@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/proposal.patch",
+    "bytes": 55105,
+    "sha256": "6bd753e92f39c8acce22d923c6714b0043a89ded7067bdf06e96d4999ed1a021"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/artifacts/emission.json",
+    "bytes": 308,
+    "sha256": "0e25e510d19670057b40b26d0e0eda1da98ce5662266effefa0c1147c2fda551"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/artifacts/template_ir2.json",
+    "bytes": 16535285,
+    "sha256": "66a7e92c42525450458f4a4bd0062ddd43fb4da095b476e9ced54940ad56e517"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/artifacts/trace.leu32",
+    "bytes": 8172160,
+    "sha256": "29d91935adc01233ed674a5f8a74bddb12ef79f332457fe655bd186914611c51"
+  }
+]

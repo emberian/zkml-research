@@ -1,0 +1,1 @@
+Compiler/FheArithmetic.lean:8:0: error: object file '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/build/Compiler/BfvSignedAccumulatorAir.olean' of module Compiler.BfvSignedAccumulatorAir does not exist

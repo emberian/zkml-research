@@ -1,0 +1,13 @@
+{
+  "name": "finite_schedule_successor",
+  "root": "../proof_frontier/2026-09-08/finite_schedule_successor",
+  "patch": "../proof_frontier/2026-09-08/finite_schedule_successor/arity-eight-finite-schedule.patch",
+  "expected_pins": 42,
+  "source_files": {
+    "Selvage/ArityEightSchedule.lean": "../proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightSchedule.lean",
+    "Selvage/ArityEightScheduleBabyBear.lean": "../proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightScheduleBabyBear.lean",
+    "Selvage/ArityEightScheduleLogged.lean": "../proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightScheduleLogged.lean",
+    "Selvage/ArityEightScheduleSupplied.lean": "../proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightScheduleSupplied.lean",
+    "Selvage/ArityEightScheduleWitnesses.lean": "../proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightScheduleWitnesses.lean"
+  }
+}

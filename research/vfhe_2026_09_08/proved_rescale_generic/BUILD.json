@@ -1,0 +1,48 @@
+{
+  "claim": "EXECUTED final runner build pins before proof invocation",
+  "built_command_record": "results/build002.command.json",
+  "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+  "cargo": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)",
+  "host": "arm64",
+  "proof_runtime_env": {
+    "RAYON_NUM_THREADS": "4"
+  },
+  "files": [
+    {
+      "path": "src/main.rs",
+      "bytes": 12973,
+      "sha256": "53171712029f894c2ad97c8bc8f408c022c483cca9c6f3ba32e96bbc5c395d8f"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 723,
+      "sha256": "bfc04ff6b3e1ae04cbbd8c8f66a43294262d2189b911c9e6881174a4f7dd3288"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 39903,
+      "sha256": "9850eb09ac35bc9835bb51ca7bf0c025c35a51f05dc469089ee815133a22a592"
+    },
+    {
+      "path": "selection.json",
+      "bytes": 1663,
+      "sha256": "65ffd50dfb8996a24e55b9169dfd78b39f5aa6b100ebe729d464ed648fe4c8e9"
+    },
+    {
+      "path": "target/release/vfhe-proved-rescale-generic",
+      "bytes": 4702608,
+      "sha256": "759902fd6ed3c264db89802b915ecd16d6319b938f8e4d58e32531a3aef6066c"
+    },
+    {
+      "path": "../proved_operation/backend/src/lib.rs",
+      "bytes": 9468,
+      "sha256": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+    },
+    {
+      "path": "../proved_operation/backend/Cargo.toml",
+      "bytes": 1414,
+      "sha256": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9"
+    }
+  ],
+  "frozen_utc": "2026-09-08T17:13:39.680706+00:00"
+}

@@ -1,0 +1,24 @@
+{
+  "command": [
+    "proof/target/release/tfhe-bootstrap-entry-proof",
+    "prove",
+    "artifacts/template_ir2.json",
+    "fixtures/normal_001/public_rows.json",
+    "artifacts/trace.leu32",
+    "results/proof001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor",
+  "timeout_seconds": 180,
+  "exit": 0,
+  "seconds": 0.9344640410272405,
+  "stdout": {
+    "path": "results/proof-normal-001.stdout",
+    "bytes": 652,
+    "sha256": "f044b4f97fed4f5c1d5df3d5bfff51a7b3e87f1ffa354fb2ed69082167cae963"
+  },
+  "stderr": {
+    "path": "results/proof-normal-001.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

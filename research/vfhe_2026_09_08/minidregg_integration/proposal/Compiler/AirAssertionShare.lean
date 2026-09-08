@@ -1,0 +1,235 @@
+/- Stable source assertion sharing, before the existing Signature emitter.
+The cache key preserves the full ordered syntax, including constants and wires.
+No arithmetic gate is authored by this pass; one representative of each repeated
+assertion is retained. Hash collisions affect cost only, never key equality. -/
+import Compiler.AirSimplify
+import Std.Data.HashSet.Lemmas
+
+namespace Minidregg.Compiler.AirAssertionShare
+open Minidregg.Compiler
+open Minidregg.Compiler.AirSimplify
+set_option autoImplicit false
+universe u
+variable {F : Type u} [Field F] {Idx : Type u}
+
+/-- Statement first: every assignment satisfies exactly the same source relation. -/
+def Preserves (pass : ConstraintSystem F Idx → ConstraintSystem F Idx) : Prop :=
+  ∀ asg s, systemAccepts asg (pass s) ↔ systemAccepts asg s
+
+/-- Finite cache key for the existing W-type source, not another AIR. -/
+inductive Key (F Idx : Type u) where
+  | constant (c : F)
+  | variable (i : Idx)
+  | add (a b : Key F Idx)
+  | mul (a b : Key F Idx)
+  deriving BEq, Hashable, DecidableEq
+
+instance [BEq F] [LawfulBEq F] [BEq Idx] [LawfulBEq Idx] : LawfulBEq (Key F Idx) where
+  rfl := by intro a; induction a <;> simp_all [BEq.beq, instBEqKey.beq]
+  eq_of_beq := by
+    intro a b
+    induction a generalizing b <;> cases b <;> simp_all [BEq.beq, instBEqKey.beq] <;> aesop
+
+def keyAlg : Alg (AirSig F Idx) (Key F Idx) := fun op => match op with
+  | .const c => fun _ => .constant c
+  | .var i => fun _ => .variable i
+  | .add => fun k => .add (k false) (k true)
+  | .mul => fun k => .mul (k false) (k true)
+
+def key : Term (AirSig F Idx) → Key F Idx := fold keyAlg
+
+def restore : Key F Idx → Term (AirSig F Idx)
+  | .constant c => cst c
+  | .variable i => vr i
+  | .add a b => add' (restore a) (restore b)
+  | .mul a b => mul' (restore a) (restore b)
+
+theorem restore_key_hom (asg : Idx → F) :
+    IsFoldHom (evalAlg asg) (fun t => eval asg (restore (key t))) := by
+  intro op k
+  cases op <;> simp [key, fold_mk, keyAlg, restore, evalAlg]
+
+theorem restore_key_eval (asg : Idx → F) (t : Term (AirSig F Idx)) :
+    eval asg (restore (key t)) = eval asg t :=
+  congrFun (fold_unique (evalAlg asg) _ (restore_key_hom asg)) t
+
+/-- Stable first occurrence. The reverse accumulator makes the walk tail
+recursive even for generated systems with tens of thousands of assertions. -/
+def uniqueGo {α : Type u} [BEq α] [Hashable α] :
+    List α → Std.HashSet α → List α → List α
+  | [], _, keptRev => keptRev.reverse
+  | a :: rest, seen, keptRev =>
+      if a ∈ seen then uniqueGo rest seen keptRev
+      else uniqueGo rest (seen.insert a) (a :: keptRev)
+
+theorem mem_uniqueGo {α : Type u} [BEq α] [LawfulBEq α] [Hashable α]
+    (xs : List α) (seen : Std.HashSet α) (keptRev : List α) (x : α) :
+    x ∈ uniqueGo xs seen keptRev ↔ x ∈ keptRev ∨ (x ∈ xs ∧ x ∉ seen) := by
+  induction xs generalizing seen keptRev with
+  | nil => simp [uniqueGo]
+  | cons a rest ih =>
+      by_cases ha : a ∈ seen
+      · simp only [uniqueGo, if_pos ha, ih, List.mem_cons]
+        aesop
+      · simp only [uniqueGo, if_neg ha, ih, List.mem_cons, Std.HashSet.mem_insert]
+        by_cases hx : x = a <;> simp_all [Ne.symm]
+
+variable [BEq F] [LawfulBEq F] [Hashable F]
+variable [BEq Idx] [LawfulBEq Idx] [Hashable Idx]
+
+def share (s : ConstraintSystem F Idx) : ConstraintSystem F Idx :=
+  (uniqueGo (s.map key) ∅ []).map restore
+
+theorem share_preserves : Preserves (share (F := F) (Idx := Idx)) := by
+  intro asg s
+  constructor
+  · intro h t ht
+    have hm : key t ∈ uniqueGo (s.map key) ∅ [] :=
+      (mem_uniqueGo _ _ _ _).mpr (Or.inr ⟨List.mem_map.mpr ⟨t,ht,rfl⟩,by simp⟩)
+    have hs := h _ (List.mem_map.mpr ⟨key t,hm,rfl⟩)
+    simpa only [accepts, restore_key_eval] using hs
+  · intro h t ht
+    obtain ⟨k,hk,rfl⟩ := List.mem_map.mp ht
+    have hk' : k ∈ s.map key := by
+      simpa using (mem_uniqueGo _ _ _ _).mp hk
+    obtain ⟨original,ho,rfl⟩ := List.mem_map.mp hk'
+    simpa only [accepts, restore_key_eval] using h original ho
+
+def optimize [DecidableEq F] (s : ConstraintSystem F Idx) : ConstraintSystem F Idx :=
+  share (simplifySystem s)
+
+theorem optimize_preserves [DecidableEq F] : Preserves (optimize (F := F) (Idx := Idx)) := by
+  intro asg s
+  exact (share_preserves asg _).trans (simplifySystem_accepts_iff asg s)
+
+def emitShared [DecidableEq F] (ix : Idx → Nat) (nPublic nVars : Nat)
+    (s : ConstraintSystem F Idx) : ConstraintDescriptor F :=
+  emit ix nPublic nVars (optimize s)
+
+theorem emitShared_accepts_iff [DecidableEq F] (ix : Idx → Nat)
+    (hinj : Function.Injective ix) (nPublic nVars : Nat)
+    (hbound : ∀ i, ix i < nVars) (asg : Idx → F) (s : ConstraintSystem F Idx) :
+    (∃ v : Nat → F, (∀ i, v (ix i) = asg i) ∧
+      descriptorHolds (emitShared ix nPublic nVars s) v) ↔ systemAccepts asg s := by
+  rw [emitShared, emit_accepts_iff ix hinj nPublic nVars hbound, optimize_preserves]
+
+theorem emitShared_forces [DecidableEq F] (ix : Idx → Nat) (nPublic nVars : Nat)
+    (s : ConstraintSystem F Idx) (v : Nat → F)
+    (h : descriptorHolds (emitShared ix nPublic nVars s) v) :
+    systemAccepts (readVars ix v) s := by
+  have hd := (emit_faithful ix nPublic nVars (optimize s) v).mp h
+  exact (optimize_preserves _ _).mp (flattenSystem_forces _ _ _ 0 hd.1 hd.2)
+
+namespace Teeth
+-- Adversarial but legal hash functions: all field payloads and variable names
+-- hash alike. Equality of the full ordered syntax must still decide sharing.
+local instance : Hashable (ZMod 7) := ⟨fun _ => 0⟩
+local instance : Hashable (Fin 2) := ⟨fun _ => 0⟩
+
+def sample : ConstraintSystem (ZMod 7) (Fin 2) :=
+  [boolGadget 0, boolGadget 1, boolGadget 0]
+def bad : Fin 2 → ZMod 7 := fun i => if i = 0 then 1 else 2
+
+theorem distinct_assertions_collide :
+    hash (key (boolGadget (F := ZMod 7) (0 : Fin 2))) =
+      hash (key (boolGadget (F := ZMod 7) (1 : Fin 2))) := by rfl
+
+theorem repeated_assertion_removed : (share sample).length = 2 := by
+  simp [share, sample, uniqueGo, key, fold_mk, keyAlg, boolGadget, mul', add', vr, cst]
+
+theorem nonzero_witness : systemAccepts (fun _ : Fin 2 => (1 : ZMod 7)) (optimize sample) := by
+  rw [optimize_preserves]
+  simp [sample, systemAccepts_cons, systemAccepts_nil, boolGadget_correct]
+
+theorem emitted_premise_inhabited : ∃ v : Nat → ZMod 7,
+    v 0 = 1 ∧ v 1 = 1 ∧ descriptorHolds (emitShared Fin.val 2 2 sample) v := by
+  have hs : systemAccepts (fun _ : Fin 2 => (1 : ZMod 7)) sample :=
+    (optimize_preserves _ _).mp nonzero_witness
+  obtain ⟨v,hv,hd⟩ := (emitShared_accepts_iff Fin.val Fin.val_injective 2 2
+    (fun i : Fin 2 => i.isLt) (fun _ => (1 : ZMod 7)) sample).mpr hs
+  exact ⟨v,hv 0,hv 1,hd⟩
+
+theorem changed_distinct_variable_refused : ¬ systemAccepts bad (optimize sample) := by
+  rw [optimize_preserves]
+  intro h
+  have hh := (boolGadget_correct bad (1 : Fin 2)).mp
+    (h (boolGadget 1) (by simp [sample]))
+  norm_num [bad] at hh
+  exact (show ¬ ((2 : ZMod 7) = 0 ∨ (2 : ZMod 7) = 1) from by decide) hh
+
+theorem dropping_distinct_assertion_is_failopen :
+    systemAccepts bad [boolGadget 0] ∧ ¬ systemAccepts bad (optimize sample) := by
+  refine ⟨?_,changed_distinct_variable_refused⟩
+  simp [systemAccepts_cons, systemAccepts_nil, boolGadget_correct, bad]
+
+end Teeth
+
+end Minidregg.Compiler.AirAssertionShare
+
+-- Exact axiom outputs from the checked declarations.
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.instLawfulBEqKey' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.instLawfulBEqKey
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.restore_key_hom' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.restore_key_hom
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.restore_key_eval' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.restore_key_eval
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.mem_uniqueGo' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.mem_uniqueGo
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.share_preserves' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.share_preserves
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.optimize_preserves' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.optimize_preserves
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.emitShared_accepts_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.emitShared_accepts_iff
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.emitShared_forces' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.emitShared_forces
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.Teeth.distinct_assertions_collide' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.distinct_assertions_collide
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.Teeth.repeated_assertion_removed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.repeated_assertion_removed
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.Teeth.nonzero_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.nonzero_witness
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.Teeth.emitted_premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.emitted_premise_inhabited
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.Teeth.changed_distinct_variable_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.changed_distinct_variable_refused
+
+/-- info: 'Minidregg.Compiler.AirAssertionShare.Teeth.dropping_distinct_assertion_is_failopen' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.dropping_distinct_assertion_is_failopen

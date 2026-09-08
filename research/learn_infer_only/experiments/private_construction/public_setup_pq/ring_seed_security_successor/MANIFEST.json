@@ -1,0 +1,95 @@
+{
+  "scope": "[DERIVED/EXECUTED] Classical programmable-ROM theorem and deterministic finite ledger, conditional on exact Ring-LWE; no concrete SHAKE/QROM/security-bit claim",
+  "status": "COMPLETE",
+  "artifacts": {
+    "CHECKS.json": "522726e96e83115ee65f7642ca7d00933ea8f7f9f48739fc28aae7f358868152",
+    "COMMANDS.json": "5fdb88e2c1ad5cabbc8bc19a4dd72b28b271fb309b310f52cecbf8561a15af19",
+    "NEXT.md": "d3ce403860bc93b4b8f6d307706b7b3199746369729b6c119e10a0bdb801a77b",
+    "SOURCES.md": "4195d7bcaa9c5ca5256e199306a6c8f451d6de8c9654ef0ebcb5a6dd8b85d81d",
+    "STATUS.md": "4b12702b8fee2e8957191dd0ef1372ed812517b0596e0906d21c8aef173fcd3f",
+    "THEOREM.md": "9c333a923f95c00598b5582aed603a4db838da99850b476f2411f0af1d2fb87a",
+    "check_ledger.py": "000f523f3f9ff93e663c0979c5b7b51e5eaf15768c43e8fb1238c7a467c02237",
+    "seal.py": "c3adf884cdc16a29caa2273bfe09d06fd9c205c3654287762a1c301747f0f9fd",
+    "transcript_programming/CHECKS.json": "97f133dea86164c54b031a5572bf4ada06c00f2bb80b7a30fbeb199126bd6883",
+    "transcript_programming/KERNEL.md": "08af89d3facefae4d74553a56a683f9577fc0289481addc48572794e155be109",
+    "transcript_programming/MANIFEST.json": "bd749a5f6c211b27764bac9ef62bedf7cae250ad2dcce272e9e675b8a09173f6",
+    "transcript_programming/NEXT.md": "ea2b08f36eb5610f8c9d34a270d481cbf5aee985d872240f15ab63541768ce4f",
+    "transcript_programming/RUN.log": "b9cf651822b6f422c6ef476ee9d2465f1ebd0121dccef8c6390a1780fda8fab2",
+    "transcript_programming/STATUS.md": "561751eb7388439895fc3fd0ec377ac5b97ec86268a031c7cc6c8726bd478e31",
+    "transcript_programming/check_kernel.py": "34aa327a2c6d95f91ad4339495c22d0bbb6d101b0b12eb622af73061cbc7669a"
+  },
+  "public_inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/MANIFEST.json": {
+      "sha256": "2d61addad6b34a65486e9b68d25f7efb5292d97d6bd251e30879ad772764ef24",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/expansion/public_expander.py": {
+      "sha256": "ab175083b2a38e382776f07a52a0d8b84e8886085f40f083117de273f0d0aba4",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/CANDIDATE.md": {
+      "sha256": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/RING_REGULARITY.md": {
+      "sha256": "2926555d5842bb71af7b16caec3eef512a9c7cfea99e877b862bcfea79d30e85",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/SPEC.md": {
+      "sha256": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/sampler.py": {
+      "sha256": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/proposal_screen.c": {
+      "sha256": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/reference.py": {
+      "sha256": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/ring.py": {
+      "sha256": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2021-046.txt": {
+      "sha256": "1c041f582042c6b811ec56c66e84d734c0cee36f7a7823c333b9360ab5fdcf2c",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2013-293.txt": {
+      "sha256": "bb8e859a3184bff5870150932861b46e4c29dcd354e3cdbea4dc98fc94dc5e56",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/seed_transport.py": {
+      "sha256": "327edd427f51e25f7984cd490ce317699da0d970b7f45eb9e04ddc68426523fd"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/GRID.json": {
+      "sha256": "de246339b8321791cba308e01ef0f929a42d725e3bbdd7a8b533622a7011031a"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/MANIFEST.json": {
+      "sha256": "23226a36d44899189716a63bd97378bdf114b8791fa0f80a39ed3f212b1adf4e"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py": {
+      "sha256": "cb19230ab53045005114811a7f2692df43f27ea145cf23f1fecca2356a3914f7"
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf": {
+      "sha256": "8b5a43ee653081a0d7cf94bc7584e80ed60a6a525c41d15fdc61734ea7c6c20f",
+      "expected_hash_matched": true
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/293.pdf": {
+      "sha256": "6b22c0bca6f3234a3aaa769a42c106c1816b12edffef2332bf7835c78d3c21e0",
+      "expected_hash_matched": true
+    }
+  },
+  "search_counts": {
+    "Scry_SQL": 0,
+    "web_searches": 0,
+    "web_opens": 0,
+    "PDF_downloads": 0
+  },
+  "prohibited_operations_performed": [],
+  "root_integration": "Root read theorem; no independent-review completion gate"
+}

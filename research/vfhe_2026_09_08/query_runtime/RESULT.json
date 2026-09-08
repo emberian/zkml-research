@@ -1,0 +1,202 @@
+{
+  "claim": "EXECUTED complete active-class query arithmetic proof with changed-output rejection",
+  "operation": {
+    "acc_sha256": "34c2108957324274852397b5175e7714e8e51df16de93562cf9e25c4e7c7917c",
+    "actual_product_residue_checks": 32768,
+    "ciphertext_moduli": [
+      2199023190017,
+      4398046486529
+    ],
+    "claim": "EXECUTED whole public query arithmetic export and native replay",
+    "components": 2,
+    "degree": 4096,
+    "export_ns": 29909375,
+    "final_output_residues": 16384,
+    "native_payload_replay_equal": true,
+    "out_sha256": "f91eb98578df7be7ed002c7d96998f9577cbd282191406caa2206a5b2a4e57fd",
+    "plaintext_modulus": 4294828033,
+    "private_files_read": 0,
+    "public_order": "rowID,accumulator2x7,positivePT2x7,negativePT2x7,finalout2x7; radix64",
+    "public_rows_sha256": "fe7ce2e690b599bd5b3f035c4ea8e37fa7a16359c358162866b8a57b9011ced0",
+    "public_tuple_width": 57,
+    "query_sha256": "7b7d31759c0b52f3547436ed20b2a1954c41aaa3fe24c848d6f331a90007c5b1",
+    "rows": 8192,
+    "scope": "Public query parsing, plaintext polynomial encoding and NTT are implementation TCB. Generated relation must bind both signed products and final subtraction. No reader/plaintext or authorization proof."
+  },
+  "proof": {
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED generated joined whole query arithmetic proof",
+    "final_output_residues": 16384,
+    "proof_bytes": 842564,
+    "proof_sha256": "1fa6b436dd9fab6c84500469e1752f5785226459600708c924dfa5bd2e6ce9f9",
+    "prove_ns": 3813823250,
+    "public_rows_sha256": "fe7ce2e690b599bd5b3f035c4ea8e37fa7a16359c358162866b8a57b9011ced0",
+    "public_tuple_width": 57,
+    "rows": 8192,
+    "self_verify_ns": 100227250,
+    "template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "trace_width": 2509,
+    "verified": true
+  },
+  "fresh_verification": {
+    "acc_sha256": "34c2108957324274852397b5175e7714e8e51df16de93562cf9e25c4e7c7917c",
+    "changed_output_rejected": false,
+    "claim": "EXECUTED fresh-process whole query arithmetic verification",
+    "out_sha256": "f91eb98578df7be7ed002c7d96998f9577cbd282191406caa2206a5b2a4e57fd",
+    "proof_sha256": "1fa6b436dd9fab6c84500469e1752f5785226459600708c924dfa5bd2e6ce9f9",
+    "query_sha256": "7b7d31759c0b52f3547436ed20b2a1954c41aaa3fe24c848d6f331a90007c5b1",
+    "verified": true,
+    "verify_ns": 111377250
+  },
+  "negative_control": {
+    "acc_sha256": "34c2108957324274852397b5175e7714e8e51df16de93562cf9e25c4e7c7917c",
+    "changed_output_rejected": true,
+    "claim": "EXECUTED fresh-process whole query arithmetic verification",
+    "out_sha256": "f91eb98578df7be7ed002c7d96998f9577cbd282191406caa2206a5b2a4e57fd",
+    "proof_sha256": "1fa6b436dd9fab6c84500469e1752f5785226459600708c924dfa5bd2e6ce9f9",
+    "query_sha256": "7b7d31759c0b52f3547436ed20b2a1954c41aaa3fe24c848d6f331a90007c5b1",
+    "verified": false,
+    "verify_ns": 102261792
+  },
+  "emission": {
+    "trace_width": 2509,
+    "trace_bytes": 82214912,
+    "source_constraints": 4442,
+    "rows": 8192,
+    "radix64_refused": true,
+    "public_tuple_order": "rowID,acc2x7,positivePT2x7,negativePT2x7,out2x7",
+    "ir2_arithmetic_constraints": 2744,
+    "constructed_cases_checked": 4,
+    "changed_output_refused": true,
+    "actual_row_constraint_check": "unchanged native prover; emitter checks four constructed rows"
+  },
+  "provenance": {
+    "claim": "EXECUTED parsed public provenance links the proved class output to the retained accepted live model snapshot",
+    "class": "card_arrival",
+    "revision": 1,
+    "head_sha256": "cb163920f2593eea951f3e9c4a67831f3dce8094ff00a3cd1fd487a794084020",
+    "model_root": "e5b2c59da18da8ce4d43aea3c431fa8ff017df029575458a3f2abe5e9cb4ddb6",
+    "receipt_sha256": "9c81f2df21cae6b97707d4b33367a682bdd8aa41d3b5f6cab747db49bc5896cd",
+    "prior_update_proof_sha256": "db97c23396017219c22ee88487c320bba70ec6dccf172929e7900620ff68485f",
+    "acc_sha256": "34c2108957324274852397b5175e7714e8e51df16de93562cf9e25c4e7c7917c",
+    "query_sha256": "7b7d31759c0b52f3547436ed20b2a1954c41aaa3fe24c848d6f331a90007c5b1",
+    "out_sha256": "f91eb98578df7be7ed002c7d96998f9577cbd282191406caa2206a5b2a4e57fd",
+    "metadata_files": [
+      {
+        "path": "source_public_query_complete.json",
+        "sha256": "52e54960377f3dce0049336cbe01d16f041deccca252e3184bffc47190b2a9cd"
+      },
+      {
+        "path": "source_committed.json",
+        "sha256": "9a5ac2680ec1a4ff40854fb17388518acf19111dd69bcaa03ef884e85e5f5558"
+      }
+    ],
+    "scope": "Metadata/receipt authenticity is the existing service protocol TCB, outside the arithmetic proof. This new proof is produced after the earlier live run completed its historical reader phase; it does not retroactively make that query proof-gated before decryption."
+  },
+  "commands": {
+    "export001": {
+      "command": [
+        "target/release/vfhe-query-runtime",
+        "export",
+        "../proved_journal/live_learner/results/live001/case/out.ct",
+        "../proved_journal/live_learner/runtime/live001/queries/697d0834dcc44680b12c502bdf90c986/query.json",
+        "../proved_journal/live_learner/runtime/live001/queries/697d0834dcc44680b12c502bdf90c986/0.ct",
+        "results/case001"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+      "started_utc": "2026-09-08T17:35:43.160729+00:00",
+      "pid": 73556,
+      "returncode": 0,
+      "elapsed_seconds": 0.04417220799950883,
+      "finished_utc": "2026-09-08T17:35:43.205707+00:00",
+      "user_seconds": 0.024238,
+      "system_seconds": 0.008017999999999999,
+      "max_rss_bytes": 30015488
+    },
+    "prove001": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-query-runtime",
+        "prove",
+        "../query_arithmetic/artifacts/template_ir2.json",
+        "results/case001",
+        "../query_arithmetic/artifacts/trace.leu32",
+        "results/proof001"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+      "started_utc": "2026-09-08T17:44:19.407055+00:00",
+      "pid": 82681,
+      "returncode": 0,
+      "elapsed_seconds": 4.002188334008679,
+      "finished_utc": "2026-09-08T17:44:23.409764+00:00",
+      "user_seconds": 12.967819,
+      "system_seconds": 0.556761,
+      "max_rss_bytes": 2100527104
+    },
+    "verify001": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-query-runtime",
+        "verify",
+        "../query_arithmetic/artifacts/template_ir2.json",
+        "results/case001",
+        "results/proof001/proof.bin"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+      "started_utc": "2026-09-08T17:45:15.618004+00:00",
+      "pid": 83965,
+      "returncode": 0,
+      "elapsed_seconds": 0.14260033302707598,
+      "finished_utc": "2026-09-08T17:45:15.761023+00:00",
+      "user_seconds": 0.304766,
+      "system_seconds": 0.018442999999999998,
+      "max_rss_bytes": 68534272
+    },
+    "reject001": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-query-runtime",
+        "verify-changed-output",
+        "../query_arithmetic/artifacts/template_ir2.json",
+        "results/case001",
+        "results/proof001/proof.bin"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+      "started_utc": "2026-09-08T17:45:25.349815+00:00",
+      "pid": 84095,
+      "returncode": 0,
+      "elapsed_seconds": 0.13177087501389906,
+      "finished_utc": "2026-09-08T17:45:25.481959+00:00",
+      "user_seconds": 0.286399,
+      "system_seconds": 0.017671,
+      "max_rss_bytes": 70844416
+    }
+  },
+  "native_build": "BUILD.json",
+  "source_theorems": "../query_arithmetic/README.md",
+  "source_pins": "../query_arithmetic/source_pins.json",
+  "proof_file": "results/proof001/proof.bin",
+  "public_case": "results/case001",
+  "template": "../query_arithmetic/artifacts/template_ir2.json",
+  "trace": "../query_arithmetic/artifacts/trace.leu32",
+  "pipeline": {
+    "source": "run.py",
+    "source_sha256": "6cfd66790b20c1a28d80856b1b9d23229560216b8f0b7e66e52a41427c319175",
+    "config": "PIPELINE.json",
+    "config_sha256": "4f00e8b01224a798851ad8116e72b2468f2c5ddaae5a9402007ac0542ee984fd",
+    "cli": "python3 run.py ACC_CT QUERY_JSON OUT_CT NEW_RUN",
+    "output": "NEW_RUN/result.json, case/public_rows.json, proof/proof.bin",
+    "first_wrapper_execution": "Delegated to new substantive query_gate_successor run; no duplicate saved-case proof run here."
+  },
+  "scope": [
+    "Every serialized NTT output coefficient of both components and both primes for one active class",
+    "Both ciphertext-plaintext products plus final subtraction; no unproved product output supplied as premise",
+    "Other class output, multiclass ranking, query encoding/NTT, decryption and protocol metadata are outside this arithmetic theorem",
+    "Saved historical query already completed its reader phase before this new proof; no retroactive proof-gating claim",
+    "No private key read or decryption in this lane"
+  ],
+  "completed_utc": "2026-09-08T17:53:31.237530+00:00"
+}

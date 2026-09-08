@@ -1,0 +1,80 @@
+{
+  "status": "executed",
+  "summary": {
+    "status": "PASS",
+    "registered_keys": 16,
+    "absent_secret_rows": 0,
+    "universal_reader": false,
+    "encodes": 6,
+    "learns": 6,
+    "expiries": 2,
+    "scalar_scores_matched": 96,
+    "decisions_matched": 48,
+    "registered_query_correct_at_each_checkpoint": [
+      16,
+      16,
+      16
+    ],
+    "query_count": 16,
+    "utility_scope": "Fixed known-public reused slice, not new held-out estimate",
+    "class_scores_changed_by_expiry": 32,
+    "whole_window_bound": 2520950,
+    "p_half_floor": 14219946,
+    "elapsed_seconds": 217.62658470799215,
+    "public_elapsed_seconds": 128.99478566698963,
+    "costs": {
+      "init": {
+        "calls": 1,
+        "seconds": 1.7698034580098465
+      },
+      "register": {
+        "calls": 16,
+        "seconds": 52.29838978993939
+      },
+      "finalize": {
+        "calls": 1,
+        "seconds": 10.45352862495929
+      },
+      "encode": {
+        "calls": 6,
+        "seconds": 44.02335666498402
+      },
+      "learn": {
+        "calls": 6,
+        "seconds": 16.18920095899375
+      },
+      "rebuild": {
+        "calls": 2,
+        "seconds": 3.5724907079711556
+      },
+      "query": {
+        "calls": 16,
+        "seconds": 88.61462316702818
+      }
+    },
+    "public_before_private": true,
+    "source_pins_sha256": "2fb22bf8b14807a1f66549a27b9be97a99b18c4e742c70ffa7d4abb82adf8426",
+    "runtime_result_sha256": "4e15c695e8292319e7ac787300478f9f9712974c5de870699ff7c2022a3569d3",
+    "public_complete_sha256": "50dffb977572a4d710ea03f96243a0661cec9edd3bba3094505d946c3b38303e",
+    "scores_csv_sha256": "5bf5f11fca48a8971618dc1aaeb3e24f50cb153384c7034b9e302359da0bf708",
+    "collector_private_payload_reads": 0
+  },
+  "source_files_unchanged": true,
+  "public_evidence_sha256": {
+    "REPORT.md": "2e0de887d3f7800c370e9fb5fb994343c8cccff107f596c0c9f5dfcbcd010a86",
+    "SUMMARY.json": "d7e4edd561aa08a6fb40aa76790bf383aa5ad00dbefd2373f82d51cf12f664dd",
+    "SCORES.csv": "5bf5f11fca48a8971618dc1aaeb3e24f50cb153384c7034b9e302359da0bf708",
+    "registry.json": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+    "fixture.json": "8b961704aa37ec4953110330b4048da1f0f639346803f240e20a04c9c38910ee",
+    "PREPARATION.json": "ac1d44ffa0b01fee4d19e90b36664929e07c2237df70a1ec3f1517f348666540",
+    "SOURCE_PINS.json": "2fb22bf8b14807a1f66549a27b9be97a99b18c4e742c70ffa7d4abb82adf8426",
+    "normal_001.log": "bb27887d7a6871b14cc5b48f6dd77c98491caef696648a72bd5f04496d8730c7",
+    "normal_001.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "results/normal_001/RESULT.json": "4e15c695e8292319e7ac787300478f9f9712974c5de870699ff7c2022a3569d3",
+    "results/normal_001/PUBLIC_COMPLETE.json": "50dffb977572a4d710ea03f96243a0661cec9edd3bba3094505d946c3b38303e",
+    "summarize.py": "bb8c3d7e418c31a8453ba5fbc80f432fafbf3d777ce8782c5d2b4b7dce603d0a",
+    "summarize.log": "1d4aab1ec6df6d4e41b51ff84b10a7d409b0da52032cdab6f58734661cc370a9",
+    "summarize.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scope": "Fixed query restricted-key semantic learner; known-public data and full per-input coalition query span; no universal reader constructed"
+}

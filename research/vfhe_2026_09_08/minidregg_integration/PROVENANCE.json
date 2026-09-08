@@ -1,0 +1,474 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "files": {
+    "Compiler/BfvLinearCombination.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean",
+      "sha256": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+      "group": "arithmetic_coverage",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvLinearCombinationLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombinationLayout.lean",
+      "sha256": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3",
+      "group": "arithmetic_coverage",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvExpiry.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiry.lean",
+      "sha256": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+      "group": "arithmetic_coverage",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvExpiryLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiryLayout.lean",
+      "sha256": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+      "group": "arithmetic_coverage",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvOperationWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvOperationWitness.lean",
+      "sha256": "dd2af44988c3d853c8bc64329474adf647ee54b89479b8e75ee2ecf19a158fd9",
+      "group": "arithmetic_coverage",
+      "expected_pin_checked": true
+    },
+    "EmitBfvLinearCombination.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/EmitBfvLinearCombination.lean",
+      "sha256": "0450e5787f48ba8bde3bf5c1a55c9b0fd38fc5fb52ebde85f83d9d0319ffb4a5",
+      "group": "arithmetic_coverage",
+      "expected_pin_checked": true
+    },
+    "EmitBfvExpiry.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/EmitBfvExpiry.lean",
+      "sha256": "73b4d829a04f48a8c186cba8181b6ade7233894c8ed4d3e275adbfa413e8f1fb",
+      "group": "arithmetic_coverage",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvRescaleRow.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleRow.lean",
+      "sha256": "27396905c9e7e58cbcddd4effabd6abd2205268e1c28dfccb88338162857da9b",
+      "group": "arithmetic_rescale",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvRescaleWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleWitness.lean",
+      "sha256": "1788612154ce6674e72e3731ad96f0d25993c3d489a40552fedcc0c777bbfdef",
+      "group": "arithmetic_rescale",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvRescaleSound.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleSound.lean",
+      "sha256": "fc0d61b81ddfad5399978e2e9c3dae092b4c9976515180613acbb1c636ed7d9c",
+      "group": "arithmetic_rescale",
+      "expected_pin_checked": true
+    },
+    "EmitBfvRescale.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/EmitBfvRescale.lean",
+      "sha256": "d9749e5db641e99334e09d28e5d314c559ea47adf8e54ce8b5ed9147c7935333",
+      "group": "compiler_cost_successor",
+      "expected_pin_checked": true,
+      "replaces": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/EmitBfvRescale.lean",
+        "sha256": "7abd63fda7ec6a3224864205cd5636617ea971dbb458d6248395e08edb1692fd",
+        "group": "arithmetic_rescale",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/DirectedRnsEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsEmit.lean",
+      "sha256": "6150b38a2ec60a6737505c25535b2a9e79459fcf9b5f79b1e0965803b6803c09",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/DirectedRnsExhibits.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsExhibits.lean",
+      "sha256": "c87d90e4e0ce248f56c8acd5dbbe9ce92bdc4b40941afd14e0be3689f2c75107",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/DirectedRnsScaler.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsScaler.lean",
+      "sha256": "e0afaa5e0fcdb594f8e63c34c8456db638fa07937a79784d1ceb11a0538c0b9a",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/DirectedRnsWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsWitness.lean",
+      "sha256": "a79956a8263d4643b1b5a465da3d91ef7a7e57b210e574c683d893f781cdb01d",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/NonlinearRnsInstance.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsInstance.lean",
+      "sha256": "6ec28f0e6aac1ef29e39ab622588927a9bae593939225827ece0b2b1b2f4e277",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/NonlinearRnsNative.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsNative.lean",
+      "sha256": "38fdd174fd58d8ca1df04d50d8632ec0f034cf149e7e0d5d997ec2a5b90fc569",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/NonlinearRnsPublic.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublic.lean",
+      "sha256": "ef05bbd066689be7c1f3598bc7d3b1c02554d0c7d63a9a4a12e6e10bb75d7f34",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/NonlinearRnsPublicSound.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublicSound.lean",
+      "sha256": "ae51163e3889141a4aec8e09fb9eb8fdfd2a847172a56b48f7d8dca7863c4486",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/NonlinearRnsSound.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsSound.lean",
+      "sha256": "210e38dcf4616ffe913319ad18cf6767c6004fc0899b10c0b3513ed7e23965fb",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/SignedMatrix.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrix.lean",
+      "sha256": "d3f84e321bd1ee5b4deb3bdda3a4ee7cca2ae3da695d37944c283292aecef7d5",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/SignedMatrixEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrixEmit.lean",
+      "sha256": "4f165bf1e7d7ba213ac90e40fe2bb311639c061334e95fed68c002d07471ef53",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "EmitNonlinearRns.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/EmitNonlinearRns.lean",
+      "sha256": "b0091f5eb0d78e3c3ec60167b5a82c439bce9d2b89389997e17d24e9ca75d9cf",
+      "group": "arithmetic_rescale_generic",
+      "expected_pin_checked": true
+    },
+    "Compiler/AirAssertionShare.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean",
+      "sha256": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf",
+      "group": "compiler_cost_successor",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvRescaleAssertionShare.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/BfvRescaleAssertionShare.lean",
+      "sha256": "a343673837610f4fb97a303fc4c07b4e49d743eece212ef1fca7f22e6353cc31",
+      "group": "compiler_cost_successor",
+      "expected_pin_checked": true
+    },
+    "Compiler/TfheModulusSwitch.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/Compiler/TfheModulusSwitch.lean",
+      "sha256": "dafb653dcdb09702b107703bbb4043c55dfa1b6da5485e4c88fde835571aba54",
+      "group": "bootstrap_successor",
+      "expected_pin_checked": true
+    },
+    "EmitTfheModulusSwitch.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/EmitTfheModulusSwitch.lean",
+      "sha256": "0db477894b852f1bc192234e22b127a3cadf49fd251740bbb324d896f3d91edf",
+      "group": "bootstrap_successor",
+      "expected_pin_checked": true
+    },
+    "Compiler/TfheInitialRotation.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/Compiler/TfheInitialRotation.lean",
+      "sha256": "a42a9d79426035386a8bd16622ac06fe6c1f7451fa454f330790e906c1aa20d1",
+      "group": "bootstrap_rotation_successor",
+      "expected_pin_checked": true
+    },
+    "EmitTfheInitialRotation.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/EmitTfheInitialRotation.lean",
+      "sha256": "71eb0e8cef1eb49046d382c5fe74931f3fd25c1c5d89c254d72c4ba632196e08",
+      "group": "bootstrap_rotation_successor",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvQueryMul.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean",
+      "sha256": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e",
+      "group": "query_arithmetic",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvQueryRow.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean",
+      "sha256": "eb101cab960c6954ee7258a13cf41ea3cf9ebb285f99f410e92f1108efddaa8f",
+      "group": "query_arithmetic",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvQueryTeeth.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean",
+      "sha256": "68f36ac565f581c48ed54453595523cde07566a669d6858b03ac0b2244ac57a2",
+      "group": "query_arithmetic",
+      "expected_pin_checked": true
+    },
+    "Compiler/BfvQueryWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryWitness.lean",
+      "sha256": "860e1a86402d9ee6c816c2725f8e4865008d988044d975308b59df8a2e7081dd",
+      "group": "query_arithmetic",
+      "expected_pin_checked": true
+    },
+    "EmitBfvQuery.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/EmitBfvQuery.lean",
+      "sha256": "d76ab80472bdc34bab576ebc96d227a2e1766d6996fda67b635f3d76e6b505b7",
+      "group": "query_arithmetic",
+      "expected_pin_checked": true
+    },
+    "Compiler/AirSimplify.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean",
+      "sha256": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/IntegerCertificateEmission.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean",
+      "sha256": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheSourceCertificateEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean",
+      "sha256": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheTargetProjectionEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean",
+      "sha256": "23653006b13b339c5d3a1e58255e273c8d607e17a108ec4c1c4b38614a585363",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheTargetProjectionWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean",
+      "sha256": "dd0c8ee14a1dbc779f7d4c16ec6b9c314444304c9652a13134b966fd8386a79c",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheSourceCertificateWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean",
+      "sha256": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheSourceCertificate.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean",
+      "sha256": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheRnsScaleDecomposition.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean",
+      "sha256": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheSourceCertificateLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean",
+      "sha256": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheTargetProjectionLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean",
+      "sha256": "8194cb7e55cce3ae1e3266a35267e00f26f588b3cd0246a608dedc1fee8fd439",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheTargetProjectionVerifier.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionVerifier.lean",
+      "sha256": "41d8e514bc3a93463a7b6cbae4bc44b0de24298c8e4c2b3c4deedf1ce09a2e2b",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/BFVScaleLiftRefinement.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean",
+      "sha256": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheTargetProjection.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean",
+      "sha256": "4f6f6f1d5bc89d416a9275f732fb623736232c6ef4bfe3abfccdf64bacb0f1d0",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheSourceCertificateVerifier.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean",
+      "sha256": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheSourceCertificateOptimized.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean",
+      "sha256": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+      "group": "required predecessor",
+      "expected_pin_checked": true
+    },
+    "Compiler/FheArithmetic.lean": {
+      "source": "new integration glue",
+      "sha256": "a23d64e7e44d5362ba9a436d190a5a7d3685b06496a638d821ffe32d71a4b77d",
+      "group": "integration"
+    },
+    "Compiler.lean": {
+      "source": "git:6937394e1dc2c2aaff986c7d4b3a258aca5d16fd:Compiler.lean plus one import",
+      "base_sha256": "7d1de586dc1b53d2785344c5a04e505540cad58e707d07b13ccfc35bb311c358",
+      "sha256": "d450f8989bd3cfc11848dfe2435e07e753b66d910b421799c99ae37f0b77e32e",
+      "group": "integration"
+    }
+  },
+  "module_dependency_order": [
+    "Compiler/IntegerCertificateEmission.lean",
+    "Compiler/BfvLinearCombination.lean",
+    "Compiler/BfvExpiry.lean",
+    "Compiler/AirSimplify.lean",
+    "Compiler/BfvLinearCombinationLayout.lean",
+    "Compiler/BfvExpiryLayout.lean",
+    "Compiler/BfvOperationWitness.lean",
+    "Compiler/BFVScaleLiftRefinement.lean",
+    "Compiler/FheRnsScaleDecomposition.lean",
+    "Compiler/FheSourceCertificate.lean",
+    "Compiler/FheSourceCertificateLayout.lean",
+    "Compiler/FheSourceCertificateEmit.lean",
+    "Compiler/FheSourceCertificateOptimized.lean",
+    "Compiler/FheSourceCertificateVerifier.lean",
+    "Compiler/FheSourceCertificateWitness.lean",
+    "Compiler/FheTargetProjection.lean",
+    "Compiler/FheTargetProjectionLayout.lean",
+    "Compiler/FheTargetProjectionEmit.lean",
+    "Compiler/FheTargetProjectionVerifier.lean",
+    "Compiler/FheTargetProjectionWitness.lean",
+    "Compiler/BfvRescaleRow.lean",
+    "Compiler/BfvRescaleSound.lean",
+    "Compiler/BfvRescaleWitness.lean",
+    "Compiler/AirAssertionShare.lean",
+    "Compiler/BfvRescaleAssertionShare.lean",
+    "Compiler/SignedMatrix.lean",
+    "Compiler/SignedMatrixEmit.lean",
+    "Compiler/DirectedRnsScaler.lean",
+    "Compiler/DirectedRnsWitness.lean",
+    "Compiler/DirectedRnsExhibits.lean",
+    "Compiler/DirectedRnsEmit.lean",
+    "Compiler/NonlinearRnsInstance.lean",
+    "Compiler/NonlinearRnsPublic.lean",
+    "Compiler/NonlinearRnsSound.lean",
+    "Compiler/NonlinearRnsNative.lean",
+    "Compiler/NonlinearRnsPublicSound.lean",
+    "Compiler/TfheModulusSwitch.lean",
+    "Compiler/TfheInitialRotation.lean",
+    "Compiler/BfvQueryMul.lean",
+    "Compiler/BfvQueryRow.lean",
+    "Compiler/BfvQueryWitness.lean",
+    "Compiler/BfvQueryTeeth.lean",
+    "Compiler/FheArithmetic.lean"
+  ],
+  "all_file_order": [
+    "Compiler/IntegerCertificateEmission.lean",
+    "Compiler/BfvLinearCombination.lean",
+    "Compiler/BfvExpiry.lean",
+    "Compiler/AirSimplify.lean",
+    "Compiler/BfvLinearCombinationLayout.lean",
+    "Compiler/BfvExpiryLayout.lean",
+    "Compiler/BfvOperationWitness.lean",
+    "Compiler/BFVScaleLiftRefinement.lean",
+    "Compiler/FheRnsScaleDecomposition.lean",
+    "Compiler/FheSourceCertificate.lean",
+    "Compiler/FheSourceCertificateLayout.lean",
+    "Compiler/FheSourceCertificateEmit.lean",
+    "Compiler/FheSourceCertificateOptimized.lean",
+    "Compiler/FheSourceCertificateVerifier.lean",
+    "Compiler/FheSourceCertificateWitness.lean",
+    "Compiler/FheTargetProjection.lean",
+    "Compiler/FheTargetProjectionLayout.lean",
+    "Compiler/FheTargetProjectionEmit.lean",
+    "Compiler/FheTargetProjectionVerifier.lean",
+    "Compiler/FheTargetProjectionWitness.lean",
+    "Compiler/BfvRescaleRow.lean",
+    "Compiler/BfvRescaleSound.lean",
+    "Compiler/BfvRescaleWitness.lean",
+    "Compiler/AirAssertionShare.lean",
+    "Compiler/BfvRescaleAssertionShare.lean",
+    "Compiler/SignedMatrix.lean",
+    "Compiler/SignedMatrixEmit.lean",
+    "Compiler/DirectedRnsScaler.lean",
+    "Compiler/DirectedRnsWitness.lean",
+    "Compiler/DirectedRnsExhibits.lean",
+    "Compiler/DirectedRnsEmit.lean",
+    "Compiler/NonlinearRnsInstance.lean",
+    "Compiler/NonlinearRnsPublic.lean",
+    "Compiler/NonlinearRnsSound.lean",
+    "Compiler/NonlinearRnsNative.lean",
+    "Compiler/NonlinearRnsPublicSound.lean",
+    "Compiler/TfheModulusSwitch.lean",
+    "Compiler/TfheInitialRotation.lean",
+    "Compiler/BfvQueryMul.lean",
+    "Compiler/BfvQueryRow.lean",
+    "Compiler/BfvQueryWitness.lean",
+    "Compiler/BfvQueryTeeth.lean",
+    "Compiler/FheArithmetic.lean",
+    "Compiler.lean",
+    "EmitBfvExpiry.lean",
+    "EmitBfvLinearCombination.lean",
+    "EmitBfvQuery.lean",
+    "EmitBfvRescale.lean",
+    "EmitNonlinearRns.lean",
+    "EmitTfheInitialRotation.lean",
+    "EmitTfheModulusSwitch.lean"
+  ],
+  "base_direct_dependencies": {
+    "Compiler/PredCompile.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/PredCompile.lean",
+      "git_blob": "5d07867315eab57b8ab90eab44262cd23c7b2440"
+    },
+    "Compiler/DescriptorEval.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean",
+      "git_blob": "e347305f4c7e19b55ced8ee948bf372207a729ac"
+    },
+    "Compiler/BfvSignedAccumulatorAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BfvSignedAccumulatorAir.lean",
+      "git_blob": "b2acd6019c788e842188f57c0867754f1fd66719"
+    }
+  },
+  "retained_completed_module_evidence": {
+    "arithmetic_coverage": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/results/checked_modules.json",
+      "sha256": "e7e01e4a9511d3a604f64d73a7401724cb56f2d743a6f07c061a1a223181d0bb"
+    },
+    "arithmetic_rescale": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/results/checked_modules.json",
+      "sha256": "fe801916f93cc69ccc0530d592aeaaacca590ec960cee50ceef60fe05aa6651c"
+    },
+    "arithmetic_rescale_generic": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/results/checked_modules.json",
+      "sha256": "31eabff007c3d89dcda9ef7e5e0c2f93d6ec9fea258f89b42ff107f53e3253fb"
+    },
+    "compiler_cost_successor": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/RESULTS.json",
+      "sha256": "0be447730f5dca3311f86b5450d7eebf17afa60237958431eeeae20e3a8fb973"
+    },
+    "bootstrap_successor": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/MANIFEST.json",
+      "sha256": "8ea53aba3a790148e1e912f1b0bfbc5458662f253af33cb6336b416eb9d45f1f"
+    },
+    "bootstrap_rotation_successor": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/MANIFEST.json",
+      "sha256": "1cc31ccf975640c84951f7aea59515b2a093618fde6fe1dcc66abe3197352a60"
+    },
+    "query_arithmetic": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/results/validation.json",
+      "sha256": "fa2637d03e7be67fa8a1b2634d329496f2df974906084c28bde49026a62a0b13"
+    },
+    "required_certificate_predecessors": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/validation-summary.json",
+      "sha256": "f8a30a375707cd1da6250db2af6178945b01e9d6a25831ed912b2c57cf80f844"
+    }
+  },
+  "exporter_resolution": "EmitBfvRescale.lean is the completed assertion-sharing replacement, not the earlier unspecialized exporter.",
+  "excluded": [
+    "ongoing rescale_compiler_successor",
+    "proof_frontier work",
+    "runtime crates and generated traces/proofs",
+    "old Checks runners and experiment-only probes"
+  ],
+  "new_glue": [
+    "Compiler/FheArithmetic.lean",
+    "Compiler.lean one import"
+  ],
+  "patch_sha256": "7e3e625deefe311d1f7d359ca6f3fc54fc727818bc138afaf955170cc42ed265"
+}

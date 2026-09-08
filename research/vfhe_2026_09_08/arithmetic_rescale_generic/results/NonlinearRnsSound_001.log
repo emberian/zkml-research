@@ -1,0 +1,91 @@
+Compiler/NonlinearRnsSound.lean:14:10: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case left
+⊢ (∀ j ∈ List.finRange 9,
+      leftConstant (inputRow params j) < 2 ^ 300 ∧
+        rightConstant (inputRow params j) < 2 ^ 300 ∧
+          ∀ (g : Fin (groups 9 4)),
+            leftCoefficient (inputRow params j) g < 2 ^ 201 ∧ rightCoefficient (inputRow params j) g < 2 ^ 201) ∧
+    (leftConstant (gRow params) < 2 ^ 300 ∧
+        rightConstant (gRow params) < 2 ^ 300 ∧
+          ∀ (g : Fin (groups 9 4)),
+            leftCoefficient (gRow params) g < 2 ^ 201 ∧ rightCoefficient (gRow params) g < 2 ^ 201) ∧
+      (leftConstant (gBound params) < 2 ^ 300 ∧
+          rightConstant (gBound params) < 2 ^ 300 ∧
+            ∀ (g : Fin (groups 9 4)),
+              leftCoefficient (gBound params) g < 2 ^ 201 ∧ rightCoefficient (gBound params) g < 2 ^ 201) ∧
+        (leftConstant (fRow params) < 2 ^ 300 ∧
+            rightConstant (fRow params) < 2 ^ 300 ∧
+              ∀ (g : Fin (groups 9 4)),
+                leftCoefficient (fRow params) g < 2 ^ 201 ∧ rightCoefficient (fRow params) g < 2 ^ 201) ∧
+          (leftConstant (fBound params) < 2 ^ 300 ∧
+              rightConstant (fBound params) < 2 ^ 300 ∧
+                ∀ (g : Fin (groups 9 4)),
+                  leftCoefficient (fBound params) g < 2 ^ 201 ∧ rightCoefficient (fBound params) g < 2 ^ 201) ∧
+            (leftConstant (yRow params) < 2 ^ 300 ∧
+                rightConstant (yRow params) < 2 ^ 300 ∧
+                  ∀ (g : Fin (groups 9 4)),
+                    leftCoefficient (yRow params) g < 2 ^ 201 ∧ rightCoefficient (yRow params) g < 2 ^ 201) ∧
+              (leftConstant (yBound params) < 2 ^ 300 ∧
+                  rightConstant (yBound params) < 2 ^ 300 ∧
+                    ∀ (g : Fin (groups 9 4)),
+                      leftCoefficient (yBound params) g < 2 ^ 201 ∧ rightCoefficient (yBound params) g < 2 ^ 201) ∧
+                ∀ x ∈ [],
+                  leftConstant x < 2 ^ 300 ∧
+                    rightConstant x < 2 ^ 300 ∧
+                      ∀ (g : Fin (groups 9 4)), leftCoefficient x g < 2 ^ 201 ∧ rightCoefficient x g < 2 ^ 201
+Compiler/NonlinearRnsSound.lean:15:4: error: Tactic `constructor` failed: target is not an inductive datatype
+
+case right
+⊢ ∀ a ∈ List.finRange 4,
+    (leftConstant (targetRow params a) < 2 ^ 300 ∧
+        rightConstant (targetRow params a) < 2 ^ 300 ∧
+          ∀ (g : Fin (groups 9 4)),
+            leftCoefficient (targetRow params a) g < 2 ^ 201 ∧ rightCoefficient (targetRow params a) g < 2 ^ 201) ∧
+      (leftConstant (targetBound params a) < 2 ^ 300 ∧
+          rightConstant (targetBound params a) < 2 ^ 300 ∧
+            ∀ (g : Fin (groups 9 4)),
+              leftCoefficient (targetBound params a) g < 2 ^ 201 ∧
+                rightCoefficient (targetBound params a) g < 2 ^ 201) ∧
+        ∀ x ∈ [],
+          leftConstant x < 2 ^ 300 ∧
+            rightConstant x < 2 ^ 300 ∧
+              ∀ (g : Fin (groups 9 4)), leftCoefficient x g < 2 ^ 201 ∧ rightCoefficient x g < 2 ^ 201
+Compiler/NonlinearRnsSound.lean:12:83: warning: This simp argument is unused:
+  List.forall_mem_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [̵f̵o̵r̵m̵s̵,̵L̵i̵s̵t̵.̵f̵o̵r̵a̵l̵l̵_̵m̵e̵m̵_̵a̵p̵p̵e̵n̵d̵,̵L̵i̵s̵t̵.̵f̵o̵r̵a̵l̵l̵_̵m̵e̵m̵_̵m̵a̵p̵,̵L̵i̵s̵t̵.̵f̵o̵r̵a̵l̵l̵_̵m̵e̵m̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵f̵o̵r̵a̵l̵l̵_̵m̵e̵m̵_̵n̵i̵l̵,̵a̵n̵d̵_̵t̵r̵u̵e̵,̵L̵i̵s̵t̵.̵f̵o̵r̵a̵l̵l̵_̵m̵e̵m̵_̵f̵l̵a̵t̵M̵a̵p̵]̵[̲f̲o̲r̲m̲s̲,̲ ̲L̲i̲s̲t̲.̲f̲o̲r̲a̲l̲l̲_̲m̲e̲m̲_̲a̲p̲p̲e̲n̲d̲,̲ ̲L̲i̲s̲t̲.̲f̲o̲r̲a̲l̲l̲_̲m̲e̲m̲_̲m̲a̲p̲,̲ ̲L̲i̲s̲t̲.̲f̲o̲r̲a̲l̲l̲_̲m̲e̲m̲_̲c̲o̲n̲s̲,̲ ̲a̲n̲d̲_̲t̲r̲u̲e̲,̲
+  ̲ ̲ ̲ ̲ ̲L̲i̲s̲t̲.̲f̲o̲r̲a̲l̲l̲_̲m̲e̲m̲_̲f̲l̲a̲t̲M̲a̲p̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsSound.lean:12:103: warning: This simp argument is unused:
+  and_true
+
+Hint: Omit it from the simp argument list.
+  simp only [forms, ̲List.forall_mem_append, ̲List.forall_mem_map, ̲List.forall_mem_cons,
+  ̲ ̲ ̲ ̲ ̲List.forall_mem_nil,a̵n̵d̵_̵t̵r̵u̵e̵,̵ ̲List.forall_mem_flatMap]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsSound.lean:27:28: warning: exponent 300 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+Compiler/NonlinearRnsSound.lean:37:23: error: Application type mismatch: The argument
+  target i 0
+has type
+  Fin (groups ?m.8 ?m.10)
+but is expected to have type
+  Fin profile.groups
+in the application
+  decoded profile asg (target i 0)
+Compiler/NonlinearRnsSound.lean:37:87: error: Application type mismatch: The argument
+  residue j
+has type
+  Fin (groups 9 ?m.17)
+but is expected to have type
+  Fin profile.groups
+in the application
+  decoded profile asg (residue j)
+Compiler/NonlinearRnsSound.lean:39:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (3000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

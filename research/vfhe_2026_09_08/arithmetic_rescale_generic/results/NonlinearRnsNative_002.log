@@ -1,0 +1,6 @@
+Compiler/NonlinearRnsNative.lean:38:27: warning: 'norm_num' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/NonlinearRnsNative.lean:38:27: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`

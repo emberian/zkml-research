@@ -1,0 +1,935 @@
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 98
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨0, ⋯⟩))
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 96
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨1, ⋯⟩))
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 87
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨2, ⋯⟩))
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 77
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨3, ⋯⟩))
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 61
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨4, ⋯⟩))
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 45
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨5, ⋯⟩))
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 36
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨6, ⋯⟩))
+Compiler/TfheInitialRotation.lean:20:79: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 20
+  a - b ≤ -1
+where
+ a := ↑↑j
+ b := ↑(widths ((fun i => i) ⟨7, ⋯⟩))
+Compiler/TfheInitialRotation.lean:54:2: error: unsolved goals
+case «0»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value 0) (bits ((fun i => i) ⟨0, ⋯⟩)))
+
+case «1»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value 1) (bits ((fun i => i) ⟨1, ⋯⟩)))
+
+case «2»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨2, ⋯⟩) (bits ((fun i => i) ⟨2, ⋯⟩)))
+
+case «3»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨3, ⋯⟩) (bits ((fun i => i) ⟨3, ⋯⟩)))
+
+case «4»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨4, ⋯⟩) (bits ((fun i => i) ⟨4, ⋯⟩)))
+
+case «5»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨5, ⋯⟩) (bits ((fun i => i) ⟨5, ⋯⟩)))
+
+case «6»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨6, ⋯⟩) (bits ((fun i => i) ⟨6, ⋯⟩)))
+
+case «7»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨7, ⋯⟩) (bits ((fun i => i) ⟨7, ⋯⟩)))
+
+case «8»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨8, ⋯⟩) (bits ((fun i => i) ⟨8, ⋯⟩)))
+
+case «9»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨9, ⋯⟩) (bits ((fun i => i) ⟨9, ⋯⟩)))
+
+case «10»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨10, ⋯⟩) (bits ((fun i => i) ⟨10, ⋯⟩)))
+
+case «11»
+asg : W → BabyBear
+h : systemAccepts asg ranges
+⊢ systemAccepts asg (rangeGadget (value ⟨11, ⋯⟩) (bits ((fun i => i) ⟨11, ⋯⟩)))
+Compiler/TfheInitialRotation.lean:55:10: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+asg : W → BabyBear
+h : systemAccepts asg ranges
+k : Fin 12
+⊢ 2 ^ widths k ≤ babyBearP
+Compiler/TfheInitialRotation.lean:79:52: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ w ≤ 511
+  0 ≤ u ≤ 3
+  t ≥ 0
+  s - t ≥ 1
+  r ≥ 0
+  q - r ≥ 1
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 2
+  m - n ≥ 1
+  l ≥ 0
+  k - l ≥ 1
+  j ≥ 0
+  i - j ≥ 1
+  h ≥ 0
+  g - h ≥ 1
+  f ≥ 0
+  e - f ≥ 1
+  d ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a - b ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑(val asg 2)
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ d := ↑(val asg 3)
+ e := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ f := ↑(val asg 4)
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ h := ↑(val asg 5)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ j := ↑(val asg 6)
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ l := ↑(val asg 7)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ n := ↑(val asg 8)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ p := ↑(val asg 9)
+ q := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ r := ↑(val asg 10)
+ s := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ t := ↑(val asg 11)
+ u := ↑(val asg 0)
+ w := ↑(val asg 1)
+Compiler/TfheInitialRotation.lean:79:86: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ w ≤ 511
+  0 ≤ u ≤ 3
+  t ≥ 0
+  s - t ≥ 1
+  r ≥ 0
+  q - r ≥ 1
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 0
+  m - n ≥ 1
+  l ≥ 0
+  k - l ≥ 1
+  j ≥ 65536
+  i - j ≥ 1
+  h ≥ 0
+  g - h ≥ 1
+  f ≥ 0
+  e - f ≥ 1
+  d ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a - b ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑(val asg 2)
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ d := ↑(val asg 3)
+ e := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ f := ↑(val asg 4)
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ h := ↑(val asg 5)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ j := ↑(val asg 6)
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ l := ↑(val asg 7)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ n := ↑(val asg 8)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ p := ↑(val asg 9)
+ q := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ r := ↑(val asg 10)
+ s := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ t := ↑(val asg 11)
+ u := ↑(val asg 0)
+ w := ↑(val asg 1)
+Compiler/TfheInitialRotation.lean:80:52: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ x ≤ 65535
+  0 ≤ w ≤ 511
+  0 ≤ u ≤ 3
+  t ≥ 0
+  s - t ≥ 1
+  r ≥ 0
+  q - r ≥ 1
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 2
+  m - n ≥ 1
+  l ≥ 0
+  k - l ≥ 1
+  j ≥ 0
+  i - j ≥ 1
+  h ≥ 0
+  g - h ≥ 1
+  f ≥ 0
+  e - f ≥ 1
+  d ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a - b ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑(val asg 2)
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ d := ↑(val asg 3)
+ e := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ f := ↑(val asg 4)
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ h := ↑(val asg 5)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ j := ↑(val asg 6)
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ l := ↑(val asg 7)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ n := ↑(val asg 8)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ p := ↑(val asg 9)
+ q := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ r := ↑(val asg 10)
+ s := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ t := ↑(val asg 11)
+ u := ↑(val asg 0)
+ w := ↑(val asg 1)
+ x := ↑(val asg 8) * ↑(val asg 6)
+Compiler/TfheInitialRotation.lean:80:86: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ x ≤ 65535
+  0 ≤ w ≤ 511
+  0 ≤ u ≤ 3
+  t ≥ 0
+  s - t ≥ 1
+  r ≥ 0
+  q - r ≥ 1
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 0
+  m - n ≥ 1
+  l ≥ 65536
+  k - l ≥ 1
+  j ≥ 0
+  i - j ≥ 1
+  h ≥ 0
+  g - h ≥ 1
+  f ≥ 0
+  e - f ≥ 1
+  d ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a - b ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑(val asg 2)
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ d := ↑(val asg 3)
+ e := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ f := ↑(val asg 4)
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ h := ↑(val asg 5)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ j := ↑(val asg 6)
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ l := ↑(val asg 7)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ n := ↑(val asg 8)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ p := ↑(val asg 9)
+ q := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ r := ↑(val asg 10)
+ s := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ t := ↑(val asg 11)
+ u := ↑(val asg 0)
+ w := ↑(val asg 1)
+ x := ↑(val asg 8) * ↑(val asg 6)
+Compiler/TfheInitialRotation.lean:82:45: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ y ≤ 65535
+  0 ≤ x ≤ 65535
+  0 ≤ w ≤ 511
+  0 ≤ u ≤ 3
+  t ≥ 0
+  s - t ≥ 1
+  r ≥ 0
+  q - r ≥ 1
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 0
+  m - n ≥ 1
+  l ≥ 0
+  k - l ≥ 1
+  j ≥ 0
+  i - j ≥ 1
+  h ≥ 0
+  g - h ≥ 1
+  f ≥ 0
+  e - f ≥ 1
+  d ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  b + w ≥ 2013265921
+  a - b ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑(val asg 2)
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ d := ↑(val asg 3)
+ e := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ f := ↑(val asg 4)
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ h := ↑(val asg 5)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ j := ↑(val asg 6)
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ l := ↑(val asg 7)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ n := ↑(val asg 8)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ p := ↑(val asg 9)
+ q := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ r := ↑(val asg 10)
+ s := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ t := ↑(val asg 11)
+ u := ↑(val asg 0)
+ w := ↑(val asg 1)
+ x := ↑(val asg 8) * ↑(val asg 6)
+ y := ↑(val asg 8) * ↑(val asg 7)
+Compiler/TfheInitialRotation.lean:82:78: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ y ≤ 65535
+  0 ≤ x ≤ 65535
+  0 ≤ w ≤ 511
+  0 ≤ u ≤ 3
+  t ≥ 0
+  s - t ≥ 1
+  r ≥ 0
+  q - r ≥ 1
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 0
+  m - n ≥ 1
+  l ≥ 0
+  k - l ≥ 1
+  j ≥ 0
+  i - j ≥ 1
+  h ≥ 0
+  h + 512*n + 1024*p ≥ 2013265921
+  g - h ≥ 1
+  f ≥ 0
+  e - f ≥ 1
+  d ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  a - b ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑(val asg 2)
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ d := ↑(val asg 3)
+ e := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ f := ↑(val asg 4)
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ h := ↑(val asg 5)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ j := ↑(val asg 6)
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ l := ↑(val asg 7)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ n := ↑(val asg 8)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ p := ↑(val asg 9)
+ q := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ r := ↑(val asg 10)
+ s := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ t := ↑(val asg 11)
+ u := ↑(val asg 0)
+ w := ↑(val asg 1)
+ x := ↑(val asg 8) * ↑(val asg 6)
+ y := ↑(val asg 8) * ↑(val asg 7)
+Compiler/TfheInitialRotation.lean:85:45: error: linarith failed to find a contradiction
+case h
+asg : W → BabyBear
+hs✝ : systemAccepts asg system
+hr : systemAccepts asg ranges
+he✝ : systemAccepts asg [indexTerm, loTerm, hiTerm]
+hb : ∀ (k : Fin 12), val asg k < 2 ^ widths k
+he :
+  asg (value 1) + asg (value 2) = asg (value 5) + 512 * asg (value 8) + 1024 * asg (value 9) ∧
+    asg (value 3) + 2 * asg (value 8) * asg (value 6) = asg (value 6) + 65536 * asg (value 10) ∧
+      asg (value 4) + 2 * asg (value 8) * asg (value 7) + asg (value 10) = asg (value 7) + 65536 * asg (value 11)
+ha : val asg 2 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+hzl : val asg 3 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+hzh : val asg 4 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+hi : val asg 5 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+hxl : val asg 6 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+hxh : val asg 7 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+hs : val asg 8 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ht : val asg 9 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+hc : val asg 10 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+hd : val asg 11 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+h0 : val asg 0 < 4
+hj : val asg 1 < 512
+hp1 : val asg 8 * val asg 6 ≤ 1 * 65535
+hp2 : val asg 8 * val asg 7 ≤ 1 * 65535
+hindex : val asg 1 + val asg 2 = val asg 5 + 512 * val asg 8 + 1024 * val asg 9
+a✝ : 2013265921 ≤ val asg 3 + 2 * val asg 8 * val asg 6
+⊢ False
+failed
+Compiler/TfheInitialRotation.lean:85:82: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ x ≤ 65535
+  0 ≤ w ≤ 65535
+  0 ≤ u ≤ 511
+  0 ≤ t ≤ 3
+  s ≥ 0
+  r - s ≥ 1
+  q ≥ 0
+  p - q ≥ 1
+  o ≥ 0
+  n - o ≥ 1
+  m ≥ 0
+  l - m ≥ 1
+  k ≥ 0
+  j - k ≥ 1
+  i ≥ 0
+  i + 65536*q ≥ 2013265921
+  h - i ≥ 1
+  g ≥ 0
+  g + 512*m + 1024*o - u ≥ 0
+  f - g ≥ 1
+  e ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+  b - c ≥ 1
+  a - g - 512*m - 1024*o + u ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑(val asg 3)
+ d := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ e := ↑(val asg 4)
+ f := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ g := ↑(val asg 5)
+ h := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ i := ↑(val asg 6)
+ j := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ k := ↑(val asg 7)
+ l := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ m := ↑(val asg 8)
+ n := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ o := ↑(val asg 9)
+ p := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ q := ↑(val asg 10)
+ r := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ s := ↑(val asg 11)
+ t := ↑(val asg 0)
+ u := ↑(val asg 1)
+ w := ↑(val asg 8) * ↑(val asg 6)
+ x := ↑(val asg 8) * ↑(val asg 7)
+Compiler/TfheInitialRotation.lean:88:45: error: linarith failed to find a contradiction
+case h
+asg : W → BabyBear
+hs✝ : systemAccepts asg system
+hr : systemAccepts asg ranges
+he✝ : systemAccepts asg [indexTerm, loTerm, hiTerm]
+hb : ∀ (k : Fin 12), val asg k < 2 ^ widths k
+he :
+  asg (value 1) + asg (value 2) = asg (value 5) + 512 * asg (value 8) + 1024 * asg (value 9) ∧
+    asg (value 3) + 2 * asg (value 8) * asg (value 6) = asg (value 6) + 65536 * asg (value 10) ∧
+      asg (value 4) + 2 * asg (value 8) * asg (value 7) + asg (value 10) = asg (value 7) + 65536 * asg (value 11)
+ha : val asg 2 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+hzl : val asg 3 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+hzh : val asg 4 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+hi : val asg 5 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+hxl : val asg 6 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+hxh : val asg 7 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+hs : val asg 8 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ht : val asg 9 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+hc : val asg 10 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+hd : val asg 11 < 2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+h0 : val asg 0 < 4
+hj : val asg 1 < 512
+hp1 : val asg 8 * val asg 6 ≤ 1 * 65535
+hp2 : val asg 8 * val asg 7 ≤ 1 * 65535
+hindex : val asg 1 + val asg 2 = val asg 5 + 512 * val asg 8 + 1024 * val asg 9
+hlo : val asg 3 + 2 * val asg 8 * val asg 6 = val asg 6 + 65536 * val asg 10
+a✝ : 2013265921 ≤ val asg 4 + 2 * val asg 8 * val asg 7 + val asg 10
+⊢ False
+failed
+Compiler/TfheInitialRotation.lean:88:82: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  x ≥ 0
+  0 ≤ w ≤ 65535
+  0 ≤ u ≤ 65535
+  0 ≤ t ≤ 511
+  0 ≤ s ≤ 3
+  r ≥ 0
+  q - r ≥ 1
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 0
+  m - n ≥ 1
+  l ≥ 0
+  k - l ≥ 1
+  j ≥ 0
+  j + 65536*r ≥ 2013265921
+  i - j ≥ 1
+  h ≥ 0
+  h + 65536*p - x ≥ 0
+  g - h ≥ 1
+  f ≥ 0
+  f + 512*l + 1024*n - t ≥ 0
+  e - f ≥ 1
+  d ≥ 0
+  c - d ≥ 1
+  b - h - 65536*p + x ≥ 1
+  a - f - 512*l - 1024*n + t ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ d := ↑(val asg 4)
+ e := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ f := ↑(val asg 5)
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ h := ↑(val asg 6)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ j := ↑(val asg 7)
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ l := ↑(val asg 8)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ n := ↑(val asg 9)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ p := ↑(val asg 10)
+ q := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ r := ↑(val asg 11)
+ s := ↑(val asg 0)
+ t := ↑(val asg 1)
+ u := ↑(val asg 8) * ↑(val asg 6)
+ w := ↑(val asg 8) * ↑(val asg 7)
+ x := ↑(2 * val asg 8) * ↑(val asg 6)
+Compiler/TfheInitialRotation.lean:90:61: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  x ≥ 0
+  w ≥ 0
+  0 ≤ u ≤ 65535
+  0 ≤ t ≤ 65535
+  0 ≤ s ≤ 511
+  0 ≤ r ≤ 3
+  q ≥ 0
+  p - q ≥ 1
+  o ≥ 0
+  n - o ≥ 1
+  m ≥ 0
+  l - m ≥ 1
+  k ≥ 0
+  k + 2*m - y ≤ -1
+  j - k ≥ 1
+  i ≥ 0
+  i - o + 65536*q - x ≥ 0
+  h - i ≥ 1
+  g ≥ 0
+  g + 65536*o - w ≥ 0
+  f - g ≥ 1
+  e ≥ 0
+  e + 512*k + 1024*m - s ≥ 0
+  0 ≤ e + 512*k + 1024*m - 512*y ≤ 511
+  d - e ≥ 1
+  c - i + o - 65536*q + x ≥ 1
+  b - g - 65536*o + w ≥ 1
+  a - e - 512*k - 1024*m + s ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ d := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ e := ↑(val asg 5)
+ f := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ g := ↑(val asg 6)
+ h := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ i := ↑(val asg 7)
+ j := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ k := ↑(val asg 8)
+ l := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ m := ↑(val asg 9)
+ n := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ o := ↑(val asg 10)
+ p := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ q := ↑(val asg 11)
+ r := ↑(val asg 0)
+ s := ↑(val asg 1)
+ t := ↑(val asg 8) * ↑(val asg 6)
+ u := ↑(val asg 8) * ↑(val asg 7)
+ w := ↑(2 * val asg 8) * ↑(val asg 6)
+ x := ↑(2 * val asg 8) * ↑(val asg 7)
+ y := ↑(val asg 1 + val asg 2) / 512
+Compiler/TfheInitialRotation.lean:91:63: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  0 ≤ x - 2*y ≤ 1
+  w ≥ 0
+  u ≥ 0
+  0 ≤ t ≤ 65535
+  0 ≤ s ≤ 65535
+  0 ≤ r ≤ 511
+  0 ≤ q ≤ 3
+  p ≥ 0
+  o - p ≥ 1
+  n ≥ 0
+  m - n ≥ 1
+  l ≥ 0
+  l - y ≤ -1
+  2*l - x ≤ 0
+  k - l ≥ 1
+  j + 2*l - x ≥ 1
+  i ≥ 0
+  i - n + 65536*p - w ≥ 0
+  h - i ≥ 1
+  g ≥ 0
+  g + 65536*n - u ≥ 0
+  f - g ≥ 1
+  e ≥ 0
+  e - r + 512*x ≥ 0
+  0 ≤ e ≤ 511
+  d - e ≥ 1
+  c - i + n - 65536*p + w ≥ 1
+  b - g - 65536*n + u ≥ 1
+  a - e + r - 512*x ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ d := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ e := ↑(val asg 5)
+ f := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ g := ↑(val asg 6)
+ h := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ i := ↑(val asg 7)
+ j := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ l := ↑(val asg 9)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ n := ↑(val asg 10)
+ o := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ p := ↑(val asg 11)
+ q := ↑(val asg 0)
+ r := ↑(val asg 1)
+ s := ↑(val asg 8) * ↑(val asg 6)
+ t := ↑(val asg 8) * ↑(val asg 7)
+ u := ↑(2 * val asg 8) * ↑(val asg 6)
+ w := ↑(2 * val asg 8) * ↑(val asg 7)
+ x := ↑(val asg 1 + val asg 2) / 512
+ y := ↑((val asg 1 + val asg 2) / 512) / 2
+Compiler/TfheInitialRotation.lean:92:52: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  x ≥ 0
+  0 ≤ w - 2*x ≤ 1
+  u ≥ 0
+  t ≥ 0
+  0 ≤ s ≤ 65535
+  0 ≤ r ≤ 65535
+  0 ≤ q ≤ 511
+  0 ≤ p ≤ 3
+  o ≥ 0
+  n - o ≥ 1
+  m ≥ 0
+  l - m ≥ 1
+  k - x ≥ 1
+  j - w + 2*x ≥ 1
+  i ≥ 0
+  i - m + 65536*o - u ≥ 0
+  h - i ≥ 1
+  g ≥ 0
+  g + 65536*m - t ≥ 0
+  g + 65536*i ≥ 4294967296
+  f - g ≥ 1
+  e ≥ 0
+  e - q + 512*w ≥ 0
+  0 ≤ e ≤ 511
+  d - e ≥ 1
+  c - i + m - 65536*o + u ≥ 1
+  b - g - 65536*m + t ≥ 1
+  a - e + q - 512*w ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ d := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ e := ↑(val asg 5)
+ f := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ g := ↑(val asg 6)
+ h := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ i := ↑(val asg 7)
+ j := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ l := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ m := ↑(val asg 10)
+ n := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ o := ↑(val asg 11)
+ p := ↑(val asg 0)
+ q := ↑(val asg 1)
+ r := ↑(val asg 8) * ↑(val asg 6)
+ s := ↑(val asg 8) * ↑(val asg 7)
+ t := ↑(2 * val asg 8) * ↑(val asg 6)
+ u := ↑(2 * val asg 8) * ↑(val asg 7)
+ w := ↑(val asg 1 + val asg 2) / 512
+ x := ↑((val asg 1 + val asg 2) / 512) / 2
+Compiler/TfheInitialRotation.lean:92:78: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  x ≥ 0
+  0 ≤ w - 2*x ≤ 1
+  u ≥ 0
+  t ≥ 0
+  0 ≤ s ≤ 65535
+  0 ≤ r ≤ 65535
+  0 ≤ q ≤ 511
+  0 ≤ p ≤ 3
+  o ≥ 0
+  n - o ≥ 1
+  m ≥ 0
+  l - m ≥ 1
+  k - x ≥ 1
+  j - w + 2*x ≥ 1
+  i ≥ 0
+  i - m + 65536*o - u ≥ 0
+  h - i ≥ 1
+  g ≥ 0
+  g + 65536*m - t ≥ 0
+  g + 65536*i + 4294967296*o - t - 65536*u ≥ 4294967296
+  f - g ≥ 1
+  e ≥ 0
+  e - q + 512*w ≥ 0
+  0 ≤ e ≤ 511
+  d - e ≥ 1
+  c - i + m - 65536*o + u ≥ 1
+  b - g - 65536*m + t ≥ 1
+  a - e + q - 512*w ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ d := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ e := ↑(val asg 5)
+ f := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ g := ↑(val asg 6)
+ h := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ i := ↑(val asg 7)
+ j := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ l := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ m := ↑(val asg 10)
+ n := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ o := ↑(val asg 11)
+ p := ↑(val asg 0)
+ q := ↑(val asg 1)
+ r := ↑(val asg 8) * ↑(val asg 6)
+ s := ↑(val asg 8) * ↑(val asg 7)
+ t := ↑(2 * val asg 8) * ↑(val asg 6)
+ u := ↑(2 * val asg 8) * ↑(val asg 7)
+ w := ↑(val asg 1 + val asg 2) / 512
+ x := ↑((val asg 1 + val asg 2) / 512) / 2
+Compiler/TfheInitialRotation.lean:98:28: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  t ≥ 0
+  0 ≤ s ≤ 65535
+  0 ≤ r ≤ 65535
+  0 ≤ q ≤ 511
+  0 ≤ p ≤ 3
+  o ≥ 1
+  n - o ≥ 1
+  m ≥ 0
+  l - m ≥ 1
+  k - t ≥ 1
+  j ≥ 1
+  i ≥ 0
+  i - m + 65536*o ≥ 0
+  h - i ≥ 1
+  g ≥ 0
+  g + 65536*m ≥ 0
+  f - g ≥ 1
+  e ≥ 0
+  e - q + 1024*t ≥ 0
+  0 ≤ e ≤ 511
+  d - e ≥ 1
+  c - i + m - 65536*o ≥ 1
+  b - g - 65536*m ≥ 1
+  a - e + q - 1024*t ≥ 1
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ d := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ e := ↑(val asg 5)
+ f := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ g := ↑(val asg 6)
+ h := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ i := ↑(val asg 7)
+ j := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ l := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ m := ↑(val asg 10)
+ n := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ o := ↑(val asg 11)
+ p := ↑(val asg 0)
+ q := ↑(val asg 1)
+ r := ↑(val asg 8) * ↑(val asg 6)
+ s := ↑(val asg 8) * ↑(val asg 7)
+ t := ↑((val asg 1 + val asg 2) / 512) / 2
+Compiler/TfheInitialRotation.lean:104:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  t ≥ 0
+  0 ≤ t - 4294967296*u ≤ 4294967295
+  s ≥ 0
+  0 ≤ r ≤ 65535
+  0 ≤ q ≤ 65535
+  0 ≤ p ≤ 511
+  0 ≤ o ≤ 3
+  n ≥ 0
+  n + u ≥ 2
+  m - n ≥ 1
+  l ≥ 0
+  k - l ≥ 1
+  j - s ≥ 1
+  i ≥ 2
+  h ≥ 0
+  h + l - 65536*n ≤ 0
+  65536*h + t ≤ 4294967296
+  65536*h + 65536*l + t ≥ 4294967296
+  g - h ≥ 1
+  f + 65536*h + t ≥ 4294967297
+  e ≥ 0
+  e - p + 1024*s ≥ -512
+  0 ≤ e ≤ 511
+  d - e ≥ 1
+  c + h + l - 65536*n ≥ 1
+  b - 65536*h - 65536*l - t ≥ -4294967295
+  a - e + p - 1024*s ≥ 513
+where
+ a := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 2
+ b := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 3
+ c := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 4
+ d := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 5
+ e := ↑(val asg 5)
+ f := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 6
+ g := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 7
+ h := ↑(val asg 7)
+ i := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 8
+ j := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 9
+ k := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 10
+ l := ↑(val asg 10)
+ m := ↑2 ^ ![2, 9, 10, 16, 16, 9, 16, 16, 1, 1, 1, 1] 11
+ n := ↑(val asg 11)
+ o := ↑(val asg 0)
+ p := ↑(val asg 1)
+ q := ↑(val asg 8) * ↑(val asg 6)
+ r := ↑(val asg 8) * ↑(val asg 7)
+ s := ↑((val asg 1 + val asg 2) / 512) / 2
+ t := ↑(4294967296 - (val asg 6 + 65536 * val asg 7))
+ u := ↑(4294967296 - (val asg 6 + 65536 * val asg 7)) / 4294967296
+Compiler/TfheInitialRotation.lean:116:49: warning: unused variable `hb`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Compiler/TfheInitialRotation.lean:148:21: warning: 'norm_num at h' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/TfheInitialRotation.lean:148:21: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+'Minidregg.Compiler.TfheInitialRotation.small_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.range_bounds' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.equations' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.rowSound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.simplifiedSource_sound' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.library_sign' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.source_injective' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.zero_witness' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.changed_zero_refused' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

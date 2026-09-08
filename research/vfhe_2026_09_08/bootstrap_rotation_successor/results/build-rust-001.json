@@ -1,0 +1,23 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--offline",
+    "-j2"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor",
+  "timeout_seconds": 180,
+  "exit": 0,
+  "seconds": 88.41066433297237,
+  "stdout": {
+    "path": "results/build-rust-001.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "results/build-rust-001.stderr",
+    "bytes": 16246,
+    "sha256": "b1386c1e4deb897048fb6d086cbdf5acef77a07da3558c12120334528212a4d6"
+  }
+}

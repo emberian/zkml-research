@@ -1,0 +1,2 @@
+Compiler/SignedMatrixEmit.lean:83:8: error(lean.unknownIdentifier): Unknown constant `Minidregg.Compiler.SignedMatrix.splitSound.mp`
+Compiler/SignedMatrixEmit.lean:84:2: error: No goals to be solved

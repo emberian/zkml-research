@@ -1,0 +1,52 @@
+{
+  "status": "PASS",
+  "role_command": "finalize",
+  "pid": 62012,
+  "uid": 501,
+  "elapsed_seconds": 0.0024897500406950712,
+  "peak_rss_bytes_macos": 37863424,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/a.json",
+      "kind": "seeded_a",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/registration_00.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/registration_01.ring",
+      "kind": "registration",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/registry.ring",
+      "kind": "explicit_registry",
+      "bytes": 747,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "91111489576502d2c4c1d35e517d28a340e6081d4406c8340ddda64857f18536"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/public.json",
+      "kind": "seeded_public",
+      "bytes": 752,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "3aadad49870255bbe363e4a9a0d973d65dfbf5a533078c1f872cd24f561d079f"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 0,
+    "registrations": 2,
+    "absent_private_rows_generated": 0,
+    "missing_rows_stored": 0,
+    "missing_rows_described": 7,
+    "public_missing_seed_bytes": 32
+  },
+  "error": null
+}

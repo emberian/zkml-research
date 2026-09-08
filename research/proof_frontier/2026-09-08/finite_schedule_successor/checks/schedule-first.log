@@ -1,0 +1,23 @@
+Selvage/ArityEightSchedule.lean:57:32: error: unexpected token 'prefix'; expected '(', '[', '_', '{', '⦃' or identifier
+Selvage/ArityEightSchedule.lean:57:39: error: unexpected token ','; expected ':'
+Selvage/ArityEightSchedule.lean:57:64: error: unexpected token ')'; expected ':'
+Selvage/ArityEightSchedule.lean:97:8: error(lean.unknownIdentifier): Unknown identifier `prefix_challenge_bound`
+Selvage/ArityEightSchedule.lean:101:8: error: No goals to be solved
+Selvage/ArityEightSchedule.lean:159:45: error(lean.unknownIdentifier): Unknown identifier `relDist_self`
+Selvage/ArityEightSchedule.lean:159:33: error: Type mismatch: After simplification, term
+  hfinal
+ has type
+  0 ≤ radius m
+but is expected to have type
+  relDist (s.wordAt r m ⋯) (s.wordAt r m ⋯) ≤ radius m
+Selvage/ArityEightSchedule.lean:177:74: error: (deterministic) timeout at `isDefEq`, maximum number of heartbeats (800000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightSchedule.lean:163:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (800000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightSchedule.lean:183:8: error: (kernel) unknown constant 'Minidregg.Selvage.ArityEight.Schedule.coherent_query_bound'

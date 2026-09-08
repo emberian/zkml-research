@@ -1,0 +1,144 @@
+{
+  "status": "executed exact algebraic construction",
+  "verification": {
+    "status": "PASS",
+    "registered_rows": 16,
+    "real_delta_support": 39,
+    "delta_linf": 4,
+    "delta_squared_norm": 94,
+    "integer_kernel_equalities": 16,
+    "withheld_dot_delta": 38,
+    "withheld_not_in_registered_Fp_span": true,
+    "exact_per_input_registered_score_matches": 96,
+    "exact_memory_registered_score_matches": 192,
+    "teaches_in_each_history": 6,
+    "expiries_in_each_history": 2,
+    "max_actual_state_coordinate_abs": 151,
+    "registered_W2_signed_bound": 2520950,
+    "withheld_W2_signed_bound": 2467610,
+    "p_half_floor": 14219946,
+    "final_card_arrival_hidden_score_difference": 190,
+    "rows": [
+      {
+        "revision": 1,
+        "class": "card_arrival",
+        "registered_scores_match": true,
+        "withheld_left": 202211,
+        "withheld_right": 202249,
+        "difference": 38
+      },
+      {
+        "revision": 1,
+        "class": "cash_withdrawal_charge",
+        "registered_scores_match": true,
+        "withheld_left": 0,
+        "withheld_right": 0,
+        "difference": 0
+      },
+      {
+        "revision": 2,
+        "class": "card_arrival",
+        "registered_scores_match": true,
+        "withheld_left": 202211,
+        "withheld_right": 202249,
+        "difference": 38
+      },
+      {
+        "revision": 2,
+        "class": "cash_withdrawal_charge",
+        "registered_scores_match": true,
+        "withheld_left": 219715,
+        "withheld_right": 219715,
+        "difference": 0
+      },
+      {
+        "revision": 3,
+        "class": "card_arrival",
+        "registered_scores_match": true,
+        "withheld_left": 399367,
+        "withheld_right": 399481,
+        "difference": 114
+      },
+      {
+        "revision": 3,
+        "class": "cash_withdrawal_charge",
+        "registered_scores_match": true,
+        "withheld_left": 219715,
+        "withheld_right": 219715,
+        "difference": 0
+      },
+      {
+        "revision": 4,
+        "class": "card_arrival",
+        "registered_scores_match": true,
+        "withheld_left": 399367,
+        "withheld_right": 399481,
+        "difference": 114
+      },
+      {
+        "revision": 4,
+        "class": "cash_withdrawal_charge",
+        "registered_scores_match": true,
+        "withheld_left": 444616,
+        "withheld_right": 444616,
+        "difference": 0
+      },
+      {
+        "revision": 5,
+        "class": "card_arrival",
+        "registered_scores_match": true,
+        "withheld_left": 404646,
+        "withheld_right": 404836,
+        "difference": 190
+      },
+      {
+        "revision": 5,
+        "class": "cash_withdrawal_charge",
+        "registered_scores_match": true,
+        "withheld_left": 444616,
+        "withheld_right": 444616,
+        "difference": 0
+      },
+      {
+        "revision": 6,
+        "class": "card_arrival",
+        "registered_scores_match": true,
+        "withheld_left": 404646,
+        "withheld_right": 404836,
+        "difference": 190
+      },
+      {
+        "revision": 6,
+        "class": "cash_withdrawal_charge",
+        "registered_scores_match": true,
+        "withheld_left": 432078,
+        "withheld_right": 432078,
+        "difference": 0
+      }
+    ],
+    "witness_sha256": "d304ca461cc4820b1e1be96be6519417d9911eeb527d9a46192a5987c9e0a501",
+    "verifier_sha256": "dfc3a04d07cf8f5f5f8dbaa14a0f36be510dd035b6b91e1ffb562aac0e36abaf",
+    "model_crypto_or_private_key_reads": 0
+  },
+  "scope": "Nonvacuous continuing pair in admitted int8 feature domain for actual16 semantic query rows; no natural-language encoder-image or computational-privacy claim",
+  "evidence_sha256": {
+    "CANDIDATES.json": "418e35466248fc038df60a32437249847484f348685bac6c979652181c1e87e9",
+    "PROOF.md": "703a8b03188bf904822be2591aaa7db507fbd9bac397f1774720e17da120ceeb",
+    "verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "verify.log": "c71b6fcb91d775340009e55478abec9492d373c70584f12d6f92e22ea2e855fb",
+    "SOURCES.md": "56ade7ed5f25a241eee9140e1e9808bbfa911b46850f60362e7a4cb71509bc6e",
+    "REPORT.md": "614abb39ba8df186fd6686a513a6b943097758ccf1e60147ebae9d72c0a27ae0",
+    "NEXT.md": "608ee46aa10f481c6410827211e18ef78692c83766ffc34bdeb7e56cb7d628a7",
+    "WITNESS.json": "d304ca461cc4820b1e1be96be6519417d9911eeb527d9a46192a5987c9e0a501",
+    "STATUS.md": "61d88733f0cfbdf25d929b54c4ba679bba9b4c3294346c3dd4c4c135626e1431",
+    "construct.log": "46db5eb47f251b6aaaa088b870ea8c13464051a80ddd00936c7ae08e5370dc27",
+    "README.md": "ad714d382b5b7f792c105231618929e1a57a372bb36dc1ae289663dd38730ce5",
+    ".gitignore": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+    "SELECTION.json": "b59326e8b6f00be8502dcd82103c667376c793596f4fa4a4911e2164be8578d9",
+    "construct.py": "7c4aaf53625446e0f2f467915a8ffa3f144aec09aa6e4350e075697d95d90e97",
+    "VERIFICATION.json": "01a1e9a2ba374133f4155b974f562729ffe6ddf72af9439b6becccfcb926073a",
+    "construct.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "verify.py": "dfc3a04d07cf8f5f5f8dbaa14a0f36be510dd035b6b91e1ffb562aac0e36abaf",
+    "CONSTRUCTION.json": "11a202a52dc8484d03b56387f6a8857ced5a90ac8953e6e8752b11bd56332bbf"
+  }
+}

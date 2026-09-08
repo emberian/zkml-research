@@ -1,0 +1,24 @@
+{
+  "changed_output_rejected": false,
+  "claim": "EXECUTED fresh joined public proof verification",
+  "error": null,
+  "mutated_output_coefficient": null,
+  "prior_modulus_switch": {
+    "body_row": [
+      805,
+      56149,
+      55195,
+      862
+    ],
+    "body_row_matches_decoded_pbs_input": true,
+    "proof_sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8",
+    "template_sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31",
+    "verified": true,
+    "verify_ns": 17263791
+  },
+  "proof_bytes": 290448,
+  "proof_sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45",
+  "verified": true,
+  "verifier_ran": true,
+  "verify_ns": 22450917
+}

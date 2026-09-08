@@ -1,0 +1,4 @@
+build/
+native/target/
+proof/target/
+artifacts/trace.leu32

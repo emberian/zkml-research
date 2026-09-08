@@ -1,0 +1,1958 @@
+{
+  "status": "PASS",
+  "started_utc": "2026-09-08T17:39:51.451261+00:00",
+  "finished_utc": "2026-09-08T17:43:29.080576+00:00",
+  "elapsed_seconds": 217.62658470799215,
+  "public_elapsed_seconds": 128.99478566698963,
+  "profile": "candidate_full",
+  "parameters": {
+    "N": 16384,
+    "w": 64,
+    "d": 577,
+    "recipients": 16,
+    "p": 28439893,
+    "q": 497323290947860672931310292648754779192460749687510494957169639477681564739617435942913,
+    "sigma_key": 33554432,
+    "sigma_error": 1024,
+    "flood": 226156424291633194186662080095093570025917938800079226639565593765455331328,
+    "W": 32,
+    "denominator": 8204908842
+  },
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "actual_registered_recipient_keys": 16,
+  "absent_recipient_rows_generated": 0,
+  "universal_reader_constructed": false,
+  "fresh_encodes": 6,
+  "learns": 6,
+  "expiries": 2,
+  "query_score_matches": 96,
+  "prediction_matches": 48,
+  "public_complete_before_first_recipient_read": true,
+  "public_roles_private_artifact_reads": 0,
+  "orchestrator_private_payload_reads": 0,
+  "commands": [
+    {
+      "event": "init",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/init.json",
+        "init",
+        "--profile",
+        "candidate_full",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.7698034580098465,
+      "elapsed_seconds": 1.7701809579739347,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/init.json"
+    },
+    {
+      "event": "register_00",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_00.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "0",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_00/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_00.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2528318330296315,
+      "elapsed_seconds": 5.023497374961153,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_00.json"
+    },
+    {
+      "event": "register_01",
+      "role": "recipient_01",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_01.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_01.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "1",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_01/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_01.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.240879708027933,
+      "elapsed_seconds": 8.264889082987793,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_01.json"
+    },
+    {
+      "event": "register_02",
+      "role": "recipient_02",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_02.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_02.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "2",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_02/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_02.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.275265959033277,
+      "elapsed_seconds": 11.540699499950279,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_02.json"
+    },
+    {
+      "event": "register_03",
+      "role": "recipient_03",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_03.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_03.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "3",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_03/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_03.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2381237910012715,
+      "elapsed_seconds": 14.779598416993394,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_03.json"
+    },
+    {
+      "event": "register_04",
+      "role": "recipient_04",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_04.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_04.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "4",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_04/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_04.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2534160829964094,
+      "elapsed_seconds": 18.03353191696806,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_04.json"
+    },
+    {
+      "event": "register_05",
+      "role": "recipient_05",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_05.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_05.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "5",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_05/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_05.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2544867919641547,
+      "elapsed_seconds": 21.288720082957298,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_05.json"
+    },
+    {
+      "event": "register_06",
+      "role": "recipient_06",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_06.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_06.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "6",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_06/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_06.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2784180410089903,
+      "elapsed_seconds": 24.567909666977357,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_06.json"
+    },
+    {
+      "event": "register_07",
+      "role": "recipient_07",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_07.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_07.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "7",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_07/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_07.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2631012499914505,
+      "elapsed_seconds": 27.831667082966305,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_07.json"
+    },
+    {
+      "event": "register_08",
+      "role": "recipient_08",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_08.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_08.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "8",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_08/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_08.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.233483874995727,
+      "elapsed_seconds": 31.06590149999829,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_08.json"
+    },
+    {
+      "event": "register_09",
+      "role": "recipient_09",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_09.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_09.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "9",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_09/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_09.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2559726659674197,
+      "elapsed_seconds": 34.322454041976016,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_09.json"
+    },
+    {
+      "event": "register_10",
+      "role": "recipient_10",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_10.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_10.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "10",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_10/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_10.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2277374169789255,
+      "elapsed_seconds": 37.55083633295726,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_10.json"
+    },
+    {
+      "event": "register_11",
+      "role": "recipient_11",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_11.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_11.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "11",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_11/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_11.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.285592000000179,
+      "elapsed_seconds": 40.837081749981735,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_11.json"
+    },
+    {
+      "event": "register_12",
+      "role": "recipient_12",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_12.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_12.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "12",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_12/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_12.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2950051660300232,
+      "elapsed_seconds": 44.13267491699662,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_12.json"
+    },
+    {
+      "event": "register_13",
+      "role": "recipient_13",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_13.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_13.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "13",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_13/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_13.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2959145839558914,
+      "elapsed_seconds": 47.42933770798845,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_13.json"
+    },
+    {
+      "event": "register_14",
+      "role": "recipient_14",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_14.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_14.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "14",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_14/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_14.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.2908924999646842,
+      "elapsed_seconds": 50.720877832965925,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_14.json"
+    },
+    {
+      "event": "register_15",
+      "role": "recipient_15",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_15.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_15.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--coordinate",
+        "15",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_15/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_15.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.357268124993425,
+      "elapsed_seconds": 54.07878574996721,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/register_15.json"
+    },
+    {
+      "event": "finalize",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/finalize.json",
+        "finalize",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/public.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_00.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_01.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_02.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_03.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_04.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_05.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_06.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_07.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_08.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_09.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_10.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_11.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_12.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_13.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_14.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/registration_15.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 10.45352862495929,
+      "elapsed_seconds": 64.53347558295354,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/finalize.json"
+    },
+    {
+      "event": "encode_01",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_01.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_01.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_01.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 7.117626249964815,
+      "elapsed_seconds": 71.65226158295991,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_01.json"
+    },
+    {
+      "event": "learn_01",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_01.json",
+        "window",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_01.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_01.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.6357054589898326,
+      "elapsed_seconds": 73.28886299999431,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_01.json"
+    },
+    {
+      "event": "encode_02",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_02.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_02.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_02.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 7.124087665986735,
+      "elapsed_seconds": 80.4141256249859,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_02.json"
+    },
+    {
+      "event": "learn_02",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_02.json",
+        "window",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_02.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_02.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.6548683330183849,
+      "elapsed_seconds": 82.06972766696708,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_02.json"
+    },
+    {
+      "event": "encode_03",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_03.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_03.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_03.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 7.349455707997549,
+      "elapsed_seconds": 89.45623495796463,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_03.json"
+    },
+    {
+      "event": "learn_03",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_03.json",
+        "window",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_03.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_03.ring",
+        "--state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_01.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 2.651098624977749,
+      "elapsed_seconds": 92.10802316694753,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_03.json"
+    },
+    {
+      "event": "encode_04",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_04.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_04.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_04.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 7.195386415987741,
+      "elapsed_seconds": 99.30442908295663,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_04.json"
+    },
+    {
+      "event": "learn_04",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_04.json",
+        "window",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_04.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_04.ring",
+        "--state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_02.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 2.5848463340080343,
+      "elapsed_seconds": 101.89010991697432,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_04.json"
+    },
+    {
+      "event": "encode_05",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_05.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_05.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_05.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 7.313788208004553,
+      "elapsed_seconds": 109.24074791697785,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_05.json"
+    },
+    {
+      "event": "learn_05",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_05.json",
+        "window",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_05.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_05.ring",
+        "--state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_03.ring",
+        "--expire",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_01.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.801423083001282,
+      "elapsed_seconds": 113.04337324999506,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_05.json"
+    },
+    {
+      "event": "encode_06",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_06.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_06.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_06.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 7.923012417042628,
+      "elapsed_seconds": 120.96779479196994,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/encode_06.json"
+    },
+    {
+      "event": "learn_06",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_06.json",
+        "window",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_06.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_06.ring",
+        "--state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_04.ring",
+        "--expire",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_02.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.861259124998469,
+      "elapsed_seconds": 124.83012916694861,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/learn_06.json"
+    },
+    {
+      "event": "exact_expiry_rebuild_0",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/exact_expiry_rebuild_0.json",
+        "combine",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/rebuilt_0.ring",
+        "--term",
+        "1",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_03.ring",
+        "--term",
+        "1",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_05.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.82423754199408,
+      "elapsed_seconds": 126.69195391697576,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/exact_expiry_rebuild_0.json"
+    },
+    {
+      "event": "exact_expiry_rebuild_1",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/exact_expiry_rebuild_1.json",
+        "combine",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/rebuilt_1.ring",
+        "--term",
+        "1",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_04.ring",
+        "--term",
+        "1",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_06.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.7482531659770757,
+      "elapsed_seconds": 128.47859629197046,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/exact_expiry_rebuild_1.json"
+    },
+    {
+      "event": "query_recipient_00",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_00.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_00/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.283071374986321,
+      "elapsed_seconds": 134.27816637494834,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_00.json"
+    },
+    {
+      "event": "query_recipient_01",
+      "role": "recipient_01",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_01.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_01.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_01/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.163817791966721,
+      "elapsed_seconds": 139.44285745796515,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_01.json"
+    },
+    {
+      "event": "query_recipient_02",
+      "role": "recipient_02",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_02.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_02.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_02/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.110721874982119,
+      "elapsed_seconds": 144.55453070800286,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_02.json"
+    },
+    {
+      "event": "query_recipient_03",
+      "role": "recipient_03",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_03.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_03.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_03/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.301618708006572,
+      "elapsed_seconds": 149.85720679198857,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_03.json"
+    },
+    {
+      "event": "query_recipient_04",
+      "role": "recipient_04",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_04.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_04.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_04/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.339695792004932,
+      "elapsed_seconds": 155.19781324994983,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_04.json"
+    },
+    {
+      "event": "query_recipient_05",
+      "role": "recipient_05",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_05.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_05.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_05/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.229307667003013,
+      "elapsed_seconds": 160.42804170795716,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_05.json"
+    },
+    {
+      "event": "query_recipient_06",
+      "role": "recipient_06",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_06.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_06.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_06/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.1214673340437,
+      "elapsed_seconds": 165.5504827919649,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_06.json"
+    },
+    {
+      "event": "query_recipient_07",
+      "role": "recipient_07",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_07.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_07.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_07/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.169991667033173,
+      "elapsed_seconds": 170.7213977079955,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_07.json"
+    },
+    {
+      "event": "query_recipient_08",
+      "role": "recipient_08",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_08.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_08.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_08/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.531775542011019,
+      "elapsed_seconds": 176.25416437495733,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_08.json"
+    },
+    {
+      "event": "query_recipient_09",
+      "role": "recipient_09",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_09.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_09.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_09/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 6.74867279099999,
+      "elapsed_seconds": 183.00390204199357,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_09.json"
+    },
+    {
+      "event": "query_recipient_10",
+      "role": "recipient_10",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_10.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_10.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_10/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 8.373127458035015,
+      "elapsed_seconds": 191.37827491696225,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_10.json"
+    },
+    {
+      "event": "query_recipient_11",
+      "role": "recipient_11",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_11.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_11.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_11/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.6150408330140635,
+      "elapsed_seconds": 196.99553137499606,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_11.json"
+    },
+    {
+      "event": "query_recipient_12",
+      "role": "recipient_12",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_12.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_12.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_12/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.097659749968443,
+      "elapsed_seconds": 202.09413466695696,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_12.json"
+    },
+    {
+      "event": "query_recipient_13",
+      "role": "recipient_13",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_13.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_13.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_13/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.204275541997049,
+      "elapsed_seconds": 207.2995954999933,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_13.json"
+    },
+    {
+      "event": "query_recipient_14",
+      "role": "recipient_14",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_14.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_14.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_14/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.16539624996949,
+      "elapsed_seconds": 212.46580662496854,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_14.json"
+    },
+    {
+      "event": "query_recipient_15",
+      "role": "recipient_15",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/recipient_15.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+        "--registry",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_15.json",
+        "query",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_15/key.ring",
+        "--models",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.158982791006565,
+      "elapsed_seconds": 217.62566691695247,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/results/normal_001/query_recipient_15.json"
+    }
+  ],
+  "registered_query_results": [
+    {
+      "coordinate": 0,
+      "query_text": "How do I locate my card?",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 215361,
+            "cash_withdrawal_charge": 198734
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 447965,
+            "cash_withdrawal_charge": 401795
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 470157,
+            "cash_withdrawal_charge": 402003
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 1,
+      "query_text": "I still have not received my new card, I ordered over a week ago.",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 223775,
+            "cash_withdrawal_charge": 203864
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 456661,
+            "cash_withdrawal_charge": 415708
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 453187,
+            "cash_withdrawal_charge": 419492
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 2,
+      "query_text": "I ordered a card but it has not arrived. Help please!",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 228957,
+            "cash_withdrawal_charge": 198190
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 463202,
+            "cash_withdrawal_charge": 402483
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 464320,
+            "cash_withdrawal_charge": 410460
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 3,
+      "query_text": "Is there a way to know when my card will arrive?",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 238145,
+            "cash_withdrawal_charge": 193263
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 472904,
+            "cash_withdrawal_charge": 387129
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 467553,
+            "cash_withdrawal_charge": 402882
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 4,
+      "query_text": "My card has not arrived yet.",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 229766,
+            "cash_withdrawal_charge": 200181
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 466943,
+            "cash_withdrawal_charge": 403481
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 457061,
+            "cash_withdrawal_charge": 405004
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 5,
+      "query_text": "When will I get my card?",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 232773,
+            "cash_withdrawal_charge": 202753
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 474654,
+            "cash_withdrawal_charge": 407175
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 469438,
+            "cash_withdrawal_charge": 412335
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 6,
+      "query_text": "Do you know if there is a tracking number for the new card you sent me?",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 236514,
+            "cash_withdrawal_charge": 200938
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 469676,
+            "cash_withdrawal_charge": 401365
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 474936,
+            "cash_withdrawal_charge": 414441
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 7,
+      "query_text": "i have not received my card",
+      "expected_label": "card_arrival",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 221098,
+            "cash_withdrawal_charge": 203134
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 455386,
+            "cash_withdrawal_charge": 409566
+          },
+          "prediction": "card_arrival"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 456467,
+            "cash_withdrawal_charge": 411356
+          },
+          "prediction": "card_arrival"
+        }
+      ]
+    },
+    {
+      "coordinate": 8,
+      "query_text": "I see some fees for cash withdraw.",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 197869,
+            "cash_withdrawal_charge": 209171
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 382856,
+            "cash_withdrawal_charge": 440710
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 378601,
+            "cash_withdrawal_charge": 464780
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    },
+    {
+      "coordinate": 9,
+      "query_text": "How come I was charged extra when I withdrew cash?",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 199523,
+            "cash_withdrawal_charge": 222526
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 401320,
+            "cash_withdrawal_charge": 478598
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 410672,
+            "cash_withdrawal_charge": 491065
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    },
+    {
+      "coordinate": 10,
+      "query_text": "Why am I being charged when I withdraw cash?",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 201850,
+            "cash_withdrawal_charge": 223176
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 406893,
+            "cash_withdrawal_charge": 469283
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 419066,
+            "cash_withdrawal_charge": 486890
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    },
+    {
+      "coordinate": 11,
+      "query_text": "What is this charge on my account for a cash withdrawl?",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 203551,
+            "cash_withdrawal_charge": 212633
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 401078,
+            "cash_withdrawal_charge": 452558
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 404968,
+            "cash_withdrawal_charge": 484420
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    },
+    {
+      "coordinate": 12,
+      "query_text": "Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 202118,
+            "cash_withdrawal_charge": 217009
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 404152,
+            "cash_withdrawal_charge": 452827
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 405317,
+            "cash_withdrawal_charge": 475191
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    },
+    {
+      "coordinate": 13,
+      "query_text": "How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 200411,
+            "cash_withdrawal_charge": 214013
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 402076,
+            "cash_withdrawal_charge": 445281
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 406925,
+            "cash_withdrawal_charge": 470033
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    },
+    {
+      "coordinate": 14,
+      "query_text": "It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 201593,
+            "cash_withdrawal_charge": 230594
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 410376,
+            "cash_withdrawal_charge": 466576
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 413168,
+            "cash_withdrawal_charge": 471709
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    },
+    {
+      "coordinate": 15,
+      "query_text": "Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",
+      "expected_label": "cash_withdrawal_charge",
+      "results": [
+        {
+          "revision": 2,
+          "scores": {
+            "card_arrival": 201310,
+            "cash_withdrawal_charge": 213374
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 4,
+          "scores": {
+            "card_arrival": 397197,
+            "cash_withdrawal_charge": 434303
+          },
+          "prediction": "cash_withdrawal_charge"
+        },
+        {
+          "revision": 6,
+          "scores": {
+            "card_arrival": 389104,
+            "cash_withdrawal_charge": 459714
+          },
+          "prediction": "cash_withdrawal_charge"
+        }
+      ]
+    }
+  ],
+  "private_metadata_only": [
+    {
+      "coordinate": 0,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 1,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 2,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 3,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 4,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 5,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 6,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 7,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 8,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 9,
+      "key_bytes": 3801733,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 10,
+      "key_bytes": 3801734,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 11,
+      "key_bytes": 3801734,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 12,
+      "key_bytes": 3801734,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 13,
+      "key_bytes": 3801734,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 14,
+      "key_bytes": 3801734,
+      "mode": "0o600"
+    },
+    {
+      "coordinate": 15,
+      "key_bytes": 3801734,
+      "mode": "0o600"
+    }
+  ],
+  "source_pins_sha256": "2fb22bf8b14807a1f66549a27b9be97a99b18c4e742c70ffa7d4abb82adf8426",
+  "sources_unchanged": true,
+  "scope": "Known-public cached text fixture, fixed query projection credentials, per-input full query-span capability for coalitions; no resident privacy or computational hardness measurement"
+}

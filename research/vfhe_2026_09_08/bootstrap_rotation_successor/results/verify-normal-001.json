@@ -1,0 +1,24 @@
+{
+  "command": [
+    "target/release/tfhe-bootstrap-rotation-proof",
+    "verify",
+    "artifacts/template_ir2.json",
+    "fixtures/normal_001",
+    "results/proof001/proof.bin",
+    "results/verify.json"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor",
+  "timeout_seconds": 180,
+  "exit": 0,
+  "seconds": 0.07732787495478988,
+  "stdout": {
+    "path": "results/verify-normal-001.stdout",
+    "bytes": 603,
+    "sha256": "99aa9264e81ba3d09463286262ef64e835a675a13408f04ca977eb1ffe5c527c"
+  },
+  "stderr": {
+    "path": "results/verify-normal-001.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

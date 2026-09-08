@@ -1,0 +1,18 @@
+{
+  "claim": "EXECUTED exact restoration of two remaining formatting-only changes from the earlier cargo fmt --all incident; both original SHA256s match frozen proved_operation/RESULT.json and HEAD; no binary rebuild",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/src/main.rs",
+      "before_formatted_sha256": "1b64bd630872524b6a09be2eeca5991255c25ed7a9b33bf9df1b7f978b03157f",
+      "restored_frozen_sha256": "b3ee26658dc6d739509f8e1d463453da4651cfb229b066d556075cb82c3062d7",
+      "formatted_mtime": 1788887389.3070977
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/src/update.rs",
+      "before_formatted_sha256": "b0d5931a6dd15de1a133bcc63a6488463765f2308d23a34ba2dd4afa52177965",
+      "restored_frozen_sha256": "9414935ad8dd6cb0a505f7fc280219db9b384c4bf8ff3df6075157744ec6117e",
+      "formatted_mtime": 1788887389.3133683
+    }
+  ],
+  "restored_utc": "2026-09-08T17:45:04.057917+00:00"
+}

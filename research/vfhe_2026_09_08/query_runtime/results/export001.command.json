@@ -1,0 +1,19 @@
+{
+  "command": [
+    "target/release/vfhe-query-runtime",
+    "export",
+    "../proved_journal/live_learner/results/live001/case/out.ct",
+    "../proved_journal/live_learner/runtime/live001/queries/697d0834dcc44680b12c502bdf90c986/query.json",
+    "../proved_journal/live_learner/runtime/live001/queries/697d0834dcc44680b12c502bdf90c986/0.ct",
+    "results/case001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+  "started_utc": "2026-09-08T17:35:43.160729+00:00",
+  "pid": 73556,
+  "returncode": 0,
+  "elapsed_seconds": 0.04417220799950883,
+  "finished_utc": "2026-09-08T17:35:43.205707+00:00",
+  "user_seconds": 0.024238,
+  "system_seconds": 0.008017999999999999,
+  "max_rss_bytes": 30015488
+}

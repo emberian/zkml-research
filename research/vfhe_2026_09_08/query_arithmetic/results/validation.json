@@ -1,0 +1,62 @@
+[
+  {
+    "module": "Compiler.BfvQueryMul",
+    "command": [
+      "lake",
+      "env",
+      "bash",
+      "-c",
+      "LEAN_PATH=\"$1/build:$LEAN_PATH\" lean --root=\"$1\" -o \"$1/build/Compiler/$2.olean\" \"$1/Compiler/$2.lean\"",
+      "check",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic",
+      "BfvQueryMul"
+    ],
+    "exit_code": 0,
+    "seconds": 12.69507416698616
+  },
+  {
+    "module": "Compiler.BfvQueryRow",
+    "command": [
+      "lake",
+      "env",
+      "bash",
+      "-c",
+      "LEAN_PATH=\"$1/build:$LEAN_PATH\" lean --root=\"$1\" -o \"$1/build/Compiler/$2.olean\" \"$1/Compiler/$2.lean\"",
+      "check",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic",
+      "BfvQueryRow"
+    ],
+    "exit_code": 0,
+    "seconds": 4.639011666993611
+  },
+  {
+    "module": "Compiler.BfvQueryWitness",
+    "command": [
+      "lake",
+      "env",
+      "bash",
+      "-c",
+      "LEAN_PATH=\"$1/build:$LEAN_PATH\" lean --root=\"$1\" -o \"$1/build/Compiler/$2.olean\" \"$1/Compiler/$2.lean\"",
+      "check",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic",
+      "BfvQueryWitness"
+    ],
+    "exit_code": 0,
+    "seconds": 4.075103042006958
+  },
+  {
+    "module": "Compiler.BfvQueryTeeth",
+    "command": [
+      "lake",
+      "env",
+      "bash",
+      "-c",
+      "LEAN_PATH=\"$1/build:$LEAN_PATH\" lean --root=\"$1\" -o \"$1/build/Compiler/$2.olean\" \"$1/Compiler/$2.lean\"",
+      "check",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic",
+      "BfvQueryTeeth"
+    ],
+    "exit_code": 0,
+    "seconds": 7.107849541993346
+  }
+]

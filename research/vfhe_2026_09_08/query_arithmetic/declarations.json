@@ -1,0 +1,112 @@
+[
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.sumTerm_eval",
+    "line": 45
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.convolutionTerm_eval",
+    "line": 48
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.convolution_denote",
+    "line": 56
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.padded_denote",
+    "line": 61
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.convolution_bound",
+    "line": 65
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.column_correct",
+    "line": 78
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.radix_balance",
+    "line": 90
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.denote_add",
+    "line": 108
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.convolution_cast",
+    "line": 115
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.padded_cast",
+    "line": 118
+  },
+  {
+    "file": "Compiler/BfvQueryMul.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.rowSystem_sound",
+    "line": 123
+  },
+  {
+    "file": "Compiler/BfvQueryRow.lean",
+    "name": "Minidregg.Compiler.BfvQueryRow.prime_capacity",
+    "line": 63
+  },
+  {
+    "file": "Compiler/BfvQueryRow.lean",
+    "name": "Minidregg.Compiler.BfvQueryRow.wholeRowSound",
+    "line": 66
+  },
+  {
+    "file": "Compiler/BfvQueryRow.lean",
+    "name": "Minidregg.Compiler.BfvQueryRow.emittedSystem_sound",
+    "line": 97
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.canonical_accepts",
+    "line": 29
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.nonzero_premise",
+    "line": 37
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.inhabited_core_fire",
+    "line": 59
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.changed_output_refused",
+    "line": 64
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.digitwise_falsifier",
+    "line": 73
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.wrong_values",
+    "line": 82
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.wrong_canonical",
+    "line": 88
+  },
+  {
+    "file": "Compiler/BfvQueryTeeth.lean",
+    "name": "Minidregg.Compiler.BfvQueryMul.Teeth.wrong_output_refused",
+    "line": 96
+  }
+]

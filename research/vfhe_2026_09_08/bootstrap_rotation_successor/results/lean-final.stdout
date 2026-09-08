@@ -1,0 +1,15 @@
+Compiler/TfheInitialRotation.lean:171:4: warning: Try `simp at h` instead of `simpa using h`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Compiler/TfheInitialRotation.lean:172:4: warning: Try `simp at h` instead of `simpa using h`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Minidregg.Compiler.TfheInitialRotation.simplifiedSource_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Compiler/TfheInitialRotation.lean:188:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Compiler.TfheInitialRotation.simplifiedSource_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Compiler.TfheInitialRotation.simplifiedSource_sound' depends on axioms: [propext,
++  Classical.choice,
++  Quot.sound]

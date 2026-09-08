@@ -1,0 +1,23 @@
+{
+  "commands": [
+    [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/proposal.patch"
+    ],
+    [
+      "git",
+      "apply",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/proposal.patch"
+    ]
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/patch_application",
+  "exit": [
+    0,
+    0
+  ],
+  "all_applied_sources_equal_checked_sources": true,
+  "files": 12,
+  "companion_modified": false
+}

@@ -1,0 +1,20 @@
+{
+  "minidregg_base": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "sources": {
+    "Compiler/BfvQueryMul.lean": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e",
+    "Compiler/BfvQueryRow.lean": "eb101cab960c6954ee7258a13cf41ea3cf9ebb285f99f410e92f1108efddaa8f",
+    "Compiler/BfvQueryTeeth.lean": "68f36ac565f581c48ed54453595523cde07566a669d6858b03ac0b2244ac57a2",
+    "Compiler/BfvQueryWitness.lean": "860e1a86402d9ee6c816c2725f8e4865008d988044d975308b59df8a2e7081dd",
+    "EmitBfvQuery.lean": "d76ab80472bdc34bab576ebc96d227a2e1766d6996fda67b635f3d76e6b505b7"
+  },
+  "patch_sha256": "3899dc09bd676143b1c3c7e14aaf94009e17bb29902eedfb0eeb519515b0a746",
+  "theorems": 22,
+  "validation": "results/validation.json",
+  "dependencies": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiry.lean": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiryLayout.lean": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombinationLayout.lean": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3"
+  }
+}

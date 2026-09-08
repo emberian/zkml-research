@@ -1,0 +1,13 @@
+# Bounded actual rescale proof attached
+
+[EXECUTED, saved owner outputs] The separate generic-rescale lane completed a proof for 32 distinct positions from this learner's actual N8192 ciphertext multiplication capture. Each position joins all nine extended-product residues and all four output residues, giving 128 output-residue equations. The selected positions cover all three components and include coefficient0,4095,4096,8191 in each. This covers **32 of24,576 positions**, not the entire ciphertext square.
+
+[EXECUTED, saved owner outputs] The 14,454,987-byte proof took2.590258625 seconds to produce. A fresh process verified it in0.506973750 seconds; verification against a changed first output digit rejected. The exact proof hash is `eb887940a2734828b56500a4d5f42316e29c1fb12c20a795ee341c6c24f62a31`; the generated relation hash is `66a7e92c42525450458f4a4bd0062ddd43fb4da095b476e9ced54940ad56e517`.
+
+[EXECUTED] [join_rescale_proof.py](join_rescale_proof.py) independently checked the saved source/trace/ciphertext-copy hashes, all416 selected input/output residues against the actual trace via exact radix512 decomposition, the proof/template hashes, and the successful saved verification/rejection exit records. It ran no cryptography, model forward or private read. [RESCALE_PROOF_JOIN.json](RESCALE_PROOF_JOIN.json) binds all evidence. The runtime exporter separately records checking all98,304 captured output residues against the raw canonical ciphertext; that is an attributed implementation check, not an additional theorem in this join.
+
+[SOURCE] The emitted relation uses the deployed directed fixed-point9→4 scaler, including its signed constructor constants. It does not silently substitute an ideal nearest-rounding rule. The proof's selected-row statement leaves extension, convolution, rotations, the remaining downscale positions, serialization/NTT implementation, the encoder and FIFO authorization outside its scope. No whole learner proof or full reader-key removal is claimed.
+
+The owner artifacts are [proof metadata](../../../../vfhe_2026_09_08/proved_rescale_generic/results/proof001/proof.json), [fresh verification](../../../../vfhe_2026_09_08/proved_rescale_generic/results/verify001.stdout), [changed-output rejection](../../../../vfhe_2026_09_08/proved_rescale_generic/results/reject001.stdout), and [emission metadata](../../../../vfhe_2026_09_08/arithmetic_rescale_generic/artifacts/emission.json).
+
+[EXECUTED] This is an additive successor to the initial REPORT.md/RESULT.json, which accurately recorded the proof join as pending when sealed. Their original bytes, the completed learner sources/runtimes and public trace remain unchanged.

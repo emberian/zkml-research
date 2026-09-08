@@ -1,0 +1,20 @@
+Compiler/TfheInitialRotation.lean:129:49: warning: unused variable `hb`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Compiler/TfheInitialRotation.lean:161:21: warning: 'norm_num at h' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/TfheInitialRotation.lean:161:21: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+'Minidregg.Compiler.TfheInitialRotation.small_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.range_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.equations' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.simplifiedSource_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.library_sign' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.source_injective' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.zero_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheInitialRotation.changed_zero_refused' depends on axioms: [propext, Classical.choice, Quot.sound]

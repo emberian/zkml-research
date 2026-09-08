@@ -1,0 +1,10 @@
+{"trace_width": 111,
+ "trace_bytes": 909312,
+ "source_constraints": 113,
+ "rows": 2048,
+ "out_of_range_limb_refused": true,
+ "ir2_arithmetic_constraints": 113,
+ "exact_public_tables": 2,
+ "claim": "EXECUTED compiler-generated complete saved TFHE initial rotation",
+ "changed_output_refused": true,
+ "all_saved_native_rows_checked": true}

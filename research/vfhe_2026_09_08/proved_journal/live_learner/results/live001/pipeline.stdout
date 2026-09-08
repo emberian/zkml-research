@@ -1,0 +1,5 @@
+export: exit 0, 0.039s
+emit: exit 0, 36.470s
+prove: exit 0, 1.977s
+verify: exit 0, 0.127s
+{"status": "verified", "result": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/runtime/live001/proposals/new-card-teach/proved/result.json", "elapsed_seconds": 38.620449499983806}

@@ -1,0 +1,54 @@
+{
+  "Selvage.ArityEightSchedule": [
+    "Minidregg.Selvage.ArityEight.Schedule.prefix_challenge_bound",
+    "Minidregg.Selvage.ArityEight.Schedule.bad_round_bound",
+    "Minidregg.Selvage.ArityEight.Schedule.bad_schedule_bound",
+    "Minidregg.Selvage.ArityEight.Schedule.earliest_transition_cover",
+    "Minidregg.Selvage.ArityEight.Schedule.coherent_query_bound",
+    "Minidregg.Selvage.ArityEight.Schedule.sound"
+  ],
+  "Selvage.ArityEightScheduleSupplied": [
+    "Minidregg.Selvage.ArityEight.Schedule.supplied_cover",
+    "Minidregg.Selvage.ArityEight.Schedule.supplied_sound"
+  ],
+  "Selvage.ArityEightScheduleBabyBear": [
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.firstFifteen_domains",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.firstFifteen_transitions",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.degree_positive",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.degree_step",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.radius_positive",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.radius_gap",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.rate",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.terminal_sound",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.supplied_terminal_sound"
+  ],
+  "Selvage.ArityEightScheduleWitnesses": [
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.source_eq",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.source_far",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.source_not_mem",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.literal_exact",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.terminal_mem",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.domain_zero",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.terminal_monomial_one",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.zero_seed_accepts",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.one_seed_rejects",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.sound_fires"
+  ],
+  "Selvage.ArityEightScheduleLogged": [
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.word_log_subset",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.input_log_subset",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.checkpoint_valid",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.no_bad",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.extracted_word",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.word_extract",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.input_extract",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.no_failure",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.row_logged",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.row_zero_verified",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.checkpoints_logged",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.openings_logged",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.extracted_far",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.supplied_zero_accepts",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.supplied_bound_fires"
+  ]
+}

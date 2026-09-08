@@ -1,0 +1,45 @@
+'Minidregg.Compiler.NonlinearRnsInstance.paramsValid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.DirectedRnsScaler.compiledSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.DirectedRnsScaler.certificateSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.DirectedRnsScaler.honest_accepts' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.DirectedRnsScaler.balanced_accepts' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.DirectedRnsScaler.matrixSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.parameter_capacities' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.capacity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.source_balanced' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.eval_cst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.eval_var' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.eval_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.eval_scale' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.eval_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.eval_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.eval_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.splitSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.DirectedRnsScaler.nonvacuous' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.DirectedRnsScaler.wrongRoundingRefused' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.wordV125_correct' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.fixed_ranges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.accumulator_ranges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.nativeWordRefinement' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.projectionAgreement' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsInstance.canonical_lift_preserves_native' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.SignedMatrix.digit_linearization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.SignedMatrix.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsPublic.input_wire' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsPublic.output_wire' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsPublic.input_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsPublic.output_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsPublic.publicRowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsPublic.nativeProjectedRow_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NonlinearRnsPublic.simplifiedSource_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

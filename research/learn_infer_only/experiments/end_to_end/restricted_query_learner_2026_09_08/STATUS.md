@@ -1,0 +1,3 @@
+[EXECUTED] Complete: one actual full-profile ring semantic learner run,217.627s. Six encodes/six Learn/two expiry;16 recipient-specific keys;561 directly uniform missing public rows; zero absent-row secrets or universal reader. All96 scalar scores and48 predictions match. All32 query/class scores changed after expiry. Public closure before recipient reads; no retry.
+
+[EXECUTED] General semantic B has rank16 query rows plus561 identity completion rows. Whole-window signed score bound2,520,950 <p/2 with unchanged parameters. Known public reused slice16/16 at each checkpoint is not a fresh utility estimate. REPORT.md, SUMMARY.json and SCORES.csv are final.

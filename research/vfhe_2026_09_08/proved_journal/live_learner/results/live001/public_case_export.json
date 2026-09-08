@@ -1,0 +1,42 @@
+{
+  "claim": "EXECUTED exact public-only case export after live completion",
+  "method": "shutil.copyfile of six named public case artifacts; source/destination SHA256 equality",
+  "files": [
+    {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/runtime/live001/proposals/new-card-teach/proved/case/acc.ct",
+      "export": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/results/live001/case/acc.ct",
+      "sha256": "b000339a962c4d6e491f6afab103408062c7840d1f292f7042ef7785e26dd881",
+      "bytes": 85103
+    },
+    {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/runtime/live001/proposals/new-card-teach/proved/case/fresh.ct",
+      "export": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/results/live001/case/fresh.ct",
+      "sha256": "34c2108957324274852397b5175e7714e8e51df16de93562cf9e25c4e7c7917c",
+      "bytes": 85103
+    },
+    {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/runtime/live001/proposals/new-card-teach/proved/case/old.ct",
+      "export": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/results/live001/case/old.ct",
+      "sha256": "b000339a962c4d6e491f6afab103408062c7840d1f292f7042ef7785e26dd881",
+      "bytes": 85103
+    },
+    {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/runtime/live001/proposals/new-card-teach/proved/case/out.ct",
+      "export": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/results/live001/case/out.ct",
+      "sha256": "34c2108957324274852397b5175e7714e8e51df16de93562cf9e25c4e7c7917c",
+      "bytes": 85103
+    },
+    {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/runtime/live001/proposals/new-card-teach/proved/case/public_ntt_rows.json",
+      "export": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/results/live001/case/public_ntt_rows.json",
+      "sha256": "df11cb712782e79c3d142593820501b9cdc8298e7f0810663ed261194eda6b26",
+      "bytes": 1164837
+    },
+    {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/runtime/live001/proposals/new-card-teach/proved/case/source_event.json",
+      "export": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_learner/results/live001/case/source_event.json",
+      "sha256": "5d3962209cc0c6e84fbaeed163b368ce7731ef069700a02b24348a9f460d0c3e",
+      "bytes": 1774
+    }
+  ]
+}

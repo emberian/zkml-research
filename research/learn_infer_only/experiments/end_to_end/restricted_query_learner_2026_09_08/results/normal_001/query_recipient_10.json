@@ -1,0 +1,85 @@
+{
+  "status": "PASS",
+  "role_command": "query",
+  "pid": 80901,
+  "elapsed_seconds": 8.081979666021653,
+  "peak_rss_bytes_macos": 276791296,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_10/key.ring",
+      "kind": "key",
+      "private": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json",
+      "kind": "class_snapshot_map",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_01.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_02.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_03.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_04.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_05.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_06.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [],
+  "result": {
+    "recipient_coordinate": 10,
+    "registered_query_text": "Why am I being charged when I withdraw cash?",
+    "private_rows_read": 1,
+    "query_results": [
+      {
+        "revision": 2,
+        "scores": {
+          "card_arrival": 201850,
+          "cash_withdrawal_charge": 223176
+        },
+        "prediction": "cash_withdrawal_charge"
+      },
+      {
+        "revision": 4,
+        "scores": {
+          "card_arrival": 406893,
+          "cash_withdrawal_charge": 469283
+        },
+        "prediction": "cash_withdrawal_charge"
+      },
+      {
+        "revision": 6,
+        "scores": {
+          "card_arrival": 419066,
+          "cash_withdrawal_charge": 486890
+        },
+        "prediction": "cash_withdrawal_charge"
+      }
+    ],
+    "output_scope": "Explicit public benchmark scores from this recipient only"
+  },
+  "error": null
+}

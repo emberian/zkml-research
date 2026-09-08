@@ -1,0 +1,19 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean:59:32: error: Application type mismatch: The argument
+  fun h => Fin.castLE h g
+has type
+  4 ≤ ?m.8 → Fin ?m.8
+but is expected to have type
+  Fin 7
+in the application
+  value asg l fun h => Fin.castLE h g
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean:66:8: warning: declaration uses `sorry`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean:95:2: error(lean.unknownIdentifier): Unknown identifier `AirAssertionShare.shareAssertions`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean:99:34: error: Application type mismatch: The argument
+  fun h => Fin.castLE h g
+has type
+  4 ≤ ?m.8 → Fin ?m.8
+but is expected to have type
+  Fin 7
+in the application
+  value asg l fun h => Fin.castLE h g
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean:103:53: error(lean.unknownIdentifier): Unknown identifier `AirAssertionShare.shareAssertions_accepts_iff`

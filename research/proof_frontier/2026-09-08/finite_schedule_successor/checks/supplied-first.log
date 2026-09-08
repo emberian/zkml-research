@@ -1,0 +1,47 @@
+Selvage/ArityEightScheduleSupplied.lean:11:28: error(lean.unknownIdentifier): Unknown identifier `TwoRound.Checkpoint`
+Selvage/ArityEightScheduleSupplied.lean:12:29: error(lean.unknownIdentifier): Unknown identifier `TwoRound.Checkpoint`
+Selvage/ArityEightScheduleSupplied.lean:18:14: error: typeclass instance problem is stuck
+  DecidableEq (?m.22 n p)
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `DecidableEq` contains metavariables. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+Selvage/ArityEightScheduleSupplied.lean:23:21: error: typeclass instance problem is stuck
+  Membership (EfficientRootOpening.Query F Digest × Digest) (?m.17 n hn e)
+
+Note: Lean will not try to resolve this typeclass instance problem because the second type argument to `Membership` contains metavariables. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+Selvage/ArityEightScheduleSupplied.lean:26:4: warning: declaration uses `sorry`
+Selvage/ArityEightScheduleSupplied.lean:35:4: warning: declaration uses `sorry`
+Selvage/ArityEightScheduleSupplied.lean:58:8: warning: declaration uses `sorry`
+Selvage/ArityEightScheduleSupplied.lean:63:5: warning: unused variable `hsub`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/ArityEightScheduleSupplied.lean:63:39: warning: unused variable `hlog`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/ArityEightScheduleSupplied.lean:64:5: warning: unused variable `ha`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/ArityEightScheduleSupplied.lean:70:4: warning: 'exact
+  supplied_row_pins H (T.data (3 * j.val) (by omega)) (T.data (3 * j.val + 1) (by omega))
+    (T.data (3 * j.val + 2) (by omega)) (st.word j (friPrefix r j (by omega))).1
+    (st.input j (friPrefix r j (by omega))).1 (st.word (j + 1) (friPrefix r (j + 1) (by omega))).1 L default
+    (st.word j (friPrefix r j (by omega))).2 (st.input j (friPrefix r j (by omega))).2
+    (st.word (j + 1) (friPrefix r (j + 1) (by omega))).2 (hsub.1 j (by omega)) (hsub.2 j) (hsub.1 (j + 1) (by omega))
+    (fun h => hb ⟨j, h⟩) (r j) (roundQueries hell j seed a) (o j a) (hlog j a) (ha.2 j a)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/ArityEightScheduleSupplied.lean:76:20: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/ArityEightScheduleSupplied.lean:76:57: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/ArityEightScheduleSupplied.lean:94:12: error: typeclass instance problem is stuck
+  DecidableEq ?m.119
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `DecidableEq` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.

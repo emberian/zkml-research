@@ -1,0 +1,39 @@
+{
+  "scope": "Observed source/data/binary identities; no private key files read or hashed",
+  "owned_sources": {
+    "config.json": "a9fd560c31b3726a081b83237269d6598b380fda33d9d7a934286cf621748201",
+    "model.py": "14224b411de4cb90cb42ddb97172951abca34380a91c3f0d1fe651f6ef2c137d",
+    "evaluate.py": "a07bb9486a34d9183aebb2c17c2bafe6257d899252f6b74a828a8ae0dbdcb6b3",
+    "basic_crypto.py": "80854b9ccb5e4b4b2575cc3339f0d8ad9c0b16735bfd2d83950d007878a68f73",
+    "encrypted_evaluate.py": "3b3bd1d20635705380d28a952ef700b47000dee44674373e28c4308c7eacbcc6",
+    "session.py": "30d12875825e4a959eb11e7ec1319bb62914a3894f79eeed5b400f2206e44313",
+    "fast_model.py": "5cf79d0bbd6bf38da3ad80d42e1149ee2c5ee45cf1d56f7ed2167ea5282cf0a4",
+    "live_demo.py": "986100c0eadb3dc8ca43702467fb4288fe1b88b8005ddf6c4917aaf47e50c0b0",
+    "live_inputs.json": "8f571e2ea8c2e9b86914df77f0909dc57621f0d49aac74e779a308ce08665c56",
+    "check_cached_002.py": "8745433278aa72b9162838fbf005123dadfc3d5bb1552668d4195a2b770bf2b6",
+    "crypto/Cargo.toml": "e2367e24a855b9c99645cbaf9ef4ccb53c955c470d3732653a4000f9a563807b",
+    "crypto/Cargo.baseline.toml": "6751793f5f4f607b6f2a76d83b95270c7e283441bff70ca0e6e610b3703baa3f",
+    "crypto/Cargo.lock": "a1d78d8818df5b72c82d7ad2c0f484e023c4925db420c47938964b50525febee",
+    "crypto/src/main.rs": "fcefe3e11749e78771bec25cfeeaf5430a1ab0799ddaf3b09eef2ae2eda0ac47",
+    "crypto/src/cached.rs": "e14ac9699747ab06347020ed6859ba5cda7855559ebb9a48a290887c4fb13420",
+    "crypto/src/scaler_constants.rs": "1f2b5ae12b87d4c0226ee6ecbff857d5bf9113fdd0176272ee5982258767f2db",
+    "crypto/cache_revision_001/cached.rs": "0ace2ac541b28205d1e614e62111edad71be875cef9ef2db8930bfb83ab8c971",
+    "cached_host_source.json": "a76b887621a41fce924616503702e306d652bad0b149a92d498b80699a5d43e1"
+  },
+  "read_only_dependencies": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/encoder.py": "682392ed626b4f0f5b705f06cc0710aa8ad42cf7092c127e94642f12714ae272",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/config.json": "1e051be559a01ce600f4434bf9a85c2585023f14e425d86c55cf0cd77a0ca5ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/data/selected.json": "5e1e10fce61b7074345bdee1e5cecf5768f5cdd91684e06fb37cf783abe2eb09",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/features.npz": "03959f885631c4b095d81210b06def3e4071a1d9bf98e1c7427b1cd114aeaf6a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/plaintext_result.json": "0d2ea48a4640d660c3cef2c775a4113f05ae945c1156286a936a8ac8c6935a9d",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mul.rs": "930cbd009048f11ebb10b66b1f1d9bf5bb033ccb96154e1d95ac3d779f553cfc",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs": "82719d9ba27cc48542a6ba6989240217cc50d9005591208e7d7648b211f33c4f",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/scaler.rs": "8ee2370b84d30a5c9fdcc890c65e3bfb64c03b7ed7c7bbb3da1596175a545d14"
+  },
+  "binaries": {
+    "crypto/target/release/kernel-crypto": "a6f378e6b25b51abcfa7ecfb73896aebbb9443b30c63a3bd306d8d5691a2b859",
+    "crypto/target/release/kernel-crypto-cached": "5503d7495df77adafa9f2f4d9c417eb4a7fd6babaca67f608edfc643de14f0f7",
+    "crypto/cache_revision_001/kernel-crypto-cached": "f4f15459ecd4253a8f8f9733fd1af614a457254444c4f64360e1ac2553023f37"
+  }
+}

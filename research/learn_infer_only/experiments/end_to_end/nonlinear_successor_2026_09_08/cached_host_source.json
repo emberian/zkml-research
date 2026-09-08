@@ -1,0 +1,7 @@
+{
+  "shared_crypto_helpers_including_square_byte_identical": true,
+  "original_runtime_source_and_binary_unchanged": true,
+  "cached_binary_sha256": "f4f15459ecd4253a8f8f9733fd1af614a457254444c4f64360e1ac2553023f37",
+  "cached_source_sha256": "0ace2ac541b28205d1e614e62111edad71be875cef9ef2db8930bfb83ab8c971",
+  "scope": "Cache adapter preserves shared source prefix; actual live output equality is recorded separately, not a universal wrapper theorem"
+}

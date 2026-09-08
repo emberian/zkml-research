@@ -1,0 +1,18 @@
+{
+  "name": "emit",
+  "argv": [
+    "lake",
+    "env",
+    "bash",
+    "-c",
+    "exec env LEAN_PATH=/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build:\"$LEAN_PATH\" lean --root=/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic --run /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/EmitBfvQuery.lean \"$1\" \"$2\"",
+    "query-emit",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/queries/new-two-class-query/proof1/generated",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/queries/new-two-class-query/proof1/case/public_rows.json"
+  ],
+  "cwd": "/Users/ember/dev/minidregg",
+  "started_utc": "2026-09-08T17:56:48.627943+00:00",
+  "returncode": 0,
+  "elapsed_seconds": 103.0728750830167,
+  "finished_utc": "2026-09-08T17:58:31.701875+00:00"
+}

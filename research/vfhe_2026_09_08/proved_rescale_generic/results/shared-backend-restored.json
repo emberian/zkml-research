@@ -1,0 +1,6 @@
+{
+  "claim": "EXECUTED exact restoration from Git index bytes matching previously frozen artifact SHA256",
+  "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs",
+  "formatted_sha256": "673846ca9241f8070cafd4c3be34da14b097bea3334df6c7ade480fc2ae46f15",
+  "restored_sha256": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+}

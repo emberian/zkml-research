@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "map_selected_before_scores": true,
+  "plaintext_map_evaluations": 1,
+  "query_row_rank": 16,
+  "identity_completion_rows": 561,
+  "six_input_basis_roundtrips": 6,
+  "exact_pairwise_kernel_identities": 96,
+  "universal_abs_compact_bound": 4,
+  "universal_abs_lift_bound": 16,
+  "universal_abs_query_coefficient_bound": 32,
+  "universal_single_kernel_bound": 262144,
+  "universal_positive_capacity2_sum_bound": 524288,
+  "universal_signed_weight32_sum_bound": 8388608,
+  "p_half_floor": 14219946,
+  "whole_weight32_kernel_bound_strictly_below_p_half": true,
+  "registered_max_query_L1": 4225,
+  "registered_capacity2_generic_int8_bound": 1073150,
+  "observed_max_single_kernel": 17689,
+  "observed_max_capacity2_score": 33314,
+  "snapshots": [
+    {
+      "revision": 2,
+      "correct": 8,
+      "total": 16
+    },
+    {
+      "revision": 4,
+      "correct": 9,
+      "total": 16
+    },
+    {
+      "revision": 6,
+      "correct": 10,
+      "total": 16
+    }
+  ],
+  "new_model_forwards": 0,
+  "new_crypto_runs": 0,
+  "sources_unchanged": true
+}

@@ -1,0 +1,86 @@
+{
+  "owned": {
+    ".gitignore": "8bf8e5cab24cd5151c0ab0135e880085070ae78178da07a6a144adb03444b818",
+    "CONTRACT.md": "95d6f064d7fa8a7eee8d9e0b22015c2e170c4b64d8e4af1746dad976d279292f",
+    "PREPARATION.json": "ac1d44ffa0b01fee4d19e90b36664929e07c2237df70a1ec3f1517f348666540",
+    "basis.py": "16510ae61dfb1ce1f1d4e706e8d594d2ad687827355ba38db98d218e027e4b9f",
+    "codec/__init__.py": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7",
+    "codec/packed.py": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d",
+    "fixture.json": "8b961704aa37ec4953110330b4048da1f0f639346803f240e20a04c9c38910ee",
+    "prepare.log": "f8021cb5d9292adec47576b7d6a0adaf9d7b82ae94ff7ee3ff475f4afd075db1",
+    "prepare.py": "720684b8545f06c36a5ee49340b56b39ac010799e33d880abc77101067be27f0",
+    "prepare.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "registry.json": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+    "source/fast/ring.py": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567",
+    "source/fast/run.py": "e7632e4eccccec16354ecfbbf541a23e96d8f8f803465c7de62a63eff522f698",
+    "source/fast/sampling/__init__.py": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1",
+    "source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b",
+    "source/fast/sampling/proposal_screen.c": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4",
+    "source/fast/sampling/reference.py": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd",
+    "source/fast/sampling/sampler.py": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8",
+    "source/transport.original.py": "cb19230ab53045005114811a7f2692df43f27ea145cf23f1fecca2356a3914f7",
+    "transport.patch": "84aa6414e949e1839ecd0c60dfef68ac0f75bc6f85fa2ccb62e0b6b577b0fc24",
+    "transport.py": "5eed477a600a3789c9b2a83150eed653674b59b1073e09f392b63b991d3780f6",
+    "workflow.py": "2f3eea008664072404b0ce265437f6ae25ca8c784ad6b61d7c1beaf86b2907c5"
+  },
+  "byte_identical_copied_origins": {
+    "source/fast/run.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/run.py",
+      "sha256": "e7632e4eccccec16354ecfbbf541a23e96d8f8f803465c7de62a63eff522f698"
+    },
+    "source/fast/ring.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/ring.py",
+      "sha256": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567"
+    },
+    "source/fast/sampling/proposal_screen.c": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/proposal_screen.c",
+      "sha256": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4"
+    },
+    "source/fast/sampling/__init__.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/__init__.py",
+      "sha256": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1"
+    },
+    "source/fast/sampling/reference.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/reference.py",
+      "sha256": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+    },
+    "source/fast/sampling/sampler.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/sampler.py",
+      "sha256": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8"
+    },
+    "source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so",
+      "sha256": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b"
+    },
+    "codec/packed.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/codec/packed.py",
+      "sha256": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d"
+    },
+    "codec/__init__.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/codec/__init__.py",
+      "sha256": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7"
+    },
+    "source/transport.original.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+      "sha256": "cb19230ab53045005114811a7f2692df43f27ea145cf23f1fecca2356a3914f7"
+    }
+  },
+  "parameters": {
+    "N": 16384,
+    "w": 64,
+    "d": 577,
+    "recipients": 16,
+    "p": 28439893,
+    "q": 497323290947860672931310292648754779192460749687510494957169639477681564739617435942913,
+    "sigma_key": 33554432,
+    "sigma_error": 1024,
+    "flood": 226156424291633194186662080095093570025917938800079226639565593765455331328,
+    "W": 32,
+    "denominator": 8204908842
+  },
+  "delta": 60612896562862346171488433051960381449958923222795080866685104784700003464050,
+  "cutoff_error_bound": 226156424291633194186662080095093570025917938800079226641871436774669025280,
+  "strict_correctness_margin": 46138885408197821743542059925874392968300175139590010361605332831121185846130,
+  "python": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+  "scope": "Prelaunch source/parameter identities; no cryptographic execution"
+}

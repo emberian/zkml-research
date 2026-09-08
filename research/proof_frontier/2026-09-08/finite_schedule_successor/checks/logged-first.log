@@ -1,0 +1,30 @@
+Selvage/ArityEightScheduleLogged.lean:79:4: error: don't know how to synthesize implicit argument `α`
+  @Eq (PowerTwoFriLevels (?m.18 j p) (3 * (↑j + 1)) → Ext4) ((extracted checkpoints 0).input (↑j) p) fun x => 0
+context:
+j : Fin 5
+p : Fin ↑j → Ext4
+⊢ Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+Selvage/ArityEightScheduleLogged.lean:79:46: error(lean.inferBinderTypeFailed): Failed to infer binder type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+Selvage/ArityEightScheduleLogged.lean:79:4: error: don't know how to synthesize implicit argument `ι`
+  @Words.input Ext4 (PowerTwoFriLevels (?m.18 j p)) (extracted checkpoints 0) (↑j) p
+context:
+j : Fin 5
+p : Fin ↑j → Ext4
+⊢ ℕ → Type
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+Selvage/ArityEightScheduleLogged.lean:79:5: error: don't know how to synthesize implicit argument `ell`
+  @extracted Ext4 Digest TwoRound.Witnesses.Logged.instDecidableEqDigest (?m.18 j p) checkpoints 0
+context:
+j : Fin 5
+p : Fin ↑j → Ext4
+⊢ ℕ
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+Selvage/ArityEightScheduleLogged.lean:132:8: warning: unused variable `a`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

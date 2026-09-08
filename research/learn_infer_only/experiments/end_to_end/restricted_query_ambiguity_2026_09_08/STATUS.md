@@ -1,0 +1,3 @@
+[EXECUTED] Complete nonvacuous feature-domain witness:39 real coordinates changed,delta infinity norm4,Ydelta exactlyzero for actual16 registered semantic rows,withheld actual query dot38. Six paired teachings/two expiries preserve all96 per-input and192 memory registered scores; final hidden difference190. All feature coordinates admitted,whole-window signed bounds<p/2. Independent standard-library checker passes.
+
+[SCOPE] Right features are not claimed to be natural-language embeddings. No encryption,decryption,model/private-key reads,attack or recovery test. See REPORT.md/PROOF.md/RESULT.json.

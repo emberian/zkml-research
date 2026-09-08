@@ -1,0 +1,111 @@
+{
+  "status": "PASS",
+  "workflow_sha256": "818d929eb50cb1c1f1dd05767ba90c6e4fce82d0bf01ffa4576140a0b6181d07",
+  "total_seconds": 138.78836079203757,
+  "actor_processes": 45,
+  "unique_actor_pids": 45,
+  "role_seconds": {
+    "init": {
+      "count": 1,
+      "total": 0.13290812500054017,
+      "min": 0.13290812500054017,
+      "max": 0.13290812500054017
+    },
+    "register": {
+      "count": 16,
+      "total": 70.10122062690789,
+      "min": 3.6737468339852057,
+      "max": 6.7635184999671765
+    },
+    "finalize": {
+      "count": 1,
+      "total": 0.24830333300633356,
+      "min": 0.24830333300633356,
+      "max": 0.24830333300633356
+    },
+    "encode": {
+      "count": 3,
+      "total": 33.80270529194968,
+      "min": 11.161982833989896,
+      "max": 11.439206374983769
+    },
+    "combine": {
+      "count": 1,
+      "total": 1.970108458015602,
+      "min": 1.970108458015602,
+      "max": 1.970108458015602
+    },
+    "window": {
+      "count": 3,
+      "total": 8.58259604102932,
+      "min": 1.7605214579962194,
+      "max": 3.9083174580009654
+    },
+    "decode": {
+      "count": 20,
+      "total": 23.76299691828899,
+      "min": 1.1435479170177132,
+      "max": 1.2683085420285352
+    }
+  },
+  "peak_actor_rss_bytes": 490242048,
+  "actual_recipient_keys": 16,
+  "absent_recipient_keys": 0,
+  "designated_outputs_matched": 20,
+  "public_private_payload_reads": 0,
+  "orchestrator_private_payload_reads": 0,
+  "key_container_bytes_min": 3801648,
+  "key_container_bytes_max": 3801649,
+  "actual_artifact_sizes": {
+    "a.json": {
+      "bytes": 605,
+      "payload_bytes": null
+    },
+    "registry.ring": {
+      "bytes": 9470295,
+      "payload_bytes": null
+    },
+    "public.json": {
+      "bytes": 974,
+      "payload_bytes": null
+    },
+    "cipher_0.ring": {
+      "bytes": 37901312,
+      "payload_bytes": 37900653
+    },
+    "cipher_1.ring": {
+      "bytes": 37901312,
+      "payload_bytes": 37900653
+    },
+    "cipher_2.ring": {
+      "bytes": 37901312,
+      "payload_bytes": 37900653
+    },
+    "signed.ring": {
+      "bytes": 37901452,
+      "payload_bytes": 37900653
+    },
+    "window_0.ring": {
+      "bytes": 37901380,
+      "payload_bytes": 37900653
+    },
+    "window_1.ring": {
+      "bytes": 37901451,
+      "payload_bytes": 37900653
+    },
+    "window_2.ring": {
+      "bytes": 37901451,
+      "payload_bytes": 37900653
+    }
+  },
+  "actual_registration_bytes_min": 592441,
+  "actual_registration_bytes_max": 592442,
+  "private_payloads_opened_by_this_summary": 0,
+  "new_crypto_runs": 0,
+  "seeded_issuer_bundle_bytes": 9471269,
+  "ideal_uniform_baseline_public_bytes": 379390500,
+  "public_bundle_reduction_factor": 40.056987083779376,
+  "public_bundle_reduction_percent": 97.50355662569305,
+  "baseline_summary_sha256": "1690065a2f6789c94a15d086de849382fa96b19d517f3b71d1d6947e3520c925",
+  "security_mode": "Conditional public-SHAKE seeded setup; ideal-uniform theorem not transferred"
+}

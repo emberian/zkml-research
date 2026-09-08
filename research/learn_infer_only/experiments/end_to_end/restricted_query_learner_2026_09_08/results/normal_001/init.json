@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "role_command": "init",
+  "pid": 78006,
+  "elapsed_seconds": 1.6142749579739757,
+  "peak_rss_bytes_macos": 136183808,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/a.ring",
+      "kind": "a",
+      "bytes": 37880358,
+      "payload_bytes": 37879808,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "8e6dd931eaae530264e5024c384f43e694a51f07e8f90fa72542dbab6235c002"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 0
+  },
+  "error": null
+}

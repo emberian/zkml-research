@@ -1,0 +1,54 @@
+{
+  "checked_sources_unchanged": true,
+  "claim_label": "EXECUTED",
+  "completed_utc": "2026-09-08 17:27:46 UTC",
+  "documentation_correction": "Public seeded missing-row relation also constrains the full-Gaussian setup hybrid; seeded Ring-LWE for A alone is insufficient. Runtime sources and saved checks unchanged.",
+  "files": {
+    ".gitignore": {
+      "bytes": 13,
+      "sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b"
+    },
+    "CHECKS.json": {
+      "bytes": 2550,
+      "sha256": "0cb1012f27d6b4c693336728dbe0a9a34cfaea4d6e49beabcca9dda8bf55f6a8"
+    },
+    "DESIGN.md": {
+      "bytes": 4083,
+      "sha256": "7d8bbf164daa6b81fa50ebeebd0a1583baeafd428ffc37039643a66ee15bbe51"
+    },
+    "NEXT.md": {
+      "bytes": 697,
+      "sha256": "915208c3ff228a783602c06add4e4b63a010e061ca15bbee87c98c0aa1bacd35"
+    },
+    "RUN.log": {
+      "bytes": 563,
+      "sha256": "07313b96db7a7b661baa2afa28d11ab1df7e643f6035910d29b9bd1d858be1f5"
+    },
+    "SECURITY.md": {
+      "bytes": 7148,
+      "sha256": "51c69b691a39e1e22a67566b3f0dd86bf2af3e27c8c568886d75968be6af54d3"
+    },
+    "STATUS.md": {
+      "bytes": 1102,
+      "sha256": "b04e6a24b5afb91b39060de6b9c5a3291fd366589114a70119655613f1593702"
+    },
+    "__init__.py": {
+      "bytes": 158,
+      "sha256": "3f15a40737daebb4ebeb7e469a4162e2f956319e20fba2386cbfcbb6b2f4e0a8"
+    },
+    "check_expansion.py": {
+      "bytes": 5269,
+      "sha256": "08edc9469e783119d16f06edc81046817c2687a81e325363499bec94a9750461"
+    },
+    "public_expander.py": {
+      "bytes": 5732,
+      "sha256": "ab175083b2a38e382776f07a52a0d8b84e8886085f40f083117de273f0d0aba4"
+    }
+  },
+  "frozen": true,
+  "private_artifact_reads": 0,
+  "public_full_row_checks": 1,
+  "raw_row_files_persisted": 0,
+  "scope": "Canonical deterministic public SHAKE256 expansion and cheap checks only; ideal-XOF rejection argument derived; direct seeded Ring-LWE/regularity or programmable-XOF proof remains open.",
+  "search_queries": 0
+}

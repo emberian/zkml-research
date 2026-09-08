@@ -1,0 +1,162 @@
+--- ring_transport/transport.py
++++ restricted_query_learner/transport.py
+@@ -18,14 +18,22 @@
+ import time
+ 
+ HERE=Path(__file__).resolve().parent
+-FAST=HERE.parent/'ring_implementation_fast'
++FAST=HERE/'source/fast'
+ sys.path.insert(0,str(FAST))
+ from ring import Parameters, Ring, PublicSetup, RecipientKey, RecipientBatch, Ciphertext, SparseBasis, generate_recipient_key
+ from run import params, fixture
+ from sampling.sampler import GaussianSampler
+ from codec import pack_values, unpack_values, payload_bytes
+ 
+-MAGIC=b'RINGTRN1'
++from basis import load as load_basis
++BASIS=None
++BASIS_SHA256=None
++
++def configure_basis(path):
++    global BASIS,BASIS_SHA256
++    BASIS,BASIS_SHA256=load_basis(path)
++
++MAGIC=b'RINGSEM1'
+ READS=[]
+ WRITES=[]
+ 
+@@ -42,7 +50,7 @@
+ 
+ 
+ def basic_header(profile,kind,setup_id=None,**extra):
+-    return {'format_version':1,'kind':kind,'profile':profile,'parameters':asdict(params(profile)),
++    return {'format_version':2,'registry_sha256':BASIS_SHA256,'kind':kind,'profile':profile,'parameters':asdict(params(profile)),
+             'setup_id':setup_id or os.urandom(32).hex(),**extra}
+ 
+ 
+@@ -57,17 +65,18 @@
+ 
+ 
+ def validate_header(h):
+-    common={'format_version','kind','profile','parameters','setup_id'}
++    common={'format_version','registry_sha256','kind','profile','parameters','setup_id'}
+     extra={'a':set(),'registration':{'coordinate','a_sha256'},'public':{'a_sha256'},
+            'key':{'coordinate','a_sha256'},'ciphertext':{'a_sha256','public_sha256','weight','terms'}}
+     if not isinstance(h,dict) or h.get('kind') not in extra or set(h)!=common|extra[h['kind']]:
+         raise ValueError('invalid header fields')
+-    if type(h['format_version']) is not int or h['format_version']!=1 or h['profile'] not in ('toy','candidate_n_probe','candidate_full'):
++    if type(h['format_version']) is not int or h['format_version']!=2 or h['profile']!='candidate_full':
+         raise ValueError('unsupported format/profile')
+     p=params(h['profile'])
++    if BASIS is None or h['registry_sha256']!=BASIS_SHA256:raise ValueError('different fixed text-query registry/basis')
+     if canonical(h['parameters'])!=canonical(asdict(p)):
+         raise ValueError('parameters do not match the fixed profile')
+-    for name in ['setup_id','a_sha256','public_sha256']:
++    for name in ['setup_id','a_sha256','public_sha256','registry_sha256']:
+         if name in h and (not isinstance(h[name],str) or len(h[name])!=64 or any(c not in '0123456789abcdef' for c in h[name])):
+             raise ValueError('noncanonical context digest')
+     if 'coordinate' in h and (type(h['coordinate']) is not int or not 0<=h['coordinate']<p.recipients):
+@@ -160,7 +169,7 @@
+     c=Container(path,'public'); p=c.p; ring=Ring(p.N,p.q)
+     setup=PublicSetup.__new__(PublicSetup)
+     setup.params,setup.sampler,setup.ring=p,sampler,ring
+-    setup.basis=SparseBasis(p.d,p.recipients,p.p)
++    setup.basis=BASIS
+     setup.A=polynomial_rows(c,ring,p.w)
+     setup.P=[c.take(p.N) for _ in range(p.d)]
+     c.finish()
+@@ -176,7 +185,7 @@
+ 
+ 
+ def context_equal(a,b):
+-    for name in ['profile','setup_id','parameters','a_sha256']:
++    for name in ['profile','setup_id','parameters','a_sha256','registry_sha256']:
+         if a.get(name)!=b.get(name):raise ValueError('cross-context artifact')
+     if a['kind']=='ciphertext' and b['kind']=='ciphertext' and a['public_sha256']!=b['public_sha256']:
+         raise ValueError('cross-public-key ciphertexts')
+@@ -189,7 +198,7 @@
+ 
+ 
+ def command_init(a):
+-    p=params(a.profile); public=PublicSetup(p,None)
++    p=params(a.profile); public=PublicSetup(p,None); public.basis=BASIS
+     h=basic_header(a.profile,'a')
+     write_container(a.out,h,itertools.chain.from_iterable(public.ring.coefficients(poly) for poly in public.A))
+     return {'actual_private_rows_generated':0}
+@@ -212,7 +221,7 @@
+     h,p,ring,A=load_a(a.public_a); ah=digest(a.public_a)
+     setup=PublicSetup.__new__(PublicSetup)
+     setup.params,setup.ring,setup.A,setup.P=p,ring,A,[None]*p.d
+-    setup.basis=SparseBasis(p.d,p.recipients,p.p); setup.sampler=None
++    setup.basis=BASIS; setup.sampler=None
+     for path in a.registration:
+         c=Container(path,'registration')
+         if c.header['setup_id']!=h['setup_id'] or c.header['profile']!=h['profile'] or c.header['a_sha256']!=ah:
+@@ -231,6 +240,7 @@
+     x=json.loads(path.read_text())
+     if not isinstance(x,list) or len(x)!=public.params.d or any(type(v) is not int or not 0<=v<public.params.p for v in x):
+         raise ValueError('input must be a canonical F_p vector')
++    if any(abs(v if v<=public.params.p//2 else v-public.params.p)>127 for v in x) or x[-1]!=0:raise ValueError('semantic issuer expects int8 feature residues and final zero')
+     ct=public.encode(x)
+     ch=basic_header(h['profile'],'ciphertext',h['setup_id'],a_sha256=h['a_sha256'],public_sha256=digest(a.public),weight=1,terms=None)
+     emit_cipher(a.out,ch,public.params,ct)
+@@ -309,9 +319,42 @@
+     return {'recipient_coordinate':key.coordinate,'private_rows_read':1,'expected_synthetic_lift_matched':expected}
+ 
+ 
++def command_query(a):
++    kc=Container(a.key,'key'); p=kc.p; kh=kc.header
++    bits=(8*p.sigma_key).bit_length(); modulus=1<<bits; sign=1<<(bits-1)
++    row=[]
++    for _ in range(p.w):
++        values=[x if x<sign else x-modulus for x in kc.take(p.N)]
++        if any(abs(x)>=8*p.sigma_key for x in values):raise ValueError('noncanonical key coefficient')
++        row.append(values)
++    kc.finish(); key=RecipientKey(kh['coordinate'],row)
++    public_models=Path(a.models).resolve(); READS.append({'path':str(public_models),'kind':'class_snapshot_map','private':False})
++    manifest=json.loads(public_models.read_text())
++    if manifest['registry_sha256']!=BASIS_SHA256 or manifest['capacity']!=2:raise ValueError('model map registry/capacity mismatch')
++    setup=PublicSetup.__new__(PublicSetup); setup.params=p; setup.ring=Ring(p.N,p.q)
++    comparisons=[]
++    for snapshot in manifest['snapshots']:
++        scores={}
++        if set(snapshot['classes'])!=set(BASIS.registry['classes']):raise ValueError('wrong fixed class map')
++        for label,item in snapshot['classes'].items():
++            if type(item['count']) is not int or not 1<=item['count']<=2:raise ValueError('invalid class count')
++            h,_,ct,lineage=load_ciphertext(item['path']); context_equal(kh,h)
++            if digest(item['path'])!=item['sha256'] or len(lineage)!=item['count'] or any(c!=1 for c in lineage.values()):raise ValueError('class snapshot/count mismatch')
++            value=setup.decode(key,ct)
++            if abs(value)>item['count']*BASIS.bounds[key.coordinate]:raise ValueError('signed application score out of declared range')
++            scores[label]=value
++        from fractions import Fraction
++        ranked=sorted(scores,key=lambda label:(-Fraction(scores[label],snapshot['classes'][label]['count']),label))
++        comparisons.append({'revision':snapshot['revision'],'scores':scores,'prediction':ranked[0]})
++    # Recipient deliberately publishes these known-public benchmark scores.
++    # It never reads another recipient's private output or key.
++    return {'recipient_coordinate':key.coordinate,'registered_query_text':BASIS.registry['queries'][key.coordinate]['text'],'private_rows_read':1,'query_results':comparisons,'output_scope':'Explicit public benchmark scores from this recipient only'}
++
++
+ def main():
+     parser=argparse.ArgumentParser()
+     parser.add_argument('--receipt',required=True)
++    parser.add_argument('--registry',required=True)
+     sub=parser.add_subparsers(dest='command',required=True)
+     p=sub.add_parser('init'); p.add_argument('--profile',choices=['toy','candidate_n_probe','candidate_full'],required=True); p.add_argument('--out',required=True)
+     p=sub.add_parser('register'); p.add_argument('--public-a',required=True); p.add_argument('--coordinate',type=int,required=True); p.add_argument('--key-out',required=True); p.add_argument('--registration-out',required=True)
+@@ -319,13 +362,14 @@
+     p=sub.add_parser('encode'); p.add_argument('--public',required=True); p.add_argument('--input',required=True); p.add_argument('--out',required=True)
+     p=sub.add_parser('combine'); p.add_argument('--term',nargs=2,action='append',required=True,metavar=('COEFFICIENT','CIPHERTEXT')); p.add_argument('--out',required=True)
+     p=sub.add_parser('window'); p.add_argument('--state'); p.add_argument('--add',required=True); p.add_argument('--expire'); p.add_argument('--capacity',type=int,required=True); p.add_argument('--out',required=True)
++    p=sub.add_parser('query'); p.add_argument('--key',required=True); p.add_argument('--models',required=True)
+     p=sub.add_parser('decode'); p.add_argument('--key',required=True); p.add_argument('--ciphertext',required=True); p.add_argument('--expected-lift',type=int); p.add_argument('--out',required=True)
+-    a=parser.parse_args(); start=time.perf_counter(); status='PASS'; error=None; result={}
++    a=parser.parse_args(); configure_basis(a.registry); start=time.perf_counter(); status='PASS'; error=None; result={}
+     try:result=globals()['command_'+a.command](a)
+     except Exception as exc:status='FAIL'; error=f'{type(exc).__name__}: {exc}'
+     receipt={'status':status,'role_command':a.command,'pid':os.getpid(),'elapsed_seconds':time.perf_counter()-start,
+              'peak_rss_bytes_macos':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,'uid':os.getuid(),
+-             'artifact_reads':READS,'artifact_writes':WRITES,'result':result,'error':error}
++             'registry_sha256':BASIS_SHA256,'artifact_reads':READS,'artifact_writes':WRITES,'result':result,'error':error}
+     Path(a.receipt).write_text(json.dumps(receipt,indent=2)+'\n')
+     print(json.dumps({'status':status,'role_command':a.command,'elapsed_seconds':receipt['elapsed_seconds'],'error':error}),flush=True)
+     return 0 if status=='PASS' else 1

@@ -1,0 +1,49 @@
+{
+  "instance": "actual nonlinear text-kernel query after9teaches and1expiry",
+  "files": {
+    "trace": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace/basic.json",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/trace/basic.json",
+      "bytes": 5577348,
+      "sha256": "c0c32aa29c30ade43151e22dc865cd6465c1d7093eb2c333c618eadb30c772c2"
+    },
+    "dot_ciphertext": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace/basic.dot.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/trace/basic.dot.ct",
+      "bytes": 409630,
+      "sha256": "df086144f6e467bcc119184e3aa35b6e509f185095e2691b183d755c7306d6a0"
+    },
+    "output_ciphertext": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace/basic-000.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/answers/basic-000.ct",
+      "bytes": 614445,
+      "sha256": "1dfa0a85aba49bd4cb5b67610b89eb3211e50bc575ba18449bedf4c34cabf11c"
+    }
+  },
+  "N": 8192,
+  "t": 4294475777,
+  "base": [
+    1125899906826241,
+    1125899906629633,
+    1125899905744897,
+    1125899905351681
+  ],
+  "extended_base": [
+    1125899906826241,
+    1125899906629633,
+    1125899905744897,
+    1125899905351681,
+    4611686018427322369,
+    4611686018427289601,
+    4611686018426454017,
+    4611686018426257409,
+    4611686018425815041
+  ],
+  "components": 3,
+  "native_multiplicator_bytes_equal": true,
+  "source_sha256": "fcefe3e11749e78771bec25cfeeaf5430a1ab0799ddaf3b09eef2ae2eda0ac47",
+  "binary_sha256": "a6f378e6b25b51abcfa7ecfb73896aebbb9443b30c63a3bd306d8d5691a2b859",
+  "cargo_lock_sha256": "a1d78d8818df5b72c82d7ad2c0f484e023c4925db420c47938964b50525febee",
+  "captured": "Actual product PowerBasis before native Scaler, and actual output PowerBasis immediately after native Scaler, before NTT. No ideal rounding oracle.",
+  "scope": "N8192 q4/t32 actual ciphertext multiplication, distinct from smaller compiler-proved6to3 instance."
+}

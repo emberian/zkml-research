@@ -1,0 +1,8 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean:51:4: error: unsolved goals
+case left.refine_5.«0»
+left✝ : (fun i => i) ⟨0, ⋯⟩ ∈ List.finRange 14
+ht : column 17 wires ((fun i => i) ⟨0, ⋯⟩) ∈ List.map (column 17 wires) (List.finRange 14)
+⊢ 33295 = ↑(![3, 5, 15] 2) + 32768 + 512
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean:56:2: error: unsolved goals
+case right
+⊢ ZMod.val 3 = 3 ∧ ZMod.val 5 = 5 ∧ ![3, 5, 15] 2 % babyBearP = 15

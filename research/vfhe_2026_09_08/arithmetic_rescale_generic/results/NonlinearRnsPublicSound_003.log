@@ -1,0 +1,48 @@
+Compiler/NonlinearRnsPublicSound.lean:28:2: error: `dsimp` made no progress
+Compiler/NonlinearRnsPublicSound.lean:39:2: error: `dsimp` made no progress
+Compiler/NonlinearRnsPublicSound.lean:51:2: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/NonlinearRnsPublicSound.lean:50:33: warning: This simp argument is unused:
+  input_wire
+
+Hint: Omit it from the simp argument list.
+  simp only [̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵i̵n̵p̵u̵t̵_̵w̵i̵r̵e̵,̵p̵r̵o̵f̵i̵l̵e̵,̵L̵a̵y̵o̵u̵t̵.̵b̵a̵s̵e̵]̵[̲F̲u̲n̲c̲t̲i̲o̲n̲.̲c̲o̲m̲p̲_̲a̲p̲p̲l̲y̲,̲ ̲p̲r̲o̲f̲i̲l̲e̲,̲ ̲L̲a̲y̲o̲u̲t̲.̲b̲a̲s̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsPublicSound.lean:63:2: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/NonlinearRnsPublicSound.lean:62:33: warning: This simp argument is unused:
+  output_wire
+
+Hint: Omit it from the simp argument list.
+  simp only [̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵o̵u̵t̵p̵u̵t̵_̵w̵i̵r̵e̵,̵p̵r̵o̵f̵i̵l̵e̵,̵L̵a̵y̵o̵u̵t̵.̵b̵a̵s̵e̵]̵[̲F̲u̲n̲c̲t̲i̲o̲n̲.̲c̲o̲m̲p̲_̲a̲p̲p̲l̲y̲,̲ ̲p̲r̲o̲f̲i̲l̲e̲,̲ ̲L̲a̲y̲o̲u̲t̲.̲b̲a̲s̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsPublicSound.lean:79:27: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  fun i => decoded profile (asg ∘ wireMap) (target i 0)
+in the target expression
+  ↑(decoded profile (asg ∘ wireMap) (target i 0)) = wordOutput (publicResidues asg) % ↑(params.targetBase i)
+
+asg : ℕ → BabyBear
+hs✝ : systemAccepts asg system
+i : Fin 4
+hz : systemAccepts asg [vr 88]
+hs : systemAccepts asg (renameS wireMap source)
+hz' : asg 88 = 0
+ha : systemAccepts (asg ∘ wireMap) source
+hb : DirectedRnsScaler.Balanced params (decoded profile (asg ∘ wireMap))
+hc :
+  Accepts params (fun j => ↑(decoded profile (asg ∘ wireMap) (residue j)))
+    (fun i => ↑(decoded profile (asg ∘ wireMap) (target i 0)))
+    (readCertificate params (decoded profile (asg ∘ wireMap)))
+hw :
+  (wordOutput fun j => ↑(decoded profile (asg ∘ wireMap) (residue j))) =
+    output params fun j => ↑(decoded profile (asg ∘ wireMap) (residue j))
+hout : ↑(decoded profile (asg ∘ wireMap) (target i 0)) = wordOutput (publicResidues asg) % ↑(params.targetBase i)
+⊢ ↑(publicOutput asg i) = wordOutput (publicResidues asg) % ↑(params.targetBase i)

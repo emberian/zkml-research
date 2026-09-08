@@ -1,0 +1,41 @@
+{
+  "input": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/results/case001/public_rows.json",
+  "input_sha256": "fe7ce2e690b599bd5b3f035c4ea8e37fa7a16359c358162866b8a57b9011ced0",
+  "order": [
+    "baseline",
+    "fast"
+  ],
+  "observations": [
+    {
+      "name": "baseline",
+      "seconds": 102.78433162497822,
+      "exit_code": 0,
+      "output_dir": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_emitter_successor/results/baseline001"
+    },
+    {
+      "name": "fast",
+      "seconds": 88.16824149998138,
+      "exit_code": 0,
+      "output_dir": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_emitter_successor/results/fast001"
+    }
+  ],
+  "template_ir2.json": {
+    "byte_identical": true,
+    "bytes": 553870,
+    "sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "matches_frozen": true
+  },
+  "trace.leu32": {
+    "byte_identical": true,
+    "bytes": 82214912,
+    "sha256": "8f1d1a0ab009f41756e2164c4a0a833494f1d76ad07992f58b767fb495e78cc5",
+    "matches_frozen": true
+  },
+  "sample0.leu32": {
+    "byte_identical": true,
+    "bytes": 10036,
+    "sha256": "039ecc338a2d9c13c3c87b1d619778c7ed5cdfb6dbaa30fd74e90aeadb12c460",
+    "matches_frozen": true
+  },
+  "speedup": 1.1657749987562123
+}

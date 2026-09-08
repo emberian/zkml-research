@@ -1,0 +1,14 @@
+{
+  "architecture": "degree2 empirical kernel mean over last8 examples per class",
+  "capacity": 8,
+  "feature_dimension": 576,
+  "feature_source": "../useful_learner_2026_09_08/encoder.py and its saved vectors; unchanged E5 encoder/projection",
+  "requantization": "numpy.rint(old_integer_vector[:576]/4), ties-to-even",
+  "coordinate_bound": 32,
+  "norm_squared_bound": 20000,
+  "score": "sum_i ((x_i dot query)^2) / active_count",
+  "comparison": "same saved BANKING77 data, same FIFO schedule; original prototype and requantized linear prototype controls; no grid/tuning",
+  "packing": "N8192 SIMD slots: feature*8+example_lane, zero-pad to1024 features; rotations8..2048 plus row swap; ct×ct square returns3components; recipient sums first8 repeated kernel slots",
+  "plaintext_kernel_sum_bound": 3200000000,
+  "encrypted_initial_workload": "128 Learn/64 expiry; first2 original-test rows per each of8 classes at32,64,128 (48 multiclass queries). Full320-row utility comparison is plaintext reused-data exploratory."
+}

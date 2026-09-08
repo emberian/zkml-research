@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "exhaustive_two_coordinate_identity_controls": 6561,
+  "tight_dimension32_bound_controls": true,
+  "zero_and_one_source_coordinate_controls": true,
+  "synthetic_plaintext_issuer_cli": true,
+  "benchmark_utility_reevaluations": 0,
+  "cryptographic_runs": 0
+}

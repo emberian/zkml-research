@@ -1,0 +1,14 @@
+[
+  "/usr/bin/time",
+  "-l",
+  "lake",
+  "env",
+  "bash",
+  "-c",
+  "LEAN_PATH=\"$1/build:$LEAN_PATH\" lean --root=\"$1\" --run \"$1/$2\" \"$3\" \"$4\"",
+  "emit",
+  "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_emitter_successor",
+  "EmitBfvQueryFast.lean",
+  "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_emitter_successor/results/fast001",
+  "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/results/case001/public_rows.json"
+]

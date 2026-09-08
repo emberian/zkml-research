@@ -1,0 +1,43 @@
+{
+  "actual_expander_or_cryptosystem_executions": 0,
+  "checked_toy_source_unchanged": true,
+  "claim_label": "EXECUTED",
+  "completed_utc": "2026-09-08 17:53:55 UTC",
+  "exhaustive_models": 1,
+  "files": {
+    "CHECKS.json": {
+      "bytes": 1679,
+      "sha256": "97f133dea86164c54b031a5572bf4ada06c00f2bb80b7a30fbeb199126bd6883"
+    },
+    "KERNEL.md": {
+      "bytes": 13096,
+      "sha256": "08af89d3facefae4d74553a56a683f9577fc0289481addc48572794e155be109"
+    },
+    "NEXT.md": {
+      "bytes": 610,
+      "sha256": "ea2b08f36eb5610f8c9d34a270d481cbf5aee985d872240f15ab63541768ce4f"
+    },
+    "RUN.log": {
+      "bytes": 691,
+      "sha256": "b9cf651822b6f422c6ef476ee9d2465f1ebd0121dccef8c6390a1780fda8fab2"
+    },
+    "STATUS.md": {
+      "bytes": 820,
+      "sha256": "561751eb7388439895fc3fd0ec377ac5b97ec86268a031c7cc6c8726bd478e31"
+    },
+    "check_kernel.py": {
+      "bytes": 5972,
+      "sha256": "34aa327a2c6d95f91ad4339495c22d0bbb6d101b0b12eb622af73061cbc7669a"
+    }
+  },
+  "frozen": true,
+  "frozen_expander_source": {
+    "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/expansion/public_expander.py",
+    "sha256": "ab175083b2a38e382776f07a52a0d8b84e8886085f40f083117de273f0d0aba4"
+  },
+  "private_artifact_reads": 0,
+  "proof_status": "DERIVED exact classical finite-kernel proof; EXECUTED one tiny exhaustive model; not Lean or QROM",
+  "scope": "Fresh classical programmable-oracle transcript kernel, exact cap/unused/high-bit treatment and work counts; parent owns full joint setup target distribution and registry chronology.",
+  "search_queries": 0,
+  "table_target_pairs": 36864
+}

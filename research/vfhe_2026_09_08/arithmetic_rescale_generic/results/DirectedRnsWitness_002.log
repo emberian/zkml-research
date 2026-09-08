@@ -1,0 +1,24 @@
+Compiler/DirectedRnsWitness.lean:68:17: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Inhabited (SideCache × SideCache)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/DirectedRnsWitness.lean:69:21: error(lean.invalidField): Invalid field notation: Type of
+  l
+is not known; cannot resolve field `constant`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `IsPreconnected.constant`
+  • `PreconnectedSpace.constant`
+  • `PLift.rec.constant`
+  • `ULift.rec.constant`
+  • `Lean.Lsp.CompletionItemKind.constant`
+  • `Lean.Lsp.SymbolKind.constant`
+  • `SideCache.constant`
+  • `Row.constant`
+Compiler/DirectedRnsWitness.lean:70:42: error(lean.invalidField): Invalid field notation: Type of
+  l
+is not known; cannot resolve field `coefficients`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `SideCache.coefficients`
+  • `Capacity.coefficients`

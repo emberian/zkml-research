@@ -1,0 +1,187 @@
+Compiler/DirectedRnsScaler.lean:109:106: error: Application type mismatch: The argument
+  cst (↑(p.sourceBase i) - 1)
+has type
+  Term (AirSig ℤ ?m.18)
+but is expected to have type
+  Row (groups L (?m.13 p i))
+in the application
+  sub (add (var (residue i)) (var (inputSlack i))) (cst (↑(p.sourceBase i) - 1))
+Compiler/DirectedRnsScaler.lean:110:78: error: Application type mismatch: The argument
+  cst p.dG
+has type
+  Term (AirSig ℕ ?m.19)
+but is expected to have type
+  Row (groups L (?m.15 p))
+in the application
+  add (scale 2 (linear p.thetaG)) (cst p.dG)
+Compiler/DirectedRnsScaler.lean:112:85: error: Application type mismatch: The argument
+  cst (2 * ↑p.dG - 1)
+has type
+  Term (AirSig ℤ ?m.22)
+but is expected to have type
+  Row (groups (?m.12 p) (?m.13 p))
+in the application
+  sub (add (var (extra 1)) (var (extra 2))) (cst (2 * ↑p.dG - 1))
+Compiler/DirectedRnsScaler.lean:113:78: error: Application type mismatch: The argument
+  cst p.dF
+has type
+  Term (AirSig ℕ ?m.19)
+but is expected to have type
+  Row (groups L (?m.15 p))
+in the application
+  add (scale 2 (linear p.thetaF)) (cst p.dF)
+Compiler/DirectedRnsScaler.lean:114:44: error: Application type mismatch: The argument
+  cst p.wOffset
+has type
+  Term (AirSig ℕ ?m.39)
+but is expected to have type
+  Row (groups L (?m.15 p))
+in the application
+  sub (var (extra 3)) (cst p.wOffset)
+Compiler/DirectedRnsScaler.lean:115:85: error: Application type mismatch: The argument
+  cst (2 * ↑p.dF - 1)
+has type
+  Term (AirSig ℤ ?m.22)
+but is expected to have type
+  Row (groups (?m.12 p) (?m.13 p))
+in the application
+  sub (add (var (extra 4)) (var (extra 5))) (cst (2 * ↑p.dF - 1))
+Compiler/DirectedRnsScaler.lean:117:83: error: Application type mismatch: The argument
+  cst p.wOffset
+has type
+  Term (AirSig ℕ ?m.31)
+but is expected to have type
+  Row (groups L (?m.13 p))
+in the application
+  sub (var (extra 3)) (cst p.wOffset)
+Compiler/DirectedRnsScaler.lean:118:39: error: Application type mismatch: The argument
+  cst p.uOffset
+has type
+  Term (AirSig ℕ ?m.45)
+but is expected to have type
+  Row (groups L (?m.13 p))
+in the application
+  sub (var (extra 8)) (cst p.uOffset)
+Compiler/DirectedRnsScaler.lean:119:85: error: Application type mismatch: The argument
+  cst (↑p.Q - 1)
+has type
+  Term (AirSig ℤ ?m.22)
+but is expected to have type
+  Row (groups (?m.12 p) (?m.13 p))
+in the application
+  sub (add (var (extra 6)) (var (extra 7))) (cst (↑p.Q - 1))
+Compiler/DirectedRnsScaler.lean:120:58: error: don't know how to synthesize implicit argument `n`
+  @sub (groups (?m.11 p i) K) (var (extra 6)) (add (scale (↑(p.targetBase i)) (var (target i 1))) (var (target i 0)))
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:121:3: error: don't know how to synthesize implicit argument `n`
+  @add (groups (?m.11 p i) K) (scale (↑(p.targetBase i)) (var (target i 1))) (var (target i 0))
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:121:52: error: don't know how to synthesize implicit argument `n`
+  @var (groups (?m.11 p i) K) (target i 0)
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:121:57: error: don't know how to synthesize implicit argument `L`
+  @target (?m.11 p i) K i 0
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:121:8: error: don't know how to synthesize implicit argument `n`
+  @scale (groups (?m.11 p i) K) (↑(p.targetBase i)) (var (target i 1))
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:121:32: error: don't know how to synthesize implicit argument `n`
+  @var (groups (?m.11 p i) K) (target i 1)
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:121:37: error: don't know how to synthesize implicit argument `L`
+  @target (?m.11 p i) K i 1
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:120:63: error: don't know how to synthesize implicit argument `n`
+  @var (groups (?m.11 p i) K) (extra 6)
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:120:68: error: don't know how to synthesize implicit argument `L`
+  @extra (?m.11 p i) K 6
+context:
+L K : ℕ
+p : Params L K
+i : Fin K
+⊢ ℕ
+Compiler/DirectedRnsScaler.lean:120:4: error(lean.inferDefTypeFailed): Failed to infer type of definition `targetRow`
+Compiler/DirectedRnsScaler.lean:123:46: error: Application type mismatch: The argument
+  cst (↑(p.targetBase i) - 1)
+has type
+  Term (AirSig ℤ ?m.22)
+but is expected to have type
+  Row (groups (?m.12 p i) K)
+in the application
+  sub (add (var (target i 0)) (var (target i 2))) (cst (↑(p.targetBase i) - 1))
+Compiler/DirectedRnsScaler.lean:125:25: error(lean.unknownIdentifier): Unknown identifier `inputRow`
+Compiler/DirectedRnsScaler.lean:125:41: error(lean.unknownIdentifier): Unknown identifier `gRow`
+Compiler/DirectedRnsScaler.lean:125:48: error(lean.unknownIdentifier): Unknown identifier `gBound`
+Compiler/DirectedRnsScaler.lean:125:57: error(lean.unknownIdentifier): Unknown identifier `fRow`
+Compiler/DirectedRnsScaler.lean:125:64: error(lean.unknownIdentifier): Unknown identifier `fBound`
+Compiler/DirectedRnsScaler.lean:125:73: error(lean.unknownIdentifier): Unknown identifier `yRow`
+Compiler/DirectedRnsScaler.lean:125:80: error(lean.unknownIdentifier): Unknown identifier `yBound`
+Compiler/DirectedRnsScaler.lean:126:39: error(lean.unknownIdentifier): Unknown identifier `targetRow`
+Compiler/DirectedRnsScaler.lean:126:53: error(lean.unknownIdentifier): Unknown identifier `targetBound`
+Compiler/DirectedRnsScaler.lean:127:106: error: Application type mismatch: The argument
+  x
+has type
+  Fin (groups L K) → ℕ
+but is expected to have type
+  Term (AirSig ?m.7 ?m.9)
+in the application
+  eval ?m.11 x
+Compiler/DirectedRnsScaler.lean:127:97: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field ℕ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/DirectedRnsScaler.lean:127:102: error: Application type mismatch: The argument
+  row
+has type
+  Row (groups L K)
+but is expected to have type
+  ?m.20 row → ℕ
+in the application
+  eval row
+Compiler/DirectedRnsScaler.lean:143:29: error: Function expected at
+  h
+but this term has type
+  Balanced p x
+
+Note: Expected a function because this term is being applied to the argument
+  (inputRow p i)
+Compiler/DirectedRnsScaler.lean:142:111: error: unsolved goals
+L K : ℕ
+p : Params L K
+hp : Valid p
+x : Fin (groups L K) → ℕ
+h : Balanced p x
+⊢ Accepts p (fun j => ↑(x (residue j))) (fun i => ↑(x (target i 0))) (readCertificate p x)

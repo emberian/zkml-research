@@ -1,0 +1,23 @@
+[
+  {
+    "op": "query",
+    "text": "Where can I buy a policy covering medical care on my trip overseas?"
+  },
+  {
+    "op": "teach",
+    "label": "travel_insurance",
+    "text": "I need travel insurance for an overseas holiday, including hospital treatment."
+  },
+  {
+    "op": "teach",
+    "label": "travel_insurance",
+    "text": "Does your travel policy cover medical emergencies while I am abroad?"
+  },
+  {
+    "op": "query",
+    "text": "Where can I buy a policy covering medical care on my trip overseas?"
+  },
+  {
+    "op": "status"
+  }
+]

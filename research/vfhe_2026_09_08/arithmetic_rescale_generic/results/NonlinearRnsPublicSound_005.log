@@ -1,0 +1,366 @@
+Compiler/NonlinearRnsPublicSound.lean:22:49: error: unsolved goals
+i : Fin 9
+d : Fin 23
+hi : ↑i < 9
+hd : ↑d < 23
+hdiv : (↑i * 23 + ↑d) / 23 = ↑i
+hmod : (↑i * 23 + ↑d) % 23 = ↑d
+⊢ (if
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                right_inv := ⋯ }
+              (⟨↑i, ⋯⟩, d)) <
+          39 * 23 then
+      if
+          ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨↑i, ⋯⟩, d)) /
+              23 <
+            9 then
+        if
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨↑i, ⋯⟩, d)) %
+                23 <
+              7 then
+          1 +
+              7 *
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨↑i, ⋯⟩, d)) /
+                  23) +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨↑i, ⋯⟩, d)) %
+              23
+        else 88
+      else
+        if
+            27 ≤
+                ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨↑i, ⋯⟩, d)) /
+                  23 ∧
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                          right_inv := ⋯ }
+                        (⟨↑i, ⋯⟩, d)) /
+                    23 <
+                  39 ∧
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨↑i, ⋯⟩, d)) /
+                        23 -
+                      27) %
+                    3 =
+                  0 then
+          if
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨↑i, ⋯⟩, d)) %
+                  23 <
+                6 then
+            64 +
+                6 *
+                  ((↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨↑i, ⋯⟩, d)) /
+                        23 -
+                      27) /
+                    3) +
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨↑i, ⋯⟩, d)) %
+                23
+          else 88
+        else
+          89 +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                  right_inv := ⋯ }
+                (⟨↑i, ⋯⟩, d))
+    else
+      89 +
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+              right_inv := ⋯ }
+            (⟨↑i, ⋯⟩, d))) =
+    if ↑d < 7 then 1 + 7 * ↑i + ↑d else 88
+i : Fin 9
+d : Fin 23
+hi : ↑i < 9
+hd : ↑d < 23
+hdiv : (↑i * 23 + ↑d) / 23 = ↑i
+hmod : (↑i * 23 + ↑d) % 23 = ↑d
+⊢ (if
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                right_inv := ⋯ }
+              (⟨↑i, ⋯⟩, d)) <
+          39 * 23 then
+      if
+          ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨↑i, ⋯⟩, d)) /
+              23 <
+            9 then
+        if
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨↑i, ⋯⟩, d)) %
+                23 <
+              7 then
+          1 +
+              7 *
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨↑i, ⋯⟩, d)) /
+                  23) +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨↑i, ⋯⟩, d)) %
+              23
+        else 88
+      else
+        if
+            27 ≤
+                ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨↑i, ⋯⟩, d)) /
+                  23 ∧
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                          right_inv := ⋯ }
+                        (⟨↑i, ⋯⟩, d)) /
+                    23 <
+                  39 ∧
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨↑i, ⋯⟩, d)) /
+                        23 -
+                      27) %
+                    3 =
+                  0 then
+          if
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨↑i, ⋯⟩, d)) %
+                  23 <
+                6 then
+            64 +
+                6 *
+                  ((↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨↑i, ⋯⟩, d)) /
+                        23 -
+                      27) /
+                    3) +
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨↑i, ⋯⟩, d)) %
+                23
+          else 88
+        else
+          89 +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                  right_inv := ⋯ }
+                (⟨↑i, ⋯⟩, d))
+    else
+      89 +
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+              right_inv := ⋯ }
+            (⟨↑i, ⋯⟩, d))) =
+    if ↑d < 7 then 1 + 7 * ↑i + ↑d else 88
+Compiler/NonlinearRnsPublicSound.lean:33:50: error: unsolved goals
+i : Fin 4
+d : Fin 23
+hi : ↑i < 4
+hd : ↑d < 23
+hdiv : ((27 + 3 * ↑i) * 23 + ↑d) / 23 = 27 + 3 * ↑i
+hmod : ((27 + 3 * ↑i) * 23 + ↑d) % 23 = ↑d
+⊢ (if
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                right_inv := ⋯ }
+              (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) <
+          39 * 23 then
+      if
+          ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+              23 <
+            9 then
+        if
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+                23 <
+              7 then
+          1 +
+              7 *
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                  23) +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+              23
+        else 88
+      else
+        if
+            27 ≤
+                ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                  23 ∧
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                          right_inv := ⋯ }
+                        (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                    23 <
+                  39 ∧
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                        23 -
+                      27) %
+                    3 =
+                  0 then
+          if
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+                  23 <
+                6 then
+            64 +
+                6 *
+                  ((↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                        23 -
+                      27) /
+                    3) +
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+                23
+          else 88
+        else
+          89 +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                  right_inv := ⋯ }
+                (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d))
+    else
+      89 +
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+              right_inv := ⋯ }
+            (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d))) =
+    if ↑d < 6 then 64 + 6 * ↑i + ↑d else 88
+i : Fin 4
+d : Fin 23
+hi : ↑i < 4
+hd : ↑d < 23
+hdiv : ((27 + 3 * ↑i) * 23 + ↑d) / 23 = 27 + 3 * ↑i
+hmod : ((27 + 3 * ↑i) * 23 + ↑d) % 23 = ↑d
+⊢ (if
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                right_inv := ⋯ }
+              (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) <
+          39 * 23 then
+      if
+          ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+              23 <
+            9 then
+        if
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+                23 <
+              7 then
+          1 +
+              7 *
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                  23) +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                    right_inv := ⋯ }
+                  (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+              23
+        else 88
+      else
+        if
+            27 ≤
+                ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                  23 ∧
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                          right_inv := ⋯ }
+                        (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                    23 <
+                  39 ∧
+                (↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                        23 -
+                      27) %
+                    3 =
+                  0 then
+          if
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                        right_inv := ⋯ }
+                      (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+                  23 <
+                6 then
+            64 +
+                6 *
+                  ((↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                              right_inv := ⋯ }
+                            (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) /
+                        23 -
+                      27) /
+                    3) +
+              ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                      right_inv := ⋯ }
+                    (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d)) %
+                23
+          else 88
+        else
+          89 +
+            ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+                  right_inv := ⋯ }
+                (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d))
+    else
+      89 +
+        ↑({ toFun := fun x => ⟨↑x.2 + 23 * ↑x.1, ⋯⟩, invFun := fun x => (x.divNat, x.modNat), left_inv := ⋯,
+              right_inv := ⋯ }
+            (⟨2 * 9 + 9 + 3 * ↑i + ↑0, ⋯⟩, d))) =
+    if ↑d < 6 then 64 + 6 * ↑i + ↑d else 88
+Compiler/NonlinearRnsPublicSound.lean:57:13: warning: This simp argument is unused:
+  hl
+
+Hint: Omit it from the simp argument list.
+  simp only [hl̵,̵hh̵, ̲if_true, ̲if_false, ̲hz, ̲ZMod.val_zero, ̲mul_zero, ̲Finset.sum_const_zero, ̲add_zero,
+  ̲ ̲ ̲ ̲ ̲Fin.val_castAdd]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsPublicSound.lean:57:19: warning: This simp argument is unused:
+  if_true
+
+Hint: Omit it from the simp argument list.
+  simp only [hl, ̲hh, ̲if_t̵r̵u̵e̵,̵i̵f_̵f̵alse, ̲hz, ̲ZMod.val_zero, ̲mul_zero, ̲Finset.sum_const_zero, ̲add_zero,
+  ̲ ̲ ̲ ̲ ̲Fin.val_castAdd]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsPublicSound.lean:72:13: warning: This simp argument is unused:
+  hl
+
+Hint: Omit it from the simp argument list.
+  simp only [hl̵,̵hh̵, ̲if_true, ̲if_false, ̲hz, ̲ZMod.val_zero, ̲mul_zero, ̲Finset.sum_const_zero, ̲add_zero,
+  ̲ ̲ ̲ ̲ ̲Fin.val_castAdd]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsPublicSound.lean:72:19: warning: This simp argument is unused:
+  if_true
+
+Hint: Omit it from the simp argument list.
+  simp only [hl, ̲hh, ̲if_t̵r̵u̵e̵,̵i̵f_̵f̵alse, ̲hz, ̲ZMod.val_zero, ̲mul_zero, ̲Finset.sum_const_zero, ̲add_zero,
+  ̲ ̲ ̲ ̲ ̲Fin.val_castAdd]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

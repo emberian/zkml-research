@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "role_command": "decode",
+  "pid": 62073,
+  "elapsed_seconds": 0.0013658329844474792,
+  "peak_rss_bytes_macos": 38174720,
+  "uid": 501,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/private/recipient_01/key.ring",
+      "kind": "key",
+      "private": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/window_2.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/private/recipient_01/window_output.json",
+      "kind": "designated_output",
+      "private": true,
+      "bytes": 55,
+      "mode": "0o600"
+    }
+  ],
+  "result": {
+    "recipient_coordinate": 1,
+    "private_rows_read": 1,
+    "expected_synthetic_lift_matched": true
+  },
+  "error": null
+}

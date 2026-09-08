@@ -1,0 +1,3 @@
+[OPEN] The exact policy is nonvacuous on admitted int8 features. Establishing an analogous pair inside the actual frozen encoder's natural-language image would be a separate constructive task and is not implied here. Do not turn this witness into an unsupported computational privacy or recovery-resistance claim.
+
+[OPEN] A future formal patch could encode the elementary common-schedule linearity theorem; no compiler/scaler theorem should be cited as if it already proves this semantic premise. The complete checked integer witness is sufficient for the current scoped handoff; no new ring run is needed.
