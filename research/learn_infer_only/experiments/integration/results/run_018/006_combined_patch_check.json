@@ -1,0 +1,14 @@
+{
+  "label": "combined_patch_check",
+  "command": [
+    "git",
+    "apply",
+    "--check",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integration/minidregg-combined-resident.patch"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 0.06001429198659025
+}

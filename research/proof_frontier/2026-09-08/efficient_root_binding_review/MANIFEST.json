@@ -1,0 +1,46 @@
+{
+  "scope": "Independent local source/math review; no Lean or cryptographic protocol runs.",
+  "author_audit_sha256": "98fb3d92058fee53698ff4af191f70b12ac9e243b3c09e822c774de4e4f40d44",
+  "files": [
+    {
+      "path": "INPUTS.json",
+      "bytes": 11321,
+      "sha256": "d27c7fb9c2ce3bc56c02704c99bcbe4ec8f2e4791c2d7c6258ac4ec83909de5e"
+    },
+    {
+      "path": "NEXT.md",
+      "bytes": 491,
+      "sha256": "a29d8b596607ea56e69fbb25adfbe01d229500501815937e2c72a7b58571d250"
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 12183,
+      "sha256": "96a6aadef5ee7597654f13bddacef3bf15dbb70dc6bb1bb9a318599f82c0a438"
+    },
+    {
+      "path": "RESULTS.json",
+      "bytes": 1096,
+      "sha256": "6e46a02cd2cb7edec735b8217fbaeb8499eb4ae6e4d708231877a8a3ee71ab46"
+    },
+    {
+      "path": "STATUS.md",
+      "bytes": 357,
+      "sha256": "d45465f2d6ccfda934b2d3d073605f24def4ff5a039a6cb42cb1c240ae181d85"
+    },
+    {
+      "path": "commands.json",
+      "bytes": 1164,
+      "sha256": "c03e94adb3a607e5c03b48c65cb68655bdcf4447ee4bf7e998d8b8dd786f3222"
+    },
+    {
+      "path": "controls.py",
+      "bytes": 6609,
+      "sha256": "fcb1d1d75c143e16b89c11c2243943d6c12acddb5451d9bb37b1b70adb87625c"
+    },
+    {
+      "path": "verify_inputs.py",
+      "bytes": 2373,
+      "sha256": "1de897c108d51a2ba4fd93eceadf8213c03aaffb8aad2d9115d0aed62acb346d"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "scope": "Independent frozen p3 index/arithmetic review, no new Lean or crypto runs.",
+  "author_manifest_sha256": "17b4f5a087248c521eb25e7ca8d44ee859f67f2a22dac7a54dfaca43602327f5",
+  "report_local_links_checked": 10,
+  "files": [
+    {
+      "path": "INPUTS.json",
+      "bytes": 19772,
+      "sha256": "f17d247314263e998ee86aba6affea1f2bf5f4a3f2c6f902b73a6987aee53fee"
+    },
+    {
+      "path": "NEXT.md",
+      "bytes": 460,
+      "sha256": "662baa37d8ec5e2dc612462dbce7d2583c0c964b1cc8e754fb20fe25174ac9af"
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 12004,
+      "sha256": "0e0182b77a8b7d3bc106185f6fba7f7e442390c1cfe4ace3e1def25f7cb88b54"
+    },
+    {
+      "path": "RESULTS.json",
+      "bytes": 884,
+      "sha256": "c5f666575f49e589bb2195051994a5b7dab0e703ed143a4a81504ce57643b6eb"
+    },
+    {
+      "path": "STATUS.md",
+      "bytes": 339,
+      "sha256": "5692f712e7516c21ebb480bbd6c07cb52f740208d542854fc7401a26d9bff4fa"
+    },
+    {
+      "path": "audit.py",
+      "bytes": 11639,
+      "sha256": "da4587fcb2d0e0f4ebadfdcf868819d3b5072eed13994364d54e4063cd80789d"
+    },
+    {
+      "path": "author_replay.json",
+      "bytes": 1750,
+      "sha256": "911e14997780ec900936586aec59502786647f2bfc9dd16548b964d38cf05f8a"
+    },
+    {
+      "path": "commands.json",
+      "bytes": 1987,
+      "sha256": "95cb4cf7d182bd7ffde1ac7a81de2e8fe9d0bb9a098b8e77714672e4ed938497"
+    }
+  ]
+}

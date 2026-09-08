@@ -1,0 +1,17 @@
+{
+  "driver.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/driver.py",
+    "original_sha256": "4273817b1262e97c2e9cb798d576068cf9fb4f16849325fde6dcfd62475b8714",
+    "scope": "Unfrozen editable successor wrapper; preserve original unchanged"
+  },
+  "private_oracle.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/private_oracle.py",
+    "original_sha256": "3c9ce9b0819817eb2a2f0ff5430a1f4eac5c4253b844c925587885b2914d605f",
+    "scope": "Unfrozen editable successor wrapper; preserve original unchanged"
+  },
+  "setup_join.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/setup_join.py",
+    "original_sha256": "e3dce88d56dec559b2987498bb29a00767ee3a5d8c0eca66b95234ee42387d97",
+    "scope": "Unfrozen editable successor wrapper; preserve original unchanged"
+  }
+}

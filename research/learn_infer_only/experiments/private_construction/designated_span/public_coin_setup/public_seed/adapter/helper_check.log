@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "scope": "positive public SHAKE/framing/truncation fixture and AST parsing only",
+  "shake256_documented_example_20_bytes": "44709d6fcb83d92a76dcb0b668c98e1b1d3dafe7",
+  "positive_toy_transcript": {
+    "suite": "SHAKE256-direct-bitwords-cap128-v1",
+    "seed_hex": "7265736964656e742d64657369676e617465642d7075626c69632d736565642d706f7369746976652d303031",
+    "tau": [
+      "01"
+    ],
+    "U": [
+      "02"
+    ],
+    "tapes": [
+      {
+        "role": "tau",
+        "coordinate": 0,
+        "word_bits": 2,
+        "raw_bytes_per_word": 1,
+        "discarded_low_bits": 6,
+        "accepted_counter": 1,
+        "raw_words_hex": [
+          "4f"
+        ]
+      },
+      {
+        "role": "U",
+        "coordinate": 0,
+        "word_bits": 3,
+        "raw_bytes_per_word": 1,
+        "discarded_low_bits": 5,
+        "accepted_counter": 2,
+        "raw_words_hex": [
+          "13",
+          "43"
+        ]
+      }
+    ]
+  },
+  "fixed_group_bits": {
+    "tau": 2047,
+    "U": 2048
+  },
+  "availability_upper_bound": "577/2^128 in ideal independent-bit model",
+  "parsed_sources": [
+    "derive.py",
+    "driver.py",
+    "helper_check.py",
+    "public_reference.py",
+    "seed_setup.py",
+    "source/public_setup/setup.py",
+    "source/public_setup/source/crypto/crypto.py",
+    "source/public_setup/source/crypto/group.py",
+    "source/public_setup/source/crypto/native_pow.py"
+  ]
+}

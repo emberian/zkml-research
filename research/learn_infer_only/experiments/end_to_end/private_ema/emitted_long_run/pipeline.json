@@ -1,0 +1,46 @@
+{
+  "claim": "EXECUTED",
+  "completed": true,
+  "stages": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/run_public.py"
+      ],
+      "ended_utc": "2026-09-08T08:09:56.380002+00:00",
+      "returncode": 0,
+      "stage": "run_public",
+      "started_utc": "2026-09-08T05:28:28.206807+00:00"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/verify_public.py"
+      ],
+      "ended_utc": "2026-09-08T08:09:57.124545+00:00",
+      "returncode": 0,
+      "stage": "verify_public",
+      "started_utc": "2026-09-08T08:09:56.381233+00:00"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/drain.py"
+      ],
+      "ended_utc": "2026-09-08T08:09:59.851597+00:00",
+      "returncode": 0,
+      "stage": "drain",
+      "started_utc": "2026-09-08T08:09:57.125149+00:00"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/seal.py"
+      ],
+      "ended_utc": "2026-09-08T08:10:00.189035+00:00",
+      "returncode": 0,
+      "stage": "seal",
+      "started_utc": "2026-09-08T08:09:59.852173+00:00"
+    }
+  ]
+}

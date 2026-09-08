@@ -40,7 +40,7 @@
     "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md"
   },
   "formal": {
-    "excerpt_sha256": "3761e650910b4bd0abc9243da829e647bb6c7d436836060725d7f79cffce8b1c",
+    "excerpt_sha256": "db7b1753b2f70b2be8e76b067d17d18493652707a1366aa9538a4e548f50e435",
     "lines": [
       1,
       5
@@ -182,6 +182,22 @@
       15
     ],
     "path": "research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md"
+  },
+  "tfhe_long": {
+    "excerpt_sha256": "93859669cc1fbcaf9073a58075e9a102a03d1b2f819e85ce28c3d03c85bb0536",
+    "lines": [
+      1,
+      19
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/REPORT.md"
+  },
+  "tfhe_long_scope": {
+    "excerpt_sha256": "9ed5e8f998750db3fe20705e4a98c62d79bd4f3c13aa38b3a91f396939755f93",
+    "lines": [
+      100,
+      109
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/REPORT.md"
   },
   "tfhe_scope": {
     "excerpt_sha256": "4e8407ca49e6fd183244d073d2d0c0b05a041cf744679375e767a48fbab411bc",

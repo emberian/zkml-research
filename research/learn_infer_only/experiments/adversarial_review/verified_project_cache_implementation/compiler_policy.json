@@ -1,0 +1,25 @@
+{
+  "compiler": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+  "external_roots": [
+    "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean",
+    "/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean",
+    "/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean",
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean"
+  ],
+  "forbidden_project_roots": [
+    "/Users/ember/dev/minidregg/.lake/build/lib/lean"
+  ],
+  "lean_options": [],
+  "lean_version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "schema": "explicit-lean-cli-policy-v1",
+  "semantic_environment": {},
+  "toolchain_root": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0"
+}

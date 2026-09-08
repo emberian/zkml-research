@@ -1,0 +1,3 @@
+[OPEN] Obtain final independent source review of the exact47-file preparation, especially launch.py group cleanup/deadline, public_close.py postshutdown checks and PUBLIC_SEAL/PUBLIC_GATE private boundary. The earlier snapshot review is not launch acceptance.
+
+[OPEN] Only after a new explicit root/user authorization with a full45-minute future window and an accepted exact-inventory reviewer gate may the sole normal33Learn/4Infer/1expiry launch occur. Do not launch today, modify frozen files, reuse a prior runtime or bypass launch.py. Preserve completed primitive/review packages. See HANDOFF.md for schemas, hashes and the future command.

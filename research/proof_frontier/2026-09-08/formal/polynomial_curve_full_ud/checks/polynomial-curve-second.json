@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialCurve.olean",
+    "Theory/PolynomialCurve.lean"
+  ],
+  "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+  "exit_code": 0,
+  "source_sha256": "94322da5f6be1c35aa244ed178bf39bdead9417d98f1cd2f48bba2111b99c68e",
+  "source_unchanged": true,
+  "elapsed_s": 7.088045120239258,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/polynomial-curve-second.log"
+}

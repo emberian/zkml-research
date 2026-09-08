@@ -1,0 +1,54 @@
+{
+  "schema": "public-seed-adapter-source-freeze-v1",
+  "source_sha256": {
+    "CONTRACT.md": "aa00324a8f2b5e718e364330f03b17df4ce2ff4bd0027b7f0c5e0eba4e0ba8a4",
+    "derive.py": "3f312d8b28aea6825888dbff6d14db1612116a4063d4506b1d6f6c5e9719cc2d",
+    "seed_setup.py": "e28200a54bde84c317cc8937f4ed630ff8a5f15e5c3fc3ff6ddf226aedb4c575",
+    "driver.py": "505f1f21f3fe75e99b476a3ff8542655dd37b904a50db0e7488641b84255084d",
+    "public_reference.py": "215c00e130d7b30b38a6cb366ed4308b479d46f033048788b967fac7dff041d7",
+    "helper_check.py": "d9c28e90d07ec5657372408099c89524dedcd6b7349b0c531793b038aa6a9bea",
+    "helper_check.log": "aaee1c0335ff73fb5acd9d5bac461a0cde4791116d62d35d875c853ee5f2d17b",
+    "source/public_setup/setup.py": "b148a7a86ab22385a7659f9f54c086e52d37f5a715b5415cda5785ee23ff9d2b",
+    "source/public_setup/source/crypto/crypto.py": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+    "source/public_setup/source/crypto/group.py": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+    "source/public_setup/source/crypto/native_pow.py": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+    "source/public_setup/source/crypto/rows.json": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0"
+  },
+  "frozen_crypto": {
+    "crypto.py": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+    "group.py": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+    "native_pow.py": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+    "rows.json": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0"
+  },
+  "copied_predecessors": {
+    "source/public_setup/setup.py": {
+      "original": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/setup.py",
+      "sha256": "b148a7a86ab22385a7659f9f54c086e52d37f5a715b5415cda5785ee23ff9d2b"
+    },
+    "source/public_setup/source/crypto/crypto.py": {
+      "original": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/crypto.py",
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0"
+    },
+    "source/public_setup/source/crypto/group.py": {
+      "original": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/group.py",
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac"
+    },
+    "source/public_setup/source/crypto/native_pow.py": {
+      "original": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/native_pow.py",
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7"
+    },
+    "source/public_setup/source/crypto/rows.json": {
+      "original": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/rows.json",
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0"
+    }
+  },
+  "reviewed_mathematics": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/PROPOSAL.md": "ec9af914cb349e0bc6881bd8a5b99fd493e43b106a869a44eb58edf758083ab3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_seed_setup/REPORT.md": "387c53f581c6adda25dc0a5da5ab91257000e59e1d016bd5e78dce3459e7b90d"
+  },
+  "native_dependency": {
+    "path": "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib",
+    "sha256": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c"
+  },
+  "prelaunch_gate": "PRELAUNCH_REVIEW.json; accepted exact source_pins hash, independently pinned report, root_notified true"
+}

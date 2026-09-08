@@ -1,0 +1,41 @@
+{
+  "scope": "Three single-module Lean iterations; no full build",
+  "attempts": [
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Theory/PolynomialMatrixKernel.lean"
+      ],
+      "exit_code": 0,
+      "log": "lean-01.log",
+      "stage": "generalized determinant and rank proof"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Theory/PolynomialMatrixKernel.lean"
+      ],
+      "exit_code": 0,
+      "log": "lean-02.log",
+      "stage": "parametric witness/teeth and observed10 new axiom outputs"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-polynomial-curve-kernel-20260908/.lake/build/lib/lean/Theory/PolynomialMatrixKernel.olean",
+        "Theory/PolynomialMatrixKernel.lean"
+      ],
+      "exit_code": 0,
+      "log": "lean-final.log",
+      "stage": "final26 exact guarded axiom checks and olean",
+      "source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91"
+    }
+  ]
+}

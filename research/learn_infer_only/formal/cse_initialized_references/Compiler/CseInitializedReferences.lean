@@ -1,0 +1,461 @@
+/-
+[DERIVED statement-first] Initialized references survive the existing CSE pass.
+Reuse flatten_covers, the previous CSE shape theorem, and the existing ForwardValid.
+No gate evaluator, CSE implementation or learner arithmetic is defined here.
+The storage-only prefix model writes arbitrary payloads; it models lookup presence,
+not Rust execution, ciphertext values or TFHE semantics.
+-/
+import Compiler.CseStructure
+
+namespace Minidregg.Compiler.CseInitializedReferences
+open Minidregg.Compiler
+open Minidregg.Compiler.PrivateAddressEmaSchedule
+open Minidregg.Compiler.EmittedScheduleExecution
+open Minidregg.Compiler.CseStructure
+
+set_option autoImplicit false
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+def CseInitializedPreservation : Prop :=
+  ∀ d : ConstraintDescriptor F2, ForwardValid d → ForwardValid (cse d)
+
+def EmittedInitialized : Prop :=
+  ∀ (m : Nat) (es : List (Expr m)), ForwardValid (shared es)
+
+def AllRefs (d : ConstraintDescriptor F2) : Prop :=
+  (∀ g ∈ d.gates, Ready (d.gates.map DGate.out ++ List.range d.nVars) g.a ∧
+    Ready (d.gates.map DGate.out ++ List.range d.nVars) g.b) ∧
+  ∀ z ∈ d.zeros, Ready (d.gates.map DGate.out ++ List.range d.nVars) z
+
+def KeptAvailable (base : List Nat) (s : CseState F2) : List Nat :=
+  s.kept.map DGate.out ++ base
+
+structure InitGood (base : List Nat) (lower : Nat) (available : List Nat)
+    (s : CseState F2) : Prop where
+  fresh : ∀ x, lower ≤ x → s.subst.getD x x = x
+  mapped : ∀ x ∈ available, Ready (KeptAvailable base s) (.wire (s.subst.getD x x))
+  sig_kept : ∀ op a b w, s.sigs[((op, a, b) : GateSig F2)]? = some w →
+    (⟨op, a, b, w⟩ : DGate F2) ∈ s.kept
+  kept_refs : ∀ g ∈ s.kept, Ready (KeptAvailable base s) g.a ∧ Ready (KeptAvailable base s) g.b
+
+theorem ready_mono (a b : List Nat) (w : DWire F2)
+    (hab : ∀ i ∈ a, i ∈ b) (hw : Ready a w) : Ready b w := by
+  cases w with
+  | cnst c => trivial
+  | wire i => exact hab i hw
+
+theorem ready_subst (base available : List Nat) (s : CseState F2)
+    (hmap : ∀ x ∈ available, Ready (KeptAvailable base s) (.wire (s.subst.getD x x)))
+    (w : DWire F2) (hw : Ready available w) : Ready (KeptAvailable base s) (w.subst s.subst) := by
+  cases w with
+  | cnst c => trivial
+  | wire i => exact hmap i hw
+
+theorem ready_head (available : List Nat) (g : DGate F2) (gs : List (DGate F2))
+    (w : DWire F2) (hw : w.bounded g.out)
+    (hs : ∀ k ∈ gs, g.out < k.out)
+    (hr : Ready ((g :: gs).map DGate.out ++ available) w) : Ready available w := by
+  cases w with
+  | cnst c => trivial
+  | wire i =>
+    rcases List.mem_append.mp hr with hm | hm
+    · obtain ⟨k, hk, he⟩ := List.mem_map.mp hm
+      rcases List.mem_cons.mp hk with rfl | hk
+      · change i < k.out at hw
+        omega
+      · have hgt := hs k hk
+        change i < g.out at hw
+        omega
+    · exact hm
+
+theorem ordered_refs_forward (bound lower : Nat) (available : List Nat) (gs : List (DGate F2))
+    (hshape : ∀ g ∈ gs, GateShape lower bound g)
+    (hsort : gs.Pairwise (fun a b => a.out < b.out))
+    (hrefs : ∀ g ∈ gs, Ready (gs.map DGate.out ++ available) g.a ∧
+      Ready (gs.map DGate.out ++ available) g.b) : ForwardGates bound lower available gs := by
+  induction gs generalizing lower available with
+  | nil => trivial
+  | cons g gs ih =>
+    obtain ⟨hlo, hhi, ha, hb⟩ := hshape g (List.mem_cons_self ..)
+    obtain ⟨hbefore, htailSort⟩ := List.pairwise_cons.mp hsort
+    obtain ⟨hra, hrb⟩ := hrefs g (List.mem_cons_self ..)
+    refine ⟨hlo, hhi, ready_head available g gs g.a ha hbefore hra,
+      ready_head available g gs g.b hb hbefore hrb, ?_⟩
+    have hshape' : ∀ k ∈ gs, GateShape (g.out + 1) bound k := by
+      intro k hk
+      obtain ⟨_, hkb, hka, hkc⟩ := hshape k (List.mem_cons_of_mem _ hk)
+      exact ⟨by have := hbefore k hk; omega, hkb, hka, hkc⟩
+    have hrefs' : ∀ k ∈ gs, Ready (gs.map DGate.out ++ g.out :: available) k.a ∧
+        Ready (gs.map DGate.out ++ g.out :: available) k.b := by
+      intro k hk
+      obtain ⟨hka, hkb⟩ := hrefs k (List.mem_cons_of_mem _ hk)
+      have hmem : ∀ i ∈ (g :: gs).map DGate.out ++ available,
+          i ∈ gs.map DGate.out ++ g.out :: available := by
+        intro i hi
+        simpa only [List.map_cons, List.mem_append, List.mem_cons, or_assoc, or_comm, or_left_comm] using hi
+      exact ⟨ready_mono _ _ _ hmem hka, ready_mono _ _ _ hmem hkb⟩
+    exact ih (g.out + 1) (g.out :: available) hshape' htailSort hrefs'
+
+theorem shape_refs_valid (d : ConstraintDescriptor F2) (hs : d.SSA) (hw : d.WellFormed)
+    (hr : AllRefs d) : ForwardValid d := by
+  refine ⟨hw.public_le, hw.vars_le, ?_, hr.2⟩
+  apply ordered_refs_forward d.nWires d.nVars (List.range d.nVars) d.gates _ hs.2 hr.1
+  intro g hg
+  exact ⟨(hw.gates_in g hg).2.2.1, (hw.gates_in g hg).2.2.2, (hs.1 g hg).1, (hs.1 g hg).2⟩
+
+theorem flattenSystem_covers (m : Nat) (es : List (Expr m)) (start : Nat) :
+    ∀ i, start ≤ i → i < (flattenSystem es start).next →
+      ∃ g ∈ (flattenSystem es start).gates, g.out = i := by
+  induction es generalizing start with
+  | nil => intro i hlo hhi; change i < start at hhi; omega
+  | cons e es ih =>
+    intro i hlo hhi
+    by_cases he : i < (flatten e start).next
+    · obtain ⟨g, hg, hgo⟩ := flatten_covers e start i hlo he
+      exact ⟨g, List.mem_append_left _ hg, hgo⟩
+    · obtain ⟨g, hg, hgo⟩ := ih (flatten e start).next i (by omega) hhi
+      exact ⟨g, List.mem_append_right _ hg, hgo⟩
+
+theorem raw_covers (m : Nat) (es : List (Expr m)) (i : Nat)
+    (hlo : m ≤ i) (hhi : i < (raw es).nWires) :
+    ∃ g ∈ (raw es).gates, g.out = i := by
+  have hb : i < m + (flattenSystem es 0).next := hhi
+  obtain ⟨g, hg, hgo⟩ := flattenSystem_covers m es 0 (i - m) (Nat.zero_le _) (by omega)
+  refine ⟨emitGate Fin.val m g, List.mem_map.mpr ⟨g, hg, rfl⟩, ?_⟩
+  change m + g.out = i
+  omega
+
+theorem raw_bounded_ready (m : Nat) (es : List (Expr m)) (w : DWire F2)
+    (hw : w.bounded (raw es).nWires) : Ready ((raw es).gates.map DGate.out ++ List.range m) w := by
+  cases w with
+  | cnst c => trivial
+  | wire i =>
+    apply List.mem_append.mpr
+    by_cases hi : i < m
+    · exact Or.inr (List.mem_range.mpr hi)
+    · obtain ⟨g, hg, hgo⟩ := raw_covers m es i (by omega) hw
+      exact Or.inl (List.mem_map.mpr ⟨g, hg, hgo⟩)
+
+theorem raw_forward_valid (m : Nat) (es : List (Expr m)) : ForwardValid (raw es) := by
+  obtain ⟨hs, hw⟩ := raw_premises_inhabited m es
+  apply shape_refs_valid (raw es) hs hw
+  constructor
+  · intro g hg
+    exact ⟨raw_bounded_ready m es g.a (hw.gates_in g hg).1,
+      raw_bounded_ready m es g.b (hw.gates_in g hg).2.1⟩
+  · intro z hz
+    exact raw_bounded_ready m es z (hw.zeros_in z hz)
+
+theorem getD_insert_ne (σ : Std.HashMap Nat Nat) (key value x : Nat) (hne : key ≠ x) :
+    (σ.insert key value).getD x x = σ.getD x x := by
+  rw [Std.HashMap.getD_insert, if_neg (by simpa using hne)]
+
+theorem cseGo_initialized (base : List Nat) (bound lower : Nat) (available : List Nat)
+    (gs : List (DGate F2)) : ∀ s : CseState F2,
+      (∀ x ∈ available, x < lower) → ForwardGates bound lower available gs →
+      InitGood base lower available s →
+      (∀ g ∈ (cseGo gs s).kept,
+        Ready (KeptAvailable base (cseGo gs s)) g.a ∧ Ready (KeptAvailable base (cseGo gs s)) g.b) ∧
+      (∀ x ∈ gs.map DGate.out ++ available,
+        Ready (KeptAvailable base (cseGo gs s)) (.wire ((cseGo gs s).subst.getD x x))) := by
+  induction gs generalizing lower available with
+  | nil =>
+    intro s _ _ hs
+    exact ⟨hs.kept_refs, by simpa using hs.mapped⟩
+  | cons g gs ih =>
+    intro s hav hg hs
+    obtain ⟨hlo, _, hga, hgb, htail⟩ := hg
+    have hav' : ∀ x ∈ g.out :: available, x < g.out + 1 := by
+      intro x hx
+      rcases List.mem_cons.mp hx with rfl | hx
+      · omega
+      · have := hav x hx; omega
+    have htransfer : ∀ x ∈ (g :: gs).map DGate.out ++ available,
+        x ∈ gs.map DGate.out ++ g.out :: available := by
+      intro x hx
+      simpa only [List.map_cons, List.mem_append, List.mem_cons, or_assoc, or_comm, or_left_comm] using hx
+    cases hhit : s.sigs[((g.op, g.a.subst s.subst, g.b.subst s.subst) : GateSig F2)]? with
+    | some w =>
+      rw [cseGo_cons, hhit]
+      let s' : CseState F2 := ⟨s.subst.insert g.out w, s.sigs, s.kept⟩
+      have hs' : InitGood base (g.out + 1) (g.out :: available) s' := by
+        refine ⟨?_, ?_, hs.sig_kept, hs.kept_refs⟩
+        · intro x hx
+          change (s.subst.insert g.out w).getD x x = x
+          rw [getD_insert_ne s.subst g.out w x (by omega), hs.fresh x (by omega)]
+        · intro x hx
+          rcases List.mem_cons.mp hx with rfl | hx
+          · change Ready (KeptAvailable base s) (.wire ((s.subst.insert g.out w).getD g.out g.out))
+            rw [Std.HashMap.getD_insert, if_pos (by simp)]
+            exact List.mem_append_left _ (List.mem_map.mpr
+              ⟨_, hs.sig_kept _ _ _ _ hhit, rfl⟩)
+          · have hxl := hav x hx
+            change Ready (KeptAvailable base s) (.wire ((s.subst.insert g.out w).getD x x))
+            rw [getD_insert_ne s.subst g.out w x (by omega)]
+            exact hs.mapped x hx
+      obtain ⟨hkept, hmap⟩ := ih (g.out + 1) (g.out :: available) s' hav' htail hs'
+      exact ⟨hkept, fun x hx => hmap x (htransfer x hx)⟩
+    | none =>
+      rw [cseGo_cons, hhit]
+      let k : DGate F2 := ⟨g.op, g.a.subst s.subst, g.b.subst s.subst, g.out⟩
+      let s' : CseState F2 := ⟨s.subst, s.sigs.insert (k.op, k.a, k.b) k.out, k :: s.kept⟩
+      have hinc : ∀ x ∈ KeptAvailable base s, x ∈ KeptAvailable base s' := by
+        intro x hx
+        exact List.mem_cons_of_mem _ hx
+      have hs' : InitGood base (g.out + 1) (g.out :: available) s' := by
+        refine ⟨fun x hx => hs.fresh x (by omega), ?_, insert_signature_kept s hs.sig_kept k, ?_⟩
+        · intro x hx
+          rcases List.mem_cons.mp hx with rfl | hx
+          · change Ready (KeptAvailable base s') (.wire (s.subst.getD g.out g.out))
+            rw [hs.fresh g.out hlo]
+            exact List.mem_cons_self ..
+          · exact ready_mono _ _ _ hinc (hs.mapped x hx)
+        · intro j hj
+          rcases List.mem_cons.mp hj with rfl | hj
+          · exact ⟨ready_mono _ _ _ hinc (ready_subst base available s hs.mapped g.a hga),
+              ready_mono _ _ _ hinc (ready_subst base available s hs.mapped g.b hgb)⟩
+          · exact ⟨ready_mono _ _ _ hinc (hs.kept_refs j hj).1,
+              ready_mono _ _ _ hinc (hs.kept_refs j hj).2⟩
+      obtain ⟨hkept, hmap⟩ := ih (g.out + 1) (g.out :: available) s' hav' htail hs'
+      exact ⟨hkept, fun x hx => hmap x (htransfer x hx)⟩
+
+theorem empty_initialized (base : List Nat) (lower : Nat) :
+    InitGood base lower base ⟨∅, ∅, []⟩ := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro x _
+    exact Std.HashMap.getD_empty
+  · intro x hx
+    simpa only [KeptAvailable, List.map_nil, List.nil_append, Std.HashMap.getD_empty] using hx
+  · intro op a b w h
+    simp only [Std.HashMap.getElem?_empty] at h
+    contradiction
+  · intro g hg
+    contradiction
+
+theorem cse_initialized_preservation : CseInitializedPreservation := by
+  intro d hd
+  obtain ⟨hs, hw⟩ := valid_implies_shape d hd
+  obtain ⟨hcs, hcw⟩ := cse_structure_preservation d hs hw
+  obtain ⟨hk, hm⟩ := cseGo_initialized (List.range d.nVars) d.nWires d.nVars
+    (List.range d.nVars) d.gates ⟨∅, ∅, []⟩ (fun x hx => List.mem_range.mp hx) hd.2.2.1
+    (empty_initialized (List.range d.nVars) d.nVars)
+  let s := cseGo d.gates (⟨∅, ∅, []⟩ : CseState F2)
+  have hmem : ∀ x ∈ KeptAvailable (List.range d.nVars) s,
+      x ∈ (cse d).gates.map DGate.out ++ List.range (cse d).nVars := by
+    intro x hx
+    simpa only [KeptAvailable, cse_gates, cse_nVars, List.map_reverse, List.mem_append,
+      List.mem_reverse] using hx
+  apply shape_refs_valid (cse d) hcs hcw
+  constructor
+  · intro g hg
+    have hg' : g ∈ s.kept := List.mem_reverse.mp hg
+    exact ⟨ready_mono _ _ _ hmem (hk g hg').1, ready_mono _ _ _ hmem (hk g hg').2⟩
+  · intro z hz
+    obtain ⟨w, hw, rfl⟩ := List.mem_map.mp hz
+    apply ready_mono _ _ _ hmem
+    exact ready_subst (List.range d.nVars) (d.gates.map DGate.out ++ List.range d.nVars)
+      s hm w (hd.2.2.2 w hw)
+
+theorem emitted_initialized : EmittedInitialized := by
+  intro m es
+  exact cse_initialized_preservation (raw es) (raw_forward_valid m es)
+
+theorem learn_valid_kernel : validCheck learnSchedule = true :=
+  (validCheck_iff learnSchedule).mpr (emitted_initialized 42 learnTerms)
+
+theorem infer_valid_kernel : validCheck inferSchedule = true :=
+  (validCheck_iff inferSchedule).mpr (emitted_initialized 34 inferTerms)
+
+/- Storage-only model. The write payload is arbitrary; no gate operation is evaluated. -/
+def inputStore {α : Type} {n : Nat} (inputs : Fin n → α) : Nat → Option α :=
+  fun i => if hi : i < n then some (inputs ⟨i, hi⟩) else none
+
+def prefixStore {α : Type} {n : Nat} (inputs : Fin n → α) (payload : DGate F2 → α)
+    (doneGates : List (DGate F2)) : Nat → Option α :=
+  doneGates.foldl (fun store g => Function.update store g.out (some (payload g))) (inputStore inputs)
+
+def readOption {α : Type} (store : Nat → Option α) (constant : F2 → α) : DWire F2 → Option α
+  | .cnst c => some (constant c)
+  | .wire i => store i
+
+def StoresAvailable {α : Type} (available : List Nat) (store : Nat → Option α) : Prop :=
+  ∀ i ∈ available, ∃ value, store i = some value
+
+def LookupSuccess (d : ConstraintDescriptor F2) : Prop :=
+  ∀ (α : Type) (inputs : Fin d.nVars → α) (payload : DGate F2 → α) (constant : F2 → α),
+    (∀ (doneGates suffix : List (DGate F2)) (g : DGate F2), d.gates = doneGates ++ g :: suffix →
+      ∃ a b, readOption (prefixStore inputs payload doneGates) constant g.a = some a ∧
+        readOption (prefixStore inputs payload doneGates) constant g.b = some b) ∧
+    (∀ z ∈ d.zeros, ∃ value,
+      readOption (prefixStore inputs payload d.gates) constant z = some value)
+
+theorem input_store_available {α : Type} (n : Nat) (inputs : Fin n → α) :
+    StoresAvailable (List.range n) (inputStore inputs) := by
+  intro i hi
+  have hib := List.mem_range.mp hi
+  exact ⟨inputs ⟨i, hib⟩, dif_pos hib⟩
+
+theorem update_store_available {α : Type} (available : List Nat) (store : Nat → Option α)
+    (out : Nat) (value : α) (hs : StoresAvailable available store) :
+    StoresAvailable (out :: available) (Function.update store out (some value)) := by
+  intro i hi
+  by_cases he : i = out
+  · subst i
+    exact ⟨value, by simp⟩
+  · have him : i ∈ available := (List.mem_cons.mp hi).resolve_left he
+    obtain ⟨v, hv⟩ := hs i him
+    exact ⟨v, by simpa [Function.update, he] using hv⟩
+
+theorem fold_store_available {α : Type} (gs : List (DGate F2)) (payload : DGate F2 → α)
+    (available : List Nat) (store : Nat → Option α) (hs : StoresAvailable available store) :
+    StoresAvailable (gs.map DGate.out ++ available)
+      (gs.foldl (fun current g => Function.update current g.out (some (payload g))) store) := by
+  induction gs generalizing available store with
+  | nil => simpa using hs
+  | cons g gs ih =>
+    have ht := ih (g.out :: available) (Function.update store g.out (some (payload g)))
+      (update_store_available available store g.out (payload g) hs)
+    intro i hi
+    apply ht i
+    simpa only [List.map_cons, List.mem_append, List.mem_cons, or_assoc, or_comm, or_left_comm] using hi
+
+theorem prefix_store_available {α : Type} (n : Nat) (inputs : Fin n → α)
+    (payload : DGate F2 → α) (doneGates : List (DGate F2)) :
+    StoresAvailable (doneGates.map DGate.out ++ List.range n) (prefixStore inputs payload doneGates) :=
+  fold_store_available doneGates payload (List.range n) (inputStore inputs) (input_store_available n inputs)
+
+theorem ready_lookup_some {α : Type} (available : List Nat) (store : Nat → Option α)
+    (constant : F2 → α) (w : DWire F2) (hs : StoresAvailable available store)
+    (hw : Ready available w) : ∃ value, readOption store constant w = some value := by
+  cases w with
+  | cnst c => exact ⟨constant c, rfl⟩
+  | wire i => exact hs i hw
+
+theorem forward_prefix_refs (bound lower : Nat) (available : List Nat)
+    (doneGates suffix : List (DGate F2)) (g : DGate F2)
+    (h : ForwardGates bound lower available (doneGates ++ g :: suffix)) :
+    Ready (doneGates.map DGate.out ++ available) g.a ∧ Ready (doneGates.map DGate.out ++ available) g.b := by
+  induction doneGates generalizing lower available with
+  | nil => exact ⟨h.2.2.1, h.2.2.2.1⟩
+  | cons k doneGates ih =>
+    have hr := ih (k.out + 1) (k.out :: available) h.2.2.2.2
+    have hm : ∀ i ∈ doneGates.map DGate.out ++ k.out :: available,
+        i ∈ (k :: doneGates).map DGate.out ++ available := by
+      intro i hi
+      simpa only [List.map_cons, List.mem_append, List.mem_cons, or_assoc, or_comm, or_left_comm] using hi
+    exact ⟨ready_mono _ _ _ hm hr.1, ready_mono _ _ _ hm hr.2⟩
+
+theorem valid_lookup_success (d : ConstraintDescriptor F2) (hd : ForwardValid d) : LookupSuccess d := by
+  intro α inputs payload constant
+  constructor
+  · intro doneGates suffix g he
+    have hr := forward_prefix_refs d.nWires d.nVars (List.range d.nVars) doneGates suffix g
+      (by simpa only [← he] using hd.2.2.1)
+    obtain ⟨a, ha⟩ := ready_lookup_some _ _ constant g.a
+      (prefix_store_available d.nVars inputs payload doneGates) hr.1
+    obtain ⟨b, hb⟩ := ready_lookup_some _ _ constant g.b
+      (prefix_store_available d.nVars inputs payload doneGates) hr.2
+    exact ⟨a, b, ha, hb⟩
+  · intro z hz
+    exact ready_lookup_some _ _ constant z
+      (prefix_store_available d.nVars inputs payload d.gates) (hd.2.2.2 z hz)
+
+theorem learn_lookups_succeed : LookupSuccess learnSchedule :=
+  valid_lookup_success learnSchedule (emitted_initialized 42 learnTerms)
+
+theorem infer_lookups_succeed : LookupSuccess inferSchedule :=
+  valid_lookup_success inferSchedule (emitted_initialized 34 inferTerms)
+
+def holeDescriptor : ConstraintDescriptor F2 :=
+  ⟨0, 0, 2, [⟨.add, .wire 0, .cnst 0, 1⟩], [.wire 1]⟩
+
+/-- This inhabitant has SSA and allocation bounds but reads an unproduced auxiliary hole. -/
+theorem hole_has_shape : holeDescriptor.SSA ∧ holeDescriptor.WellFormed := by
+  constructor
+  · simp [holeDescriptor, ConstraintDescriptor.SSA, DWire.bounded]
+  · refine ⟨by decide, by decide, ?_, ?_⟩
+    · intro g hg
+      simp only [holeDescriptor, List.mem_singleton] at hg
+      subst g
+      simp [holeDescriptor, DWire.bounded]
+    · intro z hz
+      simp only [holeDescriptor, List.mem_singleton] at hz
+      subst z
+      simp [holeDescriptor, DWire.bounded]
+
+theorem hole_not_initialized : ¬ ForwardValid holeDescriptor := by
+  simp [ForwardValid, ForwardGates, Ready, holeDescriptor]
+
+theorem hole_lookup_fails :
+    readOption (prefixStore (fun i : Fin 0 => i.elim0) (fun _ : DGate F2 => false) [])
+      (fun _ => false) (.wire 0) = none := by
+  simp [readOption, prefixStore, inputStore]
+
+theorem hole_lookup_success_refuted : ¬ LookupSuccess holeDescriptor := by
+  intro h
+  obtain ⟨a, b, ha, _⟩ := (h Bool (fun i : Fin 0 => i.elim0)
+    (fun _ => false) (fun _ => false)).1 [] [] ⟨.add, .wire 0, .cnst 0, 1⟩ rfl
+  have hbad : (none : Option Bool) = some a := hole_lookup_fails.symm.trans ha
+  cases hbad
+
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.ready_mono' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms ready_mono
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.ready_subst' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ready_subst
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.ready_head' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ready_head
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.ordered_refs_forward' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ordered_refs_forward
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.shape_refs_valid' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms shape_refs_valid
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.flattenSystem_covers' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms flattenSystem_covers
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.raw_covers' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms raw_covers
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.raw_bounded_ready' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms raw_bounded_ready
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.raw_forward_valid' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms raw_forward_valid
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.getD_insert_ne' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms getD_insert_ne
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.cseGo_initialized' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms cseGo_initialized
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.empty_initialized' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms empty_initialized
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.cse_initialized_preservation' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms cse_initialized_preservation
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.emitted_initialized' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms emitted_initialized
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.learn_valid_kernel' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms learn_valid_kernel
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.infer_valid_kernel' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms infer_valid_kernel
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.input_store_available' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms input_store_available
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.update_store_available' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms update_store_available
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.fold_store_available' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms fold_store_available
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.prefix_store_available' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms prefix_store_available
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.ready_lookup_some' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms ready_lookup_some
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.forward_prefix_refs' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms forward_prefix_refs
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.valid_lookup_success' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms valid_lookup_success
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.learn_lookups_succeed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms learn_lookups_succeed
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.infer_lookups_succeed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms infer_lookups_succeed
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.hole_has_shape' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms hole_has_shape
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.hole_not_initialized' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms hole_not_initialized
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.hole_lookup_fails' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms hole_lookup_fails
+/-- info: 'Minidregg.Compiler.CseInitializedReferences.hole_lookup_success_refuted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms hole_lookup_success_refuted
+
+end Minidregg.Compiler.CseInitializedReferences

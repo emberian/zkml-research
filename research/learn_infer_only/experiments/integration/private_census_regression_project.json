@@ -1,0 +1,35 @@
+{
+  "scope": "Lexical census regression; exact Lean guards remain independently compiled.",
+  "source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean",
+  "source_sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+  "checker_sha256": "44fdab8adf39806641e77cf9eca44feadd935082dcb4c1a0ac3d2fbc1d1d09ef",
+  "positive_pins": 6,
+  "private_pins": 3,
+  "negative_controls": [
+    {
+      "label": "wrong module identity",
+      "refused": true,
+      "reason": "Axiom pin has no unique matching declaration: _private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem"
+    },
+    {
+      "label": "public declaration with private print",
+      "refused": true,
+      "reason": "Axiom pin has no unique matching declaration: _private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem"
+    },
+    {
+      "label": "private declaration with public print",
+      "refused": true,
+      "reason": "Axiom pin has no unique matching declaration: Minidregg.Selvage.FullUDTeeth.affine_mem"
+    },
+    {
+      "label": "unrelated declaration name",
+      "refused": true,
+      "reason": "Axiom pin has no unique matching declaration: _private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.unrelated"
+    },
+    {
+      "label": "missing private guard",
+      "refused": true,
+      "reason": "Axiom output comment without adjacent exact guard"
+    }
+  ]
+}

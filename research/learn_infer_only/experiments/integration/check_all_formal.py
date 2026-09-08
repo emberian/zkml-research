@@ -327,7 +327,8 @@ class Run:
         print(f'{self.name}: {self.report["status"]}; report {self.results / "report.json"}', flush=True)
 
 
-def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project: bool = False):
+def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project: bool = False,
+              cache_manifest: Path | None = None, cache_sha256: str | None = None):
     (run.results / manifest_path.name).write_bytes(manifest_path.read_bytes())
     manifest = json.loads(manifest_path.read_text())
     run.report['manifest'] = manifest
@@ -349,6 +350,15 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project:
     patch_records = []
     proposed_imports = {u: [] for u in UMBRELLAS}
     inputs = [Path(__file__).resolve(), manifest_path, env_record]
+    cache_api = None
+    if cache_manifest is not None:
+        if rebuild_project or with_checks or not cache_sha256 or sha(cache_manifest) != cache_sha256:
+            raise ValueError('Cache v1 requires its exact manifest hash and excludes rebuild/check modes')
+        import verified_project_cache as cache_api
+        helper = Path(cache_api.__file__).resolve()
+        inputs.extend([helper, cache_manifest])
+        shutil.copy2(helper, run.results / helper.name)
+        save(run.results / 'cache_parent.json', dict(path=str(cache_manifest), sha256=cache_sha256))
     run.inputs = run.snapshot(inputs)
     for lane in manifest['lanes']:
         patch_path = RESIDENT / lane['patch']
@@ -494,7 +504,7 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project:
 
     all_compile = {name: m['imports'] for name, m in modules.items()}
     all_compile.update({u: imports(text) for u, text in staged_umbrellas.items()})
-    if rebuild_project:
+    if rebuild_project or cache_manifest is not None:
         # Rebuild the current project source closure, including preexisting dirty
         # sources. External package/toolchain artifacts remain read-only caches.
         project_imports = {rel[:-5].replace('/', '.'): imports((source_root / rel).read_text())
@@ -513,6 +523,8 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project:
         all_compile = {name: project_imports[name] for name in sorted(closure)}
     run.report['rebuild_project_source_closure'] = rebuild_project
     run.report['project_modules_compiled'] = len(all_compile)
+    run.report['project_source_closure_modules'] = len(all_compile)
+    run.report['verified_project_cache'] = cache_manifest is not None
 
     # Mirror all companion artifact directories with real local directories and
     # file symlinks. A namespace in the first LEAN_PATH root shadows later roots;
@@ -523,7 +535,7 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project:
     skip_modules = set(modules) | set(UMBRELLAS)
     artifact_records = []
     for folder, dirs, files in os.walk(artifacts):
-        if rebuild_project:
+        if rebuild_project or cache_manifest is not None:
             # No original project object may be inherited into this mode.
             break
         relfolder = Path(folder).relative_to(artifacts)
@@ -542,7 +554,7 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project:
     prior = json.loads(env_record.read_text())
     paths = next(c['stdout'].strip() for c in prior['checks'] if c['command'] == ['lake', 'env', 'printenv', 'LEAN_PATH'])
     dependency_paths = paths.split(':')
-    if rebuild_project:
+    if rebuild_project or cache_manifest is not None:
         dependency_paths = [p for p in dependency_paths if Path(p).resolve() != artifacts.resolve()]
         if any(not Path(p).is_absolute() for p in dependency_paths):
             raise ValueError('Project-closure rebuild requires absolute external dependency paths')
@@ -553,6 +565,33 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project:
                                                 reused_dependency_paths=True)
     order = topo(all_compile)
     run.report['full_compile_order'] = order
+    cache_plan = None
+    reused = set()
+    if cache_api is not None:
+        policy = json.loads(cache_manifest.read_text())['cohort']['policy']
+        if policy['compiler'] != LEAN or policy['external_roots'] != dependency_paths:
+            raise ValueError('Cache compiler or external-root policy differs from this invocation')
+        cache_plan = cache_api.plan_admission(
+            manifest_path=cache_manifest, expected_sha256=cache_sha256,
+            source_root=source_root, selected_modules=list(modules),
+            overlay_root=overlay, compiler_policy=policy)
+        if cache_plan['full_compile_order'] != order or cache_plan['lean_path'] != env['LEAN_PATH']:
+            raise ValueError('Cache source closure/order/resolver differs from integration')
+        save(run.results / 'cache_admission.json', cache_plan)
+        for item in cache_plan['ordered_copies']:
+            target = Path(item['destination'])
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open('xb') as out, Path(item['source']).open('rb') as inp:
+                shutil.copyfileobj(inp, out)
+            reused.add(item['module'])
+        save(run.results / 'cache_staged_verification.json', cache_api.verify_staged_copies(cache_plan))
+        rebuild_names = {item['module'] for item in cache_plan['ordered_rebuilds']}
+        if reused & rebuild_names or reused | rebuild_names != set(order) or not set(UMBRELLAS) <= rebuild_names:
+            raise ValueError('Cache partition or mandatory umbrella rebuild mismatch')
+        run.report['project_modules_compiled'] = len(rebuild_names)
+        run.report['project_modules_reused'] = len(reused)
+        run.report['cache_parent_sha256'] = cache_sha256
+        run.report['cache_scope'] = 'Verified project objects from clean run018 plus observed external cohort; no clean rebuild or cache-seed promotion claim.'
     outputs = {}
     for name in order:
         rel = name.replace('.', '/')
@@ -561,8 +600,11 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project:
         output.parent.mkdir(parents=True, exist_ok=True)
         if output.is_symlink() or not output.resolve().is_relative_to(run.scratch.resolve()):
             raise RuntimeError(f'Refuse output outside isolated overlay: {output}')
-        run.command('lean_' + name.replace('.', '_'), [LEAN, '-o', str(output), str(source)], source_root, env, source)
-        outputs[name] = dict(path=str(output), sha256=sha(output))
+        if name not in reused:
+            run.command('lean_' + name.replace('.', '_'), [LEAN, '-o', str(output), str(source)], source_root, env, source)
+        outputs[name] = dict(path=str(output), sha256=sha(output), reused=name in reused)
+    if cache_plan is not None:
+        save(run.results / 'cache_final_verification.json', cache_api.verify_final_outputs(cache_plan))
     save(run.results / 'compiled_olean_hashes.json', outputs)
     run.report['umbrella_builds'] = list(UMBRELLAS)
     run.report['checks_executed'] = []
@@ -593,10 +635,15 @@ def main():
     parser.add_argument('--checks', action='store_true', help='Run integer #eval checks in isolated output directories.')
     parser.add_argument('--rebuild-project', action='store_true',
                         help='Recompile the entire selected project-source import closure; cache only external packages/toolchain.')
+    parser.add_argument('--verified-project-cache', type=Path, help='Use a separately sealed observed project-object export.')
+    parser.add_argument('--cache-sha256', help='Required exact SHA256 of the cache export manifest.')
     args = parser.parse_args()
+    if bool(args.verified_project_cache) != bool(args.cache_sha256):
+        parser.error('Both --verified-project-cache and --cache-sha256 are required together')
     run = Run()
     try:
-        integrate(run, args.manifest.resolve(), args.checks, args.rebuild_project)
+        integrate(run, args.manifest.resolve(), args.checks, args.rebuild_project,
+                  args.verified_project_cache.resolve() if args.verified_project_cache else None, args.cache_sha256)
     except Exception as error:
         run.report['status'] = 'failed'
         run.report['error'] = str(error)

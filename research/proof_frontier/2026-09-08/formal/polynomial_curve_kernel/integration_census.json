@@ -1,0 +1,507 @@
+{
+  "theorems": [
+    "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+    "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+    "RS_det_submatrix_eq_zero_of_det_eq_zero",
+    "RS_mulVec_adjugate_col_eq_det",
+    "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+    "RS_natDegree_det_le_of_entry_natDegree_le",
+    "RS_natDegree_det_le_of_entry_natDegree_le_one",
+    "adjugate_updateRow_same_col",
+    "det_updateRow_eq_sum_mul_adjugate_col",
+    "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+    "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+    "degree_correctness",
+    "correctness",
+    "witnessMatrix_premises",
+    "witnessVector_valid",
+    "premises_inhabited",
+    "satisfiable",
+    "determinant_hypothesis_teeth",
+    "degree_bound_teeth",
+    "degree_witnessMatrix_premises",
+    "degree_witnessVector_valid",
+    "degree_premises_inhabited",
+    "degree_satisfiable",
+    "degree_determinant_hypothesis_teeth",
+    "degree_strict_bound_teeth",
+    "entry_degree_hypothesis_teeth"
+  ],
+  "qualified_declarations": [
+    {
+      "name": "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+      "private": false,
+      "line": 72
+    },
+    {
+      "name": "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+      "private": false,
+      "line": 83
+    },
+    {
+      "name": "RS_det_submatrix_eq_zero_of_det_eq_zero",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+      "private": false,
+      "line": 94
+    },
+    {
+      "name": "RS_mulVec_adjugate_col_eq_det",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+      "private": false,
+      "line": 127
+    },
+    {
+      "name": "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+      "private": false,
+      "line": 144
+    },
+    {
+      "name": "RS_natDegree_det_le_of_entry_natDegree_le",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le",
+      "private": false,
+      "line": 159
+    },
+    {
+      "name": "RS_natDegree_det_le_of_entry_natDegree_le_one",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+      "private": false,
+      "line": 199
+    },
+    {
+      "name": "adjugate_updateRow_same_col",
+      "qualified_name": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+      "private": false,
+      "line": 206
+    },
+    {
+      "name": "det_updateRow_eq_sum_mul_adjugate_col",
+      "qualified_name": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+      "private": false,
+      "line": 213
+    },
+    {
+      "name": "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+      "private": false,
+      "line": 224
+    },
+    {
+      "name": "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+      "qualified_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+      "private": false,
+      "line": 445
+    },
+    {
+      "name": "degree_correctness",
+      "qualified_name": "PolynomialMatrixKernel.degree_correctness",
+      "private": false,
+      "line": 458
+    },
+    {
+      "name": "correctness",
+      "qualified_name": "PolynomialMatrixKernel.correctness",
+      "private": false,
+      "line": 464
+    },
+    {
+      "name": "witnessMatrix_premises",
+      "qualified_name": "PolynomialMatrixKernel.witnessMatrix_premises",
+      "private": false,
+      "line": 475
+    },
+    {
+      "name": "witnessVector_valid",
+      "qualified_name": "PolynomialMatrixKernel.witnessVector_valid",
+      "private": false,
+      "line": 482
+    },
+    {
+      "name": "premises_inhabited",
+      "qualified_name": "PolynomialMatrixKernel.premises_inhabited",
+      "private": false,
+      "line": 496
+    },
+    {
+      "name": "satisfiable",
+      "qualified_name": "PolynomialMatrixKernel.satisfiable",
+      "private": false,
+      "line": 504
+    },
+    {
+      "name": "determinant_hypothesis_teeth",
+      "qualified_name": "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+      "private": false,
+      "line": 510
+    },
+    {
+      "name": "degree_bound_teeth",
+      "qualified_name": "PolynomialMatrixKernel.degree_bound_teeth",
+      "private": false,
+      "line": 523
+    },
+    {
+      "name": "degree_witnessMatrix_premises",
+      "qualified_name": "PolynomialMatrixKernel.degree_witnessMatrix_premises",
+      "private": false,
+      "line": 554
+    },
+    {
+      "name": "degree_witnessVector_valid",
+      "qualified_name": "PolynomialMatrixKernel.degree_witnessVector_valid",
+      "private": false,
+      "line": 562
+    },
+    {
+      "name": "degree_premises_inhabited",
+      "qualified_name": "PolynomialMatrixKernel.degree_premises_inhabited",
+      "private": false,
+      "line": 577
+    },
+    {
+      "name": "degree_satisfiable",
+      "qualified_name": "PolynomialMatrixKernel.degree_satisfiable",
+      "private": false,
+      "line": 585
+    },
+    {
+      "name": "degree_determinant_hypothesis_teeth",
+      "qualified_name": "PolynomialMatrixKernel.degree_determinant_hypothesis_teeth",
+      "private": false,
+      "line": 593
+    },
+    {
+      "name": "degree_strict_bound_teeth",
+      "qualified_name": "PolynomialMatrixKernel.degree_strict_bound_teeth",
+      "private": false,
+      "line": 606
+    },
+    {
+      "name": "entry_degree_hypothesis_teeth",
+      "qualified_name": "PolynomialMatrixKernel.entry_degree_hypothesis_teeth",
+      "private": false,
+      "line": 631
+    }
+  ],
+  "theorem_count": 26,
+  "pin_count": 26,
+  "pins": [
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 639,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.correctness",
+      "requested_name": "PolynomialMatrixKernel.correctness",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 645,
+      "expected_message": "info: 'PolynomialMatrixKernel.correctness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.correctness"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.witnessMatrix_premises",
+      "requested_name": "PolynomialMatrixKernel.witnessMatrix_premises",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 649,
+      "expected_message": "info: 'PolynomialMatrixKernel.witnessMatrix_premises' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.witnessMatrix_premises"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.witnessVector_valid",
+      "requested_name": "PolynomialMatrixKernel.witnessVector_valid",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 653,
+      "expected_message": "info: 'PolynomialMatrixKernel.witnessVector_valid' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.witnessVector_valid"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.premises_inhabited",
+      "requested_name": "PolynomialMatrixKernel.premises_inhabited",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 657,
+      "expected_message": "info: 'PolynomialMatrixKernel.premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.premises_inhabited"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.satisfiable",
+      "requested_name": "PolynomialMatrixKernel.satisfiable",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 661,
+      "expected_message": "info: 'PolynomialMatrixKernel.satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.satisfiable"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+      "requested_name": "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 665,
+      "expected_message": "info: 'PolynomialMatrixKernel.determinant_hypothesis_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.determinant_hypothesis_teeth"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_bound_teeth",
+      "requested_name": "PolynomialMatrixKernel.degree_bound_teeth",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 669,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_bound_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_bound_teeth"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 673,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 679,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 685,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 691,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 695,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 701,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+      "requested_name": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 707,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.adjugate_updateRow_same_col' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+      "requested_name": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 711,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 718,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+      "requested_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 723,
+      "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_correctness",
+      "requested_name": "PolynomialMatrixKernel.degree_correctness",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 728,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_correctness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_correctness"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_witnessMatrix_premises",
+      "requested_name": "PolynomialMatrixKernel.degree_witnessMatrix_premises",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 731,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_witnessMatrix_premises' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_witnessMatrix_premises"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_witnessVector_valid",
+      "requested_name": "PolynomialMatrixKernel.degree_witnessVector_valid",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 734,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_witnessVector_valid' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_witnessVector_valid"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_premises_inhabited",
+      "requested_name": "PolynomialMatrixKernel.degree_premises_inhabited",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 737,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_premises_inhabited"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_satisfiable",
+      "requested_name": "PolynomialMatrixKernel.degree_satisfiable",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 740,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_satisfiable"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_determinant_hypothesis_teeth",
+      "requested_name": "PolynomialMatrixKernel.degree_determinant_hypothesis_teeth",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 743,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_determinant_hypothesis_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_determinant_hypothesis_teeth"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.degree_strict_bound_teeth",
+      "requested_name": "PolynomialMatrixKernel.degree_strict_bound_teeth",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 746,
+      "expected_message": "info: 'PolynomialMatrixKernel.degree_strict_bound_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.degree_strict_bound_teeth"
+    },
+    {
+      "theorem": "PolynomialMatrixKernel.entry_degree_hypothesis_teeth",
+      "requested_name": "PolynomialMatrixKernel.entry_degree_hypothesis_teeth",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 749,
+      "expected_message": "info: 'PolynomialMatrixKernel.entry_degree_hypothesis_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "PolynomialMatrixKernel.entry_degree_hypothesis_teeth"
+    }
+  ],
+  "forbidden_constructs": [],
+  "admit_identifier_tokens": [],
+  "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+}

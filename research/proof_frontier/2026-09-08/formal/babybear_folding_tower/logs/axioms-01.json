@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-babybear-folding-tower-20260908/.lake/build/lib/lean/Selvage/BabyBearTwoAdic.olean",
+    "Selvage/BabyBearTwoAdic.lean"
+  ],
+  "cwd": "/tmp/minidregg-babybear-folding-tower-20260908",
+  "exit_code": 0,
+  "source_sha256": "079a528b1e899446db67260119e38408f50ee9661aeab05d4c3dd4a576af7eb6",
+  "source_unchanged": true,
+  "elapsed_s": 13.359049081802368,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-01.log"
+}

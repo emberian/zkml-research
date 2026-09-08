@@ -1,0 +1,54 @@
+{
+  "claim_label": "SOURCE",
+  "dependencies": [
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean",
+      "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137",
+      "locations": {
+        "HashSuite": 27,
+        "recompute": 73,
+        "openingScheme": 134,
+        "recompute_cons_some_iff": 156,
+        "accepted_different_values_imply_collision": 257
+      },
+      "isolated_copy_identical": true
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/OracleLogExtraction.lean",
+      "sha256": "bc6f99709e7c6caf6353023f985ec4b5496192eb9bad38f8af1f7d0616e8b6d4",
+      "locations": {
+        "OracleLog": 78,
+        "OracleLog.answerOf": 92
+      },
+      "isolated_copy_identical": true
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BinaryLookup.lean",
+      "sha256": "04cc95ec2034959c18c8e5fae51659fb710d83457ee70abbde5ae61da11558ac",
+      "locations": {
+        "binaryAddressBits": 28
+      },
+      "isolated_copy_identical": true
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/CorrelatedAgreement.lean",
+      "sha256": "1f93c645e77154fdd969855f17d153b9ffb9e2c147f997dbb704dce71876b70e",
+      "locations": {
+        "close": 112
+      },
+      "isolated_copy_identical": true
+    }
+  ],
+  "frozen_prior_audit_and_review": {
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/AUDIT.md": "98fb3d92058fee53698ff4af191f70b12ac9e243b3c09e822c774de4e4f40d44",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/MANIFEST.json": "036da50e4a76d36581ea7d867096292008db6691661f0721471b3c71c63aa118",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding_review/REPORT.md": "96a6aadef5ee7597654f13bddacef3bf15dbb70dc6bb1bb9a318599f82c0a438"
+  },
+  "search": {
+    "corpus": "companion Selvage/OracleLog*.lean and BinaryMerkle.lean",
+    "instrument": "rg declarations and extraction/log terms; direct source inspection",
+    "scope": "Existing challenge-log / explicit word-preimage extraction does not provide this supplied Merkle reverse-path adapter. New reverse lookup is proved equal to existing answerOf on swapped cells."
+  },
+  "web_queries": 0,
+  "scry_sql_queries": 0
+}

@@ -1,0 +1,250 @@
+{
+  "checkpoints": [
+    {
+      "history_id": 67000,
+      "phase": 1,
+      "states": {
+        "0": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h0-e0064.ct",
+          "sha256": "764e9eb39453d64b46f3167728fc46a2bb9cb6006b1c120b52dc8cb8b777fe83"
+        },
+        "1": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/initial_67000_1.ct",
+          "sha256": "72d79506a6f251054c8f4827ea1c110ef2a6095403c31c8ef1b8fd165a5b5347"
+        }
+      }
+    },
+    {
+      "history_id": 67000,
+      "phase": 2,
+      "states": {
+        "0": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h0-e0064.ct",
+          "sha256": "764e9eb39453d64b46f3167728fc46a2bb9cb6006b1c120b52dc8cb8b777fe83"
+        },
+        "1": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h0-e0144.ct",
+          "sha256": "55f3c0460dee2bd079c2ea7be97683e5487ec725613ed8cf0bdc11655be9fdba"
+        }
+      }
+    },
+    {
+      "history_id": 67000,
+      "phase": 3,
+      "states": {
+        "0": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h0-e0224.ct",
+          "sha256": "cb69dc2c77c75c092b5016046ea26ea21c32b7436ed33793bd5c330dcbb88ac8"
+        },
+        "1": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h0-e0144.ct",
+          "sha256": "55f3c0460dee2bd079c2ea7be97683e5487ec725613ed8cf0bdc11655be9fdba"
+        }
+      }
+    },
+    {
+      "history_id": 67001,
+      "phase": 1,
+      "states": {
+        "0": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h1-e0064.ct",
+          "sha256": "81604d9734794a362c99aec27d8d273e5b3394a69ddfaf6629d53f0d67188962"
+        },
+        "1": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/initial_67001_1.ct",
+          "sha256": "c5257099890fb8566bec01abd04e9534df198b7ad9436581261f225413039903"
+        }
+      }
+    },
+    {
+      "history_id": 67001,
+      "phase": 2,
+      "states": {
+        "0": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h1-e0064.ct",
+          "sha256": "81604d9734794a362c99aec27d8d273e5b3394a69ddfaf6629d53f0d67188962"
+        },
+        "1": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h1-e0144.ct",
+          "sha256": "f8c21772205897e85fdae73a11cf1a7c543bf8f637f51b5a9df292e06f4963fd"
+        }
+      }
+    },
+    {
+      "history_id": 67001,
+      "phase": 3,
+      "states": {
+        "0": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h1-e0224.ct",
+          "sha256": "52b852b29bed34c19d471f6ef65069b3da9da48a637307f0ddf3abf297edc080"
+        },
+        "1": {
+          "bytes": 108441,
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/h1-e0144.ct",
+          "sha256": "f8c21772205897e85fdae73a11cf1a7c543bf8f637f51b5a9df292e06f4963fd"
+        }
+      }
+    }
+  ],
+  "closed_utc": "2026-09-08T08:09:56.356621+00:00",
+  "completed": true,
+  "counts": {
+    "Infer": 96,
+    "Learn": 384,
+    "host_invocations": 960,
+    "issuer_invocations": 404,
+    "replay_pairs": 480
+  },
+  "freeze_sha256": "6cc20a07b75330c2fb7aaa19a2021c6b495096c6b477b1554eb4a2a14c7943e8",
+  "initials": [
+    {
+      "history_id": 67000,
+      "route": 0,
+      "state": {
+        "bytes": 108441,
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/initial_67000_0.ct",
+        "sha256": "7582bc9c718cbb190f8df7391e04d947dd7a7ec652f13ce99e9cd4e6955a3418"
+      }
+    },
+    {
+      "history_id": 67000,
+      "route": 1,
+      "state": {
+        "bytes": 108441,
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/initial_67000_1.ct",
+        "sha256": "72d79506a6f251054c8f4827ea1c110ef2a6095403c31c8ef1b8fd165a5b5347"
+      }
+    },
+    {
+      "history_id": 67001,
+      "route": 0,
+      "state": {
+        "bytes": 108441,
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/initial_67001_0.ct",
+        "sha256": "aee69f5a4cbad956869368920d499ef6575e2d65afc3aedef5a7c3af216cc66c"
+      }
+    },
+    {
+      "history_id": 67001,
+      "route": 1,
+      "state": {
+        "bytes": 108441,
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/initial_67001_1.ct",
+        "sha256": "c5257099890fb8566bec01abd04e9534df198b7ad9436581261f225413039903"
+      }
+    }
+  ],
+  "query_artifacts": {
+    "256": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_256.ct",
+      "sha256": "69c1b0c645ba2a1ce88f8f8ee5b2f88562cf55471bbb6268f79f896bbd65ef92"
+    },
+    "257": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_257.ct",
+      "sha256": "bd5e2aa57826447f1ec29a3810926028399c593d78ef71964bade68210b177da"
+    },
+    "272": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_272.ct",
+      "sha256": "2ddf6c65ad994bd05e6f3f986ea93bb3adbc2d123b43b879010d6871adc1cdc4"
+    },
+    "273": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_273.ct",
+      "sha256": "fb25735eba0c327cfc49e9e06634318f595a3c98bd1061f1ec447c3cee6a152f"
+    },
+    "288": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_288.ct",
+      "sha256": "3ea23ebcfff6283289f5caded8d6c563a7c5082693e7f1f6bb8221744c642b8c"
+    },
+    "289": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_289.ct",
+      "sha256": "c3870028800c461af601f395b49d7e52fc5b27171c89b4f85fc1b3754e4fc39c"
+    },
+    "304": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_304.ct",
+      "sha256": "c6bfb1de2205f4455c1593b0bc749a08566b77252d7259b0ed41506c00add8f6"
+    },
+    "305": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_305.ct",
+      "sha256": "6905cba9151ab95738ac3a3006b07e6202cc2651d8245db69dc27320a163da80"
+    },
+    "320": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_320.ct",
+      "sha256": "6c4daa2ac375abb6ef5dd9cb8453ffce27ce535da2ee22be21bc97df26848ae7"
+    },
+    "321": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_321.ct",
+      "sha256": "da4af555677174e496a5c80208533d02b7984a3681857a9d8aa0fe5e7231c199"
+    },
+    "336": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_336.ct",
+      "sha256": "dfae0873c64a2d0a8a73425a91416521a52e7e660bcbeb1cdc911c9fba3cc739"
+    },
+    "337": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_337.ct",
+      "sha256": "7f2ba14d4fac4cd6ad025625f4b987e47fa0bf42b7b1b2b9301ca8c8ac6849b3"
+    },
+    "352": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_352.ct",
+      "sha256": "2383b73256ab496945b96a3e3d8bdc69b8b66782e80c2a105d64e597d19bd848"
+    },
+    "353": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_353.ct",
+      "sha256": "5f0580dc38ec010bab3b33f1d7f820c9a0efcf525ab2f20bececef1c45797317"
+    },
+    "368": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_368.ct",
+      "sha256": "390105c0264647803c97524de79843d833bafcf4cf07dcef5be6d9f1aed90d83"
+    },
+    "369": {
+      "bytes": 6801,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/runtime/run001/public/query_369.ct",
+      "sha256": "4dcb308b5f3d62eacaf931555e9f0065a0f4838be1174ee88257c621cc06c60d"
+    }
+  },
+  "reader_invocations": 0,
+  "started_utc": "2026-09-08T05:28:28.472235+00:00",
+  "transcripts": {
+    "events": {
+      "bytes": 844028,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/events.jsonl",
+      "sha256": "13405dd34f7ff017689ed0b55fe1feacc1d318db99665b289775a4463a0e46bf"
+    },
+    "operations": {
+      "bytes": 7861404,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/operations.jsonl",
+      "sha256": "63d6c75120354c669c4e0603e16414856fa224c0eea47b1fc1ef40c527a23e01"
+    },
+    "replays": {
+      "bytes": 374171,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/replays.jsonl",
+      "sha256": "48927e07efd52895be9eb7134ec8122227133c5b64679655c6fdb2f1a59358fb"
+    }
+  },
+  "wall_seconds": 9687.876547332999
+}

@@ -1,0 +1,16 @@
+{
+  "scope": "public integer primality/CRT certificate only; no cryptography, sampling or estimator",
+  "q": "497323290947860672931310292648754779192460749687510494957169639477681564739617435942913",
+  "q_factorization_minus_one": {
+    "odd_part": 4294967767,
+    "two_exponent": 256
+  },
+  "witness": 3,
+  "witness_power_equals_minus_one": true,
+  "candidate_count": 236,
+  "N": 4096,
+  "primitive_2N_root": "150672670399264886014481996813601940782203114734998155716986239215569815304532921611424",
+  "root_power_N_equals_minus_one": true,
+  "bit_length": 289,
+  "proof": "For every prime divisor ell of q, the witness forces 2^256 | (ell-1). Thus ell>=2^256+1>sqrt(q); q must be prime. This follows from the order of the witness modulo ell, without a probable-prime heuristic."
+}

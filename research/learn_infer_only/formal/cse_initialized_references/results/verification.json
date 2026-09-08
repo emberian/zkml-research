@@ -1,0 +1,623 @@
+{
+  "all_package_checks_passed": true,
+  "source_sha256": "1e8037c2c4ce35727a804912560b13a89a673682a8ca7405f2d1d4504d884386",
+  "patch_sha256": "39afffcab611adc4a3a292bd3935ea551ae5f22e264660c9d2c0523256c74c6c",
+  "census": {
+    "theorems": [
+      "ready_mono",
+      "ready_subst",
+      "ready_head",
+      "ordered_refs_forward",
+      "shape_refs_valid",
+      "flattenSystem_covers",
+      "raw_covers",
+      "raw_bounded_ready",
+      "raw_forward_valid",
+      "getD_insert_ne",
+      "cseGo_initialized",
+      "empty_initialized",
+      "cse_initialized_preservation",
+      "emitted_initialized",
+      "learn_valid_kernel",
+      "infer_valid_kernel",
+      "input_store_available",
+      "update_store_available",
+      "fold_store_available",
+      "prefix_store_available",
+      "ready_lookup_some",
+      "forward_prefix_refs",
+      "valid_lookup_success",
+      "learn_lookups_succeed",
+      "infer_lookups_succeed",
+      "hole_has_shape",
+      "hole_not_initialized",
+      "hole_lookup_fails",
+      "hole_lookup_success_refuted"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "ready_mono",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_mono",
+        "private": false,
+        "line": 42
+      },
+      {
+        "name": "ready_subst",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_subst",
+        "private": false,
+        "line": 48
+      },
+      {
+        "name": "ready_head",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_head",
+        "private": false,
+        "line": 55
+      },
+      {
+        "name": "ordered_refs_forward",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ordered_refs_forward",
+        "private": false,
+        "line": 72
+      },
+      {
+        "name": "shape_refs_valid",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.shape_refs_valid",
+        "private": false,
+        "line": 100
+      },
+      {
+        "name": "flattenSystem_covers",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.flattenSystem_covers",
+        "private": false,
+        "line": 107
+      },
+      {
+        "name": "raw_covers",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.raw_covers",
+        "private": false,
+        "line": 120
+      },
+      {
+        "name": "raw_bounded_ready",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.raw_bounded_ready",
+        "private": false,
+        "line": 129
+      },
+      {
+        "name": "raw_forward_valid",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.raw_forward_valid",
+        "private": false,
+        "line": 140
+      },
+      {
+        "name": "getD_insert_ne",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.getD_insert_ne",
+        "private": false,
+        "line": 150
+      },
+      {
+        "name": "cseGo_initialized",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.cseGo_initialized",
+        "private": false,
+        "line": 154
+      },
+      {
+        "name": "empty_initialized",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.empty_initialized",
+        "private": false,
+        "line": 223
+      },
+      {
+        "name": "cse_initialized_preservation",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.cse_initialized_preservation",
+        "private": false,
+        "line": 236
+      },
+      {
+        "name": "emitted_initialized",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.emitted_initialized",
+        "private": false,
+        "line": 260
+      },
+      {
+        "name": "learn_valid_kernel",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.learn_valid_kernel",
+        "private": false,
+        "line": 264
+      },
+      {
+        "name": "infer_valid_kernel",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.infer_valid_kernel",
+        "private": false,
+        "line": 267
+      },
+      {
+        "name": "input_store_available",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.input_store_available",
+        "private": false,
+        "line": 293
+      },
+      {
+        "name": "update_store_available",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.update_store_available",
+        "private": false,
+        "line": 299
+      },
+      {
+        "name": "fold_store_available",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.fold_store_available",
+        "private": false,
+        "line": 310
+      },
+      {
+        "name": "prefix_store_available",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.prefix_store_available",
+        "private": false,
+        "line": 323
+      },
+      {
+        "name": "ready_lookup_some",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_lookup_some",
+        "private": false,
+        "line": 328
+      },
+      {
+        "name": "forward_prefix_refs",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.forward_prefix_refs",
+        "private": false,
+        "line": 335
+      },
+      {
+        "name": "valid_lookup_success",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.valid_lookup_success",
+        "private": false,
+        "line": 349
+      },
+      {
+        "name": "learn_lookups_succeed",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.learn_lookups_succeed",
+        "private": false,
+        "line": 364
+      },
+      {
+        "name": "infer_lookups_succeed",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.infer_lookups_succeed",
+        "private": false,
+        "line": 367
+      },
+      {
+        "name": "hole_has_shape",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_has_shape",
+        "private": false,
+        "line": 374
+      },
+      {
+        "name": "hole_not_initialized",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_not_initialized",
+        "private": false,
+        "line": 387
+      },
+      {
+        "name": "hole_lookup_fails",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_fails",
+        "private": false,
+        "line": 390
+      },
+      {
+        "name": "hole_lookup_success_refuted",
+        "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_success_refuted",
+        "private": false,
+        "line": 395
+      }
+    ],
+    "theorem_count": 29,
+    "pin_count": 29,
+    "pins": [
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.ready_mono",
+        "requested_name": "ready_mono",
+        "axioms": [],
+        "line": 402,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.ready_mono' does not depend on any axioms",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.ready_mono"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.ready_subst",
+        "requested_name": "ready_subst",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 404,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.ready_subst' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.ready_subst"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.ready_head",
+        "requested_name": "ready_head",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 406,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.ready_head' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.ready_head"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.ordered_refs_forward",
+        "requested_name": "ordered_refs_forward",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 408,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.ordered_refs_forward' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.ordered_refs_forward"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.shape_refs_valid",
+        "requested_name": "shape_refs_valid",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 410,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.shape_refs_valid' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.shape_refs_valid"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.flattenSystem_covers",
+        "requested_name": "flattenSystem_covers",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 412,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.flattenSystem_covers' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.flattenSystem_covers"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.raw_covers",
+        "requested_name": "raw_covers",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 414,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.raw_covers' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.raw_covers"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.raw_bounded_ready",
+        "requested_name": "raw_bounded_ready",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 416,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.raw_bounded_ready' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.raw_bounded_ready"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.raw_forward_valid",
+        "requested_name": "raw_forward_valid",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 418,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.raw_forward_valid' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.raw_forward_valid"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.getD_insert_ne",
+        "requested_name": "getD_insert_ne",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 420,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.getD_insert_ne' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.getD_insert_ne"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.cseGo_initialized",
+        "requested_name": "cseGo_initialized",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 422,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.cseGo_initialized' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.cseGo_initialized"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.empty_initialized",
+        "requested_name": "empty_initialized",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 424,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.empty_initialized' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.empty_initialized"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.cse_initialized_preservation",
+        "requested_name": "cse_initialized_preservation",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 426,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.cse_initialized_preservation' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.cse_initialized_preservation"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.emitted_initialized",
+        "requested_name": "emitted_initialized",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 428,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.emitted_initialized' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.emitted_initialized"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.learn_valid_kernel",
+        "requested_name": "learn_valid_kernel",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 430,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.learn_valid_kernel' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.learn_valid_kernel"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.infer_valid_kernel",
+        "requested_name": "infer_valid_kernel",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 432,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.infer_valid_kernel' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.infer_valid_kernel"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.input_store_available",
+        "requested_name": "input_store_available",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 434,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.input_store_available' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.input_store_available"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.update_store_available",
+        "requested_name": "update_store_available",
+        "axioms": [
+          "propext"
+        ],
+        "line": 436,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.update_store_available' depends on axioms: [propext]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.update_store_available"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.fold_store_available",
+        "requested_name": "fold_store_available",
+        "axioms": [
+          "propext"
+        ],
+        "line": 438,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.fold_store_available' depends on axioms: [propext]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.fold_store_available"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.prefix_store_available",
+        "requested_name": "prefix_store_available",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 440,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.prefix_store_available' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.prefix_store_available"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.ready_lookup_some",
+        "requested_name": "ready_lookup_some",
+        "axioms": [],
+        "line": 442,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.ready_lookup_some' does not depend on any axioms",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.ready_lookup_some"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.forward_prefix_refs",
+        "requested_name": "forward_prefix_refs",
+        "axioms": [
+          "propext"
+        ],
+        "line": 444,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.forward_prefix_refs' depends on axioms: [propext]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.forward_prefix_refs"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.valid_lookup_success",
+        "requested_name": "valid_lookup_success",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 446,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.valid_lookup_success' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.valid_lookup_success"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.learn_lookups_succeed",
+        "requested_name": "learn_lookups_succeed",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 448,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.learn_lookups_succeed' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.learn_lookups_succeed"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.infer_lookups_succeed",
+        "requested_name": "infer_lookups_succeed",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 450,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.infer_lookups_succeed' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.infer_lookups_succeed"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.hole_has_shape",
+        "requested_name": "hole_has_shape",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 452,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.hole_has_shape' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.hole_has_shape"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.hole_not_initialized",
+        "requested_name": "hole_not_initialized",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 454,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.hole_not_initialized' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.hole_not_initialized"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_fails",
+        "requested_name": "hole_lookup_fails",
+        "axioms": [
+          "propext"
+        ],
+        "line": 456,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.hole_lookup_fails' depends on axioms: [propext]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_fails"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_success_refuted",
+        "requested_name": "hole_lookup_success_refuted",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 458,
+        "expected_message": "info: 'Minidregg.Compiler.CseInitializedReferences.hole_lookup_success_refuted' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_success_refuted"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_initialized_package_a9tinwcp",
+      "exit_code": 0,
+      "seconds": 0.06607954201172106,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/minidregg-cse-initialized-references.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_initialized_package_a9tinwcp",
+      "exit_code": 0,
+      "seconds": 0.04121533301076852,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/minidregg-cse-initialized-references.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_initialized_package_a9tinwcp",
+      "exit_code": 0,
+      "seconds": 0.04147654099506326,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_initialized_package_a9tinwcp/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_initialized_package_a9tinwcp",
+      "exit_code": 0,
+      "seconds": 0.18172962497919798,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "seconds": 0.13210770802106708,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    }
+  ],
+  "lean_check": "results/lean_006.json",
+  "actual_initialized_kernel_proved": true,
+  "option_lookup_kernel_proved": true,
+  "rust_refinement_proved": false,
+  "frozen_files_unchanged": true,
+  "frozen_file_count": 96,
+  "companion_head_unchanged": true,
+  "companion_status_unchanged": true,
+  "dependency_source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean": "37d9b62f5a0b0b3b80fa7b2de2f8322e71c92b4635710f64eb848f573bffb077",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean": "9828878c2ac7b175c9d9928348b0a858573ad951a569a90997684732e0289608"
+  },
+  "reused_source_sha256": {
+    "/Users/ember/dev/minidregg/Compiler/AirFlatten.lean": "504221deeb50018370b35110c60bcd01d0e0e89677a63ed0f023b80c07fe3f54",
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6"
+  },
+  "scope": "Kernel-checked CSE preservation of ForwardValid, every emitted F2 source descriptor initialized, actual Learn/Infer validCheck theorems, and Some lookup after arbitrary payload writes in a functional Option-store model. No gate evaluator or Rust/TFHE refinement. Four fresh proposal dependency oleans with cached external dependencies; root owns full umbrella build."
+}

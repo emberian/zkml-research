@@ -1,0 +1,189 @@
+{
+  "scope": "[EXECUTED] Saved generic estimator records, conditional structured-ring modeling; no security certification",
+  "status": "PASS",
+  "attempts": 24,
+  "entries": 24,
+  "errors": 0,
+  "timeouts": 0,
+  "infinity_outputs": 0,
+  "total_estimator_calculation_seconds_not_attack_time": 58.32683895895025,
+  "points": [
+    {
+      "point": "ring_baseline_4096",
+      "minima": {
+        "MATZOV_classical": {
+          "log2_modeled_cost": 51.94400665886226,
+          "path": "bdd",
+          "beta": 60,
+          "lattice_dimension": 8145
+        },
+        "ADPS16_classical": {
+          "log2_modeled_cost": 17.811999999999998,
+          "path": "usvp",
+          "beta": 61,
+          "lattice_dimension": 7945
+        },
+        "ADPS16_quantum_core_svp": {
+          "log2_modeled_cost": 16.165,
+          "path": "usvp",
+          "beta": 61,
+          "lattice_dimension": 7945
+        },
+        "MATZOV_quantum_depth_width": {
+          "log2_modeled_cost": 55.750336070641495,
+          "path": "bdd",
+          "beta": 60,
+          "lattice_dimension": 8111
+        }
+      },
+      "joint_finite_parameters_and_costs": {
+        "label": "ring_baseline_4096",
+        "N": 4096,
+        "w_ring_samples": 64,
+        "q": "497323290947860672931310292648754779192460749687510494957169639477681564739617435942913",
+        "q_bits": 289,
+        "primitive_2N_root": "150672670399264886014481996813601940782203114734998155716986239215569815304532921611424",
+        "sigma_e_width_pow2": 10,
+        "sigma_K_width_pow2": 24,
+        "flood_radius_pow2": 244,
+        "BK_pow2": 27,
+        "BE_pow2": 13,
+        "shift_bound_pow2": 58,
+        "theta": "3/64",
+        "smoothing_log_upper": 212,
+        "regularity": [
+          {
+            "k": 1,
+            "short_bound": "2^4096/q^384",
+            "rank_plus_short_below_2_minus_192": true,
+            "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+          },
+          {
+            "k": 2,
+            "short_bound": "2^4096/q^192",
+            "rank_plus_short_below_2_minus_192": true,
+            "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+          }
+        ],
+        "all_17_coalitions_privacy_statistical_bound": "<2^-168",
+        "correctness_failure_bound": "<2^-203",
+        "unit_failure_upper": "N/q < 2^-276",
+        "raw_scalar_proxy": {
+          "n": 4096,
+          "m": 262144,
+          "secret": "UniformMod(q)"
+        },
+        "normalized_scalar_proxy": {
+          "n": 4096,
+          "m": 258048,
+          "secret_and_error": "DiscreteGaussianAlpha(QQ(1024)/q,q)"
+        },
+        "costs": {
+          "ciphertext_coefficients": 262721,
+          "ciphertext_bytes": 9490797,
+          "public_A_and_P_bytes": 94847488,
+          "recipient_key_bits_per_coefficient_strict_tail": 28,
+          "one_recipient_key_bytes_strict_tail": 917504,
+          "all_recipient_keys_bytes_strict_tail": 14680064,
+          "fresh_encode_full_ring_products": 64,
+          "fresh_encode_scalar_coefficient_multiplications": 2363392,
+          "fresh_encode_gaussian_coefficients": 262144,
+          "read_coefficient_multiplications": 262144,
+          "add_or_expire_residue_operations": 262721
+        }
+      }
+    },
+    {
+      "point": "ring_joint_repair_16384",
+      "minima": {
+        "MATZOV_classical": {
+          "log2_modeled_cost": 211.90974474869606,
+          "path": "bdd",
+          "beta": 629,
+          "lattice_dimension": 33609
+        },
+        "ADPS16_classical": {
+          "log2_modeled_cost": 184.25199999999998,
+          "path": "usvp",
+          "beta": 631,
+          "lattice_dimension": 32688
+        },
+        "ADPS16_quantum_core_svp": {
+          "log2_modeled_cost": 167.215,
+          "path": "usvp",
+          "beta": 631,
+          "lattice_dimension": 32688
+        },
+        "MATZOV_quantum_depth_width": {
+          "log2_modeled_cost": 199.73157229596697,
+          "path": "bdd",
+          "beta": 629,
+          "lattice_dimension": 33609
+        }
+      },
+      "joint_finite_parameters_and_costs": {
+        "label": "ring_joint_repair_16384",
+        "N": 16384,
+        "w_ring_samples": 64,
+        "q": "497323290947860672931310292648754779192460749687510494957169639477681564739617435942913",
+        "q_bits": 289,
+        "primitive_2N_root": "392468411228582977956273214396722831887432734543154379933671833052773570902878518108580",
+        "sigma_e_width_pow2": 10,
+        "sigma_K_width_pow2": 25,
+        "flood_radius_pow2": 247,
+        "BK_pow2": 28,
+        "BE_pow2": 13,
+        "shift_bound_pow2": 61,
+        "theta": "3/64",
+        "smoothing_log_upper": 214,
+        "regularity": [
+          {
+            "k": 1,
+            "short_bound": "2^16384/q^1536",
+            "rank_plus_short_below_2_minus_192": true,
+            "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+          },
+          {
+            "k": 2,
+            "short_bound": "2^16384/q^768",
+            "rank_plus_short_below_2_minus_192": true,
+            "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+          }
+        ],
+        "all_17_coalitions_privacy_statistical_bound": "<2^-168",
+        "correctness_failure_bound": "<2^-200",
+        "unit_failure_upper": "N/q < 2^-274",
+        "raw_scalar_proxy": {
+          "n": 16384,
+          "m": 1048576,
+          "secret": "UniformMod(q)"
+        },
+        "normalized_scalar_proxy": {
+          "n": 16384,
+          "m": 1032192,
+          "secret_and_error": "DiscreteGaussianAlpha(QQ(1024)/q,q)"
+        },
+        "costs": {
+          "ciphertext_coefficients": 1049153,
+          "ciphertext_bytes": 37900653,
+          "public_A_and_P_bytes": 379389952,
+          "recipient_key_bits_per_coefficient_strict_tail": 29,
+          "one_recipient_key_bytes_strict_tail": 3801088,
+          "all_recipient_keys_bytes_strict_tail": 60817408,
+          "fresh_encode_full_ring_products": 64,
+          "fresh_encode_scalar_coefficient_multiplications": 9453568,
+          "fresh_encode_gaussian_coefficients": 1048576,
+          "read_coefficient_multiplications": 1048576,
+          "add_or_expire_residue_operations": 1049153
+        }
+      }
+    }
+  ],
+  "baseline_filter": "N=4096 fails the declared named cost filter",
+  "larger_point_filter": "N=16384 passes the declared named generic filter only; exact Ring-LWE hardness remains open",
+  "block_size_range": [
+    60,
+    632
+  ],
+  "all_selected_MATZOV_blocks_within_source_fit_1024": true
+}

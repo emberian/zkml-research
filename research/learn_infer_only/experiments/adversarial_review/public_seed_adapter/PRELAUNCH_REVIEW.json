@@ -1,0 +1,10 @@
+{
+  "schema": "independent-public-seed-adapter-prelaunch-review-v1",
+  "disposition": "accepted",
+  "source_pins_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac",
+  "review_report_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/REPORT.md",
+  "review_report_sha256": "c421d1088adc4c0a27fa0d674b9fa2aeaccbd2be72017f1957f7c814bc52c884",
+  "root_notified": true,
+  "root_notification": "Accepted exact-source verdict delivered to /root through collaboration.send_message before this gate was written.",
+  "scope": "One existing-authorized normal attempt: 33 Learn, four Infer, one exact original expiry; all public verification and evidence closure before four private decryptions. Prelaunch source/helpers only; no observed crypto result. No seed search, retries, extraction tests or stopped paths."
+}

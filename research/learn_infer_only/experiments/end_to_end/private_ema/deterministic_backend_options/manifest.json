@@ -1,0 +1,60 @@
+{
+  "scope": "Frozen source-only note; no implementation build or crypto test",
+  "files": [
+    {
+      "path": "ADAPTER_CONTRACT.md",
+      "bytes": 4971,
+      "sha256": "9e4d5c51e0957accd88e4752e5da69a93b5b1705537e252a70432a1a7fb3b5ed"
+    },
+    {
+      "path": "NEXT.md",
+      "bytes": 964,
+      "sha256": "3e6d6245add526baea51cac3777d829a5ad4e4b4ea1a4ea0ca64447a961e919d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 15008,
+      "sha256": "67e77e1b350164c05d5e460aea3b832eda3ea9531e65d43fc7d648ee297f4c72"
+    },
+    {
+      "path": "STATUS.md",
+      "bytes": 886,
+      "sha256": "e6fed0083864cfff3eaacb79f98e1f1085adb51ac24c70911a2e2b3286dacd6f"
+    },
+    {
+      "path": "audit_sources.py",
+      "bytes": 8244,
+      "sha256": "4cb872ea4edbe1966d8787f0c002ee9c94e220ef1adc8597e9739e044c73a8ef"
+    },
+    {
+      "path": "results/searches.json",
+      "bytes": 1045,
+      "sha256": "988d15da4c450aff7326d7333410d4fefb7989a29f656baeb56263b6b4f60551"
+    },
+    {
+      "path": "results/source_audit.json",
+      "bytes": 18413,
+      "sha256": "ee1a49a81ea6b73e24d6e4186724aa2104438c56d57a73fff3230fb084c367ef"
+    },
+    {
+      "path": "results/source_excerpts.txt",
+      "bytes": 102558,
+      "sha256": "8bc79ebe431cd4515cf13222f7f53ecae7ec7af0402e0d9c8a3367bbb1f63e33"
+    },
+    {
+      "path": "results/web_open_primary.txt",
+      "bytes": 25076,
+      "sha256": "74da30f1bb746e5324dead3ebc2988f99c8fe3cb6760d7af4a6549b13564fd84"
+    },
+    {
+      "path": "results/web_search_01_02.txt",
+      "bytes": 32273,
+      "sha256": "7eb9938360066cc4442ab62d4de4ecc1763b6b0e5e6cf536d93d673f79471f0a"
+    },
+    {
+      "path": "results/web_search_03_04.txt",
+      "bytes": 31170,
+      "sha256": "1427cdac039980bcd1f09f5f372f86494ee9e9a66269e00ba6740eb478d7f0d8"
+    }
+  ]
+}

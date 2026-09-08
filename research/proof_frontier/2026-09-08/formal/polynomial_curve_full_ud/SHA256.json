@@ -1,0 +1,12 @@
+{
+  "Theory/PolynomialCurve.lean": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15",
+  "Theory/CurveRSInterpolationMatrix.lean": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa",
+  "Theory/CurveRSInterpolationKernel.lean": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c",
+  "Selvage/CurveFullUDStatement.lean": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6",
+  "Selvage/CurveFullUDInterpolation.lean": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e",
+  "Selvage/CurveFullUDBivariate.lean": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c",
+  "Selvage/CurveFullUDCore.lean": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14",
+  "Selvage/CurveProximityGapFullUD.lean": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5",
+  "Selvage/CurveFriChallenge.lean": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547",
+  "Selvage/CurveFullUDTeeth.lean": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96"
+}

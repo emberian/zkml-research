@@ -1,0 +1,18 @@
+'Minidregg.Selvage.CurveFullUDWitness.legalWord_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

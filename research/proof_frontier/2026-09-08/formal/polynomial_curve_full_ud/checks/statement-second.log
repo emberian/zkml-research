@@ -1,0 +1,13 @@
+Selvage/CurveFullUDStatement.lean:50:15: error: don't know how to synthesize implicit argument `M`
+  @curveWord (ZMod 101) (ZMod.instField 101) (Fin 5) ?m.68 (fun x x_1 => 0) z
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ Finset.univ
+⊢ ℕ
+Selvage/CurveFullUDStatement.lean:50:30: error(lean.inferBinderTypeFailed): Failed to infer binder type
+Selvage/CurveFullUDStatement.lean:58:8: warning: unused variable `j`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

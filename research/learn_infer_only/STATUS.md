@@ -1,5 +1,23 @@
 # Learn/infer-only resident — third overnight swarm active
 
+## Final collection — 2026-09-08 14:52 UTC
+
+[EXECUTED] The timed swarm is closing for the 15:00 UTC deadline. Agent work was interrupted by the usage limit around 07:10–14:29 UTC; already launched OS jobs continued. This record does not claim continuous agent work during that interruption. Microsite updates remain deferred at Ember's request.
+
+[EXECUTED] The full emitted nonlinear trajectory completed at 08:10 UTC: **384 Learn, 96 Infer, 480 matching independent complete-byte replay pairs, 960 observed fixed-FFT-plan checks and 484 matching authorized primary audits**. Public closure and sealing preceded private comparison. The full reader key remains and the fixture is reused, so this supplies execution evidence rather than a new utility or operator-privacy result. [Report](experiments/end_to_end/private_ema/emitted_long_run/REPORT.md); [independent public audit](experiments/adversarial_review/emitted_long_run/REPORT.md).
+
+[EXECUTED] Clean project-source run018 passed **72 proposed modules / 952 exact guarded theorem pins**, rebuilding all **567 project modules**, four umbrellas and both import boundaries. External package/toolchain caches were retained. The immutable 952-pin patch and archived checker preserve the result. [Summary](experiments/integration/results/run_018/SUMMARY.md).
+
+[EXECUTED separately checked proposals] Later work adds initialized-reference preservation, an actual BabyBear folding tower and witnesses, p3 query transport, degree-M polynomial/full-UD arguments, and a deterministic adapter for supplied Merkle openings. Individual Lean checks and independent reviews are saved. The final integration manifest selects **97 modules / 1,189 pins** and passes source census, rooting and patch-payload preflight only; **that larger joint Lean build has not run**. [Preflight](experiments/integration/proposal_preflight_final.json).
+
+[EXECUTED] The public-seed SHAKE256 adapter completed 33 Learn / four Infer / one expiry in 342.180 seconds with four matching private outputs after public closure; independent review passed. Full fixed-span recipient credentials survive. The new durable-journal join is prepared but unlaunched, with only a partial prelaunch review. [Adapter report](experiments/private_construction/designated_span/public_coin_setup/public_seed/adapter/REPORT.md).
+
+[DERIVED reviewed] The ring fixed-coordinate construction, selected hardness estimates and bounded finite sampler now have separate reviewed arguments. The repaired sizing point requires 37,900,653-byte ciphertexts and 379,389,952-byte public material. These are mathematical/heuristic estimates, not an implemented PQ resident. The finite sampler's below-2^-207 aggregate error bound comes with enormous conservative work bounds. [Ring audit](experiments/private_construction/public_setup_pq/ring_candidate/hardness/AUDIT.md); [sampler](experiments/private_construction/public_setup_pq/finite_sampler/SPEC.md).
+
+[EXECUTED evidence consistency] Checkpoint004 passes 1,315 public files across 26 inventories and 30 frozen anchors. Both companions retain their baseline HEAD/status and all 26 preexisting dirty-file hashes. The collector does not rerun proofs, cryptography, estimators or private comparisons. Later supplied-opening and long-run review packets have their own manifests. [Collector](experiments/end_to_end/overnight_checkpoint_004.json).
+
+[OPEN] No result yet combines useful private nonlinear learning, a cryptographic history-bound restricted release, malicious-operator resistance and absence of all equivalent full-reader credentials. The cache helper/export is reviewed; its new integration wrapper is syntax/help checked only, with no actual cache admission or build. The integer-only TFHE adapter is an uncompiled draft. NEXT.md gives exact continuation boundaries.
+
 [EXECUTED authorization, 2026-09-07 late evening EDT] Ember cleared the old
 goal and explicitly authorized broad parallel research and proof-system work
 until **2026-09-08 11am EDT /15:00 UTC**, with primary-source web/Scry research
@@ -8,7 +26,8 @@ and a GitHub Pages site. The new goal is active. Baseline is recovery357b437;
 companion protections. Existing dirty minidregg work is preserved by isolated
 proof checkouts/patches and a HEAD/status/content baseline.
 
-[OPEN first wave] Public-coin setup and durable journal integration; fixed-law
+[REPORTED initial work list; current state is in the newest checkpoint below]
+Public-coin setup and durable journal integration; fixed-law
 private-address EMA utility; a universal bitvector/arithmetic refinement patch;
 current FRI/proximity composition research; exact restricted-release capsule
 and interrupted PQ proof reviews; and a public research site. Root integrates,

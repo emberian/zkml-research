@@ -1,0 +1,155 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-polynomial-curve-kernel-20260908",
+  "modules": [
+    {
+      "path": "Theory/PolynomialMatrixKernel.lean",
+      "source_file": "PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "lines": 751,
+      "theorem_count": 26,
+      "pin_count": 26,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-kernel-20260908/.lake/build/lib/lean/Theory/PolynomialMatrixKernel.olean",
+          "Theory/PolynomialMatrixKernel.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-kernel-20260908",
+        "elapsed_seconds": 10.643891332991188,
+        "exit_code": 0,
+        "source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+        "source_unchanged": true,
+        "stdout": "",
+        "stderr": "",
+        "olean_sha256": "eee1d113fdb0147e056be93d12f330bf0da86d40ff9608d116a976beeb267d7a"
+      }
+    }
+  ],
+  "owned_modules": 1,
+  "owned_theorems": 26,
+  "owned_pins": 26,
+  "new_theorems": 10,
+  "old_public_signatures_preserved": 16,
+  "old_guard_blocks_preserved": 16,
+  "patch_sha256": "d93868e566910220380cfa96d33bcb665c6deb57090a34e62beaa0fe6fd56c8c",
+  "source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "license_sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+  "selection": "Complete new-file patch against base; select instead of predecessor kernel lane.",
+  "predecessor_frozen_sources_unchanged": true,
+  "exact_guarded_check_passed": true,
+  "all_pins_standard_only": true,
+  "mathlib_only_imports": true,
+  "clean_patch_application_exact_bytes": true,
+  "local_links_checked": 13,
+  "files": [
+    {
+      "path": "ArkLib-Apache-2.0.txt",
+      "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+      "bytes": 11356
+    },
+    {
+      "path": "NEXT.md",
+      "sha256": "80f25147c7c24210cc4f9e2d997d42be96897ca057c8e96e671fcb77cb93253f",
+      "bytes": 440
+    },
+    {
+      "path": "PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "bytes": 33375
+    },
+    {
+      "path": "README.md",
+      "sha256": "1ec1eb5378d44ee1b3a0f0de221354888897aee4a324d10d0679244dd3530ee6",
+      "bytes": 6624
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "90e39c7f41abe07e4ebdda033ddb120eafdca7e6a8c23e755ab110fec03387a6",
+      "bytes": 933
+    },
+    {
+      "path": "api_preservation.json",
+      "sha256": "c4e5fb3e3a28d65adb6a3ad6ca718559859eac614daca37d62cc069bdb951d57",
+      "bytes": 1129
+    },
+    {
+      "path": "changes-from-all-pins.diff",
+      "sha256": "a8e5cf66ebbfd94c0deb2214a630941af54ef2b52a3781db10626dfc80811b0e",
+      "bytes": 14777
+    },
+    {
+      "path": "import-boundary.log",
+      "sha256": "8ad794b7fb3c1f16f0b484345d6c90fdff74ed3bc3fdb20335aba83986ca789d",
+      "bytes": 160
+    },
+    {
+      "path": "integration_census.json",
+      "sha256": "4ace858e10942bc4fb8013d9f30de21d056cc10b289c45caaf64f44003816b47",
+      "bytes": 20185
+    },
+    {
+      "path": "integration_entry.json",
+      "sha256": "1d58f6820d3fd275c44a30e92f0ad8c9ef6c97e8a036a90f98c1d79448f142aa",
+      "bytes": 559
+    },
+    {
+      "path": "lean-01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lean-02.log",
+      "sha256": "2995813ad38f3cd567b31efc86835411dcda441d8a57a7e48c89caec193737cd",
+      "bytes": 1179
+    },
+    {
+      "path": "lean-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lean_attempts.json",
+      "sha256": "fcdad3724c5fb94150a04f66b870b41b9c4282d17a9cdadc1174013e48a23c79",
+      "bytes": 1054
+    },
+    {
+      "path": "lean_final.json",
+      "sha256": "d94e91e8561ae91770ef53aab2738900051025d0739e4df4430ac1228dbc4b0a",
+      "bytes": 573
+    },
+    {
+      "path": "mathlib-degree-search.log",
+      "sha256": "6ae354ff915bab89ba2e77521261d2d7f692422f839855dc73baf0eb14d0ad1f",
+      "bytes": 1045
+    },
+    {
+      "path": "new-declarations.txt",
+      "sha256": "63f032514d61eae6b28899540ceae69476b7be0bc8e9e50c3c1df6c6b710152e",
+      "bytes": 565
+    },
+    {
+      "path": "patch_and_import_checks.json",
+      "sha256": "7adc4ff74d04ddfd152b79536782c412e2f330ee4d4a1d9459fe163e76740c8b",
+      "bytes": 1472
+    },
+    {
+      "path": "polynomial-curve-kernel.patch",
+      "sha256": "d93868e566910220380cfa96d33bcb665c6deb57090a34e62beaa0fe6fd56c8c",
+      "bytes": 46104
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "f0b1c90524726c538af425999642a75b63743eaaae640675d08d5ab313298b4e",
+      "bytes": 1505
+    },
+    {
+      "path": "support_file_entry.json",
+      "sha256": "9c6ef8aa0f0f33b9e79e2e4e7c31afccec2b4e5ee2d1d27980432c486fe4d97d",
+      "bytes": 231
+    }
+  ]
+}

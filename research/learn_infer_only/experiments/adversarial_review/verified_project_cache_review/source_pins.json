@@ -1,0 +1,47 @@
+[
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/verified_project_cache.py",
+    "sha256": "91f31c3b80f3897d394832a79e43959e2c60c1b1206ae894a3656b25de02ac07"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/test_verified_project_cache.py",
+    "sha256": "4b5bc97c537fabde276ccf494fd29b1737d646e94f18a61591b0b78098e0d52d"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/synthetic_results.json",
+    "sha256": "18b42f8352ca3bc11d71d57c4a0d67ecba5dfb4dbbf2a11b64393d5dff3dabaf"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/compiler_policy.json",
+    "sha256": "491b866c9c9184c20d544208ec904ced42a58e774bc11530d4ca9c3b6f7a258e"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/REPORT.md",
+    "sha256": "8f53b7a028fa80088aa5f60522d4443c212dc5df75692cee664406532e5d8672"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/export_attempt_001.json",
+    "sha256": "77fb2b30eb6a8528c3e7c423fa50dd852b70f7bb1580df3215e74d10f2110e3b"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/run018_observed_001/manifest.json",
+    "sha256": "3c8943f716651ed9db18176f41d7197a6d919c364dda9b8c30520f42a015439f"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/pre_hardening_001/verified_project_cache.py",
+    "sha256": "86c3c3305864e6c6abaa78e4bc54d548f851de122fc2ec5de2a5bf903e9cf04a"
+  },
+  {
+    "path": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/src/lean/Lean/Util/Path.lean",
+    "sha256": "59fd27c802b78cd156d7463a2568d1fd73e24d73f0e1ec7035532a632437217e"
+  },
+  {
+    "path": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/src/lean/Lean/Parser/Module.lean",
+    "sha256": "3b92418d71deceb8d08f521c086e3d734d835e7218b5db394ba7b6aa54a96f86"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/implementation_manifest.json",
+    "sha256": "0a756d6bdd0d4c4d3b6257de10265525a7caea405cd1965a4e78c8b77ca9f155",
+    "scope": "Final author seal identity; 588 export evidence and 1134 source/object files independently verified earlier"
+  }
+]

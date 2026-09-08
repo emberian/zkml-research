@@ -1,0 +1,16 @@
+metric,value,unit,classification,source,scope
+setup_through_recipient_finalization,101459136291,ns,EXECUTED,collection.json,one normal run
+public_work_timer_before_sealing,340932174458,ns,EXECUTED,collection.json,excludes final report and inventory writing
+public_closure_checkpoint,341002693166,ns,EXECUTED,collection.json,stdout checkpoint after public evidence seal
+total_harness,342179553250,ns,EXECUTED,collection.json,includes private drain; outside public transcript
+public_processes,112,count,EXECUTED,collection.json,public phase only
+closed_public_files_including_seal,139,count,EXECUTED,collection.json,private paths excluded
+closed_public_bytes_including_seal,11296482,bytes,EXECUTED,collection.json,private paths excluded
+context,342331,bytes,EXECUTED,collection.json,canonical public context
+transcript,724344,bytes,EXECUTED,collection.json,complete domain and queried raw hash prefixes
+state,148147,bytes,EXECUTED,collection.json,frozen envelope
+recipient_output,691,bytes,EXECUTED,collection.json,frozen envelope
+queried_hash_words,577,count,EXECUTED,collection.json,all accepted first candidate
+native_modular_powers_in_public_logs,99382,count,EXECUTED,collection.json,public-phase process reports
+subgroup_checks_in_public_logs,41727,count,EXECUTED,collection.json,public-phase process reports
+single_candidate_failure_bound,577/2^128,probability,DERIVED,CONTRACT.md,ideal independent bits; not concrete SHAKE guarantee

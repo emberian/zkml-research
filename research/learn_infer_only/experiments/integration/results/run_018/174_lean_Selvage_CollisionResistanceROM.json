@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_CollisionResistanceROM",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/CollisionResistanceROM.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/CollisionResistanceROM.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "birthday_bound : \u2200 (q N : \u2115), collisionProb q N \u2264 \u2191q * (\u2191q - 1) / (2 * \u2191N)\n@commitCR_of_RO : \u2200 {D : Type} (q N : \u2115) (A : BreakAdversary D q N),\n  uniformProb (Fin q \u2192 Fin N) A.Wins \u2264 \u2191q * (\u2191q - 1) / (2 * \u2191N)\n@BreakAdversary.wins_breaks_binding : \u2200 {F \u03b9 : Type} {q N : \u2115} (A : BreakAdversary (\u03b9 \u2192 F) q N) {c : Fin q \u2192 Fin N},\n  A.Wins c \u2192 \u2200 (H : (\u03b9 \u2192 F) \u2192 Fin N), (\u2200 (i : Fin q), H (A.query i) = c i) \u2192 \u00ac(roScheme F \u03b9 H).PositionBinding\n@roAnswers_eq_coins : \u2200 {D C : Type} {q : \u2115} (A : ROAdversary D q) (c : Fin q \u2192 C),\n  (oracleRun Oracle.empty (List.ofFn fun i => (A.query i, c i))).2 = List.ofFn c\n",
+  "stderr": "",
+  "elapsed_seconds": 4.822858041996369,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/CollisionResistanceROM.lean",
+  "source_sha256_before": "79464910d31f244ae9ba3f4af7cf3589ddc97b9c401d0d31de47e087fe349957",
+  "source_sha256_after": "79464910d31f244ae9ba3f4af7cf3589ddc97b9c401d0d31de47e087fe349957"
+}

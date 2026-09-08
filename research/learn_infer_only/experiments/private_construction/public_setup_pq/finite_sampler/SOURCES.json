@@ -1,0 +1,61 @@
+{
+  "scope": "Exact repaired parameter artifacts and primary algorithm orientation",
+  "public_input_files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/GRID.json",
+      "sha256": "de246339b8321791cba308e01ef0f929a42d725e3bbdd7a8b533622a7011031a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/REBUILT.json",
+      "sha256": "b945fd60fa17bbd002f229167b915b10b23733be7db65950fe6a119dbcbe8574"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/MANIFEST.json",
+      "sha256": "2f90bee88437465514066d879eddbc3918ab1af6d0c8d6592e63b0750adeef53"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/MODEL_AND_GRID.md",
+      "sha256": "a3b0e6db5cc15d52fb1eee75ae580045391d7d73dd1ee6ac36797486d7eef7c8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/MANIFEST.json",
+      "sha256": "f3a8047121fb86d310daec4488bcbd1a311a7d269486e15f1e392a24d0c75359"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/AUDIT.md",
+      "sha256": "53eeea3fc4e11cd03bcc6229ae47b42ddfe98c274acb4af90145eeb085a9fe57"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/CANDIDATE.md",
+      "sha256": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/SMUDGED_FIXED_COORDINATE.md",
+      "sha256": "a7f98b9f17b0e9b37537ca763697f7a9235df498364df4e0dd774f293d9b9327"
+    }
+  ],
+  "web_sources": [
+    {
+      "url": "https://arxiv.org/html/1303.6257",
+      "seen": "Karney 1303.6257v2, section4 AlgorithmD and rational standard-deviation condition; not a frozen strict-cap implementation"
+    },
+    {
+      "url": "https://falcon-sign.info/impl/sign.c.html",
+      "seen": "Reference source comments1090-1092 (1.8205,72-bit half-Gaussian),1348-1353 (standard-deviation range1..2), BerExp finite-precision source; no runtime"
+    }
+  ],
+  "queries": [
+    "Karney \"Sampling exactly from the normal distribution\" discrete normal algorithm D (domain arxiv.org)",
+    "Falcon reference sampler Gaussian sampler.c official (domain falcon-sign.info)"
+  ],
+  "meter": {
+    "web_search_queries": 2,
+    "web_page_open_calls": 3,
+    "distinct_opened_pages": 2,
+    "in_page_find_calls": 2,
+    "scry_sql_calls": 0,
+    "scry_schema_calls": 0,
+    "pdf_downloads": 0
+  },
+  "scope_limit": "Two targeted primary leads only; no absence claim or inherited practical sampler/security guarantee"
+}

@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "-B",
+    "research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/export_run018.py"
+  ],
+  "elapsed_seconds": 301.5937797499937,
+  "exit_code": 0,
+  "helper_pin_after": {
+    "bytes": 35621,
+    "sha256": "86c3c3305864e6c6abaa78e4bc54d548f851de122fc2ec5de2a5bf903e9cf04a"
+  },
+  "helper_pin_before": {
+    "bytes": 35621,
+    "sha256": "86c3c3305864e6c6abaa78e4bc54d548f851de122fc2ec5de2a5bf903e9cf04a"
+  },
+  "policy_pin": {
+    "bytes": 1553,
+    "sha256": "491b866c9c9184c20d544208ec904ced42a58e774bc11530d4ca9c3b6f7a258e"
+  },
+  "result": {
+    "cohort_sha256": "f0118789533ab124a0366b078f903a4e944cc682a502c816d18786c5b1058e8a",
+    "manifest_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/verified_project_cache_implementation/run018_observed_001/manifest.json",
+    "manifest_pin": {
+      "bytes": 27733321,
+      "sha256": "3c8943f716651ed9db18176f41d7197a6d919c364dda9b8c30520f42a015439f"
+    },
+    "object_directory": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/verified_project_cache/run018_observed_001",
+    "project_modules": 567
+  },
+  "schema": "authorized-run018-observed-export-command-v1",
+  "scope": "New post-success observation, not historical external or ambient environment attestation. No Lean/build/model/crypto or overlay installation.",
+  "started_utc": "2026-09-08T14:34:37.678686+00:00"
+}

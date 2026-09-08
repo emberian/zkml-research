@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "entries_validated": 24,
+  "source_hashes_unchanged": 27,
+  "artifact_hashes": 14,
+  "manifest_sha256": "2f90bee88437465514066d879eddbc3918ab1af6d0c8d6592e63b0750adeef53",
+  "audit_sha256": "84e3180ba5f6409dea7e590bbdd40c449a58a1d325efc773ef63ea11d35951ae",
+  "mapping_sha256": "a3b0e6db5cc15d52fb1eee75ae580045391d7d73dd1ee6ac36797486d7eef7c8",
+  "summary_sha256": "13ebec65a448b1f88831e4b06bff5bec3c92427ecd663b2a02cf6bf7fbab8f95"
+}

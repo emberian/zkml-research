@@ -1,0 +1,11 @@
+Selvage/PowerTwoRootFolding.lean:145:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c - 2*d ≥ 1
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 0
+where
+ a := ↑ell
+ b := ↑m
+ c := ↑2 ^ (1 + ↑j)
+ d := ↑2 ^ ↑j

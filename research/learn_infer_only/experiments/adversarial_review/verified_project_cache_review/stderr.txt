@@ -1,0 +1,36 @@
+test_absent_external_root_is_pinned_and_appearance_invalidates (saved_cache_tests.CacheFilesTest.test_absent_external_root_is_pinned_and_appearance_invalidates) ... ok
+test_changed_dependency_invalidates_reverse_closure (saved_cache_tests.CacheFilesTest.test_changed_dependency_invalidates_reverse_closure) ... ok
+test_compile_source_before_after_binding_required (saved_cache_tests.CacheFilesTest.test_compile_source_before_after_binding_required) ... ok
+test_destination_tamper_or_sidecar_rejected (saved_cache_tests.CacheFilesTest.test_destination_tamper_or_sidecar_rejected) ... ok
+test_empty_directory_namespace_shadow_rejected (saved_cache_tests.CacheFilesTest.test_empty_directory_namespace_shadow_rejected) ... ok
+test_exact_archived_harness_required (saved_cache_tests.CacheFilesTest.test_exact_archived_harness_required) ... ok
+test_export_evidence_tamper_rejected (saved_cache_tests.CacheFilesTest.test_export_evidence_tamper_rejected) ... ok
+test_export_object_symlink_rejected (saved_cache_tests.CacheFilesTest.test_export_object_symlink_rejected) ... ok
+test_export_object_tamper_rejected_before_planning (saved_cache_tests.CacheFilesTest.test_export_object_tamper_rejected_before_planning) ... ok
+test_external_byte_change_rebuilds_everything (saved_cache_tests.CacheFilesTest.test_external_byte_change_rebuilds_everything) ... ok
+test_external_change_after_admission_rejected (saved_cache_tests.CacheFilesTest.test_external_change_after_admission_rejected) ... ok
+test_external_file_link_escape_rejected (saved_cache_tests.CacheFilesTest.test_external_file_link_escape_rejected) ... ok
+test_external_namespace_first_root_rule (saved_cache_tests.CacheFilesTest.test_external_namespace_first_root_rule) ... ok
+test_failed_producer_not_exported (saved_cache_tests.CacheFilesTest.test_failed_producer_not_exported) ... ok
+test_final_output_observation_and_copied_byte_guard (saved_cache_tests.CacheFilesTest.test_final_output_observation_and_copied_byte_guard) ... ok
+test_import_parser_rejects_unsupported_or_cycle (saved_cache_tests.CacheFilesTest.test_import_parser_rejects_unsupported_or_cycle) ... ok
+test_main_project_root_alias_rejected (saved_cache_tests.CacheFilesTest.test_main_project_root_alias_rejected) ... ok
+test_modified_copy_record_cannot_borrow_plan_digest (saved_cache_tests.CacheFilesTest.test_modified_copy_record_cannot_borrow_plan_digest) ... ok
+test_new_module_and_changed_import (saved_cache_tests.CacheFilesTest.test_new_module_and_changed_import) ... ok
+test_noncanonical_export_storage_rejected (saved_cache_tests.CacheFilesTest.test_noncanonical_export_storage_rejected) ... ok
+test_prepopulated_destination_rejected_before_copy (saved_cache_tests.CacheFilesTest.test_prepopulated_destination_rejected_before_copy) ... ok
+test_producer_unknown_sidecar_rejected (saved_cache_tests.CacheFilesTest.test_producer_unknown_sidecar_rejected) ... ok
+test_project_namespace_external_fallback_rejected (saved_cache_tests.CacheFilesTest.test_project_namespace_external_fallback_rejected) ... ok
+test_saved_object_byte_hash_required (saved_cache_tests.CacheFilesTest.test_saved_object_byte_hash_required) ... ok
+test_selected_only_producer_not_exported (saved_cache_tests.CacheFilesTest.test_selected_only_producer_not_exported) ... ok
+test_source_change_after_admission_rejected (saved_cache_tests.CacheFilesTest.test_source_change_after_admission_rejected) ... ok
+test_toolchain_byte_change_rebuilds_everything (saved_cache_tests.CacheFilesTest.test_toolchain_byte_change_rebuilds_everything) ... ok
+test_unchanged_export_plan_and_destination_recheck (saved_cache_tests.CacheFilesTest.test_unchanged_export_plan_and_destination_recheck) ... ok
+test_unrooted_new_selection_rejected (saved_cache_tests.CacheFilesTest.test_unrooted_new_selection_rejected) ... ok
+test_unsupported_policy_field_rejected (saved_cache_tests.CacheFilesTest.test_unsupported_policy_field_rejected) ... ok
+test_wrong_parent_manifest_pin_rejected (saved_cache_tests.CacheFilesTest.test_wrong_parent_manifest_pin_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 2.606s
+
+OK

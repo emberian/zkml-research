@@ -1,4 +1,22 @@
+# Run018 — complete project-source closure
+
+[EXECUTED] All 567 project modules in the four-umbrella import closure compiled from source, including 72 proposed modules with 952 exact guarded theorem pins. Patch application/content equality, both import boundaries and all four umbrellas pass.
+
+[EXECUTED] Started 2026-09-08 05:56:55 UTC; finished 07:22:18 UTC; elapsed 5123.040099 seconds. No selected input, companion source, HEAD or status changed. Existing external package/toolchain artifacts were trusted caches; no original project olean was reused. This is not a clean external-dependency build or an attested historical external-byte cohort.
+
+[EXECUTED] Combined patch SHA256: `82e1ac3f54aa0b82e74c464358724a05be206e358bb634b4f49016a196b3dd18`. The numbered952 snapshot is immutable. Exact command, axiom census, source hashes, all compile logs and output hashes are in this directory. The original harness was archived at run start.
+
+[DERIVED scope] Adds concrete BabyBear carrier/cardinality and the coherent sampled-query schedule to the earlier915-pin set. The later initialized-reference, actual-tower, root-resolution, p3 transport and degree-M curve proposals are separate. No Rust/TFHE, efficient collision extraction, private-release, concrete-hash or QROM claim follows.
+
+
+## Earlier integration records
+
 # Finished-proposal integration
+
+[EXECUTED current proposal, 2026-09-08] **Run017 passes70 modules/915 exact theorem pins**, all four umbrellas, patch application/content and both import boundaries. Use `formal/integration/minidregg-combined-resident-915.patch` (path relative to research/learn_infer_only), SHA256 `00175cda5228163b1626eabf94559ac3d8f406b7635f70dd01976b5301e5c3c6`. The explicit selection is `experiments/integration/modules_overnight_core.json`; the detailed record is `experiments/integration/results/run_017/SUMMARY.md`. Existing dependency artifacts are reused; no companion source is edited.
+
+[DERIVED] This joins the signed-word/emitted-schedule/adaptation proofs and the full unique-decoding closure. It does not establish Rust/TFHE refinement, private release or deployed soundness. Two packaging-instrument failures are preserved as run015/run016. The numbered915 snapshot remains immutable when later selections are generated. Earlier current-language paragraphs below are historical checkpoints.
+
 
 [EXECUTED current check, 2026-09-07] **Run014 passes 53 modules / 708 exact theorem
 pins and all four umbrellas**, using existing read-only dependency oleans. It

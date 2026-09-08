@@ -1,0 +1,7 @@
+'Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

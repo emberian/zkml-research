@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_BaseFoldPoseidon2",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldPoseidon2.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/BaseFoldPoseidon2.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "@friRawAdaptiveEquivocates_implies_poseidon2_collision : \u2200 {ell m qCount : \u2115}\n  (T : FoldingTower E (PowerTwoFriLevels ell) m)\n  (st : RawFriAdaptiveTranscript fun n => openingScheme hashSuite (ell - n)) (r : Fin m \u2192 E)\n  (Q : FriIndependentQuerySchedule (PowerTwoFriLevels ell) m qCount),\n  FriRawAdaptiveEquivocates (fun n => openingScheme hashSuite (ell - n)) T st r qCount Q \u2192\n    LocatedMerkleCollision hashSuite m\n",
+  "stderr": "",
+  "elapsed_seconds": 3.1605661660141777,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/BaseFoldPoseidon2.lean",
+  "source_sha256_before": "b6415ee9876cfa1f805303dfd815b604dc8856f8269bb724aaad664a3470b399",
+  "source_sha256_after": "b6415ee9876cfa1f805303dfd815b604dc8856f8269bb724aaad664a3470b399"
+}

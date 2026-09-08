@@ -1,0 +1,85 @@
+{
+  "scope": "[SOURCE/EXECUTED] Local primary-source math audit; no cryptographic execution",
+  "sources": [
+    {
+      "name": "MKMS2021",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf",
+      "pdf_sha256": "8b5a43ee653081a0d7cf94bc7584e80ed60a6a525c41d15fdc61734ea7c6c20f",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2021-046.txt",
+      "extract_sha256": "1c041f582042c6b811ec56c66e84d734c0cee36f7a7823c333b9360ab5fdcf2c",
+      "seen": "Definitions and Gaussian convention pp8\u201310; multi-hint reduction pp13\u201315; ring LHL Theorem2 pp15\u201316 and AppendixB pp34\u201336; selective/adaptive algorithms pp16/21; adaptive proof p39",
+      "primary_metadata_url": "https://eprint.iacr.org/2021/046"
+    },
+    {
+      "name": "SS2013",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/004.pdf",
+      "pdf_sha256": "0c361701dbc39786deeafc40a97c64b3a64ad88b48ec588ee000dcb0f62dc403",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2013-004.txt",
+      "extract_sha256": "44a98b57d8c9182d65c4b12ee10dc7dd9c144230965dd90eac2ebc6b31c2a3fe",
+      "seen": "Gaussian pi convention p6; Lemmas2.1/2.4 p7 (rendered); ideal short-vector/coefficient-counting Lemma3.2 pp15\u201316",
+      "primary_metadata_url": "https://eprint.iacr.org/2013/004"
+    },
+    {
+      "name": "LPR2013",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/293.pdf",
+      "pdf_sha256": "6b22c0bca6f3234a3aaa769a42c106c1816b12edffef2332bf7835c78d3c21e0",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2013-293.txt",
+      "extract_sha256": "bb8e859a3184bff5870150932861b46e4c29dcd354e3cdbea4dc98fc94dc5e56",
+      "seen": "CRT Lemma2.19 and uniform-secret/discrete Ring-LWE definitions 2.20\u20132.21/section2.6 p20; regularity section7 pp34\u201337, including ideal-obstruction discussion; no finite hardness theorem imported",
+      "primary_metadata_url": "https://eprint.iacr.org/2013/293"
+    },
+    {
+      "name": "GPV2007",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/432.pdf",
+      "pdf_sha256": "7e747881cddd16b7dcf82893682cb9b4c788d7cec5712f80aa4193f2bd30a5b3",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2007-432.txt",
+      "extract_sha256": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646",
+      "seen": "Corollary2.8 quotient regularity p10; inverse-short-vector smoothing is instead sourced to SS2013 Lemma2.1",
+      "primary_metadata_url": "https://eprint.iacr.org/2007/432"
+    },
+    {
+      "name": "cuFE2022",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/482.pdf",
+      "pdf_sha256": "e16111c402946a2ca79ad346f22f117b702fcc037144c57505189d1b0364a2ff",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2022-482.txt",
+      "extract_sha256": "b3522e2f376ef5e84a03172f2072ccd986249fc55c559901d542d7c9363390bc",
+      "seen": "Abstract/implementation provenance lead and targeted original-scheme references only; no implementation security guarantee used",
+      "primary_metadata_url": "https://eprint.iacr.org/2022/482"
+    },
+    {
+      "name": "AK2023",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/721.pdf",
+      "pdf_sha256": "68ad1d2d2c8d833306c4c6b5f40ad8b100992e01539917058e83fdd01b5b224f",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2023-721.txt",
+      "extract_sha256": "a1339ac3f48afc4e2c5a4306668fa6480d63fc01573ec575b4355507abbdf89a",
+      "seen": "Section3.4 pp4\u20135 selective-scheme algorithms and original-scheme attribution; implementation performance not imported",
+      "primary_metadata_url": "https://eprint.iacr.org/2023/721"
+    }
+  ],
+  "frozen_scalar_math_reference": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/SMUDGED_FIXED_COORDINATE.md",
+    "sha256": "a7f98b9f17b0e9b37537ca763697f7a9235df498364df4e0dd774f293d9b9327",
+    "used": "exact integer interval shift inequality and scalar-window encoding only; scalar matrix regularity and hardness results excluded"
+  },
+  "query_meter": {
+    "scry_sql_calls_including_errors": 2,
+    "scry_sql_successes": 1,
+    "scry_capacity_errors": 1,
+    "scry_schema_calls": 0,
+    "primary_web_search_queries": 4,
+    "primary_page_opens": 0,
+    "pdf_downloads": 0,
+    "eprint_pdf_downloads": 0,
+    "kagi_queries": 0
+  },
+  "web_queries": [
+    "\"inner product functional encryption\" \"ring\" LWE",
+    "\"inner product\" \"functional encryption\" \"module-LWE\"",
+    "\"Making NTRU as secure as\" eprint",
+    "\"Limits on the hardness of lattice problems\" Peikert pdf"
+  ],
+  "scry_query": "SELECT id, title, doi, primary_location.landing_page_url, publication_year FROM openalex.works WHERE hasAllTokens(search_text_lc, ['inner', 'product', 'encryption']) AND (hasToken(search_text_lc, 'ring') OR hasToken(search_text_lc, 'module')) ORDER BY publication_year DESC LIMIT 15",
+  "coverage_limit": "Targeted orientation only; no field-wide absence claim. Scry result supplied one metadata-only title, not selected for proof. All read PDFs came from the absolute local mirror.",
+  "local_render_note": "MKMS p15 and SS p7 visually inspected. SS Type3 font warnings did not prevent a readable formula render.",
+  "scry_retry": "Same query retried exactly once after saved query_capacity_exhausted response."
+}

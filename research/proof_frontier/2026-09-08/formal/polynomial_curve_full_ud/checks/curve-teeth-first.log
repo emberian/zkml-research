@@ -1,0 +1,31 @@
+Selvage/CurveFullUDTeeth.lean:18:10: error(lean.unknownIdentifier): Unknown constant `Polynomial.degree_add_lt`
+Selvage/CurveFullUDTeeth.lean:30:49: error: don't know how to synthesize implicit argument `M`
+  @curveWord (ZMod 101) (ZMod.instField 101) (Fin 5) (?m.108 i) (fun j => corruptedWord ↑j) z i
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+v : Fin (M + 1) → Fin 5 → ZMod 101 := ⋯
+i : Fin 5
+⊢ ℕ
+Selvage/CurveFullUDTeeth.lean:30:83: error: don't know how to synthesize implicit argument `n`
+  @Fin.val (?m.108 i + 1) j
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+v : Fin (M + 1) → Fin 5 → ZMod 101 := ⋯
+i : Fin 5
+j : Fin (?m.108 i + 1)
+⊢ ℕ
+Selvage/CurveFullUDTeeth.lean:30:64: error(lean.inferBinderTypeFailed): Failed to infer type of binder `j`
+Selvage/CurveFullUDTeeth.lean:85:35: error: Type mismatch
+  eq_univ_of_card ?m.77
+has type
+  #?m.77 = Fintype.card ?m.75 → ?m.77 = univ
+but is expected to have type
+  S = univ

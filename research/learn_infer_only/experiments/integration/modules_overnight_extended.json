@@ -1,0 +1,333 @@
+{
+  "schema": 1,
+  "expected_theorem_pins": 1117,
+  "scope": "Prepared follow-up to running952-pin project-source closure: execution19/CSE18/initialized-reference29, root-resolution36, actual tower48 and query-transport15. Packages have isolated checks; query transport independent review underway. No combined result yet. Noncomputable semantic BadRoots is not efficient collision advantage; concrete Rust/p3 higher-arity probability, Fiat-Shamir and QROM remain separate.",
+  "lanes": [
+    {
+      "name": "resident",
+      "root": "formal",
+      "patch": "formal/minidregg-resident-release.patch",
+      "expected_pins": 31
+    },
+    {
+      "name": "policy",
+      "root": "formal/recovery_policy",
+      "patch": "formal/recovery_policy/minidregg-private-policy-evolution.patch",
+      "expected_pins": 15
+    },
+    {
+      "name": "durable",
+      "root": "formal/durable_integration",
+      "patch": "formal/durable_integration/minidregg-durable-integration.patch",
+      "expected_pins": 45
+    },
+    {
+      "name": "randomness",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-randomness-selection.patch",
+      "expected_pins": 13
+    },
+    {
+      "name": "adaptive",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-adaptive-context.patch",
+      "expected_pins": 13
+    },
+    {
+      "name": "schedule",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-multi-receipt-schedule.patch",
+      "expected_pins": 20
+    },
+    {
+      "name": "bfv_lift",
+      "root": "formal/bfv_lift_refinement",
+      "patch": "formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+      "expected_pins": 27
+    },
+    {
+      "name": "bfv_engine",
+      "root": "formal/bfv_lift_refinement/engine_refinement",
+      "patch": "formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+      "expected_pins": 33
+    },
+    {
+      "name": "integer",
+      "root": "formal/integer_certificate_emission",
+      "patch": "formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch",
+      "expected_pins": 20
+    },
+    {
+      "name": "ema",
+      "root": "formal/durable_integration",
+      "patch": "formal/durable_integration/minidregg-ema-semantic-bridge.patch",
+      "expected_pins": 48
+    },
+    {
+      "name": "generic_contextual_ema",
+      "root": "formal/randomness_composition/generic",
+      "patch": "formal/randomness_composition/generic/minidregg-contextual-gate-ema.patch",
+      "expected_pins": 42
+    },
+    {
+      "name": "distribution_budget",
+      "root": "formal/recovery_policy",
+      "patch": "formal/recovery_policy/minidregg-private-distribution-budget.patch",
+      "expected_pins": 14
+    },
+    {
+      "name": "air_simplification",
+      "root": "formal/integer_certificate_emission/optimization",
+      "patch": "formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch",
+      "expected_pins": 27
+    },
+    {
+      "name": "bfv_source_certificate",
+      "root": "formal/bfv_lift_refinement/source_certificate",
+      "patch": "formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch",
+      "expected_pins": 23
+    },
+    {
+      "name": "ciphertext_window",
+      "root": "formal/durable_integration/bfv_window",
+      "patch": "formal/durable_integration/bfv_window/minidregg-ciphertext-window.patch",
+      "expected_pins": 44
+    },
+    {
+      "name": "window_noise",
+      "root": "formal/he_closure_costs",
+      "patch": "experiments/he_closure_costs/window_formal/proposed_minidregg.patch",
+      "expected_pins": 62
+    },
+    {
+      "name": "bfv_target_projection",
+      "root": "formal/bfv_lift_refinement/target_projection",
+      "patch": "formal/bfv_lift_refinement/target_projection/minidregg-fhe-target-projection.patch",
+      "expected_pins": 22
+    },
+    {
+      "name": "mixed_oracle_phases",
+      "root": "formal/randomness_composition/mixed",
+      "patch": "formal/randomness_composition/mixed/minidregg-mixed-oracle-phases.patch",
+      "expected_pins": 29
+    },
+    {
+      "name": "horizon_arithmetic",
+      "root": "formal/horizon_composition",
+      "patch": "formal/horizon_composition/minidregg-horizon-arithmetic.patch",
+      "expected_pins": 40
+    },
+    {
+      "name": "bfv_source_phase",
+      "root": "formal/he_closure_costs/source_phase",
+      "patch": "formal/he_closure_costs/source_phase/minidregg-bfv-source-phase.patch",
+      "expected_pins": 45
+    },
+    {
+      "name": "bfv_modular_words",
+      "root": "formal/bfv_lift_refinement/modular_lowering",
+      "patch": "formal/bfv_lift_refinement/modular_lowering/minidregg-fhe-modular-lowering.patch",
+      "expected_pins": 38
+    },
+    {
+      "name": "window_frame",
+      "root": "formal/durable_integration/window_frame",
+      "patch": "formal/durable_integration/window_frame/minidregg-window-frame.patch",
+      "expected_pins": 23
+    },
+    {
+      "name": "bfv_source_window",
+      "root": "formal/he_closure_costs/source_phase",
+      "patch": "formal/he_closure_costs/source_phase/noise_window/minidregg-bfv-source-window.patch",
+      "expected_pins": 34
+    },
+    {
+      "name": "private_address_ema",
+      "root": "formal/private_address_ema",
+      "patch": "formal/private_address_ema/minidregg-private-address-ema.patch",
+      "expected_pins": 28
+    },
+    {
+      "name": "private_address_ema_schedule",
+      "root": "formal/private_address_ema/emitted_schedule",
+      "patch": "formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch",
+      "expected_pins": 46
+    },
+    {
+      "expected_pins": 28,
+      "name": "private_ema_dynamics",
+      "patch": "formal/private_ema_dynamics/minidregg-private-ema-dynamics.patch",
+      "requires": [
+        "private_address_ema"
+      ],
+      "root": "formal/private_ema_dynamics"
+    },
+    {
+      "name": "polynomial_matrix_kernel_all_pins",
+      "root": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor",
+      "patch": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/polynomial-kernel.patch",
+      "expected_pins": 16,
+      "source_files": {
+        "Theory/PolynomialMatrixKernel.lean": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean"
+      }
+    },
+    {
+      "name": "polynomial_gluing_universe",
+      "root": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor",
+      "patch": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/polynomial-gluing-universe.patch",
+      "expected_pins": 51,
+      "source_files": {
+        "Theory/PolynomialBivariate.lean": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean",
+        "Theory/PolynomialGluingStatement.lean": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean",
+        "Theory/PolynomialGluing.lean": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean"
+      }
+    },
+    {
+      "name": "full_unique_decoding",
+      "root": "../proof_frontier/2026-09-08/formal/full_ud/src",
+      "patch": "../proof_frontier/2026-09-08/formal/full_ud/full-ud.patch",
+      "expected_pins": 38
+    },
+    {
+      "name": "overnight_full_ud_umbrella_wiring",
+      "root": "formal/integration",
+      "patch": "formal/integration/overnight_umbrella_wiring.patch",
+      "expected_pins": 0
+    },
+    {
+      "name": "full_ud_babybear",
+      "root": "../proof_frontier/2026-09-08/formal/full_ud_babybear",
+      "patch": "../proof_frontier/2026-09-08/formal/full_ud_babybear/babybear-full-ud.patch",
+      "expected_pins": 12,
+      "source_files": {
+        "Selvage/BabyBearFullUD.lean": "../proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean"
+      }
+    },
+    {
+      "name": "full_ud_sampling_budget",
+      "root": "../proof_frontier/2026-09-08/formal/full_ud_sampling_budget",
+      "patch": "../proof_frontier/2026-09-08/formal/full_ud_sampling_budget/full-ud-sampling-budget.patch",
+      "expected_pins": 25,
+      "source_files": {
+        "Selvage/FullUDSamplingBudget.lean": "../proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean"
+      }
+    },
+    {
+      "name": "overnight_sampled_umbrella_wiring",
+      "root": "formal/integration",
+      "patch": "formal/integration/overnight_sampled_umbrella_wiring.patch",
+      "expected_pins": 0
+    },
+    {
+      "name": "emitted_schedule_execution",
+      "root": "formal/emitted_schedule_execution",
+      "patch": "formal/emitted_schedule_execution/minidregg-emitted-schedule-execution.patch",
+      "expected_pins": 19,
+      "depends_on": [
+        "private_address_ema",
+        "private_address_ema_schedule"
+      ]
+    },
+    {
+      "name": "cse_structure",
+      "root": "formal/cse_structure",
+      "patch": "formal/cse_structure/minidregg-cse-structure.patch",
+      "expected_pins": 18,
+      "depends_on": [
+        "private_address_ema",
+        "private_address_ema_schedule",
+        "emitted_schedule_execution"
+      ]
+    },
+    {
+      "name": "full_ud_commitment_timing",
+      "root": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing",
+      "patch": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/full-ud-commitment-timing.patch",
+      "expected_pins": 36,
+      "source_files": {
+        "Selvage/OpeningResolution.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/OpeningResolution.lean",
+        "Selvage/FriRootResolution.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolution.lean",
+        "Selvage/FriRootResolutionSoundness.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolutionSoundness.lean",
+        "Selvage/FriRootResolutionWitnesses.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolutionWitnesses.lean",
+        "Selvage/BabyBearFriRootResolution.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/BabyBearFriRootResolution.lean"
+      }
+    },
+    {
+      "name": "babybear_folding_tower",
+      "root": "../proof_frontier/2026-09-08/formal/babybear_folding_tower",
+      "patch": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/babybear-folding-tower.patch",
+      "expected_pins": 48,
+      "source_files": {
+        "Selvage/BabyBearTwoAdic.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearTwoAdic.lean",
+        "Selvage/PowerTwoRootFolding.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/PowerTwoRootFolding.lean",
+        "Selvage/BabyBearFoldingTower.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingTower.lean",
+        "Selvage/BabyBearFoldingWitnesses.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingWitnesses.lean"
+      }
+    },
+    {
+      "name": "cse_initialized_references",
+      "root": "formal/cse_initialized_references",
+      "patch": "formal/cse_initialized_references/minidregg-cse-initialized-references.patch",
+      "expected_pins": 29,
+      "depends_on": [
+        "private_address_ema",
+        "private_address_ema_schedule",
+        "emitted_schedule_execution",
+        "cse_structure"
+      ]
+    },
+    {
+      "name": "p3_folding_transport",
+      "root": "../proof_frontier/2026-09-08/p3_folding_transport/formal",
+      "patch": "../proof_frontier/2026-09-08/p3_folding_transport/formal/minidregg-p3-query-transport.patch",
+      "expected_pins": 15,
+      "source_files": {
+        "Theory/BitReverseFriTransport.lean": "../proof_frontier/2026-09-08/p3_folding_transport/formal/src/Theory/BitReverseFriTransport.lean",
+        "Selvage/P3FriQueryTransport.lean": "../proof_frontier/2026-09-08/p3_folding_transport/formal/src/Selvage/P3FriQueryTransport.lean"
+      }
+    },
+    {
+      "name": "overnight_extended_umbrella_wiring",
+      "root": "formal/integration",
+      "patch": "formal/integration/overnight_extended_umbrella_wiring.patch",
+      "expected_pins": 0
+    }
+  ],
+  "checks": [
+    "formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean",
+    "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean"
+  ],
+  "excluded": [
+    {
+      "glob": "experiments/adversarial_review/**/*.lean",
+      "reason": "Independent review witnesses and snapshots are not proposed umbrella modules."
+    },
+    {
+      "glob": "formal/**/build/**",
+      "reason": "Generated overlays are not source-discovery inputs."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateChecks.lean",
+      "reason": "Executable IO check runner; not part of the six proposed library modules."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateRetain.lean",
+      "reason": "Executable IO retention runner; not an umbrella import."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionChecks.lean",
+      "reason": "Executable IO runner is not one of the five proposed library modules."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionAxiomReport.lean",
+      "reason": "Auxiliary report runner is not a rooted proposed library module."
+    }
+  ],
+  "support_files": [
+    {
+      "source": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/ArkLib-Apache-2.0.txt",
+      "destination": "LICENSES/ArkLib-Apache-2.0.txt",
+      "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851"
+    }
+  ]
+}

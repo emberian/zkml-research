@@ -1,0 +1,49 @@
+{
+  "scope": "Pure finite mathematics; no cryptographic evaluation or Lean build.",
+  "semantic": [
+    {
+      "n": 2,
+      "tables": 64,
+      "fixed_index_tables": 56,
+      "full_double_opening_tables": 60,
+      "fixed_index_probability": "7/8",
+      "full_double_opening_probability": "15/16",
+      "observed_conflicts": 0
+    },
+    {
+      "n": 3,
+      "tables": 177147,
+      "fixed_index_tables": 142155,
+      "full_double_opening_tables": 161595,
+      "fixed_index_probability": "65/81",
+      "full_double_opening_probability": "665/729",
+      "observed_conflicts": 0
+    }
+  ],
+  "prefix": {
+    "cases": 1618176,
+    "accepted": 809088,
+    "mismatches": 400064,
+    "unflagged_accepted": 1728,
+    "unflagged_mismatches": 0,
+    "by_depth": {
+      "0": 38528,
+      "1": 154112,
+      "2": 616448
+    }
+  },
+  "budget_integer_checks": 2145,
+  "nonvacuity": {
+    "word": [
+      1,
+      4,
+      4,
+      1
+    ],
+    "unflagged": true,
+    "affine_words": 25,
+    "minimum_distance": "1/2",
+    "accepting_challenge_query_pairs": 5,
+    "challenge_query_pairs": 10
+  }
+}

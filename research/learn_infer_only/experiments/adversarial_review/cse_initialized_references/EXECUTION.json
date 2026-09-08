@@ -1,0 +1,21 @@
+{
+  "commands": [
+    {
+      "command": "python3 -B research/learn_infer_only/experiments/adversarial_review/cse_initialized_references/presence_check.py > research/learn_infer_only/experiments/adversarial_review/cse_initialized_references/presence_check.log",
+      "exit_code": 0,
+      "stdout": "presence_check.log",
+      "results": "presence_results.json"
+    },
+    {
+      "command": "python3 -B research/learn_infer_only/experiments/adversarial_review/cse_initialized_references/check_evidence.py --manifest-sha256 1c8d73ab40a06bde6dbed4b045d78d67d7fced01c5013141047ac40dc305c5c5 > research/learn_infer_only/experiments/adversarial_review/cse_initialized_references/evidence_check.log",
+      "exit_code": 0,
+      "stdout": "evidence_check.log",
+      "results": "evidence_results.json"
+    }
+  ],
+  "Lean_commands": 0,
+  "gate_operations_evaluated": 0,
+  "cryptographic_operations": 0,
+  "web_queries": 0,
+  "Scry_queries": 0
+}

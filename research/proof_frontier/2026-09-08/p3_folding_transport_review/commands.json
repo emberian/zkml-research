@@ -1,0 +1,68 @@
+[
+  {
+    "command": [
+      "git",
+      "show",
+      "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd:Theory.lean"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "<baseline umbrella bytes checked and hashed>",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "show",
+      "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd:Selvage.lean"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "<baseline umbrella bytes checked and hashed>",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "init",
+      "-q"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport_review/patch_2flpnmrl",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport/formal/minidregg-p3-query-transport.patch"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport_review/patch_2flpnmrl",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport/formal/minidregg-p3-query-transport.patch"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport_review/patch_2flpnmrl",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport_review/arithmetic_yak263qx/check_transport.py"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport_review/arithmetic_yak263qx",
+    "exit_code": 0,
+    "stdout": "<retained in author_replay.json>",
+    "stderr": ""
+  }
+]

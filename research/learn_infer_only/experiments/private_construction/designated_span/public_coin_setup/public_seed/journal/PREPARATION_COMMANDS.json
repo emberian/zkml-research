@@ -1,0 +1,23 @@
+{
+  "preparation_command": "python3 -B research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/driver.py prepare --reports research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/reports/normal_001",
+  "exit_code": 0,
+  "retained_stdout": {
+    "prepared": true,
+    "source_files": 44,
+    "signature_files": 79,
+    "crypto_commands": 0,
+    "services": 0
+  },
+  "initial_inventory": {
+    "runtime_exists": false,
+    "reports_exists": false
+  },
+  "initial_process_census": "ps -axo pid,ppid,pgid,etime,command | rg 'public_seed/journal|public-seed-journal'",
+  "initial_process_census_scope": "Only the querying shell and rg were present; no journal successor worker was found.",
+  "pure_preparation_checks": "PREPARATION_CHECK.json; source hashes/origins/modes, Python ASTs and fixed public event indices only",
+  "recheck_command": "python3 -B verify_preparation.py > PREPARATION_RECHECK.json",
+  "runtime_authorized": false,
+  "runtime_launched": false,
+  "recheck_exit_code": 0,
+  "initial_recheck_failure": "Read-only collector review-directory parent index typo; preserved in preparation_recheck_001_source.py and preparation_recheck_001.json; no frozen source or runtime changed."
+}

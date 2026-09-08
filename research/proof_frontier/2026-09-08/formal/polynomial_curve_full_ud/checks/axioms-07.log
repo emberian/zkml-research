@@ -1,0 +1,4 @@
+'_private.Selvage.CurveFullUDCore.0.Minidregg.Selvage.curve_rs_nearby_polynomial' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.curveFullUDCardCore' depends on axioms: [propext, Classical.choice, Quot.sound]

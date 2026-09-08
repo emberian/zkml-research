@@ -1,0 +1,6 @@
+/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/RingTheory/Polynomial/Resultant/Basic.lean:929:  f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
+/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/RingTheory/Polynomial/Resultant/Basic.lean:1016:  rw [discr, ← Matrix.det_reindex_self e, sylvesterDeriv_of_natDegree_eq_three hf]
+/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/LinearAlgebra/Matrix/Polynomial.lean:40:theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
+/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/LinearAlgebra/Matrix/Polynomial.lean:41:    natDegree (det ((X : α[X]) • A.map C + B.map C : Matrix n n α[X])) ≤ Fintype.card n := by
+/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/LinearAlgebra/Matrix/Polynomial.lean:92:  rcases (natDegree_det_X_add_C_le 1 A).eq_or_lt with h | h
+/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/LinearAlgebra/Matrix/Charpoly/Eigs.lean:85:  rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim B,

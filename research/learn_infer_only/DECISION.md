@@ -1,5 +1,9 @@
 # Decision: demonstrate the designated-recipient learner with durable verification
 
+[DERIVED closeout decision, 2026-09-08] We now have substantial end-to-end demonstrations of encrypted continuation, durable verification and designated recipients, plus a completed nonlinear encrypted trajectory. The next decisive construction gap is their composition with genuinely restricted cryptographic release: the nonlinear tests retain a full reader, and exposed fixed-span credentials permit reads outside the journal. The completed public-seed adapter removes scalar-master construction under its stated model, not the recipient coalition's fixed-span power. No full mental-autarky claim follows. Prior paragraphs describing ongoing runs are historical; STATUS.md records their completion.
+
+[DERIVED priority] Finish review of the already prepared public-seed journal join and the 1,189-pin integration proposal; then pursue one explicit restricted-release construction/game or a precisely scoped obstruction. The reviewed ring and finite-sampler work provide a conditional PQ direction with a severe cost bill, not a ready replacement backend.
+
 [DERIVED recovery decision, 2026-09-07] The next concrete milestone is the
 public-coin setup plus durable designated journal. Both components separately
 run; their exact joined successor is unfinished. The full original designated

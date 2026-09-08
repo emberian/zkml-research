@@ -1,0 +1,215 @@
+{
+  "all_checks_passed": true,
+  "source_sha256": {
+    "Theory/BitReverseFriTransport.lean": "f546b123f49632cbe3284baa23c3f12943529f7c2b8231e87f7ac71b2c2399cf",
+    "Selvage/P3FriQueryTransport.lean": "9cfbb720613e77e3652c7de8ddf7ebac9e39322ad36e49bf7c43ff6b09f3c176"
+  },
+  "patch_sha256": "a853d61feffbe71802b46ddaf086b93a378246116abf429feef5fed870d48bca",
+  "theorem_count": 15,
+  "census": [
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.reverse_high_eq_low_reverse",
+      "line": 25,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.projection_transport",
+      "line": 35,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.bounded_extract",
+      "line": 40,
+      "axioms": [
+        "propext"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.query_transport",
+      "line": 46,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.query_transport_composition",
+      "line": 55,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.binary_coherent_index",
+      "line": 63,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.reverse_involution",
+      "line": 70,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.reverseIndex_lt",
+      "line": 73,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.source_premises_inhabited",
+      "line": 82,
+      "axioms": [
+        "propext"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.source_index_subject",
+      "line": 84,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Theory/BitReverseFriTransport.lean",
+      "name": "Minidregg.Theory.BitReverseFriTransport.wrong_projection_refused",
+      "line": 89,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Selvage/P3FriQueryTransport.lean",
+      "name": "Minidregg.Selvage.P3FriQueryTransport.existing_coherent_transport",
+      "line": 24,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Selvage/P3FriQueryTransport.lean",
+      "name": "Minidregg.Selvage.P3FriQueryTransport.actual_dimension_premises",
+      "line": 28,
+      "axioms": [
+        "propext"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Selvage/P3FriQueryTransport.lean",
+      "name": "Minidregg.Selvage.P3FriQueryTransport.actual_dimension_subject",
+      "line": 31,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    },
+    {
+      "module": "Selvage/P3FriQueryTransport.lean",
+      "name": "Minidregg.Selvage.P3FriQueryTransport.natural_untransported_index_refused",
+      "line": 37,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "exact_pin": true
+    }
+  ],
+  "clean_lean_checks": {
+    "Theory/BitReverseFriTransport.lean": "logs/lean_009.json",
+    "Selvage/P3FriQueryTransport.lean": "logs/selvage_005.json"
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/p3_query_transport_patch_pej6txa1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport/formal/minidregg-p3-query-transport.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/p3_query_transport_patch_pej6txa1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport/formal/minidregg-p3-query-transport.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/p3_query_transport_patch_pej6txa1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/tmp/minidregg-p3-folding-transport-20260908",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    }
+  ],
+  "source_bytes_match_patch": true,
+  "import_boundary": true,
+  "full_closure_build": false,
+  "scope": "Generic BitVec index transport and direct existing coherent-index wrapper; no folding arithmetic or probability theorem added."
+}

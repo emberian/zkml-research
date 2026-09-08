@@ -1,0 +1,8 @@
+Selvage/CurveFullUDCore.lean:241:25: error: Application type mismatch: The argument
+  add_lt_add_left hfrac ?m.1726
+has type
+  ↑(M * (e + 1)) / ↑(#good) + ?m.1726 < ↑(e + 1) / ↑n + ?m.1726
+but is expected to have type
+  ↑(e + deg - 1) / ↑n + ↑(M * (e + 1)) / ↑(#good) < ↑(e + deg - 1) / ↑n + ↑(e + 1) / ↑n
+in the application
+  lt_of_lt_of_le (add_lt_add_left hfrac ?m.1726)

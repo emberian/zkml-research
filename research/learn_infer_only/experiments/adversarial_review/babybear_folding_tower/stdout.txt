@@ -1,0 +1,520 @@
+{
+  "status": "PASS",
+  "scope": "Independent source/axiom/patch census and pure modular/rational arithmetic. No Lean or cryptographic execution.",
+  "author_manifest_sha256": "ae965e4e43fdded42b7992ee8ee9a1a265085c9ab861e2c481fef75ca1e14dc2",
+  "author_patch_sha256": "900f184c759ff80a1debe2e585ca9f493b4bd13d65a77feb8762f9d07651779a",
+  "author_modules": [
+    {
+      "path": "Selvage/BabyBearTwoAdic.lean",
+      "theorems": 13,
+      "guards": 13,
+      "saved_exit_code": 0
+    },
+    {
+      "path": "Selvage/PowerTwoRootFolding.lean",
+      "theorems": 9,
+      "guards": 9,
+      "saved_exit_code": 0
+    },
+    {
+      "path": "Selvage/BabyBearFoldingTower.lean",
+      "theorems": 16,
+      "guards": 16,
+      "saved_exit_code": 0
+    },
+    {
+      "path": "Selvage/BabyBearFoldingWitnesses.lean",
+      "theorems": 10,
+      "guards": 10,
+      "saved_exit_code": 0
+    }
+  ],
+  "qualified_declarations": [
+    {
+      "name": "generator_source_value",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value",
+      "private": false,
+      "line": 25
+    },
+    {
+      "name": "generator_half_order",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order",
+      "private": false,
+      "line": 28
+    },
+    {
+      "name": "generator_full_order",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order",
+      "private": false,
+      "line": 33
+    },
+    {
+      "name": "generator_primitive",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive",
+      "private": false,
+      "line": 39
+    },
+    {
+      "name": "generator_contract",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract",
+      "private": false,
+      "line": 48
+    },
+    {
+      "name": "generator_premise_inhabited",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited",
+      "private": false,
+      "line": 52
+    },
+    {
+      "name": "squared_generator_falsifier",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier",
+      "private": false,
+      "line": 57
+    },
+    {
+      "name": "extension_generator_primitive",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive",
+      "private": false,
+      "line": 66
+    },
+    {
+      "name": "omega20_source_value",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value",
+      "private": false,
+      "line": 73
+    },
+    {
+      "name": "omega_primitive",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive",
+      "private": false,
+      "line": 79
+    },
+    {
+      "name": "omega_ne_zero",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero",
+      "private": false,
+      "line": 85
+    },
+    {
+      "name": "omega_square",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square",
+      "private": false,
+      "line": 89
+    },
+    {
+      "name": "omega_half_turn",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn",
+      "private": false,
+      "line": 97
+    },
+    {
+      "name": "levelRoot_primitive",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_primitive",
+      "private": false,
+      "line": 26
+    },
+    {
+      "name": "levelRoot_pow_mod",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_pow_mod",
+      "private": false,
+      "line": 34
+    },
+    {
+      "name": "size_halves",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.size_halves",
+      "private": false,
+      "line": 56
+    },
+    {
+      "name": "levelRoot_succ",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_succ",
+      "private": false,
+      "line": 81
+    },
+    {
+      "name": "levelRoot_half_turn",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_half_turn",
+      "private": false,
+      "line": 86
+    },
+    {
+      "name": "negative_section",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.negative_section",
+      "private": false,
+      "line": 93
+    },
+    {
+      "name": "tower_contract",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.tower_contract",
+      "private": false,
+      "line": 129
+    },
+    {
+      "name": "coherent_index_powers",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.coherent_index_powers",
+      "private": false,
+      "line": 134
+    },
+    {
+      "name": "fold_pair",
+      "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.fold_pair",
+      "private": false,
+      "line": 150
+    },
+    {
+      "name": "initialRoot_primitive",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive",
+      "private": false,
+      "line": 25
+    },
+    {
+      "name": "two_ne_zero",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero",
+      "private": false,
+      "line": 29
+    },
+    {
+      "name": "correctness",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness",
+      "private": false,
+      "line": 39
+    },
+    {
+      "name": "tower_premise_inhabited",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited",
+      "private": false,
+      "line": 43
+    },
+    {
+      "name": "levelRoot_source",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source",
+      "private": false,
+      "line": 48
+    },
+    {
+      "name": "domain_source",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source",
+      "private": false,
+      "line": 56
+    },
+    {
+      "name": "domain_ne_zero",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero",
+      "private": false,
+      "line": 62
+    },
+    {
+      "name": "initial_domain_zero_index",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index",
+      "private": false,
+      "line": 66
+    },
+    {
+      "name": "consecutive_domain_falsifier",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier",
+      "private": false,
+      "line": 71
+    },
+    {
+      "name": "farWord_not_mem",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem",
+      "private": false,
+      "line": 85
+    },
+    {
+      "name": "farWord_mem_successor",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor",
+      "private": false,
+      "line": 106
+    },
+    {
+      "name": "farWord_relDist",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist",
+      "private": false,
+      "line": 111
+    },
+    {
+      "name": "farWord_far",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far",
+      "private": false,
+      "line": 123
+    },
+    {
+      "name": "source_degree_falsifier",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier",
+      "private": false,
+      "line": 130
+    },
+    {
+      "name": "tower_and_farness_inhabited",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited",
+      "private": false,
+      "line": 135
+    },
+    {
+      "name": "coherent_sound",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound",
+      "private": false,
+      "line": 144
+    },
+    {
+      "name": "first_fold",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold",
+      "private": false,
+      "line": 38
+    },
+    {
+      "name": "first_fold_zero",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero",
+      "private": false,
+      "line": 52
+    },
+    {
+      "name": "first_fold_one",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one",
+      "private": false,
+      "line": 59
+    },
+    {
+      "name": "initial_farness",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness",
+      "private": false,
+      "line": 67
+    },
+    {
+      "name": "zero_fold_equation",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation",
+      "private": false,
+      "line": 72
+    },
+    {
+      "name": "zero_queries_accept",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept",
+      "private": false,
+      "line": 85
+    },
+    {
+      "name": "consumer_inhabited",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited",
+      "private": false,
+      "line": 112
+    },
+    {
+      "name": "query_one_falsifier",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier",
+      "private": false,
+      "line": 117
+    },
+    {
+      "name": "witnessed_probability_positive",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive",
+      "private": false,
+      "line": 128
+    },
+    {
+      "name": "witnessed_sound",
+      "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound",
+      "private": false,
+      "line": 145
+    }
+  ],
+  "guard_axiom_sets": [
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "count": 46
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "count": 2
+    }
+  ],
+  "frozen_dependency_count": 16,
+  "frozen_source_evidence_files": 14,
+  "seven_base_module_bytes_match_isolated_checkout": true,
+  "patch_reconstructs_only_four_additive_files": {
+    "Selvage/BabyBearTwoAdic.lean": "470ebf789a733f160523e816570079bb08ef05276b5b025b92d0fd60379b5eb0",
+    "Selvage/PowerTwoRootFolding.lean": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+    "Selvage/BabyBearFoldingTower.lean": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+    "Selvage/BabyBearFoldingWitnesses.lean": "5d22c5a62ffac9030378b4fbcf747bf13aad468001a48955ce95485f9c3fdb0f"
+  },
+  "isolated_toolchain": "leanprover/lean4:v4.30.0",
+  "base_prime": 2013265921,
+  "generator": 440564289,
+  "all_28_p3_root_entries_match": true,
+  "root_table": [
+    1,
+    2013265920,
+    1728404513,
+    1592366214,
+    196396260,
+    760005850,
+    1721589904,
+    397765732,
+    1732600167,
+    1753498361,
+    341742893,
+    1340477990,
+    1282623253,
+    298008106,
+    1657000625,
+    2009781145,
+    1421947380,
+    1286330022,
+    1559589183,
+    1049899240,
+    195061667,
+    414040701,
+    570250684,
+    1267047229,
+    1003846038,
+    1149491290,
+    975630072,
+    440564289
+  ],
+  "levels": [
+    {
+      "level": 0,
+      "domain_size": 1048576,
+      "degree_bound": 524288,
+      "root": 195061667
+    },
+    {
+      "level": 1,
+      "domain_size": 524288,
+      "degree_bound": 262144,
+      "root": 1049899240
+    },
+    {
+      "level": 2,
+      "domain_size": 262144,
+      "degree_bound": 131072,
+      "root": 1559589183
+    },
+    {
+      "level": 3,
+      "domain_size": 131072,
+      "degree_bound": 65536,
+      "root": 1286330022
+    },
+    {
+      "level": 4,
+      "domain_size": 65536,
+      "degree_bound": 32768,
+      "root": 1421947380
+    },
+    {
+      "level": 5,
+      "domain_size": 32768,
+      "degree_bound": 16384,
+      "root": 2009781145
+    },
+    {
+      "level": 6,
+      "domain_size": 16384,
+      "degree_bound": 8192,
+      "root": 1657000625
+    },
+    {
+      "level": 7,
+      "domain_size": 8192,
+      "degree_bound": 4096,
+      "root": 298008106
+    },
+    {
+      "level": 8,
+      "domain_size": 4096,
+      "degree_bound": 2048,
+      "root": 1282623253
+    },
+    {
+      "level": 9,
+      "domain_size": 2048,
+      "degree_bound": 1024,
+      "root": 1340477990
+    },
+    {
+      "level": 10,
+      "domain_size": 1024,
+      "degree_bound": 512,
+      "root": 341742893
+    },
+    {
+      "level": 11,
+      "domain_size": 512,
+      "degree_bound": 256,
+      "root": 1753498361
+    },
+    {
+      "level": 12,
+      "domain_size": 256,
+      "degree_bound": 128,
+      "root": 1732600167
+    },
+    {
+      "level": 13,
+      "domain_size": 128,
+      "degree_bound": 64,
+      "root": 397765732
+    },
+    {
+      "level": 14,
+      "domain_size": 64,
+      "degree_bound": 32,
+      "root": 1721589904
+    },
+    {
+      "level": 15,
+      "domain_size": 32,
+      "degree_bound": 16,
+      "root": 760005850
+    },
+    {
+      "level": 16,
+      "domain_size": 16,
+      "degree_bound": 8,
+      "root": 196396260
+    },
+    {
+      "level": 17,
+      "domain_size": 8,
+      "degree_bound": 4,
+      "root": 1592366214
+    },
+    {
+      "level": 18,
+      "domain_size": 4,
+      "degree_bound": 2,
+      "root": 1728404513
+    },
+    {
+      "level": 19,
+      "domain_size": 2,
+      "degree_bound": 1,
+      "root": 2013265920
+    }
+  ],
+  "sampled_domain_law_cases": 193,
+  "coherent_index_cases": 152,
+  "actual_first_fold_controls": 32,
+  "farWord_distance_lower": {
+    "numerator": 1,
+    "denominator": 2
+  },
+  "witness_acceptance_probability_derived_not_new_Lean": "2^-3603",
+  "frozen_55_bound_verified": true,
+  "initial_2_5_farness_verified": true,
+  "frozen_public_files_unchanged": 114,
+  "new_Lean_runs": 0,
+  "new_crypto_runs": 0,
+  "web_queries": 0,
+  "PDF_downloads": 0,
+  "Scry_queries": 0
+}

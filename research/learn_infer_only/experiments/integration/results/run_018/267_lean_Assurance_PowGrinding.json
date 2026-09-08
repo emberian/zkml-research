@@ -1,0 +1,18 @@
+{
+  "label": "lean_Assurance_PowGrinding",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/PowGrinding.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Assurance/PowGrinding.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "powResponseAccept_density : \u2200 (bits : \u2115), uniformProb (PoWResponse bits) powResponseAccept = 1 / 2 ^ bits\n@powAttempt_factor : \u2200 {bits : \u2115} {C : Type} [inst : Fintype C] (bad : C \u2192 Prop),\n  (uniformProb (PoWResponse bits \u00d7 C) fun x => powResponseAccept x.1 \u2227 bad x.2) = uniformProb C bad / 2 ^ bits\n@powGrindingWin_le : \u2200 {bits work : \u2115} {C : Type} [inst : Fintype C]\n  (bad : (i : Fin work) \u2192 ({ j // j \u2260 i } \u2192 PoWAttempt bits C) \u2192 C \u2192 Prop) {epsilon : \u211d},\n  0 \u2264 epsilon \u2192\n    (\u2200 (i : Fin work) (rest : { j // j \u2260 i } \u2192 PoWAttempt bits C), uniformProb C (bad i rest) \u2264 epsilon) \u2192\n      uniformProb (Fin work \u2192 PoWAttempt bits C) (powGrindingWin bad) \u2264 \u2191work * epsilon / 2 ^ bits\npowGrindingWin_le_grindingTermPoW : \u2200 (P : PoWSoundnessParams) {C : Type} [inst : Fintype C]\n  (bad : (i : Fin (P.queries + P.depth)) \u2192 ({ j // j \u2260 i } \u2192 PoWAttempt P.powBits C) \u2192 C \u2192 Prop),\n  (\u2200 (i : Fin (P.queries + P.depth)) (rest : { j // j \u2260 i } \u2192 PoWAttempt P.powBits C),\n      uniformProb C (bad i rest) \u2264 \u2191P.depth * (errStarUD P.toSoundnessParams + 1 / \u2191P.fieldCard)) \u2192\n    uniformProb (Fin (P.queries + P.depth) \u2192 PoWAttempt P.powBits C) (powGrindingWin bad) \u2264 grindingTermPoW P\n",
+  "stderr": "",
+  "elapsed_seconds": 39.50092441600282,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Assurance/PowGrinding.lean",
+  "source_sha256_before": "cb5bec7b100b999cc48a995f02828e9b740d1b31a584b40d12819880b77d4b12",
+  "source_sha256_after": "cb5bec7b100b999cc48a995f02828e9b740d1b31a584b40d12819880b77d4b12"
+}

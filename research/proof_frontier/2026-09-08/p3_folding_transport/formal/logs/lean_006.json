@@ -1,0 +1,17 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-p3-folding-transport-20260908/.lake/build/lib/lean/Theory/BitReverseFriTransport.olean",
+    "Theory/BitReverseFriTransport.lean"
+  ],
+  "cwd": "/tmp/minidregg-p3-folding-transport-20260908",
+  "exit_code": 0,
+  "seconds": 11.080324667011155,
+  "source_sha256": "b33acd6a93f8b86be0c2d2da76c5e4a9f50648fc5a0541f8c35425d7e9e25718",
+  "source_sha256_after": "b33acd6a93f8b86be0c2d2da76c5e4a9f50648fc5a0541f8c35425d7e9e25718",
+  "stdout": "",
+  "stderr": ""
+}

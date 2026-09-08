@@ -1,5 +1,7 @@
 # Candidate decisions during the autonomous swarm
 
+[DERIVED closeout comparison, 2026-09-08] The nonlinear TFHE path now executes the full 384/96 contract with matching public replays and deferred primary audits, but retains full-reader custody. The completed SHAKE public-seed adapter preserves fixed-span continuation without constructing a scalar master under its stated model; fixed-span recipient powers remain. A ring fixed-coordinate variant has reviewed mathematical and heuristic sizing, with finite samplability but no implementation. No candidate yet joins these strengths into one malicious-operator, history-bound, no-master-read resident. See STATUS.md and the exact artifact reports before interpreting the historical route notes below.
+
 [DERIVED] Keep Route 3 for integrity/continuity work and the exact window/EMA as
 small numerical targets. Restricted FE continuations and real encrypted loops now
 exist here; no artifact joins them into the full authenticated-ingress,

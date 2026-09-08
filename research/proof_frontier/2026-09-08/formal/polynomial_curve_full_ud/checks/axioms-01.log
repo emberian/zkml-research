@@ -1,0 +1,3 @@
+'Minidregg.PolynomialCurve.eval_poly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.PolynomialCurve.coeff_poly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.PolynomialCurve.natDegree_poly' depends on axioms: [propext, Classical.choice, Quot.sound]

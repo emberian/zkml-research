@@ -1,0 +1,48 @@
+Selvage/CurveProximityGapFullUD.lean:22:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.curve_correlatedAgreement_of_many_close`:
+  [DecidableEq ι]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq ι] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/CurveProximityGapFullUD.lean:53:5: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidablePred fun z => close δ (reedSolomonCode dom d) (curveWord u z)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/CurveProximityGapFullUD.lean:54:28: error: unsolved goals
+ι : Type u_1
+inst✝⁵ : Fintype ι
+inst✝⁴ : DecidableEq ι
+F : Type u_2
+inst✝³ : Field F
+inst✝² : DecidableEq F
+inst✝¹ : Nonempty ι
+inst✝ : Fintype F
+M : ℕ
+hM : 1 ≤ M
+dom : ι ↪ F
+d : ℕ
+hd : 1 ≤ d
+δ : ℝ
+hδ0 : 0 < δ
+hδ2 : ↑d < (1 - 2 * δ) * ↑(Fintype.card ι)
+u : Fin (M + 1) → ι → F
+hfar : ¬CorrelatedAgreement (reedSolomonCode dom d) δ u
+h : ¬sorry ≤ M * Fintype.card ι
+⊢ False
+Selvage/CurveProximityGapFullUD.lean:63:8: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  DecidablePred fun z => E (curveWord u z)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/CurveProximityGapFullUD.lean:63:87: error: unsolved goals
+ι : Type u_1
+inst✝⁴ : Fintype ι
+inst✝³ : DecidableEq ι
+F : Type u_2
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : Fintype F
+M : ℕ
+u : Fin (M + 1) → ι → F
+E : (ι → F) → Prop
+⊢ ↑{z | E (curveWord u z)}.card * (↑(Fintype.card F))⁻¹ = sorry * (↑(Fintype.card F))⁻¹
+Selvage/CurveProximityGapFullUD.lean:70:8: warning: declaration uses `sorry`

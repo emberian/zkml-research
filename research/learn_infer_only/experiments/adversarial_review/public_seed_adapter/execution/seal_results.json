@@ -1,0 +1,14 @@
+{
+  "author_files_rehashed": 167,
+  "author_final_manifest_sha256": "e59b5c1734dd229fd9eaf38084f0efce977f9f49319c7057c067855deeaefff8",
+  "author_report_sha256": "e7947e63a745ce1704adf7bd77676b2374a9901530a51cd8be0b67b033a6e7d4",
+  "collection_sha256": "597efad7eaea8665a4c82fec954529e3c6600a293837c3cfc4ba22132c815a1b",
+  "cost_rows_checked": 15,
+  "crypto_or_sampling_operations": 0,
+  "launch_record_sha256": "db3449b4f42157c0bad7a9c437d8bbbf40d53f9547c2e169f00a941faddcbb5f",
+  "ok": true,
+  "prelaunch_manifest_unchanged": true,
+  "private_file_reads": 0,
+  "private_paths_in_author_manifest": 0,
+  "scope": "Final author hash/cost/launch record consistency; launch timestamp/exit and private matches retain stated author attribution."
+}

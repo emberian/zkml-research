@@ -1,0 +1,48 @@
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

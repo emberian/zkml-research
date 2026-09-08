@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-efficient-root-opening-20260908/.lake/build/lib/lean/Selvage/EfficientRootOpening.olean",
+    "Selvage/EfficientRootOpening.lean"
+  ],
+  "cwd": "/tmp/minidregg-efficient-root-opening-20260908",
+  "exit_code": 0,
+  "source_sha256": "a7110a44e6b9ec41e2df1a3ad98b472761f1e37e33fe430889dea1fd179419c8",
+  "source_unchanged": true,
+  "elapsed_s": 34.08691520796856,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/logs/final-guard.log"
+}

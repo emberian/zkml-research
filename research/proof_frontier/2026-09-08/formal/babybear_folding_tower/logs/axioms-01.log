@@ -1,0 +1,21 @@
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn' depends on axioms: [propext, Classical.choice, Quot.sound]

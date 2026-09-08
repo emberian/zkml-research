@@ -1,0 +1,19 @@
+{
+  "all_plans_match": true,
+  "all_recorded_inputs_binary_hashes_stable": true,
+  "all_replay_bytes_equal": true,
+  "all_storage_hashes_match": true,
+  "artifacts_verified": 1364,
+  "claim": "EXECUTED",
+  "events": 480,
+  "fixture_order_and_state_continuity_match": true,
+  "frozen_sources_match": true,
+  "host_processes": 960,
+  "issuer_processes": 404,
+  "passed": true,
+  "private_files_read": false,
+  "public_phase_sha256": "40e093403e649f3da313b6ba83dbacf4227b6a15d3ab1d06ad03e5aa326b98b5",
+  "reader_invocations": 0,
+  "replay_pairs": 480,
+  "verified_utc": "2026-09-08T08:09:57.110689+00:00"
+}

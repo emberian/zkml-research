@@ -1,0 +1,77 @@
+{
+  "all_checks_passed": true,
+  "seconds": 1.0586417910235468,
+  "field": {
+    "modulus": 2013265921,
+    "degree": 4,
+    "relation": "U^4=11",
+    "root27": 440564289,
+    "root20": 195061667
+  },
+  "counts": {
+    "extension_inverse_controls": 3,
+    "index_involution": 8191,
+    "index_projection_and_fibre": 98305,
+    "uniform_pair_seed_domains": 12,
+    "target20_index_projection": 86142,
+    "target20_existing_coherent_path": 77938,
+    "row_matrix_coefficient_fold_equalities": 663,
+    "fold_cases": 54,
+    "coset_quotient_pullback_rows": 64,
+    "multiheight_query_rounds": 384,
+    "multiheight_complete_queries": 128,
+    "final_point_global_vs_final_root": 16368
+  },
+  "refused_mutations": {
+    "omit_twiddle_bitrev": 15,
+    "omit_input_bitrev": 15,
+    "repeat_beta_within_high_arity": 10,
+    "omit_fibre_bitrev": 10
+  },
+  "injection_controls": {
+    "omit_next_height_input": 3,
+    "use_beta_instead_of_beta_to_arity": 3
+  },
+  "other_controls": {
+    "wrong_modulo_before_bitrev": true,
+    "wrong_shift_direction": true,
+    "omit_coset_pullback": true,
+    "omit_quotient_scaling": true,
+    "wrong_final_root_without_exponent_rescaling": true
+  },
+  "multiheight_log_schedule": [
+    3,
+    2,
+    1
+  ],
+  "multiheight_challenges": [
+    [
+      10,
+      12,
+      21,
+      11
+    ],
+    [
+      7,
+      9,
+      15,
+      11
+    ],
+    [
+      5,
+      7,
+      11,
+      11
+    ]
+  ],
+  "multiheight_final_constant": [
+    307581938,
+    1238916591,
+    103180726,
+    791302823
+  ],
+  "source_files_checked": 22,
+  "scope": "Pure finite field/index calculations from pinned source formulas; no compiled Rust/Lean implementation equivalence or soundness proof.",
+  "crypto_runtime_runs": 0,
+  "web_queries": 0
+}

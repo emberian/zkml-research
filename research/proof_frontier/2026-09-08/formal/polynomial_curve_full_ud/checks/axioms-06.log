@@ -1,0 +1,1 @@
+'Minidregg.Selvage.curve_bw_bivariate_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]

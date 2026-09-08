@@ -1,0 +1,67 @@
+{
+  "claim": "SOURCE public timing provenance; REPORTED coordination messages",
+  "source": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/coordination.json",
+    "bytes": 645,
+    "sha256": "809b2b500581218ae37ed6cccb956a018c953e397f858c208c5d731231cdeb67"
+  },
+  "source_record": {
+    "TFHE_first_infer_block_closed_utc_reported_by_worker": "2026-09-08T05:56:47Z",
+    "TFHE_window_signal_utc_reported_by_worker": "2026-09-08T05:56:13.59Z",
+    "actual_live_start_utc": "2026-09-08T05:56:48Z",
+    "live_outer_wall_ns": 27504062000,
+    "live_start_source": "run_started.json",
+    "live_wall_source": "run.command.json",
+    "scope": "Dispatched on the actual Infer-window signal, but recorded start was after that block closed. Subsequent Learn overlap was explicitly accepted by the worker; no TFHE pause or delay was requested.",
+    "worker_reports_source": "collaboration messages from /root/emitted_runtime in this authorized run"
+  },
+  "interpretation": "The tiny pipeline began after the first Infer block closed and briefly overlapped following Learn operations. No pause was requested or made. Full-run wall costs are not isolated benchmark measurements.",
+  "saved_utc": "2026-09-08T06:01:59.284734+00:00",
+  "public_stdout_checkpoints": [
+    {
+      "completed_events": 64,
+      "complete_replay_pairs": 64,
+      "operations": 210,
+      "current_operation": "h0-e0064",
+      "phase": "public",
+      "elapsed_seconds": 1662.0084666660114,
+      "updated_utc": "2026-09-08T05:56:10.490904+00:00",
+      "reader_invocations": 0,
+      "public_phase_closed": false
+    },
+    {
+      "completed_events": 80,
+      "complete_replay_pairs": 80,
+      "operations": 242,
+      "current_operation": "h0-e0080",
+      "phase": "public",
+      "elapsed_seconds": 1677.4533599159913,
+      "updated_utc": "2026-09-08T05:56:25.935979+00:00",
+      "reader_invocations": 0,
+      "public_phase_closed": false
+    },
+    {
+      "completed_events": 81,
+      "complete_replay_pairs": 81,
+      "operations": 245,
+      "current_operation": "h0-e0081",
+      "phase": "public",
+      "elapsed_seconds": 1698.2360932909942,
+      "updated_utc": "2026-09-08T05:56:46.718959+00:00",
+      "reader_invocations": 0,
+      "public_phase_closed": false
+    },
+    {
+      "completed_events": 82,
+      "complete_replay_pairs": 82,
+      "operations": 248,
+      "current_operation": "h0-e0082",
+      "phase": "public",
+      "elapsed_seconds": 1722.6946298750117,
+      "updated_utc": "2026-09-08T05:57:11.177785+00:00",
+      "reader_invocations": 0,
+      "public_phase_closed": false
+    }
+  ],
+  "checkpoint_instrument": "Read retained per-event progress emitted by run_public.py in run_public.stdout; observation at 05:56:47 was not the exact block-close time."
+}

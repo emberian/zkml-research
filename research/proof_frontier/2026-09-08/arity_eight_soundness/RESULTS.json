@@ -1,0 +1,440 @@
+{
+  "adaptive_binary_badsets": {
+    "bad_set": "B(a)={a^2}",
+    "correlated_probability": "17/17",
+    "field": 17,
+    "fourth_power_pushforward_counts": {
+      "0": 1,
+      "1": 4,
+      "4": 4,
+      "13": 4,
+      "16": 4
+    },
+    "independent_probability": "17/289",
+    "max_fibre_cardinality": 1,
+    "square_pushforward_counts": {
+      "0": 1,
+      "1": 2,
+      "2": 2,
+      "4": 2,
+      "8": 2,
+      "9": 2,
+      "13": 2,
+      "15": 2,
+      "16": 2
+    }
+  },
+  "adaptive_injection_falsifier": {
+    "domain": [
+      0,
+      1
+    ],
+    "field": 17,
+    "fixed_curve_threshold": 16,
+    "g_beta": "-(beta^-7)*u1 for beta!=0, else 0",
+    "good_challenges": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "other_u_r": "zero",
+    "u1": [
+      0,
+      1
+    ],
+    "violated_premise": "g must be fixed before beta"
+  },
+  "degree_7_premise_witness": {
+    "coefficient_polynomials_low_to_high": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        9
+      ]
+    ],
+    "coefficient_words": [
+      [
+        2,
+        3,
+        5,
+        7,
+        9
+      ],
+      [
+        4,
+        5,
+        8,
+        11,
+        14
+      ],
+      [
+        8,
+        7,
+        11,
+        15,
+        19
+      ],
+      [
+        14,
+        9,
+        14,
+        19,
+        24
+      ],
+      [
+        22,
+        11,
+        17,
+        23,
+        29
+      ],
+      [
+        32,
+        13,
+        20,
+        27,
+        34
+      ],
+      [
+        44,
+        15,
+        23,
+        31,
+        39
+      ],
+      [
+        58,
+        17,
+        26,
+        35,
+        44
+      ]
+    ],
+    "common_agreement": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "dimension": 2,
+    "domain": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "field": 101,
+    "good_count": 101,
+    "integer_radius": 1,
+    "max_distance_to_explicit_degree_lt_2_curve": 1,
+    "required_threshold": 35
+  },
+  "degree_7_rs_counterexample": {
+    "coefficient_words": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        6
+      ],
+      [
+        0,
+        4
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        0,
+        13
+      ],
+      [
+        0,
+        5
+      ],
+      [
+        0,
+        13
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "correct_curve_Mn_bound": 14,
+    "dimension": 1,
+    "domain": [
+      0,
+      1
+    ],
+    "field": 17,
+    "good_challenges": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "good_count": 7,
+    "injection_interpretation": "no injection",
+    "integer_radius": 0,
+    "max_common_agreement": 1,
+    "naive_affine_n_bound": 2,
+    "polynomial_coefficients_low_to_high": [
+      0,
+      6,
+      4,
+      9,
+      13,
+      5,
+      13,
+      1
+    ],
+    "real_radius": "1/4 (same exact-agreement event on length 2)"
+  },
+  "degree_8_premise_witness": {
+    "coefficient_polynomials_low_to_high": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        9,
+        10
+      ]
+    ],
+    "coefficient_words": [
+      [
+        2,
+        3,
+        5,
+        7,
+        9
+      ],
+      [
+        4,
+        5,
+        8,
+        11,
+        14
+      ],
+      [
+        8,
+        7,
+        11,
+        15,
+        19
+      ],
+      [
+        14,
+        9,
+        14,
+        19,
+        24
+      ],
+      [
+        22,
+        11,
+        17,
+        23,
+        29
+      ],
+      [
+        32,
+        13,
+        20,
+        27,
+        34
+      ],
+      [
+        44,
+        15,
+        23,
+        31,
+        39
+      ],
+      [
+        58,
+        17,
+        26,
+        35,
+        44
+      ],
+      [
+        74,
+        19,
+        29,
+        39,
+        49
+      ]
+    ],
+    "common_agreement": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "dimension": 2,
+    "domain": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "field": 101,
+    "good_count": 101,
+    "integer_radius": 1,
+    "max_distance_to_explicit_degree_lt_2_curve": 1,
+    "required_threshold": 40
+  },
+  "degree_8_rs_counterexample": {
+    "coefficient_words": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        0,
+        12
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        0,
+        3
+      ],
+      [
+        0,
+        12
+      ],
+      [
+        0,
+        16
+      ],
+      [
+        0,
+        6
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "correct_curve_Mn_bound": 16,
+    "dimension": 1,
+    "domain": [
+      0,
+      1
+    ],
+    "field": 17,
+    "good_challenges": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "good_count": 8,
+    "injection_interpretation": "last coefficient is fixed g",
+    "integer_radius": 0,
+    "max_common_agreement": 1,
+    "naive_affine_n_bound": 2,
+    "polynomial_coefficients_low_to_high": [
+      0,
+      9,
+      12,
+      9,
+      3,
+      12,
+      16,
+      6,
+      1
+    ],
+    "real_radius": "1/4 (same exact-agreement event on length 2)"
+  }
+}

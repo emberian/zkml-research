@@ -1,0 +1,24 @@
+{
+  "client_key_custody": "retained at prior private reader path, not copied/read/hashed in public phase",
+  "cutoff_utc": "2026-09-08T11:28:28.472235+00:00",
+  "freeze_sha256": "6cc20a07b75330c2fb7aaa19a2021c6b495096c6b477b1554eb4a2a14c7943e8",
+  "host_concurrency": 1,
+  "pid": 34381,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "public_keys": {
+    "public_key": {
+      "bytes": 90316428,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/public_key.bin",
+      "sha256": "6c2532783998e27d824ba941dbdabb8fcf266d4e36954d63139f409128363506"
+    },
+    "server_key": {
+      "bytes": 157865796,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+      "sha256": "6ac56c1a76a83e45e159cf8ed4619a2c95efc073dbab0b2d8b33fdbe8addae2e"
+    }
+  },
+  "runtime_environment": {
+    "RAYON_NUM_THREADS": "1"
+  },
+  "started_utc": "2026-09-08T05:28:28.472235+00:00"
+}

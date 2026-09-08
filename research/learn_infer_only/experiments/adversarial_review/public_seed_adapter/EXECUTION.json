@@ -1,0 +1,19 @@
+{
+  "scope": "Prelaunch read-only source and pure public helper review; no crypto execution",
+  "commands": [
+    {
+      "command": "python3 -B research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/helper_review.py",
+      "exit_code": 0,
+      "retained_structured_output": "helper_results.json",
+      "note": "Actual tool stdout contained the same JSON object; no second helper execution was run merely to recapture stdout."
+    },
+    {
+      "command": "python3 -B research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/check_source.py > research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/source_check.log",
+      "exit_code": 0,
+      "retained_stdout": "source_check.log",
+      "retained_structured_output": "source_results.json"
+    }
+  ],
+  "web_queries": 0,
+  "Scry_queries": 0
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_initialized_k25sfgy7/olean/Compiler/CseInitializedReferences.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/Compiler/CseInitializedReferences.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references",
+  "exit_code": 0,
+  "source_sha256": "4750fb34e726f2482309809da90132ca9fc264494da1fc381fe5a83fa318a36d",
+  "source_sha256_after": "4750fb34e726f2482309809da90132ca9fc264494da1fc381fe5a83fa318a36d",
+  "source_unchanged": true,
+  "stdout": "",
+  "stderr": "",
+  "seconds": 15.96401079199859
+}

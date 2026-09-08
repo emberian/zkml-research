@@ -1,0 +1,203 @@
+{
+  "scope": "Third evidence-index deployment: formal card advanced to separately completed run017; layout and scripts unchanged. Clean project closure is not represented as completed.",
+  "utc": "2026-09-08T06:43:26.197971+00:00",
+  "url": "https://emberian.github.io/zkml-research/",
+  "revision": "df75a0665b503023f40ac04fd66e4cdb77d5387e",
+  "workflow": {
+    "conclusion": "success",
+    "databaseId": 34195495164,
+    "headSha": "df75a0665b503023f40ac04fd66e4cdb77d5387e",
+    "status": "completed",
+    "url": "https://github.com/emberian/zkml-research/actions/runs/34195495164"
+  },
+  "checks": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 32160,
+      "sha256": "ee8b812c28dd74156e83402efc81c04ad0c9650ab3d7d18991e1d40d1949648f",
+      "matches_local": true
+    },
+    {
+      "path": "assets/style.css",
+      "status": 200,
+      "bytes": 15612,
+      "sha256": "c795e452f94cafe661b42c75d14c6ac174602767dc960ea4f5c5fea6709726ef",
+      "matches_local": true
+    },
+    {
+      "path": "assets/app.js",
+      "status": 200,
+      "bytes": 2697,
+      "sha256": "b0985c343ac9e78676ec457be04109fc22fd6add69cadf0bfa16a66f0ed5b4f9",
+      "matches_local": true
+    },
+    {
+      "path": "assets/favicon.svg",
+      "status": 200,
+      "bytes": 246,
+      "sha256": "7dbd4b9d5e0e5b2358a6ad669fc45e34e7892b7c79e8babf1953124bc6449486",
+      "matches_local": true
+    },
+    {
+      "path": "source-manifest.json",
+      "status": 200,
+      "bytes": 17448,
+      "sha256": "7b2f0f6900e9a885acf797667d108f676ba5fd78fe7694e92be3a45ae9c0f911",
+      "matches_local": true
+    },
+    {
+      "path": "build-manifest.json",
+      "status": 200,
+      "bytes": 577,
+      "sha256": "9ab6874ec5317c8c852948d776dffd93e8cafca682e191545a67dd282f73b20a",
+      "matches_local": true
+    }
+  ],
+  "source_blob_checks": {
+    "ok": true,
+    "checks": [
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/SECURITY_GAME.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/formal/integration/README.md",
+        "revision": "df75a0665b503023f40ac04fd66e4cdb77d5387e",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "README.md",
+        "revision": "d434f5ebc7473dd3efd3a70eb09f0adb9d4000af",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md",
+        "revision": "aa1aff67cf437c551b50415608c9ded30976d068",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "notes/README.md",
+        "revision": "c7b08e5a8ecb2544801e2bb079930b976dd55513",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/PQ_COMPOSITION.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/REVIEW.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/README.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "docs/VERDICTS.md",
+        "revision": "f2c3163413b4975153f763ddc745880308837617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      }
+    ]
+  },
+  "validation": {
+    "strict_production_build": true,
+    "reproducibility_check": true,
+    "public_bytes": 68740,
+    "new_browser_review": false,
+    "prior_layout_browser_review": "deployment-update-001.json; this update changes reviewed source excerpt and formal-card text only"
+  },
+  "all_passed": true
+}

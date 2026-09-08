@@ -1,0 +1,53 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "target_paths_absent_from_base": [
+    "Theory/PolynomialMatrixKernel.lean",
+    "LICENSES/ArkLib-Apache-2.0.txt"
+  ],
+  "patch_sha256": "d93868e566910220380cfa96d33bcb665c6deb57090a34e62beaa0fe6fd56c8c",
+  "patch_checks": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/polynomial-curve-kernel.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/polynomial-curve-kernel.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "exact_applied_bytes_match": true,
+  "import_boundary_exit_code": 0,
+  "direct_imports_mathlib_only": [
+    "Mathlib.Algebra.Polynomial.BigOperators",
+    "Mathlib.Data.Fin.Tuple.Embedding",
+    "Mathlib.Data.Fintype.EquivFin",
+    "Mathlib.Data.Nat.Find",
+    "Mathlib.LinearAlgebra.Matrix.Adjugate",
+    "Mathlib.Tactic.FinCases"
+  ],
+  "census_script_sha256": "563b52272d913d00eb5751588befbbe7f7b226d83016d1c53f917dececff57ff",
+  "original_source_unchanged": true
+}

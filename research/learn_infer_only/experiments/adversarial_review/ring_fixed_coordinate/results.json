@@ -1,0 +1,152 @@
+{
+  "status": "PASS; public source/math checks only",
+  "frozen_sources": {
+    "CANDIDATE.md": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2",
+    "RING_REGULARITY.md": "2926555d5842bb71af7b16caec3eef512a9c7cfea99e877b862bcfea79d30e85",
+    "PARAMETERS.md": "c23732e366fe5966ddf971c0f69fdf51cec41bee134d0bf3e4da19367631b78d"
+  },
+  "script_sha256": "eff706cc1d5549c4f8545b23d40adb5cbb417a179619b88604a8b67cc68c0190",
+  "prime_order_certificate_checked": true,
+  "complete_splitting_order_checked": true,
+  "q_bits": 289,
+  "smoothing_integer_inequality_checked": true,
+  "regularity": [
+    {
+      "k": 1,
+      "rank_plus_short_below_2_minus192": true,
+      "short_q_exponent": 384
+    },
+    {
+      "k": 2,
+      "rank_plus_short_below_2_minus192": true,
+      "short_q_exponent": 192
+    }
+  ],
+  "correctness_bound": "<2^-203",
+  "privacy_coalitions": [
+    {
+      "coalition_size": 0,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 1,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 2,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 3,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 4,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 5,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 6,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 7,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 8,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 9,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 10,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 11,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 12,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 13,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 14,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 15,
+      "noncomputational_terms_below_2_minus168": true
+    },
+    {
+      "coalition_size": 16,
+      "noncomputational_terms_below_2_minus168": true
+    }
+  ],
+  "RLWE_multiplier": 768,
+  "costs": {
+    "ciphertext_coefficients": 262721,
+    "ciphertext_bytes": 9490797,
+    "full_ring_ciphertext_bytes": 94847488,
+    "public_A_bytes": 9469952,
+    "public_P_bytes": 85377536,
+    "public_A_P_bytes": 94847488,
+    "one_recipient_key_bytes_on_strict_tail": 917504,
+    "all_recipient_key_bytes_on_strict_tail": 14680064,
+    "full_ring_products_per_encryption": 64,
+    "scalar_constant_products_per_encryption": 2363392,
+    "read_coefficient_products": 262144,
+    "Gaussian_coefficients_per_encryption": 262144,
+    "uniform_scalar_floods_per_encryption": 577,
+    "uniform_secret_coefficients_per_encryption": 4096
+  },
+  "rank_law_matrices": 15625,
+  "rank_two_matrices": 14880,
+  "rank_two_probability": "2976/3125",
+  "CRT_column_image_checks": [
+    {
+      "common_zero_slots": 1,
+      "image_size": 5,
+      "preimages_each": 125
+    },
+    {
+      "common_zero_slots": 0,
+      "image_size": 25,
+      "preimages_each": 25
+    }
+  ],
+  "ideal_low_coordinate_injectivity": {
+    "ring_elements": 83521,
+    "ideals": 16,
+    "all_pass": true
+  },
+  "source_rejection_test_counterexample_CRT_ranks": [
+    2,
+    1,
+    1,
+    1
+  ],
+  "constant_coefficient_controls": 6642,
+  "adjoint_controls": 26406,
+  "joint_projection_atoms": 125,
+  "joint_projection_preimages_each": 5,
+  "integer_shift_controls": 224,
+  "noise_width_to_modulus": "2^-279 < sigma_e/q < 2^-278; width convention, not hardness",
+  "source_script_executed": false,
+  "crypto_runs": 0,
+  "estimator_runs": 0,
+  "Gaussian_samples": 0,
+  "private_files_read": 0,
+  "web_queries": 0,
+  "computational_security_endorsement": false
+}

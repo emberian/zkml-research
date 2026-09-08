@@ -1,0 +1,2406 @@
+{
+  "created_utc": "2026-09-08T14:42:41.755886+00:00",
+  "external_source_pins": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/verified_project_cache.py": {
+      "bytes": 35700,
+      "sha256": "91f31c3b80f3897d394832a79e43959e2c60c1b1206ae894a3656b25de02ac07"
+    }
+  },
+  "file_count": 598,
+  "files": {
+    "REPORT.md": {
+      "bytes": 8481,
+      "sha256": "8f53b7a028fa80088aa5f60522d4443c212dc5df75692cee664406532e5d8672"
+    },
+    "compiler_policy.json": {
+      "bytes": 1553,
+      "sha256": "491b866c9c9184c20d544208ec904ced42a58e774bc11530d4ca9c3b6f7a258e"
+    },
+    "export_attempt_001.json": {
+      "bytes": 1604,
+      "sha256": "77fb2b30eb6a8528c3e7c423fa50dd852b70f7bb1580df3215e74d10f2110e3b"
+    },
+    "export_run018.py": {
+      "bytes": 2306,
+      "sha256": "d9d5b922c05393732b99ace8b06c2488bc8b1035579a7bf171c11459a6b9f566"
+    },
+    "pre_hardening_001/synthetic_results.json": {
+      "bytes": 4583,
+      "sha256": "fdbfeeea316766c9d7e4774f74da5d9ca1f28c859dc1c3b836aaf83a52e9b8c2"
+    },
+    "pre_hardening_001/test_verified_project_cache.py": {
+      "bytes": 18713,
+      "sha256": "621bd1054485a45f6210e849afb9ce53cf67aadeb7a8c05515910625437b0901"
+    },
+    "pre_hardening_001/verified_project_cache.py": {
+      "bytes": 35621,
+      "sha256": "86c3c3305864e6c6abaa78e4bc54d548f851de122fc2ec5de2a5bf903e9cf04a"
+    },
+    "run018_observed_001/evidence/001_companion_head_before.json": {
+      "bytes": 272,
+      "sha256": "c0d9e86227d8c965692ac327b2e346da902c80566b88aa42ce9e38b280ee8c29"
+    },
+    "run018_observed_001/evidence/002_companion_status_before.json": {
+      "bytes": 630,
+      "sha256": "418e9963b897a594b64f4eab1eb998c0b6f85432d2c36e1c1c2a077b300acedb"
+    },
+    "run018_observed_001/evidence/003_lean_version.json": {
+      "bytes": 431,
+      "sha256": "eab247c3a5eb78c97e1a7945047ff64077e3508011bf571bf97675d188cabf25"
+    },
+    "run018_observed_001/evidence/004_companion_source_list.json": {
+      "bytes": 19109,
+      "sha256": "53969b6cc3b3ed31c3e5cc935853b815d6b2af51c30552def433a1a7a2c3ef17"
+    },
+    "run018_observed_001/evidence/005_isolated_git_init.json": {
+      "bytes": 293,
+      "sha256": "57f0dc72e7ddcac5f977243474e046208c869b2e92fc030207f982957083d6f8"
+    },
+    "run018_observed_001/evidence/006_combined_patch_check.json": {
+      "bytes": 419,
+      "sha256": "539287f7b6f9e94ce339262327a3bbc01ff4754aece2fb55fef42ad1070c3b1d"
+    },
+    "run018_observed_001/evidence/007_combined_patch_apply.json": {
+      "bytes": 875,
+      "sha256": "8ed86144b96fdfc680dd0b3394dfc0584147880ffa3ec5ebf01bf8d5649a75d3"
+    },
+    "run018_observed_001/evidence/008_boundary_applied_source.json": {
+      "bytes": 584,
+      "sha256": "2073ed9df22c115a4803d99bad2923dbcb3c309ef7974f9bbe847fc72351a8db"
+    },
+    "run018_observed_001/evidence/009_boundary_existing_companion.json": {
+      "bytes": 438,
+      "sha256": "ed2a19cecad1a265eb08c92a3a1e8784e96a466d25d102785eb4e1fd057ddee6"
+    },
+    "run018_observed_001/evidence/010_lean_Assurance_Placeholder.json": {
+      "bytes": 1991,
+      "sha256": "e90a11b7ad9a06147b2e9820ec8ea10376f3799201a236d1293258e797f19d88"
+    },
+    "run018_observed_001/evidence/011_lean_Assurance_TwoRegimeQueryBudget.json": {
+      "bytes": 2026,
+      "sha256": "95c48ca0e1a98adb106461baa69b6fc36269f66cd75426524e2b6087b9e5c1f1"
+    },
+    "run018_observed_001/evidence/012_lean_Compiler_BFVScaleLiftRefinement.json": {
+      "bytes": 2030,
+      "sha256": "e021e2d2a8133d9ef402e6617c67ec0fd6099f8615f3ea937941478e86c2773c"
+    },
+    "run018_observed_001/evidence/013_lean_Compiler_Placeholder.json": {
+      "bytes": 1986,
+      "sha256": "0c821473bc0842ba8e64ad3cbaee500f2e82e5cf9c413f1e88069ac66c95da1c"
+    },
+    "run018_observed_001/evidence/014_lean_Compiler_Signature.json": {
+      "bytes": 2046,
+      "sha256": "2155498c4c7788dce99cbc6601dd655f0328fabefdb5bcb42d377a02a6bf1337"
+    },
+    "run018_observed_001/evidence/015_lean_Compiler_Sp800185Cshake256Core.json": {
+      "bytes": 2027,
+      "sha256": "cc26e6dbf3d7afdcd16815b27b7f1db6b8b21b4acbac218502de8e4bbeb65a29"
+    },
+    "run018_observed_001/evidence/016_lean_Compiler_TranscriptController.json": {
+      "bytes": 2022,
+      "sha256": "484695b4c41707b0147b078c13014f5986f050aa58814be23c5648b145748395"
+    },
+    "run018_observed_001/evidence/017_lean_Compiler_UwueavePreoProjectionV2.json": {
+      "bytes": 2035,
+      "sha256": "084d2674c9a1ff064f8c5ef7d017cee79e764d275b287a486ba177331903ea13"
+    },
+    "run018_observed_001/evidence/018_lean_Kernel_Camera.json": {
+      "bytes": 1959,
+      "sha256": "3e2fe5a927659d1e39837f2d727b0bc062871090d1b40f3e272d87cd8d40c8da"
+    },
+    "run018_observed_001/evidence/019_lean_Kernel_IrreversibleEffectSettlement.json": {
+      "bytes": 2047,
+      "sha256": "0de835cebe27fdb95694ddb73a709e8f758e83e37da0d91c5a394f78361c4a7c"
+    },
+    "run018_observed_001/evidence/020_lean_Kernel_Turn.json": {
+      "bytes": 1950,
+      "sha256": "c0917e2b724668c1d5143fdddb3ed72526e81b547722770ec35d377781e10098"
+    },
+    "run018_observed_001/evidence/021_lean_Pred_Core.json": {
+      "bytes": 1943,
+      "sha256": "560a39a002def9fbee28fba216b6476fe16131150f5101b0ef37f4a865f8fa24"
+    },
+    "run018_observed_001/evidence/022_lean_Selvage_BabyBearExt4.json": {
+      "bytes": 2180,
+      "sha256": "1173f6393d674f287bc6cdfbbdc2769aa9360772b066f6cf212635bd7b7c404a"
+    },
+    "run018_observed_001/evidence/023_lean_Selvage_CorrelatedAgreement.json": {
+      "bytes": 2014,
+      "sha256": "66fa80d7e154931e46d751ff51319314f0f784762ffda7b49037247ad3c2674a"
+    },
+    "run018_observed_001/evidence/024_lean_Selvage_HeteroComposition.json": {
+      "bytes": 2006,
+      "sha256": "102155e05ca50409dcea1d578c1202d2e72abf275f2f2e46be5920b53431acf0"
+    },
+    "run018_observed_001/evidence/025_lean_Selvage_Rbr.json": {
+      "bytes": 1999,
+      "sha256": "01e30f8b9d069f8a931d10fde247074dd82f57543a1fe29f2761ef2ea417614a"
+    },
+    "run018_observed_001/evidence/026_lean_Selvage_Statements.json": {
+      "bytes": 1980,
+      "sha256": "28cbd28cc38101a095726ef882e0d965b77e49008979a9b77f59a74e86a2c499"
+    },
+    "run018_observed_001/evidence/027_lean_Selvage_ZkmlPoseidon2Data.json": {
+      "bytes": 2007,
+      "sha256": "efba309d0d359a43a0c0f3b2e27bd6939d395e57e9d350ce98ded1590cab8c4b"
+    },
+    "run018_observed_001/evidence/028_lean_Selvage_ZkmlSuiteRegistry.json": {
+      "bytes": 2007,
+      "sha256": "16b190cc09123cc77eb26f9d086a1ada2dea0f10ffc4ba575f2b138062fa89a5"
+    },
+    "run018_observed_001/evidence/029_lean_Theory_Bignum.json": {
+      "bytes": 1959,
+      "sha256": "889d3cea18011bbc507554c79e0db92eccd35f6638089330540e1ca16b89e60b"
+    },
+    "run018_observed_001/evidence/030_lean_Theory_BinaryTower.json": {
+      "bytes": 1978,
+      "sha256": "0d3686343458c4b753ba890c4633ee46cc14687587327c2636e3500bac672362"
+    },
+    "run018_observed_001/evidence/031_lean_Theory_Confluence.json": {
+      "bytes": 1974,
+      "sha256": "59a556acb1d6619a476b91558cfbdb2faea07d63589ac2b41c4b12e0ffe224ab"
+    },
+    "run018_observed_001/evidence/032_lean_Theory_CyclotomicInertia.json": {
+      "bytes": 2003,
+      "sha256": "f9f90eff916b7a10dcc8cd50b357dd97ef29fedf1bf3e2f7c31d83c09ea09167"
+    },
+    "run018_observed_001/evidence/033_lean_Theory_ExceptionalSetLocalRing.json": {
+      "bytes": 2026,
+      "sha256": "216c59b7227a0dea44b189164436a1a0ae934e59f49fef0670656b5981e91490"
+    },
+    "run018_observed_001/evidence/034_lean_Theory_HorizonComposition.json": {
+      "bytes": 2006,
+      "sha256": "c9c6812b62620db3d06b586ac66534e10445b2edc74b78d33790073e25851536"
+    },
+    "run018_observed_001/evidence/035_lean_Theory_IndexedProgram.json": {
+      "bytes": 1990,
+      "sha256": "3093fa8f608d5f01c54c6522a47d64d9a6068c143f63ae6e7b8b6644ccc86eb9"
+    },
+    "run018_observed_001/evidence/036_lean_Theory_IntegerFingerprint.json": {
+      "bytes": 2007,
+      "sha256": "5bd01c9948282b28f89c5489d2cbe37bf571009acd03ecb622436b40e62af0b3"
+    },
+    "run018_observed_001/evidence/037_lean_Theory_IntegerWindowNoise.json": {
+      "bytes": 2006,
+      "sha256": "ef5487583ab03d3fedb170ef95eac2c1f094a1ac9bb6f237c983d1097e82e68c"
+    },
+    "run018_observed_001/evidence/038_lean_Theory_Knowledge.json": {
+      "bytes": 1971,
+      "sha256": "7ffe8f3bc9107dd01796dc3324347a9cb030170923ebc032da20fa688a59195f"
+    },
+    "run018_observed_001/evidence/039_lean_Theory_PolynomialBivariate.json": {
+      "bytes": 2010,
+      "sha256": "12491d33b5d5255a457a1af628b3c38e32b4fa1ba6a4a9df8a8dc24f66d48c13"
+    },
+    "run018_observed_001/evidence/040_lean_Theory_PolynomialMatrixKernel.json": {
+      "bytes": 2022,
+      "sha256": "bd708de69d6c4d2c1a4a269435cc614cef5d9c6bd37f703d8517233daca52011"
+    },
+    "run018_observed_001/evidence/041_lean_Theory_PrivacyProfile.json": {
+      "bytes": 1988,
+      "sha256": "1ab1bca529194074cb9a33e200c6fd612e7a6bf669c9249e41ba6367f97c58f8"
+    },
+    "run018_observed_001/evidence/042_lean_Theory_PrivateAddressEma.json": {
+      "bytes": 2002,
+      "sha256": "93cc7d4f4c2f5d343dbb502ce77d4e3c34a0efc3027163dfea15e8447e34749a"
+    },
+    "run018_observed_001/evidence/043_lean_Theory_PrivateTrace.json": {
+      "bytes": 1982,
+      "sha256": "f18b0e20c1717962419a1c766303ee1bb7b1fb75b9837170d8a8cb869ac5a18c"
+    },
+    "run018_observed_001/evidence/044_lean_Theory_RSInterpolationMatrix.json": {
+      "bytes": 2016,
+      "sha256": "b581b73357af681814523ca82290b15e6f5cb2a6b86604b848803ecd88f40495"
+    },
+    "run018_observed_001/evidence/045_lean_Theory_ReactiveReceipt.json": {
+      "bytes": 1994,
+      "sha256": "e3210424c625cd9dc557a8b45520d21d28df1d81d7024f4f25294bdb786eb04d"
+    },
+    "run018_observed_001/evidence/046_lean_Theory_RevocationConsensus.json": {
+      "bytes": 2011,
+      "sha256": "57921069f9240feade99b3839e931e8f4962ec97b444819e988320526121801a"
+    },
+    "run018_observed_001/evidence/047_lean_Theory_TypedAuthorization.json": {
+      "bytes": 2007,
+      "sha256": "e2e9746e41e686e7a440e3c0d379a109f02b772aff24021d26e228085c6d3efb"
+    },
+    "run018_observed_001/evidence/048_lean_Assurance_ResidentBfvWindowNoise.json": {
+      "bytes": 2034,
+      "sha256": "71b78f315a9e1efabde54bc5f62310211be816f0c68a9992b41e51e7ddfc494f"
+    },
+    "run018_observed_001/evidence/049_lean_Compiler_Air.json": {
+      "bytes": 1955,
+      "sha256": "47ceee7eefeabcd14a9a9fab868f1e88e6f0460c99e853150dbb7fbef22ab684"
+    },
+    "run018_observed_001/evidence/050_lean_Compiler_DialectBundle.json": {
+      "bytes": 1995,
+      "sha256": "b15a438e0958cb8288199027a8b871b6b3a877d34a78c9beaddb57cbe21bc774"
+    },
+    "run018_observed_001/evidence/051_lean_Compiler_FheRnsScaleDecomposition.json": {
+      "bytes": 2038,
+      "sha256": "3181843fd3e01956b01ac562c72b3a623cf1d7a025f9fe32ae5b4458a4d887e1"
+    },
+    "run018_observed_001/evidence/052_lean_Compiler_Sp800185Cshake256Conformance.json": {
+      "bytes": 2055,
+      "sha256": "fa849706bccc9656a56e759e3fe3838c8fd8e0a40d421225d611a7f1bb8d93e7"
+    },
+    "run018_observed_001/evidence/053_lean_Kernel_PrivateTurn.json": {
+      "bytes": 1979,
+      "sha256": "1c833fcd690afaf1b149ddfb23ea78a2c126ef501ff432ac988b137042ee1cab"
+    },
+    "run018_observed_001/evidence/054_lean_Kernel_State.json": {
+      "bytes": 1955,
+      "sha256": "e676206cef757fed25e010bfad938eb2b83110a1ce4cb6f364c9c6b21b82d019"
+    },
+    "run018_observed_001/evidence/055_lean_Kernel_TurnLimit.json": {
+      "bytes": 1971,
+      "sha256": "ce637ca71307a8e0dcd7b274edd73773a53e45685551f2118c83308fa71a6d9e"
+    },
+    "run018_observed_001/evidence/056_lean_Selvage_Depth.json": {
+      "bytes": 1958,
+      "sha256": "2116feccb90831b3497cf4bb54b6ba390fe965534c1943ee4a89a59372eb855f"
+    },
+    "run018_observed_001/evidence/057_lean_Selvage_LigeritoInterleaved.json": {
+      "bytes": 2015,
+      "sha256": "2f6ce999c94c4625b912aa2057561a24d0a0ca9429ee1a19d79658bea79c46f2"
+    },
+    "run018_observed_001/evidence/058_lean_Selvage_ReedSolomon.json": {
+      "bytes": 1982,
+      "sha256": "68949f126811ba3c40c047bf91d6c04a6662fa16b3e240cbd8c4c189c2efe9cc"
+    },
+    "run018_observed_001/evidence/059_lean_Theory_AuthorizationDeclaration.json": {
+      "bytes": 2435,
+      "sha256": "8c3729a5b56e71ac2b6dddcc59359ded66e5c91d9abddac56b2753489205b542"
+    },
+    "run018_observed_001/evidence/060_lean_Theory_BfvPhaseAlgebra.json": {
+      "bytes": 1994,
+      "sha256": "21fc39630d3ed1d6bf4cfede625899739889ef72850553c0984e0b05b5543e27"
+    },
+    "run018_observed_001/evidence/061_lean_Theory_BinaryTowerFanPaar.json": {
+      "bytes": 2006,
+      "sha256": "868119fd396d8b789ea0074f6bb3ad0d682c04994f18a48d97a1514eb6019cda"
+    },
+    "run018_observed_001/evidence/062_lean_Theory_CausalVersionDag.json": {
+      "bytes": 1998,
+      "sha256": "4505a490919eb249399647b16f63a0070b82e7fed770d78a10a25c98c3d52145"
+    },
+    "run018_observed_001/evidence/063_lean_Theory_CiphertextWindow.json": {
+      "bytes": 1998,
+      "sha256": "6ed7a85f5034a5e4859eb6420dd16fd83ce468ae6c981e26e6638d20f1cae027"
+    },
+    "run018_observed_001/evidence/064_lean_Theory_CompressedLinearEquation.json": {
+      "bytes": 2030,
+      "sha256": "bb43a9127823ca05bfda328875c7a295c47814355ad6a0bb0f7ad1fd8568fb80"
+    },
+    "run018_observed_001/evidence/065_lean_Theory_CrossModulus.json": {
+      "bytes": 1982,
+      "sha256": "e6ddad923d8a39ed63d7268f30f5ac24f9b78672c8dd57ae09a5ecb0473f0648"
+    },
+    "run018_observed_001/evidence/066_lean_Theory_CyclotomicExceptionalSet.json": {
+      "bytes": 2030,
+      "sha256": "51dc04992c16bc242b9d8d60124eea2507abff1ecf90cf9602e50d5f5036a034"
+    },
+    "run018_observed_001/evidence/067_lean_Theory_DisclosureDeclaration.json": {
+      "bytes": 2018,
+      "sha256": "5caa0e286da1fb7e26f079b15b287545bdd8b0c2ec93df57786d4f67af9d4e14"
+    },
+    "run018_observed_001/evidence/068_lean_Theory_EpistemicConsensus.json": {
+      "bytes": 2006,
+      "sha256": "043568a7b70b5f29acce0cf20a24a8511747ee327dd5cfedfe06ade7e18b7405"
+    },
+    "run018_observed_001/evidence/069_lean_Theory_EvmFragment.json": {
+      "bytes": 1978,
+      "sha256": "9a11fb1a7da2f9a584427f40bc4fb59ee13e1fc82cc6930e3dfa9d3f233d0d06"
+    },
+    "run018_observed_001/evidence/070_lean_Theory_ExtensionBasis.json": {
+      "bytes": 1990,
+      "sha256": "2ac2e7d5b27c44a4520af8d683539e4a4f04b5b5e2ef42cef8e6b89a3e574855"
+    },
+    "run018_observed_001/evidence/071_lean_Theory_Finality.json": {
+      "bytes": 1966,
+      "sha256": "49b51033af404a10561975a2df8d3a61230652c85f0ac1c598195084c04baa49"
+    },
+    "run018_observed_001/evidence/072_lean_Theory_GuardedAdvice.json": {
+      "bytes": 1986,
+      "sha256": "41b888f130aa5828f5c9277071a3f7534d17e9bb5b9354a744240f0095f2a7ee"
+    },
+    "run018_observed_001/evidence/073_lean_Theory_HorizonCompositionWitnesses.json": {
+      "bytes": 2042,
+      "sha256": "6a3ee98e64e1bb18a3beaea5e4860fea82e67a0e046d83083675e4ae9cac18b4"
+    },
+    "run018_observed_001/evidence/074_lean_Theory_PolynomialGluingStatement.json": {
+      "bytes": 2320,
+      "sha256": "386a23f82f6f4b5dad99af27c6d28927462d02bcf81b931b383b96d60dfa9d6b"
+    },
+    "run018_observed_001/evidence/075_lean_Theory_PrivateEmaDynamics.json": {
+      "bytes": 2006,
+      "sha256": "003d7a6f0b08657cb82067afe66c9d63b8c9e5b2cafa2711fa1e5da501fcd50b"
+    },
+    "run018_observed_001/evidence/076_lean_Theory_PrivatePolicyEvolution.json": {
+      "bytes": 2022,
+      "sha256": "468f949e150d87b7f7847a3745abfdbf713a1d43578df59a123ba2248df0e9f1"
+    },
+    "run018_observed_001/evidence/077_lean_Theory_RSInterpolationKernel.json": {
+      "bytes": 2017,
+      "sha256": "7ad6f0e1d971ec8740aeb12b756114ab32dfc427b8604370633c501ba59eb37f"
+    },
+    "run018_observed_001/evidence/078_lean_Theory_TypedAuthorizationWitness.json": {
+      "bytes": 2035,
+      "sha256": "691a20e2bcddf96d089c76d82cc99583c0b02f405386e0cc8d17fadbdfdcba2c"
+    },
+    "run018_observed_001/evidence/079_lean_Theory_ViewMerge.json": {
+      "bytes": 1970,
+      "sha256": "26083818abceee26ea6e4c13e5fccd78a5a20e163702cfcd8bb048e9c4fad022"
+    },
+    "run018_observed_001/evidence/080_lean_Theory_ZkmlTensorOps.json": {
+      "bytes": 1986,
+      "sha256": "130138cb29b724966d206a057d934ad7561c4f85a9ceb23fc29c989697ed9b35"
+    },
+    "run018_observed_001/evidence/081_lean_Assurance_ResidentBfvSourcePhase.json": {
+      "bytes": 2034,
+      "sha256": "2e5d07cf01f30049689e401572422a454d8e5c426892ac1fe50d905856f29ab8"
+    },
+    "run018_observed_001/evidence/082_lean_Compiler_AirFlatten.json": {
+      "bytes": 1982,
+      "sha256": "134cfbe9578be2743008cb1746c4ab8db81c587ce67d5b46adbf95c8dd9c7564"
+    },
+    "run018_observed_001/evidence/083_lean_Compiler_AirRange.json": {
+      "bytes": 1974,
+      "sha256": "c25af2f549d87bcc2bf3e50ad765df0fb7a650b1632d8a469e48228f46fbc203"
+    },
+    "run018_observed_001/evidence/084_lean_Compiler_DisjointOraclePhases.json": {
+      "bytes": 2022,
+      "sha256": "408bfb7fac03be6e1e0598062835333663d77ea9e636a538c87343f611407cb5"
+    },
+    "run018_observed_001/evidence/085_lean_Compiler_SemanticManifest.json": {
+      "bytes": 3776,
+      "sha256": "6dae82f4385af265b52144f5c48d193946ca37bd65aa253e164635c843ecb54a"
+    },
+    "run018_observed_001/evidence/086_lean_Kernel_Receipt.json": {
+      "bytes": 1963,
+      "sha256": "72fbe89635d57e624a92d16db65b93c60314351dfab6af186d5bef55aa3d9456"
+    },
+    "run018_observed_001/evidence/087_lean_Kernel_TurnBalancedLimit.json": {
+      "bytes": 2003,
+      "sha256": "0a595c60ca6bb21d7d2712bc6076363f8e28b419818c8c741f2fc6872e4a8a19"
+    },
+    "run018_observed_001/evidence/088_lean_Selvage_ConstrainedCode.json": {
+      "bytes": 1998,
+      "sha256": "13bfdfffaaf77b98f94ebe049af0e8b0a568122e0dc9f50b5421455fefad5088"
+    },
+    "run018_observed_001/evidence/089_lean_Selvage_FiatShamir.json": {
+      "bytes": 2763,
+      "sha256": "cff0cecdabeb0f81cefab5ae15b9c0c0e5a3b7d36437847549b6a9e150303096"
+    },
+    "run018_observed_001/evidence/090_lean_Selvage_Proximity.json": {
+      "bytes": 1974,
+      "sha256": "e2024fa98540331852d89773137f9a3c31bc8a49906a7f0e756a5ec310f91d18"
+    },
+    "run018_observed_001/evidence/091_lean_Selvage_RandomnessSelection.json": {
+      "bytes": 2015,
+      "sha256": "a8ad0ceff77dcd0f1a80533c188308325a26a3aacb303f61438611124ea03fb6"
+    },
+    "run018_observed_001/evidence/092_lean_Selvage_Sumcheck.json": {
+      "bytes": 1971,
+      "sha256": "cd91a6afdc8302dd20e15fc5fe9a4e64b9766debe0f164c45127e8f1e8010ddd"
+    },
+    "run018_observed_001/evidence/093_lean_Theory_AdditiveNTT.json": {
+      "bytes": 1978,
+      "sha256": "f6ba0d4954a512b9be49789980be7fda0e236c6e77a8f5c24b2362b0b6053d0e"
+    },
+    "run018_observed_001/evidence/094_lean_Theory_BfvNoiseSource.json": {
+      "bytes": 1989,
+      "sha256": "697867b464615f0e685c27e15b4d518f243994f81fe00108daa028bdccb7c65d"
+    },
+    "run018_observed_001/evidence/095_lean_Theory_BinaryTowerTrace.json": {
+      "bytes": 1998,
+      "sha256": "694ff1c9a333d59a39a16d0c1ed6879e79d32a07cd40920da77ba4f81e34a3ac"
+    },
+    "run018_observed_001/evidence/096_lean_Theory_CausalVersionAncestry.json": {
+      "bytes": 2018,
+      "sha256": "0fbd599eb93bd6990a3d14f30195185af70e1e56e2d7fca3266fff2f5e6f2410"
+    },
+    "run018_observed_001/evidence/097_lean_Theory_CiphertextWindowNoise.json": {
+      "bytes": 2018,
+      "sha256": "652ad76d18fe0917b9dc1f9c23a65c0a7bc6f37641b19dc9347f9e54c53a5c69"
+    },
+    "run018_observed_001/evidence/098_lean_Theory_CredentialAuthorityFamily.json": {
+      "bytes": 2578,
+      "sha256": "f2aa89f0d7de55ab72bd7e5b9ced9f2bde789d2e2df811e7552503b425fc2004"
+    },
+    "run018_observed_001/evidence/099_lean_Theory_EffectDeclaration.json": {
+      "bytes": 2003,
+      "sha256": "1bc8aa53e6c11eb3a497d6e89d0424f91b636f629ff4a00b4480dabf92e7c922"
+    },
+    "run018_observed_001/evidence/100_lean_Theory_EvmResidual.json": {
+      "bytes": 1979,
+      "sha256": "98ba9a4eee7c0b573d5b58d9c6966ad7cb39780e3e780e89af0170c0c127c23a"
+    },
+    "run018_observed_001/evidence/101_lean_Theory_LaceMerge.json": {
+      "bytes": 1970,
+      "sha256": "5ce422f423752128aecd9242ef720d480eb1a2abe5c4b556d6e9f772f4ee8670"
+    },
+    "run018_observed_001/evidence/102_lean_Theory_PolynomialGluing.json": {
+      "bytes": 1998,
+      "sha256": "f373374c3fe384701ed61cd9c8320f916c95ac3464eda522c0d46059d1a89b6a"
+    },
+    "run018_observed_001/evidence/103_lean_Theory_PrivateComputationDeclaration.json": {
+      "bytes": 2050,
+      "sha256": "48b26a6a6833d0077f923b2402bb190e8d21924c7abcfde0da8d5643b4cf97e1"
+    },
+    "run018_observed_001/evidence/104_lean_Theory_PrivateDistributionBudget.json": {
+      "bytes": 2033,
+      "sha256": "18788690bf631acb2065854b1c315fd4b1d7251821584be67b7a19ac1bdf0eda"
+    },
+    "run018_observed_001/evidence/105_lean_Theory_ReactiveController.json": {
+      "bytes": 2006,
+      "sha256": "468adc9003386b900320635e07499c71786ae230f1707ff651541807af7d6bf1"
+    },
+    "run018_observed_001/evidence/106_lean_Theory_ZkmlMatmulSum.json": {
+      "bytes": 1986,
+      "sha256": "86e1d8f0ffd0c3e1cbb5a49e903c769a2fb6f8218af7a072462b1e0e706f3da4"
+    },
+    "run018_observed_001/evidence/107_lean_Assurance_ResidentBfvSourceWindow.json": {
+      "bytes": 2038,
+      "sha256": "613224578c3b784d254741e966d900dfca541149404227518ee76a9dc52b9954"
+    },
+    "run018_observed_001/evidence/108_lean_Compiler_AirHash.json": {
+      "bytes": 1970,
+      "sha256": "fa25d833edd4f1ee96b077a2a2dbcca3cf9a4847d9f9be9e10220312fbeb4b16"
+    },
+    "run018_observed_001/evidence/109_lean_Compiler_DeclaredEffectArtifact.json": {
+      "bytes": 2030,
+      "sha256": "81cdf83b458707eb24dbd8655a5a4fd78daadd6426b1a77e22910da16fb2a159"
+    },
+    "run018_observed_001/evidence/110_lean_Compiler_PredCompile.json": {
+      "bytes": 1986,
+      "sha256": "13b00053e99626267af6e14825dd507c091ee1af733d3901816298c15f841d70"
+    },
+    "run018_observed_001/evidence/111_lean_Kernel_Verbs.json": {
+      "bytes": 1954,
+      "sha256": "994fd91f597f868aaea057318f3480211e17e4eb2fcb780f3032481f14564f60"
+    },
+    "run018_observed_001/evidence/112_lean_Selvage_Accumulator.json": {
+      "bytes": 1982,
+      "sha256": "393e7e8160d9768cd9e4e2854118cabf4f8eb06ee121774f79210adf887e516e"
+    },
+    "run018_observed_001/evidence/113_lean_Selvage_AdaptiveFiniteSampling.json": {
+      "bytes": 2027,
+      "sha256": "abb1d59b568ad39026c637a693bc2ab32b19ec90e0a21dfb2d594c060b2f1519"
+    },
+    "run018_observed_001/evidence/114_lean_Selvage_CharTwoWall.json": {
+      "bytes": 1982,
+      "sha256": "cc7f2cf434e0b51d800eac3714876d94a959234fdeb29159dcddc50b59ce0e9e"
+    },
+    "run018_observed_001/evidence/115_lean_Selvage_FullUDStatement.json": {
+      "bytes": 1999,
+      "sha256": "df9aea516c2a3e91e155b93021388dc0001b2f57106863ad2fcd0a17be83c008"
+    },
+    "run018_observed_001/evidence/116_lean_Selvage_LogupStar.json": {
+      "bytes": 1975,
+      "sha256": "d36e55419d4ae978a3edde49cb59f9d9ef33b65cc8407f4d44a0dbf305f710b9"
+    },
+    "run018_observed_001/evidence/117_lean_Selvage_OutOfDomain.json": {
+      "bytes": 1982,
+      "sha256": "d8687166e1b4f252209531cde1f3adc793582fa1944e4d6bc2e6f7b0cea42a35"
+    },
+    "run018_observed_001/evidence/118_lean_Selvage_ProximityGapUD.json": {
+      "bytes": 1994,
+      "sha256": "ba110b569135938ad3ffbe9ac2c3671ec6990b4c13754520536c7bcb138e1c8e"
+    },
+    "run018_observed_001/evidence/119_lean_Selvage_SmallField.json": {
+      "bytes": 1978,
+      "sha256": "0ef6892812e12f234694d3702afa8ec1dc305bf35dc4df076a447f73b9404e93"
+    },
+    "run018_observed_001/evidence/120_lean_Selvage_SumcheckReduction.json": {
+      "bytes": 2006,
+      "sha256": "ecbb0c178cd71b6a624c4efe6c85b78e6f1d12e1bd94523b2f74ac6e59f2944e"
+    },
+    "run018_observed_001/evidence/121_lean_Theory_AdditiveNTTTransform.json": {
+      "bytes": 2014,
+      "sha256": "64efa0cec2d335c6ce69fcc7e86ab36830374cac8de8aa9a7feec3dddbbb6269"
+    },
+    "run018_observed_001/evidence/122_lean_Theory_BinaryTowerFanPaarCodec.json": {
+      "bytes": 2026,
+      "sha256": "4b71717f1e90fc6b6bd9ec4f63f81b6b3ac0a034bfdfbc19c40aa0c38d17e341"
+    },
+    "run018_observed_001/evidence/123_lean_Theory_CellState.json": {
+      "bytes": 1971,
+      "sha256": "75f3446a530c0983ce5f8ce5c467dae29547337c086b225bdec74cb86a42db4d"
+    },
+    "run018_observed_001/evidence/124_lean_Assurance_AirSumcheck.json": {
+      "bytes": 1991,
+      "sha256": "d9512edd946d3387b4049143898e528a8b24645428f2ae013fbaa84ffa6ce74b"
+    },
+    "run018_observed_001/evidence/125_lean_Assurance_ReceiptClaim.json": {
+      "bytes": 1993,
+      "sha256": "30f1087c1b8f5c22854dc3b1f36abc91aac0bfa34ffd0c43f0752b90f5054391"
+    },
+    "run018_observed_001/evidence/126_lean_Assurance_SemanticReceiptRelation.json": {
+      "bytes": 5371,
+      "sha256": "5f6d9ebbc5d4c09fd9141d87f901571c234530aa8352ec9b9811acb085162809"
+    },
+    "run018_observed_001/evidence/127_lean_Compiler_AirMembership.json": {
+      "bytes": 1994,
+      "sha256": "2bdf4b9014c084efce49e9734874b6852560c510475ce5313459d3e647cbf5df"
+    },
+    "run018_observed_001/evidence/128_lean_Compiler_CanonicalPolicyAdmission.json": {
+      "bytes": 2038,
+      "sha256": "bc40416eb8b5555eb0b4df0ccbfdcf1ba7325ffee27268e6514a4ca3c6df2452"
+    },
+    "run018_observed_001/evidence/129_lean_Compiler_SemanticArtifactBundle.json": {
+      "bytes": 2331,
+      "sha256": "37eb6fe608252af508d9963083fd25a0d81450477b730e69afdf04f70a049310"
+    },
+    "run018_observed_001/evidence/130_lean_Kernel_SparseAuthenticatedState.json": {
+      "bytes": 2295,
+      "sha256": "3a6b11423d4265a2e546450893487947744b6b414801a27053149b549f894f94"
+    },
+    "run018_observed_001/evidence/131_lean_Selvage_AccExtract.json": {
+      "bytes": 1979,
+      "sha256": "b21f565d212fd74a5e9afca21c6f8a8843f3569ab970dc47187b0287c7b3c05b"
+    },
+    "run018_observed_001/evidence/132_lean_Selvage_AccSound.json": {
+      "bytes": 1970,
+      "sha256": "6e177e4d85ec0468c244c9e50a3630354c0acc14c6208e12242a5c761367edcd"
+    },
+    "run018_observed_001/evidence/133_lean_Selvage_AdditiveProximity.json": {
+      "bytes": 2006,
+      "sha256": "165ca6d6ab28061aa1892bd4b0c253ea36642f7c425f6fd14aa2d355dd241d83"
+    },
+    "run018_observed_001/evidence/134_lean_Selvage_Decider.json": {
+      "bytes": 1967,
+      "sha256": "8eb28e21c1984a38514759665ef2ee526dd5546f6f72f9fab6688d3ef163e69b"
+    },
+    "run018_observed_001/evidence/135_lean_Selvage_ExtensionChallengeBridge.json": {
+      "bytes": 3421,
+      "sha256": "526886195b77edfc7046e1287eb3bf4a3c20471426669eca6ca2501a1ed501de"
+    },
+    "run018_observed_001/evidence/136_lean_Selvage_FullUDInterpolation.json": {
+      "bytes": 2014,
+      "sha256": "ecb5800fa9482c9f732710b04d2af887235ff8ef4218ff107a7136ce824ec242"
+    },
+    "run018_observed_001/evidence/137_lean_Selvage_FullUDTeeth.json": {
+      "bytes": 1982,
+      "sha256": "c2f76a200cf78a4373b08966a0dced874ff242c630be486e1d1a738ae447d9a5"
+    },
+    "run018_observed_001/evidence/138_lean_Selvage_LightClient.json": {
+      "bytes": 1982,
+      "sha256": "c6f495c3dee70254accefa7f9ccb106982320cdecbc1b39c1d3426239933f68a"
+    },
+    "run018_observed_001/evidence/139_lean_Selvage_MultilinearExtension.json": {
+      "bytes": 2018,
+      "sha256": "70abb3a86cdad09e30bf9f4e553f3bdf4448c7e364a6eecce80b2cbd80b6f4bb"
+    },
+    "run018_observed_001/evidence/140_lean_Selvage_MultisetFingerprint.json": {
+      "bytes": 2015,
+      "sha256": "a680ae63a078862bf55ac21f21c4b033cc8dd3859cd38bddbf1bb21f19e4db50"
+    },
+    "run018_observed_001/evidence/141_lean_Selvage_ProximityGapUDSharp.json": {
+      "bytes": 2015,
+      "sha256": "0bc9dad1b340468a9bc185ba2694a3be62852b66d270a9bcfcdd09152dc51f58"
+    },
+    "run018_observed_001/evidence/142_lean_Selvage_ProximityGapUDTight.json": {
+      "bytes": 2014,
+      "sha256": "4cb5e8bec51a09465f6882ca2adb11906329ed0b4b77ab6747afa45f07683b96"
+    },
+    "run018_observed_001/evidence/143_lean_Selvage_SumcheckRbr.json": {
+      "bytes": 1983,
+      "sha256": "444687afff889c0765fff7f6b84e99e91723583bc7169fdb58a1474cfba37b56"
+    },
+    "run018_observed_001/evidence/144_lean_Selvage_ZK.json": {
+      "bytes": 1946,
+      "sha256": "a96967d71515e6f7b621222a1fe0c607725a3ee0fad58980a57c48516f6a0113"
+    },
+    "run018_observed_001/evidence/145_lean_Theory_BinaryTowerCodec.json": {
+      "bytes": 1998,
+      "sha256": "560f7197657e8749bf9824c88b60da1b86d448c8a25c7b07464ec0478f346e92"
+    },
+    "run018_observed_001/evidence/146_lean_Theory_DeclaredTurn.json": {
+      "bytes": 1982,
+      "sha256": "071b60d3ffd3206196d06a2d62ecf77bf150a8a5a22f66650e08b73528958768"
+    },
+    "run018_observed_001/evidence/147_lean_Theory_ReactiveCellTransition.json": {
+      "bytes": 2022,
+      "sha256": "39c13b5d4780b0617351f8a2be57b45a2a59b22049f07059e6fed57649ecde5f"
+    },
+    "run018_observed_001/evidence/148_lean_Assurance_SemanticTurnReceipt.json": {
+      "bytes": 2022,
+      "sha256": "6d7709e20010b5250a50c5a06e962669ba256372b971d31774a5745e28134b93"
+    },
+    "run018_observed_001/evidence/149_lean_Compiler_MinidreggV1Artifact.json": {
+      "bytes": 2018,
+      "sha256": "ecd2e3d525b06777ed04c63946f60a8a494f8ab5f50ac0301aaf1b82797f8913"
+    },
+    "run018_observed_001/evidence/150_lean_Compiler_NoteSpend.json": {
+      "bytes": 1978,
+      "sha256": "46993543c2ea83c4db6be55ab9d4b374844b06cbdacdfbd54ee1cc55bd657332"
+    },
+    "run018_observed_001/evidence/151_lean_Compiler_SparseEqualityWorkProfile.json": {
+      "bytes": 2043,
+      "sha256": "fb3e7aa562f5d8c25f9779d4d1eb686191d1d9629d0ccbe1878d0dcee6ae0da5"
+    },
+    "run018_observed_001/evidence/152_lean_Selvage_AccSoundRbr.json": {
+      "bytes": 1983,
+      "sha256": "08e39cbcb963315384c776f1cb0361a4a566bc616bc3bd6329d5330853db280a"
+    },
+    "run018_observed_001/evidence/153_lean_Selvage_BinaryLookup.json": {
+      "bytes": 1987,
+      "sha256": "1bec0d9877fb1bf6c77a3531e9c7c36ec7c59bb68cfb655c475f29da8c1914ce"
+    },
+    "run018_observed_001/evidence/154_lean_Selvage_Commitment.json": {
+      "bytes": 1978,
+      "sha256": "443025902f170dd9cf2a3697c3cdc4e3ca8b162e0d96e7c601699f41d1ac0a0e"
+    },
+    "run018_observed_001/evidence/155_lean_Selvage_EqPolynomial.json": {
+      "bytes": 1987,
+      "sha256": "96e1a188f57115d5f5b8af8d1790331d1b9a4d10fd97e98fd8c7278839debc79"
+    },
+    "run018_observed_001/evidence/156_lean_Selvage_FullUDBivariate.json": {
+      "bytes": 1997,
+      "sha256": "59e05627371f9341f93d8a8cc17582a274f1d70a9a96ab0ffffe93e601e72eae"
+    },
+    "run018_observed_001/evidence/157_lean_Selvage_LightClientSound.json": {
+      "bytes": 2002,
+      "sha256": "6a094a2d59553cbb8df1877a26ad48dab95e075cda38d0ae4df9caa9d46c487c"
+    },
+    "run018_observed_001/evidence/158_lean_Selvage_MultiplicativeMleTerminal.json": {
+      "bytes": 2038,
+      "sha256": "c27f886cbc66a7e8a011c60b2bada30f4ca523b7c12bf7c7bc0db4a11c016c92"
+    },
+    "run018_observed_001/evidence/159_lean_Selvage_QuadraticSumcheck.json": {
+      "bytes": 2007,
+      "sha256": "289aa34f7804e3d74de89e951da9321593bff19c6afab0d9f6ed76c47d32dd12"
+    },
+    "run018_observed_001/evidence/160_lean_Selvage_ZKHiding.json": {
+      "bytes": 1971,
+      "sha256": "8f30dddc2ebcafd4738efed1c5565d26894f63edb398c5324badaebd3e37e54d"
+    },
+    "run018_observed_001/evidence/161_lean_Theory_CanonicalTransition.json": {
+      "bytes": 2011,
+      "sha256": "9c0502007de248a300993554200869142e1e8c2fe1f0a3d3546627be8787f1f2"
+    },
+    "run018_observed_001/evidence/162_lean_Theory_MaterializerCardinality.json": {
+      "bytes": 2026,
+      "sha256": "5c5b1923a37f31a16e426c22a9e54d382f241cda8e39310301eab169c8cba311"
+    },
+    "run018_observed_001/evidence/163_lean_Theory_TurnTransition.json": {
+      "bytes": 1991,
+      "sha256": "3ec5e4f7975e40c5097a20ffae9112d49223a9a89a9fa4608e6697f877f77571"
+    },
+    "run018_observed_001/evidence/164_lean_Assurance_AirSumcheckQuadratic.json": {
+      "bytes": 2025,
+      "sha256": "3a7ef5b9bac9b9992d0487411b937297eee90cc54042a0bd719e149b72ecb613"
+    },
+    "run018_observed_001/evidence/165_lean_Assurance_PrivateComputationReceiptClause.json": {
+      "bytes": 2069,
+      "sha256": "fa581ec0f500e224fd1379833c5732f85495933ded82ca72198686150ac72e01"
+    },
+    "run018_observed_001/evidence/166_lean_Assurance_PrivateReceipt.json": {
+      "bytes": 2002,
+      "sha256": "b037664d3a4a76f19d5ee44cafd7690e0ef1b93191a890f42324c47460ea1ee9"
+    },
+    "run018_observed_001/evidence/167_lean_Compiler_AdmissionAir.json": {
+      "bytes": 1990,
+      "sha256": "1916f313805bd9afd299bf7a4e55621301e0b2d00849fedd887a3c93cbc8a736"
+    },
+    "run018_observed_001/evidence/168_lean_Compiler_Emit.json": {
+      "bytes": 1958,
+      "sha256": "a40233b545b84e0d930342704a9ab198e2bd61d08e655be210e0dedafdd06f58"
+    },
+    "run018_observed_001/evidence/169_lean_Kernel_DeclaredHyperedge.json": {
+      "bytes": 6534,
+      "sha256": "43e9b55cd689a398b48dfc4658475948508e037a83f7945a096c1d530bd71a51"
+    },
+    "run018_observed_001/evidence/170_lean_Selvage_AccExtractChain.json": {
+      "bytes": 1998,
+      "sha256": "fe65bbc04ca04d3b52af52e515dbd7c5eca6fc02484cd124797fadbca035fdae"
+    },
+    "run018_observed_001/evidence/171_lean_Selvage_AuditSampling.json": {
+      "bytes": 1990,
+      "sha256": "e9288f5d471e3f8a128bb7debcbbf2d33f4ebcd3a28f3dee2328426e5560c7bb"
+    },
+    "run018_observed_001/evidence/172_lean_Selvage_BaseFoldCompleteness.json": {
+      "bytes": 2019,
+      "sha256": "ceaa17cc9529aa477949ec3f2cd8e8d19596df7e8e283257e1451e3bc185c4f5"
+    },
+    "run018_observed_001/evidence/173_lean_Selvage_BinaryMerkle.json": {
+      "bytes": 1987,
+      "sha256": "3576b01439ebad2326bdbdedcd1c00b5557c4c3ac199111fb69fc2d474264c9d"
+    },
+    "run018_observed_001/evidence/174_lean_Selvage_CollisionResistanceROM.json": {
+      "bytes": 2789,
+      "sha256": "a5b2ce62934584fbe14559e442c2f473a970af737360f872a3ae1a9420a8e330"
+    },
+    "run018_observed_001/evidence/175_lean_Selvage_ConstrainedMask.json": {
+      "bytes": 1999,
+      "sha256": "143791106c5e7c3aa9dc28ee9dbff7976fa89123df6d0c771150f8715bda5581"
+    },
+    "run018_observed_001/evidence/176_lean_Selvage_DeciderProximity.json": {
+      "bytes": 2003,
+      "sha256": "88d8a3ea5b8cebcac73af253c5e15f7f7e950412b28f3efe94c3365122388091"
+    },
+    "run018_observed_001/evidence/177_lean_Selvage_DecomposableTable.json": {
+      "bytes": 2006,
+      "sha256": "15debb1edb922d12b43d74bec3b234043e93e86ddbbb3bae2b752914f082b002"
+    },
+    "run018_observed_001/evidence/178_lean_Selvage_Erasure.json": {
+      "bytes": 1967,
+      "sha256": "2535c5a206a9fb77c9215b7dbef15858316a35f49ef88880b0fded86ff320963"
+    },
+    "run018_observed_001/evidence/179_lean_Selvage_FullUDCore.json": {
+      "bytes": 1978,
+      "sha256": "84a8bd1f4957ba89e29c52533dd1b406519f4d23c5e1abedec1173f81bb37934"
+    },
+    "run018_observed_001/evidence/180_lean_Selvage_LightClientFS.json": {
+      "bytes": 1991,
+      "sha256": "82b261a771a979fe7e3f6ab928bcb1b6568b459569baebe64539c28af249167a"
+    },
+    "run018_observed_001/evidence/181_lean_Selvage_LogupIndexLink.json": {
+      "bytes": 3553,
+      "sha256": "ddf806d298aa9e3d14da7710c0d1fb143c71f6e5dcf065607024a820c610e1b5"
+    },
+    "run018_observed_001/evidence/182_lean_Selvage_MultilinearZeroTest.json": {
+      "bytes": 2014,
+      "sha256": "4222cbb9fc5cf65cc9fb5f8d5271ef1f7530b77ae07257abbbb3a062b5a476d6"
+    },
+    "run018_observed_001/evidence/183_lean_Theory_AcceptedCellEffect.json": {
+      "bytes": 2007,
+      "sha256": "d871efa0ead7e10b88484400ecb50563a0b07c6e526b3edd5c07aad643244775"
+    },
+    "run018_observed_001/evidence/184_lean_Theory_CanonicalReactiveView.json": {
+      "bytes": 2018,
+      "sha256": "4ab03903e5239da5b9c293f8be73cf793d9544ed16d5e621d142de863d011bb9"
+    },
+    "run018_observed_001/evidence/185_lean_Theory_CanonicalResourceKernel.json": {
+      "bytes": 2026,
+      "sha256": "8dfac7708f3a880c5d4bacd92f1e5834ce0628fa25e181f80e10da36fa939e29"
+    },
+    "run018_observed_001/evidence/186_lean_Theory_CellStateWitness.json": {
+      "bytes": 2261,
+      "sha256": "c811943fd6470cc6e4ce23052667e6c913cca1fabca87b7028ebd01c63f0a598"
+    },
+    "run018_observed_001/evidence/187_lean_Theory_ResourceCost.json": {
+      "bytes": 1982,
+      "sha256": "f63389a02e196a028f3da12d603e7099eef36870cf70f92ef8ec72f9a7008c8f"
+    },
+    "run018_observed_001/evidence/188_lean_Theory_SparseLogicalState.json": {
+      "bytes": 2006,
+      "sha256": "c29570f2f759af7b20443a56c9486ee52341fcf378824938146236dd3ff8ee40"
+    },
+    "run018_observed_001/evidence/189_lean_Assurance_AirSumcheckCubic.json": {
+      "bytes": 2009,
+      "sha256": "254bfafe8996d45484d63eb2b1f330d406547160bedc2156ea2348819b0586e0"
+    },
+    "run018_observed_001/evidence/190_lean_Assurance_NoteSpendCoreAcceptedCellEffect.json": {
+      "bytes": 2070,
+      "sha256": "d8423ecac6dae1abfc5229631db86597bf42d0cbf4777482e7df90c995577fbc"
+    },
+    "run018_observed_001/evidence/191_lean_Assurance_PrivateTurn.json": {
+      "bytes": 1990,
+      "sha256": "ce5bd3b55968240702323b2851d0116c90aa7279bad1d1a6eb16f6ea12923dc6"
+    },
+    "run018_observed_001/evidence/192_lean_Compiler_AirBignum.json": {
+      "bytes": 1978,
+      "sha256": "41f40b1592e8d8ea53286643c64add3bda8bf7ea4fe0a6246815fe3cd153c61a"
+    },
+    "run018_observed_001/evidence/193_lean_Compiler_DeclaredHyperedgeArtifact.json": {
+      "bytes": 3866,
+      "sha256": "e65171323b8ddc8497df5f754caeb2910f8abdcb2f62c284c92363035946787f"
+    },
+    "run018_observed_001/evidence/194_lean_Compiler_EmitSerialize.json": {
+      "bytes": 2041,
+      "sha256": "ea7ac0c2e03bc49d5655eb7295ddb6c7e34b9ed2ed973f4e085eb5c506353b36"
+    },
+    "run018_observed_001/evidence/195_lean_Compiler_EmitShare.json": {
+      "bytes": 1979,
+      "sha256": "ae2390b329e25eb991f8b6820c23e87892075c047db677043bf444ac01ce0f43"
+    },
+    "run018_observed_001/evidence/196_lean_Compiler_Logup256ReceiptClause.json": {
+      "bytes": 4495,
+      "sha256": "5cce6a166b85ae90d67015ddf75508321fe0ea02140286c75e4f1f78dda1a029"
+    },
+    "run018_observed_001/evidence/197_lean_Compiler_SumcheckVerifierAir.json": {
+      "bytes": 2018,
+      "sha256": "258935330c96adc9dbd5acff908c3ac83b057ac7b2b7cd83d78ff3930527503e"
+    },
+    "run018_observed_001/evidence/198_lean_Kernel_MultiCellHyperedge.json": {
+      "bytes": 7139,
+      "sha256": "f102c206ca1fbc757ac6f7f369158797c76f10e56a23641d3f723df6e6b7334b"
+    },
+    "run018_observed_001/evidence/199_lean_Kernel_TypedCellHyperedge.json": {
+      "bytes": 10337,
+      "sha256": "e1f2c88295ef9c97a788f3fccee7b5f389bac25816cce2f088ea63f56c33bc34"
+    },
+    "run018_observed_001/evidence/200_lean_Selvage_AdditiveBaseFold.json": {
+      "bytes": 2002,
+      "sha256": "c8ced5c58e788d23542ef3c80db64ca62827494b41bb8b1bd6d743ed9ee98f37"
+    },
+    "run018_observed_001/evidence/201_lean_Selvage_BaseFoldBraid.json": {
+      "bytes": 1990,
+      "sha256": "b0a2946baae164b4160a9bd71ea6637ca3fa9752f1c06fef776a01fc43f4a52f"
+    },
+    "run018_observed_001/evidence/202_lean_Selvage_ConstrainedMaskMulti.json": {
+      "bytes": 2018,
+      "sha256": "0b52655d3103cba122f94019f7fd4756487a5e4b092335e4a024453e66538491"
+    },
+    "run018_observed_001/evidence/203_lean_Selvage_LightClientGrinding.json": {
+      "bytes": 2014,
+      "sha256": "01c49706bc0697ac09c0fba935a664e911b506996d96d3668b6c9ef30455d864"
+    },
+    "run018_observed_001/evidence/204_lean_Selvage_MultilinearCommitment.json": {
+      "bytes": 2023,
+      "sha256": "89749b890a3e3af7adb3a67469268bd1bf0a4b88b4f3357744b4aea0c71fe03e"
+    },
+    "run018_observed_001/evidence/205_lean_Selvage_ProximityGapFullUD.json": {
+      "bytes": 2554,
+      "sha256": "17fcb4e77c113d7eec829183949dbecca4875576fb499d2ba1ca9791fd533053"
+    },
+    "run018_observed_001/evidence/206_lean_Selvage_Rank1GradientCheck.json": {
+      "bytes": 2011,
+      "sha256": "61b9806275e186e7cc8ade2a8516ddf77caca90520b23ec53f447ed62e1f9c11"
+    },
+    "run018_observed_001/evidence/207_lean_Selvage_RingSwitching.json": {
+      "bytes": 1990,
+      "sha256": "db749d2440642d6d787ea11881ad842e241de468db105f8ac8eeed84269f3d62"
+    },
+    "run018_observed_001/evidence/208_lean_Selvage_SpongeIndiff.json": {
+      "bytes": 3586,
+      "sha256": "4e3cfa12442c04645a52a71a26d0265de4ac89726eacafdf866f2cb904c5d992"
+    },
+    "run018_observed_001/evidence/209_lean_Selvage_ZkArgument.json": {
+      "bytes": 2978,
+      "sha256": "821e6b21d0f4c175a3eb5ff5a926925269bd33a948cd6a7138683afd59576e1a"
+    },
+    "run018_observed_001/evidence/210_lean_Theory_AcceptedCellEffectWitness.json": {
+      "bytes": 2034,
+      "sha256": "a1f4c717239cc793fb06687a9dd517ea6e847deb0dd7b22fdc6b28b42a940a5f"
+    },
+    "run018_observed_001/evidence/211_lean_Theory_CanonicalTransitionWitness.json": {
+      "bytes": 2037,
+      "sha256": "74de5db7a906fde17bc400d9df9bd99db7e2f9eebfaa648f18b0b07e31a10be1"
+    },
+    "run018_observed_001/evidence/212_lean_Theory_CredentialAuthorityState.json": {
+      "bytes": 2301,
+      "sha256": "36e59ecf56af9d62888847dad0a9d091c53242729c8fcb84ef2dc83652369a2e"
+    },
+    "run018_observed_001/evidence/213_lean_Theory_DeclaredActionLowering.json": {
+      "bytes": 2846,
+      "sha256": "fdafabf1740ca31e34cdc3e3e7b5024ec70db992ee201ebb12e219c8415355aa"
+    },
+    "run018_observed_001/evidence/214_lean_Theory_StoreFiniteSupport.json": {
+      "bytes": 2006,
+      "sha256": "8de5114e6f9799fe2da1d59a7e311e64cc917b27cd0128c8d70d8e7398c79a57"
+    },
+    "run018_observed_001/evidence/215_lean_Assurance_ErrorBudget.json": {
+      "bytes": 5931,
+      "sha256": "11cab6b7114180b9c6926a84c797d11da711785ee3d307f41bdbe2391e4d421d"
+    },
+    "run018_observed_001/evidence/216_lean_Assurance_ZkmlMatmulSumcheck.json": {
+      "bytes": 2019,
+      "sha256": "eb4ce18b28622b3ccbeaa5158c3b860b25581e2fb0a50765851cfe6653d34646"
+    },
+    "run018_observed_001/evidence/217_lean_Compiler_AirModularView.json": {
+      "bytes": 1998,
+      "sha256": "80a22523cfe32cc5961f4281facee4952fd8ec2dc2088f06ad2ce0a69de46c20"
+    },
+    "run018_observed_001/evidence/218_lean_Compiler_DeclaredActionBytes.json": {
+      "bytes": 2286,
+      "sha256": "b48f98ba5a903166c730fd7bf32b2b98c78cc1120c081117ef9ea32a2042d105"
+    },
+    "run018_observed_001/evidence/219_lean_Compiler_EvmAddAir.json": {
+      "bytes": 1979,
+      "sha256": "e04f838e1bb65844ba57ee218123e06d921660a9fee10c3ec0ff218479f8bb48"
+    },
+    "run018_observed_001/evidence/220_lean_Compiler_Ext6Conformance.json": {
+      "bytes": 2333,
+      "sha256": "6fb20c19ce37f6fc1fd18b4e7794144ca9dc1e757323a39f10c86dc3be64ce93"
+    },
+    "run018_observed_001/evidence/221_lean_Compiler_FriQueryVerifierAir.json": {
+      "bytes": 2018,
+      "sha256": "3c86afda1e30a4f8911688ba980bc4890e6d00b07b6ebb95101a8359dd3c4bd7"
+    },
+    "run018_observed_001/evidence/222_lean_Compiler_NextgenLightClientPublicInputs.json": {
+      "bytes": 2062,
+      "sha256": "e5d45ebbccf12e53f334da77b0f2303f0dab20668406af01b73c8eb0414f0541"
+    },
+    "run018_observed_001/evidence/223_lean_Compiler_SumcheckConformance.json": {
+      "bytes": 2017,
+      "sha256": "a0004ad167f6a581fa2e2ba8e1ba799abc4819a538c9fe30de6ed78f36e5a633"
+    },
+    "run018_observed_001/evidence/224_lean_Compiler_WideDigestAir.json": {
+      "bytes": 1994,
+      "sha256": "7629683ca563d347ad6cc02cf08c748e5d6e93bc98efed1ace0846226eaae52b"
+    },
+    "run018_observed_001/evidence/225_lean_Compiler_ZkmlEltwiseAir.json": {
+      "bytes": 1998,
+      "sha256": "64e4f56b981b8c4b2651f5a59470889d102abc343ed47442a6dae46595d7ea1c"
+    },
+    "run018_observed_001/evidence/226_lean_Compiler_ZkmlTraceCheck.json": {
+      "bytes": 2034,
+      "sha256": "9cf153207c10f31c2d6ee721d4ce0b95c7a7776c5f031eee066643e54a0e7952"
+    },
+    "run018_observed_001/evidence/227_lean_Kernel_CanonicalResourceEffect.json": {
+      "bytes": 2026,
+      "sha256": "20dddc8ea6acb90bbe1df125155e9c6150ecc2c16127ebd88dc6699548b878d4"
+    },
+    "run018_observed_001/evidence/228_lean_Kernel_DurableCommitProtocol.json": {
+      "bytes": 2018,
+      "sha256": "4169a066d5f8af8a36acf40e9364776af06da6a064dfdd4b492bdd0c4d86f775"
+    },
+    "run018_observed_001/evidence/229_lean_Selvage_AdditiveBasisBinding.json": {
+      "bytes": 2018,
+      "sha256": "04824af9cb0d6fc731c65ff195b82564aa3d56e802c7a2c50db19f890184af41"
+    },
+    "run018_observed_001/evidence/230_lean_Selvage_BabyBearFullUD.json": {
+      "bytes": 1994,
+      "sha256": "02e5d199cdf15006ae57576f3f00cc596e1aec68ee6b6a473df8d36b7250c6fb"
+    },
+    "run018_observed_001/evidence/231_lean_Selvage_BaseFoldRbr.json": {
+      "bytes": 1983,
+      "sha256": "422ebb109a200ad60bba7145ec2794841ec82680026d341466e49a9bfcdec740"
+    },
+    "run018_observed_001/evidence/232_lean_Selvage_CosetNovelTransform.json": {
+      "bytes": 4773,
+      "sha256": "46244710e569f81c12f2de0c80f1d5b0579c6da0814ecf9a4d74d403146699a2"
+    },
+    "run018_observed_001/evidence/233_lean_Selvage_FullUDWitnesses.json": {
+      "bytes": 1998,
+      "sha256": "dd50898b1dadec56854d108c04e80751fc7682e49526cedcf3bd395212c5b415"
+    },
+    "run018_observed_001/evidence/234_lean_Selvage_RbrZeroKnowledge.json": {
+      "bytes": 2002,
+      "sha256": "bdbe39a1475bb593a14e0a354e9f404b23847c2848d4b27055183b50d4b066c3"
+    },
+    "run018_observed_001/evidence/235_lean_Selvage_SpongeIndiffRunInvariant.json": {
+      "bytes": 2035,
+      "sha256": "fdb39a70ab445218dcf0dc8a2d3872d4e4219e45601fd36e52a85d72e3cc67f9"
+    },
+    "run018_observed_001/evidence/236_lean_Theory_CanonicalAuthorityProjection.json": {
+      "bytes": 2046,
+      "sha256": "a02f42f0b150941a51c2d02ac6cb6d623505667da440e9860fa562bff96b6876"
+    },
+    "run018_observed_001/evidence/237_lean_Theory_CredentialAuthorityEffects.json": {
+      "bytes": 2038,
+      "sha256": "1bce3b5a56428ce1a32ee71de5bd1e72bd40303127220439b58f84d4dd9c8486"
+    },
+    "run018_observed_001/evidence/238_lean_Theory_Hyperdocument.json": {
+      "bytes": 1986,
+      "sha256": "02f40d4660ce6bf8ee593591fa4b0c76a2547ec84bb826eb850c50acf05ca81b"
+    },
+    "run018_observed_001/evidence/239_lean_Assurance_AirSumcheckCubicConformance.json": {
+      "bytes": 2055,
+      "sha256": "efa677bcfc8256f9115e6c736ecc6513ebc4e7e8c774433ed0151a606f960443"
+    },
+    "run018_observed_001/evidence/240_lean_Assurance_ErrorBudget120.json": {
+      "bytes": 2316,
+      "sha256": "c44a4f84e834244b02bbae83ba7d95ed8718a890ada4716b55d3ec85d386ca5a"
+    },
+    "run018_observed_001/evidence/241_lean_Assurance_SemanticReceiptRuntimeCodec.json": {
+      "bytes": 7215,
+      "sha256": "3a4e7eb828103741c2c90870ee0561996cb7ac7e941844fc605904b18920941b"
+    },
+    "run018_observed_001/evidence/242_lean_Assurance_ZkmlLowRankUpdate.json": {
+      "bytes": 2014,
+      "sha256": "14b914163bb445eaef2c2cf45f318faedf2d9f549eaa32d7e7669bd4c40ee95e"
+    },
+    "run018_observed_001/evidence/243_lean_Assurance_ZkmlMatmulChecker.json": {
+      "bytes": 2297,
+      "sha256": "ab6c4651f4d41703a660aaf0458ea25d453eb5ecea3023de3a0615a8b5245c9b"
+    },
+    "run018_observed_001/evidence/244_lean_Assurance_ZkmlMatmulCommitment.json": {
+      "bytes": 2026,
+      "sha256": "53b73f9b21dcd015656069bb35f4edc07a609c2ad3f34b3c9a6d53cf8f4ff0cb"
+    },
+    "run018_observed_001/evidence/245_lean_Assurance_ZkmlMatmulConformance.json": {
+      "bytes": 2031,
+      "sha256": "0b9f0a38b12a8fa715f5340cd64dbc4e502cea2f2781e31f0af6d15212a34f3e"
+    },
+    "run018_observed_001/evidence/246_lean_Compiler_BfvCompressedEquation.json": {
+      "bytes": 2027,
+      "sha256": "6c4839ad25ced280a765be1edb414b06a802ee89763a4663adf4620554199f49"
+    },
+    "run018_observed_001/evidence/247_lean_Compiler_BignumKernelABI.json": {
+      "bytes": 2001,
+      "sha256": "ebb0809672455ff0f0659fea4ee15faac0d8f842b3af94fd67a38c7515cdf921"
+    },
+    "run018_observed_001/evidence/248_lean_Compiler_FiatShamirAir.json": {
+      "bytes": 1994,
+      "sha256": "f41326835ba7b2c207986c87592f3067a8312d3cac268897111a4345f0d23464"
+    },
+    "run018_observed_001/evidence/249_lean_Compiler_GateMleExt6.json": {
+      "bytes": 3598,
+      "sha256": "a358ce0c1581751c864e815fd9c9e38770aff6a5341afaff19ff6f580454fadc"
+    },
+    "run018_observed_001/evidence/250_lean_Compiler_WideDigestByteDecodeAir.json": {
+      "bytes": 2034,
+      "sha256": "adc8249c5e3eab335411f5c393b7b5b496d31db14189126abc259b3f44c074d8"
+    },
+    "run018_observed_001/evidence/251_lean_Kernel_DurableDataIntent.json": {
+      "bytes": 2002,
+      "sha256": "514b147568c84587edf3f9f20f3118c75251616a5dc47cbe79212314b2206ea1"
+    },
+    "run018_observed_001/evidence/252_lean_Kernel_DurableWalHandler.json": {
+      "bytes": 3156,
+      "sha256": "32c9f9df45b3033f8a3493b369966cd1a4c2025f01f54640c94ef90216ddbfc6"
+    },
+    "run018_observed_001/evidence/253_lean_Kernel_HyperdocumentEventLog.json": {
+      "bytes": 2018,
+      "sha256": "38a14ef955acb883be64e69ec27eaadae262bd2e6b3de706710eeb032356839f"
+    },
+    "run018_observed_001/evidence/254_lean_Kernel_HyperdocumentIndexSync.json": {
+      "bytes": 2022,
+      "sha256": "d2d382480a467960484fcb3592e62fb1721acfcc72a8100313daeb13de537bdf"
+    },
+    "run018_observed_001/evidence/255_lean_Selvage_BaseFoldIor.json": {
+      "bytes": 1983,
+      "sha256": "5b420512994770cd79034e5bf99910633a59b8bf84ba6e9d2636f7a8c9badfc8"
+    },
+    "run018_observed_001/evidence/256_lean_Selvage_BaseFoldRbrTable.json": {
+      "bytes": 2003,
+      "sha256": "c78a3f29ac5b9dc02f916b2f3c8b3e9db8b4033222a9546e86be2b7fef0ffdea"
+    },
+    "run018_observed_001/evidence/257_lean_Selvage_SpongeIndiffCapacityBudget.json": {
+      "bytes": 2042,
+      "sha256": "7d533ff567648a05ad80999eb966b8850158ced2887917b283cd183aa402beca"
+    },
+    "run018_observed_001/evidence/258_lean_Selvage_ZkTriangular.json": {
+      "bytes": 1986,
+      "sha256": "cfbe5e40aa68a3edfd9d8b815919ec852ff53592199eeb9dd5ada4205a39b9f5"
+    },
+    "run018_observed_001/evidence/259_lean_Theory_CellSlot.json": {
+      "bytes": 1966,
+      "sha256": "0de3a138cf99d13ba2098789d9f81a1b8fafb74f4ddb0657a1fb2a233b5dcc4c"
+    },
+    "run018_observed_001/evidence/260_lean_Theory_DeployedMaterializerWitness.json": {
+      "bytes": 2043,
+      "sha256": "31dbe1673614d7f2da5da47e9204371534ad9f01207d8b9c8268390efa607808"
+    },
+    "run018_observed_001/evidence/261_lean_Theory_HyperdocumentOperationIntent.json": {
+      "bytes": 2046,
+      "sha256": "e383343e9fa96ca7fba467aca55c34bf2abe21988c6d7f7698ee0648eea92efb"
+    },
+    "run018_observed_001/evidence/262_lean_Theory_StableRanges.json": {
+      "bytes": 1983,
+      "sha256": "9c3cec61d7c925c0a1942671ffcd4a5dbd929eabc492b3e8c3a3ac12bcd2951f"
+    },
+    "run018_observed_001/evidence/263_lean_Assurance_GrainForkSettlement.json": {
+      "bytes": 3794,
+      "sha256": "afe2978cb98d9370f045f4cb4ee057fd1fb2795e36dd58ee4b2f2cab51783294"
+    },
+    "run018_observed_001/evidence/264_lean_Assurance_HyperdocumentFinalizedDomainCrawler.json": {
+      "bytes": 2087,
+      "sha256": "40e0d841439bcc447ee05429687e5b198286c5f4a21c423a7946ebc5ef47deca"
+    },
+    "run018_observed_001/evidence/265_lean_Assurance_MixedFieldBudget.json": {
+      "bytes": 2719,
+      "sha256": "3efa68014fae415d2b93c44e885bef77ab4289bdeecf355ee557f436eda99569"
+    },
+    "run018_observed_001/evidence/266_lean_Assurance_MpcSealedCellExecution.json": {
+      "bytes": 2034,
+      "sha256": "d9efa6d4177761b884871e6427fa8905a04b51b25f4a816145c1ae4b8152a317"
+    },
+    "run018_observed_001/evidence/267_lean_Assurance_PowGrinding.json": {
+      "bytes": 3371,
+      "sha256": "2cb1fd551ee475a8854e339cfd856ab421e46a9e075a6e17a18737533d8d65bd"
+    },
+    "run018_observed_001/evidence/268_lean_Assurance_SpartanR1CS.json": {
+      "bytes": 2442,
+      "sha256": "934cefd2a6c8d5e6e8dd3fd7870dcc318c43a240147129da3f62fcb9e562921b"
+    },
+    "run018_observed_001/evidence/269_lean_Assurance_ZkmlMatmulBaseFold.json": {
+      "bytes": 2018,
+      "sha256": "478e4b7e27ed3e8fda803f42afa0b6bf20e2bf2802fcf81b00ed0cca7fff5cb6"
+    },
+    "run018_observed_001/evidence/270_lean_Assurance_ZkmlMatmulSuiteRegistry.json": {
+      "bytes": 2039,
+      "sha256": "cb6cf566a48cc905c6c2b0498e2e936fb1927bd0d18520e91c61b14330796b42"
+    },
+    "run018_observed_001/evidence/271_lean_Compiler_BfvAllModuliKernelCalls.json": {
+      "bytes": 2034,
+      "sha256": "24ba17b05cfebc3b774aaa91ca39b7c3cc534234faee0646dd87a8a1823dd5e5"
+    },
+    "run018_observed_001/evidence/272_lean_Compiler_GateFactoredExt6.json": {
+      "bytes": 4343,
+      "sha256": "9eb00534007628c9e8afeb83d290a804c31b383d40ab3ff63542db5e79924ffa"
+    },
+    "run018_observed_001/evidence/273_lean_Compiler_MerkleBindAir.json": {
+      "bytes": 1994,
+      "sha256": "e54416656ff5ee83e639cde4b40edcfa4f708d7d412ec0dbc2b2a7179498aba7"
+    },
+    "run018_observed_001/evidence/274_lean_Compiler_NativeKernelPlan.json": {
+      "bytes": 2006,
+      "sha256": "fb19aa35b1c76e3a340ec9ad758dd4244b0e2ba07d01ee20bfb99c320b30434b"
+    },
+    "run018_observed_001/evidence/275_lean_Compiler_SemanticTurnReceiptDescriptor.json": {
+      "bytes": 2058,
+      "sha256": "ce7a01668a531c5ff48c89f01cfb3258d067a12069a69490ceaf22041688f6ab"
+    },
+    "run018_observed_001/evidence/276_lean_Kernel_AdmissionPrologue.json": {
+      "bytes": 2003,
+      "sha256": "63d876af78c8b269e4df013288a50910e27f0cd2317c5a19046462b9b0c02335"
+    },
+    "run018_observed_001/evidence/277_lean_Kernel_CanonicalPolicyRegistry.json": {
+      "bytes": 2026,
+      "sha256": "1ee223bd12921369f330860c4c818a36557349b775c51e48ea8505dc0e1e717f"
+    },
+    "run018_observed_001/evidence/278_lean_Kernel_DeclaredHyperedgeWitness.json": {
+      "bytes": 2030,
+      "sha256": "6c5b542c12c5a5fd3bcedb3ee9eacd407cb5b08b5a52767918713104ee15523e"
+    },
+    "run018_observed_001/evidence/279_lean_Kernel_DeployedMaterializerWitness.json": {
+      "bytes": 2040,
+      "sha256": "ed35811d4abe81f84e7bc05f9e23667676eccd65cc3890bb85c1152fff2c30a2"
+    },
+    "run018_observed_001/evidence/280_lean_Kernel_FramedWalRefinement.json": {
+      "bytes": 3100,
+      "sha256": "d53d05e761576dd9b37187f87a6a8bf304b73479f049710d8e2425e45c5876f1"
+    },
+    "run018_observed_001/evidence/281_lean_Kernel_ReactiveTerminalCell.json": {
+      "bytes": 2014,
+      "sha256": "200c67149f8bcaca25787906ce83e3fab2660fbc3547f0e56cc853755bc7fba8"
+    },
+    "run018_observed_001/evidence/282_lean_Selvage_SpongeIndiffAdaptiveSchedule.json": {
+      "bytes": 2050,
+      "sha256": "c5e8910260e881772ca8ea01c74e2352085d40ab592387cff4af2f1bdd4909ca"
+    },
+    "run018_observed_001/evidence/283_lean_Selvage_ZkExtraction.json": {
+      "bytes": 1986,
+      "sha256": "9e8014e38140294b113530091f1dbd4a43500b59e0222d0aeaa35bf2b8a6c0bd"
+    },
+    "run018_observed_001/evidence/284_lean_Theory_DeployedTotalCarrierAudit.json": {
+      "bytes": 2034,
+      "sha256": "e0bbf95cbd519390d2b5561285be9abcaec38b3f43496cf2da4e6566d4405f43"
+    },
+    "run018_observed_001/evidence/285_lean_Theory_HyperdocumentOperations.json": {
+      "bytes": 2025,
+      "sha256": "bf41bb8744bfb67e596f84563bf9553efc5a7c3100ad6e4ea807848057eda1f7"
+    },
+    "run018_observed_001/evidence/286_lean_Assurance_GrainForkScopedSettlement.json": {
+      "bytes": 2046,
+      "sha256": "9d1ffbb356470cc2b06b7ea5a7f14ec883490551307c1d6a046816470f0d3c46"
+    },
+    "run018_observed_001/evidence/287_lean_Assurance_ScopedAcceptedCellEffectHistory.json": {
+      "bytes": 2070,
+      "sha256": "6ee5e45d802599938b937fc06b2d4b5b9bf1f074fe28a45b82d88020767ea1d3"
+    },
+    "run018_observed_001/evidence/288_lean_Assurance_ZkmlMatmulAuditTurn.json": {
+      "bytes": 2022,
+      "sha256": "cdc869012497ebd31f60cd7b7ae8c0e456bd81b180e95de03b686e37e9a4ca4d"
+    },
+    "run018_observed_001/evidence/289_lean_Assurance_ZkmlMatmulSuccinctChecker.json": {
+      "bytes": 2046,
+      "sha256": "954f611aca34086edb6aa7417e793c3afb1234550f2bc1d91289a9fe928646c5"
+    },
+    "run018_observed_001/evidence/290_lean_Compiler_AuthenticatedColumnPlan.json": {
+      "bytes": 2034,
+      "sha256": "91d70bb6b7cd72f68442d97aad3d719a328ef652c8a5876a120ace259abe5798"
+    },
+    "run018_observed_001/evidence/291_lean_Compiler_BfvInputValidity.json": {
+      "bytes": 2006,
+      "sha256": "7bc20cc8dc2732c34e88370f16e77954ddbc778281342121f6e527b98abdd21a"
+    },
+    "run018_observed_001/evidence/292_lean_Compiler_DeployedCellRegistry.json": {
+      "bytes": 2022,
+      "sha256": "3e53e082f4c7e929ef3c6eadaa141ac639b9df9a51b659f4a581a17f57eb4f87"
+    },
+    "run018_observed_001/evidence/293_lean_Compiler_DescriptorEval.json": {
+      "bytes": 3146,
+      "sha256": "4bb61d6f0d65a0ae154614e3b9e668fc33342335fdb1e35b97875b53b5553ad7"
+    },
+    "run018_observed_001/evidence/294_lean_Compiler_FramedWalRecoveryController.json": {
+      "bytes": 2050,
+      "sha256": "4ff1a5c271c64622dfc6dbf2cefbc5a07ca6c5b057420ca51790b97742680d04"
+    },
+    "run018_observed_001/evidence/295_lean_Compiler_GateTraceRelationExt6.json": {
+      "bytes": 4732,
+      "sha256": "9a357fd4770fedd8baebba96c59567ea0eebeaf5167f3127a3467b9cebd9f179"
+    },
+    "run018_observed_001/evidence/296_lean_Compiler_MinidreggV1ArithmeticWork.json": {
+      "bytes": 2043,
+      "sha256": "997467588181277e9112a265e289371b45fe54ecbc28c8a864a9faba0c8b75d7"
+    },
+    "run018_observed_001/evidence/297_lean_Compiler_SemanticController.json": {
+      "bytes": 2015,
+      "sha256": "0e8235b97d4e5c79fc0e73141f79f926ecbac1e1a152bc268d937e5e6e49aa3e"
+    },
+    "run018_observed_001/evidence/298_lean_Kernel_AuthorizedResourceCharge.json": {
+      "bytes": 2031,
+      "sha256": "cc0a12d2c0ddc043020361644e1fb872dc95e72e8eceb6050bf8f91cf2fbd5ab"
+    },
+    "run018_observed_001/evidence/299_lean_Kernel_HyperdocumentVersionEffects.json": {
+      "bytes": 2042,
+      "sha256": "925ce5552333ba8f411dd029dca0e21c3296eed0f1da8ae45e5a84d485686223"
+    },
+    "run018_observed_001/evidence/300_lean_Kernel_OutboxDelivery.json": {
+      "bytes": 1991,
+      "sha256": "d33f045ff2adb6ec88e812bb20a44bd54f7547c79eaf7656c5aca76bd6f53c9a"
+    },
+    "run018_observed_001/evidence/301_lean_Kernel_ReplicatedSettlementFinality.json": {
+      "bytes": 3365,
+      "sha256": "26fb884a64ab2aeb33bd2fd0b583295074148a843f95ca5c7b782de0ec5316a1"
+    },
+    "run018_observed_001/evidence/302_lean_Selvage_AccRbrFold.json": {
+      "bytes": 1979,
+      "sha256": "2424acb292e84edc9809e2c0771f69201e2bfdb5672122c154ba2efeaa7f0be6"
+    },
+    "run018_observed_001/evidence/303_lean_Selvage_LightClientKnowledge.json": {
+      "bytes": 2018,
+      "sha256": "a0a5c05d34199c5cfdc03fe2e1967f7a5fa9f040f641124926d6cb17d6432018"
+    },
+    "run018_observed_001/evidence/304_lean_Selvage_SpongeIndiffOffBadRun.json": {
+      "bytes": 2022,
+      "sha256": "8c8de5e381e9f2e0a626723c69107a14e816e3e4feed719f9f194515db474376"
+    },
+    "run018_observed_001/evidence/305_lean_Selvage_SubUdSeam.json": {
+      "bytes": 1974,
+      "sha256": "aaa0b438ded0fc71e2e4031a34e918d21b5a419b8f5d51611142931ee07265ac"
+    },
+    "run018_observed_001/evidence/306_lean_Selvage_ZkRbrGame.json": {
+      "bytes": 1974,
+      "sha256": "9f549fe6b0e11df436bd597c42b8ec0cbd3491a63e9b7bbf5cd6e412e0fb8ddc"
+    },
+    "run018_observed_001/evidence/307_lean_Theory_AcceptedCellEffectRequestBinding.json": {
+      "bytes": 2063,
+      "sha256": "bb5bba44187c6fee5710611748fe2d666fbe77dfbda44ae2f8751ae675c62e13"
+    },
+    "run018_observed_001/evidence/308_lean_Theory_HyperdocumentCausalFamily.json": {
+      "bytes": 2035,
+      "sha256": "4df0fd32439892c57e2905093f25348c6bc9e0231e8b7afa9b1d0cb41bce614b"
+    },
+    "run018_observed_001/evidence/309_lean_Theory_HyperdocumentInterface.json": {
+      "bytes": 2023,
+      "sha256": "d578b0c81a7441b6ea2aa16693535a122726f8a57938cf438261770039f46587"
+    },
+    "run018_observed_001/evidence/310_lean_Assurance_SelvageV0.json": {
+      "bytes": 1981,
+      "sha256": "ad539441399cc6f1f1ce4fd49f083dc388d03d475c791447a8e0563cee828b09"
+    },
+    "run018_observed_001/evidence/311_lean_Assurance_ZkmlMatmulFramedWal.json": {
+      "bytes": 2023,
+      "sha256": "de5a4db5ce57c5c19f71f471b43f49e5583176c79fb54d3e65ccf040826c332b"
+    },
+    "run018_observed_001/evidence/312_lean_Compiler_AirSimplify.json": {
+      "bytes": 1987,
+      "sha256": "3b85da0a7b813748ee39d65c3e364dfcbd925d0c50552cd4e98add7cd7129ff6"
+    },
+    "run018_observed_001/evidence/313_lean_Compiler_AuthenticatedColumnLogupBridge.json": {
+      "bytes": 4527,
+      "sha256": "87a6524aac466ba16faccdae6ce3284381a7556db63ce38dd4dab71e699c93e1"
+    },
+    "run018_observed_001/evidence/314_lean_Compiler_BfvSignedAccumulatorAir.json": {
+      "bytes": 2841,
+      "sha256": "56f461050f2374236837603ccd71ba2fedd141188e9f43244c62c29b35afa9a8"
+    },
+    "run018_observed_001/evidence/315_lean_Compiler_CommittedTerminalRealizer.json": {
+      "bytes": 6936,
+      "sha256": "6d56c3c9371a343fad2b27dbae9d3aac62341cc1f17e16a1bf9edd6db3d2a99e"
+    },
+    "run018_observed_001/evidence/316_lean_Compiler_DialectClauseDispatch.json": {
+      "bytes": 2026,
+      "sha256": "6e074a4005aa56a4d60b8c498bbf4b842a48a185b2e1e5344b06e72d52b4dbd2"
+    },
+    "run018_observed_001/evidence/317_lean_Compiler_PrivateAddressEmaSchedule.json": {
+      "bytes": 2043,
+      "sha256": "09d66d8e1e840c2a0fba7febf08e30cc04e179e95d51b54c71790d2ad8385ce6"
+    },
+    "run018_observed_001/evidence/318_lean_Compiler_ResidentEmaCertificate.json": {
+      "bytes": 2030,
+      "sha256": "45e0d92c5cb6130da2e264cf086159d113a6757d6267537814135f8e40691326"
+    },
+    "run018_observed_001/evidence/319_lean_Compiler_Tower256CshakeMerkleController.json": {
+      "bytes": 2329,
+      "sha256": "a08df074fc29624189dd3a2b10220a5ba9d58632b3d078ed2e50b2fa33de12aa"
+    },
+    "run018_observed_001/evidence/320_lean_Kernel_AuthenticatedSettlementFinality.json": {
+      "bytes": 2058,
+      "sha256": "cfebbc590ba4403ada03395f96564dc41b7cea0ced8af5651d36d543c028c11f"
+    },
+    "run018_observed_001/evidence/321_lean_Kernel_CanonicalEscrowMarket.json": {
+      "bytes": 2392,
+      "sha256": "7effd0dbac4d87c65dbb2e1c70f0ad8b70a839a113ddfcaaf23dea61427bcbc5"
+    },
+    "run018_observed_001/evidence/322_lean_Kernel_FinalityGate.json": {
+      "bytes": 1983,
+      "sha256": "e1cdbdded315377ca27653e5dc6f62311c55e10ebcf824e401354e63e56169c0"
+    },
+    "run018_observed_001/evidence/323_lean_Kernel_HyperdocumentMerge.json": {
+      "bytes": 2007,
+      "sha256": "cdb4d0ac133b3bede0560fa334645dc22da1b4c62a69d58d59fe8c78668ed3da"
+    },
+    "run018_observed_001/evidence/324_lean_Kernel_HyperdocumentPublication.json": {
+      "bytes": 2294,
+      "sha256": "824a12119f5d987232e4812f7ea8efb1f6a1637606451946dea774b89700cf90"
+    },
+    "run018_observed_001/evidence/325_lean_Kernel_ProviderExecutionLease.json": {
+      "bytes": 2023,
+      "sha256": "19c44ed898b19280fe3ee64718bc79b09827e41439299dfef4b7807236819afe"
+    },
+    "run018_observed_001/evidence/326_lean_Kernel_QuotaGcSettlement.json": {
+      "bytes": 2003,
+      "sha256": "63cecf74c5a213c0bcb242aad97e8cd597a0bab9d0a9196f531f90f02f2f363d"
+    },
+    "run018_observed_001/evidence/327_lean_Selvage_AccRbrFoldExtract.json": {
+      "bytes": 2007,
+      "sha256": "376a7da4579e59d57d38a0da1920b0270192b71521c21d9dc003c40005081459"
+    },
+    "run018_observed_001/evidence/328_lean_Selvage_AccRbrInstance.json": {
+      "bytes": 1994,
+      "sha256": "c428d41c850894ac550d5c48d4cb6e063b852a95312727eb400695cf110d85a6"
+    },
+    "run018_observed_001/evidence/329_lean_Selvage_JohnsonRegime.json": {
+      "bytes": 1990,
+      "sha256": "55fc546910e80846e5c9b0d2d4d15201a2f15de8f31680b34a8c8174b09c748a"
+    },
+    "run018_observed_001/evidence/330_lean_Selvage_SpongeIndiffProgrammedAgreement.json": {
+      "bytes": 2059,
+      "sha256": "4b1b008b34e77d4719089b3b87b0647a9de8d32878ae0ab4469e843f2f1d34dd"
+    },
+    "run018_observed_001/evidence/331_lean_Theory.json": {
+      "bytes": 1930,
+      "sha256": "bca44e2c1873f3829ce3897c4173d1eeb07f98e43b800c236292c9adb2197a79"
+    },
+    "run018_observed_001/evidence/332_lean_Assurance_AuthenticatedSettlementFinalityWitness.json": {
+      "bytes": 2098,
+      "sha256": "d3aac4196cd2817fa076b26a3c51ae9dac2a210f139d27828165de1376ea514d"
+    },
+    "run018_observed_001/evidence/333_lean_Assurance_DreggNetProviderConsumer.json": {
+      "bytes": 2043,
+      "sha256": "6e9c3f9a84689c80ce8a4e32dc554813015d3f4dbb08296744fc38d03cc64caf"
+    },
+    "run018_observed_001/evidence/334_lean_Assurance_HyperdocumentLinkPublicationWitness.json": {
+      "bytes": 2087,
+      "sha256": "aae15fd12f50729ad1fe21aac5c1ab37d3c627a0cb6671c967108a7abee8b523"
+    },
+    "run018_observed_001/evidence/335_lean_Assurance_QuotaGcSettlementWitness.json": {
+      "bytes": 2040,
+      "sha256": "8c8f046dda9f3526d7f51d93fdf0b454703647c2eb608b38a874605bfc1cb553"
+    },
+    "run018_observed_001/evidence/336_lean_Assurance_SelvageV0Manifest.json": {
+      "bytes": 2015,
+      "sha256": "1f7228c01fc8d1cdd24501b68cb6516ab57ae64a9359d52fd880df5691e199a6"
+    },
+    "run018_observed_001/evidence/337_lean_Assurance_SemanticHistoryAccumulator.json": {
+      "bytes": 2051,
+      "sha256": "946660c1973ac01625a6d8794096a3214805d08420f3de2394befc25ef239505"
+    },
+    "run018_observed_001/evidence/338_lean_Compiler_BfvReceiptClause.json": {
+      "bytes": 2006,
+      "sha256": "755ec26fd0f2e357e00c3057338db64633e3fe6213208d0a08a9839710e27e79"
+    },
+    "run018_observed_001/evidence/339_lean_Compiler_BinaryTower256Profile.json": {
+      "bytes": 2026,
+      "sha256": "e21e7d79f47261424fc50e17e70dab16ddd20f1ac090fcb7c801c9ecff9acbc8"
+    },
+    "run018_observed_001/evidence/340_lean_Compiler_IntegerCertificateEmission.json": {
+      "bytes": 2046,
+      "sha256": "813e6e9a6651eae019d69e678c975cf6100c9ce4c2cab2683c7f18ea8b2578ad"
+    },
+    "run018_observed_001/evidence/341_lean_Compiler_Sp800185Cshake256.json": {
+      "bytes": 2009,
+      "sha256": "d40f206e88df7e3950465910f0d34c9bc463173c7f8d52cdca774c84d4fe238b"
+    },
+    "run018_observed_001/evidence/342_lean_Compiler_Tower256CshakeMerkleBinding.json": {
+      "bytes": 2049,
+      "sha256": "5033ddfdb1f4697b7e5d8e72224b78566c8407aa477b2e91c32e5c352822e2e1"
+    },
+    "run018_observed_001/evidence/343_lean_Compiler_Tower256LogupControllerPlan.json": {
+      "bytes": 3156,
+      "sha256": "45159c7efeb0cbe678959470269c2caf992feec9e73afc095b62c5de775a9717"
+    },
+    "run018_observed_001/evidence/344_lean_Kernel_GuardedDurableCommit.json": {
+      "bytes": 2013,
+      "sha256": "1ac527647365e66c275c2dd4a67832b300c3a05a1008f9e0cdf1a290612d9425"
+    },
+    "run018_observed_001/evidence/345_lean_Kernel_HyperdocumentMergePublication.json": {
+      "bytes": 2051,
+      "sha256": "c97f025367cf52623894e158fae5a3f910d7e631bce0614747591b737c312d11"
+    },
+    "run018_observed_001/evidence/346_lean_Kernel_PrivateEscrowSettlement.json": {
+      "bytes": 2297,
+      "sha256": "d9948d05d08763d98ce14d1315eb1112163bdab0274e8713c7b7a21b2da68a28"
+    },
+    "run018_observed_001/evidence/347_lean_Selvage_AccRbrBcs.json": {
+      "bytes": 2470,
+      "sha256": "08d98361b56343dbdfa23d3042558a837f9d6fa87fde3addc3b384b750d54d92"
+    },
+    "run018_observed_001/evidence/348_lean_Selvage_HalfThresholdRegime.json": {
+      "bytes": 2015,
+      "sha256": "c3c5878e2324c294a2dd15c29ae20638453bcf4fcc0396bf7b11992772db4670"
+    },
+    "run018_observed_001/evidence/349_lean_Selvage_JohnsonMcaBridge.json": {
+      "bytes": 2002,
+      "sha256": "fbfb1ecdbf6d225b72abbcbb9a5a05a055b574a924e30e9a7ab2750dd40f1bca"
+    },
+    "run018_observed_001/evidence/350_lean_Selvage_SpongeIndiffWorkBudget.json": {
+      "bytes": 2026,
+      "sha256": "6b2e4ed2913009c2e70a557c43f79a391adbbc8e577e190f9bc8ec70700c70a7"
+    },
+    "run018_observed_001/evidence/351_lean_Assurance_BfvPrivateComputationJoin.json": {
+      "bytes": 2046,
+      "sha256": "7b47af7849dd1475e253800089d6c3d709c3dd9f47364de1533294d20f854a32"
+    },
+    "run018_observed_001/evidence/352_lean_Assurance_DeclaredHyperedgeReceipt.json": {
+      "bytes": 2042,
+      "sha256": "5473383a885dd5cab9d66cfba9be85a0e5576a86c13e02b5fe12d1b3bdb542b7"
+    },
+    "run018_observed_001/evidence/353_lean_Assurance_DeclaredTurnReceipt.json": {
+      "bytes": 2022,
+      "sha256": "60328ed5a3ff50b9059c5c23434b977061541d733dc041a2745a8352b6b71f0e"
+    },
+    "run018_observed_001/evidence/354_lean_Assurance_GrainHyperdocumentSettlementWitness.json": {
+      "bytes": 2086,
+      "sha256": "11cea4b3e0ab71d3d54b5b345bb0ec56a37a701699da5fe4bcca3838f2a65d7f"
+    },
+    "run018_observed_001/evidence/355_lean_Assurance_SemanticHistoryFamily.json": {
+      "bytes": 2031,
+      "sha256": "bd07522122007c8b1760f97958558484a5224c30d0a7d5b2942cfd30454cbeec"
+    },
+    "run018_observed_001/evidence/356_lean_Compiler_FheSourceCertificate.json": {
+      "bytes": 2022,
+      "sha256": "4f403ee52bf897a7d383bb281502e8fc0d77836928537b0880c933b8a4cb7e91"
+    },
+    "run018_observed_001/evidence/357_lean_Compiler_LargeIntegerCertificateEmission.json": {
+      "bytes": 2067,
+      "sha256": "e9a298c53ce20debe5a8bfda38237da20e04549e3f206dfe9f1e3589598edd53"
+    },
+    "run018_observed_001/evidence/358_lean_Compiler_SparseAuthenticatedStateLogupBridge.json": {
+      "bytes": 2082,
+      "sha256": "4faf4c2c9f830da4b8465c3ce6fb3d39c5bd211f11dddd9ac72e7dc38424172e"
+    },
+    "run018_observed_001/evidence/359_lean_Compiler_Tower256ConcreteBackend.json": {
+      "bytes": 2034,
+      "sha256": "895365f9ffb79b1030b1ad0f1fb0c1bde7c9dc762d353adf7d2bb42bb6f2f4a7"
+    },
+    "run018_observed_001/evidence/360_lean_Compiler_Tower256LogupAcceptedRun.json": {
+      "bytes": 2038,
+      "sha256": "ced2008939e2fe4453db9ba3257c2091f4f3a28422a174ac440851c1d6a3d8cd"
+    },
+    "run018_observed_001/evidence/361_lean_Compiler_Tower256NativeByteBoundary.json": {
+      "bytes": 2046,
+      "sha256": "87a95a2c6151dfae55dd97ed86c31a25b9d86338c5677d39055ee9242072ffe7"
+    },
+    "run018_observed_001/evidence/362_lean_Kernel_HyperdocumentMergeAncestry.json": {
+      "bytes": 2039,
+      "sha256": "9d62fb36b3696eddd380110789855507474b57669affe2ca84cbd8e75d77c00f"
+    },
+    "run018_observed_001/evidence/363_lean_Selvage_AccRbrBcsRaw.json": {
+      "bytes": 2511,
+      "sha256": "4d23b04f4d67181bf55930fd74ed8cd09dcaef9b1819c01b7f53e644d562a624"
+    },
+    "run018_observed_001/evidence/364_lean_Selvage_AccRbrBcsShifted.json": {
+      "bytes": 2002,
+      "sha256": "1bcf35f1303b22be0616a38735033941caac9bcd869973fa3e88c677930660ff"
+    },
+    "run018_observed_001/evidence/365_lean_Selvage_HalfThresholdFri.json": {
+      "bytes": 2003,
+      "sha256": "294608aaa41bca735547c510adf90674036aecbdef48f26b6457c6852b8db600"
+    },
+    "run018_observed_001/evidence/366_lean_Selvage_HeteroCompositionSuccinct.json": {
+      "bytes": 2038,
+      "sha256": "98be37e562f5f470d72f3b331f80041453a8653ceaba121c3e1420ab8eb48b05"
+    },
+    "run018_observed_001/evidence/367_lean_Selvage_SpongeIndiffLazyConstruction.json": {
+      "bytes": 2050,
+      "sha256": "8be36f171239c828c6e77a7d3260b14d7ef9572777e581566e8ec4e1715a3c73"
+    },
+    "run018_observed_001/evidence/368_lean_Assurance_AcceptedCellEffectHistory.json": {
+      "bytes": 2047,
+      "sha256": "3533ad06dfeead91f4d8acae2426b151c14987ee98558c3b0de1af4db81d96dc"
+    },
+    "run018_observed_001/evidence/369_lean_Assurance_BfvNativeBufferAdmission.json": {
+      "bytes": 16002,
+      "sha256": "549c816bceaefa5dc6cc5af777685d61bfa371ed2acfcc290bd128513293ce67"
+    },
+    "run018_observed_001/evidence/370_lean_Assurance_DeclaredHyperedgeHistoryBinding.json": {
+      "bytes": 2070,
+      "sha256": "7ff73c6083498674bff7010e775228dd153d9d86b5ee1a35f5e347c8200c582f"
+    },
+    "run018_observed_001/evidence/371_lean_Assurance_HistoryHeadInhabitation.json": {
+      "bytes": 2038,
+      "sha256": "f3265759ee4e7110e21f7a8f8a82139fc7fec05682b86595e2676cc47085ee83"
+    },
+    "run018_observed_001/evidence/372_lean_Assurance_SemanticHistoryFamilyInstances.json": {
+      "bytes": 2067,
+      "sha256": "019183c9f25425434235e5f74d2f0f6b0c696817907d8b73cf6fdd773bfcd7da"
+    },
+    "run018_observed_001/evidence/373_lean_Assurance_SemanticHistoryRecursiveAir.json": {
+      "bytes": 2055,
+      "sha256": "26a7c2761b89713901de6ed8a9b043f8e4bbc96149203297226b819ed5faef1a"
+    },
+    "run018_observed_001/evidence/374_lean_Assurance_SemanticHistoryStraightlinePcs.json": {
+      "bytes": 2067,
+      "sha256": "5865b754f68d17b68021dd5cabed8b261c60d7a48001c7c40a26608c5cad4f36"
+    },
+    "run018_observed_001/evidence/375_lean_Compiler_BfvProofController.json": {
+      "bytes": 2014,
+      "sha256": "0b2ae364acf86d3d9baa6365f31f7d116d21816ba00e0ce7749390f5c4d52b69"
+    },
+    "run018_observed_001/evidence/376_lean_Compiler_ComposableDeploymentManifest.json": {
+      "bytes": 2055,
+      "sha256": "97ee5478026226182aa7377d8bb08dea386cf6b240ce43a774912c173ccb98ae"
+    },
+    "run018_observed_001/evidence/377_lean_Compiler_Ext6GateProofController.json": {
+      "bytes": 2035,
+      "sha256": "959d66e062b666b5fb659f4756575424870ed5748594b9c38038f3259d26c4c8"
+    },
+    "run018_observed_001/evidence/378_lean_Compiler_FheSourceCertificateLayout.json": {
+      "bytes": 2046,
+      "sha256": "fb2fd5b98b29a9bc6805341808e4e81a71baa10ff9c97b73d599694391a94b36"
+    },
+    "run018_observed_001/evidence/379_lean_Compiler_IntegerCertificateSimplification.json": {
+      "bytes": 2070,
+      "sha256": "3e38221a34b01075e899876cc0dcbe448b4070f5e96092729ed83db918140d2a"
+    },
+    "run018_observed_001/evidence/380_lean_Compiler_NativeWorkProfiles.json": {
+      "bytes": 2015,
+      "sha256": "73ec7894fb182c709de675e93ec7da30b1412754f361a6a32a24c76175b65341"
+    },
+    "run018_observed_001/evidence/381_lean_Compiler_NoteSpendProofController.json": {
+      "bytes": 2038,
+      "sha256": "e51257b72828e818cbe2c4780c3070c699160e23efe8bd1d303004c844fc46fa"
+    },
+    "run018_observed_001/evidence/382_lean_Compiler_Tower256LogupClauseDispatch.json": {
+      "bytes": 2594,
+      "sha256": "1ab000f4db9d346cde81023bf821286e33ea7cba7721a7c291e30792da1b49b9"
+    },
+    "run018_observed_001/evidence/383_lean_Compiler_TwistMultisetInvariant.json": {
+      "bytes": 2031,
+      "sha256": "e1d24d28ecb15ccb4adda6468d68faea6559a204af6398c5529a0351665cdf01"
+    },
+    "run018_observed_001/evidence/384_lean_Compiler_TypedAuthorizationRequestCodec.json": {
+      "bytes": 2061,
+      "sha256": "1a9b548fabb71c902d00d01cfca23629f03f07fdcc86d26cbfa592cd8c36c75f"
+    },
+    "run018_observed_001/evidence/385_lean_Kernel_CredentialSignedEnvelopeController.json": {
+      "bytes": 2071,
+      "sha256": "167bf0027f0508a1bb61509a61f89fa014a6c9b09748484ee62803efb3e6df69"
+    },
+    "run018_observed_001/evidence/386_lean_Kernel_HyperdocumentTwoParentWitness.json": {
+      "bytes": 2051,
+      "sha256": "073202dd3ba51b0d0a57b53a156dc84eaf67efbdd319daf2bb4ef5fa1d62f016"
+    },
+    "run018_observed_001/evidence/387_lean_Selvage_HalfThresholdFriTower.json": {
+      "bytes": 2022,
+      "sha256": "86dd8be8c9e50901959febb3fa7b1451fb510b981d7c3b19c8035dbb4d2176ce"
+    },
+    "run018_observed_001/evidence/388_lean_Selvage_HeteroCompositionErrorBound.json": {
+      "bytes": 2046,
+      "sha256": "735d4de96a868135cccec4812830ac81edee78b0afa5ad0b3ffc1dec9f0e858f"
+    },
+    "run018_observed_001/evidence/389_lean_Selvage_OracleLogExtraction.json": {
+      "bytes": 2014,
+      "sha256": "05d14cd7c5d474fd0d3d14801f7c9f0b3749502bc80e289cbb972ca00944f61d"
+    },
+    "run018_observed_001/evidence/390_lean_Selvage_SpongeIndiffLazyHybrid.json": {
+      "bytes": 2026,
+      "sha256": "ccec4ee113278afe56bfec058ac71da4ca1833168450ff0356663557dd923b7b"
+    },
+    "run018_observed_001/evidence/391_lean_Assurance_BfvAcceptedCellEffect.json": {
+      "bytes": 2031,
+      "sha256": "e9de8f649680c1e2e3ff86749a16c7b6ab64ea2791b47fbd0f87e5711c63dff3"
+    },
+    "run018_observed_001/evidence/392_lean_Assurance_BfvConcreteBatchAdmission.json": {
+      "bytes": 2047,
+      "sha256": "23c14d95e7738371b647f9b8b4ed26f30e3f15bfc76f9bbcaa8f066b731332c5"
+    },
+    "run018_observed_001/evidence/393_lean_Assurance_BinaryTowerHeaderCodec.json": {
+      "bytes": 2579,
+      "sha256": "5e80691f6a8d1fad70d826807b911c9e19379f9e9920b15701633247676b0262"
+    },
+    "run018_observed_001/evidence/394_lean_Assurance_HistoryProjectionCardinalityTooth.json": {
+      "bytes": 2078,
+      "sha256": "a74e40f55ace8ecb400438d461b7fdf3ab62067c0baeb37e249f44646382da0f"
+    },
+    "run018_observed_001/evidence/395_lean_Assurance_ReactiveLifecycleHistory.json": {
+      "bytes": 2043,
+      "sha256": "3f6c1c6d4d546592816bca3188c5f370eeb7bf37db998a95184e0e70d89a1b88"
+    },
+    "run018_observed_001/evidence/396_lean_Assurance_TransclusionBacklinkHistory.json": {
+      "bytes": 6751,
+      "sha256": "481efad9892d5f898181ec9ecf0762db6136d095f12113909853012f33d4b487"
+    },
+    "run018_observed_001/evidence/397_lean_Assurance_TwistMemoryFingerprintJoin.json": {
+      "bytes": 2050,
+      "sha256": "befca659c4d53f17b9c13678c5ec410b01026d0c65e24b527402bc6baa7b2203"
+    },
+    "run018_observed_001/evidence/398_lean_Compiler_CommittedTerminalFactored7.json": {
+      "bytes": 5649,
+      "sha256": "85f950afd0b32bd8218b843bb23d523104a302fe95cd400ac8fd333fc3723087"
+    },
+    "run018_observed_001/evidence/399_lean_Compiler_CredentialAuthorityPageMaterializer.json": {
+      "bytes": 2081,
+      "sha256": "391563190c620db2da883a830d3f3c9160d2eb5fd78e5d149eb2b72886e61c7d"
+    },
+    "run018_observed_001/evidence/400_lean_Compiler_Ext6GateProofDeployment.json": {
+      "bytes": 2035,
+      "sha256": "ab24118e85556bd506127a51a8bafc689a6ae44993adf27f6914afecbe147c74"
+    },
+    "run018_observed_001/evidence/401_lean_Compiler_FheSourceCertificateEmit.json": {
+      "bytes": 2038,
+      "sha256": "8aa0216fdf497211bc946279515b7cec9bd523c787f2174ed8b0e6c8f45a4a6d"
+    },
+    "run018_observed_001/evidence/402_lean_Compiler_FheSourceCertificateWitness.json": {
+      "bytes": 2050,
+      "sha256": "a6a17e52fd58fb38e70ee187078aefbf8e57a96a37f2ea25a17a784acd799d17"
+    },
+    "run018_observed_001/evidence/403_lean_Compiler_FramedWalRecoveryDeployment.json": {
+      "bytes": 2051,
+      "sha256": "0ed427a03ecb5272c4ad10ea02341461c5acfc06351acf8531ceb72f5a1400cb"
+    },
+    "run018_observed_001/evidence/404_lean_Compiler_HyperdocumentCodec.json": {
+      "bytes": 2477,
+      "sha256": "61342dd03e237e221c9b8f27dd473d883e5b55ec8536df8fe619d6105382c851"
+    },
+    "run018_observed_001/evidence/405_lean_Compiler_NativeGlueGen.json": {
+      "bytes": 1994,
+      "sha256": "ae6a031b0c9376849da76a66394c582e011a94fc58f769935bcbee17656bd6a1"
+    },
+    "run018_observed_001/evidence/406_lean_Compiler_Tower256LogupExtensionDeployment.json": {
+      "bytes": 2070,
+      "sha256": "f7eab90e363294eab994cdd34d83cd30d9eecd02812d0bc4b404da640f9c12e5"
+    },
+    "run018_observed_001/evidence/407_lean_Selvage_HalfThresholdFriTranscript.json": {
+      "bytes": 2041,
+      "sha256": "c82b9eedab8fb19ca2518a2f48bd8958647076293c746ff07067d3f429a768d9"
+    },
+    "run018_observed_001/evidence/408_lean_Selvage_OracleLogProgram.json": {
+      "bytes": 2003,
+      "sha256": "20e94ea01f71f7f8e97b949be3de3ca7a0d153723a074d2af240ff43ddc56c19"
+    },
+    "run018_observed_001/evidence/409_lean_Selvage_RateRegimeSelector.json": {
+      "bytes": 3005,
+      "sha256": "b4e055f0a8b04af1bd2c5e9eed234c851a688535942487b0c71a2e321995c543"
+    },
+    "run018_observed_001/evidence/410_lean_Selvage_SpongeIndiffPrefixProgramming.json": {
+      "bytes": 2053,
+      "sha256": "cb051555e65b4eb48c690aeb3c28e36f9244266d55198d9e4d639a0e85554123"
+    },
+    "run018_observed_001/evidence/411_lean_Assurance_DeployedCredentialLifecycle.json": {
+      "bytes": 2054,
+      "sha256": "11ee27607b554d9cf03c52ce43d27f7b0af4c25690eda82c9d50aa720adf063a"
+    },
+    "run018_observed_001/evidence/412_lean_Assurance_HyperdocumentAgentOperation.json": {
+      "bytes": 2054,
+      "sha256": "a152e78fc79b1c1f1805e07bb09c8895c7697a0d259ea016d58a34d5c3b6a898"
+    },
+    "run018_observed_001/evidence/413_lean_Assurance_HyperdocumentHistoryAdmission.json": {
+      "bytes": 3865,
+      "sha256": "ee67f47af0a9bf097308b6c2a0fc33f6084bc2b6fa3e22161dea59507a368087"
+    },
+    "run018_observed_001/evidence/414_lean_Assurance_ReactiveDurableSettlement.json": {
+      "bytes": 2046,
+      "sha256": "891d2445591bb8edf337d2b93f94a0924a9c3557827ae0bbf2f0b75d412ab770"
+    },
+    "run018_observed_001/evidence/415_lean_Compiler_ArithmeticNativeDeployment.json": {
+      "bytes": 2320,
+      "sha256": "be1c3c72a60c2668a83465c9c71988387c94857bc67064450ba71a2d285307d5"
+    },
+    "run018_observed_001/evidence/416_lean_Compiler_CommittedTerminalCompose.json": {
+      "bytes": 3950,
+      "sha256": "64c5fd47ad815a5553e003742731c421121415cdf50d781c76d9fd518ffbac0e"
+    },
+    "run018_observed_001/evidence/417_lean_Compiler_CredentialAuthorityPolicyRegistry.json": {
+      "bytes": 2074,
+      "sha256": "599af048c2d57b5dccbba3b8bf41a8901a97c7e889bc7da1d868c3200e2046f5"
+    },
+    "run018_observed_001/evidence/418_lean_Compiler_Ext6GateProofPositiveRun.json": {
+      "bytes": 2038,
+      "sha256": "674ff44c7f3bbccb6e4885808c48edf1d43414cb8000d278d4f1750a4b759cad"
+    },
+    "run018_observed_001/evidence/419_lean_Compiler_FheSourceCertificateOptimized.json": {
+      "bytes": 2058,
+      "sha256": "7eef19e75d16cf154699e2c6c625e5b8b7494c9df4752f1da77b3ef11c684746"
+    },
+    "run018_observed_001/evidence/420_lean_Compiler_HyperdocumentContentPageMaterializer.json": {
+      "bytes": 2086,
+      "sha256": "350bd63cba32009a8ed908f1818b4a23166cdd52d4126f1fceb63a32a08ca91a"
+    },
+    "run018_observed_001/evidence/421_lean_Compiler_HyperdocumentEventPageMaterializer.json": {
+      "bytes": 2078,
+      "sha256": "7aef4ad1195639f38f5501d76f43d994b66ad9c44c037e948619a42e6f48e6b3"
+    },
+    "run018_observed_001/evidence/422_lean_Compiler_HyperdocumentIndexPageMaterializer.json": {
+      "bytes": 2078,
+      "sha256": "43c734478b7d13fa6b09b21383e12c71eae7d8b9663f3be4baf4b75ce6a85e4f"
+    },
+    "run018_observed_001/evidence/423_lean_Compiler_MinidreggV1NativeGlue.json": {
+      "bytes": 2027,
+      "sha256": "2820078301e78ad8a96f16bc6c405fcdfd5406e7aa22c299eacd7a7c37479a5a"
+    },
+    "run018_observed_001/evidence/424_lean_Selvage_FullUDFriConsumer.json": {
+      "bytes": 2007,
+      "sha256": "e73f95494afa6c2a1a91806f7559aeae40c934acf64459e93b8434fe545241c4"
+    },
+    "run018_observed_001/evidence/425_lean_Selvage_HalfThresholdFriQuery.json": {
+      "bytes": 2022,
+      "sha256": "41d14212ad58cef2f70af42f128d10bc1182fc5454c7287f74c41a7c9192b8e7"
+    },
+    "run018_observed_001/evidence/426_lean_Selvage_OracleLogLinked.json": {
+      "bytes": 1998,
+      "sha256": "f0d38ad002f79e0233e34576cb6312f267318c3ab0fd012ba998d24273032673"
+    },
+    "run018_observed_001/evidence/427_lean_Selvage_OracleLogSatisfiable.json": {
+      "bytes": 2018,
+      "sha256": "ccac8b568b4476a336f587d8477741b022796b76d3ddcefbe91fdb3f16bcdda6"
+    },
+    "run018_observed_001/evidence/428_lean_Selvage_SpongeIndiffPrefixHybrid.json": {
+      "bytes": 2034,
+      "sha256": "c3db859797fa95953f00e5b980de6b6cfba36058db8e282f6f510f35b392d838"
+    },
+    "run018_observed_001/evidence/429_lean_Selvage_SpongeIndiffPrefixOutput.json": {
+      "bytes": 2034,
+      "sha256": "e83592565f4d52841aba918b25ee9c238620d13f04dd1d09cef3bbf8af48ab8a"
+    },
+    "run018_observed_001/evidence/430_lean_Assurance_CredentialSignedEnvelopeEndpoint.json": {
+      "bytes": 5942,
+      "sha256": "f8e4d035a463ecec91a00110cddf9f1220f3c773416f5c0c5058eec75c46d48e"
+    },
+    "run018_observed_001/evidence/431_lean_Assurance_CredentialTokenLocalEndpoint.json": {
+      "bytes": 2059,
+      "sha256": "4573fba1abd6290bf39f27c761ad1c239d24c0db82783ab3715dd4b44508ab56"
+    },
+    "run018_observed_001/evidence/432_lean_Assurance_HyperdocumentDurableInstallation.json": {
+      "bytes": 2750,
+      "sha256": "237d347bd442515ead6afa6ae7984947cecbe4917ad37ae26b950c7f81c826aa"
+    },
+    "run018_observed_001/evidence/433_lean_Assurance_HyperdocumentGuardedDurable.json": {
+      "bytes": 2055,
+      "sha256": "50f189b3111b2042cbe90c4a05f09e4331c616aef9403cd397c7dde875d1aa9c"
+    },
+    "run018_observed_001/evidence/434_lean_Assurance_HyperdocumentIndexSyncEndpoint.json": {
+      "bytes": 2066,
+      "sha256": "0ba14bab8e04a04ee793dba8a0133ddc97329e1f0c4e735ba4f8cf4720d7045c"
+    },
+    "run018_observed_001/evidence/435_lean_Assurance_HyperdocumentLinkPageDurableWeld.json": {
+      "bytes": 2073,
+      "sha256": "31c4f76487401b68809c350f43124472b921564d12f1ab1e50e92f195bfd0d04"
+    },
+    "run018_observed_001/evidence/436_lean_Assurance_HyperdocumentLinkReopenWitness.json": {
+      "bytes": 2066,
+      "sha256": "dbb391ebefe9b53521cb3987ab663a6b716f51539648cd95683f67ec9889870f"
+    },
+    "run018_observed_001/evidence/437_lean_Assurance_HyperdocumentReactiveCarrierWitness.json": {
+      "bytes": 2086,
+      "sha256": "b690a1ea2995d98b51cf88f486f712ab74deeec92a7725595bdc184707a63e3e"
+    },
+    "run018_observed_001/evidence/438_lean_Assurance_HyperdocumentTwoParentHistoryWitness.json": {
+      "bytes": 2091,
+      "sha256": "87641a9e4062ade6de2961fb78c5d350790c3dc40327aa8377d63b8ccdd683ba"
+    },
+    "run018_observed_001/evidence/439_lean_Compiler_BoundedPageExtensionCatalog.json": {
+      "bytes": 2050,
+      "sha256": "43b9ef9224ad3a8a920e07357ea61d40557c09429d22c0c8e54b00b53c02b7f4"
+    },
+    "run018_observed_001/evidence/440_lean_Compiler_CommittedTerminalController.json": {
+      "bytes": 7563,
+      "sha256": "b9df4ece199350aac4fdc5035c68ddf302d7dfcc8a0c06dd4fc323218f8455ad"
+    },
+    "run018_observed_001/evidence/441_lean_Compiler_EvmStage0NativeDeployment.json": {
+      "bytes": 2340,
+      "sha256": "63a743d8197c1d591739da5c1fd00b39a491ceded81aec6e1051ca4ebac7bc7f"
+    },
+    "run018_observed_001/evidence/442_lean_Compiler_Ext6GateProofVersionedDeployment.json": {
+      "bytes": 2070,
+      "sha256": "c441fce2ffa1b5601035b2e86ff5a373fdd7814a7fda40ba94710dde5136f1b3"
+    },
+    "run018_observed_001/evidence/443_lean_Compiler_FheSourceCertificateVerifier.json": {
+      "bytes": 2054,
+      "sha256": "a19a148a921297b0e0075d6059013d67b85ccc4100c3674ece8894c0d156628b"
+    },
+    "run018_observed_001/evidence/444_lean_Selvage_HalfThresholdFriCoherent.json": {
+      "bytes": 2033,
+      "sha256": "5524153caf84b61d4daf9ba335d23f7208bd5bb29b71e9f252702b84a1fd0fe1"
+    },
+    "run018_observed_001/evidence/445_lean_Selvage_OracleLogLinkedTarget.json": {
+      "bytes": 2022,
+      "sha256": "c594e9f821410373f0e2df13e1f2c6d8b885a4c944f773c2bcfea9c3eed5cbac"
+    },
+    "run018_observed_001/evidence/446_lean_Selvage_SpongeIndiffPrefixWalk.json": {
+      "bytes": 2027,
+      "sha256": "c942b497800548697f3fca4762e65ca979c3b36a44530356956f7f914e6eaa9d"
+    },
+    "run018_observed_001/evidence/447_lean_Selvage_SpongeIndiffWorkStream.json": {
+      "bytes": 2026,
+      "sha256": "ef08735648afbffe39c3ea30de37b9136d6d0261757f8694a9bcd3be2b9e94b0"
+    },
+    "run018_observed_001/evidence/448_lean_Assurance_HyperdocumentLinkFramedRecovery.json": {
+      "bytes": 2070,
+      "sha256": "9c78d69f7ab3c750b37d73c7a6f469386b932c3468ab6c582413bd1675d98a71"
+    },
+    "run018_observed_001/evidence/449_lean_Assurance_HyperdocumentMergeDurableFinalityWitness.json": {
+      "bytes": 2105,
+      "sha256": "a0adbdc107dd4e039c759b0346de826afc2e8c09f4a76d65bef54e27a8c7157a"
+    },
+    "run018_observed_001/evidence/450_lean_Assurance_HyperdocumentQueryDeployment.json": {
+      "bytes": 2058,
+      "sha256": "6161a69475d886faa392a137b150d5ea30e9a74f2853ca0a3c529e3cb0643f65"
+    },
+    "run018_observed_001/evidence/451_lean_Compiler_BoundedPageCellRegistry.json": {
+      "bytes": 2034,
+      "sha256": "6a3a393da743dfadc21179b1ad3690b3ba8a8042e2df53a33626d97219c1a387"
+    },
+    "run018_observed_001/evidence/452_lean_Compiler_BoundedPageSchemaUpgrade.json": {
+      "bytes": 2038,
+      "sha256": "69d9dacad81199fa556d0f735e7513d52ecaadb3eaf5298796d4072ed56689c2"
+    },
+    "run018_observed_001/evidence/453_lean_Compiler_CommittedTerminalFactoredProver.json": {
+      "bytes": 6493,
+      "sha256": "042ac74406409b2d57f66aad53b9f061407575e0c775d03a4b180a26c557db8e"
+    },
+    "run018_observed_001/evidence/454_lean_Compiler_CommittedTerminalFiatShamir.json": {
+      "bytes": 8954,
+      "sha256": "998f8eb5fdb82a3e142b726197e4839f885300b68d413daf002b913a407ab20b"
+    },
+    "run018_observed_001/evidence/455_lean_Compiler_FheTargetProjection.json": {
+      "bytes": 2018,
+      "sha256": "1782bffdd8fc9a772f75581a615972e67fc92643e925c42a7ab070dd7663f297"
+    },
+    "run018_observed_001/evidence/456_lean_Selvage_AdditiveFriTower.json": {
+      "bytes": 2002,
+      "sha256": "48177514f85f4334548ae0bbe8b4c95f9a52eea929e599392e0ebd305af68364"
+    },
+    "run018_observed_001/evidence/457_lean_Selvage_AdditiveOodOpening.json": {
+      "bytes": 2010,
+      "sha256": "153d10f8ae9816423856805f2e05bb6798f7819cc4bef20b49493f4f21e9c996"
+    },
+    "run018_observed_001/evidence/458_lean_Selvage_BaseFoldCommittedIor.json": {
+      "bytes": 2019,
+      "sha256": "38480217eb11a2e8ed54685adb62b9b50e11ae3c687d146f6f29b92a233243c0"
+    },
+    "run018_observed_001/evidence/459_lean_Selvage_FullUDSamplingBudget.json": {
+      "bytes": 2018,
+      "sha256": "fd1172a5a7248c6e061400c08e6a61e1af92229a870123071eead4c6523bfe4d"
+    },
+    "run018_observed_001/evidence/460_lean_Selvage_OracleLogLinkedAssembly.json": {
+      "bytes": 2030,
+      "sha256": "022b1767d3f2cf9632476b38e614abe7a9a5ed7ab782b009ca5a37ab5bb7dd91"
+    },
+    "run018_observed_001/evidence/461_lean_Selvage_SpongeIndiffOracleReordering.json": {
+      "bytes": 2050,
+      "sha256": "45951b1bda649395ab19bdc4c01cdca57b63f19684d7457077648bf1d6645952"
+    },
+    "run018_observed_001/evidence/462_lean_Selvage_SpongeIndiffPrefixConflict.json": {
+      "bytes": 2042,
+      "sha256": "8453ef0da89101ce33bc34212a8d4e9f3287be732dcf77ed8cff4b359b4e2a9d"
+    },
+    "run018_observed_001/evidence/463_lean_Selvage_SpongeIndiffPrefixFresh.json": {
+      "bytes": 11740,
+      "sha256": "7fcac4a44c4768ee8669171f35e6147138511debdb213652d92cf3fa16d1dd62"
+    },
+    "run018_observed_001/evidence/464_lean_Assurance_BoundedPageSchemaUpgradeCutover.json": {
+      "bytes": 2352,
+      "sha256": "b63a1e497b3a445271c1501c2fb49dfb510262bea9889036b26b1e76d3f375c5"
+    },
+    "run018_observed_001/evidence/465_lean_Assurance_HyperdocumentLinkEndpointController.json": {
+      "bytes": 2086,
+      "sha256": "e06e285e0e47fde8330222353921d3acaffbdbed9eec4729a4b6bba492aec1cf"
+    },
+    "run018_observed_001/evidence/466_lean_Assurance_ReleaseGateRouting.json": {
+      "bytes": 2018,
+      "sha256": "1981e2cb9fd17c6d3a7d7f9ca947607668159a8eafd47e56d93a3ee165398b11"
+    },
+    "run018_observed_001/evidence/467_lean_Compiler_ContextualGate.json": {
+      "bytes": 1998,
+      "sha256": "df6ed05606386fb4018d5044c2ae879bda9bf26edae1d8b70e1cd6757bfdbb4a"
+    },
+    "run018_observed_001/evidence/468_lean_Compiler_FheTargetProjectionLayout.json": {
+      "bytes": 2043,
+      "sha256": "dbf89c17d8cc4e9b2a22a940a705916b893193a2698d4e429673adbfaffcc028"
+    },
+    "run018_observed_001/evidence/469_lean_Compiler_FiniteSparseMaterializerAudit.json": {
+      "bytes": 2059,
+      "sha256": "c2d306ee703d6182a41e3c04e467199a9d165caa034dcf1493bd13b3ed0b1b65"
+    },
+    "run018_observed_001/evidence/470_lean_Selvage_AccRbrBcsShiftedTransport.json": {
+      "bytes": 2038,
+      "sha256": "d366745d5e712c1b35f5c15df2d72e11a18755832dbca8c285e204fc5bb42ef4"
+    },
+    "run018_observed_001/evidence/471_lean_Selvage_AdditiveFriQuery.json": {
+      "bytes": 2002,
+      "sha256": "390bd5149b17057795b2df1051c644be98737dd47baac3d3cd72ce6b608bb19b"
+    },
+    "run018_observed_001/evidence/472_lean_Selvage_BaseFoldRawCommittedIor.json": {
+      "bytes": 2031,
+      "sha256": "12a8d38c0c453ca2e3ae6639245496917a1394121e316e8185f8839251ad25e0"
+    },
+    "run018_observed_001/evidence/473_lean_Selvage_BaseFoldRbrTableDescent.json": {
+      "bytes": 2031,
+      "sha256": "a9b70147b02081136bf9ec9e28db708f1866d8d3f2240c77e726f996a94825f3"
+    },
+    "run018_observed_001/evidence/474_lean_Selvage_OracleLogLinkedSubUd.json": {
+      "bytes": 2019,
+      "sha256": "ce20d84b976dcef993d145aa427289a42fa3fd256db99573b0aeac0d6278d200"
+    },
+    "run018_observed_001/evidence/475_lean_Selvage_SpongeIndiffPrefixFailure.json": {
+      "bytes": 2039,
+      "sha256": "071492def8c9d410830b9cbba024cb52e5c6953deb86c60242de7ae36fa4dd3f"
+    },
+    "run018_observed_001/evidence/476_lean_Selvage_SpongeIndiffUniformCoupling.json": {
+      "bytes": 2047,
+      "sha256": "4cb923cc3a56ebdf63de7dc48dfe8d9abeb85431c44fec9eec20e93dcb3a654d"
+    },
+    "run018_observed_001/evidence/477_lean_Assurance_HyperdocumentLinkClientCutover.json": {
+      "bytes": 2066,
+      "sha256": "60179ccd25c8890c1c2e5e31a42e370e8d63add463e4ba8ed194013a01dccdfb"
+    },
+    "run018_observed_001/evidence/478_lean_Assurance_HyperdocumentLinkLocalFileStore.json": {
+      "bytes": 2070,
+      "sha256": "8d410cc264ee755d039dd4a3c266e13adaf4d30c53d6e39e5107ff75fc37a8b8"
+    },
+    "run018_observed_001/evidence/479_lean_Assurance_HyperdocumentTransclusionReferenceDeployment.json": {
+      "bytes": 2122,
+      "sha256": "264b0e18e4b860b13612b7889d5f570b76e7f3fd92455fe6561b8c516b1c5e5d"
+    },
+    "run018_observed_001/evidence/480_lean_Assurance_ResidentReleaseContext.json": {
+      "bytes": 2035,
+      "sha256": "1cdc0abd060827ad5bae4828b9f9a59548d1a111e6f6166f9f3f7eda925e5673"
+    },
+    "run018_observed_001/evidence/481_lean_Compiler_AdditiveFriReceiptClause.json": {
+      "bytes": 2657,
+      "sha256": "28417b6ed552508f7a58ff2e7c86a8847411e789015c4a3631e54433631214e1"
+    },
+    "run018_observed_001/evidence/482_lean_Compiler_FheTargetProjectionEmit.json": {
+      "bytes": 2035,
+      "sha256": "8768b3c692ddcc2ce0a6279f36aa70075a40093604a703353d5f910690cf8c89"
+    },
+    "run018_observed_001/evidence/483_lean_Selvage_BaseFoldBinaryMerkle.json": {
+      "bytes": 2017,
+      "sha256": "d44d9a2c9ca115bfe1887143a1638b7ca9cd3c46d4e64ca8246109716744247f"
+    },
+    "run018_observed_001/evidence/484_lean_Selvage_OracleLogLinkedAttributed.json": {
+      "bytes": 2038,
+      "sha256": "5f4da0ba9725f86686f4585f21adb6757752d053e3b5b0d3860d7bec154f600c"
+    },
+    "run018_observed_001/evidence/485_lean_Selvage_SpongeIndiffDeferredWork.json": {
+      "bytes": 2034,
+      "sha256": "4649bff45814c965f864dec047497f74053a305499ae71675072fb819225d5cc"
+    },
+    "run018_observed_001/evidence/486_lean_Assurance_HyperdocumentLinkClientLocalFileCutover.json": {
+      "bytes": 2101,
+      "sha256": "8ebe35ec8eaae736fd881f8fb153a6215c75d891bae428575c3880a77f6aa1ff"
+    },
+    "run018_observed_001/evidence/487_lean_Assurance_ResidentAdaptiveContext.json": {
+      "bytes": 2039,
+      "sha256": "f5851a192ef59e2ce888919921e05710f57d3d0a71b614d4c732f5180961d6cf"
+    },
+    "run018_observed_001/evidence/488_lean_Assurance_ResidentDurableIntegration.json": {
+      "bytes": 2051,
+      "sha256": "0a6b23a05ccd80a89d5dd980829e26cd5c9eed8359e418b606f709fdbf3dc262"
+    },
+    "run018_observed_001/evidence/489_lean_Assurance_ResidentRestoreFinality.json": {
+      "bytes": 2037,
+      "sha256": "d77a46651fcb2e2db246c3cca591375e61ae25760dade39d54c7878b7f4d5cd9"
+    },
+    "run018_observed_001/evidence/490_lean_Assurance_SemanticAdditiveFriCheckpoint.json": {
+      "bytes": 2062,
+      "sha256": "1a07f5089df03eeab5ef0beee794fc0fd7a5e80742062a49007f8bc9efa1ab48"
+    },
+    "run018_observed_001/evidence/491_lean_Compiler_FheTargetProjectionVerifier.json": {
+      "bytes": 2051,
+      "sha256": "6aed12094550c2b756fd1d8242458a5f4ded1e7ce57fab6b5d76b4b3801f42da"
+    },
+    "run018_observed_001/evidence/492_lean_Compiler_Tower256AdditiveFriController.json": {
+      "bytes": 2332,
+      "sha256": "a1e1d5edd227aa74a3112fb50d535043a525dbb36f4f7b0e13416a8f07f7b178"
+    },
+    "run018_observed_001/evidence/493_lean_Selvage_BaseFoldPoseidon2.json": {
+      "bytes": 2453,
+      "sha256": "0fc3064442365a272816478721c988b9dd2465654f2cde586d2cf3652987cfa7"
+    },
+    "run018_observed_001/evidence/494_lean_Selvage_OracleLogLinkedOpenedSampling.json": {
+      "bytes": 2054,
+      "sha256": "22c82dc3c6511c4f48a1ba76051a5ab9af65d46563f979f95aacdc2b2a4ad7ba"
+    },
+    "run018_observed_001/evidence/495_lean_Selvage_SpongeIndiffAdaptiveCoupling.json": {
+      "bytes": 2050,
+      "sha256": "4c31b4bf6d1463cac7d0dcfd1a4135ed230e0bb9f615906ec131f05881c862cb"
+    },
+    "run018_observed_001/evidence/496_lean_Assurance_CiphertextWindowCell.json": {
+      "bytes": 2026,
+      "sha256": "438b7cf1ed3cbda0bb81f789543d6f90a4a1d265d2522964655b1453cc8b5325"
+    },
+    "run018_observed_001/evidence/497_lean_Assurance_HyperdocumentAgentRuntimeScheduler.json": {
+      "bytes": 2082,
+      "sha256": "e05be08ae869c98fd14c0b106604a1d5b79bb3de3e6495e9a458f14cfc88cb44"
+    },
+    "run018_observed_001/evidence/498_lean_Assurance_HyperdocumentLinkSqliteTransactionalStore.json": {
+      "bytes": 2110,
+      "sha256": "4970334004386a45344dc15edc00ea8d8c939f1a05fbfa21e957edcbe6a32f7f"
+    },
+    "run018_observed_001/evidence/499_lean_Assurance_ResidentDurableCollision.json": {
+      "bytes": 2042,
+      "sha256": "ff6f4c983aba86cbedfa7ab361db80d7d79f29ed4acadd996c37d047b0ca3d39"
+    },
+    "run018_observed_001/evidence/500_lean_Assurance_ResidentEmaCell.json": {
+      "bytes": 2006,
+      "sha256": "785075f4b6013027b49d7baaccb21f056ee88e3f198febd5194717eff7ff0f50"
+    },
+    "run018_observed_001/evidence/501_lean_Assurance_ResidentMultiReceiptSchedule.json": {
+      "bytes": 2059,
+      "sha256": "6838f4d54218a2f22263bff189ffdd7bfac42d63c2df0fb1a1f1a35716e9cb76"
+    },
+    "run018_observed_001/evidence/502_lean_Assurance_SemanticHistoryWARPAdditiveJoin.json": {
+      "bytes": 3380,
+      "sha256": "4391fb88f6f106f3554622b654acd8592b230cd9a7ad419990855c091f84342d"
+    },
+    "run018_observed_001/evidence/503_lean_Assurance_Tower256MerkleCardinalityCore.json": {
+      "bytes": 2062,
+      "sha256": "a445b0a75c30f240dd17f5bce8b06a9044d91cc1343c88d108cc947830c698c0"
+    },
+    "run018_observed_001/evidence/504_lean_Compiler_FheShoupWord.json": {
+      "bytes": 1990,
+      "sha256": "23820b507dcb70a9a1dfbea493cc4a745c0ad4e30b457b4dced7825e22e61e72"
+    },
+    "run018_observed_001/evidence/505_lean_Compiler_FheTargetProjectionWitness.json": {
+      "bytes": 2047,
+      "sha256": "d3d28d6145128f88a8bdb1604210c2a3263a44143520285574b6ac55054b057c"
+    },
+    "run018_observed_001/evidence/506_lean_Compiler_Tower256AdditiveFriRawController.json": {
+      "bytes": 2348,
+      "sha256": "6401dece578a13c327bd60795ac79681683e55b812b95acfe669820815361b30"
+    },
+    "run018_observed_001/evidence/507_lean_Selvage_BaseFoldPoseidon2Rom.json": {
+      "bytes": 2232,
+      "sha256": "1430500aca3226643e9a22af1223d68432d6d12dfe8dab74118de3fb0aeb8190"
+    },
+    "run018_observed_001/evidence/508_lean_Selvage_OracleLogLinkedTwoPhase.json": {
+      "bytes": 2030,
+      "sha256": "faccd0eed1c7fa202da34fc4cd7dd2dc65aa1d5f1ea58794150d61147d16d982"
+    },
+    "run018_observed_001/evidence/509_lean_Assurance_AuthenticatedColumnHistoryBridge.json": {
+      "bytes": 4071,
+      "sha256": "0a6503dfe298600e58371f7e1a60a5f03bf5b300f0b5536a112c96b4bed43f35"
+    },
+    "run018_observed_001/evidence/510_lean_Assurance_CiphertextWindowFrame.json": {
+      "bytes": 2031,
+      "sha256": "868cde04b5574a601d3a1ed2cda9151a920e869d20fdbb2503be6734d55daa5b"
+    },
+    "run018_observed_001/evidence/511_lean_Assurance_CiphertextWindowWitness.json": {
+      "bytes": 2039,
+      "sha256": "21271aab0e876df9c0ccb080d27dc5d7c760b0bcac5512a36eb1f83e93818b4b"
+    },
+    "run018_observed_001/evidence/512_lean_Assurance_ReactiveOutboxDelivery.json": {
+      "bytes": 2035,
+      "sha256": "f8a76e120789d6f98911262c40ef37aae5f58e5251c0bf3e81e990a6c328a5d6"
+    },
+    "run018_observed_001/evidence/513_lean_Assurance_ResidentBfvWindowPhase.json": {
+      "bytes": 2034,
+      "sha256": "48f5a59121dd1e6b96c49d2122e7887f2081600abfd6a9548c030c8d74dcc478"
+    },
+    "run018_observed_001/evidence/514_lean_Assurance_ResidentEmaRelease.json": {
+      "bytes": 2019,
+      "sha256": "f0c9b5f811b4f7a1e654fd45153c1f741c153827bbe356a9a10ffe787ef4c241"
+    },
+    "run018_observed_001/evidence/515_lean_Assurance_SemanticHistoryBcsClaimProjection.json": {
+      "bytes": 5917,
+      "sha256": "8dd929d70d1770259d27e534167280407845540815a1f1bbc68c067e4296846d"
+    },
+    "run018_observed_001/evidence/516_lean_Compiler_FheBarrettWord.json": {
+      "bytes": 1998,
+      "sha256": "2f99a89193b716c33db8ee54cd153f4d39bf4d4b2821030ee7a29e8fbc69a1cd"
+    },
+    "run018_observed_001/evidence/517_lean_Compiler_FheRnsModularAccumulation.json": {
+      "bytes": 2042,
+      "sha256": "673f14499a184fab2c199c4e463430b705ec595d2cb26ee1a092427dd18a834a"
+    },
+    "run018_observed_001/evidence/518_lean_Compiler_Tower256AdditiveFriRawDeployment.json": {
+      "bytes": 2071,
+      "sha256": "2c98dfa8a550e1706b2bcd56ffc0517757a06792fee29a4e99e8f1ce11c1fad1"
+    },
+    "run018_observed_001/evidence/519_lean_Selvage_BaseFoldBcsFiatShamir.json": {
+      "bytes": 3467,
+      "sha256": "e6e2907690a408b4c9b5814b3542eb415c19eef6d1cd944417bf972f64ff1ffd"
+    },
+    "run018_observed_001/evidence/520_lean_Selvage_HashFamily.json": {
+      "bytes": 1978,
+      "sha256": "8983dc9e0b5f76d494609518f5ffe4ce19ef7543c7d264bbd30eb48484dd1e65"
+    },
+    "run018_observed_001/evidence/521_lean_Selvage_OracleLogLinkedTwoPhaseGame.json": {
+      "bytes": 2046,
+      "sha256": "e61362f5ee8054600f9a117dc0280ed971de6f623ba91188458fad245daa317b"
+    },
+    "run018_observed_001/evidence/522_lean_Assurance_CiphertextWindowFrameWitness.json": {
+      "bytes": 2058,
+      "sha256": "943e2ef9c76e5c0bcf7c018e0901756a1242b8475a6527b3f3f5745b561701b4"
+    },
+    "run018_observed_001/evidence/523_lean_Assurance_ResidentEmaWitness.json": {
+      "bytes": 2018,
+      "sha256": "21790b6c2f380958c7a272f44abd0dbed7986106fe092872bb392c81b81503e2"
+    },
+    "run018_observed_001/evidence/524_lean_Compiler_FheRnsSourceWord.json": {
+      "bytes": 2006,
+      "sha256": "56fb5e8339a1a79f1dab6bd6ab2b303da4f64edcc40795e150eaca2a6336e516"
+    },
+    "run018_observed_001/evidence/525_lean_Selvage_BaseFoldBcsQuerySampling.json": {
+      "bytes": 3450,
+      "sha256": "a0470d54641b2e1f7a639927da5ece422b35ec2c07a1bbd9c94706b34afe876f"
+    },
+    "run018_observed_001/evidence/526_lean_Selvage_BaseFoldBcsSpongeGame.json": {
+      "bytes": 3434,
+      "sha256": "b6fabd0cca79c936cc123805eb2e07d46bbaea1c9ac01e976e498ad2b99dec1a"
+    },
+    "run018_observed_001/evidence/527_lean_Selvage_HashRelation.json": {
+      "bytes": 1987,
+      "sha256": "063d78dc185eac0f3484627f8308bc69c47abc34dbe350316a83b03cd5c865e7"
+    },
+    "run018_observed_001/evidence/528_lean_Selvage_OracleLogLinkedTwoPhaseHorns.json": {
+      "bytes": 2049,
+      "sha256": "d9004405773640483ce307c7660af8c8323d6871a1948be92de48077680f9a2d"
+    },
+    "run018_observed_001/evidence/529_lean_Assurance_ResidentEmaAdaptive.json": {
+      "bytes": 2023,
+      "sha256": "8a73619e14ed832a62806783840573ccb5928fe81a3caa5eab2e7273d318dbca"
+    },
+    "run018_observed_001/evidence/530_lean_Compiler.json": {
+      "bytes": 1937,
+      "sha256": "42de148fb41cc0ac8fb56101b3974dfafa0049f165fb5678da5b2b5334aa0a00"
+    },
+    "run018_observed_001/evidence/531_lean_Selvage_BaseFoldBcsPadding.json": {
+      "bytes": 3790,
+      "sha256": "2e7bd5e604925864dee688961bc9ffaf00d77b4e793f21c6cce61bacfa684d20"
+    },
+    "run018_observed_001/evidence/532_lean_Selvage_BaseFoldBcsQuerySamplingJoint.json": {
+      "bytes": 4755,
+      "sha256": "5fd7f5b85c35a78945d7e7561d1edbd9ebfd4efc16d0020f2fa965cfc74ca4ff"
+    },
+    "run018_observed_001/evidence/533_lean_Selvage_HashRelationInverse.json": {
+      "bytes": 4811,
+      "sha256": "f61fc00f8d8c3d75ac3d4054cc70caa6d4612d90a0d56475a2cf1d3b1c32f8ea"
+    },
+    "run018_observed_001/evidence/534_lean_Selvage_OracleLogLinkedTwoPhaseSoundness.json": {
+      "bytes": 2066,
+      "sha256": "9c57c6228d996cb944dfadd79ea26c8705465764782c9897d5d7bc0d8cabfca5"
+    },
+    "run018_observed_001/evidence/535_lean_Assurance_ProofCompositionGame.json": {
+      "bytes": 2026,
+      "sha256": "c8ed270a8b6d7e080f67cfc26aa474a2f17a7e33449a76afffc5a1ee37691203"
+    },
+    "run018_observed_001/evidence/536_lean_Assurance_ResidentMixedPhases.json": {
+      "bytes": 2022,
+      "sha256": "0dc0beebb69641209b5f9f9058af1a3ef1d8f095341eb3fa324636f37038e2aa"
+    },
+    "run018_observed_001/evidence/537_lean_Selvage_BaseFoldBcsByteCodec.json": {
+      "bytes": 2837,
+      "sha256": "9fc211ffdaf30a01ae36167f179e9dbee9aadc73c7582dc31888df6534a057cd"
+    },
+    "run018_observed_001/evidence/538_lean_Selvage_BaseFoldBcsRunSchedule.json": {
+      "bytes": 23978,
+      "sha256": "5ba7efaae3c06c31c3a4d0fa45bbce27dde8f4ecdaa62b66deeb423d31f01785"
+    },
+    "run018_observed_001/evidence/539_lean_Selvage_BaseFoldBcsStrictRomLedger.json": {
+      "bytes": 7890,
+      "sha256": "abcbb1d1d67d09f9be6b5e5856ea14fac9f0296931da67163ea8fa96cd780345"
+    },
+    "run018_observed_001/evidence/540_lean_Assurance_BfvProofControllerAdmission.json": {
+      "bytes": 2054,
+      "sha256": "958321d6440a5e1971231eee673943561096e5352c00e1e4bf001138b68fcff3"
+    },
+    "run018_observed_001/evidence/541_lean_Assurance_Ext6GateProofControllerAdmission.json": {
+      "bytes": 2075,
+      "sha256": "15c3f5eb1c4c761af60055c2a59774ef29c28b28c25193b641401bd6400e1667"
+    },
+    "run018_observed_001/evidence/542_lean_Assurance_NoteSpendProofControllerAdmission.json": {
+      "bytes": 2078,
+      "sha256": "b1709915106604c4442bcc075899d694c551fddb2126e8cac1da8c4899c332cf"
+    },
+    "run018_observed_001/evidence/543_lean_Assurance_SemanticHistoryBcsGame.json": {
+      "bytes": 4726,
+      "sha256": "aeb9d65eb88d18d727a58695912a008a177fc38a2d43a8b1a773298e27e5e91b"
+    },
+    "run018_observed_001/evidence/544_lean_Assurance_Tower256AdditiveFriControllerAdmission.json": {
+      "bytes": 2098,
+      "sha256": "f584255faf1e726170988f15e556403b44d98507fd8c3f6d46e5bd999b443575"
+    },
+    "run018_observed_001/evidence/545_lean_Assurance_Tower256AdditiveFriRawAdmission.json": {
+      "bytes": 2070,
+      "sha256": "7fd3e8ab22798e1d76ab43f1a7b3da60f00832bdc77ca146bcbe4495b03cee70"
+    },
+    "run018_observed_001/evidence/546_lean_Assurance_Tower256LogupControllerAdmission.json": {
+      "bytes": 2074,
+      "sha256": "37bbbec16e3066c1a21815d6a85a0f10d93d44338058966987d0cbfdf2326bc3"
+    },
+    "run018_observed_001/evidence/547_lean_Selvage_BaseFoldBcsCapacityEvent.json": {
+      "bytes": 9489,
+      "sha256": "3debe70aa90d90f85ec325d2c62e0cb5e9ee0e95790267db628ce78520ce9299"
+    },
+    "run018_observed_001/evidence/548_lean_Selvage_BaseFoldBcsReceiptCodec.json": {
+      "bytes": 4967,
+      "sha256": "68f89d10ee3af090cbad1738f53dfa3a5dc195c2b73716f4d3ccc162ddcade33"
+    },
+    "run018_observed_001/evidence/549_lean_Assurance_BfvConcreteBatchCell.json": {
+      "bytes": 2026,
+      "sha256": "0a5ffa93605a87bd1b9ced7d228d26fe0e118f791b0e6e471f815409f7a940d6"
+    },
+    "run018_observed_001/evidence/550_lean_Assurance_BfvSuiteMigrationBoundary.json": {
+      "bytes": 2047,
+      "sha256": "5ce319314b447b51f613150a3d1f8324f2974d984a1b428186f1319675acd7ec"
+    },
+    "run018_observed_001/evidence/551_lean_Assurance_ExtensibleProofCompositionGame.json": {
+      "bytes": 2067,
+      "sha256": "6e57e3fbf479c1dac9abe26d5788975ef6d5d5adde207c02520d40e9783cd5f9"
+    },
+    "run018_observed_001/evidence/552_lean_Assurance_NoteSpendConcreteCellAdapter.json": {
+      "bytes": 2059,
+      "sha256": "6a604ca0fc9f83b623707c1e54511d80979ec15d3160ba509e6ed6f61a79b0a9"
+    },
+    "run018_observed_001/evidence/553_lean_Assurance_RawHistoryBcsOpenings.json": {
+      "bytes": 6463,
+      "sha256": "5e96da7ab1d0769018a71d27bef53ead23f6ecb046a08bd0dde78a0c01ec8abd"
+    },
+    "run018_observed_001/evidence/554_lean_Assurance_SemanticHistoryTower256CheckpointGame.json": {
+      "bytes": 2094,
+      "sha256": "96b9ecac326038055c9057d64e2497741da9a274fc5411c32f5c1d5b57f29df7"
+    },
+    "run018_observed_001/evidence/555_lean_Assurance_Tower256AdditiveFriActualReduction.json": {
+      "bytes": 2082,
+      "sha256": "187c2fb0b850a4c0d6efd82ca4ab6090908f63025c7ca1f28b314e2db076fed8"
+    },
+    "run018_observed_001/evidence/556_lean_Assurance_Tower256AdditiveFriCanonicalExecutionGame.json": {
+      "bytes": 2110,
+      "sha256": "1e6cff36c3e35e581114b2b656c44e1f34bbe8ef339ed03b549da044cdc573aa"
+    },
+    "run018_observed_001/evidence/557_lean_Assurance_Tower256LogupExtensionDeploymentAdmission.json": {
+      "bytes": 2110,
+      "sha256": "a49816558094412f08053dd8012ac9119b08f624357a67f512b3c6d963a1542d"
+    },
+    "run018_observed_001/evidence/558_lean_Selvage_BaseFoldBcsCrossings.json": {
+      "bytes": 9710,
+      "sha256": "87a50118ca681ad6ffe1baf0a0f90a971b6ac353e3ff029a49e3933fb9354915"
+    },
+    "run018_observed_001/evidence/559_lean_Assurance_Ext6GateProofDeploymentAdmission.json": {
+      "bytes": 2075,
+      "sha256": "4c68dadfd9b4683e476ee3f3b5f4b80f646132e6720f4420ad60e43952d7405e"
+    },
+    "run018_observed_001/evidence/560_lean_Assurance_PrivateEscrowSettlementJoin.json": {
+      "bytes": 2055,
+      "sha256": "eef5f567cf4a38855005c03c972859999c347d765eb6e730922250af5d001401"
+    },
+    "run018_observed_001/evidence/561_lean_Assurance_RawHistoryCollisionBridge.json": {
+      "bytes": 2047,
+      "sha256": "40a7945510a9a4509e20b591da186c39b6fb014f22c111097dd91ab07f42e693"
+    },
+    "run018_observed_001/evidence/562_lean_Assurance_SameCoinGameProduct.json": {
+      "bytes": 3695,
+      "sha256": "cea9d6417d8ae02aa87fd6e6a68d45ef603d6a530c993a269cfb7e47a81e303b"
+    },
+    "run018_observed_001/evidence/563_lean_Assurance_SemanticHistoryTower256DeployedBcs.json": {
+      "bytes": 2082,
+      "sha256": "7ed71546eb197314536b8b1f555be7c46eb64f8da63cca31c415ed29aec5be04"
+    },
+    "run018_observed_001/evidence/564_lean_Assurance_Tower256MerkleBindingCardinality.json": {
+      "bytes": 2075,
+      "sha256": "a52825ee341d03ba90963cf5d64ad6e98162b7fafc45b89046d318e830a8dfff"
+    },
+    "run018_observed_001/evidence/565_lean_Selvage_BaseFoldBcsDeferredIdeal.json": {
+      "bytes": 4746,
+      "sha256": "f47e9e9ab4afa30961302ce6a00962ff7b9885bfd46f3322bce8effa26093828"
+    },
+    "run018_observed_001/evidence/566_lean_Assurance_Ext6GateProofNonzeroSuiteClosure.json": {
+      "bytes": 2074,
+      "sha256": "c39be08d312ad657dca301e9bfe641e4662ea1f3d9d9cc33dd100282489cf56e"
+    },
+    "run018_observed_001/evidence/567_lean_Assurance_Ext6GateProofPositiveExecution.json": {
+      "bytes": 2067,
+      "sha256": "93c27aa8e9e9fc94801342744f38db39ae368f4f9a7d91992608e51fb31b9892"
+    },
+    "run018_observed_001/evidence/568_lean_Assurance_RawSemanticHistoryCheckpointGame.json": {
+      "bytes": 2073,
+      "sha256": "537b5b789c110cfe411bd7ec831ebce4f93108411b46edd15d5435f0e48747de"
+    },
+    "run018_observed_001/evidence/569_lean_Assurance_SemanticHistoryPcsEventRealization.json": {
+      "bytes": 2082,
+      "sha256": "e6db6e29b65bdadb0ef2c4f114b92941947e8272a236b5986614c336ab9b14d0"
+    },
+    "run018_observed_001/evidence/570_lean_Selvage.json": {
+      "bytes": 1934,
+      "sha256": "0a0c847ac57462a90e7d1d11c7b27bb530074994ea4f36ecb6b9b28c4d0a7c6f"
+    },
+    "run018_observed_001/evidence/571_lean_Assurance_Tower256RawHistoryFsController.json": {
+      "bytes": 2615,
+      "sha256": "113be055f3ba2d684c12fb29184f684d124fdf4584701edf497ddb50525ca1d5"
+    },
+    "run018_observed_001/evidence/572_lean_Assurance_Tower256RawSemanticHistoryCanonicalGame.json": {
+      "bytes": 2101,
+      "sha256": "df1cc318cc2c315ddb460c980d94b200d24c7c409e84f9230f5b08cb30de0c8b"
+    },
+    "run018_observed_001/evidence/573_lean_Assurance_RawHistorySecurityPrices.json": {
+      "bytes": 2042,
+      "sha256": "0e973ca5441c0240dd4b73da93a3a4adea515a871ef6f3ae9daa005b043bffd5"
+    },
+    "run018_observed_001/evidence/574_lean_Assurance_Tower256RawHistoryFsExecution.json": {
+      "bytes": 2062,
+      "sha256": "a36073eaa126b3185d756f60b677c4d6d9a6ec13a28acef3c3326b12cdf122af"
+    },
+    "run018_observed_001/evidence/575_lean_Assurance_Tower256RawHistoryCshakeTrace.json": {
+      "bytes": 2062,
+      "sha256": "034f47c4c45a1ef91bcebb8a58441ed32e18721ca5517abb35f42c34f6b1fa33"
+    },
+    "run018_observed_001/evidence/576_lean_Assurance.json": {
+      "bytes": 1943,
+      "sha256": "d8d24e45195bcf21358552335e1a16834e3d2b8de161d7ee59b6454a8cff4efc"
+    },
+    "run018_observed_001/evidence/577_companion_head_after.json": {
+      "bytes": 270,
+      "sha256": "68a3274ebafe3d8328290ca18edeff043b5e747461fb3f2e61acbc39a14b95d1"
+    },
+    "run018_observed_001/evidence/578_companion_status_after.json": {
+      "bytes": 629,
+      "sha256": "7a57341546ad57bb831fec00b0536b902df462dea47df99f1f05b36b8eb0780f"
+    },
+    "run018_observed_001/evidence/applied_source_hashes.json": {
+      "bytes": 8255,
+      "sha256": "14e1e83d2626da6c44d298ebb5342e0949309a37866753f4ff0abf7cee6eccf9"
+    },
+    "run018_observed_001/evidence/axiom_census.json": {
+      "bytes": 783596,
+      "sha256": "63788cd48bcf0e724bd6323acbcdbe6590e884a1a3e58bd00775c0d1fda8d406"
+    },
+    "run018_observed_001/evidence/cached_dependency_artifacts.json": {
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "run018_observed_001/evidence/check_all_formal.py": {
+      "bytes": 32316,
+      "sha256": "563b52272d913d00eb5751588befbbe7f7b226d83016d1c53f917dececff57ff"
+    },
+    "run018_observed_001/evidence/companion_source_hashes_after.json": {
+      "bytes": 70833,
+      "sha256": "9a1d3446882c8275e8d08b03c54a39b981939d4cea336e02408e6749db880104"
+    },
+    "run018_observed_001/evidence/companion_source_hashes_before.json": {
+      "bytes": 70833,
+      "sha256": "9a1d3446882c8275e8d08b03c54a39b981939d4cea336e02408e6749db880104"
+    },
+    "run018_observed_001/evidence/compiled_olean_hashes.json": {
+      "bytes": 156116,
+      "sha256": "f75b5178bf08d67cdff2155139989f4ef24df548d9d3c896f70239aa552fb73f"
+    },
+    "run018_observed_001/evidence/minidregg-combined-resident.patch": {
+      "bytes": 1015053,
+      "sha256": "82e1ac3f54aa0b82e74c464358724a05be206e358bb634b4f49016a196b3dd18"
+    },
+    "run018_observed_001/evidence/modules_overnight_sampled.json": {
+      "bytes": 10205,
+      "sha256": "abb61812f05441be74f02450f6ebe9449d729c805cd28714210a74e556c96c79"
+    },
+    "run018_observed_001/evidence/report.json": {
+      "bytes": 186975,
+      "sha256": "75c1d3921998fdf7fd5377af07be6887304ebe004369eab09c28effc75ec5b39"
+    },
+    "run018_observed_001/manifest.json": {
+      "bytes": 27733321,
+      "sha256": "3c8943f716651ed9db18176f41d7197a6d919c364dda9b8c30520f42a015439f"
+    },
+    "synthetic_results.json": {
+      "bytes": 4700,
+      "sha256": "18b42f8352ca3bc11d71d57c4a0d67ecba5dfb4dbbf2a11b64393d5dff3dabaf"
+    },
+    "test_verified_project_cache.py": {
+      "bytes": 19012,
+      "sha256": "4b5bc97c537fabde276ccf494fd29b1737d646e94f18a61591b0b78098e0d52d"
+    }
+  },
+  "schema": "verified-project-cache-implementation-public-manifest-v1",
+  "scope": "31 synthetic tests and authorized post-success byte-only export. No actual cache admission/installation or Lean/build/model/crypto execution by this lane. Objects remain ignored and pinned by export manifest."
+}

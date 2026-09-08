@@ -1,0 +1,1 @@
+[DERIVED] Review complete: accept corrected efficient_root_binding audit `98fb3d92058fee53698ff4af191f70b12ac9e243b3c09e822c774de4e4f40d44` within its classical-ROM mathematical scope. See REPORT.md for precise premises and limitations, RESULTS.json for independent finite controls, and INPUTS.json for checked source pins. No Lean or crypto protocol runs.

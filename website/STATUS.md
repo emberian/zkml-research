@@ -1,5 +1,14 @@
 # Research website — published; evidence update prepared
 
+[EXECUTED final refresh preparation, 2026-09-08] The formal card now reports the completed clean project-source run018 (952 pins / 72 proposals / 567 rebuilt modules), and the nonlinear card reports the completed 480-event trajectory. The complete source paragraphs and custody limits were reviewed before refreshing locks. This changes card text and evidence links only; previous layout/interaction review is retained, with no new browser-review claim. Strict production/deployment verification follows the named source commit.
+
+[EXECUTED third deployment] Checkpoint df75a06 is public. Workflow34195495164
+succeeded; all six served files match the strict production build and all 19
+immutable source blobs match their full hashes. The formal card now reflects
+run017's 915 pins across 70 selected modules. `deployment-update-002.json`
+retains the checks. This text-only refresh reuses the prior layout review;
+the running clean source rebuild contributes no completed result to the site.
+
 [EXECUTED second deployment] Workflow34190912338 at7e17708 succeeded; root independently verified all six served files against the production build and all19 immutable source blobs. `deployment-update-001.json` retains HTTP/hash evidence. The next small refresh advances the formal card to the separately completed915-pin/70-module run017; source excerpt and limits were reread before locking.
 
 [EXECUTED root publication preparation, 2026-09-08T05:30:48.965405+00:00] Research checkpoint cf0f91f is public. Strict production build and reproducibility check pass:11 cards,25 excerpts,64 references,7 files,68,680bytes. All 19 distinct immutable GitHub source blobs return200 and match complete hashes. Root inspected the new desktop evidence and mobile PQ screenshots. Preview draft markers are absent from the production manifest. The eight reviewed website changes are ready for deployment; the earlier draft-only paragraph below is historical.

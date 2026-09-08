@@ -1,0 +1,3 @@
+[DERIVED] Accepted at the stated initialized-reference/Option-presence scope. Author manifest SHA256 `1c8d73ab40a06bde6dbed4b045d78d67d7fced01c5013141047ac40dc305c5c5`; exact 29 theorem/axiom pins. REPORT.md records the source/math audit and the explicit Rust/Vec/serde/TFHE boundary.
+
+[EXECUTED] Independent manifest/dependency hashes, lexical census, isolated exact patch application, public schedule presence controls and the unproduced-hole control pass. Companion trees and frozen packages remain unchanged. Reviewer ran no Lean command, gate evaluation or cryptography; final Lean success is attributed to saved exact lean_006.json.

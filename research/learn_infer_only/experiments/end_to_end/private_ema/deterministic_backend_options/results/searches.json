@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-08",
+  "web_search_queries": [
+    "site.docs.zama.ai tfhe-rs deterministic execution FFT NTT",
+    "site:github.com/zama-ai/tfhe-rs ntt64_bnf programmable_bootstrap",
+    "site:doc.rust-lang.org std primitive f64 unspecified precision mul_add sin cos",
+    "site:github.com/zama-ai tfhe ntt benchmark karatsuba bootstrapping"
+  ],
+  "web_search_query_count": 4,
+  "web_search_call_count": 2,
+  "additional_primary_open_urls": [
+    "https://doc.rust-lang.org/std/primitive.f64.html#method.mul_add",
+    "https://docs.zama.ai/tfhe-rs/fhe-computation/advanced-features/parallelized-pbs"
+  ],
+  "additional_open_second_url_result": "Internal Error; no claim derived from this result",
+  "scry_sql_count": 0,
+  "kagi_query_count": 0,
+  "pdf_downloads": 0,
+  "local_pdf_reads": 0,
+  "scope": "Only primary official source/documentation facts used. Search results are leads; pinned local source is authoritative for the frozen implementation. No numeric latency found by this bounded search is not a field-wide absence claim."
+}

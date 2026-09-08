@@ -1,0 +1,195 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-babybear-folding-tower-20260908",
+  "modules": [
+    {
+      "path": "Selvage/BabyBearTwoAdic.lean",
+      "sha256": "470ebf789a733f160523e816570079bb08ef05276b5b025b92d0fd60379b5eb0",
+      "lines": 133,
+      "theorem_count": 13,
+      "pin_count": 13,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-babybear-folding-tower-20260908/.lake/build/lib/lean/Selvage/BabyBearTwoAdic.olean",
+          "Selvage/BabyBearTwoAdic.lean"
+        ],
+        "cwd": "/tmp/minidregg-babybear-folding-tower-20260908",
+        "exit_code": 0,
+        "source_sha256": "470ebf789a733f160523e816570079bb08ef05276b5b025b92d0fd60379b5eb0",
+        "source_unchanged": true,
+        "elapsed_s": 13.796600103378296,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-01.log"
+      }
+    },
+    {
+      "path": "Selvage/PowerTwoRootFolding.lean",
+      "sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+      "lines": 184,
+      "theorem_count": 9,
+      "pin_count": 9,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-babybear-folding-tower-20260908/.lake/build/lib/lean/Selvage/PowerTwoRootFolding.olean",
+          "Selvage/PowerTwoRootFolding.lean"
+        ],
+        "cwd": "/tmp/minidregg-babybear-folding-tower-20260908",
+        "exit_code": 0,
+        "source_sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+        "source_unchanged": true,
+        "elapsed_s": 12.926461935043335,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-02.log"
+      }
+    },
+    {
+      "path": "Selvage/BabyBearFoldingTower.lean",
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+      "lines": 191,
+      "theorem_count": 16,
+      "pin_count": 16,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-babybear-folding-tower-20260908/.lake/build/lib/lean/Selvage/BabyBearFoldingTower.olean",
+          "Selvage/BabyBearFoldingTower.lean"
+        ],
+        "cwd": "/tmp/minidregg-babybear-folding-tower-20260908",
+        "exit_code": 0,
+        "source_sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+        "source_unchanged": true,
+        "elapsed_s": 15.788466930389404,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-03.log"
+      }
+    },
+    {
+      "path": "Selvage/BabyBearFoldingWitnesses.lean",
+      "sha256": "5d22c5a62ffac9030378b4fbcf747bf13aad468001a48955ce95485f9c3fdb0f",
+      "lines": 175,
+      "theorem_count": 10,
+      "pin_count": 10,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-babybear-folding-tower-20260908/.lake/build/lib/lean/Selvage/BabyBearFoldingWitnesses.olean",
+          "Selvage/BabyBearFoldingWitnesses.lean"
+        ],
+        "cwd": "/tmp/minidregg-babybear-folding-tower-20260908",
+        "exit_code": 0,
+        "source_sha256": "5d22c5a62ffac9030378b4fbcf747bf13aad468001a48955ce95485f9c3fdb0f",
+        "source_unchanged": true,
+        "elapsed_s": 14.79598593711853,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-04.log"
+      }
+    }
+  ],
+  "owned_modules": 4,
+  "owned_lines": 683,
+  "owned_theorems": 48,
+  "owned_pins": 48,
+  "patch_sha256": "900f184c759ff80a1debe2e585ca9f493b4bd13d65a77feb8762f9d07651779a",
+  "dependencies": [
+    {
+      "path": "Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/FullUDStatement.lean",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/FullUDTeeth.lean",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/FullUDFriConsumer.lean",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/FullUDWitnesses.lean",
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Theory/PolynomialMatrixKernel.lean",
+      "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Theory/PolynomialBivariate.lean",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Theory/PolynomialGluingStatement.lean",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Theory/PolynomialGluing.lean",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "frozen_source": "full_ud/manifest.json"
+    },
+    {
+      "path": "Selvage/BabyBearFullUD.lean",
+      "sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+      "frozen_source": "full_ud_babybear/BabyBearFullUD.lean"
+    },
+    {
+      "path": "Selvage/FullUDSamplingBudget.lean",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "frozen_source": "full_ud_sampling_budget/FullUDSamplingBudget.lean"
+    }
+  ],
+  "all_16_frozen_dependency_hashes_unchanged": true,
+  "root_census_script_sha256": "563b52272d913d00eb5751588befbbe7f7b226d83016d1c53f917dececff57ff",
+  "exact_guarded_checks_complete": true,
+  "all_pins_standard_only": true,
+  "umbrella_imports_proposed": [
+    "Selvage.BabyBearFoldingWitnesses"
+  ],
+  "source_evidence_sha256": "5fb6c0f3a4511f115310bdcb9ddd5b6d80ced57596b60777a52d341462fed41d",
+  "web_queries": 0,
+  "scry_sql_queries": 0
+}

@@ -1,0 +1,5 @@
+Selvage/EfficientRootOpening.lean:357:4: error: `simp` made no progress
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

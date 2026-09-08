@@ -1,0 +1,97 @@
+{
+  "scope": "Exact existing source audit pins; no compilation or new library execution",
+  "sources": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/karatsuba_pbs.rs",
+      "sha256": "5fb8f380794e55be9ef3c9fdaeffb039d22eca5b61b789cbbc4b83d2fa3ead76",
+      "bytes": 16471,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          16,
+          210
+        ],
+        [
+          237,
+          310
+        ],
+        [
+          314,
+          415
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/polynomial_algorithms.rs",
+      "sha256": "0ac0f9577bd508ea63cbf57f65d7b97b1ae1b1cc0089082b57b0ede5c3d7a08b",
+      "bytes": 55679,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          306,
+          339
+        ],
+        [
+          1066,
+          1088
+        ],
+        [
+          1106,
+          1206
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/modulus_switch.rs",
+      "sha256": "d82b6f2fbd49866762817304d80a97ee59cbdee1f77ff88607e1fa8dc7e0b12e",
+      "bytes": 20757,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          1,
+          24
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/common.rs",
+      "sha256": "85e2789e9e7bb931420dea5e951468b7db35ccfc9b9b28d0fe256fb1b362ab03",
+      "bytes": 8211,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          10,
+          23
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/decomposition/decomposer.rs",
+      "sha256": "5aea64df5e3bd75d01e3dcc3ca62bd734f4c0b376850a1123900ac5ca59de7f2",
+      "bytes": 29382,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          86,
+          96
+        ],
+        [
+          156,
+          185
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/decomposition.rs",
+      "sha256": "cf36ac05506b5df91031d02f9653d09d60ab42c833951623d5350ea13866c97c",
+      "bytes": 2896,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          1,
+          100
+        ]
+      ]
+    }
+  ]
+}

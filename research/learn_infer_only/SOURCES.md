@@ -1,5 +1,11 @@
 # Source register for this tranche
 
+## Third-run closeout evidence, 2026-09-08
+
+[EXECUTED] Checkpoint004 records exact public source/evidence hashes for the completed nonlinear, public-seed, ring, sampler and proof tranches. Its 1,315-file census is evidence consistency, not independent reexecution. Per-lane source registers retain exact paper versions, locations read and metered web/Scry counts; this final collector and closeout add zero Scry queries. Local mirror PDFs remain read-only and no eprint PDF was downloaded.
+
+[SOURCE / DERIVED] New source-sensitive conclusions are in the ring candidate's hardness AUDIT, the finite sampler SPEC and their independent reviews; deterministic TFHE backend options pin actual library sources. Concrete SHAKE security, QROM composition, full Rust refinement and practical PQ implementation remain open. The public website links committed excerpts with full-blob and excerpt hashes.
+
 ## Second timed run, 2026-09-07
 
 [SOURCE / EXECUTED] New primary-source access and exact versions are recorded

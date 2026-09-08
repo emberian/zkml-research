@@ -1,0 +1,162 @@
+{
+  "scope": "[EXECUTED] Public integer/Fraction arithmetic and source provenance; zero estimator calls",
+  "status": "PASS",
+  "shared": {
+    "d": 577,
+    "r": 16,
+    "W": 32,
+    "T": 384,
+    "p": 28439893,
+    "X": 14219946,
+    "encoding_denominator": 8204908842
+  },
+  "points": [
+    {
+      "label": "ring_baseline_4096",
+      "N": 4096,
+      "w_ring_samples": 64,
+      "q": "497323290947860672931310292648754779192460749687510494957169639477681564739617435942913",
+      "q_bits": 289,
+      "primitive_2N_root": "150672670399264886014481996813601940782203114734998155716986239215569815304532921611424",
+      "sigma_e_width_pow2": 10,
+      "sigma_K_width_pow2": 24,
+      "flood_radius_pow2": 244,
+      "BK_pow2": 27,
+      "BE_pow2": 13,
+      "shift_bound_pow2": 58,
+      "theta": "3/64",
+      "smoothing_log_upper": 212,
+      "regularity": [
+        {
+          "k": 1,
+          "short_bound": "2^4096/q^384",
+          "rank_plus_short_below_2_minus_192": true,
+          "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+        },
+        {
+          "k": 2,
+          "short_bound": "2^4096/q^192",
+          "rank_plus_short_below_2_minus_192": true,
+          "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+        }
+      ],
+      "all_17_coalitions_privacy_statistical_bound": "<2^-168",
+      "correctness_failure_bound": "<2^-203",
+      "unit_failure_upper": "N/q < 2^-276",
+      "raw_scalar_proxy": {
+        "n": 4096,
+        "m": 262144,
+        "secret": "UniformMod(q)"
+      },
+      "normalized_scalar_proxy": {
+        "n": 4096,
+        "m": 258048,
+        "secret_and_error": "DiscreteGaussianAlpha(QQ(1024)/q,q)"
+      },
+      "costs": {
+        "ciphertext_coefficients": 262721,
+        "ciphertext_bytes": 9490797,
+        "public_A_and_P_bytes": 94847488,
+        "recipient_key_bits_per_coefficient_strict_tail": 28,
+        "one_recipient_key_bytes_strict_tail": 917504,
+        "all_recipient_keys_bytes_strict_tail": 14680064,
+        "fresh_encode_full_ring_products": 64,
+        "fresh_encode_scalar_coefficient_multiplications": 2363392,
+        "fresh_encode_gaussian_coefficients": 262144,
+        "read_coefficient_multiplications": 262144,
+        "add_or_expire_residue_operations": 262721
+      }
+    },
+    {
+      "label": "ring_joint_repair_16384",
+      "N": 16384,
+      "w_ring_samples": 64,
+      "q": "497323290947860672931310292648754779192460749687510494957169639477681564739617435942913",
+      "q_bits": 289,
+      "primitive_2N_root": "392468411228582977956273214396722831887432734543154379933671833052773570902878518108580",
+      "sigma_e_width_pow2": 10,
+      "sigma_K_width_pow2": 25,
+      "flood_radius_pow2": 247,
+      "BK_pow2": 28,
+      "BE_pow2": 13,
+      "shift_bound_pow2": 61,
+      "theta": "3/64",
+      "smoothing_log_upper": 214,
+      "regularity": [
+        {
+          "k": 1,
+          "short_bound": "2^16384/q^1536",
+          "rank_plus_short_below_2_minus_192": true,
+          "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+        },
+        {
+          "k": 2,
+          "short_bound": "2^16384/q^768",
+          "rank_plus_short_below_2_minus_192": true,
+          "joint_h_rows": "(2h+1)*2^-192 for h>=1"
+        }
+      ],
+      "all_17_coalitions_privacy_statistical_bound": "<2^-168",
+      "correctness_failure_bound": "<2^-200",
+      "unit_failure_upper": "N/q < 2^-274",
+      "raw_scalar_proxy": {
+        "n": 16384,
+        "m": 1048576,
+        "secret": "UniformMod(q)"
+      },
+      "normalized_scalar_proxy": {
+        "n": 16384,
+        "m": 1032192,
+        "secret_and_error": "DiscreteGaussianAlpha(QQ(1024)/q,q)"
+      },
+      "costs": {
+        "ciphertext_coefficients": 1049153,
+        "ciphertext_bytes": 37900653,
+        "public_A_and_P_bytes": 379389952,
+        "recipient_key_bits_per_coefficient_strict_tail": 29,
+        "one_recipient_key_bytes_strict_tail": 3801088,
+        "all_recipient_keys_bytes_strict_tail": 60817408,
+        "fresh_encode_full_ring_products": 64,
+        "fresh_encode_scalar_coefficient_multiplications": 9453568,
+        "fresh_encode_gaussian_coefficients": 1048576,
+        "read_coefficient_multiplications": 1048576,
+        "add_or_expire_residue_operations": 1049153
+      }
+    }
+  ],
+  "proposed_calls": {
+    "points": 2,
+    "paths": [
+      "usvp",
+      "bdd",
+      "dual"
+    ],
+    "models": [
+      "MATZOV_classical",
+      "ADPS16_classical",
+      "ADPS16_quantum_core_svp",
+      "MATZOV_quantum_depth_width"
+    ],
+    "count": 24,
+    "max_seconds_per_call": 45,
+    "all_paths_receive_explicit_normalized_input": true
+  },
+  "estimator_archive_commit": "53da5982597709ba0fdf94ea37a84d822310fd84",
+  "source_hashes_checked": 27,
+  "source_manifest_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/MANIFEST.json",
+  "source_manifest_sha256": "f3a8047121fb86d310daec4488bcbd1a311a7d269486e15f1e392a24d0c75359",
+  "prime_certificate_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/searches/prime_certificate.json",
+  "prime_certificate_sha256": "8d24375202ae3176d10fd86386753680f2f6ec44a41333d78114befb4d3735a1",
+  "frozen_ring_sources": {
+    "CANDIDATE.md": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2",
+    "RING_REGULARITY.md": "2926555d5842bb71af7b16caec3eef512a9c7cfea99e877b862bcfea79d30e85",
+    "PARAMETERS.md": "c23732e366fe5966ddf971c0f69fdf51cec41bee134d0bf3e4da19367631b78d",
+    "MANIFEST.json": "703e824295a40357f44d3a8cfa073ae2f6c1411b24783a83ca1c6e4f7992fbdb"
+  },
+  "calls_executed_this_lane": 0,
+  "new_network_meter": {
+    "web_search_queries": 0,
+    "scry_sql_calls": 0,
+    "pdf_downloads": 0
+  }
+}

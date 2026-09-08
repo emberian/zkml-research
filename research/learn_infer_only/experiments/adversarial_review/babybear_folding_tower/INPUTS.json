@@ -1,0 +1,593 @@
+{
+  "scope": "Named frozen author/source/dependency records only. No private or runtime artifacts.",
+  "frozen_public_files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/NEXT.md",
+      "bytes": 1801,
+      "sha256": "4de5418426d4352b8db952058b343cd28b09bc09adf93d6d739a57e8390d4a46"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/README.md",
+      "bytes": 9189,
+      "sha256": "bff0d4c737a84447b3ccece0fd9ddc6abfe6d6a73ee3133f25ae7c4a4d6c74b9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/STATUS.md",
+      "bytes": 2183,
+      "sha256": "efee18fae1df166e614c9c60744665730f9ef42d15835d0fcd7e1b19003817e2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/babybear-folding-tower.patch",
+      "bytes": 39222,
+      "sha256": "900f184c759ff80a1debe2e585ca9f493b4bd13d65a77feb8762f9d07651779a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/declaration-names.json",
+      "bytes": 3646,
+      "sha256": "5c21dee1173e8dbaf9b237f16212b08498dbd39164c7cdbff5b38f8176863612"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/integration_census.json",
+      "bytes": 40157,
+      "sha256": "770ebd09c5fad864e1afc27070d537f4a4793143fde75ee3f4a39f8bd0b8f342"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/integration_entry.json",
+      "bytes": 820,
+      "sha256": "4fb375fc121fee38b667422ed8d5b15a6241b3275a8749fb0e51160210dfcb26"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-01.json",
+      "bytes": 562,
+      "sha256": "b38dcd3d7e0f922821ea9b029eccf03bcac44c77ae992c5e6bade607dfd62e5a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-01.log",
+      "bytes": 1578,
+      "sha256": "2316ef3e63a7e1fbf6ad43062ed31c4a3b0c7d75eef0b5a1785a747bb05e8e31"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-02.json",
+      "bytes": 570,
+      "sha256": "fdd07101f69a50e17d865d6e38fc04422552213ca74f1a622517b487046bc55d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-02.log",
+      "bytes": 1004,
+      "sha256": "1a663ea0805e25e5fc0623997d1b37bcd68c0efb518fe7d0ec57ced43f8e073b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-03.json",
+      "bytes": 571,
+      "sha256": "d14210c2a38ab69602cbf3183f78ba682d67ca993f23ba4cc81b6b533503c0d7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-03.log",
+      "bytes": 2128,
+      "sha256": "539e604750b99e15b36a42bfe8efc8ece1041f1d505718b8b39074a169d98351"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-04.json",
+      "bytes": 580,
+      "sha256": "7cf7f4943e2fc0e2f05b04a4f6d656efc6ebfa26661bc58dd0a8b9d5e18439ac"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/axioms-04.log",
+      "bytes": 1423,
+      "sha256": "7d4e6f4c310c497253e2c520c0e9616fdea55d5acc7b77d684087dd8b287430f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-01.json",
+      "bytes": 562,
+      "sha256": "93468392491fc201e8383847cd26a3e3078b579e359a39c557b3ff6cfe53ccf9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-02.json",
+      "bytes": 570,
+      "sha256": "2b23ba941a132d229e424c91551a235997c32779f46ee92fb5b3f74d616e9ddb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-03.json",
+      "bytes": 572,
+      "sha256": "0601c9e7cc69c8db40c3e9d2ae84c69c20b91579b988104c37b6953b70548306"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-03.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-04.json",
+      "bytes": 579,
+      "sha256": "669dfd42aed17de50722e0bfb96560df2e7d425ec0dc89252080500785c89bb6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/freeze-04.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/import-boundary.log",
+      "bytes": 160,
+      "sha256": "8ad794b7fb3c1f16f0b484345d6c90fdff74ed3bc3fdb20335aba83986ca789d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/patch-apply.log",
+      "bytes": 89,
+      "sha256": "f4a5bcdb2080087b2e1725e53e74e4976eab9e8c1eff1140ffec102581847ce8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/roots-01.json",
+      "bytes": 560,
+      "sha256": "b2d7fbf465eca730dbc163bf826ff1f68e3997765978c99f1889e8fe4941c17d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/roots-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/roots-02.json",
+      "bytes": 561,
+      "sha256": "ab0a33c4be4724295f51caa6c2f5660bd4b742181e8511813a7fef2c74493915"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/roots-02.log",
+      "bytes": 64,
+      "sha256": "222c12c76001e7f4b5e6eac7c9e2db27c187917173339e198a1de27bcf56da7b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/roots-03.json",
+      "bytes": 561,
+      "sha256": "f33750d0b3f455082e5cd0cefed3ed30b7a2c4e3f46e450214868213ac2caf15"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/roots-03.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-actual-01.json",
+      "bytes": 577,
+      "sha256": "84eaf609b08dc9e023f5621bbea7262116ee0c799f34a0ece91f91c500f6d939"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-actual-01.log",
+      "bytes": 80,
+      "sha256": "e51726ca096ace69f7e364ba2d4203efd33c72c02e02607915336685a6465dfe"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-actual-02.json",
+      "bytes": 577,
+      "sha256": "09d7a6c724ad58f4acd65d14e07931797b073608b07b254637f68f0545ca1512"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-actual-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-01.json",
+      "bytes": 576,
+      "sha256": "de7ee0bf7ff84fbbfc38abe17260c2978e5af7fd15ff098063ed1194ee9b21e6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-01.log",
+      "bytes": 1295,
+      "sha256": "1b923ba5a27704c8810b5a9087cee49560529a808cf14f5c8e73519fdebc352b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-02.json",
+      "bytes": 576,
+      "sha256": "1bb7becb2a90ac8c41f8d04506eb81a08852558cdeca552153de75a42927c360"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-03.json",
+      "bytes": 577,
+      "sha256": "78a27476011cdbc2f3302de623359d80620c3c12e4075ea007b0072d77f14d01"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-03.log",
+      "bytes": 255,
+      "sha256": "ab1940887525f40b9b5d600ae3e2eba3049ed9edab467f9044b02a27e872bc39"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-04.json",
+      "bytes": 576,
+      "sha256": "9c295712cb18e44771319e287dd25c248e859742e920da0837d9a609adb349cc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-04.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/witness-01.json",
+      "bytes": 581,
+      "sha256": "d89f7383d938abefceaf8ae1dab5d4fbde5933f0a5ebcc7d2d43c5b5e091932c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/witness-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/witness-02.json",
+      "bytes": 581,
+      "sha256": "aad7788032e5b27c258a0760da85775a71908e20c81e48118da2cad8ddff09a3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/witness-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/manifest.json",
+      "bytes": 7476,
+      "sha256": "ae965e4e43fdded42b7992ee8ee9a1a265085c9ab861e2c481fef75ca1e14dc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/package.py",
+      "bytes": 4204,
+      "sha256": "f4692856059bfbb7e1244e1983dda3238a9aeea666a8e3532a9166102baf925a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/run_lean.py",
+      "bytes": 996,
+      "sha256": "532d55664d0e7b1df5b5d5d42c808d9b319a0d9e18cddd0d65981ed29f487412"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/source-evidence.json",
+      "bytes": 6971,
+      "sha256": "5fb6c0f3a4511f115310bdcb9ddd5b6d80ced57596b60777a52d341462fed41d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingTower.lean",
+      "bytes": 11271,
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingWitnesses.lean",
+      "bytes": 9702,
+      "sha256": "5d22c5a62ffac9030378b4fbcf747bf13aad468001a48955ce95485f9c3fdb0f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearTwoAdic.lean",
+      "bytes": 7512,
+      "sha256": "470ebf789a733f160523e816570079bb08ef05276b5b025b92d0fd60379b5eb0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/PowerTwoRootFolding.lean",
+      "bytes": 9264,
+      "sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/prover/src/babybear.rs",
+      "bytes": 1841,
+      "sha256": "f405d7c6d3645a0535dbb40a98a2e4d528a44a5d3117773dbd2c38157dda1959"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/prover/src/mle_kernels.rs",
+      "bytes": 21847,
+      "sha256": "53a2fa85f63863cde5b0fe9ce4c8a4759c85aa6956dd8d3b339344daa2d84550"
+    },
+    {
+      "path": "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/baby-bear/src/baby_bear.rs",
+      "bytes": 8665,
+      "sha256": "6695e14d7adbc4549c876f1e48e342bd89fb4eef35da48338194cc4e60a7b87a"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/Cargo.toml",
+      "bytes": 50520,
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs",
+      "bytes": 49063,
+      "sha256": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs",
+      "bytes": 16892,
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs",
+      "bytes": 61677,
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean",
+      "bytes": 6432,
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+      "bytes": 67322,
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+      "bytes": 14622,
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/GroupTheory/OrderOfElement.lean",
+      "bytes": 62832,
+      "sha256": "764e07cfc91094fd6e83d7e7aac78ed51768743415d18adfd40aa965ef6127d0"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/RingTheory/RootsOfUnity/PrimitiveRoots.lean",
+      "bytes": 38769,
+      "sha256": "1cfba2efdd9bce4088376b96021fae035aefa9daba3201cc23ab8b464d5b818d"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean",
+      "bytes": 21766,
+      "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean",
+      "bytes": 21536,
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean",
+      "bytes": 18641,
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Theory/RSInterpolationMatrix.lean",
+      "bytes": 18641,
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean",
+      "bytes": 16801,
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Theory/RSInterpolationKernel.lean",
+      "bytes": 16801,
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDStatement.lean",
+      "bytes": 3878,
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDStatement.lean",
+      "bytes": 3878,
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean",
+      "bytes": 4835,
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDTeeth.lean",
+      "bytes": 4835,
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean",
+      "bytes": 8681,
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDInterpolation.lean",
+      "bytes": 8681,
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean",
+      "bytes": 9387,
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDBivariate.lean",
+      "bytes": 9387,
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean",
+      "bytes": 16935,
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDCore.lean",
+      "bytes": 16935,
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean",
+      "bytes": 6857,
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/ProximityGapFullUD.lean",
+      "bytes": 6857,
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDFriConsumer.lean",
+      "bytes": 5228,
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDFriConsumer.lean",
+      "bytes": 5228,
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDWitnesses.lean",
+      "bytes": 3211,
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDWitnesses.lean",
+      "bytes": 3211,
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean",
+      "bytes": 25207,
+      "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Theory/PolynomialMatrixKernel.lean",
+      "bytes": 25207,
+      "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean",
+      "bytes": 11855,
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Theory/PolynomialBivariate.lean",
+      "bytes": 11855,
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean",
+      "bytes": 3348,
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Theory/PolynomialGluingStatement.lean",
+      "bytes": 3348,
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean",
+      "bytes": 59780,
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Theory/PolynomialGluing.lean",
+      "bytes": 59780,
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean",
+      "bytes": 10639,
+      "sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/BabyBearFullUD.lean",
+      "bytes": 10639,
+      "sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/FullUDSamplingBudget.lean",
+      "bytes": 21536,
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/BabyBearExt4.lean",
+      "bytes": 6432,
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/Proximity.lean",
+      "bytes": 67322,
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/HalfThresholdFriCoherent.lean",
+      "bytes": 14622,
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/HalfThresholdFriQuery.lean",
+      "bytes": 23697,
+      "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean",
+      "bytes": 23697,
+      "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/ReedSolomon.lean",
+      "bytes": 21766,
+      "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/Commitment.lean",
+      "bytes": 26807,
+      "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Commitment.lean",
+      "bytes": 26807,
+      "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/Selvage/Rbr.lean",
+      "bytes": 25134,
+      "sha256": "9ecc85f4449a1430e3f0efcc6863d731fd70bd00d1d5ab640af0f17e55d83d63"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Rbr.lean",
+      "bytes": 25134,
+      "sha256": "9ecc85f4449a1430e3f0efcc6863d731fd70bd00d1d5ab640af0f17e55d83d63"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/lean-toolchain",
+      "bytes": 25,
+      "sha256": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/lake-manifest.json",
+      "bytes": 3506,
+      "sha256": "2fd2df8e649524961d41f496e1fcb5d16797b75577d9677d82d1a441758bd469"
+    },
+    {
+      "path": "/tmp/minidregg-babybear-folding-tower-20260908/scripts/check-import-boundary.sh",
+      "bytes": 1527,
+      "sha256": "66f66a89dad655e7f2837062d489ddb1b817e74a6903d24ecef80b85536b1ec1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py",
+      "bytes": 32316,
+      "sha256": "563b52272d913d00eb5751588befbbe7f7b226d83016d1c53f917dececff57ff"
+    }
+  ],
+  "dependency_origins": {
+    "Theory/RSInterpolationMatrix.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean",
+    "Theory/RSInterpolationKernel.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean",
+    "Selvage/FullUDStatement.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDStatement.lean",
+    "Selvage/FullUDTeeth.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean",
+    "Selvage/FullUDInterpolation.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean",
+    "Selvage/FullUDBivariate.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean",
+    "Selvage/FullUDCore.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean",
+    "Selvage/ProximityGapFullUD.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean",
+    "Selvage/FullUDFriConsumer.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDFriConsumer.lean",
+    "Selvage/FullUDWitnesses.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDWitnesses.lean",
+    "Theory/PolynomialMatrixKernel.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean",
+    "Theory/PolynomialBivariate.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean",
+    "Theory/PolynomialGluingStatement.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean",
+    "Theory/PolynomialGluing.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean",
+    "Selvage/BabyBearFullUD.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean",
+    "Selvage/FullUDSamplingBudget.lean": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean"
+  }
+}

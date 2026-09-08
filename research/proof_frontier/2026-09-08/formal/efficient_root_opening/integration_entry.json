@@ -1,0 +1,9 @@
+{
+  "name": "efficient_root_opening",
+  "root": "../proof_frontier/2026-09-08/formal/efficient_root_opening",
+  "patch": "../proof_frontier/2026-09-08/formal/efficient_root_opening/efficient-root-opening.patch",
+  "expected_pins": 20,
+  "source_files": {
+    "Selvage/EfficientRootOpening.lean": "../proof_frontier/2026-09-08/formal/efficient_root_opening/src/Selvage/EfficientRootOpening.lean"
+  }
+}

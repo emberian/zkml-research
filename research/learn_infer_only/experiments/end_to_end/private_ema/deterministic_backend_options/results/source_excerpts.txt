@@ -1,0 +1,2379 @@
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/lib.rs
+SHA256 54c543baae6c17b3ea58dce4d32239f274fc533fab564ebc9abdff3d93f43b21
+75: 
+76: #[cfg(feature = "boolean")]
+77: /// Welcome to the TFHE-rs [`boolean`](`crate::boolean`) module documentation!
+78: ///
+79: /// # Special module attributes
+80: /// cbindgen:ignore
+81: pub mod boolean;
+82: 
+83: /// Welcome to the TFHE-rs [`core_crypto`](`crate::core_crypto`) module documentation!
+84: ///
+85: /// # Special module attributes
+86: /// cbindgen:ignore
+87: pub mod core_crypto;
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs
+SHA256 d2650d683cc9a23de5e8d2f700180c68e793ae038fc6376522f4f1c6e8e5b48a
+10: 
+11: /// A structure containing a ciphertext, meant to encrypt a Boolean message.
+12: ///
+13: /// It is used to evaluate a Boolean circuits homomorphically.
+14: #[derive(Clone, Debug, Serialize, Deserialize, Versionize)]
+15: #[versionize(CiphertextVersions)]
+16: pub enum Ciphertext {
+17:     Encrypted(LweCiphertextOwned<u32>),
+18:     Trivial(bool),
+19: }
+20: 
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs
+SHA256 3ac1db249c48c031b144f1e2300531af228196d089bedad810655922ccbb8d69
+45: // p-fail = 2^-165.434, algorithmic cost ~ 117, 2-norm = 2.8284271247461903
+46: pub const PARAMETERS_ERROR_PROB_2_POW_MINUS_165: BooleanParameters = BooleanParameters {
+47:     lwe_dimension: LweDimension(837),
+48:     glwe_dimension: GlweDimension(2),
+49:     polynomial_size: PolynomialSize(1024),
+50:     #[allow(clippy::excessive_precision)]
+51:     lwe_noise_distribution: DynamicDistribution::new_gaussian_from_std_dev(StandardDev(
+52:         3.374714376692653e-06,
+53:     )),
+54:     glwe_noise_distribution: DynamicDistribution::new_gaussian_from_std_dev(StandardDev(
+55:         9.313225746198247e-10,
+56:     )),
+57:     pbs_base_log: DecompositionBaseLog(10),
+58:     pbs_level: DecompositionLevelCount(2),
+59:     ks_base_log: DecompositionBaseLog(3),
+60:     ks_level: DecompositionLevelCount(5),
+61:     encryption_key_choice: EncryptionKeyChoice::Small,
+62: };
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs
+SHA256 645ca26eab47b80d16c3088b1ab776966462d4bf2b3516567559d3b4234141f5
+558:     fn and(
+559:         &mut self,
+560:         ct_left: &Ciphertext,
+561:         ct_right: &Ciphertext,
+562:         server_key: &ServerKey,
+563:     ) -> Ciphertext {
+564:         match (ct_left, ct_right) {
+565:             (Ciphertext::Trivial(message_left), Ciphertext::Trivial(message_right)) => {
+566:                 Ciphertext::Trivial(*message_left && *message_right)
+567:             }
+568:             (Ciphertext::Encrypted(_), Ciphertext::Trivial(message_right)) => {
+569:                 self.and(ct_left, *message_right, server_key)
+570:             }
+571:             (Ciphertext::Trivial(message_left), Ciphertext::Encrypted(_)) => {
+572:                 self.and(*message_left, ct_right, server_key)
+573:             }
+574:             (Ciphertext::Encrypted(ct_left_ct), Ciphertext::Encrypted(ct_right_ct)) => {
+575:                 let mut buffer_lwe_before_pbs = LweCiphertext::new(
+576:                     0u32,
+577:                     ct_left_ct.lwe_size(),
+578:                     ct_left_ct.ciphertext_modulus(),
+579:                 );
+580: 
+581:                 let bootstrapper = &mut self.bootstrapper;
+582: 
+583:                 // compute the linear combination for AND: ct_left + ct_right + (0,...,0,-1/8)
+584:                 // ct_left + ct_right
+585:                 lwe_ciphertext_add(&mut buffer_lwe_before_pbs, ct_left_ct, ct_right_ct);
+586:                 let cst = Plaintext(PLAINTEXT_FALSE);
+587:                 // - 1/8
+588:                 lwe_ciphertext_plaintext_add_assign(&mut buffer_lwe_before_pbs, cst);
+589: 
+590:                 // compute the bootstrap and the key switch
+591:                 bootstrapper.apply_bootstrapping_pattern(buffer_lwe_before_pbs, server_key)
+592:             }
+593:         }
+710:     fn xor(
+711:         &mut self,
+712:         ct_left: &Ciphertext,
+713:         ct_right: &Ciphertext,
+714:         server_key: &ServerKey,
+715:     ) -> Ciphertext {
+716:         match (ct_left, ct_right) {
+717:             (Ciphertext::Trivial(message_left), Ciphertext::Trivial(message_right)) => {
+718:                 Ciphertext::Trivial(*message_left ^ *message_right)
+719:             }
+720:             (Ciphertext::Encrypted(_), Ciphertext::Trivial(message_right)) => {
+721:                 self.xor(ct_left, *message_right, server_key)
+722:             }
+723:             (Ciphertext::Trivial(message_left), Ciphertext::Encrypted(_)) => {
+724:                 self.xor(*message_left, ct_right, server_key)
+725:             }
+726:             (Ciphertext::Encrypted(ct_left_ct), Ciphertext::Encrypted(ct_right_ct)) => {
+727:                 let mut buffer_lwe_before_pbs = LweCiphertext::new(
+728:                     0u32,
+729:                     ct_left_ct.lwe_size(),
+730:                     ct_left_ct.ciphertext_modulus(),
+731:                 );
+732:                 let bootstrapper = &mut self.bootstrapper;
+733: 
+734:                 // Compute the linear combination for XOR: 2*(ct_left + ct_right) + (0,...,0,1/4)
+735:                 // ct_left + ct_right
+736:                 lwe_ciphertext_add(&mut buffer_lwe_before_pbs, ct_left_ct, ct_right_ct);
+737:                 let cst_add = Plaintext(PLAINTEXT_TRUE);
+738:                 // + 1/8
+739:                 lwe_ciphertext_plaintext_add_assign(&mut buffer_lwe_before_pbs, cst_add);
+740:                 let cst_mul = Cleartext(2u32);
+741:                 //* 2
+742:                 lwe_ciphertext_cleartext_mul_assign(&mut buffer_lwe_before_pbs, cst_mul);
+743: 
+744:                 // compute the bootstrap and the key switch
+745:                 bootstrapper.apply_bootstrapping_pattern(buffer_lwe_before_pbs, server_key)
+746:             }
+747:         }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs
+SHA256 d330528dd580177e21843b1ddb504bd6e2f2eda45f46b780461f4a2fbd66cfd5
+43: 
+44:         let total_elem_needed =
+45:             num_elem_in_accumulator + num_elem_in_lwe_after_ks + num_elem_in_lwe_after_pbs;
+46: 
+47:         let all_elements = if self.buffer.len() < total_elem_needed {
+48:             self.buffer.resize(total_elem_needed, 0u32);
+49:             self.buffer.as_mut_slice()
+50:         } else {
+51:             &mut self.buffer[..total_elem_needed]
+52:         };
+53: 
+54:         let (accumulator_elements, other_elements) =
+55:             all_elements.split_at_mut(num_elem_in_accumulator);
+56: 
+57:         let mut acc = GlweCiphertext::from_container(
+58:             accumulator_elements,
+59:             server_key.bootstrapping_key.polynomial_size(),
+60:             CiphertextModulus::new_native(),
+61:         );
+62: 
+63:         acc.get_mut_mask().as_mut().fill(0u32);
+64:         acc.get_mut_body().as_mut().fill(PLAINTEXT_TRUE);
+65: 
+94: /// * `bootstrapping_key` - a public key, used to perform the bootstrapping operation.
+95: /// * `key_switching_key` - a public key, used to perform the key-switching operation.
+96: #[derive(Clone, Serialize, Deserialize, Versionize)]
+97: #[versionize(ServerKeyVersions)]
+98: pub struct ServerKey {
+99:     pub(crate) bootstrapping_key: FourierLweBootstrapKeyOwned,
+100:     pub(crate) key_switching_key: LweKeyswitchKeyOwned<u32>,
+101:     pub(crate) pbs_order: PBSOrder,
+102: }
+103: 
+104: impl ServerKey {
+105:     /// Deconstruct a [`ServerKey`] into its constituents.
+106:     pub fn into_raw_parts(
+107:         self,
+108:     ) -> (
+109:         FourierLweBootstrapKeyOwned,
+110:         LweKeyswitchKeyOwned<u32>,
+111:         PBSOrder,
+112:     ) {
+113:         let Self {
+114:             bootstrapping_key,
+115:             key_switching_key,
+116:             pbs_order,
+117:         } = self;
+118: 
+119:         (bootstrapping_key, key_switching_key, pbs_order)
+120:     }
+121: 
+122:     /// Construct a [`ServerKey`] from its constituents.
+123:     ///
+124:     /// # Panics
+125:     ///
+126:     /// Panics if the constituents are not compatible with each others.
+127:     pub fn from_raw_parts(
+128:         bootstrapping_key: FourierLweBootstrapKeyOwned,
+129:         key_switching_key: LweKeyswitchKeyOwned<u32>,
+130:         pbs_order: PBSOrder,
+131:     ) -> Self {
+132:         assert_eq!(
+133:             key_switching_key.input_key_lwe_dimension(),
+134:             bootstrapping_key.output_lwe_dimension(),
+135:             "Mismatch between the input LweKeyswitchKey LweDimension ({:?}) \
+136:             and the FourierLweBootstrapKey output LweDimension ({:?})",
+137:             key_switching_key.input_key_lwe_dimension(),
+138:             bootstrapping_key.output_lwe_dimension()
+139:         );
+140: 
+141:         assert_eq!(
+142:             key_switching_key.output_key_lwe_dimension(),
+143:             bootstrapping_key.input_lwe_dimension(),
+144:             "Mismatch between the output LweKeyswitchKey LweDimension ({:?}) \
+145:             and the FourierLweBootstrapKey input LweDimension ({:?})",
+146:             key_switching_key.output_key_lwe_dimension(),
+147:             bootstrapping_key.input_lwe_dimension()
+148:         );
+149: 
+150:         assert!(
+151:             key_switching_key.ciphertext_modulus().is_native_modulus(),
+152:             "Expected native CiphertextModulus for LweKeyswitchKey got {:?}",
+153:             key_switching_key.ciphertext_modulus()
+154:         );
+155: 
+156:         Self {
+157:             bootstrapping_key,
+158:             key_switching_key,
+159:             pbs_order,
+160:         }
+161:     }
+162: 
+163:     pub fn bootstrapping_key_size_elements(&self) -> usize {
+191: #[versionize(CompressedServerKeyVersions)]
+192: pub struct CompressedServerKey {
+193:     pub(crate) bootstrapping_key: SeededLweBootstrapKeyOwned<u32>,
+194:     pub(crate) key_switching_key: SeededLweKeyswitchKeyOwned<u32>,
+195:     pub(crate) pbs_order: PBSOrder,
+196: }
+197: 
+198: impl CompressedServerKey {
+199:     /// Decompress a [`CompressedServerKey`] into a [`ServerKey`].
+200:     pub fn decompress(&self) -> ServerKey {
+224:                 let mut decompressed_bootstrapping_key = LweBootstrapKey::new(
+225:                     0,
+226:                     compressed_bootstrapping_key.glwe_size(),
+227:                     compressed_bootstrapping_key.polynomial_size(),
+228:                     compressed_bootstrapping_key.decomposition_base_log(),
+229:                     compressed_bootstrapping_key.decomposition_level_count(),
+230:                     compressed_bootstrapping_key.input_lwe_dimension(),
+231:                     compressed_bootstrapping_key.ciphertext_modulus(),
+232:                 );
+233:                 par_decompress_seeded_lwe_bootstrap_key::<_, _, _, DefaultRandomGenerator>(
+234:                     &mut decompressed_bootstrapping_key,
+235:                     compressed_bootstrapping_key,
+236:                 );
+237: 
+238:                 let mut bootstrapping_key = FourierLweBootstrapKeyOwned::new(
+239:                     decompressed_bootstrapping_key.input_lwe_dimension(),
+240:                     decompressed_bootstrapping_key.glwe_size(),
+241:                     decompressed_bootstrapping_key.polynomial_size(),
+242:                     decompressed_bootstrapping_key.decomposition_base_log(),
+243:                     decompressed_bootstrapping_key.decomposition_level_count(),
+244:                 );
+245:                 par_convert_standard_lwe_bootstrap_key_to_fourier(
+246:                     &decompressed_bootstrapping_key,
+247:                     &mut bootstrapping_key,
+248:                 );
+249:                 bootstrapping_key
+250:             },
+251:         );
+252: 
+253:         ServerKey {
+254:             bootstrapping_key,
+255:             key_switching_key,
+256:             pbs_order: *pbs_order,
+257:         }
+258:     }
+259: 
+260:     /// Deconstruct a [`CompressedServerKey`] into its constituents.
+261:     pub fn into_raw_parts(
+262:         self,
+263:     ) -> (
+264:         SeededLweBootstrapKeyOwned<u32>,
+265:         SeededLweKeyswitchKeyOwned<u32>,
+266:         PBSOrder,
+267:     ) {
+268:         let Self {
+269:             bootstrapping_key,
+270:             key_switching_key,
+271:             pbs_order,
+272:         } = self;
+273: 
+274:         (bootstrapping_key, key_switching_key, pbs_order)
+275:     }
+349:     pub(crate) fn new_server_key(&mut self, cks: &ClientKey) -> ServerKey {
+350:         let standard_bootstrapping_key: LweBootstrapKeyOwned<u32> =
+351:             par_allocate_and_generate_new_lwe_bootstrap_key(
+352:                 &cks.lwe_secret_key,
+353:                 &cks.glwe_secret_key,
+354:                 cks.parameters.pbs_base_log,
+355:                 cks.parameters.pbs_level,
+356:                 cks.parameters.glwe_noise_distribution,
+357:                 CiphertextModulus::new_native(),
+358:                 &mut self.encryption_generator,
+359:             );
+360: 
+361:         // creation of the bootstrapping key in the Fourier domain
+362:         let mut fourier_bsk = FourierLweBootstrapKey::new(
+363:             standard_bootstrapping_key.input_lwe_dimension(),
+364:             standard_bootstrapping_key.glwe_size(),
+365:             standard_bootstrapping_key.polynomial_size(),
+366:             standard_bootstrapping_key.decomposition_base_log(),
+367:             standard_bootstrapping_key.decomposition_level_count(),
+368:         );
+369: 
+370:         let fft = Fft::new(standard_bootstrapping_key.polynomial_size());
+371:         let fft = fft.as_view();
+372:         self.computation_buffers.resize(
+373:             convert_standard_lwe_bootstrap_key_to_fourier_mem_optimized_requirement(fft)
+374:                 .unaligned_bytes_required(),
+375:         );
+376: 
+377:         // Conversion to fourier domain
+378:         par_convert_standard_lwe_bootstrap_key_to_fourier(
+379:             &standard_bootstrapping_key,
+380:             &mut fourier_bsk,
+381:         );
+382: 
+383:         // Convert the GLWE secret key into an LWE secret key:
+384:         let big_lwe_secret_key = cks.glwe_secret_key.clone().into_lwe_secret_key();
+385: 
+386:         // creation of the key switching key
+387:         let ksk = allocate_and_generate_new_lwe_keyswitch_key(
+388:             &big_lwe_secret_key,
+389:             &cks.lwe_secret_key,
+390:             cks.parameters.ks_base_log,
+391:             cks.parameters.ks_level,
+392:             cks.parameters.lwe_noise_distribution,
+393:             CiphertextModulus::new_native(),
+394:             &mut self.encryption_generator,
+395:         );
+396: 
+397:         ServerKey {
+398:             bootstrapping_key: fourier_bsk,
+399:             key_switching_key: ksk,
+400:             pbs_order: cks.parameters.encryption_key_choice.into(),
+401:         }
+449:         input: &LweCiphertextOwned<u32>,
+450:         server_key: &ServerKey,
+451:     ) -> LweCiphertextOwned<u32> {
+452:         let BuffersRef {
+453:             lookup_table: accumulator,
+454:             mut buffer_lwe_after_pbs,
+455:             ..
+456:         } = self.memory.as_buffers(server_key);
+457: 
+458:         let fourier_bsk = &server_key.bootstrapping_key;
+459: 
+460:         let fft = Fft::new(fourier_bsk.polynomial_size());
+461:         let fft = fft.as_view();
+462: 
+463:         self.computation_buffers.resize(
+464:             programmable_bootstrap_lwe_ciphertext_mem_optimized_requirement::<u64>(
+465:                 fourier_bsk.glwe_size(),
+466:                 fourier_bsk.polynomial_size(),
+467:                 fft,
+468:             )
+469:             .unaligned_bytes_required(),
+470:         );
+471:         let stack = self.computation_buffers.stack();
+472: 
+473:         programmable_bootstrap_lwe_ciphertext_mem_optimized(
+474:             input,
+475:             &mut buffer_lwe_after_pbs,
+476:             &accumulator,
+477:             fourier_bsk,
+478:             fft,
+479:             stack,
+480:         );
+481: 
+482:         LweCiphertext::from_container(
+483:             buffer_lwe_after_pbs.as_ref().to_owned(),
+484:             input.ciphertext_modulus(),
+485:         )
+486:     }
+488:     pub(crate) fn bootstrap_keyswitch(
+489:         &mut self,
+490:         mut ciphertext: LweCiphertextOwned<u32>,
+491:         server_key: &ServerKey,
+492:     ) -> Ciphertext {
+493:         let BuffersRef {
+494:             lookup_table,
+495:             mut buffer_lwe_after_pbs,
+496:             ..
+497:         } = self.memory.as_buffers(server_key);
+498: 
+499:         let fourier_bsk = &server_key.bootstrapping_key;
+500: 
+501:         let fft = Fft::new(fourier_bsk.polynomial_size());
+502:         let fft = fft.as_view();
+503: 
+504:         self.computation_buffers.resize(
+505:             programmable_bootstrap_lwe_ciphertext_mem_optimized_requirement::<u64>(
+506:                 fourier_bsk.glwe_size(),
+507:                 fourier_bsk.polynomial_size(),
+508:                 fft,
+509:             )
+510:             .unaligned_bytes_required(),
+511:         );
+512:         let stack = self.computation_buffers.stack();
+513: 
+514:         // Compute a bootstrap
+515:         programmable_bootstrap_lwe_ciphertext_mem_optimized(
+516:             &ciphertext,
+517:             &mut buffer_lwe_after_pbs,
+518:             &lookup_table,
+519:             fourier_bsk,
+520:             fft,
+521:             stack,
+522:         );
+523: 
+524:         // Compute a key switch to get back to input key
+525:         keyswitch_lwe_ciphertext(
+526:             &server_key.key_switching_key,
+527:             &buffer_lwe_after_pbs,
+528:             &mut ciphertext,
+529:         );
+530: 
+531:         Ciphertext::Encrypted(ciphertext)
+532:     }
+533: 
+534:     pub(crate) fn keyswitch_bootstrap(
+535:         &mut self,
+578:     }
+579:     pub(crate) fn apply_bootstrapping_pattern(
+580:         &mut self,
+581:         ct: LweCiphertextOwned<u32>,
+582:         server_key: &ServerKey,
+583:     ) -> Ciphertext {
+584:         match server_key.pbs_order {
+585:             PBSOrder::KeyswitchBootstrap => self.keyswitch_bootstrap(ct, server_key),
+586:             PBSOrder::BootstrapKeyswitch => self.bootstrap_keyswitch(ct, server_key),
+587:         }
+588:     }
+589: }
+590: 
+591: impl ServerKey {
+592:     pub(crate) fn keyswitch(&self, input: &LweCiphertextOwned<u32>) -> LweCiphertextOwned<u32> {
+593:         // Allocate the output of the KS
+594:         let mut output = LweCiphertext::new(
+595:             0u32,
+596:             self.bootstrapping_key.input_lwe_dimension().to_lwe_size(),
+597:             input.ciphertext_modulus(),
+598:         );
+599: 
+600:         keyswitch_lwe_ciphertext(&self.key_switching_key, input, &mut output);
+601: 
+602:         output
+603:     }
+604: }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/mod.rs
+SHA256 3d29abdf88906f3a43d9487fb1557ffee4b12bfbc9ecf62213b39595ea73ce18
+1: pub mod fft128_pbs;
+2: pub mod fft64_pbs;
+3: pub mod karatsuba_pbs;
+4: pub mod ntt64_bnf_pbs;
+5: pub mod ntt64_pbs;
+6: 
+7: pub use fft128_pbs::*;
+8: pub use fft64_pbs::*;
+9: pub use karatsuba_pbs::*;
+10: pub use ntt64_bnf_pbs::*;
+11: pub use ntt64_pbs::*;
+12: 
+13: use crate::core_crypto::algorithms::glwe_encryption::allocate_and_trivially_encrypt_new_glwe_ciphertext;
+14: use crate::core_crypto::commons::parameters::*;
+15: use crate::core_crypto::commons::traits::*;
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/karatsuba_pbs.rs
+SHA256 5fb8f380794e55be9ef3c9fdaeffb039d22eca5b61b789cbbc4b83d2fa3ead76
+16: pub fn programmable_bootstrap_karatsuba_lwe_ciphertext_mem_optimized_requirement<Scalar>(
+17:     glwe_size: GlweSize,
+18:     polynomial_size: PolynomialSize,
+19: ) -> StackReq {
+20:     StackReq::all_of(&[
+21:         // local accumulator
+22:         StackReq::new_aligned::<Scalar>(glwe_size.0 * polynomial_size.0, CACHELINE_ALIGN),
+23:         // blind rotation
+24:         blind_rotate_karatsuba_assign_scratch::<Scalar>(glwe_size, polynomial_size),
+25:     ])
+26: }
+27: 
+28: /// Return the required memory for [`blind_rotate_karatsuba_assign`].
+29: pub fn blind_rotate_karatsuba_assign_scratch<Scalar>(
+30:     glwe_size: GlweSize,
+31:     polynomial_size: PolynomialSize,
+32: ) -> StackReq {
+33:     StackReq::any_of(&[
+34:         // tmp_poly allocation
+35:         StackReq::new_aligned::<Scalar>(polynomial_size.0, CACHELINE_ALIGN),
+36:         StackReq::all_of(&[
+37:             // ct1 allocation
+38:             StackReq::new_aligned::<Scalar>(glwe_size.0 * polynomial_size.0, CACHELINE_ALIGN),
+39:             // external product
+40:             karatsuba_add_external_product_assign_scratch::<Scalar>(glwe_size, polynomial_size),
+41:         ]),
+42:     ])
+43: }
+44: 
+45: /// Return the required memory for [`karatsuba_add_external_product_assign`].
+46: pub fn karatsuba_add_external_product_assign_scratch<Scalar>(
+47:     glwe_size: GlweSize,
+48:     polynomial_size: PolynomialSize,
+49: ) -> StackReq {
+50:     StackReq::all_of(&[
+51:         // Output buffer
+52:         StackReq::new_aligned::<Scalar>(glwe_size.0 * polynomial_size.0, CACHELINE_ALIGN),
+53:         // decomposition
+54:         StackReq::new_aligned::<Scalar>(glwe_size.0 * polynomial_size.0, CACHELINE_ALIGN),
+55:         // decomposition term
+56:         StackReq::new_aligned::<Scalar>(glwe_size.0 * polynomial_size.0, CACHELINE_ALIGN),
+57:     ])
+58: }
+59: 
+60: /// Perform a programmable bootstrap given an input [`LWE ciphertext`](`LweCiphertext`), a
+61: /// look-up table passed as a [`GLWE ciphertext`](`GlweCiphertext`) and an [`LWE bootstrap
+62: /// key`](`LweBootstrapKey`) using the karatsuba polynomial multiplication. The result is written in
+63: /// the provided output [`LWE ciphertext`](`LweCiphertext`).
+64: ///
+65: /// If you want to manage the computation memory manually you can use
+66: /// [`programmable_bootstrap_karatsuba_lwe_ciphertext_mem_optimized`].
+67: ///
+68: /// # Warning
+69: /// For a more efficient implementation of the programmable bootstrap, see
+70: /// [`programmable_bootstrap_lwe_ciphertext`](super::programmable_bootstrap_lwe_ciphertext)
+71: pub fn programmable_bootstrap_karatsuba_lwe_ciphertext<InputCont, OutputCont, AccCont, KeyCont>(
+72:     input: &LweCiphertext<InputCont>,
+73:     output: &mut LweCiphertext<OutputCont>,
+74:     accumulator: &GlweCiphertext<AccCont>,
+75:     bsk: &LweBootstrapKey<KeyCont>,
+76: ) where
+77:     InputCont: Container<Element = u64>,
+78:     OutputCont: ContainerMut<Element = u64>,
+79:     AccCont: Container<Element = u64>,
+80:     KeyCont: Container<Element = u64>,
+81: {
+82:     assert!(
+83:         input.ciphertext_modulus().is_power_of_two(),
+84:         "This operation requires the input to have a power of two modulus."
+85:     );
+86:     assert_eq!(
+87:         output.ciphertext_modulus(),
+88:         accumulator.ciphertext_modulus()
+89:     );
+90: 
+91:     let mut buffers = ComputationBuffers::new();
+92: 
+93:     buffers.resize(
+94:         programmable_bootstrap_karatsuba_lwe_ciphertext_mem_optimized_requirement::<u64>(
+95:             bsk.glwe_size(),
+96:             bsk.polynomial_size(),
+97:         )
+98:         .unaligned_bytes_required(),
+99:     );
+100: 
+101:     programmable_bootstrap_karatsuba_lwe_ciphertext_mem_optimized(
+102:         input,
+103:         output,
+104:         accumulator,
+105:         bsk,
+106:         buffers.stack(),
+107:     );
+108: }
+109: 
+110: /// Perform a programmable bootstrap given an input [`LWE ciphertext`](`LweCiphertext`), a
+111: /// look-up table passed as a [`GLWE ciphertext`](`GlweCiphertext`) and an [`LWE bootstrap
+112: /// key`](`LweBootstrapKey`) using the karatsuba polynomial multiplication. The result is written in
+113: /// the provided output [`LWE ciphertext`](`LweCiphertext`).
+114: ///
+115: /// # Warning
+116: /// For a more efficient implementation of the programmable bootstrap, see
+117: /// [`programmable_bootstrap_lwe_ciphertext_mem_optimized`](super::programmable_bootstrap_lwe_ciphertext_mem_optimized)
+118: pub fn programmable_bootstrap_karatsuba_lwe_ciphertext_mem_optimized<
+119:     InputCont,
+120:     OutputCont,
+121:     AccCont,
+122:     KeyCont,
+123: >(
+124:     input: &LweCiphertext<InputCont>,
+125:     output: &mut LweCiphertext<OutputCont>,
+126:     accumulator: &GlweCiphertext<AccCont>,
+127:     bsk: &LweBootstrapKey<KeyCont>,
+128:     stack: &mut PodStack,
+129: ) where
+130:     InputCont: Container<Element = u64>,
+131:     OutputCont: ContainerMut<Element = u64>,
+132:     AccCont: Container<Element = u64>,
+133:     KeyCont: Container<Element = u64>,
+134: {
+135:     assert_eq!(
+136:         output.ciphertext_modulus(),
+137:         accumulator.ciphertext_modulus()
+138:     );
+139:     assert_eq!(accumulator.ciphertext_modulus(), bsk.ciphertext_modulus());
+140: 
+141:     let (local_accumulator_data, stack) =
+142:         stack.collect_aligned(CACHELINE_ALIGN, accumulator.as_ref().iter().copied());
+143:     let mut local_accumulator = GlweCiphertextMutView::from_container(
+144:         &mut *local_accumulator_data,
+145:         accumulator.polynomial_size(),
+146:         accumulator.ciphertext_modulus(),
+147:     );
+148: 
+149:     let log_modulus = accumulator
+150:         .polynomial_size()
+151:         .to_blind_rotation_input_modulus_log();
+152: 
+153:     let msed = lwe_ciphertext_modulus_switch(input.as_view(), log_modulus);
+154: 
+155:     blind_rotate_karatsuba_assign_mem_optimized(&msed, &mut local_accumulator, bsk, stack);
+156: 
+157:     extract_lwe_sample_from_glwe_ciphertext(&local_accumulator, output, MonomialDegree(0));
+158: }
+159: 
+160: /// Perform a blind rotation given an input [`modulus switched LWE
+161: /// ciphertext`](`ModulusSwitchedLweCiphertext`), modifying a look-up table passed as a [`GLWE
+162: /// ciphertext`](`GlweCiphertext`) and an [`LWE bootstrap key`](`LweBootstrapKey`) using the
+163: /// karatsuba polynomial multiplication.
+164: ///
+165: /// If you want to manage the computation memory manually you can use
+166: /// [`blind_rotate_karatsuba_assign_mem_optimized`].
+167: ///
+168: /// # Warning
+169: /// For a more efficient implementation of the blind rotation, see
+170: /// [`blind_rotate_assign`](super::blind_rotate_assign)
+171: pub fn blind_rotate_karatsuba_assign<OutputScalar, OutputCont, KeyCont>(
+172:     msed_input: &impl ModulusSwitchedLweCiphertext<usize>,
+173:     lut: &mut GlweCiphertext<OutputCont>,
+174:     bsk: &LweBootstrapKey<KeyCont>,
+175: ) where
+176:     OutputScalar: UnsignedTorus + CastInto<usize>,
+177:     OutputCont: ContainerMut<Element = OutputScalar>,
+178:     KeyCont: Container<Element = OutputScalar>,
+179:     GlweCiphertext<OutputCont>: PartialEq<GlweCiphertext<OutputCont>>,
+180: {
+181:     let mut buffers = ComputationBuffers::new();
+182: 
+183:     buffers.resize(
+184:         blind_rotate_karatsuba_assign_scratch::<u64>(bsk.glwe_size(), bsk.polynomial_size())
+185:             .unaligned_bytes_required(),
+186:     );
+187: 
+188:     blind_rotate_karatsuba_assign_mem_optimized(msed_input, lut, bsk, buffers.stack())
+189: }
+190: 
+191: /// Perform a blind rotation given an input [`modulus switched LWE
+192: /// ciphertext`](`ModulusSwitchedLweCiphertext`), modifying a look-up table passed as a [`GLWE
+193: /// ciphertext`](`GlweCiphertext`) and an [`LWE bootstrap key`](`LweBootstrapKey`) using the
+194: /// karatsuba polynomial multiplication.
+195: ///
+196: /// # Warning
+197: /// For a more efficient implementation of the blind rotation, see
+198: /// [`blind_rotate_assign`](super::blind_rotate_assign)
+199: pub fn blind_rotate_karatsuba_assign_mem_optimized<OutputScalar, OutputCont, KeyCont>(
+200:     msed_input: &impl ModulusSwitchedLweCiphertext<usize>,
+201:     lut: &mut GlweCiphertext<OutputCont>,
+202:     bsk: &LweBootstrapKey<KeyCont>,
+203:     stack: &mut PodStack,
+204: ) where
+205:     OutputScalar: UnsignedTorus + CastInto<usize>,
+206:     OutputCont: ContainerMut<Element = OutputScalar>,
+207:     KeyCont: Container<Element = OutputScalar>,
+208:     GlweCiphertext<OutputCont>: PartialEq<GlweCiphertext<OutputCont>>,
+209: {
+210:     assert!(lut.ciphertext_modulus().is_power_of_two());
+237:     let msed_lwe_mask = msed_input.mask();
+238: 
+239:     let msed_lwe_body = msed_input.body();
+240: 
+241:     let monomial_degree = MonomialDegree(msed_lwe_body.cast_into());
+242: 
+243:     let lut_poly_size = lut.polynomial_size();
+244:     let ciphertext_modulus = lut.ciphertext_modulus();
+245:     assert!(ciphertext_modulus.is_compatible_with_native_modulus());
+246: 
+247:     lut.as_mut_polynomial_list()
+248:         .iter_mut()
+249:         .for_each(|mut poly| {
+250:             let (tmp_poly, _) = stack.make_aligned_raw(poly.as_ref().len(), CACHELINE_ALIGN);
+251: 
+252:             let mut tmp_poly = Polynomial::from_container(&mut *tmp_poly);
+253:             tmp_poly.as_mut().copy_from_slice(poly.as_ref());
+254:             polynomial_wrapping_monic_monomial_div(&mut poly, &tmp_poly, monomial_degree);
+255:         });
+256: 
+257:     // We initialize the ct_0 used for the successive cmuxes
+258:     let ct0 = lut;
+259:     let (ct1, stack) = stack.make_aligned_raw(ct0.as_ref().len(), CACHELINE_ALIGN);
+260:     let mut ct1 =
+261:         GlweCiphertextMutView::from_container(&mut *ct1, lut_poly_size, ciphertext_modulus);
+262: 
+263:     for (lwe_mask_element, bootstrap_key_ggsw) in izip_eq!(msed_lwe_mask, bsk.iter()) {
+264:         if lwe_mask_element != 0 {
+265:             let monomial_degree = MonomialDegree(lwe_mask_element);
+266: 
+267:             // we effectively inline the body of cmux here, merging the initial subtraction
+268:             // operation with the monic polynomial multiplication, then performing the
+269:             // external product manually
+270: 
+271:             // We rotate ct_1 and subtract ct_0 (first step of cmux) by performing
+272:             // ct_1 <- (ct_0 * X^a_i) - ct_0
+273:             for (mut ct1_poly, ct0_poly) in izip_eq!(
+274:                 ct1.as_mut_polynomial_list().iter_mut(),
+275:                 ct0.as_polynomial_list().iter(),
+276:             ) {
+277:                 polynomial_wrapping_monic_monomial_mul_and_subtract(
+278:                     &mut ct1_poly,
+279:                     &ct0_poly,
+280:                     monomial_degree,
+281:                 );
+282:             }
+283: 
+284:             // second step of cmux:
+285:             // ct_0 <- ct_0 + ct1 * s_i
+286:             // with ct_0 + ct1s_i = ct_0 + ((ct_0 * X^a_i) - ct_0)s_i
+287:             //                    = ct_0          if s_i= 0
+288:             //                      ct_0 * X^a_i  otherwise
+289:             //                    = ct_0 * X^(a_i * s_i)
+290:             //
+291:             // as_mut_view is required to keep borrow rules consistent
+292:             karatsuba_add_external_product_assign(
+293:                 ct0.as_mut_view(),
+294:                 bootstrap_key_ggsw,
+295:                 ct1.as_view(),
+296:                 stack,
+297:             );
+298:         }
+299:     }
+300: 
+301:     if !ciphertext_modulus.is_native_modulus() {
+302:         let signed_decomposer = SignedDecomposer::new(
+303:             DecompositionBaseLog(ciphertext_modulus.get_custom_modulus().ilog2() as usize),
+304:             DecompositionLevelCount(1),
+305:         );
+306:         ct0.as_mut()
+307:             .iter_mut()
+308:             .for_each(|x| *x = signed_decomposer.closest_representable(*x));
+309:     }
+310: }
+314: pub fn karatsuba_add_external_product_assign<Scalar>(
+315:     mut out: GlweCiphertextMutView<'_, Scalar>,
+316:     ggsw: GgswCiphertextView<Scalar>,
+317:     glwe: GlweCiphertextView<Scalar>,
+318:     stack: &mut PodStack,
+319: ) where
+320:     Scalar: UnsignedTorus,
+321: {
+322:     // we check that the polynomial sizes match
+323:     debug_assert_eq!(ggsw.polynomial_size(), glwe.polynomial_size());
+324:     debug_assert_eq!(ggsw.polynomial_size(), out.polynomial_size());
+325:     // we check that the glwe sizes match
+326:     debug_assert_eq!(ggsw.glwe_size(), glwe.glwe_size());
+327:     debug_assert_eq!(ggsw.glwe_size(), out.glwe_size());
+328: 
+329:     let align = CACHELINE_ALIGN;
+330:     let poly_size = ggsw.polynomial_size().0;
+331: 
+332:     // we round the input mask and body
+333:     let decomposer = SignedDecomposer::<Scalar>::new(
+334:         ggsw.decomposition_base_log(),
+335:         ggsw.decomposition_level_count(),
+336:     );
+337: 
+338:     let (output_buffer, substack0) =
+339:         stack.make_aligned_raw::<Scalar>(poly_size * ggsw.glwe_size().0, align);
+340:     // output_fft_buffer is initially uninitialized, considered to be implicitly zero, to avoid
+341:     // the cost of filling it up with zeros. `is_output_uninit` is set to `false` once
+342:     // it has been fully initialized for the first time.
+343:     let output_buffer = &mut *output_buffer;
+344:     let mut is_output_uninit = true;
+345: 
+346:     let (mut decomposition, substack1) = TensorSignedDecompositionLendingIter::new(
+347:         glwe.as_ref()
+348:             .iter()
+349:             .map(|s| decomposer.init_decomposer_state(*s)),
+350:         DecompositionBaseLog(decomposer.base_log),
+351:         DecompositionLevelCount(decomposer.level_count),
+352:         substack0,
+353:     );
+354: 
+355:     // We loop through the levels
+356:     for ggsw_decomp_matrix in ggsw.iter() {
+357:         // We retrieve the decomposition of this level.
+358:         let (_glwe_level, glwe_decomp_term, _substack2) =
+359:             collect_next_term(&mut decomposition, substack1, align);
+360:         let glwe_decomp_term = GlweCiphertextView::from_container(
+361:             &*glwe_decomp_term,
+362:             ggsw.polynomial_size(),
+363:             out.ciphertext_modulus(),
+364:         );
+365: 
+366:         // For each level we have to add the result of the vector-matrix product between the
+367:         // decomposition of the glwe, and the ggsw level matrix to the output. To do so, we
+368:         // iteratively add to the output, the product between every line of the matrix, and
+369:         // the corresponding (scalar) polynomial in the glwe decomposition:
+370:         //
+371:         //                ggsw_mat                        ggsw_mat
+372:         //   glwe_dec   | - - - - | <        glwe_dec   | - - - - |
+373:         //  | - - - | x | - - - - |         | - - - | x | - - - - | <
+374:         //    ^         | - - - - |             ^       | - - - - |
+375:         //
+376:         //        t = 1                           t = 2                     ...
+377: 
+378:         for (ggsw_row, glwe_poly) in izip_eq!(
+379:             ggsw_decomp_matrix.as_glwe_list().iter(),
+380:             glwe_decomp_term.as_polynomial_list().iter()
+381:         ) {
+382:             let row_as_poly_list = ggsw_row.as_polynomial_list();
+383:             if is_output_uninit {
+384:                 for (mut output_poly, row_poly) in output_buffer
+385:                     .chunks_exact_mut(poly_size)
+386:                     .map(Polynomial::from_container)
+387:                     .zip(row_as_poly_list.iter())
+388:                 {
+389:                     polynomial_wrapping_mul(&mut output_poly, &row_poly, &glwe_poly);
+390:                 }
+391:             } else {
+392:                 for (mut output_poly, row_poly) in output_buffer
+393:                     .chunks_exact_mut(poly_size)
+394:                     .map(Polynomial::from_container)
+395:                     .zip(row_as_poly_list.iter())
+396:                 {
+397:                     polynomial_wrapping_add_mul_assign(&mut output_poly, &row_poly, &glwe_poly);
+398:                 }
+399:             }
+400: 
+401:             is_output_uninit = false;
+402:         }
+403:     }
+404: 
+405:     // We iterate over the polynomials in the output.
+406:     if !is_output_uninit {
+407:         izip_eq!(
+408:             out.as_mut_polynomial_list().iter_mut(),
+409:             output_buffer
+410:                 .into_chunks(poly_size)
+411:                 .map(Polynomial::from_container),
+412:         )
+413:         .for_each(|(mut out, res)| polynomial_wrapping_add_assign(&mut out, &res));
+414:     }
+415: }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/polynomial_algorithms.rs
+SHA256 0ac0f9577bd508ea63cbf57f65d7b97b1ae1b1cc0089082b57b0ede5c3d7a08b
+306: pub fn polynomial_wrapping_add_mul_assign<Scalar, OutputCont, InputCont1, InputCont2>(
+307:     output: &mut Polynomial<OutputCont>,
+308:     lhs: &Polynomial<InputCont1>,
+309:     rhs: &Polynomial<InputCont2>,
+310: ) where
+311:     Scalar: UnsignedInteger,
+312:     OutputCont: ContainerMut<Element = Scalar>,
+313:     InputCont1: Container<Element = Scalar>,
+314:     InputCont2: Container<Element = Scalar>,
+315: {
+316:     assert!(
+317:         output.polynomial_size() == lhs.polynomial_size(),
+318:         "Output polynomial size {:?} is not the same as input lhs polynomial {:?}.",
+319:         output.polynomial_size(),
+320:         lhs.polynomial_size(),
+321:     );
+322:     assert!(
+323:         output.polynomial_size() == rhs.polynomial_size(),
+324:         "Output polynomial size {:?} is not the same as input rhs polynomial {:?}.",
+325:         output.polynomial_size(),
+326:         rhs.polynomial_size(),
+327:     );
+328: 
+329:     let polynomial_size = output.polynomial_size();
+330: 
+331:     if polynomial_size.0.is_power_of_two() && polynomial_size.0 > KARATUSBA_STOP {
+332:         let mut tmp = Polynomial::new(Scalar::ZERO, polynomial_size);
+333: 
+334:         polynomial_karatsuba_wrapping_mul(&mut tmp, lhs, rhs);
+335:         polynomial_wrapping_add_assign(output, &tmp);
+336:     } else {
+337:         polynomial_wrapping_add_mul_schoolbook_assign(output, lhs, rhs);
+338:     }
+339: }
+1066: pub fn polynomial_wrapping_mul<Scalar, OutputCont, LhsCont, RhsCont>(
+1067:     output: &mut Polynomial<OutputCont>,
+1068:     lhs: &Polynomial<LhsCont>,
+1069:     rhs: &Polynomial<RhsCont>,
+1070: ) where
+1071:     Scalar: UnsignedInteger,
+1072:     OutputCont: ContainerMut<Element = Scalar>,
+1073:     LhsCont: Container<Element = Scalar>,
+1074:     RhsCont: Container<Element = Scalar>,
+1075: {
+1076:     output.as_mut().fill(Scalar::ZERO);
+1077:     polynomial_wrapping_add_mul_assign(output, lhs, rhs);
+1078: }
+1079: 
+1080: /// Fill the output polynomial, with the result of the product of two polynomials, reduced modulo
+1081: /// $(X^{N} + 1)$ with the Karatsuba algorithm Complexity: $O(N^{1.58})$
+1082: ///
+1083: /// # Note
+1084: ///
+1085: /// Computations wrap around (similar to computing modulo $2^{n\_{bits}}$) when exceeding the
+1086: /// unsigned integer capacity.
+1087: ///
+1088: /// # Panics
+1106: pub fn polynomial_karatsuba_wrapping_mul<Scalar, OutputCont, LhsCont, RhsCont>(
+1107:     output: &mut Polynomial<OutputCont>,
+1108:     p: &Polynomial<LhsCont>,
+1109:     q: &Polynomial<RhsCont>,
+1110: ) where
+1111:     Scalar: UnsignedInteger,
+1112:     OutputCont: ContainerMut<Element = Scalar>,
+1113:     LhsCont: Container<Element = Scalar>,
+1114:     RhsCont: Container<Element = Scalar>,
+1115: {
+1116:     // check same dimensions
+1117:     assert!(
+1118:         output.polynomial_size() == p.polynomial_size(),
+1119:         "Output polynomial size {:?} is not the same as input lhs polynomial {:?}.",
+1120:         output.polynomial_size(),
+1121:         p.polynomial_size(),
+1122:     );
+1123:     assert!(
+1124:         output.polynomial_size() == q.polynomial_size(),
+1125:         "Output polynomial size {:?} is not the same as input rhs polynomial {:?}.",
+1126:         output.polynomial_size(),
+1127:         q.polynomial_size(),
+1128:     );
+1129: 
+1130:     let poly_size = output.polynomial_size().0;
+1131: 
+1132:     // check dimensions are a power of 2
+1133:     assert!(poly_size.is_power_of_two());
+1134: 
+1135:     // allocate slices for the rec
+1136:     let mut a0 = vec![Scalar::ZERO; poly_size];
+1137:     let mut a1 = vec![Scalar::ZERO; poly_size];
+1138:     let mut a2 = vec![Scalar::ZERO; poly_size];
+1139:     let mut input_a2_p = vec![Scalar::ZERO; poly_size / 2];
+1140:     let mut input_a2_q = vec![Scalar::ZERO; poly_size / 2];
+1141: 
+1142:     // prepare for splitting
+1143:     let bottom = 0..(poly_size / 2);
+1144:     let top = (poly_size / 2)..poly_size;
+1145: 
+1146:     // induction
+1147:     induction_karatsuba(&mut a0, &p[bottom.clone()], &q[bottom.clone()]);
+1148:     induction_karatsuba(&mut a1, &p[top.clone()], &q[top.clone()]);
+1149:     slice_wrapping_add(&mut input_a2_p, &p[bottom.clone()], &p[top.clone()]);
+1150:     slice_wrapping_add(&mut input_a2_q, &q[bottom.clone()], &q[top.clone()]);
+1151:     induction_karatsuba(&mut a2, &input_a2_p, &input_a2_q);
+1152: 
+1153:     // rebuild the result
+1154:     let output: &mut [Scalar] = output.as_mut();
+1155:     slice_wrapping_sub(output, &a0, &a1);
+1156:     slice_wrapping_sub_assign(&mut output[bottom.clone()], &a2[top.clone()]);
+1157:     slice_wrapping_add_assign(&mut output[bottom.clone()], &a0[top.clone()]);
+1158:     slice_wrapping_add_assign(&mut output[bottom.clone()], &a1[top.clone()]);
+1159:     slice_wrapping_add_assign(&mut output[top.clone()], &a2[bottom.clone()]);
+1160:     slice_wrapping_sub_assign(&mut output[top.clone()], &a0[bottom.clone()]);
+1161:     slice_wrapping_sub_assign(&mut output[top], &a1[bottom]);
+1162: }
+1163: 
+1164: const KARATUSBA_STOP: usize = 64;
+1165: /// Compute the induction for the karatsuba algorithm.
+1166: fn induction_karatsuba<Scalar>(res: &mut [Scalar], p: &[Scalar], q: &[Scalar])
+1167: where
+1168:     Scalar: UnsignedInteger,
+1169: {
+1170:     // stop the induction when polynomials have KARATUSBA_STOP elements
+1171:     if p.len() <= KARATUSBA_STOP {
+1172:         // schoolbook algorithm
+1173:         for (lhs_degree, &lhs_elt) in p.iter().enumerate() {
+1174:             let res = &mut res[lhs_degree..];
+1175:             for (&rhs_elt, res) in q.iter().zip(res) {
+1176:                 *res = (*res).wrapping_add(lhs_elt.wrapping_mul(rhs_elt));
+1177:             }
+1178:         }
+1179:     } else {
+1180:         let poly_size = res.len();
+1181: 
+1182:         // allocate slices for the rec
+1183:         let mut a0 = vec![Scalar::ZERO; poly_size / 2];
+1184:         let mut a1 = vec![Scalar::ZERO; poly_size / 2];
+1185:         let mut a2 = vec![Scalar::ZERO; poly_size / 2];
+1186:         let mut input_a2_p = vec![Scalar::ZERO; poly_size / 4];
+1187:         let mut input_a2_q = vec![Scalar::ZERO; poly_size / 4];
+1188: 
+1189:         // prepare for splitting
+1190:         let bottom = 0..(poly_size / 4);
+1191:         let top = (poly_size / 4)..(poly_size / 2);
+1192: 
+1193:         // rec
+1194:         induction_karatsuba(&mut a0, &p[bottom.clone()], &q[bottom.clone()]);
+1195:         induction_karatsuba(&mut a1, &p[top.clone()], &q[top.clone()]);
+1196:         slice_wrapping_add(&mut input_a2_p, &p[bottom.clone()], &p[top.clone()]);
+1197:         slice_wrapping_add(&mut input_a2_q, &q[bottom], &q[top]);
+1198:         induction_karatsuba(&mut a2, &input_a2_p, &input_a2_q);
+1199: 
+1200:         // rebuild the result
+1201:         slice_wrapping_sub(&mut res[(poly_size / 4)..(3 * poly_size / 4)], &a2, &a0);
+1202:         slice_wrapping_sub_assign(&mut res[(poly_size / 4)..(3 * poly_size / 4)], &a1);
+1203:         slice_wrapping_add_assign(&mut res[0..(poly_size / 2)], &a0);
+1204:         slice_wrapping_add_assign(&mut res[(poly_size / 2)..poly_size], &a1);
+1205:     }
+1206: }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/modulus_switch.rs
+SHA256 d82b6f2fbd49866762817304d80a97ee59cbdee1f77ff88607e1fa8dc7e0b12e
+1: use crate::core_crypto::fft_impl::common::modulus_switch;
+2: use crate::core_crypto::prelude::*;
+3: 
+4: /// Represent any kind of LWE ciphertext after a modulus switch operation.
+5: ///
+6: /// This may be used as an input to the blind rotatation.
+7: pub trait ModulusSwitchedLweCiphertext<Scalar> {
+8:     fn log_modulus(&self) -> CiphertextModulusLog;
+9:     fn lwe_dimension(&self) -> LweDimension;
+10:     fn body(&self) -> Scalar;
+11:     fn mask(&self) -> impl ExactSizeIterator<Item = Scalar> + '_;
+12: }
+13: 
+14: pub fn lwe_ciphertext_modulus_switch<Scalar, SwitchedScalar, Cont>(
+15:     lwe_in: LweCiphertext<Cont>,
+16:     log_modulus: CiphertextModulusLog,
+17: ) -> LazyStandardModulusSwitchedLweCiphertext<Scalar, SwitchedScalar, Cont>
+18: where
+19:     Scalar: UnsignedInteger + CastInto<SwitchedScalar>,
+20:     SwitchedScalar: UnsignedInteger,
+21:     Cont: Container<Element = Scalar>,
+22: {
+23:     LazyStandardModulusSwitchedLweCiphertext::from_raw_parts(lwe_in, Scalar::ZERO, log_modulus)
+24: }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/common.rs
+SHA256 85e2789e9e7bb931420dea5e951468b7db35ccfc9b9b28d0fe256fb1b362ab03
+10: pub fn modulus_switch<Scalar: UnsignedInteger>(
+11:     input: Scalar,
+12:     log_modulus: CiphertextModulusLog,
+13: ) -> Scalar {
+14:     assert!(log_modulus.0 <= Scalar::BITS);
+15:     if log_modulus.0 == Scalar::BITS {
+16:         return input;
+17:     }
+18: 
+19:     // Flooring output_to_floor is equivalent to rounding the input
+20:     let output_to_floor = input.wrapping_add(Scalar::ONE << (Scalar::BITS - log_modulus.0 - 1));
+21: 
+22:     output_to_floor >> (Scalar::BITS - log_modulus.0)
+23: }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/decomposition/decomposer.rs
+SHA256 5aea64df5e3bd75d01e3dcc3ca62bd734f4c0b376850a1123900ac5ca59de7f2
+86:     pub fn new(base_log: DecompositionBaseLog, level_count: DecompositionLevelCount) -> Self {
+87:         debug_assert!(
+88:             Scalar::BITS > base_log.0 * level_count.0,
+89:             "Decomposed bits exceeds the size of the integer to be decomposed"
+90:         );
+91:         Self {
+92:             base_log: base_log.0,
+93:             level_count: level_count.0,
+94:             integer_type: PhantomData,
+95:         }
+96:     }
+156:     pub fn init_decomposer_state(&self, input: Scalar) -> Scalar {
+157:         // The closest number representable by the decomposition can be computed by performing
+158:         // the rounding at the appropriate bit.
+159: 
+160:         // We compute the number of least significant bits which can not be represented by the
+161:         // decomposition
+162:         // Example with level_count = 3, base_log = 4 and BITS == 64 -> 52
+163:         let rep_bit_count = self.level_count * self.base_log;
+164:         let non_rep_bit_count: usize = Scalar::BITS - rep_bit_count;
+165:         // Move the representable bits + 1 to the LSB, with our example :
+166:         //       |-----| 64 - (64 - 12 - 1) == 13 bits
+167:         // 0....0XX...XX
+168:         let mut res = input >> (non_rep_bit_count - 1);
+169:         // Fetch the first bit value as we need it for a balanced rounding
+170:         let rounding_bit = res & Scalar::ONE;
+171:         // Add one to do the rounding by adding the half interval
+172:         res += Scalar::ONE;
+173:         // Discard the LSB which was the one deciding in which direction we round
+174:         res >>= 1;
+175:         // Keep the low base_log * level bits
+176:         let mod_mask = Scalar::MAX >> (Scalar::BITS - rep_bit_count);
+177:         res &= mod_mask;
+178:         // Control bit about whether we should balance the state
+179:         // This is equivalent to:
+180:         // res > B / 2 || (res == B / 2 && random == 1)
+181:         // with B = 2^(base_log * l)
+182:         let need_balance = balanced_rounding_condition_bit_trick(res, rep_bit_count, rounding_bit);
+183:         // Balance depending on the control bit
+184:         res.wrapping_sub(need_balance << rep_bit_count)
+185:     }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/decomposition.rs
+SHA256 cf36ac05506b5df91031d02f9653d09d60ab42c833951623d5350ea13866c97c
+1: use crate::core_crypto::commons::math::decomposition::decompose_one_level;
+2: pub use crate::core_crypto::commons::math::decomposition::DecompositionLevel;
+3: use crate::core_crypto::commons::numeric::UnsignedInteger;
+4: use crate::core_crypto::commons::parameters::{DecompositionBaseLog, DecompositionLevelCount};
+5: use dyn_stack::PodStack;
+6: use std::iter::Map;
+7: use std::slice::IterMut;
+8: 
+9: // copied from src/commons/math/decomposition/*.rs
+10: // in order to avoid allocations
+11: 
+12: pub struct TensorSignedDecompositionLendingIter<'buffers, Scalar: UnsignedInteger> {
+13:     // The base log of the decomposition
+14:     base_log: usize,
+15:     // The current level
+16:     current_level: usize,
+17:     // A mask which allows to compute the mod B of a value. For B=2^4, this guy is of the form:
+18:     // ...0001111
+19:     mod_b_mask: Scalar,
+20:     // The internal states of each decomposition
+21:     states: &'buffers mut [Scalar],
+22:     // A flag which stores whether the iterator is a fresh one (for the recompose method).
+23:     fresh: bool,
+24: }
+25: 
+26: impl<'buffers, Scalar: UnsignedInteger> TensorSignedDecompositionLendingIter<'buffers, Scalar> {
+27:     #[inline]
+28:     pub(crate) fn new(
+29:         input: impl Iterator<Item = Scalar>,
+30:         base_log: DecompositionBaseLog,
+31:         level: DecompositionLevelCount,
+32:         stack: &'buffers mut PodStack,
+33:     ) -> (Self, &'buffers mut PodStack) {
+34:         let (states, stack) = stack.collect_aligned(aligned_vec::CACHELINE_ALIGN, input);
+35:         (
+36:             TensorSignedDecompositionLendingIter {
+37:                 base_log: base_log.0,
+38:                 current_level: level.0,
+39:                 mod_b_mask: (Scalar::ONE << base_log.0) - Scalar::ONE,
+40:                 states,
+41:                 fresh: true,
+42:             },
+43:             stack,
+44:         )
+45:     }
+46: 
+47:     // inlining this improves perf of external product by about 25%, even in LTO builds
+48:     #[inline]
+49:     #[allow(
+50:         clippy::type_complexity,
+51:         reason = "The type complexity would require a pub type = ...; \
+52:         but impl Trait is not stable in pub type so we tell clippy to leave us alone"
+53:     )]
+54:     pub fn next_term<'short>(
+55:         &'short mut self,
+56:     ) -> Option<(
+57:         DecompositionLevel,
+58:         DecompositionBaseLog,
+59:         Map<IterMut<'short, Scalar>, impl FnMut(&'short mut Scalar) -> Scalar>,
+60:     )> {
+61:         // The iterator is not fresh anymore.
+62:         self.fresh = false;
+63:         // We check if the decomposition is over
+64:         if self.current_level == 0 {
+65:             return None;
+66:         }
+67:         let current_level = self.current_level;
+68:         let base_log = self.base_log;
+69:         let mod_b_mask = self.mod_b_mask;
+70:         self.current_level -= 1;
+71: 
+72:         Some((
+73:             DecompositionLevel(current_level),
+74:             DecompositionBaseLog(self.base_log),
+75:             self.states
+76:                 .iter_mut()
+77:                 .map(move |state| decompose_one_level(base_log, state, mod_b_mask)),
+78:         ))
+79:     }
+80: }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_bootstrap_key_conversion.rs
+SHA256 c861ec7b23782772516f178da3541065f787ff5f214b9cef14ce954814fa6e37
+290: /// Convert an [`LWE bootstrap key`](`LweBootstrapKey`) with standard coefficients to the NTT
+291: /// domain using a 64 bits NTT.
+292: ///
+293: /// See [`programmable_bootstrap_ntt64_lwe_ciphertext_mem_optimized`](`crate::core_crypto::algorithms::programmable_bootstrap_ntt64_lwe_ciphertext_mem_optimized`) for usage.
+294: pub fn convert_standard_lwe_bootstrap_key_to_ntt64<InputCont, OutputCont>(
+295:     input_bsk: &LweBootstrapKey<InputCont>,
+296:     output_bsk: &mut NttLweBootstrapKey<OutputCont>,
+297:     option: NttLweBootstrapKeyOption,
+298: ) where
+299:     InputCont: Container<Element = u64>,
+300:     OutputCont: ContainerMut<Element = u64>,
+301: {
+302:     assert_eq!(
+303:         input_bsk.polynomial_size(),
+304:         output_bsk.polynomial_size(),
+305:         "Mismatched PolynomialSize between input_bsk {:?} and output_bsk {:?}",
+306:         input_bsk.polynomial_size(),
+307:         output_bsk.polynomial_size(),
+308:     );
+309: 
+310:     assert_eq!(
+311:         input_bsk.glwe_size(),
+312:         output_bsk.glwe_size(),
+313:         "Mismatched GlweSize"
+314:     );
+315: 
+316:     assert_eq!(
+317:         input_bsk.decomposition_base_log(),
+318:         output_bsk.decomposition_base_log(),
+319:         "Mismatched DecompositionBaseLog between input_bsk {:?} and output_bsk {:?}",
+320:         input_bsk.glwe_size(),
+321:         output_bsk.glwe_size(),
+322:     );
+323: 
+324:     assert_eq!(
+325:         input_bsk.decomposition_level_count(),
+326:         output_bsk.decomposition_level_count(),
+327:         "Mismatched DecompositionLevelCount between input_bsk {:?} and output_bsk {:?}",
+328:         input_bsk.decomposition_level_count(),
+329:         output_bsk.decomposition_level_count(),
+330:     );
+331: 
+332:     assert_eq!(
+333:         input_bsk.input_lwe_dimension(),
+334:         output_bsk.input_lwe_dimension(),
+335:         "Mismatched input LweDimension between input_bsk {:?} and output_bsk {:?}",
+336:         input_bsk.input_lwe_dimension(),
+337:         output_bsk.input_lwe_dimension(),
+338:     );
+339: 
+340:     let ntt = Ntt64::new(output_bsk.ciphertext_modulus(), input_bsk.polynomial_size());
+341:     let ntt = ntt.as_view();
+342: 
+343:     // Extract modswitch_requirement
+344:     let modswitch_requirement = ntt.modswitch_requirement(input_bsk.ciphertext_modulus());
+345: 
+346:     // Allocate a buffer for bitshift and modswitch
+347:     for (input_poly, mut output_poly) in input_bsk
+348:         .as_polynomial_list()
+349:         .iter()
+350:         .zip(output_bsk.as_mut_polynomial_list().iter_mut())
+351:     {
+352:         if let Some(input_modulus_width) = modswitch_requirement {
+353:             ntt.forward_from_power_of_two_modulus(
+354:                 input_modulus_width,
+355:                 output_poly.as_mut_view(),
+356:                 input_poly,
+357:             );
+358:         } else {
+359:             ntt.forward(output_poly.as_mut_view(), input_poly);
+360:         }
+361:         if matches!(option, NttLweBootstrapKeyOption::Normalize) {
+362:             ntt.plan.normalize(output_poly.as_mut());
+363:         }
+364:     }
+365: }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/ntt64_pbs.rs
+SHA256 0fb1ba7e0f6012ef6495c76f0cb282b37f4687549d2ab8b890800b311bb0dea7
+439: pub fn programmable_bootstrap_ntt64_lwe_ciphertext<InputCont, OutputCont, AccCont, KeyCont>(
+440:     input: &LweCiphertext<InputCont>,
+441:     output: &mut LweCiphertext<OutputCont>,
+442:     accumulator: &GlweCiphertext<AccCont>,
+443:     bsk: &NttLweBootstrapKey<KeyCont>,
+444: ) where
+445:     InputCont: Container<Element = u64>,
+446:     OutputCont: ContainerMut<Element = u64>,
+447:     AccCont: Container<Element = u64>,
+448:     KeyCont: Container<Element = u64>,
+449: {
+450:     assert_eq!(
+451:         output.ciphertext_modulus(),
+452:         accumulator.ciphertext_modulus()
+453:     );
+454:     assert_eq!(accumulator.ciphertext_modulus(), bsk.ciphertext_modulus());
+455: 
+456:     let mut buffers = ComputationBuffers::new();
+457: 
+458:     let ntt = Ntt64::new(bsk.ciphertext_modulus(), bsk.polynomial_size());
+459:     let ntt = ntt.as_view();
+460: 
+461:     buffers.resize(
+462:         programmable_bootstrap_ntt64_lwe_ciphertext_mem_optimized_requirement(
+463:             bsk.glwe_size(),
+464:             bsk.polynomial_size(),
+465:             ntt,
+466:         )
+467:         .unaligned_bytes_required(),
+468:     );
+469: 
+470:     let stack = buffers.stack();
+471: 
+472:     programmable_bootstrap_ntt64_lwe_ciphertext_mem_optimized(
+473:         input,
+474:         output,
+475:         accumulator,
+476:         bsk,
+477:         ntt,
+478:         stack,
+479:     );
+480: }
+481: 
+482: pub fn programmable_bootstrap_ntt64_lwe_ciphertext_mem_optimized<
+483:     InputCont,
+484:     OutputCont,
+485:     AccCont,
+486:     KeyCont,
+487: >(
+488:     input: &LweCiphertext<InputCont>,
+489:     output: &mut LweCiphertext<OutputCont>,
+490:     accumulator: &GlweCiphertext<AccCont>,
+491:     bsk: &NttLweBootstrapKey<KeyCont>,
+492:     ntt: Ntt64View<'_>,
+493:     stack: &mut PodStack,
+494: ) where
+495:     InputCont: Container<Element = u64>,
+496:     OutputCont: ContainerMut<Element = u64>,
+497:     AccCont: Container<Element = u64>,
+498:     KeyCont: Container<Element = u64>,
+499: {
+500:     fn implementation(
+501:         bsk: NttLweBootstrapKeyView<'_, u64>,
+502:         mut lwe_out: LweCiphertextMutView<'_, u64>,
+503:         lwe_in: LweCiphertextView<'_, u64>,
+504:         accumulator: GlweCiphertextView<'_, u64>,
+505:         ntt: Ntt64View<'_>,
+506:         stack: &mut PodStack,
+507:     ) {
+508:         debug_assert_eq!(lwe_out.ciphertext_modulus(), lwe_in.ciphertext_modulus());
+509:         debug_assert_eq!(
+510:             lwe_in.ciphertext_modulus(),
+511:             accumulator.ciphertext_modulus()
+512:         );
+513: 
+514:         let (local_accumulator_data, stack) =
+515:             stack.collect_aligned(CACHELINE_ALIGN, accumulator.as_ref().iter().copied());
+516:         let mut local_accumulator = GlweCiphertextMutView::from_container(
+517:             local_accumulator_data,
+518:             accumulator.polynomial_size(),
+519:             accumulator.ciphertext_modulus(),
+520:         );
+521:         blind_rotate_ntt64_assign_mem_optimized(&lwe_in, &mut local_accumulator, &bsk, ntt, stack);
+522: 
+523:         extract_lwe_sample_from_glwe_ciphertext(
+524:             &local_accumulator,
+525:             &mut lwe_out,
+526:             MonomialDegree(0),
+527:         );
+528:     }
+529: 
+530:     implementation(
+531:         bsk.as_view(),
+532:         output.as_mut_view(),
+533:         input.as_view(),
+534:         accumulator.as_view(),
+535:         ntt,
+536:         stack,
+537:     )
+538: }
+539: 
+540: pub fn pbs_modulus_switch_non_native<Scalar: UnsignedTorus + CastInto<usize>>(
+541:     input: Scalar,
+542:     poly_size: PolynomialSize,
+543:     modulus: Scalar,
+544: ) -> usize {
+545:     let input_u128: u128 = input.cast_into();
+546:     let modulus_u128: u128 = modulus.cast_into();
+547:     let switched = divide_round(input_u128 << (poly_size.log2().0 + 1), modulus_u128);
+548:     switched as usize
+549: }
+550: 
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/ntt64_bnf_pbs.rs
+SHA256 3af0afc7c03b1f253e5c155e746f58154916841ce095a43f3c64b2d72b3b0142
+31: /// // DISCLAIMER: these toy example parameters are not guaranteed to be secure or yield correct
+32: /// // computations
+33: /// // Define the parameters for a 4 bits message able to hold the doubled 2 bits message
+34: /// let small_lwe_dimension = LweDimension(742);
+35: /// let glwe_dimension = GlweDimension(1);
+36: /// let polynomial_size = PolynomialSize(2048);
+37: /// let lwe_noise_distribution =
+38: ///     Gaussian::from_dispersion_parameter(StandardDev(0.000007069849454709433), 0.0);
+39: /// let glwe_noise_distribution =
+40: ///     Gaussian::from_dispersion_parameter(StandardDev(0.00000000000000029403601535432533), 0.0);
+41: /// let pbs_base_log = DecompositionBaseLog(23);
+42: /// let pbs_level = DecompositionLevelCount(1);
+43: /// let ciphertext_modulus = CiphertextModulus::new_native();
+44: /// let ntt_modulus = CiphertextModulus::try_new((1 << 64) - (1 << 32) + 1).unwrap();
+86: /// // Create the empty bootstrapping key in the Fourier domain
+87: /// let mut ntt_bsk = NttLweBootstrapKey::new(
+88: ///     0u64,
+89: ///     std_bootstrapping_key.input_lwe_dimension(),
+90: ///     std_bootstrapping_key.glwe_size(),
+91: ///     std_bootstrapping_key.polynomial_size(),
+92: ///     std_bootstrapping_key.decomposition_base_log(),
+93: ///     std_bootstrapping_key.decomposition_level_count(),
+94: ///     ntt_modulus,
+95: /// );
+96: ///
+97: /// // Use the conversion function (a memory optimized version also exists but is more complicated
+98: /// // to use) to convert the standard bootstrapping key to the Fourier domain.
+99: /// convert_standard_lwe_bootstrap_key_to_ntt64(
+100: ///     &std_bootstrapping_key,
+101: ///     &mut ntt_bsk,
+102: ///     NttLweBootstrapKeyOption::Raw,
+103: /// );
+428: pub fn programmable_bootstrap_ntt64_bnf_lwe_ciphertext<InputCont, OutputCont, AccCont, KeyCont>(
+429:     input: &LweCiphertext<InputCont>,
+430:     output: &mut LweCiphertext<OutputCont>,
+431:     accumulator: &GlweCiphertext<AccCont>,
+432:     bsk: &NttLweBootstrapKey<KeyCont>,
+433: ) where
+434:     InputCont: Container<Element = u64>,
+435:     OutputCont: ContainerMut<Element = u64>,
+436:     AccCont: Container<Element = u64>,
+437:     KeyCont: Container<Element = u64>,
+438: {
+439:     assert_eq!(
+440:         output.ciphertext_modulus(),
+441:         accumulator.ciphertext_modulus()
+442:     );
+443:     let mut buffers = ComputationBuffers::new();
+444: 
+445:     let ntt = Ntt64::new(bsk.ciphertext_modulus(), bsk.polynomial_size());
+446:     let ntt = ntt.as_view();
+447: 
+448:     buffers.resize(
+449:         programmable_bootstrap_ntt64_bnf_lwe_ciphertext_mem_optimized_requirement(
+450:             bsk.glwe_size(),
+451:             bsk.polynomial_size(),
+452:             ntt,
+453:         )
+454:         .unaligned_bytes_required(),
+455:     );
+456: 
+457:     let stack = buffers.stack();
+458: 
+459:     programmable_bootstrap_ntt64_bnf_lwe_ciphertext_mem_optimized(
+460:         input,
+461:         output,
+462:         accumulator,
+463:         bsk,
+464:         ntt,
+465:         stack,
+466:     );
+467: }
+468: 
+469: pub fn programmable_bootstrap_ntt64_bnf_lwe_ciphertext_mem_optimized<
+470:     InputCont,
+471:     OutputCont,
+472:     AccCont,
+473:     KeyCont,
+474: >(
+475:     input: &LweCiphertext<InputCont>,
+476:     output: &mut LweCiphertext<OutputCont>,
+477:     accumulator: &GlweCiphertext<AccCont>,
+478:     bsk: &NttLweBootstrapKey<KeyCont>,
+479:     ntt: Ntt64View<'_>,
+480:     stack: &mut PodStack,
+481: ) where
+482:     InputCont: Container<Element = u64>,
+483:     OutputCont: ContainerMut<Element = u64>,
+484:     AccCont: Container<Element = u64>,
+485:     KeyCont: Container<Element = u64>,
+486: {
+487:     fn implementation(
+488:         bsk: NttLweBootstrapKeyView<'_, u64>,
+489:         mut lwe_out: LweCiphertextMutView<'_, u64>,
+490:         lwe_in: LweCiphertextView<'_, u64>,
+491:         accumulator: GlweCiphertextView<'_, u64>,
+492:         ntt: Ntt64View<'_>,
+493:         stack: &mut PodStack,
+494:     ) {
+495:         debug_assert_eq!(
+496:             lwe_out.ciphertext_modulus(),
+497:             accumulator.ciphertext_modulus()
+498:         );
+499: 
+500:         let (local_accumulator_data, stack) =
+501:             stack.collect_aligned(CACHELINE_ALIGN, accumulator.as_ref().iter().copied());
+502:         let mut local_accumulator = GlweCiphertextMutView::from_container(
+503:             local_accumulator_data,
+504:             accumulator.polynomial_size(),
+505:             accumulator.ciphertext_modulus(),
+506:         );
+507: 
+508:         let log_modulus = accumulator
+509:             .polynomial_size()
+510:             .to_blind_rotation_input_modulus_log();
+511: 
+512:         let lwe_in_msed = lwe_ciphertext_modulus_switch(lwe_in, log_modulus);
+513: 
+514:         blind_rotate_ntt64_bnf_assign_mem_optimized(
+515:             &lwe_in_msed,
+516:             &mut local_accumulator,
+517:             &bsk,
+518:             ntt,
+519:             stack,
+520:         );
+521: 
+522:         extract_lwe_sample_from_glwe_ciphertext(
+523:             &local_accumulator,
+524:             &mut lwe_out,
+525:             MonomialDegree(0),
+526:         );
+527:     }
+528: 
+529:     implementation(
+530:         bsk.as_view(),
+531:         output.as_mut_view(),
+532:         input.as_view(),
+533:         accumulator.as_view(),
+534:         ntt,
+535:         stack,
+536:     )
+537: }
+559:         // Check that modswitch is really needed around cmux
+560:         use crate::core_crypto::fft_impl::fft64::crypto::ggsw::collect_next_term;
+561:         use crate::core_crypto::fft_impl::fft64::math::decomposition::TensorSignedDecompositionLendingIter;
+562:         use crate::core_crypto::prelude::SignedDecomposer;
+563:         let power_of_two_modulus_width =
+564:             ntt.modswitch_requirement(glwe.ciphertext_modulus()).expect(
+565:                 "Back and Forth modswitch implementation only work with power-of-two user modulus",
+566:             );
+567: 
+568:         // we check that the polynomial sizes match
+569:         debug_assert_eq!(ggsw.polynomial_size(), glwe.polynomial_size());
+570:         debug_assert_eq!(ggsw.polynomial_size(), out.polynomial_size());
+571:         // we check that the glwe sizes match
+572:         debug_assert_eq!(ggsw.glwe_size(), glwe.glwe_size());
+573:         debug_assert_eq!(ggsw.glwe_size(), out.glwe_size());
+574: 
+575:         let align = CACHELINE_ALIGN;
+576:         let poly_size = ggsw.polynomial_size().0;
+577: 
+578:         // we round the input mask and body
+579:         let decomposer = SignedDecomposer::<u64>::new(
+580:             ggsw.decomposition_base_log(),
+581:             ggsw.decomposition_level_count(),
+582:         );
+628:                 izip_eq!(
+629:                     ggsw_decomp_matrix.into_rows(),
+630:                     glwe_decomp_term.as_polynomial_list().iter()
+631:                 )
+632:                 .for_each(|(ggsw_row, glwe_poly)| {
+633:                     let mut ntt_poly = PolynomialMutView::from_container(
+634:                         substack2.make_aligned_raw::<u64>(poly_size, align).0,
+635:                     );
+636:                     // We perform the forward ntt transform for the glwe polynomial
+637:                     ntt.forward_from_decomp(ntt_poly.as_mut_view(), glwe_poly.as_view());
+638: 
+639:                     // Now we loop through the polynomials of the output, and add the
+640:                     // corresponding product of polynomials.
+641:                     update_with_fmadd_ntt64_bnf(
+642:                         output_fft_buffer,
+643:                         ggsw_row.as_ref(),
+644:                         ntt_poly.as_ref(),
+645:                         is_output_uninit,
+646:                         poly_size,
+647:                         ntt,
+648:                     );
+649: 
+650:                     // we initialized `output_fft_buffer, so we can set this to false
+651:                     is_output_uninit = false;
+652:                 });
+653:             });
+654:         }
+655: 
+656:         // --------------------------------------------  TRANSFORMATION OF RESULT TO STANDARD DOMAIN
+657:         // In this section, we bring the result from the ntt domain, back to the standard
+658:         // domain, and add it to the output.
+659:         //
+660:         // We iterate over the polynomials in the output.
+661:         if !is_output_uninit {
+662:             izip_eq!(
+663:                 out.as_mut_polynomial_list().iter_mut(),
+664:                 output_fft_buffer
+665:                     .into_chunks(poly_size)
+666:                     .map(PolynomialMutView::from_container),
+667:             )
+668:             .for_each(|(out, mut ntt_poly)| {
+669:                 // NB: Bnf implementation apply normalization on each bwd path
+670:                 ntt.plan.normalize(ntt_poly.as_mut());
+671:                 ntt.add_backward_on_power_of_two_modulus(power_of_two_modulus_width, out, ntt_poly);
+672:             });
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/ntt/ntt64.rs
+SHA256 42fd2f6d816f858815e723d1d9655330691a686d9ac09e566d5afe1e50211536
+34: impl Ntt64 {
+35:     /// Real polynomial of size `size`.
+36:     pub fn new(modulus: CiphertextModulus<u64>, polynomial_size: PolynomialSize) -> Self {
+37:         let global_plans = plans();
+38: 
+39:         assert_eq!(modulus.kind(), CiphertextModulusKind::Other);
+40: 
+41:         let plan =
+42:             global_plans.get_or_init((polynomial_size, modulus), |(polynomial_size, modulus)| {
+43:                 Plan::try_new(polynomial_size.0, modulus.get_custom_modulus() as u64)
+44:                     .unwrap_or_else(|| {
+45:                         panic!(
+46:                     "could not generate an NTT plan for the given (size, modulus) ({}, {modulus})",
+47:                     polynomial_size.0
+48:                 )
+49:                     })
+50:             });
+51: 
+52:         Self { plan }
+53:     }
+54: }
+112: /// Below implementation block define functions used while working with power-of-two modulus values
+113: impl Ntt64View<'_> {
+114:     /// Check modswitch requirement
+115:     ///
+116:     /// Return power of two modulus width if modswitch is required
+117:     /// #Notes
+118:     /// Only modswitch from a power of two modulus is supported
+119:     /// Power-of-two modulus value are always MSB aligned
+120:     pub(crate) fn modswitch_requirement(self, from: CiphertextModulus<u64>) -> Option<u32> {
+121:         let ntt_modulus = CiphertextModulus::new(self.plan.modulus() as u128);
+122:         if from == ntt_modulus {
+123:             None
+124:         } else {
+125:             assert!(
+126:                 from.is_compatible_with_native_modulus(),
+127:                 "Only support implicit modswitch from pow-of-two modulus to ntt_modulus"
+128:             );
+129:             if from.is_native_modulus() {
+130:                 Some(u64::BITS)
+131:             } else {
+132:                 let pow2_modulus = from.get_custom_modulus();
+133:                 let pow2_width = pow2_modulus.ilog2();
+134:                 Some(pow2_width)
+135:             }
+136:         }
+137:     }
+138: 
+139:     /// Handle modswitch between power-of-two modulus and Ntt prime modulus
+140:     /// This function switches modulus for a slice of coefficients
+141:     /// From: power_of_two domain (NB: value are aligned on MSB)
+142:     /// To:   ntt domain  (i.e. prime modulus)
+143:     /// Switching are done inplace
+144:     pub(crate) fn modswitch_from_power_of_two_to_ntt_prime(
+145:         self,
+146:         input_modulus_width: u32,
+147:         data: &mut [u64],
+148:     ) {
+149:         let mod_p_u128 = self.plan.modulus() as u128;
+150:         for val in data.iter_mut() {
+151:             let val_u128: u128 = (*val as u128) >> (u64::BITS - input_modulus_width);
+152:             *val = (((val_u128 * mod_p_u128) + (1 << (input_modulus_width - 1)))
+153:                 >> input_modulus_width) as u64;
+154:         }
+155:     }
+156: 
+157:     /// Handle modswitch between Ntt prime modulus and power-of-two modulus
+158:     /// This function switches modulus for a slice of coefficients
+159:     /// From: ntt domain  (i.e. prime modulus)
+160:     /// To:   power_of_two domain (NB: value are aligned on MSB)
+161:     /// Switching are done inplace
+162:     pub(crate) fn modswitch_from_ntt_prime_to_power_of_two(
+163:         self,
+164:         output_modulus_width: u32,
+165:         data: &mut [u64],
+166:     ) {
+167:         let mod_p_u128 = self.plan.modulus() as u128;
+168:         for val in data.iter_mut() {
+169:             let val_u128: u128 = (*val).cast_into();
+170:             *val = (((((val_u128) << output_modulus_width) | ((mod_p_u128) >> 1)) / mod_p_u128)
+171:                 as u64)
+172:                 << (u64::BITS - output_modulus_width);
+173:         }
+174:     }
+175: 
+176:     /// Applies a forward negacyclic NTT
+177:     ///
+178:     /// Entries coefficients are on power_of_two modulus
+179:     pub fn forward_from_power_of_two_modulus(
+180:         &self,
+181:         input_modulus_width: u32,
+182:         ntt: PolynomialMutView<'_, u64>,
+183:         standard: PolynomialView<'_, u64>,
+184:     ) {
+185:         let mut ntt = ntt;
+186:         let ntt = ntt.as_mut();
+187:         let standard = standard.as_ref();
+188:         ntt.copy_from_slice(standard);
+189: 
+190:         self.modswitch_from_power_of_two_to_ntt_prime(input_modulus_width, ntt);
+191:         self.plan.fwd(ntt);
+192:     }
+193: 
+194:     /// Applies a forward negacyclic NTT transform in place to the given buffer.
+195:     ///
+196:     /// Entries come from decomposer and thus are small signed extended value around 0.
+197:     /// There are considered as on power_of_two modulus, however a full modswitch isn't needed.
+198:     /// It's simply needed to correctly encoded the negative value regarding the ntt prime value
+199:     pub fn forward_from_decomp(
+200:         &self,
+201:         ntt: PolynomialMutView<'_, u64>,
+202:         decomp: PolynomialView<'_, u64>,
+203:     ) {
+204:         let mut ntt = ntt;
+205:         let ntt = ntt.as_mut();
+206:         let decomp = decomp.as_ref();
+207:         ntt.copy_from_slice(decomp);
+208: 
+209:         for x in ntt.iter_mut() {
+210:             *x = if (*x as i64) < 0 {
+211:                 // Correctly encode negative value in regard of the prime modulus
+212:                 x.wrapping_add(self.custom_modulus())
+213:             } else {
+214:                 *x
+215:             };
+216:         }
+217:         self.plan.fwd(ntt);
+218:     }
+219: 
+220:     /// Applies a backward negacyclic NTT transform on ntt, moved obtained value on power-of-two
+221:     /// modulus And sum them with standard polynomial
+222:     pub fn add_backward_on_power_of_two_modulus(
+223:         self,
+224:         output_modulus_width: u32,
+225:         standard: PolynomialMutView<'_, u64>,
+226:         ntt: PolynomialMutView<'_, u64>,
+227:     ) {
+228:         let mut ntt = ntt;
+229:         let mut standard = standard;
+230:         let ntt = ntt.as_mut();
+231:         let standard = standard.as_mut();
+232:         self.plan.inv(ntt);
+233:         self.modswitch_from_ntt_prime_to_power_of_two(output_modulus_width, ntt);
+234: 
+235:         // autovectorize
+236:         pulp::Arch::new().dispatch(
+237:             #[inline(always)]
+238:             || {
+239:                 for (out, inp) in izip_eq!(standard, &*ntt) {
+240:                     *out = u64::wrapping_add(*out, *inp);
+241:                 }
+242:             },
+243:         )
+244:     }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/test/lwe_programmable_bootstrapping.rs
+SHA256 8a846118fb87f1680c7c423f00255c428ae0033fde73c981cec38073f72911de
+710: fn lwe_encrypt_pbs_ntt64_decrypt_custom_mod(params: ClassicTestParams<u64>) {
+711:     let input_lwe_dimension = params.lwe_dimension;
+712:     let lwe_noise_distribution = params.lwe_noise_distribution;
+713:     let glwe_noise_distribution = params.glwe_noise_distribution;
+714:     let ciphertext_modulus = params.ciphertext_modulus;
+715:     let message_modulus_log = params.message_modulus_log;
+716:     let msg_modulus = 1u64 << message_modulus_log.0;
+717:     let encoding_with_padding = get_encoding_with_padding(ciphertext_modulus);
+718:     let glwe_dimension = params.glwe_dimension;
+719:     let polynomial_size = params.polynomial_size;
+720:     let decomp_base_log = params.pbs_base_log;
+721:     let decomp_level_count = params.pbs_level;
+722:     let mut rsc = TestResources::new();
+723: 
+724:     let f = |x: u64| x.wrapping_rem(msg_modulus);
+725: 
+726:     let delta: u64 = encoding_with_padding / msg_modulus;
+727:     let mut msg = msg_modulus;
+728:     const NB_TESTS: usize = 10;
+729: 
+730:     let accumulator = generate_programmable_bootstrap_glwe_lut(
+1004: fn lwe_encrypt_pbs_ntt64_bnf_decrypt(params: ClassicTestParams<u64>) {
+1005:     let input_lwe_dimension = params.lwe_dimension;
+1006:     let lwe_noise_distribution = params.lwe_noise_distribution;
+1007:     let glwe_noise_distribution = params.glwe_noise_distribution;
+1008:     // NB: Bnf implementation use Ct with native modulus and then modswitch for the Ntt
+1009:     let ciphertext_modulus = CiphertextModulus::new_native();
+1010:     let message_modulus_log = params.message_modulus_log;
+1011:     let msg_modulus = 1u64 << message_modulus_log.0;
+1012:     let encoding_with_padding = get_encoding_with_padding(ciphertext_modulus);
+1013:     let glwe_dimension = params.glwe_dimension;
+1014:     let polynomial_size = params.polynomial_size;
+1015:     let decomp_base_log = params.pbs_base_log;
+1016:     let decomp_level_count = params.pbs_level;
+1158:             break;
+1159:         }
+1160:     }
+1161: }
+1162: 
+1163: create_parameterized_test!(lwe_encrypt_pbs_ntt64_bnf_decrypt {
+1164:     TEST_PARAMS_3_BITS_SOLINAS_U64
+1165: });
+1166: 
+1167: fn lwe_encrypt_pbs_karatsuba_decrypt_custom_mod(params: ClassicTestParams<u64>) {
+1168:     let lwe_noise_distribution = params.lwe_noise_distribution;
+1169:     let ciphertext_modulus = params.ciphertext_modulus;
+1170:     let message_modulus_log = params.message_modulus_log;
+1171:     let msg_modulus = 1 << (message_modulus_log.0);
+1172:     let encoding_with_padding = get_encoding_with_padding(ciphertext_modulus);
+1173:     let glwe_dimension = params.glwe_dimension;
+1248:         #[cfg(tarpaulin)]
+1249:         break;
+1250:     }
+1251: }
+1252: 
+1253: create_parameterized_test!(lwe_encrypt_pbs_karatsuba_decrypt_custom_mod);
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs
+SHA256 3157e01727300ac29dbd516ff9d01905e3de0da8b98b77eb4293439c6c5f9bcf
+161: impl Fft {
+162:     /// Real polynomial of size `size`.
+163:     pub fn new(polynomial_size: PolynomialSize) -> Self {
+164:         let global_plans = plans();
+165: 
+166:         let new = |polynomial_size: PolynomialSize| {
+167:             let fourier_polynomial_size = polynomial_size.to_fourier_polynomial_size().0;
+168: 
+169:             #[cfg(not(feature = "experimental-force_fft_algo_dif4"))]
+170:             {
+171:                 (
+172:                     Twisties::new(fourier_polynomial_size),
+173:                     Plan::new(
+174:                         fourier_polynomial_size,
+175:                         Method::Measure(Duration::from_millis(10)),
+176:                     ),
+177:                 )
+178:             }
+179:             #[cfg(feature = "experimental-force_fft_algo_dif4")]
+180:             {
+181:                 (
+182:                     Twisties::new(fourier_polynomial_size),
+183:                     Plan::new(
+184:                         fourier_polynomial_size,
+185:                         Method::UserProvided {
+186:                             base_algo: tfhe_fft::ordered::FftAlgo::Dif4,
+187:                             base_n: fourier_polynomial_size,
+188:                         },
+189:                     ),
+190:                 )
+191:             }
+192:         };
+193: 
+194:         let plan = global_plans.get_or_init(polynomial_size, new);
+195: 
+196:         Self { plan }
+197:     }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/README.md
+SHA256 853830192d5324a248a23cf8d94ab05ef9553520fe0b34aa90103cdba441d2b5
+1: tfhe-ntt is a pure Rust high performance Number Theoretic Transform library that processes
+2: vectors of sizes that are powers of two.
+3: 
+4: This library provides three kinds of NTT:
+5: - The prime NTT computes the transform in a field $\mathbb{Z}/p \mathbb{Z}$
+6:   with $p$ prime, allowing for arithmetic operations on the polynomial modulo $p$.
+7: - The native NTT internally computes the transform of the first kind with
+8:   several primes, allowing the simulation of arithmetic modulo the product of
+9:   those primes, and truncates the
+10: result when the inverse transform is desired. The truncated result is guaranteed to be as if
+11: the computations were performed with wrapping arithmetic, as long as the full integer result
+12: would have be smaller than half the product of the primes, in absolute value. It is guaranteed
+13: to be suitable for multiplying two polynomials with arbitrary coefficients, and returns the
+14: result in wrapping arithmetic.
+15: - The native binary NTT is similar to the native NTT, but is optimized for the case where one
+16: of the operands of the multiplication has coefficients in $\lbrace 0, 1 \rbrace$.
+17: 
+18: # Rust requirements
+19: tfhe-ntt requires a Rust version >= 1.67.0.
+20: 
+21: # Features
+22: 
+23: - `std` (default): This enables runtime arch detection for accelerated SIMD instructions.
+24: - `avx512` (default): This enables AVX512 instructions on CPUs that support them to further
+25:   speed up the NTT.
+54: - `mul_poly_prime.rs`: Negacyclic polynomial multiplication with a prime modulus.
+55: Run the example with `cargo run --example mul_poly_prime`.
+56: - `mul_poly_native.rs`: Negacyclic polynomial multiplication with a native modulus (`2^32`, `2^64`, or `2^128`).
+57: Run the example with `cargo run --example mul_poly_native`.
+58: 
+59: # Benchmarks
+60: 
+61: Benchmarks can be executed with `cargo bench`.
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/lib.rs
+SHA256 056b21d39e1213b1eb4f29d00afd717f6847849ab7b285005b1f1f156ccd1bc9
+447: pub(crate) mod primes32 {
+448:     use crate::{
+449:         fastdiv::{Div32, Div64},
+450:         prime::exp_mod32,
+451:     };
+452: 
+453:     pub const P0: u32 = 0b0011_1111_0101_1010_0000_0000_0000_0001;
+454:     pub const P1: u32 = 0b0011_1111_0101_1101_0000_0000_0000_0001;
+455:     pub const P2: u32 = 0b0011_1111_0111_0110_0000_0000_0000_0001;
+456:     pub const P3: u32 = 0b0011_1111_1000_0010_0000_0000_0000_0001;
+457:     pub const P4: u32 = 0b0011_1111_1010_1100_0000_0000_0000_0001;
+458:     pub const P5: u32 = 0b0011_1111_1010_1111_0000_0000_0000_0001;
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/native32.rs
+SHA256 24ae7664aa1ebecb363ebc0b74174cd3a9b17246ac11617c7b66edd259cd91e1
+6: /// Negacyclic NTT plan for multiplying two 32bit polynomials.
+7: #[derive(Clone, Debug)]
+8: pub struct Plan32(
+9:     crate::prime32::Plan,
+10:     crate::prime32::Plan,
+11:     crate::prime32::Plan,
+12: );
+13: 
+14: /// Negacyclic NTT plan for multiplying two 32bit polynomials.
+15: /// This can be more efficient than [`Plan32`], but requires the AVX512 instruction set.
+16: #[cfg(all(feature = "avx512", any(target_arch = "x86", target_arch = "x86_64")))]
+17: #[derive(Clone, Debug)]
+18: pub struct Plan52(crate::prime64::Plan, crate::prime64::Plan, crate::V4IFma);
+334: impl Plan32 {
+335:     /// Returns a negacyclic NTT plan for the given polynomial size, or `None` if no
+336:     /// suitable roots of unity can be found for the wanted parameters.
+337:     pub fn try_new(n: usize) -> Option<Self> {
+338:         use crate::{prime32::Plan, primes32::*};
+339:         Some(Self(
+340:             Plan::try_new(n, P0)?,
+341:             Plan::try_new(n, P1)?,
+342:             Plan::try_new(n, P2)?,
+343:         ))
+344:     }
+345: 
+346:     /// Returns the polynomial size of the negacyclic NTT plan.
+347:     #[inline]
+348:     pub fn ntt_size(&self) -> usize {
+349:         self.0.ntt_size()
+350:     }
+351: 
+352:     #[inline]
+353:     pub fn ntt_0(&self) -> &crate::prime32::Plan {
+354:         &self.0
+355:     }
+356:     #[inline]
+357:     pub fn ntt_1(&self) -> &crate::prime32::Plan {
+358:         &self.1
+359:     }
+360:     #[inline]
+361:     pub fn ntt_2(&self) -> &crate::prime32::Plan {
+362:         &self.2
+363:     }
+364: 
+365:     pub fn fwd(&self, value: &[u32], mod_p0: &mut [u32], mod_p1: &mut [u32], mod_p2: &mut [u32]) {
+366:         for (value, mod_p0, mod_p1, mod_p2) in
+367:             crate::izip!(value, &mut *mod_p0, &mut *mod_p1, &mut *mod_p2)
+368:         {
+369:             *mod_p0 = value % crate::primes32::P0;
+370:             *mod_p1 = value % crate::primes32::P1;
+371:             *mod_p2 = value % crate::primes32::P2;
+372:         }
+373:         self.0.fwd(mod_p0);
+374:         self.1.fwd(mod_p1);
+375:         self.2.fwd(mod_p2);
+376:     }
+377: 
+378:     pub fn inv(
+379:         &self,
+380:         value: &mut [u32],
+381:         mod_p0: &mut [u32],
+382:         mod_p1: &mut [u32],
+383:         mod_p2: &mut [u32],
+384:     ) {
+385:         self.0.inv(mod_p0);
+386:         self.1.inv(mod_p1);
+387:         self.2.inv(mod_p2);
+388: 
+389:         #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+390:         {
+391:             #[cfg(feature = "avx512")]
+392:             if let Some(simd) = crate::V4IFma::try_new() {
+393:                 reconstruct_slice_32bit_012_avx512(simd, value, mod_p0, mod_p1, mod_p2);
+394:                 return;
+395:             }
+396:             if let Some(simd) = crate::V3::try_new() {
+397:                 reconstruct_slice_32bit_012_avx2(simd, value, mod_p0, mod_p1, mod_p2);
+398:                 return;
+399:             }
+400:         }
+401: 
+402:         for (value, &mod_p0, &mod_p1, &mod_p2) in crate::izip!(value, &*mod_p0, &*mod_p1, &*mod_p2)
+403:         {
+404:             *value = reconstruct_32bit_012(mod_p0, mod_p1, mod_p2);
+405:         }
+406:     }
+407: 
+408:     /// Computes the negacyclic polynomial product of `lhs` and `rhs`, and stores the result in
+409:     /// `prod`.
+410:     pub fn negacyclic_polymul(&self, prod: &mut [u32], lhs: &[u32], rhs: &[u32]) {
+411:         let n = prod.len();
+412:         assert_eq!(n, lhs.len());
+413:         assert_eq!(n, rhs.len());
+414: 
+415:         let mut lhs0 = avec![0; n];
+416:         let mut lhs1 = avec![0; n];
+417:         let mut lhs2 = avec![0; n];
+418: 
+419:         let mut rhs0 = avec![0; n];
+420:         let mut rhs1 = avec![0; n];
+421:         let mut rhs2 = avec![0; n];
+422: 
+423:         self.fwd(lhs, &mut lhs0, &mut lhs1, &mut lhs2);
+424:         self.fwd(rhs, &mut rhs0, &mut rhs1, &mut rhs2);
+425: 
+426:         self.0.mul_assign_normalize(&mut lhs0, &rhs0);
+427:         self.1.mul_assign_normalize(&mut lhs1, &rhs1);
+428:         self.2.mul_assign_normalize(&mut lhs2, &rhs2);
+429: 
+430:         self.inv(prod, &mut lhs0, &mut lhs1, &mut lhs2);
+431:     }
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/prime32.rs
+SHA256 437dfe9cf29462618aa5d9b16f7fe27259b7430687e38b576c7be12238998943
+660:     /// Returns a negacyclic NTT plan for the given polynomial size and modulus, or `None` if no
+661:     /// suitable roots of unity can be found for the wanted parameters.
+662:     pub fn try_new(polynomial_size: usize, modulus: u32) -> Option<Self> {
+663:         let p_div = Div32::new(modulus);
+664:         // 32 = 16x2 = max_register_size * ntt_radix,
+665:         // as SIMD registers can contain at most 16*u32
+666:         // and the implementation assumes that SIMD registers are full
+667:         if polynomial_size < 32
+668:             || !polynomial_size.is_power_of_two()
+669:             || !is_prime64(modulus as u64)
+670:             || find_primitive_root64(Div64::new(modulus as u64), 2 * polynomial_size as u64)
+671:                 .is_none()
+672:         {
+673:             None
+674:         } else {
+675:             let mut twid = avec![0u32; polynomial_size].into_boxed_slice();
+676:             let mut inv_twid = avec![0u32; polynomial_size].into_boxed_slice();
+677:             let (mut twid_shoup, mut inv_twid_shoup) = if modulus < (1u32 << 31) {
+678:                 (
+679:                     avec![0u32; polynomial_size].into_boxed_slice(),
+680:                     avec![0u32; polynomial_size].into_boxed_slice(),
+681:                 )
+682:             } else {
+683:                 (avec![].into_boxed_slice(), avec![].into_boxed_slice())
+684:             };
+685: 
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/prime64.rs
+SHA256 8609010f2606545250d63b9c9f8b74fee65e1d6d0eb1b2681872a691a59d2d75
+715: fn normalize_scalar(values: &mut [u64], p: u64, n_inv_mod_p: u64, n_inv_mod_p_shoup: u64) {
+716:     for val_ in values {
+717:         let val = *val_;
+718: 
+719:         let shoup_q = (((val as u128) * (n_inv_mod_p_shoup as u128)) >> 64) as u64;
+720:         let t = u64::wrapping_sub(val.wrapping_mul(n_inv_mod_p), shoup_q.wrapping_mul(p));
+721: 
+722:         *val_ = t.min(t.wrapping_sub(p));
+723:     }
+724: }
+761: impl Plan {
+762:     /// Returns a negacyclic NTT plan for the given polynomial size and modulus, or `None` if no
+763:     /// suitable roots of unity can be found for the wanted parameters.
+764:     pub fn try_new(polynomial_size: usize, modulus: u64) -> Option<Self> {
+765:         let p_div = Div64::new(modulus);
+766:         // 16 = 8x2 = max_register_size * ntt_radix,
+767:         // as SIMD registers can contain at most 8*u64
+768:         // and the implementation assumes that SIMD registers are full
+769:         if polynomial_size < 16
+770:             || !polynomial_size.is_power_of_two()
+771:             || !is_prime64(modulus)
+772:             || find_primitive_root64(p_div, 2 * polynomial_size as u64).is_none()
+773:         {
+774:             None
+775:         } else {
+776:             let ifma_instructions_available = {
+777:                 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+778:                 #[cfg(feature = "avx512")]
+779:                 let has_ifma = crate::V4IFma::try_new().is_some();
+780:                 #[cfg(not(all(
+781:                     any(target_arch = "x86", target_arch = "x86_64"),
+782:                     feature = "avx512",
+783:                 )))]
+784:                 let has_ifma = false;
+785: 
+786:                 has_ifma
+787:             };
+788: 
+789:             // See prime32 for the logic behind the checks performed here
+790:             // They avoid overflows and allow the use of fast code paths.
+791:             let init_ifma = if ifma_instructions_available && modulus < (1u64 << 52) {
+792:                 let init_less_than_52_bits = BarrettInit64::new(modulus, 52);
+793:                 if (modulus < 1501199875790166)
+794:                     || (init_less_than_52_bits.requires_single_reduction_step
+795:                         && modulus < (1 << 51))
+796:                 {
+797:                     // If we comply with the 52 bits code requirements return the init params
+798:                     Some(init_less_than_52_bits)
+799:                 } else {
+800:                     // Otherwise we will need a 64 bits fallback
+801:                     None
+802:                 }
+803:             } else {
+804:                 None
+805:             };
+806: 
+807:             let BarrettInit64 {
+808:                 bits,
+809:                 big_q,
+810:                 p_barrett,
+811:                 requires_single_reduction_step,
+812:             } = init_ifma.unwrap_or_else(|| BarrettInit64::new(modulus, 64));
+883:         self.use_ifma
+884:     }
+885: 
+886:     /// Returns whether the negacyclic NTT plan can use fast reduction code.
+887:     #[inline]
+888:     pub fn can_use_fast_reduction_code(&self) -> bool {
+889:         self.can_use_fast_reduction_code
+890:     }
+891: 
+892:     /// Applies a forward negacyclic NTT transform in place to the given buffer.
+893:     ///
+894:     /// # Note
+895:     /// On entry, the buffer holds the polynomial coefficients in standard order. On exit, the
+896:     /// buffer holds the negacyclic NTT transform coefficients in bit reversed order.
+897:     pub fn fwd(&self, buf: &mut [u64]) {
+898:         assert_eq!(buf.len(), self.ntt_size());
+899:         let p = self.p;
+900: 
+901:         #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+902:         #[cfg(feature = "avx512")]
+903:         if p < (1u64 << 50) {
+904:             if let Some(simd) = crate::V4IFma::try_new() {
+905:                 less_than_50bit::fwd_avx512(simd, p, buf, &self.twid, &self.twid_shoup);
+906:                 return;
+907:             }
+908:         } else if p < (1u64 << 51) {
+909:             if let Some(simd) = crate::V4IFma::try_new() {
+910:                 less_than_51bit::fwd_avx512(simd, p, buf, &self.twid, &self.twid_shoup);
+911:                 return;
+912:             }
+913:         }
+914: 
+915:         if p < (1u64 << 62) {
+916:             #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+917:             {
+918:                 #[cfg(feature = "avx512")]
+919:                 if let Some(simd) = crate::V4::try_new() {
+920:                     less_than_62bit::fwd_avx512(simd, p, buf, &self.twid, &self.twid_shoup);
+921:                     return;
+922:                 }
+923:                 if let Some(simd) = crate::V3::try_new() {
+924:                     less_than_62bit::fwd_avx2(simd, p, buf, &self.twid, &self.twid_shoup);
+925:                     return;
+926:                 }
+927:             }
+928:             less_than_62bit::fwd_scalar(p, buf, &self.twid, &self.twid_shoup);
+929:         } else if p < (1u64 << 63) {
+930:             #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+931:             {
+932:                 #[cfg(feature = "avx512")]
+933:                 if let Some(simd) = crate::V4::try_new() {
+934:                     less_than_63bit::fwd_avx512(simd, p, buf, &self.twid, &self.twid_shoup);
+935:                     return;
+936:                 }
+937:                 if let Some(simd) = crate::V3::try_new() {
+938:                     less_than_63bit::fwd_avx2(simd, p, buf, &self.twid, &self.twid_shoup);
+939:                     return;
+940:                 }
+941:             }
+942:             less_than_63bit::fwd_scalar(p, buf, &self.twid, &self.twid_shoup);
+943:         } else if p == Solinas::P {
+944:             #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+945:             {
+946:                 #[cfg(feature = "avx512")]
+947:                 if let Some(simd) = crate::V4::try_new() {
+948:                     generic_solinas::fwd_avx512(simd, buf, Solinas, (), &self.twid);
+949:                     return;
+950:                 }
+951:                 if let Some(simd) = crate::V3::try_new() {
+952:                     generic_solinas::fwd_avx2(simd, buf, Solinas, (), &self.twid);
+953:                     return;
+954:                 }
+955:             }
+956:             generic_solinas::fwd_scalar(buf, Solinas, (), &self.twid);
+957:         } else {
+958:             #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+959:             #[cfg(feature = "avx512")]
+960:             if let Some(simd) = crate::V4::try_new() {
+961:                 let crate::u256 { x0, x1, x2, x3 } = self.p_div.double_reciprocal;
+962:                 let p_div = (p, x0, x1, x2, x3);
+963:                 generic_solinas::fwd_avx512(simd, buf, p, p_div, &self.twid);
+964:                 return;
+965:             }
+966:             generic_solinas::fwd_scalar(buf, p, self.p_div, &self.twid);
+967:         }
+968:     }
+969: 
+970:     /// Applies an inverse negacyclic NTT transform in place to the given buffer.
+971:     ///
+972:     /// # Note
+973:     /// On entry, the buffer holds the negacyclic NTT transform coefficients in bit reversed order.
+974:     /// On exit, the buffer holds the polynomial coefficients in standard order.
+975:     pub fn inv(&self, buf: &mut [u64]) {
+976:         assert_eq!(buf.len(), self.ntt_size());
+977:         let p = self.p;
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/fft_simd.rs
+SHA256 917bae1b93c822281c7bae7b6e4800acb24182cff64e6cd419ea08c6264fba08
+219:     #[inline(always)]
+220:     fn mul(self, a: c64, b: c64) -> c64 {
+221:         let ab = a;
+222:         let xy = b;
+223: 
+224:         let a = ab.re;
+225:         let b = ab.im;
+226:         let x = xy.re;
+227:         let y = xy.im;
+228: 
+229:         c64 {
+230:             re: f64::mul_add(a, x, -b * y),
+231:             im: f64::mul_add(a, y, b * x),
+232:         }
+233:     }
+234: }
+235: 
+236: // https://stackoverflow.com/a/42792940
+237: pub fn sincospi64(mut a: f64) -> (f64, f64) {
+238:     let fma = f64::mul_add;
+239: 
+240:     // must be evaluated with IEEE-754 semantics
+241:     let az = a * 0.0;
+242: 
+243:     // for |a| >= 2**53, cospi(a) = 1.0, but cospi(Inf) = NaN
+244:     a = if a.abs() < 9007199254740992.0f64 {
+245:         a
+246:     } else {
+247:         az
+248:     };
+249: 
+250:     // reduce argument to primary approximation interval (-0.25, 0.25)
+251:     let mut r = (a + a).round();
+252:     let i = r as i64;
+253:     let t = f64::mul_add(-0.5, r, a);
+254: 
+255:     // compute core approximations
+256:     let s = t * t;
+257: 
+258:     // approximate cos(pi*x) for x in [-0.25,0.25]
+259: 
+260:     r = -1.0369917389758117e-4;
+261:     r = fma(r, s, 1.9294935641298806e-3);
+262:     r = fma(r, s, -2.5806887942825395e-2);
+263:     r = fma(r, s, 2.3533063028328211e-1);
+264:     r = fma(r, s, -1.3352627688538006e+0);
+265:     r = fma(r, s, 4.0587121264167623e+0);
+266:     r = fma(r, s, -4.9348022005446790e+0);
+267:     let mut c = fma(r, s, 1.0000000000000000e+0);
+268: 
+269:     // approximate sin(pi*x) for x in [-0.25,0.25]
+270:     r = 4.6151442520157035e-4;
+271:     r = fma(r, s, -7.3700183130883555e-3);
+272:     r = fma(r, s, 8.2145868949323936e-2);
+273:     r = fma(r, s, -5.9926452893214921e-1);
+274:     r = fma(r, s, 2.5501640398732688e+0);
+275:     r = fma(r, s, -5.1677127800499516e+0);
+276:     let s = s * t;
+277:     r *= s;
+278: 
+279:     let mut s = fma(t, f64::consts::PI, r);
+280:     // map results according to quadrant
+281: 
+282:     if (i & 2) != 0 {
+283:         s = 0.0 - s; // must be evaluated with IEEE-754 semantics
+284:         c = 0.0 - c; // must be evaluated with IEEE-754 semantics
+285:     }
+286:     if (i & 1) != 0 {
+287:         let t = 0.0 - s; // must be evaluated with IEEE-754 semantics
+288:         s = c;
+289:         c = t;
+290:     }
+291:     // IEEE-754: sinPi(+n) is +0 and sinPi(-n) is -0 for positive integers n
+292:     if a == a.floor() {
+293:         s = az
+294:     }
+295:     (s, c)
+296: }
+297: 
+298: pub fn init_wt(r: usize, n: usize, w: &mut [c64], w_inv: &mut [c64]) {
+299:     if n < r {
+300:         return;
+301:     }
+302: 
+303:     let nr = n / r;
+304:     let theta = -2.0 / n as f64;
+305: 
+306:     for wi in w.iter_mut() {
+307:         wi.re = f64::NAN;
+308:         wi.im = f64::NAN;
+309:     }
+310: 
+311:     for p in 0..nr {
+312:         for k in 1..r {
+313:             let (s, c) = sincospi64(theta * (k * p) as f64);
+314:             let z = c64::new(c, s);
+315:             w[p + k * nr] = z;
+
+SOURCE /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/unordered.rs
+SHA256 06443ae63ac2d0df68c317a6eb2e45ad4cda410b864c4d85ff9d3666d523c021
+295: macro_rules! dispatcher {
+296:     ($name: ident, $impl: ident) => {
+297:         fn $name() -> fn(&mut [c64], &[c64]) {
+298:             #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
+299:             {
+300:                 #[cfg(feature = "avx512")]
+301:                 if pulp::x86::V4::try_new().is_some() {
+302:                     return |z, w| {
+303:                         let simd = pulp::x86::V4::try_new().unwrap();
+304:                         simd.vectorize(
+305:                             #[inline(always)]
+306:                             || $impl(simd, z, w),
+307:                         );
+308:                     };
+309:                 }
+310: 
+311:                 if pulp::x86::V3::try_new().is_some() {
+312:                     return |z, w| {
+313:                         let simd = pulp::x86::V3::try_new().unwrap();
+314:                         simd.vectorize(
+315:                             #[inline(always)]
+316:                             || $impl(simd, z, w),
+317:                         );
+318:                     };
+319:                 }
+320:             }
+321: 
+322:             |z, w| $impl(crate::fft_simd::Scalar, z, w)
+323:         }
+324:     };
+325: }
+326: 
+327: dispatcher!(get_fwd_process_x2, fwd_process_x2);
+328: dispatcher!(get_fwd_process_x4, fwd_process_x4);
+329: dispatcher!(get_fwd_process_x8, fwd_process_x8);
+330: 
+331: dispatcher!(get_inv_process_x2, inv_process_x2);
+332: dispatcher!(get_inv_process_x4, inv_process_x4);
+333: dispatcher!(get_inv_process_x8, inv_process_x8);
+334: 
+335: fn get_complex_per_reg() -> usize {
+336:     #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
+337:     {
+338:         #[cfg(feature = "avx512")]
+339:         if let Some(simd) = pulp::x86::V4::try_new() {
+340:             return simd.lane_count();
+341:         }
+342:         if let Some(simd) = pulp::x86::V3::try_new() {
+343:             return simd.lane_count();
+344:         }
+345:     }
+346:     crate::fft_simd::Scalar.lane_count()
+347: }
+654:     pub fn new(n: usize, method: Method) -> Self {
+655:         assert!(n.is_power_of_two());
+656: 
+657:         let (base_algo, base_n) = match method {
+658:             Method::UserProvided { base_algo, base_n } => {
+659:                 assert!(base_n.is_power_of_two());
+660:                 assert!(base_n <= n);
+661:                 if base_n != n {
+662:                     assert!(base_n >= 32);
+663:                 }
+664:                 assert!(base_n.trailing_zeros() <= 10);
+665:                 (base_algo, base_n)
+666:             }
+667: 
+668:             #[cfg(feature = "std")]
+669:             Method::Measure(duration) => {
+670:                 let mut buf = PodBuffer::try_new(measure_fastest_scratch(n)).unwrap();
+671:                 let (algo, base_n, _) = measure_fastest(duration, n, PodStack::new(&mut buf));
+672:                 (algo, base_n)
+673:             }
+674:         };
+675: 
+676:         let [base_fn_fwd, base_fn_inv] = crate::ordered::get_fn_ptr(base_algo, base_n);
+677: 
+678:         let nan = c64 {
+679:             re: f64::NAN,
+680:             im: f64::NAN,
+681:         };
+682:         let mut twiddles = avec![nan; n + base_n].into_boxed_slice();

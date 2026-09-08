@@ -1,0 +1,18 @@
+{
+  "label": "lean_Compiler_Ext6Conformance",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Ext6Conformance.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/Ext6Conformance.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "ext6Polynomial_irreducible : Irreducible ext6Polynomial\next6Q_finrank : Module.finrank BabyBear Ext6Q = 6\next6Mul_correct : \u2200 (a b : Fin 6 \u2192 BabyBear), toExt6 (ext6Mul a b) = toExt6 a * toExt6 b\next6_known_product : ext6Mul ext6A ext6B = ext6Product\next6_edge_product : ext6Mul ext6EdgeA ext6EdgeB = ext6EdgeProduct\n",
+  "stderr": "",
+  "elapsed_seconds": 4.165660458995262,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/Ext6Conformance.lean",
+  "source_sha256_before": "6d228c5478662e000f754137fac2b2525aeebd7cb078e9a4cd7932c38609bffe",
+  "source_sha256_after": "6d228c5478662e000f754137fac2b2525aeebd7cb078e9a4cd7932c38609bffe"
+}

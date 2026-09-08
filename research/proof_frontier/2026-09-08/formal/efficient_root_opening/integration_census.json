@@ -1,0 +1,389 @@
+{
+  "theorems": [
+    "preimage_of_mem",
+    "preimage_eq_answerOf",
+    "badCheck_eq_true_iff",
+    "no_bad_of_check_false",
+    "retained_of_target",
+    "preimage_of_good",
+    "extractedAt_eq_of_logged",
+    "suppliedOpeningSound",
+    "pathLog_length_of_accepted",
+    "openingLog_length_of_accepted",
+    "supplied_accepts",
+    "prefix_bad_free",
+    "extracted_values",
+    "adapter_inhabited",
+    "late_root_falsifier",
+    "full_log_is_not_prefix",
+    "far_inhabited",
+    "all_premises_inhabited",
+    "response_collision_falsifier",
+    "child_target_falsifier"
+  ],
+  "qualified_declarations": [
+    {
+      "name": "preimage_of_mem",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.preimage_of_mem",
+      "private": false,
+      "line": 106
+    },
+    {
+      "name": "preimage_eq_answerOf",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf",
+      "private": false,
+      "line": 125
+    },
+    {
+      "name": "badCheck_eq_true_iff",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff",
+      "private": false,
+      "line": 134
+    },
+    {
+      "name": "no_bad_of_check_false",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false",
+      "private": false,
+      "line": 139
+    },
+    {
+      "name": "retained_of_target",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.retained_of_target",
+      "private": false,
+      "line": 146
+    },
+    {
+      "name": "preimage_of_good",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.preimage_of_good",
+      "private": false,
+      "line": 152
+    },
+    {
+      "name": "extractedAt_eq_of_logged",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged",
+      "private": false,
+      "line": 162
+    },
+    {
+      "name": "suppliedOpeningSound",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound",
+      "private": false,
+      "line": 223
+    },
+    {
+      "name": "pathLog_length_of_accepted",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted",
+      "private": false,
+      "line": 241
+    },
+    {
+      "name": "openingLog_length_of_accepted",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted",
+      "private": false,
+      "line": 257
+    },
+    {
+      "name": "supplied_accepts",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts",
+      "private": false,
+      "line": 276
+    },
+    {
+      "name": "prefix_bad_free",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free",
+      "private": false,
+      "line": 279
+    },
+    {
+      "name": "extracted_values",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values",
+      "private": false,
+      "line": 282
+    },
+    {
+      "name": "adapter_inhabited",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited",
+      "private": false,
+      "line": 286
+    },
+    {
+      "name": "late_root_falsifier",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier",
+      "private": false,
+      "line": 294
+    },
+    {
+      "name": "full_log_is_not_prefix",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix",
+      "private": false,
+      "line": 302
+    },
+    {
+      "name": "far_inhabited",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited",
+      "private": false,
+      "line": 307
+    },
+    {
+      "name": "all_premises_inhabited",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited",
+      "private": false,
+      "line": 317
+    },
+    {
+      "name": "response_collision_falsifier",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier",
+      "private": false,
+      "line": 331
+    },
+    {
+      "name": "child_target_falsifier",
+      "qualified_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier",
+      "private": false,
+      "line": 345
+    }
+  ],
+  "theorem_count": 20,
+  "pin_count": 20,
+  "pins": [
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.preimage_of_mem",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.preimage_of_mem",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 372,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.preimage_of_mem' depends on axioms: [propext, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.preimage_of_mem"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 374,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 376,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff' depends on axioms: [propext, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 378,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false' depends on axioms: [propext, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.retained_of_target",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.retained_of_target",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 380,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.retained_of_target' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.retained_of_target"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.preimage_of_good",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.preimage_of_good",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 382,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.preimage_of_good' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.preimage_of_good"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 384,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 386,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 388,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted' depends on axioms: [propext, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 390,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 392,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 394,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 396,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 398,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 400,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 402,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 404,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 406,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 408,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier"
+    },
+    {
+      "theorem": "Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier",
+      "requested_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 411,
+      "expected_message": "info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "declaration_name": "Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier"
+    }
+  ],
+  "forbidden_constructs": [],
+  "admit_identifier_tokens": [],
+  "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+}

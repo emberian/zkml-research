@@ -1,0 +1,24 @@
+{
+  "cwd": "/Users/ember/dev/zkml-research",
+  "independent_lean_launches": 0,
+  "successful_checks": [
+    {
+      "command": ["python3", "research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel_review/check_source.py"],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"PASS\", \"files\": 21, \"theorems\": 26, \"old_heads_and_guards\": 16, \"patch_targets\": 2, \"lean_invocations\": 0}\n",
+      "stderr": ""
+    },
+    {
+      "command": ["python3", "research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel_review/check_math.py"],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"PASS\", \"exhaustive_matrices\": 16067, \"exhaustive_determinants\": 25299, \"singular_matrices_with_bounded_kernel\": 1518, \"chain_fixtures\": 60, \"diagonal_fixtures\": 60, \"source_witnesses\": 12, \"strict_vectors_excluded\": 5055}\n",
+      "stderr": ""
+    }
+  ],
+  "review_helper_development": [
+    "Initial source-check attempt exited 1 at changed-proof-body comparison; parser did not recognize noncomputable def and included the following definitions in degree_bound_teeth.",
+    "Diagnostic second attempt exited 1 at the same comparison and printed the three detected names; author source was unchanged.",
+    "After recognizing noncomputable def, the next attempt exited 1 at patch payload parsing because the license has the standard No newline at end of file marker.",
+    "After explicitly handling that marker, the final source check passed. These were reviewer helper corrections, not author proof or patch failures."
+  ]
+}

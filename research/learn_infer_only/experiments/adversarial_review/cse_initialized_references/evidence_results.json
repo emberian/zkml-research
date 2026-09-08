@@ -1,0 +1,317 @@
+{
+  "Lean_builds_by_reviewer": 0,
+  "author_manifest_files": 15,
+  "author_manifest_sha256": "1c8d73ab40a06bde6dbed4b045d78d67d7fced01c5013141047ac40dc305c5c5",
+  "axiom_pins": [
+    {
+      "axioms": [],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_mono",
+      "theorem": "ready_mono"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_subst",
+      "theorem": "ready_subst"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_head",
+      "theorem": "ready_head"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ordered_refs_forward",
+      "theorem": "ordered_refs_forward"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.shape_refs_valid",
+      "theorem": "shape_refs_valid"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.flattenSystem_covers",
+      "theorem": "flattenSystem_covers"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.raw_covers",
+      "theorem": "raw_covers"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.raw_bounded_ready",
+      "theorem": "raw_bounded_ready"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.raw_forward_valid",
+      "theorem": "raw_forward_valid"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.getD_insert_ne",
+      "theorem": "getD_insert_ne"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.cseGo_initialized",
+      "theorem": "cseGo_initialized"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.empty_initialized",
+      "theorem": "empty_initialized"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.cse_initialized_preservation",
+      "theorem": "cse_initialized_preservation"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.emitted_initialized",
+      "theorem": "emitted_initialized"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.learn_valid_kernel",
+      "theorem": "learn_valid_kernel"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.infer_valid_kernel",
+      "theorem": "infer_valid_kernel"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.input_store_available",
+      "theorem": "input_store_available"
+    },
+    {
+      "axioms": [
+        "propext"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.update_store_available",
+      "theorem": "update_store_available"
+    },
+    {
+      "axioms": [
+        "propext"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.fold_store_available",
+      "theorem": "fold_store_available"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.prefix_store_available",
+      "theorem": "prefix_store_available"
+    },
+    {
+      "axioms": [],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.ready_lookup_some",
+      "theorem": "ready_lookup_some"
+    },
+    {
+      "axioms": [
+        "propext"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.forward_prefix_refs",
+      "theorem": "forward_prefix_refs"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.valid_lookup_success",
+      "theorem": "valid_lookup_success"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.learn_lookups_succeed",
+      "theorem": "learn_lookups_succeed"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.infer_lookups_succeed",
+      "theorem": "infer_lookups_succeed"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_has_shape",
+      "theorem": "hole_has_shape"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_not_initialized",
+      "theorem": "hole_not_initialized"
+    },
+    {
+      "axioms": [
+        "propext"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_fails",
+      "theorem": "hole_lookup_fails"
+    },
+    {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "qualified_name": "Minidregg.Compiler.CseInitializedReferences.hole_lookup_success_refuted",
+      "theorem": "hole_lookup_success_refuted"
+    }
+  ],
+  "companion_HEAD_status_and_umbrella_preserved": true,
+  "crypto_execution": 0,
+  "forbidden_identifiers": [],
+  "four_saved_fresh_proposal_dependency_checks_agree": true,
+  "frozen_predecessor_files_rehashed": 96,
+  "independent_commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n"
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n"
+    },
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/cse_initialized_references/patch_check_8swgee6g",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/minidregg-cse-initialized-references.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/cse_initialized_references/patch_check_8swgee6g",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/minidregg-cse-initialized-references.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/cse_initialized_references/patch_check_8swgee6g",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "ok": true,
+  "patch_exactly_source_and_umbrella_import": true,
+  "patch_sha256": "39afffcab611adc4a3a292bd3935ea551ae5f22e264660c9d2c0523256c74c6c",
+  "reused_companion_source_hashes": {
+    "/Users/ember/dev/minidregg/Compiler/AirFlatten.lean": "504221deeb50018370b35110c60bcd01d0e0e89677a63ed0f023b80c07fe3f54",
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4"
+  },
+  "saved_final_Lean_result_sha256": "ceba811f8783c1c4f14705e92260e98080734d687059269606fdf6271308baa8",
+  "scope": "Independent source/census/hash and isolated patch application. Lean success and axiom guard evaluation are attributed to saved exact author output, with cached companion/external dependencies; no whole-tree rebuild.",
+  "source_sha256": "1e8037c2c4ce35727a804912560b13a89a673682a8ca7405f2d1d4504d884386",
+  "storage_model_has_no_gate_evaluator": true,
+  "theorem_count": 29
+}

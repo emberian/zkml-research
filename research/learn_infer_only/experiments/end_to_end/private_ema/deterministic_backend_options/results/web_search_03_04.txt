@@ -1,0 +1,677 @@
+threshold-fhe/docs/threshold-benchmark.md at main · zama-ai/threshold-fhe · GitHub (https://github.com/zama-ai/threshold-fhe/blob/main/docs/threshold-benchmark.md)
+citeturn144search0 [wordlim: 200] Crawled: 3 weeks ago; # threshold-benchmark.md ... The `PARAMS` variable in `tfhe_test_script_fake_dkg.sh` and `tfhe_test_script_real_dkg.sh` must be changed to support real parameters.
+
+# threshold-benchmark.md
+
+
+# Benchmarking the threshold protocols
+
+The code in this repository implements threshold multi-party computation protocols such as threshold key generation, threshold decryption and so on for TFHE, BFV and BGV. The protocols are designed to be both secure and robust when a fraction of the parties are malicious. This page describes how to run the benchmarks in a wide range of configurations on the threshold protocols.
+
+## Directory overview
+
+  * `benches`
+    * Code needed for benchmarking the threshold protocols.
+  * `conf-trace`
+    * A small library for configuration and tracing functionality.
+  * `config`
+    * Default and example configurations needed when benchmarking and testing the threshold protocols.
+  * `docs`
+    * Documentation is stored here, notably it contains our preliminary draft NIST main submission document.
+  * `examples`
+    * Some example code to get you started.
+  * `experiments`
+    * Other configuration files for benchmarks.
+  * `protos`
+    * Protobuf files, both for testing/benchmarking and for communication between the MPC parties.
+  * `src`
+    * Source code for the actual server and actual MPC protocols.
+  * `test_scripts`
+    * Bash scripts used for testing.
+  * `tests`
+    * Integration tests.
+
+## Benchmarks with real network
+
+Benchmarking with a real network requires to set up said network inside a docker compose orchestrator. This prevents integrating this kind of benchmarks with `Criterion` inside `cargo bench` running command.
+
+In order to bypass this limitation we have automated this `gRPC` benchmarks using `cargo-make` utility.
+
+### Prerequisites for running benchmarks
+
+  * Rust, you need version 1.85.0 or higher.
+  * cargo-make, using `cargo`.
+  * docker, install it using your preferred method, from a package manager or using Docker Desktop.
+  * protoc, install it using your preferred method, e.g., from a package manager.
+  * redis: this is optional, only required for running the redis integration tests. Benchmarks that use redis inside a docker container do not require a local redis installation.
+
+### Generate experiment
+
+To create configuration files, we use a binary located in `src/bin/benches/gen-experiment.rs`. This binary dynamically creates a new experiment setup on the fly. An experiment is composed of a `.yml` file that describes the parties (and telemetry) configuration, and a `.toml` configuration file for the choreographer (`mobygo` or `stairwayctl`) with the network topology of the parties. See `cargo run --bin gen-experiment --features="templating" -- --help`.
+
+### Parties
+
+The MPC parties are run by executing the mobygo binary from `src/bin/moby/mobygo.rs`. We use the same mobygo source file for both `BGV` and `TFHE`, the difference is set via feature flags:
+
+  * For TFHE, compile mobygo with either no feature or --features testing (to allow for centralised key generation)
+  * For BGV, compile mobygo with --features experimental,testing.
+
+We thus have two possible docker images which we can be build, one for `TFHE` and one for `BGV`. Note that `BFV` is very similar to `BGV` as it is possible to convert between the two, so we do not provide a separate build.
+
+TFHE image can be built via
+    
+    cargo make tfhe-docker-image
+
+BGV image can be built via
+    
+    cargo make bgv-docker-image
+
+### Choreographer
+
+To interact with the MPC parties, we use a choreographer called `moby` from `src/bin/moby/moby.rs` for `TFHE`, and `stairwayctl` from `src/experimental/bin/stairwayctl.rs` for `BGV`.
+
+In both cases, the choreographer allows to:
+
+  * Initiate the PRSSs
+  * Create preprocessing (for Distributed Key Generation in both cases and Distributed Decryption for `TFHE`)
+  * Initiate Distributed Key Generation
+  * Initiate Distributed Decryption
+  * Initiate CRS Ceremony (for `TFHE` only)
+  * Retrieve results for the above
+  * Check status of a task
+
+For a list of the available commands, run:
+    
+    ./moby --help
+
+And for information on a specific command, run:
+    
+    ./moby command --help
+
+(Works also with `stairwayctl`)
+
+### Pre-defined commands
+
+With `cargo make` we have pre-defined commands to run experiments for both `TFHE` and `BGV`.
+
+NOTE: Commands prefixed with `tfhe-` can be replaced by `bgv-`to execute experiment for `BGV` instead of `TFHE`.
+
+Either with a fake centralised key generation
+    
+    cargo make tfhe-bench-fake-dkg
+
+Or with a real key generation (which takes much longer)
+    
+    cargo make tfhe-bench-real-dkg
+
+These benchmarks run the scripts located in the `test_scripts` folder.
+
+NOTE: The docker container also runs telemetry tools, therefore when running experiments, all telemetry data are exported to jaeger as well as locally exported in an opentelemetry json file in `temp/telemetry`.
+
+### Simulating Docker Network Setting
+
+To simulate a certain network connection on all containers run the following (replace `wan.sh` with the desired network below):
+    
+    # configure network on all running containers
+    ./docker/scripts/runinallcontainers.sh ./scripts/wan.sh
+    # verify that ping latency has changed as desired
+    docker exec temp-p1-1 ping temp-p2-1
+
+The following networks are simulated using `tc`:
+
+Network Config  | Script  | Latency  | Bandwidth
+--- | --- | --- | ---
+None  | `off.sh`  | none  | no limit
+WAN  | `wan.sh`  | 50 ms  | 100 Mbit/s
+1 Gbps LAN  | `lan1.sh`  | 0.5 ms  | 1 Gbit/s
+10 Gbps LAN  | `lan10.sh`  | 0.5 ms  | 10 Gbit/s
+
+Note that ping RTT will be 2x the latency from the table, when the network config is set on all nodes. Additionally, the docker image uses a non-root user, for tc to work, root user must be used and this must be manually changed in the `local.dockerfile`.
+
+## Profiling
+
+To profile various protocols, see the `benches/` folder.
+
+Following instructions are for Linux based systems. For individual benches one can run the following:
+    
+    cargo bench --bench prep --features="testing extension_degree_8" -- --profile-time 60 triple_generation_z128/n=5_t=1_batch=1000
+
+To see the flamegraph produced, fire up a terminal and open it with your favorite browser:
+    
+    firefox target/criterion/triple_generation_z128/n=5_t=1_batch=1000/profile/flamegraph.svg
+
+For MacOS-based users run the following:
+    
+    cargo flamegraph --root --bench prep --features="testing extension_degree_8" -- triple_generation_z128/n=5_t=1_batch=1000
+
+## Testing
+
+Integration tests are located in the `tests` folder and require a `redis` server to be running locally. Make sure to install `redis`and run `redis-server` in a separate terminal before running these tests.--------------------------------------------------------------------------------
+GitHub - zama-ai/threshold-fhe: Threshold MPC protocols for FHE · GitHub (https://github.com/zama-ai/threshold-fhe)
+citeturn144search1 [wordlim: 200] Crawled: last month; The main way to use the repository is to run experiments and benchmarks on the various threshold protocols, which we describe in detail in the file docs/threshold-benchmark.md. ...     `$ cargo run --bin mobygo --features="choreographer" -- -c temp/tfhe-bench-run.toml prss-init --ring residue-poly-z128 --sid 2 ...       note={\url{https://github.com/zama-ai/threshold-fhe}},
+    * Using noise flooding (section 2.2.1 of the spec)
+    * Using bit decomposition (section 2.2.2 of the spec)
+  * Resharing of FHE key shares
+  * Distributed setup for CRS (common reference string) using in ZK proofs
+
+## Getting Started
+
+### Requirements
+
+See the requirements for the benchmarks.
+
+### A simple example
+
+Important
+
+threshold-fhe is a snapshot of the work-in-progress code of what will eventually become a NIST submission. Use at your own risk!
+
+The main way to use the repository is to run experiments and benchmarks on the various threshold protocols, which we describe in detail in the file docs/threshold-benchmark.md. It is also possible to use the the repository as a library (see the example in examples/distributed_decryption.rs, but the public API is not well-documented yet, so use your own discretion.
+
+To start the benchmarked system `moby` in a dockerized environment locally with 4 parties and threshold 1:
+    
+    `$ cargo make tfhe-docker-image
+    $ cargo make tfhe-bench-run
+    `
+
+You can then start interacting with it via the `mobygo` cli.
+
+  * Initiate an insecure Key Generation
+    
+    `$ cargo run --bin mobygo --features="choreographer" -- -c temp/tfhe-bench-run.toml threshold-key-gen-result --sid 1  --storage-path temp --generate-params bc-params-sam-sns
+    `
+
+  * Initialize PRSS (one time setup)
+    
+    `$ cargo run --bin mobygo --features="choreographer" -- -c temp/tfhe-bench-run.toml prss-init --ring residue-poly-z128 --sid 2
+    `
+
+  * Perform 10 distributed decryptions
+    
+    `# Prepare correlated randomness
+    $ cargo run --bin mobygo --features="choreographer" -- -c temp/tfhe-bench-run.toml preproc-decrypt --decryption-mode noise-flood-small --path-pubkey temp/pk.bin --tfhe-type u16 --num-ctxts 10 --sid 3
+    
+    # Perform online phase
+    $ cargo run --bin mobygo --features="choreographer" -- -c temp/tfhe-bench-run.toml threshold-decrypt --decryption-mode noise-flood-small --path-pubkey temp/pk.bin --tfhe-type u16 --num-ctxts 10 --sid 4  --preproc-sid 3
+    
+    # Check the status
+    $ cargo run --bin mobygo --features="choreographer" -- -c temp/tfhe-bench-run.toml status-check --sid 4  --keep-retry true
+    
+    # Fetch the result
+    $ cargo run --bin mobygo --features="choreographer" -- -c temp/tfhe-bench-run.toml threshold-decrypt-result --sid 4
+    `
+
+### Resources
+
+  * Blog post on our threshold key management system
+  * The Noah's ark paper contains the technical details of some of our protocols
+  * An initial, preliminary version of our proposed NIST submission, which contains the detailed specification of all contained protocols
+
+### Documentation
+
+Documentation is current limited to the docs repository. It will be extended when we open-source our larger repositoru.
+
+## Working with threshold-fhe
+
+### Citations
+
+To cite threshold-fhe in academic papers, please use the following entry:
+    
+    `@Misc{ZamaThresholdFHE,
+      title={threshold-fhe: Threshold MPC protocols for FHE},
+      author={Zama},
+      year={2025},
+      note={\url{https://github.com/zama-ai/threshold-fhe}},
+    }
+    `
+
+### Contributing
+
+This repository is currently not open to external contributions, but we receive feedback as issues or messages (see the Support section).
+
+### License
+
+This software is distributed under the BSD-3-Clause-Clear license. Read this for more details.
+
+
+🌟 If you find this project helpful or interesting, please consider giving it a star on GitHub! Your support helps to grow the community and motivates further development.
+
+## About
+
+Threshold MPC protocols for FHE
+
+### Resources
+
+Readme
+
+License
+
+### Security policy
+
+Security policy
+
+Activity
+
+Custom properties
+
+### Stars
+
+59 stars
+--------------------------------------------------------------------------------
+concrete/docs/core-features/fhe_basics.md at main · zama-ai/concrete · GitHub (https://github.com/zama-ai/concrete/blob/main/docs/core-features/fhe_basics.md)
+citeturn144search2 [wordlim: 200] Crawled: last week; For more comprehensive resources about FHE, visit the awesome Zama repo or fhe.org. ... If the error terms do overflow into the message bits, this can cause an incorrect output (failure) when bootstrapping. ... In TFHE, the Bootstrap operation can be enhanced with a Table Lookup, creating a Programmable Bootstrap (PBS).
+To reduce the noise of a ciphertext, the Bootstrap operation generates a new ciphertext encrypting the same message, but with lower noise. This allows additional operations to be performed on the encrypted message.
+
+In typical FHE programs, operations are followed by a bootstrap, and this sequence repeats multiple times.
+
+## Probability of Error
+
+The amount of noise in a ciphertext is not as bounded as it may appear in the above illustration. As the errors are drawn randomly from a Gaussian distribution, they can be of varying size. This means that we need to be careful to ensure the noise terms do not affect the message bits. If the error terms do overflow into the message bits, this can cause an incorrect output (failure) when bootstrapping.
+
+The noise in a ciphertext isn't strictly bounded, as errors are drawn from a Gaussian distribution and vary in size. If the noise grows too large, it may corrupt the message bits, causing incorrect outputs during bootstrapping.
+
+In Concrete, the default failure probability is set to $$\frac{1}{100000}$$, meaning that 1 in every 100,000 executions may result in an error. Reducing this probability requires adjusting cryptographic parameters, potentially lowering performance. Conversely, allowing a higher probability of error may improve performance.
+
+## Function evaluation
+
+While we’ve covered arithmetic operations, typical programs also involve functions (for example, maximum, minimum, square root). In TFHE, the Bootstrap operation can be enhanced with a Table Lookup, creating a Programmable Bootstrap (PBS).
+
+Concrete uses PBS to evaluate functions homomorphically:
+
+  * Homomorphic univariate function evaluation: $$f(E[x]) = E[f(x)]$$
+
+For example, consider a function (or circuit) that takes a 4 bits input variable and output the maximum value between a clear constant and the encrypted input:
+    
+    import numpy as np
+    
+    def encrypted_max(x: uint4):
+        return np.maximum(5, x)
+
+This function could be turned into a table lookup:
+    
+    def encrypted_max(x: uint4):
+        lut = [5, 5, 5, 5, 5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        return lut[x]
+--------------------------------------------------------------------------------
+GitHub - zama-ai/tfhe-rs: TFHE-rs: A Pure Rust implementation of the TFHE Scheme for Boolean and Integer Arithmetics Over Encrypted Data. · GitHub (https://github.com/zama-ai/tfhe-rs)
+citeturn144search3 [wordlim: 200] Crawled: last month; implementation_notes/tfhe-ntt  | implementation_notes/tfhe-ntt  |    | ... tfhe-benchmark  | tfhe-benchmark  |    | ...       note={\url{https://github.com/zama-ai/tfhe-rs}},
+scripts  | scripts  |    |  
+tasks  | tasks  |    |  
+tests  | tests  |    |  
+tfhe-benchmark  | tfhe-benchmark  |    |  
+tfhe-csprng  | tfhe-csprng  |    |  
+tfhe-fft  | tfhe-fft  |    |  
+tfhe-ntt  | tfhe-ntt  |    |  
+tfhe-zk-pok  | tfhe-zk-pok  |    |  
+tfhe  | tfhe  |    |  
+utils  | utils  |    |  
+.editorconfig  | .editorconfig  |    |  
+.gitattributes  | .gitattributes  |    |  
+.gitbook.yaml  | .gitbook.yaml  |    |  
+.gitignore  | .gitignore  |    |  
+.lfsconfig  | .lfsconfig  |    |  
+.linelint.yml  | .linelint.yml  |    |  
+CODEOWNERS  | CODEOWNERS  |    |  
+CODE_OF_CONDUCT.md  | CODE_OF_CONDUCT.md  |    |  
+--------------------------------------------------------------------------------
+GitHub - zama-ai/awesome-zama: A curated list of amazing Fully Homomorphic Encryption (FHE) resources created by the team at Zama. · GitHub (https://github.com/zama-ai/awesome-zama)
+citeturn144search4 [wordlim: 200] Crawled: 3 months ago;   * FHEVM monorepo: Features the core framework of the Zama Confidential Blockchain Protocol. ...   * Liberating TFHE: Programmable bootstrapping with general quotient polynomials [ePrint version] - November 2022 - WAHC 2022
+  * Practical SNARGs for matrix multiplications over encrypted data [ePrint version] - January 2026 - ePrint Archive
+  * Bootstrapping (T)FHE ciphertexts via automorphisms: Closing the gap between binary and Gaussian keys [ePrint version] - December 2025 - ASIACRYPT 2025
+  * Anamorphic signatures with dictator and recipient unforgeability for long messages - December 2025 - ASIACRYPT 2025
+  * Accelerating TFHE with sorted bootstrapping techniques [ePrint version] - December 2025 - ASIACRYPT 2025
+  * Approximate CRT-based gadget decomposition for fully homomorphic encryption [ePrint version] - November 2025 - IWSEC 2025
+  * Efficient fuzzy labeled PSI from vector ring-OLE [ePrint version] - November 2025 - CANS 2025
+  * Fast homomorphic evaluation of LWR-based PRFs [ePrint version] - October 2025 - ACM CCS 2025
+  * Pool: A practical OT-based OPRF from learning with rounding [ePrint version] - October 2025 - ACM CCS 2025
+  * Towards verifiable FHE in practice: Proving correct execution of TFHE's bootstrapping using plonky2 [ePrint version] - October 2025 - ACM CCS 2025
+  * Error-simulatable sanitization for TFHE and applications [ePrint version] - October 2025 - Communications in Cryptology
+  * Sharing the mask: TFHE bootstrapping on packed messages [ePrint version] - September 2025 - CHES 2025
+  * TFHE gets real: An efficient and flexible homomorphic floating point arithmetic [ePrint version] - September 2025 - CHES 2025
+  * Complex elections via threshold (fully) homomorphic encryption [ePrint version] - August 2025 - ePrint Archive
+  * Row reduction techniques for n-party garbling [ePrint version] - August 2025 - CRYPTO 2025
+  * Transistor: A TFHE-friendly stream cipher [ePrint version] - August 2025 - CRYPTO 2025
+  * Faster VOLEitH signatures from all-but-one vector commitment and half-tree [ePrint version] - July 2025 - ACISP 2025
+  * On proofs of plaintext knowledge for the Joye-Libert encryption scheme - June 2025 - ACNS 2025
+  * Private LoRA fine-tuning of open-source LLMs with homomorphic encryption - [arXiv version] - May 2025 - arXiv Archive
+--------------------------------------------------------------------------------
+hpu_fpga/docs/faq.md at main · zama-ai/hpu_fpga · GitHub (https://github.com/zama-ai/hpu_fpga/blob/main/docs/faq.md)
+citeturn144search5 [wordlim: 200] Crawled: 3 weeks ago;     `git clone https://github.com/zama-ai/tfhe-rs.git ...     cargo bench --bench integer-bench --features=integer,internal-keycache,pbs-stats,hpu,hpu-v80 -p tfhe-benchmark -- --quick
+
+# FAQ
+
+## Table of Contents
+
+  * HPU usage with TFHE-rs
+    * How can I run the TFHE-rs code example?
+    * How can I run regression tests?
+    * How can I run benchmarks?
+  * General card usage
+    * How can I load a freshly compiled arm firmware?
+    * How do I run board diagnostics?
+  * Debug
+    * How can I read internal HPU registers?
+    * How can I change the debug level of the firmware?
+    * How do I reset the board?
+  * Common issues
+    * My board seems inaccessible. What should I do?
+      * check if the device is correctly listed on the PCIe bus
+      * Use xsdb
+        * Check SOC status
+        * JTAG status
+        * Device status
+    * The board is in `COMPAT` mode, what to do?
+    * When I do an `ami_tool overview`, nothing is displayed. What should I do?
+    * During boot, I see `[AMC] iEEPROM_Initialised FAILED`. What should I do?
+
+## HPU usage with TFHE-rs
+
+### How can I run the TFHE-rs code example?
+
+The HPU can be controlled directly by the rust library TFHE-rs starting from version v1.2. One example is located in `tfhe/examples/hpu/matmul.rs`.
+    
+    `git clone https://github.com/zama-ai/tfhe-rs.git
+    cd  tfhe-rs
+    source setup_hpu.sh --config v80
+    cargo run --profile devo --features=hpu-v80 --example hpu_matmul
+    `
+
+For faster build time, when developing, it is recommended to use the profile `devo`.
+
+### How can I run regression tests?
+    
+    `cargo test --release --features hpu-v80 --test hpu
+    `
+
+### How can I run benchmarks?
+    
+    `make bench_integer_hpu
+    `
+
+or
+    
+    `RUSTFLAGS="-C target-cpu=native" __TFHE_RS_BENCH_OP_FLAVOR=DEFAULT __TFHE_RS_FAST_BENCH=FALSE __TFHE_RS_BENCH_TYPE=latency \
+    cargo bench --bench integer-bench --features=integer,internal-keycache,pbs-stats,hpu,hpu-v80 -p tfhe-benchmark -- --quick
+    `
+
+--------------------------------------------------------------------------------
+Releases · zama-ai/tfhe-rs · GitHub (https://github.com/zama-ai/tfhe-rs/releases)
+citeturn144search6 [wordlim: 200] Crawled: 3 months ago; Releases · zama-ai/tfhe-rs ... TFHE-rs v1.6.1 adds missing type exports for th HL API, updates tfhe-ntt dependency to be 0.7.1 which is required for proper compilation. ...   * Blind rotation using Karatsuba multiplication has been added to more easily check implementations
+# Summary
+
+TFHE-rs v1.5.0 brings new features, performance improvements and several fixes across backends.
+
+See full details below:
+
+  * CPU
+  * GPU
+  * HPU
+
+## CPU
+
+### Highlights
+
+The CPU backend now provides friendlier APIs to select parameters. Decompression can now use MultiBit blind rotation for better performance in some cases. The FHE random generation primitive now supports any 64-bit ranges. ZK verification latency has been improved by 42% in the typical case.
+
+### New Features
+
+  * OPRF now supports generating uniform random values over any 64-bit ranges
+  * Decompression now supports Multi-Bit blind rotation
+  * Add MetaParameterFinder for easy parameter selection
+  * The CompressedXofKeySet can now be generated paired with its ClientKey
+  * Add the ability to recreate an LweCiphertext from a modswitched LweCiphertext
+  * Blind rotation using Karatsuba multiplication has been added to more easily check implementations
+
+### Improvements
+
+  * ZK verify latency has been improved by 42% for 256 bits of encrypted data with a 2048 bits CRS
+--------------------------------------------------------------------------------
+kms/docs/operations/advanced/common-errors.md at main · zama-ai/kms · GitHub (https://github.com/zama-ai/kms/blob/main/docs/operations/advanced/common-errors.md)
+citeturn144search7 [wordlim: 200] Crawled: 3 weeks ago; When getting an issue like in https://github.com/zama-ai/kms-core/issues/1422#issuecomment-2460248552 :    thread '<unnamed>' panicked at /var/cache/buildkit/cargo/registry/src/index.crates.io-6f17d22bba15001f/tfhe-0.9.1/src/core_crypto/algorithms/lwe_programmable_bootstrapping/fft64.rs:252:5:
+## `assertion 'left == right' failed` from tfhe-rs
+
+When getting an issue like in https://github.com/zama-ai/kms-core/issues/1422#issuecomment-2460248552 :
+    
+    thread '<unnamed>' panicked at /var/cache/buildkit/cargo/registry/src/index.crates.io-6f17d22bba15001f/tfhe-0.9.1/src/core_crypto/algorithms/lwe_programmable_bootstrapping/fft64.rs:252:5:
+    assertion `left == right` failed
+      left: LweSize(1281)
+     right: LweSize(1025)
+
+  * this most likely indicates a tfhe-rs version mismatch :
+    * error indicates that we are using a decompression key different from the one used for compressing the input ciphertext
+    * in particular, this was using keys from tfhe-rs 0.8 or prior
+  * solution was to use the latest generated keys from the deployed storage (check with marcus)
+
+## `"We can't deserialize our own validated sks key"` from fhevm-backend
+
+If you get an error like :
+    
+    2024-11-06 18:24:35 We can't deserialize our own validated sks key: DeserializationError("invalid value: integer `1`, expected variant index 0 <= i < 1")
+--------------------------------------------------------------------------------
+tfhe-rs/tfhe/docs/getting-started/README.md at main · zama-ai/tfhe-rs · GitHub (https://github.com/zama-ai/tfhe-rs/blob/main/tfhe/docs/getting-started/README.md)
+citeturn144search8 [wordlim: 200] Crawled: last month; The TFHE-rs library implements Zama’s variant of TFHE. ... It implements all homomorphic operations needed, such as addition and function evaluation via Programmable Bootstrapping.
+  * Ciphertext: encrypted messages.
+
+FHE allows to compute on ciphertexts without revealing the content of the messages. A scheme is fully homomorphic if it supports at least two of the following operations when evaluating any programs. ($$x$$ is a plaintext and $$E[x]$$ is the corresponding ciphertext):
+
+  * Homomorphic univariate function evaluation: $$f(E[x]) = E[f(x)]$$
+  * Homomorphic addition: $$E[x] + E[y] = E[x + y]$$
+  * Homomorphic multiplication: $$E[x] * E[y] = E[x * y]$$
+
+### Zama's variant of TFHE
+
+Zama's variant of TFHE is a fully homomorphic scheme that takes fixed-precision numbers as messages. It implements all homomorphic operations needed, such as addition and function evaluation via Programmable Bootstrapping.
+
+Refer to the handbook for more details.
+
+Using TFHE-rs in Rust includes the following steps:
+
+  1. Key generation: generate a pair of keys using secure parameters.
+     * Client key: used for encryption and decryption of data. This key must be kept secret.
+     * Server key (or Evaluation key): used for performing operations on encrypted data. This key could be public.
+  2. Encryption: encrypt plaintexts using the client key to produce ciphertexts.
+  3. Homomorphic operation: perform operations on ciphertexts using the server key.
+  4. Decryption: decrypt the resulting ciphertexts back to plaintexts using the client key.
+
+To understand more about FHE applications, see the 6-minute introduction to homomorphic encryption.--------------------------------------------------------------------------------
+f64 - Rust (https://doc.rust-lang.org/beta/std/primitive.f64.html)
+citeturn144search9 [wordlim: 200] Crawled: 2 months ago; ##### §Unspecified precision ... This function currently corresponds to the `(f64::sin(x), f64::cos(x))`. ...     `let x = std::f64::consts::FRAC_PI_4;
+#### pub fn sin_cos(self) -> (f64, f64)
+
+Simultaneously computes the sine and cosine of the number, `x`. Returns `(sin(x), cos(x))`.
+
+##### §Unspecified precision
+
+The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next. This function currently corresponds to the `(f64::sin(x), f64::cos(x))`. Note that this might change in the future.
+
+##### §Examples
+    
+    `let x = std::f64::consts::FRAC_PI_4;
+    let f = x.sin_cos();
+    
+    let abs_difference_0 = (f.0 - x.sin()).abs();
+    let abs_difference_1 = (f.1 - x.cos()).abs();
+    
+    assert!(abs_difference_0 < 1e-10);
+    assert!(abs_difference_1 < 1e-10);`
+
+1.0.0 · Source
+
+#### pub fn exp_m1(self) -> f64
+
+Returns `e^(self) - 1` in a way that is accurate even if the number is close to zero.
+
+##### §Unspecified precision
+
+The precision of this function is non-deterministic. --------------------------------------------------------------------------------
+Small size fft/ntt · Issue #2968 · zama-ai/tfhe-rs · GitHub (https://github.com/zama-ai/tfhe-rs/issues/2968)
+citeturn144search10 [wordlim: 200] Published: 10 months ago; Crawled: last week; `tfhe_ntt::prime32::Plan::try_new` and friends are hardcoded to fail if you try to use a length < 32.
+
+# Small size fft/ntt #2968
+
+New issue
+
+Copy link
+
+New issue
+
+Copy link
+
+Open
+
+Open
+
+Small size fft/ntt#2968
+
+Copy link
+
+Labels
+
+feature_requestSomething I need does not existSomething I need does not exist
+
+## Description
+
+hacatu
+
+opened on Oct 31, 2025
+
+Issue body actions
+
+What is the problem you want to solve and can not with the current version?
+`tfhe_ntt::prime32::Plan::try_new` and friends are hardcoded to fail if you try to use a length < 32.
+
+Describe the solution you'd like
+These functions should let you set up very short transforms.
+
+Describe alternatives you've considered
+We can just zero pad up to 32, but this makes debugging code using ntt more difficult for no reason.
+
+Additional context
+I'm trying to do a multidimensional ntt on top of the 1D prime32 impl, but it is unnecessarily hard to debug because even in 2D, the minimum transform size now forces us to look at 1024 sized arrays instead of 16.
+
+Reactions are currently unavailable
+
+## Metadata
+
+## Metadata
+
+### Assignees
+
+No one assigned
+
+### Labels
+
+feature_requestSomething I need does not existSomething I need does not exist
+
+### Type
+
+No type
+
+### Projects
+
+No projects
+
+### Milestone
+
+No milestone
+
+### Relationships
+
+None yet
+
+### Development
+
+No branches or pull requests
+--------------------------------------------------------------------------------
+Zama · GitHub (https://github.com/zama-ai)
+citeturn144search11 [wordlim: 200] Crawled: last month; zama-ai/tfhe-rs's past year of commit activity
+
+Image: @zama-ai
+
+# Zama
+
+Zama is an open source cryptography company building state-of-the-art FHE solutions for blockchain and AI.
+
+  * Verified
+
+We've verified that the organization zama-ai controls the domain:
+
+    * zama.org
+
+Learn more about verified organizations
+
+  *   * 3.7k followers
+  * Paris
+  * https://zama.org
+  * @zama
+  * hello@zama.org
+
+  * Overview
+  * Repositories
+  * Projects
+  * Packages
+  * People
+
+More
+
+README.md
+
+🌐 Website | 📒 Documentation | 💬 Community support | 📚 FHE resources by Zama
+
+## Pinned Loading
+
+  1. tfhe-rs tfhe-rs Public
+
+TFHE-rs: A Pure Rust implementation of the TFHE Scheme for Boolean and Integer Arithmetics Over Encrypted Data.
+
+Rust 1.6k 331
+
+  2. fhevm fhevm Public
+
+  * protocol-apps Public
+
+Uh oh!
+
+There was an error while loading. Please reload this page.
+
+zama-ai/protocol-apps's past year of commit activity
+
+TypeScript 6 2 0 14 Updated Jul 29, 2026
+
+  * kms Public
+
+Key Management System for the Zama Protocol.
+
+Uh oh!
+
+There was an error while loading. Please reload this page.
+
+zama-ai/kms's past year of commit activity
+
+Rust 70 19 0 22 Updated Jul 29, 2026
+
+  * tfhe-rs Public
+
+TFHE-rs: A Pure Rust implementation of the TFHE Scheme for Boolean and Integer Arithmetics Over Encrypted Data.
+
+Uh oh!
+
+There was an error while loading. Please reload this page.
+
+zama-ai/tfhe-rs's past year of commit activity
+
+Rust 1,633 331 12 37 Updated Jul 29, 2026
+
+  * zhc Public
+
+Compiler infrastructure for FHE integer programs targeting the HPU platform
+--------------------------------------------------------------------------------
+| Extended External Products of Ciphertexts with (https://github.com/user-attachments/files/19668524/poster2-1.pdf)
+citeturn144search12 [wordlim: 200] Published: 1.2 years ago; Advancements in automorphism-based bootstrapping: closing the gap between binary and Gaussian keys ... github.com/zama-ai
+--------------------------------------------------------------------------------
+DSP-Optimized Fully-Pipelined (https://github.com/user-attachments/files/19668328/DSP-Optimized_Fully-Pipelined_NTT_for_FHE-2.pdf)
+citeturn144search13 [wordlim: 200] Published: 1.2 years ago; https://github.com/encrypt-on/TP-NTT
+--------------------------------------------------------------------------------
+Technology Guide (https://github.com/intel/intel-ipsec-mb/wiki/doc/advanced-encryption-standard-galois-counter-mode-optimized-ghash-function-technology-guide-1693300747.pdf)
+citeturn144search14 [wordlim: 200] Published: 1.2 years ago; Karatsuba can be utilized for Step 1 and
+

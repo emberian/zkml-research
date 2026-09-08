@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "scope": "Independent finite independent-bit sampler specification review",
+  "verdict": "Accepted within stated source/math scope; no mathematical correction required",
+  "author_manifest_sha256": "23226a36d44899189716a63bd97378bdf114b8791fa0f80a39ed3f212b1adf4e",
+  "artifacts": {
+    "REPORT.md": "167895c59cb615dbcf3d1a2401effb969b4dcdc76b9aa4c10e5a2f0712be4c11",
+    "STATUS.md": "ee3f514fea7a722496728b00d5450cf19551ca167be6db0242c2281c4fe2d66c",
+    "NEXT.md": "5a9f0966c6e51d60a6668d9e44c7652343f220a632ce068c8f07165fec32a37a",
+    "check.py": "cdcd6f622475543c86a05ba5610df74293a88f8d96cb0c8e53129b6cc47dbb88",
+    "results.json": "70f88d8126be959dccd96311edddc5e6b47e303abca80973f3cd6221fca78983",
+    "stdout.txt": "70f88d8126be959dccd96311edddc5e6b47e303abca80973f3cd6221fca78983",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_pins.json": "03e82079f1702aafa7b3eb0e2150be2be67aa92a6f6eac4541990beaa6116073",
+    "verification.json": "67ff5d36178c1a55cdda53dda3e51982052923f983c4747f2584fcafad598004",
+    "seal.py": "69001e08b241f86c8612154430c7b4633fe6a00b42c369bfd80bf489ef43ddc7"
+  },
+  "execution": "Only deterministic public integer/Fraction and provenance checks; no random or cryptographic output"
+}

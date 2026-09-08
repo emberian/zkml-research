@@ -1,0 +1,153 @@
+{
+  "artifacts": {
+    "applied_source_hashes.json": {
+      "bytes": 8255,
+      "exists": true,
+      "sha256": "14e1e83d2626da6c44d298ebb5342e0949309a37866753f4ff0abf7cee6eccf9"
+    },
+    "axiom_census.json": {
+      "bytes": 783596,
+      "exists": true,
+      "sha256": "63788cd48bcf0e724bd6323acbcdbe6590e884a1a3e58bd00775c0d1fda8d406"
+    },
+    "cached_dependency_artifacts.json": {
+      "bytes": 3,
+      "exists": true,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "check_all_formal.py": {
+      "bytes": 32316,
+      "exists": true,
+      "sha256": "563b52272d913d00eb5751588befbbe7f7b226d83016d1c53f917dececff57ff"
+    },
+    "companion_source_hashes_after.json": {
+      "exists": false
+    },
+    "companion_source_hashes_before.json": {
+      "bytes": 70833,
+      "exists": true,
+      "sha256": "9a1d3446882c8275e8d08b03c54a39b981939d4cea336e02408e6749db880104"
+    },
+    "compiled_olean_hashes.json": {
+      "exists": false
+    },
+    "report.json": {
+      "exists": false
+    }
+  },
+  "completed_log_schema_sample": {
+    "exit_code": 0,
+    "keys": [
+      "label",
+      "command",
+      "cwd",
+      "exit_code",
+      "stdout",
+      "stderr",
+      "elapsed_seconds",
+      "lean_path",
+      "source",
+      "source_sha256_before",
+      "source_sha256_after"
+    ],
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/results/run_018/398_lean_Compiler_CommittedTerminalFactored7.json",
+    "sha256": "85f950afd0b32bd8218b843bb23d523104a302fe95cd400ac8fd333fc3723087",
+    "source_sha256_after": "b0104178c0194957d581af25504f7571d4d7460f67fd40287d7cc5fd5f5ae199",
+    "source_sha256_before": "b0104178c0194957d581af25504f7571d4d7460f67fd40287d7cc5fd5f5ae199"
+  },
+  "completed_module_log_files_observed": 390,
+  "eligible_for_export_now": false,
+  "files_modified_in_subject_run": 0,
+  "helper_sha256": "39d8f7251eefb854cfed6557b698d66e7978ab6ac52c32c438c832f98e43ab04",
+  "lean_or_build_executions": 0,
+  "note": "Eligibility here checks completion prerequisites only; a separate verified export/cohort is still required.",
+  "observed_utc": "2026-09-08T06:48:11.375646+00:00",
+  "run_directory": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/results/run_018",
+  "saved_report_status": null,
+  "schema": "read-only-integration-cache-schema-inspection-v1",
+  "schemas": {
+    "applied_source_hashes.json": {
+      "entries": 77,
+      "keys_sample": [
+        "Assurance/ResidentReleaseContext.lean",
+        "Assurance/ResidentRestoreFinality.lean",
+        "Theory/PrivatePolicyEvolution.lean",
+        "Assurance/ResidentDurableIntegration.lean",
+        "Assurance/ResidentDurableCollision.lean",
+        "Selvage/RandomnessSelection.lean",
+        "Assurance/ResidentAdaptiveContext.lean",
+        "Assurance/ResidentMultiReceiptSchedule.lean",
+        "Compiler/BFVScaleLiftRefinement.lean",
+        "Compiler/FheRnsScaleDecomposition.lean",
+        "Compiler/IntegerCertificateEmission.lean",
+        "Compiler/LargeIntegerCertificateEmission.lean",
+        "Compiler/ResidentEmaCertificate.lean",
+        "Assurance/ResidentEmaCell.lean",
+        "Assurance/ResidentEmaRelease.lean",
+        "Assurance/ResidentEmaWitness.lean",
+        "Compiler/ContextualGate.lean",
+        "Assurance/ResidentEmaAdaptive.lean",
+        "Theory/PrivateDistributionBudget.lean",
+        "Compiler/AirSimplify.lean"
+      ],
+      "kind": "dict"
+    },
+    "axiom_census.json": {
+      "entries": 72,
+      "keys_sample": [
+        "Assurance.ResidentReleaseContext",
+        "Assurance.ResidentRestoreFinality",
+        "Theory.PrivatePolicyEvolution",
+        "Assurance.ResidentDurableIntegration",
+        "Assurance.ResidentDurableCollision",
+        "Selvage.RandomnessSelection",
+        "Assurance.ResidentAdaptiveContext",
+        "Assurance.ResidentMultiReceiptSchedule",
+        "Compiler.BFVScaleLiftRefinement",
+        "Compiler.FheRnsScaleDecomposition",
+        "Compiler.IntegerCertificateEmission",
+        "Compiler.LargeIntegerCertificateEmission",
+        "Compiler.ResidentEmaCertificate",
+        "Assurance.ResidentEmaCell",
+        "Assurance.ResidentEmaRelease",
+        "Assurance.ResidentEmaWitness",
+        "Compiler.ContextualGate",
+        "Assurance.ResidentEmaAdaptive",
+        "Theory.PrivateDistributionBudget",
+        "Compiler.AirSimplify"
+      ],
+      "kind": "dict"
+    },
+    "cached_dependency_artifacts.json": {
+      "entries": 0,
+      "keys_sample": [],
+      "kind": "list"
+    },
+    "companion_source_hashes_before.json": {
+      "entries": 525,
+      "keys_sample": [
+        "/Users/ember/dev/minidregg/Assurance/AcceptedCellEffectHistory.lean",
+        "/Users/ember/dev/minidregg/Assurance/AirSumcheck.lean",
+        "/Users/ember/dev/minidregg/Assurance/AirSumcheckCubic.lean",
+        "/Users/ember/dev/minidregg/Assurance/AirSumcheckCubicConformance.lean",
+        "/Users/ember/dev/minidregg/Assurance/AirSumcheckQuadratic.lean",
+        "/Users/ember/dev/minidregg/Assurance/AuthenticatedColumnHistoryBridge.lean",
+        "/Users/ember/dev/minidregg/Assurance/AuthenticatedSettlementFinalityWitness.lean",
+        "/Users/ember/dev/minidregg/Assurance/BfvAcceptedCellEffect.lean",
+        "/Users/ember/dev/minidregg/Assurance/BfvConcreteBatchAdmission.lean",
+        "/Users/ember/dev/minidregg/Assurance/BfvConcreteBatchCell.lean",
+        "/Users/ember/dev/minidregg/Assurance/BfvNativeBufferAdmission.lean",
+        "/Users/ember/dev/minidregg/Assurance/BfvPrivateComputationJoin.lean",
+        "/Users/ember/dev/minidregg/Assurance/BfvProofControllerAdmission.lean",
+        "/Users/ember/dev/minidregg/Assurance/BfvSuiteMigrationBoundary.lean",
+        "/Users/ember/dev/minidregg/Assurance/BinaryTowerHeaderCodec.lean",
+        "/Users/ember/dev/minidregg/Assurance/BoundedPageSchemaUpgradeCutover.lean",
+        "/Users/ember/dev/minidregg/Assurance/CredentialSignedEnvelopeEndpoint.lean",
+        "/Users/ember/dev/minidregg/Assurance/CredentialTokenLocalEndpoint.lean",
+        "/Users/ember/dev/minidregg/Assurance/DeclaredHyperedgeHistoryBinding.lean",
+        "/Users/ember/dev/minidregg/Assurance/DeclaredHyperedgeReceipt.lean"
+      ],
+      "kind": "dict"
+    }
+  }
+}
