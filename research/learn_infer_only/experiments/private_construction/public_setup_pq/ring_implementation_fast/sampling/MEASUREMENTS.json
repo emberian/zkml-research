@@ -1,0 +1,405 @@
+{
+  "all_passed": true,
+  "benchmarks": [
+    {
+      "baseline": {
+        "acceptance_prefix_bits": 32,
+        "all_within_support": true,
+        "boundary_rejections": 939,
+        "cap_fallbacks": 0,
+        "coefficients_per_second": 130810.35763503291,
+        "count": 1000000,
+        "direct_threshold_evaluations": 3953,
+        "mean_over_sigma": 0.0010138359375,
+        "mean_standard_errors": 2.5413098267745275,
+        "os_random_bytes_requested": 95959776,
+        "proposal_bytes": 2,
+        "proposals": 15993044,
+        "random_bytes_consumed_in_proposals": 95958264,
+        "raw_samples_persisted": 0,
+        "second_moment_over_sigma_squared": 0.15949117855262757,
+        "seconds": 7.644654583011288,
+        "sigma": 1024,
+        "squeeze_accepts": 997000,
+        "squeeze_rejects": 14991152,
+        "suffix_draws": 0,
+        "table_cells": 4096
+      },
+      "count": 1000000,
+      "native": {
+        "acceptance_prefix_bits": 32,
+        "all_within_support": true,
+        "boundary_rejections": 972,
+        "cap_fallbacks": 0,
+        "coefficients_per_second": 1344111.6138103267,
+        "count": 1000000,
+        "direct_threshold_evaluations": 3879,
+        "mean_over_sigma": 1.27919921875e-05,
+        "mean_standard_errors": 0.03206476930604636,
+        "native_calls": 4124,
+        "os_random_bytes_requested": 96012960,
+        "proposal_bytes": 2,
+        "proposals": 16001866,
+        "random_bytes_consumed_in_proposals": 96011196,
+        "raw_samples_persisted": 0,
+        "second_moment_over_sigma_squared": 0.1590204408903122,
+        "seconds": 0.7439858340076171,
+        "sigma": 1024,
+        "squeeze_accepts": 997092,
+        "squeeze_rejects": 14999923,
+        "suffix_draws": 0,
+        "table_cells": 4096
+      },
+      "sigma": 1024,
+      "speedup": 10.275269008593812
+    },
+    {
+      "baseline": {
+        "acceptance_prefix_bits": 32,
+        "all_within_support": true,
+        "boundary_rejections": 0,
+        "cap_fallbacks": 0,
+        "coefficients_per_second": 120661.74701938525,
+        "count": 1000000,
+        "direct_threshold_evaluations": 3903,
+        "mean_over_sigma": -0.00026958762696385383,
+        "mean_standard_errors": -0.6757559682382707,
+        "os_random_bytes_requested": 128083456,
+        "proposal_bytes": 4,
+        "proposals": 16010419,
+        "random_bytes_consumed_in_proposals": 128083352,
+        "raw_samples_persisted": 0,
+        "second_moment_over_sigma_squared": 0.15957871258354484,
+        "seconds": 8.287630709004588,
+        "sigma": 33554432,
+        "squeeze_accepts": 998029,
+        "squeeze_rejects": 15008487,
+        "suffix_draws": 0,
+        "table_cells": 4096
+      },
+      "count": 1000000,
+      "native": {
+        "acceptance_prefix_bits": 32,
+        "all_within_support": true,
+        "boundary_rejections": 0,
+        "cap_fallbacks": 0,
+        "coefficients_per_second": 871944.9325365509,
+        "count": 1000000,
+        "direct_threshold_evaluations": 4026,
+        "mean_over_sigma": 0.00015646745353937148,
+        "mean_standard_errors": 0.39220574310130096,
+        "native_calls": 4271,
+        "os_random_bytes_requested": 127944448,
+        "proposal_bytes": 4,
+        "proposals": 15992798,
+        "random_bytes_consumed_in_proposals": 127942384,
+        "raw_samples_persisted": 0,
+        "second_moment_over_sigma_squared": 0.15931111923745264,
+        "seconds": 1.146861415996682,
+        "sigma": 33554432,
+        "squeeze_accepts": 997972,
+        "squeeze_rejects": 14990800,
+        "suffix_draws": 0,
+        "table_cells": 4096
+      },
+      "sigma": 33554432,
+      "speedup": 7.2263575994508535
+    }
+  ],
+  "claim_label": "EXECUTED",
+  "command": "research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/benchmark.py",
+  "completed_utc": "2026-09-08 16:08:18 UTC",
+  "elapsed_seconds": 18.79154587496305,
+  "frozen_baseline_sha256": {
+    "MANIFEST.json": "1478757f226a9e4e9531775273da4f7e0b794ff59b6ebe3c3f0d8cff5cd84ae7",
+    "MEASUREMENTS.json": "1a60bfee04fdb3b43367bfff2fdc2feb64e399621b388d64f2d3e38f2f757b3e",
+    "sampler.py": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+  },
+  "native_build_command": [
+    "/usr/bin/cc",
+    "-O3",
+    "-std=c11",
+    "-fPIC",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-dynamiclib",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/proposal_screen.c",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so"
+  ],
+  "native_library_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so",
+  "native_library_sha256": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b",
+  "native_load_seconds": 0.0011796249891631305,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "qualification": "Single runs on a shared machine; source/math refinement is derived, differential tests finite, OS entropy computational security and variable-time side channels separate. Sampler timing is not whole-ring timing.",
+  "raw_samples_persisted": 0,
+  "sampled_random_benchmark_coefficients": 4000000,
+  "search_queries": 0,
+  "source_sha256": {
+    "__init__.py": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1",
+    "benchmark.py": "30f4e4555f9c049b1e3bcab2e8bd07af5cf7b2a63446eee10141466be78810ea",
+    "proposal_screen.c": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4",
+    "reference.py": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd",
+    "sampler.py": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8"
+  },
+  "sources_unchanged_during_run": true,
+  "table_seconds": 0.2670555000077002,
+  "tests": {
+    "all_passed": true,
+    "forced_cap_suffix_controls": [
+      {
+        "outputs_and_counters_equal": true,
+        "stats": {
+          "acceptance_prefix_bits": 32,
+          "boundary_rejections": 4096,
+          "cap_fallbacks": 1,
+          "coefficients_per_second": 1506.4006014424729,
+          "count": 1,
+          "direct_threshold_evaluations": 0,
+          "native_calls": 128,
+          "os_random_bytes_requested": 24576,
+          "proposal_bytes": 2,
+          "proposals": 4096,
+          "random_bytes_consumed_in_proposals": 24576,
+          "seconds": 0.000663834041915834,
+          "sigma": 1024,
+          "squeeze_accepts": 0,
+          "squeeze_rejects": 0,
+          "suffix_draws": 0,
+          "table_cells": 4096
+        },
+        "suffix_accept": false,
+        "target_at_zero_based_proposal": null
+      },
+      {
+        "outputs_and_counters_equal": true,
+        "stats": {
+          "acceptance_prefix_bits": 32,
+          "boundary_rejections": 0,
+          "cap_fallbacks": 0,
+          "coefficients_per_second": 14159.295082615748,
+          "count": 1,
+          "direct_threshold_evaluations": 1,
+          "native_calls": 1,
+          "os_random_bytes_requested": 220,
+          "proposal_bytes": 2,
+          "proposals": 1,
+          "random_bytes_consumed_in_proposals": 6,
+          "seconds": 7.062498480081558e-05,
+          "sigma": 1024,
+          "squeeze_accepts": 0,
+          "squeeze_rejects": 0,
+          "suffix_draws": 1,
+          "table_cells": 4096
+        },
+        "suffix_accept": true,
+        "target_at_zero_based_proposal": 0
+      },
+      {
+        "outputs_and_counters_equal": true,
+        "stats": {
+          "acceptance_prefix_bits": 32,
+          "boundary_rejections": 0,
+          "cap_fallbacks": 0,
+          "coefficients_per_second": 15151.520044167282,
+          "count": 1,
+          "direct_threshold_evaluations": 1,
+          "native_calls": 2,
+          "os_random_bytes_requested": 220,
+          "proposal_bytes": 2,
+          "proposals": 2,
+          "random_bytes_consumed_in_proposals": 12,
+          "seconds": 6.59999786876142e-05,
+          "sigma": 1024,
+          "squeeze_accepts": 1,
+          "squeeze_rejects": 0,
+          "suffix_draws": 1,
+          "table_cells": 4096
+        },
+        "suffix_accept": false,
+        "target_at_zero_based_proposal": 0
+      },
+      {
+        "outputs_and_counters_equal": true,
+        "stats": {
+          "acceptance_prefix_bits": 32,
+          "boundary_rejections": 4095,
+          "cap_fallbacks": 0,
+          "coefficients_per_second": 1404.2478890756693,
+          "count": 1,
+          "direct_threshold_evaluations": 1,
+          "native_calls": 128,
+          "os_random_bytes_requested": 24604,
+          "proposal_bytes": 2,
+          "proposals": 4096,
+          "random_bytes_consumed_in_proposals": 24576,
+          "seconds": 0.0007121249800547957,
+          "sigma": 1024,
+          "squeeze_accepts": 0,
+          "squeeze_rejects": 0,
+          "suffix_draws": 1,
+          "table_cells": 4096
+        },
+        "suffix_accept": true,
+        "target_at_zero_based_proposal": 4095
+      },
+      {
+        "outputs_and_counters_equal": true,
+        "stats": {
+          "acceptance_prefix_bits": 32,
+          "boundary_rejections": 4095,
+          "cap_fallbacks": 1,
+          "coefficients_per_second": 1403.8377837563455,
+          "count": 1,
+          "direct_threshold_evaluations": 1,
+          "native_calls": 128,
+          "os_random_bytes_requested": 24604,
+          "proposal_bytes": 2,
+          "proposals": 4096,
+          "random_bytes_consumed_in_proposals": 24576,
+          "seconds": 0.0007123330142349005,
+          "sigma": 1024,
+          "squeeze_accepts": 0,
+          "squeeze_rejects": 0,
+          "suffix_draws": 1,
+          "table_cells": 4096
+        },
+        "suffix_accept": false,
+        "target_at_zero_based_proposal": 4095
+      }
+    ],
+    "invalid_inputs_rejected": 6,
+    "public_tape_differential": [
+      {
+        "count": 10000,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 1024
+      },
+      {
+        "count": 10000,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 33554432
+      },
+      {
+        "count": 32,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 1
+      },
+      {
+        "count": 32,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 2
+      },
+      {
+        "count": 32,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 128
+      },
+      {
+        "count": 32,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 256
+      },
+      {
+        "count": 32,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 512
+      },
+      {
+        "count": 32,
+        "counter_fields_equal": [
+          "count",
+          "proposals",
+          "squeeze_accepts",
+          "squeeze_rejects",
+          "direct_threshold_evaluations",
+          "boundary_rejections",
+          "cap_fallbacks",
+          "random_bytes_consumed_in_proposals",
+          "suffix_draws"
+        ],
+        "outputs_equal": true,
+        "sigma": 576460752303423488
+      }
+    ]
+  }
+}

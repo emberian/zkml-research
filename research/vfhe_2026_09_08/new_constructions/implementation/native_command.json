@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/implementation/matvecmul/target/release/examples/fused_proof",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/implementation/normal_001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/implementation/matvecmul",
+  "timeout_seconds": 300,
+  "started_utc": "2026-09-08T16:07:24.038984+00:00",
+  "binary_sha256": "7404eec4cbd7b593ea3611654d1de828cdd1d77c459587fcc319112502c28b47",
+  "source_pins_sha256": "0817bb1f0dc083c492138887968d63adfdcf560ef43268c8c9a7981778d2f0c8",
+  "pid": 69140,
+  "exit_code": 0,
+  "elapsed_seconds": 0.07298112503485754,
+  "completed_utc": "2026-09-08T16:07:24.115585+00:00",
+  "source_unchanged": true
+}

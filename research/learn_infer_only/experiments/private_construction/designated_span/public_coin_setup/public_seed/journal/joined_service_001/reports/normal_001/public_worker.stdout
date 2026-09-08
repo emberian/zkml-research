@@ -1,0 +1,14 @@
+{"phase": "public", "stage": "setup_complete", "public_elapsed_ns": 46642873708, "genesis": "102e435d432632d308cd7afbb2193c3e767315622943e0e6aa7ad9bb07a65502", "context_id": "0dfd4ab4af717596cd08bdff6e66249b246918600c8bbded949387e154185a33"}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 63905426083, "learns": 1, "infers": 1, "expiries": 0, "revision": 2}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 130045840916, "learns": 4, "infers": 1, "expiries": 0, "revision": 5}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 201308161500, "learns": 8, "infers": 1, "expiries": 0, "revision": 9}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 276255116500, "learns": 12, "infers": 1, "expiries": 0, "revision": 13}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 346000463458, "learns": 16, "infers": 2, "expiries": 0, "revision": 18}
+{"phase": "public", "stage": "orderly_reopen_complete", "public_elapsed_ns": 365434179708, "revision": 18}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 470997776000, "learns": 20, "infers": 2, "expiries": 0, "revision": 22}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 580690081875, "learns": 24, "infers": 2, "expiries": 0, "revision": 26}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 662778035791, "learns": 28, "infers": 2, "expiries": 0, "revision": 30}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 753193365916, "learns": 32, "infers": 3, "expiries": 0, "revision": 35}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 788084520666, "learns": 33, "infers": 4, "expiries": 1, "revision": 37}
+{"phase": "public", "stage": "full_public_replay_started", "public_elapsed_ns": 788650371083, "revision": 37}
+{"phase": "public_complete", "learns": 33, "infers": 4, "expiries": 1, "all_services_closed": true, "public_seconds": 981.088577083}

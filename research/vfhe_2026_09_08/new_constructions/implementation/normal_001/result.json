@@ -1,0 +1,22 @@
+{
+  "status":"PASS",
+  "ring_degree":1024,
+  "integer_width":2048,
+  "integer_height":4,
+  "ring_inner_dimension":2,
+  "components":2,
+  "fused_prover_calls":1,
+  "cached_field_elements":16384,
+  "pcs_enabled":true,
+  "unchanged_verifier_accepted":true,
+  "integer_matches":4,
+  "encryption_and_fixture_ns":347292,
+  "preprocessing_ns":980208,
+  "prove_ns":35239958,
+  "verify_with_preprocessing_ns":3155166,
+  "decrypt_compare_ns":130167,
+  "input_ciphertext_bytes":32768,
+  "output_ciphertext_bytes":65536,
+  "pcs_opening_bytes":152812,
+  "sumcheck_reported_bytes":1840
+}

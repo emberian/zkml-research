@@ -1,0 +1,80 @@
+{
+  "local_source_sha256": {
+    "notes/ring-switching-connectors.md": "0069c4e86167d98ba28257618386cf1a7ff668633024ebecf3086edb46d15211",
+    "notes/circle-aligned-vfhe.md": "894e438a8561f646bd03b2580f7af9a17d470442fb2ff5c57dc9817b72cb82a6",
+    "notes/fhe-scout-verdicts.md": "090d65dd6868132a003b28dda9ba4c85f76af75dd6eee22dbf92f93a6e8f462b",
+    "notes/ntt-as-gemm.md": "537b2104af6a4a70a3effc05a0d5431a1018d4239fbb1f50b80851f74ce23c8d",
+    "docs/VERDICTS.md": "aaa35266b155ae2f8aba5b1f21a1692fdcbfedbbe8a9e0f35ae0c880a335f77c",
+    "/Users/ember/src/matvecmul/src/protocol/prover/mod.rs": "7ca305f764f4cc7102aa89ae5834b6adbbfd75e65e03463a6baddfccea705aa1",
+    "/Users/ember/src/matvecmul/src/arith/polynomial_ring.rs": "6b937bcc8966021c816d869ae355a6d0faac35f445456b05cc7af0d213481ba5",
+    "/Users/ember/src/matvecmul/src/arith/ntt/tfhe_based_ntt.rs": "0725ec229c892eee92e42891a21ffb12d2ec9b7cdd7076ede324121844629312",
+    "/Users/ember/src/matvecmul/src/arith/linalg.rs": "989f1b0d4770d6a26c6f2fd152200a09a56a6c0a1c8b580ac54ce80c96a5d1ec",
+    "/Users/ember/src/matvecmul/src/rlwe/mod.rs": "fecdb1efee54c07e0706408dceffc130b62a232fa49eaeffc4f0340d85d8b90a",
+    "/Users/ember/src/matvecmul/src/protocol/pcs/whir.rs": "40490b84f0b3f1ccf0e16605a91543ae229e3c4e700cfa7f9bb7f04f16520dd4",
+    "/Users/ember/src/matvecmul/src/protocol/verifier/mod.rs": "404aaf15ef2e8f2958bd8523a684719150d19b50d524d547b83fca9a19738aaf",
+    "/Users/ember/src/matvecmul/Cargo.lock": "d73ad84a9fdf4b34cda8a453fc287e7e33da6afa0517ee255ea4b405d8081b50",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/27.pdf": "b6f9a994615e427e4e50e4c582ad3c515a05170eb751fee27393723182407bda",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/1127.pdf": "4780b61ff7a62cf3c2323cc578769430060437afb37fcc1d4ffab7c305f81ac4"
+  },
+  "queries": {
+    "web_search_queries": [
+      "2026 verifiable FHE ring switching NTT Hadamard proof",
+      "2026 lattice folding Neo Lova verifiable FHE vector",
+      "2025 2026 verifiable homomorphic computation aligned arithmetic ring native proof NTT",
+      "site:eprint.iacr.org 2026 \"verifiable\" \"Hadamard\"",
+      "\"verifiable\" \"NTT\" \"2026\" proof FHE",
+      "\"2026/1127\"",
+      "\"verifiable homomorphic\" \"Hadamard\"",
+      "site:eprint.iacr.org \"2026\" \"FHE\" \"proof\" NTT",
+      "\"Cyclo: Lightweight Lattice-Based Folding\""
+    ],
+    "web_open_attempts": [
+      {
+        "url": "https://github.com/zama-ai/matvecmul",
+        "outcome": "Internal Error; corrected to author remote from local git config"
+      },
+      {
+        "url": "https://github.com/tremblaythibaultl/matvecmul",
+        "outcome": "primary README read"
+      },
+      {
+        "url": "https://github.com/osdnk/cyclo",
+        "outcome": "primary README read"
+      }
+    ],
+    "scry_schema_attempts": [
+      {
+        "relation": "openalex.works",
+        "outcome": "response not retained from first batched tool output; no source claim derived"
+      }
+    ],
+    "scry_sql": [
+      {
+        "file": "scry_01.txt",
+        "query": "SELECT id, display_name, publication_year, doi FROM openalex.works WHERE publication_year >= 2025 AND hasAllTokens(search_text_lc, ['verifiable', 'homomorphic']) ORDER BY publication_year DESC LIMIT 20",
+        "sha256": "882ea2573d3334952eea8c06453da8b4e8d160ca2ff769b4076fffdd3f6e808a",
+        "row_count": 20,
+        "freshness_lag_seconds": 6450409,
+        "record_id": "e27c8eec-e9e4-447e-b8e5-bfbcc4f8c6b9"
+      },
+      {
+        "file": "scry_02.txt",
+        "query": "SELECT id, display_name, publication_year, doi FROM openalex.works WHERE publication_year >= 2024 AND (hasAllTokens(search_text_lc, ['lattice', 'folding']) OR hasAllTokens(search_text_lc, ['ring', 'snark']) OR hasAllTokens(search_text_lc, ['verifiable', 'bootstrapping'])) ORDER BY publication_year DESC LIMIT 40",
+        "sha256": "43f49308391e9c5336acd2844796fc59b3036aeaa284636dc4e8f038d42265a4",
+        "row_count": 38,
+        "freshness_lag_seconds": 6450479,
+        "record_id": "d6195ffb-501d-473a-af32-52654712e1b8"
+      }
+    ],
+    "counts": {
+      "web_search_queries": 9,
+      "web_open_attempts": 3,
+      "web_open_errors": 1,
+      "scry_sql": 2,
+      "scry_schema_attempts": 1,
+      "kagi": 0,
+      "eprint_pdf_network": 0
+    },
+    "followup_basis": "Ninth web search followed the exact Cyclo title returned by Scry; older folding directions are already in VERDICTS."
+  }
+}

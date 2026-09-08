@@ -1,0 +1,35 @@
+{
+  "initial_run": {
+    "status": "PASS",
+    "monomial_pairs": 85,
+    "schoolbook_matvec_shapes": 4,
+    "direct_domain_checks": 8,
+    "timings_ms": [
+      {
+        "n": 64,
+        "duplicate": 61.295,
+        "long": 3.66,
+        "split": 2.636
+      },
+      {
+        "n": 256,
+        "duplicate": 148.456,
+        "long": 15.705,
+        "split": 16.864
+      },
+      {
+        "n": 1024,
+        "duplicate": 819.646,
+        "long": 76.618,
+        "split": 71.566
+      },
+      {
+        "n": 4096,
+        "duplicate": 2418.347,
+        "long": 338.583,
+        "split": 355.343
+      }
+    ]
+  },
+  "reason_for_remeasurement": "Initial duplicate timing included plan construction on every call, unlike the source library cached Plan. Final comparison moves baseline plan construction outside online timing and records it separately."
+}

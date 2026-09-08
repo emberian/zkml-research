@@ -1,0 +1,42 @@
+[
+  {
+    "path": "input_ciphertexts.bin",
+    "bytes": 32768,
+    "sha256": "94b945b127e165348a39a7546e67adc6e4e9ddaa64e1cd5a5c51dbcbd67c4918"
+  },
+  {
+    "path": "matrix_opening.bin",
+    "bytes": 55364,
+    "sha256": "59c914408dec78a26da0b9b958453198294587626a2c086e5ec8004c5fb5e227"
+  },
+  {
+    "path": "output_ciphertexts.bin",
+    "bytes": 65536,
+    "sha256": "4f27a68611a9e3bc212049a5a852fb490e01befc0c741ec6240ba5eeab3f79ff"
+  },
+  {
+    "path": "r0_commitment.bin",
+    "bytes": 64,
+    "sha256": "eabafc8a596b428d3f85694da1446dbd1c44d0747a037cf011df2c7f707b3134"
+  },
+  {
+    "path": "r0_opening.bin",
+    "bytes": 48996,
+    "sha256": "db7b7146c0c6a8b3a48a02ad151ffbee3e1f95f2daf5cba3a876a0662f22d77c"
+  },
+  {
+    "path": "r1_commitment.bin",
+    "bytes": 64,
+    "sha256": "1a1a7fea81d5fb3ad9fd9901ac4a279eb0fd5848d80fe300ad827d27670c5662"
+  },
+  {
+    "path": "r1_opening.bin",
+    "bytes": 48452,
+    "sha256": "c86a63d89b450b36e4ba7618a78ff8b3a647051d0a0323ca1b7216535aef7ffc"
+  },
+  {
+    "path": "result.json",
+    "bytes": 574,
+    "sha256": "355321983161da2ddd25bd3752f7e37aaaac02a61f3afea42815fec5fafadebe"
+  }
+]

@@ -1,0 +1,131 @@
+{
+  "status": "PASS",
+  "workload": {
+    "base_field_modulus": 18446744069414584321,
+    "extension": "quadratic, nonresidue 7",
+    "ring_degree": 1024,
+    "rows": 4,
+    "ring_inner_dimension": 2,
+    "components": 2,
+    "public_deterministic_coefficients": true,
+    "encryption_performed": false,
+    "cpu": "Apple M2 Max",
+    "rustc": "1.98.0-nightly (91fe22da8 2026-06-21)",
+    "profile": "cargo release",
+    "paired_samples": 9,
+    "calls_per_sample": 32,
+    "warmups_per_side": 4
+  },
+  "claim_totals": {
+    "old_median_ns": 550444,
+    "new_median_ns": 63639,
+    "speedup": 8.64947595028206,
+    "saved_ns": 486805,
+    "excludes": "Y/Q generation, MLE table generation, sumcheck rounds, PCS"
+  },
+  "samples": [
+    {
+      "phase": "claim_totals",
+      "sample": 0,
+      "old_ns": 520352,
+      "new_ns": 63996
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 1,
+      "old_ns": 483427,
+      "new_ns": 63481
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 2,
+      "old_ns": 553123,
+      "new_ns": 64062
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 3,
+      "old_ns": 604761,
+      "new_ns": 63352
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 4,
+      "old_ns": 548743,
+      "new_ns": 63348
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 5,
+      "old_ns": 618782,
+      "new_ns": 99416
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 6,
+      "old_ns": 550444,
+      "new_ns": 63639
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 7,
+      "old_ns": 551040,
+      "new_ns": 63358
+    },
+    {
+      "phase": "claim_totals",
+      "sample": 8,
+      "old_ns": 502699,
+      "new_ns": 66406
+    },
+    {
+      "phase": "claim_medians",
+      "ring_degree": 1024,
+      "rows": 4,
+      "inner": 2,
+      "components": 2,
+      "old_ns": 550444,
+      "new_ns": 63639
+    },
+    {
+      "phase": "actual_consumer",
+      "pcs_enabled": true,
+      "verifier_accepted": true,
+      "modified_output_refused": true,
+      "output_coefficients_matched": 8192,
+      "prove_ns": 34514083,
+      "verify_ns": 2739916
+    }
+  ],
+  "validation": {
+    "focused_tests_passed": 2,
+    "explicit_consumer_tests_passed": 1,
+    "modified_output_refusal": "existing verifier unwrap panic, caught by test",
+    "all_three_PCS_openings_enabled": true,
+    "source_patch_replay_exact": true,
+    "unchanged_files": [
+      "src/protocol/verifier/mod.rs",
+      "src/protocol/sumcheck/mod.rs",
+      "src/protocol/transcript/mod.rs",
+      "src/protocol/pcs/whir.rs",
+      "src/protocol/utils.rs",
+      "src/arith/fused_matvec.rs",
+      "src/rlwe/mod.rs",
+      "Cargo.toml",
+      "Cargo.lock"
+    ]
+  },
+  "source": {
+    "upstream_commit": "00379074cad457367a86dde2ecee9d0f318a7e12",
+    "fusion_patch": "../../new_constructions/implementation/fused-matvec.patch",
+    "fusion_patch_sha256": "3ac1aa4ca8e414d5a4703b31b6601113995919f14e925049886d248ba2579443",
+    "base_prover_sha256": "6f93d51085e43916e8d312d0b4355d6f83e0d041a4b9b80476c7f74b932cccdb",
+    "patch_sha256": "419193cdc4c273fa0763d8ececd4374179041e3ba6a0df0b4ae49896a2c28af1",
+    "checked_source_sha256": {
+      "src/protocol/mod.rs": "776a3af1076fbf481bf4d85da37030548313ca1e5aa527dc080ea82f181d6e55",
+      "src/protocol/prover/mod.rs": "3fe3d5116eb532ff1d8b700090f807239c59153404563c3c5b926689de7bd409",
+      "src/protocol/ring_contraction.rs": "4f1a47ff729a19d5e744e81d44dd538cc1d892c4ac9c520544c8c0db96acf838",
+      "src/protocol/prover/ring_contraction_tests.rs": "1f48bf1439122d40ba9c67be84dd2734c133967e7db31aeb28c4b8ada7f7d10a"
+    }
+  }
+}

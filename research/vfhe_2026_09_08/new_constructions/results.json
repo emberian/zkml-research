@@ -1,0 +1,525 @@
+{
+  "status": "PASS",
+  "environment": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "processor": "arm"
+  },
+  "prime": 2013265921,
+  "prime_verified_by_trial_division": true,
+  "controls": {
+    "monomial_pairs": 85,
+    "schoolbook_matvec_shapes": 4,
+    "direct_domain_checks": 8
+  },
+  "benchmark": [
+    {
+      "n": 64,
+      "rows": 3,
+      "inner": 4,
+      "components": 2,
+      "repeats": 3,
+      "input_sha256": "689dfe21926bcd563170b90d5924e5140846f7192e894c24db3fa4e8f4a38526",
+      "output_Y_Q_sha256": "c7debcb4294d2c2f7a5cd02ec58519af61685d97efef33baf3bf0969ce83f08d",
+      "all_three_algorithms_equal": true,
+      "polynomial_evaluation_checks": 30,
+      "implementations": {
+        "duplicate": {
+          "online_ns": [
+            36679417,
+            33692208,
+            30813000
+          ],
+          "online_median_ns": 33692208,
+          "preprocessing_ns": 2585458,
+          "online_counts": {
+            "hadamard_multiplications": 4608,
+            "coefficient_accumulation_additions": 4608,
+            "quotient_recombination_additions": 384,
+            "twist_multiplications": 9216,
+            "butterfly_multiplications": 46080,
+            "butterfly_additions": 92160,
+            "forward_64": 48,
+            "normalization_multiplications": 4608,
+            "inverse_64": 24,
+            "forward_128": 48,
+            "inverse_128": 24
+          },
+          "preprocessing_counts": {},
+          "plans": [],
+          "cached_matrix_field_elements": 0
+        },
+        "long": {
+          "online_ns": [
+            3811000,
+            4317500,
+            4237333
+          ],
+          "online_median_ns": 4237333,
+          "preprocessing_ns": 3730459,
+          "online_counts": {
+            "hadamard_multiplications": 3072,
+            "spectral_accumulation_additions": 3072,
+            "butterfly_multiplications": 6272,
+            "butterfly_additions": 12544,
+            "forward_128": 8,
+            "normalization_multiplications": 768,
+            "inverse_128": 6,
+            "quotient_recombination_additions": 384
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 5376,
+            "butterfly_additions": 10752,
+            "forward_128": 12
+          },
+          "plans": [
+            {
+              "n": 128,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 784229619,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "f3adc34f4c7c689a60abd8ebfa943f8958894c6035e504e9056246d11e2ece2f"
+            }
+          ],
+          "cached_matrix_field_elements": 1536
+        },
+        "split": {
+          "online_ns": [
+            5816667,
+            2998792,
+            4252583
+          ],
+          "online_median_ns": 4252583,
+          "preprocessing_ns": 4312959,
+          "online_counts": {
+            "hadamard_multiplications": 3072,
+            "spectral_accumulation_additions": 3072,
+            "butterfly_multiplications": 5376,
+            "butterfly_additions": 10752,
+            "forward_64": 16,
+            "normalization_multiplications": 768,
+            "inverse_64": 12,
+            "twist_multiplications": 512,
+            "quotient_recombination_multiplications": 384,
+            "quotient_recombination_additions": 384
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 4608,
+            "butterfly_additions": 9216,
+            "forward_64": 24,
+            "twist_multiplications": 768
+          },
+          "plans": [
+            {
+              "n": 64,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 1917679203,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "a6a4054a1020bcc2d5a34e6f65762f05aab78054bfa488f4659dfc0a5e162c25"
+            },
+            {
+              "n": 64,
+              "negacyclic": true,
+              "modulus": 2013265921,
+              "omega": 1917679203,
+              "psi": 784229619,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "a6a4054a1020bcc2d5a34e6f65762f05aab78054bfa488f4659dfc0a5e162c25"
+            }
+          ],
+          "cached_matrix_field_elements": 1536
+        }
+      }
+    },
+    {
+      "n": 256,
+      "rows": 3,
+      "inner": 4,
+      "components": 2,
+      "repeats": 3,
+      "input_sha256": "1def854856dce4baa2f5cf53e3ae1cdaf5060bf55ca91010e5d15d4cd068aacf",
+      "output_Y_Q_sha256": "34fcb7702d0753f8dae611927c9b282f714347f061fccd8216d1e6ff68048b89",
+      "all_three_algorithms_equal": true,
+      "polynomial_evaluation_checks": 30,
+      "implementations": {
+        "duplicate": {
+          "online_ns": [
+            173473916,
+            155407208,
+            165743208
+          ],
+          "online_median_ns": 165743208,
+          "preprocessing_ns": 9547042,
+          "online_counts": {
+            "hadamard_multiplications": 18432,
+            "coefficient_accumulation_additions": 18432,
+            "quotient_recombination_additions": 1536,
+            "twist_multiplications": 36864,
+            "butterfly_multiplications": 239616,
+            "butterfly_additions": 479232,
+            "forward_256": 48,
+            "normalization_multiplications": 18432,
+            "inverse_256": 24,
+            "forward_512": 48,
+            "inverse_512": 24
+          },
+          "preprocessing_counts": {},
+          "plans": [],
+          "cached_matrix_field_elements": 0
+        },
+        "long": {
+          "online_ns": [
+            22125375,
+            23625083,
+            27027334
+          ],
+          "online_median_ns": 23625083,
+          "preprocessing_ns": 23379084,
+          "online_counts": {
+            "hadamard_multiplications": 12288,
+            "spectral_accumulation_additions": 12288,
+            "butterfly_multiplications": 32256,
+            "butterfly_additions": 64512,
+            "forward_512": 8,
+            "normalization_multiplications": 3072,
+            "inverse_512": 6,
+            "quotient_recombination_additions": 1536
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 27648,
+            "butterfly_additions": 55296,
+            "forward_512": 12
+          },
+          "plans": [
+            {
+              "n": 512,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 949217896,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "52d2874ece11180ee283303e56d407abc9d91f9cdd4dede0aa410afa3419c31c"
+            }
+          ],
+          "cached_matrix_field_elements": 6144
+        },
+        "split": {
+          "online_ns": [
+            21107958,
+            20024792,
+            21324459
+          ],
+          "online_median_ns": 21107958,
+          "preprocessing_ns": 21962750,
+          "online_counts": {
+            "hadamard_multiplications": 12288,
+            "spectral_accumulation_additions": 12288,
+            "butterfly_multiplications": 28672,
+            "butterfly_additions": 57344,
+            "forward_256": 16,
+            "normalization_multiplications": 3072,
+            "inverse_256": 12,
+            "twist_multiplications": 2048,
+            "quotient_recombination_multiplications": 1536,
+            "quotient_recombination_additions": 1536
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 24576,
+            "butterfly_additions": 49152,
+            "forward_256": 24,
+            "twist_multiplications": 3072
+          },
+          "plans": [
+            {
+              "n": 256,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 1734697937,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "8931b00723a1b4389c19308e3de1db1fef969f45440ff5a4abb2b1468ae79694"
+            },
+            {
+              "n": 256,
+              "negacyclic": true,
+              "modulus": 2013265921,
+              "omega": 1734697937,
+              "psi": 949217896,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "8931b00723a1b4389c19308e3de1db1fef969f45440ff5a4abb2b1468ae79694"
+            }
+          ],
+          "cached_matrix_field_elements": 6144
+        }
+      }
+    },
+    {
+      "n": 1024,
+      "rows": 3,
+      "inner": 4,
+      "components": 2,
+      "repeats": 3,
+      "input_sha256": "c2ff718b4b4f3431e1aaaa6d21828ce5e592458b212fa31b3547deb23ac59594",
+      "output_Y_Q_sha256": "e5eaafa6efa539120c799959d8ae51948c972365331723a487f671b4af8a5a66",
+      "all_three_algorithms_equal": true,
+      "polynomial_evaluation_checks": 30,
+      "implementations": {
+        "duplicate": {
+          "online_ns": [
+            896897583,
+            1155031917,
+            827575791
+          ],
+          "online_median_ns": 896897583,
+          "preprocessing_ns": 43777667,
+          "online_counts": {
+            "hadamard_multiplications": 73728,
+            "coefficient_accumulation_additions": 73728,
+            "quotient_recombination_additions": 6144,
+            "twist_multiplications": 147456,
+            "butterfly_multiplications": 1179648,
+            "butterfly_additions": 2359296,
+            "forward_1024": 48,
+            "normalization_multiplications": 73728,
+            "inverse_1024": 24,
+            "forward_2048": 48,
+            "inverse_2048": 24
+          },
+          "preprocessing_counts": {},
+          "plans": [],
+          "cached_matrix_field_elements": 0
+        },
+        "long": {
+          "online_ns": [
+            177376750,
+            270345625,
+            269820167
+          ],
+          "online_median_ns": 269820167,
+          "preprocessing_ns": 108329584,
+          "online_counts": {
+            "hadamard_multiplications": 49152,
+            "spectral_accumulation_additions": 49152,
+            "butterfly_multiplications": 157696,
+            "butterfly_additions": 315392,
+            "forward_2048": 8,
+            "normalization_multiplications": 12288,
+            "inverse_2048": 6,
+            "quotient_recombination_additions": 6144
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 135168,
+            "butterfly_additions": 270336,
+            "forward_2048": 12
+          },
+          "plans": [
+            {
+              "n": 2048,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 709697997,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "76cba9b0baad81f34aa8d2817a5dfb872da1b0e52345bc5a94f7c01009f29528"
+            }
+          ],
+          "cached_matrix_field_elements": 24576
+        },
+        "split": {
+          "online_ns": [
+            280840167,
+            86483125,
+            115442292
+          ],
+          "online_median_ns": 115442292,
+          "preprocessing_ns": 87344042,
+          "online_counts": {
+            "hadamard_multiplications": 49152,
+            "spectral_accumulation_additions": 49152,
+            "butterfly_multiplications": 143360,
+            "butterfly_additions": 286720,
+            "forward_1024": 16,
+            "normalization_multiplications": 12288,
+            "inverse_1024": 12,
+            "twist_multiplications": 8192,
+            "quotient_recombination_multiplications": 6144,
+            "quotient_recombination_additions": 6144
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 122880,
+            "butterfly_additions": 245760,
+            "forward_1024": 24,
+            "twist_multiplications": 12288
+          },
+          "plans": [
+            {
+              "n": 1024,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 1054808915,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "4a4c925315f264a34a6887adefe25246c4c8abebbeab9aaeade5876fe24e1723"
+            },
+            {
+              "n": 1024,
+              "negacyclic": true,
+              "modulus": 2013265921,
+              "omega": 1054808915,
+              "psi": 709697997,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "4a4c925315f264a34a6887adefe25246c4c8abebbeab9aaeade5876fe24e1723"
+            }
+          ],
+          "cached_matrix_field_elements": 24576
+        }
+      }
+    },
+    {
+      "n": 4096,
+      "rows": 3,
+      "inner": 4,
+      "components": 2,
+      "repeats": 1,
+      "input_sha256": "cd3b23dc7bf1132601fcb6fedb051a82ba405786494a392b39519bf5a9a08a56",
+      "output_Y_Q_sha256": "7912515a7df5b07b18d464201d65029d45d87439245405a9c7f29872a0265ce2",
+      "all_three_algorithms_equal": true,
+      "polynomial_evaluation_checks": 30,
+      "implementations": {
+        "duplicate": {
+          "online_ns": [
+            2884706375
+          ],
+          "online_median_ns": 2884706375,
+          "preprocessing_ns": 153048333,
+          "online_counts": {
+            "hadamard_multiplications": 294912,
+            "coefficient_accumulation_additions": 294912,
+            "quotient_recombination_additions": 24576,
+            "twist_multiplications": 589824,
+            "butterfly_multiplications": 5603328,
+            "butterfly_additions": 11206656,
+            "forward_4096": 48,
+            "normalization_multiplications": 294912,
+            "inverse_4096": 24,
+            "forward_8192": 48,
+            "inverse_8192": 24
+          },
+          "preprocessing_counts": {},
+          "plans": [],
+          "cached_matrix_field_elements": 0
+        },
+        "long": {
+          "online_ns": [
+            372934583
+          ],
+          "online_median_ns": 372934583,
+          "preprocessing_ns": 379358667,
+          "online_counts": {
+            "hadamard_multiplications": 196608,
+            "spectral_accumulation_additions": 196608,
+            "butterfly_multiplications": 745472,
+            "butterfly_additions": 1490944,
+            "forward_8192": 8,
+            "normalization_multiplications": 49152,
+            "inverse_8192": 6,
+            "quotient_recombination_additions": 24576
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 638976,
+            "butterfly_additions": 1277952,
+            "forward_8192": 12
+          },
+          "plans": [
+            {
+              "n": 8192,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 772837880,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "8e1ed2506da78d3fd7f79a13f4c615c5c0d336ccbc67feb0687a7cd684f23e12"
+            }
+          ],
+          "cached_matrix_field_elements": 98304
+        },
+        "split": {
+          "online_ns": [
+            350786750
+          ],
+          "online_median_ns": 350786750,
+          "preprocessing_ns": 356992542,
+          "online_counts": {
+            "hadamard_multiplications": 196608,
+            "spectral_accumulation_additions": 196608,
+            "butterfly_multiplications": 688128,
+            "butterfly_additions": 1376256,
+            "forward_4096": 16,
+            "normalization_multiplications": 49152,
+            "inverse_4096": 12,
+            "twist_multiplications": 32768,
+            "quotient_recombination_multiplications": 24576,
+            "quotient_recombination_additions": 24576
+          },
+          "preprocessing_counts": {
+            "butterfly_multiplications": 589824,
+            "butterfly_additions": 1179648,
+            "forward_4096": 24,
+            "twist_multiplications": 49152
+          },
+          "plans": [
+            {
+              "n": 4096,
+              "negacyclic": false,
+              "modulus": 2013265921,
+              "omega": 1619789736,
+              "psi": 1,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "e68a40a1943d4a651a830a41227ee3233157efaebf420c636ea72c2f4fa6e1d3"
+            },
+            {
+              "n": 4096,
+              "negacyclic": true,
+              "modulus": 2013265921,
+              "omega": 1619789736,
+              "psi": 772837880,
+              "input_coefficients": "ascending",
+              "output_frequencies": "natural",
+              "normalization": "inverse only",
+              "bit_reversal_sha256": "e68a40a1943d4a651a830a41227ee3233157efaebf420c636ea72c2f4fa6e1d3"
+            }
+          ],
+          "cached_matrix_field_elements": 98304
+        }
+      }
+    }
+  ],
+  "scope": "Public arithmetic prototype; duplicate is our model of source call pattern, not measured Rust/FHE/PCS",
+  "timing_caveat": "Unoptimized Python, fixed order, short local samples; all plans created before online timers. Public matrix spectra cached only by long/split. Compare operation counts first."
+}

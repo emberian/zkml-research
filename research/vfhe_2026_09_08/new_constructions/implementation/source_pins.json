@@ -1,0 +1,13 @@
+{
+  "base": "00379074cad457367a86dde2ecee9d0f318a7e12",
+  "files": {
+    "src/arith/fused_matvec.rs": "92395a2fca9b1e8175ba8af20782565a3702fa29f47a2014af49c3c4e5beae1f",
+    "src/arith/mod.rs": "8640c9ce0def1f7f6ba3ce58eb3333ca9dacbf056d60d96b9497a01e94e404b4",
+    "src/rlwe/mod.rs": "34fccfb78a6022f8badd66f550b20bf792a0d3cd5feca357067cffa0b6f41e23",
+    "src/protocol/prover/mod.rs": "6f93d51085e43916e8d312d0b4355d6f83e0d041a4b9b80476c7f74b932cccdb",
+    "examples/fused_proof.rs": "c2ba68bda50525a2391d4137652364a91fe0f396ff21bf59658d0abe8569286d"
+  },
+  "patch_sha256": "3ac1aa4ca8e414d5a4703b31b6601113995919f14e925049886d248ba2579443",
+  "cargo_lock_sha256": "d73ad84a9fdf4b34cda8a453fc287e7e33da6afa0517ee255ea4b405d8081b50",
+  "verifier_sha256": "404aaf15ef2e8f2958bd8523a684719150d19b50d524d547b83fca9a19738aaf"
+}
