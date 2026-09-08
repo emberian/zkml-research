@@ -1,5 +1,7 @@
 # Research website — published; evidence update prepared
 
+[EXECUTED latest deployment, 2026-09-08] Checkpoint50ba764 is published at https://emberian.github.io/zkml-research/ . Workflow34241270510 succeeded. All six served files and20 immutable source blobs match their production hashes; the site has11 cards and27 source excerpts. `deployment-update-003.json` retains the record. The formal card reports952pins and the nonlinear card the completed480-event trajectory. Earlier ongoing/prepared paragraphs below are historical.
+
 [EXECUTED final refresh preparation, 2026-09-08] The formal card now reports the completed clean project-source run018 (952 pins / 72 proposals / 567 rebuilt modules), and the nonlinear card reports the completed 480-event trajectory. The complete source paragraphs and custody limits were reviewed before refreshing locks. This changes card text and evidence links only; previous layout/interaction review is retained, with no new browser-review claim. Strict production/deployment verification follows the named source commit.
 
 [EXECUTED third deployment] Checkpoint df75a06 is public. Workflow34195495164

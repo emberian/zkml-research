@@ -1,5 +1,7 @@
 # Evidence-update handoff and published-site maintenance
 
+[EXECUTED latest deployment, 2026-09-08] Checkpoint50ba764 is published at https://emberian.github.io/zkml-research/ . Workflow34241270510 succeeded. All six served files and20 immutable source blobs match their production hashes; the site has11 cards and27 source excerpts. `deployment-update-003.json` retains the record. The formal card reports952pins and the nonlinear card the completed480-event trajectory. Earlier ongoing/prepared paragraphs below are historical.
+
 [EXECUTED current] The 11-card update, including the 915-pin formal card, is
 published at df75a06 and its served bytes/source hashes are verified in
 deployment-update-002.json. Later source-closure builds and underway encrypted

@@ -1,4 +1,4 @@
-# Learn/infer-only resident — third overnight swarm active
+# Learn/infer-only resident — third overnight swarm closeout
 
 ## Final collection — 2026-09-08 14:52 UTC
 
@@ -21,7 +21,7 @@
 [EXECUTED authorization, 2026-09-07 late evening EDT] Ember cleared the old
 goal and explicitly authorized broad parallel research and proof-system work
 until **2026-09-08 11am EDT /15:00 UTC**, with primary-source web/Scry research
-and a GitHub Pages site. The new goal is active. Baseline is recovery357b437;
+and a GitHub Pages site. This records the authorization for the completed work period. Baseline is recovery357b437;
 [the run brief](../../swarm/OVERNIGHT-2026-09-08.md) records scope, ownership and
 companion protections. Existing dirty minidregg work is preserved by isolated
 proof checkouts/patches and a HEAD/status/content baseline.

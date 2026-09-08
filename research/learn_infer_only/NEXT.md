@@ -1,4 +1,4 @@
-# Third overnight run — active ownership and inherited resume points
+# Third overnight run — final handoff and inherited resume points
 
 ## Deadline handoff — 2026-09-08
 
@@ -13,7 +13,7 @@
 
 [EXECUTED protections] Do not resume the previously stopped ideal-window or signer/verified-route tasks. Main minidregg, breadstuffs and the eprint mirror remain read-only. Preserve the old failed TFHE run. No new workload is launched in the deadline closeout.
 
-[EXECUTED authorization] Active until **2026-09-08 11am EDT /15:00 UTC**.
+[EXECUTED authorization] Work period ends at **2026-09-08 11am EDT /15:00 UTC**.
 Root owns shared ledgers, named commits and final integration. Read
 [the current brief](../../swarm/OVERNIGHT-2026-09-08.md). The earlier paused-goal
 paragraphs below are historical recovery records, not the current goal state.
