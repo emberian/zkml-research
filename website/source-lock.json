@@ -1,0 +1,146 @@
+{
+  "bfv": {
+    "excerpt_sha256": "011f60e9c030274a4b8c5824c6553af7fbfca0f0bbbc6ac7876f7c17e376aec5",
+    "lines": [
+      1,
+      49
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md"
+  },
+  "bfv_cost": {
+    "excerpt_sha256": "a5b40602c2c32d3b414a583e9f015fdf87e98df0968c419042e97cadd5e29d4f",
+    "lines": [
+      95,
+      123
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md"
+  },
+  "credentials": {
+    "excerpt_sha256": "14f8a8e56e1eb5bd4119e940e86f8ceef0a1d0f85445fb048cfdd45aa6e63d30",
+    "lines": [
+      75,
+      99
+    ],
+    "path": "research/learn_infer_only/SECURITY_GAME.md"
+  },
+  "designated": {
+    "excerpt_sha256": "0e7c4bc2d115066aaa8a4d2dedf3e1099f98035bc087a6df1218c72b1a963c55",
+    "lines": [
+      1,
+      1
+    ],
+    "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json"
+  },
+  "designated_scope": {
+    "excerpt_sha256": "ebe9490d2ec1f517ca9dcc76bef98dad6b5c52ec82f839bf21c0b7f5c740d253",
+    "lines": [
+      112,
+      120
+    ],
+    "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md"
+  },
+  "formal": {
+    "excerpt_sha256": "2a6991825b67e12b717b2746f71b3c9f3385c5286aeb4b4e9f0a7be019ec8118",
+    "lines": [
+      1,
+      16
+    ],
+    "path": "research/learn_infer_only/formal/integration/README.md"
+  },
+  "game": {
+    "excerpt_sha256": "95afe65f28afba0e9932441e633b56368d2359ac0a5111fe23f1652805b1f7ed",
+    "lines": [
+      14,
+      44
+    ],
+    "path": "research/learn_infer_only/SECURITY_GAME.md"
+  },
+  "house": {
+    "excerpt_sha256": "eef118b4963770cc58dc4c168e42abdfec085dec4941dab9942ada613fe81702",
+    "lines": [
+      1,
+      48
+    ],
+    "path": "README.md"
+  },
+  "ladder": {
+    "excerpt_sha256": "c8e4e0026923ef3385f31bb1c619cbbfea8989eb0b7f06a2857b5125f01689da",
+    "lines": [
+      1,
+      46
+    ],
+    "path": "research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md"
+  },
+  "notes": {
+    "excerpt_sha256": "08c33b34316dc486a4946418ed0eb29e24357298480b7af7705b8efbfd1c2faa",
+    "lines": [
+      1,
+      24
+    ],
+    "path": "notes/README.md"
+  },
+  "pq": {
+    "excerpt_sha256": "44efd6407a495ddec725e0f03e6e2794c6b0d579d182f7d22bb4c9f16e459bbb",
+    "lines": [
+      1,
+      37
+    ],
+    "path": "research/learn_infer_only/PQ_COMPOSITION.md"
+  },
+  "pq_interfaces": {
+    "excerpt_sha256": "e7ff6895cfd973d2dbee9a9dfa0d2016a4e8d27c7d3c7684ba9f8e0917f64c99",
+    "lines": [
+      43,
+      59
+    ],
+    "path": "research/learn_infer_only/PQ_COMPOSITION.md"
+  },
+  "semantic": {
+    "excerpt_sha256": "9eee8b7d574cd178325c8a09ba60c9fb85fb5da50ee49437c11a1bac1b5ce9d6",
+    "lines": [
+      1,
+      74
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md"
+  },
+  "semantic_image": {
+    "excerpt_sha256": "1f46089b5f609158aaf424ba32bfc3f84cfd2ba817ccc0a05b06a3a5d8de74a8",
+    "lines": [
+      144,
+      169
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md"
+  },
+  "setup": {
+    "excerpt_sha256": "9c9c6d4641383b5a181fea5418d76ee723ab1bb0cf54a9e4863ec66d9bf9741f",
+    "lines": [
+      1,
+      36
+    ],
+    "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md"
+  },
+  "setup_run": {
+    "excerpt_sha256": "c3cbf9b4bc1b01dd0c2796c55c55c9aea4985fb5f26f4c6dc65cf57440fe264a",
+    "lines": [
+      1,
+      1
+    ],
+    "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/report.json"
+  },
+  "tfhe": {
+    "excerpt_sha256": "388beeebac7c42b634f7ed24e1043094655dbff4710419541dad0e71332e6757",
+    "lines": [
+      1,
+      76
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/REPORT.md"
+  },
+  "verdicts": {
+    "excerpt_sha256": "84d2618f939d71c725129e1eb61c4f21e786f16558e70932b8046f78e605e4ad",
+    "lines": [
+      93,
+      126
+    ],
+    "path": "docs/VERDICTS.md"
+  }
+}

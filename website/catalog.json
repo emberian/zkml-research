@@ -1,0 +1,360 @@
+{
+  "title": "zkml-research",
+  "reviewed": "2026-09-08",
+  "repository": "https://github.com/emberian/zkml-research",
+  "branch": "dev",
+  "base_path": "/zkml-research/",
+  "sources": {
+    "house": {
+      "path": "README.md",
+      "lines": [
+        1,
+        48
+      ],
+      "label": "Purpose and house rule"
+    },
+    "verdicts": {
+      "path": "docs/VERDICTS.md",
+      "lines": [
+        93,
+        126
+      ],
+      "label": "Current verdicts · soundness accounting"
+    },
+    "notes": {
+      "path": "notes/README.md",
+      "lines": [
+        1,
+        24
+      ],
+      "label": "Research notes index"
+    },
+    "semantic": {
+      "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md",
+      "lines": [
+        1,
+        74
+      ],
+      "label": "Semantic study · results and denominators"
+    },
+    "semantic_image": {
+      "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md",
+      "lines": [
+        144,
+        169
+      ],
+      "label": "Semantic study · exposed feature image"
+    },
+    "bfv": {
+      "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
+      "lines": [
+        1,
+        49
+      ],
+      "label": "BFV integration · results and limitations"
+    },
+    "bfv_cost": {
+      "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
+      "lines": [
+        95,
+        123
+      ],
+      "label": "BFV integration · measured costs"
+    },
+    "designated": {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json",
+      "lines": [
+        1,
+        1
+      ],
+      "label": "Completed designated workload · executed JSON"
+    },
+    "designated_scope": {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md",
+      "lines": [
+        112,
+        120
+      ],
+      "label": "Designated workload · scope and assumptions"
+    },
+    "setup": {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md",
+      "lines": [
+        1,
+        36
+      ],
+      "label": "Public-coin setup · written proof review"
+    },
+    "setup_run": {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/report.json",
+      "lines": [
+        1,
+        1
+      ],
+      "label": "Public-coin primitive · executed JSON"
+    },
+    "tfhe": {
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/REPORT.md",
+      "lines": [
+        1,
+        76
+      ],
+      "label": "Encrypted EMA · feasibility and limits"
+    },
+    "formal": {
+      "path": "research/learn_infer_only/formal/integration/README.md",
+      "lines": [
+        1,
+        16
+      ],
+      "label": "Checked Lean proposal · exact package and scope"
+    },
+    "game": {
+      "path": "research/learn_infer_only/SECURITY_GAME.md",
+      "lines": [
+        14,
+        44
+      ],
+      "label": "Resident security game · functionality and leakage"
+    },
+    "credentials": {
+      "path": "research/learn_infer_only/SECURITY_GAME.md",
+      "lines": [
+        75,
+        99
+      ],
+      "label": "Resident security game · surviving credentials"
+    },
+    "ladder": {
+      "path": "research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md",
+      "lines": [
+        1,
+        46
+      ],
+      "label": "Independent-key ladder · construction and primary theorem"
+    },
+    "pq": {
+      "path": "research/learn_infer_only/PQ_COMPOSITION.md",
+      "lines": [
+        1,
+        37
+      ],
+      "label": "Post-quantum composition · assumptions ledger"
+    },
+    "pq_interfaces": {
+      "path": "research/learn_infer_only/PQ_COMPOSITION.md",
+      "lines": [
+        43,
+        59
+      ],
+      "label": "Post-quantum audit · source games and receipt boundary"
+    }
+  },
+  "paths": [
+    {
+      "id": "proof-systems",
+      "number": "01",
+      "title": "Proof systems",
+      "question": "What does an accepted proof actually establish?",
+      "description": "Follow the soundness assumptions, then inspect the checked compilation and arithmetic ingredients.",
+      "steps": [
+        {
+          "label": "Start with the current verdicts",
+          "source": "verdicts"
+        },
+        {
+          "label": "Navigate the research lanes",
+          "source": "notes"
+        },
+        {
+          "label": "Inspect the checked Lean proposal",
+          "source": "formal"
+        }
+      ],
+      "result": "formal-package"
+    },
+    {
+      "id": "encrypted-learning",
+      "number": "02",
+      "title": "Encrypted learning",
+      "question": "Can protected state keep learning?",
+      "description": "Read the useful plaintext fixture, its exact encrypted replay, and the smaller nonlinear feasibility result.",
+      "steps": [
+        {
+          "label": "Understand the semantic study",
+          "source": "semantic"
+        },
+        {
+          "label": "Trace the full BFV integration",
+          "source": "bfv"
+        },
+        {
+          "label": "Inspect encrypted nonlinear updates",
+          "source": "tfhe"
+        }
+      ],
+      "result": "semantic-bfv"
+    },
+    {
+      "id": "mental-autarky",
+      "number": "03",
+      "title": "Mental autarky",
+      "question": "Who can still read the resident’s state?",
+      "description": "Here this means a private space for a continuing learner, even against its host. Begin with the declared exposure game and surviving read capabilities.",
+      "steps": [
+        {
+          "label": "Read the functionality and leakage contract",
+          "source": "game"
+        },
+        {
+          "label": "Examine recipient capabilities",
+          "source": "credentials"
+        },
+        {
+          "label": "Study a conditional bounded construction",
+          "source": "ladder"
+        }
+      ],
+      "result": "private-resident"
+    }
+  ],
+  "cards": [
+    {
+      "id": "semantic-bfv",
+      "status": "executed",
+      "topic": "encrypted-learning",
+      "title": "Useful features, exact encrypted replay",
+      "metric": "96 / 96",
+      "metric_label": "integer answers match",
+      "body": "A selected public semantic fixture completed 384 Learn events, 96 Infer events and 256 exact-original expiries through BFV and an independently verifying durable receiver. One shared-machine run took 219.733 seconds.",
+      "limit": "The receiver retains the full BFV key. This selected subset has 28/32 correct final labels; exact arithmetic does not make every semantic answer correct.",
+      "sources": [
+        "bfv",
+        "bfv_cost"
+      ]
+    },
+    {
+      "id": "semantic-study",
+      "status": "executed",
+      "topic": "encrypted-learning",
+      "title": "A useful, deliberately small semantic learner",
+      "metric": "91.0889%",
+      "metric_label": "7,462 / 8,192 final labels",
+      "body": "A frozen SmolLM3 factual scorer feeds a four-bin recency learner. Original features score 51.0010% on the same fresh synthetic text/history study. All eleven preregistered gates passed.",
+      "limit": "A trusted plaintext issuer supplies the abstraction. The study is local and synthetic, with repeated texts across histories. Spanning exact-score credentials reveal its small aggregate image.",
+      "sources": [
+        "semantic",
+        "semantic_image"
+      ]
+    },
+    {
+      "id": "designated-workload",
+      "status": "executed",
+      "topic": "mental-autarky",
+      "title": "A complete designated-recipient workload",
+      "metric": "384 / 96 / 256",
+      "metric_label": "Learn / Infer / expiries",
+      "body": "The original fixed-span workload completed with all 96 integer comparisons passing. Public processing, independent replay and service shutdown precede private decoding. Public work took 11,697.338 seconds (3h 14m 57s).",
+      "limit": "Classical DDH, a known public fixture, honest setup/erasure and shared-account processes. Recipient credentials still read their full fixed per-input query span outside the journal. Final label accuracy remains 18/32.",
+      "sources": [
+        "designated",
+        "designated_scope",
+        "credentials"
+      ]
+    },
+    {
+      "id": "public-coin-setup",
+      "status": "derived",
+      "topic": "mental-autarky",
+      "title": "Setup without computing a scalar master",
+      "metric": "Public coins",
+      "metric_label": "a conditional construction",
+      "body": "Written review accepts an exact-distribution argument for a public constructor with no scalar-master generation or private projection-key delivery. A separate primitive run completed 33 Learn events, four Infer events and one expiry.",
+      "limit": "Honest direct sampling and independent honest recipient registration are premises. Public consistency does not certify unknown logarithms. Recipients retain the full fixed span; this card covers the primitive and proof review, not a durable journal join.",
+      "sources": [
+        "setup",
+        "setup_run"
+      ]
+    },
+    {
+      "id": "encrypted-ema",
+      "status": "executed",
+      "topic": "encrypted-learning",
+      "title": "Nonlinear updates on encrypted addresses",
+      "metric": "2 updates",
+      "metric_label": "plus 2 encrypted sign queries",
+      "body": "A TFHE probe updates four encrypted signed bytes using encrypted-address selection and signed floor arithmetic. All four separate-process full-byte replay pairs match, and encrypted state continues between calls.",
+      "limit": "A bounded feasibility result on a preregistered public fixture. The full reader key remains. This probe does not establish useful semantic learning, restricted release or a journal integration.",
+      "sources": [
+        "tfhe"
+      ]
+    },
+    {
+      "id": "formal-package",
+      "status": "executed",
+      "topic": "proof-systems",
+      "title": "A checked collection of formal ingredients",
+      "metric": "708 pins",
+      "metric_label": "across 53 Lean modules",
+      "body": "The saved combined proposal passed its overlay build, four umbrellas, patch application/content checks and import boundaries. It includes exact arithmetic and mixed-journal window framing.",
+      "limit": "A checked proposal patch, not a landed companion change. Existing dependency oleans were reused. No clean whole-tree build or universal Rust refinement is inferred.",
+      "sources": [
+        "formal"
+      ]
+    },
+    {
+      "id": "soundness-regimes",
+      "status": "source",
+      "topic": "proof-systems",
+      "title": "A security number needs its assumptions",
+      "metric": "Name the regime",
+      "metric_label": "before quoting a soundness figure",
+      "body": "The current verdict ledger distinguishes unique-decoding, idealised Johnson and legacy capacity accounting. The withdrawn capacity figure must not be presented as the system’s security level.",
+      "limit": "This is a guide to the repository’s current verdicts, not a fresh protocol audit. Query accounting and commit-phase error must not silently become a whole-system claim.",
+      "sources": [
+        "verdicts"
+      ]
+    },
+    {
+      "id": "finite-ladder",
+      "status": "derived",
+      "topic": "mental-autarky",
+      "title": "Private continuation with a fixed horizon",
+      "metric": "2 transitions",
+      "metric_label": "a source-conditional FE ladder",
+      "body": "Independent functional-encryption instances are set up backwards, so each transition embeds an already existing future public key. The argument retains the whole future key package in the adversary’s view.",
+      "limit": "A classical, selective-state construction direction under explicit primitive assumptions and honest erasure. Public commands, copying and authorized branches remain. The symbolic witness does not implement encryption.",
+      "sources": [
+        "ladder"
+      ]
+    },
+    {
+      "id": "private-resident",
+      "status": "open",
+      "topic": "mental-autarky",
+      "title": "A private resident needs restricted read authority",
+      "metric": "Still open",
+      "metric_label": "the full exposure target",
+      "body": "The target releases only the authorized answer while preserving reusable protected state. A journal can regulate a published history; surviving keys may still read inputs or support local counterfactual computations.",
+      "limit": "Successful encrypted arithmetic, durable integrity and useful adaptation are separate properties. Their current demonstrations do not establish full mental autarky under the declared exposure game.",
+      "sources": [
+        "game",
+        "credentials"
+      ]
+    },
+    {
+      "id": "pq-composition",
+      "status": "open",
+      "topic": "proof-systems",
+      "title": "Post-quantum composition remains an obligation",
+      "metric": "Separate games",
+      "metric_label": "for every cryptographic component",
+      "body": "The source audit distinguishes conditional post-quantum obfuscation, the games needed for randomized functional encryption, and the receipt’s classical random-oracle model. A primitive label does not establish their conjunction.",
+      "limit": "Stronger auxiliary-state assumptions, correctness interfaces, primitive instantiations and receipt composition require their own arguments. This site makes no whole-resident post-quantum security claim.",
+      "sources": [
+        "pq",
+        "pq_interfaces"
+      ]
+    }
+  ]
+}
