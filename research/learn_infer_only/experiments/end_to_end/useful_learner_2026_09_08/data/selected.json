@@ -1,0 +1,2715 @@
+{
+  "config_sha256": "1e051be559a01ce600f4434bf9a85c2585023f14e425d86c55cf0cd77a0ca5ee",
+  "train": [
+    {
+      "text": "Could you send me and up date on the arrival of my card?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 118
+    },
+    {
+      "text": "I just had a look at my statement. Why have I been changed for using the ATM?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9394
+    },
+    {
+      "text": "I have a payment I didnt make on my account",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3538
+    },
+    {
+      "text": "My card was stolen last night.",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1555
+    },
+    {
+      "text": "Where is my new card if I haven't received it yet?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 86
+    },
+    {
+      "text": "I don't understand why I was charged extra for withdrawing money?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9353
+    },
+    {
+      "text": "A payment that I didn't make appears in my app.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3648
+    },
+    {
+      "text": "I think someone stole my card because I can't find it.",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1535
+    },
+    {
+      "text": "How do I track the card you sent me?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 26
+    },
+    {
+      "text": "Is there a cash withdrawal fee? Because I just got charged?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9382
+    },
+    {
+      "text": "The app is showing a payment I never made.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3561
+    },
+    {
+      "text": "I can't find my card!  What should I do?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1524
+    },
+    {
+      "text": "Can I track the card that was just sent to me?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 83
+    },
+    {
+      "text": "Have you started charging for cash withdrawals? I always thought it was free until I noticed this fee. How much is the fee?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9462
+    },
+    {
+      "text": "I need to know where this charge is coming from?",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3630
+    },
+    {
+      "text": "What should I do if I think my card was stolen?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1495
+    },
+    {
+      "text": "What is the status of my card's delivery?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 21
+    },
+    {
+      "text": "Why did I get charged for withdrawing cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9471
+    },
+    {
+      "text": "Someone might have access to my card!  There are some strange payments showing up on my account.  What do I do?",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3489
+    },
+    {
+      "text": "I need to order a new card as my other one was stolen.",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1534
+    },
+    {
+      "text": "I'm still waiting for my card that was issued a week ago. What should I do?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 113
+    },
+    {
+      "text": "Is there a fee for a cash withdrawal?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9423
+    },
+    {
+      "text": "There has been a payment  in the App that has not be done by me.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3504
+    },
+    {
+      "text": "Report stolen card",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1513
+    },
+    {
+      "text": "Is there a way to track the new card you sent me?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 90
+    },
+    {
+      "text": "Why was my account assessed a fee for an ATM transaction?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9364
+    },
+    {
+      "text": "how do i dispute a payment I didnt make",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3615
+    },
+    {
+      "text": "I lost my card, what do I do now?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1533
+    },
+    {
+      "text": "How do I track the card you sent to me?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 116
+    },
+    {
+      "text": "When I withdrew my money, why was there an extra charge?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9380
+    },
+    {
+      "text": "A payment shows up on the app that I never made.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3577
+    },
+    {
+      "text": "Someone took my card without permission",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1528
+    },
+    {
+      "text": "My credit card payment has been in pending status for a super long time.  I don't get it.  Why is it like this?  When will it go through?",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5234
+    },
+    {
+      "text": "when will my transfer clear",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6092
+    },
+    {
+      "text": "The recipient doesn't see the money transaction I made",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2793
+    },
+    {
+      "text": "I requested money from the ATM and it didn't give me as much as I requested.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2463
+    },
+    {
+      "text": "How long does it actually take for a card payment to go through? There's one stuck since a couple days already that doesn't seem to move",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5097
+    },
+    {
+      "text": "Hello, I went ahead and checked my account details to be sure, and they are definitely correct.  I've had a transfer pending for a while, and I can't understand why it hasn't gone through yet.",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6108
+    },
+    {
+      "text": "When are you going to transfer the money?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2735
+    },
+    {
+      "text": "Yikes!  I didn't get the amount of money that I requested.  What do I do now?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2423
+    },
+    {
+      "text": "Is there something wrong with my card payment? It's been pending a really, really long time.",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5242
+    },
+    {
+      "text": "How long is the wait for a money transfer to post?",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6037
+    },
+    {
+      "text": "When will the transaction be done?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2751
+    },
+    {
+      "text": "How can we correct a mistake on an ATM transaction?  The app shows what I should have gotten.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2453
+    },
+    {
+      "text": "I notice there's a pending payment on my card.",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5121
+    },
+    {
+      "text": "How long do EU transfers actually take? I recently bought something online a few days ago, sent the money immediately online but the seller says it's still not there yet.",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6017
+    },
+    {
+      "text": "How long should it take for a transfer to go through? I have been waiting a while.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2795
+    },
+    {
+      "text": "I asked for more cash than what was received",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2402
+    },
+    {
+      "text": "My card payment is just showing up as pending since forever, what's going on with that, it should be going through at some point?",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5109
+    },
+    {
+      "text": "When will my transfer finish pending?",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 5992
+    },
+    {
+      "text": "Why doesn't the person I sent money to see that transfer yet?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2833
+    },
+    {
+      "text": "I didn't receive the correct amount of cash",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2408
+    },
+    {
+      "text": "How long does a payment usually show as pending? Is it normal that mine is still pending?",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5099
+    },
+    {
+      "text": "Can you tell me when my money transfer will go through",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6078
+    },
+    {
+      "text": "I transferred some money but it is not here yet",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2762
+    },
+    {
+      "text": "Hi, I draw out some money from the ATM today. The ATM has given me wrong amount and the application is displaying more amount than i withdraw.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2370
+    },
+    {
+      "text": "What's the pending length for credit transactions? I've had one in my pending category now for days and it won't move to processed.",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5232
+    },
+    {
+      "text": "My transfer hasn't appeared yet",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6061
+    },
+    {
+      "text": "where has my transferred money gone?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2798
+    },
+    {
+      "text": "I got less cash at the ATM than I asked for. Why?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2474
+    },
+    {
+      "text": "There is a payment that I made that hasn't gone through yet.",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5096
+    },
+    {
+      "text": "My money transfer has not yet occurred",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6025
+    },
+    {
+      "text": "How much time do transfers typically take? I sent money to a friend who needs it urgently. It's been hours and has not gone through.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2719
+    },
+    {
+      "text": "The ATM shows a withdraw of the amount of money I requested but I didn't revieve that amount in cash.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2442
+    },
+    {
+      "text": "I still haven't received my card after two weeks, is it lost?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 11
+    },
+    {
+      "text": "I have a strange transaction on my account which appears to pertain to a cash withdrawal I made outside Nandos in Leeds.  What is that for?  Is it fraud?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9491
+    },
+    {
+      "text": "My app is displaying a payment I didn't make",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3596
+    },
+    {
+      "text": "My wallet was stolen, along with my cards. How do I put a freeze on my cards and order a new one?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1505
+    },
+    {
+      "text": "I'm still waiting on a payment",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5154
+    },
+    {
+      "text": "How long do EU transfers take? I bought something online a couple days ago , sent the money immediately online but the seller says it is still not there yet",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6059
+    },
+    {
+      "text": "The day before yesterday I transferred funds to another account within the country.  The funds have not yet arrived.  I double and triple checked the account number and it was correct.  Why hasn't the transfer been completed yet?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2832
+    },
+    {
+      "text": "I tried to withdraw 40 pounds but only 20 came out. Did you steal my money?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2422
+    },
+    {
+      "text": "i havent got my card",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 122
+    },
+    {
+      "text": "Could you explain your rules for ATM fees?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9374
+    },
+    {
+      "text": "There's a payment in the app I don't recognize.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3528
+    },
+    {
+      "text": "A fee shouldn't apply to me if my card was stolen.",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1488
+    },
+    {
+      "text": "Why is my card payment pending?",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5147
+    },
+    {
+      "text": "I bought something online a couple days ago, sent the money immediately online but the seller says it's still not there yet. How long do EU transfers actually take?",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6031
+    },
+    {
+      "text": "I dont see my reciept",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2838
+    },
+    {
+      "text": "Why can't I take $100 out",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2403
+    },
+    {
+      "text": "Could I get tracking on the card?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 94
+    },
+    {
+      "text": "I made a cash withdrawal and was charged a fee incorrectly can you help with this?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9446
+    },
+    {
+      "text": "I just looked over my statement and I don't recognize the name of a card payment.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3544
+    },
+    {
+      "text": "My card is missing.  Please help.",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1485
+    },
+    {
+      "text": "I was wondering why my payment hasn't gone through yet, its been a while.",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5182
+    },
+    {
+      "text": "the transfer went through but now it has been pending for quite a while. i need this to go through already",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6045
+    },
+    {
+      "text": "why hasn't a transaction to a friend cleared yet?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2708
+    },
+    {
+      "text": "Why is my withdrawal wrong? I took out $100 but only received $20.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2491
+    },
+    {
+      "text": "When will I recieve my new card?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 27
+    },
+    {
+      "text": "Why are fees charged for cash withdrawals? I went to withdraw some money earlier today after shopping. There's a new fee that there.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9391
+    },
+    {
+      "text": "There is a payment with my card which i definitely did not do.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3595
+    },
+    {
+      "text": "Can you tell me the status of my new card?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1490
+    },
+    {
+      "text": "Why does my payment appear as pending?",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5098
+    },
+    {
+      "text": "What is the reason why the transfer shows as pending?",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6064
+    },
+    {
+      "text": "|I moved out of my old house two weeks ago and cancelled my direct debit to my old landlord, this direct debit was working fine.  Now I've moved in to a new place and set up a transfer to a new landlord but it's not reached her yet, can you check it please?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2827
+    },
+    {
+      "text": "I requested a higher amount for my cash withdrawal",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2352
+    },
+    {
+      "text": "I was issued a card about a week ago. why hasn't it come in yet?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 110
+    },
+    {
+      "text": "Why are you charging me for ATM withdrawal? It has always been free before.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9395
+    },
+    {
+      "text": "Why is this payment on my app",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3552
+    },
+    {
+      "text": "How do I report my card as lost or stolen?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1548
+    },
+    {
+      "text": "Hello, I made a payment with my card and it's not working. It's been a while and still says its pending. Can you tell when this will go through?",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5168
+    },
+    {
+      "text": "Transfers can take up to one day to process before departing for the beneficiary accounts. Please confirm that you've entered your account details correctly. SEPA transfers can take up to two working days, while SWIFT transfers can take up to five working days.",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 5991
+    },
+    {
+      "text": "What do I do if I completed a money transfer but the recipient hasn't received it?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2763
+    },
+    {
+      "text": "I received the wrong amount of cash.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2434
+    },
+    {
+      "text": "I haven't received my card.",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 107
+    },
+    {
+      "text": "I was charged a fee with my cash withdrawal that I shouldn't have been charged.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9474
+    },
+    {
+      "text": "One of my card payments, I don't recognise the name of the merchant.",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3590
+    },
+    {
+      "text": "I need to report a stolen card",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1478
+    },
+    {
+      "text": "My card payment has been on pending forever. What is the problem? It should have gone through at some time by now.",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5183
+    },
+    {
+      "text": "Hi I am trying to transfer money to another country but it is showing pending and it has been a long time.  I have checked numbers and they are correct.  Could you please help?",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6004
+    },
+    {
+      "text": "Why hasn't my transaction arrived?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2734
+    },
+    {
+      "text": "I am so angry right now!  I went to the ATM and did not get the correct amount of money I chose to withdraw.  How could this happen?  I need my money and want to know how I can get it ASAP!",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2413
+    },
+    {
+      "text": "How long will it be to get this new card?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 129
+    },
+    {
+      "text": "What's up with the extra fee I got?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9400
+    },
+    {
+      "text": "There are charges on my card from the past few day I am pretty sure I didnt make, can you please freeze it for me? How do I get my money returned since it wasnt me?",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3537
+    },
+    {
+      "text": "My bag got stolen with all my cards. Can you please cancel my card and send a new one?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1498
+    },
+    {
+      "text": "After making a payment with my card it doesn't seem to have worked. It's just showing to be pending. When will this actually be going through?",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5114
+    },
+    {
+      "text": "I double checked that I have the correct account details already, they're right for sure. Transfer is still pending since forever. It should not have been done so.",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6100
+    },
+    {
+      "text": "Why is my transfer taking so long. I thought it was supposed to only take 1 day if I made a transfer to someone. Can you wee what went wrong?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2866
+    },
+    {
+      "text": "I didn't receive the amount of cash I requested for the ATM.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2365
+    },
+    {
+      "text": "What's the tracking on the card you sent?",
+      "category": "card_arrival",
+      "source_split": "train",
+      "source_row": 37
+    },
+    {
+      "text": "I used my card to get cash then I was charged a fee that I shouldn't have been charged.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "train",
+      "source_row": 9510
+    },
+    {
+      "text": "There are a couple of payments with my card shown in the app that I really didn't make myself. Why is it happened?",
+      "category": "card_payment_not_recognised",
+      "source_split": "train",
+      "source_row": 3647
+    },
+    {
+      "text": "What should I do if my card is stolen?",
+      "category": "lost_or_stolen_card",
+      "source_split": "train",
+      "source_row": 1539
+    },
+    {
+      "text": "I don't know what a pending payment is.",
+      "category": "pending_card_payment",
+      "source_split": "train",
+      "source_row": 5210
+    },
+    {
+      "text": "Can you explain why my payment is still pending?",
+      "category": "pending_transfer",
+      "source_split": "train",
+      "source_row": 6088
+    },
+    {
+      "text": "wheres my money receipt",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "train",
+      "source_row": 2739
+    },
+    {
+      "text": "The ATM only gave me 10 pounds when I withdrew 30. What do I do?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "train",
+      "source_row": 2388
+    }
+  ],
+  "test": [
+    {
+      "text": "How do I locate my card?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 0
+    },
+    {
+      "text": "I still have not received my new card, I ordered over a week ago.",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 1
+    },
+    {
+      "text": "I ordered a card but it has not arrived. Help please!",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 2
+    },
+    {
+      "text": "Is there a way to know when my card will arrive?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 3
+    },
+    {
+      "text": "My card has not arrived yet.",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 4
+    },
+    {
+      "text": "When will I get my card?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 5
+    },
+    {
+      "text": "Do you know if there is a tracking number for the new card you sent me?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 6
+    },
+    {
+      "text": "i have not received my card",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 7
+    },
+    {
+      "text": "still waiting on that card",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 8
+    },
+    {
+      "text": "Is it normal to have to wait over a week for my new card?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 9
+    },
+    {
+      "text": "How do I track my card?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 10
+    },
+    {
+      "text": "How long does a card delivery take?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 11
+    },
+    {
+      "text": "I still don't have my card after 2 weeks.  What should I do?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 12
+    },
+    {
+      "text": "still waiting on my new card",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 13
+    },
+    {
+      "text": "I am still waiting for my card after 1 week.  Is this ok?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 14
+    },
+    {
+      "text": "I have been waiting longer than expected for my bank card, could you provide information on when it will arrive?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 15
+    },
+    {
+      "text": "I've been waiting longer than expected for my card.",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 16
+    },
+    {
+      "text": "Why hasn't my card been delivered?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 17
+    },
+    {
+      "text": "Where is my new card? I have been waiting a week!",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 18
+    },
+    {
+      "text": "My card still hasn't arrived after 2 weeks. Is it lost?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 19
+    },
+    {
+      "text": "I did not get my card yet, is it lost?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 20
+    },
+    {
+      "text": "Status of the card I ordered.",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 21
+    },
+    {
+      "text": "How long should my new card take to arrive?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 22
+    },
+    {
+      "text": "I ordered my card 2 weeks ago and it still isn't here? What do I do?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 23
+    },
+    {
+      "text": "My card has not arrived yet, where is it?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 24
+    },
+    {
+      "text": "What is the tracking number for my card that was mailed?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 25
+    },
+    {
+      "text": "I think something went wrong with my card delivery as I haven't received it yet.",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 26
+    },
+    {
+      "text": "I'm still waiting for delivery of my new card, why is it taking so long?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 27
+    },
+    {
+      "text": "I ordered a card a week ago, and it's still not here. What do I do?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 28
+    },
+    {
+      "text": "i want to track the card you sent",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 29
+    },
+    {
+      "text": "My card hasn't arrived yet.",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 30
+    },
+    {
+      "text": "I was expecting my new card and am wondering why I haven't received it yet?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 31
+    },
+    {
+      "text": "How do I know when my card will arrive?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 32
+    },
+    {
+      "text": "I'm still waiting on my card to be delivered.",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 33
+    },
+    {
+      "text": "Does the card you sent have a way to track to it?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 34
+    },
+    {
+      "text": "I ordered a card and I still haven't received it. It's been two weeks. What can I do?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 35
+    },
+    {
+      "text": "I'm starting to think my card is lost because it still hasn't arrived, can you help?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 36
+    },
+    {
+      "text": "Is there tracking info available?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 37
+    },
+    {
+      "text": "What is the tracking number for the card you sent?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 38
+    },
+    {
+      "text": "Where is the tracking number for the card you sent me?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 39
+    },
+    {
+      "text": "My entire gym bag, including my wallet, was stolen out of my locker today. Everything in my wallet is gone - how do I block the card to make it can't be used?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 440
+    },
+    {
+      "text": "I can't find my card and think it may have been stolen.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 441
+    },
+    {
+      "text": "Someone stole my card. I need to report it stolen. I made a police report already, but how do I report it with you?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 442
+    },
+    {
+      "text": "I cant find my card, it's gone.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 443
+    },
+    {
+      "text": "My card is lost! What can I do?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 444
+    },
+    {
+      "text": "I lost my card",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 445
+    },
+    {
+      "text": "Oh no!  I lost my card!  Help!",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 446
+    },
+    {
+      "text": "I believe my card has been stolen, what can I do about this situation? It's urgent.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 447
+    },
+    {
+      "text": "Help! Someone stole my card!",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 448
+    },
+    {
+      "text": "Help.  I have a stolen card!",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 449
+    },
+    {
+      "text": "card is lost, please help",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 450
+    },
+    {
+      "text": "How do I report my card stolen?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 451
+    },
+    {
+      "text": "My card is gone I think it was stolen",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 452
+    },
+    {
+      "text": "Is a copy of the police report necessary for completing the report process?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 453
+    },
+    {
+      "text": "I lost my wallet today with all my credit cards. Will you please block the card and send a replacement?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 454
+    },
+    {
+      "text": "How do I deal with a stolen card?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 455
+    },
+    {
+      "text": "Can you freeze my card it was stolen",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 456
+    },
+    {
+      "text": "Help!  I can't find my card.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 457
+    },
+    {
+      "text": "What should I do if I lost my card?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 458
+    },
+    {
+      "text": "I need help with a lost card",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 459
+    },
+    {
+      "text": "I think my card was stolen.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 460
+    },
+    {
+      "text": "Someone stole my wallet earlier today, not sure exactly when, probably on Piccadilly circus. Can you check if there were any attempts to use the card and obviously block it?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 461
+    },
+    {
+      "text": "I think I lost my card . I dont know how long it has been missing. Can you see if maybe someone else has been using it?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 462
+    },
+    {
+      "text": "How can I freeze a stolen card?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 463
+    },
+    {
+      "text": "What should I do if my card is missing?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 464
+    },
+    {
+      "text": "My bags were stolen. I need a new card but need to cancel the stolen one.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 465
+    },
+    {
+      "text": "Somehow I am missing my card.  What should I do?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 466
+    },
+    {
+      "text": "My card was taken from me",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 467
+    },
+    {
+      "text": "My card got lost.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 468
+    },
+    {
+      "text": "Some idiot stole my card.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 469
+    },
+    {
+      "text": "How do I report my card lost or stolen?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 470
+    },
+    {
+      "text": "My card is lost! What do I do now?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 471
+    },
+    {
+      "text": "I'm in Spain and my stuff has been stolen. My card was with it and I need a new one shipped and the old one frozen.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 472
+    },
+    {
+      "text": "I believe my credit card was stolen.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 473
+    },
+    {
+      "text": "How do I report a stolen card?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 474
+    },
+    {
+      "text": "Somebody has stolen my card, I need help please.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 475
+    },
+    {
+      "text": "I cannot find my credit card.",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 476
+    },
+    {
+      "text": "Are you able to locate my card?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 477
+    },
+    {
+      "text": "My card got stolen!",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 478
+    },
+    {
+      "text": "Help me please!  My card was stolen!",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 479
+    },
+    {
+      "text": "I don't know if this is an issue with the ATM or my account, but I just tried withdrawing 30 pounds from the ATM I'm at now and it only gave me 10. Is this a glitch or what exactly is going on?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 760
+    },
+    {
+      "text": "I didn't get all the cash I requested for at the ATM",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 761
+    },
+    {
+      "text": "How come the ATM gave me less cash than what I asked for?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 762
+    },
+    {
+      "text": "Why did I not get my cash back after I withdrew?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 763
+    },
+    {
+      "text": "I got less cash than the one I specified in the ATM",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 764
+    },
+    {
+      "text": "The amount of cash I received was incorrect",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 765
+    },
+    {
+      "text": "I'm at an ATM and withdrew 30 pounds and was only given 10. What should I do?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 766
+    },
+    {
+      "text": "The ATM gave me the wrong amount of cash today when I went to withdraw. The app says it was more.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 767
+    },
+    {
+      "text": "The amount of cash I received was different than what I requested.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 768
+    },
+    {
+      "text": "Hi. I just withdrew cash from an ATM and received the wrong amount. However, my app shows the correct amount I withdrew. How do I get the rest of the cash?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 769
+    },
+    {
+      "text": "The wrong amount of cash came out of the ATM today when I went to withdraw. When I looked at the app, it was showing it was much more.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 770
+    },
+    {
+      "text": "I did not get as much cash as I requested at the ATM.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 771
+    },
+    {
+      "text": "How can I request cash back? The ATM just gave me the wrong amount, the app shows the amount that I've been actually charged though...",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 772
+    },
+    {
+      "text": "Where is the money I pushed it's on my mobile app as being withdrawn.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 773
+    },
+    {
+      "text": "Why did I not get all the cash I asked for?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 774
+    },
+    {
+      "text": "My cash withdrawal was partly declined",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 775
+    },
+    {
+      "text": "Why did I only get $20 when I tried to get $100",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 776
+    },
+    {
+      "text": "I have withdrawn cash from ATM but i received the wrong amount. I want cash back as in app its showing actual amount which i got. Please help me in this.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 777
+    },
+    {
+      "text": "I went to withdraw some cash earlier today, but seems the ATM gave me the wrong amount of cash! The amount showing up in the app is a lot more",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 778
+    },
+    {
+      "text": "I tried to get $100 but I just got $20",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 779
+    },
+    {
+      "text": "I have not received the amount of cash i was supposed to.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 780
+    },
+    {
+      "text": "I asked for $100 cash but only got $20?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 781
+    },
+    {
+      "text": "Where is the money that I asked for? I asked for more than I got!",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 782
+    },
+    {
+      "text": "I withdrew money but the full amount wasn't dispensed.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 783
+    },
+    {
+      "text": "Something went wrong with my withdrawal. The amount of money isn't right.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 784
+    },
+    {
+      "text": "I have got out the wrong amount from an ATM. Please tell me the process to get the cash back as in app its showing the amount i have been actually received.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 785
+    },
+    {
+      "text": "I asked for 100 but only got 20.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 786
+    },
+    {
+      "text": "I didn't receive the right amount of cash back",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 787
+    },
+    {
+      "text": "The ATM gave me less cash than I requested",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 788
+    },
+    {
+      "text": "I didn't get as much cash as I asked for from the ATM, why?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 789
+    },
+    {
+      "text": "What do I do if the ATM didn't give me the correct amount I withdrew? I pulled out 30 pounds and the ATM gave me 10 pounds.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 790
+    },
+    {
+      "text": "I tried to take out cash but the amount isn't right, so what do I do?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 791
+    },
+    {
+      "text": "I didn't receive all the cash I asked for",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 792
+    },
+    {
+      "text": "I just got $20 when I tried to get $100",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 793
+    },
+    {
+      "text": "The right amount of cash was not sent to me.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 794
+    },
+    {
+      "text": "The ATM didn't give me the the withdraw amount requested.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 795
+    },
+    {
+      "text": "Why did I get less money than I asked for?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 796
+    },
+    {
+      "text": "I didn't get the right amount at the ATM.",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 797
+    },
+    {
+      "text": "did not receive correct cash upon withdrawal",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 798
+    },
+    {
+      "text": "Will declined funds I tried to withdraw be returned to me?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 799
+    },
+    {
+      "text": "I completed an in country transfer a few days ago and was sure to check the account information several times since the transaction was completed, but the funds are still not available. What is the problem?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 840
+    },
+    {
+      "text": "My money transfer has not arrived.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 841
+    },
+    {
+      "text": "I am still waiting for a transaction to be completed",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 842
+    },
+    {
+      "text": "I made a money transaction but the recipient can't see it",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 843
+    },
+    {
+      "text": "I tried to send someone money but they haven't received it.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 844
+    },
+    {
+      "text": "How long does it take for a transfer to get to a recipient?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 845
+    },
+    {
+      "text": "How can the recipient see my money transaction?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 846
+    },
+    {
+      "text": "I transferred money but the recipient says it has not arrived. Why would this be?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 847
+    },
+    {
+      "text": "The transfer I did hasn't arrived",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 848
+    },
+    {
+      "text": "how long do money transfers take?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 849
+    },
+    {
+      "text": "I transferred some money and it didint arrive",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 850
+    },
+    {
+      "text": "Where is the transfer I started?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 851
+    },
+    {
+      "text": "transaction failed?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 852
+    },
+    {
+      "text": "I just finished sending money, but it's not logging on the recipient side.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 853
+    },
+    {
+      "text": "I completed a money transaction but the recipient hasn't received it",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 854
+    },
+    {
+      "text": "The receipient doesn't see my money transfer.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 855
+    },
+    {
+      "text": "I transferred the rent payment for my new place a couple days ago but the landlord says it's not there yet, despite showing up as done on my side. I checked the account number I sent it to and it's definitely correct. Can you please verify if the transaction really went through or not?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 856
+    },
+    {
+      "text": "I need to find out why my transfer didn't get there.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 857
+    },
+    {
+      "text": "I've just moved address from a place in Durham to a place in Walton-On-The-Naze.  I have a new landlord at my new house and they haven't got my payment but I know I sent it on time, can you check they got it please?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 858
+    },
+    {
+      "text": "I sent money.  They haven't received it.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 859
+    },
+    {
+      "text": "Hey, I need some help figuring out way my transfer is not complete yet. My Landlord hasn't got the money yet.She should have received it by now.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 860
+    },
+    {
+      "text": "The day before yesterday, I performed a transfer which was within this country. It still hasn't gone through. Can you check on that? The account number is definitely correct, as I've checked and double checked.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 861
+    },
+    {
+      "text": "I'm having a problem with a money transfer.  I sent some money to a friend a couple of hours ago, and they haven't received it yet.  Why hasn't it gotten to them? How long do transfers need to go through?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 862
+    },
+    {
+      "text": "I transferred some money but the receiver can't pick it up for some reason.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 863
+    },
+    {
+      "text": "Where is the transaction I made to a friend?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 864
+    },
+    {
+      "text": "My friend still hasn't gotten a transaction I made.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 865
+    },
+    {
+      "text": "Im waiting for my transaction to go through.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 866
+    },
+    {
+      "text": "I made a transaction and it is taking a very long time to go through.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 867
+    },
+    {
+      "text": "Is there a reason why my transaction is taking so long?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 868
+    },
+    {
+      "text": "How long will it take for my transaction to be completed?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 869
+    },
+    {
+      "text": "I sent some money and the receiver can't access it.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 870
+    },
+    {
+      "text": "I sent my friend some money a few hours ago but she has not received it yet. She really needs it. How long does this take?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 871
+    },
+    {
+      "text": "The person I sent money to hasn't gotten it yet!",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 872
+    },
+    {
+      "text": "When will my funds transfer?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 873
+    },
+    {
+      "text": "How long does it take for transfers to finish?  I sent funds to my pal, and she says that she has not gotten anything.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 874
+    },
+    {
+      "text": "How long do transfers need to come through? I sent some money to a friend, she needs it urgently, but seems it's still not there yet after a couple hours.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 875
+    },
+    {
+      "text": "How long until my friend receives my transaction?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 876
+    },
+    {
+      "text": "Why hasn't my recipient received their money?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 877
+    },
+    {
+      "text": "I am still awaiting the completion of the transaction.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 878
+    },
+    {
+      "text": "I transferred some money but the recipient is having trouble withdrawing.",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 879
+    },
+    {
+      "text": "I have a strange payment in my statement",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1080
+    },
+    {
+      "text": "There is a charge on my card that I did not make",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1081
+    },
+    {
+      "text": "I saw a payment i did not do",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1082
+    },
+    {
+      "text": "There is a payment that is not mine in the app.  Please advise/",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1083
+    },
+    {
+      "text": "An unauthorized payment is in my app",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1084
+    },
+    {
+      "text": "I did not make this card payment.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1085
+    },
+    {
+      "text": "What should I do if I see a payment I didn't make?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1086
+    },
+    {
+      "text": "I found an unauthorized card payment",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1087
+    },
+    {
+      "text": "there is a transaction on my account that i didnt make",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1088
+    },
+    {
+      "text": "I don't recall making that payment?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1089
+    },
+    {
+      "text": "There are some payments with my card that I don't know where they are coming from. Just checked today and it's been since a couple days as well! What to I do? Can I revert this retrospectively? My card needs to be frozen immediately as well!",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1090
+    },
+    {
+      "text": "Has someone accessed my card there are payments I did not make that are showing up on the app.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1091
+    },
+    {
+      "text": "There are some strange charges on my card that I didn't make from a few days ago.  Is my card stolen and if so should I cancel it?  Will I get refunded the charges?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1092
+    },
+    {
+      "text": "Why would there be a payment on my account I don't recognize?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1093
+    },
+    {
+      "text": "I have a payment I didn't do",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1094
+    },
+    {
+      "text": "There is a payment that is not mine.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1095
+    },
+    {
+      "text": "Can you freeze my account?  I just saw there are transactions on my account that I don't recognize.  How can I fix this?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1096
+    },
+    {
+      "text": "There is a card payment I do not recognise.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1097
+    },
+    {
+      "text": "I don't recognise a card payment",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1098
+    },
+    {
+      "text": "Payment i did not do",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1099
+    },
+    {
+      "text": "Please put a freeze on my card,  I am worried there has been some payments on it and I don't know what for.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1100
+    },
+    {
+      "text": "I think my statement has a fraudulent charge",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1101
+    },
+    {
+      "text": "I'm concerned about a payment that has recently been made on my card.  I do not recognize the name that the transaction went to, can you help me?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1102
+    },
+    {
+      "text": "What should I do to get transactions off of my account if I didn't make them?  My card must have been compromised and I need to freeze it asap!",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1103
+    },
+    {
+      "text": "I have a payment listed in error.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1104
+    },
+    {
+      "text": "What can I do about some payments on my card I didn't make.  Please put a freeze on my card till we can figure this out.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1105
+    },
+    {
+      "text": "I'm not familiar with a card payment.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1106
+    },
+    {
+      "text": "I have an unauthorized transaction on my statement",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1107
+    },
+    {
+      "text": "There is a payment in the App that is not mine.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1108
+    },
+    {
+      "text": "I don't know where this transaction came from?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1109
+    },
+    {
+      "text": "I see a charge on my account that I don't recall making. I feel like my account may have been compromised.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1110
+    },
+    {
+      "text": "I know I didn't make this payment showing up on my card, I don't remember this person at all.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1111
+    },
+    {
+      "text": "Somebody used my card to make a purchase",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1112
+    },
+    {
+      "text": "There's a recent charge on my card that I know I didn't make because I've never seen the name before. Can we investigate this?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1113
+    },
+    {
+      "text": "Some of my card payments look different than where I purchased products from. Why is that?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1114
+    },
+    {
+      "text": "There is a strange payment on my statement. What should I do?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1115
+    },
+    {
+      "text": "I think there has been a purchase made that wasn't by me.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1116
+    },
+    {
+      "text": "There is a fraudulent charge on my statement.",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1117
+    },
+    {
+      "text": "What is the payment in my account that I did not do?",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1118
+    },
+    {
+      "text": "In my statement there is a payment that is I do not recognize",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1119
+    },
+    {
+      "text": "My card payment is still on hold, why is it so?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1600
+    },
+    {
+      "text": "Why is my payment pending?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1601
+    },
+    {
+      "text": "My card payment is still pending.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1602
+    },
+    {
+      "text": "How do i finalize a card payment",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1603
+    },
+    {
+      "text": "Why is my card payment showing as pending?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1604
+    },
+    {
+      "text": "Why has my payment not gone through?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1605
+    },
+    {
+      "text": "Please help me to know the status of my card payment as its pending since a while.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1606
+    },
+    {
+      "text": "I recently made a payment, and it is showing up in my account as \"pending\". What does that mean?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1607
+    },
+    {
+      "text": "What does it mean by pending payment?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1608
+    },
+    {
+      "text": "When will my card payment be done pending?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1609
+    },
+    {
+      "text": "I made this payment days ago so why hasn't it gone through yet?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1610
+    },
+    {
+      "text": "I am seeing pending from the card payment I made.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1611
+    },
+    {
+      "text": "My card payment is showing pending.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1612
+    },
+    {
+      "text": "I bought some stuff this morning but the payment shows as pending",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1613
+    },
+    {
+      "text": "I am waiting for a payment to go through.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1614
+    },
+    {
+      "text": "How long does an item I bought show as pending?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1615
+    },
+    {
+      "text": "What is a pending payment?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1616
+    },
+    {
+      "text": "I would like to know why my purchases from this morning are still pending.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1617
+    },
+    {
+      "text": "Why is there a pending transaction on my card?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1618
+    },
+    {
+      "text": "My card payment is pending.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1619
+    },
+    {
+      "text": "Why is a payment showing up on my card as pending?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1620
+    },
+    {
+      "text": "I made a purchase and it says it's pending. What does that mean?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1621
+    },
+    {
+      "text": "How long do card transactions take to clear?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1622
+    },
+    {
+      "text": "what does pending mean?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1623
+    },
+    {
+      "text": "How long will this card payment stay pending?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1624
+    },
+    {
+      "text": "My payment still hasn't processed!",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1625
+    },
+    {
+      "text": "I was double charged, and the second charge is showing as \"pending\". How long will it be before I get my money back once the second charge has been refunded?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1626
+    },
+    {
+      "text": "I have waited 15 days, but my payment still hasn't cleared.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1627
+    },
+    {
+      "text": "Why would I have a pending payment?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1628
+    },
+    {
+      "text": "Explain what the pending payment means?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1629
+    },
+    {
+      "text": "Why are my payments showing pending?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1630
+    },
+    {
+      "text": "My card is still pending, I've been waiting a while.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1631
+    },
+    {
+      "text": "How long does it take for a payment to go thru? I made one a few days ago and it has not been cleared yet.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1632
+    },
+    {
+      "text": "I bought some things this morning but the payment shows that it is pending",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1633
+    },
+    {
+      "text": "How long does it take to authorise a payment?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1634
+    },
+    {
+      "text": "I had a payment that I made and it's been some amount of time and would like to know when it's suppose to go though.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1635
+    },
+    {
+      "text": "What does a pending transaction mean?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1636
+    },
+    {
+      "text": "I have paid by my card but payment is still its coming as pending. I think there is some issue please check and let me know when the status will complete.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1637
+    },
+    {
+      "text": "I have a pending payment in my account that I paid a while back ago and it still hasnt gone through. Why would it show pending for so long?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1638
+    },
+    {
+      "text": "I have a pending payment from stuff I bought this morning.",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1639
+    },
+    {
+      "text": "I did transfer, why is it pending",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1840
+    },
+    {
+      "text": "How long for money transfer to show?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1841
+    },
+    {
+      "text": "Why is my transfer not done yet?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1842
+    },
+    {
+      "text": "I have a pending transfer",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1843
+    },
+    {
+      "text": "I am waiting for a pending money transfer to process.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1844
+    },
+    {
+      "text": "i transfered however its still pending",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1845
+    },
+    {
+      "text": "I have a transfer that's pending and wanted to know how long it is going to take to process?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1846
+    },
+    {
+      "text": "So the transfer finally worked but now it's been pending for quite a long time. How long do you expect me to wait for it? It's quite urgent",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1847
+    },
+    {
+      "text": "I had made a transfer but its still pending.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1848
+    },
+    {
+      "text": "I submitted my transfer but it has been pending for quite a while and I was wondering what takes so long? why hasn't it completed",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1849
+    },
+    {
+      "text": "How can I speed up a transfer?  Mine is pending.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1850
+    },
+    {
+      "text": "How long can an EU transfer take?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1851
+    },
+    {
+      "text": "My transfer is still coming up as pending.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1852
+    },
+    {
+      "text": "I'm trying to transfer money to another country. It's just pending and not sending. My account details are correct. Please help me.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1853
+    },
+    {
+      "text": "My transfer is still pending and I know the account numbers are correct.  Please help.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1854
+    },
+    {
+      "text": "I transferred money yesterday, but it still isn't available?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1855
+    },
+    {
+      "text": "How long does a transfer stay pending?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1856
+    },
+    {
+      "text": "How long do transfer pend for?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1857
+    },
+    {
+      "text": "Why hasn't my transfer gone through yet?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1858
+    },
+    {
+      "text": "When will the transfer go through?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1859
+    },
+    {
+      "text": "Please explain why the transfers shows up as pending?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1860
+    },
+    {
+      "text": "I double checked that I have the correct account details , they're right for sure. Transfer is still pending since forever. What should be done now?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1861
+    },
+    {
+      "text": "When will my transfer go through?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1862
+    },
+    {
+      "text": "What is the cause that the transfer shows as pending?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1863
+    },
+    {
+      "text": "When will the transfer be completed?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1864
+    },
+    {
+      "text": "Pending transfer?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1865
+    },
+    {
+      "text": "I would like to know why my payment is still pending, can you help?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1866
+    },
+    {
+      "text": "Someone transferred money to me and it doesn't show",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1867
+    },
+    {
+      "text": "How long does a transfer take to be confirmed?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1868
+    },
+    {
+      "text": "I made a transfer 12 hours ago. Why is it still listed as pending?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1869
+    },
+    {
+      "text": "Why does my transfer say \"pending\"?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1870
+    },
+    {
+      "text": "How long can I expect a transfer to pend for?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1871
+    },
+    {
+      "text": "For how long will my transfer be pending?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1872
+    },
+    {
+      "text": "Transferring money in 2018 to another country shouldn't take this long. My transfer has been pending for too long. I verified my account details are correct.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1873
+    },
+    {
+      "text": "Why is a money transfer not showing?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1874
+    },
+    {
+      "text": "The transfer is coming up as pending the payment is due today. Will I be charged a fee?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1875
+    },
+    {
+      "text": "I am still waiting for a money transfer to show",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1876
+    },
+    {
+      "text": "My transfer hasn't gone through yet.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1877
+    },
+    {
+      "text": "I am confused as to why my transfer could still be pending.",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1878
+    },
+    {
+      "text": "How long does it take for a money transfer to show?",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1879
+    },
+    {
+      "text": "I see some fees for cash withdraw.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2880
+    },
+    {
+      "text": "How come I was charged extra when I withdrew cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2881
+    },
+    {
+      "text": "Why am I being charged when I withdraw cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2882
+    },
+    {
+      "text": "What is this charge on my account for a cash withdrawl?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2883
+    },
+    {
+      "text": "Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2884
+    },
+    {
+      "text": "How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2885
+    },
+    {
+      "text": "It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2886
+    },
+    {
+      "text": "Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2887
+    },
+    {
+      "text": "Why is there an extra charge for money that was withdrawn?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2888
+    },
+    {
+      "text": "Why was I charged a fee for withdrawing cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2889
+    },
+    {
+      "text": "Why did I get a fee?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2890
+    },
+    {
+      "text": "Why did my cash get charged a fee that should not be there.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2891
+    },
+    {
+      "text": "Why did I have to pay a fee when I got cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2892
+    },
+    {
+      "text": "Hi, I am calling about a recent transaction that has happened on my account.  I recently went to the ATM, and tried to make a withdrawal on my account.  I just happened to check my transaction slip and noticed a fee for my withdrawal.  How can I resolve this, I didn't know fees were charged for this type of action.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2893
+    },
+    {
+      "text": "A fee was charged for my recent withdrawal.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2894
+    },
+    {
+      "text": "I got a fee for an ATM withdrawal.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2895
+    },
+    {
+      "text": "What is the reason for this fee I got after a simple cash withdrawal?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2896
+    },
+    {
+      "text": "Did you start charging for cash withdrawals? I thought it was free so far but noticed suddendly there is a fee. How much do I need to pay?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2897
+    },
+    {
+      "text": "Is there a fee for withdrawing cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2898
+    },
+    {
+      "text": "I've notice I was charged for withdrawing cash, can you explain why?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2899
+    },
+    {
+      "text": "Why was my account charged for using an ATM?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2900
+    },
+    {
+      "text": "Why is there a charge on my account for taking out cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2901
+    },
+    {
+      "text": "An ATM fee was attached to my recent withdrawal.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2902
+    },
+    {
+      "text": "I thought cash withdrawals didn't have a fee",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2903
+    },
+    {
+      "text": "Why did I get charged a fee when I tried to obtain cash?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2904
+    },
+    {
+      "text": "While I was checking out in the grocery store, I realized I needed cash so I requested some.  However, I noticed there was a fee for this transaction.  Why did I get charged a fee?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2905
+    },
+    {
+      "text": "Using an ATM caused me to incur an additional fee. Why?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2906
+    },
+    {
+      "text": "I was charged extra for a withdrawal",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2907
+    },
+    {
+      "text": "Is there a limit on how much I can withdraw from my account without being charged?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2908
+    },
+    {
+      "text": "I thought cash withdrawals were free? Why have I been charged a fee? Also, how much is this fee?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2909
+    },
+    {
+      "text": "More fees, this time for withdrawing my own cash. Why are you robbing me?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2910
+    },
+    {
+      "text": "I have never been charged a fee for cash withdrawal before. When did that change?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2911
+    },
+    {
+      "text": "I was charged for a cash withdrawal.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2912
+    },
+    {
+      "text": "Why did you charge me for a cash withdrawal?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2913
+    },
+    {
+      "text": "I took cash and got charged a fee",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2914
+    },
+    {
+      "text": "Was charged an ATM fee despite it being a small withdrawal on the 1st day of the month. I thought I was allowed 200 per month?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2915
+    },
+    {
+      "text": "I had a wrong fee charged at this ATM.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2916
+    },
+    {
+      "text": "When I got cash, I'm pretty sure there was a glitch that overcharged me.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2917
+    },
+    {
+      "text": "My account got charged for taking out cash, why did this happen?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2918
+    },
+    {
+      "text": "Why is there a fee for withdrawing?",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2919
+    }
+  ],
+  "provenance": {
+    "banking_data/train.csv": {
+      "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/train.csv",
+      "sha256": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+      "bytes": 839073
+    },
+    "banking_data/test.csv": {
+      "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/test.csv",
+      "sha256": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d",
+      "bytes": 239961
+    },
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/LICENSE",
+      "sha256": "7e7170e3cebf88a9f60c7b8421418323c09304da1af4d5e90f4da1dc1c8a2661",
+      "bytes": 18650
+    }
+  },
+  "excluded_train_test_exact_overlaps": [],
+  "selected_train_rows": 128,
+  "held_out_rows": 320
+}

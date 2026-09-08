@@ -1,0 +1,149 @@
+{
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "flint_version": "0.9.0",
+  "argv": [
+    "run.py",
+    "--profile",
+    "candidate_n_probe",
+    "--inputs",
+    "3",
+    "--output",
+    "results/candidate_n_probe_001.json"
+  ],
+  "source_sha256": {
+    "ring.py": "82c15883165f6b2b930889a826ea620fad591d09c528c8427e41fb07930bc006",
+    "run.py": "ba15995605c60defb10393f83a2e91cf282d42f70d6b4631f4c2cb613096bc0d",
+    "sampling/sampler.py": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+  },
+  "controls": {
+    "independent_naive_negacyclic_cases": 6,
+    "pass": true
+  },
+  "arithmetic_bench": [
+    {
+      "N": 64,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 7.645803270861506e-05,
+      "one_constant_product_seconds": 1.4582998119294643e-05
+    },
+    {
+      "N": 1024,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.0013730000355280936,
+      "one_constant_product_seconds": 0.0001822920166887343
+    },
+    {
+      "N": 4096,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.005306167004164308,
+      "one_constant_product_seconds": 0.0007129170116968453
+    },
+    {
+      "N": 16384,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.02365724998526275,
+      "one_constant_product_seconds": 0.0028918340103700757
+    }
+  ],
+  "run": {
+    "profile": "candidate_n_probe",
+    "status": "PASS",
+    "parameters": {
+      "N": 16384,
+      "w": 8,
+      "d": 33,
+      "recipients": 2,
+      "p": 28439893,
+      "q": 497323290947860672931310292648754779192460749687510494957169639477681564739617435942913,
+      "sigma_key": 33554432,
+      "sigma_error": 1024,
+      "flood": 226156424291633194186662080095093570025917938800079226639565593765455331328,
+      "W": 32,
+      "denominator": 8204908842
+    },
+    "classification": "toy or reduced-dimension execution; no security inference",
+    "timings_seconds": {
+      "sampler_table_build": 0.2591297920444049,
+      "public_A": 0.12926204199902713,
+      "recipient_keygen_and_publish": 2.412581250013318,
+      "missing_public_rows": 0.4101202089805156,
+      "signed_combine": 0.03147570800501853,
+      "signed_all_recipient_decode": 0.11020733299665153
+    },
+    "encodes": [
+      {
+        "step": 0,
+        "encode_seconds": 1.1794853330357,
+        "all_recipient_decode_seconds": 0.09246062499005347,
+        "window_update_seconds": 0.005927083024289459,
+        "window_all_recipient_decode_seconds": 0.08774887496838346,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 1,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 1,
+        "encode_seconds": 1.187690749997273,
+        "all_recipient_decode_seconds": 0.09143520903307945,
+        "window_update_seconds": 0.014024750038515776,
+        "window_all_recipient_decode_seconds": 0.09011354099493474,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 2,
+        "encode_seconds": 1.3688363750115968,
+        "all_recipient_decode_seconds": 0.12272300000768155,
+        "window_update_seconds": 0.03402054199250415,
+        "window_all_recipient_decode_seconds": 0.10380295797949657,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      }
+    ],
+    "sampler": {
+      "33554432": {
+        "count": 262144,
+        "seconds": 2.0432302510598674,
+        "proposals": 4184927,
+        "direct_threshold_evaluations": 1033,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 33494016
+      },
+      "1024": {
+        "count": 393216,
+        "seconds": 2.784079414966982,
+        "proposals": 6291989,
+        "direct_threshold_evaluations": 1463,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 37769088
+      }
+    },
+    "fresh_inputs_executed": 3,
+    "candidate_theorem_T": 384,
+    "T384_executed": false,
+    "actual_recipient_rows_generated": 2,
+    "absent_recipient_rows_generated": 0,
+    "signed_combination_recipients_matched": 2,
+    "oversized_combination_rejected": true,
+    "packed_sizes_bytes": {
+      "ciphertext": 4736169,
+      "public_A_P": 24266752,
+      "one_key_cutoff": 475136
+    },
+    "packing_implemented": false,
+    "peak_process_rss_native": 215515136,
+    "rss_native_unit": "bytes on macOS; KiB on Linux",
+    "raw_keys_coins_inputs_or_ciphertext_persisted": false,
+    "privacy_or_hardness_tested": false,
+    "timing_side_channel_claim": false
+  },
+  "source_unchanged": true,
+  "elapsed_seconds": 7.8870605420088395,
+  "status": "PASS"
+}

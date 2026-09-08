@@ -1,0 +1,206 @@
+diff --git a/prover/src/sumcheck.rs b/prover/src/sumcheck.rs
+index 7cd868a..cf65368 100644
+--- a/prover/src/sumcheck.rs
++++ b/prover/src/sumcheck.rs
+@@ -113,6 +113,31 @@ pub fn chi_eval(b: usize, point: &[Fp], p: u64) -> Fp {
+     })
+ }
+ 
++/// All `chi_eval(b, point, p)` weights, in the same LSB-first order.
++///
++/// Append the next coordinate as the new high bit. Each old weight `w` splits
++/// into `w - w*x` and `w*x`, so expansion costs one multiplication per new pair
++/// instead of recomputing a product of `point.len()` factors for every corner.
++/// These weights depend on the supplied challenge and are computed only after
++/// that challenge is available; reusing them does not move transcript timing.
++fn chi_weights(point: &[Fp], p: u64) -> Vec<Fp> {
++    let size = 1usize
++        .checked_shl(point.len().try_into().expect("point dimension fits u32"))
++        .expect("equality table dimension fits usize");
++    let mut weights = Vec::with_capacity(size);
++    weights.push(1 % p);
++    for &x in point {
++        let x = x % p;
++        let old_len = weights.len();
++        for i in 0..old_len {
++            let high = mul_mod(weights[i], x, p);
++            weights.push(high);
++            weights[i] = sub_mod(weights[i], high, p);
++        }
++    }
++    weights
++}
++
+ /// Mirror of `mle`: the multilinear extension `f̂(x) = Σ_b f(b)·χ_b(x)` of a
+ /// hypercube table `f` (length `2^m`) at a point (length `m`) — the literal
+ /// chi-basis sum, matching the Lean definition shape for shape.
+@@ -606,23 +631,27 @@ impl MatmulClaim {
+     pub fn row_partial(&self, x: &[Fp], p: u64) -> Vec<Fp> {
+         self.check_shape();
+         assert_eq!(x.len(), self.mu, "outer row point has mu coordinates");
+-        (0..1 << self.kappa)
+-            .map(|q| {
+-                (0..1 << self.mu).fold(0, |acc, i| {
+-                    add_mod(acc, mul_mod(self.a[i][q] % p, chi_eval(i, x, p), p), p)
+-                })
+-            })
+-            .collect()
++        let weights = chi_weights(x, p);
++        let mut partial = vec![0; 1 << self.kappa];
++        // Read each stored row contiguously, reusing its weight for every q.
++        for (row, weight) in self.a.iter().zip(weights) {
++            for (acc, &value) in partial.iter_mut().zip(row) {
++                *acc = add_mod(*acc, mul_mod(value % p, weight, p), p);
++            }
++        }
++        partial
+     }
+ 
+     /// `B̂(·, y)` on the inner cube — the Lean `colPartial`.
+     pub fn col_partial(&self, y: &[Fp], p: u64) -> Vec<Fp> {
+         self.check_shape();
+         assert_eq!(y.len(), self.nu, "outer column point has nu coordinates");
+-        (0..1 << self.kappa)
+-            .map(|q| {
+-                (0..1 << self.nu).fold(0, |acc, j| {
+-                    add_mod(acc, mul_mod(self.b[q][j] % p, chi_eval(j, y, p), p), p)
++        let weights = chi_weights(y, p);
++        self.b
++            .iter()
++            .map(|row| {
++                row.iter().zip(&weights).fold(0, |acc, (&value, &weight)| {
++                    add_mod(acc, mul_mod(value % p, weight, p), p)
+                 })
+             })
+             .collect()
+@@ -649,13 +678,18 @@ impl MatmulClaim {
+ pub fn mle2_eval(table: &[Vec<Fp>], x: &[Fp], y: &[Fp], p: u64) -> Fp {
+     let rows = table.len();
+     assert!(rows == 1 << x.len(), "table rows must be 2^|x|");
++    assert!(
++        table.iter().all(|row| row.len() == 1 << y.len()),
++        "table cols must be 2^|y|"
++    );
++    let row_weights = chi_weights(x, p);
++    let col_weights = chi_weights(y, p);
+     let mut acc = 0;
+-    for (i, row) in table.iter().enumerate() {
+-        assert!(row.len() == 1 << y.len(), "table cols must be 2^|y|");
+-        let cx = chi_eval(i, x, p);
+-        for (j, &v) in row.iter().enumerate() {
+-            acc = add_mod(acc, mul_mod(mul_mod(v % p, cx, p), chi_eval(j, y, p), p), p);
+-        }
++    for (row, row_weight) in table.iter().zip(row_weights) {
++        let row_value = row.iter().zip(&col_weights).fold(0, |sum, (&value, &weight)| {
++            add_mod(sum, mul_mod(value % p, weight, p), p)
++        });
++        acc = add_mod(acc, mul_mod(row_weight, row_value, p), p);
+     }
+     acc
+ }
+diff --git a/prover/tests/matmul_binding_reuse.rs b/prover/tests/matmul_binding_reuse.rs
+new file mode 100644
+index 0000000..ce2b5bb
+--- /dev/null
++++ b/prover/tests/matmul_binding_reuse.rs
+@@ -0,0 +1,100 @@
++//! Differential controls for equality-weight reuse in the existing contraction.
++//! The literal chi basis remains the independent oracle; no second proof API.
++use minidregg_prover::sumcheck::{chi_eval, mle2_eval, MatmulClaim};
++
++fn add(a: u64, b: u64, p: u64) -> u64 {
++    ((a as u128 + b as u128) % p as u128) as u64
++}
++fn mul(a: u64, b: u64, p: u64) -> u64 {
++    ((a as u128 * b as u128) % p as u128) as u64
++}
++fn data(n: usize, seed: u64) -> Vec<u64> {
++    let mut s = seed;
++    (0..n)
++        .map(|_| {
++            s = s
++                .wrapping_mul(6364136223846793005)
++                .wrapping_add(1442695040888963407);
++            s
++        })
++        .collect()
++}
++
++#[test]
++fn partials_and_output_opening_match_literal_basis() {
++    for p in [5, 97, 2013265921] {
++        for (mu, kappa, nu) in [(0, 0, 0), (0, 2, 3), (3, 2, 0), (1, 3, 2), (3, 1, 2)] {
++            let claim = MatmulClaim {
++                mu,
++                kappa,
++                nu,
++                a: (0..1 << mu).map(|i| data(1 << kappa, 11 + i)).collect(),
++                b: (0..1 << kappa).map(|q| data(1 << nu, 97 + q)).collect(),
++            };
++            for case in 0..3 {
++                let point = |n, seed| {
++                    if case == 0 {
++                        vec![0; n]
++                    } else if case == 1 {
++                        vec![1; n]
++                    } else {
++                        data(n, seed)
++                    }
++                };
++                let x = point(mu, 41);
++                let y = point(nu, 53);
++                let expected_a: Vec<_> = (0..1 << kappa)
++                    .map(|q| {
++                        (0..1 << mu).fold(0, |s, i| {
++                            add(s, mul(claim.a[i][q] % p, chi_eval(i, &x, p), p), p)
++                        })
++                    })
++                    .collect();
++                let expected_b: Vec<_> = (0..1 << kappa)
++                    .map(|q| {
++                        (0..1 << nu).fold(0, |s, j| {
++                            add(s, mul(claim.b[q][j] % p, chi_eval(j, &y, p), p), p)
++                        })
++                    })
++                    .collect();
++                assert_eq!(claim.row_partial(&x, p), expected_a);
++                assert_eq!(claim.col_partial(&y, p), expected_b);
++                let output = claim.output(p);
++                let expected = (0..1 << mu).fold(0, |s, i| {
++                    (0..1 << nu).fold(s, |s, j| {
++                        add(
++                            s,
++                            mul(
++                                mul(output[i][j], chi_eval(i, &x, p), p),
++                                chi_eval(j, &y, p),
++                                p,
++                            ),
++                            p,
++                        )
++                    })
++                });
++                assert_eq!(mle2_eval(&output, &x, &y, p), expected);
++            }
++        }
++    }
++}
++
++#[test]
++fn asymmetric_corners_keep_lsb_and_row_column_order() {
++    let table = vec![
++        vec![2, 3, 5, 7],
++        vec![11, 13, 17, 19],
++        vec![23, 29, 31, 37],
++        vec![41, 43, 47, 53],
++    ];
++    assert_eq!(mle2_eval(&table, &[1, 0], &[0, 1], 97), 17);
++    assert_eq!(mle2_eval(&table, &[0, 1], &[1, 0], 97), 29);
++    assert_ne!(17, 29);
++}
++
++#[test]
++#[should_panic(expected = "table cols must be")]
++fn malformed_shape_is_checked_before_weight_allocation() {
++    // The old implementation rejects this shape before any large allocation.
++    mle2_eval(&[vec![1]], &[], &[0; 40], 97);
++}

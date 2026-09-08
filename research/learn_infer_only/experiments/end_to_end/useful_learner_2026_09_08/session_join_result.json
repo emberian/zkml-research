@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "new_label": "loan_application",
+  "new_class_count": 78,
+  "revision": 1234,
+  "teaches_per_backend": 2,
+  "before_after_queries_per_backend": 2,
+  "exact_integer_matches": 155,
+  "comparisons": [
+    {
+      "event_index": 1,
+      "class_count": 77,
+      "prediction": "transfer_into_account",
+      "integer_scores_match": true
+    },
+    {
+      "event_index": 4,
+      "class_count": 78,
+      "prediction": "loan_application",
+      "integer_scores_match": true
+    }
+  ],
+  "scope": "Actual new-text interaction after the full77 fixed benchmark; inline full-key receiving; not a held-out accuracy estimate"
+}

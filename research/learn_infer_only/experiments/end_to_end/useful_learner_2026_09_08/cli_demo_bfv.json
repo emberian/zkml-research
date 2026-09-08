@@ -1,0 +1,89 @@
+{
+  "fixture": {
+    "label": "account_access",
+    "teaching_texts": [
+      "I forgot the passcode for the banking app and cannot sign in.",
+      "Please help me reset my login password so I can access my account."
+    ],
+    "query": "I cannot log in because I no longer remember the code for the app."
+  },
+  "events": [
+    {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/learner.py",
+        "query",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv",
+        "--text",
+        "I cannot log in because I no longer remember the code for the app."
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.5226662919740193,
+      "stdout": "{\n  \"label\": \"card_payment_not_recognised\",\n  \"ranking\": [\n    {\n      \"label\": \"card_payment_not_recognised\",\n      \"mean_dot\": 216201.75,\n      \"sum_dot\": 1729614,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"lost_or_stolen_card\",\n      \"mean_dot\": 207980.875,\n      \"sum_dot\": 1663847,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"pending_card_payment\",\n      \"mean_dot\": 207689.0,\n      \"sum_dot\": 1661512,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"card_arrival\",\n      \"mean_dot\": 206071.375,\n      \"sum_dot\": 1648571,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"transfer_not_received_by_recipient\",\n      \"mean_dot\": 204421.625,\n      \"sum_dot\": 1635373,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"wrong_amount_of_cash_received\",\n      \"mean_dot\": 201176.125,\n      \"sum_dot\": 1609409,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"cash_withdrawal_charge\",\n      \"mean_dot\": 200664.625,\n      \"sum_dot\": 1605317,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"pending_transfer\",\n      \"mean_dot\": 196226.0,\n      \"sum_dot\": 1569808,\n      \"observations\": 8\n    }\n  ],\n  \"revision\": 128\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/learner.py",
+        "teach",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv",
+        "--label",
+        "account_access",
+        "--text",
+        "I forgot the passcode for the banking app and cannot sign in."
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.17028820898849517,
+      "stdout": "{\n  \"revision\": 129,\n  \"label\": \"account_access\",\n  \"new_class\": true,\n  \"observations\": 1,\n  \"expired\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/learner.py",
+        "teach",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv",
+        "--label",
+        "account_access",
+        "--text",
+        "Please help me reset my login password so I can access my account."
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.17199287499533966,
+      "stdout": "{\n  \"revision\": 130,\n  \"label\": \"account_access\",\n  \"new_class\": false,\n  \"observations\": 2,\n  \"expired\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/learner.py",
+        "query",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv",
+        "--text",
+        "I cannot log in because I no longer remember the code for the app."
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.48342358303489164,
+      "stdout": "{\n  \"label\": \"account_access\",\n  \"ranking\": [\n    {\n      \"label\": \"account_access\",\n      \"mean_dot\": 233883.5,\n      \"sum_dot\": 467767,\n      \"observations\": 2\n    },\n    {\n      \"label\": \"card_payment_not_recognised\",\n      \"mean_dot\": 216201.75,\n      \"sum_dot\": 1729614,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"lost_or_stolen_card\",\n      \"mean_dot\": 207980.875,\n      \"sum_dot\": 1663847,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"pending_card_payment\",\n      \"mean_dot\": 207689.0,\n      \"sum_dot\": 1661512,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"card_arrival\",\n      \"mean_dot\": 206071.375,\n      \"sum_dot\": 1648571,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"transfer_not_received_by_recipient\",\n      \"mean_dot\": 204421.625,\n      \"sum_dot\": 1635373,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"wrong_amount_of_cash_received\",\n      \"mean_dot\": 201176.125,\n      \"sum_dot\": 1609409,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"cash_withdrawal_charge\",\n      \"mean_dot\": 200664.625,\n      \"sum_dot\": 1605317,\n      \"observations\": 8\n    },\n    {\n      \"label\": \"pending_transfer\",\n      \"mean_dot\": 196226.0,\n      \"sum_dot\": 1569808,\n      \"observations\": 8\n    }\n  ],\n  \"revision\": 130\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/learner.py",
+        "status",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.0586647079908289,
+      "stdout": "{\n  \"backend\": \"bfv\",\n  \"revision\": 130,\n  \"capacity\": 8,\n  \"classes\": {\n    \"card_arrival\": 8,\n    \"cash_withdrawal_charge\": 8,\n    \"card_payment_not_recognised\": 8,\n    \"lost_or_stolen_card\": 8,\n    \"pending_card_payment\": 8,\n    \"pending_transfer\": 8,\n    \"transfer_not_received_by_recipient\": 8,\n    \"wrong_amount_of_cash_received\": 8,\n    \"account_access\": 2\n  }\n}\n",
+      "stderr": ""
+    }
+  ]
+}

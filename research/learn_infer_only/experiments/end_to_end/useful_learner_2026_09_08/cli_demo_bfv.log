@@ -1,0 +1,1 @@
+{"backend": "bfv", "before": "card_payment_not_recognised", "after": "account_access", "expected_new_label": "account_access", "new_class_learned": true, "new_revision": 130}

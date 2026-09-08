@@ -1,0 +1,46 @@
+   Compiling version_check v0.9.5
+   Compiling libc v0.2.189
+   Compiling typenum v1.20.1
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.151
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling generic-array v0.14.7
+   Compiling syn v3.0.3
+   Compiling cpufeatures v0.2.17
+   Compiling keccak v0.1.6
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling sha3 v0.10.9
+   Compiling minidregg-prover v0.1.0 (/private/tmp/minidregg-prover-performance-20260908/prover)
+   Compiling serde_derive v1.0.229
+    Finished `release` profile [optimized] target(s) in 5.12s
+     Running tests/matmul_binding_reuse.rs (prover/target/release/deps/matmul_binding_reuse-15efd75ac9930427)
+
+running 3 tests
+test asymmetric_corners_keep_lsb_and_row_column_order ... ok
+test malformed_shape_is_checked_before_weight_allocation - should panic ... ok
+test partials_and_output_opening_match_literal_basis ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/zkml_matmul_conformance.rs (prover/target/release/deps/zkml_matmul_conformance-d922f903468c6de0)
+
+running 8 tests
+test contraction_identity_matches_lean ... ok
+test forged_output_refused_on_the_lean_vector ... ok
+test rounds_match_lean ... ok
+test lean_rounds_are_quadratic_not_cubic ... ok
+test output_matches_lean ... ok
+test partials_match_lean ... ok
+test openings_match_lean ... ok
+test prover_reproduces_the_lean_transcript ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

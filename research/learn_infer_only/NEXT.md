@@ -1,5 +1,7 @@
 # Third overnight run — final handoff and inherited resume points
 
+[REPORTED renewed work, 2026-09-08 daytime] Ember explicitly requested a wider constructive swarm, major vFHE/private-learning advances and the microsite, then rejected micro-validation as the default allocation of work. The previous11am goal is complete; a new active swarm is documented in [the constructive status](../vfhe_2026_09_08/STATUS.md) and [working queue](../vfhe_2026_09_08/NEXT.md). The deadline/review-queue instructions below describe the previous run, not a requirement to park today's authorized implementation work.
+
 ## Deadline handoff — 2026-09-08
 
 [EXECUTED] Latest successful joint proof run: run018, 952 pins / 72 proposed modules / 567 rebuilt project modules. The source-only final manifest selects 1,189 pins / 97 modules. Do not describe the latter as a combined Lean success. Read STATUS.md's final collection before the historical ownership tables below.

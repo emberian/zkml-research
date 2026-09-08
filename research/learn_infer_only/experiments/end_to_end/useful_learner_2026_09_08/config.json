@@ -1,0 +1,15 @@
+{
+  "model": "intfloat/e5-base-v2",
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--intfloat--e5-base-v2/snapshots/f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+  "revision": "f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+  "projection_seed": 202609081,
+  "dimension": 576,
+  "scale": 512,
+  "capacity": 8,
+  "train_per_class": 16,
+  "classes": ["card_arrival", "cash_withdrawal_charge", "card_payment_not_recognised", "lost_or_stolen_card", "pending_card_payment", "pending_transfer", "transfer_not_received_by_recipient", "wrong_amount_of_cash_received"],
+  "selection": "Original test split: every row for the eight named classes. Training: first 16 per class sorted by SHA256('useful-learner-2026-09-08:' + text); exact text overlaps with test excluded before selection. No test score selects an architecture or setting.",
+  "schedule": "Eight rounds over first four classes, eight rounds over last four classes, then eight rounds over all eight classes. Checkpoints at 0,4,16,32,36,48,64,96,128; encrypted complete test at 32,64,128.",
+  "feature_map": "query: prefix; E5 masked mean pooling, L2 normalize; fixed Rademacher 768x576 projection divided by sqrt(576), L2 normalize; round(scale*x), clip [-127,127], append zero. No learned semantic axes or label information in features.",
+  "readout": "Per-class mean dot product of last eight issued vectors with query vector. Inactive classes excluded; exact rational comparison; ties lexicographic label. All class routes and counts are public."
+}

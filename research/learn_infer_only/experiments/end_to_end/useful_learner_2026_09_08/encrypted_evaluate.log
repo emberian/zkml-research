@@ -1,0 +1,234 @@
+{"phase": "public", "revision": 32, "queries_complete": 40, "elapsed_seconds": 5.293962915951852}
+{"phase": "public", "revision": 32, "queries_complete": 80, "elapsed_seconds": 9.13651362498058}
+{"phase": "public", "revision": 32, "queries_complete": 120, "elapsed_seconds": 13.113823457970284}
+{"phase": "public", "revision": 32, "queries_complete": 160, "elapsed_seconds": 16.949694957991596}
+{"phase": "public", "revision": 32, "queries_complete": 200, "elapsed_seconds": 20.77246062498307}
+{"phase": "public", "revision": 32, "queries_complete": 240, "elapsed_seconds": 24.749138040991966}
+{"phase": "public", "revision": 32, "queries_complete": 280, "elapsed_seconds": 28.546526665973943}
+{"phase": "public", "revision": 32, "queries_complete": 320, "elapsed_seconds": 32.40477712498978}
+{"phase": "public", "revision": 64, "queries_complete": 40, "elapsed_seconds": 40.905645499995444}
+{"phase": "public", "revision": 64, "queries_complete": 80, "elapsed_seconds": 48.051592624979094}
+{"phase": "public", "revision": 64, "queries_complete": 120, "elapsed_seconds": 55.04358662496088}
+{"phase": "public", "revision": 64, "queries_complete": 160, "elapsed_seconds": 62.11875445797341}
+{"phase": "public", "revision": 64, "queries_complete": 200, "elapsed_seconds": 69.19787704094779}
+{"phase": "public", "revision": 64, "queries_complete": 240, "elapsed_seconds": 76.47907449997729}
+{"phase": "public", "revision": 64, "queries_complete": 280, "elapsed_seconds": 83.71710233297199}
+{"phase": "public", "revision": 64, "queries_complete": 320, "elapsed_seconds": 91.06183008296648}
+{"phase": "public", "revision": 128, "queries_complete": 40, "elapsed_seconds": 100.99973074998707}
+{"phase": "public", "revision": 128, "queries_complete": 80, "elapsed_seconds": 108.11376212496543}
+{"phase": "public", "revision": 128, "queries_complete": 120, "elapsed_seconds": 116.81151883298298}
+{"phase": "public", "revision": 128, "queries_complete": 160, "elapsed_seconds": 124.5327047079918}
+{"phase": "public", "revision": 128, "queries_complete": 200, "elapsed_seconds": 131.76918370794738}
+{"phase": "public", "revision": 128, "queries_complete": 240, "elapsed_seconds": 140.73328349995427}
+{"phase": "public", "revision": 128, "queries_complete": 280, "elapsed_seconds": 150.47999229095876}
+{"phase": "public", "revision": 128, "queries_complete": 320, "elapsed_seconds": 160.16520270798355}
+{"phase": "private_compare", "queries_complete": 80, "integer_matches": 320, "elapsed_seconds": 166.85413104097825}
+{"phase": "private_compare", "queries_complete": 160, "integer_matches": 640, "elapsed_seconds": 172.25693762500305}
+{"phase": "private_compare", "queries_complete": 240, "integer_matches": 960, "elapsed_seconds": 177.51594970800215}
+{"phase": "private_compare", "queries_complete": 320, "integer_matches": 1280, "elapsed_seconds": 182.76569266599836}
+{"phase": "private_compare", "queries_complete": 400, "integer_matches": 1920, "elapsed_seconds": 193.05207624996547}
+{"phase": "private_compare", "queries_complete": 480, "integer_matches": 2560, "elapsed_seconds": 207.03734129096847}
+{"phase": "private_compare", "queries_complete": 560, "integer_matches": 3200, "elapsed_seconds": 220.46952604094986}
+{"phase": "private_compare", "queries_complete": 640, "integer_matches": 3840, "elapsed_seconds": 232.64729883294785}
+{"phase": "private_compare", "queries_complete": 720, "integer_matches": 4480, "elapsed_seconds": 245.0358484579483}
+{"phase": "private_compare", "queries_complete": 800, "integer_matches": 5120, "elapsed_seconds": 256.809926915972}
+{"phase": "private_compare", "queries_complete": 880, "integer_matches": 5760, "elapsed_seconds": 270.42465295799775}
+{"phase": "private_compare", "queries_complete": 960, "integer_matches": 6400, "elapsed_seconds": 284.5021575829596}
+{
+  "ok": true,
+  "learns": 128,
+  "expiries": 64,
+  "queries": 960,
+  "exact_integer_matches": 6400,
+  "prediction_matches": 960,
+  "checkpoint_results": {
+    "32": {
+      "correct": 151,
+      "total": 320,
+      "accuracy": 0.471875,
+      "by_class": {
+        "card_arrival": {
+          "correct": 38,
+          "total": 40
+        },
+        "cash_withdrawal_charge": {
+          "correct": 39,
+          "total": 40
+        },
+        "card_payment_not_recognised": {
+          "correct": 36,
+          "total": 40
+        },
+        "lost_or_stolen_card": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_card_payment": {
+          "correct": 0,
+          "total": 40
+        },
+        "pending_transfer": {
+          "correct": 0,
+          "total": 40
+        },
+        "transfer_not_received_by_recipient": {
+          "correct": 0,
+          "total": 40
+        },
+        "wrong_amount_of_cash_received": {
+          "correct": 0,
+          "total": 40
+        }
+      },
+      "original_four": {
+        "correct": 151,
+        "total": 160
+      },
+      "introduced_four": {
+        "correct": 0,
+        "total": 160
+      }
+    },
+    "64": {
+      "correct": 270,
+      "total": 320,
+      "accuracy": 0.84375,
+      "by_class": {
+        "card_arrival": {
+          "correct": 37,
+          "total": 40
+        },
+        "cash_withdrawal_charge": {
+          "correct": 38,
+          "total": 40
+        },
+        "card_payment_not_recognised": {
+          "correct": 33,
+          "total": 40
+        },
+        "lost_or_stolen_card": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_card_payment": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_transfer": {
+          "correct": 32,
+          "total": 40
+        },
+        "transfer_not_received_by_recipient": {
+          "correct": 18,
+          "total": 40
+        },
+        "wrong_amount_of_cash_received": {
+          "correct": 36,
+          "total": 40
+        }
+      },
+      "original_four": {
+        "correct": 146,
+        "total": 160
+      },
+      "introduced_four": {
+        "correct": 124,
+        "total": 160
+      }
+    },
+    "128": {
+      "correct": 269,
+      "total": 320,
+      "accuracy": 0.840625,
+      "by_class": {
+        "card_arrival": {
+          "correct": 39,
+          "total": 40
+        },
+        "cash_withdrawal_charge": {
+          "correct": 39,
+          "total": 40
+        },
+        "card_payment_not_recognised": {
+          "correct": 35,
+          "total": 40
+        },
+        "lost_or_stolen_card": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_card_payment": {
+          "correct": 39,
+          "total": 40
+        },
+        "pending_transfer": {
+          "correct": 26,
+          "total": 40
+        },
+        "transfer_not_received_by_recipient": {
+          "correct": 16,
+          "total": 40
+        },
+        "wrong_amount_of_cash_received": {
+          "correct": 37,
+          "total": 40
+        }
+      },
+      "original_four": {
+        "correct": 151,
+        "total": 160
+      },
+      "introduced_four": {
+        "correct": 118,
+        "total": 160
+      }
+    }
+  },
+  "public_elapsed_seconds": 160.16846970794722,
+  "total_elapsed_seconds": 284.6048980829655,
+  "commands": {
+    "encode-query": {
+      "calls": 960,
+      "seconds": 9.582708880945574,
+      "mean_seconds": 0.00998198841765164,
+      "max_seconds": 0.029238334042020142
+    },
+    "host-infer": {
+      "calls": 6400,
+      "seconds": 140.68230305722682,
+      "mean_seconds": 0.02198160985269169,
+      "max_seconds": 0.1435433749575168
+    },
+    "host-learn": {
+      "calls": 128,
+      "seconds": 2.8083865447551943,
+      "mean_seconds": 0.021940519880899956,
+      "max_seconds": 0.0261226249858737
+    },
+    "issuer-encrypt": {
+      "calls": 128,
+      "seconds": 2.619789077027235,
+      "mean_seconds": 0.020467102164275275,
+      "max_seconds": 0.026455917046405375
+    },
+    "keygen": {
+      "calls": 1,
+      "seconds": 0.03671204100828618,
+      "mean_seconds": 0.03671204100828618,
+      "max_seconds": 0.03671204100828618
+    },
+    "reader-decrypt": {
+      "calls": 6400,
+      "seconds": 120.56420849252027,
+      "mean_seconds": 0.018838157576956293,
+      "max_seconds": 0.1955915839644149
+    }
+  },
+  "private_after_public_complete": true,
+  "decryption_semantics": "Full-key BFV reader internally decrypts complete polynomial; this experiment compares coefficient576 only. No restricted release.",
+  "queries_public": true,
+  "classes_and_counts_public": true,
+  "encoder_plaintext": true,
+  "cryptographic_backend_changed": false,
+  "new_wrapper_previously_verified": false
+}

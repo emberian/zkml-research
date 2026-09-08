@@ -1,5 +1,7 @@
 # Learn/infer-only resident — third overnight swarm closeout
 
+[REPORTED renewed work, 2026-09-08 daytime] Ember explicitly requested a wider constructive swarm, major vFHE/private-learning advances and the microsite, then rejected micro-validation as the default allocation of work. The previous11am goal is complete; a new active swarm is documented in [the constructive status](../vfhe_2026_09_08/STATUS.md) and [working queue](../vfhe_2026_09_08/NEXT.md). The deadline/review-queue instructions below describe the previous run, not a requirement to park today's authorized implementation work.
+
 ## Final collection — 2026-09-08 14:52 UTC
 
 [EXECUTED] The timed swarm is closing for the 15:00 UTC deadline. Agent work was interrupted by the usage limit around 07:10–14:29 UTC; already launched OS jobs continued. This record does not claim continuous agent work during that interruption. Microsite updates remain deferred at Ember's request.

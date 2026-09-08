@@ -1,0 +1,13 @@
+{
+  "model_load_seconds": 0.15656362503068522,
+  "forward_seconds": 36.3467970417114,
+  "forward_batches": 242,
+  "encoded_texts": 3864,
+  "cached_texts": 448,
+  "clipped_coordinates": 0,
+  "torch": "2.10.0",
+  "transformers": "4.57.3",
+  "numpy": "2.4.2",
+  "feature_sha256": "79d09a076f0af7b177815eed8888721ddad50a29fb4a324277335fc56684fdf2",
+  "elapsed_seconds": 39.75550208397908
+}

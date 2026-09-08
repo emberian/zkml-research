@@ -1,0 +1,8 @@
+{
+  "label": "account_access",
+  "teaching_texts": [
+    "I forgot the passcode for the banking app and cannot sign in.",
+    "Please help me reset my login password so I can access my account."
+  ],
+  "query": "I cannot log in because I no longer remember the code for the app."
+}

@@ -1,0 +1,11 @@
+{
+  "command": "du -sk models/bfv models/full77_bfv models/full77 feature_cache",
+  "exit_code": 0,
+  "allocated_KiB": {
+    "models/bfv": 585008,
+    "models/full77_bfv": 735324,
+    "models/full77": 5480,
+    "feature_cache": 17272
+  },
+  "scope": "Retained research ciphertext/input/output traces and feature cache; not minimum active-state storage. No files deleted."
+}

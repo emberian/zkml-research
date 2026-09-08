@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "classes": 77,
+  "learns": 1232,
+  "expiries": 616,
+  "queries": 77,
+  "exact_integer_matches": 5929,
+  "prediction_matches": 77,
+  "integration_slice_correct": 56,
+  "integration_slice_total": 77,
+  "new_utility_estimate": false,
+  "complete_test_utility": {
+    "correct": 2253,
+    "total": 3080,
+    "execution": "plaintext unchanged algorithm, full77/result.json"
+  },
+  "new_model_forwards": 0,
+  "public_elapsed_seconds": 205.92517529096222,
+  "total_elapsed_seconds": 329.77696933294646,
+  "commands": {
+    "encode-query": {
+      "calls": 77,
+      "seconds": 0.9141520480043255,
+      "mean_seconds": 0.011872104519536695
+    },
+    "host-infer": {
+      "calls": 5929,
+      "seconds": 142.21336226491258,
+      "mean_seconds": 0.023986062112483147
+    },
+    "host-learn": {
+      "calls": 1232,
+      "seconds": 29.364117497752886,
+      "mean_seconds": 0.023834510955968252
+    },
+    "issuer-encrypt": {
+      "calls": 1232,
+      "seconds": 26.836197498021647,
+      "mean_seconds": 0.021782627839303285
+    },
+    "keygen": {
+      "calls": 1,
+      "seconds": 0.034209375036880374,
+      "mean_seconds": 0.034209375036880374
+    },
+    "reader-decrypt": {
+      "calls": 5929,
+      "seconds": 105.15227584552485,
+      "mean_seconds": 0.017735246389867575
+    }
+  },
+  "public_before_private": true,
+  "full_reader_key": true,
+  "public_class_routes_counts_queries": true
+}
