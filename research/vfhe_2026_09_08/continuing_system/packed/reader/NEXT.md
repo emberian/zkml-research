@@ -1,15 +1,5 @@
 # Next
 
-[OPEN] The packed controller should consume `PROFILE.json`, call the pinned
-wrapper after every requested bank has independently verified, and supply each
-bank's accepted eight-count vector. Its full workload should retain returned
-class sums and compare them to exact plaintext dot sums, including capacity,
-FIFO expiry, and inactive lanes. Do not launch a separate crypto fixture merely
-to exercise this decoder.
+[EXECUTED] The packed controller now consumes this pinned reader after all requested banks verify and supplies each bank's accepted eight-count vector. The complete lifecycle and fresh browser flow retain actual class sums, exact references and all-slot comparisons in `../../results/packed-matched/` and `../../results/browser-packed/`. No further decoder fixture is pending.
 
-[SOURCE] The native executable and wrapper are ready at the paths documented
-in `README.md`. No decoder or proof-producer edit is needed to integrate them.
-
-[OPEN] After the coordinated lifecycle finishes, link its retained execution
-record from this directory's status. Keep build/argument evidence distinct from
-the lifecycle's private-read evidence.
+[OPEN] The full reader key survives. Future capability-restriction work must change that credential boundary; the current count checks and controller ordering do not remove unrestricted decryption authority.
