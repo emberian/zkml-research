@@ -1,0 +1,369 @@
+{
+  "classification": "EXECUTED",
+  "base_minidregg": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "apply_after": "../polynomial_ood/air-polynomial-ood.patch (and recorded predecessors)",
+  "modules": [
+    {
+      "path": "Compiler/Ir2NearbyColumns.lean",
+      "sha256": "624b333500fd3232be29291271a8e86e29854b5087ecc84a03dbff8db68e4e59",
+      "bytes": 5583,
+      "guards": 6,
+      "theorems": [
+        "Minidregg.Compiler.Ir2NearbyColumns.overlap_large",
+        "Minidregg.Compiler.Ir2NearbyColumns.unique",
+        "Minidregg.Compiler.Ir2NearbyColumns.selected_eq",
+        "Minidregg.Compiler.Ir2NearbyColumns.selected_degree",
+        "Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint",
+        "Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim"
+      ],
+      "census": {
+        "theorems": [
+          "overlap_large",
+          "unique",
+          "selected_eq",
+          "selected_degree",
+          "claims_of_joint",
+          "not_joint_of_wrong_selected_claim"
+        ],
+        "qualified_declarations": [
+          {
+            "name": "overlap_large",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.overlap_large",
+            "private": false,
+            "line": 20
+          },
+          {
+            "name": "unique",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.unique",
+            "private": false,
+            "line": 35
+          },
+          {
+            "name": "selected_eq",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_eq",
+            "private": false,
+            "line": 50
+          },
+          {
+            "name": "selected_degree",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_degree",
+            "private": false,
+            "line": 59
+          },
+          {
+            "name": "claims_of_joint",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint",
+            "private": false,
+            "line": 69
+          },
+          {
+            "name": "not_joint_of_wrong_selected_claim",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim",
+            "private": false,
+            "line": 84
+          }
+        ],
+        "theorem_count": 6,
+        "pin_count": 6,
+        "pins": [
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.overlap_large",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.overlap_large",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 94,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.overlap_large' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.overlap_large"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.unique",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.unique",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 98,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.unique' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.unique"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.selected_eq",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_eq",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 102,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.selected_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_eq"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.selected_degree",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_degree",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 106,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.selected_degree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_degree"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 110,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 114,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim"
+          }
+        ],
+        "forbidden_constructs": [],
+        "admit_identifier_tokens": [],
+        "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+      }
+    },
+    {
+      "path": "Compiler/Ir2SelectedAirPcs.lean",
+      "sha256": "0af8ed5fb9f942331d1f2902a6b44039077ec0e0e4fa4153b3ffd2fe9be6af6f",
+      "bytes": 5188,
+      "guards": 1,
+      "theorems": [
+        "Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness"
+      ],
+      "census": {
+        "theorems": [
+          "selected_air_pcs_soundness"
+        ],
+        "qualified_declarations": [
+          {
+            "name": "selected_air_pcs_soundness",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness",
+            "private": false,
+            "line": 44
+          }
+        ],
+        "theorem_count": 1,
+        "pin_count": 1,
+        "pins": [
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 93,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness"
+          }
+        ],
+        "forbidden_constructs": [],
+        "admit_identifier_tokens": [],
+        "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+      }
+    },
+    {
+      "path": "Compiler/Ir2NearbyWitnesses.lean",
+      "sha256": "965c9fe6dbd5293da30daac4883444d3fa68a237fb37217fa0ee62516200f97a",
+      "bytes": 5794,
+      "guards": 7,
+      "theorems": [
+        "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near",
+        "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero",
+        "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact",
+        "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim",
+        "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero",
+        "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation",
+        "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires"
+      ],
+      "census": {
+        "theorems": [
+          "bumped_zero_near",
+          "bumped_selects_zero",
+          "bumped_not_exact",
+          "bumped_wrong_claim",
+          "actual_selected_zero",
+          "plan_equation",
+          "selected_head_fires"
+        ],
+        "qualified_declarations": [
+          {
+            "name": "bumped_zero_near",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near",
+            "private": false,
+            "line": 16
+          },
+          {
+            "name": "bumped_selects_zero",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero",
+            "private": false,
+            "line": 23
+          },
+          {
+            "name": "bumped_not_exact",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact",
+            "private": false,
+            "line": 29
+          },
+          {
+            "name": "bumped_wrong_claim",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim",
+            "private": false,
+            "line": 42
+          },
+          {
+            "name": "actual_selected_zero",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero",
+            "private": false,
+            "line": 51
+          },
+          {
+            "name": "plan_equation",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation",
+            "private": false,
+            "line": 61
+          },
+          {
+            "name": "selected_head_fires",
+            "qualified_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires",
+            "private": false,
+            "line": 70
+          }
+        ],
+        "theorem_count": 7,
+        "pin_count": 7,
+        "pins": [
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 93,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 97,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 101,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 105,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 109,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 113,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation"
+          },
+          {
+            "theorem": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires",
+            "requested_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires",
+            "axioms": [
+              "propext",
+              "Classical.choice",
+              "Quot.sound"
+            ],
+            "line": 117,
+            "expected_message": "info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires' depends on axioms: [propext, Classical.choice, Quot.sound]",
+            "declaration_name": "Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires"
+          }
+        ],
+        "forbidden_constructs": [],
+        "admit_identifier_tokens": [],
+        "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+      }
+    }
+  ],
+  "guard_count": 14,
+  "patch_sha256": "e09db75e49335db6970139667bdd03fa4f84d5936aad0a03a22c39162dcdb2cd",
+  "checks_sha256": "2bdf820b946882c9cc15fe991bb70e1571a46dc4f1b80171e6e69ce193f6a774",
+  "patch_check": {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/selected_columns/ir2-selected-columns.patch"
+    ],
+    "cwd": "/tmp/minidregg-selected-columns-patch-check-20260909",
+    "exit_code": 0,
+    "output": ""
+  },
+  "search_counts": {
+    "web": 0,
+    "scry": 0,
+    "pdf_downloads": 0
+  }
+}

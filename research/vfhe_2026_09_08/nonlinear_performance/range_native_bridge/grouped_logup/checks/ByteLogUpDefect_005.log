@@ -1,0 +1,18 @@
+Compiler/ByteLogUpDefect.lean:139:17: error: Application type mismatch: The argument
+  Finset.card_union_le
+has type
+  ∀ (s t : Finset ?m.36), (s ∪ t).card ≤ s.card + t.card
+but is expected to have type
+  (support sends).card ≤ ?m.34
+in the application
+  le_trans Finset.card_union_le
+Compiler/ByteLogUpDefect.lean:151:15: warning: 'exact_mod_cast (by assumption)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/ByteLogUpDefect.lean:151:15: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Compiler/ByteLogUpDefect.lean:158:88: error: unsolved goals
+h : NativeNibbleBus.ExactField [16] fun x => 0
+hh : 1 = ↑(List.count 16 (List.flatMap (fun i => []) (List.range 16)))
+⊢ False

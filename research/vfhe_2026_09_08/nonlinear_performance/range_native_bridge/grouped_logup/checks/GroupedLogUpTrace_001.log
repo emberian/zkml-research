@@ -1,0 +1,5 @@
+Compiler/GroupedLogUpTrace.lean:140:2: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field ℕ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/GroupedLogUpTrace.lean:146:2: error: No goals to be solved

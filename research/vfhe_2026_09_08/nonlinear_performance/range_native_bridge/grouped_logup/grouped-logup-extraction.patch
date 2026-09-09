@@ -1,0 +1,822 @@
+diff --git a/Compiler/ByteLogUpDefect.lean b/Compiler/ByteLogUpDefect.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ByteLogUpDefect.lean
+@@ -0,0 +1,214 @@
++/- Fresh-coin logarithmic-derivative extraction for the actual arity-one byte
++bus. Main/table data, including multiplicities, are fixed before the coins;
++permutation witnesses are deliberately not part of this fixed data. -/
++import Compiler.NativeNibbleBus
++import Selvage.LogupStar
++import Selvage.BabyBearFullUD
++namespace Minidregg.Compiler.ByteLogUpDefect
++open Minidregg.Compiler Minidregg.Selvage
++open Minidregg.Selvage.BabyBearExt4 (Ext4 ext4_card)
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxHeartbeats 1000000
++noncomputable section
++
++def embed : BabyBear →+* Ext4 := algebraMap Minidregg.Selvage.BabyBearExt4.BabyBear Ext4
++def tableKeys : Finset BabyBear := (Finset.range 16).image fun (i : Nat) => (i : BabyBear)
++def support (sends : List BabyBear) : Finset BabyBear := sends.toFinset ∪ tableKeys
++abbrev Index (sends : List BabyBear) := {x : BabyBear // x∈support sends}
++def point (sends : List BabyBear) (i : Index sends) : Ext4 := embed i.val
++def expected (sends : List BabyBear) (i : Index sends) : Ext4 := (sends.count i.val : Ext4)
++def claimed (sends : List BabyBear) (m : Nat → Nat) (i : Index sends) : Ext4 :=
++  ((NativeNibbleBus.receives m).count i.val : Ext4)
++def rational (xs : List BabyBear) (α : Ext4) : Ext4 :=
++  (xs.map fun x => (α-embed x)⁻¹).sum
++def Pole (sends : List BabyBear) (α : Ext4) : Prop := ∃ i : Index sends,α-point sends i=0
++def Defect (sends : List BabyBear) (m : Nat → Nat) : Polynomial Ext4 :=
++  logupDefect (point sends) (expected sends) (claimed sends m)
++def Bad (sends : List BabyBear) (m : Nat → Nat) (α : Ext4) : Prop :=
++  Pole sends α ∨ (¬NativeNibbleBus.ExactField sends m ∧ (Defect sends m).eval α=0)
++
++def Sound : Prop := ∀ sends m α,
++  rational sends α=rational (NativeNibbleBus.receives m) α →
++  NativeNibbleBus.ExactField sends m ∨ Bad sends m α
++
++theorem point_injective (sends : List BabyBear) : Function.Injective (point sends) := by
++  intro a b h
++  exact Subtype.ext (embed.injective h)
++
++theorem receive_mem (sends : List BabyBear) (m : Nat → Nat) (x : BabyBear)
++    (hx : x∈NativeNibbleBus.receives m) : x∈support sends := by
++  apply Finset.mem_union_right
++  have h := NativeNibbleBus.receive_range m x hx
++  apply Finset.mem_image.mpr
++  exact ⟨x.val,Finset.mem_range.mpr h,ZMod.natCast_zmod_val x⟩
++
++theorem exact_iff (sends : List BabyBear) (m : Nat → Nat) :
++    NativeNibbleBus.ExactField sends m ↔ claimed sends m=expected sends := by
++  constructor
++  · intro h
++    funext i
++    have hh := congrArg embed (h i.val)
++    simpa only [map_natCast] using hh.symm
++  · intro h x
++    by_cases hx : x∈support sends
++    · have hh := congrFun h ⟨x,hx⟩
++      apply embed.injective
++      simpa only [map_natCast] using hh.symm
++    · have hs : x∉sends := fun hm => hx (Finset.mem_union_left _ (List.mem_toFinset.mpr hm))
++      have hr : x∉NativeNibbleBus.receives m := fun hm => hx (receive_mem sends m x hm)
++      simp [List.count_eq_zero.mpr hs,List.count_eq_zero.mpr hr]
++
++theorem rational_histogram (xs sends : List BabyBear) (α : Ext4)
++    (hxs : ∀ x∈xs,x∈support sends) :
++    rational xs α=logupLogDerivative (point sends)
++      (fun i => (xs.count i.val : Ext4)) α := by
++  classical
++  unfold rational logupLogDerivative point
++  change _ = ∑ j∈(support sends).attach,(xs.count j.val : Ext4)/(α-embed j.val)
++  rw [Finset.sum_attach (support sends) (fun (x : BabyBear) => (xs.count x : Ext4)/(α-embed x))]
++  rw [Finset.sum_list_map_count xs (fun x => (α-embed x)⁻¹)]
++  simp only [nsmul_eq_mul,div_eq_mul_inv]
++  apply Finset.sum_subset
++  · intro x hx
++    exact hxs x (List.mem_toFinset.mp hx)
++  · intro x hx hn
++    have hc : xs.count x=0 := List.count_eq_zero.mpr (fun h => hn (List.mem_toFinset.mpr h))
++    simp [hc]
++
++theorem sound : Sound := by
++  intro sends m α hrat
++  by_cases he : NativeNibbleBus.ExactField sends m
++  · exact Or.inl he
++  · right
++    by_cases hp : Pole sends α
++    · exact Or.inl hp
++    · right
++      refine ⟨he,?_⟩
++      apply (logup_rational_eq_iff_defect_eval_eq_zero (point sends)
++        (expected sends) (claimed sends m) α (by simpa [Pole] using hp)).mp
++      unfold claimed expected
++      rw [←rational_histogram (NativeNibbleBus.receives m) sends α (receive_mem sends m),
++        ←rational_histogram sends sends α (fun x hx => Finset.mem_union_left _ (List.mem_toFinset.mpr hx))]
++      exact hrat.symm
++
++theorem bad_probability (sends : List BabyBear) (m : Nat → Nat) :
++    uniformProb Ext4 (Bad sends m) ≤
++      ((support sends).card : ℝ)/Fintype.card Ext4 +
++      (((support sends).card-1 : Nat) : ℝ)/Fintype.card Ext4 := by
++  by_cases he : NativeNibbleBus.ExactField sends m
++  · have hb : ∀ α,Bad sends m α → Pole sends α := by intro α h; exact h.resolve_right (by simp [he])
++    refine le_trans (uniformProb_mono hb) ?_
++    have hp := logup_denominator_zero_prob_le (point sends)
++    have hc : Fintype.card (Index sends)=(support sends).card := Fintype.card_coe _
++    rw [hc] at hp
++    exact le_trans hp (le_add_of_nonneg_right (by positivity))
++  · have hn : claimed sends m≠expected sends := fun h => he ((exact_iff sends m).mpr h)
++    refine le_trans (uniformProb_mono (q := fun α => Pole sends α ∨ (Defect sends m).eval α=0) (fun α h => ?_)) ?_
++    · exact h.imp_right And.right
++    · simpa only [Fintype.card_coe] using
++        logup_wrong_or_pole_prob_le (point sends) (point_injective sends) hn
++
++/-- Actual Horner compression of a singleton tuple is independent of beta. -/
++def compress (β : Ext4) (xs : List BabyBear) : Ext4 :=
++  xs.foldl (fun acc x => embed x+acc*β) 0
++def TupleCollision (β : Ext4) : Prop :=
++  ∃ x y : BabyBear,x≠y ∧ compress β [x]=compress β [y]
++
++theorem no_tuple_collision (β : Ext4) : ¬TupleCollision β := by
++  rintro ⟨x,y,hxy,h⟩
++  apply hxy
++  apply embed.injective
++  simpa [compress] using h
++
++theorem fresh_pair_probability (sends : List BabyBear) (m : Nat → Nat) :
++    uniformProb (Ext4×Ext4) (fun coins => TupleCollision coins.1 ∨ Bad sends m coins.2) ≤
++      ((support sends).card : ℝ)/(2013265921 : ℝ)^4 +
++      (((support sends).card-1 : Nat) : ℝ)/(2013265921 : ℝ)^4 := by
++  apply uniformProb_prod_le (by positivity)
++  intro β
++  have h := bad_probability sends m
++  have hc : Fintype.card Ext4=2013265921^4 := ext4_card
++  rw [hc] at h
++  simpa only [no_tuple_collision, false_or,Nat.cast_pow,Nat.cast_ofNat] using h
++
++theorem support_card_bound (sends : List BabyBear) :
++    (support sends).card≤sends.length+16 := by
++  have ht : tableKeys.card≤16 := by
++    exact le_trans Finset.card_image_le (by simp)
++  exact le_trans (Finset.card_union_le _ _) (Nat.add_le_add sends.toFinset_card_le ht)
++
++theorem fresh_pair_length_bound (sends : List BabyBear) (m : Nat → Nat) :
++    uniformProb (Ext4×Ext4) (fun coins => TupleCollision coins.1 ∨ Bad sends m coins.2) ≤
++      (2*(sends.length : ℝ)+31)/(2013265921 : ℝ)^4 := by
++  have h := fresh_pair_probability sends m
++  have hcard := support_card_bound sends
++  have hpred : (support sends).card-1≤sends.length+15 := by omega
++  have h' : ((support sends).card : ℝ)/(2013265921 : ℝ)^4 +
++      (((support sends).card-1 : Nat) : ℝ)/(2013265921 : ℝ)^4 ≤
++      ((sends.length+16 : Nat) : ℝ)/(2013265921 : ℝ)^4 +
++      ((sends.length+15 : Nat) : ℝ)/(2013265921 : ℝ)^4 := by
++    gcongr
++  refine le_trans h (le_trans h' ?_)
++  push_cast
++  ring_nf
++  exact le_rfl
++
++/-- A concrete wrong histogram supplies a nonzero defect polynomial. -/
++theorem wrong_histogram : ¬NativeNibbleBus.ExactField [(16 : BabyBear)] (fun _ => 0) := by
++  intro h
++  have hh := h 16
++  norm_num [NativeNibbleBus.receives,List.range_succ] at hh
++
++theorem wrong_defect_nonzero : Defect [(16 : BabyBear)] (fun _ => 0)≠0 := by
++  apply logupDefect_ne_zero_of_ne (point _) (point_injective _)
++  exact fun h => wrong_histogram ((exact_iff _ _).mpr h)
++
++/-- The complete nonzero bus witness from the previous packet remains a valid
++committed multiplicity choice before either lookup coin is selected. -/
++theorem nonzeroPremise : ∃ sends m,NativeNibbleBus.ExactField sends m ∧
++    NativeNibbleBus.NoSendWrap sends ∧ ∃ x∈sends,x≠0 :=
++  NativeNibbleBus.fieldPremiseInhabited
++
++end
++end Minidregg.Compiler.ByteLogUpDefect
++
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.point_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.point_injective
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.receive_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.receive_mem
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.exact_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.exact_iff
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.rational_histogram' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.rational_histogram
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.sound
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.bad_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.bad_probability
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.no_tuple_collision' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.no_tuple_collision
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.fresh_pair_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.fresh_pair_probability
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.support_card_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.support_card_bound
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.fresh_pair_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.fresh_pair_length_bound
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.wrong_histogram' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.wrong_histogram
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.wrong_defect_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.wrong_defect_nonzero
++/-- info: 'Minidregg.Compiler.ByteLogUpDefect.nonzeroPremise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.ByteLogUpDefect.nonzeroPremise
+diff --git a/Compiler/GroupedByteFractions.lean b/Compiler/GroupedByteFractions.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/GroupedByteFractions.lean
+@@ -0,0 +1,118 @@
++/- Exact list-to-native-fraction glue. No new balance or membership premise. -/
++import Compiler.GroupedLogUpTrace
++import Compiler.ByteLogUpDefect
++
++namespace Minidregg.Compiler.GroupedByteFractions
++open Minidregg.Compiler
++open Minidregg.Compiler.ByteLogUpDefect (rational embed)
++open Minidregg.Compiler.GroupedLogUpTrace (rowSum)
++open Minidregg.Selvage.BabyBearExt4 (Ext4)
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxHeartbeats 600000
++noncomputable section
++
++def sendListN (groups last : Nat) (keys : Fin groups → Nat → Fin 4 → BabyBear) : List BabyBear :=
++  (List.finRange groups).flatMap fun g =>
++    (List.range (last+1)).flatMap fun r => (List.finRange 4).map (keys g r)
++
++def sendList (last : Nat) (keys : Fin 131 → Nat → Fin 4 → BabyBear) : List BabyBear :=
++  sendListN 131 last keys
++
++def SendSoundN (groups : Nat) : Prop := ∀ last keys α,
++  rational (sendListN groups last keys) α =
++    ∑ g, rowSum last (fun r => LogUpGrouping.fractions (fun _ => 1)
++      (fun i => α-embed (keys g r i)))
++
++def SendSound : Prop := SendSoundN 131
++
++def ReceiveSound : Prop := ∀ m α,
++  rational (NativeNibbleBus.receives m) α =
++    rowSum 15 (fun r => (m r : Ext4)/(α-embed (r : BabyBear)))
++
++theorem rational_flatMap {ι : Type*} (xs : List ι) (f : ι → List BabyBear) (α : Ext4) :
++    rational (xs.flatMap f) α = (xs.map fun i => rational (f i) α).sum := by
++  induction xs with
++  | nil => simp [rational]
++  | cons x xs ih =>
++    simpa only [rational,List.flatMap_cons,List.map_append,List.sum_append,
++      List.map_cons,List.sum_cons] using congrArg (fun z => rational (f x) α+z) ih
++
++theorem sum_map_range (n : Nat) (f : Nat → Ext4) :
++    ((List.range n).map f).sum = ∑ r ∈ Finset.range n, f r := by
++  induction n with
++  | zero => simp
++  | succ n ih => simp [List.range_succ,Finset.sum_range_succ,ih]
++
++theorem send_rationalN (groups : Nat) : SendSoundN groups := by
++  intro last keys α
++  unfold sendListN
++  rw [rational_flatMap,←Fin.sum_univ_def]
++  apply Finset.sum_congr rfl
++  intro g _
++  rw [rational_flatMap,sum_map_range]
++  unfold rowSum
++  apply Finset.sum_congr rfl
++  intro r _
++  unfold rational
++  simp only [List.map_map,Function.comp_def]
++  rw [←Fin.sum_univ_def]
++  simp only [Fin.sum_univ_succ,LogUpGrouping.fractions,one_div]
++  change (α-embed (keys g r 0))⁻¹+((α-embed (keys g r 1))⁻¹+
++    ((α-embed (keys g r 2))⁻¹+((α-embed (keys g r 3))⁻¹+0))) = _
++  ring
++
++theorem send_rational : SendSound := send_rationalN 131
++
++theorem receive_rational : ReceiveSound := by
++  intro m α
++  unfold NativeNibbleBus.receives
++  rw [rational_flatMap,sum_map_range]
++  unfold rowSum
++  apply Finset.sum_congr rfl
++  intro r _
++  simp [rational,List.map_replicate,List.sum_replicate,nsmul_eq_mul,div_eq_mul_inv]
++
++theorem mem_sendListN (groups last : Nat) (keys : Fin groups → Nat → Fin 4 → BabyBear)
++    (g : Fin groups) (r : Nat) (hr : r≤last) (i : Fin 4) :
++    keys g r i ∈ sendListN groups last keys := by
++  apply List.mem_flatMap.mpr
++  refine ⟨g,by simp,?_⟩
++  apply List.mem_flatMap.mpr
++  refine ⟨r,List.mem_range.mpr (by omega),?_⟩
++  exact List.mem_map.mpr ⟨i,by simp,rfl⟩
++
++theorem mem_sendList (last : Nat) (keys : Fin 131 → Nat → Fin 4 → BabyBear)
++    (g : Fin 131) (r : Nat) (hr : r≤last) (i : Fin 4) :
++    keys g r i ∈ sendList last keys := mem_sendListN 131 last keys g r hr i
++
++end
++end Minidregg.Compiler.GroupedByteFractions
++
++/-- info: 'Minidregg.Compiler.GroupedByteFractions.rational_flatMap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedByteFractions.rational_flatMap
++
++/-- info: 'Minidregg.Compiler.GroupedByteFractions.sum_map_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedByteFractions.sum_map_range
++
++/-- info: 'Minidregg.Compiler.GroupedByteFractions.send_rational' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedByteFractions.send_rational
++
++/-- info: 'Minidregg.Compiler.GroupedByteFractions.receive_rational' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedByteFractions.receive_rational
++
++/-- info: 'Minidregg.Compiler.GroupedByteFractions.mem_sendList' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedByteFractions.mem_sendList
++
++/-- info: 'Minidregg.Compiler.GroupedByteFractions.send_rationalN' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedByteFractions.send_rationalN
++
++/-- info: 'Minidregg.Compiler.GroupedByteFractions.mem_sendListN' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedByteFractions.mem_sendListN
+diff --git a/Compiler/GroupedLogUpTrace.lean b/Compiler/GroupedLogUpTrace.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/GroupedLogUpTrace.lean
+@@ -0,0 +1,234 @@
++/- Source-shaped global LogUp gates: exclusive prefix, transition rows, final
++row, and the final sum of cumulative values. Auxiliary traces and cumulative
++values are arbitrary; they may depend on both sampled lookup challenges. -/
++import Compiler.LogUpGrouping
++
++namespace Minidregg.Compiler.GroupedLogUpTrace
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxHeartbeats 600000
++variable {F : Type*} [Field F]
++
++def rowSum (last : Nat) (f : Nat → F) : F := ∑ r ∈ Finset.range (last+1), f r
++
++def Gates4 (last : Nat) (m d : Nat → Fin 4 → F) (s : Nat → F) (c : F) : Prop :=
++  s 0 = 0 ∧
++  (∀ r < last, LogUpGrouping.Transition (s r) (s (r+1)) (m r) (d r)) ∧
++  LogUpGrouping.Transition (s last) c (m last) (d last)
++
++def Gates1 (last : Nat) (m d s : Nat → F) (c : F) : Prop :=
++  s 0 = 0 ∧
++  (∀ r < last, (s (r+1)-s r)*d r=m r) ∧
++  (c-s last)*d last=m last
++
++def Nonzero4 (last : Nat) (d : Nat → Fin 4 → F) : Prop :=
++  ∀ r ≤ last, ∀ i, d r i ≠ 0
++
++def Nonzero1 (last : Nat) (d : Nat → F) : Prop := ∀ r ≤ last, d r ≠ 0
++
++def Sound : Prop := ∀ (last : Nat) (m d : Nat → Fin 4 → F) (s : Nat → F) (c : F),
++  Gates4 last m d s c → Nonzero4 last d →
++  c = rowSum last (fun r => LogUpGrouping.fractions (m r) (d r))
++
++/-- Fixed-four grouping with any source-selected number of columns, and one
++negative receiver on the sixteen nibble-table rows. `recvM` is the receiver
++multiplicity before the source receive operation negates it. -/
++def NativeByteSoundGeneral (groups : Nat) : Prop := ∀ (last : Nat)
++    (sendD : Fin groups → Nat → Fin 4 → F)
++    (sendS : Fin groups → Nat → F) (sendC : Fin groups → F)
++    (recvM recvD recvS : Nat → F) (recvC : F),
++  (∀ g, Gates4 last (fun _ _ => 1) (sendD g) (sendS g) (sendC g)) →
++  (∀ g, Nonzero4 last (sendD g)) →
++  Gates1 15 (fun r => -recvM r) recvD recvS recvC → Nonzero1 15 recvD →
++  (∑ g, sendC g) + recvC = 0 →
++  (∑ g, rowSum last (fun r => LogUpGrouping.fractions (fun _ => 1) (sendD g r))) +
++    rowSum 15 (fun r => -recvM r / recvD r) = 0
++
++/-- The MAC specialization has 524 unit sends in 131 groups. -/
++def NativeByteSound : Prop := @NativeByteSoundGeneral F _ 131
++
++theorem telescope (n : Nat) (s f : Nat → F)
++    (h : ∀ r < n, s (r+1)-s r=f r) :
++    s n-s 0 = ∑ r ∈ Finset.range n, f r := by
++  induction n with
++  | zero => simp
++  | succ n ih =>
++    have hp := ih (fun r hr => h r (by omega))
++    have hn := h n (by omega)
++    rw [Finset.sum_range_succ]
++    linear_combination hp + hn
++
++theorem inclusive_sum (last : Nat) (s f : Nat → F) (c : F)
++    (h0 : s 0 = 0) (ht : ∀ r < last, s (r+1)-s r=f r)
++    (hf : c-s last=f last) : c=rowSum last f := by
++  have hp := telescope last s f ht
++  rw [h0, sub_zero] at hp
++  unfold rowSum
++  rw [Finset.sum_range_succ]
++  linear_combination hp + hf
++
++theorem sound : @Sound F _ := by
++  intro last m d s c h hd
++  apply inclusive_sum last s _ c h.1
++  · intro r hr
++    exact (LogUpGrouping.transition_iff _ _ _ _ (hd r (by omega))).mp (h.2.1 r hr)
++  · exact (LogUpGrouping.transition_iff _ _ _ _ (hd last le_rfl)).mp h.2.2
++
++theorem single_sound (last : Nat) (m d s : Nat → F) (c : F)
++    (h : Gates1 last m d s c) (hd : Nonzero1 last d) :
++    c=rowSum last (fun r => m r/d r) := by
++  apply inclusive_sum last s _ c h.1
++  · intro r hr
++    exact (eq_div_iff (hd r (by omega))).mpr (h.2.1 r hr)
++  · exact (eq_div_iff (hd last le_rfl)).mpr h.2.2
++
++theorem native_byte_sound_general (groups : Nat) : @NativeByteSoundGeneral F _ groups := by
++  intro last sendD sendS sendC recvM recvD recvS recvC hs hd hr hdr hg
++  have hsend : (∑ g, sendC g) =
++      ∑ g, rowSum last (fun r => LogUpGrouping.fractions (fun _ => 1) (sendD g r)) := by
++    apply Finset.sum_congr rfl
++    intro g _
++    exact sound last _ _ _ _ (hs g) (hd g)
++  rw [←hsend, ←single_sound 15 _ _ _ _ hr hdr]
++  exact hg
++
++theorem native_byte_sound : @NativeByteSound F _ := native_byte_sound_general 131
++
++/-- This pointwise theorem quantifies over an arbitrary trace-producing function
++of the sampled challenges. No pre-challenge fixation of the auxiliary trace is
++used or required by telescoping. -/
++theorem adaptive_trace (last : Nat) (m d : F → F → Nat → Fin 4 → F)
++    (s : F → F → Nat → F) (c : F → F → F) (alpha beta : F)
++    (h : Gates4 last (m alpha beta) (d alpha beta) (s alpha beta) (c alpha beta))
++    (hd : Nonzero4 last (d alpha beta)) :
++    c alpha beta = rowSum last (fun r =>
++      LogUpGrouping.fractions (m alpha beta r) (d alpha beta r)) :=
++  sound last _ _ _ _ h hd
++
++def unitFour : Nat → Fin 4 → ℚ := fun _ i => if i=0 then 1 else 0
++def positivePrefix (r : Nat) : ℚ := r
++def negativePrefix (r : Nat) : ℚ := -(r : ℚ)
++
++def SignedWitness : Prop :=
++  Gates4 1 unitFour (fun _ _ => 1) positivePrefix 2 ∧
++  Nonzero4 1 (fun _ _ => (1 : ℚ)) ∧
++  Gates1 1 (fun _ => -1) (fun _ => 1) negativePrefix (-2) ∧
++  Nonzero1 1 (fun _ => (1 : ℚ)) ∧
++  (2 : ℚ)+(-2)=0 ∧ (2 : ℚ)≠0
++
++theorem signedWitness : SignedWitness := by
++  dsimp [SignedWitness,Gates4,Gates1,Nonzero4,Nonzero1,
++    LogUpGrouping.Transition,LogUpGrouping.denominator,LogUpGrouping.numerator,
++    unitFour,positivePrefix,negativePrefix]
++  norm_num
++
++theorem premiseInhabited : ∃ (m d : Nat → Fin 4 → ℚ) (s : Nat → ℚ) (c : ℚ),
++    Gates4 1 m d s c ∧ Nonzero4 1 d ∧ c≠0 := by
++  exact ⟨unitFour,fun _ _ => 1,positivePrefix,2,
++    signedWitness.1,signedWitness.2.1,signedWitness.2.2.2.2.2⟩
++
++def MissingTerminalFalsifier : Prop :=
++  (positivePrefix 0=0 ∧
++    ∀ r<1,LogUpGrouping.Transition (positivePrefix r) (positivePrefix (r+1))
++      (unitFour r) (fun _ => 1)) ∧
++  ¬Gates4 1 unitFour (fun _ _ => 1) positivePrefix 0 ∧
++  ¬(0 : ℚ)=rowSum 1 (fun r => LogUpGrouping.fractions (unitFour r) (fun _ => 1))
++
++theorem missingTerminalFalsifier : MissingTerminalFalsifier := by
++  dsimp [MissingTerminalFalsifier,Gates4,positivePrefix,unitFour,
++    LogUpGrouping.Transition,LogUpGrouping.denominator,LogUpGrouping.numerator,
++    LogUpGrouping.fractions,rowSum]
++  norm_num [Finset.sum_range_succ]
++
++def MissingGlobalFalsifier : Prop :=
++  Gates4 1 unitFour (fun _ _ => 1) positivePrefix 2 ∧
++  Gates1 1 (fun _ => (0 : ℚ)) (fun _ => 1) (fun _ => 0) 0 ∧
++  ¬(rowSum 1 (fun r => LogUpGrouping.fractions (unitFour r) (fun _ => 1)) +
++    rowSum 1 (fun _ => (0 : ℚ)/(1 : ℚ)) = 0)
++
++theorem missingGlobalFalsifier : MissingGlobalFalsifier := by
++  refine ⟨signedWitness.1,?_,?_⟩
++  · norm_num [Gates1]
++  · have hs := sound 1 unitFour (fun _ _ => 1) positivePrefix 2
++      signedWitness.1 signedWitness.2.1
++    rw [←hs]
++    norm_num [rowSum]
++
++def nativeRecvM (r : Nat) : ℚ := if r=0 then 524 else 0
++def nativeRecvS (r : Nat) : ℚ := if r=0 then 0 else -524
++
++/-- Inhabitation of all 131 unit-send columns and the full sixteen-row signed
++receiver, with nonzero cumulative values. Denominators are arbitrary resolved
++field values in this trace-only theorem; tuple semantics is a later bridge. -/
++def NativePremise : Prop :=
++  (∀ _g : Fin 131, Gates4 0 (fun _ _ => (1 : ℚ)) (fun _ _ => 1) (fun _ => 0) 4) ∧
++  (∀ _g : Fin 131, Nonzero4 0 (fun _ _ => (1 : ℚ))) ∧
++  Gates1 15 (fun r => -nativeRecvM r) (fun _ => 1) nativeRecvS (-524) ∧
++  Nonzero1 15 (fun _ => (1 : ℚ)) ∧
++  (∑ _g : Fin 131, (4 : ℚ)) + (-524) = 0 ∧ (4 : ℚ) ≠ 0
++
++theorem nativePremise : NativePremise := by
++  refine ⟨?_,?_,?_,?_,?_,by decide⟩
++  · intro g
++    norm_num [Gates4,LogUpGrouping.Transition,LogUpGrouping.numerator,LogUpGrouping.denominator]
++  · intro g r hr i
++    norm_num
++  · refine ⟨rfl,?_,by norm_num [nativeRecvM,nativeRecvS]⟩
++    intro r hr
++    by_cases hz : r=0
++    · subst r
++      norm_num [nativeRecvM,nativeRecvS]
++    · simp [nativeRecvM,nativeRecvS,hz]
++  · intro r hr
++    norm_num
++  · norm_num
++
++end Minidregg.Compiler.GroupedLogUpTrace
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.telescope' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.telescope
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.inclusive_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.inclusive_sum
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.sound
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.single_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.single_sound
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.native_byte_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.native_byte_sound
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.adaptive_trace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.adaptive_trace
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.signedWitness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.signedWitness
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.premiseInhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.premiseInhabited
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.missingTerminalFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.missingTerminalFalsifier
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.missingGlobalFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.missingGlobalFalsifier
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.nativePremise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.nativePremise
++
++/-- info: 'Minidregg.Compiler.GroupedLogUpTrace.native_byte_sound_general' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.GroupedLogUpTrace.native_byte_sound_general
+diff --git a/Compiler/NativeByteExtraction.lean b/Compiler/NativeByteExtraction.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/NativeByteExtraction.lean
+@@ -0,0 +1,236 @@
++/- The native grouped lookup gates imply field histogram conservation or a
++priced fresh-coin event. Main keys and receive multiplicities are fixed here;
++the existential permutation witnesses are chosen after the lookup coins. -/
++import Compiler.GroupedByteFractions
++import Compiler.NativeRangeKeyswitch
++namespace Minidregg.Compiler.NativeByteExtraction
++open Minidregg.Compiler Minidregg.Selvage
++open Minidregg.Selvage.BabyBearExt4 (Ext4)
++open Minidregg.Compiler.ByteLogUpDefect
++open Minidregg.Compiler.GroupedLogUpTrace
++open Minidregg.Compiler.GroupedByteFractions
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxHeartbeats 1000000
++noncomputable section
++
++def Accepted (groups last : Nat) (keys : Fin groups → Nat → Fin 4 → BabyBear)
++    (m : Nat → Nat) (α : Ext4) : Prop :=
++  ∃ (sendS : Fin groups → Nat → Ext4) (sendC : Fin groups → Ext4)
++    (recvS : Nat → Ext4) (recvC : Ext4),
++    (∀ g,Gates4 last (fun _ _ => 1)
++      (fun r i => α-embed (keys g r i)) (sendS g) (sendC g)) ∧
++    Gates1 15 (fun r => -(m r : Ext4)) (fun r => α-embed (r : BabyBear)) recvS recvC ∧
++    (∑ g,sendC g)+recvC=0
++
++def Sound : Prop := ∀ groups last keys m α,Accepted groups last keys m α →
++  NativeNibbleBus.ExactField (sendListN groups last keys) m ∨ Bad (sendListN groups last keys) m α
++
++theorem denom_of_nopole (sends : List BabyBear) (α : Ext4) (hp : ¬Pole sends α)
++    (x : BabyBear) (hx : x∈support sends) : α-embed x≠0 := by
++  intro hz
++  exact hp ⟨⟨x,hx⟩,hz⟩
++
++theorem accepted_rational (groups last : Nat) (keys : Fin groups → Nat → Fin 4 → BabyBear)
++    (m : Nat → Nat) (α : Ext4) (ha : Accepted groups last keys m α)
++    (hp : ¬Pole (sendListN groups last keys) α) :
++    rational (sendListN groups last keys) α=rational (NativeNibbleBus.receives m) α := by
++  obtain ⟨ss,sc,rs,rc,hg,hr,ht⟩ := ha
++  have hd : ∀ g,Nonzero4 last (fun r i => α-embed (keys g r i)) := by
++    intro g r hrl i
++    exact denom_of_nopole _ α hp _
++      (Finset.mem_union_left _ (List.mem_toFinset.mpr (mem_sendListN groups last keys g r hrl i)))
++  have hdr : Nonzero1 15 (fun r => α-embed (r : BabyBear)) := by
++    intro r hrl
++    apply denom_of_nopole _ α hp
++    apply Finset.mem_union_right
++    exact Finset.mem_image.mpr ⟨r,Finset.mem_range.mpr (by omega),rfl⟩
++  have hbal := native_byte_sound_general groups last (fun g r i => α-embed (keys g r i)) ss sc
++    (fun r => (m r : Ext4)) (fun r => α-embed (r : BabyBear)) rs rc hg hd hr hdr ht
++  rw [send_rationalN,receive_rational]
++  have hn : rowSum 15 (fun r => -(m r : Ext4)/(α-embed (r : BabyBear))) =
++      -rowSum 15 (fun r => (m r : Ext4)/(α-embed (r : BabyBear))) := by
++    simp [rowSum,neg_div]
++  rw [hn] at hbal
++  exact sub_eq_zero.mp (by simpa only [sub_eq_add_neg] using hbal)
++
++theorem sound : Sound := by
++  intro groups last keys m α ha
++  by_cases hp : Pole (sendListN groups last keys) α
++  · exact Or.inr (Or.inl hp)
++  · exact ByteLogUpDefect.sound _ m α (accepted_rational groups last keys m α ha hp)
++
++/-- Arbitrary existential permutation traces may be selected after both fresh
++coins. The main keys and table multiplicities outside the event stay fixed. -/
++theorem false_accept_probability (groups last : Nat) (keys : Fin groups → Nat → Fin 4 → BabyBear)
++    (m : Nat → Nat) (hfalse : ¬NativeNibbleBus.ExactField (sendListN groups last keys) m) :
++    uniformProb (Ext4×Ext4) (fun coins => Accepted groups last keys m coins.2) ≤
++      (2*((sendListN groups last keys).length : ℝ)+31)/(2013265921 : ℝ)^4 := by
++  have hprice := fresh_pair_length_bound (sendListN groups last keys) m
++  have hsub : uniformProb (Ext4×Ext4) (fun coins => Accepted groups last keys m coins.2) ≤
++      uniformProb (Ext4×Ext4) (fun coins =>
++        TupleCollision coins.1 ∨ Bad (sendListN groups last keys) m coins.2) := by
++    apply uniformProb_mono
++    intro coins ha
++    exact Or.inr ((sound groups last keys m coins.2 ha).resolve_left hfalse)
++  exact le_trans hsub hprice
++
++theorem exact_perm (xs ys : List BabyBear) (m : Nat → Nat) (hxy : xs.Perm ys)
++    (h : NativeNibbleBus.ExactField xs m) : NativeNibbleBus.ExactField ys m := by
++  intro x
++  rw [←hxy.count_eq x]
++  exact h x
++
++/-- All source rows, including the terminal row, obtain their range premise
++from the actual grouped gates or expose the named fresh-coin failure event.
++The permutation equality is the explicit binding to compiler-declared sends;
++it does not assume any histogram equality with the receiver. -/
++theorem allRowsRanges_or_bad {n : Nat} (groups last : Nat)
++    (keys : Fin groups → Nat → Fin 4 → BabyBear) (m : Nat → Nat) (α : Ext4)
++    (trace : Fin n → RangeKeyswitchRow.Idx → BabyBear)
++    (aux : Fin n → NativeRangeKeyswitch.Aux)
++    (ha : Accepted groups last keys m α)
++    (binding : (sendListN groups last keys).Perm (NativeRangeKeyswitch.allSends aux))
++    (he : ∀ row,NativeRangeKeyswitch.Local (trace row) (aux row))
++    (hn : n≤131072) :
++    (∀ row,RangeKeyswitchRow.RangeHolds (trace row)) ∨ Bad (sendListN groups last keys) m α := by
++  rcases sound groups last keys m α ha with hc | hb
++  · left
++    have hex := exact_perm _ _ m binding hc
++    intro row
++    apply NativeRangeKeyswitch.local_ranges (trace row) (aux row) (he row)
++    intro x hx
++    apply NativeNibbleBus.field_sound (NativeRangeKeyswitch.allSends aux) m hex
++      (NativeRangeKeyswitch.noWrap_of_domain aux hn) x
++    exact List.mem_flatMap.mpr ⟨row,List.mem_finRange row,hx⟩
++  · exact Or.inr hb
++
++theorem allRowsSound_or_bad {n : Nat} (groups last : Nat) (l : Fin 4)
++    (keys : Fin groups → Nat → Fin 4 → BabyBear) (m : Nat → Nat) (α : Ext4)
++    (trace : Fin n → RangeKeyswitchRow.Idx → BabyBear)
++    (aux : Fin n → NativeRangeKeyswitch.Aux)
++    (ha : Accepted groups last keys m α)
++    (binding : (sendListN groups last keys).Perm (NativeRangeKeyswitch.allSends aux))
++    (hg : ∀ row,systemAccepts (trace row) (RangeKeyswitchRow.system (BfvKeyswitchRow.primes l)))
++    (he : ∀ row,NativeRangeKeyswitch.Local (trace row) (aux row))
++    (hn : n≤131072) :
++    (∀ row h,RangeKeyswitchRow.value (trace row) (BfvKeyswitchCore.oIndex h)=
++      (RangeKeyswitchRow.value (trace row) (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++        RangeKeyswitchRow.value (trace row) (BfvKeyswitchCore.dIndex k)*
++        RangeKeyswitchRow.value (trace row) (BfvKeyswitchCore.kIndex h k))%BfvKeyswitchRow.primes l) ∨
++      Bad (sendListN groups last keys) m α := by
++  rcases allRowsRanges_or_bad groups last keys m α trace aux ha binding he hn with hr | hb
++  · exact Or.inl (fun row => (RangeKeyswitchRow.actualRowSound l (trace row) (hg row) (hr row)).2)
++  · exact Or.inr hb
++
++theorem embed_nat (n : Nat) : embed (n : BabyBear)=(n : Ext4) := map_natCast embed n
++
++/-- A nonzero complete 131-column native byte-bus witness. All fixed source
++keys are15, their source count is524, and alpha16 is outside the table. -/
++theorem nonzero_native_accepted :
++    Accepted 131 0 (fun _ _ _ => (15 : BabyBear))
++      (fun r => if r=15 then 524 else 0) (16 : Ext4) := by
++  refine ⟨fun _ _ => 0,fun _ => 4,fun _ => 0,-524,?_,?_,?_⟩
++  · intro g
++    norm_num [Gates4,LogUpGrouping.Transition,LogUpGrouping.denominator,
++      LogUpGrouping.numerator,show embed (15 : BabyBear)=(15 : Ext4) from embed_nat 15,
++      show embed (16 : BabyBear)=(16 : Ext4) from embed_nat 16]
++  · refine ⟨rfl,?_,?_⟩
++    · intro r hr
++      have : r≠15 := by omega
++      simp [this]
++    · norm_num [show embed (15 : BabyBear)=(15 : Ext4) from embed_nat 15]
++  · norm_num
++
++/-- An actual bad challenge can satisfy the source-shaped gates with a wrong
++histogram. Four invalid key16 sends balance eight key15 receives at alpha17.
++This is a fixed committed instance, not a post-challenge choice of multiplicity. -/
++theorem wrong_native_accepted :
++    Accepted 1 0 (fun _ _ _ => (16 : BabyBear))
++      (fun r => if r=15 then 8 else 0) (17 : Ext4) := by
++  refine ⟨fun _ _ => 0,fun _ => 4,fun _ => 0,-4,?_,?_,?_⟩
++  · intro g
++    norm_num [Gates4,LogUpGrouping.Transition,LogUpGrouping.denominator,
++      LogUpGrouping.numerator,show embed (15 : BabyBear)=(15 : Ext4) from embed_nat 15,
++      show embed (16 : BabyBear)=(16 : Ext4) from embed_nat 16]
++  · refine ⟨rfl,?_,?_⟩
++    · intro r hr
++      have : r≠15 := by omega
++      simp [this]
++    · norm_num [show embed (15 : BabyBear)=(15 : Ext4) from embed_nat 15]
++  · norm_num
++
++theorem wrong_native_histogram : ¬NativeNibbleBus.ExactField
++    (sendListN 1 0 (fun _ _ _ => (16 : BabyBear))) (fun r => if r=15 then 8 else 0) := by
++  intro h
++  have hh := h 16
++  norm_num [sendListN,NativeNibbleBus.receives,List.finRange_succ,List.range_succ,List.count_replicate] at hh
++  rw [if_neg (by decide : (15 : BabyBear)≠16)] at hh
++  exact (by decide : (4 : BabyBear)≠0) hh
++
++theorem native_premise_inhabited : ∃ groups last keys m α,
++    Accepted groups last keys m α ∧ (sendListN groups last keys).length>0 := by
++  refine ⟨1,0,fun _ _ _ => (16 : BabyBear),fun r => if r=15 then 8 else 0,
++    (17 : Ext4),wrong_native_accepted,?_⟩
++  norm_num [sendListN,List.finRange_succ,List.range_succ]
++
++/-- Direct producer of the frozen Infer theorem's compact-row premise. The
++caller supplies the existing public operand binding for this same source row. -/
++theorem checked_for_infer {n : Nat} (groups last : Nat) (l : Fin 4)
++    (keys : Fin groups → Nat → Fin 4 → BabyBear) (m : Nat → Nat) (α : Ext4)
++    (trace : Fin n → RangeKeyswitchRow.Idx → BabyBear)
++    (aux : Fin n → NativeRangeKeyswitch.Aux) (row : Fin n)
++    (operands : BfvInferComposition.Operands) (out : Fin 2 → Nat)
++    (ha : Accepted groups last keys m α)
++    (binding : (sendListN groups last keys).Perm (NativeRangeKeyswitch.allSends aux))
++    (hg : systemAccepts (trace row) (RangeKeyswitchRow.system (BfvKeyswitchRow.primes l)))
++    (he : ∀ r,NativeRangeKeyswitch.Local (trace r) (aux r))
++    (hn : n≤131072)
++    (hb : BfvInferComposition.Bound RangeKeyswitchRow.wires (trace row) operands out)
++    (hgood : ¬Bad (sendListN groups last keys) m α) :
++    NativeRangeKeyswitch.Checked l operands out := by
++  have hr := (allRowsRanges_or_bad groups last keys m α trace aux ha binding he hn).resolve_right hgood
++  exact ⟨trace row,hg,(NativeRangeKeyswitch.nativeRanges_iff _).mpr (hr row),hb⟩
++
++end
++end Minidregg.Compiler.NativeByteExtraction
++
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.denom_of_nopole' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.denom_of_nopole
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.accepted_rational' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.accepted_rational
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.sound
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.false_accept_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.false_accept_probability
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.exact_perm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.exact_perm
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.allRowsRanges_or_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.allRowsRanges_or_bad
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.allRowsSound_or_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.allRowsSound_or_bad
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.embed_nat' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.embed_nat
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.nonzero_native_accepted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.nonzero_native_accepted
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.wrong_native_accepted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.wrong_native_accepted
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.wrong_native_histogram' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.wrong_native_histogram
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.native_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.native_premise_inhabited
++/-- info: 'Minidregg.Compiler.NativeByteExtraction.checked_for_infer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeByteExtraction.checked_for_infer

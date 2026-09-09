@@ -1,0 +1,9 @@
+Compiler/ByteLogUpDefect.lean:68:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ∑ x ∈ support sends, ?f x
+in the target expression
+  (List.map (fun x => (α - embed x)⁻¹) xs).sum = ∑ j, (fun i => ↑(List.count (↑i) xs)) j / (α - embed ↑j)
+
+xs sends : List BabyBear
+α : Ext4
+hxs : ∀ x ∈ xs, x ∈ support sends
+⊢ (List.map (fun x => (α - embed x)⁻¹) xs).sum = ∑ j, (fun i => ↑(List.count (↑i) xs)) j / (α - embed ↑j)

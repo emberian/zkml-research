@@ -1,0 +1,20 @@
+Compiler/RangeProfiledCompact.lean:37:24: error(lean.unknownIdentifier): Unknown identifier `renameS`
+Compiler/RangeProfiledCompact.lean:38:28: error(lean.unknownIdentifier): Unknown identifier `renameS`
+Compiler/RangeProfiledCompact.lean:43:30: error: Application type mismatch: The argument
+  s
+has type
+  Profile
+but is expected to have type
+  Layout
+in the application
+  system s
+Compiler/RangeProfiledCompact.lean:74:6: error(lean.unknownIdentifier): Unknown identifier `systemAccepts_renameS`
+Compiler/RangeProfiledCompact.lean:77:6: error(lean.unknownIdentifier): Unknown identifier `systemAccepts_renameS`
+Compiler/RangeProfiledCompact.lean:90:34: error: Application type mismatch: The argument
+  s
+has type
+  Profile
+but is expected to have type
+  Layout
+in the application
+  system s

@@ -1,0 +1,6 @@
+work/
+__pycache__/
+target/
+build/
+*.olean
+*.ilean

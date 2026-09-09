@@ -1,0 +1,55 @@
+Compiler/NativeByteExtraction.lean:71:5: error: (deterministic) timeout at `isDefEq`, maximum number of heartbeats (1000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/NativeByteExtraction.lean:129:2: error: unsolved goals
+case refine_1
+g : Fin 131
+⊢ 4 *
+      ((16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+            (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+          (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+        (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15)) =
+    (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+              (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+            (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) +
+          (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+              (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+            (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) +
+        (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+            (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+          (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) +
+      (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+          (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) *
+        (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15)
+Compiler/NativeByteExtraction.lean:136:4: error: unsolved goals
+case refine_2.refine_2
+⊢ 524 * (16 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) = 524
+Compiler/NativeByteExtraction.lean:146:2: error: unsolved goals
+case refine_1
+g : Fin 1
+⊢ 4 *
+      ((17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+            (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+          (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+        (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16)) =
+    (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+              (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+            (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) +
+          (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+              (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+            (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) +
+        (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+            (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+          (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) +
+      (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+          (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16) *
+        (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 16)
+Compiler/NativeByteExtraction.lean:153:4: error: unsolved goals
+case refine_2.refine_2
+⊢ 4 * (17 - (AdjoinRoot.of BabyBearExt4.extensionPolynomial) 15) = 8
+Compiler/NativeByteExtraction.lean:157:87: error: unsolved goals
+h : NativeNibbleBus.ExactField (sendListN 1 0 fun x x_1 x_2 => 16) fun r => if r = 15 then 8 else 0
+hh : 4 = ↑(List.count 16 (List.replicate 8 15))
+⊢ False

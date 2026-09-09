@@ -1,0 +1,4 @@
+'Minidregg.Compiler.ProfiledPublicBridge.extensionMatrixPublic' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.ProfiledPublicBridge.rescaleMatrixPublic' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,723 @@
+diff --git a/Compiler/ProfiledPublicBridge.lean b/Compiler/ProfiledPublicBridge.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ProfiledPublicBridge.lean
+@@ -0,0 +1,63 @@
++/- The original public output argument on an arbitrary old assignment;
++no compact source, index enumeration, or range profile is imported. -/
++import Compiler.ProfiledRowCoverage
++import Compiler.BasisExtensionPublic
++import Compiler.NonlinearRnsProfiled
++namespace Minidregg.Compiler.ProfiledPublicBridge
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 300000
++
++theorem extensionMatrixPublic (old : Nat → BabyBear) (hz : old 84=0)
++    (hm : ∀ i : Fin ActualBasisExtension.profile.rows,SignedMatrix.eval (ActualBasisExtension.rows i)
++      (decoded ActualBasisExtension.profile (old ∘ ActualBasisExtension.wireMap))=0) :
++    (∀ i,ActualBasisExtension.publicInput old i<ActualBasisExtension.params.source i) ∧
++    (∀ i,ActualBasisExtension.publicCopy old i=ActualBasisExtension.publicInput old i) ∧
++    ∀ i,(ActualBasisExtension.publicNew old i : Int)=ActualBasisExtension.nativeOutput
++      (fun j => ActualBasisExtension.publicInput old j) i := by
++  have hb := ProfiledRowCoverage.extensionBalanced _ hm
++  obtain ⟨hin,hcopy,hout⟩ := ExactBasisExtension.matrixSound ActualBasisExtension.params
++    ActualBasisExtension.paramsValid _ hb
++  have hi := ActualBasisExtension.input_public old hz
++  have hc := ActualBasisExtension.copy_public old hz
++  have hn := ActualBasisExtension.new_public old hz
++  have hin' : ∀ i,ActualBasisExtension.publicInput old i<ActualBasisExtension.params.source i := by
++    intro i;rw [← congrFun hi i];exact hin i
++  refine ⟨hin',?_,?_⟩
++  · intro i;rw [← congrFun hc i,← congrFun hi i];exact hcopy i
++  · intro i
++    have h := hout i
++    have hzinput := congrArg (fun f : Fin 4 → Nat => fun j => (f j : Int)) hi
++    dsimp only at hzinput
++    rw [congrFun hn i,hzinput] at h
++    exact h.trans (ActualBasisExtension.nativeAgreement _
++      (fun j => ⟨by positivity,by exact_mod_cast hin' j⟩) i)
++
++
++theorem rescaleMatrixPublic (old : Nat → BabyBear) (hz : old 88=0)
++    (hm : ∀ i : Fin NonlinearRnsInstance.profile.rows,SignedMatrix.eval (NonlinearRnsInstance.rows i)
++      (decoded NonlinearRnsInstance.profile (old ∘ NonlinearRnsPublic.wireMap))=0) :
++    ∀ i,(NonlinearRnsPublic.publicOutput old i : Int)=NonlinearRnsInstance.nativeProjectedOutput
++      (NonlinearRnsPublic.publicResidues old) i := by
++  intro i
++  have hb := ProfiledRowCoverage.rescaleBalanced _ hm
++  have hc := DirectedRnsScaler.balanced_accepts NonlinearRnsInstance.params NonlinearRnsInstance.paramsValid _ hb
++  have hw := NonlinearRnsInstance.nativeWordRefinement _ hc.1
++  have hout := DirectedRnsScaler.matrixSound NonlinearRnsInstance.params NonlinearRnsInstance.paramsValid _ hb i
++  rw [← hw,NonlinearRnsPublic.input_public old hz,congrFun (NonlinearRnsPublic.output_public old hz) i,
++    NonlinearRnsInstance.canonical_lift_preserves_native] at hout
++  exact hout
++
++
++end Minidregg.Compiler.ProfiledPublicBridge
++/-- info: 'Minidregg.Compiler.ProfiledPublicBridge.extensionMatrixPublic' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledPublicBridge.extensionMatrixPublic
++/-- info: 'Minidregg.Compiler.ProfiledPublicBridge.rescaleMatrixPublic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledPublicBridge.rescaleMatrixPublic
+diff --git a/Compiler/ProfiledRowCoverage.lean b/Compiler/ProfiledRowCoverage.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ProfiledRowCoverage.lean
+@@ -0,0 +1,59 @@
++/- The list/index bridge is proved with an opaque row predicate. It never
++normalizes the large concrete signed rows or their evaluation functions. -/
++import Compiler.ActualBasisExtension
++import Compiler.NonlinearRnsInstance
++namespace Minidregg.Compiler.ProfiledRowCoverage
++open Minidregg.Compiler.SignedMatrix
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 300000
++
++def Covers {A : Type} {n : Nat} (rows : Fin n → A) (forms : List A) : Prop :=
++  ∀ P : A → Prop, (∀ i,P (rows i)) → ∀ row ∈ forms,P row
++
++theorem of_get {A : Type} (forms : List A) : Covers forms.get forms := by
++  intro P h row hr
++  obtain ⟨i,hi⟩ := List.mem_iff_get.mp hr
++  exact hi ▸ h i
++
++theorem extensionCover : Covers ActualBasisExtension.rows
++    (ExactBasisExtension.forms ActualBasisExtension.params) := by
++  intro P h
++  apply of_get
++  intro i
++  exact h ⟨i.val,by change i.val<20 at *;exact i.isLt⟩
++
++theorem rescaleCover : Covers NonlinearRnsInstance.rows
++    (DirectedRnsScaler.forms NonlinearRnsInstance.params) := by
++  intro P h
++  apply of_get
++  intro i
++  exact h ⟨i.val,by change i.val<23 at *;exact i.isLt⟩
++
++theorem extensionBalanced (x : Fin ActualBasisExtension.profile.groups → Nat)
++    (h : ∀ i,SignedMatrix.eval (ActualBasisExtension.rows i) x=0) :
++    ExactBasisExtension.Balanced ActualBasisExtension.params x :=
++  extensionCover (fun row => SignedMatrix.eval row x=0) h
++
++theorem rescaleBalanced (x : Fin NonlinearRnsInstance.profile.groups → Nat)
++    (h : ∀ i,SignedMatrix.eval (NonlinearRnsInstance.rows i) x=0) :
++    DirectedRnsScaler.Balanced NonlinearRnsInstance.params x :=
++  rescaleCover (fun row => SignedMatrix.eval row x=0) h
++
++end Minidregg.Compiler.ProfiledRowCoverage
++
++/-- info: 'Minidregg.Compiler.ProfiledRowCoverage.of_get' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledRowCoverage.of_get
++/-- info: 'Minidregg.Compiler.ProfiledRowCoverage.extensionCover' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledRowCoverage.extensionCover
++/-- info: 'Minidregg.Compiler.ProfiledRowCoverage.rescaleCover' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledRowCoverage.rescaleCover
++/-- info: 'Minidregg.Compiler.ProfiledRowCoverage.extensionBalanced' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledRowCoverage.extensionBalanced
++/-- info: 'Minidregg.Compiler.ProfiledRowCoverage.rescaleBalanced' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledRowCoverage.rescaleBalanced
+diff --git a/Compiler/RangeProfiledActual.lean b/Compiler/RangeProfiledActual.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeProfiledActual.lean
+@@ -0,0 +1,111 @@
++import Compiler.RangeProfiledProfiles
++import Compiler.RangeProfiledTransport
++import Compiler.ProfiledPublicBridge
++namespace Minidregg.Compiler.RangeProfiledActual
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.RangeProfiledCompact
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 100000
++set_option maxHeartbeats 200000
++
++attribute [local irreducible] RangeProfiledCompact.indexMap RangeProfiledCompact.privateData SignedMatrix.eval SignedMatrix.decoded
++  ActualBasisExtension.rows NonlinearRnsInstance.rows ActualBasisExtension.nativeOutput NonlinearRnsInstance.nativeProjectedOutput
++
++def ExtensionResult (input copy : Fin 4 → Nat) (new : Fin 5 → Nat) : Prop :=
++  (∀ i,input i<ActualBasisExtension.params.source i) ∧ (∀ i,copy i=input i) ∧
++  ∀ i,(new i : Int)=ActualBasisExtension.nativeOutput (fun j => (input j : Int)) i
++def RescaleResult (input : Fin 9 → Int) (output : Fin 4 → Nat) : Prop :=
++  ∀ i,(output i : Int)=NonlinearRnsInstance.nativeProjectedOutput input i
++
++def ExtensionSound : Prop := ∀ a : Nat → BabyBear,systemAccepts a (system extension) → RangeHolds extension a →
++  (∀ i,ActualBasisExtension.publicInput a i<ActualBasisExtension.params.source i) ∧
++  (∀ i,ActualBasisExtension.publicCopy a i=ActualBasisExtension.publicInput a i) ∧
++  ∀ i,(ActualBasisExtension.publicNew a i : Int)=ActualBasisExtension.nativeOutput
++    (fun j => ActualBasisExtension.publicInput a j) i
++def RescaleSound : Prop := ∀ a : Nat → BabyBear,systemAccepts a (system rescale) → RangeHolds rescale a →
++  ∀ i,(NonlinearRnsPublic.publicOutput a i : Int)=NonlinearRnsInstance.nativeProjectedOutput
++    (NonlinearRnsPublic.publicResidues a) i
++
++theorem extension_input (a : Nat → BabyBear) :
++    ActualBasisExtension.publicInput (a ∘ indexMap extension)=ActualBasisExtension.publicInput a := by
++  funext i
++  apply Finset.sum_congr rfl
++  intro d _
++  simp only [Function.comp_apply,publicPrefix extension _ (show 1+6*i.val+d.val<extension.publicArity by
++    change _<84;have := i.isLt;have := d.isLt;omega)]
++theorem extension_copy (a : Nat → BabyBear) :
++    ActualBasisExtension.publicCopy (a ∘ indexMap extension)=ActualBasisExtension.publicCopy a := by
++  funext i
++  apply Finset.sum_congr rfl
++  intro d _
++  simp only [Function.comp_apply,publicPrefix extension _ (show 25+6*i.val+d.val<extension.publicArity by
++    change _<84;have := i.isLt;have := d.isLt;omega)]
++theorem extension_new (a : Nat → BabyBear) :
++    ActualBasisExtension.publicNew (a ∘ indexMap extension)=ActualBasisExtension.publicNew a := by
++  funext i
++  apply Finset.sum_congr rfl
++  intro d _
++  simp only [Function.comp_apply,publicPrefix extension _ (show 49+7*i.val+d.val<extension.publicArity by
++    change _<84;have := i.isLt;have := d.isLt;omega)]
++
++theorem extensionSound : ExtensionSound := by
++  intro a hs hr
++  obtain ⟨hz,hm⟩ := RangeProfiledTransport.soundLeft extension ActualBasisExtension.capacity a hs hr
++  have h := ProfiledPublicBridge.extensionMatrixPublic (a ∘ indexMap extension) hz hm
++  have heq := congrArg₂ Prod.mk (extension_input a)
++    (congrArg₂ Prod.mk (extension_copy a) (extension_new a))
++  exact Eq.mp (congrArg (fun v : (Fin 4 → Nat) × (Fin 4 → Nat) × (Fin 5 → Nat) =>
++    ExtensionResult v.1 v.2.1 v.2.2) heq) h
++
++theorem rescale_input (a : Nat → BabyBear) :
++    NonlinearRnsPublic.publicResidues (a ∘ indexMap rescale)=NonlinearRnsPublic.publicResidues a := by
++  funext i
++  apply congrArg (fun x : Nat => (x : Int))
++  apply Finset.sum_congr rfl
++  intro d _
++  simp only [Function.comp_apply,publicPrefix rescale _ (show 1+7*i.val+d.val<rescale.publicArity by
++    change _<88;have := i.isLt;have := d.isLt;omega)]
++theorem rescale_output (a : Nat → BabyBear) :
++    NonlinearRnsPublic.publicOutput (a ∘ indexMap rescale)=NonlinearRnsPublic.publicOutput a := by
++  funext i
++  apply Finset.sum_congr rfl
++  intro d _
++  simp only [Function.comp_apply,publicPrefix rescale _ (show 64+6*i.val+d.val<rescale.publicArity by
++    change _<88;have := i.isLt;have := d.isLt;omega)]
++
++theorem rescaleSound : RescaleSound := by
++  intro a hs hr
++  obtain ⟨hz,hm⟩ := RangeProfiledTransport.soundLeft rescale NonlinearRnsProfiled.capacity a hs hr
++  have h := ProfiledPublicBridge.rescaleMatrixPublic (a ∘ indexMap rescale) hz hm
++  exact Eq.mp (congrArg₂ RescaleResult (rescale_input a) (rescale_output a)) h
++
++end Minidregg.Compiler.RangeProfiledActual
++
++/-- info: 'Minidregg.Compiler.RangeProfiledActual.extension_input' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledActual.extension_input
++
++/-- info: 'Minidregg.Compiler.RangeProfiledActual.extension_copy' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledActual.extension_copy
++
++/-- info: 'Minidregg.Compiler.RangeProfiledActual.extension_new' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledActual.extension_new
++
++/-- info: 'Minidregg.Compiler.RangeProfiledActual.extensionSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledActual.extensionSound
++
++/-- info: 'Minidregg.Compiler.RangeProfiledActual.rescale_input' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledActual.rescale_input
++
++/-- info: 'Minidregg.Compiler.RangeProfiledActual.rescale_output' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledActual.rescale_output
++
++/-- info: 'Minidregg.Compiler.RangeProfiledActual.rescaleSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledActual.rescaleSound
+diff --git a/Compiler/RangeProfiledCompact.lean b/Compiler/RangeProfiledCompact.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeProfiledCompact.lean
+@@ -0,0 +1,119 @@
++import Compiler.RangeProfiledMatrix
++import Compiler.AirSimplify
++import Compiler.PredCompile
++import Compiler.IR2RangeLookupBridge
++namespace Minidregg.Compiler.RangeProfiledCompact
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.SignedMatrix
++set_option autoImplicit false
++set_option maxRecDepth 100000
++set_option maxHeartbeats 2000000
++
++structure Profile where
++  layout : Layout
++  rowsLayout : ProfiledMatrix.RowLayout layout.rows
++  rows : Fin layout.rows → Row layout.groups
++  publicArity : Nat
++  oldMap : Nat → Nat
++
++def family {n : Nat} (bits : Nat) (f : Fin n → Nat) : List (Nat × Nat) :=
++  (List.finRange n).map fun i => (f i,bits)
++def oldRanges (s : Profile) : List (Nat × Nat) :=
++  family s.layout.limbBits (s.oldMap ∘ scalarWire s.layout) ++
++  (List.finRange s.layout.rows).flatMap fun i =>
++    family s.layout.limbBits (s.oldMap ∘ (ProfiledMatrix.rowWires s.layout s.rowsLayout i false).result) ++
++    family (s.rowsLayout.carryBits i) (s.oldMap ∘ (ProfiledMatrix.rowWires s.layout s.rowsLayout i false).carry) ++
++    family (s.rowsLayout.carryBits i) (s.oldMap ∘ (ProfiledMatrix.rowWires s.layout s.rowsLayout i true).carry)
++def privateData (s : Profile) : List Nat :=
++  ((s.publicArity :: (oldRanges s).map Prod.fst).filter (fun j => s.publicArity≤j)).eraseDups
++def nVars (s : Profile) := s.publicArity+(privateData s).length
++def indexMap (s : Profile) (j : Nat) :=
++  if j<s.publicArity then j else s.publicArity+(privateData s).idxOf j
++def oldIndex (s : Profile) (j : Nat) :=
++  if j<s.publicArity then j else (privateData s)[j-s.publicArity]?.getD 0
++def ranges (s : Profile) := ((oldRanges s).map fun r => (indexMap s r.1,r.2)).eraseDups
++def RangeHolds (s : Profile) (a : Nat → BabyBear) : Prop :=
++  ∀ r ∈ ranges s,(a r.1).val<2^r.2
++def source (s : Profile) : ConstraintSystem BabyBear Nat :=
++  [vr s.publicArity] ++ renameS s.oldMap (RangeProfiledMatrix.gates s.layout s.rowsLayout s.rows)
++def system (s : Profile) := renameS (indexMap s) (AirSimplify.simplifySystem (source s))
++
++/-- Compact source forces the original signed matrix, decoded through the
++existing public wire map; no native witness-plan correctness is a premise. -/
++def Sound (s : Profile) : Prop := ProfiledMatrix.Capacity s.layout s.rowsLayout s.rows →
++  ∀ a,systemAccepts a (system s) → RangeHolds s a →
++  (a (indexMap s s.publicArity)=0) ∧ ∀ i,
++    SignedMatrix.eval (s.rows i) (decoded s.layout (a ∘ indexMap s ∘ s.oldMap))=0
++
++theorem publicPrefix (s : Profile) (j : Nat) (hj : j<s.publicArity) : indexMap s j=j := by
++  simp [indexMap,hj]
++theorem oldPublicPrefix (s : Profile) (j : Nat) (hj : j<s.publicArity) : oldIndex s j=j := by
++  simp [oldIndex,hj]
++theorem ranges_complete (s : Profile) (a : Nat → BabyBear) (hr : RangeHolds s a) :
++    RangeProfiledMatrix.Bounds s.layout s.rowsLayout (a ∘ indexMap s ∘ s.oldMap) := by
++  have hh (r : Nat × Nat) (hm : r ∈ oldRanges s) : (a (indexMap s r.1)).val<2^r.2 :=
++    hr _ (by simpa only [ranges,List.mem_eraseDups] using
++      (List.mem_map.mpr ⟨r,hm,rfl⟩ : (indexMap s r.1,r.2) ∈ (oldRanges s).map (fun r => (indexMap s r.1,r.2))))
++  have hm {n : Nat} (b : Nat) (f : Fin n → Nat) (i : Fin n) : (f i,b) ∈ family b f :=
++    List.mem_map.mpr ⟨i,List.mem_finRange i,rfl⟩
++  refine ⟨?_,?_,?_⟩
++  · intro i
++    exact hh _ (List.mem_append_left _ (hm _ _ i))
++  · intro i j
++    exact hh _ (List.mem_append_right _ (List.mem_flatMap.mpr
++      ⟨i,List.mem_finRange i,List.mem_append_left _ (List.mem_append_left _ (hm _ _ j))⟩))
++  · intro i b j
++    cases b with
++    | false => exact hh _ (List.mem_append_right _ (List.mem_flatMap.mpr
++        ⟨i,List.mem_finRange i,List.mem_append_left _ (List.mem_append_right _ (hm _ _ j))⟩))
++    | true => exact hh _ (List.mem_append_right _ (List.mem_flatMap.mpr
++        ⟨i,List.mem_finRange i,List.mem_append_right _ (hm _ _ j)⟩))
++
++theorem sound (s : Profile) : Sound s := by
++  intro cap a hs hr
++  have h := (AirSimplify.simplifySystem_accepts_iff (a ∘ indexMap s) (source s)).mp
++    ((systemAccepts_renameS a (indexMap s) _).mp hs)
++  obtain ⟨hz,hg⟩ := (systemAccepts_append _ _ _).mp h
++  refine ⟨?_,RangeProfiledMatrix.sourceSound s.layout s.rowsLayout s.rows cap _
++    ((systemAccepts_renameS _ s.oldMap _).mp hg) (ranges_complete s a hr)⟩
++  simpa [systemAccepts_cons,systemAccepts_nil,accepts,eval_vr] using hz
++
++open Dregg2.Circuit.DescriptorIR2 Dregg2.Circuit.Emit.EffectVmEmitV2
++def LookupChecked (s : Profile) (tf : TraceFamily) (a : Nat → BabyBear) : Prop :=
++  ∀ r ∈ ranges s,IR2RangeLookupBridge.LookupHolds r.2 tf a r.1
++def FaithfulRanges (s : Profile) (tf : TraceFamily) : Prop :=
++  ∀ r ∈ ranges s,tf (rangeTidW r.2)=rangeRows r.2
++theorem ranges_of_lookups (s : Profile) (tf : TraceFamily) (ht : FaithfulRanges s tf)
++    (a : Nat → BabyBear) (hl : LookupChecked s tf a) : RangeHolds s a :=
++  fun r hr => IR2RangeLookupBridge.lookup_val_lt r.2 tf (ht r hr) a r.1 (hl r hr)
++theorem lookupSound (s : Profile) (cap : ProfiledMatrix.Capacity s.layout s.rowsLayout s.rows)
++    (tf : TraceFamily) (ht : FaithfulRanges s tf) (a : Nat → BabyBear)
++    (hs : systemAccepts a (system s)) (hl : LookupChecked s tf a) :
++    (a (indexMap s s.publicArity)=0) ∧ ∀ i,
++      SignedMatrix.eval (s.rows i) (decoded s.layout (a ∘ indexMap s ∘ s.oldMap))=0 :=
++  sound s cap a hs (ranges_of_lookups s tf ht a hl)
++end Minidregg.Compiler.RangeProfiledCompact
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompact.publicPrefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompact.publicPrefix
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompact.oldPublicPrefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompact.oldPublicPrefix
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompact.ranges_complete' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompact.ranges_complete
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompact.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompact.sound
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompact.ranges_of_lookups' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompact.ranges_of_lookups
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompact.lookupSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompact.lookupSound
+diff --git a/Compiler/RangeProfiledCompactExhibits.lean b/Compiler/RangeProfiledCompactExhibits.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeProfiledCompactExhibits.lean
+@@ -0,0 +1,42 @@
++import Compiler.RangeProfiledExhibits
++namespace Minidregg.Compiler.RangeProfiledCompactExhibits
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.ProfiledMatrix
++open Minidregg.Compiler.RangeProfiledCompact
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 500000
++
++def tinyCompact : Profile := ⟨tiny,tinyProfile,tinyRows,1,fun j => 2+j⟩
++def good (j : Nat) : BabyBear := if j=2 ∨ j=3 then 1 else 0
++def wrong (j : Nat) : BabyBear := if j=3 then 1 else 0
++def InhabitedCompact : Prop := ProfiledMatrix.Capacity tiny tinyProfile tinyRows ∧
++  systemAccepts good (RangeProfiledCompact.system tinyCompact) ∧
++  RangeHolds tinyCompact good ∧
++  decoded tiny (good ∘ indexMap tinyCompact ∘ tinyCompact.oldMap) ⟨0,by decide⟩=1
++theorem inhabitedCompact : InhabitedCompact := by
++  refine ⟨ProfiledMatrix.inhabitedCompiler.1,?_,?_,by decide⟩
++  · unfold systemAccepts;decide
++  · unfold RangeHolds;decide
++
++/-- Same admitted shape and range values, with one scalar changed: the generated
++arithmetic refuses the missing value. -/
++def ChangedScalarRefused : Prop := RangeHolds tinyCompact wrong ∧
++  ¬ systemAccepts wrong (RangeProfiledCompact.system tinyCompact)
++theorem changedScalarRefused : ChangedScalarRefused := by
++  constructor
++  · unfold RangeHolds;decide
++  · unfold systemAccepts;decide
++end Minidregg.Compiler.RangeProfiledCompactExhibits
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompactExhibits.inhabitedCompact' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompactExhibits.inhabitedCompact
++
++/-- info: 'Minidregg.Compiler.RangeProfiledCompactExhibits.changedScalarRefused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledCompactExhibits.changedScalarRefused
+diff --git a/Compiler/RangeProfiledExhibits.lean b/Compiler/RangeProfiledExhibits.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeProfiledExhibits.lean
+@@ -0,0 +1,63 @@
++import Compiler.RangeProfiledCompact
++import Compiler.ProfiledExhibits
++namespace Minidregg.Compiler.RangeProfiledExhibits
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.ProfiledMatrix
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 500000
++
++/-- A nonzero signed relation with all new premises inhabited. -/
++def InhabitedCompiler : Prop := Capacity tiny tinyProfile tinyRows ∧
++  systemAccepts tinyAssignment (RangeProfiledMatrix.gates tiny tinyProfile tinyRows) ∧
++  RangeProfiledMatrix.Bounds tiny tinyProfile tinyAssignment ∧
++  decoded tiny tinyAssignment ⟨0,by decide⟩=1
++theorem inhabitedCompiler : InhabitedCompiler := by
++  refine ⟨ProfiledMatrix.inhabitedCompiler.1,?_,?_,by decide⟩
++  · unfold systemAccepts;decide
++  · unfold RangeProfiledMatrix.Bounds;decide
++
++/-- Range evidence cannot be omitted: a scalar equal to the field modulus minus
++one can satisfy a one-bit truncated equation while its integer value is large. -/
++def falseAssignment (j : Nat) : BabyBear := if j=0 then babyBearP-1 else 0
++def falseRows : Fin tiny.rows → Row tiny.groups := fun _ =>
++  SignedMatrix.add (SignedMatrix.var ⟨0,by decide⟩) (SignedMatrix.cst 1)
++def MissingRangeFalsifier : Prop :=
++  Capacity tiny tinyProfile falseRows ∧
++  systemAccepts falseAssignment (RangeProfiledMatrix.gates tiny tinyProfile falseRows) ∧
++  ¬ RangeProfiledMatrix.Bounds tiny tinyProfile falseAssignment ∧
++  SignedMatrix.eval (falseRows ⟨0,by decide⟩) (decoded tiny falseAssignment)≠0
++theorem missingRangeFalsifier : MissingRangeFalsifier := by
++  refine ⟨by constructor <;> decide,?_,?_,by decide⟩
++  · unfold systemAccepts;decide
++  · intro h
++    have hh := h.1 ⟨0,by decide⟩
++    have hf : ¬ (falseAssignment (scalarWire tiny ⟨0,by decide⟩)).val<2^tiny.limbBits := by decide
++    exact hf hh
++
++def MissingCapacityFalsifier : Prop :=
++  systemAccepts (fun _ : Nat => (0 : BabyBear))
++    (RangeProfiledMatrix.gates tiny tinyProfile (fun _ => SignedMatrix.cst 2)) ∧
++  RangeProfiledMatrix.Bounds tiny tinyProfile (fun _ => 0) ∧
++  ¬ Capacity tiny tinyProfile (fun _ => SignedMatrix.cst 2)
++theorem missingCapacityFalsifier : MissingCapacityFalsifier := by
++  refine ⟨?_,?_,ProfiledMatrix.missingCapacityFalsifier.2.1⟩
++  · unfold systemAccepts;decide
++  · unfold RangeProfiledMatrix.Bounds;decide
++end Minidregg.Compiler.RangeProfiledExhibits
++
++/-- info: 'Minidregg.Compiler.RangeProfiledExhibits.inhabitedCompiler' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledExhibits.inhabitedCompiler
++
++/-- info: 'Minidregg.Compiler.RangeProfiledExhibits.missingRangeFalsifier' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledExhibits.missingRangeFalsifier
++
++/-- info: 'Minidregg.Compiler.RangeProfiledExhibits.missingCapacityFalsifier' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledExhibits.missingCapacityFalsifier
+diff --git a/Compiler/RangeProfiledMatrix.lean b/Compiler/RangeProfiledMatrix.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeProfiledMatrix.lean
+@@ -0,0 +1,98 @@
++/- Bit witness elimination for the existing row-profiled signed matrix. The
++arithmetic terms are the unchanged weightedSumGadget constructors. -/
++import Compiler.ProfiledMatrix
++import Compiler.RangeCompletedMac
++namespace Minidregg.Compiler.RangeProfiledMatrix
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.BfvSignedAccumulatorAir
++open Minidregg.Compiler.IntegerCertificateEmission
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 1000000
++
++def weightedGates {J : Type} {n width limbBits carryBits : Nat} (c : Nat)
++    (coeff : Fin n → Nat) (scalar : Fin n → J)
++    (w : WeightedSumWires J width limbBits carryBits) : ConstraintSystem BabyBear J :=
++  [vr (w.carry 0),vr (w.carry (Fin.last width))] ++ weightedEquationSystem c coeff scalar w
++
++noncomputable def complete {J : Type} {width limbBits carryBits : Nat}
++    (a : J → BabyBear) (w : WeightedSumWires J width limbBits carryBits) :
++    WeightedSumWires BabyBear width limbBits carryBits where
++  result := a ∘ w.result
++  carry := a ∘ w.carry
++  resultBit := fun i => RangeCompletedMac.bits limbBits (a (w.result i))
++  carryBit := fun i => RangeCompletedMac.bits carryBits (a (w.carry i))
++
++def rowGates (p : Layout) (q : ProfiledMatrix.RowLayout p.rows)
++    (rows : Fin p.rows → Row p.groups) (i : Fin p.rows) : ConstraintSystem BabyBear Nat :=
++  weightedGates (leftConstant (rows i)) (digitCoefficient p (leftCoefficient (rows i)))
++    (scalarWire p) (ProfiledMatrix.rowWires p q i false) ++
++  weightedGates (rightConstant (rows i)) (digitCoefficient p (rightCoefficient (rows i)))
++    (scalarWire p) (ProfiledMatrix.rowWires p q i true)
++def gates (p : Layout) (q : ProfiledMatrix.RowLayout p.rows)
++    (rows : Fin p.rows → Row p.groups) := (List.finRange p.rows).flatMap (rowGates p q rows)
++def Bounds (p : Layout) (q : ProfiledMatrix.RowLayout p.rows) (a : Nat → BabyBear) : Prop :=
++  (∀ i,(a (scalarWire p i)).val<2^p.limbBits) ∧
++  (∀ i j,(a ((ProfiledMatrix.rowWires p q i false).result j)).val<2^p.limbBits) ∧
++  (∀ i b j,(a ((ProfiledMatrix.rowWires p q i b).carry j)).val<2^(q.carryBits i))
++
++/-- Same integer conclusion and capacities as ProfiledMatrix.SourceSound,
++with explicit canonical field ranges replacing Boolean witness columns. -/
++def SourceSound : Prop := ∀ p q rows,ProfiledMatrix.Capacity p q rows →
++  ∀ a,systemAccepts a (gates p q rows) → Bounds p q a →
++  ∀ i,SignedMatrix.eval (rows i) (decoded p a)=0
++
++theorem weighted_completion {J : Type} {n width limbBits carryBits : Nat}
++    (c : Nat) (coeff : Fin n → Nat) (scalar : Fin n → J)
++    (w : WeightedSumWires J width limbBits carryBits) (a : J → BabyBear)
++    (hg : systemAccepts a (weightedGates c coeff scalar w))
++    (hr : ∀ i,(a (w.result i)).val<2^limbBits)
++    (hc : ∀ i,(a (w.carry i)).val<2^carryBits) :
++    systemAccepts id (weightedSumGadget c coeff (a ∘ scalar) (complete a w)) := by
++  obtain ⟨hb,he⟩ := (systemAccepts_append a _ _).mp hg
++  apply (weightedSumGadget_correct id c coeff (a ∘ scalar) (complete a w)).mpr
++  refine ⟨fun i => RangeCompletedMac.bits_complete _ _ (hr i),
++    fun i => RangeCompletedMac.bits_complete _ _ (hc i),?_,?_,?_⟩
++  · have h := hb (vr (w.carry 0)) (by simp)
++    simpa [accepts,eval_vr,complete] using h
++  · have h := hb (vr (w.carry (Fin.last width))) (by simp)
++    simpa [accepts,eval_vr,complete] using h
++  · exact (weightedEquationSystem_correct a c coeff scalar w).mp he
++
++theorem sourceSound : SourceSound := by
++  intro p q rows cap a hg hb i
++  have hrow : systemAccepts a (rowGates p q rows i) :=
++    fun t ht => hg t (List.mem_flatMap.mpr ⟨i,List.mem_finRange i,ht⟩)
++  obtain ⟨hl,hr⟩ := (systemAccepts_append a _ _).mp hrow
++  have run (c : Nat) (matrix : Fin p.groups → Nat) (b : Bool)
++      (hc : c < p.base^(q.width i)) (hm : ∀ j,digitCoefficient p matrix j < p.base^(q.width i))
++      (ha : systemAccepts a (weightedGates c (digitCoefficient p matrix) (scalarWire p)
++        (ProfiledMatrix.rowWires p q i b))) :
++      Bignum.denoteNat p.base (AirBignum.limbVals a (ProfiledMatrix.rowWires p q i b).result)=
++        c+∑ g,matrix g*decoded p a g := by
++    let w := ProfiledMatrix.rowWires p q i b
++    have hs := weighted_completion c (digitCoefficient p matrix) (scalarWire p) w a ha
++      (hb.2.1 i) (hb.2.2 i b)
++    have hscalar : systemAccepts id (AirBignum.limbRangeSystem (a ∘ scalarWire p)
++        (fun j => RangeCompletedMac.bits p.limbBits (a (scalarWire p j)))) :=
++      (AirBignum.limbRangeSystem_correct id _ _).mpr
++        (fun j => RangeCompletedMac.bits_complete _ _ (hb.1 j))
++    have h := ranged_weighted_sound cap.baseField (cap.carryField i) cap.baseField hc
++      (digitCoefficient p matrix) hm (cap.leftBudget i) (cap.rightBudget i) id
++      (a ∘ scalarWire p) (fun j => RangeCompletedMac.bits p.limbBits (a (scalarWire p j)))
++      (complete a w) hscalar hs
++    simpa only [complete,AirBignum.limbVals,Function.comp_apply,id_eq,digit_linearization] using h
++  have hl' := run _ _ false (cap.constants i).1 (fun j => (cap.coefficients i j).1) hl
++  have hr' := run _ _ true (cap.constants i).2 (fun j => (cap.coefficients i j).2) hr
++  exact (splitSound (rows i) (decoded p a)).mp (hl'.symm.trans hr')
++
++end Minidregg.Compiler.RangeProfiledMatrix
++
++/-- info: 'Minidregg.Compiler.RangeProfiledMatrix.weighted_completion' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledMatrix.weighted_completion
++
++/-- info: 'Minidregg.Compiler.RangeProfiledMatrix.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledMatrix.sourceSound
+diff --git a/Compiler/RangeProfiledProfiles.lean b/Compiler/RangeProfiledProfiles.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeProfiledProfiles.lean
+@@ -0,0 +1,25 @@
++import Compiler.RangeProfiledCompact
++import Compiler.BasisExtensionPublic
++import Compiler.NonlinearRnsProfiled
++namespace Minidregg.Compiler.RangeProfiledActual
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.RangeProfiledCompact
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 100000
++set_option maxHeartbeats 200000
++
++def extension : Profile where
++  layout := ActualBasisExtension.profile
++  rowsLayout := ActualBasisExtension.rowLayout
++  rows := ActualBasisExtension.rows
++  publicArity := 84
++  oldMap := ActualBasisExtension.wireMap
++def rescale : Profile where
++  layout := NonlinearRnsInstance.profile
++  rowsLayout := NonlinearRnsProfiled.rowLayout
++  rows := NonlinearRnsInstance.rows
++  publicArity := 88
++  oldMap := NonlinearRnsPublic.wireMap
++
++end Minidregg.Compiler.RangeProfiledActual
+diff --git a/Compiler/RangeProfiledTransport.lean b/Compiler/RangeProfiledTransport.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeProfiledTransport.lean
+@@ -0,0 +1,22 @@
++import Compiler.RangeProfiledCompact
++namespace Minidregg.Compiler.RangeProfiledTransport
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.RangeProfiledCompact
++set_option autoImplicit false
++
++/-- Reassociate the pulled-back assignment at abstract parameters before
++specializing a concrete matrix. No concrete matrix is normalized for this join. -/
++theorem soundLeft (s : Profile) (cap : ProfiledMatrix.Capacity s.layout s.rowsLayout s.rows)
++    (a : Nat → BabyBear) (hs : systemAccepts a (system s)) (hr : RangeHolds s a) :
++    (a (indexMap s s.publicArity)=0) ∧ ∀ i,
++      SignedMatrix.eval (s.rows i) (decoded s.layout ((a ∘ indexMap s) ∘ s.oldMap))=0 := by
++  obtain ⟨hz,hm⟩ := sound s cap a hs hr
++  refine ⟨hz,?_⟩
++  have heq : (a ∘ indexMap s ∘ s.oldMap)=((a ∘ indexMap s) ∘ s.oldMap) := rfl
++  intro i
++  exact Eq.mp (congrArg (fun f => SignedMatrix.eval (s.rows i) (decoded s.layout f)=0) heq) (hm i)
++end Minidregg.Compiler.RangeProfiledTransport
++
++/-- info: 'Minidregg.Compiler.RangeProfiledTransport.soundLeft' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeProfiledTransport.soundLeft
+diff --git a/EmitRangeProfiled.lean b/EmitRangeProfiled.lean
+new file mode 100644
+--- /dev/null
++++ b/EmitRangeProfiled.lean
+@@ -0,0 +1,71 @@
++/- Derived all-row arithmetic, native range declarations, and a data-only
++projection appended to the existing untrusted BigInt witness plans. -/
++import Compiler.RangeProfiledProfiles
++import Compiler.BasisExtensionWitnessPlan
++import Compiler.RescaleWitnessPlan
++import Compiler.Ir2WholeRow
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.RangeProfiledCompact Minidregg.Compiler.RangeProfiledActual
++open Minidregg.Compiler.BfvQueryRow.WitnessPlan (Operand Builder Build put)
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def rangeLookup (r : Nat × Nat) : String :=
++  "{\"t\":\"lookup\",\"table\":"++toString (69+r.2)++",\"tuple\":["++ir2Var r.1++"]}"
++def rangeTable (b : Nat) : String :=
++  "{\"id\":"++toString (69+b)++",\"name\":\"range"++toString b++
++    "\",\"arity\":1,\"sem\":\"range\",\"bits\":"++toString b++"}"
++def template (name : String) (s : Profile) (terms : ConstraintSystem BabyBear Nat)
++    (rs : List (Nat × Nat)) : String :=
++  let arithmetic := terms.map (Ir2WholeRow.gateJson (fun c : BabyBear => c.val) id)
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++
++    String.intercalate "," ((List.range s.publicArity).map ir2Var)++"]}"
++  let tables := ((rs.map Prod.snd).eraseDups).map rangeTable
++  "{\"name\":\"bfv_range_profiled_"++name++"\",\"ir\":2,\"trace_width\":"++toString (nVars s)++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,\"name\":\"bfv_public_rows\",\"arity\":"++
++    toString s.publicArity++",\"sem\":\"exact_public_rows\",\"rows\":[]},"++String.intercalate "," tables++
++    "],\"constraints\":["++String.intercalate "," (lookup::(rs.map rangeLookup)++arithmetic)++
++    "],\"hash_sites\":[],\"ranges\":[]}"
++
++def projection (s : Profile) : Build Unit := do
++  let data := privateData s
++  for j in [:s.publicArity+data.length] do
++    put j (.reg (if j<s.publicArity then j else data[j-s.publicArity]?.getD 0))
++def programJson (s : Profile) (b : Builder) : Json := Json.mkObj [
++  ("schema",toJson "lean-bigint-witness-plan-v1"),("trace_width",toJson (nVars s)),
++  ("input_arity",toJson s.publicArity),("input_digit_radix",toJson (512 : Nat)),
++  ("field_modulus",toJson babyBearP),("register_count",toJson b.next),
++  ("instructions",Json.arr (b.code.map RescaleWitnessPlan.instructionJson))]
++
++def emitOne (root : System.FilePath) (name : String) (s : Profile) (old : Except String Builder) : IO Json := do
++  let folder := root/name
++  IO.FS.createDirAll folder
++  -- Capture the data list once; reducing `indexMap s` at every term leaf would
++  -- repeatedly reconstruct the profile. This is the same defining expression.
++  let data := privateData s
++  let mapping := fun j => if j<s.publicArity then j else s.publicArity+data.idxOf j
++  let terms := renameS mapping (AirSimplify.simplifySystem (source s))
++  let rs := ((oldRanges s).map fun r => (mapping r.1,r.2)).eraseDups
++  IO.FS.writeFile (folder/"template_ir2.json") (template name s terms rs++"\n")
++  let old ← IO.ofExcept old
++  let b := (projection s |>.run old).2
++  IO.FS.writeFile (folder/"witness_plan.json") ((programJson s b).compress++"\n")
++  let project := fun j => if j<s.publicArity then j else data[j-s.publicArity]?.getD 0
++  IO.FS.writeFile (folder/"projection.json") ((toJson ((List.range (nVars s)).map project)).compress++"\n")
++  let counts := ((rs.map Prod.snd).eraseDups).map fun bits =>
++    Json.mkObj [("bits",toJson bits),("count",toJson (rs.filter (fun r => r.2==bits)).length)]
++  let summary := Json.mkObj [("name",toJson name),("width",toJson (nVars s)),
++    ("public_arity",toJson s.publicArity),("arithmetic_constraints",toJson terms.length),
++    ("range_counts",toJson counts),("instructions",toJson b.code.size),("register_count",toJson b.next)]
++  IO.FS.writeFile (folder/"emission.json") (summary.pretty++"\n")
++  IO.println summary.compress
++  return summary
++def main (args : List String) : IO UInt32 := do
++  let root : System.FilePath := args.headD "artifacts"
++  let e ← emitOne root "extension" extension BasisExtensionWitnessPlan.generated
++  let r ← emitOne root "rescale" rescale RescaleWitnessPlan.generated
++  IO.FS.writeFile (root/"emission.json") ((toJson [e,r]).pretty++"\n")
++  return 0

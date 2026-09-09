@@ -1,0 +1,20 @@
+Compiler/NativeNibbleBus.lean:37:29: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  i % 2013265921
+in the target expression
+  i % babyBearP < 16
+
+multiplicity : ℕ → ℕ
+x : BabyBear
+hx✝ : x ∈ receives multiplicity
+i : ℕ
+hi : i ∈ List.range 16
+hx : x ∈ List.replicate (multiplicity i) ↑i
+hi' : i < 16
+hx' : x = ↑i
+⊢ i % babyBearP < 16
+Compiler/NativeNibbleBus.lean:55:4: error: Type mismatch: After simplification, term
+  heq
+ has type
+  List.count x sends % babyBearP = 0 % babyBearP
+but is expected to have type
+  List.count x sends = 0

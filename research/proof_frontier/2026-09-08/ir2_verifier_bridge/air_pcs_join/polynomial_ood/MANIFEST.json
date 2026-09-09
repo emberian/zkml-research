@@ -1,0 +1,101 @@
+{
+  "classification": "EXECUTED",
+  "base_minidregg": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "apply_after": [
+    "../whole_domain/whole-domain-query.patch",
+    "../../packed_extraction/pcs_join/ir2-pcs-join.patch (and recorded predecessors)"
+  ],
+  "modules": [
+    {
+      "path": "Compiler/AirPolynomialOod.lean",
+      "sha256": "89eef0f416dd9354c4d95d2f3be3ec226b697280c4e01093a57be8a515178cf7",
+      "bytes": 9440,
+      "guards": 10,
+      "theorems": [
+        "Minidregg.Compiler.AirPolynomialOod.map_read",
+        "Minidregg.Compiler.AirPolynomialOod.read_id",
+        "Minidregg.Compiler.AirPolynomialOod.lift_eval",
+        "Minidregg.Compiler.AirPolynomialOod.lift_source",
+        "Minidregg.Compiler.AirPolynomialOod.batch_at_row",
+        "Minidregg.Compiler.AirPolynomialOod.sum_eq_horner",
+        "Minidregg.Compiler.AirPolynomialOod.batch_horner",
+        "Minidregg.Compiler.AirPolynomialOod.row_curve_nonzero",
+        "Minidregg.Compiler.AirPolynomialOod.residual_nonzero",
+        "Minidregg.Compiler.AirPolynomialOod.ood_soundness"
+      ]
+    },
+    {
+      "path": "Compiler/Ir2AirPcsOod.lean",
+      "sha256": "3eed867e8bb83a283e77343bbe7085111d24853112bd632b6bd5d02bc9f5dc6e",
+      "bytes": 10297,
+      "guards": 3,
+      "theorems": [
+        "Minidregg.Compiler.Ir2AirPcsOod.wrong_opening_of_expression",
+        "Minidregg.Compiler.Ir2AirPcsOod.pcs_without_failure",
+        "Minidregg.Compiler.Ir2AirPcsOod.air_pcs_soundness"
+      ]
+    },
+    {
+      "path": "Compiler/BfvQueryPolynomialOod.lean",
+      "sha256": "fbeea5f884e63efdd95afe608b65b5f1fd6aacad5e5bc7602cb42a8765d8d4a4",
+      "bytes": 6341,
+      "guards": 5,
+      "theorems": [
+        "Minidregg.Compiler.BfvQueryRow.PolynomialOod.coefficient_list",
+        "Minidregg.Compiler.BfvQueryRow.PolynomialOod.native_batch_order",
+        "Minidregg.Compiler.BfvQueryRow.PolynomialOod.arithmetic_error_coefficient",
+        "Minidregg.Compiler.BfvQueryRow.PolynomialOod.arithmetic_ood_sound",
+        "Minidregg.Compiler.BfvQueryRow.PolynomialOod.terminal_coefficient_inhabited"
+      ]
+    },
+    {
+      "path": "Compiler/Ir2QuotientRecomposition.lean",
+      "sha256": "7d240cb2126fd0cb6545126a02cb4194ac75722cfdf3108dd48f8d3bf4a2105c",
+      "bytes": 5155,
+      "guards": 6,
+      "theorems": [
+        "Minidregg.Compiler.Ir2QuotientRecomposition.recompose_eval",
+        "Minidregg.Compiler.Ir2QuotientRecomposition.cosetZero_degree",
+        "Minidregg.Compiler.Ir2QuotientRecomposition.weight_degree",
+        "Minidregg.Compiler.Ir2QuotientRecomposition.coordinate_degree",
+        "Minidregg.Compiler.Ir2QuotientRecomposition.recompose_degree",
+        "Minidregg.Compiler.Ir2QuotientRecomposition.actual_quotient_degree"
+      ]
+    },
+    {
+      "path": "Compiler/Ir2AirPcsOodWitnesses.lean",
+      "sha256": "0cb562aa9557fbddf562f5b685f0b25473582f6596657ce5debb90bddcfeb145",
+      "bytes": 6152,
+      "guards": 8,
+      "theorems": [
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.claimed_equation_accepts",
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.exact_residual",
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.bad_row",
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.residual_degree",
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.actual_packed_head_fires",
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.positive_quotient",
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.adaptive_quotient_falsifier",
+        "Minidregg.Compiler.Ir2AirPcsOod.Witnesses.false_opening_tooth"
+      ]
+    }
+  ],
+  "guard_count": 32,
+  "patch_sha256": "ee51b11e08f2d06c38c66d2d6cc28c283ad9c8d07244f7a4debe4e83af17d766",
+  "checks_sha256": "2420d139bef0de8ed98e40db1fe955b2c1b013706833776020d85e4d20c78361",
+  "patch_check": {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/polynomial_ood/air-polynomial-ood.patch"
+    ],
+    "cwd": "/tmp/minidregg-air-polynomial-patch-check-20260909",
+    "exit_code": 0,
+    "output": ""
+  },
+  "search_counts": {
+    "web": 0,
+    "scry": 0,
+    "pdf_downloads": 0
+  }
+}

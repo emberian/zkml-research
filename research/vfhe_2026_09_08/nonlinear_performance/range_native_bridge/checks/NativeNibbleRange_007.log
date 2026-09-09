@@ -1,0 +1,13 @@
+Compiler/NativeNibbleRange.lean:207:31: warning: 'decide' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/NativeNibbleRange.lean:207:31: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Compiler/NativeNibbleRange.lean:215:34: warning: 'decide' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/NativeNibbleRange.lean:215:34: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Compiler/NativeNibbleRange.lean:231:113: error: No goals to be solved

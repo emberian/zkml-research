@@ -1,0 +1,5 @@
+'Minidregg.Compiler.ProfiledRowCoverage.of_get' does not depend on any axioms
+'Minidregg.Compiler.ProfiledRowCoverage.extensionCover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledRowCoverage.rescaleCover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledRowCoverage.extensionBalanced' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledRowCoverage.rescaleBalanced' depends on axioms: [propext, Classical.choice, Quot.sound]

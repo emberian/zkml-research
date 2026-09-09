@@ -1,0 +1,40 @@
+Compiler/NativeNibbleComplete.lean:16:6: error(lean.unknownIdentifier): Unknown constant `List.mul_sum`
+Compiler/NativeNibbleComplete.lean:13:70: error: unsolved goals
+a : ℕ → ℕ
+n b : ℕ
+⊢ a 0 * b ^ 0 + (List.map ((fun i => a i * b ^ i) ∘ Nat.succ) (List.range n)).sum =
+    a 0 + b * (List.map (fun i => a (i + 1) * b ^ i) (List.range n)).sum
+Compiler/NativeNibbleComplete.lean:15:18: warning: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [̵n̵a̵t̵W̵e̵i̵g̵h̵t̵e̵d̵,̵L̵i̵s̵t̵.̵r̵a̵n̵g̵e̵_̵s̵u̵c̵c̵_̵e̵q̵_̵m̵a̵p̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵m̵a̵p̵,̵
+  ̵ ̵ ̵ ̵ ̵L̵i̵s̵t̵.̵s̵u̵m̵_̵c̵o̵n̵s̵,̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵p̵o̵w̵_̵s̵u̵c̵c̵]̵[̲n̲a̲t̲W̲e̲i̲g̲h̲t̲e̲d̲,̲ ̲L̲i̲s̲t̲.̲r̲a̲n̲g̲e̲_̲s̲u̲c̲c̲_̲e̲q̲_̲m̲a̲p̲,̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲m̲a̲p̲,̲ ̲L̲i̲s̲t̲.̲s̲u̲m̲_̲c̲o̲n̲s̲,̲
+  ̲ ̲ ̲ ̲ ̲p̲o̲w̲_̲s̲u̲c̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NativeNibbleComplete.lean:15:38: warning: This simp argument is unused:
+  pow_succ
+
+Hint: Omit it from the simp argument list.
+  simp only [̵n̵a̵t̵W̵e̵i̵g̵h̵t̵e̵d̵,̵L̵i̵s̵t̵.̵r̵a̵n̵g̵e̵_̵s̵u̵c̵c̵_̵e̵q̵_̵m̵a̵p̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵m̵a̵p̵,̵
+  ̵ ̵ ̵ ̵ ̵L̵i̵s̵t̵.̵s̵u̵m̵_̵c̵o̵n̵s̵,̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵p̵o̵w̵_̵s̵u̵c̵c̵]̵[̲n̲a̲t̲W̲e̲i̲g̲h̲t̲e̲d̲,̲ ̲L̲i̲s̲t̲.̲r̲a̲n̲g̲e̲_̲s̲u̲c̲c̲_̲e̲q̲_̲m̲a̲p̲,̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲m̲a̲p̲,̲ ̲L̲i̲s̲t̲.̲s̲u̲m̲_̲c̲o̲n̲s̲,̲
+  ̲ ̲ ̲ ̲ ̲F̲u̲n̲c̲t̲i̲o̲n̲.̲c̲o̲m̲p̲_̲a̲p̲p̲l̲y̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NativeNibbleComplete.lean:73:4: error: linarith failed to find a contradiction
+case h
+bits : ℕ
+v : BabyBear
+hw : Supported bits
+hv : ZMod.val v < 16 ^ (limbCount bits - 1) * 2 ^ topBits bits
+hn : 0 < limbCount bits
+ht : 0 < topBits bits
+ht4 : topBits bits ≤ 4
+hpow : 16 ^ (limbCount bits - 1) * 2 ^ topBits bits = 2 ^ bits
+hfield : 2 ^ bits < 2013265921
+htopcap : 2 ^ topBits bits ≤ 16
+hpred : limbCount bits = limbCount bits - 1 + 1
+a✝ : 16 ^ (limbCount bits - 1) * 16 ≤ ZMod.val v
+⊢ False
+failed

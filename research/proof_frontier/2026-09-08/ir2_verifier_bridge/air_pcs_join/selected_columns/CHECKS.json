@@ -1,0 +1,89 @@
+{
+  "classification": "EXECUTED",
+  "modules": [
+    {
+      "path": "Compiler/Ir2NearbyColumns.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/Ir2NearbyColumns.olean",
+        "Compiler/Ir2NearbyColumns.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 4.388183333969209,
+      "source_sha256": "624b333500fd3232be29291271a8e86e29854b5087ecc84a03dbff8db68e4e59",
+      "source_stable": true,
+      "olean_sha256": "35e8b9984ae75c43c92a864840ce7354213febbd3ab8fd7f1f50a6345e60750b",
+      "axiom_guards": 6,
+      "log": "checks/Ir2NearbyColumns.log"
+    },
+    {
+      "path": "Compiler/Ir2SelectedAirPcs.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/Ir2SelectedAirPcs.olean",
+        "Compiler/Ir2SelectedAirPcs.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 5.256684000021778,
+      "source_sha256": "0af8ed5fb9f942331d1f2902a6b44039077ec0e0e4fa4153b3ffd2fe9be6af6f",
+      "source_stable": true,
+      "olean_sha256": "480e236612fa098086e513ce582c65f643629ed59b5586f8aaf791d15537f0b2",
+      "axiom_guards": 1,
+      "log": "checks/Ir2SelectedAirPcs.log"
+    },
+    {
+      "path": "Compiler/Ir2NearbyWitnesses.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/Ir2NearbyWitnesses.olean",
+        "Compiler/Ir2NearbyWitnesses.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 4.346117292006966,
+      "source_sha256": "965c9fe6dbd5293da30daac4883444d3fa68a237fb37217fa0ee62516200f97a",
+      "source_stable": true,
+      "olean_sha256": "ba8b741cccf50bbae6433b5a00c33278e0af3d9be0ecbcb27e2fcede9f6241d3",
+      "axiom_guards": 7,
+      "log": "checks/Ir2NearbyWitnesses.log"
+    }
+  ],
+  "direct_dependencies_at_import": {
+    "Compiler/Ir2AirPcsOod.lean": {
+      "source_sha256": "3eed867e8bb83a283e77343bbe7085111d24853112bd632b6bd5d02bc9f5dc6e",
+      "olean_sha256": "06fbf8be5e072e2bd3eafe48710a3f345515c711ffc18027a3df39a8bc3fede4"
+    },
+    "Compiler/Ir2NearbyColumns.lean": {
+      "source_sha256": "624b333500fd3232be29291271a8e86e29854b5087ecc84a03dbff8db68e4e59",
+      "olean_sha256": "35e8b9984ae75c43c92a864840ce7354213febbd3ab8fd7f1f50a6345e60750b"
+    },
+    "Compiler/Ir2SelectedAirPcs.lean": {
+      "source_sha256": "0af8ed5fb9f942331d1f2902a6b44039077ec0e0e4fa4153b3ffd2fe9be6af6f",
+      "olean_sha256": "480e236612fa098086e513ce582c65f643629ed59b5586f8aaf791d15537f0b2"
+    },
+    "Compiler/Ir2AirPcsOodWitnesses.lean": {
+      "source_sha256": "0cb562aa9557fbddf562f5b685f0b25473582f6596657ce5debb90bddcfeb145",
+      "olean_sha256": "3b3823609f0cb02e61866999d1d31bb33b3373ff1e1d70362484097b4053c69e"
+    }
+  },
+  "import_boundary": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "exit_code": 0,
+    "log": "checks/import-boundary.log"
+  },
+  "scope": "Changed modules only; exact guard-pinned kernel checks. No broad rebuild, native execution, or implementation refinement claimed."
+}

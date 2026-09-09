@@ -1,0 +1,3 @@
+Compiler/GroupedLogUpTrace.lean:147:2: error: unsolved goals
+case refine_2
+⊢ ¬((2 + if 2 = 0 then 2 else 0) + if 3 = 0 then 2 else 0) = 0

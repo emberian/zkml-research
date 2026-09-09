@@ -1,0 +1,3 @@
+Integrate `runtime/caller.py` into the continuing system's subprocess backend using the four caller-selected operations documented in README.md. Preserve the same public update and square-capture formats and caller-approved ciphertext bindings. Exercise fresh teaching, expiry, persistence/restart and queries as one complete system workload under the root coordinator.
+
+No more saved-class cost/theorem successor is queued. Do not rerun `runtime/run.py` as a baseline or mistake its106 reused proofs for a fresh whole-class production. The complete formal patch and retained proof evidence are ready for parent integration/publication; companion trees remain read-only.

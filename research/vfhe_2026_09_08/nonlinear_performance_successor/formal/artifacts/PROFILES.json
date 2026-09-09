@@ -1,0 +1,146 @@
+{
+  "schema": "lean-range-profiled-artifacts-v1",
+  "status": "emitted-artifacts-frozen-public-transport-pending",
+  "profiles": {
+    "extension": [
+      {
+        "width": 2239,
+        "register_count": 99593,
+        "range_counts": [
+          {
+            "count": 1038,
+            "bits": 9
+          },
+          {
+            "count": 664,
+            "bits": 2
+          },
+          {
+            "count": 76,
+            "bits": 14
+          },
+          {
+            "count": 460,
+            "bits": 15
+          }
+        ],
+        "public_arity": 84,
+        "name": "extension",
+        "instructions": 101831,
+        "arithmetic_constraints": 1241,
+        "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/extension/template_ir2.json",
+        "template_sha256": "b78a15ccd10d64d1e10cec61990e9a7591baee1d2cbc7263b7d368ad9a641ae9",
+        "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/extension/witness_plan.json",
+        "plan_sha256": "0831d826c8854e6e9461062e654f28133a46fe5f316563c3d43bf65c7a7dbe80",
+        "projection": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/extension/projection.json",
+        "projection_sha256": "559b09635d5222525ad30adebc98f209367de327c774d9b0272d5911c55c7ada",
+        "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+        "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+      }
+    ],
+    "rescale": [
+      {
+        "width": 2599,
+        "register_count": 96625,
+        "range_counts": [
+          {
+            "count": 1308,
+            "bits": 9
+          },
+          {
+            "count": 800,
+            "bits": 2
+          },
+          {
+            "count": 78,
+            "bits": 15
+          },
+          {
+            "count": 78,
+            "bits": 14
+          },
+          {
+            "count": 94,
+            "bits": 16
+          },
+          {
+            "count": 240,
+            "bits": 11
+          }
+        ],
+        "public_arity": 88,
+        "name": "rescale",
+        "instructions": 99223,
+        "arithmetic_constraints": 1337,
+        "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/rescale/template_ir2.json",
+        "template_sha256": "cb360a004dc976f20c03f0bf08684f38683bd370c3182ed301638c2778176075",
+        "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/rescale/witness_plan.json",
+        "plan_sha256": "930b4f5928a6c07c7ddcf4c12971e7f776e5c5f1b829e8fd1d118e77b784dc57",
+        "projection": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/rescale/projection.json",
+        "projection_sha256": "5f89ec325643ea6b3f58c250cfb86a4ea6447b3a23f18a205bdbb7127abe0665",
+        "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+        "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/EmitRangeProfiled.lean",
+      "sha256": "d2b0903e72bbb5fae8dd3f9a2d774f89f29efc9e33a7bb4613a61584395d2a01"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/Compiler/RangeProfiledProfiles.lean",
+      "sha256": "336f28575dc36b66dabcbfbb647abed22b1e196e20b8b9721a2b74d8f5863eb8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/Compiler/RangeProfiledCompact.lean",
+      "sha256": "744048510e84307a7cc2b994c468d3188854c3dd177ff1556d4ae236dc8fadba"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/Compiler/RangeProfiledMatrix.lean",
+      "sha256": "181e61b37d0d2a6cebfb59840cd47a32d1b28b81d4fa3d69975a2f19b8b27b1d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionWitnessPlan.lean",
+      "sha256": "5b71cad464812e4cd7ade68420b06d3f31d5921a4be2808dbffdc5a497bce19c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionPublic.lean",
+      "sha256": "864a50a56b09a31da3c967f9d83c7d717b450615469dc8703861defc6592e62c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionLayout.lean",
+      "sha256": "247ab6fa77a4904c7c46407a97eca388867f8d33c1302e0b70ef8849da8d1a21"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/Compiler/RescaleWitnessPlan.lean",
+      "sha256": "c21ef1d935a7f3ddfbaf4c0dbebf6c4ad0847939a53b47ff8668c088d255a97d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledMatrix.lean",
+      "sha256": "848c2fb072f6e5e7b1c360fd60c56cc668046c744135860e13b7bbea45c0d51c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/NonlinearRnsProfiled.lean",
+      "sha256": "b3be72bb7089497664b74c836f5fd4945735fbd3b795080d0c1d6dbe93420900"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeCompletedMac.lean",
+      "sha256": "235506337faf0f64dfc32e181c0a2dfea8e295caf8380bbda4bf6738071f576c"
+    }
+  ],
+  "emitter_command": {
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "--run",
+      "EmitRangeProfiled.lean",
+      "artifacts"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal",
+    "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+    "seconds": 213.68609112501144,
+    "exit": 0,
+    "source_sha256": "d2b0903e72bbb5fae8dd3f9a2d774f89f29efc9e33a7bb4613a61584395d2a01"
+  },
+  "scope": "Compiler-derived all-row gates and native range vocabulary, same public84/public88; source completion and generic compact soundness checked. Final actual public native-output theorem is still being closed; do not claim its completion from this artifact manifest."
+}

@@ -1,0 +1,6 @@
+'Minidregg.Compiler.RangeProfiledCompactExhibits.inhabitedCompact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.RangeProfiledCompactExhibits.changedScalarRefused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

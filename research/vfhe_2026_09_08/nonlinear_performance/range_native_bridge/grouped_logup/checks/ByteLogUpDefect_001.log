@@ -1,0 +1,57 @@
+Compiler/ByteLogUpDefect.lean:15:33: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Algebra BabyBear Ext4
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/ByteLogUpDefect.lean:16:35: error: Application type mismatch: The argument
+  Finset.range 16
+has type
+  Finset ℕ
+but is expected to have type
+  Finset BabyBear
+in the application
+  Finset.image (fun i => i) (Finset.range 16)
+Compiler/ByteLogUpDefect.lean:39:8: warning: declaration uses `sorry`
+Compiler/ByteLogUpDefect.lean:70:2: error: Tactic `apply` failed: could not unify the conclusion of `@Finset.sum_subset`
+  ∑ x ∈ ?s₁, ?f x = ∑ x ∈ ?s₂, ?f x
+with the goal
+  ∑ m ∈ xs.toFinset, List.count m xs • (α - embed m)⁻¹ = ∑ a, (fun i => ↑(List.count (↑i) xs)) ↑a / (α - embed ↑↑a)
+
+Note: The full type of `@Finset.sum_subset` is
+  ∀ {ι : Type ?u.4154.827} {M : Type ?u.4154.826} {s₁ s₂ : Finset ι} [inst : AddCommMonoid M] {f : ι → M},
+    s₁ ⊆ s₂ → (∀ x ∈ s₂, x ∉ s₁ → f x = 0) → ∑ x ∈ s₁, f x = ∑ x ∈ s₂, f x
+
+xs sends : List BabyBear
+α : Ext4
+hxs : ∀ x ∈ xs, x ∈ support sends
+⊢ ∑ m ∈ xs.toFinset, List.count m xs • (α - embed m)⁻¹ = ∑ a, (fun i => ↑(List.count (↑i) xs)) ↑a / (α - embed ↑↑a)
+Compiler/ByteLogUpDefect.lean:88:10: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  logupLogDerivative (point sends) (fun i => ↑(List.count (↑i) (NativeNibbleBus.receives m))) α
+in the target expression
+  logupLogDerivative (point sends) (claimed sends m) α = logupLogDerivative (point sends) (expected sends) α
+
+case neg.h
+sends : List BabyBear
+m : ℕ → ℕ
+α : Ext4
+hrat : rational sends α = rational (NativeNibbleBus.receives m) α
+he : ¬NativeNibbleBus.ExactField sends m
+hp : ¬Pole sends α
+⊢ logupLogDerivative (point sends) (claimed sends m) α = logupLogDerivative (point sends) (expected sends) α
+Compiler/ByteLogUpDefect.lean:104:11: error: don't know how to synthesize implicit argument `b`
+  @le_trans ℝ Real.instPreorder (uniformProb Ext4 (Bad sends m)) (uniformProb Ext4 ?m.106)
+    (↑(support sends).card / ↑(Fintype.card Ext4) + ↑((support sends).card - 1) / ↑(Fintype.card Ext4))
+    (uniformProb_mono fun α h => ?m.109) ?m.111
+context:
+sends : List BabyBear
+m : ℕ → ℕ
+he : ¬NativeNibbleBus.ExactField sends m
+hn : claimed sends m ≠ expected sends
+⊢ ℝ
+Compiler/ByteLogUpDefect.lean:104:21: error: don't know how to synthesize implicit argument `q`
+  @uniformProb_mono Ext4 BabyBearExt4.ext4Fintype (Bad sends m) ?m.106 fun α h => ?m.109
+context:
+sends : List BabyBear
+m : ℕ → ℕ
+he : ¬NativeNibbleBus.ExactField sends m
+hn : claimed sends m ≠ expected sends
+⊢ Ext4 → Prop

@@ -1,0 +1,4 @@
+Compiler/NativeByteExtraction.lean:164:87: error: unsolved goals
+h : NativeNibbleBus.ExactField (sendListN 1 0 fun x x_1 x_2 => 16) fun r => if r = 15 then 8 else 0
+hh : 4 = if 15 = 16 then 8 else 0
+⊢ False
