@@ -1,0 +1,78 @@
+{
+  "weighted": {
+    "files": {
+      "artifacts/template_ir2.json": {
+        "sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+        "bytes": 315975
+      },
+      "artifacts/trace.leu32": {
+        "sha256": "2bb6f3937100847d5595e214b76252746dec9c9bbbe399c7675a56ec7d5e78df",
+        "bytes": 40435712
+      },
+      "artifacts/minidregg_descriptor.json": {
+        "sha256": "dc9fb64061a72069e4e89d4a518fdb545901dd38026ff642d87fd60a6b3d0960",
+        "bytes": 275821
+      },
+      "artifacts/emission.json": {
+        "sha256": "1daf8878275f0e7fb64200f0809a76ff79ee75c6da6c079cebeaa11b4bb9af52",
+        "bytes": 382
+      },
+      "../proved_operation/results/case001/public_rows.json": {
+        "sha256": "267092b2fe739fde58a70aec79769f891a92c2967475f304b41cd28edb7001ba",
+        "bytes": 1461721
+      }
+    },
+    "emission": {
+      "trace_width": 1234,
+      "trace_bytes": 40435712,
+      "standard_descriptor_nWires": 6995,
+      "standard_descriptor_gates": 4721,
+      "source_constraints": 1698,
+      "rows": 8192,
+      "radix64_refused": true,
+      "public_tuple_order": "rowID,A3x7,B3x7,O3x7",
+      "ir2_arithmetic_constraints": 1698,
+      "constructed_cases_checked": 4,
+      "changed_output_refused": true,
+      "all_actual_source_rows_checked": true
+    }
+  },
+  "expiry": {
+    "files": {
+      "artifacts_expiry/template_ir2.json": {
+        "sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+        "bytes": 268925
+      },
+      "artifacts_expiry/trace.leu32": {
+        "sha256": "2810032705c219f5a4fd82f717a4d9859965d234cab065f795c31de673a1e102",
+        "bytes": 33325056
+      },
+      "artifacts_expiry/minidregg_descriptor.json": {
+        "sha256": "4439f96c07b5955e8492b7922cd889a79d2e6b3e40b5733db23d9868ac4653dd",
+        "bytes": 226045
+      },
+      "artifacts_expiry/emission.json": {
+        "sha256": "ae6eaef50a9175ddddad6361b6ef7d7de86dcc5f076cacdd92b798bf60110034",
+        "bytes": 397
+      },
+      "../proved_operation/results/learner_expiry001/public_ntt_rows.json": {
+        "sha256": "125fdd7d2bc8739898559c3275a8d572cbb0ea693e2d8b9cbb1b8d2cc944c8b1",
+        "bytes": 1355662
+      }
+    },
+    "emission": {
+      "trace_width": 1017,
+      "trace_bytes": 33325056,
+      "standard_descriptor_nWires": 5925,
+      "standard_descriptor_gates": 3865,
+      "source_constraints": 1456,
+      "rows": 8192,
+      "radix64_refused": true,
+      "public_tuple_order": "rowID,acc2x7,fresh2x7,old2x7,out2x7",
+      "ir2_arithmetic_constraints": 1456,
+      "constructed_cases_checked": 4,
+      "changed_output_refused": true,
+      "all_actual_source_rows_checked": true
+    }
+  }
+}

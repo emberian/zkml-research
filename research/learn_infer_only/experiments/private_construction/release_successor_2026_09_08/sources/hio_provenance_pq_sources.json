@@ -1,0 +1,126 @@
+{
+  "label": "SOURCE / DERIVED / EXECUTED; source supplement owned by pq_provenance_construction; root may merge into shared SOURCES",
+  "note": "HIO_PROVENANCE_PQ.md",
+  "sources": [
+    {
+      "id": "2023/1532",
+      "url": "https://eprint.iacr.org/2023/1532",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/1532.pdf",
+      "pdf_sha256": "f1b09f9684ae74052014a1d5e68a110e24903635fc935d56f73d246e851a9635",
+      "local_text": "/tmp/hio-pq-2023-1532.txt",
+      "text_sha256": "b3373c895f7ad3cf9a83f8df8e20593bba75259a47e04fdfddd3ba2a731c26c3",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/1532.pdf",
+        "/tmp/hio-pq-2023-1532.txt"
+      ],
+      "access": "Definitions 3.5/3.7 and Theorems 3.6/3.8, Corollary 3.9, printed pp16-18; Definition 4.1, Theorem 4.2, Figure 1 and opening proof, pp22-24. Classical-query post-quantum theorem; not its unclonability construction."
+    },
+    {
+      "id": "2023/1702",
+      "url": "https://eprint.iacr.org/2023/1702",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/1702.pdf",
+      "pdf_sha256": "d43f3bb779f07d29d147c82448e6605b12750910d2ce7b26a41c6a17bac6baff",
+      "local_text": "/tmp/hio-pq-2023-1702.txt",
+      "text_sha256": "69eb52b4bf2560dca0b2827f45c96b902d1bfc7b522e51e48cdb8c0346cc9a87",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/1702.pdf",
+        "/tmp/hio-pq-2023-1702.txt"
+      ],
+      "access": "Definitions 1-4 pp8-11; Construction 3/Theorem 2 pp17-18; Appendix D pp36-37; full Appendix E pp37-41. Actual compiler algorithms/arbitrary-statement simulator and quantum-game boundary."
+    },
+    {
+      "id": "2019/158",
+      "url": "https://eprint.iacr.org/2019/158",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/158.pdf",
+      "pdf_sha256": "77f23fb5b2ac7e10cbb5128af35f14701b07df306f864ba61d9d66cf29d846b8",
+      "local_text": "/tmp/hio-pq-2019-158.txt",
+      "text_sha256": "0b49f3f6775e0ca19ade8fb7757c74cc6875095e014fa9e1efac7916a5d2470b",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/158.pdf",
+        "/tmp/hio-pq-2019-158.txt"
+      ],
+      "access": "Definition 2.2 pp7-8; Construction 2.9/Proposition 2.10 pp12-13; Construction 3.1 p13; Theorems 5.3/5.4 and Remarks 5.5/5.6 pp19-20; intro size/single-theorem limitations pp6-7. Not full reduction re-audit."
+    },
+    {
+      "id": "2019/908",
+      "url": "https://eprint.iacr.org/2019/908",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/908.pdf",
+      "pdf_sha256": "1078655a4115e17e5a3bfbabfd76dad20704bb356c7b8a1dd5d7b5b945a92698",
+      "local_text": "/tmp/hio-pq-2019-908.txt",
+      "text_sha256": "7b9a3a8264c7e055062a74d77e08181c805b2e2efb286760ca5a08b1deace1cd",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/908.pdf",
+        "/tmp/hio-pq-2019-908.txt"
+      ],
+      "access": "Introduction pp1-3; displayed equality relation and trapdoor Sigma protocol pp25-27; Section 6.2 cost comparison pp29-30; Theorem 6.2 and games pp31-33. Orientation for Naor-Yung consistency and generic NP costs, not selected proof backend."
+    },
+    {
+      "id": "2012/182",
+      "url": "https://eprint.iacr.org/2012/182",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/182.pdf",
+      "pdf_sha256": "f708b04cccaacca5220e444f4f703e68d35a056769b6ac4806ec0b10b0c1cbd3",
+      "local_text": "/tmp/hio-pq-2012-182.txt",
+      "text_sha256": "b967a8650118a2d813f227a65b2e491a034183dc9f8b21854e03d113fd69c7df",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/182.pdf",
+        "/tmp/hio-pq-2012-182.txt"
+      ],
+      "access": "Introduction pp2-3 (OWF-to-PRG quantum lift); Section 4.1 Construction 1 and Theorem 4.5 pp7-8, GGM quantum PRF. No full reduction audit."
+    },
+    {
+      "id": "Regev-2009-qcrypto",
+      "url": "https://www.cims.nyu.edu/~regev/papers/qcrypto.pdf",
+      "local_pdf": "/tmp/hio-pq-regev-2009.pdf",
+      "pdf_sha256": "15cfcb652725246f647a07bf9e993e723daa9207270fb688d342afbf51a0a656",
+      "local_text": "/tmp/hio-pq-regev-2009.txt",
+      "text_sha256": "6e8cd05d16059dc038a17f5cadfa5778c86084423744556f132f21e692d6bafe",
+      "access": "Section 5 pp31-35 actual key generation/encryption/decryption, Lemma 5.1 correctness, Claim 5.3 leftover hash, security proof; Theorem 1.1 parameter condition pp2-3. Our bounded-noise/all-coins modification and direct two-key feedback proof are DERIVED.",
+      "download": "Author-hosted PDF, not eprint archive."
+    }
+  ],
+  "discovery": {
+    "web_search_queries": [
+      "post quantum unbounded simulation sound NIZK LWE construction",
+      "lattice NIZK simulation sound arbitrary statements perfect correctness CCA encryption",
+      "quantum simulation sound NIZK quantum auxiliary input standard model",
+      "\"quantum\" \"simulation-sound\" \"Sahai\" NIZK",
+      "\"Quantum Simulation-Sound\" NIZK",
+      "\"NIZK for NP from\" \"quantum\" \"Shiehian\"",
+      "\"On Quantum Simulation-Soundness\" eprint",
+      "\"Noninteractive Zero Knowledge for NP from (Plain)\" eprint",
+      "Regev On lattices random linear codes cryptography public key encryption subset sum n squared errors pdf",
+      "Zhandry How to Construct Quantum Random Functions eprint 2012 2011"
+    ],
+    "web_direct_opens": [
+      "https://cic.iacr.org/p/1/4/18/pdf",
+      "https://cims.nyu.edu/~regev/publications.php"
+    ],
+    "web_clicks": [
+      {
+        "page": "https://cims.nyu.edu/~regev/publications.php",
+        "link": "https://www.cims.nyu.edu/~regev/papers/qcrypto.pdf"
+      }
+    ],
+    "web_finds": [
+      {
+        "page": "https://cims.nyu.edu/~regev/publications.php",
+        "pattern": "On Lattices, Learning"
+      }
+    ],
+    "scry_queries": 0,
+    "mirror_pdf_extractions": 5,
+    "author_pdf_downloads": 1,
+    "eprint_pdf_downloads": 0,
+    "cryptographic_runs": 0
+  }
+}

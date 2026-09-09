@@ -1,0 +1,35 @@
+{
+  "schema": "whole-row-microsite-asset-replacements-v1",
+  "owner": "root; this package does not modify or publish a website",
+  "replace": [
+    {
+      "source": "web/query-case.js",
+      "site_destination": "proof/query-case.js"
+    },
+    {
+      "source": "query/fixtures/",
+      "site_destination": "query-bundle/fixtures/",
+      "recursive": true
+    },
+    {
+      "source": "update/fixtures/learner-expiry/",
+      "site_destination": "learner-bundle/fixtures/learner-expiry/",
+      "recursive": true,
+      "destination_note": "Use the existing site update-fixture directory; this is a suggested bundle name."
+    }
+  ],
+  "reuse_unchanged": [
+    "web/package.json",
+    "web/verifier.js",
+    "web/query-consumer.js",
+    "web/shared-query-worker.js",
+    "web/pkg/vfhe_browser_verifier.d.ts",
+    "web/pkg/vfhe_browser_verifier.js",
+    "web/pkg/vfhe_browser_verifier_bg.wasm",
+    "web/pkg/vfhe_browser_verifier_bg.wasm.d.ts"
+  ],
+  "required_case_id": "fast001-all-row-reproof-two-class-query",
+  "update_template_sha256": "112a0982fc384272c5b24da9f4c2f4617078be22afe27aca59dad08c73b479e5",
+  "query_template_sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933",
+  "integration_note": "Update every application-selected update fixture pin and require the new query case ID. Preserve archived old fixtures but remove their status as corrected current examples. The unchanged shared worker accepts the existing bundleBaseUrl ending in a slash."
+}

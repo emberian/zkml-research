@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "node",
+    "verify.mjs"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row",
+  "started_utc": "2026-09-09T02:20:13.669007+00:00",
+  "returncode": 0,
+  "elapsed_seconds": 5.992926416976843,
+  "finished_utc": "2026-09-09T02:20:19.661968+00:00",
+  "stdout_sha256": "bcc30d443b4083ce9fc9ce2fc36d73a04443eb204b99c6f7cd4979f64415d318",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
