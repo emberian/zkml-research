@@ -1,0 +1,13 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-packed-encoding-20260908/.lake/build/lib/lean/Selvage/PackedLeafEncoding.olean",
+    "Selvage/PackedLeafEncoding.lean"
+  ],
+  "cwd": "/tmp/minidregg-packed-encoding-20260908",
+  "exit": 0,
+  "seconds": 10.196940898895264
+}

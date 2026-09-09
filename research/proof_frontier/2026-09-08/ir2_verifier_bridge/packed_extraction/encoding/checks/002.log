@@ -1,0 +1,17 @@
+Selvage/PackedLeafEncoding.lean:159:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  List.take (?width ?i + 4) (List.drop (rowOffset ?width ?i) (rowsEncode ?width ?rows ?salts))
+in the target expression
+  (fun xs => List.take (width i + 4) (List.drop (rowOffset width i) xs)) (rowsEncode width rows salts) =
+    (fun xs => List.take (width i + 4) (List.drop (rowOffset width i) xs)) (rowsEncode width rows otherSalts)
+
+case h.a
+m : ℕ
+width : Fin m → ℕ
+rows : (i : Fin m) → Fin (width i) → BabyBear
+salts otherSalts : Fin m → Fin 4 → BabyBear
+h : rowsEncode width rows salts = rowsEncode width rows otherSalts
+i : Fin m
+hh :
+  (fun xs => List.take (width i + 4) (List.drop (rowOffset width i) xs)) (rowsEncode width rows salts) =
+    (fun xs => List.take (width i + 4) (List.drop (rowOffset width i) xs)) (rowsEncode width rows otherSalts)
+⊢ List.ofFn (salts i) = List.ofFn (otherSalts i)

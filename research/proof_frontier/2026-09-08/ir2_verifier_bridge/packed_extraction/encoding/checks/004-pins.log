@@ -1,0 +1,25 @@
+'Minidregg.Selvage.PackedLeafEncoding.slice_block_append' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.getD_ofFn' depends on axioms: [propext]
+'Minidregg.Selvage.PackedLeafEncoding.ext4Encode_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.friLeafEncode_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.rowsEncode_length' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.ext4Decode_encode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.ext4Encode_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.prefixLength_ofFn' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.prefixLength_const' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.friRoundTrip' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.fri_values_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.friLeaf_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.rowBlock_encode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.rowSlice_encode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.rowsRoundTrip' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.rows_values_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.rowsEncode_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.nonzeroFriWitness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.fri_changed_coordinate_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.missingSaltOffsetFalsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.PackedLeafEncoding.rows_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]

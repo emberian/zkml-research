@@ -1,0 +1,2239 @@
+diff --git a/Selvage/ShapeRootExtraction.lean b/Selvage/ShapeRootExtraction.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ShapeRootExtraction.lean
+@@ -0,0 +1,176 @@
++/- Shape-directed commitment-time extraction for supplied Merkle openings.
++The two lookup kinds are separated, and a leaf lookup admits only the fixed
++public leaf shape. No hash domain separation or random-oracle law is assumed. -/
++import Selvage.EfficientRootOpening
++import Selvage.CommitmentFailureReduction
++
++namespace Minidregg.Selvage.ShapeRootExtraction
++open EfficientRootOpening
++open scoped Classical
++noncomputable section
++variable {Value Digest : Type} [instDigest : DecidableEq Digest]
++
++/-- Expected node/leaf role is known from depth; a leaf's shape is public. -/
++def admits (valid : Value → Prop) (node : Bool) : Query Value Digest → Prop
++  | .leaf v => node = false ∧ valid v
++  | .node _ _ => node = true
++
++def matchingLog (valid : Value → Prop) (node : Bool) (L : Log Value Digest) : Log Value Digest :=
++  L.filter fun e => admits valid node e.1
++
++/-- Only same-role collisions in the currently expected leaf shape are needed.
++Known cross-length or leaf/node sponge equalities are not automatically failures. -/
++def Collision (valid : Value → Prop) (L : Log Value Digest) : Prop :=
++  ResponseCollision (matchingLog valid false L) ∨ ResponseCollision (matchingLog valid true L)
++
++def Bad (valid : Value → Prop) (P L : Log Value Digest) (root : Digest) : Prop :=
++  Collision valid L ∨ LateTarget P L root
++
++def preimage (valid : Value → Prop) (node : Bool) (P : Log Value Digest) (d : Digest) :=
++  EfficientRootOpening.preimage (matchingLog valid node P) d
++
++/-- A fixed checkpoint yields a global leaf function without searching for
++alternative accepted openings or depending on later challenge/query coins. -/
++def extractedAt (valid : Value → Prop) (P : Log Value Digest) (default : Value) :
++    {k : ℕ} → Digest → (Fin k → Bool) → Value
++  | 0,root,_ => match preimage valid false P root with
++      | some (.leaf v) => v
++      | _ => default
++  | k+1,root,address => match preimage valid true P root with
++      | some (.node a b) => extractedAt valid P default (if address 0 then b else a)
++          (fun i : Fin k => address i.succ)
++      | _ => default
++
++omit [DecidableEq Digest] in
++/-- Matching retained entries embed into the underlying observed log. -/
++theorem mem_matching (valid : Value → Prop) (node : Bool) (L : Log Value Digest)
++    (e : Query Value Digest × Digest) :
++    e ∈ matchingLog valid node L ↔ e ∈ L ∧ admits valid node e.1 := by
++  simp [matchingLog]
++
++/-- Any failure of the narrower extractor is also covered by the earlier
++causal collision/late-hit machinery. This implication does not price actual Poseidon. -/
++theorem bad_to_unfiltered (valid : Value → Prop) (P L : Log Value Digest) (root : Digest)
++    (h : Bad valid P L root) : EfficientRootOpening.Bad P L root := by
++  rcases h with (h|h)|h
++  · obtain ⟨e,he,e',he',hh,hne⟩ := h
++    cases instDigest e.2 e'.2 with
++    | isTrue heq =>
++      exact Or.inl ⟨e,(mem_matching valid false L e).mp he |>.1,
++        e',(mem_matching valid false L e').mp he' |>.1,heq,hne⟩
++    | isFalse hne' => exact False.elim (hne' hh)
++  · obtain ⟨e,he,e',he',hh,hne⟩ := h
++    exact Or.inl ⟨e,(mem_matching valid true L e).mp he |>.1,
++      e',(mem_matching valid true L e').mp he' |>.1,hh,hne⟩
++  · exact Or.inr h
++
++theorem retained_of_target (valid : Value → Prop) (P L : Log Value Digest) (root : Digest)
++    (hgood : ¬Bad valid P L root) (e : Query Value Digest × Digest)
++    (he : e ∈ L) (ht : Target P root e.2) : e ∈ P := by
++  by_contra hn
++  exact hgood (Or.inr ⟨e,he,hn,ht⟩)
++
++theorem preimage_of_good (valid : Value → Prop) (node : Bool)
++    (P L : Log Value Digest) (root : Digest)
++    (hsub : ∀ e ∈ P,e ∈ L) (hgood : ¬Bad valid P L root)
++    (q : Query Value Digest) (d : Digest) (hq : admits valid node q) (he : (q,d) ∈ P) :
++    preimage valid node P d = some q := by
++  apply EfficientRootOpening.preimage_of_mem
++  · exact (mem_matching valid node P (q,d)).mpr ⟨he,hq⟩
++  · intro e hem hd
++    by_contra hne
++    have hm := (mem_matching valid node P e).mp hem
++    have hc : ResponseCollision (matchingLog valid node L) :=
++      ⟨e,(mem_matching valid node L e).mpr ⟨hsub e hm.1,hm.2⟩,
++        (q,d),(mem_matching valid node L (q,d)).mpr ⟨hsub _ he,hq⟩,hd,hne⟩
++    cases node
++    · exact hgood (Or.inl (Or.inl hc))
++    · exact hgood (Or.inl (Or.inr hc))
++
++/-- Supplied-path extraction at its declared checkpoint, checking the actual
++expected role at each depth and the fixed public leaf shape at the bottom. -/
++theorem extractedAt_eq_of_logged
++    (valid : Value → Prop) (H : BinaryMerkle.HashSuite Value Digest)
++    (P L : Log Value Digest) (default : Value) (root₀ : Digest)
++    (hsub : ∀ e ∈ P,e ∈ L) (hgood : ¬Bad valid P L root₀)
++    (v : Value) (hv : valid v) (hleaf : (.leaf v,H.leaf v) ∈ L) :
++    ∀ (k : ℕ) (root : Digest) (address : Fin k → Bool) (path : List Digest),
++    Target P root₀ root →
++    (∀ e ∈ pathLog H (H.leaf v) address path,e ∈ L) →
++    BinaryMerkle.recompute H (H.leaf v) address path = some root →
++    extractedAt valid P default root address = v := by
++  intro k
++  induction k with
++  | zero =>
++      intro root address path htarget hnodes hacc
++      cases path with
++      | cons a as => simp [BinaryMerkle.recompute] at hacc
++      | nil =>
++          have heq : H.leaf v = root := by simpa [BinaryMerkle.recompute] using hacc
++          have hp := retained_of_target valid P L root₀ hgood
++            (.leaf v,H.leaf v) hleaf (by simpa [heq] using htarget)
++          have hf := preimage_of_good valid false P L root₀ hsub hgood (.leaf v) (H.leaf v)
++            (by simp [admits,hv]) hp
++          simp [extractedAt,←heq,hf]
++  | succ k ih =>
++      intro root address path htarget hnodes hacc
++      cases path with
++      | nil => simp [BinaryMerkle.recompute] at hacc
++      | cons sibling rest =>
++          obtain ⟨child,hchild,hroot⟩ :=
++            (BinaryMerkle.recompute_cons_some_iff H (H.leaf v) sibling address rest root).mp hacc
++          cases hbit : address 0 with
++          | false =>
++              have hr : H.node child sibling = root := by simpa [hbit] using hroot
++              have hm : (.node child sibling,H.node child sibling) ∈ L :=
++                hnodes _ (by simp [pathLog,hchild,hbit,evaluate])
++              have hp := retained_of_target valid P L root₀ hgood
++                (.node child sibling,H.node child sibling) hm (by simpa [hr] using htarget)
++              have hf := preimage_of_good valid true P L root₀ hsub hgood
++                (.node child sibling) (H.node child sibling) (by simp [admits]) hp
++              have ht : Target P root₀ child :=
++                Or.inr ⟨(.node child sibling,H.node child sibling),hp,by simp [children]⟩
++              have hn : ∀ e ∈ pathLog H (H.leaf v) (fun i => address i.succ) rest,e ∈ L := by
++                intro e he
++                exact hnodes e (by simp [pathLog,hchild,hbit,he])
++              have hi := ih child (fun i => address i.succ) rest ht hn hchild
++              simpa [extractedAt,←hr,hf,hbit] using hi
++          | true =>
++              have hr : H.node sibling child = root := by simpa [hbit] using hroot
++              have hm : (.node sibling child,H.node sibling child) ∈ L :=
++                hnodes _ (by simp [pathLog,hchild,hbit,evaluate])
++              have hp := retained_of_target valid P L root₀ hgood
++                (.node sibling child,H.node sibling child) hm (by simpa [hr] using htarget)
++              have hf := preimage_of_good valid true P L root₀ hsub hgood
++                (.node sibling child) (H.node sibling child) (by simp [admits]) hp
++              have ht : Target P root₀ child :=
++                Or.inr ⟨(.node sibling child,H.node sibling child),hp,by simp [children]⟩
++              have hn : ∀ e ∈ pathLog H (H.leaf v) (fun i => address i.succ) rest,e ∈ L := by
++                intro e he
++                exact hnodes e (by simp [pathLog,hchild,hbit,he])
++              have hi := ih child (fun i => address i.succ) rest ht hn hchild
++              simpa [extractedAt,←hr,hf,hbit] using hi
++
++end
++end Minidregg.Selvage.ShapeRootExtraction
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.mem_matching' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.mem_matching
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.bad_to_unfiltered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.bad_to_unfiltered
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.retained_of_target' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.retained_of_target
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.preimage_of_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.preimage_of_good
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.extractedAt_eq_of_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.extractedAt_eq_of_logged
++
+diff --git a/Selvage/PackedLeafEncoding.lean b/Selvage/PackedLeafEncoding.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/PackedLeafEncoding.lean
+@@ -0,0 +1,300 @@
++/- Fixed-shape packed MMCS leaf projections. Extension coefficients use the
++existing BabyBear X^4-11 power-basis equivalence. P3 extension_mmcs flattens each
++extension value first; hiding_mmcs appends four base-field salts to each matrix
++row; same-height Merkle hashing concatenates those salted rows in matrix order.
++The canonical adapter's exact shape gate is a separate premise: native hiding
++MMCS itself does not check supplied salt length. No hash/ROM claim is made here. -/
++import Selvage.BabyBearExt4
++import Mathlib.Data.List.OfFn
++import Mathlib.Algebra.BigOperators.Group.List.Basic
++import Mathlib.Tactic
++namespace Minidregg.Selvage.PackedLeafEncoding
++open Minidregg.Selvage.BabyBearExt4
++set_option autoImplicit false
++set_option maxHeartbeats 1000000
++noncomputable section
++
++/-- Offset in a concatenation, derived only from preceding block lengths. -/
++def prefixLength {α : Type*} (blocks : List (List α)) (i : Nat) : Nat :=
++  ((blocks.take i).map List.length).sum
++
++def ext4Encode (x : Ext4) : List BabyBear := List.ofFn (coefficients x)
++def ext4Decode (xs : List BabyBear) : Ext4 :=
++  coefficients.symm (fun i => xs.getD i.val 0)
++
++def friLeafEncode {n : Nat} (values : Fin n → Ext4) (salts : Fin 4 → BabyBear) : List BabyBear :=
++  (List.ofFn (fun i => ext4Encode (values i))).flatten ++ List.ofFn salts
++def friProject {n : Nat} (i : Fin n) (leaf : List BabyBear) : Ext4 :=
++  ext4Decode ((leaf.drop (4*i.val)).take 4)
++
++def FriRoundTrip : Prop := ∀ (n : Nat) (values : Fin n → Ext4) (salts : Fin 4 → BabyBear) (i : Fin n),
++  friProject i (friLeafEncode values salts)=values i
++
++def rowOffset {m : Nat} (width : Fin m → Nat) (i : Fin m) : Nat :=
++  ((List.ofFn (fun j => width j+4)).take i.val).sum
++def rowsEncode {m : Nat} (width : Fin m → Nat) (rows : (i : Fin m) → Fin (width i) → BabyBear)
++    (salts : Fin m → Fin 4 → BabyBear) : List BabyBear :=
++  (List.ofFn (fun i => List.ofFn (rows i) ++ List.ofFn (salts i))).flatten
++
++def rowSlice {m : Nat} (width : Fin m → Nat) (i : Fin m) (leaf : List BabyBear) : List BabyBear :=
++  (leaf.drop (rowOffset width i)).take (width i)
++def rowProject {m : Nat} (width : Fin m → Nat) (i : Fin m) (leaf : List BabyBear) : Fin (width i) → BabyBear :=
++  fun j => (rowSlice width i leaf).getD j.val 0
++
++def RowsRoundTrip : Prop := ∀ (m : Nat) (width : Fin m → Nat)
++    (rows : (i : Fin m) → Fin (width i) → BabyBear) (salts : Fin m → Fin 4 → BabyBear) (i : Fin m),
++  rowProject width i (rowsEncode width rows salts)=rows i
++
++/-- Arbitrary-size blocks and suffix. Neither their widths nor values are
++expanded by this induction; salts may therefore be treated as any suffix. -/
++theorem slice_block_append {α : Type*} (blocks : List (List α)) (tail : List α)
++    (i : Nat) (hi : i<blocks.length) :
++    ((blocks.flatten++tail).drop (prefixLength blocks i)).take (blocks[i].length)=blocks[i] := by
++  induction blocks generalizing i with
++  | nil => simp at hi
++  | cons head rest ih =>
++    cases i with
++    | zero => simp [prefixLength,List.append_assoc]
++    | succ i =>
++      have hi' : i<rest.length := by simpa using hi
++      have ht := ih i hi'
++      simpa only [prefixLength,List.take_succ_cons,List.map_cons,List.sum_cons,List.flatten_cons,
++        List.getElem_cons_succ,List.append_assoc,←List.drop_drop,List.drop_left] using ht
++
++theorem getD_ofFn {α : Type*} (default : α) {n : Nat} (f : Fin n → α) (i : Fin n) :
++    (List.ofFn f).getD i.val default=f i := by
++  simp [List.getD_eq_getElem?_getD,i.isLt]
++
++theorem ext4Encode_length (x : Ext4) : (ext4Encode x).length=4 := by
++  simp [ext4Encode,extensionPolynomial_natDegree]
++
++theorem friLeafEncode_length {n : Nat} (values : Fin n → Ext4) (salts : Fin 4 → BabyBear) :
++    (friLeafEncode values salts).length=4*n+4 := by
++  simp [friLeafEncode,List.length_flatten,List.map_ofFn,Function.comp_def,ext4Encode_length,Nat.mul_comm]
++
++theorem rowsEncode_length {m : Nat} (width : Fin m → Nat)
++    (rows : (i : Fin m) → Fin (width i) → BabyBear) (salts : Fin m → Fin 4 → BabyBear) :
++    (rowsEncode width rows salts).length=(List.ofFn (fun i => width i+4)).sum := by
++  simp [rowsEncode,List.length_flatten,List.map_ofFn,Function.comp_def]
++
++theorem ext4Decode_encode (x : Ext4) : ext4Decode (ext4Encode x)=x := by
++  unfold ext4Decode ext4Encode
++  simp only [getD_ofFn]
++  exact coefficients.symm_apply_apply x
++
++theorem ext4Encode_injective : Function.Injective ext4Encode := by
++  intro x y h
++  have hh := congrArg ext4Decode h
++  simpa only [ext4Decode_encode] using hh
++
++theorem prefixLength_ofFn {α : Type*} {n : Nat} (blocks : Fin n → List α)
++    (width : Fin n → Nat) (hlen : ∀ i,(blocks i).length=width i) (i : Fin n) :
++    prefixLength (List.ofFn blocks) i.val=((List.ofFn width).take i.val).sum := by
++  simp only [prefixLength,List.map_take,List.map_ofFn]
++  have hw : List.length ∘ blocks=width := funext hlen
++  rw [hw]
++
++theorem prefixLength_const {α : Type*} {n : Nat} (blocks : Fin n → List α)
++    (width : Nat) (hlen : ∀ i,(blocks i).length=width) (i : Fin n) :
++    prefixLength (List.ofFn blocks) i.val=width*i.val := by
++  rw [prefixLength_ofFn blocks (fun _ => width) hlen i,List.ofFn_const,List.take_replicate]
++  simp [Nat.mul_comm]
++
++theorem friRoundTrip : FriRoundTrip := by
++  intro n values salts i
++  have h := slice_block_append (List.ofFn (fun j => ext4Encode (values j))) (List.ofFn salts) i.val (by simp)
++  rw [prefixLength_const _ 4 (fun j => ext4Encode_length (values j)) i] at h
++  simp only [List.getElem_ofFn,ext4Encode_length] at h
++  unfold friProject friLeafEncode
++  rw [h,ext4Decode_encode]
++
++theorem fri_values_injective {n : Nat} (values other : Fin n → Ext4) (salts otherSalts : Fin 4 → BabyBear)
++    (h : friLeafEncode values salts=friLeafEncode other otherSalts) : values=other := by
++  funext i
++  have hh := congrArg (friProject i) h
++  simpa only [friRoundTrip n] using hh
++
++theorem friLeaf_injective {n : Nat} (values other : Fin n → Ext4) (salts otherSalts : Fin 4 → BabyBear)
++    (h : friLeafEncode values salts=friLeafEncode other otherSalts) : values=other ∧ salts=otherSalts := by
++  have hv := fri_values_injective values other salts otherSalts h
++  refine ⟨hv,?_⟩
++  subst other
++  apply List.ofFn_injective
++  exact List.append_cancel_left h
++
++/-- Recover a whole salted row, including its four salt coordinates. -/
++theorem rowBlock_encode {m : Nat} (width : Fin m → Nat)
++    (rows : (i : Fin m) → Fin (width i) → BabyBear) (salts : Fin m → Fin 4 → BabyBear) (i : Fin m) :
++    ((rowsEncode width rows salts).drop (rowOffset width i)).take (width i+4)=
++      List.ofFn (rows i) ++ List.ofFn (salts i) := by
++  have h := slice_block_append
++    (List.ofFn (fun j => List.ofFn (rows j) ++ List.ofFn (salts j))) [] i.val (by simp)
++  rw [prefixLength_ofFn _ (fun j => width j+4) (by intro j; simp) i] at h
++  simpa only [List.append_nil,List.getElem_ofFn,List.length_append,List.length_ofFn,
++    rowsEncode,rowOffset] using h
++
++theorem rowSlice_encode {m : Nat} (width : Fin m → Nat)
++    (rows : (i : Fin m) → Fin (width i) → BabyBear) (salts : Fin m → Fin 4 → BabyBear) (i : Fin m) :
++    rowSlice width i (rowsEncode width rows salts)=List.ofFn (rows i) := by
++  have h := congrArg (List.take (width i)) (rowBlock_encode width rows salts i)
++  simpa [rowSlice,List.take_take,List.take_append_of_le_length] using h
++
++theorem rowsRoundTrip : RowsRoundTrip := by
++  intro m width rows salts i
++  funext j
++  unfold rowProject
++  rw [rowSlice_encode,getD_ofFn]
++
++theorem rows_values_injective {m : Nat} (width : Fin m → Nat)
++    (rows other : (i : Fin m) → Fin (width i) → BabyBear)
++    (salts otherSalts : Fin m → Fin 4 → BabyBear)
++    (h : rowsEncode width rows salts=rowsEncode width other otherSalts) : rows=other := by
++  funext i
++  have hh := congrArg (rowProject width i) h
++  simpa only [rowsRoundTrip m] using hh
++
++theorem rowsEncode_injective {m : Nat} (width : Fin m → Nat)
++    (rows other : (i : Fin m) → Fin (width i) → BabyBear)
++    (salts otherSalts : Fin m → Fin 4 → BabyBear)
++    (h : rowsEncode width rows salts=rowsEncode width other otherSalts) :
++    rows=other ∧ salts=otherSalts := by
++  have hv := rows_values_injective width rows other salts otherSalts h
++  refine ⟨hv,?_⟩
++  subst other
++  funext i
++  apply List.ofFn_injective
++  have hh := congrArg (fun xs : List BabyBear =>
++    (xs.drop (rowOffset width i)).take (width i+4)) h
++  dsimp only at hh
++  rw [rowBlock_encode,rowBlock_encode] at hh
++  exact List.append_cancel_left hh
++
++/-- Canonical input-batch widths, grouped in the verifier's same-height matrix order.
++The generic theorem above consumes these as dimensions without expanding their rows. -/
++def actualInputWidths : List (List Nat) :=
++  [[8,8],[2513,5],List.replicate 16 8,[59],[8,8]]
++def widthsOfList (ws : List Nat) : Fin ws.length → Nat := fun i => ws[i]
++
++/-- Fixed-shape acceptance has a nonzero value and arbitrary salts. -/
++def NonzeroFriWitness : Prop :=
++  ∀ salts : Fin 4 → BabyBear,
++    friProject (0 : Fin 1) (friLeafEncode (fun _ : Fin 1 => (1 : Ext4)) salts)=1
++
++theorem nonzeroFriWitness : NonzeroFriWitness := by
++  intro salts
++  exact friRoundTrip 1 (fun _ => 1) salts 0
++
++/-- Changing any extension coordinate cannot be hidden by changing salts. -/
++theorem fri_changed_coordinate_refused {n : Nat} (values other : Fin n → Ext4)
++    (salts otherSalts : Fin 4 → BabyBear) (i : Fin n) (hne : values i ≠ other i) :
++    friLeafEncode values salts ≠ friLeafEncode other otherSalts := by
++  intro h
++  exact hne (congrFun (fri_values_injective values other salts otherSalts h) i)
++
++/-- A missing per-row salt offset reads a salt instead of the next matrix row. -/
++def MissingSaltOffsetFalsifier : Prop :=
++  (rowsEncode (fun _ : Fin 2 => 1) (fun _ _ => 1) (fun _ _ => 0)).getD 1 0 ≠ (1 : BabyBear)
++
++theorem missingSaltOffsetFalsifier : MissingSaltOffsetFalsifier := by
++  norm_num [MissingSaltOffsetFalsifier,rowsEncode,List.ofFn_succ]
++
++/-- The matrix premise is inhabited even with different widths; no content or
++salt constraint is required by the lossless fixed-shape encoding. -/
++theorem rows_premise_inhabited (ws : List Nat)
++    (rows : (i : Fin ws.length) → Fin (widthsOfList ws i) → BabyBear)
++    (salts : Fin ws.length → Fin 4 → BabyBear) :
++    ∀ i, rowProject (widthsOfList ws) i (rowsEncode (widthsOfList ws) rows salts)=rows i := by
++  exact rowsRoundTrip ws.length (widthsOfList ws) rows salts
++
++/- Every exported theorem is pinned to its exact kernel axiom dependencies. -/
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.slice_block_append' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.slice_block_append
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.getD_ofFn' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.getD_ofFn
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.ext4Encode_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.ext4Encode_length
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.friLeafEncode_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.friLeafEncode_length
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.rowsEncode_length' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.rowsEncode_length
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.ext4Decode_encode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.ext4Decode_encode
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.ext4Encode_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.ext4Encode_injective
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.prefixLength_ofFn' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.prefixLength_ofFn
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.prefixLength_const' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.prefixLength_const
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.friRoundTrip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.friRoundTrip
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.fri_values_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.fri_values_injective
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.friLeaf_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.friLeaf_injective
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.rowBlock_encode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.rowBlock_encode
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.rowSlice_encode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.rowSlice_encode
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.rowsRoundTrip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.rowsRoundTrip
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.rows_values_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.rows_values_injective
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.rowsEncode_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.rowsEncode_injective
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.nonzeroFriWitness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.nonzeroFriWitness
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.fri_changed_coordinate_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.fri_changed_coordinate_refused
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.missingSaltOffsetFalsifier' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.missingSaltOffsetFalsifier
++
++/-- info: 'Minidregg.Selvage.PackedLeafEncoding.rows_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PackedLeafEncoding.rows_premise_inhabited
++
++end
++end Minidregg.Selvage.PackedLeafEncoding
+diff --git a/Selvage/Ir2FriPackedIndices.lean b/Selvage/Ir2FriPackedIndices.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriPackedIndices.lean
+@@ -0,0 +1,180 @@
++/- Exact packed-leaf indexing for the five actual IR2 FRI rounds. -/
++import Selvage.Ir2FriNativeEvent
++
++namespace Minidregg.Selvage.Ir2Fri
++open Ir2FriSchedule
++open Minidregg.Theory.BitReverseFriTransport
++noncomputable section
++
++/-- Statement-first contract: every natural source position has one packed row and column. -/
++def PackedIndexContract : Prop := ∀ j : Fin 5,
++  ∃ e : Index j ≃ (Index (j+1) × Fin (radix j)),
++    ∀ row col, e.symm (row,col) = nativeRowSourceIndex j row col
++
++/-- Reversing a packed row/column concatenation gives the existing natural exponent formula. -/
++theorem reverseIndex_packed (h a : ℕ) (row : Fin (2^h)) (col : Fin (2^a)) :
++    reverseIndex (h+a) (col.val + 2^a*row.val) =
++      reverseIndex h row.val + 2^h*reverseIndex a col.val := by
++  have hv : (BitVec.ofNat h row.val ++ BitVec.ofNat a col.val).toNat =
++      col.val + 2^a*row.val := by
++    rw [BitVec.toNat_append,BitVec.toNat_ofNat,BitVec.toNat_ofNat,
++      Nat.mod_eq_of_lt row.isLt,Nat.mod_eq_of_lt col.isLt,
++      ←Nat.shiftLeft_add_eq_or_of_lt col.isLt,Nat.shiftLeft_eq]
++    ac_rfl
++  have he : BitVec.ofNat (h+a) (col.val + 2^a*row.val) =
++      BitVec.ofNat h row.val ++ BitVec.ofNat a col.val := by
++    apply BitVec.eq_of_toNat_eq
++    rw [←hv,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (BitVec.ofNat h row.val ++ BitVec.ofNat a col.val).isLt]
++  unfold reverseIndex
++  rw [he,BitVec.reverse_append,BitVec.toNat_cast,BitVec.toNat_append,
++    ←Nat.shiftLeft_add_eq_or_of_lt (BitVec.ofNat h row.val).reverse.isLt,
++    Nat.shiftLeft_eq]
++  ac_rfl
++
++/-- Reverse the current natural exponent, then divide into its native packed row and column. -/
++def packedIndexEquiv (j : Fin 5) : Index j ≃ (Index (j+1) × Fin (radix j)) :=
++  ((reverseFin (17-stage j)).trans
++    (finCongr ((size_factor j).trans (Nat.mul_comm _ _)))).trans finProdFinEquiv.symm
++
++/-- The forward row number is the actual quotient after reversing the current height. -/
++theorem packedIndexEquiv_row (j : Fin 5) (i : Index j) :
++    (packedIndexEquiv j i).1.val = reverseIndex (17-stage j) i.val / radix j := by
++  change (reverseFin (17-stage j) i).val / radix j = _
++  rw [reverseFin_value]
++
++/-- The forward column number is the actual remainder after reversing the current height. -/
++theorem packedIndexEquiv_col (j : Fin 5) (i : Index j) :
++    (packedIndexEquiv j i).2.val = reverseIndex (17-stage j) i.val % radix j := by
++  change (reverseFin (17-stage j) i).val % radix j = _
++  rw [reverseFin_value]
++
++/-- The inverse is the existing actual row-source index, with no extracted-word premise. -/
++theorem packedIndexEquiv_symm (j : Fin 5) (row : Index (j+1)) (col : Fin (radix j)) :
++    (packedIndexEquiv j).symm (row,col) = nativeRowSourceIndex j row col := by
++  apply Fin.ext
++  change (reverseFin (17-stage j) _).val = _
++  rw [reverseFin_value]
++  change reverseIndex (17-stage j) (col.val+radix j*row.val) =
++    reverseIndex (nativeRowHeight j) row.val +
++      2^(nativeRowHeight j)*reverseIndex (nativeLogArity j) col.val
++  rw [←native_height_add j]
++  exact reverseIndex_packed (nativeRowHeight j) (nativeLogArity j) row col
++
++/-- Packing an actual native row source returns that exact row and column. -/
++theorem packedIndexEquiv_nativeRowSourceIndex (j : Fin 5) (row : Index (j+1))
++    (col : Fin (radix j)) :
++    packedIndexEquiv j (nativeRowSourceIndex j row col) = (row,col) := by
++  rw [←packedIndexEquiv_symm,Equiv.apply_symm_apply]
++
++/-- Every actual round inhabits the packed-index contract. -/
++theorem packed_index_contract : PackedIndexContract :=
++  fun j => ⟨packedIndexEquiv j,packedIndexEquiv_symm j⟩
++
++/-- The native verifier keeps the next low radix bits as the selected column. -/
++def rawColumn (j : Fin 5) (raw : Fin (2^17)) : Fin (radix j) :=
++  ⟨(raw.val / 2^(stage j)) % radix j,Nat.mod_lt _ (radix_positive j)⟩
++
++/-- Reversing a coherent runtime exponent recovers its remaining raw query bits. -/
++theorem reverse_runtimeIndex (j : Fin 5) (raw : Fin (2^17)) :
++    reverseIndex (17-stage j) (runtimeIndex j raw).val = raw.val / 2^(stage j) := by
++  have hb : raw.val / 2^(stage j) < 2^(17-stage j) := by
++    apply (Nat.div_lt_iff_lt_mul (by positivity : 0 < 2^(stage j))).mpr
++    rw [Nat.mul_comm,←source_size_factor]
++    exact raw.isLt
++  change reverseIndex (17-stage j) (reverseIndex (17-stage j) _) = _
++  simp [reverseIndex,BitVec.reverse_reverse_eq,Nat.mod_eq_of_lt hb]
++
++/-- The actual query decomposes into precisely the raw parent row and selected column. -/
++theorem packedIndexEquiv_runtimeIndex (j : Fin 5) (raw : Fin (2^17)) :
++    packedIndexEquiv j (runtimeIndex j raw) = (rawParentRow j raw,rawColumn j raw) := by
++  apply Prod.ext
++  · apply Fin.ext
++    rw [packedIndexEquiv_row,reverse_runtimeIndex]
++    change raw.val / 2^(stage j) / radix j = raw.val / 2^(stage (j+1))
++    rw [Nat.div_div_eq_div_mul,Nat.mul_comm,←stage_factor]
++  · apply Fin.ext
++    rw [packedIndexEquiv_col,reverse_runtimeIndex]
++    rfl
++
++/-- The selected packed source is the coherent runtime exponent at every actual round. -/
++theorem nativeRowSourceIndex_raw (j : Fin 5) (raw : Fin (2^17)) :
++    nativeRowSourceIndex j (rawParentRow j raw) (rawColumn j raw) = runtimeIndex j raw := by
++  apply (packedIndexEquiv j).injective
++  rw [packedIndexEquiv_nativeRowSourceIndex,packedIndexEquiv_runtimeIndex]
++
++/-- At the initial packed root the selector reverses all seventeen source bits. -/
++theorem nativeRowSourceIndex_raw_zero (raw : Fin (2^17)) :
++    nativeRowSourceIndex 0 (rawParentRow 0 raw) (rawColumn 0 raw) = sourceIndex raw := by
++  rw [nativeRowSourceIndex_raw]
++  exact runtimeIndex_zero raw
++
++/-- Nonzero final-round row and column select natural exponent twenty. -/
++theorem packed_index_witness :
++    (nativeRowSourceIndex 4 1 ⟨1,by decide⟩).val = 20 ∧
++      packedIndexEquiv 4 (nativeRowSourceIndex 4 1 ⟨1,by decide⟩) = (1,⟨1,by decide⟩) := by
++  exact ⟨by decide,packedIndexEquiv_nativeRowSourceIndex 4 1 ⟨1,by decide⟩⟩
++
++/-- Teeth: using raw concatenation as the natural exponent loses the required bit reversal. -/
++theorem packed_index_unreversed_falsifier : (nativeRowSourceIndex 4 1 ⟨1,by decide⟩).val ≠ 5 := by
++  decide
++
++/-- The contract and a nonzero source selector are simultaneously inhabited. -/
++theorem packed_index_premises_inhabited : PackedIndexContract ∧
++    ∃ raw : Fin (2^17), raw.val ≠ 0 ∧
++      nativeRowSourceIndex 0 (rawParentRow 0 raw) (rawColumn 0 raw) = sourceIndex raw :=
++  ⟨packed_index_contract,1,by decide,nativeRowSourceIndex_raw_zero 1⟩
++
++end
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.reverseIndex_packed' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.reverseIndex_packed
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packedIndexEquiv_row' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packedIndexEquiv_row
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packedIndexEquiv_col' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packedIndexEquiv_col
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packedIndexEquiv_symm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packedIndexEquiv_symm
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packedIndexEquiv_nativeRowSourceIndex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packedIndexEquiv_nativeRowSourceIndex
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packed_index_contract' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packed_index_contract
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.reverse_runtimeIndex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.reverse_runtimeIndex
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packedIndexEquiv_runtimeIndex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packedIndexEquiv_runtimeIndex
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_raw' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_raw
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_raw_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_raw_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packed_index_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packed_index_witness
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packed_index_unreversed_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packed_index_unreversed_falsifier
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.packed_index_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.packed_index_premises_inhabited
+diff --git a/Selvage/Ir2FriNativeMerklePath.lean b/Selvage/Ir2FriNativeMerklePath.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriNativeMerklePath.lean
+@@ -0,0 +1,132 @@
++/- Actual low-bit-first bottom-up MMCS paths transported to BinaryMerkle's top-down interface. -/
++import Selvage.BinaryMerkle
++import Mathlib.Data.Nat.Bitwise
++import Mathlib.Data.Fin.Rev
++
++namespace Minidregg.Selvage.Ir2Fri
++
++/-- The existing binary address decoder exposes the actual raw integer test bit. -/
++theorem binaryAddressBits_testBit (k : ℕ) (raw : Fin (2^k)) (i : Fin k) :
++    binaryAddressBits k raw i = Nat.testBit raw.val i.val := by
++  rw [Nat.testBit_eq_decide_div_mod_eq]
++  change ((⟨raw.val / 2^i.val % 2, _⟩ : Fin 2) == 1) = _
++  apply Bool.eq_iff_iff.mpr
++  simp [Fin.ext_iff]
++
++variable {Value Digest : Type*}
++
++/-- One native MMCS compression step, with false selecting the left child. -/
++def nativeNode (H : BinaryMerkle.HashSuite Value Digest) (bit : Bool) (child sibling : Digest) : Digest :=
++  if bit then H.node sibling child else H.node child sibling
++
++/-- Literal bottom-up path traversal: low address bit and first supplied sibling are consumed first. -/
++def bottomUpRecompute (H : BinaryMerkle.HashSuite Value Digest) : {k : ℕ} →
++    Digest → (Fin k → Bool) → List Digest → Option Digest
++  | 0, leaf, _, [] => some leaf
++  | 0, _, _, _::_ => none
++  | _+1, _, _, [] => none
++  | k+1, leaf, address, sibling::rest =>
++      bottomUpRecompute H (nativeNode H (address 0) leaf sibling)
++        (fun i : Fin k => address i.succ) rest
++
++/-- Statement-first exact path-order transport, including malformed sibling counts. -/
++def NativeMerklePathContract (H : BinaryMerkle.HashSuite Value Digest) : Prop :=
++  ∀ (k : ℕ) (leaf : Digest) (bits : Fin k → Bool) (siblings : List Digest),
++    bottomUpRecompute H leaf bits siblings =
++      BinaryMerkle.recompute H leaf (fun i => bits i.rev) siblings.reverse
++
++/-- The final top-down sibling is precisely the first compression at the leaf. -/
++theorem recompute_append_singleton (H : BinaryMerkle.HashSuite Value Digest) :
++    ∀ (k : ℕ) (leaf sibling : Digest) (address : Fin (k+1) → Bool) (path : List Digest),
++    BinaryMerkle.recompute H leaf address (path++[sibling]) =
++      BinaryMerkle.recompute H (nativeNode H (address (Fin.last k)) leaf sibling)
++        (fun i => address i.castSucc) path := by
++  intro k
++  induction k with
++  | zero =>
++    intro leaf sibling address path
++    cases path with
++    | nil => cases hb : address 0 <;> simp [BinaryMerkle.recompute,nativeNode,hb]
++    | cons s rest =>
++      cases rest <;> simp [BinaryMerkle.recompute]
++  | succ k ih =>
++    intro leaf sibling address path
++    cases path with
++    | nil => simp [BinaryMerkle.recompute]
++    | cons s rest =>
++      simp only [List.cons_append,BinaryMerkle.recompute]
++      rw [ih]
++      rfl
++
++/-- Actual bottom-up traversal equals top-down recomputation with both orders reversed. -/
++theorem bottomUpRecompute_eq_recompute (H : BinaryMerkle.HashSuite Value Digest) :
++    NativeMerklePathContract H := by
++  intro k
++  induction k with
++  | zero =>
++    intro leaf bits siblings
++    cases siblings with
++    | nil => rfl
++    | cons sibling rest =>
++      simp only [List.reverse_cons]
++      cases rest.reverse <;> rfl
++  | succ k ih =>
++    intro leaf bits siblings
++    cases siblings with
++    | nil => rfl
++    | cons sibling rest =>
++      simp only [bottomUpRecompute,ih,List.reverse_cons,recompute_append_singleton,
++        Fin.rev_last,Fin.rev_castSucc]
++
++/-- The raw-integer spelling used by the native verifier. -/
++theorem bottomUpRecompute_raw (H : BinaryMerkle.HashSuite Value Digest) (k : ℕ)
++    (leaf : Digest) (raw : Fin (2^k)) (siblings : List Digest) :
++    bottomUpRecompute H leaf (fun i : Fin k => Nat.testBit raw.val i.val) siblings =
++      BinaryMerkle.recompute H leaf (fun i => binaryAddressBits k raw i.rev) siblings.reverse := by
++  have hbits : (fun i : Fin k => Nat.testBit raw.val i.val) = binaryAddressBits k raw := by
++    funext i
++    exact (binaryAddressBits_testBit k raw i).symm
++  rw [hbits]
++  exact bottomUpRecompute_eq_recompute H k leaf _ siblings
++
++/-- An ordered arithmetic node makes the two path orientations distinguishable. -/
++def pathOrderWitnessSuite : BinaryMerkle.HashSuite ℕ ℕ where
++  leaf := id
++  node left right := 100*left+right
++
++/-- A nonzero raw index and two actual bottom-up sibling steps inhabit the transport contract. -/
++theorem native_path_premises_inhabited : NativeMerklePathContract pathOrderWitnessSuite ∧
++    bottomUpRecompute pathOrderWitnessSuite 2 (binaryAddressBits 2 1) [3,4] = some 30204 := by
++  exact ⟨bottomUpRecompute_eq_recompute _,by decide⟩
++
++/-- Teeth: keeping the LSB-first decoded address in the root-first interface changes the result. -/
++theorem native_path_unreversed_falsifier :
++    bottomUpRecompute pathOrderWitnessSuite 2 (binaryAddressBits 2 1) [3,4] ≠
++      BinaryMerkle.recompute pathOrderWitnessSuite 2 (binaryAddressBits 2 1) [3,4].reverse := by
++  decide
++
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.binaryAddressBits_testBit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.binaryAddressBits_testBit
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.recompute_append_singleton' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.recompute_append_singleton
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.bottomUpRecompute_eq_recompute' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.bottomUpRecompute_eq_recompute
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.bottomUpRecompute_raw' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.bottomUpRecompute_raw
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_path_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_path_premises_inhabited
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_path_unreversed_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_path_unreversed_falsifier
+diff --git a/Selvage/Ir2PackedCommitments.lean b/Selvage/Ir2PackedCommitments.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2PackedCommitments.lean
+@@ -0,0 +1,186 @@
++/- Canonical IR2 packed commitments, actual raw path order and causal extraction.
++No global source or FRI word is supplied as a premise: both are constructed
++from commitment-time logs and the fixed pre-FRI reduction data. -/
++import Selvage.ShapeRootExtraction
++import Selvage.Ir2FriPackedIndices
++import Selvage.Ir2FriNativeMerklePath
++import Selvage.PackedLeafEncoding
++import Selvage.Ir2FriSoundness
++import Selvage.SuppliedOpeningTrace
++
++namespace Minidregg.Selvage.Ir2Fri.Packed
++open BabyBearExt4 Ir2FriSchedule PackedLeafEncoding EfficientRootOpening
++open scoped Classical
++noncomputable section
++set_option maxRecDepth 100000
++
++abbrev Leaf := List BabyBear
++abbrev Log (Digest : Type) := EfficientRootOpening.Log Leaf Digest
++
++def widths (b : Fin 5) : List ℕ :=
++  match b.val with
++  | 0 => [8,8]
++  | 1 => [2513,5]
++  | 2 => List.replicate 16 8
++  | 3 => [59]
++  | _ => [8,8]
++
++def width (b : Fin 5) := widthsOfList (widths b)
++abbrev InputRows (b : Fin 5) := (i : Fin (widths b).length) → Fin (width b i) → BabyBear
++abbrev AllInputRows := (b : Fin 5) → InputRows b
++abbrev InputSalts (b : Fin 5) := Fin (widths b).length → Fin 4 → BabyBear
++
++def inputLeafLength (b : Fin 5) : ℕ := (List.ofFn (fun i => width b i+4)).sum
++
++def friLeafLength (j : Fin 5) : ℕ := 4*radix j+4
++
++/-- Exact same-height salted leaf lengths enforced by canonical admission. -/
++theorem leaf_lengths :
++    (List.ofFn inputLeafLength) = [24,2526,192,63,24] ∧
++    (List.ofFn friLeafLength) = [36,36,36,36,20] := by
++  norm_num [inputLeafLength,width,widths,widthsOfList,friLeafLength,radix,stage,List.ofFn_succ]
++
++/-- Fixed before the FRI challenges: alpha, claims and reduction points may be
++captured here. The same function reduces supplied rows and extracted rows.
++Its PCS algebra and false-claim-to-farness theorem are separate obligations. -/
++abbrev Reduction := Index 0 → AllInputRows → Ext4
++
++structure Checkpoint (Digest : Type) where
++  log : Log Digest
++  root : Digest
++
++structure Checkpoints (Digest : Type) where
++  input : Fin 5 → Checkpoint Digest
++  fri : (j : Fin 5) → (Fin j.val → Ext4) → Checkpoint Digest
++  final : (Fin 5 → Ext4) → Ext4
++  reduction : Reduction
++
++variable {Digest : Type} [DecidableEq Digest]
++
++/-- The role/shape-directed extractor uses the native row's MSB-first address
++in the existing root-first lookup. It never consults future query openings. -/
++def leafAt (cp : Checkpoint Digest) (len k : ℕ) (raw : Fin (2^k)) : Leaf :=
++  ShapeRootExtraction.extractedAt (fun leaf => leaf.length=len) cp.log [] cp.root
++    (fun i => binaryAddressBits k raw i.rev)
++
++def inputRowsAt (st : Checkpoints Digest) (raw : Fin (2^17)) : AllInputRows :=
++  fun b i => rowProject (width b) i (leafAt (st.input b) (inputLeafLength b) 17 raw)
++
++def packedWord (st : Checkpoints Digest) (j : Fin 5) (p : Fin j.val → Ext4) (i : Index j) : Ext4 :=
++  let packed := packedIndexEquiv j i
++  friProject packed.2 (leafAt (st.fri j p) (friLeafLength j) (nativeRowHeight j) packed.1)
++
++/-- Prefix-fixed global words are derived from logs, packing and coefficient
++decoding. The transparent final constant has no fictitious Merkle root. -/
++def extracted (st : Checkpoints Digest) : Words where
++  input i := st.reduction i (inputRowsAt st (sourceEquiv.symm i))
++  word n p := if hn : n < 5 then packedWord st ⟨n,hn⟩ p else
++    fun _ => st.final (fun i => p ⟨i.val,by omega⟩)
++
++theorem extracted_fri (st : Checkpoints Digest) (r : Fin 5 → Ext4) (j : Fin 5) :
++    (extracted st).wordAt r j (by omega) = packedWord st j (friPrefix r j (by omega)) := by
++  simp only [Words.wordAt,extracted,dif_pos j.isLt]
++
++theorem extracted_final (st : Checkpoints Digest) (r : Fin 5 → Ext4) :
++    (extracted st).wordAt r 5 le_rfl = fun _ => st.final r := by
++  rfl
++
++theorem extracted_terminal (st : Checkpoints Digest) (r : Fin 5 → Ext4) : Terminal (extracted st) r :=
++  ⟨st.final r,fun i => congrFun (extracted_final st r) i⟩
++
++/-- Raw supplied input values have fixed canonical row/salt types. -/
++structure InputOpening (Digest : Type) (b : Fin 5) where
++  rows : InputRows b
++  salts : InputSalts b
++  siblings : List Digest
++
++structure FriOpening (Digest : Type) (j : Fin 5) where
++  values : Fin (radix j) → Ext4
++  salts : Fin 4 → BabyBear
++  siblings : List Digest
++
++structure QueryOpening (Digest : Type) where
++  input : (b : Fin 5) → InputOpening Digest b
++  fri : (j : Fin 5) → FriOpening Digest j
++
++abbrev Openings (Digest : Type) (q : ℕ) := Fin q → QueryOpening Digest
++
++def InputOpening.leaf {b : Fin 5} (o : InputOpening Digest b) : Leaf :=
++  rowsEncode (width b) o.rows o.salts
++
++def FriOpening.leaf {j : Fin 5} (o : FriOpening Digest j) : Leaf := friLeafEncode o.values o.salts
++
++/-- Literal native binary MMCS path verification on the supplied raw integer. -/
++def PathAccepts (H : BinaryMerkle.HashSuite Leaf Digest) (root : Digest)
++    (k : ℕ) (raw : Fin (2^k)) (leaf : Leaf) (siblings : List Digest) : Prop :=
++  bottomUpRecompute H (H.leaf leaf) (fun i : Fin k => Nat.testBit raw.val i.val) siblings = some root
++
++/-- Exact actual hash calls of the supplied path, represented in the existing
++finite log after the proved reversal adapter. -/
++def pathLog (H : BinaryMerkle.HashSuite Leaf Digest) (k : ℕ) (raw : Fin (2^k))
++    (leaf : Leaf) (siblings : List Digest) : Log Digest :=
++  openingLog H leaf (fun i => binaryAddressBits k raw i.rev) siblings.reverse
++
++def PathsAccept (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (r : Fin 5 → Ext4) (raw : Fin (2^17)) (o : QueryOpening Digest) : Prop :=
++  (∀ b, PathAccepts H (st.input b).root 17 raw (o.input b).leaf (o.input b).siblings) ∧
++  ∀ j, PathAccepts H (st.fri j (friPrefix r j (by omega))).root (nativeRowHeight j)
++    (rawParentRow j raw) (o.fri j).leaf (o.fri j).siblings
++
++/-- The carried next coordinate is taken from the next supplied packed row;
++at the last round it is the transparent final polynomial coefficient. -/
++def suppliedAt (st : Checkpoints Digest) (r : Fin 5 → Ext4) (raw : Fin (2^17))
++    (o : QueryOpening Digest) (n : ℕ) : Ext4 :=
++  if hn : n < 5 then (o.fri ⟨n,hn⟩).values (rawColumn ⟨n,hn⟩ raw) else st.final r
++
++def QueryAccepts (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (r : Fin 5 → Ext4) (raw : Fin (2^17)) (o : QueryOpening Digest) : Prop :=
++  PathsAccept H st r raw o ∧
++  suppliedAt st r raw o 0 = st.reduction (sourceIndex raw) (fun b => (o.input b).rows) ∧
++  ∀ j : Fin 5,
++    suppliedAt st r raw o (j+1) =
++      P3Barycentric.native (nativeRowNodes j (rawParentRow j raw)) (o.fri j).values (r j)
++
++def Accepts (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (q : ℕ) (r : Fin 5 → Ext4) (raw : Fin q → Fin (2^17)) (o : Openings Digest q) : Prop :=
++  ∀ a, QueryAccepts H st r (raw a) (o a)
++
++def CheckpointsLogged (st : Checkpoints Digest) (r : Fin 5 → Ext4) (L : Log Digest) : Prop :=
++  (∀ b e,e ∈ (st.input b).log → e ∈ L) ∧
++  ∀ j e,e ∈ (st.fri j (friPrefix r j (by omega))).log → e ∈ L
++
++/-- Only each actual checkpoint's own fixed shape and role is compared. -/
++def Failure (st : Checkpoints Digest) (r : Fin 5 → Ext4) (L : Log Digest) : Prop :=
++  (∃ b, ShapeRootExtraction.Bad (fun leaf : Leaf => leaf.length=inputLeafLength b)
++    (st.input b).log L (st.input b).root) ∨
++  ∃ j, ShapeRootExtraction.Bad (fun leaf : Leaf => leaf.length=friLeafLength j)
++    (st.fri j (friPrefix r j (by omega))).log L (st.fri j (friPrefix r j (by omega))).root
++
++def queryLog (H : BinaryMerkle.HashSuite Leaf Digest) (raw : Fin (2^17)) (o : QueryOpening Digest) : Log Digest :=
++  (List.ofFn fun b : Fin 5 => pathLog H 17 raw (o.input b).leaf (o.input b).siblings).flatten ++
++  (List.ofFn fun j : Fin 5 => pathLog H (nativeRowHeight j) (rawParentRow j raw)
++    (o.fri j).leaf (o.fri j).siblings).flatten
++
++def verificationLog (H : BinaryMerkle.HashSuite Leaf Digest) (q : ℕ)
++    (raw : Fin q → Fin (2^17)) (o : Openings Digest q) : Log Digest :=
++  (List.ofFn fun a => queryLog H (raw a) (o a)).flatten
++
++end
++end Minidregg.Selvage.Ir2Fri.Packed
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.leaf_lengths' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.leaf_lengths
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.extracted_fri' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.extracted_fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.extracted_final' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.extracted_final
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.extracted_terminal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.extracted_terminal
++
+diff --git a/Selvage/Ir2PackedExtraction.lean b/Selvage/Ir2PackedExtraction.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2PackedExtraction.lean
+@@ -0,0 +1,192 @@
++/- Arbitrary canonically shaped supplied openings reduce to the extracted
++native IR2 event or an observed same-shape collision / checkpoint late hit. -/
++import Selvage.Ir2PackedCommitments
++
++namespace Minidregg.Selvage.Ir2Fri.Packed
++open BabyBearExt4 Ir2FriSchedule PackedLeafEncoding EfficientRootOpening
++open scoped Classical
++noncomputable section
++set_option maxRecDepth 100000
++set_option maxHeartbeats 1000000
++variable {Digest : Type} [DecidableEq Digest]
++
++/-- The raw native path pins its complete salted leaf at the fixed checkpoint. -/
++theorem leaf_pins (H : BinaryMerkle.HashSuite Leaf Digest) (cp : Checkpoint Digest)
++    (L : Log Digest) (len k : ℕ) (raw : Fin (2^k)) (v : Leaf) (siblings : List Digest)
++    (hsub : ∀ e ∈ cp.log,e ∈ L)
++    (hgood : ¬ShapeRootExtraction.Bad (fun leaf : Leaf => leaf.length=len) cp.log L cp.root)
++    (hv : v.length=len) (hlog : ∀ e ∈ pathLog H k raw v siblings,e ∈ L)
++    (ha : PathAccepts H cp.root k raw v siblings) : v=leafAt cp len k raw := by
++  have hh : BinaryMerkle.recompute H (H.leaf v)
++      (fun i => binaryAddressBits k raw i.rev) siblings.reverse = some cp.root := by
++    simpa only [PathAccepts,bottomUpRecompute_raw] using ha
++  exact (ShapeRootExtraction.extractedAt_eq_of_logged (fun leaf : Leaf => leaf.length=len)
++    H cp.log L [] cp.root hsub hgood v hv
++    (hlog _ (by simp [pathLog,openingLog])) k cp.root _ siblings.reverse (Or.inl rfl)
++    (fun e he => hlog e (by simp [pathLog,openingLog,he])) hh).symm
++
++omit [DecidableEq Digest] in
++/-- Every actual supplied input path contributes to the constructed verifier log. -/
++theorem input_log_mem (H : BinaryMerkle.HashSuite Leaf Digest) (q : ℕ)
++    (raw : Fin q → Fin (2^17)) (o : Openings Digest q) (a : Fin q) (b : Fin 5)
++    (e : EfficientRootOpening.Query Leaf Digest × Digest)
++    (he : e ∈ pathLog H 17 (raw a) (o a |>.input b).leaf (o a |>.input b).siblings) :
++    e ∈ verificationLog H q raw o := by
++  apply List.mem_flatten.mpr
++  refine ⟨queryLog H (raw a) (o a),List.mem_ofFn.mpr ⟨a,rfl⟩,?_⟩
++  apply List.mem_append_left
++  exact List.mem_flatten.mpr ⟨_,List.mem_ofFn.mpr ⟨b,rfl⟩,he⟩
++
++omit [DecidableEq Digest] in
++/-- Every actual supplied packed FRI path contributes to the same verifier log. -/
++theorem fri_log_mem (H : BinaryMerkle.HashSuite Leaf Digest) (q : ℕ)
++    (raw : Fin q → Fin (2^17)) (o : Openings Digest q) (a : Fin q) (j : Fin 5)
++    (e : EfficientRootOpening.Query Leaf Digest × Digest)
++    (he : e ∈ pathLog H (nativeRowHeight j) (rawParentRow j (raw a))
++      (o a |>.fri j).leaf (o a |>.fri j).siblings) :
++    e ∈ verificationLog H q raw o := by
++  apply List.mem_flatten.mpr
++  refine ⟨queryLog H (raw a) (o a),List.mem_ofFn.mpr ⟨a,rfl⟩,?_⟩
++  apply List.mem_append_right
++  exact List.mem_flatten.mpr ⟨_,List.mem_ofFn.mpr ⟨j,rfl⟩,he⟩
++
++/-- Fixed-width matrix/salt decoding recovers every supplied base input row. -/
++theorem input_rows_pin (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (L : Log Digest) (r : Fin 5 → Ext4) (raw : Fin (2^17)) (o : QueryOpening Digest)
++    (hsub : CheckpointsLogged st r L) (hgood : ¬Failure st r L)
++    (hlog : ∀ b e,e ∈ pathLog H 17 raw (o.input b).leaf (o.input b).siblings → e ∈ L)
++    (ha : PathsAccept H st r raw o) : inputRowsAt st raw = fun b => (o.input b).rows := by
++  funext b i
++  have hv := leaf_pins H (st.input b) L (inputLeafLength b) 17 raw
++    (o.input b).leaf (o.input b).siblings (hsub.1 b)
++    (fun h => hgood (Or.inl ⟨b,h⟩))
++    (rowsEncode_length (width b) (o.input b).rows (o.input b).salts) (hlog b) (ha.1 b)
++  unfold inputRowsAt
++  rw [←hv]
++  exact rowsRoundTrip _ _ _ _ i
++
++/-- One leaf lookup recovers every extension value in the packed source row. -/
++theorem fri_values_pin (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (L : Log Digest) (r : Fin 5 → Ext4) (raw : Fin (2^17)) (o : QueryOpening Digest)
++    (hsub : CheckpointsLogged st r L) (hgood : ¬Failure st r L)
++    (hlog : ∀ j e,e ∈ pathLog H (nativeRowHeight j) (rawParentRow j raw)
++      (o.fri j).leaf (o.fri j).siblings → e ∈ L)
++    (ha : PathsAccept H st r raw o) (j : Fin 5) (c : Fin (radix j)) :
++    (o.fri j).values c =
++      (extracted st).wordAt r j (by omega) (nativeRowSourceIndex j (rawParentRow j raw) c) := by
++  have hv := leaf_pins H (st.fri j (friPrefix r j (by omega))) L (friLeafLength j)
++    (nativeRowHeight j) (rawParentRow j raw) (o.fri j).leaf (o.fri j).siblings (hsub.2 j)
++    (fun h => hgood (Or.inr ⟨j,h⟩))
++    (friLeafEncode_length (o.fri j).values (o.fri j).salts) (hlog j) (ha.2 j)
++  rw [extracted_fri]
++  unfold packedWord
++  rw [packedIndexEquiv_nativeRowSourceIndex]
++  dsimp only
++  rw [←hv]
++  exact (friRoundTrip _ _ _ c).symm
++
++/-- The carried next coordinate is pinned to the extracted next global word;
++this includes the transparent constant terminal, without a nonexistent final root. -/
++theorem suppliedAt_pin (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (L : Log Digest) (r : Fin 5 → Ext4) (raw : Fin (2^17)) (o : QueryOpening Digest)
++    (hsub : CheckpointsLogged st r L) (hgood : ¬Failure st r L)
++    (hlog : ∀ j e,e ∈ pathLog H (nativeRowHeight j) (rawParentRow j raw)
++      (o.fri j).leaf (o.fri j).siblings → e ∈ L)
++    (ha : PathsAccept H st r raw o) (n : ℕ) (hn : n ≤ 5) :
++    suppliedAt st r raw o n = (extracted st).wordAt r n hn (runtimeIndex n raw) := by
++  by_cases hlt : n < 5
++  · let j : Fin 5 := ⟨n,hlt⟩
++    have hp := fri_values_pin H st L r raw o hsub hgood hlog ha j (rawColumn j raw)
++    rw [nativeRowSourceIndex_raw] at hp
++    simpa only [suppliedAt,dif_pos hlt] using hp
++  · have he : n=5 := by omega
++    subst n
++    rfl
++
++/-- Every accepted query becomes the literal native query event on derived
++prefix-fixed words, provided no required shape/role collision or late hit was observed. -/
++theorem query_pins (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (L : Log Digest) (r : Fin 5 → Ext4) (raw : Fin (2^17)) (o : QueryOpening Digest)
++    (hsub : CheckpointsLogged st r L) (hgood : ¬Failure st r L)
++    (hi : ∀ b e,e ∈ pathLog H 17 raw (o.input b).leaf (o.input b).siblings → e ∈ L)
++    (hf : ∀ j e,e ∈ pathLog H (nativeRowHeight j) (rawParentRow j raw)
++      (o.fri j).leaf (o.fri j).siblings → e ∈ L)
++    (ha : QueryAccepts H st r raw o) :
++    initialMask (extracted st) (sourceIndex raw) ∧
++    ∀ j : Fin 5,
++      (extracted st).wordAt r (j+1) (by omega) (nativeParentIndex j (rawParentRow j raw)) =
++        P3Barycentric.native (nativeRowNodes j (rawParentRow j raw))
++          (fun c => (extracted st).wordAt r j (by omega)
++            (nativeRowSourceIndex j (rawParentRow j raw) c)) (r j) := by
++  constructor
++  · have hp := suppliedAt_pin H st L r raw o hsub hgood hf ha.1 0 (by decide)
++    rw [runtimeIndex_zero] at hp
++    have hin : (extracted st).input (sourceIndex raw) =
++        st.reduction (sourceIndex raw) (fun b => (o.input b).rows) := by
++      change st.reduction (sourceIndex raw) (inputRowsAt st (sourceEquiv.symm (sourceEquiv raw))) = _
++      rw [Equiv.symm_apply_apply,input_rows_pin H st L r raw o hsub hgood hi ha.1]
++    have he : friPrefix r 0 (by decide) = (fun i => i.elim0) := Subsingleton.elim _ _
++    simpa only [initialMask,Words.wordAt,he] using hp.symm.trans (ha.2.1.trans hin.symm)
++  · intro j
++    have hp := suppliedAt_pin H st L r raw o hsub hgood hf ha.1 (j+1) (by omega)
++    rw [nativeParentIndex_rawParentRow]
++    rw [←hp,ha.2.2 j]
++    congr 1
++    funext c
++    exact fri_values_pin H st L r raw o hsub hgood hf ha.1 j c
++
++/-- Arbitrary canonical packed supplied-proof reduction. The verifier's own
++hash-call log is constructed here; only the prover checkpoints must be logged. -/
++theorem supplied_cover (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (q : ℕ) (r : Fin 5 → Ext4) (raw : Fin q → Fin (2^17)) (o : Openings Digest q)
++    (P : Log Digest) (hP : CheckpointsLogged st r P)
++    (ha : Accepts H st q r raw o) :
++    (Terminal (extracted st) r ∧ NativeQueryAccepts (extracted st) r q raw) ∨
++      Failure st r (P++verificationLog H q raw o) := by
++  let L := P++verificationLog H q raw o
++  by_cases hb : Failure st r L
++  · exact Or.inr hb
++  · have hsub : CheckpointsLogged st r L := by
++      constructor
++      · intro b e he; exact List.mem_append_left _ (hP.1 b e he)
++      · intro j e he; exact List.mem_append_left _ (hP.2 j e he)
++    have hq (a : Fin q) := query_pins H st L r (raw a) (o a) hsub hb
++      (fun b e he => List.mem_append_right _ (input_log_mem H q raw o a b e he))
++      (fun j e he => List.mem_append_right _ (fri_log_mem H q raw o a j e he)) (ha a)
++    exact Or.inl ⟨extracted_terminal st r,fun a => (hq a).1,fun j a => (hq a).2 j⟩
++
++end
++end Minidregg.Selvage.Ir2Fri.Packed
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.leaf_pins' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.leaf_pins
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.input_log_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.input_log_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.fri_log_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.fri_log_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.input_rows_pin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.input_rows_pin
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.fri_values_pin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.fri_values_pin
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.suppliedAt_pin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.suppliedAt_pin
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.query_pins' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.query_pins
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.supplied_cover' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.supplied_cover
++
+diff --git a/Selvage/Ir2PackedSoundness.lean b/Selvage/Ir2PackedSoundness.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2PackedSoundness.lean
+@@ -0,0 +1,95 @@
++/- Actual-profile packed supplied-opening soundness with its observed extraction
++failure explicit. PCS batching/farness and Fiat--Shamir remain separate. -/
++import Selvage.Ir2PackedExtraction
++
++namespace Minidregg.Selvage.Ir2Fri.Packed
++open BabyBearExt4 Ir2FriSchedule
++open scoped Classical
++noncomputable section
++variable {Digest : Type} [DecidableEq Digest]
++
++abbrev External (q : ℕ) := (Fin 5 → Ext4) × (Fin q → BabyBear)
++
++def rawQueries {q : ℕ} (x : External q) : Fin q → Fin (2^17) :=
++  fun a => BabyBearModuloSampling.sampleBits 17 (x.2 a)
++
++def FreshAccepts (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (q : ℕ) (x : External q) (o : Openings Digest q) : Prop :=
++  Accepts H st q x.1 (rawQueries x) o
++
++/-- This residual is computed on the supplied prover log plus this verifier's
++constructed packed leaf/node call log. No desired extraction implication is assumed. -/
++def observedFailure (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (q : ℕ) (x : External q) (o : Openings Digest q) (P : Log Digest) : Prop :=
++  Failure st x.1 (P++verificationLog H q (rawQueries x) o)
++
++/-- Arbitrary packed supplied proofs, actual q38/native folds/base query law.
++The initial farness premise is about the input derived from packed checkpoints
++and the fixed reduction, not an assumed global FRI word. -/
++theorem supplied_fresh_38 (H : BinaryMerkle.HashSuite Leaf Digest) (st : Checkpoints Digest)
++    (o : External 38 → Openings Digest 38) (P : External 38 → Log Digest)
++    (hP : ∀ x,CheckpointsLogged st x.1 (P x))
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) (extracted st).input) :
++    uniformProb (External 38) (fun x => FreshAccepts H st 38 x (o x)) ≤
++      (131064:ℝ)/(modulus^4:ℕ)+
++        ((((modulus-1:ℕ):ℝ)/(modulus:ℝ))*(3/5:ℝ)+1/(modulus:ℝ))^38+
++      uniformProb (External 38) (fun x => observedFailure H st 38 x (o x) (P x)) := by
++  have hc : ∀ x : External 38,FreshAccepts H st 38 x (o x) →
++      NativeFreshAccepts (extracted st) 38 x.1 x.2 ∨ observedFailure H st 38 x (o x) (P x) := by
++    intro x hx
++    exact supplied_cover H st 38 x.1 (rawQueries x) (o x) (P x) (hP x) hx
++  exact ((uniformProb_mono hc).trans (uniformProb_or_le _ _)).trans
++    (add_le_add (native_fresh_38 (extracted st) hfar) le_rfl)
++
++omit [DecidableEq Digest] in
++/-- Each native leaf/path verifier emits at most one leaf macro-call plus one
++node macro-call per actual level, including malformed supplied paths. -/
++theorem pathLog_length_le (H : BinaryMerkle.HashSuite Leaf Digest) (k : ℕ)
++    (raw : Fin (2^k)) (v : Leaf) (siblings : List Digest) :
++    (pathLog H k raw v siblings).length ≤ k+1 := by
++  have h := SuppliedOpeningTrace.openingRun_length_le H v k
++    (fun i => binaryAddressBits k raw i.rev) siblings.reverse
++  rw [SuppliedOpeningTrace.openingRun_eq] at h
++  exact h
++
++omit [DecidableEq Digest] in
++/-- The five input roots cost90 and the five packed FRI roots46 macro-call
++records per query. This is not a count of underlying Poseidon permutations. -/
++theorem queryLog_length_le (H : BinaryMerkle.HashSuite Leaf Digest)
++    (raw : Fin (2^17)) (o : QueryOpening Digest) : (queryLog H raw o).length ≤ 136 := by
++  have hi := Finset.sum_le_sum (fun (b : Fin 5) (_ : b ∈ Finset.univ) =>
++    pathLog_length_le H 17 raw (o.input b).leaf (o.input b).siblings)
++  have hf := Finset.sum_le_sum (fun (j : Fin 5) (_ : j ∈ Finset.univ) =>
++    pathLog_length_le H (nativeRowHeight j) (rawParentRow j raw) (o.fri j).leaf (o.fri j).siblings)
++  have h := Nat.add_le_add hi hf
++  norm_num [nativeRowHeight,stage,Fin.sum_univ_succ] at h
++  simpa only [queryLog,List.length_append,List.length_flatten,List.map_ofFn,Function.comp_def,List.sum_ofFn] using h
++
++omit [DecidableEq Digest] in
++/-- Actual packed verifier accounting is136q records, hence5168 at38 queries.
++Repeated calls may share one fresh cache entry. Prover and transcript work are additional. -/
++theorem verificationLog_length_le (H : BinaryMerkle.HashSuite Leaf Digest) (q : ℕ)
++    (raw : Fin q → Fin (2^17)) (o : Openings Digest q) :
++    (verificationLog H q raw o).length ≤ 136*q := by
++  have h := Finset.sum_le_sum (fun (a : Fin q) (_ : a ∈ Finset.univ) => queryLog_length_le H (raw a) (o a))
++  simpa [verificationLog,List.length_flatten,List.map_ofFn,Function.comp_def,List.sum_ofFn,Nat.mul_comm] using h
++
++end
++end Minidregg.Selvage.Ir2Fri.Packed
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.supplied_fresh_38' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.supplied_fresh_38
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.pathLog_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.pathLog_length_le
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.queryLog_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.queryLog_length_le
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.verificationLog_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.verificationLog_length_le
++
+diff --git a/Selvage/ShapeRootExtractionFresh.lean b/Selvage/ShapeRootExtractionFresh.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ShapeRootExtractionFresh.lean
+@@ -0,0 +1,69 @@
++/- Finite checkpoint-family accounting for shape-directed extraction.
++The price is solely the existing ideal fresh typed macro-query law. -/
++import Selvage.ShapeRootExtraction
++
++namespace Minidregg.Selvage.ShapeRootExtraction
++open EfficientRootOpening CommitmentFreshTrace
++open scoped Classical
++variable {Value : Type} {Q N R : ℕ}
++
++/-- Failure at any member of the actual finite family of checkpoint roots and public leaf shapes. -/
++def FamilyFailure (valid : Fin R → Value → Prop) (P : Fin R → Log Value (Fin N))
++    (L : Log Value (Fin N)) (root : Fin R → Fin N) : Prop :=
++  ∃ i, Bad (valid i) (P i) L (root i)
++
++/-- Statement-first causal cover. The shared trace already accounts for every declared root. -/
++def FamilyCoverContract (A : Strategy Value Q N R) : Prop :=
++  ∀ (c : Fin Q → Fin N) (valid : Fin R → Value → Prop)
++    (P : Fin R → Log Value (Fin N)) (L : Log Value (Fin N)) (root : Fin R → Fin N),
++    (∀ i, CheckpointOrigin A c (P i) (root i)) → LogCovered A c L →
++    FamilyFailure valid P L root → CommitmentFreshTrace.Bad A c
++
++/-- Narrow same-role, same-shape failures are covered once by the existing causal trace event. -/
++theorem family_failure_cover (A : Strategy Value Q N R) : FamilyCoverContract A := by
++  intro c valid P L root hO hL hF
++  obtain ⟨i,hi⟩ := hF
++  exact checkpoint_bad_cover A c (P i) L (root i) (hO i) hL
++    (bad_to_unfiltered (valid i) (P i) L (root i) hi)
++
++/-- Ideal uniform-response-tape bound for the entire checkpoint family.
++No actual PaddingFreeSponge/Poseidon price or desired event-bound premise enters. -/
++theorem family_failure_probability [NeZero N] (A : Strategy Value Q N R)
++    (valid : (Fin Q → Fin N) → Fin R → Value → Prop)
++    (P : (Fin Q → Fin N) → Fin R → Log Value (Fin N))
++    (logs : (Fin Q → Fin N) → Log Value (Fin N))
++    (root : (Fin Q → Fin N) → Fin R → Fin N)
++    (hO : ∀ c i, CheckpointOrigin A c (P c i) (root c i))
++    (hL : ∀ c, LogCovered A c (logs c)) :
++    uniformProb (Fin Q → Fin N) (fun c => FamilyFailure (valid c) (P c) (logs c) (root c)) ≤
++      ((3*(Q:ℝ)^2+Q)/2+R*Q)/N :=
++  (uniformProb_mono fun c h => family_failure_cover A c (valid c) (P c) (logs c)
++    (root c) (hO c) (hL c) h).trans (bad_probability A)
++
++/-- The same ideal law through the existing lazy-sampling handler, with freshness explicit. -/
++theorem oracle_family_failure_probability [NeZero N] (A : Strategy Value Q N R) (hf : Fresh A)
++    (valid : (Fin Q → Fin N) → Fin R → Value → Prop)
++    (P : (Fin Q → Fin N) → Fin R → Log Value (Fin N))
++    (logs : (Fin Q → Fin N) → Log Value (Fin N))
++    (root : (Fin Q → Fin N) → Fin R → Fin N)
++    (hO : ∀ c i, CheckpointOrigin A c (P c i) (root c i))
++    (hL : ∀ c e, e ∈ logs c → e ∈ oracleLog A c) :
++    uniformProb (Fin Q → Fin N) (fun c => FamilyFailure (valid c) (P c) (logs c) (root c)) ≤
++      ((3*(Q:ℝ)^2+Q)/2+R*Q)/N := by
++  apply family_failure_probability A valid P logs root hO
++  intro c e he
++  simpa only [oracleLog_eq_entries A hf c] using hL c e he
++
++end Minidregg.Selvage.ShapeRootExtraction
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.family_failure_cover' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.family_failure_cover
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.family_failure_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.family_failure_probability
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.oracle_family_failure_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.oracle_family_failure_probability
+diff --git a/Selvage/ShapeRootExtractionWitnesses.lean b/Selvage/ShapeRootExtractionWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ShapeRootExtractionWitnesses.lean
+@@ -0,0 +1,103 @@
++/- Concrete mixed-role and mixed-length logs test the public leaf-shape filter. -/
++import Selvage.ShapeRootExtractionFresh
++
++namespace Minidregg.Selvage.ShapeRootExtraction
++open EfficientRootOpening CommitmentFreshTrace
++open scoped Classical
++noncomputable section
++
++/-- The two public leaf widths retained in the counterexample. -/
++def shortLeaf : List ℕ := List.replicate 20 0
++def longLeaf : List ℕ := List.replicate 24 0
++def valid20 (v : List ℕ) : Prop := v.length = 20
++
++/-- A wrong-width leaf and a node precede the admissible leaf, all with digest seven. -/
++def mixedShapeLog : Log (List ℕ) ℕ :=
++  [(.leaf longLeaf,7),(.node 1 2,7),(.leaf shortLeaf,7)]
++
++/-- Filtering really separates both public leaf width and expected node/leaf role. -/
++theorem mixed_shape_matching :
++    matchingLog valid20 false mixedShapeLog = [(.leaf shortLeaf,7)] ∧
++      matchingLog valid20 true mixedShapeLog = [(.node 1 2,7)] := by
++  simp [matchingLog,mixedShapeLog,admits,valid20,shortLeaf,longLeaf]
++
++/-- Different-width leaves collide under the old unfiltered event. -/
++theorem mixed_shape_old_collision : ResponseCollision mixedShapeLog := by
++  refine ⟨(.leaf longLeaf,7),by simp [mixedShapeLog],
++    (.leaf shortLeaf,7),by simp [mixedShapeLog],rfl,?_⟩
++  intro h
++  have hl : longLeaf.length = shortLeaf.length := congrArg List.length (Query.leaf.inj h)
++  norm_num [longLeaf,shortLeaf] at hl
++
++/-- Neither expected role has an internal response collision, and P=P has no late entry. -/
++theorem mixed_shape_good : ¬Bad valid20 mixedShapeLog mixedShapeLog 7 := by
++  have hc : ¬Collision valid20 mixedShapeLog := by
++    simp only [Collision,mixed_shape_matching.1,mixed_shape_matching.2,ResponseCollision,
++      List.mem_singleton]
++    simp
++  rintro (h|⟨e,he,hnot,_⟩)
++  · exact hc h
++  · exact hnot he
++
++/-- The first two same-digest records cannot divert the depth-zero leaf extractor. -/
++theorem mixed_shape_extracts_short :
++    extractedAt valid20 mixedShapeLog [] 7 (fun i : Fin 0 => i.elim0) = shortLeaf := by
++  simp [extractedAt,preimage,mixed_shape_matching.1,EfficientRootOpening.preimage]
++
++/-- Teeth: the old global collision event is strictly stronger on this retained checkpoint. -/
++theorem mixed_shape_filter_falsifier :
++    EfficientRootOpening.Bad mixedShapeLog mixedShapeLog 7 ∧
++      ¬Bad valid20 mixedShapeLog mixedShapeLog 7 ∧
++      extractedAt valid20 mixedShapeLog [] 7 (fun i : Fin 0 => i.elim0) = shortLeaf :=
++  ⟨Or.inl mixed_shape_old_collision,mixed_shape_good,mixed_shape_extracts_short⟩
++
++/-- One positive-query ideal strategy fixes its only root before receiving any response. -/
++def witnessStrategy : Strategy (List ℕ) 1 17 1 where
++  query _ _ := .leaf shortLeaf
++  roots _ _ := [0]
++  roots_le _ _ := by simp
++
++/-- Freshness, actual checkpoint origin and oracle coverage are inhabited together. -/
++theorem family_probability_premises_inhabited :
++    Fresh witnessStrategy ∧
++      (∀ c : Fin 1 → Fin 17, CheckpointOrigin witnessStrategy c [] 0) ∧
++      (∀ (c : Fin 1 → Fin 17) e, e ∈ entries witnessStrategy c → e ∈ oracleLog witnessStrategy c) := by
++  have hf : Fresh witnessStrategy := by
++    intro c i j _
++    exact Subsingleton.elim i j
++  refine ⟨hf,?_,?_⟩
++  · intro c
++    refine ⟨0,by omega,?_,?_⟩
++    · intro e
++      simp [prefixLog]
++    · intro t _
++      simp [witnessStrategy]
++  · intro c e he
++    simpa only [oracleLog_eq_entries witnessStrategy hf c] using he
++
++end
++end Minidregg.Selvage.ShapeRootExtraction
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.mixed_shape_matching' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.mixed_shape_matching
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.mixed_shape_old_collision' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.mixed_shape_old_collision
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.mixed_shape_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.mixed_shape_good
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.mixed_shape_extracts_short' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.mixed_shape_extracts_short
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.mixed_shape_filter_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.mixed_shape_filter_falsifier
++
++/-- info: 'Minidregg.Selvage.ShapeRootExtraction.family_probability_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ShapeRootExtraction.family_probability_premises_inhabited
+diff --git a/Selvage/Ir2PackedFresh.lean b/Selvage/Ir2PackedFresh.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2PackedFresh.lean
+@@ -0,0 +1,144 @@
++/- Optional classical fresh typed-hash execution composition. The arbitrary
++actual-suite theorem is Ir2PackedSoundness; this ideal macro-query law is NOT
++a probability model already justified for the deployed PaddingFreeSponge. -/
++import Selvage.Ir2PackedSoundness
++import Selvage.ShapeRootExtractionFresh
++
++namespace Minidregg.Selvage.Ir2Fri.Packed
++open BabyBearExt4 Ir2FriSchedule CommitmentFreshTrace
++open scoped Classical
++noncomputable section
++
++/-- Five pre-FRI input roots and five prefix-adaptive packed FRI roots. -/
++def rootFamily {Digest : Type} (st : Checkpoints Digest) (r : Fin 5 → Ext4)
++    (i : Fin 10) : Checkpoint Digest :=
++  Sum.elim st.input (fun j => st.fri j (friPrefix r j (by omega))) (finSumFinEquiv.symm i)
++
++def validFamily (i : Fin 10) : Leaf → Prop :=
++  Sum.elim (fun b v => v.length=inputLeafLength b) (fun j v => v.length=friLeafLength j) (finSumFinEquiv.symm i)
++
++/-- The extraction residual is exactly one finite family, with no duplicate
++root charge for every supplied coordinate or repeated query. -/
++theorem failure_iff_family {N : ℕ} (st : Checkpoints (Fin N)) (r : Fin 5 → Ext4) (L : Log (Fin N)) :
++    Failure st r L ↔ ShapeRootExtraction.FamilyFailure validFamily
++      (fun i => (rootFamily st r i).log) L (fun i => (rootFamily st r i).root) := by
++  constructor
++  · rintro (⟨b,hb⟩|⟨j,hj⟩)
++    · refine ⟨finSumFinEquiv (Sum.inl b : Fin 5 ⊕ Fin 5),?_⟩
++      simpa [validFamily,rootFamily] using hb
++    · refine ⟨finSumFinEquiv (Sum.inr j : Fin 5 ⊕ Fin 5),?_⟩
++      simpa [validFamily,rootFamily] using hj
++  · rintro ⟨i,hi⟩
++    cases he : (finSumFinEquiv.symm i : Fin 5 ⊕ Fin 5) with
++    | inl b => exact Or.inl ⟨b,by simpa [validFamily,rootFamily,he] using hi⟩
++    | inr j => exact Or.inr ⟨j,by simpa [validFamily,rootFamily,he] using hi⟩
++
++abbrev Coins (Q N : ℕ) := Fin Q → Fin N
++
++/-- Query/log facts of a causal ideal macro-query execution. Hash response
++coins are separate from fresh beta and base query-word coins. Fixing one tape
++leaves the other strategy constrained by its relevant prefixes. -/
++structure Execution (Q N q : ℕ) [NeZero N] where
++  strategy : External q → Strategy Leaf Q N 10
++  fresh : ∀ x,CommitmentFreshTrace.Fresh (strategy x)
++  checkpoints : Coins Q N → Checkpoints (Fin N)
++  proverLog : Coins Q N → External q → Log (Fin N)
++  openings : Coins Q N → External q → Openings (Fin N) q
++  origins : ∀ c x i, CheckpointOrigin (strategy x) c
++    (rootFamily (checkpoints c) x.1 i).log (rootFamily (checkpoints c) x.1 i).root
++  checkpoints_logged : ∀ c x,CheckpointsLogged (checkpoints c) x.1 (proverLog c x)
++  covered : ∀ c x e,e ∈ proverLog c x ++
++    verificationLog (cachedSuite (strategy x) c 0) q (rawQueries x) (openings c x) →
++      e ∈ oracleLog (strategy x) c
++
++variable {Q N q : ℕ} [NeZero N]
++
++def executionLog (E : Execution Q N q) (c : Coins Q N) (x : External q) : Log (Fin N) :=
++  E.proverLog c x ++ verificationLog (cachedSuite (E.strategy x) c 0) q (rawQueries x) (E.openings c x)
++
++def InitiallyFar (E : Execution Q N q) (c : Coins Q N) : Prop :=
++  ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) (extracted (E.checkpoints c)).input
++
++def ExecutionAccepts (E : Execution Q N q) (c : Coins Q N) (x : External q) : Prop :=
++  FreshAccepts (cachedSuite (E.strategy x) c 0) (E.checkpoints c) q x (E.openings c x)
++
++/-- The actual shaped failure is covered by the existing fresh-response game.
++This is a conditional idealization, with no claim that Poseidon macro-calls are independent. -/
++theorem failure_probability (E : Execution Q N q) :
++    uniformProb (Coins Q N × External q) (fun y =>
++      Failure (E.checkpoints y.1) y.2.1 (executionLog E y.1 y.2)) ≤
++      ((3*(Q:ℝ)^2+Q)/2+10*Q)/N := by
++  have hs := uniformProb_equiv (Equiv.prodComm (Coins Q N) (External q))
++    (fun y => Failure (E.checkpoints y.2) y.1.1 (executionLog E y.2 y.1))
++  simp only [Equiv.prodComm_apply,Prod.swap] at hs
++  rw [hs]
++  apply uniformProb_prod_le (by positivity)
++  intro x
++  have h := ShapeRootExtraction.oracle_family_failure_probability (E.strategy x) (E.fresh x)
++    (fun _ => validFamily)
++    (fun c i => (rootFamily (E.checkpoints c) x.1 i).log)
++    (fun c => executionLog E c x)
++    (fun c i => (rootFamily (E.checkpoints c) x.1 i).root)
++    (fun c i => E.origins c x i) (fun c e he => E.covered c x e he)
++  exact (uniformProb_congr (fun c => failure_iff_family (E.checkpoints c) x.1 (executionLog E c x))).le.trans h
++
++/-- Complete conditional ideal execution bound for the actual packed q38 profile.
++Initial extraction farness is inside the joint event, including on colliding hash tapes. -/
++theorem sound (E : Execution Q N 38) :
++    uniformProb (Coins Q N × External 38) (fun y => InitiallyFar E y.1 ∧ ExecutionAccepts E y.1 y.2) ≤
++      (131064:ℝ)/(modulus^4:ℕ)+
++        ((((modulus-1:ℕ):ℝ)/(modulus:ℝ))*(3/5:ℝ)+1/(modulus:ℝ))^38+
++      ((3*(Q:ℝ)^2+Q)/2+10*Q)/N := by
++  let ideal : Coins Q N × External 38 → Prop := fun y => InitiallyFar E y.1 ∧
++    NativeFreshAccepts (extracted (E.checkpoints y.1)) 38 y.2.1 y.2.2
++  let bad : Coins Q N × External 38 → Prop := fun y =>
++    Failure (E.checkpoints y.1) y.2.1 (executionLog E y.1 y.2)
++  have hi : uniformProb (Coins Q N × External 38) ideal ≤
++      (131064:ℝ)/(modulus^4:ℕ)+
++        ((((modulus-1:ℕ):ℝ)/(modulus:ℝ))*(3/5:ℝ)+1/(modulus:ℝ))^38 := by
++    apply uniformProb_prod_le (by positivity)
++    intro c
++    by_cases hf : InitiallyFar E c
++    · exact (uniformProb_mono fun _ h => h.2).trans (native_fresh_38 (extracted (E.checkpoints c)) hf)
++    · rw [uniformProb_false (fun _ h => hf h.1)]
++      positivity
++  have hc : ∀ y : Coins Q N × External 38,
++      InitiallyFar E y.1 ∧ ExecutionAccepts E y.1 y.2 → ideal y ∨ bad y := by
++    intro y hy
++    have h := supplied_cover (cachedSuite (E.strategy y.2) y.1 0) (E.checkpoints y.1)
++      38 y.2.1 (rawQueries y.2) (E.openings y.1 y.2) (E.proverLog y.1 y.2)
++      (E.checkpoints_logged y.1 y.2) hy.2
++    exact h.elim (fun h => Or.inl ⟨hy.1,h⟩) Or.inr
++  exact ((uniformProb_mono hc).trans (uniformProb_or_le ideal bad)).trans (add_le_add hi (failure_probability E))
++
++/-- Concrete macro-query accounting: fresh distinct calls are bounded by the
++actual prover log plus at most136q verifier records, not by permutation counts. -/
++theorem fresh_count_le (E : Execution Q N q) (B : ℕ) (c : Coins Q N) (x : External q)
++    (hP : (E.proverLog c x).length ≤ B)
++    (hcover : ∀ e ∈ entries (E.strategy x) c,e ∈ executionLog E c x) : Q ≤ B+136*q := by
++  have h := fresh_count_le_calls (E.strategy x) (E.fresh x) c (executionLog E c x) hcover
++  have hv := verificationLog_length_le (cachedSuite (E.strategy x) c 0) q (rawQueries x) (E.openings c x)
++  have hl : (executionLog E c x).length = (E.proverLog c x).length+
++      (verificationLog (cachedSuite (E.strategy x) c 0) q (rawQueries x) (E.openings c x)).length :=
++    List.length_append
++  omega
++
++end
++end Minidregg.Selvage.Ir2Fri.Packed
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.failure_iff_family' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.failure_iff_family
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.failure_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.failure_probability
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.sound
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.fresh_count_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.fresh_count_le
++
+diff --git a/Selvage/Ir2PackedWitnesses.lean b/Selvage/Ir2PackedWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2PackedWitnesses.lean
+@@ -0,0 +1,304 @@
++/- Actual packed-profile nonvacuity, using finite shape-filtered checkpoints.
++The reduction is an explicit mathematical far-word witness, not a PCS batching claim. -/
++import Selvage.Ir2PackedExtraction
++import Selvage.Ir2FriWitnesses
++
++namespace Minidregg.Selvage.Ir2Fri.Packed.Witnesses
++open BabyBearExt4 Ir2FriSchedule PackedLeafEncoding EfficientRootOpening
++open scoped Classical
++noncomputable section
++set_option maxRecDepth 100000
++set_option maxHeartbeats 1000000
++
++/-- A deliberately collision-rich suite tests the narrower actual-shape extractor. -/
++def hash : BinaryMerkle.HashSuite Leaf ℕ where
++  leaf _ := 0
++  node _ _ := 0
++
++def inputOpening (b : Fin 5) : InputOpening ℕ b where
++  rows _ _ := 0
++  salts _ _ := 0
++  siblings := List.replicate 17 0
++
++def friOpening (j : Fin 5) : FriOpening ℕ j where
++  values _ := 1
++  salts _ := 0
++  siblings := List.replicate (nativeRowHeight j) 0
++
++def queryOpening : QueryOpening ℕ where
++  input := inputOpening
++  fri := friOpening
++
++def openings (q : ℕ) : Openings ℕ q := fun _ => queryOpening
++
++/-- Six distinct actual leaf shapes plus the one node query suffice at every native depth. -/
++def checkpointLog : Packed.Log ℕ :=
++  [(.leaf (inputOpening 0).leaf,0),(.leaf (inputOpening 1).leaf,0),
++   (.leaf (inputOpening 2).leaf,0),(.leaf (inputOpening 3).leaf,0),
++   (.leaf (friOpening 0).leaf,0),(.leaf (friOpening 4).leaf,0),(.node 0 0,0)]
++
++/-- The reduction ignores the concrete zero input rows; its separate PCS interpretation is not claimed. -/
++def checkpoints : Checkpoints ℕ where
++  input _ := ⟨checkpointLog,0⟩
++  fri _ _ := ⟨checkpointLog,0⟩
++  final _ := 1
++  reduction i _ := Ir2Fri.Witnesses.farWord i
++
++/-- Statement-first actual 38-query witness target, including source farness and rejection. -/
++def ActualProfileContract : Prop :=
++  ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) (extracted checkpoints).input ∧
++  ∀ r : Fin 5 → Ext4,
++    CheckpointsLogged checkpoints r checkpointLog ∧
++    ¬Failure checkpoints r (checkpointLog++verificationLog hash 38 (fun _ => 0) (openings 38)) ∧
++    Accepts hash checkpoints 38 r (fun _ => 0) (openings 38) ∧
++    ¬Accepts hash checkpoints 38 r (fun _ => ⟨65536,by decide⟩) (openings 38)
++
++theorem input_leaf_length (b : Fin 5) : (inputOpening b).leaf.length = inputLeafLength b :=
++  rowsEncode_length _ _ _
++
++theorem fri_leaf_length (j : Fin 5) : (friOpening j).leaf.length = friLeafLength j :=
++  friLeafEncode_length _ _
++
++/-- The finite checkpoint contains the supplied canonical input leaf for every batch. -/
++theorem input_leaf_mem (b : Fin 5) : (.leaf (inputOpening b).leaf,0) ∈ checkpointLog := by
++  fin_cases b <;> simp [checkpointLog]
++  exact Or.inl rfl
++
++/-- The four arity-eight encodings coincide; the last arity-four encoding has its own entry. -/
++theorem fri_leaf_mem (j : Fin 5) : (.leaf (friOpening j).leaf,0) ∈ checkpointLog := by
++  fin_cases j <;> simp [checkpointLog]
++  all_goals exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))
++
++/-- Each expected public shape has one leaf query, and only node00 occupies the node role. -/
++theorem checkpoint_no_collision (len : ℕ) :
++    ¬ShapeRootExtraction.Collision (fun leaf : Leaf => leaf.length=len) checkpointLog := by
++  have h0 : (inputOpening 0).leaf.length=24 := by rw [input_leaf_length]; rfl
++  have h1 : (inputOpening 1).leaf.length=2526 := by rw [input_leaf_length]; rfl
++  have h2 : (inputOpening 2).leaf.length=192 := by rw [input_leaf_length]; rfl
++  have h3 : (inputOpening 3).leaf.length=63 := by rw [input_leaf_length]; rfl
++  have h4 : (friOpening 0).leaf.length=36 := by rw [fri_leaf_length]; rfl
++  have h5 : (friOpening 4).leaf.length=20 := by rw [fri_leaf_length]; rfl
++  simp only [ShapeRootExtraction.Collision,ResponseCollision,
++    ShapeRootExtraction.mem_matching,checkpointLog,List.mem_cons,
++    ShapeRootExtraction.admits]
++  simp_all
++  constructor <;> intro x d hx hshape x' hx' hshape'
++  all_goals
++    rcases hx with ⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩|⟨rfl,rfl⟩ <;>
++    rcases hx' with ⟨rfl,_⟩|⟨rfl,_⟩|⟨rfl,_⟩|⟨rfl,_⟩|⟨rfl,_⟩|⟨rfl,_⟩|⟨rfl,_⟩ <;>
++    simp_all
++
++/-- The root-first kernel recomputes zero at any exact native path height. -/
++theorem recompute_zero (k : ℕ) (bits : Fin k → Bool) :
++    BinaryMerkle.recompute hash 0 bits (List.replicate k 0) = some 0 := by
++  induction k with
++  | zero => rfl
++  | succ k ih =>
++    rw [List.replicate_succ,BinaryMerkle.recompute,ih]
++    cases bits 0 <;> rfl
++
++/-- The actual low-bit-first MMCS path accepts at every selected row. -/
++theorem path_accepts_zero (k : ℕ) (raw : Fin (2^k)) (leaf : Leaf) :
++    PathAccepts hash 0 k raw leaf (List.replicate k 0) := by
++  rw [PathAccepts,bottomUpRecompute_raw,List.reverse_replicate]
++  exact recompute_zero k _
++
++/-- Every internal call along such a path is the retained node00 call. -/
++theorem node_log_zero (k : ℕ) (bits : Fin k → Bool) :
++    EfficientRootOpening.pathLog hash 0 bits (List.replicate k 0) =
++      List.replicate k (.node 0 0,0) := by
++  induction k with
++  | zero => rfl
++  | succ k ih =>
++    rw [List.replicate_succ,EfficientRootOpening.pathLog,recompute_zero,ih]
++    cases bits 0 <;> simp [evaluate,hash,List.replicate_succ']
++
++/-- All supplied path records belong to the finite commitment checkpoint. -/
++theorem path_log_mem (k : ℕ) (raw : Fin (2^k)) (leaf : Leaf)
++    (hl : (.leaf leaf,0) ∈ checkpointLog) (e : Query Leaf ℕ × ℕ)
++    (he : e ∈ Packed.pathLog hash k raw leaf (List.replicate k 0)) : e ∈ checkpointLog := by
++  have hn : (.node 0 0,0) ∈ checkpointLog := by simp [checkpointLog]
++  change e ∈ (.leaf leaf,0)::EfficientRootOpening.pathLog hash 0
++    (fun i => binaryAddressBits k raw i.rev) (List.replicate k 0).reverse at he
++  rw [List.reverse_replicate,node_log_zero] at he
++  rcases List.mem_cons.mp he with h|h
++  · exact h ▸ hl
++  · exact (List.eq_of_mem_replicate h) ▸ hn
++
++/-- The complete 38-query verifier log reuses only the checkpoint's seven records. -/
++theorem verification_log_covered (q : ℕ) (raw : Fin q → Fin (2^17))
++    (e : Query Leaf ℕ × ℕ) (he : e ∈ verificationLog hash q raw (openings q)) : e ∈ checkpointLog := by
++  obtain ⟨L,hL,he⟩ := List.mem_flatten.mp he
++  obtain ⟨a,rfl⟩ := List.mem_ofFn.mp hL
++  rcases List.mem_append.mp he with hi|hf
++  · obtain ⟨L,hL,he⟩ := List.mem_flatten.mp hi
++    obtain ⟨b,rfl⟩ := List.mem_ofFn.mp hL
++    exact path_log_mem 17 (raw a) _ (input_leaf_mem b) e he
++  · obtain ⟨L,hL,he⟩ := List.mem_flatten.mp hf
++    obtain ⟨j,rfl⟩ := List.mem_ofFn.mp hL
++    exact path_log_mem (nativeRowHeight j) (rawParentRow j (raw a)) _ (fri_leaf_mem j) e he
++
++/-- No verifier record is late, and every public expected shape retains unique role queries. -/
++theorem no_failure (q : ℕ) (r : Fin 5 → Ext4) (raw : Fin q → Fin (2^17)) :
++    ¬Failure checkpoints r (checkpointLog++verificationLog hash q raw (openings q)) := by
++  let L := checkpointLog++verificationLog hash q raw (openings q)
++  have hsub : ∀ e ∈ L,e ∈ checkpointLog := by
++    intro e he
++    rcases List.mem_append.mp he with h|h
++    · exact h
++    · exact verification_log_covered q raw e h
++  have hgood (len : ℕ) : ¬ShapeRootExtraction.Bad
++      (fun leaf : Leaf => leaf.length=len) checkpointLog L 0 := by
++    have hm (role : Bool) : ∀ e ∈ ShapeRootExtraction.matchingLog
++        (fun leaf : Leaf => leaf.length=len) role L,
++        e ∈ ShapeRootExtraction.matchingLog (fun leaf : Leaf => leaf.length=len) role checkpointLog := by
++      intro e he
++      have hh := (ShapeRootExtraction.mem_matching _ _ _ e).mp he
++      exact (ShapeRootExtraction.mem_matching _ _ _ e).mpr ⟨hsub e hh.1,hh.2⟩
++    rintro ((h|h)|⟨e,he,hnot,_⟩)
++    · obtain ⟨e,he,e',he',hr,hn⟩ := h
++      exact checkpoint_no_collision len (Or.inl ⟨e,hm false e he,e',hm false e' he',hr,hn⟩)
++    · obtain ⟨e,he,e',he',hr,hn⟩ := h
++      exact checkpoint_no_collision len (Or.inr ⟨e,hm true e he,e',hm true e' he',hr,hn⟩)
++    · exact hnot (hsub e he)
++  rintro (⟨b,hb⟩|⟨j,hj⟩)
++  · exact hgood (inputLeafLength b) hb
++  · exact hgood (friLeafLength j) hj
++
++/-- The declared commitment-time checkpoints are actually retained. -/
++theorem checkpoints_logged (r : Fin 5 → Ext4) : CheckpointsLogged checkpoints r checkpointLog :=
++  ⟨fun _ _ h => h,fun _ _ h => h⟩
++
++/-- All actual input and FRI paths verify for every raw query, not only the accepting sample. -/
++theorem paths_accept (r : Fin 5 → Ext4) (raw : Fin (2^17)) :
++    PathsAccept hash checkpoints r raw queryOpening :=
++  ⟨fun _b => path_accepts_zero 17 raw _,fun j => path_accepts_zero (nativeRowHeight j) (rawParentRow j raw) _⟩
++
++/-- Every supplied carried FRI value, including the transparent final constant, is one. -/
++theorem supplied_one (r : Fin 5 → Ext4) (raw : Fin (2^17)) (n : ℕ) :
++    suppliedAt checkpoints r raw queryOpening n = 1 := by
++  unfold suppliedAt
++  split_ifs <;> rfl
++
++/-- Constant-one native interpolation fires at every scalar, including node hits. -/
++theorem native_one (j : Fin 5) (raw : Fin (2^17)) (β : Ext4) :
++    P3Barycentric.native (nativeRowNodes j (rawParentRow j raw)) (friOpening j).values β = 1 := by
++  simpa using P3Barycentric.native_of_polynomial (nativeRowNodes j (rawParentRow j raw))
++    (Polynomial.C (1:Ext4)) (by simpa using (show (0:WithBot ℕ) < (radix j:WithBot ℕ) from
++      WithBot.coe_lt_coe.mpr (radix_positive j))) β
++
++/-- The full actual-shape 38-query supplied proof accepts the all-zero raw query vector. -/
++theorem zero_accepts (r : Fin 5 → Ext4) :
++    Accepts hash checkpoints 38 r (fun _ => 0) (openings 38) := by
++  intro a
++  change QueryAccepts hash checkpoints r 0 queryOpening
++  refine ⟨paths_accept r 0,?_,?_⟩
++  · rw [supplied_one]
++    have hz : sourceIndex (0 : Fin (2^17)) = 0 := by apply Fin.ext; decide
++    change 1 = Ir2Fri.Witnesses.farWord (sourceIndex 0)
++    rw [hz]
++    exact Ir2Fri.Witnesses.input_zero.symm
++  · intro j
++    rw [supplied_one]
++    exact (native_one j 0 (r j)).symm
++
++/-- Raw bit16 selects natural coordinate one and makes the initial carried equality fail. -/
++theorem initial_rejects (r : Fin 5 → Ext4) :
++    ¬Accepts hash checkpoints 38 r (fun _ => ⟨65536,by decide⟩) (openings 38) := by
++  intro h
++  have he := (h 0).2.1
++  change suppliedAt checkpoints r ⟨65536,by decide⟩ queryOpening 0 =
++    Ir2Fri.Witnesses.farWord (sourceIndex ⟨65536,by decide⟩) at he
++  rw [supplied_one] at he
++  have ho : sourceIndex (⟨65536,by decide⟩ : Fin (2^17)) = 1 := by apply Fin.ext; decide
++  change 1 = Ir2Fri.Witnesses.farWord (sourceIndex ⟨65536,by decide⟩) at he
++  rw [ho] at he
++  exact Ir2Fri.Witnesses.input_one he.symm
++
++/-- The extracted source inherits the frozen positive-farness witness by construction. -/
++theorem extracted_source_far :
++    ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) (extracted checkpoints).input :=
++  Ir2Fri.Witnesses.farWord_far
++
++/-- All actual-profile premises hold together, with accepting and rejecting query vectors. -/
++theorem actual_profile_inhabited : ActualProfileContract :=
++  ⟨extracted_source_far,fun r => ⟨checkpoints_logged r,no_failure 38 r _,zero_accepts r,initial_rejects r⟩⟩
++
++end
++end Minidregg.Selvage.Ir2Fri.Packed.Witnesses
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.input_leaf_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.input_leaf_length
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.fri_leaf_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.fri_leaf_length
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.input_leaf_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.input_leaf_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.fri_leaf_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.fri_leaf_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.checkpoint_no_collision' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.checkpoint_no_collision
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.recompute_zero' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.recompute_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.path_accepts_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.path_accepts_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.node_log_zero' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.node_log_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.path_log_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.path_log_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.verification_log_covered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.verification_log_covered
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.no_failure' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.no_failure
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.checkpoints_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.checkpoints_logged
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.paths_accept' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.paths_accept
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.supplied_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.supplied_one
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.native_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.native_one
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.zero_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.zero_accepts
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.initial_rejects' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.initial_rejects
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.extracted_source_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.extracted_source_far
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.Witnesses.actual_profile_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.Witnesses.actual_profile_inhabited
+diff --git a/Selvage/Ir2PackedFreshWitness.lean b/Selvage/Ir2PackedFreshWitness.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2PackedFreshWitness.lean
+@@ -0,0 +1,298 @@
++/- Structural inhabitation of the ideal execution interface at Q7/N1/q38.
++A singleton digest alphabet has no cryptographic security meaning. -/
++import Selvage.Ir2PackedFresh
++import Selvage.Ir2PackedWitnesses
++
++namespace Minidregg.Selvage.Ir2Fri.Packed.FreshWitness
++open BabyBearExt4 Ir2FriSchedule PackedLeafEncoding EfficientRootOpening CommitmentFreshTrace
++open scoped Classical
++noncomputable section
++set_option maxRecDepth 100000
++set_option maxHeartbeats 1000000
++
++/-- Seven distinct actual packed macro-query keys. -/
++def keys : Fin 7 → Query Leaf (Fin 1) :=
++  ![.leaf (Witnesses.inputOpening 0).leaf,.leaf (Witnesses.inputOpening 1).leaf,
++    .leaf (Witnesses.inputOpening 2).leaf,.leaf (Witnesses.inputOpening 3).leaf,
++    .leaf (Witnesses.friOpening 0).leaf,.leaf (Witnesses.friOpening 4).leaf,.node 0 0]
++
++def keyTag : Query Leaf (Fin 1) → ℕ
++  | .leaf leaf => leaf.length
++  | .node _ _ => 0
++
++theorem key_tags (i : Fin 7) : keyTag (keys i) = (![24,2526,192,63,36,20,0] : Fin 7 → ℕ) i := by
++  fin_cases i
++  · change (Witnesses.inputOpening 0).leaf.length=24
++    rw [Witnesses.input_leaf_length]; rfl
++  · change (Witnesses.inputOpening 1).leaf.length=2526
++    rw [Witnesses.input_leaf_length]; rfl
++  · change (Witnesses.inputOpening 2).leaf.length=192
++    rw [Witnesses.input_leaf_length]; rfl
++  · change (Witnesses.inputOpening 3).leaf.length=63
++    rw [Witnesses.input_leaf_length]; rfl
++  · change (Witnesses.friOpening 0).leaf.length=36
++    rw [Witnesses.fri_leaf_length]; rfl
++  · change (Witnesses.friOpening 4).leaf.length=20
++    rw [Witnesses.fri_leaf_length]; rfl
++  · rfl
++
++theorem keys_injective : Function.Injective keys := by
++  intro i j h
++  have ht := congrArg keyTag h
++  rw [key_tags,key_tags] at ht
++  fin_cases i <;> fin_cases j <;> simp_all
++
++/-- All fresh keys are fixed before any response; the complete-cut checkpoints need no later roots. -/
++def strategy : Strategy Leaf 7 1 10 where
++  query t _ := keys t
++  roots _ _ := []
++  roots_le _ _ := by simp
++
++def log : Packed.Log (Fin 1) := List.ofFn fun i => (keys i,0)
++
++theorem strategy_fresh : CommitmentFreshTrace.Fresh strategy := by
++  intro c i j h
++  exact keys_injective h
++
++theorem entries_eq (c : Coins 7 1) : entries strategy c = log := by
++  apply congrArg List.ofFn
++  funext t
++  apply Prod.ext
++  · rfl
++  · exact Subsingleton.elim _ _
++
++theorem prefix_eq (c : Coins 7 1) : prefixLog strategy 7 le_rfl (friPrefix c 7 le_rfl) = log := by
++  apply congrArg List.ofFn
++  funext t
++  apply Prod.ext
++  · rfl
++  · exact Subsingleton.elim _ _
++
++def hash : BinaryMerkle.HashSuite Leaf (Fin 1) where
++  leaf _ := 0
++  node _ _ := 0
++
++theorem cached_eq (c : Coins 7 1) : cachedSuite strategy c 0 = hash := by
++  cases cachedSuite strategy c 0
++  unfold hash
++  congr <;> exact Subsingleton.elim _ _
++
++def inputOpening (b : Fin 5) : InputOpening (Fin 1) b where
++  rows := (Witnesses.inputOpening b).rows
++  salts := (Witnesses.inputOpening b).salts
++  siblings := List.replicate 17 0
++
++def friOpening (j : Fin 5) : FriOpening (Fin 1) j where
++  values := (Witnesses.friOpening j).values
++  salts := (Witnesses.friOpening j).salts
++  siblings := List.replicate (nativeRowHeight j) 0
++
++def queryOpening : QueryOpening (Fin 1) where
++  input := inputOpening
++  fri := friOpening
++
++def checkpoints : Checkpoints (Fin 1) where
++  input _ := ⟨log,0⟩
++  fri _ _ := ⟨log,0⟩
++  final _ := 1
++  reduction i _ := Ir2Fri.Witnesses.farWord i
++
++/-- The causal origin is the full seven-entry cut, with no later fresh responses. -/
++theorem checkpoint_origin (c : Coins 7 1) : CheckpointOrigin strategy c log 0 := by
++  refine ⟨7,le_rfl,?_,?_⟩
++  · intro e
++    rw [prefix_eq]
++  · intro t ht
++    omega
++
++theorem family_origin (c : Coins 7 1) (x : External 38) (i : Fin 10) :
++    CheckpointOrigin strategy c (rootFamily checkpoints x.1 i).log (rootFamily checkpoints x.1 i).root := by
++  unfold rootFamily
++  cases (finSumFinEquiv.symm i : Fin 5 ⊕ Fin 5) <;> exact checkpoint_origin c
++
++theorem node_mem : (.node 0 0,0) ∈ log := List.mem_ofFn.mpr ⟨6,rfl⟩
++
++theorem input_mem (b : Fin 5) : (.leaf (inputOpening b).leaf,0) ∈ log := by
++  fin_cases b
++  · exact List.mem_ofFn.mpr ⟨0,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨1,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨2,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨3,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨0,rfl⟩
++
++theorem fri_mem (j : Fin 5) : (.leaf (friOpening j).leaf,0) ∈ log := by
++  fin_cases j
++  · exact List.mem_ofFn.mpr ⟨4,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨4,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨4,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨4,rfl⟩
++  · exact List.mem_ofFn.mpr ⟨5,rfl⟩
++
++theorem recompute_zero (k : ℕ) (bits : Fin k → Bool) :
++    BinaryMerkle.recompute hash 0 bits (List.replicate k 0) = some 0 := by
++  induction k with
++  | zero => rfl
++  | succ k ih =>
++    rw [List.replicate_succ,BinaryMerkle.recompute,ih]
++    cases bits 0 <;> rfl
++
++theorem node_log_zero (k : ℕ) (bits : Fin k → Bool) :
++    EfficientRootOpening.pathLog hash 0 bits (List.replicate k 0) =
++      List.replicate k (.node 0 0,0) := by
++  induction k with
++  | zero => rfl
++  | succ k ih =>
++    rw [List.replicate_succ,EfficientRootOpening.pathLog,recompute_zero,ih]
++    cases bits 0 <;> simp [evaluate,hash,List.replicate_succ']
++
++theorem path_mem (k : ℕ) (raw : Fin (2^k)) (leaf : Leaf)
++    (hl : (.leaf leaf,0) ∈ log) (e : Query Leaf (Fin 1) × Fin 1)
++    (he : e ∈ Packed.pathLog hash k raw leaf (List.replicate k 0)) : e ∈ log := by
++  change e ∈ (.leaf leaf,0)::EfficientRootOpening.pathLog hash 0
++    (fun i => binaryAddressBits k raw i.rev) (List.replicate k 0).reverse at he
++  rw [List.reverse_replicate,node_log_zero] at he
++  rcases List.mem_cons.mp he with h|h
++  · exact h ▸ hl
++  · exact (List.eq_of_mem_replicate h) ▸ node_mem
++
++theorem verification_covered (raw : Fin 38 → Fin (2^17)) (e : Query Leaf (Fin 1) × Fin 1)
++    (he : e ∈ verificationLog hash 38 raw (fun _ => queryOpening)) : e ∈ log := by
++  obtain ⟨L,hL,he⟩ := List.mem_flatten.mp he
++  obtain ⟨a,rfl⟩ := List.mem_ofFn.mp hL
++  rcases List.mem_append.mp he with hi|hf
++  · obtain ⟨L,hL,he⟩ := List.mem_flatten.mp hi
++    obtain ⟨b,rfl⟩ := List.mem_ofFn.mp hL
++    exact path_mem 17 (raw a) _ (input_mem b) e he
++  · obtain ⟨L,hL,he⟩ := List.mem_flatten.mp hf
++    obtain ⟨j,rfl⟩ := List.mem_ofFn.mp hL
++    exact path_mem (nativeRowHeight j) (rawParentRow j (raw a)) _ (fri_mem j) e he
++
++/-- An actual-shaped, positive-query execution inhabits the ideal interface over one digest. -/
++def execution : Execution 7 1 38 where
++  strategy _ := strategy
++  fresh _ := strategy_fresh
++  checkpoints _ := checkpoints
++  proverLog _ _ := log
++  openings _ _ _ := queryOpening
++  origins c x i := family_origin c x i
++  checkpoints_logged _ _ := ⟨fun _ _ h => h,fun _ _ h => h⟩
++  covered c x e he := by
++    rw [cached_eq] at he
++    rw [oracleLog_eq_entries strategy strategy_fresh c,entries_eq]
++    rcases List.mem_append.mp he with h|h
++    · exact h
++    · exact verification_covered (rawQueries x) e h
++
++/-- The source is the frozen monomial witness; this is not an implementation of PCS batching. -/
++theorem initially_far (c : Coins 7 1) : InitiallyFar execution c := Ir2Fri.Witnesses.farWord_far
++
++/-- The singleton-digest execution accepts the actual all-zero 38-query base-word sample. -/
++theorem zero_accepts (c : Coins 7 1) (r : Fin 5 → Ext4) :
++    ExecutionAccepts execution c (r,fun _ => 0) := by
++  change Accepts (cachedSuite strategy c 0) checkpoints 38 r
++    (rawQueries (r,fun _ => 0)) (fun _ => queryOpening)
++  rw [cached_eq]
++  have hr : rawQueries (r,fun _ : Fin 38 => 0) = fun _ => 0 := by
++    funext a
++    apply Fin.ext
++    change (BabyBearModuloSampling.sampleBits 17 (0:BabyBear)).val = 0
++    decide
++  rw [hr]
++  have hp (k : ℕ) (raw : Fin (2^k)) (leaf : Leaf) :
++      PathAccepts hash 0 k raw leaf (List.replicate k 0) := by
++    rw [PathAccepts,bottomUpRecompute_raw,List.reverse_replicate]
++    exact recompute_zero k _
++  have hs (n : ℕ) : suppliedAt checkpoints r 0 queryOpening n = 1 := by
++    unfold suppliedAt
++    split_ifs <;> rfl
++  intro a
++  change QueryAccepts hash checkpoints r 0 queryOpening
++  refine ⟨⟨fun _ => hp 17 0 _,fun j => hp (nativeRowHeight j) (rawParentRow j 0) _⟩,?_,?_⟩
++  · rw [hs]
++    have hz : sourceIndex (0 : Fin (2^17)) = 0 := by apply Fin.ext; decide
++    change 1 = Ir2Fri.Witnesses.farWord (sourceIndex 0)
++    rw [hz]
++    exact Ir2Fri.Witnesses.input_zero.symm
++  · intro j
++    rw [hs]
++    exact (Witnesses.native_one j 0 (r j)).symm
++
++/-- Explicit structural inhabitation, with actual source farness and a positive-query accepting sample. -/
++theorem execution_inhabited : ∃ E : Execution 7 1 38,
++    (∀ c, InitiallyFar E c) ∧ ∀ c r, ExecutionAccepts E c (r,fun _ => 0) :=
++  ⟨execution,initially_far,zero_accepts⟩
++
++end
++end Minidregg.Selvage.Ir2Fri.Packed.FreshWitness
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.key_tags' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.key_tags
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.keys_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.keys_injective
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.strategy_fresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.strategy_fresh
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.entries_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.entries_eq
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.prefix_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.prefix_eq
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.cached_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.cached_eq
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.checkpoint_origin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.checkpoint_origin
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.family_origin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.family_origin
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.node_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.node_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.input_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.input_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.fri_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.fri_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.recompute_zero' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.recompute_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.node_log_zero' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.node_log_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.path_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.path_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.verification_covered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.verification_covered
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.initially_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.initially_far
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.zero_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.zero_accepts
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.execution_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Packed.FreshWitness.execution_inhabited

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-ir2-packed-extraction-20260908/.lake/build/lib/lean/Selvage/Ir2PackedFreshWitness.olean",
+    "Selvage/Ir2PackedFreshWitness.lean"
+  ],
+  "cwd": "/tmp/minidregg-ir2-packed-extraction-20260908",
+  "exit_code": 0,
+  "source_sha256": "9ef00d2ec90bc365a5c27805899b7e8ed9231f2f564f295ac37a00dc73eae0e7",
+  "source_unchanged": true,
+  "elapsed_s": 4.302756071090698,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/checks/final-09.log"
+}

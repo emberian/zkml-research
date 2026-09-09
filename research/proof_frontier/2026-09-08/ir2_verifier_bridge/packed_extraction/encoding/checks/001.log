@@ -1,0 +1,32 @@
+Selvage/PackedLeafEncoding.lean:57:33: warning: This simp argument is unused:
+  List.take_append_length
+
+Hint: Omit it from the simp argument list.
+  simp [̵p̵r̵e̵f̵i̵x̵L̵e̵n̵g̵t̵h̵,̵L̵i̵s̵t̵.̵t̵a̵k̵e̵_̵a̵p̵p̵e̵n̵d̵_̵l̵e̵n̵g̵t̵h̵,̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵a̵s̵s̵o̵c̵]̵[̲p̲r̲e̲f̲i̲x̲L̲e̲n̲g̲t̲h̲,̲ ̲L̲i̲s̲t̲.̲a̲p̲p̲e̲n̲d̲_̲a̲s̲s̲o̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/PackedLeafEncoding.lean:83:80: error: unsolved goals
+α : Type u_1
+n : ℕ
+blocks : Fin n → List α
+width : Fin n → ℕ
+hlen : ∀ (i : Fin n), (blocks i).length = width i
+i : Fin n
+⊢ (List.take (↑i) (List.ofFn (List.length ∘ blocks))).sum = (List.take (↑i) (List.ofFn width)).sum
+Selvage/PackedLeafEncoding.lean:84:54: warning: This simp argument is unused:
+  hlen
+
+Hint: Omit it from the simp argument list.
+  simp only [prefixLength, ̲List.map_take, ̲List.map_ofFn,̵h̵l̵e̵n̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/PackedLeafEncoding.lean:90:8: warning: This simp argument is unused:
+  Nat.min_eq_left i.isLt.le
+
+Hint: Omit it from the simp argument list.
+  simp [Nat.mi̵n̵_̵e̵q̵_̵l̵e̵f̵t̵ ̵i̵.̵i̵s̵L̵t̵.̵l̵e̵,̵N̵a̵t̵.̵m̵ul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/PackedLeafEncoding.lean:94:104: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
