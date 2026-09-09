@@ -1,0 +1,24 @@
+Compiler/NativeNibbleRange.lean:208:2: error: unsolved goals
+case refine_2.inl
+⊢ ZMod.val 15 < 16
+
+case refine_2.inr
+⊢ ZMod.val 15 < 16
+Compiler/NativeNibbleRange.lean:216:2: error: unsolved goals
+case refine_2.inl
+⊢ ZMod.val 15 < 16
+
+case refine_2.inr.inl
+⊢ ZMod.val 15 < 16
+
+case refine_2.inr.inr.inl
+⊢ ZMod.val 15 < 16
+
+case refine_2.inr.inr.inr
+⊢ ZMod.val 15 < 16
+Compiler/NativeNibbleRange.lean:226:37: warning: 'decide' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/NativeNibbleRange.lean:226:37: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`

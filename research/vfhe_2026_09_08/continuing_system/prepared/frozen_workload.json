@@ -1,0 +1,280 @@
+{
+  "capacity": 8,
+  "classes": [
+    "proof_integrity",
+    "runtime_performance"
+  ],
+  "corpus_provenance": "Author-written public issue texts fixed before feature encoding or evaluation. No private profile data, benchmark-dataset claim, held-out tuning, or external model inference service.",
+  "evaluation_policy": {
+    "baselines": [
+      "initial frozen kernel model",
+      "current FIFO linear mean-dot classifier",
+      "fixed balanced-label majority/tie baseline"
+    ],
+    "cryptographic_run": "Fresh setup and fresh operations. --resume reuses completed request results or resumes the same incomplete request through core; it never relabels reused proof files as newly generated.",
+    "frozen_before_encoding": true,
+    "held_out_tuning": false,
+    "lifecycle": "Each operation executes in a separate OS process against the same durable core.Live root. A named restart checkpoint records another successful reopen; the following repeated query must match every lane and ranking of the pre-restart query.",
+    "prediction": "Descending exact rational mean of eight-lane squared dot products over retained examples; alphabetical tie break.",
+    "scope": "Public author-written issue-routing workload. Full reader remains. Finite held-out accuracy is an executed utility observation, not general task accuracy or privacy evidence."
+  },
+  "feature_profile": "Existing frozen local E5 TextEncoder; 576 integer coordinates in [-32,32], squared norm <=20000. Class labels are never encoder inputs.",
+  "held_out": [
+    {
+      "id": "hpi01",
+      "label": "proof_integrity",
+      "text": "An attacker changes the claimed final result and the verifier still accepts. Which missing boundary condition allows this forgery?"
+    },
+    {
+      "id": "hpi02",
+      "label": "proof_integrity",
+      "text": "Show that the output opened by the recipient is precisely the value constrained by the accepted execution proof."
+    },
+    {
+      "id": "hpi03",
+      "label": "proof_integrity",
+      "text": "A field identity passes even though the integer computation overflowed. We need a theorem that covers the actual bounded integer semantics."
+    },
+    {
+      "id": "hpi04",
+      "label": "proof_integrity",
+      "text": "Can a proof for one query be substituted into a response for another query without being rejected?"
+    },
+    {
+      "id": "hpi05",
+      "label": "proof_integrity",
+      "text": "The statement is only true because its assumptions cannot hold together. Supply an inhabiting witness before relying on the theorem."
+    },
+    {
+      "id": "hpi06",
+      "label": "proof_integrity",
+      "text": "The serialized trace and the polynomial commitment disagree about row order. Establish which assignment the verifier actually authenticates."
+    },
+    {
+      "id": "hpi07",
+      "label": "proof_integrity",
+      "text": "Receiving a valid signature does not establish that this state descends from the pinned genesis. Check the ancestry relation itself."
+    },
+    {
+      "id": "hpi08",
+      "label": "proof_integrity",
+      "text": "A stale model update was accepted after another update had already committed. Enforce the parent revision inside the atomic commit."
+    },
+    {
+      "id": "hpi09",
+      "label": "proof_integrity",
+      "text": "We omitted the subtraction of an expired observation from the formal update equation. The proved operation must match the FIFO memory behavior."
+    },
+    {
+      "id": "hpi10",
+      "label": "proof_integrity",
+      "text": "Explain why the challenge-dependent opening cannot be chosen after the commitment to evade the proximity check."
+    },
+    {
+      "id": "hrp01",
+      "label": "runtime_performance",
+      "text": "The end-to-end request spends thirty seconds just serializing arrays. Replace the redundant copies and report the wall-clock improvement."
+    },
+    {
+      "id": "hrp02",
+      "label": "runtime_performance",
+      "text": "Peak resident memory is too high when several proof workers run together. Choose a concurrency limit that improves throughput without swapping."
+    },
+    {
+      "id": "hrp03",
+      "label": "runtime_performance",
+      "text": "Vectorize the modular arithmetic loop and compare its throughput on the complete encrypted computation."
+    },
+    {
+      "id": "hrp04",
+      "label": "runtime_performance",
+      "text": "The evaluator repeats the same transform for every class. Share that computation and measure how many milliseconds the request saves."
+    },
+    {
+      "id": "hrp05",
+      "label": "runtime_performance",
+      "text": "Proof files occupy hundreds of megabytes. Find the dominant representation overhead and reduce bytes transferred per accepted answer."
+    },
+    {
+      "id": "hrp06",
+      "label": "runtime_performance",
+      "text": "Loading the embedding model on each request dominates latency. Keep it warm and separate startup cost from steady-state service time."
+    },
+    {
+      "id": "hrp07",
+      "label": "runtime_performance",
+      "text": "The benchmark gets slower after adding threads because workers contend for memory bandwidth. Profile the bottleneck before increasing parallelism."
+    },
+    {
+      "id": "hrp08",
+      "label": "runtime_performance",
+      "text": "A denser trace reduces the number of prover jobs but increases the cost of each job. Compare total proving time and peak memory for the full operation."
+    },
+    {
+      "id": "hrp09",
+      "label": "runtime_performance",
+      "text": "The browser spends most of its loading time fetching verifier assets. Reduce the initial download while keeping the actual verification path usable."
+    },
+    {
+      "id": "hrp10",
+      "label": "runtime_performance",
+      "text": "The arithmetic backend is fast, but process launch overhead dominates short updates. Batch the launches and measure the complete teaching transaction."
+    }
+  ],
+  "operations": [
+    {
+      "id": "teach_pi01",
+      "kind": "teach",
+      "text_id": "pi01"
+    },
+    {
+      "id": "teach_pi02",
+      "kind": "teach",
+      "text_id": "pi02"
+    },
+    {
+      "id": "teach_rp01",
+      "kind": "teach",
+      "text_id": "rp01"
+    },
+    {
+      "id": "teach_rp02",
+      "kind": "teach",
+      "text_id": "rp02"
+    },
+    {
+      "checkpoint": "initial",
+      "id": "query_initial",
+      "kind": "query",
+      "text_id": "hpi01"
+    },
+    {
+      "id": "teach_pi03",
+      "kind": "teach",
+      "text_id": "pi03"
+    },
+    {
+      "id": "teach_pi04",
+      "kind": "teach",
+      "text_id": "pi04"
+    },
+    {
+      "id": "teach_pi05",
+      "kind": "teach",
+      "text_id": "pi05"
+    },
+    {
+      "id": "teach_pi06",
+      "kind": "teach",
+      "text_id": "pi06"
+    },
+    {
+      "id": "teach_pi07",
+      "kind": "teach",
+      "text_id": "pi07"
+    },
+    {
+      "id": "teach_pi08",
+      "kind": "teach",
+      "text_id": "pi08"
+    },
+    {
+      "checkpoint": "after_teaching",
+      "id": "query_later",
+      "kind": "query",
+      "text_id": "hpi01"
+    },
+    {
+      "id": "teach_pi09",
+      "kind": "teach",
+      "text_id": "pi09"
+    },
+    {
+      "id": "teach_pi10",
+      "kind": "teach",
+      "text_id": "pi10"
+    },
+    {
+      "checkpoint": "after_expiry",
+      "id": "query_expiry",
+      "kind": "query",
+      "text_id": "hpi01"
+    },
+    {
+      "id": "restart",
+      "kind": "restart"
+    },
+    {
+      "checkpoint": "after_restart",
+      "id": "query_restart",
+      "kind": "query",
+      "must_equal": "query_expiry",
+      "text_id": "hpi01"
+    }
+  ],
+  "plaintext_modulus": 4294475777,
+  "schema": "continuing-system-public-workload-v1",
+  "task": "Route a research issue to proof integrity or runtime performance engineering.",
+  "training": [
+    {
+      "id": "pi01",
+      "label": "proof_integrity",
+      "text": "The prover can put an out-of-range value into the witness and still pass verification. We need a constraint that rejects the invalid assignment."
+    },
+    {
+      "id": "pi02",
+      "label": "proof_integrity",
+      "text": "A negative integer is being interpreted as a large field residue. Establish the signed arithmetic contract and prove that the conversion preserves the claimed result."
+    },
+    {
+      "id": "rp01",
+      "label": "runtime_performance",
+      "text": "Generating the proof takes too long because every multiplication emits a separate trace. Batch the work and measure total latency and memory consumption."
+    },
+    {
+      "id": "rp02",
+      "label": "runtime_performance",
+      "text": "The cryptographic kernel spends most of its time allocating and copying coefficient buffers. Reuse storage and benchmark the complete request before and after the change."
+    },
+    {
+      "id": "pi03",
+      "label": "proof_integrity",
+      "text": "The receipt identifies the output but does not identify the parent state. Bind the complete transition context so a proof cannot be attached to a different history."
+    },
+    {
+      "id": "pi04",
+      "label": "proof_integrity",
+      "text": "A theorem assumes a relation that has no satisfying witness. Construct a nonzero valid example and identify the premise that makes the soundness statement meaningful."
+    },
+    {
+      "id": "pi05",
+      "label": "proof_integrity",
+      "text": "The last row of the execution trace is not checked by the transition constraint. Make sure a malicious final output cannot escape the verifier's checks."
+    },
+    {
+      "id": "pi06",
+      "label": "proof_integrity",
+      "text": "The verifier checks each polynomial separately, but the openings may not describe the same committed computation. Prove consistency of the batch and its shared challenge."
+    },
+    {
+      "id": "pi07",
+      "label": "proof_integrity",
+      "text": "The certificate proves equality modulo a prime but the application needs rounded integer division. State the quotient and remainder bounds and rule out wraparound."
+    },
+    {
+      "id": "pi08",
+      "label": "proof_integrity",
+      "text": "A cached acceptance can be replayed against a changed model revision. Require the accepted proof to match the current model, query and designated recipient."
+    },
+    {
+      "id": "pi09",
+      "label": "proof_integrity",
+      "text": "After an old checkpoint is restored, a spent authorization becomes available again. Specify the finality rule and demonstrate that the restored branch cannot spend it twice."
+    },
+    {
+      "id": "pi10",
+      "label": "proof_integrity",
+      "text": "The proof system validates an intermediate value while the reader decrypts a different ciphertext. Connect the exact verified output bytes to the released answer."
+    }
+  ]
+}

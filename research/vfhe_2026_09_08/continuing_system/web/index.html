@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A local working interface for the continuing proof-gated research learner.">
+  <title>Continuing learner</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to learner</a>
+  <div class="shell">
+    <header class="topbar">
+      <div class="identity"><span class="identity-mark" aria-hidden="true">↗</span><div><h1>Continuing learner</h1><p>Local research workspace</p></div></div>
+      <div id="connection" class="connection checking" role="status"><span class="status-dot" aria-hidden="true"></span><span id="connection-text">Connecting</span></div>
+    </header>
+
+    <p class="scope-note"><span aria-hidden="true">◷</span> Proofs can take several minutes. The local reader still holds a full decryption key.</p>
+    <div id="connection-notice" class="notice warning" hidden role="status"></div>
+    <div id="service-notice" class="notice error" hidden role="alert"></div>
+    <section id="evaluation-notice" class="notice evaluation-notice" hidden aria-labelledby="evaluation-title" aria-live="polite">
+      <div class="evaluation-heading"><h2 id="evaluation-title">Evaluation in progress</h2><span id="evaluation-count"></span></div>
+      <p id="evaluation-phase"></p>
+      <p id="evaluation-reason">Manual submissions are paused while the evaluation uses this learner. You can follow its progress here.</p>
+    </section>
+    <div id="action-notice" class="notice" hidden role="status"></div>
+
+    <main id="workspace" tabindex="-1">
+      <section id="loading-state" class="empty-state panel"><span class="activity-dot" aria-hidden="true"></span><h2>Opening the workspace</h2><p>Loading the learner and its saved jobs.</p></section>
+
+      <section id="setup-panel" class="setup panel" hidden aria-labelledby="setup-title">
+        <div class="setup-copy"><p class="eyebrow">One-time setup</p><h2 id="setup-title">Name what it will learn.</h2><p>Choose your class labels, then teach with examples and ask it to classify new text.</p><p class="muted">Labels are fixed after setup. Each class retains its eight most recent examples.</p></div>
+        <form id="setup-form">
+          <label for="class-labels">Class labels</label>
+          <textarea id="class-labels" name="classes" rows="5" placeholder="card_arrival&#10;cash_withdrawal_charge" required aria-describedby="labels-help"></textarea>
+          <p id="labels-help" class="field-help">One label per line. Choose distinct names you will recognize.</p>
+          <button id="setup-submit" class="button primary" type="submit">Create learner <span aria-hidden="true">↗</span></button>
+          <p id="setup-error" class="field-error" role="alert" hidden></p>
+        </form>
+      </section>
+
+      <div id="learner-panel" class="learner-layout" hidden>
+        <aside class="model-panel panel" aria-labelledby="model-title">
+          <div class="section-heading"><h2 id="model-title">Current learner</h2><span id="revision" class="revision">—</span></div>
+          <p id="model-summary" class="muted"></p>
+          <div id="class-list" class="class-list"></div>
+          <div class="model-foot"><span>Model root</span><code id="model-root">—</code></div>
+        </aside>
+
+        <div class="work-column">
+          <div class="forms-grid">
+            <section class="panel form-panel" aria-labelledby="teach-title">
+              <div class="section-heading"><h2 id="teach-title">Teach</h2><span class="step-label">Add an example</span></div>
+              <form id="teach-form">
+                <label for="teach-label">Class</label>
+                <select id="teach-label" name="label" required><option value="">Choose a class</option></select>
+                <label for="teach-text">Example text</label>
+                <textarea id="teach-text" name="text" rows="5" maxlength="16384" placeholder="An example of the selected class…" required></textarea>
+                <p class="field-help">At eight examples, the next one replaces the oldest in that class.</p>
+                <button id="teach-submit" class="button primary" type="submit">Teach this example <span aria-hidden="true">+</span></button>
+                <p id="teach-error" class="field-error" role="alert" hidden></p>
+              </form>
+            </section>
+
+            <section class="panel form-panel" aria-labelledby="query-title">
+              <div class="section-heading"><h2 id="query-title">Ask</h2><span class="step-label">Classify new text</span></div>
+              <form id="query-form">
+                <label for="query-text">Text to classify</label>
+                <textarea id="query-text" name="text" rows="8" maxlength="16384" placeholder="What would you like the learner to classify?" required></textarea>
+                <p class="field-help">The answer is released after the computation passes its proof checks.</p>
+                <button id="query-submit" class="button primary" type="submit">Run a query <span aria-hidden="true">↗</span></button>
+                <p id="query-error" class="field-error" role="alert" hidden></p>
+              </form>
+            </section>
+          </div>
+
+          <section id="answer-panel" class="panel answer-panel" aria-labelledby="answer-title">
+            <div class="section-heading"><h2 id="answer-title">Answer</h2><span id="answer-context" class="step-label"></span></div>
+            <div id="answer-content" class="answer-content" aria-live="polite"><p class="muted">Teach at least one example, then run a query. Its answer and class ranking will appear here.</p></div>
+          </section>
+        </div>
+      </div>
+
+      <section id="history-panel" class="panel history-panel" hidden aria-labelledby="history-title">
+        <div class="section-heading history-heading"><div><h2 id="history-title">Job history</h2><p class="muted">Saved by the local server. Reconnecting keeps this history.</p></div><span id="job-count" class="count-badge">0</span></div>
+        <div id="history-empty" class="history-empty">Setup, teaching and query jobs will appear here.</div>
+        <div id="history-grid" class="history-grid" hidden>
+          <div id="job-list" class="job-list" aria-label="Saved jobs"></div>
+          <section id="job-detail" class="job-detail" aria-label="Selected job"></section>
+        </div>
+      </section>
+    </main>
+
+    <footer><span>Encrypted computation · proof-gated release</span><span>Research system, with an explicit reader capability</span></footer>
+  </div>
+</body>
+</html>

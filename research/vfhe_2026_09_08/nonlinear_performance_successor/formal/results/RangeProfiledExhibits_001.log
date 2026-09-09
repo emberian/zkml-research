@@ -1,0 +1,5 @@
+Compiler/RangeProfiledExhibits.lean:32:2: error: unsolved goals
+case refine_2
+h : RangeProfiledMatrix.Bounds tiny tinyProfile falseAssignment
+hh : ZMod.val 2 ≤ 1
+⊢ False

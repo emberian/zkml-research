@@ -1,0 +1,905 @@
+diff --git a/Compiler/NativeNibbleBus.lean b/Compiler/NativeNibbleBus.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/NativeNibbleBus.lean
+@@ -0,0 +1,230 @@
++/- Exact multiset boundary for the native nibble bus. The caller flattens every
++row/range send into `sends`; receives use natural multiplicities on the actual
++sixteen values 0,...,15. This is an extracted-bus theorem, not a proof that the
++grouped LogUp argument supplies exact conservation. Field conservation requires
++an explicit no-wrap premise; field multiplicities are not silently integers. -/
++import Compiler.NativeNibbleRange
++namespace Minidregg.Compiler.NativeNibbleBus
++open Minidregg.Compiler
++set_option autoImplicit false
++set_option maxHeartbeats 600000
++
++def receives (multiplicity : Nat → Nat) : List BabyBear :=
++  (List.range 16).flatMap fun i => List.replicate (multiplicity i) (i : BabyBear)
++
++def ExactNat (sends : List BabyBear) (multiplicity : Nat → Nat) : Prop :=
++  ∀ x, sends.count x = (receives multiplicity).count x
++
++def ExactField (sends : List BabyBear) (multiplicity : Nat → Nat) : Prop :=
++  ∀ x, (sends.count x : BabyBear) = ((receives multiplicity).count x : BabyBear)
++
++/-- Only the number of sends of a particular key needs a no-wrap bound. The
++total number of receives need not be bounded for the support conclusion. -/
++def NoSendWrap (sends : List BabyBear) : Prop :=
++  ∀ x ∈ sends, sends.count x < 2013265921
++
++def Sound : Prop := ∀ sends multiplicity, ExactNat sends multiplicity →
++  ∀ x ∈ sends, x.val < 16
++
++def FieldSound : Prop := ∀ sends multiplicity, ExactField sends multiplicity →
++  NoSendWrap sends → ∀ x ∈ sends, x.val < 16
++
++theorem receive_range (multiplicity : Nat → Nat) (x : BabyBear)
++    (hx : x ∈ receives multiplicity) : x.val < 16 := by
++  obtain ⟨i,hi,hx⟩ := List.mem_flatMap.mp hx
++  have hi' : i < 16 := List.mem_range.mp hi
++  have hx' : x = (i : BabyBear) := (List.mem_replicate.mp hx).2
++  rw [hx', ZMod.val_natCast]
++  change i % 2013265921 < 16
++  rw [Nat.mod_eq_of_lt (by omega : i < 2013265921)]
++  exact hi'
++
++theorem sound : Sound := by
++  intro sends multiplicity he x hx
++  apply receive_range multiplicity x
++  apply List.count_pos_iff.mp
++  rw [←he x]
++  exact List.count_pos_iff.mpr hx
++
++theorem field_sound : FieldSound := by
++  intro sends multiplicity he hn x hx
++  by_contra hout
++  have hnot : x ∉ receives multiplicity := fun hm => hout (receive_range _ _ hm)
++  have hz := List.count_eq_zero.mpr hnot
++  have heq := congrArg (fun y : BabyBear => y.val) (he x)
++  rw [hz] at heq
++  have heq' : sends.count x % 2013265921 = 0 := by
++    simpa only [ZMod.val_natCast, Nat.zero_mod] using heq
++  have hcount : sends.count x = 0 := by
++    rwa [Nat.mod_eq_of_lt (hn x hx)] at heq'
++  exact List.count_eq_zero.mp hcount hx
++
++theorem noWrap_of_length (sends : List BabyBear) (h : sends.length < 2013265921) :
++    NoSendWrap sends := by
++  intro x hx
++  exact lt_of_le_of_lt (List.count_le_length) h
++
++/-- A caller identifies its row sends inside the global multiset. Individual
++lookup membership is a conclusion of conservation, not an input premise. -/
++theorem row_range (sends : List BabyBear) (multiplicity : Nat → Nat)
++    (bits : Nat) (v : BabyBear) (a : Nat → BabyBear)
++    (hb : bits = 9 ∨ bits = 16) (he : NativeNibbleRange.Equations bits v a)
++    (hc : ExactNat sends multiplicity)
++    (included : ∀ x ∈ NativeNibbleRange.sent bits a, x ∈ sends) : v.val < 2^bits := by
++  exact NativeNibbleRange.sound bits v a hb he
++    (fun x hx => sound sends multiplicity hc x (included x hx))
++
++theorem field_row_range (sends : List BabyBear) (multiplicity : Nat → Nat)
++    (bits : Nat) (v : BabyBear) (a : Nat → BabyBear)
++    (hb : bits = 9 ∨ bits = 16) (he : NativeNibbleRange.Equations bits v a)
++    (hc : ExactField sends multiplicity) (hn : NoSendWrap sends)
++    (included : ∀ x ∈ NativeNibbleRange.sent bits a, x ∈ sends) : v.val < 2^bits := by
++  exact NativeNibbleRange.sound bits v a hb he
++    (fun x hx => field_sound sends multiplicity hc hn x (included x hx))
++
++def good (i : Nat) : BabyBear := if i=0 then 3 else if i=1 then 5 else 0
++def goodMultiplicity (i : Nat) : Nat := if i=0 then 2 else if i=3 ∨ i=5 then 1 else 0
++
++def NonzeroPremise : Prop :=
++  NativeNibbleRange.Equations 16 83 good ∧
++  ExactNat (NativeNibbleRange.sent 16 good) goodMultiplicity ∧
++  (83 : BabyBear) ≠ 0
++
++theorem nonzeroPremise : NonzeroPremise := by
++  refine ⟨?_,?_,by decide⟩
++  · rw [NativeNibbleRange.shape16]
++    norm_num [good]
++  · intro x
++    simp [NativeNibbleRange.sends16,good,receives,goodMultiplicity,List.range_succ,
++      List.count_cons]
++    omega
++
++theorem premiseInhabited : ∃ sends multiplicity, ExactNat sends multiplicity ∧
++    ∃ x ∈ sends, x ≠ 0 := by
++  refine ⟨NativeNibbleRange.sent 16 good,goodMultiplicity,nonzeroPremise.2.1,3,?_,by decide⟩
++  simp [NativeNibbleRange.sends16,good]
++
++theorem exactField_of_exactNat (sends : List BabyBear) (multiplicity : Nat → Nat)
++    (h : ExactNat sends multiplicity) : ExactField sends multiplicity := by
++  intro x
++  exact congrArg (fun n : Nat => (n : BabyBear)) (h x)
++
++theorem fieldPremiseInhabited : ∃ sends multiplicity,
++    ExactField sends multiplicity ∧ NoSendWrap sends ∧ ∃ x ∈ sends, x ≠ 0 := by
++  refine ⟨NativeNibbleRange.sent 16 good,goodMultiplicity,
++    exactField_of_exactNat _ _ nonzeroPremise.2.1,?_,3,?_,by decide⟩
++  · apply noWrap_of_length
++    rw [NativeNibbleRange.sends16]
++    decide
++  · simp [NativeNibbleRange.sends16,good]
++
++def bad (i : Nat) : BabyBear := if i=0 then 3 else if i=3 then 16 else 0
++def omittedMultiplicity (i : Nat) : Nat := if i=0 then 2 else if i=3 then 1 else 0
++
++/-- If the full top limb were omitted from the sends, the remaining multiset
++could balance while recomposition exceeds the requested 16-bit range. -/
++def OmittedTopFalsifier : Prop :=
++  NativeNibbleRange.Equations 16 65539 bad ∧
++  ExactNat [bad 0,bad 1,bad 2] omittedMultiplicity ∧
++  ¬(65539 : BabyBear).val < 65536 ∧
++  ¬ExactNat (NativeNibbleRange.sent 16 bad) omittedMultiplicity
++
++theorem omittedTopFalsifier : OmittedTopFalsifier := by
++  refine ⟨?_,?_,by decide,?_⟩
++  · rw [NativeNibbleRange.shape16]
++    norm_num [bad]
++  · intro x
++    simp [bad,receives,omittedMultiplicity,List.range_succ,List.count_cons]
++    omega
++  · intro hc
++    have hh := sound _ _ hc 16 (by simp [NativeNibbleRange.sends16,bad])
++    have hn : ¬(16 : BabyBear).val < 16 := by decide
++    exact hn hh
++
++/-- Field equality alone cannot rule out a positive number of invalid sends
++equal to the characteristic. This exhibits the exact missing arithmetic fact
++without allocating a list of two billion entries. -/
++def FieldWrapFalsifier : Prop :=
++  0 < (2013265921 : Nat) ∧ (2013265921 : BabyBear) = 0
++
++theorem fieldWrapFalsifier : FieldWrapFalsifier := by
++  constructor <;> decide
++
++/-- A complete field-conservation premise is inhabited by invalid sends when
++the per-key count wraps. `replicate` remains symbolic in this proof. -/
++def WrappedBusFalsifier : Prop :=
++  ExactField (List.replicate 2013265921 (16 : BabyBear)) (fun _ => 0) ∧
++  (16 : BabyBear) ∈ List.replicate 2013265921 (16 : BabyBear) ∧
++  ¬(16 : BabyBear).val < 16
++
++theorem wrapped_conserves (n : Nat) (hn : (n : BabyBear) = 0) :
++    ExactField (List.replicate n (16 : BabyBear)) (fun _ => 0) := by
++  intro x
++  have hr : receives (fun _ => 0) = [] := by simp [receives]
++  rw [hr, List.count_nil]
++  rw [List.count_replicate]
++  split
++  · exact hn
++  · rfl
++
++theorem wrappedBusFalsifier : WrappedBusFalsifier := by
++  refine ⟨wrapped_conserves 2013265921 fieldWrapFalsifier.2,?_,by decide⟩
++  exact List.mem_replicate.mpr ⟨by decide,rfl⟩
++
++end Minidregg.Compiler.NativeNibbleBus
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.receive_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.receive_range
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.sound
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.field_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.field_sound
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.noWrap_of_length' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.noWrap_of_length
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.row_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.row_range
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.field_row_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.field_row_range
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.nonzeroPremise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.nonzeroPremise
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.premiseInhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.premiseInhabited
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.omittedTopFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.omittedTopFalsifier
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.fieldWrapFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.fieldWrapFalsifier
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.wrapped_conserves' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.wrapped_conserves
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.wrappedBusFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.wrappedBusFalsifier
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.exactField_of_exactNat' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.exactField_of_exactNat
++
++/-- info: 'Minidregg.Compiler.NativeNibbleBus.fieldPremiseInhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleBus.fieldPremiseInhabited
+diff --git a/Compiler/NativeNibbleComplete.lean b/Compiler/NativeNibbleComplete.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/NativeNibbleComplete.lean
+@@ -0,0 +1,136 @@
++/- Every bounded value admits the exact native auxiliary relation. This makes
++the lowering an equivalence, not an uninhabited strengthening of source ranges. -/
++import Compiler.NativeNibbleRange
++namespace Minidregg.Compiler.NativeNibbleComplete
++open Minidregg.Compiler Minidregg.Compiler.NativeNibbleRange
++set_option autoImplicit false
++set_option maxHeartbeats 600000
++
++def Complete : Prop := ∀ bits v,Supported bits → v.val<2^bits →
++  ∃ a,Equations bits v a ∧ ∀ x∈sent bits a,x.val<16
++
++theorem natWeighted_head (a : Nat → Nat) (n b : Nat) :
++    natWeighted a (n+1) b=a 0+b*natWeighted (fun i => a (i+1)) n b := by
++  simp only [natWeighted,List.range_succ_eq_map,List.map_cons,List.map_map,
++    List.sum_cons,pow_zero,mul_one]
++  rw [←List.sum_map_mul_left]
++  congr 1
++  apply congrArg List.sum
++  apply List.map_congr_left
++  intro i hi
++  dsimp
++  rw [pow_succ]
++  ring
++
++theorem digitsExist (n b v : Nat) (hb : 0<b) (hv : v<b^n) :
++    ∃ a : Nat → Nat,(∀ i<n,a i<b) ∧ natWeighted a n b=v := by
++  induction n generalizing v with
++  | zero =>
++    have : v=0 := by simpa using hv
++    subst v
++    exact ⟨fun _ => 0,by simp,by simp [natWeighted]⟩
++  | succ n ih =>
++    have hdiv : v/b<b^n := by
++      apply (Nat.div_lt_iff_lt_mul hb).mpr
++      simpa [pow_succ,Nat.mul_comm] using hv
++    obtain ⟨a,ha,he⟩ := ih (v/b) hdiv
++    let d := fun i => if i=0 then v%b else a (i-1)
++    refine ⟨d,?_,?_⟩
++    · intro i hi
++      by_cases hz : i=0
++      · simp [d,hz,Nat.mod_lt v hb]
++      · simpa [d,hz] using ha (i-1) (by omega)
++    · rw [natWeighted_head]
++      have hd : (fun i => d (i+1))=a := by funext i; simp [d]
++      rw [hd,he]
++      simpa [d] using Nat.mod_add_div v b
++
++theorem weighted_congr (a c : Nat → BabyBear) (n b : Nat)
++    (h : ∀ i<n,a i=c i) : weighted a n b=weighted c n b := by
++  unfold weighted
++  congr 1
++  apply List.map_congr_left
++  intro i hi
++  rw [h i (List.mem_range.mp hi)]
++
++theorem cast_weighted_nat (a : Nat → Nat) (n b : Nat) :
++    weighted (fun i => (a i : BabyBear)) n b=(natWeighted a n b : BabyBear) := by
++  induction n with
++  | zero => simp [weighted,natWeighted]
++  | succ n ih =>
++    rw [natWeighted_succ]
++    simp only [Nat.cast_add,Nat.cast_mul,Nat.cast_pow]
++    simpa [weighted,List.range_succ] using congrArg
++      (fun x => x+(a n : BabyBear)*(b : BabyBear)^n) ih
++
++theorem complete : Complete := by
++  intro bits v hw hv
++  obtain ⟨hn,ht,ht4,hpow,hfield⟩ := geometry bits hw
++  have htopcap : 2^(topBits bits)≤16 := by
++    simpa using Nat.pow_le_pow_right (by decide : 1≤(2 : Nat)) ht4
++  have hfull : v.val<16^(limbCount bits) := by
++    have hpred : limbCount bits=(limbCount bits-1)+1 := by omega
++    rw [hpred,pow_succ]
++    rw [←hpow] at hv
++    exact lt_of_lt_of_le hv (Nat.mul_le_mul_left _ htopcap)
++  obtain ⟨d,hd,hde⟩ := digitsExist (limbCount bits) 16 v.val (by decide) hfull
++  have hlast : d (limbCount bits-1)<2^(topBits bits) := by
++    have hpred : limbCount bits=(limbCount bits-1)+1 := by omega
++    have he := hde
++    rw [hpred,natWeighted_succ] at he
++    rw [←hpow] at hv
++    have hpos : 0<(16 : Nat)^(limbCount bits-1) := by positivity
++    nlinarith
++  obtain ⟨bd,hbd,hbe⟩ := digitsExist (topBits bits) 2 (d (limbCount bits-1)) (by decide) hlast
++  let a : Nat → BabyBear := fun i =>
++    if i<limbCount bits then (d i : BabyBear) else (bd (i-limbCount bits) : BabyBear)
++  have ha (i : Nat) (hi : i<limbCount bits) : a i=(d i : BabyBear) := by simp [a,hi]
++  have hab (i : Nat) : a (limbCount bits+i)=(bd i : BabyBear) := by simp [a]
++  refine ⟨a,⟨?_,?_⟩,?_⟩
++  · apply sub_eq_zero.mpr
++    rw [weighted_congr a (fun i => (d i : BabyBear)) _ _ ha,
++      cast_weighted_nat,hde,ZMod.natCast_zmod_val]
++  · intro i hi hp
++    obtain ⟨rfl,hp⟩ := hp
++    refine ⟨?_,?_⟩
++    · intro b hb
++      rw [hab]
++      have hb01 : bd b=0 ∨ bd b=1 := by have := hbd b hb; omega
++      rcases hb01 with h | h <;> simp [h]
++    · apply sub_eq_zero.mpr
++      have hab' : (fun b => a (limbCount bits+b))=(fun b => (bd b : BabyBear)) := by
++        funext b; exact hab b
++      rw [hab',cast_weighted_nat,hbe,ha _ (by omega)]
++  · intro x hx
++    obtain ⟨i,hi,rfl⟩ := List.mem_map.mp hx
++    have hil := List.mem_range.mp (List.mem_filter.mp hi).1
++    rw [ha i hil,ZMod.val_natCast]
++    exact lt_of_le_of_lt (Nat.mod_le _ _) (hd i hil)
++
++theorem native_iff_range (bits : Nat) (v : BabyBear) (hw : Supported bits) :
++    (∃ a,Equations bits v a ∧ ∀ x∈sent bits a,x.val<16) ↔ v.val<2^bits := by
++  constructor
++  · rintro ⟨a,he,hs⟩
++    exact supportedSound bits v a hw he hs
++  · exact complete bits v hw
++
++end Minidregg.Compiler.NativeNibbleComplete
++
++/-- info: 'Minidregg.Compiler.NativeNibbleComplete.natWeighted_head' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleComplete.natWeighted_head
++/-- info: 'Minidregg.Compiler.NativeNibbleComplete.digitsExist' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleComplete.digitsExist
++/-- info: 'Minidregg.Compiler.NativeNibbleComplete.weighted_congr' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleComplete.weighted_congr
++/-- info: 'Minidregg.Compiler.NativeNibbleComplete.cast_weighted_nat' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleComplete.cast_weighted_nat
++/-- info: 'Minidregg.Compiler.NativeNibbleComplete.complete' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleComplete.complete
++/-- info: 'Minidregg.Compiler.NativeNibbleComplete.native_iff_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleComplete.native_iff_range
+diff --git a/Compiler/NativeNibbleRange.lean b/Compiler/NativeNibbleRange.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/NativeNibbleRange.lean
+@@ -0,0 +1,317 @@
++/- Source-grounded mathematical semantics of descriptor_ir2.rs eval_decomp.
++The limb width is four, including the full-top branch. This is an interpretation
++of native field equations and sends, not another circuit or witness generator.
++Cryptographic extraction of the sent keys is a separate premise. -/
++import Compiler.EmitSerialize
++import Mathlib.Data.ZMod.Basic
++namespace Minidregg.Compiler.NativeNibbleRange
++open Minidregg.Compiler
++set_option autoImplicit false
++set_option maxHeartbeats 600000
++
++def limbCount (bits : Nat) : Nat := (bits+3)/4
++def topBits (bits : Nat) : Nat := bits-(limbCount bits-1)*4
++def partialTop (bits i : Nat) : Prop := i=limbCount bits-1 ∧ topBits bits<4
++instance (bits i : Nat) : Decidable (partialTop bits i) := inferInstanceAs (Decidable (_ ∧ _))
++
++def weighted (a : Nat → BabyBear) (count base : Nat) : BabyBear :=
++  ((List.range count).map fun i => a i*(base : BabyBear)^i).sum
++
++/-- Exactly the unconditional final recomposition and the partial-top local
++constraints emitted by the native loop. There is no transition selector here. -/
++def Equations (bits : Nat) (v : BabyBear) (a : Nat → BabyBear) : Prop :=
++  weighted a (limbCount bits) 16-v=0 ∧
++  ∀ i<limbCount bits,partialTop bits i →
++    (∀ b<topBits bits,a (limbCount bits+b)*(a (limbCount bits+b)-1)=0) ∧
++    weighted (fun b => a (limbCount bits+b)) (topBits bits) 2-a i=0
++
++/-- Each native byte-bus send has multiplicity one. The full top nibble is
++sent; only a partial top limb is replaced by local Boolean equations. -/
++def sent (bits : Nat) (a : Nat → BabyBear) : List BabyBear :=
++  ((List.range (limbCount bits)).filter fun i => ¬partialTop bits i).map a
++
++def Sound : Prop := ∀ bits v a,
++  (bits=9 ∨ bits=16) → Equations bits v a →
++  (∀ x∈sent bits a,x.val<16) → v.val<2^bits
++
++theorem shape9 (v : BabyBear) (a : Nat → BabyBear) :
++    Equations 9 v a ↔
++    a 0+16*a 1+256*a 2=v ∧ a 3*(a 3-1)=0 ∧ a 3=a 2 := by
++  simp only [Equations,limbCount,topBits,partialTop,weighted]
++  norm_num [List.range_succ] at *
++  constructor
++  · rintro ⟨hr,ht⟩
++    have hh := ht 2 (by omega) rfl
++    constructor
++    · linear_combination hr
++    · exact ⟨hh.1,sub_eq_zero.mp hh.2⟩
++  · rintro ⟨hr,hb,ht⟩
++    constructor
++    · linear_combination hr
++    · intro i hi hit
++      subst i
++      exact ⟨hb,sub_eq_zero.mpr ht⟩
++
++theorem shape16 (v : BabyBear) (a : Nat → BabyBear) :
++    Equations 16 v a ↔ a 0+16*a 1+256*a 2+4096*a 3=v := by
++  norm_num [Equations,limbCount,topBits,partialTop,weighted,List.range_succ]
++  constructor <;> intro h <;> linear_combination h
++
++theorem sends9 (a : Nat → BabyBear) : sent 9 a=[a 0,a 1] := by
++  norm_num [sent,limbCount,partialTop,topBits,List.range_succ]
++
++theorem sends16 (a : Nat → BabyBear) : sent 16 a=[a 0,a 1,a 2,a 3] := by
++  norm_num [sent,limbCount,partialTop,topBits,List.range_succ]
++
++theorem bool_val (b : BabyBear) (hb : b*(b-1)=0) : b.val≤1 := by
++  rcases mul_eq_zero.mp hb with h | h
++  · simp [h]
++  · have : b=1 := sub_eq_zero.mp h
++    rw [this]
++    decide
++
++theorem cast_value (v : BabyBear) (n : Nat) (hn : n<2013265921)
++    (he : (n : BabyBear)=v) : v.val=n := by
++  rw [←he,ZMod.val_natCast]
++  exact Nat.mod_eq_of_lt hn
++
++theorem range9 (v : BabyBear) (a : Nat → BabyBear) (he : Equations 9 v a)
++    (hs : ∀ x∈sent 9 a,x.val<16) : v.val<512 := by
++  obtain ⟨hr,hb,ht⟩ := (shape9 v a).mp he
++  have h0 := hs (a 0) (by simp [sends9])
++  have h1 := hs (a 1) (by simp [sends9])
++  have h2 : (a 2).val≤1 := by rw [←ht]; exact bool_val _ hb
++  let n := (a 0).val+16*(a 1).val+256*(a 2).val
++  have hn : n<512 := by dsimp [n]; omega
++  have hc : (n : BabyBear)=v := by
++    simpa only [n,Nat.cast_add,Nat.cast_mul,ZMod.natCast_zmod_val] using hr
++  rw [cast_value v n (by omega) hc]
++  exact hn
++
++theorem range16 (v : BabyBear) (a : Nat → BabyBear) (he : Equations 16 v a)
++    (hs : ∀ x∈sent 16 a,x.val<16) : v.val<65536 := by
++  have hr := (shape16 v a).mp he
++  have h0 := hs (a 0) (by simp [sends16])
++  have h1 := hs (a 1) (by simp [sends16])
++  have h2 := hs (a 2) (by simp [sends16])
++  have h3 := hs (a 3) (by simp [sends16])
++  let n := (a 0).val+16*(a 1).val+256*(a 2).val+4096*(a 3).val
++  have hn : n<65536 := by dsimp [n]; omega
++  have hc : (n : BabyBear)=v := by
++    simpa only [n,Nat.cast_add,Nat.cast_mul,ZMod.natCast_zmod_val] using hr
++  rw [cast_value v n (by omega) hc]
++  exact hn
++
++theorem sound : Sound := by
++  intro bits v a hbits he hs
++  rcases hbits with rfl | rfl
++  · exact range9 v a he hs
++  · exact range16 v a he hs
++
++/-- Additional widths needed by the compiler-derived matrix/rescale successor.
++The native loop is shared; only this finite capacity check is profile-specific. -/
++def Supported (bits : Nat) : Prop := bits∈[2,9,11,14,15,16]
++
++def natWeighted (a : Nat → Nat) (count base : Nat) : Nat :=
++  ((List.range count).map fun i => a i*base^i).sum
++
++theorem natWeighted_succ (a : Nat → Nat) (n b : Nat) :
++    natWeighted a (n+1) b=natWeighted a n b+a n*b^n := by
++  simp [natWeighted,List.range_succ]
++
++theorem natWeighted_bound (a : Nat → Nat) (n b : Nat) (hb : 0<b)
++    (ha : ∀ i<n,a i<b) : natWeighted a n b<b^n := by
++  induction n with
++  | zero => simp [natWeighted]
++  | succ n ih =>
++    have hp := ih (fun i hi => ha i (by omega))
++    have hn := ha n (by omega)
++    have hpow : 0<b^n := pow_pos hb n
++    rw [natWeighted_succ,pow_succ]
++    nlinarith
++
++theorem weighted_cast (a : Nat → BabyBear) (n b : Nat) :
++    (natWeighted (fun i => (a i).val) n b : BabyBear)=weighted a n b := by
++  induction n with
++  | zero => simp [natWeighted,weighted]
++  | succ n ih =>
++    simp only [natWeighted_succ,Nat.cast_add,Nat.cast_mul,Nat.cast_pow,
++      ZMod.natCast_zmod_val,ih]
++    simp [weighted,List.range_succ]
++
++theorem geometry (bits : Nat) (h : Supported bits) :
++    0<limbCount bits ∧ 0<topBits bits ∧ topBits bits≤4 ∧
++    16^(limbCount bits-1)*2^(topBits bits)=2^bits ∧ 2^bits<2013265921 := by
++  simp only [Supported,List.mem_cons,List.not_mem_nil,or_false] at h
++  rcases h with rfl | rfl | rfl | rfl | rfl | rfl <;>
++    norm_num [limbCount,topBits]
++
++theorem sent_mem (bits : Nat) (a : Nat → BabyBear) (i : Nat)
++    (hi : i<limbCount bits) (hf : ¬partialTop bits i) : a i∈sent bits a := by
++  apply List.mem_map.mpr
++  exact ⟨i,List.mem_filter.mpr ⟨List.mem_range.mpr hi,by simp [hf]⟩,rfl⟩
++
++/-- The same exact decomposition proves every width currently emitted by the
++compact MAC and the compact extension/rescale successor, including full top16. -/
++theorem supportedSound (bits : Nat) (v : BabyBear) (a : Nat → BabyBear)
++    (hw : Supported bits) (he : Equations bits v a)
++    (hs : ∀ x∈sent bits a,x.val<16) : v.val<2^bits := by
++  obtain ⟨hn,ht,hcap,hpow,hfield⟩ := geometry bits hw
++  have hbefore : ∀ i<limbCount bits-1,(a i).val<16 := by
++    intro i hi
++    exact hs _ (sent_mem bits a i (by omega) (by unfold partialTop; omega))
++  have hlast : (a (limbCount bits-1)).val<2^(topBits bits) := by
++    by_cases hp : topBits bits<4
++    · obtain ⟨hb,hr⟩ := he.2 (limbCount bits-1) (by omega) ⟨rfl,hp⟩
++      have hbits : ∀ i<topBits bits,(a (limbCount bits+i)).val<2 := by
++        intro i hi
++        have := bool_val _ (hb i hi)
++        omega
++      have hnat := natWeighted_bound (fun i => (a (limbCount bits+i)).val)
++        (topBits bits) 2 (by decide) hbits
++      have hsmall : 2^(topBits bits)≤16 := by
++        have := Nat.pow_le_pow_right (by decide : 1≤(2 : Nat)) hcap
++        norm_num at this
++        exact this
++      have hc : (natWeighted (fun i => (a (limbCount bits+i)).val)
++          (topBits bits) 2 : BabyBear)=a (limbCount bits-1) :=
++        (weighted_cast _ _ _).trans (sub_eq_zero.mp hr)
++      rw [cast_value _ _ (by omega) hc]
++      exact hnat
++    · have ht4 : topBits bits=4 := by omega
++      have hh := hs _ (sent_mem bits a (limbCount bits-1) (by omega)
++        (by simp [partialTop,hp]))
++      simpa [ht4] using hh
++  let n := natWeighted (fun i => (a i).val) (limbCount bits) 16
++  have hprefix := natWeighted_bound (fun i => (a i).val) (limbCount bits-1) 16
++    (by decide) hbefore
++  have hnval : n<2^bits := by
++    have hn' : limbCount bits=(limbCount bits-1)+1 := by omega
++    dsimp [n]
++    rw [hn',natWeighted_succ]
++    rw [←hpow]
++    have hz : 0<(16 : Nat)^(limbCount bits-1) := by positivity
++    nlinarith
++  have hc : (n : BabyBear)=v := (weighted_cast a (limbCount bits) 16).trans
++    (sub_eq_zero.mp he.1)
++  rw [cast_value _ _ (lt_trans hnval hfield) hc]
++  exact hnval
++
++def nineWitness (i : Nat) : BabyBear := if i<2 then 15 else 1
++def sixteenWitness (_ : Nat) : BabyBear := 15
++def missingTopWitness (i : Nat) : BabyBear := if i=3 then 16 else 0
++
++theorem nonzero9 : Equations 9 511 nineWitness ∧
++    (∀ x∈sent 9 nineWitness,x.val<16) ∧ (511 : BabyBear).val≠0 := by
++  refine ⟨(shape9 _ _).mpr ?_,?_,by decide⟩
++  · norm_num [nineWitness]
++  · simp only [sends9,List.mem_cons,List.not_mem_nil,or_false]
++    intro x hx
++    rcases hx with rfl | rfl <;> norm_num [nineWitness] <;> decide
++
++theorem nonzero16 : Equations 16 65535 sixteenWitness ∧
++    (∀ x∈sent 16 sixteenWitness,x.val<16) ∧ (65535 : BabyBear).val≠0 := by
++  refine ⟨(shape16 _ _).mpr ?_,?_,by decide⟩
++  · norm_num [sixteenWitness]
++  · simp only [sends16,List.mem_cons,List.not_mem_nil,or_false]
++    intro x hx
++    rcases hx with rfl | rfl | rfl | rfl <;> norm_num [sixteenWitness] <;> decide
++
++/-- Omitting the full top-nibble send permits 65536. The three lower sends
++and the native recomposition equations still hold. This is the old seam's tooth. -/
++theorem omittedFullTopFalsifier : Equations 16 65536 missingTopWitness ∧
++    (∀ i<3,(missingTopWitness i).val<16) ∧
++    ¬(∀ x∈sent 16 missingTopWitness,x.val<16) := by
++  refine ⟨(shape16 _ _).mpr ?_,?_,?_⟩
++  · norm_num [missingTopWitness]
++  · intro i hi
++    have : i≠3 := by omega
++    simp [missingTopWitness,this]
++  · intro h
++    have hh := range16 (65536 : BabyBear) missingTopWitness ((shape16 _ _).mpr (by norm_num [missingTopWitness])) h
++    have : ¬(65536 : BabyBear).val<65536 := by decide
++    exact this hh
++
++theorem overflow9Refused (a : Nat → BabyBear) :
++    ¬(Equations 9 512 a ∧ ∀ x∈sent 9 a,x.val<16) := by
++  rintro ⟨he,hs⟩
++  have := range9 _ _ he hs
++  exact (by decide : ¬(512 : BabyBear).val<512) this
++
++theorem premiseInhabited : ∃ bits v a,Supported bits ∧ Equations bits v a ∧
++    (∀ x∈sent bits a,x.val<16) ∧ v.val≠0 :=
++  ⟨16,65535,sixteenWitness,by simp [Supported],nonzero16⟩
++
++/-- The last row is not exempt. Removing all equations from a one-row trace
++would accept a non-range value; the real all-row relation cannot do so. -/
++theorem terminalRowRefused : ¬∃ a : Fin 1 → Nat → BabyBear,
++    (∀ r,Equations 9 (512 : BabyBear) (a r)) ∧
++    (∀ r x,x∈sent 9 (a r) → x.val<16) := by
++  rintro ⟨a,he,hs⟩
++  exact overflow9Refused (a 0) ⟨he 0,hs 0⟩
++
++end Minidregg.Compiler.NativeNibbleRange
++
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.shape9' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.shape9
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.shape16' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.shape16
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.sends9' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.sends9
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.sends16' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.sends16
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.bool_val' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.bool_val
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.cast_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.cast_value
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.range9' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.range9
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.range16' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.range16
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.sound
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.natWeighted_succ' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.natWeighted_succ
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.natWeighted_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.natWeighted_bound
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.weighted_cast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.weighted_cast
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.geometry' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.geometry
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.sent_mem' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.sent_mem
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.supportedSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.supportedSound
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.nonzero9' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.nonzero9
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.nonzero16' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.nonzero16
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.omittedFullTopFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.omittedFullTopFalsifier
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.overflow9Refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.overflow9Refused
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.premiseInhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.premiseInhabited
++/-- info: 'Minidregg.Compiler.NativeNibbleRange.terminalRowRefused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeNibbleRange.terminalRowRefused
+diff --git a/Compiler/NativeRangeKeyswitch.lean b/Compiler/NativeRangeKeyswitch.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/NativeRangeKeyswitch.lean
+@@ -0,0 +1,202 @@
++/- The actual nibble lowering, global byte-bus support, and the existing
++compiler-derived compact MAC/Infer theorem. Source arithmetic includes every row.
++This module does not turn a verifier Boolean into either local equations or
++global multiset extraction: those cryptographic/refinement obligations stay typed. -/
++import Compiler.NativeNibbleBus
++import Compiler.NativeNibbleComplete
++import Compiler.RangeKeyswitchLookup
++import Compiler.RangeKeyswitchInfer
++namespace Minidregg.Compiler.NativeRangeKeyswitch
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.RangeKeyswitchRow
++open Minidregg.Compiler.BfvInferComposition
++open Minidregg.Compiler.BfvInferLinear (primes)
++open Minidregg.Compiler.BfvSquareComposition (KernelCiphertext)
++set_option autoImplicit false
++set_option maxHeartbeats 800000
++set_option maxRecDepth 30000
++
++abbrev Aux := RangeSpec → Nat → BabyBear
++def Local (a : Idx → BabyBear) (aux : Aux) : Prop :=
++  ∀ r∈ranges,NativeNibbleRange.Equations r.bits (a r.wire) (aux r)
++def rowSends (aux : Aux) : List BabyBear :=
++  ranges.flatMap fun r => NativeNibbleRange.sent r.bits (aux r)
++def allSends {n : Nat} (aux : Fin n → Aux) : List BabyBear :=
++  (List.finRange n).flatMap fun row => rowSends (aux row)
++def NativeRanges (a : Idx → BabyBear) : Prop :=
++  ∃ aux,Local a aux ∧ ∀ x∈rowSends aux,x.val<16
++
++def Checked (l : Fin 4) (operands : Operands) (out : Fin 2 → Nat) : Prop :=
++  ∃ a : Idx → BabyBear,systemAccepts a (system (primes l)) ∧
++    NativeRanges a ∧ Bound wires a operands out
++
++def AllRowsSound : Prop := ∀ n l (trace : Fin n → Idx → BabyBear) aux multiplicity,
++  (∀ row,systemAccepts (trace row) (system (primes l))) →
++  (∀ row,Local (trace row) (aux row)) →
++  NativeNibbleBus.ExactField (allSends aux) multiplicity →
++  NativeNibbleBus.NoSendWrap (allSends aux) →
++  ∀ row h,value (trace row) (BfvKeyswitchCore.oIndex h)=
++    (value (trace row) (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++      value (trace row) (BfvKeyswitchCore.dIndex k)*
++      value (trace row) (BfvKeyswitchCore.kIndex h k))%primes l
++
++theorem range_widths (r : RangeSpec) (hr : r∈ranges) : r.bits=9 ∨ r.bits=16 := by
++  have hm : r∈allRanges := by simpa [ranges] using hr
++  have hf {n : Nat} (bits : Nat) (f : Fin n → Idx) (h : r∈rangeFamily bits f) :
++      r.bits=bits := by
++    obtain ⟨i,hi,he⟩ := List.mem_map.mp h
++    exact congrArg RangeSpec.bits he.symm
++  rcases List.mem_append.mp hm with h | h
++  · obtain ⟨g,hg,h⟩ := List.mem_flatMap.mp h
++    rcases List.mem_append.mp h with h | h
++    · rcases List.mem_append.mp h with h | h
++      · exact Or.inl (hf 9 _ h)
++      · exact Or.inl (hf 9 _ h)
++    · exact Or.inl (hf 9 _ h)
++  · obtain ⟨g,hg,h⟩ := List.mem_flatMap.mp h
++    rcases List.mem_append.mp h with h | h
++    · exact Or.inl (hf 9 _ h)
++    · exact Or.inr (hf 16 _ h)
++
++theorem range_supported (r : RangeSpec) (hr : r∈ranges) :
++    NativeNibbleRange.Supported r.bits := by
++  rcases range_widths r hr with h | h <;> simp [NativeNibbleRange.Supported,h]
++
++theorem local_ranges (a : Idx → BabyBear) (aux : Aux) (he : Local a aux)
++    (hs : ∀ x∈rowSends aux,x.val<16) : RangeHolds a := by
++  intro r hr
++  apply NativeNibbleRange.supportedSound r.bits (a r.wire) (aux r)
++    (range_supported r hr) (he r hr)
++  intro x hx
++  exact hs x (List.mem_flatMap.mpr ⟨r,hr,hx⟩)
++
++/-- Completeness is inherited for arbitrary accepted source values: introducing
++the native auxiliary relation cannot empty an already inhabited source premise. -/
++theorem nativeRanges_iff (a : Idx → BabyBear) : NativeRanges a ↔ RangeHolds a := by
++  constructor
++  · rintro ⟨aux,he,hs⟩
++    exact local_ranges a aux he hs
++  · intro hr
++    classical
++    have hex (r : RangeSpec) (hm : r∈ranges) :=
++      NativeNibbleComplete.complete r.bits (a r.wire) (range_supported r hm) (hr r hm)
++    let aux : Aux := fun r => if h : r∈ranges then Classical.choose (hex r h) else fun _ => 0
++    have ha (r : RangeSpec) (hm : r∈ranges) :
++        NativeNibbleRange.Equations r.bits (a r.wire) (aux r) ∧
++        ∀ x∈NativeNibbleRange.sent r.bits (aux r),x.val<16 := by
++      simpa only [aux,dif_pos hm] using Classical.choose_spec (hex r hm)
++    refine ⟨aux,fun r hm => (ha r hm).1,?_⟩
++    intro x hx
++    obtain ⟨r,hr,hx⟩ := List.mem_flatMap.mp hx
++    exact (ha r hr).2 x hx
++
++theorem checked_iff (l : Fin 4) (operands : Operands) (out : Fin 2 → Nat) :
++    Checked l operands out ↔ RangeKeyswitchInfer.Checked l operands out := by
++  simp only [Checked,RangeKeyswitchInfer.Checked,nativeRanges_iff]
++
++theorem rowSends_length (aux : Aux) : (rowSends aux).length=524 := by
++  simp only [rowSends,List.length_flatMap,NativeNibbleRange.sent,List.length_map]
++  decide
++
++theorem allSends_length {n : Nat} (aux : Fin n → Aux) :
++    (allSends aux).length=n*524 := by
++  simp [allSends,List.length_flatMap,rowSends_length]
++
++theorem noWrap_of_domain {n : Nat} (aux : Fin n → Aux) (hn : n≤131072) :
++    NativeNibbleBus.NoSendWrap (allSends aux) := by
++  apply NativeNibbleBus.noWrap_of_length
++  rw [allSends_length]
++  omega
++
++/-- The semantic range-table statement formerly assumed by the MAC bridge is
++now obtained from native local equations and bus support. Its table definition
++remains a caller-supplied faithful semantic table, distinct from LogUp extraction. -/
++theorem semanticLookups (tf : Dregg2.Circuit.DescriptorIR2.TraceFamily)
++    (ht : RangeKeyswitchLookup.FaithfulRanges tf) (a : Idx → BabyBear)
++    (hn : NativeRanges a) : RangeKeyswitchLookup.LookupChecked tf a := by
++  intro r hr
++  apply (IR2RangeLookupBridge.lookup_iff_val_lt r.bits tf (ht r hr)
++    (RangeKeyswitchLookup.extend a) r.wire.val).mpr
++  have hh := (nativeRanges_iff a).mp hn r hr
++  simpa [RangeKeyswitchLookup.extend,r.wire.isLt] using hh
++
++theorem allRowsSound : AllRowsSound := by
++  intro n l trace aux multiplicity hg he hb hn row
++  apply (actualRowSound l (trace row) (hg row) ?_).2
++  apply local_ranges (trace row) (aux row) (he row)
++  intro x hx
++  apply NativeNibbleBus.field_sound (allSends aux) multiplicity hb hn x
++  exact List.mem_flatMap.mpr ⟨row,List.mem_finRange row,hx⟩
++
++/-- The actual complete-class domain size gives a concrete no-wrap sufficient
++condition without assuming receive multiplicities themselves are bounded. -/
++theorem allRowsSound_of_length (n : Nat) (l : Fin 4)
++    (trace : Fin n → Idx → BabyBear) (aux : Fin n → Aux) (multiplicity : Nat → Nat)
++    (hg : ∀ row,systemAccepts (trace row) (system (primes l)))
++    (he : ∀ row,Local (trace row) (aux row))
++    (hb : NativeNibbleBus.ExactField (allSends aux) multiplicity)
++    (hlen : (allSends aux).length<2013265921) :
++    ∀ row h,value (trace row) (BfvKeyswitchCore.oIndex h)=
++      (value (trace row) (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++        value (trace row) (BfvKeyswitchCore.dIndex k)*
++        value (trace row) (BfvKeyswitchCore.kIndex h k))%primes l :=
++  allRowsSound n l trace aux multiplicity hg he hb (NativeNibbleBus.noWrap_of_length _ hlen)
++
++theorem inferSound (op : BfvInferContract.PublicTransforms) (key : EvaluationKey)
++    (model : Ciphertext) (query : Plaintext) (kernel : KernelCiphertext)
++    (trace : Nat → Ciphertext)
++    (hi : ∀ l j,Checked l (initialOperands model query l j) (fun h => trace 0 h l j))
++    (hr : ∀ s : Fin 10,∀ l j,Checked l (rotationOperands op.base key (trace s.val) s l j)
++      (fun h => trace (s.val+1) h l j))
++    (hrt : BfvSquareComposition.BaseRoundTrip (BfvInferContract.squareTransforms op) (trace 10))
++    (hs : BfvSquareComposition.SquareChecked (BfvInferContract.squareTransforms op)
++      (trace 10) kernel) : kernel=BfvInferContract.result op key model query := by
++  apply RangeKeyswitchInfer.inferSound op key model query kernel
++  exact ⟨trace,fun l j => (checked_iff l _ _).mp (hi l j),
++    fun s l j => (checked_iff l _ _).mp (hr s l j),hrt,hs⟩
++
++theorem checked_premise_transfer (l : Fin 4) :
++    (∃ a out,RangeKeyswitchInfer.Checked l a out) ↔ ∃ a out,Checked l a out := by
++  simp only [checked_iff]
++
++end Minidregg.Compiler.NativeRangeKeyswitch
++
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.range_widths' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.range_widths
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.range_supported' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.range_supported
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.local_ranges' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.local_ranges
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.nativeRanges_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.nativeRanges_iff
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.checked_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.checked_iff
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.rowSends_length' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.rowSends_length
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.allSends_length' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.allSends_length
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.noWrap_of_domain' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.noWrap_of_domain
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.semanticLookups' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.semanticLookups
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.allRowsSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.allRowsSound
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.allRowsSound_of_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.allRowsSound_of_length
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.inferSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.inferSound
++/-- info: 'Minidregg.Compiler.NativeRangeKeyswitch.checked_premise_transfer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.NativeRangeKeyswitch.checked_premise_transfer

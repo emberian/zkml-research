@@ -1,0 +1,11 @@
+{"width": 2239,
+ "register_count": 99593,
+ "range_counts":
+ [{"count": 1038, "bits": 9},
+  {"count": 664, "bits": 2},
+  {"count": 76, "bits": 14},
+  {"count": 460, "bits": 15}],
+ "public_arity": 84,
+ "name": "extension",
+ "instructions": 101831,
+ "arithmetic_constraints": 1241}

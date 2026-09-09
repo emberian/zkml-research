@@ -1,0 +1,151 @@
+{
+  "classification": "EXECUTED",
+  "modules": [
+    {
+      "path": "Compiler/AirPolynomialOod.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/AirPolynomialOod.olean",
+        "Compiler/AirPolynomialOod.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 19.322792374994606,
+      "source_sha256": "89eef0f416dd9354c4d95d2f3be3ec226b697280c4e01093a57be8a515178cf7",
+      "source_stable": true,
+      "olean_sha256": "9304a01de31592bc3d9f7f783af2424e7275ae50c6fcd0bb3e94f8841ac20ee7",
+      "axiom_guards": 10,
+      "log": "checks/AirPolynomialOod.log"
+    },
+    {
+      "path": "Compiler/Ir2AirPcsOod.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/Ir2AirPcsOod.olean",
+        "Compiler/Ir2AirPcsOod.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 19.96875708299922,
+      "source_sha256": "3eed867e8bb83a283e77343bbe7085111d24853112bd632b6bd5d02bc9f5dc6e",
+      "source_stable": true,
+      "olean_sha256": "06fbf8be5e072e2bd3eafe48710a3f345515c711ffc18027a3df39a8bc3fede4",
+      "axiom_guards": 3,
+      "log": "checks/Ir2AirPcsOod.log"
+    },
+    {
+      "path": "Compiler/BfvQueryPolynomialOod.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/BfvQueryPolynomialOod.olean",
+        "Compiler/BfvQueryPolynomialOod.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 22.48496987496037,
+      "source_sha256": "fbeea5f884e63efdd95afe608b65b5f1fd6aacad5e5bc7602cb42a8765d8d4a4",
+      "source_stable": true,
+      "olean_sha256": "81269d785d9a52a1b0cf005ccfd5ad303d864f4fc909f1d296354023a3708409",
+      "axiom_guards": 5,
+      "log": "checks/BfvQueryPolynomialOod.log"
+    },
+    {
+      "path": "Compiler/Ir2QuotientRecomposition.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/Ir2QuotientRecomposition.olean",
+        "Compiler/Ir2QuotientRecomposition.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 18.171320750028826,
+      "source_sha256": "7d240cb2126fd0cb6545126a02cb4194ac75722cfdf3108dd48f8d3bf4a2105c",
+      "source_stable": true,
+      "olean_sha256": "e0c8ee6030029e6b3c8920182f5a1ecc4b69ddebb7a8434b636cb6e36fb6bda2",
+      "axiom_guards": 6,
+      "log": "checks/Ir2QuotientRecomposition.log"
+    },
+    {
+      "path": "Compiler/Ir2AirPcsOodWitnesses.lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/Ir2AirPcsOodWitnesses.olean",
+        "Compiler/Ir2AirPcsOodWitnesses.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+      "exit_code": 0,
+      "elapsed_s": 9.66239987500012,
+      "source_sha256": "0cb562aa9557fbddf562f5b685f0b25473582f6596657ce5debb90bddcfeb145",
+      "source_stable": true,
+      "olean_sha256": "3b3823609f0cb02e61866999d1d31bb33b3373ff1e1d70362484097b4053c69e",
+      "axiom_guards": 8,
+      "log": "checks/Ir2AirPcsOodWitnesses.log"
+    }
+  ],
+  "direct_dependencies_at_import": {
+    "Compiler/Ir2WholeRow.lean": {
+      "source_sha256": "1067ff4414922352424565f1040ff44c54a07bacb9450b8fdf1818837d355c87",
+      "olean_sha256": "fb74e53f6fd3e859a287ecb0c79c586b5f9fce74943ff7dec296a3719896bf92"
+    },
+    "Theory/PolynomialCurve.lean": {
+      "source_sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15",
+      "olean_sha256": "058480ca88d56c5cbdca38b76bc935255362120d7e42cb14cadd7d91e411e404"
+    },
+    "Selvage/LogupStar.lean": {
+      "source_sha256": "eaa4fabb2c1caca9b588a1ec31d4a172c072a53f0bb5264a926b8625893b8d6b",
+      "olean_sha256": "d8491164dd4da1982687db80f0e8c5b318d248bcd34f1a3888bd9e89b7ed1623"
+    },
+    "Selvage/BabyBearExt4.lean": {
+      "source_sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "olean_sha256": "0e3bffb28f157065ec68607fbe8d378da05d4423c23445eb8e92f2ad9bd7c8fc"
+    },
+    "Selvage/Ir2PcsPackedSoundness.lean": {
+      "source_sha256": "fa1d1890aeb4be63a393237dc880557388736a677d57816cf2b5baad9f192e9e",
+      "olean_sha256": "35e3e04c18b76394c045682052aad026f73cde3a545975d6d328dfeed3409b60"
+    },
+    "Compiler/AirPolynomialOod.lean": {
+      "source_sha256": "89eef0f416dd9354c4d95d2f3be3ec226b697280c4e01093a57be8a515178cf7",
+      "olean_sha256": "9304a01de31592bc3d9f7f783af2424e7275ae50c6fcd0bb3e94f8841ac20ee7"
+    },
+    "Compiler/BfvQueryWholeRows.lean": {
+      "source_sha256": "80b444e564f0cb7c8e81dcbed9e1a81bd34f81ddb613dd81e018c159b1e64d0c",
+      "olean_sha256": "1c0288400f169d354e08d5512316a14c709ed9c6284c9fdd019a6e9dadc748aa"
+    },
+    "Compiler/Ir2AirPcsOod.lean": {
+      "source_sha256": "3eed867e8bb83a283e77343bbe7085111d24853112bd632b6bd5d02bc9f5dc6e",
+      "olean_sha256": "06fbf8be5e072e2bd3eafe48710a3f345515c711ffc18027a3df39a8bc3fede4"
+    },
+    "Compiler/Ir2QuotientRecomposition.lean": {
+      "source_sha256": "7d240cb2126fd0cb6545126a02cb4194ac75722cfdf3108dd48f8d3bf4a2105c",
+      "olean_sha256": "e0c8ee6030029e6b3c8920182f5a1ecc4b69ddebb7a8434b636cb6e36fb6bda2"
+    },
+    "Selvage/Ir2PcsPackedWitnesses.lean": {
+      "source_sha256": "f866c95bf0783edabda065c8bdebe12c92ca4807920d4ce1d80f671526199416",
+      "olean_sha256": "dd263b62868c3baca929c6b473662c7c6427e0d18bb708af8cdf6c0b5ff21934"
+    }
+  },
+  "import_boundary": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "exit_code": 0,
+    "log": "checks/import-boundary.log"
+  },
+  "scope": "Changed modules only; exact guard-pinned kernel checks. No broad rebuild, native execution, or implementation refinement claimed."
+}

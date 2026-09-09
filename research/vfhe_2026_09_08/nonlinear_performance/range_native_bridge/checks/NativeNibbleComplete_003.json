@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "build/Compiler/NativeNibbleComplete.olean",
+    "Compiler/NativeNibbleComplete.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/range_native_bridge",
+  "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/range_native_bridge/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+  "exit": 0,
+  "seconds": 2.9701600830303505,
+  "source_sha256": "5294409c6e90017f2cd952e5da77bad1e9bef246874829b4147883e7b0709a51"
+}

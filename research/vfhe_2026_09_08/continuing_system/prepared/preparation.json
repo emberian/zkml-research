@@ -1,0 +1,93 @@
+{
+  "checkpoints": {
+    "after_expiry": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 0.9,
+      "linear_correct": 18
+    },
+    "after_restart": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 0.9,
+      "linear_correct": 18
+    },
+    "after_teaching": {
+      "accuracy": 0.95,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 19,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 0.95,
+      "linear_correct": 19
+    },
+    "initial": {
+      "accuracy": 1.0,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 20,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 1.0,
+      "linear_correct": 20
+    }
+  },
+  "cryptographic_operations": 0,
+  "elapsed_seconds": 3.3151678330032155,
+  "encoder_helper_sha256": "241e6f2d795e677f4132f2ff9ad5dd6826cbddceb38155655d49b947b6dac7d8",
+  "encoder_stats": {
+    "cached_texts": 0,
+    "clipped_coordinates": 0,
+    "encoded_texts": 32,
+    "forward_batches": 2,
+    "forward_seconds": 0.253793501004111,
+    "model_load_seconds": 0.13276116701308638,
+    "numpy": "2.4.2",
+    "torch": "2.10.0",
+    "transformers": "4.57.3"
+  },
+  "expired_examples": [
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi09",
+      "text_id": "pi01"
+    },
+    {
+      "label": "proof_integrity",
+      "lane": 1,
+      "operation": "teach_pi10",
+      "text_id": "pi02"
+    }
+  ],
+  "held_out_texts": 20,
+  "preparation_reused": false,
+  "prepared_utc": "2026-09-09T04:15:55.115274+00:00",
+  "reference_sha256": "50d9d39cc68190348d8da0b16432b3a3d8ac057c5ed7b4dcb462d8540521c138",
+  "schema": "continuing-system-preparation-v1",
+  "training_texts": 12,
+  "vector_domain": {
+    "dimension": 576,
+    "maximum_abs_coordinate": 20,
+    "maximum_squared_norm": 16601
+  },
+  "vectors_sha256": "a373ff5e67ed16bb94010e770a1de320072655aaea7a22f46c1a7141b3df4aed",
+  "workload_sha256": "cc5bbe33245ac48b7cbc63b5499afba30957a71bb2b86882b427f408ec03eed2"
+}

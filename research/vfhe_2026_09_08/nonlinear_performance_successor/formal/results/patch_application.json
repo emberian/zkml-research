@@ -1,0 +1,15 @@
+{
+  "command": [
+    "git",
+    "-C",
+    "/Users/ember/dev/minidregg",
+    "apply",
+    "--check",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/range-profiled.patch"
+  ],
+  "seconds": 0.05331933300476521,
+  "exit": 0,
+  "stdout": "",
+  "stderr": "",
+  "patch_sha256": "a6c6589125f51b49cee29bd541f73e43df374abd43a74a4ed969e9597b5ef45a"
+}

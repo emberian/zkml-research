@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-complete-kernel-infer",
+    "verify",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+    "40",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime0/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/infer_case",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/infer/chunk040/proof.bin"
+  ],
+  "started_utc": "2026-09-09T02:44:58.591645+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 300,
+  "pid": 84500,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T02:44:58.919283+00:00",
+  "elapsed_seconds": 0.32765320799080655,
+  "user_seconds": 0.478664,
+  "system_seconds": 0.025633,
+  "max_rss_bytes": 156631040
+}

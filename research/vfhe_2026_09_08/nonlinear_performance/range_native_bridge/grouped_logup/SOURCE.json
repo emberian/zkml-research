@@ -1,0 +1,91 @@
+{
+  "base": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "owned": {
+    "Compiler/ByteLogUpDefect.lean": {
+      "sha256": "ef8b4fadc9c2f07f50d2e462063624ab317056816a1da49f98b280b2b9e06026",
+      "theorems": [
+        "point_injective",
+        "receive_mem",
+        "exact_iff",
+        "rational_histogram",
+        "sound",
+        "bad_probability",
+        "no_tuple_collision",
+        "fresh_pair_probability",
+        "support_card_bound",
+        "fresh_pair_length_bound",
+        "wrong_histogram",
+        "wrong_defect_nonzero",
+        "nonzeroPremise"
+      ],
+      "guard_count": 13
+    },
+    "Compiler/GroupedByteFractions.lean": {
+      "sha256": "1c6e0851b13346cd92f8681fb19234da27d6ed45114510961b73b79869698a5e",
+      "theorems": [
+        "rational_flatMap",
+        "sum_map_range",
+        "send_rationalN",
+        "send_rational",
+        "receive_rational",
+        "mem_sendListN",
+        "mem_sendList"
+      ],
+      "guard_count": 7
+    },
+    "Compiler/GroupedLogUpTrace.lean": {
+      "sha256": "e5bd043f446970f457f23be6c65cfc438b5784ef1fbf97cf2580565a80f41418",
+      "theorems": [
+        "telescope",
+        "inclusive_sum",
+        "sound",
+        "single_sound",
+        "native_byte_sound_general",
+        "native_byte_sound",
+        "adaptive_trace",
+        "signedWitness",
+        "premiseInhabited",
+        "missingTerminalFalsifier",
+        "missingGlobalFalsifier",
+        "nativePremise"
+      ],
+      "guard_count": 12
+    },
+    "Compiler/NativeByteExtraction.lean": {
+      "sha256": "470290f7151b2e742d21917bf3fef32f18c015e83aa7b19106b9afe81dac61e9",
+      "theorems": [
+        "denom_of_nopole",
+        "accepted_rational",
+        "sound",
+        "false_accept_probability",
+        "exact_perm",
+        "allRowsRanges_or_bad",
+        "allRowsSound_or_bad",
+        "embed_nat",
+        "nonzero_native_accepted",
+        "wrong_native_accepted",
+        "wrong_native_histogram",
+        "native_premise_inhabited",
+        "checked_for_infer"
+      ],
+      "guard_count": 13
+    }
+  },
+  "guard_count": 45,
+  "patch_sha256": "ffd834e6bcf195cb76fb443ed222ac07fdcfd71ac79756678ebfcab51134b65b",
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/range_native_bridge/SOURCE.json": "47185d86837108671d10113a23b5711037316b680f653603f2a562227650626e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/Compiler/LogUpGrouping.lean": "7442ee4b9220df0d10ceb7f276f2b6556db033ae7cfc0ba9cbdcabcbcdc7b6d8",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped/src/logup.rs": "f525316cb028409896ff0aac59bd6d95da0ff29cb430f5b1339d02ad730fd754",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped/src/types.rs": "0858d5796d6e34b4e5bb557d27da96e995dd2edad95641600b2d9337a9f24b7e",
+    "/Users/ember/dev/minidregg/Selvage/LogupStar.lean": "eaa4fabb2c1caca9b588a1ec31d4a172c072a53f0bb5264a926b8625893b8d6b",
+    "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978"
+  },
+  "fresh_coin_model": "independent uniformly sampled Ext4 beta,alpha after fixed main/table data; arbitrary subsequent permutation witnesses",
+  "byte_tuple_compression_collision_probability": 0,
+  "failure_bound": "(2*sender_list_length+31)/2013265921^4",
+  "native_proof_runs": 0,
+  "web_queries": 0,
+  "scry_queries": 0
+}

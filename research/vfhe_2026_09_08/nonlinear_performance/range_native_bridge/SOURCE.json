@@ -1,0 +1,168 @@
+{
+  "minidregg_base": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "claims": [
+    "source-grounded mathematical semantics, not Rust execution refinement",
+    "no grouped LogUp or PCS probabilistic security theorem",
+    "native canonical range equivalence for widths 2,9,11,14,15,16",
+    "global field multiset conservation plus no-wrap gives native send support",
+    "source arithmetic and range constraints apply to all rows, including terminal"
+  ],
+  "sources": {
+    "native_decomposition": {
+      "path": "/Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs",
+      "sha256": "596a450e77a8b905626e8c8b7b68dcffadd07b9bd9bcb71a040f009e8f77fb89",
+      "locations": [
+        "LIMB_BITS:468",
+        "limb_geom/decomp_cols:2070-2083",
+        "eval_decomp:3965-4000",
+        "unconditional every-row calls:4360-4365",
+        "fill_main_layout_row:5357-5390",
+        "byte degree pin:7753"
+      ]
+    },
+    "byte_table_source": {
+      "path": "/Users/ember/dev/breadstuffs/metatheory/Dregg2/Circuit/Emit/ByteTableEmit.lean",
+      "sha256": "5403165bc4da947845e270eecac061fca7a3e3a3fd9816936ee8042e22997c2b",
+      "locations": [
+        "value_is_the_row_index:191",
+        "served_key_is_canonical:214"
+      ]
+    },
+    "grouped_logup": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped/src/logup.rs",
+      "sha256": "f525316cb028409896ff0aac59bd6d95da0ff29cb430f5b1339d02ad730fd754",
+      "locations": [
+        "sum of fractions local constraints:228-260",
+        "global cumulative check:314-320",
+        "witness denominators:404-554"
+      ]
+    },
+    "lookup_grouping": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped/src/types.rs",
+      "sha256": "0858d5796d6e34b4e5bb557d27da96e995dd2edad95641600b2d9337a9f24b7e",
+      "locations": [
+        "same-bus consecutive grouping"
+      ]
+    },
+    "RangeCompletedMac": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeCompletedMac.lean",
+      "sha256": "235506337faf0f64dfc32e181c0a2dfea8e295caf8380bbda4bf6738071f576c",
+      "locations": [
+        "entire imported frozen module"
+      ]
+    },
+    "RangeKeyswitchRow": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchRow.lean",
+      "sha256": "7e1d955699b6f4d10b6352b1e624b0e57375ec3ad15a323e2862fc2b3fd49827",
+      "locations": [
+        "entire imported frozen module"
+      ]
+    },
+    "RangeKeyswitchLookup": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchLookup.lean",
+      "sha256": "ab66e0beb6a8c6c5797e40302f42cd90e1504ffef022413f47a639c5f6fa7d8f",
+      "locations": [
+        "entire imported frozen module"
+      ]
+    },
+    "RangeKeyswitchInfer": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchInfer.lean",
+      "sha256": "b0461d6a6d17bee5b6373da6859c8fbd6be4df7c133113d9c46b9014b7797d59",
+      "locations": [
+        "entire imported frozen module"
+      ]
+    },
+    "IR2RangeLookupBridge": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/Compiler/IR2RangeLookupBridge.lean",
+      "sha256": "b94fa273091e1c739a4688a98d54b2635643bd6414a43e29a6deff8411be3ae9",
+      "locations": [
+        "lookup_iff_val_lt"
+      ]
+    }
+  },
+  "owned": {
+    "Compiler/NativeNibbleBus.lean": {
+      "sha256": "2e44680356bcb7a4e8c40291a148678231c7b8ef80b84b5d0ae5d2392ee4f4e9",
+      "theorems": [
+        "receive_range",
+        "sound",
+        "field_sound",
+        "noWrap_of_length",
+        "row_range",
+        "field_row_range",
+        "nonzeroPremise",
+        "premiseInhabited",
+        "exactField_of_exactNat",
+        "fieldPremiseInhabited",
+        "omittedTopFalsifier",
+        "fieldWrapFalsifier",
+        "wrapped_conserves",
+        "wrappedBusFalsifier"
+      ],
+      "guards": 14
+    },
+    "Compiler/NativeNibbleComplete.lean": {
+      "sha256": "e03f80236fb87db66ba4434aee0c8ff96b0e4e988c32b9042a3431bbf463772b",
+      "theorems": [
+        "natWeighted_head",
+        "digitsExist",
+        "weighted_congr",
+        "cast_weighted_nat",
+        "complete",
+        "native_iff_range"
+      ],
+      "guards": 6
+    },
+    "Compiler/NativeNibbleRange.lean": {
+      "sha256": "877ca1eae8c2a9c1f1c803f40eb942b776cec6eaf31d4d85e644e329afdc7e46",
+      "theorems": [
+        "shape9",
+        "shape16",
+        "sends9",
+        "sends16",
+        "bool_val",
+        "cast_value",
+        "range9",
+        "range16",
+        "sound",
+        "natWeighted_succ",
+        "natWeighted_bound",
+        "weighted_cast",
+        "geometry",
+        "sent_mem",
+        "supportedSound",
+        "nonzero9",
+        "nonzero16",
+        "omittedFullTopFalsifier",
+        "overflow9Refused",
+        "premiseInhabited",
+        "terminalRowRefused"
+      ],
+      "guards": 21
+    },
+    "Compiler/NativeRangeKeyswitch.lean": {
+      "sha256": "980b64ced79a5e862abd2cbd8f771b9017b138237b7cc226af580a29dd9b1430",
+      "theorems": [
+        "range_widths",
+        "range_supported",
+        "local_ranges",
+        "nativeRanges_iff",
+        "checked_iff",
+        "rowSends_length",
+        "allSends_length",
+        "noWrap_of_domain",
+        "semanticLookups",
+        "allRowsSound",
+        "allRowsSound_of_length",
+        "inferSound",
+        "checked_premise_transfer"
+      ],
+      "guards": 13
+    }
+  },
+  "guard_count": 54,
+  "raw_send_count_per_compact_mac_row": 524,
+  "max_rows_in_noWrap_of_domain": 131072,
+  "max_total_sends_in_noWrap_of_domain": 68681728,
+  "patch_sha256": "7115e6ab001a875cf13bb0622c97e944654582d720f977152c9b32961acc1abe"
+}

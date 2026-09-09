@@ -1,0 +1,91 @@
+{"phase": "extension", "chunk": 0, "proof_self_verified": true}
+{"phase": "extension", "chunk": 1, "proof_self_verified": true}
+{"phase": "extension", "chunk": 2, "proof_self_verified": true}
+{"phase": "extension", "chunk": 3, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 0, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 1, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 2, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 3, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 4, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 5, "proof_self_verified": true}
+{
+  "complete_class_verified": true,
+  "new_proof_objects": 10,
+  "reused_proof_objects": 106,
+  "prover_self_checks": 10,
+  "fresh_consumer_checks": 116,
+  "total_native_verification_calls": 126,
+  "new_phases": {
+    "extension": {
+      "proofs": 4,
+      "proof_bytes": 15485630,
+      "prove_seconds": 87.579672,
+      "self_verify_seconds": 1.317577584,
+      "emission_seconds": 30.80235849902965,
+      "phase_seconds": 121.93405916600022,
+      "peak_rss_bytes": 6087983104
+    },
+    "rescale": {
+      "proofs": 6,
+      "proof_bytes": 24929599,
+      "prove_seconds": 129.458641708,
+      "self_verify_seconds": 2.180322873,
+      "emission_seconds": 52.512964334047865,
+      "phase_seconds": 186.90325787500478,
+      "peak_rss_bytes": 6604324864
+    }
+  },
+  "composed_phases": {
+    "infer": {
+      "proofs": 88,
+      "proof_bytes": 64418707,
+      "prove_seconds": 164.104358502,
+      "self_verify_seconds": 6.77037187,
+      "emission_seconds": 43.702725918847136,
+      "phase_seconds": 239.9727270840085,
+      "peak_rss_bytes": 915111936
+    },
+    "extension": {
+      "proofs": 4,
+      "proof_bytes": 15485630,
+      "prove_seconds": 87.579672,
+      "self_verify_seconds": 1.317577584,
+      "emission_seconds": 30.80235849902965,
+      "phase_seconds": 121.93405916600022,
+      "peak_rss_bytes": 6087983104
+    },
+    "tensor": {
+      "proofs": 18,
+      "proof_bytes": 12978643,
+      "prove_seconds": 26.819510125,
+      "self_verify_seconds": 1.042096167,
+      "emission_seconds": 8.617804415989667,
+      "phase_seconds": 44.00268566701561,
+      "peak_rss_bytes": 885440512
+    },
+    "rescale": {
+      "proofs": 6,
+      "proof_bytes": 24929599,
+      "prove_seconds": 129.458641708,
+      "self_verify_seconds": 2.180322873,
+      "emission_seconds": 52.512964334047865,
+      "phase_seconds": 186.90325787500478,
+      "peak_rss_bytes": 6604324864
+    }
+  },
+  "whole_class_proof_bytes": 117812579,
+  "baseline_whole_class_proof_bytes": 133690186,
+  "whole_class_proof_byte_reduction": 0.11876419260872295,
+  "new_only_prove_seconds": 217.03831370799998,
+  "composed_class_prove_seconds": 407.96218233499997,
+  "baseline_class_prove_seconds": 376.53449954399997,
+  "composed_class_peak_rss_bytes": 6604324864,
+  "baseline_class_peak_rss_bytes": 9500557312,
+  "fresh_complete_consumer_seconds": 39.47716095903888,
+  "new_production_and_complete_consumption_seconds": 349.16028558299877,
+  "finished_utc": "2026-09-09T02:45:23.632440+00:00",
+  "private_files_read": 0,
+  "baseline_reproved": false,
+  "verification_record": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/runtime/run001/verification/RESULT.json",
+  "comparison_scope": "Two replacement full-coverage stages measured once on identical public rows. Complete proof bytes and complete consumption are measured directly. Composed proving/peak costs combine newly measured extension/rescale with retained unchanged MAC/tensor measurements; they are not a fresh whole-class production latency. No timing distribution or numerical proof-security claim."
+}

@@ -1,0 +1,17 @@
+'Minidregg.Compiler.NativeRangeKeyswitch.range_widths' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.range_supported' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.local_ranges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.nativeRanges_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.checked_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.rowSends_length' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.allSends_length' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.noWrap_of_domain' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.semanticLookups' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.allRowsSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.allRowsSound_of_length' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.inferSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeRangeKeyswitch.checked_premise_transfer' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

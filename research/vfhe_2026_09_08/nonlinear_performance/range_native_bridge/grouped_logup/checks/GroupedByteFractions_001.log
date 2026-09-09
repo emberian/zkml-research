@@ -1,0 +1,34 @@
+Compiler/GroupedByteFractions.lean:32:17: error: unsolved goals
+case cons
+ι : Type u_1
+f : ι → List BabyBear
+α : Ext4
+x : ι
+xs : List ι
+ih : rational (List.flatMap f xs) α = (List.map (fun i => rational (f i) α) xs).sum
+⊢ (List.map (fun x => (α - embed x)⁻¹) (List.flatMap f xs)).sum =
+    (List.map (fun i => (List.map (fun x => (α - embed x)⁻¹) (f i)).sum) xs).sum
+Compiler/GroupedByteFractions.lean:32:51: warning: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [rational, ̲List.map_append,̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+Compiler/GroupedByteFractions.lean:40:34: error: unsolved goals
+last : ℕ
+keys : Fin 131 → ℕ → Fin 4 → BabyBear
+α : Ext4
+g : Fin 131
+a✝¹ : g ∈ Finset.univ
+r : ℕ
+a✝ : r ∈ Finset.range (last + 1)
+⊢ (α - embed (keys g r 0))⁻¹ + (α - embed (keys g r (Fin.succ 0)))⁻¹ + (α - embed (keys g r (Fin.succ 0).succ))⁻¹ +
+      (α - embed (keys g r (Fin.succ 0).succ.succ))⁻¹ =
+    (α - embed (keys g r 0))⁻¹ + (α - embed (keys g r 1))⁻¹ + (α - embed (keys g r 2))⁻¹ + (α - embed (keys g r 3))⁻¹

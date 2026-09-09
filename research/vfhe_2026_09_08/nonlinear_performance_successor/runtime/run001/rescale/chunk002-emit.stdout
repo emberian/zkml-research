@@ -1,0 +1,1 @@
+{"air_constructed_or_evaluated":false,"crypto_run":false,"execute_and_write_ns":9503426250,"instructions":99223,"producer":"Lean source-row elimination and sparse carry instructions; untrusted exact BigInt executor","public_prefix_preserved":true,"registers":96625,"rows":4096,"setup_ns":39136458,"total_ns":9542563458,"trace_bytes":42582016,"trace_width":2599}

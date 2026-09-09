@@ -1,0 +1,30 @@
+Compiler/NativeNibbleRange.lean:210:25: error: Tactic `subst` failed: invalid equality proof, it is not of the form (x = t) or (t = x)
+  x = nineWitness 1 ∨ x ∈ []
+
+case refine_2.inr
+x : BabyBear
+h✝ : x = nineWitness 1 ∨ x ∈ []
+⊢ ZMod.val x < 16
+Compiler/NativeNibbleRange.lean:208:36: warning: This simp argument is unused:
+  List.mem_singleton
+
+Hint: Omit it from the simp argument list.
+  simp only [̵s̵e̵n̵d̵s̵9̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵]̵[̲s̲e̲n̲d̲s̲9̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲c̲o̲n̲s̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NativeNibbleRange.lean:218:37: error: Tactic `subst` failed: invalid equality proof, it is not of the form (x = t) or (t = x)
+  x = sixteenWitness 3 ∨ x ∈ []
+
+case refine_2.inr.inr.inr
+x : BabyBear
+h✝ : x = sixteenWitness 3 ∨ x ∈ []
+⊢ ZMod.val x < 16
+Compiler/NativeNibbleRange.lean:216:37: warning: This simp argument is unused:
+  List.mem_singleton
+
+Hint: Omit it from the simp argument list.
+  simp only [̵s̵e̵n̵d̵s̵1̵6̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵]̵[̲s̲e̲n̲d̲s̲1̲6̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲c̲o̲n̲s̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NativeNibbleRange.lean:231:80: error: Expected type must not contain metavariables
+  65536 = ?m.59

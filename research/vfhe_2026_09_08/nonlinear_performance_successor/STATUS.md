@@ -1,0 +1,5 @@
+[EXECUTED] COMPLETE. `runtime/run001` exited0 after ten new extension/rescale proofs and116 fresh consumer checks over those proofs plus106 unchanged corrected MAC/tensor proofs. Bundle117,812,579B, peak stage RSS6,604,324,864B; composed proving407.962s. This reduces bandwidth11.88% and memory30.48% while increasing composed proving8.35%; it is not a latency win. `REPORT.md` and the two RESULT.json files retain exact scope and observations.
+
+[DERIVED] Complete original extension/rescale native public equations are proved. Nine Compiler modules/28 exact guards; generic source completion, witnesses/falsifiers, import boundary and additive patch applicability passed. `formal/READY.json` is frozen. No emitter/template/plan changed during the runtime.
+
+[EXECUTED / integration] The caller-selected subprocess API is `runtime/caller.py`; its default `runtime/caller/PIPELINE.json` has42 operational pins and no saved workload or private keys. CLI/config checked; no extra proof was launched for packaging. The whole-system core owner now integrates it into fresh teaching, expiry, restart and multiquery flows. No active process or additional cost lane remains here.

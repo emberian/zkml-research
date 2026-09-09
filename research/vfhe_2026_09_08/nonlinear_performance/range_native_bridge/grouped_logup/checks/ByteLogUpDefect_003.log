@@ -1,0 +1,9 @@
+Compiler/ByteLogUpDefect.lean:69:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ∑ x ∈ Finset.attach ?s, ?f ↑x
+in the target expression
+  (List.map (fun x => (α - embed x)⁻¹) xs).sum = ∑ j ∈ (support sends).attach, ↑(List.count (↑j) xs) / (α - embed ↑j)
+
+xs sends : List BabyBear
+α : Ext4
+hxs : ∀ x ∈ xs, x ∈ support sends
+⊢ (List.map (fun x => (α - embed x)⁻¹) xs).sum = ∑ j ∈ (support sends).attach, ↑(List.count (↑j) xs) / (α - embed ↑j)

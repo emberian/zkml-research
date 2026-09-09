@@ -1,0 +1,65 @@
+{
+  "flattened_interactions_exact": true,
+  "global_group_limit": 4,
+  "input": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/extension/template_ir2.json",
+  "instances": [
+    {
+      "buses": [
+        [
+          "ir2_byte",
+          3684,
+          921
+        ],
+        [
+          "ir2_exact_public_a84",
+          1,
+          1
+        ]
+      ],
+      "main_plus_perm_base_equivalent": 15747,
+      "main_width": 12059,
+      "max_constraint_degree": 6,
+      "name": "main",
+      "permutation_ext4_columns": 922,
+      "raw_global_interactions": 3685,
+      "zk_log_quotient_chunks": 3,
+      "zk_quotient_chunks": 8
+    },
+    {
+      "buses": [
+        [
+          "ir2_byte",
+          1,
+          1
+        ]
+      ],
+      "main_plus_perm_base_equivalent": 6,
+      "main_width": 2,
+      "max_constraint_degree": 3,
+      "name": "dregg-ir2-byte-v1",
+      "permutation_ext4_columns": 1,
+      "raw_global_interactions": 1,
+      "zk_log_quotient_chunks": 2,
+      "zk_quotient_chunks": 4
+    },
+    {
+      "buses": [
+        [
+          "ir2_exact_public_a84",
+          1,
+          1
+        ]
+      ],
+      "main_plus_perm_base_equivalent": 5,
+      "main_width": 1,
+      "max_constraint_degree": 3,
+      "name": "dregg-ir2-exact-public-a84-v1",
+      "permutation_ext4_columns": 1,
+      "raw_global_interactions": 1,
+      "zk_log_quotient_chunks": 2,
+      "zk_quotient_chunks": 4
+    }
+  ],
+  "is_zk": 1,
+  "prover_or_preprocessing_executed": false
+}

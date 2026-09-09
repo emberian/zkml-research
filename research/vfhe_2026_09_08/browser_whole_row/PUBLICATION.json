@@ -1,0 +1,61 @@
+{
+  "commit": "a777c0860bbc6a5c2d7c7baf25f73ddaaee510f6",
+  "workflow": 34303307416,
+  "status": "success",
+  "checked": [
+    {
+      "path": "the-whole-way-through/index.html",
+      "status": 200,
+      "bytes": 15642,
+      "sha256": "55c0aadbf560efa8fc354b443be0675ef14ecd42003ed1cf8010f8701b6faaa7"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/index.html",
+      "status": 200,
+      "bytes": 20052,
+      "sha256": "b6202b32b79e2753754b4c847699a3d92190c7b6f2d8aebac1001826c32b0972"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/proof-demo.js",
+      "status": 200,
+      "bytes": 6332,
+      "sha256": "3dabfe2409a643f7490cce203d9cc8dbe258f586e78006fd9f4d085b435ccbd6"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/proof/query-case.js",
+      "status": 200,
+      "bytes": 3909,
+      "sha256": "91f3d4eeec868b294076c0f4c67f8910272db9098ac2c2d0a4ffd636189e453d"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/proof/learner-expiry/template.json",
+      "status": 200,
+      "bytes": 311149,
+      "sha256": "112a0982fc384272c5b24da9f4c2f4617078be22afe27aca59dad08c73b479e5"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/proof/learner-expiry/proof.bin",
+      "status": 200,
+      "bytes": 508996,
+      "sha256": "4dd6050bfa4050c339d1bd461039f5a75c3a538d7d6ae930e786ec85c71f6421"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/query-bundle/fixtures/template.json",
+      "status": 200,
+      "bytes": 633446,
+      "sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/query-bundle/fixtures/class0/proof.bin",
+      "status": 200,
+      "bytes": 842472,
+      "sha256": "139f93baa04cad3b843d4f6823d7f0c94d370de0944448ea8b23b5d50770f5e7"
+    },
+    {
+      "path": "keep-learning-keep-a-secret/query-bundle/fixtures/class1/proof.bin",
+      "status": 200,
+      "bytes": 842594,
+      "sha256": "c846d1bbef6fed6a905ce0d1c558f79ba8494c649c9f9e6a5686a4f934be4802"
+    }
+  ]
+}

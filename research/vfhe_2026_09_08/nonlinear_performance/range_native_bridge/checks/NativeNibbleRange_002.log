@@ -1,0 +1,33 @@
+Compiler/NativeNibbleRange.lean:47:13: error: Function expected at
+  hh.left
+but this term has type
+  a 3 = 0 ∨ a 3 - 1 = 0
+
+Note: Expected a function because this term is being applied to the argument
+  0
+Compiler/NativeNibbleRange.lean:53:13: error: Application type mismatch: The argument
+  fun b hb' => ?m.166
+has type
+  (b : ?m.163) → (hb' : ?m.167 b) → ?m.168 b hb'
+but is expected to have type
+  a 3 = 0 ∨ a 3 - 1 = 0
+in the application
+  And.intro fun b hb' => ?m.166
+Compiler/NativeNibbleRange.lean:53:53: error: No goals to be solved
+Compiler/NativeNibbleRange.lean:53:26: error: unsolved goals
+v : BabyBear
+a : ℕ → BabyBear
+hr : a 0 + 16 * a 1 + 256 * a 2 = v
+hb : a 3 = 0 ∨ a 3 - 1 = 0
+ht : a 3 = a 2
+hi : 2 < 3
+b : ℕ
+hb' this : b = 0
+⊢ ?m.168 b hb'
+Compiler/NativeNibbleRange.lean:70:2: error: unsolved goals
+case inr
+b : BabyBear
+hb : b * (b - 1) = 0
+h : b - 1 = 0
+this : b = 1
+⊢ ZMod.val 1 ≤ 1

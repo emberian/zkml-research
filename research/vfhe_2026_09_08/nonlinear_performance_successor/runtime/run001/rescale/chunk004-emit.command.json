@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/rescale/witness_plan.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/rescale/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/chunks/004.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/runtime/work/d604a334b758d4d9138a48e3/chunk004"
+  ],
+  "started_utc": "2026-09-09T02:43:49.563824+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 900,
+  "pid": 83644,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T02:43:56.708245+00:00",
+  "elapsed_seconds": 7.144460333045572,
+  "user_seconds": 6.7217,
+  "system_seconds": 0.064484,
+  "max_rss_bytes": 55328768
+}

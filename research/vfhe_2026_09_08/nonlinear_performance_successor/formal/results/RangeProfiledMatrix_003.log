@@ -1,0 +1,2 @@
+'Minidregg.Compiler.RangeProfiledMatrix.weighted_completion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeProfiledMatrix.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound]

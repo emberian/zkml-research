@@ -1,0 +1,22 @@
+{
+  "started_utc": "2026-09-09T02:39:34.473198+00:00",
+  "request_sha256": "4d76cdbd880a17af1049c6caa16071cc0a182ec468dfa4735543703e772f46fe",
+  "profile_sha256": "a01ef1ded17a838e03b6d89abf66d6ff7fa84a73eb821c42716431ba3fc241e7",
+  "request": {
+    "schema": "profiled-range-complete-class-request-v1",
+    "class": "card_arrival",
+    "accepted_live_revision": 2,
+    "expected": {
+      "model_ciphertext_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+      "query_sha256": "a38f555b758db46393e4e96655a6004cc788c44f8338ccb0c05bf143930c00d3",
+      "evaluation_key_sha256": "421a81856b9ed3f83f28e8ec6d0678799b298ce6f8ce533f645ebfc9115b6955",
+      "kernel_ciphertext_sha256": "0291fc483b13e118d9ee74fc1093e9fbb91db0f9d3eb3767a4b2213f774e196e"
+    },
+    "baseline_produced": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced",
+    "baseline_verification": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/verification/result.json",
+    "scope": "The same approved class kernel: ten new full-coverage extension/rescale proofs and106 corrected unchanged MAC/tensor proofs, freshly consumed as one116-proof bundle.",
+    "reused_produced": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001",
+    "baseline_acceptance": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/consumer001/RESULT.json",
+    "baseline_acceptance_sha256": "16f83668be8e459fb5f25b60e3927996a6558e63c4ea63122852f16eefd793f6"
+  }
+}

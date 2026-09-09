@@ -1,0 +1,41 @@
+Compiler/RangeProfiledActual.lean:17:54: error: Application type mismatch: The argument
+  input
+has type
+  Fin 4 → ℕ
+but is expected to have type
+  Fin 4 → ℤ
+in the application
+  ActualBasisExtension.nativeOutput input
+Compiler/RangeProfiledActual.lean:58:14: error: Application type mismatch: The argument
+  congrArg (fun v => ExtensionResult v.1 v.2.1 v.2.2) heq
+has type
+  ExtensionResult
+      (ActualBasisExtension.publicInput (a ∘ indexMap extension),
+          ActualBasisExtension.publicCopy (a ∘ indexMap extension),
+          ActualBasisExtension.publicNew (a ∘ indexMap extension)).1
+      (ActualBasisExtension.publicInput (a ∘ indexMap extension),
+            ActualBasisExtension.publicCopy (a ∘ indexMap extension),
+            ActualBasisExtension.publicNew (a ∘ indexMap extension)).2.1
+      (ActualBasisExtension.publicInput (a ∘ indexMap extension),
+            ActualBasisExtension.publicCopy (a ∘ indexMap extension),
+            ActualBasisExtension.publicNew (a ∘ indexMap extension)).2.2 =
+    ExtensionResult
+      (ActualBasisExtension.publicInput a, ActualBasisExtension.publicCopy a, ActualBasisExtension.publicNew a).1
+      (ActualBasisExtension.publicInput a, ActualBasisExtension.publicCopy a, ActualBasisExtension.publicNew a).2.1
+      (ActualBasisExtension.publicInput a, ActualBasisExtension.publicCopy a, ActualBasisExtension.publicNew a).2.2
+but is expected to have type
+  ((∀ (i : Fin 4), ActualBasisExtension.publicInput (a ∘ indexMap extension) i < ActualBasisExtension.params.source i) ∧
+      (∀ (i : Fin 4),
+          ActualBasisExtension.publicCopy (a ∘ indexMap extension) i =
+            ActualBasisExtension.publicInput (a ∘ indexMap extension) i) ∧
+        ∀ (i : Fin 5),
+          ↑(ActualBasisExtension.publicNew (a ∘ indexMap extension) i) =
+            ActualBasisExtension.nativeOutput (fun j => ↑(ActualBasisExtension.publicInput (a ∘ indexMap extension) j))
+              i) =
+    ((∀ (i : Fin 4), ActualBasisExtension.publicInput a i < ActualBasisExtension.params.source i) ∧
+      (∀ (i : Fin 4), ActualBasisExtension.publicCopy a i = ActualBasisExtension.publicInput a i) ∧
+        ∀ (i : Fin 5),
+          ↑(ActualBasisExtension.publicNew a i) =
+            ActualBasisExtension.nativeOutput (fun j => ↑(ActualBasisExtension.publicInput a j)) i)
+in the application
+  Eq.mp (congrArg (fun v => ExtensionResult v.1 v.2.1 v.2.2) heq)

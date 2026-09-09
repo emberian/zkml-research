@@ -1,0 +1,21 @@
+at extension_input
+at extension_copy
+at extension_new
+at extensionSound
+Compiler/RangeProfiledActual.lean:72:31: error(lean.unknownIdentifier): Unknown identifier `ExactBasisExtension.matrix`
+at rescale_input
+Compiler/RangeProfiledActual.lean:99:2: error: Tactic `apply` failed: could not unify the conclusion of `Finset.sum_congr rfl`
+  Finset.sum ?m.21 ?m.18 = Finset.sum ?m.21 ?m.19
+with the goal
+  NonlinearRnsPublic.publicResidues (a ∘ indexMap rescale) i = NonlinearRnsPublic.publicResidues a i
+
+Note: The full type of `Finset.sum_congr rfl` is
+  (∀ x ∈ ?m.21, ?m.18 x = ?m.19 x) → Finset.sum ?m.21 ?m.18 = Finset.sum ?m.21 ?m.19
+
+case h
+a : ℕ → BabyBear
+i : Fin 9
+⊢ NonlinearRnsPublic.publicResidues (a ∘ indexMap rescale) i = NonlinearRnsPublic.publicResidues a i
+at rescale_output
+at rescaleSound
+Compiler/RangeProfiledActual.lean:123:31: error(lean.unknownIdentifier): Unknown identifier `DirectedRnsScaler.matrix`

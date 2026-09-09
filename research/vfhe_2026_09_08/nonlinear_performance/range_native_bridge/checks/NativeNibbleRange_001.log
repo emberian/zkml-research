@@ -1,0 +1,1 @@
+Compiler/NativeNibbleRange.lean:5:0: error: object file '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/range_native_bridge/build/Compiler/EmitSerialize.olean' of module Compiler.EmitSerialize does not exist

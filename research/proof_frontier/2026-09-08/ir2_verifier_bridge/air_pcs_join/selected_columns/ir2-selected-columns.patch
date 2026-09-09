@@ -1,0 +1,348 @@
+diff --git a/Compiler/Ir2NearbyColumns.lean b/Compiler/Ir2NearbyColumns.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/Ir2NearbyColumns.lean
+@@ -0,0 +1,117 @@
++/- Commitment-time unique nearby columns, without exact codeword membership. -/
++import Compiler.Ir2AirPcsOod
++
++namespace Minidregg.Compiler.Ir2NearbyColumns
++open Polynomial Minidregg.Selvage BabyBearExt4 Ir2Fri Ir2FriSchedule Packed Pcs
++open scoped Classical
++noncomputable section
++set_option autoImplicit false
++set_option maxHeartbeats 3000000
++
++/-- A single column polynomial agrees with a fixed commitment-time word on
++at least3/5 of the actual131072-position domain; agreement need not be exact. -/
++def NearColumn (rows : Index 0 → AllInputRows) (k : Column) (p : Ext4[X]) : Prop :=
++  p.natDegree ≤ degree 0 ∧ ∃ S : Finset (Index 0),
++    (3/5:ℝ)*(Fintype.card (Index 0):ℝ) ≤ S.card ∧
++    ∀ i ∈ S,p.eval (31*domain 0 i)=algebraMap BabyBear Ext4 (rows i k.1 k.2.1 k.2.2)
++
++/-- The actual agreement threshold forces an overlap larger than the inclusive
++degree cap. This integer inequality is strict:16384 < intersection.card. -/
++theorem overlap_large (S T : Finset (Index 0))
++    (hS : (3/5:ℝ)*(Fintype.card (Index 0):ℝ) ≤ S.card)
++    (hT : (3/5:ℝ)*(Fintype.card (Index 0):ℝ) ≤ T.card) : degree 0 < (S∩T).card := by
++  have hn : Fintype.card (Index 0)=131072 := by norm_num [Index,stage]
++  have hU := Finset.card_le_univ (S∪T)
++  have hI := Finset.card_inter_add_card_union S T
++  have hUr : ((S∪T).card:ℝ) ≤ 131072 := by exact_mod_cast hU.trans_eq hn
++  have hIr : ((S∩T).card:ℝ)+((S∪T).card:ℝ)=(S.card:ℝ)+(T.card:ℝ) := by exact_mod_cast hI
++  rw [hn] at hS hT
++  have hl : (16384:ℝ)<((S∩T).card:ℝ) := by norm_num at hS hT; linarith
++  have hd : degree 0=16384 := by norm_num [Ir2Fri.degree,stage]
++  rw [hd]
++  exact_mod_cast hl
++
++/-- Any two sufficiently near candidate polynomials are literally equal. -/
++theorem unique (rows : Index 0 → AllInputRows) (k : Column) {p q : Ext4[X]}
++    (hp : NearColumn rows k p) (hq : NearColumn rows k q) : p=q := by
++  obtain ⟨hpd,S,hS,hps⟩ := hp
++  obtain ⟨hqd,T,hT,hqt⟩ := hq
++  apply PcsBatching.eq_of_common_set (PcsBatching.cosetDomain (domain 0) 31 coset31_ne_zero)
++    hpd hqd (S∩T) (overlap_large S T hS hT)
++  intro i hi
++  exact (hps i (Finset.mem_inter.mp hi).1).trans (hqt i (Finset.mem_inter.mp hi).2).symm
++
++/-- Deterministic mathematical selection from the fixed word alone. A default
++zero is used when no sufficiently near polynomial exists; no existence premise
++or proof of efficient decoding is hidden in this definition. -/
++def selected (rows : Index 0 → AllInputRows) (k : Column) : Ext4[X] :=
++  if h : ∃ p,NearColumn rows k p then Classical.choose h else 0
++
++theorem selected_eq (rows : Index 0 → AllInputRows) (k : Column) (p : Ext4[X])
++    (hp : NearColumn rows k p) : selected rows k=p := by
++  unfold selected
++  split
++  · rename_i h
++    exact unique rows k (Classical.choose_spec h) hp
++  · rename_i h
++    exact False.elim (h ⟨p,hp⟩)
++
++theorem selected_degree (rows : Index 0 → AllInputRows) (k : Column) :
++    (selected rows k).natDegree ≤ degree 0 := by
++  unfold selected
++  split
++  · rename_i h
++    exact (Classical.choose_spec h).1
++  · simp
++
++/-- Every common-nearby PCS explanation must use these pre-opening selected
++columns, so all its claims refer to polynomials fixed by commitment-time rows. -/
++theorem claims_of_joint (rows : Index 0 → AllInputRows) (points : Points) (claims : Claims)
++    (h : JointColumnsNear rows points claims (degree 0) (2/5)) :
++    ∀ t : Pcs.Term,claims t.batch t.matrix t.point t.column=
++      (selected rows t.key).eval (points t.batch t.matrix t.point) := by
++  obtain ⟨S,hS,p,hp,hclaims⟩ := h
++  have heq : ∀ k,selected rows k=p k := by
++    intro k
++    apply selected_eq rows k (p k)
++    refine ⟨(hp k).1,S,?_,(hp k).2⟩
++    convert hS using 1
++    norm_num
++  intro t
++  rw [heq]
++  exact (hclaims t).symm
++
++theorem not_joint_of_wrong_selected_claim (rows : Index 0 → AllInputRows)
++    (points : Points) (claims : Claims) (t : Pcs.Term)
++    (hwrong : claims t.batch t.matrix t.point t.column ≠
++      (selected rows t.key).eval (points t.batch t.matrix t.point)) :
++    ¬JointColumnsNear rows points claims (degree 0) (2/5) :=
++  fun h => hwrong (claims_of_joint rows points claims h t)
++
++end
++end Minidregg.Compiler.Ir2NearbyColumns
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.overlap_large' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.overlap_large
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.unique
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.selected_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.selected_eq
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.selected_degree' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.selected_degree
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.claims_of_joint
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.not_joint_of_wrong_selected_claim
++
+diff --git a/Compiler/Ir2SelectedAirPcs.lean b/Compiler/Ir2SelectedAirPcs.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/Ir2SelectedAirPcs.lean
+@@ -0,0 +1,96 @@
++/- Selected nearby columns before zeta: source exact-codeword membership is absent. -/
++import Compiler.Ir2NearbyColumns
++
++namespace Minidregg.Compiler.Ir2NearbyColumns
++open Polynomial Minidregg.Selvage BabyBearExt4 Ir2Fri Ir2FriSchedule Packed Pcs AirPolynomialOod Ir2AirPcsOod
++open scoped Classical
++noncomputable section
++set_option autoImplicit false
++set_option maxHeartbeats 3000000
++
++/-- Commitment-time rows may depend on gamma (the quotient commit does), but
++not on zeta. The mathematical selected polynomial reads only these fixed rows. -/
++structure SelectedPlan where
++  rows : Ext4 → Index 0 → AllInputRows
++  scale : Pcs.Term → Ext4
++  expression : Ext4 → Expr
++
++def SelectedPlan.equation (a : SelectedPlan) : EquationPlan where
++  physical γ := selected (a.rows γ)
++  scale := a.scale
++  expression := a.expression
++
++variable {Digest : Type} [DecidableEq Digest]
++
++/-- Statement-first application bound from arbitrary fixed commitment words.
++No assertion says the LDE word is exactly the selected polynomial. The application
++row is a value of that polynomial, not an unproved decoding of every LDE cell. -/
++def SelectedAirPcsSoundness : Prop :=
++  ∀ (H : BinaryMerkle.HashSuite Leaf Digest) (M D : ℕ)
++    (constraints : Fin (M+1) → Ext4[X]) (vanishing : Ext4[X])
++    (quotient : Ext4 → Ext4[X]) (r : Ext4) (a : SelectedPlan)
++    (s : AirCoins → CommitmentPlan Digest)
++    (o : AllCoins → Openings Digest 38) (P : AllCoins → Packed.Log Digest),
++    vanishing.eval r=0 → (∃ j,(constraints j).eval r ≠ 0) →
++    (∀ γ,(residual constraints vanishing quotient γ).natDegree ≤ D) →
++    (∀ γ,equationPoly (a.equation.physical γ) a.equation.scale (a.equation.expression γ)=residual constraints vanishing quotient γ) →
++    (∀ x t,(s x).points t.batch t.matrix t.point=a.equation.scale t*x.2) →
++    (∀ x,(s x).rows=a.rows x.1) →
++    (∀ x,CheckpointsLogged ((s x.1).atAlpha x.2.1) x.2.2.1 (P x)) →
++    uniformProb AllCoins (fun x => AirAccepted a.equation s x.1 ∧ Accepted H (s x.1) (fun y => o (x.1,y)) x.2) ≤
++      (M:ℝ)/Fintype.card Ext4+(D:ℝ)/Fintype.card Ext4+pcsError+
++      uniformProb AllCoins (BoundaryFailure H s o P)
++
++theorem selected_air_pcs_soundness : SelectedAirPcsSoundness (Digest := Digest) := by
++  intro H M D constraints vanishing quotient r a s o P hr hbad hdeg heq hpoints hrows hP
++  let rz : AirCoins → Prop := fun x => (residual constraints vanishing quotient x.1).eval x.2=0
++  let failure : AllCoins → Prop := BoundaryFailure H s o P
++  let good : AllCoins → Prop := fun x => ¬rz x.1 ∧ AirAccepted a.equation s x.1 ∧
++    Accepted H (s x.1) (fun y => o (x.1,y)) x.2 ∧ ¬failure x
++  have hz : uniformProb AllCoins (fun x => rz x.1) ≤
++      (M:ℝ)/Fintype.card Ext4+(D:ℝ)/Fintype.card Ext4 := by
++    have hs := uniformProb_equiv (Equiv.prodComm AirCoins ChallengeSpace) (fun x => rz x.2)
++    simp only [Equiv.prodComm_apply,Prod.swap] at hs
++    rw [hs,uniformProb_prod_snd]
++    exact ood_soundness M D constraints vanishing quotient r hr hbad hdeg
++  have hg : uniformProb AllCoins good ≤ pcsError := by
++    apply uniformProb_prod_le (by unfold pcsError; positivity)
++    intro x
++    by_cases ha : AirAccepted a.equation s x
++    · by_cases hz : rz x
++      · rw [uniformProb_false (fun _ h => h.1 hz)]
++        unfold pcsError; positivity
++      · have hp : (equationPoly (a.equation.physical x.1) a.equation.scale (a.equation.expression x.1)).eval x.2 ≠ 0 := by
++          rwa [heq]
++        obtain ⟨t,ht⟩ := wrong_opening_of_expression (a.equation.physical x.1) a.equation.scale (s x).points (s x).claims x.2
++          (a.equation.expression x.1) (hpoints x) ha hp
++        have hb : ¬JointColumnsNear (s x).rows (s x).points (s x).claims (degree 0) (2/5) := by
++          rw [hrows]
++          exact not_joint_of_wrong_selected_claim (a.rows x.1) (s x).points (s x).claims t ht
++        by_cases hoff : (data (s x).rows (s x).points (s x).claims).OffDomain (domain 0) 31
++        · exact (uniformProb_mono fun _ h => ⟨h.2.2.1,fun hf => h.2.2.2 (Or.inl hf)⟩).trans
++            (pcs_without_failure H (s x) (fun y => o (x,y)) (fun y => P (x,y)) (fun y => hP (x,y)) hoff hb)
++        · rw [uniformProb_false (fun _ h => h.2.2.2 (Or.inr hoff))]
++          unfold pcsError; positivity
++    · rw [uniformProb_false (fun _ h => ha h.2.1)]
++      unfold pcsError; positivity
++  have hc : ∀ x : AllCoins,AirAccepted a.equation s x.1 ∧ Accepted H (s x.1) (fun y => o (x.1,y)) x.2 →
++      rz x.1 ∨ (good x ∨ failure x) := by
++    intro x hx
++    by_cases hz : rz x.1
++    · exact Or.inl hz
++    · by_cases hf : failure x
++      · exact Or.inr (Or.inr hf)
++      · exact Or.inr (Or.inl ⟨hz,hx.1,hx.2,hf⟩)
++  have h := ((uniformProb_mono hc).trans (uniformProb_or_le _ _)).trans
++    (add_le_add hz ((uniformProb_or_le good failure).trans (add_le_add hg le_rfl)))
++  simpa only [add_assoc] using h
++
++
++end
++end Minidregg.Compiler.Ir2NearbyColumns
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.selected_air_pcs_soundness
++
+diff --git a/Compiler/Ir2NearbyWitnesses.lean b/Compiler/Ir2NearbyWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/Ir2NearbyWitnesses.lean
+@@ -0,0 +1,120 @@
++/- The selected application bridge handles words that are not exact codewords. -/
++import Compiler.Ir2SelectedAirPcs
++import Compiler.Ir2AirPcsOodWitnesses
++
++namespace Minidregg.Compiler.Ir2NearbyColumns.Witnesses
++open Polynomial Minidregg.Selvage BabyBearExt4 Ir2Fri Ir2FriSchedule Packed Pcs AirPolynomialOod Ir2AirPcsOod
++open scoped Classical
++noncomputable section
++set_option autoImplicit false
++set_option maxHeartbeats 3000000
++
++/-- A public word with one corrupted LDE position, in each supplied column. -/
++def bumped (i : Index 0) : AllInputRows := fun _ _ _ => if i=0 then 1 else 0
++
++/-- Zero is still within the actual3/5 agreement threshold. -/
++theorem bumped_zero_near (k : Column) : NearColumn bumped k 0 := by
++  refine ⟨by simp,Finset.univ.erase 0,?_,?_⟩
++  · norm_num [Index,stage]
++  · intro i hi
++    have hi0 : i ≠ 0 := (Finset.mem_erase.mp hi).1
++    simp [bumped,hi0]
++
++theorem bumped_selects_zero (k : Column) : selected bumped k=0 :=
++  selected_eq bumped k 0 (bumped_zero_near k)
++
++/-- No degree≤16384 polynomial represents every position of this word.
++Thus the new selected-column theorem covers a condition forbidden by the
++previous exact-source premise, rather than merely renaming that premise. -/
++theorem bumped_not_exact (k : Column) :
++    ¬∃ p : Ext4[X],p.natDegree ≤ degree 0 ∧
++      ∀ i,p.eval (31*domain 0 i)=algebraMap BabyBear Ext4 (bumped i k.1 k.2.1 k.2.2) := by
++  rintro ⟨p,hp,hsource⟩
++  have hn : NearColumn bumped k p := by
++    refine ⟨hp,Finset.univ,?_,fun i _ => hsource i⟩
++    norm_num [Index,stage]
++  have heq : p=0 := (selected_eq bumped k p hn).symm.trans (bumped_selects_zero k)
++  have h := hsource 0
++  rw [heq] at h
++  simp [bumped] at h
++
++/-- A wrong1 claim is still ruled out despite the source's corrupted position. -/
++theorem bumped_wrong_claim (t : Pcs.Term) :
++    ¬JointColumnsNear bumped (fun _ _ _ => 0) (fun _ _ _ _ => 1) (degree 0) (2/5) := by
++  apply not_joint_of_wrong_selected_claim bumped (fun _ _ _ => 0) (fun _ _ _ _ => 1) t
++  rw [bumped_selects_zero]
++  simp
++
++abbrev W := Pcs.PackedWitnesses.plan
++
++/-- The already retained actual-shaped zero commitments have selected polynomial zero. -/
++theorem actual_selected_zero (k : Column) : selected W.rows k=0 := by
++  apply selected_eq W.rows k 0
++  refine ⟨by simp,Finset.univ,?_,fun i _ => Pcs.PackedWitnesses.originals_exact k i⟩
++  norm_num [Index,stage]
++
++def plan : SelectedPlan where
++  rows _ := W.rows
++  scale _ := 0
++  expression _ := Ir2AirPcsOod.Witnesses.equation
++
++theorem plan_equation : plan.equation=Ir2AirPcsOod.Witnesses.eqPlan := by
++  have h : (fun γ => selected W.rows)=(fun _ : Ext4 => fun _ : Column => (0:Ext4[X])) := by
++    funext γ k
++    exact actual_selected_zero k
++  unfold SelectedPlan.equation plan Ir2AirPcsOod.Witnesses.eqPlan
++  congr
++
++/-- The entire stronger head fires on the actual commitment/log carrier,
++without supplying an exact source-polynomial membership premise. -/
++theorem selected_head_fires :
++    uniformProb AllCoins (fun x => AirAccepted plan.equation (fun _ => W) x.1 ∧
++      Accepted Packed.Witnesses.hash W (fun _ => Packed.Witnesses.openings 38) x.2) ≤
++      ((0:ℕ):ℝ)/Fintype.card Ext4+((0:ℕ):ℝ)/Fintype.card Ext4+pcsError+
++      uniformProb AllCoins (BoundaryFailure Packed.Witnesses.hash (fun _ => W)
++        (fun _ => Packed.Witnesses.openings 38) (fun _ => Packed.Witnesses.checkpointLog)) := by
++  apply selected_air_pcs_soundness Packed.Witnesses.hash 0 0 Ir2AirPcsOod.Witnesses.badConstraint X
++    (fun _ => 0) 0 plan (fun _ => W) (fun _ => Packed.Witnesses.openings 38)
++    (fun _ => Packed.Witnesses.checkpointLog) Ir2AirPcsOod.Witnesses.bad_row.1
++    Ir2AirPcsOod.Witnesses.bad_row.2 Ir2AirPcsOod.Witnesses.residual_degree
++  · intro γ
++    rw [plan_equation]
++    exact Ir2AirPcsOod.Witnesses.exact_residual γ
++  · intro x t
++    simp [SelectedPlan.equation,plan,W,Pcs.PackedWitnesses.plan]
++  · intro x
++    rfl
++  · intro x
++    exact Pcs.PackedWitnesses.checkpoints_logged x.2
++
++end
++end Minidregg.Compiler.Ir2NearbyColumns.Witnesses
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_zero_near
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_selects_zero
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_not_exact
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.Witnesses.bumped_wrong_claim
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.Witnesses.actual_selected_zero
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.Witnesses.plan_equation
++
++/-- info: 'Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.Ir2NearbyColumns.Witnesses.selected_head_fires
++

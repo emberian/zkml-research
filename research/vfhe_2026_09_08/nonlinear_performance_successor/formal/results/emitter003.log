@@ -1,0 +1,2 @@
+{"arithmetic_constraints":1241,"instructions":101831,"name":"extension","public_arity":84,"range_counts":[{"bits":9,"count":1038},{"bits":2,"count":664},{"bits":14,"count":76},{"bits":15,"count":460}],"register_count":99593,"width":2239}
+{"arithmetic_constraints":1337,"instructions":99223,"name":"rescale","public_arity":88,"range_counts":[{"bits":9,"count":1308},{"bits":2,"count":800},{"bits":15,"count":78},{"bits":14,"count":78},{"bits":16,"count":94},{"bits":11,"count":240}],"register_count":96625,"width":2599}

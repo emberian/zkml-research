@@ -1,0 +1,10 @@
+{
+  "command": [
+    "bash",
+    "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+  ],
+  "seconds": 0.16428187501151115,
+  "exit": 0,
+  "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+  "stderr": ""
+}

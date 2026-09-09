@@ -1,0 +1,25 @@
+'Minidregg.Compiler.NativeByteExtraction.denom_of_nopole' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.accepted_rational' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.false_accept_probability' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.exact_perm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.allRowsRanges_or_bad' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.allRowsSound_or_bad' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.embed_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.nonzero_native_accepted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.wrong_native_accepted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.wrong_native_histogram' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.native_premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.NativeByteExtraction.checked_for_infer' depends on axioms: [propext, Classical.choice, Quot.sound]

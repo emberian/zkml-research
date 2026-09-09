@@ -1,0 +1,16 @@
+Compiler/NativeNibbleRange.lean:146:46: error: Tactic `subst` failed: invalid equality proof, it is not of the form (x = t) or (t = x)
+  bits = 16 ∨ bits ∈ []
+
+case inr.inr.inr.inr.inr
+bits : ℕ
+h✝ : bits = 16 ∨ bits ∈ []
+⊢ 0 < limbCount bits ∧
+    0 < topBits bits ∧
+      topBits bits ≤ 4 ∧ 16 ^ (limbCount bits - 1) * 2 ^ topBits bits = 2 ^ bits ∧ 2 ^ bits < 2013265921
+Compiler/NativeNibbleRange.lean:145:37: warning: This simp argument is unused:
+  List.mem_singleton
+
+Hint: Omit it from the simp argument list.
+  simp only [̵S̵u̵p̵p̵o̵r̵t̵e̵d̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵]̵[̲S̲u̲p̲p̲o̲r̲t̲e̲d̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲c̲o̲n̲s̲]̲ at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

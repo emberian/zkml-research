@@ -1,0 +1,6 @@
+'Minidregg.Compiler.NativeNibbleComplete.natWeighted_head' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.NativeNibbleComplete.digitsExist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeNibbleComplete.weighted_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeNibbleComplete.cast_weighted_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeNibbleComplete.complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NativeNibbleComplete.native_iff_range' depends on axioms: [propext, Classical.choice, Quot.sound]

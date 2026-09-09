@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/shape-probe/target/release/ir2-grouped-shape",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance_successor/formal/artifacts/extension/template_ir2.json"
+  ],
+  "started_utc": "2026-09-09T02:33:58.477829+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 120,
+  "pid": 75375,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T02:33:58.641891+00:00",
+  "elapsed_seconds": 0.16353774996241555,
+  "user_seconds": 0.147014,
+  "system_seconds": 0.0069889999999999996,
+  "max_rss_bytes": 31113216
+}

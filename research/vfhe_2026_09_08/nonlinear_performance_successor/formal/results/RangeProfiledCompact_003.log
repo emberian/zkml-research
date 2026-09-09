@@ -1,0 +1,6 @@
+'Minidregg.Compiler.RangeProfiledCompact.publicPrefix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeProfiledCompact.oldPublicPrefix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeProfiledCompact.ranges_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeProfiledCompact.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeProfiledCompact.ranges_of_lookups' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeProfiledCompact.lookupSound' depends on axioms: [propext, Classical.choice, Quot.sound]
