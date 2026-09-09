@@ -63,6 +63,14 @@
     ],
     "path": "README.md"
   },
+  "kernel_infer": {
+    "excerpt_sha256": "df0925d8376ca1e94f1fd5cb6e51cc381727d4111be5f913f4bf5537430d63e8",
+    "lines": [
+      1,
+      90
+    ],
+    "path": "research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/README.md"
+  },
   "ladder": {
     "excerpt_sha256": "c8e4e0026923ef3385f31bb1c619cbbfea8989eb0b7f06a2857b5125f01689da",
     "lines": [
@@ -70,6 +78,22 @@
       46
     ],
     "path": "research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md"
+  },
+  "live_proofs": {
+    "excerpt_sha256": "aca6d0cddc49ba99c029234cb7954f1fa142e2fdb624129523732964881a6ff6",
+    "lines": [
+      1,
+      26
+    ],
+    "path": "research/vfhe_2026_09_08/proved_journal/fast_live_successor/REPORT.md"
+  },
+  "live_proofs_scope": {
+    "excerpt_sha256": "9054c09919ebdaf277f9d936be9c2643013bd93d7c2efd60aad16dae0b59f6a2",
+    "lines": [
+      73,
+      78
+    ],
+    "path": "research/vfhe_2026_09_08/proved_journal/fast_live_successor/REPORT.md"
   },
   "notes": {
     "excerpt_sha256": "08c33b34316dc486a4946418ed0eb29e24357298480b7af7705b8efbfd1c2faa",
@@ -214,5 +238,13 @@
       126
     ],
     "path": "docs/VERDICTS.md"
+  },
+  "writer_obstruction": {
+    "excerpt_sha256": "f135bfd4455488137b4bdcda8b68f9f8c17ce1e65069ae2337cb051ffe3abb62",
+    "lines": [
+      11,
+      35
+    ],
+    "path": "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/INTERACTION.md"
   }
 }
