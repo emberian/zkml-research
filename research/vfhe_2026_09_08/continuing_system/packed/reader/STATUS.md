@@ -14,7 +14,8 @@ repetition check, per-class count bound, zero empty lanes, and full reader
 authority. The packed learner and workload owners have been sent the built
 binary path and this contract.
 
-[OPEN] Actual packed class-sum decryption and comparison against fresh workload
-vectors remain for the full packed lifecycle. Native parser/NTT, BFV decryption
+[EXECUTED integrated lifecycle] The complete packed lifecycle made five bank reads; all forty bank lanes and exact class sums matched the reference. The later fresh browser query made two bank reads and matched all sixteen bank lanes. See `../../results/packed-matched/RESULT.json` and `../../results/browser-packed/RESULT.json`.
+
+[OPEN] Native parser/NTT, BFV decryption
 correctness, trusted counts and caller proof ordering remain explicit external
 boundaries; this package does not change the proof producer.

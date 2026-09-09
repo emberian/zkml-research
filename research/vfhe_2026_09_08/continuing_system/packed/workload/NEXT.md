@@ -1,1 +1,3 @@
-Run the complete command in `README.md` once root is ready; use `--resume` with the same root after interruption. Inspect `ROOT.workload/RESULT.json` for all 22 completed operations, exact one-bank/two-bank lane comparisons and identical restart sums/ranking. Preserve the frozen public corpus and prepared reference; do not tune them based on held-out predictions.
+# Next
+
+[EXECUTED] The complete 22-operation run is retained at `../../results/packed-matched/RESULT.json`, with commands and outputs beside it. All one-bank and two-bank values, counts, expiry behavior and fresh restart results match. A later fresh browser teaching/query also completed; see `../../results/browser-packed/`. Preserve the prepared corpus and reference. Do not repeat the completed run for cleaner timings or tune its held-out texts.

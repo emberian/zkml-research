@@ -1,84 +1,74 @@
 {
-  "utc": "2026-09-08T04:28:44.553051+00:00",
-  "url": "https://emberian.github.io/zkml-research/",
-  "source_commit": "88e4b780f63cfa484a176f82c1ff6fd72d8f12b4",
-  "workflow": {
-    "conclusion": "success",
-    "headSha": "88e4b780f63cfa484a176f82c1ff6fd72d8f12b4",
-    "status": "completed",
-    "url": "https://github.com/emberian/zkml-research/actions/runs/34186886811"
+  "scope": "Completed continuing learner, exact-field proof backend and packed-class lifecycle publication",
+  "utc": "2026-09-09T06:07:47.330144+00:00",
+  "source_revision": "a5268000a2b94cd3689f07c215eef64f67cd835d",
+  "research_site": {
+    "revision": "1a8f52b8a0b5b7442fc840d5d4f8622950f608da",
+    "url": "https://emberian.github.io/zkml-research/",
+    "workflow": 34317506900,
+    "workflow_conclusion": "success",
+    "cards": 18,
+    "source_excerpts": 40,
+    "checks": [
+      {
+        "url": "https://emberian.github.io/zkml-research/index.html",
+        "status": 200,
+        "bytes": 45666,
+        "sha256": "e10024ed25f55fac7f23def7559fcd520de942eeeb0fec000a0a4a9efe4edf33",
+        "matches_local": true
+      },
+      {
+        "url": "https://emberian.github.io/zkml-research/source-manifest.json",
+        "status": 200,
+        "bytes": 28106,
+        "sha256": "84b2837e1ee31800becb6c610a94c8a8b2f509824b035e704b1473126484a953",
+        "matches_local": true
+      },
+      {
+        "url": "https://emberian.github.io/zkml-research/build-manifest.json",
+        "status": 200,
+        "bytes": 577,
+        "sha256": "350713f5463641bd8656cc8d93d98f98bf6772bc20296e8f2e556e2a307cd305",
+        "matches_local": true
+      }
+    ]
   },
-  "files": [
-    {
-      "path": ".nojekyll",
-      "url": "https://emberian.github.io/zkml-research/.nojekyll",
-      "http_status": 404,
-      "bytes": 9379,
-      "sha256": "b620507312c5e97566a3c6cfaf99144fefc18a0da7d941401dfa0f5f58fb0368",
-      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "matches_local_build": false
-    },
-    {
-      "path": "assets/app.js",
-      "url": "https://emberian.github.io/zkml-research/assets/app.js",
-      "http_status": 200,
-      "bytes": 2697,
-      "sha256": "b0985c343ac9e78676ec457be04109fc22fd6add69cadf0bfa16a66f0ed5b4f9",
-      "expected_sha256": "b0985c343ac9e78676ec457be04109fc22fd6add69cadf0bfa16a66f0ed5b4f9",
-      "matches_local_build": true
-    },
-    {
-      "path": "assets/favicon.svg",
-      "url": "https://emberian.github.io/zkml-research/assets/favicon.svg",
-      "http_status": 200,
-      "bytes": 246,
-      "sha256": "7dbd4b9d5e0e5b2358a6ad669fc45e34e7892b7c79e8babf1953124bc6449486",
-      "expected_sha256": "7dbd4b9d5e0e5b2358a6ad669fc45e34e7892b7c79e8babf1953124bc6449486",
-      "matches_local_build": true
-    },
-    {
-      "path": "assets/style.css",
-      "url": "https://emberian.github.io/zkml-research/assets/style.css",
-      "http_status": 200,
-      "bytes": 15612,
-      "sha256": "c795e452f94cafe661b42c75d14c6ac174602767dc960ea4f5c5fea6709726ef",
-      "expected_sha256": "c795e452f94cafe661b42c75d14c6ac174602767dc960ea4f5c5fea6709726ef",
-      "matches_local_build": true
-    },
-    {
-      "path": "build-manifest.json",
-      "url": "https://emberian.github.io/zkml-research/build-manifest.json",
-      "http_status": 200,
-      "bytes": 577,
-      "sha256": "60203efec98f8dc3df772ffdbb2237a0ca821154ca3160e1090bcbd5c903010e",
-      "expected_sha256": "60203efec98f8dc3df772ffdbb2237a0ca821154ca3160e1090bcbd5c903010e",
-      "matches_local_build": true
-    },
-    {
-      "path": "index.html",
-      "url": "https://emberian.github.io/zkml-research/index.html",
-      "http_status": 200,
-      "bytes": 27882,
-      "sha256": "07e23b551d439e261e67a427a765907f79106f1b92efbd4f509aed33dbe8b05e",
-      "expected_sha256": "07e23b551d439e261e67a427a765907f79106f1b92efbd4f509aed33dbe8b05e",
-      "matches_local_build": true
-    },
-    {
-      "path": "source-manifest.json",
-      "url": "https://emberian.github.io/zkml-research/source-manifest.json",
-      "http_status": 200,
-      "bytes": 11825,
-      "sha256": "8b75960606a31d47393e05dbace7c3030f365da55b7446c401584418c9c8437a",
-      "expected_sha256": "8b75960606a31d47393e05dbace7c3030f365da55b7446c401584418c9c8437a",
-      "matches_local_build": true
-    }
-  ],
-  "all_page_assets_match": true,
-  "scope": "Generated HTML/assets/manifests compared to local bytes. .nojekyll is deployment metadata; its observed HTTP status is retained separately. Source links checked separately; root desktop preview inspected with native Chrome through CUA.",
-  "root_live_ui_check": {
-    "tool": "CUA native Chrome Dev",
-    "page_loaded": true,
-    "expanded_evidence_sources_visible": true,
-    "desktop_screenshot_inspected": true
-  }
+  "microsite": {
+    "revision": "3b03742651a5fbdeddb1c8eacc3065006af41f3b",
+    "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/",
+    "workflow": 34317558406,
+    "workflow_conclusion": "success",
+    "checks": [
+      {
+        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/index.html",
+        "status": 200,
+        "bytes": 21029,
+        "sha256": "2871de91e03eaf1ec483a15be29e901eea0fc7d82c2c798a82afc342d0ae802e",
+        "matches_local": true
+      },
+      {
+        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/essay.css",
+        "status": 200,
+        "bytes": 21210,
+        "sha256": "2f99162d79f1b517b9b8355b6a9026235235a5bb8a6eb376bfb0d58df1f56662",
+        "matches_local": true
+      },
+      {
+        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/record.js",
+        "status": 200,
+        "bytes": 10270,
+        "sha256": "0ae98236b5c0a5a8b42c76bc1f206042041e6f8d5783a4f4476c66a19f6ffad4",
+        "matches_local": true
+      },
+      {
+        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/public-record.json",
+        "status": 200,
+        "bytes": 29903,
+        "sha256": "d80f2b280184f45deb2831501cf173c4d0b4e294537ebea6ccab3c89ccd44109",
+        "matches_local": true
+      }
+    ]
+  },
+  "instrument": "Python urllib.request GET; compare returned bytes with committed microsite files or the checked production build; GitHub CLI workflow status read. Native Chrome also opened the live microsite and rendered its actual record.",
+  "ok": true
 }
