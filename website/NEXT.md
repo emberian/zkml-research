@@ -1,5 +1,3 @@
-# Next publication
+# Next
 
-[EXECUTED] The 18-card research index and new continuing-learner microsite are public. This batch has no pending publication work. The complete construction/source records are committed; `deployment.json` identifies the successful deployments and observed public bytes.
-
-[DERIVED] Refresh this index when another substantial construction outcome completes. Update the existing result card and complete source paragraphs, then refresh its source lock. Preserve the established layout and exact scope; do not rerun cryptographic workloads for publication.
+Publish the completed plain-language rewrite of the research index and the latest microsite. Use the existing GitHub Pages deployments. Future website copy should describe the work directly, explain necessary technical terms, and link to the detailed notes. Keep internal evidence labels and review instructions out of the reader interface.

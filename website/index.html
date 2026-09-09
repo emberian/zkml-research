@@ -4,62 +4,59 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#153e3a">
-  <meta name="description" content="Open research toward verifiable machine learning. Explore executed experiments, checked formal ingredients, conditional constructions, and the limitations that remain.">
-  <meta property="og:title" content="zkml-research — evidence for verifiable learning">
-  <meta property="og:description" content="A public guide to proof systems, encrypted learning and mental autarky. Every result keeps its evidence and limitations attached.">
+  <meta name="description" content="Building AI that can learn on encrypted data, with cryptographic proofs to check its work. Try the demos and read about the latest experiments.">
+  <meta property="og:title" content="zkml-research — learning on encrypted data">
+  <meta property="og:description" content="Encrypted learning, cryptographic proofs, and AI that can keep its memory private.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://emberian.github.io/zkml-research/">
   <link rel="canonical" href="https://emberian.github.io/zkml-research/">
   <link rel="icon" type="image/svg+xml" href="{{BASE}}assets/favicon.svg">
   <link rel="stylesheet" href="{{BASE}}assets/style.css">
   <script src="{{BASE}}assets/app.js" defer></script>
-  <title>zkml-research — evidence for verifiable learning</title>
+  <title>zkml-research — learning on encrypted data</title>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <a class="wordmark" href="{{BASE}}"><span class="mark" aria-hidden="true">z</span>zkml<span>-research</span></a>
-    <nav aria-label="Main navigation"><a href="#evidence">Evidence</a><a href="#reading-paths">Reading paths</a><a href="{{REPO}}">GitHub <span aria-hidden="true">↗</span></a></nav>
+    <nav aria-label="Main navigation"><a href="#evidence">Projects</a><a href="#reading-paths">Learn more</a><a href="{{REPO}}">GitHub <span aria-hidden="true">↗</span></a></nav>
   </header>
   <main id="main" tabindex="-1">
     {{DRAFT_NOTICE}}
     <section class="intro" aria-labelledby="intro-title">
-      <div class="intro-copy"><p class="eyebrow"><span aria-hidden="true">●</span> An open research notebook</p>
-        <h1 id="intro-title">Verifiable learning.<br><em>Evidence attached.</em></h1>
-        <p class="intro-description">What can we prove about a computation? What can learn while encrypted? Who can still read the state? Follow the experiments, arguments, and open seams.</p>
-        <div class="intro-links"><a class="primary-link" href="#evidence">Explore the evidence <span aria-hidden="true">↓</span></a><a href="{{VERDICTS}}">Current verdicts <span aria-hidden="true">↗</span></a></div>
+      <div class="intro-copy"><p class="eyebrow">Encrypted machine learning</p>
+        <h1 id="intro-title">Can an AI keep<br>its memory private?</h1>
+        <p class="intro-description">We’re building systems that learn and answer questions while their memory stays encrypted, with cryptographic proofs that let others check the work.</p>
+        <div class="intro-links"><a class="primary-link" href="#evidence">See the projects <span aria-hidden="true">↓</span></a><a href="{{MICROSITE}}">Explore the latest demo <span aria-hidden="true">↗</span></a></div>
       </div>
-      <aside class="research-note" aria-label="How to read this research">
-        <p class="note-label">The working rule</p><p class="note-title">A result is only as strong<br>as its stated scope.</p>
-        <div class="note-row"><span class="badge executed">Executed</span><p>Ran here. Inspect the fixture and recorded checks.</p></div>
-        <div class="note-row"><span class="badge derived">Derived</span><p>An argument, with its premises left visible.</p></div>
-        <div class="note-row"><span class="badge source">Source</span><p>Read from a named document or theorem.</p></div>
-        <div class="note-row"><span class="badge open">Open</span><p>An obligation the evidence does not yet close.</p></div>
+      <aside class="research-note" aria-label="The latest prototype">
+        <p class="note-label">The latest prototype</p><h2 class="note-title">Teach it another example.</h2>
+        <p>Our small issue-sorting model learns from new text, answers questions and replaces old examples. It keeps its encrypted memory when you restart it.</p>
+        <p>One calculation now answers across eight categories. The first full query took 88 seconds.</p>
+        <a href="{{MICROSITE}}">See how the model changes <span aria-hidden="true">↗</span></a>
       </aside>
     </section>
-    <div class="scope-strip"><span class="scope-symbol" aria-hidden="true">↳</span><p><strong>Research, not a shipped system.</strong> This index is a guide to repository evidence. <a href="{{VERDICTS}}">VERDICTS.md</a> remains the single current-truth file; newer experiments report their own narrower scope.</p></div>
     <section id="evidence" class="evidence-section" aria-labelledby="evidence-title">
-      <div class="section-heading"><div><p class="eyebrow">The research record</p><h2 id="evidence-title">Explore the evidence</h2></div><p>Read the result.<br>Keep the boundary.</p></div>
-      <form class="filters" id="filters" role="search" aria-label="Filter research results" hidden>
-        <label class="search-field">Search the evidence<input id="search" name="q" type="search" placeholder="Try: BFV, recipient, soundness…" autocomplete="off"></label>
-        <label>Research path<select id="topic" name="topic"><option value="all">All research paths</option>{{TOPIC_OPTIONS}}</select></label>
-        <label>Evidence type<select id="status" name="status"><option value="all">All evidence types</option>{{STATUS_OPTIONS}}</select></label>
+      <div class="section-heading"><h2 id="evidence-title">What we’re working on</h2></div>
+      <form class="filters" id="filters" role="search" aria-label="Find a project" hidden>
+        <label class="search-field">Search<input id="search" name="q" type="search" placeholder="Try: memory, encryption, proofs…" autocomplete="off"></label>
+        <label>Topic<select id="topic" name="topic"><option value="all">All topics</option>{{TOPIC_OPTIONS}}</select></label>
         <button type="reset" class="reset">Reset</button>
       </form>
-      <p class="result-count" id="result-count" role="status" aria-live="polite">{{CARD_COUNT}} results · curated evidence, not a complete repository inventory</p>
+      <p class="result-count" id="result-count" role="status" aria-live="polite">{{CARD_COUNT}} projects and experiments</p>
       <div class="result-grid" id="results">{{CARDS}}</div>
-      <div id="empty" class="empty-state" hidden><h3>No matching results</h3><p>Try a broader term or reset the research path and evidence type.</p><button type="button" id="empty-reset">Show all results</button></div>
-      <noscript><p class="no-script">All results are visible. Search and filters become available with JavaScript enabled.</p></noscript>
+      <div id="empty" class="empty-state" hidden><h3>No matches</h3><p>Try another word or choose a different topic.</p><button type="button" id="empty-reset">Show all projects</button></div>
+      <noscript><p class="no-script">All projects are shown below.</p></noscript>
     </section>
     <section id="reading-paths" class="paths-section" aria-labelledby="paths-title">
-      <div class="section-heading"><div><p class="eyebrow">Choose a question</p><h2 id="paths-title">Three ways into the work</h2></div><p>Short routes through<br>the original notes.</p></div>
+      <div class="section-heading"><h2 id="paths-title">Explore a topic</h2></div>
       <div class="path-grid">{{PATHS}}</div>
     </section>
     <section class="boundaries-section" id="boundaries" aria-labelledby="boundaries-title">
-      <div><p class="eyebrow">The distance still to cover</p><h2 id="boundaries-title">Integrity, utility,<br>and privacy are<br>separate claims.</h2><div class="boundary-links">{{GAME_LINK}}{{CREDENTIALS_LINK}}</div></div>
-      <div class="boundary-prose"><p><span class="badge derived">Derived</span> Encrypted arithmetic can preserve a computation while a full reader key still exposes its state. Useful features can improve predictions while revealing a small aggregate. A durable journal can bind one accepted history while recipients retain other read capabilities.</p><p><span class="badge open">Open</span> The full resident target requires those pieces to compose under an explicit exposure and leakage contract. The cards above preserve the smaller claims that have evidence.</p></div>
+      <div><h2 id="boundaries-title">Who has the key?</h2><div class="boundary-links">{{GAME_LINK}}{{CREDENTIALS_LINK}}</div></div>
+      <div class="boundary-prose"><p>Our current encrypted learner still has a key that can decrypt its whole memory. The application checks proofs before using that key, but the person holding it can bypass the application.</p><p>We want to replace that key with the ability to learn and answer only. That would let an AI keep private internal state even from the person running its computer. Finding a practical way to do this is a central part of the project.</p></div>
     </section>
   </main>
-  <footer><div><a class="footer-brand" href="{{BASE}}">zkml-research</a><p>Open notes. Inspectable evidence. Explicit limits.</p></div><div class="footer-links">{{HOUSE_LINK}}<a href="{{BASE}}source-manifest.json">Evidence manifest <span aria-hidden="true">↗</span></a><span>Index reviewed {{REVIEWED}}</span></div></footer>
+  <footer><a class="footer-brand" href="{{BASE}}">zkml-research</a><div class="footer-links"><a href="{{REPO}}">Code and research notes <span aria-hidden="true">↗</span></a><span>Updated {{REVIEWED}}</span></div></footer>
 </body>
 </html>
