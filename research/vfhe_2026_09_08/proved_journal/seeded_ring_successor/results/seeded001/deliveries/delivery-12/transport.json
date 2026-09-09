@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "role_command": "query",
+  "pid": 1144,
+  "elapsed_seconds": 1.9056660829810426,
+  "peak_rss_bytes_macos": 270204928,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "seed_policy": "honest-dual-seed-384-qrom-v1",
+  "seed_bits": 384,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/registry.json",
+      "kind": "fixed_semantic_registry",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/private/recipient_12/key.ring",
+      "kind": "key",
+      "private": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/public/accepted_model_000006.json",
+      "kind": "class_snapshot_map",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/cas/40e403ac4ceaf3ffdf347bf78ffbc9c11796b8d3e4d9eb350141e6b2c42dc706",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/cas/c080a05345d0752e3504371839c1017d9fba53728716ed0deeec3090a640f63c",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [],
+  "result": {
+    "recipient_coordinate": 12,
+    "registered_query_text": "Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.",
+    "private_rows_read": 1,
+    "query_results": [
+      {
+        "revision": 6,
+        "scores": {
+          "card_arrival": 405317,
+          "cash_withdrawal_charge": 475191
+        },
+        "prediction": "cash_withdrawal_charge"
+      }
+    ],
+    "output_scope": "Explicit public benchmark scores from this recipient only"
+  },
+  "error": null
+}

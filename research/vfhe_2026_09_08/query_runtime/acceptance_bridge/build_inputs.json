@@ -1,0 +1,20 @@
+{
+  "scope": "instrumentation-only copies; original files unmodified",
+  "source_sha256": {
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/Cargo.toml": "1836f622fdb3677c99b7d910f2c8b1abc5f2b22e064c9158bf691c05eaf66658",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/config.rs": "f56b385c3a0e6b25411687af657219749c076d8a070a90c237d7e81507b13534",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/hiding_pcs.rs": "621347874b3886cca37dbab67ec7b29c70ba72dd90d721f14c8ccfa139cfa8d1",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/lib.rs": "254f8f209c0017bbed72a236c38efce33c43c988db8c8b011c310948215a1528",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/periodic.rs": "c592b44642a95ad6e5fb812dfcbaa294c6f38fff31ba456f70e5f4119e7ea296",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/proof.rs": "50b8f1e54c9200f96e7bc1f4d672c2b97c467e1440a70e00d1571e4d18b57c67",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9",
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/Cargo.toml": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+  },
+  "query_source": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/src/main.rs",
+    "sha256": "4df56d60708c10c2a486ea214909bf60e09c8d2406b7acd3506a195eb9f0cccc"
+  }
+}

@@ -1,0 +1,21 @@
+--- a/src/bfv/keys/evaluation_key.rs
++++ b/src/bfv/keys/evaluation_key.rs
+@@ -37,6 +37,18 @@
+ }
+ 
+ impl EvaluationKey {
++    /// Read-only public evaluation-key parts for the owned proof trace adapter.
++    /// This exposes no secret key and changes no operation implementation.
++    pub fn vfhe_public_rotation_parts(&self, shift: Option<usize>) -> Result<(usize, usize, usize, usize, Vec<Poly>, Vec<Poly>)> {
++        let exponent = match shift {
++            Some(i) => *self.rot_to_gk_exponent.get(&i).ok_or_else(|| Error::DefaultError("unsupported public rotation".into()))?,
++            None => self.par.degree() * 2 - 1,
++        };
++        let key = self.gk.get(&exponent).ok_or_else(|| Error::DefaultError("missing public Galois key".into()))?;
++        Ok((exponent, key.ksk.ciphertext_level, key.ksk.ksk_level, key.ksk.log_base,
++            key.ksk.c0.to_vec(), key.ksk.c1.to_vec()))
++    }
++
+     /// Reports whether the evaluation key enables to compute an homomorphic
+     /// inner sums.
+     pub fn supports_inner_sum(&self) -> bool {

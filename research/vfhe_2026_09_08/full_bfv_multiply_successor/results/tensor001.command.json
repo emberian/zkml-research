@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "prove_phase.py",
+    "tensor",
+    "results/case001",
+    "results/tensor001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+  "started_utc": "2026-09-08T22:55:26.457005+00:00",
+  "pid": 33852,
+  "returncode": 0,
+  "elapsed_seconds": 65.91393862501718,
+  "finished_utc": "2026-09-08T22:56:32.295443+00:00",
+  "user_seconds": 126.883699,
+  "system_seconds": 6.602896,
+  "max_rss_bytes": 888504320
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/CurveWeightedAgreement.olean",
+    "Selvage/CurveWeightedAgreement.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "9131723e28cc3a1c94edca182c3a2574db58f99f6ccef61c7e2364ac39d8edaf",
+  "source_unchanged": true,
+  "elapsed_s": 4.318936109542847,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/weighted-family.log"
+}

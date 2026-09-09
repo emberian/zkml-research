@@ -1,0 +1,27 @@
+Compiler/BfvKeyswitchMac.lean:161:2: error: `simp` made no progress
+Compiler/BfvKeyswitchMac.lean:159:13: warning: This simp argument is unused:
+  products
+
+Hint: Omit it from the simp argument list.
+  simp only [p̵r̵o̵d̵u̵c̵t̵s̵,̵Fin.sum_univ_succ]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/BfvKeyswitchMac.lean:190:40: error: unsolved goals
+J : Type
+q : ℕ
+w : RowWires J
+asg : J → BabyBear
+t : Fin 12
+⊢ 16744448 + products (fun k i => asg ((w.canonical (lhs k)).x i)) (fun k i => asg ((w.canonical (rhs k)).x i)) t +
+                eval asg (if h : ↑t < 6 then vr ((w.canonical 8).x ⟨↑t, ⋯⟩) else cst 0) +
+              asg (w.carry t.castSucc) -
+            asg (w.carry t.succ) * 512 -
+          convolution (fun i => ↑(AirModularView.constDigit 512 6 q i)) (fun i => asg (w.quotient i)) t -
+        eval asg (if h : ↑t < 6 then vr ((w.canonical 9).x ⟨↑t, ⋯⟩) else cst 0) =
+      0 ↔
+    (16777216 + products (fun k i => asg ((w.canonical (lhs k)).x i)) (fun k i => asg ((w.canonical (rhs k)).x i)) t +
+          asg (w.carry t.castSucc) +
+        if h : ↑t < 6 then asg ((w.canonical 8).x ⟨↑t, ⋯⟩) else 0) =
+      32768 + asg (w.carry t.succ) * 512 +
+          convolution (fun i => ↑(AirModularView.constDigit 512 6 q i)) (fun i => asg (w.quotient i)) t +
+        if h : ↑t < 6 then asg ((w.canonical 9).x ⟨↑t, ⋯⟩) else 0

@@ -1,0 +1,185 @@
+/- Existing-compiler lowering of the pinned scalar source certificate.
+The layout is intentionally conservative:21 groups of22 radix64 digits, twelve
+shared-result balances,57 columns and15-bit carries. The actual descriptor is
+built by existing weightedSumGadget, limbRangeSystem and emit. -/
+import Compiler.FheSourceCertificateLayout
+
+namespace Minidregg.Compiler.FheSourceCertificate
+open Minidregg.Compiler
+open Minidregg.Compiler.BfvSignedAccumulatorAir
+open Minidregg.Compiler.IntegerCertificateEmission
+open Minidregg.Compiler.DescriptorEval
+open Minidregg.Compiler.NativeKernelPlan
+open Minidregg.Theory
+open scoped BigOperators
+set_option autoImplicit false
+set_option maxRecDepth 20000
+set_option maxHeartbeats 3000000
+
+def scalarWire (i : Fin 462) : Fin 30294 := ⟨i.val,by omega⟩
+def scalarBits (i : Fin 462) (j : Fin 6) : Fin 30294 := ⟨462+6*i.val+j.val,by omega⟩
+def groupDigit : Fin 21 × Fin 22 ≃ Fin 462 := finProdFinEquiv
+
+def digitCoefficient (matrix : Fin 21 → ℕ) (i : Fin 462) : ℕ :=
+  matrix (groupDigit.symm i).1 * 64^(groupDigit.symm i).2.val
+
+def decoded (v : ℕ → BabyBear) (g : Fin 21) : ℕ :=
+  ∑ d : Fin 22, 64^d.val * (v (scalarWire (groupDigit (g,d))).val).val
+
+def resultStart (row : Fin 12) : ℕ := 3234+2255*row.val
+
+def rowWires (row : Fin 12) (right : Bool) : WeightedSumWires (Fin 30294) 57 6 15 where
+  result := fun i => ⟨resultStart row+i.val,by dsimp [resultStart]; omega⟩
+  resultBit := fun i j => ⟨resultStart row+57+6*i.val+j.val,by dsimp [resultStart]; omega⟩
+  carry := fun i => ⟨resultStart row+399+(if right then 928 else 0)+i.val,by
+    dsimp [resultStart]; split_ifs <;> omega⟩
+  carryBit := fun i j => ⟨resultStart row+399+(if right then 928 else 0)+58+15*i.val+j.val,by
+    dsimp [resultStart]; split_ifs <;> omega⟩
+
+def rowSystem (row : Fin 12) : ConstraintSystem BabyBear (Fin 30294) :=
+  weightedSumGadget (leftConstant row) (digitCoefficient (leftMatrix row)) scalarWire (rowWires row false) ++
+  weightedSumGadget (rightConstant row) (digitCoefficient (rightMatrix row)) scalarWire (rowWires row true)
+
+def sourceSystem : ConstraintSystem BabyBear (Fin 30294) :=
+  AirBignum.limbRangeSystem scalarWire scalarBits ++
+  (List.finRange 12).flatMap rowSystem
+
+def sourceDescriptor : ConstraintDescriptor BabyBear := emit Fin.val 0 30294 sourceSystem
+
+def EmittedSourceSound (d : ConstraintDescriptor BabyBear) : Prop :=
+  ∀ v : ℕ → BabyBear, descriptorHolds d v →
+    (decoded v 18 : ℤ) = FheRnsScale.deployedOutput (readResidues (decoded v)) % FheRnsScale.deployedQ
+
+/-- The emitted wire layout is a well-formed instance of the existing compiler. -/
+theorem sourceDescriptor_wellFormed : sourceDescriptor.WellFormed :=
+  emit_wellFormed Fin.val 0 30294 (by omega) (fun i => i.isLt) sourceSystem
+
+/-- Range-derived column budgets are strictly below the deployed proof field. -/
+theorem source_column_budgets :
+    63+462*63*63+(2^15-1) < babyBearP ∧
+    63+64*(2^15-1) < babyBearP := by norm_num [babyBearP]
+
+theorem digit_coefficient_capacity (matrix : Fin 21 → ℕ)
+    (h : ∀ i, matrix i < 2^210) (i : Fin 462) : digitCoefficient matrix i < 64^57 := by
+  have hp : 64^(groupDigit.symm i).2.val ≤ 64^21 :=
+    Nat.pow_le_pow_right (by omega) (by have hh := (groupDigit.symm i).2.isLt; omega)
+  have hh := Nat.mul_le_mul (h (groupDigit.symm i).1).le hp
+  exact lt_of_le_of_lt hh (by decide)
+
+/-- Reindexing the exact radix expansion preserves every pinned linear form. -/
+theorem digit_linearization (matrix : Fin 21 → ℕ) (v : ℕ → BabyBear) :
+    (∑ i : Fin 462, digitCoefficient matrix i * (v (scalarWire i).val).val) =
+      dot matrix (decoded v) := by
+  rw [← groupDigit.sum_comp]
+  simp only [digitCoefficient,Equiv.symm_apply_apply]
+  rw [Fintype.sum_prod_type]
+  simp [dot,decoded,Finset.mul_sum,mul_assoc]
+
+/-- Existing emitted constraints force every exact nonnegative balance. -/
+theorem sourceDescriptor_balanced (v : ℕ → BabyBear)
+    (hd : descriptorHolds sourceDescriptor v) : Balanced (decoded v) := by
+  let asg : Fin 30294 → BabyBear := fun i => v i.val
+  have hs := (emit_accepts_iff_fin 30294 0 asg sourceSystem).mp ⟨v,fun _ => rfl,hd⟩
+  obtain ⟨hr,hh⟩ := (systemAccepts_append asg _ _).mp hs
+  intro row
+  have hrow : systemAccepts asg (rowSystem row) := by
+    intro t ht
+    exact hh t (List.mem_flatMap.mpr ⟨row,by simp,ht⟩)
+  obtain ⟨hl,hrr⟩ := (systemAccepts_append asg _ _).mp hrow
+  have run (c : ℕ) (matrix : Fin 21 → ℕ) (w : WeightedSumWires (Fin 30294) 57 6 15)
+      (hc : c < 64^57) (hm : ∀ i, matrix i < 2^210)
+      (ha : systemAccepts asg (weightedSumGadget c (digitCoefficient matrix) scalarWire w)) :
+      Bignum.denoteNat 64 (AirBignum.limbVals asg w.result) = c+dot matrix (decoded v) := by
+    have h := ranged_weighted_sound
+      (by norm_num [babyBearP]) (by norm_num [babyBearP]) (by norm_num [babyBearP])
+      hc (digitCoefficient matrix) (digit_coefficient_capacity matrix hm)
+      source_column_budgets.1 source_column_budgets.2 asg scalarWire scalarBits w hr ha
+    simpa only [asg,digit_linearization] using h
+  have hleft := run _ _ _ (matrix_capacities.2 row).1
+    (fun i => (matrix_capacities.1 row i).1) hl
+  have hright := run _ _ _ (matrix_capacities.2 row).2
+    (fun i => (matrix_capacities.1 row i).2) hrr
+  exact hleft.symm.trans hright
+
+/-- Main emitted-descriptor refinement. Every canonicality, remainder and quotient
+premise is supplied by this descriptor's constraints, not by a caller assertion. -/
+theorem sourceDescriptor_sound : EmittedSourceSound sourceDescriptor := by
+  intro v hd
+  exact balanced_output_forced (decoded v) (sourceDescriptor_balanced v hd)
+
+/-- The same-row exact-nearest alternative is refused for EVERY wire assignment,
+including all carries, bits and emitted auxiliary wires. -/
+theorem sourceDescriptor_wrong_neighbor (v : ℕ → BabyBear)
+    (hr : readResidues (decoded v) = FheRnsScale.capturedResidues)
+    (hy : decoded v 18 = 172480) : ¬ descriptorHolds sourceDescriptor v := by
+  intro h
+  have hc := balanced_source_accepts (decoded v) (sourceDescriptor_balanced v h)
+  rw [hr,hy] at hc
+  exact wrong_neighbor_refused _ hc
+
+instance : Hashable BabyBear := ⟨fun x => hash x.val⟩
+def sharedSourceDescriptor : ConstraintDescriptor BabyBear := cse sourceDescriptor
+
+/-- Existing compiler CSE preserves the source certificate's exact meaning. -/
+theorem sharedSourceDescriptor_sound : EmittedSourceSound sharedSourceDescriptor := by
+  intro v hd
+  let asg : Fin 30294 → BabyBear := fun i => v i.val
+  have hs := (cse_emit_accepts_iff_fin 30294 0 asg sourceSystem).mp ⟨v,fun _ => rfl,hd⟩
+  obtain ⟨v',hp,hd'⟩ := (emit_accepts_iff_fin 30294 0 asg sourceSystem).mpr hs
+  have hc := sourceDescriptor_sound v' hd'
+  have he : decoded v'=decoded v := by
+    funext g
+    apply Finset.sum_congr rfl
+    intro d _
+    rw [hp (scalarWire (groupDigit (g,d)))]
+  simpa only [he] using hc
+
+end Minidregg.Compiler.FheSourceCertificate
+
+-- AXIOM PINS: actual checked print output.
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wellFormed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wellFormed
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.source_column_budgets' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.source_column_budgets
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.digit_coefficient_capacity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.digit_coefficient_capacity
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.digit_linearization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.digit_linearization
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_balanced' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_balanced
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_sound
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wrong_neighbor' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wrong_neighbor
+
+/-- info: 'Minidregg.Compiler.FheSourceCertificate.sharedSourceDescriptor_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Compiler.FheSourceCertificate.sharedSourceDescriptor_sound

@@ -1,3 +1,13 @@
+# Current restricted-state interaction result
+
+[DERIVED no-go at stated exposure] INTERACTION.md traces AGT2022/1168 and garbled encryption2020/950 through the running-prefix writer-key exposure. Exact bilinear functionality lets a retained future writer probe prior state. AGT writer keys literally contain basis ciphertexts; garbling's unused label pairs likewise permit branching. Time ratcheting does not protect prior readings re-encoded under still-live future keys.
+
+[EXECUTED public arithmetic] interaction_span.py computes that the actual16-row semantic registry induces a576-dimensional diagonal-bilinear probe span. Every variable feature coordinate is readable if those writer probes are permitted. No keys, ciphertext probes, attacks, estimator runs or weak resident demo were executed.
+
+[DERIVED complete bounded outcome] No inspected specific candidate survived the full running-prefix target. Root declined an atomic-epoch garbling implementation because it protects joint private ingress without carrying protected hidden state into a future exposed writer epoch. No weaker demo or new implementation queue was launched. The source-grounded result is the exact credential/input-binding obstruction, not a field-wide absence claim.
+
+---
+
 # Restricted transcript replay successor — completed bounded tranche
 
 [DERIVED source-conditional positive] One nonpublic one-time anchor slot, T

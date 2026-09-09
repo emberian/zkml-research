@@ -1,0 +1,22 @@
+{
+  "command": [
+    "target/release/vfhe-complete-kernel-infer",
+    "import",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/ciphertexts/state-000009-63e4c128.ct",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/queries/basic.json",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/evaluation.key",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace/basic.dot.ct",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace/basic-000.ct",
+    "results/case001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer",
+  "started_utc": "2026-09-08T23:18:02.272165+00:00",
+  "pid": 61174,
+  "returncode": 0,
+  "elapsed_seconds": 12.698495750024449,
+  "finished_utc": "2026-09-08T23:18:14.971101+00:00",
+  "user_seconds": 12.18914,
+  "system_seconds": 0.338742,
+  "max_rss_bytes": 840941568
+}

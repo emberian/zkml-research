@@ -1,0 +1,25 @@
+'Minidregg.Selvage.ArityEight.Schedule.uniformProb_all_coordinates' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.uniformProb_square' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.firstFifteen_sq_val' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.blockSquare_val' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_val' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_eq_coherent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourceChecks_iff_seedChecks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.seed_probability_mass' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.consistency_query_exact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "build/Compiler/BfvSquareComposition.olean",
+    "Compiler/BfvSquareComposition.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition",
+  "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "seconds": 7.1208843749482185,
+  "exit": 0,
+  "source_sha256": "a1cfa57583d1622f20919ef7c09f1e36e65dff9cda04dde04d8cf026637b0609",
+  "log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/results/BfvSquareComposition_004.log"
+}

@@ -1,0 +1,84 @@
+{
+  "owned": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorAxiomPins.lean",
+      "sha256": "f2c089e5bd5e24cd4c69add231c8b6d5844bbb662cc866ef4d25661a2c5ecb5e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorCore.lean",
+      "sha256": "5983ffcdc3626a806ef079abba198bfd6bd9ce30954a91422dd761a55334a913"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorExhibits.lean",
+      "sha256": "987f1620cfebe934375ab11285056ad840a10d31821d59b18ebb17ffe558234b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorMul.lean",
+      "sha256": "bf32232c477e48a231ceaed72c6a3f73f52ca0cb0e02aa938e1836434880c3b9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorRow.lean",
+      "sha256": "db2c0aedcc1e91484f6785a0280feb64522a21f3170bf64f94455e2df314ae76"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorWitnessPlan.lean",
+      "sha256": "669c37920c7365fb5f60eb291a3df275c17ed92eaaa63861f9c52a003f05f63d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/EmitBfvTensor.lean",
+      "sha256": "806716fd4dc58b59381eb2710ece6bccd1c917853e404b1b1ef8c42ac4de005f"
+    }
+  ],
+  "origins_and_dependencies": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean",
+      "sha256": "bb91eeb1c1fc46c0e1f498e49de18cc7533f6ab3bf5b7b14efa01382b4f87bb0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean",
+      "sha256": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean",
+      "sha256": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean",
+      "sha256": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean",
+      "sha256": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/source_pins.json",
+      "sha256": "c3dd9e065849636058b0b81347b22f1e689f72f7b1ea4c5ae8ea5aa488c5afd9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/SCHEMA.md",
+      "sha256": "09d92c0d53b5b7efba9e6da22ebc9a6c8bd4fcfac7431e237cebae6eee84d416"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/src/main.rs",
+      "sha256": "c55464a62f7988aa936b9665199a958cf53d5935022ac75c1a2761e4a47227e6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/Cargo.lock",
+      "sha256": "ebf256afaeb1605c15758f2a692ec2ba9e230a99b58b9fbb389029d0c7a9106a"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/CLAUDE.md",
+      "sha256": "18ebc13de065377cfd216282759f01fd889b823a07c1f923c6a93204b371d570"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/ATLAS.md",
+      "sha256": "d43c10614bde325a28ff73ca5127d0d5ffbda19eeb48d4238c1126caf1d873ad"
+    }
+  ],
+  "read_only_dependency_artifacts": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/results/dependency_artifacts.json",
+    "sha256": "d68a03444371a15de272bdc569b8d77bc5226754e5e079cdc856de86b156ddd4"
+  },
+  "ready_sha256": "ac0f407a85ce3afd552b7905c8e9384e695737e442e4ab2b689a122b5102be2b",
+  "patch_sha256": "86661da5a86b2a146f5b401a87461ca50b65d4f26b488e2ded2e1b3a9f437987"
+}

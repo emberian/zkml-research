@@ -1,0 +1,9 @@
+Finset.sum_range_add.{u_4} {M : Type u_4} [AddCommMonoid M] (f : ℕ → M) (n m : ℕ) :
+  ∑ x ∈ Finset.range (n + m), f x = ∑ x ∈ Finset.range n, f x + ∑ x ∈ Finset.range m, f (n + x)
+Finset.sum_range_succ'.{u_4} {M : Type u_4} [AddCommMonoid M] (f : ℕ → M) (n : ℕ) :
+  ∑ k ∈ Finset.range (n + 1), f k = ∑ k ∈ Finset.range n, f (k + 1) + f 0
+Finset.sum_range_reflect.{u_4} {δ : Type u_4} [AddCommMonoid δ] (f : ℕ → δ) (n : ℕ) :
+  ∑ j ∈ Finset.range n, f (n - 1 - j) = ∑ j ∈ Finset.range n, f j
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Probe.lean:5:7: error(lean.unknownIdentifier): Unknown constant `Int.mul_emod_mul_left`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Probe.lean:6:7: error(lean.unknownIdentifier): Unknown constant `Int.mul_emod_mul_right`
+Int.mul_emod (a b n : ℤ) : a * b % n = a % n * (b % n) % n

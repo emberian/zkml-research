@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--offline",
+    "-j2"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+  "started_utc": "2026-09-08T22:36:23.905692+00:00",
+  "pid": 98929,
+  "returncode": 101,
+  "elapsed_seconds": 89.8229829170159,
+  "finished_utc": "2026-09-08T22:37:53.730381+00:00",
+  "user_seconds": 165.756492,
+  "system_seconds": 9.747658,
+  "max_rss_bytes": 1226506240
+}

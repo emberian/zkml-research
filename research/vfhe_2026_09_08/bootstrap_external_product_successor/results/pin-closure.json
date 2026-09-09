@@ -1,0 +1,21 @@
+{
+  "checked_utc": "2026-09-08T22:59:04.605379+00:00",
+  "capture_pins_unchanged": 37,
+  "proof_pin_count": 121,
+  "all_actual_source_template_trace_input_binary_pins_unchanged": true,
+  "metadata_extension_only": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/SOURCE_PINS.json",
+    "preproof_sha256": "0fe1809bdf8ef4d1e8df725a6a6823f8308d2e5e63113882ad8d108cf4e623ff",
+    "preproof_exact_bytes_retained_at": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/results/formal-source-pins-before-proof.json",
+    "final_sha256": "5b7bfb47c291171f7a7c4e5892dde79ef4249ad583eaea3197865d760460cb75",
+    "added_entries": {
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/public_rows46.json": "43d887ef9389d62cae254a3b050a9a188ba2cdf51d38ed204a71a76c0e06f6d3"
+    },
+    "reconstruction": "Removed added absolute-path entries and serialized original JSON layout; exact preproof byte hash matches."
+  },
+  "no_reproof": true
+}

@@ -1,0 +1,9 @@
+'Minidregg.Selvage.ArityEight.Schedule.block_project_mass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.consistency_mass_source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.source_card_factor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.source_probability_mass' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.sourceChecks_iff_all' depends on axioms: [propext, Quot.sound]

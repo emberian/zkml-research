@@ -1,0 +1,27 @@
+Compiler/BasisExtensionPublic.lean:134:22: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (fun f j => ↑(f j)) fun i => decoded profile (asg ∘ wireMap) (residue i)
+in the target expression
+  ↑(publicNew asg i) = output params (fun j => ↑(decoded profile (asg ∘ wireMap) (residue j))) i
+
+case refine_2
+asg : ℕ → BabyBear
+hs✝ : systemAccepts asg system
+hz : systemAccepts asg [vr 84]
+hs : systemAccepts asg (renameS wireMap source)
+hz' : asg 84 = 0
+ha : systemAccepts (asg ∘ wireMap) source
+hin : ∀ (i : Fin 4), decoded profile (asg ∘ wireMap) (residue i) < params.source i
+hcopy : ∀ (i : Fin 4), decoded profile (asg ∘ wireMap) (copied i) = decoded profile (asg ∘ wireMap) (residue i)
+hout :
+  ∀ (i : Fin 5),
+    ↑(decoded profile (asg ∘ wireMap) (target i 0)) =
+      output params (fun j => ↑(decoded profile (asg ∘ wireMap) (residue j))) i
+hi : (fun i => decoded profile (asg ∘ wireMap) (residue i)) = publicInput asg
+hc : (fun i => decoded profile (asg ∘ wireMap) (copied i)) = publicCopy asg
+hn : (fun i => decoded profile (asg ∘ wireMap) (target i 0)) = publicNew asg
+hin' : ∀ (i : Fin 4), publicInput asg i < params.source i
+i : Fin 5
+h : ↑(publicNew asg i) = output params (fun j => ↑(decoded profile (asg ∘ wireMap) (residue j))) i
+hzinput :
+  ((fun f j => ↑(f j)) fun i => decoded profile (asg ∘ wireMap) (residue i)) = (fun f j => ↑(f j)) (publicInput asg)
+⊢ ↑(publicNew asg i) = nativeOutput (fun j => ↑(publicInput asg j)) i

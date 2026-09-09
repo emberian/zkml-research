@@ -1,0 +1,35 @@
+import Compiler.TfheSparseTeeth
+import Compiler.TfheSparseWitness
+#print axioms Minidregg.Theory.SparseNegacyclic.cell_shift
+#print axioms Minidregg.Theory.SparseNegacyclic.sum_difference
+#print axioms Minidregg.Theory.SparseNegacyclic.window_step
+#print axioms Minidregg.Theory.SparseNegacyclic.convolution_windows
+#print axioms Minidregg.Theory.SparseNegacyclic.convolution_step
+#print axioms Minidregg.Theory.SparseNegacyclic.window_zero
+#print axioms Minidregg.Theory.SparseNegacyclic.interval_prefixSum
+#print axioms Minidregg.Theory.SparseNegacyclic.convolution_anchor
+#print axioms Minidregg.Theory.SparseNegacyclic.certificate_sound
+#print axioms Minidregg.Theory.SparseNegacyclic.prefix_recurrence
+#print axioms Minidregg.Theory.SparseNegacyclic.signed_blocks_sum
+#print axioms Minidregg.Theory.SparseNegacyclic.prefix_certificate_sound
+#print axioms Minidregg.Theory.SparseNegacyclic.prefix_certificate_inhabited
+#print axioms Minidregg.Theory.SparseNegacyclic.anchor_omission_fails
+#print axioms Minidregg.Theory.SparseNegacyclic.scale_mod
+#print axioms Minidregg.Compiler.TfheSparseWrap.wrapColumn_correct
+#print axioms Minidregg.Compiler.TfheSparseWrap.radix_balance
+#print axioms Minidregg.Compiler.TfheSparseWrap.wrap_sound
+#print axioms Minidregg.Compiler.TfheSparseWrap.denote_linear
+#print axioms Minidregg.Compiler.TfheSparseRow.range_value
+#print axioms Minidregg.Compiler.TfheSparseRow.row_sound
+#print axioms Minidregg.Compiler.TfheSparseRow.emitted_sound
+#print axioms Minidregg.Compiler.TfheSparseCertificate.cell_index
+#print axioms Minidregg.Compiler.TfheSparseCertificate.whole_sound
+#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_low
+#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_readings
+#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_accepts
+#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_values
+#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_premise
+#print axioms Minidregg.Compiler.TfheSparseTeeth.wrong_scale_refused
+#print axioms Minidregg.Compiler.TfheSparseTeeth.wrong_anchor_refused
+#print axioms Minidregg.Compiler.TfheSparseTeeth.flagValues_bool
+#print axioms Minidregg.Compiler.TfheSparseTeeth.whole_premise

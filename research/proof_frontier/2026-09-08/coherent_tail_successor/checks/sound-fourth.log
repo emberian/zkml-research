@@ -1,0 +1,15 @@
+Selvage/BabyBearWeightedSoundness.lean:24:15: error: Function expected at
+  uniformProb_nonneg ?m.134
+but this term has type
+  0 ≤ uniformProb ?m.127 ?m.134
+
+Note: Expected a function because this term is being applied to the argument
+  (seedChecks s r)
+Selvage/BabyBearWeightedSoundness.lean:24:34: error: Application type mismatch: The argument
+  PowerTwoFriLevels 20 1
+has type
+  Type
+of sort `Type 1` but is expected to have type
+  ?m.127 → Prop
+of sort `Type` in the application
+  uniformProb_nonneg (PowerTwoFriLevels 20 1)

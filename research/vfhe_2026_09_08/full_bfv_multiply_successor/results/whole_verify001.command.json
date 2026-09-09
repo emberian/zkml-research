@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "verify_whole.py",
+    "results/case001",
+    "results/extension001",
+    "results/tensor001",
+    "../whole_rescale_runtime/results/run001",
+    "results/whole_verify001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+  "started_utc": "2026-09-08T23:00:52.568215+00:00",
+  "pid": 40518,
+  "returncode": 0,
+  "elapsed_seconds": 11.224627916992176,
+  "finished_utc": "2026-09-08T23:01:03.793514+00:00",
+  "user_seconds": 12.392974,
+  "system_seconds": 0.723499,
+  "max_rss_bytes": 171573248
+}

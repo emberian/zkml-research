@@ -1,0 +1,4 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Compiler/TfheSparseWrap.lean:77:2: warning: 'norm_num only [show (64 : SmallRing) ^ 4 = 16777216 by norm_num, hq, mul_zero, zero_mul,
+  add_zero] at hf' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`

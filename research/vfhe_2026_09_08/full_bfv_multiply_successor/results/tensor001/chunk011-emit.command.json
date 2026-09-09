@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime5/witness_plan.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime5/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/tensor/011.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/work/tensor-b045dd8c67148237/chunk011"
+  ],
+  "started_utc": "2026-09-08T22:56:04.916485+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+  "timeout_seconds": 900,
+  "pid": 34791,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-08T22:56:05.598979+00:00",
+  "elapsed_seconds": 0.6828769579879008,
+  "user_seconds": 0.47673,
+  "system_seconds": 0.01424,
+  "max_rss_bytes": 9797632
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "tensorsketch-pre-outcome-freeze-v1",
+  "created_utc": "2026-09-08T22:45:05.567078+00:00",
+  "status": "Map and policy frozen before running this successor benchmark",
+  "seed_searches": 0,
+  "successor_benchmark_executions": 0,
+  "pins": {
+    "research/learn_infer_only/experiments/end_to_end/restricted_tensorsketch_successor/policy.json": "e1780da66b4416d2702151e8ddee7a3ebfc87c4d1658ed463b0cdb79b9994576",
+    "research/learn_infer_only/experiments/end_to_end/restricted_tensorsketch_successor/tensorsketch.py": "eb58acf90df5063fec8c8bd8db6da862ffbbfe88fdd3cfaea60bc496689a4f0c",
+    "research/learn_infer_only/experiments/end_to_end/restricted_tensorsketch_successor/basis.py": "16510ae61dfb1ce1f1d4e706e8d594d2ad687827355ba38db98d218e027e4b9f",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/full77/features.npz": "79d09a076f0af7b177815eed8888721ddad50a29fb4a324277335fc56684fdf2",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/full77/selection.json": "b6ed235d9083d06285139de592728b7d9701d8799d07ed4f5a610a9d3d04ef35",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/full77/result.json": "7595fc13a0e4df55f088e906dc59f7420b19180706c0e321abfe3937353df9a0",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/features.npz": "03959f885631c4b095d81210b06def3e4071a1d9bf98e1c7427b1cd114aeaf6a",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/data/selected.json": "5e1e10fce61b7074345bdee1e5cecf5768f5cdd91684e06fb37cf783abe2eb09",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/full77.py": "cc0855dab8ef9533ab34c866108f0359de70dced12a73660d071f77ddbe92a14",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/encoder.py": "682392ed626b4f0f5b705f06cc0710aa8ad42cf7092c127e94642f12714ae272",
+    "research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/config.json": "1e051be559a01ce600f4434bf9a85c2585023f14e425d86c55cf0cd77a0ca5ee",
+    "research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+    "research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/fixture.json": "8b961704aa37ec4953110330b4048da1f0f639346803f240e20a04c9c38910ee",
+    "research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/basis.py": "16510ae61dfb1ce1f1d4e706e8d594d2ad687827355ba38db98d218e027e4b9f"
+  }
+}

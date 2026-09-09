@@ -1,0 +1,243 @@
+{
+  "additional_setups": 0,
+  "artifacts": {
+    ".gitignore": {
+      "bytes": 58,
+      "sha256": "8386658f3210da23c0c514e827dfe49405f9f66c62fd56209bc00245416a372d"
+    },
+    "COMMANDS.json": {
+      "bytes": 2478,
+      "sha256": "61164f67670159b65d458817cc3167c310c3d0e2bc00320155a20b43b6af56fa"
+    },
+    "HEADER_CHECKS.json": {
+      "bytes": 753,
+      "sha256": "ef214fb291fad653883a4e370799af48561afc7ff15adcb77bb687347cc4175f"
+    },
+    "NEXT.md": {
+      "bytes": 695,
+      "sha256": "ddfcb871ff54f46bfe1996d9c41e6a391eee124e6fc95f9db512d0c0e17fb862"
+    },
+    "ORIGINS.json": {
+      "bytes": 3913,
+      "sha256": "c9bbd1d4bde1079079f65b038acea7698c1a27d0d50a26dea95fd43746d0a6a7"
+    },
+    "README.md": {
+      "bytes": 2020,
+      "sha256": "e0eec878d3f4e3371024b7faa102166302a331f801013f789b90cb734fed2275"
+    },
+    "REPORT.md": {
+      "bytes": 5353,
+      "sha256": "f37f9bdaa4f46b9a621da9da7b7f9a3d757e51a8f9f1507232f4582e47d051fc"
+    },
+    "RUN.json": {
+      "bytes": 19716,
+      "sha256": "6233eb26e259f8260943f519a4e56d4f83166e536905ff49a989c8af185dc1a5"
+    },
+    "SOURCES.md": {
+      "bytes": 2772,
+      "sha256": "232a2665fd9d5b9e080d785213aedb9fc68909bd347fe49148ef1e133540716a"
+    },
+    "SOURCE_PINS.json": {
+      "bytes": 5898,
+      "sha256": "6dc57e64871dce8972c81c0a9288aaabd57f2dc0483748f1b592282a7f40ab45"
+    },
+    "STATUS.md": {
+      "bytes": 1626,
+      "sha256": "92c9710b637ad117cd7313b44b460f167f006462802f68115a7565e70ccc6d2a"
+    },
+    "THEOREM_APPLICATION.md": {
+      "bytes": 12333,
+      "sha256": "d2761b8d1f075eeb8fc35aabc594a6e1e4918b84fcba6e6932fa0daa8032099f"
+    },
+    "basis.py": {
+      "bytes": 2888,
+      "sha256": "16510ae61dfb1ce1f1d4e706e8d594d2ad687827355ba38db98d218e027e4b9f"
+    },
+    "check_headers.py": {
+      "bytes": 2665,
+      "sha256": "8f71b4456a5fcd53823a569a23107afd0743c8098bd5de1828f15dcb27e63139"
+    },
+    "codec/__init__.py": {
+      "bytes": 262,
+      "sha256": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7"
+    },
+    "codec/packed.py": {
+      "bytes": 6324,
+      "sha256": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d"
+    },
+    "collect_public_run.py": {
+      "bytes": 4739,
+      "sha256": "9ef3536a367e7cc8595dc7c7084e7fc4b203a026fcb2caeda21041fa652c86d2"
+    },
+    "expansion/.gitignore": {
+      "bytes": 13,
+      "sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b"
+    },
+    "expansion/CHECKS.json": {
+      "bytes": 1901,
+      "sha256": "427948023dec63708914a762e6c3628d29ca0447f76b7245cebbf7dbcfcaa878"
+    },
+    "expansion/MANIFEST.json": {
+      "bytes": 2073,
+      "sha256": "968a140d3e908d1d0ea2a8a42b13efc93e006c55308f9058ee22f66517561f79"
+    },
+    "expansion/NEXT.md": {
+      "bytes": 382,
+      "sha256": "e8b16a592dd5e9a562856086582c4a062e050a938923ff7a42fd866f37cb1f73"
+    },
+    "expansion/PROVENANCE.md": {
+      "bytes": 1729,
+      "sha256": "9b2fc3f10d1c57e2cbe3d840129b63849fe176f436783baeae725e857ea826fa"
+    },
+    "expansion/RUN.log": {
+      "bytes": 423,
+      "sha256": "f6a58ff70006bda4cca2d63c47608110a4d7a6ea3fa3fe2e03232d8cd63b2a43"
+    },
+    "expansion/STATUS.md": {
+      "bytes": 433,
+      "sha256": "83324ccac41a606214bb98790a01c45e1ff4833fb519b0013f8b078973d469bf"
+    },
+    "expansion/__init__.py": {
+      "bytes": 158,
+      "sha256": "3f15a40737daebb4ebeb7e469a4162e2f956319e20fba2386cbfcbb6b2f4e0a8"
+    },
+    "expansion/check_version.py": {
+      "bytes": 4984,
+      "sha256": "658ddbab3948b6b14c20c7933ca533373e1c59a22154820cd56b2a16077e3c10"
+    },
+    "expansion/public_expander.py": {
+      "bytes": 5714,
+      "sha256": "786e10ee57a08f2f55a1de2b897a795934ec900498da13b556c33756f500d04e"
+    },
+    "fixture.json": {
+      "bytes": 50664,
+      "sha256": "8b961704aa37ec4953110330b4048da1f0f639346803f240e20a04c9c38910ee"
+    },
+    "pin_sources.py": {
+      "bytes": 1495,
+      "sha256": "f545cf82ec8767fc3966ade291998ce5b0bf4860ebd58be9c29869443395b33b"
+    },
+    "registry.json": {
+      "bytes": 121500,
+      "sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5"
+    },
+    "seal.py": {
+      "bytes": 3645,
+      "sha256": "b5cb7d3d7a2d77cc1a41f4ec1c3c40f7df8da1dfe505e0aa289c830478622d37"
+    },
+    "source/fast/ring.py": {
+      "bytes": 11488,
+      "sha256": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567"
+    },
+    "source/fast/run.py": {
+      "bytes": 9311,
+      "sha256": "e7632e4eccccec16354ecfbbf541a23e96d8f8f803465c7de62a63eff522f698"
+    },
+    "source/fast/sampling/__init__.py": {
+      "bytes": 164,
+      "sha256": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1"
+    },
+    "source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so": {
+      "bytes": 16816,
+      "sha256": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b"
+    },
+    "source/fast/sampling/proposal_screen.c": {
+      "bytes": 2637,
+      "sha256": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4"
+    },
+    "source/fast/sampling/reference.py": {
+      "bytes": 7670,
+      "sha256": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+    },
+    "source/fast/sampling/sampler.py": {
+      "bytes": 6752,
+      "sha256": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8"
+    },
+    "source/semantic_transport.original.py": {
+      "bytes": 19959,
+      "sha256": "5eed477a600a3789c9b2a83150eed653674b59b1073e09f392b63b991d3780f6"
+    },
+    "transport.py": {
+      "bytes": 23960,
+      "sha256": "12eb65863d762e5a5d739866f1c25bed21fee061ca2b193f42fe8a1032b5cabc"
+    }
+  },
+  "checked_executable_files": 15,
+  "checked_shared_public_files": 58,
+  "frozen_executable_manifest_sha256": "6dc57e64871dce8972c81c0a9288aaabd57f2dc0483748f1b592282a7f40ab45",
+  "frozen_theorem_application_sha256": "d2761b8d1f075eeb8fc35aabc594a6e1e4918b84fcba6e6932fa0daa8032099f",
+  "private_payload_reads": 0,
+  "public_inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/SOURCE_PINS.json": "2fb22bf8b14807a1f66549a27b9be97a99b18c4e742c70ffa7d4abb82adf8426",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/MANIFEST.json": "1e4415069a3afbc45fd27345e3487e36b4c8a8f3378f4b9c7ebbf1054265147a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/THEOREM.md": "9c038779e494bcbada7875940fba276c3256af60d7dda4b5f94bf565c5d7a73d",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/REPORT.md": "a2f9ce71d1cf11e2d756a8d98e57902726e9d1560671b057ea5fd451a9744118",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/PUBLIC_COMPLETE.json": "f98b17b208e3ccea5c4475ce169f2114e57c5b83fe064a12a116a1d46cc955d9",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/RESULT.json": "b0945855f9f42dfb2a8c1f959fafcc6a4c81204b409f2cc6ed3c0a017ba8b0e8",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/a.ring": "e66665b047d7ed67fc9bf0f961a3d0ec7a5895dd63ecb1626cdb3efa48fdf512",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/changed-candidate-refusal_recompute.json": "602cd42bc28b6352d4f505a78bcedf8dd3efbc3a3fde3dd259bd9fa608cd995a",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_finalize.json": "8289dabf64bbcb63afd0d9b94b9b338fea67ebcf0a9936e7967fb606a933f94c",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_init.json": "5960c7f4dd6a77a3828a50ac9846b68ad99bab7ed35dff7e62c45ab4ffbe142a",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_00.json": "c380a38916387895d2860ed05c1a1a9032b498451321942c2c326904ba99a357",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_01.json": "1e187a7ac4bfef87b2a1eeb5e118c8ce4c93f07c955b3a8ae2189179b5a20e80",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_02.json": "854bdabff259f15367015036bb50886e3cc0e3ed60f681a5f7e14b468de5c1df",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_03.json": "831f1a04d6a3518f6f979008fda6adc62377b3634ce9ca9376175d5f78132425",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_04.json": "3bb712cc7dac2ba4e0312be7d3ff7e7ba3dfec8ec24ab7eeec92fc4f8679c8cd",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_05.json": "4f830408ef9f0042eb587139819c036d471a9ad56133288a0d8abf68d7c5ccdf",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_06.json": "cb352a71686f5cdd2f977b88baffc0d6f5749b0194c1bbd4192a1d6738ee0b32",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_07.json": "ab241194542514eab8eceb6f379446b5fc74906a6257a3f45b50b0ddfbe5cc29",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_08.json": "80391df1975bcf95b18bece0418707fe59f46bac2ec8bfccb77d036a4e2501b1",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_09.json": "4a04e210a50d8ef97cca24435a2ed6c112265b7b807f8b1c795074b281553aaf",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_10.json": "6a328a42cf29fc29e569f5167ead78530246ef47abae34f6545b5d6b383184b3",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_11.json": "5a7374a4aba4bb97fde9c821bfbd38537874683ed8b626ae94440885be854aad",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_12.json": "f5e7be244647dba677570bd52cc2688770ebbdf8fe74cfc9189beffda09482be",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_13.json": "dda605263f3eadf079195678614b577b2f80875f473a757ad3e1fe0b7df0eb7e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_14.json": "9d8dbfa933a0e3eb63859c1fbd312dde0323e2cb301b48ecc051df7f1accb22d",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_15.json": "49f28bfae8d0da0da099ead24e72eb9876c3066d12c7fa5c7c9cc101ec24810d",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach01_candidate.json": "8b5e3c6933ee9db20f8f6c80891921515a3556edbf7673b0e2c5732ab5c28d03",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach01_encode.json": "1b7345ba24545dbfa79d9fc881a2c6486f33c953f76534db8511caa919bd24e9",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach01_recompute.json": "48d0b795bf24cbaa5aa9cf77f39a286df0451022bac92d765be410dc7e265909",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach02_candidate.json": "4098c25cd9a9abe9c60aee3040ec06adbf2dd6ffbabbd6297f20aa6acaf1376c",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach02_encode.json": "02922c352cd9603e01e5fde2c8c7e21c47a1d0b56c6dbb666f651c7a2cac4bd7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach02_recompute.json": "91f4fbd5272f588cc5ce02b47b6b2bd3532b496fd71e128dbcaff34299e4b51b",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach03_candidate.json": "8e7d1a51fb8d4c3d1fd15d9bbdc28373a9fbad0acf48fee64c6ddec69dcc49ef",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach03_encode.json": "69c3738f5001fa4dcbfcb43a9669ebd17a61a2597ae830e10f77d4b03e00acf8",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach03_recompute.json": "de57d906294eaca630aa7e9d6db272e820429a375f4d7d7d47a2f17d9b6555d7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach04_candidate.json": "aaef35e7c3ce8f46e7a739099190378bb7f237709f9b5616a34cbcf16e9fc1d5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach04_encode.json": "193b83b15aaff4a79c0d57d31c6ee37723212bbaf3b09991c95ccd746d110616",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach04_recompute.json": "a130db7e2d08e96124dbadbb92471f654e55b5a6ada787937af863d81a17130f",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach05_candidate.json": "561fef23fd80cf07a6751a2661581589ab80613a45ad7cc90cd130d0f33bbc7b",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach05_encode.json": "b819c5a31197a9e1643778b830dc1efdf5a4e03721a5861436b466294f901de5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach05_recompute.json": "5ea60a77545a605451ef3b2395d1751cb2aa2d3559619dd989282632b300eacd",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach06_candidate.json": "a6297a31fa13e9d5d3af1f2958c1448e9037430e66d2f166e09142ea7cc9ecee",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach06_encode.json": "46204a73a39e0bf8af79884519403046f5edd3523fb796c352d3e29753105457",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach06_recompute.json": "ceb503291e3bb8f892b74f63ad581081f7914638aa197cd7e0e7e33b3b3ffd16",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-00/transport.json": "f5c438c1099914390327ecd9bf527a49d346961db8834c837f9d1db9c0e2bd99",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-01/transport.json": "0bacd6f1766cb5f8c99fe5d8f7f497e4567d43c43f24ca9435384ba24226b142",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-02/transport.json": "b1d828d07884e4cd8edc9bc8f047c8db04ec8f3ceb0750deeea55d568458b2ef",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-03/transport.json": "13c75dd366dd3965c99d8a988a69965b889c70c1fab36cc787d0ea5075122a4c",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-04/transport.json": "0231a68f07d864a5ef6a04a307e4599d4fe5dd0f807a51cd45d85b60287da170",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-05/transport.json": "37ac87766c961475b23e63086b0c4b6660bcd4ae68af78b1bb5f51b87ee4269e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-06/transport.json": "95cae22edc29a73d7b19e36aa9e17b19b86dc70732cff39d8d81cb10c07adec6",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-07/transport.json": "bdc74aa217a900e9687f9f094c1c6bd2b539aa759be28109cfeb5bf250c64fa5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-08/transport.json": "8893a016ddb1eb568dc44bc14ced21554079c2deab6e373447a2a90692b5147b",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-09/transport.json": "6c474839d905facd2de76b1a1c1ce4f350d352ef227c79d1100bbba3ff674b8d",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-10/transport.json": "41677507554185a7d5b69741e2cdd138254d214f854e9dcb9ecd4f5b4c001c84",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-11/transport.json": "d9f940de00f4d6c951b380f030e530e0a5f3cf1349337654f6fdfcf868f6998a",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-12/transport.json": "13518a8361444fed25a38396140fb91d288b503f6155a7084b9aca4f7689c3fe",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-13/transport.json": "a6f5c16b807deca91914b8115fbca004ee022f7f173c3ec9dd4f4395bab6b6e2",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-14/transport.json": "f10723533e71035a819bc4081581ca87e50d922b424d3df119519816bd74e1f4",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-15/transport.json": "eaa18f4de2e4b12dec4b969713f1843825db3bde23170396885c5559fad3001e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/public.ring": "d805d4ed5dc77a7521494aa1d98471c043fe03ac93e4c09662ff0b52f95be1e2",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/public_setup.json": "ea8c24ebf29c8eb9115c5f785330586e24fb3f1b5aeb8cc4f68f60b2772fdc76"
+  },
+  "schema": "ring-seed-semantic-successor-public-seal-v1",
+  "scope": "384-bit semantic transport plus one shared service run; public hashes only; no additional cryptographic execution",
+  "search_counts": {
+    "PDF_downloads": 0,
+    "Scry_SQL": 0,
+    "web": 0
+  },
+  "shared_setup_runs": 1,
+  "status": "COMPLETE"
+}

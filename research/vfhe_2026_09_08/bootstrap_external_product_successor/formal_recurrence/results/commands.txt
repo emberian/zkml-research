@@ -1,0 +1,5 @@
+Working directory: /Users/ember/dev/minidregg
+lake env bash -c 'LEAN_PATH=/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/build:$LEAN_PATH lean --root=/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence --run /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/EmitTfheSparse.lean OUTPUT_DIR PUBLIC_ROWS_JSON'
+
+Source validation: python3 /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/check.py
+No full project build. Theory/SparseNegacyclic imports Mathlib only. No network/paper search. No native crypto run by this lane.

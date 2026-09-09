@@ -1,0 +1,98 @@
+{
+  "Selvage.CurveWeightedAgreement": [
+    "Minidregg.Selvage.consistencyMass_le_card",
+    "Minidregg.Selvage.consistencyMass_nonneg",
+    "Minidregg.Selvage.consistencyMass_mono",
+    "Minidregg.Selvage.weightedClose_mutualFailure",
+    "Minidregg.Selvage.geometric_pr_uniform",
+    "Minidregg.Selvage.weightedCA_to_CA",
+    "Minidregg.Selvage.curve_weighted_uniform_sound",
+    "Minidregg.Selvage.curve_weighted_bad_card"
+  ],
+  "Selvage.FoldingConsistencyWeights": [
+    "Minidregg.Selvage.ArityEight.projectConsistency_mass",
+    "Minidregg.Selvage.ArityEight.projectConsistency_nonneg",
+    "Minidregg.Selvage.ArityEight.projectConsistency_le_one",
+    "Minidregg.Selvage.ArityEight.weighted_recompose_family",
+    "Minidregg.Selvage.ArityEight.projectConsistency8_nonneg",
+    "Minidregg.Selvage.ArityEight.projectConsistency8_le_one",
+    "Minidregg.Selvage.ArityEight.weighted_reconstruction",
+    "Minidregg.Selvage.ArityEight.fold8_injected_weighted_sound"
+  ],
+  "Selvage.ConsistencyMask": [
+    "Minidregg.Selvage.maskConsistency_nonneg",
+    "Minidregg.Selvage.maskConsistency_le_one",
+    "Minidregg.Selvage.maskConsistency_mass",
+    "Minidregg.Selvage.weightedClose_mask_transfer",
+    "Minidregg.Selvage.weightedClose_one_to_close",
+    "Minidregg.Selvage.weightedClose_self_of_mass"
+  ],
+  "Selvage.ArityEightConsistencySchedule": [
+    "Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_nonneg",
+    "Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_le_one",
+    "Minidregg.Selvage.ArityEight.Schedule.consistencyAt_succ",
+    "Minidregg.Selvage.ArityEight.Schedule.weighted_bad_round_bound",
+    "Minidregg.Selvage.ArityEight.Schedule.weighted_bad_schedule_bound",
+    "Minidregg.Selvage.ArityEight.Schedule.weighted_invariant",
+    "Minidregg.Selvage.ArityEight.Schedule.terminal_consistency_mass_lt"
+  ],
+  "Selvage.BabyBearConsistencyInvariant": [
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.rate_fixed",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.initial_far",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.bad_probability",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.terminal_mass",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_312_arithmetic",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_311_fails"
+  ],
+  "Selvage.WeightedAgreementWitnesses": [
+    "Minidregg.Selvage.WeightedAgreementWitnesses.weight_bounds",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.weight_nonconstant",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.weight_mass",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.weighted_far",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.three_weighted_good",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.weighted_bound_fires",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.zero_common",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.overweight_density_falsifier",
+    "Minidregg.Selvage.WeightedAgreementWitnesses.overlapping_marginals_falsifier"
+  ],
+  "Selvage.ConsistencyQueryMass": [
+    "Minidregg.Selvage.ArityEight.Schedule.block_project_mass",
+    "Minidregg.Selvage.ArityEight.Schedule.consistency_mass_source",
+    "Minidregg.Selvage.ArityEight.Schedule.source_card_factor",
+    "Minidregg.Selvage.ArityEight.Schedule.source_probability_mass",
+    "Minidregg.Selvage.ArityEight.Schedule.sourceChecks_iff_all"
+  ],
+  "Selvage.ConsistencyCoherentTransport": [
+    "Minidregg.Selvage.ArityEight.Schedule.uniformProb_all_coordinates",
+    "Minidregg.Selvage.ArityEight.Schedule.uniformProb_square",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.firstFifteen_sq_val",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.blockSquare_val",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_val",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_eq_coherent",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourceChecks_iff_seedChecks",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.seed_probability_mass",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.consistency_query_exact"
+  ],
+  "Selvage.ConsistencyTransportWitnesses": [
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.premises_inhabited",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.source_mass_satisfiable",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.query_exact_satisfiable",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.zero_seed_checks",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.one_seed_fails_checks",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.probability_two_poles",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.mask_omission_falsifier"
+  ],
+  "Selvage.BabyBearWeightedSoundness": [
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.coherent_tail",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.sound",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.ideal_100",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.supplied_sound",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.witness_sound"
+  ],
+  "Selvage.BabyBearWeightedFreshSoundness": [
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_call_budget",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_312",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.execution_inhabited"
+  ]
+}

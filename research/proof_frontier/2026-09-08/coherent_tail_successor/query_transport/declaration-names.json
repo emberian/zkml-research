@@ -1,0 +1,29 @@
+{
+  "Selvage.ConsistencyQueryMass": [
+    "Minidregg.Selvage.ArityEight.Schedule.block_project_mass",
+    "Minidregg.Selvage.ArityEight.Schedule.consistency_mass_source",
+    "Minidregg.Selvage.ArityEight.Schedule.source_card_factor",
+    "Minidregg.Selvage.ArityEight.Schedule.source_probability_mass",
+    "Minidregg.Selvage.ArityEight.Schedule.sourceChecks_iff_all"
+  ],
+  "Selvage.ConsistencyCoherentTransport": [
+    "Minidregg.Selvage.ArityEight.Schedule.uniformProb_all_coordinates",
+    "Minidregg.Selvage.ArityEight.Schedule.uniformProb_square",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.firstFifteen_sq_val",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.blockSquare_val",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_val",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_eq_coherent",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourceChecks_iff_seedChecks",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.seed_probability_mass",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.consistency_query_exact"
+  ],
+  "Selvage.ConsistencyTransportWitnesses": [
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.premises_inhabited",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.source_mass_satisfiable",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.query_exact_satisfiable",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.zero_seed_checks",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.one_seed_fails_checks",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.probability_two_poles",
+    "Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.mask_omission_falsifier"
+  ]
+}

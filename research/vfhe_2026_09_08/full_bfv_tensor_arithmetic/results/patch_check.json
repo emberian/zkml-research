@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "--check",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/proposal.patch"
+  ],
+  "cwd": "/Users/ember/dev/minidregg",
+  "exit": 0,
+  "stdout": "",
+  "stderr": ""
+}

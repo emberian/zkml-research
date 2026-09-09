@@ -1,0 +1,8 @@
+'Minidregg.Selvage.ArityEight.projectConsistency_mass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.projectConsistency_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.projectConsistency_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.weighted_recompose_family' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.projectConsistency8_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.projectConsistency8_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.weighted_reconstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.fold8_injected_weighted_sound' depends on axioms: [propext, Classical.choice, Quot.sound]

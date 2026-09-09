@@ -1,0 +1,17 @@
+{
+  "command": [
+    "target/release/vfhe-full-bfv-multiply",
+    "import",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace",
+    "results/case001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+  "started_utc": "2026-09-08T22:40:52.940866+00:00",
+  "pid": 6855,
+  "returncode": 0,
+  "elapsed_seconds": 0.5286903340020217,
+  "finished_utc": "2026-09-08T22:40:53.470386+00:00",
+  "user_seconds": 0.482058,
+  "system_seconds": 0.032761,
+  "max_rss_bytes": 156352512
+}

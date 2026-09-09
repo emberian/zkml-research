@@ -1,0 +1,79 @@
+# Restricted cross-input state: the writer capability is the obstruction
+
+[DERIVED decision] Do not implement a rolling bilinear learner from the inspected AGT or garbled-encryption schemes under the present exposure requirement. At a running prefix, a future writer credential plus the exposed output credential can read the earlier protected state. This is a consequence of the required functionality, before choosing pairings or lattices. A private issuer may know its own observation; that does not justify giving it a capability to read another issuer's stored observation. No pairing/garbling demo was launched merely to reproduce arithmetic while retaining that capability.
+
+[DERIVED scope] This note investigates a new cross-input functionality, not the completed generic Replay construction in CONSTRUCTION.md. The existing 384-bit transport is unchanged. The narrow candidate is
+
+    F_j(u,v) = y_j^T (u + v + gamma*(u elementwise-multiplied by v)),
+
+with nonzero public gamma and separate private issuers for u and v. A future authorized result can distinguish u,u' with Yu=Yu', so the interaction is stronger than the completed additive workload. The question is whether a surviving writer credential destroys the intended restriction.
+
+## The exact prefix test
+
+[DERIVED proposition] Suppose a prefix exposes a ciphertext C_u, output credentials for the F_j, and a copyable credential EK_v that can encode every v in a set V. The exposed view permits the entire response family {F_j(u,v):v in V}, not merely the one honestly submitted v. Any claimed privacy equivalence must preserve this whole family. An API's one-use flag, deleted file after one call, counter, or journal acceptance rule cannot shrink this family when the pre-call credential is available to copy.
+
+[DERIVED bilinear specialization] For G_j(u,v)=u^T M_j v, the readable linear space is
+
+    span { M_j v : j in the exposed output set, v in V }.
+
+If V contains a basis, decryption on its elements reveals M_j^T u for every j. For M_j=diag(y_j), every coordinate i for which some y_j[i] is nonzero is readable. For the affine-plus-interaction F above, use
+
+    F_j(u,e_i) - F_j(u,0) - y_j[i] = gamma*y_j[i]*u[i].
+
+Divide by the known nonzero coefficient (or invert it in F_p). The conclusion assumes those probes belong to the permitted message domain and exact outputs are available. Restricting V to an independently enforced smaller domain changes the readable span; merely calling arbitrary integer vectors “semantic inputs” does not enforce such a restriction.
+
+[EXECUTED public arithmetic] `python3 research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/interaction_span.py` returned original projection rank **16**, diagonal-bilinear probe span rank **576**, unreachable coordinate **576** (the fixed zero final coordinate). Thus the present public semantic registry exposes every variable input coordinate under this bilinear writer capability, not just 16 projections. INTERACTION_SPAN.json retains a nonzero output-row coefficient/inverse for each coordinate. This was public integer/field arithmetic only: zero key generation, encryption, decryption or attack execution. An initial read used the wrong JSON field name `vector577`; the saved helper uses the actual `vector` field.
+
+## The direct multi-input quadratic candidate
+
+[SOURCE construction and game] Agrawal–Goyal–Tomida, [2022/1168](https://eprint.iacr.org/2022/1168), local mirror `/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1168.pdf`, §2.3 Definition2.4 pp9–10; §5.2 pp27–29; Theorem5.1 p30. This is an actual multi-input quadratic construction with distinct slot writer keys and a corrupted-writer security game. It uses bilinear-group function-hiding IPFE and mixed-group SK-MCFE, not a lattice/PQ construction.
+
+[SOURCE algorithms] Setup samples the underlying masters and correlated masks. For each slot i it stores master encryptions MCT1,i,j of the basis vectors e_j and D master encryptions MCT0,i,j of zero, where D=4m+2k+17. These ciphertexts constitute EK_i. Enc forms a componentwise homomorphic linear combination of the basis ciphertexts, a zero correction, and randomized differences of zero ciphertexts. KeyGen uses the retained master to form a restricted quadratic key. Dec evaluates cross-pairing terms, removes their mask terms and searches the declared bounded discrete-log output range. This supplies independent input issuance, but does not eliminate setup's master custody; an honest-erasure lifecycle would have to issue the fixed output keys and delete all setup masters before exposure.
+
+[DERIVED decisive property] The writer key already contains the basis probes. For pure bilinear G, `Dec(C_u,MCT1,v,i,SK_j)` directly gives the i-th probe value. The obstruction does not depend on resetting Enc's API state or on guessing its randomness. Deleting the master after setup leaves these probes intact.
+
+[SOURCE/DERIVED security interpretation] Definition2.4 requires equal challenge outputs for every choice of the inputs in corrupted slots. Therefore the paper's corruption security is consistent with the extraction above: for a full-rank probe family, distinct u,u' are inadmissible. The separate labeled variant in §4 is secret-key MCFE; its shared master is not exposed. Label equality restricts cross-label combinations but does not prevent an exposed writer from making multiple probe messages at the same label. Neither source theorem grants selected-history-only key authority.
+
+## The newer noisy and simulation-secure leads
+
+[SOURCE construction/game, located and inspected by root; selected 2026 text also read here] [2026/1033](https://eprint.iacr.org/2026/1033), local mirror `/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/1033.pdf`, §4.1 p18, sets the slot writer credential to `ek_i=(nh.ek_i,K_i,fh.ek_i)`. Its ciphertext includes `otp.ct_i=x_i+PRF(K_i,label)`. A retained same-slot writer credential therefore opens that slot's recorded ciphertexts at every available label by subtraction. This is a declared credential property, not an attack on the paper's stated security game.
+
+[SOURCE/DERIVED cross-slot noise test] Definition3 pp14–15 includes every message in X at every requested label for each corrupted slot. Equation8 requires compatibility of the noisy function outputs under the same requested key/noise choice. Remark4 p17 explicitly derives equality constraints on coefficients mixing honest and corrupted inputs. Consequently, a future interaction-slot writer still supplies the relevant probe family against a separate honest slot. For the same fixed key and label, `G(u,e_i)+nu` minus `G(u,0)+nu` cancels the fixed key noise and reveals `(M^T u)[i]`; for the affine-plus-bilinear function, subtract the known affine term as above. The source's one-time per-label oracle discipline does not turn a copyable writer key into a credential that can encode only its honest observation. Fresh independent noise for every adversarial evaluation, with enforceable limits on repetition, would be a different functionality and lifecycle.
+
+[REPORTED source construction inspected by root; DERIVED credential consequence] [2024/2050](https://eprint.iacr.org/2024/2050), local mirror `/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/2050.pdf`, EncryptionScheme5 pp33–34, retains `u,c` in the writer master and emits `ct_x=x+c*u`. That master directly opens the ciphertext by subtraction. This is the source's single-database setting, not a break of its simulation-security theorem. It supplies no exposed-writer state-protection mechanism for the present running learner.
+
+[DERIVED disposition] These selected source algorithms close the previously uninspected 2026 lead and the associated 2024 simulation-secure lead for our retained-writer lifecycle. Noise and stronger simulation definitions do not remove the identified writer capability. No new cryptographic experiment was needed or executed.
+
+## The practical bounded garbling candidate
+
+[SOURCE algorithms] Manohar–Jain–Sahai, [2020/950](https://eprint.iacr.org/2020/950), local mirror `/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/950.pdf`, §3.3–4.3 pp6–8, §6 Remark2 pp11–12, AppendixC Definition7 pp21–22. For a fixed tuple of indices, a functional key is a garbled circuit whose input labels are derived as PRF(K,index||bit-position||bit). An input ciphertext consists of the labels selected by that input's bits. KeyGen and Enc require K. The source's selective construction uses a PRF and chosen-wire-key secure garbling; its adaptive/time-based constructions use random-oracle programming. The implementation is a practical classical source control; neither the paper's classical theorem nor AES timings establish our desired QPT/quantum-oracle theorem.
+
+[SOURCE/DERIVED retained-key test] Source §3.3 and Enc maintain an index set and refuse a second encryption for an index. This is a correctness/security-game discipline, not a cryptographic limit on someone holding K. K derives both labels of every input bit, so it decodes recorded labels directly. Giving each issuer only its own per-slot label pairs avoids that direct cross-slot master read, but does not avoid the bilinear probe proposition. Source §6 Remark2 explicitly warns that learning both labels for an input defeats its garbling-security argument.
+
+[SOURCE/DERIVED ratchet limit] The source's time-based variant replaces K by H^t(K). Definition7 rejects a security experiment containing a challenge ciphertext with time offset t' at or after an exposed key offset t. For computations joining readings from different times, §6 encrypts earlier readings again under future epoch keys. Compromising such a future key reads those earlier readings' future-key copies. The guaranteed protected past is measured by key offset, not automatically by the age of the underlying observation. Ratcheting does not preserve a hidden state while an exposed future writer may still interact with it.
+
+[DERIVED prefix lifecycle]
+
+| Surviving object | What its holder can do | Fits the target? |
+|---|---|---|
+| AGT slot writer key | Use the basis ciphertexts already inside it | No for full-rank bilinear interaction |
+| GE master or unretired epoch seed | Derive both labels and interpret corresponding ciphertexts | No |
+| Only one slot's label pairs | Branch that slot against earlier selected labels | No for the proposed bilinear recurrence |
+| Only selected labels, retired writer pairs | Evaluate the fixed garbled functions on committed inputs | Conditional bounded positive |
+| Future disjoint-epoch labels | Encode future inputs; cannot plug into an old epoch circuit | Does not permit future interaction with the old hidden state |
+
+## A useful relaxation, and what it does not accomplish
+
+[DERIVED unselected relaxation] Atomic interaction epochs can compute a genuine private cross-input feature update. Fix one circuit per epoch. Separate trusted private issuers each select labels for exactly their own observation, then retire their epoch writer pairs before any selected labels for that epoch enter the public/evaluator view. Publish both committed encodings and the restricted garbled output credential after retirement. Future epochs use disjoint wire contexts and never consume old hidden wire state. The public learner may accumulate the restricted cross-input outputs. No general decryption credential survives a completed epoch. Root declined this implementation because it improves joint private ingress but leaves the continuing learner's effective state exposed; it is not the selected missing capability.
+
+[OPEN exact boundaries] This requires honest single issuance/erasure and no retained setup master or backup. A compromise during the unretired epoch is outside this relaxation; all-prefix exposure cannot be claimed by renaming the epoch atomic. If future writer pairs are themselves compromised before their observations arrive, privacy for those subsequently encoded observations is also not claimed. Adaptive input choice after seeing a garbling needs an appropriate adaptive garbling theorem; the source's classical random-oracle theorem must not be silently called QROM. This is continuing batch computation with protected inputs, not a rolling protected complementary model state. It is the only implementation direction identified here that has a useful narrower contract; it should be selected only if that contract is wanted.
+
+[DERIVED missing primitive] For the actual rolling target, one must remove the unrestricted future writer response family: obtain a credential cryptographically confined to an already committed input, or use a different functionality whose entire authorized response family does not reconstruct the protected state. Keeping a clonable full-domain writer key while asking software to approve just one use cannot provide the former. Generating a fresh input-bound continuation credential without a retained full reader/general key issuer is the remaining construction task. Moving that authority to an online decryptor, quorum or TEE changes custody and must be declared.
+
+[SOURCE/DERIVED reusable-garbling check, contributed by root] GKP's [2012/733](https://eprint.iacr.org/2012/733), §4.1 pp31–32, returns persistent encoder gsk=(fmpk,sk), with E=SymEnc(sk,C) embedded in the FE circuit U_E. Its discussion explicitly does not require FE.KeyGen to hide U_E. Thus the wrapper does not prove encoder-exposed privacy for state hardwired in C: an allowed instantiation exposing U_E/E lets the encoder decrypt C. Absence of function hiding alone is not a universal extraction algorithm for every conceivable FE instantiation, but it is a precise missing requirement in this black-box route.
+
+[REPORTED source check by root] The alternate predicate-encryption lead [2022/806](https://eprint.iacr.org/2022/806), §1 Theorems2/3, and its JCrypt2024 version DOI10.1007/s00145-024-09504-7 provide one-sided/CPA LWE secrecy on rejecting predicates. Root's inspected accepting-output extension requires a stronger primitive/iO. No accepting-output state-protection construction is inferred from this source; the existing lockable-gate premise analysis was not repeated here.
+
+[DERIVED completed outcome] No inspected specific candidate survived the full running-prefix target in this bounded search. The demonstrated limitation is exact and narrow: retaining a full-domain writer capability for an exact bilinear continuation exposes the corresponding prior-state response span; for the actual semantic diagonal operators that span has all576 variable coordinates. Changing pairings to a PQ instantiation would not remove that functional leakage. A successful next route must change the credential/input-binding mechanism or the response family before arithmetic implementation. This is not a field-wide nonexistence claim, and it does not refute the already conditional general MIFE Replay baseline.
+
+[EXECUTED search scope] This author's tranche used one Scry SQL query (25 returned quadratic/bilinear records), ten primary-discovery web search queries, and two page opens (PETS page error; Mannheim repository bot gate). Two papers were extracted from the absolute local mirror. Root subsequently located the 2026 noisy paper in that mirror and supplied the selected 2026/1033 and 2024/2050 source findings integrated above. Root's latest reported source-pass totals are separately **11 web queries, two failed direct opens, three local papers read in selected sections, zero Scry**; these replace the earlier two-query root subtotal, not this author's counts. This integration performed only the selected 2026 text read and public source hashing, with no new search or experiment. No corpus-wide absence theorem, PDF download, new crypto run, estimator run, implementation delegation or review queue is asserted. SOURCES.json retains the compact counts and exact source hashes.

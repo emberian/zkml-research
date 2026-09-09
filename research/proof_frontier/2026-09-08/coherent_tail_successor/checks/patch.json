@@ -1,0 +1,37 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/coherent-tail-replay-14h108e4",
+  "exit_code": 0,
+  "output": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:378: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:503: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:671: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:904: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:1007: new blank line at EOF.\n+\nwarning: 5 lines add whitespace errors.\n",
+  "exact_target_files": [
+    "Selvage/ArityEightConsistencySchedule.lean",
+    "Selvage/BabyBearConsistencyInvariant.lean",
+    "Selvage/BabyBearWeightedFreshSoundness.lean",
+    "Selvage/BabyBearWeightedSoundness.lean",
+    "Selvage/ConsistencyCoherentTransport.lean",
+    "Selvage/ConsistencyMask.lean",
+    "Selvage/ConsistencyQueryMass.lean",
+    "Selvage/ConsistencyTransportWitnesses.lean",
+    "Selvage/CurveWeightedAgreement.lean",
+    "Selvage/FoldingConsistencyWeights.lean",
+    "Selvage/WeightedAgreementWitnesses.lean"
+  ],
+  "all_exact_bytes": true,
+  "file_matches": {
+    "Selvage/CurveWeightedAgreement.lean": true,
+    "Selvage/FoldingConsistencyWeights.lean": true,
+    "Selvage/ConsistencyMask.lean": true,
+    "Selvage/ArityEightConsistencySchedule.lean": true,
+    "Selvage/BabyBearConsistencyInvariant.lean": true,
+    "Selvage/WeightedAgreementWitnesses.lean": true,
+    "Selvage/ConsistencyQueryMass.lean": true,
+    "Selvage/ConsistencyCoherentTransport.lean": true,
+    "Selvage/ConsistencyTransportWitnesses.lean": true,
+    "Selvage/BabyBearWeightedSoundness.lean": true,
+    "Selvage/BabyBearWeightedFreshSoundness.lean": true
+  }
+}

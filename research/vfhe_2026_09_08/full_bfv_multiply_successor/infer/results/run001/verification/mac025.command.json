@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/target/release/vfhe-complete-kernel-infer",
+    "verify",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+    "25",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime0/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/results/case001",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/results/run001/proofs/chunk025/proof.bin"
+  ],
+  "started_utc": "2026-09-08T23:30:50.358922+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer",
+  "timeout_seconds": 300,
+  "pid": 76001,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-08T23:30:50.820365+00:00",
+  "elapsed_seconds": 0.46145229204557836,
+  "user_seconds": 0.549528,
+  "system_seconds": 0.040785999999999996,
+  "max_rss_bytes": 163594240
+}

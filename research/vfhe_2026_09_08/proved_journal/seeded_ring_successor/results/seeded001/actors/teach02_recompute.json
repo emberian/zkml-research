@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "role_command": "combine",
+  "pid": 98370,
+  "elapsed_seconds": 1.05211591697298,
+  "peak_rss_bytes_macos": 228687872,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "seed_policy": "honest-dual-seed-384-qrom-v1",
+  "seed_bits": 384,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/registry.json",
+      "kind": "fixed_semantic_registry",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/proposals/teach02/fresh.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/proposals/teach02/verification.ring",
+      "kind": "ciphertext",
+      "bytes": 37901526,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "a72d12f7a55fdb0b68907ab92484cad61e6c55728a0095406f01230a06c9c46f"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/proposals/teach02/fresh.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 1,
+    "live_L1_weight": 1,
+    "private_rows_read": 0
+  },
+  "error": null
+}

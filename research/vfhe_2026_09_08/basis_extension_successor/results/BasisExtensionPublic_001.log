@@ -1,0 +1,11 @@
+Compiler/BasisExtensionPublic.lean:23:57: error(lean.unknownIdentifier): Unknown identifier `renameS`
+Compiler/BasisExtensionPublic.lean:121:14: error(lean.unknownIdentifier): Unknown identifier `systemAccepts_renameS`
+Compiler/BasisExtensionPublic.lean:117:43: error: unsolved goals
+asg : ℕ → BabyBear
+hs✝ : systemAccepts asg system
+hz : systemAccepts asg [vr 84]
+hs : systemAccepts asg sorry
+hz' : asg 84 = 0
+⊢ (∀ (i : Fin 4), publicInput asg i < params.source i) ∧
+    (∀ (i : Fin 4), publicCopy asg i = publicInput asg i) ∧
+      ∀ (i : Fin 5), ↑(publicNew asg i) = nativeOutput (fun j => ↑(publicInput asg j)) i

@@ -1,0 +1,4 @@
+{"arithmetic_constraints":2816,"instructions":8783,"limbs":6,"prime_index":0,"public_arity":97,"q":1125899906826241,"radix":512,"register_count":8783,"trace_width":2655}
+{"arithmetic_constraints":2816,"instructions":8783,"limbs":6,"prime_index":1,"public_arity":97,"q":1125899906629633,"radix":512,"register_count":8783,"trace_width":2655}
+{"arithmetic_constraints":2816,"instructions":8783,"limbs":6,"prime_index":2,"public_arity":97,"q":1125899905744897,"radix":512,"register_count":8783,"trace_width":2655}
+{"arithmetic_constraints":2816,"instructions":8783,"limbs":6,"prime_index":3,"public_arity":97,"q":1125899905351681,"radix":512,"register_count":8783,"trace_width":2655}

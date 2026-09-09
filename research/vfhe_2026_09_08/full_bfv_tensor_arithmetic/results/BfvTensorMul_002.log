@@ -1,0 +1,29 @@
+Compiler/BfvTensorMul.lean:150:2: error: Tactic `simp` failed with a nested error:
+(deterministic) timeout at `whnf`, maximum number of heartbeats (3000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/BfvTensorMul.lean:180:33: error: Application type mismatch: The argument
+  w
+has type
+  RowWires J
+but is expected to have type
+  ℕ
+in the application
+  column_correct q w
+Compiler/BfvTensorMul.lean:209:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  h ≥ 0
+  g ≥ 0
+  f ≥ 0
+  f + g ≥ 0
+  f + g - h ≥ 1
+  1 ≤ e ≤ 73786976294838206463
+  0 ≤ d ≤ 2
+where
+ d := ↑factor
+ e := ↑(Bignum.denoteNat 64 (List.ofFn qd))
+ f := ↑(Bignum.denoteNat 64 (List.ofFn o))
+ g := ↑q * ↑(Bignum.denoteNat 64 (List.ofFn k))
+ h := ↑(factor * Bignum.denoteNat 64 (List.ofFn a)) * ↑(Bignum.denoteNat 64 (List.ofFn b))

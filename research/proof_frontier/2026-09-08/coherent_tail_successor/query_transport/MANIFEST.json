@@ -1,0 +1,38 @@
+{
+  "status": "[EXECUTED] All three assigned new Lean modules pass individual source-stable checks with warning-free exact axiom guards.",
+  "base_minidregg_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "isolate": "/tmp/minidregg-coherent-query-transport-20260908",
+  "modules": [
+    {
+      "module": "Selvage.ConsistencyQueryMass",
+      "source": "src/Selvage/ConsistencyQueryMass.lean",
+      "sha256": "4a4e536563075c2e20b8dacca715fbaa7d3f58e129e7a357aac9768d80abaf94",
+      "checked_in": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ConsistencyQueryMass.lean",
+      "proof_check": "checks/sealed-mass.json",
+      "axiom_guard_count": 5
+    },
+    {
+      "module": "Selvage.ConsistencyCoherentTransport",
+      "source": "src/Selvage/ConsistencyCoherentTransport.lean",
+      "sha256": "46c38e1a563f1113cca58732a9d7214240b9e5183e08ebc3a3b2af0124d3a866",
+      "checked_in": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ConsistencyCoherentTransport.lean",
+      "proof_check": "checks/sealed-transport.json",
+      "axiom_guard_count": 9
+    },
+    {
+      "module": "Selvage.ConsistencyTransportWitnesses",
+      "source": "src/Selvage/ConsistencyTransportWitnesses.lean",
+      "sha256": "77282cec7e21dd0e991d54564d39d2c054de8ab6f854549edc391018039d9364",
+      "checked_in": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ConsistencyTransportWitnesses.lean",
+      "proof_check": "checks/sealed-witnesses.json",
+      "axiom_guard_count": 7
+    }
+  ],
+  "theorem_count": 21,
+  "integration": "Only parent coherent_tail_successor combined patch; no standalone patch. Parent owns downstream head assembly and whole-tree integration gate.",
+  "dependency_snapshots": "SOURCES.json",
+  "frozen_dependency_refresh": "checks/frozen-dependency-refresh.json",
+  "import_boundary_check": "checks/import-boundary.json",
+  "forbidden_scan": "checks/forbidden.json",
+  "web_queries": 0
+}

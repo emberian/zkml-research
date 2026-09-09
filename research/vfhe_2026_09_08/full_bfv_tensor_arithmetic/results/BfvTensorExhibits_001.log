@@ -1,0 +1,1673 @@
+Compiler/BfvTensorExhibits.lean:61:2: error: unsolved goals
+case refine_5.«1».«0»
+left✝ : (fun i => i) ⟨0, ⋯⟩ ∈ List.finRange 22
+ht :
+  column 37 (factor ((fun i => i) ⟨1, ⋯⟩)) (weightedWires good ((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩) ∈
+    List.map (column 37 (factor ((fun i => i) ⟨1, ⋯⟩)) (weightedWires good ((fun i => i) ⟨1, ⋯⟩))) (List.finRange 22)
+⊢ 133150 = ↑(![3, 5, 9, 30, 25] 3) + 131072 + 2048
+
+case refine_5.«2».«0»
+left✝ : (fun i => i) ⟨0, ⋯⟩ ∈ List.finRange 22
+ht :
+  column 37 (factor ((fun i => i) ⟨2, ⋯⟩)) (weightedWires good ((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩) ∈
+    List.map (column 37 (factor ((fun i => i) ⟨2, ⋯⟩)) (weightedWires good ((fun i => i) ⟨2, ⋯⟩))) (List.finRange 22)
+⊢ 133145 = ↑(![3, 5, 9, 30, 25] 4) + 131072 + 2048
+Compiler/BfvTensorExhibits.lean:85:21: error: unexpected identifier; expected '}'
+Compiler/BfvTensorExhibits.lean:88:65: error: unsolved goals
+case «0»
+⊢ ((((((sorry ()).xBit 0 0 = 0 ∨ (sorry ()).xBit 0 0 = 1) ∧
+            ((sorry ()).xBit 0 1 = 0 ∨ (sorry ()).xBit 0 1 = 1) ∧
+              ((sorry ()).xBit 0 2 = 0 ∨ (sorry ()).xBit 0 2 = 1) ∧
+                ((sorry ()).xBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2) = 1) ∧
+                  ((sorry ()).xBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ = 1) ∧
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+          (sorry ()).x 0 =
+            (sorry ()).xBit 0 0 +
+              ((sorry ()).xBit 0 1 * 2 +
+                ((sorry ()).xBit 0 2 * 4 +
+                  ((sorry ()).xBit 0 (Fin.succ 2) * 8 +
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ * 16 + (sorry ()).xBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+        ((((sorry ()).xBit 1 0 = 0 ∨ (sorry ()).xBit 1 0 = 1) ∧
+              ((sorry ()).xBit 1 1 = 0 ∨ (sorry ()).xBit 1 1 = 1) ∧
+                ((sorry ()).xBit 1 2 = 0 ∨ (sorry ()).xBit 1 2 = 1) ∧
+                  ((sorry ()).xBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).xBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).x 1 =
+              (sorry ()).xBit 1 0 +
+                ((sorry ()).xBit 1 1 * 2 +
+                  ((sorry ()).xBit 1 2 * 4 +
+                    ((sorry ()).xBit 1 (Fin.succ 2) * 8 +
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ * 16 + (sorry ()).xBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).xBit 2 0 = 0 ∨ (sorry ()).xBit 2 0 = 1) ∧
+                ((sorry ()).xBit 2 1 = 0 ∨ (sorry ()).xBit 2 1 = 1) ∧
+                  ((sorry ()).xBit 2 2 = 0 ∨ (sorry ()).xBit 2 2 = 1) ∧
+                    ((sorry ()).xBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).xBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).x 2 =
+                (sorry ()).xBit 2 0 +
+                  ((sorry ()).xBit 2 1 * 2 +
+                    ((sorry ()).xBit 2 2 * 4 +
+                      ((sorry ()).xBit 2 (Fin.succ 2) * 8 +
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ * 16 + (sorry ()).xBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).xBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 0 = 1) ∧
+                  ((sorry ()).xBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 1 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 2 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 0 ∨ (sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).x (Fin.succ 2) =
+                  (sorry ()).xBit (Fin.succ 2) 0 +
+                    ((sorry ()).xBit (Fin.succ 2) 1 * 2 +
+                      ((sorry ()).xBit (Fin.succ 2) 2 * 4 +
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).xBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 0 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 1 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 2 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).x (Fin.succ 2).succ =
+                    (sorry ()).xBit (Fin.succ 2).succ 0 +
+                      ((sorry ()).xBit (Fin.succ 2).succ 1 * 2 +
+                        ((sorry ()).xBit (Fin.succ 2).succ 2 * 4 +
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).xBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).x (Fin.succ 2).succ.succ =
+                      (sorry ()).xBit (Fin.succ 2).succ.succ 0 +
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 1 * 2 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ 2 * 4 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).x (Fin.succ 2).succ.succ.succ =
+                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).x (Fin.succ 2).succ.succ.succ.succ =
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                        1)) ∧
+                          (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ =
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          (((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                        1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+      (((((sorry ()).yBit 0 0 = 0 ∨ (sorry ()).yBit 0 0 = 1) ∧
+              ((sorry ()).yBit 0 1 = 0 ∨ (sorry ()).yBit 0 1 = 1) ∧
+                ((sorry ()).yBit 0 2 = 0 ∨ (sorry ()).yBit 0 2 = 1) ∧
+                  ((sorry ()).yBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).yBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).y 0 =
+              (sorry ()).yBit 0 0 +
+                ((sorry ()).yBit 0 1 * 2 +
+                  ((sorry ()).yBit 0 2 * 4 +
+                    ((sorry ()).yBit 0 (Fin.succ 2) * 8 +
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ * 16 + (sorry ()).yBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).yBit 1 0 = 0 ∨ (sorry ()).yBit 1 0 = 1) ∧
+                ((sorry ()).yBit 1 1 = 0 ∨ (sorry ()).yBit 1 1 = 1) ∧
+                  ((sorry ()).yBit 1 2 = 0 ∨ (sorry ()).yBit 1 2 = 1) ∧
+                    ((sorry ()).yBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).yBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).y 1 =
+                (sorry ()).yBit 1 0 +
+                  ((sorry ()).yBit 1 1 * 2 +
+                    ((sorry ()).yBit 1 2 * 4 +
+                      ((sorry ()).yBit 1 (Fin.succ 2) * 8 +
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ * 16 + (sorry ()).yBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).yBit 2 0 = 0 ∨ (sorry ()).yBit 2 0 = 1) ∧
+                  ((sorry ()).yBit 2 1 = 0 ∨ (sorry ()).yBit 2 1 = 1) ∧
+                    ((sorry ()).yBit 2 2 = 0 ∨ (sorry ()).yBit 2 2 = 1) ∧
+                      ((sorry ()).yBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2) = 1) ∧
+                        ((sorry ()).yBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).y 2 =
+                  (sorry ()).yBit 2 0 +
+                    ((sorry ()).yBit 2 1 * 2 +
+                      ((sorry ()).yBit 2 2 * 4 +
+                        ((sorry ()).yBit 2 (Fin.succ 2) * 8 +
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ * 16 +
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).yBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 0 = 1) ∧
+                    ((sorry ()).yBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 1 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 2 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).y (Fin.succ 2) =
+                    (sorry ()).yBit (Fin.succ 2) 0 +
+                      ((sorry ()).yBit (Fin.succ 2) 1 * 2 +
+                        ((sorry ()).yBit (Fin.succ 2) 2 * 4 +
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).yBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 0 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 1 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 2 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).y (Fin.succ 2).succ =
+                      (sorry ()).yBit (Fin.succ 2).succ 0 +
+                        ((sorry ()).yBit (Fin.succ 2).succ 1 * 2 +
+                          ((sorry ()).yBit (Fin.succ 2).succ 2 * 4 +
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).yBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 2 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).y (Fin.succ 2).succ.succ =
+                        (sorry ()).yBit (Fin.succ 2).succ.succ 0 +
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 1 * 2 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ 2 * 4 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).y (Fin.succ 2).succ.succ.succ =
+                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                          (sorry ()).y (Fin.succ 2).succ.succ.succ.succ =
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ =
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+                            (((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                          1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) *
+                                          8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+        ⋯ ∧ ⋯) ∧
+    ⋯
+
+case «1»
+⊢ ((((((sorry ()).xBit 0 0 = 0 ∨ (sorry ()).xBit 0 0 = 1) ∧
+            ((sorry ()).xBit 0 1 = 0 ∨ (sorry ()).xBit 0 1 = 1) ∧
+              ((sorry ()).xBit 0 2 = 0 ∨ (sorry ()).xBit 0 2 = 1) ∧
+                ((sorry ()).xBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2) = 1) ∧
+                  ((sorry ()).xBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ = 1) ∧
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+          (sorry ()).x 0 =
+            (sorry ()).xBit 0 0 +
+              ((sorry ()).xBit 0 1 * 2 +
+                ((sorry ()).xBit 0 2 * 4 +
+                  ((sorry ()).xBit 0 (Fin.succ 2) * 8 +
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ * 16 + (sorry ()).xBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+        ((((sorry ()).xBit 1 0 = 0 ∨ (sorry ()).xBit 1 0 = 1) ∧
+              ((sorry ()).xBit 1 1 = 0 ∨ (sorry ()).xBit 1 1 = 1) ∧
+                ((sorry ()).xBit 1 2 = 0 ∨ (sorry ()).xBit 1 2 = 1) ∧
+                  ((sorry ()).xBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).xBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).x 1 =
+              (sorry ()).xBit 1 0 +
+                ((sorry ()).xBit 1 1 * 2 +
+                  ((sorry ()).xBit 1 2 * 4 +
+                    ((sorry ()).xBit 1 (Fin.succ 2) * 8 +
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ * 16 + (sorry ()).xBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).xBit 2 0 = 0 ∨ (sorry ()).xBit 2 0 = 1) ∧
+                ((sorry ()).xBit 2 1 = 0 ∨ (sorry ()).xBit 2 1 = 1) ∧
+                  ((sorry ()).xBit 2 2 = 0 ∨ (sorry ()).xBit 2 2 = 1) ∧
+                    ((sorry ()).xBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).xBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).x 2 =
+                (sorry ()).xBit 2 0 +
+                  ((sorry ()).xBit 2 1 * 2 +
+                    ((sorry ()).xBit 2 2 * 4 +
+                      ((sorry ()).xBit 2 (Fin.succ 2) * 8 +
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ * 16 + (sorry ()).xBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).xBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 0 = 1) ∧
+                  ((sorry ()).xBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 1 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 2 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 0 ∨ (sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).x (Fin.succ 2) =
+                  (sorry ()).xBit (Fin.succ 2) 0 +
+                    ((sorry ()).xBit (Fin.succ 2) 1 * 2 +
+                      ((sorry ()).xBit (Fin.succ 2) 2 * 4 +
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).xBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 0 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 1 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 2 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).x (Fin.succ 2).succ =
+                    (sorry ()).xBit (Fin.succ 2).succ 0 +
+                      ((sorry ()).xBit (Fin.succ 2).succ 1 * 2 +
+                        ((sorry ()).xBit (Fin.succ 2).succ 2 * 4 +
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).xBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).x (Fin.succ 2).succ.succ =
+                      (sorry ()).xBit (Fin.succ 2).succ.succ 0 +
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 1 * 2 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ 2 * 4 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).x (Fin.succ 2).succ.succ.succ =
+                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).x (Fin.succ 2).succ.succ.succ.succ =
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                        1)) ∧
+                          (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ =
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          (((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                        1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+      (((((sorry ()).yBit 0 0 = 0 ∨ (sorry ()).yBit 0 0 = 1) ∧
+              ((sorry ()).yBit 0 1 = 0 ∨ (sorry ()).yBit 0 1 = 1) ∧
+                ((sorry ()).yBit 0 2 = 0 ∨ (sorry ()).yBit 0 2 = 1) ∧
+                  ((sorry ()).yBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).yBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).y 0 =
+              (sorry ()).yBit 0 0 +
+                ((sorry ()).yBit 0 1 * 2 +
+                  ((sorry ()).yBit 0 2 * 4 +
+                    ((sorry ()).yBit 0 (Fin.succ 2) * 8 +
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ * 16 + (sorry ()).yBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).yBit 1 0 = 0 ∨ (sorry ()).yBit 1 0 = 1) ∧
+                ((sorry ()).yBit 1 1 = 0 ∨ (sorry ()).yBit 1 1 = 1) ∧
+                  ((sorry ()).yBit 1 2 = 0 ∨ (sorry ()).yBit 1 2 = 1) ∧
+                    ((sorry ()).yBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).yBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).y 1 =
+                (sorry ()).yBit 1 0 +
+                  ((sorry ()).yBit 1 1 * 2 +
+                    ((sorry ()).yBit 1 2 * 4 +
+                      ((sorry ()).yBit 1 (Fin.succ 2) * 8 +
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ * 16 + (sorry ()).yBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).yBit 2 0 = 0 ∨ (sorry ()).yBit 2 0 = 1) ∧
+                  ((sorry ()).yBit 2 1 = 0 ∨ (sorry ()).yBit 2 1 = 1) ∧
+                    ((sorry ()).yBit 2 2 = 0 ∨ (sorry ()).yBit 2 2 = 1) ∧
+                      ((sorry ()).yBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2) = 1) ∧
+                        ((sorry ()).yBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).y 2 =
+                  (sorry ()).yBit 2 0 +
+                    ((sorry ()).yBit 2 1 * 2 +
+                      ((sorry ()).yBit 2 2 * 4 +
+                        ((sorry ()).yBit 2 (Fin.succ 2) * 8 +
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ * 16 +
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).yBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 0 = 1) ∧
+                    ((sorry ()).yBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 1 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 2 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).y (Fin.succ 2) =
+                    (sorry ()).yBit (Fin.succ 2) 0 +
+                      ((sorry ()).yBit (Fin.succ 2) 1 * 2 +
+                        ((sorry ()).yBit (Fin.succ 2) 2 * 4 +
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).yBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 0 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 1 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 2 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).y (Fin.succ 2).succ =
+                      (sorry ()).yBit (Fin.succ 2).succ 0 +
+                        ((sorry ()).yBit (Fin.succ 2).succ 1 * 2 +
+                          ((sorry ()).yBit (Fin.succ 2).succ 2 * 4 +
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).yBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 2 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).y (Fin.succ 2).succ.succ =
+                        (sorry ()).yBit (Fin.succ 2).succ.succ 0 +
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 1 * 2 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ 2 * 4 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).y (Fin.succ 2).succ.succ.succ =
+                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                          (sorry ()).y (Fin.succ 2).succ.succ.succ.succ =
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ =
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+                            (((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                          1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) *
+                                          8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+        ⋯ ∧ ⋯) ∧
+    ⋯
+
+case «2»
+⊢ ((((((sorry ()).xBit 0 0 = 0 ∨ (sorry ()).xBit 0 0 = 1) ∧
+            ((sorry ()).xBit 0 1 = 0 ∨ (sorry ()).xBit 0 1 = 1) ∧
+              ((sorry ()).xBit 0 2 = 0 ∨ (sorry ()).xBit 0 2 = 1) ∧
+                ((sorry ()).xBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2) = 1) ∧
+                  ((sorry ()).xBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ = 1) ∧
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+          (sorry ()).x 0 =
+            (sorry ()).xBit 0 0 +
+              ((sorry ()).xBit 0 1 * 2 +
+                ((sorry ()).xBit 0 2 * 4 +
+                  ((sorry ()).xBit 0 (Fin.succ 2) * 8 +
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ * 16 + (sorry ()).xBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+        ((((sorry ()).xBit 1 0 = 0 ∨ (sorry ()).xBit 1 0 = 1) ∧
+              ((sorry ()).xBit 1 1 = 0 ∨ (sorry ()).xBit 1 1 = 1) ∧
+                ((sorry ()).xBit 1 2 = 0 ∨ (sorry ()).xBit 1 2 = 1) ∧
+                  ((sorry ()).xBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).xBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).x 1 =
+              (sorry ()).xBit 1 0 +
+                ((sorry ()).xBit 1 1 * 2 +
+                  ((sorry ()).xBit 1 2 * 4 +
+                    ((sorry ()).xBit 1 (Fin.succ 2) * 8 +
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ * 16 + (sorry ()).xBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).xBit 2 0 = 0 ∨ (sorry ()).xBit 2 0 = 1) ∧
+                ((sorry ()).xBit 2 1 = 0 ∨ (sorry ()).xBit 2 1 = 1) ∧
+                  ((sorry ()).xBit 2 2 = 0 ∨ (sorry ()).xBit 2 2 = 1) ∧
+                    ((sorry ()).xBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).xBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).x 2 =
+                (sorry ()).xBit 2 0 +
+                  ((sorry ()).xBit 2 1 * 2 +
+                    ((sorry ()).xBit 2 2 * 4 +
+                      ((sorry ()).xBit 2 (Fin.succ 2) * 8 +
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ * 16 + (sorry ()).xBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).xBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 0 = 1) ∧
+                  ((sorry ()).xBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 1 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 2 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 0 ∨ (sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).x (Fin.succ 2) =
+                  (sorry ()).xBit (Fin.succ 2) 0 +
+                    ((sorry ()).xBit (Fin.succ 2) 1 * 2 +
+                      ((sorry ()).xBit (Fin.succ 2) 2 * 4 +
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).xBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 0 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 1 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 2 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).x (Fin.succ 2).succ =
+                    (sorry ()).xBit (Fin.succ 2).succ 0 +
+                      ((sorry ()).xBit (Fin.succ 2).succ 1 * 2 +
+                        ((sorry ()).xBit (Fin.succ 2).succ 2 * 4 +
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).xBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).x (Fin.succ 2).succ.succ =
+                      (sorry ()).xBit (Fin.succ 2).succ.succ 0 +
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 1 * 2 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ 2 * 4 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).x (Fin.succ 2).succ.succ.succ =
+                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).x (Fin.succ 2).succ.succ.succ.succ =
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                        1)) ∧
+                          (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ =
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          (((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                        1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+      (((((sorry ()).yBit 0 0 = 0 ∨ (sorry ()).yBit 0 0 = 1) ∧
+              ((sorry ()).yBit 0 1 = 0 ∨ (sorry ()).yBit 0 1 = 1) ∧
+                ((sorry ()).yBit 0 2 = 0 ∨ (sorry ()).yBit 0 2 = 1) ∧
+                  ((sorry ()).yBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).yBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).y 0 =
+              (sorry ()).yBit 0 0 +
+                ((sorry ()).yBit 0 1 * 2 +
+                  ((sorry ()).yBit 0 2 * 4 +
+                    ((sorry ()).yBit 0 (Fin.succ 2) * 8 +
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ * 16 + (sorry ()).yBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).yBit 1 0 = 0 ∨ (sorry ()).yBit 1 0 = 1) ∧
+                ((sorry ()).yBit 1 1 = 0 ∨ (sorry ()).yBit 1 1 = 1) ∧
+                  ((sorry ()).yBit 1 2 = 0 ∨ (sorry ()).yBit 1 2 = 1) ∧
+                    ((sorry ()).yBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).yBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).y 1 =
+                (sorry ()).yBit 1 0 +
+                  ((sorry ()).yBit 1 1 * 2 +
+                    ((sorry ()).yBit 1 2 * 4 +
+                      ((sorry ()).yBit 1 (Fin.succ 2) * 8 +
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ * 16 + (sorry ()).yBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).yBit 2 0 = 0 ∨ (sorry ()).yBit 2 0 = 1) ∧
+                  ((sorry ()).yBit 2 1 = 0 ∨ (sorry ()).yBit 2 1 = 1) ∧
+                    ((sorry ()).yBit 2 2 = 0 ∨ (sorry ()).yBit 2 2 = 1) ∧
+                      ((sorry ()).yBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2) = 1) ∧
+                        ((sorry ()).yBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).y 2 =
+                  (sorry ()).yBit 2 0 +
+                    ((sorry ()).yBit 2 1 * 2 +
+                      ((sorry ()).yBit 2 2 * 4 +
+                        ((sorry ()).yBit 2 (Fin.succ 2) * 8 +
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ * 16 +
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).yBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 0 = 1) ∧
+                    ((sorry ()).yBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 1 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 2 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).y (Fin.succ 2) =
+                    (sorry ()).yBit (Fin.succ 2) 0 +
+                      ((sorry ()).yBit (Fin.succ 2) 1 * 2 +
+                        ((sorry ()).yBit (Fin.succ 2) 2 * 4 +
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).yBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 0 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 1 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 2 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).y (Fin.succ 2).succ =
+                      (sorry ()).yBit (Fin.succ 2).succ 0 +
+                        ((sorry ()).yBit (Fin.succ 2).succ 1 * 2 +
+                          ((sorry ()).yBit (Fin.succ 2).succ 2 * 4 +
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).yBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 2 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).y (Fin.succ 2).succ.succ =
+                        (sorry ()).yBit (Fin.succ 2).succ.succ 0 +
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 1 * 2 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ 2 * 4 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).y (Fin.succ 2).succ.succ.succ =
+                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                          (sorry ()).y (Fin.succ 2).succ.succ.succ.succ =
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ =
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+                            (((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                          1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) *
+                                          8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+        ⋯ ∧ ⋯) ∧
+    ⋯
+
+case «4»
+⊢ ((((((sorry ()).xBit 0 0 = 0 ∨ (sorry ()).xBit 0 0 = 1) ∧
+            ((sorry ()).xBit 0 1 = 0 ∨ (sorry ()).xBit 0 1 = 1) ∧
+              ((sorry ()).xBit 0 2 = 0 ∨ (sorry ()).xBit 0 2 = 1) ∧
+                ((sorry ()).xBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2) = 1) ∧
+                  ((sorry ()).xBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ = 1) ∧
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+          (sorry ()).x 0 =
+            (sorry ()).xBit 0 0 +
+              ((sorry ()).xBit 0 1 * 2 +
+                ((sorry ()).xBit 0 2 * 4 +
+                  ((sorry ()).xBit 0 (Fin.succ 2) * 8 +
+                    ((sorry ()).xBit 0 (Fin.succ 2).succ * 16 + (sorry ()).xBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+        ((((sorry ()).xBit 1 0 = 0 ∨ (sorry ()).xBit 1 0 = 1) ∧
+              ((sorry ()).xBit 1 1 = 0 ∨ (sorry ()).xBit 1 1 = 1) ∧
+                ((sorry ()).xBit 1 2 = 0 ∨ (sorry ()).xBit 1 2 = 1) ∧
+                  ((sorry ()).xBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).xBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).x 1 =
+              (sorry ()).xBit 1 0 +
+                ((sorry ()).xBit 1 1 * 2 +
+                  ((sorry ()).xBit 1 2 * 4 +
+                    ((sorry ()).xBit 1 (Fin.succ 2) * 8 +
+                      ((sorry ()).xBit 1 (Fin.succ 2).succ * 16 + (sorry ()).xBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).xBit 2 0 = 0 ∨ (sorry ()).xBit 2 0 = 1) ∧
+                ((sorry ()).xBit 2 1 = 0 ∨ (sorry ()).xBit 2 1 = 1) ∧
+                  ((sorry ()).xBit 2 2 = 0 ∨ (sorry ()).xBit 2 2 = 1) ∧
+                    ((sorry ()).xBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).xBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).xBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).x 2 =
+                (sorry ()).xBit 2 0 +
+                  ((sorry ()).xBit 2 1 * 2 +
+                    ((sorry ()).xBit 2 2 * 4 +
+                      ((sorry ()).xBit 2 (Fin.succ 2) * 8 +
+                        ((sorry ()).xBit 2 (Fin.succ 2).succ * 16 + (sorry ()).xBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).xBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 0 = 1) ∧
+                  ((sorry ()).xBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 1 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2) 2 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 0 ∨ (sorry ()).xBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).x (Fin.succ 2) =
+                  (sorry ()).xBit (Fin.succ 2) 0 +
+                    ((sorry ()).xBit (Fin.succ 2) 1 * 2 +
+                      ((sorry ()).xBit (Fin.succ 2) 2 * 4 +
+                        ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                          ((sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                            (sorry ()).xBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).xBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 0 = 1) ∧
+                    ((sorry ()).xBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 1 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ 2 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).x (Fin.succ 2).succ =
+                    (sorry ()).xBit (Fin.succ 2).succ 0 +
+                      ((sorry ()).xBit (Fin.succ 2).succ 1 * 2 +
+                        ((sorry ()).xBit (Fin.succ 2).succ 2 * 4 +
+                          ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                            ((sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                              (sorry ()).xBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).xBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                      ((sorry ()).xBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 2 = 0 ∨ (sorry ()).xBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).x (Fin.succ 2).succ.succ =
+                      (sorry ()).xBit (Fin.succ 2).succ.succ 0 +
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ 1 * 2 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ 2 * 4 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).xBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                        ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).x (Fin.succ 2).succ.succ.succ =
+                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ 0 +
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).x (Fin.succ 2).succ.succ.succ.succ =
+                          (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                        1)) ∧
+                          (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ =
+                            (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          (((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                        1) ∧
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ =
+                                          1) ∧
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).x (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                              (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ *
+                                          16 +
+                                        (sorry ()).xBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                            (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+      (((((sorry ()).yBit 0 0 = 0 ∨ (sorry ()).yBit 0 0 = 1) ∧
+              ((sorry ()).yBit 0 1 = 0 ∨ (sorry ()).yBit 0 1 = 1) ∧
+                ((sorry ()).yBit 0 2 = 0 ∨ (sorry ()).yBit 0 2 = 1) ∧
+                  ((sorry ()).yBit 0 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2) = 1) ∧
+                    ((sorry ()).yBit 0 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ = 1) ∧
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 0 (Fin.succ 2).succ.succ = 1)) ∧
+            (sorry ()).y 0 =
+              (sorry ()).yBit 0 0 +
+                ((sorry ()).yBit 0 1 * 2 +
+                  ((sorry ()).yBit 0 2 * 4 +
+                    ((sorry ()).yBit 0 (Fin.succ 2) * 8 +
+                      ((sorry ()).yBit 0 (Fin.succ 2).succ * 16 + (sorry ()).yBit 0 (Fin.succ 2).succ.succ * 32))))) ∧
+          ((((sorry ()).yBit 1 0 = 0 ∨ (sorry ()).yBit 1 0 = 1) ∧
+                ((sorry ()).yBit 1 1 = 0 ∨ (sorry ()).yBit 1 1 = 1) ∧
+                  ((sorry ()).yBit 1 2 = 0 ∨ (sorry ()).yBit 1 2 = 1) ∧
+                    ((sorry ()).yBit 1 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2) = 1) ∧
+                      ((sorry ()).yBit 1 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ = 1) ∧
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ.succ = 0 ∨ (sorry ()).yBit 1 (Fin.succ 2).succ.succ = 1)) ∧
+              (sorry ()).y 1 =
+                (sorry ()).yBit 1 0 +
+                  ((sorry ()).yBit 1 1 * 2 +
+                    ((sorry ()).yBit 1 2 * 4 +
+                      ((sorry ()).yBit 1 (Fin.succ 2) * 8 +
+                        ((sorry ()).yBit 1 (Fin.succ 2).succ * 16 + (sorry ()).yBit 1 (Fin.succ 2).succ.succ * 32))))) ∧
+            ((((sorry ()).yBit 2 0 = 0 ∨ (sorry ()).yBit 2 0 = 1) ∧
+                  ((sorry ()).yBit 2 1 = 0 ∨ (sorry ()).yBit 2 1 = 1) ∧
+                    ((sorry ()).yBit 2 2 = 0 ∨ (sorry ()).yBit 2 2 = 1) ∧
+                      ((sorry ()).yBit 2 (Fin.succ 2) = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2) = 1) ∧
+                        ((sorry ()).yBit 2 (Fin.succ 2).succ = 0 ∨ (sorry ()).yBit 2 (Fin.succ 2).succ = 1) ∧
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ.succ = 0 ∨
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ = 1)) ∧
+                (sorry ()).y 2 =
+                  (sorry ()).yBit 2 0 +
+                    ((sorry ()).yBit 2 1 * 2 +
+                      ((sorry ()).yBit 2 2 * 4 +
+                        ((sorry ()).yBit 2 (Fin.succ 2) * 8 +
+                          ((sorry ()).yBit 2 (Fin.succ 2).succ * 16 +
+                            (sorry ()).yBit 2 (Fin.succ 2).succ.succ * 32))))) ∧
+              ((((sorry ()).yBit (Fin.succ 2) 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 0 = 1) ∧
+                    ((sorry ()).yBit (Fin.succ 2) 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 1 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2) 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2) 2 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2) (Fin.succ 2) = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ = 1)) ∧
+                  (sorry ()).y (Fin.succ 2) =
+                    (sorry ()).yBit (Fin.succ 2) 0 +
+                      ((sorry ()).yBit (Fin.succ 2) 1 * 2 +
+                        ((sorry ()).yBit (Fin.succ 2) 2 * 4 +
+                          ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2) * 8 +
+                            ((sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ * 16 +
+                              (sorry ()).yBit (Fin.succ 2) (Fin.succ 2).succ.succ * 32))))) ∧
+                ((((sorry ()).yBit (Fin.succ 2).succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 0 = 1) ∧
+                      ((sorry ()).yBit (Fin.succ 2).succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 1 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ 2 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ 2 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ = 1)) ∧
+                    (sorry ()).y (Fin.succ 2).succ =
+                      (sorry ()).yBit (Fin.succ 2).succ 0 +
+                        ((sorry ()).yBit (Fin.succ 2).succ 1 * 2 +
+                          ((sorry ()).yBit (Fin.succ 2).succ 2 * 4 +
+                            ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2) * 8 +
+                              ((sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ * 16 +
+                                (sorry ()).yBit (Fin.succ 2).succ (Fin.succ 2).succ.succ * 32))))) ∧
+                  ((((sorry ()).yBit (Fin.succ 2).succ.succ 0 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 0 = 1) ∧
+                        ((sorry ()).yBit (Fin.succ 2).succ.succ 1 = 0 ∨ (sorry ()).yBit (Fin.succ 2).succ.succ 1 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 2 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ 2 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                      (sorry ()).y (Fin.succ 2).succ.succ =
+                        (sorry ()).yBit (Fin.succ 2).succ.succ 0 +
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ 1 * 2 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ 2 * 4 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2) * 8 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ * 16 +
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                    ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 0 ∨
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 = 1) ∧
+                          ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                        (sorry ()).y (Fin.succ 2).succ.succ.succ =
+                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ 0 +
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 1 * 2 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ 2 * 4 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2) * 8 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ * 16 +
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ (Fin.succ 2).succ.succ * 32))))) ∧
+                      ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 0 ∨
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 = 1) ∧
+                            ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ = 1)) ∧
+                          (sorry ()).y (Fin.succ 2).succ.succ.succ.succ =
+                            (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 0 +
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 1 * 2 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ 2 * 4 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                        32))))) ∧
+                        ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 0 ∨
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 = 1) ∧
+                              ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ =
+                                          1)) ∧
+                            (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ =
+                              (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 0 +
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 1 * 2 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ 2 * 4 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ * 16 +
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ (Fin.succ 2).succ.succ *
+                                          32))))) ∧
+                          ((((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) = 1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2) * 8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+                            (((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 0 ∨
+                                  (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 = 1) ∧
+                                ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 0 ∨
+                                    (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 = 1) ∧
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 0 ∨
+                                      (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 = 1) ∧
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) = 0 ∨
+                                        (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) =
+                                          1) ∧
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ =
+                                            1) ∧
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            0 ∨
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ =
+                                            1)) ∧
+                              (sorry ()).y (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ =
+                                (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 0 +
+                                  ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 1 * 2 +
+                                    ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ 2 * 4 +
+                                      ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ (Fin.succ 2) *
+                                          8 +
+                                        ((sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ *
+                                            16 +
+                                          (sorry ()).yBit (Fin.succ 2).succ.succ.succ.succ.succ.succ.succ
+                                              (Fin.succ 2).succ.succ *
+                                            32))))) ∧
+        ⋯ ∧ ⋯) ∧
+    ⋯
+Compiler/BfvTensorExhibits.lean:92:14: warning: declaration uses `sorry`
+Compiler/BfvTensorExhibits.lean:96:18: warning: declaration uses `sorry`
+Compiler/BfvTensorExhibits.lean:95:8: warning: declaration uses `sorry`
+Compiler/BfvTensorExhibits.lean:97:2: warning: 'decide +kernel' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`

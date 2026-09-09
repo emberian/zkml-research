@@ -1,0 +1,13 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "--unsafe-paths",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/proposal.patch"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/basis-extension-patch-cohjhcmr",
+  "exit": 0,
+  "stdout": "",
+  "stderr": "",
+  "all_eight_source_files_byte_equal": true
+}

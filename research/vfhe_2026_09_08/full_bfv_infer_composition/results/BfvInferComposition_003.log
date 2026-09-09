@@ -1,0 +1,7 @@
+Compiler/BfvInferComposition.lean:75:62: warning: This simp argument is unused:
+  Fin.sum_univ_succ
+
+Hint: Omit it from the simp argument list.
+  simp [̵o̵u̵t̵p̵u̵t̵,̵i̵n̵i̵t̵i̵a̵l̵O̵p̵e̵r̵a̵n̵d̵s̵,̵i̵n̵i̵t̵i̵a̵l̵P̵r̵o̵d̵u̵c̵t̵,̵F̵i̵n̵.̵s̵u̵m̵_̵u̵n̵i̵v̵_̵s̵u̵c̵c̵,̵N̵a̵t̵.̵m̵u̵l̵_̵c̵o̵m̵m̵]̵[̲o̲u̲t̲p̲u̲t̲,̲ ̲i̲n̲i̲t̲i̲a̲l̲O̲p̲e̲r̲a̲n̲d̲s̲,̲ ̲i̲n̲i̲t̲i̲a̲l̲P̲r̲o̲d̲u̲c̲t̲,̲ ̲N̲a̲t̲.̲m̲u̲l̲_̲c̲o̲m̲m̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

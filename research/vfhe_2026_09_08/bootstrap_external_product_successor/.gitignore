@@ -1,0 +1,5 @@
+target/
+build/
+consumer/target/
+formal_recurrence/build/
+formal_recurrence/artifacts/trace.leu32

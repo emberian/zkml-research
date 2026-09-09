@@ -1,0 +1,19 @@
+Compiler/BfvKeyswitchMac.lean:161:9: error: unsolved goals
+case zero
+n : ℕ
+a : Fin 0 → Fin n → ℕ
+⊢ Bignum.denoteNat 512 (List.replicate n 0) = 0
+Compiler/BfvKeyswitchMac.lean:161:29: warning: This simp argument is unused:
+  List.ofFn_succ
+
+Hint: Omit it from the simp argument list.
+  simp [L̵i̵s̵t̵.̵o̵f̵F̵n̵_̵s̵u̵c̵c̵,̵Bignum.denoteNat]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/BfvKeyswitchMac.lean:161:44: warning: This simp argument is unused:
+  Bignum.denoteNat
+
+Hint: Omit it from the simp argument list.
+  simp [List.ofFn_succ,̵B̵i̵g̵n̵u̵m̵.̵d̵e̵n̵o̵t̵e̵N̵a̵t̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

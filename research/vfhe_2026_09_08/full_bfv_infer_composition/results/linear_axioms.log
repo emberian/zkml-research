@@ -1,0 +1,7 @@
+'Minidregg.Compiler.BfvInferLinear.actual_prime_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferLinear.liftCorrect' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferLinear.reverseIndex_involutive' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.BfvInferLinear.permutationCorrect' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.BfvInferLinear.stageExponents' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferLinear.liftInhabited' depends on axioms: [propext]
+'Minidregg.Compiler.BfvInferLinear.rawCanonicalEqualityFalse' depends on axioms: [propext]

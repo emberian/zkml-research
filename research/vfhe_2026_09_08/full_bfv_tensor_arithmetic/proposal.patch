@@ -1,0 +1,806 @@
+diff --git a/Compiler/BfvTensorAxiomPins.lean b/Compiler/BfvTensorAxiomPins.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvTensorAxiomPins.lean
+@@ -0,0 +1,120 @@
++/- Exact axiom census. Kept separate so the runtime source freeze remains byte-identical. -/
++import Compiler.BfvTensorWitnessPlan
++import Compiler.BfvTensorExhibits
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.canonicalSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.canonicalSystem_sound
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.sumTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.sumTerm_eval
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.convolutionTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.convolutionTerm_eval
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.convolution_denote' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.convolution_denote
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.padded_denote' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.padded_denote
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.convolution_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.convolution_bound
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.column_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.column_correct
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.radix_balance
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.denote_add' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.denote_add
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.denote_scale' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.denote_scale
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.convolution_cast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.convolution_cast
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.padded_cast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.padded_cast
++
++/-- info: 'Minidregg.Compiler.BfvTensorMul.rowSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorMul.rowSystem_sound
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.factor_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.factor_bound
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.sound
++
++/-- info: 'Minidregg.Compiler.BfvTensorRow.prime_capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorRow.prime_capacity
++
++/-- info: 'Minidregg.Compiler.BfvTensorRow.wholeRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorRow.wholeRowSound
++
++/-- info: 'Minidregg.Compiler.BfvTensorRow.emittedSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorRow.emittedSystem_sound
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.canonical_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.canonical_accepts
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.weighted_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.weighted_accepts
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.nonzero_premise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.nonzero_premise
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.premise_inhabited
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_canonical' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_canonical
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_values' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_values
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.missing_cross_factor_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.missing_cross_factor_refused
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_refused
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.capacity_inhabited' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.capacity_inhabited
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.quotient_capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.quotient_capacity
++
++/-- info: 'Minidregg.Compiler.BfvTensorCore.Exhibits.field_column_capacity' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvTensorCore.Exhibits.field_column_capacity
++
+diff --git a/Compiler/BfvTensorCore.lean b/Compiler/BfvTensorCore.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvTensorCore.lean
+@@ -0,0 +1,67 @@
++/- Generic source composition shares two canonical inputs across all products. -/
++import Compiler.BfvTensorMul
++namespace Minidregg.Compiler.BfvTensorCore
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++
++def lhs : Fin 3 → Fin 5 := ![0,0,1]
++def rhs : Fin 3 → Fin 5 := ![0,1,1]
++def out : Fin 3 → Fin 5 := ![2,3,4]
++def factor : Fin 3 → Nat := ![1,2,1]
++
++structure Wires (J : Type) where
++  canonical : Fin 5 → AirBignum.AddWires J 11 6
++  quotient : Fin 3 → Fin 11 → J
++  quotientBit : Fin 3 → Fin 11 → Fin 6 → J
++  carry : Fin 3 → Fin 23 → J
++  carryBit : Fin 3 → Fin 23 → Fin 12 → J
++
++def weightedWires {J : Type} (w : Wires J) (k : Fin 3) : BfvTensorMul.RowWires J where
++  canonical := ![w.canonical (lhs k),w.canonical (rhs k),w.canonical (out k)]
++  quotient := w.quotient k
++  quotientBit := w.quotientBit k
++  carry := w.carry k
++  carryBit := w.carryBit k
++
++def system {J : Type} (q : Nat) (w : Wires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 3).flatMap fun k => BfvTensorMul.rowSystem q (factor k) (weightedWires w k)
++def value {J : Type} (asg : J → BabyBear) (w : Wires J) (g : Fin 5) : Nat :=
++  Bignum.denoteNat 64 (AirBignum.limbVals asg (w.canonical g).x)
++
++/-- Every output is forced from one shared canonical pair, including the cross
++term's factor2. No multiplication or output-range premise is supplied externally. -/
++def Sound {J : Type} (q : Nat) (w : Wires J) : Prop := ∀ asg : J → BabyBear,
++  systemAccepts asg (system q w) →
++    (∀ g,value asg w g<q) ∧
++    value asg w 2=(value asg w 0*value asg w 0)%q ∧
++    value asg w 3=(2*value asg w 0*value asg w 1)%q ∧
++    value asg w 4=(value asg w 1*value asg w 1)%q
++
++theorem factor_bound (k : Fin 3) : factor k≤2 := by fin_cases k <;> decide
++
++theorem sound {J : Type} (q : Nat) (hq : 0<q) (hcap : q<64^11) (w : Wires J) : Sound q w := by
++  intro asg hs
++  have hc (k : Fin 3) := BfvTensorMul.rowSystem_sound q (factor k) hq hcap
++    (factor_bound k) (weightedWires w k) asg
++    (show systemAccepts asg (BfvTensorMul.rowSystem q (factor k) (weightedWires w k)) from
++      fun t ht => hs t (List.mem_flatMap.mpr ⟨k,List.mem_finRange k,ht⟩))
++  have h0 := hc 0
++  have h1 := hc 1
++  have h2 := hc 2
++  have hp0 : value asg w 2=(value asg w 0*value asg w 0)%q := by
++    simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,factor,value] using h0.2
++  have hp1 : value asg w 3=(2*value asg w 0*value asg w 1)%q := by
++    simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,factor,value] using h1.2
++  have hp2 : value asg w 4=(value asg w 1*value asg w 1)%q := by
++    simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,factor,value] using h2.2
++  refine ⟨?_,hp0,hp1,hp2⟩
++  intro g
++  fin_cases g
++  · simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,value] using h0.1 0
++  · simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,value] using h2.1 0
++  · simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,value] using h0.1 2
++  · simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,value] using h1.1 2
++  · simpa [BfvTensorMul.word,weightedWires,lhs,rhs,out,value] using h2.1 2
++end Minidregg.Compiler.BfvTensorCore
+diff --git a/Compiler/BfvTensorExhibits.lean b/Compiler/BfvTensorExhibits.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvTensorExhibits.lean
+@@ -0,0 +1,138 @@
++/- Nonzero inhabitation and a canonical-but-wrong cross-output witness for the
++same shared source constructor. These are proof teeth, not workload coverage. -/
++import Compiler.BfvTensorCore
++namespace Minidregg.Compiler.BfvTensorCore.Exhibits
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.BfvTensorMul
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++
++def lo (n : Nat) (i : Fin 11) : BabyBear := if i.val=0 then (n : BabyBear) else 0
++def bits (n : Nat) (i : Fin 11) (j : Fin 6) : BabyBear :=
++  if i.val=0 then (n/2^j.val%2 : Nat) else 0
++
++def good : Wires BabyBear where
++  canonical := fun g => {
++    x := lo ((![3,5,9,30,25] : Fin 5 → Nat) g)
++    y := lo ((![33,31,27,6,11] : Fin 5 → Nat) g)
++    z := lo 36
++    xBit := bits ((![3,5,9,30,25] : Fin 5 → Nat) g)
++    yBit := bits ((![33,31,27,6,11] : Fin 5 → Nat) g)
++    zBit := bits 36
++    carry := fun _ => 0 }
++  quotient := fun _ _ => 0
++  quotientBit := fun _ _ _ => 0
++  carry := fun _ _ => 2048
++  carryBit := fun _ _ j => if j.val=11 then 1 else 0
++
++/-- Explicit nonzero source acceptance, not only semantic equation inhabitation. -/
++def NonzeroPremise : Prop := systemAccepts id (BfvTensorCore.system 37 good) ∧
++  value id good 0=3 ∧ value id good 1=5 ∧ value id good 2=9 ∧
++  value id good 3=30 ∧ value id good 4=25
++
++theorem canonical_accepts (g : Fin 5) :
++    systemAccepts id (canonicalSystem 37 (good.canonical g)) := by
++  rw [canonicalSystem,systemAccepts_append,AirBignum.addGadget_correct,
++    AirModularView.pinWordSystem_correct]
++  fin_cases g <;>
++    norm_num [good,lo,bits,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ,
++      AirModularView.constDigit,Bignum.digitsLE,List.getD]
++
++theorem weighted_accepts (k : Fin 3) :
++    systemAccepts id (rowSystem 37 (factor k) (weightedWires good k)) := by
++  simp only [rowSystem,systemAccepts_append]
++  refine ⟨⟨⟨⟨?_,?_⟩,?_⟩,?_⟩,?_⟩
++  · intro t ht
++    obtain ⟨g,_,ht⟩ := List.mem_flatMap.mp ht
++    have hcan : systemAccepts id (canonicalSystem 37 ((weightedWires good k).canonical g)) := by
++      fin_cases g
++      · exact canonical_accepts (lhs k)
++      · exact canonical_accepts (rhs k)
++      · exact canonical_accepts (out k)
++    exact hcan t ht
++  · rw [AirBignum.limbRangeSystem_correct]
++    intro i
++    norm_num [weightedWires,good,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ]
++  · rw [AirBignum.limbRangeSystem_correct]
++    intro i
++    norm_num [weightedWires,good,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ]
++  · norm_num [weightedWires,good,systemAccepts_cons,systemAccepts_nil,accepts,eval_add',eval_vr,eval_cst]
++  · intro t ht
++    obtain ⟨i,_,rfl⟩ := List.mem_map.mp ht
++    rw [column_correct]
++    fin_cases k <;> fin_cases i <;>
++      norm_num [weightedWires,good,lo,padded,convolution,lhs,rhs,out,factor,
++        Fin.sum_univ_succ,AirModularView.constDigit,Matrix.cons_val_two,Matrix.vecHead,Matrix.vecTail] <;> decide +kernel
++
++theorem nonzero_premise : NonzeroPremise := by
++  constructor
++  · intro t ht
++    obtain ⟨k,_,ht⟩ := List.mem_flatMap.mp ht
++    exact weighted_accepts k t ht
++  · norm_num [value,AirBignum.limbVals,good,lo,List.ofFn_succ,Bignum.denoteNat,
++      babyBearP,ZMod.val_natCast]
++    decide +kernel
++
++theorem premise_inhabited : ∃ w : Wires BabyBear,
++    systemAccepts id (BfvTensorCore.system 37 w) ∧ value id w 0≠0 ∧ value id w 1≠0 := by
++  refine ⟨good,nonzero_premise.1,?_,?_⟩
++  · rw [nonzero_premise.2.1]; decide
++  · rw [nonzero_premise.2.2.1]; decide
++
++def wrong : Wires BabyBear where
++  canonical := fun g =>
++    if g.val=3 then
++      { x := lo 15
++        y := lo 21
++        z := lo 36
++        xBit := bits 15
++        yBit := bits 21
++        zBit := bits 36
++        carry := fun _ => 0 }
++    else good.canonical g
++  quotient := good.quotient
++  quotientBit := good.quotientBit
++  carry := good.carry
++  carryBit := good.carryBit
++
++theorem wrong_canonical (g : Fin 5) :
++    systemAccepts id (canonicalSystem 37 (wrong.canonical g)) := by
++  rw [canonicalSystem,systemAccepts_append,AirBignum.addGadget_correct,
++    AirModularView.pinWordSystem_correct]
++  fin_cases g <;>
++    norm_num [wrong,good,lo,bits,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ,
++      AirModularView.constDigit,Bignum.digitsLE,List.getD]
++
++theorem wrong_values : value id wrong 0=3 ∧ value id wrong 1=5 ∧ value id wrong 3=15 := by
++  norm_num [value,wrong,good,AirBignum.limbVals,lo,List.ofFn_succ,Bignum.denoteNat]
++  decide +kernel
++
++/-- Omitting the factor2 still gives a canonical output, but the source refuses it
++for any wiring/assignment with these values, independent of witness generation. -/
++theorem missing_cross_factor_refused {J : Type} (w : Wires J) (asg : J → BabyBear)
++    (ha : value asg w 0=3) (hb : value asg w 1=5) (ho : value asg w 3=15) :
++    ¬systemAccepts asg (BfvTensorCore.system 37 w) := by
++  intro hs
++  have h := (sound 37 (by decide) (by decide) w asg hs).2.2.1
++  norm_num [ha,hb,ho] at h
++
++theorem wrong_refused : ¬systemAccepts id (BfvTensorCore.system 37 wrong) :=
++  missing_cross_factor_refused wrong id wrong_values.1 wrong_values.2.1 wrong_values.2.2
++
++theorem capacity_inhabited : ∃ q : Nat,0<q ∧ q<64^11 ∧ 37≤q := ⟨37,by decide,by decide,by decide⟩
++
++/-- The double-product quotient fits the same eleven-digit witness word for all
++canonical inputs under the strengthened deployed-prime capacity. -/
++theorem quotient_capacity (q a b f : Nat) (hq : 0<q) (hcap : 2*q<64^11)
++    (ha : a<q) (hb : b<q) (hf : f≤2) : f*a*b/q<64^11 := by
++  have hab : a*b<q*q := Nat.mul_lt_mul_of_lt_of_le ha (Nat.le_of_lt hb) hq
++  have hfprod : f*(a*b)≤2*(a*b) := Nat.mul_le_mul_right (a*b) hf
++  have hp : f*a*b<(2*q)*q := by nlinarith
++  have hd : f*a*b/q<2*q := (Nat.div_lt_iff_lt_mul hq).2 hp
++  omega
++
++theorem field_column_capacity :
++    2*(121*3969)+4095+131072<babyBearP ∧
++    63+121*3969+64*4095+2048<babyBearP := by decide
++end Minidregg.Compiler.BfvTensorCore.Exhibits
+diff --git a/Compiler/BfvTensorMul.lean b/Compiler/BfvTensorMul.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvTensorMul.lean
+@@ -0,0 +1,221 @@
++/- Compiler-native whole-coefficient schoolbook multiplication for the actual
++BFV primes. The source itself supplies all input/output canonical bounds. -/
++import Compiler.IntegerCertificateEmission
++namespace Minidregg.Compiler.BfvTensorMul
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.IntegerCertificateEmission Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++structure RowWires (J : Type) where
++  canonical : Fin 3 → AirBignum.AddWires J 11 6
++  quotient : Fin 11 → J
++  quotientBit : Fin 11 → Fin 6 → J
++  carry : Fin 23 → J
++  carryBit : Fin 23 → Fin 12 → J
++
++def word {J : Type} (asg : J → BabyBear) (w : RowWires J) (kind : Fin 3) : Nat :=
++  Bignum.denoteNat 64 (AirBignum.limbVals asg (w.canonical kind).x)
++def convolution {R : Type} [Semiring R] (a b : Fin 11 → R) (t : Fin 22) : R :=
++  ∑ i : Fin 11, ∑ j : Fin 11, if i.val+j.val=t.val then a i*b j else 0
++def padded {R : Type} [Zero R] (a : Fin 11 → R) (t : Fin 22) : R :=
++  if h : t.val < 11 then a ⟨t.val,h⟩ else 0
++def sumTerm {J : Type} (f : Fin 11 → Term (AirSig BabyBear J)) : Term (AirSig BabyBear J) :=
++  (List.ofFn f).foldr add' (cst 0)
++def convolutionTerm {J : Type} (a b : Fin 11 → Term (AirSig BabyBear J)) (t : Fin 22) : Term (AirSig BabyBear J) :=
++  sumTerm fun i => sumTerm fun j => if i.val+j.val=t.val then mul' (a i) (b j) else cst 0
++
++def canonicalSystem {J : Type} (q : Nat) (w : AirBignum.AddWires J 11 6) :
++    ConstraintSystem BabyBear J :=
++  AirBignum.addGadget w ++ AirModularView.pinWordSystem (limbBits := 6) (q-1) w.z
++
++
++def column {J : Type} (q factor : Nat) (w : RowWires J) (t : Fin 22) : Term (AirSig BabyBear J) :=
++  let ab := convolutionTerm (fun i => vr ((w.canonical 0).x i)) (fun i => vr ((w.canonical 1).x i)) t
++  let qk := convolutionTerm (fun i => cst (AirModularView.constDigit 64 11 q i : BabyBear)) (fun i => vr (w.quotient i)) t
++  let o := if h : t.val < 11 then vr ((w.canonical 2).x ⟨t.val,h⟩) else cst 0
++  add' (add' (add' (mul' (cst (factor : BabyBear)) ab) (vr (w.carry t.castSucc))) (cst 131072))
++    (mul' (cst (-1)) (add' (add' (add' o qk) (mul' (cst 64) (vr (w.carry t.succ)))) (cst 2048)))
++def rowSystem {J : Type} (q factor : Nat) (w : RowWires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 3).flatMap (fun kind => canonicalSystem q (w.canonical kind)) ++
++  AirBignum.limbRangeSystem w.quotient w.quotientBit ++
++  AirBignum.limbRangeSystem w.carry w.carryBit ++
++  [add' (vr (w.carry 0)) (cst (-2048)),add' (vr (w.carry 22)) (cst (-2048))] ++
++  (List.finRange 22).map (column q factor w)
++def RowSound {J : Type} (q factor : Nat) (w : RowWires J) : Prop :=
++  ∀ asg : J → BabyBear, systemAccepts asg (rowSystem q factor w) →
++    (∀ kind,word asg w kind < q) ∧ word asg w 2 = (factor*word asg w 0*word asg w 1)%q
++
++theorem canonicalSystem_sound {J : Type} (q : Nat) (hq : 0 < q) (hqcap : q < 64^11)
++    (w : AirBignum.AddWires J 11 6) (asg : J → BabyBear)
++    (h : systemAccepts asg (canonicalSystem q w)) :
++    Bignum.denoteNat 64 (AirBignum.limbVals asg w.x) < q ∧
++    ∀ i, (asg (w.x i)).val < 64 := by
++  obtain ⟨ha,hp⟩ := (systemAccepts_append asg _ _).mp h
++  have hh := AirBignum.addGadget_sound (by norm_num [babyBearP] : 2*2^6 ≤ babyBearP) asg w ha
++  have hpin := (AirModularView.pinWordSystem_correct asg (q-1) w.z).mp hp
++  have hz := AirModularView.denote_pinned_word (by positivity : 0 < 2^6)
++    (by norm_num [babyBearP] : 2^6 ≤ babyBearP)
++    (show q-1 < (2^6)^11 by norm_num at *; omega) asg w.z hpin
++  constructor
++  · norm_num at hz hh
++    omega
++  · intro i
++    have hr := (AirBignum.addGadget_correct asg w).mp ha
++    exact rangeGadget_val_lt (by norm_num [babyBearP] : 2^6 ≤ babyBearP)
++      asg (w.x i) (w.xBit i) (hr.1 i)
++
++
++theorem sumTerm_eval {J : Type} (asg : J → BabyBear) (f : Fin 11 → Term (AirSig BabyBear J)) :
++    eval asg (sumTerm f) = ∑ i : Fin 11, eval asg (f i) := by
++  simp [sumTerm, List.ofFn_succ, Fin.sum_univ_succ, eval_add', eval_cst]
++theorem convolutionTerm_eval {J : Type} (asg : J → BabyBear) (a b : Fin 11 → Term (AirSig BabyBear J)) (t : Fin 22) :
++    eval asg (convolutionTerm a b t) = convolution (fun i => eval asg (a i)) (fun i => eval asg (b i)) t := by
++  simp only [convolutionTerm, sumTerm_eval, convolution]
++  apply Finset.sum_congr rfl
++  intro i _
++  apply Finset.sum_congr rfl
++  intro j _
++  split <;> simp [eval_mul', eval_cst]
++theorem convolution_denote (a b : Fin 11 → Nat) :
++    Bignum.denoteNat 64 (List.ofFn (convolution a b)) =
++      Bignum.denoteNat 64 (List.ofFn a)*Bignum.denoteNat 64 (List.ofFn b) := by
++  norm_num [convolution,Fin.sum_univ_succ,List.ofFn_succ,Bignum.denoteNat]
++  ring
++theorem padded_denote (a : Fin 11 → Nat) :
++    Bignum.denoteNat 64 (List.ofFn (padded a)) = Bignum.denoteNat 64 (List.ofFn a) := by
++  norm_num [padded,List.ofFn_succ,Bignum.denoteNat]
++  rfl
++theorem convolution_bound (a b : Fin 11 → Nat) (ha : ∀ i,a i<64) (hb : ∀ i,b i<64) (t : Fin 22) :
++    convolution a b t ≤ 121*3969 := by
++  unfold convolution
++  calc
++    _ ≤ ∑ _i : Fin 11, ∑ _j : Fin 11, 3969 := by
++      apply Finset.sum_le_sum
++      intro i _
++      apply Finset.sum_le_sum
++      intro j _
++      split
++      · exact Nat.mul_le_mul (show a i ≤ 63 by have := ha i; omega) (show b j ≤ 63 by have := hb j; omega)
++      · omega
++    _ = _ := by norm_num
++theorem column_correct {J : Type} (q factor : Nat) (w : RowWires J) (asg : J → BabyBear) (t : Fin 22) :
++    accepts asg (column q factor w t) ↔
++      (factor : BabyBear)*convolution (fun i => asg ((w.canonical 0).x i)) (fun i => asg ((w.canonical 1).x i)) t + asg (w.carry t.castSucc) + 131072 =
++      padded (fun i => asg ((w.canonical 2).x i)) t +
++        convolution (fun i => (AirModularView.constDigit 64 11 q i : BabyBear)) (fun i => asg (w.quotient i)) t +64*asg (w.carry t.succ)+2048 := by
++  simp only [accepts,column,eval_add',eval_mul',eval_cst,eval_vr,convolutionTerm_eval]
++  have ho : eval asg (if h : t.val<11 then vr ((w.canonical 2).x ⟨t.val,h⟩) else cst 0) =
++      padded (fun i => asg ((w.canonical 2).x i)) t := by unfold padded; split <;> rfl
++  simp only [ho]
++  constructor <;> intro h <;> linear_combination h
++/-- Offset2048 represents signed schoolbook carries without field subtraction.
++The final endpoint cancels exactly, including the otherwise unused top column. -/
++theorem radix_balance : ∀ {n : Nat} (a b : Fin n → Nat) (carry : Fin (n+1) → Nat),
++    (∀ i,a i+carry i.castSucc+131072=b i+64*carry i.succ+2048) →
++    Bignum.denoteNat 64 (List.ofFn a)+carry 0+2048*64^n =
++    Bignum.denoteNat 64 (List.ofFn b)+64^n*carry (Fin.last n)+2048 := by
++  intro n
++  induction n with
++  | zero => intro a b c _; simp
++  | succ n ih =>
++    intro a b c heq
++    have hlo := heq (0 : Fin (n+1))
++    have htail := ih (fun i => a i.succ) (fun i => b i.succ) (fun i => c i.succ) (fun i => heq i.succ)
++    simp only [List.ofFn_succ,Bignum.denoteNat_cons,pow_succ]
++    have hzero : (0 : Fin (n+1)).castSucc = (0 : Fin (n+2)) := by apply Fin.ext; rfl
++    have hlast : (Fin.last n).succ = Fin.last (n+1) := by apply Fin.ext; rfl
++    rw [hzero] at hlo
++    dsimp only at htail
++    rw [hlast] at htail
++    nlinarith [hlo,htail]
++theorem denote_add : ∀ {n : Nat} (a b : Fin n → Nat),
++    Bignum.denoteNat 64 (List.ofFn (fun i => a i+b i)) =
++      Bignum.denoteNat 64 (List.ofFn a)+Bignum.denoteNat 64 (List.ofFn b) := by
++  intro n
++  induction n with
++  | zero => intros; simp
++  | succ n ih => intro a b; simp only [List.ofFn_succ,Bignum.denoteNat_cons,ih]; ring
++theorem denote_scale : ∀ {n : Nat} (factor : Nat) (a : Fin n → Nat),
++    Bignum.denoteNat 64 (List.ofFn (fun i => factor*a i)) =
++      factor*Bignum.denoteNat 64 (List.ofFn a) := by
++  intro n
++  induction n with
++  | zero => intros; simp
++  | succ n ih => intro factor a; simp only [List.ofFn_succ,Bignum.denoteNat_cons,ih]; ring
++
++theorem convolution_cast (a b : Fin 11 → Nat) (t : Fin 22) :
++    ((convolution a b t : Nat) : BabyBear) = convolution (fun i => (a i : BabyBear)) (fun i => (b i : BabyBear)) t := by
++  simp only [convolution,Nat.cast_sum]
++  apply Finset.sum_congr rfl
++  intro i _
++  apply Finset.sum_congr rfl
++  intro j _
++  split <;> simp only [Nat.cast_mul,Nat.cast_zero]
++theorem padded_cast (a : Fin 11 → Nat) (t : Fin 22) :
++    ((padded a t : Nat) : BabyBear) = padded (fun i => (a i : BabyBear)) t := by
++  unfold padded
++  split <;> simp
++
++theorem rowSystem_sound {J : Type} (q factor : Nat) (hq : 0<q) (hqcap : q<64^11) (hfactor : factor≤2)
++    (w : RowWires J) : RowSound q factor w := by
++  intro asg hs
++  simp only [rowSystem,systemAccepts_append] at hs
++  obtain ⟨⟨⟨⟨hcan,hqr⟩,hcr⟩,hend⟩,hcols⟩ := hs
++  have hcan' (k : Fin 3) : systemAccepts asg (canonicalSystem q (w.canonical k)) := by
++    intro t ht
++    exact hcan t (List.mem_flatMap.mpr ⟨k,List.mem_finRange k,ht⟩)
++  have hw := fun k => canonicalSystem_sound q hq hqcap (w.canonical k) asg (hcan' k)
++  let a : Fin 11 → Nat := fun i => (asg ((w.canonical 0).x i)).val
++  let b : Fin 11 → Nat := fun i => (asg ((w.canonical 1).x i)).val
++  let o : Fin 11 → Nat := fun i => (asg ((w.canonical 2).x i)).val
++  let k : Fin 11 → Nat := fun i => (asg (w.quotient i)).val
++  let qd := AirModularView.constDigit 64 11 q
++  let c : Fin 23 → Nat := fun i => (asg (w.carry i)).val
++  have hk (i : Fin 11) : k i<64 := rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^6 ≤ babyBearP) asg _ _
++    ((AirBignum.limbRangeSystem_correct asg _ _).mp hqr i)
++  have hc (i : Fin 23) : c i<4096 := rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^12 ≤ babyBearP) asg _ _
++    ((AirBignum.limbRangeSystem_correct asg _ _).mp hcr i)
++  have hqd (i : Fin 11) : qd i<64 := constDigit_lt 64 11 q (by omega) i
++  have hcol (t : Fin 22) : factor*convolution a b t+c t.castSucc+131072 =
++      (padded o t+convolution qd k t)+64*c t.succ+2048 := by
++    have hf := (column_correct q factor w asg t).mp
++      (hcols _ (List.mem_map.mpr ⟨t,List.mem_finRange t,rfl⟩))
++    have hab := convolution_bound a b (hw 0).2 (hw 1).2 t
++    have hqk := convolution_bound qd k hqd hk t
++    have ho : padded o t<64 := by unfold padded; split; exact (hw 2).2 _; omega
++    have hab2 : factor*convolution a b t ≤ 2*(121*3969) := Nat.mul_le_mul hfactor hab
++    have hc0 := hc t.castSucc
++    have hc1 := hc t.succ
++    have hl : factor*convolution a b t+c t.castSucc+131072<babyBearP := by norm_num [babyBearP]; omega
++    have hr : (padded o t+convolution qd k t)+64*c t.succ+2048<babyBearP := by norm_num [babyBearP]; omega
++    have heq : ((factor*convolution a b t+c t.castSucc+131072 : Nat) : BabyBear) =
++        (((padded o t+convolution qd k t)+64*c t.succ+2048 : Nat) : BabyBear) := by
++      simpa only [Nat.cast_add,Nat.cast_mul,Nat.cast_ofNat,convolution_cast,padded_cast,
++        a,b,o,k,qd,c,ZMod.natCast_zmod_val] using hf
++    have hv := congrArg ZMod.val heq
++    simpa only [ZMod.val_cast_of_lt hl,ZMod.val_cast_of_lt hr] using hv
++  have he : asg (w.carry 0)=2048 ∧ asg (w.carry 22)=2048 := by
++    simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,eval_add',eval_vr,eval_cst,add_neg_eq_zero] using hend
++  have h0 : c 0=2048 := by dsimp [c]; rw [he.1]; decide +kernel
++  have h14 : c 22=2048 := by dsimp [c]; rw [he.2]; decide +kernel
++  have ht := radix_balance (fun t => factor*convolution a b t) (fun t => padded o t+convolution qd k t) c hcol
++  rw [denote_scale,convolution_denote,denote_add,padded_denote,convolution_denote] at ht
++  have hqden : Bignum.denoteNat 64 (List.ofFn qd)=q := by
++    rw [show List.ofFn qd=Bignum.digitsLE 64 11 q from AirModularView.constDigits_eq 64 11 q]
++    exact Bignum.denoteNat_digitsLE (by omega) 11 q hqcap
++  change _+c 0+_=_+_*c 22+_ at ht
++  rw [h0,h14,hqden] at ht
++  have hb : factor*word asg w 0*word asg w 1=word asg w 2+q*Bignum.denoteNat 64 (List.ofFn k) := by
++    change factor*Bignum.denoteNat 64 (List.ofFn a)*Bignum.denoteNat 64 (List.ofFn b)=
++      Bignum.denoteNat 64 (List.ofFn o)+q*Bignum.denoteNat 64 (List.ofFn k)
++    rw [Nat.mul_assoc]
++    omega
++  refine ⟨fun kind => (hw kind).1,?_⟩
++  rw [hb,Nat.add_mul_mod_self_left]
++  exact (Nat.mod_eq_of_lt (hw 2).1).symm
++end Minidregg.Compiler.BfvTensorMul
++
+diff --git a/Compiler/BfvTensorRow.lean b/Compiler/BfvTensorRow.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvTensorRow.lean
+@@ -0,0 +1,69 @@
++/- One canonical input pair shared by three weighted modular products. -/
++import Compiler.BfvTensorCore
++import Compiler.AirAssertionShare
++namespace Minidregg.Compiler.BfvTensorRow
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++local instance : Hashable BabyBear where hash x := hash x.val
++
++def primes : Fin 9 → Nat := ![1125899906826241,1125899906629633,1125899905744897,
++  1125899905351681,4611686018427322369,4611686018427289601,
++  4611686018426454017,4611686018426257409,4611686018425815041]
++def nVars : Nat := 2036
++
++def group (g : Fin 5) : AirBignum.AddWires (Fin nVars) 11 6 where
++  x := fun i => ⟨1+11*g.val+i.val,by dsimp [nVars]; omega⟩
++  xBit := fun i j => ⟨56+155*g.val+6*i.val+j.val,by dsimp [nVars]; omega⟩
++  y := fun i => ⟨56+155*g.val+66+i.val,by dsimp [nVars]; omega⟩
++  yBit := fun i j => ⟨56+155*g.val+77+6*i.val+j.val,by dsimp [nVars]; omega⟩
++  carry := fun i => ⟨56+155*g.val+143+i.val,by dsimp [nVars]; omega⟩
++  z := fun i => ⟨831+i.val,by dsimp [nVars]; omega⟩
++  zBit := fun i j => ⟨842+6*i.val+j.val,by dsimp [nVars]; omega⟩
++
++def lhs := BfvTensorCore.lhs
++def rhs := BfvTensorCore.rhs
++def out := BfvTensorCore.out
++def factor := BfvTensorCore.factor
++
++def wires : BfvTensorCore.Wires (Fin nVars) where
++  canonical := group
++  quotient := fun k i => ⟨908+376*k.val+i.val,by dsimp [nVars]; omega⟩
++  quotientBit := fun k i j => ⟨908+376*k.val+11+6*i.val+j.val,by dsimp [nVars]; omega⟩
++  carry := fun k i => ⟨908+376*k.val+77+i.val,by dsimp [nVars]; omega⟩
++  carryBit := fun k i j => ⟨908+376*k.val+100+12*i.val+j.val,by dsimp [nVars]; omega⟩
++def mulWires (k : Fin 3) := BfvTensorCore.weightedWires wires k
++
++def system (q : Nat) : ConstraintSystem BabyBear (Fin nVars) :=
++  BfvTensorCore.system q wires
++def value (asg : Fin nVars → BabyBear) (g : Fin 5) : Nat :=
++  Bignum.denoteNat 64 (AirBignum.limbVals asg (group g).x)
++
++/-- Source theorem: every complete public component word is canonical and all
++three pointwise tensor products are forced from the same public input pair. -/
++def WholeRowSound (q : Nat) : Prop := ∀ asg : Fin nVars → BabyBear,
++  systemAccepts asg (system q) →
++    (∀ g,value asg g<q) ∧
++    value asg 2=(value asg 0*value asg 0)%q ∧
++    value asg 3=(2*value asg 0*value asg 1)%q ∧
++    value asg 4=(value asg 1*value asg 1)%q
++
++theorem prime_capacity (l : Fin 9) : 0<primes l ∧ 2*primes l<64^11 := by
++  fin_cases l <;> norm_num [primes]
++
++theorem wholeRowSound (q : Nat) (hq : 0<q) (hcap : q<64^11) : WholeRowSound q := by
++  exact BfvTensorCore.sound q hq hcap wires
++
++def emittedSystem (q : Nat) : ConstraintSystem BabyBear (Fin nVars) :=
++  AirAssertionShare.optimize (system q)
++
++theorem emittedSystem_sound (l : Fin 9) (asg : Fin nVars → BabyBear)
++    (h : systemAccepts asg (emittedSystem (primes l))) :
++    (∀ g,value asg g<primes l) ∧
++    value asg 2=(value asg 0*value asg 0)%primes l ∧
++    value asg 3=(2*value asg 0*value asg 1)%primes l ∧
++    value asg 4=(value asg 1*value asg 1)%primes l := by
++  apply wholeRowSound (primes l) (prime_capacity l).1 (by have := (prime_capacity l).2; omega) asg
++  exact (AirAssertionShare.optimize_preserves asg (system (primes l))).mp h
++end Minidregg.Compiler.BfvTensorRow
+diff --git a/Compiler/BfvTensorWitnessPlan.lean b/Compiler/BfvTensorWitnessPlan.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvTensorWitnessPlan.lean
+@@ -0,0 +1,113 @@
++/- Compiler-emitted untrusted witness schedule, consumed by the existing generic
++BigInt executor. No AIR or field constraints are authored by that executor. -/
++import Compiler.BfvTensorRow
++import Compiler.BfvQueryWitnessPlan
++namespace Minidregg.Compiler.BfvTensorRow.WitnessPlan
++open Lean (Json toJson)
++open Minidregg.Compiler.BfvQueryRow.WitnessPlan (Operand Instruction Builder Build compute put input)
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 0
++
++def digit (v i : Nat) : Nat := v/64^i%64
++
++def digits (a : Operand) : Build (Array Operand) := do
++  let mut ds := #[]
++  let mut rest := a
++  for _ in [:11] do
++    ds := ds.push (← compute 6 rest (.lit 64))
++    rest ← compute 5 rest (.lit 64)
++  return ds
++
++def readWord (ds : Array Operand) : Build Operand := do
++  let mut value := Operand.lit 0
++  for i in [:11] do value ← compute 1 ds[10-i]! (← compute 2 (.lit 64) value)
++  return value
++
++def putBits {bits : Nat} (w : Fin bits → Fin nVars) (value : Operand) : Build Unit := do
++  let mut rest := value
++  for j in List.finRange bits do
++    put (w j).val (← compute 6 rest (.lit 2))
++    rest ← compute 5 rest (.lit 2)
++
++def convolution (a b : Array Operand) : Build (Array Operand) := do
++  let mut cs := Array.replicate 22 (Operand.lit 0)
++  for i in [:11] do
++    for j in [:11] do
++      cs := cs.set! (i+j) (← compute 1 cs[i+j]! (← compute 2 a[i]! b[j]!))
++  return cs
++
++/-- All five caller words are copied unchanged. Only internal quotient/range/
++carry witnesses are generated from them, with the quotient derived from inputs. -/
++def producer (q : Nat) : Build Unit := do
++  for i in [:56] do input i i
++  let qd := ((List.range 11).map (fun i => Operand.lit (digit q i : Nat))).toArray
++  let bd := ((List.range 11).map (fun i => Operand.lit (digit (q-1) i : Nat))).toArray
++  let mut ds : Array (Array Operand) := #[]
++  let mut values : Array Operand := #[]
++  for g in List.finRange 5 do
++    let d := ((List.finRange 11).map fun i => Operand.reg ((group g).x i).val).toArray
++    ds := ds.push d
++    values := values.push (← readWord d)
++  for g in List.finRange 5 do
++    let w := group g
++    let vd := ds[g.val]!
++    let sd ← digits (← compute 3 (.lit (q-1 : Nat)) values[g.val]!)
++    let mut carry := Operand.lit 0
++    for i in List.finRange 11 do
++      putBits (w.xBit i) vd[i.val]!
++      put (w.y i).val sd[i.val]!
++      putBits (w.yBit i) sd[i.val]!
++      put (w.carry i.castSucc).val carry
++      carry ← compute 5 (← compute 1 (← compute 1 vd[i.val]! sd[i.val]!) carry) (.lit 64)
++    put (w.carry 11).val carry
++  let gw := group 0
++  for i in List.finRange 11 do
++    put (gw.z i).val bd[i.val]!
++    putBits (gw.zBit i) bd[i.val]!
++  for k in List.finRange 3 do
++    let w := mulWires k
++    let numerator ← compute 2 (.lit (factor k : Nat)) (← compute 2 values[(lhs k).val]! values[(rhs k).val]!)
++    let quotient ← compute 5 numerator (.lit q)
++    let kd ← digits quotient
++    let ab ← convolution ds[(lhs k).val]! ds[(rhs k).val]!
++    let qk ← convolution qd kd
++    let pd := ds[(out k).val]!
++    for i in List.finRange 11 do
++      put (w.quotient i).val kd[i.val]!
++      putBits (w.quotientBit i) kd[i.val]!
++    let mut carry := Operand.lit 0
++    for i in List.finRange 23 do
++      let encoded ← compute 7 (← compute 1 carry (.lit 2048)) (.lit 0)
++      put (w.carry i).val encoded
++      putBits (w.carryBit i) encoded
++      if i.val<22 then
++        carry ← compute 5 (← compute 4 (← compute 4
++          (← compute 1 (← compute 2 (.lit (factor k : Nat)) ab[i.val]!) carry) qk[i.val]!)
++          (pd.getD i.val (.lit 0))) (.lit 64)
++
++def operandJson (a : Operand) : Array Json := match a with
++  | .lit n => #[toJson (0 : Nat),toJson (toString n)]
++  | .reg n => #[toJson (1 : Nat),toJson n]
++def instructionJson (i : Instruction) : Json :=
++  Json.arr (#[toJson i.dst,toJson i.op] ++ operandJson i.a ++ operandJson i.b)
++def program (q : Nat) : Builder := (producer q |>.run {next := nVars}).2
++
++def programJson (q : Nat) : Json :=
++  let p := program q
++  Json.mkObj [("schema",toJson "lean-bigint-witness-plan-v1"),
++    ("trace_width",toJson nVars),("input_arity",toJson (56 : Nat)),
++    ("input_digit_radix",toJson (64 : Nat)),
++    ("field_modulus",toJson Minidregg.Compiler.babyBearP),
++    ("register_count",toJson p.next),("instructions",Json.arr (p.code.map instructionJson))]
++
++def rowOfValues (rowID a0 a1 p0 p1 p2 : Nat) : Array Nat :=
++  #[rowID] ++ (([a0,a1,p0,p1,p2]).flatMap fun x =>
++    (List.range 11).map fun i => digit x i).toArray
++
++def sampleRows (q : Nat) : Array (Array Nat) := #[
++  rowOfValues 0 0 0 0 0 0,
++  rowOfValues 1 3 5 9 30 25,
++  rowOfValues 2 (q-1) (q-1) 1 2 1,
++  rowOfValues 3 (q-2) (q-3) 4 12 9]
++end Minidregg.Compiler.BfvTensorRow.WitnessPlan
+diff --git a/EmitBfvTensor.lean b/EmitBfvTensor.lean
+new file mode 100644
+--- /dev/null
++++ b/EmitBfvTensor.lean
+@@ -0,0 +1,43 @@
++/- Each emitted equation is folded from the proved source relation. -/
++import Compiler.BfvTensorWitnessPlan
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.BfvTensorRow
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def ir2Alg : Alg (AirSig BabyBear (Fin nVars)) String := fun op => match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i.val
++  | .add => fun c => "{\"t\":\"add\",\"l\":"++c false++",\"r\":"++c true++"}"
++  | .mul => fun c => "{\"t\":\"mul\",\"l\":"++c false++",\"r\":"++c true++"}"
++def ir2Template (q : Nat) : String :=
++  let arithmetic := (emittedSystem q).map fun t => "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++String.intercalate "," ((List.range 56).map ir2Var)++"]}"
++  "{\"name\":\"bfv_actual_extended_tensor_square_q"++toString q++"\",\"ir\":2,\"trace_width\":"++toString nVars++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,\"name\":\"bfv_public_tensor_rows\",\"arity\":56,\"sem\":\"exact_public_rows\",\"rows\":[]}],\"constraints\":["++
++    String.intercalate "," (lookup::arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++
++def main (args : List String) : IO UInt32 := do
++  let root : System.FilePath := args.headD "artifacts"
++  IO.FS.createDirAll root
++  let mut rows : Array Json := #[]
++  for l in List.finRange 9 do
++    let q := primes l
++    let folder := root / ("prime"++toString l.val)
++    IO.FS.createDirAll folder
++    IO.FS.writeFile (folder / "template_ir2.json") (ir2Template q++"\n")
++    IO.FS.writeFile (folder / "witness_plan.json") ((WitnessPlan.programJson q).compress++"\n")
++    IO.FS.writeFile (folder / "sample_rows.json") ((toJson (WitnessPlan.sampleRows q)).compress++"\n")
++    let prog := WitnessPlan.program q
++    let row := Json.mkObj [("prime_index",toJson l.val),("q",toJson q),
++      ("trace_width",toJson nVars),("public_arity",toJson (56 : Nat)),
++      ("radix",toJson (64 : Nat)),("limbs",toJson (11 : Nat)),
++      ("arithmetic_constraints",toJson (emittedSystem q).length),
++      ("instructions",toJson prog.code.size),("register_count",toJson prog.next)]
++    rows := rows.push row
++    IO.println row.compress
++  IO.FS.writeFile (root / "emission.json") (Json.arr rows |>.pretty)
++  return 0

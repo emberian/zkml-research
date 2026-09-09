@@ -1,0 +1,17 @@
+{
+  "schema": "full-square-approved-rescale-v1",
+  "native": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/target/release/vfhe-whole-rescale-runtime",
+  "profiles": [
+    {
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/artifacts/template_ir2.json",
+      "template_sha256": "37a02768080e1ca8284fab4bc186b2e5981ad0b97a4af7965472953cdfe4df5a",
+      "width": 24575
+    }
+  ],
+  "source_pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/target/release/vfhe-whole-rescale-runtime": "c01425b947298a4dd9ec726ba087a7f56af3b6bdc2e38a63dd1b54d85f65bdc6",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/artifacts/template_ir2.json": "37a02768080e1ca8284fab4bc186b2e5981ad0b97a4af7965472953cdfe4df5a"
+  },
+  "reused_proofs": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/results/run001",
+  "reprove": false
+}

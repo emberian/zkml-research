@@ -1,0 +1,166 @@
+{
+  "certificate": {
+    "crt_modulus": "2009731336725594113",
+    "derivation": "8*512*(512*2^31)=2^52 for centered raw-u32 coefficients and balanced signed digits",
+    "primes": [
+      {
+        "prime": 2013265921,
+        "prime_trial_division_pass": true,
+        "psi": 341742893,
+        "psi_order": 1024,
+        "root_candidate": 31
+      },
+      {
+        "prime": 998244353,
+        "prime_trial_division_pass": true,
+        "psi": 258648936,
+        "psi_order": 1024,
+        "root_candidate": 3
+      }
+    ],
+    "signed_coefficient_bound": "4503599627370496",
+    "twice_bound_less_than_modulus": true
+  },
+  "claim": "EXECUTED new exact CRT-NTT external-product backend on genuine saved TFHE input; separate fresh public evaluation block",
+  "complete_proof": "pending separate generated recurrence",
+  "crt_equals_complete_signed_reference": true,
+  "direct_reference_ns": 558958,
+  "ephemeral_decrypt_error_against_public_delta": {
+    "byte_equal": false,
+    "coefficients": 512,
+    "different_coefficients": 510,
+    "maximum_absolute_torus32_difference": 28160
+  },
+  "exact_ntt_equals_existing_karatsuba": true,
+  "exact_output_sha256": "100b074017320fdcb3968250569cb27bf98ed7fa48986b234aeb2473b09da1c1",
+  "fft_comparison": {
+    "byte_equal": true,
+    "coefficients": 2048,
+    "different_coefficients": 0,
+    "maximum_absolute_torus32_difference": 0
+  },
+  "fft_external_product_ns": 31458,
+  "fourier_conversion_ns": 66792,
+  "generation_ns": 730416,
+  "karatsuba_ns": 408750,
+  "new_bootstraps": 0,
+  "new_glwe_secret_keys": 1,
+  "new_raw_ggsw_blocks": 1,
+  "ntt_ns": 1227708,
+  "origins": [
+    {
+      "bytes": 8232,
+      "file": "initial_lut.ct",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/initial_lut.ct",
+      "sha256": "341f66e90fd70193fe9ba240b9d761ad092181e73478e675b0eddcca63ddeb3b"
+    },
+    {
+      "bytes": 8232,
+      "file": "body_rotated_lut.ct",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/body_rotated_lut.ct",
+      "sha256": "34dc3e00c96578b3a7c15abef3cdd06e8e26636f58cd094f7cfa82777129c937"
+    },
+    {
+      "bytes": 3256,
+      "file": "pbs_input.ct",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/pbs_input.ct",
+      "sha256": "12db684dfe5695f6afabde7dc1d55c1f92e13a6d782e4994c49c7a9418fd7114"
+    },
+    {
+      "bytes": 22045,
+      "file": "prior_rows.json",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/prior_rows.json",
+      "sha256": "a328dc5c12625617e1a05afd48f2fb9287cb4edca10cce37a5ab25bf811afe1f"
+    },
+    {
+      "bytes": 11063,
+      "file": "prior_template.json",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/prior_template.json",
+      "sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31"
+    },
+    {
+      "bytes": 233366,
+      "file": "prior_proof.bin",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/prior_proof.bin",
+      "sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8"
+    },
+    {
+      "bytes": 22529,
+      "file": "rotation_template.json",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/rotation_template.json",
+      "sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc"
+    },
+    {
+      "bytes": 290448,
+      "file": "rotation_proof.bin",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/rotation_proof.bin",
+      "sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45"
+    },
+    {
+      "bytes": 8232,
+      "file": "delta.ct",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/delta.ct",
+      "sha256": "91bc6f56fbbb2cc26d22f1978ea8125110ac8e11e75252ca0a6ef89adaa0303d"
+    },
+    {
+      "bytes": 29461,
+      "file": "digits.json",
+      "origin": "../bootstrap_decomposition_successor/fixtures/normal_001/digits.json",
+      "sha256": "437651c690a2f59b47203de509170dcd67b2d070be95e278a56906d98365e1ac"
+    },
+    {
+      "bytes": 62113,
+      "file": "decomposition_template.json",
+      "origin": "../bootstrap_decomposition_successor/artifacts/template_ir2.json",
+      "sha256": "d1306386767a9ec8bdfb9bddf3e0b2f831b352feafdbd3b5e2572baa7aa4c52a"
+    },
+    {
+      "bytes": 363165,
+      "file": "decomposition_proof.bin",
+      "origin": "../bootstrap_decomposition_successor/results/proof001/proof.bin",
+      "sha256": "6993ca1094c7c96d99c3cab01605dc395dd12153aff2ae2b00c25c01a3db9f34"
+    }
+  ],
+  "prefix": {
+    "decomposition_proof_sha256": "6993ca1094c7c96d99c3cab01605dc395dd12153aff2ae2b00c25c01a3db9f34",
+    "decomposition_template_sha256": "d1306386767a9ec8bdfb9bddf3e0b2f831b352feafdbd3b5e2572baa7aa4c52a",
+    "decomposition_verified": true,
+    "decomposition_verify_ns": 26758000,
+    "prefix": {
+      "first_nonzero_mask_row": [
+        0,
+        6878,
+        25207,
+        394
+      ],
+      "modulus_switch": {
+        "body_row": [
+          805,
+          56149,
+          55195,
+          862
+        ],
+        "body_row_matches_decoded_pbs_input": true,
+        "proof_sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8",
+        "template_sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31",
+        "verified": true,
+        "verify_ns": 17974750
+      },
+      "rotation_proof_sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45",
+      "rotation_template_sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc",
+      "rotation_verified": true,
+      "rotation_verify_ns": 19371833
+    }
+  },
+  "profile": {
+    "base_log": 10,
+    "glwe_noise": "DEFAULT_PARAMETERS.glwe_noise_distribution",
+    "glwe_size": 4,
+    "levels": 2,
+    "polynomial_size": 512,
+    "scalar": "u32"
+  },
+  "public_selector": 1,
+  "raw_ggsw_sha256": "cdb69a441c980a2ce408ec355775fd4b87f3ad7ab64bf3e2c0fb59aa8b567aed",
+  "secret_key_or_rng_serialized": false
+}

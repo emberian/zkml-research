@@ -1,0 +1,219 @@
+{
+  "owned": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ActualBasisExtension.lean",
+      "bytes": 2100,
+      "sha256": "543df98fe85ea85626f43513b0c1dfe4e375be44269e7b475ffecc2ee8377c48"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionLayout.lean",
+      "bytes": 2950,
+      "sha256": "247ab6fa77a4904c7c46407a97eca388867f8d33c1302e0b70ef8849da8d1a21"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionNative.lean",
+      "bytes": 3260,
+      "sha256": "a83af69c6cb61ae8cf5ec9b513861176fae08ba1972585e22afdf97a83a70f06"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionPublic.lean",
+      "bytes": 8217,
+      "sha256": "864a50a56b09a31da3c967f9d83c7d717b450615469dc8703861defc6592e62c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionWitnessPlan.lean",
+      "bytes": 3751,
+      "sha256": "5b71cad464812e4cd7ade68420b06d3f31d5921a4be2808dbffdc5a497bce19c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ExactBasisExtension.lean",
+      "bytes": 7119,
+      "sha256": "593d4823e170acbae1af033d7b2765464408be3784e426dd931f019527dcadc7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ProfiledAutoCapacity.lean",
+      "bytes": 2737,
+      "sha256": "42e1c0a644b0734871679e60ca4e096aef6e7dd03ac615759da3b1110e12dc81"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/EmitBasisExtension.lean",
+      "bytes": 2118,
+      "sha256": "650555636a8175aca2fca69c3ee12153ea46b07946bc35aeb8a1e12f7fff3712"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/generate_constants.py",
+      "bytes": 2974,
+      "sha256": "f94607a56876c651b49f66e56bb2b33214095012d19c7e655d49144a0bfcaffd"
+    }
+  ],
+  "reused_direct_compiler_modules": [
+    {
+      "module": "Compiler.ProfiledMatrix",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledMatrix.lean",
+        "bytes": 5327,
+        "sha256": "848c2fb072f6e5e7b1c360fd60c56cc668046c744135860e13b7bbea45c0d51c"
+      },
+      "reused_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledMatrix.olean",
+        "bytes": 225088,
+        "sha256": "6f304bcc4042989bde1f1a5b25f53339e94440310f628850204a7be7ab9fd398"
+      }
+    },
+    {
+      "module": "Compiler.ProfiledBounds",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledBounds.lean",
+        "bytes": 3390,
+        "sha256": "8c035865784110f09b84d210845cb18cbcd7f12bc8f30e2bc34bd8bc37c2da11"
+      },
+      "reused_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledBounds.olean",
+        "bytes": 168120,
+        "sha256": "846da3b95897825c432354b5e5b6828228ca88d556f22f837ef5006445628c5e"
+      }
+    },
+    {
+      "module": "Compiler.ProfiledWitness",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledWitness.lean",
+        "bytes": 2872,
+        "sha256": "0bc37b059e41c985226a4b47416ff672a61051c094eb82237b76619b22785c58"
+      },
+      "reused_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledWitness.olean",
+        "bytes": 162128,
+        "sha256": "b7cd5df4201628d1814c091bc3eed73916ed456b2765cf7df7df64a09d62b963"
+      }
+    },
+    {
+      "module": "Compiler.RescaleWitnessPlan",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/Compiler/RescaleWitnessPlan.lean",
+        "bytes": 6774,
+        "sha256": "c21ef1d935a7f3ddfbaf4c0dbebf6c4ad0847939a53b47ff8668c088d255a97d"
+      },
+      "reused_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build/Compiler/RescaleWitnessPlan.olean",
+        "bytes": 720816,
+        "sha256": "5bdf4a06c642c9f733e88d89a0b63f8cb9de78748123e86428421631431723d5"
+      }
+    },
+    {
+      "module": "Compiler.BfvQueryWitnessPlan",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean",
+        "bytes": 6029,
+        "sha256": "bb91eeb1c1fc46c0e1f498e49de18cc7533f6ab3bf5b7b14efa01382b4f87bb0"
+      },
+      "reused_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/build/Compiler/BfvQueryWitnessPlan.olean",
+        "bytes": 763376,
+        "sha256": "c2265bb53e8b3275664c098461b0a4535ded8becac92ef7aea4ef05ccdb3ba7f"
+      }
+    },
+    {
+      "module": "Compiler.FheSourceCertificate",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean",
+        "bytes": 6762,
+        "sha256": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887"
+      },
+      "reused_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificate.olean",
+        "bytes": 216096,
+        "sha256": "74c8d2d7d3f12243233c5396edb02d18a2cdddaddeb69fbfec57cbc167bc3e61"
+      }
+    },
+    {
+      "module": "Compiler.FheRnsScaleDecomposition",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean",
+        "bytes": 28281,
+        "sha256": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167"
+      },
+      "reused_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean",
+        "bytes": 1439040,
+        "sha256": "2a652d43869b47f94553e9a54f7a31331a23c2fd634e9e36f16aec690a6215c8"
+      }
+    }
+  ],
+  "frozen_predecessor_manifests": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/MANIFEST.sha256",
+      "bytes": 4904,
+      "sha256": "6fc716cdf1334bde2b08f5c455d073619750ac4ffcf63d25bc6bf60e1fd7d8ee"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/MANIFEST.sha256",
+      "bytes": 3092,
+      "sha256": "45ff1ef7d7b0d4a534096adcc10d16696f4c24d77a79a22ff298e8d1e4557ab3"
+    }
+  ],
+  "native_implementation": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs",
+      "bytes": 17690,
+      "sha256": "82719d9ba27cc48542a6ba6989240217cc50d9005591208e7d7648b211f33c4f"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/mod.rs",
+      "bytes": 7534,
+      "sha256": "f0a88975e063a68febcf18559eb40b9445ef519f60305687a3c4becf3c5bc5c7"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/scaler.rs",
+      "bytes": 7751,
+      "sha256": "8ee2370b84d30a5c9fdcc890c65e3bfb64c03b7ed7c7bbb3da1596175a545d14"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mul.rs",
+      "bytes": 15406,
+      "sha256": "930cbd009048f11ebb10b66b1f1d9bf5bb033ccb96154e1d95ac3d779f553cfc"
+    }
+  ],
+  "native_constructor": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/native_extension_constants.json",
+    "bytes": 4771,
+    "sha256": "eae1fb16c2c90b455ee155550ff74fe332a92da18cdfb36baa399a5c605ff0c4"
+  },
+  "public_extension_chunks": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/extension/000.json",
+      "bytes": 1274368,
+      "sha256": "684daac93d3b9ba108dd680449be3fb560f3ae0c76373a15d579494f798b87b1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/extension/001.json",
+      "bytes": 1275087,
+      "sha256": "7e65fe2c3598b1741f84bd38027989b6c933561275ea09ecd44c0bb4dc98fb78"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/extension/002.json",
+      "bytes": 1277964,
+      "sha256": "91793f763933238f4a261060334afcb0bc42e272feed3bb5d0f1daae664da418"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/extension/003.json",
+      "bytes": 1278989,
+      "sha256": "561fb3c47eb1f2482c39754557129ce0a010a94da1104198951d6da89725faf5"
+    }
+  ],
+  "executed_runtime_results": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/extension001/result.json",
+      "bytes": 22653,
+      "sha256": "4bb3e511fae797f3a53bc5bd01716585fcc8fc990480cd9d662a3e6a2858743f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/whole_verify001/result.json",
+      "bytes": 67272,
+      "sha256": "990ed2b9c53ca09e44be549e754760a120760e8a700bcc3e3cc220343e8e8b08"
+    }
+  ],
+  "ready_sha256": "995559e0fcf994aeaddf5d6a76dd845bf4a0ffa9585a29b157e80eb564b38902",
+  "ready_pins_unchanged": true,
+  "compile_source_hashes_match": true,
+  "validation_scope": "Seven changed Compiler modules and exporter compiled in owned overlay using saved predecessor oleans; no full build or Rust-language refinement."
+}

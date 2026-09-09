@@ -1,0 +1,1 @@
+Selvage/WeightedAgreementWitnesses.lean:11:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Real.instDivInvMonoid', which is 'noncomputable'

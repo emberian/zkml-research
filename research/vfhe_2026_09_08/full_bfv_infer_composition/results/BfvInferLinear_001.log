@@ -1,0 +1,38 @@
+Compiler/BfvInferLinear.lean:35:44: error: unsolved goals
+s t : Fin 4
+x : ℕ
+hx : x < primes s
+hs : 2 ^ 49 < primes s ∧ primes s < 2 ^ 50 ∧ supportsOptimized (primes s)
+ht : 2 ^ 49 < primes t ∧ primes t < 2 ^ 50 ∧ supportsOptimized (primes t)
+hx50 : x < 2 ^ 50
+hz : x / 2 ^ 50 = 0
+⊢ x - x / 1125899906842624 * primes t = x
+Compiler/BfvInferLinear.lean:35:66: warning: This simp argument is unused:
+  hz
+
+Hint: Omit it from the simp argument list.
+  simp [lazyLiftWord,̵h̵z̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/BfvInferLinear.lean:68:29: warning: exponent 512 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+Compiler/BfvInferLinear.lean:78:41: error: unsolved goals
+case refine_1
+⊢ ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 + 1 < 1125899906826241
+
+case refine_2
+⊢ ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 + 1 -
+      (![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 + 1) / 1125899906842624 *
+        ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 =
+    ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 + 1
+
+case refine_3
+⊢ 1 % ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 = 1
+Compiler/BfvInferLinear.lean:87:26: error: unsolved goals
+h : ∀ x < primes 0, canonicalLift (primes 3) x = x
+⊢ ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 + 1 < 1125899906826241
+Compiler/BfvInferLinear.lean:85:65: error: unsolved goals
+h : ∀ x < primes 0, canonicalLift (primes 3) x = x
+this :
+  1 % ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 =
+    ![1125899906826241, 1125899906629633, 1125899905744897, 1125899905351681] 3 + 1
+⊢ False

@@ -1,0 +1,917 @@
+[
+  {
+    "module_artifact": "Compiler/AdditiveFriReceiptClause.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AdditiveFriReceiptClause.olean",
+    "sha256": "ca45d24d0d7122213354048bf4e3d9934c286d8db5816e55db6a4dec88169cfa"
+  },
+  {
+    "module_artifact": "Compiler/AdmissionAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AdmissionAir.olean",
+    "sha256": "21b6131045b538ecdc3ef688ad9925508b1cd1a9ff432d0bf7c1eecb449537e2"
+  },
+  {
+    "module_artifact": "Compiler/Air.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Air.olean",
+    "sha256": "e28e36d5b0daadbafc024e31398b54e27db1f64c75db9276991f4d39e4b273cd"
+  },
+  {
+    "module_artifact": "Compiler/AirAssertionShare.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/AirAssertionShare.olean",
+    "sha256": "242c6e5da70c7beac618455d8e88aabd6680a5eff779930f18ea3071d58456d2"
+  },
+  {
+    "module_artifact": "Compiler/AirBignum.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AirBignum.olean",
+    "sha256": "2c007e649e3315bc11575a5bc23674e775f87d949274ac0f8c0d858044977bb4"
+  },
+  {
+    "module_artifact": "Compiler/AirFlatten.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AirFlatten.olean",
+    "sha256": "86f01a1be1169ad0dcba8740c7eb9b9dde560a6c09b707dcf8185d5ce5b88e77"
+  },
+  {
+    "module_artifact": "Compiler/AirHash.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AirHash.olean",
+    "sha256": "6af40009ca8a86d08b7616f73df08c24e3c854372ca96ac4eb0c74dfd1f53868"
+  },
+  {
+    "module_artifact": "Compiler/AirMembership.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AirMembership.olean",
+    "sha256": "1225dcd138fa5c9c80eacbf42fc9824876604341b17e70826d3b1f9880118977"
+  },
+  {
+    "module_artifact": "Compiler/AirModularView.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AirModularView.olean",
+    "sha256": "574f07158009ef63a2cdb32cef563dbe95c110de7e96cf5b057dd79fbde94d48"
+  },
+  {
+    "module_artifact": "Compiler/AirRange.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AirRange.olean",
+    "sha256": "fe24286a3960a927ade17a18bc90ed304584dcf70fd4abffa1fe0859408bae0f"
+  },
+  {
+    "module_artifact": "Compiler/AirSimplify.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler/AirSimplify.olean",
+    "sha256": "11f9a012773e6130694a902a5c6f9e6964dd6c1d881c9429f5ea600d5fb61344"
+  },
+  {
+    "module_artifact": "Compiler/ArithmeticNativeDeployment.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/ArithmeticNativeDeployment.olean",
+    "sha256": "bdf1445e155973bf81730bf1be8ab852e6f888b6c2ab687fe94d89316b6f20f5"
+  },
+  {
+    "module_artifact": "Compiler/AuthenticatedColumnLogupBridge.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AuthenticatedColumnLogupBridge.olean",
+    "sha256": "6c179bf563f6dc6084cb2b054d8efe7fc2300a43d710eb56f2cfe5186e4e8054"
+  },
+  {
+    "module_artifact": "Compiler/AuthenticatedColumnPlan.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/AuthenticatedColumnPlan.olean",
+    "sha256": "b814ad5dada11c2a17e13628db8bce786aef782e35b9d4d1376af41599f9a14f"
+  },
+  {
+    "module_artifact": "Compiler/BFVScaleLiftRefinement.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/BFVScaleLiftRefinement.olean",
+    "sha256": "36a4a6d53ac2ea66f344aabc40a0d4e52bf39ce61739f1a7650dc892f280854f"
+  },
+  {
+    "module_artifact": "Compiler/BfvAllModuliKernelCalls.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BfvAllModuliKernelCalls.olean",
+    "sha256": "e2649a57d05f91056ea79a52b2a45cc1909aebcda436bc391ba524ecfd447066"
+  },
+  {
+    "module_artifact": "Compiler/BfvCompressedEquation.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BfvCompressedEquation.olean",
+    "sha256": "981f399f464f54864ed79507fd908f95e654877f5f69580b1bbb8611b700b293"
+  },
+  {
+    "module_artifact": "Compiler/BfvExpiry.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiry.olean",
+    "sha256": "54b2ab2e998f104d6aaffcb1142f98fc5be291f13e6f115e1be7620b7342f875"
+  },
+  {
+    "module_artifact": "Compiler/BfvExpiryLayout.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiryLayout.olean",
+    "sha256": "3b40e2786f9dbb60ed0eb9c31ea7dbe177f1ee187280c15c861deffe1d24f4ed"
+  },
+  {
+    "module_artifact": "Compiler/BfvInputValidity.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BfvInputValidity.olean",
+    "sha256": "70c203b54310bfa0c1f57ea554c3743f05eb2b39407128d11967e08e5a3efc97"
+  },
+  {
+    "module_artifact": "Compiler/BfvLinearCombination.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombination.olean",
+    "sha256": "062ecfc1fc7cddfe030c3266921be3b22e32e7c13d93e567bceda113a7be0a64"
+  },
+  {
+    "module_artifact": "Compiler/BfvLinearCombinationLayout.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombinationLayout.olean",
+    "sha256": "cab6ab9a682859b871f35de08a0b3dc87c69cf44823810118e683a273e3ec71d"
+  },
+  {
+    "module_artifact": "Compiler/BfvLinearCombinationWitnessData.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombinationWitnessData.olean",
+    "sha256": "3e59a22786ddfc461e2697a82cfbb32857d081ebc9692bac6aa834b0cbc4a5dd"
+  },
+  {
+    "module_artifact": "Compiler/BfvOperationWitness.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvOperationWitness.olean",
+    "sha256": "678cc7d3aaada8afe7385cc1a6ad1f78367dfa112d62b8282a922fe4d2170f19"
+  },
+  {
+    "module_artifact": "Compiler/BfvProofController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BfvProofController.olean",
+    "sha256": "7c6f0a16efdeca6aeb995dbc6c9ad56e558d4dd26118864e1adbb717627e5b10"
+  },
+  {
+    "module_artifact": "Compiler/BfvQueryMul.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryMul.olean",
+    "sha256": "263784d1bd7d26208b721e72c4a2b0746a4dad541529edf7f66e56ae79a41eb6"
+  },
+  {
+    "module_artifact": "Compiler/BfvQueryRow.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryRow.olean",
+    "sha256": "b3e99078746281b8e0f98c2469ed2a4b80f09211960b2813153e93977a0c824e"
+  },
+  {
+    "module_artifact": "Compiler/BfvQueryTeeth.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryTeeth.olean",
+    "sha256": "e575585b07e11032b4a3920c057f4a8ecce7faab026239675d2ba2a4b615ad01"
+  },
+  {
+    "module_artifact": "Compiler/BfvQueryWitness.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryWitness.olean",
+    "sha256": "e5ee96778bae48c93002dcdb8abbdb6cd12e59a73eb78eb3fa3112dc8835c74e"
+  },
+  {
+    "module_artifact": "Compiler/BfvQueryWitnessPlan.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/build/Compiler/BfvQueryWitnessPlan.olean",
+    "sha256": "c2265bb53e8b3275664c098461b0a4535ded8becac92ef7aea4ef05ccdb3ba7f"
+  },
+  {
+    "module_artifact": "Compiler/BfvReceiptClause.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BfvReceiptClause.olean",
+    "sha256": "9b83c77b988d5aae9f1e6050f321174b100ea1968efba8c38c8c9e9571d02a13"
+  },
+  {
+    "module_artifact": "Compiler/BfvRescaleAssertionShare.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/BfvRescaleAssertionShare.olean",
+    "sha256": "6cf6ab86c4a08712ce07c022b855969259e5a28806de72618236c51a3206718b"
+  },
+  {
+    "module_artifact": "Compiler/BfvRescaleRow.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleRow.olean",
+    "sha256": "3afe3c81f8d8d62df7bb8f6d9d13aab577d8cb36916da04a184b89b7e2b255ed"
+  },
+  {
+    "module_artifact": "Compiler/BfvRescaleSound.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleSound.olean",
+    "sha256": "a60753c6a2fefec186e1c9785d70fce3c9fce6020c5888cd840b8d10ff39db53"
+  },
+  {
+    "module_artifact": "Compiler/BfvRescaleWitness.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleWitness.olean",
+    "sha256": "8f382ca774c537932d4abc93f728d1b2eda060839ca1fa925d176835e261a391"
+  },
+  {
+    "module_artifact": "Compiler/BfvSignedAccumulatorAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BfvSignedAccumulatorAir.olean",
+    "sha256": "07330e8006dd94ca5f297ed0a4dcdacce5a881959bd9a347ed9b8bb10617478a"
+  },
+  {
+    "module_artifact": "Compiler/BfvTensorAxiomPins.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorAxiomPins.olean",
+    "sha256": "085c2845e95d9c0e5d1d7ec32a5ca861a8a62a7255d9821478a99f8d661eb2e0"
+  },
+  {
+    "module_artifact": "Compiler/BfvTensorCore.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorCore.olean",
+    "sha256": "689c9ae142b90de5af3ec5f276aa6ed02fdcb2670b7c6029003e7b9f155b3244"
+  },
+  {
+    "module_artifact": "Compiler/BfvTensorExhibits.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorExhibits.olean",
+    "sha256": "de93061201df2922076a86ba5f05f1dfc660b53f7d5f7fe695fdfe7d53073dca"
+  },
+  {
+    "module_artifact": "Compiler/BfvTensorMul.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorMul.olean",
+    "sha256": "4cec6e4bcd0425a59bc014f6cb1b224443f9fa62d3a33053282b5d1f510ba5c6"
+  },
+  {
+    "module_artifact": "Compiler/BfvTensorRow.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorRow.olean",
+    "sha256": "ae83faf27ced901a02cdfd9e146a2e66aeca5200139e78b4b5f8697e2a84636d"
+  },
+  {
+    "module_artifact": "Compiler/BfvTensorWitnessPlan.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorWitnessPlan.olean",
+    "sha256": "d91f4278d7a499110e14fee23444d58ab99c6deb8a851ac366abdca5c2dd7be8"
+  },
+  {
+    "module_artifact": "Compiler/BignumKernelABI.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BignumKernelABI.olean",
+    "sha256": "8e6b198f2564a72ab896b2c16e505b995e2b6f6a32d1285d616b37362c0b8d65"
+  },
+  {
+    "module_artifact": "Compiler/BinaryTower256Profile.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BinaryTower256Profile.olean",
+    "sha256": "bf45bc83e0fc0c39f967c792a70357637b9af2cd083c86934120fce24742abc4"
+  },
+  {
+    "module_artifact": "Compiler/BoundedPageCellRegistry.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BoundedPageCellRegistry.olean",
+    "sha256": "1cf66f2c0aa786eab43fb29f53828132869619a5e9a405d163b35bd8570635dd"
+  },
+  {
+    "module_artifact": "Compiler/BoundedPageExtensionCatalog.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BoundedPageExtensionCatalog.olean",
+    "sha256": "08ad9edae1e73eab7976b28be0e9c28ba6812b816f6792f6340efde830f93680"
+  },
+  {
+    "module_artifact": "Compiler/BoundedPageSchemaUpgrade.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BoundedPageSchemaUpgrade.olean",
+    "sha256": "7f0f8bb6e9d8ad4ab954b57b7ae5ab68b5fd9622580febf099362b8a6ba1baa0"
+  },
+  {
+    "module_artifact": "Compiler/BoundedQuantifiedPolicyAdmission.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/BoundedQuantifiedPolicyAdmission.olean",
+    "sha256": "09b799a3a29d4ead0245d15edd5e996b73bba25f1cae2f0977f4c1a839ba1f03"
+  },
+  {
+    "module_artifact": "Compiler/CanonicalPolicyAdmission.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CanonicalPolicyAdmission.olean",
+    "sha256": "7d6b7db9765b4317dbf6e10a8ef8ee9f5862730bfad2bb22a0e6c40efc76359c"
+  },
+  {
+    "module_artifact": "Compiler/CommittedTerminalCompose.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalCompose.olean",
+    "sha256": "a474821588fcc758d9b11ad170a9cd4d9b7a9a996f231b64361bea4cbde63db2"
+  },
+  {
+    "module_artifact": "Compiler/CommittedTerminalController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalController.olean",
+    "sha256": "850231a939dd05f0ec2439467452770ae365b68a7a85a9b3af1e4a3da3cfc27b"
+  },
+  {
+    "module_artifact": "Compiler/CommittedTerminalFactored7.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalFactored7.olean",
+    "sha256": "7718aecdac4b1db79755181517b8343d23c4214a91628ce940ed54851bc36b4f"
+  },
+  {
+    "module_artifact": "Compiler/CommittedTerminalFactoredProver.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalFactoredProver.olean",
+    "sha256": "58244465744cf4710f679bca5a7bac8dae5566a70136ff88ac58a736b42e3636"
+  },
+  {
+    "module_artifact": "Compiler/CommittedTerminalFiatShamir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalFiatShamir.olean",
+    "sha256": "aaacaf641b290dee64dbcc0bf70efc8d1dce939871673b25a4d09cf791171f67"
+  },
+  {
+    "module_artifact": "Compiler/CommittedTerminalRealizer.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalRealizer.olean",
+    "sha256": "2f0710f3a6d8e36c395166eb7ccfbce8ecda55011d390e7e46e2a1eedc9f66b8"
+  },
+  {
+    "module_artifact": "Compiler/ComposableDeploymentManifest.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/ComposableDeploymentManifest.olean",
+    "sha256": "f954b17dfa0e04e150560adfdf3911c36ec9efde7af10d1e002af80e442fd90b"
+  },
+  {
+    "module_artifact": "Compiler/CredentialAuthorityPageMaterializer.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CredentialAuthorityPageMaterializer.olean",
+    "sha256": "5a3103e2a1deec00ac4143f70a160b7ea00d32a0b24fdc11fd48839bd57f655d"
+  },
+  {
+    "module_artifact": "Compiler/CredentialAuthorityPolicyRegistry.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CredentialAuthorityPolicyRegistry.olean",
+    "sha256": "fa5808a9612a69db07d8b04b8ef22eb1cdcc8ad880b7e257fa49bdeab18406f7"
+  },
+  {
+    "module_artifact": "Compiler/DeclaredActionAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DeclaredActionAir.olean",
+    "sha256": "53eafa0d846b204db8c3db887c08e0991717d4d888802ded8b589c0e35d25a1a"
+  },
+  {
+    "module_artifact": "Compiler/DeclaredActionBytes.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DeclaredActionBytes.olean",
+    "sha256": "ba06ee681cf7ce8e40b78027c0d141aa6153d7063014313f2f9b6b39ed89c2cf"
+  },
+  {
+    "module_artifact": "Compiler/DeclaredEffectArtifact.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DeclaredEffectArtifact.olean",
+    "sha256": "b716fc2ac1bd4316144dfcddf63b2da446e6d0f968110d5060f229ce54208a18"
+  },
+  {
+    "module_artifact": "Compiler/DeclaredEffectPageMaterializer.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DeclaredEffectPageMaterializer.olean",
+    "sha256": "761455bbde9cc8bda759aa990926643de77dce11b64058d38ebf125252dc5576"
+  },
+  {
+    "module_artifact": "Compiler/DeclaredEffectPageRegistry.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DeclaredEffectPageRegistry.olean",
+    "sha256": "016f6da3892b5c529085b5ec055d3998644d5df3fc3d781b5ddffeb097aa977a"
+  },
+  {
+    "module_artifact": "Compiler/DeclaredHyperedgeArtifact.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DeclaredHyperedgeArtifact.olean",
+    "sha256": "6677ac2c019d27d07afdf845685f3bfecf5efa16d3dd346c179631f8f33902bd"
+  },
+  {
+    "module_artifact": "Compiler/DeployedCellRegistry.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DeployedCellRegistry.olean",
+    "sha256": "e2fce69c1ba861420e533cb70053efb4e5787d6ae853b418cb13a3a98cb1101a"
+  },
+  {
+    "module_artifact": "Compiler/DescriptorEval.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DescriptorEval.olean",
+    "sha256": "64954e60e1d392e34e158c231c583ab72c5203d71555e60594fdb649c2e1c80c"
+  },
+  {
+    "module_artifact": "Compiler/DialectBundle.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DialectBundle.olean",
+    "sha256": "f3be86133826b458b2e8f9c6ce12e8cc457e3301a10883a62424cec9f8a8290e"
+  },
+  {
+    "module_artifact": "Compiler/DialectClauseDispatch.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DialectClauseDispatch.olean",
+    "sha256": "eba6f6d8fa3df6b5dca9ca655915b130e3facf0559ddab23cfad34b1a7649057"
+  },
+  {
+    "module_artifact": "Compiler/DirectedRnsEmit.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsEmit.olean",
+    "sha256": "d59035a8d223b8213d7c9343353a01deea32886370083b70a15f51023ec178fc"
+  },
+  {
+    "module_artifact": "Compiler/DirectedRnsExhibits.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsExhibits.olean",
+    "sha256": "8d629c7bb221c9f4e5deb63c763ed9736c6237b3077139a1301091a6bc1f19d7"
+  },
+  {
+    "module_artifact": "Compiler/DirectedRnsScaler.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsScaler.olean",
+    "sha256": "bdca226638688903607915d08f66c28226577ed6b2ca8d8144c38f4ea4ba79b0"
+  },
+  {
+    "module_artifact": "Compiler/DirectedRnsWitness.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsWitness.olean",
+    "sha256": "52478a97f32ee37559de1ca6c07a64c013827fb1654bed395dcec10da8d92d48"
+  },
+  {
+    "module_artifact": "Compiler/DistributiveLaw.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DistributiveLaw.olean",
+    "sha256": "67e8fef383284cd36fd7b9efd0012a5ee52a51a2d29abfb7fe050d08c5a4a186"
+  },
+  {
+    "module_artifact": "Compiler/Emit.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Emit.olean",
+    "sha256": "bd7831cd5e8698fdadf7b1d50d37c2c8d019ea33563050165df3bda52bffabe3"
+  },
+  {
+    "module_artifact": "Compiler/EmitSerialize.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/EmitSerialize.olean",
+    "sha256": "28163e2621cb5afdcb918aaca2305eb7cc5a67b47010e713be3d6e3e444a2cd4"
+  },
+  {
+    "module_artifact": "Compiler/EmitShare.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/EmitShare.olean",
+    "sha256": "1dcf2260a2fd25199d0e26f1573c8fb50fe3c577c9647b1631d733dc7edfb2a2"
+  },
+  {
+    "module_artifact": "Compiler/EvmAddAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/EvmAddAir.olean",
+    "sha256": "d1346de9b109b8c10b36e04cfbb17f483742107a8b0a21b0a58843d2fd047df7"
+  },
+  {
+    "module_artifact": "Compiler/EvmStage0NativeDeployment.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/EvmStage0NativeDeployment.olean",
+    "sha256": "f8f189d4fa87f954e3990adfbd66ca2b9fc83d8728c218256d6b64b0b61d302b"
+  },
+  {
+    "module_artifact": "Compiler/Ext6Conformance.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Ext6Conformance.olean",
+    "sha256": "27626280cfd5ecfbb1ee71f107128c36ae33c0e71f8b03077e970babefc36348"
+  },
+  {
+    "module_artifact": "Compiler/Ext6GateProofController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Ext6GateProofController.olean",
+    "sha256": "2fab4315638b81eedb51fdff9310f800b4a8a4ced3cc70fa3f8fb25fb3d9586b"
+  },
+  {
+    "module_artifact": "Compiler/Ext6GateProofDeployment.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Ext6GateProofDeployment.olean",
+    "sha256": "53629fceb228a28447b14a1544b3583bddaf3d6deddc6744184b90551b266c3f"
+  },
+  {
+    "module_artifact": "Compiler/Ext6GateProofPositiveRun.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Ext6GateProofPositiveRun.olean",
+    "sha256": "8ab5fc3b922448e10aee3ed6a89e1e669ce702566f37ea87485e77737e6696ea"
+  },
+  {
+    "module_artifact": "Compiler/Ext6GateProofVersionedDeployment.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Ext6GateProofVersionedDeployment.olean",
+    "sha256": "ccde3e21fb1c2c7eea0cb8bdeffdc7f7c7449db0feb4c5352c9e62a4c7346753"
+  },
+  {
+    "module_artifact": "Compiler/FheBarrettWord.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheBarrettWord.olean",
+    "sha256": "fd937c683e23cbcc8bc13ae698b9e6847b5c4f0b548339ab59ab59878d0bc513"
+  },
+  {
+    "module_artifact": "Compiler/FheModularAxiomReport.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheModularAxiomReport.olean",
+    "sha256": "4cf216eadc761ce3679e3486e87294dea7d0d18bf3f89ca757ef3d9586a28c3a"
+  },
+  {
+    "module_artifact": "Compiler/FheRnsModularAccumulation.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheRnsModularAccumulation.olean",
+    "sha256": "e4c3cde15482a096769d48aec01bbb38dad04f2370e0de5090085cf5c4ca784c"
+  },
+  {
+    "module_artifact": "Compiler/FheRnsScaleDecomposition.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean",
+    "sha256": "2a652d43869b47f94553e9a54f7a31331a23c2fd634e9e36f16aec690a6215c8"
+  },
+  {
+    "module_artifact": "Compiler/FheRnsSourceWord.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheRnsSourceWord.olean",
+    "sha256": "6b993665fbdb9a6928f5a95f4f78bfe31b1ceffb75dd7fa025f004509660a94b"
+  },
+  {
+    "module_artifact": "Compiler/FheShoupWord.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheShoupWord.olean",
+    "sha256": "ea5c60ceb54a9559976436515937dc04931b6627cca61307bed8dd349ef48e72"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificate.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificate.olean",
+    "sha256": "74c8d2d7d3f12243233c5396edb02d18a2cdddaddeb69fbfec57cbc167bc3e61"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateAxiomReport.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateAxiomReport.olean",
+    "sha256": "542567d4861fc2d872094f964fba84727c3b3c8a9226d5dc084309a8c3f388f9"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateChecks.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateChecks.olean",
+    "sha256": "862199664cc94a8708363214e152528260337aa754f617e755232490c6b10984"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateEmit.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateEmit.olean",
+    "sha256": "3ba8d1d2114e33f4c700f38b7d3dd1272e1ae3847be93e85537ca63a14501393"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateLayout.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateLayout.olean",
+    "sha256": "97b7f84fa370f38c26e85e4fb4dfc630f493c9817c5de38c95c462bf865c0dc2"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateOptimized.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateOptimized.olean",
+    "sha256": "8c983add2982f0f8b565e09fe64aa663307246f70ef16fbea36b4a104d4cbf39"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateRetain.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateRetain.olean",
+    "sha256": "1f117f2e197ba63d661843888578f93ffb47ae0fd960c922baf7715889190ca3"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateVerifier.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateVerifier.olean",
+    "sha256": "992dfaeeb1d7943d16537f7b1cd18f528e2f935483c7eafd05cb4712606f3251"
+  },
+  {
+    "module_artifact": "Compiler/FheSourceCertificateWitness.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateWitness.olean",
+    "sha256": "e54227c07f5db117c5b2755afcd282ddb97536cddab3d9e8627982663bb49622"
+  },
+  {
+    "module_artifact": "Compiler/FheTargetProjection.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjection.olean",
+    "sha256": "17191cb789a582b4ccad4547f2f221bf2c6c88646489e7bfa2e4136599b71684"
+  },
+  {
+    "module_artifact": "Compiler/FheTargetProjectionAxiomReport.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionAxiomReport.olean",
+    "sha256": "b043a4b192bc7b9024c2a415beb7c0b61e85d293fc1d9acb489be579e8df9590"
+  },
+  {
+    "module_artifact": "Compiler/FheTargetProjectionChecks.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionChecks.olean",
+    "sha256": "067b3e27014821ccc7de0cea5f8af56fd9386a7251e9b00d9689ec20bdda7bbb"
+  },
+  {
+    "module_artifact": "Compiler/FheTargetProjectionEmit.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionEmit.olean",
+    "sha256": "ae56e70d6d8f4a0197d34ecf3f745e531a12db308701c2cad31452c13b68b0eb"
+  },
+  {
+    "module_artifact": "Compiler/FheTargetProjectionLayout.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionLayout.olean",
+    "sha256": "37f85fb1cc7600f4640f07d29db6607ee1932b586eddb0968f034a0dff08c6f2"
+  },
+  {
+    "module_artifact": "Compiler/FheTargetProjectionVerifier.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionVerifier.olean",
+    "sha256": "94e40f7e2b29b09fa3a8b77980dda7e1cc5bfc1b88953fbd0cf444732acb927a"
+  },
+  {
+    "module_artifact": "Compiler/FheTargetProjectionWitness.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionWitness.olean",
+    "sha256": "675ec0e7cbe940112ff1aa322951852802303d5a613456f997a1d5a9352269da"
+  },
+  {
+    "module_artifact": "Compiler/FiatShamirAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/FiatShamirAir.olean",
+    "sha256": "4a9562ea15a0bbecb080c9b684f95ee4f0e4d0481ada59bab59fcd0d30248d34"
+  },
+  {
+    "module_artifact": "Compiler/FiniteSparseMaterializerAudit.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/FiniteSparseMaterializerAudit.olean",
+    "sha256": "e0c8085223450adf5cc82232de77fafa88b49d89ecdd614c18f2efab8a5aad14"
+  },
+  {
+    "module_artifact": "Compiler/FramedWalRecoveryController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/FramedWalRecoveryController.olean",
+    "sha256": "803cfa63ac305004921366511bfdf594ad83c8e5c86a362e2f34dcb45e7a2035"
+  },
+  {
+    "module_artifact": "Compiler/FramedWalRecoveryDeployment.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/FramedWalRecoveryDeployment.olean",
+    "sha256": "1aeda4d20158ea5f656671cbdb8ab27cd91e6bf8b1dae34533923ffacebd5b33"
+  },
+  {
+    "module_artifact": "Compiler/FriConformance.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/FriConformance.olean",
+    "sha256": "678ac342491c93efbc6be66f87c416aae16dd4c9e7098dd997935f6afd328460"
+  },
+  {
+    "module_artifact": "Compiler/FriQueryVerifierAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/FriQueryVerifierAir.olean",
+    "sha256": "cbf0f64c9eb99b92dd0a7c49c35a0593f8968a0e60484bb7e34ad505a4bfe101"
+  },
+  {
+    "module_artifact": "Compiler/GateFactoredExt6.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/GateFactoredExt6.olean",
+    "sha256": "046d4c7493b687aeab2e77f4ab35d3f734dd8e5ab57bd6e4500ccdc2d54bfaf7"
+  },
+  {
+    "module_artifact": "Compiler/GateMleExt6.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/GateMleExt6.olean",
+    "sha256": "d31d1d28a7ee9d7f1c37011d42febf796dd9d5b6683f02efe8434a655d17c726"
+  },
+  {
+    "module_artifact": "Compiler/GateTraceRelationExt6.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/GateTraceRelationExt6.olean",
+    "sha256": "724f14050c109079442d15644ddf0b23480a0d348b3d898a289d49436568eb81"
+  },
+  {
+    "module_artifact": "Compiler/HyperdocumentCodec.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/HyperdocumentCodec.olean",
+    "sha256": "d1cd05905edfa88a152c096f436e3cad35d6dcf8c7ba161541461d1fa7b2cd46"
+  },
+  {
+    "module_artifact": "Compiler/HyperdocumentContentPageMaterializer.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/HyperdocumentContentPageMaterializer.olean",
+    "sha256": "e50201b319cb0d0093562d471f76a4b3f3ca04cb162700dac9a223fb53b758d1"
+  },
+  {
+    "module_artifact": "Compiler/HyperdocumentEventPageMaterializer.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/HyperdocumentEventPageMaterializer.olean",
+    "sha256": "a9b3c1969e6a9c4039caeca666d7a389e158dc6bc12123a405b5467201510fbe"
+  },
+  {
+    "module_artifact": "Compiler/HyperdocumentIndexPageMaterializer.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/HyperdocumentIndexPageMaterializer.olean",
+    "sha256": "7ac5ec2086aeb6eb1eba9c367e916ae637825b1c8d50cc7af8a4bee058ff816a"
+  },
+  {
+    "module_artifact": "Compiler/IntegerBilinearEmission.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/IntegerBilinearEmission.olean",
+    "sha256": "eeb93f65fcb975dddc2c1cc5ccc3007e19a5648b9b6a0c077858f42011b590ca"
+  },
+  {
+    "module_artifact": "Compiler/IntegerCertificateEmission.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/IntegerCertificateEmission.olean",
+    "sha256": "1b3e312c1d7e910ff903112d81eea8b41bf0c5e5fcc00f5aca680e9ea303fbcb"
+  },
+  {
+    "module_artifact": "Compiler/IntegerCertificateEmissionChecks.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/IntegerCertificateEmissionChecks.olean",
+    "sha256": "41a0b1e6169f207ecd810d6af45cd64abb324d50715415ae2786bc2fb139574c"
+  },
+  {
+    "module_artifact": "Compiler/IntegerCertificateSimplification.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler/IntegerCertificateSimplification.olean",
+    "sha256": "f63187b025934f57b9f62e6bc6faef6ae0b953c55a7eb1a135b79fc1f53e5afc"
+  },
+  {
+    "module_artifact": "Compiler/LargeIntegerCertificateEmission.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/LargeIntegerCertificateEmission.olean",
+    "sha256": "849ad3a654854d2f0875ab60dc7082fe8b850c90c2d709b74b11b855d7b4ab82"
+  },
+  {
+    "module_artifact": "Compiler/LargeIntegerCertificateEmissionChecks.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/LargeIntegerCertificateEmissionChecks.olean",
+    "sha256": "b3444965d61ce02a3e965a4e75530abe0a6d4085f1fcf8c3d668c65708038437"
+  },
+  {
+    "module_artifact": "Compiler/Logup256ReceiptClause.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Logup256ReceiptClause.olean",
+    "sha256": "3329f91b70d00115f5b81d963b5692e1f70deb62fb4eaed337f59e833a6200f1"
+  },
+  {
+    "module_artifact": "Compiler/MerkleBindAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/MerkleBindAir.olean",
+    "sha256": "3cf715ddabecb05621189cfa4db5373df157fd97703a32fc84d5896cf24c821e"
+  },
+  {
+    "module_artifact": "Compiler/MinidreggV1ArithmeticWork.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/MinidreggV1ArithmeticWork.olean",
+    "sha256": "dd2f0d22bbdd37046ed18b8e65e458053cd25827475cedea6b62cd0f790a6787"
+  },
+  {
+    "module_artifact": "Compiler/MinidreggV1Artifact.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/MinidreggV1Artifact.olean",
+    "sha256": "db86399a2bcad6e9b7c61462fa10bdc0b8523733bf8cfb529474491bee7bc776"
+  },
+  {
+    "module_artifact": "Compiler/MinidreggV1NativeGlue.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/MinidreggV1NativeGlue.olean",
+    "sha256": "c98b03c154b8ee45b0d27d3636f56c402afd05c188c910ab957e7c03d69ad339"
+  },
+  {
+    "module_artifact": "Compiler/NativeGlueGen.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/NativeGlueGen.olean",
+    "sha256": "e55abfc69b3149c63b37af9f6667955d9579d6038f75c0b85f25b5a4fe2e4554"
+  },
+  {
+    "module_artifact": "Compiler/NativeKernelPlan.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/NativeKernelPlan.olean",
+    "sha256": "0e196c0b9b129b75770a4cb9f5a6b73788820cb20f811567392f6ee9ab7941f7"
+  },
+  {
+    "module_artifact": "Compiler/NativeWorkProfiles.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/NativeWorkProfiles.olean",
+    "sha256": "cd0fb28dd665a3674edb47777bd7073f1eedeeed7a0e5bf9080fe8f95b8da163"
+  },
+  {
+    "module_artifact": "Compiler/NextgenLightClientPublicInputs.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/NextgenLightClientPublicInputs.olean",
+    "sha256": "0625024b6d7f7b9aaa88da168f04e59ab88c2def878ff70b7bf6743e5e0eaf4b"
+  },
+  {
+    "module_artifact": "Compiler/NonlinearRnsInstance.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsInstance.olean",
+    "sha256": "2ddbc4284e954e84b57570d077f8b38536e5fbd2c28dcc69dbc08a5dab758866"
+  },
+  {
+    "module_artifact": "Compiler/NonlinearRnsNative.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsNative.olean",
+    "sha256": "18402ba4fe5977ff15bdb6538999033dd7b5dd31478f04c071164aab95686378"
+  },
+  {
+    "module_artifact": "Compiler/NonlinearRnsProfiled.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/NonlinearRnsProfiled.olean",
+    "sha256": "6ba71004be10d63ee0d7060c37eabfba0d7d002be77128a816375a5864470d69"
+  },
+  {
+    "module_artifact": "Compiler/NonlinearRnsPublic.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublic.olean",
+    "sha256": "73c730614f607b72acefe4320e8d5ea9964a7e243810eee41d13c606beb5f0e6"
+  },
+  {
+    "module_artifact": "Compiler/NonlinearRnsPublicSound.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublicSound.olean",
+    "sha256": "eac8258b589999204d735b2a94e2e04bd88b5ba4f6042ca824d977c0cb3af0b2"
+  },
+  {
+    "module_artifact": "Compiler/NonlinearRnsSound.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsSound.olean",
+    "sha256": "4a322bfd8e3dd14c67e660f67f9417078012060c1cc3dc85dca82cc2724fd030"
+  },
+  {
+    "module_artifact": "Compiler/NoteSpend.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/NoteSpend.olean",
+    "sha256": "39494c3bbd364a14c5e5e3312de3e74f8affc5de86d18dd8781aad097f6f1a26"
+  },
+  {
+    "module_artifact": "Compiler/NoteSpendProofController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/NoteSpendProofController.olean",
+    "sha256": "30d1d5b07c18998e9d5f7b40b4222d6f26f65020c7f372274b74e90fb6dd8365"
+  },
+  {
+    "module_artifact": "Compiler/Placeholder.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Placeholder.olean",
+    "sha256": "10d764784579813471f340b23b87a7ce6b58e7c51d5c89059b5870b8c5254c10"
+  },
+  {
+    "module_artifact": "Compiler/PredCompile.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/PredCompile.olean",
+    "sha256": "0f705feea01c993ca43ab7e19974c04b7795851c9f099a2f55d9e22844aed189"
+  },
+  {
+    "module_artifact": "Compiler/ProfiledAgreement.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledAgreement.olean",
+    "sha256": "08fa85f3bad53f8a6b0568995fd690bccf7dd6f36620194eb86a2e2a24a1542f"
+  },
+  {
+    "module_artifact": "Compiler/ProfiledBounds.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledBounds.olean",
+    "sha256": "846da3b95897825c432354b5e5b6828228ca88d556f22f837ef5006445628c5e"
+  },
+  {
+    "module_artifact": "Compiler/ProfiledExhibits.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledExhibits.olean",
+    "sha256": "de99742b74b0a4eca55bee090a10dd153a5fbc62c26bdfe0e76b32689babc0ae"
+  },
+  {
+    "module_artifact": "Compiler/ProfiledMatrix.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledMatrix.olean",
+    "sha256": "6f304bcc4042989bde1f1a5b25f53339e94440310f628850204a7be7ab9fd398"
+  },
+  {
+    "module_artifact": "Compiler/ProfiledWitness.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledWitness.olean",
+    "sha256": "b7cd5df4201628d1814c091bc3eed73916ed456b2765cf7df7df64a09d62b963"
+  },
+  {
+    "module_artifact": "Compiler/RescaleWitnessPlan.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build/Compiler/RescaleWitnessPlan.olean",
+    "sha256": "5bdf4a06c642c9f733e88d89a0b63f8cb9de78748123e86428421631431723d5"
+  },
+  {
+    "module_artifact": "Compiler/SemanticArtifactBundle.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SemanticArtifactBundle.olean",
+    "sha256": "d9be72a8edf1114a2dec1530a62e33282d63849256dad666ffde3310f81333df"
+  },
+  {
+    "module_artifact": "Compiler/SemanticController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SemanticController.olean",
+    "sha256": "38c6fdca6d612923011fb978c8f85d161326c2302ed2d4fd190dd565eb5ca647"
+  },
+  {
+    "module_artifact": "Compiler/SemanticManifest.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SemanticManifest.olean",
+    "sha256": "e2d4d4aa543d25dbd8ff6b2161b36cfa10b6b9cb4962274e0d811ac9f4371690"
+  },
+  {
+    "module_artifact": "Compiler/SemanticTurnReceiptDescriptor.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SemanticTurnReceiptDescriptor.olean",
+    "sha256": "d1f7ff6847679155f3bb79a6c8ff0634b3c8186d7624628b55622e8be1d4679b"
+  },
+  {
+    "module_artifact": "Compiler/Signature.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Signature.olean",
+    "sha256": "0445e9c5112a5915b1506f3bab2fb4ea7d50f5b06dc18dc1155217f0503af22a"
+  },
+  {
+    "module_artifact": "Compiler/SignedMatrix.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrix.olean",
+    "sha256": "912d6977ee4d9c95ba2bc39453d52b2c1022e6fdc91e8237f4fce61bf44968d9"
+  },
+  {
+    "module_artifact": "Compiler/SignedMatrixEmit.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrixEmit.olean",
+    "sha256": "eb4b6ed5ecd5f98154dddaf0a1d60b73b9789f7f7eccdc6fab9da77663a2ac7d"
+  },
+  {
+    "module_artifact": "Compiler/SimplificationChecks.olean",
+    "resolved_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler/SimplificationChecks.olean",
+    "sha256": "d47a2441a5c6fda9962197c939b88327969ef8023f3a10bc4e841d4789b2af60"
+  },
+  {
+    "module_artifact": "Compiler/Sp800185Cshake256.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Sp800185Cshake256.olean",
+    "sha256": "b43f38ff9c816008c9a6c6fc02500a42e5aa1ca55df09ba8868973673e3a153b"
+  },
+  {
+    "module_artifact": "Compiler/Sp800185Cshake256Conformance.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Sp800185Cshake256Conformance.olean",
+    "sha256": "e0181f136fc4326e0207f1c50d80aae467dd22cc765fed966933c6a3b41a1981"
+  },
+  {
+    "module_artifact": "Compiler/Sp800185Cshake256Core.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Sp800185Cshake256Core.olean",
+    "sha256": "8c7dd7cdaa95001833f8cc707c1dcda74d5443932e3f3f2d5fff7a4199e8bbf4"
+  },
+  {
+    "module_artifact": "Compiler/SparseAuthenticatedStateLogupBridge.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SparseAuthenticatedStateLogupBridge.olean",
+    "sha256": "9e2ae5a06a9b88df7493d203028fb5372d27b4f493864e7dd6064acfbb4e57fe"
+  },
+  {
+    "module_artifact": "Compiler/SparseEqualityWorkProfile.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SparseEqualityWorkProfile.olean",
+    "sha256": "17c72b3ee2ee527ba87a9ea8cb1a404801b2088139ffe75d63610e0b5e86e19b"
+  },
+  {
+    "module_artifact": "Compiler/SumcheckConformance.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SumcheckConformance.olean",
+    "sha256": "f10aed10c94c4abb745f4c7975669cc2f187f68453bde30937ea50212f9cd2fa"
+  },
+  {
+    "module_artifact": "Compiler/SumcheckVerifierAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/SumcheckVerifierAir.olean",
+    "sha256": "27da9b704fdce769dd156de5b60ac809e557912914509fc44c0c69eff8757aa4"
+  },
+  {
+    "module_artifact": "Compiler/Tower256AdditiveFriController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256AdditiveFriController.olean",
+    "sha256": "44fb2ba854976cd323ea5f5153f32a94040ddb76df52d9bb561e3b90f066f030"
+  },
+  {
+    "module_artifact": "Compiler/Tower256AdditiveFriRawController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256AdditiveFriRawController.olean",
+    "sha256": "261bacf91e74c3508d58cf328d7693dd478b2b52a6abfd12ff19837457b26f9d"
+  },
+  {
+    "module_artifact": "Compiler/Tower256AdditiveFriRawDeployment.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256AdditiveFriRawDeployment.olean",
+    "sha256": "188cd1feea669730c083822d31301e097c94c5ac97f23fc9599beee89639baf4"
+  },
+  {
+    "module_artifact": "Compiler/Tower256ConcreteBackend.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256ConcreteBackend.olean",
+    "sha256": "a57190e15f9ebc5ca41afb7dc5954e9d106c8fe1e8db39e5659c7ce8d9c4750f"
+  },
+  {
+    "module_artifact": "Compiler/Tower256CshakeMerkleBinding.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256CshakeMerkleBinding.olean",
+    "sha256": "0b7f375c1b1387a073c6fc5e21c23956827446af37783ff98bfd60427ee145f3"
+  },
+  {
+    "module_artifact": "Compiler/Tower256CshakeMerkleController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256CshakeMerkleController.olean",
+    "sha256": "b4622e6eda3e20f674ad8c05a832be4a56aa1e8ba83f81196afa4306162c7b6b"
+  },
+  {
+    "module_artifact": "Compiler/Tower256LogupAcceptedRun.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256LogupAcceptedRun.olean",
+    "sha256": "2a082c0b0652640567a910ca21f68759d2632817940c7955897c1ba33398d978"
+  },
+  {
+    "module_artifact": "Compiler/Tower256LogupClauseDispatch.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256LogupClauseDispatch.olean",
+    "sha256": "7177fb68feb72aaa7ae9ed590c2ca638c93eade94294f67c604c8347532b4cc4"
+  },
+  {
+    "module_artifact": "Compiler/Tower256LogupControllerPlan.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256LogupControllerPlan.olean",
+    "sha256": "60459cc432f7c067e78a25b0e1651f19c70cfef48a09dcbab64d8733b987682e"
+  },
+  {
+    "module_artifact": "Compiler/Tower256LogupExtensionDeployment.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256LogupExtensionDeployment.olean",
+    "sha256": "912393733119ed37106a115315ebb87d017fd483bee87ed6b000adec84142c6f"
+  },
+  {
+    "module_artifact": "Compiler/Tower256NativeByteBoundary.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256NativeByteBoundary.olean",
+    "sha256": "9ac4838067cc602135869968cb4902a3c80ef2e635b9886b693a4536450bfa3c"
+  },
+  {
+    "module_artifact": "Compiler/TranscriptController.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/TranscriptController.olean",
+    "sha256": "e004583b82ed54aac53ef5c52241e45eab87bc6b6af101abf1b9922e2a35e020"
+  },
+  {
+    "module_artifact": "Compiler/TwistMultisetInvariant.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/TwistMultisetInvariant.olean",
+    "sha256": "f82000b45ab92a22153de08deb8268acc1f6402473d1370444fd063ab2bf7f2d"
+  },
+  {
+    "module_artifact": "Compiler/TypedAuthorizationRequestCodec.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/TypedAuthorizationRequestCodec.olean",
+    "sha256": "abb21e4abe8c6cc0e7d91450748cd860d6e41159f5ea233b893052c9348e1294"
+  },
+  {
+    "module_artifact": "Compiler/UwueavePreoProjectionV2.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/UwueavePreoProjectionV2.olean",
+    "sha256": "7bebe4c0deb9ee25bec36ce6e5e27fa727e4262d523e5c15d35b3f5db45c04b8"
+  },
+  {
+    "module_artifact": "Compiler/WideDigestAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/WideDigestAir.olean",
+    "sha256": "49e53ca0a86f3da263bd2b60f1d42c0bf65d68a1999ff1d1c4ef0f7d861bb212"
+  },
+  {
+    "module_artifact": "Compiler/WideDigestByteDecodeAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/WideDigestByteDecodeAir.olean",
+    "sha256": "d54fdc4efbc565d4bbdbe687218153d03e881cf1291b9bcb4fc4128563536c51"
+  },
+  {
+    "module_artifact": "Compiler/ZkmlEltwiseAir.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/ZkmlEltwiseAir.olean",
+    "sha256": "7682366e05146e75014d8b44cac4d7aef333901df45393a582f82f78423105d3"
+  },
+  {
+    "module_artifact": "Compiler/ZkmlTraceCheck.olean",
+    "resolved_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/ZkmlTraceCheck.olean",
+    "sha256": "39316cc14b84901ef7a0d587dbb451b4b01d992604a8b2a254c9e9de529b407d"
+  }
+]

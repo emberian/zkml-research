@@ -1,0 +1,41 @@
+Selvage/FoldingConsistencyWeights.lean:19:22: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ∑ j ∈ ?t, ∑ i ∈ ?s with ?g i = j, ?f i
+in the target expression
+  (∑ i ∈ S, ∑ i with D.sq i = i, weight i) / 2 = (∑ i with D.sq i ∈ S, weight i) / 2
+
+F ι κ : Type
+inst✝³ : Field F
+inst✝² : DecidableEq F
+inst✝¹ : Fintype ι
+inst✝ : Fintype κ
+dom : ι ↪ F
+domSq : κ ↪ F
+D : FoldingData F dom domSq
+weight : ι → ℝ
+S : Finset κ
+⊢ (∑ i ∈ S, ∑ i with D.sq i = i, weight i) / 2 = (∑ i with D.sq i ∈ S, weight i) / 2
+Selvage/FoldingConsistencyWeights.lean:21:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ArityEight.projectConsistency_nonneg`:
+  [DecidableEq F]
+  [Fintype κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] [Fintype κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/FoldingConsistencyWeights.lean:32:2: error: linarith failed to find a contradiction
+case h
+F ι κ : Type
+inst✝³ : Field F
+inst✝² : DecidableEq F
+inst✝¹ : Fintype ι
+inst✝ : Fintype κ
+dom : ι ↪ F
+domSq : κ ↪ F
+D : FoldingData F dom domSq
+weight : ι → ℝ
+h1 : ∀ (i : ι), weight i ≤ 1
+k : κ
+hc : {i | D.sq i = k}.card = 2
+h : consistencyMass weight {i | D.sq i = k} ≤ ↑2
+a✝ : 1 < consistencyMass weight {i | D.sq i = k} / 2
+⊢ False
+failed

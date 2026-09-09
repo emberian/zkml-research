@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/target/release/vfhe-full-bfv-multiply",
+    "verify",
+    "extension",
+    "0",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/program/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/extension001/chunk000/proof.bin"
+  ],
+  "started_utc": "2026-09-08T23:31:21.245012+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer",
+  "timeout_seconds": 300,
+  "pid": 76599,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-08T23:31:22.172151+00:00",
+  "elapsed_seconds": 0.9271552090067416,
+  "user_seconds": 0.864217,
+  "system_seconds": 0.056972999999999996,
+  "max_rss_bytes": 166707200
+}

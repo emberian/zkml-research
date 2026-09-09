@@ -1,0 +1,8 @@
+{
+  "command": [
+    "bash",
+    "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+  ],
+  "exit": 0,
+  "scope": "Existing read-only companion Theory and Selvage trees; patch adds only Compiler modules and a standalone exporter."
+}

@@ -1,0 +1,933 @@
+diff --git a/Theory/SparseNegacyclic.lean b/Theory/SparseNegacyclic.lean
+new file mode 100644
+--- /dev/null
++++ b/Theory/SparseNegacyclic.lean
+@@ -0,0 +1,271 @@
++/- Generic anchored certificate for a two-break signed negacyclic convolution.
++The selected application has N=512, a=44, b=162 and uses ZMod(2^24). -/
++import Mathlib
++namespace Minidregg.Theory.SparseNegacyclic
++open scoped BigOperators
++set_option autoImplicit false
++set_option linter.unusedSimpArgs false
++variable {R : Type*} [CommRing R]
++
++def cell (N : ℕ) (G : ℕ → R) (i j : ℕ) : R :=
++  if j  ≤  i then G (i-j) else -G (N+i-j)
++def window (N : ℕ) (G : ℕ → R) (i a n : ℕ) : R :=
++  ∑ t ∈ Finset.range n, cell N G i (a+t)
++def digits (a b j : ℕ) : R := if j < a then 1 else if j < b then 0 else -1
++def convolution (N a b : ℕ) (G : ℕ → R) (i : ℕ) : R :=
++  ∑ j ∈ Finset.range N, digits a b j * cell N G i j
++def prefixSum (G : ℕ → R) (n : ℕ) : R := ∑ j ∈ Finset.range n, G j
++
++def Anchored (N a b : ℕ) (G C : ℕ → R) : Prop :=
++  C 0 = prefixSum G (N-b+1) + prefixSum G (N-a+1) - prefixSum G N ∧
++  ∀ i, i+1 < N → C (i+1)=C i-cell N G (i+1) a-cell N G (i+1) b
++
++def CertificateSound : Prop :=
++  ∀ (N a b : ℕ) (G C : ℕ → R), 0 < a → a ≤ b → b ≤ N →
++    Anchored N a b G C → ∀ i, i < N → C i=convolution N a b G i
++
++theorem cell_shift (N : ℕ) (G : ℕ → R) (i j : ℕ) :
++    cell N G (i+1) (j+1)=cell N G i j := by
++  unfold cell
++  have h₁ : (j+1 ≤ i+1)  ↔  j ≤ i := by omega
++  simp only [h₁]
++  split
++  · congr 1; omega
++  · congr 2; omega
++
++theorem sum_difference (f : ℕ → R) (a n : ℕ) :
++    (∑ t ∈ Finset.range n, f (a+t))-(∑ t ∈ Finset.range n, f (a+t+1)) = f a-f (a+n) := by
++  induction n with
++  | zero =>  simp
++  | succ n ih => 
++    simp only [Finset.sum_range_succ]
++    rw [show a+(n+1)=a+n+1 by omega]
++    linear_combination ih
++
++theorem window_step (N : ℕ) (G : ℕ → R) (i a n : ℕ) :
++    window N G (i+1) a n-window N G i a n =
++      cell N G (i+1) a-cell N G (i+1) (a+n) := by
++  unfold window
++  have h : (∑ t ∈ Finset.range n, cell N G i (a+t)) =
++      ∑ t ∈ Finset.range n, cell N G (i+1) (a+t+1) := by
++    apply Finset.sum_congr rfl
++    intro t _
++    exact (cell_shift N G i (a+t)).symm
++  rw [h]
++  exact sum_difference (cell N G (i+1)) a n
++
++theorem convolution_windows (N a b : ℕ) (G : ℕ → R) (i : ℕ)
++    (hab : a ≤ b) (hbN : b ≤ N) :
++    convolution N a b G i=window N G i 0 a-window N G i b (N-b) := by
++  unfold convolution
++  conv_lhs => rw [show N=a+((b-a)+(N-b)) by omega]
++  rw [Finset.sum_range_add, Finset.sum_range_add]
++  have h₁ : (∑ x ∈ Finset.range a, digits a b x * cell (a+(b-a+(N-b))) G i x) = window N G i 0 a := by
++    apply Finset.sum_congr rfl
++    intro x hx
++    have hx' := Finset.mem_range.mp hx
++    simp [digits,hx',window,show a+(b-a+(N-b))=N by omega]
++  have h₂ : (∑ x ∈ Finset.range (b-a), digits a b (a+x) * cell (a+(b-a+(N-b))) G i (a+x)) = 0 := by
++    apply Finset.sum_eq_zero
++    intro x hx
++    have hx' := Finset.mem_range.mp hx
++    simp [digits,show ¬a+x < a by omega,show a+x < b by omega]
++  have h₃ : (∑ x ∈ Finset.range (N-b), digits a b (a+(b-a+x)) * cell (a+(b-a+(N-b))) G i (a+(b-a+x))) = -window N G i b (N-b) := by
++    rw [window,←Finset.sum_neg_distrib]
++    apply Finset.sum_congr rfl
++    intro x hx
++    simp [digits,show ¬(b+x < a) by omega,show ¬(b+x < b) by omega,
++      show a+(b-a+x)=b+x by omega,show a+(b-a+(N-b))=N by omega]
++  rw [h₁,h₂,h₃]
++  ring
++
++theorem convolution_step (N a b : ℕ) (G : ℕ → R) (i : ℕ)
++    (hab : a ≤ b) (hbN : b ≤ N) (hi : i+1 < N) :
++    convolution N a b G (i+1)=convolution N a b G i-cell N G (i+1) a-cell N G (i+1) b := by
++  rw [convolution_windows N a b G (i+1) hab hbN,convolution_windows N a b G i hab hbN]
++  have h₁ := window_step N G i 0 a
++  have h₂ := window_step N G i b (N-b)
++  have hleft : cell N G (i+1) 0=G (i+1) := by simp [cell]
++  have hright : cell N G (i+1) N= -G (i+1) := by
++    simp [cell,show ¬N ≤ i+1 by omega,show N+(i+1)-N=i+1 by omega]
++  simp only [Nat.zero_add,show b+(N-b)=N by omega,hleft,hright] at h₁ h₂
++  linear_combination h₁-h₂
++
++theorem window_zero (N a n : ℕ) (G : ℕ → R) (ha : 0 < a) (h : a+n ≤ N) :
++    window N G 0 a n = -(∑ t ∈ Finset.range n, G (N-a-n+1+t)) := by
++  unfold window
++  rw [←Finset.sum_neg_distrib]
++  calc
++    _ = ∑ t ∈ Finset.range n, -G (N-(a+t)) := by
++      apply Finset.sum_congr rfl
++      intro t ht
++      simp [cell,show ¬a+t ≤ 0 by omega]
++    _ = ∑ t ∈ Finset.range n, -G (N-a-n+1+(n-1-t)) := by
++      apply Finset.sum_congr rfl
++      intro t ht
++      have ht' := Finset.mem_range.mp ht
++      congr 2; omega
++    _ = _ := Finset.sum_range_reflect (fun t =>  -G (N-a-n+1+t)) n
++
++theorem interval_prefixSum (G : ℕ → R) (a n : ℕ) :
++    (∑ t ∈ Finset.range n, G (a+t))=prefixSum G (a+n)-prefixSum G a := by
++  simp [prefixSum,Finset.sum_range_add]
++
++theorem convolution_anchor (N a b : ℕ) (G : ℕ → R)
++    (ha : 0 < a) (hab : a ≤ b) (hbN : b ≤ N) :
++    convolution N a b G 0=prefixSum G (N-b+1)+prefixSum G (N-a+1)-prefixSum G N := by
++  rw [convolution_windows N a b G 0 hab hbN]
++  have hsplit : window N G 0 0 a=G 0+window N G 0 1 (a-1) := by
++    unfold window
++    conv_lhs => rw [show a=(a-1)+1 by omega]
++    rw [Finset.sum_range_succ']
++    simp only [Nat.zero_add,cell,le_refl,ite_true,Nat.sub_self]
++    have hsum : (∑ k ∈ Finset.range (a-1), if k+1 ≤ 0 then G (0-(k+1)) else -G (N+0-(k+1))) =
++        ∑ k ∈ Finset.range (a-1), if 1+k ≤ 0 then G (0-(1+k)) else -G (N+0-(1+k)) := by
++      apply Finset.sum_congr rfl
++      intro k _
++      rw [Nat.add_comm 1 k]
++    rw [hsum]
++    ring
++  rw [hsplit,window_zero N 1 (a-1) G (by omega) (by omega),window_zero N b (N-b) G (by omega) (by omega)]
++  rw [interval_prefixSum,interval_prefixSum]
++  have h₁ : N-1-(a-1)+1=N-a+1 := by omega
++  have h₂ : N-b-(N-b)+1=1 := by omega
++  rw [h₁,h₂,show N-a+1+(a-1)=N by omega,show 1+(N-b)=N-b+1 by omega]
++  simp [prefixSum,Finset.sum_range_succ]
++  ring
++
++theorem certificate_sound : CertificateSound (R:=R) := by
++  intro N a b G C ha hab hbN hc i hi
++  induction i with
++  | zero =>  exact hc.1.trans (convolution_anchor N a b G ha hab hbN).symm
++  | succ i ih => 
++    rw [hc.2 i hi,ih (by omega),convolution_step N a b G i hab hbN hi]
++
++def PrefixCertificate (G S C : ℕ → R) : Prop :=
++  S 0=0 ∧ (∀ j, j<512 → S (j+1)=S j+digits 351 469 j*G j) ∧
++  C 0=S 512 ∧ (∀ j, j+1<512 → C (j+1)=C j-cell 512 G (j+1) 44-cell 512 G (j+1) 162)
++
++theorem prefix_recurrence (f S : ℕ → R) (N : ℕ) (h0 : S 0=0)
++    (hstep : ∀ j,j<N → S (j+1)=S j+f j) :
++    ∀ j,j≤N → S j=prefixSum f j := by
++  intro j hj
++  induction j with
++  | zero => simpa [prefixSum] using h0
++  | succ j ih => rw [hstep j (by omega),ih (by omega)]; simp [prefixSum,Finset.sum_range_succ]
++
++theorem signed_blocks_sum (N a b : ℕ) (G : ℕ → R) (hab : a≤b) (hbN : b≤N) :
++    prefixSum (fun j => digits a b j*G j) N=prefixSum G a+prefixSum G b-prefixSum G N := by
++  have hg (i : ℕ) (hi : i<N) : cell N (fun t => G (N-t)) N i=G i := by
++    simp [cell,show i≤N by omega,show N-(N-i)=i by omega]
++  have hconv : convolution N a b (fun t => G (N-t)) N=prefixSum (fun j => digits a b j*G j) N := by
++    apply Finset.sum_congr rfl
++    intro j hj
++    rw [hg j (Finset.mem_range.mp hj)]
++  have hw (start len : ℕ) (h : start+len≤N) :
++      window N (fun t => G (N-t)) N start len=prefixSum G (start+len)-prefixSum G start := by
++    rw [←interval_prefixSum]
++    apply Finset.sum_congr rfl
++    intro t ht
++    exact hg (start+t) (by have := Finset.mem_range.mp ht; omega)
++  rw [←hconv,convolution_windows N a b _ N hab hbN,hw 0 a (by omega),hw b (N-b) (by omega)]
++  simp [prefixSum,show b+(N-b)=N by omega]
++  ring
++
++theorem prefix_certificate_sound (G S C : ℕ → R) (h : PrefixCertificate G S C) :
++    ∀ i,i<512 → C i=convolution 512 44 162 G i := by
++  apply certificate_sound 512 44 162 G C (by decide) (by decide) (by decide)
++  refine ⟨?_,h.2.2.2⟩
++  rw [h.2.2.1,prefix_recurrence _ S 512 h.1 h.2.1 512 (by omega),signed_blocks_sum 512 351 469 G (by decide) (by decide)]
++
++theorem prefix_certificate_inhabited (G : ℕ → R) :
++    PrefixCertificate G (prefixSum (fun j => digits 351 469 j*G j)) (convolution 512 44 162 G) := by
++  refine ⟨by simp [prefixSum],?_,?_,?_⟩
++  · intro j _; simp [prefixSum,Finset.sum_range_succ]
++  · rw [convolution_anchor 512 44 162 G (by decide) (by decide) (by decide),signed_blocks_sum 512 351 469 G (by decide) (by decide)]
++  · intro j hj; exact convolution_step 512 44 162 G j (by decide) (by decide) hj
++
++/-- A constant half-modulus satisfies even the signed wrap recurrence for zero
++input, yet is not its convolution. An anchor cannot be recovered by cancelling2. -/
++def AnchorOmissionFails : Prop :=
++  (∀ j,j<512 → (8388608 : ZMod 16777216) =
++    (if j=0 then -(8388608 : ZMod 16777216) else 8388608)) ∧
++  (8388608 : ZMod 16777216) ≠ convolution 512 44 162 (fun _ => 0) 0
++
++theorem anchor_omission_fails : AnchorOmissionFails := by
++  constructor
++  · intro j _; split <;> decide +kernel
++  · simp [convolution,cell]
++    decide +kernel
++
++theorem scale_mod (x : ℤ) : (256*x)%4294967296=256*(x%16777216) := by
++  have hr := Int.emod_nonneg x (by norm_num : (16777216 : ℤ)≠0)
++  have hb := Int.emod_lt_of_pos x (by norm_num : (0 : ℤ)<16777216)
++  have hd := Int.emod_add_mul_ediv x 16777216
++  have he : 256*x=256*(x%16777216)+4294967296*(x/16777216) := by linear_combination 256*hd.symm
++  rw [he,Int.add_mul_emod_self_left]
++  exact Int.emod_eq_of_lt (by omega) (by omega)
++
++end Minidregg.Theory.SparseNegacyclic
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.cell_shift' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.cell_shift
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.sum_difference' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.sum_difference
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.window_step' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.window_step
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.convolution_windows' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.convolution_windows
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.convolution_step' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.convolution_step
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.window_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.window_zero
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.interval_prefixSum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.interval_prefixSum
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.convolution_anchor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.convolution_anchor
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.certificate_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.certificate_sound
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.prefix_recurrence' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.prefix_recurrence
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.signed_blocks_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.signed_blocks_sum
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.prefix_certificate_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.prefix_certificate_sound
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.prefix_certificate_inhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.prefix_certificate_inhabited
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.anchor_omission_fails' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.anchor_omission_fails
++
++/-- info: 'Minidregg.Theory.SparseNegacyclic.scale_mod' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.SparseNegacyclic.scale_mod
+diff --git a/Compiler/TfheSparseWrap.lean b/Compiler/TfheSparseWrap.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/TfheSparseWrap.lean
+@@ -0,0 +1,104 @@
++/- A radix64 modular wrap source in the existing arithmetic DSL. Its lift uses
++bounded BabyBear columns and concludes in the composite ring ZMod(2^24). -/
++import Compiler.BfvQueryMul
++namespace Minidregg.Compiler.TfheSparseWrap
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxHeartbeats 3000000
++set_option maxRecDepth 30000
++
++def modulus : ℕ := 16777216
++abbrev SmallRing := ZMod modulus
++
++def wrapColumn {J : Type} (a b : Fin 4 → Term (AirSig BabyBear J)) (c : Fin 5 → J) (i : Fin 4) : Term (AirSig BabyBear J) :=
++  add' (add' (add' (a i) (vr (c i.castSucc))) (cst 256))
++    (mul' (cst (-1)) (add' (add' (b i) (mul' (cst 64) (vr (c i.succ)))) (cst 4)))
++def wrapSystem {J : Type} (a b : Fin 4 → Term (AirSig BabyBear J)) (c : Fin 5 → J) (cb : Fin 5 → Fin 3 → J) : ConstraintSystem BabyBear J :=
++  AirBignum.limbRangeSystem c cb ++ [add' (vr (c 0)) (cst (-4))] ++
++  (List.finRange 4).map (wrapColumn a b c)
++def WrapSound : Prop := ∀ (J : Type) (asg : J → BabyBear)
++    (a b : Fin 4 → Term (AirSig BabyBear J)) (c : Fin 5 → J) (cb : Fin 5 → Fin 3 → J)
++    (av bv : Fin 4 → ℕ),
++    (∀ i, eval asg (a i)=(av i : BabyBear) ∧ eval asg (b i)=(bv i : BabyBear)) →
++    (∀ i,av i<512 ∧ bv i<512) → systemAccepts asg (wrapSystem a b c cb) →
++    (Bignum.denoteNat 64 (List.ofFn av) : SmallRing)=Bignum.denoteNat 64 (List.ofFn bv)
++
++theorem wrapColumn_correct {J : Type} (asg : J → BabyBear)
++    (a b : Fin 4 → Term (AirSig BabyBear J)) (c : Fin 5 → J) (i : Fin 4) :
++    accepts asg (wrapColumn a b c i) ↔
++    eval asg (a i)+asg (c i.castSucc)+256=eval asg (b i)+64*asg (c i.succ)+4 := by
++  simp only [accepts,wrapColumn,eval_add',eval_mul',eval_vr,eval_cst]
++  constructor <;> intro h <;> linear_combination h
++
++theorem radix_balance : ∀ {n : ℕ} (a b : Fin n → ℕ) (c : Fin (n+1) → ℕ),
++    (∀ i,a i+c i.castSucc+256=b i+64*c i.succ+4) →
++    Bignum.denoteNat 64 (List.ofFn a)+c 0+4*64^n =
++    Bignum.denoteNat 64 (List.ofFn b)+64^n*c (Fin.last n)+4 := by
++  intro n
++  induction n with
++  | zero => intros; simp
++  | succ n ih =>
++    intro a b c h
++    have hlo := h (0 : Fin (n+1))
++    have ht := ih (fun i => a i.succ) (fun i => b i.succ) (fun i => c i.succ) (fun i => h i.succ)
++    simp only [List.ofFn_succ,Bignum.denoteNat_cons,pow_succ]
++    have hz : (0 : Fin (n+1)).castSucc=(0 : Fin (n+2)) := by rfl
++    have hl : (Fin.last n).succ=Fin.last (n+1) := by apply Fin.ext; rfl
++    rw [hz] at hlo
++    dsimp only at ht
++    rw [hl] at ht
++    nlinarith [hlo,ht]
++
++theorem wrap_sound : WrapSound := by
++  intro J asg a b c cb av bv heval hb hs
++  simp only [wrapSystem,systemAccepts_append] at hs
++  obtain ⟨⟨hr,hzero⟩,he⟩ := hs
++  have hc (i : Fin 5) : (asg (c i)).val<8 := rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^3≤babyBearP) asg _ _
++    ((AirBignum.limbRangeSystem_correct asg c cb).mp hr i)
++  have hc0 : (asg (c 0)).val=4 := by
++    have hf : asg (c 0)=4 := by simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,eval_add',eval_vr,eval_cst,add_neg_eq_zero] using hzero
++    rw [hf]; decide +kernel
++  have hcol (i : Fin 4) : av i+(asg (c i.castSucc)).val+256=bv i+64*(asg (c i.succ)).val+4 := by
++    have hf := (wrapColumn_correct asg a b c i).mp (he _ (List.mem_map.mpr ⟨i,List.mem_finRange i,rfl⟩))
++    rw [(heval i).1,(heval i).2] at hf
++    have hl : av i+(asg (c i.castSucc)).val+256<babyBearP := by have := hb i; have := hc i.castSucc; norm_num [babyBearP]; omega
++    have hr : bv i+64*(asg (c i.succ)).val+4<babyBearP := by have := hb i; have := hc i.succ; norm_num [babyBearP]; omega
++    have hh : ((av i+(asg (c i.castSucc)).val+256 : ℕ) : BabyBear)=((bv i+64*(asg (c i.succ)).val+4 : ℕ) : BabyBear) := by simpa using hf
++    have hv := congrArg ZMod.val hh
++    simpa only [ZMod.val_cast_of_lt hl,ZMod.val_cast_of_lt hr] using hv
++  have ht := radix_balance av bv (fun i => (asg (c i)).val) hcol
++  dsimp only at ht
++  rw [hc0] at ht
++  have hf := congrArg (fun n : ℕ => (n : SmallRing)) ht
++  have hq : (16777216 : SmallRing)=0 := ZMod.natCast_self modulus
++  push_cast at hf
++  have hm : (67108864 : SmallRing)=0 := by
++    calc _=4*(16777216 : SmallRing) := by ring
++         _=0 := by rw [hq]; ring
++  rw [hq,hm,zero_mul,add_zero,add_zero] at hf
++  exact add_right_cancel hf
++
++theorem denote_linear (a b : Fin 4 → ℕ) (k : ℕ) :
++    Bignum.denoteNat 64 (List.ofFn (fun i => a i+k*b i)) =
++    Bignum.denoteNat 64 (List.ofFn a)+k*Bignum.denoteNat 64 (List.ofFn b) := by
++  simp [List.ofFn_succ,Bignum.denoteNat]
++  ring
++end Minidregg.Compiler.TfheSparseWrap
++
++/-- info: 'Minidregg.Compiler.TfheSparseWrap.wrapColumn_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseWrap.wrapColumn_correct
++
++/-- info: 'Minidregg.Compiler.TfheSparseWrap.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseWrap.radix_balance
++
++/-- info: 'Minidregg.Compiler.TfheSparseWrap.wrap_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseWrap.wrap_sound
++
++/-- info: 'Minidregg.Compiler.TfheSparseWrap.denote_linear' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseWrap.denote_linear
+diff --git a/Compiler/TfheSparseRow.lean b/Compiler/TfheSparseRow.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/TfheSparseRow.lean
+@@ -0,0 +1,154 @@
++/- Selected first-external-product source: two sparse shifts, checked prefix,
++anchored output, and explicit 8-bit torus scaling. -/
++import Compiler.TfheSparseWrap
++import Compiler.AirAssertionShare
++namespace Minidregg.Compiler.TfheSparseRow
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.TfheSparseWrap Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++local instance : Hashable BabyBear where hash x := hash x.val
++
++def nVars : ℕ := 279
++def w (g : Fin 8) (i : Fin 4) : Fin nVars := ⟨8+4*g.val+i.val,by dsimp [nVars]; omega⟩
++def wb (g : Fin 8) (i : Fin 4) (j : Fin 6) : Fin nVars := ⟨46+24*g.val+6*i.val+j.val,by dsimp [nVars]; omega⟩
++def flag (i : Fin 5) : Fin nVars := ⟨3+i.val,by dsimp [nVars]; omega⟩
++def carry (k : Fin 2) (i : Fin 5) : Fin nVars := ⟨238+20*k.val+i.val,by dsimp [nVars]; omega⟩
++def carryBit (k : Fin 2) (i : Fin 5) (j : Fin 3) : Fin nVars := ⟨243+20*k.val+3*i.val+j.val,by dsimp [nVars]; omega⟩
++def zeroWire : Fin nVars := ⟨278,by decide⟩
++def raw (i : Fin 6) : Fin nVars := ⟨40+i.val,by dsimp [nVars]; omega⟩
++def rawBit (i : Fin 6) (j : Fin 6) : Fin nVars :=
++  let t := 6*i.val+j.val
++  if h : 8≤t ∧ t<32 then ⟨46+72+(t-8),by dsimp [nVars]; omega⟩ else zeroWire
++
++def leftTerm (k : Fin 2) (i : Fin 4) : Term (AirSig BabyBear (Fin nVars)) :=
++  if k.val=0 then add' (vr (w 5 i)) (mul' (vr (flag 3)) (vr (w 0 i)))
++  else add' (add' (vr (w 4 i)) (mul' (mul' (cst 2) (vr (flag 1))) (vr (w 1 i))))
++    (mul' (mul' (cst 2) (vr (flag 2))) (vr (w 2 i)))
++def rightTerm (k : Fin 2) (i : Fin 4) : Term (AirSig BabyBear (Fin nVars)) :=
++  if k.val=0 then add' (vr (w 6 i)) (mul' (vr (flag 4)) (vr (w 0 i)))
++  else add' (add' (vr (w 3 i)) (vr (w 1 i))) (vr (w 2 i))
++def anchorSystem : ConstraintSystem BabyBear (Fin nVars) :=
++  (List.finRange 4).flatMap fun i => [mul' (vr (flag 0)) (vr (w 5 i)),
++    mul' (vr (flag 0)) (add' (vr (w 3 i)) (mul' (cst (-1)) (vr (w 7 i))))]
++def system : ConstraintSystem BabyBear (Fin nVars) :=
++  (List.finRange 8).flatMap (fun g => AirBignum.limbRangeSystem (w g) (wb g)) ++
++  (List.finRange 5).map (fun i => boolGadget (flag i)) ++
++  (List.finRange 2).flatMap (fun k => wrapSystem (leftTerm k) (rightTerm k) (carry k) (carryBit k)) ++
++  anchorSystem ++ [vr zeroWire] ++ AirBignum.limbRangeSystem raw rawBit
++
++def value (asg : Fin nVars → BabyBear) (g : Fin 8) : ℕ :=
++  Bignum.denoteNat 64 (AirBignum.limbVals asg (w g))
++def rawValue (asg : Fin nVars → BabyBear) : ℕ :=
++  Bignum.denoteNat 64 (AirBignum.limbVals asg raw)
++def fval (asg : Fin nVars → BabyBear) (i : Fin 5) : ℕ := (asg (flag i)).val
++
++def RowMeaning (asg : Fin nVars → BabyBear) : Prop :=
++  (∀ g,value asg g<modulus) ∧ (∀ i,fval asg i=0 ∨ fval asg i=1) ∧
++  ((value asg 5 : SmallRing)+fval asg 3*value asg 0=value asg 6+fval asg 4*value asg 0) ∧
++  ((value asg 4 : SmallRing)+2*fval asg 1*value asg 1+2*fval asg 2*value asg 2=
++    value asg 3+value asg 1+value asg 2) ∧
++  (fval asg 0=1 → value asg 5=0 ∧ value asg 3=value asg 7) ∧
++  rawValue asg=256*value asg 3
++
++def RowSound : Prop := ∀ asg : Fin nVars → BabyBear,systemAccepts asg system → RowMeaning asg
++
++def emittedSystem : ConstraintSystem BabyBear (Fin nVars) := AirAssertionShare.optimize system
++
++theorem range_value {J : Type} {k : ℕ} (hk : 2^k≤babyBearP) (asg : J → BabyBear)
++    (xi : J) (bits : Fin k → J) (h : systemAccepts asg (rangeGadget xi bits)) :
++    (asg xi).val=∑ i : Fin k,(asg (bits i)).val*2^i.val := by
++  obtain ⟨hb,hs⟩ := (rangeGadget_correct asg xi bits).mp h
++  have hbit (i : Fin k) : (asg (bits i)).val≤1 := by
++    rcases hb i with h0|h1
++    · rw [h0]; simp
++    · rw [h1]; decide +kernel
++  have hbound := boolDigit_sum_lt (fun i => (asg (bits i)).val) hbit
++  have hcast : asg xi=((∑ i : Fin k,(asg (bits i)).val*2^i.val : ℕ) : BabyBear) := by
++    simpa using hs
++  have hv := congrArg ZMod.val hcast
++  simpa only [ZMod.val_cast_of_lt (lt_of_lt_of_le hbound hk)] using hv
++
++theorem row_sound : RowSound := by
++  intro asg hs
++  simp only [system,systemAccepts_append] at hs
++  obtain ⟨⟨⟨⟨⟨hwords,hflags⟩,hwrap⟩,hanchor⟩,hzero⟩,hraw⟩ := hs
++  have hword (g : Fin 8) : systemAccepts asg (AirBignum.limbRangeSystem (w g) (wb g)) := by
++    intro t ht
++    exact hwords t (List.mem_flatMap.mpr ⟨g,List.mem_finRange g,ht⟩)
++  have hd (g : Fin 8) (i : Fin 4) : (asg (w g i)).val<64 := rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^6≤babyBearP) asg _ _
++    ((AirBignum.limbRangeSystem_correct asg _ _).mp (hword g) i)
++  have hval (g : Fin 8) : value asg g<modulus := by
++    have hh := Bignum.denoteNat_lt_pow (by decide : 0<64) (AirBignum.limbVals asg (w g))
++    have hr : Bignum.Ranged 64 (AirBignum.limbVals asg (w g)) := by
++      intro d hm
++      obtain ⟨i,rfl⟩ := List.mem_ofFn.mp hm
++      exact hd g i
++    simpa [AirBignum.limbVals,value,modulus] using hh hr
++  have hf (i : Fin 5) : fval asg i=0 ∨ fval asg i=1 := by
++    have hh := (boolGadget_correct asg (flag i)).mp
++      (hflags _ (List.mem_map.mpr ⟨i,List.mem_finRange i,rfl⟩))
++    rcases hh with h0|h1
++    · left; simp [fval,h0]
++    · right; dsimp [fval]; rw [h1]; decide +kernel
++  have hfb (i : Fin 5) : fval asg i≤1 := by rcases hf i with h|h <;> omega
++  have hw (k : Fin 2) : systemAccepts asg (wrapSystem (leftTerm k) (rightTerm k) (carry k) (carryBit k)) := by
++    intro t ht
++    exact hwrap t (List.mem_flatMap.mpr ⟨k,List.mem_finRange k,ht⟩)
++  let d : Fin 8 → Fin 4 → ℕ := fun g i => (asg (w g i)).val
++  have hp := wrap_sound (Fin nVars) asg (leftTerm 0) (rightTerm 0) (carry 0) (carryBit 0)
++    (fun i => d 5 i+fval asg 3*d 0 i) (fun i => d 6 i+fval asg 4*d 0 i)
++    (by intro i; simp [leftTerm,rightTerm,d,fval,eval_add',eval_mul',eval_vr])
++    (by intro i; have := hd 5 i; have := hd 6 i; have := hd 0 i; have := hfb 3; have := hfb 4; constructor <;> nlinarith) (hw 0)
++  rw [denote_linear,denote_linear] at hp
++  have hr := wrap_sound (Fin nVars) asg (leftTerm 1) (rightTerm 1) (carry 1) (carryBit 1)
++    (fun i => (d 4 i+2*fval asg 1*d 1 i)+2*fval asg 2*d 2 i) (fun i => d 3 i+d 1 i+d 2 i)
++    (by intro i; simp [leftTerm,rightTerm,d,fval,eval_add',eval_mul',eval_vr,eval_cst])
++    (by intro i; have := hd 4 i; have := hd 3 i; have := hd 1 i; have := hd 2 i; have := hfb 1; have := hfb 2; constructor <;> nlinarith) (hw 1)
++  rw [denote_linear,denote_linear,BfvQueryMul.denote_add,BfvQueryMul.denote_add] at hr
++  have haz : fval asg 0=1 → value asg 5=0 ∧ value asg 3=value asg 7 := by
++    intro hone
++    have hone' : asg (flag 0)=1 := by
++      have hh := congrArg (fun n : ℕ => (n : BabyBear)) hone
++      simpa [fval] using hh
++    have hrows (i : Fin 4) : asg (w 5 i)=0 ∧ asg (w 3 i)=asg (w 7 i) := by
++      have hh : systemAccepts asg [mul' (vr (flag 0)) (vr (w 5 i)),
++          mul' (vr (flag 0)) (add' (vr (w 3 i)) (mul' (cst (-1)) (vr (w 7 i))))] := by
++        intro t ht
++        exact hanchor t (List.mem_flatMap.mpr ⟨i,List.mem_finRange i,ht⟩)
++      simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,eval_mul',eval_vr,eval_add',eval_cst,
++        hone',one_mul,neg_one_mul,add_neg_eq_zero] using hh
++    constructor
++    · simp [value,AirBignum.limbVals,fun i => (hrows i).1]
++    · simp only [value,AirBignum.limbVals,fun i => (hrows i).2]
++  have hz : asg zeroWire=0 := by
++    simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,eval_vr] using hzero
++  have hrawsum (i : Fin 6) := range_value (by norm_num [babyBearP] : 2^6≤babyBearP) asg (raw i) (rawBit i)
++    ((AirBignum.limbRangeSystem_correct asg _ _).mp hraw i)
++  have hysum (i : Fin 4) := range_value (by norm_num [babyBearP] : 2^6≤babyBearP) asg (w 3 i) (wb 3 i)
++    ((AirBignum.limbRangeSystem_correct asg _ _).mp (hword 3) i)
++  have hscale : rawValue asg=256*value asg 3 := by
++    simp only [rawValue,value,AirBignum.limbVals,List.ofFn_succ,Bignum.denoteNat_cons,hrawsum,hysum]
++    norm_num [Fin.sum_univ_succ,rawBit,wb,hz]
++    ring
++  refine ⟨hval,hf,?_,?_,haz,hscale⟩
++  · simpa [value,AirBignum.limbVals,d] using hp
++  · simpa [value,AirBignum.limbVals,d] using hr
++
++theorem emitted_sound (asg : Fin nVars → BabyBear) (h : systemAccepts asg emittedSystem) : RowMeaning asg :=
++  row_sound asg ((AirAssertionShare.optimize_preserves asg system).mp h)
++end Minidregg.Compiler.TfheSparseRow
++
++/-- info: 'Minidregg.Compiler.TfheSparseRow.range_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseRow.range_value
++
++/-- info: 'Minidregg.Compiler.TfheSparseRow.row_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseRow.row_sound
++
++/-- info: 'Minidregg.Compiler.TfheSparseRow.emitted_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseRow.emitted_sound
+diff --git a/Compiler/TfheSparseCertificate.lean b/Compiler/TfheSparseCertificate.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/TfheSparseCertificate.lean
+@@ -0,0 +1,98 @@
++import Compiler.TfheSparseRow
++import Theory.SparseNegacyclic
++namespace Minidregg.Compiler.TfheSparseCertificate
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.TfheSparseRow Minidregg.Compiler.TfheSparseWrap
++open Minidregg.Theory.SparseNegacyclic
++set_option autoImplicit false
++set_option maxHeartbeats 3000000
++
++def read (rows : Fin 512 → Fin nVars → BabyBear) (j : Fin 512) (g : Fin 8) : SmallRing := value (rows j) g
++/-- Shared public arrays and exact index/flag transport, supplied by the canonical
++reader. No arithmetic transition or convolution conclusion appears here. -/
++def Linked (G S C : ℕ → SmallRing) (rows : Fin 512 → Fin nVars → BabyBear) : Prop :=
++  ∀ j : Fin 512,
++    read rows j 0=G j.val ∧
++    read rows j 1=G ((j.val+512-44)%512) ∧
++    read rows j 2=G ((j.val+512-162)%512) ∧
++    read rows j 3=C j.val ∧
++    read rows j 4=(if j.val=0 then -C 511 else C (j.val-1)) ∧
++    read rows j 5=S j.val ∧ read rows j 6=S (j.val+1) ∧ read rows j 7=S 512 ∧
++    fval (rows j) 0=(if j.val=0 then 1 else 0) ∧
++    fval (rows j) 1=(if j.val<44 then 1 else 0) ∧
++    fval (rows j) 2=(if j.val<162 then 1 else 0) ∧
++    fval (rows j) 3=(if j.val<351 then 1 else 0) ∧
++    fval (rows j) 4=(if 469≤j.val then 1 else 0)
++
++def WholeSound : Prop := ∀ (G S C : ℕ → SmallRing) (rows : Fin 512 → Fin nVars → BabyBear),
++  Linked G S C rows → (∀ j,systemAccepts (rows j) emittedSystem) →
++  (∀ j : Fin 512,C j.val=convolution 512 44 162 G j.val) ∧
++  (∀ j : Fin 512,rawValue (rows j)=256*value (rows j) 3)
++
++theorem cell_index {R : Type*} [CommRing R] (G : ℕ → R) (j k : ℕ)
++    (hj : j<512) (hk : k<512) :
++    cell 512 G j k=(if j<k then -G ((j+512-k)%512) else G ((j+512-k)%512)) := by
++  by_cases h : j<k
++  · have hh : j+512-k<512 := by omega
++    simp [cell,h,show ¬k≤j by omega,Nat.mod_eq_of_lt hh,show 512+j-k=j+512-k by omega]
++  · have hh : j-k<512 := by omega
++    have hm : (j+512-k)%512=j-k := by
++      rw [show j+512-k=(j-k)+512 by omega,Nat.add_mod_right,Nat.mod_eq_of_lt hh]
++    simp [cell,h,show k≤j by omega,hm]
++
++theorem whole_sound : WholeSound := by
++  intro G S C rows hl hs
++  have hm (j : Fin 512) := emitted_sound (rows j) (hs j)
++  have hp : PrefixCertificate G S C := by
++    have h0 := hl 0
++    simp only [Fin.val_zero] at h0
++    have ha := (hm 0).2.2.2.2.1 (by simpa using h0.2.2.2.2.2.2.2.2.1)
++    have hz : S 0=0 := by
++      rw [←h0.2.2.2.2.2.1]
++      unfold read
++      rw [ha.1]
++      simp
++    have hanchor : C 0=S 512 := by
++      rw [←h0.2.2.2.1,←h0.2.2.2.2.2.2.2.1]
++      unfold read
++      rw [ha.2]
++    refine ⟨hz,?_,hanchor,?_⟩
++    · intro j hj
++      let t : Fin 512 := ⟨j,hj⟩
++      obtain ⟨l0,l1,l2,l3,l4,l5,l6,l7,f0,f1,f2,f3,f4⟩ := hl t
++      have hh := (hm t).2.2.1
++      change read rows t 5+(fval (rows t) 3 : SmallRing)*read rows t 0 =
++        read rows t 6+(fval (rows t) 4 : SmallRing)*read rows t 0 at hh
++      rw [l0,l5,l6,f3,f4] at hh
++      dsimp only [t] at hh
++      by_cases h1 : j<351
++      · simp only [if_pos h1,if_neg (show ¬469≤j by omega),Nat.cast_one,Nat.cast_zero,one_mul,zero_mul,add_zero] at hh
++        simpa [digits,h1] using hh.symm
++      · by_cases h2 : j<469
++        · simp only [if_neg h1,if_neg (show ¬469≤j by omega),Nat.cast_zero,zero_mul,add_zero] at hh
++          simpa [digits,h1,h2] using hh.symm
++        · simp only [if_neg h1,if_pos (show 469≤j by omega),Nat.cast_one,Nat.cast_zero,one_mul,zero_mul,add_zero] at hh
++          simp only [digits,if_neg h1,if_neg h2,neg_one_mul]
++          linear_combination -hh
++    · intro j hj
++      let t : Fin 512 := ⟨j+1,hj⟩
++      obtain ⟨l0,l1,l2,l3,l4,l5,l6,l7,f0,f1,f2,f3,f4⟩ := hl t
++      have hh := (hm t).2.2.2.1
++      change read rows t 4+2*(fval (rows t) 1 : SmallRing)*read rows t 1+
++        2*(fval (rows t) 2 : SmallRing)*read rows t 2=read rows t 3+read rows t 1+read rows t 2 at hh
++      rw [l1,l2,l3,l4,f1,f2] at hh
++      dsimp only [t] at hh
++      simp only [show ¬j+1=0 by omega,if_false,Nat.add_sub_cancel] at hh
++      rw [cell_index G (j+1) 44 hj (by decide),cell_index G (j+1) 162 hj (by decide)]
++      simp only [show j+1+512-44=j+469 by omega,show j+1+512-162=j+351 by omega] at hh ⊢
++      split_ifs at hh ⊢ <;> push_cast at hh <;> linear_combination -hh
++  exact ⟨fun j => prefix_certificate_sound G S C hp j.val j.isLt,fun j => (hm j).2.2.2.2.2⟩
++end Minidregg.Compiler.TfheSparseCertificate
++
++/-- info: 'Minidregg.Compiler.TfheSparseCertificate.cell_index' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseCertificate.cell_index
++
++/-- info: 'Minidregg.Compiler.TfheSparseCertificate.whole_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseCertificate.whole_sound
+diff --git a/Compiler/TfheSparseTeeth.lean b/Compiler/TfheSparseTeeth.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/TfheSparseTeeth.lean
+@@ -0,0 +1,178 @@
++import Compiler.TfheSparseCertificate
++namespace Minidregg.Compiler.TfheSparseTeeth
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.TfheSparseRow Minidregg.Compiler.TfheSparseWrap
++open Minidregg.Compiler.TfheSparseCertificate
++open Minidregg.Theory
++set_option autoImplicit false
++local instance : Hashable BabyBear where hash x := hash x.val
++set_option maxHeartbeats 3000000
++set_option maxRecDepth 30000
++
++def zeroAssignment (f : Fin 5 → BabyBear) (i : Fin nVars) : BabyBear :=
++  if i.val=3 then f 0 else if i.val=4 then f 1 else if i.val=5 then f 2 else
++  if i.val=6 then f 3 else if i.val=7 then f 4 else
++  if (238 ≤ i.val ∧ i.val < 243) ∨ (258 ≤ i.val ∧ i.val < 263) then 4 else
++  if (243 ≤ i.val ∧ i.val < 258 ∧ (i.val-243)%3=2) ∨
++    (263 ≤ i.val ∧ i.val < 278 ∧ (i.val-263)%3=2) then 1 else 0
++
++def ZeroPremise : Prop := ∃ a : Fin nVars → BabyBear,
++  systemAccepts a system ∧ fval a 0=1 ∧ ∀ g,value a g=0
++
++theorem zero_low (f : Fin 5 → BabyBear) (i : Fin nVars) (hi : i.val < 238)
++    (hflag : i.val < 3 ∨ 7 < i.val) : zeroAssignment f i=0 := by
++  simp [zeroAssignment,show ¬i.val=3 by omega,show ¬i.val=4 by omega,show ¬i.val=5 by omega,
++    show ¬i.val=6 by omega,show ¬i.val=7 by omega,show ¬238 ≤ i.val by omega,
++    show ¬258 ≤ i.val by omega,show ¬243 ≤ i.val by omega,show ¬263 ≤ i.val by omega]
++
++theorem zero_readings (f : Fin 5 → BabyBear) :
++    (∀ g i,zeroAssignment f (w g i)=0) ∧
++    (∀ g i j,zeroAssignment f (wb g i j)=0) ∧
++    (∀ i,zeroAssignment f (flag i)=f i) ∧
++    (∀ k i,zeroAssignment f (carry k i)=4) ∧
++    (∀ k i j,zeroAssignment f (carryBit k i j)=(if j.val=2 then 1 else 0)) ∧
++    zeroAssignment f zeroWire=0 ∧ (∀ i,zeroAssignment f (raw i)=0) ∧
++    (∀ i j,zeroAssignment f (rawBit i j)=0) := by
++  refine ⟨?_,?_,?_,?_,?_,?_,?_,?_⟩
++  · intro g i; apply zero_low <;> dsimp [w] <;> omega
++  · intro g i j; apply zero_low <;> dsimp [wb] <;> omega
++  · intro i; fin_cases i <;> simp [zeroAssignment,flag]
++  · intro k i; fin_cases k <;> fin_cases i <;> norm_num [zeroAssignment,carry]
++  · intro k i j; fin_cases k <;> fin_cases i <;> fin_cases j <;> norm_num [zeroAssignment,carryBit]
++  · simp [zeroAssignment,zeroWire]
++  · intro i; apply zero_low <;> dsimp [raw] <;> omega
++  · intro i j
++    unfold rawBit
++    dsimp only
++    split
++    · apply zero_low <;> dsimp <;> omega
++    · simp [zeroAssignment,zeroWire]
++
++theorem zero_accepts (f : Fin 5 → BabyBear) (hf : ∀ i,f i=0 ∨ f i=1) :
++    systemAccepts (zeroAssignment f) system := by
++  obtain ⟨hw,hb,hf',hc,hcb,hz,hr,hrb⟩ := zero_readings f
++  simp only [system,systemAccepts_append]
++  refine ⟨⟨⟨⟨⟨?_,?_⟩,?_⟩,?_⟩,?_⟩,?_⟩
++  · intro t ht
++    obtain ⟨g,_,ht⟩ := List.mem_flatMap.mp ht
++    have hh : systemAccepts (zeroAssignment f) (AirBignum.limbRangeSystem (w g) (wb g)) := by
++      rw [AirBignum.limbRangeSystem_correct]
++      intro i
++      simp [rangeGadget_correct,hw,hb]
++    exact hh t ht
++  · intro t ht
++    obtain ⟨i,_,rfl⟩ := List.mem_map.mp ht
++    rw [boolGadget_correct,hf']
++    exact hf i
++  · intro t ht
++    obtain ⟨k,_,ht⟩ := List.mem_flatMap.mp ht
++    have hh : systemAccepts (zeroAssignment f) (wrapSystem (leftTerm k) (rightTerm k) (carry k) (carryBit k)) := by
++      simp only [wrapSystem,systemAccepts_append]
++      refine ⟨⟨?_,?_⟩,?_⟩
++      · rw [AirBignum.limbRangeSystem_correct]
++        intro i
++        norm_num [rangeGadget_correct,hc,hcb,Fin.forall_fin_succ,Fin.sum_univ_succ]
++      · simp only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,eval_add',eval_vr,eval_cst,hc]
++        ring
++      · intro t ht
++        obtain ⟨i,_,rfl⟩ := List.mem_map.mp ht
++        rw [wrapColumn_correct]
++        fin_cases k <;> norm_num [leftTerm,rightTerm,eval_add',eval_mul',eval_cst,eval_vr,hw,hc]
++    exact hh t ht
++  · intro t ht
++    obtain ⟨i,_,ht⟩ := List.mem_flatMap.mp ht
++    simp only [List.mem_cons,List.not_mem_nil,or_false] at ht
++    rcases ht with rfl|rfl <;> simp [accepts,eval_mul',eval_add',eval_vr,eval_cst,hw]
++  · simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,eval_vr] using hz
++  · rw [AirBignum.limbRangeSystem_correct]
++    intro i
++    simp [rangeGadget_correct,hr,hrb]
++
++theorem zero_values (f : Fin 5 → BabyBear) (g : Fin 8) : value (zeroAssignment f) g=0 := by
++  simp [value,AirBignum.limbVals,(zero_readings f).1]
++
++theorem zero_premise : ZeroPremise := by
++  refine ⟨zeroAssignment (fun _ => 1),zero_accepts _ (fun _ => Or.inr rfl),?_,zero_values _⟩
++  dsimp [fval]
++  rw [(zero_readings _).2.2.1]
++  decide +kernel
++
++theorem wrong_scale_refused (a : Fin nVars → BabyBear)
++    (h : rawValue a≠256*value a 3) : ¬systemAccepts a emittedSystem := by
++  intro hs
++  exact h (emitted_sound a hs).2.2.2.2.2
++
++theorem wrong_anchor_refused (a : Fin nVars → BabyBear)
++    (hf : fval a 0=1) (ha : value a 3≠value a 7) : ¬systemAccepts a emittedSystem := by
++  intro hs
++  exact ha ((emitted_sound a hs).2.2.2.2.1 hf).2
++
++def flagValues (j : Fin 512) : Fin 5 → ℕ := ![if j.val=0 then 1 else 0,
++  if j.val < 44 then 1 else 0,if j.val < 162 then 1 else 0,
++  if j.val < 351 then 1 else 0,if 469 ≤ j.val then 1 else 0]
++def zeroRows (j : Fin 512) : Fin nVars → BabyBear := zeroAssignment (fun i => (flagValues j i : BabyBear))
++
++def WholePremise : Prop := ∃ rows : Fin 512 → Fin nVars → BabyBear,
++  Linked (fun _ => 0) (fun _ => 0) (fun _ => 0) rows ∧
++  ∀ j,systemAccepts (rows j) emittedSystem
++
++theorem flagValues_bool (j : Fin 512) (i : Fin 5) : flagValues j i=0 ∨ flagValues j i=1 := by
++  fin_cases i <;> dsimp [flagValues]
++  all_goals split <;> simp
++
++theorem whole_premise : WholePremise := by
++  have hfv (j : Fin 512) (i : Fin 5) : fval (zeroRows j) i=flagValues j i := by
++    dsimp [fval,zeroRows]
++    rw [(zero_readings _).2.2.1]
++    apply ZMod.val_cast_of_lt
++    rcases flagValues_bool j i with h|h <;> rw [h] <;> decide
++  refine ⟨zeroRows,?_,?_⟩
++  · intro j
++    have hz (g : Fin 8) : read zeroRows j g=0 := by
++      dsimp [TfheSparseCertificate.read,zeroRows]
++      rw [zero_values]
++      simp
++    simp only [hz,hfv,neg_zero,ite_self]
++    simp [flagValues]
++  · intro j
++    apply (AirAssertionShare.optimize_preserves (zeroRows j) system).mpr
++    apply zero_accepts
++    intro i
++    rcases flagValues_bool j i with h|h <;> simp [h]
++end Minidregg.Compiler.TfheSparseTeeth
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.zero_low' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_low
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.zero_readings' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_readings
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.zero_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_accepts
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.zero_values' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_values
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.zero_premise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.zero_premise
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.wrong_scale_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.wrong_scale_refused
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.wrong_anchor_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.wrong_anchor_refused
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.flagValues_bool' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.flagValues_bool
++
++/-- info: 'Minidregg.Compiler.TfheSparseTeeth.whole_premise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.TfheSparseTeeth.whole_premise
+diff --git a/Compiler/TfheSparseWitness.lean b/Compiler/TfheSparseWitness.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/TfheSparseWitness.lean
+@@ -0,0 +1,29 @@
++import Compiler.TfheSparseRow
++namespace Minidregg.Compiler.TfheSparseRow
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++set_option autoImplicit false
++
++def variableArray (row : Array Nat) : Array BabyBear := Id.run do
++  let mut a := Array.replicate nVars (0 : BabyBear)
++  for i in [:46] do a := a.set! i (row[i]! : BabyBear)
++  for g in [:8] do
++    for i in [:4] do
++      for j in [:6] do a := a.set! (46+24*g+6*i+j) ((row[8+4*g+i]!/2^j%2 : Nat) : BabyBear)
++  for k in [:2] do
++    let mut c : Int := 0
++    for i in [:5] do
++      let enc := (c+4).toNat
++      a := a.set! (238+20*k+i) (enc : BabyBear)
++      for j in [:3] do a := a.set! (243+20*k+3*i+j) ((enc/2^j%2 : Nat) : BabyBear)
++      if i<4 then
++        let lhs := if k=0 then row[28+i]!+row[6]!*row[8+i]!
++          else row[24+i]!+2*row[4]!*row[12+i]!+2*row[5]!*row[16+i]!
++        let rhs := if k=0 then row[32+i]!+row[7]!*row[8+i]!
++          else row[20+i]!+row[12+i]!+row[16+i]!
++        c := ((lhs : Int)+c-(rhs : Int))/64
++  return a
++
++def sourceCheck (row : Array Nat) : Bool :=
++  let a := variableArray row
++  emittedSystem.all (fun t => eval (fun i => a[i.val]!) t==0)
++end Minidregg.Compiler.TfheSparseRow
+diff --git a/EmitTfheSparse.lean b/EmitTfheSparse.lean
+new file mode 100644
+--- /dev/null
++++ b/EmitTfheSparse.lean
+@@ -0,0 +1,64 @@
++/- Ordered IR2 emission folds the proved source. No constraint expressions are
++written by the Rust public reader. -/
++import Compiler.TfheSparseWitness
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.TfheSparseRow Minidregg.Theory
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def ir2Alg : Alg (AirSig BabyBear (Fin nVars)) String := fun op => match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i.val
++  | .add => fun c => "{\"t\":\"add\",\"l\":"++c false++",\"r\":"++c true++"}"
++  | .mul => fun c => "{\"t\":\"mul\",\"l\":"++c false++",\"r\":"++c true++"}"
++def ir2Template : String :=
++  let arithmetic := emittedSystem.map fun t => "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++String.intercalate "," ((List.range 46).map ir2Var)++"]}"
++  "{\"name\":\"tfhe_selected_sparse_first_external_product\",\"ir\":2,\"trace_width\":"++toString nVars++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,\"name\":\"tfhe_sparse_public_rows\",\"arity\":46,\"sem\":\"exact_public_rows\",\"rows\":[]}],\"constraints\":["++
++    String.intercalate "," (lookup::arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++def u32Bytes (a : Array BabyBear) : ByteArray := Id.run do
++  let mut b := ByteArray.emptyWithCapacity (4*a.size)
++  for value in a do
++    for shift in [0,8,16,24] do b := b.push ((value.val >>> shift).toUInt8)
++  return b
++
++def main (args : List String) : IO UInt32 := do
++  let outDir : System.FilePath := args.headD "artifacts"
++  let inputPath := args[1]?.getD "../fixtures/normal_001/public_rows46.json"
++  let parsed ← IO.ofExcept (Json.parse (← IO.FS.readFile (System.FilePath.mk inputPath)))
++  let rows ← IO.ofExcept (Lean.fromJson? parsed : Except String (Array (Array Nat)))
++  IO.FS.createDirAll outDir
++  IO.FS.writeFile (outDir / "template_ir2.json") (ir2Template++"\n")
++  for i in [0,1,44,162,511,512,1024,1536,2047] do
++    unless sourceCheck rows[i]! do
++      let a := variableArray rows[i]!
++      let failures := emittedSystem.zipIdx |>.filterMap fun (t,j) =>
++        let value := eval (fun k => a[k.val]!) t
++        if value==0 then none else some (j,value.val)
++      throw (IO.userError s!"sample {i} refused: {failures}")
++  if sourceCheck (rows[1]!.set! 20 (((rows[1]!)[20]!+1)%64)) then
++    throw (IO.userError "changed output accepted")
++  if sourceCheck (rows[1]!.set! 40 (((rows[1]!)[40]!+1)%64)) then
++    throw (IO.userError "changed raw low bits accepted")
++  if sourceCheck (rows[0]!.set! 36 (((rows[0]!)[36]!+1)%64)) then
++    throw (IO.userError "changed anchor accepted")
++  IO.FS.withFile (outDir / "trace.leu32") .write fun handle => do
++    for i in [:rows.size] do
++      let row := rows[i]!
++      unless row.size==46 && row[0]! == i do throw (IO.userError s!"bad rowshape/id at{i}")
++      for j in [8:46] do unless row[j]!<64 do throw (IO.userError s!"bad digit at{i}/{j}")
++      for j in [3:8] do unless row[j]!≤1 do throw (IO.userError s!"bad flag at{i}/{j}")
++      handle.write (u32Bytes (variableArray row))
++  let summary := Json.mkObj [("rows",toJson rows.size),("trace_width",toJson nVars),
++    ("public_arity",toJson (46 : Nat)),("trace_bytes",toJson (rows.size*nVars*4)),
++    ("source_constraints",toJson system.length),("arithmetic_constraints",toJson emittedSystem.length),
++    ("selected_actual_rows_checked",toJson (9 : Nat)),("changed_output_refused",toJson true),
++    ("raw_scale_refused",toJson true),("anchor_refused",toJson true),
++    ("full_row_check",toJson "unchanged native proof backend")]
++  IO.FS.writeFile (outDir / "emission.json") (summary.pretty++"\n")
++  IO.println summary.compress
++  return 0

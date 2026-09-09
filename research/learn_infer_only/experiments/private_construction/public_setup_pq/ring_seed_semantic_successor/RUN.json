@@ -1,0 +1,334 @@
+{
+  "scope": "[EXECUTED] Public-only collection of the one shared fresh service run; no extra crypto",
+  "status": "PASS",
+  "shared_public_outputs": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/RESULT.json": {
+      "sha256": "b0945855f9f42dfb2a8c1f959fafcc6a4c81204b409f2cc6ed3c0a017ba8b0e8",
+      "bytes": 2143
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/PUBLIC_COMPLETE.json": {
+      "sha256": "f98b17b208e3ccea5c4475ce169f2114e57c5b83fe064a12a116a1d46cc955d9",
+      "bytes": 3812
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/public_setup.json": {
+      "sha256": "ea8c24ebf29c8eb9115c5f785330586e24fb3f1b5aeb8cc4f68f60b2772fdc76",
+      "bytes": 1481
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/a.ring": {
+      "sha256": "e66665b047d7ed67fc9bf0f961a3d0ec7a5895dd63ecb1626cdb3efa48fdf512",
+      "bytes": 798
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/public.ring": {
+      "sha256": "d805d4ed5dc77a7521494aa1d98471c043fe03ac93e4c09662ff0b52f95be1e2",
+      "bytes": 9471117
+    }
+  },
+  "result": {
+    "a_descriptor_bytes": 798,
+    "accepted_revision_served": 6,
+    "accepted_updates": 6,
+    "changed_canonical_candidate_refused": true,
+    "changed_delivery_id_refused": true,
+    "claim": "EXECUTED shared fresh seeded semantic ring learner with complete public recomputation and durable identified delivery",
+    "decisions_matched": 16,
+    "elapsed_seconds": 202.7157390829525,
+    "exact_delivery_retry_without_key": true,
+    "exact_expiries": 2,
+    "exact_head_reopen": true,
+    "final_head_sha256": "35ac524038dcabb733b73af976e39cd92e8243dba1243bd7c71a10a598e61d68",
+    "finished_utc": "2026-09-08T22:37:29.976064+00:00",
+    "fresh_encodes": 6,
+    "fresh_process_reopen_revision": 4,
+    "fresh_registered_keys": 16,
+    "full_candidate_byte_comparisons": 6,
+    "full_file_bytes_per_positive": [
+      37901526,
+      37901526,
+      37901597,
+      37901597,
+      37901597,
+      37901597
+    ],
+    "genesis": "4d29e6ff535586cffdbfa54cb6de663018517a81dd8e599067dbd42cedfc4358",
+    "historical_retry_same_receipt": true,
+    "key_scope": "Each fixed key exposes its registered query on all retained inputs/allowed combinations; coalitions get their per-input span. No cryptographic history-bound release.",
+    "missing_public_rows_seed_described": 561,
+    "missing_row_secrets": 0,
+    "orchestrator_private_payload_reads": 0,
+    "public_actor_private_artifact_reads": 0,
+    "public_complete_before_recipient_queries": true,
+    "public_elapsed_seconds": 163.9407186669996,
+    "public_issuer_bundle_bytes": 9471117,
+    "registered_recipients_served": 16,
+    "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+    "scalar_scores_matched": 32,
+    "schema": "durable-seeded-semantic-ring-result-v1",
+    "seed_bits": 384,
+    "seed_policy": "honest-dual-seed-384-qrom-v1",
+    "seeded_setup_scope": "Conditional QROM application; concrete SHAKE heuristic, no ideal-uniform distribution claim.",
+    "setup_descriptor_sha256": "d5806f2a657377f3ebf9b4b92b9764363e4cde53b77bb7ff9797768ce27d624d",
+    "sources_unchanged": true,
+    "stale_parent_refused": true,
+    "status": "PASS",
+    "universal_reader_constructed": false,
+    "utility_scope": "Completed known-public cached linear semantic fixture, not a new accuracy or privacy estimate.",
+    "verification_scope": "Full deterministic canonical acc+fresh-old recomputation over this ring, not a succinct/compiler proof."
+  },
+  "actor_metrics": {
+    "scope": "Saved public actor receipt metadata; artifact paths never followed",
+    "actor_receipts": 53,
+    "actor_receipt_pins": {
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/changed-candidate-refusal_recompute.json": {
+        "sha256": "602cd42bc28b6352d4f505a78bcedf8dd3efbc3a3fde3dd259bd9fa608cd995a",
+        "bytes": 2569
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_finalize.json": {
+        "sha256": "8289dabf64bbcb63afd0d9b94b9b338fea67ebcf0a9936e7967fb606a933f94c",
+        "bytes": 5010
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_init.json": {
+        "sha256": "5960c7f4dd6a77a3828a50ac9846b68ad99bab7ed35dff7e62c45ab4ffbe142a",
+        "bytes": 1133
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_00.json": {
+        "sha256": "c380a38916387895d2860ed05c1a1a9032b498451321942c2c326904ba99a357",
+        "bytes": 1617
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_01.json": {
+        "sha256": "1e187a7ac4bfef87b2a1eeb5e118c8ce4c93f07c955b3a8ae2189179b5a20e80",
+        "bytes": 1616
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_02.json": {
+        "sha256": "854bdabff259f15367015036bb50886e3cc0e3ed60f681a5f7e14b468de5c1df",
+        "bytes": 1616
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_03.json": {
+        "sha256": "831f1a04d6a3518f6f979008fda6adc62377b3634ce9ca9376175d5f78132425",
+        "bytes": 1616
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_04.json": {
+        "sha256": "3bb712cc7dac2ba4e0312be7d3ff7e7ba3dfec8ec24ab7eeec92fc4f8679c8cd",
+        "bytes": 1617
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_05.json": {
+        "sha256": "4f830408ef9f0042eb587139819c036d471a9ad56133288a0d8abf68d7c5ccdf",
+        "bytes": 1616
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_06.json": {
+        "sha256": "cb352a71686f5cdd2f977b88baffc0d6f5749b0194c1bbd4192a1d6738ee0b32",
+        "bytes": 1616
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_07.json": {
+        "sha256": "ab241194542514eab8eceb6f379446b5fc74906a6257a3f45b50b0ddfbe5cc29",
+        "bytes": 1617
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_08.json": {
+        "sha256": "80391df1975bcf95b18bece0418707fe59f46bac2ec8bfccb77d036a4e2501b1",
+        "bytes": 1617
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_09.json": {
+        "sha256": "4a04e210a50d8ef97cca24435a2ed6c112265b7b807f8b1c795074b281553aaf",
+        "bytes": 1616
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_10.json": {
+        "sha256": "6a328a42cf29fc29e569f5167ead78530246ef47abae34f6545b5d6b383184b3",
+        "bytes": 1618
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_11.json": {
+        "sha256": "5a7374a4aba4bb97fde9c821bfbd38537874683ed8b626ae94440885be854aad",
+        "bytes": 1618
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_12.json": {
+        "sha256": "f5e7be244647dba677570bd52cc2688770ebbdf8fe74cfc9189beffda09482be",
+        "bytes": 1617
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_13.json": {
+        "sha256": "dda605263f3eadf079195678614b577b2f80875f473a757ad3e1fe0b7df0eb7e",
+        "bytes": 1617
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_14.json": {
+        "sha256": "9d8dbfa933a0e3eb63859c1fbd312dde0323e2cb301b48ecc051df7f1accb22d",
+        "bytes": 1618
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/setup_register_15.json": {
+        "sha256": "49f28bfae8d0da0da099ead24e72eb9876c3066d12c7fa5c7c9cc101ec24810d",
+        "bytes": 1618
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach01_candidate.json": {
+        "sha256": "8b5e3c6933ee9db20f8f6c80891921515a3556edbf7673b0e2c5732ab5c28d03",
+        "bytes": 1764
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach01_encode.json": {
+        "sha256": "1b7345ba24545dbfa79d9fc881a2c6486f33c953f76534db8511caa919bd24e9",
+        "bytes": 1657
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach01_recompute.json": {
+        "sha256": "48d0b795bf24cbaa5aa9cf77f39a286df0451022bac92d765be410dc7e265909",
+        "bytes": 1547
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach02_candidate.json": {
+        "sha256": "4098c25cd9a9abe9c60aee3040ec06adbf2dd6ffbabbd6297f20aa6acaf1376c",
+        "bytes": 1764
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach02_encode.json": {
+        "sha256": "02922c352cd9603e01e5fde2c8c7e21c47a1d0b56c6dbb666f651c7a2cac4bd7",
+        "bytes": 1657
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach02_recompute.json": {
+        "sha256": "91f4fbd5272f588cc5ce02b47b6b2bd3532b496fd71e128dbcaff34299e4b51b",
+        "bytes": 1545
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach03_candidate.json": {
+        "sha256": "8e7d1a51fb8d4c3d1fd15d9bbdc28373a9fbad0acf48fee64c6ddec69dcc49ef",
+        "bytes": 2527
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach03_encode.json": {
+        "sha256": "69c3738f5001fa4dcbfcb43a9669ebd17a61a2597ae830e10f77d4b03e00acf8",
+        "bytes": 1656
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach03_recompute.json": {
+        "sha256": "de57d906294eaca630aa7e9d6db272e820429a375f4d7d7d47a2f17d9b6555d7",
+        "bytes": 2049
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach04_candidate.json": {
+        "sha256": "aaef35e7c3ce8f46e7a739099190378bb7f237709f9b5616a34cbcf16e9fc1d5",
+        "bytes": 2526
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach04_encode.json": {
+        "sha256": "193b83b15aaff4a79c0d57d31c6ee37723212bbaf3b09991c95ccd746d110616",
+        "bytes": 1657
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach04_recompute.json": {
+        "sha256": "a130db7e2d08e96124dbadbb92471f654e55b5a6ada787937af863d81a17130f",
+        "bytes": 2049
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach05_candidate.json": {
+        "sha256": "561fef23fd80cf07a6751a2661581589ab80613a45ad7cc90cd130d0f33bbc7b",
+        "bytes": 3291
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach05_encode.json": {
+        "sha256": "b819c5a31197a9e1643778b830dc1efdf5a4e03721a5861436b466294f901de5",
+        "bytes": 1657
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach05_recompute.json": {
+        "sha256": "5ea60a77545a605451ef3b2395d1751cb2aa2d3559619dd989282632b300eacd",
+        "bytes": 2551
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach06_candidate.json": {
+        "sha256": "a6297a31fa13e9d5d3af1f2958c1448e9037430e66d2f166e09142ea7cc9ecee",
+        "bytes": 3290
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach06_encode.json": {
+        "sha256": "46204a73a39e0bf8af79884519403046f5edd3523fb796c352d3e29753105457",
+        "bytes": 1657
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/actors/teach06_recompute.json": {
+        "sha256": "ceb503291e3bb8f892b74f63ad581081f7914638aa197cd7e0e7e33b3b3ffd16",
+        "bytes": 2549
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-00/transport.json": {
+        "sha256": "f5c438c1099914390327ecd9bf527a49d346961db8834c837f9d1db9c0e2bd99",
+        "bytes": 2000
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-01/transport.json": {
+        "sha256": "0bacd6f1766cb5f8c99fe5d8f7f497e4567d43c43f24ca9435384ba24226b142",
+        "bytes": 2041
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-02/transport.json": {
+        "sha256": "b1d828d07884e4cd8edc9bc8f047c8db04ec8f3ceb0750deeea55d568458b2ef",
+        "bytes": 2029
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-03/transport.json": {
+        "sha256": "13c75dd366dd3965c99d8a988a69965b889c70c1fab36cc787d0ea5075122a4c",
+        "bytes": 2023
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-04/transport.json": {
+        "sha256": "0231a68f07d864a5ef6a04a307e4599d4fe5dd0f807a51cd45d85b60287da170",
+        "bytes": 2004
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-05/transport.json": {
+        "sha256": "37ac87766c961475b23e63086b0c4b6660bcd4ae68af78b1bb5f51b87ee4269e",
+        "bytes": 1999
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-06/transport.json": {
+        "sha256": "95cae22edc29a73d7b19e36aa9e17b19b86dc70732cff39d8d81cb10c07adec6",
+        "bytes": 2047
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-07/transport.json": {
+        "sha256": "bdc74aa217a900e9687f9f094c1c6bd2b539aa759be28109cfeb5bf250c64fa5",
+        "bytes": 2002
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-08/transport.json": {
+        "sha256": "8893a016ddb1eb568dc44bc14ced21554079c2deab6e373447a2a90692b5147b",
+        "bytes": 2019
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-09/transport.json": {
+        "sha256": "6c474839d905facd2de76b1a1c1ce4f350d352ef227c79d1100bbba3ff674b8d",
+        "bytes": 2036
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-10/transport.json": {
+        "sha256": "41677507554185a7d5b69741e2cdd138254d214f854e9dcb9ecd4f5b4c001c84",
+        "bytes": 2031
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-11/transport.json": {
+        "sha256": "d9f940de00f4d6c951b380f030e530e0a5f3cf1349337654f6fdfcf868f6998a",
+        "bytes": 2043
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-12/transport.json": {
+        "sha256": "13518a8361444fed25a38396140fb91d288b503f6155a7084b9aca4f7689c3fe",
+        "bytes": 2129
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-13/transport.json": {
+        "sha256": "a6f5c16b807deca91914b8115fbca004ee022f7f173c3ec9dd4f4395bab6b6e2",
+        "bytes": 2107
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-14/transport.json": {
+        "sha256": "f10723533e71035a819bc4081581ca87e50d922b424d3df119519816bd74e1f4",
+        "bytes": 2120
+      },
+      "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/deliveries/delivery-15/transport.json": {
+        "sha256": "eaa18f4de2e4b12dec4b969713f1843825db3bde23170396885c5559fad3001e",
+        "bytes": 2121
+      }
+    },
+    "peak_standalone_actor_rss_bytes_macos": 497270784,
+    "receipt_internal_elapsed": {
+      "register": {
+        "count": 16,
+        "min_seconds": 3.5349886249750853,
+        "max_seconds": 3.659987957973499,
+        "total_seconds": 57.16739491792396
+      },
+      "encode": {
+        "count": 6,
+        "min_seconds": 10.95618979196297,
+        "max_seconds": 12.165804542019032,
+        "total_seconds": 67.61227320996113
+      },
+      "query": {
+        "count": 16,
+        "min_seconds": 1.8983875419944525,
+        "max_seconds": 2.1580701249768026,
+        "total_seconds": 32.3867117909831
+      }
+    },
+    "elapsed_scope": "Per-process receipt timing; parent command wall time includes additional startup/check overhead",
+    "key_file_bytes_min": 3801794,
+    "key_file_bytes_max": 3801795,
+    "key_file_bytes_sum": 60828710,
+    "key_payload_bytes_each": [
+      3801088
+    ],
+    "fresh_ciphertext_file_bytes_each": [
+      37901458
+    ]
+  },
+  "issuer_required_public_bytes": 9592617,
+  "fixed_semantic_registry_bytes": 121500,
+  "public_registered_payload_bytes": 9469952,
+  "expanded_A_plus_all_P_payload_bytes": 379389952,
+  "payload_reduction_factor": "641/16 = 40.0625",
+  "private_row_payload_bytes": 3801088,
+  "private_payloads_read_by_collector": 0,
+  "new_setups_or_encryptions_by_collector": 0
+}

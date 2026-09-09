@@ -1,0 +1,13 @@
+Selvage/FoldingConsistencyWeights.lean:40:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ArityEight.weighted_recompose_family`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/FoldingConsistencyWeights.lean:77:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ArityEight.projectConsistency8_le_one`:
+  [DecidableEq F]
+  [Fintype ι₃]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] [Fintype ι₃] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`

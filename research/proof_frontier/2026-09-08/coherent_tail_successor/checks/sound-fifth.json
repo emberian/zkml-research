@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/BabyBearWeightedSoundness.olean",
+    "Selvage/BabyBearWeightedSoundness.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "7c5f9322737d5e3c9f4feae486cfee208c441bf3f91e2599eb542ef487187607",
+  "source_unchanged": true,
+  "elapsed_s": 4.869929790496826,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/sound-fifth.log"
+}

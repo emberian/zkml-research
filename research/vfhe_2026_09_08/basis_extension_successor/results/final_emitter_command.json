@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "EmitBasisExtension.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+  "seconds": 2.784029960632324,
+  "exit": 0,
+  "source_sha256": "650555636a8175aca2fca69c3ee12153ea46b07946bc35aeb8a1e12f7fff3712"
+}

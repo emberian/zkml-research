@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-query-transport-20260908/.lake/build/lib/lean/Selvage/ConsistencyQueryMass.olean",
+    "Selvage/ConsistencyQueryMass.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-query-transport-20260908",
+  "exit_code": 0,
+  "source_sha256": "4a4e536563075c2e20b8dacca715fbaa7d3f58e129e7a357aac9768d80abaf94",
+  "source_unchanged": true,
+  "elapsed_s": 5.50370192527771,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/checks/sealed-mass.log"
+}

@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "role_command": "register",
+  "pid": 97202,
+  "elapsed_seconds": 3.619928499974776,
+  "peak_rss_bytes_macos": 205471744,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "seed_policy": "honest-dual-seed-384-qrom-v1",
+  "seed_bits": 384,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/registry.json",
+      "kind": "fixed_semantic_registry",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/public/a.ring",
+      "kind": "a",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/private/recipient_02/key.ring",
+      "kind": "key",
+      "bytes": 3801794,
+      "payload_bytes": 3801088,
+      "private": true,
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/runtime/seeded001/public/registration_02.ring",
+      "kind": "registration",
+      "bytes": 592587,
+      "payload_bytes": 591872,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "c7aac0fd30bc7f9ed938b39edfc9e441fbafd99e54320df0cfc352e74c9e4fc1"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 1,
+    "recipient_coordinate": 2,
+    "private_coefficients_generated": 1048576
+  },
+  "error": null
+}

@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/results/AxiomDiscovery.lean"
+  ],
+  "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit": 1,
+  "seconds": 3.5600556249846704,
+  "theorems": [
+    "Minidregg.Compiler.BfvTensorMul.canonicalSystem_sound",
+    "Minidregg.Compiler.BfvTensorMul.sumTerm_eval",
+    "Minidregg.Compiler.BfvTensorMul.convolutionTerm_eval",
+    "Minidregg.Compiler.BfvTensorMul.convolution_denote",
+    "Minidregg.Compiler.BfvTensorMul.padded_denote",
+    "Minidregg.Compiler.BfvTensorMul.convolution_bound",
+    "Minidregg.Compiler.BfvTensorMul.column_correct",
+    "Minidregg.Compiler.BfvTensorMul.radix_balance",
+    "Minidregg.Compiler.BfvTensorMul.denote_add",
+    "Minidregg.Compiler.BfvTensorMul.denote_scale",
+    "Minidregg.Compiler.BfvTensorMul.convolution_cast",
+    "Minidregg.Compiler.BfvTensorMul.padded_cast",
+    "Minidregg.Compiler.BfvTensorMul.rowSystem_sound",
+    "Minidregg.Compiler.BfvTensorCore.factor_bound",
+    "Minidregg.Compiler.BfvTensorCore.sound",
+    "Minidregg.Compiler.BfvTensorRow.prime_capacity",
+    "Minidregg.Compiler.BfvTensorRow.wholeRowSound",
+    "Minidregg.Compiler.BfvTensorRow.emittedSystem_sound",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.canonical_accepts",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.weighted_accepts",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.nonzero_premise",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.premise_inhabited",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_canonical",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_values",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.missing_cross_factor_refused",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.wrong_refused",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.capacity_inhabited",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.quotient_capacity",
+    "Minidregg.Compiler.BfvTensorCore.Exhibits.field_column_capacity"
+  ]
+}

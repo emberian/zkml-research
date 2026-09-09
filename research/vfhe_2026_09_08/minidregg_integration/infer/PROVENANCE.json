@@ -1,0 +1,2132 @@
+{
+  "state": "complete; applicability and new import glue passed",
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "predecessor_patch": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/minidregg-fhe-arithmetic.patch",
+    "sha256": "7e3e625deefe311d1f7d359ca6f3fc54fc727818bc138afaf955170cc42ed265"
+  },
+  "files": {
+    "Compiler/BfvLinearCombination.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvLinearCombination.lean",
+      "sha256": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean",
+        "sha256": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+        "group": "arithmetic_coverage",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvLinearCombinationLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvLinearCombinationLayout.lean",
+      "sha256": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombinationLayout.lean",
+        "sha256": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3",
+        "group": "arithmetic_coverage",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvExpiry.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvExpiry.lean",
+      "sha256": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiry.lean",
+        "sha256": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+        "group": "arithmetic_coverage",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvExpiryLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvExpiryLayout.lean",
+      "sha256": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiryLayout.lean",
+        "sha256": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+        "group": "arithmetic_coverage",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvOperationWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvOperationWitness.lean",
+      "sha256": "dd2af44988c3d853c8bc64329474adf647ee54b89479b8e75ee2ecf19a158fd9",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvOperationWitness.lean",
+        "sha256": "dd2af44988c3d853c8bc64329474adf647ee54b89479b8e75ee2ecf19a158fd9",
+        "group": "arithmetic_coverage",
+        "expected_pin_checked": true
+      }
+    },
+    "EmitBfvLinearCombination.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/EmitBfvLinearCombination.lean",
+      "sha256": "0450e5787f48ba8bde3bf5c1a55c9b0fd38fc5fb52ebde85f83d9d0319ffb4a5",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/EmitBfvLinearCombination.lean",
+        "sha256": "0450e5787f48ba8bde3bf5c1a55c9b0fd38fc5fb52ebde85f83d9d0319ffb4a5",
+        "group": "arithmetic_coverage",
+        "expected_pin_checked": true
+      }
+    },
+    "EmitBfvExpiry.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/EmitBfvExpiry.lean",
+      "sha256": "73b4d829a04f48a8c186cba8181b6ade7233894c8ed4d3e275adbfa413e8f1fb",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/EmitBfvExpiry.lean",
+        "sha256": "73b4d829a04f48a8c186cba8181b6ade7233894c8ed4d3e275adbfa413e8f1fb",
+        "group": "arithmetic_coverage",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvRescaleRow.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleRow.lean",
+      "sha256": "27396905c9e7e58cbcddd4effabd6abd2205268e1c28dfccb88338162857da9b",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleRow.lean",
+        "sha256": "27396905c9e7e58cbcddd4effabd6abd2205268e1c28dfccb88338162857da9b",
+        "group": "arithmetic_rescale",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvRescaleWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleWitness.lean",
+      "sha256": "1788612154ce6674e72e3731ad96f0d25993c3d489a40552fedcc0c777bbfdef",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleWitness.lean",
+        "sha256": "1788612154ce6674e72e3731ad96f0d25993c3d489a40552fedcc0c777bbfdef",
+        "group": "arithmetic_rescale",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvRescaleSound.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleSound.lean",
+      "sha256": "fc0d61b81ddfad5399978e2e9c3dae092b4c9976515180613acbb1c636ed7d9c",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleSound.lean",
+        "sha256": "fc0d61b81ddfad5399978e2e9c3dae092b4c9976515180613acbb1c636ed7d9c",
+        "group": "arithmetic_rescale",
+        "expected_pin_checked": true
+      }
+    },
+    "EmitBfvRescale.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/EmitBfvRescale.lean",
+      "sha256": "d9749e5db641e99334e09d28e5d314c559ea47adf8e54ce8b5ed9147c7935333",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/EmitBfvRescale.lean",
+        "sha256": "d9749e5db641e99334e09d28e5d314c559ea47adf8e54ce8b5ed9147c7935333",
+        "group": "compiler_cost_successor",
+        "expected_pin_checked": true,
+        "replaces": {
+          "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/EmitBfvRescale.lean",
+          "sha256": "7abd63fda7ec6a3224864205cd5636617ea971dbb458d6248395e08edb1692fd",
+          "group": "arithmetic_rescale",
+          "expected_pin_checked": true
+        }
+      }
+    },
+    "Compiler/DirectedRnsEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsEmit.lean",
+      "sha256": "6150b38a2ec60a6737505c25535b2a9e79459fcf9b5f79b1e0965803b6803c09",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsEmit.lean",
+        "sha256": "6150b38a2ec60a6737505c25535b2a9e79459fcf9b5f79b1e0965803b6803c09",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/DirectedRnsExhibits.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsExhibits.lean",
+      "sha256": "c87d90e4e0ce248f56c8acd5dbbe9ce92bdc4b40941afd14e0be3689f2c75107",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsExhibits.lean",
+        "sha256": "c87d90e4e0ce248f56c8acd5dbbe9ce92bdc4b40941afd14e0be3689f2c75107",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/DirectedRnsScaler.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsScaler.lean",
+      "sha256": "e0afaa5e0fcdb594f8e63c34c8456db638fa07937a79784d1ceb11a0538c0b9a",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsScaler.lean",
+        "sha256": "e0afaa5e0fcdb594f8e63c34c8456db638fa07937a79784d1ceb11a0538c0b9a",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/DirectedRnsWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsWitness.lean",
+      "sha256": "a79956a8263d4643b1b5a465da3d91ef7a7e57b210e574c683d893f781cdb01d",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsWitness.lean",
+        "sha256": "a79956a8263d4643b1b5a465da3d91ef7a7e57b210e574c683d893f781cdb01d",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/NonlinearRnsInstance.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsInstance.lean",
+      "sha256": "6ec28f0e6aac1ef29e39ab622588927a9bae593939225827ece0b2b1b2f4e277",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsInstance.lean",
+        "sha256": "6ec28f0e6aac1ef29e39ab622588927a9bae593939225827ece0b2b1b2f4e277",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/NonlinearRnsNative.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsNative.lean",
+      "sha256": "38fdd174fd58d8ca1df04d50d8632ec0f034cf149e7e0d5d997ec2a5b90fc569",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsNative.lean",
+        "sha256": "38fdd174fd58d8ca1df04d50d8632ec0f034cf149e7e0d5d997ec2a5b90fc569",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/NonlinearRnsPublic.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsPublic.lean",
+      "sha256": "ef05bbd066689be7c1f3598bc7d3b1c02554d0c7d63a9a4a12e6e10bb75d7f34",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublic.lean",
+        "sha256": "ef05bbd066689be7c1f3598bc7d3b1c02554d0c7d63a9a4a12e6e10bb75d7f34",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/NonlinearRnsPublicSound.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsPublicSound.lean",
+      "sha256": "ae51163e3889141a4aec8e09fb9eb8fdfd2a847172a56b48f7d8dca7863c4486",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublicSound.lean",
+        "sha256": "ae51163e3889141a4aec8e09fb9eb8fdfd2a847172a56b48f7d8dca7863c4486",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/NonlinearRnsSound.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsSound.lean",
+      "sha256": "210e38dcf4616ffe913319ad18cf6767c6004fc0899b10c0b3513ed7e23965fb",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsSound.lean",
+        "sha256": "210e38dcf4616ffe913319ad18cf6767c6004fc0899b10c0b3513ed7e23965fb",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/SignedMatrix.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/SignedMatrix.lean",
+      "sha256": "d3f84e321bd1ee5b4deb3bdda3a4ee7cca2ae3da695d37944c283292aecef7d5",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrix.lean",
+        "sha256": "d3f84e321bd1ee5b4deb3bdda3a4ee7cca2ae3da695d37944c283292aecef7d5",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/SignedMatrixEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/SignedMatrixEmit.lean",
+      "sha256": "4f165bf1e7d7ba213ac90e40fe2bb311639c061334e95fed68c002d07471ef53",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrixEmit.lean",
+        "sha256": "4f165bf1e7d7ba213ac90e40fe2bb311639c061334e95fed68c002d07471ef53",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "EmitNonlinearRns.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/EmitNonlinearRns.lean",
+      "sha256": "b0091f5eb0d78e3c3ec60167b5a82c439bce9d2b89389997e17d24e9ca75d9cf",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/EmitNonlinearRns.lean",
+        "sha256": "b0091f5eb0d78e3c3ec60167b5a82c439bce9d2b89389997e17d24e9ca75d9cf",
+        "group": "arithmetic_rescale_generic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/AirAssertionShare.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/AirAssertionShare.lean",
+      "sha256": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean",
+        "sha256": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf",
+        "group": "compiler_cost_successor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvRescaleAssertionShare.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleAssertionShare.lean",
+      "sha256": "a343673837610f4fb97a303fc4c07b4e49d743eece212ef1fca7f22e6353cc31",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/BfvRescaleAssertionShare.lean",
+        "sha256": "a343673837610f4fb97a303fc4c07b4e49d743eece212ef1fca7f22e6353cc31",
+        "group": "compiler_cost_successor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/TfheModulusSwitch.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/TfheModulusSwitch.lean",
+      "sha256": "dafb653dcdb09702b107703bbb4043c55dfa1b6da5485e4c88fde835571aba54",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/Compiler/TfheModulusSwitch.lean",
+        "sha256": "dafb653dcdb09702b107703bbb4043c55dfa1b6da5485e4c88fde835571aba54",
+        "group": "bootstrap_successor",
+        "expected_pin_checked": true
+      }
+    },
+    "EmitTfheModulusSwitch.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/EmitTfheModulusSwitch.lean",
+      "sha256": "0db477894b852f1bc192234e22b127a3cadf49fd251740bbb324d896f3d91edf",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/EmitTfheModulusSwitch.lean",
+        "sha256": "0db477894b852f1bc192234e22b127a3cadf49fd251740bbb324d896f3d91edf",
+        "group": "bootstrap_successor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/TfheInitialRotation.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/TfheInitialRotation.lean",
+      "sha256": "a42a9d79426035386a8bd16622ac06fe6c1f7451fa454f330790e906c1aa20d1",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/Compiler/TfheInitialRotation.lean",
+        "sha256": "a42a9d79426035386a8bd16622ac06fe6c1f7451fa454f330790e906c1aa20d1",
+        "group": "bootstrap_rotation_successor",
+        "expected_pin_checked": true
+      }
+    },
+    "EmitTfheInitialRotation.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/EmitTfheInitialRotation.lean",
+      "sha256": "71eb0e8cef1eb49046d382c5fe74931f3fd25c1c5d89c254d72c4ba632196e08",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/EmitTfheInitialRotation.lean",
+        "sha256": "71eb0e8cef1eb49046d382c5fe74931f3fd25c1c5d89c254d72c4ba632196e08",
+        "group": "bootstrap_rotation_successor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvQueryMul.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryMul.lean",
+      "sha256": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean",
+        "sha256": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e",
+        "group": "query_arithmetic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvQueryRow.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryRow.lean",
+      "sha256": "eb101cab960c6954ee7258a13cf41ea3cf9ebb285f99f410e92f1108efddaa8f",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean",
+        "sha256": "eb101cab960c6954ee7258a13cf41ea3cf9ebb285f99f410e92f1108efddaa8f",
+        "group": "query_arithmetic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvQueryTeeth.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryTeeth.lean",
+      "sha256": "68f36ac565f581c48ed54453595523cde07566a669d6858b03ac0b2244ac57a2",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean",
+        "sha256": "68f36ac565f581c48ed54453595523cde07566a669d6858b03ac0b2244ac57a2",
+        "group": "query_arithmetic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BfvQueryWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryWitness.lean",
+      "sha256": "860e1a86402d9ee6c816c2725f8e4865008d988044d975308b59df8a2e7081dd",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryWitness.lean",
+        "sha256": "860e1a86402d9ee6c816c2725f8e4865008d988044d975308b59df8a2e7081dd",
+        "group": "query_arithmetic",
+        "expected_pin_checked": true
+      }
+    },
+    "EmitBfvQuery.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/EmitBfvQuery.lean",
+      "sha256": "d76ab80472bdc34bab576ebc96d227a2e1766d6996fda67b635f3d76e6b505b7",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/EmitBfvQuery.lean",
+        "sha256": "d76ab80472bdc34bab576ebc96d227a2e1766d6996fda67b635f3d76e6b505b7",
+        "group": "query_arithmetic",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/AirSimplify.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/AirSimplify.lean",
+      "sha256": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean",
+        "sha256": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/IntegerCertificateEmission.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/IntegerCertificateEmission.lean",
+      "sha256": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean",
+        "sha256": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheSourceCertificateEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateEmit.lean",
+      "sha256": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean",
+        "sha256": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheTargetProjectionEmit.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionEmit.lean",
+      "sha256": "23653006b13b339c5d3a1e58255e273c8d607e17a108ec4c1c4b38614a585363",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean",
+        "sha256": "23653006b13b339c5d3a1e58255e273c8d607e17a108ec4c1c4b38614a585363",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheTargetProjectionWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionWitness.lean",
+      "sha256": "dd0c8ee14a1dbc779f7d4c16ec6b9c314444304c9652a13134b966fd8386a79c",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean",
+        "sha256": "dd0c8ee14a1dbc779f7d4c16ec6b9c314444304c9652a13134b966fd8386a79c",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheSourceCertificateWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateWitness.lean",
+      "sha256": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean",
+        "sha256": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheSourceCertificate.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificate.lean",
+      "sha256": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean",
+        "sha256": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheRnsScaleDecomposition.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheRnsScaleDecomposition.lean",
+      "sha256": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean",
+        "sha256": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheSourceCertificateLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateLayout.lean",
+      "sha256": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean",
+        "sha256": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheTargetProjectionLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionLayout.lean",
+      "sha256": "8194cb7e55cce3ae1e3266a35267e00f26f588b3cd0246a608dedc1fee8fd439",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean",
+        "sha256": "8194cb7e55cce3ae1e3266a35267e00f26f588b3cd0246a608dedc1fee8fd439",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheTargetProjectionVerifier.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionVerifier.lean",
+      "sha256": "41d8e514bc3a93463a7b6cbae4bc44b0de24298c8e4c2b3c4deedf1ce09a2e2b",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionVerifier.lean",
+        "sha256": "41d8e514bc3a93463a7b6cbae4bc44b0de24298c8e4c2b3c4deedf1ce09a2e2b",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/BFVScaleLiftRefinement.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BFVScaleLiftRefinement.lean",
+      "sha256": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean",
+        "sha256": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheTargetProjection.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjection.lean",
+      "sha256": "4f6f6f1d5bc89d416a9275f732fb623736232c6ef4bfe3abfccdf64bacb0f1d0",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean",
+        "sha256": "4f6f6f1d5bc89d416a9275f732fb623736232c6ef4bfe3abfccdf64bacb0f1d0",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheSourceCertificateVerifier.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateVerifier.lean",
+      "sha256": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean",
+        "sha256": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheSourceCertificateOptimized.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateOptimized.lean",
+      "sha256": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean",
+        "sha256": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+        "group": "required predecessor",
+        "expected_pin_checked": true
+      }
+    },
+    "Compiler/FheArithmetic.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheArithmetic.lean",
+      "sha256": "a23d64e7e44d5362ba9a436d190a5a7d3685b06496a638d821ffe32d71a4b77d",
+      "group": "frozen 51-file predecessor",
+      "existing_pin_checked": true,
+      "predecessor_provenance": {
+        "source": "new integration glue",
+        "sha256": "a23d64e7e44d5362ba9a436d190a5a7d3685b06496a638d821ffe32d71a4b77d",
+        "group": "integration"
+      }
+    },
+    "Compiler.lean": {
+      "source": "git:6937394e1dc2c2aaff986c7d4b3a258aca5d16fd:Compiler.lean plus predecessor and Infer imports",
+      "sha256": "9e87a2441f6e750d3fbc60853ed79ab916e6707095518c650022ec23fd550d1b",
+      "group": "integration",
+      "predecessor_root_sha256": "d450f8989bd3cfc11848dfe2435e07e753b66d910b421799c99ae37f0b77e32e",
+      "preserved_predecessor_import": "import Compiler.FheArithmetic  -- BFV linear/query/directed-rescale and TFHE modulus-switch/initial-rotation arithmetic; native/cryptographic refinements remain explicit"
+    },
+    "Compiler/NonlinearRnsProfiled.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/NonlinearRnsProfiled.lean",
+      "sha256": "b3be72bb7089497664b74c836f5fd4945735fbd3b795080d0c1d6dbe93420900",
+      "group": "rescale_compiler_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/ProfiledAgreement.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledAgreement.lean",
+      "sha256": "a4811300c0b8263083f63c8c2100da0bbdbf63b0c1ff893f8ccbf7d1b68acdb6",
+      "group": "rescale_compiler_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/ProfiledBounds.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledBounds.lean",
+      "sha256": "8c035865784110f09b84d210845cb18cbcd7f12bc8f30e2bc34bd8bc37c2da11",
+      "group": "rescale_compiler_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/ProfiledExhibits.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledExhibits.lean",
+      "sha256": "c9393f95dbdc0db19c8d9e192190d1c1b92c6076bc1e3218aeca058cb2680fa2",
+      "group": "rescale_compiler_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/ProfiledMatrix.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledMatrix.lean",
+      "sha256": "848c2fb072f6e5e7b1c360fd60c56cc668046c744135860e13b7bbea45c0d51c",
+      "group": "rescale_compiler_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/ProfiledWitness.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledWitness.lean",
+      "sha256": "0bc37b059e41c985226a4b47416ff672a61051c094eb82237b76619b22785c58",
+      "group": "rescale_compiler_successor",
+      "existing_pin_checked": true
+    },
+    "EmitProfiledRns.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/EmitProfiledRns.lean",
+      "sha256": "c2d3820486421ab43c46a64685880ea856ab8ccdd6895451305809e3f9286914",
+      "group": "rescale_compiler_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/RescaleWitnessPlan.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/Compiler/RescaleWitnessPlan.lean",
+      "sha256": "c21ef1d935a7f3ddfbaf4c0dbebf6c4ad0847939a53b47ff8668c088d255a97d",
+      "group": "rescale_native_emitter",
+      "existing_pin_checked": true
+    },
+    "EmitRescaleWitnessPlan.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/EmitRescaleWitnessPlan.lean",
+      "sha256": "d99cadaf7d5fcc7beb729c0a9c87353503e9bd596eff28b8b84086f4d113036d",
+      "group": "rescale_native_emitter",
+      "existing_pin_checked": true
+    },
+    "Compiler/ActualBasisExtension.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ActualBasisExtension.lean",
+      "sha256": "543df98fe85ea85626f43513b0c1dfe4e375be44269e7b475ffecc2ee8377c48",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/BasisExtensionLayout.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionLayout.lean",
+      "sha256": "247ab6fa77a4904c7c46407a97eca388867f8d33c1302e0b70ef8849da8d1a21",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/BasisExtensionNative.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionNative.lean",
+      "sha256": "a83af69c6cb61ae8cf5ec9b513861176fae08ba1972585e22afdf97a83a70f06",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/BasisExtensionPublic.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionPublic.lean",
+      "sha256": "864a50a56b09a31da3c967f9d83c7d717b450615469dc8703861defc6592e62c",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/BasisExtensionWitnessPlan.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionWitnessPlan.lean",
+      "sha256": "5b71cad464812e4cd7ade68420b06d3f31d5921a4be2808dbffdc5a497bce19c",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/ExactBasisExtension.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ExactBasisExtension.lean",
+      "sha256": "593d4823e170acbae1af033d7b2765464408be3784e426dd931f019527dcadc7",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/ProfiledAutoCapacity.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ProfiledAutoCapacity.lean",
+      "sha256": "42e1c0a644b0734871679e60ca4e096aef6e7dd03ac615759da3b1110e12dc81",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "EmitBasisExtension.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/EmitBasisExtension.lean",
+      "sha256": "650555636a8175aca2fca69c3ee12153ea46b07946bc35aeb8a1e12f7fff3712",
+      "group": "basis_extension_successor",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvTensorAxiomPins.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorAxiomPins.lean",
+      "sha256": "f2c089e5bd5e24cd4c69add231c8b6d5844bbb662cc866ef4d25661a2c5ecb5e",
+      "group": "full_bfv_tensor_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvTensorCore.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorCore.lean",
+      "sha256": "5983ffcdc3626a806ef079abba198bfd6bd9ce30954a91422dd761a55334a913",
+      "group": "full_bfv_tensor_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvTensorExhibits.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorExhibits.lean",
+      "sha256": "987f1620cfebe934375ab11285056ad840a10d31821d59b18ebb17ffe558234b",
+      "group": "full_bfv_tensor_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvTensorMul.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorMul.lean",
+      "sha256": "bf32232c477e48a231ceaed72c6a3f73f52ca0cb0e02aa938e1836434880c3b9",
+      "group": "full_bfv_tensor_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvTensorRow.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorRow.lean",
+      "sha256": "db2c0aedcc1e91484f6785a0280feb64522a21f3170bf64f94455e2df314ae76",
+      "group": "full_bfv_tensor_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvTensorWitnessPlan.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorWitnessPlan.lean",
+      "sha256": "669c37920c7365fb5f60eb291a3df275c17ed92eaaa63861f9c52a003f05f63d",
+      "group": "full_bfv_tensor_arithmetic",
+      "existing_pin_checked": true
+    },
+    "EmitBfvTensor.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/EmitBfvTensor.lean",
+      "sha256": "806716fd4dc58b59381eb2710ece6bccd1c917853e404b1b1ef8c42ac4de005f",
+      "group": "full_bfv_tensor_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvKeyswitchAxiomPins.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchAxiomPins.lean",
+      "sha256": "0034c220ad6d61709f736c38fef734e8e0e0c82f977a857208bb66e3eaf07bdc",
+      "group": "full_bfv_keyswitch_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvKeyswitchCore.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchCore.lean",
+      "sha256": "969a8cfc5b0724412a00243352cf956a6aa98d8417b9e48b7e123925736814b3",
+      "group": "full_bfv_keyswitch_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvKeyswitchExhibits.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchExhibits.lean",
+      "sha256": "5c02ef85ebf20f5b2e07cf965fc0148c5ae5f84b867c6851d0b1e55dde534848",
+      "group": "full_bfv_keyswitch_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvKeyswitchMac.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchMac.lean",
+      "sha256": "8897abedbad8090ed074361493ff08c5f89ccd31fe63fac223df9b49518839cc",
+      "group": "full_bfv_keyswitch_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvKeyswitchRow.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchRow.lean",
+      "sha256": "41c4a9beb15fbed9cc445e7b9de64043e9cfc1f799b3234ce5710743c1f9fa19",
+      "group": "full_bfv_keyswitch_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvKeyswitchWitnessPlan.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchWitnessPlan.lean",
+      "sha256": "b5f793911d62c5b19ce5d5541a35d3159e57f3c4606aeb655c2f886a7d671a81",
+      "group": "full_bfv_keyswitch_arithmetic",
+      "existing_pin_checked": true
+    },
+    "EmitBfvKeyswitch.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/EmitBfvKeyswitch.lean",
+      "sha256": "40c53ed1a630562631d35d3f4ce92a80dd34d624913ead3e6b6116a6a27fb857",
+      "group": "full_bfv_keyswitch_arithmetic",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvInferComposition.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferComposition.lean",
+      "sha256": "2718d9a27bd1566eaa0db386d31f5de8598adaa944f022debebaef0c6f6b7f9c",
+      "group": "full_bfv_infer_composition",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvInferContract.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferContract.lean",
+      "sha256": "4cb97ddb6693768743a4c1bd015917e917b535c96ec7c9365a86381a791507bb",
+      "group": "full_bfv_infer_composition",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvInferExhibits.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferExhibits.lean",
+      "sha256": "3bfd985ddb199c0035f6d7d5c649c71f4ee7536f492abbf96501fdf995f6d01c",
+      "group": "full_bfv_infer_composition",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvInferLinear.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferLinear.lean",
+      "sha256": "fbe9e3e1fdaf618aa9172afb5a013244e440a45065ae28a46064407091890975",
+      "group": "full_bfv_infer_composition",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvSquareComposition.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvSquareComposition.lean",
+      "sha256": "4b46444e7e36ca45117254afae583ccc5088db5f23ba4c188ed0647bd77c1e58",
+      "group": "full_bfv_infer_composition",
+      "existing_pin_checked": true
+    },
+    "EmitBfvInferLinear.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/EmitBfvInferLinear.lean",
+      "sha256": "7f6b91e3c274b068bf7b519f6b0af3bf853c036dc4cdc4a3570e7bc66ace1311",
+      "group": "full_bfv_infer_composition",
+      "existing_pin_checked": true
+    },
+    "Compiler/BfvQueryWitnessPlan.lean": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean",
+      "sha256": "bb91eeb1c1fc46c0e1f498e49de18cc7533f6ab3bf5b7b14efa01382b4f87bb0",
+      "group": "required Infer prerequisite",
+      "existing_pin_checked": true
+    },
+    "Compiler/FheInfer.lean": {
+      "source": "new import-only integration glue",
+      "sha256": "8869bb92d8b2f1e07d66510b72eb4208d73c1178c9db010453a02a88917b61e8",
+      "group": "integration"
+    }
+  },
+  "completed_package_evidence": {
+    "rescale_compiler_successor": {
+      "source_pins": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/source_pins.json",
+      "source_pins_sha256": "b9fcba903dd627bec790cd42301d03f9be2d46f2a8c8d1ca3dafac7cf83775ad",
+      "proposal.patch": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/proposal.patch",
+        "sha256": "9a79d94aa43a398ef7a57d878d055e7c22b012ce21870a530b51cf668b3aea30"
+      },
+      "MANIFEST.sha256": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/MANIFEST.sha256",
+        "sha256": "6fc716cdf1334bde2b08f5c455d073619750ac4ffcf63d25bc6bf60e1fd7d8ee"
+      }
+    },
+    "rescale_native_emitter": {
+      "source_pins": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/source_pins.json",
+      "source_pins_sha256": "c3dd9e065849636058b0b81347b22f1e689f72f7b1ea4c5ae8ea5aa488c5afd9",
+      "proposal.patch": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/proposal.patch",
+        "sha256": "e8a70c96d2f65b10e40cd603825a4986c0b2c6371ceae9dd95fe0f0acd303b10"
+      },
+      "MANIFEST.sha256": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/MANIFEST.sha256",
+        "sha256": "45ff1ef7d7b0d4a534096adcc10d16696f4c24d77a79a22ff298e8d1e4557ab3"
+      }
+    },
+    "basis_extension_successor": {
+      "source_pins": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/source_pins.json",
+      "source_pins_sha256": "233e11a43030a5be5cc2591887b36612cf06da58a159fddfe02d59b8e2bbf07e",
+      "proposal.patch": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/proposal.patch",
+        "sha256": "d94d689307d47fa981b83ecdac6124f52e9b0838b74c14633d3121ca5bc6cce1"
+      },
+      "MANIFEST.sha256": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/MANIFEST.sha256",
+        "sha256": "f8d6db6e5492e29458e5ef79367bc373a73768cfec79abfd30a9ac0488ce553b"
+      }
+    },
+    "full_bfv_tensor_arithmetic": {
+      "source_pins": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/source_pins.json",
+      "source_pins_sha256": "44d3deb8d458c0aa434f3624fb828da8592e6506410ee0084043424b6c8d4e42",
+      "proposal.patch": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/proposal.patch",
+        "sha256": "86661da5a86b2a146f5b401a87461ca50b65d4f26b488e2ded2e1b3a9f437987"
+      },
+      "MANIFEST.json": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/MANIFEST.json",
+        "sha256": "b74e057454bc121fe9942a346dddcd6b6eb2e801fb54684cb7208b5062cf4780"
+      }
+    },
+    "full_bfv_keyswitch_arithmetic": {
+      "source_pins": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/source_pins.json",
+      "source_pins_sha256": "5c71c34379f4f9edd08f3a4401ea192b2ebc62feea79f7fb998aae8c75a5e042",
+      "proposal.patch": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/proposal.patch",
+        "sha256": "7e100c01b807c9667b42f3230fe0ce56033c0d61de808bbd7ec6f3e3f0df937d"
+      },
+      "SOURCE_MANIFEST.json": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/SOURCE_MANIFEST.json",
+        "sha256": "6ff5ce283c1bf01c9fbd52cc69ada354db5df4021a1b6f3edfaf18b81c3fb14a"
+      }
+    },
+    "full_bfv_infer_composition": {
+      "source_pins": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/source_pins.json",
+      "source_pins_sha256": "1c59ee77e6284ba46001fcbff896125e522bfaccd72f4838114fd34881798e7c",
+      "proposal.patch": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/proposal.patch",
+        "sha256": "a05f9ee1ebf80498d4543b56ed4181011415a4790fb771ea1e1cffbe9c144406"
+      },
+      "MANIFEST.sha256": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/MANIFEST.sha256",
+        "sha256": "d03616a91977fbb3ebc63fa22b997cfeedd83bdf6b6ea6388bab668a51b78cac"
+      }
+    }
+  },
+  "base_direct_dependencies": {
+    "Compiler/PredCompile.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/PredCompile.lean",
+      "git_blob": "5d07867315eab57b8ab90eab44262cd23c7b2440"
+    },
+    "Compiler/DescriptorEval.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean",
+      "git_blob": "e347305f4c7e19b55ced8ee948bf372207a729ac"
+    },
+    "Compiler/BfvSignedAccumulatorAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BfvSignedAccumulatorAir.lean",
+      "git_blob": "b2acd6019c788e842188f57c0867754f1fd66719"
+    },
+    "Compiler/Placeholder.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Placeholder.lean",
+      "git_blob": "7bb6a0009d53307a9a61b3148a8d8c970fee856d"
+    },
+    "Compiler/Signature.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Signature.lean",
+      "git_blob": "6af74341981fa2fd13eab16c17c6eeb0d85723cf"
+    },
+    "Compiler/Air.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Air.lean",
+      "git_blob": "a8071dc437cd88c6504c3b4d92ea46b41dd5b6fe"
+    },
+    "Compiler/AirFlatten.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AirFlatten.lean",
+      "git_blob": "48347d0a2d04b95a65d039a0b6e5c5eb0ebe607b"
+    },
+    "Compiler/DialectBundle.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DialectBundle.lean",
+      "git_blob": "4d3b21b88fbe51b07bd6c3a904c9832e8df94c37"
+    },
+    "Compiler/AirRange.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AirRange.lean",
+      "git_blob": "6b5f745bd7043c471f866e666a9a9b33f3345a72"
+    },
+    "Compiler/AirBignum.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AirBignum.lean",
+      "git_blob": "0c12ade9e89d6ec6e38ed815e68607476a8b808f"
+    },
+    "Compiler/AirModularView.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AirModularView.lean",
+      "git_blob": "735a1e4e7e581e716646b443bca1b440aa19aad9"
+    },
+    "Compiler/BignumKernelABI.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BignumKernelABI.lean",
+      "git_blob": "d789bc454982731d4d3abbe6806fe15457beb7f0"
+    },
+    "Compiler/BfvAllModuliKernelCalls.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BfvAllModuliKernelCalls.lean",
+      "git_blob": "a3b75d3289dd884a2e0c1112c6e31a8149a28ce6"
+    },
+    "Compiler/BfvInputValidity.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BfvInputValidity.lean",
+      "git_blob": "309109f422e6048965bcab8fd0405196be332712"
+    },
+    "Compiler/BfvReceiptClause.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BfvReceiptClause.lean",
+      "git_blob": "21e9753b894f5e42ddfe72aab6b0253c74eff904"
+    },
+    "Compiler/BfvProofController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BfvProofController.lean",
+      "git_blob": "d9133a18b40409832551f5f3ff7fa667efd6818e"
+    },
+    "Compiler/BfvCompressedEquation.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BfvCompressedEquation.lean",
+      "git_blob": "67ffbe82e3974b020da8003f44e7157794ab9483"
+    },
+    "Compiler/WideDigestAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/WideDigestAir.lean",
+      "git_blob": "5af5198a0bb9421f6540215161ef46ae89c23781"
+    },
+    "Compiler/WideDigestByteDecodeAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/WideDigestByteDecodeAir.lean",
+      "git_blob": "bacd565ff3e73ac49e99a1c005e2f5ac9cd35559"
+    },
+    "Compiler/Ext6Conformance.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Ext6Conformance.lean",
+      "git_blob": "939d7a8863c12bc637f427dbfa50f718ae367cc3"
+    },
+    "Compiler/GateMleExt6.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/GateMleExt6.lean",
+      "git_blob": "5feb465358ee495291101f9cdb26de85c4dbfac2"
+    },
+    "Compiler/GateFactoredExt6.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/GateFactoredExt6.lean",
+      "git_blob": "773d6bb054b97ae8844db5effa28b9af2a5fa752"
+    },
+    "Compiler/GateTraceRelationExt6.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/GateTraceRelationExt6.lean",
+      "git_blob": "879532a7ad8df0d88adfd25be2e36416e3717846"
+    },
+    "Compiler/NextgenLightClientPublicInputs.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/NextgenLightClientPublicInputs.lean",
+      "git_blob": "fe0ec6de669d8477cb46e4a39376e9f509b7214b"
+    },
+    "Compiler/TypedAuthorizationRequestCodec.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/TypedAuthorizationRequestCodec.lean",
+      "git_blob": "6241023917ce2a4f7ed77fd057dd469bd9374cb5"
+    },
+    "Compiler/HyperdocumentCodec.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/HyperdocumentCodec.lean",
+      "git_blob": "62449332f4d1e343e4e9b6ba814e156fa0ca47be"
+    },
+    "Compiler/HyperdocumentContentPageMaterializer.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/HyperdocumentContentPageMaterializer.lean",
+      "git_blob": "fb144e5613cf0fa6eba272644efe491bb995482f"
+    },
+    "Compiler/HyperdocumentEventPageMaterializer.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/HyperdocumentEventPageMaterializer.lean",
+      "git_blob": "7461646351715445aba0503bf04be319f9799f90"
+    },
+    "Compiler/CredentialAuthorityPageMaterializer.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CredentialAuthorityPageMaterializer.lean",
+      "git_blob": "8a17d7df9ccc8228565c086e20de1cf6a6897a85"
+    },
+    "Compiler/BoundedPageExtensionCatalog.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BoundedPageExtensionCatalog.lean",
+      "git_blob": "1d99e4c23d1af6486cdf3b3a3b9ec7865739bb7e"
+    },
+    "Compiler/BoundedPageCellRegistry.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BoundedPageCellRegistry.lean",
+      "git_blob": "63de924095ff0c5f9625a1d72ceb8b67f2bc0a23"
+    },
+    "Compiler/BoundedPageSchemaUpgrade.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BoundedPageSchemaUpgrade.lean",
+      "git_blob": "5a6594325b46339a02f7cfd39660e6a3dea130a7"
+    },
+    "Compiler/HyperdocumentIndexPageMaterializer.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/HyperdocumentIndexPageMaterializer.lean",
+      "git_blob": "359051bdd60b039ccb3ccfdf031a26d39cba4667"
+    },
+    "Compiler/DeployedCellRegistry.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DeployedCellRegistry.lean",
+      "git_blob": "e535ec2b1840cb4acc19d49535d65e30403edfe5"
+    },
+    "Compiler/FiniteSparseMaterializerAudit.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/FiniteSparseMaterializerAudit.lean",
+      "git_blob": "3c50a7ed25c950cd8f00bf8e79b7834957de950e"
+    },
+    "Compiler/CredentialAuthorityPolicyRegistry.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CredentialAuthorityPolicyRegistry.lean",
+      "git_blob": "143159c6037294d255be1e0976ac303bd949c93b"
+    },
+    "Compiler/SemanticTurnReceiptDescriptor.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SemanticTurnReceiptDescriptor.lean",
+      "git_blob": "f7bb4b54e60649f691183b9eea9fad00b2e17f9a"
+    },
+    "Compiler/SemanticManifest.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SemanticManifest.lean",
+      "git_blob": "805d6d176370be17a3f5adac9559e362b4b7f16b"
+    },
+    "Compiler/SemanticArtifactBundle.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SemanticArtifactBundle.lean",
+      "git_blob": "7cb2902f8e1966358993f49b494f18819563acd8"
+    },
+    "Compiler/DeclaredEffectArtifact.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DeclaredEffectArtifact.lean",
+      "git_blob": "d50f493eb402af9c3308d8cfa0f39b703f06c162"
+    },
+    "Compiler/DeclaredActionBytes.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DeclaredActionBytes.lean",
+      "git_blob": "34c327111fdbf135a27d4ae7ad551160ce28be1a"
+    },
+    "Compiler/DeclaredHyperedgeArtifact.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DeclaredHyperedgeArtifact.lean",
+      "git_blob": "e6fe579687e7f28628fd042bfea28db2924710b8"
+    },
+    "Compiler/NativeWorkProfiles.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/NativeWorkProfiles.lean",
+      "git_blob": "c5e97884e1add8342f1f121c55fc7dec49fdf611"
+    },
+    "Compiler/NativeKernelPlan.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/NativeKernelPlan.lean",
+      "git_blob": "7330ad8e0b9eef3356e5a97c70fb2fac6fd4de57"
+    },
+    "Compiler/MinidreggV1ArithmeticWork.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/MinidreggV1ArithmeticWork.lean",
+      "git_blob": "1328ec7db67f9d3e559573fbc636e6be8ef5b64f"
+    },
+    "Compiler/ArithmeticNativeDeployment.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/ArithmeticNativeDeployment.lean",
+      "git_blob": "aae5a0a621ddd6acd4715f618c73e244bf1e53eb"
+    },
+    "Compiler/DialectClauseDispatch.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/DialectClauseDispatch.lean",
+      "git_blob": "00026b8aed9b22f8c4db2ea12ac34957cd363f91"
+    },
+    "Compiler/NativeGlueGen.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/NativeGlueGen.lean",
+      "git_blob": "73a7d1b1996c57e3481a7a037f2344e2c1513a99"
+    },
+    "Compiler/MinidreggV1Artifact.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/MinidreggV1Artifact.lean",
+      "git_blob": "8c0670cdf26d33ca20db33a400c9a0eff1ba2e51"
+    },
+    "Compiler/MinidreggV1NativeGlue.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/MinidreggV1NativeGlue.lean",
+      "git_blob": "389ddb9ad6150710984eb99d68a757de71da40fb"
+    },
+    "Compiler/Logup256ReceiptClause.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Logup256ReceiptClause.lean",
+      "git_blob": "8c3d4c10b050303f5d96118f32d6295d913cac0b"
+    },
+    "Compiler/AdditiveFriReceiptClause.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AdditiveFriReceiptClause.lean",
+      "git_blob": "4ca4c3afdea984cc540fcc90a72e70094daaca0c"
+    },
+    "Compiler/SemanticController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SemanticController.lean",
+      "git_blob": "e91d0b40999273bdf5aa5b9cb6ad11a661deaa7a"
+    },
+    "Compiler/TranscriptController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/TranscriptController.lean",
+      "git_blob": "0dd7808943cb05686fb7e182ca228d64179f6016"
+    },
+    "Compiler/AuthenticatedColumnPlan.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AuthenticatedColumnPlan.lean",
+      "git_blob": "4764db3249adc87c825793cb8738c6ffdbec335a"
+    },
+    "Compiler/AuthenticatedColumnLogupBridge.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AuthenticatedColumnLogupBridge.lean",
+      "git_blob": "b33b71871c8b2f5874273a14d07676767edf0b46"
+    },
+    "Compiler/Tower256CshakeMerkleController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256CshakeMerkleController.lean",
+      "git_blob": "57d1394e2fe9084d20044a245c74977a527daa90"
+    },
+    "Compiler/Sp800185Cshake256.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Sp800185Cshake256.lean",
+      "git_blob": "c6738256bdf603eb9c69fc4fd31a7a54c986f0be"
+    },
+    "Compiler/Sp800185Cshake256Conformance.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Sp800185Cshake256Conformance.lean",
+      "git_blob": "eedc5d31af3c2a127bd28b4c0e5c2b079227fe95"
+    },
+    "Compiler/BinaryTower256Profile.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/BinaryTower256Profile.lean",
+      "git_blob": "84f9f33103ea47c8ecaa09bebf6fd79e8cb4ea47"
+    },
+    "Compiler/Tower256NativeByteBoundary.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256NativeByteBoundary.lean",
+      "git_blob": "d9418e6b4123f85046b4cbfbce70fb42616190a5"
+    },
+    "Compiler/Tower256CshakeMerkleBinding.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256CshakeMerkleBinding.lean",
+      "git_blob": "a3ded3005335d2dae0f5298e4c014d3fa5533138"
+    },
+    "Compiler/Tower256ConcreteBackend.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256ConcreteBackend.lean",
+      "git_blob": "4b429b91c79a16906a2bf08c4e20a1608f738dd6"
+    },
+    "Compiler/Tower256LogupControllerPlan.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256LogupControllerPlan.lean",
+      "git_blob": "42e81c651c92c66223d66299ac542a00bfb3a6c8"
+    },
+    "Compiler/Tower256LogupAcceptedRun.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256LogupAcceptedRun.lean",
+      "git_blob": "940272afa6af65154f3c06385340860945aed0b2"
+    },
+    "Compiler/Tower256LogupClauseDispatch.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256LogupClauseDispatch.lean",
+      "git_blob": "9908b99799946a8e8e3ac2f4756d41cdc54a9d63"
+    },
+    "Compiler/Tower256LogupExtensionDeployment.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256LogupExtensionDeployment.lean",
+      "git_blob": "60967b07e050e1131403695f1bde9e835417f40a"
+    },
+    "Compiler/Tower256AdditiveFriController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256AdditiveFriController.lean",
+      "git_blob": "900fd230fdcf35dad28ab9d841856c560381ba37"
+    },
+    "Compiler/Tower256AdditiveFriRawController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256AdditiveFriRawController.lean",
+      "git_blob": "e70e85d1ed859be4e6c33fdd632c6e21a20b6548"
+    },
+    "Compiler/Tower256AdditiveFriRawDeployment.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Tower256AdditiveFriRawDeployment.lean",
+      "git_blob": "8179f86867821f249fb3475c39a3012ec05787d4"
+    },
+    "Compiler/Ext6GateProofController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Ext6GateProofController.lean",
+      "git_blob": "f4558883c5b20790184e1811a3cf013e9c9dfc7b"
+    },
+    "Compiler/Ext6GateProofDeployment.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Ext6GateProofDeployment.lean",
+      "git_blob": "e6f1f3f0b982df020e54c777121d74a56bd162e0"
+    },
+    "Compiler/Ext6GateProofPositiveRun.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Ext6GateProofPositiveRun.lean",
+      "git_blob": "bb915107009f5703dfabe7601b77b959367f5d07"
+    },
+    "Compiler/FramedWalRecoveryController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/FramedWalRecoveryController.lean",
+      "git_blob": "05e74314622a6369fb8fa06c5c2b4b5e4600b644"
+    },
+    "Compiler/FramedWalRecoveryDeployment.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/FramedWalRecoveryDeployment.lean",
+      "git_blob": "fd8d762c15a84ad1040b8277f76448250b4af775"
+    },
+    "Compiler/ComposableDeploymentManifest.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/ComposableDeploymentManifest.lean",
+      "git_blob": "51c782726cc07241b18f69cfa222d37442d3dc5e"
+    },
+    "Compiler/SparseAuthenticatedStateLogupBridge.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SparseAuthenticatedStateLogupBridge.lean",
+      "git_blob": "870b22685d7f8740360f4c4b17dfa4bf22602f96"
+    },
+    "Compiler/SparseEqualityWorkProfile.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SparseEqualityWorkProfile.lean",
+      "git_blob": "eb37178a97da3b367adbfbeab465276020ce77cc"
+    },
+    "Compiler/AirHash.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AirHash.lean",
+      "git_blob": "ede899e1740a8bbcf306fbd833cd63f8838edcdb"
+    },
+    "Compiler/AirMembership.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AirMembership.lean",
+      "git_blob": "d737878fa5f06248a509c1861e1a190f5bd20734"
+    },
+    "Compiler/NoteSpend.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/NoteSpend.lean",
+      "git_blob": "2f0a220bbd5f701d9ee7043fa45f0b97230901f6"
+    },
+    "Compiler/NoteSpendProofController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/NoteSpendProofController.lean",
+      "git_blob": "b08ee2d70755803b6a169a904e4197f7f4610ff2"
+    },
+    "Compiler/AdmissionAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/AdmissionAir.lean",
+      "git_blob": "1f57c60e9c0654cddd4219381a0a6ff02d3c2003"
+    },
+    "Compiler/Emit.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/Emit.lean",
+      "git_blob": "e5d3e4af2e6af42a5a73c106deaed9511c654627"
+    },
+    "Compiler/EmitShare.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/EmitShare.lean",
+      "git_blob": "99ee8b0153ab9b3878220b81595cd29ae8a96dd6"
+    },
+    "Compiler/EmitSerialize.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/EmitSerialize.lean",
+      "git_blob": "78b6d3d69c3efa24fa79416026abf4066dc3df08"
+    },
+    "Compiler/SumcheckVerifierAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SumcheckVerifierAir.lean",
+      "git_blob": "3438e3dec229c21d110ab9e1a48eb53465ea60ca"
+    },
+    "Compiler/FriQueryVerifierAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/FriQueryVerifierAir.lean",
+      "git_blob": "6cfe8134f99ac6400ee4b0a7ee9e6d0b851fd83d"
+    },
+    "Compiler/FiatShamirAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/FiatShamirAir.lean",
+      "git_blob": "102210ca05ea70f4289d86cb82df07b9d55efdbe"
+    },
+    "Compiler/MerkleBindAir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/MerkleBindAir.lean",
+      "git_blob": "4c7b88c9b99079b2704b63310d1215be5a0f98cd"
+    },
+    "Compiler/SumcheckConformance.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/SumcheckConformance.lean",
+      "git_blob": "ae19a675f7eed9700cb2a709b1814a777f87e336"
+    },
+    "Compiler/CanonicalPolicyAdmission.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CanonicalPolicyAdmission.lean",
+      "git_blob": "74ed63262cac68626a7e843124899bb2ca5eb48e"
+    },
+    "Compiler/EvmStage0NativeDeployment.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/EvmStage0NativeDeployment.lean",
+      "git_blob": "ee7d4c2bed405f6c1de71fcb954b8c1ee96ec626"
+    },
+    "Compiler/CommittedTerminalRealizer.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalRealizer.lean",
+      "git_blob": "c7c22ef71a0af07720fcf47099bf17bcf713a6ef"
+    },
+    "Compiler/CommittedTerminalFactored7.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalFactored7.lean",
+      "git_blob": "48d4886429c4846b48941172b7b3bc5e44b94d48"
+    },
+    "Compiler/CommittedTerminalCompose.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalCompose.lean",
+      "git_blob": "5b1084708d4e4b68835a3e1790ff289a4a2092a8"
+    },
+    "Compiler/CommittedTerminalController.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalController.lean",
+      "git_blob": "b1059da7032e670e46a319a5c99f061122a2a39a"
+    },
+    "Compiler/CommittedTerminalFiatShamir.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalFiatShamir.lean",
+      "git_blob": "29392b0e7a70e052c0c24bb51827b793e80a16c3"
+    },
+    "Compiler/CommittedTerminalFactoredProver.lean": {
+      "source": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalFactoredProver.lean",
+      "git_blob": "51f668d9643ce4a6f122d46e88f9703c1498db70"
+    }
+  },
+  "overlap_resolution": [
+    {
+      "target": "Compiler.lean",
+      "resolution": "retain predecessor FheArithmetic import; append one FheInfer import",
+      "predecessor_sha256": "d450f8989bd3cfc11848dfe2435e07e753b66d910b421799c99ae37f0b77e32e",
+      "final_sha256": "9e87a2441f6e750d3fbc60853ed79ab916e6707095518c650022ec23fd550d1b"
+    }
+  ],
+  "preserved_predecessor_resolution": "EmitBfvRescale.lean is the completed assertion-sharing replacement, not the earlier unspecialized exporter.",
+  "excluded": [
+    "separate TFHE/soundness expansions beyond the 51-file predecessor",
+    "paused restricted_ring_arithmetic",
+    "native runtime crates and proof/trace payloads",
+    "experimental PrintAxioms/ProfileStats runners and constant-regeneration scripts"
+  ],
+  "scope": "Compiler source and Lean exporters only; exact completed sources with import-only integration glue.",
+  "module_dependency_order": [
+    "Compiler/IntegerCertificateEmission.lean",
+    "Compiler/BfvLinearCombination.lean",
+    "Compiler/BfvExpiry.lean",
+    "Compiler/AirSimplify.lean",
+    "Compiler/BfvLinearCombinationLayout.lean",
+    "Compiler/BfvExpiryLayout.lean",
+    "Compiler/BfvOperationWitness.lean",
+    "Compiler/BFVScaleLiftRefinement.lean",
+    "Compiler/FheRnsScaleDecomposition.lean",
+    "Compiler/FheSourceCertificate.lean",
+    "Compiler/FheSourceCertificateLayout.lean",
+    "Compiler/FheSourceCertificateEmit.lean",
+    "Compiler/FheSourceCertificateOptimized.lean",
+    "Compiler/FheSourceCertificateVerifier.lean",
+    "Compiler/FheSourceCertificateWitness.lean",
+    "Compiler/FheTargetProjection.lean",
+    "Compiler/FheTargetProjectionLayout.lean",
+    "Compiler/FheTargetProjectionEmit.lean",
+    "Compiler/FheTargetProjectionVerifier.lean",
+    "Compiler/FheTargetProjectionWitness.lean",
+    "Compiler/BfvRescaleRow.lean",
+    "Compiler/BfvRescaleSound.lean",
+    "Compiler/BfvRescaleWitness.lean",
+    "Compiler/AirAssertionShare.lean",
+    "Compiler/BfvRescaleAssertionShare.lean",
+    "Compiler/SignedMatrix.lean",
+    "Compiler/SignedMatrixEmit.lean",
+    "Compiler/DirectedRnsScaler.lean",
+    "Compiler/DirectedRnsWitness.lean",
+    "Compiler/DirectedRnsExhibits.lean",
+    "Compiler/DirectedRnsEmit.lean",
+    "Compiler/NonlinearRnsInstance.lean",
+    "Compiler/NonlinearRnsPublic.lean",
+    "Compiler/NonlinearRnsSound.lean",
+    "Compiler/NonlinearRnsNative.lean",
+    "Compiler/NonlinearRnsPublicSound.lean",
+    "Compiler/TfheModulusSwitch.lean",
+    "Compiler/TfheInitialRotation.lean",
+    "Compiler/BfvQueryMul.lean",
+    "Compiler/BfvQueryRow.lean",
+    "Compiler/BfvQueryWitness.lean",
+    "Compiler/BfvQueryTeeth.lean",
+    "Compiler/FheArithmetic.lean",
+    "Compiler/ProfiledMatrix.lean",
+    "Compiler/ExactBasisExtension.lean",
+    "Compiler/ProfiledBounds.lean",
+    "Compiler/ProfiledAutoCapacity.lean",
+    "Compiler/ActualBasisExtension.lean",
+    "Compiler/BasisExtensionLayout.lean",
+    "Compiler/BasisExtensionNative.lean",
+    "Compiler/BasisExtensionPublic.lean",
+    "Compiler/NonlinearRnsProfiled.lean",
+    "Compiler/ProfiledWitness.lean",
+    "Compiler/BfvQueryWitnessPlan.lean",
+    "Compiler/RescaleWitnessPlan.lean",
+    "Compiler/BasisExtensionWitnessPlan.lean",
+    "Compiler/BfvKeyswitchMac.lean",
+    "Compiler/BfvKeyswitchCore.lean",
+    "Compiler/BfvKeyswitchRow.lean",
+    "Compiler/BfvInferLinear.lean",
+    "Compiler/BfvInferComposition.lean",
+    "Compiler/BfvTensorMul.lean",
+    "Compiler/BfvTensorCore.lean",
+    "Compiler/BfvTensorRow.lean",
+    "Compiler/BfvSquareComposition.lean",
+    "Compiler/BfvInferContract.lean",
+    "Compiler/BfvKeyswitchExhibits.lean",
+    "Compiler/BfvInferExhibits.lean",
+    "Compiler/BfvKeyswitchWitnessPlan.lean",
+    "Compiler/BfvKeyswitchAxiomPins.lean",
+    "Compiler/BfvTensorWitnessPlan.lean",
+    "Compiler/BfvTensorExhibits.lean",
+    "Compiler/BfvTensorAxiomPins.lean",
+    "Compiler/ProfiledAgreement.lean",
+    "Compiler/ProfiledExhibits.lean",
+    "Compiler/FheInfer.lean"
+  ],
+  "all_file_order": [
+    "Compiler/IntegerCertificateEmission.lean",
+    "Compiler/BfvLinearCombination.lean",
+    "Compiler/BfvExpiry.lean",
+    "Compiler/AirSimplify.lean",
+    "Compiler/BfvLinearCombinationLayout.lean",
+    "Compiler/BfvExpiryLayout.lean",
+    "Compiler/BfvOperationWitness.lean",
+    "Compiler/BFVScaleLiftRefinement.lean",
+    "Compiler/FheRnsScaleDecomposition.lean",
+    "Compiler/FheSourceCertificate.lean",
+    "Compiler/FheSourceCertificateLayout.lean",
+    "Compiler/FheSourceCertificateEmit.lean",
+    "Compiler/FheSourceCertificateOptimized.lean",
+    "Compiler/FheSourceCertificateVerifier.lean",
+    "Compiler/FheSourceCertificateWitness.lean",
+    "Compiler/FheTargetProjection.lean",
+    "Compiler/FheTargetProjectionLayout.lean",
+    "Compiler/FheTargetProjectionEmit.lean",
+    "Compiler/FheTargetProjectionVerifier.lean",
+    "Compiler/FheTargetProjectionWitness.lean",
+    "Compiler/BfvRescaleRow.lean",
+    "Compiler/BfvRescaleSound.lean",
+    "Compiler/BfvRescaleWitness.lean",
+    "Compiler/AirAssertionShare.lean",
+    "Compiler/BfvRescaleAssertionShare.lean",
+    "Compiler/SignedMatrix.lean",
+    "Compiler/SignedMatrixEmit.lean",
+    "Compiler/DirectedRnsScaler.lean",
+    "Compiler/DirectedRnsWitness.lean",
+    "Compiler/DirectedRnsExhibits.lean",
+    "Compiler/DirectedRnsEmit.lean",
+    "Compiler/NonlinearRnsInstance.lean",
+    "Compiler/NonlinearRnsPublic.lean",
+    "Compiler/NonlinearRnsSound.lean",
+    "Compiler/NonlinearRnsNative.lean",
+    "Compiler/NonlinearRnsPublicSound.lean",
+    "Compiler/TfheModulusSwitch.lean",
+    "Compiler/TfheInitialRotation.lean",
+    "Compiler/BfvQueryMul.lean",
+    "Compiler/BfvQueryRow.lean",
+    "Compiler/BfvQueryWitness.lean",
+    "Compiler/BfvQueryTeeth.lean",
+    "Compiler/FheArithmetic.lean",
+    "Compiler/ProfiledMatrix.lean",
+    "Compiler/ExactBasisExtension.lean",
+    "Compiler/ProfiledBounds.lean",
+    "Compiler/ProfiledAutoCapacity.lean",
+    "Compiler/ActualBasisExtension.lean",
+    "Compiler/BasisExtensionLayout.lean",
+    "Compiler/BasisExtensionNative.lean",
+    "Compiler/BasisExtensionPublic.lean",
+    "Compiler/NonlinearRnsProfiled.lean",
+    "Compiler/ProfiledWitness.lean",
+    "Compiler/BfvQueryWitnessPlan.lean",
+    "Compiler/RescaleWitnessPlan.lean",
+    "Compiler/BasisExtensionWitnessPlan.lean",
+    "Compiler/BfvKeyswitchMac.lean",
+    "Compiler/BfvKeyswitchCore.lean",
+    "Compiler/BfvKeyswitchRow.lean",
+    "Compiler/BfvInferLinear.lean",
+    "Compiler/BfvInferComposition.lean",
+    "Compiler/BfvTensorMul.lean",
+    "Compiler/BfvTensorCore.lean",
+    "Compiler/BfvTensorRow.lean",
+    "Compiler/BfvSquareComposition.lean",
+    "Compiler/BfvInferContract.lean",
+    "Compiler/BfvKeyswitchExhibits.lean",
+    "Compiler/BfvInferExhibits.lean",
+    "Compiler/BfvKeyswitchWitnessPlan.lean",
+    "Compiler/BfvKeyswitchAxiomPins.lean",
+    "Compiler/BfvTensorWitnessPlan.lean",
+    "Compiler/BfvTensorExhibits.lean",
+    "Compiler/BfvTensorAxiomPins.lean",
+    "Compiler/ProfiledAgreement.lean",
+    "Compiler/ProfiledExhibits.lean",
+    "Compiler/FheInfer.lean",
+    "Compiler.lean",
+    "EmitBasisExtension.lean",
+    "EmitBfvExpiry.lean",
+    "EmitBfvInferLinear.lean",
+    "EmitBfvKeyswitch.lean",
+    "EmitBfvLinearCombination.lean",
+    "EmitBfvQuery.lean",
+    "EmitBfvRescale.lean",
+    "EmitBfvTensor.lean",
+    "EmitNonlinearRns.lean",
+    "EmitProfiledRns.lean",
+    "EmitRescaleWitnessPlan.lean",
+    "EmitTfheInitialRotation.lean",
+    "EmitTfheModulusSwitch.lean"
+  ],
+  "new_glue": [
+    "Compiler/FheInfer.lean",
+    "Compiler.lean one additional import"
+  ],
+  "patch_sha256": "41334884b11980604bcaaafacaa6dfdbc14ccc9b42027e790d7f136b51030ff7",
+  "patch_bytes": 541726,
+  "integration_checks": [
+    {
+      "label": "base scratch repository",
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/check_base",
+      "exit_code": 0,
+      "seconds": 0.05687695799861103,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "base applicability",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/check_base",
+      "exit_code": 0,
+      "seconds": 0.049186833028215915,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "base isolated apply",
+      "argv": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/check_base",
+      "exit_code": 0,
+      "seconds": 0.09609741601161659,
+      "stdout": "",
+      "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch:2397: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch:5011: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch:5452: new blank line at EOF.\n+\nwarning: 3 lines add whitespace errors.\n"
+    },
+    {
+      "label": "dirty scratch repository",
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/check_dirty",
+      "exit_code": 0,
+      "seconds": 0.058108916971832514,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "dirty applicability",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/check_dirty",
+      "exit_code": 0,
+      "seconds": 0.04805016703903675,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "dirty isolated apply",
+      "argv": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/check_dirty",
+      "exit_code": 0,
+      "seconds": 0.09251508401939645,
+      "stdout": "",
+      "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch:2397: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch:5011: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch:5452: new blank line at EOF.\n+\nwarning: 3 lines add whitespace errors.\n"
+    },
+    {
+      "label": "actual companion read-only applicability",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "seconds": 0.061713790986686945,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "new FheInfer umbrella",
+      "argv": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/build/Compiler/FheInfer.olean",
+        "Compiler/FheInfer.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/proposal",
+      "exit_code": 0,
+      "seconds": 21.092445291986223,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "base Compiler import glue",
+      "argv": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/build/Compiler.olean",
+        "Compiler.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/proposal",
+      "exit_code": 0,
+      "seconds": 10.334916834020987,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "dirty Compiler import glue",
+      "argv": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/build/DirtyCompiler.olean",
+        "Compiler.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/check_dirty",
+      "exit_code": 0,
+      "seconds": 10.00303891702788,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "existing Theory/Selvage import boundary",
+      "argv": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "seconds": 0.3278839589911513,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    }
+  ],
+  "retained_oleans": [
+    {
+      "module": "Compiler.BfvLinearCombination",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvLinearCombination.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombination.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombination.olean"
+    },
+    {
+      "module": "Compiler.BfvLinearCombinationLayout",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvLinearCombinationLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombinationLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombinationLayout.olean"
+    },
+    {
+      "module": "Compiler.BfvExpiry",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvExpiry.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiry.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiry.olean"
+    },
+    {
+      "module": "Compiler.BfvExpiryLayout",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvExpiryLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiryLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiryLayout.olean"
+    },
+    {
+      "module": "Compiler.BfvOperationWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvOperationWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvOperationWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvOperationWitness.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleRow",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleRow.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleRow.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleRow.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleWitness.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleSound",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleSound.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleSound.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleSound.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsEmit",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsEmit.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsExhibits",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsExhibits.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsExhibits.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsExhibits.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsScaler",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsScaler.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsScaler.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsScaler.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/DirectedRnsWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsWitness.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsInstance",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsInstance.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsInstance.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsInstance.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsNative",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsNative.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsNative.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsNative.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsPublic",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsPublic.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublic.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublic.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsPublicSound",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsPublicSound.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublicSound.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublicSound.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsSound",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/NonlinearRnsSound.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsSound.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsSound.olean"
+    },
+    {
+      "module": "Compiler.SignedMatrix",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/SignedMatrix.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrix.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrix.olean"
+    },
+    {
+      "module": "Compiler.SignedMatrixEmit",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/SignedMatrixEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrixEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrixEmit.olean"
+    },
+    {
+      "module": "Compiler.AirAssertionShare",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/AirAssertionShare.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/AirAssertionShare.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/AirAssertionShare.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleAssertionShare",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvRescaleAssertionShare.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/BfvRescaleAssertionShare.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/BfvRescaleAssertionShare.olean"
+    },
+    {
+      "module": "Compiler.TfheModulusSwitch",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/TfheModulusSwitch.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TfheModulusSwitch.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TfheModulusSwitch.olean"
+    },
+    {
+      "module": "Compiler.TfheInitialRotation",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/TfheInitialRotation.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/build/Compiler/TfheInitialRotation.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/build/Compiler/TfheInitialRotation.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryMul",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryMul.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryMul.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryMul.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryRow",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryRow.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryRow.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryRow.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryTeeth",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryTeeth.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryTeeth.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryTeeth.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BfvQueryWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryWitness.olean"
+    },
+    {
+      "module": "Compiler.AirSimplify",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/AirSimplify.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler/AirSimplify.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler/AirSimplify.olean"
+    },
+    {
+      "module": "Compiler.IntegerCertificateEmission",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/IntegerCertificateEmission.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/IntegerCertificateEmission.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/IntegerCertificateEmission.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateEmit",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateEmit.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionEmit",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionEmit.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionWitness.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateWitness.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificate",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificate.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificate.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificate.olean"
+    },
+    {
+      "module": "Compiler.FheRnsScaleDecomposition",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheRnsScaleDecomposition.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateLayout",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateLayout.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionLayout",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionLayout.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionVerifier",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjectionVerifier.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionVerifier.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionVerifier.olean"
+    },
+    {
+      "module": "Compiler.BFVScaleLiftRefinement",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/BFVScaleLiftRefinement.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BFVScaleLiftRefinement.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/BFVScaleLiftRefinement.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjection",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheTargetProjection.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjection.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjection.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateVerifier",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateVerifier.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateVerifier.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateVerifier.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateOptimized",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheSourceCertificateOptimized.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateOptimized.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateOptimized.olean"
+    },
+    {
+      "module": "Compiler.FheArithmetic",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/proposal/Compiler/FheArithmetic.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/build/Compiler/FheArithmetic.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/build/Compiler/FheArithmetic.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsProfiled",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/NonlinearRnsProfiled.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/NonlinearRnsProfiled.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/NonlinearRnsProfiled.olean"
+    },
+    {
+      "module": "Compiler.ProfiledAgreement",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledAgreement.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledAgreement.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledAgreement.olean"
+    },
+    {
+      "module": "Compiler.ProfiledBounds",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledBounds.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledBounds.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledBounds.olean"
+    },
+    {
+      "module": "Compiler.ProfiledExhibits",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledExhibits.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledExhibits.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledExhibits.olean"
+    },
+    {
+      "module": "Compiler.ProfiledMatrix",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledMatrix.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledMatrix.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledMatrix.olean"
+    },
+    {
+      "module": "Compiler.ProfiledWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/ProfiledWitness.olean"
+    },
+    {
+      "module": "Compiler.RescaleWitnessPlan",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/Compiler/RescaleWitnessPlan.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build/Compiler/RescaleWitnessPlan.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build/Compiler/RescaleWitnessPlan.olean"
+    },
+    {
+      "module": "Compiler.ActualBasisExtension",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ActualBasisExtension.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/ActualBasisExtension.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/ActualBasisExtension.olean"
+    },
+    {
+      "module": "Compiler.BasisExtensionLayout",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionLayout.olean"
+    },
+    {
+      "module": "Compiler.BasisExtensionNative",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionNative.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionNative.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionNative.olean"
+    },
+    {
+      "module": "Compiler.BasisExtensionPublic",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionPublic.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionPublic.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionPublic.olean"
+    },
+    {
+      "module": "Compiler.BasisExtensionWitnessPlan",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionWitnessPlan.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionWitnessPlan.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/BasisExtensionWitnessPlan.olean"
+    },
+    {
+      "module": "Compiler.ExactBasisExtension",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ExactBasisExtension.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/ExactBasisExtension.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/ExactBasisExtension.olean"
+    },
+    {
+      "module": "Compiler.ProfiledAutoCapacity",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ProfiledAutoCapacity.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/ProfiledAutoCapacity.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/build/Compiler/ProfiledAutoCapacity.olean"
+    },
+    {
+      "module": "Compiler.BfvTensorAxiomPins",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorAxiomPins.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorAxiomPins.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorAxiomPins.olean"
+    },
+    {
+      "module": "Compiler.BfvTensorCore",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorCore.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorCore.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorCore.olean"
+    },
+    {
+      "module": "Compiler.BfvTensorExhibits",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorExhibits.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorExhibits.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorExhibits.olean"
+    },
+    {
+      "module": "Compiler.BfvTensorMul",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorMul.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorMul.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorMul.olean"
+    },
+    {
+      "module": "Compiler.BfvTensorRow",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorRow.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorRow.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorRow.olean"
+    },
+    {
+      "module": "Compiler.BfvTensorWitnessPlan",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorWitnessPlan.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorWitnessPlan.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/BfvTensorWitnessPlan.olean"
+    },
+    {
+      "module": "Compiler.BfvKeyswitchAxiomPins",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchAxiomPins.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchAxiomPins.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchAxiomPins.olean"
+    },
+    {
+      "module": "Compiler.BfvKeyswitchCore",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchCore.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchCore.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchCore.olean"
+    },
+    {
+      "module": "Compiler.BfvKeyswitchExhibits",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchExhibits.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchExhibits.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchExhibits.olean"
+    },
+    {
+      "module": "Compiler.BfvKeyswitchMac",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchMac.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchMac.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchMac.olean"
+    },
+    {
+      "module": "Compiler.BfvKeyswitchRow",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchRow.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchRow.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchRow.olean"
+    },
+    {
+      "module": "Compiler.BfvKeyswitchWitnessPlan",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchWitnessPlan.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchWitnessPlan.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/build/Compiler/BfvKeyswitchWitnessPlan.olean"
+    },
+    {
+      "module": "Compiler.BfvInferComposition",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferComposition.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferComposition.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferComposition.olean"
+    },
+    {
+      "module": "Compiler.BfvInferContract",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferContract.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferContract.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferContract.olean"
+    },
+    {
+      "module": "Compiler.BfvInferExhibits",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferExhibits.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferExhibits.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferExhibits.olean"
+    },
+    {
+      "module": "Compiler.BfvInferLinear",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferLinear.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferLinear.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferLinear.olean"
+    },
+    {
+      "module": "Compiler.BfvSquareComposition",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvSquareComposition.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvSquareComposition.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvSquareComposition.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryWitnessPlan",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/build/Compiler/BfvQueryWitnessPlan.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/build/Compiler/BfvQueryWitnessPlan.olean"
+    }
+  ],
+  "retained_olean_scope": "Reused existing completed-module artifacts and their author evidence; no theorem recompilation or new artifact audit.",
+  "glue_lean_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/infer/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "preservation": {
+    "main_Compiler_unchanged": true,
+    "predecessor_patch_unchanged": true,
+    "dirty_root_preserved_except_two_proposed_imports": true,
+    "all_applied_copied_sources_exact": true,
+    "base_Compiler_sha256": "7d1de586dc1b53d2785344c5a04e505540cad58e707d07b13ccfc35bb311c358",
+    "observed_dirty_Compiler_sha256": "49406fd9d224390e37dee72163ea1635e4f74f7eaaed63e3239c1224d0eaa217",
+    "no_Theory_or_Selvage_target_changed": true
+  }
+}

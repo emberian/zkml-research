@@ -1,0 +1,4 @@
+Compiler/BfvInferExhibits.lean:55:68: error: failed to synthesize
+  Decidable MissingStageChangesOutput
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

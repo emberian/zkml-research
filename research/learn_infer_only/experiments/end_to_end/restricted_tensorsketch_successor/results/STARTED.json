@@ -1,0 +1,7 @@
+{
+  "started_utc": "2026-09-08T22:47:31.237247+00:00",
+  "policy_freeze_sha256": "aea4f524af404acc4d701b2380f173c58b925165542bd19ccb7357bbd54c589d",
+  "evaluation_source_sha256": "6541fe56528a9f4c8ab853928e95457ab2f2e8b855f4e87ba1d9356a1c4ceab4",
+  "numpy": "2.5.2",
+  "successor_utility_attempt": 1
+}

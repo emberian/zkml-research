@@ -1,0 +1,121 @@
+{
+  "schema": "bfv-tensor-profiles-v1",
+  "scope": "all nine fixed-prime pointwise square relations; universal source soundness compiled; exhibits and axiom census packaging pending",
+  "profiles": [
+    {
+      "prime_index": 0,
+      "prime": "1125899906826241",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime0/template_ir2.json",
+      "template_sha256": "68641e6c2fd5c8041c1e51815d839b993b1c2d61651877c4afa85b0a8c89e0ad",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime0/witness_plan.json",
+      "plan_sha256": "6e82f318ce33bc9ab871fb36773e0068f65a8836b35d6d6b745b6fbd9a33d021",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 1,
+      "prime": "1125899906629633",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime1/template_ir2.json",
+      "template_sha256": "70d07c989830922ce398e2151b33459a73a5f638ded1b1af2513045b75ee0422",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime1/witness_plan.json",
+      "plan_sha256": "813a4c1bc17a8a4d42e0c70ead3b1dd9a21b22b2c783ebf3c13933fa55f802d4",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 2,
+      "prime": "1125899905744897",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime2/template_ir2.json",
+      "template_sha256": "f5edc52993d833d5512e890531493ccf9d2085f82f7c7ae4104923253cadd356",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime2/witness_plan.json",
+      "plan_sha256": "48ad0838cb0fe19a95a2e6de97bd81c6a60c6a085d20aa6bf5792c5812c356e8",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 3,
+      "prime": "1125899905351681",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime3/template_ir2.json",
+      "template_sha256": "3dc35115c579e796dc0bc43a8496270479a77c65422d54b54e5b1b11f25a96e4",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime3/witness_plan.json",
+      "plan_sha256": "af817400f2cb7fda3e257450a8f93039aef5b3fd40844eb338483a5264e3ad29",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 4,
+      "prime": "4611686018427322369",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime4/template_ir2.json",
+      "template_sha256": "88e2ff7142a2cd1402be7bf1cbee69ec24d3603c747549d8cca5774eb58c7eec",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime4/witness_plan.json",
+      "plan_sha256": "ab08387e8065e1fa40b10342ffcde5c3a0ad36abada817559ee4d86c5caa569c",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 5,
+      "prime": "4611686018427289601",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime5/template_ir2.json",
+      "template_sha256": "de0a29cfaa94d8ce1c078bcc1558023e94667c7e6fc5c103124e68c9b91c1d85",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime5/witness_plan.json",
+      "plan_sha256": "2fcd4496fbe3c721c94bf7c968b20cf16519e6bd2882dc1a9f84ec22b2eda613",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 6,
+      "prime": "4611686018426454017",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime6/template_ir2.json",
+      "template_sha256": "cb04ecc6b867441d0e0e43baa4a9b18a2475c6889c24b68faeaa1e272ffca257",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime6/witness_plan.json",
+      "plan_sha256": "a8b3b94c8b2bd532687290ed5b84be302a19a6b7eeefd0d6a1f7f03bd86cab17",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 7,
+      "prime": "4611686018426257409",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime7/template_ir2.json",
+      "template_sha256": "d0ef36fea667676619f2785e0ca1d02ca7d6e5a61d642d6da1c1855c51f335f5",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime7/witness_plan.json",
+      "plan_sha256": "1deffaaa96779f375e4f7611f436bd4c9e882de716a0c3073ecdae894372cc90",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 8,
+      "prime": "4611686018425815041",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime8/template_ir2.json",
+      "template_sha256": "59037a3eff73e6ba2655a924c931bbb311372c4e853c825f08a07a0773119e11",
+      "width": 2036,
+      "public_arity": 56,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime8/witness_plan.json",
+      "plan_sha256": "32ad6dc6dafe5e4340e5f3f4f0f57d9f5b4089968f287656d13d1cbc1e713ac5",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    }
+  ],
+  "source_sha256": {
+    "Compiler/BfvTensorCore.lean": "5983ffcdc3626a806ef079abba198bfd6bd9ce30954a91422dd761a55334a913",
+    "Compiler/BfvTensorMul.lean": "bf32232c477e48a231ceaed72c6a3f73f52ca0cb0e02aa938e1836434880c3b9",
+    "Compiler/BfvTensorRow.lean": "db2c0aedcc1e91484f6785a0280feb64522a21f3170bf64f94455e2df314ae76",
+    "Compiler/BfvTensorWitnessPlan.lean": "669c37920c7365fb5f60eb291a3df275c17ed92eaaa63861f9c52a003f05f63d"
+  },
+  "emitter_sha256": "806716fd4dc58b59381eb2710ece6bccd1c917853e404b1b1ef8c42ac4de005f"
+}

@@ -1,0 +1,13 @@
+import Compiler.BfvInferExhibits
+#print axioms Minidregg.Compiler.BfvInferComposition.boundRowSound
+#print axioms Minidregg.Compiler.BfvInferComposition.emittedChecked_sound
+#print axioms Minidregg.Compiler.BfvInferComposition.initialOperands_output
+#print axioms Minidregg.Compiler.BfvInferComposition.initialChecked_sound
+#print axioms Minidregg.Compiler.BfvInferComposition.rotationChecked_sound
+#print axioms Minidregg.Compiler.BfvInferComposition.prefixSound
+#print axioms Minidregg.Compiler.BfvInferComposition.inferDotSound
+#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.good_bound
+#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.rowPremiseInhabited
+#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.changedOutputRefused
+#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.prefixPremiseInhabited
+#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.missingStageChangesOutput

@@ -1,0 +1,1411 @@
+diff --git a/Selvage/ArityEightConsistencySchedule.lean b/Selvage/ArityEightConsistencySchedule.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightConsistencySchedule.lean
+@@ -0,0 +1,163 @@
++/- Prefix-adaptive consistency weights and a threshold-preserving finite
++challenge invariant, on the existing arity-eight schedule APIs. -/
++import Selvage.FoldingConsistencyWeights
++import Selvage.ConsistencyMask
++import Selvage.ArityEightSchedule
++
++namespace Minidregg.Selvage.ArityEight.Schedule
++open scoped BigOperators Classical
++variable {F : Type} [Field F] [DecidableEq F] {ell m : ℕ}
++
++/-- Weights depend only on the same prior scalar prefix as their source word. -/
++noncomputable def prefixConsistency (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) :
++    (n : ℕ) → n ≤ m → (Fin n → F) → PowerTwoFriLevels ell (3*n) → ℝ
++  | 0, _, _ => fun _ => 1
++  | n+1, hn, p =>
++    let j : Fin m := ⟨n,by omega⟩
++    let prior : Fin n → F := fun i => p i.castSucc
++    maskConsistency (projectConsistency8 (T.data (3*n) (by omega))
++      (T.data (3*n+1) (by omega)) (T.data (3*n+2) (by omega))
++      (prefixConsistency T s n (by omega) prior))
++      (s.word (n+1) p) (literal T s j prior (p (Fin.last n)))
++
++noncomputable def consistencyAt (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (r : Fin m → F) (n : ℕ) (hn : n ≤ m) :=
++  prefixConsistency T s n hn (friPrefix r n hn)
++
++theorem prefixConsistency_nonneg (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (n : ℕ) (hn : n ≤ m) (p : Fin n → F) :
++    ∀ i, 0 ≤ prefixConsistency T s n hn p i := by
++  induction n with
++  | zero => intro i; simp [prefixConsistency]
++  | succ n ih =>
++    exact maskConsistency_nonneg _ (projectConsistency8_nonneg _ _ _ _ (ih (by omega) _)) _ _
++
++theorem prefixConsistency_le_one (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (n : ℕ) (hn : n ≤ m) (p : Fin n → F) :
++    ∀ i, prefixConsistency T s n hn p i ≤ 1 := by
++  induction n with
++  | zero => intro i; simp [prefixConsistency]
++  | succ n ih =>
++    exact maskConsistency_le_one _ (projectConsistency8_le_one _ _ _ _ (ih (by omega) _)) _ _
++
++/-- Exact recurrence on a completed challenge vector, with no future-query argument. -/
++theorem consistencyAt_succ (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (r : Fin m → F) (j : Fin m) :
++    consistencyAt T s r (j.val+1) (by omega) =
++      maskConsistency (projectConsistency8 (T.data (3*j.val) (by omega))
++        (T.data (3*j.val+1) (by omega)) (T.data (3*j.val+2) (by omega))
++        (consistencyAt T s r j (by omega)))
++        (s.wordAt r (j+1) (by omega)) (blockAt T s j r) := rfl
++
++/-- This bad event changes the weighted threshold across one fresh scalar. -/
++def WeightedBadRound (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (deg : ℕ → ℕ) (θ : ℝ) (j : Fin m) (r : Fin m → F) : Prop :=
++  ¬WeightedClose (reedSolomonCode (T.dom (3*j.val)) (deg j)) θ
++      (consistencyAt T s r j (by omega)) (s.wordAt r j (by omega)) ∧
++  WeightedClose (reedSolomonCode (T.dom (3*(j.val+1))) (deg (j+1))) θ
++    (projectConsistency8 (T.data (3*j.val) (by omega)) (T.data (3*j.val+1) (by omega))
++      (T.data (3*j.val+2) (by omega)) (consistencyAt T s r j (by omega))) (blockAt T s j r)
++
++theorem weighted_bad_round_bound [Fintype F]
++    (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (deg : ℕ → ℕ) (θ : ℝ)
++    (j : Fin m) (hd : 1 ≤ deg (j+1)) (hdeg : deg j = 8*deg (j+1)) (hθ : 0 < θ)
++    (hrate : (deg (j+1):ℝ) < (1-2*θ)*(Fintype.card (PowerTwoFriLevels ell (3*(j.val+1))):ℝ)) :
++    uniformProb (Fin m → F) (WeightedBadRound T s deg θ j) ≤
++      ((8*Fintype.card (PowerTwoFriLevels ell (3*(j.val+1))):ℕ):ℝ)/Fintype.card F := by
++  apply prefix_challenge_bound j (fun p β =>
++    ¬WeightedClose (reedSolomonCode (T.dom (3*j.val)) (deg j)) θ
++      (prefixConsistency T s j (by omega) p) (s.word j p) ∧
++    WeightedClose (reedSolomonCode (T.dom (3*(j.val+1))) (deg (j+1))) θ
++      (projectConsistency8 (T.data (3*j.val) (by omega)) (T.data (3*j.val+1) (by omega))
++        (T.data (3*j.val+2) (by omega)) (prefixConsistency T s j (by omega) p))
++      (literal T s j p β)) (by positivity)
++  intro p
++  by_cases hf : WeightedClose (reedSolomonCode (T.dom (3*j.val)) (deg j)) θ
++      (prefixConsistency T s j (by omega) p) (s.word j p)
++  · rw [uniformProb_false (fun _ h => h.1 hf)]
++    positivity
++  · have hf' : ¬WeightedClose (reedSolomonCode (T.dom (3*j.val)) (8*deg (j+1))) θ
++        (prefixConsistency T s j (by omega) p) (s.word j p) := by simpa only [←hdeg] using hf
++    exact le_trans (uniformProb_mono fun _ h => h.2)
++      (fold8_injected_weighted_sound (T.data (3*j.val) (by omega))
++        (T.data (3*j.val+1) (by omega)) (T.data (3*j.val+2) (by omega)) hd hθ hrate
++        (prefixConsistency T s j (by omega) p) (prefixConsistency_le_one T s j (by omega) p)
++        (s.word j p) (s.input j p) hf')
++
++theorem weighted_bad_schedule_bound [Fintype F]
++    (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (deg : ℕ → ℕ) (θ : ℝ)
++    (hd : ∀ j : Fin m, 1 ≤ deg (j+1)) (hdeg : ∀ j : Fin m, deg j = 8*deg (j+1)) (hθ : 0 < θ)
++    (hrate : ∀ j : Fin m, (deg (j+1):ℝ) <
++      (1-2*θ)*(Fintype.card (PowerTwoFriLevels ell (3*(j.val+1))):ℝ)) :
++    uniformProb (Fin m → F) (fun r => ∃ j, WeightedBadRound T s deg θ j r) ≤
++      ∑ j : Fin m, ((8*Fintype.card (PowerTwoFriLevels ell (3*(j.val+1))):ℕ):ℝ)/Fintype.card F := by
++  exact le_trans (uniformProb_exists_le _)
++    (Finset.sum_le_sum fun j _ => weighted_bad_round_bound T s deg θ j (hd j) (hdeg j) hθ (hrate j))
++
++/-- No radius is spent per transition: absence of the proved bad events
++preserves weighted nonagreement from the initial word to every prefix. -/
++theorem weighted_invariant (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (deg : ℕ → ℕ) (θ : ℝ)
++    (hfar : ¬close θ (reedSolomonCode (T.dom 0) (deg 0)) (s.word 0 (fun i => i.elim0)))
++    (r : Fin m → F) (hgood : ¬∃ j, WeightedBadRound T s deg θ j r) (n : ℕ) (hn : n ≤ m) :
++    ¬WeightedClose (reedSolomonCode (T.dom (3*n)) (deg n)) θ
++      (consistencyAt T s r n hn) (s.wordAt r n hn) := by
++  induction n with
++  | zero =>
++    intro h
++    apply hfar
++    have hp : friPrefix r 0 hn = (fun i => i.elim0) := Subsingleton.elim _ _
++    simpa only [Words.wordAt,hp] using weightedClose_one_to_close _ θ _ h
++  | succ n ih =>
++    intro h
++    let j : Fin m := ⟨n,by omega⟩
++    apply hgood
++    refine ⟨j,ih (by omega),?_⟩
++    rw [consistencyAt_succ T s r j] at h
++    exact weightedClose_mask_transfer _ θ _ _ _ h
++
++/-- A legal terminal word has strictly less than (1−θ) total consistency
++mass off the derived challenge bad event. Query transport is a separate theorem. -/
++theorem terminal_consistency_mass_lt (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (deg : ℕ → ℕ) (θ : ℝ)
++    (hfar : ¬close θ (reedSolomonCode (T.dom 0) (deg 0)) (s.word 0 (fun i => i.elim0)))
++    (r : Fin m → F) (hgood : ¬∃ j, WeightedBadRound T s deg θ j r)
++    (hterminal : s.wordAt r m le_rfl ∈ reedSolomonCode (T.dom (3*m)) (deg m)) :
++    consistencyMass (consistencyAt T s r m le_rfl) Finset.univ <
++      (1-θ)*(Fintype.card (PowerTwoFriLevels ell (3*m)):ℝ) := by
++  by_contra hn
++  exact weighted_invariant T s deg θ hfar r hgood m le_rfl
++    (weightedClose_self_of_mass _ θ _ _ hterminal (le_of_not_gt hn))
++
++end Minidregg.Selvage.ArityEight.Schedule
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_nonneg
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_le_one
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.consistencyAt_succ' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.consistencyAt_succ
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.weighted_bad_round_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.weighted_bad_round_bound
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.weighted_bad_schedule_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.weighted_bad_schedule_bound
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.weighted_invariant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.weighted_invariant
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.terminal_consistency_mass_lt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.terminal_consistency_mass_lt
+diff --git a/Selvage/BabyBearConsistencyInvariant.lean b/Selvage/BabyBearConsistencyInvariant.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/BabyBearConsistencyInvariant.lean
+@@ -0,0 +1,84 @@
++/- Actual BabyBear tower/degree/rate specialization of the cumulative
++weighted invariant. The single threshold is 1/5 at all five rounds. -/
++import Selvage.ArityEightConsistencySchedule
++import Selvage.ArityEightScheduleBabyBear
++
++namespace Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted
++open BabyBearExt4
++noncomputable section
++
++theorem rate_fixed (j : Fin 5) : (degree (j+1):ℝ) <
++    (1-2*(1/5:ℝ))*(Fintype.card (PowerTwoFriLevels 20 (3*(j.val+1))):ℝ) := by
++  fin_cases j <;> norm_num [degree,PowerTwoFriLevels]
++
++theorem initial_far (s : Words Ext4 (PowerTwoFriLevels 20))
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19))
++      (s.word 0 (fun i => i.elim0))) :
++    ¬close (1/5:ℝ) (reedSolomonCode (firstFifteen.dom 0) (degree 0))
++      (s.word 0 (fun i => i.elim0)) := by
++  rintro ⟨w,hw,hc⟩
++  apply hfar
++  refine ⟨w,hw,?_⟩
++  linarith
++
++/-- The full existing degree-eight challenge sum, at one unchanged weighted threshold. -/
++theorem bad_probability (s : Words Ext4 (PowerTwoFriLevels 20)) :
++    uniformProb (Fin 5 → Ext4) (fun r => ∃ j, WeightedBadRound firstFifteen s degree (1/5:ℝ) j r) ≤
++      (1198336:ℝ)/(modulus^4:ℕ) := by
++  have h := weighted_bad_schedule_bound firstFifteen s degree (1/5:ℝ) degree_positive degree_step
++    (by norm_num) rate_fixed
++  rw [ext4_card] at h
++  norm_num [PowerTwoFriLevels,Fin.sum_univ_succ] at h ⊢
++  convert h using 1
++  ring
++
++/-- Off the derived challenge event, a legal terminal word has normalized
++consistency mass below 4/5. The query-side equality is proved separately. -/
++theorem terminal_mass (s : Words Ext4 (PowerTwoFriLevels 20))
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19))
++      (s.word 0 (fun i => i.elim0))) (r : Fin 5 → Ext4)
++    (hgood : ¬∃ j, WeightedBadRound firstFifteen s degree (1/5:ℝ) j r)
++    (ht : s.wordAt r 5 le_rfl ∈ reedSolomonCode (firstFifteen.dom 15) (degree 5)) :
++    consistencyMass (consistencyAt firstFifteen s r 5 le_rfl) Finset.univ /
++      (Fintype.card (PowerTwoFriLevels 20 15):ℝ) < 4/5 := by
++  have h := terminal_consistency_mass_lt (ell := 20) (m := 5) firstFifteen s degree (1/5:ℝ)
++    (initial_far s hfar) r hgood ht
++  norm_num [PowerTwoFriLevels] at h ⊢
++  linarith
++
++set_option exponentiation.threshold 1000 in
++/-- The ideal error budget arithmetic, including the field challenge term. -/
++theorem candidate_312_arithmetic :
++    (1198336:ℝ)/(modulus^4:ℕ)+(4/5:ℝ)^312 ≤ 1/2^100 := by norm_num [modulus]
++
++set_option exponentiation.threshold 1000 in
++/-- A one-query reduction would miss this same numerical threshold. -/
++theorem candidate_311_fails :
++    (1/2^100:ℝ) < (1198336:ℝ)/(modulus^4:ℕ)+(4/5:ℝ)^311 := by norm_num [modulus]
++
++end
++end Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.rate_fixed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.rate_fixed
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.initial_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.initial_far
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.bad_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.bad_probability
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.terminal_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.terminal_mass
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_312_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_312_arithmetic
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_311_fails' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_311_fails
+diff --git a/Selvage/BabyBearWeightedFreshSoundness.lean b/Selvage/BabyBearWeightedFreshSoundness.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/BabyBearWeightedFreshSoundness.lean
+@@ -0,0 +1,116 @@
++/- Weighted coherent-query soundness composed with the frozen causal fresh-query
++execution certificates. Classical hash coins remain separate from FRI coins. -/
++import Selvage.BabyBearWeightedSoundness
++import Selvage.CommitmentFailureSoundness
++import Selvage.CommitmentExecutionWitness
++
++namespace Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted
++open BabyBearExt4 ArityEight.Schedule ArityEight.Schedule.BabyBear
++open SuppliedOpeningTrace
++open scoped Classical
++noncomputable section
++variable {Q N q : ℕ} [NeZero N]
++
++set_option maxHeartbeats 2500000 in
++/-- Full composed five-round soundness. Initial extraction farness is part
++of the event: it is not incorrectly required on every colliding hash tape.
++The weighted invariant supplies the stronger FRI tail; the prior fresh-query reduction prices the residual. -/
++theorem sound (E : Execution Q N q) (default : Ext4) :
++    uniformProb (Coins Q N × External q)
++      (fun y => InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2) ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(4/5:ℝ)^q+((3*(Q:ℝ)^2+Q)/2+11*Q)/N := by
++  let ideal : Coins Q N × External q → Prop := fun y => InitiallyFar E default y.1 ∧
++    ArityEight.Schedule.Accepts firstFifteen (extracted (E.checkpoints y.1) default)
++      degree q (by decide) y.2.1 y.2.2
++  let bad : Coins Q N × External q → Prop := fun y => Failure (E.checkpoints y.1)
++    (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) y.2.1
++  have hi : uniformProb (Coins Q N × External q) ideal ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(4/5:ℝ)^q := by
++    apply uniformProb_prod_le (by positivity)
++    intro c
++    by_cases hf : InitiallyFar E default c
++    · have h := ArityEight.Schedule.BabyBear.Weighted.sound (extracted (E.checkpoints c) default) q hf
++      exact le_trans (uniformProb_mono fun _ hx => hx.2) h
++    · rw [uniformProb_false (fun _ hx => hf hx.1)]
++      positivity
++  have hc : ∀ y : Coins Q N × External q,
++      InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2 → ideal y ∨ bad y := by
++    intro y hy
++    let H := cachedSuite (E.strategy y.2) y.1 0
++    have hs : CheckpointsLogged (E.checkpoints y.1)
++        (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) y.2.1 := by
++      simpa only [executionLog] using checkpointsLogged_append (E.checkpoints y.1) y.2.1 (E.proverLog y.1 y.2)
++        (verificationLog H firstFifteen (E.checkpoints y.1) q (by decide) y.2.1 y.2.2
++          (E.openings y.1 y.2)) (E.checkpoints_logged y.1 y.2)
++    have hl : OpeningsLogged H firstFifteen
++        (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2)
++        q (by decide) y.2.2 (E.openings y.1 y.2) := by
++      simpa only [executionLog] using verificationLog_append_logged H firstFifteen (E.checkpoints y.1) q (by decide)
++        y.2.1 y.2.2 (E.openings y.1 y.2) (E.proverLog y.1 y.2)
++    have h := supplied_cover (ell := 20) (m := 5) H firstFifteen
++      (E.checkpoints y.1) default degree q (by decide) y.2.1 y.2.2 (E.openings y.1 y.2)
++      (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) hs hl (by
++        simpa only [Accepts] using hy.2)
++    exact h.elim (fun h => Or.inl ⟨hy.1,h⟩) Or.inr
++  exact le_trans (le_trans (uniformProb_mono hc) (uniformProb_or_le ideal bad))
++    (add_le_add hi (failure_probability E))
++
++/-- If the fixed fresh-query budget is covered by actual retained calls,
++the composed bound can be expressed using prover calls plus 720 per query seed. -/
++theorem sound_call_budget (E : Execution Q N q) (default : Ext4) (B : ℕ)
++    (hP : ∀ c x, (E.proverLog c x).length ≤ B)
++    (hcache : ∀ c x e, e ∈ entries (E.strategy x) c →
++      e ∈ executionLog E.strategy E.checkpoints E.proverLog E.openings c x) :
++    uniformProb (Coins Q N × External q)
++      (fun y => InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2) ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(4/5:ℝ)^q+
++      ((3*((B+720*q:ℕ):ℝ)^2+(B+720*q:ℕ))/2+11*(B+720*q:ℕ))/N := by
++  let c : Coins Q N := fun _ => 0
++  let x : External q := (fun _ => 0, fun _ => 0)
++  have hQ : Q ≤ B+720*q := SuppliedOpeningTrace.BabyBear.fresh_count_le_total
++    (E.strategy x) (E.fresh x) c (cachedSuite (E.strategy x) c 0) (E.checkpoints c) q x.1 x.2
++    (E.openings c x) (E.proverLog c x) (hP c x) (hcache c x)
++  apply le_trans (sound E default)
++  apply add_le_add le_rfl
++  apply div_le_div_of_nonneg_right _ (by positivity)
++  have hc : (Q:ℝ) ≤ (B+720*q:ℕ) := by exact_mod_cast hQ
++  have hs : (Q:ℝ)^2 ≤ ((B+720*q:ℕ):ℝ)^2 := sq_le_sq₀ (by positivity) (by positivity) |>.mpr hc
++  linarith
++
++/-- At 312 queries the complete ideal FRI contribution is at most 2^-100;
++the finite classical hash residual is still explicitly added. -/
++theorem sound_312 (E : Execution Q N 312) (default : Ext4) :
++    uniformProb (Coins Q N × External 312)
++      (fun y => InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2) ≤
++      (1/2^100:ℝ)+((3*(Q:ℝ)^2+Q)/2+11*Q)/N :=
++  (sound E default).trans (add_le_add ArityEight.Schedule.BabyBear.Weighted.candidate_312_arithmetic le_rfl)
++
++/-- The existing concrete finite-digest causal execution certificate inhabits
++the new composition for every positive digest cardinality. -/
++theorem execution_inhabited (N : ℕ) [NeZero N] :
++    ∃ E : Execution 1 N 312, ∀ default,
++      uniformProb (Coins 1 N × External 312)
++        (fun y => InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2) ≤
++        (1/2^100:ℝ)+((3*(1:ℝ)^2+1)/2+11)/N := by
++  refine ⟨Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution N 312, fun default => ?_⟩
++  simpa only [Nat.cast_one,mul_one] using sound_312 (Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution N 312) default
++
++end
++end Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_call_budget' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_call_budget
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_312' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_312
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.execution_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.execution_inhabited
++
+diff --git a/Selvage/BabyBearWeightedSoundness.lean b/Selvage/BabyBearWeightedSoundness.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/BabyBearWeightedSoundness.lean
+@@ -0,0 +1,120 @@
++/- Cumulative weighted FRI soundness for five actual BabyBear arity-eight
++rounds and the existing shared coherent-query sampler. -/
++import Selvage.BabyBearConsistencyInvariant
++import Selvage.ConsistencyCoherentTransport
++import Selvage.ArityEightScheduleWitnesses
++
++namespace Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted
++open BabyBearExt4
++open scoped Classical
++noncomputable section
++set_option maxRecDepth 10000
++set_option maxHeartbeats 2500000
++
++/-- One threshold survives the entire schedule. The exact coherent-query
++identity converts terminal consistency mass to the q-fold survival tail. -/
++theorem coherent_tail (s : Words Ext4 (PowerTwoFriLevels 20)) (q : ℕ)
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19))
++      (s.word 0 (fun i => i.elim0))) (r : Fin 5 → Ext4)
++    (hgood : ¬∃ j, WeightedBadRound firstFifteen s degree (1/5:ℝ) j r) :
++    uniformProb (Fin q → PowerTwoFriLevels 20 1) (Accepts firstFifteen s degree q (by decide) r) ≤
++      (4/5:ℝ)^q := by
++  by_cases ht : s.wordAt r 5 le_rfl ∈ reedSolomonCode (firstFifteen.dom 15) (degree 5)
++  · rw [consistency_query_exact s q r ht]
++    have hn := uniformProb_nonneg (seedChecks s r)
++    rw [seed_probability_mass] at hn
++    exact pow_le_pow_left₀ hn (le_of_lt (terminal_mass s hfar r hgood ht)) q
++  · rw [uniformProb_false (fun _ h => ht h.1)]
++    positivity
++
++/-- Actual five-round ideal FRI soundness with no radius loss per round.
++Challenge errors are summed; query coordinates are independent but the rounds
++within each query remain coherent. -/
++theorem sound (s : Words Ext4 (PowerTwoFriLevels 20)) (q : ℕ)
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19))
++      (s.word 0 (fun i => i.elim0))) :
++    uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => Accepts firstFifteen s degree q (by decide) x.1 x.2) ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(4/5:ℝ)^q := by
++  let bad : (Fin 5 → Ext4) → Prop := fun r => ∃ j : Fin 5, WeightedBadRound (ell := 20) (m := 5) firstFifteen s degree (1/5:ℝ) j r
++  have hb := bad_probability s
++  have hq : uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => ¬bad x.1 ∧ Accepts firstFifteen s degree q (by decide) x.1 x.2) ≤ (4/5:ℝ)^q := by
++    apply uniformProb_prod_le (by positivity)
++    intro r
++    by_cases hbad : bad r
++    · rw [uniformProb_false (fun _ h => h.1 hbad)]
++      positivity
++    · exact le_trans (uniformProb_mono fun _ h => h.2) (coherent_tail s q hfar r hbad)
++  have hsplit : uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => Accepts firstFifteen s degree q (by decide) x.1 x.2) ≤
++      uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1)) (fun x => bad x.1)+
++      uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++        (fun x => ¬bad x.1 ∧ Accepts firstFifteen s degree q (by decide) x.1 x.2) := by
++    refine le_trans (uniformProb_mono fun x hx => ?_) (uniformProb_or_le _ _)
++    by_cases hbad : bad x.1
++    · exact Or.inl hbad
++    · exact Or.inr ⟨hbad,hx⟩
++  rw [TwoRound.uniform_fst (B := Fin q → PowerTwoFriLevels 20 1) bad] at hsplit
++  change uniformProb (Fin 5 → Ext4) bad ≤ _ at hb
++  linarith
++
++/-- 312 shared queries suffice for the complete IDEAL FRI event at 2^-100,
++including the unchanged degree-eight field-challenge term. -/
++theorem ideal_100 (s : Words Ext4 (PowerTwoFriLevels 20))
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19))
++      (s.word 0 (fun i => i.elim0))) :
++    uniformProb ((Fin 5 → Ext4) × (Fin 312 → PowerTwoFriLevels 20 1))
++      (fun x => Accepts firstFifteen s degree 312 (by decide) x.1 x.2) ≤ 1/2^100 :=
++  (sound s 312 hfar).trans candidate_312_arithmetic
++
++/-- The same new tail feeds the actual supplied scalar-path verifier;
++observed hash/log failure remains an explicit residual at this interface. -/
++theorem supplied_sound {Digest : Type} [DecidableEq Digest]
++    (H : BinaryMerkle.HashSuite Ext4 Digest) (st : Checkpoints Ext4 Digest) (default : Ext4) (q : ℕ)
++    (openings : (Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1) → Openings Ext4 Digest 5 q)
++    (logs : (Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1) → EfficientRootOpening.Log Ext4 Digest)
++    (hsub : ∀ x, CheckpointsLogged st (logs x) x.1)
++    (hlog : ∀ x, OpeningsLogged (ell := 20) (m := 5) H firstFifteen (logs x) q (by decide) x.2 (openings x))
++    (hfar : EfficientRootOpening.Far_E (2/5:ℝ) 20
++      (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19))
++      (st.word 0 (fun i => i.elim0)).1 default (st.word 0 (fun i => i.elim0)).2) :
++    uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => SuppliedAccepts (ell := 20) (m := 5) H firstFifteen st default degree q (by decide) x.1 x.2 (openings x)) ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(4/5:ℝ)^q+
++      uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1)) (fun x => Failure st (logs x) x.1) := by
++  have hi := sound (extracted st default) q hfar
++  have hc := uniformProb_mono (fun (x : (Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1)) hx => supplied_cover (ell := 20) (m := 5)
++    H firstFifteen st default degree q (by decide) x.1 x.2 (openings x) (logs x) (hsub x) (hlog x) hx)
++  exact le_trans (le_trans hc (uniformProb_or_le _ _)) (add_le_add hi le_rfl)
++
++/-- The actual full-size far monomial strategy inhabits the new ideal theorem;
++its all-zero accepted queries and seed-one rejection are inherited unchanged. -/
++theorem witness_sound :
++    uniformProb ((Fin 5 → Ext4) × (Fin 312 → PowerTwoFriLevels 20 1))
++      (fun x => Accepts firstFifteen Witnesses.words degree 312 (by decide) x.1 x.2) ≤ 1/2^100 :=
++  ideal_100 Witnesses.words Witnesses.source_far
++
++end
++end Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.coherent_tail' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.coherent_tail
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.sound
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.ideal_100' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.ideal_100
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.supplied_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.supplied_sound
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.witness_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.witness_sound
++
+diff --git a/Selvage/ConsistencyCoherentTransport.lean b/Selvage/ConsistencyCoherentTransport.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ConsistencyCoherentTransport.lean
+@@ -0,0 +1,163 @@
++/- Recursive consistency mass for the actual certified BabyBear coherent sampler. -/
++import Selvage.ConsistencyQueryMass
++import Selvage.ArityEightScheduleBabyBear
++
++namespace Minidregg.Selvage.ArityEight.Schedule
++set_option maxHeartbeats 800000
++open scoped BigOperators Classical
++
++/-- Repeated independent coordinates exponentiate any single-index event. -/
++theorem uniformProb_all_coordinates {I : Type} [Fintype I] (q : ℕ) (p : I → Prop) :
++    uniformProb (Fin q → I) (fun seed => ∀ a, p (seed a)) = (uniformProb I p)^q := by
++  have hset : (Finset.univ.filter fun seed : Fin q → I => ∀ a, p (seed a)) =
++      Fintype.piFinset (fun _ : Fin q => Finset.univ.filter p) := by
++    ext seed
++    simp [Fintype.mem_piFinset]
++  unfold uniformProb
++  simp only [Nat.card_eq_fintype_card,Fintype.card_subtype]
++  rw [hset,Fintype.card_piFinset_const,Fintype.card_fun,Fintype.card_fin]
++  push_cast
++  exact (div_pow _ _ q).symm
++
++/-- The actual binary squaring map preserves uniform probability. Its two-element
++fibres are proved from FoldingData; no balanced-map premise is assumed. -/
++theorem uniformProb_square {F I K : Type} [Field F] [Fintype I] [Fintype K]
++    {dom : I ↪ F} {domSq : K ↪ F} (D : FoldingData F dom domSq) (p : K → Prop) :
++    uniformProb I (fun i => p (D.sq i)) = uniformProb K p := by
++  have hc := card_sq_preimage D (Finset.univ.filter p)
++  simp only [Finset.mem_filter,Finset.mem_univ,true_and] at hc
++  unfold uniformProb
++  simp only [Nat.card_eq_fintype_card,Fintype.card_subtype]
++  rw [hc,card_eq_two_mul_card D]
++  push_cast
++  ring
++
++namespace BabyBear
++open BabyBearExt4
++
++/-- The certified tower's exact projection, retained by firstFifteen. -/
++theorem firstFifteen_sq_val (n : ℕ) (hn : n < 15) (i : PowerTwoFriLevels 20 n) :
++    ((firstFifteen.data n hn).sq i).val = i.val % 2^(20-(n+1)) :=
++  MultiplicativeTower.correctness.2 n (by omega) i
++
++/-- Three actual square maps coincide with the existing sampler's block modulus. -/
++theorem blockSquare_val (n : ℕ) (hn : n < 5) (i : PowerTwoFriLevels 20 (3*n)) :
++    (blockSquare firstFifteen n hn i).val = i.val % 2^(20-3*(n+1)) := by
++  simp only [blockSquare,firstFifteen_sq_val]
++  rw [Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega)),
++    Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))]
++  congr 2
++
++/-- Iterated actual maps retain precisely the low bits used by coherent queries. -/
++theorem sourcePoint_val (n : ℕ) (hn : n ≤ 5) (i : PowerTwoFriLevels 20 0) :
++    (sourcePoint firstFifteen n hn i).val = i.val % 2^(20-3*n) := by
++  induction n with
++  | zero => exact (Nat.mod_eq_of_lt i.isLt).symm
++  | succ n ih =>
++    rw [sourcePoint,blockSquare_val,ih (by omega),
++      Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))]
++
++/-- Actual source trajectories and the existing seed sampler select identical indices. -/
++theorem sourcePoint_eq_coherent (j : Fin 5) (i : PowerTwoFriLevels 20 0) :
++    sourcePoint (m := 5) firstFifteen (j+1) (by omega) i =
++      powerTwoRoundIndex (show 15 ≤ 20 by decide) (⟨3*j.val+2,by omega⟩ : Fin 15)
++        ((firstFifteen.data 0 (by decide)).sq i) := by
++  apply Fin.ext
++  rw [sourcePoint_val]
++  change i.val % 2^(20-3*(j.val+1)) =
++    ((firstFifteen.data 0 (by decide)).sq i).val % 2^(20-(3*j.val+2+1))
++  rw [firstFifteen_sq_val,Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))]
++  rfl
++
++/-- One coordinate of the existing coherent query schedule passes every fold equation. -/
++def seedChecks (s : Words Ext4 (PowerTwoFriLevels 20)) (r : Fin 5 → Ext4)
++    (seed : PowerTwoFriLevels 20 1) : Prop :=
++  ∀ j : Fin 5, s.wordAt r (j+1) (by omega)
++      (powerTwoRoundIndex (show 15 ≤ 20 by decide) (⟨3*j.val+2,by omega⟩ : Fin 15) seed) =
++    blockAt firstFifteen s j r
++      (powerTwoRoundIndex (show 15 ≤ 20 by decide) (⟨3*j.val+2,by omega⟩ : Fin 15) seed)
++
++/-- This exact transport uses firstFifteen's certified square maps. Cardinalities
++alone would not identify the cross-round coherent event. -/
++theorem sourceChecks_iff_seedChecks (s : Words Ext4 (PowerTwoFriLevels 20))
++    (r : Fin 5 → Ext4) (i : PowerTwoFriLevels 20 0) :
++    sourceChecks firstFifteen s r 5 le_rfl i ↔
++      seedChecks s r ((firstFifteen.data 0 (by decide)).sq i) := by
++  rw [sourceChecks_iff_all]
++  simp only [sourcePoint_eq_coherent,seedChecks]
++
++/-- Statement-first contract for the exact fixed-scalar coherent query probability. -/
++def ConsistencyQueryContract (s : Words Ext4 (PowerTwoFriLevels 20)) (q : ℕ)
++    (r : Fin 5 → Ext4) : Prop :=
++  s.wordAt r 5 le_rfl ∈ reedSolomonCode (firstFifteen.dom 15) (degree 5) →
++    uniformProb (Fin q → PowerTwoFriLevels 20 1)
++      (Accepts firstFifteen s degree q (by decide) r) =
++      (consistencyMass (consistencyAt firstFifteen s r 5 le_rfl) Finset.univ /
++        (Fintype.card (PowerTwoFriLevels 20 15):ℝ))^q
++
++/-- The normalized terminal mass is exactly one existing coherent seed's survival probability. -/
++theorem seed_probability_mass (s : Words Ext4 (PowerTwoFriLevels 20)) (r : Fin 5 → Ext4) :
++    uniformProb (PowerTwoFriLevels 20 1) (seedChecks s r) =
++      consistencyMass (consistencyAt firstFifteen s r 5 le_rfl) Finset.univ /
++        (Fintype.card (PowerTwoFriLevels 20 15):ℝ) := by
++  rw [←uniformProb_square (firstFifteen.data 0 (by decide)) (seedChecks s r)]
++  rw [←uniformProb_congr (sourceChecks_iff_seedChecks s r)]
++  exact source_probability_mass (ell := 20) (m := 5) firstFifteen s r (by decide) 5 le_rfl
++
++/-- Every scalar-fixed acceptance event has the exact coherent query tail. All
++rounds use the same seed vector; independence is only across its q coordinates. -/
++theorem consistency_query_exact (s : Words Ext4 (PowerTwoFriLevels 20)) (q : ℕ)
++    (r : Fin 5 → Ext4) : ConsistencyQueryContract s q r := by
++  intro hterminal
++  change uniformProb (Fin q → PowerTwoFriLevels 20 1)
++    (Accepts firstFifteen s degree q (by decide) r) = _
++  calc
++    _ = uniformProb (Fin q → PowerTwoFriLevels 20 1)
++        (fun seed => ∀ a, seedChecks s r (seed a)) := by
++      apply uniformProb_congr
++      intro seed
++      simp only [Accepts,hterminal,true_and,seedChecks,roundQueries,powerTwoCoherentRound]
++      exact forall_comm
++    _ = (uniformProb (PowerTwoFriLevels 20 1) (seedChecks s r))^q :=
++      uniformProb_all_coordinates q _
++    _ = _ := by rw [seed_probability_mass]
++
++end BabyBear
++end Minidregg.Selvage.ArityEight.Schedule
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.uniformProb_all_coordinates' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.uniformProb_all_coordinates
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.uniformProb_square' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.uniformProb_square
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.firstFifteen_sq_val' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.firstFifteen_sq_val
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.blockSquare_val' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.blockSquare_val
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_val' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_val
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_eq_coherent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourcePoint_eq_coherent
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourceChecks_iff_seedChecks' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.sourceChecks_iff_seedChecks
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.seed_probability_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.seed_probability_mass
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.consistency_query_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.consistency_query_exact
++
+diff --git a/Selvage/ConsistencyMask.lean b/Selvage/ConsistencyMask.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ConsistencyMask.lean
+@@ -0,0 +1,83 @@
++/- Masking consistency weights by an actual fold equation retains the
++weighted-agreement invariant at the same threshold. -/
++import Selvage.CurveWeightedAgreement
++
++namespace Minidregg.Selvage
++open scoped BigOperators Classical
++variable {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
++
++noncomputable def maskConsistency (weight : ι → ℝ) (f g : ι → F) (i : ι) : ℝ :=
++  if f i = g i then weight i else 0
++
++omit [Fintype ι] [Field F] in
++theorem maskConsistency_nonneg (weight : ι → ℝ) (h0 : ∀ i, 0 ≤ weight i) (f g : ι → F) (i : ι) :
++    0 ≤ maskConsistency weight f g i := by
++  unfold maskConsistency
++  split_ifs
++  · exact h0 i
++  · norm_num
++
++omit [Fintype ι] [Field F] in
++theorem maskConsistency_le_one (weight : ι → ℝ) (h1 : ∀ i, weight i ≤ 1) (f g : ι → F) (i : ι) :
++    maskConsistency weight f g i ≤ 1 := by unfold maskConsistency; split_ifs <;> simp_all
++
++omit [Fintype ι] [Field F] in
++/-- Removing zero-weight mismatches leaves exactly the same mass. -/
++theorem maskConsistency_mass (weight : ι → ℝ) (f g : ι → F) (S : Finset ι) :
++    consistencyMass (maskConsistency weight f g) S =
++      consistencyMass weight (S.filter fun i => f i = g i) := by
++  simp [consistencyMass,maskConsistency,Finset.sum_filter]
++
++/-- Weighted closeness after the equality mask transfers to the literal
++fold under the previous projected weights, with no subtraction of θ. -/
++theorem weightedClose_mask_transfer (C : Submodule F (ι → F)) (θ : ℝ)
++    (weight : ι → ℝ) (next literal : ι → F)
++    (h : WeightedClose C θ (maskConsistency weight next literal) next) :
++    WeightedClose C θ weight literal := by
++  obtain ⟨S,hS,v,hv,ha⟩ := h
++  refine ⟨S.filter (fun i => next i = literal i),?_,v,hv,?_⟩
++  · simpa only [maskConsistency_mass] using hS
++  · intro i hi
++    have hs := Finset.mem_filter.mp hi
++    exact hs.2.symm.trans (ha i hs.1)
++
++/-- Initial all-one consistency weights recover ordinary proximity. -/
++theorem weightedClose_one_to_close [Nonempty ι] (C : Submodule F (ι → F)) (θ : ℝ) (f : ι → F)
++    (h : WeightedClose C θ (fun _ => 1) f) : close θ C f := by
++  obtain ⟨S,hS,v,hv,ha⟩ := h
++  refine ⟨v,hv,relDist_le_of_agreesOn ha ?_⟩
++  simpa [consistencyMass] using hS
++
++omit [DecidableEq F] in
++/-- A legal terminal codeword with enough total consistency mass is
++weighted-close to itself. This is the terminal invariant's contradiction. -/
++theorem weightedClose_self_of_mass (C : Submodule F (ι → F)) (θ : ℝ)
++    (weight : ι → ℝ) (f : ι → F) (hf : f ∈ C)
++    (hm : (1-θ)*(Fintype.card ι:ℝ) ≤ consistencyMass weight Finset.univ) :
++    WeightedClose C θ weight f := ⟨Finset.univ,hm,f,hf,fun _ _ => rfl⟩
++
++end Minidregg.Selvage
++
++/-- info: 'Minidregg.Selvage.maskConsistency_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.maskConsistency_nonneg
++
++/-- info: 'Minidregg.Selvage.maskConsistency_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.maskConsistency_le_one
++
++/-- info: 'Minidregg.Selvage.maskConsistency_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.maskConsistency_mass
++
++/-- info: 'Minidregg.Selvage.weightedClose_mask_transfer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.weightedClose_mask_transfer
++
++/-- info: 'Minidregg.Selvage.weightedClose_one_to_close' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.weightedClose_one_to_close
++
++/-- info: 'Minidregg.Selvage.weightedClose_self_of_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.weightedClose_self_of_mass
+diff --git a/Selvage/ConsistencyQueryMass.lean b/Selvage/ConsistencyQueryMass.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ConsistencyQueryMass.lean
+@@ -0,0 +1,140 @@
++/- Exact counting transport for the existing recursive consistency weights. -/
++import Selvage.ArityEightConsistencySchedule
++
++namespace Minidregg.Selvage.ArityEight.Schedule
++open scoped BigOperators Classical
++variable {F : Type} [Field F] [DecidableEq F] {ell m : ℕ}
++
++/-- Actual three successive squaring maps, without a replacement domain. -/
++def blockSquare (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (n : ℕ) (hn : n < m) (i : PowerTwoFriLevels ell (3*n)) :
++    PowerTwoFriLevels ell (3*(n+1)) :=
++  (T.data (3*n+2) (by omega)).sq ((T.data (3*n+1) (by omega)).sq
++    ((T.data (3*n) (by omega)).sq i))
++
++/-- Transport an initial source index through the actual folding maps. -/
++def sourcePoint (T : FoldingTower F (PowerTwoFriLevels ell) (3*m)) :
++    (n : ℕ) → n ≤ m → PowerTwoFriLevels ell 0 → PowerTwoFriLevels ell (3*n)
++  | 0, _, i => i
++  | n+1, hn, i => blockSquare T n (by omega) (sourcePoint T n (by omega) i)
++
++/-- The prefix of the existing literal fold checks, pulled back to one source index. -/
++def sourceChecks (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (r : Fin m → F) :
++    (n : ℕ) → n ≤ m → PowerTwoFriLevels ell 0 → Prop
++  | 0, _, _ => True
++  | n+1, hn, i => sourceChecks T s r n (by omega) i ∧
++    s.wordAt r (n+1) hn (sourcePoint T (n+1) hn i) =
++      blockAt T s ⟨n,by omega⟩ r (sourcePoint T (n+1) hn i)
++
++/-- Statement-first counting contract: recursive weights count exactly the
++source indices passing those same checks, with eightfold normalization. -/
++def SourceMassContract (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (r : Fin m → F) : Prop :=
++  ∀ n (hn : n ≤ m) (S : Finset (PowerTwoFriLevels ell (3*n))),
++    consistencyMass (consistencyAt T s r n hn) S * (8:ℝ)^n =
++      ((Finset.univ.filter fun i => sourceChecks T s r n hn i ∧
++        sourcePoint T n hn i ∈ S).card : ℝ)
++
++omit [DecidableEq F] in
++theorem block_project_mass (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (n : ℕ) (hn : n < m) (w : PowerTwoFriLevels ell (3*n) → ℝ)
++    (S : Finset (PowerTwoFriLevels ell (3*(n+1)))) :
++    consistencyMass (projectConsistency8 (T.data (3*n) (by omega))
++      (T.data (3*n+1) (by omega)) (T.data (3*n+2) (by omega)) w) S =
++      consistencyMass w (Finset.univ.filter fun i => blockSquare T n hn i ∈ S)/8 := by
++  unfold projectConsistency8
++  rw [projectConsistency_mass,projectConsistency_mass,projectConsistency_mass]
++  simp only [Finset.mem_filter,Finset.mem_univ,true_and]
++  dsimp [blockSquare]
++  ring_nf
++  congr 2
++
++theorem consistency_mass_source (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (r : Fin m → F) : SourceMassContract T s r := by
++  intro n
++  induction n with
++  | zero =>
++    intro hn S
++    simp [consistencyAt,prefixConsistency,consistencyMass,sourceChecks,sourcePoint]
++  | succ n ih =>
++    intro hn S
++    let j : Fin m := ⟨n,by omega⟩
++    rw [consistencyAt_succ T s r j,maskConsistency_mass,block_project_mass T n (by omega)]
++    have h := ih (by omega) (Finset.univ.filter fun i =>
++      blockSquare T n (by omega) i ∈ S.filter fun k =>
++        s.wordAt r (n+1) hn k = blockAt T s j r k)
++    have hset : (Finset.univ.filter fun i => sourceChecks T s r n (by omega) i ∧
++        sourcePoint T n (by omega) i ∈ (Finset.univ.filter fun k =>
++          blockSquare T n (by omega) k ∈ S.filter fun a =>
++            s.wordAt r (n+1) hn a = blockAt T s j r a)) =
++        (Finset.univ.filter fun i => sourceChecks T s r (n+1) hn i ∧
++          sourcePoint T (n+1) hn i ∈ S) := by
++      ext i
++      simp only [Finset.mem_filter,Finset.mem_univ,true_and,sourceChecks,sourcePoint]
++      dsimp [j]
++      tauto
++    rw [hset] at h
++    rw [pow_succ]
++    convert h using 1
++    ring
++
++/-- The source endpoint cardinality is the target cardinality times eight per block. -/
++theorem source_card_factor (hell : 3*m ≤ ell) (n : ℕ) (hn : n ≤ m) :
++    (Fintype.card (PowerTwoFriLevels ell 0):ℝ) =
++      (8:ℝ)^n * Fintype.card (PowerTwoFriLevels ell (3*n)) := by
++  simp only [PowerTwoFriLevels,Fintype.card_fin,Nat.sub_zero,Nat.cast_pow,Nat.cast_ofNat]
++  rw [show (8:ℝ) = 2^3 by norm_num,←pow_mul,←pow_add]
++  congr 1
++  omega
++
++/-- Uniform single-source acceptance is exactly the final normalized consistency mass. -/
++theorem source_probability_mass (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (r : Fin m → F) (hell : 3*m ≤ ell)
++    (n : ℕ) (hn : n ≤ m) :
++    uniformProb (PowerTwoFriLevels ell 0) (sourceChecks T s r n hn) =
++      consistencyMass (consistencyAt T s r n hn) Finset.univ /
++        Fintype.card (PowerTwoFriLevels ell (3*n)) := by
++  have h := consistency_mass_source T s r n hn Finset.univ
++  simp only [Finset.mem_univ,and_true] at h
++  unfold uniformProb
++  rw [Nat.card_eq_fintype_card,Fintype.card_subtype,←h,source_card_factor hell n hn]
++  have h8 : (8:ℝ)^n ≠ 0 := by positivity
++  field_simp
++
++omit [DecidableEq F] in
++/-- The recursive pullback is exactly the conjunction of existing round equations. -/
++theorem sourceChecks_iff_all (T : FoldingTower F (PowerTwoFriLevels ell) (3*m))
++    (s : Words F (PowerTwoFriLevels ell)) (r : Fin m → F)
++    (n : ℕ) (hn : n ≤ m) (i : PowerTwoFriLevels ell 0) :
++    sourceChecks T s r n hn i ↔ ∀ j : Fin n,
++      s.wordAt r (j+1) (by omega) (sourcePoint T (j+1) (by omega) i) =
++        blockAt T s ⟨j,by omega⟩ r (sourcePoint T (j+1) (by omega) i) := by
++  induction n with
++  | zero => simp [sourceChecks]
++  | succ n ih =>
++    rw [sourceChecks,Fin.forall_fin_succ',ih (by omega)]
++    rfl
++
++end Minidregg.Selvage.ArityEight.Schedule
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.block_project_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.block_project_mass
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.consistency_mass_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.consistency_mass_source
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.source_card_factor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.source_card_factor
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.source_probability_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.source_probability_mass
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.sourceChecks_iff_all' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.sourceChecks_iff_all
++
+diff --git a/Selvage/ConsistencyTransportWitnesses.lean b/Selvage/ConsistencyTransportWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ConsistencyTransportWitnesses.lean
+@@ -0,0 +1,98 @@
++/- Premise inhabitation and live teeth for exact consistency/coherent transport. -/
++import Selvage.ConsistencyCoherentTransport
++import Selvage.ArityEightScheduleWitnesses
++
++namespace Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses
++open scoped Classical
++open BabyBearExt4
++
++/-- The transport premises have an actual-field witness with both acceptance poles. -/
++def PremisesInhabited : Prop :=
++  ∃ s : Words Ext4 (PowerTwoFriLevels 20), ∀ r : Fin 5 → Ext4,
++    s.wordAt r 5 le_rfl ∈ reedSolomonCode (firstFifteen.dom 15) (degree 5) ∧
++    Accepts firstFifteen s degree 1 (by decide) r (fun _ => 0) ∧
++    ¬Accepts firstFifteen s degree 1 (by decide) r (fun _ => 1)
++
++/-- The existing far monomial schedule realizes every premise and both poles. -/
++theorem premises_inhabited : PremisesInhabited :=
++  ⟨Witnesses.words,fun r => ⟨Witnesses.terminal_mem r,
++    Witnesses.zero_seed_accepts r 1,Witnesses.one_seed_rejects r⟩⟩
++
++/-- The generic source-mass contract is realized on the same certified tower and schedule. -/
++theorem source_mass_satisfiable (r : Fin 5 → Ext4) :
++    SourceMassContract firstFifteen Witnesses.words r :=
++  consistency_mass_source firstFifteen Witnesses.words r
++
++/-- The exact probability contract fires on an actually inhabited legal-terminal premise. -/
++theorem query_exact_satisfiable (r : Fin 5 → Ext4) (q : ℕ) :
++    Witnesses.words.wordAt r 5 le_rfl ∈ reedSolomonCode (firstFifteen.dom 15) (degree 5) ∧
++    ConsistencyQueryContract Witnesses.words q r :=
++  ⟨Witnesses.terminal_mem r,consistency_query_exact Witnesses.words q r⟩
++
++/-- The zero coherent index survives all five actual equations. -/
++theorem zero_seed_checks (r : Fin 5 → Ext4) : seedChecks Witnesses.words r 0 := by
++  intro j
++  exact (Witnesses.zero_seed_accepts r 1).2 j 0
++
++/-- The one coherent index fails the last actual equation. -/
++theorem one_seed_fails_checks (r : Fin 5 → Ext4) : ¬seedChecks Witnesses.words r 1 := by
++  intro h
++  apply Witnesses.one_seed_rejects r
++  refine ⟨Witnesses.terminal_mem r,fun j _ => h j⟩
++
++/-- A witnessed finite event has positive probability and a witnessed failure
++makes that probability strictly below one. -/
++theorem probability_two_poles {I : Type} [Fintype I] [Nonempty I]
++    (p : I → Prop) (a b : I) (ha : p a) (hb : ¬p b) :
++    0 < uniformProb I p ∧ uniformProb I p < 1 := by
++  have hcard : (0:ℝ) < Fintype.card I := by exact_mod_cast Fintype.card_pos
++  have hpos : 0 < (Finset.univ.filter p).card :=
++    Finset.card_pos.mpr ⟨a,by simp [ha]⟩
++  have hlt : (Finset.univ.filter p).card < Fintype.card I := by
++    simpa using Finset.card_lt_card (Finset.filter_ssubset.mpr ⟨b,Finset.mem_univ b,hb⟩)
++  unfold uniformProb
++  rw [Nat.card_eq_fintype_card,Fintype.card_subtype]
++  exact ⟨div_pos (by exact_mod_cast hpos) hcard,
++    (div_lt_one hcard).mpr (by exact_mod_cast hlt)⟩
++
++/-- Teeth: normalized consistency mass is neither empty nor universally accepting.
++Replacing the masks by all-one weights would falsely assign this schedule mass one. -/
++theorem mask_omission_falsifier (r : Fin 5 → Ext4) :
++    0 < consistencyMass (consistencyAt firstFifteen Witnesses.words r 5 le_rfl) Finset.univ /
++        (Fintype.card (PowerTwoFriLevels 20 15):ℝ) ∧
++    consistencyMass (consistencyAt firstFifteen Witnesses.words r 5 le_rfl) Finset.univ /
++        (Fintype.card (PowerTwoFriLevels 20 15):ℝ) < 1 := by
++  rw [←seed_probability_mass]
++  exact probability_two_poles (seedChecks Witnesses.words r) 0 1
++    (zero_seed_checks r) (one_seed_fails_checks r)
++
++end Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.premises_inhabited
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.source_mass_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.source_mass_satisfiable
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.query_exact_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.query_exact_satisfiable
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.zero_seed_checks' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.zero_seed_checks
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.one_seed_fails_checks' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.one_seed_fails_checks
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.probability_two_poles' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.probability_two_poles
++
++/-- info: 'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.mask_omission_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.mask_omission_falsifier
++
+diff --git a/Selvage/CurveWeightedAgreement.lean b/Selvage/CurveWeightedAgreement.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/CurveWeightedAgreement.lean
+@@ -0,0 +1,138 @@
++/- Real-weight correlated agreement, derived from the existing mutual-CA
++full-UD theorem. Source orientation: S-two2026/532 Thm29 and Remark30.
++No new matrix/gluing argument or Reed–Solomon semantics are introduced. -/
++import Selvage.CurveProximityGapFullUD
++import Selvage.Depth
++
++namespace Minidregg.Selvage
++open scoped BigOperators Classical
++variable {ι F : Type} [Fintype ι] [Field F] [DecidableEq F] {M : ℕ}
++
++/-- Unnormalized consistency mass. Dividing by card ι gives the paper's measure. -/
++def consistencyMass (weight : ι → ℝ) (S : Finset ι) : ℝ := ∑ i ∈ S, weight i
++
++/-- Weighted agreement with some codeword; caller-selected sets are retained. -/
++def WeightedClose (C : Submodule F (ι → F)) (θ : ℝ) (weight : ι → ℝ) (f : ι → F) : Prop :=
++  ∃ S : Finset ι, (1-θ)*(Fintype.card ι:ℝ) ≤ consistencyMass weight S ∧
++    ∃ v ∈ C, AgreesOn S f v
++
++def WeightedCorrelatedAgreement {ℓ : ℕ} (C : Submodule F (ι → F)) (θ : ℝ)
++    (weight : ι → ℝ) (u : Fin ℓ → ι → F) : Prop :=
++  ∃ S : Finset ι, (1-θ)*(Fintype.card ι:ℝ) ≤ consistencyMass weight S ∧
++    ∀ j, ∃ v ∈ C, AgreesOn S (u j) v
++
++omit [Fintype ι] [Field F] [DecidableEq F] in
++/-- Subprobability weights are dominated by ordinary set cardinality. -/
++theorem consistencyMass_le_card (weight : ι → ℝ) (hle : ∀ i, weight i ≤ 1) (S : Finset ι) :
++    consistencyMass weight S ≤ (S.card:ℝ) := by
++  calc
++    _ ≤ ∑ _i ∈ S, (1:ℝ) := Finset.sum_le_sum (fun i _ => hle i)
++    _ = _ := by simp
++
++omit [Fintype ι] [Field F] [DecidableEq F] in
++theorem consistencyMass_nonneg (weight : ι → ℝ) (h0 : ∀ i, 0 ≤ weight i) (S : Finset ι) :
++    0 ≤ consistencyMass weight S := Finset.sum_nonneg (fun i _ => h0 i)
++
++omit [Fintype ι] [Field F] [DecidableEq F] in
++theorem consistencyMass_mono (weight : ι → ℝ) (h0 : ∀ i, 0 ≤ weight i)
++    {S T : Finset ι} (hST : S ⊆ T) : consistencyMass weight S ≤ consistencyMass weight T := by
++  exact Finset.sum_le_sum_of_subset_of_nonneg hST (fun i _ _ => h0 i)
++
++omit [DecidableEq F] in
++/-- Negating weighted CA turns a weighted close point into the EXISTING
++mutual-CA failure event on the SAME agreement set. -/
++theorem weightedClose_mutualFailure (C : Submodule F (ι → F)) (θ : ℝ)
++    (weight : ι → ℝ) (hle : ∀ i, weight i ≤ 1) (u : Fin (M+1) → ι → F)
++    (hfar : ¬WeightedCorrelatedAgreement C θ weight u) (r : Fin (M+1) → F)
++    (hc : WeightedClose C θ weight (comb r u)) : MutualCAFailure C θ u r := by
++  obtain ⟨S,hS,hc⟩ := hc
++  refine ⟨S,hS.trans (consistencyMass_le_card weight hle S),hc,?_⟩
++  by_contra hn
++  push Not at hn
++  exact hfar ⟨S,hS,hn⟩
++
++omit [DecidableEq F] in
++/-- Uniform scalar coins exactly realize the geometric generator for any event. -/
++theorem geometric_pr_uniform [Fintype F] (M : ℕ) (E : (Fin (M+1) → F) → Prop) :
++    (geometricGenerator F M).pr E = uniformProb F (fun z => E (fun j => z^j.val)) := by
++  unfold ProximityGenerator.pr
++  change (∑ _z ∈ Finset.univ.filter (fun z : F => E (fun j => z^j.val)),
++    (Fintype.card F:ℝ)⁻¹) = _
++  rw [Finset.sum_const,nsmul_eq_mul]
++  unfold uniformProb
++  rw [Nat.card_eq_fintype_card,Fintype.card_subtype,div_eq_mul_inv]
++
++
++omit [DecidableEq F] in
++/-- Weighted agreement also supplies ordinary agreement whenever weights≤1. -/
++theorem weightedCA_to_CA {ℓ : ℕ} (C : Submodule F (ι → F)) (θ : ℝ)
++    (weight : ι → ℝ) (hle : ∀ i, weight i ≤ 1) (u : Fin ℓ → ι → F)
++    (h : WeightedCorrelatedAgreement C θ weight u) : CorrelatedAgreement C θ u := by
++  obtain ⟨S,hS,hw⟩ := h
++  exact ⟨S,hS.trans (consistencyMass_le_card weight hle S),hw⟩
++
++/-- Existing full UD supplies real-weight curve soundness at the SAME M*n/|F|
++error, for weights fixed before the one scalar challenge. -/
++theorem curve_weighted_uniform_sound [Nonempty ι] [Fintype F]
++    (M : ℕ) (hM : 1 ≤ M) (dom : ι ↪ F) {d : ℕ} (hd : 1 ≤ d) {θ : ℝ}
++    (hθ : 0 < θ) (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι:ℝ))
++    (weight : ι → ℝ) (hle : ∀ i, weight i ≤ 1) (u : Fin (M+1) → ι → F)
++    (hfar : ¬WeightedCorrelatedAgreement (reedSolomonCode dom d) θ weight u) :
++    uniformProb F (fun z => WeightedClose (reedSolomonCode dom d) θ weight (curveWord u z)) ≤
++      ((M*Fintype.card ι:ℕ):ℝ)/Fintype.card F := by
++  have hn : (0:ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
++  have hθB : θ < 1-(1+(d:ℝ)/(Fintype.card ι:ℝ))/2 := by
++    have hdiv := (div_lt_iff₀ hn).mpr hrate
++    linarith
++  have h := hasGeometricMutualCorrelatedAgreement_fullUD M hM dom hd u θ hθ hθB
++  rw [geometric_pr_uniform] at h
++  exact le_trans (uniformProb_mono fun z hz =>
++    weightedClose_mutualFailure _ θ weight hle u hfar (fun j => z^j.val) hz) h
++
++/-- A direct weighted cardinality interface, useful before probability composition. -/
++theorem curve_weighted_bad_card [Nonempty ι] [Fintype F]
++    (M : ℕ) (hM : 1 ≤ M) (dom : ι ↪ F) {d : ℕ} (hd : 1 ≤ d) {θ : ℝ}
++    (hθ : 0 < θ) (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι:ℝ))
++    (weight : ι → ℝ) (hle : ∀ i, weight i ≤ 1) (u : Fin (M+1) → ι → F)
++    (hfar : ¬WeightedCorrelatedAgreement (reedSolomonCode dom d) θ weight u) :
++    (Finset.univ.filter fun z => WeightedClose (reedSolomonCode dom d) θ weight (curveWord u z)).card ≤
++      M*Fintype.card ι := by
++  have h := curve_weighted_uniform_sound M hM dom hd hθ hrate weight hle u hfar
++  unfold uniformProb at h
++  rw [Nat.card_eq_fintype_card,Fintype.card_subtype] at h
++  have hF : (0:ℝ) < Fintype.card F := by exact_mod_cast Fintype.card_pos
++  exact_mod_cast (div_le_div_iff_of_pos_right hF).mp h
++
++end Minidregg.Selvage
++
++/-- info: 'Minidregg.Selvage.consistencyMass_le_card' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.consistencyMass_le_card
++
++/-- info: 'Minidregg.Selvage.consistencyMass_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.consistencyMass_nonneg
++
++/-- info: 'Minidregg.Selvage.consistencyMass_mono' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.consistencyMass_mono
++
++/-- info: 'Minidregg.Selvage.weightedClose_mutualFailure' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.weightedClose_mutualFailure
++
++/-- info: 'Minidregg.Selvage.geometric_pr_uniform' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.geometric_pr_uniform
++
++/-- info: 'Minidregg.Selvage.weightedCA_to_CA' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.weightedCA_to_CA
++
++/-- info: 'Minidregg.Selvage.curve_weighted_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.curve_weighted_uniform_sound
++
++/-- info: 'Minidregg.Selvage.curve_weighted_bad_card' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.curve_weighted_bad_card
+diff --git a/Selvage/FoldingConsistencyWeights.lean b/Selvage/FoldingConsistencyWeights.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/FoldingConsistencyWeights.lean
+@@ -0,0 +1,156 @@
++/- Consistency weights transported through the EXISTING FoldingData squaring
++fibres. Weighted source agreement is reconstructed without a radius gap. -/
++import Selvage.CurveWeightedAgreement
++import Selvage.ArityEightFold
++
++namespace Minidregg.Selvage.ArityEight
++open scoped BigOperators Classical
++variable {F ι κ : Type} [Field F] [DecidableEq F] [Fintype ι] [Fintype κ]
++variable {dom : ι ↪ F} {domSq : κ ↪ F}
++
++noncomputable def projectConsistency (D : FoldingData F dom domSq) (weight : ι → ℝ) (k : κ) : ℝ :=
++  (∑ i ∈ Finset.univ.filter (fun i => D.sq i = k), weight i)/2
++
++omit [DecidableEq F] [Fintype κ] in
++/-- The projected mass equals half the mass on the actual squaring preimage. -/
++theorem projectConsistency_mass (D : FoldingData F dom domSq) (weight : ι → ℝ) (S : Finset κ) :
++    consistencyMass (projectConsistency D weight) S =
++      consistencyMass weight (Finset.univ.filter fun i => D.sq i ∈ S)/2 := by
++  unfold consistencyMass projectConsistency
++  rw [←Finset.sum_div]
++  exact congrArg (fun x : ℝ => x/2) (Finset.sum_fiberwise_eq_sum_filter Finset.univ S D.sq weight)
++
++omit [DecidableEq F] [Fintype κ] in
++theorem projectConsistency_nonneg (D : FoldingData F dom domSq) (weight : ι → ℝ)
++    (h0 : ∀ i, 0 ≤ weight i) (k : κ) : 0 ≤ projectConsistency D weight k := by
++  exact div_nonneg (Finset.sum_nonneg fun i _ => h0 i) (by norm_num)
++
++omit [DecidableEq F] [Fintype κ] in
++theorem projectConsistency_le_one (D : FoldingData F dom domSq) (weight : ι → ℝ)
++    (h1 : ∀ i, weight i ≤ 1) (k : κ) : projectConsistency D weight k ≤ 1 := by
++  have hc : (Finset.univ.filter (fun i => D.sq i = k)).card = 2 := by
++    simpa using card_sq_preimage D {k}
++  have h := consistencyMass_le_card weight h1 (Finset.univ.filter fun i => D.sq i = k)
++  rw [hc] at h
++  norm_num at h
++  change consistencyMass weight _ / 2 ≤ 1
++  linarith
++
++omit [DecidableEq F] in
++/-- All family members reconstruct on the same weighted squaring preimage. -/
++theorem weighted_recompose_family (D : FoldingData F dom domSq)
++    {n d : ℕ} {θ : ℝ} (weight : ι → ℝ) (u : Fin n → ι → F)
++    (h : WeightedCorrelatedAgreement (reedSolomonCode domSq d) θ
++      (projectConsistency D weight) (parityFamily D u)) :
++    WeightedCorrelatedAgreement (reedSolomonCode dom (2*d)) θ weight u := by
++  obtain ⟨S,hSmass,hgood⟩ := h
++  refine ⟨Finset.univ.filter (fun i => D.sq i ∈ S),?_,?_⟩
++  · rw [card_eq_two_mul_card D]
++    rw [projectConsistency_mass] at hSmass
++    push_cast
++    linarith
++  · intro j
++    obtain ⟨vE,hvE,hE⟩ := hgood (j.castAdd n)
++    obtain ⟨vO,hvO,hO⟩ := hgood (j.natAdd n)
++    simp only [parityFamily,Fin.append_left,Fin.append_right] at hE hO
++    obtain ⟨pE,hpEd,hpE⟩ := mem_reedSolomonCode_iff.mp hvE
++    obtain ⟨pO,hpOd,hpO⟩ := mem_reedSolomonCode_iff.mp hvO
++    refine ⟨fun i => (recompose pE pO).eval (dom i),mem_reedSolomonCode_iff.mpr
++      ⟨recompose pE pO,degree_recompose_lt hpEd hpOd,fun _ => rfl⟩,?_⟩
++    intro i hi
++    have hik := (Finset.mem_filter.mp hi).2
++    exact eq_recompose_of_agree D i ((hE _ hik).trans (hpE _)) ((hO _ hik).trans (hpO _))
++
++variable {ι₀ ι₁ ι₂ ι₃ : Type}
++variable [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃]
++variable {dom₀ : ι₀ ↪ F} {dom₁ : ι₁ ↪ F} {dom₂ : ι₂ ↪ F} {dom₃ : ι₃ ↪ F}
++
++noncomputable def projectConsistency8 (D₀ : FoldingData F dom₀ dom₁)
++    (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃) (weight : ι₀ → ℝ) : ι₃ → ℝ :=
++  projectConsistency D₂ (projectConsistency D₁ (projectConsistency D₀ weight))
++
++omit [DecidableEq F] [Fintype ι₃] in
++theorem projectConsistency8_nonneg (D₀ : FoldingData F dom₀ dom₁)
++    (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃) (weight : ι₀ → ℝ)
++    (h0 : ∀ i, 0 ≤ weight i) : ∀ i, 0 ≤ projectConsistency8 D₀ D₁ D₂ weight i :=
++  projectConsistency_nonneg D₂ _ (projectConsistency_nonneg D₁ _ (projectConsistency_nonneg D₀ _ h0))
++
++omit [DecidableEq F] [Fintype ι₃] in
++theorem projectConsistency8_le_one (D₀ : FoldingData F dom₀ dom₁)
++    (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃) (weight : ι₀ → ℝ)
++    (h1 : ∀ i, weight i ≤ 1) : ∀ i, projectConsistency8 D₀ D₁ D₂ weight i ≤ 1 :=
++  projectConsistency_le_one D₂ _ (projectConsistency_le_one D₁ _ (projectConsistency_le_one D₀ _ h1))
++
++omit [DecidableEq F] in
++/-- Weighted agreement reconstructs the source at unchanged θ, on eightfold fibres. -/
++theorem weighted_reconstruction (D₀ : FoldingData F dom₀ dom₁)
++    (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    (d : ℕ) (θ : ℝ) (weight : ι₀ → ℝ) (f : ι₀ → F)
++    (h : WeightedCorrelatedAgreement (reedSolomonCode dom₃ d) θ
++      (projectConsistency8 D₀ D₁ D₂ weight) (components D₀ D₁ D₂ f)) :
++    WeightedClose (reedSolomonCode dom₀ (8*d)) θ weight f := by
++  have h₂ := weighted_recompose_family D₂ _ _ h
++  have h₁ := weighted_recompose_family D₁ _ _ h₂
++  have h₀ := weighted_recompose_family D₀ _ _ h₁
++  obtain ⟨S,hS,hw⟩ := h₀
++  obtain ⟨w,hwC,hwAg⟩ := hw 0
++  refine ⟨S,hS,w,?_,hwAg⟩
++  simpa only [show 2*(2*(2*d)) = 8*d by omega] using hwC
++
++/-- Direct one-scalar, fixed-input arity-eight preservation of weighted
++nonagreement. This is the per-round invariant needed for cumulative query soundness. -/
++theorem fold8_injected_weighted_sound [Fintype F] [Nonempty ι₃]
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    {d : ℕ} (hd : 1 ≤ d) {θ : ℝ} (hθ : 0 < θ)
++    (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι₃:ℝ))
++    (weight : ι₀ → ℝ) (h1 : ∀ i, weight i ≤ 1) (f : ι₀ → F) (g : ι₃ → F)
++    (hfar : ¬WeightedClose (reedSolomonCode dom₀ (8*d)) θ weight f) :
++    uniformProb F (fun β => WeightedClose (reedSolomonCode dom₃ d) θ
++      (projectConsistency8 D₀ D₁ D₂ weight) (fun i => fold8 D₀ D₁ D₂ f β i+β^8*g i)) ≤
++      ((8*Fintype.card ι₃:ℕ):ℝ)/Fintype.card F := by
++  have hf : ¬WeightedCorrelatedAgreement (reedSolomonCode dom₃ d) θ
++      (projectConsistency8 D₀ D₁ D₂ weight) (Fin.snoc (components D₀ D₁ D₂ f) g) := by
++    rintro ⟨S,hS,hw⟩
++    apply hfar
++    apply weighted_reconstruction D₀ D₁ D₂ d θ weight f
++    exact ⟨S,hS,fun j => by simpa using hw j.castSucc⟩
++  simpa only [curveWord_snoc,←fold8_eq_curve] using
++    curve_weighted_uniform_sound 8 (by decide) dom₃ hd hθ hrate
++      (projectConsistency8 D₀ D₁ D₂ weight) (projectConsistency8_le_one D₀ D₁ D₂ weight h1)
++      (Fin.snoc (components D₀ D₁ D₂ f) g) hf
++
++end Minidregg.Selvage.ArityEight
++
++
++
++/-- info: 'Minidregg.Selvage.ArityEight.projectConsistency_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.projectConsistency_mass
++
++/-- info: 'Minidregg.Selvage.ArityEight.projectConsistency_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.projectConsistency_nonneg
++
++/-- info: 'Minidregg.Selvage.ArityEight.projectConsistency_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.projectConsistency_le_one
++
++/-- info: 'Minidregg.Selvage.ArityEight.weighted_recompose_family' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.weighted_recompose_family
++
++/-- info: 'Minidregg.Selvage.ArityEight.projectConsistency8_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.projectConsistency8_nonneg
++
++/-- info: 'Minidregg.Selvage.ArityEight.projectConsistency8_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.projectConsistency8_le_one
++
++/-- info: 'Minidregg.Selvage.ArityEight.weighted_reconstruction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.weighted_reconstruction
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_injected_weighted_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_injected_weighted_sound
+diff --git a/Selvage/WeightedAgreementWitnesses.lean b/Selvage/WeightedAgreementWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/WeightedAgreementWitnesses.lean
+@@ -0,0 +1,95 @@
++/- Nonconstant real weights, genuinely far coefficients and real good
++scalars. Existing finite curve teeth are reused; no enumeration campaign. -/
++import Selvage.CurveWeightedAgreement
++import Selvage.CurveFullUDTeeth
++
++namespace Minidregg.Selvage.WeightedAgreementWitnesses
++open CurveDegreeTeeth
++open scoped BigOperators Classical
++
++/-- Both coordinates carry positive but unequal consistency weights. -/
++noncomputable def weight : Fin 2 → ℝ := ![1,4/5]
++
++theorem weight_bounds : (∀ i, 0 ≤ weight i) ∧ (∀ i, weight i ≤ 1) := by
++  constructor <;> intro i <;> fin_cases i <;> norm_num [weight]
++
++theorem weight_nonconstant : weight 0 ≠ weight 1 := by norm_num [weight]
++
++theorem weight_mass : consistencyMass weight Finset.univ = 9/5 := by
++  norm_num [consistencyMass,weight,Fin.sum_univ_succ]
++
++/-- The existing non-codeword coefficient family remains weighted-far. -/
++theorem weighted_far : ¬WeightedCorrelatedAgreement (reedSolomonCode dom 1) (1/5:ℝ) weight words := by
++  intro h
++  exact no_correlated_agreement (weightedCA_to_CA _ _ weight weight_bounds.2 words h)
++
++/-- Three actual scalars have weighted codeword agreement despite the far family. -/
++theorem three_weighted_good (z : ZMod 17) (hz : z ∈ ({0,1,2}:Finset (ZMod 17))) :
++    WeightedClose (reedSolomonCode dom 1) (1/5:ℝ) weight (curveWord words z) := by
++  rw [curve_at_three_roots z hz]
++  exact ⟨Finset.univ,by norm_num [weight_mass],0,(reedSolomonCode dom 1).zero_mem,fun _ _ => rfl⟩
++
++/-- All field/radius/weight/farness premises fire on this genuine nonempty bad event. -/
++theorem weighted_bound_fires :
++    uniformProb (ZMod 17) (fun z => WeightedClose (reedSolomonCode dom 1) (1/5:ℝ)
++      weight (curveWord words z)) ≤ 14/17 := by
++  have h := curve_weighted_uniform_sound 7 (by decide) dom (d := 1) (by decide)
++    (θ := 1/5) (by norm_num) (by norm_num) weight weight_bounds.2 words weighted_far
++  norm_num at h ⊢
++  exact h
++
++/-- Legal zero coefficients have a weighted common agreement set at this threshold. -/
++theorem zero_common (M : ℕ) :
++    WeightedCorrelatedAgreement (reedSolomonCode dom 1) (1/5:ℝ) weight
++      (fun _ : Fin (M+1) => (0 : Fin 2 → ZMod 17)) :=
++  ⟨Finset.univ,by norm_num [weight_mass],fun _ =>
++    ⟨0,(reedSolomonCode dom 1).zero_mem,fun _ _ => rfl⟩⟩
++
++/-- Values above one break the density domination used by the reduction. -/
++theorem overweight_density_falsifier :
++    (1:ℝ) < consistencyMass (fun _ : Fin 2 => (2:ℝ)) {0} ∧
++    (consistencyMass (fun _ : Fin 2 => (2:ℝ)) {0}) > (({0}:Finset (Fin 2)).card:ℝ) := by
++  norm_num [consistencyMass]
++
++/-- Coherent round disagreements may be the SAME set. Summing their
++marginal rejection probabilities would double-count it. -/
++theorem overlapping_marginals_falsifier :
++    (({0}:Finset (Fin 2)) ∪ {0}).card < ({0}:Finset (Fin 2)).card+({0}:Finset (Fin 2)).card := by decide
++
++end Minidregg.Selvage.WeightedAgreementWitnesses
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.weight_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.weight_bounds
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.weight_nonconstant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.weight_nonconstant
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.weight_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.weight_mass
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.weighted_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.weighted_far
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.three_weighted_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.three_weighted_good
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.weighted_bound_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.weighted_bound_fires
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.zero_common' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.zero_common
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.overweight_density_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.overweight_density_falsifier
++
++/-- info: 'Minidregg.Selvage.WeightedAgreementWitnesses.overlapping_marginals_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.WeightedAgreementWitnesses.overlapping_marginals_falsifier

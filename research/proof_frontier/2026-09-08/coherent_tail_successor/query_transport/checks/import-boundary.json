@@ -1,0 +1,9 @@
+{
+  "command": [
+    "bash",
+    "scripts/check-import-boundary.sh"
+  ],
+  "cwd": "/tmp/minidregg-coherent-query-transport-20260908",
+  "exit_code": 0,
+  "log": "checks/import-boundary.log"
+}

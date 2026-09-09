@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-query-transport-20260908/.lake/build/lib/lean/Selvage/ConsistencyTransportWitnesses.olean",
+    "Selvage/ConsistencyTransportWitnesses.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-query-transport-20260908",
+  "exit_code": 0,
+  "source_sha256": "6cb4c4dc3ff30504a68c8ec010fd2d86eda3f3ae98c91477f6a154ec9ad80710",
+  "source_unchanged": true,
+  "elapsed_s": 4.423486948013306,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/checks/axioms-03.log"
+}

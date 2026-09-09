@@ -1,0 +1,612 @@
+{
+  "schema": "tfhe-selected-external-product-proof-pins-v1",
+  "recorded_before_proof_utc": "2026-09-08T22:57:36.964394+00:00",
+  "capture_pins_rechecked": 37,
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/Compiler/TfheCrtRange.lean",
+      "bytes": 3729,
+      "sha256": "6c0cb52bf32d9dc405410d93a6bd09dfaaeb898f4333bca25f325814300bf4e8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/build/Compiler/TfheCrtRange.olean",
+      "bytes": 333352,
+      "sha256": "85d3c0d38f4027f5ef87d675fb21cf51555d9865238d9483963f0cf656db5d44"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/capture_pins.json",
+      "bytes": 9561,
+      "sha256": "f5f5c265642138d645b1df9e337d3959b7069749282f5f482ba93a314cb00b91"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/consumer/Cargo.lock",
+      "bytes": 39637,
+      "sha256": "b430fe45b499acea1222c2834a09f706dc7882c15c64f6bc5d1834adcb971828"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/consumer/Cargo.toml",
+      "bytes": 761,
+      "sha256": "45e3b4a2dc6429e1095af9f13dfe4f56c01b27c6cb731ae43901ade81393e080"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/consumer/src/main.rs",
+      "bytes": 6686,
+      "sha256": "2d44b702fa7892eb1f49d9e2e4741025521b596ef6f1712a98fdd858478eea86"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/consumer/src/prior_decomposition/prior_rotation.rs",
+      "bytes": 9420,
+      "sha256": "991d553a2af5668f46bea202dfe3dc85caad907a1293c018fb75c4585557f8d8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/consumer/src/prior_decomposition.rs",
+      "bytes": 9842,
+      "sha256": "d980648750014dc0ed20d9a80733c169963d0dbbb325f4a7cfb3610f3292cb94"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/consumer/target/release/tfhe-external-product-proof",
+      "bytes": 4254400,
+      "sha256": "308763a1c05bfa340074ff6d27c3da7a68e0f77c97547915eceff155b06c00ab"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/body_rotated_lut.ct",
+      "bytes": 8232,
+      "sha256": "34dc3e00c96578b3a7c15abef3cdd06e8e26636f58cd094f7cfa82777129c937"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/decomposition_proof.bin",
+      "bytes": 363165,
+      "sha256": "6993ca1094c7c96d99c3cab01605dc395dd12153aff2ae2b00c25c01a3db9f34"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/decomposition_template.json",
+      "bytes": 62113,
+      "sha256": "d1306386767a9ec8bdfb9bddf3e0b2f831b352feafdbd3b5e2572baa7aa4c52a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/delta.ct",
+      "bytes": 8232,
+      "sha256": "91bc6f56fbbb2cc26d22f1978ea8125110ac8e11e75252ca0a6ef89adaa0303d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/digits.json",
+      "bytes": 29461,
+      "sha256": "437651c690a2f59b47203de509170dcd67b2d070be95e278a56906d98365e1ac"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/exact_ntt_external_product.ct",
+      "bytes": 8232,
+      "sha256": "100b074017320fdcb3968250569cb27bf98ed7fa48986b234aeb2473b09da1c1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/fft_external_product.ct",
+      "bytes": 8232,
+      "sha256": "100b074017320fdcb3968250569cb27bf98ed7fa48986b234aeb2473b09da1c1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/initial_lut.ct",
+      "bytes": 8232,
+      "sha256": "341f66e90fd70193fe9ba240b9d761ad092181e73478e675b0eddcca63ddeb3b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/karatsuba_external_product.ct",
+      "bytes": 8232,
+      "sha256": "100b074017320fdcb3968250569cb27bf98ed7fa48986b234aeb2473b09da1c1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/ntt_public.json",
+      "bytes": 433421,
+      "sha256": "77a82f3f9a0a68e2b74a867f3722d41caf4dfec44bbf369945211110cbede9b3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/pbs_input.ct",
+      "bytes": 3256,
+      "sha256": "12db684dfe5695f6afabde7dc1d55c1f92e13a6d782e4994c49c7a9418fd7114"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/prior_proof.bin",
+      "bytes": 233366,
+      "sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/prior_rows.json",
+      "bytes": 22045,
+      "sha256": "a328dc5c12625617e1a05afd48f2fb9287cb4edca10cce37a5ab25bf811afe1f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/prior_template.json",
+      "bytes": 11063,
+      "sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/public_fourier_ggsw.ct",
+      "bytes": 131376,
+      "sha256": "e31b52482dd42caa74a037f4560a934bcc4493dd5beca4f2f42d3c08d679ab93"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/public_raw_ggsw.ct",
+      "bytes": 65592,
+      "sha256": "cdb69a441c980a2ce408ec355775fd4b87f3ad7ab64bf3e2c0fb59aa8b567aed"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/public_rows46.json",
+      "bytes": 264106,
+      "sha256": "43d887ef9389d62cae254a3b050a9a188ba2cdf51d38ed204a71a76c0e06f6d3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/recurrence_public.json",
+      "bytes": 75319,
+      "sha256": "3990e9f45af02847e78e01c155ddf8669ec34322779c5269b4cea050f00c971c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/report.json",
+      "bytes": 6017,
+      "sha256": "d06fd642c677bc7c00e36f3616b827f9521a0b078423d363f44ccde16b57157f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/rotation_proof.bin",
+      "bytes": 290448,
+      "sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/fixtures/normal_001/rotation_template.json",
+      "bytes": 22529,
+      "sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Compiler/TfheSparseCertificate.lean",
+      "bytes": 4849,
+      "sha256": "3605f881467fd29ce59ac9d4069f8182182ee47770183e76f3e52c185490d5f6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Compiler/TfheSparseRow.lean",
+      "bytes": 8962,
+      "sha256": "2d7296b5c4990c4b06dba4b8bb32d91df9f525f6f3b055ba9b710ae8a6fd4fd3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Compiler/TfheSparseTeeth.lean",
+      "bytes": 8240,
+      "sha256": "ffcb648a111fab721d4a638e79dcc76aeb8fe4ed5a2549d95bc44d00852a43b5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Compiler/TfheSparseWitness.lean",
+      "bytes": 1193,
+      "sha256": "37ecd09579739b16de1a0d46bb22249377c8e628cc779f76895b0623b239b160"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Compiler/TfheSparseWrap.lean",
+      "bytes": 5403,
+      "sha256": "987c50f6eb2b84aef1e26c90a2519c3af203822bf1ef409d1a82f3bc1c894402"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/EmitTfheSparse.lean",
+      "bytes": 3858,
+      "sha256": "01a2fbdc980a66e04e78b49ced04271dd7daa1ffaf3857e03c99cc52ae0b94ba"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/SOURCE_PINS.json",
+      "bytes": 1099,
+      "sha256": "0fe1809bdf8ef4d1e8df725a6a6823f8308d2e5e63113882ad8d108cf4e623ff"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/Theory/SparseNegacyclic.lean",
+      "bytes": 12610,
+      "sha256": "7b07af172c79b75a714aa3343066ea36ded8bd3b54468df5742765b42378c523"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/artifacts/emission.json",
+      "bytes": 317,
+      "sha256": "83fb96a47ee62890ae93d93537b3a04900e9138b13b11d55a2a0a559f899f2dc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/artifacts/template_ir2.json",
+      "bytes": 59107,
+      "sha256": "9a3f98d241dad5430e980941ddf4fa0a360ec11c291e51a833f280dee71101b3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/artifacts/trace.leu32",
+      "bytes": 2285568,
+      "sha256": "8590cc3cd2e7cb511449ca842817d144ca15bfe3765fb4697943feebd91499fb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/build/Compiler/TfheSparseCertificate.olean",
+      "bytes": 535088,
+      "sha256": "d4d18192b211868acda36b657405ed4c20008d849df1951a1ee1a35dc53da17b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/build/Compiler/TfheSparseRow.olean",
+      "bytes": 2446824,
+      "sha256": "d5c50dbb058ea6f6329c5b4d3d381f46bc00d3c0e64fac73ee39bf107ab82920"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/build/Compiler/TfheSparseTeeth.olean",
+      "bytes": 2146856,
+      "sha256": "972221cac70a0e159bca486df0ea6a1674e0a0a80fb4e0b4e85b9634b0f0ab9a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/build/Compiler/TfheSparseWitness.olean",
+      "bytes": 234544,
+      "sha256": "94a234cb5eb32425eadd5a9465f59fcb6ef7cdc2e0c0ec7e1cd11065e03c85eb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/build/Compiler/TfheSparseWrap.olean",
+      "bytes": 495032,
+      "sha256": "7a2aa3fd2edb28902554fe4c970929be5a658b83ab937c16dd9a65306b440e1c"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/AcceptedCellEffect.olean",
+      "bytes": 2730056,
+      "sha256": "cd4355bba7c9bf6be88b087a3f44afa334ab5f94c93e68e04b33383613c11abb"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/AcceptedCellEffectRequestBinding.olean",
+      "bytes": 434960,
+      "sha256": "e503c14cff1d9be6199cc60a974fd4cdc3f6dd336a9efcd9a4d7e584014e6454"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/AcceptedCellEffectWitness.olean",
+      "bytes": 118680,
+      "sha256": "7cdaf339f0586674174cb87df6dddf72db5e9870a56e9adbe8cd76a2cbb899a3"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/AdditiveNTT.olean",
+      "bytes": 1204232,
+      "sha256": "934e0af8d18b61dcb7390e3031b83844472d45ab8cd09b88cd85fd0ca49633c3"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/AdditiveNTTTransform.olean",
+      "bytes": 1193016,
+      "sha256": "dca1619fbf8a09d5bc6e835262410ee95b7a6969d52c13e19307c3fca842feb9"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/AuthorizationDeclaration.olean",
+      "bytes": 2372456,
+      "sha256": "b63e16ba57be161da8352bed53355e04ae01ef18c215af5e2beb302b02a86196"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/Bignum.olean",
+      "bytes": 312528,
+      "sha256": "879b0a2906fcdfafd5e367305b436557e0446ae676c6a5ca52199ab87db92cbd"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/BinaryTower.olean",
+      "bytes": 210192,
+      "sha256": "23c9c4e900d2cd342a2b5e17b331769ce04230b09ba5251e4a709f46e006d17f"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/BinaryTowerCodec.olean",
+      "bytes": 31912,
+      "sha256": "fa11f06806d6d091541ae15ce4fbf9ef22c158682d0d0f66329a6d7bf1c6aee4"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/BinaryTowerFanPaar.olean",
+      "bytes": 1159392,
+      "sha256": "13153f4a14262f8e03987d7a1a05e0a88171d074a5a535d32b291fbb9f20dd7e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/BinaryTowerFanPaarCodec.olean",
+      "bytes": 509584,
+      "sha256": "fc106f00f23933835d4cb4f51d5894e49b0443f06ec4358fb2cc94b93dec95a1"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/BinaryTowerTrace.olean",
+      "bytes": 616016,
+      "sha256": "dded2767c94afaa695b5ec567832497ea4c82bc3f21d4df7b6a4e9cd290afbbb"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ByteCodecs.olean",
+      "bytes": 444400,
+      "sha256": "b62b350ff8ff148d92e60fed80db047f6be7d32d5b33f20fda7708fa0b0a8511"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CanonicalAuthorityProjection.olean",
+      "bytes": 266816,
+      "sha256": "c9b28959cc000b73cd25f0924f5b876ef3b839207b9b874ad66eaee9f80a928c"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CanonicalReactiveView.olean",
+      "bytes": 880144,
+      "sha256": "d8cec4e07e14dcc6799c126f64927f33c47e1307b0b4f213153dcb09ca2290fd"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CanonicalResourceKernel.olean",
+      "bytes": 1385048,
+      "sha256": "db71c509baa194c5b9069eb473f6e787c7d4501d6b3a4b7e84bf742aabc0f5bb"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CanonicalTransition.olean",
+      "bytes": 594376,
+      "sha256": "6610450258aeee99dd5301fe814644b48e2bd1743ba75d23f2b9a92a018bc39a"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CanonicalTransitionWitness.olean",
+      "bytes": 21712,
+      "sha256": "44a3600b06214f1b17dae2dd7691e82804b2f033a61ddbbf3e77ee624173321b"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CausalVersionAncestry.olean",
+      "bytes": 1056184,
+      "sha256": "02e0341a447f8812bc5a08f764ae6eb3224063166d822db104378878452b59b6"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CausalVersionDag.olean",
+      "bytes": 1462920,
+      "sha256": "9e83988d15cafb0912e437381bc6c7290babfe2da5d2af752b912594dc4a6648"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CellSlot.olean",
+      "bytes": 1223424,
+      "sha256": "734b388b91563a23c497c5b7ff3954e91573fa527d6a3bef47d2b1cad5565d29"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CellState.olean",
+      "bytes": 1002792,
+      "sha256": "edddbc923caefb034f503803d20ef4157d9abb30fdef194f4ba62b5913699a17"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CellStateWitness.olean",
+      "bytes": 424912,
+      "sha256": "d7d18406f5d482be2afe48f5b12dbb0d563377071161b3ac6fc4358927e91d1f"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CompressedLinearEquation.olean",
+      "bytes": 422208,
+      "sha256": "f70449f2401d235a91289d7598c8c5d904c2e97eb25e457a2d92d557a0edf093"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/Confluence.olean",
+      "bytes": 427152,
+      "sha256": "a797dc7919446ae3bfada916a68a5db35d8f736dc4c4f7f87bfc86edf9863632"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CredentialAuthorityEffects.olean",
+      "bytes": 926320,
+      "sha256": "32f454d7d291e1c6ed0a23e207b52c268fedac7306044cee2b3cc5843024a3e1"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CredentialAuthorityFamily.olean",
+      "bytes": 774744,
+      "sha256": "2158b50adee2697f5e2a45325958cd38e3e039bd343734dcb352bcbc55c7512d"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CredentialAuthorityState.olean",
+      "bytes": 527504,
+      "sha256": "af39bf1511a4c62ba5d7e31c8e2ab3c9cae2dda6c270ea3f63b058129f0bf71c"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CrossModulus.olean",
+      "bytes": 363464,
+      "sha256": "5c83927707dddb3fcd7066a8459e2fdd4c75ab9eb5f4ec7a4007218b794f8d4f"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CyclotomicExceptionalSet.olean",
+      "bytes": 727528,
+      "sha256": "5917e3d78d4bf012e92383713ab160dba6ff518afc9a15c9a8855fa087566393"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/CyclotomicInertia.olean",
+      "bytes": 17654328,
+      "sha256": "7dd7716228095ade966e83a493617c97185e3158ad47cec1fe83431260a8ddf8"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/DeclaredActionLowering.olean",
+      "bytes": 1526040,
+      "sha256": "4e1f4257cfd95b48c2fb226335449e7575efeb62aa330ad8490216b8564051c4"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/DeclaredTurn.olean",
+      "bytes": 687576,
+      "sha256": "90d11e9df9138c8cde94648576903f59346419b9a2d83df65f0d8f8a8b3d0ed8"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/DeployedMaterializerWitness.olean",
+      "bytes": 2366272,
+      "sha256": "3422a83bcf2c4c931db5522c08295479e72ca2d179a9ca06b55a78faa5f9669d"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/DeployedTotalCarrierAudit.olean",
+      "bytes": 168008,
+      "sha256": "6e68bde6a737eab1271d50e13af7791a02cf35fa59ba2f9397ef49822a091552"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/DisclosureDeclaration.olean",
+      "bytes": 1356016,
+      "sha256": "9f083baa339ff50e395b7ae14cc4faf99a543fa14a73720c28409ab7a1c8cba2"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/EffectDeclaration.olean",
+      "bytes": 1562992,
+      "sha256": "cdf0b0f4b62b64862dbb43bcceac3997eb0170c9b490557ba9c271fe50a63939"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/EpistemicConsensus.olean",
+      "bytes": 240168,
+      "sha256": "9275e7fe88dcb518b7163871f281d73471ca7419691f52518b4197d937534868"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/EvmFragment.olean",
+      "bytes": 486336,
+      "sha256": "084939c0d2aa537fbc179499b550eec062d1e81f3031f9bcdfa44a10e02f56ce"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/EvmResidual.olean",
+      "bytes": 704704,
+      "sha256": "6a6f0a960773da5245bca6c1c18dcfe2e965a9bc6a54899a655848a8699efeff"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ExceptionalSetLocalRing.olean",
+      "bytes": 192288,
+      "sha256": "c83825dd9cd16d434149de33b37c36facfa09bf70713a2f894359741a0c7c4c1"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ExtensionBasis.olean",
+      "bytes": 292048,
+      "sha256": "a03cdd43420802297891f55e8bbd936c7b4e02c8e4fe957e999be1b35c51336e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/Finality.olean",
+      "bytes": 503616,
+      "sha256": "81aa31388d585e3391bb508cd2f5a521f070522e8e52b0a654700fedc43b6625"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/GuardedAdvice.olean",
+      "bytes": 872240,
+      "sha256": "d700f476f65b06fdb71d9725ca1fdcd37bafe4ec82f714810aedd822e4416b5f"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/Hyperdocument.olean",
+      "bytes": 4098928,
+      "sha256": "0398d3aae03c36a5db0d1d1388c157c0fd4dc68a6d00ede67af7ed0342f74e8e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/HyperdocumentCausalFamily.olean",
+      "bytes": 1096080,
+      "sha256": "7cb16144a2db6bc45f8a0b2869fcdab1529009bf7fbbd17669c0f5ff00ca7fd6"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/HyperdocumentInterface.olean",
+      "bytes": 1456272,
+      "sha256": "0bbe0c56b933ee255892ed726403af8fa74d19345c98efed90fa63ebe69f901f"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/HyperdocumentOperationIntent.olean",
+      "bytes": 333976,
+      "sha256": "bf28d39b6230c5fb3d480c66eb9a696c023ae5760a22b1edfaac606273a7a625"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/HyperdocumentOperations.olean",
+      "bytes": 1617984,
+      "sha256": "1b5c71b067fb4da675639c83323d854a1d2d08461697711085a2247447bb71f7"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/IndexedProgram.olean",
+      "bytes": 669688,
+      "sha256": "ecbe78c8dbd8ff5b9b18f21d923edf12e119ba8857836f40afd47d69f788dec0"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/IntegerFingerprint.olean",
+      "bytes": 535648,
+      "sha256": "8d07112a013e3bfda79c8a89d25ce2985748a834a0487bad77220ae4e8f80ec9"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/Knowledge.olean",
+      "bytes": 116648,
+      "sha256": "d4c06599150511ad22bdee35c01bbd31dd098d6d98c79e51c631deb54da1e1af"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/LaceMerge.olean",
+      "bytes": 540000,
+      "sha256": "89ec5023f254f7c2a53d70d65bd4a7b2790de68c437a4ce21729ab5f45ca5175"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/MaterializerCardinality.olean",
+      "bytes": 190232,
+      "sha256": "52f705eaa998d56dcf7f29891c15940b30a1ea66fa95512fb0263e04038ce491"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/PrivacyProfile.olean",
+      "bytes": 300824,
+      "sha256": "1f798d41534eba9e29cf41c891df2603125b72c4013205806bac40ae1d9f3c09"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/PrivateComputationDeclaration.olean",
+      "bytes": 3816760,
+      "sha256": "cc6a5984038f7e2c491cf53ad4ccfb1cab2c8701a03f9c4b18f5546e9176c42d"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/PrivateTrace.olean",
+      "bytes": 645672,
+      "sha256": "0766c77c2aa2007c02ad2eb99b950d1a9822a43fcf57eb2a27be297e952d163e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ReactiveCellTransition.olean",
+      "bytes": 1334880,
+      "sha256": "fd505f86a9eccf0cdefa9388c39e312e52dbddf024a33ad35a1a27157f15cda6"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ReactiveController.olean",
+      "bytes": 1541160,
+      "sha256": "0e7918df16f678ed7e91cf2c8b303c635de08e555c113043b1267cb5f41b4bfe"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ReactiveReceipt.olean",
+      "bytes": 825848,
+      "sha256": "fde45f05b0dfd1eb21cfd309b6895faa27feba7182678f81f322d73e3a2feda2"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ResourceCost.olean",
+      "bytes": 976736,
+      "sha256": "39f5389a1f5d3f2c57d69eaa4688fb91de2db911b36eed7c5602351f03435540"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/RevocationConsensus.olean",
+      "bytes": 149248,
+      "sha256": "4940ba58e2b856f166778876a01d43977bf99b50f31aa3cdab69ea418f8e0b77"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/SparseLogicalState.olean",
+      "bytes": 154656,
+      "sha256": "af707c179a7de80dede3a645e6eb0d7a47f3ae09dd37ca9543afca4d7731a5f7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/formal_recurrence/build/Theory/SparseNegacyclic.olean",
+      "bytes": 1134488,
+      "sha256": "ea013a0f716f327f8fd746f083a7a0bb11716f5f78f303adde35e3160bc1d1a5"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/StableRanges.olean",
+      "bytes": 2913920,
+      "sha256": "101d2b35b9513396738a3d5fd80de52d2401d78146f2b5fca8ee58a84bb0a301"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/StoreFiniteSupport.olean",
+      "bytes": 152184,
+      "sha256": "f33ede709e150fac7b1eac0ddcc4b32413d2a170e9fc5318ed2edef9bec2ee73"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/TurnTransition.olean",
+      "bytes": 1451648,
+      "sha256": "a359f0d699bce13689e65cc0391bcaacca3a1de308cba28c39aabcee44b75dab"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/TypedAuthorization.olean",
+      "bytes": 2128392,
+      "sha256": "5f7dd20da603686f01df1d7c75d0dbc43e37a9c2858b95d46cc9423b0b21389e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/TypedAuthorizationCodec.olean",
+      "bytes": 142344,
+      "sha256": "5c5ecb4660ca661ae4db50fd39241d7aca03bdca52fe7b1a7c75af6922a92647"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/TypedAuthorizationWitness.olean",
+      "bytes": 185408,
+      "sha256": "95d0128fbabd9ca1fa9eb5ffb4398d95691a18e3b2a6903e3e1704625d4f8dde"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ViewMerge.olean",
+      "bytes": 224040,
+      "sha256": "2f51070f54c32d077c006e1bce2916ac6b80738fc91cc253c739a292ce81a912"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ZkmlMatmulSum.olean",
+      "bytes": 351736,
+      "sha256": "34a0ec981ccfb607a5a33a60b10606c4b9a72458a9b729647d79eadda7cf80c1"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/ZkmlTensorOps.olean",
+      "bytes": 2842256,
+      "sha256": "c6304d9df927d2ea930c19a538911435b5c2835aecdf643866bb13c2d115d174"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/pin_proof.py",
+      "bytes": 1793,
+      "sha256": "62ce6c15a51d8e38f37c2bd99303a65c7263a4aab3b8b5e76539b808935ee9f9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/run_record.py",
+      "bytes": 1466,
+      "sha256": "176d12f03289fda8cdee613931c32ddb469c0ba13e8a11a43dee45f31e9cf4dd"
+    }
+  ]
+}

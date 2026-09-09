@@ -64,5 +64,114 @@
   "scry_credential": "helper reads configured credential; no credential copied or printed",
   "pdf_downloads": 0,
   "absence_scope": "rg over research/learn_infer_only and notes for multi-hop functional yielded no hits; not a literature absence claim",
-  "source_note": "Primary 2026 Multi-Hop FE abstract is discovery only; no inspected full construction."
+  "source_note": "Primary 2026 Multi-Hop FE abstract is discovery only; no inspected full construction.",
+  "interaction_tranche": {
+    "current_note": "INTERACTION.md",
+    "source_rows": [
+      {
+        "id": "2022/1168",
+        "url": "https://eprint.iacr.org/2022/1168",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1168.pdf",
+        "pdf_sha256": "45ddd4c84ab07dad312a820e73210dd7effb5d5546d9998d7f643fd8b39aedd8",
+        "text": "sources/2022-1168.txt",
+        "text_sha256": "ad0533c8c7af69a9df2e3c48fc485c94bc35ed855788202049a4af71aa71bd44",
+        "inspected": "Definition2.4 pp9-10, section5.2 algorithms pp27-29, Theorem5.1 p30; labeled section2.4/4 scope"
+      },
+      {
+        "id": "2020/950",
+        "url": "https://eprint.iacr.org/2020/950",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/950.pdf",
+        "pdf_sha256": "0d1a051e526984328b4c3b434ebb18efa737b81f240900c9e6ba5bbd5443824c",
+        "text": "sources/2020-950.txt",
+        "text_sha256": "95be8dccddbbe2e00bf7a4e2762c9320d6a9c584ef4d220bd25c19ab7e183cf6",
+        "inspected": "sections3.1-4.3 pp4-8, section6 Remark2 pp11-12, AppendixC Definition7/Theorem6 pp21-22"
+      },
+      {
+        "id": "2012/733",
+        "url": "https://eprint.iacr.org/2012/733",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+        "pdf_sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+        "text": "/tmp/resident-gkp2012-733.txt",
+        "text_sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+        "inspected": "root source contribution; author also read section4.1 lines1555-1595 pp31-32"
+      },
+      {
+        "id": "2026/1033",
+        "url": "https://eprint.iacr.org/2026/1033",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/1033.pdf",
+        "pdf_sha256": "1251240e2c08592b1a25237d459df65fbd02ff38ce095362146c08ea7b9d4ddf",
+        "text": "/tmp/resident-2026-1033.txt",
+        "text_sha256": "4f6153da43a23a14f1d9c63a21038df1df360aced9d0112bd836699347903c1a",
+        "inspected": "Root read Definition3 pp14-15, Remark4 p17, section4.1 p18; integrating author also read those selected text passages",
+        "finding": "Writer contains Ki; otp.ct_i=x_i+PRF(Ki,label). Corrupted-slot all-domain compatibility; same-key fixed output noise cancels in basis-minus-zero probes. One-time is per-label oracle discipline, not a self-restricting credential."
+      },
+      {
+        "id": "2024/2050",
+        "url": "https://eprint.iacr.org/2024/2050",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/2050.pdf",
+        "pdf_sha256": "9e910f77472b9ffab4f9a6a907611176e85391f4be3f1fc3e5975d56af8868e2",
+        "inspected": "Root inspected EncryptionScheme5 pp33-34; integrating author hashed the named public PDF and attributes the source reading to root",
+        "finding": "Single-database writer master has u,c; ct_x=x+c*u directly opens under that master. No claim of a paper security break."
+      }
+    ],
+    "web_queries": [
+      "\"multi-input\" \"quadratic\" \"LWE\" functional encryption",
+      "\"bilinear\" \"functional encryption\" lattice secret key bounded",
+      "\"multi-input quadratic\" \"lattice\"",
+      "\"quadratic functional encryption\" \"LWE\" construction",
+      "\"garbling\" \"functional encryption\" \"one-time\" secret key",
+      "\"garbled\" \"multi-input functional encryption\" bounded",
+      "\"Self-Processing Private Sensor Data\" eprint",
+      "\"garbled encryption\" github Manohar",
+      "\"A New Construction Method for More Efficient Quadratic One-Time Noisy\"",
+      "\"Simulation Secure Multi-input Quadratic Functional Encryption\" eprint"
+    ],
+    "web_query_count": 10,
+    "web_open_count": 2,
+    "web_open_outcomes": {
+      "https://www.petsymposium.org/popets/2020/popets-2020-0081.php": "Internal Error",
+      "https://madoc.bib.uni-mannheim.de/72435/": "Anubis bot gate; no further bypass attempted"
+    },
+    "sql_count": 1,
+    "sql_output": "sources/scry_interaction_1.json",
+    "sql": "SELECT id,title,doi,primary_location.landing_page_url,publication_year FROM openalex.works WHERE hasAllTokens(search_text_lc,['quadratic','functional','encryption']) OR hasAllTokens(search_text_lc,['bilinear','functional','encryption']) ORDER BY publication_year DESC,cited_by_count DESC LIMIT 25",
+    "root_contributed_web_queries": 11,
+    "root_contributed_sql": 0,
+    "pdf_downloads": 0,
+    "public_arithmetic": {
+      "command": "python3 research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/interaction_span.py",
+      "exit_code": 0,
+      "stdout": {
+        "original_projection_rank": 16,
+        "diagonal_bilinear_probe_span_rank": 576,
+        "unreachable_coordinates": [
+          576
+        ],
+        "runtime_crypto_calls": 0
+      },
+      "output": "INTERACTION_SPAN.json",
+      "initial_ad_hoc_read_error": "KeyError vector577; corrected actual registry field vector"
+    },
+    "decision": "No rolling bilinear implementation with retained full-domain writer capabilities; atomic completed-epoch relaxation described separately",
+    "new_crypto_runs": 0,
+    "new_estimator_runs": 0,
+    "new_implementer_delegations": 0,
+    "new_review_queues": 0,
+    "root_reported_source_pass": {
+      "web_queries": 11,
+      "failed_direct_opens": 2,
+      "local_papers_selected_sections": 3,
+      "Scry_SQL": 0,
+      "accounting": "Latest root-reported totals for its source pass; supersedes earlier two-query root subtotal; separate from this author's ten web queries/one SQL/two opens."
+    },
+    "bounded_followon_integration": {
+      "files": "INTERACTION.md and SOURCES.json only",
+      "new_searches": 0,
+      "new_experiments": 0,
+      "new_crypto_runs": 0,
+      "activity": "Integrate root-selected source findings; read selected 2026 passages; hash two named public PDFs and supplied 2026 text",
+      "2026_discovery_status": "Full local source now located; selected algorithm/game inspected, prior discovery-only status superseded",
+      "disposition": "Neither source changes the running-prefix writer-capability obstruction; hold after integration"
+    }
+  }
 }

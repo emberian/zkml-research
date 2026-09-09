@@ -1,0 +1,24 @@
+import Compiler.BasisExtensionWitnessPlan
+#print axioms Minidregg.Compiler.ActualBasisExtension.profileDerived
+#print axioms Minidregg.Compiler.ActualBasisExtension.paramsValid
+#print axioms Minidregg.Compiler.ActualBasisExtension.capacity
+#print axioms Minidregg.Compiler.ActualBasisExtension.source_balanced
+#print axioms Minidregg.Compiler.ActualBasisExtension.sourceSound
+#print axioms Minidregg.Compiler.ActualBasisExtension.fixed_ranges
+#print axioms Minidregg.Compiler.ActualBasisExtension.garner_range
+#print axioms Minidregg.Compiler.ActualBasisExtension.projectionAgreement
+#print axioms Minidregg.Compiler.ActualBasisExtension.nativeAgreement
+#print axioms Minidregg.Compiler.ActualBasisExtension.input_wire
+#print axioms Minidregg.Compiler.ActualBasisExtension.copy_wire
+#print axioms Minidregg.Compiler.ActualBasisExtension.new_wire
+#print axioms Minidregg.Compiler.ActualBasisExtension.input_public
+#print axioms Minidregg.Compiler.ActualBasisExtension.copy_public
+#print axioms Minidregg.Compiler.ActualBasisExtension.new_public
+#print axioms Minidregg.Compiler.ActualBasisExtension.publicRowSound
+#print axioms Minidregg.Compiler.ActualBasisExtension.simplifiedSource_sound
+#print axioms Minidregg.Compiler.ExactBasisExtension.matrixSound
+#print axioms Minidregg.Compiler.ExactBasisExtension.inhabited
+#print axioms Minidregg.Compiler.ExactBasisExtension.wrongOutputRefused
+#print axioms Minidregg.Compiler.ProfiledMatrix.coefficient_le_mass
+#print axioms Minidregg.Compiler.ProfiledMatrix.auto_constants
+#print axioms Minidregg.Compiler.ProfiledMatrix.auto_coefficients

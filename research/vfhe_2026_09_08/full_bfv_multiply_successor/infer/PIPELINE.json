@@ -1,0 +1,107 @@
+{
+  "schema": "complete-saved-kernel-infer-v1",
+  "native": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/target/release/vfhe-complete-kernel-infer",
+  "linear_plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+  "linear_plan_sha256": "ec98f40fa8437f03ccf0193774c705f4a488fd55b42fcdc46f6c3774c7c51f22",
+  "profiles": [
+    {
+      "prime_index": 0,
+      "prime": "1125899906826241",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime0/template_ir2.json",
+      "template_sha256": "63a6a7c9f00d6235b88f2b1524c91b29cbd7d1728ad4d5724d9983abf264df7f",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime0/witness_plan.json",
+      "plan_sha256": "0f25b798c2cf6273817b886f12edabc65043b43a9468332a8f4088e86dd74946",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 1,
+      "prime": "1125899906629633",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime1/template_ir2.json",
+      "template_sha256": "30ccad4145f2a1c1819c7a3651e1638cfa5a828b6c5b51a782d6f739b0b02fc8",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime1/witness_plan.json",
+      "plan_sha256": "58d1632c4934ea1599fb1a1a2b681d95f93ddec5f8f8e280c5d9a0c54529b67f",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 2,
+      "prime": "1125899905744897",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime2/template_ir2.json",
+      "template_sha256": "8113913f4e84ee9dc00564d2ef8890ecc32243f08e57aa7f152cf0c529cb4d71",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime2/witness_plan.json",
+      "plan_sha256": "8d2a50685f5f6aebc23bddb4e37453afbb53e95c0a135d266bab84997f00703c",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 3,
+      "prime": "1125899905351681",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime3/template_ir2.json",
+      "template_sha256": "cf07db9ade400f907337f7c7021dfbb59048efc5adc95417bd8a8eba77b2a1aa",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime3/witness_plan.json",
+      "plan_sha256": "dceec692c254d5493393376781bc03110419119f6885e18fa2d11b971ffec8bb",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    }
+  ],
+  "square": {
+    "case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001",
+    "config_paths": {
+      "extension": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/extension.json",
+      "tensor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/tensor.json",
+      "rescale": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/rescale.json"
+    },
+    "proof_paths": {
+      "extension": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/extension001",
+      "tensor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/tensor001",
+      "rescale": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/results/run001"
+    }
+  },
+  "zstd": "/opt/homebrew/bin/zstd",
+  "source_pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/READY.json": "faea198fb8365fb60c7f200d20b118c4d5f3a844e39011a6e85862ea3d69bb01",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime0/template_ir2.json": "63a6a7c9f00d6235b88f2b1524c91b29cbd7d1728ad4d5724d9983abf264df7f",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime0/witness_plan.json": "0f25b798c2cf6273817b886f12edabc65043b43a9468332a8f4088e86dd74946",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime1/template_ir2.json": "30ccad4145f2a1c1819c7a3651e1638cfa5a828b6c5b51a782d6f739b0b02fc8",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime1/witness_plan.json": "58d1632c4934ea1599fb1a1a2b681d95f93ddec5f8f8e280c5d9a0c54529b67f",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime2/template_ir2.json": "8113913f4e84ee9dc00564d2ef8890ecc32243f08e57aa7f152cf0c529cb4d71",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime2/witness_plan.json": "8d2a50685f5f6aebc23bddb4e37453afbb53e95c0a135d266bab84997f00703c",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime3/template_ir2.json": "cf07db9ade400f907337f7c7021dfbb59048efc5adc95417bd8a8eba77b2a1aa",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime3/witness_plan.json": "dceec692c254d5493393376781bc03110419119f6885e18fa2d11b971ffec8bb",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchCore.lean": "969a8cfc5b0724412a00243352cf956a6aa98d8417b9e48b7e123925736814b3",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchMac.lean": "8897abedbad8090ed074361493ff08c5f89ccd31fe63fac223df9b49518839cc",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchRow.lean": "41c4a9beb15fbed9cc445e7b9de64043e9cfc1f799b3234ce5710743c1f9fa19",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchWitnessPlan.lean": "b5f793911d62c5b19ce5d5541a35d3159e57f3c4606aeb655c2f886a7d671a81",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/EmitBfvKeySwitch.lean": "40c53ed1a630562631d35d3f4ce92a80dd34d624913ead3e6b6116a6a27fb857",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json": "ec98f40fa8437f03ccf0193774c705f4a488fd55b42fcdc46f6c3774c7c51f22",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/src/main.rs": "43081b8a5ce14465b9cb59919da953fd4c451e3462e9a8586e98f4a8ce6d13e9",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/Cargo.toml": "2156f09a801720344a8d8cec7a231cf3bf821d3720325bdb0754a5ef0349a8b6",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/Cargo.lock": "6d8b795f9bd6003d4f4cc4d00eeda31502a9581e1514a9e0bd12d6b943b7e863",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/target/release/vfhe-complete-kernel-infer": "43c095ee9a0eff484d21507d16b9a7e188b6ba66954f4b031910040e023de43e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/vendor/fhe-dregg/src/bfv/keys/evaluation_key.rs": "0814f11e6af8734fe8e074c50fa80867fe788afca0624f297917342682473f10",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/public-key-getter.patch": "39882426cd3548c8d3dab50eace53c7a0ae67a263980f1ff2239e2445a49d4b7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/GETTER.json": "98e9065523520b49184af390a721bf34ee45b5822b4c2410eeffd23b710ce141",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/common.py": "909660bebe6955df823678e4f8e8e6dce8e81c81ff892308d8416d6af5ed1eb8",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/prove.py": "3beb6535eadb7d8cf8b3077717fd43bbcc204e1a281482758cb9baf349b11adb",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/verify.py": "6c613ada035f857987044d70903981fd58e862af516961cf2fa8e2acf59c5d46",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/run.py": "4c7b0da2fe57e6bd668a68fce444233a3d28a41053b1ac7d1f7c7511443aa509",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/Cargo.toml": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/extension.json": "74ca39f4b900aee66f7628f8b9ddec9bd55bba25bad34d1b25a62e78c4b6e76f",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/tensor.json": "4885c3306e202919bc5a4724b04326e2d6aeda6403efc7a3bc31c6f889f732b4",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/rescale.json": "274557e3be4e77efd5052722ee938e62f86b78ca19973f4f2d4c94ef2f9a6672",
+    "/opt/homebrew/bin/zstd": "aff8169fb421bb925fb16c44a7e0143fa2c7a941dc45cce76b15062a2ce54917"
+  },
+  "rayon_threads": 4,
+  "frozen_utc": "2026-09-08T23:24:52.376947+00:00"
+}

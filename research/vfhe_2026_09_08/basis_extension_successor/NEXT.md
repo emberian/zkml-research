@@ -1,0 +1,3 @@
+[OPEN] Continue the same saved Infer path in a new sibling package. Nonlinear owns actual paired4-term key-switch modular MAC. This lane may take residue-row lift, Galois permutation and packed reduction composition after root coordination. Actual keys use multi-prime log_base0 and matching level0 contexts; do not invent a single-prime bit decomposition or absent modulus-down stage.
+
+[OPEN] Preserve every source/plan/descriptor/READY input in this completed package. The complete square proof is reused in the final Infer join; do not regenerate rescale or old baseline proofs. Native witness construction remains untrusted beneath the emitted relation.

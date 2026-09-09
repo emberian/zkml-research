@@ -1,0 +1,4054 @@
+{
+  "scope": "DERIVED/EXECUTED public algebra; no keys, encryptions, probes or attacks executed",
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "field_p": 28439893,
+  "ambient_dimension": 577,
+  "original_projection_rank": 16,
+  "diagonal_bilinear_probe_span_rank": 576,
+  "reachable_coordinates": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    160,
+    161,
+    162,
+    163,
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    172,
+    173,
+    174,
+    175,
+    176,
+    177,
+    178,
+    179,
+    180,
+    181,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191,
+    192,
+    193,
+    194,
+    195,
+    196,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223,
+    224,
+    225,
+    226,
+    227,
+    228,
+    229,
+    230,
+    231,
+    232,
+    233,
+    234,
+    235,
+    236,
+    237,
+    238,
+    239,
+    240,
+    241,
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251,
+    252,
+    253,
+    254,
+    255,
+    256,
+    257,
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279,
+    280,
+    281,
+    282,
+    283,
+    284,
+    285,
+    286,
+    287,
+    288,
+    289,
+    290,
+    291,
+    292,
+    293,
+    294,
+    295,
+    296,
+    297,
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    318,
+    319,
+    320,
+    321,
+    322,
+    323,
+    324,
+    325,
+    326,
+    327,
+    328,
+    329,
+    330,
+    331,
+    332,
+    333,
+    334,
+    335,
+    336,
+    337,
+    338,
+    339,
+    340,
+    341,
+    342,
+    343,
+    344,
+    345,
+    346,
+    347,
+    348,
+    349,
+    350,
+    351,
+    352,
+    353,
+    354,
+    355,
+    356,
+    357,
+    358,
+    359,
+    360,
+    361,
+    362,
+    363,
+    364,
+    365,
+    366,
+    367,
+    368,
+    369,
+    370,
+    371,
+    372,
+    373,
+    374,
+    375,
+    376,
+    377,
+    378,
+    379,
+    380,
+    381,
+    382,
+    383,
+    384,
+    385,
+    386,
+    387,
+    388,
+    389,
+    390,
+    391,
+    392,
+    393,
+    394,
+    395,
+    396,
+    397,
+    398,
+    399,
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415,
+    416,
+    417,
+    418,
+    419,
+    420,
+    421,
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430,
+    431,
+    432,
+    433,
+    434,
+    435,
+    436,
+    437,
+    438,
+    439,
+    440,
+    441,
+    442,
+    443,
+    444,
+    445,
+    446,
+    447,
+    448,
+    449,
+    450,
+    451,
+    452,
+    453,
+    454,
+    455,
+    456,
+    457,
+    458,
+    459,
+    460,
+    461,
+    462,
+    463,
+    464,
+    465,
+    466,
+    467,
+    468,
+    469,
+    470,
+    471,
+    472,
+    473,
+    474,
+    475,
+    476,
+    477,
+    478,
+    479,
+    480,
+    481,
+    482,
+    483,
+    484,
+    485,
+    486,
+    487,
+    488,
+    489,
+    490,
+    491,
+    492,
+    493,
+    494,
+    495,
+    496,
+    497,
+    498,
+    499,
+    500,
+    501,
+    502,
+    503,
+    504,
+    505,
+    506,
+    507,
+    508,
+    509,
+    510,
+    511,
+    512,
+    513,
+    514,
+    515,
+    516,
+    517,
+    518,
+    519,
+    520,
+    521,
+    522,
+    523,
+    524,
+    525,
+    526,
+    527,
+    528,
+    529,
+    530,
+    531,
+    532,
+    533,
+    534,
+    535,
+    536,
+    537,
+    538,
+    539,
+    540,
+    541,
+    542,
+    543,
+    544,
+    545,
+    546,
+    547,
+    548,
+    549,
+    550,
+    551,
+    552,
+    553,
+    554,
+    555,
+    556,
+    557,
+    558,
+    559,
+    560,
+    561,
+    562,
+    563,
+    564,
+    565,
+    566,
+    567,
+    568,
+    569,
+    570,
+    571,
+    572,
+    573,
+    574,
+    575
+  ],
+  "unreachable_coordinates": [
+    576
+  ],
+  "actual_semantic_input_last_coordinate": 0,
+  "number_of_feature_coordinates": 576,
+  "bilinear_formula": "Dec(C_u, Enc_v(e_i), SK_y_j) = y_j[i] * u[i]",
+  "affine_bilinear_formula": "F_j(u,e_i)-F_j(u,0)-y_j[i] = gamma*y_j[i]*u[i]",
+  "validity_condition": "Future writer can encode 0 and each e_i; gamma nonzero; exact bounded integer or field output",
+  "basis_ciphertext_source": "AGT2022/1168 section5.2 p28: MCT1,i,j is a basis encryption already inside EK_i",
+  "witnesses": [
+    {
+      "coordinate": 0,
+      "output_row": 0,
+      "nonzero_multiplier": -22,
+      "inverse_mod_p": 6463612
+    },
+    {
+      "coordinate": 1,
+      "output_row": 0,
+      "nonzero_multiplier": -61,
+      "inverse_mod_p": 1864911
+    },
+    {
+      "coordinate": 2,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 3,
+      "output_row": 0,
+      "nonzero_multiplier": -18,
+      "inverse_mod_p": 1579994
+    },
+    {
+      "coordinate": 4,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 5,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 6,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 7,
+      "output_row": 0,
+      "nonzero_multiplier": -24,
+      "inverse_mod_p": 15404942
+    },
+    {
+      "coordinate": 8,
+      "output_row": 0,
+      "nonzero_multiplier": 10,
+      "inverse_mod_p": 8531968
+    },
+    {
+      "coordinate": 9,
+      "output_row": 0,
+      "nonzero_multiplier": 45,
+      "inverse_mod_p": 5055981
+    },
+    {
+      "coordinate": 10,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 11,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 12,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 13,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 14,
+      "output_row": 0,
+      "nonzero_multiplier": -21,
+      "inverse_mod_p": 17605648
+    },
+    {
+      "coordinate": 15,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 16,
+      "output_row": 0,
+      "nonzero_multiplier": 39,
+      "inverse_mod_p": 27710665
+    },
+    {
+      "coordinate": 17,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 18,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 19,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 20,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 21,
+      "output_row": 0,
+      "nonzero_multiplier": -32,
+      "inverse_mod_p": 25773653
+    },
+    {
+      "coordinate": 22,
+      "output_row": 0,
+      "nonzero_multiplier": -28,
+      "inverse_mod_p": 13204236
+    },
+    {
+      "coordinate": 23,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 24,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 25,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 26,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 27,
+      "output_row": 0,
+      "nonzero_multiplier": -21,
+      "inverse_mod_p": 17605648
+    },
+    {
+      "coordinate": 28,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 29,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 30,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 31,
+      "output_row": 1,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 32,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 33,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 34,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 35,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 36,
+      "output_row": 0,
+      "nonzero_multiplier": -38,
+      "inverse_mod_p": 12723110
+    },
+    {
+      "coordinate": 37,
+      "output_row": 0,
+      "nonzero_multiplier": 33,
+      "inverse_mod_p": 14650854
+    },
+    {
+      "coordinate": 38,
+      "output_row": 0,
+      "nonzero_multiplier": -26,
+      "inverse_mod_p": 1093842
+    },
+    {
+      "coordinate": 39,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 40,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 41,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 42,
+      "output_row": 0,
+      "nonzero_multiplier": -2,
+      "inverse_mod_p": 14219946
+    },
+    {
+      "coordinate": 43,
+      "output_row": 0,
+      "nonzero_multiplier": -45,
+      "inverse_mod_p": 23383912
+    },
+    {
+      "coordinate": 44,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 45,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 46,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 47,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 48,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 49,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 50,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 51,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 52,
+      "output_row": 0,
+      "nonzero_multiplier": 21,
+      "inverse_mod_p": 10834245
+    },
+    {
+      "coordinate": 53,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 54,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 55,
+      "output_row": 0,
+      "nonzero_multiplier": 21,
+      "inverse_mod_p": 10834245
+    },
+    {
+      "coordinate": 56,
+      "output_row": 1,
+      "nonzero_multiplier": -4,
+      "inverse_mod_p": 7109973
+    },
+    {
+      "coordinate": 57,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 58,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 59,
+      "output_row": 0,
+      "nonzero_multiplier": -22,
+      "inverse_mod_p": 6463612
+    },
+    {
+      "coordinate": 60,
+      "output_row": 0,
+      "nonzero_multiplier": 45,
+      "inverse_mod_p": 5055981
+    },
+    {
+      "coordinate": 61,
+      "output_row": 0,
+      "nonzero_multiplier": -62,
+      "inverse_mod_p": 18807026
+    },
+    {
+      "coordinate": 62,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 63,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 64,
+      "output_row": 0,
+      "nonzero_multiplier": 9,
+      "inverse_mod_p": 25279905
+    },
+    {
+      "coordinate": 65,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 66,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 67,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 68,
+      "output_row": 0,
+      "nonzero_multiplier": -4,
+      "inverse_mod_p": 7109973
+    },
+    {
+      "coordinate": 69,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 70,
+      "output_row": 0,
+      "nonzero_multiplier": -17,
+      "inverse_mod_p": 13383479
+    },
+    {
+      "coordinate": 71,
+      "output_row": 0,
+      "nonzero_multiplier": -22,
+      "inverse_mod_p": 6463612
+    },
+    {
+      "coordinate": 72,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 73,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 74,
+      "output_row": 0,
+      "nonzero_multiplier": -2,
+      "inverse_mod_p": 14219946
+    },
+    {
+      "coordinate": 75,
+      "output_row": 0,
+      "nonzero_multiplier": 29,
+      "inverse_mod_p": 980686
+    },
+    {
+      "coordinate": 76,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 77,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 78,
+      "output_row": 1,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 79,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 80,
+      "output_row": 0,
+      "nonzero_multiplier": -13,
+      "inverse_mod_p": 2187684
+    },
+    {
+      "coordinate": 81,
+      "output_row": 0,
+      "nonzero_multiplier": -25,
+      "inverse_mod_p": 7963170
+    },
+    {
+      "coordinate": 82,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 83,
+      "output_row": 0,
+      "nonzero_multiplier": -26,
+      "inverse_mod_p": 1093842
+    },
+    {
+      "coordinate": 84,
+      "output_row": 0,
+      "nonzero_multiplier": 16,
+      "inverse_mod_p": 5332480
+    },
+    {
+      "coordinate": 85,
+      "output_row": 0,
+      "nonzero_multiplier": 30,
+      "inverse_mod_p": 21803918
+    },
+    {
+      "coordinate": 86,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 87,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 88,
+      "output_row": 0,
+      "nonzero_multiplier": 27,
+      "inverse_mod_p": 8426635
+    },
+    {
+      "coordinate": 89,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 90,
+      "output_row": 0,
+      "nonzero_multiplier": 26,
+      "inverse_mod_p": 27346051
+    },
+    {
+      "coordinate": 91,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 92,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 93,
+      "output_row": 0,
+      "nonzero_multiplier": -32,
+      "inverse_mod_p": 25773653
+    },
+    {
+      "coordinate": 94,
+      "output_row": 0,
+      "nonzero_multiplier": 37,
+      "inverse_mod_p": 25365310
+    },
+    {
+      "coordinate": 95,
+      "output_row": 0,
+      "nonzero_multiplier": -25,
+      "inverse_mod_p": 7963170
+    },
+    {
+      "coordinate": 96,
+      "output_row": 0,
+      "nonzero_multiplier": -43,
+      "inverse_mod_p": 4629750
+    },
+    {
+      "coordinate": 97,
+      "output_row": 0,
+      "nonzero_multiplier": -11,
+      "inverse_mod_p": 12927224
+    },
+    {
+      "coordinate": 98,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 99,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 100,
+      "output_row": 0,
+      "nonzero_multiplier": -25,
+      "inverse_mod_p": 7963170
+    },
+    {
+      "coordinate": 101,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 102,
+      "output_row": 0,
+      "nonzero_multiplier": 10,
+      "inverse_mod_p": 8531968
+    },
+    {
+      "coordinate": 103,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 104,
+      "output_row": 1,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 105,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 106,
+      "output_row": 0,
+      "nonzero_multiplier": 41,
+      "inverse_mod_p": 9711183
+    },
+    {
+      "coordinate": 107,
+      "output_row": 0,
+      "nonzero_multiplier": -16,
+      "inverse_mod_p": 23107413
+    },
+    {
+      "coordinate": 108,
+      "output_row": 0,
+      "nonzero_multiplier": -35,
+      "inverse_mod_p": 21939346
+    },
+    {
+      "coordinate": 109,
+      "output_row": 0,
+      "nonzero_multiplier": -51,
+      "inverse_mod_p": 13941124
+    },
+    {
+      "coordinate": 110,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 111,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 112,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 113,
+      "output_row": 0,
+      "nonzero_multiplier": 21,
+      "inverse_mod_p": 10834245
+    },
+    {
+      "coordinate": 114,
+      "output_row": 0,
+      "nonzero_multiplier": 43,
+      "inverse_mod_p": 23810143
+    },
+    {
+      "coordinate": 115,
+      "output_row": 0,
+      "nonzero_multiplier": -31,
+      "inverse_mod_p": 9174159
+    },
+    {
+      "coordinate": 116,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 117,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 118,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 119,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 120,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 121,
+      "output_row": 0,
+      "nonzero_multiplier": 36,
+      "inverse_mod_p": 27649896
+    },
+    {
+      "coordinate": 122,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 123,
+      "output_row": 0,
+      "nonzero_multiplier": 29,
+      "inverse_mod_p": 980686
+    },
+    {
+      "coordinate": 124,
+      "output_row": 0,
+      "nonzero_multiplier": 80,
+      "inverse_mod_p": 1066496
+    },
+    {
+      "coordinate": 125,
+      "output_row": 0,
+      "nonzero_multiplier": -14,
+      "inverse_mod_p": 26408472
+    },
+    {
+      "coordinate": 126,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 127,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 128,
+      "output_row": 0,
+      "nonzero_multiplier": -16,
+      "inverse_mod_p": 23107413
+    },
+    {
+      "coordinate": 129,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 130,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 131,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 132,
+      "output_row": 0,
+      "nonzero_multiplier": -4,
+      "inverse_mod_p": 7109973
+    },
+    {
+      "coordinate": 133,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 134,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 135,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 136,
+      "output_row": 0,
+      "nonzero_multiplier": 9,
+      "inverse_mod_p": 25279905
+    },
+    {
+      "coordinate": 137,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 138,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 139,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 140,
+      "output_row": 0,
+      "nonzero_multiplier": -2,
+      "inverse_mod_p": 14219946
+    },
+    {
+      "coordinate": 141,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 142,
+      "output_row": 0,
+      "nonzero_multiplier": -4,
+      "inverse_mod_p": 7109973
+    },
+    {
+      "coordinate": 143,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 144,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 145,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 146,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 147,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 148,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 149,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 150,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 151,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 152,
+      "output_row": 0,
+      "nonzero_multiplier": -35,
+      "inverse_mod_p": 21939346
+    },
+    {
+      "coordinate": 153,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 154,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 155,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 156,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 157,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 158,
+      "output_row": 0,
+      "nonzero_multiplier": -33,
+      "inverse_mod_p": 13789039
+    },
+    {
+      "coordinate": 159,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 160,
+      "output_row": 0,
+      "nonzero_multiplier": -24,
+      "inverse_mod_p": 15404942
+    },
+    {
+      "coordinate": 161,
+      "output_row": 0,
+      "nonzero_multiplier": 10,
+      "inverse_mod_p": 8531968
+    },
+    {
+      "coordinate": 162,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 163,
+      "output_row": 0,
+      "nonzero_multiplier": 16,
+      "inverse_mod_p": 5332480
+    },
+    {
+      "coordinate": 164,
+      "output_row": 0,
+      "nonzero_multiplier": 20,
+      "inverse_mod_p": 4265984
+    },
+    {
+      "coordinate": 165,
+      "output_row": 0,
+      "nonzero_multiplier": -16,
+      "inverse_mod_p": 23107413
+    },
+    {
+      "coordinate": 166,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 167,
+      "output_row": 0,
+      "nonzero_multiplier": -43,
+      "inverse_mod_p": 4629750
+    },
+    {
+      "coordinate": 168,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 169,
+      "output_row": 0,
+      "nonzero_multiplier": -43,
+      "inverse_mod_p": 4629750
+    },
+    {
+      "coordinate": 170,
+      "output_row": 0,
+      "nonzero_multiplier": -25,
+      "inverse_mod_p": 7963170
+    },
+    {
+      "coordinate": 171,
+      "output_row": 0,
+      "nonzero_multiplier": 37,
+      "inverse_mod_p": 25365310
+    },
+    {
+      "coordinate": 172,
+      "output_row": 0,
+      "nonzero_multiplier": -13,
+      "inverse_mod_p": 2187684
+    },
+    {
+      "coordinate": 173,
+      "output_row": 0,
+      "nonzero_multiplier": -27,
+      "inverse_mod_p": 20013258
+    },
+    {
+      "coordinate": 174,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 175,
+      "output_row": 0,
+      "nonzero_multiplier": -21,
+      "inverse_mod_p": 17605648
+    },
+    {
+      "coordinate": 176,
+      "output_row": 0,
+      "nonzero_multiplier": 10,
+      "inverse_mod_p": 8531968
+    },
+    {
+      "coordinate": 177,
+      "output_row": 0,
+      "nonzero_multiplier": -13,
+      "inverse_mod_p": 2187684
+    },
+    {
+      "coordinate": 178,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 179,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 180,
+      "output_row": 0,
+      "nonzero_multiplier": -11,
+      "inverse_mod_p": 12927224
+    },
+    {
+      "coordinate": 181,
+      "output_row": 0,
+      "nonzero_multiplier": -37,
+      "inverse_mod_p": 3074583
+    },
+    {
+      "coordinate": 182,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 183,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 184,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 185,
+      "output_row": 0,
+      "nonzero_multiplier": -35,
+      "inverse_mod_p": 21939346
+    },
+    {
+      "coordinate": 186,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 187,
+      "output_row": 0,
+      "nonzero_multiplier": 38,
+      "inverse_mod_p": 15716783
+    },
+    {
+      "coordinate": 188,
+      "output_row": 0,
+      "nonzero_multiplier": -16,
+      "inverse_mod_p": 23107413
+    },
+    {
+      "coordinate": 189,
+      "output_row": 0,
+      "nonzero_multiplier": -23,
+      "inverse_mod_p": 14838205
+    },
+    {
+      "coordinate": 190,
+      "output_row": 0,
+      "nonzero_multiplier": 15,
+      "inverse_mod_p": 15167943
+    },
+    {
+      "coordinate": 191,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 192,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 193,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 194,
+      "output_row": 0,
+      "nonzero_multiplier": 26,
+      "inverse_mod_p": 27346051
+    },
+    {
+      "coordinate": 195,
+      "output_row": 0,
+      "nonzero_multiplier": 26,
+      "inverse_mod_p": 27346051
+    },
+    {
+      "coordinate": 196,
+      "output_row": 0,
+      "nonzero_multiplier": 16,
+      "inverse_mod_p": 5332480
+    },
+    {
+      "coordinate": 197,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 198,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 199,
+      "output_row": 0,
+      "nonzero_multiplier": -21,
+      "inverse_mod_p": 17605648
+    },
+    {
+      "coordinate": 200,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 201,
+      "output_row": 0,
+      "nonzero_multiplier": 32,
+      "inverse_mod_p": 2666240
+    },
+    {
+      "coordinate": 202,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 203,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 204,
+      "output_row": 0,
+      "nonzero_multiplier": -33,
+      "inverse_mod_p": 13789039
+    },
+    {
+      "coordinate": 205,
+      "output_row": 0,
+      "nonzero_multiplier": -42,
+      "inverse_mod_p": 8802824
+    },
+    {
+      "coordinate": 206,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 207,
+      "output_row": 1,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 208,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 209,
+      "output_row": 0,
+      "nonzero_multiplier": 35,
+      "inverse_mod_p": 6500547
+    },
+    {
+      "coordinate": 210,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 211,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 212,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 213,
+      "output_row": 0,
+      "nonzero_multiplier": 31,
+      "inverse_mod_p": 19265734
+    },
+    {
+      "coordinate": 214,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 215,
+      "output_row": 0,
+      "nonzero_multiplier": -42,
+      "inverse_mod_p": 8802824
+    },
+    {
+      "coordinate": 216,
+      "output_row": 0,
+      "nonzero_multiplier": 28,
+      "inverse_mod_p": 15235657
+    },
+    {
+      "coordinate": 217,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 218,
+      "output_row": 0,
+      "nonzero_multiplier": -17,
+      "inverse_mod_p": 13383479
+    },
+    {
+      "coordinate": 219,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 220,
+      "output_row": 0,
+      "nonzero_multiplier": 28,
+      "inverse_mod_p": 15235657
+    },
+    {
+      "coordinate": 221,
+      "output_row": 0,
+      "nonzero_multiplier": 39,
+      "inverse_mod_p": 27710665
+    },
+    {
+      "coordinate": 222,
+      "output_row": 0,
+      "nonzero_multiplier": -57,
+      "inverse_mod_p": 27442002
+    },
+    {
+      "coordinate": 223,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 224,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 225,
+      "output_row": 0,
+      "nonzero_multiplier": 26,
+      "inverse_mod_p": 27346051
+    },
+    {
+      "coordinate": 226,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 227,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 228,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 229,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 230,
+      "output_row": 1,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 231,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 232,
+      "output_row": 0,
+      "nonzero_multiplier": -13,
+      "inverse_mod_p": 2187684
+    },
+    {
+      "coordinate": 233,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 234,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 235,
+      "output_row": 0,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 236,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 237,
+      "output_row": 0,
+      "nonzero_multiplier": 31,
+      "inverse_mod_p": 19265734
+    },
+    {
+      "coordinate": 238,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 239,
+      "output_row": 0,
+      "nonzero_multiplier": 57,
+      "inverse_mod_p": 997891
+    },
+    {
+      "coordinate": 240,
+      "output_row": 0,
+      "nonzero_multiplier": -4,
+      "inverse_mod_p": 7109973
+    },
+    {
+      "coordinate": 241,
+      "output_row": 0,
+      "nonzero_multiplier": 30,
+      "inverse_mod_p": 21803918
+    },
+    {
+      "coordinate": 242,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 243,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 244,
+      "output_row": 0,
+      "nonzero_multiplier": -47,
+      "inverse_mod_p": 11496978
+    },
+    {
+      "coordinate": 245,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 246,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 247,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 248,
+      "output_row": 0,
+      "nonzero_multiplier": -35,
+      "inverse_mod_p": 21939346
+    },
+    {
+      "coordinate": 249,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 250,
+      "output_row": 0,
+      "nonzero_multiplier": -22,
+      "inverse_mod_p": 6463612
+    },
+    {
+      "coordinate": 251,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 252,
+      "output_row": 0,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 253,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 254,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 255,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 256,
+      "output_row": 0,
+      "nonzero_multiplier": 56,
+      "inverse_mod_p": 21837775
+    },
+    {
+      "coordinate": 257,
+      "output_row": 0,
+      "nonzero_multiplier": -23,
+      "inverse_mod_p": 14838205
+    },
+    {
+      "coordinate": 258,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 259,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 260,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 261,
+      "output_row": 0,
+      "nonzero_multiplier": -33,
+      "inverse_mod_p": 13789039
+    },
+    {
+      "coordinate": 262,
+      "output_row": 0,
+      "nonzero_multiplier": 9,
+      "inverse_mod_p": 25279905
+    },
+    {
+      "coordinate": 263,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 264,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 265,
+      "output_row": 0,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 266,
+      "output_row": 0,
+      "nonzero_multiplier": 31,
+      "inverse_mod_p": 19265734
+    },
+    {
+      "coordinate": 267,
+      "output_row": 0,
+      "nonzero_multiplier": -34,
+      "inverse_mod_p": 20911686
+    },
+    {
+      "coordinate": 268,
+      "output_row": 0,
+      "nonzero_multiplier": 30,
+      "inverse_mod_p": 21803918
+    },
+    {
+      "coordinate": 269,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 270,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 271,
+      "output_row": 0,
+      "nonzero_multiplier": -36,
+      "inverse_mod_p": 789997
+    },
+    {
+      "coordinate": 272,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 273,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 274,
+      "output_row": 0,
+      "nonzero_multiplier": 9,
+      "inverse_mod_p": 25279905
+    },
+    {
+      "coordinate": 275,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 276,
+      "output_row": 0,
+      "nonzero_multiplier": -14,
+      "inverse_mod_p": 26408472
+    },
+    {
+      "coordinate": 277,
+      "output_row": 0,
+      "nonzero_multiplier": 29,
+      "inverse_mod_p": 980686
+    },
+    {
+      "coordinate": 278,
+      "output_row": 0,
+      "nonzero_multiplier": -11,
+      "inverse_mod_p": 12927224
+    },
+    {
+      "coordinate": 279,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 280,
+      "output_row": 0,
+      "nonzero_multiplier": 9,
+      "inverse_mod_p": 25279905
+    },
+    {
+      "coordinate": 281,
+      "output_row": 0,
+      "nonzero_multiplier": -34,
+      "inverse_mod_p": 20911686
+    },
+    {
+      "coordinate": 282,
+      "output_row": 0,
+      "nonzero_multiplier": -17,
+      "inverse_mod_p": 13383479
+    },
+    {
+      "coordinate": 283,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 284,
+      "output_row": 0,
+      "nonzero_multiplier": 10,
+      "inverse_mod_p": 8531968
+    },
+    {
+      "coordinate": 285,
+      "output_row": 0,
+      "nonzero_multiplier": -27,
+      "inverse_mod_p": 20013258
+    },
+    {
+      "coordinate": 286,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 287,
+      "output_row": 0,
+      "nonzero_multiplier": 16,
+      "inverse_mod_p": 5332480
+    },
+    {
+      "coordinate": 288,
+      "output_row": 0,
+      "nonzero_multiplier": -58,
+      "inverse_mod_p": 27949550
+    },
+    {
+      "coordinate": 289,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 290,
+      "output_row": 0,
+      "nonzero_multiplier": -24,
+      "inverse_mod_p": 15404942
+    },
+    {
+      "coordinate": 291,
+      "output_row": 0,
+      "nonzero_multiplier": -35,
+      "inverse_mod_p": 21939346
+    },
+    {
+      "coordinate": 292,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 293,
+      "output_row": 0,
+      "nonzero_multiplier": 52,
+      "inverse_mod_p": 27892972
+    },
+    {
+      "coordinate": 294,
+      "output_row": 0,
+      "nonzero_multiplier": -14,
+      "inverse_mod_p": 26408472
+    },
+    {
+      "coordinate": 295,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 296,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 297,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 298,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 299,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 300,
+      "output_row": 0,
+      "nonzero_multiplier": -13,
+      "inverse_mod_p": 2187684
+    },
+    {
+      "coordinate": 301,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 302,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 303,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 304,
+      "output_row": 0,
+      "nonzero_multiplier": 31,
+      "inverse_mod_p": 19265734
+    },
+    {
+      "coordinate": 305,
+      "output_row": 0,
+      "nonzero_multiplier": 28,
+      "inverse_mod_p": 15235657
+    },
+    {
+      "coordinate": 306,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 307,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 308,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 309,
+      "output_row": 0,
+      "nonzero_multiplier": -39,
+      "inverse_mod_p": 729228
+    },
+    {
+      "coordinate": 310,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 311,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 312,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 313,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 314,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 315,
+      "output_row": 0,
+      "nonzero_multiplier": -33,
+      "inverse_mod_p": 13789039
+    },
+    {
+      "coordinate": 316,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 317,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 318,
+      "output_row": 0,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 319,
+      "output_row": 0,
+      "nonzero_multiplier": -29,
+      "inverse_mod_p": 27459207
+    },
+    {
+      "coordinate": 320,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 321,
+      "output_row": 0,
+      "nonzero_multiplier": -47,
+      "inverse_mod_p": 11496978
+    },
+    {
+      "coordinate": 322,
+      "output_row": 0,
+      "nonzero_multiplier": -30,
+      "inverse_mod_p": 6635975
+    },
+    {
+      "coordinate": 323,
+      "output_row": 0,
+      "nonzero_multiplier": -22,
+      "inverse_mod_p": 6463612
+    },
+    {
+      "coordinate": 324,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 325,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 326,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 327,
+      "output_row": 0,
+      "nonzero_multiplier": -17,
+      "inverse_mod_p": 13383479
+    },
+    {
+      "coordinate": 328,
+      "output_row": 0,
+      "nonzero_multiplier": -4,
+      "inverse_mod_p": 7109973
+    },
+    {
+      "coordinate": 329,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 330,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 331,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 332,
+      "output_row": 0,
+      "nonzero_multiplier": -14,
+      "inverse_mod_p": 26408472
+    },
+    {
+      "coordinate": 333,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 334,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 335,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 336,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 337,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 338,
+      "output_row": 0,
+      "nonzero_multiplier": 16,
+      "inverse_mod_p": 5332480
+    },
+    {
+      "coordinate": 339,
+      "output_row": 0,
+      "nonzero_multiplier": -47,
+      "inverse_mod_p": 11496978
+    },
+    {
+      "coordinate": 340,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 341,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 342,
+      "output_row": 0,
+      "nonzero_multiplier": 20,
+      "inverse_mod_p": 4265984
+    },
+    {
+      "coordinate": 343,
+      "output_row": 0,
+      "nonzero_multiplier": -18,
+      "inverse_mod_p": 1579994
+    },
+    {
+      "coordinate": 344,
+      "output_row": 0,
+      "nonzero_multiplier": -27,
+      "inverse_mod_p": 20013258
+    },
+    {
+      "coordinate": 345,
+      "output_row": 0,
+      "nonzero_multiplier": 26,
+      "inverse_mod_p": 27346051
+    },
+    {
+      "coordinate": 346,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 347,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 348,
+      "output_row": 0,
+      "nonzero_multiplier": -43,
+      "inverse_mod_p": 4629750
+    },
+    {
+      "coordinate": 349,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 350,
+      "output_row": 0,
+      "nonzero_multiplier": -37,
+      "inverse_mod_p": 3074583
+    },
+    {
+      "coordinate": 351,
+      "output_row": 0,
+      "nonzero_multiplier": 26,
+      "inverse_mod_p": 27346051
+    },
+    {
+      "coordinate": 352,
+      "output_row": 0,
+      "nonzero_multiplier": -32,
+      "inverse_mod_p": 25773653
+    },
+    {
+      "coordinate": 353,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 354,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 355,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 356,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 357,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 358,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 359,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 360,
+      "output_row": 0,
+      "nonzero_multiplier": -18,
+      "inverse_mod_p": 1579994
+    },
+    {
+      "coordinate": 361,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 362,
+      "output_row": 0,
+      "nonzero_multiplier": -29,
+      "inverse_mod_p": 27459207
+    },
+    {
+      "coordinate": 363,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 364,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 365,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 366,
+      "output_row": 0,
+      "nonzero_multiplier": 42,
+      "inverse_mod_p": 19637069
+    },
+    {
+      "coordinate": 367,
+      "output_row": 1,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 368,
+      "output_row": 0,
+      "nonzero_multiplier": 1,
+      "inverse_mod_p": 1
+    },
+    {
+      "coordinate": 369,
+      "output_row": 0,
+      "nonzero_multiplier": 21,
+      "inverse_mod_p": 10834245
+    },
+    {
+      "coordinate": 370,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 371,
+      "output_row": 0,
+      "nonzero_multiplier": -18,
+      "inverse_mod_p": 1579994
+    },
+    {
+      "coordinate": 372,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    },
+    {
+      "coordinate": 373,
+      "output_row": 0,
+      "nonzero_multiplier": -16,
+      "inverse_mod_p": 23107413
+    },
+    {
+      "coordinate": 374,
+      "output_row": 0,
+      "nonzero_multiplier": -45,
+      "inverse_mod_p": 23383912
+    },
+    {
+      "coordinate": 375,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 376,
+      "output_row": 0,
+      "nonzero_multiplier": 27,
+      "inverse_mod_p": 8426635
+    },
+    {
+      "coordinate": 377,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 378,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 379,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 380,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 381,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 382,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 383,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 384,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 385,
+      "output_row": 0,
+      "nonzero_multiplier": -2,
+      "inverse_mod_p": 14219946
+    },
+    {
+      "coordinate": 386,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 387,
+      "output_row": 0,
+      "nonzero_multiplier": -17,
+      "inverse_mod_p": 13383479
+    },
+    {
+      "coordinate": 388,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 389,
+      "output_row": 0,
+      "nonzero_multiplier": -2,
+      "inverse_mod_p": 14219946
+    },
+    {
+      "coordinate": 390,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 391,
+      "output_row": 0,
+      "nonzero_multiplier": -41,
+      "inverse_mod_p": 18728710
+    },
+    {
+      "coordinate": 392,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 393,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 394,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 395,
+      "output_row": 0,
+      "nonzero_multiplier": 43,
+      "inverse_mod_p": 23810143
+    },
+    {
+      "coordinate": 396,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 397,
+      "output_row": 0,
+      "nonzero_multiplier": 20,
+      "inverse_mod_p": 4265984
+    },
+    {
+      "coordinate": 398,
+      "output_row": 0,
+      "nonzero_multiplier": -32,
+      "inverse_mod_p": 25773653
+    },
+    {
+      "coordinate": 399,
+      "output_row": 0,
+      "nonzero_multiplier": 16,
+      "inverse_mod_p": 5332480
+    },
+    {
+      "coordinate": 400,
+      "output_row": 0,
+      "nonzero_multiplier": 36,
+      "inverse_mod_p": 27649896
+    },
+    {
+      "coordinate": 401,
+      "output_row": 0,
+      "nonzero_multiplier": -11,
+      "inverse_mod_p": 12927224
+    },
+    {
+      "coordinate": 402,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 403,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 404,
+      "output_row": 0,
+      "nonzero_multiplier": 15,
+      "inverse_mod_p": 15167943
+    },
+    {
+      "coordinate": 405,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 406,
+      "output_row": 0,
+      "nonzero_multiplier": -27,
+      "inverse_mod_p": 20013258
+    },
+    {
+      "coordinate": 407,
+      "output_row": 0,
+      "nonzero_multiplier": 21,
+      "inverse_mod_p": 10834245
+    },
+    {
+      "coordinate": 408,
+      "output_row": 0,
+      "nonzero_multiplier": -4,
+      "inverse_mod_p": 7109973
+    },
+    {
+      "coordinate": 409,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 410,
+      "output_row": 0,
+      "nonzero_multiplier": -25,
+      "inverse_mod_p": 7963170
+    },
+    {
+      "coordinate": 411,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 412,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 413,
+      "output_row": 0,
+      "nonzero_multiplier": 37,
+      "inverse_mod_p": 25365310
+    },
+    {
+      "coordinate": 414,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 415,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 416,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 417,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 418,
+      "output_row": 0,
+      "nonzero_multiplier": 9,
+      "inverse_mod_p": 25279905
+    },
+    {
+      "coordinate": 419,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 420,
+      "output_row": 0,
+      "nonzero_multiplier": -21,
+      "inverse_mod_p": 17605648
+    },
+    {
+      "coordinate": 421,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 422,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 423,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 424,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 425,
+      "output_row": 0,
+      "nonzero_multiplier": -53,
+      "inverse_mod_p": 2146407
+    },
+    {
+      "coordinate": 426,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 427,
+      "output_row": 0,
+      "nonzero_multiplier": 8,
+      "inverse_mod_p": 10664960
+    },
+    {
+      "coordinate": 428,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 429,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 430,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 431,
+      "output_row": 0,
+      "nonzero_multiplier": -37,
+      "inverse_mod_p": 3074583
+    },
+    {
+      "coordinate": 432,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 433,
+      "output_row": 0,
+      "nonzero_multiplier": 10,
+      "inverse_mod_p": 8531968
+    },
+    {
+      "coordinate": 434,
+      "output_row": 0,
+      "nonzero_multiplier": -13,
+      "inverse_mod_p": 2187684
+    },
+    {
+      "coordinate": 435,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 436,
+      "output_row": 0,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 437,
+      "output_row": 0,
+      "nonzero_multiplier": 20,
+      "inverse_mod_p": 4265984
+    },
+    {
+      "coordinate": 438,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 439,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 440,
+      "output_row": 0,
+      "nonzero_multiplier": 27,
+      "inverse_mod_p": 8426635
+    },
+    {
+      "coordinate": 441,
+      "output_row": 0,
+      "nonzero_multiplier": -58,
+      "inverse_mod_p": 27949550
+    },
+    {
+      "coordinate": 442,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 443,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 444,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 445,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 446,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 447,
+      "output_row": 0,
+      "nonzero_multiplier": 28,
+      "inverse_mod_p": 15235657
+    },
+    {
+      "coordinate": 448,
+      "output_row": 0,
+      "nonzero_multiplier": -2,
+      "inverse_mod_p": 14219946
+    },
+    {
+      "coordinate": 449,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 450,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 451,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 452,
+      "output_row": 0,
+      "nonzero_multiplier": -18,
+      "inverse_mod_p": 1579994
+    },
+    {
+      "coordinate": 453,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 454,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 455,
+      "output_row": 0,
+      "nonzero_multiplier": -52,
+      "inverse_mod_p": 546921
+    },
+    {
+      "coordinate": 456,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 457,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 458,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 459,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 460,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 461,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 462,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 463,
+      "output_row": 0,
+      "nonzero_multiplier": 35,
+      "inverse_mod_p": 6500547
+    },
+    {
+      "coordinate": 464,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 465,
+      "output_row": 0,
+      "nonzero_multiplier": -35,
+      "inverse_mod_p": 21939346
+    },
+    {
+      "coordinate": 466,
+      "output_row": 0,
+      "nonzero_multiplier": 48,
+      "inverse_mod_p": 20737422
+    },
+    {
+      "coordinate": 467,
+      "output_row": 0,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 468,
+      "output_row": 1,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 469,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 470,
+      "output_row": 0,
+      "nonzero_multiplier": 32,
+      "inverse_mod_p": 2666240
+    },
+    {
+      "coordinate": 471,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 472,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 473,
+      "output_row": 0,
+      "nonzero_multiplier": -26,
+      "inverse_mod_p": 1093842
+    },
+    {
+      "coordinate": 474,
+      "output_row": 0,
+      "nonzero_multiplier": -27,
+      "inverse_mod_p": 20013258
+    },
+    {
+      "coordinate": 475,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 476,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 477,
+      "output_row": 0,
+      "nonzero_multiplier": 38,
+      "inverse_mod_p": 15716783
+    },
+    {
+      "coordinate": 478,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 479,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 480,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 481,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 482,
+      "output_row": 0,
+      "nonzero_multiplier": 20,
+      "inverse_mod_p": 4265984
+    },
+    {
+      "coordinate": 483,
+      "output_row": 0,
+      "nonzero_multiplier": 32,
+      "inverse_mod_p": 2666240
+    },
+    {
+      "coordinate": 484,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 485,
+      "output_row": 0,
+      "nonzero_multiplier": -5,
+      "inverse_mod_p": 11375957
+    },
+    {
+      "coordinate": 486,
+      "output_row": 0,
+      "nonzero_multiplier": -6,
+      "inverse_mod_p": 4739982
+    },
+    {
+      "coordinate": 487,
+      "output_row": 0,
+      "nonzero_multiplier": -20,
+      "inverse_mod_p": 24173909
+    },
+    {
+      "coordinate": 488,
+      "output_row": 0,
+      "nonzero_multiplier": -29,
+      "inverse_mod_p": 27459207
+    },
+    {
+      "coordinate": 489,
+      "output_row": 0,
+      "nonzero_multiplier": 35,
+      "inverse_mod_p": 6500547
+    },
+    {
+      "coordinate": 490,
+      "output_row": 0,
+      "nonzero_multiplier": -17,
+      "inverse_mod_p": 13383479
+    },
+    {
+      "coordinate": 491,
+      "output_row": 0,
+      "nonzero_multiplier": 29,
+      "inverse_mod_p": 980686
+    },
+    {
+      "coordinate": 492,
+      "output_row": 0,
+      "nonzero_multiplier": -30,
+      "inverse_mod_p": 6635975
+    },
+    {
+      "coordinate": 493,
+      "output_row": 0,
+      "nonzero_multiplier": -9,
+      "inverse_mod_p": 3159988
+    },
+    {
+      "coordinate": 494,
+      "output_row": 0,
+      "nonzero_multiplier": 9,
+      "inverse_mod_p": 25279905
+    },
+    {
+      "coordinate": 495,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 496,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 497,
+      "output_row": 0,
+      "nonzero_multiplier": -14,
+      "inverse_mod_p": 26408472
+    },
+    {
+      "coordinate": 498,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 499,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 500,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 501,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 502,
+      "output_row": 0,
+      "nonzero_multiplier": 35,
+      "inverse_mod_p": 6500547
+    },
+    {
+      "coordinate": 503,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 504,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 505,
+      "output_row": 0,
+      "nonzero_multiplier": 40,
+      "inverse_mod_p": 2132992
+    },
+    {
+      "coordinate": 506,
+      "output_row": 0,
+      "nonzero_multiplier": 14,
+      "inverse_mod_p": 2031421
+    },
+    {
+      "coordinate": 507,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 508,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 509,
+      "output_row": 0,
+      "nonzero_multiplier": -17,
+      "inverse_mod_p": 13383479
+    },
+    {
+      "coordinate": 510,
+      "output_row": 0,
+      "nonzero_multiplier": 12,
+      "inverse_mod_p": 26069902
+    },
+    {
+      "coordinate": 511,
+      "output_row": 0,
+      "nonzero_multiplier": -16,
+      "inverse_mod_p": 23107413
+    },
+    {
+      "coordinate": 512,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 513,
+      "output_row": 0,
+      "nonzero_multiplier": -19,
+      "inverse_mod_p": 25446220
+    },
+    {
+      "coordinate": 514,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 515,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 516,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 517,
+      "output_row": 0,
+      "nonzero_multiplier": 5,
+      "inverse_mod_p": 17063936
+    },
+    {
+      "coordinate": 518,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 519,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 520,
+      "output_row": 0,
+      "nonzero_multiplier": -11,
+      "inverse_mod_p": 12927224
+    },
+    {
+      "coordinate": 521,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 522,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 523,
+      "output_row": 0,
+      "nonzero_multiplier": 21,
+      "inverse_mod_p": 10834245
+    },
+    {
+      "coordinate": 524,
+      "output_row": 0,
+      "nonzero_multiplier": 18,
+      "inverse_mod_p": 26859899
+    },
+    {
+      "coordinate": 525,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 526,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 527,
+      "output_row": 0,
+      "nonzero_multiplier": -44,
+      "inverse_mod_p": 3231806
+    },
+    {
+      "coordinate": 528,
+      "output_row": 0,
+      "nonzero_multiplier": -15,
+      "inverse_mod_p": 13271950
+    },
+    {
+      "coordinate": 529,
+      "output_row": 0,
+      "nonzero_multiplier": 19,
+      "inverse_mod_p": 2993673
+    },
+    {
+      "coordinate": 530,
+      "output_row": 0,
+      "nonzero_multiplier": -36,
+      "inverse_mod_p": 789997
+    },
+    {
+      "coordinate": 531,
+      "output_row": 0,
+      "nonzero_multiplier": 33,
+      "inverse_mod_p": 14650854
+    },
+    {
+      "coordinate": 532,
+      "output_row": 0,
+      "nonzero_multiplier": 33,
+      "inverse_mod_p": 14650854
+    },
+    {
+      "coordinate": 533,
+      "output_row": 0,
+      "nonzero_multiplier": 37,
+      "inverse_mod_p": 25365310
+    },
+    {
+      "coordinate": 534,
+      "output_row": 0,
+      "nonzero_multiplier": 33,
+      "inverse_mod_p": 14650854
+    },
+    {
+      "coordinate": 535,
+      "output_row": 0,
+      "nonzero_multiplier": 26,
+      "inverse_mod_p": 27346051
+    },
+    {
+      "coordinate": 536,
+      "output_row": 0,
+      "nonzero_multiplier": 2,
+      "inverse_mod_p": 14219947
+    },
+    {
+      "coordinate": 537,
+      "output_row": 0,
+      "nonzero_multiplier": 15,
+      "inverse_mod_p": 15167943
+    },
+    {
+      "coordinate": 538,
+      "output_row": 0,
+      "nonzero_multiplier": -2,
+      "inverse_mod_p": 14219946
+    },
+    {
+      "coordinate": 539,
+      "output_row": 0,
+      "nonzero_multiplier": 38,
+      "inverse_mod_p": 15716783
+    },
+    {
+      "coordinate": 540,
+      "output_row": 0,
+      "nonzero_multiplier": 40,
+      "inverse_mod_p": 2132992
+    },
+    {
+      "coordinate": 541,
+      "output_row": 0,
+      "nonzero_multiplier": -13,
+      "inverse_mod_p": 2187684
+    },
+    {
+      "coordinate": 542,
+      "output_row": 0,
+      "nonzero_multiplier": -26,
+      "inverse_mod_p": 1093842
+    },
+    {
+      "coordinate": 543,
+      "output_row": 0,
+      "nonzero_multiplier": 11,
+      "inverse_mod_p": 15512669
+    },
+    {
+      "coordinate": 544,
+      "output_row": 0,
+      "nonzero_multiplier": -10,
+      "inverse_mod_p": 19907925
+    },
+    {
+      "coordinate": 545,
+      "output_row": 0,
+      "nonzero_multiplier": 13,
+      "inverse_mod_p": 26252209
+    },
+    {
+      "coordinate": 546,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 547,
+      "output_row": 0,
+      "nonzero_multiplier": 22,
+      "inverse_mod_p": 21976281
+    },
+    {
+      "coordinate": 548,
+      "output_row": 0,
+      "nonzero_multiplier": -24,
+      "inverse_mod_p": 15404942
+    },
+    {
+      "coordinate": 549,
+      "output_row": 0,
+      "nonzero_multiplier": -14,
+      "inverse_mod_p": 26408472
+    },
+    {
+      "coordinate": 550,
+      "output_row": 0,
+      "nonzero_multiplier": 39,
+      "inverse_mod_p": 27710665
+    },
+    {
+      "coordinate": 551,
+      "output_row": 0,
+      "nonzero_multiplier": 7,
+      "inverse_mod_p": 4062842
+    },
+    {
+      "coordinate": 552,
+      "output_row": 0,
+      "nonzero_multiplier": 4,
+      "inverse_mod_p": 21329920
+    },
+    {
+      "coordinate": 553,
+      "output_row": 0,
+      "nonzero_multiplier": 41,
+      "inverse_mod_p": 9711183
+    },
+    {
+      "coordinate": 554,
+      "output_row": 0,
+      "nonzero_multiplier": 17,
+      "inverse_mod_p": 15056414
+    },
+    {
+      "coordinate": 555,
+      "output_row": 0,
+      "nonzero_multiplier": -3,
+      "inverse_mod_p": 9479964
+    },
+    {
+      "coordinate": 556,
+      "output_row": 0,
+      "nonzero_multiplier": 32,
+      "inverse_mod_p": 2666240
+    },
+    {
+      "coordinate": 557,
+      "output_row": 0,
+      "nonzero_multiplier": -14,
+      "inverse_mod_p": 26408472
+    },
+    {
+      "coordinate": 558,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 559,
+      "output_row": 0,
+      "nonzero_multiplier": 30,
+      "inverse_mod_p": 21803918
+    },
+    {
+      "coordinate": 560,
+      "output_row": 0,
+      "nonzero_multiplier": -22,
+      "inverse_mod_p": 6463612
+    },
+    {
+      "coordinate": 561,
+      "output_row": 0,
+      "nonzero_multiplier": 25,
+      "inverse_mod_p": 20476723
+    },
+    {
+      "coordinate": 562,
+      "output_row": 0,
+      "nonzero_multiplier": -7,
+      "inverse_mod_p": 24377051
+    },
+    {
+      "coordinate": 563,
+      "output_row": 0,
+      "nonzero_multiplier": 15,
+      "inverse_mod_p": 15167943
+    },
+    {
+      "coordinate": 564,
+      "output_row": 0,
+      "nonzero_multiplier": 23,
+      "inverse_mod_p": 13601688
+    },
+    {
+      "coordinate": 565,
+      "output_row": 0,
+      "nonzero_multiplier": 24,
+      "inverse_mod_p": 13034951
+    },
+    {
+      "coordinate": 566,
+      "output_row": 0,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 567,
+      "output_row": 0,
+      "nonzero_multiplier": 35,
+      "inverse_mod_p": 6500547
+    },
+    {
+      "coordinate": 568,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 569,
+      "output_row": 0,
+      "nonzero_multiplier": -1,
+      "inverse_mod_p": 28439892
+    },
+    {
+      "coordinate": 570,
+      "output_row": 1,
+      "nonzero_multiplier": -8,
+      "inverse_mod_p": 17774933
+    },
+    {
+      "coordinate": 571,
+      "output_row": 0,
+      "nonzero_multiplier": 3,
+      "inverse_mod_p": 18959929
+    },
+    {
+      "coordinate": 572,
+      "output_row": 0,
+      "nonzero_multiplier": 46,
+      "inverse_mod_p": 6800844
+    },
+    {
+      "coordinate": 573,
+      "output_row": 0,
+      "nonzero_multiplier": 15,
+      "inverse_mod_p": 15167943
+    },
+    {
+      "coordinate": 574,
+      "output_row": 0,
+      "nonzero_multiplier": 6,
+      "inverse_mod_p": 23699911
+    },
+    {
+      "coordinate": 575,
+      "output_row": 0,
+      "nonzero_multiplier": -12,
+      "inverse_mod_p": 2369991
+    }
+  ],
+  "runtime_crypto_calls": 0
+}

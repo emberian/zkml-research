@@ -1,0 +1,8 @@
+'Minidregg.Selvage.consistencyMass_le_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.consistencyMass_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.consistencyMass_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.weightedClose_mutualFailure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.geometric_pr_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.weightedCA_to_CA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.curve_weighted_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.curve_weighted_bad_card' depends on axioms: [propext, Classical.choice, Quot.sound]

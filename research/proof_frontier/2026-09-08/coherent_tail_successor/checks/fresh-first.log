@@ -1,0 +1,10 @@
+Selvage/BabyBearWeightedFreshSoundness.lean:96:2: error: Type mismatch
+  sound_312 (Witness.execution N 312) default
+has type
+  (uniformProb (Coins 1 N × External 312) fun y =>
+      InitiallyFar (Witness.execution N 312) default y.1 ∧ Accepts (Witness.execution N 312) default y.1 y.2) ≤
+    1 / 2 ^ 100 + ((3 * ↑1 ^ 2 + ↑1) / 2 + 11 * ↑1) / ↑N
+but is expected to have type
+  (uniformProb (Coins 1 N × External 312) fun y =>
+      InitiallyFar (Witness.execution N 312) default y.1 ∧ Accepts (Witness.execution N 312) default y.1 y.2) ≤
+    1 / 2 ^ 100 + ((3 * 1 ^ 2 + 1) / 2 + 11) / ↑N

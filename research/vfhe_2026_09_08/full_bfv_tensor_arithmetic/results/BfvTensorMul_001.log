@@ -1,0 +1,1 @@
+Compiler/BfvTensorMul.lean:3:0: error: object file '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/build/Compiler/IntegerCertificateEmission.olean' of module Compiler.IntegerCertificateEmission does not exist

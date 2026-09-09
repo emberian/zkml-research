@@ -1,0 +1,19 @@
+{
+  "new_web_searches": 2,
+  "new_scry_sql": 0,
+  "web_queries": [
+    "site.eprint.iacr.org/2020/654 weighted correlated agreement FRI",
+    "site.eprint.iacr.org/2026/532 weights unique decoding"
+  ],
+  "search_result_use": "orientation only; no secondary-source theorem claim used",
+  "primary_sources": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/654.pdf",
+      "sha256": "a66a5d0d43e53b6a1cb83cbe87ee86e9c8f5c65562c85b22fef1396603ffe47f"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/532.pdf",
+      "sha256": "e3b0132ec598ca16835c1de3c85d0c8b07c41b5f063f1d88b5a9628c22252c3f"
+    }
+  ]
+}

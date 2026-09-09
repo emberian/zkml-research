@@ -1,0 +1,15 @@
+'Minidregg.Compiler.BfvSquareComposition.basisChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvSquareComposition.basisRoundTrip' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvSquareComposition.tensorChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvSquareComposition.rescaleChecked_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvSquareComposition.squareChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvSquareComposition.checked_of_sources' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvSquareComposition.roundtrip_inhabited' does not depend on any axioms
+'Minidregg.Compiler.BfvSquareComposition.wrong_kernel_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvSquareComposition.one_coefficient_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

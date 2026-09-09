@@ -1,0 +1,1 @@
+[OPEN] Root integrates the additive minidregg patch after its existing compiler prerequisites. Runtime composes these complete tensor proofs with extension, directed rescale and the eventual packed dot/rotation source relations. Preserve all existing bytes; any later join is additive. Do not rerun the learner or the completed eighteen tensor chunks.

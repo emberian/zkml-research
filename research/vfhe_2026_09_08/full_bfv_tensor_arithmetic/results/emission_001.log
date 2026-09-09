@@ -1,0 +1,9 @@
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":0,"public_arity":56,"q":1125899906826241,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":1,"public_arity":56,"q":1125899906629633,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":2,"public_arity":56,"q":1125899905744897,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":3,"public_arity":56,"q":1125899905351681,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":4,"public_arity":56,"q":4611686018427322369,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":5,"public_arity":56,"q":4611686018427289601,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":6,"public_arity":56,"q":4611686018426454017,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":7,"public_arity":56,"q":4611686018426257409,"radix":64,"register_count":7707,"trace_width":2036}
+{"arithmetic_constraints":2183,"instructions":7707,"limbs":11,"prime_index":8,"public_arity":56,"q":4611686018425815041,"radix":64,"register_count":7707,"trace_width":2036}
