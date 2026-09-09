@@ -1,0 +1,14 @@
+{
+  "classification": "EXECUTED",
+  "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/artifacts/template_ir2.json",
+  "source_sha256": "37a02768080e1ca8284fab4bc186b2e5981ad0b97a4af7965472953cdfe4df5a",
+  "output": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/templates/rescale/0/template_ir2.json",
+  "output_sha256": "1d7478f06cacfa9e604692082830e7ce298a2fd0edd10bca0b68056ccdb2503c",
+  "trace_width": 24575,
+  "arithmetic_gates_repaired": 32043,
+  "constraint_count_preserved": 32044,
+  "normalized_polynomial_bodies_equal": true,
+  "all_other_constraints_and_metadata_equal": true,
+  "new_scope": "window_gate/on_transition=false on every row, loc/c leaves",
+  "limit": "selected row-local emitter families; no cryptographic or native-parser proof"
+}

@@ -1,0 +1,41 @@
+Compiler/RangeKeyswitchRow.lean:20:21: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Idx 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Idx
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/RangeKeyswitchRow.lean:21:21: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Idx 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Idx
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/RangeKeyswitchRow.lean:22:21: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Idx 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Idx
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/RangeKeyswitchRow.lean:28:30: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Idx 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Idx
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/RangeKeyswitchRow.lean:29:27: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Idx 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Idx
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/RangeKeyswitchRow.lean:61:19: error: Type mismatch: After simplification, term
+  hm
+ has type
+  r ∈ allRanges
+but is expected to have type
+  r ∈ allRanges.eraseDups

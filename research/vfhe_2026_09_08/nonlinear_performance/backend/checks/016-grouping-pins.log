@@ -1,0 +1,6 @@
+'Minidregg.Compiler.LogUpGrouping.cleared_fraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.LogUpGrouping.transition_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.LogUpGrouping.regroup_sum' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.LogUpGrouping.signedWitness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.LogUpGrouping.zeroDenominatorFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.LogUpGrouping.signFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]

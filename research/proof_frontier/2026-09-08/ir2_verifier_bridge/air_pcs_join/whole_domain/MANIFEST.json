@@ -1,0 +1,33 @@
+{
+  "classification": "EXECUTED",
+  "base_minidregg": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "apply_after": "research/vfhe_2026_09_08/minidregg_integration/infer/minidregg-complete-infer.patch",
+  "files": [
+    {
+      "path": "Compiler/Ir2WholeRow.lean",
+      "sha256": "1067ff4414922352424565f1040ff44c54a07bacb9450b8fdf1818837d355c87",
+      "bytes": 4650,
+      "axiom_guards": 5
+    },
+    {
+      "path": "Compiler/BfvQueryWholeRows.lean",
+      "sha256": "80b444e564f0cb7c8e81dcbed9e1a81bd34f81ddb613dd81e018c159b1e64d0c",
+      "bytes": 8527,
+      "axiom_guards": 10
+    },
+    {
+      "path": "EmitBfvQuery.lean",
+      "sha256": "0e41efdb0b58da2158cfc7967aa3d35c7717bdff989e2102c977a61dd7b0e7b8",
+      "bytes": 3801,
+      "axiom_guards": 0
+    }
+  ],
+  "patch_sha256": "3ec1d224e3304b8b7621692b894ef7cd528fda7f29e8f4fd98848f65bfce4476",
+  "checks": [
+    "checks/final-01.json",
+    "checks/emitter.json",
+    "checks/template-equality.json",
+    "theorem/CHECKS.json"
+  ],
+  "scope": "Compiler-derived whole-domain assertion emission and deterministic actual-query/public-row arithmetic; no arbitrary-proof backend refinement."
+}

@@ -1,6 +1,6 @@
 # Current construction choice
 
-[OPEN first] Realize HIO_PROVENANCE.md's specified proof interface using established primitives. The active builder is evaluating encrypted exact-statement witnesses plus a simulation-sound proof, with an explicit CCA/extraction-feedback argument. A generic name such as NIZK is insufficient; account for the actual real/simulated setup and unknown challenge compiler coins.
+[OPEN first] HIO_PROVENANCE_BACKEND.md completed the encrypted exact-statement witness construction and CCA/extraction-feedback argument. The next builder is selecting actual post-quantum primitives that meet all-coins correctness and adaptive simulation-soundness conditions, with explicit source-game matching and cost. The ordinary-iO component and repeated-size problem remain separate; a PQ certificate backend alone would not make the whole resident PQ.
 
 [OPEN separate frontier] A polynomial-size retained-view input-composition construction must hide every old encrypted boundary. HIO_CONTINUATION.md's flat ACE splice fails even for honestly issued equivalent residual functions. Do not build that leaking splice, or restart a wrapper-only repair that exposes a later old boundary. The ordinary-iO nested wrapper remains the conditional baseline; no useful repeated-size bound is established.
 

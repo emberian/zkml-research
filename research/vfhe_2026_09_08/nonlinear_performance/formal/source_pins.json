@@ -1,0 +1,74 @@
+{
+  "owned_sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeCompletedMac.lean",
+      "sha256": "235506337faf0f64dfc32e181c0a2dfea8e295caf8380bbda4bf6738071f576c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchInfer.lean",
+      "sha256": "b0461d6a6d17bee5b6373da6859c8fbd6be4df7c133113d9c46b9014b7797d59"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchLookup.lean",
+      "sha256": "ab66e0beb6a8c6c5797e40302f42cd90e1504ffef022413f47a639c5f6fa7d8f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchRow.lean",
+      "sha256": "7e1d955699b6f4d10b6352b1e624b0e57375ec3ad15a323e2862fc2b3fd49827"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeMacExhibits.lean",
+      "sha256": "f9622a5e54acf1edf15fe13b510cca1ee292e4309f07af60b07cd6a0399fcb62"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/EmitRangeKeyswitch.lean",
+      "sha256": "cc24a18e7c87a739b8daa416818b864b5eab034a987fcb224fc3626cd77ba7d5"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/SOURCE_MANIFEST.json",
+      "sha256": "6ff5ce283c1bf01c9fbd52cc69ada354db5df4021a1b6f3edfaf18b81c3fb14a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/source_pins.json",
+      "sha256": "1c59ee77e6284ba46001fcbff896125e522bfaccd72f4838114fd34881798e7c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/READY.json",
+      "sha256": "f7b2c62840372710891ac85fd75e1f027404e920d6312d98cd67522a0529b69c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/Compiler/IR2RangeLookupBridge.lean",
+      "sha256": "b94fa273091e1c739a4688a98d54b2635643bd6414a43e29a6deff8411be3ae9"
+    },
+    {
+      "path": "/tmp/minidregg-ir2-whole-row-20260908/Compiler/Ir2WholeRow.lean",
+      "sha256": "1067ff4414922352424565f1040ff44c54a07bacb9450b8fdf1818837d355c87"
+    }
+  ],
+  "retained_oleans": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build/Compiler/RangeCompletedMac.olean",
+      "sha256": "fb44635960cd39f6f16b4565017973d261a102ff8302869374a9299b770f1a23"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build/Compiler/RangeKeyswitchInfer.olean",
+      "sha256": "e582f99db38600a2ab98f5ed1af12e64fba9da735d82ffbd107b805720ed8944"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build/Compiler/RangeKeyswitchLookup.olean",
+      "sha256": "e17b2b7ae9d796cb1bc5aea17b0e675c80ad03076958ca9637803953d3912ca4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build/Compiler/RangeKeyswitchRow.olean",
+      "sha256": "e3266cadca75c844a26ed34ac90a8649e55753065f5c7f22aee996c19e8a3c5e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build/Compiler/RangeMacExhibits.olean",
+      "sha256": "e824a6f7dd718856adf30d8814b2408cf72c0b9b2ea8caa282585c1f36b923c0"
+    }
+  ],
+  "patch_sha256": "47f6ec43ba0a58f141fe8daad18654f452e0567f4a6b7b7974bee11ae39683a6",
+  "import_boundary": "Only Compiler modules and one exporter are added. Theory and Selvage trees are unchanged. Shared whole-tree integration remains parent-owned."
+}

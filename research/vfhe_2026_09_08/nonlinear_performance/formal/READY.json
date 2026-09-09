@@ -1,0 +1,177 @@
+{
+  "schema": "lean-range-keyswitch-ready-v1",
+  "status": "source-and-artifacts-ready",
+  "profiles": [
+    {
+      "width": 349,
+      "register_count": 8783,
+      "range9": 210,
+      "range16": 26,
+      "public_arity": 97,
+      "prime_index": 0,
+      "prime": 1125899906826241,
+      "instructions": 9132,
+      "arithmetic_constraints": 274,
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime0/template_ir2.json",
+      "template_sha256": "20d13b4be4ad2246b281181c4217325d8cc49be8478be4ed1e63bfc781ae691d",
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime0/witness_plan.json",
+      "plan_sha256": "75d3b2a705e5daa788f776ca1ab692cca36ab3abc3a701e1bffae86868b99856",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "width": 349,
+      "register_count": 8783,
+      "range9": 210,
+      "range16": 26,
+      "public_arity": 97,
+      "prime_index": 1,
+      "prime": 1125899906629633,
+      "instructions": 9132,
+      "arithmetic_constraints": 274,
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime1/template_ir2.json",
+      "template_sha256": "b288e5f53faade84f40437f9a314ddb71a9afeea0da81fe4ff6bb1908ea10784",
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime1/witness_plan.json",
+      "plan_sha256": "68350569894537b778a4eb49295f83e4cb081811c86ad46f8259cb8785eb2b2f",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "width": 349,
+      "register_count": 8783,
+      "range9": 210,
+      "range16": 26,
+      "public_arity": 97,
+      "prime_index": 2,
+      "prime": 1125899905744897,
+      "instructions": 9132,
+      "arithmetic_constraints": 274,
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime2/template_ir2.json",
+      "template_sha256": "ffeafaa2287ed77f4f7b6fc73f0762019f47dbd813e9e104a3f7568858eeff23",
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime2/witness_plan.json",
+      "plan_sha256": "e2c7c3864788897ecc58b2257720275cb58d3742919a0de6586cae82e7c80d85",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "width": 349,
+      "register_count": 8783,
+      "range9": 210,
+      "range16": 26,
+      "public_arity": 97,
+      "prime_index": 3,
+      "prime": 1125899905351681,
+      "instructions": 9132,
+      "arithmetic_constraints": 274,
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime3/template_ir2.json",
+      "template_sha256": "2fb7f059e6c23d7ea4089c05b946b55a11a95415358f24f8705a7e50576cdb44",
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime3/witness_plan.json",
+      "plan_sha256": "255e16de4b425aa5f5642490ee6d9b71f4d0360f7936c848f4ce4ca3419a93d0",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    }
+  ],
+  "owned_sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeCompletedMac.lean",
+      "sha256": "235506337faf0f64dfc32e181c0a2dfea8e295caf8380bbda4bf6738071f576c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchInfer.lean",
+      "sha256": "b0461d6a6d17bee5b6373da6859c8fbd6be4df7c133113d9c46b9014b7797d59"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchLookup.lean",
+      "sha256": "ab66e0beb6a8c6c5797e40302f42cd90e1504ffef022413f47a639c5f6fa7d8f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchRow.lean",
+      "sha256": "7e1d955699b6f4d10b6352b1e624b0e57375ec3ad15a323e2862fc2b3fd49827"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeMacExhibits.lean",
+      "sha256": "f9622a5e54acf1edf15fe13b510cca1ee292e4309f07af60b07cd6a0399fcb62"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/EmitRangeKeyswitch.lean",
+      "sha256": "cc24a18e7c87a739b8daa416818b864b5eab034a987fcb224fc3626cd77ba7d5"
+    }
+  ],
+  "checks": {
+    "RangeMacExhibits": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "build/Compiler/RangeMacExhibits.olean",
+        "Compiler/RangeMacExhibits.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal",
+      "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+      "seconds": 5.446184667001944,
+      "exit": 0,
+      "source_sha256": "f9622a5e54acf1edf15fe13b510cca1ee292e4309f07af60b07cd6a0399fcb62",
+      "log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/results/RangeMacExhibits_004.log"
+    },
+    "RangeCompletedMac": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "build/Compiler/RangeCompletedMac.olean",
+        "Compiler/RangeCompletedMac.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal",
+      "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+      "seconds": 2.963577999966219,
+      "exit": 0,
+      "source_sha256": "235506337faf0f64dfc32e181c0a2dfea8e295caf8380bbda4bf6738071f576c",
+      "log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/results/RangeCompletedMac_006.log"
+    },
+    "RangeKeyswitchInfer": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "build/Compiler/RangeKeyswitchInfer.olean",
+        "Compiler/RangeKeyswitchInfer.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal",
+      "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+      "seconds": 3.13532625004882,
+      "exit": 0,
+      "source_sha256": "b0461d6a6d17bee5b6373da6859c8fbd6be4df7c133113d9c46b9014b7797d59",
+      "log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/results/RangeKeyswitchInfer_003.log"
+    },
+    "RangeKeyswitchRow": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "build/Compiler/RangeKeyswitchRow.olean",
+        "Compiler/RangeKeyswitchRow.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal",
+      "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+      "seconds": 3.0202540410100482,
+      "exit": 0,
+      "source_sha256": "7e1d955699b6f4d10b6352b1e624b0e57375ec3ad15a323e2862fc2b3fd49827",
+      "log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/results/RangeKeyswitchRow_005.log"
+    },
+    "RangeKeyswitchLookup": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "build/Compiler/RangeKeyswitchLookup.olean",
+        "Compiler/RangeKeyswitchLookup.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal",
+      "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+      "seconds": 2.9675543750054203,
+      "exit": 0,
+      "source_sha256": "ab66e0beb6a8c6c5797e40302f42cd90e1504ffef022413f47a639c5f6fa7d8f",
+      "log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/results/RangeKeyswitchLookup_003.log"
+    }
+  },
+  "guarded_declarations": 23,
+  "row_theorem": "Minidregg.Compiler.RangeKeyswitchLookup.lookupRowSound",
+  "infer_theorem": "Minidregg.Compiler.RangeKeyswitchInfer.inferSound",
+  "scope": "Source acceptance, canonical field ranges from faithful existing IR2 lookup semantics, and existing square source certificates force BfvInferContract.result. Native parser/lowering/proof extraction and public NTT/serialization remain explicit TCB. All-row gate serializer required in every phase. Untrusted witness executor only projects the old generated plan.",
+  "requires_grouped_backend": true
+}

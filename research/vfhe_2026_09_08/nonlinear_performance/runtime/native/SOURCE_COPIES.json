@@ -1,0 +1,50 @@
+[
+  {
+    "role": "infer",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/src/main.rs",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/infer/src/main.rs",
+    "sha256": "43081b8a5ce14465b9cb59919da953fd4c451e3462e9a8586e98f4a8ce6d13e9"
+  },
+  {
+    "role": "infer",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/Cargo.lock",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/infer/Cargo.lock",
+    "sha256": "6d8b795f9bd6003d4f4cc4d00eeda31502a9581e1514a9e0bd12d6b943b7e863"
+  },
+  {
+    "role": "square",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/src/main.rs",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/square/src/main.rs",
+    "sha256": "3db66856129b50aaf3b03ea39c503a4492860d5304d9b7897df7df39f04b43c2"
+  },
+  {
+    "role": "square",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/Cargo.lock",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/square/Cargo.lock",
+    "sha256": "a5c3039d361112c394a45b94fd88fe56b0fec82c13c7cdceb3e86dd694af4ecf"
+  },
+  {
+    "role": "rescale",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/src/main.rs",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/rescale/src/main.rs",
+    "sha256": "a22a69041a903ba155c4716e5b2828909f19447f187a8d0a51ae909933246c73"
+  },
+  {
+    "role": "rescale",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/Cargo.lock",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/rescale/Cargo.lock",
+    "sha256": "98ae7e98a1677bdbac80a8c1f0a9e9e70719c67ed0ab39681312f046756fb459"
+  },
+  {
+    "role": "update",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/native/src/main.rs",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/update/src/main.rs",
+    "sha256": "34c9f0306972170d74e9d17be5bba674d4a37f0974b4532ad3a0e5f05a4d1b88"
+  },
+  {
+    "role": "update",
+    "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/native/Cargo.lock",
+    "copy": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/update/Cargo.lock",
+    "sha256": "f9cd8018e4786601eb04d87f2f9050f65ca97ca5a87ad2ba9679f3b123a6a568"
+  }
+]

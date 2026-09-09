@@ -1,0 +1,13 @@
+[package]
+name="ir2-grouped-shape"
+version="0.1.0"
+edition="2024"
+publish=false
+[workspace]
+[dependencies]
+dregg-circuit={path="circuit"}
+serde_json="1"
+[patch."https://github.com/Plonky3/Plonky3"]
+p3-lookup={path="/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped"}
+p3-fri={path="/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73"}
+p3-challenger={path="/Users/ember/dev/breadstuffs/vendor/plonky3-challenger-82cfad73"}

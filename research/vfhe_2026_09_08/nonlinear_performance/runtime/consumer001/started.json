@@ -1,0 +1,19 @@
+{
+  "started_utc": "2026-09-09T01:55:01.411331+00:00",
+  "consumer_sha256": "caea8875f1d1b954164ade547bb522f5d2fe6ccf68ae32bb18c40571ad9c4115",
+  "profile_sha256": "8ba4941617f07cdef623271fb4a2c18431d5c52faa8ee36ed7c3169c3cff9fd7",
+  "request": {
+    "schema": "public-performance-class-request-v1",
+    "class": "card_arrival",
+    "accepted_live_revision": 2,
+    "expected": {
+      "model_ciphertext_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+      "query_sha256": "a38f555b758db46393e4e96655a6004cc788c44f8338ccb0c05bf143930c00d3",
+      "evaluation_key_sha256": "421a81856b9ed3f83f28e8ec6d0678799b298ce6f8ce533f645ebfc9115b6955",
+      "kernel_ciphertext_sha256": "0291fc483b13e118d9ee74fc1093e9fbb91db0f9d3eb3767a4b2213f774e196e"
+    },
+    "baseline_produced": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced",
+    "baseline_verification": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/verification/result.json",
+    "scope": "One complete savedPUBLICclasskernel arithmetic consumer. No classifier-wide replay or fresh setup/private read."
+  }
+}

@@ -1,0 +1,4 @@
+{"arithmetic_constraints":274,"instructions":9132,"prime":1125899906826241,"prime_index":0,"public_arity":97,"range16":26,"range9":210,"register_count":8783,"width":349}
+{"arithmetic_constraints":274,"instructions":9132,"prime":1125899906629633,"prime_index":1,"public_arity":97,"range16":26,"range9":210,"register_count":8783,"width":349}
+{"arithmetic_constraints":274,"instructions":9132,"prime":1125899905744897,"prime_index":2,"public_arity":97,"range16":26,"range9":210,"register_count":8783,"width":349}
+{"arithmetic_constraints":274,"instructions":9132,"prime":1125899905351681,"prime_index":3,"public_arity":97,"range16":26,"range9":210,"register_count":8783,"width":349}

@@ -1,0 +1,5 @@
+'Minidregg.Compiler.RangeCompletedMac.bits_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeCompletedMac.canonical_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeCompletedMac.source_completion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeCompletedMac.source_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeCompletedMac.sound' depends on axioms: [propext, Classical.choice, Quot.sound]

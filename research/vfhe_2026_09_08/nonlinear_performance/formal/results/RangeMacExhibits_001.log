@@ -1,0 +1,53 @@
+Compiler/RangeMacExhibits.lean:23:2: error: unsolved goals
+case refine_1.«0».«0»
+⊢ ZMod.val 1 < 512 ∧ ZMod.val 35 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«1».«0»
+⊢ ZMod.val 2 < 512 ∧ ZMod.val 34 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«2».«0»
+⊢ ZMod.val 3 < 512 ∧ ZMod.val 33 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«3».«0»
+⊢ ZMod.val 4 < 512 ∧ ZMod.val 32 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«4».«0»
+⊢ ZMod.val 2 < 512 ∧ ZMod.val 34 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«5».«0»
+⊢ ZMod.val 2 < 512 ∧ ZMod.val 34 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«6».«0»
+⊢ ZMod.val 2 < 512 ∧ ZMod.val 34 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«7».«0»
+⊢ ZMod.val 2 < 512 ∧ ZMod.val 34 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«8».«0»
+⊢ ZMod.val 3 < 512 ∧ ZMod.val 33 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«9».«0»
+⊢ ZMod.val 3 < 512 ∧ ZMod.val 33 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«10».«0»
+⊢ ZMod.val 3 < 512 ∧ ZMod.val 33 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«11».«0»
+⊢ ZMod.val 3 < 512 ∧ ZMod.val 33 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«12».«0»
+⊢ ZMod.val 7 < 512 ∧ ZMod.val 29 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«13».«0»
+⊢ ZMod.val 5 < 512 ∧ ZMod.val 31 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«14».«0»
+⊢ ZMod.val 27 < 512 ∧ ZMod.val 9 < 512 ∧ ZMod.val 36 < 512
+
+case refine_1.«15».«0»
+⊢ ZMod.val 35 < 512 ∧ ZMod.val 1 < 512 ∧ ZMod.val 36 < 512
+Compiler/RangeMacExhibits.lean:27:2: error: unsolved goals
+case refine_3
+h : Fin 2
+i : Fin 13
+⊢ ZMod.val 32768 < 65536

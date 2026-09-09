@@ -1,0 +1,1 @@
+[COMPLETE: source and emitted artifacts] Five modules, 23 exact guards; four compact all-row templates/plans frozen in READY.json. Runtime owns the single complete corrected class proof. See README.md for native lowering/extraction boundaries.

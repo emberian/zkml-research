@@ -360,5 +360,36 @@
     "cryptographic_runs": 0,
     "estimator_runs": 0,
     "result": "Retained old ACE boundary exposes a deterministic fingerprint of a private prepended command. A separate bounded ordinary-iO provenance construction has explicit, uninstantiated online simulation-extraction assumptions."
+  },
+  "hio_provenance_backend_2026_09_09": {
+    "note": "HIO_PROVENANCE_BACKEND.md",
+    "web_query_count": 6,
+    "web_open_count": 8,
+    "web_open_outcomes": {
+      "failed_IACR_archive_variants": 2,
+      "successful_author_PDF_and_positioned_reads": 6
+    },
+    "scry_sql_count": 0,
+    "eprint_pdf_downloads": 0,
+    "cryptographic_runs": 0,
+    "estimator_runs": 0,
+    "sources": [
+      {
+        "id": "2010/154",
+        "url": "https://eprint.iacr.org/2010/154",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2010/154.pdf",
+        "pdf_sha256": "e1aeb4789d4a1c26d23a4a242b2273b73779c9c8ee27206a69c22747163bc42a",
+        "local_text": "/tmp/hio-dhlw-2010-154.txt",
+        "local_text_sha256": "f5775c6f4bbb3fa7fc73216146bf048e14187d4a59bc8ea23190946f1b15a5a1",
+        "inspected": "Sections3,4.4,4.5 and AppendixA.4 pp8-11,21-22; definitions, construction and reduction."
+      },
+      {
+        "title": "Robust Non-interactive Zero Knowledge",
+        "authors": "De Santis, Di Crescenzo, Ostrovsky, Persiano, Sahai",
+        "url": "https://web.cs.ucla.edu/~sahai/work/web/2001%20Publications/Crypto_DeSantis2001.pdf",
+        "inspected": "Definitions2/6 pp572,575-576; section3.2 construction pp578-579; Theorem2 p579 and full simulation-soundness proof pp580-584. Author-hosted PDF through web tool."
+      }
+    ],
+    "result": "Tagged encrypted-witness compiler realizes online adaptive-feedback extraction using perfectly correct IND-CCA2 PKE and established unbounded simulation-sound NIZK; a classical derived reduction, no primitive implementation or PQ claim."
   }
 }

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/repair_template.py",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/artifacts/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/templates/rescale/0/template_ir2.json"
+  ],
+  "started_utc": "2026-09-09T01:35:15.185851+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 120,
+  "pid": 76435,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T01:35:16.482154+00:00",
+  "elapsed_seconds": 1.296310999954585,
+  "user_seconds": 1.197425,
+  "system_seconds": 0.057213999999999994,
+  "max_rss_bytes": 284459008
+}

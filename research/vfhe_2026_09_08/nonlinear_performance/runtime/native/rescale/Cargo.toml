@@ -1,0 +1,20 @@
+[package]
+name = "vfhe-whole-rescale-runtime"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[workspace]
+[dependencies]
+vfhe-public-preprocessing-backend = { path = "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/adapter" }
+dregg-circuit = { path = "/Users/ember/dev/breadstuffs/circuit" }
+fhe = { path = "/Users/ember/dev/breadstuffs/vendor/fhe-dregg" }
+fhe-math = "=0.1.1"
+fhe-traits = "=0.1.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+postcard = { version = "1", features = ["alloc"] }
+sha2 = "0.10"
+[patch."https://github.com/Plonky3/Plonky3"]
+p3-fri = { path = "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73" }
+p3-challenger = { path = "/Users/ember/dev/breadstuffs/vendor/plonky3-challenger-82cfad73" }
+p3-lookup = { path = "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped" }

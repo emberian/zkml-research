@@ -1,0 +1,14 @@
+{
+  "classification": "EXECUTED",
+  "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime1/template_ir2.json",
+  "source_sha256": "70d07c989830922ce398e2151b33459a73a5f638ded1b1af2513045b75ee0422",
+  "output": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/templates/tensor/1/template_ir2.json",
+  "output_sha256": "ece3660751dd9e594843353af6e4158b63179a40186cf9b4ee1801f0e8d418ae",
+  "trace_width": 2036,
+  "arithmetic_gates_repaired": 2183,
+  "constraint_count_preserved": 2184,
+  "normalized_polynomial_bodies_equal": true,
+  "all_other_constraints_and_metadata_equal": true,
+  "new_scope": "window_gate/on_transition=false on every row, loc/c leaves",
+  "limit": "selected row-local emitter families; no cryptographic or native-parser proof"
+}

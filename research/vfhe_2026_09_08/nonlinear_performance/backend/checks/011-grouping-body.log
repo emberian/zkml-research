@@ -1,0 +1,5 @@
+Compiler/LogUpGrouping.lean:55:2: error: unsolved goals
+case right
+⊢ 0 = 2 * ![1, -2, 3, -4] 2 * ![1, 2, 3, 4] 3 + 2 * ![1, 2, 3, 4] 2 * ![1, -2, 3, -4] 3
+Compiler/LogUpGrouping.lean:69:41: error: unsolved goals
+⊢ -2 = -1 + ![1, -2, 3, -4] 2 + ![1, -2, 3, -4] 3 ∧ ¬-2 = 3 + ![1, 2, 3, 4] 2 + ![1, 2, 3, 4] 3

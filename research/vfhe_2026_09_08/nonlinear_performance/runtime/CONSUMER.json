@@ -1,0 +1,22 @@
+{
+  "schema": "corrected-diagnostic-consumer-v1",
+  "pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/consumer.py": "c38fe648091efe0c9799fbee26367dbe1cc196332598a0f1818b050d195838c3",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/PIPELINE.json": "8ba4941617f07cdef623271fb4a2c18431d5c52faa8ee36ed7c3169c3cff9fd7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/REQUEST.json": "3272408b46a68b696530ba1a92b3c1458cf8b8d72a07d55b47402563b281efdf",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/failure.json": "f2800586dd2188cc287d6d5dbbb365614cbd12ff4bb3cab21396f7e4ef098a80",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/verification/infer000.stdout": "6ec58ddbdc2f4844978dcf569f17a3753a842e615fc22ad13cd527e2872e9d96",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/verification/infer000.command.json": "a6fb87271ff678c82f95c3d08f5066e9944723128389fda048aaa25833f58a1f",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/infer/result.json": "b1683ca867c39d15f6beba001c72f382844dd80a4e7a59e415d936b8471342a7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/extension/result.json": "3ee6461c2ef23b0ff7994790d647b5cbe3d23a4cdb154df48761c502ede176e9",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/tensor/result.json": "4425307354dd8ffc1cfd09b9cd57b5022fb9241f3878f87a2e25b805813b2dd5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/rescale/result.json": "0f515598c9ac1d6ee61ed3e8d5d2cfc45a7d0f6956509ebc238336e5858af395"
+  },
+  "reason": "Native verification accepted, but omitted optional backend diagnostic; pinned binary identity is the authoritative backend binding. No arithmetic/proof/configuration change.",
+  "new_proof_objects": 0,
+  "fresh_verification_calls": 116,
+  "prior_unused_native_acceptances": 1,
+  "private_files_read": 0,
+  "production_retries": 0,
+  "schema_note": "All native verification metadata branches read from frozen source before launch: rescale omits the template diagnostic too; exact pinned template argv binds it."
+}

@@ -1,0 +1,10 @@
+   Compiling p3-lookup v0.5.1 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped)
+    Finished `release` profile [optimized] target(s) in 1.85s
+     Running unittests src/lib.rs (research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped/target/release/deps/p3_lookup-c856831156d10ed9)
+
+running 2 tests
+test types::grouped_tests::grouped_preserves_flattened_tuples_counts_buses_and_local_prefix ... ok
+test types::grouped_tests::grouped_empty_and_full_boundary ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 17 filtered out; finished in 0.00s
+

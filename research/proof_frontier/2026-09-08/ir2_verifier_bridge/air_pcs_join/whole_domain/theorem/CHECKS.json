@@ -1,0 +1,38 @@
+{
+  "classification": "EXECUTED",
+  "source": "Compiler/BfvQueryWholeRows.lean",
+  "isolate": "/tmp/minidregg-bfv-query-whole-rows-20260908",
+  "source_sha256": "80b444e564f0cb7c8e81dcbed9e1a81bd34f81ddb613dd81e018c159b1e64d0c",
+  "source_stable": true,
+  "olean_sha256": "1c0288400f169d354e08d5512316a14c709ed9c6284c9fdd019a6e9dadc748aa",
+  "command": "lake env lean -o .lake/build/lib/lean/Compiler/BfvQueryWholeRows.olean Compiler/BfvQueryWholeRows.lean",
+  "exit_code": 0,
+  "output": "",
+  "theorem_guards": 10,
+  "axiom_union": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "preserved_dependencies": {
+    "BfvQueryRow": {
+      "source_sha256": "eb101cab960c6954ee7258a13cf41ea3cf9ebb285f99f410e92f1108efddaa8f",
+      "olean_sha256": "b3e99078746281b8e0f98c2469ed2a4b80f09211960b2813153e93977a0c824e"
+    },
+    "Ir2WholeRow": {
+      "source_sha256": "1067ff4414922352424565f1040ff44c54a07bacb9450b8fdf1818837d355c87",
+      "olean_sha256": "fb74e53f6fd3e859a287ecb0c79c586b5f9fce74943ff7dec296a3719896bf92"
+    }
+  },
+  "import_boundary": {
+    "command": "bash scripts/check-import-boundary.sh",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "forbidden_proof_scan": {
+    "pattern": "\\b(sorry|axiom|native_decide)\\b",
+    "matches": []
+  },
+  "scope": "Deterministic source/scope and public-prefix coverage only; no Rust refinement, PCS or probability claim."
+}

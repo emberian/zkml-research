@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-ir2-whole-row-20260908/.lake/build/lib/lean/Compiler/Ir2WholeRow.olean",
+    "Compiler/Ir2WholeRow.lean"
+  ],
+  "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+  "exit_code": 0,
+  "source_sha256": "2c7f750d757138d3c7644b8cd16317c8a620253812b18b61986d43c7fdf58a92",
+  "source_unchanged": true,
+  "elapsed_s": 4.282608270645142,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/checks/scope001.log"
+}

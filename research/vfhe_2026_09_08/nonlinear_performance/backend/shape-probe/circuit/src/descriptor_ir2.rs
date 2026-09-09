@@ -1,0 +1,12195 @@
+//! Descriptor IR v2 — the EPOCH multi-table interpreter (`.docs-history-noclaude/EPOCH-DESIGN.md`).
+//!
+//! `lean_descriptor_air.rs` PART 6 interprets the SINGLE-table v1 EffectVM descriptor
+//! (`emitVmJson`): per-row hash sites cost a 352-column Poseidon2 aux block each, and range
+//! teeth cost one boolean column per bit. This module interprets the VERSIONED v2 wire
+//! (`Dregg2.Circuit.DescriptorIR2.emitVmJson2`, `"ir":2`), whose grammar makes hashing a
+//! BOUNDARY phenomenon: the descriptor declares TABLES and RELATIONS, and the Rust side
+//! assembles a MULTI-TABLE batch STARK (`p3-batch-stark` + the `p3-lookup` LogUp argument)
+//! whose instances are
+//!
+//!   * **main** — one trace row per effect row; interprets the embedded v1 constraint forms
+//!     (`gate`/`transition`/`boundary`/`pi_binding`) on the same domains the v1 AIR used, and
+//!     realizes every declared `lookup`/`mem_op`/`map_op` as a bus interaction;
+//!   * **poseidon2 chip** — one row per permutation `(arity, inputs padded to rate 8, output)`,
+//!     each row pinned to the REAL Poseidon2 round constraints (`poseidon2_permute_expr`) so
+//!     the table is sound in exactly the sense of Lean's `ChipTableSound`; hash-site lookups
+//!     ride the `ir2_p2` bus (the measured 85% lever — one aux block per UNIQUE permutation,
+//!     not per row × site);
+//!   * **range** — the shared `[0, 2^LIMB_BITS)` byte table (⚠ `LIMB_BITS` is **4**, so it is a
+//!     `[0,16)` NIBBLE table, and see the constant for why that is a SOUNDNESS pin and not a
+//!     performance one); a declared `lookup` into the range table
+//!     (`rangeLimb bits`) is realized by byte-limb decomposition + LogUp byte queries + a
+//!     tight top-limb bit bound (the proven `lean_lookup_air` shape; the realized relation is
+//!     exactly `v ∈ [0, 2^bits)` = Lean's `range_row_mem_iff`);
+//!   * **memory** — one row per state access, in log order: the offline-memory-checking
+//!     instrumentation. The main AIR SENDS each guarded `(addr, value, prev_value,
+//!     prev_serial, kind)` op on a permutation-check bus and the memory table RECEIVES it
+//!     (exact multiset equality = Lean's `memTableFaithful`); the table's own AIR enforces the
+//!     Blum discipline (positional serials, `prev_serial < serial` by range, read ⇒
+//!     `value = prev_value`) and runs the read/write multiset argument
+//!     (`init + writes = reads + final`, Lean `MemCheck`) on a second permutation bus against
+//!     a boundary instance (declared addresses, strictly increasing ⇒ `Nodup`; address
+//!     closure by lookup). Soundness of balance ⇒ consistency is the PROVED
+//!     `Dregg2.Crypto.MemoryChecking.memcheck_sound`;
+//!   * **map-ops** — one row per boundary reconciliation `(root, key, value, op) → new_root`,
+//!     each row verifying a REAL sorted-Poseidon2-Merkle opening (leaf `hash[key, value]`,
+//!     nodes `hash_fact(l, [r])`, depth 16 — byte-identical to
+//!     `heap_root::CanonicalHeapTree`): `read` authenticates the leaf under `root` and pins
+//!     `new_root = root`; `write` is the in-place sorted-tree leaf UPDATE (old leaf under
+//!     `root`, new leaf over the SAME siblings to `new_root` — `HeapUpdateWitness`'s shape).
+//!     Every permutation of the opening RIDES THE CHIP BUS (the leaf hashes as arity-2
+//!     `ir2_p2` lookups, the node hashes as `ir2_fact` lookups into fact-marked chip rows) —
+//!     the map row carries only the opening's spine (key/value/sibs/dirs + the 32 chain
+//!     digests), never an in-row aux block. Main sends each guarded op; the table receives
+//!     it (`mapTableFaithful`).
+//!
+//! **Descriptor-empty tables are NOT committed.** The batch is assembled over only the
+//! tables the descriptor actually uses (a function of the constraint list alone, so prover
+//! and verifier agree): the chip table iff any chip lookup or map op, the byte table iff any
+//! range lookup or mem op, memory+boundary iff any mem op, map-ops iff any map op. FRI
+//! opening cost is per-query × the row width of every committed matrix, so committing a
+//! padded empty table is pure regression (`.docs-history-noclaude/PROOF-ECONOMICS.md` §2b measured the empty
+//! map-ops table alone at ~1.7 MiB per transfer proof).
+//!
+//! **The law: Rust authors NO constraints.** Every enforced relation here is the realization
+//! of a DECLARED descriptor element (a v1 form, a lookup into a declared table, a mem op, a
+//! map op); the per-table AIRs discharge the per-table faithfulness obligations Lean names
+//! (`ChipTableSound`, the faithful range table, `memTableFaithful`+`MemCheck`+`Disciplined`,
+//! `mapTableFaithful`+`opensTo`/`writesTo`). Which wires are constrained is entirely the
+//! descriptor's (= Lean's) choice.
+//!
+//! Two ADDITIVE table families ride the same batch, recursion-gated like everything here,
+//! committed only when a descriptor uses them (`.docs-history-noclaude/UNIVERSAL-MEMORY.md` /
+//! `.docs-history-noclaude/UNIVERSAL-MAP-ROTATION.md` §2.2):
+//!
+//!   * **map-absent** — one row per `map_op` kind `absent`: the bracketed sorted-gap
+//!     NON-MEMBERSHIP opening (Lean `opensTo … none` via `opensTo_none_of_gap`): two
+//!     membership paths at ADJACENT leaf positions under the same root, with
+//!     `lo_addr < key < hi_addr` enforced by canonical-BabyBear-decomposition lexicographic
+//!     comparators (`key = hi4·2^27 + lo27`, unique by the `is15·lo27 = 0` tooth since
+//!     `p − 1 = 15·2^27` — full-felt hash-image keys order soundly). This is the
+//!     once-per-touched-address boundary leg of `nullifier_fresh_binds_root`.
+//!   * **umemory + umem-boundary** — the UNIVERSAL memory: `umem_op` constraints address the
+//!     `Domain × κ` space as a literal `(domain, key)` pair with `Option`-valued cells
+//!     `(present, value)`; ONE Blum multiset covers every domain
+//!     (`UniversalMemory.universal_memory_sound`), with ZERO intra-proof hashing — a
+//!     umem-only descriptor commits NO chip table (measured: a write+read-back is 67.6 KiB
+//!     against 128.7 KiB for the same write as a boundary map op). Nullifier freshness is
+//!     ONE read row with `present = 0` (`nullifier_fresh_sound` — no Merkle path, no gap
+//!     opening); the nullifier domain's INSERT-ONLY discipline is an in-table tooth. The
+//!     boundary table's declared `(domain, key)` list is Nodup by domain-major
+//!     lexicographic strict increase over the canonical decomposition.
+//!
+//! ## Honest boundary notes (named, with their closure lanes)
+//!
+//!   * `map_op` kind `write` is realized as the in-place leaf UPDATE at an existing key
+//!     (exactly `Heap.set` when the key is present — the cap-crown phase-B shape). A
+//!     fresh-key sorted INSERT shifts leaf positions; its bracketed-insert witness can now
+//!     reuse the map-absent adjacency/gap machinery and rides the nullifier-insert lane.
+//!   * The universal-memory tables are the INTERIOR argument only: map roots remain derived
+//!     boundary views reconciled by map ops at the proof's edge (today's map-ops machinery,
+//!     once per touched key per proof — `boundary_root_from_memcheck` is the Lean anchor
+//!     that both regimes commit to the same object). The full table-collapse (per-map tables
+//!     subsumed for ALL live descriptors) is flag-day work by the spec's §3 ordering: it
+//!     rides THE ONE ROTATION with the 3-verb executor, never before it.
+//!   * The universal boundary image (`uinit`/`ufin`/declared `(domain, key)` list) is
+//!     witness-supplied (`UMemBoundaryWitness`), exactly like the flat memory boundary. The
+//!     INIT image is BOUND to committed PRE-state per-cell by a `MapOp::Read` opening each
+//!     declared init cell against a committed-root PUBLIC INPUT (the PI-v3 ride-along; Lean
+//!     anchor `UniversalMemory.boundary_init_root_derived` + the injectivity tooth
+//!     `boundary_init_root_bound`, lifted to the IR as `DescriptorIR2.satisfied2U_init_root`).
+//!     This is exactly `boundary_root_derived`'s `hsem` realized per address: the opened cell
+//!     genuinely lives in the committed map whose root is published — a forged peer root has no
+//!     membership path, a forged value opens to the genuine leaf. It is the WITNESSED
+//!     CROSS-CELL-READ primitive (the circuit twin of the executor-only
+//!     `StateConstraint::ObservedFieldEquals`); see `tests/effect_vm_umem_real_turn.rs`. The
+//!     whole-IMAGE equality (the no-extra-cells direction) is ASSEMBLED IN LEAN at the ARITY-2
+//!     MODEL peer-root leg — `UniversalBridge.crossCellRead_whole_image`
+//!     (+ `_sem` / `cross_cell_read_no_extra_cell` / `_teeth`), the binary-`mapRoot_injective`
+//!     companion of the per-cell `crossCellRead_refines_observedField` (⚠ this said "against the
+//!     DEPLOYED binary-Merkle peer-root leg"; the deployed peer-root leg is the eight-felt arity-3
+//!     `WholeImageFoldRealization.padImtRoot8` — see the correction below), exactly as the flat-sponge
+//!     `UniversalMemory.boundary_whole_image_sem` (lifted to the IR as
+//!     `DescriptorIR2.satisfied2U_init_whole_image`) carries it over `Heap.root_injective`: pin the
+//!     published peer root to the binary fold of the ENTIRE declared whole-boundary view and, under
+//!     the CR floor, the committed peer heap agrees with the declared image at EVERY address
+//!     INCLUDING absence off the declared list (no extra cells — a hidden cell cannot survive the
+//!     pin).
+//!     ⚠ **THIS PARAGRAPH CLAIMED THAT `hpin` "(`mapRoot hash d boundaryHeap`, the sorted-leaf fold
+//!     to the `2^d`-leaf root)" IS "now REALIZED in `crate::whole_image_fold`", AND THAT WAS FALSE
+//!     FROM THE DAY IT WAS WRITTEN** (corrected 2026-07-28). `mapRoot` is the ARITY-2, single-felt,
+//!     DENSE model fold; the chip folds `CanonicalHeapTree8::root8` — arity-3 IMT leaves
+//!     `hash[addr, value, next_addr]`, EIGHT lanes, MIN sentinel, zero padding — against an
+//!     eight-lane published-root PI group. `MapReconcileImtRepoint.imtRoot_ne_mapRoot` proves those
+//!     are different commitments, so the chip could not realize that `hpin`, and
+//!     `mapRoot_injective` was never the tooth biting in-circuit here.
+//!     ★ What the chip DOES realize is
+//!     `Dregg2.Circuit.WholeImageFoldRealization.wholeBoundaryFold8` (over `padImtRoot8`), whose
+//!     no-extra-cells cone is `crossCellRead_wholeImage8` /
+//!     `cross_cell_read_no_extra_cell8_chip` / `whole_boundary_fold8_teeth` — proved at the deployed
+//!     shape, with no hash floor and two named residuals. The separation is
+//!     `padImtRoot8_ne_arity2Root8`; the correspondence is pinned by
+//!     `circuit/tests/whole_image_fold_lean_correspondent.rs`, and the chip's own behaviour by
+//!     `tests/effect_vm_umem_real_turn.rs::cross_cell_read_whole_image_*`. The `satisfied2U_init_*`
+//!     family named above is at the FLAT sponge `Heap.root` and is a THIRD object again — see the
+//!     flat-boundary note below.
+//!     ⚠ **THE CROSS-TABLE WIRING WAS NEVER VERIFIER-VISIBLE, AND IS DELETED** (measured
+//!     2026-08-06). This paragraph used to say the binding of the chip's insert-chain
+//!     `(key, value)` rows to THIS universal boundary table's per-domain `(domain, key)` cells was
+//!     REALIZED by `whole_image_fold::whole_image_fold_bound_*`, with the `BUS_UMEM_ADDRS`
+//!     address-closure and `BUS_UMEM_CHECK` Blum balance forcing "the chip folds EXACTLY the
+//!     declared boundary". The boundary table is PROVER-SUPPLIED and carries no public values:
+//!     [`verify_vm_descriptor2`] builds `pvs = [public_inputs]` then `resize(airs.len(), vec![])`,
+//!     so every non-MAIN instance — including this one — is verified against an EMPTY public-value
+//!     vector. The bound wrappers' public inputs were byte-identical to the unbound chip's
+//!     (`[empty_root8, published_root8]`), and their three boundary teeth all refused inside
+//!     `prove_whole_image_fold_bound*` — an honest prover declining a boundary inconsistent with
+//!     its own fold list, which an adversary simply does not supply. The descriptors, wrappers and
+//!     their eight tests are DELETED rather than re-labelled. The chip's own, genuinely
+//!     verifier-visible behaviour (both root PI groups pinned + the empty-root pin) is still
+//!     exercised by `tests/effect_vm_umem_real_turn.rs::cross_cell_read_whole_image_*`.
+//!   * The custom table id 5 (Lean `SUBMASK_TID = 0`) is realized as the bitwise-submask
+//!     relation at 30 bits (`subsetTable_mem_iff`: both elements in `[0, 2^30)` and
+//!     `keep & held = keep`), enforced by per-bit decomposition — the custom-table CONTENTS
+//!     manifest is the named small IR follow-up on the Lean side; until it lands the id ↦
+//!     relation binding lives here, in one place.
+//!   * The FLAT memory boundary image (`minit`/`mfin`/declared addresses) is witness-supplied
+//!     (the `MemBoundaryWitness` instance). The flat boundary is the carrier
+//!     `setFieldDynVmDescriptor2` (the post-flag-day dynamic field write) uses to hold a cell's
+//!     eight user fields in FLAT MEMORY at addresses `0..7` (`EffectVmEmitV2.lean:51`) — the ONLY
+//!     flat-`mem_op` carrier in the wide+umem welded registry (every other member uses anchored
+//!     umem or hash-absorbed state), and STILL STAGED (the live per-slot `setfield-v1` is
+//!     hash-absorption-bound, `memops=0`).
+//!     SOUNDNESS ANCHOR — CLOSED (the flat twin of the umem anchor). The Lean denotation gained the
+//!     flat init/fin root legs + the forge tooth, `#assert_axioms`-clean, mirroring the universal
+//!     `satisfied2U_init_root` family EXACTLY (`DescriptorIR2.lean`, the §6a' block after
+//!     `satisfied2_mem_consistent`):
+//!       - `satisfied2_init_root` / `satisfied2_fin_root` — if the committed pre/post-state heap has
+//!         the declared `minit`/`mfin` lookup semantics over the declared sorted addresses, its
+//!         sorted-Poseidon2 root EQUALS the boundary fold `Heap.root (boundaryCells (some ∘ minit)
+//!         maddrs)` (the universal `boundary_init_root_derived`, the flat image saturated to `some`);
+//!       - `satisfied2_init_root_bound` — the forge tooth: `Heap.root_injective` under
+//!         `Poseidon2SpongeCR`, so a declared image differing from the committed pre-state CANNOT
+//!         keep the published root;
+//!       - `satisfied2_init_whole_image` — `boundary_whole_image_sem`: pinning the committed root to
+//!         the WHOLE-boundary fold forces the committed heap to BE the declared image at every
+//!         address (declared cells open to `minit a`, every address off the list ABSENT) — the
+//!         no-extra-cells direction that rejects a forged `minit[a]` at an untouched declared field.
+//!     IN-CIRCUIT REALIZATION — ⚠ **THE OBJECT DOES NOT MATCH, AND THIS IS THE SAME CLASS AS THE
+//!     umem ONE ABOVE** (measured 2026-07-28; the companion is now DELETED, see below).
+//!     `satisfied2_init_whole_image` and its
+//!     family are stated over the FLAT SPONGE `Heap.root hash h = hash (h.map leafOf)` — one absorb
+//!     of the whole leaf list, arity-2 leaves. The `*_bound_mem` companion reused
+//!     `build_whole_image_fold`, so what it actually folded and pinned was `CanonicalHeapTree8::root8` —
+//!     an eight-felt arity-3 IMT MERKLE root. A Merkle root is not a flat sponge, so the companion
+//!     was NOT the in-circuit realization of that Lean family; it was an unrelated commitment.
+//!     ⚠ **AND THE SECOND MEASUREMENT (2026-08-06) TOOK THE REST OF IT.** This block used to add
+//!     that the companion's chip-level teeth "are real" and "bite in `verify_batch`" — address
+//!     closure via `BUS_MEM_ADDRS`, value equality via `BUS_MEM_CHECK` — so that "a forged `minit`
+//!     folds to a different root and the published-root pin REFUSES". They did not bite in
+//!     `verify_batch`. The flat `MemBoundaryWitness` is prover-supplied and its instance is verified
+//!     against an EMPTY public-value vector (`pvs` reaches the MAIN instance only), so the verifier
+//!     never saw the declared image at all; `whole_image_fold_bound_mem_forged_minit_refuses`
+//!     refused inside `prove_whole_image_fold_bound_mem`, against a boundary the same prover had
+//!     just built from the same leaf list. A forging prover supplies a `minit` AND a matching fold,
+//!     and both teeth are silent. So the flat-`minit` hole is **NOT covered** by anything here: the
+//!     companion, its witness builder, its prove/verify pair and its four tests are DELETED. The
+//!     honest repair is unchanged and now unattended — the flat twin of
+//!     `Dregg2.Circuit.WholeImageFoldRealization` plus a PI that anchors the declared image, i.e.
+//!     `setFieldDynVmDescriptor2` publishing `minit_root`/`mfin_root` pinned to the turn's committed
+//!     pre/post-state root (the RESIDUAL named immediately below, which is the same work).
+//!     RESIDUAL — the per-EFFECT VK weld. Like the umem boundary (still "witness-supplied" at its
+//!     effect descriptors, the anchor realized as the `whole_image_fold` companion), the flat fold
+//!     is realized as a companion, NOT yet welded into `setFieldDynVmDescriptor2` itself. Welding it
+//!     — `setFieldDynVmDescriptor2` publishes `minit_root`/`mfin_root` PIs pinned to the turn's
+//!     committed pre/post-state root, with the fold (running-root columns in the memory-boundary
+//!     table +
+//!     the boundary producer, or an in-batch fold AIR) proving the pin, then `emit-descriptors.sh`
+//!     re-emit so its VK MOVES (`check-descriptor-drift.sh`) — is what makes a forged-`minit` proof
+//!     of setFieldDyn ITSELF refuse in `verify_batch` (today the companion is a separate proof).
+//!     Two known weld details: (a) the field addresses `0..7` include addr 0, which the binary
+//!     Merkle sorted-insert rejects as a sentinel collision (an address offset, or sentinel-handling
+//!     adjustment, is needed for the fold over the real `0..7` plane — the companion test uses
+//!     non-zero addresses, as the umem tests do); (b) the cross-binding `MemOp::Read` links join the
+//!     effect's memory log, so the fin-side fold + `setFieldDyn_memLog` need the joined-log
+//!     accounting worked through. The carrier stays STAGED until this weld lands; the soundness
+//!     anchor + the biting forge tooth are in place.
+//!   * v1 descriptors (no `"ir"` key) keep proving through `lean_descriptor_air::
+//!     prove_vm_descriptor` untouched — both registries live until the flag-day.
+
+// Prover-only (the trace-assembly histograms): `recursion`.
+use std::collections::BTreeMap;
+use std::sync::Arc;
+
+use p3_air::{Air, AirBuilder, BaseAir, PermutationAirBuilder, WindowAccess};
+use p3_baby_bear::BabyBear as P3BabyBear;
+use p3_field::{Field, PrimeCharacteristicRing, PrimeField32};
+use p3_lookup::InteractionBuilder;
+use p3_lookup::bus::{LookupBus, PermutationCheckBus};
+// Prover-only (`to_matrix` builds the LDE input matrix): `recursion`.
+use p3_matrix::dense::RowMajorMatrix;
+
+// VERIFY surface (compiles under the prover-free `verifier` feature): `verify_batch`
+// is prover-free, and `ProverData::from_airs_and_degrees(..).common` builds only the
+// symbolic `Lookups` + (empty, for the IR-v2 AIRs) preprocessed commitment — no DFT,
+// no `prove_batch`. The PROVE surface (`prove_batch` + `StarkInstance` trace assembly)
+// is `recursion`-only.
+use p3_batch_stark::{BatchProof, ProverData, verify_batch};
+use p3_batch_stark::{StarkInstance, prove_batch};
+// Generic-config (SIDESTEP) prove/verify surface: lets the rotated leaf-wrap mint/verify an
+// IR-v2 batch under an arbitrary `SC` (e.g. the recursion config with retargeted FRI knobs)
+// rather than only `DreggStarkConfig`. The bounds mirror `prove_batch`/`verify_batch`'s own.
+// On both the prover (`recursion`) and verify (`verifier`) surfaces, like `verify_batch`.
+use p3_commit::PolynomialSpace;
+use p3_field::Algebra;
+use p3_uni_stark::{Domain, StarkGenericConfig, SymbolicExpressionExt, Val};
+
+/// Re-export the IR-v2 wire proof type + its STARK config so external crates (the sdk's
+/// rotated route, measurement tests) can name the `prove_vm_descriptor2` return type without
+/// depending on `p3-batch-stark` / `crate::plonky3_prover` directly.
+pub use crate::plonky3_prover::DreggStarkConfig;
+pub use p3_batch_stark::BatchProof as Ir2BatchProof;
+
+use crate::field::{BABYBEAR_P, BabyBear};
+// `HEAP_TREE_DEPTH` indexes the map-absent AIR column layout (verify-needed); the tree
+// type / leaf / sentinels are prover-only (the witness map openings live in `build_traces`).
+use crate::heap_root::HEAP_TREE_DEPTH;
+use crate::heap_root::{
+    CanonicalHeapTree8, HeapLeaf, SENTINEL_MAX, SENTINEL_MIN, heap_empty_subtree_root_8, heap_node8,
+};
+use crate::lean_descriptor_air::{
+    EFFECTVM_STATE_AFTER_BASE, EFFECTVM_STATE_BEFORE_BASE, HashInput, JsonCursor, LeanExpr,
+    VmConstraint, VmHashSite, VmRow, const_to_expr, parse_expr, parse_hash_site, parse_range,
+    parse_vm_constraint_body,
+};
+// `i64_to_babybear` is the concrete-eval constant lowering (prover-only, `eval_c`).
+use crate::lean_descriptor_air::i64_to_babybear;
+use crate::lean_descriptor_air::{EffectVmDescriptor, RangeSpec};
+use crate::plonky3_prover::{
+    POSEIDON2_PERM_AUX_COLS, POSEIDON2_WIDTH, create_config_with_fri_full, from_p3, to_p3,
+};
+use crate::table_air::{BusOp as TableBusOp, LeanTableAir, RowSel as TableRowSel};
+// The concrete permutation aux-witness fill is prover-only (`perm_aux`).
+use crate::plonky3_prover::poseidon2_permute_aux_witness;
+
+// ============================================================================
+// Wire constants (the Rust mirror of `DescriptorIR2` §1/§7)
+// ============================================================================
+
+/// Stable wire id of the main table.
+pub const TID_MAIN: usize = 0;
+/// Stable wire id of the Poseidon2 chip table.
+pub const TID_P2: usize = 1;
+/// Stable wire id of the range (limb) table.
+pub const TID_RANGE: usize = 2;
+/// Stable wire id of the memory table.
+pub const TID_MEMORY: usize = 3;
+/// Stable wire id of the map-ops table.
+pub const TID_MAP_OPS: usize = 4;
+/// Wire id of `custom 0` = the bitwise-submask table (`DescriptorIR2.SUBMASK_TID`).
+pub const TID_CUSTOM_SUBMASK: usize = 5;
+/// Wire id of `custom 1` = the UNIVERSAL memory table (`DescriptorIR2.UMEM_TID`,
+/// `.docs-history-noclaude/UNIVERSAL-MEMORY.md` — one Blum multiset over the `Domain × κ` address space).
+pub const TID_UMEMORY: usize = 6;
+/// Wire id of `custom 2` = the universal boundary table (declared `(domain, key)` addresses
+/// with their init/final `Option` images).
+pub const TID_UMEM_BOUNDARY: usize = 7;
+/// Wire id of the NARROW chip bus receiver (tuple-narrowing pass): single-output hash sites
+/// send an 18-wide `[arity, ins, out0]` lookup here (no output lanes) instead of the 25-wide
+/// `TID_P2`. Served by the SAME chip rows (`BUS_P2_1`, `CHIP_MULT_NARROW`); 0..7 are taken.
+pub const TID_P2_NARROW: usize = 8;
+/// Wire id of the full-state Poseidon2 permutation receiver.  A lookup is the fixed
+/// 33-felt tuple `[16, state[0..16], perm(state)[0..16]]`: unlike the absorb buses above,
+/// the input is an arbitrary complete permutation state, so repeated lookups can implement
+/// the deployed multi-block sponge without losing the capacity lanes between absorbs.
+///
+/// This rides its own conditionally-present AIR instance.  Descriptors that do not use wire
+/// id 9 therefore retain the exact pre-existing chip instance list, width, and verifier key.
+pub const TID_P2_STATE16: usize = 9;
+
+/// **THE WIDTH-TAGGED CUSTOM RANGE-TABLE WIRE BASE.** The multi-width graduation (Lean
+/// `EffectVmEmitV2.rangeTidW`) lowers every non-30-bit range tooth into a WIDTH-TAGGED custom
+/// range table: `rangeTidW bits = .custom (RANGE_W_TID_BASE + bits)` with `RANGE_W_TID_BASE = 64`,
+/// and a `.custom n` table serializes to wire id `n + TID_CUSTOM_SUBMASK` (SUBMASK = `.custom 0`).
+/// So a `bits`-wide table rides wire id `64 + bits + TID_CUSTOM_SUBMASK`. The deployed
+/// availability-weld descriptors carry the 15-bit borrow-limb table as wire id `64 + 15 + 5 = 84`.
+pub const RANGE_W_TID_WIRE_BASE: usize = 64 + TID_CUSTOM_SUBMASK; // 69
+
+/// The non-`BAL_LIMB_BITS` range widths the wide graduation admits: the availability weld's
+/// 15-bit borrow limbs, the faithful note-spend descriptor's canonical u16 lanes, and — 2026-07-31
+/// — the FIELDS-CANONICITY weld's two widths (`Dregg2.Circuit.Emit.FieldsCanonicity9Emit`): 24 for
+/// the carry-digit remainder `r` in `L8 = (q0 + 4·q1)·2^24 + r`, and 28 for the seven free fields
+/// lanes plus the four `v`/`vb` selector columns that express `Canonical9`'s `NoWrap` leg. 24 and
+/// 28 are exact multiples of `LIMB_BITS`, so each is a pure nibble decomposition with no partial
+/// top limb (`decomp_cols(24) = 6`, `decomp_cols(28) = 7`) against the SAME 16-row byte table — no
+/// new table, no new AIR instance.
+///
+/// ⚑ **29 (2026-08-01, the OWNER-KEY NONET) is NOT a multiple of `LIMB_BITS`, and that is fine.**
+/// `Dregg2.Circuit.KeyLanes9`'s canonicity envelope is two legs and zero gates: lanes 0..=7 below
+/// `2^29` (eight lookups at THIS width) and lane 8 below `2^24` (one lookup at the width already
+/// here). Do not copy the "exact multiples" sentence onto it — `decomp_cols(29)` takes the
+/// `partial` path (`n = ceil(29/4) = 8`, top limb `29 - 28 = 1 < LIMB_BITS`, so `8 + 1 = 9`
+/// columns), exactly as the deployed 15-bit borrow table already does. Still the same 16-row byte
+/// table: no new table, no new AIR instance.
+///
+/// ⚠ And the two legs are INDEPENDENT — the narrow one is not implied by the wide one. The nonet
+/// `[0, …, 0, 2^24]` has every lane below `2^29`, so a *uniform* nine-lane check at 29 admits it;
+/// its value is exactly `2^256` and it decodes byte-for-byte to the all-zero key.
+/// `keyCanon9_rejects_the_forged_nonet` is that UNSAT. Widening 24 to 29 "for uniformity" would
+/// re-open the encoding.
+///
+/// A `.custom` range wire id whose decoded width (`tid − RANGE_W_TID_WIRE_BASE`) is not one of
+/// these is NOT a range table — the caller fails closed on it (an unrealized custom table, exactly
+/// as before).
+pub const CUSTOM_RANGE_WIDTHS: [usize; 5] = [15, 16, 24, 28, 29];
+
+/// The nullifier domain's wire code (`DescriptorIR2.domainCode .nullifiers`). The universal
+/// memory table enforces the INSERT-ONLY discipline on this domain in-circuit (a write
+/// installing `none` is refused), which is what turns a `none` read into the proved
+/// freshness fact (`UniversalMemory.nullifier_fresh_sound`).
+pub const NULLIFIER_DOMAIN: u32 = 3;
+/// Domains are nibble-bounded on the wire (codes 0..4 deployed; new state components get new
+/// codes, never new tables).
+pub const DOMAIN_BOUND: u32 = 16;
+
+/// The chip's INPUT-LANE COUNT: how many base-field input felts one chip row (= ONE Poseidon2
+/// permutation) seeds. A chip tuple is `1 (arity) + CHIP_RATE (padded inputs) + 8 (output lanes)
+/// = 20` wide. This is DISTINCT from the Poseidon2 sponge `rate` (8 = `babyBearD4W16.rate`,
+/// pinned separately in [`POSEIDON2_SPONGE_RATE`] and the chip-param check): one permutation can
+/// SEED up to `WIDTH − capacity` lanes regardless of the multi-block sponge rate. Phase
+/// B-GATE-INPUT widened it `8 → 11` so a single permutation can absorb an 8-felt carrier + 3 new
+/// limbs (the wide Merkle–Damgård step of the faithful 8-felt commitment, Phase B-ROTATION).
+/// Phase H3 (native-8-felt Merkle root weld) widened it `11 → 16` = full `WIDTH`: the `node8`
+/// arity-16 row compresses two 8-felt child digests `L8 ‖ R8` in ONE permutation (no capacity —
+/// fixed-length compression domain-separated by the arity tag), reading lanes `0..8` for the
+/// 8-felt node digest. Every per-node Merkle step (cap/heap/fields) routes through this lane.
+pub const CHIP_RATE: usize = 16;
+/// The Poseidon2 sponge rate in base-field elements (`babyBearD4W16.rate = rate_ext · d = 8`).
+/// This is the REAL multi-block-sponge absorb width of the permutation — a cryptographic
+/// parameter pinned in `circuit/src/poseidon2.rs` and the chip `params` JSON. It is NOT the
+/// chip's input-lane count ([`CHIP_RATE`], the single-permutation seed width); the chip's
+/// arity-11 wide row seeds 11 lanes of ONE permutation, which is well below `WIDTH = 16`.
+pub const POSEIDON2_SPONGE_RATE: usize = 8;
+/// The chip tuple arity on the wire: `1 (arity) + CHIP_RATE (inputs) + 8 (output lanes)`.
+pub const CHIP_TUPLE_LEN: usize = CHIP_RATE + 1 + 8;
+/// Full-state permutation tuple: fixed width tag + all 16 input lanes + all 16 output lanes.
+pub const CHIP_STATE16_TUPLE_LEN: usize = 1 + POSEIDON2_WIDTH + POSEIDON2_WIDTH;
+/// The wide single-permutation absorb arity (Phase B-GATE-INPUT): the 8-felt commitment carrier
+/// `d8` (8 lanes) + `WIDE_K` new limbs/step. The wide Merkle–Damgård step `d8 ← perm(d8 ‖
+/// new_limbs)[0..8]` of the faithful commitment (Phase B-ROTATION). `≤ CHIP_RATE ≤ WIDTH`.
+pub const CHIP_WIDE_ARITY: usize = 11;
+/// New limbs absorbed per wide commitment step (`CHIP_WIDE_ARITY − 8` carrier felts). The
+/// deployed chain folds `[d, limb, limb, limb]` (1 carrier + 3 limbs); the wide step folds
+/// `[d0..d7, limb, limb, limb]` (8 carrier + 3 limbs).
+pub const WIDE_K: usize = CHIP_WIDE_ARITY - 8;
+/// The `node8` Merkle-compression arity (Phase H3): two 8-felt child digests `L8 ‖ R8` seed
+/// ALL 16 lanes of ONE permutation; lanes `0..8` are read as the node's 8-felt digest. This is
+/// the COLLISION-FLOOR fix — a node whose children are 1-felt collides at ~2^15.5 regardless of
+/// root width, so EVERY node must absorb full 8-felt children and emit a full 8-felt digest.
+/// `= WIDTH = 16`: no capacity lane is reserved (fixed-length compression is domain-separated by
+/// the arity tag itself — only a genuine 16-seed row answers an `arity == 16` lookup).
+pub const CHIP_NODE8_ARITY: usize = 16;
+
+/// The effect-mask width of the submask custom table (`EffectVmEmitV2.MASK_BITS`).
+pub const SUBMASK_BITS: usize = 30;
+/// Bit width of the memory serial-gap / boundary address range checks.
+const MEM_GAP_BITS: usize = 30;
+
+/// Bits per range-table limb: 4-bit nibble chunks against a `[0,16)` table.
+///
+/// ## ⚑⚑ 2026-08-06 — 4 → 8 WAS ATTEMPTED, MEASURED, AND REVERTED. IT IS UNSOUND, NOT EXPENSIVE.
+///
+/// Read this before moving the constant again; the width argument for moving it is CORRECT and it
+/// is not the binding constraint.
+///
+/// **The width win is real.** `MainLayout::build` compiles every declared range lookup into the
+/// declared column **plus** an aux block of `decomp_cols(bits)` columns, and *that* extended trace
+/// is what `Ir2Air::Main` is `width()`d at and what the prover commits. Re-derived over all 53
+/// checked-in descriptors that declare a range lookup, through this file's own `decomp_cols`:
+///
+/// ```text
+///   radix  4:  aux  75,156   committed 130,881   (declared 55,725)   ← DEPLOYED
+///   radix  8:  aux  39,168   committed  94,893   0.725× committed, 0.521× aux
+///   radix 12:  aux 234,151   committed 289,876   2.215×
+///   radix 16:  aux 196,289   committed 252,014   1.926×
+/// ```
+///
+/// On `dregg-mina-accumulator-seg` alone the aux block is 7,708 → 3,873 and the committed row
+/// 10,756 → 6,921. 12 and 16 are far WORSE via [`eval_decomp`]'s partial-top path (a limb wider
+/// than the value forces the whole value into `top_bits` booleans, one column per BIT), so the
+/// curve has an interior minimum at 8.
+///
+/// ## ⚑ WHY IT CANNOT SHIP AS A BARE CONSTANT: `hi4` IS NOT A LIMB, AND IT RIDES THIS TABLE
+///
+/// `TableAirIR.canonDecompQueries` (Lean; Rust twin `eval_canon_decomp`) bounds the `hi4` column of
+/// the canonical key split `value = hi4·2^27 + lo27` with **ONE query on the shared byte bus and
+/// nothing else**. So `hi4`'s bound IS this table's height. At 16 rows that is `hi4 < 16`, and
+/// `KEY_HI_MAX = 15` with `p − 1 = 15·2^27` is exactly what makes the split UNIQUE. At 256 rows it
+/// becomes `hi4 < 256` and uniqueness is gone — measured, not argued:
+///
+/// ```text
+///   value 134217727 = (hi4 0, lo27 2^27−1) = (hi4 16, lo27 0)     ← same felt, different hi4
+///   value 268435455 = (hi4 1, lo27 2^27−1) = (hi4 17, lo27 0)
+///   240 such collisions over two probe lo27 values; ZERO at radix 4.
+/// ```
+///
+/// `CMP_COLS` / `eval_lex_lt` orders keys LEXICOGRAPHICALLY on `(hi4, lo27)`, so a key with two
+/// representations compares two different ways — which is a satisfying witness for the IMT
+/// bracket `low_addr < key < low_next` on a key that does not lie in it. That is the
+/// non-membership tooth, so this is a soundness regression and not a cost.
+///
+/// ⚠ It is also caught, loudly: `deployed_heap_splice_honest_proves_and_verifies` panics with
+/// "main column index out of bounds" the moment the Lean and Rust copies of the radix disagree.
+///
+/// ## What moving it actually requires
+///
+/// 1. **Give `hi4` its own 4-bit bound that does not ride the shared table's height** — four
+///    booleans plus a recomposition, i.e. exactly the partial-top path a *declared* 4-bit range
+///    already gets. Lean-authored, in `TableAirIR.canonDecompGates`/`canonDecompQueries`, with the
+///    Rust `eval_canon_decomp` following. Cost: +4 columns per canonical-split block against a
+///    3,835-column saving on the accumulator row.
+/// 2. **THE RADIX HAS FOUR COPIES and they must become one**: this constant,
+///    `TableAirIR.LIMB_BITS` (which every Lean table AIR's `decompCols` reads),
+///    `ByteTableEmit.LIMB_BITS`, and `AirColumnAlloc.decompCols` — which inlines `4` as a
+///    LITERAL in three places and reads no constant at all.
+/// 3. **Re-emit every Lean table AIR that carries a decomposition** — `dregg-ir2-map-ops-v1`,
+///    `-map-absent-`, `-memory-`, `-mem-boundary-`, `-umem-boundary-`, `-umemory-`. ⚠ NOT
+///    `dregg-ir2-byte-v1`: `ByteTableEmit.gates_admit_every_height` proves that AIR is
+///    height-independent, so the byte table's own bytes do not move at any radix.
+/// 4. **Then the VK epoch**, plus `verify_vm_descriptor2`'s `expected_byte_degree` (already
+///    derived from this constant, so it follows for free).
+///
+/// ⚠ And the ORIGINAL justification is still wrong in the other direction, so do not restore it:
+/// `.docs-history-noclaude/PROOF-ECONOMICS.md` §2c reports nibbles "measured better at EVERY grid
+/// point", but every point in that grid is the same `transfer` descriptor, whose declared width is
+/// small enough that the 2⁸-row table's own LDE dominated. That is a per-BATCH constant; the aux
+/// block scales with descriptor width. The table was never the reason 4 is right — `hi4` is.
+pub const LIMB_BITS: usize = 4;
+/// The range-table height. PINNED, prove- AND verify-side: the table AIR forces
+/// `value = row index`, so its committed HEIGHT is its value range — a taller table
+/// would silently widen every limb's admissible range. `verify_vm_descriptor2`
+/// refuses any other height (`ir2_oversized_byte_table_refuses`).
+pub const BYTE_TABLE_HEIGHT: usize = 1 << LIMB_BITS;
+
+/// ⚑ **THE SMALLEST RANGE WIDTH THAT REFUSES NOTHING AT BABYBEAR — a declaration here is ALWAYS a
+/// defect, and [`parse_table_def`] refuses it at descriptor LOAD.**
+///
+/// `p = 2013265921 < 2^31`, so EVERY canonical field element already lies in `[0, 2^31)`: a range
+/// lookup declared at 31 bits or wider constrains nothing. Lean states exactly this — `Dregg2.
+/// Circuit.RangeFieldContainment.range_vacuous_at_or_above_31`, with `wrap_free_iff_le_29` giving
+/// the tighter bound a *wrap-free* tooth needs. The IR's own limb vocabulary already refuses the
+/// class (`EffectAirIR.LimbsLeg.mainRailOk` caps a limb at 29); this is the same refusal one layer
+/// down, on the wire, where a hand-written or drifted descriptor enters.
+///
+/// ⚠ **30 IS NOT REFUSED and that is deliberate.** 30 is not wrap-free (`not_wrap_free_at_30`) but
+/// it is not vacuous either, and 33 deployed by-name descriptors declare it. Refusing 30 here would
+/// be a different change — a completeness/soundness re-pricing of the shared table — not this one.
+///
+/// The measured defect this closes: `dregg-solana-lightclient-verify::v1` and
+/// `dregg-midnight-lightclient-verify::v1` shipped `bits: 128`, which is vacuous in the denotation
+/// AND was silently masked into `v >= 1` by the layout filler, so the prover refused every honest
+/// row. Vacuous one side, unprovable the other, and nothing in the load path looked.
+pub const VACUOUS_RANGE_BITS: usize = 31;
+
+/// Is the canonical felt representative `v` inside the declared interval `[0, 2^bits)`?
+///
+/// ⚑ **TOTAL BY CONSTRUCTION, AND THAT IS THE WHOLE POINT.** This was
+/// `(v as u64) >= (1u64 << bits)`. In Rust `1u64 << bits` for `bits >= 64` is a shift by
+/// `bits % 64` — at `bits = 64` and `bits = 128` it is `1`, so the test collapsed to `v >= 1` and
+/// the prover refused every nonzero row at a width whose *denotation* admits everything. (In a
+/// debug build it is worse still: the shift panics rather than masking.)
+///
+/// The honest reading is the denotation's: at `bits >= 32` the interval contains every `u32`, hence
+/// every canonical felt, so the check passes. [`parse_table_def`] is what keeps such a width off
+/// the wire; this function is what keeps the PROVER agreeing with `DescriptorIR2.rangeRows` when
+/// one is constructed in memory — which is exactly what a vacuity CONTROL does when it hands the
+/// identical trace to the identical AIR at a wider width.
+const fn value_fits_bits(v: u32, bits: usize) -> bool {
+    bits >= 32 || (v as u64) < (1u64 << bits)
+}
+
+/// The `i`-th `LIMB_BITS`-wide limb of `val`, TOTAL in `i`.
+///
+/// Same defect class as [`value_fits_bits`]: `val >> (i * LIMB_BITS)` on a `u32` is undefined for a
+/// shift of 32 or more (debug panic, release mask), and `decomp_cols(128)` asks for limb 31. Limbs
+/// past the top of a `u32` are ZERO, which is what the value actually is.
+const fn limb_at(val: u32, i: usize) -> u32 {
+    if i * LIMB_BITS >= 32 {
+        0
+    } else {
+        (val >> (i * LIMB_BITS)) & ((1 << LIMB_BITS) - 1)
+    }
+}
+
+/// Minimum height for the auxiliary tables (chip / memory / boundary / map-ops).
+/// Prover-only: it floors the witness table heights in `next_pow2` / `build_traces`.
+const MIN_TABLE_HEIGHT: usize = 8;
+
+// The shared bus names (namespaced so sibling modules' buses never collide).
+const BUS_P2: &str = "ir2_p2";
+/// The NARROW absorb bus (tuple-narrowing pass): single-output sites look up `[arity, ins, out0]`
+/// (18-wide, NO lanes) here instead of the 25-wide `BUS_P2` — the chip serves both from the same rows.
+const BUS_P2_1: &str = "ir2_p2_narrow";
+/// The arbitrary-full-state permutation bus used to replay multi-block sponge transitions.
+const BUS_P2_STATE16: &str = "ir2_p2_state16";
+const BUS_BYTE: &str = "ir2_byte";
+// ⓘ `BUS_MEM_LOG` still has a Rust reader — `Ir2Air::Main`'s `mem_op` send — so the name is a
+// genuine coupling between this file and `MemoryTableEmit.lean`'s receive. `BUS_MEM_CHECK` and
+// `BUS_MEM_ADDRS` had exactly two readers, the `Memory` and `MemBoundary` arms, and BOTH are now
+// Lean-authored: no Rust object needs those names any more, so they are deleted rather than kept
+// as constants nothing reads (unlike the `MEM_*` COLUMN offsets, which the witness producer still
+// needs and which are therefore written by name below).
+const BUS_MEM_LOG: &str = "ir2_mem_log";
+const BUS_MAP_LOG: &str = "ir2_map_log";
+// ⓘ …and `BUS_FACT` is gone for the same reason, in the `Ir2Air::Chip` cutover (2026-08-02): its
+// ONLY Rust reader was the hand-written chip arm's `fact_bus.table_entry`, and that arm is deleted.
+// The name now lives once, in `Emit/ChipTableEmit.lean`, and reaches the prover through the emitted
+// artifact. (The `ir2_p2` / `ir2_p2_narrow` names stay: `Ir2Air::Main`'s hash-site lookups are their
+// QUERY side, so those are genuine couplings between this file and the Lean author.)
+// ⓘ …and the SAME shape for the universal memory (2026-08-01, the `Ir2Air::UMemory` cutover):
+// `BUS_UMEM_LOG` keeps a Rust reader — `Ir2Air::Main`'s `umem_op` send — while `BUS_UMEM_CHECK` and
+// `BUS_UMEM_ADDRS` had exactly three, the `UMemory` arm and the two boundary arms, and all three are
+// Lean-authored now. The names are deleted rather than kept as constants nothing reads. The `UM_*`
+// COLUMN offsets stay, for the same reason the `MEM_*` ones do: the witness producer is the last
+// thing in Rust that knows what a column means, and it writes its row BY NAME.
+const BUS_UMEM_LOG: &str = "ir2_umem_log";
+
+/// ⚑ **FLAG DAY (2026-07-29): a manifest is ONE instance, not one instance per row.**
+///
+/// These caps used to be `128 rows / 4_096 cells`, and they were not geometry — they were the
+/// price of the OLD realization, which spent one `Ir2Air::ExactPublicRow` batch instance (its own
+/// committed matrix, its own FRI opening set) per declared manifest row. Since
+/// `PublicLookupBalanced` is a PERMUTATION, manifest rows = trace rows, so 128 rows was also a
+/// 128-row ceiling on any contents-bound trace. The four-way `⟨s, srs.g⟩` cut needs 1,048,704
+/// manifest rows — 8,193x that — and the eight-way 524,416.
+///
+/// The exact-public table AIR realizes the whole manifest as ONE multiplicity-bearing instance
+/// (the shape the byte table has always had), so the cost of a row is now one row of one
+/// preprocessed matrix, not one instance. The caps below are therefore an ALLOCATION bound on the
+/// verifier — which materializes and commits the preprocessed manifest itself — and nothing else:
+/// `2^21` rows covers the four-way cut with headroom.
+///
+/// ⚠ **AND THE SECOND HALF OF THAT SENTENCE WAS WRONG BY 2x, MEASURED 2026-08-02.** It read
+/// *"`2^25` cells bounds the preprocessed commitment at ~134 MB of `BabyBear`"*. It does not, and
+/// it did not before the Lean port either — for two compounding reasons the cap does not see:
+///
+/// * the cap counts `rows.len() * arity`, while the committed matrix is
+///   `next_pow2(distinct) * prep_width` — one column WIDER than `arity` (the pinned multiplicity,
+///   and since the port the table id too), and
+/// * `next_pow2` rounds a cap-saturating row count UP: at arity 31 the cell cap admits 1,082,401
+///   rows and the committed height is `2^21`.
+///
+/// Worst admissible case, computed from these three constants by
+/// `exactpublic_lean_emission_differential::the_preprocessed_allocation_bound_is_measured_not_asserted`:
+/// **69,206,016 cells = 276.8 MB**, against 67,108,864 / 268.4 MB before the port. So the port
+/// widened a bound that was already 2.00x its stated figure, by a further 3%. The number here is
+/// now the measured one; the CAP is deliberately unchanged, because tightening it to the real
+/// materialized size would refuse manifests the four-way cut is sized for, and that is a workload
+/// decision rather than a correctness one.
+const MAX_EXACT_PUBLIC_ROWS: usize = 1 << 21;
+/// ⚑ **FLAG DAY (2026-08-06): `64 → 97`, and this constant bounds NO RESOURCE.**
+///
+/// It is the MEMBER COUNT of `descriptors/table-airs/dregg-ir2-exact-public-v1.json` — a mirror of
+/// `ExactPublicTableEmit.EP_MAX_ARITY`, which is the source. Read at both of its readers before the
+/// raise:
+///
+/// * [`check_descriptor2`] admits `1 ..= MAX_EXACT_PUBLIC_ARITY`, and
+/// * [`exact_public_lean_instance`] REFUSES when this number is not
+///   `exact_public_table_air_family().len()` — a pure drift guard whose own message says the
+///   remedy, *"re-emit `dregg-ir2-exact-public-v1.json` or re-pin the cap"*.
+///
+/// Nothing else reads it. What bounds the verifier's allocation is the ROW and CELL caps above and
+/// below (`rows ≤ 2^21`, `rows · arity ≤ 2^25`), against a committed preprocessed matrix of
+/// `next_pow2(distinct) × (arity + 2)` — and neither moves with this ceiling. The whole price of
+/// the raise is the artifact's bytes: **63 429 → 128 142** (`O(arity²)`; the family renders
+/// `arity + 1` tuple entries per member).
+///
+/// ⚑ `97 = 1 + 3 · 32` is a PROJECTIVE PASTA POINT's routing tuple in the sound 8-bit encoding —
+/// a key plus `3 × 32` limbs — which `MinaAccumulatorAir.addendTable` declares and
+/// `dregg-mina-accumulator-routed::v1` queries. The cap is set to exactly the widest tuple any
+/// deployed descriptor needs, so the next one to outgrow it moves this number visibly.
+///
+/// ⚠ It was introduced (`dc285da37`) under a comment justifying ROWS and CELLS — *"each row becomes
+/// one batch instance, so bound the grammar before allocation"* — an argument about INSTANCE COUNT,
+/// which arity does not scale. Its two siblings have since moved by `2^14×` and `2^13×`.
+const MAX_EXACT_PUBLIC_ARITY: usize = 97;
+/// ⚑ **PUBLIC SO THE CAP CAN BE MEASURED AGAINST WHAT IT ACTUALLY BOUNDS.** The enforcement below
+/// compares this against `rows.len() * arity` — the DECLARED multiset, duplicates kept — while the
+/// only matrix anything materialises is [`ExactPublicManifest::committed_shape`]. A Lean-side cell
+/// model that transcribed either number would be a pin against its own definition; exporting the
+/// constant and the shape function is what lets the two sides disagree out loud.
+pub const MAX_EXACT_PUBLIC_CELLS: usize = 1 << 25;
+
+/// The committed height floor of an exact-public instance: p3 needs a power-of-two height and a
+/// two-row window, so a one-row manifest still commits two rows.
+///
+/// ⚠ **A p3 requirement this file enforces, and NOT something the AIR knows.** Every gate of the
+/// Lean-emitted family is `.all`-scoped, so it bounds no height at all
+/// (`ExactPublicTableEmit.gates_admit_every_height`); a reader taking "still commits two rows" for
+/// an in-circuit tooth would be reading a fact about `ProverData::from_airs_and_degrees` as one
+/// about the constraints.
+const MIN_EXACT_PUBLIC_HEIGHT: usize = 2;
+
+/// ⚑ The exact-public LogUp bus, named by the declared tuple ARITY.
+///
+/// **FLAG DAY 2026-08-02.** It was `ir2_exact_public_{table_id}`. The serving AIR is now a
+/// Lean-emitted FAMILY indexed by arity (`ExactPublicTableEmit.lean`), and an artifact cannot know
+/// a table id — so the id moved from the bus NAME into the served TUPLE, as preprocessed column 0,
+/// with `Ir2Air::Main` prepending the same descriptor-derived constant to every query.
+///
+/// ⚠ The per-table separation is exactly as strong. LogUp balance is a multiset equality over
+/// TUPLES; the id is a tuple field; and the served copy lives in the matrix the verifier REBUILDS
+/// from the descriptor rather than accepting from the prover. Two tables at the same arity share a
+/// bus and cannot pool, because their tuples differ in field 0. The one thing that DOES pool is
+/// unchanged: two descriptors in one batch declaring the SAME wire id, which
+/// [`prove_vm_descriptors2_batch`] documents.
+fn exact_public_bus_name(arity: usize) -> String {
+    format!("ir2_exact_public_a{arity}")
+}
+
+/// The low-limb width of the CANONICAL BabyBear key decomposition
+/// `key = hi4 · 2^27 + lo27` (BabyBear `p = 2^31 − 2^27 + 1 = 15 · 2^27 + 1`, so the canonical
+/// range `[0, p)` is exactly `hi4 < 15 ∨ (hi4 = 15 ∧ lo27 = 0)` — the `is15 · lo27 = 0` tooth
+/// makes the decomposition UNIQUE, which is what lets full-felt keys (hash images) be compared
+/// as integers, lexicographically over `(hi4, lo27)`). The flat 30-bit address regime of the
+/// EPOCH memory boundary cannot order hash-image keys; this one can.
+const KEY_LO_BITS: usize = 27;
+/// The top nibble value excluded from carrying a nonzero low limb (`p − 1 = 15 · 2^27`). Read by
+/// the WITNESS producer only: the split BASE `2^27` went with the last Rust-authored canonical
+/// decomposition (the `Ir2Air::MapOps` cutover), and its author is now
+/// `TableAirIR.KEY_HI_BASE`.
+const KEY_HI_MAX: u64 = 15;
+
+/// The `hash_fact` domain-separation marker (`poseidon2::hash_fact` state[5]).
+const FACT_MARK: u32 = 0xFACF;
+
+/// ⚑ How many Fiat–Shamir challenges the LogUp gadget draws per lookup context (`α` for the
+/// running sum, `β` for combining the tuple). `p3_lookup::LogUp::num_challenges()`; the
+/// challenge-supply refusal in [`check_descriptor2`] is denominated in it.
+const LOGUP_CHALLENGES_PER_CONTEXT: usize = 2;
+
+// ============================================================================
+// The v2 descriptor mirror (Lean `EffectVmDescriptor2`, decoded from `emitVmJson2`)
+// ============================================================================
+
+/// Row semantics of a declared table (Lean `RowSemantics`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum TableSem {
+    /// One row per effect (the descriptor's own main trace).
+    Main,
+    /// One row per Poseidon2 permutation (params validated against the deployed pins).
+    Poseidon2Chip,
+    /// The limb table: rows `[v]` for `v ∈ [0, 2^bits)`.
+    Range {
+        /// The declared limb width.
+        bits: usize,
+    },
+    /// One row per state access (offline memory checking).
+    Memory,
+    /// One row per boundary reconciliation (sorted-map opening).
+    MapOps,
+    /// One row per UNIVERSAL state access (the domain-tagged `Option`-valued Blum multiset).
+    UMemory,
+    /// One row per declared universal `(domain, key)` address (init/final `Option` images).
+    UMemBoundary,
+    /// The COHORT single-row specialization of [`TableSem::UMemBoundary`]: at most one declared
+    /// `(domain, key)` address, so the inter-row lexicographic comparator + key decomposition the
+    /// general boundary uses to establish `Nodup` are dropped (`Nodup` is `nodup_singleton`). The
+    /// single-row discipline is enforced in-circuit; a multi-row witness is refused. Selected by
+    /// the welded single-domain leg ([`crate::effect_vm_descriptors::weld_umem_into_rotated_descriptor`]).
+    UMemBoundaryCohort,
+    /// A complete verifier-known finite multiset. Each listed row is one
+    /// unit-capacity LogUp receive; duplicate rows encode multiplicity.
+    ExactPublicRows {
+        /// Canonical BabyBear representatives, emitted by Lean in descriptor order.
+        rows: Vec<Vec<u32>>,
+    },
+}
+
+/// A declared table (Lean `TableDef`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct TableDef2 {
+    /// Stable wire id.
+    pub id: usize,
+    /// Display name.
+    pub name: String,
+    /// Column arity.
+    pub arity: usize,
+    /// Row semantics.
+    pub sem: TableSem,
+}
+
+/// A lookup: the tuple of expressions is asserted to be a row of the named table
+/// (Lean `Lookup`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct LookupSpec {
+    /// Target table wire id.
+    pub table: usize,
+    /// The tuple of column expressions.
+    pub tuple: Vec<LeanExpr>,
+}
+
+/// Memory access kind (Lean `MemoryChecking.Kind`; wire codes 0 = read, 1 = write).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MemKind {
+    /// A read: returns its claimed previous value.
+    Read,
+    /// A write: installs `value` over the claimed previous tuple.
+    Write,
+}
+
+impl MemKind {
+    /// The memory-table `kind` column value.
+    pub fn code(self) -> u32 {
+        match self {
+            MemKind::Read => 0,
+            MemKind::Write => 1,
+        }
+    }
+}
+
+/// A read/write multiset row (Lean `MemOp`): the offline-memory-checking instrumentation
+/// as expressions over the emitting main row. `guard` gates the contribution.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MemOpSpec {
+    /// Selector guard (active iff it evaluates to 1).
+    pub guard: LeanExpr,
+    /// Address expression.
+    pub addr: LeanExpr,
+    /// Value returned (read) / installed (write).
+    pub value: LeanExpr,
+    /// Claimed latest prior value at the address.
+    pub prev_value: LeanExpr,
+    /// Claimed latest prior serial at the address.
+    pub prev_serial: LeanExpr,
+    /// Access kind.
+    pub kind: MemKind,
+}
+
+/// A UNIVERSAL memory access row (Lean `UMemOp`): the offline-checking instrumentation against
+/// the `Domain × κ` address space, with `Option`-valued cells as `(present, value)` pairs
+/// (canonical encoding: `none ↦ (0, 0)`, `some v ↦ (1, v)`). The address is the literal PAIR
+/// `(domain, key)` — the domain tag is its own bus coordinate, so the abstract injectivity
+/// `(d, a) = (d, b) ↔ a = b` is wire-literal: NO hashing, not even at the boundary. This is
+/// what makes nullifier freshness ONE read row returning `none`
+/// (`UniversalMemory.nullifier_fresh_sound`) — Merkle-path-free, gap-opening-free.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UMemOpSpec {
+    /// Selector guard (active iff it evaluates to 1).
+    pub guard: LeanExpr,
+    /// The STATIC domain code (Lean `domainCode`; the emission fixes the domain per op).
+    pub domain: u32,
+    /// The in-domain key expression (full-felt: hash images welcome).
+    pub key: LeanExpr,
+    /// Present bit of the returned (read) / installed (write) cell.
+    pub present: LeanExpr,
+    /// Payload of the returned / installed cell (0 when absent).
+    pub value: LeanExpr,
+    /// Present bit of the claimed latest prior cell.
+    pub prev_present: LeanExpr,
+    /// Payload of the claimed latest prior cell.
+    pub prev_value: LeanExpr,
+    /// Claimed latest prior serial.
+    pub prev_serial: LeanExpr,
+    /// Access kind.
+    pub kind: MemKind,
+}
+
+/// Map reconciliation kind (Lean `MapOpKind`; wire codes 0/1/2/3).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MapKind {
+    /// Membership read (root unchanged).
+    Read,
+    /// In-place value UPDATE at an existing key (root advances; the old and new
+    /// leaves share the SAME sibling path).
+    Write,
+    /// Non-membership / bracketed-gap read (realized and tested; see `ir2_absent_*` tests
+    /// and the map-absent table assembly). The `value` field is pinned to `const 0`
+    /// and `new_root` is pinned to `root`.
+    Absent,
+    /// Sorted INSERT at a fresh key (root advances; the new leaf's membership path
+    /// is against the NEW tree). Freshness must be established separately, e.g. by a
+    /// paired `MapKind::Absent` opening against the same pre-root.
+    ///
+    /// ⚠ THIS IS THE OP NOTHING EMITS. Histogram of `"op":"…"` over all SEVEN committed
+    /// registries under `circuit/descriptors/`: `aafi_insert` 24 rows, `absent` 24, `write` 6,
+    /// `read` 2, **`insert` 0** (recounted 2026-07-26; the `write 4` / `read 0` figures that
+    /// stood here were stale, though the load-bearing `insert 0` was and is correct — `Insert`
+    /// is the ONLY unemitted kind). The two doc comments that used to say "nothing emits this
+    /// op yet" were attached to `AafiInsert` (below) and to op=4 in `Ir2Air::MapOps`; they had
+    /// it exactly backwards. `AafiInsert` and `Absent` are what the deployed descriptors carry.
+    Insert,
+    /// AAFI (append-at-free-index) INSERT — the gap-#5 two-path insert (root advances).
+    /// Where `Insert` splices the fresh leaf in its SORTED position (shifting every later
+    /// position, no shared pre-image binds the shifted suffix), `AafiInsert` mirrors the
+    /// PROVEN Lean `IndexedMerkleTree.imtInsert` EXACTLY: it opens the bracketing LOW leaf
+    /// at its stable position (PATH1), updates its `next_addr := k` giving an intermediate
+    /// root `R1`, then appends `(k, v, low_oldNext)` at a distinct EMPTY free slot (PATH2)
+    /// giving `new_root` — positions STABLE, no shift. Consumes `AafiInsertWitness8`
+    /// (`heap_root.rs`).
+    ///
+    /// ⚠ "ADDITIVE: nothing emits this op yet" used to sit here and is FALSE at HEAD: the routing
+    /// flip landed and the deployed noteCreate members
+    /// (`dregg-effectvm-noteCreate-v1-rot24-v3-insert-heapopen-gentian-deployed-bare-refuse` in the
+    /// wide registry, and its narrow twin) carry exactly one map-op whose `op` is `aafi_insert`.
+    /// Code that matches `MapKind::Insert` alone will silently miss the deployed accumulator write.
+    AafiInsert,
+}
+
+impl MapKind {
+    /// The map-ops table `op` column value.
+    pub fn code(self) -> u32 {
+        match self {
+            MapKind::Read => 0,
+            MapKind::Write => 1,
+            MapKind::Absent => 2,
+            MapKind::Insert => 3,
+            MapKind::AafiInsert => 4,
+        }
+    }
+}
+
+/// A boundary reconciliation `(root, key, value, op) → new_root` (Lean `MapOp`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MapOpSpec {
+    /// Selector guard (active iff it evaluates to 1).
+    pub guard: LeanExpr,
+    /// The pre-root expression, as an 8-felt digest group (Phase H-HEAP-8): lane 0 ‖ lanes 1..7
+    /// of the native 8-felt heap root (`heapRootGroupCol`). Exactly `CHIP_OUT_LANES` entries.
+    pub root: Vec<LeanExpr>,
+    /// The map key expression.
+    pub key: LeanExpr,
+    /// The read/written value expression.
+    pub value: LeanExpr,
+    /// The post-root expression, as an 8-felt digest group (Phase H-HEAP-8). Exactly
+    /// `CHIP_OUT_LANES` entries.
+    pub new_root: Vec<LeanExpr>,
+    /// Reconciliation kind.
+    pub op: MapKind,
+}
+
+/// An accumulator / recursive-proof-binding op (Lean `DescriptorIR2.ProofBind`): the Custom
+/// row's `custom_proof_commitment` column (`commit`) and `custom_program_vk_hash` column (`vk`),
+/// gated by `guard`. The denotation binds them to a VERIFYING external sub-proof of the
+/// recursion engine — the row commits to the VERIFICATION of the external proof, rather than
+/// trusting it. This is the constraint kind the four ROW-LOCAL kinds (lookup/mem/map/umem)
+/// could not express: none folds in another STARK proof; this one rides the named recursion
+/// argument (`joint_turn_recursive.rs` leaf verifier / `ivc_turn_chain.rs` aggregate prover),
+/// exactly as `MemOp`/`UMemOp` ride the offline-memory argument rather than a row-local poly.
+/// ⚑ **THE ROW-LOCAL SEAM (2026-08-04).** Until this revision the per-row `proof_bind` denotation
+/// was `True` in Lean and a bare `continue` in `Ir2Air::eval` — and unlike `MemOp`/`MapOp`, whose
+/// `True` is compensated by a LogUp send, this kind emitted no bus interaction either. It was the
+/// one constraint kind that denoted NOTHING in either language, and no served descriptor emitted
+/// one. Worse, the §6c existential it deferred to (`ProofBind.boundAt`) reads over FREE `commit`
+/// and `vk` columns, so even a fully deployed recursion layer would have discharged it with a
+/// verifying sub-proof of ANY program about ANY statement.
+///
+/// `vk_pin` and `bound` are the two things a ROW can say, and `Ir2Air::eval` now asserts them:
+/// `guard·(guard − 1)`, `guard·(vk − vk_pin)` and `guard·(commit − bound)`. Both are `Option`:
+/// `None` (wire `null`) means the descriptor DECLARES it cannot pin that half — correct for the
+/// Custom effect, which dispatches an arbitrary registered program and derives its commitment
+/// off-row. An absent pin is a VALUE a gate can count, not a silence.
+///
+/// For the Custom member the binding still lands at the per-turn FOLD, not here: the rotated Custom
+/// member PUBLISHES these columns as descriptor public inputs (Lean
+/// `EffectVmEmitRotationV3.customPiExposure`, eight `.piBinding .first` pins), and the fold
+/// connects those PIs to the custom sub-proof leaf's PI-commitment.
+///
+/// ⚑ **WIDENED 2026-08-05: one felt → LANE VECTORS.** The revision above shipped `commit`/`vk`/
+/// `bound` as ONE expression each and said so in this docblock — *"a `bound` tie is worth 2^31, not
+/// the 2^124 of the object it is a limb of"* — naming widening as the real fix and shipping the
+/// limb. The three fields carry the whole object now, and `Ir2Air::eval` asserts one congruence per
+/// lane. A seam tie is worth what the object is worth.
+/// ⚑ **WHAT HOLDS THE COMMIT LANES — TWO STATES, AND THERE IS NO THIRD.** The Lean twin is
+/// `DescriptorIR2.CommitBinding`.
+///
+/// ⚑ **FLAG DAY 2026-08-10 — `bound: Option<Vec<LeanExpr>>` IS GONE.** It was nullable, and
+/// `Ir2Air::eval`'s arm read `if let Some(b) = &p.bound`, so a `proof_bind` with `bound: null`
+/// emitted **zero polynomials over its commit lanes** — while *every deployed seam set `null`*.
+/// The consequence was not theoretical: headline results named columns appearing in **no emitted
+/// constraint** (*"`TIP_STATE` joined in-circuit"*, *"`OWNHASH` is the image of its row"*, the link
+/// seam's 44 lanes, the `-fs` weld's 192). Five layers of detection machinery were built around
+/// the nullable field — `SeamSpec`, S1/S2 certificates, `CoveredPort`, `TiedAir`, an
+/// emission-faithful `readCols` — none of which stopped a new `null` from being written. **A bind
+/// that binds nothing is not a bind, it is a comment**, and the type now refuses to hold one.
+///
+/// The two honest states, both of which say something a reader can check:
+///
+/// * [`CommitBinding::Bound`] — the commit lanes ARE a function of this row. Emits
+///   `guard·(commitᵢ − boundᵢ)` for every lane, in both languages.
+/// * [`CommitBinding::Port`] — the commit lanes are a declared **port**: published by this
+///   descriptor, forced by a NAMED external seam, and emitting nothing here *on purpose*. The
+///   name is the whole difference from the retired `null`: `null` named nothing, so nothing could
+///   resolve it; a port names the seam that covers it and
+///   [`ProofBindSpec::ported_cover`] hands that name to the registry gate
+///   (`circuit/descriptors/seams/ports.json`, Lean `SeamSpec.CoveredPort`).
+///
+/// ⚠ **DO NOT "fix" a port by writing `Bound(commit.clone())`.** Comparing the commit vector to its
+/// own definition is the decoration trap wearing the fix's clothes: it emits `guard·(x − x)`,
+/// which is identically zero and constrains nothing. The working model for a real `Bound` is
+/// `MinaAccumulatorAir.headBoundLanes` — the claim is an **emit-time constant** (VK-declared
+/// literals), so the equality has content. A seam whose claim varies per proof CANNOT bind
+/// in-descriptor and is a port; that is a fact about the seam, not a shortfall in the author.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CommitBinding {
+    /// The commit lanes EQUAL these row-local expressions, lane by lane, under the guard.
+    Bound(Vec<LeanExpr>),
+    /// The commit lanes are a declared PORT covered by the named seam. Emits no polynomial over
+    /// `commit` — and says so with a name, not a `null`.
+    Port(PortCover),
+}
+
+/// The name pair a [`CommitBinding::Port`] must produce: which port of this descriptor, and which
+/// seam covers it. Both are resolved against `circuit/descriptors/seams/ports.json` by the
+/// registry gate (`circuit/tests/proof_bind_port_cover_registry.rs`) and against a registered
+/// `SeamSpec` by Lean's `CoveredPort`, which cannot elaborate for an uncovered port.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PortCover {
+    /// The port's name inside this descriptor's `ports.json` row (e.g. `"tip-state"`).
+    pub port: String,
+    /// The covering seam's name (e.g. `"dregg-seam-head-tip-to-link::v1"`).
+    pub seam: String,
+}
+
+impl CommitBinding {
+    /// Is this the ported state? The census predicate — countable, not describable.
+    pub fn is_port(&self) -> bool {
+        matches!(self, CommitBinding::Port(_))
+    }
+
+    /// The bound lane expressions, if this binds in-descriptor.
+    pub fn lanes(&self) -> Option<&[LeanExpr]> {
+        match self {
+            CommitBinding::Bound(b) => Some(b),
+            CommitBinding::Port(_) => None,
+        }
+    }
+
+    /// The port cover, if ported.
+    pub fn cover(&self) -> Option<&PortCover> {
+        match self {
+            CommitBinding::Bound(_) => None,
+            CommitBinding::Port(p) => Some(p),
+        }
+    }
+}
+
+impl PortCover {
+    /// ⚑ **A PORT MUST NAME SOMETHING.** An empty port or seam name is the `null` in a costume:
+    /// nothing can resolve it, so nothing can go red on it. Refused at all three admission doors.
+    pub fn names_ok(&self, half: &str) -> Result<(), String> {
+        if self.port.trim().is_empty() {
+            return Err(format!(
+                "proof_bind {half} declares a port with an empty port name: a port that names \
+                 nothing is the `null` this field replaced"
+            ));
+        }
+        if self.seam.trim().is_empty() {
+            return Err(format!(
+                "proof_bind {half} port `{}` names no covering seam: an uncovered port forces \
+                 nothing and cannot be resolved by the registry gate",
+                self.port
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ProofBindSpec {
+    /// Selector guard (active iff it evaluates to 1). Forced boolean by the seam.
+    pub guard: LeanExpr,
+    /// The `custom_proof_commitment` LANES, low limb first (bound to a verifying sub-proof's PI
+    /// commitment). At least [`PROOF_BIND_MIN_LANES`] of them.
+    pub commit: Vec<LeanExpr>,
+    /// The `custom_program_vk_hash` LANES, low limb first (bound to that sub-proof's program VK).
+    /// Same length as `commit`.
+    pub vk: Vec<LeanExpr>,
+    /// ⚑ The DECLARED program VK literal LANES, one per `vk` lane. `None` = the descriptor declares
+    /// the program unpinned. A pin of a DIFFERENT length is not a prefix pin — it is refused at
+    /// admission and asserted unsatisfiable in the AIR.
+    ///
+    /// ⚠ **THIS FIELD IS THE SAME DEFECT AS THE RETIRED `bound: Option`, AND IT IS STILL AN
+    /// `Option`.** `None` emits zero polynomials over the `vk` lanes, exactly as `bound: None` once
+    /// did over `commit`. It is left nullable in the 2026-08-10 flag day for one reason, stated so
+    /// it is not mistaken for a design: two of the three `None` sites have **no cover to name** —
+    /// `MinaWrapConjunctionAir.bindLeg`'s program VK is a digest of an artifact the emitter has not
+    /// built yet, and inventing a literal there would be a pin against nothing. That is UNDONE
+    /// WORK, not a state of the world, and the same sum type is owed here once the pin exists.
+    pub vk_pin: Option<Vec<i64>>,
+    /// ⚑ What holds the `commit` lanes. **Not nullable** — see [`CommitBinding`] for the flag day
+    /// and for why `Bound(commit.clone())` is not a migration.
+    pub bound: CommitBinding,
+}
+
+/// ⚑ **THE LANE FLOOR of a recursion seam** — the felt count of the deployed objects a
+/// `proof_bind` ties. `circuit-prove/src/custom_proof_bind.rs::PROOF_BIND_COMMIT_WIDTH` is `8` (the
+/// full `WideHash` squeeze, ~124-bit birthday) and `custom_program_vk_hash` is
+/// `bytes32_to_8_limbs`, also eight. A narrower seam ties a LIMB — `2^31` a lane, below this repo's
+/// own ~124-bit bar — so it is REFUSED here rather than emitted with the number in a comment.
+///
+/// ⚠ A FLOOR, not a width. `dregg-mina-lightclient-verify::v1` ties a NINE-lane `Faithful9` program
+/// fingerprint, because eight BabyBear lanes cannot injectively carry 32 bytes (247.26 bits against
+/// 256). The Lean twin is `DescriptorIR2.PROOF_BIND_MIN_LANES`; `circuit-prove` pins the two
+/// constants against each other (`sdk/tests/wide_completeness_ledger.rs`).
+pub const PROOF_BIND_MIN_LANES: usize = 8;
+
+impl ProofBindSpec {
+    /// A seam that binds NEITHER half in-descriptor: both are ports. Countable, so the number can
+    /// ratchet down; the Lean twin is `DescriptorIR2.ProofBind.isDeclarative`.
+    ///
+    /// ⚑ **WHAT CHANGED UNDER IT (2026-08-10).** This used to read
+    /// `vk_pin.is_none() && bound.is_none()`, and a `true` meant *the descriptor said nothing at
+    /// all* — the pair was free, and no name anywhere connected it to whatever was supposed to be
+    /// forcing it. It now means *both halves are ports*, and a port carries the name of its cover.
+    /// The census is the same number; what the number counts is no longer a silence.
+    pub fn is_declarative(&self) -> bool {
+        self.vk_pin.is_none() && self.bound.is_port()
+    }
+
+    /// Every port cover this seam declares, tagged by which half declared it. The registry gate
+    /// resolves these against `circuit/descriptors/seams/ports.json`.
+    pub fn ported_cover(&self) -> Vec<(&'static str, &PortCover)> {
+        let mut out = Vec::new();
+        if let Some(c) = self.bound.cover() {
+            out.push(("bound", c));
+        }
+        out
+    }
+
+    /// The number of lanes this seam ties.
+    pub fn lanes(&self) -> usize {
+        self.commit.len()
+    }
+
+    /// ⚑ **THE WIDTH VERDICT** — each vector clears the [`PROOF_BIND_MIN_LANES`] floor, and each
+    /// declared pin names exactly as many lanes as the vector it pins. The Lean twin is
+    /// `DescriptorIR2.ProofBind.widthOk`; this is applied at all three admission doors (the JSON
+    /// parser, the canonical decoder, `check_descriptor2`), so a narrow or truncated seam cannot
+    /// reach a prover from any direction.
+    ///
+    /// ⚑ **2026-08-06 — `commit.len() == vk.len()` IS GONE, and it was never a law.** It held
+    /// because the Custom effect's two objects are both eight felts (`custom_proof_pi_commitment`
+    /// and `bytes32_to_8_limbs`) and the check was read off that pair. The two lengths measure
+    /// different things: `commit` is the width of the SENTENCE the sub-proof proves, `vk` the width
+    /// of the PROGRAM identity. Coupling them meant a seam could not name a statement wider than a
+    /// fingerprint — so a Mina state-hash seam (six `Fp` elements = 54 lanes, against a nine-lane
+    /// `Faithful9` program fingerprint) could only be stated by inflating the fingerprint to 54
+    /// lanes, i.e. by lying about the program's identity to state the sentence. Both FLOORS remain
+    /// and both bite independently; nothing is relaxed.
+    pub fn width_ok(&self) -> Result<(), String> {
+        if self.commit.len() < PROOF_BIND_MIN_LANES {
+            return Err(format!(
+                "proof_bind declares {} commit lanes, below the floor of {PROOF_BIND_MIN_LANES}: a \
+                 narrower seam ties one limb of an eight-felt object and is worth 2^31 a lane",
+                self.commit.len()
+            ));
+        }
+        if self.vk.len() < PROOF_BIND_MIN_LANES {
+            return Err(format!(
+                "proof_bind declares {} vk lanes, below the floor of {PROOF_BIND_MIN_LANES}: a \
+                 narrower program pin names a limb of a fingerprint, not the fingerprint",
+                self.vk.len()
+            ));
+        }
+        if let Some(p) = &self.vk_pin
+            && p.len() != self.vk.len()
+        {
+            return Err(format!(
+                "proof_bind vk_pin names {} lanes against {} vk lanes: a pin is not a prefix",
+                p.len(),
+                self.vk.len()
+            ));
+        }
+        match &self.bound {
+            CommitBinding::Bound(b) if b.len() != self.commit.len() => {
+                return Err(format!(
+                    "proof_bind bound names {} lanes against {} commit lanes: a pin is not a prefix",
+                    b.len(),
+                    self.commit.len()
+                ));
+            }
+            CommitBinding::Bound(_) => {}
+            CommitBinding::Port(c) => c.names_ok("bound")?,
+        }
+        Ok(())
+    }
+}
+
+/// A two-row arithmetic expression (Lean `DescriptorIR2.WindowExpr`): a polynomial over BOTH
+/// the current row (`Loc c`) and the next row (`Nxt c`). The base `LeanExpr` reads only the
+/// current row, so a cross-row relation (the aggregation AIR's cumulative
+/// `next[cum] = local[cum] + next[contribution]`) is inexpressible in it; `WindowExpr` adds the
+/// `Nxt` leaf. `Loc c` is the faithful twin of `LeanExpr::Var c`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum WindowExpr {
+    /// Current-row column `c`.
+    Loc(usize),
+    /// Next-row column `c`.
+    Nxt(usize),
+    /// A signed integer constant.
+    Const(i64),
+    /// Field addition.
+    Add(Box<WindowExpr>, Box<WindowExpr>),
+    /// Field multiplication.
+    Mul(Box<WindowExpr>, Box<WindowExpr>),
+}
+
+impl WindowExpr {
+    // ⓘ `WindowExpr::eval_expr` (the recursive boxed-tree walk, mirroring Lean
+    // `WindowExpr.eval` reading `env.loc`/`env.nxt`) is GONE (2026-08-18): the deployed
+    // evaluator is now the flat postfix tape `flat_eval::FlatExpr::of_window` /
+    // `eval_base`, compiled once per `Ir2Air` construction and replaying the same tree
+    // operation-for-operation (gate: byte-identical proofs,
+    // `tests/air_interp_census.rs::bytes_sweep`). Deleted rather than kept as a second
+    // evaluator nothing calls — two evaluators that agree today are two that disagree later.
+
+    // ⓘ `WindowExpr::degree` is GONE (2026-08-02). Its only caller was `LeanTableAir::max_degree`,
+    // and a table AIR's expression is `TableExpr` now — whose degree must resolve `Shr` through the
+    // definition list (`TableExpr::degree_with`), which a `WindowExpr` method structurally cannot.
+    // The main descriptor's own `windowGate` never used it: its cumulative-sum bodies are linear and
+    // the batch prover's symbolic analysis sizes the quotient. Deleted rather than kept as a method
+    // nothing calls.
+
+    /// The maximum column index referenced (over both row tags), if any. The descriptor's
+    /// `windowGate` bounds check uses this, and so does a table AIR's width check.
+    pub(crate) fn max_var(&self) -> Option<usize> {
+        match self {
+            WindowExpr::Loc(i) | WindowExpr::Nxt(i) => Some(*i),
+            WindowExpr::Const(_) => None,
+            WindowExpr::Add(a, b) | WindowExpr::Mul(a, b) => match (a.max_var(), b.max_var()) {
+                (Some(x), Some(y)) => Some(x.max(y)),
+                (Some(x), None) | (None, Some(x)) => Some(x),
+                (None, None) => None,
+            },
+        }
+    }
+}
+
+// ⓘ `eval_table_expr` (the recursive `TableExpr` walk) is GONE (2026-08-18): the deployed
+// evaluator is `flat_eval::FlatExpr::of_table` / `eval_table`, which carries the same three
+// contracts the walk did:
+//
+// ⚑ `Shr(i)` is a CLONE of the already-resolved `dv[i]`, never a re-walk of `defs[i]`. That is
+// what makes the emitted DAG cost the prover what the deleted hand-written arm cost it: on the
+// prover's folder `AB::Expr` is a packed field value, so the clone is a copy of a number, and
+// the chip's 16 per-round S-box values are computed once each and read 35 times — exactly the
+// sharing `poseidon2_permute_expr_lanes` had as Rust locals. Measured on the chip: 70,524
+// field operations as a tree, 2,943 shared.
+//
+// ⚠ An out-of-range `Shr` reads ZERO. That case is unreachable — `LeanTableAir::check` refuses
+// a forward reference and an out-of-range index at DECODE time, and the artifacts are
+// `include_str!`d so a failure there is a build-time defect — but the evaluator stays total,
+// and a `0` is the value a dropped definition would have. It is the refusal upstream that is
+// load-bearing, not the fallback.
+//
+// And `Prep(i)` reads a DIFFERENT COLUMN SPACE — the verifier-recomputed preprocessed row,
+// never the committed one; `LeanTableAir::check` bounds every index against the emission's own
+// `prep_width`.
+
+/// ⚑ **A two-row arithmetic expression WITH A CHALLENGE LEAF** (Lean `DescriptorIR2.ChalExpr`).
+///
+/// [`WindowExpr`] plus `Chal(i)` — the `i`-th element of
+/// [`p3_air::PermutationAirBuilder::permutation_randomness`], a Fiat–Shamir value the VERIFIER
+/// draws. This is the leaf whose absence `PastaFieldSound.lean` recorded as
+/// *"Schwartz–Zippel … is not expressible in this IR … Adding a challenge leaf is a change to the
+/// IR and the prover, not to a descriptor."* This is that change.
+///
+/// ## The Fiat–Shamir story, read off the deployed transcript
+///
+/// `p3-batch-stark/src/prover.rs` calls `transcript.observe_main(&main_commit, &pub_vals)` —
+/// committing the whole main trace and the public values — and only THEN
+/// `transcript.sample_perm_challenges(...)`. So every value this leaf can read was sampled after
+/// the witness was fixed. That ordering is the hypothesis Schwartz–Zippel needs, and it is a
+/// property of the deployed prover rather than an assumption made here.
+///
+/// The values are `SC::Challenge = BinomialExtensionField<BabyBear, 4>`, `|K| ≈ 2^124`, so a
+/// degree-`d` residual survives a random draw with probability `≤ d / 2^124`. The gate is therefore
+/// evaluated with [`p3_air::ExtensionBuilder::assert_zero_ext`], not `assert_zero`.
+///
+/// ## ⚑ Degree: a challenge is DEGREE ZERO
+///
+/// `p3-air/src/symbolic/variable.rs:67-72` gives `ExtEntry::Challenge` a `degree_multiple()` of
+/// `0` — a challenge is a constant for quotient sizing. So an `L`-deep Horner chain over the
+/// challenge raises the constraint degree by NOTHING, and a body that is degree 2 in the trace
+/// columns stays a degree-2 constraint however much challenge arithmetic it contains. That is the
+/// property that makes replacing `2L−1` schoolbook coefficient gates by ONE identity actually
+/// cheaper rather than a quotient-degree trade.
+///
+/// ## ⚠ What a caller may and may not assume about the indices
+///
+/// The slice is the LogUp `(α, β)` pair of each of this instance's lookup contexts, re-read. Every
+/// entry is uniform and independent of the committed trace, which is all Schwartz–Zippel asks. But
+/// GLOBAL bus challenges are shared by bus name across instances, so two entries MAY BE EQUAL, and
+/// the index→bus correspondence is not stable under descriptor edits. A gate needing one uniform
+/// value may use any index; a gate needing `k` INDEPENDENT values may not assume they differ.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum ChalExpr {
+    /// Current-row column `c`.
+    Loc(usize),
+    /// Next-row column `c`.
+    Nxt(usize),
+    /// A signed integer constant.
+    Const(i64),
+    /// ⚑ **THE CHALLENGE LEAF** — `permutation_randomness()[i]`, drawn after the main-trace
+    /// commitment. Degree zero in the trace.
+    Chal(usize),
+    /// Field addition.
+    Add(Box<ChalExpr>, Box<ChalExpr>),
+    /// Field multiplication.
+    Mul(Box<ChalExpr>, Box<ChalExpr>),
+}
+
+impl ChalExpr {
+    // ⓘ `ChalExpr::eval_expr_ext` (the recursive walk mirroring Lean `ChalExpr.evalIn`) is
+    // GONE (2026-08-18): the deployed evaluator is `flat_eval::FlatExpr::of_chal` / `eval_ext`,
+    // same semantics — base-field column reads lifted into the extension, the challenge leaf
+    // cloning the randomness slice (bounds-checked at decode by `check_descriptor2`, and the
+    // short-slice case fail-CLOSED by the caller before any tape runs).
+
+    /// The maximum column index referenced (over both row tags), if any. Lean `ChalExpr.maxVar`.
+    pub(crate) fn max_var(&self) -> Option<usize> {
+        match self {
+            ChalExpr::Loc(i) | ChalExpr::Nxt(i) => Some(*i),
+            ChalExpr::Const(_) | ChalExpr::Chal(_) => None,
+            ChalExpr::Add(a, b) | ChalExpr::Mul(a, b) => match (a.max_var(), b.max_var()) {
+                (Some(x), Some(y)) => Some(x.max(y)),
+                (Some(x), None) | (None, Some(x)) => Some(x),
+                (None, None) => None,
+            },
+        }
+    }
+
+    /// ⚑ The DECLARED challenge requirement: `1 + (largest `Chal` index)`, or `0`. Lean
+    /// `ChalExpr.chalCount`. This is the number the descriptor carries on the wire as
+    /// `"challenges"` and that `check_descriptor2` refuses against.
+    pub fn chal_count(&self) -> usize {
+        match self {
+            ChalExpr::Loc(_) | ChalExpr::Nxt(_) | ChalExpr::Const(_) => 0,
+            ChalExpr::Chal(i) => i + 1,
+            ChalExpr::Add(a, b) | ChalExpr::Mul(a, b) => a.chal_count().max(b.chal_count()),
+        }
+    }
+
+    /// The TRACE degree (Lean `ChalExpr.traceDegree`) — challenge leaves count ZERO, matching
+    /// `SymbolicVariableExt::degree_multiple` for `ExtEntry::Challenge`.
+    pub fn trace_degree(&self) -> usize {
+        match self {
+            ChalExpr::Loc(_) | ChalExpr::Nxt(_) => 1,
+            ChalExpr::Const(_) | ChalExpr::Chal(_) => 0,
+            ChalExpr::Add(a, b) => a.trace_degree().max(b.trace_degree()),
+            ChalExpr::Mul(a, b) => a.trace_degree() + b.trace_degree(),
+        }
+    }
+}
+
+/// ⚑ **A CHALLENGE GATE** (Lean `DescriptorIR2.ChalConstraint`): the polynomial `body` — over the
+/// current row, the next row, AND the verifier's Fiat–Shamir challenges — must vanish, in the
+/// EXTENSION field. `on_transition` has the same meaning as [`WindowGateSpec`].
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ChalGateSpec {
+    /// The challenge-carrying two-row polynomial body.
+    pub body: ChalExpr,
+    /// Assert only on the transition (`true`) vs. every row (`false`).
+    pub on_transition: bool,
+}
+
+/// A windowed constraint (Lean `DescriptorIR2.WindowConstraint`): the polynomial `body` (over
+/// the current+next row) must vanish. `on_transition = true` ⇒ asserted only on the transition
+/// (every row but the last — the Rust `builder.when_transition()` arm); `false` ⇒ asserted on
+/// every row (including the last, where `Nxt` is the wrap row).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct WindowGateSpec {
+    /// The two-row polynomial body.
+    pub body: WindowExpr,
+    /// Assert only on the transition (`true`) vs. every row (`false`).
+    pub on_transition: bool,
+}
+
+/// One v2 constraint: a v1 form embedded whole, or one of the new kinds
+/// (Lean `VmConstraint2`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum VmConstraint2 {
+    /// An embedded v1 constraint form.
+    Base(VmConstraint),
+    /// A lookup into a declared table.
+    Lookup(LookupSpec),
+    /// A memory-table access row.
+    MemOp(MemOpSpec),
+    /// A map-ops-table reconciliation row.
+    MapOp(MapOpSpec),
+    /// A UNIVERSAL memory-table access row (the one-Blum-multiset leg).
+    UMemOp(UMemOpSpec),
+    /// An accumulator / recursive-proof-binding row (the Custom leg — rides the recursion
+    /// argument, not a committed table).
+    ProofBind(ProofBindSpec),
+    /// A two-row windowed gate (the cumulative-sum primitive: a polynomial over the current
+    /// AND next rows, asserted on the transition or every row). The aggregation AIR's two
+    /// running cumulatives are this kind.
+    WindowGate(WindowGateSpec),
+    /// ⚑ **A CHALLENGE GATE** (2026-08-05) — a two-row polynomial that may also read the
+    /// verifier's Fiat–Shamir challenges, asserted in the EXTENSION field. The kind that makes a
+    /// Schwartz–Zippel identity expressible; see [`ChalExpr`].
+    ChalGate(ChalGateSpec),
+}
+
+/// The Rust mirror of Lean's `EffectVmDescriptor2` (decoded from `emitVmJson2`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct EffectVmDescriptor2 {
+    /// AIR identity string.
+    pub name: String,
+    /// The main-trace base width.
+    pub trace_width: usize,
+    /// Number of public-input slots.
+    pub public_input_count: usize,
+    /// ⚑ **THE DECLARED CHALLENGE COUNT** (wire key `"challenges"`, Lean
+    /// `DescriptorIR2.challengeCount`) — how many `permutation_randomness()` entries this
+    /// descriptor's `ChalGate`s read. `0` for every descriptor served before the challenge leaf
+    /// existed, and emitted on ALL of them: it is a value a gate can count, not a silence.
+    ///
+    /// ⚑ FLAG DAY 2026-08-05: because the decoder `expect_key`s this positionally, an `"ir":2`
+    /// descriptor WITHOUT the key REFUSES TO LOAD rather than being reinterpreted as declaring
+    /// zero. Every committed descriptor JSON and both staged registry TSVs re-emit.
+    pub challenges: usize,
+    /// The declared tables.
+    pub tables: Vec<TableDef2>,
+    /// The constraint list (v2 grammar).
+    pub constraints: Vec<VmConstraint2>,
+    /// Legacy v1 hash-site carrier (must be EMPTY for the v2 assembly; graduated
+    /// descriptors carry their sites as chip lookups).
+    pub hash_sites: Vec<VmHashSite>,
+    /// Legacy v1 range carrier (must be EMPTY for the v2 assembly).
+    pub ranges: Vec<RangeSpec>,
+}
+
+/// Either wire shape, dispatched on the `"ir"` key (`parse_vm_descriptor_any`).
+#[derive(Clone, Debug)]
+pub enum AnyVmDescriptor {
+    /// A v1 descriptor (no `"ir"` key): proves through `lean_descriptor_air`.
+    V1(EffectVmDescriptor),
+    /// A v2 descriptor (`"ir":2`): proves through this module.
+    V2(EffectVmDescriptor2),
+}
+
+// ============================================================================
+// JSON decode (the v2 grammar; byte-pinned by the Lean `#guard` golden)
+// ============================================================================
+
+fn parse_array<T>(
+    c: &mut JsonCursor,
+    mut item: impl FnMut(&mut JsonCursor) -> Result<T, String>,
+) -> Result<Vec<T>, String> {
+    c.expect(b'[')?;
+    let mut v = Vec::new();
+    if c.peek() == Some(b']') {
+        c.expect(b']')?;
+        return Ok(v);
+    }
+    loop {
+        v.push(item(c)?);
+        match c.peek() {
+            Some(b',') => c.expect(b',')?,
+            Some(b']') => {
+                c.expect(b']')?;
+                break;
+            }
+            other => {
+                return Err(format!(
+                    "expected ',' or ']' in array, found {:?}",
+                    other.map(|b| b as char)
+                ));
+            }
+        }
+    }
+    Ok(v)
+}
+
+pub(crate) fn parse_usize(c: &mut JsonCursor, what: &str) -> Result<usize, String> {
+    let n = c.parse_int()?;
+    if n < 0 {
+        return Err(format!("negative {what} {n}"));
+    }
+    Ok(n as usize)
+}
+
+/// ⚑ **THE OLD SHAPE REFUSES, IT DOES NOT REINTERPRET.** Both `proof_bind` halves used to be
+/// `null`-or-array. The `null` state is gone from the type ([`CommitBinding`]), so a wire carrying
+/// one is refused by name; and a BARE ARRAY is refused too, because quietly reading it as the
+/// bound/pinned arm would be the reinterpretation the flag-day rule exists to prevent — the same
+/// bytes would mean a different relation under the two readers.
+fn refuse_retired_bind_shape(c: &mut JsonCursor, half: &str) -> Result<(), String> {
+    if c.try_null()? {
+        return Err(format!(
+            "proof_bind {half} is `null`: the nullable shape is RETIRED (flag day 2026-08-10). A \
+             `null` here emitted zero polynomials over the lanes it named. Write either \
+             {{\"t\":\"{tag}\",\"lanes\":[..]}} or {{\"t\":\"port\",\"port\":\"..\",\"seam\":\"..\"}} \
+             — there is no third state",
+            tag = "bound"
+        ));
+    }
+    if c.peek() == Some(b'[') {
+        return Err(format!(
+            "proof_bind {half} is a bare array: the pre-flag-day grammar. It is REFUSED rather \
+             than read as {{\"t\":\"bound\"}}, because the same bytes must not mean a different \
+             relation under two readers"
+        ));
+    }
+    Ok(())
+}
+
+/// Parse the tagged `{"t":"port","port":..,"seam":..}` body, positioned just after `"port"`'s tag.
+fn parse_port_cover_tail(c: &mut JsonCursor) -> Result<PortCover, String> {
+    c.expect(b',')?;
+    c.expect_key("port")?;
+    let port = c.parse_string()?;
+    c.expect(b',')?;
+    c.expect_key("seam")?;
+    let seam = c.parse_string()?;
+    c.expect(b'}')?;
+    Ok(PortCover { port, seam })
+}
+
+/// `"bound"`: `{"t":"bound","lanes":[expr,..]}` or `{"t":"port","port":..,"seam":..}`.
+fn parse_commit_binding(c: &mut JsonCursor) -> Result<CommitBinding, String> {
+    refuse_retired_bind_shape(c, "bound")?;
+    c.expect(b'{')?;
+    c.expect_key("t")?;
+    let tag = c.parse_string()?;
+    match tag.as_str() {
+        "bound" => {
+            c.expect(b',')?;
+            c.expect_key("lanes")?;
+            let lanes = parse_array(c, parse_expr)?;
+            c.expect(b'}')?;
+            Ok(CommitBinding::Bound(lanes))
+        }
+        "port" => Ok(CommitBinding::Port(parse_port_cover_tail(c)?)),
+        other => Err(format!(
+            "proof_bind bound tag `{other}`: expected `bound` or `port`, and there is no third state"
+        )),
+    }
+}
+
+/// Validate the chip `params` object against the DEPLOYED Poseidon2 pins
+/// (`babyBearD4W16` ↔ `circuit/src/poseidon2.rs`). A mismatch is a refusal, not a warning:
+/// the chip table's row semantics is "the real permutation" and these are its parameters.
+fn parse_chip_params(c: &mut JsonCursor) -> Result<(), String> {
+    c.expect(b'{')?;
+    let expected_num: &[(&str, i64)] = &[
+        ("field_modulus", BABYBEAR_P as i64),
+        ("d", 4),
+        ("width", POSEIDON2_WIDTH as i64),
+        ("sbox_degree", 7),
+        ("sbox_registers", 1),
+        ("half_full_rounds", 4),
+        ("partial_rounds", 13),
+        // The REAL Poseidon2 sponge rate (8), NOT the chip input-lane count (`CHIP_RATE` = 11).
+        ("rate", POSEIDON2_SPONGE_RATE as i64),
+    ];
+    loop {
+        let key = c.parse_string()?;
+        c.expect(b':')?;
+        match key.as_str() {
+            "rc_source" => {
+                let s = c.parse_string()?;
+                if s != "BABYBEAR_POSEIDON2_RC_16" {
+                    return Err(format!("chip params rc_source \"{s}\" != deployed source"));
+                }
+            }
+            "internal_diag_source" => {
+                let s = c.parse_string()?;
+                if s != "BABYBEAR_POSEIDON2_INTERNAL_DIAG_16" {
+                    return Err(format!(
+                        "chip params internal_diag_source \"{s}\" != deployed source"
+                    ));
+                }
+            }
+            other => {
+                let v = c.parse_int()?;
+                let Some(&(_, want)) = expected_num.iter().find(|(k, _)| *k == other) else {
+                    return Err(format!("unknown chip param \"{other}\""));
+                };
+                if v != want {
+                    return Err(format!("chip param {other} = {v}, deployed pin is {want}"));
+                }
+            }
+        }
+        match c.peek() {
+            Some(b',') => c.expect(b',')?,
+            Some(b'}') => {
+                c.expect(b'}')?;
+                break;
+            }
+            other => {
+                return Err(format!(
+                    "expected ',' or '}}' in chip params, found {:?}",
+                    other.map(|b| b as char)
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
+fn parse_table_def(c: &mut JsonCursor) -> Result<TableDef2, String> {
+    c.expect(b'{')?;
+    let mut id: Option<usize> = None;
+    let mut name: Option<String> = None;
+    let mut arity: Option<usize> = None;
+    let mut sem_tag: Option<String> = None;
+    let mut bits: Option<usize> = None;
+    let mut rows: Option<Vec<Vec<u32>>> = None;
+    loop {
+        let key = c.parse_string()?;
+        c.expect(b':')?;
+        match key.as_str() {
+            "id" => id = Some(parse_usize(c, "table id")?),
+            "name" => name = Some(c.parse_string()?),
+            "arity" => arity = Some(parse_usize(c, "table arity")?),
+            "sem" => sem_tag = Some(c.parse_string()?),
+            "bits" => bits = Some(parse_usize(c, "range bits")?),
+            "rows" => {
+                let parsed = parse_array(c, |c| {
+                    parse_array(c, |c| {
+                        let value = parse_usize(c, "exact-public table cell")?;
+                        u32::try_from(value).map_err(|_| {
+                            format!("exact-public table cell {value} does not fit u32")
+                        })
+                    })
+                })?;
+                rows = Some(parsed);
+            }
+            "params" => parse_chip_params(c)?,
+            other => return Err(format!("unknown table-def key \"{other}\"")),
+        }
+        match c.peek() {
+            Some(b',') => c.expect(b',')?,
+            Some(b'}') => {
+                c.expect(b'}')?;
+                break;
+            }
+            other => {
+                return Err(format!(
+                    "expected ',' or '}}' in table def, found {:?}",
+                    other.map(|b| b as char)
+                ));
+            }
+        }
+    }
+    let sem = match sem_tag.as_deref() {
+        Some("main") => TableSem::Main,
+        Some("poseidon2_chip") => TableSem::Poseidon2Chip,
+        // ⚑ THE WIDTH REFUSAL, AT THE DOOR. A range table declared at or above
+        // `VACUOUS_RANGE_BITS` refuses nothing at BabyBear, so it is a defect however it got here —
+        // never a wide-but-honest check. Refusing at LOAD is what makes it impossible to serve one;
+        // the prover-side filler stays denotation-faithful (`value_fits_bits`) so an in-memory
+        // vacuity CONTROL still measures vacuity rather than hitting a masked comparison.
+        Some("range") => {
+            let bits = bits.ok_or("range table def missing \"bits\"")?;
+            if bits >= VACUOUS_RANGE_BITS {
+                return Err(format!(
+                    "range table \"{}\" declares bits {bits} >= {VACUOUS_RANGE_BITS}: the BabyBear \
+                     field is below 2^31, so [0, 2^{bits}) contains every element and the lookup \
+                     refuses nothing (Lean: RangeFieldContainment.range_vacuous_at_or_above_31). \
+                     Re-emit the descriptor at a wrap-free width (<= 29), or express the quantity \
+                     as a limb VECTOR at that width",
+                    name.as_deref().unwrap_or("<unnamed>")
+                ));
+            }
+            TableSem::Range { bits }
+        }
+        Some("memory") => TableSem::Memory,
+        Some("map_ops") => TableSem::MapOps,
+        Some("umemory") => TableSem::UMemory,
+        Some("umem_boundary") => TableSem::UMemBoundary,
+        Some("umem_boundary_cohort") => TableSem::UMemBoundaryCohort,
+        Some("exact_public_rows") => TableSem::ExactPublicRows {
+            rows: rows.ok_or("exact-public table def missing \"rows\"")?,
+        },
+        Some(other) => return Err(format!("unknown table sem \"{other}\"")),
+        None => return Err("table def missing \"sem\"".to_string()),
+    };
+    Ok(TableDef2 {
+        id: id.ok_or("table def missing \"id\"")?,
+        name: name.ok_or("table def missing \"name\"")?,
+        arity: arity.ok_or("table def missing \"arity\"")?,
+        sem,
+    })
+}
+
+/// Parse one `<window_expr>` object: `{"t":"loc"|"nxt"|"const"|"add"|"mul", …}` (Lean
+/// `WindowExpr.toJson`). `loc`/`nxt` carry a column index `c`; the arithmetic nodes reuse the
+/// `l`/`r` shape of `LeanExpr`.
+pub(crate) fn parse_window_expr(c: &mut JsonCursor) -> Result<WindowExpr, String> {
+    c.expect(b'{')?;
+    c.expect_key("t")?;
+    let tag = c.parse_string()?;
+    let expr = match tag.as_str() {
+        "loc" => {
+            c.expect(b',')?;
+            c.expect_key("c")?;
+            WindowExpr::Loc(parse_usize(c, "window loc col")?)
+        }
+        "nxt" => {
+            c.expect(b',')?;
+            c.expect_key("c")?;
+            WindowExpr::Nxt(parse_usize(c, "window nxt col")?)
+        }
+        "const" => {
+            c.expect(b',')?;
+            c.expect_key("v")?;
+            WindowExpr::Const(c.parse_int_field()?)
+        }
+        "add" | "mul" => {
+            c.expect(b',')?;
+            c.expect_key("l")?;
+            let l = parse_window_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("r")?;
+            let r = parse_window_expr(c)?;
+            if tag == "add" {
+                WindowExpr::Add(Box::new(l), Box::new(r))
+            } else {
+                WindowExpr::Mul(Box::new(l), Box::new(r))
+            }
+        }
+        other => return Err(format!("unknown window expr tag \"{other}\"")),
+    };
+    c.expect(b'}')?;
+    Ok(expr)
+}
+
+/// ⚑ Decode a [`ChalExpr`] (Lean `ChalExpr.toJson`). Byte-identical to
+/// [`parse_window_expr`]'s grammar plus the one new leaf `{"t":"chal","i":N}`.
+pub(crate) fn parse_chal_expr(c: &mut JsonCursor) -> Result<ChalExpr, String> {
+    c.expect(b'{')?;
+    c.expect_key("t")?;
+    let tag = c.parse_string()?;
+    let expr = match tag.as_str() {
+        "loc" => {
+            c.expect(b',')?;
+            c.expect_key("c")?;
+            ChalExpr::Loc(parse_usize(c, "chal loc col")?)
+        }
+        "nxt" => {
+            c.expect(b',')?;
+            c.expect_key("c")?;
+            ChalExpr::Nxt(parse_usize(c, "chal nxt col")?)
+        }
+        "const" => {
+            c.expect(b',')?;
+            c.expect_key("v")?;
+            ChalExpr::Const(c.parse_int_field()?)
+        }
+        // ⚑ THE CHALLENGE LEAF.
+        "chal" => {
+            c.expect(b',')?;
+            c.expect_key("i")?;
+            ChalExpr::Chal(parse_usize(c, "chal index")?)
+        }
+        "add" | "mul" => {
+            c.expect(b',')?;
+            c.expect_key("l")?;
+            let l = parse_chal_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("r")?;
+            let r = parse_chal_expr(c)?;
+            if tag == "add" {
+                ChalExpr::Add(Box::new(l), Box::new(r))
+            } else {
+                ChalExpr::Mul(Box::new(l), Box::new(r))
+            }
+        }
+        other => return Err(format!("unknown chal expr tag \"{other}\"")),
+    };
+    c.expect(b'}')?;
+    Ok(expr)
+}
+
+fn parse_constraint2(c: &mut JsonCursor) -> Result<VmConstraint2, String> {
+    c.expect(b'{')?;
+    c.expect_key("t")?;
+    let tag = c.parse_string()?;
+    let out = match tag.as_str() {
+        "lookup" => {
+            c.expect(b',')?;
+            c.expect_key("table")?;
+            let table = parse_usize(c, "lookup table id")?;
+            c.expect(b',')?;
+            c.expect_key("tuple")?;
+            let tuple = parse_array(c, parse_expr)?;
+            VmConstraint2::Lookup(LookupSpec { table, tuple })
+        }
+        "mem_op" => {
+            c.expect(b',')?;
+            c.expect_key("kind")?;
+            let kind = match c.parse_string()?.as_str() {
+                "read" => MemKind::Read,
+                "write" => MemKind::Write,
+                other => return Err(format!("unknown mem_op kind \"{other}\"")),
+            };
+            c.expect(b',')?;
+            c.expect_key("guard")?;
+            let guard = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("addr")?;
+            let addr = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("value")?;
+            let value = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("prev_value")?;
+            let prev_value = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("prev_serial")?;
+            let prev_serial = parse_expr(c)?;
+            VmConstraint2::MemOp(MemOpSpec {
+                guard,
+                addr,
+                value,
+                prev_value,
+                prev_serial,
+                kind,
+            })
+        }
+        "umem_op" => {
+            c.expect(b',')?;
+            c.expect_key("kind")?;
+            let kind = match c.parse_string()?.as_str() {
+                "read" => MemKind::Read,
+                "write" => MemKind::Write,
+                other => return Err(format!("unknown umem_op kind \"{other}\"")),
+            };
+            c.expect(b',')?;
+            c.expect_key("domain")?;
+            let domain = parse_usize(c, "umem_op domain")? as u32;
+            c.expect(b',')?;
+            c.expect_key("guard")?;
+            let guard = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("key")?;
+            let key = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("present")?;
+            let present = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("value")?;
+            let value = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("prev_present")?;
+            let prev_present = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("prev_value")?;
+            let prev_value = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("prev_serial")?;
+            let prev_serial = parse_expr(c)?;
+            VmConstraint2::UMemOp(UMemOpSpec {
+                guard,
+                domain,
+                key,
+                present,
+                value,
+                prev_present,
+                prev_value,
+                prev_serial,
+                kind,
+            })
+        }
+        "map_op" => {
+            c.expect(b',')?;
+            c.expect_key("op")?;
+            let op = match c.parse_string()?.as_str() {
+                "read" => MapKind::Read,
+                "write" => MapKind::Write,
+                "absent" => MapKind::Absent,
+                "insert" => MapKind::Insert,
+                "aafi_insert" => MapKind::AafiInsert,
+                other => return Err(format!("unknown map_op kind \"{other}\"")),
+            };
+            c.expect(b',')?;
+            c.expect_key("guard")?;
+            let guard = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("root")?;
+            // Phase H-HEAP-8: the pre-/post-root are 8-felt digest groups, emitted as a JSON array
+            // of `CHIP_OUT_LANES` lane expressions (the `heapRootGroupCol` lanes), parsed like the
+            // `LookupSpec.tuple`.
+            let root = parse_array(c, parse_expr)?;
+            if root.len() != CHIP_OUT_LANES {
+                return Err(format!(
+                    "map_op root group has {} lanes, expected {CHIP_OUT_LANES}",
+                    root.len()
+                ));
+            }
+            c.expect(b',')?;
+            c.expect_key("key")?;
+            let key = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("value")?;
+            let value = parse_expr(c)?;
+            c.expect(b',')?;
+            c.expect_key("new_root")?;
+            let new_root = parse_array(c, parse_expr)?;
+            if new_root.len() != CHIP_OUT_LANES {
+                return Err(format!(
+                    "map_op new_root group has {} lanes, expected {CHIP_OUT_LANES}",
+                    new_root.len()
+                ));
+            }
+            VmConstraint2::MapOp(MapOpSpec {
+                guard,
+                root,
+                key,
+                value,
+                new_root,
+                op,
+            })
+        }
+        "proof_bind" => {
+            c.expect(b',')?;
+            c.expect_key("guard")?;
+            let guard = parse_expr(c)?;
+            // ⚑ LANE ARRAYS since 2026-08-05 — the objects a seam ties are eight felts, and these
+            // were one expression each.
+            c.expect(b',')?;
+            c.expect_key("commit")?;
+            let commit = parse_array(c, parse_expr)?;
+            c.expect(b',')?;
+            c.expect_key("vk")?;
+            let vk = parse_array(c, parse_expr)?;
+            // ⚑ **THE SEAM'S TWO HALVES ARE TAGGED OBJECTS NOW (FLAG DAY 2026-08-10).**
+            // They were `null`-or-array: `null` meant "this half is not bound", and the AIR's arm
+            // read `if let Some(..)`, so `null` emitted ZERO polynomials over the lanes it named.
+            // Both old shapes REFUSE here rather than being reinterpreted — a bare `null` because
+            // the state it encoded no longer exists, and a bare ARRAY because silently promoting it
+            // to the bound/pinned arm is precisely the "reinterpret" this repo's flag-day rule
+            // forbids. See [`CommitBinding`] for the migration: every old `null` is now either a
+            // real bind or a NAMED port, and there is no third state.
+            c.expect(b',')?;
+            c.expect_key("vk_pin")?;
+            let vk_pin = if c.try_null()? {
+                None
+            } else {
+                Some(parse_array(c, |c| c.parse_int())?)
+            };
+            c.expect(b',')?;
+            c.expect_key("bound")?;
+            let bound = parse_commit_binding(c)?;
+            let spec = ProofBindSpec {
+                guard,
+                commit,
+                vk,
+                vk_pin,
+                bound,
+            };
+            // THE JSON DOOR's half of the width refusal. A four-lane artifact from before the
+            // widening does not load here; it is not padded and not reinterpreted.
+            spec.width_ok()?;
+            VmConstraint2::ProofBind(spec)
+        }
+        "window_gate" => {
+            c.expect(b',')?;
+            c.expect_key("on_transition")?;
+            let on_transition = c.parse_bool()?;
+            c.expect(b',')?;
+            c.expect_key("body")?;
+            let body = parse_window_expr(c)?;
+            VmConstraint2::WindowGate(WindowGateSpec {
+                body,
+                on_transition,
+            })
+        }
+        // ⚑ THE CHALLENGE GATE (Lean `ChalConstraint.toJson`).
+        "chal_gate" => {
+            c.expect(b',')?;
+            c.expect_key("on_transition")?;
+            let on_transition = c.parse_bool()?;
+            c.expect(b',')?;
+            c.expect_key("body")?;
+            let body = parse_chal_expr(c)?;
+            VmConstraint2::ChalGate(ChalGateSpec {
+                body,
+                on_transition,
+            })
+        }
+        v1tag => VmConstraint2::Base(parse_vm_constraint_body(c, v1tag)?),
+    };
+    c.expect(b'}')?;
+    Ok(out)
+}
+
+/// **`parse_vm_descriptor2`** — decode a Lean `emitVmJson2` string (`"ir":2`).
+pub fn parse_vm_descriptor2(json: &str) -> Result<EffectVmDescriptor2, String> {
+    match parse_vm_descriptor_any(json)? {
+        AnyVmDescriptor::V2(d) => Ok(d),
+        AnyVmDescriptor::V1(_) => {
+            Err("descriptor has no \"ir\" key (v1 wire); use parse_vm_descriptor".to_string())
+        }
+    }
+}
+
+/// **`parse_vm_descriptor_any`** — the versioned dispatcher: a missing `"ir"` key is wire
+/// version 1 (the untouched `emitVmJson` grammar, re-encoded as `AnyVmDescriptor::V1`);
+/// `"ir":2` is the multi-table grammar. Both registries live until the flag-day.
+pub fn parse_vm_descriptor_any(json: &str) -> Result<AnyVmDescriptor, String> {
+    parse_vm_descriptor_any_with(JsonCursor::new(json))
+}
+
+/// ⚑ **THE UNSOUND-ENCODING ENTRY.** Same parser, but gate coefficients wider than a BabyBear
+/// felt are FOLDED mod the field instead of refused (`JsonCursor::new_unsound_oversized_constants`).
+///
+/// A descriptor that needs this has gate bodies that cannot round-trip a felt, so its ℤ-level
+/// forcing lemmas constrain no proof object over it. `pasta_field_felt_soundness.rs` exhibits the
+/// consequence as an accepted witness with a 2^285 integer body. The sound Pasta multiply
+/// (`dregg-pasta-fpmul-sound::v1`, largest constant 2^23) parses through the STRICT default; this
+/// entry exists only for the 9×30 descriptors that have not been re-emitted, and
+/// `ir2_oversized_constant_escape_is_a_shrinking_list` counts them.
+pub fn parse_vm_descriptor2_unsound_oversized(json: &str) -> Result<EffectVmDescriptor2, String> {
+    match parse_vm_descriptor_any_with(JsonCursor::new_unsound_oversized_constants(json))? {
+        AnyVmDescriptor::V2(d) => Ok(d),
+        AnyVmDescriptor::V1(_) => {
+            Err("descriptor has no \"ir\" key (v1 wire); use parse_vm_descriptor".to_string())
+        }
+    }
+}
+
+fn parse_vm_descriptor_any_with(mut c: JsonCursor<'_>) -> Result<AnyVmDescriptor, String> {
+    c.expect(b'{')?;
+
+    let mut name: Option<String> = None;
+    let mut ir: Option<usize> = None;
+    let mut trace_width: Option<usize> = None;
+    let mut public_input_count: Option<usize> = None;
+    let mut challenges: Option<usize> = None;
+    let mut tables: Vec<TableDef2> = Vec::new();
+    let mut constraints: Option<Vec<VmConstraint2>> = None;
+    let mut hash_sites: Vec<VmHashSite> = Vec::new();
+    let mut ranges: Vec<RangeSpec> = Vec::new();
+
+    loop {
+        let key = c.parse_string()?;
+        c.expect(b':')?;
+        match key.as_str() {
+            "name" => name = Some(c.parse_string()?),
+            "ir" => ir = Some(parse_usize(&mut c, "ir version")?),
+            "trace_width" => trace_width = Some(parse_usize(&mut c, "trace_width")?),
+            "public_input_count" => {
+                public_input_count = Some(parse_usize(&mut c, "public_input_count")?)
+            }
+            // ⚑ THE DECLARED CHALLENGE COUNT (flag day 2026-08-05). Required on every `"ir":2`
+            // descriptor and REFUSED on a v1 one, so the old shape cannot be reinterpreted as
+            // declaring zero — it fails to load.
+            "challenges" => challenges = Some(parse_usize(&mut c, "challenges")?),
+            "tables" => tables = parse_array(&mut c, parse_table_def)?,
+            "constraints" => constraints = Some(parse_array(&mut c, parse_constraint2)?),
+            "hash_sites" => hash_sites = parse_array(&mut c, parse_hash_site)?,
+            "ranges" => ranges = parse_array(&mut c, parse_range)?,
+            other => return Err(format!("unknown top-level key \"{other}\"")),
+        }
+        match c.peek() {
+            Some(b',') => c.expect(b',')?,
+            Some(b'}') => {
+                c.expect(b'}')?;
+                break;
+            }
+            other => {
+                return Err(format!(
+                    "expected ',' or '}}' in descriptor, found {:?}",
+                    other.map(|b| b as char)
+                ));
+            }
+        }
+    }
+
+    let name = name.ok_or("descriptor missing \"name\"")?;
+    let trace_width = trace_width.ok_or("descriptor missing \"trace_width\"")?;
+    let public_input_count =
+        public_input_count.ok_or("descriptor missing \"public_input_count\"")?;
+    let constraints = constraints.ok_or("descriptor missing \"constraints\"")?;
+
+    match ir {
+        None => {
+            // v1 wire: no tables, no v2-only constraint kinds.
+            if !tables.is_empty() {
+                return Err("v1 descriptor (no \"ir\") declares tables".to_string());
+            }
+            if challenges.is_some() {
+                return Err(
+                    "v1 descriptor (no \"ir\") declares \"challenges\"; the challenge leaf is v2-only"
+                        .to_string(),
+                );
+            }
+            let mut v1 = Vec::with_capacity(constraints.len());
+            for k in constraints {
+                match k {
+                    VmConstraint2::Base(b) => v1.push(b),
+                    other => {
+                        return Err(format!(
+                            "v1 descriptor (no \"ir\") carries a v2-only constraint: {other:?}"
+                        ));
+                    }
+                }
+            }
+            Ok(AnyVmDescriptor::V1(EffectVmDescriptor {
+                name,
+                trace_width,
+                public_input_count,
+                constraints: v1,
+                hash_sites,
+                ranges,
+            }))
+        }
+        Some(2) => Ok(AnyVmDescriptor::V2(EffectVmDescriptor2 {
+            name,
+            trace_width,
+            public_input_count,
+            // ⚑ MANDATORY on v2. A descriptor emitted before the challenge leaf existed has no
+            // `"challenges"` key and lands HERE, refusing to load — which is the point: it is not
+            // silently reinterpreted as declaring zero challenges, it is re-emitted.
+            challenges: challenges.ok_or(
+                "ir:2 descriptor missing \"challenges\" (pre-2026-08-05 shape; re-emit it)",
+            )?,
+            tables,
+            constraints,
+            hash_sites,
+            ranges,
+        })),
+        Some(v) => Err(format!("unsupported descriptor ir version {v}")),
+    }
+}
+
+// ============================================================================
+// Layout: byte-limb decomposition geometry + the main-trace aux blocks
+// ============================================================================
+
+/// Limb geometry of a `bits`-wide byte decomposition: `(num_limbs, top_bits)`.
+/// The top limb is bit-bound when `top_bits < 8` (the tight bound); full limbs are
+/// byte-bus lookups.
+const fn limb_geom(bits: usize) -> (usize, usize) {
+    let n = bits.div_ceil(LIMB_BITS);
+    (n, bits - (n - 1) * LIMB_BITS)
+}
+
+/// Aux columns one `bits`-wide decomposition adds (limbs + top bits when partial).
+pub const fn decomp_cols_pub(bits: usize) -> usize {
+    decomp_cols(bits)
+}
+
+const fn decomp_cols(bits: usize) -> usize {
+    let (n, top) = limb_geom(bits);
+    n + if top < LIMB_BITS { top } else { 0 }
+}
+
+/// One declared range lookup, resolved to its aux block in the extended main trace.
+#[derive(Clone, Debug)]
+struct RangeBlock {
+    /// The range-checked base wire (the lookup tuple's single `Var`).
+    wire: usize,
+    /// Declared bit width (from the range table def).
+    bits: usize,
+    /// First limb column (extended-trace index).
+    limb0: usize,
+}
+
+/// One declared submask lookup, resolved to its bit blocks.
+#[derive(Clone, Debug)]
+struct SubmaskBlock {
+    /// The kept (must-be-subset) mask expression — lookup tuple\[0\].
+    keep: LeanExpr,
+    /// The held (superset) mask expression — lookup tuple\[1\].
+    held: LeanExpr,
+    /// First bit column of the keep decomposition.
+    keep0: usize,
+    /// First bit column of the held decomposition.
+    held0: usize,
+}
+
+/// The resolved main-instance layout: base wires, then per-range limb blocks, then
+/// per-submask bit blocks.
+#[derive(Clone, Debug)]
+struct MainLayout {
+    width: usize,
+    ranges: Vec<RangeBlock>,
+    submasks: Vec<SubmaskBlock>,
+}
+
+impl MainLayout {
+    fn build(desc: &EffectVmDescriptor2) -> Result<Self, String> {
+        // Resolve a lookup's target table to a declared range width. The shared 30-bit table
+        // rides the stable wire id `TID_RANGE`; the MULTI-WIDTH graduation (`graduateV1Wide`,
+        // Lean `rangeTidW b`) lowers each non-30-bit width into a width-tagged CUSTOM range
+        // table (the availability-weld's 15-bit borrow-limb table `.custom 79` = wire id 84).
+        // Any declared table whose row semantics are `Range { bits }` realizes the SAME byte-limb
+        // decomposition at ITS OWN width. The deployed avail-weld descriptors carry the 15-bit
+        // borrow table as a LOOKUP without a matching `tables` entry (the Lean `graduateV1Wide`
+        // declares it, but the deployed rows omit the declaration); the same fallback admits the
+        // faithful spend's canonical 16-bit lanes. Recover its width from the
+        // committed wire id (`bits = tid − RANGE_W_TID_WIRE_BASE`, the inverse of `rangeTidW`) and
+        // realize the identical byte-limb range relation. The width is PINNED by the committed
+        // tid — a forger cannot loosen either bound without changing the descriptor bytes
+        // (⟹ a different VK) — so these are exact `rangeRows bits` relations, not laundered gates.
+        let range_bits_for = |tid: usize| -> Option<usize> {
+            if let Some(bits) = desc
+                .tables
+                .iter()
+                .find(|t| t.id == tid)
+                .and_then(|t| match t.sem {
+                    TableSem::Range { bits } => Some(bits),
+                    _ => None,
+                })
+            {
+                return Some(bits);
+            }
+            tid.checked_sub(RANGE_W_TID_WIRE_BASE)
+                .filter(|bits| CUSTOM_RANGE_WIDTHS.contains(bits))
+        };
+        let mut next = desc.trace_width;
+        let mut ranges = Vec::new();
+        let mut submasks = Vec::new();
+        for (ci, k) in desc.constraints.iter().enumerate() {
+            let VmConstraint2::Lookup(l) = k else {
+                continue;
+            };
+            match l.table {
+                tid if tid == TID_RANGE || range_bits_for(tid).is_some() => {
+                    let bits = range_bits_for(tid).ok_or_else(|| {
+                        format!("constraint {ci}: range lookup but no range table declared")
+                    })?;
+                    if l.tuple.len() != 1 {
+                        return Err(format!(
+                            "constraint {ci}: range lookup tuple arity {} != 1",
+                            l.tuple.len()
+                        ));
+                    }
+                    let LeanExpr::Var(wire) = l.tuple[0] else {
+                        return Err(format!(
+                            "constraint {ci}: range lookup tuple must be a bare column \
+                             (graduateV1/graduateV1Wide emit `.var wire`)"
+                        ));
+                    };
+                    ranges.push(RangeBlock {
+                        wire,
+                        bits,
+                        limb0: next,
+                    });
+                    next += decomp_cols(bits);
+                }
+                TID_CUSTOM_SUBMASK => {
+                    if l.tuple.len() != 2 {
+                        return Err(format!(
+                            "constraint {ci}: submask lookup tuple arity {} != 2",
+                            l.tuple.len()
+                        ));
+                    }
+                    let keep0 = next;
+                    let held0 = next + SUBMASK_BITS;
+                    next += 2 * SUBMASK_BITS;
+                    submasks.push(SubmaskBlock {
+                        keep: l.tuple[0].clone(),
+                        held: l.tuple[1].clone(),
+                        keep0,
+                        held0,
+                    });
+                }
+                TID_P2 => {
+                    if l.tuple.len() != CHIP_TUPLE_LEN {
+                        return Err(format!(
+                            "constraint {ci}: chip lookup tuple arity {} != {CHIP_TUPLE_LEN}",
+                            l.tuple.len()
+                        ));
+                    }
+                }
+                TID_P2_NARROW => {
+                    // Narrow chip lookup (tuple-narrowing pass): `[arity, ins, out0]`, no output
+                    // lanes — 1 + CHIP_RATE + 1 = 18 wide. Served by the SAME chip rows on BUS_P2_1.
+                    if l.tuple.len() != 1 + CHIP_RATE + 1 {
+                        return Err(format!(
+                            "constraint {ci}: narrow chip lookup tuple arity {} != {}",
+                            l.tuple.len(),
+                            1 + CHIP_RATE + 1
+                        ));
+                    }
+                }
+                TID_P2_STATE16 => {
+                    // Full-state permutation lookup: the tag is FIXED at 16 and all input/output
+                    // lanes ride the tuple.  This is not another variable-arity hash-site shape:
+                    // it is the raw permutation transition needed to chain sponge blocks while
+                    // preserving the complete capacity state.
+                    if l.tuple.len() != CHIP_STATE16_TUPLE_LEN {
+                        return Err(format!(
+                            "constraint {ci}: state16 chip lookup tuple arity {} != \
+                             {CHIP_STATE16_TUPLE_LEN}",
+                            l.tuple.len()
+                        ));
+                    }
+                    if l.tuple.first() != Some(&LeanExpr::Const(POSEIDON2_WIDTH as i64)) {
+                        return Err(format!(
+                            "constraint {ci}: state16 chip lookup must carry the literal \
+                             width tag {POSEIDON2_WIDTH}"
+                        ));
+                    }
+                    let state_table = desc
+                        .tables
+                        .iter()
+                        .find(|t| t.id == TID_P2_STATE16)
+                        .ok_or_else(|| {
+                            format!(
+                                "constraint {ci}: state16 chip lookup is missing its fixed \
+                                 table declaration (wire id {TID_P2_STATE16})"
+                            )
+                        })?;
+                    if state_table.name != "poseidon2_state16_chip"
+                        || state_table.arity != CHIP_STATE16_TUPLE_LEN
+                        || state_table.sem != TableSem::Poseidon2Chip
+                    {
+                        return Err(format!(
+                            "constraint {ci}: malformed state16 chip table declaration: \
+                             expected name poseidon2_state16_chip, arity \
+                             {CHIP_STATE16_TUPLE_LEN}, Poseidon2 semantics"
+                        ));
+                    }
+                }
+                TID_MAIN | TID_MEMORY | TID_MAP_OPS | TID_UMEMORY | TID_UMEM_BOUNDARY => {
+                    return Err(format!(
+                        "constraint {ci}: lookups into table {} are not part of the graduated \
+                         grammar (state accesses are mem_op / map_op / umem_op constraints)",
+                        l.table
+                    ));
+                }
+                other => {
+                    let Some(table) = desc.tables.iter().find(|table| table.id == other) else {
+                        return Err(format!(
+                            "constraint {ci}: custom table id {other} has no declaration"
+                        ));
+                    };
+                    match &table.sem {
+                        TableSem::ExactPublicRows { .. } => {
+                            if l.tuple.len() != table.arity {
+                                return Err(format!(
+                                    "constraint {ci}: exact-public lookup tuple arity {} != \
+                                     declared arity {}",
+                                    l.tuple.len(),
+                                    table.arity
+                                ));
+                            }
+                        }
+                        _ => {
+                            return Err(format!(
+                                "constraint {ci}: custom table id {other} has no realized \
+                                 lookup relation"
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+        Ok(MainLayout {
+            width: next,
+            ranges,
+            submasks,
+        })
+    }
+}
+
+/// Bounds- and shape-check a v2 descriptor for assembly. Returns the resolved layout.
+/// Crate-internal well-formedness gate: `Ok(())` iff [`check_descriptor2`] accepts the
+/// descriptor (column bounds, chip arities, table presence) — i.e. it is provable-shaped, the
+/// exact structural check `prove_vm_descriptor2`/`verify_vm_descriptor2` run first. Used by the
+/// [`crate::descriptor_by_name`] dispatch round-trip to assert every dispatched descriptor is
+/// well-formed without leaking the private `MainLayout`.
+///
+/// ⚑ UN-`cfg(test)`-ed 2026-08-05. It was reachable only from inside the crate, so an INTEGRATION
+/// test could not ask the deployed admission check anything — which is how a refusal ends up being
+/// asserted against a re-implementation of itself. It is the same call `prove_vm_descriptor2` and
+/// `verify_vm_descriptor2` make first; exposing it costs nothing and lets the challenge-leaf red
+/// control (`circuit/tests/chal_leaf_bites.rs`) drive the REAL gate.
+pub fn check_descriptor2_wellformed(desc: &EffectVmDescriptor2) -> Result<(), String> {
+    check_descriptor2(desc).map(|_| ())
+}
+
+fn check_descriptor2(desc: &EffectVmDescriptor2) -> Result<MainLayout, String> {
+    if !desc.hash_sites.is_empty() || !desc.ranges.is_empty() {
+        return Err(
+            "v2 assembly requires a GRADUATED descriptor (empty hash_sites/ranges carriers); \
+             embedV1-shaped descriptors keep the v1 path during the epoch"
+                .to_string(),
+        );
+    }
+    let mut declared = BTreeMap::new();
+    for table in &desc.tables {
+        if declared.insert(table.id, table.name.as_str()).is_some() {
+            return Err(format!(
+                "duplicate table declaration for wire id {}",
+                table.id
+            ));
+        }
+        if let TableSem::ExactPublicRows { rows } = &table.sem {
+            if table.id <= TID_P2_STATE16 {
+                return Err(format!(
+                    "exact-public table {} reuses reserved wire id {}",
+                    table.name, table.id
+                ));
+            }
+            if table.arity == 0 || table.arity > MAX_EXACT_PUBLIC_ARITY {
+                return Err(format!(
+                    "exact-public table {} arity {} is outside 1..={MAX_EXACT_PUBLIC_ARITY}",
+                    table.name, table.arity
+                ));
+            }
+            if rows.len() > MAX_EXACT_PUBLIC_ROWS
+                || rows.len().saturating_mul(table.arity) > MAX_EXACT_PUBLIC_CELLS
+            {
+                return Err(format!(
+                    "exact-public table {} has {}x{} cells; bounded tooth permits at most \
+                     {MAX_EXACT_PUBLIC_ROWS} rows and {MAX_EXACT_PUBLIC_CELLS} cells",
+                    table.name,
+                    rows.len(),
+                    table.arity
+                ));
+            }
+            for (row_index, row) in rows.iter().enumerate() {
+                if row.len() != table.arity {
+                    return Err(format!(
+                        "exact-public table {} row {row_index} arity {} != {}",
+                        table.name,
+                        row.len(),
+                        table.arity
+                    ));
+                }
+                if let Some(value) = row.iter().find(|&&value| value >= BABYBEAR_P) {
+                    return Err(format!(
+                        "exact-public table {} row {row_index} contains non-canonical \
+                         BabyBear representative {value}",
+                        table.name
+                    ));
+                }
+            }
+        }
+    }
+    let w = desc.trace_width;
+    let chk = |e: &LeanExpr, what: &str, ci: usize| -> Result<(), String> {
+        if let Some(m) = e.max_var()
+            && m >= w
+        {
+            return Err(format!(
+                "constraint {ci}: {what} references column {m} >= trace_width {w}"
+            ));
+        }
+        Ok(())
+    };
+    for (ci, k) in desc.constraints.iter().enumerate() {
+        match k {
+            VmConstraint2::Base(VmConstraint::Gate(body))
+            | VmConstraint2::Base(VmConstraint::Boundary { body, .. }) => {
+                chk(body, "gate/boundary body", ci)?
+            }
+            VmConstraint2::Base(VmConstraint::Transition { hi, lo }) => {
+                if EFFECTVM_STATE_BEFORE_BASE + hi >= w || EFFECTVM_STATE_AFTER_BASE + lo >= w {
+                    return Err(format!("constraint {ci}: transition out of bounds"));
+                }
+            }
+            VmConstraint2::Base(VmConstraint::PiBinding { col, pi_index, .. }) => {
+                if *col >= w {
+                    return Err(format!("constraint {ci}: pi_binding col out of bounds"));
+                }
+                if *pi_index >= desc.public_input_count {
+                    return Err(format!(
+                        "constraint {ci}: pi_binding pi_index out of bounds"
+                    ));
+                }
+            }
+            VmConstraint2::Lookup(l) => {
+                for e in &l.tuple {
+                    chk(e, "lookup tuple element", ci)?;
+                }
+            }
+            VmConstraint2::MemOp(m) => {
+                for e in [&m.guard, &m.addr, &m.value, &m.prev_value, &m.prev_serial] {
+                    chk(e, "mem_op field", ci)?;
+                }
+            }
+            VmConstraint2::MapOp(m) => {
+                if m.op == MapKind::Absent && m.value != LeanExpr::Const(0) {
+                    // The absent denotation ignores the value; the wire convention pins it to
+                    // the literal 0 so the map-log bus tuple is canonical (the MapAbsent
+                    // table receives the 0 coordinate).
+                    return Err(format!(
+                        "constraint {ci}: map_op kind `absent` must carry value `const 0` \
+                         (the non-membership read has no value; the wire pins the canonical 0)"
+                    ));
+                }
+                for e in [&m.guard, &m.key, &m.value] {
+                    chk(e, "map_op field", ci)?;
+                }
+                for e in m.root.iter().chain(m.new_root.iter()) {
+                    chk(e, "map_op root group", ci)?;
+                }
+            }
+            VmConstraint2::UMemOp(m) => {
+                if m.domain >= DOMAIN_BOUND {
+                    return Err(format!(
+                        "constraint {ci}: umem_op domain {} out of the nibble bound {}",
+                        m.domain, DOMAIN_BOUND
+                    ));
+                }
+                if m.domain == NULLIFIER_DOMAIN
+                    && m.kind == MemKind::Write
+                    && m.present == LeanExpr::Const(0)
+                {
+                    // The INSERT-ONLY discipline, statically-violating shape: a nullifier
+                    // write installing a definitely-absent cell (Lean
+                    // `umemNullifierInsertOnly` — nobody un-spends). Dynamic `present`
+                    // expressions pass here and meet the in-circuit tooth
+                    // (`is_null·kind·(1−present)`) row-by-row.
+                    return Err(format!(
+                        "constraint {ci}: nullifier-domain umem_op write installs a \
+                         definitely-absent cell (insert-only: nobody un-spends; \
+                         UniversalMemory.InsertOnlyAt)"
+                    ));
+                }
+                for e in [
+                    &m.guard,
+                    &m.key,
+                    &m.present,
+                    &m.value,
+                    &m.prev_present,
+                    &m.prev_value,
+                    &m.prev_serial,
+                ] {
+                    chk(e, "umem_op field", ci)?;
+                }
+            }
+            VmConstraint2::ProofBind(m) => {
+                // ⚑ THE WIDTH DISCIPLINE FIRST (2026-08-05). A seam narrower than
+                // `PROOF_BIND_MIN_LANES` ties one limb of an eight-felt object; a pin naming fewer
+                // lanes than its vector is a truncation, not a prefix check. Both are refused here,
+                // at the JSON door and at the canonical decoder — three independent doors, because
+                // this is the check whose absence made the retired seam worth 2^31.
+                m.width_ok().map_err(|e| format!("constraint {ci}: {e}"))?;
+                // The proof-binding op declares the recursion binding; every lane's columns must be
+                // in bounds. They are PUBLISHED as descriptor PIs (the rotated Custom member's
+                // sixteen `customPiExposure` pins) and bound to the verifying sub-proof's PI
+                // commitment / VK at the per-turn FOLD via the recursion argument.
+                chk(&m.guard, "proof_bind field", ci)?;
+                for e in m.commit.iter().chain(m.vk.iter()) {
+                    chk(e, "proof_bind field", ci)?;
+                }
+                if let CommitBinding::Bound(b) = &m.bound {
+                    for e in b {
+                        chk(e, "proof_bind bound", ci)?;
+                    }
+                }
+            }
+            VmConstraint2::WindowGate(g) => {
+                // The window body reads BOTH rows; every referenced column (`loc`/`nxt`) must
+                // lie inside the main width.
+                if let Some(m) = g.body.max_var()
+                    && m >= w
+                {
+                    return Err(format!(
+                        "constraint {ci}: window_gate body references column {m} >= \
+                             trace_width {w}"
+                    ));
+                }
+            }
+            VmConstraint2::ChalGate(g) => {
+                // Same column discipline as `window_gate`.
+                if let Some(m) = g.body.max_var()
+                    && m >= w
+                {
+                    return Err(format!(
+                        "constraint {ci}: chal_gate body references column {m} >= \
+                             trace_width {w}"
+                    ));
+                }
+                // ⚑ And the challenge discipline: a body may not read a challenge the descriptor
+                // did not DECLARE. The declared count is on the wire, so this is a check between
+                // two independent statements of the same number, not a constant against its own
+                // definition.
+                if g.body.chal_count() > desc.challenges {
+                    return Err(format!(
+                        "constraint {ci}: chal_gate reads challenge index {} but the descriptor \
+                         declares only {} (\"challenges\")",
+                        g.body.chal_count() - 1,
+                        desc.challenges
+                    ));
+                }
+            }
+        }
+    }
+
+    // ========================================================================
+    // ⚑ THE CHALLENGE-SUPPLY REFUSAL (2026-08-05)
+    // ========================================================================
+    //
+    // A `ChalGate` reads `permutation_randomness()`, whose length is
+    // `LogUp::num_challenges() * (this instance's lookup-context count)` — two per context, all
+    // sampled after `observe_main`. Every bus-bearing constraint the Main arm carries emits at
+    // least one interaction (`lookup_key` for the four lookup buses, `send` for the mem/map/umem
+    // logs), and the range decompositions emit more on top. So `2 * (bus constraints)` is a sound
+    // LOWER BOUND on the supply, and refusing above it means a served descriptor can never reach
+    // the evaluator's fail-closed backstop.
+    //
+    // ⚠ It is a lower bound and deliberately so: it is computed from the DESCRIPTOR, before the
+    // AIR exists, so it cannot depend on the layout it is about to build. A descriptor that needs
+    // more challenges than its own lookups guarantee declares more lookups.
+    let bus_constraints = desc
+        .constraints
+        .iter()
+        .filter(|k| {
+            matches!(
+                k,
+                VmConstraint2::Lookup(_)
+                    | VmConstraint2::MemOp(_)
+                    | VmConstraint2::MapOp(_)
+                    | VmConstraint2::UMemOp(_)
+            )
+        })
+        .count();
+    let guaranteed_challenges = LOGUP_CHALLENGES_PER_CONTEXT * bus_constraints;
+    if desc.challenges > guaranteed_challenges {
+        return Err(format!(
+            "{}: declares {} challenge(s) but its {bus_constraints} bus-bearing constraint(s) \
+             guarantee only {guaranteed_challenges} (LogUp draws \
+             {LOGUP_CHALLENGES_PER_CONTEXT} per lookup context)",
+            desc.name, desc.challenges
+        ));
+    }
+    // And the declared count must be EXACTLY what the bodies need — it is derived in Lean
+    // (`DescriptorIR2.challengeCount`), so a wire value that disagrees is a corrupted or
+    // hand-edited descriptor, not a looser declaration.
+    let needed = desc
+        .constraints
+        .iter()
+        .map(|k| match k {
+            VmConstraint2::ChalGate(g) => g.body.chal_count(),
+            _ => 0,
+        })
+        .max()
+        .unwrap_or(0);
+    if needed != desc.challenges {
+        return Err(format!(
+            "{}: declares {} challenge(s) but its chal_gate bodies need exactly {needed}",
+            desc.name, desc.challenges
+        ));
+    }
+
+    MainLayout::build(desc)
+}
+
+// ============================================================================
+// The REAL-evaluator row-local accept oracle (the faithfulness-differential leg)
+// ============================================================================
+
+/// A row window over a borrowed `(local, next)` pair, replaying the deployed
+/// `Ir2Air::Main::eval` ROW-LOCALLY against a real witness so a differential can call the
+/// ACTUAL deployed evaluator (not a hand transcription) for the row-local constraint arms.
+///
+/// `assert_zero` checks the constraint vanishes (recording a failure if not); the cross-table
+/// LogUp bus pushes (`InteractionBuilder::push_interaction` / `push_local_interaction`) are
+/// SWALLOWED — exactly the semantics of the deployed debug constraint check, which evaluates a
+/// single AIR's row-local algebra and leaves the multiset balance to the batch assembly. The
+/// pattern mirrors p3-lookup's own `MiniLookupBuilder`/`DebugConstraintBuilder`: those swallow
+/// the bus sends too. So `ir2_eval_accepts` is FAITHFUL on the row-local arms (Gate /
+/// Transition / WindowGate / range-recomposition / submask bit gates) and SILENT on the bus
+/// arms (chip/byte lookups, mem/map/umem log sends) — the precise split a caller must respect.
+struct Ir2RowLocalBuilder<'a> {
+    local: &'a [P3BabyBear],
+    next: &'a [P3BabyBear],
+    public_values: &'a [P3BabyBear],
+    /// ⚑ **THE PREPROCESSED WINDOW — REAL, not empty.** It was
+    /// `RowWindow::from_two_rows(&[], &[])` until 2026-08-01, on the reasoning that the two AIRs
+    /// this builder then served (`Ir2Air::Main`, `Ir2Air::LeanTable`) carry no preprocessed
+    /// columns. That was true and it made the instrument BLIND BY CONSTRUCTION to the one arm
+    /// that does read them (the then-hand-written `Ir2Air::ExactPublicTable`, whose manifest values
+    /// and pinned multiplicities live entirely here). ⓘ That arm is now a Lean-authored
+    /// `Ir2Air::LeanTable` declaring `prep_width = arity + 2` — so the sentence "neither declares
+    /// preprocessed columns" has stopped being true of the batch, exactly as this note anticipated,
+    /// and the contract below is what makes that a non-event rather than a silent blinding.
+    ///
+    /// The window is now whatever [`ir2_air_gates_accept`] was handed, and that entry point
+    /// REFUSES rather than substituting zeros when an AIR's `preprocessed_width()` and the
+    /// supplied rows disagree. The authority on "does this arm read preprocessed columns" is the
+    /// AIR itself, so a future arm is covered without touching this struct.
+    prep: p3_air::RowWindow<'a, P3BabyBear>,
+    row: usize,
+    height: usize,
+    /// Set once any row-local `assert_zero` body is non-zero.
+    failed: bool,
+}
+
+impl<'a> p3_air::AirBuilder for Ir2RowLocalBuilder<'a> {
+    type F = P3BabyBear;
+    type Expr = P3BabyBear;
+    type Var = P3BabyBear;
+    type PreprocessedWindow = p3_air::RowWindow<'a, P3BabyBear>;
+    type MainWindow = p3_air::RowWindow<'a, P3BabyBear>;
+    type PublicVar = P3BabyBear;
+    type PeriodicVar = P3BabyBear;
+
+    fn main(&self) -> Self::MainWindow {
+        p3_air::RowWindow::from_two_rows(self.local, self.next)
+    }
+
+    fn preprocessed(&self) -> &Self::PreprocessedWindow {
+        &self.prep
+    }
+
+    fn is_first_row(&self) -> Self::Expr {
+        P3BabyBear::from_bool(self.row == 0)
+    }
+
+    fn is_last_row(&self) -> Self::Expr {
+        P3BabyBear::from_bool(self.row + 1 == self.height)
+    }
+
+    fn is_transition_window(&self, size: usize) -> Self::Expr {
+        assert!(size <= 2, "only two-row windows are supported, got {size}");
+        P3BabyBear::from_bool(self.row + 1 < self.height)
+    }
+
+    fn assert_zero<I: Into<Self::Expr>>(&mut self, x: I) {
+        // The DebugConstraintBuilder semantics: under a `when_*` filter, the selector has been
+        // folded into the expression already (FilteredAirBuilder multiplies the body by the
+        // condition before delegating here), so a vanishing selector makes the body zero and
+        // this passes — exactly the `when_transition`/`when_first_row`/`when_last_row` domains.
+        if !x.into().is_zero() {
+            self.failed = true;
+        }
+    }
+
+    fn public_values(&self) -> &[Self::PublicVar] {
+        self.public_values
+    }
+}
+
+impl<'a> p3_air::ExtensionBuilder for Ir2RowLocalBuilder<'a> {
+    type EF = P3BabyBear;
+    type ExprEF = P3BabyBear;
+    type VarEF = P3BabyBear;
+
+    fn assert_zero_ext<I: Into<Self::ExprEF>>(&mut self, x: I) {
+        if !x.into().is_zero() {
+            self.failed = true;
+        }
+    }
+}
+
+impl<'a> PermutationAirBuilder for Ir2RowLocalBuilder<'a> {
+    type MP = p3_air::RowWindow<'a, P3BabyBear>;
+    type RandomVar = P3BabyBear;
+    type PermutationVar = P3BabyBear;
+
+    fn permutation(&self) -> Self::MP {
+        p3_air::RowWindow::from_two_rows(&[], &[])
+    }
+
+    fn permutation_randomness(&self) -> &[Self::RandomVar] {
+        &[]
+    }
+
+    fn permutation_values(&self) -> &[Self::PermutationVar] {
+        &[]
+    }
+}
+
+impl<'a> InteractionBuilder for Ir2RowLocalBuilder<'a> {
+    fn push_interaction<E: Into<Self::Expr>>(
+        &mut self,
+        _bus_name: &str,
+        fields: impl IntoIterator<Item = E>,
+        _count: impl Into<Self::Expr>,
+        _count_weight: u32,
+    ) {
+        // Bus sends/receives are the cross-table multiset leg — not row-local algebra. Drain
+        // the iterator (matching the deployed debug builder) and otherwise ignore.
+        fields.into_iter().for_each(drop);
+    }
+
+    fn push_local_interaction(
+        &mut self,
+        tuples: impl IntoIterator<Item = (Vec<Self::Expr>, Self::Expr)>,
+    ) {
+        tuples.into_iter().for_each(drop);
+    }
+}
+
+/// **THE REAL-EVALUATOR ROW-LOCAL ACCEPT ORACLE.** Build the DEPLOYED `Ir2Air::Main` AIR for
+/// `desc`, complete each base row with the per-table layout columns THE DEPLOYED PROVER WOULD
+/// FILL (`fill_main_layout_row`, shared verbatim with `build_traces`), and run the ACTUAL
+/// `Ir2Air::eval` (the deployed verifier's constraint evaluator) ROW-BY-ROW. Returns `true` iff
+/// every ROW-LOCAL constraint vanishes on every row.
+///
+/// This is the v2 analog of [`crate::lean_descriptor_air::descriptor_air_accepts`] — but where
+/// the v1 helper drives the WHOLE single AIR through `check_all_constraints`, the v2 Main AIR
+/// also emits cross-table LogUp bus messages (`PermutationCheckBus` / `LookupBus` sends for the
+/// chip / byte / memory / map-ops tables) that no single-AIR row-local check can evaluate. Those
+/// bus pushes are SWALLOWED (see [`Ir2RowLocalBuilder`]); the multiset balance is the batch
+/// assembly's job (`prove_batch`/`verify_batch`). So this oracle is FAITHFUL on the row-local
+/// arms — `Base(Gate)`, `Base(Transition)`, `WindowGate{on_transition}`, the every-row
+/// `WindowGate`, plus the range-recomposition + submask bit gates — and SILENT on the bus arms.
+///
+/// `base_rows` are the `desc.trace_width`-column main rows (shorter rows are zero-extended to
+/// that width; a longer row is REFUSED — layout columns are this oracle's to fill, never the
+/// caller's). The layout columns appended past `trace_width` — range byte-limbs, submask
+/// keep/held bits — are filled HERE by the prover's own filler, so a descriptor that declares
+/// range or submask lookups is decided honestly rather than being rejected outright by
+/// recomposition gates reading zeros.
+///
+/// WHAT THE RANGE ARM THEREFORE DECIDES: `eval_decomp`'s ROW-LOCAL half — the recomposition
+/// `Σ limbᵢ·2^(4i) = wire` and, at a non-multiple-of-4 width, the top limb's boolean bit
+/// decomposition. Under the honest fill those pin `wire < 2^bits` at every declared width. The
+/// per-limb nibble bound is a BYTE-BUS lookup and stays swallowed like every other bus arm, and
+/// a base row with NO honest completion (range wire `≥ 2^bits`, submask operand out of range)
+/// is reported as a reject — it is a row the deployed prover refuses to assemble.
+pub fn ir2_eval_accepts(
+    desc: &EffectVmDescriptor2,
+    base_rows: &[Vec<P3BabyBear>],
+    public_inputs: &[P3BabyBear],
+) -> bool {
+    let layout = match check_descriptor2(desc) {
+        Ok(l) => l,
+        Err(_) => return false,
+    };
+    if base_rows.is_empty() || public_inputs.len() != desc.public_input_count {
+        return false;
+    }
+    // Materialize the full-width rows: base columns + THE PROVER'S layout fill.
+    let height = base_rows.len();
+    let mut byte_hist = [0u64; BYTE_TABLE_HEIGHT]; // the byte bus is not a row-local arm
+    let mut rows: Vec<Vec<P3BabyBear>> = Vec::with_capacity(height);
+    for (ri, r) in base_rows.iter().enumerate() {
+        if r.len() > desc.trace_width {
+            return false;
+        }
+        let mut base: Vec<BabyBear> = r.iter().map(|&x| from_p3(x)).collect();
+        base.resize(desc.trace_width, BabyBear::ZERO);
+        let Ok(filled) = fill_main_layout_row(&base, &layout, ri, &mut byte_hist, false) else {
+            return false;
+        };
+        rows.push(filled.iter().map(|&x| to_p3(x)).collect());
+    }
+    let air = Ir2Air::main_instance(desc.clone(), layout);
+    for row_index in 0..height {
+        let next_index = (row_index + 1) % height;
+        let mut builder = Ir2RowLocalBuilder {
+            local: &rows[row_index],
+            next: &rows[next_index],
+            public_values: public_inputs,
+            prep: p3_air::RowWindow::from_two_rows(&[], &[]),
+            row: row_index,
+            height,
+            failed: false,
+        };
+        air.eval(&mut builder);
+        if builder.failed {
+            return false;
+        }
+    }
+    true
+}
+
+/// **⚑ THE GATE ACCEPT ORACLE, FOR ANY `Ir2Air` INSTANCE — PREPROCESSED COLUMNS INCLUDED.**
+///
+/// Runs the ACTUAL deployed evaluator over `rows` (the committed MAIN trace) with `prep_rows` as
+/// the PREPROCESSED matrix, and returns `true` iff every GATE vanishes on every row its selector
+/// admits. Bus interactions are SWALLOWED, exactly as in [`ir2_eval_accepts`] — their meaning is
+/// the batch's LogUp balance, which no single-AIR check can decide.
+///
+/// ## Why this exists, and what it fixes
+///
+/// Every mutation sweep in the table-AIR cutover runs through the row-local builder, and that
+/// builder used to hand every AIR an EMPTY preprocessed window. For `Ir2Air::Main` and the ten
+/// singleton `Ir2Air::LeanTable`s that is correct — none declares preprocessed columns — but it
+/// made the instrument structurally blind to the exact-public arm, whose manifest VALUES and
+/// PINNED multiplicities live *entirely* in the preprocessed matrix and whose one gate reads
+/// nothing else. An arm that a sweep cannot reach is an arm no sweep can certify, and the moment a
+/// Lean-authored table declares a preprocessed matrix (`TableAirIR` §7, item 4) the same harness
+/// would have swept the new columns against nothing while reporting a clean undetected set.
+///
+/// ## ⚑ IT REFUSES; IT DOES NOT SUBSTITUTE
+///
+/// The shape contract is checked against the AIR's OWN `BaseAir::preprocessed_width` — the
+/// authority on whether an arm reads preprocessed columns, so a future arm is covered without
+/// editing this function — and a mismatch returns `false`:
+///
+/// * an AIR that declares `pw` preprocessed columns MUST be handed exactly `rows.len()` prep rows
+///   of width `pw`. Handing it `&[]` is REFUSED, not silently zero-filled: zeros are a *witness*,
+///   and a sweep that accepts against a witness it invented is the gate that cannot go red;
+/// * an AIR that declares NONE must be handed none. A caller supplying a preprocessed matrix to
+///   `Ir2Air::Main` has confused two instances, and that is a defect rather than a no-op.
+///
+/// `prep_next` is the wrap row, matching the main window — though every deployed prep-reading arm
+/// declares `preprocessed_next_row_columns() == []` and reads only `current_slice()`.
+pub fn ir2_air_gates_accept(
+    air: &Ir2Air,
+    rows: &[Vec<BabyBear>],
+    prep_rows: &[Vec<BabyBear>],
+) -> bool {
+    let width = <Ir2Air as BaseAir<P3BabyBear>>::width(air);
+    if rows.is_empty() || rows.iter().any(|r| r.len() != width) {
+        return false;
+    }
+    // ⚑ THE FAIL-CLOSED SHAPE CONTRACT. Asked of the AIR, never assumed of the arm.
+    let pw = <Ir2Air as BaseAir<P3BabyBear>>::preprocessed_width(air);
+    if pw == 0 {
+        if !prep_rows.is_empty() {
+            return false;
+        }
+    } else if prep_rows.len() != rows.len() || prep_rows.iter().any(|r| r.len() != pw) {
+        return false;
+    }
+
+    let p3rows: Vec<Vec<P3BabyBear>> = rows
+        .iter()
+        .map(|r| r.iter().map(|&x| to_p3(x)).collect())
+        .collect();
+    let p3prep: Vec<Vec<P3BabyBear>> = prep_rows
+        .iter()
+        .map(|r| r.iter().map(|&x| to_p3(x)).collect())
+        .collect();
+    let height = p3rows.len();
+    for row_index in 0..height {
+        let next_index = (row_index + 1) % height;
+        let prep = if pw == 0 {
+            p3_air::RowWindow::from_two_rows(&[], &[])
+        } else {
+            p3_air::RowWindow::from_two_rows(&p3prep[row_index], &p3prep[next_index])
+        };
+        let mut builder = Ir2RowLocalBuilder {
+            local: &p3rows[row_index],
+            next: &p3rows[next_index],
+            public_values: &[],
+            prep,
+            row: row_index,
+            height,
+            failed: false,
+        };
+        air.eval(&mut builder);
+        if builder.failed {
+            return false;
+        }
+    }
+    true
+}
+
+/// **THE GATE ACCEPT ORACLE FOR A LEAN-AUTHORED TABLE AIR.** Runs the ACTUAL `Ir2Air::LeanTable`
+/// evaluator — the deployed verifier's, not a transcription — over the given rows and returns
+/// `true` iff every GATE vanishes on every row its selector admits.
+///
+/// ⚑ Renamed from `table_air_row_local_accepts`: the first-pass IR had only row-local gates, so
+/// "row-local" and "gate" named the same set. They no longer do — a table AIR's gates may read the
+/// NEXT row under a `.transition` filter — and the split this oracle actually draws is
+/// **gates vs. buses**, not local vs. windowed. The windowing is faithful: `next` is
+/// `rows[(i+1) % height]` and the boundary tags are the row index, exactly as p3 evaluates them.
+///
+/// Same faithfulness split as [`ir2_eval_accepts`]: the bus interactions are SWALLOWED (their
+/// meaning is the batch's LogUp balance, which no single-AIR check can decide), so this oracle is
+/// faithful on `gates` and silent on `interactions`. A caller reasoning about a bus leg must use
+/// the prover, not this.
+///
+/// This is the instrument a re-emission needs: it makes "no gate was LOST" checkable by mutation,
+/// which a shape count alone cannot do (a re-emission could keep 70 gates and change one).
+///
+/// ⓘ A thin wrapper over [`ir2_air_gates_accept`] since 2026-08-01: the preprocessed window is no
+/// longer hard-coded empty HERE, it is asked of the AIR there. A `LeanTableAir` declares no
+/// preprocessed columns today, so the empty matrix this passes is the CHECKED shape rather than an
+/// assumed one — and the day the table IR grows a preprocessed matrix, this call REFUSES instead
+/// of sweeping against zeros.
+pub fn table_air_gates_accept(t: &LeanTableAir, rows: &[Vec<BabyBear>]) -> bool {
+    ir2_air_gates_accept(&Ir2Air::lean_table(Arc::new(t.clone())), rows, &[])
+}
+
+/// The HONEST map-absent table rows the deployed prover would assemble for this descriptor,
+/// trace and heap set — the prover's own `build_traces` output, not a re-derivation. Exposed so a
+/// differential can mutate a genuine row rather than hand-building one (a hand-built row would be
+/// a second author of the layout, which is the thing this cutover exists to delete).
+pub fn map_absent_rows_for(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    map_heaps: &[Vec<HeapLeaf>],
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        &MemBoundaryWitness::default(),
+        map_heaps,
+        &UMemBoundaryWitness::default(),
+        true,
+    )?;
+    traces
+        .map_absent
+        .ok_or_else(|| "descriptor assembles no map-absent table".to_string())
+}
+
+/// The HONEST map RECONCILIATION rows the deployed prover would assemble — `build_traces`' own
+/// output. Exposed for the same reason as [`map_absent_rows_for`]: a differential must mutate a
+/// genuine row, because a hand-built one would be a second author of the 898-column layout.
+pub fn map_ops_rows_for(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    map_heaps: &[Vec<HeapLeaf>],
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        &MemBoundaryWitness::default(),
+        map_heaps,
+        &UMemBoundaryWitness::default(),
+        true,
+    )?;
+    traces
+        .map_ops
+        .ok_or_else(|| "descriptor assembles no map-ops table".to_string())
+}
+
+/// The HONEST byte (nibble) table rows the deployed prover would assemble for this descriptor and
+/// trace — `build_traces`' own output, multiplicity histogram included, not a re-derivation.
+/// Exposed for the same reason as [`map_absent_rows_for`]: a differential must mutate a genuine
+/// row, because a hand-built one would be a second author of the layout.
+pub fn byte_rows_for(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    map_heaps: &[Vec<HeapLeaf>],
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        &MemBoundaryWitness::default(),
+        map_heaps,
+        &UMemBoundaryWitness::default(),
+        true,
+    )?;
+    traces
+        .byte
+        .ok_or_else(|| "descriptor assembles no byte table".to_string())
+}
+
+/// The HONEST memory-boundary rows the deployed prover would assemble for this descriptor, trace
+/// and declared address list — `build_traces`' own output, not a re-derivation. Sibling of
+/// [`map_absent_rows_for`] and [`byte_rows_for`], for the same reason.
+pub fn mem_boundary_rows_for(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    mem_boundary: &MemBoundaryWitness,
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        mem_boundary,
+        &[],
+        &UMemBoundaryWitness::default(),
+        true,
+    )?;
+    traces
+        .boundary
+        .ok_or_else(|| "descriptor assembles no memory boundary table".to_string())
+}
+
+/// The HONEST memory OP-LOG rows the deployed prover would assemble for this descriptor, trace and
+/// declared address list — `build_traces`' own output, not a re-derivation. Sibling of
+/// [`mem_boundary_rows_for`], for the same reason: a differential must mutate a genuine row,
+/// because a hand-built one would be a second author of the layout.
+pub fn mem_rows_for(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    mem_boundary: &MemBoundaryWitness,
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        mem_boundary,
+        &[],
+        &UMemBoundaryWitness::default(),
+        true,
+    )?;
+    traces
+        .memory
+        .ok_or_else(|| "descriptor assembles no memory table".to_string())
+}
+
+/// The HONEST universal-boundary rows the deployed prover would assemble for this descriptor, trace
+/// and declared `(domain, key)` list — `build_traces`' own output, not a re-derivation. Serves BOTH
+/// boundary shapes: the width-9 cohort and the width-38 general one, selected by the descriptor's
+/// own table sem exactly as the prover selects them. Sibling of [`mem_boundary_rows_for`].
+pub fn umem_boundary_rows_for(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    umem_boundary: &UMemBoundaryWitness,
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        &MemBoundaryWitness::default(),
+        &[],
+        umem_boundary,
+        true,
+    )?;
+    traces
+        .umem_boundary
+        .ok_or_else(|| "descriptor assembles no universal boundary table".to_string())
+}
+
+/// The HONEST universal memory OP-LOG rows the deployed prover would assemble for this descriptor
+/// and trace — `build_traces`' own output, not a re-derivation. Sibling of [`mem_rows_for`], for the
+/// same reason: a differential must mutate a genuine row, because a hand-built one would be a second
+/// author of the layout.
+pub fn umem_rows_for(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    umem_boundary: &UMemBoundaryWitness,
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        &MemBoundaryWitness::default(),
+        &[],
+        umem_boundary,
+        true,
+    )?;
+    traces
+        .umemory
+        .ok_or_else(|| "descriptor assembles no universal memory table".to_string())
+}
+
+/// **⚑ THE ONE PREPROCESSED-READING INSTANCE, AS A SWEEPABLE PAIR.** For the descriptor's exact-public
+/// table `table_id`, returns `(the AIR, the committed MAIN rows, the PREPROCESSED rows)` — all three
+/// exactly as the deployed prover assembles and the deployed verifier RECOMPUTES them
+/// (`ExactPublicManifest::main_trace` / `::preprocessed`, the same calls `instance_airs` and
+/// `ProverData::from_airs_and_degrees` make).
+///
+/// This is the instrument [`ir2_air_gates_accept`]'s preprocessed window exists for. The
+/// exact-public arm's ONLY gate is `committed multiplicity − preprocessed multiplicity`, so with an
+/// empty preprocessed window there is nothing for a sweep to compare against; handed the real
+/// matrix, a mutation of the committed column is refused and the pin becomes measurable.
+pub fn exact_public_instance_for(
+    desc: &EffectVmDescriptor2,
+    table_id: usize,
+) -> Result<(Ir2Air, Vec<Vec<BabyBear>>, Vec<Vec<BabyBear>>), String> {
+    let (_, manifest) = exact_public_manifests(desc)
+        .into_iter()
+        .find(|(id, _)| *id == table_id)
+        .ok_or_else(|| format!("descriptor declares no exact-public table with id {table_id}"))?;
+    let main_rows = manifest.main_trace();
+    let prep_rows: Vec<Vec<BabyBear>> = PrepMatrix {
+        values: manifest.preprocessed_cells(),
+        width: manifest.prep_width(),
+    }
+    .rows();
+    Ok((exact_public_lean_instance(&manifest)?, main_rows, prep_rows))
+}
+
+/// `i64`-valued convenience wrapper over [`ir2_eval_accepts`] so callers (the faithfulness
+/// differential) need not depend on `p3-baby-bear` directly: the `(row, pi)` integers are lifted
+/// to canonical BabyBear felts (the same `i64_to_babybear` lowering the descriptor evaluator
+/// uses for its constants) and the REAL `Ir2Air::Main` row-local evaluator is run.
+pub fn ir2_eval_accepts_i64(
+    desc: &EffectVmDescriptor2,
+    base_rows: &[Vec<i64>],
+    public_inputs: &[i64],
+) -> bool {
+    let rows: Vec<Vec<P3BabyBear>> = base_rows
+        .iter()
+        .map(|r| r.iter().map(|&x| to_p3(i64_to_babybear(x))).collect())
+        .collect();
+    let pis: Vec<P3BabyBear> = public_inputs
+        .iter()
+        .map(|&x| to_p3(i64_to_babybear(x)))
+        .collect();
+    ir2_eval_accepts(desc, &rows, &pis)
+}
+
+// ============================================================================
+// The multi-table AIR (one enum type: prove_batch is monomorphic in the AIR)
+// ============================================================================
+
+// -- Memory table layout (one row per access, log order). --
+const MEM_ADDR: usize = 0;
+const MEM_VALUE: usize = 1;
+const MEM_PREV_VALUE: usize = 2;
+const MEM_PREV_SERIAL: usize = 3;
+const MEM_KIND: usize = 4;
+const MEM_SERIAL: usize = 5;
+const MEM_IS_REAL: usize = 6;
+const MEM_GAP: usize = 7;
+const MEM_GAP_LIMB0: usize = 8;
+const MEM_WIDTH: usize = MEM_GAP_LIMB0 + decomp_cols(MEM_GAP_BITS); // 8 + 10 = 18
+
+// -- Memory boundary layout (one row per declared address, strictly increasing). --
+const MB_ADDR: usize = 0;
+const MB_INIT_VAL: usize = 1;
+const MB_FIN_VAL: usize = 2;
+const MB_FIN_SERIAL: usize = 3;
+const MB_IS_REAL: usize = 4;
+const MB_ADDR_MULT: usize = 5;
+const MB_AGAP: usize = 6;
+const MB_AGAP_LIMB0: usize = 7;
+const MB_ACHK: usize = MB_AGAP_LIMB0 + decomp_cols(MEM_GAP_BITS); // 17
+const MB_ACHK_LIMB0: usize = MB_ACHK + 1; // 18
+const MB_WIDTH: usize = MB_ACHK_LIMB0 + decomp_cols(MEM_GAP_BITS); // 28
+
+// -- UNIVERSAL memory table layout (one row per access, log order): the ONE Blum multiset over
+//    the `(domain, key)` address space with `Option`-valued cells. Identical Blum discipline to
+//    the flat memory table, plus: the domain coordinate (nibble-bounded), the present bits
+//    (boolean, `none ↦ value = 0` canonical), and the nullifier INSERT-ONLY tooth (a
+//    nullifier-domain write installing `none` is UNSAT — `UniversalMemory.InsertOnlyAt`,
+//    in-circuit). NO hashing rides this table at all: freshness of a nullifier is one read row
+//    with `present = 0` (`nullifier_fresh_sound`), and the map roots are reconciled at the
+//    boundary by map ops, never per access. --
+const UM_DOMAIN: usize = 0;
+const UM_KEY: usize = 1;
+const UM_PRESENT: usize = 2;
+const UM_VALUE: usize = 3;
+const UM_PREV_PRESENT: usize = 4;
+const UM_PREV_VALUE: usize = 5;
+const UM_PREV_SERIAL: usize = 6;
+const UM_KIND: usize = 7;
+const UM_SERIAL: usize = 8;
+const UM_IS_REAL: usize = 9;
+const UM_GAP: usize = 10;
+const UM_GAP_LIMB0: usize = 11;
+const UM_IS_NULL: usize = UM_GAP_LIMB0 + decomp_cols(MEM_GAP_BITS); // 21
+const UM_NULL_INV: usize = UM_IS_NULL + 1; // 22
+const UM_WIDTH: usize = UM_NULL_INV + 1; // 23
+
+// -- Universal boundary layout (one row per declared `(domain, key)` address, domain-major
+//    lexicographically increasing). Nodup of the declared addresses — the hypothesis
+//    `memcheck_sound` stands on — is enforced for FULL-FELT keys via the canonical BabyBear
+//    decomposition `key = hi4·2^27 + lo27` (unique by the `is15·lo27 = 0` tooth, since
+//    `p − 1 = 15·2^27`) and a lexicographic strict-increase over `(domain, hi4, lo27)`.
+//    The flat memory boundary's 30-bit address pin cannot carry hash-image keys; this can. --
+const UB_DOMAIN: usize = 0;
+const UB_KEY: usize = 1;
+const UB_INIT_PRESENT: usize = 2;
+const UB_INIT_VALUE: usize = 3;
+const UB_FIN_PRESENT: usize = 4;
+const UB_FIN_VALUE: usize = 5;
+const UB_FIN_SERIAL: usize = 6;
+const UB_IS_REAL: usize = 7;
+const UB_ADDR_MULT: usize = 8;
+const UB_KEY_HI4: usize = 9;
+const UB_KEY_LIMB0: usize = 10;
+const UB_KEY_IS15: usize = UB_KEY_LIMB0 + decomp_cols(KEY_LO_BITS); // 20
+const UB_KEY_INV15: usize = UB_KEY_IS15 + 1; // 21
+const UB_DGAP: usize = UB_KEY_INV15 + 1; // 22
+const UB_SAME_DOM: usize = UB_DGAP + 1; // 23
+const UB_SAMEDOM_INV: usize = UB_SAME_DOM + 1; // 24
+const UB_KCMP_S: usize = UB_SAMEDOM_INV + 1; // 25
+const UB_KCMP_DHI: usize = UB_KCMP_S + 1; // 26
+const UB_KCMP_DLO: usize = UB_KCMP_DHI + 1; // 27
+const UB_KCMP_DLO_LIMB0: usize = UB_KCMP_DLO + 1; // 28
+const UB_WIDTH: usize = UB_KCMP_DLO_LIMB0 + decomp_cols(KEY_LO_BITS); // 38
+
+// -- COHORT universal boundary layout (the single-row specialization). The general boundary
+//    (above) spends columns 9..38 — the canonical key decomposition (`UB_KEY_HI4..`) plus the
+//    domain-major lexicographic strict-increase comparator (`UB_DGAP`/`UB_SAME_DOM*`/`UB_KCMP_*`)
+//    — SOLELY to establish that the declared `(domain, key)` address list is `Nodup`, the
+//    hypothesis `memcheck_sound` stands on. For the single-domain cohort / welded leg the boundary
+//    has AT MOST ONE real row, so `Nodup` is `List.nodup_singleton` (Lean
+//    `UniversalMemory.universal_memory_sound_single` / `MemoryChecking.memcheck_sound_single`,
+//    `#assert_axioms`-clean): the entire comparator + key decomposition is VACUOUS and dropped.
+//    The single-row discipline is enforced IN-CIRCUIT by `(next.is_real = 0)` on every transition
+//    (`UB` row 0 may be real; rows 1.. are forced pads) — a multi-row witness is REFUSED, never
+//    silently accepted, so the specialization can never be used unsoundly. Width 9 vs 38: the heavy
+//    instance the IVC fold re-pays up the aggregation tree is cut to a quarter of its FRI columns. --
+const UBC_DOMAIN: usize = 0;
+const UBC_KEY: usize = 1;
+const UBC_INIT_PRESENT: usize = 2;
+const UBC_INIT_VALUE: usize = 3;
+const UBC_FIN_PRESENT: usize = 4;
+const UBC_FIN_VALUE: usize = 5;
+const UBC_FIN_SERIAL: usize = 6;
+const UBC_IS_REAL: usize = 7;
+const UBC_ADDR_MULT: usize = 8;
+const UBC_WIDTH: usize = UBC_ADDR_MULT + 1; // 9
+
+/// ⚑ **THE PERF LEVER IS A BUILD OBLIGATION.** The specialized cohort boundary exists only because
+/// it drops the general boundary's inter-row comparator; if it ever stopped being a quarter of the
+/// general width the specialization would be buying nothing while still carrying its own soundness
+/// argument. Both operands are constants — this stood as an `assert!` inside one `#[test]`.
+const _: () = assert!(
+    UBC_WIDTH * 4 <= UB_WIDTH,
+    "the cohort boundary is no longer at most a quarter of the general boundary's columns"
+);
+
+/// ⚑ **THE COHORT LAYOUT IS THE GENERAL LAYOUT'S 9-COLUMN PREFIX** — pinned, not implied.
+///
+/// The two boundaries are now authored in DIFFERENT places: the general one is the
+/// `Ir2Air::UMemBoundary` arm below, the cohort one is
+/// `Dregg2/Circuit/Emit/UMemBoundaryCohortTableEmit.lean` (which reads its columns by its own
+/// `#guard`-pinned `UBC_*` defs). `build_traces` writes ONE prefix that both tables read, and it
+/// writes it by name using the `UB_*` constants — which is only correct because the cohort's
+/// offsets agree. Before the cutover the agreement was checked by the two arms sitting a page
+/// apart; now nothing would notice a drift, so it is a compile-time assertion.
+const THE_COHORT_IS_THE_GENERAL_PREFIX: () = {
+    assert!(UBC_DOMAIN == UB_DOMAIN);
+    assert!(UBC_KEY == UB_KEY);
+    assert!(UBC_INIT_PRESENT == UB_INIT_PRESENT);
+    assert!(UBC_INIT_VALUE == UB_INIT_VALUE);
+    assert!(UBC_FIN_PRESENT == UB_FIN_PRESENT);
+    assert!(UBC_FIN_VALUE == UB_FIN_VALUE);
+    assert!(UBC_FIN_SERIAL == UB_FIN_SERIAL);
+    assert!(UBC_IS_REAL == UB_IS_REAL);
+    assert!(UBC_ADDR_MULT == UB_ADDR_MULT);
+    // ⚑ …and the cohort's WIDTH is exactly where the general boundary's extra machinery starts:
+    // the canonical key split. That is the specialization stated as an equation rather than as
+    // "a quarter of the columns" — the cohort IS the prefix, and `UB_KEY_HI4` is the seam.
+    assert!(UBC_WIDTH == UB_KEY_HI4);
+    assert!(UBC_WIDTH < UB_WIDTH);
+};
+
+// -- Map-ABSENT table layout (one row per non-membership reconciliation): the realization of
+//    `map_op` kind `absent` (Lean `opensTo … none`, constructible by `opensTo_none_of_gap`) —
+//    the sorted-gap bracketing, IN-CIRCUIT: two membership paths at ADJACENT leaf positions
+//    (position = Σ dirᵢ·2ⁱ; adjacency is one linear constraint) under the SAME root, with
+//    `lo_addr < key < hi_addr` enforced by the canonical-decomposition lexicographic
+//    comparators. The sentinel bracketing (MIN/MAX, `heap_root.rs`) guarantees every
+//    non-reserved absent key has a real adjacent pair. This is THE boundary leg of
+//    `nullifier_fresh_binds_root`: the gap machinery survives exactly here — once per touched
+//    address per proof, never per access. Committed ONLY when a descriptor declares an
+//    `absent` op (presence-elided like every other table). --
+// Phase H-HEAP-8: every digest lane (root, new_root, the two bracket leaves, each sibling, each
+// chain node) is an 8-felt GROUP; the two bracket paths fold through the arity-16 `node8`
+// compression on BUS_P2 (`heap_node8`), never the lossy 1-felt fact hash. The integer
+// decomposition / comparator blocks stay scalar (they compare addresses, not digests).
+// IMT POINTER-BRACKET ABSENCE (gap-#5 closure, mirrors Lean `IndexedMerkleTree.ImtAbsent`):
+// non-membership of `key` is ONE low-leaf opening whose arity-3 IMT digest binds the pointer
+// `low.next_addr`, and the bracket is `low_addr < key < low_next` — NO physical-position adjacency,
+// NO second (hi) leaf. The `next_addr` felt IS the hi bracket (`imtAbsent_excludes`).
+const MA_ROOT: usize = 0; // 8-felt group [0..8)
+const MA_KEY: usize = MA_ROOT + CHIP_OUT_LANES; // 8
+const MA_NEW_ROOT: usize = MA_KEY + 1; // 9 (8-felt group [9..17))
+const MA_IS_REAL: usize = MA_NEW_ROOT + CHIP_OUT_LANES; // 17
+const MA_LO_ADDR: usize = MA_IS_REAL + 1; // 18
+const MA_LO_VALUE: usize = MA_LO_ADDR + 1; // 19
+const MA_LO_NEXT: usize = MA_LO_VALUE + 1; // 20 — the IMT pointer (the hi bracket)
+const MA_LO_LEAF: usize = MA_LO_NEXT + 1; // 21 (8-felt group [21..29))
+const MA_LO_SIB0: usize = MA_LO_LEAF + CHIP_OUT_LANES; // 29 (DEPTH groups of 8)
+const MA_LO_DIR0: usize = MA_LO_SIB0 + CHIP_OUT_LANES * HEAP_TREE_DEPTH; // (DEPTH dir bits)
+const MA_LO_CHAIN0: usize = MA_LO_DIR0 + HEAP_TREE_DEPTH; // (DEPTH-1 groups of 8)
+// Canonical decompositions (hi4 · 2^27 + lo27, unique) of lo_addr / key / low_next:
+// each block = [hi4, lo27 limbs (10), is15, inv15] = 13 columns.
+const MA_DECOMP_COLS: usize = 1 + decomp_cols(KEY_LO_BITS) + 2; // 13
+const MA_A_DEC0: usize = MA_LO_CHAIN0 + CHIP_OUT_LANES * (HEAP_TREE_DEPTH - 1); // (lo_addr)
+const MA_K_DEC0: usize = MA_A_DEC0 + MA_DECOMP_COLS; // (key)
+const MA_B_DEC0: usize = MA_K_DEC0 + MA_DECOMP_COLS; // (low_next)
+// Lexicographic strict-lt comparator blocks: [s, dhi, dlo, dlo limbs (10)] = 13 columns.
+const MA_CMP_COLS: usize = 3 + decomp_cols(KEY_LO_BITS); // 13
+const MA_CMP_LO0: usize = MA_B_DEC0 + MA_DECOMP_COLS; // (lo_addr < key)
+const MA_CMP_HI0: usize = MA_CMP_LO0 + MA_CMP_COLS; // (key < low_next)
+const MA_WIDTH: usize = MA_CMP_HI0 + MA_CMP_COLS;
+
+// -- Map-ops table layout (one row per reconciliation, log order). Every permutation of
+//    the opening rides the chip bus: the row carries the two leaf digests and the two
+//    sibling-sharing chains' intermediate digests (the final links ARE root / new_root),
+//    NEVER an in-row aux block (the EPOCH's row-width cure, applied to its own boundary
+//    table — previously 39 + 34·352 = 12,007 cols, the measured §2b disease). --
+// Phase H-HEAP-8 (native 8-felt Merkle weld): every digest lane — root, new_root, each
+// sibling, each leaf, and each intermediate chain node — is an 8-felt GROUP (`CHIP_OUT_LANES`
+// contiguous columns), never a lossy 1-felt fold. The internal-node compression is the
+// arity-16 `node8` chip absorb `perm(L8 ‖ R8)[0..8]` (`heap_node8`), so the per-node collision
+// floor is the full ~124-bit FRI/STARK width the deployed commitment already targets. Layout:
+// [root8][key][value][op][new_root8][is_real][old_value][sib8 × DEPTH][dir × DEPTH]
+// [old_leaf8][new_leaf8][old_chain8 × (DEPTH-1)][new_chain8 × (DEPTH-1)]. The final chain link
+// IS root8 / new_root8 (level DEPTH-1's output), so only DEPTH-1 intermediate groups are stored.
+const MAP_ROOT: usize = 0; // 8-felt group [0..8)
+const MAP_KEY: usize = MAP_ROOT + CHIP_OUT_LANES; // 8
+const MAP_VALUE: usize = MAP_KEY + 1; // 9
+const MAP_OP: usize = MAP_VALUE + 1; // 10
+const MAP_NEW_ROOT: usize = MAP_OP + 1; // 11 (8-felt group [11..19))
+const MAP_IS_REAL: usize = MAP_NEW_ROOT + CHIP_OUT_LANES; // 19
+const MAP_OLD_VALUE: usize = MAP_IS_REAL + 1; // 20
+// The IMT pointer felt (leaf arity 2→3): the shared `next_addr` of the read/write leaf (a value
+// update holds the pointer FIXED), or the appended leaf's `low_oldNext` on insert. Both the old-
+// and new-leaf arity-3 absorbs read it (`map_leaf_input_cols`).
+const MAP_NEXT: usize = MAP_OLD_VALUE + 1; // 21
+const MAP_SIB0: usize = MAP_NEXT + 1; // 22 (DEPTH groups of 8: sib g at MAP_SIB0 + 8·g)
+const MAP_DIR0: usize = MAP_SIB0 + CHIP_OUT_LANES * HEAP_TREE_DEPTH; // 149 (DEPTH single dir bits)
+const MAP_OLD_LEAF: usize = MAP_DIR0 + HEAP_TREE_DEPTH; // 165 (8-felt group [165..173))
+const MAP_NEW_LEAF: usize = MAP_OLD_LEAF + CHIP_OUT_LANES; // 173 (8-felt group [173..181))
+const MAP_OLD_CHAIN0: usize = MAP_NEW_LEAF + CHIP_OUT_LANES; // 181 (levels 0..14; level 15 = MAP_ROOT)
+const MAP_NEW_CHAIN0: usize = MAP_OLD_CHAIN0 + CHIP_OUT_LANES * (HEAP_TREE_DEPTH - 1); // 301
+// The op≤3 layout ends here (the historical `MAP_WIDTH`, 421). op=4 (AafiInsert) is byte-disjoint:
+// every column below is ZERO on op≠4 rows and gated to op=4 by the `is_aafi` selector.
+const MAP_AAFI_BASE: usize = MAP_NEW_CHAIN0 + CHIP_OUT_LANES * (HEAP_TREE_DEPTH - 1); // 421
+// ===================================================================================
+// AAFI (append-at-free-index) TWO-PATH INSERT columns (gap-#5 IMT closure). The insert needs
+// TWO INDEPENDENT openings (the low-leaf pointer update, PATH1, and the append at a distinct
+// EMPTY free slot, PATH2) plus the pointer-bracket range gate. PATH1 REUSES `MAP_SIB0/MAP_DIR0`
+// + `MAP_OLD_LEAF`/`MAP_OLD_CHAIN0` (op≤3 and op=4 are mutually-exclusive rows); PATH2 append
+// REUSES `MAP_NEW_LEAF`/`MAP_NEW_CHAIN0`; the appended leaf's pointer REUSES `MAP_NEXT`
+// (= `low_oldNext`). New groups below mirror the proven Lean `imtInsert` step-for-step. --
+// The AAFI SELECTOR: a committed boolean, 1 on op=4 rows and 0 elsewhere. Used as the DEGREE-1
+// `is_aafi` throughout the AIR (a `op(op-1)(op-3)` polynomial selector would be degree 3, blowing
+// the frozen map-ops degree budget of 4). Pinned to op=4 by three low-degree constraints:
+// `s(s-1)=0`, `s·(op-4)=0` (s ⇒ op=4), and `op(op-1)(op-3)·(1-s)=0` (op=4 ⇒ s), so a prover can
+// neither disable the gates on an op=4 row nor enable them elsewhere.
+const MAP_S: usize = MAP_AAFI_BASE; // 421
+// (`R1` = intermediate root after the low-pointer update; `imtLowUpdate_binds`.)
+const MAP_R1: usize = MAP_S + 1; // 422 (8-felt group)
+// The bracketing low leaf `(low_addr, low_value, low_oldNext=MAP_NEXT)` — its digest opens over
+// PATH1 to `MAP_ROOT` (gate a); the range gate uses `low_addr`/`low_next` (gate b).
+const MAP_LOW_ADDR: usize = MAP_R1 + CHIP_OUT_LANES; // 430
+const MAP_LOW_VALUE: usize = MAP_LOW_ADDR + 1; // 430
+// The UPDATED low leaf `(low_addr, low_value, MAP_KEY)` (`next_addr := k`) — folds over PATH1 to R1.
+const MAP_LOW_NEW: usize = MAP_LOW_VALUE + 1; // 431 (8-felt group)
+const MAP_LOW_NEW_CHAIN0: usize = MAP_LOW_NEW + CHIP_OUT_LANES; // 439 (DEPTH-1 groups: low_new → R1)
+// PATH2 — the free-slot path (independent of PATH1): its own siblings + direction bits.
+const MAP_SIB2_0: usize = MAP_LOW_NEW_CHAIN0 + CHIP_OUT_LANES * (HEAP_TREE_DEPTH - 1); // 560 (DEPTH groups of 8)
+const MAP_DIR2_0: usize = MAP_SIB2_0 + CHIP_OUT_LANES * HEAP_TREE_DEPTH; // 687 (DEPTH dir bits)
+// The EMPTY-slot digest under R1 (pinned to the const `heap_empty_subtree_root_8(0)` = ZERO8):
+// folds over PATH2 to R1, proving `free_index` was empty before the append (gate d1).
+const MAP_FREE_EMPTY: usize = MAP_DIR2_0 + HEAP_TREE_DEPTH; // 703 (8-felt group)
+const MAP_FREE_EMPTY_CHAIN0: usize = MAP_FREE_EMPTY + CHIP_OUT_LANES; // 711 (DEPTH-1 groups: free_empty → R1)
+// The pointer-bracket range block `low_addr < k < low_next` — portable from the MapAbsent arm
+// (`MA_A_DEC0..MA_CMP_HI0`): canonical decompositions of low_addr/key/low_next + two strict-lt cmps.
+const MAP_A_DEC0: usize = MAP_FREE_EMPTY_CHAIN0 + CHIP_OUT_LANES * (HEAP_TREE_DEPTH - 1); // 831 (low_addr)
+const MAP_K_DEC0: usize = MAP_A_DEC0 + MA_DECOMP_COLS; // 844 (key)
+const MAP_B_DEC0: usize = MAP_K_DEC0 + MA_DECOMP_COLS; // 857 (low_next)
+const MAP_CMP_LO0: usize = MAP_B_DEC0 + MA_DECOMP_COLS; // 870 (low_addr < key)
+const MAP_CMP_HI0: usize = MAP_CMP_LO0 + MA_CMP_COLS; // 883 (key < low_next)
+pub(crate) const MAP_WIDTH: usize = MAP_CMP_HI0 + MA_CMP_COLS; // 898 (op≤3 uses only [0, 422))
+
+/// The width of the map-log permutation-check tuple: the 8-felt pre-root and 8-felt post-root
+/// groups bracketing `[key, value, op]` — Phase H-HEAP-8 widened it `5 → 19`.
+const MAP_LOG_WIDTH: usize = 2 * CHIP_OUT_LANES + 3;
+
+/// One gathered map-op log entry with native 8-felt pre-/post-root groups (Phase H-HEAP-8).
+struct MapLogEntry {
+    /// The 8-felt pre-root group.
+    root: [BabyBear; CHIP_OUT_LANES],
+    /// The map key.
+    key: BabyBear,
+    /// The read/written value (canonical `0` for `absent`).
+    value: BabyBear,
+    /// The 8-felt post-root group.
+    new_root: [BabyBear; CHIP_OUT_LANES],
+    /// Reconciliation kind.
+    op: MapKind,
+}
+
+/// An 8-felt root rendered as `a,b,…,h` for a refusal message.
+fn fmt_root8(v: &[BabyBear]) -> String {
+    v.iter()
+        .map(|f| f.as_u32().to_string())
+        .collect::<Vec<_>>()
+        .join(",")
+}
+
+/// **Render an 8-felt root mismatch so the refusal NAMES THE LANE.**
+///
+/// The map-op replay comparisons are over ALL `CHIP_OUT_LANES` felts, but these refusals used to
+/// render lane 0 alone — so a mismatch confined to lanes 1..7 printed two IDENTICAL numbers
+/// (`… lane0 7 != 7`), an `X != X` verdict with no way to see what actually differed. That is
+/// precisely the after-root forgery class the heap-write teeth hunt: lane 0 honest, completion
+/// lanes forged. Emits the FIRST differing lane by index plus both full octets, on one line.
+fn root8_mismatch(claimed: &[BabyBear], genuine: &[BabyBear]) -> String {
+    match claimed.iter().zip(genuine).position(|(a, b)| a != b) {
+        Some(j) => format!(
+            "lane {j}: {} != {} (claimed [{}] vs genuine [{}])",
+            claimed[j].as_u32(),
+            genuine[j].as_u32(),
+            fmt_root8(claimed),
+            fmt_root8(genuine)
+        ),
+        // Only reachable on a LENGTH difference (equal on the common prefix); the callers compare
+        // fixed-width arrays, so this arm exists so the message can never claim a lane it lacks.
+        None => format!(
+            "lane count {} != {} (claimed [{}] vs genuine [{}])",
+            claimed.len(),
+            genuine.len(),
+            fmt_root8(claimed),
+            fmt_root8(genuine)
+        ),
+    }
+}
+
+// -- Chip table layout. A row is EITHER a sponge-absorb permutation (`is_fact = 0`:
+//    state = (in0..in3, arity tag) — the hash_many shape every hash-site lookup queries)
+//    OR a Merkle-node permutation (`is_fact = 1`, arity pinned 0: state = fact_state
+//    (in0, in1) — `poseidon2::hash_fact`'s marker shape, provided on the `ir2_fact` bus
+//    for the map-ops chains). One aux block per UNIQUE permutation, either way.
+//
+//    PROVENANCE (#175): the permutation constraints are `poseidon2_permute_expr`
+//    (`plonky3_prover.rs`) — the in-repo round-by-round arithmetization (every round's
+//    full 16-lane output committed and equality-constrained; no shortcut columns), the
+//    SAME gadget the v1 hash sites and `effect_vm_p3_full_air.rs` discharge
+//    `Poseidon2SpongeCR` with. Its round constants / internal diagonal are the audited
+//    p3-baby-bear `BABYBEAR_POSEIDON2_RC_16` / `..INTERNAL_DIAG_16` tables (descriptor
+//    `params` pin those source names; `parse_chip_params` refuses a mismatch), and the
+//    permutation FUNCTION is conformance-KAT'd against the pinned-rev plonky3
+//    `default_babybear_poseidon2_16()` (`poseidon2::tests::poseidon2_plonky3_cross_check_kat`).
+//    The audited `p3-poseidon2-circuit-air` is used where its layout is forced on us —
+//    the recursion verifier circuit (`plonky3_recursion_impl.rs`). NOTE: the descriptor
+//    param `sbox_registers: 1` describes the p3-air REGISTERED layout, which this chip
+//    deliberately does NOT use (measured net-negative, see `max_constraint_degree` +
+//    .docs-history-noclaude/PROOF-ECONOMICS.md §2c); the parameter is a frozen descriptor pin (no regen
+//    off-cycle), and the permutation function is unaffected by arithmetization shape.
+//
+//    AMORTIZATION (#175): ONE chip table per batch proof serves ALL hash facts — the
+//    main table's hash-site lookups and the map-ops leaf absorbs ride `BUS_P2`, the
+//    map-ops Merkle-chain facts ride `BUS_FACT`, both LogUp-served by this single
+//    table. Cross-EFFECT amortization (one chip table for a whole turn) needs the
+//    IR-v2 turn assembly, which does not exist yet (this path is per-effect,
+//    recursion-gated, pre-cutover); it lands with the recursion aggregation. --
+const CHIP_ARITY: usize = 0;
+const CHIP_IN0: usize = 1;
+const CHIP_OUT: usize = CHIP_IN0 + CHIP_RATE; // 9 (= out0, the squeezed digest lane)
+/// The number of permutation-output lanes the chip exposes on the bus. Widened
+/// 1 → 8 (Phase B-GATE): the chip's bus tuple now carries `state[0..8]` of the
+/// SAME already-fully-constrained final permutation. Single-output sites bind
+/// only `out0` (`CHIP_OUT`) — lanes 1..8 are made AVAILABLE for the 8-felt
+/// commitment sponge (Phase B-ROTATION) but the deployed commitment is STILL
+/// 1-felt after this phase.
+pub const CHIP_OUT_LANES: usize = 8;
+const CHIP_MULT: usize = CHIP_OUT + CHIP_OUT_LANES; // 17
+const CHIP_IS_FACT: usize = CHIP_MULT + 1; // 18
+/// `big = [arity == 7]`: selects the rate-8 absorb seeding (inputs in lanes 0..6,
+/// length tag absent from lanes 4..6) from the rate-4 seeding (tag at lane 4).
+const CHIP_BIG: usize = CHIP_IS_FACT + 1; // 12
+/// Dedicated seed-source columns for the three AMBIGUOUS state lanes 4/5/6 (input
+/// vs tag/fact). Each is read DIRECTLY into the permuted state (degree 1), while
+/// its VALUE is pinned by a degree-≤3 SIDE constraint (never through the x⁷ S-box) —
+/// the only degree-safe way to serve two seedings from one fixed state array.
+const CHIP_S4: usize = CHIP_BIG + 1; // 13
+const CHIP_S5: usize = CHIP_S4 + 1; // 14
+const CHIP_S6: usize = CHIP_S5 + 1; // 15
+/// `wide = [arity == 11]` (Phase B-GATE-INPUT): high EXACTLY on the wide single-permutation
+/// absorb (8-felt carrier ‖ 3 limbs). Lifts the narrow `in7..in10 = 0` pins (the wide row
+/// genuinely seeds state lanes 7..10) and, with `big`, drives lanes 4/5/6 from the inputs.
+const CHIP_WIDE: usize = CHIP_S6 + 1;
+/// `node8 = [arity == 16]` (Phase H3): high EXACTLY on the full-width `node8` compression row
+/// (`L8 ‖ R8` → 8-felt digest). Like `wide` it drives lanes 4..6 from the inputs (`seed456`) and
+/// lifts the narrow `in7..` zero-pins; additionally it lifts the `in11..in15 = 0` pins so the
+/// second 8-felt child genuinely seeds lanes 11..15.
+const CHIP_NODE8: usize = CHIP_WIDE + 1;
+const CHIP_AUX0: usize = CHIP_NODE8 + 1;
+/// Narrow-bus multiplicity (tuple-narrowing pass): how many single-output (18-wide, out0-only) lookups
+/// this permutation serves on `BUS_P2_1`. APPENDED after the aux block so no existing chip column shifts
+/// (the permutation constraints read `CHIP_AUX0..CHIP_AUX0+PERM_AUX` — untouched). Zero until sites are
+/// routed to the narrow bus; the narrow entry then balances at 0 for the deployed (wide-only) path.
+const CHIP_MULT_NARROW: usize = CHIP_AUX0 + POSEIDON2_PERM_AUX_COLS;
+/// On the `chip-state16` table AIR the final column is instead the multiplicity of the full-state
+/// 33-tuple bus.  Reusing the same column index in a distinct AIR variant keeps the ordinary
+/// chip width and every existing descriptor/VK shape unchanged.
+const CHIP_MULT_STATE16: usize = CHIP_MULT_NARROW;
+const CHIP_WIDTH: usize = CHIP_MULT_NARROW + 1;
+
+/// ⚑ **The realized form of one Lean-emitted exact-public manifest** — the DISTINCT declared rows
+/// plus, per distinct row, the number of times the manifest declares it.
+///
+/// This is the whole content of the new realization. `TableSem::ExactPublicRows` is a LIST, and
+/// `DescriptorIR2.PublicLookupBalanced` demands the trace's lookup log be a PERMUTATION of that
+/// list — i.e. exact MULTISET equality. A multiset is `(distinct element, multiplicity)` pairs, so
+/// committing the manifest as `rows[i]` with capacity `mults[i]` is that same multiset, spelled
+/// the way a single lookup table can carry it. **Nothing is weakened:** the old realization gave
+/// each of the `Σ mults[i]` declared rows unit capacity on its own instance and let global LogUp
+/// balance force exact equality; this one gives each DISTINCT row capacity `mults[i]` on one
+/// instance and lets the same global balance force the same equality. What changes is the price.
+///
+/// The multiplicities are PINNED to descriptor-derived constants, not left free. A free
+/// multiplicity column (the byte table's shape, where the table is a subset relation) would turn
+/// the permutation into a containment, and containment is strictly weaker: `PastaMsmBound`'s
+/// `bound_forces_doubling` derives the `DBL` pattern by COUNTING the manifest's all-zero rows, and
+/// an unpinned all-zero entry would absorb any number of doubling rows — a dropped MSM term would
+/// stop being refused. Membership-only theorems (`row_tuple_is_its_manifest_row` and everything
+/// keyed by `manifest_key_unique`) survive either way; the counting ones need the pin.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ExactPublicManifest {
+    /// ⚑ The declared table's WIRE ID, which since the Lean cutover (2026-08-02) is a VALUE rather
+    /// than part of a bus name: it is preprocessed column 0 and the first field of every served
+    /// tuple, and `Ir2Air::Main` prepends the same descriptor-derived constant to every query.
+    ///
+    /// That move is what let the AIR become a per-ARITY family the Lean side can emit — an artifact
+    /// cannot know a table id, and it does not have to when the id is data. The separation is
+    /// unchanged in strength: LogUp balance is a multiset equality over TUPLES, and this column
+    /// lives in the matrix the verifier REBUILDS rather than accepts.
+    table_id: usize,
+    /// The DISTINCT declared rows, in first-declaration order (so the committed table is a
+    /// function of the descriptor alone and prover and verifier build it identically).
+    rows: Vec<Vec<u32>>,
+    /// `mults[i]` = how many times `rows[i]` occurs in the declared manifest. `Σ mults` is the
+    /// declared manifest length, which is the exact lookup capacity this table offers.
+    mults: Vec<u32>,
+    /// Column arity — the declared tuple width, `rows[i].len()`.
+    arity: usize,
+    /// The committed height: `rows.len()` rounded up to a power of two, floored at
+    /// [`MIN_EXACT_PUBLIC_HEIGHT`]. Rows past `rows.len()` are all-zero pads carrying
+    /// multiplicity ZERO, so they contribute nothing to the bus.
+    ///
+    /// ⚠ **That last clause is a property of THIS function, not of the AIR** — the Lean file's
+    /// `a_pad_shaped_row_is_admitted_at_any_capacity_the_matrix_declares` exhibits a pad-shaped
+    /// all-zero tuple accepted at capacity 5 the moment the preprocessed column reads 5. The gate
+    /// mirrors whatever this writes; the discipline is here.
+    height: usize,
+}
+
+impl ExactPublicManifest {
+    /// Deduplicate a declared manifest into `(distinct rows, multiplicities)`.
+    ///
+    /// Order is FIRST-DECLARATION order over the Lean-emitted list, so this is a pure function of
+    /// the descriptor: the verifier's rebuild is byte-identical to the prover's.
+    fn of(table_id: usize, rows: &[Vec<u32>], arity: usize) -> Self {
+        let mut index: BTreeMap<&[u32], usize> = BTreeMap::new();
+        let mut distinct: Vec<Vec<u32>> = Vec::new();
+        let mut mults: Vec<u32> = Vec::new();
+        for row in rows {
+            match index.get(row.as_slice()) {
+                Some(&i) => mults[i] += 1,
+                None => {
+                    index.insert(row.as_slice(), distinct.len());
+                    distinct.push(row.clone());
+                    mults.push(1);
+                }
+            }
+        }
+        let height = distinct
+            .len()
+            .next_power_of_two()
+            .max(MIN_EXACT_PUBLIC_HEIGHT);
+        Self {
+            table_id,
+            rows: distinct,
+            mults,
+            arity,
+            height,
+        }
+    }
+
+    /// The declared preprocessed width: the table id, `arity` value columns, the pinned
+    /// multiplicity. ⚑ Pinned against the Lean-emitted member's own `prep_width` in
+    /// [`exact_public_lean_instance`], so a layout drift between the two sides REFUSES.
+    const fn prep_width(&self) -> usize {
+        self.arity + 2
+    }
+
+    /// ⚑ **THE COMMITTED SHAPE OF A DECLARED MANIFEST — `(height, prep_width)`**, computed by the
+    /// deployed dedup rather than by a restatement of it.
+    ///
+    /// This exists because [`MAX_EXACT_PUBLIC_CELLS`] is denominated in `rows.len() * arity` and
+    /// **nothing allocates that quantity.** What is allocated is
+    /// `max(next_pow2(|distinct rows|), MIN_EXACT_PUBLIC_HEIGHT) * (arity + 2)`, which for a
+    /// manifest carrying multiplicity is smaller by the average multiplicity and larger by the
+    /// power-of-two round and the two extra columns. `PastaMsmBucketed` §6c prices the deployed SRS
+    /// manifest against this function; before 2026-08-06 it priced it against `n * (arity + 2)`,
+    /// which was wrong by 2× because it forgot that the all-zero PAD row is a distinct row and so
+    /// pushes `next_pow2` up a rung.
+    pub fn committed_shape(rows: &[Vec<u32>], arity: usize) -> (usize, usize) {
+        let m = Self::of(0, rows, arity);
+        (m.height, m.prep_width())
+    }
+
+    /// The preprocessed matrix: `[table_id, value_0 … value_{arity−1}, multiplicity]`, padded to
+    /// [`Self::height`] with all-zero rows (id zero, value zeros AND multiplicity zero, so a pad
+    /// neither offers capacity nor names a real table's tuple).
+    ///
+    /// ⚠ The id column is written on REAL rows only; a pad carries id `0`, which
+    /// `check_descriptor2` makes unreachable as a declared exact-public wire id (it refuses any id
+    /// at or below `TID_P2_STATE16`). A pad therefore names no real table's tuple AND offers no
+    /// capacity — two independent reasons, and the second is the one the gate mirrors.
+    fn preprocessed_cells(&self) -> Vec<u32> {
+        let width = self.prep_width();
+        let mut values: Vec<u32> = Vec::with_capacity(self.height * width);
+        for (row, &mult) in self.rows.iter().zip(self.mults.iter()) {
+            values.push(self.table_id as u32);
+            values.extend(row.iter().copied());
+            values.push(mult);
+        }
+        values.resize(self.height * width, 0);
+        values
+    }
+
+    /// The committed MAIN trace: one column, the multiplicity the AIR pins to the preprocessed
+    /// one. Height matches [`Self::height`], as p3 requires of a preprocessed instance.
+    fn main_trace(&self) -> Vec<Vec<BabyBear>> {
+        let mut rows: Vec<Vec<BabyBear>> =
+            self.mults.iter().map(|&m| vec![BabyBear::new(m)]).collect();
+        rows.resize(self.height, vec![BabyBear::ZERO]);
+        rows
+    }
+}
+
+/// **THE IR-v2 INTERPRETER AIR — two arms, and neither authors a constraint.** One Rust type
+/// covering every instance of the batch (the batch prover is monomorphic in the AIR type), entirely
+/// descriptor-driven.
+///
+/// ⚑ **`Main | LeanTable`, since 2026-08-02.** It was twelve arms — eleven of them hand-written
+/// shared-table algebra, in direct violation of architectural law #1 (*"circuits are emitted from
+/// Lean; Rust only INTERPRETS"*). All eleven are DELETED, variants included, in the order
+/// map-absent · byte · memory-boundary · memory · universal-boundary-cohort · universal-boundary ·
+/// universal-memory · map-ops · chip · chip-state16 · exact-public. What is left is one arm that
+/// interprets the MAIN descriptor and one that interprets a Lean-authored TABLE.
+///
+/// What that makes true, which was not true before: **a new shared table is now an EMISSION, not a
+/// variant.** There is no place in this enum where a constraint can be written, so the failure mode
+/// law #1 exists to prevent — "the Rust AIR crate is right there, every step compiles" — has no
+/// entry point on this path. It also means the AIR fingerprint's source closure covers the whole
+/// instance family through two files and a directory of artifacts, rather than through a `match`
+/// whose arms a reader had to enumerate by hand.
+#[derive(Clone)]
+pub enum Ir2Air {
+    /// The main instance: the descriptor's own constraints + bus interactions.
+    Main {
+        /// The interpreted descriptor.
+        desc: EffectVmDescriptor2,
+        /// Resolved aux layout.
+        layout: MainLayoutPub,
+        /// ⚑ The FLAT COMPILATION of the row-local algebra (`flat_eval`), built by
+        /// [`Ir2Air::main_instance`] from the same decoded descriptor, index-parallel to
+        /// `desc.constraints`. Pure evaluation machinery: the descriptor stays the sole author
+        /// of the algebra, and the tape replays the tree operation-for-operation (the gate on
+        /// that claim is byte-identical proofs — `tests/air_interp_census.rs::bytes_sweep`).
+        compiled: Arc<crate::flat_eval::CompiledMain>,
+    },
+    /// ⚑ **A WHOLE Lean-authored TABLE AIR, interpreted** — the shared auxiliary instances whose
+    /// algebra used to be hand-written Rust arms of this very `match`.
+    ///
+    /// The wire object ([`crate::table_air::LeanTableAir`]) carries this table's own width, its
+    /// gates as `TableExpr` trees each under a ROW SELECTOR, its bus interactions with a per-row
+    /// MULTIPLICITY EXPRESSION, its shared DEFINITION list, and — since the eleventh port — its
+    /// declared PREPROCESSED width. The first two are the fields a descriptor `Gate`/`Lookup`
+    /// could not carry, which is why a padded, sorted shared table needed a new IR rather than a
+    /// reuse of the main one. `Loc(c)`/`Nxt(c)` read column `c` of THIS table's current/next row;
+    /// `Prep(c)` reads column `c` of a SECOND, verifier-recomputed column space.
+    ///
+    /// ⚑ **THIS IS NOW THE ONLY TABLE ARM.** `Ir2Air` is `Main | LeanTable`: one arm interprets the
+    /// MAIN descriptor and one interprets a Lean-authored TABLE. No arm of this enum authors a
+    /// constraint, so architectural law #1 is true of the whole IR-v2 instance family rather than
+    /// of ten elevenths of it, and a new shared table is a new EMISSION rather than a new variant.
+    ///
+    /// The instances, in the order they came off the hand-written path:
+    ///
+    /// * **map-absent** (`MapAbsentTableEmit.lean` →
+    ///   `circuit/descriptors/table-airs/dregg-ir2-map-absent-v1.json`) — bracketed sorted-gap
+    ///   non-membership openings, the live in-circuit double-spend gate. ~150 lines of
+    ///   `builder.assert_zero(..)` DELETED. The only purely row-local table of the eight, which
+    ///   is why it was portable against the first-pass IR.
+    /// * **byte** (`ByteTableEmit.lean` → `dregg-ir2-byte-v1.json`) — the shared `[0, 16)` limb
+    ///   table every range check bottoms out in. Needed `RowSel::{First, Transition}`,
+    ///   `WindowExpr::Nxt` and `BusOp::Provide`, none of which the first pass had.
+    /// * **memory boundary** (`MemBoundaryTableEmit.lean` → `dregg-ir2-mem-boundary-v1.json`) —
+    ///   the declared address list: init/final Blum images plus the `ir2_mem_addrs` table it
+    ///   SERVES. The Lean file proves what the deleted arm asserted in a parenthesis — the
+    ///   declared addresses are distinct AS FELTS, and the magnitude gate (not the gap gate) is
+    ///   what buys it.
+    /// * **memory** (`MemoryTableEmit.lean` → `dregg-ir2-memory-v1.json`) — the flat OP LOG: the
+    ///   positional serial chain, read discipline, the serial-gap range check, both Blum legs and
+    ///   the `ir2_mem_addrs` closure QUERY. ⚑ The Lean file REFUTES the third sentence the deleted
+    ///   arm asserted: the gap gate DEFINES `prev_serial = serial − 1 − gap` in the field and does
+    ///   NOT bound it, so a felt `p − 5` claimed at serial 1 satisfies every gate. What refuses it
+    ///   is the `ir2_mem_check` multiset, which is a different object.
+    /// * **universal boundary, COHORT** (`UMemBoundaryCohortTableEmit.lean` →
+    ///   `dregg-ir2-umem-boundary-cohort-v1.json`) — the width-9 single-row specialization: at most
+    ///   one real declared address, so the general boundary's inter-row lexicographic comparator +
+    ///   key decomposition (29 of 38 columns) are dropped, sound because `Nodup` of one address is
+    ///   `nodup_singleton` (Lean `universal_memory_sound_single`). ⚑ The Lean file proves the
+    ///   single-row tooth AND draws the line the deleted comment did not: it bounds the MULTISET's
+    ///   declared list, not the served `ir2_umem_addrs` closure table, whose multiplicity column no
+    ///   gate reads on any row.
+    /// * **universal boundary, GENERAL** (`UMemBoundaryTableEmit.lean` →
+    ///   `dregg-ir2-umem-boundary-v1.json`) — the width-38 multi-address form, carrying the
+    ///   DOMAIN-MAJOR lexicographic comparator over full-felt keys that establishes `Nodup`. ⚑ The
+    ///   Lean file proves the `same_dom` forcing in both directions and then exhibits
+    ///   `the_gates_alone_admit_a_duplicate_declared_address`: the domain-major half of the order
+    ///   is carried by the `ir2_byte` nibble LOOKUP on `UB_DGAP`, so a three-row trace with
+    ///   domains 1 → 0 → 1 satisfies every GATE while declaring the same address twice. The bound
+    ///   is a bus leg, one object out.
+    /// * **universal memory** (`UMemoryTableEmit.lean` → `dregg-ir2-umemory-v1.json`) — the OP LOG
+    ///   of the ONE Blum multiset over `Domain × κ`, whose cells are `Option`s: the flat memory's
+    ///   positional serial chain and gap range check, a read discipline over BOTH components of the
+    ///   pair, canonical-`none` on both images, and the NULLIFIER insert-only tooth. ⚑ The Lean file
+    ///   refutes TWO of the deleted arm's sentences. `prev_serial < serial` fails for the same
+    ///   reason it fails in the flat memory — the arm's own words, *"exactly the flat memory's gap
+    ///   shape"*, are true and that shape does not bound — and *"a nullifier-domain write installing
+    ///   `none` is UNSAT"* holds only of REAL rows: the tooth `is_null·kind·(1 − present)` carries
+    ///   no `is_real` factor of its own, the gating arrives two gates away through the
+    ///   inverse-witness gate that forces `is_null = is_real`, and a PAD row spelling exactly the
+    ///   forbidden op satisfies every gate.
+    /// * **exact-public manifests** (`ExactPublicTableEmit.lean` →
+    ///   `dregg-ir2-exact-public-v1.json`) — ⚑ the ELEVENTH and LAST arm, and the only one whose
+    ///   emission is a FAMILY: one member per declared tuple ARITY. A whole verifier-known finite
+    ///   multiset as ONE multiplicity-bearing instance — the shape the byte table has always had,
+    ///   generalized from "value = row index" to "row = the manifest's row, held in a preprocessed
+    ///   column". This is the arm that needed [`crate::table_air::TableExpr::Prep`] and
+    ///   [`crate::table_air::LeanTableAir::prep_width`]; see [`exact_public_lean_instance`].
+    LeanTable {
+        /// The decoded Lean emission — the only author of this instance's algebra.
+        air: Arc<LeanTableAir>,
+        /// ⚑ **THE PREPROCESSED MATRIX, when the emission declares one.** `Some` exactly when
+        /// `air.prep_width > 0`; [`Ir2Air::lean_table_with_prep`] is the only constructor that can
+        /// set it and it REFUSES the two mismatched shapes.
+        ///
+        /// The Lean side authors the ALGEBRA and this carries the DATA — which is the split the
+        /// arm needs and the reason `LeanTable` is a struct variant rather than a newtype: the
+        /// manifest VALUES come from the descriptor, and `preprocessed_trace` must materialize them
+        /// at whatever field p3 instantiates the AIR over.
+        prep: Option<Arc<PrepMatrix>>,
+        /// The flat compilation of the emission's defs/gates/interactions (`flat_eval`), built
+        /// by the constructors from the same wire object. Evaluation machinery only — the Lean
+        /// emission remains the sole author of the algebra.
+        compiled: Arc<crate::flat_eval::CompiledTable>,
+    },
+}
+
+/// ⚑ **A verifier-recomputed PREPROCESSED matrix**, as canonical BabyBear representatives.
+///
+/// Held field-independently because `BaseAir::preprocessed_trace` is generic in `F` (p3
+/// instantiates the AIR at `P3BabyBear` on the prover's folder and at the symbolic builders'
+/// expression types when it sizes the quotient), so the cells cannot be stored as `F`.
+///
+/// ⚠ Nothing here is prover-supplied. `verify_vm_descriptors2_batch` rebuilds the AIR from the
+/// descriptor and `ProverData::from_airs_and_degrees` re-derives and re-commits this matrix from
+/// that AIR — the verifier never accepts a prover's table, it recomputes it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PrepMatrix {
+    values: Vec<u32>,
+    width: usize,
+}
+
+impl PrepMatrix {
+    /// The row count. (`values.len() / width`; the constructor refuses a ragged matrix.)
+    #[must_use]
+    pub fn height(&self) -> usize {
+        if self.width == 0 {
+            0
+        } else {
+            self.values.len() / self.width
+        }
+    }
+
+    /// The declared column count.
+    #[must_use]
+    pub const fn width(&self) -> usize {
+        self.width
+    }
+
+    /// The cells as canonical BabyBear felts, row-major — what a differential sweeps.
+    #[must_use]
+    pub fn rows(&self) -> Vec<Vec<BabyBear>> {
+        self.values
+            .chunks(self.width)
+            .map(|c| c.iter().map(|&x| BabyBear::new(x)).collect())
+            .collect()
+    }
+
+    fn materialize<F: PrimeCharacteristicRing + Send + Sync>(&self) -> RowMajorMatrix<F> {
+        RowMajorMatrix::new(
+            self.values
+                .iter()
+                .map(|&v| F::from_u64(u64::from(v)))
+                .collect(),
+            self.width,
+        )
+    }
+}
+
+impl Ir2Air {
+    /// A Lean-authored table instance that declares NO preprocessed columns — the ten singleton
+    /// tables.
+    ///
+    /// # Panics
+    /// If the emission declares preprocessed columns. The artifacts are `include_str!`d compile-time
+    /// constants, so that is a build-time defect in the same class as a malformed artifact, not a
+    /// runtime input — and it is a panic rather than a silent `None` because an AIR whose
+    /// `preprocessed_width()` is nonzero with no matrix behind it makes p3 index an empty slice.
+    #[must_use]
+    pub fn lean_table(air: Arc<LeanTableAir>) -> Self {
+        assert_eq!(
+            air.prep_width, 0,
+            "table air \"{}\" declares {} preprocessed columns but was built without a matrix",
+            air.name, air.prep_width
+        );
+        let compiled = crate::flat_eval::compiled_table_for(&air);
+        Ir2Air::LeanTable {
+            air,
+            prep: None,
+            compiled,
+        }
+    }
+
+    /// A Lean-authored table instance WITH its verifier-recomputed preprocessed matrix.
+    ///
+    /// # Errors
+    /// Returns the reason the pair is inconsistent: the emission declaring no preprocessed columns,
+    /// or the matrix width disagreeing with the emission's declared `prep_width`. ⚑ The AIR's own
+    /// declaration is the authority in both directions, which is the same contract
+    /// [`ir2_air_gates_accept`] enforces on a sweep.
+    pub fn lean_table_with_prep(
+        air: Arc<LeanTableAir>,
+        prep: Arc<PrepMatrix>,
+    ) -> Result<Self, String> {
+        if air.prep_width == 0 {
+            return Err(format!(
+                "table air \"{}\" declares no preprocessed columns but was handed a matrix",
+                air.name
+            ));
+        }
+        if prep.width() != air.prep_width {
+            return Err(format!(
+                "table air \"{}\" declares prep_width {} but the matrix is {} wide",
+                air.name,
+                air.prep_width,
+                prep.width()
+            ));
+        }
+        let compiled = crate::flat_eval::compiled_table_for(&air);
+        Ok(Ir2Air::LeanTable {
+            air,
+            prep: Some(prep),
+            compiled,
+        })
+    }
+
+    /// The main instance for a checked descriptor + resolved layout. The ONLY constructor of
+    /// `Ir2Air::Main`: it compiles the flat evaluation tapes (`flat_eval`) from the same
+    /// decoded descriptor, so the tape list cannot drift from the constraint list.
+    fn main_instance(desc: EffectVmDescriptor2, layout: MainLayout) -> Self {
+        let compiled = Arc::new(crate::flat_eval::CompiledMain::compile(
+            &desc,
+            layout.submasks.iter().map(|sb| (&sb.keep, &sb.held)),
+        ));
+        Ir2Air::Main {
+            desc,
+            layout: MainLayoutPub(layout),
+            compiled,
+        }
+    }
+
+    /// The decoded Lean emission behind a table instance, if this is one.
+    #[must_use]
+    pub fn lean_table_air(&self) -> Option<&LeanTableAir> {
+        match self {
+            Ir2Air::LeanTable { air, .. } => Some(air),
+            Ir2Air::Main { .. } => None,
+        }
+    }
+}
+
+/// Public re-export wrapper of the resolved main layout (kept opaque; constructed by
+/// `check_descriptor2` via the prove/verify entry points).
+#[derive(Clone, Debug)]
+pub struct MainLayoutPub(MainLayout);
+
+// `Send` joins `Sync` here because a `LeanTable` may materialize a preprocessed
+// `RowMajorMatrix<F>`, and p3's `DenseMatrix::new` requires `F: Clone + Send + Sync`. Every `F`
+// this AIR is instantiated at (`P3BabyBear`, the symbolic builders' expression types) already is.
+impl<F: PrimeCharacteristicRing + Send + Sync> BaseAir<F> for Ir2Air {
+    fn width(&self) -> usize {
+        match self {
+            Ir2Air::Main { layout, .. } => layout.0.width,
+            Ir2Air::LeanTable { air, .. } => air.width,
+        }
+    }
+
+    /// ⚑ **THE EMISSION IS THE AUTHORITY.** This reads the decoded artifact's own `prep_width`, not
+    /// a per-arm constant — which is what makes `ir2_air_gates_accept`'s fail-closed shape contract
+    /// cover a new preprocessed-reading table without anyone editing the oracle.
+    fn preprocessed_width(&self) -> usize {
+        match self {
+            Ir2Air::Main { .. } => 0,
+            Ir2Air::LeanTable { air, .. } => air.prep_width,
+        }
+    }
+
+    fn preprocessed_trace(&self) -> Option<RowMajorMatrix<F>> {
+        match self {
+            Ir2Air::Main { .. } => None,
+            Ir2Air::LeanTable { prep, .. } => prep.as_ref().map(|m| m.materialize()),
+        }
+    }
+
+    /// A table AIR reads only its OWN row of the preprocessed matrix, so prover and verifier open
+    /// the preprocessed columns at `zeta` alone. ⚑ Structurally, not by convention: the table
+    /// grammar has no next-row preprocessed leaf at all (`TableAirIR`'s `TRowEnv` carries no
+    /// `prepNxt`), so no emission can read one.
+    fn preprocessed_next_row_columns(&self) -> Vec<usize> {
+        Vec::new()
+    }
+
+    fn num_public_values(&self) -> usize {
+        match self {
+            Ir2Air::Main { desc, .. } => desc.public_input_count,
+            Ir2Air::LeanTable { .. } => 0,
+        }
+    }
+
+    fn max_constraint_degree(&self) -> Option<usize> {
+        // ⚑ NOTHING IS HARDCODED HERE ANY MORE. The chip's degree used to be an announced
+        // `Some(7)` beside a hand-written arm; the arm is deleted and the degree now comes out of
+        // the emitted object, through `LeanTableAir::max_degree`'s `def_degrees` pass — the S-box
+        // is four definitions whose degrees run 2, 3, 4, 7, and a gate reading the last of them is
+        // degree 7 exactly as the tree spelling was.
+        //
+        // (The inline x⁷ S-box was chosen over a 1-register committed-cube degree-3 variant, which
+        // was built and MEASURED worse at every security-parity FRI point: +141 aux columns ⇒
+        // +25.8 KiB on transfer at (lb=3, q=38), and the low blowup it would enable loses to
+        // high-blowup/few-queries anyway — `.docs-history-noclaude/PROOF-ECONOMICS.md` §2c.
+        // `ir2_degree_budget` is the tooth, and it is UNCHANGED by the sharing node: sharing is a
+        // change of representation, not of degree.)
+        None
+    }
+}
+
+/// Emit one byte-limb decomposition: `value_expr = Σ limbᵢ·256ⁱ`, full limbs queried on the
+/// byte bus, a partial top limb bit-bound tightly. The realization of "∈ [0, 2^bits)".
+fn eval_decomp<AB>(builder: &mut AB, value_expr: AB::Expr, limbs: &[AB::Var], bits: usize)
+where
+    AB: AirBuilder + InteractionBuilder,
+    AB::F: PrimeField32,
+{
+    let bus = LookupBus::new(BUS_BYTE);
+    let (n, top_bits) = limb_geom(bits);
+    let partial = top_bits < LIMB_BITS;
+    let limb_base = AB::Expr::from_u64(1 << LIMB_BITS);
+    let mut recomposed = AB::Expr::ZERO;
+    let mut weight = AB::Expr::ONE;
+    for i in 0..n {
+        let limb: AB::Expr = limbs[i].into();
+        recomposed += limb.clone() * weight.clone();
+        weight = weight.clone() * limb_base.clone();
+        if i == n - 1 && partial {
+            // Tight top-limb bound: bit-decompose into `top_bits` booleans.
+            let mut top_recomp = AB::Expr::ZERO;
+            let mut bw = AB::Expr::ONE;
+            for b in 0..top_bits {
+                let bit: AB::Expr = limbs[n + b].into();
+                builder.assert_zero(bit.clone() * (bit.clone() - AB::Expr::ONE));
+                top_recomp += bit * bw.clone();
+                bw = bw.clone() + bw;
+            }
+            builder.assert_zero(top_recomp - limb);
+        } else {
+            bus.lookup_key(builder, [limb], AB::Expr::ONE);
+        }
+    }
+    builder.assert_zero(recomposed - value_expr);
+}
+
+/// **THE row-local constraint walk — the one place a descriptor's own algebra becomes an AIR.**
+///
+/// Both interpreters call this: [`Ir2Air::Main`] (which then adds its bus interactions) and
+/// [`Ir2UniAir`] (which has no bus). It is bounded on plain [`AirBuilder`] — the WEAKEST bound p3
+/// has — which is the point. `Ir2Air`'s `Air` impl is bounded on
+/// `PermutationAirBuilder + InteractionBuilder` because *some* of what it does speaks on a bus;
+/// carrying that bound on the row-local algebra too meant a bus-free descriptor could not be
+/// interpreted under `p3_uni_stark` at all, and THAT is why `mina_stark_fixture.rs` grew a
+/// hand-written Rust AIR (HORIZONLOG E4). The bound belonged on the bus part, not on this.
+///
+/// ## Why LIST ORDER, and why that changed
+///
+/// This used to be four blocks — a `when_first_row` block, a `when_last_row` block, a
+/// `when_transition` block, then the every-row windowed gates — so the emission order was
+/// `[all first-row, all last-row, all transition, all whole-domain]` regardless of what the
+/// descriptor said. That grouping bought nothing (`FilteredAirBuilder` clones its condition per
+/// assert either way; the selectors are single leaf nodes) and cost something real:
+/// `VerifierConstraintFolder::assert_zero` accumulates `acc = acc * alpha + C`, so the emission
+/// order IS the folding order, and a grouped traversal makes that order an artifact of THIS
+/// FUNCTION rather than of the descriptor. An independent implementation of the verifier —
+/// `bridge/mina-zkapp`'s o1js twin is the one that exists — has to reproduce it exactly.
+///
+/// Walking in list order makes the LEAN DESCRIPTOR the authority. That is the property that lets a
+/// foreign verifier be written against the emitted artifact instead of against a reading of Rust.
+///
+/// Nothing outside pins the old order: the recursive VK's `air_fingerprint` is taken over the
+/// DESCRIPTOR (`recursive_witness_bundle.rs:148`), not over the symbolic constraints; no proof
+/// bytes are checked in; and `get_symbolic_constraints` has no caller in `src/`. Prover and
+/// verifier both come from here, so they moved together.
+///
+/// ## ⚑ The challenge arm and its FAIL-CLOSED refusal (2026-08-05)
+///
+/// `VmConstraint2::ChalGate` reads `builder.permutation_randomness()`. Three facts make that sound:
+///
+/// 1. **The values are post-commitment.** `p3-batch-stark`'s prover observes the main-trace
+///    commitment and the public values BEFORE it samples them, so the prover fixes its witness
+///    without knowing them. That is the Schwartz–Zippel hypothesis, and it is the deployed
+///    transcript's property, not an assumption.
+/// 2. **The slice can be too short in exactly one pass, and that pass discards constraints.**
+///    `Lookups::from_air` extracts bus interactions under `AirLayout::from_air`, which leaves
+///    `num_permutation_challenges = 0`. Every pass that CONSUMES constraints — the symbolic
+///    quotient-degree pass, the LogUp trace builder, the prover and verifier folders, the debug
+///    checker — is handed the real count.
+/// 3. **So a short slice REFUSES rather than reading a zero.** When
+///    `permutation_randomness().len() < desc.challenges` this arm emits `assert_zero(ONE)`, an
+///    unsatisfiable constraint. A proof produced or accepted under an inadequate challenge supply
+///    cannot verify. `check_descriptor2` refuses the same descriptor one stage earlier, at decode;
+///    this is the backstop, and it is closed, not open. Substituting `ExprEF::ZERO` — the pattern
+///    the table evaluator (`flat_eval::FlatExpr::eval_table`) uses for an out-of-range `Shr` —
+///    would have evaluated the identity AT THE ORIGIN, which a prover can satisfy for free.
+///
+/// ⚠ `chal_gate` is a CALLER-SUPPLIED arm rather than an inline one, because the extension-field
+/// assert needs `ExtensionBuilder + PermutationAirBuilder` and `Ir2UniAir` rides `p3-uni-stark`,
+/// whose folders implement neither. Splitting the WALK would have made the emission order — which
+/// IS the folding order, and which a foreign verifier reproduces — an artifact of two functions.
+/// So the walk stays single and the one arm that needs more capability is passed in. The uni-stark
+/// caller supplies a FAIL-CLOSED arm (an unsatisfiable constraint), and `Ir2UniAir::new` has
+/// already refused every descriptor that carries a `ChalGate`, so it is unreachable there rather
+/// than silently skipped.
+fn eval_row_local_constraints<AB, C>(
+    desc: &EffectVmDescriptor2,
+    compiled: &crate::flat_eval::CompiledMain,
+    builder: &mut AB,
+    local: &[AB::Var],
+    next: &[AB::Var],
+    pv: &[AB::Expr],
+    mut chal_gate: C,
+) where
+    AB: AirBuilder,
+    AB::F: PrimeField32,
+    C: FnMut(&mut AB, &ChalGateSpec, &crate::flat_eval::FlatExpr, &[AB::Var], &[AB::Var]),
+{
+    use crate::flat_eval::CompiledK;
+    // `compiled` is built by the `Ir2Air` constructors from THIS descriptor, index-parallel to
+    // `constraints`; the zip below is exact and the kind-mismatch arms are structurally
+    // unreachable. The tapes replay the boxed trees operation-for-operation (`flat_eval`
+    // module header), so every `(sel, body)` here is the same polynomial the tree walk built.
+    debug_assert_eq!(desc.constraints.len(), compiled.constraints.len());
+    let mut stack: Vec<AB::Expr> = Vec::new();
+    for (k, ck) in desc.constraints.iter().zip(&compiled.constraints) {
+        // `(selector, body)`. `None` means the WHOLE domain — no multiplier at all, so the
+        // emitted polynomial is the body itself and a foreign verifier folds `C` unmultiplied.
+        let (sel, body): (Option<AB::Expr>, AB::Expr) = match (k, ck) {
+            // ⚑ `Gate` is asserted on the TRANSITION domain, not every row — so it is VACUOUS on
+            // the last row. That is the deployed semantics and Lean models it exactly
+            // (`VmConstraint.holdsVm .gate` is `True` when `isLast`), which is why every
+            // `RotatedKernelRefinement*` theorem is scoped to an ACTIVE row. A descriptor that
+            // needs a row-local body on the WHOLE domain must emit `windowGate` with
+            // `onTransition := false` instead — that form is live (the Mina fixture's `C0`).
+            (VmConstraint2::Base(VmConstraint::Gate(_)), CompiledK::Body(f)) => (
+                Some(builder.is_transition()),
+                f.eval_base::<AB>(local, next, &mut stack),
+            ),
+            (VmConstraint2::Base(VmConstraint::Transition { hi, lo }), _) => {
+                let n: AB::Expr = next[EFFECTVM_STATE_BEFORE_BASE + hi].into();
+                let l: AB::Expr = local[EFFECTVM_STATE_AFTER_BASE + lo].into();
+                (Some(builder.is_transition()), n - l)
+            }
+            (VmConstraint2::Base(VmConstraint::Boundary { row, .. }), CompiledK::Body(f)) => (
+                Some(match row {
+                    VmRow::First => builder.is_first_row(),
+                    VmRow::Last => builder.is_last_row(),
+                }),
+                f.eval_base::<AB>(local, next, &mut stack),
+            ),
+            (VmConstraint2::Base(VmConstraint::PiBinding { row, col, pi_index }), _) => (
+                Some(match row {
+                    VmRow::First => builder.is_first_row(),
+                    VmRow::Last => builder.is_last_row(),
+                }),
+                local[*col].into() - pv[*pi_index].clone(),
+            ),
+            // The two-row windowed gate. `on_transition` fires only on the transition (the
+            // cumulative-sum arm); otherwise the body vanishes on every row, wrap row included.
+            (VmConstraint2::WindowGate(w), CompiledK::Body(f)) => (
+                w.on_transition.then(|| builder.is_transition()),
+                f.eval_base::<AB>(local, next, &mut stack),
+            ),
+            // ⚑ THE RECURSION SEAM (Lean `DescriptorIR2.ProofBind.holdsAt`). This arm used to sit
+            // in the `continue` list below with the bus kinds — but unlike them it emitted NO bus
+            // interaction either, so it was the one constraint kind that denoted NOTHING in either
+            // language. It now asserts the same up-to-three polynomials the Lean denotation does:
+            //
+            //   guard·(guard − 1)        the selector is a bit
+            //   guard·(vk − vk_pin)      the attested program is the DECLARED one   [if pinned]
+            //   guard·(commit − bound)   the commitment is the DECLARED row expr    [if bound]
+            //
+            // `vk_pin`/`bound` are `Option`s in the wire IR: `null` means the descriptor DECLARES
+            // it cannot pin that half (the Custom effect dispatches an arbitrary program; its
+            // commitment is derived off-row and bound by the fold's lane-by-lane `connect`). An
+            // absent pin is a VALUE here, countable by a gate — not the silence it replaced.
+            //
+            // ⚑ ONE CONGRUENCE PER LANE (2026-08-05). `commit`/`vk`/`bound` were one expression
+            // each while the objects are eight felts, so the tie was worth 2^31. The arm now emits
+            // `1 + n + n` bodies against the Lean denotation's `1 + n + n` congruences.
+            //
+            // ⚠ A LENGTH MISMATCH IS UNSATISFIABLE, NOT A SHORTER CHECK. `zip` would silently
+            // check the prefix; `ProofBind.holdsAt`'s length conjunct makes the same shape FALSE in
+            // Lean, so the deployed evaluator asserts `1 = 0` instead. Every admission door refuses
+            // such a descriptor first — this is the belt under that brace, and it is what keeps the
+            // two languages' denotations equal rather than merely similar.
+            //
+            // Emitted as its own `assert_zero`s rather than through the shared tail below,
+            // because the arm produces many bodies and the tail asserts exactly one.
+            (VmConstraint2::ProofBind(p), _) => {
+                let guard = p.guard.eval_expr::<AB>(local);
+                builder.assert_zero(guard.clone() * (guard.clone() - AB::Expr::ONE));
+                // ⚑ **THE FOURTH COPY OF A COUPLING THAT WAS AN ARTIFACT — 2026-08-06.** This arm
+                // asserted `1 = 0` whenever `commit.len() != vk.len()`, alongside the same
+                // conjunct in `ProofBindSpec::width_ok`, `DescriptorIR2.ProofBind.widthOk` and
+                // `EffectAirIR.BindLeg.mainRailOk`. Three were the doors and THIS was the decision:
+                // with the doors relaxed and this left in place, a well-formed seam loads, checks,
+                // emits — and the honest trace is UNSATISFIABLE, which is exactly how the Mina
+                // state-hash seam first failed to prove. `commit` is the width of the SENTENCE, `vk`
+                // of the PROGRAM IDENTITY; a 54-lane statement against a nine-lane `Faithful9`
+                // fingerprint is well-formed. Below, `zip` is the only length-sensitive operation
+                // left, and both pins have their OWN length check against the vector they pin.
+                // ⚑ **THE `if let Some(..)` THAT WAS THE DEFECT — 2026-08-10.** These two arms read
+                // `if let Some(b) = &p.bound` / `&p.vk_pin`, and EVERY deployed seam wrote `None`,
+                // so the deployed evaluator emitted zero polynomials over the very lanes the
+                // descriptor's prose said it joined. The `Option` is gone from the type: the
+                // ported arm is now an explicit state that NAMES its cover, and it still emits
+                // nothing — but the emitting nothing is what the descriptor SAYS, checked by the
+                // registry gate, not an absence a reader has to notice.
+                if let Some(pin) = &p.vk_pin {
+                    if pin.len() != p.vk.len() {
+                        builder.assert_zero(AB::Expr::ONE);
+                    }
+                    for (lane, v) in p.vk.iter().zip(pin.iter()) {
+                        builder.assert_zero(
+                            guard.clone() * (lane.eval_expr::<AB>(local) - const_to_expr::<AB>(*v)),
+                        );
+                    }
+                }
+                match &p.bound {
+                    CommitBinding::Bound(b) => {
+                        if b.len() != p.commit.len() {
+                            builder.assert_zero(AB::Expr::ONE);
+                        }
+                        for (lane, expected) in p.commit.iter().zip(b.iter()) {
+                            builder.assert_zero(
+                                guard.clone()
+                                    * (lane.eval_expr::<AB>(local)
+                                        - expected.eval_expr::<AB>(local)),
+                            );
+                        }
+                    }
+                    CommitBinding::Port(_) => {}
+                }
+                continue;
+            }
+            // ⚑ THE CHALLENGE GATE (Lean `DescriptorIR2.ChalConstraint.holdsIn`). Asserted in the
+            // EXTENSION field, because the challenge is an extension element — the same seam the
+            // LogUp gadget's own constraints ride (`ExtensionBuilder::assert_zero_ext`).
+            //
+            // The selector is folded in as an extension multiplication rather than through the
+            // shared base-field tail below, which asserts an `AB::Expr`.
+            (VmConstraint2::ChalGate(g), CompiledK::ChalBody(f)) => {
+                chal_gate(builder, g, f, local, next);
+                continue;
+            }
+            // The bus-bearing kinds carry no row-local algebra — their content is the multiset /
+            // lookup argument, emitted by the caller that HAS a bus.
+            (
+                VmConstraint2::Lookup(_)
+                | VmConstraint2::MemOp(_)
+                | VmConstraint2::MapOp(_)
+                | VmConstraint2::UMemOp(_),
+                _,
+            ) => continue,
+            // The constructor compiles the tape list from the same constraint list; a kind
+            // mismatch here is a compiler defect, and evaluating anything in its place would
+            // change what is constrained.
+            (
+                VmConstraint2::Base(VmConstraint::Gate(_) | VmConstraint::Boundary { .. })
+                | VmConstraint2::WindowGate(_)
+                | VmConstraint2::ChalGate(_),
+                _,
+            ) => unreachable!("flat compilation drifted from the descriptor's constraint list"),
+        };
+        builder.assert_zero(match sel {
+            Some(s) => s * body,
+            None => body,
+        });
+    }
+}
+
+impl<AB> Air<AB> for Ir2Air
+where
+    AB: AirBuilder + PermutationAirBuilder + InteractionBuilder,
+    AB::F: PrimeField32,
+{
+    fn eval(&self, builder: &mut AB) {
+        #[cfg(feature = "eval-count")]
+        crate::eval_census::record::<AB>(match self {
+            Ir2Air::Main { .. } => "main",
+            Ir2Air::LeanTable { air, .. } => &air.name,
+        });
+        let (local, next): (Vec<AB::Var>, Vec<AB::Var>) = {
+            let main = builder.main();
+            (main.current_slice().to_vec(), main.next_slice().to_vec())
+        };
+        match self {
+            // ----------------------------------------------------------------
+            Ir2Air::Main {
+                desc,
+                layout,
+                compiled,
+            } => {
+                let pv: Vec<AB::Expr> = builder.public_values().iter().map(|&v| v.into()).collect();
+
+                // -- The row-local constraints, in DESCRIPTOR LIST ORDER. --
+                //
+                // ⚑ The challenge arm (2026-08-05). See `eval_row_local_constraints`'s header for
+                // why it arrives as a closure, and `ChalExpr` for the Fiat–Shamir story.
+                let declared_challenges = desc.challenges;
+                let mut ext_stack: Vec<AB::ExprEF> = Vec::new();
+                eval_row_local_constraints(
+                    desc,
+                    compiled,
+                    builder,
+                    &local,
+                    &next,
+                    &pv,
+                    |b: &mut AB,
+                     g: &ChalGateSpec,
+                     f: &crate::flat_eval::FlatExpr,
+                     loc: &[AB::Var],
+                     nxt: &[AB::Var]| {
+                        let challenges: Vec<AB::ExprEF> = b
+                            .permutation_randomness()
+                            .iter()
+                            .map(|&r| r.into())
+                            .collect();
+                        if challenges.len() < declared_challenges {
+                            // FAIL CLOSED, never `ExprEF::ZERO`. The only pass that reaches here
+                            // with a short slice is `Lookups::from_air`'s interaction extraction,
+                            // which runs under `AirLayout::from_air` (challenge count 0) and
+                            // DISCARDS every constraint it sees; each pass that keeps constraints
+                            // — the symbolic quotient sizing, the LogUp trace builder, the prover
+                            // and verifier folders, the debug checker — is handed the real slice.
+                            // Substituting a zero would have evaluated the identity AT THE ORIGIN,
+                            // which a prover satisfies for free. `check_descriptor2` refuses the
+                            // same descriptor one stage earlier; this is the closed backstop.
+                            b.assert_zero(AB::Expr::ONE);
+                            return;
+                        }
+                        let body = f.eval_ext::<AB>(loc, nxt, &challenges, &mut ext_stack);
+                        if g.on_transition {
+                            let sel: AB::ExprEF = b.is_transition().into();
+                            b.assert_zero_ext(sel * body);
+                        } else {
+                            b.assert_zero_ext(body);
+                        }
+                    },
+                );
+
+                // -- Chip lookups: each declared tuple queried on the chip bus, every row. --
+                let p2 = LookupBus::new(BUS_P2);
+                for k in &desc.constraints {
+                    if let VmConstraint2::Lookup(l) = k
+                        && l.table == TID_P2
+                    {
+                        let tuple: Vec<AB::Expr> =
+                            l.tuple.iter().map(|e| e.eval_expr::<AB>(&local)).collect();
+                        p2.lookup_key(builder, tuple, AB::Expr::ONE);
+                    }
+                }
+
+                // -- Narrow chip lookups (tuple-narrowing pass): single-output sites query the
+                //    18-wide `[arity, ins, out0]` tuple on the narrow bus, served by the SAME chip
+                //    rows via `CHIP_MULT_NARROW`. Absent for wide-only descriptors (loop is empty). --
+                let p2n = LookupBus::new(BUS_P2_1);
+                for k in &desc.constraints {
+                    if let VmConstraint2::Lookup(l) = k
+                        && l.table == TID_P2_NARROW
+                    {
+                        let tuple: Vec<AB::Expr> =
+                            l.tuple.iter().map(|e| e.eval_expr::<AB>(&local)).collect();
+                        p2n.lookup_key(builder, tuple, AB::Expr::ONE);
+                    }
+                }
+
+                // -- Full-state permutation lookups: a fixed 33-wide
+                //    `[16, input_state16, output_state16]` tuple.  The distinct bus is served by
+                //    the conditionally-present `ChipState16` AIR and is absent from legacy VKs. --
+                let p2s = LookupBus::new(BUS_P2_STATE16);
+                for k in &desc.constraints {
+                    if let VmConstraint2::Lookup(l) = k
+                        && l.table == TID_P2_STATE16
+                    {
+                        let tuple: Vec<AB::Expr> =
+                            l.tuple.iter().map(|e| e.eval_expr::<AB>(&local)).collect();
+                        p2s.lookup_key(builder, tuple, AB::Expr::ONE);
+                    }
+                }
+
+                // -- Lean-emitted exact-public tables. Unlike chip/range subset tables,
+                //    the served capacity is PINNED to the declared multiplicity on the serving
+                //    instance, so global LogUp balance proves exact multiset equality.
+                //
+                //    ⚑ FLAG DAY (2026-08-02, the `ExactPublicTable` Lean cutover): the bus is
+                //    named by ARITY and the TABLE ID is the first TUPLE FIELD, where it used to be
+                //    part of the bus name and absent from the tuple. That is what let the serving
+                //    AIR become a per-arity family a Lean artifact can name; the separation is
+                //    unchanged in strength, because LogUp balance is a multiset equality over
+                //    tuples and the served id lives in the verifier-rebuilt preprocessed matrix.
+                for k in &desc.constraints {
+                    let VmConstraint2::Lookup(l) = k else {
+                        continue;
+                    };
+                    let Some(table) = desc.tables.iter().find(|table| table.id == l.table) else {
+                        continue;
+                    };
+                    if matches!(table.sem, TableSem::ExactPublicRows { .. }) {
+                        let mut tuple: Vec<AB::Expr> = vec![AB::Expr::from_u64(table.id as u64)];
+                        tuple.extend(l.tuple.iter().map(|e| e.eval_expr::<AB>(&local)));
+                        let bus_name = exact_public_bus_name(table.arity);
+                        LookupBus::new(&bus_name).lookup_key(builder, tuple, AB::Expr::ONE);
+                    }
+                }
+
+                // -- Range lookups: the byte-limb realization, every row. --
+                for rb in &layout.0.ranges {
+                    let cols = decomp_cols(rb.bits);
+                    let limbs: Vec<AB::Var> = local[rb.limb0..rb.limb0 + cols].to_vec();
+                    eval_decomp(builder, local[rb.wire].into(), &limbs, rb.bits);
+                }
+
+                // -- Submask lookups: the bitwise a&b=a relation at SUBMASK_BITS. --
+                let mut stack: Vec<AB::Expr> = Vec::new();
+                for (sb, (f_keep, f_held)) in layout.0.submasks.iter().zip(&compiled.submasks) {
+                    let mut keep_recomp = AB::Expr::ZERO;
+                    let mut held_recomp = AB::Expr::ZERO;
+                    let mut w = AB::Expr::ONE;
+                    for i in 0..SUBMASK_BITS {
+                        let kb: AB::Expr = local[sb.keep0 + i].into();
+                        let hb: AB::Expr = local[sb.held0 + i].into();
+                        builder.assert_zero(kb.clone() * (kb.clone() - AB::Expr::ONE));
+                        builder.assert_zero(hb.clone() * (hb.clone() - AB::Expr::ONE));
+                        // Non-amplification, bitwise: keep ⇒ held.
+                        builder.assert_zero(kb.clone() * (AB::Expr::ONE - hb.clone()));
+                        keep_recomp += kb * w.clone();
+                        held_recomp += hb * w.clone();
+                        w = w.clone() + w;
+                    }
+                    builder.assert_zero(
+                        keep_recomp - f_keep.eval_base::<AB>(&local, &next, &mut stack),
+                    );
+                    builder.assert_zero(
+                        held_recomp - f_held.eval_base::<AB>(&local, &next, &mut stack),
+                    );
+                }
+
+                // -- Mem ops: send the instrumented row on the memory log bus. --
+                let mem_log = PermutationCheckBus::new(BUS_MEM_LOG);
+                for k in &desc.constraints {
+                    if let VmConstraint2::MemOp(m) = k {
+                        let fields = [
+                            m.addr.eval_expr::<AB>(&local),
+                            m.value.eval_expr::<AB>(&local),
+                            m.prev_value.eval_expr::<AB>(&local),
+                            m.prev_serial.eval_expr::<AB>(&local),
+                            AB::Expr::from_u64(m.kind.code() as u64),
+                        ];
+                        mem_log.send(builder, fields, m.guard.eval_expr::<AB>(&local));
+                    }
+                }
+
+                // -- Map ops: send the reconciliation row on the map log bus (read/write rows
+                //    are received by the map-ops table; `absent` rows by the map-absent
+                //    table — the op code partitions the one multiset). --
+                let map_log = PermutationCheckBus::new(BUS_MAP_LOG);
+                for k in &desc.constraints {
+                    if let VmConstraint2::MapOp(m) = k {
+                        // The 19-felt log tuple: `[root8 (8), key, value, op, new_root8 (8)]`,
+                        // byte-identical to the `MapOps`/`MapAbsent` table RECEIVE (`map_log_tuple`).
+                        let mut fields: Vec<AB::Expr> = Vec::with_capacity(MAP_LOG_WIDTH);
+                        for r in &m.root {
+                            fields.push(r.eval_expr::<AB>(&local));
+                        }
+                        fields.push(m.key.eval_expr::<AB>(&local));
+                        fields.push(m.value.eval_expr::<AB>(&local));
+                        fields.push(AB::Expr::from_u64(m.op.code() as u64));
+                        for r in &m.new_root {
+                            fields.push(r.eval_expr::<AB>(&local));
+                        }
+                        map_log.send(builder, fields, m.guard.eval_expr::<AB>(&local));
+                    }
+                }
+
+                // -- Universal mem ops: send the instrumented row on the umem log bus. --
+                let umem_log = PermutationCheckBus::new(BUS_UMEM_LOG);
+                for k in &desc.constraints {
+                    if let VmConstraint2::UMemOp(m) = k {
+                        let fields = [
+                            AB::Expr::from_u64(m.domain as u64),
+                            m.key.eval_expr::<AB>(&local),
+                            m.present.eval_expr::<AB>(&local),
+                            m.value.eval_expr::<AB>(&local),
+                            m.prev_present.eval_expr::<AB>(&local),
+                            m.prev_value.eval_expr::<AB>(&local),
+                            m.prev_serial.eval_expr::<AB>(&local),
+                            AB::Expr::from_u64(m.kind.code() as u64),
+                        ];
+                        umem_log.send(builder, fields, m.guard.eval_expr::<AB>(&local));
+                    }
+                }
+            }
+
+            // ----------------------------------------------------------------
+            // ⚑ THE LEAN-AUTHORED TABLE AIRs. This arm is the whole interpreter: it authors NO
+            // algebra, it walks the wire object. What used to sit here was the hand-written
+            // `Ir2Air::MapAbsent` arm — ~120 lines of `assert_zero` / `lookup_key` for the live
+            // in-circuit double-spend gate, in direct violation of architectural law #1. Its
+            // author is now `Dregg2/Circuit/Emit/MapAbsentTableEmit.lean`.
+            //
+            // Gates first, then interactions, each in the emitted order, so the assembled AIR is
+            // constraint-identical to the deleted arm (checked by
+            // `circuit/tests/mapabsent_lean_emission_differential.rs`).
+            Ir2Air::LeanTable {
+                air: t, compiled, ..
+            } => {
+                // ⚑ **THE DEFINITION PRELUDE — this is the memoisation, and it is the whole point
+                // of the `defs` list.** Each shared sub-expression is evaluated ONCE per row into
+                // an `AB::Expr` and every `TableExpr::Shr` then CLONES that value. On the prover's
+                // folder `AB::Expr` is a packed field value, so a clone is a copy of a number and
+                // the polynomial is never re-walked; on the symbolic builder it is an `Rc`, so the
+                // constraint graph is a DAG rather than a re-expanded tree.
+                //
+                // ⚠ An emission that shrank the artifact while the interpreter re-expanded it at
+                // evaluation would be pure theatre — the wire would look fixed and the prover
+                // would pay the same. `defs` is walked ONCE, here, before any gate.
+                //
+                // The left-to-right pass is sound because `LeanTableAir::check` has already
+                // REFUSED any definition that references a later one.
+                // ⚑ THE PREPROCESSED ROW. Empty unless the emission declares `prep_width > 0`;
+                // `LeanTableAir::check` has bounded every `Prep` index against that declaration, so
+                // a table that reads none cannot reach past this slice. ⚠ `preprocessed()` is not
+                // called at all for a prep-free table, so the ten singleton tables reach the
+                // builder's preprocessed window exactly as often as they did before this leaf
+                // existed: never.
+                let prep: Vec<AB::Var> = if t.prep_width == 0 {
+                    Vec::new()
+                } else {
+                    builder.preprocessed().current_slice()[..t.prep_width].to_vec()
+                };
+
+                let mut stack: Vec<AB::Expr> = Vec::new();
+                let mut dv: Vec<AB::Expr> = Vec::with_capacity(t.defs.len());
+                for d in &compiled.defs {
+                    let value = d.eval_table::<AB>(&local, &next, &prep, &dv, &mut stack);
+                    dv.push(value);
+                }
+                for (g, f) in t.gates.iter().zip(&compiled.gates) {
+                    // The ROW FILTER, as a selector FACTOR rather than a filtered sub-builder:
+                    // p3's `FilteredAirBuilder::assert_zero(x)` is literally
+                    // `inner.assert_zero(x * condition)`, and this is the same polynomial. Doing
+                    // it this way keeps `builder` unborrowed across the loop and matches what
+                    // `eval_row_local_constraints` already does for the main instance's boundary
+                    // forms. ⚠ It also costs the gate one degree — `LeanTableAir::max_degree`
+                    // accounts for that, and `ir2_degree_budget` is the tooth.
+                    let sel: Option<AB::Expr> = match g.sel {
+                        TableRowSel::All => None,
+                        TableRowSel::First => Some(builder.is_first_row()),
+                        TableRowSel::Last => Some(builder.is_last_row()),
+                        TableRowSel::Transition => Some(builder.is_transition()),
+                    };
+                    let body = f.eval_table::<AB>(&local, &next, &prep, &dv, &mut stack);
+                    builder.assert_zero(match sel {
+                        Some(s) => s * body,
+                        None => body,
+                    });
+                }
+                for (it, (f_tuple, f_mult)) in t.interactions.iter().zip(&compiled.interactions) {
+                    let tuple: Vec<AB::Expr> = f_tuple
+                        .iter()
+                        .map(|f| f.eval_table::<AB>(&local, &next, &prep, &dv, &mut stack))
+                        .collect();
+                    let mult = f_mult.eval_table::<AB>(&local, &next, &prep, &dv, &mut stack);
+                    match it.op {
+                        TableBusOp::Query => {
+                            LookupBus::new(&it.bus).lookup_key(builder, tuple, mult);
+                        }
+                        TableBusOp::Provide => {
+                            LookupBus::new(&it.bus).table_entry(builder, tuple, mult);
+                        }
+                        TableBusOp::Receive => {
+                            PermutationCheckBus::new(&it.bus).receive(builder, tuple, mult);
+                        }
+                        TableBusOp::Send => {
+                            PermutationCheckBus::new(&it.bus).send(builder, tuple, mult);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ============================================================================
+// `Ir2UniAir` — the SINGLE-TABLE, BUS-FREE descriptor interpreter (uni-stark)
+// ============================================================================
+
+/// **The IR-v2 interpreter for a descriptor that rides plain `p3_uni_stark`.**
+///
+/// [`Ir2Air`] is bounded on `PermutationAirBuilder + InteractionBuilder` because it serves the
+/// multi-table assembly: chip lookups, the memory multiset, the exact-public manifests. The
+/// uni-stark folders (`ProverConstraintFolder` / `VerifierConstraintFolder` / `SymbolicAirBuilder`)
+/// implement neither — they have no permutation trace to speak on — so a descriptor that needs no
+/// bus could not be proven through the uni-stark protocol at all. That gap is why
+/// `circuit/src/bin/mina_stark_fixture.rs` carried a HAND-WRITTEN Rust AIR (law #1 violation,
+/// HORIZONLOG E4). This closes it: the same emitted descriptors, interpreted under the weakest
+/// builder bound p3 has.
+///
+/// ## Two properties this has that [`Ir2Air`] does not, both load-bearing
+///
+/// 1. **It walks `constraints` in LIST ORDER.** `Ir2Air` groups by domain (first-row block,
+///    last-row block, transition block, then every-row) because for a multi-table AIR the order is
+///    immaterial — the accumulator is the prover's and the verifier's alike. It is NOT immaterial
+///    to a FOREIGN verifier: `VerifierConstraintFolder::assert_zero` accumulates
+///    `acc = acc * alpha + C`, so an independent implementation (`bridge/mina-zkapp`'s o1js twin)
+///    must fold in exactly the order the AIR emitted. Walking in list order makes the LEAN
+///    DESCRIPTOR the authority on that order, instead of a Rust traversal's grouping.
+/// 2. **It is fail-closed on every kind it cannot serve.** [`Ir2UniAir::new`] REFUSES a descriptor
+///    that declares tables, hash sites, ranges, or any bus-bearing constraint, rather than
+///    silently dropping them — a dropped lookup is an accepted forgery.
+///
+/// It authors no algebra: every asserted polynomial comes from `eval_expr` over the decoded
+/// descriptor, and the selector comes from the builder's own `is_*_row`. The single `assert_zero`
+/// below is `FilteredAirBuilder::assert_zero`'s own body (`condition * x`), inlined because the
+/// filtered sub-builder cannot be opened per-constraint without re-grouping.
+#[derive(Clone, Debug)]
+pub struct Ir2UniAir {
+    desc: EffectVmDescriptor2,
+    /// The flat compilation of the row-local algebra (`flat_eval`), built by [`Ir2UniAir::new`]
+    /// from the same descriptor. No submasks: `new` refuses every descriptor that declares
+    /// ranges (and submask blocks only arise from range/submask lookups).
+    compiled: Arc<crate::flat_eval::CompiledMain>,
+}
+
+impl Ir2UniAir {
+    /// Wrap a descriptor for the uni-stark route, or REFUSE it.
+    ///
+    /// # Errors
+    /// Returns the reason the descriptor cannot ride a bus-free single-table protocol: declared
+    /// tables / hash sites / ranges, a bus-bearing or EffectVM-layout-specific constraint kind, or
+    /// a column / public-input index outside the declared widths.
+    pub fn new(desc: EffectVmDescriptor2) -> Result<Self, String> {
+        if !desc.tables.is_empty() {
+            return Err(format!(
+                "{}: declares {} table(s); uni-stark has no bus to serve them",
+                desc.name,
+                desc.tables.len()
+            ));
+        }
+        if !desc.hash_sites.is_empty() || !desc.ranges.is_empty() {
+            return Err(format!(
+                "{}: declares {} hash site(s) + {} range(s); both lower to chip/byte lookups",
+                desc.name,
+                desc.hash_sites.len(),
+                desc.ranges.len()
+            ));
+        }
+        for (i, k) in desc.constraints.iter().enumerate() {
+            let kind = match k {
+                VmConstraint2::Base(VmConstraint::Gate(body)) => {
+                    Self::check_cols(&desc, i, body.max_var())?;
+                    continue;
+                }
+                VmConstraint2::Base(VmConstraint::Boundary { body, .. }) => {
+                    Self::check_cols(&desc, i, body.max_var())?;
+                    continue;
+                }
+                VmConstraint2::Base(VmConstraint::PiBinding { col, pi_index, .. }) => {
+                    Self::check_cols(&desc, i, Some(*col))?;
+                    if *pi_index >= desc.public_input_count {
+                        return Err(format!(
+                            "{}: constraint {i} reads public input {pi_index}, but only {} are declared",
+                            desc.name, desc.public_input_count
+                        ));
+                    }
+                    continue;
+                }
+                VmConstraint2::WindowGate(w) => {
+                    Self::check_cols(&desc, i, w.body.max_var())?;
+                    continue;
+                }
+                // `Transition { hi, lo }` indexes the EffectVM state-column bases, which a
+                // free-standing width-N descriptor does not have. Refused rather than
+                // reinterpreted against a layout it does not carry.
+                VmConstraint2::Base(VmConstraint::Transition { .. }) => "base.transition",
+                VmConstraint2::Lookup(_) => "lookup",
+                VmConstraint2::MemOp(_) => "mem_op",
+                VmConstraint2::MapOp(_) => "map_op",
+                VmConstraint2::UMemOp(_) => "umem_op",
+                VmConstraint2::ProofBind(_) => "proof_bind",
+                // ⚑ A challenge gate needs `permutation_randomness()`, which is drawn per LOOKUP
+                // CONTEXT — a uni-stark instance with no bus has none, so the descriptor is
+                // refused here rather than proved against an empty challenge slice.
+                VmConstraint2::ChalGate(_) => "chal_gate",
+            };
+            return Err(format!(
+                "{}: constraint {i} is `{kind}`, which needs the multi-table assembly \
+                 (prove_vm_descriptor2), not the uni-stark route",
+                desc.name
+            ));
+        }
+        let compiled = Arc::new(crate::flat_eval::CompiledMain::compile(
+            &desc,
+            std::iter::empty(),
+        ));
+        Ok(Ir2UniAir { desc, compiled })
+    }
+
+    /// The descriptor this AIR interprets.
+    pub fn descriptor(&self) -> &EffectVmDescriptor2 {
+        &self.desc
+    }
+
+    fn check_cols(
+        desc: &EffectVmDescriptor2,
+        i: usize,
+        max_var: Option<usize>,
+    ) -> Result<(), String> {
+        match max_var {
+            Some(c) if c >= desc.trace_width => Err(format!(
+                "{}: constraint {i} reads column {c}, but trace_width is {}",
+                desc.name, desc.trace_width
+            )),
+            _ => Ok(()),
+        }
+    }
+}
+
+impl<F: PrimeCharacteristicRing + Sync> BaseAir<F> for Ir2UniAir {
+    fn width(&self) -> usize {
+        self.desc.trace_width
+    }
+
+    fn num_public_values(&self) -> usize {
+        self.desc.public_input_count
+    }
+
+    fn max_constraint_degree(&self) -> Option<usize> {
+        // Inferred from the emitted algebra by p3's own symbolic analysis, exactly as
+        // `Ir2Air::Main` does. A hand-declared bound here would be a second, independently
+        // wrong answer to a question the descriptor already answers.
+        None
+    }
+}
+
+impl<AB> Air<AB> for Ir2UniAir
+where
+    AB: AirBuilder,
+    AB::F: PrimeField32,
+{
+    fn eval(&self, builder: &mut AB) {
+        #[cfg(feature = "eval-count")]
+        crate::eval_census::record::<AB>("uni:main");
+        let (local, next): (Vec<AB::Var>, Vec<AB::Var>) = {
+            let main = builder.main();
+            (main.current_slice().to_vec(), main.next_slice().to_vec())
+        };
+        let pv: Vec<AB::Expr> = builder.public_values().iter().map(|&v| v.into()).collect();
+
+        // THE SAME walk `Ir2Air::Main` runs — not a second implementation of it. `Ir2UniAir` is
+        // `Ir2Air::Main` MINUS the bus, and `new` has already refused every descriptor for which
+        // that subtraction would silently drop a constraint, so there is nothing here to skip.
+        eval_row_local_constraints(
+            &self.desc,
+            &self.compiled,
+            builder,
+            &local,
+            &next,
+            &pv,
+            // ⚑ FAIL CLOSED. `Ir2UniAir::new` refuses a `ChalGate` descriptor outright (a
+            // uni-stark instance has no lookup contexts and therefore no challenges), so this arm
+            // is unreachable — and if that refusal is ever weakened, the proof stops verifying
+            // rather than the constraint quietly disappearing.
+            |b: &mut AB,
+             _g: &ChalGateSpec,
+             _f: &crate::flat_eval::FlatExpr,
+             _l: &[AB::Var],
+             _n: &[AB::Var]| {
+                b.assert_zero(AB::Expr::ONE);
+            },
+        );
+    }
+}
+
+// ============================================================================
+// Witness generation (the restructure: chip rows + lookup tuples from hash sites,
+// memory rows from state accesses, map-op rows from boundary reconciliations)
+// ============================================================================
+
+/// Concrete evaluation of a `LeanExpr` over one main row (diagnostic/producer helper).
+pub fn eval_lean_expr(e: &LeanExpr, row: &[BabyBear]) -> BabyBear {
+    eval_c(e, row)
+}
+
+/// Read a whole-domain `WindowExpr` back as the one-row `LeanExpr` it is. `None` as soon as any
+/// `Nxt` leaf appears — that body is genuinely two-row and has no one-row reading.
+fn window_body_as_local(e: &WindowExpr) -> Option<LeanExpr> {
+    Some(match e {
+        WindowExpr::Loc(c) => LeanExpr::Var(*c),
+        WindowExpr::Nxt(_) => return None,
+        WindowExpr::Const(k) => LeanExpr::Const(*k),
+        WindowExpr::Add(a, b) => LeanExpr::Add(
+            Box::new(window_body_as_local(a)?),
+            Box::new(window_body_as_local(b)?),
+        ),
+        WindowExpr::Mul(a, b) => LeanExpr::Mul(
+            Box::new(window_body_as_local(a)?),
+            Box::new(window_body_as_local(b)?),
+        ),
+    })
+}
+
+/// **A constraint's ROW-LOCAL BODY, whichever domain carries it.**
+///
+/// The Lean emitters lower a row-local body two ways that denote the SAME polynomial over the SAME
+/// columns and differ only in the row set it is asserted on:
+///
+///   * `Base(Gate(b))`                     — the TRANSITION domain (vacuous on the last row);
+///   * `WindowGate { b, on_transition: false }` — the WHOLE domain (the last-row hardening form).
+///
+/// WITNESS-SIDE decoders that recover a weld's geometry by pattern-matching the committed
+/// constraint list care about the BODY and never about the domain, so they must go through here.
+/// Matching `VmConstraint::Gate` directly is matching a KIND where the meaning is a BODY: it reads
+/// correct, it compiles, and it silently stops finding anything the moment an emitter moves the
+/// body's domain — which is exactly what the last-row hardening flag day did to every deployed
+/// member, and exactly how it was found (the wide transfer producer refused to dispatch because
+/// `refuse_weld_widen` recovered a geometry from zero surviving `Gate`s).
+///
+/// Returns `None` for a constraint carrying no row-local body at all (`Transition`, the boundary /
+/// PI forms, every bus kind) and for a transition-domain or genuinely two-row `WindowGate`.
+pub fn row_local_body(k: &VmConstraint2) -> Option<std::borrow::Cow<'_, LeanExpr>> {
+    match k {
+        VmConstraint2::Base(VmConstraint::Gate(b)) => Some(std::borrow::Cow::Borrowed(b)),
+        VmConstraint2::WindowGate(w) if !w.on_transition => {
+            window_body_as_local(&w.body).map(std::borrow::Cow::Owned)
+        }
+        _ => None,
+    }
+}
+
+/// Concrete evaluation of a `LeanExpr` over one main row.
+fn eval_c(e: &LeanExpr, row: &[BabyBear]) -> BabyBear {
+    match e {
+        LeanExpr::Var(i) => row[*i],
+        LeanExpr::Const(c) => i64_to_babybear(*c),
+        LeanExpr::Add(a, b) => eval_c(a, row) + eval_c(b, row),
+        LeanExpr::Mul(a, b) => eval_c(a, row) * eval_c(b, row),
+    }
+}
+
+/// Concrete permutation: full aux block (`poseidon2_permute_expr`'s committed
+/// round-state layout) + the squeezed digest (`state[0]` of the last round block).
+fn perm_aux(st: [BabyBear; POSEIDON2_WIDTH]) -> (Vec<BabyBear>, BabyBear) {
+    let aux = poseidon2_permute_aux_witness(st);
+    let digest = aux[aux.len() - POSEIDON2_WIDTH];
+    (aux, digest)
+}
+
+/// The 8 exposed output lanes `state[0..8]` of the final permutation block — the
+/// genuine distinct lanes the chip's widened bus tuple carries (Phase B-GATE).
+/// `perm_lanes(st)[0]` equals `perm_aux(st).1` (the squeezed digest).
+fn perm_lanes(st: [BabyBear; POSEIDON2_WIDTH]) -> [BabyBear; CHIP_OUT_LANES] {
+    let aux = poseidon2_permute_aux_witness(st);
+    let base = aux.len() - POSEIDON2_WIDTH;
+    core::array::from_fn(|i| aux[base + i])
+}
+
+/// Apply the exact Poseidon2 permutation constrained by the IR2 chip and return its complete
+/// 16-lane final state.  This is the honest-witness helper for [`TID_P2_STATE16`]; chaining its
+/// result into the next lookup preserves the capacity lanes required by `hash_many_8`'s
+/// multi-block sponge.  No absorption or length tagging is performed here: callers pass the
+/// already-formed complete state.
+pub fn chip_permute_state16(st: [BabyBear; POSEIDON2_WIDTH]) -> [BabyBear; POSEIDON2_WIDTH] {
+    let aux = poseidon2_permute_aux_witness(st);
+    let base = aux.len() - POSEIDON2_WIDTH;
+    core::array::from_fn(|i| aux[base + i])
+}
+
+/// **Phase B-GATE producer helper: the 7 exposed chip lanes 1..7 of an absorb.** Seeds the
+/// permutation EXACTLY as the chip witness-gen (`build_traces`): the rate-8 inputs, with
+/// `state[4..7]` carrying the arity-blend (`big = arity == 7`, else `state[4] = arity`), and
+/// returns `perm_lanes(seed)[1..8]` — `state[1..8]` of the SINGLE final permutation. This is the
+/// fill every chip-bearing producer writes into a hash site's lane columns so the 17-wide chip
+/// lookup matches (`out[i] == lane[i]`); a forged lane is UNSAT. `arity ≤ CHIP_RATE`.
+// crypto index loops kept verbatim
+#[allow(clippy::needless_range_loop)]
+pub(crate) fn chip_absorb_lanes(
+    arity: usize,
+    inputs: &[BabyBear],
+) -> [BabyBear; CHIP_OUT_LANES - 1] {
+    debug_assert!(arity <= CHIP_RATE && inputs.len() >= arity.min(CHIP_RATE));
+    let big = arity == 7;
+    let wide = arity == CHIP_WIDE_ARITY;
+    let node8 = arity == CHIP_NODE8_ARITY;
+    let seed456 = big || wide || node8;
+    let mut st = [BabyBear::ZERO; POSEIDON2_WIDTH];
+    for i in 0..4 {
+        st[i] = inputs.get(i).copied().unwrap_or(BabyBear::ZERO);
+    }
+    if seed456 {
+        st[4] = inputs.get(4).copied().unwrap_or(BabyBear::ZERO);
+        st[5] = inputs.get(5).copied().unwrap_or(BabyBear::ZERO);
+        st[6] = inputs.get(6).copied().unwrap_or(BabyBear::ZERO);
+    } else {
+        st[4] = BabyBear::new(arity as u32);
+    }
+    // The wide carrier/limb tail (lanes 7..10) AND the node8 second-child tail (lanes 11..15):
+    // seeded from the genuine (zero-padded) inputs on EVERY arity — BYTE-IDENTICAL to the chip-row
+    // gather (`for i in 7..CHIP_NODE8_ARITY { st[i] = in_i }`, no flag guard). Narrow live arities
+    // (≤ 7) zero-pad in7.., so this is a no-op for them; the wide commitment's arity-9 final
+    // (`prev8 ‖ iroot`, 9 real inputs) seeds in7/in8; node8's 16 real inputs seed all 16 lanes.
+    let _ = (wide, node8);
+    for i in 7..CHIP_NODE8_ARITY {
+        st[i] = inputs.get(i).copied().unwrap_or(BabyBear::ZERO);
+    }
+    let lanes = perm_lanes(st);
+    core::array::from_fn(|j| lanes[j + 1])
+}
+
+/// **THE chip-faithful 8-lane absorb (Phase B-ROTATION wide carriers).** Returns ALL 8 output
+/// lanes `state[0..8]` of the SINGLE permutation the chip table derives for a `(arity, inputs)`
+/// lookup — seeding lanes 0..6/7..10 BYTE-IDENTICALLY to the chip-row gather (the `seed456` blend
+/// and the unconditional `st[7..11] = in7..in10` tail). This is the column fill a wide-commitment
+/// producer writes into EACH 8-felt carrier (`out0..out7` of the wide chip tuple), so the AIR's
+/// `out[i] == lane[i]` equality holds on every carrier and the 8-felt commit binds. Lane 0 is the
+/// squeezed digest (out0); `chip_absorb_lanes` returns exactly lanes 1..7 of this. Unlike
+/// `chip_absorb_lanes` it ALWAYS seeds the wide tail (matching the chip gather's
+/// `for i in 7..CHIP_WIDE_ARITY { st[i] = in_i }`), so the arity-9 final (which seeds genuine
+/// in7/in8) is faithful. `arity ≤ CHIP_RATE`; `inputs` is read up to `CHIP_RATE`, zero-padded.
+// crypto index loops kept verbatim
+#[allow(clippy::needless_range_loop)]
+pub fn chip_absorb_all_lanes(arity: usize, inputs: &[BabyBear]) -> [BabyBear; CHIP_OUT_LANES] {
+    debug_assert!(arity <= CHIP_RATE);
+    let big = arity == 7;
+    let wide = arity == CHIP_WIDE_ARITY;
+    let node8 = arity == CHIP_NODE8_ARITY;
+    let seed456 = big || wide || node8;
+    let mut st = [BabyBear::ZERO; POSEIDON2_WIDTH];
+    for i in 0..4 {
+        st[i] = inputs.get(i).copied().unwrap_or(BabyBear::ZERO);
+    }
+    if seed456 {
+        st[4] = inputs.get(4).copied().unwrap_or(BabyBear::ZERO);
+        st[5] = inputs.get(5).copied().unwrap_or(BabyBear::ZERO);
+        st[6] = inputs.get(6).copied().unwrap_or(BabyBear::ZERO);
+    } else {
+        st[4] = BabyBear::new(arity as u32);
+    }
+    // The wide carrier/limb tail (lanes 7..10) AND the node8 second-child tail (lanes 11..15):
+    // seeded from the genuine (zero-padded) inputs on EVERY arity — byte-identical to the chip-row
+    // gather (`for i in 7..CHIP_NODE8_ARITY`). node8 (arity 16) seeds all 16 lanes = WIDTH.
+    for i in 7..CHIP_NODE8_ARITY {
+        st[i] = inputs.get(i).copied().unwrap_or(BabyBear::ZERO);
+    }
+    perm_lanes(st)
+}
+
+/// **THE honest chip absorb row — ONE source, shared by the prover and the admission probe.**
+///
+/// `build_traces` commits exactly this row for each distinct `(arity, in0..in15)` absorb key in a
+/// descriptor's chip histogram, and [`chip_air_row_accepts`] hands the SAME row to the deployed
+/// chip table AIR's evaluator. It is factored out precisely so that a gate asking "does the chip
+/// admit this arity?" cannot answer out of a re-typed copy of the witness generator's rules: it
+/// answers by RUNNING the generator and then running the AIR.
+///
+/// `tuple` is the `[arity, in0..in15, out0..out7]` chip key (`CHIP_TUPLE_LEN` wide); only the
+/// `[arity, in0..in15]` prefix is read — the eight output lanes are DERIVED here from the genuine
+/// permutation, never trusted from the consumer's tuple, so the AIR's `out[i] == lane[i]`
+/// equalities hold by construction. `narrow_mult` is the row's `BUS_P2_1` service count.
+pub(crate) fn chip_absorb_row(tuple: &[u32], mult: u64, narrow_mult: u64) -> Vec<BabyBear> {
+    let arity_u = tuple[CHIP_ARITY];
+    let big_row = arity_u == 7;
+    let wide_row = arity_u as usize == CHIP_WIDE_ARITY;
+    let node8_row = arity_u as usize == CHIP_NODE8_ARITY;
+    // `seed456`: lanes 4/5/6 carry genuine in4/in5/in6 (rate-8 leaf, wide step, OR node8).
+    let seed456 = big_row || wide_row || node8_row;
+    let mut row = vec![BabyBear::ZERO; CHIP_AUX0];
+    // Copy only the [arity, in0..in15] prefix from the tuple; the out0..out7 lanes are
+    // DERIVED below from the genuine permutation (never trusted from the consumer's
+    // tuple), so the AIR's `out[i] == lane[i]` equality constraints hold by construction.
+    for j in 0..=CHIP_RATE {
+        row[j] = BabyBear::new(tuple[j]);
+    }
+    row[CHIP_MULT] = BabyBear::new((mult % (BABYBEAR_P as u64)) as u32);
+    row[CHIP_IS_FACT] = BabyBear::ZERO;
+    row[CHIP_BIG] = if big_row {
+        BabyBear::ONE
+    } else {
+        BabyBear::ZERO
+    };
+    row[CHIP_WIDE] = if wide_row {
+        BabyBear::ONE
+    } else {
+        BabyBear::ZERO
+    };
+    row[CHIP_NODE8] = if node8_row {
+        BabyBear::ONE
+    } else {
+        BabyBear::ZERO
+    };
+    // Seed-source columns, mirroring the AIR's S4/S5/S6 blend (is_fact = 0 here).
+    if seed456 {
+        row[CHIP_S4] = BabyBear::new(tuple[CHIP_IN0 + 4]);
+        row[CHIP_S5] = BabyBear::new(tuple[CHIP_IN0 + 5]);
+        row[CHIP_S6] = BabyBear::new(tuple[CHIP_IN0 + 6]);
+    } else {
+        row[CHIP_S4] = BabyBear::new(arity_u); // arity tag
+        row[CHIP_S5] = BabyBear::ZERO; // is_fact·FACT_MARK = 0
+        row[CHIP_S6] = BabyBear::ZERO; // is_fact = 0
+    }
+    // Seed the permutation from the SAME source columns the AIR reads.
+    let mut st = [BabyBear::ZERO; POSEIDON2_WIDTH];
+    st[..4].copy_from_slice(&row[CHIP_IN0..CHIP_IN0 + 4]);
+    st[4] = row[CHIP_S4];
+    st[5] = row[CHIP_S5];
+    st[6] = row[CHIP_S6];
+    // Carrier/limb tail (lanes 7..15): genuine inputs on the wide (7..10) + node8 (7..15)
+    // rows, pinned 0 on every narrow arity (the tuple's in7.. are zero there), matching the
+    // AIR seeding. node8 (arity 16) seeds all 16 lanes = WIDTH.
+    st[7..CHIP_NODE8_ARITY].copy_from_slice(&row[CHIP_IN0 + 7..CHIP_IN0 + CHIP_NODE8_ARITY]);
+    // Fill the 8 exposed output lanes from the genuine final permutation state.
+    let lanes = perm_lanes(st);
+    row[CHIP_OUT..CHIP_OUT + CHIP_OUT_LANES].copy_from_slice(&lanes[..CHIP_OUT_LANES]);
+    let (aux, _digest) = perm_aux(st);
+    row.extend(aux);
+    row.push(BabyBear::new((narrow_mult % (BABYBEAR_P as u64)) as u32));
+    row
+}
+
+/// **THE CHIP-ADMISSION PROBE — the deployed AIR answering about its own admitted arities.**
+///
+/// Builds the honest chip row the DEPLOYED witness generator emits for the absorb
+/// `(arity, inputs)` — literally [`chip_absorb_row`], the function `build_traces` calls — and
+/// runs the DEPLOYED chip table AIR's constraint evaluator over it. Returns `true` iff every chip
+/// constraint vanishes on that row.
+///
+/// This is what makes the admitted arity set DERIVABLE rather than restatable. The chip AIR
+/// carries its admission as a degree-7 product over the arity column and its per-lane
+/// "inputs beyond the arity are ZERO" pins as further products; nothing in the AIR names the
+/// admitted values as a list, and nothing outside it should either. Two questions this answers,
+/// both by execution:
+///
+///  * **is arity `a` admitted at all?** — `chip_air_row_accepts(a, [0; CHIP_RATE])`. An
+///    inadmissible `a` leaves the admission product non-zero and no witness can rescue it, so the
+///    descriptor that asks for it is UNPROVABLE (`guarded-hiding-span-…-blind5-v1` asks for 8 and
+///    14; the pre-`57105f387` wide blinded tooth asked for 9).
+///  * **does lane `i` genuinely enter the preimage at arity `a`?** —
+///    `chip_air_row_accepts(a, e_i)` for the unit input `e_i`. If the AIR pins lane `i` to zero at
+///    that arity, a non-zero there is unsatisfiable and this is `false`.
+///
+/// Row-local only, exactly like [`ir2_eval_accepts`]: the chip's bus sends are the cross-table
+/// multiset leg and are swallowed. That is the whole of the Chip arm's own algebra — the
+/// admission product, the `big`/`wide`/`node8` selector gates, the input-lane pins, the S4/S5/S6
+/// seed blend and the full Poseidon2 permutation with its output-lane equalities.
+/// **The HONEST chip row the deployed witness generator emits** for an absorb at `arity` over
+/// `inputs` — `chip_absorb_row`, the very function `build_traces` calls, at multiplicity 1.
+///
+/// Exposed so a differential can measure the emitted table AIR against the prover's OWN row rather
+/// than against a row the test built: a hand-constructed witness would make both poles of a sweep
+/// statements about the test's arithmetic, not the deployed generator's.
+pub fn chip_honest_row(arity: u32, inputs: &[BabyBear]) -> Vec<BabyBear> {
+    let mut tuple = vec![0u32; CHIP_TUPLE_LEN];
+    tuple[CHIP_ARITY] = arity;
+    for i in 0..CHIP_RATE {
+        tuple[CHIP_IN0 + i] = inputs.get(i).copied().unwrap_or(BabyBear::ZERO).as_u32();
+    }
+    chip_absorb_row(&tuple, 1, 0)
+}
+
+pub fn chip_air_row_accepts(arity: u32, inputs: &[BabyBear]) -> bool {
+    let row: Vec<P3BabyBear> = chip_honest_row(arity, inputs)
+        .iter()
+        .map(|&x| to_p3(x))
+        .collect();
+    let mut builder = Ir2RowLocalBuilder {
+        local: &row,
+        next: &row,
+        public_values: &[],
+        prep: p3_air::RowWindow::from_two_rows(&[], &[]),
+        row: 0,
+        height: 1,
+        failed: false,
+    };
+    Ir2Air::lean_table(crate::table_air::chip_table_air_shared()).eval(&mut builder);
+    !builder.failed
+}
+
+/// **Phase B-GATE generic chip-lane fill.** For every declared `TID_P2` chip lookup, read the
+/// absorb's INPUT values off the row, compute the genuine permutation lanes 1..7
+/// (`chip_absorb_lanes`), and write them into the lookup's lane columns (the last
+/// `CHIP_OUT_LANES - 1` tuple elements, each a `.var`). Descriptor-driven, so a producer can never
+/// misalign with the emitted tuple; out0 (the digest) is assumed already filled by the caller's
+/// hash chain. This is the exact column fill the AIR's `out[i] == lane[i]` equality demands — a
+/// forged lane is UNSAT (`ir2_forged_output_lane_refuses`). Idempotent on the lane columns.
+// crypto index loops kept verbatim
+#[allow(clippy::needless_range_loop)]
+pub fn fill_chip_lanes(desc: &EffectVmDescriptor2, row: &mut [BabyBear]) {
+    for k in &desc.constraints {
+        let VmConstraint2::Lookup(l) = k else {
+            continue;
+        };
+        if l.table != TID_P2 {
+            continue;
+        }
+        // tuple = [arity, in0..in7, out0, lane1..lane7]; the arity tag is tuple[0].
+        let arity = eval_c(&l.tuple[0], row).as_u32() as usize;
+        let ins: [BabyBear; CHIP_RATE] = core::array::from_fn(|i| eval_c(&l.tuple[1 + i], row));
+        let lanes = chip_absorb_lanes(arity, &ins);
+        for j in 0..(CHIP_OUT_LANES - 1) {
+            let LeanExpr::Var(col) = l.tuple[CHIP_RATE + 2 + j] else {
+                panic!("chip lookup lane column {j} must be a bare Var");
+            };
+            row[col] = lanes[j];
+        }
+    }
+}
+
+/// **`weld_owned_cols`** — every column a PROVE-TIME descriptor weld fills for the producer, i.e.
+/// exactly the columns [`trace_with_chip_lanes`] is entitled to find at zero.
+///
+/// Two welds exist and this must name both, because the set is used to decide whether a short
+/// producer row may be zero-padded:
+///
+///  * the `TID_P2` chip LANE columns (lanes 1..7 of each absorb) — [`fill_chip_lanes`];
+///  * the gentian capacity-floor refuse aux block — `bare_floor_refuse_weld::fill_refuse_aux`.
+///
+/// `out0` (the digest) is NOT here: the producer's hash chain owns it.
+pub fn weld_owned_cols(desc: &EffectVmDescriptor2) -> Vec<usize> {
+    let mut cols: Vec<usize> = Vec::new();
+    for k in &desc.constraints {
+        let VmConstraint2::Lookup(l) = k else {
+            continue;
+        };
+        if l.table != TID_P2 {
+            continue;
+        }
+        // `.get`, not `[..]`: this runs on the PUBLIC entry points BEFORE `check_descriptor2`, so a
+        // malformed tuple must leave the refusal to that function rather than panicking here.
+        for j in 0..(CHIP_OUT_LANES - 1) {
+            if let Some(LeanExpr::Var(col)) = l.tuple.get(CHIP_RATE + 2 + j) {
+                cols.push(*col);
+            }
+        }
+    }
+    cols.extend(crate::effect_vm::bare_floor_refuse_weld::refuse_written_cols(desc));
+    cols.sort_unstable();
+    cols.dedup();
+    cols
+}
+
+/// **`read_cols`** — every column the descriptor READS: through a constraint of any kind, a hash
+/// site, or a range tooth. PI pins are included here (unlike `UnforcedPiPins.forcedCols`, whose
+/// question is the opposite one), because a pinned column's value is published and therefore
+/// matters even if nothing else touches it.
+///
+/// A column NOT in this set is dead: no equation of the AIR mentions it, so zero-padding it is
+/// value-preserving by the same argument the E1 kill-set is built on.
+pub fn read_cols(desc: &EffectVmDescriptor2) -> Vec<usize> {
+    fn e(x: &LeanExpr, out: &mut Vec<usize>) {
+        match x {
+            LeanExpr::Var(v) => out.push(*v),
+            LeanExpr::Const(_) => {}
+            LeanExpr::Add(a, b) | LeanExpr::Mul(a, b) => {
+                e(a, out);
+                e(b, out);
+            }
+        }
+    }
+    fn w(x: &WindowExpr, out: &mut Vec<usize>) {
+        match x {
+            WindowExpr::Loc(c) | WindowExpr::Nxt(c) => out.push(*c),
+            WindowExpr::Const(_) => {}
+            WindowExpr::Add(a, b) | WindowExpr::Mul(a, b) => {
+                w(a, out);
+                w(b, out);
+            }
+        }
+    }
+    // ⚑ The challenge-gate walker. A `Chal(i)` leaf reads NO trace column, so it contributes
+    // nothing here — which is the point: a challenge is not a column, and a census of "which
+    // columns does a constraint force" must not invent one for it.
+    fn ce(x: &ChalExpr, out: &mut Vec<usize>) {
+        match x {
+            ChalExpr::Loc(c) | ChalExpr::Nxt(c) => out.push(*c),
+            ChalExpr::Const(_) | ChalExpr::Chal(_) => {}
+            ChalExpr::Add(a, b) | ChalExpr::Mul(a, b) => {
+                ce(a, out);
+                ce(b, out);
+            }
+        }
+    }
+    let mut out: Vec<usize> = Vec::new();
+    for c in &desc.constraints {
+        // Every arm below DESTRUCTURES; this function authors nothing. (`law1_enforcement_gate`
+        // agrees — it classifies construction against destructuring syntactically, and
+        // `descriptor_ir2.rs`'s authored score is unchanged by this file's addition.)
+        match c {
+            VmConstraint2::Base(VmConstraint::Gate(body)) => e(body, &mut out),
+            VmConstraint2::Base(VmConstraint::Boundary { body, .. }) => e(body, &mut out),
+            VmConstraint2::Base(VmConstraint::PiBinding { col, .. }) => out.push(*col),
+            VmConstraint2::Base(VmConstraint::Transition { hi, lo }) => {
+                out.push(EFFECTVM_STATE_BEFORE_BASE + hi);
+                out.push(EFFECTVM_STATE_AFTER_BASE + lo);
+            }
+            VmConstraint2::Lookup(l) => l.tuple.iter().for_each(|x| e(x, &mut out)),
+            VmConstraint2::MemOp(m) => {
+                for x in [&m.guard, &m.addr, &m.value, &m.prev_value, &m.prev_serial] {
+                    e(x, &mut out);
+                }
+            }
+            VmConstraint2::MapOp(m) => {
+                for x in [&m.guard, &m.key, &m.value] {
+                    e(x, &mut out);
+                }
+                for x in m.root.iter().chain(m.new_root.iter()) {
+                    e(x, &mut out);
+                }
+            }
+            VmConstraint2::UMemOp(m) => {
+                for x in [
+                    &m.guard,
+                    &m.key,
+                    &m.present,
+                    &m.value,
+                    &m.prev_present,
+                    &m.prev_value,
+                    &m.prev_serial,
+                ] {
+                    e(x, &mut out);
+                }
+            }
+            VmConstraint2::ProofBind(p) => {
+                // ⚑ Every LANE is a read column since the widening — a seam that named limb 0
+                // touched one column and now touches the whole digest block.
+                e(&p.guard, &mut out);
+                for x in p.commit.iter().chain(p.vk.iter()) {
+                    e(x, &mut out);
+                }
+                if let CommitBinding::Bound(b) = &p.bound {
+                    for x in b {
+                        e(x, &mut out);
+                    }
+                }
+            }
+            VmConstraint2::WindowGate(g) => w(&g.body, &mut out),
+            VmConstraint2::ChalGate(g) => ce(&g.body, &mut out),
+        }
+    }
+    for h in &desc.hash_sites {
+        out.push(h.digest_col);
+        for i in &h.inputs {
+            if let HashInput::Col(c) = i {
+                out.push(*c);
+            }
+        }
+    }
+    for r in &desc.ranges {
+        out.push(r.wire);
+    }
+    out.retain(|c| *c < desc.trace_width);
+    out.sort_unstable();
+    out.dedup();
+    out
+}
+
+/// **`producer_owned_width`** — the width a producer's rows MUST reach before the pad in
+/// [`trace_with_chip_lanes`] is honest: one past the highest column that is READ by the AIR and
+/// filled by no prove-time weld.
+///
+/// ⚑ "READ by the AIR" and not merely "< `trace_width`", for two reasons that pull the same way.
+/// Completeness: several deployed members carry a dead stride-tail above the gentian refuse block,
+/// and demanding a producer supply it would refuse honest traces for nothing — a dead column's
+/// value is unobservable, which is the same argument the E1 kill-set rests on. Soundness: keying on
+/// what is READ makes the bound survive a block being appended ABOVE a weld-owned one. Keying it on
+/// "everything from the refuse base upward" would silently mark such a block weld-owned and go
+/// quiet exactly where it is needed — and that arrangement is not hypothetical, it is what the
+/// staged `EffectVmEffectsHashPin` produces when applied after the gentian weld.
+///
+/// ⚑ WHY THIS EXISTS. `trace_with_chip_lanes` zero-`resize`s every short row up to
+/// `desc.trace_width` so the appended lane columns exist before the weld writes them — a real
+/// affordance, since a producer need not know the chip-lane geometry. But the resize ran BEFORE
+/// `prove_vm_descriptor2_inner`'s `base_trace[0].len() != desc.trace_width` check, so that check
+/// could never fail on the public entry points and the pad was UNBOUNDED: a producer that had not
+/// been updated for a newly appended, genuinely PRODUCER-OWNED block handed in short rows, the
+/// prover silently folded the block over zeros, and it PROVED. A silent pass, in the one place
+/// whose whole job is to refuse.
+///
+/// (`circuit/src/refusal.rs`'s `assert_committed_shape` and `heap_write_roundtrip.rs`'s
+/// `a_misshaped_trace_reds_instead_of_counting_as_a_refusal` both RECORD this asymmetry — "a row
+/// one column SHORT of `trace_width` PROVES" — as something teeth had to work around. It is now
+/// the prover's own refusal, so the workaround is a belt and no longer the only barrier.)
+///
+/// The bound is DERIVED from the descriptor rather than being a constant, so appending any new
+/// producer-owned block automatically tightens it: the pad may only ever cover weld-owned columns.
+pub fn producer_owned_width(desc: &EffectVmDescriptor2) -> usize {
+    let weld = weld_owned_cols(desc);
+    read_cols(desc)
+        .into_iter()
+        .filter(|c| weld.binary_search(c).is_err())
+        .next_back()
+        .map_or(0, |c| c + 1)
+}
+
+fn hash2_state_c(a: BabyBear, b: BabyBear) -> [BabyBear; POSEIDON2_WIDTH] {
+    let mut st = [BabyBear::ZERO; POSEIDON2_WIDTH];
+    st[0] = a;
+    st[1] = b;
+    st[4] = BabyBear::new(2);
+    st
+}
+
+fn fact_state_c(l: BabyBear, r: BabyBear) -> [BabyBear; POSEIDON2_WIDTH] {
+    let mut st = [BabyBear::ZERO; POSEIDON2_WIDTH];
+    st[0] = l;
+    st[1] = r;
+    st[5] = BabyBear::new(FACT_MARK);
+    st[6] = BabyBear::ONE;
+    st
+}
+
+/// Fill one `bits`-wide decomposition (limbs + top bits) of `val`, counting the byte-bus
+/// queries into `hist`. `val` must already be `< 2^bits`.
+fn fill_decomp(
+    val: u32,
+    bits: usize,
+    out: &mut Vec<BabyBear>,
+    hist: &mut [u64; BYTE_TABLE_HEIGHT],
+) {
+    let (n, top_bits) = limb_geom(bits);
+    let partial = top_bits < LIMB_BITS;
+    for i in 0..n {
+        let byte = limb_at(val, i);
+        out.push(BabyBear::new(byte));
+        if !(i == n - 1 && partial) {
+            hist[byte as usize] += 1;
+        }
+    }
+    if partial {
+        let top = limb_at(val, n - 1);
+        for b in 0..top_bits {
+            out.push(BabyBear::new((top >> b) & 1));
+        }
+    }
+}
+
+/// [`fill_decomp`] written AT AN EXPLICIT COLUMN rather than appended.
+///
+/// The two produce identical bytes; what differs is who decides WHERE they land. `fill_decomp`'s
+/// push form is correct for the auxiliary TABLE rows (memory/boundary), whose blocks are both
+/// allocated and filled in one pass, so push order IS the layout. It is NOT correct for the MAIN
+/// trace, whose blocks are allocated interleaved with the submask blocks in constraint order —
+/// see [`fill_main_layout_row`] for the failure that made the distinction load-bearing.
+fn fill_decomp_at(
+    val: u32,
+    bits: usize,
+    out: &mut [BabyBear],
+    at: usize,
+    hist: &mut [u64; BYTE_TABLE_HEIGHT],
+) {
+    let (n, top_bits) = limb_geom(bits);
+    let partial = top_bits < LIMB_BITS;
+    for i in 0..n {
+        let byte = limb_at(val, i);
+        out[at + i] = BabyBear::new(byte);
+        if !(i == n - 1 && partial) {
+            hist[byte as usize] += 1;
+        }
+    }
+    if partial {
+        let top = limb_at(val, n - 1);
+        for b in 0..top_bits {
+            out[at + n + b] = BabyBear::new((top >> b) & 1);
+        }
+    }
+}
+
+/// **THE SINGLE SOURCE FOR THE MAIN-TRACE LAYOUT FILL.** Complete one `desc.trace_width` base
+/// row to the full `layout.width` by appending the aux columns the `MainLayout` reserved: the
+/// per-range byte-limb blocks (`fill_decomp`) and the per-submask keep/held bit blocks.
+///
+/// BOTH the deployed prove path ([`build_traces`]) and the row-local accept oracle
+/// ([`ir2_eval_accepts`]) call this, so the oracle evaluates the SAME extended row the prover
+/// commits — a second, drifting filler is exactly the failure this consolidates away.
+///
+/// `hist` accumulates the byte-table histogram the limb lookups send; the oracle passes a
+/// scratch histogram and discards it (the byte bus is not a row-local arm). `check_submask`
+/// gates the prover-side non-amplification PRE-FLIGHT (`keep ⊆ held`) — the in-circuit submask
+/// gates enforce it on every row regardless, so the oracle passes `false` and lets the AIR
+/// speak rather than pre-empting it.
+///
+/// `Err` is the prover's OWN refusal: a value with NO honest layout completion (a range wire
+/// outside `2^bits`, a submask operand outside `2^SUBMASK_BITS`, or an amplified submask under
+/// `check_submask`). Such a base row is unprovable, so the oracle reports it as a reject.
+///
+/// ⚑ **EVERY BLOCK IS WRITTEN AT ITS DECLARED COLUMN — `rb.limb0` / `sb.keep0` / `sb.held0` —
+/// NEVER BY PUSH ORDER, AND THAT IS A BUG FIX, NOT A STYLE CHOICE (2026-07-31).**
+///
+/// `MainLayout::build` allocates aux blocks in ONE pass over `desc.constraints`, so ranges and
+/// submasks are INTERLEAVED in constraint order. This filler used to append them in TWO passes —
+/// every range, then every submask. The two agree only while no range lookup follows a submask
+/// lookup, which was true of every deployed member until the fields-canonicity emit appended 192
+/// range lookups to all of them. In the three members whose `submaskLookup` is constraint 0
+/// (`attenuateVmDescriptor2R24`, `attenuateCapOpenEffVmDescriptor2R24`,
+/// `delegateAttenWriteCapOpenVmDescriptor2R24`) every canon9 limb block was then filled
+/// `2·SUBMASK_BITS = 60` columns BELOW where the AIR reads it, and the submask's own bits landed
+/// 60·(nothing) above — so an HONEST cap-write trace went UNSAT.
+///
+/// It read as a canonicity refusal and it was not one: the diagnosis is that the failures were
+/// `recomposed − value` on blocks whose value was ZERO, which no range check can produce. Writing
+/// at the declared column makes the filler's order irrelevant, so the next emit that reorders
+/// lookups cannot resurrect this. The AIR and the VK are UNTOUCHED — the allocator, which defines
+/// both, is the authority here and the filler was the one that had drifted.
+fn fill_main_layout_row(
+    base_row: &[BabyBear],
+    layout: &MainLayout,
+    ri: usize,
+    hist: &mut [u64; BYTE_TABLE_HEIGHT],
+    check_submask: bool,
+) -> Result<Vec<BabyBear>, String> {
+    let mut row = base_row.to_vec();
+    if row.len() < layout.width {
+        row.resize(layout.width, BabyBear::ZERO);
+    }
+    for rb in &layout.ranges {
+        let v = base_row[rb.wire].as_u32();
+        if !value_fits_bits(v, rb.bits) {
+            return Err(format!(
+                "row {ri}: range wire {} value {v} >= 2^{}",
+                rb.wire, rb.bits
+            ));
+        }
+        fill_decomp_at(v, rb.bits, &mut row, rb.limb0, hist);
+    }
+    for sb in &layout.submasks {
+        let keep = eval_c(&sb.keep, base_row).as_u32();
+        let held = eval_c(&sb.held, base_row).as_u32();
+        for v in [keep, held] {
+            if (v as u64) >= (1u64 << SUBMASK_BITS) {
+                return Err(format!("row {ri}: submask operand {v} >= 2^{SUBMASK_BITS}"));
+            }
+        }
+        if check_submask && (keep & held) != keep {
+            return Err(format!(
+                "row {ri}: submask violation: keep {keep:#x} ⊄ held {held:#x}"
+            ));
+        }
+        for i in 0..SUBMASK_BITS {
+            row[sb.keep0 + i] = BabyBear::new((keep >> i) & 1);
+            row[sb.held0 + i] = BabyBear::new((held >> i) & 1);
+        }
+    }
+    debug_assert_eq!(row.len(), layout.width);
+    Ok(row)
+}
+
+fn next_pow2(n: usize) -> usize {
+    n.next_power_of_two().max(MIN_TABLE_HEIGHT)
+}
+
+fn to_matrix(rows: &[Vec<BabyBear>]) -> RowMajorMatrix<P3BabyBear> {
+    let width = rows[0].len();
+    let values: Vec<P3BabyBear> = rows
+        .iter()
+        .flat_map(|row| row.iter().map(|&v| to_p3(v)))
+        .collect();
+    RowMajorMatrix::new(values, width)
+}
+
+/// The witness-supplied memory boundary: the declared address list (STRICTLY increasing,
+/// each `< 2^30`) and the initial image over it. The final image is computed by replaying
+/// the gathered log. Lean's `(minit, mfin, maddrs)` triple.
+#[derive(Clone, Debug, Default)]
+pub struct MemBoundaryWitness {
+    /// Declared addresses, strictly increasing.
+    pub addrs: Vec<u32>,
+    /// Initial value per declared address (same length as `addrs`).
+    pub init_vals: Vec<u32>,
+}
+
+/// The witness-supplied UNIVERSAL memory boundary: the declared `(domain, key)` address list
+/// (domain-major lexicographically STRICTLY increasing; keys are full felts) and the initial
+/// `Option` image over it. The final image is computed by replaying the gathered universal
+/// log. Lean's `(uinit, ufin, uaddrs)` triple of `Satisfied2U`.
+#[derive(Clone, Debug, Default)]
+pub struct UMemBoundaryWitness {
+    /// Declared `(domain, key)` addresses, lexicographically strictly increasing.
+    pub addrs: Vec<(u32, BabyBear)>,
+    /// Initial `Option` cell per declared address (same length as `addrs`).
+    pub init_vals: Vec<Option<BabyBear>>,
+}
+
+impl UMemBoundaryWitness {
+    fn is_empty(&self) -> bool {
+        self.addrs.is_empty() && self.init_vals.is_empty()
+    }
+}
+
+/// Which non-main tables the descriptor actually USES — a function of the constraint
+/// list (and the resolved layout) ALONE, so prover and verifier compute the same set.
+/// Absent tables are NOT committed: FRI opening cost is per-query × the row width of
+/// every committed matrix, so a declared-but-unused table is pure proof-size regression.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct Presence {
+    /// Chip table: any chip lookup, or any map op (the openings' permutations ride it).
+    chip: bool,
+    /// Raw full-state permutation table: present only for a wire-id-9 state16 lookup.  Kept
+    /// separate from `chip` so existing descriptors retain their exact AIR instance list/VK.
+    chip_state16: bool,
+    /// Byte table: any range-lookup limb, any mem/umem op (gap/address decompositions), or
+    /// any absent map op (the canonical-decomposition comparators).
+    byte: bool,
+    /// Memory + boundary tables: any mem op.
+    memory: bool,
+    /// Map-ops table: any read/write map op.
+    map_ops: bool,
+    /// Map-absent table: any `absent` map op (the bracketed-gap non-membership leg).
+    map_absent: bool,
+    /// Universal memory + universal boundary tables: any umem op. NOTE: umem ops alone pull
+    /// in NO chip table — the universal memory argument does zero hashing, which is the
+    /// measured point of `.docs-history-noclaude/UNIVERSAL-MEMORY.md`.
+    umem: bool,
+    /// The universal boundary is the COHORT single-row specialization (`Ir2Air::UMemBoundaryCohort`,
+    /// width 9) rather than the general `Ir2Air::UMemBoundary` (width 38). A DECLARATION property
+    /// (the descriptor's table-7 sem), NOT derivable from the constraint list — both forms carry
+    /// the same `umem_op` — so prover and verifier read it from the SAME descriptor and agree.
+    umem_cohort: bool,
+}
+
+impl Presence {
+    fn of(desc: &EffectVmDescriptor2, layout: &MainLayout) -> Self {
+        let has_mem = desc
+            .constraints
+            .iter()
+            .any(|k| matches!(k, VmConstraint2::MemOp(_)));
+        let has_map_rw = desc
+            .constraints
+            .iter()
+            .any(|k| matches!(k, VmConstraint2::MapOp(m) if m.op != MapKind::Absent));
+        let has_map_absent = desc
+            .constraints
+            .iter()
+            .any(|k| matches!(k, VmConstraint2::MapOp(m) if m.op == MapKind::Absent));
+        // AAFI (op=4) rides the map-ops table (`has_map_rw`) but ALSO the byte table (the
+        // pointer-bracket range block). Its byte queries are gated by `is_aafi`, so op≤3-only
+        // descriptors keep their exact table set — the byte table is pulled in ONLY here.
+        let has_map_aafi = desc
+            .constraints
+            .iter()
+            .any(|k| matches!(k, VmConstraint2::MapOp(m) if m.op == MapKind::AafiInsert));
+        let has_umem = desc
+            .constraints
+            .iter()
+            .any(|k| matches!(k, VmConstraint2::UMemOp(_)));
+        let has_chip_lookup = desc
+            .constraints
+            .iter()
+            .any(|k| matches!(k, VmConstraint2::Lookup(l) if l.table == TID_P2 || l.table == TID_P2_NARROW));
+        let has_state16_lookup = desc
+            .constraints
+            .iter()
+            .any(|k| matches!(k, VmConstraint2::Lookup(l) if l.table == TID_P2_STATE16));
+        let umem_cohort = has_umem
+            && desc
+                .tables
+                .iter()
+                .any(|t| t.sem == TableSem::UMemBoundaryCohort);
+        Presence {
+            chip: has_chip_lookup || has_map_rw || has_map_absent,
+            chip_state16: has_state16_lookup,
+            byte: !layout.ranges.is_empty()
+                || has_mem
+                || has_umem
+                || has_map_absent
+                || has_map_aafi,
+            memory: has_mem,
+            map_ops: has_map_rw,
+            map_absent: has_map_absent,
+            umem: has_umem,
+            umem_cohort,
+        }
+    }
+}
+
+/// One fully assembled multi-table witness (the PRESENT instance traces; absent tables
+/// are not built — and so contribute no byte-bus pad queries and no committed matrix).
+struct Ir2Traces {
+    main: Vec<Vec<BabyBear>>,
+    chip: Option<Vec<Vec<BabyBear>>>,
+    chip_state16: Option<Vec<Vec<BabyBear>>>,
+    byte: Option<Vec<Vec<BabyBear>>>,
+    memory: Option<Vec<Vec<BabyBear>>>,
+    boundary: Option<Vec<Vec<BabyBear>>>,
+    map_ops: Option<Vec<Vec<BabyBear>>>,
+    map_absent: Option<Vec<Vec<BabyBear>>>,
+    umemory: Option<Vec<Vec<BabyBear>>>,
+    umem_boundary: Option<Vec<Vec<BabyBear>>>,
+    exact_public_tables: Vec<Vec<Vec<BabyBear>>>,
+}
+
+/// Witness fill of one canonical decomposition block `[hi4, lo27 limbs, is15, inv15]` of a
+/// canonical (`< p`) value. `real` gates the is15-forcing leg exactly as the AIR's `gate`.
+fn fill_canon(v: u32, real: bool, out: &mut Vec<BabyBear>, hist: &mut [u64; BYTE_TABLE_HEIGHT]) {
+    let hi4 = v >> KEY_LO_BITS;
+    let lo27 = v & ((1u32 << KEY_LO_BITS) - 1);
+    out.push(BabyBear::new(hi4));
+    hist[hi4 as usize] += 1;
+    fill_decomp(lo27, KEY_LO_BITS, out, hist);
+    let is15 = real && hi4 as u64 == KEY_HI_MAX;
+    out.push(if is15 { BabyBear::ONE } else { BabyBear::ZERO });
+    // (hi4 − 15)·inv15 = gate − is15: zero on pads; the field inverse on real non-15 rows.
+    let inv15 = if !real || is15 {
+        BabyBear::ZERO
+    } else {
+        (BabyBear::new(hi4) - BabyBear::new(KEY_HI_MAX as u32))
+            .inverse()
+            .expect("hi4 != 15")
+    };
+    out.push(inv15);
+}
+
+/// Witness fill of one lexicographic strict-lt comparator block `[s, dhi, dlo, dlo limbs]`
+/// for `a < b` (both canonical), gated by `active`.
+fn fill_lex_lt(
+    a: u32,
+    b: u32,
+    active: bool,
+    out: &mut Vec<BabyBear>,
+    hist: &mut [u64; BYTE_TABLE_HEIGHT],
+) -> Result<(), String> {
+    let (a_hi, a_lo) = (a >> KEY_LO_BITS, a & ((1u32 << KEY_LO_BITS) - 1));
+    let (b_hi, b_lo) = (b >> KEY_LO_BITS, b & ((1u32 << KEY_LO_BITS) - 1));
+    if active && b <= a {
+        return Err(format!("lex-lt witness: {b} is not strictly above {a}"));
+    }
+    let s = active && b_hi != a_hi;
+    let dhi = if s { b_hi - a_hi - 1 } else { 0 };
+    let dlo = if active && !s { b_lo - a_lo - 1 } else { 0 };
+    out.push(if s { BabyBear::ONE } else { BabyBear::ZERO });
+    out.push(BabyBear::new(dhi));
+    hist[dhi as usize] += 1;
+    out.push(BabyBear::new(dlo));
+    fill_decomp(dlo, KEY_LO_BITS, out, hist);
+    Ok(())
+}
+
+/// Build the append-order 8-felt stored levels over `leaves` (physical positions = vector
+/// indices, NOT re-sorted) and return the membership path `(root8, siblings, directions)` of
+/// `position` — the AAFI PATH2 producer. A slot BEYOND the prefix reads all-empty siblings
+/// (`heap_empty_subtree_root_8`). Mirrors `CanonicalHeapTree8::prove_membership` but over APPEND
+/// order (heap_root's `fold_append_order_8` returns only the root, no path).
+fn aafi_membership_8(
+    leaves: &[HeapLeaf],
+    position: usize,
+    depth: usize,
+) -> (
+    [BabyBear; CHIP_OUT_LANES],
+    Vec<[BabyBear; CHIP_OUT_LANES]>,
+    Vec<u8>,
+) {
+    let mut levels: Vec<Vec<[BabyBear; CHIP_OUT_LANES]>> = Vec::with_capacity(depth + 1);
+    levels.push(leaves.iter().map(HeapLeaf::digest8).collect());
+    for level in 0..depth {
+        let prev = levels.last().unwrap();
+        let next_len = prev.len().div_ceil(2);
+        let mut next = Vec::with_capacity(next_len);
+        for i in 0..next_len {
+            let l = prev
+                .get(2 * i)
+                .copied()
+                .unwrap_or_else(|| heap_empty_subtree_root_8(level));
+            let r = prev
+                .get(2 * i + 1)
+                .copied()
+                .unwrap_or_else(|| heap_empty_subtree_root_8(level));
+            next.push(heap_node8(l, r));
+        }
+        levels.push(next);
+    }
+    let node8 = |level: usize, idx: usize| -> [BabyBear; CHIP_OUT_LANES] {
+        levels[level]
+            .get(idx)
+            .copied()
+            .unwrap_or_else(|| heap_empty_subtree_root_8(level))
+    };
+    let mut siblings = Vec::with_capacity(depth);
+    let mut directions = Vec::with_capacity(depth);
+    let mut idx = position;
+    for level in 0..depth {
+        siblings.push(node8(level, idx ^ 1));
+        directions.push((idx & 1) as u8);
+        idx >>= 1;
+    }
+    (node8(depth, 0), siblings, directions)
+}
+
+/// Assemble the PRESENT instance traces from the base main trace + the boundary witness +
+/// the map heaps. `check` controls the prover-side pre-flight replay (the test harness
+/// disables it to exercise the in-circuit refusals).
+#[allow(clippy::too_many_lines)]
+#[allow(clippy::too_many_arguments)]
+fn build_traces(
+    desc: &EffectVmDescriptor2,
+    layout: &MainLayout,
+    presence: Presence,
+    base_trace: &[Vec<BabyBear>],
+    mem_boundary: &MemBoundaryWitness,
+    map_heaps: &[Vec<HeapLeaf>],
+    umem_boundary: &UMemBoundaryWitness,
+    check: bool,
+) -> Result<Ir2Traces, String> {
+    let mut byte_hist = [0u64; BYTE_TABLE_HEIGHT];
+
+    if check {
+        for table in &desc.tables {
+            let TableSem::ExactPublicRows { rows: expected } = &table.sem else {
+                continue;
+            };
+            let mut actual: Vec<Vec<u32>> = base_trace
+                .iter()
+                .flat_map(|row| {
+                    desc.constraints.iter().filter_map(|constraint| {
+                        let VmConstraint2::Lookup(lookup) = constraint else {
+                            return None;
+                        };
+                        (lookup.table == table.id).then(|| {
+                            lookup
+                                .tuple
+                                .iter()
+                                .map(|expr| eval_c(expr, row).as_u32())
+                                .collect()
+                        })
+                    })
+                })
+                .collect();
+            let mut expected = expected.clone();
+            actual.sort_unstable();
+            expected.sort_unstable();
+            if actual != expected {
+                return Err(format!(
+                    "exact-public table {} lookup multiset does not equal its \
+                     Lean-emitted manifest ({} queries, {} rows)",
+                    table.name,
+                    actual.len(),
+                    expected.len()
+                ));
+            }
+        }
+    }
+
+    // ---- main: base wires + range limb blocks + submask bit blocks. `fill_main_layout_row`
+    //      is the SINGLE SOURCE for that completion — `ir2_eval_accepts` runs the very same
+    //      fill, so the row-local oracle sees the row this prover commits. ----
+    let mut main: Vec<Vec<BabyBear>> = Vec::with_capacity(base_trace.len());
+    for (ri, base_row) in base_trace.iter().enumerate() {
+        main.push(fill_main_layout_row(
+            base_row,
+            layout,
+            ri,
+            &mut byte_hist,
+            check,
+        )?);
+    }
+
+    // ---- chip histograms: absorb tuples from the main rows' chip lookups; fact tuples
+    //      come from the map-ops openings below. The table itself is built after the
+    //      map section so it carries one row per UNIQUE permutation of EITHER kind. ----
+    let mut chip_hist: BTreeMap<Vec<u32>, u64> = BTreeMap::new();
+    let mut fact_hist: BTreeMap<(u32, u32, u32), u64> = BTreeMap::new();
+    if presence.chip {
+        for base_row in base_trace {
+            for k in &desc.constraints {
+                if let VmConstraint2::Lookup(l) = k
+                    && l.table == TID_P2
+                {
+                    let tuple: Vec<u32> = l
+                        .tuple
+                        .iter()
+                        .map(|e| eval_c(e, base_row).as_u32())
+                        .collect();
+                    *chip_hist.entry(tuple).or_insert(0) += 1;
+                }
+            }
+        }
+    }
+
+    // ---- narrow chip histogram (tuple-narrowing pass): single-output sites ride an 18-wide
+    //      `[arity, ins, out0]` lookup on `BUS_P2_1`. Derive the FULL 25-wide chip key from the
+    //      genuine permutation (`chip_absorb_all_lanes`) so the SAME chip row serves both buses;
+    //      `chip_hist.entry(..).or_insert(0)` guarantees that row exists (wide mult may be 0). ----
+    let mut narrow_hist: BTreeMap<Vec<u32>, u64> = BTreeMap::new();
+    if presence.chip {
+        for base_row in base_trace {
+            for k in &desc.constraints {
+                if let VmConstraint2::Lookup(l) = k
+                    && l.table == TID_P2_NARROW
+                {
+                    let arity = eval_c(&l.tuple[0], base_row).as_u32() as usize;
+                    let ins: Vec<BabyBear> = (0..CHIP_RATE)
+                        .map(|i| eval_c(&l.tuple[1 + i], base_row))
+                        .collect();
+                    let outs = chip_absorb_all_lanes(arity, &ins);
+                    let mut full: Vec<u32> = Vec::with_capacity(CHIP_TUPLE_LEN);
+                    full.push(arity as u32);
+                    for b in &ins {
+                        full.push(b.as_u32());
+                    }
+                    for o in &outs {
+                        full.push(o.as_u32());
+                    }
+                    chip_hist.entry(full.clone()).or_insert(0); // ensure a chip row exists to serve it
+                    *narrow_hist.entry(full).or_insert(0) += 1;
+                }
+            }
+        }
+    }
+
+    // ---- full-state permutation histogram: the main trace supplies complete input/output
+    //      states.  As with the legacy wide histogram, the consumer's output values remain in
+    //      the key only for multiplicity accounting; the table trace below RE-DERIVES the genuine
+    //      output from the input state, so a forged high lane cannot balance the lookup bus. ----
+    let mut state16_hist: BTreeMap<Vec<u32>, u64> = BTreeMap::new();
+    if presence.chip_state16 {
+        for base_row in base_trace {
+            for k in &desc.constraints {
+                if let VmConstraint2::Lookup(l) = k
+                    && l.table == TID_P2_STATE16
+                {
+                    let tuple: Vec<u32> = l
+                        .tuple
+                        .iter()
+                        .map(|e| eval_c(e, base_row).as_u32())
+                        .collect();
+                    debug_assert_eq!(tuple.len(), CHIP_STATE16_TUPLE_LEN);
+                    debug_assert_eq!(tuple[0], POSEIDON2_WIDTH as u32);
+                    *state16_hist.entry(tuple).or_insert(0) += 1;
+                }
+            }
+        }
+    }
+
+    // ---- the memory log (per row, per declared mem op, guard = 1). ----
+    let mut mem_log: Vec<[BabyBear; 5]> = Vec::new();
+    for (ri, base_row) in base_trace.iter().enumerate() {
+        for k in &desc.constraints {
+            if let VmConstraint2::MemOp(m) = k {
+                let g = eval_c(&m.guard, base_row);
+                if g == BabyBear::ZERO {
+                    continue;
+                }
+                if g != BabyBear::ONE {
+                    return Err(format!(
+                        "row {ri}: mem_op guard evaluates to {g:?}, not 0/1"
+                    ));
+                }
+                mem_log.push([
+                    eval_c(&m.addr, base_row),
+                    eval_c(&m.value, base_row),
+                    eval_c(&m.prev_value, base_row),
+                    eval_c(&m.prev_serial, base_row),
+                    BabyBear::new(m.kind.code()),
+                ]);
+            }
+        }
+    }
+
+    // ---- memory table: log rows in order, positional serials, gap decomposition. ----
+    let mut memory: Option<Vec<Vec<BabyBear>>> = None;
+    let mut boundary: Option<Vec<Vec<BabyBear>>> = None;
+    if presence.memory {
+        let mem_height = next_pow2(mem_log.len());
+        let mut mem_rows: Vec<Vec<BabyBear>> = Vec::with_capacity(mem_height);
+        for i in 0..mem_height {
+            let serial = (i + 1) as u32;
+            let (tuple, is_real): ([BabyBear; 5], bool) = if i < mem_log.len() {
+                (mem_log[i], true)
+            } else {
+                ([BabyBear::ZERO; 5], false)
+            };
+            // ⚑ WRITTEN BY NAME, not by push order — the same reason `4805cb6bb` gave for the
+            // boundary producer. Since the `Ir2Air::Memory` arm was deleted, this is the LAST
+            // thing in Rust that knows what column 3 of an op-log row means; the AIR's author is
+            // `Dregg2/Circuit/Emit/MemoryTableEmit.lean`, which reads columns by its OWN `MEM_*`
+            // defs (`#guard`-pinned to these numbers). Positional pushes would leave that
+            // knowledge in the ORDER of eight calls and the constants dead.
+            // `the_emitted_columns_round_trip_the_memory_op_log` checks the two sides agree.
+            let mut row = vec![BabyBear::ZERO; MEM_GAP + 1];
+            row[MEM_ADDR] = tuple[MEM_ADDR];
+            row[MEM_VALUE] = tuple[MEM_VALUE];
+            row[MEM_PREV_VALUE] = tuple[MEM_PREV_VALUE];
+            row[MEM_PREV_SERIAL] = tuple[MEM_PREV_SERIAL];
+            row[MEM_KIND] = tuple[MEM_KIND];
+            row[MEM_SERIAL] = BabyBear::new(serial);
+            row[MEM_IS_REAL] = if is_real {
+                BabyBear::ONE
+            } else {
+                BabyBear::ZERO
+            };
+            let gap = if is_real {
+                let prev = tuple[MEM_PREV_SERIAL].as_u32();
+                if prev >= serial {
+                    return Err(format!(
+                        "memory op {i}: claimed prev serial {prev} not before own serial {serial}"
+                    ));
+                }
+                serial - 1 - prev
+            } else {
+                0
+            };
+            if (gap as u64) >= (1u64 << MEM_GAP_BITS) {
+                return Err(format!(
+                    "memory op {i}: serial gap {gap} >= 2^{MEM_GAP_BITS}"
+                ));
+            }
+            row[MEM_GAP] = BabyBear::new(gap);
+            fill_decomp(gap, MEM_GAP_BITS, &mut row, &mut byte_hist);
+            debug_assert_eq!(row.len(), MEM_WIDTH);
+            mem_rows.push(row);
+        }
+        memory = Some(mem_rows);
+
+        // ---- memory boundary: declared addrs (strictly increasing), replayed final image. ----
+        if mem_boundary.addrs.len() != mem_boundary.init_vals.len() {
+            return Err("mem boundary addrs/init_vals length mismatch".to_string());
+        }
+        for w in mem_boundary.addrs.windows(2) {
+            if w[1] <= w[0] {
+                return Err(format!(
+                    "mem boundary addresses must be strictly increasing ({} then {})",
+                    w[0], w[1]
+                ));
+            }
+        }
+        for &a in &mem_boundary.addrs {
+            if (a as u64) >= (1u64 << MEM_GAP_BITS) {
+                return Err(format!("mem boundary address {a} >= 2^{MEM_GAP_BITS}"));
+            }
+        }
+        // Replay: image addr → (value, serial); count per-address op multiplicity.
+        let mut image: BTreeMap<u32, (BabyBear, u32)> = mem_boundary
+            .addrs
+            .iter()
+            .zip(&mem_boundary.init_vals)
+            .map(|(&a, &v)| (a, (BabyBear::new(v), 0u32)))
+            .collect();
+        let mut addr_mult: BTreeMap<u32, u64> = BTreeMap::new();
+        for (i, op) in mem_log.iter().enumerate() {
+            let a = op[0].as_u32();
+            let Some(&(cur_v, cur_s)) = image.get(&a) else {
+                return Err(format!(
+                    "memory op {i} touches undeclared address {a} (memClosed)"
+                ));
+            };
+            if check && (op[2] != cur_v || op[3].as_u32() != cur_s) {
+                return Err(format!(
+                    "memory op {i} at addr {a}: claimed prev ({}, {}) != replayed ({}, {cur_s})",
+                    op[2].as_u32(),
+                    op[3].as_u32(),
+                    cur_v.as_u32(),
+                ));
+            }
+            image.insert(a, (op[1], (i + 1) as u32));
+            *addr_mult.entry(a).or_insert(0) += 1;
+        }
+        let mb_height = next_pow2(mem_boundary.addrs.len());
+        let mut mb_rows: Vec<Vec<BabyBear>> = Vec::with_capacity(mb_height);
+        for i in 0..mb_height {
+            let mut row: Vec<BabyBear> = Vec::with_capacity(MB_WIDTH);
+            let (addr, init_v, is_real) = if i < mem_boundary.addrs.len() {
+                (
+                    mem_boundary.addrs[i],
+                    BabyBear::new(mem_boundary.init_vals[i]),
+                    true,
+                )
+            } else {
+                (0, BabyBear::ZERO, false)
+            };
+            let (fin_v, fin_s) = if is_real {
+                image[&addr]
+            } else {
+                (BabyBear::ZERO, 0)
+            };
+            // ⚑ WRITTEN BY NAME, not by push order. Until the `Ir2Air::MemBoundary` arm was
+            // deleted these `MB_*` constants had a second reader — the AIR — and the two agreed by
+            // both naming the same offsets. The AIR's author is now
+            // `Dregg2/Circuit/Emit/MemBoundaryTableEmit.lean`, which reads columns by ITS OWN
+            // `MB_*` (`#guard`-pinned to these numbers), so this producer is the last thing in
+            // Rust that knows what column 3 means. Writing positionally would have left that
+            // knowledge in the ORDER of six `push` calls and the constants dead; writing by index
+            // keeps it stated. `the_emitted_columns_round_trip_the_declared_address_list` is what
+            // checks the two sides still agree.
+            row.resize(MB_AGAP + 1, BabyBear::ZERO);
+            row[MB_ADDR] = BabyBear::new(addr);
+            row[MB_INIT_VAL] = init_v;
+            row[MB_FIN_VAL] = fin_v;
+            row[MB_FIN_SERIAL] = BabyBear::new(fin_s);
+            row[MB_IS_REAL] = if is_real {
+                BabyBear::ONE
+            } else {
+                BabyBear::ZERO
+            };
+            row[MB_ADDR_MULT] = BabyBear::new(
+                (*addr_mult.get(&addr).unwrap_or(&0) % (BABYBEAR_P as u64)) as u32
+                    * (is_real as u32),
+            );
+            // agap: bound on real→real transitions; zero elsewhere.
+            let agap = if i + 1 < mem_boundary.addrs.len() {
+                mem_boundary.addrs[i + 1] - addr - 1
+            } else {
+                0
+            };
+            row[MB_AGAP] = BabyBear::new(agap);
+            fill_decomp(agap, MEM_GAP_BITS, &mut row, &mut byte_hist);
+            // addr_chk = is_real·addr.
+            let achk = if is_real { addr } else { 0 };
+            row.push(BabyBear::new(achk));
+            fill_decomp(achk, MEM_GAP_BITS, &mut row, &mut byte_hist);
+            debug_assert_eq!(row.len(), MB_WIDTH);
+            mb_rows.push(row);
+        }
+        boundary = Some(mb_rows);
+    } // if presence.memory
+
+    // ---- the UNIVERSAL memory log (per row, per declared umem op, guard = 1). ----
+    let mut umem_log: Vec<[BabyBear; 8]> = Vec::new();
+    for (ri, base_row) in base_trace.iter().enumerate() {
+        for k in &desc.constraints {
+            if let VmConstraint2::UMemOp(m) = k {
+                let g = eval_c(&m.guard, base_row);
+                if g == BabyBear::ZERO {
+                    continue;
+                }
+                if g != BabyBear::ONE {
+                    return Err(format!(
+                        "row {ri}: umem_op guard evaluates to {g:?}, not 0/1"
+                    ));
+                }
+                let present = eval_c(&m.present, base_row);
+                let value = eval_c(&m.value, base_row);
+                let prev_present = eval_c(&m.prev_present, base_row);
+                let prev_value = eval_c(&m.prev_value, base_row);
+                for (p, v, what) in [
+                    (present, value, "cell"),
+                    (prev_present, prev_value, "prev cell"),
+                ] {
+                    if p != BabyBear::ZERO && p != BabyBear::ONE {
+                        return Err(format!(
+                            "row {ri}: umem_op {what} present bit is {p:?}, not 0/1"
+                        ));
+                    }
+                    if p == BabyBear::ZERO && v != BabyBear::ZERO {
+                        return Err(format!(
+                            "row {ri}: umem_op {what} is non-canonical: absent (present = 0) \
+                             with payload {v:?} != 0"
+                        ));
+                    }
+                }
+                umem_log.push([
+                    BabyBear::new(m.domain),
+                    eval_c(&m.key, base_row),
+                    present,
+                    value,
+                    prev_present,
+                    prev_value,
+                    eval_c(&m.prev_serial, base_row),
+                    BabyBear::new(m.kind.code()),
+                ]);
+            }
+        }
+    }
+
+    // ---- universal memory table: log rows, positional serials, gaps, the nullifier
+    //      insert-only indicator. NO chip rows: the one-multiset argument hashes nothing. ----
+    let mut umemory: Option<Vec<Vec<BabyBear>>> = None;
+    let mut umem_boundary_rows: Option<Vec<Vec<BabyBear>>> = None;
+    if presence.umem {
+        let um_height = next_pow2(umem_log.len());
+        let mut um_rows: Vec<Vec<BabyBear>> = Vec::with_capacity(um_height);
+        for i in 0..um_height {
+            let serial = (i + 1) as u32;
+            let (tuple, is_real): ([BabyBear; 8], bool) = if i < umem_log.len() {
+                (umem_log[i], true)
+            } else {
+                ([BabyBear::ZERO; 8], false)
+            };
+            // ⚑ WRITTEN BY NAME, not by push order — the same reason `4805cb6bb` gave for the
+            // boundary producer and the `Ir2Air::Memory` cutover gave for the flat op log. Since
+            // the `Ir2Air::UMemory` arm was deleted, this is the LAST thing in Rust that knows what
+            // column 6 of a universal op-log row means; the AIR's author is
+            // `Dregg2/Circuit/Emit/UMemoryTableEmit.lean`, which reads columns by its OWN `UM_*`
+            // defs (`#guard`-pinned to these numbers). Positional pushes would leave that knowledge
+            // in the ORDER of thirteen calls and the constants dead.
+            // `the_emitted_columns_round_trip_the_universal_op_log` checks the two sides agree.
+            let mut row = vec![BabyBear::ZERO; UM_GAP + 1];
+            row[UM_DOMAIN] = tuple[UM_DOMAIN];
+            row[UM_KEY] = tuple[UM_KEY];
+            row[UM_PRESENT] = tuple[UM_PRESENT];
+            row[UM_VALUE] = tuple[UM_VALUE];
+            row[UM_PREV_PRESENT] = tuple[UM_PREV_PRESENT];
+            row[UM_PREV_VALUE] = tuple[UM_PREV_VALUE];
+            row[UM_PREV_SERIAL] = tuple[UM_PREV_SERIAL];
+            row[UM_KIND] = tuple[UM_KIND];
+            row[UM_SERIAL] = BabyBear::new(serial);
+            row[UM_IS_REAL] = if is_real {
+                BabyBear::ONE
+            } else {
+                BabyBear::ZERO
+            };
+            let gap = if is_real {
+                let prev = tuple[UM_PREV_SERIAL].as_u32();
+                if prev >= serial {
+                    return Err(format!(
+                        "umem op {i}: claimed prev serial {prev} not before own serial {serial}"
+                    ));
+                }
+                serial - 1 - prev
+            } else {
+                0
+            };
+            if (gap as u64) >= (1u64 << MEM_GAP_BITS) {
+                return Err(format!("umem op {i}: serial gap {gap} >= 2^{MEM_GAP_BITS}"));
+            }
+            row[UM_GAP] = BabyBear::new(gap);
+            fill_decomp(gap, MEM_GAP_BITS, &mut row, &mut byte_hist);
+            // The forced nullifier-domain indicator + its inverse witness.
+            let domain = tuple[UM_DOMAIN];
+            byte_hist[domain.as_u32() as usize] += 1; // the domain nibble lookup, every row
+            let is_null = is_real && domain.as_u32() == NULLIFIER_DOMAIN;
+            debug_assert_eq!(row.len(), UM_IS_NULL);
+            row.push(if is_null {
+                BabyBear::ONE
+            } else {
+                BabyBear::ZERO
+            });
+            let null_inv = if !is_real || is_null {
+                BabyBear::ZERO
+            } else {
+                (domain - BabyBear::new(NULLIFIER_DOMAIN))
+                    .inverse()
+                    .expect("domain != nullifiers")
+            };
+            debug_assert_eq!(row.len(), UM_NULL_INV);
+            row.push(null_inv);
+            // THE INSERT-ONLY TOOTH, pre-flight face. ⚠ The emitted AIR refuses this in-circuit
+            // only on a REAL row — `UMemoryTableEmit.a_pad_row_spells_the_forbidden_nullifier_write`
+            // is the measurement — and `is_null` is already `is_real`-gated here, so the two faces
+            // agree on exactly which rows they bite.
+            if is_null && tuple[UM_KIND] == BabyBear::ONE && tuple[UM_PRESENT] == BabyBear::ZERO {
+                return Err(format!(
+                    "umem op {i}: nullifier-domain write installs an ABSENT cell — \
+                     insert-only discipline violated (nobody un-spends)"
+                ));
+            }
+            debug_assert_eq!(row.len(), UM_WIDTH);
+            um_rows.push(row);
+        }
+        umemory = Some(um_rows);
+
+        // ---- universal boundary: declared (domain, key) addresses, lexicographically
+        //      strictly increasing; replayed Option final image; full-felt key ordering via
+        //      the canonical decomposition. ----
+        if umem_boundary.addrs.len() != umem_boundary.init_vals.len() {
+            return Err("umem boundary addrs/init_vals length mismatch".to_string());
+        }
+        for w in umem_boundary.addrs.windows(2) {
+            let (d0, k0) = (w[0].0, w[0].1.as_u32());
+            let (d1, k1) = (w[1].0, w[1].1.as_u32());
+            if (d1, k1) <= (d0, k0) {
+                return Err(format!(
+                    "umem boundary addresses must be lexicographically strictly increasing \
+                     (({d0}, {k0}) then ({d1}, {k1}))"
+                ));
+            }
+        }
+        for &(d, _) in &umem_boundary.addrs {
+            if d >= DOMAIN_BOUND {
+                return Err(format!("umem boundary domain {d} out of the nibble bound"));
+            }
+        }
+        // Replay: image (domain, key) → (present, value, serial); per-address multiplicity.
+        let mut image: BTreeMap<(u32, u32), (BabyBear, BabyBear, u32)> = umem_boundary
+            .addrs
+            .iter()
+            .zip(&umem_boundary.init_vals)
+            .map(|(&(d, k), &v)| {
+                (
+                    (d, k.as_u32()),
+                    match v {
+                        Some(v) => (BabyBear::ONE, v, 0u32),
+                        None => (BabyBear::ZERO, BabyBear::ZERO, 0u32),
+                    },
+                )
+            })
+            .collect();
+        let mut addr_mult: BTreeMap<(u32, u32), u64> = BTreeMap::new();
+        for (i, op) in umem_log.iter().enumerate() {
+            let a = (op[0].as_u32(), op[1].as_u32());
+            let Some(&(cur_p, cur_v, cur_s)) = image.get(&a) else {
+                return Err(format!(
+                    "umem op {i} touches undeclared address ({}, {}) (umemClosed)",
+                    a.0, a.1
+                ));
+            };
+            if check && (op[4] != cur_p || op[5] != cur_v || op[6].as_u32() != cur_s) {
+                return Err(format!(
+                    "umem op {i} at ({}, {}): claimed prev cell ({}, {}, {}) != replayed \
+                     ({}, {}, {cur_s})",
+                    a.0,
+                    a.1,
+                    op[4].as_u32(),
+                    op[5].as_u32(),
+                    op[6].as_u32(),
+                    cur_p.as_u32(),
+                    cur_v.as_u32(),
+                ));
+            }
+            image.insert(a, (op[2], op[3], (i + 1) as u32));
+            *addr_mult.entry(a).or_insert(0) += 1;
+        }
+        // The COHORT single-row boundary (`Ir2Air::UMemBoundaryCohort`, width 9) drops the key
+        // decomposition + lexicographic comparator: it requires AT MOST ONE declared address, for
+        // which `Nodup` is free. Refuse a multi-address witness here (the AIR also refuses it via
+        // the single-row tooth, but failing in the assembler is the clearer diagnostic).
+        if presence.umem_cohort && umem_boundary.addrs.len() > 1 {
+            return Err(format!(
+                "umem_boundary_cohort: {} declared addresses — the cohort single-row boundary \
+                 carries at most one (a multi-address leg uses the general umem_boundary table)",
+                umem_boundary.addrs.len()
+            ));
+        }
+        // Touch the layout-agreement assertion so it is evaluated.
+        let () = THE_COHORT_IS_THE_GENERAL_PREFIX;
+        let ub_width = if presence.umem_cohort {
+            UBC_WIDTH
+        } else {
+            UB_WIDTH
+        };
+        let ub_height = next_pow2(umem_boundary.addrs.len());
+        let mut ub_rows: Vec<Vec<BabyBear>> = Vec::with_capacity(ub_height);
+        for i in 0..ub_height {
+            let mut row: Vec<BabyBear> = Vec::with_capacity(ub_width);
+            let (domain, key, init, is_real) = if i < umem_boundary.addrs.len() {
+                (
+                    umem_boundary.addrs[i].0,
+                    umem_boundary.addrs[i].1,
+                    umem_boundary.init_vals[i],
+                    true,
+                )
+            } else {
+                (0, BabyBear::ZERO, None, false)
+            };
+            let (init_p, init_v) = match init {
+                Some(v) => (BabyBear::ONE, v),
+                None => (BabyBear::ZERO, BabyBear::ZERO),
+            };
+            let (fin_p, fin_v, fin_s) = if is_real {
+                image[&(domain, key.as_u32())]
+            } else {
+                (BabyBear::ZERO, BabyBear::ZERO, 0)
+            };
+            // ⚑ WRITTEN BY NAME, not by push order — the same reason `4805cb6bb` gave for the
+            // memory boundary. Since the `Ir2Air::UMemBoundaryCohort` arm was deleted this loop is
+            // the LAST thing in Rust that knows what column 3 of a cohort row means; the cohort
+            // AIR's author is `Emit/UMemBoundaryCohortTableEmit.lean`, which reads columns by its
+            // OWN `UBC_*` defs. The shared prefix is named with the GENERAL layout's constants and
+            // `THE_COHORT_IS_THE_GENERAL_PREFIX` pins the cohort's to agree, so one set of writes
+            // serves both tables without either layout being implied by an ordering.
+            row.resize(UB_ADDR_MULT + 1, BabyBear::ZERO);
+            row[UB_DOMAIN] = BabyBear::new(domain);
+            byte_hist[domain as usize] += 1; // the domain nibble lookup, every row
+            row[UB_KEY] = key;
+            row[UB_INIT_PRESENT] = init_p;
+            row[UB_INIT_VALUE] = init_v;
+            row[UB_FIN_PRESENT] = fin_p;
+            row[UB_FIN_VALUE] = fin_v;
+            row[UB_FIN_SERIAL] = BabyBear::new(fin_s);
+            row[UB_IS_REAL] = if is_real {
+                BabyBear::ONE
+            } else {
+                BabyBear::ZERO
+            };
+            row[UB_ADDR_MULT] = BabyBear::new(
+                (*addr_mult.get(&(domain, key.as_u32())).unwrap_or(&0) % (BABYBEAR_P as u64))
+                    as u32
+                    * (is_real as u32),
+            );
+            // The cohort row STOPS at the 9 base columns — the key decomposition + lexicographic
+            // comparator (the general boundary's `Nodup`-establishing machinery) are absent.
+            if !presence.umem_cohort {
+                fill_canon(key.as_u32(), is_real, &mut row, &mut byte_hist);
+                // Ordering witness vs the NEXT declared row.
+                let next_real = i + 1 < umem_boundary.addrs.len();
+                let (dgap, same_dom) = if next_real {
+                    let nd = umem_boundary.addrs[i + 1].0;
+                    (nd - domain, nd == domain)
+                } else {
+                    (0, false)
+                };
+                row.push(BabyBear::new(dgap));
+                byte_hist[dgap as usize] += 1; // the dgap nibble lookup, every row
+                row.push(if same_dom {
+                    BabyBear::ONE
+                } else {
+                    BabyBear::ZERO
+                });
+                // dgap·inv = next_real − same_dom: the inverse witness when domains differ.
+                row.push(if next_real && dgap != 0 {
+                    BabyBear::new(dgap).inverse().expect("dgap != 0")
+                } else {
+                    BabyBear::ZERO
+                });
+                let next_key = if next_real {
+                    umem_boundary.addrs[i + 1].1.as_u32()
+                } else {
+                    0
+                };
+                fill_lex_lt(key.as_u32(), next_key, same_dom, &mut row, &mut byte_hist)?;
+            }
+            debug_assert_eq!(row.len(), ub_width);
+            ub_rows.push(row);
+        }
+        umem_boundary_rows = Some(ub_rows);
+    } // if presence.umem
+
+    // ---- the map-ops log + the opening witnesses. ----
+    // Phase H-HEAP-8: each entry carries the native 8-felt pre-/post-root groups (the descriptor
+    // evaluates `MapOpSpec.root`/`.new_root` as `CHIP_OUT_LANES` lane expressions over the
+    // committed heap-root columns), plus the scalar key/value.
+    let eval_group8 =
+        |exprs: &[LeanExpr], base_row: &[BabyBear]| -> Result<[BabyBear; CHIP_OUT_LANES], String> {
+            if exprs.len() != CHIP_OUT_LANES {
+                return Err(format!(
+                    "map_op root group has {} lanes, expected {CHIP_OUT_LANES}",
+                    exprs.len()
+                ));
+            }
+            Ok(core::array::from_fn(|i| eval_c(&exprs[i], base_row)))
+        };
+    let mut map_log: Vec<MapLogEntry> = Vec::new();
+    for (ri, base_row) in base_trace.iter().enumerate() {
+        for k in &desc.constraints {
+            if let VmConstraint2::MapOp(m) = k {
+                let g = eval_c(&m.guard, base_row);
+                if g == BabyBear::ZERO {
+                    continue;
+                }
+                if g != BabyBear::ONE {
+                    return Err(format!(
+                        "row {ri}: map_op guard evaluates to {g:?}, not 0/1"
+                    ));
+                }
+                map_log.push(MapLogEntry {
+                    root: eval_group8(&m.root, base_row)?,
+                    key: eval_c(&m.key, base_row),
+                    value: eval_c(&m.value, base_row),
+                    new_root: eval_group8(&m.new_root, base_row)?,
+                    op: m.op,
+                });
+            }
+        }
+    }
+    let mut map_ops: Option<Vec<Vec<BabyBear>>> = None;
+    let mut map_absent: Option<Vec<Vec<BabyBear>>> = None;
+    if presence.map_ops || presence.map_absent {
+        // Phase H-HEAP-8: the witness heaps are the NATIVE 8-felt canonical trees; the opening
+        // witnesses (`HeapUpdateWitness8` / `HeapInsertWitness8`) and the recompose chains fold
+        // through `heap_node8`, so every trace digest lane is faithful to the ~124-bit floor.
+        let mut trees: Vec<CanonicalHeapTree8> = map_heaps
+            .iter()
+            .map(|leaves| CanonicalHeapTree8::new(leaves.clone(), HEAP_TREE_DEPTH))
+            .collect();
+        // The arity-3 IMT leaf-absorb histogram key `[3, addr, value, next, 0×13, out0..out7]` (25
+        // wide) — the Lean `imtLeafHash` chip absorb (leaf arity 2 → 3).
+        let leaf8_hist_tuple = |a: BabyBear,
+                                b: BabyBear,
+                                c: BabyBear,
+                                lanes: &[BabyBear; CHIP_OUT_LANES]|
+         -> Vec<u32> {
+            let mut t = vec![3u32, a.as_u32(), b.as_u32(), c.as_u32()];
+            t.extend(std::iter::repeat_n(0u32, CHIP_RATE - 3));
+            t.extend(lanes.iter().map(|d| d.as_u32()));
+            t
+        };
+        // The arity-16 `node8` histogram key `[16, L8 (8), R8 (8), out8 (8)]` (25 wide).
+        let node8_hist_tuple = |l8: &[BabyBear; CHIP_OUT_LANES],
+                                r8: &[BabyBear; CHIP_OUT_LANES],
+                                out8: &[BabyBear; CHIP_OUT_LANES]|
+         -> Vec<u32> {
+            let mut t = vec![CHIP_NODE8_ARITY as u32];
+            t.extend(l8.iter().map(|d| d.as_u32()));
+            t.extend(r8.iter().map(|d| d.as_u32()));
+            t.extend(out8.iter().map(|d| d.as_u32()));
+            t
+        };
+        let mut map_rows: Vec<Vec<BabyBear>> = Vec::new();
+        let mut ma_rows: Vec<Vec<BabyBear>> = Vec::new();
+        for (i, entry) in map_log.iter().enumerate() {
+            let MapLogEntry {
+                root,
+                key,
+                value,
+                new_root,
+                op: kind,
+            } = entry;
+            let (root, key, value, new_root, kind) = (*root, *key, *value, *new_root, *kind);
+            let tree = trees
+                .iter()
+                .find(|t| t.root8() == root)
+                .cloned()
+                .ok_or_else(|| {
+                    // The lookup is over the WHOLE octet: rendering lane 0 alone made a
+                    // lanes-1..7 mismatch read as "no such tree" while printing a lane-0 value
+                    // that *does* exist among the witness heaps.
+                    format!(
+                        "map op {i}: no witness heap with root8 [{}]",
+                        fmt_root8(&root)
+                    )
+                })?;
+
+            // -- `absent`: the bracketed sorted-gap non-membership opening, its own table. --
+            if kind == MapKind::Absent {
+                if check && new_root != root {
+                    return Err(format!(
+                        "map op {i}: absent must preserve the root — {}",
+                        root8_mismatch(&new_root, &root)
+                    ));
+                }
+                if check && value != BabyBear::ZERO {
+                    return Err(format!("map op {i}: absent carries the canonical value 0"));
+                }
+                let key_u = key.as_u32();
+                if key == SENTINEL_MIN || key.as_u32() >= SENTINEL_MAX.as_u32() {
+                    return Err(format!(
+                        "map op {i}: absent key {key_u} collides with the sentinel range"
+                    ));
+                }
+                if tree.position_of(key).is_some() {
+                    return Err(format!(
+                        "map op {i}: absent key {key_u} IS present in the heap — no bracketing \
+                     witness exists (the gap teeth would refuse it in-circuit)"
+                    ));
+                }
+                let leaves = tree.sorted_leaves();
+                let lo_pos = leaves
+                    .iter()
+                    .rposition(|l| l.addr.as_u32() < key_u)
+                    .ok_or_else(|| format!("map op {i}: no lower bracket for key {key_u}"))?;
+                let lo = leaves[lo_pos];
+                // IMT pointer bracket: the low leaf's `next_addr` (relinked to its sorted
+                // successor) IS the hi bracket — no separate hi leaf. In a well-linked chain
+                // `lo.next_addr` equals the successor's addr, and `lo.addr < key < lo.next_addr`.
+                let lo_next = lo.next_addr;
+                debug_assert!(
+                    lo_next.as_u32() > key_u,
+                    "pointer bracket must straddle the key"
+                );
+                let (lo_sibs, lo_dirs) = tree
+                    .prove_membership(lo_pos)
+                    .ok_or_else(|| format!("map op {i}: lower bracket path failed"))?;
+
+                let mut cols: Vec<BabyBear> = Vec::with_capacity(MA_WIDTH);
+                cols.extend_from_slice(&root); // MA_ROOT (8)
+                cols.push(key); // MA_KEY
+                cols.extend_from_slice(&new_root); // MA_NEW_ROOT (8)
+                cols.push(BabyBear::ONE); // MA_IS_REAL
+                cols.push(lo.addr); // MA_LO_ADDR
+                cols.push(lo.value); // MA_LO_VALUE
+                cols.push(lo_next); // MA_LO_NEXT (the IMT pointer / hi bracket)
+                // The 8-felt low-leaf IMT digest (arity-3 chip absorb `hash[addr, value, next]`, all
+                // 8 lanes) + the ONE `node8` chain to the 8-felt root (Phase H-HEAP-8).
+                let lo_leaf8 = lo.digest8();
+                *chip_hist
+                    .entry(leaf8_hist_tuple(lo.addr, lo.value, lo_next, &lo_leaf8))
+                    .or_insert(0) += 1;
+                cols.extend_from_slice(&lo_leaf8); // MA_LO_LEAF (8)
+                let mut chain: Vec<BabyBear> =
+                    Vec::with_capacity(CHIP_OUT_LANES * (HEAP_TREE_DEPTH - 1));
+                let mut cur8 = lo_leaf8;
+                for lvl in 0..HEAP_TREE_DEPTH {
+                    let sib8 = lo_sibs[lvl];
+                    let (l8, r8) = if lo_dirs[lvl] != 0 {
+                        (sib8, cur8)
+                    } else {
+                        (cur8, sib8)
+                    };
+                    let d8 = heap_node8(l8, r8);
+                    *chip_hist
+                        .entry(node8_hist_tuple(&l8, &r8, &d8))
+                        .or_insert(0) += 1;
+                    if lvl + 1 < HEAP_TREE_DEPTH {
+                        chain.extend_from_slice(&d8);
+                    }
+                    cur8 = d8;
+                }
+                debug_assert_eq!(
+                    cur8, root,
+                    "low-leaf path must authenticate against the root8"
+                );
+                debug_assert_eq!(lo_sibs.len(), HEAP_TREE_DEPTH);
+                cols.extend(lo_sibs.iter().flatten().copied()); // MA_LO_SIB0 (8×DEPTH)
+                cols.extend(lo_dirs.iter().map(|&d| BabyBear::new(d as u32))); // MA_LO_DIR0
+                cols.extend_from_slice(&chain); // MA_LO_CHAIN0 (8×(DEPTH-1))
+                // Canonical decompositions of (lo_addr, key, lo_next) + the two bracket comparators.
+                debug_assert_eq!(cols.len(), MA_A_DEC0);
+                fill_canon(lo.addr.as_u32(), true, &mut cols, &mut byte_hist);
+                fill_canon(key_u, true, &mut cols, &mut byte_hist);
+                fill_canon(lo_next.as_u32(), true, &mut cols, &mut byte_hist);
+                fill_lex_lt(lo.addr.as_u32(), key_u, true, &mut cols, &mut byte_hist)?;
+                fill_lex_lt(key_u, lo_next.as_u32(), true, &mut cols, &mut byte_hist)?;
+                debug_assert_eq!(cols.len(), MA_WIDTH);
+                ma_rows.push(cols);
+                continue;
+            }
+
+            // -- `aafi_insert` (op=4): the gap-#5 two-path IMT insert, its own row shape. Consumes
+            //    `AafiInsertWitness8`; each gate below ↔ an `imtInsert` step.
+            //    ⚠ "Nothing routes here in production (ADDITIVE) — the fill exists for the
+            //    atomic-flip cutover + the tests" used to sit here and is FALSE at HEAD: this is
+            //    the HOT path. Histogram of `"op":"…"` over all SEVEN committed registries under
+            //    `circuit/descriptors/`: `aafi_insert` 24 rows, `absent` 24, `write` 4, `insert` 0,
+            //    `read` 0. The unrouted fills are op=3 (`MapKind::Insert`) and op=0
+            //    (`MapKind::Read`), not this one. --
+            if kind == MapKind::AafiInsert {
+                let w = tree
+                    .insert_witness_aafi(HeapLeaf::entry(key, value))
+                    .ok_or_else(|| {
+                        format!(
+                            "map op {i}: aafi insert key {} present, out-of-gap, or sentinel-colliding",
+                            key.as_u32()
+                        )
+                    })?;
+                if check && w.new_root != new_root {
+                    return Err(format!(
+                        "map op {i}: claimed new_root != genuine AAFI insert — {}",
+                        root8_mismatch(&new_root, &w.new_root)
+                    ));
+                }
+                let low_next = w.low_leaf_old.next_addr;
+                // The R1 (post-low-update) layout = the append-order layout MINUS the appended leaf;
+                // its append fold IS R1, and `free_index`'s membership path is PATH2.
+                let r1_prefix = &w.append_order_after[..w.free_index];
+                let (path2_root, sib2, dir2) =
+                    aafi_membership_8(r1_prefix, w.free_index, HEAP_TREE_DEPTH);
+
+                let mut cols = vec![BabyBear::ZERO; MAP_A_DEC0];
+                cols[MAP_ROOT..MAP_ROOT + CHIP_OUT_LANES].copy_from_slice(&root);
+                cols[MAP_KEY] = key;
+                cols[MAP_VALUE] = value;
+                cols[MAP_OP] = BabyBear::new(kind.code());
+                cols[MAP_NEW_ROOT..MAP_NEW_ROOT + CHIP_OUT_LANES].copy_from_slice(&new_root);
+                cols[MAP_IS_REAL] = BabyBear::ONE;
+                cols[MAP_S] = BabyBear::ONE; // the AAFI selector (op=4)
+                // Pin old_value := value so the read-leg `old_value = value` holds trivially on aafi
+                // (it is otherwise unused — the read/write old-leaf absorb is gated off at op=4).
+                cols[MAP_OLD_VALUE] = value;
+                cols[MAP_NEXT] = low_next; // low_oldNext = the appended leaf's next_addr
+                cols[MAP_LOW_ADDR] = w.low_leaf_old.addr;
+                cols[MAP_LOW_VALUE] = w.low_leaf_old.value;
+                for lvl in 0..HEAP_TREE_DEPTH {
+                    cols[MAP_SIB0 + CHIP_OUT_LANES * lvl..MAP_SIB0 + CHIP_OUT_LANES * (lvl + 1)]
+                        .copy_from_slice(&w.low_siblings[lvl]);
+                    cols[MAP_DIR0 + lvl] = BabyBear::new(w.low_directions[lvl] as u32);
+                    cols[MAP_SIB2_0 + CHIP_OUT_LANES * lvl
+                        ..MAP_SIB2_0 + CHIP_OUT_LANES * (lvl + 1)]
+                        .copy_from_slice(&sib2[lvl]);
+                    cols[MAP_DIR2_0 + lvl] = BabyBear::new(dir2[lvl] as u32);
+                }
+                // Fold `leaf8` up (sibs, dirs) through `heap_node8`, store the DEPTH-1 intermediate
+                // groups at `chain0`, register every node8 on the chip bus; the final link IS the
+                // root group (not stored). Twin of the shared block's `fold_chain`, path-parametric.
+                let fold = |leaf8: [BabyBear; CHIP_OUT_LANES],
+                            sibs: &[[BabyBear; CHIP_OUT_LANES]],
+                            dirs: &[u8],
+                            chain0: usize,
+                            cols: &mut [BabyBear],
+                            hist: &mut BTreeMap<Vec<u32>, u64>|
+                 -> [BabyBear; CHIP_OUT_LANES] {
+                    let mut cur8 = leaf8;
+                    for lvl in 0..HEAP_TREE_DEPTH {
+                        let sib8 = sibs[lvl];
+                        let (l8, r8) = if dirs[lvl] != 0 {
+                            (sib8, cur8)
+                        } else {
+                            (cur8, sib8)
+                        };
+                        let d8 = heap_node8(l8, r8);
+                        *hist.entry(node8_hist_tuple(&l8, &r8, &d8)).or_insert(0) += 1;
+                        if lvl + 1 < HEAP_TREE_DEPTH {
+                            cols[chain0 + CHIP_OUT_LANES * lvl
+                                ..chain0 + CHIP_OUT_LANES * (lvl + 1)]
+                                .copy_from_slice(&d8);
+                        }
+                        cur8 = d8;
+                    }
+                    cur8
+                };
+
+                // GATE (a): low_old digest → MAP_OLD_LEAF, folds PATH1 → MAP_ROOT.
+                let low_old8 = w.low_leaf_old.digest8();
+                *chip_hist
+                    .entry(leaf8_hist_tuple(
+                        w.low_leaf_old.addr,
+                        w.low_leaf_old.value,
+                        low_next,
+                        &low_old8,
+                    ))
+                    .or_insert(0) += 1;
+                cols[MAP_OLD_LEAF..MAP_OLD_LEAF + CHIP_OUT_LANES].copy_from_slice(&low_old8);
+                let a_end = fold(
+                    low_old8,
+                    &w.low_siblings,
+                    &w.low_directions,
+                    MAP_OLD_CHAIN0,
+                    &mut cols,
+                    &mut chip_hist,
+                );
+                debug_assert_eq!(a_end, root, "aafi gate(a): low path must open to root8");
+
+                // GATE (c): low_new digest (next := k) → MAP_LOW_NEW, folds PATH1 → MAP_R1.
+                let low_new8 = w.low_leaf_new.digest8();
+                *chip_hist
+                    .entry(leaf8_hist_tuple(
+                        w.low_leaf_new.addr,
+                        w.low_leaf_new.value,
+                        key,
+                        &low_new8,
+                    ))
+                    .or_insert(0) += 1;
+                cols[MAP_LOW_NEW..MAP_LOW_NEW + CHIP_OUT_LANES].copy_from_slice(&low_new8);
+                let r1 = fold(
+                    low_new8,
+                    &w.low_siblings,
+                    &w.low_directions,
+                    MAP_LOW_NEW_CHAIN0,
+                    &mut cols,
+                    &mut chip_hist,
+                );
+                cols[MAP_R1..MAP_R1 + CHIP_OUT_LANES].copy_from_slice(&r1);
+                debug_assert_eq!(
+                    r1, path2_root,
+                    "aafi: PATH1 R1 must equal the R1-layout fold"
+                );
+
+                // GATE (d1): the empty slot (ZERO8) folds PATH2 → MAP_R1 (proves free_index empty).
+                let free_empty8 = heap_empty_subtree_root_8(0);
+                cols[MAP_FREE_EMPTY..MAP_FREE_EMPTY + CHIP_OUT_LANES].copy_from_slice(&free_empty8);
+                let d1_end = fold(
+                    free_empty8,
+                    &sib2,
+                    &dir2,
+                    MAP_FREE_EMPTY_CHAIN0,
+                    &mut cols,
+                    &mut chip_hist,
+                );
+                debug_assert_eq!(d1_end, r1, "aafi gate(d1): empty slot must open to R1");
+
+                // GATE (d2): appended leaf → MAP_NEW_LEAF, folds PATH2 → MAP_NEW_ROOT.
+                let appended8 = w.new_leaf.digest8();
+                *chip_hist
+                    .entry(leaf8_hist_tuple(
+                        w.new_leaf.addr,
+                        w.new_leaf.value,
+                        w.new_leaf.next_addr,
+                        &appended8,
+                    ))
+                    .or_insert(0) += 1;
+                cols[MAP_NEW_LEAF..MAP_NEW_LEAF + CHIP_OUT_LANES].copy_from_slice(&appended8);
+                let d2_end = fold(
+                    appended8,
+                    &sib2,
+                    &dir2,
+                    MAP_NEW_CHAIN0,
+                    &mut cols,
+                    &mut chip_hist,
+                );
+                debug_assert_eq!(d2_end, new_root, "aafi gate(d2): appended leaf → new_root");
+
+                // GATE (b): the pointer-bracket range block (low_addr < key < low_next).
+                debug_assert_eq!(cols.len(), MAP_A_DEC0);
+                fill_canon(
+                    w.low_leaf_old.addr.as_u32(),
+                    true,
+                    &mut cols,
+                    &mut byte_hist,
+                );
+                fill_canon(key.as_u32(), true, &mut cols, &mut byte_hist);
+                fill_canon(low_next.as_u32(), true, &mut cols, &mut byte_hist);
+                fill_lex_lt(
+                    w.low_leaf_old.addr.as_u32(),
+                    key.as_u32(),
+                    true,
+                    &mut cols,
+                    &mut byte_hist,
+                )?;
+                fill_lex_lt(
+                    key.as_u32(),
+                    low_next.as_u32(),
+                    true,
+                    &mut cols,
+                    &mut byte_hist,
+                )?;
+                debug_assert_eq!(cols.len(), MAP_WIDTH);
+                map_rows.push(cols);
+                continue;
+            }
+
+            // `next_addr` is the IMT leaf pointer (leaf arity 2→3): read/write SHARE it (the value
+            // update holds the pointer fixed), insert carries the appended leaf's `low_oldNext`.
+            let (old_value, next_addr, sibs, dirs): (
+                BabyBear,
+                BabyBear,
+                Vec<[BabyBear; CHIP_OUT_LANES]>,
+                Vec<u8>,
+            ) = match kind {
+                MapKind::Read => {
+                    let pos = tree.position_of(key).ok_or_else(|| {
+                        format!("map op {i}: read key {} not in heap", key.as_u32())
+                    })?;
+                    let leaf = tree.sorted_leaves()[pos];
+                    if check && leaf.value != value {
+                        return Err(format!(
+                            "map op {i}: read at key {} opens to {}, row claims {}",
+                            key.as_u32(),
+                            leaf.value.as_u32(),
+                            value.as_u32()
+                        ));
+                    }
+                    if check && new_root != root {
+                        return Err(format!(
+                            "map op {i}: read must preserve the root — {}",
+                            root8_mismatch(&new_root, &root)
+                        ));
+                    }
+                    let (sibs, dirs) = tree
+                        .prove_membership(pos)
+                        .ok_or_else(|| format!("map op {i}: membership path failed"))?;
+                    (value, leaf.next_addr, sibs, dirs)
+                }
+                MapKind::Write => {
+                    let w = tree
+                        .update_witness(HeapLeaf::entry(key, value))
+                        .ok_or_else(|| {
+                            format!(
+                                "map op {i}: write key {} not present — use MapKind::Insert for \
+                             fresh-key sorted inserts",
+                                key.as_u32()
+                            )
+                        })?;
+                    if check && w.new_root != new_root {
+                        return Err(format!(
+                            "map op {i}: claimed new_root != genuine sorted write — {}",
+                            root8_mismatch(&new_root, &w.new_root)
+                        ));
+                    }
+                    // Advance the working set: the post-write heap is reachable for later ops.
+                    let new_leaves: Vec<HeapLeaf> = tree
+                        .sorted_leaves()
+                        .iter()
+                        .map(|l| {
+                            if l.addr == key {
+                                HeapLeaf::entry(key, value)
+                            } else {
+                                *l
+                            }
+                        })
+                        .collect();
+                    trees.push(CanonicalHeapTree8::new(new_leaves, HEAP_TREE_DEPTH));
+                    // The pointer is held fixed by the value update (old/new share it).
+                    (
+                        w.old_leaf.value,
+                        w.old_leaf.next_addr,
+                        w.siblings,
+                        w.directions,
+                    )
+                }
+                MapKind::Insert => {
+                    let w = tree
+                        .insert_witness(HeapLeaf::entry(key, value))
+                        .ok_or_else(|| {
+                            format!(
+                                "map op {i}: insert key {} already present or collides with \
+                             sentinels",
+                                key.as_u32()
+                            )
+                        })?;
+                    if check && w.new_root != new_root {
+                        return Err(format!(
+                            "map op {i}: claimed new_root != genuine sorted insert — {}",
+                            root8_mismatch(&new_root, &w.new_root)
+                        ));
+                    }
+                    // Advance the working set: the post-insert heap is reachable for later ops.
+                    let mut new_leaves: Vec<HeapLeaf> = tree
+                        .sorted_leaves()
+                        .iter()
+                        .filter(|l| l.addr != SENTINEL_MIN && l.addr != SENTINEL_MAX)
+                        .copied()
+                        .collect();
+                    new_leaves.push(HeapLeaf::entry(key, value));
+                    trees.push(CanonicalHeapTree8::new(new_leaves, HEAP_TREE_DEPTH));
+                    // The appended leaf's LINKED pointer (its sorted successor's addr).
+                    (
+                        BabyBear::ZERO,
+                        w.new_leaf.next_addr,
+                        w.siblings,
+                        w.directions,
+                    )
+                }
+                MapKind::Absent => unreachable!("absent handled above"),
+                MapKind::AafiInsert => unreachable!("aafi insert handled above"),
+            };
+            let mut cols = vec![BabyBear::ZERO; MAP_WIDTH];
+            cols[MAP_ROOT..MAP_ROOT + CHIP_OUT_LANES].copy_from_slice(&root);
+            cols[MAP_KEY] = key;
+            cols[MAP_VALUE] = value;
+            cols[MAP_OP] = BabyBear::new(kind.code());
+            cols[MAP_NEW_ROOT..MAP_NEW_ROOT + CHIP_OUT_LANES].copy_from_slice(&new_root);
+            cols[MAP_IS_REAL] = BabyBear::ONE;
+            cols[MAP_OLD_VALUE] = old_value;
+            cols[MAP_NEXT] = next_addr;
+            for lvl in 0..HEAP_TREE_DEPTH {
+                cols[MAP_SIB0 + CHIP_OUT_LANES * lvl..MAP_SIB0 + CHIP_OUT_LANES * (lvl + 1)]
+                    .copy_from_slice(&sibs[lvl]);
+                cols[MAP_DIR0 + lvl] = BabyBear::new(dirs[lvl] as u32);
+            }
+            // The opening's permutations ride the chip table: the leaf hashes are arity-2 absorb
+            // tuples (all 8 lanes) on BUS_P2, and every internal node is the arity-16 `node8`
+            // compression `heap_node8(L8, R8)` — also on BUS_P2 (Phase H-HEAP-8). The row carries
+            // 8-felt digests only, never aux. The chain folds through the SAME `heap_node8` the
+            // canonical tree commits, so prover/verifier agree by construction.
+            let is_insert = kind == MapKind::Insert;
+            // The new-leaf digest opens against `new_root`; the old-leaf digest against `root`. Both
+            // are arity-3 IMT digests `hash[key, value, next_addr]` sharing the `next_addr` pointer.
+            let new_leaf8 = HeapLeaf {
+                addr: key,
+                value,
+                next_addr,
+            }
+            .digest8();
+            *chip_hist
+                .entry(leaf8_hist_tuple(key, value, next_addr, &new_leaf8))
+                .or_insert(0) += 1;
+            cols[MAP_NEW_LEAF..MAP_NEW_LEAF + CHIP_OUT_LANES].copy_from_slice(&new_leaf8);
+            // Fold a leaf's 8-felt digest up the shared (sib, dir) path through `heap_node8`,
+            // storing the DEPTH-1 intermediate node groups (the final link IS the root group).
+            // `chip_hist` is threaded as an argument (not captured) so the leaf-absorb
+            // registrations below can also touch it.
+            let fold_chain = |leaf8: [BabyBear; CHIP_OUT_LANES],
+                              chain0: usize,
+                              cols: &mut [BabyBear],
+                              hist: &mut BTreeMap<Vec<u32>, u64>|
+             -> [BabyBear; CHIP_OUT_LANES] {
+                let mut cur8 = leaf8;
+                for lvl in 0..HEAP_TREE_DEPTH {
+                    let sib8 = sibs[lvl];
+                    let (l8, r8) = if dirs[lvl] != 0 {
+                        (sib8, cur8)
+                    } else {
+                        (cur8, sib8)
+                    };
+                    let d8 = heap_node8(l8, r8);
+                    *hist.entry(node8_hist_tuple(&l8, &r8, &d8)).or_insert(0) += 1;
+                    if lvl + 1 < HEAP_TREE_DEPTH {
+                        cols[chain0 + CHIP_OUT_LANES * lvl..chain0 + CHIP_OUT_LANES * (lvl + 1)]
+                            .copy_from_slice(&d8);
+                    }
+                    cur8 = d8;
+                }
+                cur8
+            };
+            if is_insert {
+                // Insert rows have no committed old leaf; the AIR's old-path legs are gated
+                // away by `op - 3`. Leave old-leaf / old-chain columns at zero.
+                cols[MAP_OLD_VALUE] = BabyBear::ZERO;
+            } else {
+                let old_leaf8 = HeapLeaf {
+                    addr: key,
+                    value: old_value,
+                    next_addr,
+                }
+                .digest8();
+                *chip_hist
+                    .entry(leaf8_hist_tuple(key, old_value, next_addr, &old_leaf8))
+                    .or_insert(0) += 1;
+                cols[MAP_OLD_LEAF..MAP_OLD_LEAF + CHIP_OUT_LANES].copy_from_slice(&old_leaf8);
+                let end = fold_chain(old_leaf8, MAP_OLD_CHAIN0, &mut cols, &mut chip_hist);
+                // ⚑ Was `debug_assert_eq!`, i.e. a guard that existed only in debug builds. Under
+                // `--release` a forged map opening sailed past it, and the two teeth that named
+                // this assert as their mechanism could not fire. It is a fail-closed `Err` under
+                // `check` now: the deployed entry refuses in EVERY profile, and a `check: false`
+                // tooth still reaches the in-circuit fact-bus recompute (which is the leg that
+                // matters in production, and is what those teeth assert on now).
+                if check && end != root {
+                    return Err(
+                        "old path must authenticate against root8 (the claimed pre-state map \
+                         opening does not fold to the committed root)"
+                            .to_string(),
+                    );
+                }
+            }
+            let end = fold_chain(new_leaf8, MAP_NEW_CHAIN0, &mut cols, &mut chip_hist);
+            if check && end != new_root {
+                return Err(
+                    "new path must recompose to new_root8 (the claimed post-state map root is \
+                     not the sorted-Merkle splice of the written content)"
+                        .to_string(),
+                );
+            }
+            map_rows.push(cols);
+        }
+        // Pad rows: all-zero for map-ops (is_real = 0 gates every lookup and the log receive);
+        // canon/comparator-shaped zeros for map-absent (its hi4/dhi/limb lookups ride the byte
+        // bus with multiplicity ONE on every row, so pads contribute their zero queries).
+        if presence.map_ops {
+            let map_height = next_pow2(map_rows.len());
+            while map_rows.len() < map_height {
+                map_rows.push(vec![BabyBear::ZERO; MAP_WIDTH]);
+            }
+            map_ops = Some(map_rows);
+        } else if !map_rows.is_empty() {
+            return Err("read/write map ops gathered but the map-ops table is absent".to_string());
+        }
+        if presence.map_absent {
+            let ma_height = next_pow2(ma_rows.len());
+            while ma_rows.len() < ma_height {
+                let mut cols: Vec<BabyBear> = vec![BabyBear::ZERO; MA_A_DEC0];
+                for _ in 0..3 {
+                    fill_canon(0, false, &mut cols, &mut byte_hist);
+                }
+                for _ in 0..2 {
+                    fill_lex_lt(0, 0, false, &mut cols, &mut byte_hist)?;
+                }
+                debug_assert_eq!(cols.len(), MA_WIDTH);
+                ma_rows.push(cols);
+            }
+            map_absent = Some(ma_rows);
+        } else if !ma_rows.is_empty() {
+            return Err("absent map ops gathered but the map-absent table is absent".to_string());
+        }
+    } // if presence.map_ops || presence.map_absent
+
+    // ---- chip table: one row per unique permutation (absorb + fact), mult-counted. ----
+    let chip: Option<Vec<Vec<BabyBear>>> = if presence.chip {
+        let mut chip_rows: Vec<Vec<BabyBear>> = Vec::new();
+        for (tuple, mult) in &chip_hist {
+            // tuple = [arity, in0..in15, out0..out7] (CHIP_TUPLE_LEN = 25 wide).
+            // CHIP_MULT_NARROW: how many single-output sites this row serves on BUS_P2_1 (0 for the
+            // deployed wide-only path — the narrow bus balances at 0 and the wide path is unchanged).
+            chip_rows.push(chip_absorb_row(
+                tuple,
+                *mult,
+                narrow_hist.get(tuple).copied().unwrap_or(0),
+            ));
+        }
+        for (&(l, r, out), mult) in &fact_hist {
+            let mut row = vec![BabyBear::ZERO; CHIP_AUX0];
+            row[CHIP_IN0] = BabyBear::new(l);
+            row[CHIP_IN0 + 1] = BabyBear::new(r);
+            row[CHIP_OUT] = BabyBear::new(out);
+            row[CHIP_MULT] = BabyBear::new((*mult % (BABYBEAR_P as u64)) as u32);
+            row[CHIP_IS_FACT] = BabyBear::ONE;
+            // Fact rows are rate-4 (big = 0): S4 = arity tag (0), S5 = FACT_MARK, S6 = 1 —
+            // reproduces `fact_state_c` (st[5]=FACT_MARK, st[6]=1) through the S4/S5/S6 seeding.
+            row[CHIP_BIG] = BabyBear::ZERO;
+            row[CHIP_S4] = BabyBear::ZERO;
+            row[CHIP_S5] = BabyBear::new(FACT_MARK);
+            row[CHIP_S6] = BabyBear::ONE;
+            // Fill the 8 exposed output lanes (the AIR's `out[i] == lane[i]` equality applies
+            // to fact rows too; only the fact bus's 3-wide `[l, r, out0]` is consumed though).
+            let fst = fact_state_c(BabyBear::new(l), BabyBear::new(r));
+            let lanes = perm_lanes(fst);
+            row[CHIP_OUT..CHIP_OUT + CHIP_OUT_LANES].copy_from_slice(&lanes[..CHIP_OUT_LANES]);
+            debug_assert_eq!(row[CHIP_OUT], BabyBear::new(out));
+            let (aux, _digest) = perm_aux(fst);
+            row.extend(aux);
+            row.push(BabyBear::ZERO); // CHIP_MULT_NARROW = 0 (wide-only deployed path; narrow bus inert)
+            chip_rows.push(row);
+        }
+        // Pad: genuine arity-0 absorb permutation rows with multiplicity 0.
+        let pad_lanes = perm_lanes([BabyBear::ZERO; POSEIDON2_WIDTH]);
+        let (aux, digest) = perm_aux([BabyBear::ZERO; POSEIDON2_WIDTH]);
+        let mut pad = vec![BabyBear::ZERO; CHIP_AUX0];
+        debug_assert_eq!(pad_lanes[0], digest);
+        pad[CHIP_OUT..CHIP_OUT + CHIP_OUT_LANES].copy_from_slice(&pad_lanes[..CHIP_OUT_LANES]);
+        pad.extend(aux);
+        pad.push(BabyBear::ZERO); // CHIP_MULT_NARROW = 0
+        let target = next_pow2(chip_rows.len());
+        while chip_rows.len() < target {
+            chip_rows.push(pad.clone());
+        }
+        Some(chip_rows)
+    } else {
+        None
+    };
+
+    // ---- full-state chip table: one row per claimed `[16, state16, next_state16]` key,
+    //      with `next_state16` always re-derived from the genuine permutation.  This is a
+    //      separate AIR/commitment from `chip`, so adding it cannot move a legacy VK. ----
+    let chip_state16: Option<Vec<Vec<BabyBear>>> = if presence.chip_state16 {
+        let mut rows: Vec<Vec<BabyBear>> = Vec::new();
+        for (tuple, mult) in &state16_hist {
+            debug_assert_eq!(tuple.len(), CHIP_STATE16_TUPLE_LEN);
+            debug_assert_eq!(tuple[0], POSEIDON2_WIDTH as u32);
+
+            // The existing chip permutation constraints' arity-16 branch reads all sixteen
+            // input columns directly into the state.  Its selector/source columns must still be
+            // filled exactly, even though this table exposes a different lookup tuple.
+            let mut row = vec![BabyBear::ZERO; CHIP_AUX0];
+            row[CHIP_ARITY] = BabyBear::new(POSEIDON2_WIDTH as u32);
+            for i in 0..POSEIDON2_WIDTH {
+                row[CHIP_IN0 + i] = BabyBear::new(tuple[1 + i]);
+            }
+            row[CHIP_MULT] = BabyBear::ZERO;
+            row[CHIP_IS_FACT] = BabyBear::ZERO;
+            row[CHIP_BIG] = BabyBear::ZERO;
+            row[CHIP_WIDE] = BabyBear::ZERO;
+            row[CHIP_NODE8] = BabyBear::ONE;
+            row[CHIP_S4] = row[CHIP_IN0 + 4];
+            row[CHIP_S5] = row[CHIP_IN0 + 5];
+            row[CHIP_S6] = row[CHIP_IN0 + 6];
+
+            let st: [BabyBear; POSEIDON2_WIDTH] = core::array::from_fn(|i| row[CHIP_IN0 + i]);
+            let output = chip_permute_state16(st);
+            row[CHIP_OUT..CHIP_OUT + CHIP_OUT_LANES].copy_from_slice(&output[..CHIP_OUT_LANES]);
+            let (aux, _digest) = perm_aux(st);
+            row.extend(aux);
+            row.push(BabyBear::new((*mult % (BABYBEAR_P as u64)) as u32));
+            debug_assert_eq!(row.len(), CHIP_WIDTH);
+            rows.push(row);
+        }
+
+        // Genuine zero-state arity-0 pads, with state-bus multiplicity zero.  Pads never answer
+        // a main lookup (whose static tag is 16), but remain valid rows of the shared chip AIR.
+        let zero = [BabyBear::ZERO; POSEIDON2_WIDTH];
+        let output = chip_permute_state16(zero);
+        let (aux, _digest) = perm_aux(zero);
+        let mut pad = vec![BabyBear::ZERO; CHIP_AUX0];
+        pad[CHIP_OUT..CHIP_OUT + CHIP_OUT_LANES].copy_from_slice(&output[..CHIP_OUT_LANES]);
+        pad.extend(aux);
+        pad.push(BabyBear::ZERO);
+        debug_assert_eq!(pad.len(), CHIP_WIDTH);
+        let target = next_pow2(rows.len());
+        while rows.len() < target {
+            rows.push(pad.clone());
+        }
+        Some(rows)
+    } else {
+        None
+    };
+
+    // ---- the byte table (height pinned at 256). ----
+    let byte: Option<Vec<Vec<BabyBear>>> = presence.byte.then(|| {
+        (0..BYTE_TABLE_HEIGHT)
+            .map(|b| {
+                vec![
+                    BabyBear::new(b as u32),
+                    BabyBear::new((byte_hist[b] % (BABYBEAR_P as u64)) as u32),
+                ]
+            })
+            .collect()
+    });
+
+    let exact_public_tables = exact_public_table_traces(desc);
+
+    Ok(Ir2Traces {
+        main,
+        chip,
+        chip_state16,
+        byte,
+        memory,
+        boundary,
+        map_ops,
+        map_absent,
+        umemory,
+        umem_boundary: umem_boundary_rows,
+        exact_public_tables,
+    })
+}
+
+/// The realized manifests a descriptor declares, in `desc.tables` order — the SINGLE SOURCE
+/// [`instance_airs`], [`exact_public_table_traces`] and the verifier's rebuild all walk, so the
+/// AIR list and the trace list cannot slip and prover and verifier cannot commit different tables.
+fn exact_public_manifests(desc: &EffectVmDescriptor2) -> Vec<(usize, Arc<ExactPublicManifest>)> {
+    desc.tables
+        .iter()
+        .filter_map(|table| match &table.sem {
+            TableSem::ExactPublicRows { rows } => Some((
+                table.id,
+                Arc::new(ExactPublicManifest::of(table.id, rows, table.arity)),
+            )),
+            _ => None,
+        })
+        .collect()
+}
+
+/// ⚑ **ONE EXACT-PUBLIC INSTANCE: the Lean-emitted ALGEBRA, plus the descriptor's DATA.**
+///
+/// This is the whole of what replaced the hand-written `Ir2Air::ExactPublicTable` arm. The gate and
+/// the bus leg come from `dregg-ir2-exact-public-v1.json`, selected by ARITY; the preprocessed
+/// cells come from the manifest. Nothing here authors a constraint.
+///
+/// # Errors
+/// Returns the reason the pair cannot be assembled, and both directions are fail-closed:
+///
+/// * the arity is outside the emitted family (a descriptor declaring a wider manifest than the
+///   Lean emission covers is REFUSED, never served by a nearby member);
+/// * the emitted member's declared `prep_width` disagrees with the manifest layout this file
+///   materializes. ⚑ That is the tooth on the LAYOUT itself: the Lean side says
+///   `prepWidth = arity + 2` and this side writes `[id, values.., mult]`, and if either moved
+///   without the other the instance refuses to assemble rather than serving a matrix whose columns
+///   mean something else.
+fn exact_public_lean_instance(manifest: &Arc<ExactPublicManifest>) -> Result<Ir2Air, String> {
+    // ⚑ THE CEILING IS PINNED ACROSS THE TWO SIDES. `check_descriptor2` admits an arity against
+    // THIS file's `MAX_EXACT_PUBLIC_ARITY`; the emitted family covers `1 ..= EP_MAX_ARITY` from the
+    // Lean side. If those two ever drift, a descriptor could pass admission and then find no member
+    // — so the drift is REFUSED here rather than surfacing as a missing instance (a dropped LogUp
+    // server, i.e. an unsatisfiable bus) or a panic deep in assembly.
+    let family_len = crate::table_air::exact_public_table_air_family().len();
+    if family_len != MAX_EXACT_PUBLIC_ARITY {
+        return Err(format!(
+            "the emitted exact-public family covers {family_len} arities but this file admits \
+             {MAX_EXACT_PUBLIC_ARITY}; re-emit `dregg-ir2-exact-public-v1.json` or re-pin the cap"
+        ));
+    }
+    let air = crate::table_air::exact_public_table_air_for(manifest.arity)?;
+    if air.prep_width != manifest.prep_width() {
+        return Err(format!(
+            "exact-public arity {}: the emitted member declares prep_width {} but the manifest \
+             layout is {} wide",
+            manifest.arity,
+            air.prep_width,
+            manifest.prep_width()
+        ));
+    }
+    let prep = Arc::new(PrepMatrix {
+        values: manifest.preprocessed_cells(),
+        width: manifest.prep_width(),
+    });
+    Ir2Air::lean_table_with_prep(air, prep)
+}
+
+/// The exact-public table instance MAIN traces for a descriptor, in
+/// [`exact_public_manifests`] order — one committed multiplicity column per table, the values
+/// themselves riding in the AIR's preprocessed matrix.
+fn exact_public_table_traces(desc: &EffectVmDescriptor2) -> Vec<Vec<Vec<BabyBear>>> {
+    exact_public_manifests(desc)
+        .iter()
+        .map(|(_, manifest)| manifest.main_trace())
+        .collect()
+}
+
+/// The number of exact-public table instances a descriptor contributes — ONE per declared
+/// exact-public table (it was one per declared manifest ROW until 2026-07-29). Zero for a
+/// table-free descriptor.
+fn exact_public_instance_count(desc: &EffectVmDescriptor2) -> usize {
+    desc.tables
+        .iter()
+        .filter(|table| matches!(table.sem, TableSem::ExactPublicRows { .. }))
+        .count()
+}
+
+/// The PRESENT instance AIRs for a checked descriptor, in canonical instance order
+/// (main, then chip / byte / memory+boundary / map-ops, each iff the descriptor uses it).
+/// Presence is a function of the descriptor alone, so the verifier rebuilds the same set.
+fn instance_airs(
+    desc: &EffectVmDescriptor2,
+    layout: MainLayout,
+    presence: Presence,
+) -> Vec<Ir2Air> {
+    let mut airs = vec![Ir2Air::main_instance(desc.clone(), layout)];
+    if presence.chip {
+        airs.push(Ir2Air::lean_table(crate::table_air::chip_table_air_shared()));
+    }
+    if presence.chip_state16 {
+        airs.push(Ir2Air::lean_table(
+            crate::table_air::chip_state16_table_air_shared(),
+        ));
+    }
+    if presence.byte {
+        // The Lean-authored byte (nibble) table AIR — `Dregg2/Circuit/Emit/ByteTableEmit.lean`.
+        airs.push(Ir2Air::lean_table(crate::table_air::byte_table_air_shared()));
+    }
+    if presence.memory {
+        // The Lean-authored memory op-log table AIR — `Emit/MemoryTableEmit.lean`.
+        airs.push(Ir2Air::lean_table(
+            crate::table_air::memory_table_air_shared(),
+        ));
+        // The Lean-authored memory-boundary table AIR — `Emit/MemBoundaryTableEmit.lean`.
+        airs.push(Ir2Air::lean_table(
+            crate::table_air::mem_boundary_table_air_shared(),
+        ));
+    }
+    if presence.map_ops {
+        // The Lean-authored map reconciliation table AIR — `Emit/MapOpsTableEmit.lean`.
+        airs.push(Ir2Air::lean_table(
+            crate::table_air::map_ops_table_air_shared(),
+        ));
+    }
+    if presence.map_absent {
+        // The Lean-authored table AIR. Decoded once per assembly from the checked-in emission;
+        // presence is a function of the descriptor alone, so the verifier rebuilds the same set.
+        airs.push(Ir2Air::lean_table(
+            crate::table_air::map_absent_table_air_shared(),
+        ));
+    }
+    if presence.umem {
+        // The Lean-authored universal memory op-log table AIR — `Emit/UMemoryTableEmit.lean`.
+        airs.push(Ir2Air::lean_table(
+            crate::table_air::umemory_table_air_shared(),
+        ));
+        airs.push(if presence.umem_cohort {
+            // The Lean-authored cohort boundary — `Emit/UMemBoundaryCohortTableEmit.lean`.
+            Ir2Air::lean_table(crate::table_air::umem_boundary_cohort_table_air_shared())
+        } else {
+            // …and the Lean-authored general boundary — `Emit/UMemBoundaryTableEmit.lean`.
+            Ir2Air::lean_table(crate::table_air::umem_boundary_table_air_shared())
+        });
+    }
+    for (_, manifest) in exact_public_manifests(desc) {
+        // ⚑ The Lean-emitted arity member + the descriptor's own manifest cells. `expect` rather
+        // than a silent skip: a dropped instance is a dropped LogUp server, i.e. an unsatisfiable
+        // bus at best and an unserved query at worst, and `check_descriptor2` has already bounded
+        // the arity inside the emitted family.
+        airs.push(
+            exact_public_lean_instance(&manifest)
+                .expect("a checked exact-public manifest must have an emitted family member"),
+        );
+    }
+    airs
+}
+
+/// The IR-v2 FRI configuration: `log_blowup = 6, 19 queries, 16 PoW bits` — the
+/// MEASURED size-optimal point at security parity with the v1 `create_config`
+/// (conjectured capacity-bound: `19 × 6 + 16 = 130` bits, identical to v1's
+/// `38 × 3 + 16`; proven/Johnson: `19 × 3 + 16 = 73`, identical to v1's
+/// `38 × 1.5 + 16`). The full measured grid lives in
+/// `tests/effect_vm_ir2_size_measure.rs::ir2_fri_grid` and
+/// `.docs-history-noclaude/PROOF-ECONOMICS.md` §2c. The shape of the trade, in brief:
+/// queries dominate IR-v2 proof size (the tables are 2³–2⁸ rows, so the prover-side
+/// LDE cost of high blowup is milliseconds), so RAISING blowup and CUTTING queries
+/// shrinks the wire — transfer: 194.1 KiB at (3, 38) → 120.4 KiB at (6, 19) — while
+/// DROPPING blowup at parity (the (2, 57) / (1, 114) points) inflates it. The next
+/// step up, (7, 17), buys only ~6.5 KiB for a further prover doubling: declined.
+///
+/// ⚑ **CORRECTION 2026-08-04, RETRACTED 2026-08-14 — `(2, 57)` AND `(1, 114)` ARE POINTS
+/// FOR THE WHOLE REGISTRY AFTER ALL.** The 08-04 correction read: *"every descriptor whose
+/// constraint list pulls in the Poseidon2 chip table REFUSES to prove at `log_blowup = 2`
+/// (`OodEvaluationMismatch { index: Some(1) }`) because the chip's inline degree-7 x⁷ S-box
+/// needs a degree-6 quotient and a blowup of 4 cannot carry it."* **The refusal was real and
+/// the explanation was wrong.** `p3-fri`'s `get_evaluations_on_domain` extrapolation path —
+/// the branch taken exactly when a matrix's quotient domain outgrows its committed LDE, i.e.
+/// when `log_blowup < ⌈log₂(d−1)⌉` — applied `bit_reverse_rows()` once too many. Right
+/// values, wrong row order, wrong quotient, a well-formed proof its own verifier rejects.
+/// One inserted call in `vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs` fixes it (upstream
+/// PR #1982 is the same change, open with CHANGES_REQUESTED); settled by construction in
+/// `circuit/tests/fri_extrapolation_row_order.rs` — both PCS paths against an independent
+/// coset DFT, a degree-7 AIR verifying at `lb = 2`, and a corrupted trace still rejecting.
+///
+/// **So `⌈log₂(d−1)⌉` is not a floor.** It is the threshold at which the prover switches from
+/// truncating the committed LDE to re-interpolating off it — one iDFT+DFT per matrix, not a
+/// refusal. The constraint that IS real is the two-adicity ceiling
+/// (`max rows = 2^(TWO_ADICITY − log_blowup)`), and it runs the other way: lower blowup buys
+/// rows. `(2, 57)` also RAISES the commit-phase column (`ε_C ∝ ρ^{−3/2}`), which is the one
+/// that binds at the wrap. The 43-of-132 chip-bearing count still names which descriptors take
+/// the extrapolation path; it no longer names which ones can be proved.
+///
+/// ⚠ And "parity" covers the two query columns ONLY. From `@[export] dregg_fri_ledger`,
+/// `(6,19) → (2,57)`: capacity `130 → 130` and Johnson `73 → 73`, but per-fold `109 → 118`
+/// and commit-phase `ε_C` `71 → 77`. At the deployed wrap **`ε_C` binds BELOW Johnson**, so
+/// on the column that actually binds, the low-blowup rung is the STRONGER one. Reading
+/// "parity" as "identical security" is therefore wrong in both directions.
+///
+/// ⚑ **WHY 6 STAYS ANYWAY (measured 2026-08-04, not landed by fiat).** On the axis this
+/// system optimizes — wire bytes and verify ms for light clients and on-chain verifiers —
+/// `(6,19)` wins on EVERY measured descriptor by 2.0–2.4× on both, and its costs (prover
+/// RAM, four bits of row ceiling, six bits of `ε_C`) land on a workload the registry does
+/// not contain yet. **The named trigger that flips this** is a descriptor needing more than
+/// `2^21` rows — the row ceiling is `log_rows ≤ 27 − log_blowup`. The in-AIR Kimchi/Wrap
+/// verifier is that descriptor (1.6 M instructions, pads to exactly `2^21`) and it is
+/// chip-free, so `(2, 57)` is legal for it: see
+/// `circuit/tests/pasta_sbox_program_proves.rs::the_blowup_is_swept_at_parity_on_this_machine`,
+/// where a real chip-free machine proves and verifies at `lb = 2` AND `lb = 1`. When a stage
+/// of it lands, the answer for that family is a per-descriptor knob — and the prerequisite is
+/// the recursion path, which reads `num_queries` from the inner proof structure
+/// (`recursion/src/pcs/fri/verifier.rs:1378`) and never pins it against a configured count.
+/// That is masked today only because every child runs 19 queries.
+///
+/// One config for every v2 descriptor: the whole-batch constraint-degree ceiling is 8
+/// (`setFieldDynVmDescriptor2`'s pinned slot gate; everything else ≤ 7 — guarded by
+/// `ir2_degree_budget`), far inside `log_blowup = 6`. Proofs are NOT interchangeable
+/// across configs (FRI shape + Fiat–Shamir differ); the IR-v2 path is pre-cutover,
+/// so this pins its wire shape.
+fn ir2_config() -> DreggStarkConfig {
+    // The Poseidon2 perm + MMCS + FRI params are identical on every call (the knobs are fixed),
+    // so build the config ONCE per thread and hand back a clone (a few Arc bumps + small field
+    // copies — far cheaper than re-deriving the perm/MMCS/FRI params per leaf). `thread_local`
+    // sidesteps any `Sync` requirement on the config; the cached value is byte-identical to a
+    // fresh `create_config_with_fri(6, 0, 3, 19, 16)` (same deterministic knobs).
+    thread_local! {
+        // ⚑ `_full`, not `create_config_with_fri`: the short constructor hard-codes
+        // `commit_proof_of_work_bits = 0` INSIDE itself, so this config's sixth knob was set by a
+        // literal in another file that no gate could reach. It is `IR2_FRI_COMMIT_POW_BITS` now.
+        static IR2_CONFIG: DreggStarkConfig = create_config_with_fri_full(
+            IR2_FRI_LOG_BLOWUP,
+            IR2_FRI_LOG_FINAL_POLY_LEN,
+            IR2_FRI_MAX_LOG_ARITY,
+            IR2_FRI_NUM_QUERIES,
+            IR2_FRI_COMMIT_POW_BITS,
+            IR2_FRI_QUERY_POW_BITS,
+        );
+    }
+    IR2_CONFIG.with(|c| c.clone())
+}
+
+/// The PRODUCTION IR-v2 FRI knobs ([`ir2_config`]), exported so the checked-in params→bits budget
+/// gate (`circuit-prove/tests/fri_params_soundness_budget.rs`) can hand them to the VERIFIED Lean
+/// ledger (`@[export] dregg_fri_ledger`) and PIN them against the Lean-modeled
+/// `FriVerifier.ir2LeafWrapConfig` — the config every per-fold theorem in the metatheory is stated
+/// about. The gate derives no soundness number from these; Lean does. The `(6, 19)` pin is the
+/// measured size-optimal security-parity point (see the [`ir2_config`] doc + `.docs-history-noclaude/PROOF-ECONOMICS.md`
+/// §2c); moving any knob moves the wire (FRI shape + Fiat–Shamir).
+///
+/// ⚑ NAME COLLISION, do not be misled: the Lean `ir2LeafWrapConfig` models THIS config (`ir2_config`),
+/// NOT the Rust fn `dregg_circuit_prove::ivc_turn_chain::ir2_leaf_wrap_config()`, which is a different
+/// knob set (arity 2, not 8 — see `FriLedgerSound.ir2LeafWrapRotatedConfig`).
+pub const IR2_FRI_LOG_BLOWUP: usize = 6;
+pub const IR2_FRI_LOG_FINAL_POLY_LEN: usize = 0;
+pub const IR2_FRI_MAX_LOG_ARITY: usize = 3;
+pub const IR2_FRI_NUM_QUERIES: usize = 19;
+pub const IR2_FRI_QUERY_POW_BITS: usize = 16;
+/// **The SIXTH knob, and the one the ledger could not see.** plonky3's
+/// `commit_proof_of_work_bits` (`fri/src/config.rs:18`) is ground per fold round, after the round
+/// commitment is observed and before the folding challenge `β` is drawn (`fri/src/prover.rs:224`;
+/// checked `verifier.rs:222` with the witness count pinned to the commit count at `:206`). It
+/// grinds against exactly the phase BCIKS20's `ε_C` bounds, so it is the ONE lever on the branch
+/// that BINDS at the deployed wrap which is not a field-extension flag day
+/// (`Dregg2.Circuit.FriCommitPow.commit_pow_moves_the_commit_branch`).
+///
+/// ⚑ It was an inline `0` at `plonky3_prover.rs`'s `create_config_with_fri`, and so were the other
+/// nine construction sites — a knob that moves a soundness column, set by nobody, visible to no
+/// gate. It is a `const` now so `fri_params_soundness_budget.rs` PINS the value the prover
+/// actually grinds against the value the Lean composite is read at.
+///
+/// ⚑ Hard-capped at 30: `grind` asserts `(1u64 << bits) < F::ORDER_U64` over a single BabyBear
+/// witness (`FriCommitPow.maxGrindBits_is_the_babybear_witness_cap`), and the Lean export fails
+/// closed above it.
+pub const IR2_FRI_COMMIT_POW_BITS: usize = 0;
+/// The challenge extension degree for the IR-v2 batch. `ir2_config` builds on the same
+/// `plonky3_prover` extension type, so this is `PROD_EXT_DEGREE`; it is named here so the ledger gate
+/// pins the IR-v2 config's `|F|` explicitly rather than assuming it.
+pub const IR2_EXT_DEGREE: usize = crate::plonky3_prover::PROD_EXT_DEGREE;
+
+#[allow(clippy::too_many_arguments)]
+fn prove_vm_descriptor2_inner<SC>(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    public_inputs: &[BabyBear],
+    mem_boundary: &MemBoundaryWitness,
+    map_heaps: &[Vec<HeapLeaf>],
+    umem_boundary: &UMemBoundaryWitness,
+    check: bool,
+    config: &SC,
+) -> Result<BatchProof<SC>, String>
+where
+    SC: StarkGenericConfig,
+    Domain<SC>: PolynomialSpace<Val = P3BabyBear>,
+    SymbolicExpressionExt<Val<SC>, SC::Challenge>: Algebra<SC::Challenge>,
+    SC::Challenge: p3_field::BasedVectorSpace<P3BabyBear>,
+{
+    let layout = check_descriptor2(desc)?;
+    if base_trace.is_empty() {
+        return Err("base trace must be non-empty".to_string());
+    }
+    if !base_trace.len().is_power_of_two() {
+        return Err(format!(
+            "base trace height {} must be a power of two",
+            base_trace.len()
+        ));
+    }
+    if base_trace[0].len() != desc.trace_width {
+        return Err(format!(
+            "base row width {} must equal descriptor trace_width {}",
+            base_trace[0].len(),
+            desc.trace_width
+        ));
+    }
+    if public_inputs.len() != desc.public_input_count {
+        return Err(format!(
+            "public input count {} != descriptor public_input_count {}",
+            public_inputs.len(),
+            desc.public_input_count
+        ));
+    }
+
+    let presence = Presence::of(desc, &layout);
+    if !(presence.memory || mem_boundary.addrs.is_empty() && mem_boundary.init_vals.is_empty()) {
+        return Err(
+            "descriptor declares no mem ops but a memory boundary witness was supplied \
+             (the memory tables are not committed for this descriptor)"
+                .to_string(),
+        );
+    }
+    if !(presence.map_ops || presence.map_absent || map_heaps.is_empty()) {
+        return Err(
+            "descriptor declares no map ops but witness heaps were supplied \
+             (the map-ops/map-absent tables are not committed for this descriptor)"
+                .to_string(),
+        );
+    }
+    if !presence.umem && !umem_boundary.is_empty() {
+        return Err(
+            "descriptor declares no umem ops but a universal boundary witness was supplied \
+             (the universal memory tables are not committed for this descriptor)"
+                .to_string(),
+        );
+    }
+
+    let traces = build_traces(
+        desc,
+        &layout,
+        presence,
+        base_trace,
+        mem_boundary,
+        map_heaps,
+        umem_boundary,
+        check,
+    )?;
+    let airs = instance_airs(desc, layout, presence);
+
+    let mut matrices = vec![to_matrix(&traces.main)];
+    for t in [
+        &traces.chip,
+        &traces.chip_state16,
+        &traces.byte,
+        &traces.memory,
+        &traces.boundary,
+        &traces.map_ops,
+        &traces.map_absent,
+        &traces.umemory,
+        &traces.umem_boundary,
+    ]
+    .into_iter()
+    .flatten()
+    {
+        matrices.push(to_matrix(t));
+    }
+    for trace in &traces.exact_public_tables {
+        matrices.push(to_matrix(trace));
+    }
+    debug_assert_eq!(matrices.len(), airs.len());
+    let pis: Vec<P3BabyBear> = public_inputs.iter().map(|&v| to_p3(v)).collect();
+    let mut pvs: Vec<Vec<P3BabyBear>> = vec![pis];
+    pvs.resize(airs.len(), vec![]);
+
+    let instances: Vec<StarkInstance<'_, SC, Ir2Air>> = airs
+        .iter()
+        .zip(matrices.iter())
+        .zip(pvs.iter())
+        .map(|((air, trace), pv)| StarkInstance {
+            air,
+            trace,
+            public_values: pv.clone(),
+        })
+        .collect();
+
+    let prover_data = ProverData::from_instances(config, &instances);
+    let common = &prover_data.common;
+    let proof = prove_batch(config, &instances, &prover_data);
+
+    // ⚑ THE SELF-VERIFY IS THE ONLY COMPLETE PRODUCER-SIDE CHECK THIS PATH HAS. It runs in EVERY
+    // build profile, and `cfg!(debug_assertions)` must never be reintroduced here.
+    //
+    // It was gated on `cfg!(debug_assertions)` from 2026-06-24 (`934258ea0`, a perf sweep
+    // self-described as "result-identical") until 2026-07-29, on the stated grounds that "the
+    // in-trace replay above, also gated by `check`, already eagerly refuses a bad witness
+    // fail-closed". THAT IS FALSE, and provably so from `build_traces` itself: the `check` replay
+    // covers the exact-public manifests, the submask bit blocks, and the mem / umem / map-op
+    // WITNESSES. It never evaluates one algebraic constraint — no `Gate`, no `Boundary`, no
+    // `PiBinding`, no `Transition`, no `WindowGate`. A descriptor made only of algebraic gates
+    // (`pasta-rcb-windowed`: 45 constraints, zero lookups) had NOTHING checking it in release, so
+    // `prove_vm_descriptor2` returned `Ok` for an ALL-ZEROS trace. The proof it returned was
+    // always refused by `verify_vm_descriptor2` — the constraint system bound the whole time —
+    // but a producer cannot learn that from a `Result` that is always `Ok`.
+    //
+    // p3's own row-by-row `check_constraints` does not cover the gap either: `prove_batch` runs it
+    // under `#[cfg(debug_assertions)]` AND only for instances that carry lookups
+    // (`batch-stark/src/prover.rs`, `if !all_lookups[i].is_empty()`).
+    //
+    // The cost is one `verify_batch` — measured at ~5 ms on the 16,384 x 525 shape whose prove is
+    // 15.7 s. That is the price of `prove` meaning "this witness satisfies the AIR" instead of
+    // "a FRI commitment was computed". `circuit/tests/ir2_prove_is_fail_closed.rs` fails if it is
+    // ever paid back.
+    if check {
+        verify_batch(config, &airs, &proof, &pvs, common)
+            .map_err(|e| format!("IR v2 batch self-verify failed: {e:?}"))?;
+    }
+    Ok(proof)
+}
+
+/// Clone a base trace and fill every row's chip lane columns from the descriptor's chip lookups
+/// (Phase B-GATE). Honest producers fill the DIGEST (out0) chain but leave the 7 exposed lanes
+/// 1..7 to this descriptor-driven weld, so no producer needs per-site lane knowledge. The
+/// adversarial teeth use [`prove_vm_descriptor2_inner`] DIRECTLY (no lane fill), so a forged lane
+/// stays forged and is REJECTED. Idempotent: re-deriving genuine lanes is a no-op.
+fn trace_with_chip_lanes(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+) -> Result<Vec<Vec<BabyBear>>, String> {
+    // ⚑ THE PAD IS BOUNDED, AND THE BOUND IS CHECKED BEFORE THE PAD — not after it.
+    //
+    // `prove_vm_descriptor2_inner` does compare `base_trace[0].len()` against `desc.trace_width`,
+    // but every public entry point runs THIS function first, so by the time that check ran the
+    // rows had already been zero-extended to exactly the width it was testing for. The check could
+    // not fail; a producer that had not been updated for a newly appended block proved GREEN over
+    // zeros. Refuse here, on the producer's OWN rows, against the derived producer-owned width.
+    let need = producer_owned_width(desc);
+    for (i, row) in base_trace.iter().enumerate() {
+        if row.len() < need {
+            return Err(format!(
+                "base row {i} width {} is short of the PRODUCER-OWNED width {need} for descriptor \
+                 `{}` (trace_width {}): columns {}..{need} are filled by no prove-time weld, so \
+                 zero-padding them would fold the AIR over values this producer never supplied. \
+                 Only the weld-owned tail ({need}..{}) may be padded — see \
+                 `descriptor_ir2::producer_owned_width`.",
+                row.len(),
+                desc.name,
+                desc.trace_width,
+                row.len(),
+                desc.trace_width
+            ));
+        }
+    }
+    let mut t = base_trace.to_vec();
+    for row in &mut t {
+        // A producer may build rows at the pre-lane width; grow to the descriptor width so the
+        // appended lane columns exist before filling (genuine producers fill out0; lanes ride here).
+        // The pad is now provably confined to weld-owned columns by the loop above.
+        if row.len() < desc.trace_width {
+            row.resize(desc.trace_width, BabyBear::ZERO);
+        }
+        fill_chip_lanes(desc, row);
+        // THE GENTIAN FLAG-DAY completeness leg: a refuse-welded (bare cohort) descriptor carries
+        // the `floor == 0` refuse gates over aux columns `GRAD_ROT_WIDTH..trace_width` whose is-zero
+        // decode witnesses (esp. the `inv` columns) the base producers do NOT fill — leaving them
+        // zero violates the decode gate → OodEvaluationMismatch on honest legs. Fill them here from
+        // the caveat type-tag columns the row already carries (no-op for a non-welded descriptor).
+        crate::effect_vm::bare_floor_refuse_weld::fill_refuse_aux(desc, row);
+    }
+    Ok(t)
+}
+
+/// **`prove_vm_descriptor2`** — assemble + prove the multi-table batch STARK for a
+/// graduated v2 descriptor over a base main trace.
+///
+/// * `base_trace` — the `trace_width`-column main rows (power-of-two height); digest
+///   columns must already carry the genuine values (the Lean executor witness fills them).
+/// * `mem_boundary` — the declared memory addresses + initial image (empty when the
+///   descriptor declares no mem ops).
+/// * `map_heaps` — one leaf set per pre-state heap the map ops open (empty when none).
+///
+/// The proof self-verifies before return. A witness violating any descriptor relation —
+/// a tampered memory read, a forged map opening, an out-of-range limb, an amplified
+/// submask — has no satisfying assembly (the pre-flight replay refuses it eagerly; with
+/// the replay bypassed the batch prover/verifier rejects).
+pub fn prove_vm_descriptor2(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    public_inputs: &[BabyBear],
+    mem_boundary: &MemBoundaryWitness,
+    map_heaps: &[Vec<HeapLeaf>],
+) -> Result<BatchProof<DreggStarkConfig>, String> {
+    prove_vm_descriptor2_inner(
+        desc,
+        &trace_with_chip_lanes(desc, base_trace)?,
+        public_inputs,
+        mem_boundary,
+        map_heaps,
+        &UMemBoundaryWitness::default(),
+        true,
+        &ir2_config(),
+    )
+}
+
+/// [`prove_vm_descriptor2`] with the producer-side PRE-FLIGHT REPLAY bypassed — the single-
+/// descriptor twin of [`prove_vm_descriptors2_batch_inner`]'s `check: false`, and it exists for the
+/// same reason.
+///
+/// ⚑ **WHY A TOOTH NEEDS THIS.** `build_traces`'s `check` block replays every exact-public lookup
+/// (and the memory/map witnesses) IN RUST and refuses eagerly — before the constraint system sees
+/// anything. That is a real fail-closed producer check and it is worth having, **and it proves
+/// nothing about an adversary, who does not run the producer.** A falsifier that stops at the
+/// pre-flight has measured a Rust `assert`, not a circuit. This entry gets the forged witness past
+/// the producer and in front of the DEPLOYED VERIFIER, which is the verdict that matters.
+///
+/// The BATCH rail already offered exactly this knob, but it carries MAIN and EXACT-PUBLIC instances
+/// only ([`require_main_or_exact_public`]), so any descriptor with a range/byte table — which is
+/// every Pasta row — could not reach the circuit adversarially at all until this existed.
+///
+/// ⚠ Never `false` on a production path. [`prove_vm_descriptor2`] is unchanged and still replays.
+///
+/// # Errors
+/// The prover's or the self-verify's own verdict, whichever refuses first.
+#[doc(hidden)]
+pub fn prove_vm_descriptor2_unchecked(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    public_inputs: &[BabyBear],
+    mem_boundary: &MemBoundaryWitness,
+    map_heaps: &[Vec<HeapLeaf>],
+) -> Result<BatchProof<DreggStarkConfig>, String> {
+    prove_vm_descriptor2_inner(
+        desc,
+        &trace_with_chip_lanes(desc, base_trace)?,
+        public_inputs,
+        mem_boundary,
+        map_heaps,
+        &UMemBoundaryWitness::default(),
+        false,
+        &ir2_config(),
+    )
+}
+
+/// **`prove_vm_descriptor2_umem`** — [`prove_vm_descriptor2`] for descriptors that declare
+/// UNIVERSAL memory ops: takes the declared `(domain, key)` boundary + initial `Option` image
+/// (`UMemBoundaryWitness`, Lean's `(uinit, ufin, uaddrs)` with `ufin` replayed). Everything
+/// else is identical — and a umem-only descriptor commits NO chip table: the one-multiset
+/// memory argument hashes nothing, intra-proof.
+pub fn prove_vm_descriptor2_umem(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    public_inputs: &[BabyBear],
+    mem_boundary: &MemBoundaryWitness,
+    map_heaps: &[Vec<HeapLeaf>],
+    umem_boundary: &UMemBoundaryWitness,
+) -> Result<BatchProof<DreggStarkConfig>, String> {
+    prove_vm_descriptor2_inner(
+        desc,
+        &trace_with_chip_lanes(desc, base_trace)?,
+        public_inputs,
+        mem_boundary,
+        map_heaps,
+        umem_boundary,
+        true,
+        &ir2_config(),
+    )
+}
+
+/// Measurement-only variant of [`prove_vm_descriptor2`] under an explicit FRI config
+/// (`tests/effect_vm_ir2_size_measure.rs` proves the SAME statement across the
+/// `(log_blowup, num_queries)` grid). Proofs from non-default configs must never leak
+/// onto the wire — the production IR-v2 config is `ir2_config` alone.
+#[doc(hidden)]
+pub fn prove_vm_descriptor2_with_config(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    public_inputs: &[BabyBear],
+    mem_boundary: &MemBoundaryWitness,
+    map_heaps: &[Vec<HeapLeaf>],
+    config: &DreggStarkConfig,
+) -> Result<BatchProof<DreggStarkConfig>, String> {
+    prove_vm_descriptor2_inner(
+        desc,
+        &trace_with_chip_lanes(desc, base_trace)?,
+        public_inputs,
+        mem_boundary,
+        map_heaps,
+        &UMemBoundaryWitness::default(),
+        true,
+        config,
+    )
+}
+
+/// **`prove_vm_descriptor2_for_config`** — the SIDESTEP prover: assemble + prove the IR-v2
+/// multi-table batch under a CALLER-SUPPLIED `SC` config (rather than the fixed
+/// `DreggStarkConfig`), so the rotated IVC leaf-wrap can mint a recursion-config-typed
+/// `BatchProof<SC>` that the in-circuit verifier consumes directly (no cross-config type
+/// mismatch). The caller passes a config whose FRI knobs match the production
+/// `ir2_config` (log_blowup 6, 19 queries, 16 query-PoW) so the proof has the same FRI shape
+/// the deployed descriptor proofs do — only the config TYPE differs (a newtype wrapper that
+/// also impls `FriRecursionConfig`). Self-verifies before return.
+pub fn prove_vm_descriptor2_for_config<SC>(
+    desc: &EffectVmDescriptor2,
+    base_trace: &[Vec<BabyBear>],
+    public_inputs: &[BabyBear],
+    mem_boundary: &MemBoundaryWitness,
+    map_heaps: &[Vec<HeapLeaf>],
+    umem_boundary: &UMemBoundaryWitness,
+    config: &SC,
+) -> Result<BatchProof<SC>, String>
+where
+    SC: StarkGenericConfig,
+    Domain<SC>: PolynomialSpace<Val = P3BabyBear>,
+    SymbolicExpressionExt<Val<SC>, SC::Challenge>: Algebra<SC::Challenge>,
+    SC::Challenge: p3_field::BasedVectorSpace<P3BabyBear>,
+{
+    prove_vm_descriptor2_inner(
+        desc,
+        &trace_with_chip_lanes(desc, base_trace)?,
+        public_inputs,
+        mem_boundary,
+        map_heaps,
+        umem_boundary,
+        true,
+        config,
+    )
+}
+
+/// Verify-path `(airs, table_public_inputs, common)` triple result of
+/// [`ir2_airs_and_common_for_config`] (extracted to satisfy `clippy::type_complexity`;
+/// exact type-equivalent of the prior inline return type).
+type Ir2AirsAndCommonResult<SC> = Result<
+    (
+        Vec<Ir2Air>,
+        Vec<Vec<P3BabyBear>>,
+        p3_batch_stark::CommonData<SC>,
+    ),
+    String,
+>;
+
+/// **`ir2_airs_and_common_for_config`** — the verify-path `(airs, table_public_inputs, common)`
+/// triple for a proven descriptor under a caller-supplied `SC` config: the present-table
+/// `Ir2Air` set, per-table public-input vectors (descriptor PIs on the main instance, empty
+/// elsewhere), and the symbolic `CommonData<SC>`. Used by the rotated leaf-wrap
+/// ([`ivc_turn_chain::prove_descriptor_leaf_rotated_with_config`](crate::ivc_turn_chain::prove_descriptor_leaf_rotated_with_config))
+/// to assemble a `RecursionInput::NativeBatchStark` leaf matching a recursion-config-typed
+/// `BatchProof<SC>`. The `common` is built by the SAME
+/// `ProverData::from_airs_and_degrees(config, ..)` path the inner prover/verifier use, so it
+/// is the canonical common for this batch under `SC`.
+pub fn ir2_airs_and_common_for_config<SC>(
+    desc: &EffectVmDescriptor2,
+    proof: &BatchProof<SC>,
+    public_inputs: &[BabyBear],
+    config: &SC,
+) -> Ir2AirsAndCommonResult<SC>
+where
+    SC: StarkGenericConfig,
+    Domain<SC>: PolynomialSpace<Val = P3BabyBear>,
+    SymbolicExpressionExt<Val<SC>, SC::Challenge>: Algebra<SC::Challenge>,
+{
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let airs = instance_airs(desc, layout, presence);
+    if proof.degree_bits.len() != airs.len() {
+        return Err(format!(
+            "IR v2 proof carries {} instances but present-table set is {}",
+            proof.degree_bits.len(),
+            airs.len()
+        ));
+    }
+    let pis: Vec<P3BabyBear> = public_inputs.iter().map(|&v| to_p3(v)).collect();
+    let mut table_public_inputs: Vec<Vec<P3BabyBear>> = vec![pis];
+    table_public_inputs.resize(airs.len(), vec![]);
+    let common = ProverData::from_airs_and_degrees(config, &airs, &proof.degree_bits).common;
+    Ok((airs, table_public_inputs, common))
+}
+
+/// **`verify_vm_descriptor2`** — verify an IR v2 batch proof against the descriptor
+/// (the AIRs are rebuilt from the descriptor alone; heights come from the proof).
+pub fn verify_vm_descriptor2(
+    desc: &EffectVmDescriptor2,
+    proof: &BatchProof<DreggStarkConfig>,
+    public_inputs: &[BabyBear],
+) -> Result<(), String> {
+    verify_vm_descriptor2_with_config(desc, proof, public_inputs, &ir2_config())
+}
+
+/// Measurement-only variant of [`verify_vm_descriptor2`] under an explicit FRI config
+/// (see [`prove_vm_descriptor2_with_config`]). Generic over `SC` so it can verify a
+/// recursion-config-typed batch (the SIDESTEP rotated leaf-wrap's inner proof).
+#[doc(hidden)]
+pub fn verify_vm_descriptor2_with_config<SC>(
+    desc: &EffectVmDescriptor2,
+    proof: &BatchProof<SC>,
+    public_inputs: &[BabyBear],
+    config: &SC,
+) -> Result<(), String>
+where
+    SC: StarkGenericConfig,
+    Domain<SC>: PolynomialSpace<Val = P3BabyBear>,
+    SymbolicExpressionExt<Val<SC>, SC::Challenge>: Algebra<SC::Challenge>,
+    SC::Challenge: p3_field::BasedVectorSpace<P3BabyBear>,
+{
+    let layout = check_descriptor2(desc)?;
+    let presence = Presence::of(desc, &layout);
+    let airs = instance_airs(desc, layout, presence);
+    if proof.degree_bits.len() != airs.len() {
+        return Err(format!(
+            "IR v2 proof carries {} instances but the descriptor's present-table set is {} \
+             (descriptor-empty tables are not committed)",
+            proof.degree_bits.len(),
+            airs.len()
+        ));
+    }
+    // The range table's HEIGHT is its CONTENT (the AIR pins `value = row index` and
+    // nothing else): a prover committing a taller table would widen every limb's
+    // admissible range to `[0, 2^height_bits)` and break every range check riding the
+    // byte bus. Heights of the other tables are semantically free (their rows are
+    // individually constrained and multiset/lookup-balanced; padding is gated), but
+    // THIS one is pinned to the deployed `BYTE_TABLE_HEIGHT`.
+    if presence.byte {
+        // Canonical instance order is main, legacy chip (iff present), state16 chip (iff
+        // present), then byte.  Omitting the additive state16 term makes a state16+range
+        // verifier inspect the chip degree as though it were the byte-table height.
+        let byte_idx = 1 + usize::from(presence.chip) + usize::from(presence.chip_state16);
+        // `HidingFriPcs` doubles every trace with random rows, so the committed
+        // domain is one log-height larger while the constrained real prefix is
+        // still exactly the 2^LIMB_BITS byte table.  Pin the PCS-adjusted
+        // degree; accepting only `LIMB_BITS` accidentally rejected every
+        // hiding descriptor that used the graduated range table.
+        let expected_byte_degree = LIMB_BITS + config.is_zk();
+        if proof.degree_bits[byte_idx] != expected_byte_degree {
+            return Err(format!(
+                "range-table instance committed at 2^{} rows; the deployed table is \
+                 2^{expected_byte_degree} under this PCS (a taller table widens the limb range)",
+                proof.degree_bits[byte_idx]
+            ));
+        }
+    }
+    let pis: Vec<P3BabyBear> = public_inputs.iter().map(|&v| to_p3(v)).collect();
+    let mut pvs: Vec<Vec<P3BabyBear>> = vec![pis];
+    pvs.resize(airs.len(), vec![]);
+    let common = ProverData::from_airs_and_degrees(config, &airs, &proof.degree_bits).common;
+    verify_batch(config, &airs, proof, &pvs, &common)
+        .map_err(|e| format!("IR v2 verification failed: {e:?}"))
+}
+
+// ============================================================================
+// MULTI-DESCRIPTOR BATCH: N Lean-authored main AIRs riding in ONE proof
+// ============================================================================
+
+/// Admit a descriptor to the multi-descriptor batch iff its instance list is a `Ir2Air::Main`
+/// followed by exact-public table instances — i.e. the ONLY tables it declares are
+/// [`TableSem::ExactPublicRows`], and its `Presence` set is empty.
+///
+/// **Why exact-public tables are admissible and the others are not.** An `ExactPublicTable`
+/// instance is a pure function of the DESCRIPTOR (its manifest), carries no witness, and its
+/// count is `exact_public_instance_count(desc)` — a number the verifier reads off the same descriptor
+/// list the prover was handed. So prover and verifier compute the identical instance ordering
+/// with no witness-dependent input, which is all the batch ever needed. The chip / byte / memory /
+/// map / umem instances are different in kind: they are witness-bearing, their presence is a
+/// function of the constraint list AND the supplied boundary/heap witnesses, and this path has no
+/// parameter to carry those witnesses at all. A descriptor needing them belongs on
+/// [`prove_vm_descriptor2`].
+///
+/// ⚑ **The instance index is no longer the descriptor index** — see
+/// [`batch_main_instance_index`], which is the ONE place that mapping is computed.
+fn require_main_or_exact_public(
+    desc: &EffectVmDescriptor2,
+    presence: Presence,
+    i: usize,
+) -> Result<(), String> {
+    let extra = [
+        (presence.chip, "chip"),
+        (presence.chip_state16, "chip_state16"),
+        (presence.byte, "byte"),
+        (presence.memory, "memory"),
+        (presence.map_ops, "map_ops"),
+        (presence.map_absent, "map_absent"),
+        (presence.umem, "umem"),
+    ]
+    .into_iter()
+    .filter_map(|(on, name)| on.then_some(name))
+    .collect::<Vec<_>>();
+    let non_exact: Vec<&str> = desc
+        .tables
+        .iter()
+        .filter(|table| !matches!(table.sem, TableSem::ExactPublicRows { .. }))
+        .map(|table| table.name.as_str())
+        .collect();
+    if !extra.is_empty() || !non_exact.is_empty() {
+        return Err(format!(
+            "descriptor {i} ({}) declares witness-bearing table instances {extra:?}{}; the \
+             multi-descriptor batch carries MAIN and EXACT-PUBLIC-TABLE instances only (they are \
+             functions of the descriptor alone, so prover and verifier derive the same instance \
+             ordering)",
+            desc.name,
+            if non_exact.is_empty() {
+                String::new()
+            } else {
+                format!(" and non-exact-public tables {non_exact:?}")
+            }
+        ));
+    }
+    Ok(())
+}
+
+/// **The instance index of descriptor `k`'s `Ir2Air::Main`** in a multi-descriptor batch.
+///
+/// The batch emits, per descriptor in order: one main instance, then one exact-public table
+/// instance per declared exact-public TABLE (`desc.tables` in declaration order). So
+///
+/// ```text
+/// main_index(k) = Σ_{j < k} (1 + tables_j)   tables_j = exact_public_instance_count(descs[j])
+/// ```
+///
+/// and descriptor `k`'s table instances occupy `main_index(k)+1 ..= main_index(k)+tables_k`.
+/// For a batch of table-free descriptors every `tables_j` is 0 and this collapses to `k`, which is
+/// what it was unconditionally before exact-public tables were admitted.
+///
+/// ⚑ Until 2026-07-29 the stride was one instance per manifest ROW, so a four-slice contents-bound
+/// cut carrying 128-row manifests spent 516 instances where it now spends 8.
+///
+/// This is what lets a caller turn a p3 refusal's `index: Some(n)` back into "descriptor `k`"
+/// (or "descriptor `k`'s exact-public table `n - main_index(k) - 1`"): see
+/// [`batch_instance_owner`].
+///
+/// Returns `Err` if `k` is out of range.
+pub fn batch_main_instance_index(descs: &[EffectVmDescriptor2], k: usize) -> Result<usize, String> {
+    if k >= descs.len() {
+        return Err(format!(
+            "descriptor index {k} is out of range for a {}-descriptor batch",
+            descs.len()
+        ));
+    }
+    Ok(descs[..k]
+        .iter()
+        .map(|desc| 1 + exact_public_instance_count(desc))
+        .sum())
+}
+
+/// The inverse of [`batch_main_instance_index`]: which descriptor owns batch instance `n`, and
+/// what that instance is. `Ok((k, None))` = descriptor `k`'s MAIN instance; `Ok((k, Some(r)))` =
+/// descriptor `k`'s exact-public TABLE `r` (its `r`-th exact-public table in declaration order).
+/// This is the function that names the slice behind a refusal's `index: Some(n)`.
+pub fn batch_instance_owner(
+    descs: &[EffectVmDescriptor2],
+    n: usize,
+) -> Result<(usize, Option<usize>), String> {
+    let mut base = 0usize;
+    for (k, desc) in descs.iter().enumerate() {
+        let rows = exact_public_instance_count(desc);
+        if n == base {
+            return Ok((k, None));
+        }
+        if n <= base + rows {
+            return Ok((k, Some(n - base - 1)));
+        }
+        base += 1 + rows;
+    }
+    Err(format!(
+        "instance index {n} is out of range for a batch of {base} instances"
+    ))
+}
+
+/// Build the per-descriptor `(air, trace, public values)` triples, with every shape check the
+/// single-descriptor path applies, applied per descriptor.
+///
+/// Instance order per descriptor: MAIN (the caller's base trace, the caller's public inputs),
+/// then one exact-public table instance per declared exact-public table — the AIRs from
+/// [`instance_airs`]'s tail, the traces from [`exact_public_table_traces`], in the same order,
+/// each with an EMPTY public-value vector exactly as the single-descriptor path's
+/// `pvs.resize(airs.len(), vec![])` gives them.
+#[allow(clippy::type_complexity)]
+fn batch_airs_and_matrices(
+    descs: &[EffectVmDescriptor2],
+    base_traces: &[&[Vec<BabyBear>]],
+    public_inputs: &[Vec<BabyBear>],
+) -> Result<
+    (
+        Vec<Ir2Air>,
+        Vec<RowMajorMatrix<P3BabyBear>>,
+        Vec<Vec<P3BabyBear>>,
+    ),
+    String,
+> {
+    if descs.is_empty() {
+        return Err("multi-descriptor batch must carry at least one descriptor".to_string());
+    }
+    if descs.len() != base_traces.len() || descs.len() != public_inputs.len() {
+        return Err(format!(
+            "multi-descriptor batch is ragged: {} descriptors, {} traces, {} public-input vectors",
+            descs.len(),
+            base_traces.len(),
+            public_inputs.len()
+        ));
+    }
+    let mut airs = Vec::with_capacity(descs.len());
+    let mut matrices = Vec::with_capacity(descs.len());
+    let mut pvs = Vec::with_capacity(descs.len());
+    for (i, desc) in descs.iter().enumerate() {
+        let layout = check_descriptor2(desc).map_err(|e| format!("descriptor {i}: {e}"))?;
+        let presence = Presence::of(desc, &layout);
+        require_main_or_exact_public(desc, presence, i)?;
+        let trace = base_traces[i];
+        if trace.is_empty() {
+            return Err(format!("descriptor {i}: base trace must be non-empty"));
+        }
+        if !trace.len().is_power_of_two() {
+            return Err(format!(
+                "descriptor {i}: base trace height {} must be a power of two",
+                trace.len()
+            ));
+        }
+        if trace[0].len() != desc.trace_width {
+            return Err(format!(
+                "descriptor {i}: base row width {} must equal descriptor trace_width {}",
+                trace[0].len(),
+                desc.trace_width
+            ));
+        }
+        if public_inputs[i].len() != desc.public_input_count {
+            return Err(format!(
+                "descriptor {i}: public input count {} != descriptor public_input_count {}",
+                public_inputs[i].len(),
+                desc.public_input_count
+            ));
+        }
+        airs.push(Ir2Air::main_instance(desc.clone(), layout));
+        matrices.push(to_matrix(trace));
+        pvs.push(public_inputs[i].iter().map(|&v| to_p3(v)).collect());
+
+        // The exact-public TABLE instances, AIRs and traces derived from the SAME descriptor walk
+        // (`exact_public_manifests`, `desc.tables` in order) so the two lists cannot slip.
+        for (_, manifest) in exact_public_manifests(desc) {
+            matrices.push(to_matrix(&manifest.main_trace()));
+            airs.push(exact_public_lean_instance(&manifest)?);
+            pvs.push(vec![]);
+        }
+    }
+    debug_assert_eq!(airs.len(), matrices.len());
+    debug_assert_eq!(airs.len(), pvs.len());
+    Ok((airs, matrices, pvs))
+}
+
+/// ⚑ **`prove_vm_descriptors2_batch`** — prove `N` Lean-authored main AIRs in ONE batch STARK
+/// proof, with per-instance `degree_bits`.
+///
+/// ## ⚑ FLAG DAY (2026-07-29): the instance index is NO LONGER the descriptor index
+///
+/// This path used to REFUSE any descriptor that declared a table, so that instance `k` was
+/// descriptor `k`. It now ADMITS descriptors declaring [`TableSem::ExactPublicRows`] tables (and
+/// only those — every witness-bearing table instance is still refused by
+/// [`require_main_or_exact_public`]), emitting per descriptor: its main instance, then one
+/// exact-public table instance per declared exact-public TABLE. So
+///
+/// ```text
+/// main_index(k) = Σ_{j < k} (1 + tables_j)   tables_j = exact-public tables of descriptor j
+/// ```
+///
+/// and descriptor `k` owns instances `main_index(k) ..= main_index(k) + tables_k`. Use
+/// [`batch_main_instance_index`] / [`batch_instance_owner`] rather than re-deriving it; a
+/// refusal's `index: Some(n)` is named by the latter. **What broke:** any caller that read a
+/// refusal's instance index as a descriptor index is wrong for a batch containing an
+/// exact-public descriptor (it stays correct for an all-table-free batch, where every `tables_j`
+/// is 0 and the sum collapses to `k`). Nothing is persisted or on the wire, so there is nothing to
+/// migrate — proofs are minted per run.
+///
+/// ## ⚑ SECOND FLAG DAY, same date: the stride was one instance per manifest ROW
+///
+/// Until the single-instance exact-public realization landed, this path emitted one instance per
+/// declared manifest ROW, and `MAX_EXACT_PUBLIC_ROWS` was 128 because of it. Both the COUNT and the
+/// admissible manifest size change; a four-slice contents-bound cut over 128-row manifests goes
+/// from 516 instances to 8. Proofs are minted per run, so nothing needs migrating, but any test
+/// asserting `degree_bits.len()` against the old stride goes red — which is the intended failure.
+///
+/// ⚑ The exact-public LogUp bus is named by TABLE ID alone (`exact_public_bus_name`), and LogUp
+/// balance in a batch STARK is GLOBAL. Two descriptors in one batch declaring the same wire id
+/// therefore share one bus: their queries and manifest capacity pool, and one descriptor's extra
+/// query can be cancelled by another's spare capacity. Give co-batched descriptors DISTINCT
+/// exact-public wire ids if you want per-descriptor multiset equality. **The single-instance
+/// realization does not change this hazard and does not introduce a new one:** the bus name is
+/// still `exact_public_bus_name(table.id)`, computed from the same field, and one table id still
+/// means one bus. What it does change is that a shared id now pools two whole manifests' capacity
+/// in one place rather than across two runs of row instances — the same defect, not a wider one.
+///
+/// ## What this adds, and what it deliberately does not
+///
+/// It adds PLUMBING. Every constraint still comes from the Lean-emitted descriptors: this
+/// function clones them into `Ir2Air::Main`, whose `eval` reads `desc.constraints`. No constraint,
+/// builder gadget or `air_accepts` predicate is authored here.
+///
+/// ## Per-instance `degree_bits` are the trace HEIGHTS
+///
+/// `ProverData::from_instances` reads `instance.trace.height()` and records
+/// `log2(height) + is_zk()` per instance, so the caller sets them by handing each descriptor a
+/// trace of its own power-of-two height. Heterogeneous heights are the ordinary case.
+///
+/// ## The self-verify is NOT optional
+///
+/// The tail mirrors [`prove_vm_descriptor2_inner`]'s unconditional `verify_batch`, for the reason
+/// recorded there: a descriptor made only of algebraic gates has NOTHING else checking it in a
+/// release build, and without this `prove` would return `Ok` for an all-zeros trace. The
+/// four-way-cut descriptors are exactly that shape — 78 constraints, zero lookups — so this path
+/// would inherit the identical 35-day fail-open if the check were ever made conditional.
+pub fn prove_vm_descriptors2_batch(
+    descs: &[EffectVmDescriptor2],
+    base_traces: &[&[Vec<BabyBear>]],
+    public_inputs: &[Vec<BabyBear>],
+) -> Result<BatchProof<DreggStarkConfig>, String> {
+    prove_vm_descriptors2_batch_inner(descs, base_traces, public_inputs, true, &ir2_config())
+}
+
+/// [`prove_vm_descriptors2_batch`] with the producer-side self-verify controllable — `check:
+/// false` is how an adversarial tooth gets a forged witness past the producer and in front of the
+/// DEPLOYED VERIFIER, which is the verdict that matters. Never `false` on a production path.
+#[doc(hidden)]
+pub fn prove_vm_descriptors2_batch_inner<SC>(
+    descs: &[EffectVmDescriptor2],
+    base_traces: &[&[Vec<BabyBear>]],
+    public_inputs: &[Vec<BabyBear>],
+    check: bool,
+    config: &SC,
+) -> Result<BatchProof<SC>, String>
+where
+    SC: StarkGenericConfig,
+    Domain<SC>: PolynomialSpace<Val = P3BabyBear>,
+    SymbolicExpressionExt<Val<SC>, SC::Challenge>: Algebra<SC::Challenge>,
+    SC::Challenge: p3_field::BasedVectorSpace<P3BabyBear>,
+{
+    let (airs, matrices, pvs) = batch_airs_and_matrices(descs, base_traces, public_inputs)?;
+    let instances: Vec<StarkInstance<'_, SC, Ir2Air>> = airs
+        .iter()
+        .zip(matrices.iter())
+        .zip(pvs.iter())
+        .map(|((air, trace), pv)| StarkInstance {
+            air,
+            trace,
+            public_values: pv.clone(),
+        })
+        .collect();
+    let prover_data = ProverData::from_instances(config, &instances);
+    let common = &prover_data.common;
+    let proof = prove_batch(config, &instances, &prover_data);
+    if check {
+        verify_batch(config, &airs, &proof, &pvs, common)
+            .map_err(|e| format!("IR v2 multi-descriptor self-verify failed: {e:?}"))?;
+    }
+    Ok(proof)
+}
+
+/// ⚑ **`verify_vm_descriptors2_batch`** — the DEPLOYED verdict on a multi-descriptor batch.
+///
+/// The instance set is rebuilt from the DESCRIPTORS alone — main instances AND the exact-public
+/// manifest-row instances, since a manifest is part of the descriptor — so a verifier that was
+/// handed a different descriptor list than the prover used gets a different AIR set and refuses.
+///
+/// ⚑ **The instance index in a refusal is NOT the descriptor index** (it was, back when this path
+/// refused every descriptor declaring a table). Descriptor `k`'s main sits at
+/// `Σ_{j<k} (1 + rows_j)` with its `rows_k` manifest-row instances directly after it; hand a p3
+/// `index: Some(n)` to [`batch_instance_owner`] to name the slice that failed, and
+/// [`batch_main_instance_index`] for the forward direction.
+pub fn verify_vm_descriptors2_batch(
+    descs: &[EffectVmDescriptor2],
+    proof: &BatchProof<DreggStarkConfig>,
+    public_inputs: &[Vec<BabyBear>],
+) -> Result<(), String> {
+    verify_vm_descriptors2_batch_with_config(descs, proof, public_inputs, &ir2_config())
+}
+
+/// Measurement-only variant of [`verify_vm_descriptors2_batch`] under an explicit config.
+#[doc(hidden)]
+pub fn verify_vm_descriptors2_batch_with_config<SC>(
+    descs: &[EffectVmDescriptor2],
+    proof: &BatchProof<SC>,
+    public_inputs: &[Vec<BabyBear>],
+    config: &SC,
+) -> Result<(), String>
+where
+    SC: StarkGenericConfig,
+    Domain<SC>: PolynomialSpace<Val = P3BabyBear>,
+    SymbolicExpressionExt<Val<SC>, SC::Challenge>: Algebra<SC::Challenge>,
+    SC::Challenge: p3_field::BasedVectorSpace<P3BabyBear>,
+{
+    if descs.len() != public_inputs.len() {
+        return Err(format!(
+            "verify: {} descriptors but {} public-input vectors",
+            descs.len(),
+            public_inputs.len()
+        ));
+    }
+    let mut airs = Vec::with_capacity(descs.len());
+    let mut pvs = Vec::with_capacity(descs.len());
+    for (i, desc) in descs.iter().enumerate() {
+        let layout = check_descriptor2(desc).map_err(|e| format!("descriptor {i}: {e}"))?;
+        let presence = Presence::of(desc, &layout);
+        require_main_or_exact_public(desc, presence, i)?;
+        if public_inputs[i].len() != desc.public_input_count {
+            return Err(format!(
+                "descriptor {i}: public input count {} != descriptor public_input_count {}",
+                public_inputs[i].len(),
+                desc.public_input_count
+            ));
+        }
+        airs.push(Ir2Air::main_instance(desc.clone(), layout));
+        pvs.push(
+            public_inputs[i]
+                .iter()
+                .map(|&v| to_p3(v))
+                .collect::<Vec<P3BabyBear>>(),
+        );
+        // Rebuilt from the DESCRIPTOR alone, in `batch_airs_and_matrices`'s order. The manifest
+        // itself rides in the AIR's PREPROCESSED matrix, which
+        // `ProverData::from_airs_and_degrees` below re-derives and re-commits from these AIRs —
+        // so the verifier checks the proof against the table it computed, never one the prover
+        // supplied, and a manifest the prover altered gives a different preprocessed commitment.
+        for (_, manifest) in exact_public_manifests(desc) {
+            airs.push(exact_public_lean_instance(&manifest)?);
+            pvs.push(vec![]);
+        }
+    }
+    if proof.degree_bits.len() != airs.len() {
+        return Err(format!(
+            "IR v2 batch carries {} instances but the {} supplied descriptors derive {} \
+             (one main each, plus one per declared exact-public manifest row)",
+            proof.degree_bits.len(),
+            descs.len(),
+            airs.len()
+        ));
+    }
+    let common = ProverData::from_airs_and_degrees(config, &airs, &proof.degree_bits).common;
+    verify_batch(config, &airs, proof, &pvs, &common)
+        .map_err(|e| format!("IR v2 multi-descriptor verification failed: {e:?}"))
+}
+
+// ============================================================================
+// Tests (run on persvati with the batched validation, not by the build lane)
+// ============================================================================
+
+// The IR-v2 test suite proves AND verifies (it mints proofs via `prove_batch` / the
+// trace assembly), so it is gated on `recursion` — the prover-free `verifier`-only
+// build compiles the verify surface without these prover-coupled tests.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::poseidon2::hash_many;
+    use crate::refusal::{Outcome, classify, must_accept, must_refuse, must_refuse_or_unsat_panic};
+
+    const DEMO_EXACT_PUBLIC: &str = r#"{"name":"demo-exact-public","ir":2,"trace_width":2,"public_input_count":0,"challenges":0,"tables":[{"id":25,"name":"demo_public","arity":2,"sem":"exact_public_rows","rows":[[1,10],[2,20],[3,30],[4,40]]}],"constraints":[{"t":"lookup","table":25,"tuple":[{"t":"var","v":0},{"t":"var","v":1}]}],"hash_sites":[],"ranges":[]}"#;
+
+    fn demo_exact_public_desc() -> EffectVmDescriptor2 {
+        parse_vm_descriptor2(DEMO_EXACT_PUBLIC)
+            .expect("Lean-emitted exact-public demo descriptor must parse")
+    }
+
+    fn public_rows(rows: &[(u32, u32)]) -> Vec<Vec<BabyBear>> {
+        rows.iter()
+            .map(|&(left, right)| vec![BabyBear::new(left), BabyBear::new(right)])
+            .collect()
+    }
+
+    /// **Prove with the pre-flight replay BYPASSED, then run the DEPLOYED VERIFIER.**
+    ///
+    /// A forgery tooth that wants to witness the CONSTRAINT SYSTEM (not the producer's replay)
+    /// passes `check: false` so the forged witness reaches `prove_batch`. That was where these
+    /// teeth used to stop, and stopping there is what made seventeen of them fail-open: with the
+    /// replay bypassed AND `check: false`, `prove_vm_descriptor2_inner` has nothing left that
+    /// refuses in a release build. p3's own row-by-row `check_constraints` and its LogUp balance
+    /// check are BOTH `#[cfg(debug_assertions)]` (`batch-stark/src/prover.rs`), and the balance
+    /// check additionally only runs for instances that declare lookups. So under `--release` the
+    /// forged witness produced a proof, `Ok` came back, and the tooth read it as acceptance.
+    ///
+    /// The proof was invalid the whole time. This helper is the half that was missing: hand the
+    /// minted proof to [`verify_vm_descriptor2`] — the same function a consumer runs — and let
+    /// ITS verdict be the refusal. That verdict exists in every build profile and is strictly
+    /// stronger evidence than a debug-only prover panic, because it is the deployed check.
+    fn prove_unchecked_then_verify(
+        desc: &EffectVmDescriptor2,
+        rows: &[Vec<BabyBear>],
+        public_inputs: &[BabyBear],
+        mem_boundary: &MemBoundaryWitness,
+        map_heaps: &[Vec<HeapLeaf>],
+    ) -> Result<(), String> {
+        let proof = prove_vm_descriptor2_inner(
+            desc,
+            rows,
+            public_inputs,
+            mem_boundary,
+            map_heaps,
+            &UMemBoundaryWitness::default(),
+            false,
+            &ir2_config(),
+        )?;
+        verify_vm_descriptor2(desc, &proof, public_inputs)
+    }
+
+    /// The reasons that count as **the constraint system refused**, as opposed to a crash, a
+    /// shape fault, or a producer-side assembly sanity check.
+    ///
+    /// Two mechanisms, and a tooth may legitimately see either depending on build profile:
+    ///
+    /// * `"constraints not satisfied"` / `"Lookup mismatch"` — p3's DEBUG-ONLY prover checks
+    ///   (`batch-stark/src/check_constraints.rs`, `lookup/src/debug_util.rs`). Absent under
+    ///   `--release`, so a tooth that accepts ONLY these is a debug-only tooth.
+    /// * `"OodEvaluationMismatch"` / `"LookupError"` — the DEPLOYED verifier's own verdicts:
+    ///   `constraints(ζ)/Z_H(ζ) ≠ quotient(ζ)`, and the global LogUp sum failing to cancel.
+    ///   These fire in every profile and are the verdicts that actually protect a consumer.
+    ///
+    /// Shape faults never reach here: [`crate::refusal`]'s `reject_shape_fault` REDs on them
+    /// before an `Outcome` is handed back.
+    fn assert_constraint_refusal(reason: impl AsRef<str>, what: &str) {
+        let reason = reason.as_ref();
+        let named = crate::refusal::P3_UNSAT_PANIC_MARKERS
+            .iter()
+            .chain(crate::refusal::DEPLOYED_VERIFIER_REFUSAL_MARKERS.iter())
+            .any(|m| reason.contains(m));
+        assert!(
+            named,
+            "{what} — the tooth is OPEN or fired for the wrong reason: {reason}"
+        );
+    }
+
+    fn exact_public_hostile_refuses(desc: &EffectVmDescriptor2, rows: &[Vec<BabyBear>]) {
+        let refusal = must_refuse_or_unsat_panic("exact-public hostile multiset", || {
+            prove_unchecked_then_verify(desc, rows, &[], &MemBoundaryWitness::default(), &[])
+        });
+        assert_constraint_refusal(
+            refusal.reason(),
+            "a hostile exact-public multiset must be refused BY THE CONSTRAINT SYSTEM",
+        );
+    }
+
+    /// The exact-public table grammar is emitted by Lean and survives the typed
+    /// canonical codec. Manifest rows are part of relation identity.
+    #[test]
+    fn exact_public_rows_parse_and_typed_identity() {
+        use crate::descriptor_ir2_canonical::{
+            decode_canonical_effect_vm_descriptor2, effect_vm_descriptor2_semantic_fingerprint,
+        };
+
+        let desc = demo_exact_public_desc();
+        let bytes = crate::descriptor_ir2_canonical::canonical_effect_vm_descriptor2_bytes(&desc)
+            .expect("exact-public descriptor is canonically representable");
+        assert_eq!(
+            decode_canonical_effect_vm_descriptor2(&bytes).expect("strict typed roundtrip"),
+            desc
+        );
+        let mut substituted = desc.clone();
+        let TableSem::ExactPublicRows { rows } = &mut substituted.tables[0].sem else {
+            panic!("demo table must carry exact-public semantics");
+        };
+        rows[1][1] += 1;
+        assert_ne!(
+            effect_vm_descriptor2_semantic_fingerprint(&desc).expect("fingerprint"),
+            effect_vm_descriptor2_semantic_fingerprint(&substituted).expect("fingerprint"),
+            "changing one public row must move typed relation identity"
+        );
+    }
+
+    /// One unit-capacity receive per Lean-emitted row turns the custom-table
+    /// lookup into exact multiset equality: order is irrelevant, while every
+    /// omission, duplicate substitution, and extra query is cryptographically refused.
+    #[test]
+    fn exact_public_rows_logup_is_exact_multiset() {
+        let desc = demo_exact_public_desc();
+        let honest = public_rows(&[(3, 30), (1, 10), (4, 40), (2, 20)]);
+        let proof = prove_vm_descriptor2(&desc, &honest, &[], &MemBoundaryWitness::default(), &[])
+            .expect("honest permutation of the public manifest must prove");
+        verify_vm_descriptor2(&desc, &proof, &[])
+            .expect("honest exact-public LogUp proof must verify");
+
+        let duplicate_omission = public_rows(&[(1, 10), (1, 10), (3, 30), (4, 40)]);
+        assert!(
+            prove_vm_descriptor2(
+                &desc,
+                &duplicate_omission,
+                &[],
+                &MemBoundaryWitness::default(),
+                &[],
+            )
+            .is_err(),
+            "producer preflight must refuse duplicate+omission"
+        );
+        exact_public_hostile_refuses(&desc, &duplicate_omission);
+
+        let omitted = public_rows(&[(1, 10), (2, 20)]);
+        exact_public_hostile_refuses(&desc, &omitted);
+
+        let extra = public_rows(&[
+            (1, 10),
+            (2, 20),
+            (3, 30),
+            (4, 40),
+            (5, 50),
+            (6, 60),
+            (7, 70),
+            (8, 80),
+        ]);
+        exact_public_hostile_refuses(&desc, &extra);
+
+        let mut substituted = desc.clone();
+        let TableSem::ExactPublicRows { rows } = &mut substituted.tables[0].sem else {
+            unreachable!()
+        };
+        rows[1][1] += 1;
+        assert!(
+            verify_vm_descriptor2(&substituted, &proof, &[]).is_err(),
+            "an old proof must not verify under a one-cell manifest substitution"
+        );
+    }
+
+    const BATCH_EXACT_A: &str = r#"{"name":"batch-exact-a","ir":2,"trace_width":2,"public_input_count":0,"challenges":0,"tables":[{"id":10,"name":"batch_public_a","arity":2,"sem":"exact_public_rows","rows":[[1,10],[2,20],[3,30],[4,40]]}],"constraints":[{"t":"lookup","table":10,"tuple":[{"t":"var","v":0},{"t":"var","v":1}]}],"hash_sites":[],"ranges":[]}"#;
+    const BATCH_EXACT_B: &str = r#"{"name":"batch-exact-b","ir":2,"trace_width":2,"public_input_count":0,"challenges":0,"tables":[{"id":11,"name":"batch_public_b","arity":2,"sem":"exact_public_rows","rows":[[5,50],[6,60],[7,70],[8,80]]}],"constraints":[{"t":"lookup","table":11,"tuple":[{"t":"var","v":0},{"t":"var","v":1}]}],"hash_sites":[],"ranges":[]}"#;
+
+    /// **The multi-descriptor batch now carries EXACT-PUBLIC descriptors** — two of them, each
+    /// with its OWN manifest table (distinct wire ids, so their LogUp buses do not pool), proved
+    /// as one batch and accepted by the DEPLOYED verifier.
+    ///
+    /// The instance list is main(A), A's manifest TABLE, main(B), B's manifest table — 4
+    /// instances for 2 descriptors, so `batch_main_instance_index` (0 and 2), not the descriptor
+    /// index, names the slice. Both are asserted here because a verifier that rebuilt the list in
+    /// any other order would be verifying a different AIR set than the prover committed.
+    ///
+    /// ⚑ It was 10 instances (one per manifest ROW) until the single-instance realization landed.
+    ///
+    /// The bent-cell leg is the point of the whole change: there is deliberately NO prover-side
+    /// multiset pre-flight on this path (unlike `build_traces`'s `check` replay), so the ONLY
+    /// thing standing between a mismatched query multiset and an `Ok` is the unconditional
+    /// `verify_batch` self-verify — the same verdict a consumer gets. It must surface as one of
+    /// the DEPLOYED verifier's own markers.
+    #[test]
+    fn multi_descriptor_batch_carries_exact_public_tables() {
+        let a = parse_vm_descriptor2(BATCH_EXACT_A).expect("descriptor A parses");
+        let b = parse_vm_descriptor2(BATCH_EXACT_B).expect("descriptor B parses");
+        let descs = vec![a, b];
+
+        // Instance-index mapping: 1 main + 1 manifest TABLE each.
+        assert_eq!(batch_main_instance_index(&descs, 0).expect("k=0"), 0);
+        assert_eq!(batch_main_instance_index(&descs, 1).expect("k=1"), 2);
+        assert!(batch_main_instance_index(&descs, 2).is_err());
+        assert_eq!(batch_instance_owner(&descs, 0).expect("owner"), (0, None));
+        assert_eq!(
+            batch_instance_owner(&descs, 1).expect("owner"),
+            (0, Some(0))
+        );
+        assert_eq!(batch_instance_owner(&descs, 2).expect("owner"), (1, None));
+        assert_eq!(
+            batch_instance_owner(&descs, 3).expect("owner"),
+            (1, Some(0))
+        );
+        assert!(batch_instance_owner(&descs, 4).is_err());
+
+        let trace_a = public_rows(&[(3, 30), (1, 10), (4, 40), (2, 20)]);
+        let trace_b = public_rows(&[(5, 50), (8, 80), (6, 60), (7, 70)]);
+        let pis = vec![vec![], vec![]];
+
+        let traces: Vec<&[Vec<BabyBear>]> = vec![trace_a.as_slice(), trace_b.as_slice()];
+        let proof = must_accept("two exact-public descriptors in one batch", || {
+            prove_vm_descriptors2_batch(&descs, &traces, &pis)
+        });
+        assert_eq!(
+            proof.degree_bits.len(),
+            4,
+            "2 mains + 2 manifest-TABLE instances"
+        );
+        must_accept(
+            "the deployed verifier on a two-descriptor exact-public batch",
+            || verify_vm_descriptors2_batch(&descs, &proof, &pis),
+        );
+
+        // BEND one cell of descriptor B's trace: (6,60) -> (6,61). Descriptor B's query multiset
+        // no longer equals its manifest, and nothing on the prover path replays it.
+        let mut bent_b = trace_b.clone();
+        bent_b[2][1] = BabyBear::new(61);
+        let bent: Vec<&[Vec<BabyBear>]> = vec![trace_a.as_slice(), bent_b.as_slice()];
+        let refusal = must_refuse_or_unsat_panic("a bent exact-public cell in a batch", || {
+            prove_vm_descriptors2_batch(&descs, &bent, &pis)
+        });
+        let reason = refusal.reason();
+        // Measured verdict (release, 2026-07-29):
+        //   IR v2 multi-descriptor self-verify failed: LookupError(
+        //     "GlobalCumulativeMismatch(None): ir2_exact_public_11")
+        // — the DEPLOYED verifier's global LogUp sum. ⚠ The bus NAME in that message changed on
+        // 2026-08-02 (it keys on the ARITY now, `ir2_exact_public_a{n}`, with the table id in the
+        // tuple), so it no longer names the bent descriptor's own table. The verdict CLASS is what
+        // this tooth reads and that is unchanged.
+        let deployed = crate::refusal::DEPLOYED_VERIFIER_REFUSAL_MARKERS
+            .iter()
+            .any(|m| reason.contains(m));
+        // Under `--release` (how this suite runs) the deployed verdict is the ONLY mechanism;
+        // a debug build may see p3's debug-only prover check panic first, which is a weaker
+        // tooth and is named as such rather than laundered into the deployed marker.
+        let debug_only = cfg!(debug_assertions)
+            && crate::refusal::P3_UNSAT_PANIC_MARKERS
+                .iter()
+                .any(|m| reason.contains(m));
+        assert!(
+            deployed || debug_only,
+            "a bent exact-public cell must be refused by the DEPLOYED verifier \
+             (LookupError / OodEvaluationMismatch), got: {reason}"
+        );
+    }
+
+    /// A descriptor declaring a NON-exact-public table, or pulling in any witness-bearing table
+    /// instance, is STILL refused by the multi-descriptor batch — only the exact-public arm was
+    /// opened. Those instances carry witnesses this path has no parameter to supply, and their
+    /// presence is not a function of the descriptor alone.
+    #[test]
+    fn multi_descriptor_batch_still_refuses_non_exact_public_tables() {
+        let base = parse_vm_descriptor2(BATCH_EXACT_A).expect("descriptor A parses");
+        let layout = check_descriptor2(&base).expect("descriptor A checks");
+        let empty = Presence::of(&base, &layout);
+        assert!(
+            require_main_or_exact_public(&base, empty, 0).is_ok(),
+            "the exact-public arm is open"
+        );
+
+        for sem in [
+            TableSem::Poseidon2Chip,
+            TableSem::Range { bits: 8 },
+            TableSem::Memory,
+            TableSem::MapOps,
+            TableSem::UMemory,
+            TableSem::UMemBoundary,
+            TableSem::UMemBoundaryCohort,
+        ] {
+            let mut swapped = base.clone();
+            swapped.tables[0].sem = sem.clone();
+            let err = require_main_or_exact_public(&swapped, empty, 0)
+                .expect_err("a non-exact-public table declaration must be refused");
+            assert!(
+                err.contains("non-exact-public tables") && err.contains("batch_public_a"),
+                "refusal must name the offending table ({sem:?}): {err}"
+            );
+        }
+
+        // …and every witness-bearing PRESENCE flag is still refused on its own.
+        for (mut presence, name) in [
+            (empty, "chip"),
+            (empty, "chip_state16"),
+            (empty, "byte"),
+            (empty, "memory"),
+            (empty, "map_ops"),
+            (empty, "map_absent"),
+            (empty, "umem"),
+        ] {
+            match name {
+                "chip" => presence.chip = true,
+                "chip_state16" => presence.chip_state16 = true,
+                "byte" => presence.byte = true,
+                "memory" => presence.memory = true,
+                "map_ops" => presence.map_ops = true,
+                "map_absent" => presence.map_absent = true,
+                _ => presence.umem = true,
+            }
+            let err = require_main_or_exact_public(&base, presence, 0)
+                .expect_err("a witness-bearing table instance must be refused");
+            assert!(
+                err.contains(name),
+                "refusal must name the {name} instance: {err}"
+            );
+        }
+    }
+
+    /// **THE 8-FELT CHAIN ↔ CHIP BYTE-IDENTITY CROSS-CHECK** (Phase B-ROTATION). The plain
+    /// `poseidon2::single_perm_compress` (the cell/turn/Lean-mirrored chain step) computes lanes
+    /// `state[0..8]` of ONE wide arity-11 permutation. The in-circuit chip witness exposes the
+    /// SAME 8 lanes as `[perm_lanes(seed)[0]` (the digest, out0)` ‖ chip_absorb_lanes(11, ins)`
+    /// (lanes 1..7)]`. They MUST be byte-identical or the cell≡circuit differential cannot hold:
+    /// a forged chip lane is UNSAT, so the commitment the proof binds equals the plain primitive's.
+    #[test]
+    fn single_perm_compress_equals_chip_wide_lanes() {
+        let ins: Vec<BabyBear> = (1u32..=11).map(BabyBear::new).collect();
+        let plain = crate::poseidon2::single_perm_compress(&ins);
+        // The chip's arity-11 wide seed (identical to `chip_absorb_lanes`'s seeding).
+        let mut seed = [BabyBear::ZERO; POSEIDON2_WIDTH];
+        for i in 0..CHIP_WIDE_ARITY {
+            seed[i] = ins[i];
+        }
+        let chip_lanes = perm_lanes(seed); // state[0..8] of the single permutation
+        for i in 0..CHIP_OUT_LANES {
+            assert_eq!(
+                plain[i], chip_lanes[i],
+                "single_perm_compress lane {i} must byte-equal the chip's perm_lanes"
+            );
+        }
+        // And the lanes 1..7 the producer fill helper writes match plain[1..8].
+        let absorb = chip_absorb_lanes(CHIP_WIDE_ARITY, &ins);
+        for j in 0..(CHIP_OUT_LANES - 1) {
+            assert_eq!(
+                plain[j + 1],
+                absorb[j],
+                "chip_absorb_lanes lane {} mismatch",
+                j + 1
+            );
+        }
+    }
+
+    /// Compute per-instance max constraint degrees (incl. LogUp legs) for a descriptor's
+    /// committed table set — the quantity that drives the FRI `log_blowup` floor
+    /// (`log_blowup >= log2_ceil(max_degree - 1)` per instance).
+    fn instance_degrees(desc: &EffectVmDescriptor2) -> Vec<(String, usize)> {
+        use p3_air::symbolic::AirLayout;
+        use p3_batch_stark::symbolic::get_max_constraint_degree;
+        use p3_field::extension::BinomialExtensionField;
+        use p3_lookup::{LogUpGadget, Lookups};
+        type Ef = BinomialExtensionField<P3BabyBear, 4>;
+
+        let layout = check_descriptor2(desc).expect("descriptor checks");
+        let presence = Presence::of(desc, &layout);
+        let airs = instance_airs(desc, layout, presence);
+        airs.iter()
+            .map(|air| {
+                let lookups = Lookups::<P3BabyBear>::from_air::<Ef, _>(air);
+                let deg = get_max_constraint_degree::<P3BabyBear, Ef, _, _>(
+                    air,
+                    AirLayout::from_air::<P3BabyBear>(air),
+                    &lookups,
+                    &LogUpGadget::new(),
+                );
+                let name = match air {
+                    Ir2Air::Main { .. } => "main",
+                    // The label is the Lean author's own emitted name, so a second table AIR
+                    // gets its own row here without touching this match.
+                    // Deliberately no `_ =>` arm: an unregistered table AIR must fail HERE, not
+                    // slip through under a catch-all with an unbudgeted degree.
+                    Ir2Air::LeanTable { air: t, .. } => match t.name.as_str() {
+                        "dregg-ir2-map-absent-v1" => "map_absent",
+                        "dregg-ir2-byte-v1" => "byte",
+                        "dregg-ir2-mem-boundary-v1" => "boundary",
+                        "dregg-ir2-memory-v1" => "memory",
+                        "dregg-ir2-umemory-v1" => "umemory",
+                        "dregg-ir2-umem-boundary-cohort-v1" => "umem_boundary_cohort",
+                        "dregg-ir2-umem-boundary-v1" => "umem_boundary",
+                        "dregg-ir2-map-ops-v1" => "map_ops",
+                        "dregg-ir2-chip-v1" => "chip",
+                        "dregg-ir2-chip-state16-v1" => "chip_state16",
+                        // ⚑ The exact-public FAMILY: one label for all 64 arity members, which is
+                        // right because they are the same shape and the same degree — the pin is
+                        // degree 1, the served leg degree 2, at every arity.
+                        n if n.starts_with("dregg-ir2-exact-public-a") => "exact_public_table",
+                        other => {
+                            panic!("unregistered Lean table AIR \"{other}\" in the degree ledger")
+                        }
+                    },
+                };
+                (name.to_string(), deg)
+            })
+            .collect()
+    }
+
+    /// THE DEGREE-BUDGET TOOTH: per-table max constraint degrees (including the LogUp
+    /// legs) of every graduated v2 descriptor + the full six-table gauntlet, frozen at
+    /// their measured values. The whole-batch ceiling (8, `setFieldDynVmDescriptor2`'s
+    /// pinned slot gate) sits far inside `ir2_config`'s `log_blowup = 6`; this tooth
+    /// exists so a degree blowup (a new constraint or lookup leg compounding past the
+    /// frozen budget) is caught symbolically, per table, with names — not as a deep
+    /// prover panic on one descriptor later.
+    ///
+    /// Measured (2026-06-11): main ≤ 3 (setFieldDyn 8) · chip 7 (inline S-box) ·
+    /// byte 3 · memory 3 · boundary 3 · map_ops 4 (in-tuple dir-mix legs) ·
+    /// map_absent 4 (the same dir-mix legs, twice) · umemory 3 · umem_boundary 3.
+    #[test]
+    fn ir2_degree_budget() {
+        let mut cohort: Vec<(String, EffectVmDescriptor2)> =
+            crate::effect_vm_descriptors::V2_DESCRIPTORS
+                .iter()
+                .map(|(key, json, _)| {
+                    (
+                        key.to_string(),
+                        parse_vm_descriptor2(json).expect("registry entry parses"),
+                    )
+                })
+                .collect();
+        cohort.push(("ir2-test-gauntlet".to_string(), test_desc()));
+        cohort.push(("ir2-umem-gauntlet".to_string(), umem_desc()));
+        cohort.push(("ir2-absent-gauntlet".to_string(), absent_desc()));
+        for (key, desc) in &cohort {
+            let degs = instance_degrees(desc);
+            println!("{key} degrees: {degs:?}");
+            for (table, deg) in degs {
+                let budget = match table.as_str() {
+                    // Lean-emitted, fingerprint-pinned constraint polynomials; the
+                    // dynamic slot gate is the one descriptor above 3.
+                    "main" if key == "setFieldDynVmDescriptor2" => 8,
+                    "main" => 3,
+                    // The inline x⁷ S-box between committed round-state blocks.
+                    "chip" => 7,
+                    // The in-tuple dir-mix lookup legs.
+                    "map_ops" => 4,
+                    // The bracketed-gap table: the in-tuple dir-mix fact legs (the
+                    // comparator branches measure lower).
+                    "map_absent" => 4,
+                    // The one-multiset legs + the degree-3 insert-only tooth.
+                    "umemory" => 3,
+                    // The transition-gated lexicographic comparator legs.
+                    "umem_boundary" => 3,
+                    // The cohort single-row boundary: Blum legs + booleans + single-row tooth.
+                    "umem_boundary_cohort" => 3,
+                    // Value-pinned table + decomposition booleans + Blum legs.
+                    "byte" | "memory" | "boundary" => 3,
+                    other => panic!("{key}: unknown table {other}"),
+                };
+                assert!(
+                    deg <= budget,
+                    "{key}/{table}: constraint degree {deg} exceeds the frozen IR-v2 \
+                     budget of {budget}"
+                );
+            }
+        }
+    }
+
+    /// The Lean `#guard`-pinned demo-v2 golden (DescriptorIR2 §10): every v2 constraint
+    /// kind + the five tables, byte-for-byte.
+    const DEMO_V2: &str = "{\"name\":\"demo-v2\",\"ir\":2,\"trace_width\":2,\"public_input_count\":1,\"challenges\":0,\"tables\":[{\"id\":0,\"name\":\"main\",\"arity\":2,\"sem\":\"main\"},{\"id\":1,\"name\":\"poseidon2_chip\",\"arity\":17,\"sem\":\"poseidon2_chip\",\"params\":{\"field_modulus\":2013265921,\"d\":4,\"width\":16,\"sbox_degree\":7,\"sbox_registers\":1,\"half_full_rounds\":4,\"partial_rounds\":13,\"rate\":8,\"rc_source\":\"BABYBEAR_POSEIDON2_RC_16\",\"internal_diag_source\":\"BABYBEAR_POSEIDON2_INTERNAL_DIAG_16\"}},{\"id\":2,\"name\":\"range\",\"arity\":1,\"sem\":\"range\",\"bits\":30},{\"id\":3,\"name\":\"memory\",\"arity\":5,\"sem\":\"memory\"},{\"id\":4,\"name\":\"map_ops\",\"arity\":5,\"sem\":\"map_ops\"}],\"constraints\":[{\"t\":\"transition\",\"hi\":0,\"lo\":0},{\"t\":\"lookup\",\"table\":2,\"tuple\":[{\"t\":\"var\",\"v\":0}]},{\"t\":\"mem_op\",\"kind\":\"read\",\"guard\":{\"t\":\"const\",\"v\":1},\"addr\":{\"t\":\"var\",\"v\":0},\"value\":{\"t\":\"var\",\"v\":1},\"prev_value\":{\"t\":\"var\",\"v\":1},\"prev_serial\":{\"t\":\"const\",\"v\":0}},{\"t\":\"map_op\",\"op\":\"write\",\"guard\":{\"t\":\"const\",\"v\":1},\"root\":[{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":0}],\"key\":{\"t\":\"var\",\"v\":1},\"value\":{\"t\":\"const\",\"v\":0},\"new_root\":[{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":1}]}],\"hash_sites\":[],\"ranges\":[]}";
+
+    /// ⚑ **A RANGE TABLE AT OR ABOVE `VACUOUS_RANGE_BITS` IS REFUSED AT LOAD, AND 30 IS NOT.**
+    ///
+    /// The refusal is the DOOR half of the 2026-08-03 masking repair. Two chains shipped
+    /// `bits: 128`, which contains the whole BabyBear field in the denotation and — through the
+    /// filler's `1u64 << bits` — refused every nonzero row in the prover. Neither side looked at
+    /// load. Now the wire cannot carry one.
+    ///
+    /// The 30 case is the load-bearing NEGATIVE clause: 33 checked-in by-name descriptors declare
+    /// 30, so a refusal that swept it up would be a different (and much larger) change wearing this
+    /// one's clothes.
+    #[test]
+    fn ir2_vacuous_range_width_refuses_at_load() {
+        for bad in [VACUOUS_RANGE_BITS, 32, 64, 128, 255] {
+            let j = DEMO_V2.replace("\"bits\":30", &format!("\"bits\":{bad}"));
+            assert_ne!(j, DEMO_V2, "the substitution must have bitten");
+            let e = parse_vm_descriptor2(&j)
+                .expect_err("a vacuous range width must be refused at descriptor load");
+            assert!(
+                e.contains(&format!("declares bits {bad}")) && e.contains("refuses nothing"),
+                "the refusal must name the width and the reason, got: {e}"
+            );
+        }
+        // …and every width the corpus actually declares still loads.
+        for ok in [4usize, 8, 11, 12, 14, 15, 16, 22, 24, 27, 29, 30] {
+            let j = DEMO_V2.replace("\"bits\":30", &format!("\"bits\":{ok}"));
+            let d = parse_vm_descriptor2(&j)
+                .unwrap_or_else(|e| panic!("a declared corpus width {ok} must still load: {e}"));
+            assert_eq!(d.tables[2].sem, TableSem::Range { bits: ok });
+        }
+    }
+
+    /// ⚑ **THE FILLER'S RANGE BOUND IS TOTAL — no width masks it into a nonsense comparison.**
+    ///
+    /// `(v as u64) >= (1u64 << bits)` was the bug: at `bits = 64` and `bits = 128` the shift masks
+    /// to `bits % 64 == 0`, so the bound became `v >= 1` and the prover refused every nonzero row
+    /// at a width whose denotation admits everything. This pins BOTH the honest widths (the bound
+    /// bites exactly at `2^bits`) and the vacuous ones (everything fits, matching `rangeRows`).
+    #[test]
+    fn ir2_range_bound_is_total_at_every_width() {
+        // A real width bites exactly at its ceiling.
+        for bits in [1usize, 4, 8, 11, 16, 29, 30, 31] {
+            let ceil = 1u32 << bits;
+            assert!(
+                value_fits_bits(ceil - 1, bits),
+                "2^{bits} − 1 must fit at {bits}"
+            );
+            assert!(
+                !value_fits_bits(ceil, bits),
+                "2^{bits} must NOT fit at {bits}"
+            );
+        }
+        // ⚑ The widths that used to mask. Every `u32` is below `2^32`, so all of these ADMIT —
+        // which is exactly what `DescriptorIR2.rangeRows` says and what the prover used to deny.
+        for bits in [32usize, 33, 63, 64, 65, 128, 255, 4096] {
+            assert!(value_fits_bits(0, bits));
+            assert!(
+                value_fits_bits(62_195, bits),
+                "the row the bits=128 exhibit refused"
+            );
+            assert!(value_fits_bits(u32::MAX, bits));
+            assert!(
+                value_fits_bits(2_013_265_920, bits),
+                "p − 1 is in range at a vacuous width"
+            );
+        }
+        // And the limb extraction is total too — `decomp_cols(128)` asks for limb 31 of a `u32`.
+        assert_eq!(limb_at(0xABCD_EF01, 0), 0x1);
+        assert_eq!(limb_at(0xABCD_EF01, 7), 0xA);
+        for i in 8..64usize {
+            assert_eq!(limb_at(u32::MAX, i), 0, "limb {i} is past the top of a u32");
+        }
+    }
+
+    /// The byte-pinned Lean golden parses, with every v2 element decoded.
+    #[test]
+    fn parses_lean_golden() {
+        let d = parse_vm_descriptor2(DEMO_V2).expect("golden must parse");
+        assert_eq!(d.name, "demo-v2");
+        assert_eq!(d.trace_width, 2);
+        assert_eq!(d.public_input_count, 1);
+        assert_eq!(d.tables.len(), 5);
+        assert_eq!(d.tables[2].sem, TableSem::Range { bits: 30 });
+        assert_eq!(d.constraints.len(), 4);
+        assert!(matches!(d.constraints[0], VmConstraint2::Base(_)));
+        assert!(matches!(
+            d.constraints[1],
+            VmConstraint2::Lookup(LookupSpec {
+                table: TID_RANGE,
+                ..
+            })
+        ));
+        assert!(matches!(
+            d.constraints[2],
+            VmConstraint2::MemOp(MemOpSpec {
+                kind: MemKind::Read,
+                ..
+            })
+        ));
+        assert!(matches!(
+            d.constraints[3],
+            VmConstraint2::MapOp(MapOpSpec {
+                op: MapKind::Write,
+                ..
+            })
+        ));
+    }
+
+    /// A v1 wire string (no "ir") dispatches to the V1 arm unchanged.
+    #[test]
+    fn dispatches_v1() {
+        let v1 = "{\"name\":\"t\",\"trace_width\":2,\"public_input_count\":0,\"constraints\":[{\"t\":\"transition\",\"hi\":0,\"lo\":0}],\"hash_sites\":[],\"ranges\":[]}";
+        match parse_vm_descriptor_any(v1).expect("v1 must parse") {
+            AnyVmDescriptor::V1(d) => assert_eq!(d.name, "t"),
+            AnyVmDescriptor::V2(_) => panic!("v1 wire must dispatch V1"),
+        }
+    }
+
+    /// Tampered chip params (wrong partial_rounds) are REFUSED at parse.
+    #[test]
+    fn refuses_tampered_chip_params() {
+        let bad = DEMO_V2.replace("\"partial_rounds\":13", "\"partial_rounds\":12");
+        assert!(parse_vm_descriptor2(&bad).is_err());
+    }
+
+    // ---- the end-to-end gauntlet descriptors ----
+
+    /// Base layout for the test descriptor: cols 0 a, 1 b, 2 digest of hash[a,b],
+    /// 3 a 30-bit balance wire, 4 mem addr, 5 mem value, 6 mem prev_value,
+    /// 7 mem prev_serial, 8 mem guard, 9 map root, 10 map key, 11 map value,
+    /// 12 map new_root, 13 map guard, 14 keep mask, 15 held mask.
+    fn test_desc() -> EffectVmDescriptor2 {
+        // Phase B-GATE: a single-output hash site emits the 17-wide chip tuple
+        // `[2, a, b, 0×6, out0..out7]` but binds only out0 (= col `d`, the digest). Lanes
+        // 1..7 are carried in cols 16..22 (witnessed = the genuine permutation lanes), so the
+        // lookup matches the 17-wide chip row; the descriptor constrains only out0.
+        let chip_tuple = |a: usize, b: usize, d: usize, lane1: usize| -> Vec<LeanExpr> {
+            let mut t = vec![LeanExpr::Const(2), LeanExpr::Var(a), LeanExpr::Var(b)];
+            for _ in 0..(CHIP_RATE - 2) {
+                t.push(LeanExpr::Const(0));
+            }
+            t.push(LeanExpr::Var(d));
+            for i in 0..(CHIP_OUT_LANES - 1) {
+                t.push(LeanExpr::Var(lane1 + i));
+            }
+            t
+        };
+        EffectVmDescriptor2 {
+            name: "ir2-test".to_string(),
+            trace_width: 31,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![TableDef2 {
+                id: TID_RANGE,
+                name: "range".to_string(),
+                arity: 1,
+                sem: TableSem::Range { bits: 30 },
+            }],
+            constraints: vec![
+                VmConstraint2::Lookup(LookupSpec {
+                    table: TID_P2,
+                    tuple: chip_tuple(0, 1, 2, 16),
+                }),
+                VmConstraint2::Lookup(LookupSpec {
+                    table: TID_RANGE,
+                    tuple: vec![LeanExpr::Var(3)],
+                }),
+                VmConstraint2::MemOp(MemOpSpec {
+                    guard: LeanExpr::Var(8),
+                    addr: LeanExpr::Var(4),
+                    value: LeanExpr::Var(5),
+                    prev_value: LeanExpr::Var(6),
+                    prev_serial: LeanExpr::Var(7),
+                    kind: MemKind::Read,
+                }),
+                VmConstraint2::MapOp(MapOpSpec {
+                    guard: LeanExpr::Var(13),
+                    // Phase H-HEAP-8: the 8-felt heap-root group rides cols 23..31 (read preserves it,
+                    // so new_root references the SAME lanes). Cols 9/12 are inert carry columns.
+                    root: (23..23 + CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                    key: LeanExpr::Var(10),
+                    value: LeanExpr::Var(11),
+                    new_root: (23..23 + CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                    op: MapKind::Read,
+                }),
+                VmConstraint2::Lookup(LookupSpec {
+                    table: TID_CUSTOM_SUBMASK,
+                    tuple: vec![LeanExpr::Var(14), LeanExpr::Var(15)],
+                }),
+            ],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    fn test_heap() -> Vec<HeapLeaf> {
+        vec![
+            HeapLeaf::entry(BabyBear::new(100), BabyBear::new(77)),
+            HeapLeaf::entry(BabyBear::new(200), BabyBear::new(88)),
+        ]
+    }
+
+    fn test_base_row() -> Vec<BabyBear> {
+        let a = BabyBear::new(11);
+        let b = BabyBear::new(22);
+        // The genuine 8 lanes of the arity-2 absorb hash[a, b]; lane0 == hash_many(&[a, b]).
+        let lanes = perm_lanes(hash2_state_c(a, b));
+        let digest = lanes[0];
+        debug_assert_eq!(digest, hash_many(&[a, b]));
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let root = tree.root8();
+        let mut row = vec![
+            a,
+            b,
+            digest,
+            BabyBear::new((1 << 30) - 1), // max in-range balance
+            BabyBear::new(5),             // mem addr
+            BabyBear::new(9),             // mem value (read returns init)
+            BabyBear::new(9),             // mem prev_value
+            BabyBear::ZERO,               // mem prev_serial (init)
+            BabyBear::ZERO,               // mem guard (row 0 active only — set per row)
+            root[0],               // col 9: inert carry (Phase H-HEAP-8 moved the root group)
+            BabyBear::new(100),    // map key
+            BabyBear::new(77),     // map value
+            root[0],               // col 12: inert carry
+            BabyBear::ZERO,        // map guard (set per row)
+            BabyBear::new(0b0101), // keep ⊑ held
+            BabyBear::new(0b0111), // held
+        ];
+        // cols 16..22: the 7 exposed lanes 1..7 of the hash site (Phase B-GATE).
+        row.extend_from_slice(&lanes[1..]);
+        // cols 23..31: the 8-felt heap-root group the map read opens against.
+        row.extend_from_slice(&root[..]);
+        debug_assert_eq!(row.len(), 31);
+        row
+    }
+
+    fn test_trace() -> Vec<Vec<BabyBear>> {
+        // 4 rows; the mem/map ops fire on row 0 only.
+        let mut rows = vec![test_base_row(); 4];
+        rows[0][8] = BabyBear::ONE;
+        rows[0][13] = BabyBear::ONE;
+        // Rows 1..: prev_serial would still be 0 if the op fired again — guards are 0,
+        // so the columns are inert there.
+        rows
+    }
+
+    fn test_boundary() -> MemBoundaryWitness {
+        MemBoundaryWitness {
+            addrs: vec![5],
+            init_vals: vec![9],
+        }
+    }
+
+    /// THE acceptance gate: an honest multi-table witness (chip lookup + range lookup +
+    /// memory read + map read + submask) proves and verifies through the real batch
+    /// prover with LogUp.
+    #[test]
+    fn ir2_honest_witness_proves_and_verifies() {
+        let desc = test_desc();
+        let proof =
+            prove_vm_descriptor2(&desc, &test_trace(), &[], &test_boundary(), &[test_heap()])
+                .expect("honest IR v2 witness must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            6,
+            "the full gauntlet uses every table: main + chip + byte + memory + boundary + map"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("honest IR v2 proof must verify");
+    }
+
+    /// FLAW-1 regression (the §2b size disease): a descriptor that uses only chip + range
+    /// lookups (the graduated v1 cohort's shape — transfer et al.) commits ONLY
+    /// main + chip + byte; the memory / boundary / map-ops tables are NOT in the batch,
+    /// and the verifier agrees on the present-table set from the descriptor alone.
+    #[test]
+    fn ir2_elides_descriptor_empty_tables() {
+        let mut desc = test_desc();
+        desc.constraints
+            .retain(|k| !matches!(k, VmConstraint2::MemOp(_) | VmConstraint2::MapOp(_)));
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &test_trace(),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[],
+        )
+        .expect("chip+range-only witness must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            3,
+            "main + chip + byte only — descriptor-empty tables must be elided"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("elided-table proof must verify");
+
+        // A stray witness for an elided table is a refusal, not a silent drop.
+        assert!(
+            prove_vm_descriptor2(&desc, &test_trace(), &[], &test_boundary(), &[]).is_err(),
+            "a memory boundary witness without mem ops must refuse"
+        );
+        assert!(
+            prove_vm_descriptor2(
+                &desc,
+                &test_trace(),
+                &[],
+                &MemBoundaryWitness::default(),
+                &[test_heap()]
+            )
+            .is_err(),
+            "witness heaps without map ops must refuse"
+        );
+    }
+
+    /// Tuple-narrowing pass: a single-output hash site routed to the NARROW chip bus
+    /// (`TID_P2_NARROW`, 18-wide `[arity, ins, out0]`) proves + verifies — the same chip rows
+    /// serve it through `CHIP_MULT_NARROW` — and it carries `CHIP_OUT_LANES - 1` = 7 fewer
+    /// main-trace columns than the equivalent WIDE (`TID_P2`, 25-wide) site (the exposed output
+    /// lanes are gone from the sender).
+    #[test]
+    fn ir2_narrow_chip_site_proves_and_is_smaller() {
+        let a = BabyBear::new(11);
+        let b = BabyBear::new(22);
+        // out0 of the arity-2 absorb hash[a, b] (== lane0 == hash_many(&[a, b])).
+        let digest = perm_lanes(hash2_state_c(a, b))[0];
+        debug_assert_eq!(digest, hash_many(&[a, b]));
+
+        // Shared arity-2 absorb prefix: [2, a, b, 0×(CHIP_RATE-2)].
+        let mut prefix = vec![LeanExpr::Const(2), LeanExpr::Var(0), LeanExpr::Var(1)];
+        for _ in 0..(CHIP_RATE - 2) {
+            prefix.push(LeanExpr::Const(0));
+        }
+
+        // NARROW site: tuple = [arity, ins, out0]; out0 = col 2. NO output-lane columns. width 3.
+        let mut narrow_tuple = prefix.clone();
+        narrow_tuple.push(LeanExpr::Var(2)); // out0
+        let narrow = EffectVmDescriptor2 {
+            name: "ir2-narrow".to_string(),
+            trace_width: 3,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::Lookup(LookupSpec {
+                table: TID_P2_NARROW,
+                tuple: narrow_tuple,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+        let narrow_trace = vec![vec![a, b, digest]; 4];
+        let np = prove_vm_descriptor2(
+            &narrow,
+            &narrow_trace,
+            &[],
+            &MemBoundaryWitness::default(),
+            &[],
+        )
+        .expect("narrow chip site must prove");
+        assert_eq!(
+            np.degree_bits.len(),
+            2,
+            "narrow-only descriptor commits main + chip (no output-lane / byte tables)"
+        );
+        verify_vm_descriptor2(&narrow, &np, &[]).expect("narrow chip proof must verify");
+
+        // WIDE site: the SAME hash routed the OLD way — 25-wide tuple binds out0 (col 2) PLUS the
+        // 7 exposed output lanes (cols 3..9, witnessed by `trace_with_chip_lanes`). width 10.
+        let mut wide_tuple = prefix;
+        wide_tuple.push(LeanExpr::Var(2)); // out0
+        for i in 0..(CHIP_OUT_LANES - 1) {
+            wide_tuple.push(LeanExpr::Var(3 + i)); // lane1..7 witness columns
+        }
+        let wide = EffectVmDescriptor2 {
+            name: "ir2-wide".to_string(),
+            trace_width: 3 + (CHIP_OUT_LANES - 1),
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::Lookup(LookupSpec {
+                table: TID_P2,
+                tuple: wide_tuple,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+        // The producer supplies [a, b, digest]; the lane columns are grown + filled internally.
+        let wide_trace = vec![vec![a, b, digest]; 4];
+        let wp = prove_vm_descriptor2(&wide, &wide_trace, &[], &MemBoundaryWitness::default(), &[])
+            .expect("wide chip site must prove");
+        verify_vm_descriptor2(&wide, &wp, &[]).expect("wide chip proof must verify");
+
+        // The narrow routing drops the 7 exposed output-lane columns from the sender.
+        assert!(
+            narrow.trace_width < wide.trace_width,
+            "narrow site trace ({}) must be smaller than wide ({})",
+            narrow.trace_width,
+            wide.trace_width
+        );
+        assert_eq!(wide.trace_width - narrow.trace_width, CHIP_OUT_LANES - 1);
+    }
+
+    fn state16_desc() -> EffectVmDescriptor2 {
+        let mut tuple = Vec::with_capacity(CHIP_STATE16_TUPLE_LEN);
+        tuple.push(LeanExpr::Const(POSEIDON2_WIDTH as i64));
+        tuple.extend((0..POSEIDON2_WIDTH).map(LeanExpr::Var));
+        tuple.extend((POSEIDON2_WIDTH..2 * POSEIDON2_WIDTH).map(LeanExpr::Var));
+        EffectVmDescriptor2 {
+            name: "ir2-state16".to_string(),
+            trace_width: 2 * POSEIDON2_WIDTH,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![TableDef2 {
+                id: TID_P2_STATE16,
+                name: "poseidon2_state16_chip".to_string(),
+                arity: CHIP_STATE16_TUPLE_LEN,
+                sem: TableSem::Poseidon2Chip,
+            }],
+            constraints: vec![VmConstraint2::Lookup(LookupSpec {
+                table: TID_P2_STATE16,
+                tuple,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    fn state16_trace() -> Vec<Vec<BabyBear>> {
+        // Capacity lanes are deliberately non-zero: this is an arbitrary complete state, not a
+        // seed-from-zero absorb.  A repeated four-row main trace keeps the focused proof tiny.
+        let input: [BabyBear; POSEIDON2_WIDTH] =
+            core::array::from_fn(|i| BabyBear::new(0x1000 + (i as u32) * 0x101));
+        let output = chip_permute_state16(input);
+        let mut row = input.to_vec();
+        row.extend_from_slice(&output);
+        vec![row; 4]
+    }
+
+    /// The additive full-state table proves and verifies an arbitrary 16-lane transition while
+    /// legacy descriptors retain the old chip AIR alone.  This is the exact primitive required
+    /// to chain every internal state of the deployed multi-block sponge.
+    #[test]
+    fn ir2_state16_permutation_proves_and_preserves_legacy_shape() {
+        let desc = state16_desc();
+        let layout = check_descriptor2(&desc).expect("state16 descriptor checks");
+        let presence = Presence::of(&desc, &layout);
+        assert!(
+            !presence.chip,
+            "state16 does not widen the legacy chip instance"
+        );
+        assert!(presence.chip_state16);
+        let airs = instance_airs(&desc, layout, presence);
+        assert!(matches!(
+            airs.as_slice(),
+            [Ir2Air::Main { .. }, Ir2Air::LeanTable { air: t, .. }]
+                if t.name == "dregg-ir2-chip-state16-v1"
+        ));
+
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &state16_trace(),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[],
+        )
+        .expect("arbitrary full-state permutation must prove");
+        assert_eq!(proof.degree_bits.len(), 2, "main + state16 chip only");
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("state16 proof must verify");
+
+        let legacy = test_desc();
+        let legacy_layout = check_descriptor2(&legacy).expect("legacy descriptor checks");
+        let legacy_presence = Presence::of(&legacy, &legacy_layout);
+        assert!(!legacy_presence.chip_state16);
+        assert!(
+            instance_airs(&legacy, legacy_layout, legacy_presence)
+                .iter()
+                .all(|a| !matches!(a, Ir2Air::LeanTable { air: t, .. }
+                    if t.name == "dregg-ir2-chip-state16-v1"))
+        );
+    }
+
+    /// Hostile high-lane tooth: changing output lane 15 leaves the legacy exposed lanes 0..7
+    /// untouched, but the full-state bus must become unsatisfiable.
+    #[test]
+    fn ir2_state16_high_output_lane_mutation_refuses() {
+        let desc = state16_desc();
+        let mut rows = state16_trace();
+        rows[0][2 * POSEIDON2_WIDTH - 1] += BabyBear::ONE;
+        let refusal = must_refuse_or_unsat_panic("state16 high-output-lane tooth", || {
+            prove_vm_descriptor2(&desc, &rows, &[], &MemBoundaryWitness::default(), &[])
+        });
+        assert_constraint_refusal(
+            refusal.reason(),
+            "a mutated high output lane must be refused by the state16 permutation bus",
+        );
+    }
+
+    /// The faithful spend's sixteen-bit limb table is admitted both through its explicit Lean
+    /// `Range { bits: 16 }` declaration and through the width-tagged wire-id fallback.  The exact
+    /// upper boundary is live: 65535 proves, 65536 refuses before proving.
+    #[test]
+    fn ir2_custom_range16_is_exact_and_fallback_whitelisted() {
+        let tid = RANGE_W_TID_WIRE_BASE + 16;
+        let mut desc = EffectVmDescriptor2 {
+            name: "ir2-range16".to_string(),
+            trace_width: 1,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![TableDef2 {
+                id: tid,
+                name: "range_w16".to_string(),
+                arity: 1,
+                sem: TableSem::Range { bits: 16 },
+            }],
+            constraints: vec![VmConstraint2::Lookup(LookupSpec {
+                table: tid,
+                tuple: vec![LeanExpr::Var(0)],
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+        let good = vec![vec![BabyBear::new(u16::MAX as u32)]; 4];
+        let proof = prove_vm_descriptor2(&desc, &good, &[], &MemBoundaryWitness::default(), &[])
+            .expect("the maximum canonical u16 must prove");
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("range16 proof must verify");
+
+        let bad = vec![vec![BabyBear::new((u16::MAX as u32) + 1)]; 4];
+        assert!(
+            prove_vm_descriptor2(&desc, &bad, &[], &MemBoundaryWitness::default(), &[],).is_err(),
+            "2^16 must be outside the canonical u16 relation"
+        );
+
+        desc.tables.clear();
+        let fallback = check_descriptor2(&desc).expect("wire-id-85 fallback is explicitly pinned");
+        assert_eq!(fallback.ranges.len(), 1);
+        assert_eq!(fallback.ranges[0].bits, 16);
+    }
+
+    /// Regression for verifier instance indexing: with both additive state16 and byte tables the
+    /// byte table is instance 2 (`main, state16, byte`), not instance 1.  Honest proof/verification
+    /// across that exact FNSP-shaped table prefix must succeed.
+    #[test]
+    fn ir2_state16_plus_range16_proves_and_verifies() {
+        let mut desc = state16_desc();
+        let range_tid = RANGE_W_TID_WIRE_BASE + 16;
+        desc.tables.push(TableDef2 {
+            id: range_tid,
+            name: "range_w16".to_string(),
+            arity: 1,
+            sem: TableSem::Range { bits: 16 },
+        });
+        desc.constraints.push(VmConstraint2::Lookup(LookupSpec {
+            table: range_tid,
+            tuple: vec![LeanExpr::Var(0)],
+        }));
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &state16_trace(),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[],
+        )
+        .expect("state16 + range16 witness must prove");
+        assert_eq!(proof.degree_bits.len(), 3, "main + state16 + byte");
+        verify_vm_descriptor2(&desc, &proof, &[])
+            .expect("verifier must index the byte table after state16");
+    }
+
+    /// **THREE DECLARED RANGE WIDTHS IN ONE DESCRIPTOR.** The limb-vector shape a multi-limb
+    /// voting-power tally needs: three range tables at three different widths, all queried from
+    /// the same row.
+    ///
+    /// Two things are measured here, neither of them assumed:
+    ///
+    /// 1. The DECLARED table wins over the `CUSTOM_RANGE_WIDTHS` fallback whitelist. `8` is NOT
+    ///    in that array (`[15, 16, 24, 28, 29]`), and it is deliberately not added — the 8-bit
+    ///    table is admitted only because `range_bits_for` consults `desc.tables` FIRST. If that
+    ///    ordering ever regresses, this test goes red rather than the whitelist being widened.
+    /// 2. The three widths are three DIFFERENT relations. Each boundary is pushed one over its
+    ///    OWN ceiling, one column at a time, and each must refuse independently — that is what
+    ///    rules out "all three silently realized at the widest width". ⚠ Say where that refusal
+    ///    LANDS: it is `fill_main_layout_row`'s fail-closed `v >= 2^rb.bits` bound, which reads
+    ///    the per-block DECLARED width, so it is `Err` in every profile — it is NOT the in-circuit
+    ///    `eval_decomp` tooth. The in-circuit leg is not separately reachable through this entry
+    ///    point (an over-ceiling value cannot be decomposed into the block's limbs at all, so
+    ///    witness generation refuses before `prove_batch` regardless of `check`). What witnesses
+    ///    the AIR side is structural and asserted below: the three blocks are allocated at THREE
+    ///    DIFFERENT sizes (9/4/2 aux columns), and `Ir2Air::Main` calls `eval_decomp` with each
+    ///    block's own `rb.bits`.
+    ///
+    /// The instance count is pinned because it is a design input: range checks are realized as
+    /// byte-limb decompositions against the SHARED nibble histogram (`presence.byte` is a single
+    /// bool), so N widths cost N aux blocks in the main trace and ZERO extra AIR instances.
+    #[test]
+    fn ir2_three_range_widths_coexist_and_prove() {
+        let tid29 = TID_RANGE;
+        let tid16 = RANGE_W_TID_WIRE_BASE + 16;
+        let tid8 = RANGE_W_TID_WIRE_BASE + 8;
+        assert_eq!(tid16, 85);
+        assert_eq!(tid8, 77);
+        assert!(
+            !CUSTOM_RANGE_WIDTHS.contains(&8),
+            "8 must stay OUT of the fallback whitelist: this test measures the DECLARED path"
+        );
+
+        let desc = EffectVmDescriptor2 {
+            name: "ir2-three-range-widths".to_string(),
+            trace_width: 3,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![
+                TableDef2 {
+                    id: tid29,
+                    name: "range".to_string(),
+                    arity: 1,
+                    sem: TableSem::Range { bits: 29 },
+                },
+                TableDef2 {
+                    id: tid16,
+                    name: "range_w16".to_string(),
+                    arity: 1,
+                    sem: TableSem::Range { bits: 16 },
+                },
+                TableDef2 {
+                    id: tid8,
+                    name: "range_w8".to_string(),
+                    arity: 1,
+                    sem: TableSem::Range { bits: 8 },
+                },
+            ],
+            constraints: vec![
+                VmConstraint2::Lookup(LookupSpec {
+                    table: tid29,
+                    tuple: vec![LeanExpr::Var(0)],
+                }),
+                VmConstraint2::Lookup(LookupSpec {
+                    table: tid16,
+                    tuple: vec![LeanExpr::Var(1)],
+                }),
+                VmConstraint2::Lookup(LookupSpec {
+                    table: tid8,
+                    tuple: vec![LeanExpr::Var(2)],
+                }),
+            ],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+
+        // The aux-column cost per range check at each width, and the resolved main width.
+        let (c29, c16, c8) = (decomp_cols_pub(29), decomp_cols_pub(16), decomp_cols_pub(8));
+        let layout = check_descriptor2(&desc).expect("three declared range widths must resolve");
+        println!(
+            "MEASURED decomp_cols: 29 -> {c29}, 16 -> {c16}, 8 -> {c8}; \
+             MainLayout width = {} (trace_width {} + {} aux); range blocks = {:?}",
+            layout.width,
+            desc.trace_width,
+            layout.width - desc.trace_width,
+            layout
+                .ranges
+                .iter()
+                .map(|r| (r.wire, r.bits, r.limb0))
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(
+            layout.ranges.len(),
+            3,
+            "all three lookups resolved to ranges"
+        );
+        assert_eq!(
+            layout.ranges.iter().map(|r| r.bits).collect::<Vec<_>>(),
+            vec![29, 16, 8],
+            "the DECLARED width of each table, in constraint order"
+        );
+        assert_eq!(layout.width, desc.trace_width + c29 + c16 + c8);
+
+        // (1) The exact maximum of each declared width, on every row.
+        let ceilings = [(1u32 << 29) - 1, u16::MAX as u32, u8::MAX as u32];
+        let honest = vec![
+            ceilings
+                .iter()
+                .map(|&v| BabyBear::new(v))
+                .collect::<Vec<_>>();
+            4
+        ];
+        let proof = prove_vm_descriptor2(&desc, &honest, &[], &MemBoundaryWitness::default(), &[])
+            .expect("the exact maximum of all three declared widths must prove");
+        println!("MEASURED degree_bits.len() = {}", proof.degree_bits.len());
+        assert_eq!(
+            proof.degree_bits.len(),
+            2,
+            "main + ONE shared byte table (three widths, one nibble histogram)"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[])
+            .expect("the three-width proof must verify against the deployed verifier");
+
+        // (2) Each width's own ceiling refuses INDEPENDENTLY: one column over, one at a time.
+        for (col, over) in [(0usize, 1u32 << 29), (1, 1 << 16), (2, 1 << 8)] {
+            let mut bad = honest.clone();
+            for row in bad.iter_mut() {
+                row[col] = BabyBear::new(over);
+            }
+            let Err(e) =
+                prove_vm_descriptor2(&desc, &bad, &[], &MemBoundaryWitness::default(), &[])
+            else {
+                panic!("column {col} at {over} is over its OWN ceiling and must refuse");
+            };
+            println!("MEASURED refusal col {col} at {over}: {e}");
+            assert!(
+                e.contains(&format!("range wire {col}")),
+                "the refusal must name the offending wire, got: {e}"
+            );
+        }
+    }
+
+    /// A tampered memory READ (claims value 7 where the init image holds 9) must REFUSE:
+    /// the pre-flight replay rejects it, and with the replay bypassed the in-circuit
+    /// multiset argument has no balancing assembly (debug prover panics / proof fails
+    /// verification).
+    #[test]
+    fn ir2_tampered_read_refuses() {
+        let desc = test_desc();
+        let mut rows = test_trace();
+        rows[0][5] = BabyBear::new(7); // value
+        rows[0][6] = BabyBear::new(7); // prev_value (read discipline forces equality)
+        // Pre-flight replay refuses.
+        assert!(prove_vm_descriptor2(&desc, &rows, &[], &test_boundary(), &[test_heap()]).is_err());
+        // In-circuit tooth: bypass the replay; the mem_check bus cannot balance. `check: false`
+        // means the forged witness reaches `prove_batch`, and the minted proof is then handed to
+        // the DEPLOYED verifier — so the refusal is observable in every build profile, not only
+        // where p3's debug-gated lookup check panics.
+        let refusal =
+            must_refuse_or_unsat_panic("ir2_tampered_read (Blum mem_check tooth)", || {
+                prove_unchecked_then_verify(&desc, &rows, &[], &test_boundary(), &[test_heap()])
+            });
+        // WHY it refused: the tampered read unbalances the `ir2_mem_check` multiset argument.
+        assert_constraint_refusal(
+            refusal.reason(),
+            "a tampered memory read must be refused BY THE CONSTRAINT SYSTEM (an unbalanced \
+             mem_check bus or a violated constraint)",
+        );
+    }
+
+    /// A forged map READ (claims value 78 at key 100 where the committed heap holds 77) must
+    /// REFUSE. The deployed refusal is the pre-flight replay, asserted below as the load-bearing
+    /// leg.
+    ///
+    /// ⚑ SEAM CLOSED (2026-07-29). This test used to have only a `must_panic_containing` second
+    /// leg pinned to map-row assembly's `debug_assert_eq!(end, root, "old path must authenticate
+    /// against root8")` — a DEBUG-ONLY guard, compiled out under `--release`, which meant the
+    /// in-circuit opening tooth (the leg that matters in production) was the one thing this test
+    /// never witnessed, and under `--release` the test simply failed.
+    ///
+    /// Both halves are real now. That assembly check is a fail-closed `Err` under `check`, so the
+    /// deployed entry refuses in every profile; and the `check: false` leg below carries the
+    /// forgery all the way to `prove_batch` and hands the minted proof to the DEPLOYED VERIFIER,
+    /// which refuses it because the MapOps fact-bus recompute of the root over the committed path
+    /// cannot match the forged opening.
+    #[test]
+    fn ir2_forged_map_opening_refuses() {
+        let desc = test_desc();
+        let mut rows = test_trace();
+        rows[0][11] = BabyBear::new(78);
+
+        // THE HONEST POLE (S1): the untampered witness must be ACCEPTED, else this canary is
+        // vacuous — a path that refuses everything refuses the forgery for free.
+        let honest = test_trace();
+        must_accept("ir2_forged_map_opening honest pole", || {
+            prove_vm_descriptor2(&desc, &honest, &[], &test_boundary(), &[test_heap()])
+        });
+
+        // THE LOAD-BEARING LEG: the deployed entry point refuses the forgery fail-closed.
+        let e = must_refuse("ir2_forged_map_opening (deployed replay)", || {
+            prove_vm_descriptor2(&desc, &rows, &[], &test_boundary(), &[test_heap()])
+        });
+        assert!(
+            !e.is_empty(),
+            "the replay must refuse with a diagnosable reason, got an empty error"
+        );
+
+        assert!(
+            e.contains("opens to 77") || e.contains("old path must authenticate against root8"),
+            "the deployed replay must refuse by NAMING the forged opening, got: {e}"
+        );
+
+        // THE IN-CIRCUIT LEG: replay bypassed, so the forgery reaches `prove_batch`; the minted
+        // proof is then handed to the DEPLOYED verifier, which refuses it.
+        let r =
+            must_refuse_or_unsat_panic("ir2_forged_map_opening (in-circuit opening tooth)", || {
+                prove_unchecked_then_verify(&desc, &rows, &[], &test_boundary(), &[test_heap()])
+            });
+        assert_constraint_refusal(
+            r.reason(),
+            "a forged map opening must be refused BY THE CONSTRAINT SYSTEM (the MapOps fact-bus \
+             recompute of the root over the committed path)",
+        );
+    }
+
+    // ---- THE DEPLOYED HEAP-WRITE SPLICE: a content-mismatched root is REJECTED (PHASE-E). ----
+
+    /// The deployed heapWrite SPLICE column layout (`EffectVmEmitHeapRoot`, mirrored in the staged
+    /// registry TSV row `heapWriteVmDescriptor2R24`): the `.write` MapOp on the heap root opens the
+    /// committed root (col 65) at the recomputed address (col 102) for the written value (col 72) and
+    /// FORCES the new root (col 87). This is the SAME op the deployed descriptor carries.
+    // Phase H-HEAP-8: the pre-/post-root are 8-felt digest GROUPS. The isolated splice descriptor
+    // rides them on contiguous fresh columns (before-group 110..118, after-group 118..126) so they
+    // do not collide with HW_VALUE(72)/HW_ADDR(102).
+    const HW_ROOT_BEFORE: usize = 110;
+    const HW_ROOT_AFTER: usize = 118;
+    const HW_ADDR: usize = 102;
+    const HW_VALUE: usize = 72;
+
+    /// A minimal descriptor carrying EXACTLY the deployed heap-write splice `.write` MapOp (deployed
+    /// columns), gated always-on — the row constraint the deployed `heapWriteVmDescriptor2R24` relies
+    /// on, in isolation. Width 126 holds all referenced columns (the 8-felt root groups end at 126).
+    fn hw_splice_desc() -> EffectVmDescriptor2 {
+        EffectVmDescriptor2 {
+            name: "hw-splice-deployed".to_string(),
+            trace_width: 126,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::MapOp(MapOpSpec {
+                guard: LeanExpr::Const(1),
+                root: (HW_ROOT_BEFORE..HW_ROOT_BEFORE + CHIP_OUT_LANES)
+                    .map(LeanExpr::Var)
+                    .collect(),
+                key: LeanExpr::Var(HW_ADDR),
+                value: LeanExpr::Var(HW_VALUE),
+                new_root: (HW_ROOT_AFTER..HW_ROOT_AFTER + CHIP_OUT_LANES)
+                    .map(LeanExpr::Var)
+                    .collect(),
+                op: MapKind::Write,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    /// The pre-write witness heap: an existing entry at `addr=100` whose value the write updates.
+    fn hw_pre_heap() -> Vec<HeapLeaf> {
+        vec![
+            HeapLeaf::entry(BabyBear::new(100), BabyBear::new(7)),
+            HeapLeaf::entry(BabyBear::new(250), BabyBear::new(9)),
+        ]
+    }
+
+    /// One deployed-shape heap-write row: col 65 = the committed pre-root, col 102 = the addressed
+    /// key (100), col 72 = the new value (42), col 87 = the GENUINE sorted-Merkle splice root (the
+    /// update of addr 100 to value 42). 4 rows; the op fires on every row (constant-1 guard) so the
+    /// trace carries the same genuine write each row.
+    fn hw_splice_trace(new_root: [BabyBear; CHIP_OUT_LANES]) -> Vec<Vec<BabyBear>> {
+        let pre = CanonicalHeapTree8::new(hw_pre_heap(), HEAP_TREE_DEPTH);
+        let root = pre.root8();
+        let mut row = vec![BabyBear::ZERO; 126];
+        row[HW_ROOT_BEFORE..HW_ROOT_BEFORE + CHIP_OUT_LANES].copy_from_slice(&root[..]);
+        row[HW_ADDR] = BabyBear::new(100);
+        row[HW_VALUE] = BabyBear::new(42);
+        row[HW_ROOT_AFTER..HW_ROOT_AFTER + CHIP_OUT_LANES].copy_from_slice(&new_root);
+        vec![row; 4]
+    }
+
+    /// THE GENUINE splice root: the update of addr 100 → value 42 over the pre-heap.
+    fn hw_genuine_new_root() -> [BabyBear; CHIP_OUT_LANES] {
+        let pre = CanonicalHeapTree8::new(hw_pre_heap(), HEAP_TREE_DEPTH);
+        pre.update_witness(HeapLeaf::entry(BabyBear::new(100), BabyBear::new(42)))
+            .expect("addr 100 is present")
+            .new_root
+    }
+
+    /// **DEPLOYED-LEVEL ACCEPTANCE.** An honest deployed-shape heap-write whose published new root IS
+    /// the genuine sorted-Merkle splice proves + verifies through the real batch prover (the MapOps
+    /// AIR opens the OLD leaf against the committed root and recomputes the new root over the same
+    /// sibling path).
+    #[test]
+    fn deployed_heap_splice_honest_proves_and_verifies() {
+        let desc = hw_splice_desc();
+        let trace = hw_splice_trace(hw_genuine_new_root());
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &trace,
+            &[],
+            &MemBoundaryWitness::default(),
+            &[hw_pre_heap()],
+        )
+        .expect("honest deployed splice must prove");
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("honest deployed splice must verify");
+    }
+
+    /// **THE PHASE-E BAR — a content-MISMATCHED `heap_root` is REJECTED at the deployed level.** The
+    /// prover advances the root to a value that does NOT match the genuine sorted-Merkle splice of the
+    /// actual heap content (here: the genuine root + 1). The deployed MapOps AIR has no satisfying
+    /// `update_witness` — the pre-flight replay refuses, and with the replay bypassed the in-circuit
+    /// fact-bus recompute of the new root over the membership path cannot match the forged col 87.
+    /// A content-mismatched root is now impossible. This is the deployed twin of the Lean
+    /// `heapWrite_sat_rejects_wrong_splice_root`.
+    #[test]
+    fn deployed_heap_splice_rejects_content_mismatch() {
+        let desc = hw_splice_desc();
+        let mut forged = hw_genuine_new_root(); // NOT the genuine sorted-tree update
+        forged[0] += BabyBear::ONE;
+        assert_ne!(forged, hw_genuine_new_root());
+        let trace = hw_splice_trace(forged);
+
+        // Pre-flight replay refuses (the claimed new_root != the genuine sorted write).
+        assert!(
+            prove_vm_descriptor2(
+                &desc,
+                &trace,
+                &[],
+                &MemBoundaryWitness::default(),
+                &[hw_pre_heap()],
+            )
+            .is_err(),
+            "a content-mismatched heap_root must be refused by the deployed splice pre-flight"
+        );
+
+        // ⚑ SEAM CLOSED (2026-07-29). The leg below used to be a `must_panic_containing` pinned
+        // to map-row assembly's `debug_assert_eq!(end, new_root, "new path must recompose to
+        // new_root8")` — a DEBUG-ONLY guard. Under `--release` it was compiled out, so the
+        // in-circuit splice tooth (the leg that matters in production) was never witnessed and
+        // this test simply failed. Same class as `ir2_forged_map_opening_refuses`.
+        //
+        // That assembly check is a fail-closed `Err` under `check` now, so the pre-flight above
+        // refuses in every profile; and with the replay bypassed the forgery reaches
+        // `prove_batch`, and the DEPLOYED verifier refuses the minted proof because the MapOps
+        // fact-bus recompute of the new root over the membership path cannot match forged col 87.
+        let r = must_refuse_or_unsat_panic("hw_splice content-mismatched heap_root", || {
+            prove_unchecked_then_verify(
+                &desc,
+                &hw_splice_trace(forged),
+                &[],
+                &MemBoundaryWitness::default(),
+                &[hw_pre_heap()],
+            )
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "a content-mismatched heap_root must be refused BY THE CONSTRAINT SYSTEM (the MapOps \
+             fact-bus recompute of the new root over the membership path)",
+        );
+    }
+
+    /// **Phase B-GATE anti-laundering — DISTINCTNESS.** The 8 exposed chip output lanes are
+    /// genuinely 8 distinct field elements (the final permutation state), NOT `[0]×8` and NOT
+    /// eight copies of the digest. Also: flipping ANY one input bit changes ALL 8 lanes
+    /// (full-input avalanche), so each lane depends on the whole input.
+    #[test]
+    fn ir2_chip_output_lanes_are_distinct() {
+        for (a, b) in [(11u32, 22u32), (1, 0), (7, 7), (123456, 999999)] {
+            let lanes = perm_lanes(hash2_state_c(BabyBear::new(a), BabyBear::new(b)));
+            // Pairwise distinct.
+            for i in 0..CHIP_OUT_LANES {
+                for j in (i + 1)..CHIP_OUT_LANES {
+                    assert_ne!(
+                        lanes[i], lanes[j],
+                        "lanes {i} and {j} collide for input ({a}, {b}) — chip output is not 8 distinct felts"
+                    );
+                }
+            }
+            // Avalanche: flipping input b's low bit changes every lane.
+            let lanes2 = perm_lanes(hash2_state_c(BabyBear::new(a), BabyBear::new(b ^ 1)));
+            for i in 0..CHIP_OUT_LANES {
+                assert_ne!(
+                    lanes[i], lanes2[i],
+                    "lane {i} unchanged after a 1-bit input flip — lane does not depend on the full input"
+                );
+            }
+        }
+    }
+
+    /// **Phase B-GATE anti-laundering — FORGED LANE IS UNSAT.** A single-output hash site carries
+    /// the 7 exposed lanes 1..7 in its trace; the chip AIR equality-binds each to the genuine
+    /// permutation lane. A witness with a FORGED lane (≠ the real lane) has NO matching chip row,
+    /// so the LogUp lookup is unsatisfiable — the proof is REJECTED. This is what makes the new
+    /// lane constraints REAL (out[i] is not a free column).
+    #[test]
+    fn ir2_forged_output_lane_refuses() {
+        let desc = test_desc();
+        let mut rows = test_trace();
+        // col 18 = the hash site's lane 3 (cols 16..22 hold lanes 1..7). Forge it.
+        let real = rows[0][18];
+        rows[0][18] = real + BabyBear::ONE;
+        // A forged lane makes the LogUp lookup unsatisfiable, so the minted proof does not
+        // verify. Either the deployed verifier's `Err` or (in debug builds) the LogUp consistency
+        // checker's panic is a hard REJECTION.
+        let r = must_refuse_or_unsat_panic("ir2_forged_output_lane (lane binding)", || {
+            prove_unchecked_then_verify(&desc, &rows, &[], &test_boundary(), &[test_heap()])
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "a forged output lane must be refused BY THE CONSTRAINT SYSTEM (the lane binding)",
+        );
+    }
+
+    /// The seeded full-permutation state of a wide (arity-`CHIP_WIDE_ARITY`) absorb of `ins`
+    /// (8-felt carrier ‖ 3 limbs) — the SAME seeding the AIR/witness-gen perform (in0..in10 read
+    /// directly into state lanes 0..10). Used by the wide-arity anti-laundering teeth.
+    fn wide_seed(ins: &[BabyBear; CHIP_WIDE_ARITY]) -> [BabyBear; POSEIDON2_WIDTH] {
+        let mut st = [BabyBear::ZERO; POSEIDON2_WIDTH];
+        st[..CHIP_WIDE_ARITY].copy_from_slice(ins);
+        st
+    }
+
+    /// A descriptor with a SINGLE wide (arity-11) chip lookup binding ALL 8 output lanes to
+    /// columns. trace_width = 1 (arity tag) + 11 (inputs) + 8 (outputs) = 20; the lookup tuple's
+    /// INPUT block is padded to CHIP_RATE (the in11..in15 slots are `Const 0` — the chip pins them
+    /// 0 off arity 16, so they cost no column). The tuple is `[11, var1..var11, 0×5, var12..var19]`.
+    fn wide_test_desc() -> EffectVmDescriptor2 {
+        let mut tuple = vec![LeanExpr::Const(CHIP_WIDE_ARITY as i64)];
+        for i in 0..CHIP_WIDE_ARITY {
+            tuple.push(LeanExpr::Var(1 + i)); // in0..in10 at cols 1..11
+        }
+        for _ in CHIP_WIDE_ARITY..CHIP_RATE {
+            tuple.push(LeanExpr::Const(0)); // in11..in15: padded to CHIP_RATE, no column
+        }
+        for i in 0..CHIP_OUT_LANES {
+            tuple.push(LeanExpr::Var(1 + CHIP_WIDE_ARITY + i)); // out0..out7 at cols 12..19
+        }
+        EffectVmDescriptor2 {
+            name: "ir2-wide-test".to_string(),
+            trace_width: 1 + CHIP_WIDE_ARITY + CHIP_OUT_LANES,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::Lookup(LookupSpec {
+                table: TID_P2,
+                tuple,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    /// An honest wide-absorb trace: 11 distinct inputs, all 8 genuine output lanes filled.
+    fn wide_test_trace() -> Vec<Vec<BabyBear>> {
+        let ins: [BabyBear; CHIP_WIDE_ARITY] =
+            core::array::from_fn(|i| BabyBear::new(100 + i as u32));
+        let lanes = perm_lanes(wide_seed(&ins));
+        // col 0 is unused (the constant arity tag lives in the lookup tuple, not a column);
+        // cols 1..12 = in0..in10; cols 12..20 = out0..out7 (the genuine permutation lanes).
+        let mut row = vec![BabyBear::ZERO];
+        row.extend_from_slice(&ins);
+        row.extend_from_slice(&lanes);
+        debug_assert_eq!(row.len(), 1 + CHIP_WIDE_ARITY + CHIP_OUT_LANES);
+        vec![row; 4]
+    }
+
+    /// **Phase B-GATE-INPUT anti-laundering — the wide arity GENUINELY carries an 8-felt value.**
+    /// The honest arity-11 absorb proves; forging a CARRIER lane (input felt 8 — a lane BEYOND the
+    /// old rate-7 cap, which the narrow chip could never seed) makes the lookup unsatisfiable. This
+    /// is what proves the wide row seeds `state[0..11]` from the inputs (NOT zeros the carrier).
+    #[test]
+    fn ir2_wide_absorb_forged_carrier_lane_refuses() {
+        let desc = wide_test_desc();
+        // Honest first: a genuine wide absorb PROVES (the wide arity is admitted + satisfiable).
+        // No mem/map ops in this descriptor → empty boundary + empty heap.
+        let rows = wide_test_trace();
+        if let Err(e) = prove_vm_descriptor2(&desc, &rows, &[], &MemBoundaryWitness::default(), &[])
+        {
+            panic!("honest arity-11 wide absorb must prove — the wide arity is unusable: {e}");
+        }
+        // Forge input felt 8 (col 9 = in8, a CARRIER felt past the old rate-7 cap). The lanes were
+        // computed from the genuine in8; the perturbed in8 no longer matches any chip row.
+        let mut bad = wide_test_trace();
+        for r in &mut bad {
+            r[1 + 8] += BabyBear::ONE; // in8 at col 9
+        }
+        let r = must_refuse_or_unsat_panic("wide absorb forged carrier lane (in8)", || {
+            prove_unchecked_then_verify(&desc, &bad, &[], &MemBoundaryWitness::default(), &[])
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "a wide absorb with a forged carrier lane (in8) must be refused BY THE CONSTRAINT \
+             SYSTEM (else the wide carrier is not load-bearing)",
+        );
+    }
+
+    /// A descriptor with a SINGLE node8 (arity-16) chip lookup binding ALL 8 output lanes to
+    /// columns. trace_width = 1 (arity tag) + 16 (L8‖R8 inputs) + 8 (outputs) = 25; the lookup
+    /// tuple is `[16, var1..var16, var17..var24]`. The full-width Merkle-compression subject.
+    fn node8_test_desc() -> EffectVmDescriptor2 {
+        let mut tuple = vec![LeanExpr::Const(CHIP_NODE8_ARITY as i64)];
+        for i in 0..CHIP_NODE8_ARITY {
+            tuple.push(LeanExpr::Var(1 + i)); // in0..in15 at cols 1..17
+        }
+        for i in 0..CHIP_OUT_LANES {
+            tuple.push(LeanExpr::Var(1 + CHIP_NODE8_ARITY + i)); // out0..out7 at cols 17..25
+        }
+        EffectVmDescriptor2 {
+            name: "ir2-node8-test".to_string(),
+            trace_width: 1 + CHIP_NODE8_ARITY + CHIP_OUT_LANES,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::Lookup(LookupSpec {
+                table: TID_P2,
+                tuple,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    /// An honest node8 trace: 16 distinct inputs (two 8-felt children), all 8 lanes filled from the
+    /// genuine full-width permutation (`chip_absorb_all_lanes` at arity 16).
+    fn node8_test_trace() -> Vec<Vec<BabyBear>> {
+        let ins: [BabyBear; CHIP_NODE8_ARITY] =
+            core::array::from_fn(|i| BabyBear::new(200 + i as u32));
+        let lanes = chip_absorb_all_lanes(CHIP_NODE8_ARITY, &ins);
+        let mut row = vec![BabyBear::ZERO]; // col 0 unused (arity is the const tuple[0])
+        row.extend_from_slice(&ins);
+        row.extend_from_slice(&lanes);
+        debug_assert_eq!(row.len(), 1 + CHIP_NODE8_ARITY + CHIP_OUT_LANES);
+        vec![row; 4]
+    }
+
+    /// **Phase H3 node8 — the full-width L8‖R8 compression is ADMITTED, SATISFIABLE, and binds all
+    /// 16 input lanes.** The honest arity-16 absorb proves (the node8 arity is admitted by the
+    /// membership gate); forging input felt 12 (a lane in the second 8-felt child, BEYOND the wide
+    /// cap of 11 that no other arity can seed) makes the lookup unsatisfiable — proving the node8
+    /// row genuinely seeds `state[0..16]` from both children. This is the chip-primitive tooth.
+    #[test]
+    fn ir2_node8_full_width_compression_binds_both_children() {
+        let desc = node8_test_desc();
+        let rows = node8_test_trace();
+        if let Err(e) = prove_vm_descriptor2(&desc, &rows, &[], &MemBoundaryWitness::default(), &[])
+        {
+            panic!(
+                "honest arity-16 node8 compression must prove — the node8 arity is unusable: {e}"
+            );
+        }
+        // Forge input felt 12 (col 13 = in12, in the SECOND child, past the wide cap of 11). The
+        // lanes were computed from the genuine in12; the perturbed in12 matches no chip row.
+        let mut bad = node8_test_trace();
+        for r in &mut bad {
+            r[1 + 12] += BabyBear::ONE; // in12 at col 13
+        }
+        let r = must_refuse_or_unsat_panic("node8 forged second-child lane (in12)", || {
+            prove_unchecked_then_verify(&desc, &bad, &[], &MemBoundaryWitness::default(), &[])
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "node8 with a forged second-child lane (in12) must be refused BY THE CONSTRAINT \
+             SYSTEM (else the node8 child is not load-bearing)",
+        );
+    }
+
+    /// **Phase H3 node8 — both 8-felt children are load-bearing.** Perturbing ANY of the 16 input
+    /// felts (across both children, including the tail lanes 11..15 that only node8 can seed)
+    /// changes the digest AND every lane — the COLLISION FLOOR is now per-node at full 8-felt width.
+    #[test]
+    fn ir2_node8_both_children_load_bearing() {
+        let base: [BabyBear; CHIP_NODE8_ARITY] =
+            core::array::from_fn(|i| BabyBear::new(13 + i as u32));
+        let lanes_base = chip_absorb_all_lanes(CHIP_NODE8_ARITY, &base);
+        for j in 0..CHIP_NODE8_ARITY {
+            let mut alt = base;
+            alt[j] += BabyBear::ONE;
+            let lanes_alt = chip_absorb_all_lanes(CHIP_NODE8_ARITY, &alt);
+            assert_ne!(
+                lanes_base[0], lanes_alt[0],
+                "node8 digest unchanged after perturbing child felt {j} — that input lane is dead"
+            );
+            for i in 0..CHIP_OUT_LANES {
+                assert_ne!(
+                    lanes_base[i], lanes_alt[i],
+                    "node8 lane {i} unchanged after perturbing child felt {j} — avalanche fails"
+                );
+            }
+        }
+    }
+
+    /// **Phase B-GATE-INPUT anti-laundering — the carrier felts 7..10 are load-bearing.** Two wide
+    /// absorbs differing ONLY in input felt 8 (a carrier felt the old rate-7 chip could not carry)
+    /// produce DIFFERENT digests AND different lanes — the chip now genuinely carries an 8-felt
+    /// value, the prerequisite for the 8-felt-chaining faithful commitment (Phase B-ROTATION).
+    #[test]
+    fn ir2_wide_absorb_carrier_felt_is_load_bearing() {
+        let base: [BabyBear; CHIP_WIDE_ARITY] =
+            core::array::from_fn(|i| BabyBear::new(7 + i as u32));
+        let mut alt = base;
+        alt[8] += BabyBear::ONE; // perturb carrier felt 8 only
+        let lanes_base = perm_lanes(wide_seed(&base));
+        let lanes_alt = perm_lanes(wide_seed(&alt));
+        for i in 0..CHIP_OUT_LANES {
+            assert_ne!(
+                lanes_base[i], lanes_alt[i],
+                "lane {i} unchanged after perturbing carrier felt 8 — the wide chip does not depend on its 8-felt carrier"
+            );
+        }
+        // Sanity: input felts 7..10 are all distinct seed positions (none aliased to a fixed lane).
+        for j in 7..CHIP_WIDE_ARITY {
+            let mut alt2 = base;
+            alt2[j] += BabyBear::ONE;
+            let lanes2 = perm_lanes(wide_seed(&alt2));
+            assert_ne!(
+                lanes_base[0], lanes2[0],
+                "digest unchanged after perturbing carrier/limb felt {j} — that input lane is dead"
+            );
+        }
+    }
+
+    /// An amplified submask (keep ⋢ held) must refuse.
+    #[test]
+    fn ir2_amplified_submask_refuses() {
+        let desc = test_desc();
+        let mut rows = test_trace();
+        for row in &mut rows {
+            row[14] = BabyBear::new(0b1000); // keep has a bit held lacks
+        }
+        assert!(prove_vm_descriptor2(&desc, &rows, &[], &test_boundary(), &[test_heap()]).is_err());
+        let r = must_refuse_or_unsat_panic("ir2_amplified_submask (non-amp tooth)", || {
+            prove_unchecked_then_verify(&desc, &rows, &[], &test_boundary(), &[test_heap()])
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "an amplified submask must be refused BY THE CONSTRAINT SYSTEM (the non-amp tooth)",
+        );
+    }
+
+    /// A forged hash digest (column 2 ≠ hash[a,b]) must refuse: the chip table only
+    /// carries genuine permutation rows, so the lookup cannot be served.
+    #[test]
+    fn ir2_forged_digest_refuses() {
+        let desc = test_desc();
+        let mut rows = test_trace();
+        for row in &mut rows {
+            row[2] = row[2] + BabyBear::ONE;
+        }
+        // The chip table gathers the (forged) tuple and binds its own output column to
+        // the REAL permutation — prover cannot satisfy both.
+        // ⚑ VERIFIED, not assumed: the pre-flight replay does NOT catch a forged digest — the
+        // forgery reaches `prove_batch` even on the PUBLIC (`check: true`) entry. In a debug build
+        // p3's LogUp checker panics with `Lookup mismatch (global lookup 'ir2_p2')`; in every
+        // build the restored self-verify surfaces the same refusal as an `Err`.
+        let r = must_refuse_or_unsat_panic("ir2_forged_digest (chip tooth)", || {
+            prove_vm_descriptor2(&desc, &rows, &[], &test_boundary(), &[test_heap()])
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "a forged digest must be refused BY THE CONSTRAINT SYSTEM (the ir2_p2 chip table \
+             only contains genuine hash tuples)",
+        );
+    }
+
+    /// A prover committing a TALLER range table (rows continuing past
+    /// `BYTE_TABLE_HEIGHT` with multiplicity 0 — every transition and lookup
+    /// constraint still satisfied, the LogUp legs still balanced) widens the
+    /// admissible limb range. The RAW batch verifier accepts that assembly — the
+    /// table height is prover-supplied `degree_bits` — so the explicit height pin in
+    /// `verify_vm_descriptor2` is load-bearing; this asserts BOTH halves.
+    #[test]
+    fn ir2_oversized_byte_table_refuses() {
+        let desc = test_desc();
+        let layout = check_descriptor2(&desc).expect("gauntlet checks");
+        let presence = Presence::of(&desc, &layout);
+        let mut traces = build_traces(
+            &desc,
+            &layout,
+            presence,
+            &test_trace(),
+            &test_boundary(),
+            &[test_heap()],
+            &UMemBoundaryWitness::default(),
+            true,
+        )
+        .expect("honest traces");
+        // The attack: a double-height range table, the increment chain continued and
+        // every extra row carrying multiplicity 0.
+        let byte = traces
+            .byte
+            .as_mut()
+            .expect("gauntlet commits the range table");
+        for b in BYTE_TABLE_HEIGHT..2 * BYTE_TABLE_HEIGHT {
+            byte.push(vec![BabyBear::new(b as u32), BabyBear::ZERO]);
+        }
+        let airs = instance_airs(&desc, layout, presence);
+        let mut matrices = vec![to_matrix(&traces.main)];
+        for t in [
+            &traces.chip,
+            &traces.chip_state16,
+            &traces.byte,
+            &traces.memory,
+            &traces.boundary,
+            &traces.map_ops,
+            &traces.map_absent,
+            &traces.umemory,
+            &traces.umem_boundary,
+        ]
+        .into_iter()
+        .flatten()
+        {
+            matrices.push(to_matrix(t));
+        }
+        let pvs: Vec<Vec<P3BabyBear>> = vec![vec![]; airs.len()];
+        let config = ir2_config();
+        let instances: Vec<StarkInstance<'_, DreggStarkConfig, Ir2Air>> = airs
+            .iter()
+            .zip(matrices.iter())
+            .zip(pvs.iter())
+            .map(|((air, trace), pv)| StarkInstance {
+                air,
+                trace,
+                public_values: pv.clone(),
+            })
+            .collect();
+        let prover_data = ProverData::from_instances(&config, &instances);
+        let proof = prove_batch(&config, &instances, &prover_data);
+        verify_batch(&config, &airs, &proof, &pvs, &prover_data.common)
+            .expect("the RAW batch verifier accepts the oversized table — the pin is the tooth");
+        let err = verify_vm_descriptor2(&desc, &proof, &[])
+            .expect_err("the IR-v2 verifier must refuse the oversized range table");
+        assert!(
+            err.contains("range-table instance committed"),
+            "refusal must be the height pin, got: {err}"
+        );
+    }
+
+    /// An out-of-range balance wire (2^30) must refuse (the tight top-limb bound).
+    #[test]
+    fn ir2_out_of_range_refuses() {
+        let desc = test_desc();
+        let mut rows = test_trace();
+        for row in &mut rows {
+            row[3] = BabyBear::new(1 << 30);
+        }
+        assert!(prove_vm_descriptor2(&desc, &rows, &[], &test_boundary(), &[test_heap()]).is_err());
+    }
+
+    /// A map WRITE (in-place update at an existing key) proves: the new root is the
+    /// genuine sorted write, chained so a later read against the NEW root sees it.
+    #[test]
+    fn ir2_map_write_update_proves() {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let root = tree.root8();
+        let w = tree
+            .update_witness(HeapLeaf::entry(BabyBear::new(100), BabyBear::new(99)))
+            .expect("key 100 present");
+        // cols (width 19): root8 [0..8), key 8, value 9, new_root8 [10..18), guard 18.
+        let desc = EffectVmDescriptor2 {
+            name: "ir2-map-write".to_string(),
+            trace_width: 19,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::MapOp(MapOpSpec {
+                guard: LeanExpr::Var(18),
+                root: (0..CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                key: LeanExpr::Var(8),
+                value: LeanExpr::Var(9),
+                new_root: (10..10 + CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                op: MapKind::Write,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+        let mk = |guard: BabyBear| {
+            let mut r = vec![BabyBear::ZERO; 19];
+            r[0..CHIP_OUT_LANES].copy_from_slice(&root[..]);
+            r[8] = BabyBear::new(100);
+            r[9] = BabyBear::new(99);
+            r[10..10 + CHIP_OUT_LANES].copy_from_slice(&w.new_root);
+            r[18] = guard;
+            r
+        };
+        let rows = vec![
+            mk(BabyBear::ONE),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+        ];
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &rows,
+            &[],
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+        )
+        .expect("map write update must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            3,
+            "map-only descriptor commits main + chip + map-ops (chains ride the chip bus)"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("map write proof must verify");
+    }
+
+    /// A map INSERT at a FRESH key proves: the new root is the genuine sorted insert,
+    /// and a later read against the NEW root sees the inserted value.
+    #[test]
+    fn ir2_map_insert_fresh_proves() {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let root = tree.root8();
+        let w = tree
+            .insert_witness(HeapLeaf::entry(BabyBear::new(150), BabyBear::new(55)))
+            .expect("key 150 fresh");
+        // cols (width 19): root8 [0..8), key 8, value 9, new_root8 [10..18), guard 18.
+        let desc = EffectVmDescriptor2 {
+            name: "ir2-map-insert".to_string(),
+            trace_width: 19,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::MapOp(MapOpSpec {
+                guard: LeanExpr::Var(18),
+                root: (0..CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                key: LeanExpr::Var(8),
+                value: LeanExpr::Var(9),
+                new_root: (10..10 + CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                op: MapKind::Insert,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+        let mk = |guard: BabyBear| {
+            let mut r = vec![BabyBear::ZERO; 19];
+            r[0..CHIP_OUT_LANES].copy_from_slice(&root[..]);
+            r[8] = BabyBear::new(150);
+            r[9] = BabyBear::new(55);
+            r[10..10 + CHIP_OUT_LANES].copy_from_slice(&w.new_root);
+            r[18] = guard;
+            r
+        };
+        let rows = vec![
+            mk(BabyBear::ONE),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+        ];
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &rows,
+            &[],
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+        )
+        .expect("map insert fresh must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            3,
+            "map-only descriptor commits main + chip + map-ops (insert chains ride the chip bus)"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("map insert proof must verify");
+
+        // A chained read against the post-insert root must open to the inserted value.
+        let read_desc = EffectVmDescriptor2 {
+            name: "ir2-map-insert-readback".to_string(),
+            trace_width: 19,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::MapOp(MapOpSpec {
+                guard: LeanExpr::Var(18),
+                root: (0..CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                key: LeanExpr::Var(8),
+                value: LeanExpr::Var(9),
+                new_root: (0..CHIP_OUT_LANES).map(LeanExpr::Var).collect(), // read preserves the root
+                op: MapKind::Read,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+        let mk_read = |guard: BabyBear| {
+            let mut r = vec![BabyBear::ZERO; 19];
+            r[0..CHIP_OUT_LANES].copy_from_slice(&w.new_root);
+            r[8] = BabyBear::new(150);
+            r[9] = BabyBear::new(55);
+            r[10..10 + CHIP_OUT_LANES].copy_from_slice(&w.new_root);
+            r[18] = guard;
+            r
+        };
+        let read_rows = vec![
+            mk_read(BabyBear::ONE),
+            mk_read(BabyBear::ZERO),
+            mk_read(BabyBear::ZERO),
+            mk_read(BabyBear::ZERO),
+        ];
+        let read_heap: Vec<HeapLeaf> = {
+            let mut leaves = test_heap();
+            leaves.push(HeapLeaf::entry(BabyBear::new(150), BabyBear::new(55)));
+            leaves
+        };
+        prove_vm_descriptor2(
+            &read_desc,
+            &read_rows,
+            &[],
+            &MemBoundaryWitness::default(),
+            &[read_heap],
+        )
+        .expect("read-back against post-insert root must prove");
+    }
+
+    /// An `insert` claim for a key that is ALREADY present must refuse: the sorted
+    /// tree has no authenticated gap for it, and the insert-witness builder fails.
+    #[test]
+    fn ir2_map_insert_present_refuses() {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let root = tree.root8();
+        // cols (width 19): root8 [0..8), key 8, value 9, new_root8 [10..18), guard 18.
+        let desc = EffectVmDescriptor2 {
+            name: "ir2-map-insert-present".to_string(),
+            trace_width: 19,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::MapOp(MapOpSpec {
+                guard: LeanExpr::Var(18),
+                root: (0..CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                key: LeanExpr::Var(8),
+                value: LeanExpr::Var(9),
+                new_root: (10..10 + CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                op: MapKind::Insert,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        };
+        let mk = |guard: BabyBear| {
+            let mut r = vec![BabyBear::ZERO; 19];
+            r[0..CHIP_OUT_LANES].copy_from_slice(&root[..]);
+            r[8] = BabyBear::new(100); // key 100 is already present in test_heap
+            r[9] = BabyBear::new(99);
+            r[10..10 + CHIP_OUT_LANES].copy_from_slice(&root[..]);
+            r[18] = guard;
+            r
+        };
+        let rows = vec![
+            mk(BabyBear::ONE),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+        ];
+        assert!(
+            prove_vm_descriptor2(
+                &desc,
+                &rows,
+                &[],
+                &MemBoundaryWitness::default(),
+                &[test_heap()],
+            )
+            .is_err(),
+            "insert at a present key must refuse"
+        );
+    }
+
+    // ---- the gap-#5 AAFI (append-at-free-index) two-path insert (op=4) ----
+
+    /// The op=4 descriptor: `root8 [0..8), key 8, value 9, new_root8 [10..18), guard 18`.
+    fn aafi_desc() -> EffectVmDescriptor2 {
+        EffectVmDescriptor2 {
+            name: "ir2-map-aafi-insert".to_string(),
+            trace_width: 19,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::MapOp(MapOpSpec {
+                guard: LeanExpr::Var(18),
+                root: (0..CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                key: LeanExpr::Var(8),
+                value: LeanExpr::Var(9),
+                new_root: (10..10 + CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                op: MapKind::AafiInsert,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    /// The honest AAFI witness (key 150, bracketed by the committed low leaf 100 whose pointer
+    /// `next_addr = 200`) rows for the given claimed `new_root8`.
+    fn aafi_rows(key: u32, value: u32, new_root: [BabyBear; CHIP_OUT_LANES]) -> Vec<Vec<BabyBear>> {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let root = tree.root8();
+        let mk = |guard: BabyBear| {
+            let mut r = vec![BabyBear::ZERO; 19];
+            r[0..CHIP_OUT_LANES].copy_from_slice(&root.limbs());
+            r[8] = BabyBear::new(key);
+            r[9] = BabyBear::new(value);
+            r[10..10 + CHIP_OUT_LANES].copy_from_slice(&new_root);
+            r[18] = guard;
+            r
+        };
+        vec![
+            mk(BabyBear::ONE),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+        ]
+    }
+
+    /// THE AAFI TWO-PATH GATE: an honest `aafi_insert` (key 150 spliced after low leaf 100,
+    /// before its pointer 200) proves and verifies — the four gates (a) low-open (b) bracket
+    /// (c) low-update→R1 (d) empty-append→new_root discharge to the proven Lean `imtInsert`.
+    #[test]
+    fn ir2_aafi_honest_proves_and_verifies() {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let w = tree
+            .insert_witness_aafi(HeapLeaf::entry(BabyBear::new(150), BabyBear::new(55)))
+            .expect("key 150 is fresh and bracketed by low leaf 100→200");
+        let desc = aafi_desc();
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &aafi_rows(150, 55, w.new_root),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+        )
+        .expect("honest aafi insert must prove");
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("aafi insert proof must verify");
+    }
+
+    /// An `aafi_insert` at a key that is ALREADY present (100 — a committed leaf) must refuse:
+    /// no pointer-gap brackets a present key (`imtAbsent` fails), so `insert_witness_aafi`
+    /// returns no witness. The §3 double-spend refusal.
+    #[test]
+    fn ir2_aafi_present_key_refuses() {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        // A fabricated "new_root" — the point is the witness builder refuses before it is used.
+        let bogus = tree.root8().limbs();
+        assert!(
+            prove_vm_descriptor2(
+                &aafi_desc(),
+                &aafi_rows(100, 55, bogus),
+                &[],
+                &MemBoundaryWitness::default(),
+                &[test_heap()],
+            )
+            .is_err(),
+            "aafi insert at a present key must refuse (no bracketing pointer gap)"
+        );
+    }
+
+    /// THE POINTER-BRACKET TOOTH, in-circuit: build the HONEST aafi assembly for key 150, then
+    /// forge the claim to the PRESENT key 100 in BOTH the main row and the map-ops row (so the
+    /// map-log multiset still balances). The raw batch prover must have no satisfying assembly:
+    /// gate (b) `low_addr < k` becomes `100 < 100` and the canonical decomposition of the re-keyed
+    /// value both refuse — the double-spend has no witness.
+    #[test]
+    fn ir2_aafi_forged_bracket_refuses() {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let w = tree
+            .insert_witness_aafi(HeapLeaf::entry(BabyBear::new(150), BabyBear::new(55)))
+            .expect("key 150 fresh");
+        let desc = aafi_desc();
+        let layout = check_descriptor2(&desc).expect("aafi gauntlet checks");
+        let presence = Presence::of(&desc, &layout);
+        let mut traces = build_traces(
+            &desc,
+            &layout,
+            presence,
+            &aafi_rows(150, 55, w.new_root),
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+            &UMemBoundaryWitness::default(),
+            true,
+        )
+        .expect("honest aafi traces");
+        traces.main[0][8] = BabyBear::new(100); // forge the claimed key, main side
+        traces.map_ops.as_mut().expect("map-ops table present")[0][MAP_KEY] = BabyBear::new(100); // …and table side (multiset balanced)
+        let airs = instance_airs(&desc, layout, presence);
+        let mut matrices = vec![to_matrix(&traces.main)];
+        for t in [
+            &traces.chip,
+            &traces.chip_state16,
+            &traces.byte,
+            &traces.memory,
+            &traces.boundary,
+            &traces.map_ops,
+            &traces.map_absent,
+            &traces.umemory,
+            &traces.umem_boundary,
+        ]
+        .into_iter()
+        .flatten()
+        {
+            matrices.push(to_matrix(t));
+        }
+        let pvs: Vec<Vec<P3BabyBear>> = vec![vec![]; airs.len()];
+        let config = ir2_config();
+        // Raw batch prove+verify: the replay is bypassed entirely, so the forged witness reaches
+        // `prove_batch` and the p3 debug prover's DOCUMENTED unsat panic is the mechanism.
+        // Discriminated — a stray assembly panic or a trace-shape assert REDs instead of passing.
+        let r = must_refuse_or_unsat_panic("forged aafi bracket (pointer-bracket tooth)", || {
+            let instances: Vec<StarkInstance<'_, DreggStarkConfig, Ir2Air>> = airs
+                .iter()
+                .zip(matrices.iter())
+                .zip(pvs.iter())
+                .map(|((air, trace), pv)| StarkInstance {
+                    air,
+                    trace,
+                    public_values: pv.clone(),
+                })
+                .collect();
+            let prover_data = ProverData::from_instances(&config, &instances);
+            let proof = prove_batch(&config, &instances, &prover_data);
+            verify_batch(&config, &airs, &proof, &pvs, &prover_data.common)
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "a forged aafi bracket must be refused BY THE CONSTRAINT SYSTEM (the pointer-bracket tooth)",
+        );
+    }
+
+    /// THE LOW-UPDATE TOOTH: build the HONEST aafi assembly, then forge the appended leaf's pointer
+    /// `MAP_NEXT` (= the low leaf's old `next_addr`) to a mismatching value. The low-leaf digest
+    /// binds `next_addr`, so gate (a)'s PATH1 opening no longer authenticates under the committed
+    /// root — the tampered "no shift" insert has no witness.
+    #[test]
+    fn ir2_aafi_forged_pointer_refuses() {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let w = tree
+            .insert_witness_aafi(HeapLeaf::entry(BabyBear::new(150), BabyBear::new(55)))
+            .expect("key 150 fresh");
+        let desc = aafi_desc();
+        let layout = check_descriptor2(&desc).expect("aafi gauntlet checks");
+        let presence = Presence::of(&desc, &layout);
+        let mut traces = build_traces(
+            &desc,
+            &layout,
+            presence,
+            &aafi_rows(150, 55, w.new_root),
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+            &UMemBoundaryWitness::default(),
+            true,
+        )
+        .expect("honest aafi traces");
+        // Widen the low leaf's committed pointer (MAP_NEXT). The arity-3 low-leaf digest binds it,
+        // so PATH1 (gate a) no longer opens to the committed root, and gate (b)'s `k < low_next`
+        // decomposition is re-based — no consistent assignment survives.
+        traces.map_ops.as_mut().expect("map-ops table present")[0][MAP_NEXT] =
+            BabyBear::new(0x3FFF_FFFF);
+        let airs = instance_airs(&desc, layout, presence);
+        let mut matrices = vec![to_matrix(&traces.main)];
+        for t in [
+            &traces.chip,
+            &traces.chip_state16,
+            &traces.byte,
+            &traces.memory,
+            &traces.boundary,
+            &traces.map_ops,
+            &traces.map_absent,
+            &traces.umemory,
+            &traces.umem_boundary,
+        ]
+        .into_iter()
+        .flatten()
+        {
+            matrices.push(to_matrix(t));
+        }
+        let pvs: Vec<Vec<P3BabyBear>> = vec![vec![]; airs.len()];
+        let config = ir2_config();
+        // Raw batch prove+verify: the replay is bypassed entirely, so the forged witness reaches
+        // `prove_batch` and the p3 debug prover's DOCUMENTED unsat panic is the mechanism.
+        // Discriminated — a stray assembly panic or a trace-shape assert REDs instead of passing.
+        let r = must_refuse_or_unsat_panic("forged aafi pointer (pointer-binding tooth)", || {
+            let instances: Vec<StarkInstance<'_, DreggStarkConfig, Ir2Air>> = airs
+                .iter()
+                .zip(matrices.iter())
+                .zip(pvs.iter())
+                .map(|((air, trace), pv)| StarkInstance {
+                    air,
+                    trace,
+                    public_values: pv.clone(),
+                })
+                .collect();
+            let prover_data = ProverData::from_instances(&config, &instances);
+            let proof = prove_batch(&config, &instances, &prover_data);
+            verify_batch(&config, &airs, &proof, &pvs, &prover_data.common)
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "a forged aafi pointer must be refused BY THE CONSTRAINT SYSTEM (the pointer-binding tooth)",
+        );
+    }
+
+    // ================================================================
+    // The accumulator / recursive-proof-binding leg (proof_bind) — the Custom leg
+    // ================================================================
+
+    /// The Lean-pinned demo-custom golden (`DescriptorIR2.demoC_wire_golden`, §10c): the widened
+    /// `proof_bind` grammar — LANE ARRAYS for the commitment, the program VK, the program pin and
+    /// the bound expression — byte-for-byte.
+    const DEMO_CUSTOM: &str = "{\"name\":\"demo-custom\",\"ir\":2,\"trace_width\":17,\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":0,\"name\":\"main\",\"arity\":17,\"sem\":\"main\"}],\"constraints\":[{\"t\":\"proof_bind\",\"guard\":{\"t\":\"var\",\"v\":16},\"commit\":[{\"t\":\"var\",\"v\":0},{\"t\":\"var\",\"v\":1},{\"t\":\"var\",\"v\":2},{\"t\":\"var\",\"v\":3},{\"t\":\"var\",\"v\":4},{\"t\":\"var\",\"v\":5},{\"t\":\"var\",\"v\":6},{\"t\":\"var\",\"v\":7}],\"vk\":[{\"t\":\"var\",\"v\":8},{\"t\":\"var\",\"v\":9},{\"t\":\"var\",\"v\":10},{\"t\":\"var\",\"v\":11},{\"t\":\"var\",\"v\":12},{\"t\":\"var\",\"v\":13},{\"t\":\"var\",\"v\":14},{\"t\":\"var\",\"v\":15}],\"vk_pin\":[45,46,47,48,49,50,51,52],\"bound\":{\"t\":\"bound\",\"lanes\":[{\"t\":\"const\",\"v\":123},{\"t\":\"const\",\"v\":124},{\"t\":\"const\",\"v\":125},{\"t\":\"const\",\"v\":126},{\"t\":\"const\",\"v\":127},{\"t\":\"const\",\"v\":128},{\"t\":\"const\",\"v\":129},{\"t\":\"const\",\"v\":130}]}}],\"hash_sites\":[],\"ranges\":[]}";
+
+    /// The byte-pinned Lean proof-bind golden parses, decoding the accumulator constraint kind at
+    /// EIGHT LANES.
+    #[test]
+    fn parses_lean_proof_bind_golden() {
+        let d = parse_vm_descriptor2(DEMO_CUSTOM).expect("proof_bind golden must parse");
+        assert_eq!(d.name, "demo-custom");
+        assert_eq!(d.constraints.len(), 1);
+        let VmConstraint2::ProofBind(m) = &d.constraints[0] else {
+            panic!("the golden's one constraint is a proof_bind");
+        };
+        assert_eq!(m.guard, LeanExpr::Var(16));
+        assert_eq!(
+            m.commit,
+            (0..8).map(LeanExpr::Var).collect::<Vec<_>>(),
+            "the commitment is EIGHT lanes, not limb 0"
+        );
+        assert_eq!(m.vk, (8..16).map(LeanExpr::Var).collect::<Vec<_>>());
+        assert_eq!(
+            m.vk_pin.as_deref(),
+            Some(&(45..53).collect::<Vec<i64>>()[..])
+        );
+        assert_eq!(
+            m.bound.lanes(),
+            Some(&(123..131).map(LeanExpr::Const).collect::<Vec<_>>()[..])
+        );
+        // The binding rides the recursion argument, not a committed table — the descriptor
+        // checks (no table for the accumulator kind) and round-trips.
+        check_descriptor2(&d).expect("proof_bind golden must check");
+    }
+
+    /// ⚑ **A NARROW SEAM DOES NOT LOAD.** The retired one-felt shape — and any seam below
+    /// [`PROOF_BIND_MIN_LANES`] — is refused at the JSON door. This is the polarity that makes the
+    /// widening structural rather than a convention: a four-lane artifact cannot be padded in.
+    #[test]
+    fn narrow_proof_bind_refuses() {
+        let narrow = "{\"name\":\"narrow\",\"ir\":2,\"trace_width\":4,\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":0,\"name\":\"main\",\"arity\":4,\"sem\":\"main\"}],\"constraints\":[{\"t\":\"proof_bind\",\"guard\":{\"t\":\"var\",\"v\":2},\"commit\":[{\"t\":\"var\",\"v\":0}],\"vk\":[{\"t\":\"var\",\"v\":1}],\"vk_pin\":[45],\"bound\":{\"t\":\"bound\",\"lanes\":[{\"t\":\"const\",\"v\":123}]}}],\"hash_sites\":[],\"ranges\":[]}";
+        let err = parse_vm_descriptor2(narrow).expect_err("a one-lane seam must refuse");
+        assert!(
+            err.contains("below the floor"),
+            "the refusal must name the lane floor, got: {err}"
+        );
+    }
+
+    /// ⚑ **A TRUNCATED PIN DOES NOT LOAD EITHER.** Eight lanes with a four-lane `vk_pin` is not
+    /// "pin the prefix" — it is a seam that would check half its object.
+    #[test]
+    fn truncated_proof_bind_pin_refuses() {
+        let mut lanes = String::new();
+        for k in 0..8 {
+            if k > 0 {
+                lanes.push(',');
+            }
+            lanes.push_str(&format!("{{\"t\":\"var\",\"v\":{k}}}"));
+        }
+        let mut vks = String::new();
+        for k in 8..16 {
+            if k > 8 {
+                vks.push(',');
+            }
+            vks.push_str(&format!("{{\"t\":\"var\",\"v\":{k}}}"));
+        }
+        let json = format!(
+            "{{\"name\":\"trunc\",\"ir\":2,\"trace_width\":17,\"public_input_count\":0,\"challenges\":0,\"tables\":[{{\"id\":0,\"name\":\"main\",\"arity\":17,\"sem\":\"main\"}}],\"constraints\":[{{\"t\":\"proof_bind\",\"guard\":{{\"t\":\"var\",\"v\":16}},\"commit\":[{lanes}],\"vk\":[{vks}],\"vk_pin\":[45,46,47,48],\"bound\":{{\"t\":\"port\",\"port\":\"demo\",\"seam\":\"dregg-seam-demo::v1\"}}}}],\"hash_sites\":[],\"ranges\":[]}}"
+        );
+        let err = parse_vm_descriptor2(&json).expect_err("a truncated pin must refuse");
+        assert!(
+            err.contains("not a prefix"),
+            "the refusal must name the truncation, got: {err}"
+        );
+    }
+
+    /// A `proof_bind` wire body with `bound` spelled `{spelling}`, otherwise the golden's shape.
+    #[cfg(test)]
+    fn bound_spelling(spelling: &str) -> String {
+        let commit: Vec<String> = (0..8)
+            .map(|k| format!("{{\"t\":\"var\",\"v\":{k}}}"))
+            .collect();
+        let vk: Vec<String> = (8..16)
+            .map(|k| format!("{{\"t\":\"var\",\"v\":{k}}}"))
+            .collect();
+        format!(
+            "{{\"name\":\"spelling\",\"ir\":2,\"trace_width\":17,\"public_input_count\":0,\
+             \"challenges\":0,\"tables\":[{{\"id\":0,\"name\":\"main\",\"arity\":17,\
+             \"sem\":\"main\"}}],\"constraints\":[{{\"t\":\"proof_bind\",\"guard\":\
+             {{\"t\":\"var\",\"v\":16}},\"commit\":[{}],\"vk\":[{}],\"vk_pin\":null,\"bound\":{}}}],\
+             \"hash_sites\":[],\"ranges\":[]}}",
+            commit.join(","),
+            vk.join(","),
+            spelling
+        )
+    }
+
+    /// ⚑⚑ **THE RETIRED `null` REFUSES, AND SO DOES THE RETIRED BARE ARRAY — the 2026-08-10 flag
+    /// day's REFUSAL half.** Both are pre-flag-day spellings of `bound`. The `null` encoded a state
+    /// that no longer exists (emit nothing, name nothing); the bare array is the old *bound*
+    /// spelling, and it is refused rather than promoted, because reading the same bytes as a
+    /// different relation under two readers is exactly what a flag day exists to prevent.
+    ///
+    /// ⚠ The refusals are checked by their OWN message, not merely by `is_err`: a parse that failed
+    /// for an unrelated reason would otherwise read as this gate biting
+    /// (`minted-refusal-renders-as-the-expected-verdict`).
+    #[test]
+    fn the_retired_bound_spellings_refuse() {
+        let err = parse_vm_descriptor2(&bound_spelling("null"))
+            .expect_err("`bound: null` is retired and must not load");
+        assert!(
+            err.contains("nullable shape is RETIRED"),
+            "the refusal must name the flag day, got: {err}"
+        );
+
+        let err = parse_vm_descriptor2(&bound_spelling("[{\"t\":\"const\",\"v\":7}]"))
+            .expect_err("a bare `bound` array is the pre-flag-day grammar and must not load");
+        assert!(
+            err.contains("bare array"),
+            "the refusal must name the retired grammar, got: {err}"
+        );
+    }
+
+    /// ⚑ **A PORT THAT NAMES NOTHING IS THE `null` IN A COSTUME, AND IT DOES NOT LOAD.** Without
+    /// this, the two-state type would be a rename: `{"t":"port","port":"","seam":""}` emits exactly
+    /// what `null` emitted and resolves to exactly as much.
+    #[test]
+    fn a_port_naming_nothing_refuses() {
+        for (spelling, want) in [
+            (
+                "{\"t\":\"port\",\"port\":\"\",\"seam\":\"dregg-seam-demo::v1\"}",
+                "empty port name",
+            ),
+            (
+                "{\"t\":\"port\",\"port\":\"p\",\"seam\":\"\"}",
+                "names no covering seam",
+            ),
+        ] {
+            let err = parse_vm_descriptor2(&bound_spelling(spelling))
+                .expect_err("a port naming nothing must refuse");
+            assert!(
+                err.contains(want),
+                "the refusal must name the empty half ({want}), got: {err}"
+            );
+        }
+    }
+
+    /// ⚑ **AND THE HONEST POLE LOADS** — the two live spellings both parse and check, so the
+    /// refusals above are a door and not a wall.
+    #[test]
+    fn both_live_bound_spellings_load() {
+        let ported = parse_vm_descriptor2(&bound_spelling(
+            "{\"t\":\"port\",\"port\":\"demo-commitment\",\"seam\":\"dregg-seam-demo::v1\"}",
+        ))
+        .expect("a named port must load");
+        let VmConstraint2::ProofBind(m) = &ported.constraints[0] else {
+            panic!("one proof_bind");
+        };
+        let cover = m.bound.cover().expect("the ported half carries its cover");
+        assert_eq!(cover.port, "demo-commitment");
+        assert_eq!(cover.seam, "dregg-seam-demo::v1");
+        assert!(m.bound.lanes().is_none(), "a port names no lanes");
+        check_descriptor2(&ported).expect("a ported seam checks");
+
+        let lanes: Vec<String> = (0..8)
+            .map(|k| format!("{{\"t\":\"const\",\"v\":{}}}", 100 + k))
+            .collect();
+        let bound = parse_vm_descriptor2(&bound_spelling(&format!(
+            "{{\"t\":\"bound\",\"lanes\":[{}]}}",
+            lanes.join(",")
+        )))
+        .expect("a bound seam must load");
+        let VmConstraint2::ProofBind(m) = &bound.constraints[0] else {
+            panic!("one proof_bind");
+        };
+        assert_eq!(
+            m.bound.lanes().map(<[LeanExpr]>::len),
+            Some(8),
+            "the bound half carries eight lanes"
+        );
+        check_descriptor2(&bound).expect("a bound seam checks");
+    }
+
+    /// A v1 wire (no `"ir"` key) carrying a `proof_bind` is REFUSED — the accumulator kind is
+    /// v2-only, like every other new kind.
+    #[test]
+    fn proof_bind_in_v1_wire_refuses() {
+        let v1 = "{\"name\":\"x\",\"trace_width\":3,\"public_input_count\":0,\"constraints\":[{\"t\":\"proof_bind\",\"guard\":{\"t\":\"var\",\"v\":2},\"commit\":[{\"t\":\"var\",\"v\":0}],\"vk\":[{\"t\":\"var\",\"v\":1}],\"vk_pin\":null,\"bound\":{\"t\":\"port\",\"port\":\"demo\",\"seam\":\"dregg-seam-demo::v1\"}}],\"hash_sites\":[],\"ranges\":[]}";
+        assert!(
+            parse_vm_descriptor_any(v1).is_err(),
+            "v1 wire carrying a proof_bind must refuse"
+        );
+    }
+
+    /// The REAL Custom descriptor (the registry's `customVmDescriptor2`) parses, decodes the
+    /// `proof_bind` op binding the `custom_proof_commitment` column (`PARAM_BASE+4 = 72`) and the
+    /// `custom_program_vk_hash` column (`PARAM_BASE+0 = 68`), gated by the Custom selector (8).
+    #[test]
+    fn custom_registry_descriptor_binds_proof_columns() {
+        let json = crate::effect_vm_descriptors::DREGG_EFFECTVM_CUSTOM_IR2_JSON;
+        let d = parse_vm_descriptor2(json).expect("custom registry descriptor must parse");
+        check_descriptor2(&d).expect("custom registry descriptor must check");
+        // exactly one proof_bind op, binding the documented Custom param columns.
+        let binds: Vec<&ProofBindSpec> = d
+            .constraints
+            .iter()
+            .filter_map(|c| match c {
+                VmConstraint2::ProofBind(m) => Some(m),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(binds.len(), 1, "Custom carries exactly one proof binding");
+        let m = binds[0];
+        // guard = sel::CUSTOM (8). ⚑ EIGHT LANES each since the widening: the low four commitment
+        // limbs at param CUSTOM_PROOF_COMMIT_BASE (PARAM_BASE+4 = 72), the low four VK limbs at
+        // param CUSTOM_VK_HASH_BASE (PARAM_BASE+0 = 68), and the high four of each on the member's
+        // teeth columns. (PARAM_BASE = STATE_BEFORE_BASE + state::SIZE = 54 + 14 = 68.)
+        assert_eq!(
+            m.guard,
+            LeanExpr::Var(crate::effect_vm::columns::sel::CUSTOM)
+        );
+        assert_eq!(
+            m.lanes(),
+            PROOF_BIND_MIN_LANES,
+            "the deployed custom seam ties the FULL eight-felt commitment"
+        );
+        assert_eq!(m.vk.len(), m.commit.len());
+        assert_eq!(
+            m.commit[..4],
+            (0..4)
+                .map(|k| LeanExpr::Var(
+                    crate::effect_vm::columns::PARAM_BASE
+                        + crate::effect_vm::columns::param::CUSTOM_PROOF_COMMIT_BASE
+                        + k
+                ))
+                .collect::<Vec<_>>()[..]
+        );
+        assert_eq!(
+            m.vk[..4],
+            (0..4)
+                .map(|k| LeanExpr::Var(
+                    crate::effect_vm::columns::PARAM_BASE
+                        + crate::effect_vm::columns::param::CUSTOM_VK_HASH_BASE
+                        + k
+                ))
+                .collect::<Vec<_>>()[..]
+        );
+    }
+
+    // -- The recursion-engine binding (the Rust analog of Lean `Satisfied2Custom` /
+    //    `proofBind_determined`): a `proof_bind` op denotes "the row's commitment column IS the
+    //    public-input commitment of a VERIFYING sub-proof, and its vk column that proof's program
+    //    VK". The verification rides the recursion argument (`joint_turn_recursive.rs` leaf
+    //    verifier), supplied here as a named, realizable engine — exactly as `RecursiveAggregation.
+    //    EngineSound` names it. We model the engine + fire the anti-ghost BOTH ways. --
+
+    /// A toy recursion engine: the proof carrier is `bool` (`true` = the honest sub-proof), the
+    /// verifier accepts exactly `true`, a verifying proof exposes a fixed `(commit, vk)`. The
+    /// REAL engine is plonky3's leaf verifier; this models the binding implication the descriptor
+    /// rides.
+    struct ToyEngine {
+        commit: u32,
+        vk: u32,
+    }
+    impl ToyEngine {
+        fn verify(&self, p: bool) -> bool {
+            p
+        }
+        fn pi_commit(&self, _p: bool) -> u32 {
+            self.commit
+        }
+        fn vk_of(&self, _p: bool) -> u32 {
+            self.vk
+        }
+        /// The named `EngineBinding`: the commitment determines the attested vk across verifying
+        /// proofs (the in-circuit-verifier soundness — the one FRI obligation outside Lean).
+        fn commit_determines_vk(&self) -> bool {
+            true
+        }
+    }
+
+    /// **HONEST Custom row VERIFIES.** A Custom row whose `custom_proof_commitment` / vk columns
+    /// match a verifying sub-proof's exposed commitment / vk satisfies the proof binding — the row
+    /// commits to a genuine verification. (The positive polarity of `proofBind_determined`.)
+    #[test]
+    fn proof_bind_honest_commitment_verifies() {
+        let eng = ToyEngine {
+            commit: 123,
+            vk: 45,
+        };
+        let p = true; // the honest sub-proof
+        assert!(eng.verify(p), "the honest sub-proof verifies");
+        // the Custom row's commitment/vk columns carry the genuine exposed values.
+        let row_commit = eng.pi_commit(p);
+        let row_vk = eng.vk_of(p);
+        // the binding holds: some verifying proof exposes exactly (row_commit, row_vk).
+        assert_eq!(row_commit, 123);
+        assert_eq!(row_vk, 45);
+    }
+
+    /// **FORGED Custom row REJECTS (the anti-ghost).** Under the named engine binding, a Custom
+    /// row that claims a `custom_proof_commitment` SOME verifying sub-proof exposes but pairs it
+    /// with the WRONG vk has NO satisfying binding: the commitment DETERMINES the vk, so a forged
+    /// vk is excluded. The recursion analog of `proofBind_determined`: the binding cannot lie.
+    #[test]
+    fn proof_bind_forged_commitment_refuses() {
+        let eng = ToyEngine {
+            commit: 123,
+            vk: 45,
+        };
+        assert!(eng.commit_determines_vk(), "the engine binding holds");
+        // A forger claims the genuine commitment (123) but a DIFFERENT vk (99) than any verifying
+        // sub-proof exposes (45). For ANY verifying proof q with pi_commit(q) = 123, the binding
+        // forces vk_of(q) = 45 ≠ 99 — so no satisfying `Satisfied2Custom` exists.
+        let forged_vk: u32 = 99;
+        let q = true; // any verifying sub-proof at this commitment
+        assert!(eng.verify(q));
+        assert_eq!(eng.pi_commit(q), 123, "the forger's claimed commitment");
+        assert_ne!(
+            eng.vk_of(q),
+            forged_vk,
+            "the genuine vk (45) the binding forces differs from the forged vk (99) — REJECT"
+        );
+        // Equivalently: a forger claiming a commitment NO verifying sub-proof exposes also fails
+        // (no `p` with verify(p) AND pi_commit(p) = forged) — the boundTo existential is empty.
+        let unbacked_commit: u32 = 777;
+        let exists_backing = [true, false]
+            .iter()
+            .any(|&p| eng.verify(p) && eng.pi_commit(p) == unbacked_commit);
+        assert!(
+            !exists_backing,
+            "no verifying sub-proof exposes the unbacked commitment — the binding is UNSAT"
+        );
+    }
+
+    // ================================================================
+    // The UNIVERSAL memory leg (umem_op) + the absent (sorted-gap) leg
+    // ================================================================
+
+    /// The Lean `#guard`-pinned demo-umem golden (DescriptorIR2 §10b): the `umem_op` grammar
+    /// + the `umemory`/`umem_boundary` table sems, byte-for-byte.
+    const DEMO_UMEM: &str = "{\"name\":\"demo-umem\",\"ir\":2,\"trace_width\":4,\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":0,\"name\":\"main\",\"arity\":4,\"sem\":\"main\"},{\"id\":6,\"name\":\"umemory\",\"arity\":8,\"sem\":\"umemory\"},{\"id\":7,\"name\":\"umem_boundary\",\"arity\":7,\"sem\":\"umem_boundary\"}],\"constraints\":[{\"t\":\"umem_op\",\"kind\":\"write\",\"domain\":3,\"guard\":{\"t\":\"const\",\"v\":1},\"key\":{\"t\":\"var\",\"v\":0},\"present\":{\"t\":\"const\",\"v\":1},\"value\":{\"t\":\"const\",\"v\":1},\"prev_present\":{\"t\":\"const\",\"v\":0},\"prev_value\":{\"t\":\"const\",\"v\":0},\"prev_serial\":{\"t\":\"const\",\"v\":0}},{\"t\":\"umem_op\",\"kind\":\"read\",\"domain\":3,\"guard\":{\"t\":\"const\",\"v\":1},\"key\":{\"t\":\"var\",\"v\":1},\"present\":{\"t\":\"const\",\"v\":0},\"value\":{\"t\":\"const\",\"v\":0},\"prev_present\":{\"t\":\"const\",\"v\":0},\"prev_value\":{\"t\":\"const\",\"v\":0},\"prev_serial\":{\"t\":\"const\",\"v\":0}},{\"t\":\"umem_op\",\"kind\":\"write\",\"domain\":0,\"guard\":{\"t\":\"const\",\"v\":1},\"key\":{\"t\":\"var\",\"v\":2},\"present\":{\"t\":\"const\",\"v\":1},\"value\":{\"t\":\"var\",\"v\":3},\"prev_present\":{\"t\":\"const\",\"v\":0},\"prev_value\":{\"t\":\"const\",\"v\":0},\"prev_serial\":{\"t\":\"const\",\"v\":0}}],\"hash_sites\":[],\"ranges\":[]}";
+
+    /// The byte-pinned Lean umem golden parses, with every element decoded.
+    #[test]
+    fn parses_lean_umem_golden() {
+        let d = parse_vm_descriptor2(DEMO_UMEM).expect("umem golden must parse");
+        assert_eq!(d.name, "demo-umem");
+        assert_eq!(d.tables.len(), 3);
+        assert_eq!(d.tables[1].sem, TableSem::UMemory);
+        assert_eq!(d.tables[1].id, TID_UMEMORY);
+        assert_eq!(d.tables[2].sem, TableSem::UMemBoundary);
+        assert_eq!(d.tables[2].id, TID_UMEM_BOUNDARY);
+        assert_eq!(d.constraints.len(), 3);
+        assert!(matches!(
+            &d.constraints[0],
+            VmConstraint2::UMemOp(UMemOpSpec {
+                kind: MemKind::Write,
+                domain: NULLIFIER_DOMAIN,
+                ..
+            })
+        ));
+        assert!(matches!(
+            &d.constraints[1],
+            VmConstraint2::UMemOp(UMemOpSpec {
+                kind: MemKind::Read,
+                domain: NULLIFIER_DOMAIN,
+                ..
+            })
+        ));
+        assert!(matches!(
+            &d.constraints[2],
+            VmConstraint2::UMemOp(UMemOpSpec {
+                kind: MemKind::Write,
+                domain: 0,
+                ..
+            })
+        ));
+        check_descriptor2(&d).expect("umem golden must check");
+    }
+
+    /// A HUGE (hash-image-scale) nullifier key: `p − 2` (hi4 = 14, lo27 = 2^27 − 1) — the
+    /// canonical-decomposition machinery must order it, which the 30-bit flat regime cannot.
+    const BIG_KEY: u32 = BABYBEAR_P - 2;
+
+    /// Base layout: col 0 = inserted nullifier key, 1 = fresh-checked nullifier key,
+    /// 2 = register key, 3 = register value, 4 = the op guard.
+    fn umem_desc() -> EffectVmDescriptor2 {
+        let op = |domain: u32,
+                  key: LeanExpr,
+                  present: LeanExpr,
+                  value: LeanExpr,
+                  prev_present: LeanExpr,
+                  prev_value: LeanExpr,
+                  prev_serial: LeanExpr,
+                  kind: MemKind| {
+            VmConstraint2::UMemOp(UMemOpSpec {
+                guard: LeanExpr::Var(4),
+                domain,
+                key,
+                present,
+                value,
+                prev_present,
+                prev_value,
+                prev_serial,
+                kind,
+            })
+        };
+        EffectVmDescriptor2 {
+            name: "ir2-umem-test".to_string(),
+            trace_width: 5,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![
+                // The nullifier INSERT (serial 1).
+                op(
+                    NULLIFIER_DOMAIN,
+                    LeanExpr::Var(0),
+                    LeanExpr::Const(1),
+                    LeanExpr::Const(1),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    MemKind::Write,
+                ),
+                // THE FRESHNESS READ (serial 2): one row, present = 0 — `none`. No Merkle
+                // path, no gap opening, no hashing (`nullifier_fresh_sound`).
+                op(
+                    NULLIFIER_DOMAIN,
+                    LeanExpr::Var(1),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    MemKind::Read,
+                ),
+                // A register write (serial 3): a SECOND domain in the SAME table — the
+                // one-multiset coverage (`universal_memory_sound`).
+                op(
+                    0,
+                    LeanExpr::Var(2),
+                    LeanExpr::Const(1),
+                    LeanExpr::Var(3),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    LeanExpr::Const(0),
+                    MemKind::Write,
+                ),
+            ],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    fn umem_trace() -> Vec<Vec<BabyBear>> {
+        let row = vec![
+            BabyBear::new(7),       // inserted nullifier
+            BabyBear::new(BIG_KEY), // fresh-checked nullifier (full-felt key)
+            BabyBear::new(0),       // register key
+            BabyBear::new(42),      // register value
+            BabyBear::ZERO,         // guard (row 0 only)
+        ];
+        let mut rows = vec![row; 4];
+        rows[0][4] = BabyBear::ONE;
+        rows
+    }
+
+    fn umem_test_boundary() -> UMemBoundaryWitness {
+        UMemBoundaryWitness {
+            addrs: vec![
+                (0, BabyBear::new(0)),
+                (NULLIFIER_DOMAIN, BabyBear::new(7)),
+                (NULLIFIER_DOMAIN, BabyBear::new(BIG_KEY)),
+            ],
+            init_vals: vec![None, None, None],
+        }
+    }
+
+    /// THE UNIVERSAL-MEMORY GATE: nullifier insert + Merkle-path-free freshness read +
+    /// cross-domain register write, ONE multiset, proven and verified — with NO chip table
+    /// committed (the memory argument hashes nothing; `.docs-history-noclaude/UNIVERSAL-MEMORY.md`'s point,
+    /// measured).
+    #[test]
+    fn ir2_umem_honest_proves_and_verifies_no_chip() {
+        let desc = umem_desc();
+        let proof = prove_vm_descriptor2_umem(
+            &desc,
+            &umem_trace(),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[],
+            &umem_test_boundary(),
+        )
+        .expect("honest umem witness must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            4,
+            "umem descriptor commits main + byte + umemory + umem-boundary — and NO chip \
+             table (zero intra-proof hashing)"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("umem proof must verify");
+    }
+
+    /// PRESENCE refusal: a universal boundary witness without umem ops must refuse (the
+    /// tables are not committed), and a umem descriptor's proof must carry the tables.
+    #[test]
+    fn ir2_umem_presence_teeth() {
+        let r = prove_vm_descriptor2_umem(
+            &test_desc(),
+            &test_trace(),
+            &[],
+            &test_boundary(),
+            &[test_heap()],
+            &umem_test_boundary(),
+        );
+        assert!(r.is_err(), "stray umem boundary witness must refuse");
+    }
+
+    /// A single-domain, single-address COHORT descriptor: one `umemOp` write, declaring the
+    /// `umem_boundary_cohort` table sem (the width-9 single-row boundary). The deployed welded
+    /// leg's shape (`weld_umem_into_rotated_descriptor_cohort`) in miniature.
+    fn umem_cohort_desc() -> EffectVmDescriptor2 {
+        EffectVmDescriptor2 {
+            name: "ir2-umem-cohort-test".to_string(),
+            trace_width: 3,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![
+                TableDef2 {
+                    id: TID_UMEMORY,
+                    name: "umemory".to_string(),
+                    arity: 8,
+                    sem: TableSem::UMemory,
+                },
+                TableDef2 {
+                    id: TID_UMEM_BOUNDARY,
+                    name: "umem_boundary_cohort".to_string(),
+                    arity: 7,
+                    sem: TableSem::UMemBoundaryCohort,
+                },
+            ],
+            constraints: vec![VmConstraint2::UMemOp(UMemOpSpec {
+                guard: LeanExpr::Var(2),
+                domain: 0,
+                key: LeanExpr::Var(0),
+                present: LeanExpr::Const(1),
+                value: LeanExpr::Var(1),
+                prev_present: LeanExpr::Const(0),
+                prev_value: LeanExpr::Const(0),
+                prev_serial: LeanExpr::Const(0),
+                kind: MemKind::Write,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    fn umem_cohort_trace() -> Vec<Vec<BabyBear>> {
+        // col0 = key, col1 = value, col2 = guard (row 0 only — one declared address).
+        let row = vec![BabyBear::new(5), BabyBear::new(42), BabyBear::ZERO];
+        let mut rows = vec![row; 4];
+        rows[0][2] = BabyBear::ONE;
+        rows
+    }
+
+    fn umem_cohort_boundary() -> UMemBoundaryWitness {
+        UMemBoundaryWitness {
+            addrs: vec![(0, BabyBear::new(5))],
+            init_vals: vec![None],
+        }
+    }
+
+    /// THE COHORT PERF LEVER: a single-address universal boundary proves through the width-9
+    /// specialized AIR (`Ir2Air::UMemBoundaryCohort`), NOT the width-38 general one — the
+    /// inter-row `Nodup` comparator + key decomposition (29 columns) are dropped, sound because
+    /// `Nodup` of one address is `nodup_singleton` (Lean `universal_memory_sound_single`).
+    #[test]
+    fn ir2_umem_cohort_proves_through_specialized_air() {
+        // Width: the dropped comparator is real — the cohort boundary is a quarter of the columns.
+        assert_eq!(UBC_WIDTH, 9);
+        // (`UBC_WIDTH * 4 <= UB_WIDTH` is const-asserted at `UBC_WIDTH`'s definition)
+
+        let desc = umem_cohort_desc();
+        let layout = check_descriptor2(&desc).expect("cohort desc checks");
+        let presence = Presence::of(&desc, &layout);
+        assert!(
+            presence.umem_cohort,
+            "the cohort table sem must select the specialized boundary"
+        );
+        let airs = instance_airs(&desc, layout, presence);
+        assert!(
+            airs.iter().any(|a| matches!(
+                a,
+                Ir2Air::LeanTable { air: t, .. } if t.name == "dregg-ir2-umem-boundary-cohort-v1"
+            )),
+            "the Lean-emitted cohort boundary AIR must be in the instance set"
+        );
+        assert!(
+            !airs.iter().any(|a| matches!(
+                a,
+                Ir2Air::LeanTable { air: t, .. } if t.name == "dregg-ir2-umem-boundary-v1"
+            )),
+            "the general boundary AIR must NOT be committed for a cohort descriptor"
+        );
+
+        let proof = prove_vm_descriptor2_umem(
+            &desc,
+            &umem_cohort_trace(),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[],
+            &umem_cohort_boundary(),
+        )
+        .expect("honest single-address cohort must prove through the specialized AIR");
+        assert_eq!(
+            proof.degree_bits.len(),
+            4,
+            "cohort commits main + byte + umemory + umem_boundary_cohort (no chip)"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("cohort proof must verify");
+    }
+
+    /// THE SINGLE-ROW TOOTH: the cohort boundary carries AT MOST ONE address. A two-address
+    /// witness is REFUSED (at assembly, and the in-circuit `next.is_real = 0` tooth would refuse
+    /// it too) — the specialization can never be used to skip the `Nodup` comparator for a
+    /// genuinely multi-row boundary.
+    #[test]
+    fn ir2_umem_cohort_refuses_two_addresses() {
+        let desc = umem_cohort_desc();
+        let two = UMemBoundaryWitness {
+            addrs: vec![(0, BabyBear::new(5)), (0, BabyBear::new(6))],
+            init_vals: vec![None, None],
+        };
+        let r = prove_vm_descriptor2_umem(
+            &desc,
+            &umem_cohort_trace(),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[],
+            &two,
+        );
+        assert!(
+            r.is_err(),
+            "the cohort single-row boundary must refuse a >1-address witness"
+        );
+    }
+
+    /// THE DOUBLE-SPEND TOOTH: insert nullifier 7, then claim it is STILL FRESH (the read's
+    /// key re-pointed at the inserted key). Pre-flight replay refuses; with the replay
+    /// bypassed the one-multiset argument has no balancing assembly.
+    #[test]
+    fn ir2_umem_double_spend_refuses() {
+        let desc = umem_desc();
+        let mut rows = umem_trace();
+        rows[0][1] = BabyBear::new(7); // "fresh" read of the JUST-INSERTED nullifier
+        let boundary = UMemBoundaryWitness {
+            addrs: vec![(0, BabyBear::new(0)), (NULLIFIER_DOMAIN, BabyBear::new(7))],
+            init_vals: vec![None, None],
+        };
+        assert!(
+            prove_vm_descriptor2_umem(
+                &desc,
+                &rows,
+                &[],
+                &MemBoundaryWitness::default(),
+                &[],
+                &boundary,
+            )
+            .is_err(),
+            "pre-flight replay must refuse the double spend"
+        );
+        // (Removed a DEAD `catch_unwind(prove_vm_descriptor2_inner(..))` here whose result was
+        // bound to `r` and never read — it re-ran the whole prove and discarded the verdict, so it
+        // asserted nothing. `assert_umem_forgery_refused` below is the tooth, and it does the same
+        // `check: false` prove itself.)
+        assert_umem_forgery_refused(&desc, &rows, &boundary, "double-spend freshness");
+    }
+
+    /// A umem forgery must be refused AT THE REAL SOUNDNESS BOUNDARY — the verifier. The raw
+    /// [`prove_vm_descriptor2_inner`] here runs with `check = false` (the pre-flight replay
+    /// bypassed) so the forged multiset actually reaches the prover; the ONE Blum multiset
+    /// (`ir2_umem_check`) is what must reject it. Three refusal faces, all sound:
+    ///   * the debug prover PANICS on the unbalanced bus (`lookup/debug_util`), or
+    ///   * the assembler/prover returns `Err`, or
+    ///   * (release, where `check = false` also skips the self-verify) the prover emits a proof —
+    ///     and the VERIFIER rejects it with a `GlobalCumulativeMismatch` on `ir2_umem_check`.
+    /// Asserting on the prover's return value ALONE is a false tooth: a `check = false` proof is
+    /// unverified, so a release build would read the emitted (yet unverifiable) proof as "accepted".
+    /// The tooth is OPEN only if a produced proof VERIFIES.
+    fn assert_umem_forgery_refused(
+        desc: &EffectVmDescriptor2,
+        rows: &[Vec<BabyBear>],
+        boundary: &UMemBoundaryWitness,
+        tooth: &str,
+    ) {
+        // `classify` keeps all three honest refusal faces below, but a panic that is NOT the p3
+        // debug prover's documented unsat verdict now REDS instead of silently counting as face 1.
+        let r = classify(tooth, || {
+            prove_vm_descriptor2_inner(
+                desc,
+                rows,
+                &[],
+                &MemBoundaryWitness::default(),
+                &[],
+                boundary,
+                false,
+                &ir2_config(),
+            )
+        });
+        match r {
+            // Face 1: the debug prover panicked on the unbalanced `ir2_umem_check` bus.
+            Outcome::UnsatPanic(_) => {}
+            // Face 2: the assembler/prover refused the forgery fail-closed.
+            Outcome::Err(_) => {}
+            Outcome::Accepted(proof) => {
+                // The prover produced a proof (release: `check = false` skips self-verify). The
+                // soundness boundary is the CONSUMER's verify — it must reject the unbalanced bus.
+                let v = verify_vm_descriptor2(desc, &proof, &[]);
+                assert!(
+                    v.is_err(),
+                    "{tooth}: an intra-proof umem forgery produced a VERIFYING proof — tooth OPEN"
+                );
+            }
+        }
+    }
+
+    /// THE CROSS-DOMAIN STEAL TOOTH: a caps-domain read claims the REGISTER write's cell
+    /// (same key 0, value 42, serial 3 — only the domain tag differs). The tag is its own
+    /// bus coordinate, so the claimed entry cancels nothing: unbalanced, refused. (The Lean
+    /// twin: `UniversalMemory.lean` §6 negative polarity 1.)
+    #[test]
+    fn ir2_umem_cross_domain_steal_refuses() {
+        let mut desc = umem_desc();
+        desc.constraints.push(VmConstraint2::UMemOp(UMemOpSpec {
+            guard: LeanExpr::Var(4),
+            domain: 2, // caps — stealing the registers-domain (0) tuple
+            key: LeanExpr::Var(2),
+            present: LeanExpr::Const(1),
+            value: LeanExpr::Var(3),
+            prev_present: LeanExpr::Const(1),
+            prev_value: LeanExpr::Var(3),
+            prev_serial: LeanExpr::Const(3),
+            kind: MemKind::Read,
+        }));
+        let mut boundary = umem_test_boundary();
+        boundary.addrs.insert(1, (2, BabyBear::new(0)));
+        boundary.init_vals.insert(1, None);
+        assert!(
+            prove_vm_descriptor2_umem(
+                &desc,
+                &umem_trace(),
+                &[],
+                &MemBoundaryWitness::default(),
+                &[],
+                &boundary,
+            )
+            .is_err(),
+            "pre-flight replay must refuse the cross-domain steal"
+        );
+        assert_umem_forgery_refused(&desc, &umem_trace(), &boundary, "cross-domain tuple steal");
+    }
+
+    /// THE INSERT-ONLY TOOTH: a nullifier-domain write installing `none`. The statically
+    /// violating shape (present = const 0) is refused at check; the DYNAMIC shape (present
+    /// rides a column that evaluates to 0) is refused by the in-circuit
+    /// `is_null·kind·(1−present)` row constraint.
+    #[test]
+    fn ir2_umem_insert_only_refuses_unspend() {
+        // Static shape: refused at descriptor check.
+        let mut desc = umem_desc();
+        desc.constraints[0] = VmConstraint2::UMemOp(UMemOpSpec {
+            guard: LeanExpr::Var(4),
+            domain: NULLIFIER_DOMAIN,
+            key: LeanExpr::Var(0),
+            present: LeanExpr::Const(0),
+            value: LeanExpr::Const(0),
+            prev_present: LeanExpr::Const(0),
+            prev_value: LeanExpr::Const(0),
+            prev_serial: LeanExpr::Const(0),
+            kind: MemKind::Write,
+        });
+        let err = check_descriptor2(&desc).expect_err("static un-spend must refuse");
+        assert!(err.contains("insert-only"), "got: {err}");
+
+        // Dynamic shape: present rides col 3 (set to 0); value 0 keeps the cell canonical.
+        let mut desc2 = umem_desc();
+        desc2.constraints[0] = VmConstraint2::UMemOp(UMemOpSpec {
+            guard: LeanExpr::Var(4),
+            domain: NULLIFIER_DOMAIN,
+            key: LeanExpr::Var(0),
+            present: LeanExpr::Var(3),
+            value: LeanExpr::Const(0),
+            prev_present: LeanExpr::Const(0),
+            prev_value: LeanExpr::Const(0),
+            prev_serial: LeanExpr::Const(0),
+            kind: MemKind::Write,
+        });
+        let mut rows = umem_trace();
+        for row in &mut rows {
+            row[3] = BabyBear::ZERO; // the dynamic present bit evaluates to 0
+            row[1] = BabyBear::new(9); // make the freshness read consistent (key 9 untouched)
+        }
+        let boundary = UMemBoundaryWitness {
+            addrs: vec![
+                (0, BabyBear::new(0)),
+                (NULLIFIER_DOMAIN, BabyBear::new(7)),
+                (NULLIFIER_DOMAIN, BabyBear::new(9)),
+            ],
+            init_vals: vec![None, None, None],
+        };
+        assert!(
+            prove_vm_descriptor2_umem(
+                &desc2,
+                &rows,
+                &[],
+                &MemBoundaryWitness::default(),
+                &[],
+                &boundary,
+            )
+            .is_err(),
+            "pre-flight must refuse the dynamic un-spend"
+        );
+        assert_umem_forgery_refused(&desc2, &rows, &boundary, "nullifier un-spend (insert-only)");
+    }
+
+    /// A tampered umem READ (claims register value 43 where the write installed 42) must
+    /// refuse: replay pre-flight, and the multiset legs with the replay bypassed.
+    #[test]
+    fn ir2_umem_tampered_read_refuses() {
+        let mut desc = umem_desc();
+        // A read-back of the register cell, claiming the write's cell as prior.
+        desc.constraints.push(VmConstraint2::UMemOp(UMemOpSpec {
+            guard: LeanExpr::Var(4),
+            domain: 0,
+            key: LeanExpr::Var(2),
+            present: LeanExpr::Const(1),
+            value: LeanExpr::Const(43), // the LIE: the write installed 42
+            prev_present: LeanExpr::Const(1),
+            prev_value: LeanExpr::Const(43),
+            prev_serial: LeanExpr::Const(3),
+            kind: MemKind::Read,
+        }));
+        assert!(
+            prove_vm_descriptor2_umem(
+                &desc,
+                &umem_trace(),
+                &[],
+                &MemBoundaryWitness::default(),
+                &[],
+                &umem_test_boundary(),
+            )
+            .is_err()
+        );
+        assert_umem_forgery_refused(
+            &desc,
+            &umem_trace(),
+            &umem_test_boundary(),
+            "tampered umem read (Blum)",
+        );
+    }
+
+    // ---- the `absent` (bracketed sorted-gap) realization ----
+
+    /// Base layout (width 18): root8 [0..8), key 8, new_root8 [9..17) (== root8), guard 17.
+    fn absent_desc() -> EffectVmDescriptor2 {
+        EffectVmDescriptor2 {
+            name: "ir2-absent-test".to_string(),
+            trace_width: 18,
+            public_input_count: 0,
+            challenges: 0,
+            tables: vec![],
+            constraints: vec![VmConstraint2::MapOp(MapOpSpec {
+                guard: LeanExpr::Var(17),
+                root: (0..CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                key: LeanExpr::Var(8),
+                value: LeanExpr::Const(0),
+                new_root: (9..9 + CHIP_OUT_LANES).map(LeanExpr::Var).collect(),
+                op: MapKind::Absent,
+            })],
+            hash_sites: vec![],
+            ranges: vec![],
+        }
+    }
+
+    fn absent_trace(key: u32) -> Vec<Vec<BabyBear>> {
+        let tree = CanonicalHeapTree8::new(test_heap(), HEAP_TREE_DEPTH);
+        let root = tree.root8();
+        let mk = |guard: BabyBear| {
+            let mut r = vec![BabyBear::ZERO; 18];
+            r[0..CHIP_OUT_LANES].copy_from_slice(&root[..]);
+            r[8] = BabyBear::new(key);
+            r[9..9 + CHIP_OUT_LANES].copy_from_slice(&root[..]);
+            r[17] = guard;
+            r
+        };
+        vec![
+            mk(BabyBear::ONE),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+            mk(BabyBear::ZERO),
+        ]
+    }
+
+    /// THE NON-MEMBERSHIP GATE: an honest `absent` op (key 150, bracketed by the committed
+    /// leaves 100 and 200) proves and verifies — the realization of `opensTo … none` /
+    /// `opensTo_none_of_gap`, the boundary leg of `nullifier_fresh_binds_root`.
+    #[test]
+    fn ir2_absent_honest_proves_and_verifies() {
+        let desc = absent_desc();
+        let proof = prove_vm_descriptor2(
+            &desc,
+            &absent_trace(150),
+            &[],
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+        )
+        .expect("honest absent witness must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            4,
+            "absent-only descriptor commits main + chip + byte + map-absent (no map-ops)"
+        );
+        verify_vm_descriptor2(&desc, &proof, &[]).expect("absent proof must verify");
+    }
+
+    /// An `absent` claim for a PRESENT key (100 — a committed leaf) must refuse: no
+    /// bracketing witness exists, and a forged one violates the gap comparators.
+    #[test]
+    fn ir2_absent_of_present_key_refuses() {
+        let desc = absent_desc();
+        assert!(
+            prove_vm_descriptor2(
+                &desc,
+                &absent_trace(100),
+                &[],
+                &MemBoundaryWitness::default(),
+                &[test_heap()],
+            )
+            .is_err(),
+            "absent of a present key must refuse"
+        );
+    }
+
+    /// THE FORGED-BRACKET TOOTH, in-circuit: build the HONEST absent assembly for key 150,
+    /// then tamper the claim to the PRESENT key 100 in BOTH the main row and the map-absent
+    /// row (so the map-log multiset still balances — the strongest forgery shape). The raw
+    /// batch prover must have no satisfying assembly: the key's canonical decomposition and
+    /// the `lo < key` comparator (100 < 100) refuse the re-keyed bracketing witness.
+    #[test]
+    fn ir2_absent_forged_bracket_refuses() {
+        let desc = absent_desc();
+        let layout = check_descriptor2(&desc).expect("absent gauntlet checks");
+        let presence = Presence::of(&desc, &layout);
+        let mut traces = build_traces(
+            &desc,
+            &layout,
+            presence,
+            &absent_trace(150),
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+            &UMemBoundaryWitness::default(),
+            true,
+        )
+        .expect("honest absent traces");
+        traces.main[0][1] = BabyBear::new(100); // the forged claim, main side
+        traces.map_absent.as_mut().expect("absent table present")[0][MA_KEY] = BabyBear::new(100); // …and table side (multiset balanced)
+        let airs = instance_airs(&desc, layout, presence);
+        let mut matrices = vec![to_matrix(&traces.main)];
+        for t in [
+            &traces.chip,
+            &traces.chip_state16,
+            &traces.byte,
+            &traces.memory,
+            &traces.boundary,
+            &traces.map_ops,
+            &traces.map_absent,
+            &traces.umemory,
+            &traces.umem_boundary,
+        ]
+        .into_iter()
+        .flatten()
+        {
+            matrices.push(to_matrix(t));
+        }
+        let pvs: Vec<Vec<P3BabyBear>> = vec![vec![]; airs.len()];
+        let config = ir2_config();
+        // Raw batch prove+verify: the replay is bypassed entirely, so the forged witness reaches
+        // `prove_batch` and the p3 debug prover's DOCUMENTED unsat panic is the mechanism.
+        // Discriminated — a stray assembly panic or a trace-shape assert REDs instead of passing.
+        let r = must_refuse_or_unsat_panic("forged absent bracket (gap tooth)", || {
+            let instances: Vec<StarkInstance<'_, DreggStarkConfig, Ir2Air>> = airs
+                .iter()
+                .zip(matrices.iter())
+                .zip(pvs.iter())
+                .map(|((air, trace), pv)| StarkInstance {
+                    air,
+                    trace,
+                    public_values: pv.clone(),
+                })
+                .collect();
+            let prover_data = ProverData::from_instances(&config, &instances);
+            let proof = prove_batch(&config, &instances, &prover_data);
+            verify_batch(&config, &airs, &proof, &pvs, &prover_data.common)
+        });
+        assert_constraint_refusal(
+            r.reason(),
+            "a forged absent bracket must be refused BY THE CONSTRAINT SYSTEM (the gap tooth)",
+        );
+    }
+
+    /// THE POINTER-BRACKET TOOTH, in-circuit, on a wide-bracket: the IMT replacement for the retired
+    /// physical-adjacency gate (Lean `IndexedMerkleTree.imtAbsent_excludes` — the `next_addr` pointer
+    /// IS the hi bracket). Build the HONEST absent assembly for key 150 (bracketed by the low leaf
+    /// 100 whose pointer `next_addr = 200`), then forge ONLY the low leaf's pointer `MA_LO_NEXT` to a
+    /// huge value so `lo_addr < key < low_next` spuriously straddles far more than the true gap — the
+    /// literal WIDE BRACKET a commitment-knower would invent. The forge must refuse: the low leaf's
+    /// arity-3 IMT digest `hash[addr, value, next_addr]` BINDS `next_addr` (so a widened pointer no
+    /// longer authenticates under the root), and the canonical decomposition of `MA_LO_NEXT` pins it.
+    /// This isolates the POINTER-BINDING teeth from the gap comparator (`ir2_absent_forged_bracket_refuses`
+    /// forges the key; this forges the pointer).
+    #[test]
+    fn ir2_absent_forged_wide_bracket_nonadjacent_refuses() {
+        let desc = absent_desc();
+        let layout = check_descriptor2(&desc).expect("absent gauntlet checks");
+        let presence = Presence::of(&desc, &layout);
+        let mut traces = build_traces(
+            &desc,
+            &layout,
+            presence,
+            &absent_trace(150),
+            &MemBoundaryWitness::default(),
+            &[test_heap()],
+            &UMemBoundaryWitness::default(),
+            true,
+        )
+        .expect("honest absent traces");
+        // The honest upper-bracket position (leaf 200) sits at hi_pos = lo_pos + 1. Flip the lowest
+        // direction bit of the UPPER path so the reconstructed position is no longer consecutive with
+        // the lower one — the wide-bracket shape. (The `lo`/`hi` leaf digests, sibling paths and gap
+        // comparators stay honest; ONLY the consecutiveness is broken, so the adjacency gate is the
+        // sole tooth that can fire.)
+        let ma = traces.map_absent.as_mut().expect("absent table present");
+        // IMT POINTER-BRACKET FORGE (the adjacency forge's replacement): widen the low leaf's
+        // pointer `low_next` to a huge value so the bracket `lo_addr < key < low_next` spuriously
+        // straddles far more than the true gap. The low leaf's arity-3 IMT digest BINDS `low_next`,
+        // and the canonical decomposition of `MA_LO_NEXT` pins it — so a widened pointer fails BOTH
+        // the leaf-absorb chip match AND the decomposition gate. No satisfying assignment keeps the
+        // leaf authentic under the root while widening the pointer.
+        ma[0][MA_LO_NEXT] = BabyBear::new(0x7FFF_FFFF);
+        let airs = instance_airs(&desc, layout, presence);
+        let mut matrices = vec![to_matrix(&traces.main)];
+        for t in [
+            &traces.chip,
+            &traces.chip_state16,
+            &traces.byte,
+            &traces.memory,
+            &traces.boundary,
+            &traces.map_ops,
+            &traces.map_absent,
+            &traces.umemory,
+            &traces.umem_boundary,
+        ]
+        .into_iter()
+        .flatten()
+        {
+            matrices.push(to_matrix(t));
+        }
+        let pvs: Vec<Vec<P3BabyBear>> = vec![vec![]; airs.len()];
+        let config = ir2_config();
+        // Raw batch prove+verify: the replay is bypassed entirely, so the forged witness reaches
+        // `prove_batch` and the p3 debug prover's DOCUMENTED unsat panic is the mechanism.
+        // Discriminated — a stray assembly panic or a trace-shape assert REDs instead of passing.
+        let r = must_refuse_or_unsat_panic(
+            "forged WIDE pointer bracket (pointer-binding tooth)",
+            || {
+                let instances: Vec<StarkInstance<'_, DreggStarkConfig, Ir2Air>> = airs
+                    .iter()
+                    .zip(matrices.iter())
+                    .zip(pvs.iter())
+                    .map(|((air, trace), pv)| StarkInstance {
+                        air,
+                        trace,
+                        public_values: pv.clone(),
+                    })
+                    .collect();
+                let prover_data = ProverData::from_instances(&config, &instances);
+                let proof = prove_batch(&config, &instances, &prover_data);
+                verify_batch(&config, &airs, &proof, &pvs, &prover_data.common)
+            },
+        );
+        assert_constraint_refusal(
+            r.reason(),
+            "a forged WIDE pointer bracket must be refused BY THE CONSTRAINT SYSTEM (the pointer-binding tooth)",
+        );
+    }
+
+    // ==== THE DEPLOYED noteSpend DESCRIPTOR — the double-spend wide-bracket close ====
+
+    /// **THE DEPLOYED-LEVEL no-double-spend mutation-confirm (D1-wire).** The Lean §8¾
+    /// (`Circuit/Argus/Effects/NoteSpend.lean`) proves `Adjacent ⟹ GapInterval` and that a
+    /// non-consecutive wide bracket cannot be `Adjacent` (`wide_bracket_forge_rejected`); the
+    /// forcing FFI it names is "the deployed noteSpend descriptor must enforce adjacency on the
+    /// `(lo,hi)` bracket columns". The deployed `noteSpendVmDescriptor2R24` discharges that through
+    /// its `.absent` map-op (`EffectVmEmitRotationV3.nullifierFreshOp`), realized by the IR-v2
+    /// `MapAbsent` AIR — which enforces, IN-CIRCUIT, that the two opened bracket leaves sit at
+    /// CONSECUTIVE positions (`hi_pos − lo_pos == 1`) AND authenticate under the committed nullifier
+    /// root AND strictly straddle the spent nullifier. So the descriptor verify cannot accept a
+    /// non-adjacent wide bracket — the forgery that "proves" non-membership of a nullifier that IS in
+    /// the set (a double-spend).
+    ///
+    /// This test confirms that AT THE DEPLOYED DESCRIPTOR LEVEL (not the standalone
+    /// `membership_verifier::verify_nullifier_nonmembership` unit, and not the synthetic
+    /// `absent_desc`): build the HONEST deployed noteSpend assembly (real before-nullifier
+    /// accumulator with ≥4 leaves; the spent nullifier brackets between two consecutive ones), prove
+    /// + verify it through the deployed descriptor (NO DOWNGRADE), then forge ONLY the map-absent
+    /// upper-bracket direction bits so the bracket is a NON-ADJACENT wide bracket, and confirm the
+    /// deployed `noteSpendVmDescriptor2R24` verify REJECTS it. The light-client noteSpend
+    /// double-spend forgery is closed end-to-end on the deployed wire.
+    #[test]
+    fn deployed_notespend_wide_bracket_double_spend_rejected() {
+        use crate::effect_vm::trace_rotated::{
+            DFA_RC_LEN, NUM_PRE_LIMBS, ROT_PI_COUNT, ROT_WIDTH, RotatedBlockWitness,
+            SpendRevocationWitness, empty_caveat_manifest,
+            generate_rotated_note_spend_trace_with_nullifier_tree,
+        };
+        use crate::effect_vm::{CellState, Effect};
+
+        // Resolve the DEPLOYED noteSpend descriptor (the light-client V3-staged shape carrying
+        // the two nullifier map-ops — `.absent` freshness + `.insert` set-insert).
+        let name = "noteSpendVmDescriptor2R24";
+        let json = crate::effect_vm_descriptors::V3_STAGED_REGISTRY_TSV
+            .lines()
+            .find_map(|l| {
+                let mut it = l.splitn(3, '\t');
+                if it.next() == Some(name) {
+                    let _ = it.next();
+                    it.next()
+                } else {
+                    None
+                }
+            })
+            .expect("noteSpendVmDescriptor2R24 in V3_STAGED_REGISTRY_TSV");
+        let desc = parse_vm_descriptor2(json).expect("deployed noteSpend descriptor parses");
+        // DERIVED, not transcribed: the rotated base + the nullifier-forcing fifth pin + the dsl rc
+        // tail. This read `51` and went stale when the 2026-08-07 seven-slot PI compaction took
+        // `ROT_PI_COUNT` 46 -> 39 (`docs/PI-DISPOSITION.md` §6).
+        assert_eq!(
+            desc.public_input_count,
+            ROT_PI_COUNT + 1 + DFA_RC_LEN,
+            "deployed noteSpend carries the nullifier-forcing pin"
+        );
+        // The descriptor genuinely carries the `.absent` freshness map-op (the adjacency-forcing leg).
+        assert!(
+            desc.constraints
+                .iter()
+                .any(|c| matches!(c, VmConstraint2::MapOp(m) if m.op == MapKind::Absent)),
+            "the deployed noteSpend descriptor must carry the `.absent` freshness map-op"
+        );
+
+        let before_balance: u64 = 90_000;
+        let value: u64 = 500;
+        let nf: u32 = 0x5050; // the spent nullifier (NOT in the BEFORE set; brackets 0x4444..0x6666)
+        let effect = Effect::NoteSpend {
+            nullifier: BabyBear::new(nf),
+            value,
+        };
+        let st = CellState::new(before_balance, 0);
+        let effects = vec![effect];
+
+        // A before-nullifier accumulator with FOUR leaves so the spent nullifier (0x5050) brackets
+        // between the consecutive pair (0x4444, 0x6666) — and a NON-consecutive leaf (0x1111) exists
+        // BELOW lo, the target of the wide-bracket forge.
+        let before_nullifiers = vec![
+            HeapLeaf::entry(BabyBear::new(0x1111), BabyBear::new(1)),
+            HeapLeaf::entry(BabyBear::new(0x2222), BabyBear::new(1)),
+            HeapLeaf::entry(BabyBear::new(0x4444), BabyBear::new(1)),
+            HeapLeaf::entry(BabyBear::new(0x6666), BabyBear::new(1)),
+        ];
+
+        // The witness-INDEPENDENT block witnesses (the verify path threads trusted commits; for a
+        // self-contained descriptor-level prove/verify the placeholder pre-limbs suffice — the
+        // generator overrides the nullifier-root limbs from the real accumulator).
+        let zero_w = RotatedBlockWitness::new(vec![BabyBear::ZERO; NUM_PRE_LIMBS], BabyBear::ZERO)
+            .expect("NUM_PRE_LIMBS pre-iroot limbs");
+        let caveat = empty_caveat_manifest();
+
+        // The THIRD map-op (`spendAncestorFreshOp`): this spend rides no delegated capability, so
+        // the honest producer parks the mint-root ancestor and opens it against the empty revoked
+        // set (the committed `revoked_root` this placeholder witness stands for).
+        let (trace, dpis, map_heaps) = generate_rotated_note_spend_trace_with_nullifier_tree(
+            &st,
+            &effects,
+            &zero_w,
+            &zero_w,
+            &caveat,
+            &before_nullifiers,
+            &SpendRevocationWitness::undelegated(&[]),
+        )
+        .expect("deployment-real noteSpend trace builds (the spent nullifier is fresh)");
+        assert_eq!(trace[0].len(), ROT_WIDTH, "deployed rotated trace width");
+
+        // NO DOWNGRADE: the honest deployed noteSpend proves + verifies through the deployed
+        // descriptor's `.absent`/`.insert` grow-gate — the adjacency tooth ACCEPTS a genuine
+        // consecutive bracket.
+        let mem_boundary = MemBoundaryWitness::default();
+        let layout = check_descriptor2(&desc).expect("deployed noteSpend descriptor checks");
+        let presence = Presence::of(&desc, &layout);
+        let chip_laned = trace_with_chip_lanes(&desc, &trace)
+            .expect("the deployed noteSpend producer builds full producer-owned rows");
+        let honest_proof = prove_vm_descriptor2(&desc, &trace, &dpis, &mem_boundary, &map_heaps)
+            .expect("NO DOWNGRADE: the honest deployed noteSpend must prove");
+        verify_vm_descriptor2(&desc, &honest_proof, &dpis)
+            .expect("NO DOWNGRADE: the honest deployed noteSpend must verify");
+
+        // THE FORGE (the wide-bracket double-spend): assemble the honest tables, then flip the lowest
+        // upper-bracket direction bit so the two opened bracket leaves are NON-ADJACENT
+        // (`hi_pos − lo_pos ≠ 1`) — the wide bracket a commitment-knower invents to fake freshness of
+        // an already-spent nullifier. The deployed descriptor's `MapAbsent` adjacency constraint must
+        // refuse: there is no satisfying assignment that keeps both leaves authentic under the root
+        // while making their positions non-consecutive.
+        let mut traces = build_traces(
+            &desc,
+            &layout,
+            presence,
+            &chip_laned,
+            &mem_boundary,
+            &map_heaps,
+            &UMemBoundaryWitness::default(),
+            true,
+        )
+        .expect("honest deployed noteSpend tables assemble");
+        let ma = traces
+            .map_absent
+            .as_mut()
+            .expect("deployed noteSpend descriptor commits a map-absent table");
+        // THE DOUBLE-SPEND FORGE (IMT pointer-bracket form): widen the low leaf's `low_next`
+        // pointer to fake freshness of an already-spent nullifier. The arity-3 IMT leaf digest binds
+        // `low_next` (and its canonical decomposition pins it), so the deployed `MapAbsent` refuses:
+        // a widened pointer cannot authenticate under the committed nullifier root (Lean
+        // `imtAbsent_excludes` — the pointer IS the bracket).
+        ma[0][MA_LO_NEXT] = BabyBear::new(0x7FFF_FFFF);
+
+        let airs = instance_airs(&desc, layout, presence);
+        let mut matrices = vec![to_matrix(&traces.main)];
+        for t in [
+            &traces.chip,
+            &traces.chip_state16,
+            &traces.byte,
+            &traces.memory,
+            &traces.boundary,
+            &traces.map_ops,
+            &traces.map_absent,
+            &traces.umemory,
+            &traces.umem_boundary,
+        ]
+        .into_iter()
+        .flatten()
+        {
+            matrices.push(to_matrix(t));
+        }
+        // The PIs ride the FIRST (Main) AIR only — the canonical `prove_vm_descriptor2_inner`
+        // assembly (`pvs = vec![pis]` then resized to the air count).
+        let pis: Vec<P3BabyBear> = dpis.iter().map(|&v| to_p3(v)).collect();
+        let mut pvs: Vec<Vec<P3BabyBear>> = vec![pis];
+        pvs.resize(airs.len(), vec![]);
+        let config = ir2_config();
+        // Raw batch prove+verify: the replay is bypassed, so the forged witness reaches
+        // `prove_batch` and the p3 debug prover's DOCUMENTED unsat panic is the mechanism.
+        let r = must_refuse_or_unsat_panic(
+            "DEPLOYED noteSpend NON-ADJACENT wide-bracket non-membership witness",
+            || {
+                let instances: Vec<StarkInstance<'_, DreggStarkConfig, Ir2Air>> = airs
+                    .iter()
+                    .zip(matrices.iter())
+                    .zip(pvs.iter())
+                    .map(|((air, trace), pv)| StarkInstance {
+                        air,
+                        trace,
+                        public_values: pv.clone(),
+                    })
+                    .collect();
+                let prover_data = ProverData::from_instances(&config, &instances);
+                let proof = prove_batch(&config, &instances, &prover_data);
+                verify_batch(&config, &airs, &proof, &pvs, &prover_data.common)
+            },
+        );
+        assert_constraint_refusal(
+            r.reason(),
+            "the DEPLOYED noteSpend descriptor must refuse a NON-ADJACENT wide-bracket \
+             non-membership witness BY THE CONSTRAINT SYSTEM (else the light-client double-spend \
+             forgery is open on the deployed descriptor)",
+        );
+        eprintln!(
+            "DEPLOYED noteSpend D1-WIRE: honest spend proves+verifies; a NON-ADJACENT wide-bracket \
+             forged freshness witness is UNSAT through the deployed noteSpendVmDescriptor2R24 \
+             MapAbsent adjacency tooth — the light-client double-spend forgery is CLOSED end-to-end."
+        );
+    }
+
+    // ==== THE ROTATION (staged) — the Lean-emitted rotated-state probe ====
+    //
+    // `Dregg2/Circuit/Emit/EffectVmEmitRotation.lean` emits the rotated state block
+    // (cells root · 16 registers · cap/nullifier/heap roots · lifecycle · epoch ·
+    // committed height · the receipt-index MMR root LAST · the chained commitment)
+    // as a graduated IR-v2 descriptor; the Lean keystones are
+    // `rotationProbeV2_pins_commit` / `wireCommit_binds` /
+    // `rotationProbe_commit_binds_published`. These tests are the Rust teeth:
+    // honest witness proves+verifies (size measured), EVERY column and PI is
+    // tamper-refused, and the layout/absorption coverage is drift-guarded in
+    // `effect_vm_descriptors.rs`.
+
+    fn rotation_probe_desc() -> EffectVmDescriptor2 {
+        parse_vm_descriptor2(
+            crate::effect_vm_descriptors::DREGG_EFFECTVM_ROTATION_STATE_V3_STAGED_JSON,
+        )
+        .expect("staged rotation probe parses")
+    }
+
+    /// The honest rotated-block witness: 24 distinct limbs (`100 + col`), the genuine
+    /// 4-ary chained absorption (site digests on the chain carriers, final on
+    /// `STATE_COMMIT`), PI = [published commit, committed height].
+    fn rotation_probe_trace() -> (Vec<Vec<BabyBear>>, Vec<BabyBear>) {
+        use crate::effect_vm::columns::rotation as rot;
+        use crate::poseidon2::hash_many;
+        // Phase B-GATE: the row is widened past PROBE_WIDTH by `7·n_sites` lane columns (the
+        // descriptor's graduated trace width). The digest chain is built first (out0 columns),
+        // then `fill_chip_lanes` writes the genuine lanes 1..7 for every chip lookup off the row.
+        let desc = rotation_probe_desc();
+        let mut row = vec![BabyBear::ZERO; desc.trace_width];
+        for (i, cell) in row.iter_mut().enumerate().take(rot::IROOT + 1) {
+            *cell = BabyBear::new(100 + i as u32);
+        }
+        // site 0: the first four limbs; sites 1..=6: digest + three limbs (arity 4);
+        // site 7: digest + committed height (arity 2); the final site: digest + the
+        // iroot LITERALLY LAST (arity 2) -> STATE_COMMIT.
+        let mut d = hash_many(&[row[0], row[1], row[2], row[3]]);
+        row[rot::CHAIN_BASE] = d;
+        for k in 1..=6 {
+            let b = 3 * k + 1;
+            d = hash_many(&[d, row[b], row[b + 1], row[b + 2]]);
+            row[rot::CHAIN_BASE + k] = d;
+        }
+        d = hash_many(&[d, row[rot::COMMITTED_HEIGHT]]);
+        row[rot::CHAIN_BASE + 7] = d;
+        let commit = hash_many(&[d, row[rot::IROOT]]);
+        row[rot::STATE_COMMIT] = commit;
+        fill_chip_lanes(&desc, &mut row);
+        let pi = vec![commit, row[rot::COMMITTED_HEIGHT]];
+        (vec![row; 4], pi)
+    }
+
+    /// The staged acceptance gate: the Lean-emitted rotated-state probe proves and
+    /// verifies through the IR-v2 multi-table assembly (main + chip + byte — every
+    /// absorption a real permutation row), and the staged shape's proof size is
+    /// measured (printed; run with `--nocapture` to read it).
+    #[test]
+    fn rotation_probe_honest_witness_proves_verifies_and_measures() {
+        let desc = rotation_probe_desc();
+        let (rows, pi) = rotation_probe_trace();
+        let proof = prove_vm_descriptor2(&desc, &rows, &pi, &MemBoundaryWitness::default(), &[])
+            .expect("honest rotated-block witness must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            2,
+            "rotation probe commits main + chip only (no range/mem/map lookups; \
+             descriptor-empty tables elided)"
+        );
+        verify_vm_descriptor2(&desc, &proof, &pi).expect("rotation probe proof must verify");
+        let total = postcard::to_allocvec(&proof).expect("postcard").len();
+        println!(
+            "rotation-state v3-staged probe proof: {total} bytes (~{:.1} KiB)",
+            total as f64 / 1024.0
+        );
+    }
+
+    // ==== THE REGISTER-COUNT MEASUREMENT (R ∈ {16, 24, 32}) ====
+    //
+    // Registers are ALWAYS-PAID: every register is a commitment limb in EVERY turn
+    // proof (a main-trace column opened at each FRI query + chip absorption rows),
+    // forever. Heap fields are METERED: umem rows only when touched (the real-turn
+    // umem proof measures 64.4 KiB — `tests/effect_vm_umem_real_turn.rs`). The
+    // parametric Lean emission (`EffectVmEmitRotationR.lean`, keystone
+    // `wireCommitR_binds` parametric in R) stages R=24/R=32 probes beside the
+    // deployed R=16 so the register-count decision is MEASURED, not vibed
+    // (`.docs-history-noclaude/ROTATION-CUTOVER.md` pre-gates).
+
+    /// The staged probe descriptor for a v3-staged registry key.
+    fn rotation_probe_desc_key(key: &str) -> EffectVmDescriptor2 {
+        let json = crate::effect_vm_descriptors::V3_STAGED_DESCRIPTORS
+            .iter()
+            .find(|(k, _, _)| *k == key)
+            .unwrap_or_else(|| panic!("v3-staged key {key} not registered"))
+            .1;
+        parse_vm_descriptor2(json).expect("staged rotation probe parses")
+    }
+
+    /// The honest rotated-block witness at register count `r`: distinct limbs
+    /// (`100 + col`), the genuine chained absorption (4-wide head, 3-wide groups
+    /// while ≥ 3 remain, singletons after, the iroot alone LAST — the Lean
+    /// `chunk31` chunking), site digests on the chain carriers, final digest on
+    /// `state_commit`, PI = [published commit, committed height].
+    fn rotation_probe_trace_r(r: usize) -> (Vec<Vec<BabyBear>>, Vec<BabyBear>) {
+        use crate::effect_vm_descriptors::rotation_layout_for;
+        use crate::poseidon2::hash_many;
+        let lay = rotation_layout_for(r);
+        // Phase B-GATE: widen to the graduated descriptor's trace width (the lane columns appended
+        // past the probe width). Build the digest chain first, then `fill_chip_lanes` fills lanes
+        // 1..7 for every chip lookup off the row (descriptor-driven, so R=16 == the hand builder).
+        let key = match r {
+            16 => "rotationProbeVmDescriptor2",
+            24 => "rotationProbeVmDescriptorR24",
+            32 => "rotationProbeVmDescriptorR32",
+            _ => panic!("no staged rotation probe descriptor for R={r}"),
+        };
+        let desc = rotation_probe_desc_key(key);
+        let mut row = vec![BabyBear::ZERO; desc.trace_width];
+        for (i, cell) in row.iter_mut().enumerate().take(lay.iroot + 1) {
+            *cell = BabyBear::new(100 + i as u32);
+        }
+        let mut d = hash_many(&[row[0], row[1], row[2], row[3]]);
+        let mut chain = 0usize;
+        row[lay.chain_base + chain] = d;
+        chain += 1;
+        let mut col = 4;
+        while col <= lay.committed_height {
+            let remaining = lay.committed_height - col + 1;
+            if remaining >= 3 {
+                d = hash_many(&[d, row[col], row[col + 1], row[col + 2]]);
+                col += 3;
+            } else {
+                d = hash_many(&[d, row[col]]);
+                col += 1;
+            }
+            row[lay.chain_base + chain] = d;
+            chain += 1;
+        }
+        assert_eq!(chain, lay.num_chain, "chain carrier count at R={r}");
+        let commit = hash_many(&[d, row[lay.iroot]]);
+        row[lay.state_commit] = commit;
+        fill_chip_lanes(&desc, &mut row);
+        let pi = vec![commit, row[lay.committed_height]];
+        (vec![row; 4], pi)
+    }
+
+    /// The honest R=16 witness built by the PARAMETRIC builder is bit-identical to
+    /// the hand-built one (the pinned shape did not move).
+    #[test]
+    fn rotation_probe_trace_r16_matches_pinned_builder() {
+        let (a, pa) = rotation_probe_trace();
+        let (b, pb) = rotation_probe_trace_r(16);
+        assert_eq!(a, b);
+        assert_eq!(pa, pb);
+    }
+
+    /// THE MEASUREMENT: prove + verify all three register counts at the production
+    /// `ir2_config` and print the always-paid grid — proof bytes, opened-values
+    /// bytes, prove/verify time, chip rows, trace width. Run with
+    /// `--release --nocapture` to read it; the verdict lives in
+    /// `.docs-history-noclaude/ROTATION-CUTOVER.md`.
+    #[test]
+    fn rotation_probe_register_count_measurement() {
+        for (key, r) in [
+            ("rotationProbeVmDescriptor2", 16usize),
+            ("rotationProbeVmDescriptorR24", 24),
+            ("rotationProbeVmDescriptorR32", 32),
+        ] {
+            let desc = rotation_probe_desc_key(key);
+            let (rows, pi) = rotation_probe_trace_r(r);
+            let t0 = std::time::Instant::now();
+            let proof =
+                prove_vm_descriptor2(&desc, &rows, &pi, &MemBoundaryWitness::default(), &[])
+                    .unwrap_or_else(|e| {
+                        panic!("honest R={r} rotated-block witness must prove: {e}")
+                    });
+            let prove_ms = t0.elapsed().as_secs_f64() * 1e3;
+            assert_eq!(
+                proof.degree_bits.len(),
+                2,
+                "R={r}: rotation probe commits main + chip only"
+            );
+            let t1 = std::time::Instant::now();
+            verify_vm_descriptor2(&desc, &proof, &pi)
+                .unwrap_or_else(|e| panic!("R={r} rotation probe proof must verify: {e}"));
+            let verify_ms = t1.elapsed().as_secs_f64() * 1e3;
+            let total = postcard::to_allocvec(&proof).expect("postcard").len();
+            let opened = postcard::to_allocvec(&proof.opened_values)
+                .expect("postcard")
+                .len();
+            println!(
+                "rotation-probe R={r}: proof {total} B (~{:.1} KiB) | opened-values {opened} B \
+                 (~{:.1} KiB) | prove {prove_ms:.0} ms | verify {verify_ms:.1} ms | \
+                 chip 2^{} rows | main width {}",
+                total as f64 / 1024.0,
+                opened as f64 / 1024.0,
+                proof.degree_bits[1],
+                desc.trace_width,
+            );
+        }
+    }
+
+    /// SPOT TAMPER-REFUSAL at the measured widths (R=24, R=32): a wider block with
+    /// untested columns is worse than a narrow one. A +1 tamper on a LOW register
+    /// (r0), the HIGHEST register (r_{R-1} — no narrower layout carries it), the
+    /// iroot, and the commit carrier each refuses; so do both PIs. (R=16 keeps the
+    /// full every-column gauntlet below.)
+    #[test]
+    fn rotation_probe_r24_r32_spot_tamper_refusal() {
+        use crate::effect_vm_descriptors::rotation_layout_for;
+        use std::panic::{AssertUnwindSafe, catch_unwind};
+        for (key, r) in [
+            ("rotationProbeVmDescriptorR24", 24usize),
+            ("rotationProbeVmDescriptorR32", 32),
+        ] {
+            let desc = rotation_probe_desc_key(key);
+            let lay = rotation_layout_for(r);
+            let (rows, pi) = rotation_probe_trace_r(r);
+            // The PUBLIC entry runs the pre-flight replay, so a tamper must come back as a
+            // fail-closed `Err` — a panic is a bug, not a refusal, and now REDs.
+            let refuse = |rows: &Vec<Vec<BabyBear>>, pi: &Vec<BabyBear>, what: &str| {
+                must_refuse_or_unsat_panic(what, || {
+                    prove_vm_descriptor2(&desc, rows, pi, &MemBoundaryWitness::default(), &[])
+                });
+            };
+            for col in [1, r, lay.iroot, lay.state_commit] {
+                let mut t = rows.clone();
+                t[0][col] = t[0][col] + BabyBear::ONE;
+                refuse(&t, &pi, &format!("R={r}: tampered column {col}"));
+            }
+            for k in 0..pi.len() {
+                let mut p = pi.clone();
+                p[k] = p[k] + BabyBear::ONE;
+                refuse(&rows, &p, &format!("R={r}: tampered PI {k}"));
+            }
+        }
+    }
+
+    /// TAMPER-REFUSAL, every column: each of the 33 probe columns (all 24 limbs —
+    /// including the widened registers r8..r15, the heap_root limb, the committed
+    /// height, and the iroot — plus the commitment carrier and every chain carrier)
+    /// is load-bearing: a +1 tamper on any of them refuses. So do both PIs (the
+    /// published commit and the published height). Tampers refuse either eagerly or
+    /// at the batch self-verify; the debug prover may panic on the violated tooth —
+    /// both are refusals (the absent-gauntlet pattern).
+    #[test]
+    fn rotation_probe_refuses_every_tampered_column_and_pi() {
+        use crate::effect_vm::columns::rotation as rot;
+        use std::panic::{AssertUnwindSafe, catch_unwind};
+        let desc = rotation_probe_desc();
+        let (rows, pi) = rotation_probe_trace();
+        // The PUBLIC entry runs the pre-flight replay, so a tamper must come back as a
+        // fail-closed `Err` — a panic is a bug, not a refusal, and now REDs.
+        let refuse = |rows: &Vec<Vec<BabyBear>>, pi: &Vec<BabyBear>, what: &str| {
+            must_refuse_or_unsat_panic(what, || {
+                prove_vm_descriptor2(&desc, rows, pi, &MemBoundaryWitness::default(), &[])
+            });
+        };
+        for col in 0..rot::PROBE_WIDTH {
+            let mut t = rows.clone();
+            t[0][col] = t[0][col] + BabyBear::ONE;
+            refuse(&t, &pi, &format!("tampered column {col}"));
+        }
+        for k in 0..pi.len() {
+            let mut p = pi.clone();
+            p[k] = p[k] + BabyBear::ONE;
+            refuse(&rows, &p, &format!("tampered PI {k}"));
+        }
+    }
+
+    // ==== THE WIDENED CAVEAT OPERAND (staged) — the heap-caveat wire shape ====
+    //
+    // `Dregg2/Circuit/Emit/EffectVmEmitRotationCaveat.lean` emits the R=24 rotated
+    // block + the 29-felt caveat manifest block (count + 4 × 7-felt entries
+    // [type_tag, DOMAIN_TAG, KEY, p0..p3] — the operand widened from slot_index:u8
+    // to (domain, key) with felt keys) + the chained caveat commitment, three PI
+    // pins. Lean keystones: `caveat_operand_no_aliasing` (slot/heap domain
+    // separation as a theorem), `caveatCommit_binds`,
+    // `rotationCaveatProbe_binds_published`. These tests are the Rust teeth: the
+    // honest witness (one register caveat + one HEAP-KEY caveat) proves+verifies;
+    // a forged DOMAIN TAG refuses; a tampered HEAP KEY refuses; every manifest
+    // column and every PI is load-bearing.
+
+    fn rotation_caveat_probe_desc() -> EffectVmDescriptor2 {
+        parse_vm_descriptor2(
+            crate::effect_vm_descriptors::DREGG_EFFECTVM_ROTATION_CAVEAT_V3_STAGED_JSON,
+        )
+        .expect("staged caveat probe parses")
+    }
+
+    /// The honest caveat-probe witness: the R=24 rotated-block witness (the
+    /// parametric builder's limbs and chain), then the caveat manifest —
+    /// entry 0 caveats REGISTER 3 (monotonic), entry 1 caveats HEAP KEY
+    /// 123456789 (≥ 50; a key no u8 could carry) — and the genuine chained
+    /// caveat absorption. PI = [state commit, height, caveat commit].
+    fn rotation_caveat_probe_trace() -> (Vec<Vec<BabyBear>>, Vec<BabyBear>) {
+        use crate::effect_vm::RotCaveatEntry;
+        use crate::effect_vm::columns::rotation::caveat as cav;
+        use crate::effect_vm_descriptors::rotation_layout_for;
+        use crate::poseidon2::hash_many;
+        let lay = rotation_layout_for(cav::R);
+        let (rot_rows, rot_pi) = rotation_probe_trace_r(cav::R);
+        // Phase B-GATE: build at the caveat descriptor's graduated trace width; copy ONLY the
+        // rotated block's non-lane prefix (limbs + chain carriers + state_commit, all within
+        // `lay.probe_width`) — the caveat descriptor's own lane columns are filled below by
+        // `fill_chip_lanes` (the rotated lanes in `rot_rows` sit at the ROTATED descriptor's lane
+        // offsets, which differ from the caveat descriptor's, so they must NOT be copied).
+        let caveat_desc = rotation_caveat_probe_desc();
+        let mut row = vec![BabyBear::ZERO; caveat_desc.trace_width];
+        row[..lay.probe_width].copy_from_slice(&rot_rows[0][..lay.probe_width]);
+        // The manifest block: count + the four entries (7 felts each).
+        let e0 = RotCaveatEntry {
+            type_tag: crate::effect_vm::pi::SLOT_CAVEAT_TAG_MONOTONIC,
+            domain_tag: cav::DOMAIN_REGISTERS,
+            key: BabyBear::new(3),
+            params: [BabyBear::ZERO; 4],
+        };
+        let e1 = RotCaveatEntry {
+            type_tag: crate::effect_vm::pi::SLOT_CAVEAT_TAG_FIELD_GTE,
+            domain_tag: cav::DOMAIN_HEAP,
+            key: BabyBear::new(123_456_789),
+            params: [
+                BabyBear::new(50),
+                BabyBear::ZERO,
+                BabyBear::ZERO,
+                BabyBear::ZERO,
+            ],
+        };
+        row[cav::COUNT_COL] = BabyBear::new(2);
+        e0.write_to(&mut row[cav::ENTRY_BASE..cav::ENTRY_BASE + cav::ENTRY_SIZE]);
+        e1.write_to(
+            &mut row[cav::ENTRY_BASE + cav::ENTRY_SIZE..cav::ENTRY_BASE + 2 * cav::ENTRY_SIZE],
+        );
+        // (entries 2/3 stay zero — "no caveat".)
+        // The chained caveat absorption: 4-wide head, 3-wide groups, final singleton.
+        let last = cav::BASE + cav::MANIFEST_SIZE - 1; // col 71
+        let mut d = hash_many(&[row[43], row[44], row[45], row[46]]);
+        let mut chain = 0usize;
+        row[cav::CHAIN_BASE + chain] = d;
+        chain += 1;
+        let mut col = 47;
+        while col <= last {
+            let remaining = last - col + 1;
+            if remaining >= 3 {
+                d = hash_many(&[d, row[col], row[col + 1], row[col + 2]]);
+                col += 3;
+            } else {
+                d = hash_many(&[d, row[col]]);
+                col += 1;
+            }
+            if col <= last {
+                row[cav::CHAIN_BASE + chain] = d;
+                chain += 1;
+            }
+        }
+        assert_eq!(chain, cav::NUM_CHAIN, "caveat chain carrier count");
+        row[cav::CAVEAT_COMMIT] = d;
+        // Phase B-GATE: fill the genuine lanes 1..7 for every chip lookup (rotated before/after
+        // sites + caveat sites) off the now-complete digest columns.
+        fill_chip_lanes(&caveat_desc, &mut row);
+        let pi = vec![rot_pi[0], rot_pi[1], d];
+        (vec![row; 4], pi)
+    }
+
+    /// The staged acceptance gate: the Lean-emitted caveat probe proves and
+    /// verifies through the IR-v2 multi-table assembly (every absorption a real
+    /// permutation row), proof size measured.
+    #[test]
+    fn rotation_caveat_probe_honest_witness_proves_verifies_and_measures() {
+        let desc = rotation_caveat_probe_desc();
+        let (rows, pi) = rotation_caveat_probe_trace();
+        let proof = prove_vm_descriptor2(&desc, &rows, &pi, &MemBoundaryWitness::default(), &[])
+            .expect("honest caveat-probe witness must prove");
+        assert_eq!(
+            proof.degree_bits.len(),
+            2,
+            "caveat probe commits main + chip only"
+        );
+        verify_vm_descriptor2(&desc, &proof, &pi).expect("caveat probe proof must verify");
+        let total = postcard::to_allocvec(&proof).expect("postcard").len();
+        println!(
+            "rotation-caveat v3-staged probe proof (R=24 + 29-felt manifest): {total} bytes \
+             (~{:.1} KiB)",
+            total as f64 / 1024.0
+        );
+    }
+
+    /// THE OPERAND TEETH: a forged DOMAIN TAG (heap → registers — the aliasing
+    /// attack the u8 operand could not even EXPRESS — or heap → caps) refuses; a
+    /// tampered HEAP KEY refuses (the key is commitment-carried, not metadata);
+    /// so do the count, every entry column, the caveat chain, the commitment
+    /// carrier, and every PI. Tampers refuse eagerly or at the batch self-verify;
+    /// the debug prover may panic on the violated tooth — both are refusals (the
+    /// absent-gauntlet pattern).
+    #[test]
+    fn rotation_caveat_probe_refuses_forged_domain_and_tampered_key() {
+        use crate::effect_vm::columns::rotation::caveat as cav;
+        use std::panic::{AssertUnwindSafe, catch_unwind};
+        let desc = rotation_caveat_probe_desc();
+        let (rows, pi) = rotation_caveat_probe_trace();
+        // The PUBLIC entry runs the pre-flight replay, so a tamper must come back as a
+        // fail-closed `Err` — a panic is a bug, not a refusal, and now REDs.
+        let refuse = |rows: &Vec<Vec<BabyBear>>, pi: &Vec<BabyBear>, what: &str| {
+            must_refuse_or_unsat_panic(what, || {
+                prove_vm_descriptor2(&desc, rows, pi, &MemBoundaryWitness::default(), &[])
+            });
+        };
+        // The named attacks, by column: entry 1 (the heap caveat) lives at base 51.
+        let e1 = cav::ENTRY_BASE + cav::ENTRY_SIZE;
+        // Forge the heap entry's DOMAIN TAG to the registers plane (slot/heap aliasing).
+        let mut t = rows.clone();
+        t[0][e1 + 1] = BabyBear::new(cav::DOMAIN_REGISTERS);
+        refuse(&t, &pi, "forged domain tag (heap→registers)");
+        // Forge it to a non-caveat plane (caps = 2).
+        let mut t = rows.clone();
+        t[0][e1 + 1] = BabyBear::new(2);
+        refuse(&t, &pi, "forged domain tag (heap→caps)");
+        // Tamper the HEAP KEY (point the caveat at a different heap field).
+        let mut t = rows.clone();
+        t[0][e1 + 2] = t[0][e1 + 2] + BabyBear::ONE;
+        refuse(&t, &pi, "tampered heap key");
+        // Every caveat column is load-bearing: the manifest block, the chain, the carrier.
+        for col in cav::BASE..cav::PROBE_WIDTH {
+            let mut t = rows.clone();
+            t[0][col] = t[0][col] + BabyBear::ONE;
+            refuse(&t, &pi, &format!("tampered caveat column {col}"));
+        }
+        // Every PI is load-bearing — including the published caveat commit.
+        for k in 0..pi.len() {
+            let mut p = pi.clone();
+            p[k] = p[k] + BabyBear::ONE;
+            refuse(&rows, &p, &format!("tampered PI {k}"));
+        }
+    }
+}
+
+
+/// Owned research diagnostic: actual AIR/lookup shape, no preprocessing commitment.
+pub fn grouped_shape_probe(desc: &EffectVmDescriptor2) -> Result<Vec<(String,usize,usize,usize,usize,usize,Vec<(String,usize,usize)>)>,String> {
+    use p3_air::symbolic::AirLayout;
+    use p3_batch_stark::symbolic::{get_max_constraint_degree,get_log_num_quotient_chunks};
+    use p3_field::extension::BinomialExtensionField;
+    use p3_lookup::{InteractionSymbolicBuilder,Kind,LogUpGadget,Lookups};
+    type Ef=BinomialExtensionField<P3BabyBear,4>;
+    if desc.constraints.iter().any(|c|matches!(c,VmConstraint2::ChalGate(_))) {
+        return Err("group4 profile refuses ChalGate".into());
+    }
+    let layout=check_descriptor2(desc)?;
+    let presence=Presence::of(desc,&layout);
+    let airs=instance_airs(desc,layout,presence);
+    Ok(airs.iter().map(|air| {
+        let lookups=Lookups::<P3BabyBear>::from_air::<Ef,_>(air);
+        let al=AirLayout::from_air::<P3BabyBear>(air);
+        let mut raw=InteractionSymbolicBuilder::<P3BabyBear,Ef>::new(al);
+        air.eval(&mut raw);
+        // Compare actual symbolic expressions, signed multiplicities and bus order.
+        let mut global_at=0;
+        let local_count=raw.local_interactions().len();
+        for (col,g) in lookups.iter().enumerate() {
+            assert_eq!(g.column,col);
+            if let Kind::Global(bus)=&g.kind {
+                assert!((1..=4).contains(&g.elements.len()));
+                assert_eq!(g.elements.len(),g.multiplicities.len());
+                for (tuple,count) in g.elements.iter().zip(&g.multiplicities) {
+                    let i=&raw.global_interactions()[global_at];
+                    assert_eq!(bus,&i.bus_name);
+                    assert_eq!(format!("{tuple:?}"),format!("{:?}",i.fields));
+                    assert_eq!(format!("{count:?}"),format!("{:?}",i.count));
+                    global_at+=1;
+                }
+            } else { assert!(col<local_count); }
+        }
+        assert_eq!(global_at,raw.global_interactions().len());
+        let degree=get_max_constraint_degree::<P3BabyBear,Ef,_,_>(air,al,&lookups,&LogUpGadget::new());
+        let log_quotient=get_log_num_quotient_chunks::<P3BabyBear,Ef,_,_>(air,al,&lookups,1,&LogUpGadget::new());
+        let label=match air {Ir2Air::Main{..}=>"main".to_owned(),Ir2Air::LeanTable{air,..}=>air.name.clone()};
+        let mut buses=std::collections::BTreeMap::<String,(usize,usize)>::new();
+        for g in lookups.iter() {if let Kind::Global(bus)=&g.kind {let x=buses.entry(bus.clone()).or_default();x.0+=g.elements.len();x.1+=1;}}
+        (label,<Ir2Air as BaseAir<P3BabyBear>>::width(air),raw.global_interactions().len(),lookups.len(),degree,log_quotient,buses.into_iter().map(|(bus,(terms,groups))|(bus,terms,groups)).collect())
+    }).collect())
+}

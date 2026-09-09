@@ -1,0 +1,8 @@
+{
+  "classification": "EXECUTED",
+  "generic_Lean_fold_matches_strict_template_migration": true,
+  "generated_template": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/generated_query/template_ir2.json",
+  "sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933",
+  "corrected_assertions": 2744,
+  "lookup_preserved": true
+}

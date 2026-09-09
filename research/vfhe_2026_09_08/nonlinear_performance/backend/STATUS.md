@@ -1,0 +1,3 @@
+[EXECUTED] Completed isolated fixed-four global lookup grouping, actual compact/old symbolic shapes, two focused native tests, and two checked Lean bridges (13 exact guarded theorem pins). Runtime/shape sources frozen. The runtime owner has all selected paths and is responsible for the single complete-class performance/proof execution.
+
+[OPEN] No measured proving speedup is asserted by this helper alone. Range lowering/extraction and native implementation refinement remain explicit boundaries; the checked Lean completion begins from actual semantic LookupHolds. New degree6/three-instance PCS profile is not assigned old pricing.

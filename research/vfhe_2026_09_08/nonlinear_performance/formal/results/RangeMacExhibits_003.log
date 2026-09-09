@@ -1,0 +1,3 @@
+'Minidregg.Compiler.RangeMacExhibits.nonzeroPremise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeMacExhibits.missingProductFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeMacExhibits.premiseInhabited' depends on axioms: [propext, Classical.choice, Quot.sound]

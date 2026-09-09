@@ -1,0 +1,52 @@
+{
+  "claim": "DERIVED allocation of previously executed savedPUBLICclass000; no baseline rerun",
+  "case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced",
+  "phases": [
+    {
+      "phase": "infer",
+      "chunks": 88,
+      "proof_bytes": 76353261,
+      "prove_seconds": 197.369796832,
+      "emission_seconds": 53.25521686975844,
+      "phase_seconds": 295.5746157079702,
+      "peak_rss_bytes": 1219149824,
+      "record": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/infer/result.json"
+    },
+    {
+      "phase": "extension",
+      "chunks": 4,
+      "proof_bytes": 21658174,
+      "prove_seconds": 63.52553554,
+      "emission_seconds": 26.14594249991933,
+      "phase_seconds": 95.45811212499393,
+      "peak_rss_bytes": 8975597568,
+      "record": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/extension/result.json"
+    },
+    {
+      "phase": "tensor",
+      "chunks": 18,
+      "proof_bytes": 12977918,
+      "prove_seconds": 28.277851962,
+      "emission_seconds": 8.833524081972428,
+      "phase_seconds": 45.84916504198918,
+      "peak_rss_bytes": 865370112,
+      "record": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/tensor/result.json"
+    },
+    {
+      "phase": "rescale",
+      "chunks": 6,
+      "proof_bytes": 34633859,
+      "prove_seconds": 93.822556501,
+      "emission_seconds": 38.71802679199027,
+      "phase_seconds": 140.34961295803078,
+      "peak_rss_bytes": 8699576320,
+      "record": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale/result.json"
+    }
+  ],
+  "complete_class_producer_seconds": 593.576087124995,
+  "complete_class_fresh_verify_seconds": 39.84963191696443,
+  "complete_class_proof_bytes": 145623212,
+  "complete_class_prove_seconds": 382.995740835,
+  "recorded_other_class_mac_seconds": 253.05561309,
+  "comparison_caution": "One sequential recordedrun perclass; measuredtimingvariation isnot removed by matchinginputs."
+}

@@ -1,0 +1,33 @@
+{
+  "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+  "explicit_deserialized_old_verify_ns": 104234083,
+  "gate_control": {
+    "changed_public_cells": 1,
+    "changed_public_rows_sha256": "43e4ccb1d116e8d00f09da2607d94a02448c4b54a0c927c83a7ca48e5acd651b",
+    "changed_trace_cells": 1,
+    "column": 43,
+    "gate_oracle_excludes_lookup_bus": true,
+    "new_digit": 10,
+    "old_digit": 11,
+    "old_gate_ns": 598192167,
+    "old_native_main_gates_accept": true,
+    "old_template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "physical_row": 8191,
+    "repaired_gate_ns": 579668375,
+    "repaired_native_main_gates_accept": false,
+    "repaired_template_sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933",
+    "scope": "One public raw-row terminal control, no FHE container generation or secret inputs",
+    "source_public_rows_sha256": "abe798ede5a79d84c5ad28449210968912c794b1ab042fe821280965fc9a30c3",
+    "source_trace_sha256": "d15d6bae898ab0c2da08a931b9f75cc2f0c09a11f314462a698d6ac8ec8c7209"
+  },
+  "old_mutated_statement_native_verified": true,
+  "old_proof_repaired_statement_rejected": true,
+  "proof_bytes": 842358,
+  "proof_sha256": "3497e4a37522cc9d188d0d11bcecc86cb194af0580f336d2b8860205e24714c8",
+  "prove_ns_including_backend_self_verification": 4147960916,
+  "repaired_proof_generation_attempted": false,
+  "repaired_rejection": "IR v2 verification failed: OodEvaluationMismatch { index: Some(0) }",
+  "repaired_statement_verify_ns": 107498375,
+  "scope": "Native gate-oracle contrast establishes selector effect; accepted old proof includes actual PCS, quotient and LogUp checks. Rejecting that proof under repaired statement is additional statement-binding evidence, not a substitute for the gate contrast.",
+  "source_input_bytes_unchanged": true
+}
