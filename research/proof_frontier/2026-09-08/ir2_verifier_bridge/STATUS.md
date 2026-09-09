@@ -1,0 +1,1 @@
+[EXECUTED] FROZEN: 13 additive Lean modules, 128 exact axiom pins; changed-module checks and import gate pass. `Ir2Fri.native_fresh_38` proves the explicit actual-profile native row/query proximity bound. Canonical admission freshly verifies the saved proof. See README.md for the remaining arbitrary-proof packed extraction, PCS and FS boundaries.

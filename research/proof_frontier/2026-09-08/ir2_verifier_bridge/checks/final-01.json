@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Theory/P3BarycentricInterpolation.olean",
+    "Theory/P3BarycentricInterpolation.lean"
+  ],
+  "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+  "exit_code": 0,
+  "source_sha256": "98ea087a3c5afd4d8c64fc1f2e89788f5b717b08fdd953b2b7a303cbeade2d1a",
+  "source_unchanged": true,
+  "elapsed_s": 9.351301908493042,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-01.log"
+}

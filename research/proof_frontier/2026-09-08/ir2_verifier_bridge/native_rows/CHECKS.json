@@ -1,0 +1,101 @@
+{
+  "claim_status": "[EXECUTED]",
+  "check": {
+    "module": "Selvage.Ir2FriNativeRows",
+    "source_sha256": "1af8534ecb4455c8cb51037160a81fd869a4271fc2e2d0417fbec8a323fb6d57",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-o",
+      "/tmp/minidregg-ir2-native-rows-20260908/.lake/build/lib/lean/Selvage/Ir2FriNativeRows.olean",
+      "Selvage/Ir2FriNativeRows.lean"
+    ],
+    "cwd": "/tmp/minidregg-ir2-native-rows-20260908",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_s": 6.492994070053101,
+    "source_unchanged": true,
+    "guarded_theorem_count": 12,
+    "axiom_union": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "import_boundary": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/tmp/minidregg-ir2-native-rows-20260908",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "forbidden_scan": {
+    "instrument": "Python regex over both complete frozen additive native row/event modules",
+    "pattern": "\\b(?:sorry|native_decide)\\b|^\\s*axiom\\s",
+    "matches": []
+  },
+  "dependency_snapshots": [
+    {
+      "status": "[SOURCE]",
+      "module": "Selvage.Ir2FriModel",
+      "path": "/tmp/minidregg-ir2-native-rows-20260908/Selvage/Ir2FriModel.lean",
+      "source_sha256": "8e318297417b149fe66f70da761b6b08d8d36bb4b0799a8a20a79f3d319dc5de",
+      "olean_sha256": "fd1a3437101c57a63d32fece42cf731ea80354213e1c598e9f0a2e572b53ed92",
+      "seen": "Copied GREEN source/olean; inspected definitions and proof bodies; not modified."
+    },
+    {
+      "status": "[SOURCE]",
+      "module": "Selvage.P3NativeFoldRows",
+      "path": "/tmp/minidregg-ir2-native-rows-20260908/Selvage/P3NativeFoldRows.lean",
+      "source_sha256": "e35f6297160e39eb88338354292294f38a0b50d9aa4c767e26b52883d0538f18",
+      "olean_sha256": "bfaebadf7d5dbbf414fedcab099263adefa1b5672b5693ae41ccbaab2f24ec4d",
+      "seen": "Copied GREEN source/olean; inspected definitions and proof bodies; not modified."
+    },
+    {
+      "status": "[SOURCE]",
+      "module": "Selvage.Ir2FriCosetRows",
+      "path": "/tmp/minidregg-ir2-native-rows-20260908/Selvage/Ir2FriCosetRows.lean",
+      "source_sha256": "5c7849dc04bba663d799fdf5adeb9735a44dad701c1b2d66c267b2e79703c2aa",
+      "olean_sha256": "208a207b06720e5a7f23244e29feb01ce4a83fff40a3d3a6bc590d50e66a1b11",
+      "seen": "Copied GREEN source/olean; inspected definitions and proof bodies; not modified."
+    },
+    {
+      "status": "[SOURCE]",
+      "module": "Selvage.Ir2FriProjection",
+      "path": "/tmp/minidregg-ir2-native-rows-20260908/Selvage/Ir2FriProjection.lean",
+      "source_sha256": "a498c394695d7beefad55b2bcb9a98dbe70d0d295404eb4720c52bccb15caf76",
+      "olean_sha256": "5786e44025e227b30d0190ec764466c48542e354e13c0e96504ce3ccd0b0a6bd",
+      "seen": "Copied GREEN source/olean; inspected definitions and proof bodies; not modified."
+    }
+  ],
+  "event_check": {
+    "module": "Selvage.Ir2FriNativeEvent",
+    "source_sha256": "b1eb2dd419db1733ded9798c90bface3a4598fc7730438005088d8c34d97922a",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-o",
+      "/tmp/minidregg-ir2-native-rows-20260908/.lake/build/lib/lean/Selvage/Ir2FriNativeEvent.olean",
+      "Selvage/Ir2FriNativeEvent.lean"
+    ],
+    "cwd": "/tmp/minidregg-ir2-native-rows-20260908",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_s": 14.035737037658691,
+    "source_unchanged": true,
+    "guarded_theorem_count": 6,
+    "axiom_union": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "native_rows_preserved": "1af8534ecb4455c8cb51037160a81fd869a4271fc2e2d0417fbec8a323fb6d57"
+}

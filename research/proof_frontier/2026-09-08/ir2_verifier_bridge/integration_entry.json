@@ -1,0 +1,21 @@
+{
+  "name": "ir2_verifier_bridge",
+  "root": "../proof_frontier/2026-09-08/ir2_verifier_bridge",
+  "patch": "../proof_frontier/2026-09-08/ir2_verifier_bridge/ir2-verifier-bridge.patch",
+  "expected_pins": 128,
+  "source_files": {
+    "Theory/P3BarycentricInterpolation.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Theory/P3BarycentricInterpolation.lean",
+    "Selvage/FiniteModuloSampling.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/FiniteModuloSampling.lean",
+    "Selvage/BabyBearModuloSampling.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/BabyBearModuloSampling.lean",
+    "Selvage/Ir2FriSchedule.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriSchedule.lean",
+    "Selvage/Ir2FriConsistency.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriConsistency.lean",
+    "Selvage/P3NativeFoldRows.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/P3NativeFoldRows.lean",
+    "Selvage/Ir2FriCosetRows.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriCosetRows.lean",
+    "Selvage/Ir2FriModel.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriModel.lean",
+    "Selvage/Ir2FriProjection.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriProjection.lean",
+    "Selvage/Ir2FriNativeRows.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriNativeRows.lean",
+    "Selvage/Ir2FriNativeEvent.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriNativeEvent.lean",
+    "Selvage/Ir2FriSoundness.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriSoundness.lean",
+    "Selvage/Ir2FriWitnesses.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/src/Selvage/Ir2FriWitnesses.lean"
+  }
+}

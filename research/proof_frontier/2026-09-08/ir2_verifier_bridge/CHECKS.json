@@ -1,0 +1,250 @@
+{
+  "claim_status": "[EXECUTED]",
+  "isolate": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+  "base_git_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "lean_version": "4.30.0",
+  "patch_sha256": "57e47c1748df847e32305ad2b0a7d8b515920b2d6ae02dd36030a097a947f6c8",
+  "module_count": 13,
+  "pin_count": 128,
+  "source_files": {
+    "Theory/P3BarycentricInterpolation.lean": {
+      "sha256": "98ea087a3c5afd4d8c64fc1f2e89788f5b717b08fdd953b2b7a303cbeade2d1a",
+      "pins": 5,
+      "lines": 140
+    },
+    "Selvage/FiniteModuloSampling.lean": {
+      "sha256": "1edafdb9f8e80357bb167633544043693c19549cd99079f3f60574b589137c75",
+      "pins": 10,
+      "lines": 165
+    },
+    "Selvage/BabyBearModuloSampling.lean": {
+      "sha256": "be2f232546563c003f72b01ffa1cca76b3aecae9f9e08980dde55a7482201c73",
+      "pins": 10,
+      "lines": 143
+    },
+    "Selvage/Ir2FriSchedule.lean": {
+      "sha256": "7bab7edc008c5a3d40cda2010a6ee4e604cd45f5547ab55fe45c4f1eaca2384c",
+      "pins": 16,
+      "lines": 213
+    },
+    "Selvage/Ir2FriConsistency.lean": {
+      "sha256": "5ce076ca5dbe716cef88fb2282e601c3acc8df11943de5086737478315e8f60b",
+      "pins": 21,
+      "lines": 358
+    },
+    "Selvage/P3NativeFoldRows.lean": {
+      "sha256": "859e34b5d391889edc84cbed3e17cf03b6a03839e56f6db020daf14cbaada165",
+      "pins": 10,
+      "lines": 188
+    },
+    "Selvage/Ir2FriCosetRows.lean": {
+      "sha256": "9f155b610e37e304ddb5eccc8b74f82c20cd0bd12e93ae03eb495ec38c27eec0",
+      "pins": 7,
+      "lines": 123
+    },
+    "Selvage/Ir2FriModel.lean": {
+      "sha256": "492d82978b558fc17ed84fc3545252c6857b98b10a9c09806a8f3baeb4f82599",
+      "pins": 10,
+      "lines": 235
+    },
+    "Selvage/Ir2FriProjection.lean": {
+      "sha256": "fae8bd66c81976b41ecfa91e112018acce6021183fe6cc27dc148f6a23812144",
+      "pins": 5,
+      "lines": 102
+    },
+    "Selvage/Ir2FriNativeRows.lean": {
+      "sha256": "1af8534ecb4455c8cb51037160a81fd869a4271fc2e2d0417fbec8a323fb6d57",
+      "pins": 12,
+      "lines": 200
+    },
+    "Selvage/Ir2FriNativeEvent.lean": {
+      "sha256": "b1eb2dd419db1733ded9798c90bface3a4598fc7730438005088d8c34d97922a",
+      "pins": 6,
+      "lines": 114
+    },
+    "Selvage/Ir2FriSoundness.lean": {
+      "sha256": "ceaa778d8a58183ee8d64400c97d8bf69d5c69d21c93b83355285d597832231c",
+      "pins": 5,
+      "lines": 147
+    },
+    "Selvage/Ir2FriWitnesses.lean": {
+      "sha256": "b068fc973234b0ecce70bc21b2442b4524655ade94a42e1c6db1889ebb609418",
+      "pins": 11,
+      "lines": 172
+    }
+  },
+  "own_final_checks": [
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Theory/P3BarycentricInterpolation.olean",
+        "Theory/P3BarycentricInterpolation.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+      "exit_code": 0,
+      "source_sha256": "98ea087a3c5afd4d8c64fc1f2e89788f5b717b08fdd953b2b7a303cbeade2d1a",
+      "source_unchanged": true,
+      "elapsed_s": 9.351301908493042,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-01.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Selvage/P3NativeFoldRows.olean",
+        "Selvage/P3NativeFoldRows.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+      "exit_code": 0,
+      "source_sha256": "859e34b5d391889edc84cbed3e17cf03b6a03839e56f6db020daf14cbaada165",
+      "source_unchanged": true,
+      "elapsed_s": 12.740943908691406,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-02.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Selvage/Ir2FriCosetRows.olean",
+        "Selvage/Ir2FriCosetRows.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+      "exit_code": 0,
+      "source_sha256": "9f155b610e37e304ddb5eccc8b74f82c20cd0bd12e93ae03eb495ec38c27eec0",
+      "source_unchanged": true,
+      "elapsed_s": 8.331509113311768,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-03.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Selvage/Ir2FriModel.olean",
+        "Selvage/Ir2FriModel.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+      "exit_code": 0,
+      "source_sha256": "492d82978b558fc17ed84fc3545252c6857b98b10a9c09806a8f3baeb4f82599",
+      "source_unchanged": true,
+      "elapsed_s": 12.67396879196167,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-04.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Selvage/Ir2FriProjection.olean",
+        "Selvage/Ir2FriProjection.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+      "exit_code": 0,
+      "source_sha256": "fae8bd66c81976b41ecfa91e112018acce6021183fe6cc27dc148f6a23812144",
+      "source_unchanged": true,
+      "elapsed_s": 5.549269914627075,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-05.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Selvage/Ir2FriSoundness.olean",
+        "Selvage/Ir2FriSoundness.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+      "exit_code": 0,
+      "source_sha256": "ceaa778d8a58183ee8d64400c97d8bf69d5c69d21c93b83355285d597832231c",
+      "source_unchanged": true,
+      "elapsed_s": 6.546885251998901,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-06.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Selvage/Ir2FriWitnesses.olean",
+        "Selvage/Ir2FriWitnesses.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+      "exit_code": 0,
+      "source_sha256": "b068fc973234b0ecce70bc21b2442b4524655ade94a42e1c6db1889ebb609418",
+      "source_unchanged": true,
+      "elapsed_s": 5.6752610206604,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-07.log"
+    }
+  ],
+  "retained_child_checks": {
+    "query_sampling": {
+      "path": "query_sampling/CHECKS.json",
+      "sha256": "670122c64d612137b5a90f56c97db57008d8e44e3ad3e473175402fb6f935cdb"
+    },
+    "schedule": {
+      "path": "schedule/CHECKS.json",
+      "sha256": "52ce94e99b7ba5b76593f384f7fb340f14198e52c73c21592d160e1caa88985a"
+    },
+    "native_rows": {
+      "path": "native_rows/CHECKS.json",
+      "sha256": "809bfe95e36a8dddbe32c58dc48a4686fddcc09e73b1ed1810eac14c0a6300a6"
+    }
+  },
+  "direct_predecessor_imports": {
+    "Selvage/AuditSampling.lean": {
+      "sha256": "e4a487464308b8cdeaf367692390d25f7c30229b2840f038b825de3a7306362a"
+    },
+    "Selvage/ConsistencyCoherentTransport.lean": {
+      "sha256": "46c38e1a563f1113cca58732a9d7214240b9e5183e08ebc3a3b2af0124d3a866"
+    },
+    "Theory/BitReverseFriTransport.lean": {
+      "sha256": "f546b123f49632cbe3284baa23c3f12943529f7c2b8231e87f7ac71b2c2399cf"
+    },
+    "Selvage/FoldingConsistencyWeights.lean": {
+      "sha256": "108e6dbdc3237605703c0b0119a295291c0d74fd1dd98a8dc92f2e6b6d9f3e03"
+    },
+    "Selvage/BabyBearFoldingTower.lean": {
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314"
+    },
+    "Selvage/ConsistencyMask.lean": {
+      "sha256": "ff9784ab6a7a4e503041591b0d009b4e98e1aad85f02f3933178fe840a489d86"
+    },
+    "Selvage/ArityEightConsistencySchedule.lean": {
+      "sha256": "3fb35c055edc2d3f59764b6b93e5fb5ff8d80e4d72bd84e94cca11b30d6bf42f"
+    },
+    "Selvage/ArityEightTwoRoundWitnesses.lean": {
+      "sha256": "f5be8500a800fa2e07ca82143f1f76fa50adabc0f046598220d824b4322d68da"
+    }
+  },
+  "import_gate": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "exit_code": 0,
+    "log": "checks/import-boundary.log"
+  },
+  "patch_replay": "PASS: additive exact-source reconstruction in empty temporary directory",
+  "forbidden_tokens": "PASS: no sorry, axiom declaration, native_decide in stripped source",
+  "q38_arithmetic": {
+    "instrument": "Python fractions.Fraction; Decimal at precision50",
+    "theta": "2/5",
+    "prime": 2013265921,
+    "challenge_numerator": 131064,
+    "exact_numerator": "1312172475402798413024202295632678959477674799523660986688954745486264566684305716102647899602048726705459800672374630823313509901689728740281016698044051030593212675451067287918116342402615534677597112778155021866449348163438431075535365829991411818625319930928964192018306860795892056799184437361734506296109781768785559549018069530757518458873",
+    "exact_denominator": "353381169394356891530331660913439814553384106430484991697012335164622329271109677267133618913250448197838262710091026013532034925872377553374314464174304510063944675784131894814224513628716823794271247963328165783834132300541297901449036785205140194553225668379508312792899401629160427811607294577692138987615521612574630655573664030510522557708537692161",
+    "decimal": "3.7131929741804526490604594685894176714019742647209E-9"
+  },
+  "scope": "Individual changed-module checks; no broad rebuild or arbitrary Rust proof refinement claim"
+}

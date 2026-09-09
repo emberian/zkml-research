@@ -1,0 +1,75 @@
+{
+  "claim_status": "[EXECUTED]",
+  "checks": [
+    {
+      "module": "Selvage.FiniteModuloSampling",
+      "source_sha256": "1edafdb9f8e80357bb167633544043693c19549cd99079f3f60574b589137c75",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-query-sampling-20260908/.lake/build/lib/lean/Selvage/FiniteModuloSampling.olean",
+        "Selvage/FiniteModuloSampling.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-query-sampling-20260908",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_s": 4.570604085922241,
+      "source_unchanged": true,
+      "guarded_theorem_count": 10,
+      "axiom_union": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "module": "Selvage.BabyBearModuloSampling",
+      "source_sha256": "be2f232546563c003f72b01ffa1cca76b3aecae9f9e08980dde55a7482201c73",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-query-sampling-20260908/.lake/build/lib/lean/Selvage/BabyBearModuloSampling.olean",
+        "Selvage/BabyBearModuloSampling.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-query-sampling-20260908",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_s": 5.0192711353302,
+      "source_unchanged": true,
+      "guarded_theorem_count": 10,
+      "axiom_union": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    }
+  ],
+  "import_boundary": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/tmp/minidregg-ir2-query-sampling-20260908",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "forbidden_scan": {
+    "instrument": "Python regex over both complete frozen Lean source files",
+    "pattern": "\\b(?:sorry|native_decide)\\b|^\\s*axiom\\s",
+    "matches": []
+  },
+  "source_map": {
+    "claim_status": "[SOURCE]",
+    "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-challenger-82cfad73/src/duplex_challenger.rs",
+    "lines": "250-270",
+    "sha256": "97d24562539a515f67dcb290cd14c389aeea3d7b2a79e0f0585b3e01ed1652a2",
+    "seen": "CanSampleBits<usize> implementation: assert bit bounds, sample a base-field value, take its canonical u64 integer, cast to usize, mask with ((1 << bits)-1)."
+  }
+}
