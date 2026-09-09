@@ -1,0 +1,96 @@
+{
+  "complete_class_verified": true,
+  "expected": {
+    "model_ciphertext_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+    "query_sha256": "a38f555b758db46393e4e96655a6004cc788c44f8338ccb0c05bf143930c00d3",
+    "evaluation_key_sha256": "421a81856b9ed3f83f28e8ec6d0678799b298ce6f8ce533f645ebfc9115b6955",
+    "kernel_ciphertext_sha256": "0291fc483b13e118d9ee74fc1093e9fbb91db0f9d3eb3767a4b2213f774e196e"
+  },
+  "binding": {
+    "dot_ciphertext_sha256": "9ada38328eedf30eede7e95895430bec60059abbc4be129c5fcb9f8e9c7617f7",
+    "evaluation_key_sha256": "421a81856b9ed3f83f28e8ec6d0678799b298ce6f8ce533f645ebfc9115b6955",
+    "kernel_ciphertext_sha256": "0291fc483b13e118d9ee74fc1093e9fbb91db0f9d3eb3767a4b2213f774e196e",
+    "linear_plan_sha256": "ec98f40fa8437f03ccf0193774c705f4a488fd55b42fcdc46f6c3774c7c51f22",
+    "model_ciphertext_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+    "query_sha256": "a38f555b758db46393e4e96655a6004cc788c44f8338ccb0c05bf143930c00d3"
+  },
+  "square_binding": {
+    "extension_power_sha256": "37da8d93be440f3762d7eab7d1da1d8901a0d52978e231311436cfb975b0c344",
+    "input_ciphertext_sha256": "9ada38328eedf30eede7e95895430bec60059abbc4be129c5fcb9f8e9c7617f7",
+    "output_ciphertext_sha256": "0291fc483b13e118d9ee74fc1093e9fbb91db0f9d3eb3767a4b2213f774e196e",
+    "scope": "Exact raw-square phase binding with public parsing and linear NTT transforms in verifier TCB; no scaler/product computation in verification",
+    "source_trace_sha256": "e55d3e8d42bdc068f0b05d48f96af6ea46447887926da63151a4919bd845e8d0"
+  },
+  "new_proof_objects": 116,
+  "prover_self_checks": 116,
+  "fresh_consumer_checks": 116,
+  "prior_native_acceptances_before_wrapper_error": 1,
+  "total_native_verification_calls": 233,
+  "reused_proofs": 0,
+  "proof_production_repeated": false,
+  "phases": {
+    "infer": {
+      "proofs": 88,
+      "proof_bytes": 64418707,
+      "prove_seconds": 164.104358502,
+      "self_verify_seconds": 6.77037187,
+      "emission_seconds": 43.702725918847136,
+      "phase_seconds": 239.9727270840085,
+      "peak_rss_bytes": 915111936
+    },
+    "extension": {
+      "proofs": 4,
+      "proof_bytes": 21658784,
+      "prove_seconds": 57.23228575,
+      "self_verify_seconds": 0.886275293,
+      "emission_seconds": 25.252564500027802,
+      "phase_seconds": 87.67741383297835,
+      "peak_rss_bytes": 8971370496
+    },
+    "tensor": {
+      "proofs": 18,
+      "proof_bytes": 12978643,
+      "prove_seconds": 26.819510125,
+      "self_verify_seconds": 1.042096167,
+      "emission_seconds": 8.617804415989667,
+      "phase_seconds": 44.00268566701561,
+      "peak_rss_bytes": 885440512
+    },
+    "rescale": {
+      "proofs": 6,
+      "proof_bytes": 34634052,
+      "prove_seconds": 128.378345167,
+      "self_verify_seconds": 1.588186999,
+      "emission_seconds": 47.146450000000186,
+      "phase_seconds": 184.65941354096867,
+      "peak_rss_bytes": 9500557312
+    }
+  },
+  "new_mac_proof_bytes": 64418707,
+  "baseline_mac_proof_bytes": 76353261,
+  "mac_proof_byte_reduction": 0.15630706329622257,
+  "new_mac_prove_seconds": 164.104358502,
+  "baseline_mac_prove_seconds": 197.369796832,
+  "mac_prove_time_reduction": 0.16854371268525614,
+  "whole_class_proof_bytes": 133690186,
+  "baseline_whole_class_proof_bytes": 145623212,
+  "whole_class_proof_byte_reduction": 0.08194453230436916,
+  "whole_class_prove_seconds": 376.53449954399997,
+  "baseline_whole_class_prove_seconds": 382.995740835,
+  "proof_phase_seconds": 556.3122401249711,
+  "baseline_proof_phase_seconds": 577.2315058329841,
+  "whole_class_fresh_consumer_seconds": 35.74915766698541,
+  "baseline_whole_class_fresh_consumer_seconds": 39.84963191696443,
+  "whole_class_peak_rss_bytes": 9500557312,
+  "private_files_read": 0,
+  "finished_utc": "2026-09-09T01:55:37.160660+00:00",
+  "controller_correction": "Original fresh native check accepted; frozen wrapper then raised KeyError for optional backend diagnostic. This separately frozen consumer uses the pinned binary identity and conditionally checks the diagnostic when present. Original failed attempt preserved; no proofs regenerated.",
+  "comparison_scope": "One corrected same-public-case class. All arithmetic now holds on the final row; historical baseline skipped it. Compact MAC uses ranges and fixed-four grouped lookups. Historical timing is not a controlled same-relation benchmark, and old numerical PCS pricing is not inherited.",
+  "acceptance_record": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/consumer001/RESULT.json",
+  "acceptance_sha256": "16f83668be8e459fb5f25b60e3927996a6558e63c4ea63122852f16eefd793f6",
+  "profile_sha256": "8ba4941617f07cdef623271fb4a2c18431d5c52faa8ee36ed7c3169c3cff9fd7",
+  "consumer_contract_sha256": "caea8875f1d1b954164ade547bb522f5d2fe6ccf68ae32bb18c40571ad9c4115",
+  "api_sha256": "b7eddd6bd211a552bd3ef15edb5c9349f6276d394e7c5204ecfc670331bc4878",
+  "wall_including_wrapper_repair_seconds": 840.07968,
+  "wall_scope": "Includes the preserved wrapper failure and source repair interval; not a clean single-command latency measurement."
+}

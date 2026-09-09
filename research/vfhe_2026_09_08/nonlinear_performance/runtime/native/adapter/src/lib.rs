@@ -1,0 +1,137 @@
+//! Deterministically reconstruct PUBLIC preprocessing while retaining the existing
+//! OS-randomized hiding PCS for witness, quotient, random-codeword and FRI work.
+//! No AIR, verifier equation, proof schema or FRI parameter is replaced here.
+use dregg_circuit::descriptor_ir2::{Ir2BatchProof,prove_vm_descriptor2_for_config,verify_vm_descriptor2_with_config};
+use dregg_circuit::descriptor_proof_backend::{DescriptorProofProver,DescriptorProofVerifier,DescriptorStatement,Plonky3HidingFriWitness};
+use dregg_circuit::stark_zk::{ZK_FRI_LOG_BLOWUP,ZK_FRI_LOG_FINAL_POLY_LEN,ZK_FRI_MAX_LOG_ARITY,ZK_FRI_NUM_QUERIES,ZK_FRI_QUERY_POW_BITS,ZK_FRI_COMMIT_POW_BITS,ZK_EXT_DEGREE};
+use p3_baby_bear::{BabyBear,Poseidon2BabyBear,default_babybear_poseidon2_16};
+use p3_challenger::DuplexChallenger;
+use p3_commit::{BuildPeriodicLdeTableFast,ExtensionMmcs,OpenedValues,Pcs,PeriodicLdeTable};
+use p3_dft::Radix2DitParallel;
+use p3_field::{Field,extension::BinomialExtensionField};
+use p3_fri::{FriParameters,HidingFriPcs};
+use p3_matrix::dense::RowMajorMatrix;
+use p3_merkle_tree::MerkleTreeHidingMmcs;
+use p3_symmetric::{PaddingFreeSponge,TruncatedPermutation};
+use p3_uni_stark::StarkConfig;
+use rand::{SeedableRng,rngs::SmallRng};
+use rand_xoshiro::Xoshiro256PlusPlus;
+
+type Perm=Poseidon2BabyBear<16>;
+type Extension=BinomialExtensionField<BabyBear,ZK_EXT_DEGREE>;
+type Challenger=DuplexChallenger<BabyBear,Perm,16,8>;
+type Hash=PaddingFreeSponge<Perm,16,8,8>;
+type Compress=TruncatedPermutation<Perm,2,8,16>;
+type ValMmcs<R=SmallRng>=MerkleTreeHidingMmcs<<BabyBear as Field>::Packing,<BabyBear as Field>::Packing,Hash,Compress,R,2,8,4>;
+type Inner<R=SmallRng>=HidingFriPcs<BabyBear,Radix2DitParallel<BabyBear>,ValMmcs<R>,ExtensionMmcs<BabyBear,Extension,ValMmcs<R>>,R>;
+type Domain=<Inner as Pcs<Extension,Challenger>>::Domain;
+type Commitment=<Inner as Pcs<Extension,Challenger>>::Commitment;
+type Data=<Inner as Pcs<Extension,Challenger>>::ProverData;
+type OpeningProof=<Inner as Pcs<Extension,Challenger>>::Proof;
+type OpeningPoints<'a>=Vec<(&'a Data,Vec<Vec<Extension>>)>;
+type Claims=Vec<(Commitment,Vec<(Domain,Vec<(Extension,Vec<Extension>)>)>)>;
+
+fn fresh_rng()->SmallRng {
+    let mut seed=<SmallRng as SeedableRng>::Seed::default();
+    getrandom::fill(seed.as_mut()).expect("OS entropy for hiding PCS");
+    SmallRng::from_seed(seed)
+}
+fn inner_with_rng<R:Clone>(leaf_rng:R,codeword_rng:R)->Inner<R> {
+    let perm=default_babybear_poseidon2_16();
+    let hash=PaddingFreeSponge::new(perm.clone());
+    let compress=TruncatedPermutation::new(perm);
+    let mmcs=ValMmcs::new(hash,compress,0,leaf_rng);
+    let fri=FriParameters {log_blowup:ZK_FRI_LOG_BLOWUP,log_final_poly_len:ZK_FRI_LOG_FINAL_POLY_LEN,
+        max_log_arity:ZK_FRI_MAX_LOG_ARITY,num_queries:ZK_FRI_NUM_QUERIES,
+        commit_proof_of_work_bits:ZK_FRI_COMMIT_POW_BITS,query_proof_of_work_bits:ZK_FRI_QUERY_POW_BITS,
+        mmcs:ExtensionMmcs::new(mmcs.clone())};
+    Inner::new(Radix2DitParallel::default(),mmcs,fri,4,codeword_rng)
+}
+fn witness_inner()->Inner {inner_with_rng(fresh_rng(),fresh_rng())}
+fn public_inner()->Inner<Xoshiro256PlusPlus> {
+    // Explicit portable algorithm and exact byte seed: unlike SmallRng, this
+    // does not select a different generator on wasm32 versus native64.
+    // Only commit_preprocessing receives this factory's result.
+    let rng=Xoshiro256PlusPlus::from_seed(*b"vfhe-public-preprocessing-v1!!!!");
+    inner_with_rng(rng.clone(),rng)
+}
+
+/// The only changed method is commit_preprocessing. All other calls below are
+/// direct delegation, including the hiding-specific methods with trait defaults.
+#[derive(Clone)]
+pub struct PublicPreprocessingPcs {witness:Inner}
+impl BuildPeriodicLdeTableFast for PublicPreprocessingPcs {
+    type PeriodicDomain=Domain;
+    fn maybe_build_periodic_lde_table_fast(&self,cols:&[Vec<BabyBear>],trace:Domain,quotient:Domain)->Option<PeriodicLdeTable<BabyBear>> {
+        self.witness.maybe_build_periodic_lde_table_fast(cols,trace,quotient)
+    }
+}
+impl Pcs<Extension,Challenger> for PublicPreprocessingPcs {
+    type Domain=Domain;type Commitment=Commitment;type ProverData=Data;
+    type EvaluationsOnDomain<'a>=<Inner as Pcs<Extension,Challenger>>::EvaluationsOnDomain<'a>;
+    type Proof=OpeningProof;type Error=<Inner as Pcs<Extension,Challenger>>::Error;
+    const ZK:bool=<Inner as Pcs<Extension,Challenger>>::ZK;
+    fn natural_domain_for_degree(&self,n:usize)->Domain {Pcs::<Extension,Challenger>::natural_domain_for_degree(&self.witness,n)}
+    fn log_max_lde_height(&self)->usize {Pcs::<Extension,Challenger>::log_max_lde_height(&self.witness)}
+    fn commit(&self,evals:impl IntoIterator<Item=(Domain,RowMajorMatrix<BabyBear>)>)->(Commitment,Data) {Pcs::<Extension,Challenger>::commit(&self.witness,evals)}
+    fn commit_preprocessing(&self,evals:impl IntoIterator<Item=(Domain,RowMajorMatrix<BabyBear>)>)->(Commitment,Data) {
+        // Recreate the public-only PCS every time, so verification does not depend
+        // on which unrelated commitments this process previously performed.
+        Pcs::<Extension,Challenger>::commit_preprocessing(&public_inner(),evals)
+    }
+    fn commit_quotient(&self,domain:Domain,evals:RowMajorMatrix<BabyBear>,chunks:usize)->(Commitment,Data) {Pcs::<Extension,Challenger>::commit_quotient(&self.witness,domain,evals,chunks)}
+    fn get_quotient_ldes(&self,evals:impl IntoIterator<Item=(Domain,RowMajorMatrix<BabyBear>)>,chunks:usize)->Vec<RowMajorMatrix<BabyBear>> {Pcs::<Extension,Challenger>::get_quotient_ldes(&self.witness,evals,chunks)}
+    fn commit_ldes(&self,ldes:Vec<RowMajorMatrix<BabyBear>>)->(Commitment,Data) {Pcs::<Extension,Challenger>::commit_ldes(&self.witness,ldes)}
+    fn get_evaluations_on_domain<'a>(&self,data:&'a Data,idx:usize,domain:Domain)->Self::EvaluationsOnDomain<'a> {Pcs::<Extension,Challenger>::get_evaluations_on_domain(&self.witness,data,idx,domain)}
+    fn get_evaluations_on_domain_no_random<'a>(&self,data:&'a Data,idx:usize,domain:Domain)->Self::EvaluationsOnDomain<'a> {Pcs::<Extension,Challenger>::get_evaluations_on_domain_no_random(&self.witness,data,idx,domain)}
+    fn open(&self,points:OpeningPoints<'_>,challenger:&mut Challenger)->(OpenedValues<Extension>,OpeningProof) {Pcs::<Extension,Challenger>::open(&self.witness,points,challenger)}
+    fn open_with_preprocessing(&self,points:OpeningPoints<'_>,challenger:&mut Challenger,prep:bool)->(OpenedValues<Extension>,OpeningProof) {Pcs::<Extension,Challenger>::open_with_preprocessing(&self.witness,points,challenger,prep)}
+    fn verify(&self,claims:Claims,proof:&OpeningProof,challenger:&mut Challenger)->Result<(),Self::Error> {Pcs::<Extension,Challenger>::verify(&self.witness,claims,proof,challenger)}
+    fn get_opt_randomization_poly_commitment(&self,domains:impl IntoIterator<Item=Domain>)->Option<(Commitment,Data)> {Pcs::<Extension,Challenger>::get_opt_randomization_poly_commitment(&self.witness,domains)}
+    fn build_periodic_lde_table(&self,cols:&[Vec<BabyBear>],trace:Domain,quotient:Domain)->PeriodicLdeTable<BabyBear> {Pcs::<Extension,Challenger>::build_periodic_lde_table(&self.witness,cols,trace,quotient)}
+}
+pub type Config=StarkConfig<PublicPreprocessingPcs,Extension,Challenger>;
+fn config()->Config {
+    StarkConfig::new(PublicPreprocessingPcs{witness:witness_inner()},Challenger::new(default_babybear_poseidon2_16()))
+}
+pub struct FixedPublicPreprocessing;
+impl DescriptorProofVerifier for FixedPublicPreprocessing {
+    type Proof=Ir2BatchProof<Config>;
+    const BACKEND_ID:&'static str="plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1|global-logup-consecutive-group4-v1";
+    fn verify(statement:&DescriptorStatement,proof:&Self::Proof)->Result<(),String> {
+        statement.validate()?;
+        verify_vm_descriptor2_with_config(statement.descriptor(),proof,&statement.public_input_felts(),&config())
+    }
+}
+impl DescriptorProofProver for FixedPublicPreprocessing {
+    type Witness<'a>=Plonky3HidingFriWitness<'a>;
+    fn prove<'a>(statement:&DescriptorStatement,w:Self::Witness<'a>)->Result<Self::Proof,String> {
+        statement.validate()?;
+        prove_vm_descriptor2_for_config(statement.descriptor(),w.base_trace,&statement.public_input_felts(),w.mem_boundary,w.map_heaps,w.umem_boundary,&config())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use p3_field::PrimeCharacteristicRing;
+    #[test]
+    fn public_commitments_reconstruct_but_witness_commitments_remain_randomized() {
+        let a=PublicPreprocessingPcs{witness:witness_inner()};
+        let b=PublicPreprocessingPcs{witness:witness_inner()};
+        let domain=a.natural_domain_for_degree(8);
+        let rows=RowMajorMatrix::new(vec![BabyBear::ONE;4],1);
+        let encode=|c:&Commitment|postcard::to_allocvec(c).unwrap();
+        let (pa,_)=a.commit_preprocessing([(domain,rows.clone())]);
+        let (pb,_)=b.commit_preprocessing([(domain,rows.clone())]);
+        assert_eq!(encode(&pa),encode(&pb));
+        let (wa,_)=a.commit([(domain,rows.clone())]);
+        let (wb,_)=b.commit([(domain,rows.clone())]);
+        assert_ne!(encode(&wa),encode(&wb));
+        let (pa_after,_)=a.commit_preprocessing([(domain,rows.clone())]);
+        assert_eq!(encode(&pa),encode(&pa_after));
+        let mut changed=rows; changed.values[0]=BabyBear::ZERO;
+        let (pc,_)=b.commit_preprocessing([(domain,changed)]);
+        assert_ne!(encode(&pa),encode(&pc));
+    }
+}

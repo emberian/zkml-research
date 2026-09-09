@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-native-terminal-control",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/artifacts/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/generated_query/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class0/case/public_rows.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof0/generated/trace.leu32",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/native_terminal_control/results/control001/artifacts"
+  ],
+  "start_unix": 1788917672.784394,
+  "exit_code": 0,
+  "wall_seconds": 5.943987084028777,
+  "user_seconds": 16.035626,
+  "system_seconds": 0.6446259999999999,
+  "max_rss_bytes": 2367062016,
+  "explicit_policy": {
+    "RAYON_NUM_THREADS": "4"
+  },
+  "input_and_source_sha256": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/artifacts/template_ir2.json": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/generated_query/template_ir2.json": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class0/case/public_rows.json": "abe798ede5a79d84c5ad28449210968912c794b1ab042fe821280965fc9a30c3",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof0/generated/trace.leu32": "d15d6bae898ab0c2da08a931b9f75cc2f0c09a11f314462a698d6ac8ec8c7209",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-native-terminal-control": "65e630e40982ea871b79a48f48b943040b6d125397e47942b438a7593a591b0d",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/native_terminal_control/src/main.rs": "e46b154b5867ae00eddfdcf83ada328a4e37ee7bc2999a66206ea916bb75f143",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/native_terminal_control/Cargo.toml": "c55097a04a2db05fd1280e996d11bc64ebe870883068edf6b2bfb4cad2c38f57",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/native_terminal_control/Cargo.lock": "4657d9f643e95daee86af16ae219394a6bdbc82346bfca2cb0ffb2e9c5570127",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/native_terminal_control/run.py": "d7002bc4900924b93d12b6180a4935ef7b1147084eef41d8a9309c498e1a0c67",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b",
+    "/Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs": "596a450e77a8b905626e8c8b7b68dcffadd07b9bd9bcb71a040f009e8f77fb89"
+  },
+  "posthash_match": true
+}

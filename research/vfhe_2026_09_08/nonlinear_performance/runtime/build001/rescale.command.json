@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/Users/ember/.cargo/bin/cargo",
+    "build",
+    "--release",
+    "--offline",
+    "--manifest-path",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/rescale/Cargo.toml"
+  ],
+  "started_utc": "2026-09-09T01:35:00.967815+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 1800,
+  "pid": 76166,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T01:35:02.299408+00:00",
+  "elapsed_seconds": 1.3316017909673974,
+  "user_seconds": 2.888346,
+  "system_seconds": 0.28354799999999997,
+  "max_rss_bytes": 246153216
+}

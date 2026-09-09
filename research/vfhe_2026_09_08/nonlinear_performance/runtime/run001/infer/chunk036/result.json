@@ -1,0 +1,104 @@
+{
+  "kind": "infer",
+  "index": 36,
+  "proof": {
+    "arity": 97,
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1|global-logup-consecutive-group4-v1",
+    "binding": {
+      "dot_ciphertext_sha256": "9ada38328eedf30eede7e95895430bec60059abbc4be129c5fcb9f8e9c7617f7",
+      "evaluation_key_sha256": "421a81856b9ed3f83f28e8ec6d0678799b298ce6f8ce533f645ebfc9115b6955",
+      "kernel_ciphertext_sha256": "0291fc483b13e118d9ee74fc1093e9fbb91db0f9d3eb3767a4b2213f774e196e",
+      "linear_plan_sha256": "ec98f40fa8437f03ccf0193774c705f4a488fd55b42fcdc46f6c3774c7c51f22",
+      "model_ciphertext_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+      "query_sha256": "a38f555b758db46393e4e96655a6004cc788c44f8338ccb0c05bf143930c00d3"
+    },
+    "end_row_exclusive": 151552,
+    "first_row": 147456,
+    "index": 36,
+    "prime_index": 2,
+    "proof_bytes": 732900,
+    "proof_sha256": "3de98efafa552993ddc28a6f1c90d1a5ee9097735e601077edfd7b7988309f40",
+    "prove_ns": 1828966167,
+    "public_rows_sha256": "a7c1a557b4d61d0a7ba57ccae291853be6c7c0962a37a0bdf2ef306d89d42683",
+    "rows": 4096,
+    "self_verify_ns": 86354250,
+    "stage": 4,
+    "template_sha256": "ffeafaa2287ed77f4f7b6fc73f0762019f47dbd813e9e104a3f7568858eeff23",
+    "verified": true,
+    "width": 349
+  },
+  "costs": {
+    "emit": {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime2/witness_plan.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime2/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/infer_case/rows/036.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/a0707a594236b25dd25257b1/chunk036"
+      ],
+      "started_utc": "2026-09-09T01:43:17.413076+00:00",
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+      "timeout_seconds": 900,
+      "pid": 83110,
+      "returncode": 0,
+      "timed_out": false,
+      "finished_utc": "2026-09-09T01:43:17.927298+00:00",
+      "elapsed_seconds": 0.5142388749518432,
+      "user_seconds": 0.45147,
+      "system_seconds": 0.005633,
+      "max_rss_bytes": 11681792
+    },
+    "prove": {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-complete-kernel-infer",
+        "prove",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+        "36",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime2/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/infer_case",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/a0707a594236b25dd25257b1/chunk036/trace.leu32",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/infer/chunk036"
+      ],
+      "started_utc": "2026-09-09T01:43:17.931405+00:00",
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+      "timeout_seconds": 1800,
+      "pid": 83135,
+      "returncode": 0,
+      "timed_out": false,
+      "finished_utc": "2026-09-09T01:43:20.078263+00:00",
+      "elapsed_seconds": 2.1468949589761905,
+      "user_seconds": 7.09554,
+      "system_seconds": 0.262244,
+      "max_rss_bytes": 868581376
+    },
+    "compress": {
+      "argv": [
+        "/opt/homebrew/bin/zstd",
+        "-T1",
+        "-3",
+        "--no-progress",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/a0707a594236b25dd25257b1/chunk036/trace.leu32",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/a0707a594236b25dd25257b1/chunk036/trace.leu32.zst"
+      ],
+      "started_utc": "2026-09-09T01:43:20.079900+00:00",
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+      "timeout_seconds": 300,
+      "pid": 83170,
+      "returncode": 0,
+      "timed_out": false,
+      "finished_utc": "2026-09-09T01:43:20.134783+00:00",
+      "elapsed_seconds": 0.05489620799198747,
+      "user_seconds": 0.020678,
+      "system_seconds": 0.0037289999999999997,
+      "max_rss_bytes": 13205504
+    }
+  },
+  "witness_transport": {
+    "raw_bytes": 5718016,
+    "raw_sha256": "01ef1c8c54a8392a8fa8134f59d7040df9ec382ba9000331d7c77981b10401c7",
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/a0707a594236b25dd25257b1/chunk036/trace.leu32.zst",
+    "bytes": 1688875,
+    "sha256": "b8c17c3aa2dde770c9afa2d7fb737d76624f569e3281068ceb3ee1e7e6b6a873"
+  }
+}

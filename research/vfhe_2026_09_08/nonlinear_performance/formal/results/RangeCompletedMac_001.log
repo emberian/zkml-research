@@ -1,0 +1,23 @@
+Compiler/RangeCompletedMac.lean:77:73: error: Invalid projection: Projections cannot be used on functions, and
+  he
+has function type
+  ∀ t ∈ [vr (w.carry 0), vr (w.carry 6)], accepts a t
+Compiler/RangeCompletedMac.lean:112:44: error: Application type mismatch: The argument
+  id
+has type
+  ?m.246 → ?m.246
+but is expected to have type
+  ℕ
+in the application
+  BfvKeyswitchMac.column_correct id
+Compiler/RangeCompletedMac.lean:112:6: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (3000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/RangeCompletedMac.lean:84:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (3000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/RangeCompletedMac.lean:117:8: error: (kernel) unknown constant 'Minidregg.Compiler.RangeCompletedMac.source_completion'

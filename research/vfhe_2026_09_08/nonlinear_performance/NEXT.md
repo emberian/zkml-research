@@ -1,0 +1,1 @@
+No additional run or comparison is queued. Parent may integrate this completed package and its two additive source patches. If continued later, use runtime/api.py with its pinned corrected metadata checker, not the preserved failedwrapper. A new numerical PCS/LogUp/FRI profile theorem is not supplied here; do not inherit old pricing or claim whole historical model-history repair.

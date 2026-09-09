@@ -1,0 +1,8 @@
+'Minidregg.Compiler.RangeKeyswitchRow.ranges_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchRow.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchRow.actualRowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchRow.publicPrefix' depends on axioms: [propext]
+'Minidregg.Compiler.RangeKeyswitchRow.instDecidableEqRangeSpec' does not depend on any axioms
+'Minidregg.Compiler.RangeKeyswitchRow.instBEqRangeSpec' does not depend on any axioms
+'Minidregg.Compiler.RangeKeyswitchRow.instReflBEqRangeSpec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchRow.instLawfulBEqRangeSpec' depends on axioms: [propext, Classical.choice, Quot.sound]

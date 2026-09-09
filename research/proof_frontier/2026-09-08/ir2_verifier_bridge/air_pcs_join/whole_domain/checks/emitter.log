@@ -1,0 +1,2 @@
+produced0/4 rows
+{"actual_row_constraint_check":"unchanged native prover; emitter checks four constructed rows","changed_output_refused":true,"constructed_cases_checked":4,"ir2_arithmetic_constraints":2744,"public_tuple_order":"rowID,acc2x7,positivePT2x7,negativePT2x7,out2x7","radix64_refused":true,"rows":4,"source_constraints":4442,"trace_bytes":40144,"trace_width":2509}

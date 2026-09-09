@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "--check",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/whole-domain-query.patch"
+  ],
+  "cwd": "/tmp/minidregg-whole-domain-patch-check-20260909",
+  "exit_code": 0,
+  "output": "",
+  "predecessor_emitter_sha256": "d76ab80472bdc34bab576ebc96d227a2e1766d6996fda67b635f3d76e6b505b7"
+}

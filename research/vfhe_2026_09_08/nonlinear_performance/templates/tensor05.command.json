@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/repair_template.py",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime5/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/templates/tensor/5/template_ir2.json"
+  ],
+  "started_utc": "2026-09-09T01:35:14.713749+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 120,
+  "pid": 76418,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T01:35:14.832603+00:00",
+  "elapsed_seconds": 0.11886408302234486,
+  "user_seconds": 0.094208,
+  "system_seconds": 0.012425,
+  "max_rss_bytes": 42237952
+}

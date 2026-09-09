@@ -1,0 +1,860 @@
+//! **THE CUSTOM-PROOF STATE-BINDING ABI** — the canonical public-input prefix that
+//! makes a custom sub-proof provably ABOUT a specific cell-state transition.
+//!
+//! ## The gap this closes
+//!
+//! `Effect::Custom` binds two things into the EffectVM's public inputs
+//! (`pi::CUSTOM_PROOFS_BASE + i*16`): the sub-program's `vk_hash` (8 felts) and a
+//! `custom_proof_commitment` (8 felts) = [`custom_proof_pi_commitment_8`] over the
+//! sub-proof's public inputs. The deployed fold
+//! (`dregg_circuit_prove::joint_turn_recursive::prove_custom_binding_node_segmented`)
+//! `connect`s that CLAIMED commitment, lane by lane, to the commitment the custom leaf
+//! computes IN-CIRCUIT from the sub-proof's REAL public inputs — so a claimed commitment
+//! no verifying sub-proof backs is UNSAT.
+//!
+//! That chain binds **which public inputs the sub-proof used**. It does NOT bind what
+//! those public inputs SAY. The commitment is an opaque hash: nothing required the
+//! sub-proof's PIs to mention the cell's pre-state or post-state at all. So a custom AIR
+//! could prove a beautiful transition `R1 -> R2` while the turn commits `S1 -> S2`, with
+//! `R1 != S1` and `R2 != S2`, and every existing gate passed. The custom proof verified;
+//! it was simply not ABOUT the state the turn committed.
+//!
+//! ## The ABI
+//!
+//! A state-binding custom proof's public inputs are, by construction:
+//!
+//! ```text
+//!   pis[0..8]   = the cell's PRE-state  commitment (the leg's tail PI [n-16..n-8))
+//!   pis[8..16]  = the cell's POST-state commitment (the leg's tail PI [n-8..n))
+//!   pis[16..]   = application-specific (the game's board roots, move seals, …)
+//! ```
+//!
+//! **WHICH 8-felt commitment (read this — two different values in this system are both
+//! called "the commitment"):** the prefix is the deployed **v9 CHIP commit** —
+//! `dregg_cell::commitment::bytes32_to_felt8` of the stored/claimed 32-byte commitment,
+//! i.e. `compute_canonical_state_commitment_v9_felt8` = `wire_commit_8_chip` over the
+//! cell's 178 rotated pre-limbs + iroot (the byte-twin of the circuit's `fill_wide_block`).
+//! That is the value the executor holds, the value the WIDE leg publishes in its LAST 16
+//! descriptor PIs, and the value the in-circuit fold connects against.
+//!
+//! It is **NOT** `CellState::compute_commitment_8`, and **NOT** the EffectVM
+//! `PI[OLD_COMMIT_BASE..+8]` / `PI[NEW_COMMIT_BASE..+8]` prefix slots. That legacy
+//! bundle-path commitment is a 5-node `hash_4_to_1` tree over
+//! `balance/nonce/fields[8]/cap_root/record_digest` — a different function over a strict
+//! SUBSET of the limbs, with no cells_root, no map roots, no iroot. The two values are not
+//! two encodings of one commitment and can never be equal; nothing pins them to each other.
+//! (This doc previously named those two — the prose had drifted from the wire. The
+//! executor's comparands, below, are and were the v9 chip commit.)
+//!
+//! ## Why the prefix rides for free
+//!
+//! [`custom_proof_pi_commitment_8`] hashes the WHOLE public-input vector. So the moment
+//! the state roots are IN the PIs, they are already covered by the commitment the
+//! `Effect::Custom` row carries and the fold binds in-circuit. No new EffectVM PI slot, no
+//! new trace column, no descriptor change, no VK rotation — the binding surface already
+//! exists; this module fixes what MUST occupy its preimage.
+//!
+//! ## The two teeth (and their exact reach)
+//!
+//! 1. **Off-AIR, executor (LANDED here):**
+//!    `dregg_turn::executor::proof_verify::TurnExecutor::enforce_custom_proof_state_binding`
+//!    recomputes [`custom_proof_pi_commitment_8`] over the wire sub-proof's PIs and
+//!    requires (a) it equals the in-circuit-committed `custom_proof_commitment`, and
+//!    (b) the PI prefix equals the turn's OLD/NEW state commitments. This is what an
+//!    EXECUTOR (and any re-executing validator) enforces.
+//!
+//! 2. **In-circuit, fold (LANDED — and the DEPLOYED DEFAULT):** the dual-expose leg leaf
+//!    carries the descriptor-bound REAL roots in its exposed segment
+//!    (`ivc_turn_chain::SEG_FIRST_OLD` lanes `0..8`, `SEG_LAST_NEW` lanes `8..16`). The
+//!    custom leaf's `expose_claim` is widened from `[commitment(8)]` to
+//!    `[commitment(8) ‖ pis[0..16]]`
+//!    (`dregg_circuit_prove::custom_leaf_adapter::prove_custom_leaf_with_state_commitment`),
+//!    and `dregg_circuit_prove::joint_turn_recursive::prove_custom_binding_node_state_segmented`
+//!    `connect`s those 16 lanes to the leg's segment lanes. The deployed chain prover
+//!    (`ivc_turn_chain::prove_chain_core_rotated`'s Custom arm) mints THAT pair — so a
+//!    custom sub-proof whose declared roots are not the leg's real rotated roots has no
+//!    satisfying partner: UNSAT, no root, and the light client never receives a verifying
+//!    artifact.
+//!
+//! A PURE LIGHT CLIENT (folding only the recursion tree, never re-running the executor) now
+//! witnesses BOTH "a sub-proof backs this commitment" AND "its PIs are this cell's roots".
+//!
+//! The two teeth are deliberately kept, and they are not redundant: tooth 1 refuses the
+//! turn at admission (cheap, before any STARK), tooth 2 makes the refusal a property of the
+//! ARTIFACT rather than of the verifier's diligence. Tooth 2 is not a conditional gate —
+//! the state node REQUIRES the 24-lane claim, so a prover cannot dodge it by minting the
+//! narrow leaf.
+//!
+//! **The ABI is now load-bearing on the prover side.** A sub-program publishing fewer than
+//! `CUSTOM_PI_STATE_PREFIX_LEN` PIs is refused by the deployed prover, exactly as it was
+//! already refused by the deployed executor. A custom carrier must publish the prefix.
+
+use crate::field::BabyBear;
+
+/// Offset of the PRE-state commitment in a state-binding custom proof's public inputs.
+pub const CUSTOM_PI_OLD_COMMIT_BASE: usize = 0;
+/// Width of the PRE-state commitment (the 8-felt Poseidon2 form the EffectVM binds).
+pub const CUSTOM_PI_OLD_COMMIT_LEN: usize = 8;
+/// Offset of the POST-state commitment in a state-binding custom proof's public inputs.
+pub const CUSTOM_PI_NEW_COMMIT_BASE: usize = CUSTOM_PI_OLD_COMMIT_BASE + CUSTOM_PI_OLD_COMMIT_LEN;
+/// Width of the POST-state commitment.
+pub const CUSTOM_PI_NEW_COMMIT_LEN: usize = 8;
+/// Total felts the state-binding prefix occupies. Application public inputs start here.
+pub const CUSTOM_PI_STATE_PREFIX_LEN: usize = CUSTOM_PI_NEW_COMMIT_BASE + CUSTOM_PI_NEW_COMMIT_LEN;
+
+/// ⚑ **THE PREFIX FITS THE DEPLOYED CAP — AT BUILD TIME.** A state prefix that outgrew
+/// `MAX_PUBLIC_INPUTS` would leave the application a negative allowance, and every sub-program
+/// built on the weld would be unprovable. Both operands are constants; this used to be an
+/// `assert!` inside one `#[test]` in this file, i.e. checked after the whole crate had compiled.
+const _: () = assert!(
+    CUSTOM_PI_STATE_PREFIX_LEN < crate::dsl::circuit::MAX_PUBLIC_INPUTS,
+    "the custom state-binding prefix no longer fits the deployed public-input cap"
+);
+
+/// Domain separator for the custom sub-proof's public-input commitment.
+///
+/// **Byte-identical to `dregg_circuit_prove::custom_proof_bind::CUSTOM_PROOF_PI_DOMAIN`**
+/// and to [`crate::effect_vm::trace_rotated::DFA_ROUTE_COMMIT_DOMAIN`]. Duplicated here
+/// because `dregg-circuit` cannot depend on `dregg-circuit-prove` (the verify floor must
+/// not pull the prover); the cross-pin test
+/// `circuit-prove/tests/custom_state_binding_cross_pin.rs` fails loudly on any drift.
+pub const CUSTOM_PROOF_PI_DOMAIN: &str = "dregg-custom-proof-bind-pi-v1";
+
+/// The canonical 8-felt commitment to a custom sub-proof's public inputs — the value the
+/// `Effect::Custom` row carries and the fold binds in-circuit.
+///
+/// **Byte-identical to `dregg_circuit_prove::custom_proof_bind::custom_proof_pi_commitment`**
+/// (same domain, same `WideHash::from_poseidon2` full 8-felt squeeze). This copy exists so
+/// the VERIFY floor (`dregg-turn`'s executor, which must not depend on the prover) can
+/// recompute the commitment from a wire sub-proof's PIs and reject a mismatch.
+pub fn custom_proof_pi_commitment_8(public_inputs: &[BabyBear]) -> [BabyBear; 8] {
+    crate::binding::WideHash::from_poseidon2(CUSTOM_PROOF_PI_DOMAIN, public_inputs).to_felts()
+}
+
+/// Build the canonical state-binding public-input prefix for a custom sub-proof that
+/// attests the transition `old_commit8 -> new_commit8`.
+///
+/// A custom program's own public inputs are appended after this prefix:
+/// `[state_binding_prefix(old, new), ..app_pis].concat()`.
+pub fn custom_pi_state_prefix(
+    old_commit8: &[BabyBear; 8],
+    new_commit8: &[BabyBear; 8],
+) -> [BabyBear; CUSTOM_PI_STATE_PREFIX_LEN] {
+    let mut out = [BabyBear::ZERO; CUSTOM_PI_STATE_PREFIX_LEN];
+    out[CUSTOM_PI_OLD_COMMIT_BASE..CUSTOM_PI_OLD_COMMIT_BASE + CUSTOM_PI_OLD_COMMIT_LEN]
+        .copy_from_slice(old_commit8);
+    out[CUSTOM_PI_NEW_COMMIT_BASE..CUSTOM_PI_NEW_COMMIT_BASE + CUSTOM_PI_NEW_COMMIT_LEN]
+        .copy_from_slice(new_commit8);
+    out
+}
+
+/// Read the (pre, post) state commitments a state-binding custom proof's public inputs
+/// claim. Returns `None` when the vector is too short to carry the prefix — a proof that
+/// cannot even express the binding, which the executor refuses fail-closed rather than
+/// zero-padding into a false match.
+pub fn extract_custom_pi_state_roots(
+    public_inputs: &[BabyBear],
+) -> Option<([BabyBear; 8], [BabyBear; 8])> {
+    if public_inputs.len() < CUSTOM_PI_STATE_PREFIX_LEN {
+        return None;
+    }
+    let old = core::array::from_fn(|j| public_inputs[CUSTOM_PI_OLD_COMMIT_BASE + j]);
+    let new = core::array::from_fn(|j| public_inputs[CUSTOM_PI_NEW_COMMIT_BASE + j]);
+    Some((old, new))
+}
+
+// ============================================================================
+// THE APP-ROOT WELD ABI — the keystone: force an app's PUBLISHED root R to EQUAL
+// the cell's REAL committed field value, visible to a pure light client.
+// ============================================================================
+//
+// The state prefix above ties a custom sub-proof's `[old8 ‖ new8]` PIs to the cell's real
+// rotated roots — so a pure light client witnesses that the transition is about THIS cell's
+// pre/post commitments. But an application (automatafl's board_new_root8, tug's winner,
+// param-compose/entity-compose's outcome_commitment) ALSO publishes an application ROOT `R` in
+// its app PIs (past the state prefix). `R` is BOUND (covered by the sub-proof's PI commitment,
+// which the fold connects, so a prover cannot swap it post-hoc) but it is NOT TIED to what the
+// cell actually STORES: nothing forces `R == the committed field the app wrote it into`. The
+// `new8` commitment commits the WHOLE post-state (every cell field), but it is an opaque hash —
+// the CellProgram constraint vocabulary cannot open it to re-expose one field, and a prover who
+// picks BOTH the field value it writes AND the `R` it publishes makes them agree trivially.
+//
+// The sound GENERAL form is an IN-CIRCUIT TIE at the fold node: the wide effect-VM leg exposes
+// the cell's committed value for a DECLARED field key `K` (a value carried faithfully in the
+// rotated pre-limbs the `new8` commitment absorbs), and the fold `connect`s it, lane by lane, to
+// the sub-proof's published `R` at a DECLARED PI offset `j`. Then `new8` (welded to the leg's
+// real root) commits the field, the leg exposes that same committed field, and the connect forces
+// `R == field[K]` — a property of the ARTIFACT a pure light client verifies, not of an executor's
+// diligence.
+//
+// This module carries the APP-DECLARED half of that ABI: where `R` sits in the sub-proof PIs
+// (`j`, width `L`) and which cell field key `K` it must equal. The leg-side exposure of `field[K]`
+// and the fold connect live in `dregg-circuit-prove` (the prover), the way the state weld's leg
+// exposure and connect do — this floor crate must not pull the prover.
+
+/// An application-root weld declaration: the sub-proof's published root `R` occupies
+/// `pis[app_root_pi_offset .. app_root_pi_offset + app_root_len]` and MUST equal the cell's
+/// committed value at wide-leg field key `field_key`.
+///
+/// `app_root_pi_offset` is an APP PI index (past the state prefix, so `>= CUSTOM_PI_STATE_PREFIX_LEN`
+/// — an app root overlapping the state commitments is refused). `app_root_len` is the root's width
+/// in felts (`1` for a scalar register like tug's `winner`, `8` for an octet root like automatafl's
+/// `board_new_root8` or the compose `outcome_commitment`). `field_key` is opaque to this floor
+/// crate — the prover maps it to the leg's field-exposure PI slot.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct AppRootBinding {
+    /// `j`: the app PI index where the published root `R` begins.
+    pub app_root_pi_offset: usize,
+    /// `L`: the width of `R` in felts.
+    pub app_root_len: usize,
+    /// `K`: the cell field key `R` must equal (the leg exposes its committed value).
+    pub field_key: usize,
+}
+
+impl AppRootBinding {
+    /// Fail-closed validity: the root must sit strictly past the state prefix (never aliasing
+    /// `[old8 ‖ new8]`) and have nonzero width. A binding that violates this cannot express the
+    /// weld and is refused rather than silently welding the wrong lanes.
+    pub fn is_well_formed(&self) -> bool {
+        self.app_root_len > 0 && self.app_root_pi_offset >= CUSTOM_PI_STATE_PREFIX_LEN
+    }
+
+    /// The last PI index (exclusive) the root occupies — the minimum `public_input_count` a
+    /// sub-program carrying this binding must publish.
+    pub fn app_root_pi_end(&self) -> usize {
+        self.app_root_pi_offset + self.app_root_len
+    }
+}
+
+/// A direct-IR2 application declaration that its public inputs contain the
+/// faithful post-state user-fields map root.  The recursion node connects all
+/// eight lanes to the Custom wide leg's Lean-pinned `fields_root` publication.
+///
+/// This is intentionally distinct from [`AppRootBinding`]: `fields_root` is a
+/// state-commitment component, not one of the contiguous fixed `fields[0..8]`
+/// registers.  Treating it as an app field would select unrelated columns.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PostFieldsRootBinding {
+    /// Public-input offset of the application's native-eight fields root.
+    pub fields_root_pi_offset: usize,
+}
+
+impl PostFieldsRootBinding {
+    pub const LEN: usize = 8;
+
+    pub fn is_well_formed(&self) -> bool {
+        self.fields_root_pi_offset >= CUSTOM_PI_STATE_PREFIX_LEN
+    }
+
+    pub fn fields_root_pi_end(&self) -> usize {
+        self.fields_root_pi_offset.saturating_add(Self::LEN)
+    }
+}
+
+// ============================================================================
+// THE BOARD-WINDOW ABI — the SLICE-LIST generalization of `AppRootBinding`, for a
+// sub-proof that carries a state IN and a state OUT window in its public inputs.
+// ============================================================================
+//
+// `AppRootBinding` names ONE contiguous PI range and welds it to a cell field. A GAME LEG
+// publishes two *state windows* instead: the state it CONSUMED and the state it PRODUCED
+// (automatafl Leg R publishes `pack(old)` and `pack(cMidV4)`; Leg A publishes `pack(old)` and
+// `pack(new)`), each of which is the board PLUS the automaton coordinate — and those two families
+// are NOT contiguous in the PI vector (Leg A's OUT is `pack_out` at `[25..34)` and the appended
+// `NAX/NAY` at `[36..38)`, with `ax/ay` in between). So a single `(offset,len)` cannot express the
+// window; a SLICE LIST can.
+//
+// The window is the whole cross-leaf vocabulary of the two-leg fold: the ONLY rule between
+// adjacent leaves is `left.OUT == right.IN`, connected lane-by-lane in the aggregation node. That
+// one rule instantiates the resolve→step mid seam (`hseamPack ∧ hseamAutoX ∧ hseamAutoY`, the
+// hypotheses `turn_sat_imp_roundStep_pi` takes), the inter-round board carry, and — read off the
+// root as `[first.IN ‖ last.OUT]` — the genesis/final position. Because the automatafl pack is
+// INJECTIVE (`pack_injective_modp`, base-4 positional with `packed < 4^15 < p`), a window equality
+// IS a board equality: no collision-resistance assumption enters this seam.
+//
+// This floor crate carries only the DECLARATION (which PI lanes are the window). The leaf-side
+// exposure and the in-circuit `connect` live in `dregg-circuit-prove`, exactly as the app-root
+// weld's halves are split.
+
+/// A board/state WINDOW declaration: the sub-proof's public inputs carry an IN window (the state
+/// it consumed) at `in_slices` and an OUT window (the state it produced) at `out_slices`, each a
+/// list of `(pi_offset, len)` PI ranges concatenated in order.
+///
+/// Both windows must have the same total width — they are compared to each OTHER across adjacent
+/// leaves, so a width disagreement cannot express the rule and is refused.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct BoardWindowBinding {
+    /// The PI slices whose concatenation is the state this leaf CONSUMED.
+    pub in_slices: Vec<(usize, usize)>,
+    /// The PI slices whose concatenation is the state this leaf PRODUCED.
+    pub out_slices: Vec<(usize, usize)>,
+}
+
+impl BoardWindowBinding {
+    /// The total felt width of a slice list.
+    pub fn slices_len(slices: &[(usize, usize)]) -> usize {
+        slices.iter().map(|(_, l)| *l).sum()
+    }
+
+    /// The window width (`in` and `out` agree on a well-formed binding).
+    pub fn window_len(&self) -> usize {
+        Self::slices_len(&self.in_slices)
+    }
+
+    /// The last PI index (exclusive) any slice touches — the minimum `public_input_count` a
+    /// sub-program carrying this binding must publish.
+    pub fn pi_end(&self) -> usize {
+        self.in_slices
+            .iter()
+            .chain(self.out_slices.iter())
+            .map(|(o, l)| o.saturating_add(*l))
+            .max()
+            .unwrap_or(0)
+    }
+
+    /// Fail-closed validity: both windows non-empty and of EQUAL width, every slice of nonzero
+    /// length, and every slice strictly past the 16-felt state prefix (a window aliasing
+    /// `[old8 ‖ new8]` would weld cell anchors as if they were board state).
+    pub fn is_well_formed(&self) -> bool {
+        let ok = |slices: &[(usize, usize)]| {
+            !slices.is_empty()
+                && slices
+                    .iter()
+                    .all(|(o, l)| *l > 0 && *o >= CUSTOM_PI_STATE_PREFIX_LEN)
+        };
+        ok(&self.in_slices)
+            && ok(&self.out_slices)
+            && Self::slices_len(&self.in_slices) == Self::slices_len(&self.out_slices)
+            && self.window_len() > 0
+    }
+}
+
+/// Read the felts a slice list selects out of `public_inputs`. `None` when the list is empty or
+/// any slice runs past the end — never zero-padding a short vector into a false window.
+pub fn extract_pi_slices(
+    public_inputs: &[BabyBear],
+    slices: &[(usize, usize)],
+) -> Option<Vec<BabyBear>> {
+    if slices.is_empty() {
+        return None;
+    }
+    let mut out = Vec::with_capacity(BoardWindowBinding::slices_len(slices));
+    for (o, l) in slices {
+        let end = o.checked_add(*l)?;
+        if end > public_inputs.len() {
+            return None;
+        }
+        out.extend_from_slice(&public_inputs[*o..end]);
+    }
+    Some(out)
+}
+
+/// The `(IN, OUT)` windows a sub-proof's public inputs carry for `binding`. `None` on an
+/// ill-formed binding or a PI vector too short to carry either window (the in-circuit mirror
+/// refuses the same shape fail-closed).
+pub fn extract_custom_pi_board_window(
+    public_inputs: &[BabyBear],
+    binding: &BoardWindowBinding,
+) -> Option<(Vec<BabyBear>, Vec<BabyBear>)> {
+    if !binding.is_well_formed() {
+        return None;
+    }
+    let win_in = extract_pi_slices(public_inputs, &binding.in_slices)?;
+    let win_out = extract_pi_slices(public_inputs, &binding.out_slices)?;
+    Some((win_in, win_out))
+}
+
+// ============================================================================
+// THE ROUNDSTATE WINDOW — the M5 generalization of the 11-lane board window to the
+// WHOLE RoundState the multi-round (conflict) braid carries between legs.
+// ============================================================================
+//
+// The board window above carries `[pack(board) ‖ auto]` (11 lanes at n = 11) — enough for the
+// SINGLE-round two-leg fold (Leg R → Leg A), whose only cross-leaf datum is the board position.
+// The MULTI-ROUND braid adds CONFLICT rounds (Leg C, `AutomataflLegCEmit`), which carry the marks
+// overlay and the per-seat locked/waiting tables across `C_k → C_{k+1}`. The window a conflict
+// round hands to the next is the WHOLE RoundState:
+//
+//   [ boardPack(RFC) ‖ marksPack(RFC) ‖ lockedVec(5·P) ‖ waitingInd(P) ‖ auto(2) ]
+//
+// which at n = 11, P = 2 seats is `roundStateWindowLanes 11 2 = 32` lanes
+// (`AutomataflLegCEmit.roundStateWindowLanes`, `#guard`ed to 32 in Lean).
+//
+// **`BoardWindowBinding` ALREADY carries this.** It is an arbitrary slice LIST — never fixed at
+// 11 (the `window_len()`, `pi_end()`, `is_well_formed()`, and `extract_*` machinery are all width-
+// generic; the "11" only ever lived in the automatafl leg constructors and their tests). So the
+// generalization is a DECLARATION, not a new carrier: which PI lanes of a Leg C sub-proof are each
+// sub-window, mirroring the Lean PI layout (`AutomataflLegCEmit §3`). The in-circuit `connect`
+// (whole-window for the conflict chain `C_k.OUT == C_{k+1}.IN`, and the board+marks PREFIX for the
+// clean handoff `C_last.OUT == R.IN`) lives in `dregg-circuit-prove`, exactly as the board window's
+// `connect` does.
+
+/// The RoundState sub-window widths and the Leg C PI offsets at `n = 11`, `P = LEGC_SEATS = 2` —
+/// the only instantiated size (Lean: `AutomataflLegCEmit`, `#guard roundStateWindowLanes 11 2 ==
+/// 32`). Every offset mirrors a Lean `def` (named per line); the cross-pin is the `#guard`ed Lean
+/// layout, and [`leg_c_roundstate_window_n11`] reproduces exactly those PI ranges.
+pub mod roundstate_window_n11 {
+    /// `NGen.RFC 11` = `AutomataflCommit.feltCount 11` — the packed-board lane count.
+    pub const BOARD_LANES: usize = 9;
+    /// `AutomataflMarks.marksWindowLanes 11` = `feltCount 11`.
+    pub const MARKS_LANES: usize = 9;
+    /// `AutomataflLegCEmit.lockedLanes 2` = `5 · P`.
+    pub const LOCKED_LANES: usize = 10;
+    /// `AutomataflLegCEmit.waitingLanes 2` = `P`.
+    pub const WAITING_LANES: usize = 2;
+    /// The automaton coordinate `(ax, ay)`.
+    pub const AUTO_LANES: usize = 2;
+    /// `roundStateWindowLanes 11 2` = 9 + 9 + 10 + 2 + 2.
+    pub const ROUNDSTATE_LANES: usize =
+        BOARD_LANES + MARKS_LANES + LOCKED_LANES + WAITING_LANES + AUTO_LANES;
+
+    /// `board ‖ marks` — the leading prefix the CLEAN HANDOFF (`C_last.OUT == R.IN`) carries.
+    /// `locked`/`waiting`/`auto` sit past it and are consumed at the clean round, not carried into
+    /// Leg R (see `board_window_clean_handoff_connects` in `dregg-circuit-prove`).
+    pub const HANDOFF_LANES: usize = BOARD_LANES + MARKS_LANES;
+
+    // The Leg C PI offsets (`AutomataflLegCEmit §3`); `AUTO_PI_BASE 11 = 16 + 2·RFC = 34`.
+    /// `cPackInFelt` window — `PI[16 .. 16+RFC)`, verbatim Leg R's `pack_in`.
+    pub const PI_BOARD_IN: usize = 16;
+    /// `cPackOutFelt` window — `PI[16+RFC .. 16+2·RFC)` (board FROZEN: gated equal to IN).
+    pub const PI_BOARD_OUT: usize = 25;
+    /// `ax, ay` at `AUTO_PI_BASE 11`. The board is frozen across a clash round, so the IN and OUT
+    /// windows point at the SAME auto lanes.
+    pub const PI_AUTO: usize = 34;
+    /// `piMarksIn 11 = AUTO_PI_BASE + 2`.
+    pub const PI_MARKS_IN: usize = 36;
+    /// `piMarksOut = piMarksIn + RFC`.
+    pub const PI_MARKS_OUT: usize = 45;
+    /// `piLockedIn = piMarksOut + RFC`.
+    pub const PI_LOCKED_IN: usize = 54;
+    /// `piLockedOut = piLockedIn + 5·P`.
+    pub const PI_LOCKED_OUT: usize = 64;
+    /// `piWaitingIn = piLockedOut + 5·P`.
+    pub const PI_WAITING_IN: usize = 74;
+    /// `piWaitingOut = piWaitingIn + P`.
+    pub const PI_WAITING_OUT: usize = 76;
+    /// `LEGC_PI_COUNT 11 = piWaitingOut + P`.
+    pub const LEGC_PI_COUNT: usize = 78;
+}
+
+/// The Leg C conflict-round RoundState window at `n = 11` — the `(IN, OUT)` slice lists in the
+/// canonical `[board ‖ marks ‖ locked ‖ waiting ‖ auto]` order, each 32 lanes. This is the
+/// declaration a conflict-round leaf carries so the fold can `connect` `C_k.OUT == C_{k+1}.IN`
+/// (whole window) and `C_last.OUT == R.IN` (the board+marks prefix). It reproduces exactly the Lean
+/// PI layout (`AutomataflLegCEmit §3`); nothing here authors a constraint — this is the same
+/// declaration-only category as the board window's `in_slices`/`out_slices`.
+pub fn leg_c_roundstate_window_n11() -> BoardWindowBinding {
+    use roundstate_window_n11::*;
+    BoardWindowBinding {
+        in_slices: vec![
+            (PI_BOARD_IN, BOARD_LANES),
+            (PI_MARKS_IN, MARKS_LANES),
+            (PI_LOCKED_IN, LOCKED_LANES),
+            (PI_WAITING_IN, WAITING_LANES),
+            (PI_AUTO, AUTO_LANES),
+        ],
+        out_slices: vec![
+            (PI_BOARD_OUT, BOARD_LANES),
+            (PI_MARKS_OUT, MARKS_LANES),
+            (PI_LOCKED_OUT, LOCKED_LANES),
+            (PI_WAITING_OUT, WAITING_LANES),
+            (PI_AUTO, AUTO_LANES),
+        ],
+    }
+}
+
+/// Read the published app root `R` a sub-proof's public inputs carry for `binding`. Returns `None`
+/// when the binding is ill-formed or the vector is too short to carry `R` — never zero-padding a
+/// short vector into a false root (the in-circuit mirror refuses the same shape fail-closed).
+pub fn extract_custom_pi_app_root(
+    public_inputs: &[BabyBear],
+    binding: &AppRootBinding,
+) -> Option<Vec<BabyBear>> {
+    if !binding.is_well_formed() || public_inputs.len() < binding.app_root_pi_end() {
+        return None;
+    }
+    Some(public_inputs[binding.app_root_pi_offset..binding.app_root_pi_end()].to_vec())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn prefix_roundtrips_through_the_extractor() {
+        let old: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(100 + j as u32));
+        let new: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(200 + j as u32));
+        let mut pis = custom_pi_state_prefix(&old, &new).to_vec();
+        pis.extend_from_slice(&[BabyBear::new(7), BabyBear::new(9)]);
+
+        let (got_old, got_new) = extract_custom_pi_state_roots(&pis).expect("prefix present");
+        assert_eq!(got_old, old, "pre-state root must roundtrip");
+        assert_eq!(got_new, new, "post-state root must roundtrip");
+    }
+
+    /// A vector too short to carry the prefix yields `None` — never a zero-padded
+    /// "match" against a genuine all-zero root.
+    #[test]
+    fn short_public_inputs_do_not_zero_pad_into_a_binding() {
+        let short = vec![BabyBear::ZERO; CUSTOM_PI_STATE_PREFIX_LEN - 1];
+        assert!(
+            extract_custom_pi_state_roots(&short).is_none(),
+            "a PI vector too short to express the binding must not be readable as one"
+        );
+    }
+
+    /// The commitment covers the WHOLE PI vector — so mutating the state prefix (the
+    /// forgery the weld exists to catch) moves the commitment the fold binds. This is
+    /// why the prefix rides the existing binding surface for free.
+    #[test]
+    fn commitment_moves_when_the_state_prefix_is_forged() {
+        let old: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(100 + j as u32));
+        let new: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(200 + j as u32));
+        let honest = custom_pi_state_prefix(&old, &new).to_vec();
+
+        let mut forged = honest.clone();
+        forged[CUSTOM_PI_NEW_COMMIT_BASE] = BabyBear::new(999);
+
+        assert_ne!(
+            custom_proof_pi_commitment_8(&honest),
+            custom_proof_pi_commitment_8(&forged),
+            "a forged post-state root must move the PI commitment the fold connects"
+        );
+    }
+
+    /// **THE BUDGET MEASUREMENT.** The weld's whole cost, measured against the deployed
+    /// caps — not asserted. It rides the EXISTING binding surface: the state roots go
+    /// into the custom sub-program's OWN public inputs, which the
+    /// `custom_proof_commitment` already hashes in full. So:
+    ///
+    ///   * EffectVM trace columns:  +0  (`MAX_TRACE_WIDTH` = 1024 untouched)
+    ///   * EffectVM constraints:    +0  (`MAX_CONSTRAINT_DEGREE` = 8 untouched)
+    ///   * EffectVM PI slots:       +0  (no new `pi::` constant; `ACTIVE_BASE_COUNT` and
+    ///                                   `CUSTOM_ENTRY_SIZE` are unchanged)
+    ///   * custom sub-program PIs: +16  (the state prefix) out of `MAX_PUBLIC_INPUTS` = 64
+    ///
+    /// The only budget the weld spends is the sub-program's PI allowance, and it leaves
+    /// 48 for the application. (For scale: automatafl's AIR publishes 2 PIs today.)
+    #[test]
+    fn the_weld_costs_no_effectvm_budget_and_leaves_48_app_public_inputs() {
+        use crate::dsl::circuit::{MAX_CONSTRAINT_DEGREE, MAX_PUBLIC_INPUTS, MAX_TRACE_WIDTH};
+        use crate::effect_vm::pi;
+
+        // The EffectVM side is untouched — the weld adds no PI slot, so the custom entry
+        // stride and the active base count are exactly what they were.
+        assert_eq!(
+            pi::CUSTOM_ENTRY_SIZE,
+            16,
+            "custom entry stride unchanged by the weld"
+        );
+        assert_eq!(
+            pi::CUSTOM_PROOFS_BASE,
+            pi::ACTIVE_BASE_COUNT,
+            "the weld introduced no PI slot before the custom entries"
+        );
+
+        // (the prefix fitting `MAX_PUBLIC_INPUTS` is const-asserted at the constant's definition)
+        assert_eq!(
+            MAX_PUBLIC_INPUTS - CUSTOM_PI_STATE_PREFIX_LEN,
+            48,
+            "the weld must leave 48 public inputs for the application"
+        );
+
+        // Pinned so a future widening of the caps cannot silently reprice the weld.
+        assert_eq!(MAX_TRACE_WIDTH, 1024);
+        assert_eq!(MAX_CONSTRAINT_DEGREE, 8);
+        assert_eq!(MAX_PUBLIC_INPUTS, 64);
+    }
+
+    /// The app-root binding's well-formedness gate: a root aliasing the state prefix, or of zero
+    /// width, is refused (it cannot express the weld).
+    #[test]
+    fn app_root_binding_well_formedness() {
+        let ok = AppRootBinding {
+            app_root_pi_offset: CUSTOM_PI_STATE_PREFIX_LEN,
+            app_root_len: 8,
+            field_key: 0,
+        };
+        assert!(ok.is_well_formed());
+        assert_eq!(ok.app_root_pi_end(), CUSTOM_PI_STATE_PREFIX_LEN + 8);
+
+        // Aliases the state prefix.
+        let aliased = AppRootBinding {
+            app_root_pi_offset: 8,
+            app_root_len: 8,
+            field_key: 0,
+        };
+        assert!(!aliased.is_well_formed());
+        // Zero width.
+        let empty = AppRootBinding {
+            app_root_pi_offset: CUSTOM_PI_STATE_PREFIX_LEN,
+            app_root_len: 0,
+            field_key: 0,
+        };
+        assert!(!empty.is_well_formed());
+    }
+
+    /// The extractor reads exactly the declared root lanes, and refuses (returns `None`) a vector
+    /// too short to carry it — never zero-padding a short vector into a false root.
+    #[test]
+    fn app_root_extractor_reads_the_declared_lanes_or_refuses() {
+        let old: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(100 + j as u32));
+        let new: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(200 + j as u32));
+        let r: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(300 + j as u32));
+        let mut pis = custom_pi_state_prefix(&old, &new).to_vec();
+        pis.extend_from_slice(&r);
+
+        let b = AppRootBinding {
+            app_root_pi_offset: CUSTOM_PI_STATE_PREFIX_LEN,
+            app_root_len: 8,
+            field_key: 0,
+        };
+        assert_eq!(
+            extract_custom_pi_app_root(&pis, &b).expect("root present"),
+            r.to_vec()
+        );
+
+        // One short of R's end ⇒ None (never zero-padded).
+        let short = &pis[..pis.len() - 1];
+        assert!(extract_custom_pi_app_root(short, &b).is_none());
+        // Ill-formed binding ⇒ None regardless of length.
+        let bad = AppRootBinding {
+            app_root_pi_offset: 0,
+            app_root_len: 8,
+            field_key: 0,
+        };
+        assert!(extract_custom_pi_app_root(&pis, &bad).is_none());
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // The BOARD WINDOW (the two-leg fold's whole cross-leaf vocabulary).
+    // ---------------------------------------------------------------------------------------
+
+    /// The automatafl Leg-R / Leg-A windows at n = 11 (`feltCount 11 = 9`), the exact geometry the
+    /// two-leg fold declares. Leg R's OUT is contiguous; Leg A's is NOT (`pack_out` at `[25..34)`
+    /// then the appended `NAX/NAY`) — which is why the binding is a slice LIST.
+    #[test]
+    fn the_automatafl_leg_windows_are_well_formed_and_11_lanes_wide() {
+        let leg_r = BoardWindowBinding {
+            in_slices: vec![(16, 9), (34, 2)],
+            out_slices: vec![(25, 9), (34, 2)],
+        };
+        let leg_a = BoardWindowBinding {
+            in_slices: vec![(16, 9), (34, 2)],
+            out_slices: vec![(25, 9), (36, 2)],
+        };
+        for (name, b) in [("leg R", &leg_r), ("leg A", &leg_a)] {
+            assert!(b.is_well_formed(), "{name} window must be well-formed");
+            assert_eq!(b.window_len(), 11, "{name}: pack(9) ‖ auto(2)");
+        }
+        assert_eq!(leg_r.pi_end(), 36, "Leg R touches PIs up to 36");
+        assert_eq!(
+            leg_a.pi_end(),
+            38,
+            "Leg A touches the appended NAX/NAY at 36,37"
+        );
+    }
+
+    /// Fail-closed well-formedness: unequal IN/OUT widths cannot express `left.OUT == right.IN`;
+    /// an empty list, a zero-width slice, or a slice aliasing the `[old8 ‖ new8]` prefix (which
+    /// would weld CELL anchors as if they were board state) are all refused.
+    #[test]
+    fn board_window_refuses_unequal_empty_zero_width_and_prefix_aliasing() {
+        let unequal = BoardWindowBinding {
+            in_slices: vec![(16, 9)],
+            out_slices: vec![(25, 9), (34, 2)],
+        };
+        assert!(!unequal.is_well_formed(), "IN/OUT widths must agree");
+
+        let empty = BoardWindowBinding {
+            in_slices: vec![],
+            out_slices: vec![],
+        };
+        assert!(!empty.is_well_formed());
+
+        let zero = BoardWindowBinding {
+            in_slices: vec![(16, 0)],
+            out_slices: vec![(25, 0)],
+        };
+        assert!(!zero.is_well_formed());
+
+        let aliased = BoardWindowBinding {
+            in_slices: vec![(8, 9)],
+            out_slices: vec![(25, 9)],
+        };
+        assert!(
+            !aliased.is_well_formed(),
+            "a window overlapping the state prefix must be refused"
+        );
+    }
+
+    /// The extractor concatenates the declared slices in order, and REFUSES a PI vector too short
+    /// to carry either window — never zero-padding a short vector into a false board.
+    #[test]
+    fn board_window_extractor_concatenates_in_order_or_refuses() {
+        let binding = BoardWindowBinding {
+            in_slices: vec![(16, 9), (34, 2)],
+            out_slices: vec![(25, 9), (36, 2)],
+        };
+        // PI[j] = j, so the extracted window IS its own index list — order is visible.
+        let pis: Vec<BabyBear> = (0..38u32).map(BabyBear::new).collect();
+        let (win_in, win_out) =
+            extract_custom_pi_board_window(&pis, &binding).expect("both windows present");
+        assert_eq!(
+            win_in.iter().map(|f| f.as_u32()).collect::<Vec<_>>(),
+            vec![16, 17, 18, 19, 20, 21, 22, 23, 24, 34, 35]
+        );
+        assert_eq!(
+            win_out.iter().map(|f| f.as_u32()).collect::<Vec<_>>(),
+            vec![25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37]
+        );
+
+        // One PI short of the OUT window's end ⇒ None (never zero-padded into a false window).
+        assert!(extract_custom_pi_board_window(&pis[..37], &binding).is_none());
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // The ROUNDSTATE WINDOW (the multi-round conflict braid's whole cross-leg vocabulary).
+    // ---------------------------------------------------------------------------------------
+
+    /// The Leg C RoundState window is a well-formed 32-lane `BoardWindowBinding` — the SAME
+    /// slice-list carrier the 11-lane board window uses, never a new type. This is the M5
+    /// generalization made concrete: `window_len()` is 32, not 11.
+    #[test]
+    fn the_leg_c_roundstate_window_is_well_formed_and_32_lanes_wide() {
+        let b = leg_c_roundstate_window_n11();
+        assert!(
+            b.is_well_formed(),
+            "the RoundState window must be well-formed"
+        );
+        assert_eq!(
+            b.window_len(),
+            32,
+            "board(9) ‖ marks(9) ‖ locked(10) ‖ waiting(2) ‖ auto(2)"
+        );
+        assert_eq!(b.window_len(), roundstate_window_n11::ROUNDSTATE_LANES);
+        assert_eq!(
+            b.pi_end(),
+            roundstate_window_n11::LEGC_PI_COUNT,
+            "the window reaches LEGC_PI_COUNT 11 = 78"
+        );
+        // The carrier was NEVER fixed at 11 — the same slice-list now holds the whole RoundState.
+        assert!(
+            b.window_len() > 11,
+            "the carrier generalized past the 11-lane board window"
+        );
+        assert_eq!(
+            roundstate_window_n11::HANDOFF_LANES,
+            18,
+            "the clean handoff carries board ‖ marks = 18 lanes"
+        );
+    }
+
+    /// The extractor concatenates the RoundState sub-windows in `[board ‖ marks ‖ locked ‖ waiting
+    /// ‖ auto]` order, and the board+marks HANDOFF prefix is the leading 18 lanes of each half.
+    /// `PI[j] = j`, so each extracted lane IS its own index — the layout is visible.
+    #[test]
+    fn the_roundstate_window_extracts_the_lean_pi_layout_in_order() {
+        let b = leg_c_roundstate_window_n11();
+        let pis: Vec<BabyBear> = (0..roundstate_window_n11::LEGC_PI_COUNT as u32)
+            .map(BabyBear::new)
+            .collect();
+        let (win_in, win_out) =
+            extract_custom_pi_board_window(&pis, &b).expect("both windows present");
+        let idx = |w: &[BabyBear]| w.iter().map(|f| f.as_u32()).collect::<Vec<_>>();
+        assert_eq!(
+            idx(&win_in),
+            vec![
+                16, 17, 18, 19, 20, 21, 22, 23, 24, // board IN  [16..25)
+                36, 37, 38, 39, 40, 41, 42, 43, 44, // marksIn   [36..45)
+                54, 55, 56, 57, 58, 59, 60, 61, 62, 63, // lockedIn  [54..64)
+                74, 75, // waitingIn [74..76)
+                34, 35, // auto      [34..36)
+            ]
+        );
+        assert_eq!(
+            idx(&win_out),
+            vec![
+                25, 26, 27, 28, 29, 30, 31, 32, 33, // board OUT  [25..34)
+                45, 46, 47, 48, 49, 50, 51, 52, 53, // marksOut   [45..54)
+                64, 65, 66, 67, 68, 69, 70, 71, 72, 73, // lockedOut  [64..74)
+                76, 77, // waitingOut [76..78)
+                34, 35, // auto       [34..36) (board frozen ⇒ same as IN)
+            ]
+        );
+        // The board+marks handoff prefix — what the clean C→R connect carries — is the leading 18.
+        assert_eq!(
+            idx(&win_out[..roundstate_window_n11::HANDOFF_LANES]),
+            vec![
+                25, 26, 27, 28, 29, 30, 31, 32, 33, 45, 46, 47, 48, 49, 50, 51, 52, 53
+            ],
+            "the clean handoff carries board(9) ‖ marks(9); locked/waiting/auto sit past it"
+        );
+    }
+
+    /// Every board-window lane rides the SAME commitment surface the fold already binds — so the
+    /// window needs no new hash, only the `connect`. (This is what makes "exposure IS execution"
+    /// hold for the window lanes: they are the leaf's own bound PI targets.)
+    #[test]
+    fn every_board_window_lane_moves_the_commitment() {
+        let binding = BoardWindowBinding {
+            in_slices: vec![(16, 9), (34, 2)],
+            out_slices: vec![(25, 9), (36, 2)],
+        };
+        let honest: Vec<BabyBear> = (0..38u32).map(|j| BabyBear::new(j + 1)).collect();
+        let base = custom_proof_pi_commitment_8(&honest);
+        for (o, l) in binding.in_slices.iter().chain(binding.out_slices.iter()) {
+            for k in *o..o + l {
+                let mut forged = honest.clone();
+                forged[k] += BabyBear::ONE;
+                assert_ne!(
+                    custom_proof_pi_commitment_8(&forged),
+                    base,
+                    "board-window lane {k} must be load-bearing in the PI commitment"
+                );
+            }
+        }
+    }
+
+    /// The published root rides the SAME commitment surface: mutating any lane of R (past the state
+    /// prefix) moves the PI commitment the fold binds — so the app-root weld needs no new hash, only
+    /// the fold connect.
+    #[test]
+    fn app_root_lanes_move_the_commitment() {
+        let old: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(100 + j as u32));
+        let new: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(200 + j as u32));
+        let r: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(300 + j as u32));
+        let mut honest = custom_pi_state_prefix(&old, &new).to_vec();
+        honest.extend_from_slice(&r);
+        let base = custom_proof_pi_commitment_8(&honest);
+        for k in 0..8 {
+            let mut forged = honest.clone();
+            forged[CUSTOM_PI_STATE_PREFIX_LEN + k] += BabyBear::ONE;
+            assert_ne!(
+                custom_proof_pi_commitment_8(&forged),
+                base,
+                "published-root lane {k} must be load-bearing in the PI commitment"
+            );
+        }
+    }
+
+    /// Every lane of both roots is load-bearing in the commitment: a node binding only
+    /// some lanes would accept a forgery in the rest.
+    #[test]
+    fn every_state_prefix_lane_moves_the_commitment() {
+        let old: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(100 + j as u32));
+        let new: [BabyBear; 8] = core::array::from_fn(|j| BabyBear::new(200 + j as u32));
+        let honest = custom_pi_state_prefix(&old, &new).to_vec();
+        let base = custom_proof_pi_commitment_8(&honest);
+
+        for k in 0..CUSTOM_PI_STATE_PREFIX_LEN {
+            let mut forged = honest.clone();
+            forged[k] = forged[k] + BabyBear::ONE;
+            assert_ne!(
+                custom_proof_pi_commitment_8(&forged),
+                base,
+                "state-prefix lane {k} must be load-bearing in the PI commitment"
+            );
+        }
+    }
+}

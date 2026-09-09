@@ -1,0 +1,1147 @@
+//! Public input layout for the Effect VM AIR.
+//!
+//! Stage 1 widening (`EFFECT-VM-SHAPE-A.md`): commitments grow from 1 felt
+//! (~31-bit binding) to 4 felts (~124-bit binding), via the typed
+//! `Commitment4<T>` framework (`dregg_commit::typed`). Position 0 of each
+//! 4-tuple corresponds to the in-trace `state::STATE_COMMIT` continuity
+//! column; positions 1..3 are bound to the canonical cell state by the
+//! executor PI matching loop.
+//!
+//! AUDIT[stage1-trace-widen]: For Stage 1 the trace `state::STATE_COMMIT`
+//! remains a 1-column continuity hash (Constraint Group 4 unchanged). The
+//! extra 3 PI elements get their security from the executor PI matching
+//! loop. Stage 2 (`EFFECT-VM-SHAPE-A.md` Phase 1) widens the trace column.
+
+// ---- Commitments (Phase C widened to 8 felts each, ~124-bit collision) ----
+//
+// Stage 1 took the commitment 1 felt -> 4 felts. Phase C
+// (`.docs-history-noclaude/FAITHFUL-STATE-COMMITMENT.md`) takes it 4 -> 8. THE FLOOR: a
+// 4-felt BabyBear commit packs ~124 raw bits but, as a Poseidon2 digest,
+// its COLLISION resistance is ~half the digest width = ~62 bits — below the
+// system's FRI ~128-bit security. Eight genuine Poseidon2 squeeze felts give
+// ~124-bit collision resistance, MATCHING the FRI floor. The 8 felts MUST be
+// genuine independent squeezes (see `CellState::compute_commitment_8`), never
+// 4 real + 4 zero-padded (that retains the ~62-bit floor).
+/// Old state commitment, 8-felt Poseidon2 form.
+pub const OLD_COMMIT_BASE: usize = 0;
+pub const OLD_COMMIT_LEN: usize = 8;
+/// New state commitment, 8-felt Poseidon2 form.
+pub const NEW_COMMIT_BASE: usize = OLD_COMMIT_BASE + OLD_COMMIT_LEN;
+pub const NEW_COMMIT_LEN: usize = 8;
+/// Effects-tree hash, 4-felt Poseidon2 form. Promotes the prior 2-felt
+/// (lo+synthetic-hi) form to 4 felts; synthetic-hi is dropped.
+pub const EFFECTS_HASH_BASE: usize = NEW_COMMIT_BASE + NEW_COMMIT_LEN;
+pub const EFFECTS_HASH_LEN: usize = 4;
+
+// ---- Backwards-compatible aliases (position 0 only) ----
+/// Legacy alias: position 0 of OLD_COMMIT_BASE (single-felt continuity binding).
+pub const OLD_COMMIT: usize = OLD_COMMIT_BASE;
+/// Legacy alias: position 0 of NEW_COMMIT_BASE.
+pub const NEW_COMMIT: usize = NEW_COMMIT_BASE;
+/// Legacy alias: position 0 of EFFECTS_HASH_BASE.
+pub const EFFECTS_HASH_LO: usize = EFFECTS_HASH_BASE;
+/// Legacy alias: position 1 of EFFECTS_HASH_BASE. AUDIT[stage1-effects-hash]:
+/// callers reading this should switch to absorbing all 4 elements via the
+/// EFFECTS_HASH_LEN range; the prior synthetic-hi binding is replaced by
+/// independent Poseidon2 squeezes.
+pub const EFFECTS_HASH_HI: usize = EFFECTS_HASH_BASE + 1;
+
+// ---- Per-cell balance limbs (P0-1 net_delta binding) ----
+//
+// Computed from `EFFECTS_HASH_BASE + EFFECTS_HASH_LEN` so the whole prefix
+// cascades when a commitment width changes (Phase C 4->8): there are NO free
+// literal offsets in the prefix below — each base is `prior_base + prior_len`.
+/// Initial balance low limb (30 bits) — pinned to row 0 state_before.
+pub const INIT_BAL_LO: usize = EFFECTS_HASH_BASE + EFFECTS_HASH_LEN;
+/// Initial balance high limb — pinned to row 0 state_before.
+pub const INIT_BAL_HI: usize = INIT_BAL_LO + 1;
+/// Final balance low limb — pinned to last row state_after.
+pub const FINAL_BAL_LO: usize = INIT_BAL_HI + 1;
+/// Final balance high limb — pinned to last row state_after.
+pub const FINAL_BAL_HI: usize = FINAL_BAL_LO + 1;
+
+// ---- Net balance delta (P0-1 binding) ----
+pub const NET_DELTA_MAG: usize = FINAL_BAL_HI + 1;
+pub const NET_DELTA_SIGN: usize = NET_DELTA_MAG + 1;
+
+// ---- ⚑ THE SEVEN-SLOT COMPACTION — flag day 2026-08-07 ----
+//
+// SEVEN published felts stood here, at v1 offsets 26..32, and they are GONE:
+//
+//   26      CURRENT_BLOCK_HEIGHT   the constant `0` — `EffectVmContext::default()`, never
+//                                  overridden by any producer, never touched by
+//                                  `verify_one_cohort_run`'s reconstruction. The live temporal
+//                                  binding is `v3::COMMITTED_HEIGHT`, pinned 56/56 AND overridden
+//                                  by the verifier from `cell.state.committed_height()`. The
+//                                  comparison that would have made 26 "the verifier-supplied
+//                                  comparand" was written NOWHERE.
+//   27      MAX_CUSTOM_EFFECTS     the constant `MAX_CUSTOM_EFFECTS_DEFAULT` (4) on producer AND
+//                                  verifier. The cap IS enforced — off-circuit, from the
+//                                  verifier's own ledger (`read_cell_max_custom_effects` → the
+//                                  `proofs.len() > cap` refusal), which is strictly stronger than
+//                                  a felt the prover wrote.
+//   28      CUSTOM_EFFECT_COUNT    the real count, but re-derived identically by every consumer.
+//                                  Its four OFF-CIRCUIT readers used it as the length prefix of
+//                                  the custom-proof array; they now call [`custom_entry_count`],
+//                                  which derives the length from the PI VECTOR THE VERIFIER
+//                                  HOLDS. That is the stronger of the two, so this is a gain.
+//                                  The "Stage 1 sum-check (Group 7)" three docblocks credited
+//                                  never existed: `aux_off::CUSTOM_COUNT_ACC` is filled by the
+//                                  trace generator and read by NO constraint.
+//   29..32  APPROVED_HANDOFFS[4]   the empty-tree zero sentinel. `ValidateHandoff` has not been
+//                                  an effect since the verb-lockstep pass.
+//
+// Measured before the cut, from the emitted registry bytes
+// (`scripts/pi_disposition_census.py`): **0 `pi_binding`s at every one of the seven, on all 57
+// wide members and all 60 v3 members.** A `pi_binding` is the only constraint kind that reads a
+// public input, so the constraint system never looked at any of them.
+//
+// ⚠ AND THE PART THAT NEARLY WENT WRONG. A prior lane priced ELEVEN — these seven plus
+// `EFFECTS_HASH_GLOBAL` (37..40) — off the same zeroes, and REFUSED the rotation when it read the
+// consumers. `EFFECTS_HASH_GLOBAL` and `TURN_HASH` are 0-pinned HERE and load-bearing in
+// `dregg-bilateral-aggregation-v3`: `bilateral_aggregation_air::SCHEDULE_PI_BASE ==
+// inner_pi::TURN_HASH_BASE`, so the 49-felt bilateral-schedule contract IS the v1 window
+// `[TURN_HASH_BASE, TURN_HASH_BASE + 49)`, and `schedule_block_from_inner_pi` projects it into
+// that descriptor's main trace where `window_gate` transitions FORCE the columns and `pi_binding`
+// pins them. A zero in the census answers "does any constraint IN THESE TWO REGISTRIES read this
+// index" — never "does anything read this slot".
+//
+// The seven were CONTIGUOUS, which is exactly what made them separable: the schedule window slides
+// down by 7 STILL CONTIGUOUS, `SCHEDULE_PI_BASE` cascades symbolically, and the aggregation
+// contract is unharmed. Had the cut included 37..40 it would have punched a hole through it.
+// `docs/PI-DISPOSITION.md` §6 carries the retraction, the price and the per-slot decision;
+// `scripts/pi_disposition_census.py`'s `PROJECTIONS` table now goes RED if that projection stops
+// holding, which exists because this mistake was nearly made.
+//
+// What this re-emitted: every rotation descriptor (Σ piCount 3,821 → 3,429 wide, 3,012 → 2,599
+// v3), `WIDE_REGISTRY_STAGED_FP`, `dregg-epoch`'s `registry_fp`, `PROVENANCE.json`, and a VK
+// rotation. NOT a re-genesis: `CANONICAL_STATE_SCHEMA_EPOCH` does not move — the compaction rides
+// past every `state_commit`. (No number for it here on purpose: this line carried "24" for a few
+// hours and the constant was already 26 by the time the emit ran. Read `persist/src/lib.rs`.)
+
+// ---- Stage 7-γ.0a additions: turn-level identity bindings ----
+//
+// These four fields were designed as values *shared across all per-cell proofs of
+// one turn*, with the verifier's cross-proof PI matching loop
+// (`verify_proof_carrying_turn_bundle`) enforcing equality across the N proofs.
+//
+// ⚠ CORRECTED 2026-08-06: THAT LOOP NEVER RAN, and is now deleted. It had one
+// caller, which had none. No artifact in the tree carries a bundle of per-cell PI
+// vectors to a verifier either, so there is nothing for a cross-proof loop to
+// range over. What decides these four today:
+//   * FULL NODE — `verify_one_cohort_run` RECONSTRUCTS the whole PI vector from
+//     the trusted Turn/Cell/anchors and never deserialises the prover's. Every
+//     slot is verifier-authoritative there; an AIR pin would be a subset of what
+//     reconstruction already forces.
+//   * WIRE — TURN_HASH is compared against a CALLER-SUPPLIED external anchor
+//     (`sdk::verify_full_turn_bound`, `dregg_verifier::check_receipt_pi_binding`,
+//     `turn::conditional`), always as FOUR felts via `canonical_32_to_felts_4`.
+//     ACTOR_NONCE is genuinely pinned (47/56 members) to the state column.
+//   * THE BILATERAL AGGREGATION — and this is the half the 2026-08-06 rewrite of
+//     this block MISSED, corrected 2026-08-07. `bilateral_aggregation_air::
+//     SCHEDULE_PI_BASE == TURN_HASH_BASE` (26 post-compaction, 33 before it):
+//     offsets `[TURN_HASH_BASE, TURN_HASH_BASE + 49)` ARE the 49-felt
+//     bilateral-schedule contract. `schedule_block_from_inner_pi` projects the
+//     window into `dregg-bilateral-aggregation-v3`, whose EMITTED bytes force
+//     cols 0..12 (TURN_HASH, EFFECTS_HASH_GLOBAL, ACTOR_NONCE,
+//     PREVIOUS_RECEIPT_HASH) with `window_gate` transitions and pin them to its
+//     own outer PI. So TURN_HASH and EFFECTS_HASH_GLOBAL are consumed by a
+//     deployed AIR — the previous text here, "EFFECTS_HASH_GLOBAL is read by
+//     nobody", was false. ⓘ The seven-slot compaction slid that window down by 7
+//     INTACT (it kept the schedule block contiguous), which is why it cost the
+//     aggregation nothing but a re-emit.
+// No EFFECT-VM AIR constraint reads any of the four: `pi_binding` is the only
+// constraint kind that reads a public input, and `TURN_HASH_BASE..+8` carry zero
+// of them IN THE TWO ROTATION REGISTRIES. That is a statement about those
+// descriptors, NOT about the slots — see the aggregation bullet above, and
+// `scripts/pi_disposition_census.py`'s `proj-read` column, which exists because
+// the distinction was collapsed once and cost a mispriced VK rotation.
+// `docs/DESIGN-pi-authority.md` argues the geometry cutover that would have
+// pinned TURN_HASH in the effect-VM member is NOT worth doing.
+//
+/// Poseidon2 of the canonical `Turn::hash()` (v3, post-Stage-7-α.1).
+/// All per-cell proofs of one turn share this value; the verifier
+/// rejects bundles whose per-cell proofs disagree.
+pub const TURN_HASH_BASE: usize = NET_DELTA_SIGN + 1;
+pub const TURN_HASH_LEN: usize = 4;
+/// Poseidon2 over the canonical-DFS-order traversal of the whole
+/// `call_forest`'s effects (not per-cell).
+///
+/// ⚑ **"DEAD AT THESE OFFSETS" — RETRACTED 2026-08-07. THESE FOUR FELTS ARE THE
+/// BILATERAL-SCHEDULE CONTRACT'S EFFECTS-HASH BLOCK, AND A DEPLOYED AIR FORCES
+/// THEM.** This docblock said *"zero `pi_binding`s across all 57 wide members; no
+/// reader … the real object lives at
+/// `bilateral_aggregation_air::OUTER_EFFECTS_HASH_GLOBAL_BASE`. Disposition: STOP
+/// PUBLISHING from this window."* The pin count is right; both conclusions are
+/// wrong, and the citation is the reason why — that outer slot is **sourced from
+/// this one**.
+///
+/// `bilateral_aggregation_air::SCHEDULE_PI_BASE = inner_pi::TURN_HASH_BASE` (26)
+/// and `sched::EFFECTS_HASH_GLOBAL_BASE = 4`, so the 49-felt bilateral-schedule
+/// contract window is `inner_pi[26, 75)` and THIS slot is its felts 4..7.
+/// `schedule_block_from_inner_pi` projects that window into the deployed
+/// `dregg-bilateral-aggregation-v3` main trace at cols 4..7, where the EMITTED
+/// bytes (`circuit/descriptors/dregg-bilateral-aggregation-v3.json`, read
+/// directly) carry four `window_gate` transitions holding them equal on every row
+/// AND `pi_binding` first + last to that descriptor's own `PI[4..7]`. The column
+/// is forced, so the pin survives `dropUnforcedPins`: the aggregation enforces
+/// cross-cell agreement on the whole-`call_forest` effects hash ALGEBRAICALLY.
+/// Lean origin: `EffectVmEmitBilateralAgg.lean:224` (`turnIdBindings`).
+///
+/// Reachable, not dead plumbing: `wasm/src/runtime.rs:584` proves an aggregated
+/// bundle; `verifier/src/bilateral_pair.rs:331`, `wasm/src/runtime.rs:556`,
+/// `turn-prover/src/aggregate_bilateral_prover.rs:1082` and
+/// `node/src/blocklace_sync.rs:12162` each reconstruct these felts into the PI
+/// vector they Fiat–Shamir against.
+///
+/// **Disposition: KEEP.** Removing them punches a hole in a contiguous contract
+/// window — a second VK rotation for the aggregation descriptor, and the deletion
+/// of a check that currently holds. `docs/PI-DISPOSITION.md` §6 carries the
+/// retraction and the corrected price. The removable SEVEN (the old 26..32) were
+/// contiguous and slid this window down INTACT; they were cut on 2026-08-07, which
+/// is why this slot now begins at 30 rather than 37.
+pub const EFFECTS_HASH_GLOBAL_BASE: usize = TURN_HASH_BASE + TURN_HASH_LEN;
+pub const EFFECTS_HASH_GLOBAL_LEN: usize = 4;
+/// Outer `Turn::nonce`, promoted to PI. Closes the differential-test
+/// gap from task #49 (AIR previously did not witness the agent's
+/// outer nonce bump). The verifier's PI-match loop rejects bundles
+/// whose per-cell proofs disagree on the actor nonce, and the
+/// executor checks PI[ACTOR_NONCE] == turn.nonce.
+pub const ACTOR_NONCE: usize = EFFECTS_HASH_GLOBAL_BASE + EFFECTS_HASH_GLOBAL_LEN;
+/// Poseidon2 of `previous_receipt_hash` (32 bytes -> 4 felts) when
+/// present, or the zero sentinel when absent. Binds each per-cell
+/// proof to a specific receipt-chain position.
+pub const PREVIOUS_RECEIPT_HASH_BASE: usize = ACTOR_NONCE + 1;
+pub const PREVIOUS_RECEIPT_HASH_LEN: usize = 4;
+
+// ---- Stage 7-γ.2 Phase 1: bilateral cross-cell algebraic binding ----
+//
+// These slots project each per-cell proof's bilateral-effect participation
+// (Transfer, GrantCapability, Introduce) into shared PI fields that the
+// off-AIR verifier reconstructs from the turn's call_forest + ACTOR_NONCE.
+// The verifier rejects any per-cell PI that doesn't match the
+// schedule-derived expectation, closing the executor-trust gap for cross-
+// cell agreement (EXECUTOR-HONESTY-AUDIT.md T1, T3, T15 multi-cell tails).
+//
+// All bilateral fields default to the zero sentinel
+// (`Commitment4::empty()` for the 4-felt roots; 0 for the scalar counts)
+// when this cell has no bilateral effects of that kind. The verifier
+// short-circuits matching against sentinel entries.
+//
+// Sub-stage status:
+//   γ.2.0  PI surface + sentinels                  ✅ (this commit)
+//   γ.2.1  AIR aux columns + boundary binding      pending (TODO[γ.2.1])
+//   γ.2.2  Verifier cross-cell match loop          ✅ (this commit)
+//   γ.2.3  IS_AGENT_CELL gate                      ✅ (this commit)
+
+/// Count of Transfer rows in this cell's projection where direction == 1
+/// (outflow). The verifier's expected-schedule reconstruction must agree.
+pub const OUTBOUND_TRANSFER_COUNT: usize = PREVIOUS_RECEIPT_HASH_BASE + PREVIOUS_RECEIPT_HASH_LEN;
+/// Count of Transfer rows where direction == 0 (inflow).
+pub const INBOUND_TRANSFER_COUNT: usize = OUTBOUND_TRANSFER_COUNT + 1;
+/// Count of GrantCapability rows where this cell is the grantor.
+pub const OUTBOUND_GRANT_COUNT: usize = INBOUND_TRANSFER_COUNT + 1;
+/// Count of GrantCapability rows where this cell is the grantee.
+pub const INBOUND_GRANT_COUNT: usize = OUTBOUND_GRANT_COUNT + 1;
+/// Count of Introduce rows where this cell is the introducer.
+pub const INTRO_AS_INTRODUCER_COUNT: usize = INBOUND_GRANT_COUNT + 1;
+/// Count of Introduce rows where this cell is the recipient.
+pub const INTRO_AS_RECIPIENT_COUNT: usize = INTRO_AS_INTRODUCER_COUNT + 1;
+/// Count of Introduce rows where this cell is the target.
+pub const INTRO_AS_TARGET_COUNT: usize = INTRO_AS_RECIPIENT_COUNT + 1;
+
+/// 4-felt Poseidon2 accumulator over all outbound bilateral transfer_ids
+/// in this turn, absorbed in trace-row-index order. Each step folds
+/// `(transfer_id_4, peer_cell_id_4)` into the running state. Domain
+/// separator distinguishes from inbound + grant + introduce roots.
+/// Sentinel: `[BabyBear::ZERO; 4]` when count == 0.
+pub const OUTGOING_TRANSFER_ROOT_BASE: usize = INTRO_AS_TARGET_COUNT + 1;
+pub const OUTGOING_TRANSFER_ROOT_LEN: usize = 4;
+/// Mirror of OUTGOING_TRANSFER_ROOT for the inbound side.
+pub const INCOMING_TRANSFER_ROOT_BASE: usize =
+    OUTGOING_TRANSFER_ROOT_BASE + OUTGOING_TRANSFER_ROOT_LEN;
+pub const INCOMING_TRANSFER_ROOT_LEN: usize = 4;
+
+/// 4-felt accumulator over outbound grant_ids (this cell as grantor).
+pub const OUTGOING_GRANT_ROOT_BASE: usize =
+    INCOMING_TRANSFER_ROOT_BASE + INCOMING_TRANSFER_ROOT_LEN;
+pub const OUTGOING_GRANT_ROOT_LEN: usize = 4;
+/// 4-felt accumulator over inbound grant_ids (this cell as grantee).
+pub const INCOMING_GRANT_ROOT_BASE: usize = OUTGOING_GRANT_ROOT_BASE + OUTGOING_GRANT_ROOT_LEN;
+pub const INCOMING_GRANT_ROOT_LEN: usize = 4;
+
+/// 4-felt accumulator over intro_ids where this cell is the introducer.
+pub const INTRO_AS_INTRODUCER_ROOT_BASE: usize = INCOMING_GRANT_ROOT_BASE + INCOMING_GRANT_ROOT_LEN;
+pub const INTRO_AS_INTRODUCER_ROOT_LEN: usize = 4;
+/// 4-felt accumulator over intro_ids where this cell is the recipient.
+pub const INTRO_AS_RECIPIENT_ROOT_BASE: usize =
+    INTRO_AS_INTRODUCER_ROOT_BASE + INTRO_AS_INTRODUCER_ROOT_LEN;
+pub const INTRO_AS_RECIPIENT_ROOT_LEN: usize = 4;
+/// 4-felt accumulator over intro_ids where this cell is the target.
+pub const INTRO_AS_TARGET_ROOT_BASE: usize =
+    INTRO_AS_RECIPIENT_ROOT_BASE + INTRO_AS_RECIPIENT_ROOT_LEN;
+pub const INTRO_AS_TARGET_ROOT_LEN: usize = 4;
+
+/// Single-felt boolean: 1 iff this per-cell proof was the actor's
+/// (signer's) cell for the turn. Exactly one proof in a bundle must
+/// carry IS_AGENT_CELL == 1; all others must be 0. The agent-cell
+/// proof's row-0 NONCE column is pinned to PI[ACTOR_NONCE] (γ.0a
+/// constraint), and non-agent cells are exempt from that pin. The
+/// verifier enforces the exactly-one-agent rule across the bundle.
+pub const IS_AGENT_CELL: usize = INTRO_AS_TARGET_ROOT_BASE + INTRO_AS_TARGET_ROOT_LEN;
+
+// ---- Sovereign-witness AIR teeth (SOVEREIGN-WITNESS-AIR-DESIGN.md) ----
+//
+// Phase 1: bind the witness's signing identity + replay counter to the
+// AIR at row 0 via gated boundary constraints. When IS_SOVEREIGN_CELL
+// == 1, the prover and verifier must agree on
+//   PI[SOVEREIGN_WITNESS_KEY_COMMIT_BASE..+4] == Poseidon2(owner_pubkey)
+//   PI[SOVEREIGN_WITNESS_SEQUENCE]            == witness.sequence
+// When IS_SOVEREIGN_CELL == 0 (hosted-cell proofs), the prover writes
+// the zero sentinel into both PI slots and the in-trace aux columns,
+// and the boundary holds trivially (the columns and PI both zero).
+// The verifier sets the PI sentinel when not sovereign.
+//
+// Phase 2 (Option B per design §3.2 — RETIRED / REPURPOSED): this pair
+// was specified to bind an inner sovereign `transition_proof` verified by an
+// off-AIR recursive verifier. That verifier is RETIRED (fail-closed,
+// `execute.rs` rejects any v1 `transition_proof`), `populate_sovereign_witness_pi`
+// has no caller, and no AIR constraint reads these columns — they were a DEAD
+// 4-felt sentinel (the adversarial finding;
+// `metatheory/Dregg2/Circuit/SovereignBackingAttack.lean`).
+//
+// DECISION (the sovereign recursion-leaf epoch): the COMMITMENT column carries the
+// sovereign AUTHORITY DIGEST — the 4-felt `key_commit` the re-proved
+// sovereign-authority leaf binds in-circuit
+// (`circuit-prove::sovereign_leaf_adapter::prove_sovereign_leaf_with_key_claim`),
+// connected to the deployed sovereign leg's `SOVEREIGN_WITNESS_KEY_COMMIT` teeth by
+// `joint_turn_recursive::prove_sovereign_binding_node_segmented`. It is NOT an inner
+// transition-proof hash. The queued 4→8 LIFT IS DEAD/SUBSUMED: a key/authority
+// DIGEST needs exactly 4 felts (same reasoning as KEY_COMMIT below — the Ed25519
+// signature binds the full 256-bit key off-AIR; widening adds no soundness). The
+// VK_HASH column is likewise vestigial (the leaf is minted under the fixed
+// `ir2_leaf_wrap_config`, not a per-witness inner VK). Re-pointing these columns'
+// VALUE to the authority digest on the deployed ROTATED leg (a rotated-PI exposure)
+// is the named BIG-BANG DESCRIPTOR piece; the leaf + binding-node mechanism is its
+// consumer and lands here. Const layout UNCHANGED (no BASE_COUNT cascade).
+/// 4-felt Poseidon2 hash of the sovereign cell's owning pubkey (the
+/// key that signed the witness). Zero sentinel when IS_SOVEREIGN_CELL == 0.
+///
+/// NOTE (Phase C): this stays 4 felts. It is a KEY DIGEST (an identity /
+/// replay binding over the Ed25519 owner pubkey), NOT a state commitment, and
+/// its security is backed off-AIR by the actual signature verification + the
+/// monotonic-sequence chain-walk — it does not carry the state-commitment
+/// collision floor that OLD/NEW_COMMIT do. Widening it would not close any
+/// soundness gap (the signature already binds the full 256-bit key).
+pub const SOVEREIGN_WITNESS_KEY_COMMIT_BASE: usize = IS_AGENT_CELL + 1;
+pub const SOVEREIGN_WITNESS_KEY_COMMIT_LEN: usize = 4;
+/// Per-cell monotonic sequence counter from the witness. Zero sentinel
+/// when IS_SOVEREIGN_CELL == 0. Replay protection via the verifier's
+/// chain-walk (each turn's PI[SOVEREIGN_WITNESS_SEQUENCE] must equal
+/// the federation's last-known + 1, enforced at executor injection
+/// time).
+pub const SOVEREIGN_WITNESS_SEQUENCE: usize =
+    SOVEREIGN_WITNESS_KEY_COMMIT_BASE + SOVEREIGN_WITNESS_KEY_COMMIT_LEN;
+/// Single-felt boolean: 1 iff this per-cell proof attests to a
+/// sovereign-witnessed effect. 0 for hosted cells. Drives the gating
+/// for SOVEREIGN_WITNESS_KEY_COMMIT / SOVEREIGN_WITNESS_SEQUENCE.
+pub const IS_SOVEREIGN_CELL: usize = SOVEREIGN_WITNESS_SEQUENCE + 1;
+/// 4-felt VK hash of the AIR under which the inner transition_proof
+/// was produced (typically the Effect VM AIR — see design §3.2). Zero
+/// sentinel when no transition_proof was supplied or IS_SOVEREIGN_CELL
+/// == 0. Bound only when HAS_TRANSITION_PROOF == 1.
+pub const SOVEREIGN_TRANSITION_PROOF_VK_HASH_BASE: usize = IS_SOVEREIGN_CELL + 1;
+pub const SOVEREIGN_TRANSITION_PROOF_VK_HASH_LEN: usize = 4;
+/// 4-felt Poseidon2 hash of the inner transition_proof bytes (after
+/// canonical serialization). Zero sentinel when no proof was supplied.
+pub const SOVEREIGN_TRANSITION_PROOF_COMMITMENT_BASE: usize =
+    SOVEREIGN_TRANSITION_PROOF_VK_HASH_BASE + SOVEREIGN_TRANSITION_PROOF_VK_HASH_LEN;
+pub const SOVEREIGN_TRANSITION_PROOF_COMMITMENT_LEN: usize = 4;
+/// Single-felt boolean: 1 iff a STARK transition_proof was supplied
+/// alongside the witness AND IS_SOVEREIGN_CELL == 1.
+pub const HAS_TRANSITION_PROOF: usize =
+    SOVEREIGN_TRANSITION_PROOF_COMMITMENT_BASE + SOVEREIGN_TRANSITION_PROOF_COMMITMENT_LEN;
+
+// ---- 30-bit value-truncation fix (CAVEAT-LAYER-COVERAGE.md §6.5) ----
+//
+// Three effects (BridgeMint, BridgeLock, CreateEscrow) project a u64
+// `value` into a single BabyBear via `value & ((1 << 30) - 1)`. Above
+// 2^30, the high 34 bits are unrecoverable from the proof: a malicious
+// prover could re-mint / re-lock / escrow with arbitrary high-bit
+// collisions.
+//
+// Fix: bind the full u64 into the PI via four 16-bit limbs (positive,
+// each < 2^16, summing as v_l + v_ml*2^16 + v_mh*2^32 + v_h*2^48 == value).
+// The executor populates the limbs from the runtime u64; the verifier
+// PI-matching loop catches any disagreement. The existing per-row
+// value_lo param is preserved for backwards-compatibility and is
+// tied to the lo+mid_lo+mid_hi via boundary at row 0 (the
+// 30-bit-limb form is now demonstrably one *shadow* of the full
+// four-limb form).
+//
+// Each effect gets a 4-element PI slot; populated only when that
+// effect appears in the trace. When absent, the slot is the zero
+// sentinel.
+/// 4-limb (16-bit each) decomposition of `BridgeMint.value`. Limbs are
+/// little-endian: limbs[0] is the low 16 bits, limbs[3] is the high 16.
+pub const BRIDGE_MINT_VALUE_LIMBS_BASE: usize = HAS_TRANSITION_PROOF + 1;
+pub const BRIDGE_MINT_VALUE_LIMBS_LEN: usize = 4;
+/// 4-limb decomposition of `BridgeLock.value`. RETIRED (VERB-LOCKSTEP):
+/// the effect no longer exists; the slot is always the zero sentinel.
+pub const BRIDGE_LOCK_VALUE_LIMBS_BASE: usize =
+    BRIDGE_MINT_VALUE_LIMBS_BASE + BRIDGE_MINT_VALUE_LIMBS_LEN;
+pub const BRIDGE_LOCK_VALUE_LIMBS_LEN: usize = 4;
+/// 4-limb decomposition of `CreateEscrow.amount`. RETIRED (VERB-LOCKSTEP):
+/// the effect no longer exists; the slot is always the zero sentinel.
+pub const CREATE_ESCROW_AMOUNT_LIMBS_BASE: usize =
+    BRIDGE_LOCK_VALUE_LIMBS_BASE + BRIDGE_LOCK_VALUE_LIMBS_LEN;
+pub const CREATE_ESCROW_AMOUNT_LIMBS_LEN: usize = 4;
+
+// ---- Custom proof commitments ----
+/// For each custom effect i (0..custom_count):
+///   PI[CUSTOM_PROOFS_BASE + i*16 + 0..8]  = custom_program_vk_hash (8 elements, full 32B)
+///   PI[CUSTOM_PROOFS_BASE + i*16 + 8..16] = custom_proof_commitment (8 elements —
+///                                           flag-day rotation from 4; ~124-bit birthday)
+///
+/// **PI layout v3** (`VK_PI_LAYOUT_VERSION == 3`): the frozen v2 prefix
+/// (`BASE_COUNT` felts) is followed by the FOUR-slot v3 tail
+/// (`v3::COMMITTED_HEIGHT`, `v3::RATE_BOUND_TAG`, `v3::CHALLENGE_WINDOW_TAG`,
+/// `v3::ASSET_CLASS`); custom proof entries are appended after the tail. This
+/// moves `CUSTOM_PROOFS_BASE` from `BASE_COUNT` to `v3::V3_BASE_COUNT`. Pre-v3
+/// proofs are NOT verifier-compatible with post-v3 proofs (the PI length
+/// differs by `V3_BASE_COUNT - BASE_COUNT` felts plus any custom entries); the
+/// verifier rejects on PI length mismatch.
+///
+/// Note: CUSTOM_PROOFS_BASE is computed from `v3::V3_BASE_COUNT` so that
+/// adding new v3+ PI fields shifts the custom-proof entries automatically.
+/// All callers compute from the active base count rather than the literal
+/// constant.
+pub const CUSTOM_PROOFS_BASE: usize = v3::V3_BASE_COUNT;
+
+/// How many custom-proof entries a public-input vector of length `len` carries.
+///
+/// ⚑ **This replaces `PI[CUSTOM_EFFECT_COUNT]`, and it is STRICTLY STRONGER than what it
+/// replaces.** Until 2026-08-07 four off-circuit readers — `turn::executor::atomic` (twice),
+/// `effect_vm::trace::extract_custom_proof_commitments` and `preflight`'s effect-VM check — took
+/// the entry count from a published felt. No constraint read that felt (0 `pi_binding`s on all 117
+/// deployed members), so it was a number the PROVER wrote, used to slice the array the VERIFIER
+/// holds. This derives it from the vector's own length instead: a fact about the object in hand,
+/// which a prover cannot lie about at all.
+///
+/// Entries start at [`CUSTOM_PROOFS_BASE`] and are [`CUSTOM_ENTRY_SIZE`] felts each. A vector
+/// whose tail is not a whole number of entries yields the floor — the readers already bounds-check
+/// each slice, and a short tail is a PI-length mismatch the verifier rejects earlier.
+pub const fn custom_entry_count(len: usize) -> usize {
+    if len <= CUSTOM_PROOFS_BASE {
+        0
+    } else {
+        (len - CUSTOM_PROOFS_BASE) / CUSTOM_ENTRY_SIZE
+    }
+}
+
+/// PI layout version for custom-effect dispatch. Bumped from 2 to 3 when the v3
+/// tail was appended after the frozen v2 prefix. ⚠ This constant does NOT
+/// discriminate the tail's WIDTH: the tail was three slots when the version
+/// bumped and is FOUR today (`v3::ASSET_CLASS` was appended without a further
+/// bump), so `VK_PI_LAYOUT_VERSION == 3` names a family, not a length. The PI
+/// length check is the deterministic one, and it is the one that actually
+/// separates the two shapes.
+pub const VK_PI_LAYOUT_VERSION: u32 = 3;
+
+/// Number of fixed public inputs in the active layout (PI v3).
+///
+/// This is the value provers/verifiers should use when sizing the fixed
+/// portion of the PI vector. Custom proof entries are appended after this.
+/// The frozen v2 prefix lives at offsets `0..BASE_COUNT`.
+pub const ACTIVE_BASE_COUNT: usize = v3::V3_BASE_COUNT;
+/// Frozen v2 public-input prefix (without custom proof data).
+///
+/// # ⚑ THIS BLOCK IS WHERE EVERY STALE PI NUMBER IN THE TREE CAME FROM
+///
+/// It carried a hand-written table of ABSOLUTE OFFSETS — `0..21`, `198
+/// NOTESPEND_NULLIFIER`, `BASE_COUNT 201` — written before Phase C widened
+/// `OLD_COMMIT`/`NEW_COMMIT` from 4 felts to 8 (`+8` total). Every number in it
+/// was therefore exactly 8 low. The same stale integers were still being quoted
+/// in four other files on 2026-08-06 (a `circuit/tests` docblock, a
+/// `circuit-prove` module header, an `EffectVmEmitRotationV3.lean` doc block,
+/// and `docs/deos/EFFECTVM-SIDESTRUCTURE-ABI.md`, all citing
+/// `NOTESPEND_NULLIFIER` as 198 against a live 206); all four now name the
+/// constant. Repairing copies without repairing this block only reseeds them.
+///
+/// So the table is gone and the layout is stated the way the code states it.
+/// `OLD_COMMIT_BASE = 0` is the single literal in the whole prefix; **every
+/// other base is `prior_base + prior_len`**, so naming the constants in order is
+/// a complete and drift-proof description — it cannot go stale under a width
+/// change the way a table of absolute offsets did. The absolute numbers a reader
+/// actually needs are pinned by a test against the Lean emission, not asserted
+/// here — see `v3_drift_guard::pi_v3_offsets_match_lean`.
+///
+/// # The v2 prefix, in cascade order
+///
+/// `OLD_COMMIT_BASE[OLD_COMMIT_LEN]` · `NEW_COMMIT_BASE[NEW_COMMIT_LEN]` ·
+/// `EFFECTS_HASH_BASE[EFFECTS_HASH_LEN]` · `INIT_BAL_LO` · `INIT_BAL_HI` ·
+/// `FINAL_BAL_LO` · `FINAL_BAL_HI` · `NET_DELTA_MAG` · `NET_DELTA_SIGN` ·
+/// `TURN_HASH_BASE[TURN_HASH_LEN]` (γ.0a) ·
+/// `EFFECTS_HASH_GLOBAL_BASE[EFFECTS_HASH_GLOBAL_LEN]` (γ.0a) · `ACTOR_NONCE`
+/// (γ.0a) · `PREVIOUS_RECEIPT_HASH_BASE[PREVIOUS_RECEIPT_HASH_LEN]` (γ.0a) ·
+/// the seven γ.2 bilateral counts (`OUTBOUND_TRANSFER_COUNT` …
+/// `INTRO_AS_TARGET_COUNT`, one felt each) · the seven γ.2 4-felt roots
+/// (`OUTGOING_TRANSFER_ROOT_BASE` … `INTRO_AS_TARGET_ROOT_BASE`) ·
+/// `IS_AGENT_CELL` (γ.2) ·
+/// `SOVEREIGN_WITNESS_KEY_COMMIT_BASE[SOVEREIGN_WITNESS_KEY_COMMIT_LEN]` ·
+/// `SOVEREIGN_WITNESS_SEQUENCE` · `IS_SOVEREIGN_CELL` ·
+/// `SOVEREIGN_TRANSITION_PROOF_VK_HASH_BASE[..LEN]` ·
+/// `SOVEREIGN_TRANSITION_PROOF_COMMITMENT_BASE[..LEN]` ·
+/// `HAS_TRANSITION_PROOF` · `BRIDGE_MINT_VALUE_LIMBS_BASE[..LEN]` ·
+/// `BRIDGE_LOCK_VALUE_LIMBS_BASE[..LEN]` (RETIRED) ·
+/// `CREATE_ESCROW_AMOUNT_LIMBS_BASE[..LEN]` (RETIRED) · `SLOT_CAVEAT_COUNT` ·
+/// `SLOT_CAVEAT_MANIFEST_BASE[MAX_SLOT_CAVEATS * SLOT_CAVEAT_ENTRY_SIZE]` ·
+/// `CROSS_EFFECT_DEPS_COUNT` ·
+/// `CROSS_EFFECT_DEPS_BASE[MAX_CROSS_EFFECT_DEPS * CROSS_EFFECT_DEP_ENTRY_SIZE]` ·
+/// `WITNESS_INDEX_MAP_COUNT` ·
+/// `WITNESS_INDEX_MAP_BASE[MAX_WITNESS_INDEX_ENTRIES * WITNESS_INDEX_ENTRY_SIZE]` ·
+/// `UNILATERAL_ATTESTATIONS_COUNT` ·
+/// `UNILATERAL_ATTESTATIONS_ROOT_BASE[UNILATERAL_ATTESTATIONS_ROOT_LEN]` ·
+/// `EMIT_EVENT_COUNT` · `EMIT_EVENT_TOPIC_HASH_BASE[EMIT_EVENT_TOPIC_HASH_LEN]` ·
+/// `EMIT_EVENT_PAYLOAD_HASH_BASE[EMIT_EVENT_PAYLOAD_HASH_LEN]` ·
+/// `FEDERATION_ID_BASE[FEDERATION_ID_LEN]` (#131) ·
+/// `OWNER_CELL_ID_BASE[OWNER_CELL_ID_LEN]` (#132) · `NOTESPEND_NULLIFIER` (D5) ·
+/// `NOTECREATE_COMMITMENT` (D5b) · `BURN_TARGET_PI` (D5c) — and the prefix ends
+/// at `BASE_COUNT = BURN_TARGET_PI + 1`.
+///
+/// # Active layout (PI v3)
+///
+/// The frozen v2 prefix is followed by the FOUR-slot v3 tail — `v3::COMMITTED_HEIGHT`,
+/// `v3::RATE_BOUND_TAG`, `v3::CHALLENGE_WINDOW_TAG`, `v3::ASSET_CLASS` — and custom
+/// proof entries start at `v3::V3_BASE_COUNT` (`== ACTIVE_BASE_COUNT ==
+/// CUSTOM_PROOFS_BASE`). The v2 prefix is frozen so that pre-v3 descriptors and Lean
+/// facts remain byte-identical; new PI fields land in the v3+ tail.
+///
+/// ---- Slot-caveat manifest (Cav-Codex Block 3) ----
+///
+/// Per `SLOT-CAVEATS-DESIGN.md` §4: AIR enforcement of slot caveats
+/// is opt-in per variant. Block 3 lands the *manifest surface*: a
+/// single PI section that carries the cell-program's declared
+/// `StateConstraint` set so that
+///   (a) the verifier can re-evaluate the same caveats against the
+///       state_before/state_after columns this AIR already binds,
+///       and
+///   (b) a future row-bound AIR gadget can pin specific
+///       (state_before.fields[i], state_after.fields[i]) columns to
+///       the manifest entries.
+///
+/// The manifest is fixed-size — up to `MAX_SLOT_CAVEATS` entries of
+/// `SLOT_CAVEAT_ENTRY_SIZE` felts each, prefixed by a single-felt
+/// count. Unused entries are zero-padded. Each entry is a 6-felt
+/// tuple: `[type_tag, slot_index, p0, p1, p2, p3]`. Variants with
+/// fewer than 4 numeric parameters leave trailing felts at zero.
+/// Singleton `AllowedTransitions` entries use
+/// `[count=1, allowed_old, allowed_new, 0]`; larger transition tables
+/// need a table/Merkle membership gadget and are not projected.
+///
+/// Type tags (kept in sync with `dregg_cell::program::StateConstraint`):
+pub const SLOT_CAVEAT_COUNT: usize =
+    CREATE_ESCROW_AMOUNT_LIMBS_BASE + CREATE_ESCROW_AMOUNT_LIMBS_LEN;
+/// Maximum number of slot caveats bindable through the PI manifest.
+/// Cells declaring more than this fall back to executor-only
+/// enforcement (the AIR cannot bind them).
+pub const MAX_SLOT_CAVEATS: usize = 4;
+/// Felts per slot-caveat entry: [type_tag, slot_index, p0, p1, p2, p3].
+pub const SLOT_CAVEAT_ENTRY_SIZE: usize = 6;
+/// Base of the manifest array. Entry `i` lives at
+/// `SLOT_CAVEAT_MANIFEST_BASE + i * SLOT_CAVEAT_ENTRY_SIZE`.
+pub const SLOT_CAVEAT_MANIFEST_BASE: usize = SLOT_CAVEAT_COUNT + 1;
+
+// Type tags for the manifest (numerically distinct from any
+// existing PI sentinel and from zero — zero means "no caveat").
+pub const SLOT_CAVEAT_TAG_FIELD_EQUALS: u32 = 1;
+pub const SLOT_CAVEAT_TAG_FIELD_GTE: u32 = 2;
+pub const SLOT_CAVEAT_TAG_FIELD_LTE: u32 = 3;
+pub const SLOT_CAVEAT_TAG_WRITE_ONCE: u32 = 4;
+pub const SLOT_CAVEAT_TAG_IMMUTABLE: u32 = 5;
+pub const SLOT_CAVEAT_TAG_MONOTONIC: u32 = 6;
+pub const SLOT_CAVEAT_TAG_STRICT_MONOTONIC: u32 = 7;
+pub const SLOT_CAVEAT_TAG_FIELD_DELTA: u32 = 8;
+/// **The in-range bit-width for a `FieldDelta` / `FieldDeltaInRange` RESULT slot**
+/// (the underflow-wrap MINT closure). `new == old + delta` is a BabyBear FIELD
+/// sum, so an UNAFFORDABLE decrement (delta the additive inverse `p − k`, old < k)
+/// satisfies the gate by committing the WRAP value `≈ 2^31` directly — minting
+/// ~2^31. The verifier re-eval (`verify::verify_slot_caveat_manifest`) and the
+/// in-AIR bit-decomposition gadget (`circuit_prove::field_delta_range_air`) both
+/// force the result into `[0, 2^N)`, `N < p`, so the wrap value has no N-bit
+/// preimage and is refused. Mirrors `dregg_cell::program::eval::FIELD_DELTA_RESULT_BITS`.
+pub const FIELD_DELTA_RESULT_BITS: u32 = 30;
+pub const SLOT_CAVEAT_TAG_MONOTONIC_SEQUENCE: u32 = 9;
+pub const SLOT_CAVEAT_TAG_TEMPORAL_GATE: u32 = 10;
+pub const SLOT_CAVEAT_TAG_SENDER_AUTHORIZED: u32 = 11;
+pub const SLOT_CAVEAT_TAG_ALLOWED_TRANSITIONS: u32 = 12;
+// Register-reading temporal atoms (the proven `TemporalAlgebra` family).
+// These re-evaluate against the PRE-state slot view (`initial_fields`), the
+// way the Lean atoms read the target cell's committed pre-state record.
+// `CooledSince` is height-only and lowers to `TEMPORAL_GATE` (no tag here).
+pub const SLOT_CAVEAT_TAG_RATE_BOUND: u32 = 13;
+pub const SLOT_CAVEAT_TAG_UNTIL_EVENT: u32 = 14;
+pub const SLOT_CAVEAT_TAG_SINCE_EVENT: u32 = 15;
+pub const SLOT_CAVEAT_TAG_CHALLENGE_WINDOW: u32 = 16;
+/// The sealed-escrow atomic-swap gate (`docs/deos/SETTLE-ESCROW-WELD-DESIGN.md`,
+/// the Lean `SettleGate` in `metatheory/Dregg2/Deos/SealedEscrow.lean` §6). A
+/// SINGLE manifest entry that reads BOTH leg-status slots and forces the atomic
+/// both-or-none transition: both legs `Deposited` before, both `Consumed` after.
+/// Encoding: `slot_index` = leg A's status slot; `p0` = leg B's status slot. A
+/// partial settle (one leg flipped) FAILS the conjunction — inexpressible — so a
+/// light client re-evaluating this entry witnesses settlement atomicity. STAGED:
+/// the AIR constraint polynomials (the VK bytes) are UNCHANGED (manifest in PI +
+/// off-AIR re-evaluation, exactly the temporal tags 13–16); an old verifier
+/// rejects this tag as `unknown type_tag` (the lockstep sealed-escrow verifier
+/// epoch), NOT a proving-key rotation.
+pub const SLOT_CAVEAT_TAG_SETTLE_ESCROW: u32 = 17;
+/// The field-mirrored `LegStatus::Deposited` code (matches the Lean
+/// `stDeposited` and `cell/src/escrow_sealed.rs::LegStatus`): a leg is locked
+/// and unconsumed before settlement.
+pub const SETTLE_ESCROW_STATUS_DEPOSITED: u32 = 1;
+/// The field-mirrored `LegStatus::Consumed` code (matches the Lean `stConsumed`):
+/// a leg has been consumed (settled) after the atomic transition.
+pub const SETTLE_ESCROW_STATUS_CONSUMED: u32 = 2;
+/// The standing-obligation per-period discharge gate
+/// (`docs/deos/DISCHARGE-OBLIGATION-WELD-DESIGN.md`, the Lean `DischargeGate` in
+/// `metatheory/Dregg2/Deos/StandingObligation.lean` §6b). A SINGLE manifest entry
+/// that reads the committed `next_due` cursor and discharged-total slots across the
+/// (before, after) transition and forces the schedule shape: the discharge is DUE
+/// (block height ≥ the committed due block), the cursor ADVANCES by exactly one
+/// period, and the total advances by EXACTLY the schedule amount. Encoding:
+/// `slot_index` = the `next_due` cursor slot (old_v = before, new_v = after);
+/// `p0` = the due-block slot; `p1` = the discharged-total slot; `p2` = the period
+/// (the cursor advance per discharge); `p3` = the amount (the total advance per
+/// discharge). An EARLY discharge (height below the due block), a WRONG-AMOUNT
+/// discharge, or a NON-ADVANCED cursor (a replay that does not move the one-shot
+/// cursor) FAILS the conjunction — inexpressible — so a light client re-evaluating
+/// this entry witnesses the per-period discipline. STAGED: the AIR constraint
+/// polynomials (the VK bytes) are UNCHANGED (manifest in PI + off-AIR
+/// re-evaluation, exactly the temporal tags 13–16 and the sealed-escrow tag 17);
+/// an old verifier rejects this tag as `unknown type_tag` (the lockstep
+/// standing-obligation verifier epoch), NOT a proving-key rotation.
+pub const SLOT_CAVEAT_TAG_DISCHARGE_OBLIGATION: u32 = 18;
+/// The share-vault no-dilution deposit gate
+/// (`docs/deos/VAULT-DEPOSIT-WELD-DESIGN.md`, the Lean `VaultDepositGate` in
+/// `metatheory/Dregg2/Deos/Vault.lean` §6b). A SINGLE manifest entry that reads the
+/// committed `total_assets` and `total_shares` counter slots across the (before,
+/// after) transition and forces the no-dilution share-price shape: the deposit is
+/// genuine (`after_assets > before_assets`, the assets advance by the deposit `d`),
+/// the mint is POSITIVE (`after_shares > before_shares`, the shares advance by `m` —
+/// the zero-mint / inflation-attack tooth), and NO existing holder is diluted
+/// (`before_assets·m ≤ before_shares·d`, the no-dilution floor — the existing
+/// price-per-share never decreases). Encoding: `slot_index` = the `total_assets`
+/// counter slot (old_v = before, new_v = after); `p0` = the `total_shares` counter
+/// slot. The deposit `d` and minted `m` are read as the across-transition deltas of
+/// those two slots (no per-deposit constant). A ZERO-MINT deposit (the ERC-4626
+/// first-depositor inflation attack, a victim's deposit rounding to nothing), an
+/// over-minting DILUTING deposit, or a NON-CONSERVING deposit (assets that do not
+/// advance by exactly the deposit) FAILS the conjunction — inexpressible — so a light
+/// client re-evaluating this entry witnesses the no-dilution discipline. STAGED: the
+/// AIR constraint polynomials (the VK bytes) are UNCHANGED (manifest in PI + off-AIR
+/// re-evaluation, exactly the temporal tags 13–16, the sealed-escrow tag 17, and the
+/// standing-obligation tag 18); an old verifier rejects this tag as `unknown
+/// type_tag` (the lockstep share-vault verifier epoch), NOT a proving-key rotation.
+pub const SLOT_CAVEAT_TAG_VAULT_DEPOSIT: u32 = 19;
+/// The `|Δ| ≤ d` BOUNDED-delta atom's fresh wire home (`HeapAtom::DeltaBounded`,
+/// the Lean `tagHeapAtom` tag 20). Distinct from `FIELD_DELTA` (tag 8), whose live
+/// re-eval is the EXACT `new == old + p0` (`verify.rs` `SLOT_CAVEAT_TAG_FIELD_DELTA`
+/// = the `HeapAtom::DeltaEquals` semantics). The tag-8 alignment was corrected in the
+/// Lean twin (`metatheory/Dregg2/Circuit/Emit/EffectVmEmitRotationCaveat.lean` §5,
+/// `heapAdmits_deltaEquals_iff`); this const gives the displaced bounded twin its own
+/// number so BOTH the exact and the bounded delta stay heap-expressible. STAGED
+/// (heap-plane `RotCaveatEntry`, host/scalar re-evaluated — the AIR constraint
+/// polynomials / VK bytes are UNCHANGED); an un-upgraded verifier rejects this tag as
+/// `unknown type_tag` (epoch-lockstep), NOT a proving-key rotation.
+pub const SLOT_CAVEAT_TAG_FIELD_DELTA_BOUNDED: u32 = 20;
+/// The CROSS-KEY heap relation `new[heap key] ≤ new[heap other_key] + delta`
+/// (`StateConstraint::HeapFieldLteOther`, the Lean `RelationalCaveat.heapFieldLteOther`
+/// in `metatheory/Dregg2/Exec/RelationalCaveat.lean` §8, characterized by
+/// `evalHeapRel_fieldLteOther_iff`; the staged wire bridge is
+/// `EffectVmEmitRotationCaveat.lean` §5b `RotCaveatEntry.relCaveat?`). A single
+/// heap-domain entry that reads TWO heap keys — inexpressible by the per-key `HeapAtom`
+/// vocabulary (each atom reads only its own key) — encoding `key` = the entry key, `p0`
+/// = the other key, `p1` = the signed delta. Lets a Bazaar purse keep BOTH capacity
+/// operands in the openable heap instead of hoisting the pair into fixed register slots.
+/// STAGED: the manifest is PI off-AIR re-evaluation, so the AIR constraint polynomials
+/// (the VK bytes) are UNCHANGED; an un-upgraded verifier rejects this tag as `unknown
+/// type_tag` (the lockstep cross-key-heap verifier epoch), NOT a proving-key rotation.
+pub const SLOT_CAVEAT_TAG_HEAP_FIELD_LTE_OTHER: u32 = 21;
+
+// ---- Cross-effect within-turn chain pinning (Proof-to-Action Binding §3.3) ----
+//
+// Per `PROOF-TO-ACTION-BINDING-SWEEP.md` §3.3: when two effects in
+// the same turn chain (e.g., `SpendNote` produces a nullifier that
+// a later `BridgeMint` consumes in the same turn), the AIR needs to
+// witness that the producer's output equals the consumer's input.
+// Without this, a malicious executor could route the consumer to a
+// different value than what the producer actually produced.
+//
+// The manifest is fixed-size — up to `MAX_CROSS_EFFECT_DEPS` entries
+// of `CROSS_EFFECT_DEP_ENTRY_SIZE` felts each, prefixed by a
+// single-felt count. Each entry is a 6-felt tuple:
+//   [producer_index, consumer_index, field_tag, vc0, vc1, vc2]
+// where:
+//   - producer_index, consumer_index: u32-as-BabyBear indices into
+//     the canonical DFS-traversal order of the call_forest;
+//   - field_tag: discriminator for the named field (nullifier=1,
+//     note_commitment=2, escrow_id=3, destination=4, note_tree_root=5);
+//   - vc0..vc2: 3 of the 8 limbs of the chained 32-byte value
+//     commitment, providing ~93-bit binding strength (one
+//     commitment cell can pack 32 bytes only with 8 limbs; the
+//     fixed manifest entry size of 6 felts holds the first 3 limbs;
+//     callers that need stronger binding should additionally
+//     submit an `EffectBindingProof` schema entry which carries the
+//     full 8 limbs).
+//
+// The verifier-side off-AIR check
+// (`TurnExecutor::verify_effect_binding_proofs_with_ledger`, reached from
+// `turn::executor::execute`)
+// enforces the full 32-byte algebraic match; the AIR slot here is the
+// shared-PI surface that future row-bound enforcement (Stage 7-γ.3)
+// will tie to specific trace rows of the producer/consumer effects.
+pub const CROSS_EFFECT_DEPS_COUNT: usize =
+    SLOT_CAVEAT_MANIFEST_BASE + MAX_SLOT_CAVEATS * SLOT_CAVEAT_ENTRY_SIZE;
+pub const MAX_CROSS_EFFECT_DEPS: usize = 4;
+pub const CROSS_EFFECT_DEP_ENTRY_SIZE: usize = 6;
+pub const CROSS_EFFECT_DEPS_BASE: usize = CROSS_EFFECT_DEPS_COUNT + 1;
+
+/// Field-name tags for cross-effect dependencies. Kept in sync with
+/// `dregg_turn::binding_proof::EffectDependency::field_name` string
+/// match in `TurnExecutor::extract_named_field_32b`.
+pub const CROSS_EFFECT_FIELD_TAG_NULLIFIER: u32 = 1;
+pub const CROSS_EFFECT_FIELD_TAG_NOTE_COMMITMENT: u32 = 2;
+pub const CROSS_EFFECT_FIELD_TAG_ESCROW_ID: u32 = 3;
+pub const CROSS_EFFECT_FIELD_TAG_DESTINATION: u32 = 4;
+pub const CROSS_EFFECT_FIELD_TAG_NOTE_TREE_ROOT: u32 = 5;
+
+// ---- Witness-blob → Effect indexing (Proof-to-Action Binding §3.2) ----
+//
+// Per `PROOF-TO-ACTION-BINDING-SWEEP.md` §3.2: the runtime `Action`
+// carries `witness_blobs: Vec<WitnessBlob>` and witness-attached
+// predicates reference blobs by `proof_witness_index`. The Effect VM
+// currently does not bind which witness blob feeds which effect: a
+// malicious executor could shuffle blobs so that an effect needing
+// witness K reads bytes meant for effect L.
+//
+// Fix: a per-effect `witness_blob_index` manifest. Each entry is a
+// 2-felt tuple:
+//   [effect_index, witness_index]
+// both as u32-as-BabyBear. Unused entries are zero-padded; the
+// count prefix tells the verifier how many entries are live.
+//
+// The off-AIR verifier checks well-formedness (bounds, no-dupes); a
+// future per-effect AIR slot binds the witness blob's BLAKE3 hash to
+// the effect's row-0 columns for full algebraic enforcement.
+pub const WITNESS_INDEX_MAP_COUNT: usize =
+    CROSS_EFFECT_DEPS_BASE + MAX_CROSS_EFFECT_DEPS * CROSS_EFFECT_DEP_ENTRY_SIZE;
+pub const MAX_WITNESS_INDEX_ENTRIES: usize = 8;
+pub const WITNESS_INDEX_ENTRY_SIZE: usize = 2;
+pub const WITNESS_INDEX_MAP_BASE: usize = WITNESS_INDEX_MAP_COUNT + 1;
+
+// ---- Stage 7-γ.2 unilateral binding (1-arity sibling of bilateral) ----
+//
+// Per `CROSS-CELL-CATEGORICAL-ANALYSIS.md` §3.5: γ.2 binds pairs (Transfer,
+// Grant) and triples (Introduce) but has no 1-arity sibling. *Unilateral*
+// attestations are the dual — a single cell self-attests to a property
+// over its own transitions (state, nonce bump, sovereign-witness signing)
+// *without a counterparty*. They compose with `peer_exchange`'s
+// federation-bypass primitive: a peer state transition can carry one
+// unilateral attestation, and the receiver verifies it against the
+// sender's cell-id-derived canonical encoding.
+//
+// PI shape (append-only after `WITNESS_INDEX_MAP`):
+//   - `UNILATERAL_ATTESTATIONS_COUNT` (1 felt): number of unilateral
+//     attestations this turn produced for this cell.
+//   - `UNILATERAL_ATTESTATIONS_ROOT_BASE` (4 felts): Merkle/Poseidon2
+//     accumulator over the `(attestation_kind, attestation_data)` tuples,
+//     order-preserving DFS. The future AIR boundary constraint pins the
+//     in-trace `unilateral_root` aux column to this PI slot — same shape
+//     as the bilateral roots (γ.2.1 work). Today the off-AIR verifier
+//     recomputes the expected accumulator from the bundle's declared
+//     attestation list and rejects any mismatch.
+//
+// Sentinel: `[BabyBear::ZERO; 4]` when count == 0. Distinct salt per
+// attestation kind ensures `SelfStateTransition` cannot be confused with
+// `SelfNonceBump` even at colliding data.
+pub const UNILATERAL_ATTESTATIONS_COUNT: usize =
+    WITNESS_INDEX_MAP_BASE + MAX_WITNESS_INDEX_ENTRIES * WITNESS_INDEX_ENTRY_SIZE;
+pub const UNILATERAL_ATTESTATIONS_ROOT_BASE: usize = UNILATERAL_ATTESTATIONS_COUNT + 1;
+pub const UNILATERAL_ATTESTATIONS_ROOT_LEN: usize = 4;
+
+/// Maximum unilateral attestations the off-AIR verifier walks per turn.
+/// The accumulator size is independent of this cap (4-felt root); the
+/// cap is a guardrail on the schedule reconstruction.
+pub const MAX_UNILATERAL_ATTESTATIONS: usize = 8;
+
+// Type tags for `UnilateralAttestationKind` — kept in sync with
+// `dregg_turn::bilateral_schedule::UnilateralAttestationKind`. Zero is
+// the "no attestation" sentinel (count == 0 → all data zero).
+pub const UNILATERAL_ATTESTATION_KIND_SELF_STATE_TRANSITION: u32 = 1;
+pub const UNILATERAL_ATTESTATION_KIND_SELF_NONCE_BUMP: u32 = 2;
+pub const UNILATERAL_ATTESTATION_KIND_SOVEREIGN_WITNESS: u32 = 3;
+/// `Custom { kind_tag }` flattens to the high half of u32 space: bit 31
+/// would put us out of canonical BabyBear, so kind_tag is masked to 30
+/// bits and OR'd with this discriminant.
+pub const UNILATERAL_ATTESTATION_KIND_CUSTOM_BASE: u32 = 0x4000_0000;
+
+// ---- EmitEvent algebraic binding (closes #110) ----
+//
+// Per `EFFECT-VM-EMIT-EVENT.md` (lane Opus AIR-structural, 2026-05-25):
+// the EffectVmAir previously only carried a single-felt `event_hash` for
+// `Effect::EmitEvent`, which collided with the runtime `Event { topic,
+// data }` canonical encoding (32B topic ‖ 32B payload). The MCP
+// `dregg_register_service` tool was synthesising a `SetField` row as a
+// workaround. These PI slots replace that workaround with a real
+// algebraic binding:
+//
+//   PI[EMIT_EVENT_COUNT]                          number of EmitEvent rows
+//                                                 in this trace.
+//   PI[EMIT_EVENT_TOPIC_HASH_BASE..+8]            8-felt projection of the
+//                                                 canonical topic hash (full
+//                                                 256-bit binding).
+//   PI[EMIT_EVENT_PAYLOAD_HASH_BASE..+8]          8-felt projection of the
+//                                                 canonical payload hash
+//                                                 (full 256-bit binding).
+//
+// The AIR per-row constraint (gated by `sel::EMIT_EVENT`) pins
+// `params[0..4]` to `PI[EMIT_EVENT_TOPIC_HASH][0..4]` and `params[4..8]`
+// to `PI[EMIT_EVENT_PAYLOAD_HASH][0..4]`, giving algebraic ~124-bit
+// binding inside the AIR. The high halves (`[4..8]` of each) are bound
+// via `compute_effects_hash` absorption (which ingests all 16 felts
+// per emit-event row) and via the off-AIR verifier's PI-match loop
+// (which recomputes the canonical hashes from the runtime `Event`).
+//
+// Sentinel: when count == 0, both 8-felt slots are `[BabyBear::ZERO; 8]`.
+// Soundness: with the per-row equality constraint, all emit-event rows
+// in one proof must share the same hashes. Multi-emit-distinct-hashes
+// requires PI extension (deferred).
+pub const EMIT_EVENT_COUNT: usize =
+    UNILATERAL_ATTESTATIONS_ROOT_BASE + UNILATERAL_ATTESTATIONS_ROOT_LEN;
+pub const EMIT_EVENT_TOPIC_HASH_BASE: usize = EMIT_EVENT_COUNT + 1;
+pub const EMIT_EVENT_TOPIC_HASH_LEN: usize = 8;
+pub const EMIT_EVENT_PAYLOAD_HASH_BASE: usize =
+    EMIT_EVENT_TOPIC_HASH_BASE + EMIT_EVENT_TOPIC_HASH_LEN;
+pub const EMIT_EVENT_PAYLOAD_HASH_LEN: usize = 8;
+
+// ---- Stage 7-γ.2 follow-up (#131 + #132): per-cell federation + owner binding ----
+//
+// Without these two slots, a per-cell / bilateral / witnessed-receipt proof
+// minted under federation A (or for owner cell X) is structurally
+// indistinguishable from one minted under federation B (or owner cell Y):
+// the cross-cell match loop (CG-2/CG-3) checks turn-identity + bilateral
+// roots but never the federation or the proving cell's own id, so a verifier
+// could be tricked into accepting a proof swapped in from a different
+// federation or a different owner cell.
+//
+// Both fields are a 4-felt Poseidon2 compression of a 32-byte canonical id
+// (`federation_id_to_felts_4` / `owner_cell_id_to_felts_4` in the trace
+// module — bit-identical to `dregg_commit::typed::canonical_32_to_felts_4`
+// so the executor-side verifier reconstruction matches). The AIR pins both
+// to dedicated row-0 aux columns (`aux_off::FEDERATION_ID_*` /
+// `aux_off::OWNER_CELL_ID_*`); the off-AIR verifier recomputes the expected
+// values from the trusted federation id + owner cell id and rejects any
+// per-cell PI that disagrees.
+//
+// #131: FEDERATION_ID — the federation under which this proof was minted.
+//       All per-cell proofs of one turn share this value (the verifier's
+//       PI-match loop also enforces cross-proof equality).
+pub const FEDERATION_ID_BASE: usize = EMIT_EVENT_PAYLOAD_HASH_BASE + EMIT_EVENT_PAYLOAD_HASH_LEN;
+pub const FEDERATION_ID_LEN: usize = 4;
+// #132: OWNER_CELL_ID — the cell whose state transition this proof attests.
+//       Distinct per per-cell proof (each side of a bilateral effect carries
+//       its own owner). Binds the proof to a specific owner cell so a proof
+//       for owner cell X cannot be substituted for owner cell Y.
+pub const OWNER_CELL_ID_BASE: usize = FEDERATION_ID_BASE + FEDERATION_ID_LEN;
+pub const OWNER_CELL_ID_LEN: usize = 4;
+
+// ---- D5: NoteSpend nullifier cross-binding (approach A) ----
+//
+// THE GAP this closes: the EffectVM's NoteSpend row carries `param0` = a
+// single folded BabyBear nullifier (`fold_bytes32_to_bb(nullifier.0)`),
+// absorbed into `effects_hash`. But that param was NOT cross-bound to the
+// proof that actually enforces the nullifier against the spent note's
+// preimage — the `SCHEMA_NOTE_SPEND` binding proof (`effect_action_air`,
+// `fields[0]` = the 32-byte nullifier) and `note_spending_witness` (which
+// derives the nullifier from the preimage). So a malicious executor could
+// prove nullifier N via the spending/binding proof yet feed a DIFFERENT M
+// into the EffectVM, and nothing rejected the mismatch.
+//
+// Approach A closes it with three teeth that all reference the SAME folded
+// nullifier:
+//   (1) this PI slot — a single felt carrying `fold_bytes32_to_bb(nullifier)`.
+//   (2) AIR per-row constraint (air.rs), gated by `sel::NOTE_SPEND`: every
+//       NoteSpend row's `param0` MUST equal `PI[NOTESPEND_NULLIFIER]`.
+//   (3) ⚠ DOES NOT EXIST. MEASURED 2026-08-02. This tooth was described here as
+//       "off-AIR equality (turn::executor::proof_verify): the verifier reconstructs
+//       `PI[NOTESPEND_NULLIFIER]` from the SCHEMA_NOTE_SPEND binding proof's `fields[0]`
+//       and the PI-match loop rejects any proof whose PI disagrees." No crate performs it.
+//       `grep -rn NOTESPEND_NULLIFIER turn/src` matches only an unrelated test NAME
+//       (`membership_verifier.rs`), and no crate outside `circuit/` references the constant
+//       — not `verifier/`, not `lightclient/`, not `sdk/`. The binding proof does carry the
+//       nullifier's RAW 32 bytes in `fields[0]`, but nothing folds them and nothing compares
+//       the result to this slot.
+//
+//       So the count is TWO teeth, not three, and the missing one is the ONLY one that would
+//       have tied this felt to the 256-bit source. Approach A's "all reference the SAME
+//       folded nullifier" is true of (1) and (2) — which reference each other, in-circuit,
+//       and nothing else. Left described-and-absent rather than quietly deleted, because a
+//       reader who counted three teeth needs to see which one they were counting.
+//
+// Single felt (one slot, not 8): matches the in-trace `param0` width the
+// AIR already pins. The full 256-bit binding of the nullifier lives in the
+// SCHEMA_NOTE_SPEND binding proof (fields[0], 8 limbs) + note_spending_witness;
+// this slot is the weld that forbids the EffectVM from spending a different
+// nullifier than the one the binding proof certified. Mirrors EMIT_EVENT's
+// "first row's value, shared across all matching rows" single-slot shape:
+// the per-row gated equality forces every NoteSpend row in one proof to
+// share this nullifier (multi-distinct-nullifier proofs need PI extension,
+// deferred — same posture as EmitEvent's EMIT_EVENT_COUNT > 1 note).
+//
+// Sentinel: BabyBear::ZERO when the proof carries no NoteSpend row. A
+// NoteSpend whose folded nullifier is genuinely zero is indistinguishable
+// from the sentinel, but `fold_bytes32_to_bb` of a real preimage-derived
+// nullifier is ~never zero (and the binding proof independently certifies
+// the 256-bit value), so the sentinel collision is not an exploit surface.
+pub const NOTESPEND_NULLIFIER: usize = OWNER_CELL_ID_BASE + OWNER_CELL_ID_LEN;
+
+// ---- D5b: NoteCreate commitment cross-binding (approach A, sibling) ----
+//
+// THE GAP this closes (mirrors NOTESPEND_NULLIFIER above): the EffectVM's
+// NoteCreate row carries `param0` (`param::NOTE_COMMITMENT`) = a single folded
+// BabyBear note commitment (`fold_bytes32_to_bb(commitment.0)`), absorbed into
+// `effects_hash` and driving the balance DEBIT. But that param was NOT cross-
+// bound to the proof that certifies the commitment against its
+// value/asset_type/range_proof opening — the `SCHEMA_NOTE_CREATE` binding
+// proof (`effect_action_air`, `fields[0]` = the 32-byte commitment). A
+// malicious executor could prove commitment C via the binding proof (effect
+// at DFS index i) yet feed a DIFFERENT C' into the EffectVM trace; the
+// effects_hash reconstruction uses the trace's C' while the binding-proof
+// PI-check uses the indexed effect's C, and prior to this slot NOTHING
+// cross-checked C == C' — so the debited note creation could be attributed
+// to a commitment the binding proof never validated.
+//
+// Three teeth, all referencing the SAME folded commitment:
+//   (1) this PI slot — a single felt carrying `fold_bytes32_to_bb(commitment)`.
+//   (2) AIR per-row constraint (air.rs), gated by `sel::NOTE_CREATE`: every
+//       NoteCreate row's `param0` (NOTE_COMMITMENT) MUST equal
+//       `PI[NOTECREATE_COMMITMENT]`.
+//   (3) off-AIR equality (turn::executor::proof_verify): the verifier
+//       reconstructs `PI[NOTECREATE_COMMITMENT]` from the SCHEMA_NOTE_CREATE
+//       binding proof's `fields[0]` and the PI-match loop rejects any proof
+//       whose PI disagrees.
+//
+// Sentinel: ZERO when the proof carries no NoteCreate row (same rationale as
+// NOTESPEND_NULLIFIER — a real commitment is ~never the zero fold).
+pub const NOTECREATE_COMMITMENT: usize = NOTESPEND_NULLIFIER + 1;
+
+// ---- D5c: Burn target cross-binding (approach A, sibling) ----
+//
+// THE GAP this closes: the EffectVM's Burn row carries `param0`
+// (`param::BURN_TARGET`) = a single folded BabyBear target-cell id
+// (`fold_bytes32_to_bb(target.as_bytes())`). The Burn row's balance-debit
+// constraint operates on the trace's RUNNING balance, but the *which cell*
+// the burn applies to is what the `SCHEMA_BURN` binding proof certifies the
+// algebraic `old_balance - new_balance == amount` relation against
+// (`fields[0]` = the 32-byte target cell id, validated against the ledger
+// snapshot in `extract_burn_binding_params`). Prior to this slot, a malicious
+// executor could supply a SCHEMA_BURN proof for the balance math of target T
+// yet feed a Burn for a DIFFERENT target T' into the EffectVM — nothing
+// welded the EffectVM's burn target to the cell whose balance arithmetic the
+// binding proof actually validated.
+//
+// ⚠ **NONE OF D5c's THREE TEETH EXIST AT HEAD** (felt-width #25, verified by
+// direct read + the committed descriptor bytes — do not re-derive the closure
+// from this block's history):
+//   (1) this PI slot — WRITTEN by the v1 trace generator, but the deployed
+//       rotated PI vector is `pis[..V1_PI_COUNT]` + 4 pins, so offset 200 is
+//       NOT PUBLISHED on the leg any verifier sees.
+//   (2) the AIR per-row constraint `s_burn·(param0 − PI[BURN_TARGET_PI])` —
+//       RETIRED with the v1 hand-AIR (`air.rs` header: "`EffectVmAir` + its
+//       `StarkAir` impl is RETIRED"). The Lean-authored deployed descriptor
+//       (`EffectVmEmitBurn.burnVmDescriptor`, piCount 42) has no gate, hash
+//       site or PI binding over param0, and the live registry member
+//       `burnVmDescriptor2R24` references trace col 68 (`PARAM_BASE + 0`)
+//       ZERO times. The burn target is an UNCONSTRAINED witness column.
+//   (3) the off-AIR equality — there is none. `TurnExecutor::expected_burn_target_limbs` was the
+//       dead-code stub that would have carried it; it had zero call sites and was DELETED in the
+//       canonical-codec Stage 0 sweep, so nothing off-AIR compares the target either.
+// The only carrier the target actually reaches is `compute_effects_hash` (all
+// 8 limbs since the #25 widening), and the deployed descriptor binds none of
+// `PI[EFFECTS_HASH_BASE..+4]` either. Whoever ANCHORS this — that is the real
+// work — must anchor the 8 limbs, not this slot.
+//
+// The same "three teeth" wording above `NOTESPEND_NULLIFIER` /
+// `NOTECREATE_COMMITMENT` describes the same retired machinery; those two
+// siblings are felt-width #4 and are still 1-felt carriers.
+//
+// Sentinel: ZERO when the proof carries no Burn row.
+pub const BURN_TARGET_PI: usize = NOTECREATE_COMMITMENT + 1;
+
+pub const BASE_COUNT: usize = BURN_TARGET_PI + 1;
+/// Elements per custom effect entry in PI (8 vk_hash + 8 proof_commit).
+/// Was 8 in PI layout v1; widened to 12 in v2 (`VK_PI_LAYOUT_VERSION == 2`);
+/// widened to 16 in the proof-bind flag-day rotation (blocker #2: the
+/// `custom_proof_commitment` grew 4 → 8 felts, ~62-bit → ~124-bit birthday).
+/// Old 12-felt entries are NOT verifier-compatible (the PI length differs);
+/// the verifier rejects on PI length mismatch — no silent widening.
+pub const CUSTOM_ENTRY_SIZE: usize = 16;
+
+// ---- Hard cap on declared max_custom_effects ----
+/// Hard ceiling on a cell's declared `max_custom_effects`. Per
+/// `DESIGN-max-custom-effects.md` §5, bounds worst-case verifier child-proof work to
+/// ~3.2s/turn at 50ms/proof.
+///
+/// # Where this is enforced
+///
+/// * **Verifier** — `dregg_turn::TurnExecutor::read_cell_max_custom_effects` REFUSES a
+///   turn whose cell declares more than this, before `enforce_custom_effect_proofs` runs
+///   any recursive sub-proof verify. This is the one that bounds attacker-chosen work.
+/// * **Prover** — `crate::effect_vm::trace::generate_effect_vm_trace` asserts it while
+///   building a trace.
+///
+/// ⚑ This docblock said *"refused at registration time"* until 2026-08-05. There was no
+/// registration-time refusal anywhere in the tree, and the prover assertion was the ONLY
+/// site referencing this constant, so the ceiling a verifier enforced was the field's own
+/// `u8::MAX` = **255**. Do not restate the claim without a call site.
+pub const MAX_CUSTOM_EFFECTS_HARD_CAP: u8 = 64;
+/// Soft cap: the recommended workspace ceiling. Cells declaring up to this
+/// are uncontroversial; cells declaring 17..64 should justify the choice.
+pub const MAX_CUSTOM_EFFECTS_SOFT_CAP: u8 = 16;
+/// Default value for cells that don't declare a per-cell max. Matches the
+/// pre-Stage-1 workspace constant.
+pub const MAX_CUSTOM_EFFECTS_DEFAULT: u8 = 4;
+
+// AUDIT[stage1-pi-only-bound]: PI[OLD_COMMIT_BASE+1..+4],
+// PI[NEW_COMMIT_BASE+1..+4] and PI[EFFECTS_HASH_BASE+1..+4] are bound only
+// by the executor's PI matching loop (deterministic recomputation from
+// cell/federation state), not by per-row AIR constraints. Stage 2 may add
+// aux columns to anchor positions 1..3 of state-commit forms inside the
+// trace. (This note also named `PI[APPROVED_HANDOFFS_BASE..+4]`; that slot
+// was DELETED in the 2026-08-07 seven-slot compaction — `ValidateHandoff`
+// has not been an effect since the verb-lockstep pass.)
+
+// ---- PI v3 (THE ROTATION, STAGED — `.docs-history-noclaude/UNIVERSAL-MAP-ROTATION.md` §2.6) ----
+//
+// The v3 tail appends FOUR slots after the frozen v2 prefix (it was three when
+// this block was written; `ASSET_CLASS` is the fourth). NOTHING on the
+// live wire path reads these yet: they are staged for the one VK flag-day
+// (`.docs-history-noclaude/ROTATION-CUTOVER.md`), exactly the additive IR-v2 pattern. The Lean
+// twin is `metatheory/Dregg2/Circuit/RotationLayout.lean` namespace `PiV3` —
+// the offsets below are EMITTED THERE (every layout fact a theorem or a named
+// carrier); the `pi_v3_offsets_match_lean` test is the drift guard: if the
+// live v2 prefix (`BASE_COUNT`) grows before the flag-day, the pin fails
+// loudly here and the Lean module must be re-anchored first.
+pub mod v3 {
+    use super::BASE_COUNT;
+
+    /// The committed-height column: the `committedHeight` commitment limb's
+    /// public face (Lean: `PiV3.COMMITTED_HEIGHT`). Closes the temporal
+    /// gate's prover-chosen-height note: the verifier reads the height FROM
+    /// the committed state (`RotationLayout.committed_height_not_prover_chosen`).
+    /// ⚠ This docblock twice described `CURRENT_BLOCK_HEIGHT` as the
+    /// "verifier-supplied comparand" (at PI 18, then at PI 26) — and no code
+    /// ever performed the comparison. That slot was DELETED on 2026-08-07.
+    /// THIS slot is the whole temporal binding, and always was.
+    pub const COMMITTED_HEIGHT: usize = BASE_COUNT;
+    /// The rateBound caveat tag (Lean: `PiV3.RATE_BOUND_TAG`).
+    pub const RATE_BOUND_TAG: usize = BASE_COUNT + 1;
+    /// The challengeWindow caveat tag (Lean: `PiV3.CHALLENGE_WINDOW_TAG`).
+    /// What the optimistic proving mode reads (#169) — the tag ships at the
+    /// flag-day, the mode ships later.
+    pub const CHALLENGE_WINDOW_TAG: usize = BASE_COUNT + 2;
+
+    /// ASSET_CLASS — the per-cell asset / issuer-cell class (dregg3: AssetId :=
+    /// issuer-cell), as a single field element folded from the cell's committed
+    /// `token_id` (`crate::block_conservation::fold_token_id_to_asset`, the exact
+    /// fold the executor's per-asset collector already uses; `dregg_turn`'s
+    /// `TurnExecutor::fold_token_id_to_asset` just delegates to it). Lean:
+    /// `PiV3.ASSET_CLASS`.
+    ///
+    /// WHY THIS SLOT EXISTS (light-client conservation soundness). The per-asset
+    /// cross-cell conservation gate (`block_conservation::BlockConservation`)
+    /// must partition each per-cell proof's NET_DELTA by its asset class so that
+    /// EACH asset conserves to zero INDEPENDENTLY — a turn that nets to zero
+    /// ACROSS assets but forges value WITHIN an asset is rejected. Without this
+    /// slot the collector read the asset class via a LEDGER LOOKUP
+    /// (`ledger.get(cell).token_id()`), which a ledgerless light client cannot
+    /// do — so the partition was producer/ledger-TRUSTED, not proof-bound.
+    ///
+    /// Binding it as a PI slot (pinned by the row-0 boundary constraint to the
+    /// `aux_off::ASSET_CLASS` aux column, the same posture as OWNER_CELL_ID /
+    /// FEDERATION_ID) makes the asset partition PROOF-BOUND: a prover cannot
+    /// claim a PI asset class that disagrees with the row-0 aux column its trace
+    /// committed. The off-AIR verifier / light-client bundle path then groups by
+    /// `PI[ASSET_CLASS]` directly, so per-asset Σδ=0 is enforced WITHOUT a
+    /// ledger. Single felt: matches the collector's per-asset partition key
+    /// (`PerCellContribution::asset`).
+    ///
+    /// ⚑ AND "SINGLE FELT" IS THE WOUND, not just a layout note. One `BabyBear`
+    /// is ~2^30.87 classes, so two DISTINCT 32-byte asset ids land in one class
+    /// after a 2^15.67 birthday grind, and cross-asset borrowing between them is
+    /// invisible to everything reading this slot — including the verified Lean
+    /// `Σδ=0` decider, which is handed the folded class. The executor refuses a
+    /// turn whose committed ids collide
+    /// (`turn::executor::atomic::refuse_colliding_asset_classes`), which is
+    /// possible only because IT still holds the pre-fold ids; a ledgerless light
+    /// client reading this slot has no such recourse. Making the partition
+    /// genuinely collision-resistant means widening THIS SLOT (and the row-0
+    /// `aux_off::ASSET_CLASS` column, and the committed
+    /// `Dregg2.Circuit.CrossCellConservation` asset column) to a multi-felt asset
+    /// commitment — Lean-authored, and a PI-layout flag day. See
+    /// `crate::block_conservation::fold_token_id_to_asset`.
+    pub const ASSET_CLASS: usize = BASE_COUNT + 3;
+    /// The v3 base count (Lean: `PiV3.V3_BASE_COUNT`). At the cutover,
+    /// `VK_PI_LAYOUT_VERSION` bumps 2 → 3 and `CUSTOM_PROOFS_BASE` moves here.
+    pub const V3_BASE_COUNT: usize = BASE_COUNT + 4;
+}
+
+#[cfg(test)]
+mod v3_drift_guard {
+    /// THE DRIFT GUARD: the staged v3 offsets are byte-pinned against the Lean
+    /// emission (`RotationLayout.PiV3`). A change to the live v2 prefix before
+    /// the flag-day fails HERE, forcing the Lean re-anchor first — Rust never
+    /// invents a layout fact (law #1 of the rotation spec).
+    ///
+    /// ⚑ This docblock quoted `V2_BASE_COUNT = 201, tail 201/202/203,
+    /// V3_BASE_COUNT = 204` until 2026-08-06 — the PRE-PHASE-C numbers, which
+    /// the assertions three lines below already contradicted. The pinned values
+    /// live in the `assert_eq!`s and nowhere else; do not restate them in prose,
+    /// which is exactly how the stale set propagated out of this file.
+    #[test]
+    fn pi_v3_offsets_match_lean() {
+        // Phase C widened OLD_COMMIT + NEW_COMMIT 4->8 felts each (+8 total),
+        // shifting the whole prefix: BASE_COUNT 201 -> 209. The 2026-08-07
+        // seven-slot compaction then removed v1 offsets 26..32, taking it
+        // 209 -> 202. The Lean twin `RotationLayout.PiV3` is re-anchored to match.
+        assert_eq!(
+            super::BASE_COUNT,
+            202,
+            "v2 prefix drifted: re-anchor RotationLayout.PiV3.V2_BASE_COUNT"
+        );
+        assert_eq!(super::v3::COMMITTED_HEIGHT, 202);
+        assert_eq!(super::v3::RATE_BOUND_TAG, 203);
+        assert_eq!(super::v3::CHALLENGE_WINDOW_TAG, 204);
+        // ASSET_CLASS is the 4th v3 slot (light-client conservation soundness).
+        assert_eq!(super::v3::ASSET_CLASS, 205);
+        assert_eq!(super::v3::V3_BASE_COUNT, 206);
+    }
+
+    /// The v1 published window is exactly `ACTOR_NONCE + 1` — the highest v1 pin plus
+    /// one. `trace_rotated::V1_PI_COUNT` and the Lean `pi.V1_PI_COUNT` are the same
+    /// number written in two more places; this is where the three are held together.
+    #[test]
+    fn v1_window_covers_the_highest_v1_pin() {
+        assert_eq!(super::ACTOR_NONCE, 34);
+        assert_eq!(
+            crate::effect_vm::trace_rotated::V1_PI_COUNT,
+            super::ACTOR_NONCE + 1,
+            "V1_PI_COUNT must be ACTOR_NONCE + 1 — a shorter window slices the nonce pin \
+             off the rotated PI vector"
+        );
+        // The seven-slot compaction: TURN_HASH now starts immediately after NET_DELTA_SIGN.
+        assert_eq!(super::TURN_HASH_BASE, super::NET_DELTA_SIGN + 1);
+        assert_eq!(super::TURN_HASH_BASE, 26);
+        assert_eq!(super::EFFECTS_HASH_GLOBAL_BASE, 30);
+    }
+}

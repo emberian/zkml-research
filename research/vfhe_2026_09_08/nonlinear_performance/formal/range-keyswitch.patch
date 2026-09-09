@@ -1,0 +1,596 @@
+diff --git a/Compiler/RangeCompletedMac.lean b/Compiler/RangeCompletedMac.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeCompletedMac.lean
+@@ -0,0 +1,167 @@
++/- Range-native source completion. Arithmetic terms are the existing MAC and
++addition constructors. Only their bit witnesses become existential. -/
++import Compiler.BfvKeyswitchCore
++namespace Minidregg.Compiler.RangeCompletedMac
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 300000
++
++def canonicalGates {J : Type} (q : Nat) (w : AirBignum.AddWires J 6 9) : ConstraintSystem BabyBear J :=
++  AirBignum.carryRangeSystem w ++ [vr (w.carry 0),vr (w.carry 6)] ++
++  AirBignum.addEquationSystem w ++ AirModularView.pinWordSystem (limbBits := 9) (q-1) w.z
++
++def rowGates {J : Type} (q : Nat) (w : BfvKeyswitchMac.RowWires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 10).flatMap (fun k => canonicalGates q (w.canonical k)) ++
++  [add' (vr (w.carry 0)) (cst (-32768)),add' (vr (w.carry 12)) (cst (-32768))] ++
++  (List.finRange 12).map (BfvKeyswitchMac.column q w)
++
++def gates {J : Type} (q : Nat) (w : BfvKeyswitchCore.Wires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 2).flatMap fun h => rowGates q (BfvKeyswitchCore.macWires w h)
++
++def Bounds {J : Type} (a : J → BabyBear) (w : BfvKeyswitchCore.Wires J) : Prop :=
++  (∀ g i,(a ((w.canonical g).x i)).val<512 ∧
++    (a ((w.canonical g).y i)).val<512 ∧ (a ((w.canonical g).z i)).val<512) ∧
++  (∀ h i,(a (w.quotient h i)).val<512) ∧
++  (∀ h i,(a (w.carry h i)).val<65536)
++
++/-- Acceptance of unchanged arithmetic plus canonical ranges forces exactly the
++previous paired-MAC public relation, for every assignment and every wire layout. -/
++def Sound {J : Type} (q : Nat) (w : BfvKeyswitchCore.Wires J) : Prop :=
++  ∀ a : J → BabyBear, systemAccepts a (gates q w) → Bounds a w →
++  (∀ g,BfvKeyswitchCore.value a w g<q) ∧ ∀ h,
++    BfvKeyswitchCore.value a w (BfvKeyswitchCore.oIndex h)=
++    (BfvKeyswitchCore.value a w (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++      BfvKeyswitchCore.value a w (BfvKeyswitchCore.dIndex k)*
++      BfvKeyswitchCore.value a w (BfvKeyswitchCore.kIndex h k))%q
++
++noncomputable def bits (k : Nat) (x : BabyBear) : Fin k → BabyBear :=
++  if h : x.val<2^k then Classical.choose (exists_boolDecomp (F := BabyBear) x.val h)
++  else fun _ => 0
++
++theorem bits_complete (k : Nat) (x : BabyBear) (hx : x.val<2^k) :
++    systemAccepts (id : BabyBear → BabyBear) (rangeGadget x (bits k x)) := by
++  apply (rangeGadget_correct id x (bits k x)).mpr
++  have h := Classical.choose_spec (exists_boolDecomp (F := BabyBear) x.val hx)
++  simpa [bits,hx] using h
++
++noncomputable def completeGroup {J : Type} (a : J → BabyBear) (w : AirBignum.AddWires J 6 9) : AirBignum.AddWires BabyBear 6 9 where
++  x := fun i => a (w.x i)
++  y := fun i => a (w.y i)
++  z := fun i => a (w.z i)
++  carry := fun i => a (w.carry i)
++  xBit := fun i => bits 9 (a (w.x i))
++  yBit := fun i => bits 9 (a (w.y i))
++  zBit := fun i => bits 9 (a (w.z i))
++noncomputable def complete {J : Type} (a : J → BabyBear) (w : BfvKeyswitchCore.Wires J) : BfvKeyswitchCore.Wires BabyBear where
++  canonical := fun g => completeGroup a (w.canonical g)
++  quotient := fun h i => a (w.quotient h i)
++  quotientBit := fun h i => bits 9 (a (w.quotient h i))
++  carry := fun h i => a (w.carry h i)
++  carryBit := fun h i => bits 16 (a (w.carry h i))
++
++theorem canonical_complete {J : Type} (a : J → BabyBear) (q : Nat) (w : AirBignum.AddWires J 6 9)
++    (hg : systemAccepts a (canonicalGates q w))
++    (hb : ∀ i,(a (w.x i)).val<512 ∧ (a (w.y i)).val<512 ∧ (a (w.z i)).val<512) :
++    systemAccepts id (BfvKeyswitchMac.canonicalSystem q (completeGroup a w)) := by
++  simp only [canonicalGates,systemAccepts_append] at hg
++  obtain ⟨⟨⟨hc,he⟩,ha⟩,hp⟩ := hg
++  apply (systemAccepts_append id _ _).mpr
++  constructor
++  · apply (AirBignum.addGadget_correct id _).mpr
++    refine ⟨fun i => bits_complete 9 _ (hb i).1,
++      fun i => bits_complete 9 _ (hb i).2.1,
++      fun i => bits_complete 9 _ (hb i).2.2,?_,?_,?_,?_⟩
++    · exact (AirBignum.carryRangeSystem_correct a w).mp hc
++    · simpa [systemAccepts_cons,systemAccepts_nil,accepts,eval_vr] using (he (vr (w.carry 0)) (by simp))
++    · have hh := he (vr (w.carry 6)) (by simp)
++      simpa [accepts,eval_vr,completeGroup] using hh
++    · exact (AirBignum.addEquationSystem_correct a w).mp ha
++  · apply (AirModularView.pinWordSystem_correct id _ _).mpr
++    exact (AirModularView.pinWordSystem_correct a _ _).mp hp
++
++theorem source_completion {J : Type} (q : Nat) (w : BfvKeyswitchCore.Wires J) (a : J → BabyBear)
++    (hg : systemAccepts a (gates q w)) (hb : Bounds a w) :
++    systemAccepts id (BfvKeyswitchCore.system q (complete a w)) := by
++  intro t ht
++  obtain ⟨h,_,ht⟩ := List.mem_flatMap.mp ht
++  have gh : systemAccepts a (rowGates q (BfvKeyswitchCore.macWires w h)) :=
++    fun t ht => hg t (List.mem_flatMap.mpr ⟨h,List.mem_finRange h,ht⟩)
++  simp only [rowGates,systemAccepts_append] at gh
++  obtain ⟨⟨gc,ge⟩,gm⟩ := gh
++  have can (k : Fin 10) : systemAccepts id (BfvKeyswitchMac.canonicalSystem q
++      ((BfvKeyswitchCore.macWires (complete a w) h).canonical k)) :=
++    canonical_complete a q _ (fun t ht => gc t (List.mem_flatMap.mpr ⟨k,List.mem_finRange k,ht⟩)) (hb.1 _)
++  have old : systemAccepts id (BfvKeyswitchMac.rowSystem q (BfvKeyswitchCore.macWires (complete a w) h)) := by
++    simp only [BfvKeyswitchMac.rowSystem,systemAccepts_append]
++    refine ⟨⟨⟨⟨?_,?_⟩,?_⟩,?_⟩,?_⟩
++    · intro t ht
++      obtain ⟨k,_,ht⟩ := List.mem_flatMap.mp ht
++      exact can k t ht
++    · apply (AirBignum.limbRangeSystem_correct id _ _).mpr
++      intro i
++      exact bits_complete 9 _ (hb.2.1 h i)
++    · apply (AirBignum.limbRangeSystem_correct id _ _).mpr
++      intro i
++      exact bits_complete 16 _ (hb.2.2 h i)
++    · simp only [systemAccepts_cons,systemAccepts_nil,accepts,eval_add',eval_vr,eval_cst] at ge ⊢
++      exact ge
++    · intro t ht
++      obtain ⟨i,_,rfl⟩ := List.mem_map.mp ht
++      apply (BfvKeyswitchMac.column_correct q (BfvKeyswitchCore.macWires (complete a w) h) id i).mpr
++      have hi := (BfvKeyswitchMac.column_correct q (BfvKeyswitchCore.macWires w h) a i).mp
++        (gm _ (List.mem_map.mpr ⟨i,List.mem_finRange i,rfl⟩))
++      simpa only [BfvKeyswitchCore.macWires,complete,completeGroup,id_eq] using hi
++  exact old t ht
++
++/-- Erasing explicit bit witnesses preserves the remaining generated gates. -/
++theorem source_reduction {J : Type} (q : Nat) (w : BfvKeyswitchCore.Wires J) (a : J → BabyBear)
++    (hs : systemAccepts a (BfvKeyswitchCore.system q w)) :
++    systemAccepts a (gates q w) := by
++  intro t ht
++  obtain ⟨h,_,ht⟩ := List.mem_flatMap.mp ht
++  have ho : systemAccepts a (BfvKeyswitchMac.rowSystem q (BfvKeyswitchCore.macWires w h)) :=
++    fun t ht => hs t (List.mem_flatMap.mpr ⟨h,List.mem_finRange h,ht⟩)
++  simp only [BfvKeyswitchMac.rowSystem,systemAccepts_append] at ho
++  have hn : systemAccepts a (rowGates q (BfvKeyswitchCore.macWires w h)) := by
++    simp only [rowGates,systemAccepts_append]
++    refine ⟨⟨?_,ho.1.2⟩,ho.2⟩
++    intro t ht
++    obtain ⟨g,_,ht⟩ := List.mem_flatMap.mp ht
++    have hc := ho.1.1.1.1
++    have hh : systemAccepts a (BfvKeyswitchMac.canonicalSystem q
++        ((BfvKeyswitchCore.macWires w h).canonical g)) :=
++      fun t ht => hc t (List.mem_flatMap.mpr ⟨g,List.mem_finRange g,ht⟩)
++    simp only [BfvKeyswitchMac.canonicalSystem,AirBignum.addGadget,systemAccepts_append] at hh
++    have hg : systemAccepts a (canonicalGates q ((BfvKeyswitchCore.macWires w h).canonical g)) := by
++      simp only [canonicalGates,systemAccepts_append]
++      exact ⟨⟨⟨hh.1.1.1.2,hh.1.1.2⟩,hh.1.2⟩,hh.2⟩
++    exact hg t ht
++  exact hn t ht
++
++theorem sound {J : Type} (q : Nat) (hq : 0<q) (hcap : q<512^6) (w : BfvKeyswitchCore.Wires J) : Sound q w := by
++  intro a hg hb
++  exact BfvKeyswitchCore.sound q hq hcap (complete a w) id (source_completion q w a hg hb)
++end Minidregg.Compiler.RangeCompletedMac
++
++/-- info: 'Minidregg.Compiler.RangeCompletedMac.bits_complete' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeCompletedMac.bits_complete
++
++/-- info: 'Minidregg.Compiler.RangeCompletedMac.canonical_complete' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeCompletedMac.canonical_complete
++
++/-- info: 'Minidregg.Compiler.RangeCompletedMac.source_completion' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeCompletedMac.source_completion
++
++/-- info: 'Minidregg.Compiler.RangeCompletedMac.source_reduction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeCompletedMac.source_reduction
++
++/-- info: 'Minidregg.Compiler.RangeCompletedMac.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeCompletedMac.sound
++
+diff --git a/Compiler/RangeKeyswitchInfer.lean b/Compiler/RangeKeyswitchInfer.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeKeyswitchInfer.lean
+@@ -0,0 +1,91 @@
++/- Replacement accepted-row type, composed through the previous exact Infer
++functions and prefix/square theorems. No second evaluator or square AIR. -/
++import Compiler.RangeKeyswitchRow
++import Compiler.BfvInferContract
++namespace Minidregg.Compiler.RangeKeyswitchInfer
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.BfvInferComposition
++open Minidregg.Compiler.BfvInferLinear (primes)
++open Minidregg.Compiler.BfvSquareComposition (KernelCiphertext)
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 500000
++
++def Checked (l : Fin 4) (a : Operands) (out : Fin 2 → Nat) : Prop :=
++  ∃ asg : RangeKeyswitchRow.Idx → BabyBear,
++    systemAccepts asg (RangeKeyswitchRow.system (primes l)) ∧
++    RangeKeyswitchRow.RangeHolds asg ∧ Bound RangeKeyswitchRow.wires asg a out
++
++theorem checked_sound (l : Fin 4) (a : Operands) (out : Fin 2 → Nat)
++    (hc : Checked l a out) : ∀ h,out h=output (primes l) a h := by
++  obtain ⟨asg,hs,hr,hb⟩ := hc
++  intro h
++  have hh := (RangeKeyswitchRow.actualRowSound l asg hs hr).2 h
++  change BfvKeyswitchCore.value asg RangeKeyswitchRow.wires (BfvKeyswitchCore.oIndex h)=
++    (BfvKeyswitchCore.value asg RangeKeyswitchRow.wires (BfvKeyswitchCore.aIndex h)+
++      ∑ i : Fin 4,BfvKeyswitchCore.value asg RangeKeyswitchRow.wires (BfvKeyswitchCore.dIndex i)*
++      BfvKeyswitchCore.value asg RangeKeyswitchRow.wires (BfvKeyswitchCore.kIndex h i))%primes l at hh
++  simpa only [hb.1,hb.2.1,hb.2.2.1,hb.2.2.2,output] using hh
++
++def Initial (model : Ciphertext) (query : Plaintext) (out : Ciphertext) : Prop :=
++  ∀ l j,Checked l (initialOperands model query l j) (fun h => out h l j)
++def Rotation (op : Transforms) (key : EvaluationKey) (s : Fin 10)
++    (before after : Ciphertext) : Prop :=
++  ∀ l j,Checked l (rotationOperands op key before s l j) (fun h => after h l j)
++
++def DotSound : Prop := ∀ op key model query (trace : Nat → Ciphertext),
++  Initial model query (trace 0) →
++  (∀ s : Fin 10,Rotation op key s (trace s.val) (trace (s.val+1))) →
++  trace 10=inferDot op key model query
++
++theorem dotSound : DotSound := by
++  intro op key model query trace hi hr
++  apply prefixSound Ciphertext (stepAt op key) (initialProduct model query) trace 10
++  · funext h l j
++    exact (checked_sound l _ _ (hi l j) h).trans (initialOperands_output model query h l j)
++  · intro i hi
++    have hh : trace (i+1)=rotationStep op key ⟨i,hi⟩ (trace i) := by
++      funext h l j
++      exact checked_sound l _ _ (hr ⟨i,hi⟩ l j) h
++    simpa [stepAt,hi] using hh
++
++def AcceptedInfer (op : BfvInferContract.PublicTransforms) (key : EvaluationKey)
++    (model : Ciphertext) (query : Plaintext) (kernel : KernelCiphertext) : Prop :=
++  ∃ trace : Nat → Ciphertext, Initial model query (trace 0) ∧
++    (∀ s : Fin 10,Rotation op.base key s (trace s.val) (trace (s.val+1))) ∧
++    BfvSquareComposition.BaseRoundTrip (BfvInferContract.squareTransforms op) (trace 10) ∧
++    BfvSquareComposition.SquareChecked (BfvInferContract.squareTransforms op) (trace 10) kernel
++
++def InferSound : Prop := ∀ op key model query kernel,
++  AcceptedInfer op key model query kernel → kernel=BfvInferContract.result op key model query
++
++theorem inferSound : InferSound := by
++  intro op key model query kernel hc
++  obtain ⟨trace,hi,hr,hrt,hs⟩ := hc
++  have hd := dotSound op.base key model query trace hi hr
++  have hk := BfvSquareComposition.squareChecked_sound (BfvInferContract.squareTransforms op)
++    (trace 10) kernel hrt hs
++  simpa only [hd,BfvInferContract.result] using hk
++
++theorem wrongOutputRefused (op : BfvInferContract.PublicTransforms) (key : EvaluationKey)
++    (model : Ciphertext) (query : Plaintext) (kernel : KernelCiphertext)
++    (hw : kernel≠BfvInferContract.result op key model query) :
++    ¬AcceptedInfer op key model query kernel := fun hc => hw (inferSound op key model query kernel hc)
++end Minidregg.Compiler.RangeKeyswitchInfer
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchInfer.checked_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchInfer.checked_sound
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchInfer.dotSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchInfer.dotSound
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchInfer.inferSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchInfer.inferSound
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchInfer.wrongOutputRefused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchInfer.wrongOutputRefused
++
+diff --git a/Compiler/RangeKeyswitchLookup.lean b/Compiler/RangeKeyswitchLookup.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeKeyswitchLookup.lean
+@@ -0,0 +1,58 @@
++/- Existing declared-table lookup semantics closes the range premise. -/
++import Compiler.RangeKeyswitchRow
++import Compiler.IR2RangeLookupBridge
++namespace Minidregg.Compiler.RangeKeyswitchLookup
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.RangeKeyswitchRow
++open Dregg2.Circuit.DescriptorIR2
++open Dregg2.Circuit.Emit.EffectVmEmitV2
++set_option autoImplicit false
++
++def extend (a : Idx → BabyBear) (i : Nat) : BabyBear :=
++  if h : i<nVars then a ⟨i,h⟩ else 0
++
++def LookupChecked (tf : TraceFamily) (a : Idx → BabyBear) : Prop :=
++  ∀ r ∈ ranges,IR2RangeLookupBridge.LookupHolds r.bits tf (extend a) r.wire.val
++
++def FaithfulRanges (tf : TraceFamily) : Prop :=
++  ∀ r ∈ ranges,tf (rangeTidW r.bits)=rangeRows r.bits
++
++/-- Exact existing IR2 range tables, not a native verifier-success premise. -/
++theorem ranges_of_lookups (tf : TraceFamily) (ht : FaithfulRanges tf) (a : Idx → BabyBear)
++    (hl : LookupChecked tf a) : RangeHolds a := by
++  intro r hr
++  have hh := IR2RangeLookupBridge.lookup_val_lt r.bits tf (ht r hr) (extend a) r.wire.val (hl r hr)
++  simpa [extend,r.wire.isLt] using hh
++
++theorem lookupRowSound (l : Fin 4) (tf : TraceFamily) (ht : FaithfulRanges tf)
++    (a : Idx → BabyBear) (hg : systemAccepts a (system (BfvKeyswitchRow.primes l)))
++    (hl : LookupChecked tf a) :
++    (∀ g,value a g<BfvKeyswitchRow.primes l) ∧ ∀ h,value a (BfvKeyswitchCore.oIndex h)=
++    (value a (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++      value a (BfvKeyswitchCore.dIndex k)*value a (BfvKeyswitchCore.kIndex h k))%BfvKeyswitchRow.primes l :=
++  actualRowSound l a hg (ranges_of_lookups tf ht a hl)
++
++/-- The source theorem quantifies every row, including the final one. The
++whole-row serializer is required at the separate descriptor interpretation seam. -/
++theorem allRowsSound {n : Nat} (l : Fin 4) (tf : TraceFamily) (ht : FaithfulRanges tf)
++    (trace : Fin n → Idx → BabyBear)
++    (hg : ∀ r,systemAccepts (trace r) (system (BfvKeyswitchRow.primes l)))
++    (hl : ∀ r,LookupChecked tf (trace r)) :
++    ∀ r h,value (trace r) (BfvKeyswitchCore.oIndex h)=
++    (value (trace r) (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++      value (trace r) (BfvKeyswitchCore.dIndex k)*value (trace r) (BfvKeyswitchCore.kIndex h k))%BfvKeyswitchRow.primes l :=
++  fun r => (lookupRowSound l tf ht (trace r) (hg r) (hl r)).2
++end Minidregg.Compiler.RangeKeyswitchLookup
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchLookup.ranges_of_lookups' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchLookup.ranges_of_lookups
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchLookup.lookupRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchLookup.lookupRowSound
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchLookup.allRowsSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchLookup.allRowsSound
++
+diff --git a/Compiler/RangeKeyswitchRow.lean b/Compiler/RangeKeyswitchRow.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeKeyswitchRow.lean
+@@ -0,0 +1,136 @@
++/- Compact source with range lookup vocabulary. Data and arithmetic use the
++existing paired-MAC constructors; omitted bit columns are completed in Lean. -/
++import Compiler.RangeCompletedMac
++import Compiler.BfvKeyswitchRow
++namespace Minidregg.Compiler.RangeKeyswitchRow
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++local instance : Hashable BabyBear where hash x := hash x.val
++
++def nVars : Nat := 349
++abbrev Idx := Fin nVars
++
++def group (g : Fin 16) : AirBignum.AddWires Idx 6 9 where
++  x := fun i => ⟨1+6*g.val+i.val,by dsimp [nVars]; omega⟩
++  y := fun i => ⟨97+13*g.val+i.val,by dsimp [nVars]; omega⟩
++  z := fun i => ⟨305+i.val,by dsimp [nVars]; omega⟩
++  carry := fun i => ⟨97+13*g.val+6+i.val,by dsimp [nVars]; omega⟩
++  xBit := fun _ _ => ⟨0,by decide⟩
++  yBit := fun _ _ => ⟨0,by decide⟩
++  zBit := fun _ _ => ⟨0,by decide⟩
++
++def wires : BfvKeyswitchCore.Wires Idx where
++  canonical := group
++  quotient := fun h i => ⟨311+6*h.val+i.val,by dsimp [nVars]; omega⟩
++  carry := fun h i => ⟨323+13*h.val+i.val,by dsimp [nVars]; omega⟩
++  quotientBit := fun _ _ _ => ⟨0,by decide⟩
++  carryBit := fun _ _ _ => ⟨0,by decide⟩
++
++structure RangeSpec where
++  wire : Idx
++  bits : Nat
++  deriving DecidableEq,BEq,ReflBEq,LawfulBEq
++
++def rangeFamily {n : Nat} (width : Nat) (f : Fin n → Idx) : List RangeSpec :=
++  (List.finRange n).map fun i => ⟨f i,width⟩
++def allRanges : List RangeSpec :=
++  (List.finRange 16).flatMap (fun g => rangeFamily 9 (group g).x ++
++    rangeFamily 9 (group g).y ++ rangeFamily 9 (group g).z) ++
++  (List.finRange 2).flatMap (fun h => rangeFamily 9 (wires.quotient h) ++ rangeFamily 16 (wires.carry h))
++def ranges := allRanges.eraseDups
++
++def RangeHolds (a : Idx → BabyBear) : Prop :=
++  ∀ r ∈ ranges,(a r.wire).val<2^r.bits
++
++def system (q : Nat) := AirAssertionShare.optimize (RangeCompletedMac.gates q wires)
++def value (a : Idx → BabyBear) (g : Fin 16) := BfvKeyswitchCore.value a wires g
++
++/-- Public operands and both outputs satisfy the same exact integer law as the
++previous bit-decomposed source, for any accepted compact assignment. -/
++def RowSound (q : Nat) : Prop := ∀ a : Idx → BabyBear,
++  systemAccepts a (system q) → RangeHolds a →
++  (∀ g,value a g<q) ∧ ∀ h,value a (BfvKeyswitchCore.oIndex h)=
++    (value a (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++      value a (BfvKeyswitchCore.dIndex k)*value a (BfvKeyswitchCore.kIndex h k))%q
++
++theorem ranges_complete (a : Idx → BabyBear) (hr : RangeHolds a) : RangeCompletedMac.Bounds a wires := by
++  have hh : ∀ r ∈ allRanges,(a r.wire).val<2^r.bits := by
++    intro r hm
++    exact hr r (by simpa [ranges] using hm)
++  have hcan (g : Fin 16) (r : RangeSpec)
++      (hm : r ∈ rangeFamily 9 (group g).x ++ rangeFamily 9 (group g).y ++ rangeFamily 9 (group g).z) :=
++    hh r (List.mem_append_left _ (List.mem_flatMap.mpr ⟨g,List.mem_finRange g,hm⟩))
++  have hmac (h : Fin 2) (r : RangeSpec)
++      (hm : r ∈ rangeFamily 9 (wires.quotient h) ++ rangeFamily 16 (wires.carry h)) :=
++    hh r (List.mem_append_right _ (List.mem_flatMap.mpr ⟨h,List.mem_finRange h,hm⟩))
++  have hm {n : Nat} (b : Nat) (f : Fin n → Idx) (i : Fin n) :
++      RangeSpec.mk (f i) b ∈ rangeFamily b f := List.mem_map.mpr ⟨i,List.mem_finRange i,rfl⟩
++  refine ⟨?_,?_,?_⟩
++  · intro g i
++    refine ⟨?_,?_,?_⟩
++    · exact hcan g _ (List.mem_append_left _ (List.mem_append_left _ (hm 9 _ i)))
++    · exact hcan g _ (List.mem_append_left _ (List.mem_append_right _ (hm 9 _ i)))
++    · exact hcan g _ (List.mem_append_right _ (hm 9 _ i))
++  · intro h i
++    exact hmac h _ (List.mem_append_left _ (hm 9 _ i))
++  · intro h i
++    exact hmac h _ (List.mem_append_right _ (hm 16 _ i))
++
++theorem rowSound (q : Nat) (hq : 0<q) (hcap : q<512^6) : RowSound q := by
++  intro a hs hr
++  exact RangeCompletedMac.sound q hq hcap wires a
++    ((AirAssertionShare.optimize_preserves a _).mp hs) (ranges_complete a hr)
++
++theorem actualRowSound (l : Fin 4) : RowSound (BfvKeyswitchRow.primes l) :=
++  rowSound _ (BfvKeyswitchRow.prime_capacity l).1 (by have := (BfvKeyswitchRow.prime_capacity l).2; omega)
++
++/-- Data-only projection from the previous generated native witness registers.
++The public prefix is unchanged; existing Boolean carry data is retained. -/
++def oldIndex (i : Idx) : Nat :=
++  if i.val<97 then i.val
++  else if i.val<305 then
++    let g := (i.val-97)/13
++    let j := (i.val-97)%13
++    97+121*g+(if j<6 then 54+j else 114+(j-6))
++  else if i.val<311 then 2033+(i.val-305)
++  else if i.val<323 then 2093+281*((i.val-311)/6)+(i.val-311)%6
++  else 2093+281*((i.val-323)/13)+60+(i.val-323)%13
++
++theorem publicPrefix (i : Idx) (hi : i.val<97) : oldIndex i=i.val := by simp [oldIndex,hi]
++
++end Minidregg.Compiler.RangeKeyswitchRow
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.ranges_complete' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.ranges_complete
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.rowSound
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.actualRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.actualRowSound
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.publicPrefix' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.publicPrefix
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.instDecidableEqRangeSpec' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.instDecidableEqRangeSpec
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.instBEqRangeSpec' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.instBEqRangeSpec
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.instReflBEqRangeSpec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.instReflBEqRangeSpec
++
++/-- info: 'Minidregg.Compiler.RangeKeyswitchRow.instLawfulBEqRangeSpec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeKeyswitchRow.instLawfulBEqRangeSpec
++
+diff --git a/Compiler/RangeMacExhibits.lean b/Compiler/RangeMacExhibits.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/RangeMacExhibits.lean
+@@ -0,0 +1,55 @@
++/- Nonzero premise and canonical omitted-product refusal for the generic source
++used by the actual compact layout. No large closed trace is kernel evaluated. -/
++import Compiler.RangeCompletedMac
++import Compiler.BfvKeyswitchExhibits
++namespace Minidregg.Compiler.RangeMacExhibits
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.BfvKeyswitchCore
++open Minidregg.Compiler.BfvKeyswitchCore.Exhibits
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 1000000
++
++def NonzeroPremise : Prop :=
++  systemAccepts id (RangeCompletedMac.gates 37 good) ∧
++  RangeCompletedMac.Bounds id good ∧ value id good 0=1 ∧ value id good 14=27
++
++def MissingProductFalsifier : Prop :=
++  ¬(systemAccepts id (RangeCompletedMac.gates 37 wrong) ∧ RangeCompletedMac.Bounds id wrong)
++
++theorem nonzeroPremise : NonzeroPremise := by
++  refine ⟨RangeCompletedMac.source_reduction 37 good id nonzero_premise.1,?_,good_values 0,good_values 14⟩
++  refine ⟨?_,?_,?_⟩
++  · intro g i
++    fin_cases g <;> fin_cases i <;> norm_num [good,vals,lo] <;> decide
++  · intro h i
++    norm_num [good]
++  · intro h i
++    norm_num [good]
++    decide
++
++theorem missingProductFalsifier : MissingProductFalsifier := by
++  intro h
++  have hh := (RangeCompletedMac.sound 37 (by decide) (by decide) wrong id h.1 h.2).2 0
++  norm_num [wrong_values,vals,oIndex,aIndex,dIndex,kIndex,Fin.sum_univ_succ] at hh
++
++theorem premiseInhabited : ∃ w : Wires BabyBear,
++    systemAccepts id (RangeCompletedMac.gates 37 w) ∧ RangeCompletedMac.Bounds id w ∧
++    value id w 0≠0 ∧ value id w 14≠0 := by
++  refine ⟨good,nonzeroPremise.1,nonzeroPremise.2.1,?_,?_⟩
++  · rw [good_values]; decide
++  · rw [good_values]; decide
++end Minidregg.Compiler.RangeMacExhibits
++
++/-- info: 'Minidregg.Compiler.RangeMacExhibits.nonzeroPremise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeMacExhibits.nonzeroPremise
++
++/-- info: 'Minidregg.Compiler.RangeMacExhibits.missingProductFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeMacExhibits.missingProductFalsifier
++
++/-- info: 'Minidregg.Compiler.RangeMacExhibits.premiseInhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.RangeMacExhibits.premiseInhabited
++
+diff --git a/EmitRangeKeyswitch.lean b/EmitRangeKeyswitch.lean
+new file mode 100644
+--- /dev/null
++++ b/EmitRangeKeyswitch.lean
+@@ -0,0 +1,59 @@
++/- The existing source term fold, now using whole-row gates and declared native
++range relations. Only a projection is appended to the old untrusted witness plan. -/
++import Compiler.RangeKeyswitchRow
++import Compiler.BfvKeyswitchWitnessPlan
++import Compiler.Ir2WholeRow
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.RangeKeyswitchRow
++open Minidregg.Compiler.BfvQueryRow.WitnessPlan (Operand Builder Build put)
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def rangeLookup (r : RangeSpec) : String :=
++  "{\"t\":\"lookup\",\"table\":"++toString (69+r.bits)++",\"tuple\":["++ir2Var r.wire.val++"]}"
++def ir2Template (q : Nat) : String :=
++  let arithmetic := (system q).map (Ir2WholeRow.gateJson (fun c : BabyBear => c.val) Fin.val)
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++String.intercalate "," ((List.range 97).map ir2Var)++"]}"
++  "{\"name\":\"bfv_range_paired_keyswitch_mac_q"++toString q++"\",\"ir\":2,\"trace_width\":"++toString nVars++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,\"name\":\"bfv_public_keyswitch_rows\",\"arity\":97,\"sem\":\"exact_public_rows\",\"rows\":[]},"++
++    "{\"id\":78,\"name\":\"range9\",\"arity\":1,\"sem\":\"range\",\"bits\":9},"++
++    "{\"id\":85,\"name\":\"range16\",\"arity\":1,\"sem\":\"range\",\"bits\":16}],\"constraints\":["++
++    String.intercalate "," (lookup::(ranges.map rangeLookup)++arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++
++def projection : Build Unit := do
++  for i in List.finRange nVars do put i.val (.reg (oldIndex i))
++def program (q : Nat) : Builder :=
++  (projection.run (BfvKeyswitchRow.WitnessPlan.program q)).2
++
++def programJson (q : Nat) : Json :=
++  let p := program q
++  Json.mkObj [("schema",toJson "lean-bigint-witness-plan-v1"),
++    ("trace_width",toJson nVars),("input_arity",toJson (97 : Nat)),
++    ("input_digit_radix",toJson (512 : Nat)),("field_modulus",toJson babyBearP),
++    ("register_count",toJson p.next),
++    ("instructions",Json.arr (p.code.map BfvKeyswitchRow.WitnessPlan.instructionJson))]
++
++def main (args : List String) : IO UInt32 := do
++  let root : System.FilePath := args.headD "artifacts"
++  IO.FS.createDirAll root
++  let mut rows : Array Json := #[]
++  for l in List.finRange 4 do
++    let q := BfvKeyswitchRow.primes l
++    let folder := root / ("prime"++toString l.val)
++    IO.FS.createDirAll folder
++    IO.FS.writeFile (folder / "template_ir2.json") (ir2Template q++"\n")
++    IO.FS.writeFile (folder / "witness_plan.json") ((programJson q).compress++"\n")
++    let p := program q
++    let row := Json.mkObj [("prime_index",toJson l.val),("prime",toJson q),
++      ("width",toJson nVars),("public_arity",toJson (97 : Nat)),
++      ("range9",toJson (ranges.filter (fun r => r.bits==9)).length),
++      ("range16",toJson (ranges.filter (fun r => r.bits==16)).length),
++      ("arithmetic_constraints",toJson (system q).length),
++      ("instructions",toJson p.code.size),("register_count",toJson p.next)]
++    rows := rows.push row
++    IO.println row.compress
++  IO.FS.writeFile (root / "emission.json") (Json.arr rows |>.pretty)
++  return 0

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run.py", line 118, in <module>
+    main()
+    ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run.py", line 86, in main
+    verified = consume(request, out, out / 'verification')
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run.py", line 40, in consume
+    checks.extend(pipeline.verify_phase(c, kind, case[kind], Path(produced) / kind, out))
+                  ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/pipeline.py", line 136, in verify_phase
+    check_record(c,kind,i,case,record,proof)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/pipeline.py", line 76, in check_record
+    assert record['backend'] == c['backend_id']
+           ~~~~~~^^^^^^^^^^^
+KeyError: 'backend'

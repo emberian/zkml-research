@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-whole-rescale-runtime",
+    "prove",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/templates/rescale/0/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case",
+    "5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/851370f2b7bf07787a7b25e2/chunk005/trace.leu32",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/rescale/chunk005"
+  ],
+  "started_utc": "2026-09-09T01:50:31.932785+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 1800,
+  "pid": 4171,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T01:50:55.473301+00:00",
+  "elapsed_seconds": 23.54081124998629,
+  "user_seconds": 61.267469,
+  "system_seconds": 2.073546,
+  "max_rss_bytes": 9492037632
+}

@@ -1,0 +1,8 @@
+Compiler/LogUpGrouping.lean:51:2: error: failed to synthesize
+  Decidable SignedWitness
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/LogUpGrouping.lean:66:2: error: failed to synthesize
+  Decidable SignFalsifier
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

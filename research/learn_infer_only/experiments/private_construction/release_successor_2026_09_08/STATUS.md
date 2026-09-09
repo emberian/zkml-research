@@ -6,7 +6,9 @@
 
 [SOURCE/DERIVED] CONTROLLED_HE.md records three actual controlled/keyed-HE algorithms. The circuit-restricting CHE ciphertext is terminal; keyed and attribute-based HE permit arbitrary circuits to eligible evaluators and retain input readers. Eight web queries and one Scry SQL located/oriented these sources; all PDFs were read locally. SOURCES.json records exact locations and hashes. No new cryptographic run was launched around these mismatches.
 
-[OPEN current construction] Instantiate the provenance proof interface from established primitives, including exact statement binding and extraction feedback. Efficient retained-view input composition remains a distinct size/privacy problem. The following earlier bounded results are preserved.
+[DERIVED completed backend] HIO_PROVENANCE_BACKEND.md now constructs that interface from perfectly correct IND-CCA2 encryption and adaptive unbounded simulation-sound NIZK. Encrypting the exact edge together with its witness permits online decryption/extraction; exact tags handle challenge-ciphertext reuse in the CCA reduction. The backend simulation loss is ε_MT-ZK + q_s·ε_CCA and extraction loss ε_SS, at the stated full resources. This is a classical conditional construction with unimplemented primitive backends.
+
+[OPEN current construction] Select a source-grounded post-quantum instantiation matching all-coins correctness, adaptive auxiliary-input simulation and extraction, and actual certificate resource bounds. Efficient retained-view input composition remains a distinct size/privacy problem. The following earlier bounded results are preserved.
 
 ---
 

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-full-bfv-multiply",
+    "verify",
+    "extension",
+    "0",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/templates/extension/0/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/square_case",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/run001/extension/chunk000/proof.bin"
+  ],
+  "started_utc": "2026-09-09T01:55:26.686409+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 300,
+  "pid": 16189,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T01:55:27.254698+00:00",
+  "elapsed_seconds": 0.5683025000034831,
+  "user_seconds": 0.635837,
+  "system_seconds": 0.031521,
+  "max_rss_bytes": 154091520
+}

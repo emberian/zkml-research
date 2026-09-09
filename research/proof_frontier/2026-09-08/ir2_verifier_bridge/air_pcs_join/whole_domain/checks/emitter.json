@@ -1,0 +1,15 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "--run",
+    "EmitBfvQuery.lean",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/generated_query"
+  ],
+  "cwd": "/tmp/minidregg-ir2-whole-row-20260908",
+  "exit_code": 0,
+  "elapsed_s": 5.14077091217041,
+  "source_sha256": "0e41efdb0b58da2158cfc7967aa3d35c7717bdff989e2102c977a61dd7b0e7b8",
+  "log": "checks/emitter.log"
+}

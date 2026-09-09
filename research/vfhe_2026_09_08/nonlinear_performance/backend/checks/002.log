@@ -1,0 +1,3 @@
+Compiler/IR2RangeLookupBridge.lean:60:23: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information

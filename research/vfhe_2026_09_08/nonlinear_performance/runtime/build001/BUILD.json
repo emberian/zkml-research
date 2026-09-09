@@ -1,0 +1,122 @@
+{
+  "started_utc": "2026-09-09T01:34:22.478136+00:00",
+  "builds": [
+    {
+      "name": "infer",
+      "cost": {
+        "argv": [
+          "/Users/ember/.cargo/bin/cargo",
+          "build",
+          "--release",
+          "--offline",
+          "--manifest-path",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/infer/Cargo.toml"
+        ],
+        "started_utc": "2026-09-09T01:34:22.478372+00:00",
+        "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+        "timeout_seconds": 1800,
+        "pid": 75659,
+        "returncode": 0,
+        "timed_out": false,
+        "finished_utc": "2026-09-09T01:34:52.993937+00:00",
+        "elapsed_seconds": 30.515522707952186,
+        "user_seconds": 89.593868,
+        "system_seconds": 2.06433,
+        "max_rss_bytes": 1340489728
+      },
+      "binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-complete-kernel-infer",
+      "binary_sha256": "de30c1edd532aff7d3104d322071a82c31d5c0dc4a8ca8fcf90eb421b2011698",
+      "manifest_sha256": "06587169733cfd96abfafbe6009eb2a600a4d10eb9d20b3e9cd5378d5d483d1a",
+      "lock_sha256": "0a6f7f31d570c1465d32a6ebfb0e372ee4531e89442cffaa6b418db17cc4e043",
+      "source_sha256": "43081b8a5ce14465b9cb59919da953fd4c451e3462e9a8586e98f4a8ce6d13e9"
+    },
+    {
+      "name": "square",
+      "cost": {
+        "argv": [
+          "/Users/ember/.cargo/bin/cargo",
+          "build",
+          "--release",
+          "--offline",
+          "--manifest-path",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/square/Cargo.toml"
+        ],
+        "started_utc": "2026-09-09T01:34:52.998410+00:00",
+        "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+        "timeout_seconds": 1800,
+        "pid": 75984,
+        "returncode": 0,
+        "timed_out": false,
+        "finished_utc": "2026-09-09T01:35:00.963374+00:00",
+        "elapsed_seconds": 7.964967083011288,
+        "user_seconds": 16.111153,
+        "system_seconds": 1.005008,
+        "max_rss_bytes": 386646016
+      },
+      "binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-full-bfv-multiply",
+      "binary_sha256": "06187c1da3d4fd104864a5bb34671c534b2b46ae341478322c580084eb21a946",
+      "manifest_sha256": "8e2ffb80a68257673831ed25284678255040cb4a4beb79c7e57aabb4cfcd7b9a",
+      "lock_sha256": "09e13e95ae314f16e9fa400368585f65dfc3e316fbf10de1d03ad6d815fe7421",
+      "source_sha256": "3db66856129b50aaf3b03ea39c503a4492860d5304d9b7897df7df39f04b43c2"
+    },
+    {
+      "name": "rescale",
+      "cost": {
+        "argv": [
+          "/Users/ember/.cargo/bin/cargo",
+          "build",
+          "--release",
+          "--offline",
+          "--manifest-path",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/rescale/Cargo.toml"
+        ],
+        "started_utc": "2026-09-09T01:35:00.967815+00:00",
+        "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+        "timeout_seconds": 1800,
+        "pid": 76166,
+        "returncode": 0,
+        "timed_out": false,
+        "finished_utc": "2026-09-09T01:35:02.299408+00:00",
+        "elapsed_seconds": 1.3316017909673974,
+        "user_seconds": 2.888346,
+        "system_seconds": 0.28354799999999997,
+        "max_rss_bytes": 246153216
+      },
+      "binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-whole-rescale-runtime",
+      "binary_sha256": "ab34310a14c3a02a0414bfabbb86b0191907fc29f861a6ecf6c41e829b1f9139",
+      "manifest_sha256": "87fdbea960a66b100dd7f37fc6ac3d1b7f4e990fb68613b4ccb6966f10456959",
+      "lock_sha256": "7609198c51b03330002ef5174b172f61e00fcb85c60426f2f3954d18bfd3d157",
+      "source_sha256": "a22a69041a903ba155c4716e5b2828909f19447f187a8d0a51ae909933246c73"
+    },
+    {
+      "name": "update",
+      "cost": {
+        "argv": [
+          "/Users/ember/.cargo/bin/cargo",
+          "build",
+          "--release",
+          "--offline",
+          "--manifest-path",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/update/Cargo.toml"
+        ],
+        "started_utc": "2026-09-09T01:35:02.304318+00:00",
+        "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+        "timeout_seconds": 1800,
+        "pid": 76198,
+        "returncode": 0,
+        "timed_out": false,
+        "finished_utc": "2026-09-09T01:35:03.383539+00:00",
+        "elapsed_seconds": 1.0792287079966627,
+        "user_seconds": 2.103507,
+        "system_seconds": 0.25128,
+        "max_rss_bytes": 225820672
+      },
+      "binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/target/release/vfhe-live-nonlinear-update",
+      "binary_sha256": "b6febd574c9a2502200e64f0c6de8bd5149e1ce84b3c8ae8e08a054beb10c8e8",
+      "manifest_sha256": "a0e72893ce30e3f7d9d057bfbe048e33ffc98b9b26e1e8ac8fe56f2e347c33fa",
+      "lock_sha256": "fbc12fd48da100f6d40b12f1d8e55330fdab60959465bfc612234a97772dc438",
+      "source_sha256": "34c9f0306972170d74e9d17be5bba674d4a37f0974b4532ad3a0e5f05a4d1b88"
+    }
+  ],
+  "finished_utc": "2026-09-09T01:35:03.388094+00:00"
+}

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/zstd",
+    "-T1",
+    "-3",
+    "--no-progress",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/851370f2b7bf07787a7b25e2/chunk001/trace.leu32",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/work/851370f2b7bf07787a7b25e2/chunk001/trace.leu32.zst"
+  ],
+  "started_utc": "2026-09-09T01:48:41.083025+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime",
+  "timeout_seconds": 300,
+  "pid": 87755,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T01:48:41.463299+00:00",
+  "elapsed_seconds": 0.38028937502531335,
+  "user_seconds": 0.378668,
+  "system_seconds": 0.058593,
+  "max_rss_bytes": 39534592
+}

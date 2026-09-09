@@ -1,0 +1,4 @@
+'Minidregg.Compiler.RangeKeyswitchInfer.checked_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchInfer.dotSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchInfer.inferSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchInfer.wrongOutputRefused' depends on axioms: [propext, Classical.choice, Quot.sound]

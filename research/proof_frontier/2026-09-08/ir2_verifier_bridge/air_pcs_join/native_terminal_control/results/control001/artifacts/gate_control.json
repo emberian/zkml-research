@@ -1,0 +1,19 @@
+{
+  "changed_public_cells": 1,
+  "changed_public_rows_sha256": "43e4ccb1d116e8d00f09da2607d94a02448c4b54a0c927c83a7ca48e5acd651b",
+  "changed_trace_cells": 1,
+  "column": 43,
+  "gate_oracle_excludes_lookup_bus": true,
+  "new_digit": 10,
+  "old_digit": 11,
+  "old_gate_ns": 598192167,
+  "old_native_main_gates_accept": true,
+  "old_template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+  "physical_row": 8191,
+  "repaired_gate_ns": 579668375,
+  "repaired_native_main_gates_accept": false,
+  "repaired_template_sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933",
+  "scope": "One public raw-row terminal control, no FHE container generation or secret inputs",
+  "source_public_rows_sha256": "abe798ede5a79d84c5ad28449210968912c794b1ab042fe821280965fc9a30c3",
+  "source_trace_sha256": "d15d6bae898ab0c2da08a931b9f75cc2f0c09a11f314462a698d6ac8ec8c7209"
+}

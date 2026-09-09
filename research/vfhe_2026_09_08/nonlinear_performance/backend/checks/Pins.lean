@@ -1,0 +1,8 @@
+import Compiler.IR2RangeLookupBridge
+#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup_val_lt
+#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup_iff_val_lt
+#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup9_iff
+#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup16_iff
+#print axioms Minidregg.Compiler.IR2RangeLookupBridge.declared_wire_ids
+#print axioms Minidregg.Compiler.IR2RangeLookupBridge.nonzeroWitness
+#print axioms Minidregg.Compiler.IR2RangeLookupBridge.overflowFalsifier

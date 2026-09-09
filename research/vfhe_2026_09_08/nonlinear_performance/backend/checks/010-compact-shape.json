@@ -1,0 +1,65 @@
+{
+  "flattened_interactions_exact": true,
+  "global_group_limit": 4,
+  "input": "research/vfhe_2026_09_08/nonlinear_performance/formal/artifacts/prime0/template_ir2.json",
+  "instances": [
+    {
+      "buses": [
+        [
+          "ir2_byte",
+          524,
+          131
+        ],
+        [
+          "ir2_exact_public_a97",
+          1,
+          1
+        ]
+      ],
+      "main_plus_perm_base_equivalent": 1821,
+      "main_width": 1293,
+      "max_constraint_degree": 6,
+      "name": "main",
+      "permutation_ext4_columns": 132,
+      "raw_global_interactions": 525,
+      "zk_log_quotient_chunks": 3,
+      "zk_quotient_chunks": 8
+    },
+    {
+      "buses": [
+        [
+          "ir2_byte",
+          1,
+          1
+        ]
+      ],
+      "main_plus_perm_base_equivalent": 6,
+      "main_width": 2,
+      "max_constraint_degree": 3,
+      "name": "dregg-ir2-byte-v1",
+      "permutation_ext4_columns": 1,
+      "raw_global_interactions": 1,
+      "zk_log_quotient_chunks": 2,
+      "zk_quotient_chunks": 4
+    },
+    {
+      "buses": [
+        [
+          "ir2_exact_public_a97",
+          1,
+          1
+        ]
+      ],
+      "main_plus_perm_base_equivalent": 5,
+      "main_width": 1,
+      "max_constraint_degree": 3,
+      "name": "dregg-ir2-exact-public-a97-v1",
+      "permutation_ext4_columns": 1,
+      "raw_global_interactions": 1,
+      "zk_log_quotient_chunks": 2,
+      "zk_quotient_chunks": 4
+    }
+  ],
+  "is_zk": 1,
+  "prover_or_preprocessing_executed": false
+}

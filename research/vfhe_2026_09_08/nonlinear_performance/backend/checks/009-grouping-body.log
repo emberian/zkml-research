@@ -1,0 +1,11 @@
+Compiler/LogUpGrouping.lean:29:6: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Compiler/LogUpGrouping.lean:29:6: warning: 'ring' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Compiler/LogUpGrouping.lean:56:2: error: unsolved goals
+case right
+⊢ 0 = 2 * ![1, -2, 3, -4] 2 * ![1, 2, 3, 4] 3 + 2 * ![1, 2, 3, 4] 2 * ![1, -2, 3, -4] 3
+Compiler/LogUpGrouping.lean:70:41: error: unsolved goals
+⊢ -2 = -1 + ![1, -2, 3, -4] 2 + ![1, -2, 3, -4] 3 ∧ ¬-2 = 3 + ![1, 2, 3, 4] 2 + ![1, 2, 3, 4] 3

@@ -1,0 +1,1356 @@
+//! Runtime circuit descriptor: a generic `StarkAir` implementation driven by data.
+//!
+//! Instead of the proc macro generating full `impl StarkAir` code, it emits a
+//! [`CircuitDescriptor`] that the generic [`DslCircuit`] interprets at runtime.
+//!
+//! # Smart Contract Runtime
+//!
+//! The `DslCircuit` + `CircuitDescriptor` serves as the smart contract runtime:
+//! user-defined cell programs are submitted as serialized `CircuitDescriptor`s at
+//! deploy time, validated for safety, and then executed/verified at runtime via
+//! the [`CellProgram`] and [`ProgramRegistry`] types.
+
+use std::collections::{HashMap, HashSet};
+use std::sync::Mutex;
+
+use crate::field::BabyBear;
+use serde::{Deserialize, Serialize};
+
+// ============================================================================
+// Descriptor types
+// ============================================================================
+
+/// A preprocessed lookup table: a fixed set of valid tuples committed once at setup time.
+///
+/// Lookup tables enable efficient table-driven computation in circuits (DFA routing,
+/// range checks, bytecode dispatch). A `Lookup` constraint asserts that a query tuple
+/// drawn from trace columns appears in the named table.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LookupTable {
+    /// Unique identifier for this table.
+    pub id: String,
+    /// Column width of each entry tuple.
+    pub width: usize,
+    /// The valid tuples (each inner Vec has `width` elements).
+    pub entries: Vec<Vec<u32>>,
+}
+
+/// O(1)-membership view over a set of [`LookupTable`]s, built once (e.g. per
+/// prove/verify) and consulted per trace row. Replaces the per-row `find` +
+/// linear `entries` scan (O(rows·entries), tables up to 2^16) with a hashed
+/// lookup keyed by table id then by tuple.
+#[derive(Debug, Clone, Default)]
+pub struct LookupIndex {
+    tables: HashMap<String, HashSet<Vec<u32>>>,
+}
+
+impl LookupIndex {
+    /// Build the index from a table set. O(total entries), paid once.
+    pub fn build(tables: &[LookupTable]) -> Self {
+        let tables = tables
+            .iter()
+            .map(|t| (t.id.clone(), t.entries.iter().cloned().collect()))
+            .collect();
+        Self { tables }
+    }
+
+    /// `Some(true)` if `query` is a member of the named table, `Some(false)` if
+    /// the table exists but lacks the tuple, `None` if the table is absent.
+    fn membership(&self, table_id: &str, query: &[u32]) -> Option<bool> {
+        self.tables.get(table_id).map(|set| set.contains(query))
+    }
+}
+
+/// The source a `Lookup` constraint consults for table membership: either a raw
+/// slice of tables (linear scan — fine for one-off/test evaluation) or a
+/// prebuilt [`LookupIndex`] (O(1) — used for the per-row prover/verifier loop).
+/// Both yield identical membership results.
+#[derive(Clone, Copy)]
+pub enum TableSource<'a> {
+    Slice(&'a [LookupTable]),
+    Index(&'a LookupIndex),
+}
+
+impl TableSource<'_> {
+    /// `Some(true)` if `query` is in the named table, `Some(false)` if the table
+    /// exists but lacks the tuple, `None` if the table is absent.
+    fn membership(&self, table_id: &str, query: &[u32]) -> Option<bool> {
+        match self {
+            TableSource::Slice(tables) => tables
+                .iter()
+                .find(|t| t.id.as_str() == table_id)
+                .map(|t| t.entries.iter().any(|entry| entry.as_slice() == query)),
+            TableSource::Index(index) => index.membership(table_id, query),
+        }
+    }
+}
+
+/// A complete description of an AIR circuit — trace layout, constraints, boundaries.
+///
+/// This is the core type for user-defined cell programs. It is serializable for
+/// deployment and can be validated for safety before accepting into a registry.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CircuitDescriptor {
+    pub name: String,
+    pub trace_width: usize,
+    pub max_degree: usize,
+    pub columns: Vec<ColumnDef>,
+    pub constraints: Vec<ConstraintExpr>,
+    pub boundaries: Vec<BoundaryDef>,
+    pub public_input_count: usize,
+    /// Preprocessed lookup tables available for `ConstraintExpr::Lookup` constraints.
+    #[serde(default)]
+    pub lookup_tables: Vec<LookupTable>,
+}
+
+/// Metadata for a single trace column.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ColumnDef {
+    pub name: String,
+    pub index: usize,
+    pub kind: ColumnKind,
+}
+
+/// Semantic kind of a column (for documentation and potential future optimization).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ColumnKind {
+    Value,
+    Binary,
+    Selector,
+    Hash,
+}
+
+/// An algebraic constraint expression that evaluates to zero on a valid trace.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ConstraintExpr {
+    /// `local[a] - local[b] == 0`
+    Equality { col_a: usize, col_b: usize },
+    /// `local[a] * local[b] - local[output] == 0`
+    Multiplication { a: usize, b: usize, output: usize },
+    /// `local[col] * (local[col] - 1) == 0` (boolean check)
+    Binary { col: usize },
+    /// `local[col] - pi[pi_index] == 0` (typically enforced via boundary)
+    PiBinding { col: usize, pi_index: usize },
+    /// `next[next_col] - local[local_col] == 0`
+    Transition { next_col: usize, local_col: usize },
+    /// Arbitrary polynomial: sum of terms, each a coefficient times a product of columns.
+    Polynomial { terms: Vec<PolyTerm> },
+    /// Gated constraint: `local[selector_col] * inner == 0`
+    Gated {
+        selector_col: usize,
+        inner: Box<ConstraintExpr>,
+    },
+
+    /// Constraint active when selector_col == 0 (inverted gating)
+    /// `(1 - local[selector_col]) * inner == 0`
+    InvertedGated {
+        selector_col: usize,
+        inner: Box<ConstraintExpr>,
+    },
+
+    /// Squared constraint: `inner^2 == 0` (equivalent to `inner == 0` for soundness,
+    /// but produces different numerical values when composed with alpha powers).
+    Squared { inner: Box<ConstraintExpr> },
+
+    /// Constrain col_output == Poseidon2_hash_fact(col_inputs[0], col_inputs[1..])
+    /// The first input column is the predicate, the rest are terms.
+    /// The evaluator computes hash_fact(predicate, &terms) and checks equality.
+    /// For general-purpose hashing (sponge), use hash_many via Polynomial encoding.
+    Hash {
+        output_col: usize,
+        input_cols: Vec<usize>,
+    },
+
+    /// When selector_col != 0, require value_col != 0.
+    /// Implemented as: selector * (value * inverse - 1) == 0
+    /// Needs an auxiliary inverse column (prover fills with value^{-1}, or 0 if value==0).
+    ConditionalNonzero {
+        selector_col: usize,
+        value_col: usize,
+        inverse_col: usize,
+    },
+
+    /// Require sum(flag_cols) >= 1 (at least one flag is active).
+    /// Implemented as: (1 - flag_0) * (1 - flag_1) * ... * (1 - flag_n) == 0
+    /// (product is zero iff at least one flag is 1).
+    AtLeastOne { flag_cols: Vec<usize> },
+
+    /// Constrain output_col == Poseidon2_hash_2_to_1(input_col_a, input_col_b).
+    /// Uses the 2-to-1 compression function with arity tag 2.
+    Hash2to1 {
+        output_col: usize,
+        input_col_a: usize,
+        input_col_b: usize,
+    },
+
+    /// Constrain output_col == Poseidon2_hash_4_to_1([col_0, col_1, col_2, col_3]).
+    /// Uses the 4-to-1 compression function with arity tag 4.
+    Hash4to1 {
+        output_col: usize,
+        input_cols: [usize; 4],
+    },
+    /// Constrain `output_col == cap_root::cap_node(left, right)` — the SINGLE in-circuit
+    /// cap-tree node hash (`cap_chip_absorb([FACT_MARK, left, right])`: the arity-3 rate-8
+    /// chip absorb, `state[0]=FACT_MARK, state[1]=left, state[2]=right, state[4]=3`). This is
+    /// the node hash `CanonicalCapTree` commits since decision #1 (one in-circuit cap hash);
+    /// it REPLACES the capacity-tagged `Hash` (`hash_fact`) form for cap-tree node folds.
+    Hash3Cap {
+        output_col: usize,
+        left_col: usize,
+        right_col: usize,
+    },
+    /// **Native 8-felt cap-tree node compression (`cap_root::cap_node8`).** Constrains
+    /// `output_cols[0..8] == cap_node8(left_cols[0..8], right_cols[0..8])` — ALL 8 lanes
+    /// of the arity-16 `node8` Poseidon2 compression `perm(L8 ‖ R8)[0..8]`
+    /// (`descriptor_ir2::chip_absorb_all_lanes(CHIP_NODE8_ARITY, L8‖R8)`). This is the
+    /// MULTI-OUTPUT twin of [`Self::Hash3Cap`]: where `Hash3Cap` squeezes a single lane-0
+    /// digest (the lossy ~31-bit 1-felt form), `MerkleHash8` EQUALITY-binds every one of
+    /// the 8 genuine output lanes, so the per-node collision floor is the full 8-felt
+    /// width (~124-bit), matching the deployed FRI/STARK soundness and the native 8-felt
+    /// cap tree (`CanonicalCapTree` since Phase H-CAP-8). The p3 AIR arithmetizes it via
+    /// `poseidon2_permute_expr_lanes` (the already-committed 8-lane exposure) over ONE
+    /// Poseidon2 aux block; the input state is `L8 ‖ R8` seeded directly into all 16
+    /// permutation lanes (no arity-tag lane — node8 seeds every lane with a genuine input,
+    /// byte-identical to `chip_absorb_all_lanes` at arity 16).
+    MerkleHash8 {
+        /// The 8 columns receiving the parent node's 8-felt digest lanes.
+        output_cols: [usize; 8],
+        /// The 8 columns of the left child's 8-felt digest.
+        left_cols: [usize; 8],
+        /// The 8 columns of the right child's 8-felt digest.
+        right_cols: [usize; 8],
+    },
+    /// Constrain output_col == Poseidon2_hash_4_to_1(children) where children are
+    /// reconstructed from (current_col, sib_cols[3], position_col) by placing
+    /// current at the position index and siblings in the remaining slots.
+    ///
+    /// This is the correct constraint for 4-ary Merkle membership: the parent hash
+    /// is position-independent (same for all 4 children's proofs).
+    MerkleHash {
+        output_col: usize,
+        current_col: usize,
+        sib_cols: [usize; 3],
+        position_col: usize,
+    },
+    /// Lookup constraint: asserts that the tuple of values at `query_columns` in the
+    /// current row appears in the named lookup table.
+    ///
+    /// This is NOT algebraic in the traditional sense; in the constraint checker it is
+    /// verified by membership test. In a real STARK prover, it would be compiled to a
+    /// log-derivative (LogUp) or permutation argument. The constraint evaluator returns
+    /// zero when the tuple is found and non-zero otherwise.
+    Lookup {
+        /// Which table to look up in (must match a `LookupTable::id` in the descriptor).
+        table_id: String,
+        /// Which trace columns form the query tuple (indices into the trace row).
+        query_columns: Vec<usize>,
+    },
+
+    /// **Cross-row running-hash accumulation.** Constrains
+    /// `next[output_next_col] == hash_2_to_1(local[seed_local_col], next[input_next_col])`.
+    ///
+    /// This is the transition form of [`Self::Hash2to1`]: it folds the *previous*
+    /// row's accumulator (`local[seed_local_col]`) with the *current* row's absorbed
+    /// value (`next[input_next_col]`) into the current row's accumulator
+    /// (`next[output_next_col]`). It is the only constraint form whose hash inputs
+    /// span both the `local` and `next` windows, which the running-hash route
+    /// commitment of `dregg-dfa-routing-v1` requires (the rolling commitment
+    /// `running_{i+1} = compress running_i entryHash_{i+1}`). The transition
+    /// vanishing polynomial excludes the last row, so this is enforced on rows
+    /// `0..n-2`, exactly as a chain step should be.
+    ///
+    /// Mirrors `Dregg2.Crypto.DfaAcceptanceAir.Accumulates`
+    /// (`b.running = compress a.running b.entryHash`).
+    ChainedHash2to1 {
+        /// `next`-row column receiving the accumulated hash.
+        output_next_col: usize,
+        /// `local`-row column holding the previous accumulator (the seed of this step).
+        seed_local_col: usize,
+        /// `next`-row column holding the value absorbed at this step.
+        input_next_col: usize,
+    },
+
+    /// **Public-input-seeded hash binding (per-row).** Constrains
+    /// `local[output_col] == hash_2_to_1(pi[seed_pi_index], local[input_col])`.
+    ///
+    /// The seed is a *public input* rather than a trace column — this binds the
+    /// first row's running hash to `compress tableCommitment entryHash₀`, where the
+    /// `tableCommitment` is disclosed as a public input. Gate it with a first-row
+    /// selector so it fires only on row 0 (the chain's seed), matching
+    /// `Dregg2.Crypto.DfaAcceptanceAir.Satisfies.seed`
+    /// (`r₀.running = compress tableCommitment r₀.entryHash`). Without this seed
+    /// binding the route commitment would not be tied to the *table* commitment, so
+    /// a router could present a chain over a different transition table.
+    SeedHash2to1 {
+        /// Column receiving the seeded hash.
+        output_col: usize,
+        /// Public-input index supplying the seed (the table commitment).
+        seed_pi_index: usize,
+        /// Column holding the value absorbed against the seed (the first entry hash).
+        input_col: usize,
+    },
+
+    /// **Deterministic 2-input function table, enforced algebraically.** Constrains
+    /// `local[out_col] == P(local[a_col], local[b_col])`, where `P` is the unique
+    /// bivariate Lagrange-interpolating polynomial that agrees with the function
+    /// table on the grid `a_values × b_values`. Unlike [`Self::Lookup`] (a
+    /// non-polynomial membership step that cannot be FRI-checked), this is a genuine
+    /// low-degree polynomial (degree `(|a_values|-1) + (|b_values|-1)`), so it is
+    /// sound through the real STARK quotient/FRI pipeline.
+    ///
+    /// Soundness is only meaningful when `(local[a_col], local[b_col])` is pinned to
+    /// the grid; pair this with range constraints (e.g. `∏ (col - v) == 0`) on the
+    /// input columns so off-grid rows cannot escape. Models the deterministic
+    /// transition TABLE of `Dregg2.Crypto.DfaAcceptanceAir`
+    /// (`r.next = d.step r.state r.sym`, GAP-A): `next == step(state, symbol)`.
+    TableFunction {
+        /// Column holding the first input (e.g. `current_state`).
+        a_col: usize,
+        /// Column holding the second input (e.g. `symbol`).
+        b_col: usize,
+        /// Column holding the function output (e.g. `next_state`).
+        out_col: usize,
+        /// Distinct first-input grid values (the `a` axis of the table).
+        a_values: Vec<u32>,
+        /// Distinct second-input grid values (the `b` axis of the table).
+        b_values: Vec<u32>,
+        /// Row-major outputs over `a_values × b_values`: `outputs[i*|b| + j]` is
+        /// `P(a_values[i], b_values[j])`.
+        outputs: Vec<u32>,
+    },
+    // NOTE: SelectiveWrite was removed -- it used a non-algebraic Rust if/else branch
+    // which is unsound in a STARK (constraints must be evaluatable as polynomials over
+    // the entire domain). Users should instead use a Gated constraint with an explicit
+    // binary indicator column set to 1 at the target row and 0 elsewhere:
+    //   indicator * (next[target_col] - local[source_col]) == 0
+    // This is algebraic and soundly verifiable.
+}
+
+/// A single term in a polynomial constraint: `coeff * product(local[col] for col in col_indices)`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PolyTerm {
+    pub coeff: BabyBear,
+    /// Product of these column values. Empty = constant term (just coeff).
+    pub col_indices: Vec<usize>,
+}
+
+/// A boundary constraint definition (binds a trace cell to a value at prove time).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum BoundaryDef {
+    /// `trace[row][col] == pi[pi_index]`
+    PiBinding {
+        row: BoundaryRow,
+        col: usize,
+        pi_index: usize,
+    },
+    /// `trace[row][col] == fixed_value`
+    Fixed {
+        row: BoundaryRow,
+        col: usize,
+        value: BabyBear,
+    },
+}
+
+/// Which row a boundary constraint targets.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum BoundaryRow {
+    First,
+    Last,
+    /// Absolute row index.
+    Index(usize),
+}
+
+// ============================================================================
+// Constraint evaluation
+// ============================================================================
+
+impl ConstraintExpr {
+    /// Evaluate this constraint expression given the current and next row.
+    ///
+    /// NOTE: `Lookup` constraints always return zero from this method (no table context).
+    /// Use [`evaluate_with_tables`] when lookup tables are available.
+    pub fn evaluate(&self, local: &[BabyBear], next: &[BabyBear], pi: &[BabyBear]) -> BabyBear {
+        self.evaluate_with_tables(local, next, pi, TableSource::Slice(&[]))
+    }
+
+    /// Evaluate this constraint expression with access to lookup tables.
+    ///
+    /// For `Lookup` constraints, checks that the query tuple appears in the named table.
+    /// Returns `BabyBear::ZERO` if satisfied, `BabyBear::ONE` if the lookup fails.
+    pub fn evaluate_with_tables(
+        &self,
+        local: &[BabyBear],
+        next: &[BabyBear],
+        pi: &[BabyBear],
+        tables: TableSource<'_>,
+    ) -> BabyBear {
+        match self {
+            Self::Equality { col_a, col_b } => local[*col_a] - local[*col_b],
+            Self::Multiplication { a, b, output } => local[*a] * local[*b] - local[*output],
+            Self::Binary { col } => local[*col] * (local[*col] - BabyBear::ONE),
+            Self::PiBinding { col, pi_index } => local[*col] - pi[*pi_index],
+            Self::Transition {
+                next_col,
+                local_col,
+            } => next[*next_col] - local[*local_col],
+            Self::Polynomial { terms } => {
+                let mut sum = BabyBear::ZERO;
+                for term in terms {
+                    let mut prod = term.coeff;
+                    for &ci in &term.col_indices {
+                        prod *= local[ci];
+                    }
+                    sum += prod;
+                }
+                sum
+            }
+            Self::Gated {
+                selector_col,
+                inner,
+            } => local[*selector_col] * inner.evaluate_with_tables(local, next, pi, tables),
+            Self::InvertedGated {
+                selector_col,
+                inner,
+            } => {
+                (BabyBear::ONE - local[*selector_col])
+                    * inner.evaluate_with_tables(local, next, pi, tables)
+            }
+            Self::Squared { inner } => {
+                let v = inner.evaluate_with_tables(local, next, pi, tables);
+                v * v
+            }
+            Self::Hash {
+                output_col,
+                input_cols,
+            } => {
+                // First input is the predicate, rest are terms.
+                let predicate = local[input_cols[0]];
+                let terms: Vec<BabyBear> = input_cols[1..].iter().map(|&c| local[c]).collect();
+                let expected = crate::poseidon2::hash_fact(predicate, &terms);
+                expected - local[*output_col]
+            }
+            Self::ConditionalNonzero {
+                selector_col,
+                value_col,
+                inverse_col,
+            } => {
+                // selector * (value * inverse - 1) == 0
+                // When selector=0: constraint is trivially 0.
+                // When selector!=0: requires value*inverse=1, i.e. value!=0.
+                local[*selector_col] * (local[*value_col] * local[*inverse_col] - BabyBear::ONE)
+            }
+            Self::AtLeastOne { flag_cols } => {
+                // (1-f0)*(1-f1)*...*(1-fn) == 0 iff at least one fi=1
+                let mut product = BabyBear::ONE;
+                for &col in flag_cols {
+                    product *= BabyBear::ONE - local[col];
+                }
+                product
+            }
+            Self::Hash2to1 {
+                output_col,
+                input_col_a,
+                input_col_b,
+            } => {
+                let expected =
+                    crate::poseidon2::hash_2_to_1(local[*input_col_a], local[*input_col_b]);
+                expected - local[*output_col]
+            }
+            Self::Hash4to1 {
+                output_col,
+                input_cols,
+            } => {
+                let children = [
+                    local[input_cols[0]],
+                    local[input_cols[1]],
+                    local[input_cols[2]],
+                    local[input_cols[3]],
+                ];
+                let expected = crate::poseidon2::hash_4_to_1(&children);
+                expected - local[*output_col]
+            }
+            Self::Hash3Cap {
+                output_col,
+                left_col,
+                right_col,
+            } => {
+                // The single in-circuit cap-tree node hash (`cap_chip_absorb([FACT_MARK, l, r])`).
+                let expected = crate::cap_root::cap_node(local[*left_col], local[*right_col]);
+                expected - local[*output_col]
+            }
+            Self::MerkleHash8 {
+                output_cols,
+                left_cols,
+                right_cols,
+            } => {
+                // The native 8-felt cap-tree node compression (`cap_node8`): all 8 output
+                // lanes bound. The p3 AIR (`dsl_p3_air`) binds each lane individually via
+                // `poseidon2_permute_expr_lanes` — THAT is the deployed soundness. This
+                // concrete evaluator is the native satisfaction indicator: it sums the 8
+                // per-lane residuals, which is ZERO on an honest witness (every lane matches
+                // `cap_node8`) and non-zero on a tampered node (a genuine 8-felt collision is
+                // needed to spoof all eight simultaneously — the ~124-bit floor).
+                let left: [BabyBear; 8] = core::array::from_fn(|i| local[left_cols[i]]);
+                let right: [BabyBear; 8] = core::array::from_fn(|i| local[right_cols[i]]);
+                let expected = crate::cap_root::cap_node8(left, right);
+                let mut acc = BabyBear::ZERO;
+                for i in 0..8 {
+                    acc = acc + (expected[i] - local[output_cols[i]]);
+                }
+                acc
+            }
+            Self::MerkleHash {
+                output_col,
+                current_col,
+                sib_cols,
+                position_col,
+            } => {
+                // Reconstruct children in canonical order from (current, siblings, position).
+                //
+                // NOTE: At interpolated points on the blown-up evaluation domain, `position`
+                // is an arbitrary BabyBear value (not necessarily in {0,1,2,3}). The C1
+                // position-validity constraint pos*(pos-1)*(pos-2)*(pos-3)==0 only enforces
+                // {0,1,2,3} at trace rows; off-domain evaluations must not panic. The hash
+                // is opaque (constraint degree marked as 1, dsl_plonky3 emits ZERO) so the
+                // value at off-domain points does not affect soundness — only correctness
+                // at trace rows matters. Clamp to a valid index for off-domain robustness.
+                let current = local[*current_col];
+                let position_raw = local[*position_col].0 as usize;
+                let siblings = [local[sib_cols[0]], local[sib_cols[1]], local[sib_cols[2]]];
+                let mut children = [BabyBear::ZERO; 4];
+                // Position slot for `current` is clamped to 0..=3; siblings fill the rest
+                // in order. At a trace row (where C1 is satisfied) position is in {0..3}
+                // and this reproduces the canonical (current, siblings) interleaving.
+                let position = (position_raw % 4) as u8;
+                let mut sib_idx: usize = 0;
+                for i in 0..4u8 {
+                    if i == position {
+                        children[i as usize] = current;
+                    } else if sib_idx < siblings.len() {
+                        children[i as usize] = siblings[sib_idx];
+                        sib_idx += 1;
+                    }
+                }
+                let expected = crate::poseidon2::hash_4_to_1(&children);
+                expected - local[*output_col]
+            }
+            Self::Lookup {
+                table_id,
+                query_columns,
+            } => {
+                // Extract the query tuple from the current row.
+                let query: Vec<u32> = query_columns.iter().map(|&c| local[c].0).collect();
+                // Membership: zero if the tuple is in the named table, one
+                // otherwise (missing table also treated as unsatisfied).
+                match tables.membership(table_id, &query) {
+                    Some(true) => BabyBear::ZERO,
+                    _ => BabyBear::ONE,
+                }
+            }
+            Self::ChainedHash2to1 {
+                output_next_col,
+                seed_local_col,
+                input_next_col,
+            } => {
+                // next[output] - hash_2_to_1(local[seed], next[input])
+                let expected =
+                    crate::poseidon2::hash_2_to_1(local[*seed_local_col], next[*input_next_col]);
+                next[*output_next_col] - expected
+            }
+            Self::SeedHash2to1 {
+                output_col,
+                seed_pi_index,
+                input_col,
+            } => {
+                // local[output] - hash_2_to_1(pi[seed], local[input])
+                let expected = crate::poseidon2::hash_2_to_1(pi[*seed_pi_index], local[*input_col]);
+                local[*output_col] - expected
+            }
+            Self::TableFunction {
+                a_col,
+                b_col,
+                out_col,
+                a_values,
+                b_values,
+                outputs,
+            } => {
+                let expected =
+                    eval_table_function(local[*a_col], local[*b_col], a_values, b_values, outputs);
+                local[*out_col] - expected
+            }
+        }
+    }
+}
+
+/// Evaluate the bivariate Lagrange interpolation of a function table at `(a, b)`.
+///
+/// `P(a, b) = Σ_i Σ_j outputs[i*|b|+j] · Lᵢ(a) · Lⱼ(b)`, where `Lᵢ(a) = ∏_{k≠i}
+/// (a - a_values[k]) / (a_values[i] - a_values[k])` is the Lagrange basis. This is
+/// a genuine low-degree polynomial in `(a, b)`, so it FRI-checks; at grid points it
+/// equals the tabulated output exactly. The grid values are distinct (a precondition
+/// the descriptor builder upholds), so the denominators are nonzero.
+fn eval_table_function(
+    a: BabyBear,
+    b: BabyBear,
+    a_values: &[u32],
+    b_values: &[u32],
+    outputs: &[u32],
+) -> BabyBear {
+    // Lagrange basis values L_i(a) and L_j(b).
+    let lagrange = |x: BabyBear, nodes: &[u32]| -> Vec<BabyBear> {
+        nodes
+            .iter()
+            .enumerate()
+            .map(|(i, &xi)| {
+                let xi_f = BabyBear::new(xi);
+                let mut num = BabyBear::ONE;
+                let mut den = BabyBear::ONE;
+                for (k, &xk) in nodes.iter().enumerate() {
+                    if k == i {
+                        continue;
+                    }
+                    let xk_f = BabyBear::new(xk);
+                    num *= x - xk_f;
+                    den *= xi_f - xk_f;
+                }
+                // Distinct nodes ⇒ den ≠ 0.
+                num * den.inverse().unwrap_or(BabyBear::ZERO)
+            })
+            .collect()
+    };
+
+    let la = lagrange(a, a_values);
+    let lb = lagrange(b, b_values);
+    let nb = b_values.len();
+    let mut acc = BabyBear::ZERO;
+    for (i, lai) in la.iter().enumerate() {
+        for (j, lbj) in lb.iter().enumerate() {
+            let out = outputs.get(i * nb + j).copied().unwrap_or(0);
+            acc += (*lai) * (*lbj) * BabyBear::new(out);
+        }
+    }
+    acc
+}
+
+impl BoundaryDef {
+    fn resolve_row(&self, trace_len: usize) -> usize {
+        match self {
+            Self::PiBinding { row, .. } | Self::Fixed { row, .. } => match row {
+                BoundaryRow::First => 0,
+                BoundaryRow::Last => trace_len - 1,
+                BoundaryRow::Index(i) => *i,
+            },
+        }
+    }
+}
+
+// ============================================================================
+// DslCircuit: generic StarkAir driven by a descriptor
+// ============================================================================
+
+/// Global cache for leaked air name strings. Ensures each unique name is leaked at most once,
+/// preventing unbounded memory growth when multiple `DslCircuit` instances share the same name.
+static AIR_NAME_CACHE: Mutex<Option<HashMap<String, &'static str>>> = Mutex::new(None);
+
+/// Intern a string as `&'static str`, reusing a previously leaked copy if available.
+pub fn intern_air_name(name: &str) -> &'static str {
+    let mut guard = AIR_NAME_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    let cache = guard.get_or_insert_with(HashMap::new);
+    if let Some(&existing) = cache.get(name) {
+        return existing;
+    }
+    let leaked: &'static str = Box::leak(name.to_owned().into_boxed_str());
+    cache.insert(name.to_owned(), leaked);
+    leaked
+}
+
+/// A circuit defined entirely by its descriptor. Implements `StarkAir` generically.
+pub struct DslCircuit {
+    pub descriptor: CircuitDescriptor,
+    /// O(1) membership index over `descriptor.lookup_tables`, built once at
+    /// construction so `eval_constraints` (called per trace row) does not
+    /// re-scan the tables on every row.
+    lookup_index: LookupIndex,
+}
+
+impl DslCircuit {
+    pub fn new(descriptor: CircuitDescriptor) -> Self {
+        let lookup_index = LookupIndex::build(&descriptor.lookup_tables);
+        Self {
+            descriptor,
+            lookup_index,
+        }
+    }
+}
+
+// ============================================================================
+// Program Validation
+// ============================================================================
+
+/// Maximum allowed trace width for deployed programs (columns).
+pub const MAX_TRACE_WIDTH: usize = 1024;
+
+/// Maximum allowed constraint degree for deployed programs.
+pub const MAX_CONSTRAINT_DEGREE: usize = 8;
+
+/// Maximum number of public inputs for deployed programs.
+pub const MAX_PUBLIC_INPUTS: usize = 64;
+
+/// Errors returned when validating a program descriptor for deployment.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ProgramValidationError {
+    /// Trace width exceeds the maximum allowed (1024 columns).
+    TooWide { width: usize },
+    /// Constraint degree exceeds the maximum allowed (8).
+    DegreeTooHigh { degree: usize },
+    /// A constraint references a column index that exceeds trace_width.
+    ColumnOutOfBounds {
+        constraint_index: usize,
+        col: usize,
+        trace_width: usize,
+    },
+    /// Too many public inputs declared.
+    TooManyPublicInputs { count: usize },
+    /// A boundary constraint references an out-of-bounds column.
+    BoundaryColumnOutOfBounds {
+        boundary_index: usize,
+        col: usize,
+        trace_width: usize,
+    },
+    /// A boundary constraint references a public input index out of range.
+    BoundaryPiOutOfBounds {
+        boundary_index: usize,
+        pi_index: usize,
+        pi_count: usize,
+    },
+    /// Program name is empty or too long.
+    InvalidName,
+    /// Trace width is zero.
+    ZeroWidth,
+    /// A constraint's algebraic degree exceeds max_degree.
+    ConstraintDegreeExceeded {
+        constraint_index: usize,
+        degree: usize,
+        max_degree: usize,
+    },
+    /// A PiBinding constraint references an out-of-bounds public input index.
+    PiBindingOutOfBounds {
+        constraint_index: usize,
+        pi_index: usize,
+        pi_count: usize,
+    },
+}
+
+impl std::fmt::Display for ProgramValidationError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::TooWide { width } => {
+                write!(f, "trace width {width} exceeds max {MAX_TRACE_WIDTH}")
+            }
+            Self::DegreeTooHigh { degree } => write!(
+                f,
+                "constraint degree {degree} exceeds max {MAX_CONSTRAINT_DEGREE}"
+            ),
+            Self::ColumnOutOfBounds {
+                constraint_index,
+                col,
+                trace_width,
+            } => {
+                write!(
+                    f,
+                    "constraint {constraint_index} references column {col} but trace_width is {trace_width}"
+                )
+            }
+            Self::TooManyPublicInputs { count } => write!(
+                f,
+                "public_input_count {count} exceeds max {MAX_PUBLIC_INPUTS}"
+            ),
+            Self::BoundaryColumnOutOfBounds {
+                boundary_index,
+                col,
+                trace_width,
+            } => {
+                write!(
+                    f,
+                    "boundary {boundary_index} references column {col} but trace_width is {trace_width}"
+                )
+            }
+            Self::BoundaryPiOutOfBounds {
+                boundary_index,
+                pi_index,
+                pi_count,
+            } => {
+                write!(
+                    f,
+                    "boundary {boundary_index} references pi[{pi_index}] but public_input_count is {pi_count}"
+                )
+            }
+            Self::InvalidName => write!(f, "program name is empty or exceeds 256 bytes"),
+            Self::ZeroWidth => write!(f, "trace width must be at least 1"),
+            Self::ConstraintDegreeExceeded {
+                constraint_index,
+                degree,
+                max_degree,
+            } => {
+                write!(
+                    f,
+                    "constraint {constraint_index} has degree {degree} which exceeds max_degree {max_degree}"
+                )
+            }
+            Self::PiBindingOutOfBounds {
+                constraint_index,
+                pi_index,
+                pi_count,
+            } => {
+                write!(
+                    f,
+                    "constraint {constraint_index} PiBinding references pi[{pi_index}] but public_input_count is {pi_count}"
+                )
+            }
+        }
+    }
+}
+
+impl std::error::Error for ProgramValidationError {}
+
+impl ConstraintExpr {
+    /// Compute the algebraic degree of this constraint expression.
+    ///
+    /// Each column reference contributes degree 1. Multiplication of sub-expressions
+    /// adds their degrees. Gating adds 1 (selector * inner).
+    pub fn degree(&self) -> usize {
+        match self {
+            Self::Equality { .. } => 1,
+            Self::Multiplication { .. } => 2,
+            Self::Binary { .. } => 2,
+            Self::PiBinding { .. } => 1,
+            Self::Transition { .. } => 1,
+            Self::Polynomial { terms } => {
+                terms.iter().map(|t| t.col_indices.len()).max().unwrap_or(0)
+            }
+            Self::Gated { inner, .. } => 1 + inner.degree(),
+            Self::InvertedGated { inner, .. } => 1 + inner.degree(),
+            Self::Squared { inner } => 2 * inner.degree(),
+            Self::Hash { .. } => {
+                // The hash computation (`hash_fact(predicate, terms)`) is an opaque,
+                // non-algebraic helper evaluated over the witness columns; the AIR
+                // constraint is `hash(inputs) - output`, which is degree 1 in the
+                // committed columns (the same way Hash2to1/Hash4to1/MerkleHash report
+                // degree 1). Counting `input_cols.len()` here was a bug: it conflated
+                // the number of input columns with algebraic degree, causing the
+                // degree-validation step to over-conservatively reject valid circuits.
+                1
+            }
+            Self::ConditionalNonzero { .. } => {
+                // selector * (value * inverse - 1): degree 3
+                3
+            }
+            Self::AtLeastOne { flag_cols } => {
+                // (1 - f0) * (1 - f1) * ... * (1 - fn): degree = n
+                flag_cols.len()
+            }
+            Self::Hash2to1 { .. } => {
+                // hash_2_to_1(a, b) - output: the hash is opaque, constraint is degree 1.
+                1
+            }
+            Self::Hash4to1 { .. } => {
+                // hash_4_to_1([a,b,c,d]) - output: the hash is opaque, constraint is degree 1.
+                1
+            }
+            Self::Hash3Cap { .. } => {
+                // cap_node(l, r) - output: the hash is opaque, constraint is degree 1.
+                1
+            }
+            Self::MerkleHash8 { .. } => {
+                // cap_node8(L8, R8) - output8: the 8-lane compression is opaque (bound by
+                // the Poseidon2 aux block, not this polynomial), constraint is degree 1 —
+                // the same posture as every other hash form.
+                1
+            }
+            Self::MerkleHash { .. } => {
+                // Position-aware hash_4_to_1(children): opaque hash, constraint is degree 1.
+                1
+            }
+            Self::Lookup { query_columns, .. } => {
+                // Lookup is non-algebraic (membership test). Degree is 1 per column reference.
+                query_columns.len().max(1)
+            }
+            Self::ChainedHash2to1 { .. } => {
+                // next[out] - hash_2_to_1(local[seed], next[in]): opaque hash, degree 1.
+                1
+            }
+            Self::SeedHash2to1 { .. } => {
+                // local[out] - hash_2_to_1(pi[seed], local[in]): opaque hash, degree 1.
+                1
+            }
+            Self::TableFunction {
+                a_values, b_values, ..
+            } => {
+                // P(a,b) = Σ Lᵢ(a)Lⱼ(b) outputsᵢⱼ: degree (|a|-1) in a, (|b|-1) in b.
+                a_values.len().saturating_sub(1) + b_values.len().saturating_sub(1)
+            }
+        }
+    }
+
+    /// Return the maximum column index referenced by this constraint expression.
+    fn max_column_index(&self) -> Option<usize> {
+        match self {
+            Self::Equality { col_a, col_b } => Some((*col_a).max(*col_b)),
+            Self::Multiplication { a, b, output } => Some((*a).max(*b).max(*output)),
+            Self::Binary { col } => Some(*col),
+            Self::PiBinding { col, .. } => Some(*col),
+            Self::Transition {
+                next_col,
+                local_col,
+            } => Some((*next_col).max(*local_col)),
+            Self::Polynomial { terms } => terms
+                .iter()
+                .flat_map(|t| t.col_indices.iter().copied())
+                .max(),
+            Self::Gated {
+                selector_col,
+                inner,
+            } => {
+                let inner_max = inner.max_column_index().unwrap_or(0);
+                Some((*selector_col).max(inner_max))
+            }
+            Self::InvertedGated {
+                selector_col,
+                inner,
+            } => {
+                let inner_max = inner.max_column_index().unwrap_or(0);
+                Some((*selector_col).max(inner_max))
+            }
+            Self::Squared { inner } => inner.max_column_index(),
+            Self::Hash {
+                output_col,
+                input_cols,
+            } => {
+                let max_input = input_cols.iter().copied().max().unwrap_or(0);
+                Some((*output_col).max(max_input))
+            }
+            Self::ConditionalNonzero {
+                selector_col,
+                value_col,
+                inverse_col,
+            } => Some((*selector_col).max(*value_col).max(*inverse_col)),
+            Self::AtLeastOne { flag_cols } => flag_cols.iter().copied().max(),
+            Self::Hash2to1 {
+                output_col,
+                input_col_a,
+                input_col_b,
+            } => Some((*output_col).max(*input_col_a).max(*input_col_b)),
+            Self::Hash4to1 {
+                output_col,
+                input_cols,
+            } => {
+                let max_input = input_cols.iter().copied().max().unwrap_or(0);
+                Some((*output_col).max(max_input))
+            }
+            Self::Hash3Cap {
+                output_col,
+                left_col,
+                right_col,
+            } => Some((*output_col).max(*left_col).max(*right_col)),
+            Self::MerkleHash8 {
+                output_cols,
+                left_cols,
+                right_cols,
+            } => output_cols
+                .iter()
+                .chain(left_cols.iter())
+                .chain(right_cols.iter())
+                .copied()
+                .max(),
+            Self::MerkleHash {
+                output_col,
+                current_col,
+                sib_cols,
+                position_col,
+            } => {
+                let max_sib = sib_cols.iter().copied().max().unwrap_or(0);
+                Some(
+                    (*output_col)
+                        .max(*current_col)
+                        .max(max_sib)
+                        .max(*position_col),
+                )
+            }
+            Self::Lookup { query_columns, .. } => query_columns.iter().copied().max(),
+            Self::ChainedHash2to1 {
+                output_next_col,
+                seed_local_col,
+                input_next_col,
+            } => Some((*output_next_col).max(*seed_local_col).max(*input_next_col)),
+            Self::SeedHash2to1 {
+                output_col,
+                input_col,
+                ..
+            } => Some((*output_col).max(*input_col)),
+            Self::TableFunction {
+                a_col,
+                b_col,
+                out_col,
+                ..
+            } => Some((*a_col).max(*b_col).max(*out_col)),
+        }
+    }
+}
+
+/// Recursively check that all PiBinding references within a constraint expression
+/// are within the declared `pi_count`. Returns `Ok(())` if all references are valid,
+/// or `Err(pi_index)` with the first out-of-bounds pi_index found.
+fn check_pi_bounds_recursive(expr: &ConstraintExpr, pi_count: usize) -> Result<(), usize> {
+    match expr {
+        ConstraintExpr::PiBinding { pi_index, .. } => {
+            if *pi_index >= pi_count {
+                return Err(*pi_index);
+            }
+        }
+        ConstraintExpr::SeedHash2to1 { seed_pi_index, .. } => {
+            if *seed_pi_index >= pi_count {
+                return Err(*seed_pi_index);
+            }
+        }
+        ConstraintExpr::Gated { inner, .. } => {
+            check_pi_bounds_recursive(inner, pi_count)?;
+        }
+        ConstraintExpr::InvertedGated { inner, .. } => {
+            check_pi_bounds_recursive(inner, pi_count)?;
+        }
+        ConstraintExpr::Squared { inner } => {
+            check_pi_bounds_recursive(inner, pi_count)?;
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
+impl CircuitDescriptor {
+    /// Validate that this program is safe to deploy as a cell program.
+    ///
+    /// Checks:
+    /// - Trace width within bounds (max 1024 columns)
+    /// - Constraint degree within bounds (max 8)
+    /// - No column index out of bounds in constraints
+    /// - Public input count reasonable (max 64)
+    /// - Boundary constraints reference valid rows/columns
+    /// - Program name is non-empty and not too long
+    pub fn validate(&self) -> Result<(), ProgramValidationError> {
+        // Name validation
+        if self.name.is_empty() || self.name.len() > 256 {
+            return Err(ProgramValidationError::InvalidName);
+        }
+
+        // Trace width bounds
+        if self.trace_width == 0 {
+            return Err(ProgramValidationError::ZeroWidth);
+        }
+        if self.trace_width > MAX_TRACE_WIDTH {
+            return Err(ProgramValidationError::TooWide {
+                width: self.trace_width,
+            });
+        }
+
+        // Constraint degree bounds
+        if self.max_degree > MAX_CONSTRAINT_DEGREE {
+            return Err(ProgramValidationError::DegreeTooHigh {
+                degree: self.max_degree,
+            });
+        }
+
+        // Public input count
+        if self.public_input_count > MAX_PUBLIC_INPUTS {
+            return Err(ProgramValidationError::TooManyPublicInputs {
+                count: self.public_input_count,
+            });
+        }
+
+        // Validate column indices, degree, and PiBinding bounds in constraints
+        for (i, constraint) in self.constraints.iter().enumerate() {
+            if let Some(max_col) = constraint.max_column_index()
+                && max_col >= self.trace_width
+            {
+                return Err(ProgramValidationError::ColumnOutOfBounds {
+                    constraint_index: i,
+                    col: max_col,
+                    trace_width: self.trace_width,
+                });
+            }
+
+            // Check that the constraint's algebraic degree does not exceed max_degree
+            let deg = constraint.degree();
+            if deg > self.max_degree {
+                return Err(ProgramValidationError::ConstraintDegreeExceeded {
+                    constraint_index: i,
+                    degree: deg,
+                    max_degree: self.max_degree,
+                });
+            }
+
+            // Check PiBinding references are within public_input_count (recursively)
+            if let Err(pi_index) = check_pi_bounds_recursive(constraint, self.public_input_count) {
+                return Err(ProgramValidationError::PiBindingOutOfBounds {
+                    constraint_index: i,
+                    pi_index,
+                    pi_count: self.public_input_count,
+                });
+            }
+        }
+
+        // Validate boundary constraints
+        for (i, bc) in self.boundaries.iter().enumerate() {
+            match bc {
+                BoundaryDef::PiBinding { col, pi_index, .. } => {
+                    if *col >= self.trace_width {
+                        return Err(ProgramValidationError::BoundaryColumnOutOfBounds {
+                            boundary_index: i,
+                            col: *col,
+                            trace_width: self.trace_width,
+                        });
+                    }
+                    if *pi_index >= self.public_input_count {
+                        return Err(ProgramValidationError::BoundaryPiOutOfBounds {
+                            boundary_index: i,
+                            pi_index: *pi_index,
+                            pi_count: self.public_input_count,
+                        });
+                    }
+                }
+                BoundaryDef::Fixed { col, .. } => {
+                    if *col >= self.trace_width {
+                        return Err(ProgramValidationError::BoundaryColumnOutOfBounds {
+                            boundary_index: i,
+                            col: *col,
+                            trace_width: self.trace_width,
+                        });
+                    }
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+// ============================================================================
+// Program Errors
+// ============================================================================
+
+/// Errors that can occur during program deployment, proof generation, or verification.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ProgramError {
+    /// The program descriptor failed validation.
+    ValidationFailed(ProgramValidationError),
+    /// The requested program (by VK hash) is not in the registry.
+    UnknownProgram,
+    /// Proof deserialization failed.
+    InvalidProof(String),
+    /// Proof verification failed.
+    VerificationFailed(String),
+    /// Witness is missing required column data.
+    MissingWitness { column: String },
+    /// Witness column has wrong length.
+    WitnessLengthMismatch {
+        column: String,
+        expected: usize,
+        got: usize,
+    },
+    /// Trace length must be a power of two and >= 2.
+    InvalidTraceLength { len: usize },
+}
+
+impl std::fmt::Display for ProgramError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::ValidationFailed(e) => write!(f, "program validation failed: {e}"),
+            Self::UnknownProgram => write!(f, "unknown program (VK hash not found in registry)"),
+            Self::InvalidProof(msg) => write!(f, "invalid proof: {msg}"),
+            Self::VerificationFailed(msg) => write!(f, "verification failed: {msg}"),
+            Self::MissingWitness { column } => write!(f, "witness missing column: {column}"),
+            Self::WitnessLengthMismatch {
+                column,
+                expected,
+                got,
+            } => {
+                write!(
+                    f,
+                    "witness column '{column}' has length {got}, expected {expected}"
+                )
+            }
+            Self::InvalidTraceLength { len } => {
+                write!(f, "trace length {len} must be a power of two and >= 2")
+            }
+        }
+    }
+}
+
+impl std::error::Error for ProgramError {}
+
+impl From<ProgramValidationError> for ProgramError {
+    fn from(e: ProgramValidationError) -> Self {
+        Self::ValidationFailed(e)
+    }
+}
+
+// ============================================================================
+// Cell Program: deployable circuit descriptor
+// ============================================================================
+
+/// A deployable cell program (serialized circuit descriptor).
+///
+/// Users submit cell programs as serialized `CircuitDescriptor`s. The descriptor
+/// defines valid state transitions for a sovereign cell. The `vk_hash` is derived
+/// deterministically from the descriptor and serves as the program's identity.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CellProgram {
+    /// The circuit descriptor (defines valid transitions).
+    pub descriptor: CircuitDescriptor,
+    /// Program version (for upgrade/migration tracking).
+    pub version: u32,
+    /// The verification key hash (derived from the descriptor).
+    pub vk_hash: [u8; 32],
+}
+
+impl CellProgram {
+    /// Create a new CellProgram from a descriptor, computing the VK hash.
+    pub fn new(descriptor: CircuitDescriptor, version: u32) -> Self {
+        let vk_hash = Self::compute_vk_hash(&descriptor);
+        Self {
+            descriptor,
+            version,
+            vk_hash,
+        }
+    }
+
+    /// Compute the verification key hash from the descriptor.
+    ///
+    /// This is a deterministic hash of the serialized descriptor, serving as the
+    /// program's unique identity. Two programs with identical descriptors produce
+    /// the same VK hash.
+    pub fn compute_vk_hash(descriptor: &CircuitDescriptor) -> [u8; 32] {
+        let serialized = postcard::to_allocvec(descriptor)
+            .expect("CircuitDescriptor serialization should not fail");
+        *blake3::hash(&serialized).as_bytes()
+    }
+
+    /// Verify that the stored vk_hash matches the descriptor.
+    ///
+    /// Call this after deserialization to detect tampering.
+    pub fn verify_integrity(&self) -> bool {
+        self.vk_hash == Self::compute_vk_hash(&self.descriptor)
+    }
+
+    /// Generate an execution trace for this program from provided witness values.
+    ///
+    /// The witness maps column names to their values for each row. The trace length
+    /// must be a power of two and >= 2.
+    pub fn generate_trace(
+        &self,
+        witness_values: &HashMap<String, Vec<BabyBear>>,
+        num_rows: usize,
+    ) -> Result<Vec<Vec<BabyBear>>, ProgramError> {
+        // Validate trace length
+        if num_rows < 2 || !num_rows.is_power_of_two() {
+            return Err(ProgramError::InvalidTraceLength { len: num_rows });
+        }
+
+        let mut trace = Vec::with_capacity(num_rows);
+
+        for row_idx in 0..num_rows {
+            let mut row = vec![BabyBear::ZERO; self.descriptor.trace_width];
+            for col_def in &self.descriptor.columns {
+                if let Some(values) = witness_values.get(&col_def.name) {
+                    if values.len() != num_rows {
+                        return Err(ProgramError::WitnessLengthMismatch {
+                            column: col_def.name.clone(),
+                            expected: num_rows,
+                            got: values.len(),
+                        });
+                    }
+                    row[col_def.index] = values[row_idx];
+                }
+                // Columns not in witness default to ZERO (padding columns)
+            }
+            trace.push(row);
+        }
+
+        Ok(trace)
+    }
+}
+
+// ============================================================================
+// Program Registry: VK → program lookup
+// ============================================================================
+
+/// Registry mapping verification key hashes to deployed programs.
+///
+/// This serves as the "code store" for the smart contract runtime. Programs are
+/// validated before deployment and can be looked up by their VK hash for
+/// verification of proof-carrying turns.
+#[derive(Debug, Clone, Default)]
+pub struct ProgramRegistry {
+    programs: HashMap<[u8; 32], CellProgram>,
+}
+
+impl ProgramRegistry {
+    /// Create an empty program registry.
+    pub fn new() -> Self {
+        Self {
+            programs: HashMap::new(),
+        }
+    }
+
+    /// Deploy a program to the registry after validation.
+    ///
+    /// Returns the VK hash on success. Rejects programs that fail validation.
+    /// If a program with the same VK hash already exists, this is a no-op
+    /// (idempotent deployment).
+    pub fn deploy(&mut self, program: CellProgram) -> Result<[u8; 32], ProgramError> {
+        // Validate the descriptor
+        program.descriptor.validate()?;
+
+        // Verify the VK hash is correctly computed
+        let computed_vk = CellProgram::compute_vk_hash(&program.descriptor);
+        if computed_vk != program.vk_hash {
+            return Err(ProgramError::InvalidProof(
+                "VK hash does not match descriptor".to_string(),
+            ));
+        }
+
+        let vk_hash = program.vk_hash;
+        self.programs.insert(vk_hash, program);
+        Ok(vk_hash)
+    }
+
+    /// Look up a deployed program by its VK hash.
+    pub fn get(&self, vk_hash: &[u8; 32]) -> Option<&CellProgram> {
+        self.programs.get(vk_hash)
+    }
+
+    /// Check if a program is deployed.
+    pub fn contains(&self, vk_hash: &[u8; 32]) -> bool {
+        self.programs.contains_key(vk_hash)
+    }
+
+    /// Number of deployed programs.
+    pub fn len(&self) -> usize {
+        self.programs.len()
+    }
+
+    /// Whether the registry is empty.
+    pub fn is_empty(&self) -> bool {
+        self.programs.is_empty()
+    }
+
+    /// Iterate the deployed `(vk_hash, program)` pairs. Used by the genuine
+    /// `proof_bind` engine (`crate::custom_proof_bind`) to resolve a program by
+    /// the lossy 8-felt PI projection of its VK hash.
+    pub fn iter(&self) -> impl Iterator<Item = (&[u8; 32], &CellProgram)> {
+        self.programs.iter()
+    }
+}
+
+// ============================================================================
+// Tests
+// ============================================================================

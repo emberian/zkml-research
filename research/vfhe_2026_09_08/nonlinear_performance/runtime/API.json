@@ -1,0 +1,11 @@
+{
+  "schema": "corrected-nonlinear-public-api-v1",
+  "pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/api.py": "0baff8237f7fe5b6699229a57d4ae2549a0896762261f473054585373d12084a",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/consumer.py": "c38fe648091efe0c9799fbee26367dbe1cc196332598a0f1818b050d195838c3",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/CONSUMER.json": "caea8875f1d1b954164ade547bb522f5d2fe6ccf68ae32bb18c40571ad9c4115",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/PIPELINE.json": "8ba4941617f07cdef623271fb4a2c18431d5c52faa8ee36ed7c3169c3cff9fd7"
+  },
+  "scope": "CLI dispatches the frozen generated proof producer and the exact diagnostic-tolerant record checker exercised by consumer001. No AIR, backend, or source arithmetic changes. CLI is source-checked; production and complete consumer executed separately once.",
+  "measured_acceptance": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/consumer001/RESULT.json"
+}

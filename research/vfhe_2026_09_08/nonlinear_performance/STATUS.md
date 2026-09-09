@@ -1,0 +1,1 @@
+[COMPLETE] Corrected compact/grouped class kernel accepted:116 newproofs,116 selfchecks,116 finalfreshchecks plus1 earliernativeacceptance before preservedwrappererror. Completeproofbytes−8.19%,MACprove−16.85%,wholeprove−1.69%; fullpeakRSSrose. Sources/results frozen; no furthercrypto. Authoritative runtime/consumer001/RESULT.json; concise REPORT.md and callable runtime/api.py.

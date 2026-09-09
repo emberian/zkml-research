@@ -1,0 +1,7 @@
+'Minidregg.Compiler.IR2RangeLookupBridge.lookup_val_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.IR2RangeLookupBridge.lookup_iff_val_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.IR2RangeLookupBridge.lookup9_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.IR2RangeLookupBridge.lookup16_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.IR2RangeLookupBridge.declared_wire_ids' does not depend on any axioms
+'Minidregg.Compiler.IR2RangeLookupBridge.nonzeroWitness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.IR2RangeLookupBridge.overflowFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]

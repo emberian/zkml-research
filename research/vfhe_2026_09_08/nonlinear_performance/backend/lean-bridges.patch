@@ -1,0 +1,202 @@
+--- /dev/null
++++ b/Compiler/IR2RangeLookupBridge.lean
+@@ -0,0 +1,99 @@
++/- The existing IR2 range-lookup semantics, applied to the existing compiler's
++canonical BabyBear values. This is a local semantic bridge, not an assumption
++that a native proof is sound or a new range-table AIR. -/
++import Compiler.EmitSerialize
++import Dregg2.Circuit.Emit.EffectVmEmitV2
++
++namespace Minidregg.Compiler.IR2RangeLookupBridge
++open Dregg2.Circuit.DescriptorIR2
++open Dregg2.Circuit.Emit.EffectVmEmit
++open Dregg2.Circuit.Emit.EffectVmEmitV2
++set_option autoImplicit false
++set_option maxHeartbeats 500000
++
++def canonicalEnv (asg : Nat → BabyBear) : VmRowEnv where
++  loc w := ((asg w).val : Int)
++  nxt _ := 0
++  pub _ := 0
++
++def LookupHolds (bits : Nat) (tf : TraceFamily) (asg : Nat → BabyBear) (w : Nat) : Prop :=
++  Dregg2.Circuit.DescriptorIR2.Lookup.holdsAt tf (canonicalEnv asg)
++    ⟨rangeTidW bits,[.var w]⟩
++
++/-- The faithful semantic table is explicit. The existing theorem proves the
++interval; only the canonical nat-to-int conversion is discharged here. -/
++theorem lookup_val_lt (bits : Nat) (tf : TraceFamily)
++    (hr : tf (rangeTidW bits)=rangeRows bits) (asg : Nat → BabyBear) (w : Nat)
++    (h : LookupHolds bits tf asg w) : (asg w).val < 2^bits := by
++  have hv := lookup_replaces_rangeW bits tf hr (canonicalEnv asg) w h
++  change 0 ≤ ((asg w).val : Int) ∧ ((asg w).val : Int) < (2 : Int)^bits at hv
++  exact_mod_cast hv.2
++
++theorem lookup_iff_val_lt (bits : Nat) (tf : TraceFamily)
++    (hr : tf (rangeTidW bits)=rangeRows bits) (asg : Nat → BabyBear) (w : Nat) :
++    LookupHolds bits tf asg w ↔ (asg w).val < 2^bits := by
++  constructor
++  · exact lookup_val_lt bits tf hr asg w
++  · intro h
++    unfold LookupHolds Dregg2.Circuit.DescriptorIR2.Lookup.holdsAt
++    rw [hr]
++    change [((asg w).val : Int)] ∈ rangeRows bits
++    apply (range_row_mem_iff _ bits).mpr
++    exact ⟨Int.natCast_nonneg _,by exact_mod_cast h⟩
++
++theorem lookup9_iff (tf : TraceFamily) (hr : tf (rangeTidW 9)=rangeRows 9)
++    (asg : Nat → BabyBear) (w : Nat) : LookupHolds 9 tf asg w ↔ (asg w).val < 512 :=
++  lookup_iff_val_lt 9 tf hr asg w
++
++theorem lookup16_iff (tf : TraceFamily) (hr : tf (rangeTidW 16)=rangeRows 16)
++    (asg : Nat → BabyBear) (w : Nat) : LookupHolds 16 tf asg w ↔ (asg w).val < 65536 :=
++  lookup_iff_val_lt 16 tf hr asg w
++
++/-- The existing width-indexed Lean IDs serialize to the proposed declared IDs. -/
++theorem declared_wire_ids : (rangeTidW 9).wireId=78 ∧ (rangeTidW 16).wireId=85 := by
++  decide
++
++def NonzeroWitness : Prop :=
++  LookupHolds 9 (fun _ => rangeRows 9) (fun _ => (511 : BabyBear)) 0
++
++theorem nonzeroWitness : NonzeroWitness := by
++  exact (lookup9_iff (fun _ => rangeRows 9) rfl (fun _ => (511 : BabyBear)) 0).mpr (by decide)
++
++def OverflowFalsifier : Prop := ∀ (tf : TraceFamily),
++  tf (rangeTidW 9)=rangeRows 9 → ¬LookupHolds 9 tf (fun _ => (512 : BabyBear)) 0
++
++theorem overflowFalsifier : OverflowFalsifier := by
++  intro tf hr h
++  have hv := (lookup9_iff tf hr _ _).mp h
++  have hn : ¬(512 : BabyBear).val < 512 := by decide
++  exact hn hv
++
++end Minidregg.Compiler.IR2RangeLookupBridge
++
++/-- info: 'Minidregg.Compiler.IR2RangeLookupBridge.lookup_val_lt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup_val_lt
++
++/-- info: 'Minidregg.Compiler.IR2RangeLookupBridge.lookup_iff_val_lt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup_iff_val_lt
++
++/-- info: 'Minidregg.Compiler.IR2RangeLookupBridge.lookup9_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup9_iff
++
++/-- info: 'Minidregg.Compiler.IR2RangeLookupBridge.lookup16_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.IR2RangeLookupBridge.lookup16_iff
++
++/-- info: 'Minidregg.Compiler.IR2RangeLookupBridge.declared_wire_ids' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.IR2RangeLookupBridge.declared_wire_ids
++
++/-- info: 'Minidregg.Compiler.IR2RangeLookupBridge.nonzeroWitness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.IR2RangeLookupBridge.nonzeroWitness
++
++/-- info: 'Minidregg.Compiler.IR2RangeLookupBridge.overflowFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.IR2RangeLookupBridge.overflowFalsifier
+--- /dev/null
++++ b/Compiler/LogUpGrouping.lean
+@@ -0,0 +1,97 @@
++/- Algebraic certificate for the existing LogUp multi-element fraction.
++The Rust successor preserves tuple/count order and uses this four-term grouping.
++This module does not prove native code refinement or a cryptographic soundness bound. -/
++import Mathlib
++
++namespace Minidregg.Compiler.LogUpGrouping
++set_option autoImplicit false
++
++variable {F : Type*} [Field F]
++
++def denominator (d : Fin 4 → F) : F := d 0*d 1*d 2*d 3
++def numerator (m d : Fin 4 → F) : F :=
++  m 0*d 1*d 2*d 3 + d 0*m 1*d 2*d 3 +
++  d 0*d 1*m 2*d 3 + d 0*d 1*d 2*m 3
++
++def fractions (m d : Fin 4 → F) : F :=
++  m 0/d 0 + m 1/d 1 + m 2/d 2 + m 3/d 3
++
++def Transition (s t : F) (m d : Fin 4 → F) : Prop :=
++  (t-s)*denominator d=numerator m d
++
++/-- Signed multiplicities are arbitrary field values; each denominator is the
++existing shared-bus challenge minus its compressed tuple. Zero denominators are
++an explicit excluded event, just as for ungrouped LogUp. -/
++theorem cleared_fraction (m d : Fin 4 → F) (hd : ∀ i,d i≠0) :
++    fractions m d * denominator d = numerator m d := by
++  unfold fractions denominator numerator
++  field_simp [hd 0,hd 1,hd 2,hd 3]
++
++theorem transition_iff (s t : F) (m d : Fin 4 → F) (hd : ∀ i,d i≠0) :
++    Transition s t m d ↔ t-s=fractions m d := by
++  have hden : denominator d≠0 := by
++    unfold denominator
++    exact mul_ne_zero (mul_ne_zero (mul_ne_zero (hd 0) (hd 1)) (hd 2)) (hd 3)
++  unfold Transition
++  rw [←cleared_fraction m d hd]
++  exact mul_left_inj' hden
++
++/-- Group boundaries do not alter the rational contribution's total. The native
++patch separately checks that flattening its groups reproduces the input list. -/
++theorem regroup_sum (groups : List (List F)) :
++    (groups.map List.sum).sum = groups.flatten.sum := by
++  exact List.sum_flatten.symm
++
++def SignedWitness : Prop :=
++  let m : Fin 4 → ℚ := ![1,-2,3,-4]
++  let d : Fin 4 → ℚ := ![1,2,3,4]
++  (∀ i,d i≠0) ∧ Transition 5 5 m d
++
++theorem signedWitness : SignedWitness := by
++  dsimp [SignedWitness,Transition,denominator,numerator]
++  constructor
++  · intro i
++    fin_cases i <;> norm_num
++  · norm_num
++
++def ZeroDenominatorFalsifier : Prop :=
++  let m : Fin 4 → ℚ := fun _ => 1
++  let d : Fin 4 → ℚ := fun _ => 0
++  Transition 0 1 m d ∧ ¬(1-0=fractions m d)
++
++theorem zeroDenominatorFalsifier : ZeroDenominatorFalsifier := by
++  norm_num [ZeroDenominatorFalsifier,Transition,denominator,numerator,fractions]
++
++def SignFalsifier : Prop :=
++  let d : Fin 4 → ℚ := fun _ => 1
++  Transition 0 (-2) ![1,-2,3,-4] d ∧ ¬Transition 0 (-2) ![1,2,3,4] d
++
++theorem signFalsifier : SignFalsifier := by
++  dsimp [SignFalsifier,Transition,denominator,numerator]
++  norm_num
++
++end Minidregg.Compiler.LogUpGrouping
++
++/-- info: 'Minidregg.Compiler.LogUpGrouping.cleared_fraction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.LogUpGrouping.cleared_fraction
++
++/-- info: 'Minidregg.Compiler.LogUpGrouping.transition_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.LogUpGrouping.transition_iff
++
++/-- info: 'Minidregg.Compiler.LogUpGrouping.regroup_sum' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.LogUpGrouping.regroup_sum
++
++/-- info: 'Minidregg.Compiler.LogUpGrouping.signedWitness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.LogUpGrouping.signedWitness
++
++/-- info: 'Minidregg.Compiler.LogUpGrouping.zeroDenominatorFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.LogUpGrouping.zeroDenominatorFalsifier
++
++/-- info: 'Minidregg.Compiler.LogUpGrouping.signFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.LogUpGrouping.signFalsifier

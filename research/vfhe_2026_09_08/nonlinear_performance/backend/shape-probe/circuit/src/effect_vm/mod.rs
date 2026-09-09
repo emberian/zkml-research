@@ -1,0 +1,272 @@
+//! Effect VM AIR: Multi-row DSL circuit proving arbitrary sequences of effects
+//! (turns) in a single STARK proof.
+//!
+//! Inspired by o1vm (RISC-V execution trace proving), but for dregg Effects instead
+//! of CPU instructions. Each trace row represents one effect execution step.
+//!
+//! # Instruction Set (Effect Types)
+//!
+//! - NoOp (0): Padding effect; all constraints trivially satisfied.
+//! - Transfer (1): Balance transfer with direction (in/out).
+//! - SetField (2): Update a custom field slot.
+//! - GrantCapability (3): Cross-cell delegation. direction 0 = recipient
+//!   install (capability_root update); direction 1 = granter-side delegation
+//!   row (cap Phase B2: held membership-open + non-amp gates, cap_root
+//!   passthrough).
+//! - NoteSpend (4): Spend a note (nullifier reveal, balance credit).
+//! - NoteCreate (5): Create a note (commitment creation, BALANCE-NEUTRAL — the
+//!   note value lives in the commitment, never on the transparent ledger).
+//! - CreateObligation (6): Lock stake from balance as a bonded obligation.
+//! - FulfillObligation (7): Return locked stake on successful fulfillment.
+//! - Custom (8): CellProgram dispatch — state flows unchanged, domain constraints
+//!   proven externally. Params carry program VK hash + proof commitment.
+//! - SlashObligation (9): Slash an expired obligation.
+//! - Seal (10): Lock a field against mutation.
+//! - Unseal (11): Unlock a sealed field.
+//! - MakeSovereign (12): Transition cell from managed to sovereign.
+//! - CreateCellFromFactory (13): Record factory provenance.
+//! - ExportSturdyRef (14): Export cell as sturdy ref (CapTP).
+//! - EnlivenRef (15): Enliven a sturdy ref (CapTP).
+//! - DropRef (16): Drop a remote reference / GC decrement (CapTP).
+//! - ValidateHandoff (17): Validate a handoff certificate (CapTP).
+//! - AllocateQueue (18): Create a new MerkleQueue (storage Phase 2).
+//! - EnqueueMessage (19): Append message to queue (storage Phase 2).
+//! - DequeueMessage (20): Advance queue head, reveal message (storage Phase 2).
+//! - ResizeQueue (21): Change queue capacity (storage Phase 2).
+//! - AtomicQueueTx (22): Prove atomic cross-queue transaction (storage Phase 3).
+//! - PipelineStep (23): Prove pipeline step correctly routed a message (storage Phase 3).
+//! - Burn (46): Explicit non-conservation balance reduction (near-miss aliasing closure).
+//! - CellDestroy (47): Permanently retire a cell (near-miss aliasing closure).
+//! - AttenuateCapability (48): Narrow a c-list cap (near-miss aliasing closure).
+//! - CellSeal (49): Transition cell lifecycle to Sealed (AIR-impl lane #119).
+//! - CellUnseal (50): Reverse a cell seal (AIR-impl lane #119).
+//! - ReceiptArchive (51): Summarize receipt-chain prefix (AIR-impl lane #119).
+//! - Refusal (52): Evidence-of-absence attestation (AIR-impl lane #119).
+//!
+//! # Trace Layout (one row per effect)
+//!
+//! ```text
+//! | selector[24] | state_before[14] | effect_params[8] | state_after[14] | aux[11] |
+//! ```
+//!
+//! Total width: 71 columns
+//!
+//! ## Column Breakdown
+//!
+//! Selectors (cols 0..9): Exactly one active per row.
+//!   - sel_noop, sel_transfer, sel_setfield, sel_grantcap, sel_notespend, sel_notecreate,
+//!     sel_create_obligation, sel_fulfill_obligation, sel_custom
+//!
+//! State Before (cols 9..23):
+//!   - balance_lo, balance_hi (u64 as two BabyBear limbs, 30+34 bits)
+//!   - nonce
+//!   - field_values[0..7] (8 custom fields)
+//!   - capability_root
+//!   - state_commitment (running Poseidon2 hash of full state)
+//!   - reserved
+//!
+//! Effect Params (cols 23..31):
+//!   - param0..param7 (meaning depends on effect type)
+//!
+//! State After (cols 31..45):
+//!   - Same layout as state_before
+//!
+//! Aux (cols 50..61):
+//!   - Auxiliary witness values (intermediate hashes, commitment tree nodes)
+//!   - aux[8..10]: state commitment tree intermediates (hash_4_to_1 outputs)
+//!
+//! # Constraints
+//!
+//! 1. Selector exclusivity: sum(selectors) == 1, each selector is boolean.
+//! 2. Per-effect constraints (gated by selector):
+//!    - Transfer: new_balance = old_balance +/- amount
+//!    - SetField: one field updated, others unchanged
+//!    - GrantCap: capability_root = hash(old_root, new_entry)
+//!    - NoteSpend: nullifier valid, balance increases
+//!    - NoteCreate: commitment valid, balance UNCHANGED (balance-neutral; the
+//!      value is hidden in the commitment, never moved on the transparent ledger)
+//!    - CreateObligation: balance decreases by stake_amount
+//!    - FulfillObligation: balance increases by stake_return
+//!    - Custom: state unchanged (domain constraints proven externally)
+//! 3. Transition constraints (row-to-row continuity):
+//!    - next_row.state_before == this_row.state_after
+//!    - next_row.nonce == this_row.nonce + 1 (or same for NoOp padding)
+//! 4. Boundary constraints:
+//!    - First row: state_before matches old_commitment (public input)
+//!    - Last non-padding row: state_after matches new_commitment
+//!    - Conservation: net balance delta == public input
+//!
+//! # Public Inputs
+//!
+//! Base layout: `pi::ACTIVE_BASE_COUNT` felts, then the per-custom-effect entries.
+//!
+//! ⚑ **A TABLE OF ABSOLUTE OFFSETS USED TO SIT HERE, AND IT WAS WRONG BY 8 FOR MONTHS.** It
+//! opened `[0..4] OLD_COMMIT[4]` — the PRE-PHASE-C widths, stale from the day the state
+//! commitments went 4 felts → 8, so every number below the third row was low by eight. The
+//! 2026-08-07 seven-slot compaction would have made the same table wrong by another seven. The
+//! prefix is a pure cascade (`OLD_COMMIT_BASE = 0` is the only literal; every later base is
+//! `prior_base + prior_len`), so naming the constants in order is a COMPLETE and drift-proof
+//! description and an offset table is not. Read `pi.rs` — its `BASE_COUNT` docblock states the
+//! order, and `pi::v3_drift_guard` pins the handful of absolute numbers a reader actually needs
+//! against the Lean emission.
+//!
+//! The one thing worth stating in prose, because it is a decision rather than a layout: the four
+//! 7-γ.0a additions (`TURN_HASH`, `EFFECTS_HASH_GLOBAL`, `ACTOR_NONCE`, `PREVIOUS_RECEIPT_HASH`)
+//! were designed as values *shared across all per-cell proofs of one turn*, checked for
+//! cross-proof equality by `verify_proof_carrying_turn_bundle`.
+//!
+//! ⚠ **CORRECTED 2026-08-06. That loop never ran and is now deleted.** Measured
+//! before removal: `verify_proof_carrying_turn_bundle` had exactly one caller,
+//! which itself had zero, so no executor ever compared these four slots across a
+//! bundle — and no artifact in the tree carries a bundle of per-cell PI vectors
+//! to a verifier in the first place. What actually decides these values today:
+//!
+//! * On the FULL NODE, `turn::executor::proof_verify::verify_one_cohort_run`
+//!   takes no PI vector at all — it RECONSTRUCTS the whole vector from the
+//!   trusted `Turn` / before-`Cell` / anchors and verifies against that. Every
+//!   slot is verifier-authoritative there, pinned or not; the prover's published
+//!   vector is never deserialised.
+//! * On the WIRE, `TURN_HASH` is compared against a CALLER-SUPPLIED external
+//!   anchor (`sdk::verify_full_turn_bound`'s `expected_turn_hash`,
+//!   `dregg_verifier::check_receipt_pi_binding`,
+//!   `turn::conditional`), always as FOUR felts via `canonical_32_to_felts_4`.
+//! * ⚑ `TURN_HASH` **and** `EFFECTS_HASH_GLOBAL` are also PROOF-BOUND, in another descriptor —
+//!   corrected 2026-08-07, and this block previously said the opposite ("`EFFECTS_HASH_GLOBAL`
+//!   is read by NOTHING"). They are the first eight felts of the 49-felt bilateral-schedule
+//!   window `inner_pi[TURN_HASH_BASE, +49)` that `schedule_block_from_inner_pi` projects into
+//!   `dregg-bilateral-aggregation-v3`, where `window_gate` transitions FORCE the columns and
+//!   `pi_binding` pins them to that descriptor's own outer PI.
+//!
+//! No EFFECT-VM AIR constraint reads any of the four: `pi_binding` is the only constraint kind
+//! that reads a public input, and those offsets carry zero of them across all 56 deployed wide
+//! members — a statement about THOSE descriptors, not about the slots. See
+//! `docs/PI-DISPOSITION.md` §6 and `scripts/pi_disposition_census.py`'s `proj-read` column.
+
+// ============================================================================
+// Sub-module layout
+// ============================================================================
+//
+// The Effect VM AIR was originally one monolithic 10k-line file. It now
+// decomposes by concern:
+//   columns   — trace width + per-block column index sub-modules (sel,
+//                state, param, aux_off).
+//   pi        — public-input slot constants.
+//   effect    — the `Effect` enum (one variant per effect type).
+//   cell_state — the `CellState` struct + commitment helpers.
+//   helpers   — limb split/join, reserved-bit fill, compute_effects_hash[_4].
+//   air       — `AIR_DESCRIPTOR`, `EffectVmAir`, `StarkAir` impl.
+//   trace     — witness/trace generation + `EffectVmContext`.
+//   verify    — verifier-side range / slot-caveat checks.
+//   tests     — the (large) #[cfg(test)] module.
+//
+// External callers see the pre-decomp public surface preserved via
+// re-exports below (no path changes needed).
+
+pub mod columns;
+/// THE E1 DELETION GEOMETRY (Epoch-1 SECOND flag-day) — Lean-emitted per-member kill-set of dead
+/// v1-face columns (POST-S2 half-open runs, `deadColsE1 M 90`); the producer's
+/// `trace_rotated::compact_e1_columns` drops exactly the columns the Lean emit deleted, AFTER
+/// `compact_s2_columns`. Same law as `layout_generated` / `s2_compact_generated`: never hand-edit.
+pub mod e1_compact_generated;
+/// The rotated column layout, EXPORTED FROM LEAN (`metatheory/EmitLayoutManifest.lean`) and
+/// installed by the ack-gated emit pipeline. Lean defines this geometry and emits the constraint
+/// descriptors that READ these columns; the Rust producer WRITES them. Both now read one source.
+///
+/// Never hand-edit `layout_generated.rs`. Never re-declare one of its constants by hand: that is
+/// exactly how the perms/VK completion weld came to read limb 37 (`revoked_root` lane-0) while the
+/// producer wrote limb 38, silently making every honest setPermissions/setVerificationKey turn UNSAT.
+pub mod layout_generated;
+pub mod pi;
+/// THE S2 DELETION GEOMETRY (Epoch 1) — Lean-emitted `(key, bb, lane_base)` per wide member; the
+/// producer's `trace_rotated::compact_s2_columns` drops exactly the columns the Lean emit deleted
+/// from the committed wide descriptors. Same law as `layout_generated`: never hand-edit.
+pub mod s2_compact_generated;
+/// THE WIDE+UMEM WELD DERIVATION CONTRACT — Lean-emitted `(key, domain, splice, shape)` per wide
+/// member. It REPLACES the 10 MB `rotation-wide-umem-welded-registry-staged.tsv`, which was that
+/// table applied to the (still committed) bare wide registry; the verifier now derives its welded
+/// member exactly the way the prover always has. Same law as `layout_generated`: never hand-edit.
+pub mod umem_weld_generated;
+
+mod air;
+pub mod authority_digest_weld;
+pub mod bare_floor_refuse_weld;
+pub mod burn_avail_weld;
+pub mod carrier_floor_weld;
+mod cell_state;
+pub mod custom_state_binding;
+pub mod discharge_weld;
+mod effect;
+mod helpers;
+pub mod satisfaction_weld;
+mod trace;
+pub mod trace_rotated;
+pub mod transfer_avail_weld;
+pub mod transfer_fee_avail_weld;
+pub mod vault_weld;
+mod verify;
+
+// (The v1 per-action proof granularity module + the large v1 hand-AIR test module
+// were retired with `EffectVmAir`. The shared trace generator they also covered
+// (`generate_effect_vm_trace` / `EFFECT_VM_WIDTH`) stays — the rotated leg rides it.)
+
+// ---- Re-export column layout (preserves pre-decomp paths) ----
+pub use columns::{
+    AUX_BASE, BAL_LIMB_BITS, EFFECT_VM_WIDTH, NUM_AUX, NUM_EFFECTS, NUM_PARAMS, PARAM_BASE,
+    STATE_AFTER_BASE, STATE_BEFORE_BASE, aux_off, param, sel, state,
+};
+
+// ---- Re-export types ----
+pub use cell_state::CellState;
+pub use custom_state_binding::{
+    CUSTOM_PI_NEW_COMMIT_BASE, CUSTOM_PI_NEW_COMMIT_LEN, CUSTOM_PI_OLD_COMMIT_BASE,
+    CUSTOM_PI_OLD_COMMIT_LEN, CUSTOM_PI_STATE_PREFIX_LEN, custom_pi_state_prefix,
+    custom_proof_pi_commitment_8, extract_custom_pi_state_roots,
+};
+pub use effect::{AttenuateWitness, Effect, RevokeWitness};
+
+// ---- Re-export helpers ----
+pub use helpers::{
+    PUBKEY_NONET_LANE_COL, bytes32_to_8_limbs, compute_effects_hash, compute_effects_hash_4,
+    field_from_lanes9, field_limbs9, fold_bytes32_to_bb, key_commit_teeth,
+    key_commit_teeth_from_nonet, key_from_lanes9, key_limbs9, refusal_reason_bytes, split_u64,
+    u64_from_4_limbs_16, u64_to_4_limbs_16,
+};
+// Re-export so sibling modules can write `use super::fill_reserved_bits`
+// (mirrors the pre-decomp module-level visibility).
+pub(crate) use helpers::{fill_balance_limb_bits, fill_reserved_bits};
+
+// ---- Re-export AIR ----
+pub use air::AIR_DESCRIPTOR;
+// `EffectVmAir` (v1 hand-AIR) is RETIRED — the rotated IR-v2 descriptor is the
+// sole effect-VM circuit.
+
+// ---- Re-export trace generation ----
+pub use trace::{
+    EffectVmContext, EffectVmTraceError, RotCaveatEntry, SlotCaveatEntry, canonical_id_to_felts_4,
+    effect_selector, encode_net_delta, extract_asset_class, extract_custom_proof_commitments,
+    extract_net_delta, extract_slot_caveat_manifest, generate_effect_vm_trace,
+    generate_effect_vm_trace_ext, try_generate_effect_vm_trace, try_generate_effect_vm_trace_ext,
+};
+
+// ---- Re-export the LIVE rotated (R=24) trace generator (G1, staged-additive) ----
+pub use trace_rotated::{
+    DISCHARGE_SAT_DESCRIPTOR_NAME, ROT_PI_COUNT, ROT_WIDTH, RotatedBlockWitness,
+    RotatedCaveatEntry, RotatedCaveatManifest, SETTLE_ESCROW_SAT_DESCRIPTOR_NAME,
+    VAULT_SAT_DESCRIPTOR_NAME, empty_caveat_manifest, generate_rotated_effect_vm_trace,
+    rotated_descriptor_name, rotated_descriptor_name_for_declared_capacity,
+    rotated_descriptor_name_for_declared_discharge, rotated_descriptor_name_for_declared_escrow,
+    rotated_descriptor_name_for_declared_vault, rotated_descriptor_name_for_effect,
+    rotated_set_field_descriptor_name, transfer_caveat_manifest,
+};
+
+// ---- Re-export the STAGED in-AIR capacity-gate satisfaction weld (PIECE 2 of the VK epoch) ----
+pub use satisfaction_weld::{
+    after_field_col, before_field_col, rotated_field_offset, settle_escrow_satisfaction_gates,
+};
+
+// ---- Re-export verify ----
+pub use verify::{
+    BALANCE_LIMB_PI_MIN_LEN, verify_balance_limb_pis, verify_balance_limb_ranges,
+    verify_rotated_caveat_coverage, verify_slot_caveat_coverage, verify_slot_caveat_manifest,
+    verify_state_integrity,
+};

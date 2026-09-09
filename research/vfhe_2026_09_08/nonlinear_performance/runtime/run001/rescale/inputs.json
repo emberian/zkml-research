@@ -1,0 +1,18 @@
+{
+  "kind": "rescale",
+  "profile_sha256": "8ba4941617f07cdef623271fb4a2c18431d5c52faa8ee36ed7c3169c3cff9fd7",
+  "case_pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/basic-000.ct": "0291fc483b13e118d9ee74fc1093e9fbb91db0f9d3eb3767a4b2213f774e196e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/basic.dot.ct": "9ada38328eedf30eede7e95895430bec60059abbc4be129c5fcb9f8e9c7617f7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/operation.json": "15fdc8d201b499353f4672abb2a40d3327923ccf9738d43b1d0c31340fc6f622",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/source_descriptor.json": "2a3fbba0b8b5f3c1cfa3c17edbbe4d4adda93d64794d6ff5ccd5b9b3f06abf9e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/basic.json": "e55d3e8d42bdc068f0b05d48f96af6ea46447887926da63151a4919bd845e8d0",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/chunks/001.json": "c8f8d08fd39aa12d14dd874b978f9bf31144567933470bfcefb9843fa4afd444",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/chunks/000.json": "dcfb30c2acd1085f7b26f8840a92ee60258da829f5b29189d5d98477294afff8",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/chunks/003.json": "4595616d70386d7339f2cc375bdf6f7c81ac359d060b3d37fe73efd4b3d97a14",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/chunks/002.json": "f87a9b22eac0818af8a6e555ff1ccf062791dd86f399f4244a55d68c22a504cd",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/chunks/005.json": "6e95cc367205376725c938efa6dc5029432cbb9d47e9364a67aa00bcb821df74",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/queries/query01/class000/produced/rescale_case/chunks/004.json": "01869a1499e52c5f6f6f58a6740e1fb15a9c2977c7d900ad33d35198f7c82af3"
+  },
+  "started_utc": "2026-09-09T01:47:51.492383+00:00"
+}

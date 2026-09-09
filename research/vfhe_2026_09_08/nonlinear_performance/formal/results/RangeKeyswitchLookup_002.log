@@ -1,0 +1,3 @@
+'Minidregg.Compiler.RangeKeyswitchLookup.ranges_of_lookups' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchLookup.lookupRowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.RangeKeyswitchLookup.allRowsSound' depends on axioms: [propext, Classical.choice, Quot.sound]

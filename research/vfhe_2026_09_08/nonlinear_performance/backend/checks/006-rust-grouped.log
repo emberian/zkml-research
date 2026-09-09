@@ -1,0 +1,165 @@
+     Locking 57 packages to latest Rust 1.98.0-nightly compatible versions
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+   Compiling syn v3.0.5
+   Compiling serde_core v1.0.229
+   Compiling num-integer v0.1.47
+   Compiling serde v1.0.229
+   Compiling serde_derive v1.0.229
+   Compiling syn v2.0.119
+   Compiling strength_reduce v0.2.4
+   Compiling paste v1.0.15
+   Compiling transpose v0.2.3
+   Compiling tracing-core v0.1.36
+   Compiling pin-project-lite v0.2.17
+   Compiling rand_core v0.10.1
+   Compiling either v1.18.0
+   Compiling itertools v0.14.0
+   Compiling tracing-attributes v0.1.31
+   Compiling rand v0.10.2
+   Compiling p3-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling tracing v0.1.44
+   Compiling num-bigint v0.4.8
+   Compiling p3-maybe-rayon v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling spin v0.11.1
+   Compiling thiserror v2.0.20
+   Compiling thiserror-impl v2.0.20
+   Compiling p3-field v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-matrix v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-dft v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-symmetric v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-mds v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon1 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon2 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-multilinear-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-monty-31 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling libm v0.2.16
+   Compiling p3-challenger v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-commit v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-fri v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling allocator-api2 v0.2.21
+   Compiling equivalent v1.0.2
+   Compiling foldhash v0.2.0
+   Compiling hashbrown v0.17.1
+   Compiling p3-uni-stark v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-merkle-tree v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-baby-bear v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-goldilocks v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-lookup v0.5.1 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/p3-lookup-grouped)
+error[E0283]: type annotations needed
+   --> src/types.rs:150:69
+    |
+150 |           let global: Vec<_> = buses.iter().enumerate().map(|(i,bus)| SymbolicInteraction {
+    |  _____________________________________________________________________^
+151 | |             bus_name: bus.to_string(),
+152 | |             fields: vec![SymbolicExpression::from(BabyBear::from_u64(i as u64 + 17))],
+153 | |             count: SymbolicExpression::from(if i % 2 == 0 { BabyBear::ONE } else { BabyBear::NEG_ONE }),
+154 | |             count_weight: (i % 2) as u32,
+155 | |         }).collect();
+    | |_________^ cannot infer type of the type parameter `F` declared on the struct `SymbolicInteraction`
+    |
+    = note: multiple `impl`s satisfying `_: ExtensionField<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>` found in the `p3_field` crate:
+            - impl<F, D> ExtensionField<F> for BinomialExtensionField<F, D>
+              where the constant `D` has type `usize`, F: BinomiallyExtendable<D>;
+            - impl<F> ExtensionField<F> for F
+              where F: p3_field::Field;
+    = note: required for `SymbolicExpr<BaseLeaf<_>>` to implement `From<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>`
+help: consider specifying a concrete type for the type parameter `F`
+    |
+150 |         let global: Vec<_> = buses.iter().enumerate().map(|(i,bus)| SymbolicInteraction::</* Type */> {
+    |                                                                                        ++++++++++++++
+
+error[E0283]: type annotations needed
+   --> src/types.rs:150:69
+    |
+150 |           let global: Vec<_> = buses.iter().enumerate().map(|(i,bus)| SymbolicInteraction {
+    |  _____________________________________________________________________^
+151 | |             bus_name: bus.to_string(),
+152 | |             fields: vec![SymbolicExpression::from(BabyBear::from_u64(i as u64 + 17))],
+153 | |             count: SymbolicExpression::from(if i % 2 == 0 { BabyBear::ONE } else { BabyBear::NEG_ONE }),
+154 | |             count_weight: (i % 2) as u32,
+155 | |         }).collect();
+    | |_________^ cannot infer type of the type parameter `F` declared on the struct `SymbolicInteraction`
+156 |           let local = vec![SymbolicLocalInteraction {
+157 |               tuples: vec![(vec![SymbolicExpression::from(BabyBear::from_u64(99))],SymbolicExpression::from(BabyBear::NEG_ONE))],
+    |                                  ------------------ type must be known at this point
+    |
+    = note: multiple `impl`s satisfying `_: ExtensionField<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>` found in the `p3_field` crate:
+            - impl<F, D> ExtensionField<F> for BinomialExtensionField<F, D>
+              where the constant `D` has type `usize`, F: BinomiallyExtendable<D>;
+            - impl<F> ExtensionField<F> for F
+              where F: p3_field::Field;
+    = note: required for `SymbolicExpr<BaseLeaf<_>>` to implement `From<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>`
+help: consider specifying a concrete type for the type parameter `F`
+    |
+150 |         let global: Vec<_> = buses.iter().enumerate().map(|(i,bus)| SymbolicInteraction::</* Type */> {
+    |                                                                                        ++++++++++++++
+
+error[E0283]: type annotations needed
+   --> src/types.rs:150:69
+    |
+150 |           let global: Vec<_> = buses.iter().enumerate().map(|(i,bus)| SymbolicInteraction {
+    |  _____________________________________________________________________^
+151 | |             bus_name: bus.to_string(),
+152 | |             fields: vec![SymbolicExpression::from(BabyBear::from_u64(i as u64 + 17))],
+153 | |             count: SymbolicExpression::from(if i % 2 == 0 { BabyBear::ONE } else { BabyBear::NEG_ONE }),
+154 | |             count_weight: (i % 2) as u32,
+155 | |         }).collect();
+    | |_________^ cannot infer type of the type parameter `F` declared on the struct `SymbolicInteraction`
+156 |           let local = vec![SymbolicLocalInteraction {
+157 |               tuples: vec![(vec![SymbolicExpression::from(BabyBear::from_u64(99))],SymbolicExpression::from(BabyBear::NEG_ONE))],
+    |                                                                                    ------------------ type must be known at this point
+    |
+    = note: multiple `impl`s satisfying `_: ExtensionField<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>` found in the `p3_field` crate:
+            - impl<F, D> ExtensionField<F> for BinomialExtensionField<F, D>
+              where the constant `D` has type `usize`, F: BinomiallyExtendable<D>;
+            - impl<F> ExtensionField<F> for F
+              where F: p3_field::Field;
+    = note: required for `SymbolicExpr<BaseLeaf<_>>` to implement `From<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>`
+help: consider specifying a concrete type for the type parameter `F`
+    |
+150 |         let global: Vec<_> = buses.iter().enumerate().map(|(i,bus)| SymbolicInteraction::</* Type */> {
+    |                                                                                        ++++++++++++++
+
+error[E0283]: type annotations needed for `builder::SymbolicInteraction<_>`
+   --> src/types.rs:184:13
+    |
+184 | ...   let one=SymbolicInteraction { bus_name:"a".to_string(),fields:vec![SymbolicExpression::from(BabyBear::ONE)],count:SymbolicExp...
+    |           ^^^                                                            ------------------ type must be known at this point
+    |
+    = note: multiple `impl`s satisfying `_: ExtensionField<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>` found in the `p3_field` crate:
+            - impl<F, D> ExtensionField<F> for BinomialExtensionField<F, D>
+              where the constant `D` has type `usize`, F: BinomiallyExtendable<D>;
+            - impl<F> ExtensionField<F> for F
+              where F: p3_field::Field;
+    = note: required for `SymbolicExpr<BaseLeaf<_>>` to implement `From<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>`
+help: consider giving `one` an explicit type, where the type for type parameter `EF` is specified
+    |
+184 |         let one: builder::SymbolicInteraction<F>=SymbolicInteraction { bus_name:"a".to_string(),fields:vec![SymbolicExpression::from(BabyBear::ONE)],count:SymbolicExpression::from(BabyBear::NEG_ONE),count_weight:0 };
+    |                +++++++++++++++++++++++++++++++++
+
+error[E0283]: type annotations needed for `builder::SymbolicInteraction<_>`
+   --> src/types.rs:184:13
+    |
+184 | ...et one=SymbolicInteraction { bus_name:"a".to_string(),fields:vec![SymbolicExpression::from(BabyBear::ONE)],count:SymbolicExpression::f...
+    |       ^^^                                                                                                           ------------------ type must be known at this point
+    |
+    = note: multiple `impl`s satisfying `_: ExtensionField<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>` found in the `p3_field` crate:
+            - impl<F, D> ExtensionField<F> for BinomialExtensionField<F, D>
+              where the constant `D` has type `usize`, F: BinomiallyExtendable<D>;
+            - impl<F> ExtensionField<F> for F
+              where F: p3_field::Field;
+    = note: required for `SymbolicExpr<BaseLeaf<_>>` to implement `From<p3_monty_31::monty_31::MontyField31<BabyBearParameters>>`
+help: consider giving `one` an explicit type, where the type for type parameter `EF` is specified
+    |
+184 |         let one: builder::SymbolicInteraction<F>=SymbolicInteraction { bus_name:"a".to_string(),fields:vec![SymbolicExpression::from(BabyBear::ONE)],count:SymbolicExpression::from(BabyBear::NEG_ONE),count_weight:0 };
+    |                +++++++++++++++++++++++++++++++++
+
+For more information about this error, try `rustc --explain E0283`.
+error: could not compile `p3-lookup` (lib test) due to 5 previous errors

@@ -1,0 +1,1595 @@
+//! Stage 7-γ.2 Phase 2 — joint bilateral aggregation AIR.
+//!
+//! See `STAGE-7-GAMMA-2-PHASE-2-SKETCH.md` for the full design.
+//!
+//! This module collapses Phase 1's "N per-cell STARK proofs + Rust cross-cell
+//! match loop" into a single outer AIR whose public input is the reduced
+//! bundle-level summary. The outer trace has one row per inner per-cell proof
+//! (padded to a power of two). Each row carries that proof's decoupled 49-felt
+//! bilateral-schedule block (`Sched.*`) lifted into trace columns plus 3
+//! accumulators (width **52** in the compacted v3 layout). The AIR's constraints
+//! then enforce, in one algebraic pass:
+//!
+//!   CG-2  turn-identity agreement (per-row, IN-CIRCUIT in v3)
+//!         The FIRST row's identity slots [TURN_HASH, EFFECTS_HASH_GLOBAL,
+//!         ACTOR_NONCE, PREVIOUS_RECEIPT_HASH] are pinned to the outer PI by
+//!         `pi_binding`, and 13 identity-carry `window_gate`s force
+//!         `next[c] == local[c]` on every transition — so EVERY row's identity
+//!         slots equal the published turn identity. (v2 bound only the first +
+//!         last rows, leaving the middle rows' identity columns in-AIR
+//!         unconstrained — the gap `BilateralAggregationCompact.gapTrace`
+//!         exhibits; v3 closes it, proven `compact_identity_every_row`.)
+//!
+//!   CG-3  schedule replay — RETIRED in v3.
+//!         v2 spent 35 gates on `sched[13+k] == expected[49+k]` where BOTH
+//!         blocks were prover-filled from the same row, so the block was a
+//!         tautological self-check that pinned nothing (any trace satisfied it
+//!         by copying). Those 35 gates + their 35 dead expected columns are
+//!         DELETED. The schedule block's counts/roots are bound to the canonical
+//!         Turn OFF-AIR (`verify_aggregated_bundle` step 5, `schedule.counts_for`
+//!         / `roots_for`) — that is the real closure, not the deleted self-check.
+//!
+//!   CG-4  IS_AGENT_CELL accounting
+//!         running cumulative sum of IS_AGENT_CELL across rows. Boundary:
+//!         last row's cumulative == 1. (When N_CELLS is the active prefix,
+//!         padding rows carry IS_AGENT_CELL = 0 and contribute nothing.)
+//!
+//!   CG-5  cross-side existence
+//!         expressed as a per-row "schedule-covered" indicator: a row's
+//!         expected counts being nonzero must be matched by *another* row
+//!         claiming the peer side. Today this is enforced *outside* the AIR
+//!         by the prover's schedule-construction logic — the AIR's job is
+//!         to confirm what the prover claims, not to discover unbundled
+//!         peers. (CG-5 in Rust-shape is part of the prover-side wiring
+//!         and the verifier's outer-PI cross-check, not an AIR constraint
+//!         group of its own. The Phase-2 sketch flags it as the most
+//!         delicate group; we land the matrix variant in a follow-up.)
+//!
+//!   BILATERAL_CONSISTENT
+//!         outer PI slot, must equal 1; constrained to 1 at the last row.
+//!
+//! ## Inner-proof recursive verification (CG-1)
+//!
+//! Phase 2's headline win is *also* collapsing each inner STARK verify into
+//! the outer AIR. With the now-paved `plonky3_recursion_impl` substrate, the
+//! aggregation prover composes:
+//!
+//!   1. Phase-1 verify of each inner Effect VM proof (classical Rust call).
+//!   2. The outer aggregation AIR proof over their PIs.
+//!   3. (Optional) a recursive-layer proof of (2), produced via
+//!      `prove_recursive_layer_for_air` — this is the constant-size
+//!      verification artifact Phase 2 promises.
+//!
+//! Step (3) means the outer verifier never re-runs (1): the recursive layer
+//! attests that the outer AIR accepted its inputs, and the outer AIR's CG-2
+//! through CG-5 plus the row PIs *being the inner PIs* binds those inputs
+//! to the per-cell proofs the prover ran in (1). A consumer downstream needs
+//! only (3) + the outer PI to know the bundle is bilaterally consistent.
+//!
+//! ## Trace layout (DEPLOYED — the decoupled v3 `agg::*` layout)
+//!
+//! `width = agg::WIDTH` = **52** columns. Per row:
+//!
+//! ```text
+//!  [0  .. 13)   schedule turn-identity  — 4 turn-hash + 4 effects-hash + nonce
+//!                                          + 4 previous-receipt (the 13 slots the
+//!                                          identity-carry window gates pin)
+//!  [13 .. 20)   schedule counts         — 7 bilateral count fields
+//!  [20 .. 48)   schedule roots          — 7 × 4-felt root fields
+//!  [48]         is_agent_cell           — bool: this row is the agent cell
+//!  [49]         is_agent_cumulative     — running sum of IS_AGENT_CELL
+//!  [50]         consistent_indicator    — bool 1 = this row's checks pass
+//!  [51]         n_cells_active          — running active-row counter
+//! ```
+//!
+//! (v2 also carried a 35-felt `expected_counts`/`expected_roots` block at
+//! `[49, 84)` and 35 gates checking `schedule == expected`; both sides were
+//! prover-filled, so the block was a tautology — DELETED in v3, which is
+//! −40% committed columns.)
+//!
+//! Boundary constraints:
+//! - `is_agent_cumulative[last] == 1`
+//! - `outer_pi[BILATERAL_CONSISTENT] == 1`
+//!
+//! ## Outer PI layout
+//!
+//! ```text
+//!   0..4    OUTER_TURN_HASH
+//!   4..8    OUTER_EFFECTS_HASH_GLOBAL
+//!   8       OUTER_ACTOR_NONCE
+//!   9..13   OUTER_PREVIOUS_RECEIPT_HASH
+//!  13..21   OUTER_AGENT_CELL_ID   (8-felt cell-id decomposition)
+//!  21       OUTER_N_CELLS         (number of active rows in the trace)
+//!  22       OUTER_BILATERAL_CONSISTENT  (must == 1 for accept)
+//! ```
+//!
+//! Fixed width: 23 felts, independent of N. This is the headline win for
+//! verifier complexity vs. Phase 1's `N × 74` per-bundle PI.
+
+#[cfg(feature = "plonky3")]
+use p3_air::{Air, AirBuilder, BaseAir, WindowAccess};
+#[cfg(feature = "plonky3")]
+use p3_field::PrimeCharacteristicRing;
+
+use crate::effect_vm::pi as inner_pi;
+use crate::field::BabyBear;
+
+// ---------------------------------------------------------------------------
+// Lean-emitted descriptor (law #1): the bilateral aggregation AIR, as a PROVED
+// `EffectVmDescriptor2` (`Dregg2/Circuit/Emit/EffectVmEmitBilateralAgg.lean`).
+// ---------------------------------------------------------------------------
+
+/// The byte-pinned Lean emission of the COMPACTED bilateral aggregation descriptor
+/// (`emitVmJson2 bilateralAggDescriptorV3`, `BilateralAggregationCompact.lean`). The schedule
+/// contract is DECOUPLED from the v1 `effect_vm::pi` buffer: the descriptor's main trace carries a
+/// standalone 49-felt schedule block (`Sched.*`) and 3 accumulators (width **52**); the outer PI is
+/// a fixed 23 felts independent of N. The 35 prover-filled `sched[13+k] == expected[49+k]`
+/// self-check gates (and their 35 dead columns) that v2 carried are DELETED — both sides were
+/// prover-filled, so the block was a tautology that pinned nothing; 13 identity-carry `windowGate`s
+/// now pin the per-row turn-identity slots constant, which + the first-row PI bindings forces EVERY
+/// row onto the published turn identity (v2 bound only first/last — the middle-row gap `gapTrace`
+/// exhibits). Lean proves v3 accepts a STRICT subset of v2 against the deployed `Satisfied2`
+/// (`expand_satisfies` + `gapTrace_contract_not_v3`). The two cumulative-sum transitions remain the
+/// `windowGate` (two-row) kind (now 15 window gates total: 13 identity + 2 cumulative). Re-emit via
+/// `lake env lean --run EmitBilateralLegs.lean`; the SHA is pinned by
+/// `bilateral_aggregation_descriptor_matches_lean_pin` and the Lean `#guard`.
+pub const BILATERAL_AGGREGATION_DESCRIPTOR_JSON: &str =
+    include_str!("../descriptors/dregg-bilateral-aggregation-v3.json");
+
+/// The descriptor's wire identity (matches `bilateralAggDescriptorV3.name`).
+pub const BILATERAL_AGGREGATION_DESCRIPTOR_NAME: &str = "dregg-bilateral-aggregation-v3";
+
+/// Parse the byte-pinned Lean descriptor into an [`EffectVmDescriptor2`]. The aggregation
+/// prover/verifier route through `descriptor_ir2::{prove,verify}_vm_descriptor2` against THIS
+/// descriptor — no Rust-authored constraint semantics (law #1). Fail-closed on any parse error
+/// (the pinned bytes are the Lean golden; a divergence is a hard refusal, never a warning).
+pub fn bilateral_aggregation_descriptor() -> crate::descriptor_ir2::EffectVmDescriptor2 {
+    crate::descriptor_ir2::parse_vm_descriptor2(BILATERAL_AGGREGATION_DESCRIPTOR_JSON)
+        .expect("pinned bilateral-aggregation descriptor JSON must parse (Lean golden)")
+}
+
+// ===========================================================================
+// The DECOUPLED v2 trace + outer-PI layout (Lean `Agg.*` / `Sched.*` / `OuterPi.*`).
+//
+// The descriptor's main trace carries a STANDALONE 49-felt bilateral-schedule block (no v1
+// `effect_vm::pi` dependency), the 35 prover-derived `expected_*` columns, and 3 accumulators.
+// These mirror `EffectVmEmitBilateralAgg.lean` 1:1 (pinned by the Lean `#guard`s + the Rust
+// `agg_v2_layout_matches_lean` tooth). The aggregation reads the schedule block independently
+// of the rotated effect-vm 38-PI.
+// ===========================================================================
+
+pub mod sched {
+    //! The decoupled bilateral-schedule inner-row block (Lean `Sched.*`), offsets LOCAL to the
+    //! aggregation main trace. The rotated witnessed-receipt carries this exact field order.
+    /// 4-felt turn hash.
+    pub const TURN_HASH_BASE: usize = 0;
+    pub const TURN_HASH_LEN: usize = 4;
+    /// 4-felt global effects hash.
+    pub const EFFECTS_HASH_GLOBAL_BASE: usize = 4;
+    pub const EFFECTS_HASH_GLOBAL_LEN: usize = 4;
+    /// Actor nonce (1 felt).
+    pub const ACTOR_NONCE: usize = 8;
+    /// 4-felt previous-receipt hash.
+    pub const PREVIOUS_RECEIPT_HASH_BASE: usize = 9;
+    pub const PREVIOUS_RECEIPT_HASH_LEN: usize = 4;
+    /// 7 bilateral counts.
+    pub const COUNTS_BASE: usize = 13;
+    pub const COUNTS_LEN: usize = 7;
+    /// 7 × 4-felt bilateral roots.
+    pub const ROOTS_BASE: usize = 20;
+    pub const ROOTS_LEN: usize = 28;
+    /// Agent-cell boolean (1 felt).
+    pub const IS_AGENT_CELL: usize = 48;
+    /// The schedule contract width (the standalone block the WR carries).
+    pub const WIDTH: usize = 49;
+}
+
+/// The COMPACTED (v3) aggregation main trace: schedule block + accumulators (Lean `AggC.*`,
+/// `BilateralAggregationCompact.lean`). The v2 `expected_counts`/`expected_roots` self-check block
+/// is DELETED (it was prover-filled on both sides — a tautology pinning nothing), so the three
+/// accumulators sit directly after the 49-felt schedule block (width 52, was 87).
+pub mod agg {
+    use super::sched;
+    /// The schedule block occupies `[0, Sched::WIDTH)`.
+    pub const SCHED_BASE: usize = 0;
+    /// Running cumulative of `IS_AGENT_CELL` (was col 84 in v2; the 35 expected cols are gone).
+    pub const IS_AGENT_CUMULATIVE_COL: usize = sched::WIDTH;
+    /// Per-row "this row's checks passed" boolean (was col 85).
+    pub const CONSISTENT_INDICATOR_COL: usize = IS_AGENT_CUMULATIVE_COL + 1;
+    /// Running active-row counter (was col 86).
+    pub const N_CELLS_ACTIVE_COL: usize = CONSISTENT_INDICATOR_COL + 1;
+    /// Total main width: 49 + 3 = 52 (was 87).
+    pub const WIDTH: usize = N_CELLS_ACTIVE_COL + 1;
+    /// Absolute column of a schedule field.
+    pub const fn sch_col(off: usize) -> usize {
+        SCHED_BASE + off
+    }
+}
+
+/// The aggregation outer public-input layout (Lean `OuterPi.*`; fixed width, independent of N).
+pub mod outer_pi_v2 {
+    pub const TURN_HASH_BASE: usize = 0;
+    pub const TURN_HASH_LEN: usize = 4;
+    pub const EFFECTS_HASH_GLOBAL_BASE: usize = 4;
+    pub const EFFECTS_HASH_GLOBAL_LEN: usize = 4;
+    pub const ACTOR_NONCE: usize = 8;
+    pub const PREVIOUS_RECEIPT_HASH_BASE: usize = 9;
+    pub const PREVIOUS_RECEIPT_HASH_LEN: usize = 4;
+    pub const AGENT_CELL_ID_BASE: usize = 13;
+    pub const AGENT_CELL_ID_LEN: usize = 8;
+    pub const N_CELLS: usize = 21;
+    pub const BILATERAL_CONSISTENT: usize = 22;
+    /// Outer PI count (fixed at 23).
+    pub const COUNT: usize = 23;
+}
+
+/// The v1 PI offsets of the bilateral-schedule contract — the 49-felt window
+/// `[TURN_HASH_BASE, +49)` inside the legacy `effect_vm::pi` vector that the decoupled `sched`
+/// block re-bases to 0. The WR carries the schedule independently; this is the ONE coupling to
+/// the v1 PI module, retired when the WR is restructured to emit `sched` natively (see
+/// `schedule_block_from_inner_pi`).
+///
+/// ⚑ **THIS COUPLING IS WHY THE 2026-08-07 PI COMPACTION STOPPED AT SEVEN SLOTS.** A prior lane
+/// read `EFFECTS_HASH_GLOBAL`'s zero pin-count in the two rotation registries as "nothing reads
+/// it" and priced deleting it — but it is `sched::EFFECTS_HASH_GLOBAL`, felts 4..7 of THIS
+/// window, forced by four `window_gate` transitions and pinned first+last in the emitted
+/// `dregg-bilateral-aggregation-v3`. The seven slots that WERE removed (the old v1 26..32) sat
+/// entirely BELOW this base, so the window slid down by 7 still contiguous and the contract was
+/// unharmed. `docs/PI-DISPOSITION.md` §6; `scripts/pi_disposition_census.py` now goes red if
+/// this projection stops holding.
+pub const SCHEDULE_PI_BASE: usize = inner_pi::TURN_HASH_BASE; // == 26 (was 33 pre-compaction)
+
+/// Extract the 49-felt decoupled schedule block from a per-cell inner-PI vector. The block is
+/// `inner_pi[SCHEDULE_PI_BASE .. SCHEDULE_PI_BASE + sched::WIDTH)` — a pure projection (the
+/// fields are contiguous in the v1 layout: turn-id 13 · counts 7 · roots 28 · is_agent 1). A
+/// restructured rotated WR carries this block directly; until then the bundle derives it here.
+pub fn schedule_block_from_inner_pi(inner_pi_vec: &[BabyBear]) -> [BabyBear; sched::WIDTH] {
+    let mut block = [BabyBear::ZERO; sched::WIDTH];
+    for (i, slot) in block.iter_mut().enumerate() {
+        *slot = inner_pi_vec[SCHEDULE_PI_BASE + i];
+    }
+    block
+}
+
+// ---------------------------------------------------------------------------
+// Outer-AIR column layout
+// ---------------------------------------------------------------------------
+
+/// Width of the inner PI buffer columns. Equal to the active per-cell PI v3
+/// fixed count (`inner_pi::ACTIVE_BASE_COUNT`). We lift the entire vector into
+/// the trace so every CG-2/CG-3 constraint is a simple column equality.
+pub const PI_BUFFER_WIDTH: usize = inner_pi::ACTIVE_BASE_COUNT;
+
+/// Offset of the inner PI buffer (column 0).
+pub const PI_BUFFER_BASE: usize = 0;
+
+/// Offset and width of the per-row expected counts block (7 felts).
+pub const EXPECTED_COUNTS_BASE: usize = PI_BUFFER_BASE + PI_BUFFER_WIDTH;
+pub const EXPECTED_COUNTS_WIDTH: usize = 7;
+
+/// Offset and width of the per-row expected roots block (7 × 4 = 28 felts).
+pub const EXPECTED_ROOTS_BASE: usize = EXPECTED_COUNTS_BASE + EXPECTED_COUNTS_WIDTH;
+pub const EXPECTED_ROOTS_WIDTH: usize = 7 * 4;
+
+/// Running cumulative of `IS_AGENT_CELL` (single felt).
+pub const IS_AGENT_CUMULATIVE_COL: usize = EXPECTED_ROOTS_BASE + EXPECTED_ROOTS_WIDTH;
+
+/// Per-row "this row's checks passed" boolean (single felt). Set to 1 by
+/// the prover when the row corresponds to an actual inner proof and its
+/// counts/roots/identity all match. Padding rows carry 0.
+pub const CONSISTENT_INDICATOR_COL: usize = IS_AGENT_CUMULATIVE_COL + 1;
+
+/// Running active-row counter (single felt). Padding rows do not increment.
+pub const N_CELLS_ACTIVE_COL: usize = CONSISTENT_INDICATOR_COL + 1;
+
+/// Total per-row width.
+pub const AGG_WIDTH: usize = N_CELLS_ACTIVE_COL + 1;
+
+// ---------------------------------------------------------------------------
+// Outer-AIR public-input layout
+// ---------------------------------------------------------------------------
+
+/// Outer PI: 4-felt turn hash.
+pub const OUTER_TURN_HASH_BASE: usize = 0;
+pub const OUTER_TURN_HASH_LEN: usize = 4;
+
+/// Outer PI: 4-felt global effects hash.
+pub const OUTER_EFFECTS_HASH_GLOBAL_BASE: usize = OUTER_TURN_HASH_BASE + OUTER_TURN_HASH_LEN;
+pub const OUTER_EFFECTS_HASH_GLOBAL_LEN: usize = 4;
+
+/// Outer PI: actor nonce (single felt; matches the inner per-cell layout).
+pub const OUTER_ACTOR_NONCE: usize = OUTER_EFFECTS_HASH_GLOBAL_BASE + OUTER_EFFECTS_HASH_GLOBAL_LEN;
+
+/// Outer PI: 4-felt previous-receipt hash.
+pub const OUTER_PREVIOUS_RECEIPT_HASH_BASE: usize = OUTER_ACTOR_NONCE + 1;
+pub const OUTER_PREVIOUS_RECEIPT_HASH_LEN: usize = 4;
+
+/// Outer PI: agent-cell id (8-felt canonical decomposition). The aggregation
+/// verifier cross-checks this against the active row whose IS_AGENT_CELL is 1.
+pub const OUTER_AGENT_CELL_ID_BASE: usize =
+    OUTER_PREVIOUS_RECEIPT_HASH_BASE + OUTER_PREVIOUS_RECEIPT_HASH_LEN;
+pub const OUTER_AGENT_CELL_ID_LEN: usize = 8;
+
+/// Outer PI: number of active inner proofs in the bundle (single felt). The
+/// AIR uses this only to constrain that the last active row's
+/// `is_agent_cumulative == 1`; it does *not* gate constraints inside the
+/// trace by index (Plonky3 doesn't support that pattern cleanly). Padding
+/// rows are required to set IS_AGENT_CELL=0 and contribute zero to the
+/// cumulative.
+pub const OUTER_N_CELLS: usize = OUTER_AGENT_CELL_ID_BASE + OUTER_AGENT_CELL_ID_LEN;
+
+/// Outer PI: bilateral-consistent flag (single felt; must be 1).
+pub const OUTER_BILATERAL_CONSISTENT: usize = OUTER_N_CELLS + 1;
+
+/// Outer PI base count.
+pub const OUTER_BASE_COUNT: usize = OUTER_BILATERAL_CONSISTENT + 1;
+
+// ---------------------------------------------------------------------------
+// Witness construction
+// ---------------------------------------------------------------------------
+
+pub struct AggregationOuterPi {
+    pub turn_hash: [BabyBear; 4],
+    pub effects_hash_global: [BabyBear; 4],
+    pub actor_nonce: BabyBear,
+    pub previous_receipt_hash: [BabyBear; 4],
+    pub agent_cell_id: [BabyBear; 8],
+    pub n_cells: u32,
+    pub bilateral_consistent: BabyBear,
+}
+
+impl AggregationOuterPi {
+    /// Project to the flat outer-PI vector consumed by the AIR.
+    pub fn to_vec(&self) -> Vec<BabyBear> {
+        let mut pi = vec![BabyBear::ZERO; OUTER_BASE_COUNT];
+        pi[OUTER_TURN_HASH_BASE..OUTER_TURN_HASH_BASE + OUTER_TURN_HASH_LEN]
+            .copy_from_slice(&self.turn_hash[..OUTER_TURN_HASH_LEN]);
+        pi[OUTER_EFFECTS_HASH_GLOBAL_BASE
+            ..OUTER_EFFECTS_HASH_GLOBAL_BASE + OUTER_EFFECTS_HASH_GLOBAL_LEN]
+            .copy_from_slice(&self.effects_hash_global[..OUTER_EFFECTS_HASH_GLOBAL_LEN]);
+        pi[OUTER_ACTOR_NONCE] = self.actor_nonce;
+        pi[OUTER_PREVIOUS_RECEIPT_HASH_BASE
+            ..OUTER_PREVIOUS_RECEIPT_HASH_BASE + OUTER_PREVIOUS_RECEIPT_HASH_LEN]
+            .copy_from_slice(&self.previous_receipt_hash[..OUTER_PREVIOUS_RECEIPT_HASH_LEN]);
+        pi[OUTER_AGENT_CELL_ID_BASE..OUTER_AGENT_CELL_ID_BASE + OUTER_AGENT_CELL_ID_LEN]
+            .copy_from_slice(&self.agent_cell_id[..OUTER_AGENT_CELL_ID_LEN]);
+        pi[OUTER_N_CELLS] = BabyBear::new(self.n_cells);
+        pi[OUTER_BILATERAL_CONSISTENT] = self.bilateral_consistent;
+        pi
+    }
+}
+
+pub struct AggregationInnerRowV2 {
+    /// The decoupled bilateral-schedule block (`Sched::WIDTH` felts; see
+    /// [`schedule_block_from_inner_pi`]). The v2 `expected_counts`/`expected_roots` fields are
+    /// GONE in the compacted v3 layout — the self-check they fed was a prover-filled tautology
+    /// (see [`BILATERAL_AGGREGATION_DESCRIPTOR_JSON`]); the schedule's counts/roots are bound to
+    /// the canonical Turn OFF-AIR by the aggregate verifier.
+    pub schedule: [BabyBear; sched::WIDTH],
+}
+
+/// Build the DECOUPLED v3 aggregation trace (width [`agg::WIDTH`] = 52) from an ordered list of
+/// inner rows. Row layout mirrors Lean `AggC.*`: schedule block `[0, 49)`, `is_agent_cumulative`
+/// 49, `consistent_indicator` 50, `n_cells_active` 51. Active rows carry `consistent = 1`; padding
+/// rows (to the next power of two) carry `0` and forward the cumulatives + the turn-identity slots.
+/// The identity mirror on padding rows is LOAD-BEARING in v3: the identity-carry window gates fire
+/// on the padding transitions too, so a padding row that did not mirror the turn identity would
+/// break the carry chain (in v2 it only satisfied the last-row `pi_binding`).
+pub fn build_aggregation_trace_v2(rows: &[AggregationInnerRowV2]) -> Vec<Vec<BabyBear>> {
+    assert!(!rows.is_empty(), "aggregation needs at least one inner row");
+    let n_active = rows.len();
+    let n_padded = n_active.max(2).next_power_of_two();
+
+    let mut trace: Vec<Vec<BabyBear>> = Vec::with_capacity(n_padded);
+    let mut cum_agent: u32 = 0;
+    let mut n_cells_active: u32 = 0;
+
+    for row in rows {
+        let mut t = vec![BabyBear::ZERO; agg::WIDTH];
+        for (j, &v) in row.schedule.iter().enumerate() {
+            t[agg::sch_col(j)] = v;
+        }
+        let is_agent_u = row.schedule[sched::IS_AGENT_CELL].as_u32();
+        cum_agent += is_agent_u;
+        n_cells_active += 1;
+        t[agg::IS_AGENT_CUMULATIVE_COL] = BabyBear::new(cum_agent);
+        t[agg::CONSISTENT_INDICATOR_COL] = BabyBear::new(1);
+        t[agg::N_CELLS_ACTIVE_COL] = BabyBear::new(n_cells_active);
+        trace.push(t);
+    }
+
+    // Padding rows: cumulative + n_cells_active carry forward; the turn-identity schedule fields
+    // mirror the first active row so the identity-carry window gates hold across the padding
+    // transitions (and the last-row CG-2 `pi_binding` is satisfied).
+    while trace.len() < n_padded {
+        let mut t = vec![BabyBear::ZERO; agg::WIDTH];
+        t[agg::IS_AGENT_CUMULATIVE_COL] = BabyBear::new(cum_agent);
+        t[agg::N_CELLS_ACTIVE_COL] = BabyBear::new(n_cells_active);
+        if let Some(first) = rows.first() {
+            for i in 0..sched::TURN_HASH_LEN {
+                t[agg::sch_col(sched::TURN_HASH_BASE + i)] =
+                    first.schedule[sched::TURN_HASH_BASE + i];
+            }
+            for i in 0..sched::EFFECTS_HASH_GLOBAL_LEN {
+                t[agg::sch_col(sched::EFFECTS_HASH_GLOBAL_BASE + i)] =
+                    first.schedule[sched::EFFECTS_HASH_GLOBAL_BASE + i];
+            }
+            t[agg::sch_col(sched::ACTOR_NONCE)] = first.schedule[sched::ACTOR_NONCE];
+            for i in 0..sched::PREVIOUS_RECEIPT_HASH_LEN {
+                t[agg::sch_col(sched::PREVIOUS_RECEIPT_HASH_BASE + i)] =
+                    first.schedule[sched::PREVIOUS_RECEIPT_HASH_BASE + i];
+            }
+        }
+        trace.push(t);
+    }
+
+    trace
+}
+
+/// Prove the DECOUPLED bilateral aggregation through the Lean-emitted descriptor (law #1): the
+/// 52-col trace satisfies `bilateral_aggregation_descriptor()` against the 23-felt outer PI,
+/// via the multi-table batch prover. No tables/memory/maps are committed (the descriptor is
+/// pure row-window arithmetic). The caller serialises the returned `Ir2BatchProof` with
+/// `postcard`, exactly as the rotated effect-vm leg does.
+pub fn prove_aggregation_v2(
+    trace: &[Vec<BabyBear>],
+    outer_pi: &[BabyBear],
+) -> Result<crate::descriptor_ir2::Ir2BatchProof<crate::descriptor_ir2::DreggStarkConfig>, String> {
+    let desc = bilateral_aggregation_descriptor();
+    crate::descriptor_ir2::prove_vm_descriptor2(
+        &desc,
+        trace,
+        outer_pi,
+        &crate::descriptor_ir2::MemBoundaryWitness::default(),
+        &[],
+    )
+}
+
+/// Verify a DECOUPLED bilateral aggregation proof against the Lean descriptor + the 23-felt
+/// outer PI. Prover-free (`verifier` feature). Fail-closed on verify error.
+pub fn verify_aggregation_v2(
+    proof: &crate::descriptor_ir2::Ir2BatchProof<crate::descriptor_ir2::DreggStarkConfig>,
+    outer_pi: &[BabyBear],
+) -> Result<(), String> {
+    let desc = bilateral_aggregation_descriptor();
+    crate::descriptor_ir2::verify_vm_descriptor2(&desc, proof, outer_pi)
+}
+
+// ---------------------------------------------------------------------------
+// Lean-emitted descriptors (law #1) for the two bilateral-aggregation LEGS:
+// the CROSS-SIDE EXISTENCE (CG-5) and BUNDLE-TREE FOLD AIRs. These retire the
+// hand-authored `CrossSideExistenceAir`/`BundleTreeFoldAir` `StarkAir` impls on
+// the live path (the hand-AIRs remain only as the layout-of-record + trace
+// builders + tests until the C7 deletion). Each is a PROVED `EffectVmDescriptor2`
+// (`Dregg2/Circuit/Emit/EffectVmEmit{CrossSide,BundleFold}.lean`).
+// ---------------------------------------------------------------------------
+
+/// The byte-pinned Lean emission of the cross-side-existence descriptor
+/// (`emitVmJson2 crossSideDescriptor`). Width 8, no public inputs, a single Poseidon2 chip table:
+/// the fingerprint `edge_fp = Poseidon2(edge_id)` is now a REAL in-circuit chip lookup (the
+/// hand-AIR never constrained it), the balance prefix-sum is the `windowGate` two-row primitive,
+/// and `balance[last] == 0` is the missing-peer boundary. Re-emit via
+/// `lake env lean --run EmitBilateralLegs.lean`; the shape is pinned by
+/// `cross_side_descriptor_parses_with_lean_pinned_shape`.
+pub const CROSS_SIDE_EXISTENCE_DESCRIPTOR_JSON: &str =
+    include_str!("../descriptors/dregg-cross-side-existence-v2.json");
+
+/// The cross-side descriptor's wire identity (matches `crossSideDescriptor.name`).
+pub const CROSS_SIDE_EXISTENCE_DESCRIPTOR_NAME: &str = "dregg-cross-side-existence-v2";
+
+/// Parse the byte-pinned Lean cross-side descriptor. Fail-closed on parse error (the pinned bytes
+/// are the Lean golden; a divergence is a hard refusal).
+pub fn cross_side_existence_descriptor() -> crate::descriptor_ir2::EffectVmDescriptor2 {
+    crate::descriptor_ir2::parse_vm_descriptor2(CROSS_SIDE_EXISTENCE_DESCRIPTOR_JSON)
+        .expect("pinned cross-side-existence descriptor JSON must parse (Lean golden)")
+}
+
+/// The byte-pinned Lean emission of the bundle-tree-fold descriptor
+/// (`emitVmJson2 bundleFoldDescriptor`). Width 3, public inputs `[initial, final]`, a single
+/// Poseidon2 chip table: the compress `acc_out = Poseidon2(acc_in, digest)` is now a REAL
+/// in-circuit chip lookup (RETIRING the hand-AIR's named residual that left the row-internal
+/// Poseidon relation to the verifier's chain recompute), with chain continuity as the `windowGate`
+/// primitive and the first/last accumulator pins as `pi_binding`s. Re-emit via
+/// `lake env lean --run EmitBilateralLegs.lean`; shape pinned by
+/// `bundle_fold_descriptor_parses_with_lean_pinned_shape`.
+pub const BUNDLE_TREE_FOLD_DESCRIPTOR_JSON: &str =
+    include_str!("../descriptors/dregg-bundle-tree-fold-v2.json");
+
+/// The bundle-fold descriptor's wire identity (matches `bundleFoldDescriptor.name`).
+pub const BUNDLE_TREE_FOLD_DESCRIPTOR_NAME: &str = "dregg-bundle-tree-fold-v2";
+
+/// Parse the byte-pinned Lean bundle-fold descriptor. Fail-closed on parse error.
+pub fn bundle_tree_fold_descriptor() -> crate::descriptor_ir2::EffectVmDescriptor2 {
+    crate::descriptor_ir2::parse_vm_descriptor2(BUNDLE_TREE_FOLD_DESCRIPTOR_JSON)
+        .expect("pinned bundle-tree-fold descriptor JSON must parse (Lean golden)")
+}
+
+/// Prove the cross-side-existence balance through the Lean-emitted descriptor (law #1): the 9-col
+/// `build_cross_side_trace_v2` output satisfies `cross_side_existence_descriptor()` against the
+/// `[commit_seed, edge_commit]` PI, via the multi-table batch STARK (the Poseidon2 chip table
+/// commits both the fingerprints AND the rolling edge-sequence commitment). No Rust-authored
+/// constraint semantics: every gate + the balance/commit `windowGate`s + the two chip lookups come
+/// from the verified Lean module. The `pi` binds the proven trace to the canonical edge sequence
+/// (the IR-v2 analog of the hand-AIR's `recompute_trace_commitment`).
+pub fn prove_cross_side_existence_v2(
+    trace: &[Vec<BabyBear>],
+    pi: &[BabyBear],
+) -> Result<crate::descriptor_ir2::Ir2BatchProof<crate::descriptor_ir2::DreggStarkConfig>, String> {
+    let desc = cross_side_existence_descriptor();
+    crate::descriptor_ir2::prove_vm_descriptor2(
+        &desc,
+        trace,
+        pi,
+        &crate::descriptor_ir2::MemBoundaryWitness::default(),
+        &[],
+    )
+}
+
+/// Verify a cross-side-existence proof against the Lean descriptor + the `[commit_seed,
+/// edge_commit]` PI. Prover-free.
+pub fn verify_cross_side_existence_v2(
+    proof: &crate::descriptor_ir2::Ir2BatchProof<crate::descriptor_ir2::DreggStarkConfig>,
+    pi: &[BabyBear],
+) -> Result<(), String> {
+    let desc = cross_side_existence_descriptor();
+    crate::descriptor_ir2::verify_vm_descriptor2(&desc, proof, pi)
+}
+
+/// Prove the bundle-tree fold through the Lean-emitted descriptor (law #1): the 3-col
+/// `build_tree_fold_trace` output satisfies `bundle_tree_fold_descriptor()` against the
+/// `[initial, final]` PI, via the multi-table batch STARK (the chip table commits the compress
+/// chain). No Rust-authored constraint semantics.
+pub fn prove_tree_fold_v2(
+    trace: &[Vec<BabyBear>],
+    pi: &[BabyBear],
+) -> Result<crate::descriptor_ir2::Ir2BatchProof<crate::descriptor_ir2::DreggStarkConfig>, String> {
+    let desc = bundle_tree_fold_descriptor();
+    crate::descriptor_ir2::prove_vm_descriptor2(
+        &desc,
+        trace,
+        pi,
+        &crate::descriptor_ir2::MemBoundaryWitness::default(),
+        &[],
+    )
+}
+
+/// Verify a bundle-tree-fold proof against the Lean descriptor + the `[initial, final]` PI.
+/// Prover-free.
+pub fn verify_tree_fold_v2(
+    proof: &crate::descriptor_ir2::Ir2BatchProof<crate::descriptor_ir2::DreggStarkConfig>,
+    pi: &[BabyBear],
+) -> Result<(), String> {
+    let desc = bundle_tree_fold_descriptor();
+    crate::descriptor_ir2::verify_vm_descriptor2(&desc, proof, pi)
+}
+
+// ===========================================================================
+// CG-5 IN-CIRCUIT — cross-side existence as an algebraic balance AIR
+// ===========================================================================
+//
+// The original CG-5 ("every outgoing edge has its matching incoming peer in
+// the bundle") was a Rust precondition (`verify_bilateral_chain`'s HashSet
+// existence loop). This AIR makes it an *algebraic* constraint.
+//
+// ## The argument
+//
+// Walk every directed bilateral edge the canonical Turn schedule predicts
+// (transfers + grants; introduces are handled as their pairwise role edges).
+// For each edge `e = (from, to)` with canonical, direction-independent id
+// `edge_id` we conceptually emit two half-edges:
+//
+//   * an OUTGOING half claimed by `from` (sign = +1)
+//   * an INCOMING half claimed by `to`   (sign = -1)
+//
+// A half-edge is *materialised as a trace row only if its self-cell is a
+// participant in the bundle*. The AIR maintains a running balance
+//
+//   balance[i] = balance[i-1] + sign[i] * edge_fp[i]
+//
+// where `edge_fp = Poseidon2(edge_id)` is a collision-resistant fingerprint
+// of the canonical (direction-independent) edge id. The boundary constraint
+// pins `balance[last] == 0`.
+//
+// ### Why sum-to-zero ⟺ no missing peer (soundness)
+//
+// If every edge that touches the bundle has BOTH endpoints in the bundle,
+// then each `edge_fp` appears once with +1 and once with -1: every term
+// cancels and the balance is 0. If some edge has exactly one endpoint in the
+// bundle (the "missing peer" attack the brief flags), that edge contributes a
+// single, uncancelled `± edge_fp` term. For the balance to still be 0, that
+// surviving term must be cancelled by another edge's term — i.e. two distinct
+// canonical edge ids must collide under Poseidon2 (`edge_fp_a == edge_fp_b`,
+// `id_a != id_b`), or the prover must fabricate an `edge_id`/`sign` that
+// disagrees with the canonical schedule.
+//
+// The first — collision of two distinct canonical edge ids under `edge_fp` — is
+// NOT ~124-bit hard here: `edge_fp` is a SINGLE BabyBear image (one 31-bit felt),
+// so its collision resistance is only ~31-bit (birthday ~2^15.5). The in-circuit
+// balance == 0 boundary therefore is NOT, on its own, a cryptographic missing-peer
+// detector. The REAL closure is OFF-AIR (the "second" clause below): the verifier
+// re-derives the *exact* multiset of canonical half-edges (id, sign, self-in-bundle)
+// from the Turn and requires the proof-bound trace rows to equal it. So a malicious
+// prover cannot drop a half-edge, flip a sign, or invent an edge id — an
+// uncancelled term cannot be papered over by a felt-collision because the trace
+// multiset is pinned to the canonical schedule. (To make the in-circuit balance
+// itself a cryptographic detector, `edge_fp` would need widening to 4 felts; the
+// off-AIR multiset re-derivation is what closes it today.)
+//
+// This is a genuine in-circuit replacement for the Rust existence loop: the
+// uncancelled-term detection is performed by the STARK over the committed
+// trace (FRI + boundary opening) BOUND to the off-AIR canonical multiset, not by
+// a Rust `HashSet` alone.
+//
+// ## Trace layout (`CSE_WIDTH` columns)
+//
+// ```text
+//   [0..4)  edge_id           — canonical direction-independent 4-felt id
+//   [4]     edge_fp           — Poseidon2(edge_id) fingerprint
+//   [5]     sign              — +1 (outgoing) or p-1 (== -1, incoming)
+//   [6]     present           — 1 for a real half-edge row, 0 for padding
+//   [7]     balance           — running balance prefix sum (this row inclusive)
+// ```
+//
+// Public inputs: none required for the algebraic core; the boundary pins
+// `balance[last] == 0`. The verifier separately binds the trace to the Turn.
+
+/// CG-5 trace column: canonical 4-felt edge id, base offset.
+pub const CSE_EDGE_ID_BASE: usize = 0;
+pub const CSE_EDGE_ID_LEN: usize = 4;
+/// CG-5 trace column: Poseidon2 fingerprint of the edge id.
+pub const CSE_EDGE_FP_COL: usize = CSE_EDGE_ID_BASE + CSE_EDGE_ID_LEN;
+/// CG-5 trace column: edge direction sign (+1 outgoing / -1 incoming).
+pub const CSE_SIGN_COL: usize = CSE_EDGE_FP_COL + 1;
+/// CG-5 trace column: 1 for a real half-edge row, 0 for padding.
+pub const CSE_PRESENT_COL: usize = CSE_SIGN_COL + 1;
+/// CG-5 trace column: running balance prefix sum (this row inclusive).
+pub const CSE_BALANCE_COL: usize = CSE_PRESENT_COL + 1;
+/// CG-5 total trace width.
+pub const CSE_WIDTH: usize = CSE_BALANCE_COL + 1;
+
+/// Cross-side existence balance AIR (in-circuit CG-5). See module section.
+#[derive(Clone, Debug)]
+pub struct CrossSideExistenceAir;
+
+impl CrossSideExistenceAir {
+    pub const WIDTH: usize = CSE_WIDTH;
+    pub const AIR_NAME: &'static str = "dregg-cross-side-existence-v1";
+
+    /// Compute the per-edge fingerprint from a canonical 4-felt edge id.
+    /// Direction-independent: both half-edges of the same canonical edge
+    /// share this value, so a matched pair cancels in the balance.
+    pub fn edge_fingerprint(edge_id: &[BabyBear; 4]) -> BabyBear {
+        crate::poseidon2::hash_4_to_1(edge_id)
+    }
+}
+
+#[cfg(feature = "plonky3")]
+impl<F: PrimeCharacteristicRing + Sync> BaseAir<F> for CrossSideExistenceAir {
+    fn width(&self) -> usize {
+        Self::WIDTH
+    }
+
+    fn num_public_values(&self) -> usize {
+        0
+    }
+
+    fn main_next_row_columns(&self) -> Vec<usize> {
+        vec![
+            CSE_BALANCE_COL,
+            CSE_SIGN_COL,
+            CSE_EDGE_FP_COL,
+            CSE_PRESENT_COL,
+        ]
+    }
+}
+
+#[cfg(feature = "plonky3")]
+impl<AB: AirBuilder> Air<AB> for CrossSideExistenceAir {
+    fn eval(&self, builder: &mut AB) {
+        let main = builder.main();
+        let local = main.current_slice();
+        let next = main.next_slice();
+
+        let one = AB::Expr::ONE;
+        let present: AB::Expr = local[CSE_PRESENT_COL].into();
+        let sign: AB::Expr = local[CSE_SIGN_COL].into();
+        let fp: AB::Expr = local[CSE_EDGE_FP_COL].into();
+        let balance: AB::Expr = local[CSE_BALANCE_COL].into();
+
+        // present ∈ {0,1}.
+        builder.assert_zero(present.clone() * (present.clone() - one.clone()));
+        // sign ∈ {+1,-1}: (sign-1)(sign+1) == sign^2 - 1 == 0 on present rows.
+        // On padding rows we force sign == 0 so the contribution vanishes.
+        // We express: present*(sign^2 - 1) == 0  AND  (1-present)*sign == 0.
+        builder.assert_zero(present.clone() * (sign.clone() * sign.clone() - one.clone()));
+        builder.assert_zero((one.clone() - present.clone()) * sign.clone());
+        // Padding rows contribute nothing: (1-present)*fp == 0 is NOT required
+        // (fp can be anything on padding), because the contribution is
+        // sign*fp and sign==0 on padding. But to keep padding canonical we
+        // also pin fp==0 on padding for a clean witness.
+        builder.assert_zero((one.clone() - present.clone()) * fp.clone());
+
+        // Balance prefix sum:
+        //   balance[0]    == sign[0]*fp[0]              (first row seed)
+        //   balance[i+1]  == balance[i] + sign[i+1]*fp[i+1]
+        builder
+            .when_first_row()
+            .assert_zero(balance.clone() - sign.clone() * fp.clone());
+
+        let bal_next: AB::Expr = next[CSE_BALANCE_COL].into();
+        let sign_next: AB::Expr = next[CSE_SIGN_COL].into();
+        let fp_next: AB::Expr = next[CSE_EDGE_FP_COL].into();
+        builder
+            .when_transition()
+            .assert_zero(bal_next - (balance.clone() + sign_next * fp_next));
+
+        // Boundary: the whole bundle balances — every present half-edge's
+        // contribution cancels. Uncancelled (missing-peer) edges break this.
+        builder.when_last_row().assert_zero(balance);
+    }
+}
+
+/// One materialised half-edge row for the cross-side existence AIR.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct CrossSideHalfEdge {
+    /// Canonical, direction-independent 4-felt edge id.
+    pub edge_id: [BabyBear; 4],
+    /// `true` = outgoing (sign +1), `false` = incoming (sign -1).
+    pub outgoing: bool,
+}
+
+/// Build the cross-side existence trace from an ordered list of half-edge
+/// rows. Pads to the next power of two with `present = 0` rows that carry the
+/// balance forward. Active rows compute `edge_fp = Poseidon2(edge_id)` and the
+/// running balance.
+pub fn build_cross_side_trace(half_edges: &[CrossSideHalfEdge]) -> Vec<Vec<BabyBear>> {
+    let n_active = half_edges.len();
+    let n_padded = n_active.max(2).next_power_of_two();
+    let mut trace: Vec<Vec<BabyBear>> = Vec::with_capacity(n_padded);
+
+    let mut balance = BabyBear::ZERO;
+    for he in half_edges {
+        let fp = CrossSideExistenceAir::edge_fingerprint(&he.edge_id);
+        let sign = if he.outgoing {
+            BabyBear::ONE
+        } else {
+            // p - 1 == -1 in BabyBear.
+            BabyBear::ZERO - BabyBear::ONE
+        };
+        balance += sign * fp;
+        let mut row = vec![BabyBear::ZERO; CSE_WIDTH];
+        row[CSE_EDGE_ID_BASE..CSE_EDGE_ID_BASE + 4].copy_from_slice(&he.edge_id);
+        row[CSE_EDGE_FP_COL] = fp;
+        row[CSE_SIGN_COL] = sign;
+        row[CSE_PRESENT_COL] = BabyBear::ONE;
+        row[CSE_BALANCE_COL] = balance;
+        trace.push(row);
+    }
+
+    // Padding: present=0, sign=0, fp=0, balance carries forward.
+    while trace.len() < n_padded {
+        let mut row = vec![BabyBear::ZERO; CSE_WIDTH];
+        row[CSE_BALANCE_COL] = balance;
+        trace.push(row);
+    }
+
+    trace
+}
+
+// ---------------------------------------------------------------------------
+// The DECOUPLED v2 cross-side trace (the LEAN-emitted descriptor layout, law #1).
+//
+// Adds the edge-sequence COMMITMENT columns the IR-v2 binding needs (see
+// `EffectVmEmitCrossSide.lean` §"The trace↔proof binding"): a rolling
+// `commit[i] = Poseidon2(commit_in[i], edge_fp[i])` whose final value is a public
+// input the off-AIR verifier re-derives from the canonical Turn edges. The
+// fingerprint AND the commitment are REAL chip lookups (the hand-AIR constrained
+// neither in-circuit; it bound the whole trace via `recompute_trace_commitment`).
+// ---------------------------------------------------------------------------
+
+/// CG-5 v2 trace column: canonical 4-felt edge id (`Cse.EDGE_ID_BASE`).
+pub const CSE2_EDGE_ID_BASE: usize = 0;
+/// CG-5 v2 trace column: Poseidon2 fingerprint of the edge id.
+pub const CSE2_EDGE_FP_COL: usize = CSE2_EDGE_ID_BASE + 4;
+/// CG-5 v2 trace column: edge direction sign (+1 / -1).
+pub const CSE2_SIGN_COL: usize = CSE2_EDGE_FP_COL + 1;
+/// CG-5 v2 trace column: 1 for a real half-edge, 0 for padding.
+pub const CSE2_PRESENT_COL: usize = CSE2_SIGN_COL + 1;
+/// CG-5 v2 trace column: running balance prefix sum.
+pub const CSE2_BALANCE_COL: usize = CSE2_PRESENT_COL + 1;
+/// CG-5 v2 trace column: rolling edge-sequence commitment BEFORE this row (= prev `commit`).
+pub const CSE2_COMMIT_IN_COL: usize = CSE2_BALANCE_COL + 1;
+/// CG-5 v2 trace column: rolling edge-sequence commitment AFTER absorbing this row's fingerprint.
+pub const CSE2_COMMIT_COL: usize = CSE2_COMMIT_IN_COL + 1;
+/// Phase B-GATE: the fingerprint absorb's 7 exposed lanes 1..7 (`Cse.FP_LANE1_COL`).
+pub const CSE2_FP_LANE1_COL: usize = CSE2_COMMIT_COL + 1;
+/// Phase B-GATE: the commitment absorb's 7 exposed lanes 1..7 (`Cse.COMMIT_LANE1_COL`).
+pub const CSE2_COMMIT_LANE1_COL: usize =
+    CSE2_FP_LANE1_COL + (crate::descriptor_ir2::CHIP_OUT_LANES - 1);
+/// CG-5 v2 total trace width (mirrors `Cse.WIDTH = 24`): chain cols + 2·7 chip lane cols.
+pub const CSE2_WIDTH: usize = CSE2_COMMIT_LANE1_COL + (crate::descriptor_ir2::CHIP_OUT_LANES - 1);
+
+/// CG-5 v2 public input: the commitment seed (`commit_in[0]`, fixed at 0).
+pub const CSE2_PI_COMMIT_SEED: usize = 0;
+/// CG-5 v2 public input: the final edge-sequence commitment (`commit[last]`).
+pub const CSE2_PI_EDGE_COMMIT: usize = 1;
+/// CG-5 v2 public input count (mirrors `Cse.PI_COUNT = 2`).
+pub const CSE2_PI_COUNT: usize = 2;
+
+/// Build the DECOUPLED v2 cross-side trace (width [`CSE2_WIDTH`] = 9) from an ordered list of
+/// half-edge rows, returning `(trace, public_inputs)`. The rolling commitment
+/// `commit[i] = Poseidon2(commit_in[i], edge_fp[i])` (seed 0) binds the ORDERED edge-fingerprint
+/// sequence; its final value is `pi[CSE2_PI_EDGE_COMMIT]`. Padding rows carry the GENUINE
+/// `edge_fp = Poseidon2(0,0,0,0)` and continue the commitment chain (so both chip lookups hold on
+/// every row), with `present = sign = 0` so the balance is untouched. The off-AIR verifier
+/// re-derives the identical `(trace, pi)` from the canonical Turn edges.
+/// Phase B-GATE: fill a cross-side row's chip lane columns. The fingerprint absorb is arity-4 over
+/// the 4-felt edge id; the commitment absorb is arity-2 over `[commit_in, fp]`. Lanes 1..7 are the
+/// genuine permutation lanes (`chip_absorb_lanes`), so both 17-wide chip lookups match.
+fn cse2_fill_lanes(
+    row: &mut [BabyBear],
+    edge_id: &[BabyBear; 4],
+    commit_in: BabyBear,
+    fp: BabyBear,
+) {
+    let fp_lanes = crate::descriptor_ir2::chip_absorb_lanes(4, edge_id);
+    let commit_lanes = crate::descriptor_ir2::chip_absorb_lanes(2, &[commit_in, fp]);
+    let n = crate::descriptor_ir2::CHIP_OUT_LANES - 1;
+    row[CSE2_FP_LANE1_COL..CSE2_FP_LANE1_COL + n].copy_from_slice(&fp_lanes);
+    row[CSE2_COMMIT_LANE1_COL..CSE2_COMMIT_LANE1_COL + n].copy_from_slice(&commit_lanes);
+}
+
+pub fn build_cross_side_trace_v2(
+    half_edges: &[CrossSideHalfEdge],
+) -> (Vec<Vec<BabyBear>>, Vec<BabyBear>) {
+    let n_active = half_edges.len();
+    let n_padded = n_active.max(2).next_power_of_two();
+    let mut trace: Vec<Vec<BabyBear>> = Vec::with_capacity(n_padded);
+
+    let mut balance = BabyBear::ZERO;
+    let mut commit = BabyBear::ZERO; // the seed (== pi[CSE2_PI_COMMIT_SEED]).
+
+    for he in half_edges {
+        let fp = CrossSideExistenceAir::edge_fingerprint(&he.edge_id);
+        let sign = if he.outgoing {
+            BabyBear::ONE
+        } else {
+            BabyBear::ZERO - BabyBear::ONE
+        };
+        balance += sign * fp;
+        let commit_in = commit;
+        let commit_out = crate::poseidon2::hash_2_to_1(commit_in, fp);
+        commit = commit_out;
+        let mut row = vec![BabyBear::ZERO; CSE2_WIDTH];
+        row[CSE2_EDGE_ID_BASE..CSE2_EDGE_ID_BASE + 4].copy_from_slice(&he.edge_id);
+        row[CSE2_EDGE_FP_COL] = fp;
+        row[CSE2_SIGN_COL] = sign;
+        row[CSE2_PRESENT_COL] = BabyBear::ONE;
+        row[CSE2_BALANCE_COL] = balance;
+        row[CSE2_COMMIT_IN_COL] = commit_in;
+        row[CSE2_COMMIT_COL] = commit_out;
+        cse2_fill_lanes(&mut row, &he.edge_id, commit_in, fp);
+        trace.push(row);
+    }
+
+    // Padding: present=0, sign=0, balance carries forward; the fingerprint of the all-zero edge id
+    // and the commitment chain continue (so both chip lookups hold on padding rows too).
+    while trace.len() < n_padded {
+        let edge_id = [BabyBear::ZERO; 4];
+        let fp = CrossSideExistenceAir::edge_fingerprint(&edge_id);
+        let commit_in = commit;
+        let commit_out = crate::poseidon2::hash_2_to_1(commit_in, fp);
+        commit = commit_out;
+        let mut row = vec![BabyBear::ZERO; CSE2_WIDTH];
+        row[CSE2_EDGE_FP_COL] = fp;
+        row[CSE2_BALANCE_COL] = balance;
+        row[CSE2_COMMIT_IN_COL] = commit_in;
+        row[CSE2_COMMIT_COL] = commit_out;
+        cse2_fill_lanes(&mut row, &edge_id, commit_in, fp);
+        trace.push(row);
+    }
+
+    let pi = vec![BabyBear::ZERO, commit];
+    (trace, pi)
+}
+
+// ===========================================================================
+// PROOF-OF-PROOFS / TREE FOLD — BundleTreeFoldAir
+// ===========================================================================
+//
+// The original aggregator produced a single, flat outer proof over one Turn's
+// per-cell proofs. This AIR adds the recursive layer the brief asks for: an
+// outer attestation over a *tree of child AggregatedBundles*. Each child
+// bundle is reduced to a fixed digest (a Poseidon2 hash of its outer PI), and
+// the fold AIR commits a hash chain over those digests:
+//
+//   acc[0]    = digest[0]
+//   acc[i+1]  = Poseidon2( acc[i], digest[i+1] )   (2-to-1 compress)
+//
+// The final accumulator is the outer attestation's public input. Verifying
+// the fold proof is O(1) in the number of children (the headline recursion
+// win). The verifier separately re-checks each child bundle classically and
+// recomputes the expected accumulator, so the fold proof binds the exact set
+// of children it claims.
+//
+// ## Trace layout (`FOLD_WIDTH` columns)
+//
+// ```text
+//   [0]  acc_in    — chain accumulator before absorbing this child
+//   [1]  digest    — this child's bundle digest
+//   [2]  acc_out   — Poseidon2(acc_in, digest)  (this row's chain output)
+// ```
+//
+// Public inputs: `[initial_acc (==0 or digest[0] seed), final_acc]`.
+
+/// Tree-fold trace column: incoming chain accumulator.
+pub const FOLD_ACC_IN_COL: usize = 0;
+/// Tree-fold trace column: this child's bundle digest.
+pub const FOLD_DIGEST_COL: usize = 1;
+/// Tree-fold trace column: outgoing chain accumulator (acc_in ⊕ digest).
+pub const FOLD_ACC_OUT_COL: usize = 2;
+/// Phase B-GATE: the compress absorb's 7 exposed lanes 1..7 (`Fold.LANE1_COL = 3`).
+pub const FOLD_LANE1_COL: usize = 3;
+/// Tree-fold total trace width: 3 chain cols + 7 chip lane cols (`Fold.WIDTH = 10`).
+pub const FOLD_WIDTH: usize = 3 + (crate::descriptor_ir2::CHIP_OUT_LANES - 1);
+
+/// Tree-fold public input: initial accumulator (seed).
+pub const FOLD_PI_INITIAL: usize = 0;
+/// Tree-fold public input: final accumulator (the outer attestation).
+pub const FOLD_PI_FINAL: usize = 1;
+/// Tree-fold public input count.
+pub const FOLD_PI_COUNT: usize = 2;
+
+/// Bundle-tree fold AIR (proof-of-proofs over child AggregatedBundles).
+#[derive(Clone, Debug)]
+pub struct BundleTreeFoldAir;
+
+impl BundleTreeFoldAir {
+    pub const WIDTH: usize = FOLD_WIDTH;
+    pub const PUBLIC_INPUTS: usize = FOLD_PI_COUNT;
+    pub const AIR_NAME: &'static str = "dregg-bundle-tree-fold-v1";
+
+    /// Compress two chain elements into one (2-to-1 Poseidon2). The chain
+    /// step the AIR's row-internal constraint mirrors.
+    pub fn compress(acc: BabyBear, digest: BabyBear) -> BabyBear {
+        crate::poseidon2::hash_2_to_1(acc, digest)
+    }
+}
+
+#[cfg(feature = "plonky3")]
+impl<F: PrimeCharacteristicRing + Sync> BaseAir<F> for BundleTreeFoldAir {
+    fn width(&self) -> usize {
+        Self::WIDTH
+    }
+
+    fn num_public_values(&self) -> usize {
+        Self::PUBLIC_INPUTS
+    }
+
+    fn main_next_row_columns(&self) -> Vec<usize> {
+        vec![FOLD_ACC_IN_COL]
+    }
+}
+
+#[cfg(feature = "plonky3")]
+impl<AB: AirBuilder> Air<AB> for BundleTreeFoldAir {
+    fn eval(&self, builder: &mut AB) {
+        let main = builder.main();
+        let local = main.current_slice();
+        let next = main.next_slice();
+
+        let acc_in: AB::Expr = local[FOLD_ACC_IN_COL].into();
+        let acc_out: AB::Expr = local[FOLD_ACC_OUT_COL].into();
+        let next_acc_in: AB::Expr = next[FOLD_ACC_IN_COL].into();
+
+        let pv = builder.public_values();
+        let pv_initial: AB::Expr = pv[FOLD_PI_INITIAL].into();
+        let pv_final: AB::Expr = pv[FOLD_PI_FINAL].into();
+
+        // First row: acc_in == initial accumulator (public input).
+        builder.when_first_row().assert_zero(acc_in - pv_initial);
+        // Last row: acc_out == final accumulator (public input).
+        builder
+            .when_last_row()
+            .assert_zero(acc_out.clone() - pv_final);
+        // Chain continuity: acc_out[i] == acc_in[i+1].
+        builder.when_transition().assert_zero(acc_out - next_acc_in);
+        // NOTE: the row-internal Poseidon2 relation acc_out ==
+        // compress(acc_in, digest) is enforced cryptographically by the
+        // verifier recomputing the chain (custom-STARK has no in-AIR
+        // Poseidon gadget). See the StarkAir impl docs for the residual.
+    }
+}
+
+/// Build the tree-fold trace from an ordered list of child bundle digests.
+/// Pads to the next power of two by continuing the compress chain over a
+/// zero digest (so padding rows still satisfy continuity + the row-internal
+/// compress relation the verifier recomputes). Returns `(trace, public_inputs)`.
+/// Phase B-GATE: fill a tree-fold row's chip lane columns from the arity-2 compress absorb of
+/// `[acc_in, digest]` — lanes 1..7 are the genuine permutation lanes so the 17-wide chip matches.
+fn fold_fill_lanes(row: &mut [BabyBear], acc_in: BabyBear, digest: BabyBear) {
+    let lanes = crate::descriptor_ir2::chip_absorb_lanes(2, &[acc_in, digest]);
+    let n = crate::descriptor_ir2::CHIP_OUT_LANES - 1;
+    row[FOLD_LANE1_COL..FOLD_LANE1_COL + n].copy_from_slice(&lanes);
+}
+
+pub fn build_tree_fold_trace(child_digests: &[BabyBear]) -> (Vec<Vec<BabyBear>>, Vec<BabyBear>) {
+    assert!(
+        !child_digests.is_empty(),
+        "tree fold needs at least one child digest"
+    );
+    let n = child_digests.len();
+    let n_padded = n.max(2).next_power_of_two();
+    let mut trace: Vec<Vec<BabyBear>> = Vec::with_capacity(n_padded);
+
+    // Seed the chain with the first digest, then compress subsequent ones.
+    let initial = child_digests[0];
+    let mut acc = initial;
+    for &digest in child_digests.iter() {
+        let acc_in = acc;
+        // Uniform recurrence: acc_out = compress(acc_in, digest). For the
+        // seed row acc_in == digest[0], so the first child is double-folded;
+        // this is deterministic and collision-resistant (Poseidon2), and the
+        // verifier recomputes the identical chain.
+        let acc_out = BundleTreeFoldAir::compress(acc_in, digest);
+        let mut row = vec![BabyBear::ZERO; FOLD_WIDTH];
+        row[FOLD_ACC_IN_COL] = acc_in;
+        row[FOLD_DIGEST_COL] = digest;
+        row[FOLD_ACC_OUT_COL] = acc_out;
+        fold_fill_lanes(&mut row, acc_in, digest);
+        trace.push(row);
+        acc = acc_out;
+    }
+    // Padding rows: continue the chain over zero digests.
+    while trace.len() < n_padded {
+        let acc_in = acc;
+        let acc_out = BundleTreeFoldAir::compress(acc_in, BabyBear::ZERO);
+        let mut row = vec![BabyBear::ZERO; FOLD_WIDTH];
+        row[FOLD_ACC_IN_COL] = acc_in;
+        row[FOLD_DIGEST_COL] = BabyBear::ZERO;
+        row[FOLD_ACC_OUT_COL] = acc_out;
+        fold_fill_lanes(&mut row, acc_in, BabyBear::ZERO);
+        trace.push(row);
+        acc = acc_out;
+    }
+
+    let final_acc = trace.last().unwrap()[FOLD_ACC_OUT_COL];
+    let public_inputs = vec![initial, final_acc];
+    (trace, public_inputs)
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The byte-pinned descriptor parses and carries the Lean-pinned COMPACTED (v3) shape
+    /// (`#guard`s in `BilateralAggregationCompact.lean`): width 52, PI 23, 48 constraints, EXACTLY
+    /// 15 window gates (13 identity-carry + 2 cumulative), name `dregg-bilateral-aggregation-v3`.
+    /// This is the law-#1 tooth — the Rust aggregation reads ONLY this descriptor; a drift from the
+    /// Lean golden is a hard failure.
+    #[test]
+    fn bilateral_descriptor_parses_with_lean_pinned_shape() {
+        use crate::descriptor_ir2::VmConstraint2;
+        let d = bilateral_aggregation_descriptor();
+        assert_eq!(d.name, BILATERAL_AGGREGATION_DESCRIPTOR_NAME);
+        assert_eq!(d.trace_width, agg::WIDTH);
+        assert_eq!(d.trace_width, 52);
+        assert_eq!(d.public_input_count, outer_pi_v2::COUNT);
+        assert_eq!(d.public_input_count, 23);
+        assert!(
+            d.tables.is_empty(),
+            "pure row-window AIR: no committed tables"
+        );
+        assert_eq!(
+            d.constraints.len(),
+            48,
+            "the Lean #guard pins 48 constraints (v2's 70, minus the 35 CG-3 self-checks, plus 13 \
+             identity-carry gates)"
+        );
+        let window_gates = d
+            .constraints
+            .iter()
+            .filter(|c| matches!(c, VmConstraint2::WindowGate(_)))
+            .count();
+        assert_eq!(
+            window_gates, 15,
+            "13 identity-carry + 2 cumulative-sum window gates"
+        );
+    }
+
+    /// ⚑ **THE `canonical_32_to_felts_4` CENSUS FOR THIS AIR — MEASURED ON THE EMITTED BYTES, AND
+    /// THE DETECTOR THAT KEEPS IT MEASURED.**
+    ///
+    /// `2fd097812` closed a live soundness hole whose root cause was a census that *asserted*
+    /// instead of measuring: `6441705e8` rewrote `dregg_commit::typed::canonical_32_to_felts_4`
+    /// and reasoned in its own commit body that the fold was "off-AIR — measured, not assumed",
+    /// missing `TurnExecutor::pubkey_to_witness_key_commit`, which IS that function and IS on-AIR.
+    /// `turn/src/bilateral_schedule.rs` calls the same fold in eight places feeding THIS AIR, and
+    /// the closing lane named that as an unchased residual. This test is the measurement.
+    ///
+    /// **Frame: the descriptor's column indices ARE the authoring `Sched.*`/`AggC.*` frame.**
+    /// Lean's `Agg.schCol off = Agg.SCHED_BASE + off` with `SCHED_BASE = 0`, so `sch_col` is the
+    /// identity — there is no compaction offset here, unlike the sovereign VM descriptor whose
+    /// emitted key-commit columns are `BEFORE_BASE + B_PUBKEY_OCTET − 90` rather than the
+    /// authoring frame. Every number below is a raw column of `dregg-bilateral-aggregation-v3`.
+    ///
+    /// **The measurement (bytes at `PROVENANCE.json` sha
+    /// `a7feccb16138895df5e05a967c0caa7d3f97a07a138914bbc780a37bf8051ec7`):** the descriptor
+    /// declares **zero tables** and carries **zero `Lookup` constraints**, so it has no Poseidon2
+    /// chip and cannot recompute any fold in-circuit. Its 48 constraints read exactly the columns
+    /// `0..=12` (the turn-identity slots — 27 `pi_binding`s + 13 identity-carry `window_gate`s) and
+    /// `48..=51` (the agent bool + the three accumulators). **Columns 13..=47 — the seven
+    /// `Sched::COUNTS` and the seven 4-felt `Sched::ROOTS`, which is where every
+    /// `canonical_32_to_felts_4` output on this path lands — are read by NO constraint at all.**
+    ///
+    /// So the answer to "recompute or consume?" is neither: the AIR does not even *read* the
+    /// fold's image. Producer/verifier agreement is therefore the whole closure, and it holds by
+    /// construction — both halves are the same function
+    /// (`ExpectedBilateral::roots_for`, one implementation, one `dregg_commit::typed` import): the
+    /// producer at `bilateral_schedule::schedule_block_for_cell`, the verifier at
+    /// `TurnExecutor::verify_bilateral_bundle_with_schedule`. There is no second spelling to drift.
+    ///
+    /// ⚑ **This test is the detector, not the note.** It fails on any constraint kind other than
+    /// the four this AIR uses, so landing a chip lookup that recomputes the fold in-circuit makes
+    /// it RED and forces the next lane to re-derive the census rather than inherit a stale
+    /// "off-AIR" claim. A documented wound is not a detected one.
+    /// Collect every trace column read by any constraint of a parsed descriptor. Returns
+    /// `Err(kind)` on a constraint kind this AIR does not carry today — a `Lookup` (an in-circuit
+    /// Poseidon2), a `MemOp`, a `ChalGate`, anything. The caller treats that as the census going
+    /// stale, because it IS: the shape of an in-circuit recompute arriving.
+    fn columns_read_by(
+        d: &crate::descriptor_ir2::EffectVmDescriptor2,
+    ) -> Result<Vec<usize>, String> {
+        use crate::descriptor_ir2::{VmConstraint2, WindowExpr};
+        use crate::lean_descriptor_air::{LeanExpr, VmConstraint};
+
+        fn lean_cols(e: &LeanExpr, out: &mut Vec<usize>) {
+            match e {
+                LeanExpr::Var(c) => out.push(*c),
+                LeanExpr::Const(_) => {}
+                LeanExpr::Add(l, r) | LeanExpr::Mul(l, r) => {
+                    lean_cols(l, out);
+                    lean_cols(r, out);
+                }
+            }
+        }
+        fn window_cols(e: &WindowExpr, out: &mut Vec<usize>) {
+            match e {
+                WindowExpr::Loc(c) | WindowExpr::Nxt(c) => out.push(*c),
+                WindowExpr::Const(_) => {}
+                WindowExpr::Add(l, r) | WindowExpr::Mul(l, r) => {
+                    window_cols(l, out);
+                    window_cols(r, out);
+                }
+            }
+        }
+
+        let mut read: Vec<usize> = Vec::new();
+        for c in &d.constraints {
+            match c {
+                VmConstraint2::Base(VmConstraint::Gate(body))
+                | VmConstraint2::Base(VmConstraint::Boundary { body, .. }) => {
+                    lean_cols(body, &mut read)
+                }
+                VmConstraint2::Base(VmConstraint::PiBinding { col, .. }) => read.push(*col),
+                VmConstraint2::Base(VmConstraint::Transition { hi, lo }) => {
+                    read.push(*hi);
+                    read.push(*lo);
+                }
+                VmConstraint2::WindowGate(w) => window_cols(&w.body, &mut read),
+                other => return Err(format!("{other:?}")),
+            }
+        }
+        read.sort_unstable();
+        read.dedup();
+        Ok(read)
+    }
+
+    #[test]
+    fn bilateral_descriptor_reads_no_counts_or_roots_column_so_the_fold_is_off_air() {
+        let d = bilateral_aggregation_descriptor();
+
+        // No chip, no table: the AIR has no means to hash in-circuit at all.
+        assert!(
+            d.tables.is_empty(),
+            "a declared table is the shape an in-circuit Poseidon2 recompute would arrive in — \
+             re-derive the fold census before changing this"
+        );
+
+        let read = columns_read_by(&d).unwrap_or_else(|kind| {
+            panic!(
+                "dregg-bilateral-aggregation-v3 grew a constraint kind it did not have when the \
+                 `canonical_32_to_felts_4` fold was measured OFF-AIR for this member ({kind}). A \
+                 `Lookup` here is an in-circuit hash: the in-circuit recipe would then be a FOURTH \
+                 spelling of a denotation that already cost one live soundness hole \
+                 (`2fd097812`). Re-derive the census against the producer \
+                 (`bilateral_schedule::roots_for`) and the verifier \
+                 (`verify_bilateral_bundle_with_schedule`) before relaxing this."
+            )
+        });
+
+        let expected: Vec<usize> = (0..sched::COUNTS_BASE)
+            .chain(sched::IS_AGENT_CELL..agg::WIDTH)
+            .collect();
+        assert_eq!(
+            read, expected,
+            "the emitted constraints must read ONLY the 13 turn-identity slots and the agent \
+             bool + 3 accumulators"
+        );
+
+        // The load-bearing half, stated as its own assertion so the failure names the wound:
+        // every `canonical_32_to_felts_4` image on this path lands in [COUNTS_BASE, IS_AGENT_CELL).
+        for col in sched::COUNTS_BASE..sched::IS_AGENT_CELL {
+            assert!(
+                !read.contains(&col),
+                "column {col} carries a `Sched` count/root — the image of \
+                 `dregg_commit::typed::canonical_32_to_felts_4` folded through \
+                 `bilateral_schedule::fold_entry`. A constraint reading it makes the fold ON-AIR \
+                 for this member, and the in-circuit recipe must then be checked against the \
+                 producer and the verifier."
+            );
+        }
+        assert_eq!(
+            sched::IS_AGENT_CELL - sched::COUNTS_BASE,
+            sched::COUNTS_LEN + sched::ROOTS_LEN,
+            "the unread window is exactly counts ++ roots"
+        );
+    }
+
+    /// ⚑ **THE CENSUS ABOVE, PROVED REFUTABLE** — the floor must be satisfiable and refutable but
+    /// not provable. `2fd097812`'s sibling lesson (`minted-a-falsifier-that-stopped-falsifying`) is
+    /// that an adversary built by string surgery can quietly become a no-op while the gate stays
+    /// green, so this mutation is asserted to have HAPPENED before its verdict is read: the
+    /// mutated descriptor must parse, must carry exactly one more constraint, and only then is its
+    /// column census required to differ.
+    ///
+    /// The mutation is the minimal shape an in-circuit recompute would take on the way in: one
+    /// extra gate reading `Sched::ROOTS_BASE` — the first felt of `outgoing_transfer_root`, an
+    /// image of `canonical_32_to_felts_4` via `fold_entry`. Note this runs entirely on a STRING
+    /// built in-test; the checked-in descriptor bytes are never touched, so no concurrent lane can
+    /// compile through a mutated tree (the red-proof-scaffold hazard).
+    #[test]
+    fn the_counts_and_roots_census_goes_red_when_a_constraint_reads_a_root_column() {
+        let honest = bilateral_aggregation_descriptor();
+        let honest_read = columns_read_by(&honest).expect("the honest descriptor censuses cleanly");
+        assert!(
+            !honest_read.contains(&sched::ROOTS_BASE),
+            "precondition: the honest descriptor does not read the first root column"
+        );
+
+        // Splice one extra gate reading col ROOTS_BASE into the emitted constraint list.
+        let injected = format!(
+            r#",{{"t":"gate","body":{{"t":"var","v":{}}}}}],"hash_sites""#,
+            sched::ROOTS_BASE
+        );
+        let mutated_json =
+            BILATERAL_AGGREGATION_DESCRIPTOR_JSON.replace(r#"],"hash_sites""#, &injected);
+        assert_ne!(
+            mutated_json, BILATERAL_AGGREGATION_DESCRIPTOR_JSON,
+            "the mutation must actually have been applied — a `replace` of a pattern that has left \
+             the emitted bytes is how a falsifier stops falsifying"
+        );
+
+        let mutated = crate::descriptor_ir2::parse_vm_descriptor2(&mutated_json)
+            .expect("the mutated descriptor must still PARSE, or the adversary is a parse error");
+        assert_eq!(
+            mutated.constraints.len(),
+            honest.constraints.len() + 1,
+            "the mutation must add exactly one constraint"
+        );
+
+        let mutated_read =
+            columns_read_by(&mutated).expect("the injected gate is a kind the census walks");
+        assert!(
+            mutated_read.contains(&sched::ROOTS_BASE),
+            "THE CENSUS IS BLIND: a gate reading the first root column did not show up in the \
+             column census, so the off-AIR verdict for `canonical_32_to_felts_4` rests on a check \
+             that cannot go red"
+        );
+        assert_ne!(
+            mutated_read, honest_read,
+            "the honest and mutated censuses must differ, or the detector pins nothing"
+        );
+    }
+
+    /// The same detector, exercised against the shape an in-circuit Poseidon2 ACTUALLY arrives in:
+    /// a `Lookup` constraint. `columns_read_by` must REFUSE (not silently skip) — a census that
+    /// walked past an unknown kind would report "no root column read" while the fold was being
+    /// recomputed in-circuit beside it. The cross-side descriptor is the in-tree witness that this
+    /// kind is real and reachable: it carries two chip lookups today.
+    #[test]
+    fn the_census_refuses_a_lookup_rather_than_walking_past_it() {
+        let with_chip = cross_side_existence_descriptor();
+        assert!(
+            with_chip
+                .constraints
+                .iter()
+                .any(|c| matches!(c, crate::descriptor_ir2::VmConstraint2::Lookup(_))),
+            "precondition: the cross-side descriptor really does carry a chip lookup"
+        );
+        assert!(
+            columns_read_by(&with_chip).is_err(),
+            "the census must REFUSE a descriptor carrying an in-circuit hash, never walk past it"
+        );
+    }
+
+    /// The cross-side-existence (CG-5) descriptor parses with the Lean-pinned shape
+    /// (`EffectVmEmitCrossSide.lean` `#guard`s): width 10, 2 PI (commit seed + edge commitment),
+    /// ONE Poseidon2 chip table, 11 constraints, EXACTLY two window gates (balance + commit
+    /// continuity) + two chip lookups (the arity-4 fingerprint + the arity-2 commitment), name
+    /// `dregg-cross-side-existence-v2`. Law-#1 tooth: the Rust CG-5 leg reads ONLY this descriptor.
+    #[test]
+    fn cross_side_descriptor_parses_with_lean_pinned_shape() {
+        use crate::descriptor_ir2::{TableSem, VmConstraint2};
+        let d = cross_side_existence_descriptor();
+        assert_eq!(d.name, CROSS_SIDE_EXISTENCE_DESCRIPTOR_NAME);
+        assert_eq!(d.trace_width, CSE2_WIDTH);
+        assert_eq!(
+            d.trace_width, 24,
+            "Phase B-GATE: 10 chain cols + 2·7 chip lane cols"
+        );
+        assert_eq!(d.public_input_count, CSE2_PI_COUNT);
+        assert_eq!(
+            d.public_input_count, 2,
+            "commit seed + edge-sequence commitment"
+        );
+        assert_eq!(d.tables.len(), 1, "one declared table");
+        assert!(
+            matches!(d.tables[0].sem, TableSem::Poseidon2Chip),
+            "the fingerprint + commitment ride a real Poseidon2 chip table"
+        );
+        assert_eq!(
+            d.constraints.len(),
+            11,
+            "the Lean #guard pins 11 constraints"
+        );
+        let window_gates = d
+            .constraints
+            .iter()
+            .filter(|c| matches!(c, VmConstraint2::WindowGate(_)))
+            .count();
+        assert_eq!(
+            window_gates, 2,
+            "the balance + commitment-continuity window gates"
+        );
+        let chip_lookups = d
+            .constraints
+            .iter()
+            .filter(|c| matches!(c, VmConstraint2::Lookup(_)))
+            .count();
+        assert_eq!(chip_lookups, 2, "the fingerprint + commitment chip lookups");
+    }
+
+    /// The bundle-tree-fold descriptor parses with the Lean-pinned shape
+    /// (`EffectVmEmitBundleFold.lean` `#guard`s): width 3, 2 PI, ONE Poseidon2 chip table, 4
+    /// constraints, EXACTLY one window gate + one (arity-2) chip lookup, name
+    /// `dregg-bundle-tree-fold-v2`. The chip lookup is the in-circuit compress that RETIRES the
+    /// hand-AIR's verifier-side residual.
+    #[test]
+    fn bundle_fold_descriptor_parses_with_lean_pinned_shape() {
+        use crate::descriptor_ir2::{TableSem, VmConstraint2};
+        let d = bundle_tree_fold_descriptor();
+        assert_eq!(d.name, BUNDLE_TREE_FOLD_DESCRIPTOR_NAME);
+        assert_eq!(d.trace_width, FOLD_WIDTH);
+        assert_eq!(
+            d.trace_width, 10,
+            "Phase B-GATE: 3 chain cols + 7 chip lane cols"
+        );
+        assert_eq!(d.public_input_count, FOLD_PI_COUNT);
+        assert_eq!(d.public_input_count, 2);
+        assert_eq!(d.tables.len(), 1, "one declared table");
+        assert!(
+            matches!(d.tables[0].sem, TableSem::Poseidon2Chip),
+            "the compress rides a real Poseidon2 chip table"
+        );
+        assert_eq!(d.constraints.len(), 4, "the Lean #guard pins 4 constraints");
+        let window_gates = d
+            .constraints
+            .iter()
+            .filter(|c| matches!(c, VmConstraint2::WindowGate(_)))
+            .count();
+        assert_eq!(window_gates, 1, "the single chain-continuity window gate");
+        let chip_lookups = d
+            .constraints
+            .iter()
+            .filter(|c| matches!(c, VmConstraint2::Lookup(_)))
+            .count();
+        assert_eq!(chip_lookups, 1, "the single compress chip lookup");
+    }
+
+    /// END-TO-END (law #1): the cross-side balance trace proves + verifies through the LEAN
+    /// descriptor batch prover, and a TAMPERED edge-commitment PI does NOT verify (the
+    /// edge-sequence binding that replaces the hand-AIR's `recompute_trace_commitment`). The
+    /// missing-peer rejection is a property of the (unsatisfiable) unbalanced trace — the
+    /// turn-side `prove_cross_side_existence` pre-flights the balance and returns `Err` BEFORE
+    /// proving (the debug batch prover panics on an unsatisfiable trace), so we assert the
+    /// nonzero-balance property here and leave the UNSAT rejection to the Lean tooth
+    /// `cse_rejects_unbalanced` + the pre-flight.
+    #[test]
+    fn cross_side_descriptor_proves_balanced_rejects_missing_peer() {
+        // Balanced: one edge, both halves present (+fp and -fp cancel).
+        let (balanced, pi) = build_cross_side_trace_v2(&[he(1000, true), he(1000, false)]);
+        assert_eq!(balanced.last().unwrap()[CSE2_BALANCE_COL], BabyBear::ZERO);
+        let proof = prove_cross_side_existence_v2(&balanced, &pi)
+            .expect("balanced cross-side trace must prove through the descriptor");
+        verify_cross_side_existence_v2(&proof, &pi)
+            .expect("balanced cross-side descriptor proof must verify");
+
+        // Tampered edge-commitment PI: the `commit[last] == pi[edge_commit]` boundary fails, so the
+        // same proof no longer verifies — this is the binding to the canonical edge sequence.
+        let mut bad_pi = pi.clone();
+        bad_pi[CSE2_PI_EDGE_COMMIT] = bad_pi[CSE2_PI_EDGE_COMMIT] + BabyBear::ONE;
+        assert!(
+            verify_cross_side_existence_v2(&proof, &bad_pi).is_err(),
+            "tampered edge-commitment PI must reject (the edge-sequence binding)"
+        );
+
+        // Missing peer: the balance is nonzero — the turn-side pre-flight rejects this before
+        // proving (the debug batch prover panics on an unsatisfiable trace). The `balance[last] ==
+        // 0` boundary is the in-circuit detector, proved UNSAT by
+        // `EffectVmEmitCrossSide.cse_rejects_unbalanced`.
+        let (unbalanced, _upi) =
+            build_cross_side_trace_v2(&[he(1000, true), he(2000, true), he(2000, false)]);
+        assert_ne!(
+            unbalanced.last().unwrap()[CSE2_BALANCE_COL],
+            BabyBear::ZERO,
+            "a missing-peer edge leaves a nonzero balance the boundary rejects"
+        );
+    }
+
+    /// END-TO-END (law #1): the tree-fold trace proves + verifies through the LEAN descriptor batch
+    /// prover, and a tampered final-accumulator PI does NOT verify (the `pi_binding` boundary). The
+    /// compress is a REAL chip lookup, strictly stronger than the hand-AIR.
+    #[test]
+    fn tree_fold_descriptor_proves_rejects_tampered_final() {
+        let (trace, pi) = build_tree_fold_trace(&[BabyBear::new(111), BabyBear::new(222)]);
+        let proof =
+            prove_tree_fold_v2(&trace, &pi).expect("tree fold must prove through the descriptor");
+        verify_tree_fold_v2(&proof, &pi).expect("tree fold descriptor proof must verify");
+
+        let mut bad_pi = pi.clone();
+        bad_pi[FOLD_PI_FINAL] = bad_pi[FOLD_PI_FINAL] + BabyBear::ONE;
+        assert!(
+            verify_tree_fold_v2(&proof, &bad_pi).is_err(),
+            "tampered final accumulator must reject"
+        );
+    }
+
+    /// The decoupled `sched` block re-bases the v1 bilateral-schedule PI window `[26, 75)` to 0.
+    /// Pin the contiguity assumption `schedule_block_from_inner_pi` relies on: every schedule
+    /// field sits at `inner_pi::<field> == SCHEDULE_PI_BASE + sched::<field>`.
+    #[test]
+    fn schedule_block_offsets_match_v1_pi_window() {
+        // ⚑ THE ABSOLUTE ANCHOR IS NOT RE-TYPED HERE. This line read `assert_eq!(SCHEDULE_PI_BASE,
+        // 33)` and survived the 2026-08-07 seven-slot compaction as a stale number: the window had
+        // moved to `[26, 75)` and the pin could only go red by hand. It could not have said anything
+        // else either — `SCHEDULE_PI_BASE` IS `inner_pi::TURN_HASH_BASE` by definition, so pinning
+        // it to a literal asserted only that somebody had retyped the number. The absolute pin lives
+        // ONCE, in the module that owns the layout (`effect_vm::pi`'s
+        // `v1_window_covers_the_highest_v1_pin`). What this test checks is the property the
+        // projection actually needs and this literal never did: the 49-felt block is CONTIGUOUS and
+        // lands inside the v1 PI vector.
+        assert_eq!(sched::WIDTH, 49);
+        // Three constants from two modules — a BUILD obligation, and the one
+        // `schedule_block_from_inner_pi` actually relies on. (Its predecessor here was the
+        // `assert_eq!(SCHEDULE_PI_BASE, 33)` the comment above describes; replacing a stale
+        // literal with a live relation is only half the repair if the live relation is still
+        // reported by a test run rather than by the build.)
+        const _: () = assert!(
+            SCHEDULE_PI_BASE + sched::WIDTH <= inner_pi::BASE_COUNT,
+            "the bilateral-schedule window must fit inside the v1 PI vector"
+        );
+        assert_eq!(
+            inner_pi::TURN_HASH_BASE,
+            SCHEDULE_PI_BASE + sched::TURN_HASH_BASE
+        );
+        assert_eq!(
+            inner_pi::EFFECTS_HASH_GLOBAL_BASE,
+            SCHEDULE_PI_BASE + sched::EFFECTS_HASH_GLOBAL_BASE
+        );
+        assert_eq!(inner_pi::ACTOR_NONCE, SCHEDULE_PI_BASE + sched::ACTOR_NONCE);
+        assert_eq!(
+            inner_pi::PREVIOUS_RECEIPT_HASH_BASE,
+            SCHEDULE_PI_BASE + sched::PREVIOUS_RECEIPT_HASH_BASE
+        );
+        assert_eq!(
+            inner_pi::OUTBOUND_TRANSFER_COUNT,
+            SCHEDULE_PI_BASE + sched::COUNTS_BASE
+        );
+        assert_eq!(
+            inner_pi::OUTGOING_TRANSFER_ROOT_BASE,
+            SCHEDULE_PI_BASE + sched::ROOTS_BASE
+        );
+        assert_eq!(
+            inner_pi::IS_AGENT_CELL,
+            SCHEDULE_PI_BASE + sched::IS_AGENT_CELL
+        );
+        // The window is exactly the 49 felts [26, 75) — nothing else lives in it.
+        assert_eq!(SCHEDULE_PI_BASE + sched::WIDTH, inner_pi::IS_AGENT_CELL + 1);
+    }
+
+    // ---- CG-5 cross-side existence AIR ----
+
+    fn he(id: u32, outgoing: bool) -> CrossSideHalfEdge {
+        CrossSideHalfEdge {
+            edge_id: [
+                BabyBear::new(id),
+                BabyBear::new(id + 1),
+                BabyBear::new(id + 2),
+                BabyBear::new(id + 3),
+            ],
+            outgoing,
+        }
+    }
+
+    // The hand-STARK `CrossSideExistenceAir` / `BundleTreeFoldAir` prove/verify tests
+    // (`cross_side_balanced_pair_sums_to_zero_and_proves`, `..._two_edges_both_balanced_proves`,
+    // `cross_side_missing_peer_does_not_balance`, `..._adversary_cannot_forge_zero_balance_boundary`,
+    // `tree_fold_two_children_proves_and_verifies`, `tree_fold_rejects_tampered_final_acc`) are
+    // retired. Their statements are covered — and strengthened (a real compress chip lookup) — by the
+    // descriptor tests `cross_side_descriptor_proves_balanced_rejects_missing_peer` and
+    // `tree_fold_descriptor_proves_rejects_tampered_final` above (through `prove_*_v2` /
+    // `verify_*_v2`), plus `circuit-prove/tests/bilateral_aggregation_{emit_gate,adversarial_audit}.rs`.
+
+    // ---- Tree-fold AIR ----
+
+    #[test]
+    fn tree_fold_distinct_child_sets_give_distinct_accumulators() {
+        let (_, pi_a) = build_tree_fold_trace(&[BabyBear::new(1), BabyBear::new(2)]);
+        let (_, pi_b) = build_tree_fold_trace(&[BabyBear::new(1), BabyBear::new(3)]);
+        assert_ne!(
+            pi_a[FOLD_PI_FINAL], pi_b[FOLD_PI_FINAL],
+            "different child digest sets must fold to different accumulators"
+        );
+    }
+
+    #[test]
+    fn outer_pi_layout_round_trip() {
+        let pi = AggregationOuterPi {
+            turn_hash: [
+                BabyBear::new(1),
+                BabyBear::new(2),
+                BabyBear::new(3),
+                BabyBear::new(4),
+            ],
+            effects_hash_global: [
+                BabyBear::new(5),
+                BabyBear::new(6),
+                BabyBear::new(7),
+                BabyBear::new(8),
+            ],
+            actor_nonce: BabyBear::new(9),
+            previous_receipt_hash: [
+                BabyBear::new(10),
+                BabyBear::new(11),
+                BabyBear::new(12),
+                BabyBear::new(13),
+            ],
+            agent_cell_id: [
+                BabyBear::new(14),
+                BabyBear::new(15),
+                BabyBear::new(16),
+                BabyBear::new(17),
+                BabyBear::new(18),
+                BabyBear::new(19),
+                BabyBear::new(20),
+                BabyBear::new(21),
+            ],
+            n_cells: 3,
+            bilateral_consistent: BabyBear::new(1),
+        };
+        let v = pi.to_vec();
+        assert_eq!(v.len(), OUTER_BASE_COUNT);
+        assert_eq!(v[OUTER_TURN_HASH_BASE].as_u32(), 1);
+        assert_eq!(v[OUTER_EFFECTS_HASH_GLOBAL_BASE].as_u32(), 5);
+        assert_eq!(v[OUTER_ACTOR_NONCE].as_u32(), 9);
+        assert_eq!(v[OUTER_PREVIOUS_RECEIPT_HASH_BASE].as_u32(), 10);
+        assert_eq!(v[OUTER_AGENT_CELL_ID_BASE].as_u32(), 14);
+        assert_eq!(v[OUTER_N_CELLS].as_u32(), 3);
+        assert_eq!(v[OUTER_BILATERAL_CONSISTENT].as_u32(), 1);
+    }
+}
