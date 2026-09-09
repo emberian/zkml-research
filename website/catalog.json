@@ -220,6 +220,38 @@
         109
       ],
       "label": "Completed nonlinear trajectory \u00b7 retained reader and scope"
+    },
+    "kernel_infer": {
+      "path": "research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/README.md",
+      "lines": [
+        1,
+        90
+      ],
+      "label": "Complete nonlinear kernel \u00b7 actual verifier, costs and scope"
+    },
+    "live_proofs": {
+      "path": "research/vfhe_2026_09_08/proved_journal/fast_live_successor/REPORT.md",
+      "lines": [
+        1,
+        26
+      ],
+      "label": "Fresh learning \u00b7 updates and complete class-query proofs"
+    },
+    "live_proofs_scope": {
+      "path": "research/vfhe_2026_09_08/proved_journal/fast_live_successor/REPORT.md",
+      "lines": [
+        73,
+        78
+      ],
+      "label": "Live learner \u00b7 surviving full reader and implementation assumptions"
+    },
+    "writer_obstruction": {
+      "path": "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/INTERACTION.md",
+      "lines": [
+        11,
+        35
+      ],
+      "label": "Rolling bilinear state \u00b7 writer probes and exact readable span"
     }
   },
   "paths": [
@@ -228,7 +260,7 @@
       "number": "01",
       "title": "Proof systems",
       "question": "What does an accepted proof actually establish?",
-      "description": "Follow the soundness assumptions, then inspect the checked compilation and arithmetic ingredients.",
+      "description": "Start with the soundness assumptions, then inspect a complete encrypted kernel computation and its actual verifier.",
       "steps": [
         {
           "label": "Start with the current verdicts",
@@ -239,33 +271,33 @@
           "source": "notes"
         },
         {
-          "label": "Inspect the checked Lean proposal",
-          "source": "formal"
+          "label": "Inspect the complete nonlinear kernel proof",
+          "source": "kernel_infer"
         }
       ],
-      "result": "formal-package"
+      "result": "complete-kernel-infer"
     },
     {
       "id": "encrypted-learning",
       "number": "02",
       "title": "Encrypted learning",
       "question": "Can protected state keep learning?",
-      "description": "Follow the semantic fixture, its exact BFV replay, and the smaller Lean-emitted nonlinear runtime. Keep the longer replay failure in view.",
+      "description": "Follow fresh teaching into proved class answers, then inspect the complete nonlinear kernel. Keep the surviving reader capability visible.",
       "steps": [
         {
           "label": "Understand the semantic study",
           "source": "semantic"
         },
         {
-          "label": "Trace the full BFV integration",
-          "source": "bfv"
+          "label": "Run fresh teaching with proved answers",
+          "source": "live_proofs"
         },
         {
-          "label": "Inspect the emitted nonlinear runtime",
-          "source": "tfhe"
+          "label": "Inspect the full nonlinear kernel",
+          "source": "kernel_infer"
         }
       ],
-      "result": "encrypted-ema"
+      "result": "fresh-proved-learning"
     },
     {
       "id": "mental-autarky",
@@ -283,14 +315,54 @@
           "source": "credentials"
         },
         {
-          "label": "Study a conditional bounded construction",
-          "source": "ladder"
+          "label": "See why the rolling writer candidate fails",
+          "source": "writer_obstruction"
         }
       ],
-      "result": "private-resident"
+      "result": "writer-response-gap"
     }
   ],
   "cards": [
+    {
+      "id": "complete-kernel-infer",
+      "status": "executed",
+      "topic": "proof-systems",
+      "title": "A complete encrypted nonlinear kernel",
+      "metric": "6m 45s",
+      "metric_label": "one captured inference, reusing the completed square proofs",
+      "body": "The packed query multiplication, all ten rotations and reductions, and the nonlinear square reach one joined verifier. All 116 proof checks pass and bind the approved input model, query and public evaluation key to the exact output ciphertext. Fresh verification takes 58 seconds; proofs total 145.6 MB.",
+      "limit": "One saved class kernel, not a full classifier or a from-scratch timing. Public encoding, transforms and the proof backend remain implementation assumptions. Earlier teaching history is unproved and a full BFV reader survives.",
+      "sources": [
+        "kernel_infer"
+      ]
+    },
+    {
+      "id": "fresh-proved-learning",
+      "status": "executed",
+      "topic": "encrypted-learning",
+      "title": "Fresh teaching with proved answers",
+      "metric": "21.20s",
+      "metric_label": "two teachings, two class answers, four fresh proofs",
+      "body": "New text updates two encrypted classes. Each update is proved and committed; both class computations are then proved and verified at the accepted model revision before the first private reads. The resulting scores match their integer references.",
+      "limit": "A small live integration, not an accuracy study. The encoder is plaintext and the recipient retains the full BFV key; the journal does not cryptographically restrict that key.",
+      "sources": [
+        "live_proofs",
+        "live_proofs_scope"
+      ]
+    },
+    {
+      "id": "writer-response-gap",
+      "status": "derived",
+      "topic": "mental-autarky",
+      "title": "Why the next resident needs a different writer capability",
+      "metric": "16 \u2192 576",
+      "metric_label": "readable dimensions in the proposed bilinear continuation",
+      "body": "Cross-input interaction could make hidden state affect future answers. In the inspected construction, however, the surviving writer already contains basis encodings. Combined with the output keys, they reveal all 576 variable semantic coordinates. A public span calculation establishes the consequence.",
+      "limit": "This is a scoped credential and functionality obstruction, not a cryptographic attack execution or an impossibility theorem for private learning. It identifies a design that should change before implementation.",
+      "sources": [
+        "writer_obstruction"
+      ]
+    },
     {
       "id": "semantic-bfv",
       "status": "executed",
