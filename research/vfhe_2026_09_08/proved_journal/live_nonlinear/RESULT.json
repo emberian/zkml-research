@@ -1,0 +1,133 @@
+{
+  "complete_live_flow": true,
+  "fresh_setup": true,
+  "classes": [
+    "card_arrival",
+    "cash_withdrawal_charge"
+  ],
+  "teachings_committed": 2,
+  "accepted_revision": 2,
+  "accepted_model_root": "1c0de7daddd10b302641c9a10bf96d066ec3681a74d15c787fdc499f1aaeea82",
+  "queries": 1,
+  "fresh_update_proofs": 16,
+  "fresh_infer_proofs": 232,
+  "total_fresh_proofs": 248,
+  "reused_proofs": 0,
+  "all_verification_before_private_receive": true,
+  "private_reads": 2,
+  "exact_kernel_comparisons": [
+    {
+      "class": "card_arrival",
+      "expected": {
+        "kernel_values": [
+          169989444,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 169989444
+      },
+      "actual": {
+        "kernel_values": [
+          169989444,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 169989444
+      },
+      "matches": true
+    },
+    {
+      "class": "cash_withdrawal_charge",
+      "expected": {
+        "kernel_values": [
+          221533456,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 221533456
+      },
+      "actual": {
+        "kernel_values": [
+          221533456,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 221533456
+      },
+      "matches": true
+    }
+  ],
+  "prediction": "cash_withdrawal_charge",
+  "expected_arithmetic_prediction": "cash_withdrawal_charge",
+  "intended_label": "cash_withdrawal_charge",
+  "intended_label_matches": true,
+  "encoder_stats": {
+    "model_load_seconds": 0.14436691702576354,
+    "forward_seconds": 0.07099812501110137,
+    "forward_batches": 1,
+    "encoded_texts": 3,
+    "cached_texts": 0,
+    "clipped_coordinates": 0,
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "numpy": "2.4.2"
+  },
+  "public_acceptance_sha256": "89516fd324e7d10b99fb63e2d37d45becfc1f296e0a515edb78c8c7fba0110e7",
+  "elapsed_seconds": 1428.602406333026,
+  "finished_utc": "2026-09-09T00:54:51.375922+00:00",
+  "runtime": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001",
+  "scope": "One fresh two-class nonlinear classification query after actual proved teachings, under public encoder/reader/parser/NTT/journal/backend TCB. Full reader remains; not private resident or utility benchmark. Later teach/query and exact eight-entry FIFO expiry are supported by the same continuing interface, not separately exercised by this minimal run.",
+  "costs": {
+    "claim": "DERIVED from the retained executed process/proof records, with no new cryptographic execution",
+    "outer_elapsed_seconds": 1429.1114335000166,
+    "new_proof_objects": 248,
+    "reused_proofs": 0,
+    "proof_bytes": 304995885,
+    "proving_seconds": 880.312760634,
+    "self_verification_calls": 248,
+    "self_verification_seconds": 28.440527163,
+    "fresh_consumer_verification_calls": 248,
+    "fresh_consumer_seconds": 83.1897784579196,
+    "explicit_verification_calls": 496,
+    "emission_seconds": 269.99882444849936,
+    "peak_prover_rss_bytes": 8975597568,
+    "outer_max_child_rss_bytes": 8975597568,
+    "witness_raw_bytes": 17396072448,
+    "witness_compressed_bytes": 1379378855,
+    "runtime_failures": 0,
+    "retries": 0,
+    "public_phase_complete_utc": "2026-09-09T00:54:51.098852+00:00",
+    "first_receive_started_utc": "2026-09-09T00:54:51.141335+00:00",
+    "first_reader_process_started_utc": "2026-09-09T00:54:51.143531+00:00",
+    "finished_utc": "2026-09-09T00:54:51.791655+00:00"
+  },
+  "executed_result_path": "results/live001/RESULT.json",
+  "executed_result_sha256": "5a6d1e8faa8c21d6daf3717144eaacba04e546ac310126254e4d6b45dc0492de",
+  "costs_path": "results/live001/COSTS.json",
+  "public_acceptance_path": "runtime/live001/queries/query01/public_acceptance.json",
+  "profile_sha256": "86a0ce82266635e7644777e857f436a0f3e5c9fa6d9bbb85f941d98cab344058",
+  "teaching_receipts": {
+    "teach02": "24bc5f020832a34ba7d511c02b35ec2588a973406d7ba5edc9ffc75da8f4adb4",
+    "teach01": "affef7f1a22b6930c7dc22e87dbc765d997da06ff1e0b408ad5be7f6cb09f6d8"
+  }
+}

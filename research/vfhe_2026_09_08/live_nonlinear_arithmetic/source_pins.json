@@ -1,0 +1,63 @@
+{
+  "owned": [
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/live_nonlinear_arithmetic/Compiler/BfvTeachingExhibits.lean",
+        "bytes": 5623,
+        "sha256": "4e5b346aa46d7894ff2067b38af1768d8af8cf8bd2d178d5332b37850242ec5b"
+      },
+      "check": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/live_nonlinear_arithmetic/results/BfvTeachingExhibits_004.json",
+        "bytes": 1707,
+        "sha256": "485076b4b32da948729f5ab8790d4a93caadfe626582e5dad245e8fb55dcc6db"
+      },
+      "retained_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/live_nonlinear_arithmetic/build/Compiler/BfvTeachingExhibits.olean",
+        "bytes": 4800720,
+        "sha256": "a5b8be98c9ce5a272aeb01e6ec7c32fa35684723c27ddb7f902d916f46a3b0d3"
+      }
+    },
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/live_nonlinear_arithmetic/Compiler/BfvTeachingUpdate.lean",
+        "bytes": 7067,
+        "sha256": "dbe563044f644696908efc55e89682e2cab63e1bc5f6c2d9078c73e65bfca158"
+      },
+      "check": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/live_nonlinear_arithmetic/results/BfvTeachingUpdate_004.json",
+        "bytes": 1702,
+        "sha256": "e4465ea753980bab65bedfe5717fd3217208dbc57e89100c73d2fe7d932c2b93"
+      },
+      "retained_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/live_nonlinear_arithmetic/build/Compiler/BfvTeachingUpdate.olean",
+        "bytes": 293384,
+        "sha256": "89bab2d29e9b963cb5e2b87cee782ef2dcf680f9098904e7491cbac134da5b76"
+      }
+    }
+  ],
+  "theorems": 14,
+  "exact_guards": 14,
+  "reused_artifacts": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/live_nonlinear_arithmetic/ARTIFACT_REUSE.json",
+    "bytes": 3471,
+    "sha256": "e0d6a5f22b3e964c7c4718ef6e64ff2cf619fb48935c3081d91e038a8766ddab"
+  },
+  "predecessors": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/source_pins.json",
+      "bytes": 8143,
+      "sha256": "1c59ee77e6284ba46001fcbff896125e522bfaccd72f4838114fd34881798e7c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/SOURCE_MANIFEST.json",
+      "bytes": 9311,
+      "sha256": "6ff5ce283c1bf01c9fbd52cc69ada354db5df4021a1b6f3edfaf18b81c3fb14a"
+    }
+  ],
+  "native_teaching_source": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/crypto/src/main.rs",
+    "bytes": 9647,
+    "sha256": "fcefe3e11749e78771bec25cfeeaf5430a1ab0799ddaf3b09eef2ae2eda0ac47"
+  },
+  "integration_scope": "Two additive Compiler modules importing the frozen full Infer and MAC sources. Root owns cumulative patch/import-only umbrella and boundary check; no old-source rebuild, emitter rerun, new AIR or crypto run in this lane."
+}

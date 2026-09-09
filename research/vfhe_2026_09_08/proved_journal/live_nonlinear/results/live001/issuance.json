@@ -1,0 +1,41 @@
+{
+  "fixture_sha256": "5e69d773daa9576ff1a5fc07102c2e775d584202d6483eb2f26085cf9f1ace4f",
+  "encoder_stats": {
+    "model_load_seconds": 0.14436691702576354,
+    "forward_seconds": 0.07099812501110137,
+    "forward_batches": 1,
+    "encoded_texts": 3,
+    "cached_texts": 0,
+    "clipped_coordinates": 0,
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "numpy": "2.4.2"
+  },
+  "features": [
+    {
+      "id": "teach01",
+      "vector_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/features/teach01.json",
+      "sha256": "2d7889e03aff2acb2d7f9490979ccbcebc1c889a86dc16da223f3bc30bedaadf",
+      "coordinate_max_abs": 17,
+      "norm_squared": 16460
+    },
+    {
+      "id": "teach02",
+      "vector_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/features/teach02.json",
+      "sha256": "1d33c51705a7fb55c9ce3a264f08d84a654532537a207aa5366216b232cefc88",
+      "coordinate_max_abs": 18,
+      "norm_squared": 16405
+    },
+    {
+      "id": "query01",
+      "vector_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001/features/query01.json",
+      "sha256": "05de11b9b1e75d07791b63143f96c48792320e260ad9fe71a991ae1a954a8b45",
+      "coordinate_max_abs": 19,
+      "norm_squared": 16413
+    }
+  ],
+  "plaintext_trusted_issuer": true,
+  "public_fixture_features": true,
+  "new_model_batch_count": 1,
+  "full_reader_key_remains": true
+}

@@ -1,0 +1,352 @@
+{"phase": "teach", "id": "teach01", "class": "card_arrival"}
+{"phase": "update", "chunk": 0, "proof_self_verified": true}
+{"phase": "update", "chunk": 1, "proof_self_verified": true}
+{"phase": "update", "chunk": 2, "proof_self_verified": true}
+{"phase": "update", "chunk": 3, "proof_self_verified": true}
+{"phase": "update", "chunk": 4, "proof_self_verified": true}
+{"phase": "update", "chunk": 5, "proof_self_verified": true}
+{"phase": "update", "chunk": 6, "proof_self_verified": true}
+{"phase": "update", "chunk": 7, "proof_self_verified": true}
+{"phase": "teach", "id": "teach02", "class": "cash_withdrawal_charge"}
+{"phase": "update", "chunk": 0, "proof_self_verified": true}
+{"phase": "update", "chunk": 1, "proof_self_verified": true}
+{"phase": "update", "chunk": 2, "proof_self_verified": true}
+{"phase": "update", "chunk": 3, "proof_self_verified": true}
+{"phase": "update", "chunk": 4, "proof_self_verified": true}
+{"phase": "update", "chunk": 5, "proof_self_verified": true}
+{"phase": "update", "chunk": 6, "proof_self_verified": true}
+{"phase": "update", "chunk": 7, "proof_self_verified": true}
+{"phase": "produce-all-class-kernel-proofs", "request_id": "query01"}
+{"phase": "infer", "chunk": 0, "proof_self_verified": true}
+{"phase": "infer", "chunk": 1, "proof_self_verified": true}
+{"phase": "infer", "chunk": 2, "proof_self_verified": true}
+{"phase": "infer", "chunk": 3, "proof_self_verified": true}
+{"phase": "infer", "chunk": 4, "proof_self_verified": true}
+{"phase": "infer", "chunk": 5, "proof_self_verified": true}
+{"phase": "infer", "chunk": 6, "proof_self_verified": true}
+{"phase": "infer", "chunk": 7, "proof_self_verified": true}
+{"phase": "infer", "chunk": 8, "proof_self_verified": true}
+{"phase": "infer", "chunk": 9, "proof_self_verified": true}
+{"phase": "infer", "chunk": 10, "proof_self_verified": true}
+{"phase": "infer", "chunk": 11, "proof_self_verified": true}
+{"phase": "infer", "chunk": 12, "proof_self_verified": true}
+{"phase": "infer", "chunk": 13, "proof_self_verified": true}
+{"phase": "infer", "chunk": 14, "proof_self_verified": true}
+{"phase": "infer", "chunk": 15, "proof_self_verified": true}
+{"phase": "infer", "chunk": 16, "proof_self_verified": true}
+{"phase": "infer", "chunk": 17, "proof_self_verified": true}
+{"phase": "infer", "chunk": 18, "proof_self_verified": true}
+{"phase": "infer", "chunk": 19, "proof_self_verified": true}
+{"phase": "infer", "chunk": 20, "proof_self_verified": true}
+{"phase": "infer", "chunk": 21, "proof_self_verified": true}
+{"phase": "infer", "chunk": 22, "proof_self_verified": true}
+{"phase": "infer", "chunk": 23, "proof_self_verified": true}
+{"phase": "infer", "chunk": 24, "proof_self_verified": true}
+{"phase": "infer", "chunk": 25, "proof_self_verified": true}
+{"phase": "infer", "chunk": 26, "proof_self_verified": true}
+{"phase": "infer", "chunk": 27, "proof_self_verified": true}
+{"phase": "infer", "chunk": 28, "proof_self_verified": true}
+{"phase": "infer", "chunk": 29, "proof_self_verified": true}
+{"phase": "infer", "chunk": 30, "proof_self_verified": true}
+{"phase": "infer", "chunk": 31, "proof_self_verified": true}
+{"phase": "infer", "chunk": 32, "proof_self_verified": true}
+{"phase": "infer", "chunk": 33, "proof_self_verified": true}
+{"phase": "infer", "chunk": 34, "proof_self_verified": true}
+{"phase": "infer", "chunk": 35, "proof_self_verified": true}
+{"phase": "infer", "chunk": 36, "proof_self_verified": true}
+{"phase": "infer", "chunk": 37, "proof_self_verified": true}
+{"phase": "infer", "chunk": 38, "proof_self_verified": true}
+{"phase": "infer", "chunk": 39, "proof_self_verified": true}
+{"phase": "infer", "chunk": 40, "proof_self_verified": true}
+{"phase": "infer", "chunk": 41, "proof_self_verified": true}
+{"phase": "infer", "chunk": 42, "proof_self_verified": true}
+{"phase": "infer", "chunk": 43, "proof_self_verified": true}
+{"phase": "infer", "chunk": 44, "proof_self_verified": true}
+{"phase": "infer", "chunk": 45, "proof_self_verified": true}
+{"phase": "infer", "chunk": 46, "proof_self_verified": true}
+{"phase": "infer", "chunk": 47, "proof_self_verified": true}
+{"phase": "infer", "chunk": 48, "proof_self_verified": true}
+{"phase": "infer", "chunk": 49, "proof_self_verified": true}
+{"phase": "infer", "chunk": 50, "proof_self_verified": true}
+{"phase": "infer", "chunk": 51, "proof_self_verified": true}
+{"phase": "infer", "chunk": 52, "proof_self_verified": true}
+{"phase": "infer", "chunk": 53, "proof_self_verified": true}
+{"phase": "infer", "chunk": 54, "proof_self_verified": true}
+{"phase": "infer", "chunk": 55, "proof_self_verified": true}
+{"phase": "infer", "chunk": 56, "proof_self_verified": true}
+{"phase": "infer", "chunk": 57, "proof_self_verified": true}
+{"phase": "infer", "chunk": 58, "proof_self_verified": true}
+{"phase": "infer", "chunk": 59, "proof_self_verified": true}
+{"phase": "infer", "chunk": 60, "proof_self_verified": true}
+{"phase": "infer", "chunk": 61, "proof_self_verified": true}
+{"phase": "infer", "chunk": 62, "proof_self_verified": true}
+{"phase": "infer", "chunk": 63, "proof_self_verified": true}
+{"phase": "infer", "chunk": 64, "proof_self_verified": true}
+{"phase": "infer", "chunk": 65, "proof_self_verified": true}
+{"phase": "infer", "chunk": 66, "proof_self_verified": true}
+{"phase": "infer", "chunk": 67, "proof_self_verified": true}
+{"phase": "infer", "chunk": 68, "proof_self_verified": true}
+{"phase": "infer", "chunk": 69, "proof_self_verified": true}
+{"phase": "infer", "chunk": 70, "proof_self_verified": true}
+{"phase": "infer", "chunk": 71, "proof_self_verified": true}
+{"phase": "infer", "chunk": 72, "proof_self_verified": true}
+{"phase": "infer", "chunk": 73, "proof_self_verified": true}
+{"phase": "infer", "chunk": 74, "proof_self_verified": true}
+{"phase": "infer", "chunk": 75, "proof_self_verified": true}
+{"phase": "infer", "chunk": 76, "proof_self_verified": true}
+{"phase": "infer", "chunk": 77, "proof_self_verified": true}
+{"phase": "infer", "chunk": 78, "proof_self_verified": true}
+{"phase": "infer", "chunk": 79, "proof_self_verified": true}
+{"phase": "infer", "chunk": 80, "proof_self_verified": true}
+{"phase": "infer", "chunk": 81, "proof_self_verified": true}
+{"phase": "infer", "chunk": 82, "proof_self_verified": true}
+{"phase": "infer", "chunk": 83, "proof_self_verified": true}
+{"phase": "infer", "chunk": 84, "proof_self_verified": true}
+{"phase": "infer", "chunk": 85, "proof_self_verified": true}
+{"phase": "infer", "chunk": 86, "proof_self_verified": true}
+{"phase": "infer", "chunk": 87, "proof_self_verified": true}
+{"phase": "extension", "chunk": 0, "proof_self_verified": true}
+{"phase": "extension", "chunk": 1, "proof_self_verified": true}
+{"phase": "extension", "chunk": 2, "proof_self_verified": true}
+{"phase": "extension", "chunk": 3, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 0, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 1, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 2, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 3, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 4, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 5, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 6, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 7, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 8, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 9, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 10, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 11, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 12, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 13, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 14, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 15, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 16, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 17, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 0, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 1, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 2, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 3, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 4, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 5, "proof_self_verified": true}
+{"phase": "infer", "chunk": 0, "proof_self_verified": true}
+{"phase": "infer", "chunk": 1, "proof_self_verified": true}
+{"phase": "infer", "chunk": 2, "proof_self_verified": true}
+{"phase": "infer", "chunk": 3, "proof_self_verified": true}
+{"phase": "infer", "chunk": 4, "proof_self_verified": true}
+{"phase": "infer", "chunk": 5, "proof_self_verified": true}
+{"phase": "infer", "chunk": 6, "proof_self_verified": true}
+{"phase": "infer", "chunk": 7, "proof_self_verified": true}
+{"phase": "infer", "chunk": 8, "proof_self_verified": true}
+{"phase": "infer", "chunk": 9, "proof_self_verified": true}
+{"phase": "infer", "chunk": 10, "proof_self_verified": true}
+{"phase": "infer", "chunk": 11, "proof_self_verified": true}
+{"phase": "infer", "chunk": 12, "proof_self_verified": true}
+{"phase": "infer", "chunk": 13, "proof_self_verified": true}
+{"phase": "infer", "chunk": 14, "proof_self_verified": true}
+{"phase": "infer", "chunk": 15, "proof_self_verified": true}
+{"phase": "infer", "chunk": 16, "proof_self_verified": true}
+{"phase": "infer", "chunk": 17, "proof_self_verified": true}
+{"phase": "infer", "chunk": 18, "proof_self_verified": true}
+{"phase": "infer", "chunk": 19, "proof_self_verified": true}
+{"phase": "infer", "chunk": 20, "proof_self_verified": true}
+{"phase": "infer", "chunk": 21, "proof_self_verified": true}
+{"phase": "infer", "chunk": 22, "proof_self_verified": true}
+{"phase": "infer", "chunk": 23, "proof_self_verified": true}
+{"phase": "infer", "chunk": 24, "proof_self_verified": true}
+{"phase": "infer", "chunk": 25, "proof_self_verified": true}
+{"phase": "infer", "chunk": 26, "proof_self_verified": true}
+{"phase": "infer", "chunk": 27, "proof_self_verified": true}
+{"phase": "infer", "chunk": 28, "proof_self_verified": true}
+{"phase": "infer", "chunk": 29, "proof_self_verified": true}
+{"phase": "infer", "chunk": 30, "proof_self_verified": true}
+{"phase": "infer", "chunk": 31, "proof_self_verified": true}
+{"phase": "infer", "chunk": 32, "proof_self_verified": true}
+{"phase": "infer", "chunk": 33, "proof_self_verified": true}
+{"phase": "infer", "chunk": 34, "proof_self_verified": true}
+{"phase": "infer", "chunk": 35, "proof_self_verified": true}
+{"phase": "infer", "chunk": 36, "proof_self_verified": true}
+{"phase": "infer", "chunk": 37, "proof_self_verified": true}
+{"phase": "infer", "chunk": 38, "proof_self_verified": true}
+{"phase": "infer", "chunk": 39, "proof_self_verified": true}
+{"phase": "infer", "chunk": 40, "proof_self_verified": true}
+{"phase": "infer", "chunk": 41, "proof_self_verified": true}
+{"phase": "infer", "chunk": 42, "proof_self_verified": true}
+{"phase": "infer", "chunk": 43, "proof_self_verified": true}
+{"phase": "infer", "chunk": 44, "proof_self_verified": true}
+{"phase": "infer", "chunk": 45, "proof_self_verified": true}
+{"phase": "infer", "chunk": 46, "proof_self_verified": true}
+{"phase": "infer", "chunk": 47, "proof_self_verified": true}
+{"phase": "infer", "chunk": 48, "proof_self_verified": true}
+{"phase": "infer", "chunk": 49, "proof_self_verified": true}
+{"phase": "infer", "chunk": 50, "proof_self_verified": true}
+{"phase": "infer", "chunk": 51, "proof_self_verified": true}
+{"phase": "infer", "chunk": 52, "proof_self_verified": true}
+{"phase": "infer", "chunk": 53, "proof_self_verified": true}
+{"phase": "infer", "chunk": 54, "proof_self_verified": true}
+{"phase": "infer", "chunk": 55, "proof_self_verified": true}
+{"phase": "infer", "chunk": 56, "proof_self_verified": true}
+{"phase": "infer", "chunk": 57, "proof_self_verified": true}
+{"phase": "infer", "chunk": 58, "proof_self_verified": true}
+{"phase": "infer", "chunk": 59, "proof_self_verified": true}
+{"phase": "infer", "chunk": 60, "proof_self_verified": true}
+{"phase": "infer", "chunk": 61, "proof_self_verified": true}
+{"phase": "infer", "chunk": 62, "proof_self_verified": true}
+{"phase": "infer", "chunk": 63, "proof_self_verified": true}
+{"phase": "infer", "chunk": 64, "proof_self_verified": true}
+{"phase": "infer", "chunk": 65, "proof_self_verified": true}
+{"phase": "infer", "chunk": 66, "proof_self_verified": true}
+{"phase": "infer", "chunk": 67, "proof_self_verified": true}
+{"phase": "infer", "chunk": 68, "proof_self_verified": true}
+{"phase": "infer", "chunk": 69, "proof_self_verified": true}
+{"phase": "infer", "chunk": 70, "proof_self_verified": true}
+{"phase": "infer", "chunk": 71, "proof_self_verified": true}
+{"phase": "infer", "chunk": 72, "proof_self_verified": true}
+{"phase": "infer", "chunk": 73, "proof_self_verified": true}
+{"phase": "infer", "chunk": 74, "proof_self_verified": true}
+{"phase": "infer", "chunk": 75, "proof_self_verified": true}
+{"phase": "infer", "chunk": 76, "proof_self_verified": true}
+{"phase": "infer", "chunk": 77, "proof_self_verified": true}
+{"phase": "infer", "chunk": 78, "proof_self_verified": true}
+{"phase": "infer", "chunk": 79, "proof_self_verified": true}
+{"phase": "infer", "chunk": 80, "proof_self_verified": true}
+{"phase": "infer", "chunk": 81, "proof_self_verified": true}
+{"phase": "infer", "chunk": 82, "proof_self_verified": true}
+{"phase": "infer", "chunk": 83, "proof_self_verified": true}
+{"phase": "infer", "chunk": 84, "proof_self_verified": true}
+{"phase": "infer", "chunk": 85, "proof_self_verified": true}
+{"phase": "infer", "chunk": 86, "proof_self_verified": true}
+{"phase": "infer", "chunk": 87, "proof_self_verified": true}
+{"phase": "extension", "chunk": 0, "proof_self_verified": true}
+{"phase": "extension", "chunk": 1, "proof_self_verified": true}
+{"phase": "extension", "chunk": 2, "proof_self_verified": true}
+{"phase": "extension", "chunk": 3, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 0, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 1, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 2, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 3, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 4, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 5, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 6, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 7, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 8, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 9, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 10, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 11, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 12, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 13, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 14, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 15, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 16, "proof_self_verified": true}
+{"phase": "tensor", "chunk": 17, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 0, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 1, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 2, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 3, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 4, "proof_self_verified": true}
+{"phase": "rescale", "chunk": 5, "proof_self_verified": true}
+{"phase": "all-public-verification-complete", "proofs": 248, "private_reads": 0}
+{
+  "complete_live_flow": true,
+  "fresh_setup": true,
+  "classes": [
+    "card_arrival",
+    "cash_withdrawal_charge"
+  ],
+  "teachings_committed": 2,
+  "accepted_revision": 2,
+  "accepted_model_root": "1c0de7daddd10b302641c9a10bf96d066ec3681a74d15c787fdc499f1aaeea82",
+  "queries": 1,
+  "fresh_update_proofs": 16,
+  "fresh_infer_proofs": 232,
+  "total_fresh_proofs": 248,
+  "reused_proofs": 0,
+  "all_verification_before_private_receive": true,
+  "private_reads": 2,
+  "exact_kernel_comparisons": [
+    {
+      "class": "card_arrival",
+      "expected": {
+        "kernel_values": [
+          169989444,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 169989444
+      },
+      "actual": {
+        "kernel_values": [
+          169989444,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 169989444
+      },
+      "matches": true
+    },
+    {
+      "class": "cash_withdrawal_charge",
+      "expected": {
+        "kernel_values": [
+          221533456,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 221533456
+      },
+      "actual": {
+        "kernel_values": [
+          221533456,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sum_kernel": 221533456
+      },
+      "matches": true
+    }
+  ],
+  "prediction": "cash_withdrawal_charge",
+  "expected_arithmetic_prediction": "cash_withdrawal_charge",
+  "intended_label": "cash_withdrawal_charge",
+  "intended_label_matches": true,
+  "encoder_stats": {
+    "model_load_seconds": 0.14436691702576354,
+    "forward_seconds": 0.07099812501110137,
+    "forward_batches": 1,
+    "encoded_texts": 3,
+    "cached_texts": 0,
+    "clipped_coordinates": 0,
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "numpy": "2.4.2"
+  },
+  "public_acceptance_sha256": "89516fd324e7d10b99fb63e2d37d45becfc1f296e0a515edb78c8c7fba0110e7",
+  "elapsed_seconds": 1428.602406333026,
+  "finished_utc": "2026-09-09T00:54:51.375922+00:00",
+  "runtime": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001",
+  "scope": "One fresh two-class nonlinear classification query after actual proved teachings, under public encoder/reader/parser/NTT/journal/backend TCB. Full reader remains; not private resident or utility benchmark. Later teach/query and exact eight-entry FIFO expiry are supported by the same continuing interface, not separately exercised by this minimal run."
+}

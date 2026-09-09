@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-09T00:31:02.770865+00:00",
+  "pid": 12554,
+  "profile_sha256": "86a0ce82266635e7644777e857f436a0f3e5c9fa6d9bbb85f941d98cab344058",
+  "fixture_sha256": "5e69d773daa9576ff1a5fc07102c2e775d584202d6483eb2f26085cf9f1ace4f",
+  "runtime": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/runtime/live001",
+  "private_reads": 0
+}

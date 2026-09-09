@@ -1,0 +1,1 @@
+[OPEN] Hold. The parent proof-frontier owner should consume the same-root, same-role, exact-shape distinction in the extraction residual. No further constructor, proof, backend edit, broad audit or grid is queued here.

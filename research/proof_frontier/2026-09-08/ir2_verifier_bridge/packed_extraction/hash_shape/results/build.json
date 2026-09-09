@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "cargo",
+    "build",
+    "--release",
+    "--offline"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/hash_shape",
+  "exit": 0,
+  "elapsed_seconds_reported_by_cargo": 9.28,
+  "stdout": {
+    "path": "results/build.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "results/build.stderr",
+    "bytes": 2688,
+    "sha256": "7873de7c2e42bd56134d8c0872253fdf9f32c849b7e8da464a8c9dfae04fc3d7"
+  }
+}

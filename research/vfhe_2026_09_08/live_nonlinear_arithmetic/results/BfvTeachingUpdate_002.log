@@ -1,0 +1,31 @@
+Compiler/BfvTeachingUpdate.lean:37:33: warning: This simp argument is unused:
+  Int.mul_emod
+
+Hint: Omit it from the simp argument list.
+  simp [̵u̵p̵d̵a̵t̵e̵V̵a̵l̵u̵e̵,̵I̵n̵t̵.̵a̵d̵d̵_̵e̵m̵o̵d̵,̵I̵n̵t̵.̵m̵u̵l̵_̵e̵m̵o̵d̵]̵[̲u̲p̲d̲a̲t̲e̲V̲a̲l̲u̲e̲,̲ ̲I̲n̲t̲.̲a̲d̲d̲_̲e̲m̲o̲d̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/BfvTeachingUpdate.lean:109:8: warning: Possibly looping simp theorem: `update.eq_1`
+
+Note: Possibly caused by: `updateValue`, `← Int.natCast_add`, and `Nat.cast_add`
+
+Hint: You can disable a simp theorem from the default simp set by passing `- theoremName` to `simp`.
+Compiler/BfvTeachingUpdate.lean:109:20: warning: Possibly looping simp theorem: `updateValue.eq_1`
+
+Note: Possibly caused by: `← Int.natCast_add` and `Nat.cast_add`
+
+Hint: You can disable a simp theorem from the default simp set by passing `- theoremName` to `simp`.
+Compiler/BfvTeachingUpdate.lean:109:32: warning: Possibly looping simp theorem: `← Int.natCast_add`
+
+Note: Possibly caused by: `Nat.cast_add`
+
+Hint: You can disable a simp theorem from the default simp set by passing `- theoremName` to `simp`.
+Compiler/BfvTeachingUpdate.lean:109:49: warning: Possibly looping simp theorem: `← Int.natCast_emod`
+
+Note: Possibly caused by: `Int.natCast_mod`
+
+Hint: You can disable a simp theorem from the default simp set by passing `- theoremName` to `simp`.
+Compiler/BfvTeachingUpdate.lean:109:2: error: Tactic `simp` failed with a nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information

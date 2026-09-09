@@ -1,0 +1,103 @@
+{
+  "schema": "actual-leaf-hash-shape-constructor-v1",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 8,
+      "sha256": "b53ee26e6ff1da219b0563333a76d2c9ec19eec713d6ee54e11a1edacb0e9f3d"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 10321,
+      "sha256": "5c23624e56f334688c073c780782e46582ad6d57096bae764439686eb57ca35b"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 486,
+      "sha256": "a8cb14cad23adacf93796c10283bbd76769e43aa1954c021732a567241d2d24b"
+    },
+    {
+      "path": "NEXT.md",
+      "bytes": 219,
+      "sha256": "af962f43c0642780268d948123e7a27bcb9ef68c19080e104a49df54e5fb7998"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4930,
+      "sha256": "36d819deb87b0efe1c3f339115b5c6402549129697645fdfaac853dd1b59afad"
+    },
+    {
+      "path": "SOURCE_PINS.json",
+      "bytes": 3235,
+      "sha256": "e85b67ef76594594e60df856718cc57f4a3822309199924ceca64a37f798f586"
+    },
+    {
+      "path": "STATUS.md",
+      "bytes": 719,
+      "sha256": "b922859dc8e336d6da78701166fe39c12331f3ce004786530edc58562fe2c566"
+    },
+    {
+      "path": "results/build.json",
+      "bytes": 571,
+      "sha256": "16b9a9fef60dfbeb27bccee5d2a3eceee6ff9d3683e7b10a8f861d60c0a59909"
+    },
+    {
+      "path": "results/build.stderr",
+      "bytes": 2688,
+      "sha256": "7873de7c2e42bd56134d8c0872253fdf9f32c849b7e8da464a8c9dfae04fc3d7"
+    },
+    {
+      "path": "results/build.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/command.json",
+      "bytes": 904,
+      "sha256": "d6d6cff2831cc352eda023b4b5d2eb41c4826592155fc02d45ec03f7327a2212"
+    },
+    {
+      "path": "results/result.json",
+      "bytes": 1564,
+      "sha256": "5306d6386501718d9928c634093085b2ee27dae8b6753b2712bbb872850fd76f"
+    },
+    {
+      "path": "results/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/shape.json",
+      "bytes": 1214,
+      "sha256": "5080a0602fe432db136ff777734de4115d7c717c5138b16a49637abb316d8346"
+    },
+    {
+      "path": "results/shape.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/shape.stdout",
+      "bytes": 1152,
+      "sha256": "7611297ab70084e9508a6dfadbde79b202c46712e8e6233a5c93590ed1ef608d"
+    },
+    {
+      "path": "run_once.py",
+      "bytes": 1805,
+      "sha256": "47ad53f3663d49d5860de8e5272b3444803d1f566497217eb21595de2aa26a1d"
+    },
+    {
+      "path": "shape_check.py",
+      "bytes": 2182,
+      "sha256": "4075d105b9fb38ae38707afec007e038a2f88f1d8cc8f5456ef7ceb1f7b3259d"
+    },
+    {
+      "path": "src/main.rs",
+      "bytes": 2052,
+      "sha256": "1f9160a1a59bb51690e00ec59ef926545d43c7b116ba9fa391397b319b8772ea"
+    }
+  ],
+  "native_constructor_runs": 1,
+  "full_proof_or_key_runs": 0,
+  "scope": "Low-level20/24leafcollision; canonical root-specific shapes differ; no accepted forged proof."
+}

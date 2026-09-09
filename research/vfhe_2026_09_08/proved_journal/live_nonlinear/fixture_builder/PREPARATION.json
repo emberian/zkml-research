@@ -1,0 +1,12 @@
+{
+  "python_ast_parses": true,
+  "source_pins": 8,
+  "model_pins": 9,
+  "fixed_texts": 3,
+  "exact_text_overlaps_in_existing_selected_train_test": 0,
+  "model_crypto_private_execution": false,
+  "reusable_TextEncoder_api": true,
+  "automatic_decryption": false,
+  "shared_command_lifecycle": "enclosing common.command",
+  "source_revision": "reusable encoder addition before shared launch"
+}
