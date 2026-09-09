@@ -1,0 +1,137 @@
+{
+  "scope": "One existing canonical query, pure public field/index arithmetic; no new crypto run.",
+  "capture": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/acceptance_bridge/canonical001/events.jsonl",
+  "capture_sha256": "14954ea9148d78da52f6e40baf21d493378f2c2cc8363cf1b85762dabc061d5d",
+  "query": 0,
+  "raw_index": 30539,
+  "natural_exponent": 107996,
+  "term_count": 5271,
+  "matrix_checkpoints": 23,
+  "matrix_offsets": [
+    {
+      "batch": 0,
+      "matrix": 0,
+      "first_alpha_exponent": 0
+    },
+    {
+      "batch": 0,
+      "matrix": 1,
+      "first_alpha_exponent": 8
+    },
+    {
+      "batch": 1,
+      "matrix": 0,
+      "first_alpha_exponent": 16
+    },
+    {
+      "batch": 1,
+      "matrix": 1,
+      "first_alpha_exponent": 5042
+    },
+    {
+      "batch": 2,
+      "matrix": 0,
+      "first_alpha_exponent": 5052
+    },
+    {
+      "batch": 2,
+      "matrix": 1,
+      "first_alpha_exponent": 5060
+    },
+    {
+      "batch": 2,
+      "matrix": 2,
+      "first_alpha_exponent": 5068
+    },
+    {
+      "batch": 2,
+      "matrix": 3,
+      "first_alpha_exponent": 5076
+    },
+    {
+      "batch": 2,
+      "matrix": 4,
+      "first_alpha_exponent": 5084
+    },
+    {
+      "batch": 2,
+      "matrix": 5,
+      "first_alpha_exponent": 5092
+    },
+    {
+      "batch": 2,
+      "matrix": 6,
+      "first_alpha_exponent": 5100
+    },
+    {
+      "batch": 2,
+      "matrix": 7,
+      "first_alpha_exponent": 5108
+    },
+    {
+      "batch": 2,
+      "matrix": 8,
+      "first_alpha_exponent": 5116
+    },
+    {
+      "batch": 2,
+      "matrix": 9,
+      "first_alpha_exponent": 5124
+    },
+    {
+      "batch": 2,
+      "matrix": 10,
+      "first_alpha_exponent": 5132
+    },
+    {
+      "batch": 2,
+      "matrix": 11,
+      "first_alpha_exponent": 5140
+    },
+    {
+      "batch": 2,
+      "matrix": 12,
+      "first_alpha_exponent": 5148
+    },
+    {
+      "batch": 2,
+      "matrix": 13,
+      "first_alpha_exponent": 5156
+    },
+    {
+      "batch": 2,
+      "matrix": 14,
+      "first_alpha_exponent": 5164
+    },
+    {
+      "batch": 2,
+      "matrix": 15,
+      "first_alpha_exponent": 5172
+    },
+    {
+      "batch": 3,
+      "matrix": 0,
+      "first_alpha_exponent": 5180
+    },
+    {
+      "batch": 4,
+      "matrix": 0,
+      "first_alpha_exponent": 5239
+    },
+    {
+      "batch": 4,
+      "matrix": 1,
+      "first_alpha_exponent": 5255
+    }
+  ],
+  "reduced_opening_canonical": [
+    1829907157,
+    1767482785,
+    310915759,
+    501465025
+  ],
+  "all_native_checkpoints_match": true,
+  "omitted_coset_factor_refused": true,
+  "reset_alpha_each_batch_refused": true,
+  "seconds": 0.6392661249847151
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "git",
+    "-C",
+    "/Users/ember/dev/minidregg",
+    "apply",
+    "--check",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_batching/pcs-batching.patch"
+  ],
+  "exit": 0,
+  "stdout": "",
+  "stderr": ""
+}

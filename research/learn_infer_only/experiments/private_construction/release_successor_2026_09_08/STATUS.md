@@ -1,3 +1,15 @@
+# Bounded continuation with public provenance — current result
+
+[DERIVED positive] HIO.md gives ordinary-iO private specialization of a public authentic parent without a persistent writer master. HIO_PROVENANCE.md closes that parent-origin interface conditionally with exact rooted edge certificates. A direct same-parent iO hybrid needs only simulation of true outer statements with unknown compiler coins, plus the explicitly specified adaptive online extraction interface. All retained ancestors and valid hostile descendants are included. Setup erasure, finite horizon and actual nested circuit resources remain assumptions; no practical or PQ instantiation is claimed.
+
+[REFUTED: the stated flat ACE splice] HIO_CONTINUATION.md gives a polynomial-size input-prepend implementation using the inspected HIO source blocks, then distinguishes the private command with three public block evaluations. Every exposed old encrypted boundary retains a deterministic fingerprint of its original input. This happens on the concrete equal-residual margin witness after honest setup and issuance; stripping a final plaintext field or adding provenance does not repair it. The paper's input-composition sketch is not being identified with this derived failed construction.
+
+[SOURCE/DERIVED] CONTROLLED_HE.md records three actual controlled/keyed-HE algorithms. The circuit-restricting CHE ciphertext is terminal; keyed and attribute-based HE permit arbitrary circuits to eligible evaluators and retain input readers. Eight web queries and one Scry SQL located/oriented these sources; all PDFs were read locally. SOURCES.json records exact locations and hashes. No new cryptographic run was launched around these mismatches.
+
+[OPEN current construction] Instantiate the provenance proof interface from established primitives, including exact statement binding and extraction feedback. Efficient retained-view input composition remains a distinct size/privacy problem. The following earlier bounded results are preserved.
+
+---
+
 # Current restricted-state interaction result
 
 [DERIVED no-go at stated exposure] INTERACTION.md traces AGT2022/1168 and garbled encryption2020/950 through the running-prefix writer-key exposure. Exact bilinear functionality lets a retained future writer probe prior state. AGT writer keys literally contain basis ciphertexts; garbling's unused label pairs likewise permit branching. Time ratcheting does not protect prior readings re-encoded under still-live future keys.

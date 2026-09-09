@@ -1,0 +1,66 @@
+{
+  "sources": {
+    "Selvage/Ir2PcsBatching.lean": "cb4c925e08ee5dbdc51b7770ce42d1dbf9e1ba8c392795f00af740716dbbd994",
+    "Selvage/PcsBatchingExhibits.lean": "1631600f9fc9e53729a9ea85bda0f57ac792a751e7fb8b1d5ffe6efc2d6271e6",
+    "Selvage/PcsBatchingFullUD.lean": "af493b18a64e609f087a6ea56a16041e69b5f5fb8f1cb977d8396fccf74b7710",
+    "Selvage/PcsQuotientAgreement.lean": "9a173251713b6ccf777dab837aacca5f1789e338b5149c31ad38c58215dd0b8d"
+  },
+  "patch_sha256": "248220fdf6470957e75fd27d8a76bed3e52fdc181ed9d486e0953858e5077a1a",
+  "theorems": 29,
+  "guards": 29,
+  "checks": [
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-pcs-batching-20260908/.lake/build/lib/lean/Selvage/PcsQuotientAgreement.olean",
+        "Selvage/PcsQuotientAgreement.lean"
+      ],
+      "cwd": "/tmp/minidregg-pcs-batching-20260908",
+      "exit": 0,
+      "seconds": 9.757480144500732
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-pcs-batching-20260908/.lake/build/lib/lean/Selvage/PcsBatchingFullUD.olean",
+        "Selvage/PcsBatchingFullUD.lean"
+      ],
+      "cwd": "/tmp/minidregg-pcs-batching-20260908",
+      "exit": 0,
+      "seconds": 4.902229070663452
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-pcs-batching-20260908/.lake/build/lib/lean/Selvage/Ir2PcsBatching.olean",
+        "Selvage/Ir2PcsBatching.lean"
+      ],
+      "cwd": "/tmp/minidregg-pcs-batching-20260908",
+      "exit": 0,
+      "seconds": 4.793335199356079
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-pcs-batching-20260908/.lake/build/lib/lean/Selvage/PcsBatchingExhibits.olean",
+        "Selvage/PcsBatchingExhibits.lean"
+      ],
+      "cwd": "/tmp/minidregg-pcs-batching-20260908",
+      "exit": 0,
+      "seconds": 4.565685987472534
+    }
+  ],
+  "patch_check_exit": 0
+}

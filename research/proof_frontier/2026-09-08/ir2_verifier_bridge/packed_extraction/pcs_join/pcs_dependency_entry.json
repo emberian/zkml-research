@@ -1,0 +1,12 @@
+{
+  "name": "ir2_pcs_batching",
+  "root": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_batching",
+  "patch": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_batching/pcs-batching.patch",
+  "expected_pins": 29,
+  "source_files": {
+    "Selvage/Ir2PcsBatching.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_batching/Selvage/Ir2PcsBatching.lean",
+    "Selvage/PcsBatchingExhibits.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_batching/Selvage/PcsBatchingExhibits.lean",
+    "Selvage/PcsBatchingFullUD.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_batching/Selvage/PcsBatchingFullUD.lean",
+    "Selvage/PcsQuotientAgreement.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_batching/Selvage/PcsQuotientAgreement.lean"
+  }
+}

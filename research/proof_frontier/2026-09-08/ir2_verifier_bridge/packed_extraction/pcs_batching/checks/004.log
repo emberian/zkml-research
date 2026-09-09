@@ -1,0 +1,12 @@
+Selvage/Ir2PcsBatching.lean:49:10: error: Invalid `⟨...⟩` notation: The expected type
+  List.Mem t
+    (List.ofFn fun m =>
+        (List.ofFn fun p =>
+            List.ofFn fun c => { batch := t.batch, matrix := m, point := p, column := c }).flatten).flatten
+has more than one constructor
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+Selvage/Ir2PcsBatching.lean:113:2: error: mod_cast has type
+  ¬(31 : BabyBear) = 0
+but is expected to have type
+  ¬(31 : Ext4) = 0

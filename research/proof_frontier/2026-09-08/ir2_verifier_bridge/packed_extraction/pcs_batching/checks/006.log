@@ -1,0 +1,52 @@
+Selvage/Ir2PcsBatching.lean:67:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  termAt (Classical.choose ⋯)
+in the target expression
+  (termAt (columnIndex k)).key = k
+
+k : Column
+⊢ (termAt (columnIndex k)).key = k
+Selvage/Ir2PcsBatching.lean:100:4: error: Type mismatch: After simplification, term
+  hki
+ has type
+  eval (31 * (domain 0) i) (p (columnIndex k)) =
+    (algebraMap BabyBear Ext4)
+      (rows i (termAt (columnIndex k)).key.fst (termAt (columnIndex k)).key.snd.fst
+        (termAt (columnIndex k)).key.snd.snd)
+but is expected to have type
+  eval (31 * (domain 0) i) (p (columnIndex k)) = (algebraMap BabyBear Ext4) (rows i k.fst k.snd.fst k.snd.snd)
+Selvage/Ir2PcsBatching.lean:107:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  p (columnIndex t.key)
+in the target expression
+  eval (points t.batch t.matrix t.point) ((fun k => p (columnIndex k)) t.key) = claims t.batch t.matrix t.point t.column
+
+case refine_2
+rows : Index 0 → AllInputRows
+points : Points
+claims : Claims
+d : ℕ
+δ : ℝ
+S : Finset (Index 0)
+hS : (1 - δ) * ↑(Fintype.card (Index 0)) ≤ ↑S.card
+p : Fin (5270 + 1) → Ext4[X]
+hp :
+  ∀ (j : Fin (5270 + 1)),
+    (p j).natDegree ≤ d ∧
+      eval ((data rows points claims).point j) (p j) = (data rows points claims).claim j ∧
+        ∀ i ∈ S,
+          eval (31 * (domain 0) i) (p j) = (data rows points claims).source ((data rows points claims).column j) i
+hshared : ∀ (j k : Fin (5270 + 1)), (data rows points claims).column j = (data rows points claims).column k → p j = p k
+t : Term
+j : Fin 5271
+hj : termAt j = t
+hkey : (data rows points claims).column (columnIndex t.key) = (data rows points claims).column j
+⊢ eval (points t.batch t.matrix t.point) ((fun k => p (columnIndex k)) t.key) = claims t.batch t.matrix t.point t.column
+Selvage/Ir2PcsBatching.lean:205:2: error: Type mismatch: After simplification, term
+  hb
+ has type
+  ↑{α | close (2 / 5) (reedSolomonCode (domain 0) (degree 0)) fun i => reduction points claims α i (rows i)}.card /
+      ↑(Fintype.card Ext4) ≤
+    690749440 / ↑(Fintype.card Ext4)
+but is expected to have type
+  ↑{x | close (2 / 5) (reedSolomonCode (domain 0) (degree 0)) fun i => reduction points claims x i (rows i)}.card /
+      ↑(Fintype.card Ext4) ≤
+    690749440 / ↑(modulus ^ 4)

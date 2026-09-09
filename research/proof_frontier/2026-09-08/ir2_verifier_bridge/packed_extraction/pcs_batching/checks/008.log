@@ -1,0 +1,7 @@
+Selvage/Ir2PcsBatching.lean:112:4: error: Type mismatch: After simplification, term
+  hclaim
+ has type
+  eval (points (termAt j).batch (termAt j).matrix (termAt j).point) (p j) =
+    claims (termAt j).batch (termAt j).matrix (termAt j).point (termAt j).column
+but is expected to have type
+  eval (points t.batch t.matrix t.point) (p j) = claims t.batch t.matrix t.point t.column
