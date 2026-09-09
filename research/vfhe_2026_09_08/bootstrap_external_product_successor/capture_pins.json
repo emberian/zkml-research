@@ -1,0 +1,191 @@
+{
+  "schema": "exact-external-product-capture-pins-v1",
+  "recorded_before_setup_utc": "2026-09-08T22:23:52.744708+00:00",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/PLAN.md",
+      "bytes": 3378,
+      "sha256": "85fc5386e1048ccc395b7104546bde18acb8a219e9a2c41353ca1afcaed57b42"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/Cargo.toml",
+      "bytes": 758,
+      "sha256": "9e356aac20ab7ca192c83f959529630d8aa610b158df0bd6329b211db3474c08"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/Cargo.lock",
+      "bytes": 39637,
+      "sha256": "b7a8ca0bbb93ae556b5d2a3fcd6687b91026c947f2a48bd91cbfcfa6914377d1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/src/main.rs",
+      "bytes": 11662,
+      "sha256": "2732d1d4f7e88fa4d436cdb3f231faf7cc4da047d78eb90d443ffc3e7790b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/src/prior_decomposition.rs",
+      "bytes": 9842,
+      "sha256": "d980648750014dc0ed20d9a80733c169963d0dbbb325f4a7cfb3610f3292cb94"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/src/prior_decomposition/prior_rotation.rs",
+      "bytes": 9420,
+      "sha256": "991d553a2af5668f46bea202dfe3dc85caad907a1293c018fb75c4585557f8d8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/run_record.py",
+      "bytes": 1466,
+      "sha256": "176d12f03289fda8cdee613931c32ddb469c0ba13e8a11a43dee45f31e9cf4dd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor/target/release/tfhe-exact-external-product",
+      "bytes": 3485616,
+      "sha256": "c822c51bdf529b4dab0191908ee016cd17fd472eab73257f2c270b561caa3b08"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/MANIFEST.json",
+      "bytes": 16405,
+      "sha256": "5b57c1c5bf6c3a793aeb9426b544d04a7feabdf126454b8f688edf7140fba997"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/execution_pins.json",
+      "bytes": 13437,
+      "sha256": "ba2fed9bc2787b77bed6677bdfe5608d75f0778fb9ecb20dd7ca4d9d5553f86b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/results/proof001/proof.bin",
+      "bytes": 363165,
+      "sha256": "6993ca1094c7c96d99c3cab01605dc395dd12153aff2ae2b00c25c01a3db9f34"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/artifacts/template_ir2.json",
+      "bytes": 62113,
+      "sha256": "d1306386767a9ec8bdfb9bddf3e0b2f831b352feafdbd3b5e2572baa7aa4c52a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/src/main.rs",
+      "bytes": 8549,
+      "sha256": "3a03a87b29fbdff745d857bc51c2ed9de4b725bd0cfa2cfc1b9883233c49d5c1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/src/prior_rotation.rs",
+      "bytes": 9420,
+      "sha256": "991d553a2af5668f46bea202dfe3dc85caad907a1293c018fb75c4585557f8d8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/pbs_input.ct",
+      "bytes": 3256,
+      "sha256": "12db684dfe5695f6afabde7dc1d55c1f92e13a6d782e4994c49c7a9418fd7114"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/rotation_template.json",
+      "bytes": 22529,
+      "sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/prior_rows.json",
+      "bytes": 22045,
+      "sha256": "a328dc5c12625617e1a05afd48f2fb9287cb4edca10cce37a5ab25bf811afe1f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/capture.json",
+      "bytes": 3117,
+      "sha256": "d2229b73197ed50b37ec25015520aa422403ebfae05611add3bd4a5eb7bd44bd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/rotation_proof.bin",
+      "bytes": 290448,
+      "sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/initial_lut.ct",
+      "bytes": 8232,
+      "sha256": "341f66e90fd70193fe9ba240b9d761ad092181e73478e675b0eddcca63ddeb3b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/tables.json",
+      "bytes": 94264,
+      "sha256": "cb2d0c7c55e882a53037e24b669ac870569b7f76eaba80d5f2441daf2cbd9347"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/prior_proof.bin",
+      "bytes": 233366,
+      "sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/body_rotated_lut.ct",
+      "bytes": 8232,
+      "sha256": "34dc3e00c96578b3a7c15abef3cdd06e8e26636f58cd094f7cfa82777129c937"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/prior_template.json",
+      "bytes": 11063,
+      "sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/digits.json",
+      "bytes": 29461,
+      "sha256": "437651c690a2f59b47203de509170dcd67b2d070be95e278a56906d98365e1ac"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/fixtures/normal_001/delta.ct",
+      "bytes": 8232,
+      "sha256": "91bc6f56fbbb2cc26d22f1978ea8125110ac8e11e75252ca0a6ef89adaa0303d"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs",
+      "bytes": 3618,
+      "sha256": "3ac1db249c48c031b144f1e2300531af228196d089bedad810655922ccbb8d69"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/ggsw_encryption.rs",
+      "bytes": 34604,
+      "sha256": "f19f557696a37ec494f61caf440d47caf5c2259f7f170c914fc77c6a3c1ddd31"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/ggsw_conversion.rs",
+      "bytes": 2499,
+      "sha256": "8b8af74794ddc099d713467b5a95cf88293cd7a9326b100b9c8849f4f6e0339d"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/karatsuba_pbs.rs",
+      "bytes": 16471,
+      "sha256": "5fb8f380794e55be9ef3c9fdaeffb039d22eca5b61b789cbbc4b83d2fa3ead76"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/fft64_pbs.rs",
+      "bytes": 42310,
+      "sha256": "21c8009e0999c78401dea57a1d7bcbe91c47b80b231357b42eab9552a20abd71"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/ggsw.rs",
+      "bytes": 26981,
+      "sha256": "e686210f50b68719b0706cded16d46cf32556e6b9c4f25b1c23b3a6f0f866232"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/polynomial_algorithms.rs",
+      "bytes": 55679,
+      "sha256": "0ac0f9577bd508ea63cbf57f65d7b97b1ae1b1cc0089082b57b0ede5c3d7a08b"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/decomposition/decomposer.rs",
+      "bytes": 29382,
+      "sha256": "5aea64df5e3bd75d01e3dcc3ca62bd734f4c0b376850a1123900ac5ca59de7f2"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/decomposition/iter.rs",
+      "bytes": 27664,
+      "sha256": "80731dfeb8f2de330c671d82403dce14437ecb951cb00e49232716a6c15cad57"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/Cargo.toml",
+      "bytes": 1414,
+      "sha256": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs",
+      "bytes": 9468,
+      "sha256": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+    }
+  ]
+}

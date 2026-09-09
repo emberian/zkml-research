@@ -1,0 +1,21 @@
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.premises_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.source_mass_satisfiable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.query_exact_satisfiable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.zero_seed_checks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.one_seed_fails_checks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.probability_two_poles' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.QueryWitnesses.mask_omission_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -1,0 +1,8 @@
+'Minidregg.Compiler.TfheCrtRange.product_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheCrtRange.list_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheCrtRange.coefficient_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheCrtRange.crtUnique' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheCrtRange.centered_u32' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheCrtRange.scale_low24' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheCrtRange.negative_one_witness' does not depend on any axioms
+'Minidregg.Compiler.TfheCrtRange.changed_zero_refused' depends on axioms: [propext, Classical.choice, Quot.sound]

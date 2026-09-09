@@ -1,0 +1,18 @@
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.rate_fixed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.initial_far' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.bad_probability' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.terminal_mass' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_312_arithmetic' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.candidate_311_fails' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

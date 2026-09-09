@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "pin_proof.py"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_external_product_successor",
+  "timeout_seconds": 30,
+  "exit": 0,
+  "seconds": 0.1836394999991171,
+  "stdout": {
+    "path": "results/pin-proof-001.stdout",
+    "bytes": 275,
+    "sha256": "6c63ef27ec4bf3b49191de156d01d057a69f2e8c9ef88d0029d00b4f4b086ae8"
+  },
+  "stderr": {
+    "path": "results/pin-proof-001.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

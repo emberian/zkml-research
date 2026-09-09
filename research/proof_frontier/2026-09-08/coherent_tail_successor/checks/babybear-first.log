@@ -1,0 +1,12 @@
+Selvage/BabyBearConsistencyInvariant.lean:32:20: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+Selvage/BabyBearConsistencyInvariant.lean:44:33: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/BabyBearConsistencyInvariant.lean:50:55: error: unsolved goals
+⊢ 1198336 / 16428751811598850197311699254593454081 + (4 / 5) ^ 312 ≤ 1 / 1267650600228229401496703205376
+Selvage/BabyBearConsistencyInvariant.lean:54:59: error: unsolved goals
+⊢ 1 / 1267650600228229401496703205376 < 1198336 / 16428751811598850197311699254593454081 + (4 / 5) ^ 311

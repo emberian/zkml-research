@@ -1,0 +1,16 @@
+Compiler/BfvTensorMul.lean:197:6: error: Tactic `simp` failed with a nested error:
+(deterministic) timeout at `whnf`, maximum number of heartbeats (3000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/BfvTensorMul.lean:199:4: error: (deterministic) timeout at `«tactic execution»`, maximum number of heartbeats (3000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/BfvTensorMul.lean:161:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (3000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/FoldingConsistencyWeights.olean",
+    "Selvage/FoldingConsistencyWeights.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "54d3a10db378c2ad3cb643e6b3d2f4ba509f508a441a1084590bb8c8c95f44e0",
+  "source_unchanged": true,
+  "elapsed_s": 5.0786778926849365,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/fibres-clean.log"
+}

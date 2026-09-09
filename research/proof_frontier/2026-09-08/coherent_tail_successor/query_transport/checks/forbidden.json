@@ -1,0 +1,6 @@
+{
+  "claim_status": "[EXECUTED]",
+  "instrument": "Python re.search over the complete text of exactly the three frozen new Lean modules",
+  "pattern": "\\b(?:sorry|native_decide)\\b|^\\s*axiom\\s",
+  "matches": []
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/WeightedAgreementWitnesses.olean",
+    "Selvage/WeightedAgreementWitnesses.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "67eefda117fdb794e7b82b95e0b905837f25e89a07cae720c5ae003d708dcaf7",
+  "source_unchanged": true,
+  "elapsed_s": 6.781116247177124,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/witnesses-second.log"
+}

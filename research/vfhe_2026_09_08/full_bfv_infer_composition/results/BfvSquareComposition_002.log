@@ -1,0 +1,28 @@
+Compiler/BfvSquareComposition.lean:111:4: error: 'change' tactic failed, pattern
+  coefficients c (baseIndex i) j = op.inverseBase i (inputDot c i) j
+is not definitionally equal to target
+  coefficients c (Fin.castAdd 5 i) j = expectedBasis op inputDot c (Fin.castAdd 5 i) j
+Compiler/BfvSquareComposition.lean:113:4: error: 'change' tactic failed, pattern
+  coefficients c (newIndex i) j =
+    (ActualBasisExtension.nativeOutput (fun k => ↑(op.inverseBase k (inputDot c k) j)) i).toNat
+is not definitionally equal to target
+  coefficients c (Fin.natAdd 4 i) j = expectedBasis op inputDot c (Fin.natAdd 4 i) j
+Compiler/BfvSquareComposition.lean:125:4: error: Type mismatch
+  h c i
+has type
+  op.forwardExtended (baseIndex i) (op.inverseBase i (inputDot c i)) = inputDot c i
+but is expected to have type
+  forwardAll op (expectedBasis op inputDot) c (Fin.castAdd 5 i) = nativeExtended op inputDot c (Fin.castAdd 5 i)
+Compiler/BfvSquareComposition.lean:126:4: error: Tactic `rfl` failed: The left-hand side
+  forwardAll op (expectedBasis op inputDot) c (Fin.natAdd 4 i)
+is not definitionally equal to the right-hand side
+  nativeExtended op inputDot c (Fin.natAdd 4 i)
+
+case h.h.refine_2
+op : SquareTransforms
+inputDot : InputDot
+h : BaseRoundTrip op inputDot
+c : Fin 2
+l : Fin 9
+i : Fin 5
+⊢ forwardAll op (expectedBasis op inputDot) c (Fin.natAdd 4 i) = nativeExtended op inputDot c (Fin.natAdd 4 i)

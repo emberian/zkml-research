@@ -1,0 +1,19 @@
+{
+  "name": "coherent_tail_successor",
+  "root": "../proof_frontier/2026-09-08/coherent_tail_successor",
+  "patch": "../proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch",
+  "expected_pins": 74,
+  "source_files": {
+    "Selvage/ArityEightConsistencySchedule.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/ArityEightConsistencySchedule.lean",
+    "Selvage/BabyBearConsistencyInvariant.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/BabyBearConsistencyInvariant.lean",
+    "Selvage/BabyBearWeightedFreshSoundness.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/BabyBearWeightedFreshSoundness.lean",
+    "Selvage/BabyBearWeightedSoundness.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/BabyBearWeightedSoundness.lean",
+    "Selvage/ConsistencyCoherentTransport.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/ConsistencyCoherentTransport.lean",
+    "Selvage/ConsistencyMask.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/ConsistencyMask.lean",
+    "Selvage/ConsistencyQueryMass.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/ConsistencyQueryMass.lean",
+    "Selvage/ConsistencyTransportWitnesses.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/ConsistencyTransportWitnesses.lean",
+    "Selvage/CurveWeightedAgreement.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/CurveWeightedAgreement.lean",
+    "Selvage/FoldingConsistencyWeights.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/FoldingConsistencyWeights.lean",
+    "Selvage/WeightedAgreementWitnesses.lean": "../proof_frontier/2026-09-08/coherent_tail_successor/src/Selvage/WeightedAgreementWitnesses.lean"
+  }
+}

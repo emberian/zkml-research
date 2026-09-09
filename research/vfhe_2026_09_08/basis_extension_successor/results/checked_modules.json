@@ -1,0 +1,100 @@
+[
+  {
+    "module": "ExactBasisExtension",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ExactBasisExtension.olean",
+      "Compiler/ExactBasisExtension.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+    "seconds": 16.06632399559021,
+    "exit": 0,
+    "log": "results/final_ExactBasisExtension.log",
+    "source_sha256": "593d4823e170acbae1af033d7b2765464408be3784e426dd931f019527dcadc7"
+  },
+  {
+    "module": "ProfiledAutoCapacity",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ProfiledAutoCapacity.olean",
+      "Compiler/ProfiledAutoCapacity.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+    "seconds": 2.9130396842956543,
+    "exit": 0,
+    "log": "results/final_ProfiledAutoCapacity.log",
+    "source_sha256": "42e1c0a644b0734871679e60ca4e096aef6e7dd03ac615759da3b1110e12dc81"
+  },
+  {
+    "module": "ActualBasisExtension",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ActualBasisExtension.olean",
+      "Compiler/ActualBasisExtension.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+    "seconds": 3.0910472869873047,
+    "exit": 0,
+    "log": "results/final_ActualBasisExtension.log",
+    "source_sha256": "543df98fe85ea85626f43513b0c1dfe4e375be44269e7b475ffecc2ee8377c48"
+  },
+  {
+    "module": "BasisExtensionLayout",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/BasisExtensionLayout.olean",
+      "Compiler/BasisExtensionLayout.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+    "seconds": 4.152317047119141,
+    "exit": 0,
+    "log": "results/final_BasisExtensionLayout.log",
+    "source_sha256": "247ab6fa77a4904c7c46407a97eca388867f8d33c1302e0b70ef8849da8d1a21"
+  },
+  {
+    "module": "BasisExtensionNative",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/BasisExtensionNative.olean",
+      "Compiler/BasisExtensionNative.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+    "seconds": 3.564927101135254,
+    "exit": 0,
+    "log": "results/final_BasisExtensionNative.log",
+    "source_sha256": "a83af69c6cb61ae8cf5ec9b513861176fae08ba1972585e22afdf97a83a70f06"
+  },
+  {
+    "module": "BasisExtensionPublic",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/BasisExtensionPublic.olean",
+      "Compiler/BasisExtensionPublic.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+    "seconds": 3.7693710327148438,
+    "exit": 0,
+    "log": "results/final_BasisExtensionPublic.log",
+    "source_sha256": "864a50a56b09a31da3c967f9d83c7d717b450615469dc8703861defc6592e62c"
+  },
+  {
+    "module": "BasisExtensionWitnessPlan",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/BasisExtensionWitnessPlan.olean",
+      "Compiler/BasisExtensionWitnessPlan.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor",
+    "seconds": 3.095654010772705,
+    "exit": 0,
+    "log": "results/final_BasisExtensionWitnessPlan.log",
+    "source_sha256": "5b71cad464812e4cd7ade68420b06d3f31d5921a4be2808dbffdc5a497bce19c"
+  }
+]

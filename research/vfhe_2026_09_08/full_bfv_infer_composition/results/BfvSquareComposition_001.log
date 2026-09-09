@@ -1,0 +1,50 @@
+Compiler/BfvSquareComposition.lean:39:11: error: failed to elaborate eliminator, insufficient number of arguments, expected type:
+  Fin 9 → Slot → ℕ
+Compiler/BfvSquareComposition.lean:40:4: error: Type mismatch
+  fun l j => (ActualBasisExtension.nativeOutput (fun i => ↑(op.inverseBase i (inputDot c i) j)) l).toNat
+has type
+  Fin 5 → Slot → ℕ
+but is expected to have type
+  (i : Fin 5) → ?m.4 (Fin.natAdd 4 i)
+Compiler/BfvSquareComposition.lean:50:11: error: failed to elaborate eliminator, insufficient number of arguments, expected type:
+  Fin 9 → Slot → ℕ
+Compiler/BfvSquareComposition.lean:51:14: error: Type mismatch
+  op.forwardExtended (newIndex l) (expectedBasis op inputDot c (newIndex l))
+has type
+  Slot → ℕ
+but is expected to have type
+  ?m.4 (Fin.natAdd ?m.2 l)
+Compiler/BfvSquareComposition.lean:110:50: error: Application type mismatch: The argument
+  l
+has type
+  Fin 9
+but is expected to have type
+  Fin (?m.58 + ?m.59)
+in the application
+  Fin.addCases (fun i => ?m.65) (fun i => ?m.68) l
+Compiler/BfvSquareComposition.lean:121:50: error: Application type mismatch: The argument
+  l
+has type
+  Fin 9
+but is expected to have type
+  Fin (?m.17 + ?m.18)
+in the application
+  Fin.addCases (fun i => ?m.24) (fun i => ?m.27) l
+Compiler/BfvSquareComposition.lean:131:4: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (1000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/BfvSquareComposition.lean:125:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (1000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/BfvSquareComposition.lean:141:2: error: Type mismatch: After simplification, term
+  hh
+ has type
+  coefficients c l j = (NonlinearRnsInstance.nativeProjectedOutput (NonlinearRnsPublic.publicResidues asg) l).toNat
+but is expected to have type
+  coefficients c l j =
+    (NonlinearRnsInstance.nativeProjectedOutput (fun i => ↑(op.inverseExtended i (product c i) j)) l).toNat
+Compiler/BfvSquareComposition.lean:143:8: error: (kernel) unknown constant 'Minidregg.Compiler.BfvSquareComposition.tensorChecked_sound'

@@ -1,0 +1,28 @@
+Compiler/BfvSquareComposition.lean:197:23: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Slot 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Slot
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/BfvSquareComposition.lean:201:57: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Slot 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Slot
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/BfvSquareComposition.lean:203:13: warning: This simp argument is unused:
+  ite_true
+
+Hint: Omit it from the simp argument list.
+  simp only [i̵t̵e̵_̵t̵r̵u̵e̵,̵and_self] at hh
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/BfvSquareComposition.lean:203:22: warning: This simp argument is unused:
+  and_self
+
+Hint: Omit it from the simp argument list.
+  simp only [ite_true,̵a̵n̵d̵_̵s̵e̵l̵f̵] at hh
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

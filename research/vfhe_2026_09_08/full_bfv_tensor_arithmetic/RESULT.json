@@ -1,0 +1,16 @@
+{
+  "status": "checked source and complete saved tensor phase",
+  "theorems": 29,
+  "axiom_guard_exit": 0,
+  "source_and_artifacts_unchanged": true,
+  "rows": 73728,
+  "outputs": 221184,
+  "proof_bytes": 12978885,
+  "proof_seconds": 45.523139211,
+  "native_emit_seconds": 10.39654883305775,
+  "runtime_phase_seconds": 65.63268133299425,
+  "maximum_process_rss_bytes": 888504320,
+  "runtime_result_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/tensor001/result.json",
+  "runtime_result_sha256": "041c9b251ab40213aef3c86c08a949132805e8638471d291d9f520bda9fc4044",
+  "scope": "saved proof/self-verification records inspected; no independent crypto/proof rerun; complete tensor phase, not complete nonlinear Infer"
+}

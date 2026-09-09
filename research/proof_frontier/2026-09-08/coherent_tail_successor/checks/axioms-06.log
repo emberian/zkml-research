@@ -1,0 +1,19 @@
+'Minidregg.Selvage.WeightedAgreementWitnesses.weight_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.weight_nonconstant' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.weight_mass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.weighted_far' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.three_weighted_good' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.weighted_bound_fires' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.zero_common' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.overweight_density_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.WeightedAgreementWitnesses.overlapping_marginals_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

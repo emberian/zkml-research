@@ -1,0 +1,12 @@
+'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_call_budget' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.sound_312' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Weighted.execution_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

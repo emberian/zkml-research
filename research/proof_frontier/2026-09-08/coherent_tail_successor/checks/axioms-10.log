@@ -1,0 +1,15 @@
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.coherent_tail' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.ideal_100' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.supplied_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Weighted.witness_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

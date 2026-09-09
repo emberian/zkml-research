@@ -1,0 +1,13 @@
+{
+  "Theory/SparseNegacyclic.lean": "7b07af172c79b75a714aa3343066ea36ded8bd3b54468df5742765b42378c523",
+  "Compiler/TfheSparseWrap.lean": "987c50f6eb2b84aef1e26c90a2519c3af203822bf1ef409d1a82f3bc1c894402",
+  "Compiler/TfheSparseRow.lean": "2d7296b5c4990c4b06dba4b8bb32d91df9f525f6f3b055ba9b710ae8a6fd4fd3",
+  "Compiler/TfheSparseCertificate.lean": "3605f881467fd29ce59ac9d4069f8182182ee47770183e76f3e52c185490d5f6",
+  "Compiler/TfheSparseTeeth.lean": "ffcb648a111fab721d4a638e79dcc76aeb8fe4ed5a2549d95bc44d00852a43b5",
+  "Compiler/TfheSparseWitness.lean": "37ecd09579739b16de1a0d46bb22249377c8e628cc779f76895b0623b239b160",
+  "EmitTfheSparse.lean": "01a2fbdc980a66e04e78b49ced04271dd7daa1ffaf3857e03c99cc52ae0b94ba",
+  "artifacts/template_ir2.json": "9a3f98d241dad5430e980941ddf4fa0a360ec11c291e51a833f280dee71101b3",
+  "artifacts/trace.leu32": "8590cc3cd2e7cb511449ca842817d144ca15bfe3765fb4697943feebd91499fb",
+  "artifacts/emission.json": "83fb96a47ee62890ae93d93537b3a04900e9138b13b11d55a2a0a559f899f2dc",
+  "proposal.patch": "f01a1ccc56b6cec64cef639e41a0f727d5cc2affc0acff5315d92d3fd5db9fb3"
+}

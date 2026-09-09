@@ -1,0 +1,46 @@
+{
+  "Theory/SparseNegacyclic.lean": [
+    "Minidregg.Theory.SparseNegacyclic.cell_shift",
+    "Minidregg.Theory.SparseNegacyclic.sum_difference",
+    "Minidregg.Theory.SparseNegacyclic.window_step",
+    "Minidregg.Theory.SparseNegacyclic.convolution_windows",
+    "Minidregg.Theory.SparseNegacyclic.convolution_step",
+    "Minidregg.Theory.SparseNegacyclic.window_zero",
+    "Minidregg.Theory.SparseNegacyclic.interval_prefixSum",
+    "Minidregg.Theory.SparseNegacyclic.convolution_anchor",
+    "Minidregg.Theory.SparseNegacyclic.certificate_sound",
+    "Minidregg.Theory.SparseNegacyclic.prefix_recurrence",
+    "Minidregg.Theory.SparseNegacyclic.signed_blocks_sum",
+    "Minidregg.Theory.SparseNegacyclic.prefix_certificate_sound",
+    "Minidregg.Theory.SparseNegacyclic.prefix_certificate_inhabited",
+    "Minidregg.Theory.SparseNegacyclic.anchor_omission_fails",
+    "Minidregg.Theory.SparseNegacyclic.scale_mod"
+  ],
+  "Compiler/TfheSparseWrap.lean": [
+    "Minidregg.Compiler.TfheSparseWrap.wrapColumn_correct",
+    "Minidregg.Compiler.TfheSparseWrap.radix_balance",
+    "Minidregg.Compiler.TfheSparseWrap.wrap_sound",
+    "Minidregg.Compiler.TfheSparseWrap.denote_linear"
+  ],
+  "Compiler/TfheSparseRow.lean": [
+    "Minidregg.Compiler.TfheSparseRow.range_value",
+    "Minidregg.Compiler.TfheSparseRow.row_sound",
+    "Minidregg.Compiler.TfheSparseRow.emitted_sound"
+  ],
+  "Compiler/TfheSparseCertificate.lean": [
+    "Minidregg.Compiler.TfheSparseCertificate.cell_index",
+    "Minidregg.Compiler.TfheSparseCertificate.whole_sound"
+  ],
+  "Compiler/TfheSparseTeeth.lean": [
+    "Minidregg.Compiler.TfheSparseTeeth.zero_low",
+    "Minidregg.Compiler.TfheSparseTeeth.zero_readings",
+    "Minidregg.Compiler.TfheSparseTeeth.zero_accepts",
+    "Minidregg.Compiler.TfheSparseTeeth.zero_values",
+    "Minidregg.Compiler.TfheSparseTeeth.zero_premise",
+    "Minidregg.Compiler.TfheSparseTeeth.wrong_scale_refused",
+    "Minidregg.Compiler.TfheSparseTeeth.wrong_anchor_refused",
+    "Minidregg.Compiler.TfheSparseTeeth.flagValues_bool",
+    "Minidregg.Compiler.TfheSparseTeeth.whole_premise"
+  ],
+  "Compiler/TfheSparseWitness.lean": []
+}

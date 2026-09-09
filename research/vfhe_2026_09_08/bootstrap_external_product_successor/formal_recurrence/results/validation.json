@@ -1,0 +1,32 @@
+[
+  {
+    "module": "Theory/SparseNegacyclic.lean",
+    "exit": 0,
+    "seconds": 34.29416745802155
+  },
+  {
+    "module": "Compiler/TfheSparseWrap.lean",
+    "exit": 0,
+    "seconds": 7.21276670799125
+  },
+  {
+    "module": "Compiler/TfheSparseRow.lean",
+    "exit": 0,
+    "seconds": 11.32574325002497
+  },
+  {
+    "module": "Compiler/TfheSparseCertificate.lean",
+    "exit": 0,
+    "seconds": 36.61900725000305
+  },
+  {
+    "module": "Compiler/TfheSparseTeeth.lean",
+    "exit": 0,
+    "seconds": 17.773188291990664
+  },
+  {
+    "module": "Compiler/TfheSparseWitness.lean",
+    "exit": 0,
+    "seconds": 5.439996333967429
+  }
+]

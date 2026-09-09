@@ -1,0 +1,134 @@
+Compiler/ExactBasisExtension.lean:42:46: error: Application type mismatch: The argument
+  cst (↑(p.source i) - 1)
+has type
+  Term (AirSig ℤ ?m.10)
+but is expected to have type
+  Row (groups L K)
+in the application
+  sub (add (var (residue i)) (var (slack i))) (cst (↑(p.source i) - 1))
+Compiler/ExactBasisExtension.lean:44:38: error: Application type mismatch: The argument
+  cst p.denominator
+has type
+  Term (AirSig ℕ ?m.11)
+but is expected to have type
+  Row (groups L K)
+in the application
+  add (scale 2 (linear p.theta)) (cst p.denominator)
+Compiler/ExactBasisExtension.lean:47:44: error: Application type mismatch: The argument
+  cst (2 * ↑p.denominator - 1)
+has type
+  Term (AirSig ℤ ?m.14)
+but is expected to have type
+  Row (groups L K)
+in the application
+  sub (add (var (extra 1)) (var (extra 2))) (cst (2 * ↑p.denominator - 1))
+Compiler/ExactBasisExtension.lean:50:53: error: Application type mismatch: The argument
+  cst p.quotientOffset
+has type
+  Term (AirSig ℕ ?m.26)
+but is expected to have type
+  Row (groups L K)
+in the application
+  sub (var (target i 1)) (cst p.quotientOffset)
+Compiler/ExactBasisExtension.lean:52:50: error: Application type mismatch: The argument
+  cst (↑(p.target i) - 1)
+has type
+  Term (AirSig ℤ ?m.14)
+but is expected to have type
+  Row (groups L K)
+in the application
+  sub (add (var (target i 0)) (var (target i 2))) (cst (↑(p.target i) - 1))
+Compiler/ExactBasisExtension.lean:85:4: error: linarith failed to find a contradiction
+case h1.h
+L K : ℕ
+p : Params L K
+hp : Valid p
+x : Fin (groups L K) → ℕ
+h : Balanced p x
+hin : ∀ (i : Fin L), ↑(x (residue i)) + ↑(x (slack i)) - SignedMatrix.eval sorry x = 0
+hb : ↑(x (extra 1)) + ↑(x (extra 2)) - SignedMatrix.eval sorry x = 0
+ht :
+  ∀ (i : Fin K),
+    ∑ x_1, p.omega x_1 * ↑(x (residue x_1)) - p.gamma * ↑(x (extra 0)) -
+        (↑(p.target i) * (↑(x (target i 1)) - SignedMatrix.eval sorry x) + ↑(x (target i 0))) =
+      0
+htb : ∀ (i : Fin K), ↑(x (target i 0)) + ↑(x (target i 2)) - SignedMatrix.eval sorry x = 0
+hc : ∀ (i : Fin L), ↑(x (copied i)) - ↑(x (residue i)) = 0
+hrem0 : 0 ≤ ↑(x (extra 1))
+hrem1 : ↑(x (extra 1)) < 2 * ↑p.denominator
+hg :
+  2 * ∑ x_1, ↑(x (residue x_1)) * p.theta x_1 + SignedMatrix.eval sorry x -
+      (2 * ↑p.denominator * ↑(x (extra 0)) + ↑(x (extra 1))) =
+    0
+a✝ : 2 * ∑ i, ↑(x (residue i)) * p.theta i + ↑p.denominator < 2 * ↑p.denominator * ↑(x (extra 0)) + ↑(x (extra 1))
+⊢ False
+failed
+Compiler/ExactBasisExtension.lean:100:90: error: linarith failed to find a contradiction
+case h1.h
+L K : ℕ
+p : Params L K
+hp : Valid p
+x : Fin (groups L K) → ℕ
+h : Balanced p x
+hin : ∀ (i : Fin L), ↑(x (residue i)) + ↑(x (slack i)) - SignedMatrix.eval sorry x = 0
+hg :
+  2 * ∑ x_1, p.theta x_1 * ↑(x (residue x_1)) + SignedMatrix.eval sorry x -
+      (2 * ↑p.denominator * ↑(x (extra 0)) + ↑(x (extra 1))) =
+    0
+hb : ↑(x (extra 1)) + ↑(x (extra 2)) - SignedMatrix.eval sorry x = 0
+ht :
+  ∀ (i : Fin K),
+    ∑ x_1, p.omega x_1 * ↑(x (residue x_1)) - p.gamma * ↑(x (extra 0)) -
+        (↑(p.target i) * (↑(x (target i 1)) - SignedMatrix.eval sorry x) + ↑(x (target i 0))) =
+      0
+htb : ∀ (i : Fin K), ↑(x (target i 0)) + ↑(x (target i 2)) - SignedMatrix.eval sorry x = 0
+hc : ∀ (i : Fin L), ↑(x (copied i)) - ↑(x (residue i)) = 0
+hrem0 : 0 ≤ ↑(x (extra 1))
+hrem1 : ↑(x (extra 1)) < 2 * ↑p.denominator
+hg' : 2 * ∑ i, ↑(x (residue i)) * p.theta i + ↑p.denominator = 2 * ↑p.denominator * ↑(x (extra 0)) + ↑(x (extra 1))
+hv : ↑(x (extra 0)) = rounded p fun j => ↑(x (residue j))
+i : Fin K
+hout0 : 0 ≤ ↑(x (target i 0))
+hout1 : ↑(x (target i 0)) < ↑(p.target i)
+he :
+  (∑ x_1, ↑(x (residue x_1)) * p.omega x_1 - p.gamma * rounded p fun j => ↑(x (residue j))) -
+      (↑(p.target i) * (↑(x (target i 1)) - SignedMatrix.eval sorry x) + ↑(x (target i 0))) =
+    0
+a✝ :
+  (∑ j, ↑(x (residue j)) * p.omega j - p.gamma * rounded p fun j => ↑(x (residue j))) <
+    ↑(p.target i) * (↑(x (target i 1)) - ↑p.quotientOffset) + ↑(x (target i 0))
+⊢ False
+failed
+Compiler/ExactBasisExtension.lean:78:13: warning: declaration uses `sorry`
+Compiler/ExactBasisExtension.lean:78:22: warning: declaration uses `sorry`
+Compiler/ExactBasisExtension.lean:78:32: warning: declaration uses `sorry`
+Compiler/ExactBasisExtension.lean:78:44: warning: declaration uses `sorry`
+Compiler/ExactBasisExtension.lean:78:54: warning: declaration uses `sorry`
+Compiler/ExactBasisExtension.lean:79:51: warning: This simp argument is unused:
+  eval_cst
+
+Hint: Omit it from the simp argument list.
+  simp only [̵i̵n̵p̵u̵t̵R̵o̵w̵,̵g̵a̵r̵n̵e̵r̵R̵o̵w̵,̵g̵a̵r̵n̵e̵r̵B̵o̵u̵n̵d̵,̵t̵a̵r̵g̵e̵t̵R̵o̵w̵,̵t̵a̵r̵g̵e̵t̵B̵o̵u̵n̵d̵,̵c̵o̵p̵y̵R̵o̵w̵,̵l̵i̵n̵e̵a̵r̵,̵
+  ̵ ̵ ̵ ̵ ̵e̵v̵a̵l̵_̵s̵u̵b̵,̵e̵v̵a̵l̵_̵a̵d̵d̵,̵e̵v̵a̵l̵_̵s̵c̵a̵l̵e̵,̵e̵v̵a̵l̵_̵s̵u̵m̵,̵e̵v̵a̵l̵_̵v̵a̵r̵,̵e̵v̵a̵l̵_̵c̵s̵t̵]̵[̲i̲n̲p̲u̲t̲R̲o̲w̲,̲ ̲g̲a̲r̲n̲e̲r̲R̲o̲w̲,̲ ̲g̲a̲r̲n̲e̲r̲B̲o̲u̲n̲d̲,̲ ̲t̲a̲r̲g̲e̲t̲R̲o̲w̲,̲ ̲t̲a̲r̲g̲e̲t̲B̲o̲u̲n̲d̲,̲ ̲c̲o̲p̲y̲R̲o̲w̲,̲ ̲l̲i̲n̲e̲a̲r̲,̲ ̲e̲v̲a̲l̲_̲s̲u̲b̲,̲
+  ̲ ̲ ̲ ̲ ̲e̲v̲a̲l̲_̲a̲d̲d̲,̲ ̲e̲v̲a̲l̲_̲s̲c̲a̲l̲e̲,̲ ̲e̲v̲a̲l̲_̲s̲u̲m̲,̲ ̲e̲v̲a̲l̲_̲v̲a̲r̲]̲ at hin hg hb ht htb hc
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/ExactBasisExtension.lean:111:98: error: Tactic `decide` failed for proposition
+  ((forms tiny).all fun row => decide (SignedMatrix.eval row tinyValues = 0)) = true
+because its `Decidable` instance
+  instDecidableEqBool ((forms tiny).all fun row => decide (SignedMatrix.eval row tinyValues = 0)) true
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableEqBool`, `Bool.decEq`, `Int.decEq`, and `Int.instDecidableEq`, reduction got stuck at the `Decidable` instance
+  match (forms tiny).all fun row => decide (SignedMatrix.eval row tinyValues = 0), true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+Compiler/ExactBasisExtension.lean:119:28: warning: This simp argument is unused:
+  Fin.sum_univ_succ
+
+Hint: Omit it from the simp argument list.
+  simp [̵o̵u̵t̵p̵u̵t̵,̵r̵o̵u̵n̵d̵e̵d̵,̵t̵i̵n̵y̵,̵F̵i̵n̵.̵s̵u̵m̵_̵u̵n̵i̵v̵_̵s̵u̵c̵c̵,̵h̵i̵,̵h̵o̵]̵[̲o̲u̲t̲p̲u̲t̲,̲ ̲r̲o̲u̲n̲d̲e̲d̲,̲ ̲t̲i̲n̲y̲,̲ ̲h̲i̲,̲ ̲h̲o̲]̲ at hs
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

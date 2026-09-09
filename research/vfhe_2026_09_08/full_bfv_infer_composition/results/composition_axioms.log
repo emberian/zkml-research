@@ -1,0 +1,20 @@
+'Minidregg.Compiler.BfvInferComposition.boundRowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.emittedChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.initialOperands_output' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.initialChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.rotationChecked_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.prefixSound' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.inferDotSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.Exhibits.good_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.Exhibits.rowPremiseInhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.Exhibits.changedOutputRefused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvInferComposition.Exhibits.prefixPremiseInhabited' does not depend on any axioms
+'Minidregg.Compiler.BfvInferComposition.Exhibits.missingStageChangesOutput' does not depend on any axioms

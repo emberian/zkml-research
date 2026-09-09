@@ -1,0 +1,9 @@
+{
+  "schema": "approved-kernel-infer-input-v1",
+  "model_ciphertext_sha256": "83b464214b9cb2e779c5a3c0f2a45d36ea03c653c7c152b0c8b84248cf5cfce8",
+  "query_sha256": "7b97980ac8e8b66e5c18f5010ecea7ba056c6295be189feae7bc950578f99d14",
+  "evaluation_key_sha256": "aadb52dab3e4839f468f0bc48be9a1755459fe1a22a096d40a8495f092c34137",
+  "saved_model_revision": 9,
+  "input_commitment": "explicit content hash supplied to the verifier",
+  "history_scope": "Selected saved model after9teaches/1expiry; historical teaching/journal acceptance is not proved by this inference"
+}

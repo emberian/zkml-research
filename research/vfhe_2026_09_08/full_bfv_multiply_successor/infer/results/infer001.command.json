@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "run.py",
+    "REQUEST.json",
+    "results/case001",
+    "results/run001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer",
+  "started_utc": "2026-09-08T23:24:52.588822+00:00",
+  "pid": 69714,
+  "returncode": 0,
+  "elapsed_seconds": 405.08256483398145,
+  "finished_utc": "2026-09-08T23:31:37.673017+00:00",
+  "user_seconds": 876.030548,
+  "system_seconds": 39.959108,
+  "max_rss_bytes": 1243267072
+}

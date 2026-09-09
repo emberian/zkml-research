@@ -1,0 +1,11 @@
+{"trace_width": 279,
+ "trace_bytes": 2285568,
+ "source_constraints": 330,
+ "selected_actual_rows_checked": 9,
+ "rows": 2048,
+ "raw_scale_refused": true,
+ "public_arity": 46,
+ "full_row_check": "unchanged native proof backend",
+ "changed_output_refused": true,
+ "arithmetic_constraints": 295,
+ "anchor_refused": true}

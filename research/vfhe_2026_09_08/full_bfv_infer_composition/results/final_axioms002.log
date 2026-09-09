@@ -1,0 +1,6 @@
+'Minidregg.Compiler.BfvInferComposition.nativeLiftCorrespondence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvInferContract.inferSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferContract.uniqueOutput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvInferContract.wrongOutputRefused' depends on axioms: [propext, Classical.choice, Quot.sound]

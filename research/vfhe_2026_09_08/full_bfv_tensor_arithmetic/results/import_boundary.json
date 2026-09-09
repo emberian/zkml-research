@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+  "stderr": "",
+  "scope": "Read-only companion boundary script; all new modules are Compiler additions"
+}

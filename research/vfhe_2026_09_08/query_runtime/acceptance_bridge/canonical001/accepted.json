@@ -1,0 +1,884 @@
+{
+  "admission_mode": "canonical-fixed-query",
+  "canonical_admission": {
+    "declared_base_widths": [
+      [
+        8,
+        8
+      ],
+      [
+        2513,
+        5
+      ],
+      [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      [
+        59
+      ],
+      [
+        8,
+        8
+      ]
+    ],
+    "fresh_native_verification_in_this_invocation": true,
+    "input_log_height": 17,
+    "log_arities": [
+      3,
+      3,
+      3,
+      3,
+      2
+    ],
+    "native_verification_required": true,
+    "passed": true,
+    "profile": "fixed-ir2-whole-query-canonical-v1",
+    "public_preprocessing_random_codewords": 0,
+    "random_codewords_per_matrix": 4,
+    "salt_words_per_matrix": 4,
+    "template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d"
+  },
+  "canonical_predicates": {
+    "all_native_fold_bindings_and_terminal_equalities": true,
+    "all_salt_rows_exactly_four": true,
+    "input_widths_match_claims": true,
+    "salt_rows_checked": 1064,
+    "schedule_matches_public_height_scheduler": true
+  },
+  "command_sha256": "4cc8a958ae67ceed8be8fa6267205fd6ad35a9fa4f5e444ddf448ba1cf99b41a",
+  "event_counts": {
+    "fri_alpha": 1,
+    "fri_begin": 1,
+    "fri_beta": 5,
+    "fri_commit_observe": 5,
+    "fri_final_poly_observe": 1,
+    "fri_fold_result": 190,
+    "fri_packed_row_verified": 190,
+    "fri_query": 38,
+    "fri_reduced_openings": 38,
+    "fri_round_carried": 190,
+    "fri_schedule": 1,
+    "fri_schedule_observed": 1,
+    "fri_terminal_check": 38,
+    "hiding_claims_before_merge": 1,
+    "input_batch_verified": 190,
+    "input_matrix": 874,
+    "input_matrix_reduced": 874,
+    "native_fold": 190,
+    "pcs_claims": 1,
+    "transcript_observe": 21156,
+    "transcript_sample": 40,
+    "transcript_sample_bits": 39
+  },
+  "events_sha256": "14954ea9148d78da52f6e40baf21d493378f2c2cc8363cf1b85762dabc061d5d",
+  "field": {
+    "encoding": "native serde: Montgomery base words, R=2^32; extension object value holds four ascending power-basis Montgomery words; raw_base_word from sample_bits is already canonical",
+    "extension_degree": 4,
+    "extension_polynomial": "X^4 - 11",
+    "prime": 2013265921
+  },
+  "input_matrix_shapes": [
+    {
+      "batch": 0,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 0,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            715946783,
+            987315161,
+            1957709238,
+            296787357,
+            1750996748,
+            1765743391,
+            1144099358,
+            1850128606
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 0,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 1,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            715946783,
+            987315161,
+            1957709238,
+            296787357,
+            1750996748,
+            1765743391,
+            1144099358,
+            1850128606
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 1,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 0,
+      "opening_points": 2,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            109198360,
+            1871132650,
+            1294059348,
+            679315397,
+            1881643410,
+            1769192242,
+            1233505287,
+            101621973
+          ]
+        ]
+      },
+      "width_base": 2513
+    },
+    {
+      "batch": 1,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 1,
+      "opening_points": 2,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            109198360,
+            1871132650,
+            1294059348,
+            679315397,
+            1881643410,
+            1769192242,
+            1233505287,
+            101621973
+          ]
+        ]
+      },
+      "width_base": 5
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 0,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 1,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 2,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 3,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 4,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 5,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 6,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 7,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 8,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 9,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 10,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 11,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 12,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 13,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 14,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 2,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 15,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            28359522,
+            1670115661,
+            108659568,
+            1058952238,
+            987615133,
+            1190471310,
+            1538574139,
+            1434470240
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 3,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 0,
+      "opening_points": 1,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            915188753,
+            1046839261,
+            464790218,
+            52794409,
+            469787915,
+            602159586,
+            337182479,
+            395309740
+          ]
+        ]
+      },
+      "width_base": 59
+    },
+    {
+      "batch": 4,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 0,
+      "opening_points": 2,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            1444827047,
+            1077557799,
+            1341409905,
+            1688536048,
+            1222987039,
+            841933579,
+            1888901170,
+            1408232713
+          ]
+        ]
+      },
+      "width_base": 8
+    },
+    {
+      "batch": 4,
+      "domain_shift": 268435454,
+      "lde_height": 131072,
+      "log_domain_size": 14,
+      "matrix": 1,
+      "opening_points": 2,
+      "root": {
+        "_marker": null,
+        "cap": [
+          [
+            1444827047,
+            1077557799,
+            1341409905,
+            1688536048,
+            1222987039,
+            841933579,
+            1888901170,
+            1408232713
+          ]
+        ]
+      },
+      "width_base": 8
+    }
+  ],
+  "native_acceptance": {
+    "acc_sha256": "e36c2748096178b7630a165f5e22ed6e6292a7fa08b1bc3dc81d7d3caf12286b",
+    "changed_output_rejected": false,
+    "claim": "EXECUTED fresh-process whole query arithmetic verification",
+    "out_sha256": "14e77e552b91d4df4c776c1a630a0c488fda4e3b0755a779ca4a9c1ea3cc28f3",
+    "proof_sha256": "53ac28c1c9bd281f33bf1b8ddf7e54cb2ec4ba499d7685a79f56de1992b611bf",
+    "query_sha256": "b3d468fd195b2f696ac5c93be3f3c374142e532f04f6af860f6a96fdc035eb39",
+    "verified": true,
+    "verify_ns": 8548262750
+  },
+  "parameters": {
+    "commit_pow_bits": 0,
+    "log_blowup": 3,
+    "log_final_poly_len": 0,
+    "max_log_arity": 3,
+    "num_queries": 38,
+    "query_pow_bits": 16
+  },
+  "queries": [
+    {
+      "index": 30539,
+      "query": 0,
+      "raw_base_word": 600471371
+    },
+    {
+      "index": 125003,
+      "query": 1,
+      "raw_base_word": 463857739
+    },
+    {
+      "index": 16511,
+      "query": 2,
+      "raw_base_word": 1020280959
+    },
+    {
+      "index": 113534,
+      "query": 3,
+      "raw_base_word": 171162494
+    },
+    {
+      "index": 94799,
+      "query": 4,
+      "raw_base_word": 1558540879
+    },
+    {
+      "index": 107791,
+      "query": 5,
+      "raw_base_word": 1053664527
+    },
+    {
+      "index": 120904,
+      "query": 6,
+      "raw_base_word": 1674041416
+    },
+    {
+      "index": 121614,
+      "query": 7,
+      "raw_base_word": 370268942
+    },
+    {
+      "index": 96650,
+      "query": 8,
+      "raw_base_word": 462649738
+    },
+    {
+      "index": 100258,
+      "query": 9,
+      "raw_base_word": 740919202
+    },
+    {
+      "index": 78220,
+      "query": 10,
+      "raw_base_word": 507326860
+    },
+    {
+      "index": 72105,
+      "query": 11,
+      "raw_base_word": 955718057
+    },
+    {
+      "index": 31777,
+      "query": 12,
+      "raw_base_word": 281705505
+    },
+    {
+      "index": 111980,
+      "query": 13,
+      "raw_base_word": 130659692
+    },
+    {
+      "index": 123016,
+      "query": 14,
+      "raw_base_word": 559931528
+    },
+    {
+      "index": 71677,
+      "query": 15,
+      "raw_base_word": 1730484221
+    },
+    {
+      "index": 127188,
+      "query": 16,
+      "raw_base_word": 538308820
+    },
+    {
+      "index": 125602,
+      "query": 17,
+      "raw_base_word": 648800930
+    },
+    {
+      "index": 65458,
+      "query": 18,
+      "raw_base_word": 605487026
+    },
+    {
+      "index": 93582,
+      "query": 19,
+      "raw_base_word": 1178693006
+    },
+    {
+      "index": 14659,
+      "query": 20,
+      "raw_base_word": 237123907
+    },
+    {
+      "index": 12644,
+      "query": 21,
+      "raw_base_word": 599142756
+    },
+    {
+      "index": 85294,
+      "query": 22,
+      "raw_base_word": 1082871086
+    },
+    {
+      "index": 94005,
+      "query": 23,
+      "raw_base_word": 1230335797
+    },
+    {
+      "index": 100113,
+      "query": 24,
+      "raw_base_word": 1594984209
+    },
+    {
+      "index": 4378,
+      "query": 25,
+      "raw_base_word": 1296044314
+    },
+    {
+      "index": 93659,
+      "query": 26,
+      "raw_base_word": 1414622683
+    },
+    {
+      "index": 73254,
+      "query": 27,
+      "raw_base_word": 703143462
+    },
+    {
+      "index": 102302,
+      "query": 28,
+      "raw_base_word": 1649512350
+    },
+    {
+      "index": 5802,
+      "query": 29,
+      "raw_base_word": 562042538
+    },
+    {
+      "index": 127883,
+      "query": 30,
+      "raw_base_word": 1278079883
+    },
+    {
+      "index": 102876,
+      "query": 31,
+      "raw_base_word": 1108447708
+    },
+    {
+      "index": 120788,
+      "query": 32,
+      "raw_base_word": 2000934868
+    },
+    {
+      "index": 124752,
+      "query": 33,
+      "raw_base_word": 1011214160
+    },
+    {
+      "index": 49829,
+      "query": 34,
+      "raw_base_word": 162448037
+    },
+    {
+      "index": 100204,
+      "query": 35,
+      "raw_base_word": 1491961708
+    },
+    {
+      "index": 8330,
+      "query": 36,
+      "raw_base_word": 818028682
+    },
+    {
+      "index": 73534,
+      "query": 37,
+      "raw_base_word": 499851070
+    }
+  ],
+  "schedule": {
+    "actual_log_arities": [
+      3,
+      3,
+      3,
+      3,
+      2
+    ],
+    "canonical_log_arities": [
+      3,
+      3,
+      3,
+      3,
+      2
+    ],
+    "canonical_schedule_matches": true,
+    "extra_query_index_bits": 0,
+    "input_log_heights": [
+      17
+    ],
+    "log_global_max_height": 17,
+    "observed_in_transcript_only_after_betas": true
+  },
+  "scope": "Original verifier acceptance with instrumentation. Canonical predicates are additional observed facts, not guards in the original verifier or a general soundness theorem.",
+  "source_and_input_posthash_match": true
+}

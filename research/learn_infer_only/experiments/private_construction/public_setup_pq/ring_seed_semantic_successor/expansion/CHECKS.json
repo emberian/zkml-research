@@ -1,0 +1,60 @@
+{
+  "all_passed": true,
+  "binding_bytes": 32,
+  "canonical_domain_and_version_separation": true,
+  "claim_label": "EXECUTED",
+  "command": "python3 -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_semantic_successor/expansion/check_version.py",
+  "completed_utc": "2026-09-08 22:27:58 UTC",
+  "domain_bytes": 187,
+  "exact_source_replacements": [
+    [
+      "See SECURITY.md",
+      "See PROVENANCE.md"
+    ],
+    [
+      "ring-seed-transport/public-rows/v1",
+      "ring-seed-semantic/public-rows/v2"
+    ],
+    [
+      "seed[32|64]",
+      "seed[48]"
+    ],
+    [
+      "len(seed) not in (32, 64)",
+      "len(seed) != 48"
+    ],
+    [
+      "exactly 32 or 64 bytes",
+      "exactly 48 bytes"
+    ]
+  ],
+  "expanded_rows": 0,
+  "frozen_baseline_sha256": {
+    "MANIFEST.json": "cb179f7b4e1e9888cc2ffcb35bdb505a1526e9e0c2494de40c7e4a952947f46d",
+    "__init__.py": "3f15a40737daebb4ebeb7e469a4162e2f956319e20fba2386cbfcbb6b2f4e0a8",
+    "public_expander.py": "ab175083b2a38e382776f07a52a0d8b84e8886085f40f083117de273f0d0aba4"
+  },
+  "initializer_byte_identical": true,
+  "package_import_compatible": true,
+  "private_artifact_reads": 0,
+  "protocol": "ring-seed-semantic/public-rows/v2",
+  "public_test_domain_sha256": "de5cba9e9e2667e08a4181a30accbbff654d23b656761b143a937601e932be2b",
+  "rejected": [
+    "seed_bytes=32",
+    "seed_bytes=64",
+    "seed_bytes=47",
+    "seed_bytes=49",
+    "binding_bytes=31",
+    "binding_bytes=33"
+  ],
+  "search_queries": 0,
+  "seed_bytes": 48,
+  "setup_runs": 0,
+  "source_and_old_pins_unchanged": true,
+  "source_sha256": {
+    "__init__.py": "3f15a40737daebb4ebeb7e469a4162e2f956319e20fba2386cbfcbb6b2f4e0a8",
+    "check_version.py": "658ddbab3948b6b14c20c7933ca533373e1c59a22154820cd56b2a16077e3c10",
+    "public_expander.py": "786e10ee57a08f2f55a1de2b897a795934ec900498da13b556c33756f500d04e"
+  },
+  "xof_calls": 0
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "prove_phase.py",
+    "extension",
+    "results/case001",
+    "results/extension001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+  "started_utc": "2026-09-08T22:58:24.837772+00:00",
+  "pid": 37476,
+  "returncode": 0,
+  "elapsed_seconds": 93.46360545797506,
+  "finished_utc": "2026-09-08T22:59:58.301167+00:00",
+  "user_seconds": 238.852365,
+  "system_seconds": 6.7524429999999995,
+  "max_rss_bytes": 8225964032
+}

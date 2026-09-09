@@ -1,0 +1,214 @@
+{
+  "scope": "Read-only public protobuf metadata and saved model/query provenance. No secret-key path, crypto operation or private answer was read.",
+  "evaluation_key_ciphertext_level": 0,
+  "evaluation_key_level": 0,
+  "galois_keys": [
+    {
+      "exponent": 4097,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 5953,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 6561,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 8193,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 10241,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 13313,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 14849,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 15617,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 16001,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    },
+    {
+      "exponent": 16383,
+      "ciphertext_level": 0,
+      "ksk_level": 0,
+      "log_base": 0,
+      "c0_polynomials": 4,
+      "c1_serialized_polynomials": 0,
+      "seed_bytes": [
+        32
+      ]
+    }
+  ],
+  "rotation_order": [
+    6561,
+    5953,
+    16001,
+    15617,
+    14849,
+    13313,
+    10241,
+    4097,
+    8193,
+    16383
+  ],
+  "branch": "multi-prime RNS residue-row lift, four-term paired NTT MAC; no log-base bit decomposition, no context-downswitch at level0",
+  "revision": 9,
+  "classes": {
+    "card_arrival": 8
+  },
+  "commitment_scope": "saved model manifest hash; old basic run had no historical journal commit",
+  "infer": {
+    "command": "infer",
+    "arguments": {
+      "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic",
+      "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/ciphertexts/state-000009-63e4c128.ct",
+      "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/queries/basic.json",
+      "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/answers/basic-000.ct",
+      "trace": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/trace/basic"
+    },
+    "returncode": 0,
+    "elapsed_seconds": 2.671013417013455,
+    "result": {
+      "bytes": 614445,
+      "components": 3,
+      "ct_ct_multiplications": 1,
+      "ct_multiply_ns": 102085542,
+      "dot_ns": 22465667,
+      "elapsed_ns": 2574926625,
+      "rotation_count": 10,
+      "sha256": "1dfa0a85aba49bd4cb5b67610b89eb3211e50bc575ba18449bedf4c34cabf11c"
+    }
+  },
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/evaluation.key",
+      "bytes": 8193050,
+      "sha256": "aadb52dab3e4839f468f0bc48be9a1755459fe1a22a096d40a8495f092c34137"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/model.json",
+      "bytes": 1792,
+      "sha256": "97c840914ea7a35e2890fcd7e20a34ef46e34ad0fffddc11adcd1988e534d913"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/queries/basic.json",
+      "bytes": 3175,
+      "sha256": "7b97980ac8e8b66e5c18f5010ecea7ba056c6295be189feae7bc950578f99d14"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/ciphertexts/state-000009-63e4c128.ct",
+      "bytes": 409630,
+      "sha256": "83b464214b9cb2e779c5a3c0f2a45d36ea03c653c7c152b0c8b84248cf5cfce8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/basic/operations.jsonl",
+      "bytes": 15898,
+      "sha256": "5891ddbef74beb3b541725b8d73bd19783b352de938ee8abfa791441a94a23d4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/basic_crypto.py",
+      "bytes": 1212,
+      "sha256": "80854b9ccb5e4b4b2575cc3339f0d8ad9c0b16735bfd2d83950d007878a68f73"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/model.py",
+      "bytes": 6316,
+      "sha256": "14224b411de4cb90cb42ddb97172951abca34380a91c3f0d1fe651f6ef2c137d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/config.json",
+      "bytes": 1025,
+      "sha256": "a9fd560c31b3726a081b83237269d6598b380fda33d9d7a934286cf621748201"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/crypto/src/main.rs",
+      "bytes": 9647,
+      "sha256": "fcefe3e11749e78771bec25cfeeaf5430a1ab0799ddaf3b09eef2ae2eda0ac47"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace/basic.dot.ct",
+      "bytes": 409630,
+      "sha256": "df086144f6e467bcc119184e3aa35b6e509f185095e2691b183d755c7306d6a0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace/basic-000.ct",
+      "bytes": 614445,
+      "sha256": "1dfa0a85aba49bd4cb5b67610b89eb3211e50bc575ba18449bedf4c34cabf11c"
+    }
+  ]
+}

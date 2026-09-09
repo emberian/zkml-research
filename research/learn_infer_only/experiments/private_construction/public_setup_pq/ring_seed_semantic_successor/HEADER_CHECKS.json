@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "scope": "[EXECUTED] Deterministic synthetic header checks, not actual setup artifacts",
+  "mandatory_seed_bits": 384,
+  "magic": "RINGSSM2",
+  "format_version": 3,
+  "downgrade_or_context_mutations_rejected": [
+    "seed_bits",
+    "seed_policy",
+    "a_seed",
+    "missing_seed",
+    "format_version",
+    "registry_sha256"
+  ],
+  "A_descriptor_roundtrip": true,
+  "postprocessing_functions_AST_unchanged": [
+    "command_decode",
+    "command_query",
+    "command_combine",
+    "command_window",
+    "evaluate",
+    "load_ciphertext"
+  ],
+  "registered_basis_rank": 16,
+  "basis_dimension": 577,
+  "whole_two_input_score_bound": 2520950,
+  "Gaussian_samples": 0,
+  "expansion_rows": 0,
+  "setup_runs": 0,
+  "crypto_runs": 0
+}

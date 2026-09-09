@@ -1,0 +1,56 @@
+{
+  "profile": "fixed-ir2-whole-query-canonical-v1",
+  "template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+  "native_verification_required": true,
+  "input_log_height": 17,
+  "log_arities": [
+    3,
+    3,
+    3,
+    3,
+    2
+  ],
+  "declared_base_widths": [
+    [
+      8,
+      8
+    ],
+    [
+      2513,
+      5
+    ],
+    [
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8
+    ],
+    [
+      59
+    ],
+    [
+      8,
+      8
+    ]
+  ],
+  "random_codewords_per_matrix": 4,
+  "public_preprocessing_random_codewords": 0,
+  "salt_words_per_matrix": 4,
+  "passed": true,
+  "evidence_kind": "Predicates applied to retained freshly extracted replay001 events. The later --canonical CLI mode itself was not rerun.",
+  "events_sha256": "14954ea9148d78da52f6e40baf21d493378f2c2cc8363cf1b85762dabc061d5d",
+  "proof_sha256": "53ac28c1c9bd281f33bf1b8ddf7e54cb2ec4ba499d7685a79f56de1992b611bf",
+  "runner_sha256": "a4bf65c1c8f55a2762f7fbbd47d7779ca048bdae6d645938c9fedc7fff580ddf"
+}

@@ -1,0 +1,402 @@
+[
+  {
+    "path": ".gitignore",
+    "bytes": 43,
+    "sha256": "1b7a578c878b69fbf4c310bdd3c6c1b9bb2841252d7e15acde4855b941abfb46"
+  },
+  {
+    "path": "Compiler/BfvTensorAxiomPins.lean",
+    "bytes": 6692,
+    "sha256": "f2c089e5bd5e24cd4c69add231c8b6d5844bbb662cc866ef4d25661a2c5ecb5e"
+  },
+  {
+    "path": "Compiler/BfvTensorCore.lean",
+    "bytes": 3232,
+    "sha256": "5983ffcdc3626a806ef079abba198bfd6bd9ce30954a91422dd761a55334a913"
+  },
+  {
+    "path": "Compiler/BfvTensorExhibits.lean",
+    "bytes": 6026,
+    "sha256": "987f1620cfebe934375ab11285056ad840a10d31821d59b18ebb17ffe558234b"
+  },
+  {
+    "path": "Compiler/BfvTensorMul.lean",
+    "bytes": 12254,
+    "sha256": "bf32232c477e48a231ceaed72c6a3f73f52ca0cb0e02aa938e1836434880c3b9"
+  },
+  {
+    "path": "Compiler/BfvTensorRow.lean",
+    "bytes": 3341,
+    "sha256": "db2c0aedcc1e91484f6785a0280feb64522a21f3170bf64f94455e2df314ae76"
+  },
+  {
+    "path": "Compiler/BfvTensorWitnessPlan.lean",
+    "bytes": 4757,
+    "sha256": "669c37920c7365fb5f60eb291a3df275c17ed92eaaa63861f9c52a003f05f63d"
+  },
+  {
+    "path": "EmitBfvTensor.lean",
+    "bytes": 2483,
+    "sha256": "806716fd4dc58b59381eb2710ece6bccd1c917853e404b1b1ef8c42ac4de005f"
+  },
+  {
+    "path": "NEXT.md",
+    "bytes": 352,
+    "sha256": "a0343d26adcb165062351f924aef135219e3481f8fb1ab2772e0a758c5571bd8"
+  },
+  {
+    "path": "README.md",
+    "bytes": 4490,
+    "sha256": "85807cc60d5f374cbbe4fd456b8fa61bc3537c6f4f33ed4dc0199b96cf969314"
+  },
+  {
+    "path": "READY.json",
+    "bytes": 8031,
+    "sha256": "ac0f407a85ce3afd552b7905c8e9384e695737e442e4ab2b689a122b5102be2b"
+  },
+  {
+    "path": "RESULT.json",
+    "bytes": 767,
+    "sha256": "212d3139987c501e309872157251cb5596b23463f6a075e464f18dd456caba7d"
+  },
+  {
+    "path": "SCHEMA.md",
+    "bytes": 1755,
+    "sha256": "566c2c03cee17709a0cf2f9167b35198205a7d4d58fc74b32abb67c5ad5a5992"
+  },
+  {
+    "path": "STATEMENT.md",
+    "bytes": 1802,
+    "sha256": "3b5882f35eff4e1ed8d3f1a3bb5835f814a70a315b82cbef9f33191c3ae3cec0"
+  },
+  {
+    "path": "STATUS.md",
+    "bytes": 546,
+    "sha256": "9380854e65927daf2d8a11324708aaeae47878609eecaa497f239a5072837f2b"
+  },
+  {
+    "path": "artifacts/emission.json",
+    "bytes": 1859,
+    "sha256": "0279a1391d1d6b8e15ddbbbacdf5a28134fc9658c729583f52cb62430527408f"
+  },
+  {
+    "path": "artifacts/prime0/sample_rows.json",
+    "bytes": 489,
+    "sha256": "21b685e1194f314e7b3b978b5b55aa82a0e3d73993d4a105c4b338f6405606e8"
+  },
+  {
+    "path": "artifacts/prime0/template_ir2.json",
+    "bytes": 475356,
+    "sha256": "68641e6c2fd5c8041c1e51815d839b993b1c2d61651877c4afa85b0a8c89e0ad"
+  },
+  {
+    "path": "artifacts/prime0/witness_plan.json",
+    "bytes": 168343,
+    "sha256": "6e82f318ce33bc9ab871fb36773e0068f65a8836b35d6d6b745b6fbd9a33d021"
+  },
+  {
+    "path": "artifacts/prime1/sample_rows.json",
+    "bytes": 489,
+    "sha256": "63ebbbf0f8bd6f75c133e2e7fc348e326501a212ecef3d2e0ecacd2daaf6fdb5"
+  },
+  {
+    "path": "artifacts/prime1/template_ir2.json",
+    "bytes": 475356,
+    "sha256": "70d07c989830922ce398e2151b33459a73a5f638ded1b1af2513045b75ee0422"
+  },
+  {
+    "path": "artifacts/prime1/witness_plan.json",
+    "bytes": 168343,
+    "sha256": "813a4c1bc17a8a4d42e0c70ead3b1dd9a21b22b2c783ebf3c13933fa55f802d4"
+  },
+  {
+    "path": "artifacts/prime2/sample_rows.json",
+    "bytes": 489,
+    "sha256": "b1d3dcb02606e7ba07325135109ae3b7242900a6253d340d13eb9561b68c9523"
+  },
+  {
+    "path": "artifacts/prime2/template_ir2.json",
+    "bytes": 475356,
+    "sha256": "f5edc52993d833d5512e890531493ccf9d2085f82f7c7ae4104923253cadd356"
+  },
+  {
+    "path": "artifacts/prime2/witness_plan.json",
+    "bytes": 168343,
+    "sha256": "48ad0838cb0fe19a95a2e6de97bd81c6a60c6a085d20aa6bf5792c5812c356e8"
+  },
+  {
+    "path": "artifacts/prime3/sample_rows.json",
+    "bytes": 489,
+    "sha256": "9f4385b6ca062b38dde5571173747aa8af1413655dfcf917c87b661420cbf66d"
+  },
+  {
+    "path": "artifacts/prime3/template_ir2.json",
+    "bytes": 475356,
+    "sha256": "3dc35115c579e796dc0bc43a8496270479a77c65422d54b54e5b1b11f25a96e4"
+  },
+  {
+    "path": "artifacts/prime3/witness_plan.json",
+    "bytes": 168343,
+    "sha256": "af817400f2cb7fda3e257450a8f93039aef5b3fd40844eb338483a5264e3ad29"
+  },
+  {
+    "path": "artifacts/prime4/sample_rows.json",
+    "bytes": 497,
+    "sha256": "bc46003854b44183ec32c9028814c567634815f7bb0f66d5ad46fb6b4956ae8c"
+  },
+  {
+    "path": "artifacts/prime4/template_ir2.json",
+    "bytes": 480847,
+    "sha256": "88e2ff7142a2cd1402be7bf1cbee69ec24d3603c747549d8cca5774eb58c7eec"
+  },
+  {
+    "path": "artifacts/prime4/witness_plan.json",
+    "bytes": 168435,
+    "sha256": "ab08387e8065e1fa40b10342ffcde5c3a0ad36abada817559ee4d86c5caa569c"
+  },
+  {
+    "path": "artifacts/prime5/sample_rows.json",
+    "bytes": 497,
+    "sha256": "b4a88924a294239b1af2e1d1e2ca43ce38e3af0c3ff56263a9f9e47faa39ffea"
+  },
+  {
+    "path": "artifacts/prime5/template_ir2.json",
+    "bytes": 480847,
+    "sha256": "de0a29cfaa94d8ce1c078bcc1558023e94667c7e6fc5c103124e68c9b91c1d85"
+  },
+  {
+    "path": "artifacts/prime5/witness_plan.json",
+    "bytes": 168435,
+    "sha256": "2fcd4496fbe3c721c94bf7c968b20cf16519e6bd2882dc1a9f84ec22b2eda613"
+  },
+  {
+    "path": "artifacts/prime6/sample_rows.json",
+    "bytes": 497,
+    "sha256": "4ab979c0dfa82edbd82998220870789967a849634dcdce13ddd4d36790c52b30"
+  },
+  {
+    "path": "artifacts/prime6/template_ir2.json",
+    "bytes": 480847,
+    "sha256": "cb04ecc6b867441d0e0e43baa4a9b18a2475c6889c24b68faeaa1e272ffca257"
+  },
+  {
+    "path": "artifacts/prime6/witness_plan.json",
+    "bytes": 168435,
+    "sha256": "a8b3b94c8b2bd532687290ed5b84be302a19a6b7eeefd0d6a1f7f03bd86cab17"
+  },
+  {
+    "path": "artifacts/prime7/sample_rows.json",
+    "bytes": 497,
+    "sha256": "e235770b07392aa9b1664ef39c0e94d6d8bc534691769e18248ad132562e4626"
+  },
+  {
+    "path": "artifacts/prime7/template_ir2.json",
+    "bytes": 480847,
+    "sha256": "d0ef36fea667676619f2785e0ca1d02ca7d6e5a61d642d6da1c1855c51f335f5"
+  },
+  {
+    "path": "artifacts/prime7/witness_plan.json",
+    "bytes": 168435,
+    "sha256": "1deffaaa96779f375e4f7611f436bd4c9e882de716a0c3073ecdae894372cc90"
+  },
+  {
+    "path": "artifacts/prime8/sample_rows.json",
+    "bytes": 495,
+    "sha256": "e8fa4945fb423256959ab676ef5881ebfec715da8d6ecb93043652c79f380d82"
+  },
+  {
+    "path": "artifacts/prime8/template_ir2.json",
+    "bytes": 478103,
+    "sha256": "59037a3eff73e6ba2655a924c931bbb311372c4e853c825f08a07a0773119e11"
+  },
+  {
+    "path": "artifacts/prime8/witness_plan.json",
+    "bytes": 168401,
+    "sha256": "32ad6dc6dafe5e4340e5f3f4f0f57d9f5b4089968f287656d13d1cbc1e713ac5"
+  },
+  {
+    "path": "check_one.py",
+    "bytes": 965,
+    "sha256": "7f40cfadca8fff5ff2ef94a2d8bf40c019d9e029b14fafa6910c544bf616447d"
+  },
+  {
+    "path": "proposal.patch",
+    "bytes": 40674,
+    "sha256": "86661da5a86b2a146f5b401a87461ca50b65d4f26b488e2ded2e1b3a9f437987"
+  },
+  {
+    "path": "results/AxiomDiscovery.lean",
+    "bytes": 2104,
+    "sha256": "e243eea7b9dca3e13c4735d998edf11401cd6a92ad17523c3b4e2ac4150f0285"
+  },
+  {
+    "path": "results/BfvTensorAxiomPins_001.json",
+    "bytes": 1708,
+    "sha256": "ff2586397a683f85dacae99953308f691b3713316bd771b0392f025d056939aa"
+  },
+  {
+    "path": "results/BfvTensorAxiomPins_001.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "results/BfvTensorCore_001.json",
+    "bytes": 1692,
+    "sha256": "a07a38468691312e9380059323735546632f713f5c58b891dc8b338a1a2374f9"
+  },
+  {
+    "path": "results/BfvTensorCore_001.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "results/BfvTensorExhibits_001.json",
+    "bytes": 1705,
+    "sha256": "c950790f56b24032d47fca257b5a648572e5a1deea94f8a87b0392f96d5104f0"
+  },
+  {
+    "path": "results/BfvTensorExhibits_001.log",
+    "bytes": 144398,
+    "sha256": "efb14156746e22e98341c00f5481ad0879aaa60ec967fc666c06d9db670449a2"
+  },
+  {
+    "path": "results/BfvTensorExhibits_002.json",
+    "bytes": 1705,
+    "sha256": "b7ae416bc0abf0cc476d4c7d441891355b77604f47960622df8081cbfda383dd"
+  },
+  {
+    "path": "results/BfvTensorExhibits_002.log",
+    "bytes": 143531,
+    "sha256": "7d948f59736fdb814128c7bdfad545e06dba7e6810ec47a69f94755163fd02f9"
+  },
+  {
+    "path": "results/BfvTensorExhibits_003.json",
+    "bytes": 1704,
+    "sha256": "6dc005890628c09b74ce1647d8d312407f90939d0be9c7bd3f79272df3f3874c"
+  },
+  {
+    "path": "results/BfvTensorExhibits_003.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "results/BfvTensorExhibits_004.json",
+    "bytes": 1705,
+    "sha256": "b7857dbc007f80163c1eb8215cf06655f1bc01fa38a1c9f64afc9b1cf4b7df24"
+  },
+  {
+    "path": "results/BfvTensorExhibits_004.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "results/BfvTensorMul_001.json",
+    "bytes": 1691,
+    "sha256": "05122055138a5e7c266844bd1f2c3611d55a23a0c0a4215dfe9ecc5d1f0d7b05"
+  },
+  {
+    "path": "results/BfvTensorMul_001.log",
+    "bytes": 245,
+    "sha256": "9b683a42bfe79ad2e07d28e28f990edbeb30a46b80f2e6c155f58660ae04fe11"
+  },
+  {
+    "path": "results/BfvTensorMul_002.json",
+    "bytes": 1689,
+    "sha256": "c91808551105e4dc008d0004ff97f8756d1dccdeaaf91c0cfdfe2a37969985f4"
+  },
+  {
+    "path": "results/BfvTensorMul_002.log",
+    "bytes": 1026,
+    "sha256": "6035dc3076711da1f1a146fc24f0fbfc588cc926e50f019051c33676411b67e2"
+  },
+  {
+    "path": "results/BfvTensorMul_003.json",
+    "bytes": 1690,
+    "sha256": "a83a166232321e446fd525bac58fab577a82d16ca0c6d5d630fd88c8e4e05e30"
+  },
+  {
+    "path": "results/BfvTensorMul_003.log",
+    "bytes": 961,
+    "sha256": "fe85d33c64a2f005fa0ce37dd9031136395c5bfed2defbf232934660af783187"
+  },
+  {
+    "path": "results/BfvTensorMul_004.json",
+    "bytes": 1690,
+    "sha256": "9b45c84a13014481bfba3a87ec1b059756af540a6ccccb731bde3fe12694d9e7"
+  },
+  {
+    "path": "results/BfvTensorMul_004.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "results/BfvTensorRow_001.json",
+    "bytes": 1690,
+    "sha256": "058de4ca1bd8487ad931aa30fefe3ca49b1b639a050047ccc33b53e2a4efe843"
+  },
+  {
+    "path": "results/BfvTensorRow_001.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "results/BfvTensorWitnessPlan_001.json",
+    "bytes": 1714,
+    "sha256": "de5d6747f3f9a2f2b6d6e85dbf1871b2d5399481a61459015a06b95654eecd75"
+  },
+  {
+    "path": "results/BfvTensorWitnessPlan_001.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "results/axiom_census.json",
+    "bytes": 4408,
+    "sha256": "732b6b1bda07bf23ae5540913699df7ccec43e75bd9aae99a066fbce6fc6e2ff"
+  },
+  {
+    "path": "results/axiom_discovery.json",
+    "bytes": 3153,
+    "sha256": "f1e73c80b3a350f4c05cacdf2851ca54c08ddd6126ec14acb6f98d1fb21aa711"
+  },
+  {
+    "path": "results/axiom_discovery.log",
+    "bytes": 3338,
+    "sha256": "2363e3eba040addb968251ca7ade02d2d91b55b19114d0dfafa281c021fd4554"
+  },
+  {
+    "path": "results/dependency_artifacts.json",
+    "bytes": 49478,
+    "sha256": "d68a03444371a15de272bdc569b8d77bc5226754e5e079cdc856de86b156ddd4"
+  },
+  {
+    "path": "results/emission_001.json",
+    "bytes": 1449,
+    "sha256": "ed839d2fa94bd2cb4143fffd934da281368a1bf796c33948d3f258a4a6655e32"
+  },
+  {
+    "path": "results/emission_001.log",
+    "bytes": 1545,
+    "sha256": "734af024b62e3814996c9b72110412f84b9ed732ed6582ae39de60c4d1bef1e6"
+  },
+  {
+    "path": "results/import_boundary.json",
+    "bytes": 303,
+    "sha256": "93889ae45231c2308f47808b883f8bb0886974c55665b60c7bab8bcc029ca14d"
+  },
+  {
+    "path": "results/patch_apply.json",
+    "bytes": 340,
+    "sha256": "3fe57bb97647d6f7e0e64a7ff3833fc6d5ad9fcd547039e56852da6aa16420e7"
+  },
+  {
+    "path": "results/patch_check.json",
+    "bytes": 250,
+    "sha256": "0ad313b043a063c15b3369238f0a5f7415ac9d886328f43f425a40e309bb5672"
+  },
+  {
+    "path": "source_pins.json",
+    "bytes": 4320,
+    "sha256": "44d3deb8d458c0aa434f3624fb828da8592e6506410ee0084043424b6c8d4e42"
+  }
+]

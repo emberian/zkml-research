@@ -1,0 +1,60 @@
+{
+  "scope": "Backend preparation and public result collection; journal owns the sole shared crypto run",
+  "commands": [
+    {
+      "command": "ring_implementation/.venv/bin/python -B ring_seed_semantic_successor/check_headers.py",
+      "path_base": "research/learn_infer_only/experiments/private_construction/public_setup_pq",
+      "exit_code": 0,
+      "output": "HEADER_CHECKS.json",
+      "Gaussian_samples": 0,
+      "expansions": 0,
+      "setup_runs": 0
+    },
+    {
+      "command": "ring_implementation/.venv/bin/python -B ring_seed_semantic_successor/pin_sources.py",
+      "path_base": "research/learn_infer_only/experiments/private_construction/public_setup_pq",
+      "exit_code": 0,
+      "output": "SOURCE_PINS.json"
+    },
+    {
+      "command": "python3 research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_semantic_successor/collect_public_run.py",
+      "exit_code": 0,
+      "stdout": {
+        "status": "PASS",
+        "shared_setup_runs": 1,
+        "additional_setups": 0,
+        "public_issuer_bundle_bytes": 9471117,
+        "issuer_with_fixed_registry_bytes": 9592617,
+        "seconds": 202.7157390829525,
+        "matched_scores": 32
+      },
+      "output": "RUN.json"
+    },
+    {
+      "command": "python3 research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_semantic_successor/collect_public_run.py",
+      "purpose": "Add saved actor metadata",
+      "initial_exit_code": 1,
+      "initial_failure": "Expected 53 receipts under actors; found 37. The 16 recipient transport receipts are under public deliveries/delivery-*/transport.json. No crypto ran.",
+      "repair": "Include explicitly named public delivery transport receipts; never follow artifact paths",
+      "exit_code": 0,
+      "output": "RUN.json",
+      "public_actor_receipts": 53,
+      "additional_setups": 0,
+      "private_payload_reads": 0
+    },
+    {
+      "command": "python3 research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_semantic_successor/seal.py",
+      "scope": "Public hash verification and package seal only",
+      "output": "MANIFEST.json",
+      "private_payload_reads": 0,
+      "crypto_runs": 0
+    }
+  ],
+  "shared_actual_run": "research/vfhe_2026_09_08/proved_journal/seeded_ring_successor/results/seeded001/RESULT.json",
+  "child_checks": "expansion/MANIFEST.json",
+  "search_counts": {
+    "web": 0,
+    "Scry_SQL": 0,
+    "PDF_downloads": 0
+  }
+}

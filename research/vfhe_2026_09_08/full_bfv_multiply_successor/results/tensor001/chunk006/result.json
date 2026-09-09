@@ -1,0 +1,102 @@
+{
+  "index": 6,
+  "proof": {
+    "arity": 56,
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "binding": {
+      "extension_power_sha256": "77534aca6968571c7b4260093bfa62438773236bc936c90c316c1fe9b06a4425",
+      "input_ciphertext_sha256": "df086144f6e467bcc119184e3aa35b6e509f185095e2691b183d755c7306d6a0",
+      "output_ciphertext_sha256": "1dfa0a85aba49bd4cb5b67610b89eb3211e50bc575ba18449bedf4c34cabf11c",
+      "scope": "Exact raw-square phase binding with public parsing and linear NTT transforms in verifier TCB; no scaler/product computation in verification",
+      "source_trace_sha256": "c0c32aa29c30ade43151e22dc865cd6465c1d7093eb2c333c618eadb30c772c2"
+    },
+    "end_row_exclusive": 28672,
+    "first_row": 24576,
+    "index": 6,
+    "kind": "tensor",
+    "proof_bytes": 720220,
+    "proof_sha256": "a82c3cb5199f1b255ffcfd5dd6ceae23750a35e797470cc550653b89843ef58a",
+    "prove_ns": 2542167417,
+    "public_rows_sha256": "8458382e8af7de0a24f74ceede3525b240ba4aa38ad2af9a3f2edc9176fcb1e6",
+    "rows": 4096,
+    "self_verify_ns": 81687500,
+    "template_sha256": "3dc35115c579e796dc0bc43a8496270479a77c65422d54b54e5b1b11f25a96e4",
+    "verified": true,
+    "width": 2036
+  },
+  "costs": {
+    "emit": {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime3/witness_plan.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime3/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/tensor/006.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/work/tensor-b045dd8c67148237/chunk006"
+      ],
+      "started_utc": "2026-09-08T22:55:45.171822+00:00",
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+      "timeout_seconds": 900,
+      "pid": 34288,
+      "returncode": 0,
+      "timed_out": false,
+      "finished_utc": "2026-09-08T22:55:45.753278+00:00",
+      "elapsed_seconds": 0.5814782080124132,
+      "user_seconds": 0.48955299999999996,
+      "system_seconds": 0.013979,
+      "max_rss_bytes": 9781248
+    },
+    "prove": {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/target/release/vfhe-full-bfv-multiply",
+        "prove",
+        "tensor",
+        "6",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime3/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/work/tensor-b045dd8c67148237/chunk006/trace.leu32",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/tensor001/chunk006"
+      ],
+      "started_utc": "2026-09-08T22:55:45.774981+00:00",
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+      "timeout_seconds": 1800,
+      "pid": 34300,
+      "returncode": 0,
+      "timed_out": false,
+      "finished_utc": "2026-09-08T22:55:48.805033+00:00",
+      "elapsed_seconds": 3.0300600409973413,
+      "user_seconds": 6.446102,
+      "system_seconds": 0.29220399999999996,
+      "max_rss_bytes": 881164288
+    },
+    "compress": {
+      "argv": [
+        "/opt/homebrew/bin/zstd",
+        "-T1",
+        "-3",
+        "--no-progress",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/work/tensor-b045dd8c67148237/chunk006/trace.leu32",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/work/tensor-b045dd8c67148237/chunk006/trace.leu32.zst"
+      ],
+      "started_utc": "2026-09-08T22:55:48.806505+00:00",
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+      "timeout_seconds": 300,
+      "pid": 34342,
+      "returncode": 0,
+      "timed_out": false,
+      "finished_utc": "2026-09-08T22:55:48.915643+00:00",
+      "elapsed_seconds": 0.10915025003487244,
+      "user_seconds": 0.072154,
+      "system_seconds": 0.01571,
+      "max_rss_bytes": 39862272
+    }
+  },
+  "witness_transport": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/work/tensor-b045dd8c67148237/chunk006/trace.leu32.zst",
+    "sha256": "f3f346953c5726d1ac32b898ce5a1ab07c4ebc97489d79b60a8b987f6070a550",
+    "bytes": 3340710,
+    "raw_sha256": "1e27e62f44c7c4067117de7a3539a4daefbfa8a265934f8744757dd1d4c02fb0",
+    "raw_bytes": 33357824,
+    "tracked_in_git": false
+  }
+}

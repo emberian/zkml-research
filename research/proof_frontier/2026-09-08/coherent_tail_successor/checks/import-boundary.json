@@ -1,0 +1,10 @@
+{
+  "command": [
+    "bash",
+    "scripts/check-import-boundary.sh"
+  ],
+  "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "exit_code": 0,
+  "elapsed_s": 0.20087409019470215,
+  "output": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n"
+}

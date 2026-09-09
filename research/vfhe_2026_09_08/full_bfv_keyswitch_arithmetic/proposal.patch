@@ -1,0 +1,852 @@
+diff --git a/Compiler/BfvKeyswitchAxiomPins.lean b/Compiler/BfvKeyswitchAxiomPins.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvKeyswitchAxiomPins.lean
+@@ -0,0 +1,136 @@
++/- Exact theorem census, separate from frozen runtime source. -/
++import Compiler.BfvKeyswitchWitnessPlan
++import Compiler.BfvKeyswitchExhibits
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.canonicalSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.canonicalSystem_sound
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.sumTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.sumTerm_eval
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.convolutionTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.convolutionTerm_eval
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.convolution_denote' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.convolution_denote
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.padded_denote' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.padded_denote
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.convolution_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.convolution_bound
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.radix_balance
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.denote_add' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.denote_add
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.denote_scale' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.denote_scale
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.convolution_cast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.convolution_cast
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.padded_cast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.padded_cast
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.denote_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.denote_sum
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.products_denote' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.products_denote
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.products_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.products_bound
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.products_cast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.products_cast
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.productTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.productTerm_eval
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.column_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.column_correct
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchMac.rowSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchMac.rowSystem_sound
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.sound
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchRow.prime_capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchRow.prime_capacity
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchRow.wholeRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchRow.wholeRowSound
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchRow.emittedSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchRow.emittedSystem_sound
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.canonical_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.canonical_accepts
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.mac_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.mac_accepts
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.good_values' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.good_values
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.nonzero_premise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.nonzero_premise
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.premise_inhabited
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_canonical' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_canonical
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_values' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_values
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_refused
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.capacity_inhabited' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.capacity_inhabited
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.quotient_capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.quotient_capacity
++
++/-- info: 'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.field_column_capacity' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Compiler.BfvKeyswitchCore.Exhibits.field_column_capacity
++
+diff --git a/Compiler/BfvKeyswitchCore.lean b/Compiler/BfvKeyswitchCore.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvKeyswitchCore.lean
+@@ -0,0 +1,74 @@
++/- Paired RNS switching MAC, sharing four canonical lifted inputs. -/
++import Compiler.BfvKeyswitchMac
++namespace Minidregg.Compiler.BfvKeyswitchCore
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++structure Wires (J : Type) where
++  canonical : Fin 16 → AirBignum.AddWires J 6 9
++  quotient : Fin 2 → Fin 6 → J
++  quotientBit : Fin 2 → Fin 6 → Fin 9 → J
++  carry : Fin 2 → Fin 13 → J
++  carryBit : Fin 2 → Fin 13 → Fin 16 → J
++
++def kindMap (h : Fin 2) (k : Fin 10) : Fin 16 :=
++  if k.val<4 then ⟨k.val,by omega⟩
++  else if k.val<8 then ⟨4*h.val+k.val,by omega⟩
++  else if k.val=8 then ⟨12+h.val,by omega⟩
++  else ⟨14+h.val,by omega⟩
++def macWires {J : Type} (w : Wires J) (h : Fin 2) : BfvKeyswitchMac.RowWires J where
++  canonical := fun k => w.canonical (kindMap h k)
++  quotient := w.quotient h
++  quotientBit := w.quotientBit h
++  carry := w.carry h
++  carryBit := w.carryBit h
++
++def system {J : Type} (q : Nat) (w : Wires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 2).flatMap fun h => BfvKeyswitchMac.rowSystem q (macWires w h)
++def value {J : Type} (asg : J → BabyBear) (w : Wires J) (g : Fin 16) : Nat :=
++  Bignum.denoteNat 512 (AirBignum.limbVals asg (w.canonical g).x)
++def dIndex (k : Fin 4) : Fin 16 := ⟨k.val,by omega⟩
++def kIndex (h : Fin 2) (k : Fin 4) : Fin 16 := ⟨4+4*h.val+k.val,by omega⟩
++def aIndex (h : Fin 2) : Fin 16 := ⟨12+h.val,by omega⟩
++def oIndex (h : Fin 2) : Fin 16 := ⟨14+h.val,by omega⟩
++/-- Every operand/output is canonical; both accumulated outputs are forced from
++one shared D[4]. All sixteen public word bounds are part of acceptance. -/
++def Sound {J : Type} (q : Nat) (w : Wires J) : Prop := ∀ asg : J → BabyBear,
++  systemAccepts asg (system q w) → (∀ g,value asg w g<q) ∧
++    ∀ h,value asg w (oIndex h)=(value asg w (aIndex h)+
++      ∑ k : Fin 4,value asg w (dIndex k)*value asg w (kIndex h k))%q
++
++theorem sound {J : Type} (q : Nat) (hq : 0<q) (hcap : q<512^6) (w : Wires J) : Sound q w := by
++  intro asg hs
++  have hc (h : Fin 2) := BfvKeyswitchMac.rowSystem_sound q hq hcap (macWires w h) asg
++    (show systemAccepts asg (BfvKeyswitchMac.rowSystem q (macWires w h)) from
++      fun t ht => hs t (List.mem_flatMap.mpr ⟨h,List.mem_finRange h,ht⟩))
++  constructor
++  · intro g
++    have h0 := hc 0
++    have h1 := hc 1
++    fin_cases g
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 0
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 1
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 2
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 3
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 4
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 5
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 6
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 7
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h1.1 4
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h1.1 5
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h1.1 6
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h1.1 7
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 8
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h1.1 8
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h0.1 9
++    · simpa [BfvKeyswitchMac.word,macWires,kindMap,value] using h1.1 9
++  · intro h
++    have hh := (hc h).2
++    fin_cases h <;>
++      simpa [BfvKeyswitchMac.word,macWires,kindMap,value,BfvKeyswitchMac.lhs,
++        BfvKeyswitchMac.rhs,dIndex,kIndex,aIndex,oIndex,Fin.sum_univ_succ] using hh
++end Minidregg.Compiler.BfvKeyswitchCore
+diff --git a/Compiler/BfvKeyswitchExhibits.lean b/Compiler/BfvKeyswitchExhibits.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvKeyswitchExhibits.lean
+@@ -0,0 +1,129 @@
++/- Nonzero acceptance and a canonical omitted-term falsifier for the same source. -/
++import Compiler.BfvKeyswitchCore
++namespace Minidregg.Compiler.BfvKeyswitchCore.Exhibits
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.BfvKeyswitchMac
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 5000000
++
++def vals : Fin 16 → Nat := ![1,2,3,4,2,2,2,2,3,3,3,3,7,5,27,35]
++def lo (n : Nat) (i : Fin 6) : BabyBear := if i.val=0 then (n : BabyBear) else 0
++def bits (n : Nat) (i : Fin 6) (j : Fin 9) : BabyBear :=
++  if i.val=0 then (n/2^j.val%2 : Nat) else 0
++def good : Wires BabyBear where
++  canonical := fun g => {
++    x := lo (vals g)
++    y := lo (36-vals g)
++    z := lo 36
++    xBit := bits (vals g)
++    yBit := bits (36-vals g)
++    zBit := bits 36
++    carry := fun _ => 0 }
++  quotient := fun _ _ => 0
++  quotientBit := fun _ _ _ => 0
++  carry := fun _ _ => 32768
++  carryBit := fun _ _ j => if j.val=15 then 1 else 0
++
++def NonzeroPremise : Prop := systemAccepts id (BfvKeyswitchCore.system 37 good) ∧
++  ∀ g,value id good g=vals g
++
++theorem canonical_accepts (g : Fin 16) :
++    systemAccepts id (canonicalSystem 37 (good.canonical g)) := by
++  rw [canonicalSystem,systemAccepts_append,AirBignum.addGadget_correct,
++    AirModularView.pinWordSystem_correct]
++  fin_cases g <;>
++    norm_num [good,vals,lo,bits,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ,
++      AirModularView.constDigit,Bignum.digitsLE,List.getD]
++
++theorem mac_accepts (h : Fin 2) :
++    systemAccepts id (rowSystem 37 (macWires good h)) := by
++  simp only [rowSystem,systemAccepts_append]
++  refine ⟨⟨⟨⟨?_,?_⟩,?_⟩,?_⟩,?_⟩
++  · intro t ht
++    obtain ⟨g,_,ht⟩ := List.mem_flatMap.mp ht
++    exact canonical_accepts (kindMap h g) t ht
++  · rw [AirBignum.limbRangeSystem_correct]
++    intro i
++    norm_num [macWires,good,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ]
++  · rw [AirBignum.limbRangeSystem_correct]
++    intro i
++    norm_num [macWires,good,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ]
++  · norm_num [macWires,good,systemAccepts_cons,systemAccepts_nil,accepts,eval_add',eval_vr,eval_cst]
++  · intro t ht
++    obtain ⟨i,_,rfl⟩ := List.mem_map.mp ht
++    rw [column_correct]
++    fin_cases h <;> fin_cases i <;>
++      norm_num [macWires,kindMap,good,vals,lo,padded,products,convolution,lhs,rhs,
++        Fin.sum_univ_succ,AirModularView.constDigit,Matrix.cons_val_two,Matrix.vecHead,Matrix.vecTail]
++
++theorem good_values (g : Fin 16) : value id good g=vals g := by
++  fin_cases g <;>
++    norm_num [value,AirBignum.limbVals,good,vals,lo,List.ofFn_succ,Bignum.denoteNat] <;> decide +kernel
++
++theorem nonzero_premise : NonzeroPremise := by
++  constructor
++  · intro t ht
++    obtain ⟨h,_,ht⟩ := List.mem_flatMap.mp ht
++    exact mac_accepts h t ht
++  · exact good_values
++
++theorem premise_inhabited : ∃ w : Wires BabyBear,
++    systemAccepts id (BfvKeyswitchCore.system 37 w) ∧ value id w 0≠0 ∧ value id w 14≠0 := by
++  refine ⟨good,nonzero_premise.1,?_,?_⟩
++  · rw [good_values]; decide
++  · rw [good_values]; decide
++
++def wrong : Wires BabyBear where
++  canonical := fun g =>
++    if g.val=14 then
++      { x := lo 19
++        y := lo 17
++        z := lo 36
++        xBit := bits 19
++        yBit := bits 17
++        zBit := bits 36
++        carry := fun _ => 0 }
++    else good.canonical g
++  quotient := good.quotient
++  quotientBit := good.quotientBit
++  carry := good.carry
++  carryBit := good.carryBit
++
++theorem wrong_canonical (g : Fin 16) :
++    systemAccepts id (canonicalSystem 37 (wrong.canonical g)) := by
++  rw [canonicalSystem,systemAccepts_append,AirBignum.addGadget_correct,
++    AirModularView.pinWordSystem_correct]
++  fin_cases g <;>
++    norm_num [wrong,good,vals,lo,bits,rangeGadget_correct,Fin.forall_fin_succ,Fin.sum_univ_succ,
++      AirModularView.constDigit,Bignum.digitsLE,List.getD]
++
++theorem wrong_values (g : Fin 16) : value id wrong g=if g.val=14 then 19 else vals g := by
++  fin_cases g <;>
++    norm_num [value,wrong,good,vals,AirBignum.limbVals,lo,List.ofFn_succ,Bignum.denoteNat] <;> decide +kernel
++
++/-- The missing final2*4 term leaves every public word canonical but source
++acceptance is impossible. The theorem uses source soundness, not a producer check. -/
++theorem wrong_refused : ¬systemAccepts id (BfvKeyswitchCore.system 37 wrong) := by
++  intro hs
++  have h := (sound 37 (by decide) (by decide) wrong id hs).2 0
++  norm_num [wrong_values,vals,oIndex,aIndex,dIndex,kIndex,Fin.sum_univ_succ] at h
++
++theorem capacity_inhabited : ∃ q : Nat,0<q ∧ 5*q<512^6 := ⟨37,by decide,by decide⟩
++
++theorem quotient_capacity (q ad : Nat) (a b : Fin 4 → Nat) (hq : 0<q)
++    (hcap : 5*q<512^6) (had : ad<q) (ha : ∀ i,a i<q) (hb : ∀ i,b i<q) :
++    (ad+∑ i : Fin 4,a i*b i)/q<512^6 := by
++  have hs : (∑ i : Fin 4,a i*b i)≤4*(q*q) := by
++    calc
++      _ ≤ ∑ _i : Fin 4,q*q := Finset.sum_le_sum fun i _ =>
++        Nat.mul_le_mul (Nat.le_of_lt (ha i)) (Nat.le_of_lt (hb i))
++      _ = _ := by simp
++  have hp : ad+(∑ i : Fin 4,a i*b i)<(5*q)*q := by nlinarith
++  have hd := (Nat.div_lt_iff_lt_mul hq).2 hp
++  omega
++
++theorem field_column_capacity :
++    4*(36*261121)+511+65535+16777216<babyBearP ∧
++    511+36*261121+512*65535+32768<babyBearP := by decide
++end Minidregg.Compiler.BfvKeyswitchCore.Exhibits
+diff --git a/Compiler/BfvKeyswitchMac.lean b/Compiler/BfvKeyswitchMac.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvKeyswitchMac.lean
+@@ -0,0 +1,275 @@
++/- Source-native four-term modular multiply-accumulate for actual BFV switching. -/
++import Compiler.IntegerCertificateEmission
++namespace Minidregg.Compiler.BfvKeyswitchMac
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.IntegerCertificateEmission Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 5000000
++structure RowWires (J : Type) where
++  canonical : Fin 10 → AirBignum.AddWires J 6 9
++  quotient : Fin 6 → J
++  quotientBit : Fin 6 → Fin 9 → J
++  carry : Fin 13 → J
++  carryBit : Fin 13 → Fin 16 → J
++
++def word {J : Type} (asg : J → BabyBear) (w : RowWires J) (kind : Fin 10) : Nat :=
++  Bignum.denoteNat 512 (AirBignum.limbVals asg (w.canonical kind).x)
++def convolution {R : Type} [Semiring R] (a b : Fin 6 → R) (t : Fin 12) : R :=
++  ∑ i : Fin 6, ∑ j : Fin 6, if i.val+j.val=t.val then a i*b j else 0
++def products {R : Type} [Semiring R] (a b : Fin 4 → Fin 6 → R) (t : Fin 12) : R :=
++  ∑ k : Fin 4,convolution (a k) (b k) t
++def padded {R : Type} [Zero R] (a : Fin 6 → R) (t : Fin 12) : R :=
++  if h : t.val<6 then a ⟨t.val,h⟩ else 0
++def sumTerm {J : Type} (f : Fin 6 → Term (AirSig BabyBear J)) : Term (AirSig BabyBear J) :=
++  (List.ofFn f).foldr add' (cst 0)
++def convolutionTerm {J : Type} (a b : Fin 6 → Term (AirSig BabyBear J)) (t : Fin 12) : Term (AirSig BabyBear J) :=
++  sumTerm fun i => sumTerm fun j => if i.val+j.val=t.val then mul' (a i) (b j) else cst 0
++
++def lhs (k : Fin 4) : Fin 10 := ⟨k.val,by omega⟩
++def rhs (k : Fin 4) : Fin 10 := ⟨4+k.val,by omega⟩
++def canonicalSystem {J : Type} (q : Nat) (w : AirBignum.AddWires J 6 9) : ConstraintSystem BabyBear J :=
++  AirBignum.addGadget w ++ AirModularView.pinWordSystem (limbBits := 9) (q-1) w.z
++
++def productTerm {J : Type} (w : RowWires J) (t : Fin 12) : Term (AirSig BabyBear J) :=
++  ((List.finRange 4).map fun k => convolutionTerm
++    (fun i => vr ((w.canonical (lhs k)).x i))
++    (fun i => vr ((w.canonical (rhs k)).x i)) t).foldr add' (cst 0)
++def column {J : Type} (q : Nat) (w : RowWires J) (t : Fin 12) : Term (AirSig BabyBear J) :=
++  let ab := productTerm w t
++  let qk := convolutionTerm (fun i => cst (AirModularView.constDigit 512 6 q i : BabyBear)) (fun i => vr (w.quotient i)) t
++  let o := if h : t.val<6 then vr ((w.canonical 9).x ⟨t.val,h⟩) else cst 0
++  let ad := if h : t.val<6 then vr ((w.canonical 8).x ⟨t.val,h⟩) else cst 0
++  add' (add' (add' (add' ab ad) (vr (w.carry t.castSucc))) (cst 16777216))
++    (mul' (cst (-1)) (add' (add' (add' o qk) (mul' (cst 512) (vr (w.carry t.succ)))) (cst 32768)))
++def rowSystem {J : Type} (q : Nat) (w : RowWires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 10).flatMap (fun kind => canonicalSystem q (w.canonical kind)) ++
++  AirBignum.limbRangeSystem w.quotient w.quotientBit ++
++  AirBignum.limbRangeSystem w.carry w.carryBit ++
++  [add' (vr (w.carry 0)) (cst (-32768)),add' (vr (w.carry 12)) (cst (-32768))] ++
++  (List.finRange 12).map (column q w)
++def RowSound {J : Type} (q : Nat) (w : RowWires J) : Prop := ∀ asg : J → BabyBear,
++  systemAccepts asg (rowSystem q w) → (∀ k,word asg w k<q) ∧
++    word asg w 9=(word asg w 8+∑ k : Fin 4,word asg w (lhs k)*word asg w (rhs k))%q
++
++theorem canonicalSystem_sound {J : Type} (q : Nat) (hq : 0 < q) (hqcap : q < 512^6)
++    (w : AirBignum.AddWires J 6 9) (asg : J → BabyBear)
++    (h : systemAccepts asg (canonicalSystem q w)) :
++    Bignum.denoteNat 512 (AirBignum.limbVals asg w.x) < q ∧
++    ∀ i, (asg (w.x i)).val < 512 := by
++  obtain ⟨ha,hp⟩ := (systemAccepts_append asg _ _).mp h
++  have hh := AirBignum.addGadget_sound (by norm_num [babyBearP] : 2*2^9 ≤ babyBearP) asg w ha
++  have hpin := (AirModularView.pinWordSystem_correct asg (q-1) w.z).mp hp
++  have hz := AirModularView.denote_pinned_word (by positivity : 0 < 2^9)
++    (by norm_num [babyBearP] : 2^9 ≤ babyBearP)
++    (show q-1 < (2^9)^6 by norm_num at *; omega) asg w.z hpin
++  constructor
++  · norm_num at hz hh
++    omega
++  · intro i
++    have hr := (AirBignum.addGadget_correct asg w).mp ha
++    exact rangeGadget_val_lt (by norm_num [babyBearP] : 2^9 ≤ babyBearP)
++      asg (w.x i) (w.xBit i) (hr.1 i)
++
++
++theorem sumTerm_eval {J : Type} (asg : J → BabyBear) (f : Fin 6 → Term (AirSig BabyBear J)) :
++    eval asg (sumTerm f) = ∑ i : Fin 6, eval asg (f i) := by
++  simp [sumTerm, List.ofFn_succ, Fin.sum_univ_succ, eval_add', eval_cst]
++theorem convolutionTerm_eval {J : Type} (asg : J → BabyBear) (a b : Fin 6 → Term (AirSig BabyBear J)) (t : Fin 12) :
++    eval asg (convolutionTerm a b t) = convolution (fun i => eval asg (a i)) (fun i => eval asg (b i)) t := by
++  simp only [convolutionTerm, sumTerm_eval, convolution]
++  apply Finset.sum_congr rfl
++  intro i _
++  apply Finset.sum_congr rfl
++  intro j _
++  split <;> simp [eval_mul', eval_cst]
++theorem convolution_denote (a b : Fin 6 → Nat) :
++    Bignum.denoteNat 512 (List.ofFn (convolution a b)) =
++      Bignum.denoteNat 512 (List.ofFn a)*Bignum.denoteNat 512 (List.ofFn b) := by
++  norm_num [convolution,Fin.sum_univ_succ,List.ofFn_succ,Bignum.denoteNat]
++  ring
++theorem padded_denote (a : Fin 6 → Nat) :
++    Bignum.denoteNat 512 (List.ofFn (padded a)) = Bignum.denoteNat 512 (List.ofFn a) := by
++  norm_num [padded,List.ofFn_succ,Bignum.denoteNat]
++  rfl
++theorem convolution_bound (a b : Fin 6 → Nat) (ha : ∀ i,a i<512) (hb : ∀ i,b i<512) (t : Fin 12) :
++    convolution a b t ≤ 36*261121 := by
++  unfold convolution
++  calc
++    _ ≤ ∑ _i : Fin 6, ∑ _j : Fin 6, 261121 := by
++      apply Finset.sum_le_sum
++      intro i _
++      apply Finset.sum_le_sum
++      intro j _
++      split
++      · exact Nat.mul_le_mul (show a i ≤ 511 by have := ha i; omega) (show b j ≤ 511 by have := hb j; omega)
++      · omega
++    _ = _ := by norm_num
++theorem radix_balance : ∀ {n : Nat} (a b : Fin n → Nat) (carry : Fin (n+1) → Nat),
++    (∀ i,a i+carry i.castSucc+16777216=b i+512*carry i.succ+32768) →
++    Bignum.denoteNat 512 (List.ofFn a)+carry 0+32768*512^n =
++    Bignum.denoteNat 512 (List.ofFn b)+512^n*carry (Fin.last n)+32768 := by
++  intro n
++  induction n with
++  | zero => intro a b c _; simp
++  | succ n ih =>
++    intro a b c heq
++    have hlo := heq (0 : Fin (n+1))
++    have htail := ih (fun i => a i.succ) (fun i => b i.succ) (fun i => c i.succ) (fun i => heq i.succ)
++    simp only [List.ofFn_succ,Bignum.denoteNat_cons,pow_succ]
++    have hzero : (0 : Fin (n+1)).castSucc = (0 : Fin (n+2)) := by apply Fin.ext; rfl
++    have hlast : (Fin.last n).succ = Fin.last (n+1) := by apply Fin.ext; rfl
++    rw [hzero] at hlo
++    dsimp only at htail
++    rw [hlast] at htail
++    nlinarith [hlo,htail]
++theorem denote_add : ∀ {n : Nat} (a b : Fin n → Nat),
++    Bignum.denoteNat 512 (List.ofFn (fun i => a i+b i)) =
++      Bignum.denoteNat 512 (List.ofFn a)+Bignum.denoteNat 512 (List.ofFn b) := by
++  intro n
++  induction n with
++  | zero => intros; simp
++  | succ n ih => intro a b; simp only [List.ofFn_succ,Bignum.denoteNat_cons,ih]; ring
++theorem denote_scale : ∀ {n : Nat} (factor : Nat) (a : Fin n → Nat),
++    Bignum.denoteNat 512 (List.ofFn (fun i => factor*a i)) =
++      factor*Bignum.denoteNat 512 (List.ofFn a) := by
++  intro n
++  induction n with
++  | zero => intros; simp
++  | succ n ih => intro factor a; simp only [List.ofFn_succ,Bignum.denoteNat_cons,ih]; ring
++
++theorem convolution_cast (a b : Fin 6 → Nat) (t : Fin 12) :
++    ((convolution a b t : Nat) : BabyBear) = convolution (fun i => (a i : BabyBear)) (fun i => (b i : BabyBear)) t := by
++  simp only [convolution,Nat.cast_sum]
++  apply Finset.sum_congr rfl
++  intro i _
++  apply Finset.sum_congr rfl
++  intro j _
++  split <;> simp only [Nat.cast_mul,Nat.cast_zero]
++theorem padded_cast (a : Fin 6 → Nat) (t : Fin 12) :
++    ((padded a t : Nat) : BabyBear) = padded (fun i => (a i : BabyBear)) t := by
++  unfold padded
++  split <;> simp
++
++
++theorem denote_sum : ∀ {m n : Nat} (a : Fin m → Fin n → Nat),
++    Bignum.denoteNat 512 (List.ofFn (fun i => ∑ k : Fin m,a k i)) =
++      ∑ k : Fin m,Bignum.denoteNat 512 (List.ofFn (a k)) := by
++  intro m
++  induction m with
++  | zero =>
++    intro n a
++    simp only [Fin.sum_univ_zero,List.ofFn_const]
++    induction n with
++    | zero => rfl
++    | succ n ih => simpa [List.replicate_succ,Bignum.denoteNat] using ih
++  | succ m ih =>
++    intro n a
++    simp only [Fin.sum_univ_succ]
++    rw [denote_add,ih]
++
++theorem products_denote (a b : Fin 4 → Fin 6 → Nat) :
++    Bignum.denoteNat 512 (List.ofFn (products a b)) =
++      ∑ k : Fin 4,Bignum.denoteNat 512 (List.ofFn (a k))*Bignum.denoteNat 512 (List.ofFn (b k)) := by
++  change Bignum.denoteNat 512 (List.ofFn (fun i => ∑ k : Fin 4,convolution (a k) (b k) i))=_
++  rw [denote_sum]
++  simp only [convolution_denote]
++
++theorem products_bound (a b : Fin 4 → Fin 6 → Nat)
++    (ha : ∀ k i,a k i<512) (hb : ∀ k i,b k i<512) (t : Fin 12) :
++    products a b t≤4*(36*261121) := by
++  calc
++    _ ≤ ∑ _k : Fin 4,36*261121 := Finset.sum_le_sum fun k _ => convolution_bound (a k) (b k) (ha k) (hb k) t
++    _ = _ := by simp
++
++theorem products_cast (a b : Fin 4 → Fin 6 → Nat) (t : Fin 12) :
++    ((products a b t : Nat) : BabyBear)=products (fun k i => (a k i : BabyBear)) (fun k i => (b k i : BabyBear)) t := by
++  simp only [products,Nat.cast_sum,convolution_cast]
++
++theorem productTerm_eval {J : Type} (w : RowWires J) (asg : J → BabyBear) (t : Fin 12) :
++    eval asg (productTerm w t)=products
++      (fun k i => asg ((w.canonical (lhs k)).x i))
++      (fun k i => asg ((w.canonical (rhs k)).x i)) t := by
++  simp [productTerm,products,List.finRange_succ,Fin.sum_univ_succ,eval_add',eval_cst,
++    convolutionTerm_eval,eval_vr]
++
++theorem column_correct {J : Type} (q : Nat) (w : RowWires J) (asg : J → BabyBear) (t : Fin 12) :
++    accepts asg (column q w t) ↔
++    products (fun k i => asg ((w.canonical (lhs k)).x i)) (fun k i => asg ((w.canonical (rhs k)).x i)) t+
++      padded (fun i => asg ((w.canonical 8).x i)) t+asg (w.carry t.castSucc)+16777216 =
++      padded (fun i => asg ((w.canonical 9).x i)) t+
++      convolution (fun i => (AirModularView.constDigit 512 6 q i : BabyBear)) (fun i => asg (w.quotient i)) t+
++      512*asg (w.carry t.succ)+32768 := by
++  simp only [accepts,column,eval_add',eval_mul',eval_cst,eval_vr,productTerm_eval,convolutionTerm_eval]
++  have ho : eval asg (if h : t.val<6 then vr ((w.canonical 9).x ⟨t.val,h⟩) else cst 0) =
++      padded (fun i => asg ((w.canonical 9).x i)) t := by unfold padded; split <;> rfl
++  have ha : eval asg (if h : t.val<6 then vr ((w.canonical 8).x ⟨t.val,h⟩) else cst 0) =
++      padded (fun i => asg ((w.canonical 8).x i)) t := by unfold padded; split <;> rfl
++  simp only [ho,ha]
++  constructor <;> intro h <;> linear_combination h
++
++
++
++theorem rowSystem_sound {J : Type} (q : Nat) (hq : 0<q) (hcap : q<512^6)
++    (w : RowWires J) : RowSound q w := by
++  intro asg hs
++  simp only [rowSystem,systemAccepts_append] at hs
++  obtain ⟨⟨⟨⟨hcan,hqr⟩,hcr⟩,hend⟩,hcols⟩ := hs
++  have hcan' (k : Fin 10) : systemAccepts asg (canonicalSystem q (w.canonical k)) := by
++    intro t ht
++    exact hcan t (List.mem_flatMap.mpr ⟨k,List.mem_finRange k,ht⟩)
++  have hw := fun k => canonicalSystem_sound q hq hcap (w.canonical k) asg (hcan' k)
++  let a : Fin 4 → Fin 6 → Nat := fun k i => (asg ((w.canonical (lhs k)).x i)).val
++  let b : Fin 4 → Fin 6 → Nat := fun k i => (asg ((w.canonical (rhs k)).x i)).val
++  let ad : Fin 6 → Nat := fun i => (asg ((w.canonical 8).x i)).val
++  let o : Fin 6 → Nat := fun i => (asg ((w.canonical 9).x i)).val
++  let k : Fin 6 → Nat := fun i => (asg (w.quotient i)).val
++  let qd := AirModularView.constDigit 512 6 q
++  let c : Fin 13 → Nat := fun i => (asg (w.carry i)).val
++  have hk (i : Fin 6) : k i<512 := rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^9≤babyBearP) asg _ _
++    ((AirBignum.limbRangeSystem_correct asg _ _).mp hqr i)
++  have hc (i : Fin 13) : c i<65536 := rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^16≤babyBearP) asg _ _
++    ((AirBignum.limbRangeSystem_correct asg _ _).mp hcr i)
++  have hqd (i : Fin 6) : qd i<512 := constDigit_lt 512 6 q (by omega) i
++  have hcol (t : Fin 12) : products a b t+padded ad t+c t.castSucc+16777216 =
++      (padded o t+convolution qd k t)+512*c t.succ+32768 := by
++    have hf := (column_correct q w asg t).mp
++      (hcols _ (List.mem_map.mpr ⟨t,List.mem_finRange t,rfl⟩))
++    have hab := products_bound a b (fun j => (hw (lhs j)).2) (fun j => (hw (rhs j)).2) t
++    have hqk := convolution_bound qd k hqd hk t
++    have ho : padded o t<512 := by unfold padded; split; exact (hw 9).2 _; omega
++    have had : padded ad t<512 := by unfold padded; split; exact (hw 8).2 _; omega
++    have hc0 := hc t.castSucc
++    have hc1 := hc t.succ
++    have hl : products a b t+padded ad t+c t.castSucc+16777216<babyBearP := by norm_num [babyBearP]; omega
++    have hr : (padded o t+convolution qd k t)+512*c t.succ+32768<babyBearP := by norm_num [babyBearP]; omega
++    have heq : ((products a b t+padded ad t+c t.castSucc+16777216 : Nat) : BabyBear)=
++        (((padded o t+convolution qd k t)+512*c t.succ+32768 : Nat) : BabyBear) := by
++      simpa only [Nat.cast_add,Nat.cast_mul,Nat.cast_ofNat,products_cast,convolution_cast,padded_cast,
++        a,b,ad,o,k,qd,c,ZMod.natCast_zmod_val] using hf
++    have hv := congrArg ZMod.val heq
++    simpa only [ZMod.val_cast_of_lt hl,ZMod.val_cast_of_lt hr] using hv
++  have he : asg (w.carry 0)=32768 ∧ asg (w.carry 12)=32768 := by
++    simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,eval_add',eval_vr,eval_cst,add_neg_eq_zero] using hend
++  have h0 : c 0=32768 := by dsimp [c]; rw [he.1]; decide +kernel
++  have hn : c 12=32768 := by dsimp [c]; rw [he.2]; decide +kernel
++  have ht := radix_balance (fun t => products a b t+padded ad t) (fun t => padded o t+convolution qd k t) c hcol
++  rw [denote_add,products_denote,padded_denote,denote_add,padded_denote,convolution_denote] at ht
++  have hqden : Bignum.denoteNat 512 (List.ofFn qd)=q := by
++    rw [show List.ofFn qd=Bignum.digitsLE 512 6 q from AirModularView.constDigits_eq 512 6 q]
++    exact Bignum.denoteNat_digitsLE (by omega) 6 q hcap
++  change _+c 0+_=_+_*c 12+_ at ht
++  rw [h0,hn,hqden] at ht
++  have hb : word asg w 8+(∑ j : Fin 4,word asg w (lhs j)*word asg w (rhs j))=
++      word asg w 9+q*Bignum.denoteNat 512 (List.ofFn k) := by
++    change Bignum.denoteNat 512 (List.ofFn ad)+(∑ j : Fin 4,
++      Bignum.denoteNat 512 (List.ofFn (a j))*Bignum.denoteNat 512 (List.ofFn (b j)))=
++      Bignum.denoteNat 512 (List.ofFn o)+q*Bignum.denoteNat 512 (List.ofFn k)
++    omega
++  refine ⟨fun kind => (hw kind).1,?_⟩
++  rw [hb,Nat.add_mul_mod_self_left]
++  exact (Nat.mod_eq_of_lt (hw 9).1).symm
++end Minidregg.Compiler.BfvKeyswitchMac
+diff --git a/Compiler/BfvKeyswitchRow.lean b/Compiler/BfvKeyswitchRow.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvKeyswitchRow.lean
+@@ -0,0 +1,46 @@
++import Compiler.BfvKeyswitchCore
++import Compiler.AirAssertionShare
++namespace Minidregg.Compiler.BfvKeyswitchRow
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 3000000
++local instance : Hashable BabyBear where hash x := hash x.val
++
++def primes : Fin 4 → Nat := ![1125899906826241,1125899906629633,1125899905744897,1125899905351681]
++def nVars : Nat := 2655
++
++def group (g : Fin 16) : AirBignum.AddWires (Fin nVars) 6 9 where
++  x := fun i => ⟨1+6*g.val+i.val,by dsimp [nVars]; omega⟩
++  xBit := fun i j => ⟨97+121*g.val+9*i.val+j.val,by dsimp [nVars]; omega⟩
++  y := fun i => ⟨97+121*g.val+54+i.val,by dsimp [nVars]; omega⟩
++  yBit := fun i j => ⟨97+121*g.val+60+9*i.val+j.val,by dsimp [nVars]; omega⟩
++  carry := fun i => ⟨97+121*g.val+114+i.val,by dsimp [nVars]; omega⟩
++  z := fun i => ⟨2033+i.val,by dsimp [nVars]; omega⟩
++  zBit := fun i j => ⟨2039+9*i.val+j.val,by dsimp [nVars]; omega⟩
++def wires : BfvKeyswitchCore.Wires (Fin nVars) where
++  canonical := group
++  quotient := fun h i => ⟨2093+281*h.val+i.val,by dsimp [nVars]; omega⟩
++  quotientBit := fun h i j => ⟨2093+281*h.val+6+9*i.val+j.val,by dsimp [nVars]; omega⟩
++  carry := fun h i => ⟨2093+281*h.val+60+i.val,by dsimp [nVars]; omega⟩
++  carryBit := fun h i j => ⟨2093+281*h.val+73+16*i.val+j.val,by dsimp [nVars]; omega⟩
++def macWires (h : Fin 2) := BfvKeyswitchCore.macWires wires h
++def system (q : Nat) := BfvKeyswitchCore.system q wires
++def value (asg : Fin nVars → BabyBear) (g : Fin 16) := BfvKeyswitchCore.value asg wires g
++
++def WholeRowSound (q : Nat) : Prop := BfvKeyswitchCore.Sound q wires
++
++theorem prime_capacity (l : Fin 4) : 0<primes l ∧ 5*primes l<512^6 := by
++  fin_cases l <;> norm_num [primes]
++theorem wholeRowSound (q : Nat) (hq : 0<q) (hcap : q<512^6) : WholeRowSound q :=
++  BfvKeyswitchCore.sound q hq hcap wires
++
++def emittedSystem (q : Nat) := AirAssertionShare.optimize (system q)
++theorem emittedSystem_sound (l : Fin 4) (asg : Fin nVars → BabyBear)
++    (h : systemAccepts asg (emittedSystem (primes l))) :
++    (∀ g,value asg g<primes l) ∧ ∀ h,value asg (BfvKeyswitchCore.oIndex h)=
++      (value asg (BfvKeyswitchCore.aIndex h)+∑ k : Fin 4,
++        value asg (BfvKeyswitchCore.dIndex k)*value asg (BfvKeyswitchCore.kIndex h k))%primes l := by
++  apply wholeRowSound (primes l) (prime_capacity l).1 (by have := (prime_capacity l).2; omega) asg
++  exact (AirAssertionShare.optimize_preserves asg (system (primes l))).mp h
++end Minidregg.Compiler.BfvKeyswitchRow
+diff --git a/Compiler/BfvKeyswitchWitnessPlan.lean b/Compiler/BfvKeyswitchWitnessPlan.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/BfvKeyswitchWitnessPlan.lean
+@@ -0,0 +1,114 @@
++/- Compiler-emitted untrusted witness schedule, consumed by the existing generic
++BigInt executor. No AIR or field constraints are authored by that executor. -/
++import Compiler.BfvKeyswitchRow
++import Compiler.BfvQueryWitnessPlan
++namespace Minidregg.Compiler.BfvKeyswitchRow.WitnessPlan
++open Lean (Json toJson)
++open Minidregg.Compiler.BfvQueryRow.WitnessPlan (Operand Instruction Builder Build compute put input)
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 0
++
++def digit (v i : Nat) : Nat := v/512^i%512
++
++def digits (a : Operand) : Build (Array Operand) := do
++  let mut ds := #[]
++  let mut rest := a
++  for _ in [:6] do
++    ds := ds.push (← compute 6 rest (.lit 512))
++    rest ← compute 5 rest (.lit 512)
++  return ds
++
++def readWord (ds : Array Operand) : Build Operand := do
++  let mut value := Operand.lit 0
++  for i in [:6] do value ← compute 1 ds[5-i]! (← compute 2 (.lit 512) value)
++  return value
++
++def putBits {bits : Nat} (w : Fin bits → Fin nVars) (value : Operand) : Build Unit := do
++  let mut rest := value
++  for j in List.finRange bits do
++    put (w j).val (← compute 6 rest (.lit 2))
++    rest ← compute 5 rest (.lit 2)
++
++def convolution (a b : Array Operand) : Build (Array Operand) := do
++  let mut cs := Array.replicate 12 (Operand.lit 0)
++  for i in [:6] do
++    for j in [:6] do
++      cs := cs.set! (i+j) (← compute 1 cs[i+j]! (← compute 2 a[i]! b[j]!))
++  return cs
++
++/-- All sixteen public words are copied unchanged; only source auxiliaries are generated. -/
++def producer (q : Nat) : Build Unit := do
++  for i in [:97] do input i i
++  let qd := ((List.range 6).map (fun i => Operand.lit (digit q i : Nat))).toArray
++  let bd := ((List.range 6).map (fun i => Operand.lit (digit (q-1) i : Nat))).toArray
++  let mut ds : Array (Array Operand) := #[]
++  let mut values : Array Operand := #[]
++  for g in List.finRange 16 do
++    let d := ((List.finRange 6).map fun i => Operand.reg ((group g).x i).val).toArray
++    ds := ds.push d
++    values := values.push (← readWord d)
++  for g in List.finRange 16 do
++    let w := group g
++    let vd := ds[g.val]!
++    let sd ← digits (← compute 3 (.lit (q-1 : Nat)) values[g.val]!)
++    let mut carry := Operand.lit 0
++    for i in List.finRange 6 do
++      putBits (w.xBit i) vd[i.val]!
++      put (w.y i).val sd[i.val]!
++      putBits (w.yBit i) sd[i.val]!
++      put (w.carry i.castSucc).val carry
++      carry ← compute 5 (← compute 1 (← compute 1 vd[i.val]! sd[i.val]!) carry) (.lit 512)
++    put (w.carry 6).val carry
++  let gw := group 0
++  for i in List.finRange 6 do
++    put (gw.z i).val bd[i.val]!
++    putBits (gw.zBit i) bd[i.val]!
++  for h in List.finRange 2 do
++    let w := macWires h
++    let mut numerator := values[12+h.val]!
++    let mut ab := Array.replicate 12 (Operand.lit 0)
++    for k in [:4] do
++      numerator ← compute 1 numerator (← compute 2 values[k]! values[4+4*h.val+k]!)
++      let prod ← convolution ds[k]! ds[4+4*h.val+k]!
++      for i in [:12] do ab := ab.set! i (← compute 1 ab[i]! prod[i]!)
++    let quotient ← compute 5 numerator (.lit q)
++    let kd ← digits quotient
++    let qk ← convolution qd kd
++    let ad := ds[12+h.val]!
++    let pd := ds[14+h.val]!
++    for i in List.finRange 6 do
++      put (w.quotient i).val kd[i.val]!
++      putBits (w.quotientBit i) kd[i.val]!
++    let mut carry := Operand.lit 0
++    for i in List.finRange 13 do
++      let encoded ← compute 7 (← compute 1 carry (.lit 32768)) (.lit 0)
++      put (w.carry i).val encoded
++      putBits (w.carryBit i) encoded
++      if i.val<12 then
++        carry ← compute 5 (← compute 4 (← compute 4
++          (← compute 1 (← compute 1 ab[i.val]! (ad.getD i.val (.lit 0))) carry) qk[i.val]!)
++          (pd.getD i.val (.lit 0))) (.lit 512)
++
++def operandJson (a : Operand) : Array Json := match a with
++  | .lit n => #[toJson (0 : Nat),toJson (toString n)]
++  | .reg n => #[toJson (1 : Nat),toJson n]
++def instructionJson (i : Instruction) : Json :=
++  Json.arr (#[toJson i.dst,toJson i.op] ++ operandJson i.a ++ operandJson i.b)
++def program (q : Nat) : Builder := (producer q |>.run {next := nVars}).2
++
++def programJson (q : Nat) : Json :=
++  let p := program q
++  Json.mkObj [("schema",toJson "lean-bigint-witness-plan-v1"),
++    ("trace_width",toJson nVars),("input_arity",toJson (97 : Nat)),
++    ("input_digit_radix",toJson (512 : Nat)),
++    ("field_modulus",toJson Minidregg.Compiler.babyBearP),
++    ("register_count",toJson p.next),("instructions",Json.arr (p.code.map instructionJson))]
++
++def rowOfValues (rowID : Nat) (xs : List Nat) : Array Nat :=
++  #[rowID] ++ (xs.flatMap fun x => (List.range 6).map fun i => digit x i).toArray
++
++def sampleRows : Array (Array Nat) := #[
++  rowOfValues 0 (List.replicate 16 0),
++  rowOfValues 1 [1,2,3,4,2,2,2,2,3,3,3,3,7,5,27,35]]
++end Minidregg.Compiler.BfvKeyswitchRow.WitnessPlan
+diff --git a/EmitBfvKeyswitch.lean b/EmitBfvKeyswitch.lean
+new file mode 100644
+--- /dev/null
++++ b/EmitBfvKeyswitch.lean
+@@ -0,0 +1,43 @@
++/- Each emitted equation is folded from the proved source relation. -/
++import Compiler.BfvKeyswitchWitnessPlan
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.BfvKeyswitchRow
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def ir2Alg : Alg (AirSig BabyBear (Fin nVars)) String := fun op => match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i.val
++  | .add => fun c => "{\"t\":\"add\",\"l\":"++c false++",\"r\":"++c true++"}"
++  | .mul => fun c => "{\"t\":\"mul\",\"l\":"++c false++",\"r\":"++c true++"}"
++def ir2Template (q : Nat) : String :=
++  let arithmetic := (emittedSystem q).map fun t => "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++String.intercalate "," ((List.range 97).map ir2Var)++"]}"
++  "{\"name\":\"bfv_actual_paired_keyswitch_mac_q"++toString q++"\",\"ir\":2,\"trace_width\":"++toString nVars++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,\"name\":\"bfv_public_keyswitch_rows\",\"arity\":97,\"sem\":\"exact_public_rows\",\"rows\":[]}],\"constraints\":["++
++    String.intercalate "," (lookup::arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++
++def main (args : List String) : IO UInt32 := do
++  let root : System.FilePath := args.headD "artifacts"
++  IO.FS.createDirAll root
++  let mut rows : Array Json := #[]
++  for l in List.finRange 4 do
++    let q := primes l
++    let folder := root / ("prime"++toString l.val)
++    IO.FS.createDirAll folder
++    IO.FS.writeFile (folder / "template_ir2.json") (ir2Template q++"\n")
++    IO.FS.writeFile (folder / "witness_plan.json") ((WitnessPlan.programJson q).compress++"\n")
++    IO.FS.writeFile (folder / "sample_rows.json") ((toJson (WitnessPlan.sampleRows)).compress++"\n")
++    let prog := WitnessPlan.program q
++    let row := Json.mkObj [("prime_index",toJson l.val),("q",toJson q),
++      ("trace_width",toJson nVars),("public_arity",toJson (97 : Nat)),
++      ("radix",toJson (512 : Nat)),("limbs",toJson (6 : Nat)),
++      ("arithmetic_constraints",toJson (emittedSystem q).length),
++      ("instructions",toJson prog.code.size),("register_count",toJson prog.next)]
++    rows := rows.push row
++    IO.println row.compress
++  IO.FS.writeFile (root / "emission.json") (Json.arr rows |>.pretty)
++  return 0

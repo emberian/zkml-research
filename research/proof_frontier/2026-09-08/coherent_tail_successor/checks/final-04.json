@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightConsistencySchedule.olean",
+    "Selvage/ArityEightConsistencySchedule.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "3fb35c055edc2d3f59764b6b93e5fb5ff8d80e4d72bd84e94cca11b30d6bf42f",
+  "source_unchanged": true,
+  "elapsed_s": 4.556858777999878,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-04.log"
+}

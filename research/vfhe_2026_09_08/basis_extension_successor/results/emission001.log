@@ -1,0 +1,2 @@
+EmitBasisExtension.lean:26:5: error: unexpected token 'meta'; expected '(', ':=', 'rec', '|', identifier or term
+EmitBasisExtension.lean:26:10: error: unexpected token ':='; expected 'lemma'

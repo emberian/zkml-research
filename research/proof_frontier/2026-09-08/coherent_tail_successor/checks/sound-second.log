@@ -1,0 +1,8 @@
+Selvage/BabyBearWeightedSoundness.lean:25:7: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/BabyBearWeightedSoundness.lean:71:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (2500000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

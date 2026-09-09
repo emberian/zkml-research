@@ -1,0 +1,43 @@
+'Minidregg.Compiler.BfvKeyswitchMac.canonicalSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.sumTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.convolutionTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.convolution_denote' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.padded_denote' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.convolution_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.denote_add' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.denote_scale' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.convolution_cast' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.padded_cast' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.denote_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.products_denote' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.products_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.products_cast' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.productTerm_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.column_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchMac.rowSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchRow.prime_capacity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchRow.wholeRowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchRow.emittedSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.canonical_accepts' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.mac_accepts' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.good_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.nonzero_premise' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_canonical' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.wrong_refused' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.capacity_inhabited' depends on axioms: [propext]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.quotient_capacity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvKeyswitchCore.Exhibits.field_column_capacity' does not depend on any axioms

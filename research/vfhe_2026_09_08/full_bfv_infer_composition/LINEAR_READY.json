@@ -1,0 +1,19 @@
+{
+  "schema": "lean-bfv-infer-linear-plan-v1",
+  "plan": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+    "bytes": 399094,
+    "sha256": "ec98f40fa8437f03ccf0193774c705f4a488fd55b42fcdc46f6c3774c7c51f22"
+  },
+  "source": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferLinear.lean",
+    "bytes": 5357,
+    "sha256": "fbe9e3e1fdaf618aa9172afb5a013244e440a45065ae28a46064407091890975"
+  },
+  "exporter": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/EmitBfvInferLinear.lean",
+    "bytes": 615,
+    "sha256": "7f6b91e3c274b068bf7b519f6b0af3bf853c036dc4cdc4a3570e7bc66ace1311"
+  },
+  "consumption": "The owned Infer runtime uses permutation[out_index] directly; callback NTT/decoder remains explicit."
+}

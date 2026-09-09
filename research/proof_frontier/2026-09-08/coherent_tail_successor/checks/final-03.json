@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/ConsistencyMask.olean",
+    "Selvage/ConsistencyMask.lean"
+  ],
+  "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "ff9784ab6a7a4e503041591b0d009b4e98e1aad85f02f3933178fe840a489d86",
+  "source_unchanged": true,
+  "elapsed_s": 4.459754943847656,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-03.log"
+}

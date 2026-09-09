@@ -1,0 +1,16 @@
+Selvage/BabyBearWeightedSoundness.lean:23:7: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/BabyBearWeightedSoundness.lean:37:44: error: Application type mismatch: The argument
+  firstFifteen
+has type
+  FoldingTower Ext4 (PowerTwoFriLevels 20) 15
+but is expected to have type
+  FoldingTower Ext4 (PowerTwoFriLevels 20) (3 * ?m.122)
+in the application
+  WeightedBadRound firstFifteen
+Selvage/BabyBearWeightedSoundness.lean:69:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

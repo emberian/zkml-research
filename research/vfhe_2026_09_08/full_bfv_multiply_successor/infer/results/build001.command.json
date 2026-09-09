@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--offline",
+    "-j2"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer",
+  "started_utc": "2026-09-08T23:12:37.030662+00:00",
+  "pid": 54772,
+  "returncode": 101,
+  "elapsed_seconds": 91.3989828749909,
+  "finished_utc": "2026-09-08T23:14:08.430346+00:00",
+  "user_seconds": 168.544804,
+  "system_seconds": 10.425441,
+  "max_rss_bytes": 1227997184
+}

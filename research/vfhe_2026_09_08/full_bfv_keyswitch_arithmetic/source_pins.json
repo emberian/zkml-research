@@ -1,0 +1,90 @@
+{
+  "owned": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchAxiomPins.lean",
+      "sha256": "0034c220ad6d61709f736c38fef734e8e0e0c82f977a857208bb66e3eaf07bdc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchCore.lean",
+      "sha256": "969a8cfc5b0724412a00243352cf956a6aa98d8417b9e48b7e123925736814b3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchExhibits.lean",
+      "sha256": "5c02ef85ebf20f5b2e07cf965fc0148c5ae5f84b867c6851d0b1e55dde534848"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchMac.lean",
+      "sha256": "8897abedbad8090ed074361493ff08c5f89ccd31fe63fac223df9b49518839cc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchRow.lean",
+      "sha256": "41c4a9beb15fbed9cc445e7b9de64043e9cfc1f799b3234ce5710743c1f9fa19"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchWitnessPlan.lean",
+      "sha256": "b5f793911d62c5b19ce5d5541a35d3159e57f3c4606aeb655c2f886a7d671a81"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/EmitBfvKeyswitch.lean",
+      "sha256": "40c53ed1a630562631d35d3f4ce92a80dd34d624913ead3e6b6116a6a27fb857"
+    }
+  ],
+  "origins_and_dependencies": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/source_pins.json",
+      "sha256": "44d3deb8d458c0aa434f3624fb828da8592e6506410ee0084043424b6c8d4e42"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/Compiler/BfvTensorMul.lean",
+      "sha256": "bf32232c477e48a231ceaed72c6a3f73f52ca0cb0e02aa938e1836434880c3b9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean",
+      "sha256": "bb91eeb1c1fc46c0e1f498e49de18cc7533f6ab3bf5b7b14efa01382b4f87bb0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean",
+      "sha256": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean",
+      "sha256": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/source_pins.json",
+      "sha256": "c3dd9e065849636058b0b81347b22f1e689f72f7b1ea4c5ae8ea5aa488c5afd9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/SCHEMA.md",
+      "sha256": "09d92c0d53b5b7efba9e6da22ebc9a6c8bd4fcfac7431e237cebae6eee84d416"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/src/main.rs",
+      "sha256": "c55464a62f7988aa936b9665199a958cf53d5935022ac75c1a2761e4a47227e6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/Cargo.lock",
+      "sha256": "ebf256afaeb1605c15758f2a692ec2ba9e230a99b58b9fbb389029d0c7a9106a"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/proto/bfv.proto",
+      "sha256": "66c88bf6a34f8a27a215c841cfc5a0bea7c913654d1b4e84b30745eff6c4de9e"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/key_switching_key.rs",
+      "sha256": "d7f84e35e8618515664ec7521c4f5cd422a9f9709ed1ebdd115fc15f4a05aad1"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/galois_key.rs",
+      "sha256": "3d799609c1880c427a7cc8debea45466b8280daf57c9711e0c75138e02fa5b13"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/evaluation_key.rs",
+      "sha256": "f0801332ab2dbed5a18c1a2a4ca99e1ab60cc512f7f125fde748abb87f93c0db"
+    }
+  ],
+  "dependency_artifacts_sha256": "cb81ee9b8bf74bfac769033b7bb7a13c436fdbc51195a326b0d682617bb7ed20",
+  "ready_sha256": "faea198fb8365fb60c7f200d20b118c4d5f3a844e39011a6e85862ea3d69bb01",
+  "patch_sha256": "7e100c01b807c9667b42f3230fe0ce56033c0d61de808bbd7ec6f3e3f0df937d",
+  "public_provenance_sha256": "673018860c917189350b81988dee0c3cfff798d6ee4ea5681dd129c20e838235"
+}

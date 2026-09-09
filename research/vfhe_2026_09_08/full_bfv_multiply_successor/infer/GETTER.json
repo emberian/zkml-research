@@ -1,0 +1,7 @@
+{
+  "source": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/evaluation_key.rs",
+  "original_sha256": "f0801332ab2dbed5a18c1a2a4ca99e1ab60cc512f7f125fde748abb87f93c0db",
+  "owned_copy": "research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/vendor/fhe-dregg/src/bfv/keys/evaluation_key.rs",
+  "derived_sha256": "0814f11e6af8734fe8e074c50fa80867fe788afca0624f297917342682473f10",
+  "change": "one read-only public getter; original operation code unchanged"
+}

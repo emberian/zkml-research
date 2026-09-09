@@ -1,0 +1,803 @@
+{
+  "scope": "cumulative weighted-agreement invariant and exact actual coherent-query identity; five-round BabyBear ideal/supplied/fresh-query soundness with tail (4/5)^q",
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "lean_toolchain": "leanprover/lean4:v4.30.0",
+  "modules": [
+    {
+      "path": "Selvage/CurveWeightedAgreement.lean",
+      "sha256": "5dcf6fe2baa5f073e9285798372a1b686b86b4b8eecbf66c9000e8289307479b",
+      "lines": 138,
+      "theorems": 8,
+      "guards": 8,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/CurveWeightedAgreement.olean",
+          "Selvage/CurveWeightedAgreement.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "5dcf6fe2baa5f073e9285798372a1b686b86b4b8eecbf66c9000e8289307479b",
+        "source_unchanged": true,
+        "elapsed_s": 5.183837890625,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-01.log"
+      },
+      "locations": {
+        "consistencyMass_le_card": 26,
+        "consistencyMass_nonneg": 33,
+        "consistencyMass_mono": 37,
+        "weightedClose_mutualFailure": 44,
+        "geometric_pr_uniform": 56,
+        "weightedCA_to_CA": 68,
+        "curve_weighted_uniform_sound": 76,
+        "curve_weighted_bad_card": 93
+      }
+    },
+    {
+      "path": "Selvage/FoldingConsistencyWeights.lean",
+      "sha256": "108e6dbdc3237605703c0b0119a295291c0d74fd1dd98a8dc92f2e6b6d9f3e03",
+      "lines": 156,
+      "theorems": 8,
+      "guards": 8,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/FoldingConsistencyWeights.olean",
+          "Selvage/FoldingConsistencyWeights.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "108e6dbdc3237605703c0b0119a295291c0d74fd1dd98a8dc92f2e6b6d9f3e03",
+        "source_unchanged": true,
+        "elapsed_s": 4.573515892028809,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-02.log"
+      },
+      "locations": {
+        "projectConsistency_mass": 16,
+        "projectConsistency_nonneg": 24,
+        "projectConsistency_le_one": 29,
+        "weighted_recompose_family": 41,
+        "projectConsistency8_nonneg": 73,
+        "projectConsistency8_le_one": 79,
+        "weighted_reconstruction": 86,
+        "fold8_injected_weighted_sound": 102
+      }
+    },
+    {
+      "path": "Selvage/ConsistencyMask.lean",
+      "sha256": "ff9784ab6a7a4e503041591b0d009b4e98e1aad85f02f3933178fe840a489d86",
+      "lines": 83,
+      "theorems": 6,
+      "guards": 6,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/ConsistencyMask.olean",
+          "Selvage/ConsistencyMask.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "ff9784ab6a7a4e503041591b0d009b4e98e1aad85f02f3933178fe840a489d86",
+        "source_unchanged": true,
+        "elapsed_s": 4.459754943847656,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-03.log"
+      },
+      "locations": {
+        "maskConsistency_nonneg": 13,
+        "maskConsistency_le_one": 21,
+        "maskConsistency_mass": 26,
+        "weightedClose_mask_transfer": 33,
+        "weightedClose_one_to_close": 45,
+        "weightedClose_self_of_mass": 54
+      }
+    },
+    {
+      "path": "Selvage/ArityEightConsistencySchedule.lean",
+      "sha256": "3fb35c055edc2d3f59764b6b93e5fb5ff8d80e4d72bd84e94cca11b30d6bf42f",
+      "lines": 163,
+      "theorems": 7,
+      "guards": 7,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightConsistencySchedule.olean",
+          "Selvage/ArityEightConsistencySchedule.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "3fb35c055edc2d3f59764b6b93e5fb5ff8d80e4d72bd84e94cca11b30d6bf42f",
+        "source_unchanged": true,
+        "elapsed_s": 4.556858777999878,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-04.log"
+      },
+      "locations": {
+        "prefixConsistency_nonneg": 28,
+        "prefixConsistency_le_one": 36,
+        "consistencyAt_succ": 45,
+        "weighted_bad_round_bound": 62,
+        "weighted_bad_schedule_bound": 89,
+        "weighted_invariant": 102,
+        "terminal_consistency_mass_lt": 124
+      }
+    },
+    {
+      "path": "Selvage/BabyBearConsistencyInvariant.lean",
+      "sha256": "09c6d2e5a115acce7f7cb632b667201c96173b3e575daf697faeb18ec5a09a75",
+      "lines": 84,
+      "theorems": 6,
+      "guards": 6,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/BabyBearConsistencyInvariant.olean",
+          "Selvage/BabyBearConsistencyInvariant.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "09c6d2e5a115acce7f7cb632b667201c96173b3e575daf697faeb18ec5a09a75",
+        "source_unchanged": true,
+        "elapsed_s": 4.986783027648926,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-05.log"
+      },
+      "locations": {
+        "rate_fixed": 10,
+        "initial_far": 14,
+        "bad_probability": 25,
+        "terminal_mass": 37,
+        "candidate_312_arithmetic": 51,
+        "candidate_311_fails": 56
+      }
+    },
+    {
+      "path": "Selvage/WeightedAgreementWitnesses.lean",
+      "sha256": "1a4d5d4baee4241a0f461c309354a739adc0e6ac87ec16216d64b142d0a87ce6",
+      "lines": 95,
+      "theorems": 9,
+      "guards": 9,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/WeightedAgreementWitnesses.olean",
+          "Selvage/WeightedAgreementWitnesses.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "1a4d5d4baee4241a0f461c309354a739adc0e6ac87ec16216d64b142d0a87ce6",
+        "source_unchanged": true,
+        "elapsed_s": 4.831762075424194,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-06.log"
+      },
+      "locations": {
+        "weight_bounds": 13,
+        "weight_nonconstant": 16,
+        "weight_mass": 18,
+        "weighted_far": 22,
+        "three_weighted_good": 27,
+        "weighted_bound_fires": 33,
+        "zero_common": 42,
+        "overweight_density_falsifier": 49,
+        "overlapping_marginals_falsifier": 56
+      }
+    },
+    {
+      "path": "Selvage/ConsistencyQueryMass.lean",
+      "sha256": "4a4e536563075c2e20b8dacca715fbaa7d3f58e129e7a357aac9768d80abaf94",
+      "lines": 140,
+      "theorems": 5,
+      "guards": 5,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-query-transport-20260908/.lake/build/lib/lean/Selvage/ConsistencyQueryMass.olean",
+          "Selvage/ConsistencyQueryMass.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-query-transport-20260908",
+        "exit_code": 0,
+        "source_sha256": "4a4e536563075c2e20b8dacca715fbaa7d3f58e129e7a357aac9768d80abaf94",
+        "source_unchanged": true,
+        "elapsed_s": 5.50370192527771,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/checks/sealed-mass.log"
+      },
+      "locations": {
+        "block_project_mass": 40,
+        "consistency_mass_source": 53,
+        "source_card_factor": 83,
+        "source_probability_mass": 92,
+        "sourceChecks_iff_all": 107
+      }
+    },
+    {
+      "path": "Selvage/ConsistencyCoherentTransport.lean",
+      "sha256": "46c38e1a563f1113cca58732a9d7214240b9e5183e08ebc3a3b2af0124d3a866",
+      "lines": 163,
+      "theorems": 9,
+      "guards": 9,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-query-transport-20260908/.lake/build/lib/lean/Selvage/ConsistencyCoherentTransport.olean",
+          "Selvage/ConsistencyCoherentTransport.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-query-transport-20260908",
+        "exit_code": 0,
+        "source_sha256": "46c38e1a563f1113cca58732a9d7214240b9e5183e08ebc3a3b2af0124d3a866",
+        "source_unchanged": true,
+        "elapsed_s": 5.2290239334106445,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/checks/sealed-transport.log"
+      },
+      "locations": {
+        "uniformProb_all_coordinates": 10,
+        "uniformProb_square": 24,
+        "firstFifteen_sq_val": 39,
+        "blockSquare_val": 44,
+        "sourcePoint_val": 52,
+        "sourcePoint_eq_coherent": 61,
+        "sourceChecks_iff_seedChecks": 82,
+        "seed_probability_mass": 99,
+        "consistency_query_exact": 109
+      }
+    },
+    {
+      "path": "Selvage/ConsistencyTransportWitnesses.lean",
+      "sha256": "77282cec7e21dd0e991d54564d39d2c054de8ab6f854549edc391018039d9364",
+      "lines": 98,
+      "theorems": 7,
+      "guards": 7,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-query-transport-20260908/.lake/build/lib/lean/Selvage/ConsistencyTransportWitnesses.olean",
+          "Selvage/ConsistencyTransportWitnesses.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-query-transport-20260908",
+        "exit_code": 0,
+        "source_sha256": "77282cec7e21dd0e991d54564d39d2c054de8ab6f854549edc391018039d9364",
+        "source_unchanged": true,
+        "elapsed_s": 5.77128005027771,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/checks/sealed-witnesses.log"
+      },
+      "locations": {
+        "premises_inhabited": 17,
+        "source_mass_satisfiable": 22,
+        "query_exact_satisfiable": 27,
+        "zero_seed_checks": 33,
+        "one_seed_fails_checks": 38,
+        "probability_two_poles": 45,
+        "mask_omission_falsifier": 60
+      }
+    },
+    {
+      "path": "Selvage/BabyBearWeightedSoundness.lean",
+      "sha256": "efe1fa80ba5f503d3f31abe7010f61b93a859844e8a1eea1cfe4d99394238fc1",
+      "lines": 120,
+      "theorems": 5,
+      "guards": 5,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/BabyBearWeightedSoundness.olean",
+          "Selvage/BabyBearWeightedSoundness.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "efe1fa80ba5f503d3f31abe7010f61b93a859844e8a1eea1cfe4d99394238fc1",
+        "source_unchanged": true,
+        "elapsed_s": 6.817929029464722,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-10.log"
+      },
+      "locations": {
+        "coherent_tail": 16,
+        "sound": 33,
+        "ideal_100": 64,
+        "supplied_sound": 73,
+        "witness_sound": 93
+      }
+    },
+    {
+      "path": "Selvage/BabyBearWeightedFreshSoundness.lean",
+      "sha256": "a3277d3234d05871c0fe4902193964627a7a5100d6048a37563f44b632307ee3",
+      "lines": 116,
+      "theorems": 4,
+      "guards": 4,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-coherent-tail-successor-20260908/.lake/build/lib/lean/Selvage/BabyBearWeightedFreshSoundness.olean",
+          "Selvage/BabyBearWeightedFreshSoundness.lean"
+        ],
+        "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "a3277d3234d05871c0fe4902193964627a7a5100d6048a37563f44b632307ee3",
+        "source_unchanged": true,
+        "elapsed_s": 10.64911699295044,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/checks/final-11.log"
+      },
+      "locations": {
+        "sound": 18,
+        "sound_call_budget": 60,
+        "sound_312": 82,
+        "execution_inhabited": 90
+      }
+    }
+  ],
+  "module_count": 11,
+  "theorem_count": 74,
+  "all_exact_guarded_checks_pass": true,
+  "standard_axioms_only": true,
+  "patch": "coherent-tail.patch",
+  "patch_sha256": "14b0d61e5dcff647448894d0079889a1187f7255e8fe87a565ccef2b66c42498",
+  "dependencies": {
+    "Selvage/CurveProximityGapFullUD.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveProximityGapFullUD.lean"
+    },
+    "Selvage/CurveFullUDCore.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDCore.lean"
+    },
+    "Selvage/CurveFullUDBivariate.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDBivariate.lean"
+    },
+    "Selvage/CurveFullUDInterpolation.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDInterpolation.lean"
+    },
+    "Selvage/CurveFullUDStatement.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDStatement.lean"
+    },
+    "Selvage/FullUDStatement.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDStatement.lean"
+    },
+    "Selvage/Proximity.lean": {
+      "kind": "base",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/FullUDInterpolation.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean"
+    },
+    "Theory/RSInterpolationKernel.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean"
+    },
+    "Theory/RSInterpolationMatrix.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean"
+    },
+    "Theory/PolynomialMatrixKernel.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/PolynomialMatrixKernel.lean"
+    },
+    "Theory/CurveRSInterpolationKernel.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/CurveRSInterpolationKernel.lean"
+    },
+    "Theory/CurveRSInterpolationMatrix.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/CurveRSInterpolationMatrix.lean"
+    },
+    "Theory/PolynomialCurve.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/PolynomialCurve.lean"
+    },
+    "Theory/PolynomialBivariate.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean"
+    },
+    "Theory/PolynomialGluing.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean"
+    },
+    "Theory/PolynomialGluingStatement.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean"
+    },
+    "Selvage/ProximityGapFullUD.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean"
+    },
+    "Selvage/FullUDCore.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean"
+    },
+    "Selvage/FullUDBivariate.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean"
+    },
+    "Selvage/FullUDTeeth.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean"
+    },
+    "Selvage/Depth.lean": {
+      "kind": "base",
+      "sha256": "65d0c2ca25ddd2a9f13deadc20c4f72c59ceb255103520a9a603751d760d6d2b",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/Depth.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/ArityEightFold.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "f2aaf9bbb3d2c694d663586d61929a354a01ff7a630234aeda41a64066a2288e",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightFold.lean"
+    },
+    "Selvage/CurveFriChallenge.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFriChallenge.lean"
+    },
+    "Selvage/Sumcheck.lean": {
+      "kind": "base",
+      "sha256": "fb62103bbe093ba866ebef01e001eba3398d2bce707c7b71420a33185d3aa0a0",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/Sumcheck.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/ArityEightSchedule.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "7a7ce1a6a05a39611ac5aab8a50e2c40b1e70624459f8e560a576eef3608a76a",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightSchedule.lean"
+    },
+    "Selvage/ArityEightTwoRound.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "88ccc7cc374cf0ad333b2432b092e72fb5b4b8df4260d848042bbe00b327dab9",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/src/Selvage/ArityEightTwoRound.lean"
+    },
+    "Selvage/ArityEightSampling.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "07a38e944dd9c4d59209766e81f632e85cc8fca8892affe84d14acd5c73a766b",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightSampling.lean"
+    },
+    "Selvage/HalfThresholdFriCoherent.lean": {
+      "kind": "base",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/ArityEightScheduleBabyBear.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "b1d8b71f47cb23ae19cae9ef1983658b00d6734ca5cee84a5afe5ef0292a615a",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightScheduleBabyBear.lean"
+    },
+    "Selvage/ArityEightScheduleSupplied.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "c562fd2bb6249a727918154ae792bfadcfc4b3a8c148f610347cc316ad3ade2b",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightScheduleSupplied.lean"
+    },
+    "Selvage/ArityEightSupplied.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "7e1945b7b131983a78c441bd87c66f38a2685f3ce45da0a7b97befea0a1ec7b0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightSupplied.lean"
+    },
+    "Selvage/EfficientRootOpening.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "defd19242e66118333d477cd14bcb1b108c4d517b1e55861dee66f35647dafe6",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/src/Selvage/EfficientRootOpening.lean"
+    },
+    "Selvage/BinaryMerkle.lean": {
+      "kind": "base",
+      "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/OracleLogExtraction.lean": {
+      "kind": "base",
+      "sha256": "bc6f99709e7c6caf6353023f985ec4b5496192eb9bad38f8af1f7d0616e8b6d4",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/OracleLogExtraction.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/BabyBearFoldingTower.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingTower.lean"
+    },
+    "Selvage/BabyBearTwoAdic.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "470ebf789a733f160523e816570079bb08ef05276b5b025b92d0fd60379b5eb0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearTwoAdic.lean"
+    },
+    "Selvage/BabyBearExt4.lean": {
+      "kind": "base",
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/PowerTwoRootFolding.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/PowerTwoRootFolding.lean"
+    },
+    "Selvage/FullUDSamplingBudget.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean"
+    },
+    "Selvage/FullUDFriConsumer.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDFriConsumer.lean"
+    },
+    "Selvage/HalfThresholdFriTranscript.lean": {
+      "kind": "base",
+      "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/BabyBearFullUD.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean"
+    },
+    "Selvage/CurveFullUDTeeth.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDTeeth.lean"
+    },
+    "Selvage/ArityEightScheduleWitnesses.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "b406a0ee575c104d6b6880307d6bc033a3b45413b2edece69c55c0f4ae9b1109",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/src/Selvage/ArityEightScheduleWitnesses.lean"
+    },
+    "Selvage/ArityEightTwoRoundWitnesses.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "f5be8500a800fa2e07ca82143f1f76fa50adabc0f046598220d824b4322d68da",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/src/Selvage/ArityEightTwoRoundWitnesses.lean"
+    },
+    "Selvage/CommitmentFailureSoundness.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "145721edb39379ae69e554c530aec1588edcc94d29b3e4978c926e0be2d222b3",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentFailureSoundness.lean"
+    },
+    "Selvage/SuppliedScheduleTrace.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "3ccf696d1901a1389775c392bf473ad5aa9ca34ec5e5fd8c884450fb7e983a81",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/SuppliedScheduleTrace.lean"
+    },
+    "Selvage/SuppliedOpeningTrace.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "1465444b6975c870f9de4fedbccaf975029d32016c7d315d5669e193a65904bc",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/SuppliedOpeningTrace.lean"
+    },
+    "Selvage/CommitmentFailureReduction.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "b2fbcf5a58c54583c930946f64decc3d0cd2e7ae192c3497ef24ad4921fd11b1",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentFailureReduction.lean"
+    },
+    "Selvage/CommitmentFreshTrace.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "7edb060eccaf106a5d50cb4c7333ecb9282eefacf4d9d922235df30931f48ca7",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentFreshTrace.lean"
+    },
+    "Selvage/CollisionResistanceROM.lean": {
+      "kind": "base",
+      "sha256": "79464910d31f244ae9ba3f4af7cf3589ddc97b9c401d0d31de47e087fe349957",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/CommitmentExecutionWitness.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "a677d975114a7d60fa6c43fd45c8231fbef2f7ecc539f05519063bacad414ae6",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentExecutionWitness.lean"
+    }
+  },
+  "source_evidence": [
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs",
+      "sha256": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/NOTE.md",
+      "sha256": "6bc561ca24a00d797263b106a5e63219396e0aa99a9c41db748d82587f1ad727"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/ERRATUM.md",
+      "sha256": "feba813ebf02445616c68af3a739b381eaf02d734b9bc970d858626d97cea6c5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport/MANIFEST.json",
+      "sha256": "17b4f5a087248c521eb25e7ca8d44ee859f67f2a22dac7a54dfaca43602327f5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/MANIFEST.json",
+      "sha256": "fed8141f3d1606cd7ffa25bdd85918acbbdcb1ac8037307359adf1ff05994729"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/MANIFEST.json",
+      "sha256": "9b18d46259b37570d073999589ed06daee9e1cbbe57dbed232c2dc8c24a9b7ef"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/MANIFEST.json",
+      "sha256": "ae965e4e43fdded42b7992ee8ee9a1a265085c9ab861e2c481fef75ca1e14dc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/MANIFEST.json",
+      "sha256": "00c949485be9154cf4bc9cc85118ba17b45764af71894d8d4872b759b00aee11"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch",
+      "sha256": "5b06aa2514285208b58e2c486ee1655659681ad45b631953f7a635c0fea026db"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/MANIFEST.json",
+      "sha256": "87081fea252194e071cb3ee61a54f788f95964f0207733a75a47cdff2c8a5cf8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/arity-eight-two-round.patch",
+      "sha256": "5575cc8cc203bab5147ed6d4be499f8a12b2ea9b8ffc0dac0671be1a82cebeb2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/MANIFEST.json",
+      "sha256": "801e62920710e960a453d9d323cb2b7bad00c45da96964caf6a1bd7a7d344373"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/arity-eight-finite-schedule.patch",
+      "sha256": "8c020de8eb4addcaac45e6d124f23297d2e799d2048d8830efeb0e0e24209f87"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/AUDIT.md",
+      "sha256": "98fb3d92058fee53698ff4af191f70b12ac9e243b3c09e822c774de4e4f40d44"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/MANIFEST.json",
+      "sha256": "a0c722d1e4c7e1f9e826137b4d0be908376413485636816969dae07489126c51"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/commitment-failure.patch",
+      "sha256": "531cf5b741d120ebd77d39f1b438a9e4415f1706a3559972299101cdb65760fd"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/654.pdf",
+      "sha256": "a66a5d0d43e53b6a1cb83cbe87ee86e9c8f5c65562c85b22fef1396603ffe47f"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/532.pdf",
+      "sha256": "e3b0132ec598ca16835c1de3c85d0c8b07c41b5f063f1d88b5a9628c22252c3f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/MANIFEST.json",
+      "sha256": "b3354f72648f2018608e49915a23d39e4c82afee616b2ea7eb9c74f59d89cbf4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/checks/frozen-dependency-refresh.json",
+      "sha256": "15419840e5d94ca98c6fd84eb1f82fd72dfa1484e0f597e2525966a35251c3f9"
+    }
+  ],
+  "import_gate": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/tmp/minidregg-coherent-tail-successor-20260908",
+    "exit_code": 0,
+    "elapsed_s": 0.20087409019470215,
+    "output": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n"
+  },
+  "patch_replay": {
+    "command": [
+      "git",
+      "apply",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch"
+    ],
+    "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/coherent-tail-replay-14h108e4",
+    "exit_code": 0,
+    "output": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:378: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:503: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:671: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:904: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/coherent-tail.patch:1007: new blank line at EOF.\n+\nwarning: 5 lines add whitespace errors.\n",
+    "exact_target_files": [
+      "Selvage/ArityEightConsistencySchedule.lean",
+      "Selvage/BabyBearConsistencyInvariant.lean",
+      "Selvage/BabyBearWeightedFreshSoundness.lean",
+      "Selvage/BabyBearWeightedSoundness.lean",
+      "Selvage/ConsistencyCoherentTransport.lean",
+      "Selvage/ConsistencyMask.lean",
+      "Selvage/ConsistencyQueryMass.lean",
+      "Selvage/ConsistencyTransportWitnesses.lean",
+      "Selvage/CurveWeightedAgreement.lean",
+      "Selvage/FoldingConsistencyWeights.lean",
+      "Selvage/WeightedAgreementWitnesses.lean"
+    ],
+    "all_exact_bytes": true,
+    "file_matches": {
+      "Selvage/CurveWeightedAgreement.lean": true,
+      "Selvage/FoldingConsistencyWeights.lean": true,
+      "Selvage/ConsistencyMask.lean": true,
+      "Selvage/ArityEightConsistencySchedule.lean": true,
+      "Selvage/BabyBearConsistencyInvariant.lean": true,
+      "Selvage/WeightedAgreementWitnesses.lean": true,
+      "Selvage/ConsistencyQueryMass.lean": true,
+      "Selvage/ConsistencyCoherentTransport.lean": true,
+      "Selvage/ConsistencyTransportWitnesses.lean": true,
+      "Selvage/BabyBearWeightedSoundness.lean": true,
+      "Selvage/BabyBearWeightedFreshSoundness.lean": true
+    }
+  },
+  "broad_rebuild_performed": false,
+  "independent_review_campaign_performed": false,
+  "new_web_queries": 2,
+  "new_scry_sql_queries": 0,
+  "predecessors_preserved": true,
+  "artifact_sha256": {
+    "README.md": "d9ca37ccffe6ba5c9d6de73fe7d54b69fd42c0557d3b974ffbab0e464df4d7d0",
+    "STATUS.md": "f34e85052c1f446aca69469227009c33eae56e32d8d42e35572a40fa92a0ec46",
+    "NEXT.md": "441456fa8a1af3f540607cb655e7c44ef5ef8928525589bb9e70da51c87c5a12",
+    "DEPENDENCIES.json": "c902de1610651617dd6edca1bc52c7595f3888929de9378009d98b4607d63f7c",
+    "declaration-names.json": "60f85dcd6d92568958867cdd2c38ed173409aa794d6c9fd7ccd6e1fe4f9b6d51",
+    "integration_entry.json": "de333735e7fc481914f27b7b4d0df4cf207bee46d188350f7f1102a1d16707c7",
+    "run_lean.py": "68254187a65bef4e606bf0b4405bfebd7b9894803b6a44428676e6598bcb4ee1",
+    "pin_all.py": "b0cdaf88a0b478c8844b5adea0da4a8bed1fbdfbd546cfebf187ca90b2b49005",
+    "finalize.py": "66e7604de68392b6c27a0482aac8301d36bbfae17a4c1c2b97cfcb83299e8dfd",
+    "final_checks.py": "072f72792dcd5088874930f92252e489cc40c7d1d7e656300e26d8877ecb7cce",
+    "TARGET.md": "07c60f4287d2adfb9e531a9a1796e2eb445acbc0fa66572ab039bced7bbbad7f",
+    "SOURCES.json": "4adeedb0ecea16d7bb10645b3cfd46c61a3aa12c7e964f6d25a595f53427bc6f"
+  },
+  "query_transport_builder_manifest": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/coherent_tail_successor/query_transport/MANIFEST.json",
+    "sha256": "b3354f72648f2018608e49915a23d39e4c82afee616b2ea7eb9c74f59d89cbf4"
+  }
+}

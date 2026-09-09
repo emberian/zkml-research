@@ -1,0 +1,17 @@
+'Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_nonneg' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.prefixConsistency_le_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.consistencyAt_succ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.weighted_bad_round_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.weighted_bad_schedule_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.weighted_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.terminal_consistency_mass_lt' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

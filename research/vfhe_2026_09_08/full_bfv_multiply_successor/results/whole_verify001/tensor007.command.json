@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/target/release/vfhe-full-bfv-multiply",
+    "verify",
+    "tensor",
+    "7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/artifacts/prime3/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/tensor001/chunk007/proof.bin"
+  ],
+  "started_utc": "2026-09-08T23:00:57.242774+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor",
+  "timeout_seconds": 300,
+  "pid": 40694,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-08T23:00:57.569255+00:00",
+  "elapsed_seconds": 0.32649970799684525,
+  "user_seconds": 0.351605,
+  "system_seconds": 0.019091,
+  "max_rss_bytes": 95977472
+}

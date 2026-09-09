@@ -1,0 +1,578 @@
+[
+  {
+    "train_index": 0,
+    "test_index": 0,
+    "target_kernel": 0.930062403800548,
+    "raw_sketch_estimate": 0.946380089444574,
+    "quantized_estimate": 0.94488525390625,
+    "raw_error": 0.016317685644025914,
+    "quantized_error": 0.014822850105701946
+  },
+  {
+    "train_index": 1,
+    "test_index": 1,
+    "target_kernel": 1.126435203026631,
+    "raw_sketch_estimate": 1.183901224299916,
+    "quantized_estimate": 1.1833953857421875,
+    "raw_error": 0.05746602127328515,
+    "quantized_error": 0.056960182715556584
+  },
+  {
+    "train_index": 2,
+    "test_index": 2,
+    "target_kernel": 1.0236134234728524,
+    "raw_sketch_estimate": 1.1087442456919234,
+    "quantized_estimate": 1.110504150390625,
+    "raw_error": 0.08513082221907098,
+    "quantized_error": 0.08689072691777255
+  },
+  {
+    "train_index": 3,
+    "test_index": 3,
+    "target_kernel": 1.1269939898047596,
+    "raw_sketch_estimate": 1.1945761958777439,
+    "quantized_estimate": 1.193634033203125,
+    "raw_error": 0.06758220607298426,
+    "quantized_error": 0.06664004339836538
+  },
+  {
+    "train_index": 4,
+    "test_index": 4,
+    "target_kernel": 0.913617555575911,
+    "raw_sketch_estimate": 0.9597183612786466,
+    "quantized_estimate": 0.9600982666015625,
+    "raw_error": 0.04610080570273567,
+    "quantized_error": 0.046480711025651544
+  },
+  {
+    "train_index": 5,
+    "test_index": 5,
+    "target_kernel": 1.0370107542403275,
+    "raw_sketch_estimate": 1.1710020371101564,
+    "quantized_estimate": 1.1712188720703125,
+    "raw_error": 0.13399128286982886,
+    "quantized_error": 0.13420811782998499
+  },
+  {
+    "train_index": 6,
+    "test_index": 6,
+    "target_kernel": 1.1515622242732206,
+    "raw_sketch_estimate": 1.2020982656540582,
+    "quantized_estimate": 1.2015838623046875,
+    "raw_error": 0.05053604138083756,
+    "quantized_error": 0.050021638031466864
+  },
+  {
+    "train_index": 7,
+    "test_index": 7,
+    "target_kernel": 1.1862631982658058,
+    "raw_sketch_estimate": 1.3588889609090984,
+    "quantized_estimate": 1.3585205078125,
+    "raw_error": 0.17262576264329255,
+    "quantized_error": 0.17225730954669416
+  },
+  {
+    "train_index": 8,
+    "test_index": 8,
+    "target_kernel": 1.0652318084758008,
+    "raw_sketch_estimate": 1.167003212904092,
+    "quantized_estimate": 1.1659698486328125,
+    "raw_error": 0.10177140442829113,
+    "quantized_error": 0.10073804015701171
+  },
+  {
+    "train_index": 9,
+    "test_index": 9,
+    "target_kernel": 1.0419267621036852,
+    "raw_sketch_estimate": 1.1840217039425625,
+    "quantized_estimate": 1.18804931640625,
+    "raw_error": 0.14209494183887728,
+    "quantized_error": 0.14612255430256482
+  },
+  {
+    "train_index": 10,
+    "test_index": 10,
+    "target_kernel": 1.2542352593154646,
+    "raw_sketch_estimate": 1.3111959508096334,
+    "quantized_estimate": 1.314239501953125,
+    "raw_error": 0.056960691494168714,
+    "quantized_error": 0.060004242637660354
+  },
+  {
+    "train_index": 11,
+    "test_index": 11,
+    "target_kernel": 1.1795419622794725,
+    "raw_sketch_estimate": 1.252208022371633,
+    "quantized_estimate": 1.25189208984375,
+    "raw_error": 0.07266606009216048,
+    "quantized_error": 0.0723501275642775
+  },
+  {
+    "train_index": 12,
+    "test_index": 12,
+    "target_kernel": 1.1579488599672914,
+    "raw_sketch_estimate": 1.1556741459935438,
+    "quantized_estimate": 1.1593475341796875,
+    "raw_error": -0.0022747139737475663,
+    "quantized_error": 0.0013986742123961449
+  },
+  {
+    "train_index": 13,
+    "test_index": 13,
+    "target_kernel": 1.2194901234615827,
+    "raw_sketch_estimate": 1.289141820918303,
+    "quantized_estimate": 1.28875732421875,
+    "raw_error": 0.06965169745672029,
+    "quantized_error": 0.0692672007571673
+  },
+  {
+    "train_index": 14,
+    "test_index": 14,
+    "target_kernel": 1.140421998934471,
+    "raw_sketch_estimate": 1.2004008222284028,
+    "quantized_estimate": 1.197998046875,
+    "raw_error": 0.05997882329393178,
+    "quantized_error": 0.05757604794052895
+  },
+  {
+    "train_index": 15,
+    "test_index": 15,
+    "target_kernel": 1.0845317447237903,
+    "raw_sketch_estimate": 1.1769609593175119,
+    "quantized_estimate": 1.1782073974609375,
+    "raw_error": 0.09242921459372155,
+    "quantized_error": 0.09367565273714717
+  },
+  {
+    "train_index": 16,
+    "test_index": 16,
+    "target_kernel": 1.1548722158331657,
+    "raw_sketch_estimate": 1.228716586731025,
+    "quantized_estimate": 1.2242431640625,
+    "raw_error": 0.07384437089785933,
+    "quantized_error": 0.06937094822933432
+  },
+  {
+    "train_index": 17,
+    "test_index": 17,
+    "target_kernel": 1.1445809945143992,
+    "raw_sketch_estimate": 1.2855214018200058,
+    "quantized_estimate": 1.2839508056640625,
+    "raw_error": 0.14094040730560664,
+    "quantized_error": 0.1393698111496633
+  },
+  {
+    "train_index": 18,
+    "test_index": 18,
+    "target_kernel": 1.0037113228463568,
+    "raw_sketch_estimate": 1.1279577489185613,
+    "quantized_estimate": 1.12884521484375,
+    "raw_error": 0.12424642607220449,
+    "quantized_error": 0.12513389199739322
+  },
+  {
+    "train_index": 19,
+    "test_index": 19,
+    "target_kernel": 1.1646742472075857,
+    "raw_sketch_estimate": 1.2061381565144984,
+    "quantized_estimate": 1.2053375244140625,
+    "raw_error": 0.04146390930691268,
+    "quantized_error": 0.04066327720647678
+  },
+  {
+    "train_index": 20,
+    "test_index": 20,
+    "target_kernel": 1.0828797484427923,
+    "raw_sketch_estimate": 1.0918819561047712,
+    "quantized_estimate": 1.09271240234375,
+    "raw_error": 0.0090022076619789,
+    "quantized_error": 0.009832653900957666
+  },
+  {
+    "train_index": 21,
+    "test_index": 21,
+    "target_kernel": 1.022371050203219,
+    "raw_sketch_estimate": 1.0371437771391356,
+    "quantized_estimate": 1.035736083984375,
+    "raw_error": 0.01477272693591658,
+    "quantized_error": 0.013365033781155944
+  },
+  {
+    "train_index": 22,
+    "test_index": 22,
+    "target_kernel": 1.0798411453142762,
+    "raw_sketch_estimate": 1.0697940044483403,
+    "quantized_estimate": 1.0705108642578125,
+    "raw_error": -0.010047140865935944,
+    "quantized_error": -0.009330281056463718
+  },
+  {
+    "train_index": 23,
+    "test_index": 23,
+    "target_kernel": 1.0499557035509497,
+    "raw_sketch_estimate": 1.0775513016269542,
+    "quantized_estimate": 1.0764312744140625,
+    "raw_error": 0.027595598076004535,
+    "quantized_error": 0.026475570863112807
+  },
+  {
+    "train_index": 24,
+    "test_index": 24,
+    "target_kernel": 1.0948054189939285,
+    "raw_sketch_estimate": 1.210904875115375,
+    "quantized_estimate": 1.2126922607421875,
+    "raw_error": 0.11609945612144656,
+    "quantized_error": 0.11788684174825903
+  },
+  {
+    "train_index": 25,
+    "test_index": 25,
+    "target_kernel": 1.152282807874144,
+    "raw_sketch_estimate": 1.207392270618584,
+    "quantized_estimate": 1.209930419921875,
+    "raw_error": 0.05510946274443995,
+    "quantized_error": 0.057647612047730945
+  },
+  {
+    "train_index": 26,
+    "test_index": 26,
+    "target_kernel": 1.2394545979477698,
+    "raw_sketch_estimate": 1.3947445157537004,
+    "quantized_estimate": 1.394775390625,
+    "raw_error": 0.1552899178059306,
+    "quantized_error": 0.1553207926772302
+  },
+  {
+    "train_index": 27,
+    "test_index": 27,
+    "target_kernel": 1.074496297063888,
+    "raw_sketch_estimate": 1.159518080050475,
+    "quantized_estimate": 1.161468505859375,
+    "raw_error": 0.08502178298658691,
+    "quantized_error": 0.08697220879548695
+  },
+  {
+    "train_index": 28,
+    "test_index": 28,
+    "target_kernel": 1.154011488892138,
+    "raw_sketch_estimate": 1.1456317506672349,
+    "quantized_estimate": 1.1456451416015625,
+    "raw_error": -0.008379738224903122,
+    "quantized_error": -0.008366347290575504
+  },
+  {
+    "train_index": 29,
+    "test_index": 29,
+    "target_kernel": 1.1169086492154747,
+    "raw_sketch_estimate": 1.2807226197328418,
+    "quantized_estimate": 1.27838134765625,
+    "raw_error": 0.16381397051736712,
+    "quantized_error": 0.16147269844077528
+  },
+  {
+    "train_index": 30,
+    "test_index": 30,
+    "target_kernel": 1.0672249386552721,
+    "raw_sketch_estimate": 1.041655528882984,
+    "quantized_estimate": 1.03936767578125,
+    "raw_error": -0.025569409772288054,
+    "quantized_error": -0.027857262874022126
+  },
+  {
+    "train_index": 31,
+    "test_index": 31,
+    "target_kernel": 1.021314469529898,
+    "raw_sketch_estimate": 1.0286388692766195,
+    "quantized_estimate": 1.030975341796875,
+    "raw_error": 0.00732439974672161,
+    "quantized_error": 0.009660872266977094
+  },
+  {
+    "train_index": 32,
+    "test_index": 32,
+    "target_kernel": 0.996432630578056,
+    "raw_sketch_estimate": 1.0756919298582943,
+    "quantized_estimate": 1.0769805908203125,
+    "raw_error": 0.07925929928023834,
+    "quantized_error": 0.08054796024225652
+  },
+  {
+    "train_index": 33,
+    "test_index": 33,
+    "target_kernel": 1.0100884882413084,
+    "raw_sketch_estimate": 1.0632658939284738,
+    "quantized_estimate": 1.0574188232421875,
+    "raw_error": 0.05317740568716545,
+    "quantized_error": 0.04733033500087913
+  },
+  {
+    "train_index": 34,
+    "test_index": 34,
+    "target_kernel": 1.1414080560789444,
+    "raw_sketch_estimate": 1.2647577716852538,
+    "quantized_estimate": 1.265411376953125,
+    "raw_error": 0.12334971560630947,
+    "quantized_error": 0.12400332087418064
+  },
+  {
+    "train_index": 35,
+    "test_index": 35,
+    "target_kernel": 1.0336571338266367,
+    "raw_sketch_estimate": 1.0083533250144683,
+    "quantized_estimate": 1.0085601806640625,
+    "raw_error": -0.025303808812168427,
+    "quantized_error": -0.02509695316257421
+  },
+  {
+    "train_index": 36,
+    "test_index": 36,
+    "target_kernel": 1.138158126399503,
+    "raw_sketch_estimate": 1.295666642850847,
+    "quantized_estimate": 1.2989959716796875,
+    "raw_error": 0.1575085164513439,
+    "quantized_error": 0.1608378452801844
+  },
+  {
+    "train_index": 37,
+    "test_index": 37,
+    "target_kernel": 1.0652711803559214,
+    "raw_sketch_estimate": 1.1187831721035764,
+    "quantized_estimate": 1.1164093017578125,
+    "raw_error": 0.053511991747654974,
+    "quantized_error": 0.05113812140189111
+  },
+  {
+    "train_index": 38,
+    "test_index": 38,
+    "target_kernel": 1.1318182626419002,
+    "raw_sketch_estimate": 1.2743011285638204,
+    "quantized_estimate": 1.2695159912109375,
+    "raw_error": 0.14248286592192017,
+    "quantized_error": 0.13769772856903728
+  },
+  {
+    "train_index": 39,
+    "test_index": 39,
+    "target_kernel": 1.1041813198389718,
+    "raw_sketch_estimate": 1.0104484443727415,
+    "quantized_estimate": 1.0143890380859375,
+    "raw_error": -0.09373287546623033,
+    "quantized_error": -0.08979228175303433
+  },
+  {
+    "train_index": 40,
+    "test_index": 40,
+    "target_kernel": 1.0361718399362871,
+    "raw_sketch_estimate": 1.1493338272412075,
+    "quantized_estimate": 1.1499176025390625,
+    "raw_error": 0.11316198730492033,
+    "quantized_error": 0.11374576260277536
+  },
+  {
+    "train_index": 41,
+    "test_index": 41,
+    "target_kernel": 0.9969048644998111,
+    "raw_sketch_estimate": 1.10721571520844,
+    "quantized_estimate": 1.1056976318359375,
+    "raw_error": 0.110310850708629,
+    "quantized_error": 0.10879276733612642
+  },
+  {
+    "train_index": 42,
+    "test_index": 42,
+    "target_kernel": 1.0434926757588983,
+    "raw_sketch_estimate": 1.1826955461583566,
+    "quantized_estimate": 1.1859893798828125,
+    "raw_error": 0.13920287039945833,
+    "quantized_error": 0.14249670412391424
+  },
+  {
+    "train_index": 43,
+    "test_index": 43,
+    "target_kernel": 1.1267591205105418,
+    "raw_sketch_estimate": 1.294516362104332,
+    "quantized_estimate": 1.293487548828125,
+    "raw_error": 0.16775724159379024,
+    "quantized_error": 0.16672842831758317
+  },
+  {
+    "train_index": 44,
+    "test_index": 44,
+    "target_kernel": 0.9456298244767822,
+    "raw_sketch_estimate": 0.9918980414804537,
+    "quantized_estimate": 0.98876953125,
+    "raw_error": 0.04626821700367145,
+    "quantized_error": 0.04313970677321777
+  },
+  {
+    "train_index": 45,
+    "test_index": 45,
+    "target_kernel": 1.077353151573334,
+    "raw_sketch_estimate": 1.0766494952113135,
+    "quantized_estimate": 1.0758056640625,
+    "raw_error": -0.0007036563620204106,
+    "quantized_error": -0.0015474875108338892
+  },
+  {
+    "train_index": 46,
+    "test_index": 46,
+    "target_kernel": 1.0827527239598567,
+    "raw_sketch_estimate": 1.1345066688372754,
+    "quantized_estimate": 1.1356353759765625,
+    "raw_error": 0.05175394487741869,
+    "quantized_error": 0.05288265201670583
+  },
+  {
+    "train_index": 47,
+    "test_index": 47,
+    "target_kernel": 1.0345571095967898,
+    "raw_sketch_estimate": 1.053393900670926,
+    "quantized_estimate": 1.0538482666015625,
+    "raw_error": 0.018836791074136272,
+    "quantized_error": 0.019291157004772685
+  },
+  {
+    "train_index": 48,
+    "test_index": 48,
+    "target_kernel": 1.0992963827593485,
+    "raw_sketch_estimate": 0.9731836224382278,
+    "quantized_estimate": 0.972686767578125,
+    "raw_error": -0.12611276032112073,
+    "quantized_error": -0.1266096151812235
+  },
+  {
+    "train_index": 49,
+    "test_index": 49,
+    "target_kernel": 0.9833614184171893,
+    "raw_sketch_estimate": 1.00612155435374,
+    "quantized_estimate": 1.0066070556640625,
+    "raw_error": 0.022760135936550796,
+    "quantized_error": 0.02324563724687323
+  },
+  {
+    "train_index": 50,
+    "test_index": 50,
+    "target_kernel": 1.2731118926458294,
+    "raw_sketch_estimate": 1.3051348048029467,
+    "quantized_estimate": 1.303924560546875,
+    "raw_error": 0.03202291215711739,
+    "quantized_error": 0.030812667901045643
+  },
+  {
+    "train_index": 51,
+    "test_index": 51,
+    "target_kernel": 1.1946207145228982,
+    "raw_sketch_estimate": 1.2368377973180031,
+    "quantized_estimate": 1.23590087890625,
+    "raw_error": 0.04221708279510494,
+    "quantized_error": 0.0412801643833518
+  },
+  {
+    "train_index": 52,
+    "test_index": 52,
+    "target_kernel": 1.2632914818823338,
+    "raw_sketch_estimate": 1.1729186900192872,
+    "quantized_estimate": 1.17120361328125,
+    "raw_error": -0.09037279186304659,
+    "quantized_error": -0.09208786860108376
+  },
+  {
+    "train_index": 53,
+    "test_index": 53,
+    "target_kernel": 1.157891391791054,
+    "raw_sketch_estimate": 1.217615362998913,
+    "quantized_estimate": 1.215301513671875,
+    "raw_error": 0.059723971207858995,
+    "quantized_error": 0.05741012188082095
+  },
+  {
+    "train_index": 54,
+    "test_index": 54,
+    "target_kernel": 1.0736581626260886,
+    "raw_sketch_estimate": 1.0914725171751343,
+    "quantized_estimate": 1.0903778076171875,
+    "raw_error": 0.017814354549045675,
+    "quantized_error": 0.016719644991098903
+  },
+  {
+    "train_index": 55,
+    "test_index": 55,
+    "target_kernel": 1.1254070736467838,
+    "raw_sketch_estimate": 1.1260417043667985,
+    "quantized_estimate": 1.12921142578125,
+    "raw_error": 0.0006346307200146839,
+    "quantized_error": 0.0038043521344661713
+  },
+  {
+    "train_index": 56,
+    "test_index": 56,
+    "target_kernel": 0.9992143267445499,
+    "raw_sketch_estimate": 1.0321053401421523,
+    "quantized_estimate": 1.030364990234375,
+    "raw_error": 0.032891013397602364,
+    "quantized_error": 0.031150663489825092
+  },
+  {
+    "train_index": 57,
+    "test_index": 57,
+    "target_kernel": 1.0860100770514691,
+    "raw_sketch_estimate": 1.1269656362128444,
+    "quantized_estimate": 1.1281280517578125,
+    "raw_error": 0.04095555916137528,
+    "quantized_error": 0.042117974706343375
+  },
+  {
+    "train_index": 58,
+    "test_index": 58,
+    "target_kernel": 0.9581648395978846,
+    "raw_sketch_estimate": 1.0240075365727535,
+    "quantized_estimate": 1.0186614990234375,
+    "raw_error": 0.06584269697486889,
+    "quantized_error": 0.060496659425552934
+  },
+  {
+    "train_index": 59,
+    "test_index": 59,
+    "target_kernel": 0.9821437248174334,
+    "raw_sketch_estimate": 0.9876193706586491,
+    "quantized_estimate": 0.9866180419921875,
+    "raw_error": 0.005475645841215737,
+    "quantized_error": 0.0044743171747541055
+  },
+  {
+    "train_index": 60,
+    "test_index": 60,
+    "target_kernel": 1.0335640552366385,
+    "raw_sketch_estimate": 1.0108947794360574,
+    "quantized_estimate": 1.0147552490234375,
+    "raw_error": -0.02266927580058109,
+    "quantized_error": -0.018808806213201024
+  },
+  {
+    "train_index": 61,
+    "test_index": 61,
+    "target_kernel": 1.1516277225600788,
+    "raw_sketch_estimate": 1.2720551734091714,
+    "quantized_estimate": 1.2725372314453125,
+    "raw_error": 0.12042745084909257,
+    "quantized_error": 0.12090950888523366
+  },
+  {
+    "train_index": 62,
+    "test_index": 62,
+    "target_kernel": 1.0550276434514672,
+    "raw_sketch_estimate": 1.1684485357545782,
+    "quantized_estimate": 1.1704864501953125,
+    "raw_error": 0.11342089230311103,
+    "quantized_error": 0.11545880674384534
+  },
+  {
+    "train_index": 63,
+    "test_index": 63,
+    "target_kernel": 1.1052237718977267,
+    "raw_sketch_estimate": 1.1670211761520477,
+    "quantized_estimate": 1.1672821044921875,
+    "raw_error": 0.06179740425432101,
+    "quantized_error": 0.06205833259446081
+  }
+]

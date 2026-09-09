@@ -1,0 +1,262 @@
+--- /Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/Cargo.toml
++++ /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/acceptance_bridge/overlay/fri/Cargo.toml
+@@ -12,6 +12,8 @@
+ local-delta = "Injectable, proof-wire-identical TwoAdic FRI matrix-fold backend; plus the `get_evaluations_on_domain` row-order fix (upstream PR #1982, open/CHANGES_REQUESTED) — see the header of src/two_adic_pcs.rs"
+ 
+ [dependencies]
++bridge-events = { path = "../events" }
++serde_json = "1"
+ p3-challenger = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+ p3-commit = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+ p3-dft = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+--- /Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/hiding_pcs.rs
++++ /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/acceptance_bridge/overlay/fri/src/hiding_pcs.rs
+@@ -402,6 +402,7 @@
+         challenger: &mut Challenger,
+     ) -> Result<(), Self::Error> {
+         let (opened_values_for_rand_cws, inner_proof) = proof;
++        bridge_events::emit("hiding_claims_before_merge", serde_json::json!({"batches":rounds.iter().map(|(c,ms)|serde_json::json!({"root":c,"matrices":ms.iter().map(|(d,pv)|serde_json::json!({"log_domain_size":d.log_size(),"domain_shift":d.shift(),"points_and_values":pv})).collect::<alloc::vec::Vec<_>>()})).collect::<alloc::vec::Vec<_>>(),"random_codeword_openings":opened_values_for_rand_cws}));
+         // Now we merge `opened_values_for_rand_cws` into the opened values in `rounds`, undoing
+         // the split that we did in `open`, to get a complete set of opened values for the inner PCS
+         // to check.
+--- /Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/lib.rs
++++ /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/acceptance_bridge/overlay/fri/src/lib.rs
+@@ -3,6 +3,7 @@
+ #![no_std]
+ 
+ extern crate alloc;
++extern crate std;
+ 
+ mod config;
+ mod hiding_pcs;
+--- /Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs
++++ /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/acceptance_bridge/overlay/fri/src/two_adic_pcs.rs
+@@ -249,7 +249,9 @@
+         reverse_slice_index_bits(&mut xs);
+ 
+         // Lagrange interpolation at beta
+-        lagrange_interpolate_at(&xs, &evals, beta)
++        let result=lagrange_interpolate_at(&xs, &evals, beta);
++        bridge_events::emit("native_fold", serde_json::json!({"parent_index":index,"log_height":log_height,"log_arity":log_arity,"subgroup_start":subgroup_start,"xs":xs,"evals":evals,"beta":beta,"result":result}));
++        result
+     }
+ 
+     #[instrument(skip_all)]
+@@ -963,6 +965,7 @@
+         proof: &Self::Proof,
+         challenger: &mut Challenger,
+     ) -> Result<(), Self::Error> {
++        bridge_events::emit("pcs_claims", serde_json::json!({"batches":commitments_with_opening_points.iter().map(|(c,ms)|serde_json::json!({"root":c,"matrices":ms.iter().map(|(d,pv)|serde_json::json!({"log_domain_size":d.log_size(),"domain_shift":d.shift(),"points_and_values":pv})).collect::<alloc::vec::Vec<_>>()})).collect::<alloc::vec::Vec<_>>()}));
+         // Write all evaluations to challenger.
+         // Need to ensure to do this in the same order as the prover.
+         for (_, round) in &commitments_with_opening_points {
+--- /Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs
++++ /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/acceptance_bridge/overlay/fri/src/verifier.rs
+@@ -140,7 +140,9 @@
+     // `(f(zeta) - fi(x))/(zeta - x)` which need to be checked.
+     // Explicitly, `|f|` is `commitments_with_opening_points.flatten().flatten().len()`
+     // (i.e counting the number (point, claimed_evaluation) pairs).
++    bridge_events::emit("fri_begin", serde_json::json!({"log_blowup":params.log_blowup,"log_final_poly_len":params.log_final_poly_len,"max_log_arity":params.max_log_arity,"num_queries":params.num_queries,"commit_pow_bits":params.commit_proof_of_work_bits,"query_pow_bits":params.query_proof_of_work_bits}));
+     let alpha: Challenge = challenger.sample_algebra_element();
++    bridge_events::emit("fri_alpha", serde_json::json!({"alpha":alpha}));
+ 
+     // Validate that all query proofs have the same number of commit phase openings
+     let expected_rounds = proof.commit_phase_commits.len();
+@@ -203,6 +205,19 @@
+     let total_log_reduction: usize = log_arities.iter().sum();
+     let log_global_max_height = total_log_reduction + params.log_blowup + params.log_final_poly_len;
+ 
++    let mut input_heights: alloc::vec::Vec<usize> = commitments_with_opening_points.iter().flat_map(|(_,mats)| mats.iter().map(|(d,_)| log2_strict_usize(d.size())+params.log_blowup)).collect();
++    input_heights.sort_unstable(); input_heights.dedup(); input_heights.reverse();
++    let mut canonical_arities=alloc::vec::Vec::new();
++    if let Some(&max_h)=input_heights.first() {
++        let final_h=params.log_blowup+params.log_final_poly_len;
++        let mut h=max_h;
++        while h>final_h {
++            let next=input_heights.iter().copied().find(|&v|v<h);
++            let a=crate::compute_log_arity_for_round(h,next,final_h,params.max_log_arity);
++            canonical_arities.push(a); h-=a;
++        }
++    }
++    bridge_events::emit("fri_schedule",serde_json::json!({"actual_log_arities":log_arities,"canonical_log_arities":canonical_arities,"canonical_schedule_matches":canonical_arities==log_arities,"input_log_heights":input_heights,"log_global_max_height":log_global_max_height,"extra_query_index_bits":folding.extra_query_index_bits(),"observed_in_transcript_only_after_betas":true}));
+     if proof.commit_pow_witnesses.len() != proof.commit_phase_commits.len() {
+         return Err(FriError::CommitPowWitnessCountMismatch {
+             expected: proof.commit_phase_commits.len(),
+@@ -218,11 +233,14 @@
+         .map(|(comm, witness)| {
+             // Observe the commitment, check the PoW witness, then sample the
+             // folding challenge.
++            bridge_events::emit("fri_commit_observe", serde_json::json!({"commitment":comm,"pow_witness":witness}));
+             challenger.observe(comm.clone());
+             if !challenger.check_witness(params.commit_proof_of_work_bits, *witness) {
+                 return Err(FriError::InvalidPowWitness);
+             }
+-            Ok(challenger.sample_algebra_element())
++            let beta:Challenge=challenger.sample_algebra_element();
++            bridge_events::emit("fri_beta", serde_json::json!({"beta":beta}));
++            Ok(beta)
+         })
+         .collect::<Result<Vec<_>, _>>()?;
+ 
+@@ -235,6 +253,7 @@
+     }
+ 
+     // Observe all coefficients of the final polynomial.
++    bridge_events::emit("fri_final_poly_observe", serde_json::json!({"coefficients":proof.final_poly}));
+     challenger.observe_algebra_slice(&proof.final_poly);
+ 
+     // Ensure that we have the expected number of FRI query proofs.
+@@ -250,6 +269,7 @@
+         challenger.observe(Val::from_usize(log_arity));
+     }
+ 
++    bridge_events::emit("fri_schedule_observed", serde_json::json!({"log_arities":log_arities}));
+     // Check PoW.
+     if !challenger.check_witness(params.query_proof_of_work_bits, proof.query_pow_witness) {
+         return Err(FriError::InvalidPowWitness);
+@@ -258,6 +278,7 @@
+     // The log of the final domain size.
+     let log_final_height = params.log_blowup + params.log_final_poly_len;
+ 
++    let mut bridge_query=0usize;
+     for QueryProof {
+         input_proof,
+         commit_phase_openings,
+@@ -267,6 +288,7 @@
+         let index =
+             challenger.sample_bits(log_global_max_height + folding.extra_query_index_bits());
+ 
++        bridge_events::emit("fri_query", serde_json::json!({"query":bridge_query,"index":index}));
+         // Next we open all polynomials `f` at the relevant index and combine them into our FRI inputs.
+         let ro = open_input(
+             params,
+@@ -278,6 +300,7 @@
+             commitments_with_opening_points,
+         )?;
+ 
++        bridge_events::emit("fri_reduced_openings", serde_json::json!({"query":bridge_query,"values":ro}));
+         debug_assert!(
+             ro.iter().tuple_windows().all(|((l, _), (r, _))| l > r),
+             "reduced openings sorted by height descending"
+@@ -320,6 +343,8 @@
+             eval = eval * x + coeff;
+         }
+ 
++        bridge_events::emit("fri_terminal_check", serde_json::json!({"query":bridge_query,"domain_index":domain_index,"x":x,"evaluation":eval,"folded_eval":folded_eval,"equal":eval==folded_eval}));
++        bridge_query+=1;
+         if eval != folded_eval {
+             return Err(FriError::FinalPolyMismatch);
+         }
+@@ -454,6 +479,7 @@
+             )
+             .map_err(FriError::CommitPhaseMmcsError)?;
+ 
++        bridge_events::emit("fri_packed_row_verified", serde_json::json!({"round":round,"log_current_height":log_current_height,"log_folded_height":log_folded_height,"extension_width":arity,"base_width":arity*EF::DIMENSION,"index_in_group":index_in_group,"parent_index":*start_index,"commitment":comm,"evals":evals,"opening_proof":opening.opening_proof,"beta":beta}));
+         // Fold the group of sibling nodes to get the evaluation of the parent FRI node.
+         folded_eval = folding.fold_row(
+             *start_index,
+@@ -463,6 +489,7 @@
+             evals.into_iter(),
+         );
+ 
++        bridge_events::emit("fri_fold_result", serde_json::json!({"round":round,"before_injection":folded_eval}));
+         // Update current height
+         log_current_height = log_folded_height;
+ 
+@@ -477,7 +504,9 @@
+         if let Some((_, ro)) = ro_iter.next_if(|(lh, _)| *lh == log_folded_height) {
+             let beta_pow = beta.exp_power_of_2(log_arity);
+             folded_eval += beta_pow * ro;
+-        }
++            bridge_events::emit("fri_injection", serde_json::json!({"round":round,"log_height":log_folded_height,"reduced_opening":ro,"beta_power":beta_pow,"after_injection":folded_eval}));
++        }
++        bridge_events::emit("fri_round_carried", serde_json::json!({"round":round,"value":folded_eval,"index":*start_index}));
+     }
+ 
+     // Verify we reached the expected final height
+@@ -596,6 +625,7 @@
+             )
+             .map_err(FriError::InputError)?;
+ 
++        bridge_events::emit("input_batch_verified", serde_json::json!({"batch":batch,"root":batch_commit,"heights":batch_heights,"reduced_index":reduced_index,"opened_values":batch_opening.opened_values,"opening_proof":batch_opening.opening_proof}));
+         // For each matrix in the commitment
+         for (matrix, (mat_opening, (mat_domain, mat_points_and_values))) in batch_opening
+             .opened_values
+@@ -618,6 +648,7 @@
+                 .entry(log_height) // Get a mutable reference to the entry.
+                 .or_insert((Challenge::ONE, Challenge::ZERO));
+ 
++            bridge_events::emit("input_matrix", serde_json::json!({"batch":batch,"matrix":matrix,"log_height":log_height,"width":mat_opening.len(),"index":index>>bits_reduced,"reversed_index":rev_reduced_index,"x":x,"alpha_power_start":*alpha_pow,"reduced_opening_start":*ro,"points_and_values":mat_points_and_values}));
+             // For each polynomial `f` in our matrix, compute `(f(z) - f(x))/(z - x)`,
+             // scale by the appropriate alpha power and add to the reduced opening for this log_height.
+             for (point, (z, ps_at_z)) in mat_points_and_values.iter().enumerate() {
+@@ -639,6 +670,7 @@
+                     *alpha_pow *= alpha;
+                 }
+             }
++            bridge_events::emit("input_matrix_reduced", serde_json::json!({"batch":batch,"matrix":matrix,"log_height":log_height,"alpha_power_end":*alpha_pow,"reduced_opening_end":*ro}));
+         }
+ 
+         // `reduced_openings` would have a log_height = log_blowup entry only if there was a
+--- /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/Cargo.toml
++++ /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/acceptance_bridge/overlay/backend/Cargo.toml
+@@ -5,6 +5,9 @@
+ publish = false
+ 
+ [dependencies]
++bridge-events = { path = "../events" }
++serde_json = "1"
++serde = "1"
+ dregg-circuit = { path = "/Users/ember/dev/breadstuffs/circuit" }
+ p3-baby-bear = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+ p3-challenger = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+--- /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs
++++ /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/acceptance_bridge/overlay/backend/src/lib.rs
+@@ -19,7 +19,46 @@
+ 
+ type Perm=Poseidon2BabyBear<16>;
+ type Extension=BinomialExtensionField<BabyBear,ZK_EXT_DEGREE>;
+-type Challenger=DuplexChallenger<BabyBear,Perm,16,8>;
++type Challenger=LoggedChallenger;
++// Concrete transparent wrapper: all real state transitions delegate to the original challenger.
++// The extra clone in sample_bits observes the raw word without advancing the real transcript.
++use p3_challenger::{CanObserve, CanSample, CanSampleBits, FieldChallenger, GrindingChallenger};
++use p3_field::PrimeField64;
++#[derive(Clone)]
++pub struct LoggedChallenger(DuplexChallenger<BabyBear,Perm,16,8>);
++impl LoggedChallenger {
++    fn new(p:Perm)->Self {Self(DuplexChallenger::new(p))}
++}
++impl<T:serde::Serialize> CanObserve<T> for LoggedChallenger
++where DuplexChallenger<BabyBear,Perm,16,8>:CanObserve<T> {
++    fn observe(&mut self,v:T) {
++        bridge_events::emit("transcript_observe",serde_json::json!({"rust_type":core::any::type_name::<T>(),"value":&v}));
++        self.0.observe(v);
++    }
++}
++impl<T:serde::Serialize> CanSample<T> for LoggedChallenger
++where DuplexChallenger<BabyBear,Perm,16,8>:CanSample<T> {
++    fn sample(&mut self)->T {
++        let v:T=self.0.sample();
++        bridge_events::emit("transcript_sample",serde_json::json!({"rust_type":core::any::type_name::<T>(),"value":&v}));
++        v
++    }
++}
++impl CanSampleBits<usize> for LoggedChallenger {
++    fn sample_bits(&mut self,bits:usize)->usize {
++        let raw:BabyBear=self.0.clone().sample();
++        let result=self.0.sample_bits(bits);
++        assert_eq!(result,(raw.as_canonical_u64() as usize)&((1usize<<bits)-1));
++        bridge_events::emit("transcript_sample_bits",serde_json::json!({"bits":bits,"raw_base_word":raw.as_canonical_u64(),"index":result}));
++        result
++    }
++}
++impl FieldChallenger<BabyBear> for LoggedChallenger {}
++impl GrindingChallenger for LoggedChallenger {
++    type Witness=BabyBear;
++    fn grind(&mut self,_bits:usize)->BabyBear {panic!("acceptance bridge is verification-only")}
++}
++
+ type Hash=PaddingFreeSponge<Perm,16,8,8>;
+ type Compress=TruncatedPermutation<Perm,2,8,16>;
+ type ValMmcs<R=SmallRng>=MerkleTreeHidingMmcs<<BabyBear as Field>::Packing,<BabyBear as Field>::Packing,Hash,Compress,R,2,8,4>;

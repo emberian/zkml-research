@@ -1,0 +1,20 @@
+Selvage/CurveWeightedAgreement.lean:37:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.consistencyMass_mono`:
+  [Fintype ι]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype ι] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/CurveWeightedAgreement.lean:43:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.weightedClose_mutualFailure`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/CurveWeightedAgreement.lean:55:85: error: unsolved goals
+F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : Fintype F
+M : ℕ
+E : (Fin (M + 1) → F) → Prop
+⊢ {x | E fun j => x ^ ↑j}.card = {x | E fun j => x ^ ↑j}.card

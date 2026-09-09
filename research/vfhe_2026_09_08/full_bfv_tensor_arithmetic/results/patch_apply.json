@@ -1,0 +1,7 @@
+{
+  "exit": 0,
+  "files": 7,
+  "byte_identical": true,
+  "directory": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/results/patch_applied",
+  "note": "First apply invocation from a nested cwd with an absolute directory skipped paths; repeated from repository root using an owned relative directory."
+}

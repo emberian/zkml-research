@@ -1,0 +1,27 @@
+{
+  "claim_status": "[EXECUTED]",
+  "copied_from": "/tmp/minidregg-coherent-tail-successor-20260908",
+  "copied_to": "/tmp/minidregg-coherent-query-transport-20260908",
+  "modules": [
+    {
+      "module": "CurveWeightedAgreement",
+      "source_sha256": "5dcf6fe2baa5f073e9285798372a1b686b86b4b8eecbf66c9000e8289307479b",
+      "olean_sha256": "73795353056851d40874e7ec8a0a26b317b7911d28baeff0af4102d65a16b87e"
+    },
+    {
+      "module": "FoldingConsistencyWeights",
+      "source_sha256": "108e6dbdc3237605703c0b0119a295291c0d74fd1dd98a8dc92f2e6b6d9f3e03",
+      "olean_sha256": "19554764f8ba1a5e707887e7d3dd9694bd167fcb3eef9f8bf518b614ed985ac2"
+    },
+    {
+      "module": "ConsistencyMask",
+      "source_sha256": "ff9784ab6a7a4e503041591b0d009b4e98e1aad85f02f3933178fe840a489d86",
+      "olean_sha256": "ee074e464f86cd9318d54ee00aa6e99821efef57843259d92ccbb5331fb139fc"
+    },
+    {
+      "module": "ArityEightConsistencySchedule",
+      "source_sha256": "3fb35c055edc2d3f59764b6b93e5fb5ff8d80e4d72bd84e94cca11b30d6bf42f",
+      "olean_sha256": "fde41470044fa75ac1f1637a458b30a1647e78fc8157eea7488d65e4a5281eff"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/zstd",
+    "-T1",
+    "-3",
+    "--no-progress",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/work/6b84deabadf1159f/chunk069/trace.leu32",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/work/6b84deabadf1159f/chunk069/trace.leu32.zst"
+  ],
+  "started_utc": "2026-09-08T23:29:07.219749+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer",
+  "timeout_seconds": 300,
+  "pid": 73786,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-08T23:29:07.398915+00:00",
+  "elapsed_seconds": 0.17916258302284405,
+  "user_seconds": 0.126548,
+  "system_seconds": 0.020131,
+  "max_rss_bytes": 40255488
+}

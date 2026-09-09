@@ -1,0 +1,60 @@
+{
+  "basis.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/basis.py",
+    "sha256": "16510ae61dfb1ce1f1d4e706e8d594d2ad687827355ba38db98d218e027e4b9f"
+  },
+  "registry.json": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/registry.json",
+    "sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5"
+  },
+  "fixture.json": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/fixture.json",
+    "sha256": "8b961704aa37ec4953110330b4048da1f0f639346803f240e20a04c9c38910ee"
+  },
+  "codec/__init__.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/codec/__init__.py",
+    "sha256": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7"
+  },
+  "codec/packed.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/codec/packed.py",
+    "sha256": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d"
+  },
+  "source/fast/ring.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/ring.py",
+    "sha256": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567"
+  },
+  "source/fast/run.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/run.py",
+    "sha256": "e7632e4eccccec16354ecfbbf541a23e96d8f8f803465c7de62a63eff522f698"
+  },
+  "source/fast/sampling/__init__.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/__init__.py",
+    "sha256": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1"
+  },
+  "source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so",
+    "sha256": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b"
+  },
+  "source/fast/sampling/proposal_screen.c": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/proposal_screen.c",
+    "sha256": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4"
+  },
+  "source/fast/sampling/reference.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/reference.py",
+    "sha256": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+  },
+  "source/fast/sampling/sampler.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/sampler.py",
+    "sha256": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8"
+  },
+  "transport.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+    "sha256": "5eed477a600a3789c9b2a83150eed653674b59b1073e09f392b63b991d3780f6",
+    "modified_after_copy": true
+  },
+  "source/semantic_transport.original.py": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+    "sha256": "5eed477a600a3789c9b2a83150eed653674b59b1073e09f392b63b991d3780f6",
+    "modified_after_copy": false
+  }
+}

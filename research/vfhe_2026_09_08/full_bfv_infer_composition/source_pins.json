@@ -1,0 +1,175 @@
+{
+  "owned": [
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferComposition.lean",
+        "bytes": 9968,
+        "sha256": "2718d9a27bd1566eaa0db386d31f5de8598adaa944f022debebaef0c6f6b7f9c"
+      },
+      "check": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/results/BfvInferComposition_007.json",
+        "bytes": 1710,
+        "sha256": "a31576db03a1f4b0a31d107f5d1865c43de41dd4ba5913522eeeeec7e4d64d38"
+      },
+      "retained_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferComposition.olean",
+        "bytes": 334160,
+        "sha256": "97b4255048054b2fb6087f4d99a875be0fbbefd69e9175eaccf50ea4f547a6aa"
+      }
+    },
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferContract.lean",
+        "bytes": 3870,
+        "sha256": "4cb97ddb6693768743a4c1bd015917e917b535c96ec7c9365a86381a791507bb"
+      },
+      "check": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/results/BfvInferContract_003.json",
+        "bytes": 1701,
+        "sha256": "f30c5049c8bed4c51bb83e39948b0cb5826a8ac83d05836529fa9951b4a0b1e6"
+      },
+      "retained_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferContract.olean",
+        "bytes": 69896,
+        "sha256": "2e33df9b469ae4a276c1b624afcaf1bce27ad8ae142a4923ace0e97983440b14"
+      }
+    },
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferExhibits.lean",
+        "bytes": 3535,
+        "sha256": "3bfd985ddb199c0035f6d7d5c649c71f4ee7536f492abbf96501fdf995f6d01c"
+      },
+      "check": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/results/BfvInferExhibits_003.json",
+        "bytes": 1701,
+        "sha256": "e0068482c42537afb94081464067a325160fda968c5bf163f4c4d7b85c165deb"
+      },
+      "retained_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferExhibits.olean",
+        "bytes": 230448,
+        "sha256": "5b60233d151ffeb9341c3088603885fe5eab72b62c42f98e7d9af8a4737da864"
+      }
+    },
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferLinear.lean",
+        "bytes": 5357,
+        "sha256": "fbe9e3e1fdaf618aa9172afb5a013244e440a45065ae28a46064407091890975"
+      },
+      "check": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/results/BfvInferLinear_003.json",
+        "bytes": 1696,
+        "sha256": "955b3d149d969154d2ab98bf3161b6e44a2d91ccec3e5176b06dbd89bdb2d9b9"
+      },
+      "retained_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvInferLinear.olean",
+        "bytes": 432936,
+        "sha256": "5c91df530ed1305d687e534ae7860fd884368937a70e15ae13ef7a4d913277e2"
+      }
+    },
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvSquareComposition.lean",
+        "bytes": 13171,
+        "sha256": "4b46444e7e36ca45117254afae583ccc5088db5f23ba4c188ed0647bd77c1e58"
+      },
+      "check": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/results/BfvSquareComposition_006.json",
+        "bytes": 1713,
+        "sha256": "4b3cc8b14f87d9637ac5bfc5043102ed934dc05adbdba3ea4436b4c3c9f1e443"
+      },
+      "retained_olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/build/Compiler/BfvSquareComposition.olean",
+        "bytes": 308576,
+        "sha256": "af38e4adba683531a97410947bf124b1cb5a416fa2f85c6217b9a4ceb9617a11"
+      }
+    },
+    {
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/EmitBfvInferLinear.lean",
+        "bytes": 615,
+        "sha256": "7f6b91e3c274b068bf7b519f6b0af3bf853c036dc4cdc4a3570e7bc66ace1311"
+      }
+    }
+  ],
+  "theorem_declarations": 32,
+  "exact_guards": 32,
+  "predecessor_manifests": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/MANIFEST.sha256",
+      "bytes": 5178,
+      "sha256": "f8d6db6e5492e29458e5ef79367bc373a73768cfec79abfd30a9ac0488ce553b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/MANIFEST.sha256",
+      "bytes": 4904,
+      "sha256": "6fc716cdf1334bde2b08f5c455d073619750ac4ffcf63d25bc6bf60e1fd7d8ee"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/manifest.json",
+      "bytes": 11900,
+      "sha256": "7ad0e4d716ba62786aa4d796d6d4156a8b586c930d95c645f00c4838aa6b0235"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/SOURCE_MANIFEST.json",
+      "bytes": 9311,
+      "sha256": "6ff5ce283c1bf01c9fbd52cc69ada354db5df4021a1b6f3edfaf18b81c3fb14a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_tensor_arithmetic/MANIFEST.json",
+      "bytes": 12269,
+      "sha256": "b74e057454bc121fe9942a346dddcd6b6eb2e801fb54684cb7208b5062cf4780"
+    }
+  ],
+  "native_source": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/mod.rs",
+      "bytes": 38900,
+      "sha256": "e57c981bd82f8834ddac280f6d2aaaf8d93e95f2970d70815cd17f18e1731543"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "bytes": 41838,
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/primes.rs",
+      "bytes": 3836,
+      "sha256": "22ab35ddf5cd00ef09a1af4c51c8f92a0276419f06dcde4714131764d1a4d42f"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/key_switching_key.rs",
+      "bytes": 22216,
+      "sha256": "d7f84e35e8618515664ec7521c4f5cd422a9f9709ed1ebdd115fc15f4a05aad1"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/galois_key.rs",
+      "bytes": 9360,
+      "sha256": "3d799609c1880c427a7cc8debea45466b8280daf57c9711e0c75138e02fa5b13"
+    }
+  ],
+  "linear_plan": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+    "bytes": 399094,
+    "sha256": "ec98f40fa8437f03ccf0193774c705f4a488fd55b42fcdc46f6c3774c7c51f22"
+  },
+  "runtime_evidence": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/results/case001/operation.json",
+      "bytes": 19587,
+      "sha256": "3ef16a19dc4b037c51c8e12955e31e2721dcaa3e35a4bf82670006f0e9bde4dd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/results/run001/verification/result.json",
+      "bytes": 284563,
+      "sha256": "735cc5272b650fed8d23a8e3a36aa342a9d5011a5bd7492ba2470686379b35e1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/src/main.rs",
+      "bytes": 16673,
+      "sha256": "43081b8a5ce14465b9cb59919da953fd4c451e3462e9a8586e98f4a8ce6d13e9"
+    }
+  ],
+  "integration_scope": "Five new Compiler modules plus standalone emitter; reuse retained predecessor oleans and source evidence. Root integration lane owns cumulative patch applicability/import-boundary and new umbrella only."
+}

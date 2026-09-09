@@ -1,0 +1,53 @@
+Compiler/BfvInferContract.lean:7:21: error: ambiguous identifier `Slot`, possible interpretations: [BfvInferLinear.Slot, BfvInferLinear.Slot]
+Compiler/BfvInferContract.lean:8:26: error: ambiguous identifier `Ciphertext`, possible interpretations: [BfvInferComposition.Ciphertext,
+ BfvInferComposition.Ciphertext]
+Compiler/BfvInferContract.lean:9:27: error: ambiguous identifier `KernelCiphertext`, possible interpretations: [BfvSquareComposition.KernelCiphertext,
+ BfvSquareComposition.KernelCiphertext]
+Compiler/BfvInferContract.lean:16:29: error(lean.unknownIdentifier): Unknown identifier `Slot`
+
+Note: It is not possible to treat `Slot` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:16:43: error(lean.unknownIdentifier): Unknown identifier `Slot`
+
+Note: It is not possible to treat `Slot` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:17:29: error(lean.unknownIdentifier): Unknown identifier `Slot`
+
+Note: It is not possible to treat `Slot` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:17:43: error(lean.unknownIdentifier): Unknown identifier `Slot`
+
+Note: It is not possible to treat `Slot` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:19:4: warning: declaration uses `sorry`
+Compiler/BfvInferContract.lean:25:42: error(lean.unknownIdentifier): Unknown identifier `EvaluationKey`
+
+Note: It is not possible to treat `EvaluationKey` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:25:66: error(lean.unknownIdentifier): Unknown identifier `Ciphertext`
+
+Note: It is not possible to treat `Ciphertext` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:26:13: error(lean.unknownIdentifier): Unknown identifier `Plaintext`
+
+Note: It is not possible to treat `Plaintext` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:26:26: error(lean.unknownIdentifier): Unknown identifier `KernelCiphertext`
+
+Note: It is not possible to treat `KernelCiphertext` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:33:49: error(lean.unknownIdentifier): Unknown identifier `EvaluationKey`
+
+Note: It is not possible to treat `EvaluationKey` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:33:73: error(lean.unknownIdentifier): Unknown identifier `Ciphertext`
+
+Note: It is not possible to treat `Ciphertext` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:34:13: error(lean.unknownIdentifier): Unknown identifier `Plaintext`
+
+Note: It is not possible to treat `Plaintext` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:34:34: error(lean.unknownIdentifier): Unknown identifier `KernelCiphertext`
+
+Note: It is not possible to treat `KernelCiphertext` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.
+Compiler/BfvInferContract.lean:35:18: error(lean.unknownIdentifier): Unknown identifier `Ciphertext`
+Compiler/BfvInferContract.lean:42:4: warning: declaration uses `sorry`
+Compiler/BfvInferContract.lean:45:4: warning: declaration uses `sorry`
+Compiler/BfvInferContract.lean:48:4: warning: declaration uses `sorry`
+Compiler/BfvInferContract.lean:56:2: warning: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Compiler/BfvInferContract.lean:56:17: warning: declaration uses `sorry`
+Compiler/BfvInferContract.lean:51:8: warning: declaration uses `sorry`
+Compiler/BfvInferContract.lean:58:8: warning: declaration uses `sorry`
+Compiler/BfvInferContract.lean:62:8: warning: declaration uses `sorry`

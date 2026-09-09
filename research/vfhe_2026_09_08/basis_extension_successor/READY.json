@@ -1,0 +1,69 @@
+{
+  "template": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/program/template_ir2.json",
+    "bytes": 7113688,
+    "sha256": "5bd98484deb16e5f1af364e479a4e17d139ba5b379f539e32df96f7b031b65a2"
+  },
+  "plan": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/program/witness_plan.json",
+    "bytes": 2564972,
+    "sha256": "ea44b48aeb7b69a51f3d2379459c1ca4b28ef774274f483e6fabd4c6f7f6d178"
+  },
+  "emission": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/program/emission.json",
+    "bytes": 202,
+    "sha256": "b926ca52f8f4db53a214cc960d0d15d7c3e5fe7b2ebdeb9e091752a196bb15b4"
+  },
+  "native": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+    "bytes": 665328,
+    "sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+  },
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ActualBasisExtension.lean",
+      "bytes": 2100,
+      "sha256": "543df98fe85ea85626f43513b0c1dfe4e375be44269e7b475ffecc2ee8377c48"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionLayout.lean",
+      "bytes": 2950,
+      "sha256": "247ab6fa77a4904c7c46407a97eca388867f8d33c1302e0b70ef8849da8d1a21"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionNative.lean",
+      "bytes": 3260,
+      "sha256": "a83af69c6cb61ae8cf5ec9b513861176fae08ba1972585e22afdf97a83a70f06"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionPublic.lean",
+      "bytes": 8217,
+      "sha256": "864a50a56b09a31da3c967f9d83c7d717b450615469dc8703861defc6592e62c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/BasisExtensionWitnessPlan.lean",
+      "bytes": 3751,
+      "sha256": "5b71cad464812e4cd7ade68420b06d3f31d5921a4be2808dbffdc5a497bce19c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ExactBasisExtension.lean",
+      "bytes": 7119,
+      "sha256": "593d4823e170acbae1af033d7b2765464408be3784e426dd931f019527dcadc7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/Compiler/ProfiledAutoCapacity.lean",
+      "bytes": 2737,
+      "sha256": "42e1c0a644b0734871679e60ca4e096aef6e7dd03ac615759da3b1110e12dc81"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/basis_extension_successor/EmitBasisExtension.lean",
+      "bytes": 2118,
+      "sha256": "650555636a8175aca2fca69c3ee12153ea46b07946bc35aeb8a1e12f7fff3712"
+    }
+  ],
+  "native_constructor": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/results/case001/native_extension_constants.json",
+    "bytes": 4771,
+    "sha256": "eae1fb16c2c90b455ee155550ff74fe332a92da18cdfb36baa399a5c605ff0c4"
+  }
+}

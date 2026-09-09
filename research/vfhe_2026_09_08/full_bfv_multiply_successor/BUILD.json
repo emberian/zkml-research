@@ -1,0 +1,38 @@
+{
+  "claim": "EXECUTED isolated native public phase reader/prover build",
+  "command_record": "results/build002.command.json",
+  "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+  "rayon_threads": 4,
+  "files": [
+    {
+      "path": "src/main.rs",
+      "bytes": 19694,
+      "sha256": "3db66856129b50aaf3b03ea39c503a4492860d5304d9b7897df7df39f04b43c2"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 738,
+      "sha256": "04897725ebf13b5fe0e38a4dabc4983d84cd367a98ddc5ba05bcd3e67a52d186"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 39910,
+      "sha256": "a5c3039d361112c394a45b94fd88fe56b0fec82c13c7cdceb3e86dd694af4ecf"
+    },
+    {
+      "path": "target/release/vfhe-full-bfv-multiply",
+      "bytes": 4761792,
+      "sha256": "5e0a2a2f8b5a602d38261966ef0596f1845c8e66ecb135f72d05468378549360"
+    },
+    {
+      "path": "../proved_operation/backend/src/lib.rs",
+      "bytes": 9468,
+      "sha256": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+    },
+    {
+      "path": "../proved_operation/backend/Cargo.toml",
+      "bytes": 1414,
+      "sha256": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9"
+    }
+  ]
+}

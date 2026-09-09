@@ -1,0 +1,565 @@
+{
+  "linear": [
+    {
+      "revision": 2,
+      "counts": {
+        "card_arrival": 1,
+        "cash_withdrawal_charge": 1
+      },
+      "scores": [
+        {
+          "card_arrival": 215361,
+          "cash_withdrawal_charge": 198734
+        },
+        {
+          "card_arrival": 223775,
+          "cash_withdrawal_charge": 203864
+        },
+        {
+          "card_arrival": 228957,
+          "cash_withdrawal_charge": 198190
+        },
+        {
+          "card_arrival": 238145,
+          "cash_withdrawal_charge": 193263
+        },
+        {
+          "card_arrival": 229766,
+          "cash_withdrawal_charge": 200181
+        },
+        {
+          "card_arrival": 232773,
+          "cash_withdrawal_charge": 202753
+        },
+        {
+          "card_arrival": 236514,
+          "cash_withdrawal_charge": 200938
+        },
+        {
+          "card_arrival": 221098,
+          "cash_withdrawal_charge": 203134
+        },
+        {
+          "card_arrival": 197869,
+          "cash_withdrawal_charge": 209171
+        },
+        {
+          "card_arrival": 199523,
+          "cash_withdrawal_charge": 222526
+        },
+        {
+          "card_arrival": 201850,
+          "cash_withdrawal_charge": 223176
+        },
+        {
+          "card_arrival": 203551,
+          "cash_withdrawal_charge": 212633
+        },
+        {
+          "card_arrival": 202118,
+          "cash_withdrawal_charge": 217009
+        },
+        {
+          "card_arrival": 200411,
+          "cash_withdrawal_charge": 214013
+        },
+        {
+          "card_arrival": 201593,
+          "cash_withdrawal_charge": 230594
+        },
+        {
+          "card_arrival": 201310,
+          "cash_withdrawal_charge": 213374
+        }
+      ],
+      "predictions": [
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge"
+      ],
+      "correct": 16,
+      "total": 16
+    },
+    {
+      "revision": 4,
+      "counts": {
+        "card_arrival": 2,
+        "cash_withdrawal_charge": 2
+      },
+      "scores": [
+        {
+          "card_arrival": 447965,
+          "cash_withdrawal_charge": 401795
+        },
+        {
+          "card_arrival": 456661,
+          "cash_withdrawal_charge": 415708
+        },
+        {
+          "card_arrival": 463202,
+          "cash_withdrawal_charge": 402483
+        },
+        {
+          "card_arrival": 472904,
+          "cash_withdrawal_charge": 387129
+        },
+        {
+          "card_arrival": 466943,
+          "cash_withdrawal_charge": 403481
+        },
+        {
+          "card_arrival": 474654,
+          "cash_withdrawal_charge": 407175
+        },
+        {
+          "card_arrival": 469676,
+          "cash_withdrawal_charge": 401365
+        },
+        {
+          "card_arrival": 455386,
+          "cash_withdrawal_charge": 409566
+        },
+        {
+          "card_arrival": 382856,
+          "cash_withdrawal_charge": 440710
+        },
+        {
+          "card_arrival": 401320,
+          "cash_withdrawal_charge": 478598
+        },
+        {
+          "card_arrival": 406893,
+          "cash_withdrawal_charge": 469283
+        },
+        {
+          "card_arrival": 401078,
+          "cash_withdrawal_charge": 452558
+        },
+        {
+          "card_arrival": 404152,
+          "cash_withdrawal_charge": 452827
+        },
+        {
+          "card_arrival": 402076,
+          "cash_withdrawal_charge": 445281
+        },
+        {
+          "card_arrival": 410376,
+          "cash_withdrawal_charge": 466576
+        },
+        {
+          "card_arrival": 397197,
+          "cash_withdrawal_charge": 434303
+        }
+      ],
+      "predictions": [
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge"
+      ],
+      "correct": 16,
+      "total": 16
+    },
+    {
+      "revision": 6,
+      "counts": {
+        "card_arrival": 2,
+        "cash_withdrawal_charge": 2
+      },
+      "scores": [
+        {
+          "card_arrival": 470157,
+          "cash_withdrawal_charge": 402003
+        },
+        {
+          "card_arrival": 453187,
+          "cash_withdrawal_charge": 419492
+        },
+        {
+          "card_arrival": 464320,
+          "cash_withdrawal_charge": 410460
+        },
+        {
+          "card_arrival": 467553,
+          "cash_withdrawal_charge": 402882
+        },
+        {
+          "card_arrival": 457061,
+          "cash_withdrawal_charge": 405004
+        },
+        {
+          "card_arrival": 469438,
+          "cash_withdrawal_charge": 412335
+        },
+        {
+          "card_arrival": 474936,
+          "cash_withdrawal_charge": 414441
+        },
+        {
+          "card_arrival": 456467,
+          "cash_withdrawal_charge": 411356
+        },
+        {
+          "card_arrival": 378601,
+          "cash_withdrawal_charge": 464780
+        },
+        {
+          "card_arrival": 410672,
+          "cash_withdrawal_charge": 491065
+        },
+        {
+          "card_arrival": 419066,
+          "cash_withdrawal_charge": 486890
+        },
+        {
+          "card_arrival": 404968,
+          "cash_withdrawal_charge": 484420
+        },
+        {
+          "card_arrival": 405317,
+          "cash_withdrawal_charge": 475191
+        },
+        {
+          "card_arrival": 406925,
+          "cash_withdrawal_charge": 470033
+        },
+        {
+          "card_arrival": 413168,
+          "cash_withdrawal_charge": 471709
+        },
+        {
+          "card_arrival": 389104,
+          "cash_withdrawal_charge": 459714
+        }
+      ],
+      "predictions": [
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge"
+      ],
+      "correct": 16,
+      "total": 16
+    }
+  ],
+  "tensorsketch": [
+    {
+      "revision": 2,
+      "counts": {
+        "card_arrival": 1,
+        "cash_withdrawal_charge": 1
+      },
+      "scores": [
+        {
+          "card_arrival": 76902,
+          "cash_withdrawal_charge": 70103
+        },
+        {
+          "card_arrival": 81132,
+          "cash_withdrawal_charge": 69361
+        },
+        {
+          "card_arrival": 80487,
+          "cash_withdrawal_charge": 65151
+        },
+        {
+          "card_arrival": 85744,
+          "cash_withdrawal_charge": 61971
+        },
+        {
+          "card_arrival": 84975,
+          "cash_withdrawal_charge": 66526
+        },
+        {
+          "card_arrival": 88146,
+          "cash_withdrawal_charge": 72686
+        },
+        {
+          "card_arrival": 86696,
+          "cash_withdrawal_charge": 72187
+        },
+        {
+          "card_arrival": 81600,
+          "cash_withdrawal_charge": 70660
+        },
+        {
+          "card_arrival": 72466,
+          "cash_withdrawal_charge": 80079
+        },
+        {
+          "card_arrival": 69104,
+          "cash_withdrawal_charge": 81426
+        },
+        {
+          "card_arrival": 73662,
+          "cash_withdrawal_charge": 85859
+        },
+        {
+          "card_arrival": 72143,
+          "cash_withdrawal_charge": 76556
+        },
+        {
+          "card_arrival": 66073,
+          "cash_withdrawal_charge": 76393
+        },
+        {
+          "card_arrival": 68602,
+          "cash_withdrawal_charge": 77996
+        },
+        {
+          "card_arrival": 65086,
+          "cash_withdrawal_charge": 84142
+        },
+        {
+          "card_arrival": 66300,
+          "cash_withdrawal_charge": 73208
+        }
+      ],
+      "predictions": [
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge"
+      ],
+      "correct": 16,
+      "total": 16
+    },
+    {
+      "revision": 4,
+      "counts": {
+        "card_arrival": 2,
+        "cash_withdrawal_charge": 2
+      },
+      "scores": [
+        {
+          "card_arrival": 166492,
+          "cash_withdrawal_charge": 146793
+        },
+        {
+          "card_arrival": 172125,
+          "cash_withdrawal_charge": 151020
+        },
+        {
+          "card_arrival": 169069,
+          "cash_withdrawal_charge": 138331
+        },
+        {
+          "card_arrival": 175325,
+          "cash_withdrawal_charge": 130464
+        },
+        {
+          "card_arrival": 180608,
+          "cash_withdrawal_charge": 141585
+        },
+        {
+          "card_arrival": 187687,
+          "cash_withdrawal_charge": 151831
+        },
+        {
+          "card_arrival": 175238,
+          "cash_withdrawal_charge": 146039
+        },
+        {
+          "card_arrival": 174882,
+          "cash_withdrawal_charge": 148668
+        },
+        {
+          "card_arrival": 136023,
+          "cash_withdrawal_charge": 174835
+        },
+        {
+          "card_arrival": 137846,
+          "cash_withdrawal_charge": 186466
+        },
+        {
+          "card_arrival": 147008,
+          "cash_withdrawal_charge": 188259
+        },
+        {
+          "card_arrival": 139331,
+          "cash_withdrawal_charge": 169799
+        },
+        {
+          "card_arrival": 131284,
+          "cash_withdrawal_charge": 165976
+        },
+        {
+          "card_arrival": 137111,
+          "cash_withdrawal_charge": 169554
+        },
+        {
+          "card_arrival": 133668,
+          "cash_withdrawal_charge": 171866
+        },
+        {
+          "card_arrival": 129211,
+          "cash_withdrawal_charge": 153555
+        }
+      ],
+      "predictions": [
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge"
+      ],
+      "correct": 16,
+      "total": 16
+    },
+    {
+      "revision": 6,
+      "counts": {
+        "card_arrival": 2,
+        "cash_withdrawal_charge": 2
+      },
+      "scores": [
+        {
+          "card_arrival": 185409,
+          "cash_withdrawal_charge": 140938
+        },
+        {
+          "card_arrival": 175663,
+          "cash_withdrawal_charge": 150815
+        },
+        {
+          "card_arrival": 177360,
+          "cash_withdrawal_charge": 138301
+        },
+        {
+          "card_arrival": 179743,
+          "cash_withdrawal_charge": 139090
+        },
+        {
+          "card_arrival": 180069,
+          "cash_withdrawal_charge": 142135
+        },
+        {
+          "card_arrival": 192784,
+          "cash_withdrawal_charge": 151012
+        },
+        {
+          "card_arrival": 185670,
+          "cash_withdrawal_charge": 147751
+        },
+        {
+          "card_arrival": 180906,
+          "cash_withdrawal_charge": 147694
+        },
+        {
+          "card_arrival": 137848,
+          "cash_withdrawal_charge": 184099
+        },
+        {
+          "card_arrival": 149619,
+          "cash_withdrawal_charge": 190727
+        },
+        {
+          "card_arrival": 158783,
+          "cash_withdrawal_charge": 193609
+        },
+        {
+          "card_arrival": 145481,
+          "cash_withdrawal_charge": 183418
+        },
+        {
+          "card_arrival": 139019,
+          "cash_withdrawal_charge": 173370
+        },
+        {
+          "card_arrival": 147207,
+          "cash_withdrawal_charge": 177053
+        },
+        {
+          "card_arrival": 142130,
+          "cash_withdrawal_charge": 168850
+        },
+        {
+          "card_arrival": 129726,
+          "cash_withdrawal_charge": 165028
+        }
+      ],
+      "predictions": [
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "card_arrival",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge",
+        "cash_withdrawal_charge"
+      ],
+      "correct": 16,
+      "total": 16
+    }
+  ],
+  "source_fixture_sha256": "8b961704aa37ec4953110330b4048da1f0f639346803f240e20a04c9c38910ee"
+}

@@ -1,0 +1,17 @@
+Selvage/ConsistencyMask.lean:13:0: error: cannot omit referenced section variable `inst✝`
+Selvage/ConsistencyMask.lean:17:0: error: cannot omit referenced section variable `inst✝`
+Selvage/ConsistencyMask.lean:21:0: error: cannot omit referenced section variable `inst✝`
+Selvage/ConsistencyMask.lean:35:4: error: Type mismatch: After simplification, term
+  hS
+ has type
+  (1 - θ) * ↑(Fintype.card ι) ≤ consistencyMass (maskConsistency weight next literal) S
+but is expected to have type
+  (1 - θ) * ↑(Fintype.card ι) ≤ consistencyMass weight ({i ∈ S | next i = literal i})
+Selvage/ConsistencyMask.lean:35:16: warning: declaration uses `sorry`
+Selvage/ConsistencyMask.lean:35:16: error: (kernel) unknown constant 'Minidregg.Selvage.maskConsistency_mass'
+Selvage/ConsistencyMask.lean:49:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.weightedClose_self_of_mass`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`

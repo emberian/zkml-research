@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "--directory=research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/results/patch_applied",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/proposal.patch"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "exit": 0,
+  "files": 7,
+  "byte_identical": true
+}

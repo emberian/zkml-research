@@ -1,0 +1,62 @@
+{
+  "schema": "bfv-paired-mac-profiles-v1",
+  "scope": "Universal paired modular four-term MAC plus two addends, canonical16words; source theorem compiled, separate exhibits/axiom census pending",
+  "profiles": [
+    {
+      "prime_index": 0,
+      "prime": "1125899906826241",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime0/template_ir2.json",
+      "template_sha256": "63a6a7c9f00d6235b88f2b1524c91b29cbd7d1728ad4d5724d9983abf264df7f",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime0/witness_plan.json",
+      "plan_sha256": "0f25b798c2cf6273817b886f12edabc65043b43a9468332a8f4088e86dd74946",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 1,
+      "prime": "1125899906629633",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime1/template_ir2.json",
+      "template_sha256": "30ccad4145f2a1c1819c7a3651e1638cfa5a828b6c5b51a782d6f739b0b02fc8",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime1/witness_plan.json",
+      "plan_sha256": "58d1632c4934ea1599fb1a1a2b681d95f93ddec5f8f8e280c5d9a0c54529b67f",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 2,
+      "prime": "1125899905744897",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime2/template_ir2.json",
+      "template_sha256": "8113913f4e84ee9dc00564d2ef8890ecc32243f08e57aa7f152cf0c529cb4d71",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime2/witness_plan.json",
+      "plan_sha256": "8d2a50685f5f6aebc23bddb4e37453afbb53e95c0a135d266bab84997f00703c",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    },
+    {
+      "prime_index": 3,
+      "prime": "1125899905351681",
+      "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime3/template_ir2.json",
+      "template_sha256": "cf07db9ade400f907337f7c7021dfbb59048efc5adc95417bd8a8eba77b2a1aa",
+      "width": 2655,
+      "public_arity": 97,
+      "plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/artifacts/prime3/witness_plan.json",
+      "plan_sha256": "dceec692c254d5493393376781bc03110419119f6885e18fa2d11b971ffec8bb",
+      "executor": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+      "executor_sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+    }
+  ],
+  "source_sha256": {
+    "Compiler/BfvKeyswitchCore.lean": "969a8cfc5b0724412a00243352cf956a6aa98d8417b9e48b7e123925736814b3",
+    "Compiler/BfvKeyswitchMac.lean": "8897abedbad8090ed074361493ff08c5f89ccd31fe63fac223df9b49518839cc",
+    "Compiler/BfvKeyswitchRow.lean": "41c4a9beb15fbed9cc445e7b9de64043e9cfc1f799b3234ce5710743c1f9fa19",
+    "Compiler/BfvKeyswitchWitnessPlan.lean": "b5f793911d62c5b19ce5d5541a35d3159e57f3c4606aeb655c2f886a7d671a81"
+  },
+  "emitter_sha256": "40c53ed1a630562631d35d3f4ce92a80dd34d624913ead3e6b6116a6a27fb857",
+  "public_provenance_sha256": "673018860c917189350b81988dee0c3cfff798d6ee4ea5681dd129c20e838235"
+}

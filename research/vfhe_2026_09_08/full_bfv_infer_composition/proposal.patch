@@ -1,0 +1,763 @@
+--- /dev/null
++++ b/Compiler/BfvInferComposition.lean
+@@ -0,0 +1,208 @@
++/- Whole Infer's dot stage, composed from the accepted compiler-owned MAC rows
++and the public linear plan. The NTT callbacks remain a stated runtime boundary. -/
++import Compiler.BfvInferLinear
++namespace Minidregg.Compiler.BfvInferComposition
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open BfvInferLinear
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 2000000
++
++structure Operands where
++  d : Fin 4 → Nat
++  key : Fin 2 → Fin 4 → Nat
++  addend : Fin 2 → Nat
++
++def output (q : Nat) (a : Operands) (h : Fin 2) : Nat :=
++  (a.addend h+∑ i : Fin 4,a.d i*a.key h i)%q
++
++/-- Public binding carries no output arithmetic premise. Only the public words
++are identified with their roles; accepted source equations supply arithmetic. -/
++def Bound {J : Type} (w : BfvKeyswitchCore.Wires J) (asg : J → BabyBear)
++    (a : Operands) (out : Fin 2 → Nat) : Prop :=
++  (∀ i,BfvKeyswitchCore.value asg w (BfvKeyswitchCore.dIndex i)=a.d i) ∧
++  (∀ h i,BfvKeyswitchCore.value asg w (BfvKeyswitchCore.kIndex h i)=a.key h i) ∧
++  (∀ h,BfvKeyswitchCore.value asg w (BfvKeyswitchCore.aIndex h)=a.addend h) ∧
++  (∀ h,BfvKeyswitchCore.value asg w (BfvKeyswitchCore.oIndex h)=out h)
++
++def BoundRowSound : Prop := ∀ (J : Type) (q : Nat), 0<q → q<512^6 →
++  ∀ (w : BfvKeyswitchCore.Wires J) (asg : J → BabyBear) (a : Operands) (out : Fin 2 → Nat),
++  systemAccepts asg (BfvKeyswitchCore.system q w) → Bound w asg a out →
++  ∀ h,out h=output q a h
++
++theorem boundRowSound : BoundRowSound := by
++  intro J q hq hcap w asg a out hs hb h
++  have hh := (BfvKeyswitchCore.sound q hq hcap w asg hs).2 h
++  simpa only [hb.1,hb.2.1,hb.2.2.1,hb.2.2.2,output] using hh
++
++def EmittedChecked (l : Fin 4) (a : Operands) (out : Fin 2 → Nat) : Prop :=
++  ∃ asg : Fin BfvKeyswitchRow.nVars → BabyBear,
++    systemAccepts asg (BfvKeyswitchRow.emittedSystem (primes l)) ∧
++    Bound BfvKeyswitchRow.wires asg a out
++
++theorem emittedChecked_sound (l : Fin 4) (a : Operands) (out : Fin 2 → Nat)
++    (hc : EmittedChecked l a out) : ∀ h,out h=output (primes l) a h := by
++  obtain ⟨asg,hs,hb⟩ := hc
++  intro h
++  have hh := (BfvKeyswitchRow.emittedSystem_sound l asg hs).2 h
++  change BfvKeyswitchCore.value asg BfvKeyswitchRow.wires (BfvKeyswitchCore.oIndex h)=
++    (BfvKeyswitchCore.value asg BfvKeyswitchRow.wires (BfvKeyswitchCore.aIndex h)+
++      ∑ i : Fin 4,BfvKeyswitchCore.value asg BfvKeyswitchRow.wires (BfvKeyswitchCore.dIndex i)*
++      BfvKeyswitchCore.value asg BfvKeyswitchRow.wires (BfvKeyswitchCore.kIndex h i))%primes l at hh
++  simpa only [hb.1,hb.2.1,hb.2.2.1,hb.2.2.2,output] using hh
++
++abbrev Ciphertext := Fin 2 → Fin 4 → Slot → Nat
++abbrev Plaintext := Fin 4 → Slot → Nat
++abbrev EvaluationKey := Fin 10 → Fin 2 → Fin 4 → Fin 4 → Slot → Nat
++/-- These supplied public transforms name the exact representation boundary.
++No inverse/linearity claim about a Rust NTT implementation is assumed or proved. -/
++structure Transforms where
++  forward : Fin 4 → (Slot → Nat) → Slot → Nat
++  inverse : Fin 4 → (Slot → Nat) → Slot → Nat
++
++def initialOperands (model : Ciphertext) (query : Plaintext) (l : Fin 4) (j : Slot) : Operands where
++  d := fun i => if i.val=0 then query l j else 0
++  key := fun h i => if i.val=0 then model h l j else 0
++  addend := fun _ => 0
++
++def initialProduct (model : Ciphertext) (query : Plaintext) : Ciphertext :=
++  fun h l j => model h l j*query l j%primes l
++
++theorem initialOperands_output (model : Ciphertext) (query : Plaintext) (h : Fin 2)
++    (l : Fin 4) (j : Slot) :
++    output (primes l) (initialOperands model query l j) h=initialProduct model query h l j := by
++  fin_cases h <;> simp [output,initialOperands,initialProduct,Nat.mul_comm]
++
++def rotated (p : Ciphertext) (s : Fin 10) : Ciphertext :=
++  fun h l => substitute (exponents s) (p h l)
++
++def lifted (op : Transforms) (p : Ciphertext) (s : Fin 10)
++    (target source : Fin 4) : Slot → Nat :=
++  op.forward target (fun j => canonicalLift (primes target)
++    (op.inverse source (rotated p s 1 source) j))
++
++
++/-- Exactly the input-specific NTT congruence needed to replace native lazy
++coefficients with the verifier's canonical target-prime coefficients. -/
++def NativeLiftCorrespondence : Prop := ∀ (op : Transforms) (p : Ciphertext) (s : Fin 10)
++  (source target : Fin 4),
++  (∀ j,op.inverse source (rotated p s 1 source) j<primes source) →
++  op.forward target (fun j => canonicalLift (primes target)
++    (op.inverse source (rotated p s 1 source) j))=
++    op.forward target (op.inverse source (rotated p s 1 source)) →
++  lifted op p s target source=op.forward target (fun j => lazyLiftWord (primes target)
++    (op.inverse source (rotated p s 1 source) j))
++
++theorem nativeLiftCorrespondence : NativeLiftCorrespondence := by
++  intro op p s source target hcanonical hcongruence
++  have hword : (fun j => lazyLiftWord (primes target)
++      (op.inverse source (rotated p s 1 source) j))=
++      op.inverse source (rotated p s 1 source) := by
++    funext j
++    exact (liftCorrect source target _ (hcanonical j)).2.1
++  rw [hword]
++  exact hcongruence
++
++def rotationOperands (op : Transforms) (key : EvaluationKey) (p : Ciphertext)
++    (s : Fin 10) (l : Fin 4) (j : Slot) : Operands where
++  d := fun i => lifted op p s l i j
++  key := fun h i => key s h l i j
++  addend := fun h => if h.val=0 then (p 0 l j+rotated p s 0 l j)%primes l else p 1 l j
++
++def rotationStep (op : Transforms) (key : EvaluationKey) (s : Fin 10)
++    (p : Ciphertext) : Ciphertext :=
++  fun h l j => output (primes l) (rotationOperands op key p s l j) h
++
++def InitialChecked (model : Ciphertext) (query : Plaintext) (out : Ciphertext) : Prop :=
++  ∀ l j, EmittedChecked l (initialOperands model query l j) (fun h => out h l j)
++def RotationChecked (op : Transforms) (key : EvaluationKey) (s : Fin 10)
++    (before after : Ciphertext) : Prop :=
++  ∀ l j, EmittedChecked l (rotationOperands op key before s l j) (fun h => after h l j)
++
++theorem initialChecked_sound (model : Ciphertext) (query : Plaintext) (out : Ciphertext)
++    (hc : InitialChecked model query out) : out=initialProduct model query := by
++  funext h l j
++  exact (emittedChecked_sound l _ _ (hc l j) h).trans (initialOperands_output model query h l j)
++
++theorem rotationChecked_sound (op : Transforms) (key : EvaluationKey) (s : Fin 10)
++    (before after : Ciphertext) (hc : RotationChecked op key s before after) :
++    after=rotationStep op key s before := by
++  funext h l j
++  exact emittedChecked_sound l _ _ (hc l j) h
++
++/-- Generic prefix composition, reused at every length through the final stage. -/
++def iterate {S : Type} (step : Nat → S → S) (start : S) : Nat → S
++  | 0 => start
++  | n+1 => step n (iterate step start n)
++
++def PrefixSound : Prop := ∀ (S : Type) (step : Nat → S → S) (start : S)
++  (trace : Nat → S) (n : Nat),trace 0=start →
++  (∀ i,i<n → trace (i+1)=step i (trace i)) → trace n=iterate step start n
++
++theorem prefixSound : PrefixSound := by
++  intro S step start trace n h0 hs
++  induction n with
++  | zero => exact h0
++  | succ n ih =>
++    rw [hs n (by omega),iterate,ih (fun i hi => hs i (by omega))]
++
++def stepAt (op : Transforms) (key : EvaluationKey) (n : Nat) (p : Ciphertext) : Ciphertext :=
++  if h : n<10 then rotationStep op key ⟨n,h⟩ p else p
++
++def inferDot (op : Transforms) (key : EvaluationKey) (model : Ciphertext)
++    (query : Plaintext) : Ciphertext := iterate (stepAt op key) (initialProduct model query) 10
++
++def InferDotSound : Prop := ∀ (op : Transforms) (key : EvaluationKey) (model : Ciphertext)
++  (query : Plaintext) (trace : Nat → Ciphertext),
++  InitialChecked model query (trace 0) →
++  (∀ s : Fin 10,RotationChecked op key s (trace s.val) (trace (s.val+1))) →
++  trace 10=inferDot op key model query
++
++theorem inferDotSound : InferDotSound := by
++  intro op key model query trace hi hr
++  apply prefixSound Ciphertext (stepAt op key) (initialProduct model query) trace 10
++  · exact initialChecked_sound model query (trace 0) hi
++  · intro i hi
++    have hs := rotationChecked_sound op key ⟨i,hi⟩ (trace i) (trace (i+1)) (hr ⟨i,hi⟩)
++    simpa [stepAt,hi] using hs
++
++end Minidregg.Compiler.BfvInferComposition
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.boundRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.boundRowSound
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.emittedChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.emittedChecked_sound
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.initialOperands_output' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.initialOperands_output
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.initialChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.initialChecked_sound
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.rotationChecked_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.rotationChecked_sound
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.prefixSound' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.prefixSound
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.inferDotSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.inferDotSound
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.nativeLiftCorrespondence' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.nativeLiftCorrespondence
+--- /dev/null
++++ b/Compiler/BfvInferContract.lean
+@@ -0,0 +1,77 @@
++/- One contract for the chosen Infer: compiler-accepted initial product, ten
++rotation/add stages, basis extension, tensor square and directed rescale. -/
++import Compiler.BfvInferComposition
++import Compiler.BfvSquareComposition
++namespace Minidregg.Compiler.BfvInferContract
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvInferLinear (Slot)
++open Minidregg.Compiler.BfvInferComposition (Ciphertext Plaintext EvaluationKey)
++open Minidregg.Compiler.BfvSquareComposition (KernelCiphertext)
++set_option autoImplicit false
++
++/-- One shared pair of base-prime transform callbacks is used throughout Infer;
++the extension-prime callbacks occur only in its final square. -/
++structure PublicTransforms where
++  base : BfvInferComposition.Transforms
++  forwardExtended : Fin 9 → (Slot → Nat) → Slot → Nat
++  inverseExtended : Fin 9 → (Slot → Nat) → Slot → Nat
++
++def squareTransforms (op : PublicTransforms) : BfvSquareComposition.SquareTransforms where
++  inverseBase := op.base.inverse
++  forwardExtended := op.forwardExtended
++  inverseExtended := op.inverseExtended
++  forwardBase := op.base.forward
++
++def result (op : PublicTransforms) (key : EvaluationKey) (model : Ciphertext)
++    (query : Plaintext) : KernelCiphertext :=
++  BfvSquareComposition.exactDirectedSquare (squareTransforms op)
++    (BfvInferComposition.inferDot op.base key model query)
++
++/-- All source acceptance and bindings refer to the same intermediate dot.
++The only transform law is the input-specific common-modulus roundtrip, not
++an arithmetic-output equality. Byte commitments/decoding remain outside Lean. -/
++def AcceptedInfer (op : PublicTransforms) (key : EvaluationKey) (model : Ciphertext)
++    (query : Plaintext) (kernel : KernelCiphertext) : Prop :=
++  ∃ trace : Nat → Ciphertext,
++    BfvInferComposition.InitialChecked model query (trace 0) ∧
++    (∀ s : Fin 10,BfvInferComposition.RotationChecked op.base key s
++      (trace s.val) (trace (s.val+1))) ∧
++    BfvSquareComposition.BaseRoundTrip (squareTransforms op) (trace 10) ∧
++    BfvSquareComposition.SquareChecked (squareTransforms op) (trace 10) kernel
++
++def InferSound : Prop := ∀ op key model query kernel,
++  AcceptedInfer op key model query kernel → kernel=result op key model query
++
++def UniqueOutput : Prop := ∀ op key model query left right,
++  AcceptedInfer op key model query left → AcceptedInfer op key model query right → left=right
++
++def WrongOutputRefused : Prop := ∀ op key model query kernel,
++  kernel≠result op key model query → ¬AcceptedInfer op key model query kernel
++
++theorem inferSound : InferSound := by
++  intro op key model query kernel hc
++  obtain ⟨trace,hi,hr,hrt,hs⟩ := hc
++  have hd := BfvInferComposition.inferDotSound op.base key model query trace hi hr
++  have hk := BfvSquareComposition.squareChecked_sound (squareTransforms op) (trace 10) kernel hrt hs
++  simpa only [hd,result] using hk
++
++theorem uniqueOutput : UniqueOutput := by
++  intro op key model query left right hl hr
++  exact (inferSound op key model query left hl).trans (inferSound op key model query right hr).symm
++
++theorem wrongOutputRefused : WrongOutputRefused := by
++  intro op key model query kernel hwrong hc
++  exact hwrong (inferSound op key model query kernel hc)
++end Minidregg.Compiler.BfvInferContract
++
++/-- info: 'Minidregg.Compiler.BfvInferContract.inferSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferContract.inferSound
++
++/-- info: 'Minidregg.Compiler.BfvInferContract.uniqueOutput' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferContract.uniqueOutput
++
++/-- info: 'Minidregg.Compiler.BfvInferContract.wrongOutputRefused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferContract.wrongOutputRefused
+--- /dev/null
++++ b/Compiler/BfvInferExhibits.lean
+@@ -0,0 +1,82 @@
++import Compiler.BfvInferComposition
++import Compiler.BfvKeyswitchExhibits
++namespace Minidregg.Compiler.BfvInferComposition.Exhibits
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open BfvKeyswitchCore
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 2000000
++
++def sample : Operands where
++  d := ![1,2,3,4]
++  key := fun h _ => if h.val=0 then 2 else 3
++  addend := ![7,5]
++
++def RowPremiseInhabited : Prop := ∃ w : Wires BabyBear,
++  systemAccepts id (BfvKeyswitchCore.system 37 w) ∧ Bound w id sample ![27,35]
++
++theorem good_bound : Bound BfvKeyswitchCore.Exhibits.good id sample ![27,35] := by
++  refine ⟨?_,?_,?_,?_⟩
++  · intro i; rw [BfvKeyswitchCore.Exhibits.good_values]
++    fin_cases i <;> rfl
++  · intro h i; rw [BfvKeyswitchCore.Exhibits.good_values]
++    fin_cases h <;> fin_cases i <;> rfl
++  · intro h; rw [BfvKeyswitchCore.Exhibits.good_values]
++    fin_cases h <;> rfl
++  · intro h; rw [BfvKeyswitchCore.Exhibits.good_values]
++    fin_cases h <;> rfl
++
++theorem rowPremiseInhabited : RowPremiseInhabited :=
++  ⟨BfvKeyswitchCore.Exhibits.good,BfvKeyswitchCore.Exhibits.nonzero_premise.1,good_bound⟩
++
++def ChangedOutputRefused : Prop := ∀ (J : Type) (w : Wires J) (asg : J → BabyBear)
++  (out : Fin 2 → Nat),systemAccepts asg (BfvKeyswitchCore.system 37 w) →
++  Bound w asg sample out → out 0≠19
++
++theorem changedOutputRefused : ChangedOutputRefused := by
++  intro J w asg out hs hb
++  have heq := boundRowSound J 37 (by decide) (by decide) w asg sample out hs hb 0
++  have hvalue : output 37 sample 0=27 := by decide
++  omega
++
++def sampleStep (_n x : Nat) : Nat := (x+2)%37
++def sampleTrace : Nat → Nat := iterate sampleStep 7
++
++def PrefixPremiseInhabited : Prop := ∃ trace : Nat → Nat,
++  trace 0=7 ∧ (∀ i,i<10 → trace (i+1)=sampleStep i (trace i)) ∧ trace 10=27
++
++theorem prefixPremiseInhabited : PrefixPremiseInhabited := by
++  exact ⟨sampleTrace,rfl,fun _ _ => rfl,by decide⟩
++
++/-- Dropping the last accumulated stage gives a different value even when the
++same modular arithmetic is used. This tests stage coverage, not row arithmetic. -/
++def MissingStageChangesOutput : Prop := iterate sampleStep 7 9≠iterate sampleStep 7 10
++
++theorem missingStageChangesOutput : MissingStageChangesOutput := by
++  unfold MissingStageChangesOutput
++  decide
++end Minidregg.Compiler.BfvInferComposition.Exhibits
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.Exhibits.good_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.good_bound
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.Exhibits.rowPremiseInhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.rowPremiseInhabited
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.Exhibits.changedOutputRefused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.changedOutputRefused
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.Exhibits.prefixPremiseInhabited' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.prefixPremiseInhabited
++
++/-- info: 'Minidregg.Compiler.BfvInferComposition.Exhibits.missingStageChangesOutput' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferComposition.Exhibits.missingStageChangesOutput
+--- /dev/null
++++ b/Compiler/BfvInferLinear.lean
+@@ -0,0 +1,118 @@
++/- Exact public linear boundary for the actual multi-prime, level-zero Infer. -/
++import Compiler.BfvKeyswitchRow
++namespace Minidregg.Compiler.BfvInferLinear
++open Minidregg.Compiler
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 2000000
++set_option exponentiation.threshold 4096
++
++def degree : Nat := 8192
++abbrev Slot := Fin degree
++def primes := BfvKeyswitchRow.primes
++/-- The actual prime constructor's optimized-reduction test after substituting
++its fourteen leading zero bits. All inputs here are public constants. -/
++def supportsOptimized (q : Nat) : Prop :=
++  (2^(3*14)+1)*2^64 < 2^(3*14)*(2^14+1)*q
++/-- Natural-word model of zq::lazy_reduce_opt at fifty-bit moduli. -/
++def lazyLiftWord (q x : Nat) : Nat := x-(x/2^50)*q
++/-- Canonical target-prime input to the public NTT callback. -/
++def canonicalLift (q x : Nat) : Nat := x%q
++
++def LiftCorrect : Prop := ∀ s t : Fin 4, ∀ x : Nat, x<primes s →
++  supportsOptimized (primes t) ∧ lazyLiftWord (primes t) x=x ∧
++  x<2*primes t ∧ lazyLiftWord (primes t) x%primes t=canonicalLift (primes t) x
++
++theorem actual_prime_bounds (i : Fin 4) :
++    2^49<primes i ∧ primes i<2^50 ∧ supportsOptimized (primes i) := by
++  fin_cases i <;> norm_num [primes,BfvKeyswitchRow.primes,supportsOptimized]
++
++theorem liftCorrect : LiftCorrect := by
++  intro s t x hx
++  have hs := actual_prime_bounds s
++  have ht := actual_prime_bounds t
++  have hx50 : x<2^50 := lt_trans hx hs.2.1
++  have hz : x/2^50=0 := Nat.div_eq_of_lt hx50
++  have heq : lazyLiftWord (primes t) x=x := by unfold lazyLiftWord; rw [hz]; simp
++  exact ⟨ht.2.2,heq,by omega,by simp [heq,canonicalLift]⟩
++
++/-- Bit-reversed NTT storage coordinate, exactly thirteen low bits. -/
++def reverseIndex (j : Slot) : Slot := (BitVec.ofFin (show Fin (2^13) from j)).reverse.toFin
++/-- Odd-root enumeration map, before converting to bit-reversed storage. -/
++def rootIndex (e : Nat) (j : Slot) : Slot :=
++  ⟨((e-1)/2+e*j.val)%degree,Nat.mod_lt _ (by decide)⟩
++/-- Direct input index for each output storage index. -/
++def permutation (e : Nat) (j : Slot) : Slot :=
++  reverseIndex (rootIndex e (reverseIndex j))
++def substitute {A : Type} (e : Nat) (p : Slot → A) (j : Slot) : A := p (permutation e j)
++
++def PermutationCorrect : Prop := ∀ (A : Type) (e : Nat) (p : Slot → A) (j : Slot),
++  substitute e p (reverseIndex j)=p (reverseIndex (rootIndex e j))
++
++theorem reverseIndex_involutive (j : Slot) : reverseIndex (reverseIndex j)=j := by
++  simp only [reverseIndex,BitVec.ofFin_toFin,BitVec.reverse_reverse_eq,BitVec.toFin_ofFin]
++
++theorem permutationCorrect : PermutationCorrect := by
++  intro A e p j
++  simp [substitute,permutation,reverseIndex_involutive]
++
++/-- Fixed exponents used by the saved evaluation key: nine column rotations
++by 8..2048 followed by the row automorphism. -/
++def exponents : Fin 10 → Nat := ![6561,5953,16001,15617,14849,13313,10241,4097,8193,16383]
++def shifts : Fin 9 → Nat := ![8,16,32,64,128,256,512,1024,2048]
++def StageExponents : Prop :=
++  (∀ i : Fin 9, exponents i.castSucc=3^(shifts i)%(2*degree)) ∧
++  exponents 9=2*degree-1 ∧ (∀ i, exponents i%2=1 ∧ exponents i<2*degree)
++
++theorem stageExponents : StageExponents := by
++  constructor
++  · intro i; fin_cases i <;> decide
++  constructor
++  · decide
++  · intro i; fin_cases i <;> decide
++
++/-- Nonzero source residue above one target prime: lift must not be mistaken
++for canonical equality across all moduli. -/
++def LiftInhabited : Prop := ∃ x, x<primes 0 ∧ lazyLiftWord (primes 3) x=x ∧
++  canonicalLift (primes 3) x=1
++
++theorem liftInhabited : LiftInhabited := by
++  exact ⟨primes 3+1,by decide,by decide,by decide⟩
++
++def RawCanonicalEqualityFalse : Prop :=
++  ¬ ∀ x, x<primes 0 → canonicalLift (primes 3) x=x
++
++theorem rawCanonicalEqualityFalse : RawCanonicalEqualityFalse := by
++  intro h
++  have heq := h (primes 3+1) (by decide)
++  have hne : canonicalLift (primes 3) (primes 3+1)≠primes 3+1 := by decide
++  exact hne heq
++end Minidregg.Compiler.BfvInferLinear
++
++/-- info: 'Minidregg.Compiler.BfvInferLinear.actual_prime_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferLinear.actual_prime_bounds
++
++/-- info: 'Minidregg.Compiler.BfvInferLinear.liftCorrect' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferLinear.liftCorrect
++
++/-- info: 'Minidregg.Compiler.BfvInferLinear.reverseIndex_involutive' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferLinear.reverseIndex_involutive
++
++/-- info: 'Minidregg.Compiler.BfvInferLinear.permutationCorrect' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferLinear.permutationCorrect
++
++/-- info: 'Minidregg.Compiler.BfvInferLinear.stageExponents' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferLinear.stageExponents
++
++/-- info: 'Minidregg.Compiler.BfvInferLinear.liftInhabited' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferLinear.liftInhabited
++
++/-- info: 'Minidregg.Compiler.BfvInferLinear.rawCanonicalEqualityFalse' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvInferLinear.rawCanonicalEqualityFalse
+--- /dev/null
++++ b/Compiler/BfvSquareComposition.lean
+@@ -0,0 +1,249 @@
++/- Composition of the actual compiler-owned basis extension, square tensor and
++nine-to-four directed rescale. Array aliases carry no output-arithmetic premise.
++NTT callbacks, decoding and exact public table/index bindings remain explicit TCB.
++Actual public-layout acceptance is inhabited by the retained runtime proofs;
++predecessor kernel exhibits inhabit generic arithmetic sources. This helper does
++not reduce a giant actual-layout witness or prove a Rust NTT correspondence. -/
++import Compiler.BfvInferLinear
++import Compiler.BasisExtensionPublic
++import Compiler.BfvTensorRow
++import Compiler.NonlinearRnsProfiled
++namespace Minidregg.Compiler.BfvSquareComposition
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvInferLinear (Slot)
++set_option autoImplicit false
++set_option maxHeartbeats 1000000
++set_option maxRecDepth 30000
++
++abbrev InputDot := Fin 2 → Fin 4 → Slot → Nat
++abbrev ExtendedInput := Fin 2 → Fin 9 → Slot → Nat
++abbrev ExtendedProduct := Fin 3 → Fin 9 → Slot → Nat
++abbrev KernelCiphertext := Fin 3 → Fin 4 → Slot → Nat
++
++def baseIndex (i : Fin 4) : Fin 9 := i.castAdd 5
++def newIndex (i : Fin 5) : Fin 9 := i.natAdd 4
++def tensorIndex (i : Fin 3) : Fin 5 := ⟨2+i.val,by omega⟩
++
++structure SquareTransforms where
++  inverseBase : Fin 4 → (Slot → Nat) → Slot → Nat
++  forwardExtended : Fin 9 → (Slot → Nat) → Slot → Nat
++  inverseExtended : Fin 9 → (Slot → Nat) → Slot → Nat
++  forwardBase : Fin 4 → (Slot → Nat) → Slot → Nat
++
++/-- Only the supplied input arrays require a roundtrip. Native common-modulus
++rows are copied in NTT representation; no unrelated callback laws are hidden. -/
++def BaseRoundTrip (op : SquareTransforms) (inputDot : InputDot) : Prop :=
++  ∀ c l,op.forwardExtended (baseIndex l) (op.inverseBase l (inputDot c l))=inputDot c l
++
++def expectedBasis (op : SquareTransforms) (inputDot : InputDot) : ExtendedInput :=
++  fun c l => Fin.addCases (m:=4) (n:=5) (motive:=fun _ => Slot → Nat) (fun l => op.inverseBase l (inputDot c l))
++    (fun l j => (ActualBasisExtension.nativeOutput
++      (fun i => (op.inverseBase i (inputDot c i) j : Int)) l).toNat) l
++
++def forwardAll (op : SquareTransforms) (coefficients : ExtendedInput) : ExtendedInput :=
++  fun c l => op.forwardExtended l (coefficients c l)
++
++/-- Exact native branch: four unchanged base NTT arrays and five newly extended
++arrays transformed forwards. Accepted copied coefficient rows meet this branch
++through BaseRoundTrip, not by silently redefining the input representation. -/
++def nativeExtended (op : SquareTransforms) (inputDot : InputDot) : ExtendedInput :=
++  fun c l => Fin.addCases (m:=4) (n:=5) (motive:=fun _ => Slot → Nat) (inputDot c)
++    (fun l => op.forwardExtended (newIndex l) (expectedBasis op inputDot c (newIndex l))) l
++
++def tensorProduct (input : ExtendedInput) : ExtendedProduct :=
++  fun c l j => (![input 0 l j*input 0 l j,2*input 0 l j*input 1 l j,
++    input 1 l j*input 1 l j] : Fin 3 → Nat) c % BfvTensorRow.primes l
++
++def directedProjection (op : SquareTransforms) (product : ExtendedProduct) : KernelCiphertext :=
++  fun c l j => (NonlinearRnsInstance.nativeProjectedOutput
++    (fun i => (op.inverseExtended i (product c i) j : Int)) l).toNat
++
++def finish (op : SquareTransforms) (coefficients : KernelCiphertext) : KernelCiphertext :=
++  fun c l => op.forwardBase l (coefficients c l)
++
++def exactDirectedSquare (op : SquareTransforms) (inputDot : InputDot) : KernelCiphertext :=
++  finish op (directedProjection op (tensorProduct (nativeExtended op inputDot)))
++
++/-- One full public basis-extension tensor. Index aliases include all four copies
++and all five new residues at every one of the two component/coefficient slots. -/
++def BasisChecked (op : SquareTransforms) (inputDot : InputDot) (coefficients : ExtendedInput) : Prop :=
++  ∀ c j,∃ asg : Nat → BabyBear,
++    systemAccepts asg (AirSimplify.simplifySystem ActualBasisExtension.system) ∧
++    (∀ l,ActualBasisExtension.publicInput asg l=op.inverseBase l (inputDot c l) j) ∧
++    (∀ l,ActualBasisExtension.publicCopy asg l=coefficients c (baseIndex l) j) ∧
++    (∀ l,ActualBasisExtension.publicNew asg l=coefficients c (newIndex l) j)
++
++/-- The two tensor inputs are the very same shared extended arrays at all nine
++primes. Its three outputs are the same array later supplied to inverseExtended. -/
++def TensorChecked (input : ExtendedInput) (product : ExtendedProduct) : Prop :=
++  ∀ l j,∃ asg : Fin BfvTensorRow.nVars → BabyBear,
++    systemAccepts asg (BfvTensorRow.emittedSystem (BfvTensorRow.primes l)) ∧
++    BfvTensorRow.value asg 0=input 0 l j ∧ BfvTensorRow.value asg 1=input 1 l j ∧
++    ∀ c,BfvTensorRow.value asg (tensorIndex c)=product c l j
++
++/-- All nine source residues and all four target residues are aliased for every
++coefficient of each of the three tensor components. -/
++def RescaleChecked (op : SquareTransforms) (product : ExtendedProduct) (coefficients : KernelCiphertext) : Prop :=
++  ∀ c j,∃ asg : Nat → BabyBear,
++    systemAccepts asg (AirSimplify.simplifySystem NonlinearRnsProfiled.system) ∧
++    (∀ l,NonlinearRnsPublic.publicResidues asg l=(op.inverseExtended l (product c l) j : Int)) ∧
++    (∀ l,NonlinearRnsPublic.publicOutput asg l=coefficients c l j)
++
++/-- The final equality binds representation only: forward NTT of the same
++accepted coefficient arrays. It does not assume a square or any arithmetic. -/
++def SquareChecked (op : SquareTransforms) (inputDot : InputDot) (kernelCiphertext : KernelCiphertext) : Prop :=
++  ∃ extendedCoefficients productNtt projectedCoefficients,
++    BasisChecked op inputDot extendedCoefficients ∧
++    TensorChecked (forwardAll op extendedCoefficients) productNtt ∧
++    RescaleChecked op productNtt projectedCoefficients ∧
++    kernelCiphertext=finish op projectedCoefficients
++
++def SquareSound : Prop := ∀ op inputDot kernelCiphertext,
++  BaseRoundTrip op inputDot → SquareChecked op inputDot kernelCiphertext →
++  kernelCiphertext=exactDirectedSquare op inputDot
++
++theorem basisChecked_sound (op : SquareTransforms) (inputDot : InputDot) (coefficients : ExtendedInput)
++    (hc : BasisChecked op inputDot coefficients) : coefficients=expectedBasis op inputDot := by
++  funext c l j
++  obtain ⟨asg,hs,hi,hcopy,hnew⟩ := hc c j
++  have h := ActualBasisExtension.simplifiedSource_sound asg hs
++  refine Fin.addCases (m:=4) (n:=5) (fun i => ?_) (fun i => ?_) l
++  · simp only [expectedBasis,Fin.addCases_left]
++    change coefficients c (baseIndex i) j=op.inverseBase i (inputDot c i) j
++    rw [←hcopy i,h.2.1 i,hi i]
++  · simp only [expectedBasis,Fin.addCases_right]
++    change coefficients c (newIndex i) j=(ActualBasisExtension.nativeOutput
++      (fun k => (op.inverseBase k (inputDot c k) j : Int)) i).toNat
++    have hin : (fun k : Fin 4 => (ActualBasisExtension.publicInput asg k : Int))=
++        (fun k => (op.inverseBase k (inputDot c k) j : Int)) := by funext k; rw [hi k]
++    have hh := congrArg Int.toNat (h.2.2 i)
++    rw [hin] at hh
++    simpa only [Int.toNat_natCast,hnew] using hh
++
++theorem basisRoundTrip (op : SquareTransforms) (inputDot : InputDot) (h : BaseRoundTrip op inputDot) :
++    forwardAll op (expectedBasis op inputDot)=nativeExtended op inputDot := by
++  funext c l
++  refine Fin.addCases (m:=4) (n:=5) (fun i => ?_) (fun i => ?_) l
++  · simpa only [forwardAll,expectedBasis,nativeExtended,Fin.addCases_left,baseIndex] using h c i
++  · simp only [forwardAll,nativeExtended,Fin.addCases_right,newIndex]
++
++theorem tensorChecked_sound (input : ExtendedInput) (product : ExtendedProduct)
++    (hc : TensorChecked input product) : product=tensorProduct input := by
++  funext c l j
++  obtain ⟨asg,hs,h0,h1,ho⟩ := hc l j
++  have h := BfvTensorRow.emittedSystem_sound l asg hs
++  have ho0 : BfvTensorRow.value asg 2=product 0 l j := ho 0
++  have ho1 : BfvTensorRow.value asg 3=product 1 l j := ho 1
++  have ho2 : BfvTensorRow.value asg 4=product 2 l j := ho 2
++  rw [h0,h1,ho0,ho1,ho2] at h
++  fin_cases c
++  · exact h.2.1
++  · exact h.2.2.1
++  · exact h.2.2.2
++
++theorem rescaleChecked_sound (op : SquareTransforms) (product : ExtendedProduct) (coefficients : KernelCiphertext)
++    (hc : RescaleChecked op product coefficients) : coefficients=directedProjection op product := by
++  funext c l j
++  obtain ⟨asg,hs,hi,ho⟩ := hc c j
++  have h := NonlinearRnsProfiled.simplifiedSource_sound asg hs l
++  have hin : NonlinearRnsPublic.publicResidues asg=
++      (fun i => (op.inverseExtended i (product c i) j : Int)) := funext hi
++  have hh := congrArg Int.toNat h
++  rw [hin] at hh
++  simpa only [Int.toNat_natCast,ho,directedProjection] using hh
++
++theorem squareChecked_sound : SquareSound := by
++  intro op inputDot kernelCiphertext hrt hc
++  obtain ⟨extended,product,projected,hb,ht,hr,hk⟩ := hc
++  have he := basisChecked_sound op inputDot extended hb
++  have hn : forwardAll op extended=nativeExtended op inputDot := by rw [he,basisRoundTrip op inputDot hrt]
++  have hp : product=tensorProduct (nativeExtended op inputDot) := by rw [←hn];exact tensorChecked_sound _ _ ht
++  have hproj := rescaleChecked_sound op product projected hr
++  rw [hk,hproj,hp]
++  rfl
++
++/-- The certificate constructor only packages independently supplied accepted
++sources and explicit representation/index links; there is no desired-result leg. -/
++theorem checked_of_sources (op : SquareTransforms) (inputDot : InputDot)
++    (extended : ExtendedInput) (product : ExtendedProduct) (projected : KernelCiphertext)
++    (hb : BasisChecked op inputDot extended) (ht : TensorChecked (forwardAll op extended) product)
++    (hr : RescaleChecked op product projected) : SquareChecked op inputDot (finish op projected) :=
++  ⟨extended,product,projected,hb,ht,hr,rfl⟩
++
++/-- A concrete inhabitant of the callback law, distinct from claiming native
++NTT correctness or actual-layout source acceptance. -/
++def identityTransforms : SquareTransforms where
++  inverseBase := fun _ x => x
++  forwardExtended := fun _ x => x
++  inverseExtended := fun _ x => x
++  forwardBase := fun _ x => x
++
++theorem roundtrip_inhabited (inputDot : InputDot) : BaseRoundTrip identityTransforms inputDot := by
++  intro c l
++  rfl
++
++theorem wrong_kernel_refused (op : SquareTransforms) (inputDot : InputDot)
++    (kernelCiphertext : KernelCiphertext) (hrt : BaseRoundTrip op inputDot)
++    (hwrong : kernelCiphertext≠exactDirectedSquare op inputDot) :
++    ¬SquareChecked op inputDot kernelCiphertext := by
++  intro hc
++  exact hwrong (squareChecked_sound op inputDot kernelCiphertext hrt hc)
++
++def zeroSlot : Slot := ⟨0,by decide⟩
++
++/-- A concrete wrong sibling changes one supplied kernel coefficient. Its
++rejection follows for every possible source witness, rather than a producer test. -/
++theorem one_coefficient_refused (op : SquareTransforms) (inputDot : InputDot)
++    (hrt : BaseRoundTrip op inputDot) :
++    ¬SquareChecked op inputDot (fun c l j =>
++      if c=0 ∧ l=0 ∧ j=zeroSlot then exactDirectedSquare op inputDot c l j+1
++      else exactDirectedSquare op inputDot c l j) := by
++  apply wrong_kernel_refused op inputDot _ hrt
++  intro h
++  have hh := congrArg (fun p : KernelCiphertext => p 0 0 zeroSlot) h
++  dsimp only at hh
++  simp only [ite_true,and_self] at hh
++  omega
++end Minidregg.Compiler.BfvSquareComposition
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.basisChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.basisChecked_sound
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.basisRoundTrip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.basisRoundTrip
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.tensorChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.tensorChecked_sound
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.rescaleChecked_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.rescaleChecked_sound
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.squareChecked_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.squareChecked_sound
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.checked_of_sources' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.checked_of_sources
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.roundtrip_inhabited' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.roundtrip_inhabited
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.wrong_kernel_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.wrong_kernel_refused
++
++/-- info: 'Minidregg.Compiler.BfvSquareComposition.one_coefficient_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.BfvSquareComposition.one_coefficient_refused
+--- /dev/null
++++ b/EmitBfvInferLinear.lean
+@@ -0,0 +1,11 @@
++import Compiler.BfvInferLinear
++open Lean Minidregg.Compiler.BfvInferLinear
++
++def main (args : List String) : IO Unit := do
++  let out := args.headD "artifacts/linear_plan.json"
++  let stages := (List.finRange 10).map fun i => Json.mkObj [
++    ("index",toJson (i.val+1)),("exponent",toJson (exponents i)),
++    ("permutation",toJson ((List.finRange degree).map fun j => (permutation (exponents i) j).val))]
++  let plan := Json.mkObj [("schema",toJson "lean-bfv-infer-linear-plan-v1"),
++    ("degree",toJson degree),("primes",toJson (List.ofFn primes)),("stages",toJson stages)]
++  IO.FS.writeFile out (plan.compress++"\n")

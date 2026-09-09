@@ -1,0 +1,167 @@
+{
+  "claim_status": "[SOURCE]",
+  "inspection": "Local construction/definitions and Lean proof bodies. No literature claims.",
+  "web_queries": 0,
+  "sources": [
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ArityEightSchedule.lean",
+      "sha256": "7a7ce1a6a05a39611ac5aab8a50e2c40b1e70624459f8e560a576eef3608a76a",
+      "seen": [
+        {
+          "declaration": "roundQueries",
+          "line": 32,
+          "observed": "definition uses the existing powerTwoCoherentRound sampler"
+        },
+        {
+          "declaration": "Accepts",
+          "line": 36,
+          "observed": "terminal RS membership and every round-query equality"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ArityEightScheduleBabyBear.lean",
+      "sha256": "b1d8b71f47cb23ae19cae9ef1983658b00d6734ca5cee84a5afe5ef0292a615a",
+      "seen": [
+        {
+          "declaration": "firstFifteen",
+          "line": 10,
+          "observed": "restriction of certified actual tower to fifteen binary transitions"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/PowerTwoRootFolding.lean",
+      "sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+      "seen": [
+        {
+          "declaration": "TowerContract",
+          "line": 21,
+          "observed": "exact natural-power embedding and square-index modulus"
+        },
+        {
+          "declaration": "squareIndex",
+          "line": 61,
+          "observed": "actual modulo index definition"
+        },
+        {
+          "declaration": "tower_contract",
+          "line": 129,
+          "observed": "construction proves its exact domain/index contract"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/BabyBearFoldingTower.lean",
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+      "seen": [
+        {
+          "declaration": "correctness",
+          "line": 39,
+          "observed": "actual certified extension tower satisfies exact contract"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/HalfThresholdFriCoherent.lean",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "seen": [
+        {
+          "declaration": "powerTwoRoundIndex",
+          "line": 47,
+          "observed": "existing coherent index modulus"
+        },
+        {
+          "declaration": "powerTwoCoherentRound",
+          "line": 78,
+          "observed": "same seed vector projected at each round"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ArityEightScheduleWitnesses.lean",
+      "sha256": "b406a0ee575c104d6b6880307d6bc033a3b45413b2edece69c55c0f4ae9b1109",
+      "seen": [
+        {
+          "declaration": "terminal_mem",
+          "line": 39,
+          "observed": "actual legal terminal word"
+        },
+        {
+          "declaration": "zero_seed_accepts",
+          "line": 56,
+          "observed": "existing monomial witness accepts zero seed"
+        },
+        {
+          "declaration": "one_seed_rejects",
+          "line": 74,
+          "observed": "same witness rejects one seed"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ArityEightConsistencySchedule.lean",
+      "sha256": "3fb35c055edc2d3f59764b6b93e5fb5ff8d80e4d72bd84e94cca11b30d6bf42f",
+      "seen": [
+        {
+          "declaration": "prefixConsistency",
+          "line": 12,
+          "observed": "recursive actual-fibre projection and equality masking"
+        },
+        {
+          "declaration": "consistencyAt",
+          "line": 24,
+          "observed": "weights on frozen scalar prefix"
+        },
+        {
+          "declaration": "consistencyAt_succ",
+          "line": 45,
+          "observed": "exact recurrence"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/FoldingConsistencyWeights.lean",
+      "sha256": "108e6dbdc3237605703c0b0119a295291c0d74fd1dd98a8dc92f2e6b6d9f3e03",
+      "seen": [
+        {
+          "declaration": "projectConsistency",
+          "line": 11,
+          "observed": "weights over actual squaring fibres"
+        },
+        {
+          "declaration": "projectConsistency_mass",
+          "line": 16,
+          "observed": "exact preimage mass identity"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/ConsistencyMask.lean",
+      "sha256": "ff9784ab6a7a4e503041591b0d009b4e98e1aad85f02f3933178fe840a489d86",
+      "seen": [
+        {
+          "declaration": "maskConsistency",
+          "line": 9,
+          "observed": "actual word equality indicator"
+        },
+        {
+          "declaration": "maskConsistency_mass",
+          "line": 26,
+          "observed": "exact restricted-set identity"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-coherent-query-transport-20260908/Selvage/CurveWeightedAgreement.lean",
+      "sha256": "5dcf6fe2baa5f073e9285798372a1b686b86b4b8eecbf66c9000e8289307479b",
+      "seen": [
+        {
+          "declaration": "consistencyMass",
+          "line": 12,
+          "observed": "finite weighted sum"
+        }
+      ]
+    }
+  ]
+}

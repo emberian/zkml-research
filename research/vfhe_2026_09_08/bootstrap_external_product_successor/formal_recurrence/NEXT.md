@@ -1,0 +1,1 @@
+Owner independent_review may run the one already-authorized proof using frozen artifacts/template_ir2.json and trace.leu32; the final source/guard handoff is complete. Root owns full integration/commits. Preserve source, template and trace bytes. No further setup/full-PBS or theorem expansion in this lane.
