@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/sources/repair_template.py",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/artifacts_expiry/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/templates/expiry/template_ir2.json"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row",
+  "started_utc": "2026-09-09T02:17:29.668820+00:00",
+  "RAYON_NUM_THREADS": null,
+  "returncode": 0,
+  "elapsed_seconds": 0.09530608303612098,
+  "finished_utc": "2026-09-09T02:17:29.764113+00:00",
+  "stdout": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/results/migrate-expiry.stdout",
+    "bytes": 797,
+    "sha256": "393fb0d48d6b1bf4960ea30f21baeba5330a06a4fd8e804c0a4dd89de3c0a3a4"
+  },
+  "stderr": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/results/migrate-expiry.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

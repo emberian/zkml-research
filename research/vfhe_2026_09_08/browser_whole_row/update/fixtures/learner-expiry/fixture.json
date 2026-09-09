@@ -1,0 +1,28 @@
+{
+  "schema": "whole-row-public-update-fixture-v1",
+  "claim": "[SOURCE] Re-proved event 65 public acc+fresh-old coefficient rows with all-row arithmetic gates.",
+  "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+  "public_table_id": 11,
+  "files": {
+    "template.json": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/templates/expiry/template_ir2.json",
+      "sha256": "112a0982fc384272c5b24da9f4c2f4617078be22afe27aca59dad08c73b479e5",
+      "bytes": 311149,
+      "gzip9_bytes": 14232
+    },
+    "public_rows.json": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/fixtures/learner-expiry/public_rows.json",
+      "sha256": "125fdd7d2bc8739898559c3275a8d572cbb0ea693e2d8b9cbb1b8d2cc944c8b1",
+      "bytes": 1355662,
+      "gzip9_bytes": 462464
+    },
+    "proof.bin": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/proofs/learner-expiry/proof.bin",
+      "sha256": "4dd6050bfa4050c339d1bd461039f5a75c3a538d7d6ae930e786ec85c71f6421",
+      "bytes": 508996,
+      "gzip9_bytes": 433615
+    }
+  },
+  "scope": "All physical rows under the application-selected coefficient relation. No proof of FIFO authorization, encoder, ciphertext-key membership, decryption, or universal native verifier soundness.",
+  "original_fixture_preserved": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/fixtures/learner-expiry"
+}

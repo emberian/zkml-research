@@ -391,5 +391,20 @@
       }
     ],
     "result": "Tagged encrypted-witness compiler realizes online adaptive-feedback extraction using perfectly correct IND-CCA2 PKE and established unbounded simulation-sound NIZK; a classical derived reduction, no primitive implementation or PQ claim."
+  },
+  "hio_provenance_pq_2026_09_09": {
+    "note": "HIO_PROVENANCE_PQ.md",
+    "source_record": "sources/hio_provenance_pq_sources.json",
+    "source_record_sha256": "9d7d07af6a277a01a5923fb32c780168de76f3a44bb2668835b57343916ea958",
+    "web_query_count": 10,
+    "web_direct_open_count": 2,
+    "web_click_count": 1,
+    "web_find_count": 1,
+    "scry_sql_count": 0,
+    "local_mirror_extractions": 5,
+    "author_pdf_downloads": 1,
+    "eprint_pdf_downloads": 0,
+    "cryptographic_runs": 0,
+    "result": "Two bounded-noise Regev encryptions and a source-backed post-quantum simulation-sound NIZK give the classical-query online feedback interface from CPA security. Fixed-bit sampler distances and all encryption coins are covered; arbitrary quantum advice needs its explicit stronger base-hardness convention. iO/PQ and repeated-size bounds remain separate."
   }
 }

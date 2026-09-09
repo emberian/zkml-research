@@ -1,0 +1,57 @@
+{
+  "schema": "public-whole-row-reproof-context-v1",
+  "case_id": "fast001-all-row-reproof-two-class-query",
+  "original_request_sha256": "f51886689ef26b2d5a943d9331f17787a36be0043a17e405e9ac83440bd60312",
+  "original_request": {
+    "files": {
+      "card_arrival": {
+        "case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof0/case",
+        "proof": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof0/proof/proof.bin"
+      },
+      "cash_withdrawal_charge": {
+        "case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof1/case",
+        "proof": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof1/proof/proof.bin"
+      }
+    },
+    "request": {
+      "active_classes": [
+        "card_arrival",
+        "cash_withdrawal_charge"
+      ],
+      "classes": {
+        "card_arrival": {
+          "acc_sha256": "e36c2748096178b7630a165f5e22ed6e6292a7fa08b1bc3dc81d7d3caf12286b",
+          "out_sha256": "14e77e552b91d4df4c776c1a630a0c488fda4e3b0755a779ca4a9c1ea3cc28f3",
+          "proof_sha256": "53ac28c1c9bd281f33bf1b8ddf7e54cb2ec4ba499d7685a79f56de1992b611bf",
+          "rows_sha256": "abe798ede5a79d84c5ad28449210968912c794b1ab042fe821280965fc9a30c3"
+        },
+        "cash_withdrawal_charge": {
+          "acc_sha256": "883539e89f9eeba07e52194901c5568652b8c756b092d106d19672a1f95cb9f6",
+          "out_sha256": "a8929c88da8861ec1cf81b7f34411b302a09bd434c237b6b01bac71ca442ccc6",
+          "proof_sha256": "80ea26a3fcc615d5eb5ad69433c57f8d21d47236531878f0e2baff4acf3572bc",
+          "rows_sha256": "190efb0aa303172501e247b60d312f59ff51d783e28050778b9eb634239d0180"
+        }
+      },
+      "counts": {
+        "card_arrival": 1,
+        "cash_withdrawal_charge": 1
+      },
+      "gate_genesis": "98ddc4020a77bff1ca30ce9c0af9c7b8ca6a6567888f72e66c3a76e503b33217",
+      "head_sha256": "f7eb9435f47b0b64d3985a8180414eda83975fe70663d2f086a1c721633799c4",
+      "model_genesis": "4b3c115179b0c255ad025dd2ee1c2d4e4ffee587d564be9aba0c84369c2a9d8c",
+      "model_root": "742982ae2402dc944074f0df249d412040ef273df392803810a92c434c807204",
+      "query_sha256": "b3d468fd195b2f696ac5c93be3f3c374142e532f04f6af860f6a96fdc035eb39",
+      "recipient_id": "fresh-instance-full-bfv-reader",
+      "request_id": "new-two-class-query",
+      "revision": 2,
+      "schema": "all-active-class-query-request-v1",
+      "template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d"
+    }
+  },
+  "replacement_template_sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933",
+  "replacement_proofs": {
+    "card_arrival": "139f93baa04cad3b843d4f6823d7f0c94d370de0944448ea8b23b5d50770f5e7",
+    "cash_withdrawal_charge": "c846d1bbef6fed6a905ce0d1c558f79ba8494c649c9f9e6a5686a4f934be4802"
+  },
+  "scope": "Historical context plus replacement arithmetic proof identities; not an authorization or live model-head attestation."
+}

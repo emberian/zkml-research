@@ -1,6 +1,6 @@
 # Current construction choice
 
-[OPEN first] HIO_PROVENANCE_BACKEND.md completed the encrypted exact-statement witness construction and CCA/extraction-feedback argument. The next builder is selecting actual post-quantum primitives that meet all-coins correctness and adaptive simulation-soundness conditions, with explicit source-game matching and cost. The ordinary-iO component and repeated-size problem remain separate; a PQ certificate backend alone would not make the whole resident PQ.
+[DERIVED completed certificate outcome] HIO_PROVENANCE_PQ.md gives concrete bounded-noise Regev algorithms, a source-backed post-quantum simulation-sound proof compiler and a direct two-key adaptive-feedback reduction. Generic NP proof implementation/cost and the larger iO construction remain open. Do not repeat this source pass or advertise a PQ certificate as a PQ resident.
 
 [OPEN separate frontier] A polynomial-size retained-view input-composition construction must hide every old encrypted boundary. HIO_CONTINUATION.md's flat ACE splice fails even for honestly issued equivalent residual functions. Do not build that leaking splice, or restart a wrapper-only repair that exposes a later old boundary. The ordinary-iO nested wrapper remains the conditional baseline; no useful repeated-size bound is established.
 

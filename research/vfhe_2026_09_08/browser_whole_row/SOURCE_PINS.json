@@ -1,0 +1,162 @@
+{
+  "classification": "SOURCE",
+  "cases": [
+    {
+      "id": "learner-expiry",
+      "kind": "expiry",
+      "case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001",
+      "trace": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/artifacts_expiry/trace.leu32",
+        "bytes": 33325056,
+        "sha256": "2810032705c219f5a4fd82f717a4d9859965d234cab065f795c31de673a1e102"
+      },
+      "rows": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001/public_ntt_rows.json",
+        "bytes": 1355662,
+        "sha256": "125fdd7d2bc8739898559c3275a8d572cbb0ea693e2d8b9cbb1b8d2cc944c8b1"
+      },
+      "binary": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "bytes": 4844608,
+        "sha256": "dd41ec2eac52bf35ff8a9c6e736fa4dcb7cb4ae41cec6bace5cf593a3cf87cc6"
+      },
+      "mode": "prove-update",
+      "public_case_files": [
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001/acc.ct",
+          "bytes": 85103,
+          "sha256": "a379e8226bce28659934ff3fe65826461ee64ab4860bbbc35a15729b83f4e702"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001/fresh.ct",
+          "bytes": 85103,
+          "sha256": "a379d821893c6f42402c6d7e53dc30d63f3868d8e3299e7088b58e1e89b67abc"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001/old.ct",
+          "bytes": 85103,
+          "sha256": "93a21a6e86494918be754926bb51501a5dc8e829baa33d117a7089dbbabb1020"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001/out.ct",
+          "bytes": 85103,
+          "sha256": "67d13c84cc4b131b4011eacbf55dfe86c22093125ba7f45e6e9b84413429ab54"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001/source_event.json",
+          "bytes": 5136,
+          "sha256": "94eb4b24de3eb1052f38f5fe599ffd352e6673b0a3752a803eeb1d450a062458"
+        }
+      ],
+      "template": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/templates/expiry/template_ir2.json",
+        "bytes": 311149,
+        "sha256": "112a0982fc384272c5b24da9f4c2f4617078be22afe27aca59dad08c73b479e5"
+      }
+    },
+    {
+      "id": "class0",
+      "kind": "query",
+      "case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class0/case",
+      "trace": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof0/generated/trace.leu32",
+        "bytes": 82214912,
+        "sha256": "d15d6bae898ab0c2da08a931b9f75cc2f0c09a11f314462a698d6ac8ec8c7209"
+      },
+      "rows": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class0/case/public_rows.json",
+        "bytes": 1355833,
+        "sha256": "abe798ede5a79d84c5ad28449210968912c794b1ab042fe821280965fc9a30c3"
+      },
+      "binary": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-query-runtime",
+        "bytes": 4696416,
+        "sha256": "9566638eef8f0dce7c5d3edd351f1e29da6301164ccbe1d8451ce642874c8c2c"
+      },
+      "mode": "prove",
+      "public_case_files": [
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class0/case/acc.ct",
+          "bytes": 85103,
+          "sha256": "e36c2748096178b7630a165f5e22ed6e6292a7fa08b1bc3dc81d7d3caf12286b"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class0/case/query.json",
+          "bytes": 1917,
+          "sha256": "b3d468fd195b2f696ac5c93be3f3c374142e532f04f6af860f6a96fdc035eb39"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class0/case/out.ct",
+          "bytes": 85103,
+          "sha256": "14e77e552b91d4df4c776c1a630a0c488fda4e3b0755a779ca4a9c1ea3cc28f3"
+        }
+      ],
+      "template": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/templates/query/template_ir2.json",
+        "bytes": 633446,
+        "sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933"
+      }
+    },
+    {
+      "id": "class1",
+      "kind": "query",
+      "case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class1/case",
+      "trace": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof1/generated/trace.leu32",
+        "bytes": 82214912,
+        "sha256": "63b89b8288b44d0aa964cf5c00f5d04881b4765640df18ee42914a37dd1d8879"
+      },
+      "rows": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class1/case/public_rows.json",
+        "bytes": 1356003,
+        "sha256": "190efb0aa303172501e247b60d312f59ff51d783e28050778b9eb634239d0180"
+      },
+      "binary": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-query-runtime",
+        "bytes": 4696416,
+        "sha256": "9566638eef8f0dce7c5d3edd351f1e29da6301164ccbe1d8451ce642874c8c2c"
+      },
+      "mode": "prove",
+      "public_case_files": [
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class1/case/acc.ct",
+          "bytes": 85103,
+          "sha256": "883539e89f9eeba07e52194901c5568652b8c756b092d106d19672a1f95cb9f6"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class1/case/query.json",
+          "bytes": 1917,
+          "sha256": "b3d468fd195b2f696ac5c93be3f3c374142e532f04f6af860f6a96fdc035eb39"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/results/fast001/class1/case/out.ct",
+          "bytes": 85103,
+          "sha256": "a8929c88da8861ec1cf81b7f34411b302a09bd434c237b6b01bac71ca442ccc6"
+        }
+      ],
+      "template": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_whole_row/templates/query/template_ir2.json",
+        "bytes": 633446,
+        "sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933"
+      }
+    }
+  ],
+  "original_templates": {
+    "expiry": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/artifacts_expiry/template_ir2.json",
+      "bytes": 268925,
+      "sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7"
+    },
+    "query": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/artifacts/template_ir2.json",
+      "bytes": 553870,
+      "sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d"
+    }
+  },
+  "generated_query_origin": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/generated_query/template_ir2.json",
+    "bytes": 633446,
+    "sha256": "504ec55e5421ec3116fff563974a1ef6f849fb08caea20daec3f0fcf72c9c933"
+  },
+  "scope": "Fixed public cases and source-derived traces; all-row wrapping changes, polynomial bodies unchanged."
+}
