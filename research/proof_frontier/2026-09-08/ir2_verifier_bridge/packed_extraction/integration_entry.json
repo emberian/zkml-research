@@ -1,0 +1,20 @@
+{
+  "name": "ir2_packed_extraction",
+  "root": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction",
+  "patch": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/ir2-packed-extraction.patch",
+  "expected_pins": 111,
+  "source_files": {
+    "Selvage/ShapeRootExtraction.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/ShapeRootExtraction.lean",
+    "Selvage/PackedLeafEncoding.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/PackedLeafEncoding.lean",
+    "Selvage/Ir2FriPackedIndices.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2FriPackedIndices.lean",
+    "Selvage/Ir2FriNativeMerklePath.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2FriNativeMerklePath.lean",
+    "Selvage/Ir2PackedCommitments.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2PackedCommitments.lean",
+    "Selvage/Ir2PackedExtraction.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2PackedExtraction.lean",
+    "Selvage/Ir2PackedSoundness.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2PackedSoundness.lean",
+    "Selvage/ShapeRootExtractionFresh.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/ShapeRootExtractionFresh.lean",
+    "Selvage/ShapeRootExtractionWitnesses.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/ShapeRootExtractionWitnesses.lean",
+    "Selvage/Ir2PackedFresh.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2PackedFresh.lean",
+    "Selvage/Ir2PackedWitnesses.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2PackedWitnesses.lean",
+    "Selvage/Ir2PackedFreshWitness.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/src/Selvage/Ir2PackedFreshWitness.lean"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Selvage/PackedLeafEncodingPins.lean"
+  ],
+  "cwd": "/tmp/minidregg-packed-encoding-20260908",
+  "exit": 0,
+  "seconds": 11.288150072097778,
+  "declarations": [
+    "slice_block_append",
+    "getD_ofFn",
+    "ext4Encode_length",
+    "friLeafEncode_length",
+    "rowsEncode_length",
+    "ext4Decode_encode",
+    "ext4Encode_injective",
+    "prefixLength_ofFn",
+    "prefixLength_const",
+    "friRoundTrip",
+    "fri_values_injective",
+    "friLeaf_injective",
+    "rowBlock_encode",
+    "rowSlice_encode",
+    "rowsRoundTrip",
+    "rows_values_injective",
+    "rowsEncode_injective",
+    "nonzeroFriWitness",
+    "fri_changed_coordinate_refused",
+    "missingSaltOffsetFalsifier",
+    "rows_premise_inhabited"
+  ]
+}

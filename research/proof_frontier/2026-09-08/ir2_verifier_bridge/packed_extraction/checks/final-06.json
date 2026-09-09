@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-ir2-packed-extraction-20260908/.lake/build/lib/lean/Selvage/ShapeRootExtractionFresh.olean",
+    "Selvage/ShapeRootExtractionFresh.lean"
+  ],
+  "cwd": "/tmp/minidregg-ir2-packed-extraction-20260908",
+  "exit_code": 0,
+  "source_sha256": "9882db853436196fe1a0eaf141884142cdbb600041f5cf40fb75072678fb860d",
+  "source_unchanged": true,
+  "elapsed_s": 4.542465925216675,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/checks/final-06.log"
+}

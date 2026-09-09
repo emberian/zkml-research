@@ -1,0 +1,150 @@
+{
+  "classification": "EXECUTED",
+  "isolate": "/tmp/minidregg-ir2-packed-indices-20260908",
+  "checks": [
+    {
+      "source": "Selvage/Ir2FriPackedIndices.lean",
+      "source_sha256": "3c6e7e94de078c39b81309c7e1b7a24b0b09fa6eb7322597ae42a56912872b5a",
+      "command": "lake env lean -o .lake/build/lib/lean/Selvage/Ir2FriPackedIndices.olean Selvage/Ir2FriPackedIndices.lean",
+      "exit_code": 0,
+      "output": "",
+      "theorem_guards": 13,
+      "olean_sha256": "61fcb9e33326c8d49196d027026f0a2a508e1d3440ddd83298b47aa384a38c5c"
+    },
+    {
+      "source": "Selvage/Ir2FriNativeMerklePath.lean",
+      "source_sha256": "0b187fabc66100220d01b8ea5b4a34630ab1fa741cde08144b2bf3aafe0a73a0",
+      "command": "lake env lean -o .lake/build/lib/lean/Selvage/Ir2FriNativeMerklePath.olean Selvage/Ir2FriNativeMerklePath.lean",
+      "exit_code": 0,
+      "output": "",
+      "theorem_guards": 6,
+      "olean_sha256": "c68abc5c59a24aa701b52f31140216c7f976c9b2e97e05b160383db127541b77"
+    },
+    {
+      "source": "Selvage/ShapeRootExtractionFresh.lean",
+      "isolate": "/tmp/minidregg-shape-root-fresh-20260908",
+      "source_sha256": "9882db853436196fe1a0eaf141884142cdbb600041f5cf40fb75072678fb860d",
+      "olean_sha256": "1c397fa7ed8d16fa87d06875b7f03dd7b07f4d4f4e099e223b01da6603d36077",
+      "command": "lake env lean -o .lake/build/lib/lean/Selvage/ShapeRootExtractionFresh.olean Selvage/ShapeRootExtractionFresh.lean",
+      "exit_code": 0,
+      "output": "",
+      "theorem_guards": 3
+    },
+    {
+      "source": "Selvage/ShapeRootExtractionWitnesses.lean",
+      "isolate": "/tmp/minidregg-shape-root-fresh-20260908",
+      "source_sha256": "23e679cfd0cddd4a05dc4ec549b6da55322c8782ee704eb4c0156a74aa0e1353",
+      "olean_sha256": "dcfc830ae638296350d1b7aff9769585d5735baf232ae9fb1ebc367afb682187",
+      "command": "lake env lean -o .lake/build/lib/lean/Selvage/ShapeRootExtractionWitnesses.olean Selvage/ShapeRootExtractionWitnesses.lean",
+      "exit_code": 0,
+      "output": "",
+      "theorem_guards": 6
+    },
+    {
+      "source": "Selvage/Ir2PackedWitnesses.lean",
+      "isolate": "/tmp/minidregg-ir2-packed-witnesses-20260908",
+      "source_sha256": "2d5db2ebc874ef815eefa3234aa2f4ed06cab3ccfbeef1f400b9ef0f1ab51ac8",
+      "olean_sha256": "0d49935c213b2a72b79c84b11d44fec9c8df53fd7df2fc7992d15f9ff7ac2b42",
+      "command": "lake env lean -o .lake/build/lib/lean/Selvage/Ir2PackedWitnesses.olean Selvage/Ir2PackedWitnesses.lean",
+      "exit_code": 0,
+      "output": "",
+      "theorem_guards": 19,
+      "preserved_dependencies": {
+        "ShapeRootExtraction": {
+          "source_sha256": "a499c6e6adb822f0d2f755aa05a3d430cbe9525570fe1dd55f1ac4317ffbd98b",
+          "olean_sha256": "49a7f9f4b1e061b15bfe6289be97bc0edcec0eae89bed76256cb67650a9215e3",
+          "matches_parent_now": true
+        },
+        "Ir2PackedCommitments": {
+          "source_sha256": "b7ed5af4327bcd9ae3cedd4477b97c7b2b815b8077a6c7c3833bcd04e921ca63",
+          "olean_sha256": "8e3924f52ba027e2e7a27027b9e7b53c8893699a7b79dc97f66b56635b365bec",
+          "matches_parent_now": true
+        },
+        "Ir2PackedExtraction": {
+          "source_sha256": "dd83124a0dd63f1a82ddbb801ec54a8394648a6c2e67e7ac073dade4034aa07b",
+          "olean_sha256": "b219ba5a087cad0262b9b1a4434644e5fe845f5f4fc4ecb492f01bd21075080c",
+          "matches_parent_now": true
+        },
+        "Ir2FriWitnesses": {
+          "source_sha256": "b068fc973234b0ecce70bc21b2442b4524655ade94a42e1c6db1889ebb609418",
+          "olean_sha256": "5aa8da9b515a198abc549e930054ced0baa2d185cc5d92502bfd8b6e0c8d92e8",
+          "matches_parent_now": true
+        }
+      }
+    },
+    {
+      "source": "Selvage/Ir2PackedFreshWitness.lean",
+      "isolate": "/tmp/minidregg-ir2-packed-fresh-witness-20260908",
+      "source_sha256": "9ef00d2ec90bc365a5c27805899b7e8ed9231f2f564f295ac37a00dc73eae0e7",
+      "olean_sha256": "c7ecf269dd48552caa5a00ad3b8d54ee1a35b8c86a519c06af74c8cdc9bfe9e9",
+      "command": "lake env lean -o .lake/build/lib/lean/Selvage/Ir2PackedFreshWitness.olean Selvage/Ir2PackedFreshWitness.lean",
+      "exit_code": 0,
+      "output": "",
+      "theorem_guards": 18,
+      "preserved_dependencies": {
+        "Ir2PackedFresh": {
+          "source_sha256": "82bf270e10a167c4aefe4add4c12143aaeb15a1835f1f4ee451c5f211f998803",
+          "olean_sha256": "18f1de6269d99f590a5abca06fb270d675900c2fb1ad8539560957f1ac3bcaf3"
+        },
+        "Ir2PackedSoundness": {
+          "source_sha256": "98a0722af832d1cc67dd0d50b6850519aeea403ba0bf1c0a311621407c5520cd",
+          "olean_sha256": "ac0a1f8e34a6f7cac229702228d171c386d2a8fb1ea03ecc73e546c163ef73f4"
+        },
+        "Ir2PackedWitnesses": {
+          "source_sha256": "2d5db2ebc874ef815eefa3234aa2f4ed06cab3ccfbeef1f400b9ef0f1ab51ac8",
+          "olean_sha256": "0d49935c213b2a72b79c84b11d44fec9c8df53fd7df2fc7992d15f9ff7ac2b42"
+        }
+      }
+    }
+  ],
+  "import_boundary": {
+    "command": "bash scripts/check-import-boundary.sh",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "frozen_native_modules_preserved": true,
+  "forbidden_proof_scan": {
+    "pattern": "\\b(sorry|axiom|native_decide)\\b",
+    "matches": []
+  },
+  "shape_isolate": "/tmp/minidregg-shape-root-fresh-20260908",
+  "shape_dependency": {
+    "source": "Selvage/ShapeRootExtraction.lean",
+    "source_sha256": "723148a57aa22adb3248b6a248879a2db75bda08a77aaaf4c2ab04d722a3bc05",
+    "command": "lake env lean -o .lake/build/lib/lean/Selvage/ShapeRootExtraction.olean Selvage/ShapeRootExtraction.lean",
+    "exit_code": 0,
+    "output": "Selvage/ShapeRootExtraction.lean:53:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ShapeRootExtraction.bad_to_unfiltered`:\n  [DecidableEq Digest]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [DecidableEq Digest] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`\n",
+    "owner": "parent; no source modifications in this lane"
+  },
+  "shape_import_boundary": {
+    "command": "bash scripts/check-import-boundary.sh",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "shape_forbidden_proof_scan": {
+    "pattern": "\\b(sorry|axiom|native_decide)\\b",
+    "matches": []
+  },
+  "packed_witness_import_boundary": {
+    "command": "bash scripts/check-import-boundary.sh",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "packed_witness_forbidden_proof_scan": {
+    "pattern": "\\b(sorry|axiom|native_decide)\\b",
+    "matches": []
+  },
+  "packed_fresh_witness_import_boundary": {
+    "command": "bash scripts/check-import-boundary.sh",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "packed_fresh_witness_forbidden_proof_scan": {
+    "pattern": "\\b(sorry|axiom|native_decide)\\b",
+    "matches": []
+  }
+}
