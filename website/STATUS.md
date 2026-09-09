@@ -1,7 +1,7 @@
-# Public research index — current publication
+# Website update — 9 September 2026
 
-[EXECUTED published, 2026-09-09] The production build has 18 cards, 40 source excerpts, 85 checked HTML/asset references and 7 generated files totaling 92,904 bytes. Its leading cards describe the completed packed nine-class learner and matched-field continuing lifecycle. The full reader, plaintext encoder, changed score/proof profiles and unproved numerical soundness remain explicit limits. VERDICTS is authoritative and unchanged.
+[EXECUTED] Rewrote the 18 project summaries and the page introduction for a general audience. Removed evidence badges, the evidence-type filter, per-card disclaimer boxes, source hashes from the interface and methodology commentary. Search, topic selection, existing links and downloadable source metadata remain. Body text is larger.
 
-[EXECUTED] `python3 website/build.py --refresh-sources` and `python3 website/build.py --check` passed after reviewing complete source paragraphs and committing the results at `a5268000a2b94cd3689f07c215eef64f67cd835d`. Publication commit `1a8f52b8a0b5b7442fc840d5d4f8622950f608da` deployed successfully in Pages run 34317506900. Served index and source/build manifests are byte-identical to the checked local build. `deployment.json` retains URLs, byte counts and SHA-256 comparisons.
+[EXECUTED] The latest companion microsite now explains the app, proof costs and teaching results in plain language. Its saved-session explorer uses shorter labels. The source measurements and downloadable run data are unchanged.
 
-[EXECUTED] The new companion microsite, [Keep the next example](https://emberian.github.io/dregg-microsites/keep-the-next-example/), also deployed successfully at `3b03742651a5fbdeddb1c8eacc3065006af41f3b` in Pages run 34317558406. Its four served HTML/CSS/JavaScript/data files match the local files; the actual native browser rendered the live record. The page links immutable research evidence and distinguishes its recorded explorer from the local encrypted learner.
+[EXECUTED] The production build and JavaScript syntax checks pass. Publication follows this source commit; the last deployment record remains in `deployment.json` until replaced by the completed update.

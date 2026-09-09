@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 OUT = HERE / "dist"
 STATUSES = {"executed": "Executed", "derived": "Derived", "source": "Source", "open": "Open"}
-TOPICS = {"proof-systems": "Proof systems", "encrypted-learning": "Encrypted learning", "mental-autarky": "Mental autarky"}
+TOPICS = {"proof-systems": "Proof systems", "encrypted-learning": "Encrypted learning", "mental-autarky": "Private AI"}
 
 
 def digest(data: bytes) -> str:
@@ -99,33 +99,34 @@ def render(data: dict, records: dict) -> bytes:
         paths.append(f'''<article class="reading-path" id="path-{esc(path['id'])}">
           <div class="path-label"><span>{esc(path['number'])}</span><h3>{esc(path['title'])}</h3></div>
           <p class="path-question">{esc(path['question'])}</p><p>{esc(path['description'])}</p>
-          <ol>{steps}</ol><a class="path-result" href="#{esc(path['result'])}">See a related result <span aria-hidden="true">↓</span></a>
+          <ol>{steps}</ol><a class="path-result" href="#{esc(path['result'])}">View project <span aria-hidden="true">↓</span></a>
         </article>''')
     cards = []
     for card in data["cards"]:
         if card["status"] not in STATUSES or card["topic"] not in TOPICS:
             raise ValueError(f"Unknown card category: {card['id']}")
-        evidence = "".join(f'<li>{source_link(records[key])}<span class="source-id">SHA-256 {records[key]["excerpt_sha256"][:12]}… · excerpt</span></li>' for key in card["sources"])
+        evidence = "".join(f'<li>{source_link(records[key])}</li>' for key in card["sources"])
+        metric = f'<div class="metric">{esc(card["metric"])}</div><p class="metric-label">{esc(card["metric_label"])}</p>' if card["metric"] else ""
         cards.append(f'''<article class="result-card" id="{esc(card['id'])}" data-topic="{esc(card['topic'])}" data-status="{esc(card['status'])}">
-          <div class="card-meta"><span class="badge {esc(card['status'])}">{STATUSES[card['status']]}</span><span>{TOPICS[card['topic']]}</span></div>
+          <div class="card-meta"><span>{TOPICS[card['topic']]}</span></div>
           <h3><a href="#{esc(card['id'])}">{esc(card['title'])}</a></h3>
-          <div class="metric">{esc(card['metric'])}</div><p class="metric-label">{esc(card['metric_label'])}</p>
+          {metric}
           <p class="card-body">{esc(card['body'])}</p>
-          <div class="boundary"><span>What this does not establish</span><p>{esc(card['limit'])}</p></div>
-          <details><summary>Evidence and scope <span>{len(card['sources'])} {'source' if len(card['sources']) == 1 else 'sources'}</span></summary><ul class="evidence-list">{evidence}</ul></details>
+          <details><summary>Read more</summary><ul class="evidence-list">{evidence}</ul></details>
         </article>''')
     topic_options = "".join(f'<option value="{key}">{value}</option>' for key, value in TOPICS.items())
     status_options = "".join(f'<option value="{key}">{value}</option>' for key, value in STATUSES.items())
     template = (HERE / "index.html").read_text()
     replacements = {
         "BASE": base, "REPO": repo, "REVIEWED": esc(data["reviewed"]),
+        "MICROSITE": "https://emberian.github.io/dregg-microsites/keep-the-next-example/",
         "PATHS": "\n".join(paths), "CARDS": "\n".join(cards),
         "TOPIC_OPTIONS": topic_options, "STATUS_OPTIONS": status_options,
         "CARD_COUNT": str(len(cards)),
         "VERDICTS": f'{repo}/blob/{data["branch"]}/docs/VERDICTS.md',
-        "GAME_LINK": source_link(records["game"], "Read the resident security game"),
+        "GAME_LINK": source_link(records["game"], "The private AI design"),
         "HOUSE_LINK": source_link(records["house"], "Read the repository’s house rule"),
-        "CREDENTIALS_LINK": source_link(records["credentials"], "Read the credential boundary"),
+        "CREDENTIALS_LINK": source_link(records["credentials"], "Keys and what they can read"),
         "DRAFT_NOTICE": '<p class="scope-strip draft-notice"><strong>Local draft.</strong> New evidence links await the source commit. This preview is not the published site.</p>' if any(s["draft"] for s in records.values()) else "",
     }
     for key, value in replacements.items():
@@ -160,6 +161,7 @@ def validate(files: dict[str, bytes], data: dict, records: dict) -> dict:
     page.feed(files["index.html"].decode())
     issues = page.errors
     allowed_external = {data["repository"], data["repository"] + "/blob/" + data["branch"] + "/docs/VERDICTS.md"}
+    allowed_external.add("https://emberian.github.io/dregg-microsites/keep-the-next-example/")
     allowed_external.update(source["url"] for source in records.values())
     for ref in page.references:
         url = urlsplit(ref)

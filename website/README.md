@@ -28,8 +28,8 @@ and browser QA artifacts are ignored.
 ## Evidence changes
 
 [DERIVED maintenance rule] `catalog.json` holds short presentation summaries,
-reading paths and an explicit list of public source excerpts. Every card has an
-evidence category and a visible limitation. The selected excerpt's SHA-256 is
+reading paths and an explicit list of public source excerpts. Each project summary links its technical notes. Public copy explains the work
+in ordinary language; evidence categories remain internal metadata. The selected excerpt's SHA-256 is
 locked in `source-lock.json`. When a selected excerpt changes, the ordinary
 build stops; it never updates the lock automatically.
 

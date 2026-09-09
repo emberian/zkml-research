@@ -11,7 +11,7 @@
         1,
         48
       ],
-      "label": "Purpose and house rule"
+      "label": "About the project"
     },
     "verdicts": {
       "path": "docs/VERDICTS.md",
@@ -19,7 +19,7 @@
         93,
         126
       ],
-      "label": "Current verdicts \u00b7 soundness accounting"
+      "label": "Security calculations"
     },
     "notes": {
       "path": "notes/README.md",
@@ -27,7 +27,7 @@
         1,
         24
       ],
-      "label": "Research notes index"
+      "label": "Research notes"
     },
     "semantic": {
       "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md",
@@ -35,7 +35,7 @@
         1,
         74
       ],
-      "label": "Semantic study \u00b7 results and denominators"
+      "label": "Text-feature experiment"
     },
     "semantic_image": {
       "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md",
@@ -43,7 +43,7 @@
         144,
         169
       ],
-      "label": "Semantic study \u00b7 exposed feature image"
+      "label": "What the answer keys reveal"
     },
     "bfv": {
       "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
@@ -51,7 +51,7 @@
         1,
         49
       ],
-      "label": "BFV integration \u00b7 results and limitations"
+      "label": "Encrypted model results"
     },
     "bfv_cost": {
       "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
@@ -59,7 +59,7 @@
         95,
         123
       ],
-      "label": "BFV integration \u00b7 measured costs"
+      "label": "Runtime measurements"
     },
     "designated": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json",
@@ -67,7 +67,7 @@
         1,
         1
       ],
-      "label": "Completed designated workload \u00b7 executed JSON"
+      "label": "Query results"
     },
     "designated_scope": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md",
@@ -75,7 +75,7 @@
         112,
         120
       ],
-      "label": "Designated workload \u00b7 scope and assumptions"
+      "label": "Recipient key design"
     },
     "setup": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md",
@@ -83,7 +83,7 @@
         1,
         36
       ],
-      "label": "Public-coin setup \u00b7 written proof review"
+      "label": "Setup construction"
     },
     "tfhe": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
@@ -91,7 +91,7 @@
         1,
         18
       ],
-      "label": "Lean-emitted runtime \u00b7 finite plaintext and encrypted checks"
+      "label": "Encrypted runtime"
     },
     "formal": {
       "path": "research/learn_infer_only/formal/integration/README.md",
@@ -99,7 +99,7 @@
         1,
         5
       ],
-      "label": "Checked Lean proposal \u00b7 exact package and scope"
+      "label": "Lean proof package"
     },
     "game": {
       "path": "research/learn_infer_only/SECURITY_GAME.md",
@@ -107,7 +107,7 @@
         14,
         44
       ],
-      "label": "Resident security game \u00b7 functionality and leakage"
+      "label": "Private AI design goals"
     },
     "credentials": {
       "path": "research/learn_infer_only/SECURITY_GAME.md",
@@ -115,7 +115,7 @@
         75,
         99
       ],
-      "label": "Resident security game \u00b7 surviving credentials"
+      "label": "Who holds which keys"
     },
     "ladder": {
       "path": "research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md",
@@ -123,7 +123,7 @@
         1,
         46
       ],
-      "label": "Independent-key ladder \u00b7 construction and primary theorem"
+      "label": "Two-step construction"
     },
     "pq_interfaces": {
       "path": "research/learn_infer_only/PQ_COMPOSITION.md",
@@ -131,7 +131,7 @@
         43,
         59
       ],
-      "label": "Post-quantum audit \u00b7 source games and receipt boundary"
+      "label": "Combining post-quantum components"
     },
     "setup_journal": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/README.md",
@@ -139,7 +139,7 @@
         1,
         70
       ],
-      "label": "Public-coin journal \u00b7 completed run and scope"
+      "label": "Setup and saved-history results"
     },
     "tfhe_scope": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
@@ -147,7 +147,7 @@
         89,
         104
       ],
-      "label": "Lean-emitted runtime \u00b7 proof and reader-key boundary"
+      "label": "Runtime design"
     },
     "tfhe_failure": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md",
@@ -155,7 +155,7 @@
         1,
         15
       ],
-      "label": "Older long run \u00b7 first mismatch and semantic boundary"
+      "label": "The repeated-update mismatch"
     },
     "tfhe_controls": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
@@ -163,7 +163,7 @@
         1,
         19
       ],
-      "label": "Fixed-FFT controls \u00b7 five observed replay pairs"
+      "label": "Fixed-transform experiments"
     },
     "tfhe_controls_scope": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
@@ -171,7 +171,7 @@
         56,
         99
       ],
-      "label": "Fixed-FFT controls \u00b7 separate cases and unresolved cause"
+      "label": "Experiment details"
     },
     "pq_costs": {
       "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
@@ -179,7 +179,7 @@
         179,
         237
       ],
-      "label": "Conditional PQ sizing \u00b7 normalization and structural costs"
+      "label": "Storage calculations"
     },
     "pq_costs_scope": {
       "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
@@ -187,7 +187,7 @@
         267,
         281
       ],
-      "label": "Conditional PQ sizing \u00b7 no certified parameter set"
+      "label": "Sizing assumptions"
     },
     "pq_review": {
       "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/REVIEW.md",
@@ -195,7 +195,7 @@
         1,
         19
       ],
-      "label": "Independent review \u00b7 accepted fixed-policy construction"
+      "label": "Lattice construction"
     },
     "pq_restricted": {
       "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md",
@@ -203,7 +203,7 @@
         1,
         68
       ],
-      "label": "Restricted QPT argument \u00b7 exact assumptions"
+      "label": "Quantum-security argument"
     },
     "tfhe_long": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/REPORT.md",
@@ -211,7 +211,7 @@
         1,
         19
       ],
-      "label": "Completed nonlinear trajectory \u00b7 exact checks and denominators"
+      "label": "Complete encrypted run"
     },
     "tfhe_long_scope": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/REPORT.md",
@@ -219,7 +219,7 @@
         100,
         109
       ],
-      "label": "Completed nonlinear trajectory \u00b7 retained reader and scope"
+      "label": "Runtime implementation"
     },
     "kernel_infer": {
       "path": "research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/README.md",
@@ -227,7 +227,7 @@
         1,
         90
       ],
-      "label": "Complete nonlinear kernel \u00b7 actual verifier, costs and scope"
+      "label": "Encrypted similarity calculation"
     },
     "live_proofs": {
       "path": "research/vfhe_2026_09_08/proved_journal/fast_live_successor/REPORT.md",
@@ -235,7 +235,7 @@
         1,
         26
       ],
-      "label": "Fresh learning \u00b7 updates and complete class-query proofs"
+      "label": "First teaching demo"
     },
     "live_proofs_scope": {
       "path": "research/vfhe_2026_09_08/proved_journal/fast_live_successor/REPORT.md",
@@ -243,7 +243,7 @@
         73,
         78
       ],
-      "label": "Live learner \u00b7 surviving full reader and implementation assumptions"
+      "label": "Demo implementation"
     },
     "writer_obstruction": {
       "path": "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/INTERACTION.md",
@@ -251,7 +251,7 @@
         11,
         35
       ],
-      "label": "Rolling bilinear state \u00b7 writer probes and exact readable span"
+      "label": "How the writer key exposes state"
     },
     "corrected_class": {
       "path": "research/vfhe_2026_09_08/nonlinear_performance/REPORT.md",
@@ -259,7 +259,7 @@
         1,
         34
       ],
-      "label": "Corrected class \u00b7 complete acceptance, cost and remaining boundaries"
+      "label": "Corrected calculation and timings"
     },
     "whole_rows": {
       "path": "research/proof_frontier/2026-09-08/ir2_verifier_bridge/air_pcs_join/whole_domain/README.md",
@@ -267,7 +267,7 @@
         1,
         15
       ],
-      "label": "Whole-row emission \u00b7 source theorem and historical gap"
+      "label": "The missing final-row check"
     },
     "actual_pcs_join": {
       "path": "research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_join/README.md",
@@ -275,7 +275,7 @@
         1,
         37
       ],
-      "label": "Actual PCS join \u00b7 theorem and explicit probability assumptions"
+      "label": "Verifier theorem"
     },
     "continuation_backend": {
       "path": "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/HIO_PROVENANCE_BACKEND.md",
@@ -283,7 +283,7 @@
         1,
         68
       ],
-      "label": "Private continuation certificates \u00b7 algorithms and primitive scope"
+      "label": "Private-state transition design"
     },
     "continuation_limits": {
       "path": "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/HIO_PROVENANCE_BACKEND.md",
@@ -291,7 +291,7 @@
         291,
         349
       ],
-      "label": "Private continuation \u00b7 credentials, costs and unimplemented components"
+      "label": "Implementation requirements"
     },
     "continuing_complete": {
       "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md",
@@ -299,7 +299,7 @@
         3,
         17
       ],
-      "label": "Complete continuing learner \u00b7 executed lifecycle"
+      "label": "Complete learning session"
     },
     "packed_complete": {
       "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md",
@@ -307,7 +307,7 @@
         69,
         94
       ],
-      "label": "Nine classes \u00b7 packed bank lifecycle and scope"
+      "label": "Nine-category results"
     },
     "continuing_boundaries": {
       "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md",
@@ -315,7 +315,7 @@
         125,
         130
       ],
-      "label": "Surviving reader and native proof boundaries"
+      "label": "Application architecture"
     },
     "field_costs": {
       "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md",
@@ -323,75 +323,75 @@
         21,
         56
       ],
-      "label": "Changed arithmetic and measured producer/consumer costs"
+      "label": "Arithmetic and timings"
     }
   },
   "paths": [
     {
       "id": "proof-systems",
       "number": "01",
-      "title": "Proof systems",
-      "question": "What does an accepted proof actually establish?",
-      "description": "Start with the soundness assumptions, then inspect a complete encrypted kernel computation and its actual verifier.",
+      "title": "Checking the computation",
+      "question": "How can someone check an answer?",
+      "description": "Cryptographic proofs let a computer show that it followed a particular calculation. These notes cover the verifier and the cost of proving encrypted work.",
       "steps": [
         {
-          "label": "Start with the current verdicts",
-          "source": "verdicts"
+          "source": "field_costs",
+          "label": "The new proof system"
         },
         {
-          "label": "Navigate the research lanes",
-          "source": "notes"
+          "source": "corrected_class",
+          "label": "A complete encrypted calculation"
         },
         {
-          "label": "Inspect the corrected complete class",
-          "source": "corrected_class"
+          "source": "verdicts",
+          "label": "Probability of missing an error"
         }
       ],
-      "result": "complete-kernel-infer"
+      "result": "matched-continuing-lifecycle"
     },
     {
       "id": "encrypted-learning",
       "number": "02",
-      "title": "Encrypted learning",
-      "question": "Can protected state keep learning?",
-      "description": "Follow fresh teaching into proved class answers, then inspect the complete nonlinear kernel. Keep the surviving reader capability visible.",
+      "title": "Learning while encrypted",
+      "question": "Can the model keep changing?",
+      "description": "Follow new examples into an encrypted model, then see how it answers questions and replaces old memories.",
       "steps": [
         {
-          "label": "Understand the semantic study",
-          "source": "semantic"
+          "source": "continuing_complete",
+          "label": "A complete learning session"
         },
         {
-          "label": "Run fresh teaching with proved answers",
-          "source": "live_proofs"
+          "source": "packed_complete",
+          "label": "Nine categories in one learner"
         },
         {
-          "label": "Inspect the corrected nonlinear kernel",
-          "source": "corrected_class"
+          "source": "semantic",
+          "label": "Choosing useful text features"
         }
       ],
-      "result": "fresh-proved-learning"
+      "result": "packed-continuing-classes"
     },
     {
       "id": "mental-autarky",
       "number": "03",
-      "title": "Mental autarky",
-      "question": "Who can still read the resident\u2019s state?",
-      "description": "Here this means a private space for a continuing learner, even against its host. Begin with the declared exposure game and surviving read capabilities.",
+      "title": "Private AI",
+      "question": "Who can read the model’s memory?",
+      "description": "We want an AI to learn and communicate without giving its host unrestricted access to its internal state.",
       "steps": [
         {
-          "label": "Read the functionality and leakage contract",
-          "source": "game"
+          "source": "game",
+          "label": "The system we want to build"
         },
         {
-          "label": "Examine recipient capabilities",
-          "source": "credentials"
+          "source": "credentials",
+          "label": "Keys and their powers"
         },
         {
-          "label": "See why the rolling writer candidate fails",
-          "source": "writer_obstruction"
+          "source": "writer_obstruction",
+          "label": "A design that exposed too much"
         }
       ],
-      "result": "writer-response-gap"
+      "result": "private-resident"
     }
   ],
   "cards": [
@@ -399,11 +399,10 @@
       "id": "packed-continuing-classes",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "Nine classes through expiry and restart",
-      "metric": "8m 19s",
-      "metric_label": "18 teachings, three queries and a process reopen",
-      "body": "Eight class centroids share one encrypted bank. The complete nine-class lifecycle verifies 2,336 fresh proofs, expires two old examples, and preserves all class sums and exact rankings across restart. Its first query answers eight classes in 87.672 seconds.",
-      "limit": "A small authored corpus with a surviving full reader. Class availability changes during teaching; this is not a general accuracy benchmark. Native proof and public-transform assumptions remain.",
+      "title": "A learner that keeps learning",
+      "metric": "88 seconds",
+      "metric_label": "to answer across eight categories",
+      "body": "The latest prototype sorts software issues into categories. You can teach it new examples, ask questions, and restart it without losing its memory. Each category keeps its eight most recent examples. A complete nine-category run included 18 teachings, three questions and two old examples being replaced; the encrypted scores matched the ordinary calculation throughout.",
       "sources": [
         "packed_complete",
         "continuing_boundaries"
@@ -413,11 +412,10 @@
       "id": "matched-continuing-lifecycle",
       "status": "executed",
       "topic": "proof-systems",
-      "title": "A complete learner in the BFV arithmetic fields",
-      "metric": "3,200",
-      "metric_label": "fresh proofs, each independently verified",
-      "body": "The exact-field backend removes carry and range witnesses. Twelve teachings, four complete two-class queries, FIFO expiry and restart finish in 638.021 worker seconds, with every returned value matching the reference.",
-      "limit": "The score and proof profile differ from the quadratic predecessor. No equal-security speedup or numerical soundness level is claimed. Verification still costs more than recomputing this small FHE function; a full reader survives.",
+      "title": "Faster proofs for encrypted learning",
+      "metric": "10m 38s",
+      "metric_label": "for 12 teachings, four questions and a restart",
+      "body": "Encryption and proof systems often use different arithmetic, which makes checking the work expensive. We built a proof system using the same arithmetic as the encryption. It completes a two-category learning session with 3,200 proofs checked. Verification is still slower than simply repeating this small encrypted computation.",
       "sources": [
         "continuing_complete",
         "field_costs",
@@ -428,11 +426,10 @@
       "id": "complete-kernel-infer",
       "status": "executed",
       "topic": "proof-systems",
-      "title": "A corrected complete nonlinear kernel",
-      "metric": "133.7 MB",
-      "metric_label": "116 fresh proofs, with arithmetic on every row",
-      "body": "One saved public class passes a complete fresh consumer after repairing the final-row emitter gap. Compact ranges reduce proof data by 8.19% and MAC proving by 16.85%. All 88 MAC, 4 basis-extension, 18 tensor and 6 rescale proofs are new.",
-      "limit": "Whole proving improves only 1.69% and peak memory rises. This is one saved class, not a new teaching chain or private-reading run. Native lowering, lookup extraction and the new profile\u2019s full soundness bound remain open; a full reader survives.",
+      "title": "Checking every step of an encrypted calculation",
+      "metric": "116 proofs",
+      "metric_label": "for one complete nonlinear calculation",
+      "body": "We repaired a bug that left the final row of a calculation unchecked. The corrected version proves a complete encrypted similarity calculation, including multiplication and rescaling. A more compact way to check number ranges reduces proof size by 8.19%; total proving time improves by 1.69%, with higher memory use.",
       "sources": [
         "corrected_class",
         "whole_rows"
@@ -442,11 +439,10 @@
       "id": "fresh-proved-learning",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "The earlier fresh teaching integration",
-      "metric": "21.20s",
-      "metric_label": "two teachings, two class answers, four fresh proofs",
-      "body": "New text updates two encrypted classes. Each update is proved and committed; both class computations are then proved and verified at the accepted model revision before the first private reads. The resulting scores match their integer references.",
-      "limit": "Historical accepted run: the legacy emitter skipped final-row arithmetic, so these proofs do not establish every intended row. The corrected saved-class successor is separate. The encoder is plaintext and the recipient retains the full BFV key.",
+      "title": "The first text-to-encrypted-answer demo",
+      "metric": "",
+      "metric_label": "",
+      "body": "An earlier prototype connected new text examples to encrypted model updates and answers. Two teachings and two category answers completed in 21.20 seconds. Later work found a missing final-row check in its proof generator; the corrected implementation is used by the current learner.",
       "sources": [
         "live_proofs",
         "live_proofs_scope",
@@ -457,11 +453,10 @@
       "id": "writer-response-gap",
       "status": "derived",
       "topic": "mental-autarky",
-      "title": "Why the next resident needs a different writer capability",
-      "metric": "16 \u2192 576",
-      "metric_label": "readable dimensions in the proposed bilinear continuation",
-      "body": "Cross-input interaction could make hidden state affect future answers. In the inspected construction, however, the surviving writer already contains basis encodings. Combined with the output keys, they reveal all 576 variable semantic coordinates. A public span calculation establishes the consequence.",
-      "limit": "This is a scoped credential and functionality obstruction, not a cryptographic attack execution or an impossibility theorem for private learning. It identifies a design that should change before implementation.",
+      "title": "Adding memories can also expose them",
+      "metric": "",
+      "metric_label": "",
+      "body": "One proposed design gave the software a key for adding new memories. Our calculation showed that combining that key with the answer keys would reveal all 576 changing coordinates of the model. That design needs a different way to add memories before it can protect them from its host.",
       "sources": [
         "writer_obstruction"
       ]
@@ -470,11 +465,10 @@
       "id": "actual-pcs-join",
       "status": "derived",
       "topic": "proof-systems",
-      "title": "The actual polynomial verifier, joined",
-      "metric": "5,271 terms",
-      "metric_label": "native batching connected to packed commitment extraction",
-      "body": "The Lean theorem connects the actual batching loop, commitment-time words, folding equations and 38 query positions. A failed common polynomial explanation implies an explicit acceptance bound, with shaped extraction failure kept separate.",
-      "limit": "Fresh independent challenges and off-domain openings are assumptions. This is the pinned old profile, not the corrected range profile or a deployed security-bit estimate. Application constraints, Fiat\u2013Shamir and arbitrary native refinement remain separate.",
+      "title": "Connecting the proof verifier to its mathematics",
+      "metric": "",
+      "metric_label": "",
+      "body": "A verifier checks a large computation by sampling parts of a mathematical encoding. We connected its batching and folding calculations to a Lean theorem about the probability of accepting an invalid proof. The theorem assumes fresh independent randomness; connecting that assumption to the implemented hash-based transcript is further work.",
       "sources": [
         "actual_pcs_join"
       ]
@@ -483,11 +477,10 @@
       "id": "private-continuation-certificates",
       "status": "derived",
       "topic": "mental-autarky",
-      "title": "Certifying a private continuation",
-      "metric": "No online registry",
-      "metric_label": "conditional rooted ancestry from encrypted witnesses",
-      "body": "A private issuer specializes a public continuation program and certifies its exact parent, child and permitted release. Tagged encrypted witnesses plus simulation-sound proofs give online extraction in the security reduction, including adaptive feedback. The deployed setup retains no witness reader.",
-      "limit": "A classical conditional construction: general obfuscation, honest setup erasure and a finite horizon remain. Primitive implementations and useful repeated-size bounds are absent; post-quantum certification alone would not make the whole resident post-quantum.",
+      "title": "A design for passing private state to the next step",
+      "metric": "",
+      "metric_label": "",
+      "body": "We developed a theoretical design in which each step certifies the next private state and the answer it may release. It can track that ancestry without an online registry. It depends on program obfuscation, erased setup secrets and a preset number of steps. An efficient implementation is still missing.",
       "sources": [
         "continuation_backend",
         "continuation_limits"
@@ -497,11 +490,10 @@
       "id": "semantic-bfv",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "Useful features, exact encrypted replay",
-      "metric": "96 / 96",
-      "metric_label": "integer answers match",
-      "body": "A selected public semantic fixture completed 384 Learn events, 96 Infer events and 256 exact-original expiries through BFV and an independently verifying durable receiver. One shared-machine run took 219.733 seconds.",
-      "limit": "The receiver retains the full BFV key. This selected subset has 28/32 correct final labels; exact arithmetic does not make every semantic answer correct.",
+      "title": "Encrypted answers match ordinary arithmetic",
+      "metric": "96 of 96",
+      "metric_label": "answers matched",
+      "body": "A small model processed 384 updates and replaced 256 old examples while encrypted. All 96 numerical answers matched the ordinary calculation, and 28 of 32 final category predictions were correct. The encrypted run took about 3 minutes 40 seconds.",
       "sources": [
         "bfv",
         "bfv_cost"
@@ -511,11 +503,10 @@
       "id": "semantic-study",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "A useful, deliberately small semantic learner",
-      "metric": "91.0889%",
-      "metric_label": "7,462 / 8,192 final labels",
-      "body": "A frozen SmolLM3 factual scorer feeds a four-bin recency learner. Original features score 51.0010% on the same fresh synthetic text/history study. All eleven preregistered gates passed.",
-      "limit": "A trusted plaintext issuer supplies the abstraction. The study is local and synthetic, with repeated texts across histories. Spanning exact-score credentials reveal its small aggregate image.",
+      "title": "Better text features for a small learner",
+      "metric": "91.1%",
+      "metric_label": "correct across 8,192 synthetic cases",
+      "body": "A small learner used features from the SmolLM3 language model to adapt to recent examples. It reached 91.1% accuracy, compared with 51.0% using the original features. These tests used synthetic texts and histories. The language model that produced the features ran outside encryption.",
       "sources": [
         "semantic",
         "semantic_image"
@@ -525,11 +516,10 @@
       "id": "designated-workload",
       "status": "executed",
       "topic": "mental-autarky",
-      "title": "A complete designated-recipient workload",
-      "metric": "384 / 96 / 256",
-      "metric_label": "Learn / Infer / expiries",
-      "body": "The original fixed-span workload completed with all 96 integer comparisons passing. Public processing, independent replay and service shutdown precede private decoding. Public work took 11,697.338 seconds (3h 14m 57s).",
-      "limit": "Classical DDH, a known public fixture, honest setup/erasure and shared-account processes. Recipient credentials still read their full fixed per-input query span outside the journal. Final label accuracy remains 18/32.",
+      "title": "Giving different readers different answers",
+      "metric": "",
+      "metric_label": "",
+      "body": "A functional-encryption prototype gives each recipient keys for a fixed set of questions. It completed 384 updates and 96 queries, with all numerical answers matching the reference. Those keys still work on old inputs and outside the application, so deleting an example from the model does not revoke access to it.",
       "sources": [
         "designated",
         "designated_scope",
@@ -540,11 +530,10 @@
       "id": "public-coin-setup",
       "status": "executed",
       "topic": "mental-autarky",
-      "title": "Public-coin setup joins the durable journal",
-      "metric": "40 / 4 / 8",
-      "metric_label": "Learn / Infer / exact-original expiries",
-      "body": "The honest public constructor generates no scalar master. Its journal join completed all 44 independent transition replays; both ordered histories agree and all four private integers match the fixture. Reopening and exact historical retries preserve the head.",
-      "limit": "Honest sampling and independent recipient registration remain premises. Recipients retain the full per-input fixed span, including expired inputs. The setup proof excludes the instrumented timing view; this arithmetic fixture establishes no model utility or whole-protocol privacy.",
+      "title": "Setting up without a central master secret",
+      "metric": "",
+      "metric_label": "",
+      "body": "This prototype creates the public setup without generating a central secret key. It completed 40 updates, four queries and eight replacements, and reopened the same saved history. It requires honest setup and separately registered recipients. Each recipient still has keys for its fixed set of questions.",
       "sources": [
         "setup_journal",
         "setup"
@@ -554,11 +543,10 @@
       "id": "encrypted-ema",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "A complete nonlinear encrypted trajectory",
-      "metric": "480 replay pairs",
-      "metric_label": "384 Learn + 96 Infer; two histories",
-      "body": "The Lean-emitted schedules ran through a generic TFHE interpreter. Every independent-process byte replay matched. After public verification closed, all 484 authorized primary state and sign checks matched the frozen integer fixture.",
-      "limit": "The full reader key remains. This reused fixture is not a new utility study, universal determinism proof or unrestricted-exposure privacy demonstration. Rust/TFHE and accepted-history release remain separate.",
+      "title": "A longer encrypted learning run",
+      "metric": "480 operations",
+      "metric_label": "384 updates and 96 queries",
+      "body": "We ran a nonlinear learning rule under TFHE encryption, using an execution schedule generated from Lean. A second process repeated every operation and produced identical encrypted bytes. Decrypting the results also gave the expected states and answers.",
       "sources": [
         "tfhe_long",
         "tfhe_long_scope"
@@ -568,11 +556,10 @@
       "id": "nonlinear-replay-boundary",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "A longer replay stops at Learn 14",
-      "metric": "13, then a mismatch",
-      "metric_label": "the older handwritten runtime",
-      "body": "The first thirteen Learn replay pairs match; the fourteenth produces different ciphertext bytes from identical public inputs. A separate emitted runtime with a fixed FFT plan later passes five preregistered replay pairs, including that public input case.",
-      "limit": "Byte mismatch does not imply incorrect plaintext. The five controls are independent cases, not a completed learning trajectory; no new plaintext decoding was done. They establish neither the old cause nor general deterministic replay.",
+      "title": "When repeating a calculation gives different bytes",
+      "metric": "",
+      "metric_label": "",
+      "body": "An older encrypted runtime produced different ciphertext bytes on its fourteenth repeated update, despite receiving the same inputs. The replacement runtime uses a fixed plan for its numerical transforms and passes that case and four others. The later 480-operation run uses this approach.",
       "sources": [
         "tfhe_failure",
         "tfhe_controls",
@@ -583,11 +570,10 @@
       "id": "formal-package",
       "status": "executed",
       "topic": "proof-systems",
-      "title": "A checked collection of formal ingredients",
-      "metric": "952 pins",
-      "metric_label": "72 proposed modules; 567 rebuilt from source",
-      "body": "The complete project import closure passed its source build, four umbrellas, patch application and import boundaries. The proposal joins learner arithmetic and emitted schedules with full unique decoding and coherent BabyBear query bounds.",
-      "limit": "A proposed companion patch. External package/toolchain artifacts were cached; project modules were rebuilt. This does not establish Rust/TFHE refinement, private release or deployed soundness.",
+      "title": "Proving the learner’s arithmetic in Lean",
+      "metric": "",
+      "metric_label": "",
+      "body": "The proposed Lean package covers learning arithmetic, execution schedules and parts of the cryptographic verifier across 72 modules. Lean checks the mathematical proofs mechanically. The package is available as a patch for the companion proof-system repository; connecting these theorems to the full native implementation remains work to do.",
       "sources": [
         "formal"
       ]
@@ -596,11 +582,10 @@
       "id": "soundness-regimes",
       "status": "source",
       "topic": "proof-systems",
-      "title": "A security number needs its assumptions",
-      "metric": "Name the regime",
-      "metric_label": "before quoting a soundness figure",
-      "body": "The current verdict ledger distinguishes unique-decoding, idealised Johnson and legacy capacity accounting. The withdrawn capacity figure must not be presented as the system\u2019s security level.",
-      "limit": "This is a guide to the repository\u2019s current verdicts, not a fresh protocol audit. Query accounting and commit-phase error must not silently become a whole-system claim.",
+      "title": "How often could a false proof pass?",
+      "metric": "",
+      "metric_label": "",
+      "body": "The verifier samples a mathematical encoding instead of checking every step. Its chance of missing an error depends on the number of samples and the error-correcting model. The technical note compares those models and explains why an earlier security estimate was withdrawn.",
       "sources": [
         "verdicts"
       ]
@@ -609,11 +594,10 @@
       "id": "finite-ladder",
       "status": "derived",
       "topic": "mental-autarky",
-      "title": "Private continuation with a fixed horizon",
-      "metric": "2 transitions",
-      "metric_label": "a source-conditional FE ladder",
-      "body": "Independent functional-encryption instances are set up backwards, so each transition embeds an already existing future public key. The argument retains the whole future key package in the adversary\u2019s view.",
-      "limit": "A classical, selective-state construction direction under explicit primitive assumptions and honest erasure. Public commands, copying and authorized branches remain. The symbolic witness does not implement encryption.",
+      "title": "Planning several private steps in advance",
+      "metric": "2 steps",
+      "metric_label": "in a functional-encryption design",
+      "body": "Functional encryption can let a key reveal a selected result without revealing the input. We use it in a two-step design where each private computation prepares an encrypted state for the next. The steps are set up backwards, so each knows how to encrypt for its successor. This requires the future steps to be planned and the setup secrets erased.",
       "sources": [
         "ladder"
       ]
@@ -622,11 +606,10 @@
       "id": "private-resident",
       "status": "open",
       "topic": "mental-autarky",
-      "title": "A private resident needs restricted read authority",
-      "metric": "Still open",
-      "metric_label": "the full exposure target",
-      "body": "The target releases only the authorized answer while preserving reusable protected state. A journal can regulate a published history; surviving keys may still read inputs or support local counterfactual computations.",
-      "limit": "Successful encrypted arithmetic, durable integrity and useful adaptation are separate properties. Their current demonstrations do not establish full mental autarky under the declared exposure game.",
+      "title": "An AI whose host cannot open its memory",
+      "metric": "",
+      "metric_label": "",
+      "body": "The goal is an AI that can keep learning and communicating while the person running it has no key that opens all of its memory. The remaining keys must allow only the intended operations. This is stronger than storing an encrypted file: the protection has to survive new inputs, new answers and copies of old state.",
       "sources": [
         "game",
         "credentials"
@@ -636,11 +619,10 @@
       "id": "pq-composition",
       "status": "open",
       "topic": "proof-systems",
-      "title": "A conditional post-quantum route, with costs",
-      "metric": "No certified bits",
-      "metric_label": "finite sizing is not a security level",
-      "body": "Independent review accepts a conditional fixed-policy LWE construction. A narrower QPT argument permits smaller widths. One n = 1,024 sizing example still needs 84.43 MB per ciphertext and 86.46 GB of public matrices; these are calculated, packed sizes, not generated objects.",
-      "limit": "The example normalizes unresolved source constants. Gaussian implementation error, reduction errors and computational hardness remain open. Fixed per-input recipient leakage persists, and receipt composition is separate. No whole-resident post-quantum result is claimed.",
+      "title": "What a post-quantum design would cost",
+      "metric": "84 MB",
+      "metric_label": "per ciphertext in one sizing calculation",
+      "body": "We studied a lattice-based functional-encryption design intended to resist quantum attacks. One sizing calculation gives about 84 MB per encrypted input and 86 GB of public matrices. Those estimates depend on unresolved construction constants; they show where the storage cost comes from and what needs to shrink before implementation.",
       "sources": [
         "pq_review",
         "pq_restricted",
