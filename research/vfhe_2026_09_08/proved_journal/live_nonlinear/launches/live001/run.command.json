@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "-u",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/run.py",
+    "--run",
+    "live001"
+  ],
+  "started_utc": "2026-09-09T00:31:02.677587+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear",
+  "timeout_seconds": 10800,
+  "pid": 12554,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-09T00:54:51.791655+00:00",
+  "elapsed_seconds": 1429.1114335000166,
+  "user_seconds": 3366.082981,
+  "system_seconds": 148.101963,
+  "max_rss_bytes": 8975597568
+}

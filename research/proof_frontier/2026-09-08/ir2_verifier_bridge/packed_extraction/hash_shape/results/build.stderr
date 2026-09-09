@@ -1,0 +1,45 @@
+     Locking 42 packages to latest Rust 1.98.0-nightly compatible versions
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling autocfg v1.5.1
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling strength_reduce v0.2.4
+   Compiling paste v1.0.15
+   Compiling either v1.18.0
+   Compiling pin-project-lite v0.2.17
+   Compiling tracing-core v0.1.36
+   Compiling rand_core v0.10.1
+   Compiling p3-maybe-rayon v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling scopeguard v1.2.0
+   Compiling rand v0.10.2
+   Compiling lock_api v0.4.14
+   Compiling itertools v0.14.0
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.151
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling spin v0.11.1
+   Compiling num-traits v0.2.19
+   Compiling syn v3.0.5
+   Compiling syn v2.0.119
+   Compiling num-integer v0.1.47
+   Compiling transpose v0.2.3
+   Compiling num-bigint v0.4.8
+   Compiling serde_derive v1.0.229
+   Compiling tracing-attributes v0.1.31
+   Compiling p3-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling tracing v0.1.44
+   Compiling p3-field v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-matrix v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-symmetric v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-dft v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-mds v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon2 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon1 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-monty-31 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-challenger v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-baby-bear v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling actual-poseidon-leaf-shape-alias v0.1.0 (/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/hash_shape)
+    Finished `release` profile [optimized] target(s) in 9.28s

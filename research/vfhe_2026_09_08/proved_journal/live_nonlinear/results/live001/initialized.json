@@ -1,0 +1,24 @@
+{
+  "initialized": true,
+  "genesis": "eb173c0df179344969119bdac2882b948b2147e72b5b964b12825d0545a51481",
+  "head": {
+    "genesis": "eb173c0df179344969119bdac2882b948b2147e72b5b964b12825d0545a51481",
+    "revision": 0,
+    "classes": {
+      "card_arrival": {
+        "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "teaches": 0,
+        "queue": []
+      },
+      "cash_withdrawal_charge": {
+        "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "teaches": 0,
+        "queue": []
+      }
+    },
+    "model_root": "6afc9c3cd5ffd71ea6112ae508eeb875c6459a9ba5042964090fd8e84f0edaef",
+    "last_receipt_sha256": null
+  },
+  "recipient_id": "4a9501ffb5ccfa6bcf6e0c8ac3a9f6d6464f7d054db1e6db2ad92e27b707b7b9",
+  "full_reader_key": true
+}

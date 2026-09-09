@@ -1,0 +1,11 @@
+[package]
+name = "actual-poseidon-leaf-shape-alias"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[workspace]
+[dependencies]
+p3-baby-bear = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+p3-field = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+p3-symmetric = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+serde_json = "=1.0.151"

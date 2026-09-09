@@ -1,0 +1,14 @@
+{
+  "schema": "live-nonlinear-two-class-fixture-v1",
+  "purpose": "One fresh teaching per class and one query scored across both accepted class memories; no utility estimate or tuning.",
+  "teaching": [
+    {"id": "teach01", "label": "card_arrival", "lane": 0, "text": "My replacement debit card was dispatched last week, but it still hasn't arrived."},
+    {"id": "teach02", "label": "cash_withdrawal_charge", "lane": 0, "text": "The ATM dispensed my cash, but there is an extra withdrawal fee on my statement."}
+  ],
+  "query": {"id": "query01", "text": "Why was I charged an extra fee when I took money out of an ATM?", "intended_label": "cash_withdrawal_charge"},
+  "class_order": ["card_arrival", "cash_withdrawal_charge"],
+  "encoder_invocation": "One fresh local E5 batch of the two teaching texts followed by the query; labels are not encoder inputs.",
+  "feature_map": "Existing E5 768-to576 fixed projection, scale512/clip127; then existing numpy.rint(first576/4), ties-to-even, bound32 and norm_squared<=20000.",
+  "model": "One lane0 observation per class in the existing eight-lane degree2 kernel memory; no expiry in this minimal fresh workload.",
+  "reader": "Full BFV reader key; exactly two class-output decryptions, deferred until update and query proof acceptance. Plaintext public trusted issuer and known public text fixture."
+}

@@ -1,0 +1,20 @@
+'Minidregg.Compiler.BfvTeachingUpdate.signedReduction' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.operandSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.updateRow_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.updateSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.historySound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.learnThenInferSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.noExpiry' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.wrongUpdateRefused' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.Exhibits.canonical_accepts' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.Exhibits.mac_accepts' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.Exhibits.good_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.Exhibits.good_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.Exhibits.nonzeroUpdateInhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvTeachingUpdate.Exhibits.omittedExpiryRefused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

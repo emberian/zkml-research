@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "target/release/actual-poseidon-leaf-shape-alias"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/hash_shape",
+  "exit": 0,
+  "seconds": 0.005609125015325844,
+  "source_pins_sha256": "e85b67ef76594594e60df856718cc57f4a3822309199924ceca64a37f798f586",
+  "output": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/hash_shape/results/result.json",
+    "bytes": 1564,
+    "sha256": "5306d6386501718d9928c634093085b2ee27dae8b6753b2712bbb872850fd76f"
+  },
+  "stderr": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/hash_shape/results/run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sources_unchanged": true
+}

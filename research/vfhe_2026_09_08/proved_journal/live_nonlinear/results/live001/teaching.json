@@ -1,0 +1,103 @@
+[
+  {
+    "committed": true,
+    "head": {
+      "genesis": "eb173c0df179344969119bdac2882b948b2147e72b5b964b12825d0545a51481",
+      "revision": 1,
+      "classes": {
+        "card_arrival": {
+          "acc_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+          "teaches": 1,
+          "queue": [
+            {
+              "sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+              "lane": 0
+            }
+          ]
+        },
+        "cash_withdrawal_charge": {
+          "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "queue": [],
+          "teaches": 0
+        }
+      },
+      "model_root": "2d99b0cfa95cfc4f9152544c817d5293d82c9d5a29f67a6dd9d3e208a41c4055",
+      "last_receipt_sha256": "affef7f1a22b6930c7dc22e87dbc765d997da06ff1e0b408ad5be7f6cb09f6d8"
+    },
+    "receipt_sha256": "affef7f1a22b6930c7dc22e87dbc765d997da06ff1e0b408ad5be7f6cb09f6d8",
+    "request": {
+      "schema": "live-nonlinear-update-v1",
+      "request_id": "teach01",
+      "genesis": "eb173c0df179344969119bdac2882b948b2147e72b5b964b12825d0545a51481",
+      "recipient_id": "4a9501ffb5ccfa6bcf6e0c8ac3a9f6d6464f7d054db1e6db2ad92e27b707b7b9",
+      "revision": 1,
+      "parent_sha256": "1dc0be175ff9aa447143eec24e89695e78abdee2791453d865be35a8f8f45145",
+      "parent_model_root": "6afc9c3cd5ffd71ea6112ae508eeb875c6459a9ba5042964090fd8e84f0edaef",
+      "label": "card_arrival",
+      "lane": 0,
+      "text_sha256": "cac3827b6d2904934e30be46025d34ede1e9402a3ef5967d0054a690b418a1e9",
+      "feature_sha256": "3db4a27c0f313eef4c21648c1b2ad51bb56f1bafc133d15610fd9ea0d7372e57",
+      "payloads": {
+        "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "fresh_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+        "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "out_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98"
+      },
+      "profile_sha256": "86a0ce82266635e7644777e857f436a0f3e5c9fa6d9bbb85f941d98cab344058"
+    },
+    "private_reads": 0
+  },
+  {
+    "committed": true,
+    "head": {
+      "genesis": "eb173c0df179344969119bdac2882b948b2147e72b5b964b12825d0545a51481",
+      "revision": 2,
+      "classes": {
+        "card_arrival": {
+          "acc_sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98",
+          "queue": [
+            {
+              "lane": 0,
+              "sha256": "f7aa1fe7b7f514717b2f0f70ac1464484e2e49131ec4a121c3afd98bf9d8af98"
+            }
+          ],
+          "teaches": 1
+        },
+        "cash_withdrawal_charge": {
+          "acc_sha256": "7e1826644be611eebcd9099ce46e7468289299dc40835fa2394a9af67371b26a",
+          "teaches": 1,
+          "queue": [
+            {
+              "sha256": "7e1826644be611eebcd9099ce46e7468289299dc40835fa2394a9af67371b26a",
+              "lane": 0
+            }
+          ]
+        }
+      },
+      "model_root": "1c0de7daddd10b302641c9a10bf96d066ec3681a74d15c787fdc499f1aaeea82",
+      "last_receipt_sha256": "24bc5f020832a34ba7d511c02b35ec2588a973406d7ba5edc9ffc75da8f4adb4"
+    },
+    "receipt_sha256": "24bc5f020832a34ba7d511c02b35ec2588a973406d7ba5edc9ffc75da8f4adb4",
+    "request": {
+      "schema": "live-nonlinear-update-v1",
+      "request_id": "teach02",
+      "genesis": "eb173c0df179344969119bdac2882b948b2147e72b5b964b12825d0545a51481",
+      "recipient_id": "4a9501ffb5ccfa6bcf6e0c8ac3a9f6d6464f7d054db1e6db2ad92e27b707b7b9",
+      "revision": 2,
+      "parent_sha256": "02c928184e4aa3c4aecb52ca5c7dbde7e098b2cacc27cbe454ee4597fe120916",
+      "parent_model_root": "2d99b0cfa95cfc4f9152544c817d5293d82c9d5a29f67a6dd9d3e208a41c4055",
+      "label": "cash_withdrawal_charge",
+      "lane": 0,
+      "text_sha256": "b0a5ebf5a5d5c53c3f925029d414d92e2f2c0156f4ea820877f36ff34cbb9f14",
+      "feature_sha256": "9d5af8124f384045c453058b6e95f3b65c672b25831c8e116b31df060c12d2a0",
+      "payloads": {
+        "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "fresh_sha256": "7e1826644be611eebcd9099ce46e7468289299dc40835fa2394a9af67371b26a",
+        "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "out_sha256": "7e1826644be611eebcd9099ce46e7468289299dc40835fa2394a9af67371b26a"
+      },
+      "profile_sha256": "86a0ce82266635e7644777e857f436a0f3e5c9fa6d9bbb85f941d98cab344058"
+    },
+    "private_reads": 0
+  }
+]

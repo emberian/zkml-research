@@ -1,0 +1,52 @@
+{
+  "answered": true,
+  "prediction": "cash_withdrawal_charge",
+  "ranking": [
+    "cash_withdrawal_charge",
+    "card_arrival"
+  ],
+  "classes": {
+    "card_arrival": {
+      "all8192_slots_repeat8": true,
+      "elapsed_ns": 4877125,
+      "full_reader_key": true,
+      "kernel_values": [
+        169989444,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sum_kernel": 169989444
+    },
+    "cash_withdrawal_charge": {
+      "all8192_slots_repeat8": true,
+      "elapsed_ns": 3864500,
+      "full_reader_key": true,
+      "kernel_values": [
+        221533456,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sum_kernel": 221533456
+    }
+  },
+  "counts": {
+    "card_arrival": 1,
+    "cash_withdrawal_charge": 1
+  },
+  "revision": 2,
+  "model_root": "1c0de7daddd10b302641c9a10bf96d066ec3681a74d15c787fdc499f1aaeea82",
+  "public_acceptance_sha256": "89516fd324e7d10b99fb63e2d37d45becfc1f296e0a515edb78c8c7fba0110e7",
+  "private_reads": 2,
+  "finished_utc": "2026-09-09T00:54:51.374191+00:00",
+  "full_reader": true
+}

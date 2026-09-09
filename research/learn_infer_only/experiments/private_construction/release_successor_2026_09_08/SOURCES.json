@@ -173,5 +173,98 @@
       "2026_discovery_status": "Full local source now located; selected algorithm/game inspected, prior discovery-only status superseded",
       "disposition": "Neither source changes the running-prefix writer-capability obstruction; hold after integration"
     }
+  },
+  "constrained_input_orientation_2026_09_09": {
+    "web_query_count": 6,
+    "web_open_count": 0,
+    "scry_sql_count": 1,
+    "web_queries": [
+      "functional encryption sign inner product threshold output LWE",
+      "\"input-constrained\" \"functional encryption\"",
+      "\"stateful\" \"functional encryption\" \"public\" \"writer\"",
+      "\"functional encryption\" \"computational\" \"admissibility\"",
+      "\"functional encryption\" \"authenticated inputs\"",
+      "\"functional encryption\" \"constrained inputs\""
+    ],
+    "scry_sql": "SELECT id,title,doi,primary_location.landing_page_url,publication_year FROM openalex.works WHERE hasAllTokens(search_text_lc,['functional','encryption','authenticated']) OR hasAllTokens(search_text_lc,['functional','encryption','admissibility']) OR hasAllTokens(search_text_lc,['constrained','input','encryption']) ORDER BY publication_year DESC,cited_by_count DESC LIMIT 20",
+    "scry_output": "sources/scry_constrained_inputs_1.json",
+    "observed_scry_rows": 0,
+    "scry_coverage_limit": "Response reports zero read_rows and a bounded OpenAlex snapshot with freshness lag6481540s; no source-absence conclusion.",
+    "result": "Orientation only. Updatable-FE and static predicate leads match algorithms already analyzed in PRIVATE_CONSTRUCTION.md/CANDIDATES.md. The returned hardware-token FE source explicitly adds a hardware assumption. No new practical exposed-writer restriction was established and no duplicate implementation was launched.",
+    "new_construction_reads": 0,
+    "pdf_downloads": 0,
+    "secret_contents_recorded": false
+  },
+  "obfuscation_construction_orientation_2026_09_09": {
+    "note": "LATTICE_GATE.md",
+    "web_query_count": 7,
+    "web_open_count": 0,
+    "query_accounting": "Additional to the preceding six-query constrained-input orientation. The complete root continuation used thirteen web search queries, one Scry SQL, zero direct opens and zero PDF downloads.",
+    "discovery_topics": [
+      "2026 practical/post-quantum iO",
+      "2025/307 assumptions",
+      "2026 constrained encryption",
+      "How to Authenticate a Non-Deterministic Computation",
+      "Shift-Hiding Functions Obfuscation",
+      "Homomorphic Indistinguishability Obfuscation",
+      "Abram Malavolta Roy authentication"
+    ],
+    "primary_discovery": [
+      "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITCS.2024.14",
+      "https://ldr709.gitlab.io/"
+    ],
+    "local_sources": [
+      {
+        "id": "2026/741",
+        "url": "https://eprint.iacr.org/2026/741",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/741.pdf",
+        "pdf_sha256": "f8c7104b4bbff73f2e243efbca377f917987a0b69781caabc5e37aeef2a5bbcd",
+        "local_text": "/tmp/resident-2026-741.txt",
+        "local_text_sha256": "16c5c54b99a8a41fbb9a3ca9ae5b52dbcd0db9304e7ccc4f49f4178a8a0c5a21",
+        "command": [
+          "pdftotext",
+          "-layout",
+          "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/741.pdf",
+          "/tmp/resident-2026-741.txt"
+        ],
+        "inspected": "Abstract/introduction; technical overview pp12\u201314; sampler scope p18; Definition1 p19; Section4.1\u20134.4 pp33\u201338; Definition2 and Theorem5 pp44\u201348, game and first five hybrids only.",
+        "text_publication": "Local extraction only; full third-party text not included in this publication."
+      },
+      {
+        "id": "2025/307",
+        "url": "https://eprint.iacr.org/2025/307",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/307.pdf",
+        "pdf_sha256": "d07838eff75183d8667871bd9118faed98a5fbe37ade9b60ed6b93cc5f077bb4",
+        "local_text": "/tmp/resident-2025-307.txt",
+        "local_text_sha256": "27a15f6ce3cf2352fe41bb2a88dc7b7e6fe104a9bbeebb87d8658ae64d62e322",
+        "command": [
+          "pdftotext",
+          "-layout",
+          "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/307.pdf",
+          "/tmp/resident-2025-307.txt"
+        ],
+        "inspected": "Abstract, introduction and Theorems1.1\u20131.2 pp1\u20132; construction/reduction not inspected.",
+        "text_publication": "Local extraction only; full third-party text not included in this publication."
+      }
+    ],
+    "new_cryptographic_runs": 0,
+    "new_estimator_runs": 0,
+    "result": "Concrete direct shifted-key obfuscation has an explicit K-dependent security gap; exposing K decrypts the encrypted constraint. The specialized compressed-sampler theorem is not an arbitrary release-gate theorem. Quasi-linear iO still assumes small-circuit iO and specific Extended-Frege equivalence proofs. Homomorphic iO is under separate construction-level reading by the resident source helper. Separate HIO.md now records the completed source read and the conditional bounded positive construction."
+  },
+  "hio_construction_2026_09_09": {
+    "note": "HIO.md",
+    "source": "2023/925",
+    "url": "https://eprint.iacr.org/2023/925",
+    "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/925.pdf",
+    "pdf_sha256": "f1a689cef440625a0b05a88fd544d6ef1f256d03c7894644d8270923db6b9b0f",
+    "local_text": "sources/2023-925.txt",
+    "local_text_sha256": "8609e43f898df47f45f57a4b4538c9ded337f7f72fd302e9fd18e42fc2347326",
+    "inspected": "Sections3.1\u20133.3,4,5,6.1,7 and AppendixB: full definitions, algorithms and selected stated reductions. Exact printed-page locations in HIO.md.",
+    "web_query_count": 0,
+    "scry_sql_count": 0,
+    "pdf_downloads": 0,
+    "cryptographic_runs": 0,
+    "publication": "Full third-party text retained locally only. HIO.md contains source-scope summary and a distinct derived bounded continuation construction.",
+    "result": "Ordinary iO permits a bounded private issuer to specialize an authentic public parent without a persistent writer master. A finite-forest joint-view hybrid is explicit; repeated size growth, fixed horizon and parent authentication remain. Source final-only HIO/H-MIFE theorem does not by itself supply a joint retained-ancestor input-precomposition theorem."
   }
 }

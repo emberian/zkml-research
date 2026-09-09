@@ -1,0 +1,11 @@
+{
+  "command": "cargo build --release --offline",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/native",
+  "exit_code": 0,
+  "reported_cargo_seconds": 4.47,
+  "binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/native/target/release/vfhe-live-nonlinear-update",
+  "binary_sha256": "ad67d19f336a6746c2588666d696518935f7b276bc7dc6c4e42f8271bb8c3722",
+  "source_sha256": "34c9f0306972170d74e9d17be5bba674d4a37f0974b4532ad3a0e5f05a4d1b88",
+  "cargo_lock_sha256": "f9cd8018e4786601eb04d87f2f9050f65ca97ca5a87ad2ba9679f3b123a6a568",
+  "cache": "Owned APFS clone of previous target cache; frozen Infer/square/rescale binaries and arithmetic templates reused unchanged; no companion write."
+}

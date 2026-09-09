@@ -1,0 +1,7 @@
+[DERIVED, before proof] Actual teaching is ciphertext addition with optional subtraction: next = acc + fresh - old componentwise modulo each of the four fixed primes. Fresh is already encrypted into its chosen FIFO lane; the teaching operation itself has no mask multiplication. No-expiry old is the literal zero coefficient tensor.
+
+[DERIVED, reuse] Reuse the frozen generated paired-MAC relation/native witness plans for all four primes. Public97 words are D=[fresh0,fresh1,old0,old1], K0=[1,0,q-1,0], K1=[0,1,0,q-1], add=[acc0,acc1], out=[next0,next1]. All word ranges remain constraints. Eight4096-row chunks cover the full N8192 two-component/four-prime update. No new AIR, emitter or native witness producer is needed.
+
+[DERIVED, statement] All accepted bound rows force the exact signed modular update. The resulting caller-selected model can be substituted into the previously universal Infer contract. A finite accepted update history determines its current model tensor by induction; this theorem does not infer issuer authorization, plaintext example validity, lane placement or FIFO selection from ciphertext arithmetic. Those are separately bound by the live service.
+
+[PREDECLARED] Generic positive modulus and actual-prime source soundness; nonzero cheap semantic witness and every-aux wrong-output refusal; reuse existing genuinely accepting MAC source witness, without giant actual-layout kernel reduction. Preserve all prior packages and use their existing generic executor.

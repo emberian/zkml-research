@@ -1,0 +1,1 @@
+The live runtime can consume the agreed public97 mapping with the pinned existing artifacts. No new circuit, native witness production implementation or sample grid is needed. Root may add the two checked modules to the completed Infer integration. Preserve prior packages and wait for the one fresh live pipeline's actual outcome; do not manufacture a saved-history claim.

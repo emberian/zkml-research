@@ -1,0 +1,16 @@
+{
+  "status": "new source prepared; py_compile and CLI help passed; no export or proof replay executed",
+  "files": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/export_public.py": "3084b5ad5ee590f2e6515effa2547f852edc6837389663d6d616455bd9e97ff3",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/PUBLIC_EXPORT.md": "ffd63c6c1966f02d227c3233ad9b921c8754129639c4325626ef1f6f6e38b90a"
+  },
+  "read_only_source_dependencies": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/live.py": "f762e3128e58076b7ec22a827c75867ce6f8e5cfec3e266dab6f3354557a4fed",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/pipeline.py": "e1358c179b903ce191d31d82f1e8118721c251ca6a0c442dd344868e44d17b49",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/common.py": "909660bebe6955df823678e4f8e8e6dce8e81c81ff892308d8416d6af5ed1eb8",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/live_nonlinear/PIPELINE.json": "86a0ce82266635e7644777e857f436a0f3e5c9fa6d9bbb85f941d98cab344058",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/multiclass_successor/service.py": "f36e386933ed6b97a0c90db2f66dd75afcec8958163ec0a6c73b24faa15e4340"
+  },
+  "does_not_modify_approved_profile": true,
+  "execution_owner": "emitted_runtime"
+}
