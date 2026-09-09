@@ -1,0 +1,292 @@
+{
+  "complete": true,
+  "completed_operations": 22,
+  "controller_root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/packed-lifecycle/resident.workload",
+  "corpus_sha256": "3a1c115a5a34fdd2b3ac3ca33f97d0553672b83675ddd567750d707499d1cac9",
+  "engine": {
+    "bank_count": 2,
+    "class_layout": {
+      "api_behavior": {
+        "bank": "0",
+        "lane": 3
+      },
+      "build_dependencies": {
+        "bank": "0",
+        "lane": 5
+      },
+      "documentation": {
+        "bank": "0",
+        "lane": 7
+      },
+      "interface_accessibility": {
+        "bank": "0",
+        "lane": 6
+      },
+      "memory_usage": {
+        "bank": "0",
+        "lane": 2
+      },
+      "network_transport": {
+        "bank": "1",
+        "lane": 0
+      },
+      "proof_integrity": {
+        "bank": "0",
+        "lane": 0
+      },
+      "runtime_performance": {
+        "bank": "0",
+        "lane": 1
+      },
+      "storage_recovery": {
+        "bank": "0",
+        "lane": 4
+      }
+    },
+    "classes_per_bank": 8,
+    "fifo_capacity": 8,
+    "infer_proofs_per_bank": 352,
+    "layout": "fixed class lanes",
+    "proof_backend": "matched",
+    "schema": "packed-class-sum-display-v1",
+    "score_formula": "class_sum / count",
+    "score_kind": "linear",
+    "score_signed": true,
+    "sum_key": "sum_dot",
+    "update_proofs": 32
+  },
+  "expired_reference_examples": [
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi09",
+      "text_id": "pi01"
+    },
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi10",
+      "text_id": "pi02"
+    }
+  ],
+  "freshness_accounting": "Actual metrics count each stable request once across invocations. Reused completed requests and resumed phases are not relabeled as new proofs.",
+  "instance_cumulative_metrics": {
+    "accepted_fresh_proofs": 2336,
+    "answered_queries": 3,
+    "classes_answered": 26,
+    "committed_updates": 18,
+    "discarded_phase_attempts": 0,
+    "occupied_banks": 5,
+    "private_reads": 5,
+    "proof_bytes": 424195924,
+    "proofs_generated": 2336,
+    "proofs_verified": 2336
+  },
+  "instance_root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/packed-lifecycle/resident",
+  "invocation": {
+    "elapsed_seconds": 499.9975107909995,
+    "finished_utc": "2026-09-09T05:44:01.617491+00:00",
+    "mode": "run",
+    "newly_completed_steps": [
+      "teach_pi01",
+      "teach_rp01",
+      "teach_mu01",
+      "teach_ab01",
+      "teach_sr01",
+      "teach_bd01",
+      "teach_ia01",
+      "teach_dc01",
+      "query_one_bank",
+      "teach_nt01",
+      "teach_pi02",
+      "teach_pi03",
+      "teach_pi04",
+      "teach_pi05",
+      "teach_pi06",
+      "teach_pi07",
+      "teach_pi08",
+      "teach_pi09",
+      "teach_pi10",
+      "query_two_banks",
+      "restart",
+      "query_restart"
+    ],
+    "resumed_incomplete_steps": [],
+    "reused_completed_steps": [],
+    "started_utc": "2026-09-09T05:35:41.615298+00:00"
+  },
+  "metrics_available_for_every_crypto_operation": true,
+  "phase_elapsed_seconds": {
+    "bank000-prove": 160.56989970902214,
+    "bank000-read": 0.6639360410044901,
+    "bank000-verify": 71.70733337494312,
+    "bank001-prove": 95.23354612401454,
+    "bank001-read": 0.4670183749985881,
+    "bank001-verify": 40.21625166700687,
+    "issue": 6.864360915147699,
+    "learn": 2.925575792149175,
+    "prove": 75.73902020911919,
+    "verify": 33.61419495817972
+  },
+  "plaintext_utility": {
+    "after_restart": {
+      "accuracy": 1.0,
+      "active_banks": 2,
+      "active_classes": 9,
+      "active_label_correct": 9,
+      "active_label_examples": 9,
+      "correct": 9,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior"
+    },
+    "before_expiry": {
+      "accuracy": 1.0,
+      "active_banks": 2,
+      "active_classes": 9,
+      "active_label_correct": 9,
+      "active_label_examples": 9,
+      "correct": 9,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior"
+    },
+    "one_bank": {
+      "accuracy": 0.8888888888888888,
+      "active_banks": 1,
+      "active_classes": 8,
+      "active_label_correct": 8,
+      "active_label_examples": 8,
+      "correct": 8,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior"
+    },
+    "two_banks_after_expiry": {
+      "accuracy": 1.0,
+      "active_banks": 2,
+      "active_classes": 9,
+      "active_label_correct": 9,
+      "active_label_examples": 9,
+      "correct": 9,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior"
+    }
+  },
+  "queries": [
+    {
+      "checkpoint": "one_bank",
+      "checks": {
+        "active_banks": 1,
+        "active_classes": 8,
+        "all_banks_accepted_before_read": true,
+        "compared_bank_lanes": 8,
+        "counts_equal": true,
+        "empty_and_padding_lanes_equal": true,
+        "every_decrypted_class_sum_equal": true,
+        "exact_rational_ranking_equal": true,
+        "prediction_correct_for_intended_label": true,
+        "private_bank_reads": 1,
+        "reader_checked_repeat8": true
+      },
+      "id": "query_one_bank",
+      "prediction": "proof_integrity",
+      "ranking": [
+        "proof_integrity",
+        "build_dependencies",
+        "api_behavior",
+        "documentation",
+        "storage_recovery",
+        "interface_accessibility",
+        "runtime_performance",
+        "memory_usage"
+      ],
+      "revision": 8,
+      "worker_pid": 63032
+    },
+    {
+      "checkpoint": "two_banks_after_expiry",
+      "checks": {
+        "active_banks": 2,
+        "active_classes": 9,
+        "all_banks_accepted_before_read": true,
+        "compared_bank_lanes": 16,
+        "counts_equal": true,
+        "empty_and_padding_lanes_equal": true,
+        "every_decrypted_class_sum_equal": true,
+        "exact_rational_ranking_equal": true,
+        "prediction_correct_for_intended_label": true,
+        "private_bank_reads": 2,
+        "reader_checked_repeat8": true
+      },
+      "id": "query_two_banks",
+      "prediction": "proof_integrity",
+      "ranking": [
+        "proof_integrity",
+        "build_dependencies",
+        "api_behavior",
+        "documentation",
+        "storage_recovery",
+        "interface_accessibility",
+        "runtime_performance",
+        "memory_usage",
+        "network_transport"
+      ],
+      "revision": 18,
+      "worker_pid": 65975
+    },
+    {
+      "checkpoint": "after_restart",
+      "checks": {
+        "active_banks": 2,
+        "active_classes": 9,
+        "all_banks_accepted_before_read": true,
+        "compared_bank_lanes": 16,
+        "counts_equal": true,
+        "empty_and_padding_lanes_equal": true,
+        "every_decrypted_class_sum_equal": true,
+        "exact_rational_ranking_equal": true,
+        "prediction_correct_for_intended_label": true,
+        "private_bank_reads": 2,
+        "reader_checked_repeat8": true,
+        "restarted_process_same_model_class_sums_and_ranking": true
+      },
+      "id": "query_restart",
+      "prediction": "proof_integrity",
+      "ranking": [
+        "proof_integrity",
+        "build_dependencies",
+        "api_behavior",
+        "documentation",
+        "storage_recovery",
+        "interface_accessibility",
+        "runtime_performance",
+        "memory_usage",
+        "network_transport"
+      ],
+      "revision": 18,
+      "worker_pid": 68373
+    }
+  ],
+  "reference_sha256": "f66d5938d057b6a98c57e8104b1625c477076c53e439f30dfb9c5808fe3c5bc5",
+  "required_operations": 22,
+  "schema": "packed-class-lifecycle-result-v1",
+  "scope": "Fixed author-written utility observations. The first checkpoint has no example for network_transport. Membership and FIFO teaching change together; no accuracy-gain, benchmark-generalization or reader-privacy claim.",
+  "updated_utc": "2026-09-09T05:44:01.622396+00:00",
+  "vectors_sha256": "48cfe65173f8d51e864e3b5f0b22e180f81fb20d6954ead9cacdef4bdaf35f8e",
+  "worker_attempt_wall_seconds": 499.7064031671034,
+  "worker_attempts_without_terminal_timing": 0
+}

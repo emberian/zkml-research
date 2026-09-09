@@ -1,0 +1,98 @@
+{
+  "schema": "packed-class-lifecycle-preparation-v1",
+  "prepared_utc": "2026-09-09T05:33:30.756528+00:00",
+  "corpus_sha256": "3a1c115a5a34fdd2b3ac3ca33f97d0553672b83675ddd567750d707499d1cac9",
+  "encoder_helper_sha256": "241e6f2d795e677f4132f2ff9ad5dd6826cbddceb38155655d49b947b6dac7d8",
+  "vectors_sha256": "48cfe65173f8d51e864e3b5f0b22e180f81fb20d6954ead9cacdef4bdaf35f8e",
+  "reference_sha256": "f66d5938d057b6a98c57e8104b1625c477076c53e439f30dfb9c5808fe3c5bc5",
+  "training_texts": 18,
+  "held_out_texts": 9,
+  "elapsed_seconds": 7.032562375010457,
+  "encoder_stats": {
+    "model_load_seconds": 0.29222825000761077,
+    "forward_seconds": 0.5684908340335824,
+    "forward_batches": 2,
+    "encoded_texts": 27,
+    "cached_texts": 0,
+    "clipped_coordinates": 0,
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "numpy": "2.4.2"
+  },
+  "maximum_abs_coordinate": 22,
+  "maximum_squared_norm": 16599,
+  "cryptographic_operations": 0,
+  "preparation_reused": false,
+  "checkpoints": {
+    "one_bank": {
+      "examples": 9,
+      "correct": 8,
+      "accuracy": 0.8888888888888888,
+      "active_label_examples": 8,
+      "active_label_correct": 8,
+      "active_classes": 8,
+      "active_banks": 1,
+      "frozen_initial_correct": 8,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "majority_label": "api_behavior",
+      "majority_correct": 1,
+      "majority_accuracy": 0.1111111111111111
+    },
+    "before_expiry": {
+      "examples": 9,
+      "correct": 9,
+      "accuracy": 1.0,
+      "active_label_examples": 9,
+      "active_label_correct": 9,
+      "active_classes": 9,
+      "active_banks": 2,
+      "frozen_initial_correct": 8,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "majority_label": "api_behavior",
+      "majority_correct": 1,
+      "majority_accuracy": 0.1111111111111111
+    },
+    "two_banks_after_expiry": {
+      "examples": 9,
+      "correct": 9,
+      "accuracy": 1.0,
+      "active_label_examples": 9,
+      "active_label_correct": 9,
+      "active_classes": 9,
+      "active_banks": 2,
+      "frozen_initial_correct": 8,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "majority_label": "api_behavior",
+      "majority_correct": 1,
+      "majority_accuracy": 0.1111111111111111
+    },
+    "after_restart": {
+      "examples": 9,
+      "correct": 9,
+      "accuracy": 1.0,
+      "active_label_examples": 9,
+      "active_label_correct": 9,
+      "active_classes": 9,
+      "active_banks": 2,
+      "frozen_initial_correct": 8,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "majority_label": "api_behavior",
+      "majority_correct": 1,
+      "majority_accuracy": 0.1111111111111111
+    }
+  },
+  "expired_examples": [
+    {
+      "operation": "teach_pi09",
+      "label": "proof_integrity",
+      "text_id": "pi01",
+      "lane": 0
+    },
+    {
+      "operation": "teach_pi10",
+      "label": "proof_integrity",
+      "text_id": "pi02",
+      "lane": 0
+    }
+  ]
+}

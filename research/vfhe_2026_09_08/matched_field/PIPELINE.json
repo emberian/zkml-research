@@ -1,0 +1,8 @@
+{
+  "caller_sha256": "36b6f904aecd6efae1fe1dcea460349729425ee44d0965e6ace46ea370abaec4",
+  "linear_plan": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/artifacts/linear_plan.json",
+  "linear_plan_sha256": "ec98f40fa8437f03ccf0193774c705f4a488fd55b42fcdc46f6c3774c7c51f22",
+  "native": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native/target/release/vfhe-matched-field",
+  "native_sha256": "128be0ebf696007e04c62a5cee95023a07bb9e654adc30955ea9367d0fafcb3a",
+  "schema": "matched-field-linear-profile-v1"
+}

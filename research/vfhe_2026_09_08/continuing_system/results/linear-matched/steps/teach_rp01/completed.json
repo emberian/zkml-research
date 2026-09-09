@@ -1,0 +1,113 @@
+{
+  "checks": {
+    "durable_revision_and_fifo_lanes_equal": true,
+    "expired_reference_example": null
+  },
+  "operation": {
+    "id": "teach_rp01",
+    "kind": "teach",
+    "text_id": "rp01"
+  },
+  "recorded_utc": "2026-09-09T05:20:33.001475+00:00",
+  "worker": {
+    "engine": {
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "proof_backend": "matched",
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    },
+    "process": {
+      "elapsed_seconds": 6.296750749985222,
+      "finished_utc": "2026-09-09T05:20:32.990171+00:00",
+      "pid": 49263,
+      "ppid": 49106
+    },
+    "result": {
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "205a06f94d2e7a079a52c08740584ae8212713baa827461e8e558ebda59438ba",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "f6ee60bcfe86a5d38bb8b1316d5f5548d3d3142573b585a36c6a609c62bcb8c3"
+              },
+              {
+                "lane": 1,
+                "sha256": "6af707457fcb9cc076ad345cf25b105e55bf995b4d1c7f7bfc27e58c675ca5b5"
+              }
+            ],
+            "teaches": 2
+          },
+          "runtime_performance": {
+            "acc_sha256": "bc446f812f8dd28f09e239686756b5e432986b50dbc558704f25f73ef43952fc",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "bc446f812f8dd28f09e239686756b5e432986b50dbc558704f25f73ef43952fc"
+              }
+            ],
+            "teaches": 1
+          }
+        },
+        "genesis": "600b0d74b9f3a41c93fb7f4f86f9646e46cb122c7f999d0d599868fa80b8e7e5",
+        "last_receipt_sha256": "add23134f3b9b02bc8dd3477e8232df6084872a55fa509ccfaba46c90065e01f",
+        "model_root": "f0c7bf89f896d4652aae43eb0140f1a26f63b17b6f7eb164fafc578ab48dced9",
+        "revision": 3
+      },
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "metrics": {
+        "accepted_fresh_proofs": 32,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.2993951249518432,
+          "learn": 0.14726791699649766,
+          "prove": 3.9224190420354716,
+          "verify": 1.704997666995041
+        },
+        "private_reads": 0,
+        "proof_bytes": 5666107,
+        "proofs_generated": 32,
+        "proofs_verified": 32
+      },
+      "private_reads": 0,
+      "proof_backend": "matched",
+      "receipt_sha256": "add23134f3b9b02bc8dd3477e8232df6084872a55fa509ccfaba46c90065e01f",
+      "request": {
+        "engine_sha256": "173b718491ea316b52fac220cf63ed9ae3f9dd1f55bcd8a9152e73c2c7611315",
+        "feature_sha256": "834870d0939e4fe607fd550a0a09dfcdcf8236633f12103e9cdf97dbde719ab0",
+        "genesis": "600b0d74b9f3a41c93fb7f4f86f9646e46cb122c7f999d0d599868fa80b8e7e5",
+        "label": "runtime_performance",
+        "lane": 0,
+        "parent_model_root": "272a1d6f99097ed3925554f502a2257713c2ee881bf5273c02935495e7d894be",
+        "parent_sha256": "b7b9f02e95ee2204050725328f984f6629937a3afcd1e7852d79b4b8cb3afeda",
+        "payloads": {
+          "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "fresh_sha256": "bc446f812f8dd28f09e239686756b5e432986b50dbc558704f25f73ef43952fc",
+          "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "out_sha256": "bc446f812f8dd28f09e239686756b5e432986b50dbc558704f25f73ef43952fc"
+        },
+        "profile_sha256": "daf3baa054b5b979e77ab4d9d9366bc87bf4988e4c8f227579611b8d68947842",
+        "recipient_id": "c48c0835968f1bbcbe26b0355026d0336eefb2b7a37b32c46be62b70433e2966",
+        "request_id": "teach_rp01",
+        "revision": 3,
+        "schema": "continuing-update-v1",
+        "text_sha256": "6841a637f8e23e3906ea205e9f9a8649fcfcbac749ce06ea049ce745d6d241f6"
+      },
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    }
+  }
+}

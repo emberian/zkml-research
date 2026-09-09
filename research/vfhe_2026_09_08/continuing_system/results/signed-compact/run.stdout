@@ -1,0 +1,90 @@
+{"phase": "initialize", "complete": true, "elapsed_seconds": 0.722108667017892}
+{"phase": "teach", "complete": true, "elapsed_seconds": 42.079385332996026}
+{"phase": "query", "complete": true, "elapsed_seconds": 470.88143920799484}
+{"phase": "reopen-same-query", "complete": true, "elapsed_seconds": 0.6147054169559851}
+{
+  "complete": true,
+  "instance": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/signed-compact",
+  "scope": "Public corpus and analytic signed-vector stress; not natural-language utility.",
+  "expected_dot_values": [
+    -13411,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "actual_dot_values": [
+    -13411,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "sum_dot": -13411,
+  "ranking": [
+    "proof_integrity"
+  ],
+  "fresh_setup": true,
+  "fresh_update_proofs": 8,
+  "fresh_linear_proofs": 88,
+  "independent_consumer_checks": 96,
+  "reader_decryptions": 1,
+  "retained_response_identical_after_fresh_process": true,
+  "reopen_new_proofs": 0,
+  "reopen_new_reads": 0,
+  "all8192_slots_repeat8": true,
+  "no_quadratic_capture": true,
+  "public_acceptance_before_private_read": true,
+  "teach_metrics": {
+    "proofs_generated": 8,
+    "accepted_fresh_proofs": 8,
+    "proofs_verified": 8,
+    "discarded_phase_attempts": 0,
+    "proof_bytes": 5786487,
+    "phase_elapsed_seconds": {
+      "prove": 38.44016662496142,
+      "verify": 2.6100265409913845,
+      "issue": 0.3899417500360869,
+      "learn": 0.16195929201785475
+    },
+    "committed_updates": 1,
+    "answered_queries": 0,
+    "private_reads": 0
+  },
+  "query_metrics": {
+    "proofs_generated": 88,
+    "accepted_fresh_proofs": 88,
+    "proofs_verified": 88,
+    "discarded_phase_attempts": 0,
+    "proof_bytes": 64421507,
+    "phase_elapsed_seconds": {
+      "class000-verify": 41.43505795800593,
+      "class000-prove": 428.61442241602344,
+      "class000-read": 0.24705833400366828
+    },
+    "committed_updates": 0,
+    "answered_queries": 1,
+    "private_reads": 1
+  },
+  "wall_seconds": {
+    "initialize": 0.722108667017892,
+    "teach": 42.079385332996026,
+    "query": 470.88143920799484,
+    "reopen_same_query": 0.6147054169559851,
+    "total": 514.9004615420126
+  },
+  "native_prove_command_seconds": 372.6136997109279,
+  "native_prove_peak_rss_bytes": 918781952,
+  "proof_bytes": 70207994,
+  "genesis": "beb5f3fbae87b23daeb99b0426ad2195ca6c8a6b4416895a7c81b1d724470fe5",
+  "answer_sha256": "3007fad6807671b4b9e1c21fa2278041128fd5f834a8f6b349604b983bf359f7",
+  "provenance_sha256": "681f071330577cee525fa0a6c33f5a049a3d94ca2918f1f817d08c7625839907",
+  "profile_sha256": "35ce159117df2500dc484595d2cfce0ac98f42f790c66b8fe9924596f188b220",
+  "finished_utc": "2026-09-09T05:33:35.798115+00:00"
+}

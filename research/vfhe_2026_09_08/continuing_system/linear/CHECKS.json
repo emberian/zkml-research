@@ -1,0 +1,12 @@
+{
+  "caller_parses": true,
+  "profile_pins": 18,
+  "exact_binding_accepted": true,
+  "legacy_binding_projection": true,
+  "missing_model_refused": true,
+  "extra_kernel_refused": true,
+  "wrong_query_refused": true,
+  "proof_runs": 0,
+  "private_reads": 0,
+  "native_operations": 0
+}

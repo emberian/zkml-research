@@ -1,0 +1,15 @@
+{
+  "base_sha256": "3a7cb22d973b6e4f99c6ac920478ccb80fb10908fd2fe76f4cccf807d0e1d8b4",
+  "checks": [
+    "Python AST parse",
+    "complete linear reference derived from frozen vectors",
+    "default reference object unchanged",
+    "core engine metadata and receive contract read"
+  ],
+  "crypto_executions": 0,
+  "linear_reference_sha256": "87dd7c6c5e60cdd04333b25626bc884395fb286f9fa11e52afd25ffa27a6350a",
+  "patch_sha256": "0ad853c83f0692cae3e676bb9c8aceb6367ffb6fb2cf664678bc9fb14bbbb82f",
+  "proposed_sha256": "7fe9b73a9330e55b713cd426304d1f10cbffad085d957b0ada3a15f1524101e3",
+  "schema": "continuing-system-workload-engine-patch-v1",
+  "target": "research/vfhe_2026_09_08/continuing_system/workload.py"
+}

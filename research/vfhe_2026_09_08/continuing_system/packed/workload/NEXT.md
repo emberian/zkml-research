@@ -1,0 +1,1 @@
+Run the complete command in `README.md` once root is ready; use `--resume` with the same root after interruption. Inspect `ROOT.workload/RESULT.json` for all 22 completed operations, exact one-bank/two-bank lane comparisons and identical restart sums/ranking. Preserve the frozen public corpus and prepared reference; do not tune them based on held-out predictions.

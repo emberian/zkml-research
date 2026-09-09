@@ -1,0 +1,42 @@
+Compiler/MatchedFieldProgram.lean:138:25: error: Function expected at
+  trace
+but this term has type
+  ?m.67 op key model query
+
+Note: Expected a function because this term is being applied to the argument
+  0
+Compiler/MatchedFieldProgram.lean:139:37: error: Function expected at
+  trace
+but this term has type
+  ?m.67 op key model query
+
+Note: Expected a function because this term is being applied to the argument
+  s.val
+Compiler/MatchedFieldProgram.lean:139:51: error: Function expected at
+  trace
+but this term has type
+  ?m.67 op key model query
+
+Note: Expected a function because this term is being applied to the argument
+  (s.val + 1)
+Compiler/MatchedFieldProgram.lean:140:4: error: Function expected at
+  trace
+but this term has type
+  ?m.67 op key model query
+
+Note: Expected a function because this term is being applied to the argument
+  10
+Compiler/MatchedFieldProgram.lean:140:26: error: Function expected at
+  trace
+but this term has type
+  ?m.67 op key model query
+
+Note: Expected a function because this term is being applied to the argument
+  10
+Compiler/MatchedFieldProgram.lean:155:282: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat Slot 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Slot
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.

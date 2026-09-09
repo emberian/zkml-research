@@ -1,0 +1,108 @@
+{
+  "checks": {
+    "durable_revision_and_fifo_lanes_equal": true,
+    "expired_reference_example": null
+  },
+  "operation": {
+    "id": "teach_pi02",
+    "kind": "teach",
+    "text_id": "pi02"
+  },
+  "recorded_utc": "2026-09-09T05:20:26.600018+00:00",
+  "worker": {
+    "engine": {
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "proof_backend": "matched",
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    },
+    "process": {
+      "elapsed_seconds": 6.0049650829751045,
+      "finished_utc": "2026-09-09T05:20:26.589599+00:00",
+      "pid": 49197,
+      "ppid": 49106
+    },
+    "result": {
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "205a06f94d2e7a079a52c08740584ae8212713baa827461e8e558ebda59438ba",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "f6ee60bcfe86a5d38bb8b1316d5f5548d3d3142573b585a36c6a609c62bcb8c3"
+              },
+              {
+                "lane": 1,
+                "sha256": "6af707457fcb9cc076ad345cf25b105e55bf995b4d1c7f7bfc27e58c675ca5b5"
+              }
+            ],
+            "teaches": 2
+          },
+          "runtime_performance": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+            "queue": [],
+            "teaches": 0
+          }
+        },
+        "genesis": "600b0d74b9f3a41c93fb7f4f86f9646e46cb122c7f999d0d599868fa80b8e7e5",
+        "last_receipt_sha256": "200fa4371a24ac58b0c8b8fb8c74b44ea83a34d83155216e5c8315a48f7740fb",
+        "model_root": "272a1d6f99097ed3925554f502a2257713c2ee881bf5273c02935495e7d894be",
+        "revision": 2
+      },
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "metrics": {
+        "accepted_fresh_proofs": 32,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.30279829195933416,
+          "learn": 0.14531345904106274,
+          "prove": 3.680558083986398,
+          "verify": 1.6797502089757472
+        },
+        "private_reads": 0,
+        "proof_bytes": 5694041,
+        "proofs_generated": 32,
+        "proofs_verified": 32
+      },
+      "private_reads": 0,
+      "proof_backend": "matched",
+      "receipt_sha256": "200fa4371a24ac58b0c8b8fb8c74b44ea83a34d83155216e5c8315a48f7740fb",
+      "request": {
+        "engine_sha256": "173b718491ea316b52fac220cf63ed9ae3f9dd1f55bcd8a9152e73c2c7611315",
+        "feature_sha256": "de4a64bdce5c42c183e58bb8bac7800f77891460e6a3d2f413f770bf235ca7a4",
+        "genesis": "600b0d74b9f3a41c93fb7f4f86f9646e46cb122c7f999d0d599868fa80b8e7e5",
+        "label": "proof_integrity",
+        "lane": 1,
+        "parent_model_root": "8b1e7afe3ca7508e99546281249762e70fa2a66362dc2b6d12b3329d531e7f3b",
+        "parent_sha256": "3ea28f52e6d53f3dca6b63bf22eb1cca5dc7478eb6e8d1d604622386137988ff",
+        "payloads": {
+          "acc_sha256": "f6ee60bcfe86a5d38bb8b1316d5f5548d3d3142573b585a36c6a609c62bcb8c3",
+          "fresh_sha256": "6af707457fcb9cc076ad345cf25b105e55bf995b4d1c7f7bfc27e58c675ca5b5",
+          "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "out_sha256": "205a06f94d2e7a079a52c08740584ae8212713baa827461e8e558ebda59438ba"
+        },
+        "profile_sha256": "daf3baa054b5b979e77ab4d9d9366bc87bf4988e4c8f227579611b8d68947842",
+        "recipient_id": "c48c0835968f1bbcbe26b0355026d0336eefb2b7a37b32c46be62b70433e2966",
+        "request_id": "teach_pi02",
+        "revision": 2,
+        "schema": "continuing-update-v1",
+        "text_sha256": "c8c934d41f3c07ff8dad734e03656820673ec50ca59d4895157d1d41c62833a5"
+      },
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    }
+  }
+}

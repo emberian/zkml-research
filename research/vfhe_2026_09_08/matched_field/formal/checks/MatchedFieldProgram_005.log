@@ -1,0 +1,24 @@
+'Minidregg.Compiler.MatchedFieldProgram.checked_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.checked_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.linearSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.output_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.checked_d_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.updateOperands_output' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.updateSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.updateThenLinearSound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.wrongLinearRefused' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.demoInitial' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.demoRotations' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.linearPremiseInhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.updateWitness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.demoUpdate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.updateLinearPremiseInhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.MatchedFieldProgram.omittedExpiryRefused' depends on axioms: [propext, Classical.choice, Quot.sound]

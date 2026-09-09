@@ -26,6 +26,7 @@ def _load(name, path):
     return module
 
 backend = _load('continuing_system_backend', HERE / 'backend.py')
+engines = _load('continuing_system_engines', HERE / 'engines.py')
 j = _load('continuing_system_journal_primitives', HERE.parent / 'proved_journal/multiclass_successor/service.py')
 Refused = j.Refused
 CAPACITY = 8
@@ -79,7 +80,12 @@ def _empty_failed_setup(attempt):
             and argv[3] == str(attempt / 'issuer') and not (attempt / 'issuer').exists())
 
 
-def initialize(root, classes):
+def metadata(root):
+    """Display metadata without opening or replaying the journal."""
+    return engines.metadata(j.read(Path(root).expanduser().resolve() / 'journal/genesis.json').get('engine'))
+
+
+def initialize(root, classes, score='squared', proof_backend='compact'):
     """Fresh keygen once; matching initialization retries recover its durable phase."""
     backend.install_signal_handlers()
     root = Path(root).expanduser().resolve()
@@ -87,6 +93,7 @@ def initialize(root, classes):
     j.need(all(isinstance(x, str) and 0 < len(x) <= 256 for x in classes), 'class_labels')
     j.need(len(classes) == len(set(classes)), 'unique_classes')
     classes = sorted(classes)
+    selected = engines.metadata({'score_kind': score, 'proof_backend': proof_backend})
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
     import fcntl
     with (root / 'adapter.lock').open('a') as lock:
@@ -94,17 +101,23 @@ def initialize(root, classes):
         if (root / 'journal/genesis.json').exists() and (root / 'initialized.json').exists():
             result = j.read(root / 'initialized.json')
             j.need(sorted(result['head']['classes']) == classes, 'initialization_class_conflict')
-            backend.Backend(j.read(root / 'journal/genesis.json')['backend'])
+            genesis = j.read(root / 'journal/genesis.json')
+            j.need(engines.metadata(genesis.get('engine')) == selected, 'initialization_engine_conflict')
+            engines.Engine(backend, backend.Backend(genesis['backend']), genesis.get('engine'))
             return result
         init_path = root / 'initializing.json'
         if init_path.exists():
             request = j.read(init_path)
             j.need(request['classes'] == classes, 'initialization_class_conflict')
             engine = backend.Backend(request['backend'])
+            score_engine = engines.Engine(backend, engine, request.get('engine'))
+            j.need(score_engine.info == selected, 'initialization_engine_conflict')
         else:
             j.need(not any(p.name not in ('adapter.lock',) for p in root.iterdir()), 'fresh_instance_directory')
             engine = backend.Backend()
+            score_engine = engines.Engine.new(backend, engine, score, proof_backend)
             request = {'classes': classes, 'backend': engine.descriptor, 'started_utc': backend.now()}
+            if score_engine.descriptor is not None: request['engine'] = score_engine.descriptor
             j.write_json(init_path, request)
         issuer = root / 'issuer'
         if not (issuer / '.setup_complete.json').exists():
@@ -136,13 +149,16 @@ def initialize(root, classes):
         genesis_path = journal / 'genesis.json'
         if genesis_path.exists():
             genesis = j.read(genesis_path)
-            j.need(genesis['classes'] == classes and genesis['backend'] == engine.descriptor, 'genesis_initialization_conflict')
+            j.need(genesis['classes'] == classes and genesis['backend'] == engine.descriptor
+                   and genesis.get('engine') == score_engine.descriptor, 'genesis_initialization_conflict')
         else:
             genesis = {'schema': 'continuing-proof-learner-genesis-v1', 'classes': classes,
-                'backend': engine.descriptor, 'profile_sha256': engine.profile_sha256, 'policy': POLICY,
+                'backend': engine.descriptor, 'profile_sha256': engine.profile_sha256,
+                'policy': engines.policy(POLICY, score_engine.descriptor),
                 'recipient_id': backend.sha(issuer / 'public.key'),
                 'evaluation_key_sha256': backend.sha(issuer / 'evaluation.key'),
                 'initial_classes': initial, 'zero_sha256': zero_hash, 'created_utc': backend.now()}
+            if score_engine.descriptor is not None: genesis['engine'] = score_engine.descriptor
             j.write_json(genesis_path, genesis)
         gid = j.digest(genesis)
         state = {'genesis': gid, 'revision': 0, 'classes': initial, 'model_root': state_root(initial), 'last_receipt_sha256': None}
@@ -159,6 +175,7 @@ def initialize(root, classes):
             db.close()
         result = {'initialized': True, 'genesis': gid, 'head': state, 'recipient_id': genesis['recipient_id'],
                   'full_reader_key': True, 'fifo_capacity': CAPACITY}
+        if score_engine.descriptor is not None: result.update(score_engine.info)
         j.write_json(root / 'initialized.json', result)
         return result
 
@@ -169,12 +186,14 @@ class Live:
         self.root = Path(root).expanduser().resolve(); self.journal = self.root / 'journal'
         self.genesis = j.read(self.journal / 'genesis.json'); self.gid = j.digest(self.genesis)
         self.backend = backend.Backend(self.genesis['backend'])
+        self.engine = engines.Engine(backend, self.backend, self.genesis.get('engine'))
         self.encoder = None; self._thread_lock = threading.RLock()
         self.check(); self.reopen()
 
     def check(self):
-        j.need(j.read(self.journal / 'genesis.json') == self.genesis and self.genesis['policy'] == POLICY, 'genesis_policy_changed')
-        self.backend.check()
+        j.need(j.read(self.journal / 'genesis.json') == self.genesis and
+               self.genesis['policy'] == engines.policy(POLICY, self.engine.descriptor), 'genesis_policy_changed')
+        self.engine.check()
         j.need(backend.sha(self.root / 'issuer/public.key') == self.genesis['recipient_id'] and
                backend.sha(self.root / 'issuer/evaluation.key') == self.genesis['evaluation_key_sha256'], 'public_key_identity')
 
@@ -186,6 +205,9 @@ class Live:
             try:
                 self.check(); yield
             finally: fcntl.flock(lock, fcntl.LOCK_UN)
+
+    def metadata(self):
+        return dict(self.engine.info)
 
     def head(self, db=None):
         own = db is None; db = db or j.connection(self.journal)
@@ -214,6 +236,8 @@ class Live:
         j.need(req['payloads']['acc_sha256'] == entry['acc_sha256'] and req['payloads']['old_sha256'] == old and
                req['lane'] == entry['teaches'] % CAPACITY, 'current_class_lane_fifo')
         j.need(req['profile_sha256'] == self.genesis['profile_sha256'], 'request_profile')
+        if self.engine.descriptor is not None:
+            j.need(req.get('engine_sha256') == j.digest(self.engine.descriptor), 'request_score_engine')
 
     def advance(self, state, req, receipt_sha):
         classes = dict(state['classes']); entry = classes[req['label']]; queue = list(entry['queue'])
@@ -233,7 +257,7 @@ class Live:
                 j.need(j.digest(receipt) == row['receipt_sha256'] and j.digest(req) == row['request_sha256'], 'receipt_identity')
                 self.parent(state, req)
                 accepted = receipt['proof_acceptance']
-                j.need(accepted['verified'] and accepted['proofs_verified'] == 8 and accepted['binding'] == req['payloads'], 'retained_update_acceptance')
+                j.need(accepted['verified'] and accepted['proofs_verified'] == self.engine.update_count and accepted['binding'] == req['payloads'], 'retained_update_acceptance')
                 for digest in req['payloads'].values(): self.cas(digest)
                 state = self.advance(state, req, row['receipt_sha256'])
             j.need(state == self.head(db), 'reopened_committed_chain')
@@ -329,14 +353,9 @@ class Live:
         return {'path': str(attempt / name), 'value': value}
 
     def _metrics(self, out, accepted, operation):
-        entries = accepted['verifications'] if operation == 'teach' else [v for c in accepted.values() for v in c['verifications']]
+        entries = self.engine.verification_entries(accepted) if operation == 'teach' else [v for c in accepted.values() for v in self.engine.verification_entries(c)]
         phases = [j.read(p) for p in (out / 'phases').glob('*.json')]
-        generated = []
-        for proof in (out / 'phases').rglob('proof.bin'):
-            report = proof.with_name('proof.json')
-            if report.exists() and j.read(report).get('verified') is True:
-                generated.append(proof)
-        result = {'proofs_generated': len(generated), 'accepted_fresh_proofs': len(entries),
+        result = {'proofs_generated': self.engine.generated_proofs(out / 'phases'), 'accepted_fresh_proofs': len(entries),
             'proofs_verified': len(entries), 'discarded_phase_attempts': len(list((out / 'phases').rglob('failed.json'))),
             'proof_bytes': sum(v['proof_bytes'] for v in entries),
             'phase_elapsed_seconds': {p['phase']: p['elapsed_seconds'] for p in phases},
@@ -380,19 +399,20 @@ class Live:
                 'parent_sha256': j.digest(head), 'parent_model_root': head['model_root'], 'label': label, 'lane': lane,
                 'text_sha256': j.sha(text.encode()), 'feature_sha256': backend.sha(vector_path),
                 'payloads': candidate['binding'], 'profile_sha256': self.genesis['profile_sha256']}
+            if self.engine.descriptor is not None: req['engine_sha256'] = j.digest(self.engine.descriptor)
             self.parent(head, req); j.write_json(out / 'request.json', req)
             def prove(attempt):
-                value = self.backend.produce_update(case, attempt / 'produced', attempt)
+                value = self.engine.produce_update(case, attempt / 'produced', attempt)
                 return {'path': str(attempt / 'produced'), 'value': value}
             produced = self._phase(out, 'prove', prove,
-                lambda a: self._recover_result(a, 'produced', 'proofs_generated', 8))['result']
-            j.need(produced['value']['binding'] == req['payloads'] and produced['value']['fresh_proofs'] == 8, 'complete_update_production')
+                lambda a: self._recover_result(a, 'produced', 'proofs_generated', self.engine.update_count))['result']
+            j.need(produced['value']['binding'] == req['payloads'] and produced['value']['fresh_proofs'] == self.engine.update_count, 'complete_update_production')
             def verify(attempt):
-                value = self.backend.verify_update(req['payloads'], produced['path'], attempt / 'verified', attempt)
+                value = self.engine.verify_update(req['payloads'], produced['path'], attempt / 'verified', attempt)
                 return {'path': str(attempt / 'verified'), 'value': value}
             accepted = self._phase(out, 'verify', verify,
-                lambda a: self._recover_result(a, 'verified', 'verified', 8))['result']['value']
-            j.need(accepted['verified'] and accepted['proofs_verified'] == 8 and accepted['binding'] == req['payloads'], 'complete_update_acceptance')
+                lambda a: self._recover_result(a, 'verified', 'verified', self.engine.update_count))['result']['value']
+            j.need(accepted['verified'] and accepted['proofs_verified'] == self.engine.update_count and accepted['binding'] == req['payloads'], 'complete_update_acceptance')
             metrics = self._metrics(out, accepted, 'teach'); self.check()
             db = j.connection(self.journal)
             try:
@@ -408,6 +428,7 @@ class Live:
                 digest = j.digest(receipt); new = self.advance(head, req, digest)
                 result = {'committed': True, 'head': new, 'receipt_sha256': digest, 'request': req,
                           'private_reads': 0, 'metrics': metrics, 'fifo_capacity': CAPACITY}
+                if self.engine.descriptor is not None: result.update(self.engine.info)
                 db.execute('INSERT INTO journal VALUES(?,?,?,?,?)', (new['revision'], request_id, j.digest(req), j.canonical(receipt).decode(), digest))
                 db.execute('UPDATE head SET state=?,state_sha256=? WHERE singleton=1', (j.canonical(new).decode(), j.digest(new)))
                 db.execute('UPDATE requests SET status=?,phase=?,result_json=?,error_json=NULL,updated_utc=? WHERE request_id=?',
@@ -443,25 +464,28 @@ class Live:
                 'model_root': head['model_root'], 'profile_sha256': self.genesis['profile_sha256'],
                 'evaluation_key_sha256': self.genesis['evaluation_key_sha256'], 'query_sha256': backend.sha(query_path),
                 'text_sha256': j.sha(text.encode()), 'active_classes': active, 'classes': {}}
+            if self.engine.descriptor is not None: req['engine_sha256'] = j.digest(self.engine.descriptor)
             for index, label in enumerate(active):
                 acc = head['classes'][label]['acc_sha256']; self.cas(acc)
-                def capture(attempt):
-                    value = self.backend.capture(self.root / 'issuer', self.journal / 'cas' / acc, query_path,
-                        attempt / 'capture', head['revision'], label, attempt)
-                    return {'path': str(attempt / 'capture'), 'value': value}
-                captured = self._phase(out, f'class{index:03}-capture', capture)['result']
+                captured = None
+                if self.engine.needs_capture:
+                    def capture(attempt):
+                        value = self.engine.capture(self.root / 'issuer', self.journal / 'cas' / acc, query_path,
+                            attempt / 'capture', head['revision'], label, attempt)
+                        return {'path': str(attempt / 'capture'), 'value': value}
+                    captured = self._phase(out, f'class{index:03}-capture', capture)['result']['path']
                 def prove(attempt):
-                    value = self.backend.produce_infer(self.journal / 'cas' / acc, query_path,
-                        self.root / 'issuer/evaluation.key', captured['path'], attempt / 'produced', attempt)
+                    value = self.engine.produce_infer(self.journal / 'cas' / acc, query_path,
+                        self.root / 'issuer/evaluation.key', captured, attempt / 'produced', attempt)
                     return {'path': str(attempt / 'produced'), 'value': value}
                 produced = self._phase(out, f'class{index:03}-prove', prove,
-                    lambda a: self._recover_result(a, 'produced', 'proofs_generated', 116))['result']
-                j.need(produced['value']['fresh_proofs'] == 116 and produced['value'].get('reused_proofs', 0) == 0, 'complete_fresh_kernel_production')
+                    lambda a: self._recover_result(a, 'produced', 'proofs_generated', self.engine.infer_count))['result']
+                j.need(produced['value']['fresh_proofs'] == self.engine.infer_count and produced['value'].get('reused_proofs', 0) == 0, 'complete_fresh_score_production')
                 binding = produced['value']['binding']
                 j.need(binding['model_ciphertext_sha256'] == acc and binding['query_sha256'] == req['query_sha256'] and
                        binding['evaluation_key_sha256'] == req['evaluation_key_sha256'], 'query_production_binding')
                 req['classes'][label] = {'model_ciphertext_sha256': acc,
-                    'kernel_ciphertext_sha256': binding['kernel_ciphertext_sha256'],
+                    self.engine.output_key: binding[self.engine.output_key],
                     'count': len(head['classes'][label]['queue']), 'produced': produced['path'], 'index': index}
                 j.write_json(out / 'request.json', req)
             self.query_binding(self.head(), req)
@@ -471,6 +495,8 @@ class Live:
             return req
 
     def query_binding(self, head, req):
+        if self.engine.descriptor is not None:
+            j.need(req.get('engine_sha256') == j.digest(self.engine.descriptor), 'query_score_engine')
         active = sorted(c for c, e in head['classes'].items() if e['queue'])
         j.need(req['genesis'] == self.gid and req['recipient_id'] == self.genesis['recipient_id'] and
                req['profile_sha256'] == self.genesis['profile_sha256'], 'query_genesis_profile')
@@ -493,17 +519,17 @@ class Live:
                 return accepted
             checks = {}; outputs = {}
             for label, entry in req['classes'].items():
-                expected = {k: entry[k] for k in ('model_ciphertext_sha256', 'kernel_ciphertext_sha256')}
+                expected = {k: entry[k] for k in ('model_ciphertext_sha256', self.engine.output_key)}
                 expected.update(query_sha256=req['query_sha256'], evaluation_key_sha256=req['evaluation_key_sha256'])
                 def verify(attempt):
-                    value = self.backend.verify_infer(expected, entry['produced'], attempt / 'verified', attempt)
+                    value = self.engine.verify_infer(expected, entry['produced'], attempt / 'verified', attempt)
                     return {'path': str(attempt / 'verified'), 'value': value}
                 accepted = self._phase(out, f'class{entry["index"]:03}-verify', verify,
-                    lambda a: self._recover_result(a, 'verified', 'complete_infer_verified', 116))['result']['value']
-                j.need(accepted['complete_infer_verified'] and accepted['proofs_verified'] == 116 and
-                       all(accepted['binding'][k] == v for k, v in expected.items()), 'complete_kernel_acceptance')
+                    lambda a: self._recover_result(a, 'verified', self.engine.infer_flag, self.engine.infer_count))['result']['value']
+                j.need(accepted[self.engine.infer_flag] and accepted['proofs_verified'] == self.engine.infer_count and
+                       all(accepted['binding'][k] == v for k, v in expected.items()), 'complete_score_acceptance')
                 checks[label] = accepted
-                outputs[label] = str(Path(entry['produced']) / 'infer_case/expected_kernel.ct')
+                outputs[label] = str(self.engine.output_path(entry['produced']))
             self.check(); db = j.connection(self.journal)
             try:
                 db.execute('BEGIN IMMEDIATE'); head = self.head(db); self.query_binding(head, req)
@@ -530,29 +556,34 @@ class Live:
             acceptance = j.read(out / 'public_acceptance.json')
             j.need(acceptance['all_active_classes_verified'] and acceptance['head_checked_under_write_lock'] and
                    acceptance['request_sha256'] == j.digest(req) and acceptance['request'] == req and
-                   set(acceptance['checks']) == set(req['active_classes']), 'all_proofs_before_private_receive')
+                   set(acceptance['checks']) == set(req['active_classes']) and
+                   set(acceptance['outputs']) == set(req['active_classes']), 'all_proofs_before_private_receive')
             for label, path in acceptance['outputs'].items():
-                j.need(backend.sha(path) == req['classes'][label]['kernel_ciphertext_sha256'] and
-                       acceptance['checks'][label]['complete_infer_verified'] and
-                       acceptance['checks'][label]['proofs_verified'] == 116, 'accepted_reader_output')
+                j.need(backend.sha(path) == req['classes'][label][self.engine.output_key] and
+                       acceptance['checks'][label][self.engine.infer_flag] and
+                       acceptance['checks'][label]['proofs_verified'] == self.engine.infer_count, 'accepted_reader_output')
             if not (out / 'receive_started.json').exists():
                 j.write_json(out / 'receive_started.json', {'utc': backend.now(),
                     'public_acceptance_sha256': backend.sha(out / 'public_acceptance.json')})
             answers = {}
             for index, label in enumerate(req['active_classes']):
                 def read(attempt):
-                    value = self.backend.native('read', attempt, dir=self.root / 'issuer', ct=acceptance['outputs'][label])
+                    value = self.engine.receive(self.root / 'issuer', acceptance['outputs'][label],
+                        acceptance['checks'][label]['binding'], attempt)
                     return {'value': value}
                 answers[label] = self._phase(out, f'class{index:03}-read', read)['result']['value']
-            order = sorted(answers, key=lambda c: (-Fraction(answers[c]['sum_kernel'], req['classes'][c]['count']), c))
+            order = sorted(answers, key=lambda c: (-Fraction(self.engine.score(answers[c]), req['classes'][c]['count']), c))
             metrics = self._metrics(out, acceptance['checks'], 'query')
             result = {'answered': True, 'prediction': order[0], 'winner': order[0], 'ranking': order,
                 'classes': answers, 'counts': {c: req['classes'][c]['count'] for c in answers},
-                'class_scores': [{'label': c, 'sum_kernel': answers[c]['sum_kernel'], 'count': req['classes'][c]['count'],
-                    'mean_numerator': answers[c]['sum_kernel'], 'mean_denominator': req['classes'][c]['count']} for c in order],
+                'class_scores': [{'label': c, self.engine.info['sum_key']: self.engine.score(answers[c]), 'count': req['classes'][c]['count'],
+                    'mean_numerator': self.engine.score(answers[c]), 'mean_denominator': req['classes'][c]['count']} for c in order],
                 'revision': req['revision'], 'model_root': req['model_root'], 'public_accepted': True,
                 'public_acceptance_sha256': backend.sha(out / 'public_acceptance.json'),
                 'private_reads': len(answers), 'finished_utc': backend.now(), 'full_reader': True, 'metrics': metrics}
+            if self.engine.linear:
+                for item in result['class_scores']: item['sum_score'] = item[self.engine.info['sum_key']]
+                self.engine.decorate_result(result)
             db = j.connection(self.journal)
             try:
                 db.execute('BEGIN IMMEDIATE'); self.query_binding(self.head(db), req)
@@ -598,13 +629,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     init = sub.add_parser('init'); init.add_argument('root'); init.add_argument('--class', dest='classes', action='append', required=True)
+    init.add_argument('--score', choices=('squared', 'linear'), default='squared')
+    init.add_argument('--proof-backend', '--backend', choices=('compact', 'matched'), default='compact')
     for name in ('teach', 'query', 'status'):
         p = sub.add_parser(name); p.add_argument('root')
         if name != 'status':
             p.add_argument('--text', required=True); p.add_argument('--request-id', required=True); p.add_argument('--vector-json')
         if name == 'teach': p.add_argument('--label', required=True)
     args = parser.parse_args()
-    if args.action == 'init': result = initialize(args.root, args.classes)
+    if args.action == 'init': result = initialize(args.root, args.classes, args.score, args.proof_backend)
     else:
         live = Live(args.root)
         if args.action == 'status': result = live.head()

@@ -1,0 +1,118 @@
+{
+  "checks": {
+    "durable_revision_and_fifo_lanes_equal": true,
+    "expired_reference_example": null
+  },
+  "operation": {
+    "id": "teach_pi07",
+    "kind": "teach",
+    "text_id": "pi07"
+  },
+  "recorded_utc": "2026-09-09T04:45:31.639391+00:00",
+  "worker": {
+    "process": {
+      "elapsed_seconds": 23.72991487494437,
+      "finished_utc": "2026-09-09T04:45:31.631082+00:00",
+      "pid": 17049,
+      "ppid": 388
+    },
+    "result": {
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "e8c5335fc714f393895072a419f03964d3bfde7459bbbdcaca4cace45b49d6c3",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "c76260fdad14068c32d2167809f436fe9af6dc01390ef7a123848010dc8d12e6"
+              },
+              {
+                "lane": 1,
+                "sha256": "bc7c65041d6243b0947247e00b2aa4ce60699d1f68b674ae6cd7d9630122ea0f"
+              },
+              {
+                "lane": 2,
+                "sha256": "f93f24aa7cd1c4ed4a8fd7e238164e1afb2374023e556cf384a9f8518fcaef1a"
+              },
+              {
+                "lane": 3,
+                "sha256": "07146066ece148c11dfa54224921f81556f5c9c3507f02fa00d8d2a872ac1a75"
+              },
+              {
+                "lane": 4,
+                "sha256": "6a93ac97a9fbaeea328507faa948edf13509ffa683dd9535478cb2bf74f7bbcd"
+              },
+              {
+                "lane": 5,
+                "sha256": "dc0190c5d6a3150cc0bb248f241a3a4c6c1773b5b5720c37f41abdafb70f0e47"
+              },
+              {
+                "lane": 6,
+                "sha256": "0142f8c992d2b450757ef650512ed597f37d570f0ab6e16859a605b3cef35a6a"
+              }
+            ],
+            "teaches": 7
+          },
+          "runtime_performance": {
+            "acc_sha256": "406c3890bb831b134e953dd7b741ae0bef74f2ca9abce347da9129a63c5f2890",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "2583c16d0a3205325358b5958f1c06fab277284d584469352fe269fb6ff86f45"
+              },
+              {
+                "lane": 1,
+                "sha256": "6fb6ab2dc8f2a43c6cede816300a3e25f620f42d5c2bea24029ffe4926c0c314"
+              }
+            ],
+            "teaches": 2
+          }
+        },
+        "genesis": "8cef650bcfecb9139b005e628a29c5a4efb6bce0e3c34fda658b77c5ced69368",
+        "last_receipt_sha256": "22a3a21a6e198b5b12192e49120481115d548d804971a42cb72810e0ede85ea2",
+        "model_root": "82fd7c9a6c5230cdffd1967a9afcc82322f585bb909c9431bb8930a74b83be5f",
+        "revision": 9
+      },
+      "metrics": {
+        "accepted_fresh_proofs": 8,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.2439009589725174,
+          "learn": 0.08627466601319611,
+          "prove": 21.678290290990844,
+          "verify": 1.6072001249995083
+        },
+        "private_reads": 0,
+        "proof_bytes": 5801588,
+        "proofs_generated": 8,
+        "proofs_verified": 8
+      },
+      "private_reads": 0,
+      "receipt_sha256": "22a3a21a6e198b5b12192e49120481115d548d804971a42cb72810e0ede85ea2",
+      "request": {
+        "feature_sha256": "2106d1638fc1d8cc5cd4b7509f61985d2b557b03d8b06f447ba580632284e39a",
+        "genesis": "8cef650bcfecb9139b005e628a29c5a4efb6bce0e3c34fda658b77c5ced69368",
+        "label": "proof_integrity",
+        "lane": 6,
+        "parent_model_root": "d7841b0392d7ec92138314572254d4b83ede82c83c31f2362946fc1beea9b028",
+        "parent_sha256": "39e142f4193618f4a662f8a86aa6164cdc9a26ae78da70e702e5f1b917ff9365",
+        "payloads": {
+          "acc_sha256": "aec36a20e3c01d2e0af235fcc3631a51a3172792e3616c7998c85f40951fd725",
+          "fresh_sha256": "0142f8c992d2b450757ef650512ed597f37d570f0ab6e16859a605b3cef35a6a",
+          "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "out_sha256": "e8c5335fc714f393895072a419f03964d3bfde7459bbbdcaca4cace45b49d6c3"
+        },
+        "profile_sha256": "daf3baa054b5b979e77ab4d9d9366bc87bf4988e4c8f227579611b8d68947842",
+        "recipient_id": "6bb56ff7f07ca940607fc14253c2c9630985a49b3c34825ab58fdf21173df412",
+        "request_id": "teach_pi07",
+        "revision": 9,
+        "schema": "continuing-update-v1",
+        "text_sha256": "2d045ee917f18952b57708a726da02d908281c3a321641f1f9cbc89c7c2d695e"
+      }
+    }
+  }
+}

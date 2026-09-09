@@ -1,0 +1,144 @@
+{
+  "checks": {
+    "durable_revision_and_fifo_lanes_equal": true,
+    "expired_reference_example": {
+      "lane": 0,
+      "text_id": "pi01"
+    }
+  },
+  "operation": {
+    "id": "teach_pi09",
+    "kind": "teach",
+    "text_id": "pi09"
+  },
+  "recorded_utc": "2026-09-09T05:25:12.594743+00:00",
+  "worker": {
+    "engine": {
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "proof_backend": "matched",
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    },
+    "process": {
+      "elapsed_seconds": 9.9457316249609,
+      "finished_utc": "2026-09-09T05:25:12.583793+00:00",
+      "pid": 53556,
+      "ppid": 49106
+    },
+    "result": {
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "fa96d40fc10c5f95dccf75690565e01e5dc0511e4629951b44a9c133245ee24a",
+            "queue": [
+              {
+                "lane": 1,
+                "sha256": "6af707457fcb9cc076ad345cf25b105e55bf995b4d1c7f7bfc27e58c675ca5b5"
+              },
+              {
+                "lane": 2,
+                "sha256": "e87c964750527dc697f2de890eaaa0c3052ef801c439e0fa463e476d9c2b6baf"
+              },
+              {
+                "lane": 3,
+                "sha256": "146e57db37f00cf4e4afd5f762f0f198dd57d00ec8e299e6b06309f25aa5f3d2"
+              },
+              {
+                "lane": 4,
+                "sha256": "1c0d4c4cb89d3caa5c7263525474b101f86f79caff102c02c0e04b3d743a591a"
+              },
+              {
+                "lane": 5,
+                "sha256": "fc8a9348434dda8ab6ccc661cd26098a9182631e8ba75ca6f1f315675d9daf1f"
+              },
+              {
+                "lane": 6,
+                "sha256": "e06ee5a3960f6a657b3668f6bc7b09f775e21efa2844b1b5cfd62da59c6b552b"
+              },
+              {
+                "lane": 7,
+                "sha256": "72cb5c0d073ea6bcd4a6ef6312b4426e1cac4f8432770898d6e2d4a429d3ec7d"
+              },
+              {
+                "lane": 0,
+                "sha256": "e3eeeb89b6c18af53d42f3275959b3bfc2a577522fca10bf8faaa523f3fc2fee"
+              }
+            ],
+            "teaches": 9
+          },
+          "runtime_performance": {
+            "acc_sha256": "d02b7c41cc3102d0f0eea7f4b01dbeae09cef0c2b54dd4eaf237da065b3cc006",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "bc446f812f8dd28f09e239686756b5e432986b50dbc558704f25f73ef43952fc"
+              },
+              {
+                "lane": 1,
+                "sha256": "a9f502c72c026db5cb026d172d71c6238eae9fbd30a229890791f22d02b6d879"
+              }
+            ],
+            "teaches": 2
+          }
+        },
+        "genesis": "600b0d74b9f3a41c93fb7f4f86f9646e46cb122c7f999d0d599868fa80b8e7e5",
+        "last_receipt_sha256": "91a58fc24064072e98ba78c49ed871bdce99cebc0a26d086a3a556e29e102e87",
+        "model_root": "0ca51ca500a141ac857051e3ee30ce00f76b39bd1b8b7c6f8dda7435899aa5cf",
+        "revision": 11
+      },
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "metrics": {
+        "accepted_fresh_proofs": 32,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.38605929201003164,
+          "learn": 0.15847983304411173,
+          "prove": 6.665838374989107,
+          "verify": 2.4334377499762923
+        },
+        "private_reads": 0,
+        "proof_bytes": 5722533,
+        "proofs_generated": 32,
+        "proofs_verified": 32
+      },
+      "private_reads": 0,
+      "proof_backend": "matched",
+      "receipt_sha256": "91a58fc24064072e98ba78c49ed871bdce99cebc0a26d086a3a556e29e102e87",
+      "request": {
+        "engine_sha256": "173b718491ea316b52fac220cf63ed9ae3f9dd1f55bcd8a9152e73c2c7611315",
+        "feature_sha256": "25df8a4a7d431f2d0995de8c8d1483c87bd23156af532e4953c2219251eabee1",
+        "genesis": "600b0d74b9f3a41c93fb7f4f86f9646e46cb122c7f999d0d599868fa80b8e7e5",
+        "label": "proof_integrity",
+        "lane": 0,
+        "parent_model_root": "3f02b6a551f9d9857a6b8e5630248d30c4d437908cbede18b0e1ad93eacfc8c3",
+        "parent_sha256": "9a8f6a18934ce306365a7c1ff2e74fdc559222b67ca9d5e38672946d43cdcb92",
+        "payloads": {
+          "acc_sha256": "f051c9fe7d503974ef7765ca2b875e532ab57da6e1d4cbb1040952329fcfa1b3",
+          "fresh_sha256": "e3eeeb89b6c18af53d42f3275959b3bfc2a577522fca10bf8faaa523f3fc2fee",
+          "old_sha256": "f6ee60bcfe86a5d38bb8b1316d5f5548d3d3142573b585a36c6a609c62bcb8c3",
+          "out_sha256": "fa96d40fc10c5f95dccf75690565e01e5dc0511e4629951b44a9c133245ee24a"
+        },
+        "profile_sha256": "daf3baa054b5b979e77ab4d9d9366bc87bf4988e4c8f227579611b8d68947842",
+        "recipient_id": "c48c0835968f1bbcbe26b0355026d0336eefb2b7a37b32c46be62b70433e2966",
+        "request_id": "teach_pi09",
+        "revision": 11,
+        "schema": "continuing-update-v1",
+        "text_sha256": "e7ad123a78dd3faa093b644d4ba99a1486dd678aa76fe4a18eec562ba9909f13"
+      },
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    }
+  }
+}

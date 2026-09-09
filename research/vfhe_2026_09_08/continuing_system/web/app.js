@@ -56,6 +56,48 @@ function jobs() { return [...(snapshot?.jobs || [])].sort((a, b) => String(b.cre
 function classEntries() { return Object.entries(snapshot?.head?.classes || {}); }
 function workerReady() { return snapshot?.worker_running !== false && !snapshot?.service_error; }
 function evaluationRunning() { return snapshot?.evaluation?.running === true; }
+function selectedEngine() {
+  const selected = $('engine-mode').value;
+  if (selected === 'packed:matched') return { layout: 'classes', score: 'linear', proof_backend: 'matched' };
+  if (!['squared:compact', 'linear:compact', 'linear:matched'].includes(selected)) throw new Error('Choose one of the available learner modes.');
+  const [score, proof_backend] = selected.split(':');
+  return { score, proof_backend };
+}
+function engineFor(result = {}) {
+  const engine = { ...(snapshot?.engine || {}) };
+  for (const key of ['score_kind', 'proof_backend', 'score_formula', 'score_signed', 'update_proofs_per_class', 'infer_proofs_per_class', 'lane_values_key', 'sum_key', 'layout', 'classes_per_bank', 'infer_proofs_per_bank', 'bank_count']) {
+    if (result[key] !== undefined && result[key] !== null) engine[key] = result[key];
+  }
+  // Engine-absent legacy instances retain the original squared/compact mode.
+  engine.score_kind ??= engine.score_signed === true ? 'linear' : 'squared';
+  engine.proof_backend ??= 'compact';
+  engine.sum_key ??= engine.score_kind === 'linear' ? 'sum_dot' : 'sum_kernel';
+  if (engine.layout !== 'classes') engine.lane_values_key ??= engine.score_kind === 'linear' ? 'dot_values' : 'kernel_values';
+  return engine;
+}
+function scoreLabel(engine) { return engine.score_kind === 'linear' ? 'Average similarity' : 'Average squared similarity'; }
+function backendLabel(engine) { return engine.proof_backend === 'matched' ? 'Matched proofs' : 'Compact proofs'; }
+function renderEngineChoice() {
+  const { score, proof_backend, layout } = selectedEngine();
+  if (layout === 'classes') {
+    $('engine-help').textContent = 'Keeps an encrypted total of each class’s up to eight most recent examples. Signed mean scores; one matched proof batch serves up to eight classes. The layout and mode are fixed after setup.';
+    return;
+  }
+  $('engine-help').textContent = (score === 'squared'
+    ? 'Squares each example’s similarity before averaging. This is the original default.'
+    : 'Averages signed similarities; negative scores stay negative.')
+    + (proof_backend === 'matched' ? ' Uses the matched proof profile.' : '')
+    + ' The mode is fixed after setup.';
+}
+function classBankCount(head, engine) {
+  if (Number.isSafeInteger(engine.bank_count) && engine.bank_count >= 0) return engine.bank_count;
+  if (Number.isSafeInteger(head.bank_count) && head.bank_count >= 0) return head.bank_count;
+  if (Array.isArray(head.banks)) return head.banks.length;
+  if (head.banks && typeof head.banks === 'object') return Object.keys(head.banks).length;
+  const assignments = Object.values(head.classes || {}).map(info => info.bank);
+  if (assignments.length && assignments.every(bank => (Number.isSafeInteger(bank) && bank >= 0) || (typeof bank === 'string' && bank.length > 0))) return new Set(assignments.map(String)).size;
+  return null;
+}
 function retainedCount(info) { return Array.isArray(info?.queue) ? info.queue.length : Number(info?.count || 0); }
 function timeText(value) {
   const date = new Date(value);
@@ -111,6 +153,7 @@ function updateControls() {
   $('setup-submit').disabled = !connected || !workerReady() || evaluationRunning() || setupExists || posting.has('init');
   $('setup-submit').firstChild.textContent = initializing ? 'Setup is running ' : setupExists ? 'Setup saved · see history ' : posting.has('init') ? 'Submitting… ' : 'Create learner ';
   $('class-labels').disabled = setupExists || posting.has('init');
+  $('engine-mode').disabled = setupExists || posting.has('init');
   $('labels-help').textContent = setupExists ? 'Setup has a saved job. Follow it in the history, or resume it there if interrupted.' : 'One label per line. Choose distinct names you will recognize.';
   $('teach-submit').disabled = !connected || !workerReady() || evaluationRunning() || !initialized || !classEntries().length || posting.has('teach');
   $('query-submit').disabled = !connected || !workerReady() || evaluationRunning() || !initialized || !classEntries().some(([, info]) => retainedCount(info) > 0) || posting.has('query');
@@ -120,6 +163,23 @@ function updateControls() {
 }
 function renderClasses() {
   const head = snapshot?.head || {};
+  const engine = engineFor();
+  $('engine-score-label').textContent = scoreLabel(engine);
+  $('engine-backend-label').textContent = backendLabel(engine);
+  $('engine-score-label').title = engine.score_formula || '';
+  const packed = engine.layout === 'classes';
+  const banks = packed ? classBankCount(head, engine) : null;
+  $('engine-layout-note').hidden = !packed;
+  $('engine-layout-note').textContent = packed ? 'Encrypted class totals' + (banks !== null ? ` · ${banks} ${banks === 1 ? 'class bank' : 'class banks'}` : '') : '';
+  const proofCounts = [];
+  if (Number.isSafeInteger(engine.update_proofs_per_class)) proofCounts.push(`${engine.update_proofs_per_class} proofs per update`);
+  if (packed) {
+    const capacity = Number.isSafeInteger(engine.classes_per_bank) && engine.classes_per_bank > 0 ? ` (up to ${engine.classes_per_bank} classes)` : '';
+    if (Number.isSafeInteger(engine.infer_proofs_per_bank)) proofCounts.push(`${engine.infer_proofs_per_bank} query proofs shared per bank${capacity}`);
+    else proofCounts.push(`One query proof batch per class bank${capacity}`);
+  } else if (Number.isSafeInteger(engine.infer_proofs_per_class)) proofCounts.push(`${engine.infer_proofs_per_class} proofs per queried class`);
+  $('engine-proof-counts').hidden = proofCounts.length === 0;
+  $('engine-proof-counts').textContent = proofCounts.join(' · ');
   $('revision').textContent = `rev ${head.revision ?? '—'}`;
   const entries = classEntries();
   const total = entries.reduce((sum, [, info]) => sum + retainedCount(info), 0);
@@ -152,8 +212,12 @@ function selectedQuery() {
 }
 function exactScore(result, label) {
   const entry = Array.isArray(result.class_scores) ? result.class_scores.find(item => item.label === label) : null;
-  const numerator = entry?.mean_numerator ?? entry?.sum_kernel ?? result.classes?.[label]?.sum_kernel;
-  const denominator = entry?.mean_denominator ?? entry?.count ?? result.counts?.[label];
+  const engine = engineFor(result);
+  const classResult = result.classes?.[label] || {};
+  const numerator = entry?.mean_numerator ?? classResult.mean_numerator ?? entry?.sum_score ?? entry?.[engine.sum_key]
+    ?? classResult.sum_score ?? classResult[engine.sum_key] ?? entry?.sum_dot ?? classResult.sum_dot
+    ?? entry?.sum_kernel ?? classResult.sum_kernel;
+  const denominator = entry?.mean_denominator ?? classResult.mean_denominator ?? entry?.count ?? classResult.count ?? result.counts?.[label];
   if (numerator === undefined || denominator === undefined || Number(denominator) <= 0) return 'Unavailable';
   if ([numerator, denominator].some(value => typeof value === 'number' && !Number.isSafeInteger(value))) return 'Exact integer unavailable in this response';
   return `${String(numerator)} / ${String(denominator)}`;
@@ -161,7 +225,7 @@ function exactScore(result, label) {
 function renderAnswer() {
   const job = selectedQuery();
   const recent = !job ? snapshot?.recent_answers?.[0] : null;
-  const signature = JSON.stringify(job || recent || null);
+  const signature = JSON.stringify([job || recent || null, snapshot?.engine || null]);
   if (signature === lastAnswerSignature) return;
   lastAnswerSignature = signature;
   $('answer-context').textContent = job ? timeText(job.created_utc) : recent ? 'Saved query · ' + recent.request_id : '';
@@ -176,6 +240,7 @@ function renderAnswer() {
     return;
   }
   const result = job?.result || recent?.result || {};
+  const engine = engineFor(result);
   const winner = result.prediction ?? result.winner;
   if (winner === undefined || winner === null) {
     content.replaceChildren(element('p', 'muted', 'This completed job has no answer in its saved result. Select it in the history for details.'));
@@ -183,17 +248,32 @@ function renderAnswer() {
   }
   const ranking = Array.isArray(result.ranking) ? result.ranking.map(item => typeof item === 'string' ? item : item.label) : (result.class_scores || []).map(item => item.label);
   const table = element('table', 'ranking');
-  const caption = element('caption', 'sr-only', 'Class ranking by exact mean kernel score');
+  const caption = element('caption', 'sr-only', 'Class ranking by exact ' + scoreLabel(engine).toLowerCase());
   table.append(caption);
   const header = element('thead'); const headerRow = element('tr');
   for (const title of ['Rank', 'Class', 'Exact score']) { const cell = element('th', '', title); cell.scope = 'col'; headerRow.append(cell); }
   header.append(headerRow); table.append(header);
   const body = element('tbody');
-  ranking.forEach((label, index) => { const row = element('tr'); row.append(element('td', 'rank', index + 1), element('td', '', label), element('td', 'score', exactScore(result, label))); body.append(row); });
+  ranking.forEach((label, index) => {
+    const row = element('tr');
+    const classCell = element('td', '', label);
+    const classResult = result.classes?.[label];
+    const values = classResult?.score_values ?? classResult?.[engine.lane_values_key];
+    if (engine.layout !== 'classes' && Array.isArray(values) && values.length) {
+      const details = element('details', 'score-details');
+      details.append(element('summary', '', 'Stored slot scores'));
+      const valueText = values.map(value => typeof value === 'number' && !Number.isSafeInteger(value) ? '(integer precision unavailable)' : String(value)).join(', ');
+      details.append(element('p', 'score-values', valueText));
+      classCell.append(details);
+    }
+    row.append(element('td', 'rank', index + 1), classCell, element('td', 'score', exactScore(result, label)));
+    body.append(row);
+  });
   table.append(body);
   const prefix = element('p', 'prediction-label', 'Released answer');
   const prediction = element('p', 'prediction', winner);
-  const foot = element('p', 'answer-foot', `Revision ${result.revision ?? '—'} · Scores are kernel sums divided by retained examples.${result.public_accepted === true ? ' Public proof gate accepted.' : ''}`);
+  const sumDescription = engine.layout === 'classes' ? 'signed class similarity totals' : engine.score_kind === 'linear' ? 'signed similarity sums' : 'squared similarity sums';
+  const foot = element('p', 'answer-foot', `Revision ${result.revision ?? '—'} · ${scoreLabel(engine)}: ${sumDescription} divided by retained examples.${result.public_accepted === true ? ' Public proof gate accepted.' : ''}`);
   content.replaceChildren(prefix, prediction, table, foot);
 }
 function selectJob(id) {
@@ -363,9 +443,10 @@ $('setup-form').addEventListener('submit', async event => {
     if (!classes.length) throw new Error('Add at least one class label.');
     if (classes.length > 1024 || classes.some(label => label.length > 256)) throw new Error('Use at most 1,024 labels, with at most 256 characters each.');
     if (new Set(classes).size !== classes.length) throw new Error('Each class label must be distinct.');
-    await submit('init', { classes });
+    await submit('init', { classes, ...selectedEngine() });
   } catch (error) { if ($('setup-error').hidden) formError('setup', error.message); }
 });
+$('engine-mode').addEventListener('change', renderEngineChoice);
 $('teach-form').addEventListener('submit', async event => {
   event.preventDefault();
   formError('teach', '');
@@ -396,7 +477,7 @@ if (context?.registerTool) {
       async execute(input) {
         if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length) throw new Error('Expected an empty object.');
         await refresh(); if (!connected) throw new Error('Local server unavailable.');
-        return { initialized: snapshot.initialized, revision: snapshot.head?.revision, evaluation: snapshot.evaluation,
+        return { initialized: snapshot.initialized, revision: snapshot.head?.revision, engine: snapshot.engine, evaluation: snapshot.evaluation,
           classes: classEntries().map(([label, info]) => ({ label, count: retainedCount(info) })),
           jobs: jobs().map(({ id, kind, status, phase }) => ({ id, kind, status, phase })) };
       } },

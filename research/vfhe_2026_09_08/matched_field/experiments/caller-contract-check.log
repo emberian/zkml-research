@@ -1,0 +1,10 @@
+[EXECUTED] Lightweight caller contract checks; no cryptographic operations.
+utc: 2026-09-09T05:04:19.513971+00:00
+cwd: /Users/ember/dev/zkml-research
+command: python3 -B -O research/vfhe_2026_09_08/matched_field/experiments/caller-contract-check.py
+script_sha256: 90ab2ea1d0434e40baa785195a6def47469e1d39e07cef7632bd7217784ef31a
+caller_sha256: 36b6f904aecd6efae1fe1dcea460349729425ee44d0965e6ace46ea370abaec4
+exit_code: 0
+stdout:
+{"python_optimized_mode": true, "linear_and_update_valid_expectations_accepted": true, "valid_profile_accepted": true, "rejections": ["linear-missing-input", "linear-extra-field", "linear-uppercase-digest", "update-missing-input", "update-extra-field", "update-uppercase-digest", "private-path", "duplicate-json-field", "nonfinite-json-field", "existing-output-profile", "plan-byte-pin"], "proofs_generated": 0, "fhe_evaluations": 0, "private_files_read": 0}
+stderr:

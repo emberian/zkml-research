@@ -1,0 +1,239 @@
+{"operation": "initialize", "status": "running", "pid": 391, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/initialize/attempt-001.stderr"}
+{"operation": "teach_pi01", "status": "running", "pid": 392, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi01/attempt-001.stderr"}
+{"operation": "teach_pi01", "status": "complete", "completed_operations": 1}
+{"operation": "teach_pi02", "status": "running", "pid": 477, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi02/attempt-001.stderr"}
+{"operation": "teach_pi02", "status": "complete", "completed_operations": 2}
+{"operation": "teach_rp01", "status": "running", "pid": 732, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_rp01/attempt-001.stderr"}
+{"operation": "teach_rp01", "status": "complete", "completed_operations": 3}
+{"operation": "teach_rp02", "status": "running", "pid": 843, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_rp02/attempt-001.stderr"}
+{"operation": "teach_rp02", "status": "complete", "completed_operations": 4}
+{"operation": "query_initial", "status": "running", "pid": 984, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/query_initial/attempt-001.stderr"}
+{"operation": "query_initial", "status": "complete", "completed_operations": 5}
+{"operation": "teach_pi03", "status": "running", "pid": 16223, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi03/attempt-001.stderr"}
+{"operation": "teach_pi03", "status": "complete", "completed_operations": 6}
+{"operation": "teach_pi04", "status": "running", "pid": 16428, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi04/attempt-001.stderr"}
+{"operation": "teach_pi04", "status": "complete", "completed_operations": 7}
+{"operation": "teach_pi05", "status": "running", "pid": 16636, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi05/attempt-001.stderr"}
+{"operation": "teach_pi05", "status": "complete", "completed_operations": 8}
+{"operation": "teach_pi06", "status": "running", "pid": 16850, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi06/attempt-001.stderr"}
+{"operation": "teach_pi06", "status": "complete", "completed_operations": 9}
+{"operation": "teach_pi07", "status": "running", "pid": 17049, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi07/attempt-001.stderr"}
+{"operation": "teach_pi07", "status": "complete", "completed_operations": 10}
+{"operation": "teach_pi08", "status": "running", "pid": 17359, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi08/attempt-001.stderr"}
+{"operation": "teach_pi08", "status": "complete", "completed_operations": 11}
+{"operation": "query_later", "status": "running", "pid": 17528, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/query_later/attempt-001.stderr"}
+{"operation": "query_later", "status": "complete", "completed_operations": 12}
+{"operation": "teach_pi09", "status": "running", "pid": 37292, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi09/attempt-001.stderr"}
+{"operation": "teach_pi09", "status": "complete", "completed_operations": 13}
+{"operation": "teach_pi10", "status": "running", "pid": 37624, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/teach_pi10/attempt-001.stderr"}
+{"operation": "teach_pi10", "status": "complete", "completed_operations": 14}
+{"operation": "query_expiry", "status": "running", "pid": 38037, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/query_expiry/attempt-001.stderr"}
+{"operation": "query_expiry", "status": "complete", "completed_operations": 15}
+{"operation": "restart", "status": "running", "pid": 57723, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/restart/attempt-001.stderr"}
+{"operation": "restart", "status": "complete", "completed_operations": 16}
+{"operation": "query_restart", "status": "running", "pid": 57724, "stderr": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload/steps/query_restart/attempt-001.stderr"}
+{"operation": "query_restart", "status": "complete", "completed_operations": 17}
+{
+  "schema": "continuing-system-workload-result-v1",
+  "updated_utc": "2026-09-09T05:56:01.912110+00:00",
+  "instance_root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident",
+  "controller_root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident.workload",
+  "workload_sha256": "cc5bbe33245ac48b7cbc63b5499afba30957a71bb2b86882b427f408ec03eed2",
+  "preparation_sha256": "4769cdad719766521331ecd7e767964710d3cf3b47b2b2a828319be87d3cdbc9",
+  "completed_operations": 17,
+  "required_operations": 17,
+  "complete": true,
+  "queries": [
+    {
+      "id": "query_initial",
+      "checkpoint": "initial",
+      "revision": 4,
+      "prediction": "proof_integrity",
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "checks": {
+        "compared_kernel_values": 16,
+        "every_kernel_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true
+      },
+      "process_pid": 984
+    },
+    {
+      "id": "query_later",
+      "checkpoint": "after_teaching",
+      "revision": 10,
+      "prediction": "proof_integrity",
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "checks": {
+        "compared_kernel_values": 16,
+        "every_kernel_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true
+      },
+      "process_pid": 17528
+    },
+    {
+      "id": "query_expiry",
+      "checkpoint": "after_expiry",
+      "revision": 12,
+      "prediction": "proof_integrity",
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "checks": {
+        "compared_kernel_values": 16,
+        "every_kernel_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true
+      },
+      "process_pid": 38037
+    },
+    {
+      "id": "query_restart",
+      "checkpoint": "after_restart",
+      "revision": 12,
+      "prediction": "proof_integrity",
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "checks": {
+        "compared_kernel_values": 16,
+        "every_kernel_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true,
+        "restarted_process_same_model_and_every_lane": true
+      },
+      "process_pid": 57724
+    }
+  ],
+  "metrics_available_for_every_crypto_operation": true,
+  "instance_cumulative_metrics": {
+    "proofs_generated": 1024,
+    "proofs_verified": 1024,
+    "proof_bytes": 1012130665,
+    "committed_updates": 12,
+    "answered_queries": 4,
+    "private_reads": 8
+  },
+  "phase_elapsed_seconds": {
+    "issue": 3.001982459973078,
+    "learn": 1.09200200001942,
+    "prove": 266.4445000809501,
+    "verify": 19.25520174804842,
+    "class000-capture": 7.496608458983246,
+    "class000-prove": 2398.9638705829857,
+    "class000-read": 0.504106333013624,
+    "class000-verify": 166.69669312605402,
+    "class001-capture": 7.175056250067428,
+    "class001-prove": 2489.8860803330317,
+    "class001-read": 0.43101408291840926,
+    "class001-verify": 180.78569262492238
+  },
+  "worker_attempt_wall_seconds": 5546.017843709909,
+  "worker_attempts_without_terminal_timing": 0,
+  "invocation": {
+    "started_utc": "2026-09-09T04:23:35.729738+00:00",
+    "mode": "resume",
+    "reused_completed_steps": [],
+    "resumed_incomplete_steps": [],
+    "newly_completed_steps": [
+      "teach_pi01",
+      "teach_pi02",
+      "teach_rp01",
+      "teach_rp02",
+      "query_initial",
+      "teach_pi03",
+      "teach_pi04",
+      "teach_pi05",
+      "teach_pi06",
+      "teach_pi07",
+      "teach_pi08",
+      "query_later",
+      "teach_pi09",
+      "teach_pi10",
+      "query_expiry",
+      "restart",
+      "query_restart"
+    ],
+    "elapsed_seconds": 5546.132853416959,
+    "finished_utc": "2026-09-09T05:56:01.909057+00:00"
+  },
+  "freshness_accounting": "Metrics describe each unique stable request once across all invocations. Reused or resumed requests are not counted as fresh work in this invocation.",
+  "plaintext_utility": {
+    "after_expiry": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 0.9,
+      "linear_correct": 18
+    },
+    "after_restart": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 0.9,
+      "linear_correct": 18
+    },
+    "after_teaching": {
+      "accuracy": 0.95,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 19,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 0.95,
+      "linear_correct": 19
+    },
+    "initial": {
+      "accuracy": 1.0,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 20,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "linear_accuracy": 1.0,
+      "linear_correct": 20
+    }
+  },
+  "expired_reference_examples": [
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi09",
+      "text_id": "pi01"
+    },
+    {
+      "label": "proof_integrity",
+      "lane": 1,
+      "operation": "teach_pi10",
+      "text_id": "pi02"
+    }
+  ],
+  "scope": "Public author-written issue-routing workload. Full reader remains. Finite held-out accuracy is an executed utility observation, not general task accuracy or privacy evidence."
+}

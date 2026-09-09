@@ -1,0 +1,15 @@
+{
+  "schema": "continuing-engine-application-patch-v1",
+  "apply_only_after_active_workload_terminal": true,
+  "base": {
+    "research/vfhe_2026_09_08/continuing_system/core.py": "1351dbc7dff219d2053aab223e04c16b65ee459c62a5208818e8d9ff8998571a",
+    "research/vfhe_2026_09_08/continuing_system/backend.py": "16485b8d914b6107abae9a56f38b52c8039186d6be2be8288f1f5cebaf9711a5"
+  },
+  "new_files": {
+    "research/vfhe_2026_09_08/continuing_system/core.py": "bca9a9aeb1705c834ccfbc8154f1be34a2a9ba5bb7fa3b1b50c894fa5a571917",
+    "research/vfhe_2026_09_08/continuing_system/engines.py": "647f21bfad20e008374daeb5e5302df5a30cfa90dfd8ea51a51e728be9165f50"
+  },
+  "patch_sha256": "c5daa8ee5399920c28d52dc75074f4274519ae54d5ed782e4b52cdeb4b540790",
+  "checks_sha256": "01a83531b0595cd247e9e7a1da4166ec90d70d9ade894d0874621450a17d3b5b",
+  "live_backend_modified": false
+}

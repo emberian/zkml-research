@@ -1,0 +1,274 @@
+{
+  "checks": {
+    "durable_revision_layout_and_fifo_counts_equal": true,
+    "expired_reference_example": null
+  },
+  "operation": {
+    "id": "teach_dc01",
+    "kind": "teach",
+    "text_id": "dc01"
+  },
+  "recorded_utc": "2026-09-09T05:36:31.580095+00:00",
+  "worker": {
+    "engine": {
+      "bank_count": 2,
+      "class_layout": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4
+        }
+      },
+      "classes_per_bank": 8,
+      "fifo_capacity": 8,
+      "infer_proofs_per_bank": 352,
+      "layout": "fixed class lanes",
+      "proof_backend": "matched",
+      "schema": "packed-class-sum-display-v1",
+      "score_formula": "class_sum / count",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs": 32
+    },
+    "process": {
+      "elapsed_seconds": 4.559928250033408,
+      "finished_utc": "2026-09-09T05:36:31.568596+00:00",
+      "pid": 62980,
+      "ppid": 62180
+    },
+    "result": {
+      "bank_count": 2,
+      "class_layout": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4
+        }
+      },
+      "classes_per_bank": 8,
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "banks": {
+          "0": {
+            "acc_sha256": "25d103bbd98b8e264c85db0165f84956473859cd31e45d58675afe77995042ff"
+          },
+          "1": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16"
+          }
+        },
+        "classes": {
+          "api_behavior": {
+            "bank": "0",
+            "lane": 3,
+            "queue": [
+              {
+                "lane": 3,
+                "sha256": "31638b479d03dd6a58a58b12eac9bd51c6dafff6ec58ae188dce6c111a7af6e1"
+              }
+            ],
+            "teaches": 1
+          },
+          "build_dependencies": {
+            "bank": "0",
+            "lane": 5,
+            "queue": [
+              {
+                "lane": 5,
+                "sha256": "ae75f541828832de461116f0c8fe851597c0fda4b74308b321169a78cd3536e9"
+              }
+            ],
+            "teaches": 1
+          },
+          "documentation": {
+            "bank": "0",
+            "lane": 7,
+            "queue": [
+              {
+                "lane": 7,
+                "sha256": "e0cfd6c902b5cf6ac804ad7bf61719bc5c3a5a5b8446dc01cdb04b88049baa3a"
+              }
+            ],
+            "teaches": 1
+          },
+          "interface_accessibility": {
+            "bank": "0",
+            "lane": 6,
+            "queue": [
+              {
+                "lane": 6,
+                "sha256": "1b6fdc35470bf94de065031ffe797c551236463796b81b621cd7d8fc4f937d2f"
+              }
+            ],
+            "teaches": 1
+          },
+          "memory_usage": {
+            "bank": "0",
+            "lane": 2,
+            "queue": [
+              {
+                "lane": 2,
+                "sha256": "76f477a2ee4bf0a342d7e3c3faa3fd17b0140311c815ef1f7698129277ea6825"
+              }
+            ],
+            "teaches": 1
+          },
+          "network_transport": {
+            "bank": "1",
+            "lane": 0,
+            "queue": [],
+            "teaches": 0
+          },
+          "proof_integrity": {
+            "bank": "0",
+            "lane": 0,
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "a1c869d041d0c2b578080c6a6b18356067ca683339934013fa1b9d77e42cf49b"
+              }
+            ],
+            "teaches": 1
+          },
+          "runtime_performance": {
+            "bank": "0",
+            "lane": 1,
+            "queue": [
+              {
+                "lane": 1,
+                "sha256": "a2c50591177e97949667c37be18fe709a06acc13d511084a808b1360232e4d6b"
+              }
+            ],
+            "teaches": 1
+          },
+          "storage_recovery": {
+            "bank": "0",
+            "lane": 4,
+            "queue": [
+              {
+                "lane": 4,
+                "sha256": "6e21a54eb90305b12360e3438caafaa3d002ae37ce71aac49992f39234701e57"
+              }
+            ],
+            "teaches": 1
+          }
+        },
+        "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+        "last_receipt_sha256": "b2a2a9cfd7f39e73bb9f6b4ade63ff47a8ee8c837b6e1476aa6cdae2bd43e7ee",
+        "model_root": "b719ba445d1c67c486c4f4326e9bd548c0bd9154cb92c836ec095b7abf302aca",
+        "revision": 8
+      },
+      "infer_proofs_per_bank": 352,
+      "layout": "fixed class lanes",
+      "metrics": {
+        "accepted_fresh_proofs": 32,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.3190879159956239,
+          "learn": 0.15406012500170618,
+          "prove": 2.600914374983404,
+          "verify": 1.204179499996826
+        },
+        "private_reads": 0,
+        "proof_bytes": 5693899,
+        "proofs_generated": 32,
+        "proofs_verified": 32
+      },
+      "private_reads": 0,
+      "proof_backend": "matched",
+      "receipt_sha256": "b2a2a9cfd7f39e73bb9f6b4ade63ff47a8ee8c837b6e1476aa6cdae2bd43e7ee",
+      "request": {
+        "backend_sha256": "e202fb7141a240037bdccc7dfa4e092737f30a6f65f082019f76e10ad70ee227",
+        "bank": "0",
+        "feature_sha256": "c5cc7bbc737eaa48c4b92f06601453b47b28b60bdbd7b7bd7ebd114f41a08ae0",
+        "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+        "label": "documentation",
+        "lane": 7,
+        "parent_model_root": "a60fa47c379c9bd34fcfc957fff6da75932dca6267578acbf3798aaa4068d4f0",
+        "parent_sha256": "824379a5246da5e59cfd5b63f2885fa811ca9e6de9f00f80f73b5438e010e71b",
+        "payloads": {
+          "acc_sha256": "59a2cd22cf5b22e9f8597881ac9d380163c4b8b4c10df193b9de4a054e6c5522",
+          "fresh_sha256": "e0cfd6c902b5cf6ac804ad7bf61719bc5c3a5a5b8446dc01cdb04b88049baa3a",
+          "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "out_sha256": "25d103bbd98b8e264c85db0165f84956473859cd31e45d58675afe77995042ff"
+        },
+        "recipient_id": "dfc2f8c677ea1e86b155f817e3045af9797e5ab564c2208542c2ac553247d57f",
+        "request_id": "teach_dc01",
+        "revision": 8,
+        "schema": "packed-class-update-v1",
+        "text_sha256": "9c20173b4fd9638bb53428347945a88bc5f38548cda89f15d62a2158d46292af"
+      },
+      "schema": "packed-class-sum-display-v1",
+      "score_formula": "class_sum / count",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs": 32
+    }
+  }
+}

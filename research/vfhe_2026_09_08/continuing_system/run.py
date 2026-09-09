@@ -12,12 +12,17 @@ PYTHON = REPO / 'research/learn_infer_only/experiments/adaptation_utility/.venv/
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['serve', 'prepare', 'evaluate', 'resume', 'check', 'build'])
+    parser.add_argument('action', choices=['serve', 'prepare', 'evaluate', 'resume', 'check', 'build',
+                                         'packed-prepare', 'packed-evaluate', 'packed-resume'])
     args, rest = parser.parse_known_args()
     if not PYTHON.is_file():
         raise SystemExit('The retained encoder environment is missing: ' + str(PYTHON))
     if args.action == 'serve':
         target, argv = 'server.py', rest
+    elif args.action.startswith('packed-'):
+        target = 'packed/workload/workload.py'
+        action = args.action.removeprefix('packed-')
+        argv = [{'prepare': '--prepare', 'evaluate': '--run', 'resume': '--resume'}[action], *rest]
     elif args.action in ('prepare', 'evaluate', 'resume'):
         target = 'workload.py'
         argv = [{'prepare': '--prepare', 'evaluate': '--run', 'resume': '--resume'}[args.action], *rest]

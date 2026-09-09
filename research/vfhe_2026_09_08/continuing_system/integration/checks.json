@@ -1,0 +1,52 @@
+{
+  "scope": "syntax/import, actual profile byte pins, CLI flags and legacy genesis metadata only",
+  "crypto_launched": false,
+  "live_source_unchanged": {
+    "core.py": "1351dbc7dff219d2053aab223e04c16b65ee459c62a5208818e8d9ff8998571a",
+    "backend.py": "16485b8d914b6107abae9a56f38b52c8039186d6be2be8288f1f5cebaf9711a5"
+  },
+  "engines": [
+    {
+      "engine": "squared/compact",
+      "pins_checked": true,
+      "score_kind": "squared",
+      "proof_backend": "compact",
+      "score_formula": "mean(dot^2)",
+      "score_signed": false,
+      "update_proofs_per_class": 8,
+      "infer_proofs_per_class": 116,
+      "lane_values_key": "kernel_values",
+      "sum_key": "sum_kernel"
+    },
+    {
+      "engine": "linear/compact",
+      "pins_checked": true,
+      "score_kind": "linear",
+      "proof_backend": "compact",
+      "score_formula": "mean(dot)",
+      "score_signed": true,
+      "update_proofs_per_class": 8,
+      "infer_proofs_per_class": 88,
+      "lane_values_key": "dot_values",
+      "sum_key": "sum_dot"
+    },
+    {
+      "engine": "linear/matched",
+      "pins_checked": true,
+      "score_kind": "linear",
+      "proof_backend": "matched",
+      "score_formula": "mean(dot)",
+      "score_signed": true,
+      "update_proofs_per_class": 32,
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "sum_key": "sum_dot"
+    }
+  ],
+  "legacy_genesis": {
+    "genesis_sha256": "aa99c694166f37d458f1054476f692494114d9749512185365193a1e46e84c3b",
+    "policy_unchanged": true,
+    "legacy_backend_pins_checked": true,
+    "journal_opened": false
+  }
+}

@@ -1,0 +1,3733 @@
+{
+  "checkpoints": {
+    "after_restart": {
+      "accuracy": 1.0,
+      "active_banks": 2,
+      "active_classes": 9,
+      "active_label_correct": 9,
+      "active_label_examples": 9,
+      "correct": 9,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior",
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "label_has_teaching": true,
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "build_dependencies",
+            "api_behavior",
+            "documentation",
+            "storage_recovery",
+            "interface_accessibility",
+            "runtime_performance",
+            "memory_usage",
+            "network_transport"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "label_has_teaching": true,
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "memory_usage",
+            "network_transport",
+            "storage_recovery",
+            "api_behavior",
+            "documentation",
+            "interface_accessibility",
+            "proof_integrity",
+            "build_dependencies"
+          ]
+        },
+        {
+          "id": "hmu01",
+          "label": "memory_usage",
+          "label_has_teaching": true,
+          "prediction": "memory_usage",
+          "ranking": [
+            "memory_usage",
+            "network_transport",
+            "runtime_performance",
+            "storage_recovery",
+            "api_behavior",
+            "interface_accessibility",
+            "build_dependencies",
+            "proof_integrity",
+            "documentation"
+          ]
+        },
+        {
+          "id": "hab01",
+          "label": "api_behavior",
+          "label_has_teaching": true,
+          "prediction": "api_behavior",
+          "ranking": [
+            "api_behavior",
+            "network_transport",
+            "documentation",
+            "memory_usage",
+            "runtime_performance",
+            "build_dependencies",
+            "storage_recovery",
+            "proof_integrity",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hsr01",
+          "label": "storage_recovery",
+          "label_has_teaching": true,
+          "prediction": "storage_recovery",
+          "ranking": [
+            "storage_recovery",
+            "network_transport",
+            "memory_usage",
+            "build_dependencies",
+            "runtime_performance",
+            "documentation",
+            "api_behavior",
+            "proof_integrity",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hbd01",
+          "label": "build_dependencies",
+          "label_has_teaching": true,
+          "prediction": "build_dependencies",
+          "ranking": [
+            "build_dependencies",
+            "documentation",
+            "runtime_performance",
+            "storage_recovery",
+            "network_transport",
+            "memory_usage",
+            "proof_integrity",
+            "api_behavior",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hia01",
+          "label": "interface_accessibility",
+          "label_has_teaching": true,
+          "prediction": "interface_accessibility",
+          "ranking": [
+            "interface_accessibility",
+            "documentation",
+            "build_dependencies",
+            "storage_recovery",
+            "proof_integrity",
+            "network_transport",
+            "api_behavior",
+            "runtime_performance",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hdc01",
+          "label": "documentation",
+          "label_has_teaching": true,
+          "prediction": "documentation",
+          "ranking": [
+            "documentation",
+            "interface_accessibility",
+            "build_dependencies",
+            "api_behavior",
+            "runtime_performance",
+            "proof_integrity",
+            "storage_recovery",
+            "network_transport",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hnt01",
+          "label": "network_transport",
+          "label_has_teaching": true,
+          "prediction": "network_transport",
+          "ranking": [
+            "network_transport",
+            "memory_usage",
+            "api_behavior",
+            "storage_recovery",
+            "runtime_performance",
+            "documentation",
+            "build_dependencies",
+            "interface_accessibility",
+            "proof_integrity"
+          ]
+        }
+      ]
+    },
+    "before_expiry": {
+      "accuracy": 1.0,
+      "active_banks": 2,
+      "active_classes": 9,
+      "active_label_correct": 9,
+      "active_label_examples": 9,
+      "correct": 9,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior",
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "label_has_teaching": true,
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "build_dependencies",
+            "api_behavior",
+            "documentation",
+            "storage_recovery",
+            "interface_accessibility",
+            "runtime_performance",
+            "memory_usage",
+            "network_transport"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "label_has_teaching": true,
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "memory_usage",
+            "network_transport",
+            "storage_recovery",
+            "api_behavior",
+            "documentation",
+            "interface_accessibility",
+            "proof_integrity",
+            "build_dependencies"
+          ]
+        },
+        {
+          "id": "hmu01",
+          "label": "memory_usage",
+          "label_has_teaching": true,
+          "prediction": "memory_usage",
+          "ranking": [
+            "memory_usage",
+            "network_transport",
+            "runtime_performance",
+            "storage_recovery",
+            "api_behavior",
+            "proof_integrity",
+            "interface_accessibility",
+            "build_dependencies",
+            "documentation"
+          ]
+        },
+        {
+          "id": "hab01",
+          "label": "api_behavior",
+          "label_has_teaching": true,
+          "prediction": "api_behavior",
+          "ranking": [
+            "api_behavior",
+            "network_transport",
+            "documentation",
+            "memory_usage",
+            "runtime_performance",
+            "proof_integrity",
+            "build_dependencies",
+            "storage_recovery",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hsr01",
+          "label": "storage_recovery",
+          "label_has_teaching": true,
+          "prediction": "storage_recovery",
+          "ranking": [
+            "storage_recovery",
+            "network_transport",
+            "memory_usage",
+            "build_dependencies",
+            "runtime_performance",
+            "documentation",
+            "api_behavior",
+            "proof_integrity",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hbd01",
+          "label": "build_dependencies",
+          "label_has_teaching": true,
+          "prediction": "build_dependencies",
+          "ranking": [
+            "build_dependencies",
+            "documentation",
+            "runtime_performance",
+            "storage_recovery",
+            "network_transport",
+            "proof_integrity",
+            "memory_usage",
+            "api_behavior",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hia01",
+          "label": "interface_accessibility",
+          "label_has_teaching": true,
+          "prediction": "interface_accessibility",
+          "ranking": [
+            "interface_accessibility",
+            "documentation",
+            "build_dependencies",
+            "storage_recovery",
+            "proof_integrity",
+            "network_transport",
+            "api_behavior",
+            "runtime_performance",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hdc01",
+          "label": "documentation",
+          "label_has_teaching": true,
+          "prediction": "documentation",
+          "ranking": [
+            "documentation",
+            "interface_accessibility",
+            "build_dependencies",
+            "api_behavior",
+            "runtime_performance",
+            "proof_integrity",
+            "storage_recovery",
+            "network_transport",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hnt01",
+          "label": "network_transport",
+          "label_has_teaching": true,
+          "prediction": "network_transport",
+          "ranking": [
+            "network_transport",
+            "memory_usage",
+            "api_behavior",
+            "storage_recovery",
+            "runtime_performance",
+            "documentation",
+            "build_dependencies",
+            "interface_accessibility",
+            "proof_integrity"
+          ]
+        }
+      ]
+    },
+    "one_bank": {
+      "accuracy": 0.8888888888888888,
+      "active_banks": 1,
+      "active_classes": 8,
+      "active_label_correct": 8,
+      "active_label_examples": 8,
+      "correct": 8,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior",
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "label_has_teaching": true,
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "build_dependencies",
+            "api_behavior",
+            "documentation",
+            "storage_recovery",
+            "interface_accessibility",
+            "runtime_performance",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "label_has_teaching": true,
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "memory_usage",
+            "storage_recovery",
+            "api_behavior",
+            "proof_integrity",
+            "documentation",
+            "interface_accessibility",
+            "build_dependencies"
+          ]
+        },
+        {
+          "id": "hmu01",
+          "label": "memory_usage",
+          "label_has_teaching": true,
+          "prediction": "memory_usage",
+          "ranking": [
+            "memory_usage",
+            "runtime_performance",
+            "storage_recovery",
+            "proof_integrity",
+            "api_behavior",
+            "interface_accessibility",
+            "build_dependencies",
+            "documentation"
+          ]
+        },
+        {
+          "id": "hab01",
+          "label": "api_behavior",
+          "label_has_teaching": true,
+          "prediction": "api_behavior",
+          "ranking": [
+            "api_behavior",
+            "proof_integrity",
+            "documentation",
+            "memory_usage",
+            "runtime_performance",
+            "build_dependencies",
+            "storage_recovery",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hsr01",
+          "label": "storage_recovery",
+          "label_has_teaching": true,
+          "prediction": "storage_recovery",
+          "ranking": [
+            "storage_recovery",
+            "memory_usage",
+            "build_dependencies",
+            "runtime_performance",
+            "documentation",
+            "api_behavior",
+            "proof_integrity",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hbd01",
+          "label": "build_dependencies",
+          "label_has_teaching": true,
+          "prediction": "build_dependencies",
+          "ranking": [
+            "build_dependencies",
+            "proof_integrity",
+            "documentation",
+            "runtime_performance",
+            "storage_recovery",
+            "memory_usage",
+            "api_behavior",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hia01",
+          "label": "interface_accessibility",
+          "label_has_teaching": true,
+          "prediction": "interface_accessibility",
+          "ranking": [
+            "interface_accessibility",
+            "documentation",
+            "build_dependencies",
+            "storage_recovery",
+            "api_behavior",
+            "proof_integrity",
+            "runtime_performance",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hdc01",
+          "label": "documentation",
+          "label_has_teaching": true,
+          "prediction": "documentation",
+          "ranking": [
+            "documentation",
+            "interface_accessibility",
+            "build_dependencies",
+            "api_behavior",
+            "runtime_performance",
+            "proof_integrity",
+            "storage_recovery",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hnt01",
+          "label": "network_transport",
+          "label_has_teaching": false,
+          "prediction": "memory_usage",
+          "ranking": [
+            "memory_usage",
+            "api_behavior",
+            "storage_recovery",
+            "runtime_performance",
+            "documentation",
+            "build_dependencies",
+            "interface_accessibility",
+            "proof_integrity"
+          ]
+        }
+      ]
+    },
+    "two_banks_after_expiry": {
+      "accuracy": 1.0,
+      "active_banks": 2,
+      "active_classes": 9,
+      "active_label_correct": 9,
+      "active_label_examples": 9,
+      "correct": 9,
+      "examples": 9,
+      "frozen_initial_accuracy": 0.8888888888888888,
+      "frozen_initial_correct": 8,
+      "majority_accuracy": 0.1111111111111111,
+      "majority_correct": 1,
+      "majority_label": "api_behavior",
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "label_has_teaching": true,
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "build_dependencies",
+            "api_behavior",
+            "documentation",
+            "storage_recovery",
+            "interface_accessibility",
+            "runtime_performance",
+            "memory_usage",
+            "network_transport"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "label_has_teaching": true,
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "memory_usage",
+            "network_transport",
+            "storage_recovery",
+            "api_behavior",
+            "documentation",
+            "interface_accessibility",
+            "proof_integrity",
+            "build_dependencies"
+          ]
+        },
+        {
+          "id": "hmu01",
+          "label": "memory_usage",
+          "label_has_teaching": true,
+          "prediction": "memory_usage",
+          "ranking": [
+            "memory_usage",
+            "network_transport",
+            "runtime_performance",
+            "storage_recovery",
+            "api_behavior",
+            "interface_accessibility",
+            "build_dependencies",
+            "proof_integrity",
+            "documentation"
+          ]
+        },
+        {
+          "id": "hab01",
+          "label": "api_behavior",
+          "label_has_teaching": true,
+          "prediction": "api_behavior",
+          "ranking": [
+            "api_behavior",
+            "network_transport",
+            "documentation",
+            "memory_usage",
+            "runtime_performance",
+            "build_dependencies",
+            "storage_recovery",
+            "proof_integrity",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hsr01",
+          "label": "storage_recovery",
+          "label_has_teaching": true,
+          "prediction": "storage_recovery",
+          "ranking": [
+            "storage_recovery",
+            "network_transport",
+            "memory_usage",
+            "build_dependencies",
+            "runtime_performance",
+            "documentation",
+            "api_behavior",
+            "proof_integrity",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hbd01",
+          "label": "build_dependencies",
+          "label_has_teaching": true,
+          "prediction": "build_dependencies",
+          "ranking": [
+            "build_dependencies",
+            "documentation",
+            "runtime_performance",
+            "storage_recovery",
+            "network_transport",
+            "memory_usage",
+            "proof_integrity",
+            "api_behavior",
+            "interface_accessibility"
+          ]
+        },
+        {
+          "id": "hia01",
+          "label": "interface_accessibility",
+          "label_has_teaching": true,
+          "prediction": "interface_accessibility",
+          "ranking": [
+            "interface_accessibility",
+            "documentation",
+            "build_dependencies",
+            "storage_recovery",
+            "proof_integrity",
+            "network_transport",
+            "api_behavior",
+            "runtime_performance",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hdc01",
+          "label": "documentation",
+          "label_has_teaching": true,
+          "prediction": "documentation",
+          "ranking": [
+            "documentation",
+            "interface_accessibility",
+            "build_dependencies",
+            "api_behavior",
+            "runtime_performance",
+            "proof_integrity",
+            "storage_recovery",
+            "network_transport",
+            "memory_usage"
+          ]
+        },
+        {
+          "id": "hnt01",
+          "label": "network_transport",
+          "label_has_teaching": true,
+          "prediction": "network_transport",
+          "ranking": [
+            "network_transport",
+            "memory_usage",
+            "api_behavior",
+            "storage_recovery",
+            "runtime_performance",
+            "documentation",
+            "build_dependencies",
+            "interface_accessibility",
+            "proof_integrity"
+          ]
+        }
+      ]
+    }
+  },
+  "expired_examples": [
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi09",
+      "text_id": "pi01"
+    },
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi10",
+      "text_id": "pi02"
+    }
+  ],
+  "final_model": {
+    "api_behavior": {
+      "bank": "0",
+      "lane": 3,
+      "queue": [
+        {
+          "lane": 3,
+          "text_id": "ab01"
+        }
+      ],
+      "teaches": 1
+    },
+    "build_dependencies": {
+      "bank": "0",
+      "lane": 5,
+      "queue": [
+        {
+          "lane": 5,
+          "text_id": "bd01"
+        }
+      ],
+      "teaches": 1
+    },
+    "documentation": {
+      "bank": "0",
+      "lane": 7,
+      "queue": [
+        {
+          "lane": 7,
+          "text_id": "dc01"
+        }
+      ],
+      "teaches": 1
+    },
+    "interface_accessibility": {
+      "bank": "0",
+      "lane": 6,
+      "queue": [
+        {
+          "lane": 6,
+          "text_id": "ia01"
+        }
+      ],
+      "teaches": 1
+    },
+    "memory_usage": {
+      "bank": "0",
+      "lane": 2,
+      "queue": [
+        {
+          "lane": 2,
+          "text_id": "mu01"
+        }
+      ],
+      "teaches": 1
+    },
+    "network_transport": {
+      "bank": "1",
+      "lane": 0,
+      "queue": [
+        {
+          "lane": 0,
+          "text_id": "nt01"
+        }
+      ],
+      "teaches": 1
+    },
+    "proof_integrity": {
+      "bank": "0",
+      "lane": 0,
+      "queue": [
+        {
+          "lane": 0,
+          "text_id": "pi03"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi04"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi05"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi06"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi07"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi08"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi09"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi10"
+        }
+      ],
+      "teaches": 10
+    },
+    "runtime_performance": {
+      "bank": "0",
+      "lane": 1,
+      "queue": [
+        {
+          "lane": 1,
+          "text_id": "rp01"
+        }
+      ],
+      "teaches": 1
+    },
+    "storage_recovery": {
+      "bank": "0",
+      "lane": 4,
+      "queue": [
+        {
+          "lane": 4,
+          "text_id": "sr01"
+        }
+      ],
+      "teaches": 1
+    }
+  },
+  "final_revision": 18,
+  "operations": {
+    "query_one_bank": {
+      "answer": {
+        "banks": {
+          "0": {
+            "class_sums": [
+              14445,
+              12131,
+              11995,
+              12790,
+              12300,
+              12970,
+              12211,
+              12514
+            ],
+            "counts": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "per_class_signed_bounds": [
+              20000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000
+            ],
+            "signed_sum": 101356
+          }
+        },
+        "classes": {
+          "api_behavior": {
+            "bank": "0",
+            "count": 1,
+            "lane": 3,
+            "mean_denominator": 1,
+            "mean_numerator": 12790,
+            "sum_dot": 12790
+          },
+          "build_dependencies": {
+            "bank": "0",
+            "count": 1,
+            "lane": 5,
+            "mean_denominator": 1,
+            "mean_numerator": 12970,
+            "sum_dot": 12970
+          },
+          "documentation": {
+            "bank": "0",
+            "count": 1,
+            "lane": 7,
+            "mean_denominator": 1,
+            "mean_numerator": 12514,
+            "sum_dot": 12514
+          },
+          "interface_accessibility": {
+            "bank": "0",
+            "count": 1,
+            "lane": 6,
+            "mean_denominator": 1,
+            "mean_numerator": 12211,
+            "sum_dot": 12211
+          },
+          "memory_usage": {
+            "bank": "0",
+            "count": 1,
+            "lane": 2,
+            "mean_denominator": 1,
+            "mean_numerator": 11995,
+            "sum_dot": 11995
+          },
+          "proof_integrity": {
+            "bank": "0",
+            "count": 1,
+            "lane": 0,
+            "mean_denominator": 1,
+            "mean_numerator": 14445,
+            "sum_dot": 14445
+          },
+          "runtime_performance": {
+            "bank": "0",
+            "count": 1,
+            "lane": 1,
+            "mean_denominator": 1,
+            "mean_numerator": 12131,
+            "sum_dot": 12131
+          },
+          "storage_recovery": {
+            "bank": "0",
+            "count": 1,
+            "lane": 4,
+            "mean_denominator": 1,
+            "mean_numerator": 12300,
+            "sum_dot": 12300
+          }
+        },
+        "counts": {
+          "api_behavior": 1,
+          "build_dependencies": 1,
+          "documentation": 1,
+          "interface_accessibility": 1,
+          "memory_usage": 1,
+          "proof_integrity": 1,
+          "runtime_performance": 1,
+          "storage_recovery": 1
+        },
+        "prediction": "proof_integrity",
+        "ranking": [
+          "proof_integrity",
+          "build_dependencies",
+          "api_behavior",
+          "documentation",
+          "storage_recovery",
+          "interface_accessibility",
+          "runtime_performance",
+          "memory_usage"
+        ]
+      },
+      "kind": "query",
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 8
+    },
+    "query_restart": {
+      "answer": {
+        "banks": {
+          "0": {
+            "class_sums": [
+              108010,
+              12131,
+              11995,
+              12790,
+              12300,
+              12970,
+              12211,
+              12514
+            ],
+            "counts": [
+              8,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "per_class_signed_bounds": [
+              160000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000
+            ],
+            "signed_sum": 194921
+          },
+          "1": {
+            "class_sums": [
+              11844,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "counts": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "per_class_signed_bounds": [
+              20000,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "signed_sum": 11844
+          }
+        },
+        "classes": {
+          "api_behavior": {
+            "bank": "0",
+            "count": 1,
+            "lane": 3,
+            "mean_denominator": 1,
+            "mean_numerator": 12790,
+            "sum_dot": 12790
+          },
+          "build_dependencies": {
+            "bank": "0",
+            "count": 1,
+            "lane": 5,
+            "mean_denominator": 1,
+            "mean_numerator": 12970,
+            "sum_dot": 12970
+          },
+          "documentation": {
+            "bank": "0",
+            "count": 1,
+            "lane": 7,
+            "mean_denominator": 1,
+            "mean_numerator": 12514,
+            "sum_dot": 12514
+          },
+          "interface_accessibility": {
+            "bank": "0",
+            "count": 1,
+            "lane": 6,
+            "mean_denominator": 1,
+            "mean_numerator": 12211,
+            "sum_dot": 12211
+          },
+          "memory_usage": {
+            "bank": "0",
+            "count": 1,
+            "lane": 2,
+            "mean_denominator": 1,
+            "mean_numerator": 11995,
+            "sum_dot": 11995
+          },
+          "network_transport": {
+            "bank": "1",
+            "count": 1,
+            "lane": 0,
+            "mean_denominator": 1,
+            "mean_numerator": 11844,
+            "sum_dot": 11844
+          },
+          "proof_integrity": {
+            "bank": "0",
+            "count": 8,
+            "lane": 0,
+            "mean_denominator": 8,
+            "mean_numerator": 108010,
+            "sum_dot": 108010
+          },
+          "runtime_performance": {
+            "bank": "0",
+            "count": 1,
+            "lane": 1,
+            "mean_denominator": 1,
+            "mean_numerator": 12131,
+            "sum_dot": 12131
+          },
+          "storage_recovery": {
+            "bank": "0",
+            "count": 1,
+            "lane": 4,
+            "mean_denominator": 1,
+            "mean_numerator": 12300,
+            "sum_dot": 12300
+          }
+        },
+        "counts": {
+          "api_behavior": 1,
+          "build_dependencies": 1,
+          "documentation": 1,
+          "interface_accessibility": 1,
+          "memory_usage": 1,
+          "network_transport": 1,
+          "proof_integrity": 8,
+          "runtime_performance": 1,
+          "storage_recovery": 1
+        },
+        "prediction": "proof_integrity",
+        "ranking": [
+          "proof_integrity",
+          "build_dependencies",
+          "api_behavior",
+          "documentation",
+          "storage_recovery",
+          "interface_accessibility",
+          "runtime_performance",
+          "memory_usage",
+          "network_transport"
+        ]
+      },
+      "kind": "query",
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 18
+    },
+    "query_two_banks": {
+      "answer": {
+        "banks": {
+          "0": {
+            "class_sums": [
+              108010,
+              12131,
+              11995,
+              12790,
+              12300,
+              12970,
+              12211,
+              12514
+            ],
+            "counts": [
+              8,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "per_class_signed_bounds": [
+              160000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000,
+              20000
+            ],
+            "signed_sum": 194921
+          },
+          "1": {
+            "class_sums": [
+              11844,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "counts": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "per_class_signed_bounds": [
+              20000,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "signed_sum": 11844
+          }
+        },
+        "classes": {
+          "api_behavior": {
+            "bank": "0",
+            "count": 1,
+            "lane": 3,
+            "mean_denominator": 1,
+            "mean_numerator": 12790,
+            "sum_dot": 12790
+          },
+          "build_dependencies": {
+            "bank": "0",
+            "count": 1,
+            "lane": 5,
+            "mean_denominator": 1,
+            "mean_numerator": 12970,
+            "sum_dot": 12970
+          },
+          "documentation": {
+            "bank": "0",
+            "count": 1,
+            "lane": 7,
+            "mean_denominator": 1,
+            "mean_numerator": 12514,
+            "sum_dot": 12514
+          },
+          "interface_accessibility": {
+            "bank": "0",
+            "count": 1,
+            "lane": 6,
+            "mean_denominator": 1,
+            "mean_numerator": 12211,
+            "sum_dot": 12211
+          },
+          "memory_usage": {
+            "bank": "0",
+            "count": 1,
+            "lane": 2,
+            "mean_denominator": 1,
+            "mean_numerator": 11995,
+            "sum_dot": 11995
+          },
+          "network_transport": {
+            "bank": "1",
+            "count": 1,
+            "lane": 0,
+            "mean_denominator": 1,
+            "mean_numerator": 11844,
+            "sum_dot": 11844
+          },
+          "proof_integrity": {
+            "bank": "0",
+            "count": 8,
+            "lane": 0,
+            "mean_denominator": 8,
+            "mean_numerator": 108010,
+            "sum_dot": 108010
+          },
+          "runtime_performance": {
+            "bank": "0",
+            "count": 1,
+            "lane": 1,
+            "mean_denominator": 1,
+            "mean_numerator": 12131,
+            "sum_dot": 12131
+          },
+          "storage_recovery": {
+            "bank": "0",
+            "count": 1,
+            "lane": 4,
+            "mean_denominator": 1,
+            "mean_numerator": 12300,
+            "sum_dot": 12300
+          }
+        },
+        "counts": {
+          "api_behavior": 1,
+          "build_dependencies": 1,
+          "documentation": 1,
+          "interface_accessibility": 1,
+          "memory_usage": 1,
+          "network_transport": 1,
+          "proof_integrity": 8,
+          "runtime_performance": 1,
+          "storage_recovery": 1
+        },
+        "prediction": "proof_integrity",
+        "ranking": [
+          "proof_integrity",
+          "build_dependencies",
+          "api_behavior",
+          "documentation",
+          "storage_recovery",
+          "interface_accessibility",
+          "runtime_performance",
+          "memory_usage",
+          "network_transport"
+        ]
+      },
+      "kind": "query",
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 18
+    },
+    "restart": {
+      "kind": "restart",
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 18
+    },
+    "teach_ab01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "api_behavior",
+      "lane": 3,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [],
+          "teaches": 0
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [],
+          "teaches": 0
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [],
+          "teaches": 0
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [],
+          "teaches": 0
+        }
+      },
+      "revision": 4
+    },
+    "teach_bd01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "build_dependencies",
+      "lane": 5,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [],
+          "teaches": 0
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [],
+          "teaches": 0
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 6
+    },
+    "teach_dc01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "documentation",
+      "lane": 7,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 8
+    },
+    "teach_ia01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "interface_accessibility",
+      "lane": 6,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [],
+          "teaches": 0
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 7
+    },
+    "teach_mu01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "memory_usage",
+      "lane": 2,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [],
+          "teaches": 0
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [],
+          "teaches": 0
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [],
+          "teaches": 0
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [],
+          "teaches": 0
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [],
+          "teaches": 0
+        }
+      },
+      "revision": 3
+    },
+    "teach_nt01": {
+      "bank": "1",
+      "expired": null,
+      "kind": "teach",
+      "label": "network_transport",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 9
+    },
+    "teach_pi01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [],
+          "teaches": 0
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [],
+          "teaches": 0
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [],
+          "teaches": 0
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [],
+          "teaches": 0
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [],
+          "teaches": 0
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [],
+          "teaches": 0
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [],
+          "teaches": 0
+        }
+      },
+      "revision": 1
+    },
+    "teach_pi02": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            }
+          ],
+          "teaches": 2
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 10
+    },
+    "teach_pi03": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            }
+          ],
+          "teaches": 3
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 11
+    },
+    "teach_pi04": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            }
+          ],
+          "teaches": 4
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 12
+    },
+    "teach_pi05": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            }
+          ],
+          "teaches": 5
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 13
+    },
+    "teach_pi06": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            }
+          ],
+          "teaches": 6
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 14
+    },
+    "teach_pi07": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi07"
+            }
+          ],
+          "teaches": 7
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 15
+    },
+    "teach_pi08": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi08"
+            }
+          ],
+          "teaches": 8
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 16
+    },
+    "teach_pi09": {
+      "bank": "0",
+      "expired": {
+        "lane": 0,
+        "text_id": "pi01"
+      },
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            }
+          ],
+          "teaches": 9
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 17
+    },
+    "teach_pi10": {
+      "bank": "0",
+      "expired": {
+        "lane": 0,
+        "text_id": "pi02"
+      },
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "text_id": "bd01"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "text_id": "dc01"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "text_id": "ia01"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "nt01"
+            }
+          ],
+          "teaches": 1
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 18
+    },
+    "teach_rp01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "runtime_performance",
+      "lane": 1,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [],
+          "teaches": 0
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [],
+          "teaches": 0
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [],
+          "teaches": 0
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [],
+          "teaches": 0
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [],
+          "teaches": 0
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [],
+          "teaches": 0
+        }
+      },
+      "revision": 2
+    },
+    "teach_sr01": {
+      "bank": "0",
+      "expired": null,
+      "kind": "teach",
+      "label": "storage_recovery",
+      "lane": 4,
+      "model": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "text_id": "ab01"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [],
+          "teaches": 0
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [],
+          "teaches": 0
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [],
+          "teaches": 0
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "mu01"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [],
+          "teaches": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "text_id": "sr01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 5
+    }
+  },
+  "schema": "packed-class-lifecycle-reference-v1",
+  "scope": "Fixed author-written utility observations. The first checkpoint has no example for network_transport. Membership and FIFO teaching change together; no accuracy-gain, benchmark-generalization or reader-privacy claim.",
+  "score": "exact signed class sum/count"
+}

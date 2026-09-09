@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "-u",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/workload/workload.py",
+    "--worker",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/packed-lifecycle/resident.workload/steps/teach_mu01/input.json"
+  ],
+  "attempt": 1,
+  "elapsed_seconds": 6.660791459027678,
+  "finished_utc": "2026-09-09T05:36:00.548979+00:00",
+  "pid": 62468,
+  "returncode": 0,
+  "started_utc": "2026-09-09T05:35:53.888119+00:00",
+  "status": "completed"
+}

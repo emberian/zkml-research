@@ -40,6 +40,32 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
 
 
+def progress_description(directory, progress, raw):
+    relative = str(progress.parent.relative_to(directory))
+    phase = raw.get('phase', '')
+    if progress.parent == directory:
+        match = re.fullmatch(r'(class|bank)(\d+)-(prove|verify|capture|read)', phase)
+        if match:
+            action = {'prove': 'Proving the encrypted computation',
+                      'verify': 'Independently verifying the complete proof batch',
+                      'capture': 'Computing the encrypted answer',
+                      'read': 'Reading the verified answer'}[match[3]]
+            return f'{match[1].capitalize()} {int(match[2]) + 1}: {action}'
+        return {'issue': 'Encrypting the new teaching example',
+                'learn': 'Updating encrypted memory', 'prove': 'Proving the model update',
+                'verify': 'Verifying the model update', 'complete': 'Complete'}.get(phase, phase.replace('_', ' ').capitalize())
+    match = re.search(r'class(\d+)', relative)
+    prefix = f'Class {int(match[1]) + 1}: ' if match else ''
+    kind = raw.get('kind') or progress.parent.name
+    part = {'infer': 'encrypted dot product', 'extension': 'basis extension',
+            'tensor': 'ciphertext square', 'rescale': 'rescaling',
+            'update': 'model update'}.get(kind, 'computation')
+    action = {'emit': 'Building witness for', 'prove': 'Proving',
+              'complete': 'Finished'}.get(phase, 'Verifying')
+    detail = f" · chunk {raw['index'] + 1}" if isinstance(raw.get('index'), int) else ''
+    return prefix + action + ' ' + part + detail
+
+
 class Jobs:
     def __init__(self, root):
         self.root = Path(root).resolve()
@@ -102,6 +128,18 @@ class Jobs:
                     or len(set(labels)) != len(labels)):
                 raise ValueError('Provide distinct nonempty class labels (at most 1024).')
             body = {'classes': labels}
+            score = payload.get('score', 'squared')
+            proof_backend = payload.get('proof_backend', 'compact')
+            layout = payload.get('layout', 'examples')
+            if (score, proof_backend) not in (('squared', 'compact'), ('linear', 'compact'), ('linear', 'matched')):
+                raise ValueError('Choose squared/compact, linear/compact, or linear/matched.')
+            if layout not in ('examples', 'classes') or (layout == 'classes' and (score, proof_backend) != ('linear', 'matched')):
+                raise ValueError('Packed classes require linear scoring with matched proofs.')
+            # Preserve existing initialization request identities for the default.
+            if (score, proof_backend) != ('squared', 'compact'):
+                body.update(score=score, proof_backend=proof_backend)
+            if layout == 'classes':
+                body['layout'] = layout
             identifier = 'init'
         else:
             request_id = payload.get('request_id')
@@ -182,6 +220,19 @@ class Jobs:
             except (OSError, ValueError):
                 continue
         result['evaluation'] = self.evaluation()
+        genesis_path = self.model / 'journal/genesis.json'
+        if result['initialized'] and (HERE / 'engines.py').exists():
+            import engines
+            genesis = json.loads(genesis_path.read_text())
+            packed = genesis['schema'] == 'packed-class-centroid-genesis-v1'
+            descriptor = genesis['backend']['proof_engine'] if packed else genesis.get('engine')
+            result['engine'] = engines.metadata(descriptor)
+            if packed:
+                info = result['engine']
+                info.update(layout='classes', classes_per_bank=genesis['policy']['classes_per_bank'],
+                            bank_count=len(genesis['initial_banks']), score_formula='class_sum / count',
+                            infer_proofs_per_bank=info.pop('infer_proofs_per_class'))
+                info.pop('lane_values_key', None)
         return result
 
     def evaluation(self):
@@ -197,7 +248,10 @@ class Jobs:
                 fcntl.flock(lock, fcntl.LOCK_UN)
             except BlockingIOError:
                 running = True
-        operations = json.loads((HERE / 'workload.json').read_text())['operations']
+        genesis_path = self.model / 'journal/genesis.json'
+        packed = genesis_path.exists() and json.loads(genesis_path.read_text())['schema'] == 'packed-class-centroid-genesis-v1'
+        corpus = HERE / 'packed/workload/corpus.json' if packed else HERE / 'workload.json'
+        operations = json.loads(corpus.read_text())['operations']
         done = [op for op in operations if (controller / 'steps' / op['id'] / 'completed.json').is_file()]
         current = next((op for op in operations if op not in done), None)
         value = {'running': running, 'completed_operations': len(done),
@@ -210,9 +264,7 @@ class Jobs:
             if progress:
                 try:
                     raw = json.loads(progress.read_text())
-                    value['phase'] = str(progress.parent.relative_to(directory)) + ': ' + str(raw.get('phase', 'Working'))
-                    if isinstance(raw.get('index'), int):
-                        value['phase'] += f" — chunk {raw['index'] + 1}"
+                    value['phase'] = progress_description(directory, progress, raw)
                 except (OSError, ValueError):
                     pass
         if (controller / 'RESULT.json').exists():
@@ -236,13 +288,21 @@ class Jobs:
             monitor = threading.Thread(target=self.monitor, args=(row, payload, monitor_stop), daemon=True)
             monitor.start()
             try:
+                selected_core = core
+                genesis_path = self.model / 'journal/genesis.json'
+                packed = payload.get('layout') == 'classes'
+                if genesis_path.exists():
+                    packed = json.loads(genesis_path.read_text())['schema'] == 'packed-class-centroid-genesis-v1'
+                if packed:
+                    from packed import core as selected_core
                 if row['kind'] == 'init':
                     self.phase(row['id'], 'Creating encryption keys and the initial journal')
-                    result = core.initialize(self.model, payload['classes'])
-                    live = core.Live(self.model)
+                    selection = {key: payload[key] for key in ('score', 'proof_backend') if key in payload}
+                    result = selected_core.initialize(self.model, payload['classes'], **({} if packed else selection))
+                    live = selected_core.Live(self.model)
                 else:
                     if live is None:
-                        live = core.Live(self.model)
+                        live = selected_core.Live(self.model)
                     self.phase(row['id'], 'Encoding supplied text and preparing encrypted computation')
                     if row['kind'] == 'teach':
                         result = live.teach(payload['label'], payload['text'], payload['request_id'])
@@ -274,12 +334,7 @@ class Jobs:
                     continue
                 raw = json.loads(progress.read_text())
                 newest = progress.stat().st_mtime_ns
-                relative = str(progress.parent.relative_to(request))
-                phase = str(raw.get('phase', 'Working'))
-                index = raw.get('index')
-                done = raw.get('completed_phase', raw.get('completed'))
-                detail = f' — chunk {index + 1}' if isinstance(index, int) else f' — {done} checks complete' if isinstance(done, int) else ''
-                self.phase(row['id'], relative + ': ' + phase + detail)
+                self.phase(row['id'], progress_description(request, progress, raw))
             except (OSError, ValueError):
                 continue
 

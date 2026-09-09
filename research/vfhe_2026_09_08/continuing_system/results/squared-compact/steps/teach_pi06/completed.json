@@ -1,0 +1,114 @@
+{
+  "checks": {
+    "durable_revision_and_fifo_lanes_equal": true,
+    "expired_reference_example": null
+  },
+  "operation": {
+    "id": "teach_pi06",
+    "kind": "teach",
+    "text_id": "pi06"
+  },
+  "recorded_utc": "2026-09-09T04:45:07.833604+00:00",
+  "worker": {
+    "process": {
+      "elapsed_seconds": 23.466006790986285,
+      "finished_utc": "2026-09-09T04:45:07.826105+00:00",
+      "pid": 16850,
+      "ppid": 388
+    },
+    "result": {
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "aec36a20e3c01d2e0af235fcc3631a51a3172792e3616c7998c85f40951fd725",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "c76260fdad14068c32d2167809f436fe9af6dc01390ef7a123848010dc8d12e6"
+              },
+              {
+                "lane": 1,
+                "sha256": "bc7c65041d6243b0947247e00b2aa4ce60699d1f68b674ae6cd7d9630122ea0f"
+              },
+              {
+                "lane": 2,
+                "sha256": "f93f24aa7cd1c4ed4a8fd7e238164e1afb2374023e556cf384a9f8518fcaef1a"
+              },
+              {
+                "lane": 3,
+                "sha256": "07146066ece148c11dfa54224921f81556f5c9c3507f02fa00d8d2a872ac1a75"
+              },
+              {
+                "lane": 4,
+                "sha256": "6a93ac97a9fbaeea328507faa948edf13509ffa683dd9535478cb2bf74f7bbcd"
+              },
+              {
+                "lane": 5,
+                "sha256": "dc0190c5d6a3150cc0bb248f241a3a4c6c1773b5b5720c37f41abdafb70f0e47"
+              }
+            ],
+            "teaches": 6
+          },
+          "runtime_performance": {
+            "acc_sha256": "406c3890bb831b134e953dd7b741ae0bef74f2ca9abce347da9129a63c5f2890",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "2583c16d0a3205325358b5958f1c06fab277284d584469352fe269fb6ff86f45"
+              },
+              {
+                "lane": 1,
+                "sha256": "6fb6ab2dc8f2a43c6cede816300a3e25f620f42d5c2bea24029ffe4926c0c314"
+              }
+            ],
+            "teaches": 2
+          }
+        },
+        "genesis": "8cef650bcfecb9139b005e628a29c5a4efb6bce0e3c34fda658b77c5ced69368",
+        "last_receipt_sha256": "803f9d8ece2954e84461cc9e3aa374110183d7064579b7d4da18b7868baf60cf",
+        "model_root": "d7841b0392d7ec92138314572254d4b83ede82c83c31f2362946fc1beea9b028",
+        "revision": 8
+      },
+      "metrics": {
+        "accepted_fresh_proofs": 8,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.24142199999187142,
+          "learn": 0.08971629198640585,
+          "prove": 21.475411500025075,
+          "verify": 1.546209332998842
+        },
+        "private_reads": 0,
+        "proof_bytes": 5801564,
+        "proofs_generated": 8,
+        "proofs_verified": 8
+      },
+      "private_reads": 0,
+      "receipt_sha256": "803f9d8ece2954e84461cc9e3aa374110183d7064579b7d4da18b7868baf60cf",
+      "request": {
+        "feature_sha256": "9a53179243621fe6320e467c981c02c9c21731489c510b02de7e76f0a4bfdc42",
+        "genesis": "8cef650bcfecb9139b005e628a29c5a4efb6bce0e3c34fda658b77c5ced69368",
+        "label": "proof_integrity",
+        "lane": 5,
+        "parent_model_root": "eb0992a34d83839953c059e88f7f0546a982075eb2c9a886126d3cadc2a5e040",
+        "parent_sha256": "791440fd1ee251522230f4c22aeab55c4e1e689f7775c8e99e717d3bfb36ef86",
+        "payloads": {
+          "acc_sha256": "81589073690ad3c58e33b3895be99e0b4c114110606736f439e8c49eecba1700",
+          "fresh_sha256": "dc0190c5d6a3150cc0bb248f241a3a4c6c1773b5b5720c37f41abdafb70f0e47",
+          "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "out_sha256": "aec36a20e3c01d2e0af235fcc3631a51a3172792e3616c7998c85f40951fd725"
+        },
+        "profile_sha256": "daf3baa054b5b979e77ab4d9d9366bc87bf4988e4c8f227579611b8d68947842",
+        "recipient_id": "6bb56ff7f07ca940607fc14253c2c9630985a49b3c34825ab58fdf21173df412",
+        "request_id": "teach_pi06",
+        "revision": 8,
+        "schema": "continuing-update-v1",
+        "text_sha256": "1fe10d9775ba2c23d6c02a24eafed4c7a200f48051ddc9bfce686bf5e328f92c"
+      }
+    }
+  }
+}

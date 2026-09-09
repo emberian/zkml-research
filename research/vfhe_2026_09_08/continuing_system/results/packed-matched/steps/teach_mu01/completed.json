@@ -1,0 +1,249 @@
+{
+  "checks": {
+    "durable_revision_layout_and_fifo_counts_equal": true,
+    "expired_reference_example": null
+  },
+  "operation": {
+    "id": "teach_mu01",
+    "kind": "teach",
+    "text_id": "mu01"
+  },
+  "recorded_utc": "2026-09-09T05:36:00.550036+00:00",
+  "worker": {
+    "engine": {
+      "bank_count": 2,
+      "class_layout": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4
+        }
+      },
+      "classes_per_bank": 8,
+      "fifo_capacity": 8,
+      "infer_proofs_per_bank": 352,
+      "layout": "fixed class lanes",
+      "proof_backend": "matched",
+      "schema": "packed-class-sum-display-v1",
+      "score_formula": "class_sum / count",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs": 32
+    },
+    "process": {
+      "elapsed_seconds": 6.529539541981649,
+      "finished_utc": "2026-09-09T05:36:00.534973+00:00",
+      "pid": 62468,
+      "ppid": 62180
+    },
+    "result": {
+      "bank_count": 2,
+      "class_layout": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4
+        }
+      },
+      "classes_per_bank": 8,
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "banks": {
+          "0": {
+            "acc_sha256": "055a48ba489d8a3ad449a7843f0039242533fb67f1de6e5dfcab2a3c9eccd92b"
+          },
+          "1": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16"
+          }
+        },
+        "classes": {
+          "api_behavior": {
+            "bank": "0",
+            "lane": 3,
+            "queue": [],
+            "teaches": 0
+          },
+          "build_dependencies": {
+            "bank": "0",
+            "lane": 5,
+            "queue": [],
+            "teaches": 0
+          },
+          "documentation": {
+            "bank": "0",
+            "lane": 7,
+            "queue": [],
+            "teaches": 0
+          },
+          "interface_accessibility": {
+            "bank": "0",
+            "lane": 6,
+            "queue": [],
+            "teaches": 0
+          },
+          "memory_usage": {
+            "bank": "0",
+            "lane": 2,
+            "queue": [
+              {
+                "lane": 2,
+                "sha256": "76f477a2ee4bf0a342d7e3c3faa3fd17b0140311c815ef1f7698129277ea6825"
+              }
+            ],
+            "teaches": 1
+          },
+          "network_transport": {
+            "bank": "1",
+            "lane": 0,
+            "queue": [],
+            "teaches": 0
+          },
+          "proof_integrity": {
+            "bank": "0",
+            "lane": 0,
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "a1c869d041d0c2b578080c6a6b18356067ca683339934013fa1b9d77e42cf49b"
+              }
+            ],
+            "teaches": 1
+          },
+          "runtime_performance": {
+            "bank": "0",
+            "lane": 1,
+            "queue": [
+              {
+                "lane": 1,
+                "sha256": "a2c50591177e97949667c37be18fe709a06acc13d511084a808b1360232e4d6b"
+              }
+            ],
+            "teaches": 1
+          },
+          "storage_recovery": {
+            "bank": "0",
+            "lane": 4,
+            "queue": [],
+            "teaches": 0
+          }
+        },
+        "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+        "last_receipt_sha256": "848541914063b293fac31a71af719c149abf70d2ed18be1cc1e3fd419f58dce7",
+        "model_root": "abf4ed7ebe6c983c6aa0abc955ae76601b03ab7d76b3d8ba39a6fe18b45165f0",
+        "revision": 3
+      },
+      "infer_proofs_per_bank": 352,
+      "layout": "fixed class lanes",
+      "metrics": {
+        "accepted_fresh_proofs": 32,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.31941083300625905,
+          "learn": 0.16671745799249038,
+          "prove": 3.887188665976282,
+          "verify": 1.8615247090347111
+        },
+        "private_reads": 0,
+        "proof_bytes": 5694643,
+        "proofs_generated": 32,
+        "proofs_verified": 32
+      },
+      "private_reads": 0,
+      "proof_backend": "matched",
+      "receipt_sha256": "848541914063b293fac31a71af719c149abf70d2ed18be1cc1e3fd419f58dce7",
+      "request": {
+        "backend_sha256": "e202fb7141a240037bdccc7dfa4e092737f30a6f65f082019f76e10ad70ee227",
+        "bank": "0",
+        "feature_sha256": "213c01ee0134cbcf20c12d058ee3137d2f4c40cd6e6324c2f3fc893ae7eda059",
+        "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+        "label": "memory_usage",
+        "lane": 2,
+        "parent_model_root": "db61a2743841b9857bb62dd8fb61363a68a781885676e9fc84501dfaadc6ef78",
+        "parent_sha256": "1cc50ad6b5ff913e20a118a1644f24cacbb7309e17c069960526fc434d6f9522",
+        "payloads": {
+          "acc_sha256": "31a305f1e36449173fc5ede3a38c2bfb87b3ede556bcb915dae5f69c2c515b7d",
+          "fresh_sha256": "76f477a2ee4bf0a342d7e3c3faa3fd17b0140311c815ef1f7698129277ea6825",
+          "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+          "out_sha256": "055a48ba489d8a3ad449a7843f0039242533fb67f1de6e5dfcab2a3c9eccd92b"
+        },
+        "recipient_id": "dfc2f8c677ea1e86b155f817e3045af9797e5ab564c2208542c2ac553247d57f",
+        "request_id": "teach_mu01",
+        "revision": 3,
+        "schema": "packed-class-update-v1",
+        "text_sha256": "35d3d887c4eca4d0747ce01685bccbb058475acec795262f4de7e23d7b2e595b"
+      },
+      "schema": "packed-class-sum-display-v1",
+      "score_formula": "class_sum / count",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs": 32
+    }
+  }
+}

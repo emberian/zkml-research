@@ -1,0 +1,11 @@
+{
+  "claim_label": "EXECUTED",
+  "caller_parses": true,
+  "profile_pins": 5,
+  "native_refusal_checks": 3,
+  "linear_profile_pins_unchanged": 18,
+  "private_reads": 0,
+  "key_generations": 0,
+  "proof_runs": 0,
+  "complete_packed_flow": "Not launched by this check; owned by packed learner lifecycle."
+}

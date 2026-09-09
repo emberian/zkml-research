@@ -1,0 +1,56 @@
+{
+  "modules": {
+    "MatchedFieldMac": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "build/Compiler/MatchedFieldMac.olean",
+        "Compiler/MatchedFieldMac.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/formal",
+      "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+      "exit": 0,
+      "seconds": 11.21705729200039,
+      "source_sha256": "2b2741399e6f94a2073ea8927d8a8573fceb0fd850e334401e46ff48c6f8f2ce",
+      "record": "checks/MatchedFieldMac_004.json"
+    },
+    "MatchedFieldProgram": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "build/Compiler/MatchedFieldProgram.olean",
+        "Compiler/MatchedFieldProgram.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/formal",
+      "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/backend/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/build/lib/lean",
+      "exit": 0,
+      "seconds": 15.020912542007864,
+      "source_sha256": "f7d8e15d88ffa3db2e6f0df46d174d211ec42a5fb1ab36e7069c024d525133d6",
+      "record": "checks/MatchedFieldProgram_006.json"
+    }
+  },
+  "package": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "/Users/ember/dev/minidregg",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/formal/matched-field-arithmetic.patch"
+      ],
+      "exit": 0,
+      "log": "checks/package_01.log"
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "exit": 0,
+      "log": "checks/package_02.log"
+    }
+  ],
+  "guard_count": 29,
+  "proof_runtime_runs": 0
+}

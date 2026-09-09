@@ -1,0 +1,613 @@
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).d ((fun i => i) ⟨0, ⋯⟩) < primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).d ((fun i => i) ⟨1, ⋯⟩) < primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).d ((fun i => i) ⟨2, ⋯⟩) < primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).d ((fun i => i) ⟨3, ⋯⟩) < primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).d ((fun i => i) ⟨0, ⋯⟩) < primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).d ((fun i => i) ⟨1, ⋯⟩) < primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).d ((fun i => i) ⟨2, ⋯⟩) < primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).d ((fun i => i) ⟨3, ⋯⟩) < primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).d ((fun i => i) ⟨0, ⋯⟩) < primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).d ((fun i => i) ⟨1, ⋯⟩) < primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).d ((fun i => i) ⟨2, ⋯⟩) < primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).d ((fun i => i) ⟨3, ⋯⟩) < primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).d ((fun i => i) ⟨0, ⋯⟩) < primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).d ((fun i => i) ⟨1, ⋯⟩) < primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).d ((fun i => i) ⟨2, ⋯⟩) < primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:117:45: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).d ((fun i => i) ⟨3, ⋯⟩) < primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:118:63: error: Expected type must not contain free variables
+  (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j).key ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:120:45: error: Expected type must not contain free variables
+  demoTrace 0 ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩)) (initialOperands demoModel demoQuery ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:131:22: error: Expected type must not contain free variables
+  (rotationOperands demoTransforms demoKey (demoTrace ↑s) s ((fun i => i) ⟨0, ⋯⟩) j).addend ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:131:22: error: Expected type must not contain free variables
+  (rotationOperands demoTransforms demoKey (demoTrace ↑s) s ((fun i => i) ⟨1, ⋯⟩) j).addend ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:131:22: error: Expected type must not contain free variables
+  (rotationOperands demoTransforms demoKey (demoTrace ↑s) s ((fun i => i) ⟨2, ⋯⟩) j).addend ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:131:22: error: Expected type must not contain free variables
+  (rotationOperands demoTransforms demoKey (demoTrace ↑s) s ((fun i => i) ⟨3, ⋯⟩) j).addend ((fun i => i) ⟨1, ⋯⟩) <
+    primes ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨0, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨0, ⋯⟩)) ((fun i => i) ⟨0, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨1, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨1, ⋯⟩)) ((fun i => i) ⟨1, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨2, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨2, ⋯⟩)) ((fun i => i) ⟨2, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨3, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨3, ⋯⟩)) ((fun i => i) ⟨3, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨0, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨0, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨0, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨1, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨1, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨1, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨2, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨2, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨2, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨0, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: Expected type must not contain free variables
+  demoTrace (↑((fun i => i) ⟨4, ⋯⟩) + 1) ((fun i => i) ⟨1, ⋯⟩) ((fun i => i) ⟨3, ⋯⟩) j =
+    output (primes ((fun i => i) ⟨3, ⋯⟩))
+      (rotationOperands demoTransforms demoKey (demoTrace ↑((fun i => i) ⟨4, ⋯⟩)) ((fun i => i) ⟨4, ⋯⟩)
+        ((fun i => i) ⟨3, ⋯⟩) j)
+      ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Compiler/MatchedFieldProgram.lean:133:52: error: maximum number of errors (100; from option `maxErrors`) reached, exiting

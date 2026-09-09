@@ -1,0 +1,125 @@
+{
+  "checks": {
+    "durable_revision_and_fifo_lanes_equal": true,
+    "expired_reference_example": {
+      "lane": 1,
+      "text_id": "pi02"
+    }
+  },
+  "operation": {
+    "id": "teach_pi10",
+    "kind": "teach",
+    "text_id": "pi10"
+  },
+  "recorded_utc": "2026-09-09T05:06:10.312062+00:00",
+  "worker": {
+    "process": {
+      "elapsed_seconds": 29.10356562497327,
+      "finished_utc": "2026-09-09T05:06:10.303734+00:00",
+      "pid": 37624,
+      "ppid": 388
+    },
+    "result": {
+      "committed": true,
+      "fifo_capacity": 8,
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "43527da39b51605dfc8bc9e451d3a9f68692cd723a7ef72e20e7fac4c7a0ed22",
+            "queue": [
+              {
+                "lane": 2,
+                "sha256": "f93f24aa7cd1c4ed4a8fd7e238164e1afb2374023e556cf384a9f8518fcaef1a"
+              },
+              {
+                "lane": 3,
+                "sha256": "07146066ece148c11dfa54224921f81556f5c9c3507f02fa00d8d2a872ac1a75"
+              },
+              {
+                "lane": 4,
+                "sha256": "6a93ac97a9fbaeea328507faa948edf13509ffa683dd9535478cb2bf74f7bbcd"
+              },
+              {
+                "lane": 5,
+                "sha256": "dc0190c5d6a3150cc0bb248f241a3a4c6c1773b5b5720c37f41abdafb70f0e47"
+              },
+              {
+                "lane": 6,
+                "sha256": "0142f8c992d2b450757ef650512ed597f37d570f0ab6e16859a605b3cef35a6a"
+              },
+              {
+                "lane": 7,
+                "sha256": "f6108927a1656c0c16655dfa6499d0a2675667ef314ddddba791ea474784de0d"
+              },
+              {
+                "lane": 0,
+                "sha256": "1ee6ae7cb3ccf4de949c92ce11681c289dab0ff1563c9222e386b9e1a7e2726f"
+              },
+              {
+                "lane": 1,
+                "sha256": "43e3b11d11333cc8157e0014bba77cbb8fced530b18a5caaa2f74c1da1d331d2"
+              }
+            ],
+            "teaches": 10
+          },
+          "runtime_performance": {
+            "acc_sha256": "406c3890bb831b134e953dd7b741ae0bef74f2ca9abce347da9129a63c5f2890",
+            "queue": [
+              {
+                "lane": 0,
+                "sha256": "2583c16d0a3205325358b5958f1c06fab277284d584469352fe269fb6ff86f45"
+              },
+              {
+                "lane": 1,
+                "sha256": "6fb6ab2dc8f2a43c6cede816300a3e25f620f42d5c2bea24029ffe4926c0c314"
+              }
+            ],
+            "teaches": 2
+          }
+        },
+        "genesis": "8cef650bcfecb9139b005e628a29c5a4efb6bce0e3c34fda658b77c5ced69368",
+        "last_receipt_sha256": "1244705d173e890cb947b14f3167f5db0faae049813631137e4ee082a6d6fa83",
+        "model_root": "22c3b338e31ccd41e963ae16bf274a6b6667a9fcfb2bfbabc1a32105cec5b530",
+        "revision": 12
+      },
+      "metrics": {
+        "accepted_fresh_proofs": 8,
+        "answered_queries": 0,
+        "committed_updates": 1,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "issue": 0.24843066703760996,
+          "learn": 0.1036802910384722,
+          "prove": 26.915358625003137,
+          "verify": 1.700413957994897
+        },
+        "private_reads": 0,
+        "proof_bytes": 5817494,
+        "proofs_generated": 8,
+        "proofs_verified": 8
+      },
+      "private_reads": 0,
+      "receipt_sha256": "1244705d173e890cb947b14f3167f5db0faae049813631137e4ee082a6d6fa83",
+      "request": {
+        "feature_sha256": "5b31e36832256140cd3862649e3ae698c017fb19bd0167f4dffa0aaa7003d04e",
+        "genesis": "8cef650bcfecb9139b005e628a29c5a4efb6bce0e3c34fda658b77c5ced69368",
+        "label": "proof_integrity",
+        "lane": 1,
+        "parent_model_root": "92df959b8143e41a1cbe908a3314bd59aba3043400e8b04e8c0b0b2cf43b405d",
+        "parent_sha256": "4fce8e150c4a412d8833d5cf6f414af0035c84496bce7df5ef2b1dfd81cffc55",
+        "payloads": {
+          "acc_sha256": "721afef3ccaaa60caec8c32159b67a58c9515f15930d92ef081965034a26c285",
+          "fresh_sha256": "43e3b11d11333cc8157e0014bba77cbb8fced530b18a5caaa2f74c1da1d331d2",
+          "old_sha256": "bc7c65041d6243b0947247e00b2aa4ce60699d1f68b674ae6cd7d9630122ea0f",
+          "out_sha256": "43527da39b51605dfc8bc9e451d3a9f68692cd723a7ef72e20e7fac4c7a0ed22"
+        },
+        "profile_sha256": "daf3baa054b5b979e77ab4d9d9366bc87bf4988e4c8f227579611b8d68947842",
+        "recipient_id": "6bb56ff7f07ca940607fc14253c2c9630985a49b3c34825ab58fdf21173df412",
+        "request_id": "teach_pi10",
+        "revision": 12,
+        "schema": "continuing-update-v1",
+        "text_sha256": "6f55570c4d1ebafa6c3478dc0e454881a648c17f39c1ae11e73146cfc3a46b3b"
+      }
+    }
+  }
+}

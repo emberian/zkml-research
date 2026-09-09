@@ -1,0 +1,82 @@
+     Locking 1 package to latest Rust 1.98.0-nightly compatible version
+    Removing allocator-api2 v0.2.21
+    Removing arrayvec v0.7.8
+    Removing atomic-polyfill v1.0.3
+    Removing blake3 v1.8.7
+    Removing byteorder v1.5.0
+    Removing cc v1.4.5
+    Removing chacha20 v0.10.2
+    Removing cobs v0.3.0
+    Removing constant_time_eq v0.4.2
+    Removing cpufeatures v0.3.1
+    Removing critical-section v1.2.0
+    Removing crossbeam-deque v0.8.7
+    Removing crossbeam-epoch v0.9.20
+    Removing crossbeam-utils v0.8.22
+    Removing crunchy v0.2.4
+    Removing embedded-io v0.4.0
+    Removing embedded-io v0.6.1
+    Removing equivalent v1.0.2
+    Removing find-msvc-tools v0.1.12
+    Removing foldhash v0.2.0
+    Removing getrandom v0.4.3
+    Removing hash32 v0.2.1
+    Removing hashbrown v0.16.1
+    Removing hashbrown v0.17.1
+    Removing heapless v0.7.17
+    Removing heck v0.5.0
+    Removing lock_api v0.4.14
+    Removing p3-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-baby-bear v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-batch-stark v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-circuit v0.1.0 (https://github.com/emberian/plonky3-recursion?rev=fc3c6df#fc3c6dfa)
+    Removing p3-commit v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-dft v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-field v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-goldilocks v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-keccak v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-koala-bear v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-matrix v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-maybe-rayon v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-mds v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-merkle-tree v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-monty-31 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-multilinear-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-poseidon1 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-poseidon1-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-poseidon1-circuit-air v0.1.0 (https://github.com/emberian/plonky3-recursion?rev=fc3c6df#fc3c6dfa)
+    Removing p3-poseidon2 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-poseidon2-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-poseidon2-circuit-air v0.1.0 (https://github.com/emberian/plonky3-recursion?rev=fc3c6df#fc3c6dfa)
+    Removing p3-symmetric v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-uni-stark v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing p3-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+    Removing pin-project-lite v0.2.17
+    Removing postcard v1.1.3
+    Removing r-efi v6.0.0
+    Removing rand v0.10.2
+    Removing rand_core v0.10.1
+    Removing rand_xoshiro v0.8.1
+    Removing rayon v1.12.0
+    Removing rayon-core v1.13.0
+    Removing rmp v0.8.15
+    Removing rmp-serde v1.3.1
+    Removing rustc_version v0.4.1
+    Removing scopeguard v1.2.0
+    Removing semver v1.0.28
+    Removing shlex v2.0.1
+    Removing spin v0.9.9
+    Removing spin v0.11.1
+    Removing stable_deref_trait v1.2.1
+    Removing strength_reduce v0.2.4
+    Removing strum v0.28.0
+    Removing strum_macros v0.28.0
+    Removing syn v1.0.109
+    Removing tiny-keccak v2.0.2
+    Removing tracing v0.1.44
+    Removing tracing-attributes v0.1.31
+    Removing tracing-core v0.1.36
+    Removing transpose v0.2.3
+    Removing unroll v0.1.5
+      Adding vfhe-packed-class-reader v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native)
+note: pass `--verbose` to see 5 unchanged dependencies behind latest

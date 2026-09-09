@@ -1,0 +1,288 @@
+{
+  "capacity": 8,
+  "classes": [
+    "proof_integrity",
+    "runtime_performance",
+    "memory_usage",
+    "api_behavior",
+    "storage_recovery",
+    "build_dependencies",
+    "interface_accessibility",
+    "documentation",
+    "network_transport"
+  ],
+  "corpus_provenance": "Author-written public issue texts fixed before feature encoding and evaluation; no profile data or held-out tuning.",
+  "evaluation_policy": {
+    "baselines": [
+      "frozen first-eight-class model",
+      "fixed class-frequency majority with alphabetical tie break"
+    ],
+    "frozen_before_encoding": true,
+    "held_out_tuning": false,
+    "lifecycle": "First query has one active bank. Activate the ninth class, teach proof_integrity ten examples total and expire its first two, then query two banks. Reopen the durable instance in a fresh process and issue a fresh query for identical feature bytes.",
+    "prediction": "Descending exact rational class dot-sum divided by its retained example count; alphabetical tie break. Untaught classes are absent.",
+    "scope": "Fixed author-written utility observations. The first checkpoint has no example for network_transport. Membership and FIFO teaching change together; no accuracy-gain, benchmark-generalization or reader-privacy claim."
+  },
+  "feature_dimension": 576,
+  "held_out": [
+    {
+      "id": "hpi01",
+      "label": "proof_integrity",
+      "text": "Changing the claimed answer does not make the certificate fail verification. Determine which arithmetic or boundary constraint permits the forged witness."
+    },
+    {
+      "id": "hrp01",
+      "label": "runtime_performance",
+      "text": "The benchmark spends most of each request serializing data between short-lived workers. Reduce repeated work and measure the improvement in end-to-end latency."
+    },
+    {
+      "id": "hmu01",
+      "label": "memory_usage",
+      "text": "After thousands of requests, obsolete arrays are still reachable and the process exhausts RAM. Track the allocation lifetime and fix the retained-memory leak."
+    },
+    {
+      "id": "hab01",
+      "label": "api_behavior",
+      "text": "Clients receive a success code and an unexpected JSON shape when a required request field is missing. Correct the endpoint validation and error response contract."
+    },
+    {
+      "id": "hsr01",
+      "label": "storage_recovery",
+      "text": "After an interrupted disk write, reopening the application discards a previously committed transaction. Repair the journal replay and atomic manifest recovery sequence."
+    },
+    {
+      "id": "hbd01",
+      "label": "build_dependencies",
+      "text": "Continuous integration fails on a fresh machine because a library update requires a newer compiler. Reconcile the toolchain version with the locked dependency graph."
+    },
+    {
+      "id": "hia01",
+      "label": "interface_accessibility",
+      "text": "A screen reader announces an unlabeled button, and tab navigation skips the dialog controls. Repair the accessible descriptions and keyboard focus behavior."
+    },
+    {
+      "id": "hdc01",
+      "label": "documentation",
+      "text": "A new contributor cannot follow the README because environment variables and example commands are unexplained. Update the onboarding documentation with working instructions."
+    },
+    {
+      "id": "hnt01",
+      "label": "network_transport",
+      "text": "An interrupted socket leaves an HTTP stream hanging forever. Specify connection timeouts and reconnect behavior so the client can recover from a dropped network link."
+    }
+  ],
+  "lanes_per_bank": 8,
+  "layout": "Supplied class order is genesis bank/lane order: index//8 and index%8. First eight classes fill bank 0; network_transport activates bank 1 later.",
+  "maximum_squared_norm": 20000,
+  "operations": [
+    {
+      "id": "teach_pi01",
+      "kind": "teach",
+      "text_id": "pi01"
+    },
+    {
+      "id": "teach_rp01",
+      "kind": "teach",
+      "text_id": "rp01"
+    },
+    {
+      "id": "teach_mu01",
+      "kind": "teach",
+      "text_id": "mu01"
+    },
+    {
+      "id": "teach_ab01",
+      "kind": "teach",
+      "text_id": "ab01"
+    },
+    {
+      "id": "teach_sr01",
+      "kind": "teach",
+      "text_id": "sr01"
+    },
+    {
+      "id": "teach_bd01",
+      "kind": "teach",
+      "text_id": "bd01"
+    },
+    {
+      "id": "teach_ia01",
+      "kind": "teach",
+      "text_id": "ia01"
+    },
+    {
+      "id": "teach_dc01",
+      "kind": "teach",
+      "text_id": "dc01"
+    },
+    {
+      "checkpoint": "one_bank",
+      "id": "query_one_bank",
+      "kind": "query",
+      "text_id": "hpi01"
+    },
+    {
+      "id": "teach_nt01",
+      "kind": "teach",
+      "text_id": "nt01"
+    },
+    {
+      "id": "teach_pi02",
+      "kind": "teach",
+      "text_id": "pi02"
+    },
+    {
+      "id": "teach_pi03",
+      "kind": "teach",
+      "text_id": "pi03"
+    },
+    {
+      "id": "teach_pi04",
+      "kind": "teach",
+      "text_id": "pi04"
+    },
+    {
+      "id": "teach_pi05",
+      "kind": "teach",
+      "text_id": "pi05"
+    },
+    {
+      "id": "teach_pi06",
+      "kind": "teach",
+      "text_id": "pi06"
+    },
+    {
+      "id": "teach_pi07",
+      "kind": "teach",
+      "text_id": "pi07"
+    },
+    {
+      "id": "teach_pi08",
+      "kind": "teach",
+      "plaintext_checkpoint": "before_expiry",
+      "text_id": "pi08"
+    },
+    {
+      "id": "teach_pi09",
+      "kind": "teach",
+      "text_id": "pi09"
+    },
+    {
+      "id": "teach_pi10",
+      "kind": "teach",
+      "text_id": "pi10"
+    },
+    {
+      "checkpoint": "two_banks_after_expiry",
+      "id": "query_two_banks",
+      "kind": "query",
+      "text_id": "hpi01"
+    },
+    {
+      "id": "restart",
+      "kind": "restart"
+    },
+    {
+      "checkpoint": "after_restart",
+      "id": "query_restart",
+      "kind": "query",
+      "must_equal": "query_two_banks",
+      "text_id": "hpi01"
+    }
+  ],
+  "plaintext_modulus": 4294475777,
+  "schema": "packed-class-public-workload-v1",
+  "task": "Route public repository issues among nine engineering responsibilities using packed class-centroid sums.",
+  "training": [
+    {
+      "id": "pi01",
+      "label": "proof_integrity",
+      "text": "The execution proof accepts a forged output when the final trace row is changed. Add the missing boundary constraint and show that the verifier rejects the invalid witness."
+    },
+    {
+      "id": "rp01",
+      "label": "runtime_performance",
+      "text": "Each inference request repeats expensive transforms and launches many short worker processes. Profile the wall time, reuse the shared computation, and improve request throughput."
+    },
+    {
+      "id": "mu01",
+      "label": "memory_usage",
+      "text": "The service retains every temporary tensor after a request finishes. Find the heap ownership leak and release the buffers so resident memory stops growing."
+    },
+    {
+      "id": "ab01",
+      "label": "api_behavior",
+      "text": "The create endpoint returns the wrong HTTP status for an invalid request body. Define the public response schema and make malformed input produce the documented structured error."
+    },
+    {
+      "id": "sr01",
+      "label": "storage_recovery",
+      "text": "A crash occurs after a journal record is written but before its manifest is replaced. Make recovery reopen the last committed state without losing a durable update."
+    },
+    {
+      "id": "bd01",
+      "label": "build_dependencies",
+      "text": "A clean checkout cannot compile because the dependency lockfile selects incompatible crate versions. Pin the supported toolchain and resolve the package build conflict."
+    },
+    {
+      "id": "ia01",
+      "label": "interface_accessibility",
+      "text": "The browser form cannot be operated with a keyboard and its inputs have no accessible names. Add focus order and screen reader labels to make the interface usable."
+    },
+    {
+      "id": "dc01",
+      "label": "documentation",
+      "text": "The setup guide omits required configuration and its command examples no longer match the project. Rewrite the installation instructions and explain the configuration options."
+    },
+    {
+      "id": "nt01",
+      "label": "network_transport",
+      "text": "The client loses its connection while downloading a response and never reconnects. Add bounded retry and timeout handling around the streaming network transport."
+    },
+    {
+      "id": "pi02",
+      "label": "proof_integrity",
+      "text": "A claimed integer result is justified only by equality modulo a prime. State bounded integer semantics and constrain the quotient so wraparound cannot validate a false result."
+    },
+    {
+      "id": "pi03",
+      "label": "proof_integrity",
+      "text": "The verifier accepts two inconsistent openings from the same polynomial commitment. Bind the batch challenge and prove that every opening belongs to the committed assignment."
+    },
+    {
+      "id": "pi04",
+      "label": "proof_integrity",
+      "text": "A receipt authenticates the program name but omits the query digest. Bind the exact statement so a certificate for one input cannot authorize another input."
+    },
+    {
+      "id": "pi05",
+      "label": "proof_integrity",
+      "text": "The proof checks the first transition but leaves the last transition unconstrained. Supply all row constraints and an explicit invalid final-row witness that must be rejected."
+    },
+    {
+      "id": "pi06",
+      "label": "proof_integrity",
+      "text": "The range constraint allows a negative signed value to masquerade as a valid large residue. Prove that decoding the accepted field element returns the intended bounded integer."
+    },
+    {
+      "id": "pi07",
+      "label": "proof_integrity",
+      "text": "The soundness theorem assumes a predicate that no actual execution satisfies. Construct a valid witness and make the public statement express a nonvacuous computation."
+    },
+    {
+      "id": "pi08",
+      "label": "proof_integrity",
+      "text": "The output reader receives ciphertext bytes different from the ciphertext authenticated by the proof. Bind the exact output digest to the accepted verification statement."
+    },
+    {
+      "id": "pi09",
+      "label": "proof_integrity",
+      "text": "A prover chooses the opening challenge after seeing the value it wants to fabricate. Restore the commitment-before-challenge dependency required by the verification argument."
+    },
+    {
+      "id": "pi10",
+      "label": "proof_integrity",
+      "text": "The proof omits subtraction of the expired observation from the update equation. Constrain both the inserted and removed contributions so the certified FIFO transition is exact."
+    }
+  ]
+}
