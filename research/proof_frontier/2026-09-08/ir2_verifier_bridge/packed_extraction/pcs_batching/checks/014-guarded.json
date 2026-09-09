@@ -1,0 +1,13 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-pcs-batching-20260908/.lake/build/lib/lean/Selvage/PcsQuotientAgreement.olean",
+    "Selvage/PcsQuotientAgreement.lean"
+  ],
+  "cwd": "/tmp/minidregg-pcs-batching-20260908",
+  "exit": 0,
+  "seconds": 9.757480144500732
+}

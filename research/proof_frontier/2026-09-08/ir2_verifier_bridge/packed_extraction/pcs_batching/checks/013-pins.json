@@ -1,0 +1,42 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Selvage/PcsBatchingPins.lean"
+  ],
+  "cwd": "/tmp/minidregg-pcs-batching-20260908",
+  "exit": 0,
+  "seconds": 4.229659080505371,
+  "declarations": [
+    "Minidregg.Selvage.PcsBatching.liftQuotient_eval_point",
+    "Minidregg.Selvage.PcsBatching.liftQuotient_eval_coset",
+    "Minidregg.Selvage.PcsBatching.liftQuotient_natDegree",
+    "Minidregg.Selvage.PcsBatching.eq_of_common_set",
+    "Minidregg.Selvage.PcsBatching.jointOn_of_quotient_agreement",
+    "Minidregg.Selvage.PcsBatching.jointCard_of_many_close",
+    "Minidregg.Selvage.PcsBatching.shared_set_strict",
+    "Minidregg.Selvage.PcsBatching.jointNear_of_many_close",
+    "Minidregg.Selvage.PcsBatching.bad_alpha_card_le",
+    "Minidregg.Selvage.PcsBatching.claims_of_jointOn",
+    "Minidregg.Selvage.PcsBatching.not_jointNear_of_wrong_claim",
+    "Minidregg.Selvage.PcsBatching.bad_alpha_card_of_wrong_claim",
+    "Minidregg.Selvage.Ir2Fri.Pcs.termList_length",
+    "Minidregg.Selvage.Ir2Fri.Pcs.term_covered",
+    "Minidregg.Selvage.Ir2Fri.Pcs.pointCount_pos",
+    "Minidregg.Selvage.Ir2Fri.Pcs.columnIndex_key",
+    "Minidregg.Selvage.Ir2Fri.Pcs.jointColumnsNear_of_data",
+    "Minidregg.Selvage.Ir2Fri.Pcs.reduction_eq_curve",
+    "Minidregg.Selvage.Ir2Fri.Pcs.alphaLoop_ofFn",
+    "Minidregg.Selvage.Ir2Fri.Pcs.native_loop_eq_reduction",
+    "Minidregg.Selvage.Ir2Fri.Pcs.coset31_ne_zero",
+    "Minidregg.Selvage.Ir2Fri.Pcs.batching_parameters",
+    "Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_card",
+    "Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_probability",
+    "Minidregg.Selvage.PcsBatching.Exhibits.constant_offDomain",
+    "Minidregg.Selvage.PcsBatching.Exhibits.nonzeroAccepted",
+    "Minidregg.Selvage.PcsBatching.Exhibits.wrong_claim_bad_alpha",
+    "Minidregg.Selvage.PcsBatching.Exhibits.degreeLossFalsifier",
+    "Minidregg.Selvage.PcsBatching.Exhibits.zeroDenominatorFalsifier"
+  ]
+}

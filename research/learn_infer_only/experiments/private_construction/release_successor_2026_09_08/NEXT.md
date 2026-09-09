@@ -1,7 +1,9 @@
-# Critical next construction choice
+# Current construction choice
 
-[DERIVED] Do not build the inspected AGT or GE schemes as a rolling bilinear learner with exposed surviving full-domain writer keys. The exact source algorithm already reveals the probes; implementation speed cannot repair that capability.
+[OPEN first] Realize HIO_PROVENANCE.md's specified proof interface using established primitives. The active builder is evaluating encrypted exact-statement witnesses plus a simulation-sound proof, with an explicit CCA/extraction-feedback argument. A generic name such as NIZK is insufficient; account for the actual real/simulated setup and unknown challenge compiler coins.
 
-[OPEN] Construct input-bound continuation credentials that cannot be reused for arbitrary future probes and do not require a retained full reader/general key issuer, or choose a response family that does not reconstruct the state. For exact bilinear outputs, a full-rank future response family necessarily reveals the old state. Root declined atomic-epoch garbling; do not implement that weaker direction as this task's continuation.
+[OPEN separate frontier] A polynomial-size retained-view input-composition construction must hide every old encrypted boundary. HIO_CONTINUATION.md's flat ACE splice fails even for honestly issued equivalent residual functions. Do not build that leaking splice, or restart a wrapper-only repair that exposes a later old boundary. The ordinary-iO nested wrapper remains the conditional baseline; no useful repeated-size bound is established.
 
-[OPEN] The preexisting generic MIFE Replay construction in CONSTRUCTION.md remains a separate conditional baseline. The present task did not redo it, implement iO, or assert an indefinite resident successor. Do not turn the uninspected2026 noisy-MCFE discovery into a positive or negative source claim.
+[DERIVED retained constraint] Do not build the inspected AGT or garbled-encryption schemes as a rolling bilinear learner with exposed full-domain writer keys. Their basis/label capabilities reveal the old state under the stated exact-output family. Controlled/keyed HE does not remove the restricted-release obligation. Root declined the weaker atomic-epoch implementation; no implementation queue follows these negative results.
+
+[REPORTED retained outcomes] CONSTRUCTION.md's bounded MIFE Replay and its symbolic checks are frozen. The source paper's security games, conditional iO constructions, actual encrypted services and public arithmetic experiments have separate scopes. Keep source counts and credential lifecycles in the existing files; main companion trees and VERDICTS remain read-only.

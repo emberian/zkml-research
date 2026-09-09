@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-ir2-pcs-join-20260908/.lake/build/lib/lean/Selvage/Ir2PcsPackedSoundness.olean",
+    "Selvage/Ir2PcsPackedSoundness.lean"
+  ],
+  "cwd": "/tmp/minidregg-ir2-pcs-join-20260908",
+  "exit_code": 0,
+  "source_sha256": "c550418f5e459aa9dd37ad153c1a36016b33110bc3e9c768137e6dc7bf5a70bc",
+  "source_unchanged": true,
+  "elapsed_s": 7.502645015716553,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_join/checks/check003.log"
+}

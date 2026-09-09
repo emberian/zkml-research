@@ -1,0 +1,666 @@
+diff --git a/Selvage/PcsQuotientAgreement.lean b/Selvage/PcsQuotientAgreement.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/PcsQuotientAgreement.lean
+@@ -0,0 +1,150 @@
++/- PCS divided differences on a multiplicative coset. The source degree
++convention is explicit: quotient degree < d gives original degree ≤ d.
++No commitment, sampler, transcript or Fiat--Shamir assumption is hidden here. -/
++import Selvage.CurveProximityGapFullUD
++import Mathlib.Tactic
++
++namespace Minidregg.Selvage.PcsBatching
++open Polynomial
++open scoped BigOperators Classical
++noncomputable section
++set_option autoImplicit false
++set_option maxHeartbeats 1000000
++
++variable {F ι κ : Type*} [Field F] [DecidableEq F] [Fintype ι]
++
++/-- Terms are in the fixed coefficient order of the alpha polynomial. Repeated
++column identifiers share the same source word but may have different claims. -/
++structure Data (F ι κ : Type*) (M : ℕ) where
++  column : Fin (M+1) → κ
++  source : κ → ι → F
++  point : Fin (M+1) → F
++  claim : Fin (M+1) → F
++
++def Data.quotientWord {M : ℕ} (a : Data F ι κ M) (dom : ι ↪ F) (s : F)
++    (j : Fin (M+1)) (i : ι) : F :=
++  (a.claim j-a.source (a.column j) i)/(a.point j-s*dom i)
++
++def Data.OffDomain {M : ℕ} (a : Data F ι κ M) (dom : ι ↪ F) (s : F) : Prop :=
++  ∀ j i, a.point j ≠ s*dom i
++
++/-- Physical-variable polynomials: evaluated at the original coset point s*t,
++and at the supplied opening point z, rather than silently at z/s. -/
++def Data.JointOn {M : ℕ} (a : Data F ι κ M) (dom : ι ↪ F) (s : F)
++    (d : ℕ) (S : Finset ι) : Prop :=
++  ∃ p : Fin (M+1) → F[X],
++    (∀ j, (p j).natDegree ≤ d ∧ (p j).eval (a.point j)=a.claim j ∧
++      ∀ i ∈ S, (p j).eval (s*dom i)=a.source (a.column j) i) ∧
++    ∀ j k, a.column j=a.column k → p j=p k
++
++def Data.JointNear {M : ℕ} (a : Data F ι κ M) (dom : ι ↪ F) (s : F)
++    (d : ℕ) (δ : ℝ) : Prop :=
++  ∃ S : Finset ι, (1-δ)*(Fintype.card ι : ℝ) ≤ S.card ∧ a.JointOn dom s d S
++
++def liftQuotient (s z claim : F) (q : F[X]) : F[X] :=
++  C claim-(C z-X)*(q.comp (C s⁻¹*X))
++
++def cosetDomain (dom : ι ↪ F) (s : F) (hs : s ≠ 0) : ι ↪ F where
++  toFun i := s*dom i
++  inj' := by intro i j h; exact dom.injective (mul_left_cancel₀ hs h)
++
++omit [DecidableEq F] in
++theorem liftQuotient_eval_point (s z claim : F) (q : F[X]) :
++    (liftQuotient s z claim q).eval z=claim := by
++  simp [liftQuotient]
++
++omit [DecidableEq F] in
++theorem liftQuotient_eval_coset (s z claim t : F) (hs : s ≠ 0) (q : F[X]) :
++    (liftQuotient s z claim q).eval (s*t)=claim-(z-s*t)*q.eval t := by
++  simp [liftQuotient,hs]
++
++omit [DecidableEq F] in
++theorem liftQuotient_natDegree (s z claim : F) (q : F[X]) {d : ℕ}
++    (hq : q.natDegree < d) : (liftQuotient s z claim q).natDegree ≤ d := by
++  have hc : (q.comp (C s⁻¹*X)).natDegree ≤ q.natDegree := by
++    calc
++      _ ≤ q.natDegree*(C s⁻¹*X : F[X]).natDegree := Polynomial.natDegree_comp_le
++      _ ≤ q.natDegree*1 := Nat.mul_le_mul_left _ (Polynomial.natDegree_le_of_degree_le (Polynomial.degree_C_mul_X_le _))
++      _ = _ := Nat.mul_one _
++  have hz : (C z-X : F[X]).natDegree ≤ 1 := by
++    exact (Polynomial.natDegree_sub_le _ _).trans (by simp)
++  apply (Polynomial.natDegree_sub_le _ _).trans
++  apply max_le
++  · simp
++  · exact Polynomial.natDegree_mul_le.trans (by omega)
++
++/-- Polynomial identity uses strictly more than d shared positions. This is
++why the one-degree reconstruction loss cannot be suppressed. -/
++theorem eq_of_common_set (dom : ι ↪ F) {d : ℕ} {p q : F[X]}
++    (hp : p.natDegree ≤ d) (hq : q.natDegree ≤ d) (S : Finset ι)
++    (hsize : d < S.card) (heq : ∀ i ∈ S, p.eval (dom i)=q.eval (dom i)) : p=q := by
++  by_contra hne
++  have hp' : p.degree < ((d+1 : ℕ) : WithBot ℕ) :=
++    lt_of_le_of_lt (Polynomial.degree_le_natDegree) (by exact_mod_cast (Nat.lt_succ_of_le hp))
++  have hq' : q.degree < ((d+1 : ℕ) : WithBot ℕ) :=
++    lt_of_le_of_lt (Polynomial.degree_le_natDegree) (by exact_mod_cast (Nat.lt_succ_of_le hq))
++  have hcard := card_agreeSet_lt_of_ne dom hp' hq' hne
++  have hsub : S ⊆ Finset.univ.filter (fun i => p.eval (dom i)=q.eval (dom i)) := by
++    intro i hi
++    exact Finset.mem_filter.mpr ⟨Finset.mem_univ i,heq i hi⟩
++  have := Finset.card_le_card hsub
++  omega
++
++/-- All quotient codewords agreeing on S reconstruct one physical polynomial
++per source column, with every supplied opening claim satisfied. -/
++theorem jointOn_of_quotient_agreement {M d : ℕ} (a : Data F ι κ M)
++    (dom : ι ↪ F) (s : F) (hs : s ≠ 0) (hd : 1 ≤ d)
++    (hoff : a.OffDomain dom s) (S : Finset ι) (hsize : d < S.card)
++    (hjoint : ∀ j, ∃ w ∈ reedSolomonCode dom d, AgreesOn S (a.quotientWord dom s j) w) :
++    a.JointOn dom s d S := by
++  have hpoly : ∀ j, ∃ q : F[X], q.natDegree < d ∧
++      ∀ i ∈ S, a.quotientWord dom s j i=q.eval (dom i) := by
++    intro j
++    obtain ⟨w,hw,hagree⟩ := hjoint j
++    obtain ⟨q,hq,hval⟩ := mem_reedSolomonCode_iff.mp hw
++    refine ⟨q,?_,fun i hi => (hagree i hi).trans (hval i)⟩
++    by_cases hq0 : q=0
++    · simpa [hq0] using hd
++    · exact (Polynomial.natDegree_lt_iff_degree_lt hq0).mpr hq
++  choose q hdegree heval using hpoly
++  let p := fun j => liftQuotient s (a.point j) (a.claim j) (q j)
++  have hp : ∀ j, (p j).natDegree ≤ d := fun j => liftQuotient_natDegree _ _ _ _ (hdegree j)
++  have hagree : ∀ j i, i ∈ S → (p j).eval (s*dom i)=a.source (a.column j) i := by
++    intro j i hi
++    have hh := heval j i hi
++    have hn : a.point j-s*dom i ≠ 0 := sub_ne_zero.mpr (hoff j i)
++    have hm := (div_eq_iff hn).mp hh
++    change (liftQuotient s (a.point j) (a.claim j) (q j)).eval (s*dom i)=_
++    rw [liftQuotient_eval_coset _ _ _ _ hs]
++    linear_combination hm
++  refine ⟨p,fun j => ⟨hp j,liftQuotient_eval_point _ _ _ _,hagree j⟩,?_⟩
++  intro j k hcol
++  apply eq_of_common_set (cosetDomain dom s hs) (hp j) (hp k) S hsize
++  intro i hi
++  change (p j).eval (s*dom i)=(p k).eval (s*dom i)
++  rw [hagree j i hi,hagree k i hi,hcol]
++
++/- Exact dependencies of every theorem in this module. -/
++
++/-- info: 'Minidregg.Selvage.PcsBatching.liftQuotient_eval_point' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.liftQuotient_eval_point
++
++/-- info: 'Minidregg.Selvage.PcsBatching.liftQuotient_eval_coset' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.liftQuotient_eval_coset
++
++/-- info: 'Minidregg.Selvage.PcsBatching.liftQuotient_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.liftQuotient_natDegree
++
++/-- info: 'Minidregg.Selvage.PcsBatching.eq_of_common_set' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.eq_of_common_set
++
++/-- info: 'Minidregg.Selvage.PcsBatching.jointOn_of_quotient_agreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.jointOn_of_quotient_agreement
++
++end
++end Minidregg.Selvage.PcsBatching
+diff --git a/Selvage/PcsBatchingFullUD.lean b/Selvage/PcsBatchingFullUD.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/PcsBatchingFullUD.lean
+@@ -0,0 +1,135 @@
++/- Full unique decoding applied to the actual kind of PCS alpha batching.
++Inputs, points and claims are fixed before the one uniform alpha challenge.
++This file proves the algebraic bad-alpha count, not a Fiat--Shamir reduction. -/
++import Selvage.PcsQuotientAgreement
++
++namespace Minidregg.Selvage.PcsBatching
++open Polynomial
++open scoped BigOperators Classical
++noncomputable section
++set_option autoImplicit false
++set_option maxHeartbeats 1000000
++variable {F ι κ : Type*} [Field F] [DecidableEq F] [Fintype ι]
++
++def Data.JointCard {M : ℕ} (a : Data F ι κ M) (dom : ι ↪ F) (s : F)
++    (d e : ℕ) : Prop :=
++  ∃ S : Finset ι, Fintype.card ι-e ≤ S.card ∧ a.JointOn dom s d S
++
++/-- More than M*n nearby alpha reductions force a shared set of nearby original
++polynomials and consistent opening claims, including all repetitions of a column. -/
++theorem jointCard_of_many_close {M d e : ℕ} (a : Data F ι κ M)
++    (dom : ι ↪ F) (s : F) (hs : s ≠ 0) (hM : 1 ≤ M) (hd : 1 ≤ d)
++    (hradius : 2*e+d ≤ Fintype.card ι) (hstrict : d < Fintype.card ι-e)
++    (hoff : a.OffDomain dom s) (A : Finset F)
++    (hclose : ∀ α ∈ A, ∃ w ∈ reedSolomonCode dom d,
++      hammingDist (curveWord (a.quotientWord dom s) α) w ≤ e)
++    (hcard : M*Fintype.card ι < A.card) : a.JointCard dom s d e := by
++  obtain ⟨S,hS,hjoint⟩ := curveFullUDCardCore M dom d e hM hd hradius
++    (a.quotientWord dom s) A hclose hcard
++  exact ⟨S,hS,jointOn_of_quotient_agreement a dom s hs hd hoff S (hstrict.trans_le hS) hjoint⟩
++
++omit [DecidableEq F] in
++theorem shared_set_strict {d : ℕ} {δ : ℝ} (hδ0 : 0 < δ)
++    (hδ2 : (d : ℝ) < (1-2*δ)*(Fintype.card ι : ℝ))
++    (S : Finset ι) (hS : (1-δ)*(Fintype.card ι : ℝ) ≤ S.card) : d < S.card := by
++  have hn : (0 : ℝ) ≤ (Fintype.card ι : ℝ) := Nat.cast_nonneg _
++  have h : (d : ℝ) < S.card := by nlinarith
++  exact_mod_cast h
++
++theorem jointNear_of_many_close [Nonempty ι] {M d : ℕ} {δ : ℝ}
++    (a : Data F ι κ M) (dom : ι ↪ F) (s : F) (hs : s ≠ 0) (hM : 1 ≤ M) (hd : 1 ≤ d)
++    (hδ0 : 0 < δ) (hδ2 : (d : ℝ) < (1-2*δ)*(Fintype.card ι : ℝ))
++    (hoff : a.OffDomain dom s) (A : Finset F)
++    (hclose : ∀ α ∈ A, close δ (reedSolomonCode dom d) (curveWord (a.quotientWord dom s) α))
++    (hcard : M*Fintype.card ι < A.card) : a.JointNear dom s d δ := by
++  obtain ⟨S,hS,hjoint⟩ := curve_correlatedAgreement_of_many_close M hM dom hd hδ0 hδ2
++    (a.quotientWord dom s) A hclose hcard
++  exact ⟨S,hS,jointOn_of_quotient_agreement a dom s hs hd hoff S
++    (shared_set_strict hδ0 hδ2 S hS) hjoint⟩
++
++/-- The bad-alpha event is closeness of the actual single-scalar polynomial
++curve. The coefficient words are fixed independently of alpha. -/
++theorem bad_alpha_card_le [Nonempty ι] [Fintype F] {M d : ℕ} {δ : ℝ}
++    (a : Data F ι κ M) (dom : ι ↪ F) (s : F) (hs : s ≠ 0) (hM : 1 ≤ M) (hd : 1 ≤ d)
++    (hδ0 : 0 < δ) (hδ2 : (d : ℝ) < (1-2*δ)*(Fintype.card ι : ℝ))
++    (hoff : a.OffDomain dom s) (hfar : ¬a.JointNear dom s d δ) :
++    (Finset.univ.filter (fun α => close δ (reedSolomonCode dom d)
++      (curveWord (a.quotientWord dom s) α))).card ≤ M*Fintype.card ι := by
++  by_contra h
++  exact hfar (jointNear_of_many_close a dom s hs hM hd hδ0 hδ2 hoff _
++    (fun α hα => (Finset.mem_filter.mp hα).2) (Nat.lt_of_not_ge h))
++
++/-- Exact low-degree inputs identify the reconstructed polynomials. Thus the
++joint agreement conclusion forces every claim to equal its original evaluation. -/
++theorem claims_of_jointOn {M d : ℕ} (a : Data F ι κ M) (dom : ι ↪ F)
++    (s : F) (hs : s ≠ 0) (original : κ → F[X])
++    (hdegree : ∀ k, (original k).natDegree ≤ d)
++    (hsource : ∀ k i, (original k).eval (s*dom i)=a.source k i)
++    (S : Finset ι) (hS : d < S.card) (hjoint : a.JointOn dom s d S) :
++    ∀ j, a.claim j=(original (a.column j)).eval (a.point j) := by
++  obtain ⟨p,hp,_⟩ := hjoint
++  intro j
++  have heq : p j=original (a.column j) := by
++    apply eq_of_common_set (cosetDomain dom s hs) (hp j).1 (hdegree _) S hS
++    intro i hi
++    exact ((hp j).2.2 i hi).trans (hsource _ i).symm
++  rw [←heq]
++  exact (hp j).2.1.symm
++
++/-- A false claim for an already exact input gives the needed batching-farness
++failure predicate; no polynomial-agreement premise is smuggled into this step. -/
++theorem not_jointNear_of_wrong_claim {M d : ℕ} {δ : ℝ}
++    (a : Data F ι κ M) (dom : ι ↪ F) (s : F) (hs : s ≠ 0)
++    (hδ0 : 0 < δ) (hδ2 : (d : ℝ) < (1-2*δ)*(Fintype.card ι : ℝ))
++    (original : κ → F[X]) (hdegree : ∀ k, (original k).natDegree ≤ d)
++    (hsource : ∀ k i, (original k).eval (s*dom i)=a.source k i)
++    (j : Fin (M+1)) (hwrong : a.claim j ≠ (original (a.column j)).eval (a.point j)) :
++    ¬a.JointNear dom s d δ := by
++  rintro ⟨S,hS,hjoint⟩
++  exact hwrong (claims_of_jointOn a dom s hs original hdegree hsource S
++    (shared_set_strict hδ0 hδ2 S hS) hjoint j)
++
++theorem bad_alpha_card_of_wrong_claim [Nonempty ι] [Fintype F] {M d : ℕ} {δ : ℝ}
++    (a : Data F ι κ M) (dom : ι ↪ F) (s : F) (hs : s ≠ 0) (hM : 1 ≤ M) (hd : 1 ≤ d)
++    (hδ0 : 0 < δ) (hδ2 : (d : ℝ) < (1-2*δ)*(Fintype.card ι : ℝ))
++    (hoff : a.OffDomain dom s) (original : κ → F[X])
++    (hdegree : ∀ k, (original k).natDegree ≤ d)
++    (hsource : ∀ k i, (original k).eval (s*dom i)=a.source k i)
++    (j : Fin (M+1)) (hwrong : a.claim j ≠ (original (a.column j)).eval (a.point j)) :
++    (Finset.univ.filter (fun α => close δ (reedSolomonCode dom d)
++      (curveWord (a.quotientWord dom s) α))).card ≤ M*Fintype.card ι :=
++  bad_alpha_card_le a dom s hs hM hd hδ0 hδ2 hoff
++    (not_jointNear_of_wrong_claim a dom s hs hδ0 hδ2 original hdegree hsource j hwrong)
++
++/- Exact dependencies of every theorem in this module. -/
++
++/-- info: 'Minidregg.Selvage.PcsBatching.jointCard_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.jointCard_of_many_close
++
++/-- info: 'Minidregg.Selvage.PcsBatching.shared_set_strict' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.shared_set_strict
++
++/-- info: 'Minidregg.Selvage.PcsBatching.jointNear_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.jointNear_of_many_close
++
++/-- info: 'Minidregg.Selvage.PcsBatching.bad_alpha_card_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.bad_alpha_card_le
++
++/-- info: 'Minidregg.Selvage.PcsBatching.claims_of_jointOn' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.claims_of_jointOn
++
++/-- info: 'Minidregg.Selvage.PcsBatching.not_jointNear_of_wrong_claim' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.not_jointNear_of_wrong_claim
++
++/-- info: 'Minidregg.Selvage.PcsBatching.bad_alpha_card_of_wrong_claim' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.bad_alpha_card_of_wrong_claim
++
++end
++end Minidregg.Selvage.PcsBatching
+diff --git a/Selvage/Ir2PcsBatching.lean b/Selvage/Ir2PcsBatching.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2PcsBatching.lean
+@@ -0,0 +1,261 @@
++/- Canonical IR2 PCS batching. Runtime source: Plonky3 82cfad7,
++fri/src/verifier.rs:524-655; breadstuffs/vendor/plonky3-fri-82cfad73/
++src/two_adic_pcs.rs:841-928. All 23 matrices have LDE logheight17;
++alpha advances through batch, matrix, point, column without a height reset.
++This is the arithmetic reduction on canonically typed inputs, not Rust parsing. -/
++import Selvage.Ir2PackedCommitments
++import Selvage.PcsBatchingFullUD
++
++namespace Minidregg.Selvage.Ir2Fri.Pcs
++open BabyBearExt4 Ir2FriSchedule Packed PcsBatching Polynomial
++open scoped BigOperators Classical
++noncomputable section
++set_option autoImplicit false
++set_option maxHeartbeats 1000000
++set_option maxRecDepth 100000
++
++def pointCount (b : Fin 5) : ℕ := if b.val=1 ∨ b.val=4 then 2 else 1
++
++structure Term where
++  batch : Fin 5
++  matrix : Fin (widths batch).length
++  point : Fin (pointCount batch)
++  column : Fin (width batch matrix)
++
++abbrev Column := (b : Fin 5) × (m : Fin (widths b).length) × Fin (width b m)
++abbrev Points := (b : Fin 5) → (m : Fin (widths b).length) → Fin (pointCount b) → Ext4
++abbrev Claims := (b : Fin 5) → (m : Fin (widths b).length) →
++  Fin (pointCount b) → Fin (width b m) → Ext4
++
++/-- Literal nesting order of the native verifier, including point before column. -/
++def termList : List Term :=
++  (List.ofFn fun b : Fin 5 =>
++    (List.ofFn fun m : Fin (widths b).length =>
++      (List.ofFn fun p : Fin (pointCount b) =>
++        List.ofFn fun c : Fin (width b m) => (⟨b,m,p,c⟩ : Term)).flatten).flatten).flatten
++
++theorem termList_length : termList.length=5271 := by
++  simp only [termList,List.length_flatten,List.map_ofFn,Function.comp_def,List.length_ofFn]
++  norm_num [pointCount,width,widths,PackedLeafEncoding.widthsOfList,List.ofFn_succ]
++
++def termAt (j : Fin 5271) : Term := termList[j.val]'(by rw [termList_length]; exact j.isLt)
++
++def Term.key (t : Term) : Column := ⟨t.batch,t.matrix,t.column⟩
++
++/-- Every supplied column/point pair appears in the coefficient order. -/
++theorem term_covered (t : Term) : ∃ j : Fin 5271, termAt j=t := by
++  have hm : t ∈ termList := by
++    unfold termList
++    apply List.mem_flatten.mpr
++    refine ⟨_,List.mem_ofFn.mpr ⟨t.batch,rfl⟩,?_⟩
++    apply List.mem_flatten.mpr
++    refine ⟨_,List.mem_ofFn.mpr ⟨t.matrix,rfl⟩,?_⟩
++    apply List.mem_flatten.mpr
++    exact ⟨_,List.mem_ofFn.mpr ⟨t.point,rfl⟩,List.mem_ofFn.mpr ⟨t.column,rfl⟩⟩
++  obtain ⟨j,hj⟩ := List.mem_iff_get.mp hm
++  refine ⟨⟨j.val,by simpa [termList_length] using j.isLt⟩,?_⟩
++  exact hj
++
++theorem pointCount_pos (b : Fin 5) : 0 < pointCount b := by
++  unfold pointCount
++  split <;> decide
++
++def representative (k : Column) : Term := ⟨k.1,k.2.1,⟨0,pointCount_pos k.1⟩,k.2.2⟩
++def columnIndex (k : Column) : Fin 5271 := Classical.choose (term_covered (representative k))
++
++theorem columnIndex_key (k : Column) : (termAt (columnIndex k)).key=k := by
++  unfold columnIndex
++  rw [Classical.choose_spec (term_covered (representative k))]
++  rfl
++
++def data (rows : Index 0 → AllInputRows) (points : Points) (claims : Claims) :
++    PcsBatching.Data Ext4 (Index 0) Column 5270 where
++  column j := (termAt j).key
++  source k i := algebraMap BabyBear Ext4 (rows i k.1 k.2.1 k.2.2)
++  point j := let t := termAt j; points t.batch t.matrix t.point
++  claim j := let t := termAt j; claims t.batch t.matrix t.point t.column
++
++/-- One physical polynomial per actual input column, shared across all its
++supplied opening points, agreeing with the extracted base rows on the same S. -/
++def JointColumnsNear (rows : Index 0 → AllInputRows) (points : Points) (claims : Claims)
++    (d : ℕ) (δ : ℝ) : Prop :=
++  ∃ S : Finset (Index 0), (1-δ)*(Fintype.card (Index 0) : ℝ) ≤ S.card ∧
++    ∃ p : Column → Ext4[X],
++      (∀ k, (p k).natDegree ≤ d ∧ ∀ i ∈ S,
++        (p k).eval (31*domain 0 i)=algebraMap BabyBear Ext4 (rows i k.1 k.2.1 k.2.2)) ∧
++      ∀ t : Term, (p t.key).eval (points t.batch t.matrix t.point)=
++        claims t.batch t.matrix t.point t.column
++
++theorem jointColumnsNear_of_data (rows : Index 0 → AllInputRows) (points : Points) (claims : Claims)
++    {d : ℕ} {δ : ℝ} (h : (data rows points claims).JointNear (domain 0) 31 d δ) :
++    JointColumnsNear rows points claims d δ := by
++  obtain ⟨S,hS,p,hp,hshared⟩ := h
++  refine ⟨S,hS,(fun k => p (columnIndex k)),?_,?_⟩
++  · intro k
++    refine ⟨(hp (columnIndex k)).1,?_⟩
++    intro i hi
++    have hki := (hp (columnIndex k)).2.2 i hi
++    change (p (columnIndex k)).eval (31*domain 0 i)=
++      algebraMap BabyBear Ext4 (rows i ((termAt (columnIndex k)).key).1
++        ((termAt (columnIndex k)).key).2.1 ((termAt (columnIndex k)).key).2.2) at hki
++    exact hki.trans (congrArg (fun key : Column =>
++      algebraMap BabyBear Ext4 (rows i key.1 key.2.1 key.2.2)) (columnIndex_key k))
++  · intro t
++    obtain ⟨j,rfl⟩ := term_covered t
++    have hkey : (data rows points claims).column (columnIndex (termAt j).key)=
++        (data rows points claims).column j := by
++      change (termAt (columnIndex (termAt j).key)).key=(termAt j).key
++      exact columnIndex_key _
++    dsimp only
++    rw [hshared _ _ hkey]
++    exact (hp j).2.1
++
++def termQuotient (points : Points) (claims : Claims) (i : Index 0)
++    (rows : AllInputRows) (t : Term) : Ext4 :=
++  (claims t.batch t.matrix t.point t.column-
++    algebraMap BabyBear Ext4 (rows t.batch t.matrix t.column))/
++      (points t.batch t.matrix t.point-31*domain 0 i)
++
++/-- The actual one-height Reduction supplied to packed extraction. -/
++def reduction (points : Points) (claims : Claims) (α : Ext4) : Packed.Reduction :=
++  fun i rows => ∑ j : Fin 5271, α^j.val*termQuotient points claims i rows (termAt j)
++
++theorem reduction_eq_curve (rows : Index 0 → AllInputRows) (points : Points)
++    (claims : Claims) (α : Ext4) :
++    (fun i => reduction points claims α i (rows i))=
++      curveWord ((data rows points claims).quotientWord (domain 0) 31) α := by
++  rfl
++
++/-- The loop state retains alpha's power across all matrices and batches. -/
++def alphaLoop {F : Type*} [Field F] (α : F) (values : List F) (power total : F) : F × F :=
++  values.foldl (fun st v => (st.1*α,st.2+st.1*v)) (power,total)
++
++theorem alphaLoop_ofFn {F : Type*} [Field F] (α : F) {n : ℕ}
++    (values : Fin n → F) (power total : F) :
++    alphaLoop α (List.ofFn values) power total=
++      (power*α^n,total+power*∑ j : Fin n, α^j.val*values j) := by
++  induction n generalizing power total with
++  | zero => simp [alphaLoop]
++  | succ n ih =>
++    have hsum : (∑ j : Fin (n+1), α^j.val*values j)=
++        values 0+α*(∑ j : Fin n, α^j.val*values j.succ) := by
++      rw [Fin.sum_univ_succ]
++      simp only [Fin.val_zero,pow_zero,one_mul,Fin.val_succ,pow_succ]
++      rw [Finset.mul_sum]
++      congr 1
++      apply Finset.sum_congr rfl
++      intro j _
++      ring
++    change alphaLoop α ((List.ofFn values)) power total=_
++    rw [List.ofFn_succ]
++    change alphaLoop α (List.ofFn (fun i => values i.succ)) (power*α) (total+power*values 0)=_
++    rw [ih,hsum]
++    apply Prod.ext <;> simp only [pow_succ] <;> ring
++
++/-- The literal sequential power/accumulator loop equals the reduced word. -/
++theorem native_loop_eq_reduction (points : Points) (claims : Claims) (α : Ext4)
++    (i : Index 0) (rows : AllInputRows) :
++    alphaLoop α (List.ofFn (fun j : Fin 5271 => termQuotient points claims i rows (termAt j))) 1 0=
++      (α^5271,reduction points claims α i rows) := by
++  rw [alphaLoop_ofFn]
++  simp only [one_mul,zero_add,reduction]
++
++theorem coset31_ne_zero : (31 : Ext4) ≠ 0 := by
++  have h : (31 : BabyBear) ≠ 0 := by decide
++  intro hx
++  apply h
++  apply (algebraMap BabyBear Ext4).injective
++  simpa only [map_natCast,map_zero] using hx
++
++/-- Full-UD parameter arithmetic for the actual rate1/8 and radius2/5. -/
++theorem batching_parameters :
++    (1 : ℕ) ≤ 5270 ∧ (1 : ℕ) ≤ degree 0 ∧
++    (0 : ℝ) < 2/5 ∧
++    (degree 0 : ℝ) < (1-2*(2/5:ℝ))*(Fintype.card (Index 0) : ℝ) ∧
++    5270*Fintype.card (Index 0)=690749440 := by
++  norm_num [degree,Index,stage]
++
++/-- If fixed input rows and claims lack a joint nearby physical-polynomial
++explanation of degree≤16384, at most5270*131072 alpha values can make the actual
++PCS-reduced word close to the FRI code of degree<16384. -/
++theorem actual_bad_alpha_card (rows : Index 0 → AllInputRows) (points : Points) (claims : Claims)
++    (hoff : (data rows points claims).OffDomain (domain 0) 31)
++    (hfar : ¬JointColumnsNear rows points claims (degree 0) (2/5)) :
++    (Finset.univ.filter (fun α => close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0))
++      (fun i => reduction points claims α i (rows i)))).card ≤ 690749440 := by
++  simp_rw [reduction_eq_curve]
++  have h := bad_alpha_card_le (data rows points claims) (domain 0) 31 coset31_ne_zero
++    batching_parameters.1 batching_parameters.2.1 batching_parameters.2.2.1
++    batching_parameters.2.2.2.1 hoff (fun hj => hfar (jointColumnsNear_of_data rows points claims hj))
++  simpa only [batching_parameters.2.2.2.2] using h
++
++/-- Fresh uniform alpha only. No identification with the deployed sponge is
++made; rows, points and claims precede this challenge in the statement. -/
++theorem actual_bad_alpha_probability (rows : Index 0 → AllInputRows) (points : Points) (claims : Claims)
++    (hoff : (data rows points claims).OffDomain (domain 0) 31)
++    (hfar : ¬JointColumnsNear rows points claims (degree 0) (2/5)) :
++    uniformProb Ext4 (fun α => close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0))
++      (fun i => reduction points claims α i (rows i))) ≤
++      (690749440:ℝ)/(modulus^4:ℕ) := by
++  have h := actual_bad_alpha_card rows points claims hoff hfar
++  unfold uniformProb
++  rw [Nat.card_eq_fintype_card,Fintype.card_subtype]
++  have hF : (0 : ℝ) < Fintype.card Ext4 := by exact_mod_cast Fintype.card_pos
++  have hb := (div_le_div_iff_of_pos_right hF).mpr (show
++      ((Finset.univ.filter (fun α => close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0))
++        (fun i => reduction points claims α i (rows i)))).card : ℝ) ≤ 690749440 by exact_mod_cast h)
++  have hcard : Fintype.card Ext4=modulus^4 := ext4_card
++  simpa only [hcard] using hb
++
++/- Exact dependencies of every theorem in this module. -/
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.termList_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.termList_length
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.term_covered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.term_covered
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.pointCount_pos' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.pointCount_pos
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.columnIndex_key' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.columnIndex_key
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.jointColumnsNear_of_data' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.jointColumnsNear_of_data
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.reduction_eq_curve' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.reduction_eq_curve
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.alphaLoop_ofFn' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.alphaLoop_ofFn
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.native_loop_eq_reduction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.native_loop_eq_reduction
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.coset31_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.coset31_ne_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.batching_parameters' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.batching_parameters
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_card' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_card
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_probability
++
++end
++end Minidregg.Selvage.Ir2Fri.Pcs
+diff --git a/Selvage/PcsBatchingExhibits.lean b/Selvage/PcsBatchingExhibits.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/PcsBatchingExhibits.lean
+@@ -0,0 +1,100 @@
++/- Small nonzero premise inhabitation and orthogonal degree/denominator controls.
++The full-UD theorem fires here; no large actual-field polynomial is enumerated. -/
++import Selvage.PcsBatchingFullUD
++
++namespace Minidregg.Selvage.PcsBatching.Exhibits
++open Polynomial
++open scoped Classical
++noncomputable section
++instance : Fact (Nat.Prime 101) := ⟨by decide⟩
++
++abbrev F := ZMod 101
++abbrev dom := CurveFullUDWitness.dom
++
++def constantData : Data F (Fin 5) (Fin 1) 2 where
++  column _ := 0
++  source _ _ := 3
++  point _ := 10
++  claim _ := 3
++
++def wrongData : Data F (Fin 5) (Fin 1) 2 := {constantData with claim := fun _ => 4}
++
++def NonzeroAccepted : Prop :=
++  constantData.OffDomain dom 1 ∧
++  constantData.source 0 0 ≠ 0 ∧
++  constantData.JointCard dom 1 2 1
++
++theorem constant_offDomain : constantData.OffDomain dom 1 := by
++  intro j i
++  fin_cases i <;> norm_num [constantData,dom,CurveFullUDWitness.dom,F] <;> decide
++
++theorem nonzeroAccepted : NonzeroAccepted := by
++  refine ⟨constant_offDomain,by decide,?_⟩
++  apply jointCard_of_many_close constantData dom 1 one_ne_zero (by decide) (by decide)
++    (by decide) (by decide) constant_offDomain Finset.univ
++  · intro α _
++    refine ⟨0,(reedSolomonCode dom 2).zero_mem,?_⟩
++    have hzero : curveWord (constantData.quotientWord dom 1) α=0 := by
++      funext i
++      simp [curveWord,comb,Data.quotientWord,constantData]
++    rw [hzero]
++    simp
++  · decide
++
++/-- The counted false-claim theorem fires over101 alphas with a nonzero
++constant source; its10-element upper bound is strictly below the field size. -/
++theorem wrong_claim_bad_alpha :
++    (Finset.univ.filter (fun α : F => close (1/5:ℝ) (reedSolomonCode dom 2)
++      (curveWord (wrongData.quotientWord dom 1) α))).card ≤ 10 := by
++  have h := bad_alpha_card_of_wrong_claim wrongData dom 1 one_ne_zero
++    (by decide) (by decide) (by norm_num : (0:ℝ)<1/5)
++    (by norm_num : (2:ℝ)<(1-2*(1/5:ℝ))*(Fintype.card (Fin 5) : ℝ))
++    constant_offDomain (fun _ => (C 3 : F[X]))
++    (by intro k; simp) (by intro k i; simp [wrongData,constantData]) 0 (by norm_num [wrongData,constantData,F]; decide)
++  exact h
++
++/-- Quotient degree0 really reconstructs degree1. Replacing ≤d by <d
++without a further source argument would be false, even for this one term. -/
++def DegreeLossFalsifier : Prop :=
++  (liftQuotient (1 : F) 0 0 1).natDegree=1 ∧
++  ¬(liftQuotient (1 : F) 0 0 1).degree < (1 : WithBot ℕ)
++
++theorem degreeLossFalsifier : DegreeLossFalsifier := by
++  norm_num [DegreeLossFalsifier,liftQuotient]
++
++/-- At an on-domain opening point, field division by zero erases a false
++claim. The off-domain hypothesis has an independent, necessary role. -/
++def ZeroDenominatorFalsifier : Prop :=
++  ((1-0)/(0-0) : F)=0 ∧ (1 : F) ≠ 0
++
++theorem zeroDenominatorFalsifier : ZeroDenominatorFalsifier := by
++  norm_num [ZeroDenominatorFalsifier]
++
++/- Exact dependencies of every theorem in this module. -/
++
++/-- info: 'Minidregg.Selvage.PcsBatching.Exhibits.constant_offDomain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.Exhibits.constant_offDomain
++
++/-- info: 'Minidregg.Selvage.PcsBatching.Exhibits.nonzeroAccepted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.Exhibits.nonzeroAccepted
++
++/-- info: 'Minidregg.Selvage.PcsBatching.Exhibits.wrong_claim_bad_alpha' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.Exhibits.wrong_claim_bad_alpha
++
++/-- info: 'Minidregg.Selvage.PcsBatching.Exhibits.degreeLossFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.Exhibits.degreeLossFalsifier
++
++/-- info: 'Minidregg.Selvage.PcsBatching.Exhibits.zeroDenominatorFalsifier' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Selvage.PcsBatching.Exhibits.zeroDenominatorFalsifier
++
++end
++end Minidregg.Selvage.PcsBatching.Exhibits

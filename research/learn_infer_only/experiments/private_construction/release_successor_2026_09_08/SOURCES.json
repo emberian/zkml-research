@@ -266,5 +266,99 @@
     "cryptographic_runs": 0,
     "publication": "Full third-party text retained locally only. HIO.md contains source-scope summary and a distinct derived bounded continuation construction.",
     "result": "Ordinary iO permits a bounded private issuer to specialize an authentic public parent without a persistent writer master. A finite-forest joint-view hybrid is explicit; repeated size growth, fixed horizon and parent authentication remain. Source final-only HIO/H-MIFE theorem does not by itself supply a joint retained-ancestor input-precomposition theorem."
+  },
+  "controlled_he_2026_09_09": {
+    "note": "CONTROLLED_HE.md",
+    "local_sources": [
+      {
+        "id": "2014/989",
+        "url": "https://eprint.iacr.org/2014/989",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/989.pdf",
+        "pdf_sha256": "5375edf7efb99288d9224534dc9995d0b935a660aa63d7f3abadbadcd681978a",
+        "local_text": "/tmp/resident-ches-2014-989.txt",
+        "local_text_sha256": "5b22e15b00dda206ee296eea23ff3726ba978ce5391fad64b7a48761ca1fb6dc",
+        "command": [
+          "pdftotext",
+          "-layout",
+          "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/989.pdf",
+          "/tmp/resident-ches-2014-989.txt"
+        ],
+        "inspected": "Definition1 and Composing tokens PDFpp6-7; section4 algorithms and Theorem1 pp9-10; introduction. Full reduction not inspected.",
+        "text_publication": "Local extraction only; full third-party text not published."
+      },
+      {
+        "id": "2022/17",
+        "url": "https://eprint.iacr.org/2022/17",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/17.pdf",
+        "pdf_sha256": "5412e10a568470cb208a2319144ba9e9c072939c275bc2153df8a2f2f4f4f5ee",
+        "local_text": "/tmp/resident-keyed-2022-17.txt",
+        "local_text_sha256": "1d1801f85d863bb4246450e3087733982c7033ee7d6b3ff5b52d94279156696f",
+        "command": [
+          "pdftotext",
+          "-layout",
+          "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/17.pdf",
+          "/tmp/resident-keyed-2022-17.txt"
+        ],
+        "inspected": "Abstract/overview, syntax and KH-CCA game; section3.1 actual algorithms pp12-13. Full reduction not inspected.",
+        "text_publication": "Local extraction only; full third-party text not published."
+      },
+      {
+        "id": "2024/226",
+        "url": "https://eprint.iacr.org/2024/226",
+        "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/226.pdf",
+        "pdf_sha256": "1c0c1ffd4140175747128f6d79117b45495118fc31f10875e521de4a9d40e744",
+        "local_text": "/tmp/resident-abkeyed-2024-226.txt",
+        "local_text_sha256": "f477efb09d1d33dee4abf3ac1c3461f8b5a6fbb1f0374037c1188319dc92e2bd",
+        "command": [
+          "pdftotext",
+          "-layout",
+          "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/226.pdf",
+          "/tmp/resident-abkeyed-2024-226.txt"
+        ],
+        "inspected": "Abstract/overview; section3.1 pp20-21; section4 Definitions17-19 pp28-30; section6.1 actual algorithms pp38-39. Lattice construction/reduction not audited.",
+        "text_publication": "Local extraction only; full third-party text not published."
+      }
+    ],
+    "web_query_count": 8,
+    "web_open_count": 0,
+    "scry_sql_count": 1,
+    "web_queries": [
+      "\"homomorphic functional encryption\" construction",
+      "\"homomorphic\" \"policy\" \"decryption\" functional encryption restricted",
+      "\"attribute-based fully homomorphic encryption\" decryption circuit",
+      "\"Controlled Homomorphic Encryption\" eprint",
+      "\"Controlled Homomorphic Encryption\" 2024 2025 2026",
+      "\"Candidate iO from Homomorphic Encryption Schemes\" eprint split",
+      "\"Attribute-Based Keyed Fully Homomorphic Encryption\" eprint",
+      "\"targeted malleability\" \"homomorphic\" encryption Boneh"
+    ],
+    "scry_sql": "SELECT id,title,doi,primary_location.landing_page_url,publication_year FROM openalex.works WHERE hasAllTokens(search_text_lc,['controlled','homomorphic','encryption']) OR hasAllTokens(search_text_lc,['keyed','homomorphic','encryption']) ORDER BY publication_year DESC,cited_by_count DESC LIMIT 15",
+    "scry_output": "sources/scry_controlled_he_1.json",
+    "scry_rows": 15,
+    "scry_read_rows": 48325,
+    "scry_freshness_lag_seconds": 6484214,
+    "discovery_only_not_algorithm_audited": [
+      "2011/311 Targeted Malleability",
+      "2020/394 Candidate iO from Homomorphic Encryption Schemes"
+    ],
+    "pdf_downloads": 0,
+    "cryptographic_runs": 0,
+    "estimator_runs": 0,
+    "secret_contents_recorded": false,
+    "result": "CHE encodes a terminal tag and retains a general-FE reader; keyed/attribute-based HE permits arbitrary circuits for eligible evaluators and retains input-decryption keys. None of these inspected algorithms closes the exposed-credential resident release requirement."
+  },
+  "hio_joint_continuation_2026_09_09": {
+    "notes": [
+      "HIO_CONTINUATION.md",
+      "HIO_PROVENANCE.md"
+    ],
+    "source": "2023/925 (existing local extraction and hashes above)",
+    "inspected": "Section3.1 pp7-8 deterministic Enc/Dec, perfect correctness and unique ciphertext; section5.1 pp12-13 carried original inputs; section7 p29 scope; existing CONSTRUCTION.md section3 witness. Provenance helper read local HIO notes only. Final helper also confirmed section3.3 p10 perfect iO functionality for the all-coins correctness scope.",
+    "web_query_count": 0,
+    "scry_sql_count": 0,
+    "pdf_downloads": 0,
+    "cryptographic_runs": 0,
+    "estimator_runs": 0,
+    "result": "Retained old ACE boundary exposes a deterministic fingerprint of a private prepended command. A separate bounded ordinary-iO provenance construction has explicit, uninstantiated online simulation-extraction assumptions."
   }
 }

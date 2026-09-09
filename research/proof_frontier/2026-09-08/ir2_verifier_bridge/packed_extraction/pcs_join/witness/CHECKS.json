@@ -1,0 +1,41 @@
+{
+  "classification": "EXECUTED",
+  "source": "Selvage/Ir2PcsPackedWitnesses.lean",
+  "isolate": "/tmp/minidregg-ir2-pcs-packed-witnesses-20260908",
+  "source_sha256": "f866c95bf0783edabda065c8bdebe12c92ca4807920d4ce1d80f671526199416",
+  "source_stable": true,
+  "olean_sha256": "dd263b62868c3baca929c6b473662c7c6427e0d18bb708af8cdf6c0b5ff21934",
+  "command": "lake env lean -o .lake/build/lib/lean/Selvage/Ir2PcsPackedWitnesses.olean Selvage/Ir2PcsPackedWitnesses.lean",
+  "exit_code": 0,
+  "output": "",
+  "theorem_guards": 8,
+  "axiom_union": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "preserved_dependencies": {
+    "Ir2PcsPackedSoundness": {
+      "source_sha256": "fa1d1890aeb4be63a393237dc880557388736a677d57816cf2b5baad9f192e9e",
+      "olean_sha256": "35e3e04c18b76394c045682052aad026f73cde3a545975d6d328dfeed3409b60"
+    },
+    "Ir2PcsBatching": {
+      "source_sha256": "cb4c925e08ee5dbdc51b7770ce42d1dbf9e1ba8c392795f00af740716dbbd994",
+      "olean_sha256": "fe546f0d09eaaa44e6aa2eaedb1a64e74096a8d24d47aca98c9ed97590e9587e"
+    },
+    "Ir2PackedWitnesses": {
+      "source_sha256": "2d5db2ebc874ef815eefa3234aa2f4ed06cab3ccfbeef1f400b9ef0f1ab51ac8",
+      "olean_sha256": "0d49935c213b2a72b79c84b11d44fec9c8df53fd7df2fc7992d15f9ff7ac2b42"
+    }
+  },
+  "import_boundary": {
+    "command": "bash scripts/check-import-boundary.sh",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "forbidden_proof_scan": {
+    "pattern": "\\b(sorry|axiom|native_decide)\\b",
+    "matches": []
+  }
+}

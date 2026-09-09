@@ -1,0 +1,13 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-pcs-batching-20260908/.lake/build/lib/lean/Selvage/Ir2PcsBatching.olean",
+    "Selvage/Ir2PcsBatching.lean"
+  ],
+  "cwd": "/tmp/minidregg-pcs-batching-20260908",
+  "exit": 0,
+  "seconds": 4.793335199356079
+}

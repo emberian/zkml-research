@@ -1,0 +1,33 @@
+'Minidregg.Selvage.PcsBatching.liftQuotient_eval_point' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.liftQuotient_eval_coset' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.liftQuotient_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.eq_of_common_set' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.jointOn_of_quotient_agreement' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.jointCard_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.shared_set_strict' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.jointNear_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.bad_alpha_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.claims_of_jointOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.not_jointNear_of_wrong_claim' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.bad_alpha_card_of_wrong_claim' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.termList_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.term_covered' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.pointCount_pos' does not depend on any axioms
+'Minidregg.Selvage.Ir2Fri.Pcs.columnIndex_key' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.jointColumnsNear_of_data' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.reduction_eq_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.alphaLoop_ofFn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.native_loop_eq_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.coset31_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.batching_parameters' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.Ir2Fri.Pcs.actual_bad_alpha_probability' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.Exhibits.constant_offDomain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.Exhibits.nonzeroAccepted' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.Exhibits.wrong_claim_bad_alpha' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.PcsBatching.Exhibits.degreeLossFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.PcsBatching.Exhibits.zeroDenominatorFalsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

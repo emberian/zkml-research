@@ -1,0 +1,10 @@
+{
+  "name": "ir2_pcs_packed_join",
+  "root": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_join",
+  "patch": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_join/ir2-pcs-join.patch",
+  "expected_pins": 14,
+  "source_files": {
+    "Selvage/Ir2PcsPackedSoundness.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_join/src/Selvage/Ir2PcsPackedSoundness.lean",
+    "Selvage/Ir2PcsPackedWitnesses.lean": "../proof_frontier/2026-09-08/ir2_verifier_bridge/packed_extraction/pcs_join/src/Selvage/Ir2PcsPackedWitnesses.lean"
+  }
+}

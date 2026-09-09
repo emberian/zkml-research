@@ -1,0 +1,30 @@
+Selvage/PcsBatchingExhibits.lean:29:18: error: Expected type must not contain free variables
+  constantData.point j ≠ 1 * dom ((fun i => i) ⟨0, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Selvage/PcsBatchingExhibits.lean:29:18: error: Expected type must not contain free variables
+  constantData.point j ≠ 1 * dom ((fun i => i) ⟨1, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Selvage/PcsBatchingExhibits.lean:29:18: error: Expected type must not contain free variables
+  constantData.point j ≠ 1 * dom ((fun i => i) ⟨2, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Selvage/PcsBatchingExhibits.lean:29:18: error: Expected type must not contain free variables
+  constantData.point j ≠ 1 * dom ((fun i => i) ⟨3, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Selvage/PcsBatchingExhibits.lean:29:18: error: Expected type must not contain free variables
+  constantData.point j ≠ 1 * dom ((fun i => i) ⟨4, ⋯⟩)
+
+Hint: Use the `+revert` option to automatically clean up and revert free variables
+Selvage/PcsBatchingExhibits.lean:53:75: error: Tactic `decide` failed for proposition
+  wrongData.claim 0 ≠ eval (wrongData.point 0) ((fun x => C 3) (wrongData.column 0))
+because its `Decidable` instance
+  instDecidableNot
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableEqFin`, `instDecidableEqNat`, `instDecidableNot`, `Nat.decEq`, `ZMod.decidableEq`, and `ZMod.decidableEq._aux_3`, reduction got stuck at the `Decidable` instance
+  match h : (↑(wrongData.claim 0)).beq ↑(eval (wrongData.point 0) ((fun x => C 3) (wrongData.column 0))) with
+  | true => isTrue ⋯
+  | false => isFalse ⋯

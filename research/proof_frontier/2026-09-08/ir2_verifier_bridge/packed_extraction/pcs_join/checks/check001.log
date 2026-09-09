@@ -1,0 +1,7 @@
+Selvage/Ir2PcsPackedSoundness.lean:38:0: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/Ir2PcsPackedSoundness.lean:38:0: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/Ir2PcsPackedSoundness.lean:68:8: error: (kernel) unknown constant 'Minidregg.Selvage.Ir2Fri.Pcs.extracted_input_reduction'

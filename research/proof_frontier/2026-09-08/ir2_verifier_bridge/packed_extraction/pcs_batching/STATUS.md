@@ -1,0 +1,15 @@
+The PCS batching construction is complete and frozen. It is an additive Lean patch; companion trees and the frozen packed extraction/encoding packages were not edited.
+
+[DERIVED] `Selvage/PcsQuotientAgreement.lean:95`, `jointOn_of_quotient_agreement`, reconstructs physical-variable input polynomials from a shared quotient agreement set. Multiplying by `(z-X)` and rescaling the quotient variable accounts for the original coset `31*t`. Strictly more than `d` common positions identifies repeated columns. Quotient degree `<d` gives original degree **≤d**, not `<d`.
+
+[DERIVED] `Selvage/PcsBatchingFullUD.lean:20`, `jointCard_of_many_close`, applies the frozen degree-M full-UD theorem: more than `M*n` close reductions force a shared set of at least `n-e` input positions with one consistent polynomial per repeated column. The real-radius version is at line39. The exact-input false-claim corollary is `bad_alpha_card_of_wrong_claim`, line92; it derives the missing farness condition from an incorrect claim and an actual low-degree input polynomial.
+
+[DERIVED] `Selvage/Ir2PcsBatching.lean:194`, `actual_bad_alpha_probability`, connects the canonical profile to `Packed.Reduction`. There are5271 terms in batch→matrix→point→column order, hence alpha degree at most5270. At `n=131072`, quotient degree `<16384` and radius2/5, failure of a joint explanation by physical input polynomials of degree≤16384 implies bad-alpha probability at most `690749440 / 2013265921^4`. Inputs, points and claims are fixed before fresh uniform alpha. Off-domain opening points remain a hypothesis; its failure event is not priced here. No Fiat–Shamir or hash soundness claim follows.
+
+[SOURCE] The exact canonical shape gate is `research/vfhe_2026_09_08/query_runtime/acceptance_bridge/run.py:11–40`: widths `[[8,8],[2513,5],[8]×16,[59],[8,8]]`, point counts `[1,2,1,1,2]`, all LDE logheight17. Native verifier arithmetic is `/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/fri/src/verifier.rs:524–655`; the optimized native prover agrees at `/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs:841–928`. These are source correspondences, not Lean proofs about Rust parsing.
+
+[EXECUTED] Four individual Lean checks014–017 pass with empty logs and29/29 exact axiom guards. All dependencies are standard Lean axioms. `CHECKS.json` records source hashes, commands and patch hash. The additive patch passes read-only `git apply --check` against minidregg.
+
+[EXECUTED] `python3 check_saved_query.py` replays only the already captured canonical001/query0 using pure public field arithmetic. All23 native matrix checkpoints and the complete5271-term reduced opening match. Omitting coset31 or resetting alpha per batch produces a different result. `checks/saved-query.json` retains the input pin and matrix offsets. No prover/verifier/key-generation executable was run in this lane.
+
+[DERIVED] `PcsBatchingExhibits.lean` supplies a nonzero accepted witness that fires full UD, an exact false-claim bound, and independent degree-loss and zero-denominator falsifiers.

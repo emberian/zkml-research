@@ -1,0 +1,22 @@
+Selvage/PcsBatchingExhibits.lean:27:61: error: unsolved goals
+case «0»
+j : Fin (2 + 1)
+⊢ ¬10 = 0
+
+case «1»
+j : Fin (2 + 1)
+⊢ ¬10 = 1
+
+case «2»
+j : Fin (2 + 1)
+⊢ ¬10 = 2
+
+case «3»
+j : Fin (2 + 1)
+⊢ ¬10 = 3
+
+case «4»
+j : Fin (2 + 1)
+⊢ ¬10 = 4
+Selvage/PcsBatchingExhibits.lean:53:72: error: unsolved goals
+⊢ ¬4 = 3
