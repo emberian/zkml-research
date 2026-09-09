@@ -1,0 +1,403 @@
+{
+  "claim": "EXECUTED",
+  "engine": {
+    "proof_backend": "matched",
+    "score_kind": "linear"
+  },
+  "files": {
+    "RESULT.json": {
+      "bytes": 7397,
+      "sha256": "0878fda84d535a02c63434013f20ef3f1ac1d5e7361a3933998242c5e84caa2a",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/RESULT.json"
+    },
+    "engine_reference.json": {
+      "bytes": 41622,
+      "sha256": "87dd7c6c5e60cdd04333b25626bc884395fb286f9fa11e52afd25ffa27a6350a",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/engine_reference.json"
+    },
+    "genesis.json": {
+      "bytes": 3286,
+      "sha256": "1ae0b3bcecffece9fdd3690dc10f370d7f62cab3cc3e32e77f23f8252fae1310",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident/journal/genesis.json"
+    },
+    "identity.json": {
+      "bytes": 815,
+      "sha256": "556cccb1d7f190d43e539b97dbe2b6fcfcdcf2e195cb4ea4f790084d68853bae",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/identity.json"
+    },
+    "steps/initialize/attempt-001.json": {
+      "bytes": 638,
+      "sha256": "4c1b9af0cfd527a93344e9ba45afd364d8fede2f3d0e32beb8d4cdb409952cd4",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/initialize/attempt-001.json"
+    },
+    "steps/initialize/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/initialize/attempt-001.stderr"
+    },
+    "steps/initialize/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "793f27ae357bf25ac48aa7776adcb81e27d7d99d9b91f187f9017df5eab4bc45",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/initialize/attempt-001.stdout"
+    },
+    "steps/initialize/completed.json": {
+      "bytes": 1198,
+      "sha256": "7f9bb532f2c31607b510ea8304120575264f3e6be2973c5dc0b0f9cd503bc3ee",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/initialize/completed.json"
+    },
+    "steps/query_expiry/attempt-001.json": {
+      "bytes": 639,
+      "sha256": "b5c6abdcba886302a9939e091c9e2e2bab4c3bb7592aa9b8af4c9f40e22e7d2d",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_expiry/attempt-001.json"
+    },
+    "steps/query_expiry/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_expiry/attempt-001.stderr"
+    },
+    "steps/query_expiry/attempt-001.stdout": {
+      "bytes": 62,
+      "sha256": "dd3ffba314be37be2db7108dc8464c385258886b6e2a6fe6d0b630e4d60254ed",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_expiry/attempt-001.stdout"
+    },
+    "steps/query_expiry/completed.json": {
+      "bytes": 4841,
+      "sha256": "67bd95d54a4b18fbbb60dc66347cbdc2b29188230cc6198fe7e515eb267312e8",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_expiry/completed.json"
+    },
+    "steps/query_initial/attempt-001.json": {
+      "bytes": 640,
+      "sha256": "421fc141b15c64e7ff8732ee7f9c69dcd6eba22394e811056b5acb43fe551517",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_initial/attempt-001.json"
+    },
+    "steps/query_initial/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_initial/attempt-001.stderr"
+    },
+    "steps/query_initial/attempt-001.stdout": {
+      "bytes": 63,
+      "sha256": "cafe71b4b2ec45945df010b9820345c4a85ca1b7a76d48f4f5c8e8961990ac99",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_initial/attempt-001.stdout"
+    },
+    "steps/query_initial/completed.json": {
+      "bytes": 4790,
+      "sha256": "4cedb4c2f5c04699daa5acb49b6b1f4acffde6113c47bce438afb9db7c945932",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_initial/completed.json"
+    },
+    "steps/query_later/attempt-001.json": {
+      "bytes": 638,
+      "sha256": "250689f3e3646b1db76c364f863ff2e729f2395ff93bf26fad1cc9b9658d7628",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_later/attempt-001.json"
+    },
+    "steps/query_later/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_later/attempt-001.stderr"
+    },
+    "steps/query_later/attempt-001.stdout": {
+      "bytes": 61,
+      "sha256": "036c9ee33c40126d2d221726c8b826c20bb72911c3e497e1221516b6fee14d5d",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_later/attempt-001.stdout"
+    },
+    "steps/query_later/completed.json": {
+      "bytes": 4848,
+      "sha256": "1aead2e383a259ca5928a48e3b6e35a863de9de66a18a30d578c4b5633b85280",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_later/completed.json"
+    },
+    "steps/query_restart/attempt-001.json": {
+      "bytes": 640,
+      "sha256": "4a72acd608eeef224a710dce176c758e52be0a3102a4d6a8add72ce10d0aa4af",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_restart/attempt-001.json"
+    },
+    "steps/query_restart/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_restart/attempt-001.stderr"
+    },
+    "steps/query_restart/attempt-001.stdout": {
+      "bytes": 63,
+      "sha256": "05fa2d06d295d3ab187016b9c63acb226dd0a10a7d82fcde888d2257d2f1dde7",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_restart/attempt-001.stdout"
+    },
+    "steps/query_restart/completed.json": {
+      "bytes": 4937,
+      "sha256": "07a73091f5e55f5bef6087f0e67ff32e5fb800373863909f876ece04c7c347cd",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/query_restart/completed.json"
+    },
+    "steps/restart/attempt-001.json": {
+      "bytes": 634,
+      "sha256": "23848eadbb1d0e0760452aca37f42dabaf690ed3ab7d640d5b0afb76e2f50fad",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/restart/attempt-001.json"
+    },
+    "steps/restart/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/restart/attempt-001.stderr"
+    },
+    "steps/restart/attempt-001.stdout": {
+      "bytes": 57,
+      "sha256": "1a1dd27d2704f715b14805c0598066e8b281ddf430db009748e5f7ad352fd5ef",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/restart/attempt-001.stdout"
+    },
+    "steps/restart/completed.json": {
+      "bytes": 3004,
+      "sha256": "54d18f2cb4e4c292903822c2a597bfdb508dd53818ef2856819406ca4989521a",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/restart/completed.json"
+    },
+    "steps/teach_pi01/attempt-001.json": {
+      "bytes": 636,
+      "sha256": "92939b4ab4b56087d0e8e94cb77881fba182bc4cfdd2c8681c54b84de97a8abb",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi01/attempt-001.json"
+    },
+    "steps/teach_pi01/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi01/attempt-001.stderr"
+    },
+    "steps/teach_pi01/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "84777a17e6cff219c7d5f2d4b17e4d23b20e1e30374b355bbb27d0af0d232532",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi01/attempt-001.stdout"
+    },
+    "steps/teach_pi01/completed.json": {
+      "bytes": 3907,
+      "sha256": "4b9302e04dd417ae896cb4423d40d879252d96e41ed4227cdb89a7092cc5d330",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi01/completed.json"
+    },
+    "steps/teach_pi02/attempt-001.json": {
+      "bytes": 636,
+      "sha256": "03d4842b4ea16474261caf15bc0872ec77a967bbe844555e50ba50fd559d2272",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi02/attempt-001.json"
+    },
+    "steps/teach_pi02/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi02/attempt-001.stderr"
+    },
+    "steps/teach_pi02/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "5a93c48e63d31fc9ef07b7fa761b53e4132eb78a0eeb24001b9b5733c0bea98a",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi02/attempt-001.stdout"
+    },
+    "steps/teach_pi02/completed.json": {
+      "bytes": 4060,
+      "sha256": "0937d3ce59f39b6387e91d7ee95ee81d627e10f3879a7335e1bf9fa867c8d432",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi02/completed.json"
+    },
+    "steps/teach_pi03/attempt-001.json": {
+      "bytes": 637,
+      "sha256": "fac5528705c29d03fac14ebcd9c2025b8b91790f6842acd9051fbb3182bf1c8e",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi03/attempt-001.json"
+    },
+    "steps/teach_pi03/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi03/attempt-001.stderr"
+    },
+    "steps/teach_pi03/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "a66752f1b5633ff0bef2df1016fd9f57d68bb6f830245e755432a43d7138b33f",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi03/attempt-001.stdout"
+    },
+    "steps/teach_pi03/completed.json": {
+      "bytes": 4531,
+      "sha256": "b6c6a70df23c5762cc55f1d735f6c26cc0f04a319f0066a6055c72b0e67edf29",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi03/completed.json"
+    },
+    "steps/teach_pi04/attempt-001.json": {
+      "bytes": 637,
+      "sha256": "9f3e008d15b4ffd9e2e593347a1acd10f4d0bbd1a6c2171902d075a6e6c1e04e",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi04/attempt-001.json"
+    },
+    "steps/teach_pi04/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi04/attempt-001.stderr"
+    },
+    "steps/teach_pi04/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "5cc0fc52a79d088fc07c048d83ae2d2b240fca6bdda03fac5921d9f38f0f9e29",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi04/attempt-001.stdout"
+    },
+    "steps/teach_pi04/completed.json": {
+      "bytes": 4683,
+      "sha256": "ef08b8e25dbb1b37d7908b68f9c4f12d54866f13046a494bc9c92d5e0ef816ad",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi04/completed.json"
+    },
+    "steps/teach_pi05/attempt-001.json": {
+      "bytes": 636,
+      "sha256": "b1a5baafc932005e2f5c7c94be4dc3e2074e538da079d25fdc647692730d5de7",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi05/attempt-001.json"
+    },
+    "steps/teach_pi05/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi05/attempt-001.stderr"
+    },
+    "steps/teach_pi05/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "d22ee8ba5c5977f7705c2e49deee7efc7ae42c544eabb0c404beffe406839e49",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi05/attempt-001.stdout"
+    },
+    "steps/teach_pi05/completed.json": {
+      "bytes": 4835,
+      "sha256": "399c00093da79897f842965717db002df4d8e6214626364aef842b766559f75b",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi05/completed.json"
+    },
+    "steps/teach_pi06/attempt-001.json": {
+      "bytes": 636,
+      "sha256": "7f9242f9a77a176e7895a8319c28d54dcde677eebc5d7c0eccb3dab0b76c8475",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi06/attempt-001.json"
+    },
+    "steps/teach_pi06/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi06/attempt-001.stderr"
+    },
+    "steps/teach_pi06/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "c3d3e6dcf52fceedec49ac7ab408278a03e3d4fe2bb5287138125a374790d577",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi06/attempt-001.stdout"
+    },
+    "steps/teach_pi06/completed.json": {
+      "bytes": 4989,
+      "sha256": "407deeec332431297431f2508e415ee1a54c570eddb03d1b7d879a56bcd96cf0",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi06/completed.json"
+    },
+    "steps/teach_pi07/attempt-001.json": {
+      "bytes": 637,
+      "sha256": "cd74a9b04ce15b81000ca13c292575bbb13296c39aba966dad876013ecaca44f",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi07/attempt-001.json"
+    },
+    "steps/teach_pi07/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi07/attempt-001.stderr"
+    },
+    "steps/teach_pi07/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "5a498bbdab7ab5b2b10c54f9b05ae56b19d40704ec4e9dfc9d1b3ef4537223c5",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi07/attempt-001.stdout"
+    },
+    "steps/teach_pi07/completed.json": {
+      "bytes": 5142,
+      "sha256": "805de93373709236729083d4fcba8fbd36130fabb22ba6751365cc653a832ee8",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi07/completed.json"
+    },
+    "steps/teach_pi08/attempt-001.json": {
+      "bytes": 637,
+      "sha256": "73bc8e5dd789d6c686445e868425b8f13202af8d7b6204751019debe13ef568a",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi08/attempt-001.json"
+    },
+    "steps/teach_pi08/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi08/attempt-001.stderr"
+    },
+    "steps/teach_pi08/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "da03905d1bd36cd427a168e6c7fe18e2b4a5e15e059ad189e9364f7a6c66f4eb",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi08/attempt-001.stdout"
+    },
+    "steps/teach_pi08/completed.json": {
+      "bytes": 5295,
+      "sha256": "c875c88f4c736dc966c0d27a025c6e5ebb2a8e877fbe2fa7302fb1bd9b4d6ac5",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi08/completed.json"
+    },
+    "steps/teach_pi09/attempt-001.json": {
+      "bytes": 637,
+      "sha256": "6a2144fbea1b6b5086264d2b2214c37a6d22afed7cfba4ae8d509ce125bf5f66",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi09/attempt-001.json"
+    },
+    "steps/teach_pi09/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi09/attempt-001.stderr"
+    },
+    "steps/teach_pi09/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "bdb0b6da2fb0958815bbafc1390ea6749e2aade8831bc2a7cb6a2af96fb12958",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi09/attempt-001.stdout"
+    },
+    "steps/teach_pi09/completed.json": {
+      "bytes": 5339,
+      "sha256": "c072961f145da205ec20f6f5dfafff9f0c162bd088102d5295d34cf7f5773ce6",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi09/completed.json"
+    },
+    "steps/teach_pi10/attempt-001.json": {
+      "bytes": 636,
+      "sha256": "0e01f5c71b2f22031632bdc5404c91f7ded6f92cd8c64e1db30e8aca4425382c",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi10/attempt-001.json"
+    },
+    "steps/teach_pi10/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi10/attempt-001.stderr"
+    },
+    "steps/teach_pi10/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "4dc4b0b19d69c26d20b873605da251b53dbbd4754b89c5978110244d0986e4fb",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi10/attempt-001.stdout"
+    },
+    "steps/teach_pi10/completed.json": {
+      "bytes": 5340,
+      "sha256": "1b0f265a8925e00960ec8245bb25bb8d76b44a3d952de93f99abd22aa20dceae",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_pi10/completed.json"
+    },
+    "steps/teach_rp01/attempt-001.json": {
+      "bytes": 637,
+      "sha256": "498a1a407c77ca5e0619d7eee34cf96c093316b7bad9b5f54d1b3fec8770880e",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp01/attempt-001.json"
+    },
+    "steps/teach_rp01/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp01/attempt-001.stderr"
+    },
+    "steps/teach_rp01/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "1e52e60f6df8bc1e174dc39b0550b41e596d3ace87e230479eea8abb9ded4813",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp01/attempt-001.stdout"
+    },
+    "steps/teach_rp01/completed.json": {
+      "bytes": 4227,
+      "sha256": "03332c7b984651bf04ceae243cea5ddf72080e02a9c980c4476e8b207e6bd30d",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp01/completed.json"
+    },
+    "steps/teach_rp02/attempt-001.json": {
+      "bytes": 636,
+      "sha256": "c5990e75e3df93e8fd394763d3f99f9b8a3dd7a3fceed606c6ae0b5ab5c45d5c",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp02/attempt-001.json"
+    },
+    "steps/teach_rp02/attempt-001.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp02/attempt-001.stderr"
+    },
+    "steps/teach_rp02/attempt-001.stdout": {
+      "bytes": 60,
+      "sha256": "3ce799545376444bda350e5a3ec2efdd6d58f968c315eadf5bcbfaf0e5f8be1a",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp02/attempt-001.stdout"
+    },
+    "steps/teach_rp02/completed.json": {
+      "bytes": 4382,
+      "sha256": "c8b2396be334e4a6b0bdfa63d5148a5556b010a577d58210aa76af962cffc95f",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload/steps/teach_rp02/completed.json"
+    },
+    "workload.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/workload.stderr"
+    },
+    "workload.stdout": {
+      "bytes": 12872,
+      "sha256": "58dd672c7da84636f76d60b0068eda36c5bea4c238d0f5e10355e5a740670f79",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/workload.stdout"
+    }
+  },
+  "schema": "continuing-public-workload-snapshot-v1",
+  "scope": "Fixed public authored corpus. Execution records, not a portable verifier package. Full reader survives.",
+  "source_controller": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload",
+  "source_note": "Each worker command and backend genesis pins are retained. The original squared run began at commit 08581d0 and later processes reopened through the compatible engine integration."
+}

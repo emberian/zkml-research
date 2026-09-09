@@ -1,0 +1,69 @@
+{
+  "committed": true,
+  "head": {
+    "genesis": "beb5f3fbae87b23daeb99b0426ad2195ca6c8a6b4416895a7c81b1d724470fe5",
+    "revision": 1,
+    "classes": {
+      "proof_integrity": {
+        "acc_sha256": "32fbfa5ce8bb9c78e23a76c0633afba5f23958d432be9bb683db7a816cf7ad5a",
+        "teaches": 1,
+        "queue": [
+          {
+            "sha256": "32fbfa5ce8bb9c78e23a76c0633afba5f23958d432be9bb683db7a816cf7ad5a",
+            "lane": 0
+          }
+        ]
+      }
+    },
+    "model_root": "da3b1e78c9ecbaec95e3c4d02ffd2d2ef19e08bb42ea8a3966c13190c5cd9cc9",
+    "last_receipt_sha256": "70ebc844f93435bfd4af723172a25b3e868f0468359f56be7c8198e54c2a5f70"
+  },
+  "receipt_sha256": "70ebc844f93435bfd4af723172a25b3e868f0468359f56be7c8198e54c2a5f70",
+  "request": {
+    "schema": "continuing-update-v1",
+    "request_id": "teach-pi01",
+    "genesis": "beb5f3fbae87b23daeb99b0426ad2195ca6c8a6b4416895a7c81b1d724470fe5",
+    "recipient_id": "6db2f647bf0e0cd9fbad441a79c2e9889a08e34d91109b62f14b6f6b172e8650",
+    "revision": 1,
+    "parent_sha256": "b88207ef73011eecc6e895d8898b8d77c7c33d4bcba43e8d9b5e157fbf02281a",
+    "parent_model_root": "e7fe9055b36d743cd1e1bd6d9bdea697cc2b9f7c0b8a20e2739e48251844ea9f",
+    "label": "proof_integrity",
+    "lane": 0,
+    "text_sha256": "152a2319f571611359175db1d1831bce6db41c01e9f95047f06a5413568a6370",
+    "feature_sha256": "64d3fe3d1eb0385cdef207a0022f7cf35362585f9493986697911c3c4472568a",
+    "payloads": {
+      "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+      "fresh_sha256": "32fbfa5ce8bb9c78e23a76c0633afba5f23958d432be9bb683db7a816cf7ad5a",
+      "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+      "out_sha256": "32fbfa5ce8bb9c78e23a76c0633afba5f23958d432be9bb683db7a816cf7ad5a"
+    },
+    "profile_sha256": "daf3baa054b5b979e77ab4d9d9366bc87bf4988e4c8f227579611b8d68947842",
+    "engine_sha256": "70d0ec933a9d135289b63c07aa77856b024e58fd1fb1ef6bfd34e6a69d7f0e21"
+  },
+  "private_reads": 0,
+  "metrics": {
+    "proofs_generated": 8,
+    "accepted_fresh_proofs": 8,
+    "proofs_verified": 8,
+    "discarded_phase_attempts": 0,
+    "proof_bytes": 5786487,
+    "phase_elapsed_seconds": {
+      "prove": 38.44016662496142,
+      "verify": 2.6100265409913845,
+      "issue": 0.3899417500360869,
+      "learn": 0.16195929201785475
+    },
+    "committed_updates": 1,
+    "answered_queries": 0,
+    "private_reads": 0
+  },
+  "fifo_capacity": 8,
+  "score_kind": "linear",
+  "proof_backend": "compact",
+  "score_formula": "mean(dot)",
+  "score_signed": true,
+  "update_proofs_per_class": 8,
+  "infer_proofs_per_class": 88,
+  "lane_values_key": "dot_values",
+  "sum_key": "sum_dot"
+}

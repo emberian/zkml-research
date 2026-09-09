@@ -1,0 +1,249 @@
+{
+  "attempts": 1,
+  "created_utc": "2026-09-09T05:45:18.482851+00:00",
+  "error": null,
+  "id": "teach-web-teach-c7755d11-1cc5-4edf-8161-cfdc9b512607",
+  "kind": "teach",
+  "phase": "Complete",
+  "result": {
+    "bank_count": 2,
+    "class_layout": {
+      "api_behavior": {
+        "bank": "0",
+        "lane": 3
+      },
+      "build_dependencies": {
+        "bank": "0",
+        "lane": 5
+      },
+      "documentation": {
+        "bank": "0",
+        "lane": 7
+      },
+      "interface_accessibility": {
+        "bank": "0",
+        "lane": 6
+      },
+      "memory_usage": {
+        "bank": "0",
+        "lane": 2
+      },
+      "network_transport": {
+        "bank": "1",
+        "lane": 0
+      },
+      "proof_integrity": {
+        "bank": "0",
+        "lane": 0
+      },
+      "runtime_performance": {
+        "bank": "0",
+        "lane": 1
+      },
+      "storage_recovery": {
+        "bank": "0",
+        "lane": 4
+      }
+    },
+    "classes_per_bank": 8,
+    "committed": true,
+    "fifo_capacity": 8,
+    "head": {
+      "banks": {
+        "0": {
+          "acc_sha256": "b3860c8b18693d423388678d9719b1928968cc33050f755d32ec8075e699d397"
+        },
+        "1": {
+          "acc_sha256": "62ea3bb815a96078edec33120151eba4cb8c83b8abc814079a9d720fd2c0e33d"
+        }
+      },
+      "classes": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3,
+          "queue": [
+            {
+              "lane": 3,
+              "sha256": "31638b479d03dd6a58a58b12eac9bd51c6dafff6ec58ae188dce6c111a7af6e1"
+            }
+          ],
+          "teaches": 1
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5,
+          "queue": [
+            {
+              "lane": 5,
+              "sha256": "ae75f541828832de461116f0c8fe851597c0fda4b74308b321169a78cd3536e9"
+            }
+          ],
+          "teaches": 1
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7,
+          "queue": [
+            {
+              "lane": 7,
+              "sha256": "e0cfd6c902b5cf6ac804ad7bf61719bc5c3a5a5b8446dc01cdb04b88049baa3a"
+            }
+          ],
+          "teaches": 1
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6,
+          "queue": [
+            {
+              "lane": 6,
+              "sha256": "1b6fdc35470bf94de065031ffe797c551236463796b81b621cd7d8fc4f937d2f"
+            }
+          ],
+          "teaches": 1
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2,
+          "queue": [
+            {
+              "lane": 2,
+              "sha256": "76f477a2ee4bf0a342d7e3c3faa3fd17b0140311c815ef1f7698129277ea6825"
+            }
+          ],
+          "teaches": 1
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "sha256": "1d8fd163ece682196e8e7291c12624de01fc503320b3a399c89d3b2d61e19268"
+            },
+            {
+              "lane": 0,
+              "sha256": "3907475cd6b74f8a0bedc743f565b0126f8344ed2d99a062f4993af1b90bcb56"
+            }
+          ],
+          "teaches": 2
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0,
+          "queue": [
+            {
+              "lane": 0,
+              "sha256": "56241cfa183f2788d7dc872fa2a44395fdcf309fec3fe8f0720e08bfe7679451"
+            },
+            {
+              "lane": 0,
+              "sha256": "e45baf25a55d7cae8969206ea2e79c14ff6e14e7962413213607ffe7a2e10f7f"
+            },
+            {
+              "lane": 0,
+              "sha256": "c53f4ca98b99f32122fdbf7cca880906f45a53a487ae4494e83d3d0cf53465ab"
+            },
+            {
+              "lane": 0,
+              "sha256": "f755534c2f4be8847dfd2e26f8176a1b3ed3bffa599201fbd2a02b391efd7251"
+            },
+            {
+              "lane": 0,
+              "sha256": "9f8b99f4d6367c67ed1c1a971d7078d6743d5c83a2bcc37a165c2535b6ce4a41"
+            },
+            {
+              "lane": 0,
+              "sha256": "70018f3d348461743c5e85ed4e6def179b31ee8a807d738b031b083d34c63004"
+            },
+            {
+              "lane": 0,
+              "sha256": "e7410b449af05e1ce560b664c8e97792f7f4e159a68100a5a6cd1ab69431d368"
+            },
+            {
+              "lane": 0,
+              "sha256": "d58626f62221cbeb34424fdd19d5405b587eca96b0ed93e2222d2f90de3957ac"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1,
+          "queue": [
+            {
+              "lane": 1,
+              "sha256": "a2c50591177e97949667c37be18fe709a06acc13d511084a808b1360232e4d6b"
+            }
+          ],
+          "teaches": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4,
+          "queue": [
+            {
+              "lane": 4,
+              "sha256": "6e21a54eb90305b12360e3438caafaa3d002ae37ce71aac49992f39234701e57"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+      "last_receipt_sha256": "42e2309dd46c9429039fdbaeeef081a2dab234abbf79a6c31a27490e34d166c4",
+      "model_root": "0f966d5c8387fef4f43376522774a161bd72bde7a67aa94e1aa20286e0ba1794",
+      "revision": 19
+    },
+    "infer_proofs_per_bank": 352,
+    "layout": "fixed class lanes",
+    "metrics": {
+      "accepted_fresh_proofs": 32,
+      "answered_queries": 0,
+      "committed_updates": 1,
+      "discarded_phase_attempts": 0,
+      "phase_elapsed_seconds": {
+        "issue": 0.3776148749748245,
+        "learn": 0.1743855410022661,
+        "prove": 4.440311834041495,
+        "verify": 1.784689541964326
+      },
+      "private_reads": 0,
+      "proof_bytes": 5694776,
+      "proofs_generated": 32,
+      "proofs_verified": 32
+    },
+    "private_reads": 0,
+    "proof_backend": "matched",
+    "receipt_sha256": "42e2309dd46c9429039fdbaeeef081a2dab234abbf79a6c31a27490e34d166c4",
+    "request": {
+      "backend_sha256": "e202fb7141a240037bdccc7dfa4e092737f30a6f65f082019f76e10ad70ee227",
+      "bank": "1",
+      "feature_sha256": "70d91608102b3e2519876c712bfe6d6b580dfa46f6469a3545fd787e07753f3b",
+      "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+      "label": "network_transport",
+      "lane": 0,
+      "parent_model_root": "4a3b14667fb6085a67ad206f609445f31b99eac7cdbba98d5747736fc55a7cc8",
+      "parent_sha256": "4c2bf4d9b1fdf29fd54746e9e89116d5fc6eee8bf2f17ff03b535aad6a391a5f",
+      "payloads": {
+        "acc_sha256": "1d8fd163ece682196e8e7291c12624de01fc503320b3a399c89d3b2d61e19268",
+        "fresh_sha256": "3907475cd6b74f8a0bedc743f565b0126f8344ed2d99a062f4993af1b90bcb56",
+        "old_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "out_sha256": "62ea3bb815a96078edec33120151eba4cb8c83b8abc814079a9d720fd2c0e33d"
+      },
+      "recipient_id": "dfc2f8c677ea1e86b155f817e3045af9797e5ab564c2208542c2ac553247d57f",
+      "request_id": "web-teach-c7755d11-1cc5-4edf-8161-cfdc9b512607",
+      "revision": 19,
+      "schema": "packed-class-update-v1",
+      "text_sha256": "17fb45f65b39c673be53b78daea083fca8bd53ee9ff5d5c5255a624e486d9c19"
+    },
+    "schema": "packed-class-sum-display-v1",
+    "score_formula": "class_sum / count",
+    "score_kind": "linear",
+    "score_signed": true,
+    "sum_key": "sum_dot",
+    "update_proofs": 32
+  },
+  "status": "completed",
+  "updated_utc": "2026-09-09T05:45:32.418918+00:00"
+}

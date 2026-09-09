@@ -1,0 +1,72 @@
+{
+  "origin": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/runtime/native/infer/src/main.rs",
+  "origin_sha256": "43081b8a5ce14465b9cb59919da953fd4c451e3462e9a8586e98f4a8ce6d13e9",
+  "adaptations": [
+    "Remove unrelated kernel ciphertext from case binding and import arguments.",
+    "Produce final dot directly from unchanged packed initial product and ten rotations; no square.",
+    "Add signed eight-slot reader with immutable ciphertext/evaluation-key hash checks, repeated-lane and bounded-value refusal."
+  ],
+  "source_sha256": "4e1ab3b6b4f1a07290e36c4fa303f3bcbe573bdde69ed67e907115df88ebbcbf",
+  "new_air": false,
+  "proof_run": false,
+  "private_read": false,
+  "unchanged_source_functions": {
+    "linear_plan": {
+      "sha256": "32d5fb2b18a55df0979cc017cafc9448bf5b5878c47eb4da5913c276603b65d8",
+      "byte_identical": true
+    },
+    "params": {
+      "sha256": "80444288f5819a62b3d634b653a111b7b5950871adde11e7d828863ba49f1f57",
+      "byte_identical": true
+    },
+    "canonical": {
+      "sha256": "be8a448bbde4f8d6344401f9b95380a3a7600dbc896e27afaa61315f3f0ee1af",
+      "byte_identical": true
+    },
+    "ct": {
+      "sha256": "9f64f3ed56a6faa24008d7abac373a15133ac1b74f9f257fcdb6cad4c1a8b331",
+      "byte_identical": true
+    },
+    "coeff": {
+      "sha256": "5ab72e37d683b8ab3269b131c9bcbff6fb9efeacfa041ff014415ece84be30fb",
+      "byte_identical": true
+    },
+    "query": {
+      "sha256": "4ffdd053bc4e5836ba0f24cbf8298fb6af27361ab49aff0ac21af020b2824524",
+      "byte_identical": true
+    },
+    "rows": {
+      "sha256": "22d98d5da801610f03d13b9d051c56597746453388579873dbdc1dcfc1f163cd",
+      "byte_identical": true
+    },
+    "statement": {
+      "sha256": "42ed5225242ebe01407789084fbc6ccaa0555e24a8a381113af71f502bcbc0c7",
+      "byte_identical": true
+    },
+    "prove": {
+      "sha256": "aaab44d31451248f01fa3e9389503ffec3acd380c0c1a0aa5e4ac6a03828b84e",
+      "byte_identical": true
+    },
+    "verify": {
+      "sha256": "e41d05a1a064713ccd7e12db168d35e688f650a27b8dd3654502e6b2d7c99e72",
+      "byte_identical": true
+    }
+  },
+  "binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/linear/native/target/release/vfhe-complete-linear-infer",
+  "binary_sha256": "ac2d3cd6bd515fcd9c4e84dcfadb9fecfdc24d5eae4bb5e660172a5b855730c0",
+  "profile_sha256": "35ce159117df2500dc484595d2cfce0ac98f42f790c66b8fe9924596f188b220",
+  "build": {
+    "exit_code": 0,
+    "command": "CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=1 CARGO_TARGET_DIR=/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/linear/native/target /Users/ember/.cargo/bin/cargo build --release --offline --locked --manifest-path /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/linear/native/Cargo.toml",
+    "stdout": "native/build.stdout",
+    "stderr": "native/build.stderr",
+    "source_sha256": "4e1ab3b6b4f1a07290e36c4fa303f3bcbe573bdde69ed67e907115df88ebbcbf"
+  },
+  "theorem": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/nonlinear_performance/formal/Compiler/RangeKeyswitchInfer.lean",
+    "name": "Minidregg.Compiler.RangeKeyswitchInfer.dotSound",
+    "line": 41,
+    "sha256": "b0461d6a6d17bee5b6373da6859c8fbd6be4df7c133113d9c46b9014b7797d59",
+    "new_formal_proofs": 0
+  }
+}

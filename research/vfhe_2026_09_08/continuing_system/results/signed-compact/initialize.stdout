@@ -1,0 +1,28 @@
+{
+  "initialized": true,
+  "genesis": "beb5f3fbae87b23daeb99b0426ad2195ca6c8a6b4416895a7c81b1d724470fe5",
+  "head": {
+    "genesis": "beb5f3fbae87b23daeb99b0426ad2195ca6c8a6b4416895a7c81b1d724470fe5",
+    "revision": 0,
+    "classes": {
+      "proof_integrity": {
+        "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+        "teaches": 0,
+        "queue": []
+      }
+    },
+    "model_root": "e7fe9055b36d743cd1e1bd6d9bdea697cc2b9f7c0b8a20e2739e48251844ea9f",
+    "last_receipt_sha256": null
+  },
+  "recipient_id": "6db2f647bf0e0cd9fbad441a79c2e9889a08e34d91109b62f14b6f6b172e8650",
+  "full_reader_key": true,
+  "fifo_capacity": 8,
+  "score_kind": "linear",
+  "proof_backend": "compact",
+  "score_formula": "mean(dot)",
+  "score_signed": true,
+  "update_proofs_per_class": 8,
+  "infer_proofs_per_class": 88,
+  "lane_values_key": "dot_values",
+  "sum_key": "sum_dot"
+}

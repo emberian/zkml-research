@@ -1,0 +1,83 @@
+{
+  "answered": true,
+  "prediction": "proof_integrity",
+  "winner": "proof_integrity",
+  "ranking": [
+    "proof_integrity"
+  ],
+  "classes": {
+    "proof_integrity": {
+      "all8192_slots_repeat8": true,
+      "dot_ciphertext_sha256": "c15a8aaf6cd6be87cc9988d42786d619fee3b6498372cdeaf6dea9bf9c63684b",
+      "dot_values": [
+        -13411,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evaluation_key_sha256": "35437bd8c2f7bb231aa8b7ee838efa22a353f43ab45e0d06cf3bfe84e5396880",
+      "full_reader_key": true,
+      "scope": "Bounded signed BFV dot slots; full reader capability remains. Proof/controller acceptance is the caller's responsibility.",
+      "signed_bound": 20000,
+      "sum_dot": -13411,
+      "score_values": [
+        -13411,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sum_score": -13411
+    }
+  },
+  "counts": {
+    "proof_integrity": 1
+  },
+  "class_scores": [
+    {
+      "label": "proof_integrity",
+      "sum_dot": -13411,
+      "count": 1,
+      "mean_numerator": -13411,
+      "mean_denominator": 1,
+      "sum_score": -13411
+    }
+  ],
+  "revision": 1,
+  "model_root": "da3b1e78c9ecbaec95e3c4d02ffd2d2ef19e08bb42ea8a3966c13190c5cd9cc9",
+  "public_accepted": true,
+  "public_acceptance_sha256": "de1c4e442e28ab2427c423bed9574bb18071557a5289d18b8c7465727f24b733",
+  "private_reads": 1,
+  "finished_utc": "2026-09-09T05:33:34.558697+00:00",
+  "full_reader": true,
+  "metrics": {
+    "proofs_generated": 88,
+    "accepted_fresh_proofs": 88,
+    "proofs_verified": 88,
+    "discarded_phase_attempts": 0,
+    "proof_bytes": 64421507,
+    "phase_elapsed_seconds": {
+      "class000-verify": 41.43505795800593,
+      "class000-prove": 428.61442241602344,
+      "class000-read": 0.24705833400366828
+    },
+    "committed_updates": 0,
+    "answered_queries": 1,
+    "private_reads": 1
+  },
+  "score_kind": "linear",
+  "proof_backend": "compact",
+  "score_formula": "mean(dot)",
+  "score_signed": true,
+  "update_proofs_per_class": 8,
+  "infer_proofs_per_class": 88,
+  "lane_values_key": "dot_values",
+  "sum_key": "sum_dot"
+}

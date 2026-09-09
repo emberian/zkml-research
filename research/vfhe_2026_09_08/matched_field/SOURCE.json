@@ -1,0 +1,99 @@
+{
+  "claim": "[EXECUTED] source and build identities after successful offline release build; no proof executed",
+  "plonky3_revision": "82cfad73cd734d37a0d51953094f970c531817ec",
+  "files": {
+    "native/Cargo.toml": "ad51dfd86d26f8287ed6b42801885ee740336cc80be5166375a5933c76f924be",
+    "native/Cargo.lock": "3c62b22a0fc19d8411746d0c7a984687e240322efefd6b18509d644d65f17c8a",
+    "caller.py": "36b6f904aecd6efae1fe1dcea460349729425ee44d0965e6ace46ea370abaec4",
+    "PIPELINE.json": "51a0bef633c1de43dcab15f34cc35725d6a9cc042a5e42574e19842e382a3110",
+    "native/src/field.rs": "404a89454f536804c4f3501d584338d84cbf25ef6999a9922eb8e6b0c94ecd1a",
+    "native/src/lib.rs": "007344de57a6b5f4565d9a4830507edb188a8917ce14b3b7a5afeffb714a1364",
+    "native/src/linear.rs": "923a62859068de8b2755a4e8297f6afc74dad55d8169ea69c88e53adcf4292fa",
+    "native/src/main.rs": "3edb5489d0dfb02fdc994bd1d91fe1939cbde07b03e08c276076f20710b923ed",
+    "native/src/proof.rs": "22a00b2177999fc019075167d4a0c3e4f78c6c93a5b946c085161ce8a725cb74"
+  },
+  "binary": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native/target/release/vfhe-matched-field",
+    "sha256": "128be0ebf696007e04c62a5cee95023a07bb9e654adc30955ea9367d0fafcb3a"
+  },
+  "local_dependencies": {
+    "p3-fri": {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73",
+      "rust_and_manifest_sha256": "a482a3e00f063d6a2d107f69725797be78c47502657847aa9e58cef2b3a7413f",
+      "files": {
+        "Cargo.toml": "1836f622fdb3677c99b7d910f2c8b1abc5f2b22e064c9158bf691c05eaf66658",
+        "src/config.rs": "f56b385c3a0e6b25411687af657219749c076d8a070a90c237d7e81507b13534",
+        "src/hiding_pcs.rs": "621347874b3886cca37dbab67ec7b29c70ba72dd90d721f14c8ccfa139cfa8d1",
+        "src/lib.rs": "254f8f209c0017bbed72a236c38efce33c43c988db8c8b011c310948215a1528",
+        "src/periodic.rs": "c592b44642a95ad6e5fb812dfcbaa294c6f38fff31ba456f70e5f4119e7ea296",
+        "src/proof.rs": "50b8f1e54c9200f96e7bc1f4d672c2b97c467e1440a70e00d1571e4d18b57c67",
+        "src/prover.rs": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4",
+        "src/two_adic_pcs.rs": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9",
+        "src/verifier.rs": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412"
+      }
+    },
+    "p3-challenger": {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-challenger-82cfad73",
+      "rust_and_manifest_sha256": "0c08b215627c23e5eefc486e76ca96acfa8bfb070a4664736d1892f61de144fe",
+      "files": {
+        "Cargo.toml": "6a5153af314b97cf3f2f659fb5c2f9096b174ff1371044181601213e22a1a4da",
+        "src/duplex_challenger.rs": "97d24562539a515f67dcb290cd14c389aeea3d7b2a79e0f0585b3e01ed1652a2",
+        "src/grinding_challenger.rs": "3d4d483bc20ba0eb0e3ab00c66c6d567427cf6bc7c255f0ef239fde28d8d3ca1",
+        "src/hash_challenger.rs": "9d9cc6fdb7f6801774c1acbab10c6458978188b6795a0e570b659702be0d0b37",
+        "src/lib.rs": "28beaafb2c367236c23ed11ee33662f0001e1cb400fe4a6e82a8a5c48caefb4f",
+        "src/multi_field_challenger.rs": "6110ca5305e49227e2d2e86a6bc969d9568a59339a9b407eb2fdca7793b53903",
+        "src/serializing_challenger.rs": "4623cff6e446af9e47c1776b2080398b260dc419286a2686cbacd517c7c7fb06"
+      }
+    },
+    "fhe": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/vendor/fhe-dregg",
+      "rust_and_manifest_sha256": "e3697d32ae0725a23a8483609ab6f513351e17ddf71400fce7e0849b5c27b0bd",
+      "files": {
+        "Cargo.toml": "c0219e8207ba4c8a79b37e3524ff765bc4c7b0a5518128585347ec93fb651001",
+        "src/bfv/ciphertext.rs": "236b1b3f42d96c1ec1f0a66e4abe215b29ba9c8e6096fd9bf963b81e5fba8d85",
+        "src/bfv/context/chain.rs": "85908695bfce0245d2f17beb0048ef567bf1b89c9b313178526074d6836a1f27",
+        "src/bfv/context/cipher_plain_context.rs": "30ed9c76229cb1d0adf941ef9d5ed5e0dc73beff4ab50ea764574515c876e255",
+        "src/bfv/context/mod.rs": "219c6e41ef3ebdac22b8af5fcb3786bb60d43eb5982764abc70a3c89beb3b3af",
+        "src/bfv/encoding.rs": "568ba87082a5d4df89feb9c1ca46a7401d3861704d6a72e52702b386347dd657",
+        "src/bfv/keys/evaluation_key.rs": "0814f11e6af8734fe8e074c50fa80867fe788afca0624f297917342682473f10",
+        "src/bfv/keys/galois_key.rs": "3d799609c1880c427a7cc8debea45466b8280daf57c9711e0c75138e02fa5b13",
+        "src/bfv/keys/key_switching_key.rs": "d7f84e35e8618515664ec7521c4f5cd422a9f9709ed1ebdd115fc15f4a05aad1",
+        "src/bfv/keys/mod.rs": "7b28bc7c9d390ecab24d8dbf2e1b27376a389f6261c8b69f57027c6101f0fe3a",
+        "src/bfv/keys/public_key.rs": "c84a8da2647b7f20800317ead510584b116c0d5d99d3163f80c8e520d4ead3c3",
+        "src/bfv/keys/relinearization_key.rs": "ad2c7ca6bfbc983a43531ffbae3f8408d8750c3574ee3f79dbf0c37cc49cdd99",
+        "src/bfv/keys/secret_key.rs": "337e85e2dc4a7540039b800517ec32389dc3152516c9fdad18cc58dc55acec70",
+        "src/bfv/mod.rs": "78a8dd7fb810376a68c4fbf85eb9a2507f4cd65ce1fc06b163ddc0def23ed885",
+        "src/bfv/ops/dot_product.rs": "cb1b20d1150a6b7a1c2430d31651eeb162e1fe710fc62e2349ec069b511c1b54",
+        "src/bfv/ops/mod.rs": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+        "src/bfv/ops/mul.rs": "930cbd009048f11ebb10b66b1f1d9bf5bb033ccb96154e1d95ac3d779f553cfc",
+        "src/bfv/parameters.rs": "7f6b1d364cbc8547b3f381551ec14f1ec0272c07b3c8a4ee03c4df1fc9aece30",
+        "src/bfv/plaintext.rs": "abc6d4930295aed0fe91d58be85c79c46b4261d90fb0a02897ed002935de50b8",
+        "src/bfv/plaintext_vec.rs": "50bf227ec96093b88e34055c0115483052daa5f0ebc17a24e32483a3ea8005c8",
+        "src/bfv/rgsw_ciphertext.rs": "737c410e2e1e28eed1d1fa425f2b97f84d1b5e789181de6f264c510545bc9230",
+        "src/bfv/traits.rs": "c0fde0253d0b4530779acad1fd80f477b4e1a4e7352704b28757f3968aa1627e",
+        "src/errors.rs": "baf5243965e9511ed83aa7426d9b4b379222f4861e9ffdf7d335e51fab189b80",
+        "src/lib.rs": "3f5d4855555f46092085fe6d3c9115f0a57795f5b8b07d445a4ede70d9d44faa",
+        "src/mbfv/aggregate.rs": "f46e9d49b7b06f794a7b5ba269c080f63f5aca05e6f36e14ecac84ee754f760f",
+        "src/mbfv/crp.rs": "970e959f074400971c2287794e83be0472cee58c8d0f1f74f2795a54bea06fed",
+        "src/mbfv/mod.rs": "14a2d1d8e68c3893c906870f9b482acdb3b7e4253e6cec1a23633c3306d36bf6",
+        "src/mbfv/public_key_gen.rs": "5764092c68ffe91dc90597e0c1184467358ce4e3ffcf621efcc44b5bdb0df548",
+        "src/mbfv/public_key_switch.rs": "b7a1620c66987fae8a7b4845e277bbe77018c48be2ac2a07051f23d7b4b75f97",
+        "src/mbfv/relin_key_gen.rs": "b4de6533647e2c36fb0c5df79d739e350992a46ea2688bd5c01e564106ed2a21",
+        "src/mbfv/round.rs": "669be8070a608a12c4974c3a222d46c5bec1f6e336d43a6029f674841571fbe8",
+        "src/mbfv/secret_key_switch.rs": "c6ec3f9d6c9987fef3d8fbb82c6b7f2bd37a532675c2b73bd5f1d726add95632",
+        "src/mbfv/share_codec.rs": "e1f22a6e38e1c4bb571371bc47f7b45a8334b54436238d423f3134cd77d25938",
+        "src/proto/bfv.rs": "5ce044c5ce0e206aecbcfdd3649aed9abb503e9e0700dbe6f45a9aac78e11d9d",
+        "src/proto/mod.rs": "5a269559c603532b3d58cf547665645fb0d12d25dc5abbd6ed03d1171c32679d"
+      }
+    }
+  },
+  "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+  "build_log": "experiments/cargo-build-release-01.log",
+  "library_test_log": "experiments/cargo-test-lib-01.log",
+  "external_search_queries": 0,
+  "executed_run": {
+    "path": "experiments/fifo-expiry-run001.json",
+    "sha256": "e15cbe54429c4b29740923806a500338a7c71fc506eeefeeeb7d6b649dcd61a6",
+    "source_or_profile_changed_for_run": false
+  }
+}

@@ -1,0 +1,112 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling autocfg v1.5.1
+   Compiling libm v0.2.16
+   Compiling num-traits v0.2.19
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.189
+   Compiling syn v3.0.5
+   Compiling syn v2.0.119
+   Compiling serde_core v1.0.229
+   Compiling num-integer v0.1.47
+   Compiling serde v1.0.229
+   Compiling serde_derive v1.0.229
+   Compiling crossbeam-utils v0.8.22
+   Compiling crossbeam-epoch v0.9.20
+   Compiling crossbeam-deque v0.8.7
+   Compiling either v1.18.0
+   Compiling paste v1.0.15
+   Compiling rayon-core v1.13.0
+   Compiling rand_core v0.10.1
+   Compiling getrandom v0.4.3
+   Compiling itertools v0.14.0
+   Compiling num-bigint v0.4.8
+   Compiling strength_reduce v0.2.4
+   Compiling transpose v0.2.3
+   Compiling rayon v1.12.0
+   Compiling chacha20 v0.10.2
+   Compiling tracing-attributes v0.1.31
+   Compiling version_check v0.9.5
+   Compiling tracing-core v0.1.36
+   Compiling pin-project-lite v0.2.17
+   Compiling tracing v0.1.44
+   Compiling rand v0.10.2
+   Compiling p3-maybe-rayon v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-field v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-matrix v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling spin v0.11.1
+   Compiling zerocopy v0.8.56
+   Compiling getrandom v0.3.4
+   Compiling p3-dft v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-symmetric v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling thiserror v2.0.20
+   Compiling p3-mds v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling generic-array v0.14.7
+   Compiling thiserror-impl v2.0.20
+   Compiling rand_core v0.9.5
+   Compiling ppv-lite86 v0.2.21
+   Compiling bytemuck v1.25.2
+   Compiling typenum v1.20.1
+   Compiling num-complex v0.4.6
+   Compiling rand_chacha v0.9.0
+   Compiling p3-poseidon1 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon2 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling anyhow v1.0.104
+   Compiling p3-monty-31 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling rand v0.9.5
+   Compiling pulp v0.21.5
+   Compiling equator-macro v0.4.2
+   Compiling matrixmultiply v0.3.11
+   Compiling reborrow v0.5.5
+   Compiling num-bigint-dig v0.9.1
+   Compiling semver v1.0.28
+   Compiling rustc_version v0.4.1
+   Compiling equator v0.4.2
+   Compiling p3-challenger v0.5.1 (/Users/ember/dev/breadstuffs/vendor/plonky3-challenger-82cfad73)
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling p3-multilinear-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling pulp v0.22.3
+   Compiling num-iter v0.1.46
+   Compiling smallvec v1.16.0
+   Compiling once_cell v1.21.4
+   Compiling rawpointer v0.2.1
+   Compiling p3-commit v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling digest v0.10.7
+   Compiling prost-derive v0.14.4
+   Compiling aligned-vec v0.6.4
+   Compiling heapless v0.7.17
+   Compiling cpufeatures v0.2.17
+   Compiling zmij v1.0.23
+   Compiling pulp-wasm-simd-flag v0.1.1
+   Compiling doc-comment v0.3.4
+   Compiling bytes v1.12.1
+   Compiling byteorder v1.5.0
+   Compiling hash32 v0.2.1
+   Compiling prost v0.14.4
+   Compiling sha2 v0.10.9
+   Compiling tfhe-ntt v0.6.1
+   Compiling fhe-util v0.1.1
+   Compiling ndarray v0.17.2
+   Compiling fhe-traits v0.1.1
+   Compiling ethnum v1.5.3
+   Compiling serde_json v1.0.151
+   Compiling zeroize v1.9.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling fhe-math v0.1.1
+   Compiling p3-fri v0.5.1 (/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73)
+   Compiling cobs v0.3.0
+   Compiling p3-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling zeroize_derive v1.5.0
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling fhe v0.1.1 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/vendor/fhe-dregg)
+   Compiling p3-uni-stark v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling postcard v1.1.3
+   Compiling p3-merkle-tree v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling vfhe-matched-field v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native)
+    Finished `release` profile [optimized] target(s) in 2m 36s

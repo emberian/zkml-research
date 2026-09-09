@@ -1,0 +1,232 @@
+{
+  "complete": true,
+  "completed_operations": 17,
+  "controller_root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident.workload",
+  "engine": {
+    "proof_backend": "matched",
+    "score_kind": "linear"
+  },
+  "engine_metadata": {
+    "infer_proofs_per_class": 352,
+    "lane_values_key": "dot_values",
+    "proof_backend": "matched",
+    "score_formula": "mean(dot)",
+    "score_kind": "linear",
+    "score_signed": true,
+    "sum_key": "sum_dot",
+    "update_proofs_per_class": 32
+  },
+  "engine_reference_sha256": "87dd7c6c5e60cdd04333b25626bc884395fb286f9fa11e52afd25ffa27a6350a",
+  "evaluation_note": "evaluation-linear-matched.md",
+  "expired_reference_examples": [
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi09",
+      "text_id": "pi01"
+    },
+    {
+      "label": "proof_integrity",
+      "lane": 1,
+      "operation": "teach_pi10",
+      "text_id": "pi02"
+    }
+  ],
+  "freshness_accounting": "Metrics describe each unique stable request once across all invocations. Reused or resumed requests are not counted as fresh work in this invocation.",
+  "instance_cumulative_metrics": {
+    "accepted_fresh_proofs": 3200,
+    "answered_queries": 4,
+    "committed_updates": 12,
+    "discarded_phase_attempts": 0,
+    "private_reads": 8,
+    "proof_bytes": 583046239,
+    "proofs_generated": 3200,
+    "proofs_verified": 3200
+  },
+  "instance_root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/matched-lifecycle/resident",
+  "invocation": {
+    "elapsed_seconds": 638.2098643329809,
+    "finished_utc": "2026-09-09T05:30:53.015347+00:00",
+    "mode": "resume",
+    "newly_completed_steps": [
+      "teach_pi01",
+      "teach_pi02",
+      "teach_rp01",
+      "teach_rp02",
+      "query_initial",
+      "teach_pi03",
+      "teach_pi04",
+      "teach_pi05",
+      "teach_pi06",
+      "teach_pi07",
+      "teach_pi08",
+      "query_later",
+      "teach_pi09",
+      "teach_pi10",
+      "query_expiry",
+      "restart",
+      "query_restart"
+    ],
+    "resumed_incomplete_steps": [],
+    "reused_completed_steps": [],
+    "started_utc": "2026-09-09T05:20:14.785034+00:00"
+  },
+  "metrics_available_for_every_crypto_operation": true,
+  "phase_elapsed_seconds": {
+    "class000-prove": 203.22051812399877,
+    "class000-read": 0.8966127070016228,
+    "class000-verify": 81.36197437497322,
+    "class001-prove": 194.30986816697987,
+    "class001-read": 0.868243667006027,
+    "class001-verify": 77.21301208506338,
+    "issue": 4.2264436679543,
+    "learn": 1.8020480002160184,
+    "prove": 47.63788229099009,
+    "verify": 18.2798534159665
+  },
+  "plaintext_utility": {
+    "after_expiry": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 0.9,
+      "kernel_comparator_correct": 18
+    },
+    "after_restart": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 0.9,
+      "kernel_comparator_correct": 18
+    },
+    "after_teaching": {
+      "accuracy": 0.95,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 19,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 0.95,
+      "kernel_comparator_correct": 19
+    },
+    "initial": {
+      "accuracy": 1.0,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 20,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 1.0,
+      "kernel_comparator_correct": 20
+    }
+  },
+  "preparation_sha256": "4769cdad719766521331ecd7e767964710d3cf3b47b2b2a828319be87d3cdbc9",
+  "queries": [
+    {
+      "checkpoint": "initial",
+      "checks": {
+        "compared_score_values": 16,
+        "every_score_lane_equal": true,
+        "every_signed_dot_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "lane_values_key": "dot_values",
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true,
+        "sum_key": "sum_dot"
+      },
+      "id": "query_initial",
+      "prediction": "proof_integrity",
+      "process_pid": 49515,
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "revision": 4
+    },
+    {
+      "checkpoint": "after_teaching",
+      "checks": {
+        "compared_score_values": 16,
+        "every_score_lane_equal": true,
+        "every_signed_dot_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "lane_values_key": "dot_values",
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true,
+        "sum_key": "sum_dot"
+      },
+      "id": "query_later",
+      "prediction": "proof_integrity",
+      "process_pid": 51784,
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "revision": 10
+    },
+    {
+      "checkpoint": "after_expiry",
+      "checks": {
+        "compared_score_values": 16,
+        "every_score_lane_equal": true,
+        "every_signed_dot_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "lane_values_key": "dot_values",
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true,
+        "sum_key": "sum_dot"
+      },
+      "id": "query_expiry",
+      "prediction": "proof_integrity",
+      "process_pid": 53852,
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "revision": 12
+    },
+    {
+      "checkpoint": "after_restart",
+      "checks": {
+        "compared_score_values": 16,
+        "every_score_lane_equal": true,
+        "every_signed_dot_lane_equal": true,
+        "exact_rational_ranking_equal": true,
+        "lane_values_key": "dot_values",
+        "prediction_correct_for_intended_label": true,
+        "reader_checked_repeat8_per_class": true,
+        "restarted_process_same_model_and_every_lane": true,
+        "sum_key": "sum_dot"
+      },
+      "id": "query_restart",
+      "prediction": "proof_integrity",
+      "process_pid": 56766,
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "revision": 12
+    }
+  ],
+  "required_operations": 17,
+  "schema": "continuing-system-workload-result-v1",
+  "scope": "Public author-written issue-routing workload. Full reader remains. Finite held-out accuracy is an executed utility observation, not general task accuracy or privacy evidence.",
+  "updated_utc": "2026-09-09T05:30:53.018141+00:00",
+  "worker_attempt_wall_seconds": 638.0213993747602,
+  "worker_attempts_without_terminal_timing": 0,
+  "workload_sha256": "cc5bbe33245ac48b7cbc63b5499afba30957a71bb2b86882b427f408ec03eed2"
+}

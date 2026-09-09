@@ -1,0 +1,196 @@
+{
+  "claim": "[EXECUTED] First complete matched-field FIFO-expiry update and linear query; first attempt succeeded without source changes",
+  "shared_machine_observation": true,
+  "lane_workers": 1,
+  "baseline_workers_reported_by_parent": 4,
+  "isolated_benchmark": false,
+  "proofs_produced": 384,
+  "proofs_independently_verified": 384,
+  "private_files_read": 0,
+  "new_fhe_keys": 0,
+  "update_output_byte_equal": true,
+  "dot_output_byte_equal": true,
+  "update_output_sha256": "43527da39b51605dfc8bc9e451d3a9f68692cd723a7ef72e20e7fac4c7a0ed22",
+  "dot_output_sha256": "e9e0ebec67318e3eb0ba4b25bd43afbbec48b76c39800fb777d7a92e27f3a677",
+  "profile_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/PIPELINE.json",
+  "profile_sha256": "51a0bef633c1de43dcab15f34cc35725d6a9cc042a5e42574e19842e382a3110",
+  "binary_sha256": "128be0ebf696007e04c62a5cee95023a07bb9e654adc30955ea9367d0fafcb3a",
+  "inputs": {
+    "claim": "[EXECUTED] explicitly supplied parent input paths and raw byte hashes",
+    "utc": "2026-09-09T05:12:14.649156+00:00",
+    "shared_machine": true,
+    "lane_workers": 1,
+    "inputs": {
+      "acc": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident/teaching/teach_pi10/phases/learn-attempt000/case/acc.ct",
+        "sha256": "721afef3ccaaa60caec8c32159b67a58c9515f15930d92ef081965034a26c285",
+        "bytes": 409630
+      },
+      "fresh": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident/teaching/teach_pi10/phases/learn-attempt000/case/fresh.ct",
+        "sha256": "43e3b11d11333cc8157e0014bba77cbb8fced530b18a5caaa2f74c1da1d331d2",
+        "bytes": 409630
+      },
+      "old": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident/teaching/teach_pi10/phases/learn-attempt000/case/old.ct",
+        "sha256": "bc7c65041d6243b0947247e00b2aa4ce60699d1f68b674ae6cd7d9630122ea0f",
+        "bytes": 409630
+      },
+      "expected_update": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident/teaching/teach_pi10/phases/learn-attempt000/case/out.ct",
+        "sha256": "43527da39b51605dfc8bc9e451d3a9f68692cd723a7ef72e20e7fac4c7a0ed22",
+        "bytes": 409630
+      },
+      "query": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident/queries/query_expiry/query.json",
+        "sha256": "1ec9799406d5459a7b84e813bf6873fb760d269de39f0b6cdcb4f5cf7f5b94f9",
+        "bytes": 1460
+      },
+      "evaluation_key": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident/issuer/evaluation.key",
+        "sha256": "66368cda039fc89c43180dccb944ec29d5a88f080a7c87ca4a087d8b0972f475",
+        "bytes": 8193050
+      },
+      "expected_dot": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident/queries/query_expiry/phases/class000-capture-attempt000/capture/basic.dot.ct",
+        "sha256": "e9e0ebec67318e3eb0ba4b25bd43afbbec48b76c39800fb777d7a92e27f3a677",
+        "bytes": 409630
+      }
+    }
+  },
+  "phases": [
+    {
+      "kind": "update",
+      "phase": "produce",
+      "chunks": 32,
+      "proof_bytes": 5721926,
+      "external_wall_seconds": 2.61,
+      "external_user_seconds": 2.17,
+      "external_system_seconds": 0.12,
+      "maximum_resident_set_bytes": 54018048,
+      "public_reconstruction_seconds": 0.099383667,
+      "public_preprocessing_seconds": 0.633067289,
+      "native_prove_seconds": 1.223582286,
+      "native_verify_seconds": 0.215570708,
+      "direct_mac_check_seconds": 0.001217709,
+      "native_wall_seconds": 2.422339791,
+      "native_public_fhe_import_seconds": 0.09019175,
+      "result_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-produced/proofs/result.json",
+      "result_sha256": "e2a64fcedb7fbe978d8558c533050819357cee54404541ec1b35a701c145bb26",
+      "time_log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-produce.stderr",
+      "time_log_sha256": "8f6bff20df8b0a1de9d181043921c5092864b4a355cbfdbcb8e49fa323d1fc58"
+    },
+    {
+      "kind": "update",
+      "phase": "verify",
+      "chunks": 32,
+      "proof_bytes": 5721926,
+      "external_wall_seconds": 1.2,
+      "external_user_seconds": 1.06,
+      "external_system_seconds": 0.07,
+      "maximum_resident_set_bytes": 52641792,
+      "public_reconstruction_seconds": 0.08966875,
+      "public_preprocessing_seconds": 0.665617336,
+      "native_prove_seconds": 0.0,
+      "native_verify_seconds": 0.236078623,
+      "direct_mac_check_seconds": 0.0,
+      "native_wall_seconds": 1.056391625,
+      "native_public_fhe_import_seconds": 0,
+      "result_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-verified/result.json",
+      "result_sha256": "b7ad12851fabfe6fcc1c7cb19aeb41f9f4c5d428bb8a333bc91261cf049eaea1",
+      "time_log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-verify.stderr",
+      "time_log_sha256": "4c991b1f7bc3561c5c9b4dea38835b7ba72fdd632cfc5925a65f8f409be09421"
+    },
+    {
+      "kind": "linear",
+      "phase": "produce",
+      "chunks": 352,
+      "proof_bytes": 64336438,
+      "external_wall_seconds": 45.05,
+      "external_user_seconds": 30.94,
+      "external_system_seconds": 1.83,
+      "maximum_resident_set_bytes": 186662912,
+      "public_reconstruction_seconds": 0.337329375,
+      "public_preprocessing_seconds": 12.518266632,
+      "native_prove_seconds": 25.435509212,
+      "native_verify_seconds": 3.174905719,
+      "direct_mac_check_seconds": 0.010830583,
+      "native_wall_seconds": 44.375760958,
+      "native_public_fhe_import_seconds": 0.3699835,
+      "result_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/linear-produced/proofs/result.json",
+      "result_sha256": "e76ee172da901b05d5b11c86e5b7a1cfcbdb2d24ce2ee18fb20d226354e5f6f7",
+      "time_log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/linear-produce.stderr",
+      "time_log_sha256": "cd8a6683429ddb06aba16d7484527c145741c4ca2baf55aa372e525b8c629ae1"
+    },
+    {
+      "kind": "linear",
+      "phase": "verify",
+      "chunks": 352,
+      "proof_bytes": 64336438,
+      "external_wall_seconds": 14.2,
+      "external_user_seconds": 11.93,
+      "external_system_seconds": 0.6,
+      "maximum_resident_set_bytes": 181125120,
+      "public_reconstruction_seconds": 0.27192875,
+      "public_preprocessing_seconds": 10.040035032,
+      "native_prove_seconds": 0.0,
+      "native_verify_seconds": 2.780262586,
+      "direct_mac_check_seconds": 0.0,
+      "native_wall_seconds": 13.769790125,
+      "native_public_fhe_import_seconds": 0,
+      "result_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/linear-verified/result.json",
+      "result_sha256": "af2ba368203b3bc3fa2e90d0f31a3c30169769d072325f1edb7a636cc772bc54",
+      "time_log": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/linear-verify.stderr",
+      "time_log_sha256": "5f8f24128a73530d0f516597291fed6a94bcabb2844175a135e0925943e5e3be"
+    }
+  ],
+  "total_distinct_proof_bytes": 70058364,
+  "post_run_negative_consumers": {
+    "claim": "[EXECUTED] full-operation native consumer rejects altered first proof with refreshed outer digest and wrong expected accumulator; original accepted files unchanged",
+    "tests": [
+      {
+        "test": "changed-commitment",
+        "command": [
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native/target/release/vfhe-matched-field",
+          "verify-update",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-expected.json",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-produced/case",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/negative-consumers/tampered-proof",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/negative-consumers/changed-commitment-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "elapsed_seconds": 0.18143612501444295,
+        "success_report_exists": false,
+        "proof_byte_change": {
+          "offset": 10,
+          "xor": 1,
+          "manifest_digest_updated": true
+        }
+      },
+      {
+        "test": "wrong-caller-input",
+        "command": [
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native/target/release/vfhe-matched-field",
+          "verify-update",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/negative-consumers/wrong-expected.json",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-produced/case",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/update-produced/proofs",
+          "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/work/fifo-expiry-run001/negative-consumers/wrong-caller-input-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "elapsed_seconds": 0.1211159999947995,
+        "success_report_exists": false,
+        "proof_byte_change": null
+      }
+    ]
+  },
+  "numerical_soundness_bits": null,
+  "zero_knowledge": false,
+  "limitations": [
+    "This experimental profile has no derived numerical soundness bound; comparisons to prior backend profiles are not security-equivalent.",
+    "Linear independent consumption takes 14.20s versus 0.370s public FHE import and 0.0108s direct MAC checking after row reconstruction.",
+    "Consumer preprocessing commitments dominate: 10.040s, versus 0.272s public reconstruction and 2.780s cryptographic proof verification.",
+    "Both update and dot bytes match the retained real FIFO-expiry lifecycle captures. This lane performs no signed decoder or secret-key operation.",
+    "Proof/runtime data remain in ignored work/; this retained report pins exact result and timing evidence."
+  ]
+}

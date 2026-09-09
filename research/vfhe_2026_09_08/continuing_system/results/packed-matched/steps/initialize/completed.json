@@ -1,0 +1,188 @@
+{
+  "worker": {
+    "engine": {
+      "bank_count": 2,
+      "class_layout": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4
+        }
+      },
+      "classes_per_bank": 8,
+      "fifo_capacity": 8,
+      "infer_proofs_per_bank": 352,
+      "layout": "fixed class lanes",
+      "proof_backend": "matched",
+      "schema": "packed-class-sum-display-v1",
+      "score_formula": "class_sum / count",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs": 32
+    },
+    "process": {
+      "elapsed_seconds": 0.503391417034436,
+      "finished_utc": "2026-09-09T05:35:42.209594+00:00",
+      "pid": 62185,
+      "ppid": 62180
+    },
+    "result": {
+      "bank_count": 2,
+      "class_layout": {
+        "api_behavior": {
+          "bank": "0",
+          "lane": 3
+        },
+        "build_dependencies": {
+          "bank": "0",
+          "lane": 5
+        },
+        "documentation": {
+          "bank": "0",
+          "lane": 7
+        },
+        "interface_accessibility": {
+          "bank": "0",
+          "lane": 6
+        },
+        "memory_usage": {
+          "bank": "0",
+          "lane": 2
+        },
+        "network_transport": {
+          "bank": "1",
+          "lane": 0
+        },
+        "proof_integrity": {
+          "bank": "0",
+          "lane": 0
+        },
+        "runtime_performance": {
+          "bank": "0",
+          "lane": 1
+        },
+        "storage_recovery": {
+          "bank": "0",
+          "lane": 4
+        }
+      },
+      "classes_per_bank": 8,
+      "fifo_capacity": 8,
+      "full_reader_key": true,
+      "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+      "head": {
+        "banks": {
+          "0": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16"
+          },
+          "1": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16"
+          }
+        },
+        "classes": {
+          "api_behavior": {
+            "bank": "0",
+            "lane": 3,
+            "queue": [],
+            "teaches": 0
+          },
+          "build_dependencies": {
+            "bank": "0",
+            "lane": 5,
+            "queue": [],
+            "teaches": 0
+          },
+          "documentation": {
+            "bank": "0",
+            "lane": 7,
+            "queue": [],
+            "teaches": 0
+          },
+          "interface_accessibility": {
+            "bank": "0",
+            "lane": 6,
+            "queue": [],
+            "teaches": 0
+          },
+          "memory_usage": {
+            "bank": "0",
+            "lane": 2,
+            "queue": [],
+            "teaches": 0
+          },
+          "network_transport": {
+            "bank": "1",
+            "lane": 0,
+            "queue": [],
+            "teaches": 0
+          },
+          "proof_integrity": {
+            "bank": "0",
+            "lane": 0,
+            "queue": [],
+            "teaches": 0
+          },
+          "runtime_performance": {
+            "bank": "0",
+            "lane": 1,
+            "queue": [],
+            "teaches": 0
+          },
+          "storage_recovery": {
+            "bank": "0",
+            "lane": 4,
+            "queue": [],
+            "teaches": 0
+          }
+        },
+        "genesis": "1c853718b4114b9427b32542527b9e7d5eb604c15dddcfc0653403e74f31ecd9",
+        "last_receipt_sha256": null,
+        "model_root": "1b702411046780c1703ceec9b4d317f2d1ba504044ba2b82dd591c2f1412e40a",
+        "revision": 0
+      },
+      "infer_proofs_per_bank": 352,
+      "initialized": true,
+      "layout": "fixed class lanes",
+      "proof_backend": "matched",
+      "recipient_id": "dfc2f8c677ea1e86b155f817e3045af9797e5ab564c2208542c2ac553247d57f",
+      "schema": "packed-class-sum-display-v1",
+      "score_formula": "class_sum / count",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs": 32
+    }
+  }
+}

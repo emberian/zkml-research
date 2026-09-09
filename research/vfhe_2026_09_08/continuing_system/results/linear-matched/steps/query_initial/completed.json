@@ -1,0 +1,163 @@
+{
+  "checks": {
+    "compared_score_values": 16,
+    "every_score_lane_equal": true,
+    "every_signed_dot_lane_equal": true,
+    "exact_rational_ranking_equal": true,
+    "lane_values_key": "dot_values",
+    "prediction_correct_for_intended_label": true,
+    "reader_checked_repeat8_per_class": true,
+    "sum_key": "sum_dot"
+  },
+  "operation": {
+    "checkpoint": "initial",
+    "id": "query_initial",
+    "kind": "query",
+    "text_id": "hpi01"
+  },
+  "recorded_utc": "2026-09-09T05:22:31.181714+00:00",
+  "worker": {
+    "engine": {
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "proof_backend": "matched",
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    },
+    "process": {
+      "elapsed_seconds": 113.07035925000673,
+      "finished_utc": "2026-09-09T05:22:31.169696+00:00",
+      "pid": 49515,
+      "ppid": 49106
+    },
+    "result": {
+      "answered": true,
+      "class_scores": [
+        {
+          "count": 2,
+          "label": "proof_integrity",
+          "mean_denominator": 2,
+          "mean_numerator": 26527,
+          "sum_dot": 26527,
+          "sum_score": 26527
+        },
+        {
+          "count": 2,
+          "label": "runtime_performance",
+          "mean_denominator": 2,
+          "mean_numerator": 24893,
+          "sum_dot": 24893,
+          "sum_score": 24893
+        }
+      ],
+      "classes": {
+        "proof_integrity": {
+          "all8192_slots_repeat8": true,
+          "dot_ciphertext_sha256": "ca64559ea651c2373c0ebc4e6fc9889402967a2a7f610186649b243da29045ea",
+          "dot_values": [
+            13411,
+            13116,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "evaluation_key_sha256": "1362e18288c353605f383bc6089dde393456cc2a68d9bab30c28ce5f302c5005",
+          "full_reader_key": true,
+          "scope": "Bounded signed BFV dot slots; full reader capability remains. Proof/controller acceptance is the caller's responsibility.",
+          "score_values": [
+            13411,
+            13116,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "signed_bound": 20000,
+          "sum_dot": 26527,
+          "sum_score": 26527
+        },
+        "runtime_performance": {
+          "all8192_slots_repeat8": true,
+          "dot_ciphertext_sha256": "dcdf86200678f6442ff0011bdb3624c226229e787e587c859708008384e57a9c",
+          "dot_values": [
+            12397,
+            12496,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "evaluation_key_sha256": "1362e18288c353605f383bc6089dde393456cc2a68d9bab30c28ce5f302c5005",
+          "full_reader_key": true,
+          "scope": "Bounded signed BFV dot slots; full reader capability remains. Proof/controller acceptance is the caller's responsibility.",
+          "score_values": [
+            12397,
+            12496,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "signed_bound": 20000,
+          "sum_dot": 24893,
+          "sum_score": 24893
+        }
+      },
+      "counts": {
+        "proof_integrity": 2,
+        "runtime_performance": 2
+      },
+      "finished_utc": "2026-09-09T05:22:31.166867+00:00",
+      "full_reader": true,
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "metrics": {
+        "accepted_fresh_proofs": 704,
+        "answered_queries": 1,
+        "committed_updates": 0,
+        "discarded_phase_attempts": 0,
+        "phase_elapsed_seconds": {
+          "class000-prove": 45.283557249989826,
+          "class000-read": 0.17989899998065084,
+          "class000-verify": 16.606376874959096,
+          "class001-prove": 35.853785625018645,
+          "class001-read": 0.17154116602614522,
+          "class001-verify": 14.439812417025678
+        },
+        "private_reads": 2,
+        "proof_bytes": 128677569,
+        "proofs_generated": 704,
+        "proofs_verified": 704
+      },
+      "model_root": "6bc5cb57b93060610d0bc2f1802359227971d08f21afd0b1c24f4cdf4b8a6183",
+      "prediction": "proof_integrity",
+      "private_reads": 2,
+      "proof_backend": "matched",
+      "public_acceptance_sha256": "18dde20b0f6c6fadf4c8c602020588468c66b41dba19a1ad2321f435539230c0",
+      "public_accepted": true,
+      "ranking": [
+        "proof_integrity",
+        "runtime_performance"
+      ],
+      "revision": 4,
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32,
+      "winner": "proof_integrity"
+    }
+  }
+}

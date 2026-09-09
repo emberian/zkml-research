@@ -1,0 +1,39 @@
+{
+  "claim_label": "EXECUTED",
+  "origin": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/linear/native/src/main.rs",
+  "origin_sha256": "4e1ab3b6b4f1a07290e36c4fa303f3bcbe573bdde69ed67e907115df88ebbcbf",
+  "origin_reader_function": "read_dot at lines 391-416",
+  "adaptations": [
+    "Extract reader-only BFV dependency closure; no import, prove, verify, keygen, or encryption command.",
+    "Require exactly eight counts in 0..8 and lower-case 64-hex expected SHA-256 arguments before file reads.",
+    "Retain exact ciphertext/evaluation-key byte identity checks and fixed BFV parameters; enforce canonical ciphertext residue shape before private read.",
+    "Decode all 8192 slots and require repetition of eight centered signed class sums.",
+    "Apply each lane bound abs(sum)<=20000*count; zero-count lanes must equal zero.",
+    "Expose signed class sums, counts, per-lane bounds, repeated-slot/empty-lane checks, and full_reader_key."
+  ],
+  "source_sha256": "b148b49204dd0b18fe10fe048c98c9b4378f1fb63f17f75512748187095ae80d",
+  "binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/target/release/vfhe-packed-class-reader",
+  "binary_sha256": "61a2c59e7df1c109e07fad7c7feb463e07cf1a4e1c9686d9c35eea4ad33c6ed2",
+  "profile_sha256": "11778e553d0100f729e107eb204d4203e540da1257f588422c58c4daf9c51e57",
+  "dependency_cache": {
+    "origin": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/linear/native/target",
+    "method": "cp -cR to a distinct packed/reader/native/target; only the clone used by this build"
+  },
+  "build": {
+    "exit_code": 0,
+    "command": "CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=1 CARGO_TARGET_DIR=/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/target /Users/ember/.cargo/bin/cargo build --release --offline --locked --manifest-path /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/Cargo.toml",
+    "stdout": "native/build.stdout",
+    "stderr": "native/build.stderr"
+  },
+  "lock_update": {
+    "command": "/Users/ember/.cargo/bin/cargo update --offline --workspace --manifest-path /Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/Cargo.toml",
+    "stdout": "native/lock.stdout",
+    "stderr": "native/lock.stderr",
+    "input_lockfile": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/linear/native/Cargo.lock",
+    "input_lockfile_sha256": "a484389bbb7517fb9a79eed6d3678456ee39c16354c395d3edd3ae754509c1fd"
+  },
+  "new_air": false,
+  "new_formal_proofs": 0,
+  "crypto_keygen_or_private_reads_in_this_build": 0,
+  "proof_production_changed": false
+}

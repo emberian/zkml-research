@@ -1,0 +1,394 @@
+{
+  "attempts": 1,
+  "created_utc": "2026-09-09T05:46:08.611632+00:00",
+  "error": null,
+  "id": "query-web-query-88b4e332-bfa3-464e-a22c-75d6e20824fb",
+  "kind": "query",
+  "phase": "Complete",
+  "result": {
+    "accepted_all_banks": true,
+    "answered": true,
+    "bank_count": 2,
+    "banks": {
+      "0": {
+        "all8192_slots_repeat8": true,
+        "class_sums": [
+          90859,
+          11905,
+          12504,
+          12307,
+          12775,
+          12100,
+          11568,
+          11827
+        ],
+        "counts": [
+          8,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "dot_ciphertext_sha256": "ff183b81e86cc3f3cee94d979a479e83cae8bb5822167863308c4585310a49dd",
+        "evaluation_key_sha256": "66f2e798b9e2e5af547862a71a6deabc726a299123312b49ecd447e08daf6f74",
+        "full_reader_key": true,
+        "per_class_signed_bounds": [
+          160000,
+          20000,
+          20000,
+          20000,
+          20000,
+          20000,
+          20000,
+          20000
+        ],
+        "schema": "packed-class-sum-reader-v1",
+        "scope": "Signed BFV class sums with caller-supplied accepted counts. Full reader capability remains. Proof/controller acceptance is the caller's responsibility.",
+        "signed_bound": 160000,
+        "signed_sum": 175845,
+        "sum_values": [
+          90859,
+          11905,
+          12504,
+          12307,
+          12775,
+          12100,
+          11568,
+          11827
+        ],
+        "zero_empty_lanes": true
+      },
+      "1": {
+        "all8192_slots_repeat8": true,
+        "class_sums": [
+          27400,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "counts": [
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "dot_ciphertext_sha256": "7c7b3e08416659caffcfe9fde165282695e8cd78f9b20543a1d10846771b9fed",
+        "evaluation_key_sha256": "66f2e798b9e2e5af547862a71a6deabc726a299123312b49ecd447e08daf6f74",
+        "full_reader_key": true,
+        "per_class_signed_bounds": [
+          40000,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "schema": "packed-class-sum-reader-v1",
+        "scope": "Signed BFV class sums with caller-supplied accepted counts. Full reader capability remains. Proof/controller acceptance is the caller's responsibility.",
+        "signed_bound": 160000,
+        "signed_sum": 27400,
+        "sum_values": [
+          27400,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "zero_empty_lanes": true
+      }
+    },
+    "class_layout": {
+      "api_behavior": {
+        "bank": "0",
+        "lane": 3
+      },
+      "build_dependencies": {
+        "bank": "0",
+        "lane": 5
+      },
+      "documentation": {
+        "bank": "0",
+        "lane": 7
+      },
+      "interface_accessibility": {
+        "bank": "0",
+        "lane": 6
+      },
+      "memory_usage": {
+        "bank": "0",
+        "lane": 2
+      },
+      "network_transport": {
+        "bank": "1",
+        "lane": 0
+      },
+      "proof_integrity": {
+        "bank": "0",
+        "lane": 0
+      },
+      "runtime_performance": {
+        "bank": "0",
+        "lane": 1
+      },
+      "storage_recovery": {
+        "bank": "0",
+        "lane": 4
+      }
+    },
+    "class_scores": [
+      {
+        "bank": "1",
+        "count": 2,
+        "label": "network_transport",
+        "lane": 0,
+        "mean_denominator": 2,
+        "mean_numerator": 27400,
+        "sum_dot": 27400,
+        "sum_score": 27400
+      },
+      {
+        "bank": "0",
+        "count": 1,
+        "label": "storage_recovery",
+        "lane": 4,
+        "mean_denominator": 1,
+        "mean_numerator": 12775,
+        "sum_dot": 12775,
+        "sum_score": 12775
+      },
+      {
+        "bank": "0",
+        "count": 1,
+        "label": "memory_usage",
+        "lane": 2,
+        "mean_denominator": 1,
+        "mean_numerator": 12504,
+        "sum_dot": 12504,
+        "sum_score": 12504
+      },
+      {
+        "bank": "0",
+        "count": 1,
+        "label": "api_behavior",
+        "lane": 3,
+        "mean_denominator": 1,
+        "mean_numerator": 12307,
+        "sum_dot": 12307,
+        "sum_score": 12307
+      },
+      {
+        "bank": "0",
+        "count": 1,
+        "label": "build_dependencies",
+        "lane": 5,
+        "mean_denominator": 1,
+        "mean_numerator": 12100,
+        "sum_dot": 12100,
+        "sum_score": 12100
+      },
+      {
+        "bank": "0",
+        "count": 1,
+        "label": "runtime_performance",
+        "lane": 1,
+        "mean_denominator": 1,
+        "mean_numerator": 11905,
+        "sum_dot": 11905,
+        "sum_score": 11905
+      },
+      {
+        "bank": "0",
+        "count": 1,
+        "label": "documentation",
+        "lane": 7,
+        "mean_denominator": 1,
+        "mean_numerator": 11827,
+        "sum_dot": 11827,
+        "sum_score": 11827
+      },
+      {
+        "bank": "0",
+        "count": 1,
+        "label": "interface_accessibility",
+        "lane": 6,
+        "mean_denominator": 1,
+        "mean_numerator": 11568,
+        "sum_dot": 11568,
+        "sum_score": 11568
+      },
+      {
+        "bank": "0",
+        "count": 8,
+        "label": "proof_integrity",
+        "lane": 0,
+        "mean_denominator": 8,
+        "mean_numerator": 90859,
+        "sum_dot": 90859,
+        "sum_score": 90859
+      }
+    ],
+    "classes": {
+      "api_behavior": {
+        "bank": "0",
+        "count": 1,
+        "lane": 3,
+        "mean_denominator": 1,
+        "mean_numerator": 12307,
+        "sum_dot": 12307,
+        "sum_score": 12307
+      },
+      "build_dependencies": {
+        "bank": "0",
+        "count": 1,
+        "lane": 5,
+        "mean_denominator": 1,
+        "mean_numerator": 12100,
+        "sum_dot": 12100,
+        "sum_score": 12100
+      },
+      "documentation": {
+        "bank": "0",
+        "count": 1,
+        "lane": 7,
+        "mean_denominator": 1,
+        "mean_numerator": 11827,
+        "sum_dot": 11827,
+        "sum_score": 11827
+      },
+      "interface_accessibility": {
+        "bank": "0",
+        "count": 1,
+        "lane": 6,
+        "mean_denominator": 1,
+        "mean_numerator": 11568,
+        "sum_dot": 11568,
+        "sum_score": 11568
+      },
+      "memory_usage": {
+        "bank": "0",
+        "count": 1,
+        "lane": 2,
+        "mean_denominator": 1,
+        "mean_numerator": 12504,
+        "sum_dot": 12504,
+        "sum_score": 12504
+      },
+      "network_transport": {
+        "bank": "1",
+        "count": 2,
+        "lane": 0,
+        "mean_denominator": 2,
+        "mean_numerator": 27400,
+        "sum_dot": 27400,
+        "sum_score": 27400
+      },
+      "proof_integrity": {
+        "bank": "0",
+        "count": 8,
+        "lane": 0,
+        "mean_denominator": 8,
+        "mean_numerator": 90859,
+        "sum_dot": 90859,
+        "sum_score": 90859
+      },
+      "runtime_performance": {
+        "bank": "0",
+        "count": 1,
+        "lane": 1,
+        "mean_denominator": 1,
+        "mean_numerator": 11905,
+        "sum_dot": 11905,
+        "sum_score": 11905
+      },
+      "storage_recovery": {
+        "bank": "0",
+        "count": 1,
+        "lane": 4,
+        "mean_denominator": 1,
+        "mean_numerator": 12775,
+        "sum_dot": 12775,
+        "sum_score": 12775
+      }
+    },
+    "classes_per_bank": 8,
+    "counts": {
+      "api_behavior": 1,
+      "build_dependencies": 1,
+      "documentation": 1,
+      "interface_accessibility": 1,
+      "memory_usage": 1,
+      "network_transport": 2,
+      "proof_integrity": 8,
+      "runtime_performance": 1,
+      "storage_recovery": 1
+    },
+    "fifo_capacity": 8,
+    "finished_utc": "2026-09-09T05:48:28.445873+00:00",
+    "full_reader": true,
+    "infer_proofs_per_bank": 352,
+    "layout": "fixed class lanes",
+    "metrics": {
+      "accepted_fresh_proofs": 704,
+      "answered_queries": 1,
+      "classes_answered": 9,
+      "committed_updates": 0,
+      "discarded_phase_attempts": 0,
+      "occupied_banks": 2,
+      "phase_elapsed_seconds": {
+        "bank000-prove": 49.07327383296797,
+        "bank000-read": 0.2507844170322642,
+        "bank000-verify": 17.612383334024344,
+        "bank001-prove": 45.907847166992724,
+        "bank001-read": 0.26734224997926503,
+        "bank001-verify": 24.74156991596101
+      },
+      "private_reads": 2,
+      "proof_bytes": 128678156,
+      "proofs_generated": 704,
+      "proofs_verified": 704
+    },
+    "model_root": "0f966d5c8387fef4f43376522774a161bd72bde7a67aa94e1aa20286e0ba1794",
+    "prediction": "network_transport",
+    "private_reads": 2,
+    "proof_backend": "matched",
+    "public_acceptance_sha256": "d7dc91fa9fd93788f914aef26971616234af1f6548fced58ddb90b8c1237f8f7",
+    "public_accepted": true,
+    "ranking": [
+      "network_transport",
+      "storage_recovery",
+      "memory_usage",
+      "api_behavior",
+      "build_dependencies",
+      "runtime_performance",
+      "documentation",
+      "interface_accessibility",
+      "proof_integrity"
+    ],
+    "revision": 19,
+    "schema": "packed-class-sum-display-v1",
+    "score_formula": "class_sum / count",
+    "score_kind": "linear",
+    "score_signed": true,
+    "sum_key": "sum_dot",
+    "update_proofs": 32,
+    "winner": "network_transport"
+  },
+  "status": "completed",
+  "updated_utc": "2026-09-09T05:48:28.467941+00:00"
+}

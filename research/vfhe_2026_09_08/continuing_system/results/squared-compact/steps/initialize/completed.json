@@ -1,0 +1,31 @@
+{
+  "worker": {
+    "process": {
+      "elapsed_seconds": 0.040735957969445735,
+      "finished_utc": "2026-09-09T04:23:35.828432+00:00",
+      "pid": 391,
+      "ppid": 388
+    },
+    "result": {
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+            "queue": [],
+            "teaches": 0
+          },
+          "runtime_performance": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+            "queue": [],
+            "teaches": 0
+          }
+        },
+        "genesis": "8cef650bcfecb9139b005e628a29c5a4efb6bce0e3c34fda658b77c5ced69368",
+        "last_receipt_sha256": null,
+        "model_root": "222e5e6dd4b7c579da1ff1de98dcb60fc61d847b546ea0d0732cf05129ec2555",
+        "revision": 0
+      },
+      "reopened": true
+    }
+  }
+}

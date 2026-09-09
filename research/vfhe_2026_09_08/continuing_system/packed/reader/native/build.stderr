@@ -1,0 +1,15 @@
+   Compiling syn v2.0.119
+   Compiling serde v1.0.229
+   Compiling equator-macro v0.4.2
+   Compiling equator v0.4.2
+   Compiling num-bigint-dig v0.9.1
+   Compiling prost-derive v0.14.4
+   Compiling aligned-vec v0.6.4
+   Compiling prost v0.14.4
+   Compiling tfhe-ntt v0.6.1
+   Compiling fhe-util v0.1.1
+   Compiling fhe-math v0.1.1
+   Compiling zeroize_derive v1.4.3
+   Compiling fhe v0.1.1 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_multiply_successor/infer/vendor/fhe-dregg)
+   Compiling vfhe-packed-class-reader v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native)
+    Finished `release` profile [optimized] target(s) in 34.98s

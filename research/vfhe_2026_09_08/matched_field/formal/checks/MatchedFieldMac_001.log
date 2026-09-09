@@ -1,0 +1,24 @@
+Compiler/MatchedFieldMac.lean:37:36: warning: unused variable `hq`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Compiler/MatchedFieldMac.lean:67:6: error: Tactic `apply` failed: could not unify the conclusion of `@funext`
+  ?f = ?g
+with the goal
+  operands (pack { d := d, key := key, addend := addend } out) = { d := d, key := key, addend := addend }
+
+Note: The full type of `@funext` is
+  ∀ {α : Sort ?u.3673.209} {β : α → Sort ?u.3673.208} {f g : (x : α) → β x}, (∀ (x : α), f x = g x) → f = g
+
+case mk
+out : Fin 2 → ℕ
+d : Fin 4 → ℕ
+key : Fin 2 → Fin 4 → ℕ
+addend : Fin 2 → ℕ
+⊢ operands (pack { d := d, key := key, addend := addend } out) = { d := d, key := key, addend := addend }
+Compiler/MatchedFieldMac.lean:68:4: error: No goals to be solved
+Compiler/MatchedFieldMac.lean:87:17: error: Type mismatch
+  rfl
+has type
+  ?m.37 = ?m.37
+but is expected to have type
+  True

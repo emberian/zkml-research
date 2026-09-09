@@ -1,0 +1,1808 @@
+{
+  "accuracy_scope": "Fixed author-written held-out set; no tuning, encryption or private-resident claim.",
+  "checkpoints": {
+    "after_expiry": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 0.9,
+      "kernel_comparator_correct": 18,
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi02",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi03",
+          "label": "proof_integrity",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hpi04",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi05",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi06",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi07",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi08",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi09",
+          "label": "proof_integrity",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hpi10",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp02",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp03",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp04",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp05",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp06",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp07",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp08",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp09",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp10",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        }
+      ]
+    },
+    "after_restart": {
+      "accuracy": 0.9,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 18,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 0.9,
+      "kernel_comparator_correct": 18,
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi02",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi03",
+          "label": "proof_integrity",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hpi04",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi05",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi06",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi07",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi08",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi09",
+          "label": "proof_integrity",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hpi10",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp02",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp03",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp04",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp05",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp06",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp07",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp08",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp09",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp10",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        }
+      ]
+    },
+    "after_teaching": {
+      "accuracy": 0.95,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 19,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 0.95,
+      "kernel_comparator_correct": 19,
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi02",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi03",
+          "label": "proof_integrity",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hpi04",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi05",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi06",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi07",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi08",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi09",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi10",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp02",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp03",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp04",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp05",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp06",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp07",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp08",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp09",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp10",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        }
+      ]
+    },
+    "initial": {
+      "accuracy": 1.0,
+      "balanced_majority_accuracy": 0.5,
+      "balanced_majority_correct": 10,
+      "balanced_majority_label": "proof_integrity",
+      "correct": 20,
+      "examples": 20,
+      "frozen_initial_accuracy": 1.0,
+      "frozen_initial_correct": 20,
+      "kernel_comparator_accuracy": 1.0,
+      "kernel_comparator_correct": 20,
+      "rows": [
+        {
+          "id": "hpi01",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi02",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi03",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi04",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi05",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi06",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi07",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi08",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi09",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hpi10",
+          "label": "proof_integrity",
+          "prediction": "proof_integrity",
+          "ranking": [
+            "proof_integrity",
+            "runtime_performance"
+          ]
+        },
+        {
+          "id": "hrp01",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp02",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp03",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp04",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp05",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp06",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp07",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp08",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp09",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        },
+        {
+          "id": "hrp10",
+          "label": "runtime_performance",
+          "prediction": "runtime_performance",
+          "ranking": [
+            "runtime_performance",
+            "proof_integrity"
+          ]
+        }
+      ]
+    }
+  },
+  "derivation": "Signed integer dot products from frozen vectors and FIFO lane assignments; exact rational mean ranking.",
+  "expired_examples": [
+    {
+      "label": "proof_integrity",
+      "lane": 0,
+      "operation": "teach_pi09",
+      "text_id": "pi01"
+    },
+    {
+      "label": "proof_integrity",
+      "lane": 1,
+      "operation": "teach_pi10",
+      "text_id": "pi02"
+    }
+  ],
+  "final_model": {
+    "proof_integrity": {
+      "queue": [
+        {
+          "lane": 2,
+          "text_id": "pi03"
+        },
+        {
+          "lane": 3,
+          "text_id": "pi04"
+        },
+        {
+          "lane": 4,
+          "text_id": "pi05"
+        },
+        {
+          "lane": 5,
+          "text_id": "pi06"
+        },
+        {
+          "lane": 6,
+          "text_id": "pi07"
+        },
+        {
+          "lane": 7,
+          "text_id": "pi08"
+        },
+        {
+          "lane": 0,
+          "text_id": "pi09"
+        },
+        {
+          "lane": 1,
+          "text_id": "pi10"
+        }
+      ],
+      "teaches": 10
+    },
+    "runtime_performance": {
+      "queue": [
+        {
+          "lane": 0,
+          "text_id": "rp01"
+        },
+        {
+          "lane": 1,
+          "text_id": "rp02"
+        }
+      ],
+      "teaches": 2
+    }
+  },
+  "final_revision": 12,
+  "frozen_reference_sha256": "50d9d39cc68190348d8da0b16432b3a3d8ac057c5ed7b4dcb462d8540521c138",
+  "frozen_vectors_sha256": "a373ff5e67ed16bb94010e770a1de320072655aaea7a22f46c1a7141b3df4aed",
+  "frozen_workload_sha256": "cc5bbe33245ac48b7cbc63b5499afba30957a71bb2b86882b427f408ec03eed2",
+  "operations": {
+    "query_expiry": {
+      "answer": {
+        "classes": {
+          "proof_integrity": {
+            "count": 8,
+            "dot_values": [
+              12886,
+              13432,
+              13029,
+              12881,
+              13377,
+              13454,
+              12942,
+              13444
+            ],
+            "sum_dot": 105445
+          },
+          "runtime_performance": {
+            "count": 2,
+            "dot_values": [
+              12397,
+              12496,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "sum_dot": 24893
+          }
+        },
+        "counts": {
+          "proof_integrity": 8,
+          "runtime_performance": 2
+        },
+        "prediction": "proof_integrity",
+        "ranking": [
+          "proof_integrity",
+          "runtime_performance"
+        ]
+      },
+      "kind": "query",
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 7,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 12
+    },
+    "query_initial": {
+      "answer": {
+        "classes": {
+          "proof_integrity": {
+            "count": 2,
+            "dot_values": [
+              13411,
+              13116,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "sum_dot": 26527
+          },
+          "runtime_performance": {
+            "count": 2,
+            "dot_values": [
+              12397,
+              12496,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "sum_dot": 24893
+          }
+        },
+        "counts": {
+          "proof_integrity": 2,
+          "runtime_performance": 2
+        },
+        "prediction": "proof_integrity",
+        "ranking": [
+          "proof_integrity",
+          "runtime_performance"
+        ]
+      },
+      "kind": "query",
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            }
+          ],
+          "teaches": 2
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 4
+    },
+    "query_later": {
+      "answer": {
+        "classes": {
+          "proof_integrity": {
+            "count": 8,
+            "dot_values": [
+              13411,
+              13116,
+              13029,
+              12881,
+              13377,
+              13454,
+              12942,
+              13444
+            ],
+            "sum_dot": 105654
+          },
+          "runtime_performance": {
+            "count": 2,
+            "dot_values": [
+              12397,
+              12496,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "sum_dot": 24893
+          }
+        },
+        "counts": {
+          "proof_integrity": 8,
+          "runtime_performance": 2
+        },
+        "prediction": "proof_integrity",
+        "ranking": [
+          "proof_integrity",
+          "runtime_performance"
+        ]
+      },
+      "kind": "query",
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 7,
+              "text_id": "pi08"
+            }
+          ],
+          "teaches": 8
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 10
+    },
+    "query_restart": {
+      "answer": {
+        "classes": {
+          "proof_integrity": {
+            "count": 8,
+            "dot_values": [
+              12886,
+              13432,
+              13029,
+              12881,
+              13377,
+              13454,
+              12942,
+              13444
+            ],
+            "sum_dot": 105445
+          },
+          "runtime_performance": {
+            "count": 2,
+            "dot_values": [
+              12397,
+              12496,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "sum_dot": 24893
+          }
+        },
+        "counts": {
+          "proof_integrity": 8,
+          "runtime_performance": 2
+        },
+        "prediction": "proof_integrity",
+        "ranking": [
+          "proof_integrity",
+          "runtime_performance"
+        ]
+      },
+      "kind": "query",
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 7,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 12
+    },
+    "restart": {
+      "kind": "restart",
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 7,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 12
+    },
+    "teach_pi01": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            }
+          ],
+          "teaches": 1
+        },
+        "runtime_performance": {
+          "queue": [],
+          "teaches": 0
+        }
+      },
+      "revision": 1
+    },
+    "teach_pi02": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 1,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            }
+          ],
+          "teaches": 2
+        },
+        "runtime_performance": {
+          "queue": [],
+          "teaches": 0
+        }
+      },
+      "revision": 2
+    },
+    "teach_pi03": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 2,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            }
+          ],
+          "teaches": 3
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 5
+    },
+    "teach_pi04": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 3,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            }
+          ],
+          "teaches": 4
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 6
+    },
+    "teach_pi05": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 4,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            }
+          ],
+          "teaches": 5
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 7
+    },
+    "teach_pi06": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 5,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            }
+          ],
+          "teaches": 6
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 8
+    },
+    "teach_pi07": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 6,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            }
+          ],
+          "teaches": 7
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 9
+    },
+    "teach_pi08": {
+      "expired": null,
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 7,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 7,
+              "text_id": "pi08"
+            }
+          ],
+          "teaches": 8
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 10
+    },
+    "teach_pi09": {
+      "expired": {
+        "lane": 0,
+        "text_id": "pi01"
+      },
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 0,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            },
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 7,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            }
+          ],
+          "teaches": 9
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 11
+    },
+    "teach_pi10": {
+      "expired": {
+        "lane": 1,
+        "text_id": "pi02"
+      },
+      "kind": "teach",
+      "label": "proof_integrity",
+      "lane": 1,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 2,
+              "text_id": "pi03"
+            },
+            {
+              "lane": 3,
+              "text_id": "pi04"
+            },
+            {
+              "lane": 4,
+              "text_id": "pi05"
+            },
+            {
+              "lane": 5,
+              "text_id": "pi06"
+            },
+            {
+              "lane": 6,
+              "text_id": "pi07"
+            },
+            {
+              "lane": 7,
+              "text_id": "pi08"
+            },
+            {
+              "lane": 0,
+              "text_id": "pi09"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi10"
+            }
+          ],
+          "teaches": 10
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 12
+    },
+    "teach_rp01": {
+      "expired": null,
+      "kind": "teach",
+      "label": "runtime_performance",
+      "lane": 0,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            }
+          ],
+          "teaches": 2
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            }
+          ],
+          "teaches": 1
+        }
+      },
+      "revision": 3
+    },
+    "teach_rp02": {
+      "expired": null,
+      "kind": "teach",
+      "label": "runtime_performance",
+      "lane": 1,
+      "model": {
+        "proof_integrity": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "pi01"
+            },
+            {
+              "lane": 1,
+              "text_id": "pi02"
+            }
+          ],
+          "teaches": 2
+        },
+        "runtime_performance": {
+          "queue": [
+            {
+              "lane": 0,
+              "text_id": "rp01"
+            },
+            {
+              "lane": 1,
+              "text_id": "rp02"
+            }
+          ],
+          "teaches": 2
+        }
+      },
+      "revision": 4
+    }
+  },
+  "schema": "continuing-system-linear-reference-v1",
+  "score_kind": "linear"
+}

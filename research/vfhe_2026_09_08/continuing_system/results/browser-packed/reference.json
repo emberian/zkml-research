@@ -1,0 +1,74 @@
+{
+  "classes": {
+    "api_behavior": {
+      "bank": "0",
+      "count": 1,
+      "lane": 3,
+      "sum_dot": 12307
+    },
+    "build_dependencies": {
+      "bank": "0",
+      "count": 1,
+      "lane": 5,
+      "sum_dot": 12100
+    },
+    "documentation": {
+      "bank": "0",
+      "count": 1,
+      "lane": 7,
+      "sum_dot": 11827
+    },
+    "interface_accessibility": {
+      "bank": "0",
+      "count": 1,
+      "lane": 6,
+      "sum_dot": 11568
+    },
+    "memory_usage": {
+      "bank": "0",
+      "count": 1,
+      "lane": 2,
+      "sum_dot": 12504
+    },
+    "network_transport": {
+      "bank": "1",
+      "count": 2,
+      "lane": 0,
+      "sum_dot": 27400
+    },
+    "proof_integrity": {
+      "bank": "0",
+      "count": 8,
+      "lane": 0,
+      "sum_dot": 90859
+    },
+    "runtime_performance": {
+      "bank": "0",
+      "count": 1,
+      "lane": 1,
+      "sum_dot": 11905
+    },
+    "storage_recovery": {
+      "bank": "0",
+      "count": 1,
+      "lane": 4,
+      "sum_dot": 12775
+    }
+  },
+  "prediction": "network_transport",
+  "query_text": "Requests disconnect after a few seconds on unstable wifi and do not reconnect.",
+  "ranking": [
+    "network_transport",
+    "storage_recovery",
+    "memory_usage",
+    "api_behavior",
+    "build_dependencies",
+    "runtime_performance",
+    "documentation",
+    "interface_accessibility",
+    "proof_integrity"
+  ],
+  "revision": 19,
+  "source": "Integer reference from the frozen packed model plus the new browser teaching and query vectors, computed before private query completion.",
+  "teach_text": "Uploads time out when the server closes an idle TLS connection; retry should reconnect."
+}

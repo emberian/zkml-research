@@ -1,0 +1,21 @@
+{
+  "adopts_preinitialized_instance": false,
+  "class_order": [
+    "proof_integrity",
+    "runtime_performance",
+    "memory_usage",
+    "api_behavior",
+    "storage_recovery",
+    "build_dependencies",
+    "interface_accessibility",
+    "documentation",
+    "network_transport"
+  ],
+  "corpus_sha256": "3a1c115a5a34fdd2b3ac3ca33f97d0553672b83675ddd567750d707499d1cac9",
+  "created_utc": "2026-09-09T05:35:41.614234+00:00",
+  "prepared_dir": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/workload/prepared",
+  "reference_sha256": "f66d5938d057b6a98c57e8104b1625c477076c53e439f30dfb9c5808fe3c5bc5",
+  "root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/packed-lifecycle/resident",
+  "schema": "packed-class-lifecycle-run-v1",
+  "vectors_sha256": "48cfe65173f8d51e864e3b5f0b22e180f81fb20d6954ead9cacdef4bdaf35f8e"
+}

@@ -1,0 +1,111 @@
+{
+  "minidregg_base": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "claims": [
+    "exact canonical ZMod MAC equivalence for every positive modulus",
+    "native-shaped 16-column whole-row equations",
+    "FIFO update and eleven-stage existing BFV program composition",
+    "source-grounded mathematics; no Rust refinement or proof-byte extraction theorem"
+  ],
+  "sources": {
+    "native_equations": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native/src/proof.rs",
+      "sha256": "22a00b2177999fc019075167d4a0c3e4f78c6c93a5b946c085161ce8a725cb74",
+      "locations": [
+        "MacAir::new:101-117",
+        "MacAir::eval:149-163",
+        "verify_chunk:210-244"
+      ]
+    },
+    "native_program": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native/src/linear.rs",
+      "sha256": "923a62859068de8b2755a4e8297f6afc74dad55d8169ea69c88e53adcf4292fa",
+      "locations": [
+        "Q and STAGES:19-26",
+        "permutation:143-148",
+        "reconstruct:321-427",
+        "reconstruct_update:499-546"
+      ]
+    },
+    "native_field": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native/src/field.rs",
+      "sha256": "404a89454f536804c4f3501d584338d84cbf25ef6999a9922eb8e6b0c94ecd1a",
+      "locations": [
+        "source implementation: inspected, not refined"
+      ]
+    },
+    "BfvInferComposition": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferComposition.lean",
+      "sha256": "2718d9a27bd1566eaa0db386d31f5de8598adaa944f022debebaef0c6f6b7f9c",
+      "locations": [
+        "Operands/output",
+        "Transforms:60",
+        "initialOperands:64",
+        "rotationOperands:107",
+        "prefixSound:143",
+        "inferDot:153"
+      ]
+    },
+    "BfvInferLinear": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_infer_composition/Compiler/BfvInferLinear.lean",
+      "sha256": "fbe9e3e1fdaf618aa9172afb5a013244e440a45065ae28a46064407091890975",
+      "locations": [
+        "entire frozen imported module"
+      ]
+    },
+    "BfvKeyswitchRow": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/full_bfv_keyswitch_arithmetic/Compiler/BfvKeyswitchRow.lean",
+      "sha256": "41c4a9beb15fbed9cc445e7b9de64043e9cfc1f799b3234ce5710743c1f9fa19",
+      "locations": [
+        "primes and prime_capacity"
+      ]
+    }
+  },
+  "owned": {
+    "Compiler/MatchedFieldMac.lean": {
+      "sha256": "2b2741399e6f94a2073ea8927d8a8573fceb0fd850e334401e46ff48c6f8f2ce",
+      "theorems": [
+        "field_eq_iff",
+        "sound",
+        "equations_iff",
+        "pack_operands",
+        "pack_outputs",
+        "pack_canonical",
+        "complete",
+        "allRowsSound",
+        "primes_exact",
+        "prime_positive",
+        "nonzeroWitness",
+        "wrongOutputRefused",
+        "premiseInhabited"
+      ],
+      "guards": 13
+    },
+    "Compiler/MatchedFieldProgram.lean": {
+      "sha256": "f7d8e15d88ffa3db2e6f0df46d174d211ec42a5fb1ab36e7069c024d525133d6",
+      "theorems": [
+        "checked_sound",
+        "checked_complete",
+        "linearSound",
+        "output_canonical",
+        "checked_d_canonical",
+        "updateOperands_output",
+        "updateSound",
+        "updateThenLinearSound",
+        "wrongLinearRefused",
+        "demoInitial",
+        "demoRotations",
+        "linearPremiseInhabited",
+        "updateWitness",
+        "demoUpdate",
+        "updateLinearPremiseInhabited",
+        "omittedExpiryRefused"
+      ],
+      "guards": 16
+    }
+  },
+  "guard_count": 29,
+  "patch_sha256": "d790d8ebe63a02f8e2e4c6f6b107db3e8dcd2674e09fcd38f8019b638eeff4ed",
+  "web_queries": 0,
+  "scry_queries": 0,
+  "native_runtime_runs": 0
+}

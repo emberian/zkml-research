@@ -1,0 +1,10 @@
+{
+  "adopts_preinitialized_instance": true,
+  "created_utc": "2026-09-09T04:23:35.728988+00:00",
+  "prepared_dir": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/prepared",
+  "reference_sha256": "50d9d39cc68190348d8da0b16432b3a3d8ac057c5ed7b4dcb462d8540521c138",
+  "root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/runtime/lifecycle/resident",
+  "schema": "continuing-system-workload-run-v1",
+  "vectors_sha256": "a373ff5e67ed16bb94010e770a1de320072655aaea7a22f46c1a7141b3df4aed",
+  "workload_sha256": "cc5bbe33245ac48b7cbc63b5499afba30957a71bb2b86882b427f408ec03eed2"
+}

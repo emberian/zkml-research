@@ -1,0 +1,45 @@
+   Compiling vfhe-matched-field v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/matched_field/native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.99s
+     Running unittests src/lib.rs (target/debug/deps/vfhe_matched_field-18e8918d92649ca3)
+
+running 12 tests
+test proof::tests::full_profile_proof_rejects_wrong_context_changed_row_and_trailing_bytes ... ignored, requires coordinated native proof slot
+
+thread 'field::tests::oversized_base_domain_is_rejected' (21935593) panicked at src/field.rs:242:9:
+BFV field has two-adicity 14
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'field::tests::oversized_extension_domain_is_rejected' (21935594) panicked at src/field.rs:436:9:
+quartic BFV extension has two-adicity 16
+q=1125899906826241: complete-factor Lucas primality and primitive-root certificate passed, g=22
+q=1125899906629633: complete-factor Lucas primality and primitive-root certificate passed, g=10
+q=1125899905744897: complete-factor Lucas primality and primitive-root certificate passed, g=7
+q=1125899905351681: complete-factor Lucas primality and primitive-root certificate passed, g=13
+q=1125899906826241: X^4-22 Rabin irreducibility check passed
+q=1125899906629633: X^4-10 Rabin irreducibility check passed
+q=1125899905744897: X^4-7 Rabin irreducibility check passed
+q=1125899905351681: X^4-13 Rabin irreducibility check passed
+test field::tests::oversized_extension_domain_is_rejected - should panic ... ok
+test proof::tests::residues_shapes_and_domains_are_exact ... ok
+test field::tests::oversized_base_domain_is_rejected - should panic ... ok
+test field::tests::canonical_decoders_and_signed_quotient_extremes ... ok
+test field::tests::quartics_pass_independent_rabin_irreducibility_check ... ok
+test linear::tests::query_rejects_wrong_shape_range_norm_and_nonintegers ... ok
+
+thread 'proof::tests::whole_row_air_accepts_and_rejects_last_row_both_components' (21935601) panicked at /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/air/src/check_constraints.rs:561:13:
+constraints not satisfied on row 1023: failed constraints = [#1]
+test linear::tests::permutation_matches_library_storage_assignment ... ok
+
+thread 'proof::tests::whole_row_air_accepts_and_rejects_last_row_both_components' (21935601) panicked at /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/air/src/check_constraints.rs:561:13:
+constraints not satisfied on row 1023: failed constraints = [#2]
+test proof::tests::whole_row_air_accepts_and_rejects_last_row_both_components ... ok
+q=1125899906826241: quartic generator complete-order certificate passed: 8 + X
+q=1125899906629633: quartic generator complete-order certificate passed: 4 + X
+test field::tests::arithmetic_roots_frobenius_and_extension_inverse ... ok
+q=1125899905744897: quartic generator complete-order certificate passed: 7 + X
+q=1125899905351681: quartic generator complete-order certificate passed: 6 + X
+test field::tests::prime_and_full_generator_certificates ... ok
+test linear::tests::fixed_plan_accepts_and_rejects_permutation_mutations ... ok
+
+test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.17s
+

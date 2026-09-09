@@ -36,6 +36,14 @@
           <label for="class-labels">Class labels</label>
           <textarea id="class-labels" name="classes" rows="5" placeholder="card_arrival&#10;cash_withdrawal_charge" required aria-describedby="labels-help"></textarea>
           <p id="labels-help" class="field-help">One label per line. Choose distinct names you will recognize.</p>
+          <label for="engine-mode">Learner mode</label>
+          <select id="engine-mode" name="engine" aria-describedby="engine-help" required>
+            <option value="packed:matched" selected>Average similarity · packed classes</option>
+            <option value="linear:matched">Average similarity · matched proofs</option>
+            <option value="linear:compact">Average similarity · compact proofs</option>
+            <option value="squared:compact">Average squared similarity · compact proofs</option>
+          </select>
+          <p id="engine-help" class="field-help">Keeps an encrypted total of each class’s recent examples. One proof batch serves up to eight classes. The mode is fixed after setup.</p>
           <button id="setup-submit" class="button primary" type="submit">Create learner <span aria-hidden="true">↗</span></button>
           <p id="setup-error" class="field-error" role="alert" hidden></p>
         </form>
@@ -45,6 +53,7 @@
         <aside class="model-panel panel" aria-labelledby="model-title">
           <div class="section-heading"><h2 id="model-title">Current learner</h2><span id="revision" class="revision">—</span></div>
           <p id="model-summary" class="muted"></p>
+          <div class="engine-summary"><span id="engine-score-label">Average squared similarity</span><span id="engine-backend-label">Compact proofs</span><span id="engine-layout-note" hidden></span><span id="engine-proof-counts" hidden></span></div>
           <div id="class-list" class="class-list"></div>
           <div class="model-foot"><span>Model root</span><code id="model-root">—</code></div>
         </aside>

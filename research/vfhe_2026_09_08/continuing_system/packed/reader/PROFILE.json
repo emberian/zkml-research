@@ -1,0 +1,33 @@
+{
+  "schema": "packed-class-reader-profile-v1",
+  "native": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/target/release/vfhe-packed-class-reader",
+  "command": [
+    "read",
+    "ISSUER",
+    "DOT_CT",
+    "DOT_SHA256",
+    "EVALKEY_SHA256",
+    "COUNTS_JSON"
+  ],
+  "counts_encoding": "literal JSON array of eight integers, each in 0..8; caller-approved active class counts",
+  "bfv_degree": 8192,
+  "plaintext_modulus": 4294475777,
+  "base_primes": [
+    1125899906826241,
+    1125899906629633,
+    1125899905744897,
+    1125899905351681
+  ],
+  "lanes": 8,
+  "maximum_class_count": 8,
+  "single_example_dot_bound": 20000,
+  "maximum_class_sum_bound": 160000,
+  "pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/caller.py": "2dff87f9caaeafd4199f2a6da98867fa5db9d43dc2a56a76801bee75546bb071",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/src/main.rs": "b148b49204dd0b18fe10fe048c98c9b4378f1fb63f17f75512748187095ae80d",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/Cargo.toml": "6dd789415f88e056f1e22aa915ba9942246f3e8ef217f96c41c2a94714318463",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/Cargo.lock": "065df468ec7e02814b0060389a550ec26c360cc6ce8536336eb249ca91dc00bf",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/target/release/vfhe-packed-class-reader": "61a2c59e7df1c109e07fad7c7feb463e07cf1a4e1c9686d9c35eea4ad33c6ed2"
+  },
+  "scope": "Signed class sums for one eight-class bank. Full reader capability. The caller must independently verify every bank before invoking any private read."
+}

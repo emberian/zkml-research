@@ -1,0 +1,32 @@
+{
+  "scope": "actual source/reader/proof profile pin checks and import only",
+  "crypto_launched": false,
+  "metadata": {
+    "schema": "packed-class-sum-display-v1",
+    "score_kind": "linear",
+    "proof_backend": "matched",
+    "score_formula": "class_sum / count",
+    "score_signed": true,
+    "classes_per_bank": 8,
+    "fifo_capacity": 8,
+    "update_proofs": 32,
+    "infer_proofs_per_bank": 352,
+    "layout": "fixed class lanes",
+    "sum_key": "sum_dot"
+  },
+  "update_proofs": 32,
+  "infer_proofs_per_occupied_bank": 352,
+  "reader": {
+    "native": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/native/target/release/vfhe-packed-class-reader",
+    "native_sha256": "61a2c59e7df1c109e07fad7c7feb463e07cf1a4e1c9686d9c35eea4ad33c6ed2",
+    "profile": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/reader/PROFILE.json",
+    "profile_sha256": "11778e553d0100f729e107eb204d4203e540da1257f588422c58c4daf9c51e57"
+  },
+  "source_pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/backend.py": "2bcaa2456138845029233f46279464bd117dc71e0eb4d3ac184087e6ca015bfe",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/packed/core.py": "e64938c0c8cc8223b126dcac3b219878531b72bbb5a09d8dd00233958b8608f1",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/core.py": "bca9a9aeb1705c834ccfbc8154f1be34a2a9ba5bb7fa3b1b50c894fa5a571917",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/backend.py": "16485b8d914b6107abae9a56f38b52c8039186d6be2be8288f1f5cebaf9711a5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/continuing_system/engines.py": "647f21bfad20e008374daeb5e5302df5a30cfa90dfd8ea51a51e728be9165f50"
+  }
+}

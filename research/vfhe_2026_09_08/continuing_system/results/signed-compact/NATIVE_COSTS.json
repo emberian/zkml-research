@@ -1,0 +1,13 @@
+{
+  "scope": "Executed native proof timers from this complete signed application run, concurrent shared-machine workload; no controlled benchmark claim.",
+  "teaching": {
+    "proofs": 8,
+    "prove_seconds": 28.399710499,
+    "self_verify_seconds": 1.068493251
+  },
+  "queries": {
+    "proofs": 88,
+    "prove_seconds": 305.590798295,
+    "self_verify_seconds": 11.330597665
+  }
+}

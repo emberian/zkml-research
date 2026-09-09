@@ -1,0 +1,41 @@
+{
+  "worker": {
+    "engine": {
+      "infer_proofs_per_class": 352,
+      "lane_values_key": "dot_values",
+      "proof_backend": "matched",
+      "score_formula": "mean(dot)",
+      "score_kind": "linear",
+      "score_signed": true,
+      "sum_key": "sum_dot",
+      "update_proofs_per_class": 32
+    },
+    "process": {
+      "elapsed_seconds": 0.10475945798680186,
+      "finished_utc": "2026-09-09T05:20:14.991653+00:00",
+      "pid": 49109,
+      "ppid": 49106
+    },
+    "result": {
+      "head": {
+        "classes": {
+          "proof_integrity": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+            "queue": [],
+            "teaches": 0
+          },
+          "runtime_performance": {
+            "acc_sha256": "aabc06a530eea9d2908a1127217ee6132aea847da3151e2e0842d4384ff01b16",
+            "queue": [],
+            "teaches": 0
+          }
+        },
+        "genesis": "600b0d74b9f3a41c93fb7f4f86f9646e46cb122c7f999d0d599868fa80b8e7e5",
+        "last_receipt_sha256": null,
+        "model_root": "222e5e6dd4b7c579da1ff1de98dcb60fc61d847b546ea0d0732cf05129ec2555",
+        "revision": 0
+      },
+      "reopened": true
+    }
+  }
+}
