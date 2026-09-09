@@ -39,6 +39,22 @@
     ],
     "path": "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/HIO_PROVENANCE_BACKEND.md"
   },
+  "continuing_boundaries": {
+    "excerpt_sha256": "b450f0dd280ecd75e8866c960f2ba1c25d0f50d83cb6bfe5414afa63c02c0619",
+    "lines": [
+      125,
+      130
+    ],
+    "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md"
+  },
+  "continuing_complete": {
+    "excerpt_sha256": "ad0ee543967148a43615da1a20b9cb26d13c73cc476f3ddbc532d758a0b7e74c",
+    "lines": [
+      3,
+      17
+    ],
+    "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md"
+  },
   "corrected_class": {
     "excerpt_sha256": "112d9db2fc8f5e30c602268f43c82adcc8b4c6c063504109db723efd65cb6460",
     "lines": [
@@ -70,6 +86,14 @@
       120
     ],
     "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md"
+  },
+  "field_costs": {
+    "excerpt_sha256": "48cfd2eacec27f416da6cf8a709e0fc3c973409dda7b101cca56b456c66c0319",
+    "lines": [
+      21,
+      56
+    ],
+    "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md"
   },
   "formal": {
     "excerpt_sha256": "db7b1753b2f70b2be8e76b067d17d18493652707a1366aa9538a4e548f50e435",
@@ -134,6 +158,14 @@
       24
     ],
     "path": "notes/README.md"
+  },
+  "packed_complete": {
+    "excerpt_sha256": "7fe40914ba791367f6b9f005342eaf0785b83dde4ed2493bf3c81aa49e3346fd",
+    "lines": [
+      69,
+      94
+    ],
+    "path": "research/vfhe_2026_09_08/continuing_system/RESULTS.md"
   },
   "pq_costs": {
     "excerpt_sha256": "6bdf820701f04cd8c5d31613dc6ac68939dc2f8616da7e5e22ba5f18ec884c58",
