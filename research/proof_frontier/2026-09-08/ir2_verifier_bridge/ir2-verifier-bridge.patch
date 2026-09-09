@@ -1,0 +1,2365 @@
+diff --git a/Theory/P3BarycentricInterpolation.lean b/Theory/P3BarycentricInterpolation.lean
+new file mode 100644
+--- /dev/null
++++ b/Theory/P3BarycentricInterpolation.lean
+@@ -0,0 +1,140 @@
++/- Mathematical semantics of the deployed P3 coset-row interpolation kernel.
++The formula follows plonky3-fri-82cfad73/src/two_adic_pcs.rs:464–508;
++the inspected P3 source is dual MIT/Apache-2.0 licensed. This Lean proof
++is newly derived here from Mathlib interpolation identities.
++The theorem derives its equality with interpolation from the actual distinct
++coset-node equations, including the challenge-at-node branch. -/
++import Mathlib.LinearAlgebra.Lagrange
++import Mathlib.Tactic
++import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
++
++namespace P3Barycentric
++open Polynomial
++open scoped BigOperators Classical
++noncomputable section
++variable {F : Type*} [Field F] {n : ℕ}
++
++/-- The nonempty, distinct coset-node interface checked by the fold construction. -/
++structure CosetNodes (F : Type*) [Field F] (n : ℕ) where
++  pos : 0 < n
++  nodes : Fin n ↪ F
++  power : F
++  power_ne_zero : power ≠ 0
++  powers : ∀ i, nodes i ^ n = power
++  cardinal_ne_zero : (n : F) ≠ 0
++
++/-- Source-independent constructor from the actual coset root and shift. -/
++def fromPrimitive (ω : F) (hω : IsPrimitiveRoot ω n) (hn : 0 < n)
++    (s : F) (hs : s ≠ 0) (hcast : (n:F) ≠ 0) : CosetNodes F n where
++  pos := hn
++  nodes := ⟨fun i => s*ω^i.val, fun i j h => Fin.ext (hω.pow_inj i.isLt j.isLt (mul_left_cancel₀ hs h))⟩
++  power := s^n
++  power_ne_zero := pow_ne_zero _ hs
++  powers i := by
++    change (s*ω^i.val)^n = s^n
++    rw [mul_pow]
++    rw [←pow_mul,Nat.mul_comm i.val n,pow_mul,hω.pow_eq_one,one_pow,mul_one]
++  cardinal_ne_zero := hcast
++
++/-- Ordering may be the runtime's bit reversal; coset equations are preserved. -/
++def reindex (xs : CosetNodes F n) (e : Fin n ≃ Fin n) : CosetNodes F n where
++  pos := xs.pos
++  nodes := e.toEmbedding.trans xs.nodes
++  power := xs.power
++  power_ne_zero := xs.power_ne_zero
++  powers i := xs.powers (e i)
++  cardinal_ne_zero := xs.cardinal_ne_zero
++
++/-- Exact early-return/barycentric branch structure of the native row kernel.
++The inverse factor is native `weight_scale`; products and sums preserve order
++semantically because the carrier is a field. -/
++def native (xs : CosetNodes F n) (ys : Fin n → F) (z : F) : F :=
++  if h : ∃ i, z = xs.nodes i then ys (Classical.choose h)
++  else (∑ i, ys i * (xs.nodes i * ((n:F)*xs.power)⁻¹) * (z-xs.nodes i)⁻¹) *
++    ∏ i, (z-xs.nodes i)
++
++/-- Statement first: native evaluation is the unique degree-bounded interpolant. -/
++def Correctness (xs : CosetNodes F n) : Prop :=
++  ∀ ys z, native xs ys z = (Lagrange.interpolate Finset.univ xs.nodes ys).eval z
++
++lemma nodes_ne_zero (xs : CosetNodes F n) (i : Fin n) : xs.nodes i ≠ 0 := by
++  intro h
++  apply xs.power_ne_zero
++  rw [←xs.powers i,h,zero_pow (Nat.ne_of_gt xs.pos)]
++
++lemma nodal_shape (xs : CosetNodes F n) :
++    Lagrange.nodal Finset.univ xs.nodes = X^n-C xs.power := by
++  have hd : (Lagrange.nodal Finset.univ xs.nodes).degree = (X^n-C xs.power : F[X]).degree := by
++    simp [degree_X_pow_sub_C xs.pos]
++  have hl : (Lagrange.nodal Finset.univ xs.nodes).leadingCoeff =
++      (X^n-C xs.power : F[X]).leadingCoeff := by
++    rw [Lagrange.nodal_monic.leadingCoeff,(monic_X_pow_sub_C _ (Nat.ne_of_gt xs.pos)).leadingCoeff]
++  have hb := Polynomial.degree_sub_lt hd Lagrange.nodal_ne_zero hl
++  rw [Lagrange.degree_nodal] at hb
++  have hz : Lagrange.nodal Finset.univ xs.nodes - (X^n-C xs.power) = 0 := by
++    apply Polynomial.eq_zero_of_degree_lt_of_eval_index_eq_zero Finset.univ xs.nodes.injective.injOn hb
++    intro i hi
++    simp [Lagrange.eval_nodal_at_node hi,xs.powers i]
++  exact sub_eq_zero.mp hz
++
++lemma native_weight (xs : CosetNodes F n) (i : Fin n) :
++    Lagrange.nodalWeight Finset.univ xs.nodes i = xs.nodes i * ((n:F)*xs.power)⁻¹ := by
++  rw [Lagrange.nodalWeight_eq_eval_derivative_nodal (Finset.mem_univ i),nodal_shape]
++  simp only [derivative_sub,derivative_X_pow,derivative_C,sub_zero,eval_mul,eval_C,eval_pow,eval_X]
++  have he : (xs.nodes i)^(n-1)*xs.nodes i = xs.power := by
++    rw [←pow_succ,Nat.sub_add_cancel xs.pos,xs.powers]
++  have hx := nodes_ne_zero xs i
++  have hn := xs.cardinal_ne_zero
++  have hc := xs.power_ne_zero
++  field_simp [hx,hn,hc]
++  exact he.symm
++
++/-- The exact deployed barycentric formula, including the node hit, equals
++ordinary polynomial interpolation. No claimed fold equality is a premise. -/
++theorem correctness (xs : CosetNodes F n) : Correctness xs := by
++  intro ys z
++  by_cases h : ∃ i, z = xs.nodes i
++  · rw [native,dif_pos h]
++    have hv := Lagrange.eval_interpolate_at_node ys xs.nodes.injective.injOn (Finset.mem_univ (Classical.choose h))
++    exact hv.symm.trans (congrArg (fun x => (Lagrange.interpolate Finset.univ xs.nodes ys).eval x) (Classical.choose_spec h).symm)
++  · rw [native,dif_neg h]
++    have hi := Lagrange.eval_interpolate_not_at_node (s := Finset.univ) ys (fun i _ hz => h ⟨i,hz⟩)
++    rw [Lagrange.eval_nodal] at hi
++    simp only [native_weight] at hi
++    rw [hi,mul_comm]
++    congr 1
++    apply Finset.sum_congr rfl
++    intro i _
++    ring
++
++/-- Every genuine low-degree row polynomial is evaluated at the same scalar. -/
++theorem native_of_polynomial (xs : CosetNodes F n) (p : F[X]) (hp : p.degree < n) (z : F) :
++    native xs (fun i => p.eval (xs.nodes i)) z = p.eval z := by
++  rw [correctness]
++  congr 1
++  symm
++  exact Lagrange.eq_interpolate xs.nodes.injective.injOn (by simpa using hp)
++
++end
++end P3Barycentric
++
++/-- info: 'P3Barycentric.nodes_ne_zero' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms P3Barycentric.nodes_ne_zero
++
++/-- info: 'P3Barycentric.nodal_shape' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms P3Barycentric.nodal_shape
++
++/-- info: 'P3Barycentric.native_weight' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms P3Barycentric.native_weight
++
++/-- info: 'P3Barycentric.correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms P3Barycentric.correctness
++
++/-- info: 'P3Barycentric.native_of_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms P3Barycentric.native_of_polynomial
++
+diff --git a/Selvage/FiniteModuloSampling.lean b/Selvage/FiniteModuloSampling.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/FiniteModuloSampling.lean
+@@ -0,0 +1,165 @@
++/- Exact modulo pushforward for fresh uniform finite words. This is a
++finite sampling statement, without a pseudorandomness claim about a transcript. -/
++import Selvage.AuditSampling
++import Selvage.ConsistencyCoherentTransport
++
++namespace Minidregg.Selvage.FiniteModuloSampling
++open scoped BigOperators Classical
++
++/-- The residue map applied to the canonical representative. -/
++def sampleModulo {p : ℕ} (k : ℕ) (hk : 0 < k) (x : Fin p) : Fin k :=
++  ⟨x.val % k,Nat.mod_lt _ hk⟩
++
++/-- Statement-first exact law: a complete number of residue cycles plus one
++additional zero representative. -/
++def PushforwardLaw (a k : ℕ) (hk : 0 < k) : Prop :=
++  ∀ E : Fin k → Prop,
++    uniformProb (Fin (a*k+1)) (fun x => E (sampleModulo k hk x)) =
++      ((a*k:ℕ):ℝ)/(a*k+1) * uniformProb (Fin k) E +
++        (if E ⟨0,hk⟩ then 1/(a*k+1:ℝ) else 0)
++
++/-- Every full residue cycle contributes the same arbitrary-predicate mass. -/
++theorem full_cycles_sum (a k : ℕ) (hk : 0 < k) (E : Fin k → Prop) :
++    (∑ x : Fin (a*k), if E (sampleModulo k hk x) then (1:ℝ) else 0) =
++      (a:ℝ) * ∑ i : Fin k, if E i then (1:ℝ) else 0 := by
++  rw [←Equiv.sum_comp (finProdFinEquiv : Fin a × Fin k ≃ Fin (a*k))]
++  rw [Fintype.sum_prod_type]
++  have hmod (x : Fin a) (i : Fin k) :
++      sampleModulo k hk (finProdFinEquiv (x,i)) = i := by
++    apply Fin.ext
++    simp [sampleModulo,finProdFinEquiv,Nat.mod_eq_of_lt i.isLt]
++  simp_rw [hmod]
++  simp
++
++/-- The extra canonical representative a*k contributes exactly at residue zero. -/
++theorem cycles_plus_zero_sum (a k : ℕ) (hk : 0 < k) (E : Fin k → Prop) :
++    (∑ x : Fin (a*k+1), if E (sampleModulo k hk x) then (1:ℝ) else 0) =
++      (a:ℝ) * (∑ i : Fin k, if E i then (1:ℝ) else 0) +
++        (if E ⟨0,hk⟩ then 1 else 0) := by
++  rw [Fin.sum_univ_castSucc]
++  have hlast : sampleModulo k hk (Fin.last (a*k)) = ⟨0,hk⟩ := by
++    apply Fin.ext
++    simp [sampleModulo]
++  rw [hlast]
++  change (∑ x : Fin (a*k), if E (sampleModulo k hk x) then (1:ℝ) else 0) + _ = _
++  rw [full_cycles_sum]
++
++/-- Exact arbitrary-event distribution under one fresh uniform canonical word. -/
++theorem pushforward_exact (a k : ℕ) (hk : 0 < k) : PushforwardLaw a k hk := by
++  intro E
++  rw [uniformProb_eq_avg_indicator,cycles_plus_zero_sum,
++    uniformProb_eq_avg_indicator,Fintype.card_fin,Fintype.card_fin]
++  have hk' : (k:ℝ) ≠ 0 := by exact_mod_cast hk.ne'
++  have hp' : (a*k+1:ℝ) ≠ 0 := by positivity
++  push_cast
++  split_ifs <;> field_simp
++  all_goals ring
++
++/-- Independent fresh base words preserve the exact biased one-word law to power q. -/
++theorem independent_exact (a k : ℕ) (hk : 0 < k) (q : ℕ) (E : Fin k → Prop) :
++    uniformProb (Fin q → Fin (a*k+1)) (fun x => ∀ j, E (sampleModulo k hk (x j))) =
++      (((a*k:ℕ):ℝ)/(a*k+1) * uniformProb (Fin k) E +
++        (if E ⟨0,hk⟩ then 1/(a*k+1:ℝ) else 0))^q := by
++  rw [ArityEight.Schedule.uniformProb_all_coordinates q
++    (fun x : Fin (a*k+1) => E (sampleModulo k hk x))]
++  rw [pushforward_exact a k hk E]
++
++/-- Uniform-index survival controls the actual fresh-base modulo sampler,
++including its extra mass at zero, without assuming a uniform residue distribution. -/
++theorem independent_bound (a k : ℕ) (hk : 0 < k) (q : ℕ) (E : Fin k → Prop)
++    (t : ℝ) (ht : uniformProb (Fin k) E ≤ t) :
++    uniformProb (Fin q → Fin (a*k+1)) (fun x => ∀ j, E (sampleModulo k hk (x j))) ≤
++      (((a*k:ℕ):ℝ)/(a*k+1) * t + 1/(a*k+1:ℝ))^q := by
++  rw [ArityEight.Schedule.uniformProb_all_coordinates q
++    (fun x : Fin (a*k+1) => E (sampleModulo k hk x))]
++  apply pow_le_pow_left₀ (uniformProb_nonneg _)
++  rw [pushforward_exact a k hk E]
++  apply add_le_add (mul_le_mul_of_nonneg_left ht (by positivity))
++  split_ifs
++  · exact le_rfl
++  · positivity
++
++/-- One residue has uniform mass exactly 1/k before applying the biased map. -/
++theorem uniform_singleton (k : ℕ) (b : Fin k) :
++    uniformProb (Fin k) (fun i => i = b) = 1/(k:ℝ) := by
++  unfold uniformProb
++  simp [Nat.card_eq_fintype_card]
++
++/-- Zero receives the additional canonical representative. -/
++theorem zero_probability (a k : ℕ) (hk : 0 < k) :
++    uniformProb (Fin (a*k+1)) (fun x => sampleModulo k hk x = ⟨0,hk⟩) =
++      (a+1:ℝ)/(a*k+1) := by
++  rw [pushforward_exact a k hk (fun i => i = ⟨0,hk⟩),uniform_singleton]
++  simp only [ite_true]
++  have hk' : (k:ℝ) ≠ 0 := by exact_mod_cast hk.ne'
++  push_cast
++  field_simp
++
++/-- Every nonzero residue has only the complete-cycle representatives. -/
++theorem nonzero_probability (a k : ℕ) (hk : 0 < k) (b : Fin k) (hb : b.val ≠ 0) :
++    uniformProb (Fin (a*k+1)) (fun x => sampleModulo k hk x = b) =
++      (a:ℝ)/(a*k+1) := by
++  rw [pushforward_exact a k hk (fun i => i = b),uniform_singleton]
++  have hb' : (⟨0,hk⟩ : Fin k) ≠ b := by
++    intro h
++    exact hb (congrArg Fin.val h).symm
++  simp only [hb',ite_false,add_zero]
++  have hk' : (k:ℝ) ≠ 0 := by exact_mod_cast hk.ne'
++  push_cast
++  field_simp
++
++/-- Falsifier to a uniform-residue claim: zero is strictly heavier than one. -/
++theorem zero_bias_witness (a k : ℕ) (hk : 1 < k) :
++    uniformProb (Fin (a*k+1)) (fun x => sampleModulo k (by omega) x = ⟨1,hk⟩) <
++      uniformProb (Fin (a*k+1)) (fun x => sampleModulo k (by omega) x = ⟨0,by omega⟩) := by
++  rw [nonzero_probability a k (by omega) ⟨1,hk⟩ (by simp),zero_probability]
++  apply (div_lt_div_iff_of_pos_right (by positivity : (0:ℝ) < a*k+1)).mpr
++  linarith
++
++/-- The keystone premises are inhabited at positive cycle count and nontrivial residue size. -/
++theorem pushforward_premises_inhabited : ∃ (a k : ℕ) (hk : 0 < k),
++    0 < a ∧ 1 < k ∧ PushforwardLaw a k hk :=
++  ⟨1,2,by decide,by decide,by decide,pushforward_exact 1 2 (by decide)⟩
++
++end Minidregg.Selvage.FiniteModuloSampling
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.full_cycles_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.full_cycles_sum
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.cycles_plus_zero_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.cycles_plus_zero_sum
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.pushforward_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.pushforward_exact
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.independent_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.independent_exact
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.independent_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.independent_bound
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.uniform_singleton' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.uniform_singleton
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.zero_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.zero_probability
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.nonzero_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.nonzero_probability
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.zero_bias_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.zero_bias_witness
++
++/-- info: 'Minidregg.Selvage.FiniteModuloSampling.pushforward_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.FiniteModuloSampling.pushforward_premises_inhabited
++
+diff --git a/Selvage/BabyBearModuloSampling.lean b/Selvage/BabyBearModuloSampling.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/BabyBearModuloSampling.lean
+@@ -0,0 +1,143 @@
++/- Actual BabyBear canonical-word modulo sampling. The source distribution is
++explicitly fresh uniform base elements; no Fiat--Shamir uniformity is asserted. -/
++import Selvage.FiniteModuloSampling
++
++namespace Minidregg.Selvage.BabyBearModuloSampling
++set_option maxHeartbeats 800000
++open scoped BigOperators Classical
++open BabyBearExt4 FiniteModuloSampling
++
++/-- Canonical representatives of the actual existing BabyBear base field. -/
++def canonicalEquiv : BabyBear ≃ Fin modulus := (ZMod.finEquiv modulus).toEquiv.symm
++
++/-- This equivalence is exactly the field's canonical integer representation. -/
++theorem canonicalEquiv_val (x : BabyBear) : (canonicalEquiv x).val = x.val := rfl
++
++/-- The mathematical value of the vendor's canonical-value bit mask. -/
++def sampleBits (ell : ℕ) (x : BabyBear) : Fin (2^ell) :=
++  sampleModulo (2^ell) (by positivity) (canonicalEquiv x)
++
++/-- Exact source-map identity for `canonical & ((1 << ell)-1)`. -/
++theorem sampleBits_mask (ell : ℕ) (x : BabyBear) :
++    (sampleBits ell x).val = x.val &&& (2^ell-1) := by
++  rw [Nat.and_two_pow_sub_one_eq_mod]
++  rfl
++
++/-- The source map preserves the identity between uniform base elements and canonical words. -/
++theorem uniform_canonical (ell : ℕ) (E : Fin (2^ell) → Prop) :
++    uniformProb BabyBear (fun x => E (sampleBits ell x)) =
++      uniformProb (Fin modulus) (fun x => E (sampleModulo (2^ell) (by positivity) x)) :=
++  uniformProb_equiv canonicalEquiv
++    (fun x : Fin modulus => E (sampleModulo (2^ell) (by positivity) x))
++
++/-- BabyBear has exactly this many complete cycles at every supported two-adic height. -/
++def cycles (ell : ℕ) : ℕ := 15*2^(27-ell)
++
++theorem cycles_positive (ell : ℕ) : 0 < cycles ell := by unfold cycles; positivity
++
++/-- Exact arithmetic, including ell=0: p = cycles * 2^ell + 1. -/
++theorem modulus_cycles (ell : ℕ) (hell : ell ≤ 27) : cycles ell * 2^ell + 1 = modulus := by
++  unfold cycles
++  rw [Nat.mul_assoc,←pow_add,Nat.sub_add_cancel hell]
++  norm_num [modulus]
++
++/-- Statement-first actual-base fresh-word sampling contract. -/
++def FreshBitsLaw (ell : ℕ) : Prop := ∀ E : Fin (2^ell) → Prop,
++  uniformProb BabyBear (fun x => E (sampleBits ell x)) =
++    ((modulus-1:ℕ):ℝ)/modulus * uniformProb (Fin (2^ell)) E +
++      (if E ⟨0,by positivity⟩ then 1/(modulus:ℝ) else 0)
++
++/-- Exact arbitrary-predicate BabyBear law. The extra canonical representative is zero modulo 2^ell. -/
++theorem fresh_bits_exact (ell : ℕ) (hell : ell ≤ 27) : FreshBitsLaw ell := by
++  intro E
++  rw [uniform_canonical]
++  have h := pushforward_exact (cycles ell) (2^ell) (by positivity) E
++  have hp := modulus_cycles ell hell
++  have hn : cycles ell * 2^ell = modulus-1 := by omega
++  have hp' : (cycles ell:ℝ)*(2^ell:ℝ)+1 = (modulus:ℝ) := by exact_mod_cast hp
++  rw [hp,hn] at h
++  simp only [Nat.cast_pow,Nat.cast_ofNat] at h
++  rw [hp'] at h
++  exact h
++
++/-- q independent fresh actual base-field elements give the exact qth power. -/
++theorem fresh_bits_independent_exact (ell : ℕ) (hell : ell ≤ 27) (q : ℕ)
++    (E : Fin (2^ell) → Prop) :
++    uniformProb (Fin q → BabyBear) (fun x => ∀ j, E (sampleBits ell (x j))) =
++      (((modulus-1:ℕ):ℝ)/modulus * uniformProb (Fin (2^ell)) E +
++        (if E ⟨0,by positivity⟩ then 1/(modulus:ℝ) else 0))^q := by
++  rw [ArityEight.Schedule.uniformProb_all_coordinates q (fun x => E (sampleBits ell x)),
++    fresh_bits_exact ell hell E]
++
++/-- The verifier adapter can apply its uniform-index survival bound to this
++exact fresh-base sampler, retaining the canonical-modulo bias. -/
++theorem fresh_bits_independent_bound (ell : ℕ) (hell : ell ≤ 27) (q : ℕ)
++    (E : Fin (2^ell) → Prop) (t : ℝ) (ht : uniformProb (Fin (2^ell)) E ≤ t) :
++    uniformProb (Fin q → BabyBear) (fun x => ∀ j, E (sampleBits ell (x j))) ≤
++      (((modulus-1:ℕ):ℝ)/modulus*t+1/(modulus:ℝ))^q := by
++  rw [ArityEight.Schedule.uniformProb_all_coordinates q (fun x => E (sampleBits ell x))]
++  apply pow_le_pow_left₀ (uniformProb_nonneg _)
++  rw [fresh_bits_exact ell hell E]
++  apply add_le_add (mul_le_mul_of_nonneg_left ht (by positivity))
++  split_ifs
++  · exact le_rfl
++  · positivity
++
++/-- The actual-base keystone has an inhabited, nontrivial bit-height premise. -/
++theorem fresh_bits_premises_inhabited : ∃ ell : ℕ,
++    0 < ell ∧ ell ≤ 27 ∧ FreshBitsLaw ell :=
++  ⟨1,by decide,by decide,fresh_bits_exact 1 (by decide)⟩
++
++/-- Actual BabyBear witness: residue zero is strictly heavier than residue one
++at every positive supported bit height. This refutes exact uniformity of sample_bits. -/
++theorem actual_zero_bias (ell : ℕ) (h0 : 0 < ell) (hell : ell ≤ 27) :
++    uniformProb BabyBear (fun x => sampleBits ell x = ⟨1,by exact Nat.one_lt_two_pow h0.ne'⟩) <
++      uniformProb BabyBear (fun x => sampleBits ell x = ⟨0,by positivity⟩) := by
++  rw [uniform_canonical ell (fun i => i = ⟨1,by exact Nat.one_lt_two_pow h0.ne'⟩),
++    uniform_canonical ell (fun i => i = ⟨0,by positivity⟩)]
++  have h := zero_bias_witness (cycles ell) (2^ell) (Nat.one_lt_two_pow h0.ne')
++  rw [modulus_cycles ell hell] at h
++  exact h
++
++end Minidregg.Selvage.BabyBearModuloSampling
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.canonicalEquiv_val' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.canonicalEquiv_val
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.sampleBits_mask' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.sampleBits_mask
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.uniform_canonical' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.uniform_canonical
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.cycles_positive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.cycles_positive
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.modulus_cycles' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.modulus_cycles
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_exact
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_independent_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_independent_exact
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_independent_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_independent_bound
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.fresh_bits_premises_inhabited
++
++/-- info: 'Minidregg.Selvage.BabyBearModuloSampling.actual_zero_bias' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.BabyBearModuloSampling.actual_zero_bias
++
+diff --git a/Selvage/Ir2FriSchedule.lean b/Selvage/Ir2FriSchedule.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriSchedule.lean
+@@ -0,0 +1,213 @@
++/- The concrete IR2 replay schedule: logheight 17, four arity-eight rounds,
++then arity four, ending at logheight three. -/
++import Selvage.BabyBearModuloSampling
++import Theory.BitReverseFriTransport
++
++namespace Minidregg.Selvage.Ir2FriSchedule
++open scoped BigOperators Classical
++open Minidregg.Theory.BitReverseFriTransport
++
++/-- Total source exponent bits removed after each committed round. -/
++def stage (n : ℕ) : ℕ := min (3*n) 14
++
++/-- Existing natural exponent indices for the replay's exact domain sizes. -/
++abbrev Index (n : ℕ) : Type := Fin (2^(17-stage n))
++
++/-- Actual number of source entries combined by each of the five rounds. -/
++def radix (n : Fin 5) : ℕ := 2^(stage (n+1)-stage n)
++
++/-- The actual coherent projection reduces the natural exponent modulo the next size. -/
++def project (n : Fin 5) (i : Index n) : Index (n+1) :=
++  ⟨i.val % 2^(17-stage (n+1)),Nat.mod_lt _ (by positivity)⟩
++
++/-- Project a full seventeen-bit natural source exponent to any stage. -/
++def naturalIndex (n : ℕ) (i : Index 0) : Index n :=
++  ⟨i.val % 2^(17-stage n),Nat.mod_lt _ (by positivity)⟩
++
++/-- The runtime source order is the reverse of all seventeen raw index bits. -/
++def sourceIndex (raw : Fin (2^17)) : Index 0 :=
++  ⟨reverseIndex 17 raw.val,reverseIndex_lt 17 raw.val⟩
++
++/-- Runtime dropping of low query bits followed by reversing the remaining bits. -/
++def runtimeIndex (n : ℕ) (raw : Fin (2^17)) : Index n :=
++  ⟨reverseIndex (17-stage n) (raw.val / 2^(stage n)),reverseIndex_lt _ _⟩
++
++/-- Exact replay dimensions and final domain cardinality. -/
++theorem dimensions : [stage 0,stage 1,stage 2,stage 3,stage 4,stage 5] =
++    [0,3,6,9,12,14] ∧ Fintype.card (Index 5) = 8 := by decide
++
++theorem stage_le (n : ℕ) : stage n ≤ 14 := Nat.min_le_right _ _
++
++theorem stage_monotone {n m : ℕ} (h : n ≤ m) : stage n ≤ stage m := by
++  unfold stage
++  omega
++
++theorem radix_positive (n : Fin 5) : 0 < radix n := by unfold radix; positivity
++
++/-- The final round has four entries; the other four have eight. -/
++theorem radix_exact (n : Fin 5) : radix n = if n.val < 4 then 8 else 4 := by
++  fin_cases n <;> decide
++
++/-- Exact source/target factorization, derived from the actual stage exponents. -/
++theorem size_factor (n : Fin 5) :
++    2^(17-stage n) = radix n * 2^(17-stage (n+1)) := by
++  unfold radix
++  rw [←pow_add]
++  congr 1
++  have h := stage_monotone (show n.val ≤ n.val+1 by omega)
++  have h' := stage_le (n+1)
++  omega
++
++/-- The initial source is factored by exactly the bits removed at stage n. -/
++theorem source_size_factor (n : ℕ) : 2^17 = 2^(stage n)*2^(17-stage n) := by
++  rw [←pow_add]
++  congr 1
++  have h := stage_le n
++  omega
++
++theorem naturalIndex_zero (i : Index 0) : naturalIndex 0 i = i := by
++  apply Fin.ext
++  exact Nat.mod_eq_of_lt i.isLt
++
++/-- Successive actual projections have the same endpoint as the full source projection. -/
++theorem project_naturalIndex (n : Fin 5) (i : Index 0) :
++    project n (naturalIndex n i) = naturalIndex (n+1) i := by
++  apply Fin.ext
++  exact Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by
++    have h := stage_monotone (show n.val ≤ n.val+1 by omega)
++    omega))
++
++/-- Coherent runtime rows are exactly the projected natural exponents of the full source. -/
++theorem runtimeIndex_eq_naturalIndex (n : ℕ) (raw : Fin (2^17)) :
++    runtimeIndex n raw = naturalIndex n (sourceIndex raw) := by
++  apply Fin.ext
++  exact query_transport 17 (stage n) raw.val (by have h := stage_le n; omega) raw.isLt
++
++/-- No initial pair-index convention is used: stage zero reverses all seventeen bits. -/
++theorem runtimeIndex_zero (raw : Fin (2^17)) : runtimeIndex 0 raw = sourceIndex raw := by
++  rw [runtimeIndex_eq_naturalIndex,naturalIndex_zero]
++
++/-- Full-source bit reversal is an involution, hence a uniform-source equivalence. -/
++def sourceEquiv : Fin (2^17) ≃ Index 0 where
++  toFun := sourceIndex
++  invFun i := ⟨reverseIndex 17 i.val,reverseIndex_lt _ _⟩
++  left_inv raw := by
++    apply Fin.ext
++    change reverseIndex 17 (reverseIndex 17 raw.val) = raw.val
++    simp [reverseIndex,BitVec.reverse_reverse_eq]
++  right_inv i := by
++    apply Fin.ext
++    change reverseIndex 17 (reverseIndex 17 i.val) = i.val
++    simp [reverseIndex,BitVec.reverse_reverse_eq]
++
++/-- Quotient and remainder split an actual round index into its radix fibre and next row. -/
++def projectSplitEquiv (n : Fin 5) : Index n ≃ Fin (radix n) × Index (n+1) :=
++  (finCongr (size_factor n)).trans finProdFinEquiv.symm
++
++theorem projectSplitEquiv_snd (n : Fin 5) (i : Index n) :
++    (projectSplitEquiv n i).2 = project n i := by
++  apply Fin.ext
++  simp [projectSplitEquiv,finProdFinEquiv,project]
++
++/-- The exact fibre over every actual next-row index has the round's proved radix. -/
++def projectFiberEquiv (n : Fin 5) (k : Index (n+1)) :
++    {i : Index n // project n i = k} ≃ Fin (radix n) where
++  toFun i := (projectSplitEquiv n i.val).1
++  invFun a := ⟨(projectSplitEquiv n).symm (a,k),by
++    rw [←projectSplitEquiv_snd,Equiv.apply_symm_apply]⟩
++  left_inv i := by
++    apply Subtype.ext
++    apply (projectSplitEquiv n).injective
++    simp only [Equiv.apply_symm_apply]
++    exact Prod.ext rfl (by simpa only [projectSplitEquiv_snd] using i.property.symm)
++  right_inv a := by simp
++
++/-- Balanced fibre cardinality is derived from the concrete modulus, not assumed. -/
++theorem project_fiber_card (n : Fin 5) (k : Index (n+1)) :
++    (Finset.univ.filter fun i => project n i = k).card = radix n := by
++  have h := Fintype.card_congr (projectFiberEquiv n k)
++  simpa only [Fintype.card_subtype,Fintype.card_fin] using h
++
++/-- Radix multiplication removes exactly the new stage bits. -/
++theorem stage_factor (n : Fin 5) : 2^(stage (n+1)) = radix n * 2^(stage n) := by
++  unfold radix
++  rw [←pow_add]
++  congr 1
++  have h := stage_monotone (show n.val ≤ n.val+1 by omega)
++  omega
++
++/-- The observed final round cannot be replaced by a fifth arity-eight step. -/
++theorem final_round_arity_falsifier : radix ⟨4,by decide⟩ = 4 ∧ radix ⟨4,by decide⟩ ≠ 8 := by
++  decide
++
++/-- Full-source reversal keeps the low raw bit as the high natural exponent bit. -/
++theorem full_source_bit_witness :
++    (sourceIndex (⟨1,by decide⟩ : Fin (2^17))).val = 2^16 := by
++  decide
++
++end Minidregg.Selvage.Ir2FriSchedule
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.dimensions' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.dimensions
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.stage_le' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.stage_le
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.stage_monotone' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.stage_monotone
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.radix_positive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.radix_positive
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.radix_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.radix_exact
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.size_factor' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.size_factor
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.source_size_factor' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.source_size_factor
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.naturalIndex_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.naturalIndex_zero
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.project_naturalIndex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.project_naturalIndex
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.runtimeIndex_eq_naturalIndex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.runtimeIndex_eq_naturalIndex
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.runtimeIndex_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.runtimeIndex_zero
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.projectSplitEquiv_snd' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.projectSplitEquiv_snd
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.project_fiber_card' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.project_fiber_card
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.stage_factor' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.stage_factor
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.final_round_arity_falsifier' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.final_round_arity_falsifier
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.full_source_bit_witness' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.full_source_bit_witness
++
+diff --git a/Selvage/Ir2FriConsistency.lean b/Selvage/Ir2FriConsistency.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriConsistency.lean
+@@ -0,0 +1,358 @@
++/- Exact supplied-mask consistency for the concrete [3,3,3,3,2] replay.
++No word, code, farness, or desired probability-bound hypothesis is hidden here. -/
++import Selvage.Ir2FriSchedule
++
++namespace Minidregg.Selvage.Ir2FriSchedule
++open scoped BigOperators Classical
++
++/-- A caller supplies the actual next-word/native-fold equality at each next-row index. -/
++abbrev Mask := (n : Fin 5) → Index (n+1) → Prop
++
++/-- Average the previous consistency weights over the actual projected fibre. -/
++noncomputable def projectWeight (n : Fin 5) (w : Index n → ℝ) (k : Index (n+1)) : ℝ :=
++  (∑ i ∈ Finset.univ.filter (fun i => project n i = k), w i)/(radix n:ℝ)
++
++/-- The initial reduced-input/committed-word equality masks source weights; every later
++fibre average is masked by its supplied next-row equation. -/
++noncomputable def weight (initial : Index 0 → Prop) (mask : Mask) : (n : ℕ) → n ≤ 5 → Index n → ℝ
++  | 0, _, i => if initial i then 1 else 0
++  | n+1, hn, k => if mask ⟨n,by omega⟩ k then
++      projectWeight ⟨n,by omega⟩ (weight initial mask n (by omega)) k else 0
++
++/-- The same supplied equations pulled back to one full natural source index. -/
++def sourceChecks (initial : Index 0 → Prop) (mask : Mask) : (n : ℕ) → n ≤ 5 → Index 0 → Prop
++  | 0, _, i => initial i
++  | n+1, hn, i => sourceChecks initial mask n (by omega) i ∧
++      mask ⟨n,by omega⟩ (naturalIndex (n+1) i)
++
++/-- Statement-first exact counting contract at every prefix and terminal subset. -/
++def MassContract (initial : Index 0 → Prop) (mask : Mask) : Prop := ∀ n (hn : n ≤ 5) (S : Finset (Index n)),
++  consistencyMass (weight initial mask n hn) S * (2:ℝ)^(stage n) =
++    ((Finset.univ.filter fun i => sourceChecks initial mask n hn i ∧ naturalIndex n i ∈ S).card:ℝ)
++
++/-- This recurrence exposes precisely the caller's next-row equality mask. -/
++theorem weight_succ (initial : Index 0 → Prop) (mask : Mask) (n : Fin 5) :
++    weight initial mask (n+1) (by omega) = fun k =>
++      if mask n k then projectWeight n (weight initial mask n (by omega)) k else 0 := rfl
++
++/-- Projected subset mass is the preimage mass divided by the actual round radix. -/
++theorem projectWeight_mass (n : Fin 5) (w : Index n → ℝ) (S : Finset (Index (n+1))) :
++    consistencyMass (projectWeight n w) S =
++      consistencyMass w (Finset.univ.filter fun i => project n i ∈ S)/(radix n:ℝ) := by
++  unfold consistencyMass projectWeight
++  rw [←Finset.sum_div]
++  exact congrArg (fun x : ℝ => x/(radix n:ℝ))
++    (Finset.sum_fiberwise_eq_sum_filter Finset.univ S (project n) w)
++
++theorem projectWeight_nonneg (n : Fin 5) (w : Index n → ℝ) (hw : ∀ i, 0 ≤ w i)
++    (k : Index (n+1)) : 0 ≤ projectWeight n w k := by
++  exact div_nonneg (Finset.sum_nonneg fun i _ => hw i) (by positivity)
++
++/-- The proved fibre count ensures projected bounded weights stay bounded. -/
++theorem projectWeight_le_one (n : Fin 5) (w : Index n → ℝ) (hw : ∀ i, w i ≤ 1)
++    (k : Index (n+1)) : projectWeight n w k ≤ 1 := by
++  have hm := consistencyMass_le_card w hw (Finset.univ.filter fun i => project n i = k)
++  rw [project_fiber_card] at hm
++  have hr : (0:ℝ) < radix n := by exact_mod_cast radix_positive n
++  exact (div_le_one hr).mpr hm
++
++theorem weight_nonneg (initial : Index 0 → Prop) (mask : Mask) (n : ℕ) (hn : n ≤ 5) :
++    ∀ i, 0 ≤ weight initial mask n hn i := by
++  induction n with
++  | zero => intro i; unfold weight; split_ifs <;> norm_num
++  | succ n ih =>
++    intro i
++    rw [weight]
++    split_ifs
++    · exact projectWeight_nonneg _ _ (ih (by omega)) _
++    · exact le_rfl
++
++theorem weight_le_one (initial : Index 0 → Prop) (mask : Mask) (n : ℕ) (hn : n ≤ 5) :
++    ∀ i, weight initial mask n hn i ≤ 1 := by
++  induction n with
++  | zero => intro i; unfold weight; split_ifs <;> norm_num
++  | succ n ih =>
++    intro i
++    rw [weight]
++    split_ifs
++    · exact projectWeight_le_one _ _ (ih (by omega)) _
++    · norm_num
++
++/-- One mask step retains exactly its passing fibre preimage mass. -/
++theorem weight_mass_succ (initial : Index 0 → Prop) (mask : Mask) (n : Fin 5) (S : Finset (Index (n+1))) :
++    consistencyMass (weight initial mask (n+1) (by omega)) S =
++      consistencyMass (weight initial mask n (by omega))
++        (Finset.univ.filter fun i => project n i ∈ S ∧ mask n (project n i))/(radix n:ℝ) := by
++  have hm : consistencyMass (weight initial mask (n+1) (by omega)) S =
++      consistencyMass (projectWeight n (weight initial mask n (by omega))) (S.filter (mask n)) := by
++    rw [weight_succ]
++    simp [consistencyMass,Finset.sum_filter]
++  rw [hm,projectWeight_mass]
++  simp only [Finset.mem_filter]
++
++/-- The exact source count is derived for the supplied masks, with no event-bound premise. -/
++theorem consistency_mass_exact (initial : Index 0 → Prop) (mask : Mask) : MassContract initial mask := by
++  intro n
++  induction n with
++  | zero =>
++    intro hn S
++    change (∑ i ∈ S, if initial i then (1:ℝ) else 0) * (2:ℝ)^0 =
++      ((Finset.univ.filter fun i => initial i ∧ naturalIndex 0 i ∈ S).card:ℝ)
++    simp only [pow_zero,mul_one,naturalIndex_zero]
++    have hs : (Finset.univ.filter fun i => initial i ∧ i ∈ S) = S.filter initial := by
++      ext i
++      simp only [Finset.mem_filter,Finset.mem_univ,true_and]
++      exact and_comm
++    rw [Finset.sum_boole,hs]
++  | succ n ih =>
++    intro hn S
++    let j : Fin 5 := ⟨n,by omega⟩
++    have hfactor : (2:ℝ)^(stage (n+1)) = (radix j:ℝ)*(2:ℝ)^(stage n) := by
++      exact_mod_cast stage_factor j
++    rw [weight_mass_succ initial mask j,hfactor]
++    have h := ih (by omega) (Finset.univ.filter fun i =>
++      project j i ∈ S ∧ mask j (project j i))
++    have hset : (Finset.univ.filter fun i => sourceChecks initial mask n (by omega) i ∧
++        naturalIndex n i ∈ (Finset.univ.filter fun k => project j k ∈ S ∧ mask j (project j k))) =
++        (Finset.univ.filter fun i => sourceChecks initial mask (n+1) hn i ∧ naturalIndex (n+1) i ∈ S) := by
++      ext i
++      simp only [Finset.mem_filter,Finset.mem_univ,true_and,sourceChecks]
++      rw [project_naturalIndex]
++      dsimp [j]
++      tauto
++    rw [hset] at h
++    rw [←h]
++    have hr : (radix j:ℝ) ≠ 0 := by exact_mod_cast (radix_positive j).ne'
++    field_simp
++    rfl
++
++/-- Prefix checks are exactly the conjunction of the supplied round masks. -/
++theorem sourceChecks_iff_all (initial : Index 0 → Prop) (mask : Mask) (n : ℕ) (hn : n ≤ 5) (i : Index 0) :
++    sourceChecks initial mask n hn i ↔ initial i ∧ ∀ j : Fin n,
++      mask ⟨j,by omega⟩ (naturalIndex (j+1) i) := by
++  induction n with
++  | zero => simp [sourceChecks]
++  | succ n ih =>
++    rw [sourceChecks,Fin.forall_fin_succ',ih (by omega)]
++    tauto
++
++/-- Normalized mass of all currently consistent source trajectories. -/
++noncomputable def terminalFraction (initial : Index 0 → Prop) (mask : Mask) : ℝ :=
++  consistencyMass (weight initial mask 5 le_rfl) Finset.univ / (Fintype.card (Index 5):ℝ)
++
++/-- One uniform full natural source index survives with exactly the terminal mass fraction. -/
++theorem source_probability_exact (initial : Index 0 → Prop) (mask : Mask) :
++    uniformProb (Index 0) (sourceChecks initial mask 5 le_rfl) = terminalFraction initial mask := by
++  have h := consistency_mass_exact initial mask 5 le_rfl Finset.univ
++  simp only [Finset.mem_univ,and_true] at h
++  unfold uniformProb terminalFraction
++  rw [Nat.card_eq_fintype_card,Fintype.card_subtype,←h]
++  norm_num [Index,stage]
++  ring
++
++/-- One raw query checks the initial reduced-input equality and every later row equation. -/
++def rawSurvives (initial : Index 0 → Prop) (mask : Mask) (raw : Fin (2^17)) : Prop :=
++  initial (sourceIndex raw) ∧ ∀ n : Fin 5, mask n (runtimeIndex (n+1) raw)
++
++/-- The exact native consistency checks for a batch of full-source raw queries. -/
++def QueryAccepts (initial : Index 0 → Prop) (mask : Mask) (q : ℕ)
++    (raw : Fin q → Fin (2^17)) : Prop :=
++  (∀ a, initial (sourceIndex (raw a))) ∧
++    ∀ n : Fin 5, ∀ a, mask n (runtimeIndex (n+1) (raw a))
++
++/-- Batch checks are the conjunction of their full single-query paths. -/
++theorem QueryAccepts_iff_all (initial : Index 0 → Prop) (mask : Mask) (q : ℕ)
++    (raw : Fin q → Fin (2^17)) :
++    QueryAccepts initial mask q raw ↔ ∀ a, rawSurvives initial mask (raw a) := by
++  constructor
++  · rintro ⟨hi,hm⟩ a
++    exact ⟨hi a,fun n => hm n a⟩
++  · intro h
++    exact ⟨fun a => (h a).1,fun n a => (h a).2 n⟩
++
++/-- Exact runtime-to-natural predicate correspondence, including the initial equality. -/
++theorem rawSurvives_iff_sourceChecks (initial : Index 0 → Prop) (mask : Mask)
++    (raw : Fin (2^17)) :
++    rawSurvives initial mask raw ↔ sourceChecks initial mask 5 le_rfl (sourceIndex raw) := by
++  rw [sourceChecks_iff_all]
++  simp only [rawSurvives,runtimeIndex_eq_naturalIndex]
++
++/-- A uniform raw source query has exactly the same terminal consistency fraction. -/
++theorem raw_probability_exact (initial : Index 0 → Prop) (mask : Mask) :
++    uniformProb (Fin (2^17)) (rawSurvives initial mask) = terminalFraction initial mask := by
++  calc
++    _ = uniformProb (Fin (2^17)) (fun raw => sourceChecks initial mask 5 le_rfl (sourceEquiv raw)) :=
++      uniformProb_congr (rawSurvives_iff_sourceChecks initial mask)
++    _ = uniformProb (Index 0) (sourceChecks initial mask 5 le_rfl) :=
++      uniformProb_equiv sourceEquiv _
++    _ = _ := source_probability_exact initial mask
++
++/-- q shared coherent trajectories are independent only across full raw source coordinates. -/
++theorem coherent_query_exact (initial : Index 0 → Prop) (mask : Mask) (q : ℕ) :
++    uniformProb (Fin q → Fin (2^17)) (QueryAccepts initial mask q) =
++      (terminalFraction initial mask)^q := by
++  calc
++    _ = uniformProb (Fin q → Fin (2^17))
++        (fun raw => ∀ a, rawSurvives initial mask (raw a)) :=
++      uniformProb_congr (QueryAccepts_iff_all initial mask q)
++    _ = _ := by
++      rw [ArityEight.Schedule.uniformProb_all_coordinates q (rawSurvives initial mask),
++        raw_probability_exact]
++
++/-- The same concrete event under q fresh uniform actual BabyBear words,
++with the vendor canonical modulo bias retained exactly. -/
++theorem fresh_query_exact (initial : Index 0 → Prop) (mask : Mask) (q : ℕ) :
++    uniformProb (Fin q → BabyBearExt4.BabyBear)
++      (fun x => QueryAccepts initial mask q (fun a => BabyBearModuloSampling.sampleBits 17 (x a))) =
++      ((((BabyBearExt4.modulus-1:ℕ):ℝ)/BabyBearExt4.modulus * terminalFraction initial mask) +
++        (if rawSurvives initial mask 0 then 1/(BabyBearExt4.modulus:ℝ) else 0))^q := by
++  calc
++    _ = uniformProb (Fin q → BabyBearExt4.BabyBear)
++        (fun x => ∀ a, rawSurvives initial mask (BabyBearModuloSampling.sampleBits 17 (x a))) :=
++      uniformProb_congr (fun x => QueryAccepts_iff_all initial mask q _)
++    _ = _ := by
++      rw [BabyBearModuloSampling.fresh_bits_independent_exact 17 (by decide) q
++        (rawSurvives initial mask),raw_probability_exact]
++      rfl
++
++/-- Conservative actual fresh-base query law, retaining the initial equality and modulo bias. -/
++theorem fresh_query_bound (initial : Index 0 → Prop) (mask : Mask) (q : ℕ) :
++    uniformProb (Fin q → BabyBearExt4.BabyBear)
++      (fun x => QueryAccepts initial mask q (fun a => BabyBearModuloSampling.sampleBits 17 (x a))) ≤
++      ((((BabyBearExt4.modulus-1:ℕ):ℝ)/BabyBearExt4.modulus * terminalFraction initial mask) +
++        1/(BabyBearExt4.modulus:ℝ))^q := by
++  calc
++    _ = uniformProb (Fin q → BabyBearExt4.BabyBear)
++        (fun x => ∀ a, rawSurvives initial mask (BabyBearModuloSampling.sampleBits 17 (x a))) :=
++      uniformProb_congr (fun x => QueryAccepts_iff_all initial mask q _)
++    _ ≤ _ := BabyBearModuloSampling.fresh_bits_independent_bound 17 (by decide) q
++      (rawSurvives initial mask) (terminalFraction initial mask) (raw_probability_exact initial mask).le
++
++/-- The initial weights are exactly the carried-value/source-word equality indicator. -/
++theorem weight_zero (initial : Index 0 → Prop) (mask : Mask) :
++    weight initial mask 0 (by decide) = fun i => if initial i then 1 else 0 := rfl
++
++/-- Concrete supplied masks: the first four rounds pass and the final row must be zero. -/
++def finalZeroMask : Mask := fun n k => n.val < 4 ∨ k.val = 0
++
++/-- The actual full-source zero query passes these supplied masks. -/
++theorem final_zero_accepts : rawSurvives (fun _ => True) finalZeroMask 0 := by
++  refine ⟨trivial,?_⟩
++  intro n
++  fin_cases n <;> unfold finalZeroMask <;> decide
++
++/-- Raw bit 16 reaches natural terminal row one, which the same masks reject. -/
++theorem final_zero_rejects :
++    ¬rawSurvives (fun _ => True) finalZeroMask (⟨2^16,by decide⟩ : Fin (2^17)) := by
++  intro h
++  have hf := h.2 ⟨4,by decide⟩
++  have hn : ¬finalZeroMask ⟨4,by decide⟩
++      (runtimeIndex 5 (⟨2^16,by decide⟩ : Fin (2^17))) := by
++    unfold finalZeroMask
++    decide
++  exact hn hf
++
++/-- Statement-first inhabited counting premises include both actual-source acceptance poles. -/
++def PremisesInhabited : Prop := ∃ (initial : Index 0 → Prop) (mask : Mask),
++  MassContract initial mask ∧ rawSurvives initial mask 0 ∧
++    ¬rawSurvives initial mask (⟨2^16,by decide⟩ : Fin (2^17))
++
++theorem premises_inhabited : PremisesInhabited :=
++  ⟨fun _ => True,finalZeroMask,consistency_mass_exact _ _,final_zero_accepts,final_zero_rejects⟩
++
++/-- Teeth for the observed 38-query verifier: omitting the initial carried-value
++check accepts a batch that the complete consistency predicate rejects. -/
++theorem initial_omission_falsifier :
++    QueryAccepts (fun _ => True) (fun _ _ => True) 38 (fun _ => 0) ∧
++    ¬QueryAccepts (fun _ => False) (fun _ _ => True) 38 (fun _ => 0) := by
++  constructor
++  · exact ⟨fun _ => trivial,fun _ _ => trivial⟩
++  · intro h
++    exact h.1 0
++
++end Minidregg.Selvage.Ir2FriSchedule
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.weight_succ' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.weight_succ
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.projectWeight_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.projectWeight_mass
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.projectWeight_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.projectWeight_nonneg
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.projectWeight_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.projectWeight_le_one
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.weight_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.weight_nonneg
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.weight_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.weight_le_one
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.weight_mass_succ' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.weight_mass_succ
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.consistency_mass_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.consistency_mass_exact
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.sourceChecks_iff_all' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.sourceChecks_iff_all
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.source_probability_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.source_probability_exact
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.QueryAccepts_iff_all' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.QueryAccepts_iff_all
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.rawSurvives_iff_sourceChecks' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.rawSurvives_iff_sourceChecks
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.raw_probability_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.raw_probability_exact
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.coherent_query_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.coherent_query_exact
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.fresh_query_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.fresh_query_exact
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.fresh_query_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.fresh_query_bound
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.weight_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.weight_zero
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.final_zero_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.final_zero_accepts
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.final_zero_rejects' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.final_zero_rejects
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.premises_inhabited
++
++/-- info: 'Minidregg.Selvage.Ir2FriSchedule.initial_omission_falsifier' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2FriSchedule.initial_omission_falsifier
++
+diff --git a/Selvage/P3NativeFoldRows.lean b/Selvage/P3NativeFoldRows.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/P3NativeFoldRows.lean
+@@ -0,0 +1,188 @@
++/- Direct native barycentric-row to the existing binary folding semantics.
++The four-value final round and eight-value rounds use correlated powers of one
++scalar. Concrete node/fibre facts are explicit; no fold equality is assumed. -/
++import Theory.P3BarycentricInterpolation
++import Selvage.FoldingConsistencyWeights
++import Mathlib.Algebra.Polynomial.OfFn
++
++namespace Minidregg.Selvage.ArityEight
++open Polynomial
++open scoped BigOperators Classical
++noncomputable section
++variable {F : Type} [Field F] [DecidableEq F]
++variable {ι₀ ι₁ ι₂ ι₃ : Type} [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃]
++variable {dom₀ : ι₀ ↪ F} {dom₁ : ι₁ ↪ F} {dom₂ : ι₂ ↪ F} {dom₃ : ι₃ ↪ F}
++
++/-- The actual final native round uses arity four, hence beta then beta squared. -/
++def fold4 (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (f : ι₀ → F) (β : F) : ι₂ → F := fold D₁ (fold D₀ f β) (β^2)
++
++def components4 (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (f : ι₀ → F) : Fin 4 → ι₂ → F := parityFamily D₁ (parityFamily D₀ (fun _ : Fin 1 => f))
++
++omit [DecidableEq F] [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++theorem fold4_eq_curve (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (f : ι₀ → F) (β : F) : fold4 D₀ D₁ f β = curveWord (components4 D₀ D₁ f) β := by
++  ext i
++  simp [fold4,components4,parityFamily,curveWord,comb,Fin.sum_univ_succ,
++    Fin.append,Fin.addCases,Fin.castLT,fold,foldEven,foldOdd,div_eq_mul_inv]
++  ring
++
++omit [DecidableEq F] [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++theorem fold_selects_source (D : FoldingData F dom₀ dom₁) (f : ι₀ → F) (i : ι₀) :
++    fold D f (dom₀ i) (D.sq i) = f i := foldEven_add_mul_foldOdd D f i
++
++omit [DecidableEq F] [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++theorem fold4_selects_source (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (f : ι₀ → F) (i : ι₀) :
++    fold4 D₀ D₁ f (dom₀ i) (D₁.sq (D₀.sq i)) = f i := by
++  unfold fold4
++  rw [←D₀.domSq_sq,fold_selects_source,fold_selects_source]
++
++omit [DecidableEq F] [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++theorem fold8_selects_source (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (f : ι₀ → F) (i : ι₀) :
++    fold8 D₀ D₁ D₂ f (dom₀ i) (D₂.sq (D₁.sq (D₀.sq i))) = f i := by
++  have hx : (dom₀ i)^4 = dom₂ (D₁.sq (D₀.sq i)) := by
++    rw [D₁.domSq_sq,D₀.domSq_sq]
++    ring
++  unfold fold8
++  rw [hx,fold_selects_source]
++  exact fold4_selects_source D₀ D₁ f i
++
++omit [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++lemma coefficient_poly_eval {n : ℕ} (u : Fin (n+1) → F) (β : F) :
++    (ofFn (n+1) u).eval β = ∑ j, β^j.val*u j := by
++  rw [ofFn_eq_sum_monomial]
++  simp only [eval_finsetSum,eval_monomial]
++  apply Finset.sum_congr rfl
++  intro j _
++  ring
++
++omit [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++/-- Native four-value coset interpolation is exactly the existing two-fold
++operator when the source indices are the actual four-element square fibre. -/
++theorem native_eq_fold4 (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (xs : P3Barycentric.CosetNodes F 4) (idx : Fin 4 → ι₀) (k : ι₂)
++    (hnode : ∀ j, xs.nodes j = dom₀ (idx j))
++    (hfibre : ∀ j, D₁.sq (D₀.sq (idx j)) = k) (f : ι₀ → F) (β : F) :
++    P3Barycentric.native xs (fun j => f (idx j)) β = fold4 D₀ D₁ f β k := by
++  let p := ofFn 4 (fun j => components4 D₀ D₁ f j k)
++  have he : ∀ z, p.eval z = fold4 D₀ D₁ f z k := by
++    intro z
++    rw [fold4_eq_curve]
++    exact coefficient_poly_eval _ _
++  have hv : (fun j => f (idx j)) = fun j => p.eval (xs.nodes j) := by
++    funext j
++    rw [he,hnode,←hfibre j]
++    exact (fold4_selects_source D₀ D₁ f (idx j)).symm
++  rw [hv,P3Barycentric.native_of_polynomial xs p (ofFn_degree_lt _) β,he]
++
++omit [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++/-- Native eight-value interpolation matches all three existing folds with
++beta,beta²,beta⁴, including the native early return at any fibre point. -/
++theorem native_eq_fold8 (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (xs : P3Barycentric.CosetNodes F 8)
++    (idx : Fin 8 → ι₀) (k : ι₃) (hnode : ∀ j, xs.nodes j = dom₀ (idx j))
++    (hfibre : ∀ j, D₂.sq (D₁.sq (D₀.sq (idx j))) = k) (f : ι₀ → F) (β : F) :
++    P3Barycentric.native xs (fun j => f (idx j)) β = fold8 D₀ D₁ D₂ f β k := by
++  let p := ofFn 8 (fun j => components D₀ D₁ D₂ f j k)
++  have he : ∀ z, p.eval z = fold8 D₀ D₁ D₂ f z k := by
++    intro z
++    rw [fold8_eq_curve]
++    exact coefficient_poly_eval _ _
++  have hv : (fun j => f (idx j)) = fun j => p.eval (xs.nodes j) := by
++    funext j
++    rw [he,hnode,←hfibre j]
++    exact (fold8_selects_source D₀ D₁ D₂ f (idx j)).symm
++  rw [hv,P3Barycentric.native_of_polynomial xs p (ofFn_degree_lt _) β,he]
++
++omit [DecidableEq F] in
++theorem weighted_reconstruction4 (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (d : ℕ) (θ : ℝ) (weight : ι₀ → ℝ) (f : ι₀ → F)
++    (h : WeightedCorrelatedAgreement (reedSolomonCode dom₂ d) θ
++      (projectConsistency D₁ (projectConsistency D₀ weight)) (components4 D₀ D₁ f)) :
++    WeightedClose (reedSolomonCode dom₀ (4*d)) θ weight f := by
++  have h₁ := weighted_recompose_family D₁ _ _ h
++  have h₀ := weighted_recompose_family D₀ _ _ h₁
++  obtain ⟨S,hS,hw⟩ := h₀
++  obtain ⟨w,hwC,hwAg⟩ := hw 0
++  exact ⟨S,hS,w,by simpa only [show 2*(2*d)=4*d by omega] using hwC,hwAg⟩
++
++/-- The actual last arity-four/no-injection transition has curve degree three. -/
++theorem fold4_weighted_sound [Fintype F] [Nonempty ι₂]
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    {d : ℕ} (hd : 1 ≤ d) {θ : ℝ} (hθ : 0 < θ)
++    (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι₂:ℝ))
++    (weight : ι₀ → ℝ) (h1 : ∀ i, weight i ≤ 1) (f : ι₀ → F)
++    (hfar : ¬WeightedClose (reedSolomonCode dom₀ (4*d)) θ weight f) :
++    uniformProb F (fun β => WeightedClose (reedSolomonCode dom₂ d) θ
++      (projectConsistency D₁ (projectConsistency D₀ weight)) (fold4 D₀ D₁ f β)) ≤
++      ((3*Fintype.card ι₂:ℕ):ℝ)/Fintype.card F := by
++  have hf : ¬WeightedCorrelatedAgreement (reedSolomonCode dom₂ d) θ
++      (projectConsistency D₁ (projectConsistency D₀ weight)) (components4 D₀ D₁ f) :=
++    fun h => hfar (weighted_reconstruction4 D₀ D₁ d θ weight f h)
++  simpa only [←fold4_eq_curve] using curve_weighted_uniform_sound 3 (by decide) dom₂ hd hθ hrate
++    (projectConsistency D₁ (projectConsistency D₀ weight))
++    (projectConsistency_le_one D₁ _ (projectConsistency_le_one D₀ weight h1)) (components4 D₀ D₁ f) hf
++
++/-- The actual no-injection eight-value transition has curve degree seven. -/
++theorem fold8_weighted_sound [Fintype F] [Nonempty ι₃]
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    {d : ℕ} (hd : 1 ≤ d) {θ : ℝ} (hθ : 0 < θ)
++    (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι₃:ℝ))
++    (weight : ι₀ → ℝ) (h1 : ∀ i, weight i ≤ 1) (f : ι₀ → F)
++    (hfar : ¬WeightedClose (reedSolomonCode dom₀ (8*d)) θ weight f) :
++    uniformProb F (fun β => WeightedClose (reedSolomonCode dom₃ d) θ
++      (projectConsistency8 D₀ D₁ D₂ weight) (fold8 D₀ D₁ D₂ f β)) ≤
++      ((7*Fintype.card ι₃:ℕ):ℝ)/Fintype.card F := by
++  have hf : ¬WeightedCorrelatedAgreement (reedSolomonCode dom₃ d) θ
++      (projectConsistency8 D₀ D₁ D₂ weight) (components D₀ D₁ D₂ f) :=
++    fun h => hfar (weighted_reconstruction D₀ D₁ D₂ d θ weight f h)
++  simpa only [←fold8_eq_curve] using curve_weighted_uniform_sound 7 (by decide) dom₃ hd hθ hrate
++    (projectConsistency8 D₀ D₁ D₂ weight) (projectConsistency8_le_one D₀ D₁ D₂ weight h1)
++    (components D₀ D₁ D₂ f) hf
++
++end
++end Minidregg.Selvage.ArityEight
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold4_eq_curve' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold4_eq_curve
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold_selects_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold_selects_source
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold4_selects_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold4_selects_source
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_selects_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_selects_source
++
++/-- info: 'Minidregg.Selvage.ArityEight.coefficient_poly_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.coefficient_poly_eval
++
++/-- info: 'Minidregg.Selvage.ArityEight.native_eq_fold4' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.native_eq_fold4
++
++/-- info: 'Minidregg.Selvage.ArityEight.native_eq_fold8' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.native_eq_fold8
++
++/-- info: 'Minidregg.Selvage.ArityEight.weighted_reconstruction4' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.weighted_reconstruction4
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold4_weighted_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold4_weighted_sound
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_weighted_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_weighted_sound
++
+diff --git a/Selvage/Ir2FriCosetRows.lean b/Selvage/Ir2FriCosetRows.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriCosetRows.lean
+@@ -0,0 +1,123 @@
++/- The deployed IR2 FRI row points use the certified BabyBear roots, natural
++powers on the subgroup, and bit reversal within each packed row. The input
++PCS's separate multiplicative coset shift31 is not inserted into FRI nodes. -/
++import Selvage.P3NativeFoldRows
++import Selvage.BabyBearFoldingTower
++import Theory.BitReverseFriTransport
++import Mathlib.Data.BitVec
++
++namespace Minidregg.Selvage.Ir2Fri
++open BabyBearExt4
++open Minidregg.Theory.BitReverseFriTransport
++open scoped Classical
++noncomputable section
++
++/-- The actual bit-reversal permutation of row column indices. -/
++def reverseFin (a : ℕ) : Fin (2^a) ≃ Fin (2^a) :=
++  (BitVec.equivFin.toEquiv.symm.trans (reverseEquiv a)).trans BitVec.equivFin.toEquiv
++
++lemma reverseFin_value (a : ℕ) (i : Fin (2^a)) :
++    (reverseFin a i).val = reverseIndex a i.val := by
++  change (BitVec.ofFin i).reverse.toNat = (BitVec.ofNat a i.val).reverse.toNat
++  congr 2
++  apply BitVec.eq_of_toNat_eq
++  simp
++
++/-- Dropping h root bits has the exact certified repeated-squaring convention. -/
++theorem omega_power_drop (h a : ℕ) (ha : h+a ≤ 27) :
++    TwoAdic.omega (h+a)^(2^h) = TwoAdic.omega a := by
++  unfold TwoAdic.omega
++  rw [←pow_mul,←pow_add]
++  congr 2
++  omega
++
++/-- Exact native packed-row coset, for supported height and any log arity. -/
++def rowNodes (h a : ℕ) (ha : h+a ≤ 27) (row : Fin (2^h)) :
++    P3Barycentric.CosetNodes Ext4 (2^a) :=
++  P3Barycentric.reindex
++    (P3Barycentric.fromPrimitive (TwoAdic.omega a) (TwoAdic.omega_primitive a (by omega))
++      (by positivity) ((TwoAdic.omega (h+a))^(reverseIndex h row.val))
++      (pow_ne_zero _ (TwoAdic.omega_ne_zero (h+a) ha))
++      (by simpa only [Nat.cast_pow,Nat.cast_ofNat] using pow_ne_zero a MultiplicativeTower.two_ne_zero))
++    (reverseFin a)
++
++/-- This is the formula executed by two_adic_pcs.rs:243–250. -/
++theorem rowNodes_source (h a : ℕ) (ha : h+a ≤ 27) (row : Fin (2^h)) (j : Fin (2^a)) :
++    (rowNodes h a ha row).nodes j =
++      TwoAdic.omega (h+a)^(reverseIndex h row.val) *
++      TwoAdic.omega a^(reverseIndex a j.val) := by
++  change TwoAdic.omega (h+a)^(reverseIndex h row.val) * TwoAdic.omega a^(reverseFin a j).val = _
++  rw [reverseFin_value]
++
++/-- Native row columns are actual source-domain natural exponents. -/
++def rowSourceIndex (h a : ℕ) (row : Fin (2^h)) (j : Fin (2^a)) : Fin (2^(h+a)) :=
++  ⟨reverseIndex h row.val+2^h*reverseIndex a j.val,by
++    have hr := reverseIndex_lt h row.val
++    have hj := reverseIndex_lt a j.val
++    have hp : 0 < 2^h := by positivity
++    rw [pow_add]
++    nlinarith⟩
++
++/-- Source-domain membership is proved from roots; it is not a claim about
++numeric field labels or an arbitrary row-point convention. -/
++theorem rowNodes_sourceIndex (h a : ℕ) (ha : h+a ≤ 27)
++    (row : Fin (2^h)) (j : Fin (2^a)) :
++    (rowNodes h a ha row).nodes j = TwoAdic.omega (h+a)^(rowSourceIndex h a row j).val := by
++  rw [rowNodes_source,←omega_power_drop h a ha]
++  simp only [rowSourceIndex,pow_add,pow_mul]
++
++/-- The entire packed row projects onto the same actual parent exponent. -/
++theorem rowSourceIndex_parent (h a : ℕ) (row : Fin (2^h)) (j : Fin (2^a)) :
++    (rowSourceIndex h a row j).val % 2^h = reverseIndex h row.val := by
++  simp only [rowSourceIndex,Nat.add_mul_mod_self_left]
++  exact Nat.mod_eq_of_lt (reverseIndex_lt h row.val)
++
++/-- Source native folding is interpolation on these certified actual field
++nodes, with the explicit beta=node branch already proved. -/
++theorem row_native_correct (h a : ℕ) (ha : h+a ≤ 27) (row : Fin (2^h)) :
++    P3Barycentric.Correctness (rowNodes h a ha row) := P3Barycentric.correctness _
++
++/-- The input PCS uses the coset31 coordinate while FRI uses subgroup t.
++This function records that actual source substitution without conflating them. -/
++def inputPoint (h : ℕ) (index : Fin (2^h)) : Ext4 :=
++  (31:Ext4)*TwoAdic.omega h^(reverseIndex h index.val)
++
++/-- Exact evaluation substitution for an honest input polynomial on the
++subgroup coordinate used by FRI. -/
++theorem input_coset_substitution (h : ℕ) (index : Fin (2^h)) (p : Polynomial Ext4) :
++    p.eval (inputPoint h index) =
++      (p.comp (Polynomial.C (31:Ext4)*Polynomial.X)).eval
++        (TwoAdic.omega h^(reverseIndex h index.val)) := by
++  simp [inputPoint,Polynomial.eval_comp]
++
++end
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.reverseFin_value' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.reverseFin_value
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.omega_power_drop' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.omega_power_drop
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.rowNodes_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.rowNodes_source
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.rowNodes_sourceIndex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.rowNodes_sourceIndex
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.rowSourceIndex_parent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.rowSourceIndex_parent
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.row_native_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.row_native_correct
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.input_coset_substitution' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.input_coset_substitution
++
+diff --git a/Selvage/Ir2FriModel.lean b/Selvage/Ir2FriModel.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriModel.lean
+@@ -0,0 +1,235 @@
++/- The exact canonical query-template FRI schedule: four width-eight folds,
++then width-four, rate1/8, no lower-height injections and a constant terminal.
++This is the mathematical event targeted by the fresh native admission adapter. -/
++import Selvage.Ir2FriCosetRows
++import Selvage.Ir2FriSchedule
++import Selvage.ConsistencyMask
++import Selvage.ArityEightConsistencySchedule
++
++namespace Minidregg.Selvage.Ir2Fri
++open BabyBearExt4 ArityEight Ir2FriSchedule
++open scoped BigOperators Classical
++noncomputable section
++set_option maxHeartbeats 1000000
++set_option maxRecDepth 100000
++
++/-- Existing root/tower machinery at the actual LDE size and total reduction. -/
++def tower : FoldingTower Ext4 (PowerTwoFriLevels 17) 14 :=
++  PowerTwoRootFolding.tower (TwoAdic.omega_primitive 17 (by decide))
++    MultiplicativeTower.two_ne_zero (by decide)
++
++def domain (n : ℕ) : Index n ↪ Ext4 := tower.dom (stage n)
++def degree (n : ℕ) : ℕ := 2^(14-stage n)
++
++/-- This adapter profile has no lower-height injected words. The base input
++is the alpha-reduced opening function on subgroup t (original coset point31t).
++Each committed FRI word is fixed by the prior beta prefix. -/
++structure Words where
++  input : Index 0 → Ext4
++  word : ∀ n, (Fin n → Ext4) → Index n → Ext4
++
++def Words.wordAt (s : Words) (r : Fin 5 → Ext4) (n : ℕ) (hn : n ≤ 5) : Index n → Ext4 :=
++  s.word n (friPrefix r n hn)
++
++/-- Native [3,3,3,3,2] correlated-power folding using existing FoldingData. -/
++def foldStep : (j : Fin 5) → (Index j → Ext4) → Ext4 → Index (j+1) → Ext4
++  | ⟨0,_⟩ => fun f β => fold8 (tower.data 0 (by decide)) (tower.data 1 (by decide)) (tower.data 2 (by decide)) f β
++  | ⟨1,_⟩ => fun f β => fold8 (tower.data 3 (by decide)) (tower.data 4 (by decide)) (tower.data 5 (by decide)) f β
++  | ⟨2,_⟩ => fun f β => fold8 (tower.data 6 (by decide)) (tower.data 7 (by decide)) (tower.data 8 (by decide)) f β
++  | ⟨3,_⟩ => fun f β => fold8 (tower.data 9 (by decide)) (tower.data 10 (by decide)) (tower.data 11 (by decide)) f β
++  | ⟨4,_⟩ => fun f β => fold4 (tower.data 12 (by decide)) (tower.data 13 (by decide)) f β
++  | ⟨n+5,h⟩ => False.elim (by omega)
++
++/-- The weight projection follows those same actual square fibres. -/
++def projectStep : (j : Fin 5) → (Index j → ℝ) → Index (j+1) → ℝ
++  | ⟨0,_⟩ => projectConsistency8 (tower.data 0 (by decide)) (tower.data 1 (by decide)) (tower.data 2 (by decide))
++  | ⟨1,_⟩ => projectConsistency8 (tower.data 3 (by decide)) (tower.data 4 (by decide)) (tower.data 5 (by decide))
++  | ⟨2,_⟩ => projectConsistency8 (tower.data 6 (by decide)) (tower.data 7 (by decide)) (tower.data 8 (by decide))
++  | ⟨3,_⟩ => projectConsistency8 (tower.data 9 (by decide)) (tower.data 10 (by decide)) (tower.data 11 (by decide))
++  | ⟨4,_⟩ => fun w => projectConsistency (tower.data 13 (by decide)) (projectConsistency (tower.data 12 (by decide)) w)
++  | ⟨n+5,h⟩ => False.elim (by omega)
++
++/-- Exact native polynomial-curve degree:7 for each width8,3 for width4. -/
++def curveDegree (j : Fin 5) : ℕ := if j.val < 4 then 7 else 3
++
++theorem degrees : [degree 0,degree 1,degree 2,degree 3,degree 4,degree 5] =
++    [16384,2048,256,32,4,1] := by decide
++
++theorem projectStep_le_one (j : Fin 5) (w : Index j → ℝ) (h : ∀ i, w i ≤ 1) :
++    ∀ i, projectStep j w i ≤ 1 := by
++  fin_cases j
++  · exact projectConsistency8_le_one _ _ _ _ h
++  · exact projectConsistency8_le_one _ _ _ _ h
++  · exact projectConsistency8_le_one _ _ _ _ h
++  · exact projectConsistency8_le_one _ _ _ _ h
++  · exact projectConsistency_le_one _ _ (projectConsistency_le_one _ _ h)
++
++/-- Every actual transition satisfies the weighted full-UD bound. All field,
++domain, arity and degree premises are discharged by the fixed native profile. -/
++theorem step_weighted_bound (j : Fin 5) {θ : ℝ} (hθ : 0 < θ) (hθmax : θ < 7/16)
++    (w : Index j → ℝ) (hw : ∀ i, w i ≤ 1) (f : Index j → Ext4)
++    (hfar : ¬WeightedClose (reedSolomonCode (domain j) (degree j)) θ w f) :
++    uniformProb Ext4 (fun β => WeightedClose (reedSolomonCode (domain (j+1)) (degree (j+1))) θ
++      (projectStep j w) (foldStep j f β)) ≤
++      ((curveDegree j*Fintype.card (Index (j+1)):ℕ):ℝ)/Fintype.card Ext4 := by
++  have hr : ∀ j : Fin 5, (degree (j+1):ℝ) < (1-2*θ)*(Fintype.card (Index (j+1)):ℝ) := by
++    intro j
++    fin_cases j <;> norm_num [degree,Index,stage] <;> linarith
++  fin_cases j
++  · exact fold8_weighted_sound (tower.data 0 (by decide)) (tower.data 1 (by decide)) (tower.data 2 (by decide)) (by decide) hθ (hr 0) w hw f hfar
++  · exact fold8_weighted_sound (tower.data 3 (by decide)) (tower.data 4 (by decide)) (tower.data 5 (by decide)) (by decide) hθ (hr 1) w hw f hfar
++  · exact fold8_weighted_sound (tower.data 6 (by decide)) (tower.data 7 (by decide)) (tower.data 8 (by decide)) (by decide) hθ (hr 2) w hw f hfar
++  · exact fold8_weighted_sound (tower.data 9 (by decide)) (tower.data 10 (by decide)) (tower.data 11 (by decide)) (by decide) hθ (hr 3) w hw f hfar
++  · exact fold4_weighted_sound (tower.data 12 (by decide)) (tower.data 13 (by decide)) (by decide) hθ (hr 4) w hw f hfar
++
++/-- The initial mask is required by the native carried-input equality, even
++before the first folding challenge. -/
++def initialMask (s : Words) (i : Index 0) : Prop := s.word 0 (fun i => i.elim0) i = s.input i
++
++def prefixWeight (s : Words) : (n : ℕ) → n ≤ 5 → (Fin n → Ext4) → Index n → ℝ
++  | 0, _, p => maskConsistency (fun _ => 1) (s.word 0 p) s.input
++  | n+1, hn, p =>
++    let j : Fin 5 := ⟨n,by omega⟩
++    let prior : Fin n → Ext4 := fun i => p i.castSucc
++    maskConsistency (projectStep j (prefixWeight s n (by omega) prior))
++      (s.word (n+1) p) (foldStep j (s.word n prior) (p (Fin.last n)))
++
++def weightAt (s : Words) (r : Fin 5 → Ext4) (n : ℕ) (hn : n ≤ 5) :=
++  prefixWeight s n hn (friPrefix r n hn)
++
++def blockAt (s : Words) (j : Fin 5) (r : Fin 5 → Ext4) :=
++  foldStep j (s.wordAt r j (by omega)) (r j)
++
++def BadRound (s : Words) (θ : ℝ) (j : Fin 5) (r : Fin 5 → Ext4) : Prop :=
++  ¬WeightedClose (reedSolomonCode (domain j) (degree j)) θ (weightAt s r j (by omega))
++      (s.wordAt r j (by omega)) ∧
++    WeightedClose (reedSolomonCode (domain (j+1)) (degree (j+1))) θ
++      (projectStep j (weightAt s r j (by omega))) (blockAt s j r)
++
++
++theorem prefixWeight_le_one (s : Words) (n : ℕ) (hn : n ≤ 5) (p : Fin n → Ext4) :
++    ∀ i, prefixWeight s n hn p i ≤ 1 := by
++  induction n with
++  | zero => exact maskConsistency_le_one _ (fun _ => le_rfl) _ _
++  | succ n ih =>
++    let j : Fin 5 := ⟨n,by omega⟩
++    exact maskConsistency_le_one _ (projectStep_le_one j _ (ih (by omega) (fun i => p i.castSucc))) _ _
++
++theorem weightAt_succ (s : Words) (r : Fin 5 → Ext4) (j : Fin 5) :
++    weightAt s r (j+1) (by omega) =
++      maskConsistency (projectStep j (weightAt s r j (by omega)))
++        (s.wordAt r (j+1) (by omega)) (blockAt s j r) := rfl
++
++/-- The round event is controlled by one fresh scalar conditioned on its prefix. -/
++theorem bad_round_bound (s : Words) {θ : ℝ} (hθ : 0 < θ) (hθmax : θ < 7/16) (j : Fin 5) :
++    uniformProb (Fin 5 → Ext4) (BadRound s θ j) ≤
++      ((curveDegree j*Fintype.card (Index (j+1)):ℕ):ℝ)/Fintype.card Ext4 := by
++  apply ArityEight.Schedule.prefix_challenge_bound j (fun p β =>
++    ¬WeightedClose (reedSolomonCode (domain j) (degree j)) θ
++      (prefixWeight s j (by omega) p) (s.word j p) ∧
++    WeightedClose (reedSolomonCode (domain (j+1)) (degree (j+1))) θ
++      (projectStep j (prefixWeight s j (by omega) p)) (foldStep j (s.word j p) β)) (by positivity)
++  intro p
++  by_cases hf : WeightedClose (reedSolomonCode (domain j) (degree j)) θ
++      (prefixWeight s j (by omega) p) (s.word j p)
++  · rw [uniformProb_false (fun _ h => h.1 hf)]
++    positivity
++  · exact le_trans (uniformProb_mono fun _ h => h.2)
++      (step_weighted_bound j hθ hθmax _ (prefixWeight_le_one s j (by omega) p) _ hf)
++
++/-- All five actual challenge errors are derived and summed; there is no
++injected coefficient in this single-height deployed profile. -/
++theorem bad_schedule_bound (s : Words) {θ : ℝ} (hθ : 0 < θ) (hθmax : θ < 7/16) :
++    uniformProb (Fin 5 → Ext4) (fun r => ∃ j, BadRound s θ j r) ≤
++      (131064:ℝ)/(modulus^4:ℕ) := by
++  have h := le_trans (uniformProb_exists_le (fun (j : Fin 5) r => BadRound s θ j r))
++    (Finset.sum_le_sum fun j _ => bad_round_bound s hθ hθmax j)
++  rw [ext4_card] at h
++  norm_num [curveDegree,Index,stage,Fin.sum_univ_succ] at h ⊢
++  convert h using 1
++  ring
++
++/-- The initial native input-equality mask transfers closeness back to the
++actual alpha-reduced input, so first-root farness is not an assumption. -/
++theorem weighted_invariant (s : Words) (θ : ℝ)
++    (hfar : ¬close θ (reedSolomonCode (domain 0) (degree 0)) s.input)
++    (r : Fin 5 → Ext4) (hgood : ¬∃ j, BadRound s θ j r) (n : ℕ) (hn : n ≤ 5) :
++    ¬WeightedClose (reedSolomonCode (domain n) (degree n)) θ
++      (weightAt s r n hn) (s.wordAt r n hn) := by
++  induction n with
++  | zero =>
++    intro h
++    apply hfar
++    exact weightedClose_one_to_close _ θ _ (weightedClose_mask_transfer _ θ _ _ _ h)
++  | succ n ih =>
++    intro h
++    let j : Fin 5 := ⟨n,by omega⟩
++    apply hgood
++    refine ⟨j,ih (by omega),?_⟩
++    rw [weightAt_succ s r j] at h
++    exact weightedClose_mask_transfer _ θ _ _ _ h
++
++/-- A one-coefficient native final polynomial supplies this exact condition. -/
++def Terminal (s : Words) (r : Fin 5 → Ext4) : Prop := ∃ c, ∀ i, s.wordAt r 5 le_rfl i = c
++
++theorem terminal_codeword (s : Words) (r : Fin 5 → Ext4) (h : Terminal s r) :
++    s.wordAt r 5 le_rfl ∈ reedSolomonCode (domain 5) (degree 5) := by
++  obtain ⟨c,hc⟩ := h
++  exact mem_reedSolomonCode_iff.mpr ⟨Polynomial.C c,by
++    have hd : (Polynomial.C c).degree ≤ 0 := Polynomial.degree_C_le
++    exact hd.trans_lt (by norm_num [degree,stage]),by simpa using hc⟩
++
++/-- The whole remaining query survival mass is small, including its required
++initial equality mask, whenever no derived challenge failure occurred. -/
++theorem terminal_mass (s : Words) (θ : ℝ)
++    (hfar : ¬close θ (reedSolomonCode (domain 0) (degree 0)) s.input)
++    (r : Fin 5 → Ext4) (hgood : ¬∃ j, BadRound s θ j r) (ht : Terminal s r) :
++    consistencyMass (weightAt s r 5 le_rfl) Finset.univ <
++      (1-θ)*(Fintype.card (Index 5):ℝ) := by
++  by_contra hn
++  exact weighted_invariant s θ hfar r hgood 5 le_rfl
++    (weightedClose_self_of_mass _ θ _ _ (terminal_codeword s r ht) (le_of_not_gt hn))
++
++end
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.degrees' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.degrees
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.projectStep_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.projectStep_le_one
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.step_weighted_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.step_weighted_bound
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.prefixWeight_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.prefixWeight_le_one
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.weightAt_succ' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.weightAt_succ
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.bad_round_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.bad_round_bound
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.bad_schedule_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.bad_schedule_bound
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.weighted_invariant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.weighted_invariant
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.terminal_codeword' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.terminal_codeword
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.terminal_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.terminal_mass
++
+diff --git a/Selvage/Ir2FriProjection.lean b/Selvage/Ir2FriProjection.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriProjection.lean
+@@ -0,0 +1,102 @@
++/- Exact identification of the actual folding tower's consistency projection
++with the replay's counted coherent-query maps. -/
++import Selvage.Ir2FriModel
++import Selvage.Ir2FriConsistency
++
++namespace Minidregg.Selvage.Ir2Fri
++open BabyBearExt4 ArityEight Ir2FriSchedule
++open scoped BigOperators Classical
++noncomputable section
++set_option maxRecDepth 100000
++
++/-- Existing certified FoldingData has the runtime's exact modulus. -/
++theorem square_val (n : ℕ) (hn : n < 14) (i : PowerTwoFriLevels 17 n) :
++    ((tower.data n hn).sq i).val = i.val % 2^(17-(n+1)) := rfl
++
++def squareStep : (j : Fin 5) → Index j → Index (j+1)
++  | ⟨0,_⟩ => fun i => (tower.data 2 (by decide)).sq ((tower.data 1 (by decide)).sq ((tower.data 0 (by decide)).sq i))
++  | ⟨1,_⟩ => fun i => (tower.data 5 (by decide)).sq ((tower.data 4 (by decide)).sq ((tower.data 3 (by decide)).sq i))
++  | ⟨2,_⟩ => fun i => (tower.data 8 (by decide)).sq ((tower.data 7 (by decide)).sq ((tower.data 6 (by decide)).sq i))
++  | ⟨3,_⟩ => fun i => (tower.data 11 (by decide)).sq ((tower.data 10 (by decide)).sq ((tower.data 9 (by decide)).sq i))
++  | ⟨4,_⟩ => fun i => (tower.data 13 (by decide)).sq ((tower.data 12 (by decide)).sq i)
++  | ⟨n+5,h⟩ => False.elim (by omega)
++
++/-- All actual square maps identify the same parent as the native coherent map. -/
++theorem squareStep_project (j : Fin 5) : squareStep j = project j := by
++  funext i
++  apply Fin.ext
++  fin_cases j
++  · change i.val % 65536 % 32768 % 16384 = i.val % 16384
++    rw [Nat.mod_mod_of_dvd _ (by decide : 32768 ∣ 65536),Nat.mod_mod_of_dvd _ (by decide : 16384 ∣ 32768)]
++  · change i.val % 8192 % 4096 % 2048 = i.val % 2048
++    rw [Nat.mod_mod_of_dvd _ (by decide : 4096 ∣ 8192),Nat.mod_mod_of_dvd _ (by decide : 2048 ∣ 4096)]
++  · change i.val % 1024 % 512 % 256 = i.val % 256
++    rw [Nat.mod_mod_of_dvd _ (by decide : 512 ∣ 1024),Nat.mod_mod_of_dvd _ (by decide : 256 ∣ 512)]
++  · change i.val % 128 % 64 % 32 = i.val % 32
++    rw [Nat.mod_mod_of_dvd _ (by decide : 64 ∣ 128),Nat.mod_mod_of_dvd _ (by decide : 32 ∣ 64)]
++  · change i.val % 16 % 8 = i.val % 8
++    rw [Nat.mod_mod_of_dvd _ (by decide : 8 ∣ 16)]
++
++/-- Projection mass is exactly the actual parent preimage mass divided by radix. -/
++theorem projectStep_mass (j : Fin 5) (w : Index j → ℝ) (S : Finset (Index (j+1))) :
++    consistencyMass (projectStep j w) S =
++      consistencyMass w (Finset.univ.filter fun i => squareStep j i ∈ S)/(radix j:ℝ) := by
++  fin_cases j <;> unfold projectStep
++  all_goals simp only [projectConsistency8]
++  all_goals repeat rw [projectConsistency_mass]
++  all_goals simp only [Finset.mem_filter,Finset.mem_univ,true_and]
++  all_goals dsimp [squareStep,radix,stage]
++  all_goals norm_num
++  all_goals ring_nf
++  all_goals rfl
++
++/-- The two retained constructions are the same function, not merely similar
++cardinality bounds. This lets the weighted invariant feed the actual sampler. -/
++theorem projectStep_eq_projectWeight (j : Fin 5) (w : Index j → ℝ) :
++    projectStep j w = projectWeight j w := by
++  funext k
++  have h := projectStep_mass j w {k}
++  rw [squareStep_project] at h
++  simpa [consistencyMass,projectWeight] using h
++
++/-- Exact native transition equalities, with the same initial reduced-input mask. -/
++def stepMasks (s : Words) (r : Fin 5 → Ext4) : Mask :=
++  fun j k => s.wordAt r (j+1) (by omega) k = blockAt s j r k
++
++/-- The mathematical prefix recurrence equals the exact counted mask recurrence. -/
++theorem weightAt_eq_counted (s : Words) (r : Fin 5 → Ext4) (n : ℕ) (hn : n ≤ 5) :
++    weightAt s r n hn = weight (initialMask s) (stepMasks s r) n hn := by
++  induction n with
++  | zero =>
++    have hp : friPrefix r 0 hn = (fun i => i.elim0) := Subsingleton.elim _ _
++    funext i
++    simp only [weightAt,prefixWeight,hp,weight,initialMask]
++    rfl
++  | succ n ih =>
++    let j : Fin 5 := ⟨n,by omega⟩
++    rw [weightAt_succ s r j,weight_succ (initialMask s) (stepMasks s r) j,ih (by omega),projectStep_eq_projectWeight]
++    rfl
++
++end
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.square_val' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.square_val
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.squareStep_project' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.squareStep_project
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.projectStep_mass' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.projectStep_mass
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.projectStep_eq_projectWeight' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.projectStep_eq_projectWeight
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.weightAt_eq_counted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.weightAt_eq_counted
++
+diff --git a/Selvage/Ir2FriNativeRows.lean b/Selvage/Ir2FriNativeRows.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriNativeRows.lean
+@@ -0,0 +1,200 @@
++/- Actual packed native rows equal the IR2 mathematical folding steps.
++Node and fibre premises are derived from the certified tower and actual row maps. -/
++import Selvage.Ir2FriProjection
++
++namespace Minidregg.Selvage.Ir2Fri
++open BabyBearExt4 ArityEight Ir2FriSchedule
++open Minidregg.Theory.BitReverseFriTransport
++open scoped BigOperators Classical
++noncomputable section
++set_option maxHeartbeats 1000000
++set_option maxRecDepth 100000
++
++/-- Every current domain has the native repeated-squaring root convention. -/
++theorem native_domain_source (n : ℕ) (i : Index n) :
++    domain n i = TwoAdic.omega (17-stage n)^i.val := by
++  have hs : stage n + (17-stage n) = 17 := by
++    have h := stage_le n
++    omega
++  have h := omega_power_drop (stage n) (17-stage n) (by omega)
++  rw [hs] at h
++  change (TwoAdic.omega 17^(2^(stage n)))^i.val = _
++  rw [h]
++
++/-- Parent-row logheight in the actual packed native matrix. -/
++def nativeRowHeight (j : Fin 5) : ℕ := 17-stage (j+1)
++
++/-- The observed row logarity, including the final arity-four round. -/
++def nativeLogArity (j : Fin 5) : ℕ := stage (j+1)-stage j
++
++theorem native_height_add (j : Fin 5) : nativeRowHeight j + nativeLogArity j = 17-stage j := by
++  unfold nativeRowHeight nativeLogArity
++  have h := stage_monotone (show j.val ≤ j.val+1 by omega)
++  have h' := stage_le (j+1)
++  omega
++
++/-- The rowNodes constructor's root-height premise is discharged for all five actual rounds. -/
++theorem native_height_supported (j : Fin 5) : nativeRowHeight j + nativeLogArity j ≤ 27 := by
++  rw [native_height_add]
++  omega
++
++/-- The existing native coset-node construction at this actual stage and parent row. -/
++def nativeRowNodes (j : Fin 5) (row : Index (j+1)) :
++    P3Barycentric.CosetNodes Ext4 (radix j) :=
++  rowNodes (nativeRowHeight j) (nativeLogArity j) (native_height_supported j) row
++
++/-- The existing packed-row source indices, transported only by the proved height identity. -/
++def nativeRowSourceIndex (j : Fin 5) (row : Index (j+1)) (c : Fin (radix j)) : Index j :=
++  Fin.cast (congrArg (fun n : ℕ => 2^n) (native_height_add j))
++    (rowSourceIndex (nativeRowHeight j) (nativeLogArity j) row c)
++
++/-- Native parent row number in natural exponent order. -/
++def nativeParentIndex (j : Fin 5) (row : Index (j+1)) : Index (j+1) :=
++  ⟨reverseIndex (nativeRowHeight j) row.val,reverseIndex_lt _ _⟩
++
++/-- Source indexing is exactly the existing bit-reversed row-column construction. -/
++theorem nativeRowSourceIndex_value (j : Fin 5) (row : Index (j+1)) (c : Fin (radix j)) :
++    (nativeRowSourceIndex j row c).val =
++      (rowSourceIndex (nativeRowHeight j) (nativeLogArity j) row c).val := rfl
++
++/-- Actual native row nodes are actual source-domain points, not a desired fold-equality premise. -/
++theorem nativeRowNodes_domain (j : Fin 5) (row : Index (j+1)) (c : Fin (radix j)) :
++    (nativeRowNodes j row).nodes c = domain j (nativeRowSourceIndex j row c) := by
++  rw [native_domain_source,nativeRowSourceIndex_value]
++  change (rowNodes (nativeRowHeight j) (nativeLogArity j) (native_height_supported j) row).nodes c = _
++  rw [rowNodes_sourceIndex]
++  exact congrArg (fun x : Ext4 => x^(rowSourceIndex (nativeRowHeight j)
++    (nativeLogArity j) row c).val) (congrArg TwoAdic.omega (native_height_add j))
++
++/-- Every actual row source position has the same concrete projected parent. -/
++theorem nativeRowSourceIndex_project (j : Fin 5) (row : Index (j+1)) (c : Fin (radix j)) :
++    project j (nativeRowSourceIndex j row c) = nativeParentIndex j row := by
++  apply Fin.ext
++  exact rowSourceIndex_parent (nativeRowHeight j) (nativeLogArity j) row c
++
++/-- Statement-first native interpolation/fold-step interface on every actual row. -/
++def NativeFoldContract : Prop := ∀ (j : Fin 5) (row : Index (j+1))
++    (f : Index j → Ext4) (β : Ext4),
++  P3Barycentric.native (nativeRowNodes j row) (fun c => f (nativeRowSourceIndex j row c)) β =
++    foldStep j f β (nativeParentIndex j row)
++
++/-- The actual binary folding composition has the native row's exact parent exponent. -/
++theorem nativeRowSourceIndex_squareStep (j : Fin 5) (row : Index (j+1)) (c : Fin (radix j)) :
++    squareStep j (nativeRowSourceIndex j row c) = nativeParentIndex j row := by
++  rw [squareStep_project]
++  exact nativeRowSourceIndex_project j row c
++
++/-- Native interpolation is the existing foldStep at every actual parent row.
++The node and fibre hypotheses of native_eq_fold8/4 are discharged above. -/
++theorem native_eq_foldStep : NativeFoldContract := by
++  intro j row f β
++  fin_cases j
++  · exact native_eq_fold8 (tower.data 0 (by decide)) (tower.data 1 (by decide))
++      (tower.data 2 (by decide)) (nativeRowNodes 0 row) (nativeRowSourceIndex 0 row)
++      (nativeParentIndex 0 row) (nativeRowNodes_domain 0 row)
++      (nativeRowSourceIndex_squareStep 0 row) f β
++  · exact native_eq_fold8 (tower.data 3 (by decide)) (tower.data 4 (by decide))
++      (tower.data 5 (by decide)) (nativeRowNodes 1 row) (nativeRowSourceIndex 1 row)
++      (nativeParentIndex 1 row) (nativeRowNodes_domain 1 row)
++      (nativeRowSourceIndex_squareStep 1 row) f β
++  · exact native_eq_fold8 (tower.data 6 (by decide)) (tower.data 7 (by decide))
++      (tower.data 8 (by decide)) (nativeRowNodes 2 row) (nativeRowSourceIndex 2 row)
++      (nativeParentIndex 2 row) (nativeRowNodes_domain 2 row)
++      (nativeRowSourceIndex_squareStep 2 row) f β
++  · exact native_eq_fold8 (tower.data 9 (by decide)) (tower.data 10 (by decide))
++      (tower.data 11 (by decide)) (nativeRowNodes 3 row) (nativeRowSourceIndex 3 row)
++      (nativeParentIndex 3 row) (nativeRowNodes_domain 3 row)
++      (nativeRowSourceIndex_squareStep 3 row) f β
++  · exact native_eq_fold4 (tower.data 12 (by decide)) (tower.data 13 (by decide))
++      (nativeRowNodes 4 row) (nativeRowSourceIndex 4 row) (nativeParentIndex 4 row)
++      (nativeRowNodes_domain 4 row) (nativeRowSourceIndex_squareStep 4 row) f β
++
++/-- The actual row node/fibre premises and the resulting equality contract are inhabited together. -/
++theorem native_premises_inhabited : ∃ (j : Fin 5) (row : Index (j+1)),
++    (∀ c, (nativeRowNodes j row).nodes c = domain j (nativeRowSourceIndex j row c)) ∧
++    (∀ c, squareStep j (nativeRowSourceIndex j row c) = nativeParentIndex j row) ∧
++    NativeFoldContract :=
++  ⟨4,0,nativeRowNodes_domain 4 0,nativeRowSourceIndex_squareStep 4 0,native_eq_foldStep⟩
++
++/-- A nonconstant actual-domain word is evaluated as X on every native row. -/
++theorem native_linear_value (j : Fin 5) (row : Index (j+1)) (β : Ext4) :
++    P3Barycentric.native (nativeRowNodes j row)
++      (fun c => domain j (nativeRowSourceIndex j row c)) β = β := by
++  have hr : 1 < radix j := by
++    rw [radix_exact]
++    split_ifs <;> decide
++  have hp : (Polynomial.X : Polynomial Ext4).degree < radix j := by
++    rw [Polynomial.degree_X]
++    exact_mod_cast hr
++  have hword : (fun c => domain j (nativeRowSourceIndex j row c)) =
++      (fun c => (Polynomial.X : Polynomial Ext4).eval ((nativeRowNodes j row).nodes c)) := by
++    funext c
++    simpa only [Polynomial.eval_X] using (nativeRowNodes_domain j row c).symm
++  rw [hword,P3Barycentric.native_of_polynomial _ _ hp]
++  simp
++
++/-- The equality contract fires on the same nonconstant word at every scalar. -/
++theorem foldStep_linear_value (j : Fin 5) (row : Index (j+1)) (β : Ext4) :
++    foldStep j (domain j) β (nativeParentIndex j row) = β := by
++  rw [←native_eq_foldStep j row (domain j) β,native_linear_value]
++
++/-- Teeth: a scalar-ignoring native row cannot satisfy the proved actual-row contract. -/
++theorem native_scalar_falsifier (j : Fin 5) (row : Index (j+1)) :
++    P3Barycentric.native (nativeRowNodes j row)
++        (fun c => domain j (nativeRowSourceIndex j row c)) 0 ≠
++      P3Barycentric.native (nativeRowNodes j row)
++        (fun c => domain j (nativeRowSourceIndex j row c)) 1 := by
++  rw [native_linear_value,native_linear_value]
++  exact zero_ne_one
++
++end
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_domain_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_domain_source
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_height_add' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_height_add
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_height_supported' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_height_supported
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_value
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.nativeRowNodes_domain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.nativeRowNodes_domain
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_project' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_project
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_squareStep' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.nativeRowSourceIndex_squareStep
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_eq_foldStep' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_eq_foldStep
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_premises_inhabited
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_linear_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_linear_value
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.foldStep_linear_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.foldStep_linear_value
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_scalar_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_scalar_falsifier
++
+diff --git a/Selvage/Ir2FriNativeEvent.lean b/Selvage/Ir2FriNativeEvent.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriNativeEvent.lean
+@@ -0,0 +1,114 @@
++/- Native query-event correspondence for the concrete IR2 schedule.
++Packed-root extraction remains an external input to these global Words. -/
++import Selvage.Ir2FriNativeRows
++
++namespace Minidregg.Selvage.Ir2Fri
++open BabyBearExt4 Ir2FriSchedule
++open scoped Classical
++noncomputable section
++
++/-- The parent row actually selected by shifting the full seventeen-bit raw query. -/
++def rawParentRow (j : Fin 5) (raw : Fin (2^17)) : Index (j+1) :=
++  ⟨raw.val / 2^(stage (j+1)),by
++    apply (Nat.div_lt_iff_lt_mul (by positivity : 0 < 2^(stage (j+1)))).mpr
++    rw [←pow_add]
++    have hs : 17-stage (j+1)+stage (j+1) = 17 := by
++      have h := stage_le (j+1)
++      omega
++    rw [hs]
++    exact raw.isLt⟩
++
++/-- The selected native parent coordinate is the existing coherent runtime index. -/
++theorem nativeParentIndex_rawParentRow (j : Fin 5) (raw : Fin (2^17)) :
++    nativeParentIndex j (rawParentRow j raw) = runtimeIndex (j+1) raw := rfl
++
++/-- Literal native interpolation query checks on the prefix-fixed global words.
++The initial equality is the native carried-input equality before the first fold. -/
++def NativeQueryAccepts (s : Words) (r : Fin 5 → Ext4) (q : ℕ)
++    (raw : Fin q → Fin (2^17)) : Prop :=
++  (∀ a, initialMask s (sourceIndex (raw a))) ∧
++  ∀ j : Fin 5, ∀ a,
++    s.wordAt r (j+1) (by omega) (nativeParentIndex j (rawParentRow j (raw a))) =
++      P3Barycentric.native (nativeRowNodes j (rawParentRow j (raw a)))
++        (fun c => s.wordAt r j (by omega) (nativeRowSourceIndex j (rawParentRow j (raw a)) c))
++        (r j)
++
++/-- Statement-first acceptance contract for the actual native row checks. -/
++def NativeQueryEventContract : Prop := ∀ (s : Words) (r : Fin 5 → Ext4) (q : ℕ)
++    (raw : Fin q → Fin (2^17)),
++  NativeQueryAccepts s r q raw ↔ QueryAccepts (initialMask s) (stepMasks s r) q raw
++
++/-- Native interpolation at the raw selected parent is the model's literal block. -/
++theorem native_raw_row_eq_block (s : Words) (r : Fin 5 → Ext4) (j : Fin 5)
++    (raw : Fin (2^17)) :
++    P3Barycentric.native (nativeRowNodes j (rawParentRow j raw))
++      (fun c => s.wordAt r j (by omega) (nativeRowSourceIndex j (rawParentRow j raw) c)) (r j) =
++      blockAt s j r (runtimeIndex (j+1) raw) := by
++  rw [native_eq_foldStep,nativeParentIndex_rawParentRow]
++  rfl
++
++/-- Exact event equivalence: the model's fold equality is no longer an adapter premise. -/
++theorem native_query_iff_counted : NativeQueryEventContract := by
++  intro s r q raw
++  unfold NativeQueryAccepts QueryAccepts stepMasks
++  simp only [native_raw_row_eq_block,nativeParentIndex_rawParentRow]
++
++/-- Actual global zero words provide a positive-query acceptance witness. -/
++def nativeEventZeroWords : Words where
++  input _ := 0
++  word _ _ _ := 0
++
++/-- The native predicate is satisfiable for arbitrary challenges and positive batch sizes. -/
++theorem native_event_zero_accepts (r : Fin 5 → Ext4) (q : ℕ) (raw : Fin q → Fin (2^17)) :
++    NativeQueryAccepts nativeEventZeroWords r q raw := by
++  refine ⟨fun _ => rfl,?_⟩
++  intro j a
++  change (0:Ext4) = P3Barycentric.native (nativeRowNodes j (rawParentRow j (raw a))) (fun _ => 0) (r j)
++  symm
++  simpa using P3Barycentric.native_of_polynomial (nativeRowNodes j (rawParentRow j (raw a)))
++    (0 : Polynomial Ext4) (by simp) (r j)
++
++/-- Different actual input values make the required carried-input check fail. -/
++def nativeEventMismatchedWords : Words where
++  input _ := 1
++  word _ _ _ := 0
++
++/-- Teeth: valid zero native interpolation rows cannot erase an input mismatch. -/
++theorem native_event_initial_falsifier (r : Fin 5 → Ext4) :
++    ¬NativeQueryAccepts nativeEventMismatchedWords r 38 (fun _ => 0) := by
++  intro h
++  have hzero : (0:Ext4) = 1 := h.1 0
++  exact zero_ne_one hzero
++
++/-- Native acceptance and the event contract are inhabited at the observed 38 queries. -/
++theorem native_event_premises_inhabited : ∃ (s : Words) (r : Fin 5 → Ext4)
++    (raw : Fin 38 → Fin (2^17)), NativeQueryAccepts s r 38 raw ∧ NativeQueryEventContract :=
++  ⟨nativeEventZeroWords,fun _ => 0,fun _ => 0,native_event_zero_accepts _ _ _,native_query_iff_counted⟩
++
++end
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.nativeParentIndex_rawParentRow' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.nativeParentIndex_rawParentRow
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_raw_row_eq_block' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_raw_row_eq_block
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_query_iff_counted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_query_iff_counted
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_event_zero_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_event_zero_accepts
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_event_initial_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_event_initial_falsifier
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_event_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_event_premises_inhabited
++
+diff --git a/Selvage/Ir2FriSoundness.lean b/Selvage/Ir2FriSoundness.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriSoundness.lean
+@@ -0,0 +1,147 @@
++/- Fresh-randomness proximity theorem for the observed IR2 FRI profile.
++This event retains initial input equality, four width-eight folds, one width-four
++fold, and the native one-coefficient terminal polynomial. -/
++import Selvage.Ir2FriProjection
++import Selvage.Ir2FriNativeEvent
++
++namespace Minidregg.Selvage.Ir2Fri
++open BabyBearExt4 Ir2FriSchedule
++open scoped Classical
++noncomputable section
++set_option maxRecDepth 100000
++
++/-- The exact scalar-word consistency event represented by the canonical packed
++row projection. Word extraction/binding and PCS batching are separate bridges. -/
++def Accepts (s : Words) (q : ℕ) (r : Fin 5 → Ext4) (raw : Fin q → Fin (2^17)) : Prop :=
++  Terminal s r ∧ QueryAccepts (initialMask s) (stepMasks s r) q raw
++
++/-- Native sample_bits(17) applied to fresh uniform actual BabyBear words.
++This definition does not identify a Fiat--Shamir sponge with fresh randomness. -/
++def FreshAccepts (s : Words) (q : ℕ) (r : Fin 5 → Ext4) (raw : Fin q → BabyBear) : Prop :=
++  Accepts s q r (fun a => BabyBearModuloSampling.sampleBits 17 (raw a))
++
++/-- The exact native modulo bias increases the ideal tail by at most θ/p. -/
++def queryTail (θ : ℝ) : ℝ :=
++  (((modulus-1:ℕ):ℝ)/(modulus:ℝ))*(1-θ)+1/(modulus:ℝ)
++
++/-- On a good challenge vector, all q coherent trajectories survive with this
++single cumulative tail; no independence between rounds is assumed. -/
++theorem fresh_tail (s : Words) (q : ℕ) {θ : ℝ} (hθmax : θ < 7/16)
++    (hfar : ¬close θ (reedSolomonCode (domain 0) (degree 0)) s.input)
++    (r : Fin 5 → Ext4) (hgood : ¬∃ j, BadRound s θ j r) :
++    uniformProb (Fin q → BabyBear) (FreshAccepts s q r) ≤ (queryTail θ)^q := by
++  have hremain : 0 ≤ 1-θ := by linarith
++  have htail : 0 ≤ queryTail θ := by unfold queryTail modulus; positivity
++  by_cases ht : Terminal s r
++  · have hm := terminal_mass s θ hfar r hgood ht
++    rw [weightAt_eq_counted] at hm
++    have hc : (0:ℝ) < Fintype.card (Index 5) := by norm_num [Index,stage]
++    have hf : terminalFraction (initialMask s) (stepMasks s r) ≤ 1-θ := by
++      exact ((div_lt_iff₀ hc).mpr hm).le
++    have hn : 0 ≤ terminalFraction (initialMask s) (stepMasks s r) := by
++      rw [←raw_probability_exact]
++      exact uniformProb_nonneg _
++    have hbase : 0 ≤ (((modulus-1:ℕ):ℝ)/(modulus:ℝ))*
++        terminalFraction (initialMask s) (stepMasks s r)+1/(modulus:ℝ) := by positivity
++    have hb : (((modulus-1:ℕ):ℝ)/(modulus:ℝ))*
++        terminalFraction (initialMask s) (stepMasks s r)+1/(modulus:ℝ) ≤ queryTail θ := by
++      unfold queryTail
++      have hc0 : 0 ≤ (((modulus-1:ℕ):ℝ)/(modulus:ℝ)) := by norm_num [modulus]
++      linarith [mul_le_mul_of_nonneg_left hf hc0]
++    exact le_trans (uniformProb_mono fun _ h => h.2)
++      ((fresh_query_bound (initialMask s) (stepMasks s r) q).trans
++        (pow_le_pow_left₀ hbase hb q))
++  · rw [uniformProb_false (fun _ h => ht h.1)]
++    exact pow_nonneg htail q
++
++/-- Source-degree 16384 on the actual order-131072 subgroup, with prefix-adaptive
++committed words, a constant terminal word, five independent Ext4 challenges,
++and 38 (or q) independent fresh base-field sample words. The initial word is
++the alpha-reduced PCS input, not the separately committed first FRI word. -/
++theorem fresh_sound (s : Words) (q : ℕ) {θ : ℝ} (hθ : 0 < θ) (hθmax : θ < 7/16)
++    (hfar : ¬close θ (reedSolomonCode (domain 0) (degree 0)) s.input) :
++    uniformProb ((Fin 5 → Ext4) × (Fin q → BabyBear))
++      (fun x => FreshAccepts s q x.1 x.2) ≤
++      (131064:ℝ)/(modulus^4:ℕ)+(queryTail θ)^q := by
++  let bad : (Fin 5 → Ext4) → Prop := fun r => ∃ j, BadRound s θ j r
++  have hb := bad_schedule_bound s hθ hθmax
++  have hremain : 0 ≤ 1-θ := by linarith
++  have ht : 0 ≤ queryTail θ := by unfold queryTail modulus; positivity
++  have hq : uniformProb ((Fin 5 → Ext4) × (Fin q → BabyBear))
++      (fun x => ¬bad x.1 ∧ FreshAccepts s q x.1 x.2) ≤ (queryTail θ)^q := by
++    apply uniformProb_prod_le (pow_nonneg ht q)
++    intro r
++    by_cases hbad : bad r
++    · rw [uniformProb_false (fun _ h => h.1 hbad)]
++      exact pow_nonneg ht q
++    · exact le_trans (uniformProb_mono fun _ h => h.2) (fresh_tail s q hθmax hfar r hbad)
++  have hsplit : uniformProb ((Fin 5 → Ext4) × (Fin q → BabyBear))
++      (fun x => FreshAccepts s q x.1 x.2) ≤
++      uniformProb ((Fin 5 → Ext4) × (Fin q → BabyBear)) (fun x => bad x.1)+
++      uniformProb ((Fin 5 → Ext4) × (Fin q → BabyBear))
++        (fun x => ¬bad x.1 ∧ FreshAccepts s q x.1 x.2) := by
++    refine le_trans (uniformProb_mono fun x hx => ?_) (uniformProb_or_le _ _)
++    by_cases hbad : bad x.1
++    · exact Or.inl hbad
++    · exact Or.inr ⟨hbad,hx⟩
++  rw [ArityEight.TwoRound.uniform_fst (B := Fin q → BabyBear) bad] at hsplit
++  change uniformProb (Fin 5 → Ext4) bad ≤ _ at hb
++  linarith
++
++/-- Concrete observed query count and a source-proximity radius strictly inside
++full unique decoding for the actual rate 1/8. No PoW or cryptographic term is credited. -/
++theorem fresh_38 (s : Words)
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) s.input) :
++    uniformProb ((Fin 5 → Ext4) × (Fin 38 → BabyBear))
++      (fun x => FreshAccepts s 38 x.1 x.2) ≤
++      (131064:ℝ)/(modulus^4:ℕ)+
++        ((((modulus-1:ℕ):ℝ)/(modulus:ℝ))*(3/5:ℝ)+1/(modulus:ℝ))^38 := by
++  convert fresh_sound s 38 (by norm_num : (0:ℝ)<2/5) (by norm_num : (2/5:ℝ)<7/16) hfar using 1
++  norm_num [queryTail]
++
++/-- Same final check written with the literal native P3 row interpolation kernel. -/
++def NativeFreshAccepts (s : Words) (q : ℕ) (r : Fin 5 → Ext4) (raw : Fin q → BabyBear) : Prop :=
++  Terminal s r ∧ NativeQueryAccepts s r q
++    (fun a => BabyBearModuloSampling.sampleBits 17 (raw a))
++
++/-- This equivalence is proved for arbitrary field values, rows and challenges;
++it is not inferred from the one successful runtime replay. -/
++theorem native_fresh_iff (s : Words) (q : ℕ) (r : Fin 5 → Ext4) (raw : Fin q → BabyBear) :
++    NativeFreshAccepts s q r raw ↔ FreshAccepts s q r raw := by
++  unfold NativeFreshAccepts FreshAccepts Accepts
++  rw [native_query_iff_counted]
++
++/-- The observed query count, actual native row kernel and actual biased fresh
++query-word law, conditional on an extracted far PCS input and prefix-fixed words. -/
++theorem native_fresh_38 (s : Words)
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) s.input) :
++    uniformProb ((Fin 5 → Ext4) × (Fin 38 → BabyBear))
++      (fun x => NativeFreshAccepts s 38 x.1 x.2) ≤
++      (131064:ℝ)/(modulus^4:ℕ)+
++        ((((modulus-1:ℕ):ℝ)/(modulus:ℝ))*(3/5:ℝ)+1/(modulus:ℝ))^38 := by
++  rw [uniformProb_congr (fun (x : (Fin 5 → Ext4) × (Fin 38 → BabyBear)) => native_fresh_iff s 38 x.1 x.2)]
++  exact fresh_38 s hfar
++
++end
++end Minidregg.Selvage.Ir2Fri
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.fresh_tail' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.fresh_tail
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.fresh_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.fresh_sound
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.fresh_38' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.fresh_38
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_fresh_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_fresh_iff
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.native_fresh_38' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.native_fresh_38
++
+diff --git a/Selvage/Ir2FriWitnesses.lean b/Selvage/Ir2FriWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/Ir2FriWitnesses.lean
+@@ -0,0 +1,172 @@
++/- Actual-carrier nonvacuity and initial-equality teeth for the IR2 profile. -/
++import Selvage.Ir2FriSoundness
++import Selvage.ArityEightTwoRoundWitnesses
++
++namespace Minidregg.Selvage.Ir2Fri.Witnesses
++open BabyBearExt4 Ir2FriSchedule Polynomial ArityEight
++open scoped Classical
++noncomputable section
++set_option maxRecDepth 100000
++
++/-- A source of degree exactly 16384, outside the actual degree-below-16384 code. -/
++def farWord : Index 0 → Ext4 := fun i => (domain 0 i)^16384
++
++theorem farWord_not_mem : farWord ∉ reedSolomonCode (domain 0) 16384 := by
++  intro hw
++  obtain ⟨p,hp,heval⟩ := mem_reedSolomonCode_iff.mp hw
++  have hne : (X^16384 : Polynomial Ext4) ≠ p := by
++    intro heq
++    rw [←heq] at hp
++    norm_num at hp
++  have hcard := card_agreeSet_lt_of_ne (domain 0) (d := 16385)
++    (p := (X^16384 : Polynomial Ext4)) (by norm_num) (q := p) (hp.trans (by norm_num)) hne
++  have hall : (Finset.univ.filter fun i =>
++      (X^16384 : Polynomial Ext4).eval (domain 0 i) = p.eval (domain 0 i)) = Finset.univ := by
++    apply Finset.filter_eq_self.mpr
++    intro i _
++    simpa [farWord] using heval i
++  rw [hall,Finset.card_univ] at hcard
++  norm_num [Index,stage] at hcard
++
++/-- The minimum-distance argument yields actual positive 2/5 source farness. -/
++theorem farWord_far : ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) farWord := by
++  rintro ⟨w,hw,hclose⟩
++  have hmem : farWord ∈ reedSolomonCode (domain 0) 16385 :=
++    mem_reedSolomonCode_iff.mpr ⟨X^16384,by norm_num,fun i => by simp [farWord]⟩
++  have hw' : w ∈ reedSolomonCode (domain 0) 16385 := by
++    obtain ⟨p,hp,heval⟩ := mem_reedSolomonCode_iff.mp hw
++    exact mem_reedSolomonCode_iff.mpr ⟨p,hp.trans (by norm_num [degree,stage]),heval⟩
++  have h := reedSolomonCode_minDist (domain 0) 16385 farWord hmem w hw'
++    (fun heq => farWord_not_mem (heq ▸ hw))
++  norm_num [Index,stage] at h
++  linarith
++
++/-- The separately committed FRI words are constant one. This is deliberately
++different from the far input; the initial native query check is the detector. -/
++def words : Words where
++  input := farWord
++  word _ _ := fun _ => 1
++
++theorem fold_one {F ι κ : Type*} [Field F] {dom : ι ↪ F} {domSq : κ ↪ F}
++    (D : FoldingData F dom domSq) (β : F) : fold D (fun _ => 1) β = fun _ => 1 := by
++  simpa using TwoRound.fold_even_power D 0 β
++
++theorem block_one (r : Fin 5 → Ext4) (j : Fin 5) : blockAt words j r = fun _ => 1 := by
++  fin_cases j
++  · simpa using TwoRound.fold8_power (Ir2Fri.tower.data 0 (by decide))
++      (Ir2Fri.tower.data 1 (by decide)) (Ir2Fri.tower.data 2 (by decide)) 0 (r 0)
++  · simpa using TwoRound.fold8_power (Ir2Fri.tower.data 3 (by decide))
++      (Ir2Fri.tower.data 4 (by decide)) (Ir2Fri.tower.data 5 (by decide)) 0 (r 1)
++  · simpa using TwoRound.fold8_power (Ir2Fri.tower.data 6 (by decide))
++      (Ir2Fri.tower.data 7 (by decide)) (Ir2Fri.tower.data 8 (by decide)) 0 (r 2)
++  · simpa using TwoRound.fold8_power (Ir2Fri.tower.data 9 (by decide))
++      (Ir2Fri.tower.data 10 (by decide)) (Ir2Fri.tower.data 11 (by decide)) 0 (r 3)
++  · change fold (Ir2Fri.tower.data 13 (by decide))
++      (fold (Ir2Fri.tower.data 12 (by decide)) (fun _ => 1) (r 4)) ((r 4)^2) = _
++    rw [fold_one (Ir2Fri.tower.data 12 (by decide)) (r 4)]
++    exact fold_one (Ir2Fri.tower.data 13 (by decide)) _
++
++/-- The terminal constant polynomial and all five native consistency transitions are inhabited. -/
++theorem terminal_and_steps (r : Fin 5 → Ext4) :
++    Terminal words r ∧ ∀ j k, stepMasks words r j k := by
++  refine ⟨⟨1,fun _ => rfl⟩,?_⟩
++  intro j k
++  unfold stepMasks
++  rw [block_one]
++  rfl
++
++theorem input_zero : farWord 0 = 1 := by
++  change ((PowerTwoRootFolding.levelRoot (TwoAdic.omega 17) 0)^0)^16384 = 1
++  simp
++
++theorem input_one : farWord 1 ≠ 1 := by
++  change ((PowerTwoRootFolding.levelRoot (TwoAdic.omega 17) 0)^1)^16384 ≠ 1
++  simpa [PowerTwoRootFolding.levelRoot] using
++    (TwoAdic.omega_primitive 17 (by decide)).pow_ne_one_of_pos_of_lt
++      (by decide : 16384 ≠ 0) (by decide : 16384 < 2^17)
++
++/-- This far-input strategy really accepts the all-zero 38-query sample. -/
++theorem zero_accepts (r : Fin 5 → Ext4) : FreshAccepts words 38 r (fun _ => 0) := by
++  refine ⟨(terminal_and_steps r).1,?_,fun j a => (terminal_and_steps r).2 j _⟩
++  intro a
++  have hz : sourceIndex (BabyBearModuloSampling.sampleBits 17 (0:BabyBear)) = 0 := by
++    apply Fin.ext
++    decide
++  rw [hz]
++  exact input_zero.symm
++
++/-- Raw bit16 is natural input coordinate one: the initial equality rejects it,
++even though every later fold and terminal equality passes. -/
++theorem initial_rejects (r : Fin 5 → Ext4) :
++    ¬FreshAccepts words 38 r (fun _ => (65536:BabyBear)) := by
++  intro h
++  have he := h.2.1 0
++  have ho : sourceIndex (BabyBearModuloSampling.sampleBits 17 (65536:BabyBear)) = 1 := by
++    apply Fin.ext
++    decide
++  rw [ho] at he
++  exact input_one he.symm
++
++/-- All proximity theorem premises are inhabited together with genuine
++accepting and rejecting native query vectors on the actual field and schedule. -/
++theorem premises_inhabited : ∃ s : Words,
++    ¬close (2/5:ℝ) (reedSolomonCode (domain 0) (degree 0)) s.input ∧
++    (∀ r, FreshAccepts s 38 r (fun _ => 0)) ∧
++    (∀ r, ¬FreshAccepts s 38 r (fun _ => (65536:BabyBear))) :=
++  ⟨words,farWord_far,zero_accepts,initial_rejects⟩
++
++/-- The actual 38-query theorem applies to the concrete far-input witness. -/
++theorem sound_fires :
++    uniformProb ((Fin 5 → Ext4) × (Fin 38 → BabyBear))
++      (fun x => FreshAccepts words 38 x.1 x.2) ≤
++      (131064:ℝ)/(modulus^4:ℕ)+
++        ((((modulus-1:ℕ):ℝ)/(modulus:ℝ))*(3/5:ℝ)+1/(modulus:ℝ))^38 :=
++  fresh_38 words farWord_far
++
++end
++end Minidregg.Selvage.Ir2Fri.Witnesses
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.farWord_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.farWord_not_mem
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.farWord_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.farWord_far
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.fold_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.fold_one
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.block_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.block_one
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.terminal_and_steps' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.terminal_and_steps
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.input_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.input_zero
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.input_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.input_one
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.zero_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.zero_accepts
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.initial_rejects' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.initial_rejects
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.premises_inhabited
++
++/-- info: 'Minidregg.Selvage.Ir2Fri.Witnesses.sound_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.Ir2Fri.Witnesses.sound_fires
++

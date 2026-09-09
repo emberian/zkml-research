@@ -1,0 +1,119 @@
+{
+  "claim_status": "[EXECUTED]",
+  "checks": [
+    {
+      "module": "Selvage.Ir2FriSchedule",
+      "source_sha256": "7bab7edc008c5a3d40cda2010a6ee4e604cd45f5547ab55fe45c4f1eaca2384c",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-query-sampling-20260908/.lake/build/lib/lean/Selvage/Ir2FriSchedule.olean",
+        "Selvage/Ir2FriSchedule.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-query-sampling-20260908",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_s": 4.958762884140015,
+      "source_unchanged": true,
+      "guarded_theorem_count": 16,
+      "axiom_union": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    },
+    {
+      "module": "Selvage.Ir2FriConsistency",
+      "source_sha256": "5ce076ca5dbe716cef88fb2282e601c3acc8df11943de5086737478315e8f60b",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-ir2-query-sampling-20260908/.lake/build/lib/lean/Selvage/Ir2FriConsistency.olean",
+        "Selvage/Ir2FriConsistency.lean"
+      ],
+      "cwd": "/tmp/minidregg-ir2-query-sampling-20260908",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_s": 5.064163684844971,
+      "source_unchanged": true,
+      "guarded_theorem_count": 21,
+      "axiom_union": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    }
+  ],
+  "import_boundary": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/tmp/minidregg-ir2-query-sampling-20260908",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  "forbidden_scan": {
+    "instrument": "Python regex over both complete frozen Lean source files",
+    "pattern": "\\b(?:sorry|native_decide)\\b|^\\s*axiom\\s",
+    "matches": []
+  },
+  "sources": [
+    {
+      "status": "[REPORTED]",
+      "source": "Parent replay task handoff in this session",
+      "observed": "Input logheight17, round logarities[3,3,3,3,2], stage drops[0,3,6,9,12,14], terminal logheight3,38queries; native carried_eval requires initial reducedInput=committedWord0 consistency check."
+    },
+    {
+      "status": "[SOURCE]",
+      "path": "/tmp/minidregg-ir2-query-sampling-20260908/Theory/BitReverseFriTransport.lean",
+      "sha256": "f546b123f49632cbe3284baa23c3f12943529f7c2b8231e87f7ac71b2c2399cf",
+      "declarations": [
+        {
+          "name": "query_transport",
+          "line": 46
+        },
+        {
+          "name": "reverseIndex",
+          "line": 18
+        },
+        {
+          "name": "reverseIndex_lt",
+          "line": 73
+        }
+      ],
+      "seen": "Definitions and Lean proof bodies."
+    },
+    {
+      "status": "[SOURCE]",
+      "path": "/tmp/minidregg-ir2-query-sampling-20260908/Selvage/BabyBearModuloSampling.lean",
+      "sha256": "be2f232546563c003f72b01ffa1cca76b3aecae9f9e08980dde55a7482201c73",
+      "declarations": [
+        {
+          "name": "sampleBits",
+          "line": 17
+        },
+        {
+          "name": "sampleBits_mask",
+          "line": 21
+        },
+        {
+          "name": "fresh_bits_independent_exact",
+          "line": 64
+        },
+        {
+          "name": "fresh_bits_independent_bound",
+          "line": 74
+        }
+      ],
+      "seen": "Definitions and Lean proof bodies."
+    }
+  ]
+}

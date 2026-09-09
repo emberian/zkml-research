@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-ir2-verifier-bridge-20260908/.lake/build/lib/lean/Selvage/Ir2FriModel.olean",
+    "Selvage/Ir2FriModel.lean"
+  ],
+  "cwd": "/tmp/minidregg-ir2-verifier-bridge-20260908",
+  "exit_code": 0,
+  "source_sha256": "492d82978b558fc17ed84fc3545252c6857b98b10a9c09806a8f3baeb4f82599",
+  "source_unchanged": true,
+  "elapsed_s": 12.67396879196167,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/ir2_verifier_bridge/checks/final-04.log"
+}
