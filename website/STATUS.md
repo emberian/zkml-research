@@ -4,4 +4,4 @@
 
 [EXECUTED] The latest companion microsite now explains the app, proof costs and teaching results in plain language. Its saved-session explorer uses shorter labels. The source measurements and downloadable run data are unchanged.
 
-[EXECUTED] The production build and JavaScript syntax checks pass. Publication follows this source commit; the last deployment record remains in `deployment.json` until replaced by the completed update.
+[EXECUTED] The production build and JavaScript syntax checks pass. Both GitHub Pages updates succeeded: research revision `18c5ae5` (run 34323847132) and microsite revision `fea2b72` (run 34323849178). Served pages and changed assets match the local files; `deployment.json` records the comparisons.

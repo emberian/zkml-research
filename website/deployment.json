@@ -1,74 +1,67 @@
 {
-  "scope": "Completed continuing learner, exact-field proof backend and packed-class lifecycle publication",
-  "utc": "2026-09-09T06:07:47.330144+00:00",
-  "source_revision": "a5268000a2b94cd3689f07c215eef64f67cd835d",
-  "research_site": {
-    "revision": "1a8f52b8a0b5b7442fc840d5d4f8622950f608da",
-    "url": "https://emberian.github.io/zkml-research/",
-    "workflow": 34317506900,
-    "workflow_conclusion": "success",
-    "cards": 18,
-    "source_excerpts": 40,
-    "checks": [
-      {
-        "url": "https://emberian.github.io/zkml-research/index.html",
-        "status": 200,
-        "bytes": 45666,
-        "sha256": "e10024ed25f55fac7f23def7559fcd520de942eeeb0fec000a0a4a9efe4edf33",
-        "matches_local": true
-      },
-      {
-        "url": "https://emberian.github.io/zkml-research/source-manifest.json",
-        "status": 200,
-        "bytes": 28106,
-        "sha256": "84b2837e1ee31800becb6c610a94c8a8b2f509824b035e704b1473126484a953",
-        "matches_local": true
-      },
-      {
-        "url": "https://emberian.github.io/zkml-research/build-manifest.json",
-        "status": 200,
-        "bytes": 577,
-        "sha256": "350713f5463641bd8656cc8d93d98f98bf6772bc20296e8f2e556e2a307cd305",
-        "matches_local": true
-      }
-    ]
-  },
-  "microsite": {
-    "revision": "3b03742651a5fbdeddb1c8eacc3065006af41f3b",
-    "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/",
-    "workflow": 34317558406,
-    "workflow_conclusion": "success",
-    "checks": [
-      {
-        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/index.html",
-        "status": 200,
-        "bytes": 21029,
-        "sha256": "2871de91e03eaf1ec483a15be29e901eea0fc7d82c2c798a82afc342d0ae802e",
-        "matches_local": true
-      },
-      {
-        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/essay.css",
-        "status": 200,
-        "bytes": 21210,
-        "sha256": "2f99162d79f1b517b9b8355b6a9026235235a5bb8a6eb376bfb0d58df1f56662",
-        "matches_local": true
-      },
-      {
-        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/record.js",
-        "status": 200,
-        "bytes": 10270,
-        "sha256": "0ae98236b5c0a5a8b42c76bc1f206042041e6f8d5783a4f4476c66a19f6ffad4",
-        "matches_local": true
-      },
-      {
-        "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/public-record.json",
-        "status": 200,
-        "bytes": 29903,
-        "sha256": "d80f2b280184f45deb2831501cf173c4d0b4e294537ebea6ccab3c89ccd44109",
-        "matches_local": true
-      }
-    ]
-  },
-  "instrument": "Python urllib.request GET; compare returned bytes with committed microsite files or the checked production build; GitHub CLI workflow status read. Native Chrome also opened the live microsite and rendered its actual record.",
+  "scope": "Plain-language rewrite of the research index and latest microsite",
+  "utc": "2026-09-09T07:28:17.812792+00:00",
+  "research_revision": "18c5ae5d01d463c2c5f8f9a8302ec1b981037792",
+  "research_workflow": 34323847132,
+  "microsite_revision": "fea2b72af0b97fba43f2c57cfb33f62a2777aa4c",
+  "microsite_workflow": 34323849178,
+  "workflow_conclusions": "success",
+  "instrument": "Python urllib.request GET and byte comparison; GitHub CLI workflow status",
+  "checks": [
+    {
+      "site": "research",
+      "file": "index.html",
+      "url": "https://emberian.github.io/zkml-research/index.html",
+      "status": 200,
+      "bytes": 33451,
+      "sha256": "c1adcafe36471fe584393747208e973a989c54753e34528b2256c7533b469f76",
+      "matches_local": true
+    },
+    {
+      "site": "research",
+      "file": "assets/app.js",
+      "url": "https://emberian.github.io/zkml-research/assets/app.js",
+      "status": 200,
+      "bytes": 2463,
+      "sha256": "a637ae3675c5ff66e6871c02204f1e3af08037c248e121eb6e4ca63f6016f52d",
+      "matches_local": true
+    },
+    {
+      "site": "research",
+      "file": "assets/style.css",
+      "url": "https://emberian.github.io/zkml-research/assets/style.css",
+      "status": 200,
+      "bytes": 17784,
+      "sha256": "a583403d4aab0c9dda5da54d0faf5001e54e2e46e04bdbbdf3ac55cd405ccdca",
+      "matches_local": true
+    },
+    {
+      "site": "research",
+      "file": "source-manifest.json",
+      "url": "https://emberian.github.io/zkml-research/source-manifest.json",
+      "status": 200,
+      "bytes": 26959,
+      "sha256": "00a3635f1b643e904743d7ec60d4def529c15af168cb21c2bdd0b4f61de7b218",
+      "matches_local": true
+    },
+    {
+      "site": "microsite",
+      "file": "index.html",
+      "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/index.html",
+      "status": 200,
+      "bytes": 16415,
+      "sha256": "95f191251ce44cf6dbb7c5da8948225e79dcc6ae8ef426731a87ff288641ac3d",
+      "matches_local": true
+    },
+    {
+      "site": "microsite",
+      "file": "record.js",
+      "url": "https://emberian.github.io/dregg-microsites/keep-the-next-example/record.js",
+      "status": 200,
+      "bytes": 9856,
+      "sha256": "8a397a3fd99b46779447f4f80d97b9b329cc6a84cb5b208ee8551a425ca3a5d5",
+      "matches_local": true
+    }
+  ],
   "ok": true
 }
