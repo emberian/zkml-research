@@ -328,11 +328,11 @@ end Limbs
 /-! ## Computed teeth -/
 
 -- Little-endian direction: `3 + 10*2 + 10^2*1 = 123`.
-#guard decide (denoteNat 10 [3, 2, 1] = 123)
+theorem denoteNat_little_endian : denoteNat 10 [3, 2, 1] = 123 := by decide
 
 -- Four bytes recover a concrete 32-bit word, least significant byte first.
-#guard decide (digitsLE 256 4 305419896 = [120, 86, 52, 18])
-#guard decide (denoteNat 256 [120, 86, 52, 18] = 305419896)
+theorem digitsLE_word : digitsLE 256 4 305419896 = [120, 86, 52, 18] := by decide
+theorem denoteNat_word : denoteNat 256 [120, 86, 52, 18] = 305419896 := by decide
 
 -- Range checks are load-bearing: without them positional notation aliases.
 example : denoteNat 16 [16, 0] = denoteNat 16 [0, 1] ∧
