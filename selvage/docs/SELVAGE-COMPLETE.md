@@ -115,8 +115,7 @@ One controller-game coin owns schedule and ledger. This closes **A**, not deploy
 positive height by `Tower256MerkleCardinalityCore.merklePcs_empty_of_positive` — a 256-bit
 cSHAKE root cannot injectively carry more than `2^256` words. Read it as a description of
 the shape, not as evidence: `Tower256AdditiveFriControllerAdmission` and
-`Tower256AdditiveFriActualReduction` are RETRACTED and carry their own machine-checked
-retraction. The live path is `Tower256AdditiveFriRawAdmission` /
+`Tower256AdditiveFriActualReduction` were RETRACTED and have been DELETED (2026-09-30). The live path is `Tower256AdditiveFriRawAdmission` /
 `Tower256AdditiveFriCanonicalExecutionGame` over `RawMerklePcs`.
 
 Open **P/D/B** obligations:
@@ -181,7 +180,7 @@ source alignment, semantic-to-finite claim/witness reindexing, roots/opened-colu
 actual unshifted semantic BCS reduction. PCS, commitment-binding, and ROM `Good` events share one
 history coin; private admission has only an `ofNotBad` constructor.
 
-⛑ **RETRACTED.** `SemanticHistoryTower256CheckpointGame`'s `JointGameFamily` joins the history
+⛑ **RETRACTED, then DELETED 2026-09-30** together with `Tower256MerkleBindingCardinality`, `SemanticHistoryTower256DeployedBcs` and `SemanticHistoryPcsEventRealization`. `SemanticHistoryTower256CheckpointGame`'s `JointGameFamily` joins the history
 and Tower256 additive predicates on one `Omega`, one `FailureLedger`, exact
 WARP-terminal/additive-initial root and schedule equalities, and one four-event union bound — **of
 a type that cannot exist.** `Tower256MerkleBindingCardinality.jointGameFamily_impossible` derives

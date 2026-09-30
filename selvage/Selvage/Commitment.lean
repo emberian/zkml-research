@@ -163,6 +163,25 @@ theorem BindingCommitment.commit_injective (S : BindingCommitment Root F ι Op) 
   S.opened_eq_committed (w := g) (oe := fun i => S.openAt f i)
     fun i => h ▸ S.verifyOpen_commit f i
 
+/-- **The scope of the type.**  `commit` injects the word space into `Root`,
+so a `BindingCommitment` exists only when `Root` is at least as large as the
+word space.  A short digest over a larger word space admits none: this is the
+same pigeonhole as `Tower256MerkleCardinalityCore.merklePcs_empty_of_positive`,
+one level up, and it is why the deployed Merkle root cannot be a
+`BindingCommitment` under any hash assumption.  Use `Theory.AuthMap` and
+`Selvage/AuthMapCommitment.lean`, whose binding is a reduction to an exhibited
+collision, for a compressing commitment. -/
+theorem BindingCommitment.card_le [Fintype Root] [Fintype (ι → F)]
+    (S : BindingCommitment Root F ι Op) :
+    Fintype.card (ι → F) ≤ Fintype.card Root :=
+  Fintype.card_le_of_injective _ S.commit_injective
+
+/-- No `BindingCommitment` exists at a root type smaller than the word space. -/
+theorem BindingCommitment.isEmpty_of_card_lt [Fintype Root] [Fintype (ι → F)]
+    (h : Fintype.card Root < Fintype.card (ι → F)) :
+    IsEmpty (BindingCommitment Root F ι Op) :=
+  ⟨fun S => absurd S.card_le (not_le.mpr h)⟩
+
 /-- The honest prover's side at a known root: if `rt` commits `w`, every
 position of `w` opens from `rt` — completeness transported along the root
 equation (consumed by `decider_open_complete`). -/
@@ -437,6 +456,13 @@ theorem equivocal_breaks_extract_bind :
       e ≠ w :=
   ⟨xWord, AccExample.oneWord, fun _ => (), rfl, fun _ => trivial, by decide⟩
 
+/-- **The type's scope, refuted pole.**  A root of two symbols over a word of
+four (`25 < 625`): no `BindingCommitment` exists, whatever `verifyOpen` is.
+`idealCommitment` (root = word, equal cardinality) is the satisfied pole. -/
+theorem no_bindingCommitment_compressing :
+    IsEmpty (BindingCommitment (Fin 2 → ZMod 5) (ZMod 5) (Fin 4) Unit) :=
+  BindingCommitment.isEmpty_of_card_lt (by simp [ZMod.card])
+
 end CommitExample
 
 /-! ## Residual obligation — prose, not a stub
@@ -444,8 +470,16 @@ end CommitExample
 Named residual with its realizer; it becomes a real theorem, never a
 `def : Prop := True` (the audit discipline).
 
-**[COMMIT-CR]** — the deployed scheme realizing `BindingCommitment`. In
-deployment `Root` is a short digest: `commit` Merkle-hashes the word with the
+**[COMMIT-CR] — cannot land in this type.**  `BindingCommitment.isEmpty_of_card_lt`:
+a `BindingCommitment` with a root smaller than its word space does not exist,
+so no hash assumption can realize one.  The compressing commitment is
+`Theory.AuthMap`, whose soundness is the reduction
+`Scheme.forgery_exhibits_collision`; `Selvage/AuthMapCommitment.lean` restates
+the seams below over it, and `Assurance/SelvageV0.lean`'s capstone consumes
+that form.  Everything in this file about `BindingCommitment` is a statement
+about non-compressing commitments (the identity scheme and injections into an
+unbounded root).  The paragraph below is the original residual, kept for
+the record of what was asked for.  In deployment `Root` is a short digest: `commit` Merkle-hashes the word with the
 stack's sponge (the same hash family `[FS-ROM]` idealizes for the transcript
 layer), `openAt` produces the authentication path, and `verifyOpen` re-hashes
 the leaf up the path and compares roots. Its `binding` field is a theorem ONLY
@@ -473,6 +507,9 @@ Merkle/sponge instance is priced, not assumed. The `t`-column erasure lift
   instance registered (the `Oracle.empty` pattern).
 * `word_binding`, `opened_eq_committed`, `commit_injective` — derived binding
   at the word level; the deep step of every seam.
+* `BindingCommitment.card_le` / `isEmpty_of_card_lt` — the type's scope: no
+  inhabitant at a root smaller than the word space
+  (`no_bindingCommitment_compressing`).
 * `committed_extract_bind` / `committed_fold_bind` — `[ACC-extract-bind]`
   (a) + (c) closed at the all-positions resolution; (b) stays upstream.
 * `decider_open_sound` / `decider_open_complete` — `[DEC-open]` closed at the
@@ -487,5 +524,14 @@ Merkle/sponge instance is priced, not assumed. The `t`-column erasure lift
   `Quot.sound`; the seam theorems (`committed_extract_bind`,
   `committed_fold_bind`, `decider_open_sound`) — `propext`, `Quot.sound`;
   keystones add `Classical.choice` (via `decide`'s `Decidable` instances). -/
+
+/-! ## Axiom pins for the scope theorems -/
+
+/-- info: 'Minidregg.Selvage.BindingCommitment.card_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms BindingCommitment.card_le
+/-- info: 'Minidregg.Selvage.BindingCommitment.isEmpty_of_card_lt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms BindingCommitment.isEmpty_of_card_lt
+/-- info: 'Minidregg.Selvage.CommitExample.no_bindingCommitment_compressing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms CommitExample.no_bindingCommitment_compressing
 
 end Minidregg.Selvage
