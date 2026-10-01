@@ -38,6 +38,17 @@ def isCompilerTrust (axiomName : Name) : Bool :=
   axiomName == ``Lean.ofReduceBool || axiomName == ``Lean.trustCompiler ||
     axiomName.components.any (· == `_native)
 
+/-- A `computed_fields` override: the compiled implementation Lean generates for
+an inductive with a `computed_field` (`Noun.mug`, N-MUG). It is a definition
+named `…._override` whose only non-standard axiom is `lcProof`, the compiler's
+own placeholder. Kernel-checked statements never reach it: a theorem about the
+inductive or its field depends on the kernel-side definitions, which carry no
+`lcProof` (a theorem that did reach it would be an offender). Like
+`native_decide`, this is compiler trust, counted and reported, never silent. -/
+def isComputedFieldOverride (info : ConstantInfo) (constant : Name) (outside : List Name) : Bool :=
+  info matches .defnInfo _ && constant.components.getLast? == some `_override &&
+    outside == [``lcProof]
+
 elab "#assert_axioms " id:ident : command => do
   let name ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo id
   let axioms ← liftCoreM <| collectAxioms name
@@ -59,6 +70,7 @@ elab "#assert_axioms_tree" : command => do
   let env ← getEnv
   let mut checked := 0
   let mut compiled := 0
+  let mut overrides := 0
   let mut offenders : Array (Name × List Name) := #[]
   for (constant, info) in env.constants.map₁.toList do
     if (packageModule? env constant).isNone then continue
@@ -70,9 +82,10 @@ elab "#assert_axioms_tree" : command => do
     let outside := axioms.toList.filter (fun axiomName => !standard.contains axiomName)
     if outside.isEmpty then continue
     if outside.all isCompilerTrust then compiled := compiled + 1
+    else if isComputedFieldOverride info constant outside then overrides := overrides + 1
     else offenders := offenders.push (constant, outside)
   unless offenders.isEmpty do
     throwError m!"#assert_axioms_tree: {offenders.size} package constants rest on axioms outside the standard three and the compiler trust (first 20): {offenders.toList.take 20}"
-  logInfo m!"#assert_axioms_tree: {checked} package constants; {compiled} rest on the compiler trust (native_decide); none on sorryAx or a declared axiom"
+  logInfo m!"#assert_axioms_tree: {checked} package constants; {compiled} rest on the compiler trust (native_decide); {overrides} are computed_fields overrides (lcProof, compiled code only); none on sorryAx or a declared axiom"
 
 end Minidregg.Theory.AssertAxioms
