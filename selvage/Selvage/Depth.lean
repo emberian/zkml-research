@@ -39,8 +39,8 @@ What lands here:
   fixing the coin past (`splitAtGame`), pinning the hit move (`hitBad_fibre_le`),
   and pushforward slicing (`uniformProb_pushforward_le`) over the kernel;
 * `OB2_depth_composition_nonneg_proved` — the repaired [OB-2′], **PROVED**
-  with no remaining seam: `OB2_nonneg_of_gameSlotBound` applied to the
-  discharged [OB-2a]. Axioms: `propext`, `Classical.choice`, `Quot.sound`.
+  with no remaining seam: the union bound over the fresh slots
+  (`freshBad_le`) and the game slots (`gameSlotBound_proved`). Axioms: `propext`, `Classical.choice`, `Quot.sound`.
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.BigOperators.Field
@@ -1930,33 +1930,6 @@ def GameSlotBound : Prop :=
       uniformProb ((Fin t → r.Chal) × (Fin r.k → r.Chal))
         (HitBad rbr Z δ P j) ≤ εrbr δ
 
-/-- **Thm B.4, assembled**: the repaired [OB-2′] holds given the game-slot
-bound [OB-2a]. Everything else is closed: Construction B.5 (`srExtract`),
-Claim B.6 (`exists_roundBad_of_event`), the fresh/log-hit attribution
-(`cover`), the fresh-slot bound (`freshBad_le`), and the
-`k · ε + t · ε = (t + k) · ε` union-bound arithmetic. -/
-theorem OB2_nonneg_of_gameSlotBound (H : GameSlotBound) :
-    OB2_depth_composition_nonneg := by
-  intro r rbr Z εrbr hnn hdom
-  refine ⟨fun s => srExtract rbr s, ?_⟩
-  intro s t δ hδ P
-  have hnnδ : 0 ≤ εrbr δ := hnn δ hδ
-  have hdomδ : ∀ (i : Fin r.k) (st : Stmt r), st ∈ Z →
-      rbr.err i st δ ≤ εrbr δ := fun i st hst => hdom i st hst δ hδ
-  refine le_trans (uniformProb_mono (cover rbr Z hδ P)) ?_
-  refine le_trans (uniformProb_or_le _ _) ?_
-  refine le_trans (add_le_add
-    (uniformProb_exists_le fun a => FreshBad rbr Z δ P a)
-    (uniformProb_exists_le fun j => HitBad rbr Z δ P j)) ?_
-  refine le_trans (add_le_add
-    (Finset.sum_le_sum fun a _ => freshBad_le rbr Z hδ hnnδ hdomδ P a)
-    (Finset.sum_le_sum fun j _ =>
-      H r rbr Z εrbr δ hδ hnnδ hdomδ s t P j)) ?_
-  rw [Finset.sum_const, Finset.sum_const, Finset.card_univ, Finset.card_univ,
-    Fintype.card_fin, Fintype.card_fin, nsmul_eq_mul, nsmul_eq_mul]
-  ring_nf
-  exact le_rfl
-
 /-- **[OB-2a] discharged: the game-slot bound holds.** Assembled from the
 split of the coin space at slot `j` (`splitAtGame`), the per-fibre bound
 (`hitBad_fibre_le`), and the general lazy-`rnd` resolver's uniformity kernel
@@ -1978,9 +1951,31 @@ theorem gameSlotBound_proved : GameSlotBound := by
     rw [srTrace_eq_runFrom, ofFn_splitGame_symm, runFrom_append, runFrom_cons]
 
 /-- **[OB-2′] holds**: the repaired loss-free depth composition (WARP
-2025/753, Thm B.4), fully discharged — no remaining seam. -/
-theorem OB2_depth_composition_nonneg_proved : OB2_depth_composition_nonneg :=
-  OB2_nonneg_of_gameSlotBound gameSlotBound_proved
+2025/753, Thm B.4), fully discharged — no remaining seam. Construction B.5
+(`srExtract`), Claim B.6 (`exists_roundBad_of_event`), the fresh/log-hit
+attribution (`cover`), the fresh-slot bound (`freshBad_le`), the game-slot
+bound (`gameSlotBound_proved`), and the `k · ε + t · ε = (t + k) · ε`
+union-bound arithmetic. -/
+theorem OB2_depth_composition_nonneg_proved : OB2_depth_composition_nonneg := by
+  intro r rbr Z εrbr hnn hdom
+  refine ⟨fun s => srExtract rbr s, ?_⟩
+  intro s t δ hδ P
+  have hnnδ : 0 ≤ εrbr δ := hnn δ hδ
+  have hdomδ : ∀ (i : Fin r.k) (st : Stmt r), st ∈ Z →
+      rbr.err i st δ ≤ εrbr δ := fun i st hst => hdom i st hst δ hδ
+  refine le_trans (uniformProb_mono (cover rbr Z hδ P)) ?_
+  refine le_trans (uniformProb_or_le _ _) ?_
+  refine le_trans (add_le_add
+    (uniformProb_exists_le fun a => FreshBad rbr Z δ P a)
+    (uniformProb_exists_le fun j => HitBad rbr Z δ P j)) ?_
+  refine le_trans (add_le_add
+    (Finset.sum_le_sum fun a _ => freshBad_le rbr Z hδ hnnδ hdomδ P a)
+    (Finset.sum_le_sum fun j _ =>
+      gameSlotBound_proved r rbr Z εrbr δ hδ hnnδ hdomδ s t P j)) ?_
+  rw [Finset.sum_const, Finset.sum_const, Finset.card_univ, Finset.card_univ,
+    Fintype.card_fin, Fintype.card_fin, nsmul_eq_mul, nsmul_eq_mul]
+  ring_nf
+  exact le_rfl
 
 /-! ## Ledger
 
@@ -2017,9 +2012,7 @@ theorem OB2_depth_composition_nonneg_proved : OB2_depth_composition_nonneg :=
   step-`j` move; the tested response is the fresh coin `c_j`), the kernel,
   and pushforward slicing. See `GameSlotBound`'s doc comment for the recorded
   gap diagnosis and its closure.
-* `OB2_nonneg_of_gameSlotBound` — **PROVED**: [OB-2a] ⟹ [OB-2′], with the
-  loss-free `(t + k) · ε_rbr(δ)` arithmetic.
 * `OB2_depth_composition_nonneg_proved` — **[OB-2′] PROVED, no remaining
-  seam**. `#print axioms`: `propext`, `Classical.choice`, `Quot.sound`. -/
+  seam**, with the loss-free `(t + k) · ε_rbr(δ)` arithmetic. `#print axioms`: `propext`, `Classical.choice`, `Quot.sound`. -/
 
 end Minidregg.Selvage

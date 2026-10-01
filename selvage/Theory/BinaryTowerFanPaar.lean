@@ -32,19 +32,19 @@ the level embedding, `FanPaarRecursion` the stated target).
   `fpGen_adjoin_zero` / `fpGen_adjoin_one` (x₀ generates GF(4), x₁ generates
   GF(16) — the generation clause at the bottom two levels).
 
-## Honest residuals (STATED, named, not proved)
+## Stated here, CLOSED in `Theory.BinaryTowerTrace`
 
 * **[BTOWER-fanpaar-basis]** `FanPaarTowerBasis` — fpGen k ∉ range(embed k) for
-  ALL k: X² + gₖ·X + 1 stays irreducible at every level (Wiedemann 1988's trace
-  induction Tr(xₖ) = 1). Proved here at k = 0, 1; the general chain is the ONE
-  residual from which everything else follows.
-* **[BTOWER-fanpaar-gen]** `FanPaarGeneration` — adjoin(fpGen k) = ⊤ for all k.
-  `fanPaarGeneration_of_towerBasis` REDUCES it to the basis residual (the
-  induction step `fpGen_adjoin_succ` is proved); with it,
-  `fanPaarRecursion_of_generation` DISCHARGES `FanPaarRecursion` outright.
+  ALL k: X² + gₖ·X + 1 stays irreducible at every level. Proved here at
+  k = 0, 1; for all k by Wiedemann's trace induction Tr(xₖ) = 1
+  (`fanPaarTowerBasis_holds`).
+* **[BTOWER-fanpaar-gen]** `FanPaarGeneration` — adjoin(fpGen k) = ⊤ for all k:
+  the induction step `fpGen_adjoin_succ` is proved here, and
+  `fanPaarGeneration_holds` runs the induction on the basis.
 * **[BTOWER-mult-full]** `TowerMulFull` — the packing is bijective at every
-  level (so the recursive multiply is total all the way down).
-  `towerMulFull_of_towerBasis` reduces this, too, to `FanPaarTowerBasis`.
+  level (so the recursive multiply is total all the way down):
+  `towerMulFull_holds`.
+* `FanPaarRecursion` itself: `fanPaarRecursion_holds`.
 
 Candidate-independent FIELD MATH — imports Mathlib + Theory only (boundary
 enforced by `scripts/check-import-boundary.sh`).
@@ -507,48 +507,32 @@ theorem fpGen_adjoin_one :
     Algebra.adjoin (ZMod 2) {fpGen 1} = (⊤ : Subalgebra (ZMod 2) (binaryTower 2)) :=
   fpGen_adjoin_succ fpGen_one_not_mem_range fpGen_adjoin_zero
 
-/-! ### Named residuals and the conditional discharge of FanPaarRecursion -/
+/-! ### The statements BinaryTowerTrace closes -/
 
-/-- **[BTOWER-fanpaar-basis] (RESIDUAL).** The tower-basis / irreducibility
-chain: EVERY Fan–Paar generator avoids the embedded previous level — i.e.
-X² + gₖ·X + 1 is irreducible over T_{k+1} at every level. TRUE (Wiedemann
-1988, by the trace induction Tr_{T_{k+1}}(xₖ) = 1); PROVED here at k = 0
-(`fpGen_zero_not_mem_range`) and k = 1 (`fpGen_one_not_mem_range`). This is
-the ONE remaining gap: both [BTOWER-fanpaar-gen] and [BTOWER-mult-full]
-reduce to it (theorems below). -/
+/-- **[BTOWER-fanpaar-basis].** The tower-basis / irreducibility chain: EVERY
+Fan–Paar generator avoids the embedded previous level — i.e. X² + gₖ·X + 1 is
+irreducible over T_{k+1} at every level. Proved here at k = 0
+(`fpGen_zero_not_mem_range`) and k = 1 (`fpGen_one_not_mem_range`); for all k
+in `Theory.BinaryTowerTrace` (`fanPaarTowerBasis_holds`, Wiedemann's trace
+induction Tr_{T_{k+1}}(xₖ) = 1). -/
 def FanPaarTowerBasis : Prop :=
   ∀ k, fpGen k ∉ (binaryTowerEmbed k).range
 
-/-- **[BTOWER-fanpaar-gen] (RESIDUAL).** The generation clause of
-`FanPaarRecursion` for the BUILT generator sequence: adjoin(fpGen k) = ⊤ at
-every level. PROVED at k = 0 (`fpGen_adjoin_zero`) and k = 1
-(`fpGen_adjoin_one`); reduced to [BTOWER-fanpaar-basis] in general
-(`fanPaarGeneration_of_towerBasis` — the induction step is proved). -/
+/-- **[BTOWER-fanpaar-gen].** The generation clause of `FanPaarRecursion` for
+the BUILT generator sequence: adjoin(fpGen k) = ⊤ at every level. Proved here at
+k = 0 (`fpGen_adjoin_zero`) and k = 1 (`fpGen_adjoin_one`); for all k in
+`Theory.BinaryTowerTrace` (`fanPaarGeneration_holds`). -/
 def FanPaarGeneration : Prop :=
   ∀ k, Algebra.adjoin (ZMod 2) {fpGen k} =
     (⊤ : Subalgebra (ZMod 2) (binaryTower (k + 1)))
 
-/-- **[BTOWER-mult-full] (RESIDUAL).** The packing is bijective at EVERY level:
+/-- **[BTOWER-mult-full].** The packing is bijective at EVERY level:
 T_{k+1} = T_k ⊕ T_k·fpGen k throughout the tower, so the recursive fast
-multiply is total all the way down. PROVED at k = 0, 1 (via
-`towerPack_bijective` + the two basis keystones); reduced to
-[BTOWER-fanpaar-basis] in general (`towerMulFull_of_towerBasis`). -/
+multiply is total all the way down. Proved at k = 0, 1 via
+`towerPack_bijective` and the two basis keystones; for all k in
+`Theory.BinaryTowerTrace` (`towerMulFull_holds`). -/
 def TowerMulFull : Prop :=
   ∀ k, Function.Bijective (towerPack k)
-
-/-- [BTOWER-fanpaar-gen] reduces to [BTOWER-fanpaar-basis]: given the
-irreducibility chain, generation follows by induction (base
-`fpGen_adjoin_zero`, step `fpGen_adjoin_succ`). -/
-theorem fanPaarGeneration_of_towerBasis (h : FanPaarTowerBasis) :
-    FanPaarGeneration := by
-  intro k
-  induction k with
-  | zero => exact fpGen_adjoin_zero
-  | succ k ih => exact fpGen_adjoin_succ (h (k + 1)) ih
-
-/-- [BTOWER-mult-full] reduces to [BTOWER-fanpaar-basis]. -/
-theorem towerMulFull_of_towerBasis (h : FanPaarTowerBasis) : TowerMulFull :=
-  fun k => towerPack_bijective (h k)
 
 /-- **The recursion relations of [BTOWER-fanpaar], DISCHARGED for all k**: a
 generator sequence satisfying the base and step clauses of
@@ -560,19 +544,5 @@ theorem fanPaar_relations :
       (∀ k, gen (k + 1) ^ 2 +
         binaryTowerEmbed (k + 1) (gen k) * gen (k + 1) + 1 = 0) :=
   ⟨fpGen, fpGen_base, fpGen_step⟩
-
-/-- **Conditional discharge of [BTOWER-fanpaar]**: `FanPaarRecursion` follows
-from the generation residual alone — the witness is `fpGen` with its proved
-relations. -/
-theorem fanPaarRecursion_of_generation (h : FanPaarGeneration) :
-    FanPaarRecursion :=
-  ⟨fpGen, fpGen_base, fpGen_step, h⟩
-
-/-- **Conditional discharge of [BTOWER-fanpaar] from the ONE sharp residual**:
-the irreducibility chain [BTOWER-fanpaar-basis] implies the full
-`FanPaarRecursion`. -/
-theorem fanPaarRecursion_of_towerBasis (h : FanPaarTowerBasis) :
-    FanPaarRecursion :=
-  fanPaarRecursion_of_generation (fanPaarGeneration_of_towerBasis h)
 
 end Minidregg.Theory

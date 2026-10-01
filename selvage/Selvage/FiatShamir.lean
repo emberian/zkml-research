@@ -53,18 +53,17 @@ What lands here:
   doing — `chalReduction`/`chalOutput`), `premise` (a base RBR reduction
   exists — Depth's `trivialReduction`/`trivialRbr`), `sound` (the statement).
   `fsOfRbrSound_iff_depth` proves the statement EQUIVALENT to the repaired
-  depth obligation [OB-2′], so `fsKeystone_of_gameSlotBound` assembles the
-  whole keystone from [OB-2a] (`GameSlotBound`, Selvage/Depth.lean) — nothing
-  new is assumed here. [OB-2a] is now DISCHARGED upstream
-  (`gameSlotBound_proved`), so the keystone holds unconditionally:
-  `fsKeystone_proved`.
+  depth obligation [OB-2′], which Selvage/Depth.lean proves
+  (`OB2_depth_composition_nonneg_proved`, discharging [OB-2a] by
+  `gameSlotBound_proved`), so the keystone holds unconditionally:
+  `fsKeystone_proved`. Nothing new is assumed here.
 
 ## Residual ledger (honest, named — no `sorry`, no `True` stubs)
 * **[OB-2a] inherited — now CLOSED upstream**: `FsOfRbrSound` is proved ⇔
-  [OB-2′] (`fsOfRbrSound_iff_depth`), [OB-2′] is proved from `GameSlotBound`
-  (Selvage/Depth.lean, `OB2_nonneg_of_gameSlotBound`), and `GameSlotBound` is
-  now PROVED there (`gameSlotBound_proved`, via the general lazy-rnd
-  resolver + uniformity kernel its doc comment called for). The FS layer
+  [OB-2′] (`fsOfRbrSound_iff_depth`), and [OB-2′] is PROVED in
+  Selvage/Depth.lean (`OB2_depth_composition_nonneg_proved`, with
+  `GameSlotBound` discharged by `gameSlotBound_proved` via the general
+  lazy-rnd resolver + uniformity kernel its doc comment called for). The FS layer
   adds NO new unproved mathematics: its own two reductions
   (game-equivalence, handler correspondence) are closed in this file.
 * **[FS-ROM] the one named idealization**: "the deployed sponge/hash realizes
@@ -591,9 +590,9 @@ structure fields (not doc-comment TODOs):
   unconditionally, `fsKeystone_premise`, via Selvage/Depth.lean's
   `trivialReduction`/`trivialRbr`);
 * `sound` — THE STATEMENT: FS of RBR preserves knowledge soundness,
-  straightline, at `(t + k) · ε_rbr`. Proved from [OB-2a]
-  (`fsKeystone_of_gameSlotBound`) — and [OB-2a] is now discharged upstream
-  (`gameSlotBound_proved`, Selvage/Depth.lean: the general lazy-rnd resolver +
+  straightline, at `(t + k) · ε_rbr`. Proved through [OB-2′]
+  (`OB2_depth_composition_nonneg_proved`, Selvage/Depth.lean, which discharges
+  [OB-2a] by `gameSlotBound_proved`: the general lazy-rnd resolver +
   uniformity kernel), so the keystone holds unconditionally
   (`fsKeystone_proved`; the CY24/BMNW25 FS-of-RBR route, WARP Thm B.4). -/
 structure FsOfRbrKeystone : Prop where
@@ -631,24 +630,17 @@ theorem fsKeystone_premise :
     ∃ r : Reduction, Nonempty (RbrKnowledgeSoundness r) :=
   ⟨trivialReduction, ⟨trivialRbr⟩⟩
 
-/-- **The keystone, assembled from [OB-2a]**: `GameSlotBound`
-(Selvage/Depth.lean) implies the whole FS-of-RBR keystone — the three companion
-fields unconditionally, and `sound` through the proved chain [OB-2a] ⟹
-[OB-2′] (`OB2_nonneg_of_gameSlotBound`) ⟺ `FsOfRbrSound`
-(`fsOfRbrSound_iff_depth`). The transcript layer's own reductions (the BCS
-bridge, the handler correspondence) are closed in this file; NOTHING beyond
-[OB-2a] is assumed — and [OB-2a] is now proved (`fsKeystone_proved` below). -/
-theorem fsKeystone_of_gameSlotBound (H : GameSlotBound) : FsOfRbrKeystone where
+/-- **The keystone, unconditional**: the three companion fields hold
+unconditionally, and `sound` through [OB-2′] (`OB2_depth_composition_nonneg_proved`,
+Selvage/Depth.lean, which discharges [OB-2a] by `gameSlotBound_proved`) ⟺
+`FsOfRbrSound` (`fsOfRbrSound_iff_depth`). The transcript layer's own
+reductions (the BCS bridge, the handler correspondence) are closed in this
+file; nothing is assumed. -/
+theorem fsKeystone_proved : FsOfRbrKeystone where
   oracle_inhabited := fsKeystone_oracle_inhabited
   teeth := fsKeystone_teeth
   premise := fsKeystone_premise
-  sound := fsOfRbrSound_iff_depth.mpr (OB2_nonneg_of_gameSlotBound H)
-
-/-- **The keystone, unconditional**: [OB-2a] is discharged
-(`gameSlotBound_proved`, Selvage/Depth.lean), so FS-of-RBR knowledge-soundness
-preservation holds with no remaining seam. -/
-theorem fsKeystone_proved : FsOfRbrKeystone :=
-  fsKeystone_of_gameSlotBound gameSlotBound_proved
+  sound := fsOfRbrSound_iff_depth.mpr OB2_depth_composition_nonneg_proved
 
 #check @Oracle.respond_consistent
 #check @srFinalChal_eq_lookup
