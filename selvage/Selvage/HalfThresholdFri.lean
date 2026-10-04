@@ -213,7 +213,7 @@ theorem spike_halfThreshold_bound_attained :
 /-- At rate `rho = 1/2`, `delta = 3/10` is strictly beyond Johnson, while
 its once-halved threshold `3/20` lies inside Selvage's UNCONDITIONAL
 one-third-UD proximity band `(0, 1/6)`.  This is the concrete nonempty
-post-Johnson interval available without `PolishchukSpielman`. -/
+post-Johnson interval available on the proved one-third band. -/
 theorem postJohnson_half_lands_in_unconditional_UD :
     johnsonRadius (1 / 2 : ℝ) < 3 / 10
       ∧ (3 / 10 : ℝ) / 2 < 1 - (2 + (1 / 2 : ℝ)) / 3 := by
@@ -248,9 +248,10 @@ For later rounds Selvage currently offers two genuine choices:
 * `foldDistancePreserving_UD` is unconditional on
   `delta/2 < (1 - rate)/3`; this already gives a post-Johnson interval when
   `rate > 1/4`.
-* `foldDistancePreserving_UD_full` covers the full
-  `delta/2 < (1 - rate)/2` band, conditional on the one named classical
-  `PolishchukSpielman` divisibility lemma.
+* the full `delta/2 < (1 - rate)/2` band needs the Berlekamp-Welch route of
+  `Selvage/ProximityGapUDTight.lean` closed at its divisibility rung; the
+  `PolishchukSpielman` premise it was once conditioned on is refuted
+  (`Selvage/PolishchukSpielmanRefutation.lean`, D-0006).
 
 The query-miss factor is separately available as the fixed-word counting
 kernel `column_sampling_bridge_pr`; composing it with committed per-round

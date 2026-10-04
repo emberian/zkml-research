@@ -320,9 +320,9 @@ end HalfThresholdFriTowerExample
 /-
 Closed here: radius-scheduled far-persistence, adaptive challenge counting,
 the one-halving/fixed-tail composition, and its unconditional one-third-UD
-instantiation.  The full unique-decoding tail can replace
-`foldDistancePreserving_UD` with `foldDistancePreserving_UD_full` once the
-named `PolishchukSpielman` lemma is supplied.
+instantiation.  The full unique-decoding tail waits on the Berlekamp-Welch
+route's divisibility rung; the un-fixed `PolishchukSpielman` premise it was
+once conditioned on is refuted (`Selvage/PolishchukSpielmanRefutation.lean`).
 
 Not modeled: prover-committed intermediate words, Merkle openings, the query
 miss event, or Fiat--Shamir.  Consequently no `(1-delta/2)^q` term appears in
