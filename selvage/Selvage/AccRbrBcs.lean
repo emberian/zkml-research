@@ -980,6 +980,16 @@ theorem equivocalMsg_columnEquivocation :
     ColumnEquivocation CommitExample.equivocal qPair equivocalMsg xWord :=
   ⟨0, trivial, trivial, by decide⟩
 
+/-- **Refutable**: at the ideal commitment `S₅` (binding proved), attributing
+`oneWord`'s columns to round 1's root is no column equivocation: the family's
+refuting pole at a named point (`bcs_teeth_columns` is the same attempt, computed). -/
+theorem msgBcs_no_columnEquivocation :
+    ¬ ColumnEquivocation CommitExample.S₅.toOpeningScheme qPair (msgBcs 1) oneWord :=
+  not_columnEquivocation CommitExample.S₅
+
+/-- info: 'Minidregg.Selvage.AccRbrBcsExample.msgBcs_no_columnEquivocation' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms msgBcs_no_columnEquivocation
+
 /-- **Computed**: the word this root synthesizes is `oneWord`, by erasure
 recovery from the submitted columns alone — `bcsWord_of_colsExact` with no
 scheme in sight. -/
