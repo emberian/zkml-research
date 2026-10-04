@@ -98,4 +98,4 @@ Revisit or remove Selvage if:
 - `D-0001`: authenticated columns and dual-root history.
 - `D-0002`: canonical cell effects and hyperedge turns.
 - Top-level live-source audit:
-  `/Users/ember/dev/BREADSTUFFS_MINIDREGG_SUBSUMPTION_AUDIT_2026-08-09.md`.
+  `BREADSTUFFS_MINIDREGG_SUBSUMPTION_AUDIT_2026-08-09.md` (a scholar document outside this repository).
