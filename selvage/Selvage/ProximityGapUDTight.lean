@@ -1,7 +1,6 @@
 /-
 # Selvage.ProximityGapUDTight — `[PROXGAP-tight]`(a): the BCIKS Berlekamp–Welch-
-over-`F(Z)` route to the FULL unique-decoding radius `(1 − ρ)/2`, built to its
-one genuinely-hard rung.
+over-`F(Z)` route to the FULL unique-decoding radius `(1 − ρ)/2`, PROVED.
 
 **What this file is.** `Selvage/ProximityGapUD.lean` PROVED the RS proximity gap
 on `δ ∈ (0, (1 − ρ)/3)` and named the residual `[PROXGAP-tight]`(a): the
@@ -34,31 +33,45 @@ TR20-083):
    `(1 − ρ)/2`, not the elementary route's `3e + d ≤ n`). At `z` with
    `A(X, z) = 0`, `B(X, z)` vanishes on the whole domain and is 0. Either
    way `A(X, z) ∣ B(X, z)` for EVERY close `z`.
-3. *The divisibility rung* (`[PROXGAP-BW-ps]`): BCIKS Lemma 4.4, the
-   Polishchuk–Spielman bivariate divisibility lemma. ⚠ 2026-10-04: the
-   `Prop` this file carried for it, `PolishchukSpielman F` (plain per-line
-   divisibility, no quotient-degree bounds — the [Spi95] / BCIKS rev.1 shape),
-   is FALSE over every field with three elements
-   (`Selvage/PolishchukSpielmanRefutation.lean`,
-   `polishchukSpielman_unfixed_false`), so every theorem conditioned on it was
-   true of nothing. The def and every consumer (the full-band core
-   `correlatedAgreement_of_close_card_full`, the four `*_UD_full` heads, the
-   keystones `ps_premises_inhabited` and `good_line_CA_fullBand`) are DELETED
-   (docs/decisions/D-0006-polishchuk-spielman-unfixed-floor-refuted.md). The
-   corrected statement carries the Cramer quotient-degree bounds; the route
-   is restated on it, not on the refuted shape.
+3. *The divisibility rung* (`PolishchukSpielmanCramer`, `[PROXGAP-BW-ps]`):
+   BCIKS Lemma 4.4 in its CORRECTED form (rev.3 Appendix D; the fix due to
+   Ronald Cramer): from `A(x, Z) ∣ B(x, Z)` on `n_X` columns and
+   `A(X, z) ∣ B(X, z)` on `n_Z` rows, with every per-line QUOTIENT of degree
+   at most `b − a` in the line variable, and the budget
+   `b_X·n_Z + b_Z·n_X < n_X·n_Z` (EXACTLY where `|S| > n` is spent, and what
+   prices `err = n/|F|`), conclude `A ∣ B` in `F[X, Z]`. PROVED
+   (`polishchukSpielmanCramer_holds`, from the port
+   `Selvage/PolishchukSpielman.lean`). The plain-divisibility shape this file
+   carried until 2026-10-04 is FALSE (`Selvage/PolishchukSpielmanRefutation.lean`,
+   docs/decisions/D-0006); the Berlekamp–Welch pair meets the corrected
+   hypotheses with room to spare — its row quotients are the close codewords
+   (`deg < d ≤ n − 2e − 1 = b_X − a_X`) and its column quotients are the lines
+   `u₀(x) + Z·u₁(x)` (`deg_Z ≤ 1 = b_Z − a_Z`).
+4. *The assembly, PROVED from the quotient* (inside
+   `correlatedAgreement_of_close_card_full`): `P := B/A` has `deg_X P < d`
+   (its high coefficients — Z-polynomials of degree ≤ e + 1, by the
+   Z-degree-of-quotient lemma `ZDegLE.of_mul_left` — vanish on `> e + 1`
+   specializations), `P` reproduces the received line on the `≥ n − e`
+   domain points where `A(x, Z) ≠ 0`, and Lagrange interpolation through
+   `d` of them forces `P = v₀ + Z·v₁` with `v₀, v₁` HONEST codewords —
+   correlated agreement of `(u₀, u₁)` on ONE set of `≥ (1 − δ)n` points.
 
-**What survives here.** The UNCONDITIONAL front half of the route: the
-Berlekamp–Welch system and its solution, the specialization quotients at the
-full `2e + d ≤ n` radius, and the Z-degree calculus. The full-band heads are
-gone with the refuted floor; `(1 − ρ)/3` (`Selvage/ProximityGapUD.lean`) is
-the proved band.
+**The heads.** `rs_proximityGap_UD_full` — the two-case gap at
+`d < (1 − 2δ)·n` (the FULL unique-decoding band, vs the landed
+`(1 − 3δ)·n`) with the SAME `err = n/|F|`; `reedSolomonCode_isProximityGenerator_UD_full`
+(`B = (1 + ρ)/2` — Cor 4.11's printed constant, no longer `(2 + ρ)/3`);
+`hasMutualCorrelatedAgreement_UD_full` (mutual CA on all of UD);
+`foldDistancePreserving_UD_full`. ALL unconditional. `(1 − ρ)/3`
+(`Selvage/ProximityGapUD.lean`, untouched) is still the realizer existing
+consumers use; rewiring them to the full band is consumer work, not this file's.
 
-**Honest scope limits.** (i) Nothing here reaches past `(1 − ρ)/3`; the
-divisibility rung is the missing step. (ii) `ℓ = 2` (the affine pair
-generator), as everywhere in the landed stack.
+**Honest scope limits.** (i) This is the RS proximity gap of the abstract
+code over an abstract field; nothing at admission verifies a proof that uses
+it. (ii) `ℓ = 2` (the affine pair generator), as everywhere in the landed
+stack.
 -/
 import Selvage.ProximityGapUD
+import Selvage.PolishchukSpielman
 
 namespace Minidregg.Selvage
 
@@ -531,23 +544,509 @@ theorem bw_quotient_at (dom : ι ↪ F) {d e n' : ℕ}
       rw [eval_sub, eval_mul, ← h1, sub_self]
   exact (sub_eq_zero.mp hdiff).symm
 
+/-! ## `[PROXGAP-BW-ps]` — the Polishchuk–Spielman rung, Cramer-fixed, PROVED -/
+
+/-- **BCIKS 2020/654 Lemma 4.4, corrected (rev.3 Appendix D), in Mini's
+`F[Z][X]` orientation.** Row and column divisibility WITH the per-line
+quotients degree-bounded by `b − a` in the line variable, `a ≤ b` in both
+variables, and the budget `b_X·|S_Z| + b_Z·|S_X| < |S_X|·|S_Z|`, give
+`A ∣ B` with the quotient degree-bounded in both variables. Without the
+quotient bounds the statement is false
+(`PolishchukSpielmanRefutation.polishchukSpielman_unfixed_false`). -/
+def PolishchukSpielmanCramer (F : Type*) [Field F] : Prop :=
+  ∀ (A B : Polynomial (Polynomial F)) (SX SZ : Finset F) (aX aZ bX bZ : ℕ),
+    A.natDegree ≤ aX → ZDegLE A aZ → B.natDegree ≤ bX → ZDegLE B bZ →
+    aX ≤ bX → aZ ≤ bZ →
+    (∀ x ∈ SX, ∃ q : Polynomial F,
+      B.eval (C x) = A.eval (C x) * q ∧ q.natDegree ≤ bZ - aZ) →
+    (∀ z ∈ SZ, ∃ q : Polynomial F,
+      B.map (evalRingHom z) = A.map (evalRingHom z) * q ∧ q.natDegree ≤ bX - aX) →
+    bX * SZ.card + bZ * SX.card < SX.card * SZ.card →
+    ∃ Q : Polynomial (Polynomial F), B = A * Q ∧ Q.natDegree ≤ bX - aX ∧ ZDegLE Q (bZ - aZ)
+
+/-- **`[PROXGAP-BW-ps]` PROVED.** The ported `PS.polishchuk_spielman` (inner
+variable first) applied with the variables exchanged: its inner variable is
+Mini's `Z`, its outer variable is Mini's `X`. -/
+theorem polishchukSpielmanCramer_holds (F : Type*) [Field F] :
+    PolishchukSpielmanCramer F := by
+  intro A B SX SZ aX aZ bX bZ hAX hAZ hBX hBZ haX haZ hcol hrow hbudget
+  have hsdeg : ∀ {p : Polynomial (Polynomial F)} {t : ℕ}, ZDegLE p t → PS.sdeg p ≤ t :=
+    fun hp => PS.sdeg_le_of_coeff_natDegree_le fun n => natDegree_le_iff_degree_le.mpr (hp n)
+  obtain ⟨Q, hBQ, hQZ, hQX⟩ := PS.polishchuk_spielman A B aZ aX bZ bX SZ SX
+    (hsdeg hAZ) hAX (hsdeg hBZ) hBX haZ haX hrow hcol
+    (by
+      rw [show bZ * SX.card + bX * SZ.card = bX * SZ.card + bZ * SX.card by ring,
+        show SZ.card * SX.card = SX.card * SZ.card by ring]
+      exact hbudget)
+  refine ⟨Q, hBQ, hQX, fun i => ?_⟩
+  exact le_trans degree_le_natDegree
+    (by exact_mod_cast (PS.coeff_natDegree_le_sdeg Q i).trans hQZ)
+
+/-! ## The full-band correlated-agreement core -/
+
+omit [DecidableEq ι] in
+/-- The domain points where a nonzero `A ∈ F[Z][X]` does not vanish
+identically in `Z` number at least `n − deg_X A` — `A` has at most
+`deg_X A` roots in the domain `F[Z]`. -/
+private theorem card_eval_ne_zero (dom : ι ↪ F) {A : Polynomial (Polynomial F)}
+    (hA : A ≠ 0) {e : ℕ} (hAdeg : A.natDegree ≤ e) :
+    Fintype.card ι
+      ≤ (Finset.univ.filter fun i => A.eval (C (dom i)) ≠ 0).card + e := by
+  classical
+  have hsub : ((Finset.univ.filter fun i => ¬ A.eval (C (dom i)) ≠ 0).image
+      fun i => C (dom i)).val ⊆ A.roots := by
+    intro x hx
+    rw [Finset.mem_val, Finset.mem_image] at hx
+    obtain ⟨i, hi, rfl⟩ := hx
+    rw [Polynomial.mem_roots hA]
+    exact not_not.mp (Finset.mem_filter.mp hi).2
+  have hcard := Polynomial.card_le_degree_of_subset_roots hsub
+  rw [card_image_Cdom dom] at hcard
+  have hsplit := Finset.card_filter_add_card_filter_not
+    (s := (Finset.univ : Finset ι)) (fun i => A.eval (C (dom i)) ≠ 0)
+  rw [Finset.card_univ] at hsplit
+  omega
+
+/-- **The full-band correlated-agreement core, counting form (field-size
+free)** — BCIKS Thm 4.1 via Berlekamp–Welch over `F[Z]`, through the
+Cramer-fixed Polishchuk–Spielman rung. If the line `f 0 + γ • f 1` is δ-close to
+`RS[dom, d]` for MORE THAN `n` challenges, with `d < (1 − 2δ)·n` — the FULL
+unique-decoding band — then the pair has correlated agreement at radius δ:
+one common agreement set of `≥ (1 − δ)·n` coordinates. -/
+theorem correlatedAgreement_of_close_card_full [Nonempty ι]
+    (dom : ι ↪ F) {d : ℕ} {δ : ℝ} (hδ0 : 0 < δ)
+    (hδ2 : (d : ℝ) < (1 - 2 * δ) * (Fintype.card ι : ℝ))
+    {f : Fin 2 → ι → F} {S : Finset F}
+    (hSclose : ∀ γ ∈ S, close δ (reedSolomonCode dom d) (f 0 + γ • f 1))
+    (hScard : Fintype.card ι < S.card) :
+    CorrelatedAgreement (reedSolomonCode dom d) δ f := by
+  classical
+  set n := Fintype.card ι with hnn
+  have hn : (0 : ℝ) < (n : ℝ) := by
+    rw [hnn]; exact_mod_cast Fintype.card_pos
+  -- e is kept opaque (an fvar with a defining equation, not a let-binding)
+  -- so that `omega` can treat it as an atom downstream
+  obtain ⟨e, he⟩ : ∃ e : ℕ, e = ⌊δ * (n : ℝ)⌋₊ := ⟨_, rfl⟩
+  have heδ : (e : ℝ) ≤ δ * (n : ℝ) := by
+    rw [he]; exact Nat.floor_le (by positivity)
+  -- the governing count: d + 2e < n
+  have harith : d + (e + e) < n := by
+    have : (d : ℝ) + ((e : ℝ) + (e : ℝ)) < (n : ℝ) := by nlinarith
+    exact_mod_cast this
+  set n' : ℕ := n - e with hn'
+  have hne : n' + e = n := Nat.sub_add_cancel (by omega)
+  have hn'0 : 0 < n' := by omega
+  have hSn : n < S.card := hScard
+  -- per-challenge close witnesses, in polynomial form
+  have hex : ∀ γ ∈ S, ∃ p : Polynomial F, p.degree < (d : WithBot ℕ) ∧
+      ∃ T : Finset ι, n ≤ T.card + e ∧
+        ∀ i ∈ T, (f 0 + γ • f 1) i = p.eval (dom i) := by
+    intro γ hγ
+    obtain ⟨w, hwC, T, hTcard, hTag⟩ := exists_agreesOn_of_close (hSclose γ hγ)
+    obtain ⟨p, hpdeg, hpw⟩ := mem_reedSolomonCode_iff.mp hwC
+    refine ⟨p, hpdeg, T, ?_, fun i hi => by rw [hTag i hi, hpw i]⟩
+    have hTn : T.card ≤ n := by rw [hnn]; exact_mod_cast Finset.card_le_univ T
+    have hfloor : n - T.card ≤ e := by
+      rw [he]
+      refine Nat.le_floor ?_
+      have : ((n - T.card : ℕ) : ℝ) = (n : ℝ) - (T.card : ℝ) := by
+        rw [Nat.cast_sub hTn]
+      rw [this]
+      nlinarith
+    omega
+  choose! p hpdeg T hTcard hTag using hex
+  -- the Berlekamp–Welch pair
+  obtain ⟨A, B, hA0, hAdeg, hAz, hBdeg, hBz, hsys⟩ :=
+    exists_bw_solution dom f hne hn'0
+  -- z-side divisibility on ALL of S, with the Cramer quotient bound
+  have hzdvd : ∀ z ∈ S, ∃ q : Polynomial F,
+      B.map (evalRingHom z) = A.map (evalRingHom z) * q ∧ q.natDegree ≤ (n' - 1) - e := by
+    intro z hz
+    by_cases hAzz : A.map (evalRingHom z) = 0
+    · -- the specialized B vanishes on the whole domain, hence is 0
+      have hB0 : B.map (evalRingHom z) = 0 := by
+        refine eq_zero_of_eval_zero_on (S := Finset.univ.image dom) ?_
+          fun x hx => ?_
+        · rw [Finset.card_image_of_injective _ dom.injective, Finset.card_univ]
+          have := natDegree_map_le (f := evalRingHom z) (p := B)
+          omega
+        · obtain ⟨i, -, rfl⟩ := Finset.mem_image.mp hx
+          have := bw_specialize hsys z i
+          rw [hAzz] at this
+          simpa using this.symm
+      exact ⟨0, by rw [hB0, hAzz, mul_zero], by rw [natDegree_zero]; exact Nat.zero_le _⟩
+    · -- Berlekamp–Welch uniqueness delivers the quotient: the close codeword
+      have hpz : (p z).natDegree ≤ (n' - 1) - e := by
+        rcases eq_or_ne (p z) 0 with h0 | h0
+        · rw [h0, natDegree_zero]; exact Nat.zero_le _
+        · have := (natDegree_lt_iff_degree_lt h0).mpr (hpdeg z hz)
+          omega
+      exact ⟨p z, bw_quotient_at dom hne harith
+        (le_trans (natDegree_map_le) hAdeg)
+        (lt_of_le_of_lt (natDegree_map_le) hBdeg)
+        (hpdeg z hz) (hTcard z hz)
+        (fun i hi => by
+          have := hTag z hz i hi
+          simpa [Pi.add_apply, Pi.smul_apply, smul_eq_mul] using this)
+        (bw_specialize hsys z), hpz⟩
+  -- x-side divisibility on the whole domain (the system IS the witness;
+  -- the quotient is the received line, of Z-degree ≤ 1 = (e + 1) − e)
+  have hxdvd : ∀ x ∈ Finset.univ.image dom, ∃ q : Polynomial F,
+      B.eval (C x) = A.eval (C x) * q ∧ q.natDegree ≤ (e + 1) - e := by
+    intro x hx
+    obtain ⟨i, -, rfl⟩ := Finset.mem_image.mp hx
+    refine ⟨lineAt f i, (hsys i).symm, ?_⟩
+    have h1 : (lineAt f i).natDegree ≤ 1 :=
+      natDegree_le_iff_degree_le.mpr (by exact_mod_cast lineAt_degree_le f i)
+    omega
+  -- the Polishchuk–Spielman budget
+  have hSXcard : (Finset.univ.image dom).card = n := by
+    rw [Finset.card_image_of_injective _ dom.injective, Finset.card_univ]
+  have hc3 : (n' - 1) * S.card + (e + 1) * (Finset.univ.image dom).card
+      < (Finset.univ.image dom).card * S.card := by
+    rw [hSXcard]
+    have hs : n < S.card := hScard
+    calc (n' - 1) * S.card + (e + 1) * n
+        < (n' - 1) * S.card + (e + 1) * S.card :=
+          Nat.add_lt_add_left (mul_lt_mul_of_pos_left hs (by omega)) _
+      _ = ((n' - 1) + (e + 1)) * S.card := by ring
+      _ = n * S.card := by
+          congr 1
+          omega
+  -- the divisibility rung
+  obtain ⟨P, hBP, -, -⟩ := polishchukSpielmanCramer_holds F A B (Finset.univ.image dom) S
+    e e (n' - 1) (e + 1) hAdeg hAz (by omega) hBz (by omega) (by omega) hxdvd hzdvd hc3
+  -- the good domain points, shared by both endgames
+  set D' : Finset ι := Finset.univ.filter fun i => A.eval (C (dom i)) ≠ 0
+    with hD'
+  have hD'card : n ≤ D'.card + e := card_eval_ne_zero dom hA0 hAdeg
+  have hD'real : (1 - δ) * (n : ℝ) ≤ (D'.card : ℝ) := by
+    have h1 : (n : ℝ) - (e : ℝ) ≤ (D'.card : ℝ) := by
+      have : ((D'.card + e : ℕ) : ℝ) = (D'.card : ℝ) + (e : ℝ) := by push_cast; rfl
+      have h2 : (n : ℝ) ≤ (D'.card : ℝ) + (e : ℝ) := by
+        rw [← this]; exact_mod_cast hD'card
+      linarith
+    nlinarith
+  rcases eq_or_ne P 0 with rfl | hP0
+  · -- degenerate quotient: B = 0, the line vanishes on D′ — agreement with 0
+    rw [mul_zero] at hBP
+    refine ⟨D', hD'real, fun j => ⟨0, Submodule.zero_mem _, fun i hi => ?_⟩⟩
+    have hiA : A.eval (C (dom i)) ≠ 0 := (Finset.mem_filter.mp hi).2
+    have hline : lineAt f i = 0 := by
+      have h1 := hsys i
+      rw [hBP] at h1
+      simp only [eval_zero] at h1
+      exact (mul_eq_zero.mp h1).resolve_left hiA
+    have h0 : f 0 i = 0 := by
+      have := lineAt_coeff_zero f i
+      rw [hline] at this
+      simpa using this.symm
+    have h1 : f 1 i = 0 := by
+      have := lineAt_coeff_one f i
+      rw [hline] at this
+      simpa using this.symm
+    induction j using Fin.cases with
+    | zero => simpa using h0
+    | succ jj =>
+        have hj : jj.succ = (1 : Fin 2) := by fin_cases jj; rfl
+        rw [hj]
+        simpa using h1
+  · -- main path: the quotient inherits Z-degree ≤ e + 1
+    have hPz : ZDegLE P (e + 1) := ZDegLE.of_mul_left hA0 hP0 (hBP ▸ hBz)
+    -- the good challenges: A(X, z) survives specialization
+    set S' : Finset F := S.filter fun z => A.map (evalRingHom z) ≠ 0 with hS'
+    have hS'card : S.card ≤ S'.card + e := by
+      -- the bad challenges are roots of the nonzero leading coefficient of A
+      have hi₀ : A.coeff A.natDegree ≠ 0 := leadingCoeff_ne_zero.mpr hA0
+      have hbad : (S.filter fun z => ¬ A.map (evalRingHom z) ≠ 0).card ≤ e := by
+        by_contra hcon
+        apply hi₀
+        refine eq_zero_of_eval_zero_on
+          (S := S.filter fun z => ¬ A.map (evalRingHom z) ≠ 0) ?_ fun z hz => ?_
+        · have : (A.coeff A.natDegree).natDegree ≤ e :=
+            natDegree_le_iff_degree_le.mpr (hAz A.natDegree)
+          omega
+        · have hz0 := not_not.mp (Finset.mem_filter.mp hz).2
+          have := congrArg (fun q => q.coeff A.natDegree) hz0
+          simpa [Polynomial.coeff_map] using this
+      have hsplit : S'.card
+          + (S.filter fun z => ¬ A.map (evalRingHom z) ≠ 0).card = S.card := by
+        rw [hS']
+        exact Finset.card_filter_add_card_filter_not (s := S) _
+      omega
+    -- on the good challenges the quotient specializes to the close codeword
+    have hPspec : ∀ z ∈ S', P.map (evalRingHom z) = p z := by
+      intro z hz
+      obtain ⟨hzS, hzA⟩ := Finset.mem_filter.mp hz
+      have h1 : B.map (evalRingHom z)
+          = A.map (evalRingHom z) * P.map (evalRingHom z) := by
+        rw [hBP, Polynomial.map_mul]
+      have h2 : B.map (evalRingHom z) = A.map (evalRingHom z) * p z :=
+        bw_quotient_at dom hne harith
+          (le_trans (natDegree_map_le) hAdeg)
+          (lt_of_le_of_lt (natDegree_map_le) hBdeg)
+          (hpdeg z hzS) (hTcard z hzS)
+          (fun i hi => by
+            have := hTag z hzS i hi
+            simpa [Pi.add_apply, Pi.smul_apply, smul_eq_mul] using this)
+          (bw_specialize hsys z)
+      exact mul_left_cancel₀ hzA (h1.symm.trans h2)
+    -- Step 3: the quotient has X-degree < d
+    have hPdeg : P.degree < (d : WithBot ℕ) := by
+      rw [Polynomial.degree_lt_iff_coeff_zero]
+      intro i hi
+      have hid : d ≤ i := by exact_mod_cast hi
+      refine eq_zero_of_eval_zero_on (S := S') ?_ fun z hz => ?_
+      · have h1 : (P.coeff i).natDegree ≤ e + 1 :=
+          natDegree_le_iff_degree_le.mpr (hPz i)
+        omega
+      · have h2 := hPspec z hz
+        have h3 : (P.map (evalRingHom z)).coeff i = (p z).coeff i := by rw [h2]
+        rw [Polynomial.coeff_map] at h3
+        have h4 : (p z).coeff i = 0 := by
+          refine Polynomial.coeff_eq_zero_of_degree_lt ?_
+          exact lt_of_lt_of_le (hpdeg z (Finset.mem_filter.mp hz).1)
+            (by exact_mod_cast hid)
+        simpa [h4] using h3
+    -- Step 4: the quotient reproduces the line on D′
+    have hPline : ∀ i ∈ D', lineAt f i = P.eval (C (dom i)) := by
+      intro i hi
+      have hiA : A.eval (C (dom i)) ≠ 0 := (Finset.mem_filter.mp hi).2
+      have h1 := hsys i
+      rw [hBP, Polynomial.eval_mul] at h1
+      exact mul_left_cancel₀ hiA h1
+    -- Step 5: interpolate through d good points; the quotient is the line
+    obtain ⟨T₀, hT₀sub, hT₀card⟩ := Finset.exists_subset_card_eq
+      (s := D') (n := d) (by omega)
+    have hT₀inj : Set.InjOn dom T₀ := dom.injective.injOn
+    set v₀ : Polynomial F := Lagrange.interpolate T₀ (⇑dom) (f 0) with hv₀
+    set v₁ : Polynomial F := Lagrange.interpolate T₀ (⇑dom) (f 1) with hv₁
+    have hv₀deg : v₀.degree < (d : WithBot ℕ) := by
+      rw [hv₀, ← hT₀card]
+      exact Lagrange.degree_interpolate_lt _ hT₀inj
+    have hv₁deg : v₁.degree < (d : WithBot ℕ) := by
+      rw [hv₁, ← hT₀card]
+      exact Lagrange.degree_interpolate_lt _ hT₀inj
+    set CF : F →+* Polynomial F := Polynomial.C with hCF
+    set Pline : Polynomial (Polynomial F) :=
+      v₀.map CF + Polynomial.C (Polynomial.X : Polynomial F) * v₁.map CF
+      with hPline'
+    have hmapeval : ∀ (v : Polynomial F) (x : F),
+        (v.map CF).eval (C x) = CF (v.eval x) := by
+      intro v x
+      rw [eval_map, show (C x : Polynomial F) = CF x from rfl,
+        eval₂_at_apply]
+    have hPlineEval : ∀ x : F, Pline.eval (C x)
+        = CF (v₀.eval x) + Polynomial.X * CF (v₁.eval x) := by
+      intro x
+      rw [hPline', eval_add, eval_mul, eval_C, hmapeval, hmapeval]
+    have hPlineDeg : Pline.degree < (d : WithBot ℕ) := by
+      rw [hPline']
+      refine lt_of_le_of_lt (degree_add_le _ _) (max_lt ?_ ?_)
+      · exact lt_of_le_of_lt (degree_map_le) hv₀deg
+      · calc (Polynomial.C (Polynomial.X : Polynomial F) * v₁.map CF).degree
+            ≤ (Polynomial.C (Polynomial.X : Polynomial F)).degree
+              + (v₁.map CF).degree := degree_mul_le _ _
+          _ ≤ 0 + (v₁.map CF).degree := add_le_add degree_C_le (le_refl _)
+          _ = (v₁.map CF).degree := zero_add _
+          _ ≤ v₁.degree := degree_map_le
+          _ < (d : WithBot ℕ) := hv₁deg
+    have hPeqLine : P = Pline := by
+      rw [← sub_eq_zero]
+      refine eq_zero_of_eval_zero_on (S := T₀.image fun i => C (dom i)) ?_
+        fun x hx => ?_
+      · rw [card_image_Cdom dom, hT₀card]
+        rcases eq_or_ne (P - Pline) 0 with h0 | h0
+        · rw [h0]
+          simp only [natDegree_zero]
+          by_contra hd0
+          -- d = 0 forces P = 0, contradicting hP0
+          have hdz : d = 0 := by omega
+          apply hP0
+          refine Polynomial.ext fun i => ?_
+          rw [Polynomial.coeff_zero]
+          exact (Polynomial.degree_lt_iff_coeff_zero P d).mp hPdeg i (by omega)
+        · exact (natDegree_lt_iff_degree_lt h0).mpr
+            (lt_of_le_of_lt (degree_sub_le _ _) (max_lt hPdeg hPlineDeg))
+      · obtain ⟨i, hiT₀, rfl⟩ := Finset.mem_image.mp hx
+        have hiD' : i ∈ D' := hT₀sub hiT₀
+        rw [eval_sub, ← hPline i hiD', hPlineEval]
+        have h0 : v₀.eval (dom i) = f 0 i :=
+          Lagrange.eval_interpolate_at_node _ hT₀inj hiT₀
+        have h1 : v₁.eval (dom i) = f 1 i :=
+          Lagrange.eval_interpolate_at_node _ hT₀inj hiT₀
+        rw [h0, h1, lineAt]
+        show C (f 0 i) + C (f 1 i) * X - (C (f 0 i) + X * C (f 1 i)) = 0
+        ring
+    -- extract the coordinatewise agreement on D′
+    have hagree : ∀ i ∈ D', f 0 i = v₀.eval (dom i) ∧ f 1 i = v₁.eval (dom i) := by
+      intro i hi
+      have h1 : lineAt f i = Pline.eval (C (dom i)) := by
+        rw [← hPeqLine]; exact hPline i hi
+      rw [hPlineEval] at h1
+      have hc0 := congrArg (fun q => q.coeff 0) h1
+      have hc1 := congrArg (fun q => q.coeff 1) h1
+      simp only [lineAt_coeff_zero, lineAt_coeff_one] at hc0 hc1
+      constructor
+      · rw [hc0]
+        show (CF (v₀.eval (dom i)) + Polynomial.X * CF (v₁.eval (dom i))).coeff 0
+          = v₀.eval (dom i)
+        simp [hCF, coeff_C]
+      · rw [hc1]
+        show (CF (v₀.eval (dom i)) + Polynomial.X * CF (v₁.eval (dom i))).coeff 1
+          = v₁.eval (dom i)
+        simp [hCF, coeff_C]
+    -- assemble correlated agreement
+    refine ⟨D', hD'real, fun j => ?_⟩
+    induction j using Fin.cases with
+    | zero =>
+        refine ⟨fun i => v₀.eval (dom i),
+          mem_reedSolomonCode_iff.mpr ⟨v₀, hv₀deg, fun i => rfl⟩,
+          fun i hi => (hagree i hi).1⟩
+    | succ jj =>
+        have hj : jj.succ = (1 : Fin 2) := by fin_cases jj; rfl
+        rw [hj]
+        refine ⟨fun i => v₁.eval (dom i),
+          mem_reedSolomonCode_iff.mpr ⟨v₁, hv₁deg, fun i => rfl⟩,
+          fun i hi => (hagree i hi).2⟩
+
+/-! ## The gap heads on the FULL unique-decoding band -/
+
+/-- **`rs_proximityGap_UD_full` — the RS proximity gap at the FULL
+unique-decoding radius, two-case form.** Same shape
+as the landed `rs_proximityGap_UD`, hypothesis relaxed from `d < (1 − 3δ)·n`
+to `d < (1 − 2δ)·n` (all of `δ ∈ (0, (1 − ρ)/2)`), same `err = n/|F|`:
+either at most an `n/|F|` fraction of challenges lands the affine line
+δ-close, or the pair has full correlated agreement at radius δ. -/
+theorem rs_proximityGap_UD_full [Nonempty ι] [Fintype F]
+    (dom : ι ↪ F) {d : ℕ} {δ : ℝ} (hδ0 : 0 < δ)
+    (hδ2 : (d : ℝ) < (1 - 2 * δ) * (Fintype.card ι : ℝ))
+    (f : Fin 2 → ι → F) :
+    (affineGenerator F).pr
+        (fun r => close δ (reedSolomonCode dom d) (comb r f))
+      ≤ (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)
+    ∨ CorrelatedAgreement (reedSolomonCode dom d) δ f := by
+  classical
+  set C' := reedSolomonCode dom d with hC'
+  by_cases hpr : (affineGenerator F).pr (fun r => close δ C' (comb r f))
+      ≤ (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)
+  · exact Or.inl hpr
+  right
+  have hF : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
+  set S : Finset F := Finset.univ.filter
+    (fun γ => close δ C' (f 0 + γ • f 1)) with hS
+  -- the closeness probability is the close-challenge fraction
+  have hpr_eq : (affineGenerator F).pr (fun r => close δ C' (comb r f))
+      = (S.card : ℝ) / (Fintype.card F : ℝ) := by
+    unfold ProximityGenerator.pr
+    have hcomb : ∀ γ : F, comb ((affineGenerator F).gen γ) f = f 0 + γ • f 1 :=
+      fun γ => funext fun x => by rw [comb_affineGenerator]; rfl
+    have hfilter : (Finset.univ.filter fun ω : (affineGenerator F).Seed =>
+        close δ C' (comb ((affineGenerator F).gen ω) f)) = S := by
+      rw [hS]
+      refine Finset.filter_congr fun γ _ => ?_
+      rw [hcomb γ]
+    rw [hfilter]
+    calc ∑ ω ∈ S, (affineGenerator F).weight ω
+        = ∑ _ω ∈ S, ((Fintype.card F : ℝ))⁻¹ :=
+          Finset.sum_congr rfl fun ω _ => rfl
+      _ = (S.card : ℝ) * ((Fintype.card F : ℝ))⁻¹ := by
+          rw [Finset.sum_const, nsmul_eq_mul]
+      _ = (S.card : ℝ) / (Fintype.card F : ℝ) := (div_eq_mul_inv _ _).symm
+  -- more than n close challenges
+  have hSn : Fintype.card ι < S.card := by
+    rw [hpr_eq] at hpr
+    have h := not_le.mp hpr
+    rw [div_lt_div_iff_of_pos_right hF] at h
+    exact_mod_cast h
+  exact correlatedAgreement_of_close_card_full dom hδ0 hδ2
+    (fun γ hγ => (Finset.mem_filter.mp hγ).2) hSn
+
+/-- **The hPG realizer on the FULL unique-decoding band:** the affine generator PG(2) is a proximity generator for
+`RS[dom, d]` with bound `B = (1 + ρ)/2` — Cor 4.11's printed constant, the
+whole band `δ ∈ (0, (1 − ρ)/2)`, vs the landed unconditional `(2 + ρ)/3` —
+and error `err = n/|F|`. -/
+theorem reedSolomonCode_isProximityGenerator_UD_full [Nonempty ι] [Fintype F]
+    (dom : ι ↪ F) (d : ℕ) :
+    IsProximityGenerator (affineGenerator F) (reedSolomonCode dom d)
+      ((1 + (d : ℝ) / (Fintype.card ι : ℝ)) / 2)
+      (fun _ => (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) := by
+  intro f δ hδ0 hδB hpr
+  have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
+  have hδ2 : (d : ℝ) < (1 - 2 * δ) * (Fintype.card ι : ℝ) := by
+    -- δ < 1 − (1 + ρ)/2 = (1 − ρ)/2  ⟺  ρ < 1 − 2δ  ⟺  d < (1 − 2δ)n
+    have hρ : (d : ℝ) / (Fintype.card ι : ℝ) < 1 - 2 * δ := by linarith
+    calc (d : ℝ) = (d : ℝ) / (Fintype.card ι : ℝ) * (Fintype.card ι : ℝ) := by
+          field_simp
+      _ < (1 - 2 * δ) * (Fintype.card ι : ℝ) :=
+          mul_lt_mul_of_pos_right hρ hn
+  rcases rs_proximityGap_UD_full dom hδ0 hδ2 f with h | h
+  · exact absurd hpr (not_lt.mpr h)
+  · exact h
+
+/-- **Mutual correlated agreement on the FULL unique-decoding band.** The landed WHIR Lemma 4.10 / Corollary 4.11 machinery
+(`reedSolomonCode_hasMutualCorrelatedAgreement`, CITED, not re-derived) fed
+the full-band realizer: `B⋆ = max(1 − dC/2, (1 + ρ)/2)` collapses to
+`(1 + ρ)/2` (the exact half-distance point `(n + d − 1)/(2n)` sits `1/(2n)`
+below it), same error `n/|F|`. -/
+theorem hasMutualCorrelatedAgreement_UD_full [Nonempty ι] [Fintype F]
+    (dom : ι ↪ F) (d : ℕ) :
+    HasMutualCorrelatedAgreement (affineGenerator F) (reedSolomonCode dom d)
+      ((1 + (d : ℝ) / (Fintype.card ι : ℝ)) / 2)
+      (fun _ => (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) := by
+  have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
+  have h := reedSolomonCode_hasMutualCorrelatedAgreement (affineGenerator F)
+    dom d (reedSolomonCode_isProximityGenerator_UD_full dom d)
+    (fun _ _ _ => le_refl _)
+    (fun _ _ => div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))
+  have hle : 1 - (1 - ((d : ℝ) - 1) / (Fintype.card ι : ℝ)) / 2
+      ≤ (1 + (d : ℝ) / (Fintype.card ι : ℝ)) / 2 := by
+    have hsub : ((d : ℝ) - 1) / (Fintype.card ι : ℝ)
+        = (d : ℝ) / (Fintype.card ι : ℝ) - 1 / (Fintype.card ι : ℝ) :=
+      sub_div _ _ _
+    have h1n : (0 : ℝ) < 1 / (Fintype.card ι : ℝ) := by positivity
+    rw [hsub]
+    linarith
+  rwa [max_eq_right hle] at h
+
+/-- **`[PROX-fold-distance]` on the FULL unique-decoding band:** one FRI fold round preserves δ-farness off at most `|κ|`
+challenges for every `δ ∈ (0, (1 − ρ_κ)/2)` at the folded rate
+`ρ_κ = d/|κ|` — the landed reduction of `Selvage/Proximity.lean` (CITED) fed
+the full-band realizer. -/
+theorem foldDistancePreserving_UD_full {κ : Type*} [Fintype κ] [DecidableEq κ]
+    [Fintype F] [Nonempty ι] [Nonempty κ] {dom : ι ↪ F} {domSq : κ ↪ F}
+    (D : FoldingData F dom domSq) (d : ℕ)
+    {δ : ℝ} (hδ0 : 0 < δ)
+    (hδB : δ < 1 - (1 + (d : ℝ) / (Fintype.card κ : ℝ)) / 2) :
+    FoldDistancePreserving D (2 * d) d δ (Fintype.card κ) := by
+  have hF : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
+  exact foldDistancePreserving_of_isProximityGenerator D d
+    (reedSolomonCode_isProximityGenerator_UD_full domSq d) hδ0 hδB
+    (le_of_eq (div_mul_cancel₀ _ (ne_of_gt hF)))
+
 /-! ## Keystones (ATLAS law 2: satisfiable + teeth)
 
 The landed `RS[F₅, {0,1,2,3}, 2]` (ρ = 1/2). The full-UD band at this code is
 `δ ∈ (0, 1/4)`; the landed unconditional band is `(0, 1/6)`. δ = 1/5 sits
-STRICTLY BETWEEN.
+STRICTLY BETWEEN — the extension is macroscopic even at the toy. What the
+keystones exhibit:
 
 * **the band widens for real** (`band_widens`, UNCONDITIONAL): at δ = 1/5 the
   landed hypothesis `d < (1 − 3δ)n` FAILS and the full-band hypothesis
-  `d < (1 − 2δ)n` HOLDS.
+  `d < (1 − 2δ)n` HOLDS — the new theorem speaks where the old is silent.
 * **the Berlekamp–Welch system FIRES** (`bw_solution_F5`, UNCONDITIONAL): the
   proved existence theorem delivers a nonzero solution with the BCIKS degree
-  profile at the concrete code.
+  profile at the concrete code — premise inhabitation for everything
+  downstream of the system.
+* **end-to-end, unconditionally** (`good_line_CA_fullBand`): the all-codeword
+  line has correlated agreement at δ = 1/5 — OUTSIDE the landed band —
+  through the full pipeline (system → specialization → Cramer-fixed
+  divisibility → quotient → interpolation).
 
-The deleted `ps_premises_inhabited` exhibited the refuted floor's PREMISES
-inhabited (at `A = 1`, where the conclusion is trivial) and was read as
-"assuming it is not vacuous". Premise inhabitation at a toy says nothing about
-whether the floor is TRUE; the refutation is at the same field. -/
+The premise-inhabitation keystone this section once carried
+(`ps_premises_inhabited`) showed the PREMISES of the refuted plain-divisibility
+floor satisfiable at `A = 1`; it said nothing about whether that floor was true,
+and it was not (D-0006). -/
 
 namespace ProximityGapUDTightExample
 
@@ -571,21 +1070,45 @@ theorem bw_solution_F5 :
   exists_bw_solution dom₅ ![xWord, oneWord]
     (by norm_num [Fintype.card_fin]) (by omega)
 
+/-- **End-to-end at δ = 1/5 — outside the landed band**: the all-codeword line
+`xWord + γ·oneWord` has correlated agreement at radius 1/5 through the full
+Berlekamp–Welch pipeline. Compare `ProximityGapUDExample.good_line_CA`, capped
+at δ < 1/6. -/
+theorem good_line_CA_fullBand :
+    CorrelatedAgreement (reedSolomonCode dom₅ 2) (1/5 : ℝ)
+      ![xWord, oneWord] := by
+  refine correlatedAgreement_of_close_card_full dom₅ (by norm_num)
+    (by norm_num [Fintype.card_fin]) (S := Finset.univ)
+    (fun γ _ => ?_) ?_
+  · have hmem : xWord + γ • oneWord ∈ reedSolomonCode dom₅ 2 := line_mem γ
+    exact close_of_mem hmem (by norm_num)
+  · rw [Finset.card_univ, ZMod.card, Fintype.card_fin]
+    omega
+
 end ProximityGapUDTightExample
 
-/-! ## Residual obligation — `[PROXGAP-BW-ps]`
+/-! ## `[PROXGAP-BW-ps]` — closed
 
-The full unique-decoding band needs, after `bw_quotient_at`, bivariate
-divisibility `A ∣ B` from the row and column divisibilities. The statement
-that is TRUE is the Cramer-fixed one (BCIKS rev.3 Appendix D): the per-line
-quotients have degree at most `b − a` in the line variable. On the Berlekamp–
-Welch pair the row quotients are the close codewords `p_z` (`deg < d ≤
-n − 2e − 1 = b_X − a_X`) and the column quotients are the lines
-`u₀(x) + Z·u₁(x)` (`deg_Z ≤ 1 = b_Z − a_Z`), so the fixed form applies.
+`polishchukSpielmanCramer_holds` discharges the rung from the ported
+`PS.polishchuk_spielman` (breadstuffs `Dregg2/ForMathlib/PolishchukSpielman.lean`:
+gcd split, the Sylvester resultant `Res_X` with formal degrees, Gauss's lemma for
+coprimality over `F(Z)`, and the row operation `B ↦ B − A·q̃` that is legal inside
+the Sylvester matrix exactly because of the Cramer quotient bound). Every
+head above is unconditional; `[PROXGAP-tight]`(a) is closed at `ℓ = 2`.
 
-`#print axioms` on `exists_bw_solution`, `bw_quotient_at`,
-`ProximityGapUDTightExample.band_widens`,
-`ProximityGapUDTightExample.bw_solution_F5`: `propext`, `Classical.choice`,
-`Quot.sound`. -/
+`#print axioms` on `polishchukSpielmanCramer_holds`, `exists_bw_solution`,
+`bw_quotient_at`, `correlatedAgreement_of_close_card_full`,
+`rs_proximityGap_UD_full`, `reedSolomonCode_isProximityGenerator_UD_full`,
+`hasMutualCorrelatedAgreement_UD_full`, `foldDistancePreserving_UD_full`,
+`ProximityGapUDTightExample.good_line_CA_fullBand`: `propext`,
+`Classical.choice`, `Quot.sound` (pinned below). -/
+
+#assert_axioms polishchukSpielmanCramer_holds
+#assert_axioms correlatedAgreement_of_close_card_full
+#assert_axioms rs_proximityGap_UD_full
+#assert_axioms reedSolomonCode_isProximityGenerator_UD_full
+#assert_axioms hasMutualCorrelatedAgreement_UD_full
+#assert_axioms foldDistancePreserving_UD_full
+#assert_axioms ProximityGapUDTightExample.good_line_CA_fullBand
 
 end Minidregg.Selvage

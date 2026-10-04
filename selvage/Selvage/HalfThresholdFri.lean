@@ -248,10 +248,10 @@ For later rounds Selvage currently offers two genuine choices:
 * `foldDistancePreserving_UD` is unconditional on
   `delta/2 < (1 - rate)/3`; this already gives a post-Johnson interval when
   `rate > 1/4`.
-* the full `delta/2 < (1 - rate)/2` band needs the Berlekamp-Welch route of
-  `Selvage/ProximityGapUDTight.lean` closed at its divisibility rung; the
-  `PolishchukSpielman` premise it was once conditioned on is refuted
-  (`Selvage/PolishchukSpielmanRefutation.lean`, D-0006).
+* `foldDistancePreserving_UD_full` covers the full
+  `delta/2 < (1 - rate)/2` band, unconditionally (the Cramer-fixed
+  Polishchuk-Spielman rung is proved; the plain-divisibility form it was once
+  conditioned on is refuted, D-0006).
 
 The query-miss factor is separately available as the fixed-word counting
 kernel `column_sampling_bridge_pr`; composing it with committed per-round
