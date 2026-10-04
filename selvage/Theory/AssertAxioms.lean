@@ -22,13 +22,13 @@ Lean v4.30 precomputes each imported declaration's axioms at olean export, so
 the census is a lookup per constant, not a walk.
 -/
 import Mathlib.Tactic.Basic
+import Theory.AxiomPin
 
 namespace Minidregg.Theory.AssertAxioms
 
 open Lean Elab Command
 
-/-- The axioms a kernel-checked Mini theorem may rest on. -/
-def standard : List Name := [``propext, ``Classical.choice, ``Quot.sound]
+-- `standard` and `#assert_axioms` (over one or many names) live in Theory/AxiomPin.lean.
 
 /-- The compiler trust `native_decide` adds; refused by `#assert_axioms`,
 counted (not refused) by `#assert_axioms_tree`. In Lean v4.30 each
@@ -48,13 +48,6 @@ inductive or its field depends on the kernel-side definitions, which carry no
 def isComputedFieldOverride (info : ConstantInfo) (constant : Name) (outside : List Name) : Bool :=
   info matches .defnInfo _ && constant.components.getLast? == some `_override &&
     outside == [``lcProof]
-
-elab "#assert_axioms " id:ident : command => do
-  let name ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo id
-  let axioms ← liftCoreM <| collectAxioms name
-  let outside := axioms.toList.filter (fun axiomName => !standard.contains axiomName)
-  unless outside.isEmpty do
-    throwError m!"{name} depends on axioms outside the standard three: {outside}"
 
 /-- This package's module roots. -/
 def packageRoots : List Name :=
