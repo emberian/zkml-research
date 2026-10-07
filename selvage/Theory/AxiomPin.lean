@@ -13,8 +13,10 @@ Core4 definitions and proofs) can pin their theorems without taking a Mathlib
 dependency.  `Theory.AssertAxioms` re-exports it and adds the tree-wide census.
 
 The exact axiom set of each Objective Bend declaration is not typed by hand
-beside it: `scripts/check-objective-proofs.sh` regenerates it into
-`scripts/gates/objective-axioms.pin` and fails on any unannounced difference.
+beside it: it is a column of the declaration's row in the contract manifests
+(`scripts/gates/objective-manifest/<Module>.tsv`), which `scripts/check-objective-proofs.sh`
+ratchets: a changed axiom set is red unless `scripts/gates/objective-contract-changes.txt`
+admits it.
 -/
 import Lean
 
