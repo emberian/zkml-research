@@ -90,7 +90,7 @@ theorem denoteNat_append (base : Nat) (low high : List Nat) :
       ring
 
 /-- A ranged limb vector fits below the capacity of its width. -/
-theorem denoteNat_lt_pow {base : Nat} (_hbase : 0 < base) :
+theorem denoteNat_lt_pow {base : Nat} :
     ∀ limbs : List Nat, Ranged base limbs → denoteNat base limbs < base ^ limbs.length := by
   intro limbs
   induction limbs with
@@ -117,11 +117,11 @@ theorem denoteInt_nonneg (base : Nat) (limbs : List Nat) :
   exact Int.natCast_nonneg _
 
 /-- The integer denotation obeys the same fixed-width capacity bound. -/
-theorem denoteInt_lt_pow {base : Nat} (hbase : 0 < base)
+theorem denoteInt_lt_pow {base : Nat}
     (limbs : List Nat) (hranged : Ranged base limbs) :
     denoteInt base limbs < (base : Int) ^ limbs.length := by
   rw [denoteInt_eq_natCast]
-  exact_mod_cast denoteNat_lt_pow hbase limbs hranged
+  exact_mod_cast denoteNat_lt_pow limbs hranged
 
 /-! ## The value-to-limbs codec -/
 
@@ -270,14 +270,14 @@ def toInt {base width : Nat} (x : Limbs base width) : Int := denoteInt base x.1
     x.toInt = (x.toNat : Int) := denoteInt_eq_natCast base x.1
 
 /-- Canonical limbs fit in the exact fixed-width capacity. -/
-theorem toNat_lt_pow {base width : Nat} (hbase : 0 < base) (x : Limbs base width) :
+theorem toNat_lt_pow {base width : Nat} (x : Limbs base width) :
     x.toNat < base ^ width := by
-  simpa [toNat, x.2.2] using denoteNat_lt_pow hbase x.1 x.2.1
+  simpa [toNat, x.2.2] using denoteNat_lt_pow x.1 x.2.1
 
 /-- Decode a canonical limb vector as its bounded natural number. -/
-def toFin {base width : Nat} (hbase : 0 < base) (x : Limbs base width) :
+def toFin {base width : Nat} (x : Limbs base width) :
     Fin (base ^ width) :=
-  ⟨x.toNat, x.toNat_lt_pow hbase⟩
+  ⟨x.toNat, x.toNat_lt_pow⟩
 
 /-- Encode a bounded natural number as exactly `width` little-endian limbs. -/
 def ofFin {base width : Nat} (hbase : 0 < base) (value : Fin (base ^ width)) :
@@ -286,20 +286,20 @@ def ofFin {base width : Nat} (hbase : 0 < base) (value : Fin (base ^ width)) :
 
 /-- Decoding after encoding returns the original bounded natural number. -/
 theorem toFin_ofFin {base width : Nat} (hbase : 0 < base)
-    (value : Fin (base ^ width)) : toFin hbase (ofFin hbase value) = value := by
+    (value : Fin (base ^ width)) : toFin (ofFin hbase value) = value := by
   apply Fin.ext
   exact denoteNat_digitsLE hbase width value.1 value.2
 
 /-- Encoding after decoding returns the exact canonical limb vector. -/
 theorem ofFin_toFin {base width : Nat} (hbase : 0 < base)
-    (x : Limbs base width) : ofFin hbase (toFin hbase x) = x := by
+    (x : Limbs base width) : ofFin hbase (toFin x) = x := by
   apply Subtype.ext
   simpa [ofFin, toFin, toNat, x.2.2] using digitsLE_denoteNat hbase x.1 x.2.1
 
 /-- Canonical `width`-limb numerals are exactly the naturals below `base ^ width`. -/
 def equivFin {base width : Nat} (hbase : 0 < base) :
     Limbs base width ≃ Fin (base ^ width) where
-  toFun := toFin hbase
+  toFun := toFin
   invFun := ofFin hbase
   left_inv := ofFin_toFin hbase
   right_inv := toFin_ofFin hbase
