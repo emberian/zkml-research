@@ -15,7 +15,7 @@ dependency.  `Theory.AssertAxioms` re-exports it and adds the tree-wide census.
 The exact axiom set of each Objective Bend declaration is not typed by hand
 beside it: it is a column of the declaration's row in the contract manifests
 (`scripts/gates/objective-manifest/<Module>.tsv`), which `scripts/check-objective-proofs.sh`
-ratchets: a changed axiom set is red unless `scripts/gates/objective-contract-changes.txt`
+ratchets: a changed axiom set is red unless a line of `scripts/gates/objective-contract-decisions.txt`
 admits it.
 -/
 import Lean
