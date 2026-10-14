@@ -38,6 +38,34 @@ def denoteNat (base : Nat) : List Nat → Nat
   | [] => 0
   | d :: ds => d + base * denoteNat base ds
 
+/-- `denoteNat` seven limbs at a time: for byte limbs a seven-limb chunk is below
+`2^56`, so it is assembled in unboxed arithmetic and only one big multiply-add per
+chunk touches the bignum (the world root's every node hash runs this on 32 bytes:
+5 big steps instead of 32). Proved equal (`denoteNat_eq_fast`) and attached by
+`@[csimp]`. -/
+def denoteNatFast (base : Nat) : List Nat → Nat
+  | d0 :: d1 :: d2 :: d3 :: d4 :: d5 :: d6 :: ds =>
+      (d0 + base * (d1 + base * (d2 + base * (d3 + base * (d4 + base * (d5 + base * d6)))))) +
+        base ^ 7 * denoteNatFast base ds
+  | ds => denoteNat base ds
+
+theorem denoteNatFast_eq (base : Nat) : ∀ limbs : List Nat, denoteNatFast base limbs = denoteNat base limbs
+  | d0 :: d1 :: d2 :: d3 :: d4 :: d5 :: d6 :: ds => by
+      rw [denoteNatFast, denoteNatFast_eq base ds]
+      simp only [denoteNat]
+      ring
+  | [] => rfl
+  | [_] => rfl
+  | [_, _] => rfl
+  | [_, _, _] => rfl
+  | [_, _, _, _] => rfl
+  | [_, _, _, _, _] => rfl
+  | [_, _, _, _, _, _] => rfl
+
+@[csimp] theorem denoteNat_eq_fast : @denoteNat = @denoteNatFast := by
+  funext base limbs
+  exact (denoteNatFast_eq base limbs).symm
+
 /-- Integer denotation of the same natural limbs, without field reduction. -/
 def denoteInt (base : Nat) : List Nat → Int
   | [] => 0
