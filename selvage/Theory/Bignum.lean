@@ -18,6 +18,7 @@ casting a packed value into a smaller field is injective, and it emits no
 circuit constraints.  Those realization obligations belong above `Theory`.
 -/
 import Mathlib.Tactic
+import Theory.AxiomPin
 
 namespace Minidregg.Theory.Bignum
 
@@ -401,5 +402,14 @@ example (value : Fin ((2 : Nat) ^ 248)) :
 #guard_msgs (whitespace := lax) in #print axioms Limbs.toNat_ofBounded
 /-- info: 'Minidregg.Theory.Bignum.bits_248_fit_nine_radix_2013265921_limbs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms bits_248_fit_nine_radix_2013265921_limbs
+
+/-! ## Poles of `ValidRadix`
+
+The radix premise is satisfied by the byte radix and refuted by a unary "radix". -/
+
+theorem validRadix_byte : ValidRadix 256 := by unfold ValidRadix; decide
+theorem not_validRadix_unary : ¬ ValidRadix 1 := by unfold ValidRadix; decide
+
+#assert_axioms validRadix_byte not_validRadix_unary
 
 end Minidregg.Theory.Bignum
