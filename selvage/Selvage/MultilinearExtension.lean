@@ -82,6 +82,7 @@ quadratic round engine and the oracle factorization stay under that tag —
 no new residual is coined here.
 -/
 import Selvage.SumcheckReduction
+import Theory.AxiomPin
 
 namespace Minidregg.Selvage
 
@@ -888,5 +889,16 @@ end MLEExample
   #print axioms MLEExample.partial_terminal_agrees_but_check_bites
 /-- info: 'Minidregg.Selvage.MLEExample.residualSum_and_one_ne_full' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms MLEExample.residualSum_and_one_ne_full
+
+/-- Refuting pole of `MultiAffine`: `x₀²` over `ZMod 3` is not affine in `x₀`
+(at `t = 2`: `4 = 1` against `(1 - 2)·0 + 2·1 = 2`). -/
+theorem multiAffine_square_refused :
+    ¬ MultiAffine (m := 1) (F := ZMod 3) (fun x => x 0 * x 0) := by
+  intro h
+  have := h 0 (fun _ => 0) 2
+  simp only [Function.update_self] at this
+  exact absurd this (by decide)
+
+#assert_axioms multiAffine_square_refused
 
 end Minidregg.Selvage

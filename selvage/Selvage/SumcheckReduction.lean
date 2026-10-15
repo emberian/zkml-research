@@ -80,6 +80,7 @@ restatement.
 -/
 import Selvage.Sumcheck
 import Selvage.ConstrainedCode
+import Theory.AxiomPin
 
 namespace Minidregg.Selvage
 
@@ -548,5 +549,23 @@ example : AdaptiveAcceptsFalse (v := 1) (fun _ _ => (X : Polynomial (ZMod 5)))
   ⟨zero_word_accept_witness.1, zero_word_accept_witness.2, by decide⟩
 
 end SCRExample
+
+/-! ## Poles of `PrefixMeasurable`
+
+A constant prover is prefix-measurable; one whose round-`i` message reads
+challenge `i` itself -- it speaks after seeing its own round's coin -- is not. -/
+
+theorem prefixMeasurable_constant :
+    PrefixMeasurable (F := ZMod 2) (fun _ _ => (0 : Polynomial (ZMod 2))) :=
+  fun _ _ _ _ => rfl
+
+theorem prefixMeasurable_peeking_refused :
+    ¬ PrefixMeasurable (F := ZMod 2) (fun χ i => Polynomial.C (χ i)) := by
+  intro h
+  have := h (fun _ => 0) (fun _ => 1) 0 (fun j hj => absurd hj (Nat.not_lt_zero j))
+  simp only [Polynomial.C_inj] at this
+  exact absurd this (by decide)
+
+#assert_axioms prefixMeasurable_constant prefixMeasurable_peeking_refused
 
 end Minidregg.Selvage
