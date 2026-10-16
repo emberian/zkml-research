@@ -21,6 +21,7 @@ The remaining run theorem must synthesize the program from the actual public
 transcript and prove the corresponding off-bad semantic agreement.
 -/
 import Selvage.SpongeIndiffDeferredWork
+import Theory.AxiomPin
 
 namespace Minidregg.Selvage
 
@@ -331,5 +332,24 @@ end SpongeAdaptiveCouplingExample
 /-- info: 'Minidregg.Selvage.SpongeAdaptiveCouplingExample.adaptiveTailEvent_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SpongeAdaptiveCouplingExample.adaptiveTailEvent_probability
+
+/-! ## Poles of `WorkPrefixMeasurable`
+
+A constant guard is prefix-measurable at boundary `0`; a guard reading
+coordinate `0` is not. -/
+
+theorem workPrefixMeasurable_constant :
+    WorkPrefixMeasurable (Rate := Bool) (Cap := Unit) (work := 1) 0 (fun _ => True) :=
+  fun _ _ _ => Iff.rfl
+
+theorem workPrefixMeasurable_peeking_refused :
+    ¬ WorkPrefixMeasurable (Rate := Bool) (Cap := Unit) (work := 1) 0
+      (fun v => (v 0).1 = true) := by
+  intro h
+  have := (h (fun _ => (true, ())) (fun _ => (false, ()))
+    (fun _ hk => absurd hk (Nat.not_lt_zero _))).1 rfl
+  exact Bool.noConfusion this
+
+#assert_axioms workPrefixMeasurable_constant workPrefixMeasurable_peeking_refused
 
 end Minidregg.Selvage

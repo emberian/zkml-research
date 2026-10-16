@@ -15,6 +15,7 @@ and coupling the resulting ideal transcript to a random permutation until the
 first bad step, remain separate obligations.
 -/
 import Selvage.SpongeIndiff
+import Theory.AxiomPin
 
 namespace Minidregg.Selvage
 
@@ -142,6 +143,33 @@ theorem forwardOne_fresh : FreshIdealExecution forwardOne iv coins (List.finRang
 /-- Consequently the actual one-step ideal run has unique rooted paths. -/
 theorem forwardOne_uniquePaths : UniquePaths (idealRun forwardOne iv coins).sim iv :=
   idealRun_uniquePaths_of_fresh forwardOne iv coins forwardOne_fresh
+
+/-! ### Refuting poles of `IdealFreshAt` and `FreshIdealExecution`
+
+A forward query whose sampled capacity is the IV's capacity is not fresh. -/
+
+/-- Coins whose capacity collides with the IV's. -/
+def staleCoins : Fin 1 → ZMod 2 × (ZMod 2 × Fin 3) :=
+  fun _ => (0, (0, 0))
+
+theorem forwardOne_freshAt : IdealFreshAt forwardOne iv coins ⟨Oracle.empty, Oracle.empty, []⟩ 0 := by
+  change (1 : Fin 3) ∉ capsOf Oracle.empty iv ∧ (1 : Fin 3) ≠ 0
+  decide
+
+theorem forwardOne_stale_not_freshAt :
+    ¬ IdealFreshAt forwardOne iv staleCoins ⟨Oracle.empty, Oracle.empty, []⟩ 0 := by
+  intro h
+  change (0 : Fin 3) ∉ capsOf Oracle.empty iv ∧ (0 : Fin 3) ≠ 0 at h
+  exact h.2 rfl
+
+theorem forwardOne_stale_not_fresh :
+    ¬ FreshIdealExecution forwardOne iv staleCoins (List.finRange 1)
+      ⟨Oracle.empty, Oracle.empty, []⟩ := by
+  rw [show List.finRange 1 = [0] by decide, FreshIdealExecution]
+  rintro ⟨h, -⟩
+  exact forwardOne_stale_not_freshAt h
+
+#assert_axioms forwardOne_freshAt forwardOne_stale_not_freshAt forwardOne_stale_not_fresh
 
 end SpongeRunInvariantExample
 

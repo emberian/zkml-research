@@ -11,6 +11,7 @@ is closed below without `d ≤ t`.
 -/
 import Selvage.OracleLogLinkedAttributed
 import Selvage.JohnsonRegime
+import Theory.AxiomPin
 
 namespace Minidregg.Selvage
 
@@ -454,5 +455,34 @@ end PreimageOracleLog
 #guard_msgs (whitespace := lax) in #print axioms preimage_hitLogExtractor_pinned
 /-- info: 'Minidregg.Selvage.preimage_oracleLog_source_relaxed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms preimage_oracleLog_source_relaxed
+
+/-! ## Poles of `QueryAgreementAmplifies`
+
+At radius `1` every agreement is large; at radius `0` a schedule that only
+queries coordinate `0` cannot see the disagreement at coordinate `1`. -/
+
+theorem queryAgreementAmplifies_radiusOne :
+    QueryAgreementAmplifies (ι := Fin 2) (F := Bool) (fun _ : Fin 1 => 0) 1
+      (fun _ => false) (fun i => decide (i = 1)) :=
+  fun _ => ⟨∅, by simp, by simp [AgreesOn]⟩
+
+theorem queryAgreementAmplifies_blindQuery_refused :
+    ¬ QueryAgreementAmplifies (ι := Fin 2) (F := Bool) (fun _ : Fin 1 => 0) 0
+      (fun _ => false) (fun i => decide (i = 1)) := by
+  intro h
+  obtain ⟨A, big, agrees⟩ := h (by
+    intro x hx
+    simp only [Finset.mem_image, Finset.mem_univ, true_and] at hx
+    obtain ⟨_, rfl⟩ := hx
+    rfl)
+  have hcard : 2 ≤ A.card := by
+    have : ((2 : ℕ) : ℝ) ≤ (A.card : ℝ) := by simpa using big
+    exact_mod_cast this
+  have hA : A = Finset.univ := Finset.eq_univ_of_card A (by
+    have := Finset.card_le_univ A; simp at this ⊢; omega)
+  have := agrees 1 (by simp [hA])
+  simp at this
+
+#assert_axioms queryAgreementAmplifies_radiusOne queryAgreementAmplifies_blindQuery_refused
 
 end Minidregg.Selvage
