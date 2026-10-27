@@ -12,11 +12,9 @@ This module imports only `Lean`, so Mathlib-free modules (the Objective Bend
 Core4 definitions and proofs) can pin their theorems without taking a Mathlib
 dependency.  `Theory.AssertAxioms` re-exports it and adds the tree-wide census.
 
-The exact axiom set of each Objective Bend declaration is not typed by hand
-beside it: it is a column of the declaration's row in the contract manifests
-(`scripts/gates/objective-manifest/<Module>.tsv`), which `scripts/check-objective-proofs.sh`
-ratchets: a changed axiom set is red unless a line of `scripts/gates/objective-contract-decisions.txt`
-admits it.
+The axiom footprint of a declaration is pinned where it is stated, as a
+`#guard_msgs … #print axioms` pair (the contract manifests that once held it as
+a column were deleted on 2026-10-27: docs/COORDINATION-2026-10-27.md §2).
 -/
 import Lean
 
