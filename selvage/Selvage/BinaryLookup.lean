@@ -12,6 +12,7 @@ a vector of Hamming weight three satisfies both constraints in characteristic
 two but is not one-hot.
 -/
 import Selvage.MultilinearExtension
+import Theory.BinaryCubeAddress
 
 namespace Minidregg.Selvage
 
@@ -19,26 +20,14 @@ variable {F : Type*} [Field F]
 
 /-! ## LSB-first addresses -/
 
-/-- LSB-first equivalence between Boolean address words and table indices. -/
-def binaryCubeIndexEquiv (k : ℕ) :
-    (Fin k → Bool) ≃ Fin (2 ^ k) :=
-  (Equiv.piCongrRight fun _ => finTwoEquiv.symm).trans finFunctionFinEquiv
-
-/-- Boolean address bits decoded from a table index. -/
-def binaryAddressBits (k : ℕ) (i : Fin (2 ^ k)) : Fin k → Bool :=
-  (binaryCubeIndexEquiv k).symm i
+-- The address convention lives in `Theory.BinaryCubeAddress` (Mathlib only), so the
+-- Merkle controller shares it without importing Selvage; re-exported here.
+export Minidregg.Theory.BinaryCubeAddress (binaryCubeIndexEquiv binaryAddressBits
+  binaryAddressBits_encode binaryCubeIndexEquiv_decode)
 
 /-- The same decoded address embedded into the field. -/
 def binaryAddressPoint (k : ℕ) (i : Fin (2 ^ k)) : Fin k → F :=
   cubePt (binaryAddressBits k i)
-
-@[simp] theorem binaryAddressBits_encode (k : ℕ) (b : Fin k → Bool) :
-    binaryAddressBits k (binaryCubeIndexEquiv k b) = b := by
-  simp [binaryAddressBits]
-
-@[simp] theorem binaryCubeIndexEquiv_decode (k : ℕ) (i : Fin (2 ^ k)) :
-    binaryCubeIndexEquiv k (binaryAddressBits k i) = i := by
-  simp [binaryAddressBits]
 
 /-! ## The exact equality/one-hot vector -/
 
