@@ -82,8 +82,7 @@ ATLAS fields for `ComposeErrorBoundStrict`:
 landed F₅ system, via `accBcsSystem_F5_not_knowledgeSound`). It is a real per-system demand
 and stays listed — what is loose is only calling it an obligation without naming the `B`.
 
-Nothing in `HeteroComposition.lean` or the docs is edited here; de-listing/re-wording the
-`ComposeErrorBound` row of `docs/FORMAL_STATUS_AND_NEXT_PROOFS.md` is the coordinator's.
+Nothing in `HeteroComposition.lean` is edited here.
 
 Design record: `zkml-research/notes/compose-error-bound.md`.
 -/
@@ -97,8 +96,8 @@ open AccRbrBcsExample
 
 /-- **`ComposeErrorBound` closes from `err_nonneg` alone.** Both hypotheses are discarded
 (`-`), the equation is consumed by `rfl`, and what remains is `add_nonneg` on the two
-`ProofSystem.err_nonneg` fields. The obligation named in
-`docs/FORMAL_STATUS_AND_NEXT_PROOFS.md` is this. -/
+`ProofSystem.err_nonneg` fields. This is `ComposeErrorBound` exactly as
+`Selvage/HeteroComposition.lean` states it. -/
 theorem composeErrorBound_of_err_nonneg : ComposeErrorBound := by
   rintro A B - - ε rfl
   exact add_nonneg A.err_nonneg B.err_nonneg
