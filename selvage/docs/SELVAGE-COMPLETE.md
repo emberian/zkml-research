@@ -1,6 +1,7 @@
 # Selvage: what is complete, at which boundary
 
-Status: 2026-08-09.
+Scope: Selvage's Lean modules (`Selvage/`, `Assurance/`) and the native crate `prover/`
+(`minidregg-prover`). The evidence runs cited below date from August 2026 and have not been repeated.
 
 Selvage is substantial machine-checked mathematics plus several real Lean-owned controllers. It is
 not one deployed succinct ZK proof system. This document replaces earlier uses of “complete” that
@@ -237,15 +238,15 @@ runtime closure.
 
 ## Performance boundary — B, narrow
 
-Source `54295c6` and evidence `4d1f290` validate byte identity and measure direct versus generated
+Source `54295c6` and evidence `4d1f290` (August 2026) validated byte identity and measure direct versus generated
 dispatch for work 9101. Ratios across lengths 1–16384 were `0.985–1.040` on hbox and
 `0.985–1.025` on persvati. This is an empirical dispatch microbenchmark with no threshold and no
 semantic, security, or complete-prover implication.
 
-Integrated source/build evidence is archived from hbox as
-`E-20260810T003037-13290-hbox-3f74f634e0e1-lake`: source `3f74f63`, 8729 jobs, command exit 0,
-and source-integrity exit 0. Persvati replay is pending because local Tailscale reports
-`NeedsLogin`. This is not benchmark, semantics, or security evidence.
+The benchmark harness is `prover/benchmarks/native_dispatch` with
+`prover/tests/native_dispatch_performance.rs`. Integrated build evidence for source `3f74f63` is
+archived as `docs/evidence/runs/E-20260810T003037-13290-hbox-3f74f634e0e1-lake*` (8729 jobs,
+command exit 0, source-integrity exit 0). It is not benchmark, semantics, or security evidence.
 
 ## Historical claim corrections
 
