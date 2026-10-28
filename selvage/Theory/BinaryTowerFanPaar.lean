@@ -49,14 +49,33 @@ the level embedding, `FanPaarRecursion` the stated target).
 Candidate-independent FIELD MATH — imports Mathlib + Theory only (boundary
 enforced by `scripts/check-import-boundary.sh`).
 -/
-import Theory.BinaryTower
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.Data.Set.Card
-import Mathlib.Tactic.ComputeDegree
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Theory.BinaryTower
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.Data.Set.Card
+public import Mathlib.Tactic.ComputeDegree
+public import Mathlib.Tactic.LinearCombination
+
+-- Bodies this file reduces or derives through, not exposed by their modules (module system).
+import all Init.Data.Repr
+import all Init.Data.ToString.Basic
+import all Init.Data.ToString.Extra
+import all Init.Data.Array.Basic
+import all Init.Data.ByteArray.Basic
+import all Init.Data.String.Decode
+import all Init.Data.String.Defs
+import all Init.Control.Except
+import all Init.Data.List.Basic
+import all Init.Data.Nat.Bitwise.Basic
+import all Init.Data.String.Bootstrap
+import all Init.Data.Format.Basic
+import all Init.Data.List.Scan.Basic
+
+@[expose] public section
 
 namespace Minidregg.Theory
 

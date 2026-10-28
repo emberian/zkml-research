@@ -51,11 +51,15 @@ Candidate-independent FIELD MATH — imports Mathlib only (boundary enforced by
   Mathlib only; the boundary law forbids naming Selvage). That instantiation is
   the intended bridge and lands on the Selvage side.
 -/
-import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Algebra.CharP.Two
-import Mathlib.LinearAlgebra.Lagrange
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.LinearAlgebra.Lagrange
+public import Mathlib.SetTheory.Cardinal.Finite
+
+@[expose] public section
 
 namespace Minidregg.Theory
 

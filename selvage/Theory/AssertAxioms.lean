@@ -21,8 +21,14 @@ of the tree may import it without crossing the ATLAS §7 import boundary.
 Lean v4.30 precomputes each imported declaration's axioms at olean export, so
 the census is a lookup per constant, not a walk.
 -/
-import Mathlib.Tactic.Basic
-import Theory.AxiomPin
+module
+
+public import Mathlib.Tactic.Basic
+public import Theory.AxiomPin
+meta import Mathlib.Tactic.Basic
+meta import Theory.AxiomPin
+
+@[expose] public section
 
 namespace Minidregg.Theory.AssertAxioms
 

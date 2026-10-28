@@ -7,7 +7,11 @@ the lookup arguments (`Selvage.BinaryLookup` re-exports it). It needs only
 Mathlib, so a module that commits to cube addresses does not import the proof
 system to get them.
 -/
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+
+@[expose] public section
 
 namespace Minidregg.Theory.BinaryCubeAddress
 

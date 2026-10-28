@@ -46,8 +46,27 @@ membership / non-membership openings.
 * `pathRootM_tick` — cost: `depth + 1` hash invocations per verification and per
   incremental update, measured on the same monadic code the pure path runs.
 -/
-import Mathlib.Data.List.Forall2
-import Theory.AxiomPin
+module
+
+public import Mathlib.Data.List.Forall2
+public import Theory.AxiomPin
+
+-- Bodies this file reduces or derives through, not exposed by their modules (module system).
+import all Init.Data.Repr
+import all Init.Data.ToString.Basic
+import all Init.Data.ToString.Extra
+import all Init.Data.Array.Basic
+import all Init.Data.ByteArray.Basic
+import all Init.Data.String.Decode
+import all Init.Data.String.Defs
+import all Init.Control.Except
+import all Init.Data.List.Basic
+import all Init.Data.Nat.Bitwise.Basic
+import all Init.Data.String.Bootstrap
+import all Init.Data.Format.Basic
+import all Init.Data.List.Scan.Basic
+
+@[expose] public section
 
 namespace Minidregg.Theory.AuthMap
 

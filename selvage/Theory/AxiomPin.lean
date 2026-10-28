@@ -16,7 +16,12 @@ The axiom footprint of a declaration is pinned where it is stated, as a
 `#guard_msgs … #print axioms` pair (the contract manifests that once held it as
 a column were deleted on 2026-10-27: docs/COORDINATION-2026-10-27.md §2).
 -/
-import Lean
+module
+
+public import Lean
+meta import Lean
+
+@[expose] public section
 
 namespace Minidregg.Theory.AssertAxioms
 
