@@ -1,7 +1,7 @@
 /-
 # Theory.AuthMap — an authenticated map with an incremental root and openings
 
-DATAMODEL §3.2 / §3.9 / §5 A3.  Today a cell root is a hash of the whole encoded
+docs/DATAMODEL.md §3.2 / §3.9 / §5 A3.  Today a cell root is a hash of the whole encoded
 cell (`CellState.Materialized.root`) and the world "root" is cSHAKE over the whole
 image; nothing can be opened and every write rehashes everything.  This module is
 the object that replaces that: a sparse Merkle map of fixed depth whose root is a
