@@ -194,16 +194,20 @@ private theorem one_query_seed_rejection_probability {queryCount : Nat}
   calc
     uniformProb (Fin queryCount → Digest) (fun seeds => seeds a 0 = 0) =
         uniformProb (QueryRest × Digest) (fun split => split.2 0 = 0) := by
-      simpa [QueryRest] using
+      have hsimpa :=
         (uniformProb_equiv (splitCoord a)
           (fun split : QueryRest × Digest => split.2 0 = 0))
+      simp [QueryRest] at hsimpa ⊢
+      exact hsimpa
     _ = uniformProb Digest (fun seed => seed 0 = 0) :=
       uniformProb_prod_snd (A := QueryRest) (B := Digest)
         (fun seed : Digest => seed 0 = 0)
     _ = uniformProb (LaneRest × F) (fun split => split.2 = 0) := by
-      simpa [Digest, LaneRest] using
+      have hsimpa :=
         (uniformProb_equiv (splitCoord (0 : Fin 8))
           (fun split : LaneRest × F => split.2 = 0))
+      simp [Digest, LaneRest] at hsimpa ⊢
+      exact hsimpa
     _ = uniformProb F (fun value => value = 0) :=
       uniformProb_prod_snd (A := LaneRest) (B := F)
         (fun value : F => value = 0)
@@ -312,10 +316,10 @@ theorem unbiasedAccepts_to_rawCommittedIor {ell m queryCount : Nat}
   have rootJ := accepted.2.1 j (Nat.le_of_lt j.isLt)
   have rootNext := accepted.2.1 (j + 1) (Nat.succ_le_iff.mpr j.isLt)
   simpa [show receiptLevelRoot receipt j.castSucc =
-        st.rootAt receipt.challenge j (Nat.le_of_lt j.isLt) by simpa using rootJ,
+        st.rootAt receipt.challenge j (Nat.le_of_lt j.isLt) by exact rootJ,
     show receiptLevelRoot receipt j.succ =
         st.rootAt receipt.challenge (j + 1)
-          (Nat.succ_le_iff.mpr j.isLt) by simpa using rootNext] using hopen
+          (Nat.succ_le_iff.mpr j.isLt) by exact rootNext] using hopen
 
 #check @babyBear_nonzero_factorization
 #check @acceptedScalarEquiv

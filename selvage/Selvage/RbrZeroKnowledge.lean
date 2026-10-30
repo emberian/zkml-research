@@ -600,7 +600,7 @@ theorem extractor_meets_simulator :
           xWord + lineOf 2 1 + (2 : ZMod 5) • oneWord]
         = [lineOf 2 1, oneWord] ∧
       lineOf 2 1 ∈ constrainedMaskSpace dom₅ 2 pt2 ∧ lineOf 2 1 ≠ 0 :=
-  ⟨by decide, maskWord_mem, maskWord_ne_zero⟩
+  ⟨by decide +kernel, maskWord_mem, maskWord_ne_zero⟩
 
 /-! ### Teeth, both directions — the single-round teeth lifted to depth -/
 
@@ -623,7 +623,7 @@ extraction: `zeroKnowledge_fails_at_zero` + `extraction_survives_at_zero`
 theorem extraction_survives_zero_round :
     extractChain (ι := Fin 4) γzeroSched (padSched ![1, 2]) (xWord + oneWord)
       ![xWord + oneWord, xWord + (2 : ZMod 5) • oneWord] = [0, oneWord] := by
-  decide
+  decide +kernel
 
 /-- **Teeth 2 — one schedule kills extraction, never hiding**: at the
 diagonal (`γalt = γbase`) the chain extraction COLLAPSES (landed

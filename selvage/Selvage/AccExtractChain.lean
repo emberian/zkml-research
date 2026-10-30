@@ -441,7 +441,7 @@ theorem extractChain_recovers :
     extractChain (ι := Fin 4) γbase γalt₂ (xWord + oneWord)
       ![xWord + oneWord, xWord + (2 : ZMod 5) • oneWord]
       = [0, oneWord] := by
-  decide
+  decide +kernel
 
 /-- **Premise inhabitation**: `lightClientKnowledgeSound` fires on the landed
 keystone chain — alignment, seam, challenge distinctness, and all three
@@ -467,7 +467,7 @@ theorem extract_chain_teeth_diagonal :
     extractChain (ι := Fin 4) γbase γbase (xWord + oneWord)
       ![xWord + oneWord, xWord + (2 : ZMod 5) • oneWord]
       ≠ [0, oneWord] := by
-  decide
+  decide +kernel
 
 /-- The honest witness list of `goodChain`. -/
 def ambig₁ : List (Fin 4 → ZMod 5) := [0, oneWord]

@@ -248,7 +248,7 @@ theorem digitsLE_denoteNat {base : Nat} (hbase : 0 < base) :
         exact Nat.mod_eq_of_lt hdigit
       have hdiv : (digit + base * denoteNat base limbs) / base = denoteNat base limbs := by
         rw [Nat.add_mul_div_left _ _ hbase, Nat.div_eq_of_lt hdigit, Nat.zero_add]
-      simp only [denoteNat_cons, digitsLE, hmod, hdiv, ih htail]
+      simp only [List.length_cons, denoteNat_cons, digitsLE, hmod, hdiv, ih htail]
 
 /-! ## Uniqueness and the canonical carrier -/
 

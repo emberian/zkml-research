@@ -781,11 +781,11 @@ end Lanes
 #guard_msgs (whitespace := lax) in #print axioms novelPack_monomial_eval_ne_zero
 /-- info: 'Minidregg.Selvage.cosetPack_monomial_eval_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms cosetPack_monomial_eval_ne_zero
-/-- info: 'Minidregg.Selvage.autonomousSet_add_const' depends on axioms: [propext, Quot.sound] -/
+/-- info: 'Minidregg.Selvage.autonomousSet_add_const' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms autonomousSet_add_const
-/-- info: 'Minidregg.Selvage.autonomousSet_comp_lanewise' depends on axioms: [propext, Quot.sound] -/
+/-- info: 'Minidregg.Selvage.autonomousSet_comp_lanewise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms autonomousSet_comp_lanewise
-/-- info: 'Minidregg.Selvage.autonomousSet_iterate' depends on axioms: [propext, Quot.sound] -/
+/-- info: 'Minidregg.Selvage.autonomousSet_iterate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms autonomousSet_iterate
 /-- info: 'Minidregg.Selvage.weftMix_eq_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms weftMix_eq_eval

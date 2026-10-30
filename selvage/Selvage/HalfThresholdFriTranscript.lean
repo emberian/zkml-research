@@ -605,7 +605,7 @@ theorem spike_wrongChallenge_equivocates :
     spike_wrongChallenge_equivocal_accepts
   rcases hsplit with hpinned | hequiv
   · have hne : fold data0 spikeWord 3 (1 : Fin 2)
-        ≠ fold data0 spikeWord 1 (1 : Fin 2) := by decide
+        ≠ fold data0 spikeWord 1 (1 : Fin 2) := by decide +kernel
     exact False.elim (hne (by simpa [queryOne] using hpinned 0))
   · exact hequiv
 
@@ -629,7 +629,7 @@ theorem spike_wrongChallenge_queryZero_accepts :
   subst a
   simp [OpenedFriQuery, idealSchemes, idealCommitment, queryZero,
     fold, foldEven, foldOdd]
-  decide
+  decide +kernel
 
 /-- Querying the differing coordinate rejects the same fixed roots.  Binding
 makes adversarial opening data unable to repair the false fold equation. -/
@@ -642,7 +642,7 @@ theorem spike_wrongChallenge_queryOne_rejects :
   have hpinned := openedFriQuery_pins
     (idealSchemes 0) (idealSchemes 1) data0 rfl rfl (hopen 0)
   have hne : fold data0 spikeWord 3 (1 : Fin 2)
-      ≠ fold data0 spikeWord 1 (1 : Fin 2) := by decide
+      ≠ fold data0 spikeWord 1 (1 : Fin 2) := by decide +kernel
   exact hne (by simpa [queryOne] using hpinned)
 
 /-- The committed wrong-challenge word is at least `1/2`-far from the honest
@@ -653,7 +653,7 @@ theorem spike_wrongChallenge_distance :
     intro h
     have hpoint := congrFun h (1 : Fin 2)
     have hdiff : fold data0 spikeWord 3 (1 : Fin 2)
-        ≠ fold data0 spikeWord 1 (1 : Fin 2) := by decide
+        ≠ fold data0 spikeWord 1 (1 : Fin 2) := by decide +kernel
     exact hdiff hpoint
   have hfloor := one_div_card_le_relDist (F := ZMod 5) hne
   norm_num [Fintype.card_fin] at hfloor ⊢

@@ -48,9 +48,9 @@ a Boolean vector whose sum happens to be one in characteristic two. -/
 theorem canonicalIncidence_eq_unitVector (k : Nat)
     (I : κ → Fin (2 ^ k)) (row : κ) :
     canonicalIncidence (F := F) k I row = binaryUnitVector (I row) := by
-  simpa [canonicalIncidence, canonicalIndexColumn, binaryAddressPoint] using
-    (binaryLookupEq_cubePt_eq_unitVector (F := F) k
-      (binaryAddressBits k (I row)))
+  have h := binaryLookupEq_cubePt_eq_unitVector (F := F) k (binaryAddressBits k (I row))
+  rw [binaryCubeIndexEquiv_decode] at h
+  exact h
 
 @[simp] theorem canonicalIncidence_apply (k : Nat)
     (I : κ → Fin (2 ^ k)) (row : κ) (tableIndex : Fin (2 ^ k)) :

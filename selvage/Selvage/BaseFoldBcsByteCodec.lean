@@ -58,10 +58,12 @@ def encodeNatLE4 (value : Nat) : List UInt8 :=
   bytesOfDigits (Bignum.digitsLE 256 4 value)
     (Bignum.digitsLE_ranged (by norm_num) 4 value)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem encodeNatLE4_length (value : Nat) :
     (encodeNatLE4 value).length = 4 := by
   simp [encodeNatLE4, Bignum.digitsLE_length]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem encodeNatLE4_toNats (value : Nat) :
     (encodeNatLE4 value).map UInt8.toNat =
       Bignum.digitsLE 256 4 value := by

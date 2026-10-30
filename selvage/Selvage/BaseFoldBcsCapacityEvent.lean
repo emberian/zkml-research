@@ -579,6 +579,7 @@ theorem terminalPrimitiveFreshTo_of_noCollision (iv : Rate × Cap)
                         have := hih.2 result hrun
                         rwa [List.append_assoc, List.singleton_append] at this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A successful construction step of the fixed work adapter exposes the
 `programConstruction` result whose tables it installs. -/
 theorem workHybridStep_constr_program {q : Nat}
@@ -1000,7 +1001,7 @@ theorem paddedWorkHybridStateNat_rooted {m queryCount round : Nat}
               (paddedConstructionDistinguisher statement receipt verdict)
               (0, 0) previous ⟨round, Nat.lt_of_succ_le hround⟩ =
                 .ok state := by
-            simpa using hstate
+            exact hstate
           obtain ⟨hU, hrooted⟩ := ih hprev hprevRun
           obtain ⟨hans, hremaining⟩ :=
             paddedWorkHybridStateNat_ok_shape statement receipt verdict coins
@@ -1071,7 +1072,7 @@ theorem paddedWorkHybridStateNat_capsConsumed {m queryCount round : Nat}
               (paddedConstructionDistinguisher statement receipt verdict)
               (0, 0) previous ⟨round, Nat.lt_of_succ_le hround⟩ =
                 .ok state := by
-            simpa using hstate
+            exact hstate
           have hcons := ih hprev hprevRun
           obtain ⟨hans, hremaining⟩ :=
             paddedWorkHybridStateNat_ok_shape statement receipt verdict coins

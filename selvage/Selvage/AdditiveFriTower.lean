@@ -390,9 +390,10 @@ theorem additiveCoherentRound_uniform {ell m qCount : ℕ}
         (fun seed => p (additiveCoherentRound hmell j seed)) =
       uniformProb (Fin qCount → PowerTwoFriLevels ell ((j : ℕ) + 1))
         pPower := by
-          simpa [additiveCoherentRound, pPower, e,
-            additiveBatchEquivPowerTwo] using
+          have hsimpa :=
             powerTwoCoherentRound_uniform hmell j pPower
+          simp [additiveCoherentRound, pPower, e, additiveBatchEquivPowerTwo] at hsimpa ⊢
+          exact hsimpa
     _ = uniformProb
         (Fin qCount → AdditiveFriLevels ell ((j : ℕ) + 1)) p := by
       symm

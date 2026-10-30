@@ -3,15 +3,15 @@
 
 `#assert_axioms foo` elaborates to nothing when `foo` depends on no axiom
 outside Lean's three standard ones (`propext`, `Classical.choice`,
-`Quot.sound`), and is an error otherwise.  `sorryAx` and `Lean.ofReduceBool`
-(the compiler trust of `native_decide`) are therefore refused.
+`Quot.sound`), and is an error otherwise.  `sorryAx` and `native_decide`'s
+auxiliary axioms (its compiler trust) are therefore refused.
 
 `#assert_axioms_tree` is the same check over the whole package: every constant
 declared in one of this package's modules (roots `Theory`, `Compiler`,
 `Kernel`, `Assurance`, `Pred`, `Effects`, `Selvage`, `Host`, `Minidregg`) that
 the importing module can see. It fails on any constant resting on `sorryAx` or
 on a declared axiom, and on any package `axiom` declaration. The compiler trust
-(`native_decide`'s auxiliary axioms, `Lean.ofReduceBool`) is admitted there only as a
+(`native_decide`'s auxiliary axioms) is admitted there only as a
 counted exception, reported in the verdict line: `native_decide` is a
 deliberate tool in this tree (the `*_compiled` facts), not a hole. The root
 `AxiomCensus` module runs it over the umbrella.
@@ -37,12 +37,12 @@ open Lean Elab Command
 -- `standard` and `#assert_axioms` (over one or many names) live in Theory/AxiomPin.lean.
 
 /-- The compiler trust `native_decide` adds; refused by `#assert_axioms`,
-counted (not refused) by `#assert_axioms_tree`. In Lean v4.30 each
-`native_decide` proof is an auxiliary axiom `<theorem>._native.native_decide.ax_…`
-(older toolchains used `Lean.ofReduceBool`). -/
+counted (not refused) by `#assert_axioms_tree`. Each `native_decide` proof is an
+auxiliary axiom `<theorem>._native.native_decide.ax_…` (`Lean.Meta.nativeEqTrue`); the
+toolchain has no global compiler-trust axiom (`Lean.ofReduceBool` and `Lean.trustCompiler`
+were removed before v4.35). -/
 def isCompilerTrust (axiomName : Name) : Bool :=
-  axiomName == ``Lean.ofReduceBool || axiomName == ``Lean.trustCompiler ||
-    axiomName.components.any (· == `_native)
+  axiomName.components.any (· == `_native)
 
 /-- A `computed_fields` override: the compiled implementation Lean generates for
 an inductive with a `computed_field` (`Noun.mug`, N-MUG). It is a definition

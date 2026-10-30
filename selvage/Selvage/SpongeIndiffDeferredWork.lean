@@ -150,6 +150,7 @@ theorem deferredWorkStep_ans_length {q : Nat}
   · contradiction
 
 omit [DecidableEq Rate] in
+set_option backward.isDefEq.respectTransparency false in
 /-- On a construction query, an explicitly identified exact segment exposes
 the precise head coin used by the deferred semantic step. -/
 theorem deferredWorkStep_constr_exact {q : Nat}
@@ -292,9 +293,11 @@ theorem revealed_prefix_answer :
   have hcompletion :
       completion? (Oracle.empty : Oracle (ZMod 2 × Nat) (ZMod 2 × Nat))
         iv (1, 0) = some [1] := by
-    simpa [iv] using
+    have hsimpa :=
       (completion?_empty_iv
         (iv := iv) (s := ((1 : ZMod 2), (0 : Nat))) rfl)
+    simp [iv] at hsimpa ⊢
+    exact hsimpa
   have hfresh : fullMessageRo.lookup [1] = none := by
     unfold fullMessageRo
     rw [Oracle.lookup_respond_ne _ (by decide), Oracle.lookup_empty]

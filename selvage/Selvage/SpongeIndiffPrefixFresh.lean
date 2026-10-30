@@ -609,6 +609,7 @@ theorem prefixHybridStep_constr_of_returnsLastRate {q : Nat}
     rw [if_pos hcounts, hprogram]
   · simp [next, hrate]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fixed work-stream adapter preserves the fresh-path output theorem for
 an exact construction segment. -/
 theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
@@ -656,6 +657,7 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
   simp only [SpQuery.prefixCoins]
   rw [hcore]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fixed work adapter lifts the exact last-rate event without requiring
 freshness of proper-prefix edges. -/
 theorem workHybridStep_constr_of_returnsLastRate {q : Nat}
@@ -702,6 +704,7 @@ theorem workHybridStep_constr_of_returnsLastRate {q : Nat}
   simp only [SpQuery.prefixCoins]
   rw [hcore]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fixed work adapter inherits the same RO frame property from a
 successful construction step. -/
 theorem workHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}

@@ -428,7 +428,9 @@ theorem honest_hiding_transcript_accepted_F5 :
         (padSched fun i : Fin 2 => hidingChallengesF5 i.castSucc)
         xWord msEx goodChain.length) = 0 :=
     bcsWord_eq_zero_of_lt dom₅ 2 qz (by norm_num) _
-  simpa only [hidingMsgsF5, hidingScheduleF5, hz] using hraw
+  have hsimpa := hraw
+  simp only [hidingMsgsF5, hidingScheduleF5, hz] at hsimpa ⊢
+  exact hsimpa
 
 /-- The zero synthesis is not an honest target witness for the `(1,1)`
 aggregate.  The aggregate target is nonzero while every functional evaluates
@@ -480,12 +482,14 @@ theorem honest_hiding_word_verifies_F5 :
       hidingMsgsF5 hidingChallengesF5 =
       some (aggregate linRoot hidingScheduleF5 genesis goodChain,
         flatFold hidingScheduleF5 xWord msEx) := by
-  simpa only [hidingMsgsF5, hidingScheduleF5] using
+  have hsimpa :=
     (attributedWord_verify_honest
       (⊤ : Submodule (ZMod 5) (Fin 4 → ZMod 5)) linRoot goodChain
       (by norm_num) (by decide) (1 / 16) (by norm_num) (by norm_num)
       S₅ (rangeRootAttribution S₅) dom₅ 2 qz genesis xWord msEx
       hidingChallengesF5)
+  simp only [hidingMsgsF5, hidingScheduleF5] at hsimpa ⊢
+  exact hsimpa
 
 /-- The repaired output is not merely the honest fold syntactically: it is a
 genuine witness of the reduction target relation at the hiding point. -/

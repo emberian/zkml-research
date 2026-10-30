@@ -1169,7 +1169,7 @@ query `(1, 0)` at the IV capacity is rate-completing with message `[1]`. -/
 theorem first_completion :
     completion? Oracle.empty iv₂ ((1 : ZMod 2), (0 : Fin 2)) = some [1] := by
   have h := completion?_empty_iv (iv := iv₂) (s := ((1 : ZMod 2), (0 : Fin 2))) rfl
-  simpa using h
+  simpa [iv₂] using h
 
 /-- *The simulator programs it*: the answer is `(H [1], coin.2)` — the RO's
 value at the completed message, in the squeeze position. -/

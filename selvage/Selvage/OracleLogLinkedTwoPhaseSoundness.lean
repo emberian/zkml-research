@@ -169,6 +169,7 @@ theorem twoPhaseAlgebra_update_schedule
     · rw [padSched_of_le _ (Nat.le_of_not_gt ha),
         padSched_of_le _ (Nat.le_of_not_gt ha)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Acceptance at a staged output has at most one accepting field scalar per
 fixed ignored query component when zero is not aligned. -/
 theorem twoPhaseFreshOutputFibre_le
@@ -347,7 +348,9 @@ theorem twoPhaseFreshAlgebraLink_le
                 ((splitCoord (twoPhaseFoldSlot i)).symm (rest.2, ρ₀)))
               (twoPhaseFoldSlot i) ρ))
           (srOut P rest.1) = some (x', y') := hvec ▸ hacc
-    simpa [c, o, ρs, d₀, a, twoPhaseChallengeVectorAt] using hacc'
+    have hsimpa := hacc'
+    simp [c, o, ρs, d₀, a, twoPhaseChallengeVectorAt] at hsimpa ⊢
+    exact hsimpa
   · refine le_trans (le_of_eq (uniformProb_false fun ρ hev => ?_)) (by positivity)
     have hz := twoPhaseSubUdLogExtractor_eq_zero_of_unqueried C foldRoot ch hm
       hch δs hδpos hδone S V dom d Q wv o (srTrace P c) decodeRadius i hev.2.1
@@ -408,6 +411,7 @@ theorem twoPhaseHitZeroBad_le {tq : ℕ} :
   simp only [div_eq_mul_inv, one_mul]
   exact le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pointwise source-failure cover by fresh algebra, logged zero, or sampling
 failure. -/
 theorem twoPhaseLogSoundEvent_cover [Nonempty (Fin m)]

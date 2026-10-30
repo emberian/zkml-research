@@ -369,6 +369,7 @@ def AccStatePropBcs (C : Submodule F (Fin m → F))
       (pend.map (bcsWord dom d q)) w
 
 open Classical in
+set_option backward.isDefEq.respectTransparency false in
 /-- **The knowledge state function at the BCS alphabet** (WARP Def 4.1), all
 three clauses PROVED — `accKState`'s proofs re-run on the synthesized
 transcript with the committed-column conjunct threaded through: `empty_iff`

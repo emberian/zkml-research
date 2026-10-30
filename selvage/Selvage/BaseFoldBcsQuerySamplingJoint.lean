@@ -67,7 +67,7 @@ def acceptedDigestEquiv (ell : Nat) (hell : ell ≤ 28) :
   invFun split :=
     let scalar := (acceptedScalarEquiv ell hell).symm split.2
     ⟨fun lane => if h : lane = 0 then scalar.1 else split.1 ⟨lane, h⟩,
-      by simpa only [if_pos rfl] using scalar.2⟩
+      by simpa using scalar.2⟩
   left_inv seed := by
     apply Subtype.ext
     funext lane
@@ -81,7 +81,7 @@ def acceptedDigestEquiv (ell : Nat) (hell : ell ≤ 28) :
       dsimp only
       simp [lane.2]
     · dsimp only
-      simpa only [if_pos] using
+      simpa only [dite_true] using
         (acceptedScalarEquiv ell hell).apply_symm_apply split.2
 
 /-! ## Lift the equivalence to a complete seed batch -/

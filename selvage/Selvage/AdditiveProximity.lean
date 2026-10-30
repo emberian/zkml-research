@@ -96,7 +96,7 @@ theorem closeToDeg_iff_close (D : Finset F) (hD : D.Nonempty) {d : ℕ}
       (natDegree_lt_iff_degree_lt hd).mp hp, fun _ => rfl⟩, ?_⟩
     rw [relDist, show hammingDist (wordOn D f) u =
       (D.filter fun x => f x ≠ p.eval x).card by
-        simpa [u] using hammingDist_wordOn D f (fun x => p.eval x),
+        exact hammingDist_wordOn D f (fun x => p.eval x),
       Fintype.card_coe]
     exact (div_le_iff₀ hn).mpr (by simpa using hdist)
   · rintro ⟨u, hu, hdist⟩
@@ -111,7 +111,7 @@ theorem closeToDeg_iff_close (D : Finset F) (hD : D.Nonempty) {d : ℕ}
               funext x
               exact hpu x
         _ = (D.filter fun x => f x ≠ p.eval x).card := by
-              simpa using hammingDist_wordOn D f (fun x => p.eval x)
+              exact hammingDist_wordOn D f (fun x => p.eval x)
     rw [hham, Fintype.card_coe] at hdist
     exact (div_le_iff₀ hn).mp hdist
 
@@ -133,7 +133,7 @@ theorem foldedCloseToDeg_iff_close [CharP F 2] (R : Finset F) (hRn : R.Nonempty)
       (natDegree_lt_iff_degree_lt hd).mp hp, fun _ => rfl⟩, ?_⟩
     rw [relDist, show hammingDist (wordOn R g) u =
       (R.filter fun r => g r ≠ p.eval (foldMap beta r)).card by
-        simpa [u] using hammingDist_wordOn R g
+        exact hammingDist_wordOn R g
           (fun r => p.eval (foldMap beta r)),
       Fintype.card_coe]
     exact (div_le_iff₀ hn).mpr (by simpa using hdist)
@@ -150,7 +150,7 @@ theorem foldedCloseToDeg_iff_close [CharP F 2] (R : Finset F) (hRn : R.Nonempty)
                 funext r
                 exact hpu r
         _ = (R.filter fun r => g r ≠ p.eval (foldMap beta r)).card := by
-              simpa using hammingDist_wordOn R g
+              exact hammingDist_wordOn R g
                 (fun r => p.eval (foldMap beta r))
     rw [hham, Fintype.card_coe] at hdist
     exact (div_le_iff₀ hn).mp hdist

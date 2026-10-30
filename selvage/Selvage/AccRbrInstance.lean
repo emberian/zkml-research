@@ -523,6 +523,7 @@ theorem accExtract_append (C : Submodule F (Fin m → F))
 /-! ## `accKState` — Def 4.1's three clauses, PROVED -/
 
 open Classical in
+set_option backward.isDefEq.respectTransparency false in
 /-- **The knowledge state function for the accumulator chain** (WARP Def 4.1,
 `Selvage/Rbr.lean`'s `KStateFn`): the classical bit of `AccStateProp`. The three
 clauses are proved outright: `empty_iff` (the state at the empty transcript

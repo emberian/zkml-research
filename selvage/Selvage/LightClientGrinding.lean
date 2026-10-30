@@ -663,6 +663,7 @@ theorem grindChs_cover : ∀ (i : Fin 2) (k : Fin ((grindChs i)).length),
   · exact List.mem_cons_of_mem _ (List.mem_cons_of_mem _
       (List.mem_cons_of_mem _ (List.mem_cons_self ..)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Candidate 1's verdict in coin space: the phantom forges iff the shared
 oracle's cells 0 and 1 agree — the landed diagonal, at ITS prefixes. -/
 theorem grindFirst_verifies_iff (d₀ : Fin 2 → ZMod 5)
@@ -692,6 +693,7 @@ theorem grindFirst_verifies_iff (d₀ : Fin 2 → ZMod 5)
   rw [hs]
   exact (phantom_verifies_iff _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Candidate 2's verdict in coin space: the REORDER forges iff cells 2 and 3
 agree — its OWN diagonal, at its own prefixes. Reordering moved every
 prefix, so the two candidates' verdicts live on disjoint oracle cells. -/
@@ -856,7 +858,9 @@ theorem phantomGrind_caught_probably
     d
   have h25 : ((2 : ℕ) : ℝ) * (1 / ((5 : ℕ) : ℝ)) = 2 / 5 := by norm_num
   rw [← h25]
-  simpa [ZMod.card] using h
+  have hsimpa := h
+  simp [ZMod.card] at hsimpa ⊢
+  exact hsimpa
 
 /-- Coins `(1,0,1,1)`: the phantom itself is CAUGHT (`c₀ ≠ c₁`) — but its
 REORDER forges (`c₂ = c₃`), and the grinding adversary submits THAT one. The

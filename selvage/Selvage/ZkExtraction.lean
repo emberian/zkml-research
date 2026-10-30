@@ -1057,7 +1057,7 @@ depth-2 companion of the landed `extractor_meets_simulator`. -/
 theorem masked_extraction_computes :
     extractChain (ι := Fin 4) γbase γalt₂ (flatFold γbase xWord msEx)
         (fun k : Fin 2 => flatFold (updSched γbase γalt₂ k) xWord msEx)
-      = [lineOf 2 1, oneWord + lineOf 4 2] := by decide
+      = [lineOf 2 1, oneWord + lineOf 4 2] := by decide +kernel
 
 /-- **Masked completeness, fired**: the masked transcripts genuinely verify
 the UNCHANGED aggregate at every schedule — the transcripts the extractor
@@ -1087,7 +1087,7 @@ theorem pair_extraction_computes :
         flatFold (updSched γbase γalt₂ j) xWord (maskedWord γbase wsEx gsEx))
       (fun j : Fin 2 =>
         flatFold γbase xWord (maskedWord (updSched γbase ηalt₃ j) wsEx gsEx))
-      k = (wsEx k, gsEx k) := by decide
+      k = (wsEx k, gsEx k) := by decide +kernel
 
 /-! ### Teeth: the pair is invisible to every δ-schedule -/
 

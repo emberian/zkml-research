@@ -377,7 +377,7 @@ theorem goodChain_fs_verifies_prob_one (d : Fin 2 → ZMod 5) :
             genesis goodChain d))
           genesis goodChain)) = 1 := by
   refine Eq.trans (uniformProb_congr fun c => ?_) goodChain_verifies_prob_one
-  rw [fsSchedule_fsDerive]
+  rw [fsSchedule_fsDerive genesis goodChain c d]
   exact Iff.rfl
 
 /-- The phantom's forging set in COIN space, closed form: the FS-derived
@@ -390,7 +390,7 @@ theorem phantom_fs_verifies_iff (c d : Fin 2 → ZMod 5) :
           phantomGenesis phantomChain d))
         phantomGenesis phantomChain)
     ↔ c 0 = c 1 := by
-  rw [fsSchedule_fsDerive]
+  rw [fsSchedule_fsDerive phantomGenesis phantomChain c d]
   exact phantom_verifies_iff c
 
 /-- **Teeth — the forging probability under FS, EXACT**: the phantom chain
@@ -406,7 +406,7 @@ theorem phantom_fs_forging_prob (d : Fin 2 → ZMod 5) :
             phantomGenesis phantomChain d))
           phantomGenesis phantomChain)) = 1 / 5 := by
   refine Eq.trans (uniformProb_congr fun c => ?_) phantom_forging_prob
-  rw [fsSchedule_fsDerive]
+  rw [fsSchedule_fsDerive phantomGenesis phantomChain c d]
   exact Iff.rfl
 
 /-- **Premise inhabitation — the exact FS theorem FIRES on the phantom**:
@@ -423,7 +423,9 @@ theorem phantom_fs_caught_probably (d : Fin 2 → ZMod 5) :
   have h := lightClientFS_exact linRoot phantomChain_aligned
     ⟨⟨0, 1, phantomClaim₀⟩, List.mem_cons_self ..,
       phantomClaim₀_unsatisfiable⟩ d
-  simpa [ZMod.card] using h
+  simp only [ZMod.card] at h
+  norm_num at h ⊢
+  exact h
 
 /-- Coins `(1, 1)` — on the diagonal — FORGE: the oracle's answers rebuild the
 rigged schedule of `LCExample.phantom_forged`. The verdict is the oracle's
@@ -473,7 +475,9 @@ theorem phantom_fs_delta_fired (d : Fin 2 → ZMod 5) :
       fun v _ hclose => ?_⟩ d
   · have h' : (2 : ℝ) * (0 + 1 / 5) = 2 / 5 := by norm_num
     rw [← h']
-    simpa [ZMod.card] using h
+    simp only [ZMod.card] at h
+    norm_num at h ⊢
+    exact h.trans_eq (by norm_num [phantomChain])
   · rintro ⟨-, hc⟩
     have h0v : (0 : Fin 4 → ZMod 5) = v :=
       eq_of_relDist_le_of_lt_inv_card hclose (by norm_num [Fintype.card_fin])
@@ -496,7 +500,7 @@ theorem phantom_fs_delta_prob_eq (d : Fin 2 → ZMod 5) :
               phantomGenesis phantomChain) w)
       = 1 / 5 := by
   refine Eq.trans (uniformProb_congr fun c => ?_) phantom_delta_prob_eq
-  rw [fsSchedule_fsDerive]
+  rw [fsSchedule_fsDerive phantomGenesis phantomChain c d]
   exact Iff.rfl
 
 end LCFSExample

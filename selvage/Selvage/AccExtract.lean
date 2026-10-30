@@ -260,7 +260,7 @@ computation over F₅. -/
 theorem extract_recovers :
     extractPair (xWord + (1 : ZMod 5) • oneWord)
       (xWord + (2 : ZMod 5) • oneWord) 1 2 = (xWord, oneWord) := by
-  decide
+  decide +kernel
 
 /-- **Premise inhabitation**: `accKnowledgeSound` fires on concrete verifying
 folds — the honest accumulator × link pair of `Selvage/Accumulator.lean`'s

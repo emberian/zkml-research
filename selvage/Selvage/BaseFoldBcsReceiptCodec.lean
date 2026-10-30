@@ -152,7 +152,7 @@ theorem parseList_encodeList_append (codec : FramedCodec α) (values : List α)
   induction values with
   | nil => rfl
   | cons value values ih =>
-      simp only [encodeList, List.append_assoc, parseList]
+      simp only [List.length_cons, encodeList, List.append_assoc, parseList]
       rw [codec.parse_encode_append, Option.bind_some]
       dsimp only
       rw [ih, Option.bind_some]

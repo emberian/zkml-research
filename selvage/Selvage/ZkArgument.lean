@@ -273,7 +273,7 @@ theorem extract_recovers_masked :
     extractPair (mask xWord 2 (ZkHidingExample.lineOf 2 1))
         (mask xWord 1 (ZkHidingExample.lineOf 2 1)) 2 1
       = (xWord, ZkHidingExample.lineOf 2 1) := by
-  decide
+  decide +kernel
 
 /-- **Knowledge-soundness, fired**: `knowledge_sound` applied to the two
 transcripts at `2` and `1` recovers genuine witnesses of `evalA` and `Bmask`
@@ -312,7 +312,7 @@ theorem extraction_survives_at_zero :
     extractPair (mask xWord 0 (ZkHidingExample.lineOf 2 1))
         (mask xWord 1 (ZkHidingExample.lineOf 2 1)) 0 1
       = (xWord, ZkHidingExample.lineOf 2 1) := by
-  decide
+  decide +kernel
 
 /-- **Teeth 2** — one transcript is never enough for knowledge, but IS
 enough for hiding: two genuinely DISTINCT witness pairs — `(xWord, lineOf 2

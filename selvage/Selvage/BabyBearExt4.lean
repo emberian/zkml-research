@@ -80,9 +80,7 @@ private theorem nonsquare_of_euler_witness (a : BabyBear)
     have azero : a = 0 := by simpa using square.symm
     subst a
     simp [halfOrder] at witness
-  have fermat : b ^ (modulus - 1) = 1 := by
-    simpa [BabyBear, modulus] using
-      (FiniteField.pow_card_sub_one_eq_one b bne)
+  have fermat : b ^ (modulus - 1) = 1 := ZMod.pow_card_sub_one_eq_one bne
   have impossible : (1 : BabyBear) = -1 := by
     calc
       1 = b ^ (modulus - 1) := fermat.symm
@@ -109,20 +107,12 @@ theorem quadraticPolynomial_irreducible :
 were a square in its degree-two extension, taking its norm would make `-11` a
 square in BabyBear, contradicting the second Euler witness. -/
 theorem extensionPolynomial_irreducible : Irreducible extensionPolynomial := by
-  have quartic := X_pow_mul_sub_C_irreducible
-    (n := 2) (m := 2) quadraticPolynomial_irreducible (by
-      intro E _field _algebra x minpolyExact
-      apply X_pow_sub_C_irreducible_of_prime (by norm_num)
-      intro b square
-      have integral : IsIntegral BabyBear x := not_not.mp fun notIntegral => by
-        simpa only [degree_zero, degree_X_pow_sub_C (by norm_num : 0 < 2),
-          WithBot.natCast_ne_bot] using
-          congrArg degree
-            (minpolyExact.symm.trans (dif_neg notIntegral))
+  haveI : Fact (Irreducible (X ^ 2 - C (11 : BabyBear))) := ⟨quadraticPolynomial_irreducible⟩
+  have quartic := X_pow_mul_sub_C_irreducible (n := 2) (m := 2) quadraticPolynomial_irreducible
+    (X_pow_sub_C_irreducible_of_prime (by norm_num) fun b square => by
       apply neg_eleven_not_square (Algebra.norm BabyBear b)
-      rw [← map_pow, square, ← IntermediateField.adjoin.powerBasis_gen integral,
-        Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly]
-      simp [minpoly_gen, minpolyExact])
+      rw [← map_pow, square, norm_root_X_pow_sub_C (by norm_num)]
+      norm_num)
   simpa [extensionPolynomial] using quartic
 
 instance extensionPolynomialIrreducible : Fact (Irreducible extensionPolynomial) :=
@@ -135,8 +125,8 @@ abbrev Ext4 := AdjoinRoot extensionPolynomial
 theorem root_pow_four :
     (AdjoinRoot.root extensionPolynomial : Ext4) ^ 4 =
       algebraMap BabyBear Ext4 11 := by
-  simpa [extensionPolynomial] using
-    (root_X_pow_sub_C_pow 4 (11 : BabyBear))
+  rw [AdjoinRoot.algebraMap_eq]
+  exact root_X_pow_sub_C_pow 4 (11 : BabyBear)
 
 theorem extensionPolynomial_natDegree : extensionPolynomial.natDegree = 4 := by
   simp [extensionPolynomial]

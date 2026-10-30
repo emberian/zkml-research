@@ -1064,8 +1064,9 @@ noncomputable def foldZeroToPlain (S : FoldCommitScheme R W C) (Kh : Type)
     refine ⟨w, rfl, decide_eq_true ?_⟩
     show S.ShortOpens (S.budget b₀ 0)
         (chalFoldList chalVal x.1 (List.ofFn fun i => (x.2.1 i, x.2.2 i))) w
-    simpa only [List.ofFn_zero, chalFoldList_nil,
-      FoldCommitScheme.budget_zero] using h
+    have hsimpa := h
+    simp only [List.ofFn_zero, chalFoldList_nil, FoldCommitScheme.budget_zero] at hsimpa ⊢
+    exact hsimpa
 
 /-- The reverse embedding: the plain commitment IS a zero-fold accumulator.
 Together with `foldZeroToPlain`: the coincidence in both directions, at the
@@ -1082,8 +1083,9 @@ noncomputable def plainToFoldZero (S : FoldCommitScheme R W C) (Kh : Type)
     show S.ShortOpens (S.budget b₀ 0)
       (chalFoldList chalVal x (List.ofFn fun i : Fin 0 => (i.elim0, i.elim0)))
       π
-    simpa only [List.ofFn_zero, chalFoldList_nil,
-      FoldCommitScheme.budget_zero] using h'
+    have hsimpa := h'
+    simp only [List.ofFn_zero, chalFoldList_nil, FoldCommitScheme.budget_zero] at hsimpa ⊢
+    exact hsimpa
   bwd := fun x w h => by
     classical
     refine ⟨w, rfl, decide_eq_true ?_⟩
@@ -1091,8 +1093,9 @@ noncomputable def plainToFoldZero (S : FoldCommitScheme R W C) (Kh : Type)
     have h' : S.ShortOpens (S.budget b₀ 0)
         (chalFoldList chalVal x
           (List.ofFn fun i : Fin 0 => (i.elim0, i.elim0))) w := h
-    simpa only [List.ofFn_zero, chalFoldList_nil,
-      FoldCommitScheme.budget_zero] using h'
+    have hsimpa := h'
+    simp only [List.ofFn_zero, chalFoldList_nil, FoldCommitScheme.budget_zero] at hsimpa ⊢
+    exact hsimpa
 
 /-- **T = 1 at zero genesis under a unit challenge coincides with the plain
 commitment at bound `ρ·B`** — at the short-challenge instance (`ρ = 1`) that
@@ -1285,6 +1288,7 @@ theorem toy_roundBound_zero_id_false :
   refine uniformProb_pos_of_witness (2 : Fin 3) ?_
   exact hev
 
+set_option backward.isDefEq.respectTransparency false in
 /-- ⚑⚑ **The dropped-norm-check gate REFUSES an embedding** — the §5c
 fail-open hazard, machine-checked at the `VerifierEmbedding` carrier: the
 system whose relation forgets the norm bound admits NO embedding from the

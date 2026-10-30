@@ -424,7 +424,7 @@ theorem masked_value_F5 : mask xWord 2 oneWord = ![2, 3, 4, 0] := by decide
 /-- The bijection computes: `unmask` genuinely inverts `mask` on concrete
 words, by `decide`. -/
 theorem mask_roundtrip_F5 : unmask xWord 2 (mask xWord 2 oneWord) = oneWord := by
-  decide
+  decide +kernel
 
 /-- Two genuinely distinct satisfying masks... -/
 theorem masks_distinct_F5 : oneWord ≠ slopeWord := by decide

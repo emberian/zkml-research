@@ -592,11 +592,15 @@ noncomputable def alnQ1 (ρ₀ : ZMod 5) : SrMove accReductionBcsShifted_F5 0 :=
 theorem alnQ0_ne (ρ₀ : ZMod 5) : alnQ0 ≠ alnQ1 ρ₀ := by
   intro h
   have h1 : alnQ0.pfx.length = 1 := by
-    simpa using SrOutput.query_pfx_length (alnOut 0 0)
+    have hsimpa := SrOutput.query_pfx_length (alnOut 0 0)
       (Fin.castSucc (0 : Fin 2))
+    simp at hsimpa ⊢
+    exact hsimpa
   have h2 : (alnQ1 ρ₀).pfx.length = 2 := by
-    simpa using SrOutput.query_pfx_length (alnOut ρ₀ 0)
+    have hsimpa := SrOutput.query_pfx_length (alnOut ρ₀ 0)
       (Fin.castSucc (1 : Fin 2))
+    simp at hsimpa ⊢
+    exact hsimpa
   rw [h, h2] at h1
   exact absurd h1 (by norm_num)
 
@@ -648,6 +652,7 @@ theorem alnAnswer0 (c : Fin 2 → ZMod 5) :
   rw [alnTrace, alnSrOut, alnOut_query0]
   exact OracleLog.answerOf_cons_self _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The round-1 final challenge is the slot-1 recorded answer `c 1`. -/
 theorem alnChal1 (c : Fin 2 → ZMod 5) (d : Fin 3 → ZMod 5) :
     srFinalChal alnPrv c d (Fin.castSucc (1 : Fin 2)) = c 1 := by

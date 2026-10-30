@@ -196,6 +196,7 @@ theorem progHit (c : Fin 1 → ZMod 5) :
   rw [progTrace, progSrOut, progOut_query1]
   simp [List.findIdx?_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The round-1 final challenge IS the recorded answer `c 0` — the
 `srFinalChal_eq_answerOf` bridge, computed on the built run. -/
 theorem progChal1 (c : Fin 1 → ZMod 5) (d : Fin 3 → ZMod 5) :
@@ -313,7 +314,7 @@ kernel-checked. -/
 theorem progMisaligned (c : Fin 1 → ZMod 5) :
     ¬ LinkAligned (⊤ : Submodule (ZMod 5) (Fin 4 → ZMod 5)) genesis goodChain
       (1 : Fin 2) (((c 0)⁻¹ * (1 + c 0)) • oneWord) := by
-  have key : ∀ ρ : ZMod 5, ρ⁻¹ * (1 + ρ) ≠ 1 := by decide
+  have key : ∀ ρ : ZMod 5, ρ⁻¹ * (1 + ρ) ≠ 1 := by decide +kernel
   rintro ⟨-, hall⟩
   have hval : (goodChain.get (1 : Fin 2)).claim.targets 0 = 1 := by decide
   have hw : genesis.weights 0 = q2 := rfl

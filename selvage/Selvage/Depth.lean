@@ -516,8 +516,7 @@ def trivialKState : KStateFn trivialReduction where
     intro δ hδ st πs ρs w
     refine ⟨fun _ => ⟨(), fun _ => (), rfl, ⟨fun _ => (), trivial, ?_⟩⟩,
       fun _ => rfl⟩
-    rw [fracHamming_self]
-    exact le_of_lt hδ.1
+    exact (fracHamming_self _).trans_le (le_of_lt hδ.1)
 
 /-- RBR knowledge soundness for `trivialReduction`, with error `1` — every
 probability is at most `1`. -/
@@ -1585,9 +1584,7 @@ lemma SrOutput.query_pfx_getElem (o : SrOutput r s) (a : Fin r.k) {n : ℕ}
     (hn : n < (a : ℕ) + 1) (hk : n < r.k) :
     (o.query a).pfx[n]'(by rw [SrOutput.query_pfx_length]; omega) =
       (o.πs ⟨n, hk⟩, o.σs ⟨n, hk⟩) := by
-  show (((List.finRange r.k).take ((a : ℕ) + 1)).map
-    (fun l => (o.πs l, o.σs l)))[n]'_ = _
-  rw [List.getElem_map, List.getElem_take, List.getElem_finRange]
+  simp only [SrOutput.query, List.getElem_map, List.getElem_take, List.getElem_finRange]
   rfl
 
 end QueryStructure

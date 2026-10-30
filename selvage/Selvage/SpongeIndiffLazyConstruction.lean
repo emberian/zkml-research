@@ -189,6 +189,7 @@ def message : List (ZMod 2) := [1, 1]
 
 def blockCoins : List (ZMod 2 × Fin 4) := [(0, 1), (1, 2)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The hidden primitive runner actually executes both absorbed blocks and
 returns the second candidate's rate. -/
 theorem two_block_lazy_absorb :
@@ -198,6 +199,7 @@ theorem two_block_lazy_absorb :
   simp [lazyAbsorb, iv, message, blockCoins, Oracle.respond_fresh_fst,
     Oracle.lookup_respond_ne]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coupled construction accepts when the RO answer equals that exact
 two-block squeeze. -/
 theorem two_block_coupled_accepts :
@@ -227,6 +229,7 @@ theorem two_block_coupled_exact_literals :
       ([1, 1] : List (ZMod 2)) 1 [(0, 1), (1, 2)] = some coupledResult := by
   simpa [message, blockCoins] using two_block_coupled_exact
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Changing only the RO rate coin makes the same primitive execution reject,
 so the agreement check is load-bearing. -/
 theorem two_block_wrong_ro_rejected :

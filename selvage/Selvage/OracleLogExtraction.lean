@@ -500,6 +500,7 @@ noncomputable def logF5 :
     OracleLog (SrMove accReductionBcsShifted_F5 0) (ZMod 5) :=
   [(outF5.query 0, 1), (outF5.query 1, 1), (outF5.query 2, 1)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The log answers every designated query with `1` — the three cells found
 by first-match, distinctness by `SrOutput.query_injective` (CITED). -/
 theorem logF5_answers (c : Fin 3) :
@@ -593,7 +594,7 @@ theorem log_wrong_answer_F5 :
           - bcsWord dom₅ 2 qPair (outF5.πs (Fin.castSucc (0 : Fin 2)))))
       = some ((2 : ZMod 5)⁻¹ • msEx 0)
     rw [h1, h0, add_sub_cancel_left]
-  · decide
+  · decide +kernel
 
 /-- A log differing from `logF5` ONLY at the final query's answer — the
 inert last challenge of the shifted schedule, i.e. the FRESH challenge of

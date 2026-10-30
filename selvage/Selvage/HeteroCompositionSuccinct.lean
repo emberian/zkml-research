@@ -123,6 +123,7 @@ def constProver (r : Reduction) (s : ℕ) (o : SrOutput r s) : SrProver r s wher
   move := fun _ => ⟨o.stmt, []⟩
   out := fun _ => o
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **The bridge**: straightline FS knowledge soundness at error `0` for zero-query
 adversaries (at some `δ ∈ (0, δ*)`) gives `HeteroComposition.KnowledgeSound` of the compiled
 system at EVERY oracle. The witness is the FS extractor's output on the single transcript
@@ -169,6 +170,7 @@ theorem knowledgeSound_iff_no_ksFailure (S : ProofSystem) :
     by_contra hno
     exact h x π ⟨hacc, fun w hw => hno ⟨w, hw⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ksFailure_fs_iff (r : Reduction) (s : ℕ) (O : SrMove r s → r.Chal)
     (δ ε : ℝ) (hε : 0 ≤ ε) (x : Stmt r) (o : SrOutput r s) :
     KsFailure (fsProofSystem r s O δ ε hε) x o ↔

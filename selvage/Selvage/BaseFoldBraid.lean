@@ -77,7 +77,8 @@ theorem basefold_sumcheck_terminal (table : (Fin m → Bool) → F)
     rfl
   have hzero : mle (fun _ : Fin m → Bool => (0 : F)) r = 0 := by
     simp [mle]
-  simpa only [basefoldHonest, heq, hzero, sub_zero] using h
+  simp only [heq, hzero, sub_zero] at h
+  exact h
 
 /-- Perfect completeness of the sumcheck leg, for every challenge vector. -/
 theorem basefold_sumcheck_complete (table : (Fin m → Bool) → F)

@@ -304,7 +304,7 @@ theorem spike_not_exact_claim_f5 (H : ZMod 5) :
   rintro ⟨t, hword, hval⟩
   apply spikeWord_notMem
   rw [hword]
-  simpa using evalOnDomain_mem_reedSolomonCode (ldtTower.dom 0)
+  simpa [levels, ldtTower, levelDom] using evalOnDomain_mem_reedSolomonCode (ldtTower.dom 0)
     (booleanMobiusPolynomial 1 t) (degree_booleanMobiusPolynomial_lt 1 t)
 
 /-- **Arbitrary-word premise inhabitation:** the strict theorem fires on the

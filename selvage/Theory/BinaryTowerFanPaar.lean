@@ -140,7 +140,7 @@ theorem exists_fanpaar_step_root (k : ℕ) (c : binaryTower (k + 1)) :
       (X ^ 2 + C c * X + 1 : (binaryTower (k + 1))[X]) = 0 :=
     (congrArg (aeval (ψ (AdjoinRoot.root p.factor))) hp).symm.trans hy
   simpa only [map_add, map_mul, map_pow, map_one, aeval_X, aeval_C,
-    RingHom.algebraMap_toAlgebra, AlgHom.coe_toRingHom] using hy'
+    RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_coe] using hy'
 
 /-! ### The Fan–Paar generator sequence, BUILT -/
 

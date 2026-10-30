@@ -627,7 +627,7 @@ word that folds to ZERO at challenge `3`.  One challenge does not see it. -/
 def kernelWord : Fin 4 → ZMod 5 := ![3, 4, 0, 1]
 
 theorem fold_not_injective_f5 : kernelWord ≠ 0 ∧ fold data0 kernelWord 3 = 0 := by
-  constructor <;> decide
+  constructor <;> decide +kernel
 
 /-! ### The sibling-pair extractor at `m = 1`, `t = 1 < 2^m` -/
 
@@ -689,7 +689,7 @@ theorem descent_public_view_teeth_f5 :
   · rw [h₁, h₂]
     decide
   · rw [h₁, h₂]
-    decide
+    decide +kernel
 
 /-- ⭐ **No public-view extractor exists at `m = 2`, `t = 1`.**  No function of
 the opened sibling pair and the ENTIRE level-1 word (a fortiori of the level-1

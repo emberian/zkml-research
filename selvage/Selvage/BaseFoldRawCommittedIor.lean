@@ -217,7 +217,9 @@ private theorem idealFriQueryOpening_accepts
     OpenedFriQuery (idealCommitment F ι) (idealCommitment F κ) D
       w w' alpha k (idealFriQueryOpening D w w' k) := by
   refine ⟨rfl, rfl, rfl, ?_⟩
-  simpa [fold] using hpin
+  have hsimpa := hpin
+  simp [fold] at hsimpa ⊢
+  exact hsimpa
 
 /-! ## Lossless verifier split: ideal event or concrete equivocation -/
 

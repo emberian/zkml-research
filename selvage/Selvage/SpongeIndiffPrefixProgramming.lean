@@ -183,6 +183,7 @@ theorem programConstruction_singleton_existing_edge_fresh_ro
   simp only
   rw [if_pos (Oracle.respond_fresh_fst hroFresh existing.1).symm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pre-existing edge conflicts with an already-answered prefix RO exactly
 when their rates differ.  This consistency test is load-bearing. -/
 theorem programConstruction_singleton_existing_edge_wrong_ro
@@ -344,7 +345,9 @@ theorem full_prefix_walk :
   have hsecond : result.primitive.lookup
       (((1 : ZMod 2), (1 : Nat)).1 + 1, ((1 : ZMod 2), (1 : Nat)).2) =
         some (0, 2) := by
-    simpa using second_edge_lookup
+    have hsimpa := second_edge_lookup
+    simp at hsimpa ⊢
+    exact hsimpa
   rw [hsecond]
   rfl
 

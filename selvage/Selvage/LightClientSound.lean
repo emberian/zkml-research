@@ -630,7 +630,9 @@ theorem phantom_caught_probably :
   have h := lightClientSound_exact linRoot phantomChain_aligned
     ⟨⟨0, 1, phantomClaim₀⟩, List.mem_cons_self ..,
       phantomClaim₀_unsatisfiable⟩
-  simpa [ZMod.card] using h
+  simp only [ZMod.card] at h
+  norm_num at h ⊢
+  exact h
 
 /-- The rigged schedule `(1,1)` of `LCExample.phantom_forged` is IN the
 forging set — it is a diagonal schedule. -/
@@ -678,7 +680,9 @@ theorem phantom_delta_fired :
       fun v _ hclose => ?_⟩
   · have h' : (2 : ℝ) * (0 + 1 / 5) = 2 / 5 := by norm_num
     rw [← h']
-    simpa [ZMod.card] using h
+    simp only [ZMod.card] at h
+    norm_num at h ⊢
+    exact h.trans_eq (by norm_num [phantomChain])
   · rintro ⟨-, hc⟩
     have h0v : (0 : Fin 4 → ZMod 5) = v :=
       eq_of_relDist_le_of_lt_inv_card hclose (by norm_num [Fintype.card_fin])

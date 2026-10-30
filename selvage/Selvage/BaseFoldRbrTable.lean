@@ -341,6 +341,7 @@ theorem scTruthAfter_tableRounds_ofFn (tbl : (Fin m → Bool) → F) (z : Fin m 
   exact scTruthAfter_ofFn tbl z (fun i => (πs i).poly) ρs
 
 open Classical in
+set_option backward.isDefEq.respectTransparency false in
 /-- The Def-4.1 knowledge state for the table-witness leg, three clauses
 PROVED: empty — columns vacuous, collapses to the source relation; prover
 moves — pending-blind on columns, the scalar clause's own monotonicity;

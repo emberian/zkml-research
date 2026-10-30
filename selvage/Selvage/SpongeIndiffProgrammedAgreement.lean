@@ -103,7 +103,7 @@ the previously answered singleton construction message. -/
 theorem first_completion :
     completion? (Oracle.empty : Oracle (ZMod 2 × Fin 3) (ZMod 2 × Fin 3))
       iv (1, 0) = some [1] := by
-  simpa using completion?_empty_iv
+  exact completion?_empty_iv
     (iv := iv) (s := ((1 : ZMod 2), (0 : Fin 3))) rfl
 
 /-- **Temporal convergence witness.**  Once that later primitive query is

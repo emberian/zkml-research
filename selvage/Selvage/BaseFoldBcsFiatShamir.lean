@@ -467,10 +467,10 @@ theorem accepts_to_rawCommittedIor {ell m queryCount : Nat}
   have rootJ := accepted.2.1 j (Nat.le_of_lt j.isLt)
   have rootNext := accepted.2.1 (j + 1) (Nat.succ_le_iff.mpr j.isLt)
   simpa [show receiptLevelRoot receipt j.castSucc =
-        st.rootAt receipt.challenge j (Nat.le_of_lt j.isLt) by simpa using rootJ,
+        st.rootAt receipt.challenge j (Nat.le_of_lt j.isLt) by exact rootJ,
     show receiptLevelRoot receipt j.succ =
         st.rootAt receipt.challenge (j + 1)
-          (Nat.succ_le_iff.mpr j.isLt) by simpa using rootNext] using hopen
+          (Nat.succ_le_iff.mpr j.isLt) by exact rootNext] using hopen
 
 /-! ## The named ROM boundary -/
 

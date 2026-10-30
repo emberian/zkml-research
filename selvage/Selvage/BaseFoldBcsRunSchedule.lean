@@ -1216,6 +1216,7 @@ noncomputable def paddedSegmentReindex {m queryCount : Nat}
       (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap) :=
   guardedProgramReindex (paddedSegmentSwapProgram statement receipt)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composed program, not merely its isolated round move, places each
 eager full-message coin at the corresponding deferred segment head. -/
 theorem paddedSegmentReindex_head {m queryCount : Nat}
@@ -1373,7 +1374,7 @@ theorem paddedWorkHybridStateNat_success_routing
               (paddedConstructionDistinguisher statement receipt verdict)
               (0, 0) previous ⟨round, Nat.lt_of_succ_le hround⟩ =
                 .ok state := by
-            simpa using hstate
+            exact hstate
           obtain ⟨hanswers, hfuture⟩ := ih hprev hprevRun
           let current : Fin (m + queryCount) :=
             ⟨round, Nat.lt_of_succ_le hround⟩
@@ -1628,7 +1629,9 @@ theorem paddedWorkHybridStateNat_lastRate_semantics
       refine ⟨next, ?_, ?_, ?_, ?_⟩
       · unfold paddedWorkHybridStateNat
         rw [hstate]
-        simpa [current] using hstep
+        have hsimpa := hstep
+        simp [current] at hsimpa ⊢
+        exact hsimpa
       · have hindex : round <
             (List.ofFn
               (paddedSegmentLastAnswerSchedule statement receipt coins)).length :=

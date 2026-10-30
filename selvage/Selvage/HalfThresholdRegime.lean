@@ -208,7 +208,8 @@ theorem halfThreshold_F5 :
           (comb r ![0, toothWord])) ≤ 1 / 5 := by
   convert halfThreshold_pr_le
     (⊥ : Submodule (ZMod 5) (Fin 2 → ZMod 5)) 0 toothWord (1 / 4) pair_far using 1
-  norm_num
+  · norm_num
+  · rw [ZMod.card]; norm_num
 
 end HalfThresholdExample
 

@@ -205,9 +205,11 @@ theorem twoPhase_verify_strengthens
   classical
   by_cases hs : TwoPhaseShape (ch := ch) (S := S) (V := V) (Q := Q) πs ∧
       TwoPhaseQueryBound (ch := ch) (S := S) (V := V) (Q := Q) πs ρs
-  · exact ⟨hs.1, hs.2,
-      by simpa [accReductionBcsShiftedLinkedTwoPhase, hs] using hacc⟩
-  · simp [accReductionBcsShiftedLinkedTwoPhase, hs] at hacc
+  · dsimp only [twoPhaseReduction, accReductionBcsShiftedLinkedTwoPhase] at hacc
+    exact ⟨hs.1, hs.2, by rwa [if_pos hs] at hacc⟩
+  · dsimp only [twoPhaseReduction, accReductionBcsShiftedLinkedTwoPhase] at hacc
+    rw [if_neg hs] at hacc
+    cases hacc
 
 end Reduction
 
@@ -243,6 +245,7 @@ noncomputable def twoPhaseSubUdLogExtractor (decodeRadius : ℝ) (s : ℕ) :
           (V.word (o.πs (twoPhaseRootSlot i.succ)).preimage -
             V.word (o.πs (twoPhaseRootSlot i.castSucc)).preimage))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- FS acceptance at the staged reduction exposes all data checked by the
 ordinary preimage verifier. -/
 theorem twoPhase_fiatShamir_accept_data {s : ℕ}
@@ -285,6 +288,7 @@ theorem twoPhase_fiatShamir_accept_data {s : ℕ}
     (twoPhaseAlgebraChallenges ch Q ρs) hbase
   exact ⟨hshape, hbound, hdata.1, hdata.2.1, hdata.2.2.1, hdata.2.2.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A logged nonzero algebra challenge plus a good post-root sample pins the
 staged OracleLog extractor exactly. -/
 theorem twoPhaseGame_hitLogExtractor_pinned [Nonempty (Fin m)]

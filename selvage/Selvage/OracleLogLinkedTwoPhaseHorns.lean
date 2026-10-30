@@ -85,6 +85,7 @@ def TwoPhaseFixedScheduleBound (radius ε : ℝ) : Prop :=
       ¬ QueryAgreementAmplifies (Q.schedule z) radius
         ((γ i)⁻¹ • (V.word (u i.succ) - V.word (u i.castSucc))) (wv i)) ≤ ε
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Per-past-fibre adaptive-hit bound for the designated query slot.  The
 queried final-root prefix freezes every root/preimage.  The shorter fold
 challenges are either already fixed in the past log or are jointly uniform by
@@ -258,7 +259,7 @@ theorem twoPhase_queryHitSampling_fibre_le
             change (c : ℕ) < ch.length + 2
             omega)
         simp only [hq] at hg
-        simpa only using (congrArg Prod.fst hg).symm
+        exact (congrArg Prod.fst hg).symm
       have hfold_mem : ∀ (i : Fin ch.length) (hi : twoPhaseFoldSlot i ∈ Sf),
           srFinalChal P ((splitGame j).symm (p, ρ, cs)) dd
               (twoPhaseFoldSlot i) =
@@ -370,6 +371,7 @@ theorem twoPhase_queryHitSampling_fibre_le
         (srOut P ((splitGame j).symm (p, ρ, cs)))
         (twoPhaseQuerySlot (n := ch.length))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The per-fibre result reassembled over the whole SR coin space.  Thus each
 possible logged game slot contributes at most the fixed-schedule price once,
 despite adaptive later resolution of the algebra-prefix queries. -/
@@ -568,7 +570,9 @@ theorem fullDomainTwoPhase_fixedScheduleBound
       preimage := u }
   have hb := frozenLinks_samplingFailure_uniform (t := t) S V frozen
     (fun c => padSched γ (c : ℕ)) wv radius hradius1
-  simpa [fullDomainTwoPhaseQuerySampler, frozen, padSched] using hb
+  have hsimpa := hb
+  simp [fullDomainTwoPhaseQuerySampler, frozen, padSched] at hsimpa ⊢
+  exact hsimpa
 
 /-- The literal allowed-coordinate, ordered-without-replacement sampler. -/
 noncomputable def allowedTwoPhaseQuerySampler (allowed : Finset (Fin m))
@@ -605,7 +609,9 @@ theorem allowedTwoPhase_fixedScheduleBound
   have hb := allowedFrozenLinks_samplingFailure_uniform S V frozen
     (fun c => padSched γ (c : ℕ)) wv allowed radius agreeCap (fun i => by
       simpa [frozen, padSched] using hprem u γ i)
-  simpa [allowedTwoPhaseQuerySampler, frozen, padSched] using hb
+  have hsimpa := hb
+  simp [allowedTwoPhaseQuerySampler, frozen, padSched] at hsimpa ⊢
+  exact hsimpa
 
 /-- info: 'Minidregg.Selvage.twoPhase_queryHitSampling_fibre_le' depends on axioms: [propext, choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms twoPhase_queryHitSampling_fibre_le
