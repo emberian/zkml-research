@@ -9,10 +9,13 @@ before the oracle samples — and named exactly one strengthening residual:
 (or REORDERS) the chain AFTER seeing the answers, paying the `(t + n)` factor
 of WARP Thm B.4 — whose general form is already PROVED as
 `fsKeystone_proved`/`FsOfRbrSound` (`Selvage/FiatShamir.lean`, `(t+k)·ε_rbr`,
-unconditional). This file closes the deployment-bookkeeping piece: the
-grinding model rendered honestly, and the composition of the fixed-chain
-bound with the try-count factor — a real union-bound proof with the
-per-candidate marginals EXACT.
+unconditional). This file proves it PARTIALLY: the grinding adversary is
+adaptive in the chain it outputs, but its query sequence `qs` is fixed before
+the oracle answers. An adversary whose query `k+1` depends on answer `k` is a
+decision tree, which `Oracle.ofList qs c` cannot express; that strategy class is
+owed. Within that scope: the grinding model rendered honestly, and the
+composition of the fixed-chain bound with the try-count factor — a real
+union-bound proof with the per-candidate marginals EXACT.
 
 The model (one shared oracle, real correlations):
 * `Oracle.ofList` — the handler after the adversary's whole query run: fold
@@ -63,7 +66,8 @@ grinding). The general theorems fire with every hypothesis discharged
 selection genuinely at work; coins `(1,0,2,1)` catch every candidate.
 
 **What this does NOT close (honest residuals, end of file):**
-`[LC-grinding-native]` — the per-fold-sharp `(t+n)·(err⋆(δ)+1/|F|)` with
+adaptive query strategies (query `k+1` chosen after answer `k`): every theorem
+here fixes `qs` before the coins. `[LC-grinding-native]` — the per-fold-sharp `(t+n)·(err⋆(δ)+1/|F|)` with
 full query adaptivity. Its RBR engine LANDED while this file was being
 written: `accFsSound_native` (Selvage/AccRbrInstance.lean) FS-compiles the
 accumulator chain's OWN reduction at `(t+k)·accRbrError` — exactly that
@@ -432,9 +436,10 @@ theorem lightClientGrinding_union [Fintype F] [Nonempty ι]
     (lightClientSound foldRoot (halign i) hdC hMCA hδ0 hδB hδC herr0
       (hlen i) (hfalse i))
 
-/-- **[LC-fs-adaptive], THE GRINDING HEADLINE — the (t+n)-scaled deployable
-form.** The FS light client against a grinding adversary: `t = qs.length`
-distinct oracle queries, `T` distinct nonempty candidate chains assembled
+/-- **[LC-fs-adaptive] PARTIAL, THE GRINDING HEADLINE — the (t+n)-scaled form
+for a fixed query sequence.** The FS light client against a grinding adversary:
+`t = qs.length` distinct oracle queries, fixed before the oracle answers (an
+adversary whose later queries depend on earlier answers is NOT covered), `T` distinct nonempty candidate chains assembled
 from them (so `T ≤ t`, `grindCandidates_le_budget` — a `t`-query adversary
 genuinely has at most `t` tries), every candidate of length ≤ `n` carrying a
 δ-far-false link, the submitted chain chosen by ANY post-answer rule (the
@@ -450,8 +455,8 @@ the native per-round accounting pays per-query·per-fold — the `n`-sharper
 `(t+n)·(err⋆ + 1/|F|)`, LANDED at the IOR resolution as `accFsSound_native`
 (Selvage/AccRbrInstance.lean, `(t+k)·accRbrError` on the accumulator's own
 reduction); transporting it into THIS event vocabulary is
-`[LC-grinding-native]` (end of file). Nothing about the bound SHAPE is open;
-the proven factor is deployable now. -/
+`[LC-grinding-native]` (end of file). Within the fixed-query-sequence scope the
+bound shape is proved; adaptive query strategies are owed. -/
 theorem lightClientGrinding_sound [Fintype F] [Nonempty ι]
     {C : Submodule F (ι → F)}
     {A₀ : AccClaim Root F ι r} {T : ℕ} {chs : Fin T → Chain Root F ι r}
@@ -1021,8 +1026,8 @@ end LCGrindExample
   games — the light-client mirror of `fsStraightline_iff_sr`'s BCS bridge —
   is the remaining lemma, and it inherits `[ACC-rbr-bcs]`
   (Selvage/AccRbrInstance.lean: the deployed root-and-columns message
-  alphabet) for the deployed transcript. Nothing about the bound SHAPE is
-  open — only this identification.
+  alphabet) for the deployed transcript. Until that identification, (b) is
+  owed for this file's light client.
 * **[FS-ROM]** (inherited, Selvage/FiatShamir.lean) — the deployed hash
   realizing the lazy-sampling handler is the one named idealization; domain
   separation of `LcQuery` from the stack's other oracle uses is priced
