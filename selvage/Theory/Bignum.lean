@@ -19,7 +19,9 @@ circuit constraints.  Those realization obligations belong above `Theory`.
 -/
 module
 
-public import Mathlib.Tactic
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.NormNum
 public import Theory.AxiomPin
 
 -- Bodies this file reduces or derives through, not exposed by their modules (module system).
@@ -401,7 +403,7 @@ example (value : Fin ((2 : Nat) ^ 248)) :
 
 /-- info: 'Minidregg.Theory.Bignum.denoteInt_eq_natCast' depends on axioms: [propext] -/
 #guard_msgs (whitespace := lax) in #print axioms denoteInt_eq_natCast
-/-- info: 'Minidregg.Theory.Bignum.denoteNat_lt_pow' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'Minidregg.Theory.Bignum.denoteNat_lt_pow' depends on axioms: [propext] -/
 #guard_msgs (whitespace := lax) in #print axioms denoteNat_lt_pow
 /-- info: 'Minidregg.Theory.Bignum.denoteNat_digitsLE' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms denoteNat_digitsLE
@@ -413,9 +415,9 @@ example (value : Fin ((2 : Nat) ^ 248)) :
 #guard_msgs (whitespace := lax) in #print axioms denoteNat_injective
 /-- info: 'Minidregg.Theory.Bignum.denoteInt_injective' depends on axioms: [propext] -/
 #guard_msgs (whitespace := lax) in #print axioms denoteInt_injective
-/-- info: 'Minidregg.Theory.Bignum.Limbs.toFin_ofFin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'Minidregg.Theory.Bignum.Limbs.toFin_ofFin' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms Limbs.toFin_ofFin
-/-- info: 'Minidregg.Theory.Bignum.Limbs.ofFin_toFin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'Minidregg.Theory.Bignum.Limbs.ofFin_toFin' depends on axioms: [propext] -/
 #guard_msgs (whitespace := lax) in #print axioms Limbs.ofFin_toFin
 /-- info: 'Minidregg.Theory.Bignum.Limbs.toNat_ofBounded' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms Limbs.toNat_ofBounded

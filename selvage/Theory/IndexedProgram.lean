@@ -17,7 +17,7 @@ computes a different answer.
 -/
 module
 
-public import Mathlib.Tactic
+public import Mathlib.Tactic.Common
 
 -- Bodies this file reduces or derives through, not exposed by their modules (module system).
 import all Init.Data.Repr
