@@ -20,6 +20,10 @@ def step(p, tab, W1, W2, x, y, seed):
     return eng, wires
 
 def main():
+    import os
+    zk = os.environ.get("ZK") == "1"
+    if zk:
+        CS.HIDE, CS.NMASK = CS.LIVES * CS.T_COLS, CS.LIVES * 4
     p = bfv.ntt_primes(61, 4, 16384)[3]
     tab = MF.tables(p)
     out = dict(formula_check={}, rows={})
@@ -31,14 +35,14 @@ def main():
         y = [rng.randint(-7, 7) % p for _ in range(d)]
         eng, wires = step(p, tab, W1, W2, x, y, 5)
         ok, why, c = CS.prove_and_verify(eng, wires)
-        f = CS.counts_formula(d)
+        f = CS.counts_formula(d, hide=CS.HIDE, nmask=CS.NMASK)
         same = {k: c[k] == f[k] for k in f}
         out["formula_check"][d] = dict(honest=(ok, why), all_equal=all(same.values()),
                                       mismatches=[k for k, v in same.items() if not v])
         print(d, ok, why, "formula", "EXACT" if all(same.values()) else same, flush=True)
         if d != 64:
             continue
-        out["counts_d64"] = {k: v for k, v in c.items() if k != "child_roots"}
+        out["counts_d64"] = {k: v for k, v in c.items() if k not in ("child_roots", "carry", "roots")}
         out["rows"]["honest"] = dict(verdict="ACCEPT" if ok else "FAIL", by=why)
         for att, what in (("forge_W1n", "all custodians commit a wrong W1' (one entry +1)"),
                           ("forge_z1", "all custodians commit a wrong z1 and prove honestly"),
@@ -57,17 +61,19 @@ def main():
         e3, w3 = step(p, tab, W1b, W2b, x, y, 5)
         for k_old, k_new in (("W1n", "W1"), ("W2n", "W2")):
             w3[k_new] = wires[k_old]
-        ok3, why3, _ = CS.prove_and_verify(e3, w3, parent=c["child_roots"])
+        ok3, why3, _ = CS.prove_and_verify(e3, w3, parent=c["child_roots"], carry=c["carry"] if zk else None)
         out["rows"]["chain_step2_parent_is_step1_child"] = dict(verdict="ACCEPT" if ok3 else "REFUSED", by=why3)
         stale = {"W1": out_parent_roots(p, wires, "W1"), "W2": out_parent_roots(p, wires, "W2")}
-        ok4, why4, _ = CS.prove_and_verify(e3, w3, parent=stale)
+        ok4, why4, _ = CS.prove_and_verify(e3, w3, parent=stale, carry=c["carry"] if zk else None)
         out["rows"]["stale_parent"] = dict(what="step 2 verified against step 1's PARENT (an older W)",
                                            verdict="ACCEPT" if ok4 else "REFUSED", by=why4)
         print("chain", ok3, why3, "| stale", ok4, why4, flush=True)
     out["formula_d4096"] = dict(spine=CS.counts_formula(4096), spine_t148=CS.counts_formula(4096, t=148),
                                 elementwise_MODEL=CS.unbuilt_formula(4096, 11, 4, 14),
                                 elementwise_MODEL_d64=CS.unbuilt_formula(64, S.S1, S.S2, S.S3))
-    json.dump(out, open("cosnark_results.json", "w"), indent=1, default=str)
+    out["zk_layer1_hiding_pcs"] = zk
+    out["formula_d4096_zk"] = CS.counts_formula(4096, hide=CS.LIVES * CS.T_COLS, nmask=CS.LIVES * 4)
+    json.dump(out, open("cosnark_results_zk.json" if zk else "cosnark_results.json", "w"), indent=1, default=str)
 
 def out_parent_roots(p, wires, k):
     sh = [[v[i][0] for r in wires[k] for v in r] for i in range(3)]

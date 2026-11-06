@@ -70,17 +70,41 @@ def mle(vec, r, p):
     return sum(a * b for a, b in zip(vec, eqv(r, p))) % p
 
 # ------------------------------------------------------------------------------------------- the PCS
+HIDE = 0          # zero-knowledge PCS (cosnark ZK layer 1): random tail coefficients per row. A commitment that is
+                  # opened in L proofs (a chained W: child of step t, parent of step t+1) reveals up to L*t columns,
+                  # so it needs HIDE >= L * T_COLS
+NMASK = 0         # random mask rows per commitment: per life, one per evaluation it serves plus one proximity mask
+LIVES = 2         # a weight commitment lives twice (child, then parent); masks are split into LIVES blocks
+
 class SharePCS:
-    """Commitment to v (length 2^m) given as n additive share vectors; R x C layout, idx = row * C + col."""
-    def __init__(self, p, shares, label):
+    """Commitment to v (length 2^m) given as n additive share vectors; R x C layout, idx = row * C + col.
+    Hiding mode (HIDE, NMASK > 0): every row is encoded with HIDE extra random coefficients, so any t <= HIDE
+    opened columns are uniform whatever the data; and NMASK random mask rows are appended. Evaluation e adds mask
+    row e with weight 1 (its revealed row combination is uniform; the custodians send m_e = <M_e, b> so the
+    verifier can still subtract it). The proximity combination adds the LAST mask row with weight 1. Each
+    custodian draws its own mask and tail shares locally: no communication."""
+    def __init__(self, p, shares, label, hide=None, nmask=None):
+        import random as _r
         self.p, self.label = p, label
+        self.hide = HIDE if hide is None else hide
+        self.nmask = NMASK if nmask is None else nmask
         m = (len(shares[0]) - 1).bit_length()
         self.m = m
         self.mr, self.mc = m // 2, m - m // 2
-        self.R, self.C = 1 << self.mr, 1 << self.mc
-        self.pts = list(range(1, BLOW * self.C + 1))
-        self.rows = [[s[r * self.C:(r + 1) * self.C] for r in range(self.R)] for s in shares]
-        self.enc = [[self.encode(row) for row in rows] for rows in self.rows]
+        self.Rd, self.C = 1 << self.mr, 1 << self.mc
+        self.R = self.Rd + self.nmask
+        self.base = 0                     # which block of mask rows this proof uses (0: first life)
+        self.block = self.nmask // LIVES if self.nmask else 0
+        self.W = self.C + self.hide
+        self.pts = list(range(1, BLOW * self.W + 1))
+        self.rows = [[s[r * self.C:(r + 1) * self.C] for r in range(self.Rd)] for s in shares]
+        self.ext = []
+        for i, rows in enumerate(self.rows):
+            rng = _r.Random(H("mask", label, i, self.hide, self.nmask))
+            ext = [list(r) + [rng.randrange(p) for _ in range(self.W - self.C)] for r in rows]
+            ext += [[rng.randrange(p) for _ in range(self.W)] for _ in range(self.nmask)]
+            self.ext.append(ext)
+        self.enc = [[self.encode(row) for row in rows] for rows in self.ext]
         self.trees = [self.merkle(E) for E in self.enc]
         self.roots = [t[-1][0] for t in self.trees]
 
@@ -96,6 +120,7 @@ class SharePCS:
 
     def merkle(self, E):
         level = [H("leaf", [E[r][j] for r in range(len(E))]) for j in range(len(self.pts))]
+        level += [H("pad", j) for j in range((1 << (len(level) - 1).bit_length()) - len(level))]
         tree = [level]
         while len(level) > 1:
             level = [H(level[i], level[i + 1]) for i in range(0, len(level), 2)]
@@ -111,7 +136,109 @@ class SharePCS:
 
     def row_combo(self, i, a):
         p = self.p
-        return [sum(a[r] * self.rows[i][r][c] for r in range(self.R)) % p for c in range(self.C)]
+        return [sum(a[r] * self.ext[i][r][c] for r in range(self.R)) % p for c in range(self.W)]
+
+    def eval_weights(self, pt, e):
+        a = eqv(pt[self.mc:], self.p) + [0] * self.nmask
+        if self.nmask:
+            assert e < self.block - 1, "each mask row serves exactly one evaluation (the block's last is the proximity mask)"
+            a[self.Rd + self.base + e] = 1
+        return a
+
+    def mask_corr(self, i, pt, e):
+        if not self.nmask:
+            return 0
+        b = eqv(pt[:self.mc], self.p)
+        return sum(x * y for x, y in zip(self.ext[i][self.Rd + self.base + e][:self.C], b)) % self.p
+
+    def prox_row(self):
+        return self.Rd + self.base + self.block - 1
+
+    def prox_len(self):
+        return self.R - (1 if self.nmask else 0)
+
+    def prox_weights(self, gam):
+        """gamma on every row except this life's proximity mask, which gets weight 1 (so the revealed
+        combination is uniform). Rows of the OTHER life are still tested (their weights are random)."""
+        if not self.nmask:
+            return list(gam)
+        g = list(gam)
+        g.insert(self.prox_row(), 1)
+        return g
+
+def pcs_prove(com, evals, tr, n, p, u_hook=None):
+    """The custodians' PCS messages for every (commitment, point) in evals, then proximity, then columns."""
+    msgs, used = [], {}
+    for k, pt in evals:
+        c = com[k]
+        e = used.get(k, 0)
+        used[k] = e + 1
+        a = c.eval_weights(pt, e)
+        u = [c.row_combo(i, a) for i in range(n)]
+        if u_hook:
+            u = u_hook(k, c, a, u)
+        m = [c.mask_corr(i, pt, e) for i in range(n)]
+        msgs.append((u, m))
+        tr.absorb("u", k, u, m)
+    prox = {}
+    for k in sorted(com):
+        c = com[k]
+        gam = c.prox_weights(tr.chal(p, c.prox_len()))
+        prox[k] = (gam, [c.row_combo(i, gam) for i in range(n)])
+        tr.absorb("g", k, prox[k][1])
+    cols = {}
+    for k in sorted(com):
+        c = com[k]
+        J = [x % len(c.pts) for x in tr.chal(p, T_COLS)]
+        cols[k] = (J, [[c.open_col(i, j) for j in J] for i in range(n)])
+    return msgs, prox, cols
+
+def pcs_value(c, pt, msg, p):
+    u, m = msg
+    b = eqv(pt[:c.mc], p)
+    return (sum(sum(ui[cc] for ui in u) * b[cc] for cc in range(c.C)) - sum(m)) % p
+
+def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
+    """Replays the PCS part of the transcript and checks Merkle paths, proximity and evaluation consistency.
+    Uses only shapes from com (R, C, W, mc, nmask), never the committed data."""
+    for ie, (k, pt) in enumerate(evals):
+        vt.absorb("u", k, msgs[ie][0], msgs[ie][1])
+    gams = {}
+    for k in sorted(com):
+        c = com[k]
+        gams[k] = c.prox_weights(vt.chal(p, c.prox_len()))
+        if gams[k] != prox[k][0]:
+            return False, "proximity challenge mismatch"
+        vt.absorb("g", k, prox[k][1])
+    used = {}
+    eweights = []
+    for k, pt in evals:
+        e = used.get(k, 0)
+        used[k] = e + 1
+        eweights.append(com[k].eval_weights(pt, e))
+    for k in sorted(com):
+        c = com[k]
+        npts = len(c.pts)
+        J = [x % npts for x in vt.chal(p, T_COLS)]
+        if J != cols[k][0]:
+            return False, "column challenge mismatch"
+        gam, gs = prox[k]
+        gcode = encode_pub(p, [sum(g[cc] for g in gs) % p for cc in range(c.W)], npts)
+        ucodes = [(eweights[ie], encode_pub(p, [sum(ui[cc] for ui in msgs[ie][0]) % p for cc in range(c.W)], npts))
+                  for ie, (kk, pt) in enumerate(evals) if kk == k]
+        for jj, j in enumerate(J):
+            colsum = [0] * c.R
+            for i in range(n):
+                col, path = cols[k][1][i][jj]
+                if not verify_path(roots[k][i], col, j, path):
+                    return False, f"Merkle opening fails ({k}, custodian {i})"
+                colsum = [(a + b) % p for a, b in zip(colsum, col)]
+            if sum(g * x for g, x in zip(gam, colsum)) % p != gcode[j]:
+                return False, f"proximity test fails ({k})"
+            for a, ucode in ucodes:
+                if sum(ai * x for ai, x in zip(a, colsum)) % p != ucode[j]:
+                    return False, f"evaluation consistency fails at an opened column ({k})"
+    return True, "accept"
 
 def verify_path(root, col, j, path):
     h = H("leaf", col)
@@ -199,7 +326,7 @@ class Prover:
                 eqt = [(eqt[2 * k] * (1 - r) + eqt[2 * k + 1] * r) % p for k in range(half)]
         return msgs, rs
 
-def prove_and_verify(eng, wires, parent=None, attack=None):
+def prove_and_verify(eng, wires, parent=None, attack=None, carry=None):
     """Runs the custodians' prover and the public verifier on one step. Returns (ok, why, counts).
     `wires`: x, z1, h, z2, d2, b, g1, bg, d1, W1, W2, W1n, W2n as SPDZ-shared values (matrices row-major)."""
     p, n = eng.p, eng.n
@@ -220,6 +347,12 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
             honest_W1n = honest_sh
         if attack in ("forge_z1", "forge_sumcheck") and k == "z1":
             sh[0] = list(sh[0]); sh[0][3] = (sh[0][3] + 1) % p
+        if carry and k in carry:
+            # a chained, hiding commitment is NOT recomputed: the custodians carry its opening (shares, tails,
+            # masks) from the previous step and use its second block of mask rows
+            com[k] = carry[k]
+            com[k].base = com[k].block
+            continue
         com[k] = SharePCS(p, sh, k)
     if parent is not None:                      # the verifier's parent = the previous step's child roots
         parent_roots = parent
@@ -244,7 +377,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
         claim_z = None
         if attack == "forge_sumcheck":
             zc = com[zk]
-            zsum = [sum(zc.rows[i][r][c] for i in range(n)) % p for r in range(zc.R) for c in range(zc.C)]
+            zsum = [sum(zc.rows[i][r][c] for i in range(n)) % p for r in range(zc.Rd) for c in range(zc.C)]
             claim_z = mle(zsum, tau, p)
         msgs, rs = P.sumcheck(tr, f, wires[vk], claim_z, 2)
         proof["sumchecks"][name] = (tau, msgs, rs)
@@ -266,28 +399,15 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
         proof["rank1"][Wn] = (rc, rr)
         evals += [(Wn, rc + rr), (Wo, rc + rr), (dv, rr), (vv, rc)]
     # ---- PCS: row combinations per evaluation, one proximity combination per commitment, t columns
-    pcs_msgs = []
-    for k, pt in evals:
-        c = com[k]
-        a = eqv(pt[c.mc:], p)
-        u = [c.row_combo(i, a) for i in range(n)]
+    def u_hook(k, c, a, u):
         if attack == "lie_in_u" and k == "W1n":
             # the forged W1' is committed, but custodian 0 reports the row combination of its HONEST share,
             # so every evaluation (and the rank-1 check) looks honest; only the opened columns can tell
-            u[0] = [sum(a[r] * honest_W1n[0][r * c.C + cc] for r in range(c.R)) % p for cc in range(c.C)]
-        pcs_msgs.append(u)
-        tr.absorb("u", k, u)
-    prox = {}
-    for k in sorted(com):
-        c = com[k]
-        gam = tr.chal(p, c.R)
-        prox[k] = (gam, [c.row_combo(i, gam) for i in range(n)])
-        tr.absorb("g", k, prox[k][1])
-    cols = {}
-    for k in sorted(com):
-        c = com[k]
-        J = [x % len(c.pts) for x in tr.chal(p, T_COLS)]
-        cols[k] = (J, [[c.open_col(i, j) for j in J] for i in range(n)])
+            hon = [list(honest_W1n[0][r * c.C:(r + 1) * c.C]) + c.ext[0][r][c.C:] for r in range(c.Rd)] + c.ext[0][c.Rd:]
+            u = list(u)
+            u[0] = [sum(a[r] * hon[r][cc] for r in range(c.R)) % p for cc in range(c.W)]
+        return u
+    pcs_msgs, prox, cols = pcs_prove(com, evals, tr, n, p, u_hook)
     eng.mac_check("cosnark")
     proving_wire = {ph: v - wire0.get(ph, 0) for ph, v in eng.wire.items() if v != wire0.get(ph, 0)}
     proving_opens = eng.nopen - open0
@@ -300,14 +420,9 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
             return False, "parent commitment is not the previous step's child commitment"
         for k in sorted(roots):
             vt.absorb(k, roots[k])
-        shape = {k: (com[k].R, com[k].C, com[k].mc) for k in com}
-        # PCS evaluations first need the same transcript order: replay challenges
-        val = {}
-        def pcs_value(i_eval):
+        def pcs_value_(i_eval):
             k, pt = evals[i_eval]
-            R, C, mc = shape[k]
-            u = pcs_msgs[i_eval]
-            return sum(sum(ui[c] for ui in u) * e for c, e in zip(range(C), eqv(pt[:mc], p))) % p
+            return pcs_value(com[k], pt, pcs_msgs[i_eval], p)
         idx = 0
         sc_res = {}
         for name in ("z1", "z2", "b"):
@@ -315,7 +430,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
             tau_p, msgs, rs = proof["sumchecks"][name]
             if tau != tau_p:
                 return False, "transcript mismatch"
-            claim = pcs_value(idx)                      # z(tau) from the z commitment
+            claim = pcs_value_(idx)                      # z(tau) from the z commitment
             rr = []
             for vals in msgs:
                 if (vals[0] + vals[1]) % p != claim:
@@ -324,7 +439,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
                 r = vt.chal(p)[0]
                 rr.append(r)
                 claim = lag3(vals, r, p)
-            if claim != pcs_value(idx + 1) * pcs_value(idx + 2) % p:
+            if claim != pcs_value_(idx + 1) * pcs_value_(idx + 2) % p:
                 return False, f"sumcheck {name}: final check fails against the committed W and vector"
             idx += 3
         tau = vt.chal(p, ld)
@@ -338,53 +453,24 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
             rr.append(r)
             claim = lag3(vals, r, p)
         e = mle(eqv(tau, p), rr, p)
-        if claim != e * (pcs_value(idx) * pcs_value(idx + 1) - pcs_value(idx + 2)) % p:
+        if claim != e * (pcs_value_(idx) * pcs_value_(idx + 1) - pcs_value_(idx + 2)) % p:
             return False, "Hadamard zerocheck: final check fails (bg != b * g1)"
         idx += 3
         for Wn in ("W1n", "W2n"):
             rc, rr2 = vt.chal(p, ld), vt.chal(p, ld)
-            wn, wo, dv, vv = (pcs_value(idx + k) for k in range(4))
+            wn, wo, dv, vv = (pcs_value_(idx + k) for k in range(4))
             if wn != (wo - dv * vv) % p:
                 return False, f"rank-1 update {Wn}: W'(r) != W(r) - d(r_row) v(r_col)"
             idx += 4
-        for i_eval, (k, pt) in enumerate(evals):
-            vt.absorb("u", k, pcs_msgs[i_eval])
-        for k in sorted(com):
-            R = shape[k][0]
-            gam = vt.chal(p, R)
-            vt.absorb("g", k, prox[k][1])
-        for k in sorted(com):
-            R, C, mc = shape[k]
-            npts = BLOW * C
-            J = [x % npts for x in vt.chal(p, T_COLS)]
-            Jp, opened = cols[k]
-            if J != Jp:
-                return False, "column challenge mismatch"
-            gam, gs = prox[k]
-            gcode = encode_pub(p, [sum(g[c] for g in gs) % p for c in range(C)], npts)
-            ucodes = [(pt, encode_pub(p, [sum(ui[c] for ui in pcs_msgs[ie]) % p for c in range(C)], npts))
-                      for ie, (kk, pt) in enumerate(evals) if kk == k]
-            for jj, j in enumerate(J):
-                colsum = [0] * R
-                for i in range(n):
-                    col, path = opened[i][jj]
-                    if not verify_path(roots[k][i], col, j, path):
-                        return False, f"Merkle opening fails ({k}, custodian {i})"
-                    colsum = [(a + b) % p for a, b in zip(colsum, col)]
-                if sum(g * x for g, x in zip(gam, colsum)) % p != gcode[j]:
-                    return False, f"proximity test fails ({k})"
-                for pt, ucode in ucodes:
-                    a = eqv(pt[mc:], p)
-                    if sum(ai * x for ai, x in zip(a, colsum)) % p != ucode[j]:
-                        return False, f"evaluation consistency fails at an opened column ({k})"
-        return True, "accept"
+        return pcs_verify(com, roots, evals, pcs_msgs, prox, cols, vt, n, p)
     ok, why = V()
     # ---- counts (the proof as the verifier receives it, and the custodians' proving cost)
     wit = sum(len(v) for v in vecs.values()) + sum(len(v) for v in mats.values())
     cw = sum(com[k].R * len(com[k].pts) for k in com)
+    nev = len(evals)
     sc_elems = sum(len(m) * len(m[0]) for _, m, _ in proof["sumchecks"].values())
-    u_elems = sum(n * com[k].C for k, _ in evals)
-    g_elems = sum(n * com[k].C for k in com)
+    u_elems = sum(n * com[k].W for k, _ in evals) + (n * nev if any(com[k].nmask for k in com) else 0)
+    g_elems = sum(n * com[k].W for k in com)
     col_elems = sum(n * T_COLS * com[k].R for k in com)
     hashes = sum(n * T_COLS * (len(com[k].trees[0]) - 1) for k in com)   # path length = levels - 1
     counts = dict(witness_elems=wit, codeword_elems_per_party=cw, merkle_leaves_per_party=sum(len(com[k].pts) for k in com),
@@ -393,6 +479,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
                   proof_hashes=hashes + n * len(com), sumcheck_msg_elems=sc_elems, row_combo_elems=u_elems + g_elems,
                   opened_column_elems=col_elems, proving_openings=proving_opens, proving_wire=proving_wire,
                   child_roots={"W1": com["W1n"].roots, "W2": com["W2n"].roots},
+                  carry={"W1": com["W1n"], "W2": com["W2n"]},
                   roots={k: com[k].roots for k in com})
     return ok, why, counts
 
@@ -400,21 +487,23 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
 def shape(m):
     return 1 << (m // 2), 1 << (m - m // 2)
 
-def counts_formula(d, n=3, t=T_COLS):
-    """The built spine's counts as a function of d (validated against executed runs by run_cosnark.py)."""
+def counts_formula(d, n=3, t=T_COLS, hide=0, nmask=0):
+    """The built spine's counts as a function of d (validated against executed runs by run_cosnark.py,
+    with and without the hiding PCS)."""
     ld = d.bit_length() - 1
     vec, mat = shape(ld), shape(2 * ld)
     coms = [vec] * 9 + [mat] * 4
     evals = [vec, vec, mat] * 3 + [vec] * 3 + [mat, mat, vec, vec] * 2
-    lg = lambda C: (BLOW * C - 1).bit_length()
+    lg = lambda C: (BLOW * (C + hide) - 1).bit_length()
     sc = 3 * ld * 3 + ld * 4
-    u = sum(n * C for _, C in evals)
-    g = sum(n * C for _, C in coms)
-    col = sum(n * t * R for R, _ in coms)
+    u = sum(n * (C + hide) for _, C in evals) + (n * len(evals) if nmask else 0)
+    g = sum(n * (C + hide) for _, C in coms)
+    col = sum(n * t * (R + nmask) for R, _ in coms)
     opens = 3 * (6 * (d - 1) + 3 * ld) + 8 * (d - 1) + 4 * ld
     muls = 3 * 3 * (d - 1) + 4 * (d - 1)
-    return dict(witness_elems=9 * d + 4 * d * d, codeword_elems_per_party=sum(R * BLOW * C for R, C in coms),
-                merkle_leaves_per_party=sum(BLOW * C for _, C in coms), commitments=13, pcs_evaluations=len(evals),
+    return dict(witness_elems=9 * d + 4 * d * d,
+                codeword_elems_per_party=sum((R + nmask) * BLOW * (C + hide) for R, C in coms),
+                merkle_leaves_per_party=sum(BLOW * (C + hide) for _, C in coms), commitments=13, pcs_evaluations=len(evals),
                 proof_field_elems=sc + u + g + col + n * 13, proof_hashes=sum(n * t * lg(C) for _, C in coms) + n * 13,
                 sumcheck_msg_elems=sc, row_combo_elems=u + g, opened_column_elems=col, proving_openings=opens,
                 proving_wire={"mul": muls * 2 * n * (n - 1), "mac_check": 2 * n * (n - 1),

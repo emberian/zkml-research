@@ -127,5 +127,24 @@
    "proving_openings": 159804,
    "proving_wire": 958824
   }
+ },
+ "zk_layer1_hiding_pcs": false,
+ "formula_d4096_zk": {
+  "witness_elems": 67145728,
+  "codeword_elems_per_party": 277862400,
+  "merkle_leaves_per_party": 74496,
+  "commitments": 13,
+  "pcs_evaluations": 20,
+  "proof_field_elems": 3428607,
+  "proof_hashes": 28839,
+  "sumcheck_msg_elems": 156,
+  "row_combo_elems": 152124,
+  "opened_column_elems": 3276288,
+  "proving_openings": 106626,
+  "proving_wire": {
+   "mul": 638820,
+   "mac_check": 12,
+   "cosnark": 936
+  }
  }
 }

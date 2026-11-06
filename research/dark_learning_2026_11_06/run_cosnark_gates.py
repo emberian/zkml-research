@@ -42,17 +42,22 @@ def run(d, attack=None, cheat_phase=None):
     MF.run_step(sym, None, None, [0] * d, [0] * d, tab, 9)
     ok_m, why_m, cm = G.prove_and_verify_middle(live, sym, wires, cs["roots"])
     return dict(spine=(ok_s, why_s), middle=(ok_m, why_m), middle_counts=cm,
-                spine_counts={k: v for k, v in cs.items() if k not in ("child_roots", "roots")},
+                spine_counts={k: v for k, v in cs.items() if k not in ("child_roots", "roots", "carry")},
                 seconds=round(time.time() - t0, 1))
 
 def main():
+    import os
+    zk = os.environ.get("ZK") == "1"
+    if zk:                       # ZK layer 1: hiding PCS (tails >= t, mask rows)
+        CS.HIDE, CS.NMASK = CS.LIVES * CS.T_COLS, CS.LIVES * 4
     ds = [int(a) for a in sys.argv[1:]] or [16, 64]
     out = {}
     for d in ds:
         r = run(d)
         f = G.counts_formula(d)
         r["formula"] = f
-        r["formula_exact"] = all(r["middle_counts"][k] == v for k, v in f.items())
+        r["formula_exact"] = all(r["middle_counts"][k] == v for k, v in f.items()
+                                 if not (CS.HIDE and k == "committed_elems"))
         out[f"d{d}"] = r
         print(d, "spine", r["spine"], "middle", r["middle"], "formula exact", r["formula_exact"],
               r["middle_counts"], flush=True)
@@ -70,7 +75,8 @@ def main():
     for dd in (64, 4096):
         out[f"formula_d{dd}"] = G.counts_formula(dd) if dd == 64 else G.counts_formula(
             dd, S1=11, K1=19, S2=4, K2=8, S3=14, K3=19)
-    json.dump(out, open("cosnark_gates_results.json", "w"), indent=1, default=str)
+    out["zk_layer1_hiding_pcs"] = zk
+    json.dump(out, open("cosnark_gates_results_zk.json" if zk else "cosnark_gates_results.json", "w"), indent=1, default=str)
 
 if __name__ == "__main__":
     main()
