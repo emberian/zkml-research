@@ -1,0 +1,12 @@
+finite bf16 inputs: 65280
+act      out codes colliding codes codes w/ >1 deriv inputs affected max |dderiv|  note
+relu         32641               1                 0               0            0  y=0 code: x<=0 has d=0; x=-0.0/+0.0 tie
+sigmoid       1069             252               148           16798     0.003754  
+tanh         32498             232               190           32930     0.007538  
+gelu         48366             604               412           17008       0.5142  non-monotone: two-valued over the reals too
+silu         48464             952               751           17243       0.5008  non-monotone: two-valued over the reals too
+
+Reading: 'codes w/ >1 deriv' > 0 means a backward table keyed on the forward OUTPUT cannot reproduce the
+spec's derivative at those codes; the repair is to key the backward lookup on the INPUT code (the forward
+table's address, already committed by the forward lookup), i.e. one table with a two-column row
+(x -> sigma(x), sigma'(x)), which costs one extra column, not a second table.

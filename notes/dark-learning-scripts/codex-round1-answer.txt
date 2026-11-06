@@ -1,0 +1,370 @@
+codex
+The “boundary crossing every step” claim is too strong. The code names that problem for its scaled rational update, but it is not a BFV impossibility theorem: integer-grid updates and some exact contractions avoid it. The converse needs care too—depth 2 measured on sampled executions does not establish correctness for every adversarially chosen, proof-admitted training trace.
+
+codex
+C1 — Useful representation; false noise claim; rank1_sound does not transfer verbatim.
+
+[SOURCE] The algebraic identity is established in minidregg/Assurance/ZkmlLowRankUpdate.lean:409, matVec_chainUpdate. It does not establish encrypted execution, refreshing, integer exactness, or gradient correctness.
+
+[DERIVED] Fresh factors prevent recursive multiplicative depth from growing with training time. They do not prevent noise from accumulating in the forward sum. With T rank-r updates and per-factor-pair evaluation noise bounded by E, a straightforward worst-case bound is E_base + TrE. At T=128 and r=16, that is 2,048 contributions: potentially 11 additional bits of noise budget. Independence would not justify replacing this with square-root growth against your adversary.
+
+Depth two is plausible for one thin pair when v, x and delta are encrypted: one multiplication for x·v, another for delta times that result. It assumes suitably refreshed inputs and a realizable packing/extraction schedule. Rotations, key switches, sums, plaintext magnitudes and subsequent layers remain in the budget. “Depth two forever” is not “decryptable forever.”
+
+[DERIVED] Merging does not refresh anything. Homomorphically materializing and adding the deltas preserves their accumulated noise. Refreshing the merged matrix means a dense boundary crossing.
+
+At d=4096, r=16, T=128:
+
+131,072 factor entries are appended per step.
+16,777,216 factor entries have accumulated by the proposed merge.
+Serving costs 33,554,432 scalar multiplications, including the base matvec.
+Naively materializing that merge costs Trd² = 34,359,738,368 scalar multiplications.
+
+T=d/(2r) is a storage/serving-work equality, not an economic optimum. A merge decision needs expected future queries, materialization cost, proof cost, refresh cost and available noise margin. Also, W0v is shared among adapters for one v; it is generally recomputed when v changes.
+
+[DERIVED] Quantizing factors defines an exact modular update, but changes the learning algorithm. It is generally different from quantizing the full gradient. More seriously, Z_t arithmetic is not BabyBear arithmetic. For example, 1000×2000 mod 1032193 = 967807; that equation is false when interpreted directly in BabyBear.
+
+The factorization identity works over any commutative ring. rank1_sound requires a finite field and checks equality in that field: minidregg/Selvage/Rank1GradientCheck.lean:234–287. You need integer bounds with no wrap, explicit quotient witnesses, or a proof over the plaintext field and an appropriate extension. Directly using F_t gives only 24/t ≈ 2^-15.39 at d=4096. A BabyBear extension preserves BabyBear’s characteristic; it does not fix the mismatch.
+
+[OPEN] Who produces the plaintext factor openings without knowing the factors? The host can prove ciphertext arithmetic from a ciphertext trace. It cannot automatically instantiate the cheap plaintext rank-1 proof. Distributed proving or a ciphertext-to-plaintext commitment bridge is an additional construction.
+
+Verdict: retain the append-only representation. Replace “noise never accumulates” with a bounded-length evaluation theorem, and replace the universal merge interval with a workload-dependent policy.
+
+
+C2 — The audit theorem applies to a narrower quantity, with a different cap unless you strengthen the envelope.
+
+[SOURCE] AuditSampling.lean:603 proves an expectation bound on b times the number of corrupt rounds, including the detecting round. Its hypotheses require a positive conditional detection probability at every unstopped history. The finite-horizon theorem is proved; the infinite-horizon passage is explicitly not formalized.
+
+[DERIVED] A cap on the submitted update is not a cap on deviation from the correct update. Write u for the submitted update and u* for the prescribed update.
+
+||u|| ≤ B alone gives no B bound on ||u-u*||.
+If both updates satisfy the same cap, ||u-u*|| ≤ 2B.
+
+The one-dimensional falsifier is u=B and u*=-B. Thus:
+
+B/q can bound the total lengths of updates executed on corrupt rounds.
+2B/q bounds injected error relative to a capped honest transition.
+B/q bounds that error only if you actually certify ||u-u*|| ≤ B.
+
+The last certificate may require the backpropagation you wanted to sample.
+
+[DERIVED] For rank one, ||delta xᵀ||F = ||delta||2 ||x||2. A cheap sufficient envelope uses 2d squarings and additions, one multiplication of squared norms, and bounded-integer comparisons. At d=4096, that starts with 8,192 squarings. Rank r admits the sufficient bound Σk ||ak||2 ||bk||2, at O(rd) arithmetic. Range checks and no-wrap proofs are additional. Bounding one factor alone is invalid because of gauge freedom.
+
+[DERIVED] A linear authenticator authenticates allowed derivations under its actual security definition. It does not automatically restrict which linear combination the host may request. If the host chooses coefficients, it can authenticate a harmful linear combination. Bind the permitted coefficients, source identities, state version and operation label. Ordinary linear authentication also does not directly verify the bilinear computation of delta xᵀ or BFV multiplication/rescaling.
+
+Someone must initially authenticate the secret values and prove that the ciphertexts encrypt those values. Moving that work into the quorum is legitimate; omitting it is not.
+
+[DERIVED] “Always checked” is the right meaning of unconditional here. Cryptographic envelope proofs still have soundness error. To derive an unconditional expectation, account for envelope failures and a maximum damage on those failures; otherwise state the result conditional on valid envelopes.
+
+At q≈0.01, the theorem allows roughly 100 corrupt rounds’ payload in expectation. Under the corresponding conditional hazard assumption, 299 corrupt attempts are needed for a 95% detection guarantee. Detection must stop use of descendants, and audit refusal/timeouts must alarm. Otherwise the stopped process is not the deployed process.
+
+Finally, correct training on malicious but authorized data is not a corrupt round under this predicate. This theorem is a bound on protocol deviations, not poisoning generally.
+
+Verdict: viable as bounded speculative execution. It does not yet justify the claimed B/q injected-error bound.
+
+
+C3 — A credible restricted-oracle theorem target, not presently an IND-CPA-D theorem for deployed BFV.
+
+[DERIVED] The core idea is sound: if every admitted evaluation is perfectly correct, a legitimate IND-CPA-D decryption query can be answered using its prescribed plaintext output. In that game, queried outputs must agree between the challenge worlds. The failure-dependent oracle channel disappears.
+
+But your verifier changes the oracle’s domain. State the result for proof-gated BFV with an explicitly restricted circuit family. Do not claim unrestricted IND-CPA-D security for ordinary BFV.
+
+[SOURCE] I checked the local 2026/203 paper’s game and Propositions 11–12. Its linear-combination attack constructs the challenge ciphertext from encryptions of zero. Faithful evaluation alone does not stop it. A sound derivation-based noise gate can reject the dangerous computation. This is a meaningful restriction, not a contradiction of the impossibility result.
+
+[DERIVED] The missing premises are substantial:
+
+The proof must bind the entire derivation to authorized initial ciphertexts, keys and parameters.
+Fresh-encryption and evaluation-key noise bounds must be justified.
+Integer lifting, BFV scaling, relinearization and representation conversions must refine the implementation.
+The margin must include smudging and threshold-combination coefficients.
+Every partial-decryption participant must enforce the gate before publishing a share.
+
+The proven δ_R=N supplies one multiplication inequality. It supplies none of those other premises. Bfv/Mul.lean explicitly retains the centered-lift correspondence and key-switch-noise assumptions.
+
+[DERIVED] Proving “small noise relative to some plaintext” is insufficient. The plaintext must be the prescribed result of the bound trajectory. Otherwise the challenge-reconstruction attack can end at a fresh, small-noise ciphertext with the wrong claimed semantics.
+
+Also separate cryptographic leakage from authorized output leakage. An allowed identity circuit reveals weights perfectly, with no decryption failure. Model confidentiality needs a release-policy game, not merely an IND-CPA-D label.
+
+[SOURCE] Bfv/Smudging.lean:442 defines TranscriptHybridLedger with the conditional hybrid bounds supplied as hypotheses. It does not construct that ledger for the real transcript.
+
+[DERIVED] If one crossing publishes m ciphertext decryptions with n party polynomials each, the existing conditional accounting is:
+
+epsilon_total ≤ K m n N 2^-48.
+
+For N=4096, n=16, m=1, a million crossings cost approximately 2.33×10^-4 under that ledger. That is an upper bound, not an attack probability or established deployed security. The scalar theorem’s 2^32 noise envelope also cannot be reused for arbitrary evaluated training ciphertexts.
+
+Deterministic evaluation is compatible with the proposed restriction. It neither creates perfect correctness nor simulates threshold shares.
+
+Verdict: pursue “simulation of a proof-gated, policy-restricted threshold release interface.” That is the actual theorem.
+
+
+C4 — Attractive update storage; expensive forwards; weak poisoning restriction.
+
+[SOURCE] MeZO regenerates a Gaussian perturbation from a seed and computes its scalar coefficient from two perturbed forwards. That supports the storage idea, not encrypted execution or poisoning resistance. [MeZO authors’ description](https://princeton-nlp.github.io/mezo/)
+
+[DERIVED] Use two randomness stages. Commit the model version, batch, loss, perturbation scale and generator before revealing the direction seed. Then commit the resulting coefficient/update before revealing an independent audit-selection beacon. If the direction beacon also reveals audit selection, the host knows whether it can forge c before committing c.
+
+[DERIVED] One-dimensional poisoning is not unbiased poisoning. The adversary chooses the coefficient after seeing the direction. For normalized Rademacher z in P dimensions, choosing an update B sign(z1)z moves coordinate 1 by exactly B/√P every step. At P=4096², that is B/4096 per malicious step. Without a magnitude cap, the one-dimensional restriction provides essentially no displacement bound.
+
+Over T steps, the available directions span up to min(T,P) dimensions. Beacon unpredictability prevents advance batch adaptation; it does not prevent subsequent coefficient adaptation.
+
+[DERIVED] The update avoids ct×ct multiplication when c multiplies a public vector in a suitable encoding. Producing c still requires:
+
+Two complete dark forwards.
+All nonlinear boundary crossings in both forwards.
+The loss calculation.
+Division/rounding for the finite difference.
+A proof binding both evaluations to the same state, batch and randomness policy.
+
+Public Gaussian directions also require a specified finite sampler and quantization. Switching to signs simplifies arithmetic but changes the algorithm.
+
+[DERIVED] A seeded direction reshaped as a dense d×d matrix is generally not low rank. Keeping a history of scalar coefficients therefore makes forward evaluation cost approximately (T+1)d² scalar multiplications, rather than C1’s d²+2Trd. Materializing updates avoids that serving growth but restores dense state writes and additive noise accumulation.
+
+“One encrypted scalar” is not one committed field element. An ordinary two-polynomial ciphertext at these parameters contains 24,576 residues: 192 KiB with u64 storage, or 49,152 BabyBear bridge felts. A short digest can identify it; it does not eliminate the checked representation.
+
+Verdict: a plausible optimizer to benchmark, especially in a small parameter subspace. The cheap update is not evidence of cheap learning or strong poisoning resistance.
+
+
+C5 — Shared endpoints are necessary; conversion semantics and global history are still missing.
+
+[DERIVED] Sharing the same boundary ciphertext commitment prevents adjacent proofs from using different ciphertext bytes. It does not prove that BFV ciphertext c_in, MPC shares s, and fresh BFV ciphertext c_out represent the required related plaintexts.
+
+The boundary needs a relation of the form:
+
+Decode(c_in) = ShareReconstruct(s_in);
+s_out = authorized_transition(s_in);
+c_out encrypts ShareReconstruct(s_out).
+
+Implement this without revealing those reconstructions. Mask ownership, mask independence, arithmetic conversion, signed interpretation, rounding and encryption randomness belong in that relation.
+
+Counterexample: both segment proofs open the identical input ciphertext commitment, while the MPC proof begins from unrelated shares. Every shared-ciphertext check succeeds.
+
+[DERIVED] A trajectory commitment must cover more than weights: optimizer state, accumulated factors, scales, randomness counters, data position, key epoch, architecture and policy. Bind parent and child state roots. A consistent chain of proofs still permits rollback or competing branches unless the custodians enforce a canonical history.
+
+[DERIVED] For segment type j, let qj be the actual conditional detection probability, including checker, binding and beacon losses. Then min_j qj is a conservative bound only if every relevant corrupt action is assigned to a covered segment type. An unchecked conversion has q=0.
+
+Independent selection is not necessary for the minimum-rate argument; conditional lower bounds suffice. If one corrupt action necessarily violates several independently audited segments, its detection probability can instead be 1−Πj(1−qj). Do not claim that improvement when corruption can be localized to the weakest segment.
+
+Verdict: make the conversion itself a proved segment, and bind all state needed for continuation. Endpoint commitments alone do not establish trajectory provenance.
+
+
+C6 — Correct central objection; the proposed limb count is not a universal lower bound.
+
+[SOURCE] VERDICTS §7 item 5 already contains the September 5 correction: BFV scaling depends on a lifted integer product, not merely its residue modulo Q. FRONTIER-QUEUE’s earlier “dissolves both” sentence is stale.
+
+[DERIVED] The concrete falsifier works with one prime:
+
+Q=31, t=4.
+1×1 and 2×16 both equal 1 modulo Q.
+round(4×1/31)=0.
+round(4×32/31)=4.
+
+A native-field product proof cannot distinguish them. Checking
+
+tz + floor(Q/2) = Qy + s
+
+only modulo Q deletes y. An extension field of characteristic Q also deletes y.
+
+[DERIVED] Your magnitude estimate is useful for sizing a direct certificate. At N=4096:
+
+With deployed Q, log2(NQ²t)≈249.98: nine near-31-bit chunks, or five near-61-bit chunks.
+With Q=p61, log2(NQ²t)≈153.95: five near-31-bit chunks, or three near-61-bit chunks.
+
+These are capacity counts. Signed bounds, middle tensor components, carry headroom and a practical radix affect actual constraints. They are not a lower bound on every possible protocol: redundant moduli, quotient/remainder arguments and specialized bounded arithmetic offer different representations.
+
+[DERIVED] A single prime removes cross-limb source mixing, not source binding generally. You must still bind the correct ciphertext, coefficient, component and trajectory.
+
+The 3-adic inertia fact concerns a different cyclotomic family. Because 2N divides p61−1, the actual power-of-two BFV ring splits over F_p61; it is not made into a field by that inertia property.
+
+[SOURCE] VERDICTS §3 also records the 48-bit noise-budget loss from replacing Q≈2^109 by p61. That is not a drop-in replacement for C1’s depth-two workload. Section 3b’s better RNS primes are a separate route to native limb arithmetic while preserving Q.
+
+Verdict: yes, the “both holes disappear” claim should be retired. Describe the remaining obligation as lifted integer scaling, not necessarily a fixed number of non-native limbs.
+
+
+C7 — Exact shard removal, not exact single-datum unlearning.
+
+[DERIVED] Independence lets you remove one shard’s contribution exactly. It does not make that contribution equal to the influence of one datum.
+
+Scalar counterexample: W0=0, one shard contains targets {1,0}, and its independently trained scalar adapter minimizes squared loss. Its optimum is 1/2. Delete the target 0:
+
+Dropping the shard produces 0.
+Retraining on the retained target {1} produces 1.
+
+Membership and absence proofs do not change this discrepancy.
+
+[SOURCE] SISA localizes retraining to affected shards/slices; it does not generally replace that retraining with dropping the whole shard. [SISA paper](https://arxiv.org/html/1912.03817)
+
+[DERIVED] Exactness must name its comparator. Dropping a term can match “train with the entire shard excluded.” It generally does not match “run the prescribed learner on D minus this datum.”
+
+For single-datum exactness, either retrain the affected adapter, use singleton shards, or choose a learner with subtractable sufficient statistics.
+
+Independence must include frozen W0, optimizer state, normalization statistics, teacher outputs, validation-driven decisions and shared preprocessing. Absence from remaining data commitments does not prove absence of influence through those channels. W0 itself must be covered.
+
+[DERIVED] Updating the active adapter registry can be cheap: one authenticated deletion and O(log S) tree work, with no dense matrix subtraction in a lazy representation. Proving absence independently against S−1 shard commitments can cost O(S log n); a canonical global occurrence index can make exact-record accounting substantially cheaper.
+
+Finally, this proves the active model’s provenance. It cannot prove that an adversarial host erased old ciphertexts or previously released outputs. Custodians must refuse stale model roots.
+
+Verdict: rename it “certified shard withdrawal,” or pay for affected-shard retraining.
+
+
+C8 — A real representation problem, overstated into a universal requirement.
+
+[SOURCE] convex_step.rs:25–40 computes den·x−num·Ax. Lines 67 onward explicitly name division before general iteration as unfinished. Noise.lean:490 separately requires the intended integer result to fit the plaintext range. Its 42-step example uses den=num=1 and a public linear map; it is not a 42-step fractional-SGD theorem.
+
+[DERIVED] For the scale-carrying representation, write w_k=a_k/den^k. The plaintext stores a_k. Overflow depends on a_k, not on the denominator alone.
+
+A nontrivial counterexample is w_{k+1}=w_k/2 with w0=1. Then a_k=1 for every k. The ciphertext numerator never changes; only the public scale does. There is no inevitable wrap after log2(t) steps.
+
+Other exceptions include integer-grid optimizers, updates divisible by den, and bounded blocks followed by occasional normalization. These may change the learning algorithm or its useful domain, but they refute “every long run needs a crossing every step.”
+
+[DERIVED] Modular inversion is not general fixed-point division. At this t, 2^-1 mod t=516097, whose centered interpretation is −516096, not 1/2. It works for an exactly divisible, appropriately bounded numerator; it does not implement rounding.
+
+A general fixed-scale real-valued learner does need an explicit quantization policy. It can round each step, maintain a higher-precision residual, normalize periodically, or use a larger/multiword plaintext representation. Refreshing ciphertext noise alone does not normalize plaintext scale.
+
+Verdict: prove a precision budget for a specified optimizer and representation. BFV’s absence of CKKS-style scale management does not prove the claimed per-step crossing lower bound.
+
+
+NEW
+
+[HYPOTHESIS] Ranked below by qualitative ambition × plausibility. These are construction proposals, not novelty claims. Counts distinguish arithmetic work from commitment, proof and communication costs; none are timing predictions.
+
+1. Keep the mutable learner in malicious-secure MPC; export BFV snapshots.
+
+Statement to prove: every accepted state transition equals the specified integer training program, while any allowed corrupt coalition learns only authorized outputs. The host receives encrypted checkpoints, not live plaintext state.
+
+Cost: a dense d×d layer with one example needs approximately 3d² secret multiplications for forward, backward-input and weight-gradient products: 50,331,648 at d=4096, plus nonlinearities. A Beaver-style implementation consumes one triple and opens two masked field values per secret multiplication. For n parties, that is 2nG broadcast share elements for G such gates, before authentication overhead. A fully packed dense BFV snapshot needs at least d²/N=4096 ciphertexts.
+
+Security legs: malicious MPC, authenticated sharing, preprocessing, corruption threshold, state continuity and secure snapshot conversion. Publicly verifiable proofs require distributed proof generation; MPC authentication alone is not a public proof.
+
+Falsifier: corrupt the allowed parties, replay an old state share, or bias preprocessing and obtain an accepted incorrect checkpoint. Also measure whether distributed proof generation destroys the expected advantage.
+
+Why first: it removes repeated BFV scale/noise management from the mutable computation. It is the baseline every hybrid should beat.
+
+
+2. A dark learner with subtractable sufficient statistics.
+
+Use a frozen feature map and maintain encrypted or shared statistics:
+
+A = lambda I + Σ xxᵀ;
+b = Σ xy;
+Aw=b.
+
+Statement to prove: insertions and deletions produce exactly the statistics of the committed active multiset, and the released model solves the specified regularized problem. For exact field semantics, require invertibility; for real semantics, specify and prove the numerical solver.
+
+Cost: each insertion/deletion needs d(d+1)/2+d products and corresponding additions. At d=64 that is 2,144 products. Verifying a proposed solution by direct Aw=b costs 4,096 multiplications. A dense solve is O(d³), but it need not run on every record.
+
+Security legs: data membership and multiplicity, private feature evaluation, MPC/FHE integrity, no wrap and solver semantics.
+
+Falsifier: delete a duplicated record only once, change the feature extractor after accumulation, or supply a singular/wrapped system that passes.
+
+Why second: this offers actual exact deletion with bounded persistent state. It sacrifices general neural-network training rather than pretending arbitrary SGD influence is additive.
+
+
+3. Train a fixed public subspace, not an ever-growing factor history.
+
+Set W=W0+UCVᵀ, with public fixed d×r matrices U,V and only the r×r matrix C mutable and dark.
+
+Statement to prove: every update is the prescribed projected-gradient transition in C, and inference uses exactly W0+UCVᵀ. Include fixed-point rounding in the transition.
+
+Cost: adapter evaluation uses 2dr+r² scalar multiplications. At d=4096,r=16, that is 131,328. Only 256 mutable scalars exist, versus 131,072 fresh factor entries in C1: 512 times fewer. The coefficient gradient is (Uᵀdelta)(Vᵀx)ᵀ, costing two public projections and r² secret products.
+
+Security legs: correctness of the projected error, fixed dictionary identity, ciphertext/share conversion, privacy and quantization. Public matrices eliminate secret-secret multiplication in the projections, not in every remaining operation.
+
+Falsifier: choose a task whose useful gradient is orthogonal to the allowed subspace; the cryptography can work perfectly while learning stalls.
+
+Why third: bounded state and no merge schedule. The limitation is explicit model capacity.
+
+
+4. Proof-gated activation of training epochs.
+
+Allow speculative encrypted training, but prohibit serving outputs or activating a new model version until a proof covers the entire epoch from the last certified checkpoint.
+
+Statement to prove: every externally used model descends through verified transitions from the certified initial state. Sampling may detect failed epochs early, but is not the safety argument for activated state.
+
+Cost: E steps containing G checked arithmetic gates each still require EG gate work and a full proof. A conventional FFT-based trace prover adds roughly O(EG log(EG)) field work plus hashing. Aggregate verification and activation can occur once per epoch. This saves verification frequency, not total training correctness work.
+
+Security legs: sound step proofs, secure internal crossings, parent-root binding, a canonical version registry and enforcement by every release party.
+
+Falsifier: obtain one inference result, reward-dependent action or partial decryption from a speculative descendant; alternatively activate a valid proof against a stale parent.
+
+Why fourth: it replaces “expected damage before detection” with “no unproved model becomes active,” at a clear latency and proving cost.
+
+
+5. Differential privacy inside the authenticated training transition.
+
+Clip per-example gradients, aggregate, add privately generated noise, and enforce a cumulative privacy accountant before activating a checkpoint.
+
+Statement to prove: the actual released transcript satisfies a specified neighboring-dataset DP bound, and accepted transitions implement the clipped, randomized optimizer.
+
+Cost: for batch B and P trainable coordinates, straightforward norm computation needs BP squarings and approximately BP additions. Applying clipping needs another BP multiplications; aggregation needs (B−1)P additions. Noise needs P samples. If the chosen finite sampler costs S gates per sample, add PS gates and P additions. The sampler’s approximation/tail error belongs in delta.
+
+Security legs: correct clipping, an actual randomness-distribution argument, secret noise, malicious MPC, accounting across adaptive releases and no wrap. A proof that a noise value lies in the sampler’s support does not prove it was sampled correctly.
+
+Falsifier: reveal the noise seed, let the host choose among candidate seeds, or reuse noise across checkpoints and demonstrate privacy loss beyond the accountant.
+
+Why fifth: it controls leakage through legitimate outputs. It neither prevents authorized-data poisoning nor protects weights against a fully corrupt custody quorum.
+
+
+6. An attested epoch trainer as an explicit hardware-trust fork.
+
+The quorum authorizes an attested trainer to decrypt a checkpoint inside a TEE, run the specified training epoch, and return a newly encrypted checkpoint with an attested provenance record.
+
+Statement to prove: under the hardware isolation and attestation assumptions, the host OS/hypervisor cannot observe weights, and accepted output roots were produced by the measured program from the bound inputs.
+
+Cost: ordinary dense-layer training arithmetic—approximately 3Bd² multiply-accumulates—plus checkpoint encryption/decryption and hashing. At d=4096,B=1, that is about 50.3 million multiply-accumulates per layer. A dense BFV interface still carries at least 4096 ciphertexts each way per checkpoint; amortize that over the epoch.
+
+Security legs: hardware isolation, attestation freshness, rollback protection, controlled I/O, side-channel assumptions and threshold authorization. Attestation replaces a portable computation proof; it does not instantiate STARK soundness.
+
+Falsifier: snapshot rollback, an accepted obsolete measurement, a plaintext-bearing diagnostic channel, or a host-visible side channel.
+
+Why sixth: plausible throughput, sharply weaker trust. If “host” includes the processor itself, this construction does not satisfy the original requirement.
+
+
+7. Ring-native accumulation with a separate integer-scaling relation.
+
+Accumulate repeated BFV ring equations directly over their RNS rings, while separately proving lifted convolution, quotient/remainder and range relations for each rescale.
+
+Statement to prove: the accumulator certifies all bound ciphertext operations and their integer scaling semantics, with explicit soundness under the chosen challenge distribution and commitment assumptions.
+
+Cost: for the simple relaxed relation ab−uc=e, a two-instance quadratic fold requires the cross-products a1b2+a2b1, plus linear operations. Two negacyclic convolutions over three N=4096 limbs cost 2LN²=100,663,296 coefficient multiplications naively. With separate radix-two NTTs, the transform core costs 442,368 butterflies and 24,576 pointwise multiplications, excluding twists, normalization, commitments and range/scaling proofs. Transform reuse can reduce this.
+
+Security legs: binding/hiding commitments, short-witness handling where required, transcript challenges, global source identities and the integer scaling certificate. R_Q contains zero divisors; field Schwartz–Zippel cannot be imported with |R_Q| in the denominator.
+
+Falsifier: construct a residual supported in one CRT component that folds away too often, or replay the Q=31 scaling counterexample through an accepting accumulator.
+
+Why seventh: potentially large proof savings, but the commitment and scaling obligations are research, not implementation details.
+
+
+FOUNDATIONS
+
+1. The custody/release security game is weaker than the program’s language.
+
+[SOURCE] The scalar smudging theorem is real. Its correspondence to adaptively conditioned per-party polynomial transcripts is explicitly unproved. The fresh-noise assumption, actual threshold secret distribution, release policy and cumulative query budget are separate obligations.
+
+[DERIVED] “Below threshold cannot read,” “the full quorum can read,” “permitted outputs leak only this,” and “the host cannot advance an unauthorized history” are four different statements. None follows from a scalar smudging inequality. The pre-constrained-encryption note’s general-constraint lower bound also should not become an impossibility claim for every specially restricted learn/infer functionality.
+
+Repair: define one stateful ideal functionality with corruption, release, rollback, abort and refresh semantics. Prove the actual masked threshold/MPC transcript simulates that functionality. Instantiate the hybrid ledger from the protocol, count ciphertexts per crossing, and derive noise bounds for the actual ceremony distribution. Until then, label confidentiality conditional.
+
+
+2. The useful algebraic theorems are not yet a dark-training verifier.
+
+[SOURCE] rank1_blind_to_the_error and lowRank_blind_to_the_projection explicitly demonstrate the missing gradient semantics. The notes separately name assumed openings, missing PCS transport and Fiat–Shamir obligations. A ciphertext-only host does not possess the witnesses used in the cheap plaintext proof.
+
+[DERIVED] This is the largest architectural gap: proving arithmetic on known ciphertexts and proving arithmetic on hidden plaintexts are different protocols. A small ZK overhead for a prover that already has a witness does not solve distributed witness custody.
+
+Repair: build one complete, deliberately small training transition with a real verifier: bound input ciphertexts, activation and derivative, loss, backward error, update, scale handling and next-state root. Choose explicitly between ciphertext-trace proving and distributed plaintext proving. Attack it with a wrong delta, mixed source limbs, unrelated boundary shares, wrong quotient, stale parent and missing audit response. Price that complete object before extrapolating the rank-1 saving.
+
+
+3. There is no single executable numerical and learning specification connecting the claims.
+
+[SOURCE] The public-linear noise theorem, rank-1 field theorem, measured BFV depth and scaled convex step concern different operations and representations.
+
+[DERIVED] Several prose shortcuts are false as general statements. A 20-bit plaintext modulus does not universally limit polynomial degree to two; the input domain and intermediate bounds matter. “No range checks” for a field-linear update does not establish integer or fixed-point correctness.
+
+[EXECUTED] DARK-TRAINING.md:24–28 also incorrectly says GELU’s derivative is determined by its output. Using Python’s erf to evaluate exact GELU gives two inputs with output approximately −0.15:
+
+x≈−1.09257368, derivative≈−0.10267476.
+x≈−0.46991125, derivative≈+0.15133801.
+
+So even the derivative’s sign is not recoverable from that output alone. A joint table keyed by the preactivation can provide both values; an output-only table cannot generally do so.
+
+Repair: specify a reference integer learner with exact scales, signed ranges, rounding, clipping, derivative convention, optimizer state and randomness consumption. Prove refinement from the encrypted implementation to that learner. Then establish learning utility separately. The first milestone should be a complete multi-step trajectory whose arithmetic, confidentiality, provenance and learning behavior all refer to the same machine.
