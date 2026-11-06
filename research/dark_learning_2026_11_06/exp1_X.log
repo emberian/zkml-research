@@ -1,0 +1,1 @@
+{'N': 8192, 'L': 6, 'logQ': 204.0, 'parties': 3, 'd': 4096, 'wire': {'E2S': 98304, 'F-online': 49152, 'S2E': 147456}, 'online_total': 294912, 'preprocessing_rotated_table': 1610612736, 'preprocessing_dpf_2party': 1703936, 'openings': 8192}

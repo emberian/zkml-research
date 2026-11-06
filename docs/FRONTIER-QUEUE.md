@@ -67,7 +67,11 @@ hard — does not exist.** Cross-limb binding is an artifact of having limbs.
 > ⚑ **REFINED 2026-08-14** (`notes/cross-limb-binding.md`, `breadstuffs`
 > `5b653ba5d`). The hole is now exhibited in Lean and it is **two** holes:
 > **provenance** (a quantifier swap) and **expressibility** (`⌊t·x/Q⌉` reads the
-> CRT reconstruction). Single-prime does dissolve **both** — that claim survives.
+> CRT reconstruction). ~~Single-prime does dissolve **both** — that claim survives.~~
+> ⚠ **STRUCK 2026-11-06: refuted for the expressibility half.** VERDICTS §7.5 (09-05) already showed
+> the rescale certificate is over the INTEGERS (`round(t(z+Q)/Q) = round(tz/Q) + t`; the Q = 31, t = 4
+> pair shares a residue and scales to 0 vs 4), so ONE prime deletes Hole A (no limbs) and leaves Hole B
+> whole: `t z + ⌊Q/2⌋ = Q y + s` must be certified over ℤ, and a native mod-Q check deletes y.
 > But the sequencing changes: **the provenance half closes for +0 felts / +0
 > permutations** by interleaving the limbs into one row, so it need not wait on
 > H1. What waits on H1 is the expressibility half. And the cost that single-prime
@@ -77,6 +81,18 @@ One prime, no limbs, no CRT reconstruction to bind, no
 rounding-across-moduli that lives in no single field. It also deletes the
 RNS-emulation-in-circuit cost that dominates every published vFHE result.
 **Cost:** losing RNS speed on the FHE side (2-limb arithmetic in software).
+
+> ✅ **REPAIRED STATEMENT, 2026-11-06 (measured; `research/dark_learning_2026_11_06/`,
+> `docs/DARK-LEARNING-SCHEME-DECISION.md` §1).** The question G1 should ask is not "one prime or RNS"
+> but "is every residue field a proof field". One real ct×ct with the full integer rescale certificate,
+> every relation checked, Q = 31/t = 4 falsifier refused: native p61 @ N = 4096 = 593,899 elements
+> (36.2 Mbit, 8,842 bits/coef; the model had predicted 159,744); PRISM-style RNS with three 61-bit
+> primes each its own proof field @ N = 8192 = 827,371 elements (50.5 Mbit, **6,161 bits/coef — the
+> cheapest per coefficient**); BabyBear row-interleaved is the outlier (5-bit digits forced at
+> N = 8192). A single 61-bit prime also fails depth and the smudging read budget for a long run
+> (`notes/dark-learning-foundations-critique.md` F3, F5). Verdict: single-prime is the wrong target;
+> per-prime proof fields with canonical-integer binding (PRISM 2026/1956) are the right one, and
+> Hole B is a certificate to pay for, never a hole any modulus choice dissolves.
 **Answer it:** one afternoon — swap the modulus constant in `~/src/matvecmul`
 to a 109-bit prime, set P=2^20, inner dim 512, run their existing end-to-end
 test. Then measure the FHE-side loss in fhegg.

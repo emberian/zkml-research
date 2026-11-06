@@ -15,7 +15,12 @@ Scripts referenced: `notes/dark-learning-scripts/tradeoff_space.py` (constructio
 
 ---
 
-## F1. The plaintext-precision wall: BFV cannot rescale, and training is a long iteration. Nobody wrote this down.
+## F1. The plaintext-precision wall: BFV cannot rescale, and training is a long iteration.
+
+⚠ Astra DL31 (accepted): "nobody wrote this down" was wrong — `Bfv/Noise.lean:490` (`iter_decrypts_exact`)
+already carries the message bound `m_i < t` for the UNSIGNED decode. What is missing is the SIGNED bridge:
+a symmetric range on signed messages does not make the unsigned decode return negatives. The repair below
+is therefore a signed-decoding theorem plus the iteration-specific ledger, not a first statement of the wall.
 
 **Weakness.** Every dark-training note prices NOISE depth. None prices PLAINTEXT growth. BFV has no
 rescale: a product of two plaintexts lives at the product's scale until a rounding nonlinearity brings it
@@ -210,7 +215,9 @@ table, HE Standard v1.1 p.31, located by Codex round 2).
   audit legs, `E[Σ_{t<τ} ‖Δ_t − Δ_t^honest‖] ≤ 2B/q`. This is `leakage_bound` at `b = 2B` (triangle
   inequality on a capped honest and a capped dishonest delta). Falsifier: drop `EnvelopeLeg` and exhibit
   one corrupt step with unbounded displacement passing every sampled check with probability 1 − p.
-- `bisect_localizes`: if every step's boundary (W_t commitment or appended factor) is committed, then after
+- ~~`bisect_localizes`~~ ⚠ withdrawn (Astra DL03): local step validity is not monotone; replace with
+  bisection on PREFIX validity (does honest replay from genesis reach the committed W_t?), which costs a
+  replay, not ⌈log₂ T⌉ isolated step proofs. Original text: if every step's boundary (W_t commitment or appended factor) is committed, then after
   an alarm the first corrupt step is found with ⌈log₂ T⌉ step proofs (refereed-delegation shape; Verde
   bisects to one operation [READ lit lane: CVC atlas]).
 - Keep amplification as a separate named residual `[TRAIN-amplify]`, never folded in.

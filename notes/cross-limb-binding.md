@@ -363,6 +363,26 @@ Named precisely, with what each would take.
 
 ---
 
+## 6b. Prior art this note did not cite (added 2026-11-06)
+
+**PRISM (eprint 2026/1956, CCS'26; Zhou, Li, Yang, Hong, Wei)** [READ via the dark-learning crypto lane,
+§1, §3.1, §4.2, App. D.6]: an "MF-PCS" that commits ONCE to a master polynomial and opens it modulo each
+RNS prime, with consistency through the same canonical integer representatives; an auxiliary prime
+p_{n+1} > m·max p_i² carries the integer lift, and ONE range proof replaces n−1 per-limb range proofs.
+That is an `∃ source, ∀ i` binding — this note's Hole A, closed — published, and it carries the integer
+lift that Hole B's certificate needs; it expresses CKKS/BGV modulus and key switching through FastBconv.
+Caveats: its ZK version is designated-verifier (VOLE, non-reusable offline phase); evaluated on CKKS/BGV
+only, with no explicit BFV scale-and-round construction found. Our §2 "layout fork" (one table per limb vs
+row interleaving) was therefore a two-way choice where a third, better-priced option existed: per-prime
+proof fields with canonical-integer witnesses. Measured on one real ct×ct
+(`research/dark_learning_2026_11_06/rescale_certificates.py`, design B61): 827,371 committed elements /
+6,161 bits per coefficient at N = 8192 with three 61-bit primes, the cheapest design measured;
+`docs/DARK-LEARNING-SCHEME-DECISION.md` §1. Any claim of novelty for the Hole A closure in this note is
+withdrawn in favour of PRISM; the exhibits (`perLimb_not_imp_bound`, the tautology refutation) remain
+ours as formal statements.
+
+---
+
 ## 7. Artifacts
 
 - `breadstuffs` `5b653ba5d` — `metatheory/Bfv/CrossLimb.lean` (new, 23 keystones

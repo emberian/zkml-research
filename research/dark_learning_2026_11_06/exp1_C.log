@@ -1,0 +1,2 @@
+falsifier Q=31,t=4: mod-Q check accepts the alias: True; integer certificate refuses it: True (out(32)=4, out(1)=0)
+{'design': 'C', 'N': 8192, 'logQ': 204.0, 'field_bits': 31, 'digit_w': 5, 'digits_per_coef': 42, 'cert_elems': 32055047, 'cert_bits': 993706457, 'range_lookups': 33439246, 'detail': {'inputs': 1376256, 'K': 2039559, 'z': 2039808, 'carry': 2039808, 'scale': 5423104, 'extra': 19136512, 'range_lookups': 33439246}}

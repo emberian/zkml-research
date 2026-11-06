@@ -1785,3 +1785,47 @@ child work dominates the wrap (the measured case is K ≤ 0.17 at lb6) go to `(2
 is cut over**: per `docs/LEAF-PROVER-DECISION.md` the p3 fork is legacy. These numbers price the
 flag day for whoever revives the breadstuffs devnet, and they carry one lesson into the Tower256
 path: **leaf size, not the field, decides the blowup.**
+
+
+## 9. ⚑ Dark learning, 2026-11-06: the ct×ct rescale certificate priced on a real product, and the custody fork's crossing
+
+`research/dark_learning_2026_11_06/` (hbox, `swarm-build`, counts only), `docs/DARK-LEARNING-SCHEME-DECISION.md`.
+
+**One BFV ct×ct, with the full integer rescale certificate built and checked.** The certificate covers
+`t d + ⌊Q/2⌋ = Q y + s` over ℤ (Hole B, §7.5), the column or field bounds that lift field checks to ℤ, and
+decryption to m₁m₂. The Q = 31, t = 4 falsifier is accepted by a mod-Q check and refused by the integer
+certificate, in every run. Each count is for one concrete design: an upper bound for that design, not a
+lower bound for every protocol.
+
+| design | N | log Q | field | committed elements | committed bits | bits/coef |
+|---|---:|---:|---|---:|---:|---:|
+| native p61 (single prime, signed 22-bit digits) | 4096 | 61 | p61 | 593,899 | 36.2 M | 8,842 |
+| PRISM-style RNS, 6×34-bit + 8 ext, u pinned | 8192 | 204 | per-prime | 2,736,086 | 72.1 M | 8,800 |
+| **PRISM-style RNS, 3×61-bit + 4 ext, u pinned** | 8192 | 183 | per-prime 61-bit | **1,908,715** | **67.8 M** | **8,277** |
+| row-interleaved into BabyBear (5-bit digits) | 8192 | 204 | BabyBear | 32,055,047 | 993.7 M | 121,302 |
+
+- **The model was low by ×3.7 to ×30.** The rescale relation costs more than the product itself.
+- **The deployed layout is the outlier.** Row interleaving into BabyBear is ×15 the per-prime design in
+  bits.
+- **u must be pinned.** The base-extension quotient u, left free, lets a prover shift an extended value
+  by the basis product, and a forged output passes every residue check (exhibited in `cert_b61.py`).
+  Pinning u is a range proof and is included in the PRISM rows above.
+- **FRONTIER-QUEUE G1 is repaired in place.** A single prime deletes Hole A only. The cheapest design
+  per coefficient is per-prime proof fields with canonical-integer binding (PRISM 2026/1956, now cited in
+  `notes/cross-limb-binding.md` §6b).
+
+**One fused σ/σ' crossing, executed** (N = 8192, RNS-204, 3 custodians, 4,096 values in, 8,192 out).
+Encrypt-to-shares (E2S) and shares-to-encrypt (S2E) are real polynomials checked by decryption; the
+function's openings run on shares.
+
+| phase | elements |
+|---|---:|
+| E2S | 98,304 |
+| function, online | 49,152 |
+| S2E | 147,456 |
+| online total | 294,912 |
+| preprocessing, rotated-table 2^16 lookup | 1.61×10^9 |
+| preprocessing, 2-party DPF | 1.70×10^6 |
+
+A crossing costs N-sized messages whatever the layer width. At d = 64 the FHE fork moves 8,192-coefficient
+ciphertexts to carry 64 values, and that is why the MPC fork wins bandwidth at small d.
