@@ -38,12 +38,24 @@ MAGIC = b"DLSTEP01"
 OWNER_H = 12                 # 2^12 one-time keys per owner tree
 
 # The verifier's parameters, pinned here (not taken from whichever run script set module globals) and recorded in
-# every ledger's genesis record. Soundness at these values, stated plainly: T = 97 distinct columns at rate 1/4 gives
-# a proximity error of at most (3/4)^97 = 2^-40.26 per PCS and per Ligero (gen 4; was T = 64, 2^-26.6). That is a
-# STATISTICAL figure: under Fiat-Shamir a prover that grinds 2^g transcripts succeeds with about 2^(g-40), so it is
-# not a 128-bit non-interactive security level. 2^-128 needs T of about 309 at this rate, or a lower rate and
-# extension-field challenges.
-PARAMS = dict(HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=64, T_HIDE=97, T_OPEN=97, OWNER_H=OWNER_H)
+# every ledger's genesis record (the profile name included, so a demo ledger and a production ledger never accept each
+# other's steps). Two profiles (root decision, gen 4):
+#   ledger (default): T = 309 distinct columns at rate 1/4, (3/4)^309 = 2^-128.25 per PCS and per Ligero, so
+#                     grinding 2^g Fiat-Shamir transcripts still leaves about 2^(g-128);
+#   demo:             T = 97, 2^-40.26, a STATISTICAL figure only: under Fiat-Shamir 2^g grinding gives about 2^(g-40).
+PROFILES = {
+    "ledger": dict(PROFILE="ledger", HIDE=618, NMASK=2, LIVES=2, T_COLS=309, BLOW=4, K_L=64, T_HIDE=309, T_OPEN=309,
+                   OWNER_H=OWNER_H),
+    "demo": dict(PROFILE="demo", HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=64, T_HIDE=97, T_OPEN=97,
+                 OWNER_H=OWNER_H),
+}
+PARAMS = dict(PROFILES["ledger"])
+
+def set_profile(name):
+    """Select a profile explicitly (the demo profile is never a default)."""
+    PARAMS.clear()
+    PARAMS.update(PROFILES[name])
+    pin_params()
 
 def pin_params():
     CS.HIDE, CS.NMASK, CS.LIVES, CS.T_COLS, CS.BLOW = (PARAMS[k] for k in ("HIDE", "NMASK", "LIVES", "T_COLS", "BLOW"))
@@ -145,7 +157,7 @@ def ligero_schema(n, group_sizes):
     P = Z.Params.__new__(Z.Params)
     k, t, T = ZK.K_L, ZK.T_HIDE, ZK.T_OPEN
     npts = 4 * (k + t)
-    lg = (npts - 1).bit_length()
+    lg = (npts - 1).bit_length() + 1                    # salt + siblings
     cols = [L_(n, L_(T, ("tup", [L_(sz, FE), L_(lg, HH)]))) for sz in list(group_sizes) + [3]]
     return ("dict", [("w", L_(k + t, FE)), ("q", L_(2 * k + t - 1, FE)), ("pq", L_(2 * (k + t) - 1, FE)),
                      ("cols", ("tup", cols))])
@@ -153,7 +165,7 @@ def ligero_schema(n, group_sizes):
 def pcs_schema(n, sh):
     keys = sorted(sh)
     def cols(s):
-        lg = (len(s.pts) - 1).bit_length()
+        lg = (len(s.pts) - 1).bit_length() + 1
         return ("tup", [L_(CS.T_COLS, ("idx", len(s.pts))), L_(n, L_(CS.T_COLS, ("tup", [L_(s.R, FE), L_(lg, HH)])))])
     return (("dict", [(k, L_(n, HH)) for k in keys]),
             ("dict", [(k, L_(n, L_(sh[k].W, FE))) for k in keys]),

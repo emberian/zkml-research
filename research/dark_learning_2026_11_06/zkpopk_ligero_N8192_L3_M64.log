@@ -1,2 +1,2 @@
-sk counts {'bytes': 2645440, 'formula_bits': 21163520, 'exact': True, 'k': 8192, 'rows': 389, 'digits': 3179099, 'prove_s': 605.9, 'verify_s': 121.5}
+sk counts {'bytes': 4826464, 'formula_bits': 38611712, 'exact': True, 'k': 16384, 'rows': 180, 'digits': 2930044, 'prove_s': 416.6, 'verify_s': 216.7}
 honest secret-key batch                              ACCEPT  accept

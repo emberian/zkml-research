@@ -1,0 +1,183 @@
+{
+ "N": 8192,
+ "L": 3,
+ "M": 2,
+ "T": 97,
+ "P_bits": 255,
+ "rows": {
+  "honest secret-key batch": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true
+  },
+  "stale context: next step": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "stale context: other epoch": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "other recipient set": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "other call (replay into the transpose)": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "verified against another custodian's registered key": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "malformed key: a = 1 instead of the pinned seed's a": {
+   "verdict": "REFUSED",
+   "by": "key registry: a is not the pinned seed's",
+   "as_expected": true
+  },
+  "malformed key: b random, prover forges e_pk = -(b + a s)": {
+   "verdict": "REFUSED",
+   "by": "quadratic test: a committed digit is not binary",
+   "as_expected": true
+  },
+  "mixed limbs: limb 0 encrypts m, limbs 1+ encrypt m'": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "oversized error 9, carried by a non-binary digit": {
+   "verdict": "REFUSED",
+   "by": "quadratic test: a committed digit is not binary",
+   "as_expected": true
+  },
+  "oversized error 9, prover claims 8 (binary digits)": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "plaintext off the layout (padding coefficient nonzero)": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "changed response: proximity message w": {
+   "verdict": "REFUSED",
+   "by": "Merkle path (root 1)",
+   "as_expected": true
+  },
+  "changed response: linear message q": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "changed response: quadratic message p": {
+   "verdict": "REFUSED",
+   "by": "quadratic test: a committed digit is not binary",
+   "as_expected": true
+  },
+  "changed response: an opened column value": {
+   "verdict": "REFUSED",
+   "by": "Merkle path (root 1)",
+   "as_expected": true
+  },
+  "changed response: a leaf salt": {
+   "verdict": "REFUSED",
+   "by": "Merkle path (root 1)",
+   "as_expected": true
+  },
+  "changed commitment: root 1": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "changed commitment: root 2": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "truncated by one byte": {
+   "verdict": "REFUSED",
+   "by": "proof length",
+   "as_expected": true
+  },
+  "one trailing byte": {
+   "verdict": "REFUSED",
+   "by": "proof length",
+   "as_expected": true
+  },
+  "noncanonical element (w_0 replaced by 2^256 - 1 >= P)": {
+   "verdict": "REFUSED",
+   "by": "malformed: noncanonical field element",
+   "as_expected": true
+  },
+  "FS falsifier: simulated proof of a malformed ct, LEGACY verifier": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true
+  },
+  "FS falsifier: the same proof, real verifier": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "honest public-key batch (joint key)": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true
+  },
+  "public key: oversized e0 = 9, prover claims 8": {
+   "verdict": "REFUSED",
+   "by": "linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "regression: five 61-bit primes (Q 305 bits), zero bytes": {
+   "verdict": "REFUSED",
+   "by": "proof length",
+   "as_expected": true
+  },
+  "regression: 256-bit prime, false statement (asserts ON)": {
+   "verdict": "REFUSED",
+   "by": "prover refused: field too small for this batch: the folded limb equation could wrap modulo P",
+   "as_expected": true
+  },
+  "regression: 256-bit prime registry, verifier on arbitrary bytes": {
+   "verdict": "REFUSED",
+   "by": "key registry invalid",
+   "as_expected": true
+  },
+  "regression: a 17-bit limb prime in the registry": {
+   "verdict": "REFUSED",
+   "by": "key registry invalid",
+   "as_expected": true
+  }
+ },
+ "counts": {
+  "sk": {
+   "bytes": 669120,
+   "formula_bits": 5352960,
+   "exact": true,
+   "k": 2048,
+   "rows": 73,
+   "digits": 147525,
+   "prove_s": 14.8,
+   "verify_s": 3.9
+  },
+  "pk": {
+   "bytes": 576672,
+   "formula_bits": 4613376,
+   "exact": true
+  }
+ },
+ "gate": {
+  "products_after_accept": 2,
+  "ptxct_calls": 2,
+  "forged_refused": true,
+  "ptxct_calls_on_refusal": 0
+ },
+ "all_as_expected": true
+}

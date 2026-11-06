@@ -1,0 +1,33 @@
+sk counts {'bytes': 669120, 'formula_bits': 5352960, 'exact': True, 'k': 2048, 'rows': 73, 'digits': 147525, 'prove_s': 14.8, 'verify_s': 3.9}
+honest secret-key batch                              ACCEPT  accept
+stale context: next step                             REFUSED linear test: the folded limb equations do not hold
+stale context: other epoch                           REFUSED linear test: the folded limb equations do not hold
+other recipient set                                  REFUSED linear test: the folded limb equations do not hold
+other call (replay into the transpose)               REFUSED linear test: the folded limb equations do not hold
+verified against another custodian's registered key  REFUSED linear test: the folded limb equations do not hold
+malformed key: a = 1 instead of the pinned seed's a  REFUSED key registry: a is not the pinned seed's
+malformed key: b random, prover forges e_pk = -(b + a s) REFUSED quadratic test: a committed digit is not binary
+mixed limbs: limb 0 encrypts m, limbs 1+ encrypt m'  REFUSED linear test: the folded limb equations do not hold
+oversized error 9, carried by a non-binary digit     REFUSED quadratic test: a committed digit is not binary
+oversized error 9, prover claims 8 (binary digits)   REFUSED linear test: the folded limb equations do not hold
+plaintext off the layout (padding coefficient nonzero) REFUSED linear test: the folded limb equations do not hold
+changed response: proximity message w                REFUSED Merkle path (root 1)
+changed response: linear message q                   REFUSED linear test: the folded limb equations do not hold
+changed response: quadratic message p                REFUSED quadratic test: a committed digit is not binary
+changed response: an opened column value             REFUSED Merkle path (root 1)
+changed response: a leaf salt                        REFUSED Merkle path (root 1)
+changed commitment: root 1                           REFUSED linear test: the folded limb equations do not hold
+changed commitment: root 2                           REFUSED linear test: the folded limb equations do not hold
+truncated by one byte                                REFUSED proof length
+one trailing byte                                    REFUSED proof length
+noncanonical element (w_0 replaced by 2^256 - 1 >= P) REFUSED malformed: noncanonical field element
+FS falsifier: simulated proof of a malformed ct, LEGACY verifier ACCEPT  accept
+FS falsifier: the same proof, real verifier          REFUSED linear test: the folded limb equations do not hold
+honest public-key batch (joint key)                  ACCEPT  accept
+public key: oversized e0 = 9, prover claims 8        REFUSED linear test: the folded limb equations do not hold
+regression: five 61-bit primes (Q 305 bits), zero bytes REFUSED proof length
+regression: 256-bit prime, false statement (asserts ON) REFUSED prover refused: field too small for this batch: the folded limb equation could wrap modulo P
+regression: 256-bit prime registry, verifier on arbitrary bytes REFUSED key registry invalid
+regression: a 17-bit limb prime in the registry      REFUSED key registry invalid
+gate {'products_after_accept': 2, 'ptxct_calls': 2, 'forged_refused': True, 'ptxct_calls_on_refusal': 0}
+ALL AS EXPECTED

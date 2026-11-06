@@ -1,6 +1,6 @@
 """The batched Ligero ZKPoPK (zkpopk_ligero.py), executed and attacked.
 
-    python3 run_zkpopk_ligero.py [N L M T [attacks]]   # default 16 3 3 97 all; writes zkpopk_ligero_results_N{N}_L{L}_M{M}.json
+    python3 run_zkpopk_ligero.py [N L M T [attacks]]   # default 16 3 3 309 all; writes zkpopk_ligero_results_N{N}_L{L}_M{M}[_T{T}].json (no suffix: the ledger profile, T = 309)
 
 Honest secret-key batch (the MPC helper send: forward layout, d_c slots; plus one transpose-layout ciphertext) and
 public-key batch (FHE (b) masks), then the attacks the brief names (malformed keys, mixed limbs, oversized error,
@@ -46,7 +46,7 @@ def sk_batch(N, Qp, t, M, rng, key_seed="registry-seed-0", key_id="custodian-1")
 
 def main():
     a = sys.argv[1:]
-    N, L, M, T = (int(x) for x in a[:4]) if len(a) >= 4 else (16, 3, 3, 97)
+    N, L, M, T = (int(x) for x in a[:4]) if len(a) >= 4 else (16, 3, 3, 309)
     attacks = a[4] if len(a) > 4 else "all"
     pr = bfv.ntt_primes(61, L + 1, 2 * N)
     Qp, t = pr[:L], pr[L]
@@ -78,7 +78,7 @@ def main():
     allgood = record("honest secret-key batch", ok, why, True)
     allgood &= out["counts"]["sk"]["exact"]
     if attacks == "honest":
-        json.dump(out, open(f"zkpopk_ligero_results_N{N}_L{L}_M{M}.json", "w"), indent=1)
+        json.dump(out, open(f"zkpopk_ligero_results_N{N}_L{L}_M{M}{'' if T == 309 else f'_T{T}'}.json", "w"), indent=1)
         sys.exit(0 if allgood else 1)
 
     # --- stale context, other recipient, other sender's key
@@ -132,10 +132,10 @@ def main():
     g1, _ = Z.layout(st9)
     vals = {"s": wit["s"], "e_pk": wit["e_pk"]}
     for jj, w in enumerate(wit9["cts"]):
-        vals[f"e{jj}"], vals[f"m{jj}"], vals[f"r{jj}"] = list(w["e"]), w["m"], w["r"]
+        vals[f"e{jj}"], vals[f"r{jj}"] = list(w["e"]), w["r"]
     vals["e0"][N // 2] = 8
     d1 = Z.values_to_digits(g1, vals)
-    pos = 2 * N + 5 * N + 5 * (N // 2)
+    pos = 2 * N + 5 * N + 5 * (N // 2)                  # s, e_pk, then e0
     d1[pos] = 2                                          # digits (2,1,1,1,1) = 17 = 9 + 8: a non-binary digit
     b4 = Z.prove(st9, wit9, T=T, rng=rng, cheat=dict(digits1=d1, values1={"e0": e9}))
     allgood &= record("oversized error 9, carried by a non-binary digit", *Z.verify(st9, b4, T=T), False)
@@ -221,7 +221,7 @@ def main():
     stb_ = Z.Statement(rbig, "sk", [([Z.P, 0], [0, 0])], [[]], "audit")
     try:
         bz = Z.prove(stb_, dict(s=[0, 0], e_pk=[0, 0], cts=[dict(e=[0, 0], m=[], r=[])]), T=T, rng=rng,
-                     cheat={"K": {"K0": [0], "Kt": [0]}})
+                     cheat=dict(raw=True))
         r_ = Z.verify(stb_, bz, T=T)
     except ValueError as ex:
         r_ = (False, f"prover refused: {ex}")
@@ -235,6 +235,14 @@ def main():
     cts_s = [([x % Qs for x in c0], [x % Qs for x in c1]) for c0, c1 in cts]
     allgood &= record("regression: a 17-bit limb prime in the registry",
                       *Z.verify(Z.Statement(rs, "sk", cts_s, slots, ctx), blob, T=T), False)
+
+    # --- Codex review 2: one limb with Q ~ t has no decryption margin
+    q1 = bfv.ntt_primes(61, 1, 4)[0]
+    t1 = next(x for x in range(q1 - 2, 1 << 60, -2) if bfv.is_probable_prime(x))
+    r1 = Z.KeyRegistry(2, [q1], t1, "audit-margin", "custodian", [0, 0])
+    allgood &= record("regression: one limb with Q < 17 t (no decryption margin)",
+                      *Z.verify(Z.Statement(r1, "sk", [([8, 8], [0, 0])], [[]], "audit"), bytes(64), T=T), False)
+    allgood &= record("regression: verify(None) fails closed", *Z.verify(None, b""), False)
 
     # --- the recipient gate in front of he_matvec.ptxct
     calls = {"n": 0}
@@ -262,7 +270,7 @@ def main():
     allgood &= refused and calls["n"] == len(prods)
     print("gate", out["gate"], flush=True)
     out["all_as_expected"] = bool(allgood)
-    json.dump(out, open(f"zkpopk_ligero_results_N{N}_L{L}_M{M}.json", "w"), indent=1, default=str)
+    json.dump(out, open(f"zkpopk_ligero_results_N{N}_L{L}_M{M}{'' if T == 309 else f'_T{T}'}.json", "w"), indent=1, default=str)
     print("ALL AS EXPECTED" if allgood else "SOME ROW UNEXPECTED", flush=True)
     sys.exit(0 if allgood else 1)
 
