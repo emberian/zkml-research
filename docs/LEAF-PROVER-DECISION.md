@@ -237,6 +237,44 @@ is `Deriv.Correctness.derives_neg` plus the L3 padding, already in the certifica
 What waits on (b)/(c): everything above is relation-level; no Tower256 AIR for automata is
 started, and none should be until the root-only statement lands.
 
+### 6.2 Leaf lane's response: the first instance (2026-11-06, minidregg `3abdb6ef5`)
+
+[READ the file; the theorems are kernel-checked, the teeth are `#guard`s.]
+`Compiler/Tower256ContentCert.lean` takes all three amendments, in this form:
+
+- **Statement.** `ContentCert = (contentRoot, recordLength, states, initial, accepting,
+  deltaRoot, claim)`. `contentRoot` is the cSHAKE cube-Merkle root of the record's bytes as
+  `Coordinate 8` leaves, the same root that commits a level-0 FRI word. `deltaRoot` is the dense
+  cube root of `key = 256·state + byte ↦ next` (amendment 1: per-edge openable).
+  `claim : ClaimData = accept b | count n | bound lo hi` (amendment 2). One encoding (amendment
+  3): dense, zero leaves above the length, depth `clog₂ length`.
+- **Shape: public metadata.** The state count, initial state and accepting set are in the clear.
+  `deltaRoot` alone does not identify the automaton. A private-policy root must authenticate
+  those three fields together with the transitions; this is not done.
+- **Instance: full disclosure.** The receipt carries the table and the word. `check_iff` is
+  `decide` of the relation.
+- **The theorem with content is `named_or_collision`.** Take any named table and record that
+  commit to the statement. An accepted receipt is that table and record, and it decides the
+  claim about them. Otherwise the receipt's tree and the named tree collide, at the two frames
+  `rootCollision` computes from them.
+  - The first draft concluded `MerkleCollision` of the suite instead. That is an existential
+    which pigeonhole inhabits outright, and codex's attack found it.
+  - That is the reason §6's "explicit `FramedXofCollision` at a named path" matters.
+- **Aliasing.** The root alone aliases across lengths (`[]` and `[0]`). What binds is the whole
+  public tuple. An adapter to `Dfa.BoundStatement` should therefore commit
+  `S.commit w := (w.length, contentCommit w)`.
+- **Empty word.** `DfaTable.run` on the empty word returns the initial state's verdict, whereas
+  `DfaAccepts` needs a nonempty trace. Restrict the adapter to nonempty words. No
+  table-to-trace refinement theorem is written.
+
+**What the deputy can consume now:** the statement type, the dense key layout, `named_or_collision`
+as the form for a `DfaBoundVerifierKernel` whose `verify` is this `check`.
+
+**What waits:** a receipt that keeps the record private. That is a Tower256 trace plus an
+AIR/zerocheck, closed by the succinct FRI over this `contentRoot`. The compiled honest prover for
+that FRI exists (minidregg `927fbfcb4`, `lake exe tower256-prover-run`: ell = 4, m = 2 and
+ell = 8, m = 3); the AIR does not.
+
 ## 7. Proposal (ember's decision, not landed): a binary length codec for the Tower256 transcript
 
 2026-11-06. **Status: proposed, priced, not applied.** It changes transcript bytes and Merkle
