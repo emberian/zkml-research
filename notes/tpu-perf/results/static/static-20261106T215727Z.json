@@ -1,0 +1,1798 @@
+[
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "gateup_T256",
+  "gen": "v5e",
+  "params": {
+   "T": 256,
+   "K": 2880,
+   "N": 5760
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 4246732800
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 17326080,
+   "hbm_out": 5898240,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 2.8322341463414633e-05,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 2.15570192893401e-05,
+    "vpu": 0.0,
+    "hbm": 2.8322341463414633e-05
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     1,
+     45,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[256, 2880]",
+      "block": [
+       256,
+       2880
+      ],
+      "bytes": 737280
+     },
+     {
+      "array": "int8[2880, 5760]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[256, 5760]",
+      "block": [
+       256,
+       128
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 2605056,
+    "vmem_limit": 16777216,
+    "steps": 45,
+    "macs_per_step": 94371840
+   },
+   {
+    "name": "None",
+    "grid": [
+     1,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[256, 2880]",
+      "block": [
+       256,
+       2880
+      ],
+      "bytes": 737280
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[256, 128]",
+      "block": [
+       256,
+       128
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 2605056,
+    "vmem_limit": 16777216,
+    "steps": 1,
+    "macs_per_step": 94371840
+   }
+  ],
+  "compile_s": 0.7,
+  "cost_analysis": {
+   "flops": 65536.0,
+   "bytes accessed": 1884160.0,
+   "optimal_seconds": 2.5542367438902147e-06
+  },
+  "memory": {
+   "argument_size_in_bytes": 17694720,
+   "output_size_in_bytes": 5898240,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 273408
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 13526,
+   "scoped_vmem_max": 999424,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 2671,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[256,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"32\",\"23\"],\"input_w"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "gateup_T2048",
+  "gen": "v5e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 5760
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 33973862400
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 22487040,
+   "hbm_out": 47185920,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0001724561543147208,
+   "unit": "mxu",
+   "per_unit_s": {
+    "mxu": 0.0001724561543147208,
+    "vpu": 0.0,
+    "hbm": 8.496702439024391e-05
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     4,
+     45,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 5760]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 5760]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 180,
+    "macs_per_step": 188743680
+   },
+   {
+    "name": "None",
+    "grid": [
+     4,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 128]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 4,
+    "macs_per_step": 188743680
+   }
+  ],
+  "compile_s": 0.5,
+  "cost_analysis": {
+   "flops": 524288.0,
+   "bytes accessed": 15073280.0,
+   "optimal_seconds": 2.0433893951121718e-05
+  },
+  "memory": {
+   "argument_size_in_bytes": 22855680,
+   "output_size_in_bytes": 47185920,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 420864
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 85484,
+   "scoped_vmem_max": 2097152,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 8660,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"128\",\"8\"],\"input_"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "down_T2048",
+  "gen": "v5e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 2944
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 17364418560
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 14376960,
+   "hbm_out": 24117248,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 8.814425664974619e-05,
+   "unit": "mxu",
+   "per_unit_s": {
+    "mxu": 8.814425664974619e-05,
+    "vpu": 0.0,
+    "hbm": 4.6944156097560974e-05
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     4,
+     23,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 2944]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 2944]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 92,
+    "macs_per_step": 188743680
+   },
+   {
+    "name": "None",
+    "grid": [
+     4,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 128]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 4,
+    "macs_per_step": 188743680
+   }
+  ],
+  "compile_s": 0.4,
+  "cost_analysis": {
+   "flops": 524288.0,
+   "bytes accessed": 15073280.0,
+   "optimal_seconds": 2.0433893951121718e-05
+  },
+  "memory": {
+   "argument_size_in_bytes": 14745600,
+   "output_size_in_bytes": 24117248,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 420864
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 85484,
+   "scoped_vmem_max": 2097152,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 8660,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"128\",\"8\"],\"input_"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "rns_ntt61",
+  "cfg": "N8192_B1024",
+  "gen": "v5e",
+  "params": {
+   "B": 1024,
+   "N": 8192,
+   "N1": 64
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 103079215104
+   },
+   "vpu_elems": {
+    "32": 3288334464
+   },
+   "vpu_by_op": {
+    "add:i32": 838860816,
+    "and:i32": 553648128,
+    "shift_right_arithmetic:i32": 536870912,
+    "select:i32": 402653200,
+    "subtract:i32": 268435456,
+    "convert:i32": 201326608,
+    "xor:ui8": 134217728,
+    "multiply:i32": 134217728,
+    "multiply:f32": 83886080,
+    "add:f32": 50331648,
+    "compare:i32": 33554480,
+    "floor:f32": 16777216
+   },
+   "move_elems": 3036742176,
+   "hbm_in": 134479872,
+   "hbm_out": 67108864,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0005352106875,
+   "unit": "vpu",
+   "per_unit_s": {
+    "mxu": 0.0005232447467208122,
+    "vpu": 0.0005352106875,
+    "hbm": 0.0002458399219512195
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     128
+    ],
+    "issues": [],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 512]",
+      "block": [
+       8,
+       64,
+       512
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "int32[8, 64, 1]",
+      "block": [
+       8,
+       64,
+       1
+      ],
+      "bytes": 2048
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     }
+    ],
+    "vmem_bytes_double_buffered": 2625536,
+    "vmem_limit": 16777216,
+    "steps": 128,
+    "macs_per_step": 268435456
+   },
+   {
+    "name": "None",
+    "grid": [
+     8,
+     4
+    ],
+    "issues": [
+     "R1 block (8, 256, 8, 128): int8 packs 32 rows per tile; 8 pads"
+    ],
+    "blocks": [
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       256,
+       8,
+       128
+      ],
+      "bytes": 2097152
+     },
+     {
+      "array": "int8[64, 8, 128, 1024]",
+      "block": [
+       8,
+       8,
+       128,
+       1024
+      ],
+      "bytes": 8388608
+     },
+     {
+      "array": "int32[64, 8, 128]",
+      "block": [
+       8,
+       8,
+       128
+      ],
+      "bytes": 32768
+     },
+     {
+      "array": "int8[64, 8, 1024, 128]",
+      "block": [
+       8,
+       8,
+       256,
+       128
+      ],
+      "bytes": 2097152
+     }
+    ],
+    "vmem_bytes_double_buffered": 25231360,
+    "vmem_limit": 100663296,
+    "steps": 32,
+    "macs_per_step": 2147483648
+   }
+  ],
+  "compile_s": 16.0,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": null,
+   "optimal_seconds": null
+  },
+  "memory": {
+   "argument_size_in_bytes": 134479872,
+   "output_size_in_bytes": 67108864,
+   "temp_size_in_bytes": 67108864,
+   "generated_code_size_in_bytes": 3030016
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "custom-call": 2
+   },
+   "est_cycles_entry": 0,
+   "scoped_vmem_max": 26300416,
+   "async_prefetch": 0,
+   "n_instructions": 7,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "sumcheck_bb4_round",
+  "cfg": "H2p22",
+  "gen": "v5e",
+  "params": {
+   "H": 4194304
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 60129542144
+   },
+   "vpu_elems": {
+    "32": 11207180288
+   },
+   "vpu_by_op": {
+    "add:i32": 1744830464,
+    "and:i32": 1140850688,
+    "shift_right_arithmetic:i32": 1073741824,
+    "shift_right_logical:ui32": 671088640,
+    "and:ui32": 671088640,
+    "convert:ui32": 671088640,
+    "xor:ui8": 671088640,
+    "subtract:i32": 536870912,
+    "select:i32": 536870912,
+    "convert:i8": 402653184,
+    "reduce:i32": 402653184,
+    "convert:i32": 335544320
+   },
+   "move_elems": 14126821440,
+   "hbm_in": 536887360,
+   "hbm_out": 269234176,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0018240853333333334,
+   "unit": "vpu",
+   "per_unit_s": {
+    "mxu": 0.0003052261022538071,
+    "vpu": 0.0018240853333333334,
+    "hbm": 0.0009830750439024391
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     512
+    ],
+    "issues": [],
+    "blocks": [
+     {
+      "array": "uint32[4, 2, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "uint32[4, 2, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "int8[128, 128]",
+      "block": [
+       128,
+       128
+      ],
+      "bytes": 16384
+     },
+     {
+      "array": "int32[4, 32, 1]",
+      "block": [
+       4,
+       32,
+       1
+      ],
+      "bytes": 512
+     },
+     {
+      "array": "uint32[4, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "uint32[4, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int32[3, 128, 128]",
+      "block": [
+       3,
+       128,
+       128
+      ],
+      "bytes": 196608
+     },
+     {
+      "array": "int32[3, 128, 128]",
+      "block": [
+       3,
+       128,
+       128
+      ],
+      "bytes": 196608
+     },
+     {
+      "array": "int32[3, 2, 128, 1]",
+      "block": [
+       3,
+       2,
+       128,
+       1
+      ],
+      "bytes": 3072
+     }
+    ],
+    "vmem_bytes_double_buffered": 3972096,
+    "vmem_limit": 100663296,
+    "steps": 512,
+    "macs_per_step": 117440512
+   }
+  ],
+  "compile_s": 1.4,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": 464384.0,
+   "optimal_seconds": 6.295360890362645e-07
+  },
+  "memory": {
+   "argument_size_in_bytes": 536889344,
+   "output_size_in_bytes": 268832256,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 412160
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 1,
+    "copy @ ENTRY (HBM pass)": 1
+   },
+   "est_cycles_entry": 3882,
+   "scoped_vmem_max": 4202496,
+   "async_prefetch": 0,
+   "n_instructions": 13,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.1",
+     "layouts": [
+      "{2,1,0:T(8,128)S(1)}"
+     ],
+     "line": "%copy.c_ref = s32[4,32,1]{2,1,0:T(8,128)S(1)} copy(%c_ref), sharding={mesh[], [{}, {}, {}]}, metadata={op_name=\"C\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"4\",\"4\",\"1\"],\"input_wi"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.1",
+     "layouts": [
+      "{2,3,1,0:T(1,128)}"
+     ],
+     "line": "%copy.1 = s32[3,2,128,1]{2,3,1,0:T(1,128)} copy(%get-tuple-element.4), frontend_attributes={kernel_metadata={}}, metadata={op_name=\"jit(f)/pallas_call\" stack_frame_id=6}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bou"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "gateup_T256",
+  "gen": "v6e",
+  "params": {
+   "T": 256,
+   "K": 2880,
+   "N": 5760
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 4246732800
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 17326080,
+   "hbm_out": 5898240,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 1.45152e-05,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 4.6160139130434785e-06,
+    "hbm": 1.45152e-05
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     1,
+     45,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 256",
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[256, 2880]",
+      "block": [
+       256,
+       2880
+      ],
+      "bytes": 737280
+     },
+     {
+      "array": "int8[2880, 5760]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[256, 5760]",
+      "block": [
+       256,
+       128
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 2605056,
+    "vmem_limit": 16777216,
+    "steps": 45,
+    "macs_per_step": 94371840
+   },
+   {
+    "name": "None",
+    "grid": [
+     1,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 256",
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[256, 2880]",
+      "block": [
+       256,
+       2880
+      ],
+      "bytes": 737280
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[256, 128]",
+      "block": [
+       256,
+       128
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 2605056,
+    "vmem_limit": 16777216,
+    "steps": 1,
+    "macs_per_step": 94371840
+   }
+  ],
+  "compile_s": 0.4,
+  "cost_analysis": {
+   "flops": 65536.0,
+   "bytes accessed": 1884160.0,
+   "optimal_seconds": 1.1502809229568811e-06
+  },
+  "memory": {
+   "argument_size_in_bytes": 17694720,
+   "output_size_in_bytes": 5898240,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 215552
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 10248,
+   "scoped_vmem_max": 999424,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 2468,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[256,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"32\",\"23\"],\"input_w"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "gateup_T2048",
+  "gen": "v6e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 5760
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 33973862400
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 22487040,
+   "hbm_out": 47185920,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 4.35456e-05,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 3.692811130434783e-05,
+    "hbm": 4.35456e-05
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     4,
+     45,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 256",
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 5760]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 5760]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 180,
+    "macs_per_step": 188743680
+   },
+   {
+    "name": "None",
+    "grid": [
+     4,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 256",
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 128]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 4,
+    "macs_per_step": 188743680
+   }
+  ],
+  "compile_s": 0.5,
+  "cost_analysis": {
+   "flops": 524288.0,
+   "bytes accessed": 15073280.0,
+   "optimal_seconds": 9.202247383655049e-06
+  },
+  "memory": {
+   "argument_size_in_bytes": 22855680,
+   "output_size_in_bytes": 47185920,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 319488
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 53538,
+   "scoped_vmem_max": 2097152,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 4932,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"128\",\"8\"],\"input_"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "down_T2048",
+  "gen": "v6e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 2944
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 17364418560
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 14376960,
+   "hbm_out": 24117248,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 2.405888e-05,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 1.8874368e-05,
+    "hbm": 2.405888e-05
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     4,
+     23,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 256",
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 2944]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 2944]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 92,
+    "macs_per_step": 188743680
+   },
+   {
+    "name": "None",
+    "grid": [
+     4,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 256",
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 128]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 4,
+    "macs_per_step": 188743680
+   }
+  ],
+  "compile_s": 0.5,
+  "cost_analysis": {
+   "flops": 524288.0,
+   "bytes accessed": 48992288.0,
+   "optimal_seconds": 2.990982284245547e-05
+  },
+  "memory": {
+   "argument_size_in_bytes": 14745600,
+   "output_size_in_bytes": 24117248,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 323072
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 53538,
+   "scoped_vmem_max": 2097152,
+   "async_prefetch": 1,
+   "n_instructions": 19,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 4932,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"128\",\"8\"],\"input_"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "rns_ntt61",
+  "cfg": "N8192_B1024",
+  "gen": "v6e",
+  "params": {
+   "B": 1024,
+   "N": 8192,
+   "N1": 64
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 103079215104
+   },
+   "vpu_elems": {
+    "32": 3288334464
+   },
+   "vpu_by_op": {
+    "add:i32": 838860816,
+    "and:i32": 553648128,
+    "shift_right_arithmetic:i32": 536870912,
+    "select:i32": 402653200,
+    "subtract:i32": 268435456,
+    "convert:i32": 201326608,
+    "xor:ui8": 134217728,
+    "multiply:i32": 134217728,
+    "multiply:f32": 83886080,
+    "add:f32": 50331648,
+    "compare:i32": 33554480,
+    "floor:f32": 16777216
+   },
+   "move_elems": 3036742176,
+   "hbm_in": 134479872,
+   "hbm_out": 67108864,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.00012599296,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 0.00011204262511304348,
+    "hbm": 0.00012599296
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)",
+   "caveat": "VPU peak unknown for this generation: the bound omits VPU work and is a lower bound only"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     128
+    ],
+    "issues": [
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 512]",
+      "block": [
+       8,
+       64,
+       512
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "int32[8, 64, 1]",
+      "block": [
+       8,
+       64,
+       1
+      ],
+      "bytes": 2048
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     }
+    ],
+    "vmem_bytes_double_buffered": 2625536,
+    "vmem_limit": 16777216,
+    "steps": 128,
+    "macs_per_step": 268435456
+   },
+   {
+    "name": "None",
+    "grid": [
+     8,
+     4
+    ],
+    "issues": [
+     "R1 block (8, 256, 8, 128): int8 packs 32 rows per tile; 8 pads",
+     "R2 in-kernel dot K=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       256,
+       8,
+       128
+      ],
+      "bytes": 2097152
+     },
+     {
+      "array": "int8[64, 8, 128, 1024]",
+      "block": [
+       8,
+       8,
+       128,
+       1024
+      ],
+      "bytes": 8388608
+     },
+     {
+      "array": "int32[64, 8, 128]",
+      "block": [
+       8,
+       8,
+       128
+      ],
+      "bytes": 32768
+     },
+     {
+      "array": "int8[64, 8, 1024, 128]",
+      "block": [
+       8,
+       8,
+       256,
+       128
+      ],
+      "bytes": 2097152
+     }
+    ],
+    "vmem_bytes_double_buffered": 25231360,
+    "vmem_limit": 100663296,
+    "steps": 32,
+    "macs_per_step": 2147483648
+   }
+  ],
+  "compile_s": 18.7,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": 1052704.0,
+   "optimal_seconds": 6.426764684874797e-07
+  },
+  "memory": {
+   "argument_size_in_bytes": 134479872,
+   "output_size_in_bytes": 67108864,
+   "temp_size_in_bytes": 67141600,
+   "generated_code_size_in_bytes": 3053056
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "custom-call": 2
+   },
+   "est_cycles_entry": 0,
+   "scoped_vmem_max": 26963968,
+   "async_prefetch": 1,
+   "n_instructions": 9,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "sumcheck_bb4_round",
+  "cfg": "H2p22",
+  "gen": "v6e",
+  "params": {
+   "H": 4194304
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 60129542144
+   },
+   "vpu_elems": {
+    "32": 11207180288
+   },
+   "vpu_by_op": {
+    "add:i32": 1744830464,
+    "and:i32": 1140850688,
+    "shift_right_arithmetic:i32": 1073741824,
+    "shift_right_logical:ui32": 671088640,
+    "and:ui32": 671088640,
+    "convert:ui32": 671088640,
+    "xor:ui8": 671088640,
+    "subtract:i32": 536870912,
+    "select:i32": 536870912,
+    "convert:i8": 402653184,
+    "reduce:i32": 402653184,
+    "convert:i32": 335544320
+   },
+   "move_elems": 14126821440,
+   "hbm_in": 536887360,
+   "hbm_out": 269234176,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.00050382596,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 6.53581979826087e-05,
+    "hbm": 0.00050382596
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)",
+   "caveat": "VPU peak unknown for this generation: the bound omits VPU work and is a lower bound only"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     512
+    ],
+    "issues": [
+     "R2 in-kernel dot K=128 not a multiple of MXU edge 256",
+     "R2 in-kernel dot M=128 not a multiple of MXU edge 256",
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "uint32[4, 2, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "uint32[4, 2, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "int8[128, 128]",
+      "block": [
+       128,
+       128
+      ],
+      "bytes": 16384
+     },
+     {
+      "array": "int32[4, 32, 1]",
+      "block": [
+       4,
+       32,
+       1
+      ],
+      "bytes": 512
+     },
+     {
+      "array": "uint32[4, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "uint32[4, 2, 4096, 1024]",
+      "block": [
+       4,
+       2,
+       8,
+       1024
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int32[3, 128, 128]",
+      "block": [
+       3,
+       128,
+       128
+      ],
+      "bytes": 196608
+     },
+     {
+      "array": "int32[3, 128, 128]",
+      "block": [
+       3,
+       128,
+       128
+      ],
+      "bytes": 196608
+     },
+     {
+      "array": "int32[3, 2, 128, 1]",
+      "block": [
+       3,
+       2,
+       128,
+       1
+      ],
+      "bytes": 3072
+     }
+    ],
+    "vmem_bytes_double_buffered": 3972096,
+    "vmem_limit": 100663296,
+    "steps": 512,
+    "macs_per_step": 117440512
+   }
+  ],
+  "compile_s": 1.5,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": 463904.0,
+   "optimal_seconds": 2.8335040269666933e-07
+  },
+  "memory": {
+   "argument_size_in_bytes": 536889344,
+   "output_size_in_bytes": 268831776,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 409088
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ prefetch HBM->VMEM": 1,
+    "custom-call": 1,
+    "copy @ ENTRY (HBM pass)": 1
+   },
+   "est_cycles_entry": 4443,
+   "scoped_vmem_max": 4329472,
+   "async_prefetch": 0,
+   "n_instructions": 13,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "prefetch HBM->VMEM",
+     "comp": "main.1",
+     "layouts": [
+      "{2,1,0:T(8,128)S(1)}"
+     ],
+     "line": "%copy.c_ref = s32[4,32,1]{2,1,0:T(8,128)S(1)} copy(%c_ref), sharding={mesh[], [{}, {}, {}]}, metadata={op_name=\"C\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"4\",\"4\",\"1\"],\"input_wi"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.1",
+     "layouts": [
+      "{2,3,1,0:T(1,128)}"
+     ],
+     "line": "%copy.1 = s32[3,2,128,1]{2,3,1,0:T(1,128)} copy(%get-tuple-element.4), frontend_attributes={kernel_metadata={}}, metadata={op_name=\"jit(f)/pallas_call\" stack_frame_id=6}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bou"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ }
+]

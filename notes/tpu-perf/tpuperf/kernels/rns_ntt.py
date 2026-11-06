@@ -152,8 +152,10 @@ def inputs(rng, B, N, N1):
     p = plan_for(N, N1)
     x = [[int(v) % p.q for v in rng.integers(0, 2**62, N, dtype=np.int64)] for _ in range(B)]
     xb = np.array([[list(v.to_bytes(8, "little")) for v in row] for row in x], np.uint8)   # [B, N, 8]
-    xp = np.ascontiguousarray(xb.reshape(B, N1, N // N1, 8).transpose(3, 1, 0, 2))      # [8, N1, B, N2]
-    return (xp, p.T1, p.T2), dict(x=x)
+    xp = np.ascontiguousarray(xb.reshape(B, N1, N // N1, 8).transpose(3, 0, 1, 2))      # [8, B, N1, N2]
+    xo = (xp.astype(np.int16) - 128).astype(np.int8)                                     # offset bytes
+    T1p, T2p = pallas_operands(p)
+    return (xo, T1p, T2p), dict(x=x)
 
 
 def ntt_ref_poly(x, q, psi):
@@ -192,22 +194,23 @@ def ref(rd, B, N, N1):
         for k1 in range(N1):
             for k2 in range(N2):
                 out[k1, :, b, k2] = list(X[k1 + N1 * k2].to_bytes(8, "little"))
-    return out
+    return (out.astype(np.int16) - 128).astype(np.int8)                                  # offset bytes
 
 
-def impl(B, N, N1, **kw):
-    f, _ = make_ntt(plan_for(N, N1))
-    return f
+def impl(B, N, N1, interpret=False, **kw):
+    return make_ntt_pallas(plan_for(N, N1), interpret=interpret, **kw)
 
 
 def count(B, N, N1):
-    f = impl(B, N, N1)
-    return f, arg_specs(B, N, N1)
+    """Counts from the XLA formulation of the same algorithm (byte planes, full reduction per stage)."""
+    f, _ = make_ntt(plan_for(N, N1))
+    N2 = N // N1
+    return f, [((8, N1, B, N2), jnp.uint8), ((N1 * 8, 8 * N1), jnp.int8), ((N1, 8 * N2, 8 * N2), jnp.int8)]
 
 
 def arg_specs(B, N, N1):
     N2 = N // N1
-    return [((8, N1, B, N2), jnp.uint8), ((N1 * 8, 8 * N1), jnp.int8), ((N1, 8 * N2, 8 * N2), jnp.int8)]
+    return [((8, B, N1, N2), jnp.int8), ((8, N1, 8 * N1), jnp.int8), ((N1, 8, N2, 8 * N2), jnp.int8)]
 
 
 KERNELS = [dict(
@@ -228,3 +231,92 @@ def selfcheck_small():
     x = list(range(3, 3 + N))
     nv = [sum(x[j] * pow(psi, j * (2 * k + 1), q) for j in range(N)) % q for k in range(N)]
     return nv == ntt_ref_poly(x, q, psi)
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Pallas version. Storage convention: OFFSET BYTES, int8 = byte - 128, planar. Input [8 a, N1 j1, B, N2 j2],
+# output [N1 k1, 8 c, B, N2 k2]. The MXU consumes offset bytes directly; each stage is one kernel that does the
+# limb matmul and the full mod-q reduction in VMEM and writes only offset bytes.
+# ---------------------------------------------------------------------------------------------------------
+import functools
+
+from jax.experimental import pallas as pl
+from jax.experimental.pallas import tpu as pltpu
+
+
+def _reduce_store(z_limbs, q, o_ref, axis_put):
+    L = reduce_limbs(z_limbs, q)
+    for c in range(8):
+        axis_put(o_ref, c, (L[c] - 128).astype(jnp.int8))
+
+
+def _stage1_kernel(t_ref, x_ref, c_ref, o_ref, *, q, bb):
+    """Per polynomial b: z[(c, k1), j2] = T1p[(c, k1), (a, j1)] @ x[b][(a, j1), j2]; b is a MAJOR axis of both
+    input and output, so loads and stores are dense; the (a, j1) merge is of major dims (free)."""
+    w = t_ref[...].reshape(8 * t_ref.shape[1], t_ref.shape[2])
+    n1 = t_ref.shape[1]
+    for b in range(bb):
+        xb = x_ref[:, b].reshape(8 * x_ref.shape[2], x_ref.shape[3])
+        z = jnp.dot(w, xb, preferred_element_type=jnp.int32).reshape(8, n1, x_ref.shape[3])
+        L = reduce_limbs([z[c] + c_ref[c] for c in range(8)], q)
+        for c in range(8):
+            o_ref[c, b] = (L[c] - 128).astype(jnp.int8)
+
+
+def _stage2_kernel(a_ref, t_ref, c_ref, o_ref, *, q, kg):
+    """Per k1 in this group: rows b (sublanes), contraction over (a, j2). Reading x[a, :, kk, :] picks sublane
+    kk of each (b, k1) tile: the four-step transpose, done as a strided VMEM load instead of an HBM pass."""
+    n2 = c_ref.shape[-1]
+    for kk in range(kg):
+        acc = None
+        for a in range(8):
+            d = jnp.dot(a_ref[a, :, kk, :], t_ref[kk, a], preferred_element_type=jnp.int32)   # [bb, 8*N2]
+            acc = d if acc is None else acc + d
+        L = reduce_limbs([acc[:, c * n2:(c + 1) * n2] + c_ref[kk, c][None, :] for c in range(8)], q)
+        for c in range(8):
+            o_ref[kk, c] = (L[c] - 128).astype(jnp.int8)
+
+
+def make_ntt_pallas(plan, bb1=8, kg=8, bb=256, interpret=False):
+    N1, N2, q = plan.N1, plan.N2, plan.q
+    C1 = jnp.asarray(plan.C1.T[:, :, None])                     # [c, k1, 1]
+    C2 = jnp.asarray(plan.C2.transpose(0, 2, 1))                # [k1, c, k2]
+
+    def ntt(xo, T1p, T2p):
+        """xo int8 [8 a, B, N1 j1, N2 j2] offset bytes (per polynomial: its coefficients as an [N1, N2]
+        row-major matrix, one plane per byte); T1p int8 [8 c, N1 k1, 8*N1 (a, j1)];
+        T2p int8 [N1 k1, 8 a, N2 j2, 8*N2 (c, k2)]. Returns int8 [N1 k1, 8 c, B, N2 k2]."""
+        B = xo.shape[1]
+        b1 = min(bb1, B)
+        A = pl.pallas_call(
+            functools.partial(_stage1_kernel, q=q, bb=b1),
+            out_shape=jax.ShapeDtypeStruct((8, B, N1, N2), jnp.int8),
+            grid=(B // b1,),
+            in_specs=[pl.BlockSpec((8, N1, 8 * N1), lambda i: (0, 0, 0)),
+                      pl.BlockSpec((8, b1, N1, N2), lambda i: (0, i, 0, 0)),
+                      pl.BlockSpec((8, N1, 1), lambda i: (0, 0, 0))],
+            out_specs=pl.BlockSpec((8, b1, N1, N2), lambda i: (0, i, 0, 0)),
+            compiler_params=pltpu.CompilerParams(dimension_semantics=("parallel",)),
+            interpret=interpret,
+        )(T1p, xo, C1)
+        b2 = min(bb, B)
+        return pl.pallas_call(
+            functools.partial(_stage2_kernel, q=q, kg=kg),
+            out_shape=jax.ShapeDtypeStruct((N1, 8, B, N2), jnp.int8),
+            grid=(N1 // kg, B // b2),
+            in_specs=[pl.BlockSpec((8, b2, kg, N2), lambda k, b: (0, b, k, 0)),
+                      pl.BlockSpec((kg, 8, N2, 8 * N2), lambda k, b: (k, 0, 0, 0)),
+                      pl.BlockSpec((kg, 8, N2), lambda k, b: (k, 0, 0))],
+            out_specs=pl.BlockSpec((kg, 8, b2, N2), lambda k, b: (k, 0, b, 0)),
+            compiler_params=pltpu.CompilerParams(dimension_semantics=("parallel", "parallel"),
+                                                 vmem_limit_bytes=96 * 2**20),
+            interpret=interpret,
+        )(A, T2p, C2)
+    return ntt
+
+
+def pallas_operands(plan):
+    N1, N2 = plan.N1, plan.N2
+    T1p = np.ascontiguousarray(plan.T1.reshape(N1, 8, 8 * N1).transpose(1, 0, 2))  # [(k1,c),.] -> [c, k1, .]
+    T2p = np.ascontiguousarray(plan.T2.reshape(N1, 8, N2, 8 * N2))
+    return T1p, T2p
