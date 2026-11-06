@@ -24,16 +24,17 @@ deployment shape, abstracted to its load-bearing content):
   from the commitment is this.
 * `BindingCommitment` — an opening scheme CARRYING its binding as a Prop field.
 
-**The honest floor (read before auditing).** Position-binding is not provable
-from nothing: for the deployed Merkle/sponge it rests on collision-resistance
-of the hash. Following the discipline of `Selvage/FiatShamir.lean`'s ROM (an
-INHABITED handler, `Oracle.empty` — never an unproved axiom), the idealization
-here is a STRUCTURE with binding as a field, and it is INHABITED:
-`idealCommitment`, the identity scheme (`Root := ι → F`, `commit = id`,
-`verifyOpen rt i v _ := rt i = v`), has its binding PROVED — a binding scheme
-EXISTS, the abstraction is non-vacuous, and no axiom enters the tree. The
-deployed sponge realizing `BindingCommitment` is the one named residual
-`[COMMIT-CR]` below, priced at deployment exactly like `[FS-ROM]`.
+**Scope of the ideal layer.** `PositionBinding` is PERFECT binding. Completeness
+makes `commit` injective (`BindingCommitment.commit_injective`), so a digest
+smaller than the word space cannot realize this type under any hash assumption.
+`idealCommitment` inhabits it by retaining the whole word; this establishes only
+an ideal, non-compressing instance. A deployed hash commitment instead uses
+`OpeningScheme` with a resource-indexed adversary success bound. See
+`Selvage/BindingGame.lean` and `Selvage/BindingBudget.lean`: explicit games,
+flat-opening collision reduction, certificate/receipt error composition, and
+both history-conditional and global finite-horizon audit transports. The
+concrete Merkle reduction is `Selvage/AuthMapCommitment.lean`. None of these
+probabilistic bounds constructs a `BindingCommitment` for a short root.
 
 **Transcription notes:**
 
@@ -107,18 +108,17 @@ structure OpeningScheme (Root : Type*) (F : Type*) (ι : Type*) (Op : Type*) whe
 
 /-- **Position-binding** — the load-bearing property of the whole layer: one
 root cannot be opened to two DIFFERENT values at the same position, whatever
-the two openings. This is what the deployed Merkle tree buys with
-collision-resistance, and it is everything `[ACC-extract-bind]`(a)/(c) and
+the two openings. This is an unconditional ideal law, stronger than computational Merkle
+binding; it is everything `[ACC-extract-bind]`(a)/(c) and
 `[DEC-open]` consume. -/
 def OpeningScheme.PositionBinding (S : OpeningScheme Root F ι Op) : Prop :=
   ∀ (rt : Root) (i : ι) (v v' : F) (o o' : Op),
     S.verifyOpen rt i v o → S.verifyOpen rt i v' o' → v = v'
 
 /-- **A binding vector commitment**: an opening scheme carrying its
-position-binding as a Prop field. The honest-floor shape: binding rests on
-collision-resistance in deployment, so it enters as CARRIED STRUCTURE —
-inhabited below by `idealCommitment` (binding PROVED), never an axiom; the
-sponge realizer is the named residual `[COMMIT-CR]`. -/
+perfect position-binding as a Prop field. Inhabited below by the
+non-compressing `idealCommitment`, never an axiom. A compressing sponge cannot
+realize this structure; computational bounds are in `BindingBudget`. -/
 structure BindingCommitment (Root : Type*) (F : Type*) (ι : Type*) (Op : Type*)
     extends OpeningScheme Root F ι Op where
   /-- Position-binding — the field the seam theorems apply. -/
@@ -218,13 +218,13 @@ A binding scheme EXISTS: the identity/injective commitment, `Root := ι → F`,
 theorem (`rt i = v` and `rt i = v'` force `v = v'`). This is the exact
 `Oracle.empty` move: the idealized layer is inhabited, so every theorem taking
 a `BindingCommitment` has a non-vacuous instance, and no axiom is ever
-declared. What the identity scheme idealizes away — succinctness of the root
-and the hash realizing it — is `[COMMIT-CR]`'s ledger, not a soundness gap. -/
+declared. The identity witness does not inhabit the short-root deployment premises.
+Those require the separate computational game and collision reduction. -/
 
 /-- **The ideal (identity) commitment** — the inhabitation witness of the
 honest floor: the root IS the word, verification is symbol equality, binding
-is proved. Trivially succinctness-free; the deployed Merkle/sponge scheme
-realizing `BindingCommitment` with a short root is `[COMMIT-CR]`. -/
+is proved. Trivially succinctness-free. A short-root Merkle/sponge scheme cannot realize
+`BindingCommitment`; it consumes the computational binding budget instead. -/
 def idealCommitment (F ι : Type*) : BindingCommitment (ι → F) F ι Unit where
   commit := id
   openAt := fun _ _ => ()
@@ -478,26 +478,17 @@ so no hash assumption can realize one.  The compressing commitment is
 the seams below over it, and `Assurance/SelvageV0.lean`'s capstone consumes
 that form.  Everything in this file about `BindingCommitment` is a statement
 about non-compressing commitments (the identity scheme and injections into an
-unbounded root).  The paragraph below is the original residual, kept for
-the record of what was asked for.  In deployment `Root` is a short digest: `commit` Merkle-hashes the word with the
-stack's sponge (the same hash family `[FS-ROM]` idealizes for the transcript
-layer), `openAt` produces the authentication path, and `verifyOpen` re-hashes
-the leaf up the path and compares roots. Its `binding` field is a theorem ONLY
-relative to collision-resistance of the compression function: an adversary
-opening one root to two values at a position exhibits a hash collision along
-the paths — the standard Merkle binding reduction. What this residual owes:
-(i) the Merkle `commit`/`openAt`/`verifyOpen` as derived objects over the
-chosen sponge; (ii) the reduction "equivocation ⇒ collision" as a real
-theorem, making `binding` conditional on a NAMED CR hypothesis carried as
-structure (exactly as this file carries `binding`), never an axiom; (iii) the
-succinctness accounting (root and path sizes — the reason the identity scheme,
-sound as it is, is not the deployed one). Until it lands, the honest label:
-the commitment LAYER is proved and inhabited (identity scheme, binding a
-theorem); the seams are closed GIVEN any `BindingCommitment`; the deployed
-Merkle/sponge instance is priced, not assumed. The `t`-column erasure lift
-(partial openings to full words inside the mutual-agreement set) is
-`[ACC-extract-bind]`(b), owed in `Selvage/AccExtract.lean`'s ledger, riding
-`Selvage/CorrelatedAgreement.lean` — not re-owed here.
+unbounded root). Computational security bounds only the probability that a
+resource-bounded adversary produces a specified collision witness; it never
+bounds the probability that a fixed compressing hash is globally injective.
+`ComputationalBinding.flat_binding_advantage` retains the output pair and charges
+query/time overhead. `BindingGame.cert_and` and `receipt_and` charge the same
+experiment's error once per binding reduction. For audits, `bindLeg_of_history_game`
+requires a bound for every history; `leakage_with_global_binding` instead
+transfers a global bad-event bound with a finite damage cap. Realizer, encoding,
+resource, coupling and numerical hash assumptions remain explicit obligations.
+The `t`-column erasure lift (partial openings to full words inside the
+mutual-agreement set) is `[ACC-extract-bind]`(b), owed upstream.
 
 ## Ledger
 

@@ -38,8 +38,8 @@ What lands here:
   has a collision (equivocation ⇒ collision is `[COMMIT-CR]`(ii) at this
   resolution, and collision ⇒ equivocation makes the reduction lossless);
   `roBinding`: a collision-free `H` yields a full `BindingCommitment` — the
-  exact "binding conditional on a NAMED CR hypothesis carried as structure"
-  shape `[COMMIT-CR]` asked for.
+  unconditional ideal object only when the word-to-root map is injective.
+  This is impossible at compressing parameters and is not a computational realizer.
 * **`commitCR_of_RO`** — the discharge: a `BreakAdversary` (distinct queries
   + a claimed colliding pair chosen AFTER seeing the answers) wins — exhibits
   two distinct queried words with equal roots — with probability
@@ -329,12 +329,10 @@ theorem roScheme_break_iff_collision {F ι : Type*} {N : ℕ}
     obtain ⟨a, ha⟩ := Function.ne_iff.mp hne
     exact ha (hbind (H x) a (x a) (y a) x y ⟨rfl, rfl⟩ ⟨hcol.symm, rfl⟩)
 
-/-- The positive direction as carried structure — the exact `[COMMIT-CR]`
-shape ("binding conditional on a NAMED CR hypothesis carried as structure,
-never an axiom"): a collision-free oracle function yields a full
-`BindingCommitment`. What this file adds is the PRICE of that hypothesis:
-over the RO's coins it fails with probability `≤ q(q−1)/(2N)`
-(`commitCR_of_RO`), so CR is no longer a standalone assumption. -/
+/-- Ideal injection-to-perfect-binding construction. Its `hcr` premise is
+uninhabited when the word space exceeds the digest space. `commitCR_of_RO`
+bounds a specified adversary's output collision event; it does NOT bound the
+failure probability of this universally quantified injectivity premise. -/
 def roBinding {F ι : Type*} {N : ℕ} (H : (ι → F) → Fin N)
     (hcr : ∀ x y : ι → F, H x = H y → x = y) :
     BindingCommitment (Fin N) F ι (ι → F) where
@@ -507,8 +505,8 @@ proved by coordinate-splitting, and tight at `q = 2` by a computed instance.
 (`roScheme_break_iff_collision`) — `[COMMIT-CR]`(ii) at the flat resolution,
 LOSSLESS (an iff, not a one-way inequality). (3) The discharge
 `commitCR_of_RO`: binding breaks by query-bounded adversaries are priced by
-the birthday bound, so the CR hypothesis `roBinding` carries is no longer
-standalone — its failure probability is a theorem in the ROM. (4) The
+the birthday bound for this adversary class. The universal injectivity
+hypothesis of `roBinding` is separate and is NOT discharged by that theorem. (4) The
 modeling step "distinct fresh queries = independent uniform coins" is
 machine-checked against the LANDED handler (`roAnswers_eq_coins`), not
 narrated.
