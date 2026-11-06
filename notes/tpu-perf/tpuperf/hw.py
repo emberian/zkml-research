@@ -25,7 +25,7 @@ GEN = {
     "v6e": dict(
         topology="v6e:1x1", kaggle=None,
         bf16=9.20e14, int8=1.84e15, hbm_bw=1.6e12, hbm_bytes=32 * 2**30,  # [READ:sb]
-        vmem_bytes=None,         # [READ:cc] filled by static_check from the compiler (probe a VMEM overflow)
+        vmem_bytes=128 * 2**20,  # [READ:cc] same RESOURCE_EXHAUSTED probe on the v6e topology
         mxu=(256, 256), n_mxu=2, # [READ:sb] "256x256 systolic array"; "2 for TPU v3, TPU v6e, and TPU7x"
         clock_hz=9.20e14 / (2 * 256 * 256 * 2),  # [INFERRED] = 3.5e9: implausible, so n_mxu or the rate reading is off;
                                                  # used only to convert compiler cycle estimates, flagged in reports
