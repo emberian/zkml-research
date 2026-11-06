@@ -1,0 +1,253 @@
+{
+ "checks": [
+  {
+   "ell": 3,
+   "R": 3,
+   "codeword_symbols": 96,
+   "mismatches": 0,
+   "tower256_scalar_chunkwise_mismatches": 0,
+   "pass": true
+  },
+  {
+   "ell": 4,
+   "R": 17,
+   "codeword_symbols": 1088,
+   "mismatches": 0,
+   "tower256_scalar_chunkwise_mismatches": 0,
+   "pass": true
+  },
+  {
+   "ell": 5,
+   "R": 36,
+   "codeword_symbols": 4608,
+   "mismatches": 0,
+   "tower256_scalar_chunkwise_mismatches": 0,
+   "pass": true
+  }
+ ],
+ "cpu": [
+  {
+   "ell": 8,
+   "R": 16,
+   "message_bytes": 8192,
+   "codeword_bytes": 32768,
+   "encode_ms": 0.3236,
+   "merkle_ms": 2.479,
+   "keccak_f": 2047,
+   "encode_ns_per_codeword_byte": 9.877,
+   "merkle_ns_per_codeword_byte": 75.653,
+   "root": "39c7f9e27469b77a",
+   "cw_lo_digest": "e6aaa1636d78937d44b6072e7f2390fd"
+  },
+  {
+   "ell": 10,
+   "R": 64,
+   "message_bytes": 131072,
+   "codeword_bytes": 524288,
+   "encode_ms": 3.3243,
+   "merkle_ms": 10.2213,
+   "keccak_f": 8191,
+   "encode_ns_per_codeword_byte": 6.341,
+   "merkle_ns_per_codeword_byte": 19.496,
+   "root": "7c78bde8d7326657",
+   "cw_lo_digest": "82eca76969d29a9f595480c1ca8939a6"
+  },
+  {
+   "ell": 10,
+   "R": 256,
+   "message_bytes": 524288,
+   "codeword_bytes": 2097152,
+   "encode_ms": 10.2089,
+   "merkle_ms": 25.987,
+   "keccak_f": 20479,
+   "encode_ns_per_codeword_byte": 4.868,
+   "merkle_ns_per_codeword_byte": 12.392,
+   "root": "785be282dbdfe788",
+   "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36"
+  },
+  {
+   "ell": 12,
+   "R": 256,
+   "message_bytes": 2097152,
+   "codeword_bytes": 8388608,
+   "encode_ms": 49.5155,
+   "merkle_ms": 103.3757,
+   "keccak_f": 81919,
+   "encode_ns_per_codeword_byte": 5.903,
+   "merkle_ns_per_codeword_byte": 12.323,
+   "root": "5007a183f4c6ef86",
+   "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a"
+  },
+  {
+   "ell": 12,
+   "R": 1024,
+   "message_bytes": 8388608,
+   "codeword_bytes": 33554432,
+   "encode_ms": 262.7191,
+   "merkle_ms": 345.4257,
+   "keccak_f": 278527,
+   "encode_ns_per_codeword_byte": 7.83,
+   "merkle_ns_per_codeword_byte": 10.294,
+   "root": "2813b3853edf66dc",
+   "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7"
+  },
+  {
+   "ell": 14,
+   "R": 256,
+   "message_bytes": 8388608,
+   "codeword_bytes": 33554432,
+   "encode_ms": 377.2113,
+   "merkle_ms": 420.5441,
+   "keccak_f": 327679,
+   "encode_ns_per_codeword_byte": 11.242,
+   "merkle_ns_per_codeword_byte": 12.533,
+   "root": "8ebc85f284ef745a",
+   "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8"
+  }
+ ],
+ "gpu": [
+  {
+   "mode": "per-layer",
+   "ell": 8,
+   "R": 16,
+   "codeword_bytes": 32768,
+   "gpu_encode_ms": 0.2185,
+   "gpu_encode_ns_per_codeword_byte": 6.668,
+   "launches": 40,
+   "cw_lo_digest": "e6aaa1636d78937d44b6072e7f2390fd",
+   "digest_equals_cpu": true
+  },
+  {
+   "mode": "per-layer",
+   "ell": 10,
+   "R": 64,
+   "codeword_bytes": 524288,
+   "gpu_encode_ms": 0.2959,
+   "gpu_encode_ns_per_codeword_byte": 0.5644,
+   "launches": 50,
+   "cw_lo_digest": "82eca76969d29a9f595480c1ca8939a6",
+   "digest_equals_cpu": true
+  },
+  {
+   "mode": "per-layer",
+   "ell": 10,
+   "R": 256,
+   "codeword_bytes": 2097152,
+   "gpu_encode_ms": 0.3591,
+   "gpu_encode_ns_per_codeword_byte": 0.1712,
+   "launches": 50,
+   "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36",
+   "digest_equals_cpu": true
+  },
+  {
+   "mode": "per-layer",
+   "ell": 12,
+   "R": 256,
+   "codeword_bytes": 8388608,
+   "gpu_encode_ms": 1.0301,
+   "gpu_encode_ns_per_codeword_byte": 0.1228,
+   "launches": 60,
+   "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a",
+   "digest_equals_cpu": true
+  },
+  {
+   "mode": "per-layer",
+   "ell": 12,
+   "R": 1024,
+   "codeword_bytes": 33554432,
+   "gpu_encode_ms": 3.9113,
+   "gpu_encode_ns_per_codeword_byte": 0.1166,
+   "launches": 60,
+   "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7",
+   "digest_equals_cpu": true
+  },
+  {
+   "mode": "per-layer",
+   "ell": 14,
+   "R": 256,
+   "codeword_bytes": 33554432,
+   "gpu_encode_ms": 4.9539,
+   "gpu_encode_ns_per_codeword_byte": 0.1476,
+   "launches": 70,
+   "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8",
+   "digest_equals_cpu": true
+  },
+  {
+   "mode": "per-layer",
+   "ell": 14,
+   "R": 1024,
+   "codeword_bytes": 134217728,
+   "gpu_encode_ms": 17.1303,
+   "gpu_encode_ns_per_codeword_byte": 0.1276,
+   "launches": 70,
+   "cw_lo_digest": "17a410ca94c34b4772f78fefa7d3f4b9"
+  }
+ ],
+ "ok": true,
+ "cpu_model": "model name\t: Intel(R) Xeon(R) CPU @ 2.00GHz",
+ "keccak": {
+  "keccak_f_per_s": 795730.0,
+  "ns_per_f": 1256.7,
+  "chk": "206a514b126b83a1"
+ },
+ "nvcc_rc": 0,
+ "nvidia_smi": "Tesla T4, 300 MHz, 1590 MHz, 70.00 W\nTesla T4, 300 MHz, 1590 MHz, 70.00 W",
+ "gpu_fused": [
+  {
+   "mode": "fused",
+   "ell": 10,
+   "R": 256,
+   "codeword_bytes": 2097152,
+   "gpu_encode_ms": 0.1884,
+   "gpu_encode_ns_per_codeword_byte": 0.0898,
+   "launches": 10,
+   "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36",
+   "digest_equals_per_layer": true
+  },
+  {
+   "mode": "fused",
+   "ell": 12,
+   "R": 256,
+   "codeword_bytes": 8388608,
+   "gpu_encode_ms": 0.6232,
+   "gpu_encode_ns_per_codeword_byte": 0.0743,
+   "launches": 10,
+   "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a",
+   "digest_equals_per_layer": true
+  },
+  {
+   "mode": "fused",
+   "ell": 12,
+   "R": 1024,
+   "codeword_bytes": 33554432,
+   "gpu_encode_ms": 2.9475,
+   "gpu_encode_ns_per_codeword_byte": 0.0878,
+   "launches": 10,
+   "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7",
+   "digest_equals_per_layer": true
+  },
+  {
+   "mode": "fused",
+   "ell": 14,
+   "R": 256,
+   "codeword_bytes": 33554432,
+   "gpu_encode_ms": 4.6944,
+   "gpu_encode_ns_per_codeword_byte": 0.1399,
+   "launches": 15,
+   "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8",
+   "digest_equals_per_layer": true
+  },
+  {
+   "mode": "fused",
+   "ell": 14,
+   "R": 1024,
+   "codeword_bytes": 134217728,
+   "gpu_encode_ms": 13.6888,
+   "gpu_encode_ns_per_codeword_byte": 0.102,
+   "launches": 15,
+   "cw_lo_digest": "17a410ca94c34b4772f78fefa7d3f4b9",
+   "digest_equals_per_layer": true
+  }
+ ],
+ "nvidia_smi_after": "1500 MHz\n300 MHz"
+}
