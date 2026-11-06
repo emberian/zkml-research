@@ -44,6 +44,8 @@ Run: `uv run --no-project --with numpy --with tokenizers python g1.py numpy`, th
 | bb2 (x86), numpy OpenBLAS limbs | `model.ExactF64` | yes |
 | Kaggle Tesla T4, JAX 0.11.1 (cublasLt s8 x s8 -> s32), `runs/er-g2-layer0-t4-01` | `jaxint.Int8Mxu` | yes |
 | the same T4, float32 dots (falsifier) | `jaxint.F32Dot` | no: `a`, `q`, `k` equal, from `v` on different |
+| **G2-TPU**: GCP spot TPU v5e ("TPU v5 lite"), JAX 0.11.1, int8 dot as an s8 convolution on the MXU; run by the TPU-perf lane from this README at `1e10efb9`, result `notes/tpu-perf/results/gcp/tpuperf-s3/g2-tpu.json` (dev `38b1eb44`) | `jaxint.Int8Mxu` | yes; the int64 elementwise path raised nothing; fetch 477 MB in 11.5 s, kernel 66 s |
+| the same TPU, float32 dots (falsifier) | `jaxint.F32Dot` | no: only `a` equal, from `q` on different |
 
 Since G1 the attention dots also run as int8 limbs (q.k as 2 x 2 limbs, e.v as 3 x 2 because the exp
 table reaches 2^15), so every product in the layer is an INT8-unit operation.
@@ -62,6 +64,5 @@ refuses any range whose SHA-256 differs from `plan-layer0.json` (computed from s
 hashes equal the registry's full-mode commitment), runs layer 0 with the int8-limb kernel and the
 float32 falsifier, and writes `g2-<backend>.json`: `bit_identical`, per-intermediate equality with
 `g1-numpy.json`, the compiled HLO of an int8 dot, timings. Nothing in the checkout is written.
-JAX 0.11.1 is the version of the T4 run; a clean copy ran it to `bit_identical: true` on XLA:CPU.
-Not yet seen on a TPU: XLA's int64 elementwise path there (shifts, integer division, gathers),
-which the layer uses between the int8 dots.
+JAX 0.11.1 is the version of the T4 and TPU v5e runs; a clean copy also ran it to
+`bit_identical: true` on XLA:CPU.
