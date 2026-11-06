@@ -141,6 +141,33 @@ root. A failed opening is a rejection: the provider did not produce what it comm
 def auditVerdict (openOk : Bool) (stdout : String) (exit : Option UInt32) (x : Expect) : Verdict :=
   if openOk then verdictOf stdout exit x else .reject
 
+/-! ## The audit's own eligibility rules (codex round 2: pure rules live here, not in Rust) -/
+
+/-- A digest as the record and the staging step write it: exactly 64 lowercase hex digits. -/
+def isDigest (d : String) : Bool :=
+  d.length == 64 && d.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f')
+
+/-- **The opening check.** Staging succeeded (every handed file was a regular file, read within
+the cap, into a fresh private directory); the request and token digests are well-formed and equal
+the record's; the proof digest equals the record's, or both say "no proof"; and the record opens at
+its position under the root (`mmrOk`, the `dregg-query` `verify_range` result, whose own Lean model
+is `Dregg2.Lightclient.MMR`). -/
+def openingOk (stageOk mmrOk : Bool) (reqC yC reqS yS : String) (proofC proofS : Option String) :
+    Bool :=
+  stageOk && mmrOk && isDigest reqC && isDigest yC && reqC == reqS && yC == yS
+    && match proofC, proofS with
+      | some a, some b => isDigest a && a == b
+      | none, none => true
+      | _, _ => false
+
+/-- The audit round is the requester's seen round plus two. -/
+def auditRoundOk (seen round : UInt64) : Bool := seen < 0xFFFFFFFFFFFFFFF0 && round == seen + 2
+
+/-- The rate in parts per million as `⌊ppm · 2^64 / 10^6⌋`, or `none` outside `0 < ppm < 10^6`:
+a 100% rate is not representable as `coin < pNum`, and a 0% rate has `q = 0`. -/
+def pNumOfPpm (ppm : UInt64) : Option UInt64 :=
+  if 0 < ppm && ppm < 1000000 then some (UInt64.ofNat (ppm.toNat * 2 ^ 64 / 1000000)) else none
+
 /-- **Fail-closed alarm.** A fired audit alarms on every verdict but `accept`. -/
 def alarm (fired : Bool) (v : Verdict) : Bool := fired && v != .accept
 
@@ -178,6 +205,21 @@ def alarmC (fired verdict : UInt8) : UInt8 :=
 @[export minidregg_fp_audit_alarm_open]
 def alarmOpenC (fired verdict : UInt8) : UInt8 :=
   if alarmOpen (fired ≠ 0) (Verdict.ofCode verdict) then 1 else 0
+
+@[export minidregg_fp_audit_opening_ok]
+def openingOkC (stageOk mmrOk : UInt8) (reqC yC reqS yS : String) (hasProofC : UInt8)
+    (proofC : String) (hasProofS : UInt8) (proofS : String) : UInt8 :=
+  if openingOk (stageOk ≠ 0) (mmrOk ≠ 0) reqC yC reqS yS
+      (if hasProofC = 0 then none else some proofC) (if hasProofS = 0 then none else some proofS)
+  then 1 else 0
+
+@[export minidregg_fp_audit_round_ok]
+def auditRoundOkC (seen round : UInt64) : UInt8 := if auditRoundOk seen round then 1 else 0
+
+/-- `0` for an unrepresentable rate, else `pNum` (never `0` for a valid rate: `ppm ≥ 1` gives
+`pNum ≥ 2^64/10^6 > 0`). -/
+@[export minidregg_fp_audit_pnum_of_ppm]
+def pNumOfPpmC (ppm : UInt64) : UInt64 := (pNumOfPpm ppm).getD 0
 
 /-! ## Teeth, by evaluation -/
 
@@ -221,5 +263,11 @@ private def sampleExpect : Expect := { id := "79a5", build := "93af", r := 60, e
 -- a failed opening is a rejection even with a perfect output
 #guard auditVerdict false sampleOut (some 0) sampleExpect == .reject
 #guard auditVerdict true sampleOut (some 0) sampleExpect == .accept
+-- codex round 2: an empty digest never matches, even against an empty committed one
+#guard !openingOk true true "" "" "" "" none none
+#guard pNumOfPpm 1000000 == none && pNumOfPpm 0 == none
+#guard pNumOfPpm 10000 == some 184467440737095516
+#guard pNumOfPpm 200000 == some 3689348814741910323
+#guard auditRoundOk 5 7 && !auditRoundOk 5 6 && !auditRoundOk 0xFFFFFFFFFFFFFFFF 1
 
 end Minidregg.Selvage.AuditFlashProve
