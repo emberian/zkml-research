@@ -10,6 +10,8 @@ openings); nothing is timed. Decisions these feed: `docs/DARK-LEARNING-SCHEME-DE
     python3 run_d64.py mpc                      # d = 64 step, MPC fork (minutes)
     python3 run_d64.py fhe                      # d = 64 step, FHE fork (N = 8192 ciphertexts; a build box)
     python3 run_d64.py                          # both; writes d64_results.json
+    python3 run_he_outer.py [64] [128] [attacks] # MPC fork with HE matvec + HE outer (build box)
+    python3 inventory_he_outer.py > inventory_he_outer.out.json
     python3 run_cosnark.py                      # MPC fork's collaborative proof at d = 16, 32, 64 (a minute)
     python3 step_counts.py [--validate|--layout-check]   # counts at any d; checks against the executed runs
 
@@ -32,6 +34,8 @@ coefficient means 42² digit products per term.
 | `encoding_regressions.py` | falsifiers for the two large-t encoding fixes (fail under the broken encoding, pass under the fix) |
 | `cosnark.py`, `run_cosnark.py` | the MPC fork's collaborative proof (per-party share-codeword PCS, MPC sumchecks, rank-1 checks, chaining), full-collusion attacks, count formula checked against execution |
 | `cosnark_gates.py`, `run_cosnark_gates.py` | the middle of the collaborative proof: SPDZ execution integrity (openings, preprocessing well-formedness, IO), constraint system re-derived by the verifier from the public transcript; full-collusion attacks; exact count formula |
+| `he_outer.py`, `run_he_outer.py` | MPC fork's HE-assisted outer product (own-key pt x ct, MAC shares from the same exchange, one Freivalds-style check); honest d = 64/128 with both HE helpers, attacks, full-collusion forgery refused by the spine, exact counts |
+| `inventory_he_outer.py` | the scholar's MASCOT inventory (imported unmodified, rows re-checked) plus the HE-outer row and ZKPoPK prices |
 | `he_matvec.py`, `run_he_matvec.py` | MPC fork's HE-assisted matvec (own-key pt x ct cross terms + SPDZ Freivalds check), honest at d = 64/128, falsifiers, counts checked against execution |
 | `cert_b61.py` | the FHE fork's ct×ct certificate: explicit witness + verifier (the decryption gate) |
 | `fhe_fork.py` | FHE fork of the step: host ct×ct with certificates, custodian crossings, conversion audit |

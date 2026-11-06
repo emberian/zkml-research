@@ -939,3 +939,82 @@ other. Neither is cheaper by a margin that survives those builds.
 
 **The cheapest next measurement:** build the HE-assisted outer product in the harness, the same code
 shape as `he_matvec.py`, and re-run the scholar's `scholar_preprocessing.py` inventory against it.
+
+
+## 15. ✅ The HE-assisted outer product, built; §14's verdict settled in the scholar's model (2026-11-06)
+
+`research/dark_learning_2026_11_06/he_outer.py`, `run_he_outer.py`, `inventory_he_outer.py`; runs on hbox
+under `swarm-build` in `/tank/dregg-build/dark-learning/` (`heo_*.log`, `he_outer_results_*.json`).
+
+**Construction.** The two dense outer-product tuples (13.14 Tbit/step of MASCOT preprocessing at d = 4096)
+are replaced by pairwise pt×ct products under each custodian's own key, as in the HE matvec:
+- j sends Enc_j(H_b), with H_b(X) = Σ_c x^(j)_c X^c.
+- i returns D_a(X)·Enc_j(H_b), where D_a(X) = Σ_r a^(i)_r X^(64r). Coefficient 64r + c then holds a_r x_c
+  exactly. The return carries the he_matvec recipe: full-coefficient mask, Enc_pk_j(0), flood.
+- **The MAC shares of G come from the same exchange, run on i's MAC shares of a:**
+  Σ_i m^(i)(a) ⊗ Σ_j x^(j) = α·a⊗x. This avoids authenticating d² plain outputs. Under MASCOT that
+  would have been d² jointly hidden masks, about 0.76 Tbit at d = 4096.
+- **Integrity:** each custodian commits a hash of its (G, MAC) shares. Coins are drawn from the
+  transcript. One check, one Beaver product, MAC-checked: ρ1ᵀ[G]ρ2 − [ρ1·a][x·ρ2] = 0.
+
+**Results** (N = 8192, three 61-bit primes, t = the SPDZ prime):
+
+| run | verdict |
+|---|---|
+| d = 64, HE matvec + HE outer | ACCEPT, refines `step_spec` exactly; count formula exact (online wire 3,597,822, preprocessing 34,438, ciphertexts) |
+| d = 128 (two column blocks) | ACCEPT, refines exactly; formula exact (6,359,934 / 85,254) |
+| j encrypts x' ≠ its share | REFUSED: outer check |
+| i returns a wrong G cross term | REFUSED: outer check |
+| i returns a wrong MAC cross term only | REFUSED: batched MAC check |
+| a custodian shifts its G share before committing | REFUSED: outer check |
+| **full collusion**: all three agree on G + δ with a consistent MAC and a forged check opening | SPDZ ACCEPTS (by design); **the collaborative proof's spine REFUSES** (rank-1 check W'(r) ≠ W(r) − d(r_row)·v(r_col)), because the spine checks the update on the committed vectors whatever produced G |
+
+The attack rows run with the SPDZ matvec, so that only the outer product is under test. The matvec's own
+attacks are in §11.
+
+**The corrected per-step table at d = 4096** (bits; MASCOT preprocessing from the scholar's compiler,
+imported unmodified; their twelve saved rows reproduce exactly, `inventory_he_outer.out.json`):
+
+| | MPC: HE matvec + HE outer | FHE (b) |
+|---|---:|---:|
+| MASCOT preprocessing | 0.912 T | 0.908 T |
+| online wire (incl. existing mask wire) | 0.155 T | 0.006 T |
+| **total, scholar's model** | **1.067 T** | **0.914 T** (×1.17 in FHE's favour) |
+| ciphertexts needing a ZKPoPK | 1,728 (960 matvec + 768 outer sends) | 481 mask ciphertexts |
+| ZKPoPK, efficient-lattice MODEL | 11.2 G | (§8 model: about 7.2 G) |
+| ZKPoPK, executable Stern (scholar, 235.1 Gbit per proof) | **406 T** | **113 T** |
+| integrity proof | collaborative proof: proving wire 12.3 G as built, 0.84 G with §12's modelled levers; committed raw shares about 12.3 G (scholar's units) | ct×ct + relinearization certificates ≥ 1.26 T (16-bit digits) or 2.37 T (61-bit) |
+| integrity under full collusion of the custodians | yes (collaborative proof) | yes (certificates; the host is the prover) |
+| evaluation objects outside custody | none | a relinearization key on the host |
+
+**Verdict.**
+1. **Preprocessing collapses to parity.** With the outer tuples gone, MPC's MASCOT bill (0.912 T) equals
+   FHE (b)'s (0.908 T). In both, what remains is the nonlinear middle: lookup powers and truncation bits.
+   The forks now differ only in what they move online and in their proofs.
+2. **The ×1.17 gap is online HE returns,** 147 Gbit of the 155. Half of them are the MAC returns. If the
+   collaborative proof runs on every step, integrity no longer needs SPDZ MACs on G, and dropping the
+   MAC returns gives about 0.99 T, ×1.09 [DERIVED, not built]. Doing so trades SPDZ's cheap abort for
+   the proof's cost.
+3. **The ZKPoPK decides the fork, and today it decides for FHE (b).** At the model price both forks pay
+   a few Gbit. At the only executable price, MPC pays 406 T against FHE (b)'s 113 T, ×3.6, because
+   MPC sends 1,728 fresh ciphertexts per step and FHE (b) 481. Whichever lattice proof the LaZer/LNS
+   route delivers (scholar's NEXT) sets this row. Fewer sent ciphertexts per step is MPC's lever:
+   reuse Enc(h-blocks) between the matvec and the outer product that both use h.
+4. **What still separates them is not cost:** custody (no host-held evaluation key in MPC), and integrity
+   proof size (×100 smaller in MPC).
+
+**Unbuilt, named, in both forks:**
+- **MPC:**
+  - the ZKPoPKs (priced, not built);
+  - whole-ciphertext circuit privacy (scholar: refuted as built for the first-component flood; owed by
+    both helpers);
+  - a real MASCOT/OT backend (this table is the scholar's count model);
+  - field-extension MACs for a million-step budget;
+  - ZK layers 2–3 (in progress, next commit);
+  - distributed coin generation.
+- **FHE (b):**
+  - relinearization and its certificate (MODEL);
+  - the relinearization key's custody;
+  - mask-pair ZKPoPKs;
+  - circuit privacy;
+  - a real preprocessing backend.

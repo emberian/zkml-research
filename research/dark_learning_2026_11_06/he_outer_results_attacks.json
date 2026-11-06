@@ -1,0 +1,26 @@
+{
+ "attack_wrong_vector": {
+  "verdict": "REFUSED",
+  "by": "HE outer: Freivalds check failed (a custodian's vector, product or share is wrong)"
+ },
+ "attack_wrong_return": {
+  "verdict": "REFUSED",
+  "by": "HE outer: Freivalds check failed (a custodian's vector, product or share is wrong)"
+ },
+ "attack_wrong_mac_return": {
+  "verdict": "REFUSED",
+  "by": "MAC check failed: an opened value is not the authenticated one"
+ },
+ "attack_shift_share": {
+  "verdict": "REFUSED",
+  "by": "HE outer: Freivalds check failed (a custodian's vector, product or share is wrong)"
+ },
+ "attack_collude": {
+  "verdict": "ACCEPTED-WRONG",
+  "refines_spec": false,
+  "spine": {
+   "verdict": "REFUSED",
+   "by": "rank-1 update W1n: W'(r) != W(r) - d(r_row) v(r_col)"
+  }
+ }
+}
