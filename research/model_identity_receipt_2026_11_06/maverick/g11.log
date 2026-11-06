@@ -1,0 +1,8 @@
+swarm-build: swarm-mir13-1865516 cap=16G :: stream/target/release/mir-stream sample --manifest maverick-v2/manifest-v2.json --base https://huggingface.co/unsloth/Llama-4-Maverick-17B-128E-Instruct-GGUF/resolve/41032e5471dd6ea5b349062d978626215d6c5bba/UD-Q4_K_XL --count 6 --seed 20261106 --threads 4
+SAME blk.33.ffn_gate_exps.weight (3019898880 bytes)
+SAME blk.12.attn_output.weight (14745600 bytes)
+SAME blk.0.attn_q.weight (14745600 bytes)
+SAME blk.25.attn_q.weight (14745600 bytes)
+SAME blk.2.attn_output.weight (18022400 bytes)
+SAME blk.17.attn_v.weight (2949120 bytes)
+sample: 6 tensors, 0 differ

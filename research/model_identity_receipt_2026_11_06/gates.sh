@@ -54,7 +54,7 @@ gate "G15 wsums.txt = oracle expected.txt on 3 seeds x 2 e_res" $ok
 # the axioms are as pinned
 "$V" check "$here/receipt/maverick-receipt.json" --cid "$(awk '$2=="commitment-id"{print $1}' "$FP/examples/maverick/expected.txt")" \
   --trust "$(cat "$here/receipt/demo-evaluator.pub.hex")" >/dev/null
-gate "G16a the committed Maverick receipt verifies" $?
+[ $? = 3 ]; gate "G16a the committed Maverick receipt verifies (exit 3: receipt verified, no proof verdict given)" $?
 openssl genpkey -algorithm ed25519 -out "$W/ev.pem" 2>/dev/null; openssl genpkey -algorithm ed25519 -out "$W/rc.pem" 2>/dev/null
 mk() { python3 -I "$here/receipt/make_receipt.py" --manifest "$M/manifest-v2.json" --expected "$FP/examples/maverick/expected.txt" \
   --weights-sha "$FP/examples/maverick/weights.sha256" --key "$W/ev.pem" --mir-verify "$V" "$@" >/dev/null; }
