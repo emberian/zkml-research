@@ -162,7 +162,12 @@ class Engine:
         """Batched MAC check: sigma_i = sum_k rho_k (m_{i,k} - alpha_i v_k); sum sigma_i must be 0.
         Each party commits then opens sigma_i: 2 n (n-1) wire elements."""
         p = self.p
-        rng = random.Random(coin_seed)
+        # Coins AFTER every broadcast is fixed: the seed hashes the label and the whole frozen transcript.
+        # With a caller-chosen seed alone the coins are predictable, and one party can shift two openings by
+        # (rho_1, -rho_0) so that its MAC errors cancel (Astra scholar, rederivation.md: accepted by the
+        # previous code). Remaining obligation: the sigma_i commit-then-open is counted but not enforced here.
+        rng = random.Random(h("mac-coins", coin_seed, self.open_log and [v for _, v in self.open_log],
+                              [t for t in self.transcript]))
         rho = [rng.randrange(p) for _ in self.open_log]
         sig = {i: 0 for i in self.active}
         for r, (macs, v) in zip(rho, self.open_log):

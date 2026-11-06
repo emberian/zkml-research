@@ -58,6 +58,11 @@
    "what": "step 2 verified against step 1's PARENT (an older W)",
    "verdict": "REFUSED",
    "by": "parent commitment is not the previous step's child commitment"
+  },
+  "replayed_edge": {
+   "what": "a valid step-1 proof re-presented as step 2",
+   "verdict": "REFUSED",
+   "by": "transcript mismatch"
   }
  },
  "counts_d64": {

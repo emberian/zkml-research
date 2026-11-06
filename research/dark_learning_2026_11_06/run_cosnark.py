@@ -67,6 +67,12 @@ def main():
         ok4, why4, _ = CS.prove_and_verify(e3, w3, parent=stale, carry=c["carry"] if zk else None)
         out["rows"]["stale_parent"] = dict(what="step 2 verified against step 1's PARENT (an older W)",
                                            verdict="ACCEPT" if ok4 else "REFUSED", by=why4)
+        # replay: step 1's valid proof presented again as step 2 (same parent, wrong step index)
+        e5, w5 = step(p, tab, W1, W2, x, y, 5)
+        ok5, why5, _ = CS.prove_and_verify(e5, w5, context=("model", 0, 1), expect=("model", 0, 2))
+        out["rows"]["replayed_edge"] = dict(what="a valid step-1 proof re-presented as step 2",
+                                            verdict="ACCEPT" if ok5 else "REFUSED", by=why5)
+        print("replay", ok5, why5, flush=True)
         print("chain", ok3, why3, "| stale", ok4, why4, flush=True)
     out["formula_d4096"] = dict(spine=CS.counts_formula(4096), spine_t148=CS.counts_formula(4096, t=148),
                                 elementwise_MODEL=CS.unbuilt_formula(4096, 11, 4, 14),
