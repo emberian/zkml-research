@@ -11,6 +11,8 @@
 # Full run (default): ell 14..22, batch 512 words at ell 14 and 64 at ell 18; CPU reference and
 # CPU timings on this box's cores (1 thread and all of them).
 #
+# TOWER256_GPU_ARGS (env) is appended to the GPU run, e.g. "--mul bs --bitslice-bench" for the
+# bit-sliced multiply (accel-tower-bitslice-01).
 # Steps: hardware check; Python env (pinned); Rust toolchain (pinned) and the CPU prover; CPU
 # reference receipts + CPU timings (tower256_fri_fast_bench --emit, plus the conformance kernel
 # at ell 8 and 10); nvcc (or NVRTC) build for this GPU's arch; the GPU run with every bit-exact
@@ -89,7 +91,7 @@ fi
 
 echo "== GPU"
 accel_run 3000 600 "$PY" "$HERE/cuda/tower256_gpu.py" --data "$OUT/data" --ells "$ELLS" --reps $REPS \
-  --batch $BATCH --batch-ell $BATCH_ELL "${GPU_SRC[@]}" --out "$OUT/results.json"
+  --batch $BATCH --batch-ell $BATCH_ELL "${GPU_SRC[@]}" --out "$OUT/results.json" ${TOWER256_GPU_ARGS:-}
 if (( BATCH2 )); then
   accel_run 3000 600 "$PY" "$HERE/cuda/tower256_gpu.py" --data "$OUT/data" --ells "" --reps $REPS \
     --batch $BATCH2 --batch-ell 18 "${GPU_SRC[@]}" --out "$OUT/results_batch18.json"
@@ -105,7 +107,17 @@ res["rust_reference"] = [json.loads(l) for l in (out / "rust_reference.jsonl").r
 if (out / "results_batch18.json").exists():
     res["batch_ell18"] = json.loads((out / "results_batch18.json").read_text()).get("batch")
 p = out / "ptxas.txt"
-res["ptxas"] = [l.strip() for l in p.read_text().splitlines() if "registers" in l or "spill" in l][:80] if p.exists() else "nvrtc"
+ptx, fn = {}, None
+if p.exists():
+    for l in p.read_text().splitlines():
+        if "Compiling entry function" in l:
+            fn = l.split("'")[1]
+            ptx[fn] = {}
+        elif fn and "registers" in l:
+            ptx[fn]["registers"] = int(l.split("Used ")[1].split()[0])
+        elif fn and "spill stores" in l:
+            ptx[fn]["spill_store_bytes"] = int(l.split("bytes spill stores")[0].split(",")[-1].strip().split()[0])
+res["ptxas"] = ptx if p.exists() else "nvrtc"
 res["box"] = json.loads((out / "box.json").read_text())
 res["cpu_model"] = next((l.split(":", 1)[1].strip() for l in open("/proc/cpuinfo") if l.startswith("model name")), "?")
 res["nproc"] = len([l for l in open("/proc/cpuinfo") if l.startswith("processor")])
