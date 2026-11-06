@@ -70,6 +70,14 @@ integer model is a derivative of the served float computation, as FlashProve's i
    path taken silently: asserted per run with `preferred_element_type=int32` and a known-answer
    block.
 
+## Lean policy for this work (ember, 2026-11-06)
+
+General theorems (the audit composition, fail-closedness, the integer primitives' laws) stay
+kernel-proved. Facts about concrete data (weights, recompute outputs, digests, receipts, cp_verify
+transcripts) are checked by compiled evaluation (`#guard`, an exe, or `native_decide` where a
+theorem needs one, with its axioms pinned), never by kernel `decide`/`rfl` through encoders or
+hashes. A verified-kernel rerun is a later phase.
+
 ## Plan and gates
 
 - G0: weights downloaded and hash-checked against the registry.
