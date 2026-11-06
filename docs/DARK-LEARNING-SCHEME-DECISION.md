@@ -411,7 +411,9 @@ The variants:
   - FHE (b) trades ×40 committed bits for ×0.09 wire, and needs a relinearization key.
 - Neither fork dominates at d = 4096, which is what "explore both" requires.
 
-**An MPC-side idea the counts point to (DERIVED, not built): a drifting matrix mask.** The MPC
+**An MPC-side idea the counts point to (DERIVED, not built): a drifting matrix mask. ⚑ §10 judges
+it: the drift is vacuous, the persistent-mask core is sound but only shifts cost offline, and the
+priced replacement is an HE-assisted matvec (×2.7).** The MPC
 matvec opens W − A afresh every time because a reused mask would reveal the update. Alternative:
 1. Keep P = W − A public and move it by a PUBLIC random rank-1 u⊗w each step, so P' = P − u⊗w. The
    mask then drifts as A' = A − dW + u⊗w, so it stays secret.
@@ -585,3 +587,69 @@ and priced.
 tuples) still comes from an ideal dealer, in the MPC fork and inside the FHE fork's crossings. It is the
 same object in both, so the fork comparison is fair about it. Its price (an Overdrive/LowGear-style
 protocol) is not yet in any table here.
+
+
+## 10. The "drifting mask" (§7), argued: dead as stated; its core is sound and shifts cost; the replacement is priced
+
+**What §7 claimed.** The MPC matvec opens W − A afresh (d² openings) because reusing the mask reveals
+the update. §7 proposed keeping P = W − A public and moving it by a public random rank-1 term each step,
+P' = P − u⊗w, so that the mask drifts as A' = A − dW + u⊗w and stays secret.
+
+**1. The drift is vacuous.** P_t = P_0 − Σ_s u_s⊗w_s is a function of P_0 and public coins, so it
+carries no information beyond P_0. Setting every u⊗w to 0 changes nothing: A_t = W_t − P_t is then just
+W_t minus a public matrix. Privacy is fine, because P_0 = W_0 − A_0 is opened once under a uniform
+one-time A_0. But the drift does no work, and "P's public trajectory" was never the privacy question.
+**The idea as stated is dead.**
+
+**2. The working core is a persistent mask with incremental corrections. It is SOUND.** Let
+preprocessing give a fresh pair (b, [A_0 b]) per matvec, with A_0 persistent between re-masks. Then
+
+    [W_t b] = [A_0 b] + P_0·[b] − Σ_{s<t} [d_s]·⟨[x_s], [b]⟩,
+    [W_t v] = [W_t]·(v − b) + [W_t b]          ([W_t] times a public vector is local).
+
+The openings are:
+- P_0, once per re-mask, uniform;
+- v − b, with a fresh uniform b;
+- Beaver openings, with fresh triples.
+
+[A_0 b] is never opened, so the standard SPDZ simulation applies. The one rule: A_0 is never an opening
+mask twice. Each re-mask draws a fresh A_0 and opens W − A_0 once. Integrity comes from the MACs on the
+preprocessed [A_0 b]. The transposed matvec uses (b, [b^T A_0]) the same way.
+
+**3. But it only SHIFTS cost.**
+- **Online:** per matvec, d plus 4d per update since the last re-mask, plus d² per re-mask. At T ≈ √(d/2)
+  the amortized cost is 7.5×10^5 openings at d = 4096, against 1.68×10^7: ×22 online.
+- **Offline:** each [A_0 b] is a product of a persistent SECRET matrix with a fresh secret vector. With
+  the ideal dealer this is free, and that is the illusion. With a real dealer it costs one of:
+  - **(i) a SPDZ matvec offline.** That is d² openings again: no total saving.
+  - **(ii) an HE-assisted product.** Custodian i multiplies its plaintext share of A_0 by custodian j's
+    encrypted share of b: pt×ct only, j's own key, no evaluation key anywhere near the host. That costs
+    exactly what doing the ONLINE matvec HE-assisted would, so persistence buys nothing over (ii)
+    applied directly.
+  - **(iii) a pseudorandom-correlation generator** for (fixed secret matrix share) × (fresh vector)
+    correlations. This would make the core pay: O(d^1.5) online, sublinear offline. Whether such a PCG
+    exists for a CHOSEN fixed matrix, rather than the pseudorandom fixed side standard VOLE PCGs give,
+    is open here. [INFERRED; not searched.]
+
+**4. The priced replacement: an HE-assisted matvec in the MPC fork.** Per ordered custodian pair
+(i, j):
+- j sends Enc_j(v^(j)) in the 128 × 64 block layout: d/64 ciphertexts.
+- i returns the masked, noise-flooded Σ_blocks W^(i)·Enc_j(v^(j)): d/128 ciphertexts.
+- i returns the same for its MAC share αW^(i), so the SPDZ MAC check still covers the result.
+
+Per matvec at d = 4096 that is 6 × (64 + 2·32) × 2NL = **3.77×10^7 elements, against 1.01×10^8:
+×2.7**. Plus a ZKPoPK per sent ciphertext (unpriced). The MPC fork's steady online wire drops from
+3.06×10^8 to about **1.17×10^8**. That is below FHE (a), even before (a)'s 9.5×10^8 offline mask wire
+(§8), and about the same as FHE (b)'s 2.75×10^7 online + 7.1×10^7 offline.
+
+This hybrid keeps the MPC fork's custody property: the HE keys are each custodian's own, and there is no
+evaluation object for the mind. It is a hybrid in mechanism, not in custody. [DERIVED; not built.]
+
+**Net effect on the fork at d = 4096.** With real masks and an HE-assisted matvec:
+- the MPC fork is within ×1.2 of FHE (b) on wire;
+- it is ×40 to ×75 smaller on committed bits;
+- it keeps integrity against full collusion through §9's proof.
+
+So the MPC fork now dominates FHE (a) everywhere, and trades evenly with FHE (b) on wire while winning
+on proof size and custody. That is a model result. The next measurement that could overturn it is the
+HE-assisted matvec built and counted in the harness.
