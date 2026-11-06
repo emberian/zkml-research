@@ -1,0 +1,41 @@
+{
+ "d": 4,
+ "rows": {
+  "custodians train on x' while presenting the owner's signed x": {
+   "verdict": "REFUSED",
+   "by": "spine: Ligero linear test: the constraints do not hold"
+  },
+  "custodians train on y' while presenting the owner's signed y": {
+   "verdict": "REFUSED",
+   "by": "middle: Ligero linear test: the constraints do not hold"
+  },
+  "custodians commit x' themselves and sign with their own key": {
+   "verdict": "REFUSED",
+   "by": "owner signature does not verify over (context, x and y commitments), or its leaf was used"
+  },
+  "step 1, honest, owner-signed": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  },
+  "step 2 re-using the owner's step-1 signature (old batch, used leaf)": {
+   "verdict": "REFUSED",
+   "by": "owner signature does not verify over (context, x and y commitments), or its leaf was used"
+  },
+  "step 2, honest, owner-signed": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  }
+ },
+ "info": {
+  "first_violated_honest": [
+   null,
+   null
+  ],
+  "substitute_x_violates": "signed input binding: the custodians' x = the owner's signed x",
+  "substitute_y_violates": "signed input binding: the custodians' y = the owner's signed y",
+  "bytes_bound_step": 4516936,
+  "signature_bytes": 16772,
+  "spine_lin_constraints": 1435,
+  "middle_lin_constraints": 1337
+ }
+}
