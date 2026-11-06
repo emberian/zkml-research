@@ -59,7 +59,21 @@ def prove(scheme, Qp, s, s2, ct, e):
     p, k = partial(scheme, s, s2, ct, e)
     return p, dict(e=list(e), k={q: [c % q for c in k] for q in Qp}, s=s, s2=s2)
 
-def verify(scheme, Qp, ct, p, Kcom, w, E, tag):
+def witness_hash(p, w):
+    """Stands in for the commitment roots of (p_i, e_i, k_q) in the succinct form: the Fiat-Shamir point
+    MUST depend on them. With a point derived from public data only (legacy_fs), a custodian who knows the
+    point in advance picks k_q after the fact and passes any p_i (fs_binding_falsifiers.py)."""
+    m = hashlib.sha256()
+    m.update(",".join(map(str, p)).encode())
+    m.update(",".join(map(str, w["e"])).encode())
+    for q in sorted(w["k"]):
+        m.update(",".join(map(str, w["k"][q])).encode())
+    return m.hexdigest()
+
+def pd_point(tag, h, wh, q, legacy_fs=False):
+    return fs_point(f"PD|{tag}|{h}|{q}" if legacy_fs else f"PD|{tag}|{h}|{wh}|{q}", q)
+
+def verify(scheme, Qp, ct, p, Kcom, w, E, tag, legacy_fs=False):
     """True iff R_PD holds for the DESIGNATED ct (the caller passes the ct the protocol designates)."""
     Q, N = scheme.Q, scheme.N
     if key_commit(w["s"], w["s2"]) != Kcom:
@@ -67,8 +81,9 @@ def verify(scheme, Qp, ct, p, Kcom, w, E, tag):
     if any(abs(x) > E for x in w["e"]):
         return False, "smudging term out of range (|e| > E): an offset hidden in the error"
     h = ct_handle(ct, Q)
+    wh = witness_hash(p, w)
     for q in Qp:
-        r = fs_point(f"PD|{tag}|{h}|{q}", q)
+        r = pd_point(tag, h, wh, q, legacy_fs)
         lhs = evalp([x % q for x in p], r, q)
         rhs = (evalp([x % q for x in w["s"]], r, q) * evalp([x % q for x in ct[1]], r, q)
                + evalp([x % q for x in w["e"]], r, q)

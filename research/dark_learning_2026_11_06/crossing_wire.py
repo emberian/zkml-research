@@ -12,8 +12,8 @@ coefficients: the fused output, F2's derivative column keyed on the input code).
         h_i = -s_i a + Delta M'_i + e_i; ct = (sum h_i, a).
 
 E2S and S2E are EXECUTED here (real polynomials, checked by decryption) and their messages are counted
-element by element. F's online openings are executed on the shares (a toy table, the full d values) and
-counted; its PREPROCESSING is counted by formula for two published lookup styles, because it is where the
+element by element. F's online opening messages are counted by formula, not executed on the shares;
+a centralized toy table supplies the outputs for the S2E arithmetic check; its PREPROCESSING is counted by formula for two published lookup styles, because it is where the
 cost of an exact lookup in MPC actually lives. Counts only; no clock. Smudging noise e_i is drawn at a
 small toy width here: its size changes no element count.
 """
@@ -61,7 +61,7 @@ def run(seed=11):
     M0 = [((T * bfv.centered(x, Q) * 2 + Q) // (2 * Q)) % T for x in acc]
     Ms = [M0] + Ms
     assert all(sum(M[j] for M in Ms) % T == z[j] for j in range(N)), "E2S shares do not reconstruct z"
-    # ---- F: online openings on shares (requantize + masked-index lookup), executed with a toy table
+    # ---- F: formula-only opening count; centralized toy outputs (not an MPC lookup)
     table_mask = (1 << TABLE_BITS) - 1
     opened = 0
     for j in range(D):
@@ -76,6 +76,8 @@ def run(seed=11):
         idx = (x >> 4) & table_mask                    # requantize 20 -> 16 bits
         out_vals.append((idx * 3) % T)                 # sigma(x) stand-in: the table content is irrelevant here
     for j in range(D):
+        x = bfv.centered(z[j], T)
+        idx = (x >> 4) & table_mask
         out_vals.append((idx + 1) % T)                 # sigma'(x) column of the same row
     # reshare the outputs additively
     Mo = [[rng.randrange(T) for _ in range(N)] for _ in range(NPARTY - 1)]
@@ -98,6 +100,9 @@ def run(seed=11):
     pre_dpf = D * 2 * math.ceil(dpf_bits / 20) * 2   # two outputs, two keys, in 20-bit elements
     return dict(N=N, L=L, logQ=round(math.log2(Q), 2), parties=NPARTY, d=D, wire=bus.log,
                 online_total=sum(bus.log.values()),
+                payload_bits=(bus.log["E2S"] + bus.log["S2E"]) * max(q.bit_length() for q in Qp)
+                             + bus.log["F-online"] * T.bit_length(),
+                ciphertext_components=2, function_openings_executed=False,
                 preprocessing_rotated_table=pre_rotated, preprocessing_dpf_2party=pre_dpf,
                 openings=opened)
 

@@ -28,6 +28,7 @@ coefficient means 42² digit products per term.
 | `spdz.py` | SPDZ-style engine: MACs, Beaver/matrix/outer triples, exact truncation, exact lookup, MPC-in-the-head audit by re-execution |
 | `e2s_proof.py` | v2 crossings: masked public decryption with a well-formed partial-decryption proof (R_PD) per custodian; masked public encryption through SPDZ |
 | `step_counts.py` | schedule-level counts at any width d (both forks), validated exactly against the executed runs; `--layout-check` executes the d = 4096 block layout at N = 8192 |
+| `fs_binding_falsifiers.py` | adaptive-quotient forgeries that the LEGACY verifiers (public-data Fiat-Shamir point) accept and the fixed ones (point hashes the witness) refuse |
 | `encoding_regressions.py` | falsifiers for the two large-t encoding fixes (fail under the broken encoding, pass under the fix) |
 | `cosnark.py`, `run_cosnark.py` | the MPC fork's collaborative proof (per-party share-codeword PCS, MPC sumchecks, rank-1 checks, chaining), full-collusion attacks, count formula checked against execution |
 | `cert_b61.py` | the FHE fork's ct×ct certificate: explicit witness + verifier (the decryption gate) |

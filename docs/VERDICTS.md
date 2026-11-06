@@ -1805,7 +1805,8 @@ lower bound for every protocol.
 | row-interleaved into BabyBear (5-bit digits) | 8192 | 204 | BabyBear | 32,055,047 | 993.7 M | 121,302 |
 
 - **The model was low by ×3.7 to ×30.** The rescale relation costs more than the product itself.
-- **The deployed layout is the outlier.** Row interleaving into BabyBear is ×15 the per-prime design in
+- **The deployed layout's candidate construction is the outlier** (a cost verdict on that construction,
+  not a lower bound for BabyBear: Astra E10). Row interleaving into BabyBear is ×15 the per-prime design in
   bits.
 - **u must be pinned.** The base-extension quotient u, left free, lets a prover shift an extended value
   by the basis product, and a forged output passes every residue check (exhibited in `cert_b61.py`).
@@ -1847,3 +1848,15 @@ outcome exits 1.
   falsifier needs the deployed N, and a test at toy parameters would have passed.
 - Any design whose plaintext modulus is a large prime shared with an MPC field needs both fixes. Our
   deployed t ≈ 2^20 makes both errors small, but not zero.
+
+**Corrections after Astra's experiment-1 audit (2026-11-06; `notes/dark-learning-astra-response.md` §2).**
+- **Units.** The committed-bit figures above count range digits at 16 bits. If each digit is its own
+  committed 61-bit element, B61-with-pin is 116.4 Mbit per ct×ct (14,213 bits per coefficient), not 67.8.
+  `step_counts.py` now prints both conventions; the 61-bit one is the headline until a digit-packing PCS
+  is defined.
+- **Fiat–Shamir binding.** The identity checks in `cert_b61.verify` and `e2s_proof.verify` drew their
+  point from public data only. A prover who knows the point picks the free quotient afterwards and passes
+  a false product or partial decryption; `fs_binding_falsifiers.py` exhibits both being accepted. The point
+  now also depends on a hash of the witness (the commitment roots in succinct form), and both forgeries
+  are refused. The d = 64 "every attack refused" rows held only against non-adaptive attackers until this
+  fix.

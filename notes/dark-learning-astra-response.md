@@ -18,7 +18,10 @@ what changed. ACCEPTED means the doc now says what the audit says.
   Without a ceiling, the bound is defeated by loss M/ε on a rare event.
 - Landing it is the next Lean item on the same branch. Our landed version and Astra's
   `Displacement.lean` agree on the statement. Ours dropped the redundant `hB`, and Astra's carried a
-  toolchain-mismatched check that never ran. Its stopping convention, which counts the alarming round,
+  toolchain-mismatched check that never ran. ⚠ That last clause was wrong: Astra's exact-source-fragment
+  check DID run (exit 0 on 4.35.0, `statement-audit` line 601); what remains open is a full-module /
+  integration build (line 607). Our own branch now has that: `dark-learning/displacement-bound-rebased`
+  at 684100978 passes `lane-check` on the hbox pool. Its stopping convention, which counts the alarming round,
   is the one we used.
 
 **C8 / DL09–DL10: one defect, one underspecified. ACCEPTED.**
@@ -50,7 +53,7 @@ what changed. ACCEPTED means the doc now says what the audit says.
 
 | row | what was wrong | adjudication |
 |---|---|---|
-| DL03 `bisect_localizes` | Isolated step validity is not monotone: two cancelling bad steps restore an honest endpoint. | ACCEPTED. Withdrawn. Bisection must test prefix validity (honest replay reaches the committed state), which costs a replay. |
+| DL03 `bisect_localizes` | Isolated step validity is not monotone: two cancelling bad steps restore an honest endpoint. | ACCEPTED. Withdrawn. My first replacement (endpoint equality under honest replay) was ALSO non-monotone (experiment-1 audit); the predicate is now PrefixValid, see the experiment-1 table below. |
 | DL05 append-only noise (F4) | The formula lacked the base term, the two-product composition, message magnitudes and relin noise. | ACCEPTED. The d = 64 FHE build sidesteps it (no relin; every product enters a crossing), but the stated F4 formula must be rewritten before it is proved. Codex round 1 already flagged the T·r·E growth. |
 | DL12 C10a exact unlearning | With C2 (sampled) as the retraining certificate, a wrong transition passes with positive probability, so "exact" is false. | ACCEPTED. Exact deletion needs a full (unsampled) proof of the retrained shard, or the C18 sufficient-statistics learner. |
 | DL13 C10b generic exact expiry | "Public coefficients ⇒ exact expiry by subtraction" is false: old state propagates through later public-coefficient updates. | ACCEPTED. Exact expiry holds for additive sufficient statistics (C18) and for the FIFO learner's actual structure, not for the whole corner. |
@@ -69,3 +72,25 @@ what changed. ACCEPTED means the doc now says what the audit says.
   §1 correction). This is the PRISM single range proof, and it is mandatory.
 - **DL14 (welded absence, realization gap)** stands as Astra states it: the existing word-free DFA/lane-0
   weld does not instantiate the content-bound target. Not touched today.
+
+
+## 2. The experiment-1 audit (`notes/astra/watch/dark-experiment1-audit.md`, against `055726e6`)
+
+Every finding is ACCEPTED; the commit that lands this note applies Astra's narrow repair patch
+(`watch/dark-experiment1-repairs.patch`) to `crossing_wire.py` and `rescale_certificates.py` unchanged.
+
+| finding | adjudication and what changed |
+|---|---|
+| E1 derivative index bug in `crossing_wire.py` | ACCEPTED, patch applied. |
+| E2 experiment 1b runs no shared function | ACCEPTED, patch relabels it as a message-count formula. Superseded: the d = 64 crossings (`fhe_fork.py`) run the function on SPDZ shares, and v2 (§6 of the decision) replaced the crossing. |
+| E3 two-component E2S cannot open an unrelinearized product | ACCEPTED for experiment 1b. The d = 64 forks decrypt with (1, s, s²) and per-custodian shares of s² from IDEAL keygen; generating those shares is a keygen-time secure product (cross terms of (Σ s_i)²), named here as an unpriced long-term obligation. |
+| E4 signed digits do not pin s ∈ [0, Q) | ACCEPTED for designs A/C in `rescale_certificates.py` (patch applies unsigned digits). `cert_b61.py` (the d = 64 gate) pins s through the canonical base-extension u with v_i ∈ [0, q_i). |
+| E5 the challenge is known before commitment | ACCEPTED, and it hit harder than the audit's scope. `cert_b61.verify` and `e2s_proof.verify`, the two verifiers the d = 64 FHE fork RELIES ON, also took their point from public data only. `fs_binding_falsifiers.py` forges a wrong product (it decrypts to a different message) and a partial decryption offset by 5Δ, both ACCEPTED by the legacy verifiers. The point now also hashes the witness, and both are refused. The FHE d = 64 run was repeated on hbox with the fixed verifiers (`d64_fhe_v3.log`). |
+| E6 several phases are formula-only | ACCEPTED. Experiment-1 rows are now called candidate-layout honest-sample estimates. The verifier split exists for B61 (`cert_b61.py`, the d = 64 gate), not for A/C. |
+| E7 canonical input lifts in A | ACCEPTED; A's counts are not complete sound upper bounds. |
+| E8 mixed units | ACCEPTED. Both conventions are now printed (decision §8); the 61-bit-per-digit one is the headline. |
+| E9 crossing element widths | ACCEPTED; experiment 1b's 294,912 is superseded by the executed v2 counts, all 61-bit. |
+| E10 BabyBear "impossibility" | ACCEPTED; wording narrowed to a cost verdict on the candidate construction (decision §1a, VERDICTS §9). |
+| bisection replacement non-monotone | ACCEPTED; PrefixValid adopted in program and critique; the leftover "⌈log₂ T⌉ step proofs" removed. |
+| "never ran" stale | ACCEPTED; corrected in the C2 paragraph above. |
+| honest-majority 3PC arithmetic | ACCEPTED; decision §3 corrected. Integrity against all n now comes from §9's collaborative proof, and the MAC failure term, view definition and preprocessing privacy are listed as owed. |

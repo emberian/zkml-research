@@ -167,8 +167,12 @@ and C13 directly, the rest are priced inline.
 - **Reuses.** `AuditSampling.lean` unchanged (`leakage_bound` at b = 2B); `joint_beacon.rs`.
 - **Build fresh.** EnvelopeLeg in Lean; ~~the bisection theorem `bisect_localizes` (F7.5)~~ ⚠ withdrawn
   (Astra DL03: isolated step validity is not monotone — two cancelling bad steps restore an honest
-  endpoint, so bisection must test PREFIX validity against an honest replay, not single steps) so an alarm finds
-  the first bad step in ⌈log₂ T⌉ step proofs; Peigné's nested seed for any lazily committed tensor
+  endpoint; and, Astra experiment-1 audit, endpoint equality under honest replay is ALSO non-monotone:
+  honest 0,0,0 against committed 0,1,0 gives [True, False, True]). The repaired predicate is
+  PrefixValid(k) := ∀ i < k, ValidTransition(committed_i, committed_{i+1}, prescribed_input_i), with a fixed
+  genesis, authenticated boundaries and prescribed randomness. Its negation is monotone, so bisection
+  finds the first invalid edge, but each prefix query must prove EVERY transition in the prefix (or carry a
+  recursive prefix certificate). It is not a cheap ⌈log₂ T⌉-proof search; Peigné's nested seed for any lazily committed tensor
   (their D.3.1: roots committed after the challenge need a second commit-reveal) [READ, lit lane].
 - **The Lean statement to land (Codex round 2's proposal, accepted as the target):** a pathwise
   `injected R delta honest` accumulator, then

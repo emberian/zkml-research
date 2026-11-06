@@ -109,7 +109,17 @@ def counts(N, Qp, Bp):
     canon = (4 * N + 3 * N) * math.ceil(L * pb / 16) + 3 * N * math.ceil(k * pb / 16)  # u pins: value ranges
     return dict(cert_elems=elems, cert_bits=bits, range_lookups=vlookups + canon)
 
-def verify(scheme, Qp, Bp, h1, h2, hout, out_ct, w, sample=None):
+def witness_hash(w):
+    """Stands in for the commitment roots of the z and K residues: the identity-(3) point MUST depend on
+    them, or a prover who knows the point picks K after the fact (fs_binding_falsifiers.py)."""
+    m = hashlib.sha256()
+    for key in ("z_res", "K_res"):
+        for comp in w[key]:
+            for p in sorted(comp):
+                m.update(",".join(map(str, comp[p])).encode())
+    return m.hexdigest()
+
+def verify(scheme, Qp, Bp, h1, h2, hout, out_ct, w, sample=None, legacy_fs=False):
     """True iff every check passes. `sample` limits the per-coefficient base-extension checks to a
     coefficient subset for runtime (the polynomial identities (3) always use all coefficients); the
     harness runs sample=None (all coefficients) for the honest run and for every attack."""
@@ -138,9 +148,10 @@ def verify(scheme, Qp, Bp, h1, h2, hout, out_ct, w, sample=None):
         inB.append(resB)
     a0, a1, b0, b1 = range(4)
     pairs = [[(a0, b0)], [(a0, b1), (a1, b0)], [(a1, b1)]]
+    wh = witness_hash(w)
     for k in range(3):
         for p in Qp + Bp:
-            r = fs_point(f"{h1}{h2}{hout}{k}{p}", p)
+            r = fs_point(f"{h1}{h2}{hout}{k}{p}" if legacy_fs else f"{h1}{h2}{hout}{wh}{k}{p}", p)
             def res(i):
                 return [c % p for c in ins[i]] if p in Qp else inB[i][p]
             lhs = sum(evalp(res(i), r, p) * evalp(res(j), r, p) for i, j in pairs[k]) % p

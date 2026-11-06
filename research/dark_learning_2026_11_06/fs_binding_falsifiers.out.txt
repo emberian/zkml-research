@@ -1,0 +1,3 @@
+F-cert  output wrong: True; legacy verifier: (True, 'accept'); fixed verifier: (False, 'tensor identity fails in F_61b prime (component 0)')
+F-pd    offset 5 Delta; legacy verifier: (True, 'accept'); fixed verifier: (False, 'partial-decryption identity fails in F_q (q = 61-bit prime)')
+FS BINDING FALSIFIERS PASS

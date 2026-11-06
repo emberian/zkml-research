@@ -70,9 +70,11 @@ What this says:
 [MEASURED, `exp1_C.log`] 32,055,047 committed elements, 993.7 Mbit, 33.4 M range lookups for one ct×ct.
 Of these, 19.1 M are the CRT lift of the inputs and the per-prime output reduction; 5.4 M are the
 rescale; the product columns account for the rest. That is ×30 the v2 model's prediction and ×15 B61 in
-bits. **The deployed proof layout (all residues bridged into one 31-bit field) is the wrong layout for
-any ct×ct at N = 8192.** At N = 8192, digits of more than 5 bits cannot be summed in BabyBear, and every
-cross-prime fact becomes integer emulation.
+bits. **This candidate construction of the deployed layout (all residues bridged into one 31-bit field,
+one monolithic digit-column budget) is far the most expensive at N = 8192.** Under that budget digits
+wider than 5 bits overflow BabyBear. Chunked sums, extra carries or another arithmetization change the
+budget, so this is a cost verdict on the candidate, not a lower bound or an impossibility for BabyBear
+(Astra E10, accepted).
 
 **The fused activation/derivative crossing**, executed at N = 8192, RNS-204, 3 parties, d = 4096 values in,
 σ and σ' (8192 values) out. Encrypt-to-shares (E2S) and shares-to-encrypt (S2E) are real polynomials
@@ -138,13 +140,18 @@ where the MPC fork's bandwidth explodes (×65 online traffic fully dark, tradeof
 with a global MAC key, over F_p with p a ~61-bit prime. The prime is chosen so p ≡ 1 mod 2^k for the proof
 system and equal to one of the FHE fork's RNS primes, so both forks share field code, commitments and the
 proof system.
-- **Why dishonest-majority.** Confidentiality and integrity then fail only if ALL n custodians collude.
-  That is the same tier C as n-of-n threshold FHE, and stronger than honest-majority replicated sharing.
+- **Why dishonest-majority.** Confidentiality then fails only if ALL n custodians collude: the same tier
+  C as n-of-n threshold FHE. Integrity against all n needs §9's collaborative proof; SPDZ's MAC alone
+  gives integrity only while one custodian is honest. Both claims still owe the MAC failure term, the
+  view definition, preprocessing privacy and a repeated/adaptive-audit argument (Astra, experiment-1
+  audit); additive-share secrecy alone does not prove the opened view secret.
 - **Preprocessing.** OT-based (MASCOT-class over lattice OT) to keep FHE out of the trust base, or
   LWE-HE-based (LowGear-class), which is where the FHE fork's BFV could supply triples. Both are PQ.
 - **Rejected:**
-  - Honest-majority 3PC: one corruption already breaks it, and its speed is not the binding constraint
-    at d = 64.
+  - Honest-majority 3PC: it tolerates one corruption of three (two honest parties remain a majority; the
+    earlier wording "one corruption already breaks it" was arithmetically wrong, Astra). It is rejected
+    because two colluding custodians break it, while dishonest-majority SPDZ needs all three, and because
+    its speed is not the binding constraint at d = 64.
   - Garbled circuits as the default: ~150× the wire cost; see C21 mode below.
 
 **Who the custodians are, and what the host sees.** Three custodians in independent trust domains

@@ -216,8 +216,11 @@ table, HE Standard v1.1 p.31, located by Codex round 2).
   inequality on a capped honest and a capped dishonest delta). Falsifier: drop `EnvelopeLeg` and exhibit
   one corrupt step with unbounded displacement passing every sampled check with probability 1 − p.
 - ~~`bisect_localizes`~~ ⚠ withdrawn (Astra DL03): local step validity is not monotone; replace with
-  bisection on PREFIX validity (does honest replay from genesis reach the committed W_t?), which costs a
-  replay, not ⌈log₂ T⌉ isolated step proofs. Original text: if every step's boundary (W_t commitment or appended factor) is committed, then after
+  bisection on PrefixValid(k) := ∀ i < k, ValidTransition(committed_i, committed_{i+1}, prescribed_input_i)
+  (fixed genesis, authenticated boundaries, prescribed randomness). "Does honest replay reach the
+  committed W_t?" is NOT a repair: endpoint equality is also non-monotone (honest 0,0,0 vs committed 0,1,0
+  gives [True, False, True]; Astra experiment-1 audit). Each prefix query proves every transition in the
+  prefix or carries a recursive prefix certificate. Original text: if every step's boundary (W_t commitment or appended factor) is committed, then after
   an alarm the first corrupt step is found with ⌈log₂ T⌉ step proofs (refereed-delegation shape; Verde
   bisects to one operation [READ lit lane: CVC atlas]).
 - Keep amplification as a separate named residual `[TRAIN-amplify]`, never folded in.
