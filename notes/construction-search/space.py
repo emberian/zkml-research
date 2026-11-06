@@ -500,6 +500,49 @@ def sensitivity():
         print(f"  boundary commit x{f:<4}: proxy {v/base:.2f}x of base")
 
 
+# ---------------------------------------------------------------------------
+# Certificate families (breadstuffs docs/automata, 2026-11-05): committed cells per
+# SYMBOL for the run, plus the content commitment once per record. Every number is
+# tagged in the hub (AUTOMATA-ARITHMETIZATION-PROGRAM.md §2) and the family notes:
+# [M] = a pinned #guard in metatheory, [I] = derived there.
+#   commitment: hash_bytes_8 = ceil(n/8) + 2 Poseidon2 permutations for n bytes
+#   (rate-4 absorb, 2 bytes per lane, 4 length lanes, one squeeze) [READ poseidon2.rs:704]
+# "lookups" are per symbol; "chip" rows are Poseidon2 permutations per symbol.
+CERT_FAMILIES = {
+    # family:            (main cells/symbol, lookups/symbol, chip perms/symbol, binds word?)
+    "dfa-table-routing":  (3,  1, 0,    False),   # [M] DfaRoutingTableEmit: 3 cols, 1 table lookup
+    "dfa-hash-chained":   (22, 2, 2,    True),    # [M] DfaRoutingGeneralEmit: 22 cols, 2 chip lookups
+    "dfa-attested-weld8": (11, 1, 16,   False),   # [M] Weld8: 11 cols, 1 map-op, 16 chip rows (binary symbols)
+    "bracket-replay":     (24, 2, 4,    False),   # [M] DyckStackEmit: 24 cols, ~2 rows/token, 2 chip/row
+    "nfa-subset":         (9,  6, 0,    False),   # [I] 03-nfa: 9 cols vs a 64-row determinized table
+    "detokenizer":        (4,  1, 0,    True),    # [I] 06-transducers: 1 row + 1 vocab lookup/token
+    "weighted":           (4,  1, 0,    False),   # [I] 08-weighted: dfa + 1 accumulator column
+    "timed-window":       (5,  2, 0,    False),   # [I] 09-timed: dfa + clock; 2 range lookups/guard at 4 bits
+}
+
+def commitment_perms(n_bytes):
+    """Poseidon2 permutations to commit n bytes with hash_bytes_8 (ceil(n/8) + 2)."""
+    return (n_bytes + 7) // 8 + 2
+
+def cert_cost(family, n_symbols, n_bytes=None, h="poseidon2"):
+    """Committed cells for one certificate: the run plus (once) the content commitment.
+    Returns (run_cells, commitment_cells, total). n_bytes defaults to n_symbols."""
+    cells, _lk, chip, _bound = CERT_FAMILIES[family]
+    if n_bytes is None:
+        n_bytes = n_symbols
+    perm = INCIRCUIT_CELLS[h]
+    run = n_symbols * (cells + chip * perm)
+    commit = commitment_perms(n_bytes) * perm
+    return run, commit, run + commit
+
+def certs(n_bytes=4096):
+    """Print the per-family bill at one record size; the hub's cost law in numbers."""
+    print(f"certificate families at n = {n_bytes} bytes, {INCIRCUIT_CELLS['poseidon2']}-cell permutations")
+    print(f"{'family':22} {'run cells':>12} {'commit cells':>13} {'commit/run':>11}")
+    for fam in CERT_FAMILIES:
+        run, commit, _ = cert_cost(fam, n_bytes)
+        print(f"{fam:22} {run:12,} {commit:13,} {commit / run:11.2f}")
+
 def main():
     _calibrate_witgen()
     ap = argparse.ArgumentParser()
@@ -507,7 +550,12 @@ def main():
     ap.add_argument("--calibrate", action="store_true")
     ap.add_argument("--sensitivity", action="store_true")
     ap.add_argument("--top", type=int, default=12)
+    ap.add_argument("--certs", type=int, metavar="N_BYTES",
+                    help="print the certificate-family bill at N_BYTES (breadstuffs docs/automata)")
     a = ap.parse_args()
+    if a.certs:
+        certs(a.certs)
+        return
     if a.calibrate:
         calibrate()
         return
