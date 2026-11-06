@@ -329,24 +329,8 @@ def prove_and_verify_middle(live, sym, wires, spine_roots, attack=None):
         msgs, rs = sumcheck_pub(eng, tr, q[k], vecs[k], p)
         lsc[k] = (msgs, rs)
         evals.append((k, rs))
-    # ---- PCS openings (as in cosnark)
-    pcs_msgs = []
-    for k, pt in evals:
-        c = com[k]
-        a = CS.eqv(pt[c.mc:], p)
-        u = [c.row_combo(i, a) for i in range(n)]
-        pcs_msgs.append(u)
-        tr.absorb("u", k, u)
-    prox = {}
-    for k in sorted(com):
-        gam = tr.chal(p, com[k].R)
-        prox[k] = (gam, [com[k].row_combo(i, gam) for i in range(n)])
-        tr.absorb("g", k, prox[k][1])
-    cols = {}
-    for k in sorted(com):
-        c = com[k]
-        J = [x % len(c.pts) for x in tr.chal(p, CS.T_COLS)]
-        cols[k] = (J, [[c.open_col(i, j) for j in J] for i in range(n)])
+    # ---- PCS openings (shared routine with the spine; hiding mode follows CS.HIDE / CS.NMASK)
+    pcs_msgs, prox, cols = CS.pcs_prove(com, evals, tr, n, p)
     eng.mac_check("middle")
 
     # ======================================================== VERIFIER
@@ -360,8 +344,7 @@ def prove_and_verify_middle(live, sym, wires, spine_roots, attack=None):
             vt.absorb(k, roots[k])
         def pv(ie):
             k, pt = evals[ie]
-            mc = com[k].mc
-            return sum(sum(ui[c] for ui in pcs_msgs[ie]) * e for c, e in enumerate(CS.eqv(pt[:mc], p))) % p
+            return CS.pcs_value(com[k], pt, pcs_msgs[ie], p)
         tau = vt.chal(p, lh)
         claim, rr = 0, []
         for vals in zmsgs:
@@ -390,35 +373,7 @@ def prove_and_verify_middle(live, sym, wires, spine_roots, attack=None):
                 claim = CS.lag3(vals, r, p)
             if claim != CS.mle(qv[k], rr, p) * pv(3 + ie) % p:
                 return False, f"linear sumcheck {k}: final check fails"
-        for ie, (k, pt) in enumerate(evals):
-            vt.absorb("u", k, pcs_msgs[ie])
-        for k in sorted(com):
-            vt.chal(p, com[k].R)
-            vt.absorb("g", k, prox[k][1])
-        for k in sorted(com):
-            c = com[k]
-            npts = CS.BLOW * c.C
-            J = [x % npts for x in vt.chal(p, CS.T_COLS)]
-            if J != cols[k][0]:
-                return False, "column challenge mismatch"
-            gam, gs = prox[k]
-            gcode = CS.encode_pub(p, [sum(g[cc] for g in gs) % p for cc in range(c.C)], npts)
-            ucodes = [(pt, CS.encode_pub(p, [sum(ui[cc] for ui in pcs_msgs[ie]) % p for cc in range(c.C)], npts))
-                      for ie, (kk, pt) in enumerate(evals) if kk == k]
-            for jj, j in enumerate(J):
-                colsum = [0] * c.R
-                for i in range(n):
-                    col, path = cols[k][1][i][jj]
-                    if not CS.verify_path(roots[k][i], col, j, path):
-                        return False, f"Merkle opening fails ({k})"
-                    colsum = [(x + y) % p for x, y in zip(colsum, col)]
-                if sum(g * x for g, x in zip(gam, colsum)) % p != gcode[j]:
-                    return False, f"proximity test fails ({k})"
-                for pt, ucode in ucodes:
-                    a = CS.eqv(pt[c.mc:], p)
-                    if sum(ai * x for ai, x in zip(a, colsum)) % p != ucode[j]:
-                        return False, f"evaluation consistency fails ({k})"
-        return True, "accept"
+        return CS.pcs_verify(com, roots, evals, pcs_msgs, prox, cols, vt, n, p)
     ok, why = V()
     counts = dict(atoms=len(prep), proofprep_bits=getattr(live, "proofprep", 0), hadamard=len(had),
                   linear_constraints=len(cons), committed_elems=sum(len(V) for k, V in vecs.items()

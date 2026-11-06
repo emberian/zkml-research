@@ -1,0 +1,150 @@
+{
+ "formula_check": {
+  "16": {
+   "honest": [
+    true,
+    "accept"
+   ],
+   "all_equal": true,
+   "mismatches": []
+  },
+  "32": {
+   "honest": [
+    true,
+    "accept"
+   ],
+   "all_equal": true,
+   "mismatches": []
+  },
+  "64": {
+   "honest": [
+    true,
+    "accept"
+   ],
+   "all_equal": true,
+   "mismatches": []
+  }
+ },
+ "rows": {
+  "honest": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  },
+  "forge_W1n": {
+   "what": "all custodians commit a wrong W1' (one entry +1)",
+   "verdict": "REFUSED",
+   "by": "rank-1 update W1n: W'(r) != W(r) - d(r_row) v(r_col)"
+  },
+  "forge_z1": {
+   "what": "all custodians commit a wrong z1 and prove honestly",
+   "verdict": "REFUSED",
+   "by": "sumcheck z1: round sum does not match the claim"
+  },
+  "forge_sumcheck": {
+   "what": "wrong z1, and the colluders forge every sumcheck round",
+   "verdict": "REFUSED",
+   "by": "sumcheck z1: final check fails against the committed W and vector"
+  },
+  "lie_in_u": {
+   "what": "wrong W1' committed; custodian 0 reports its honest share's row combination",
+   "verdict": "REFUSED",
+   "by": "evaluation consistency fails at an opened column (W1n)"
+  },
+  "chain_step2_parent_is_step1_child": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  },
+  "stale_parent": {
+   "what": "step 2 verified against step 1's PARENT (an older W)",
+   "verdict": "REFUSED",
+   "by": "parent commitment is not the previous step's child commitment"
+  }
+ },
+ "counts_d64": {
+  "witness_elems": 16960,
+  "codeword_elems_per_party": 299520,
+  "merkle_leaves_per_party": 7968,
+  "commitments": 13,
+  "pcs_evaluations": 20,
+  "proof_field_elems": 98433,
+  "proof_hashes": 24999,
+  "sumcheck_msg_elems": 78,
+  "row_combo_elems": 15372,
+  "opened_column_elems": 82944,
+  "proving_openings": 1716,
+  "proving_wire": {
+   "mul": 9828,
+   "mac_check": 12,
+   "cosnark": 468
+  }
+ },
+ "formula_d4096": {
+  "spine": {
+   "witness_elems": 67145728,
+   "codeword_elems_per_party": 268582912,
+   "merkle_leaves_per_party": 67840,
+   "commitments": 13,
+   "pcs_evaluations": 20,
+   "proof_field_elems": 3395907,
+   "proof_hashes": 24615,
+   "sumcheck_msg_elems": 156,
+   "row_combo_elems": 139392,
+   "opened_column_elems": 3256320,
+   "proving_openings": 106626,
+   "proving_wire": {
+    "mul": 638820,
+    "mac_check": 12,
+    "cosnark": 936
+   }
+  },
+  "spine_t148": {
+   "witness_elems": 67145728,
+   "codeword_elems_per_party": 268582912,
+   "merkle_leaves_per_party": 67840,
+   "commitments": 13,
+   "pcs_evaluations": 20,
+   "proof_field_elems": 7669827,
+   "proof_hashes": 56871,
+   "sumcheck_msg_elems": 156,
+   "row_combo_elems": 139392,
+   "opened_column_elems": 7530240,
+   "proving_openings": 106626,
+   "proving_wire": {
+    "mul": 638820,
+    "mac_check": 12,
+    "cosnark": 936
+   }
+  },
+  "elementwise_MODEL": {
+   "committed_elems": 1536000,
+   "hadamard_constraints": 1499136,
+   "proving_openings": 11993172,
+   "proving_wire": 71959032
+  },
+  "elementwise_MODEL_d64": {
+   "committed_elems": 20544,
+   "hadamard_constraints": 19968,
+   "proving_openings": 159804,
+   "proving_wire": 958824
+  }
+ },
+ "zk_layer1_hiding_pcs": true,
+ "formula_d4096_zk": {
+  "witness_elems": 67145728,
+  "codeword_elems_per_party": 277862400,
+  "merkle_leaves_per_party": 74496,
+  "commitments": 13,
+  "pcs_evaluations": 20,
+  "proof_field_elems": 3428607,
+  "proof_hashes": 28839,
+  "sumcheck_msg_elems": 156,
+  "row_combo_elems": 152124,
+  "opened_column_elems": 3276288,
+  "proving_openings": 106626,
+  "proving_wire": {
+   "mul": 638820,
+   "mac_check": 12,
+   "cosnark": 936
+  }
+ }
+}

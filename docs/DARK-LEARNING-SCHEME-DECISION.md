@@ -813,3 +813,92 @@ chunks. For the activation lookup the multiplicities are secret and need their o
 - **Zero knowledge is still missing** (next item). The opened claims ⟨q_X, X⟩, the row combinations
   and the sumcheck messages leak linear functionals of the atoms and the spine vectors. Until it is
   built, the proof stays among the custodians.
+
+
+## 13. Zero knowledge for the collaborative proof: three layers. Layer 1 is built, layers 2–3 are designed and counted (2026-11-06)
+
+**What leaks today** (§9, §12). The verifier sees, in addition to the Merkle roots:
+- **(i)** opened codeword columns. Each is t evaluations of every row's polynomial, so linear functionals
+  of W and of the atoms.
+- **(ii)** the row combinations a^T V and γ^T V.
+- **(iii)** every sumcheck round polynomial, every evaluation value and the linear-batch claims ⟨q_X, X⟩.
+
+Until all three are hidden, the proof must not leave the custodians.
+
+**Layer 1: the hiding PCS (BUILT; `cosnark.HIDE`, `NMASK`, `LIVES`).**
+- **Columns.** Every row is encoded with HIDE extra random coefficients. For t opened columns at
+  distinct nonzero points, the map from the tail to the opened values is a Vandermonde-type matrix of
+  full rank, so the columns are uniform whatever the data.
+- **Row combinations.** Each evaluation adds its own fresh mask row with weight 1, so the revealed
+  combination is uniform. The custodians send m_e = ⟨M_e, b⟩ so the value can still be computed.
+  - The proximity combination puts weight 1 on a dedicated mask row and random weights on every other
+    row, so mask rows are proximity-tested too.
+  - **Each mask row serves exactly one combination** (asserted in code). A mask reused across two
+    combinations would reveal their difference, a linear functional of the data.
+- **Every custodian draws its own tail and mask shares locally,** with no communication.
+- **Chaining forces a design point.** A weight commitment lives twice: as step t's child and as step
+  t+1's parent. Its columns are opened in two proofs, so up to 2t columns are revealed. Hence
+  HIDE ≥ LIVES·t = 2t. Its mask rows are split into two blocks, one per life. The custodians carry the
+  commitment's opening (shares, tails, masks) into the next step; recomputing it would change the root
+  and break the chain. That is exactly what the first ZK run showed: the chain was REFUSED until the
+  carry was built.
+- **Results** (Mac; `cosnark_results_zk.json`, `cosnark_gates_results_zk.json`):
+  - the honest spine (d = 16, 32, 64), the middle and the two-step chain ACCEPT;
+  - every full-collusion attack from §9 and §12 is still REFUSED by the same check;
+  - the count formula with hiding is exact against execution at d = 16, 32, 64.
+
+| layer-1 overhead (spine) | d = 64 (executed) | d = 4096 (formula) |
+|---|---:|---:|
+| codeword elements per custodian | ×4.42 (67,840 → 299,520) | **×1.035** |
+| proof field elements | ×1.50 | **×1.010** |
+| proof hashes | ×1.69 | ×1.17 |
+| row-combination elements | ×5.82 | ×1.09 |
+
+At small d the 128-coefficient tails dominate 8-wide rows. At d = 4096 hiding costs about 1–3.5%.
+
+**Layer 2: commit the transcript (DESIGNED).** Layer 1 leaves (iii) in the clear:
+- every round polynomial;
+- every evaluation value, ⟨u', b⟩ − m_e;
+- the 13 batch claims of §12.
+
+These values are now not revealed. The custodians hold shares of them already, so each round's
+message vector is committed with the same hiding PCS (one tiny commitment per round), and Fiat–Shamir
+draws from those commitments. Counted from the executed transcripts:
+
+| hidden scalars per step | d = 64 | d = 4096 |
+|---|---:|---:|
+| spine: sumcheck coefficients (13·log d) + evaluation values (20) | 98 | 176 |
+| middle: zerocheck 4·log L + linear sumchecks + 13 claims + 16 evaluations | 434 | 705 |
+| **total** | **532** | **881** |
+
+**Layer 3: prove the verifier's checks on the hidden transcript (DESIGNED).** With the transcript
+hidden, the verifier's algebra becomes a small arithmetic circuit over those ~0.5–0.9 k values:
+- round sums and Lagrange interpolation at public challenges are linear;
+- the batch identity Σ v_X + const = 0 is linear;
+- the final checks need **7 multiplications**: three matvec finals W(τ,ρ)·x(ρ), two zerocheck finals
+  A(ρ)·B(ρ), and two rank-1 products d(r_row)·v(r_col). The linear-sumcheck finals q̃(ρ)·X̃(ρ) have
+  public q̃, so they are linear.
+
+One natively zero-knowledge Ligero proof (linear and quadratic tests with masking codewords) proves
+it. The custodians run it collaboratively on shares: the linear test is local, and the quadratic test
+needs one Beaver product per codeword entry of the 7-wide product rows. **Its size is about 10^3–10^4
+field elements per step, under 1% of layer 1's proof at d = 4096.**
+
+**Why commit-the-transcript and not Libra-style witness masking.** Libra (and Chiesa–Forbes–Spooner)
+masks each witness MLE with terms that vanish on the hypercube and reveals masked evaluations. That
+breaks the zero-round rank-1 check, construction (a): W'(r) = W(r) − d(r_row)·v(r_col) is an identity of
+unmasked MLEs at an OFF-hypercube point, and independent masks do not cancel there. Restoring it would
+need a d²-sized sumcheck, i.e. d² Beaver products in the MPC. Hiding the transcript keeps every value
+exact, so the rank-1 check stays one multiplication in the inner circuit. [INFERRED; the
+commit-the-transcript pattern is standard (Hyrax-, Spartan-style ZK via committed messages), and I make
+no novelty claim.]
+
+**Remaining non-ZK leak sources after all three layers.**
+- **The public SPDZ transcript itself.** Masked openings are uniform under SPDZ's own simulation, but
+  that argument (MAC failure term, view definition, preprocessing privacy) is owed (Astra, experiment-1
+  audit; the scholar's who-learns-what page).
+- **The beacon and timing side channels.** Not addressed.
+
+**Build status.** Layer 1 is built and tested. Layers 2 and 3 are not built. They are a refactor of both
+verifiers into "emit constraints over hidden values" plus about 150 lines of collaborative ZK-Ligero.
+Their counts above are derived from the executed transcripts' shapes.
