@@ -1,0 +1,17 @@
+[package]
+name = "mir-stream"
+version = "0.1.0"
+edition = "2021"
+description = "Initiative 13: stream a GGUF checkpoint once, reproduce FlashProve's committed integers (docs/model.md section 11) and their wsums.txt, and compute the registry v2 per-row/per-expert cSHAKE256 roots over those integers."
+
+[dependencies]
+ureq = "2.10"
+sha2 = { version = "0.10", features = ["asm"] }
+tiny-keccak = { version = "2.0", features = ["cshake"] }
+half = "2.4"
+rayon = "1.10"
+serde_json = "1"
+
+[profile.release]
+opt-level = 3
+debug = false

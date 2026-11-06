@@ -1,0 +1,14 @@
+name = "mir"
+version = "0.1.0"
+defaultTargets = ["Mir", "mir-verify"]
+
+[[lean_lib]]
+name = "Mir"
+
+[[lean_exe]]
+name = "mir-verify"
+root = "Main"
+
+[[lean_exe]]
+name = "mir-crypto-vectors"
+root = "CryptoVectors"
