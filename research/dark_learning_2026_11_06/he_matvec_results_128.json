@@ -1,0 +1,49 @@
+{
+ "d128": {
+  "verdict": "ACCEPT",
+  "refines_spec": true,
+  "counts": {
+   "online_wire": 2823966,
+   "he_send": 1474560,
+   "he_return": 1179648,
+   "spdz_wire": 169758,
+   "prep_auth_values": 118528,
+   "cts_sent": 30,
+   "cts_returned": 24
+  },
+  "formula": {
+   "online_wire": 2823966,
+   "step_prep_auth_values": 118528,
+   "he_send_wire": 1474560,
+   "he_return_wire": 1179648,
+   "auth_wire": 2304,
+   "freivalds_wire": 4626,
+   "he_wire": 2654208,
+   "spdz_wire": 6930,
+   "cts_sent": 30,
+   "cts_returned": 24,
+   "zkpopk_proofs": 30,
+   "zkpopk_bits": 194876700,
+   "prep_auth_values": 1536
+  },
+  "formula_exact": true,
+  "spdz_matvec_step_wire": 469260
+ },
+ "d4096_formula": {
+  "he": {
+   "he_send_wire": 47185920,
+   "he_return_wire": 37748736,
+   "auth_wire": 73728,
+   "freivalds_wire": 147474,
+   "he_wire": 84934656,
+   "spdz_wire": 221202,
+   "cts_sent": 960,
+   "cts_returned": 768,
+   "zkpopk_proofs": 960,
+   "zkpopk_bits": 6236054400,
+   "prep_auth_values": 49152
+  },
+  "mpc_steady_online_wire_spdz_matvec": 305897484,
+  "mpc_steady_online_wire_he_matvec": 88989726
+ }
+}

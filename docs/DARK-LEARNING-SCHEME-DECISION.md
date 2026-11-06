@@ -660,3 +660,75 @@ evaluation object for the mind. It is a hybrid in mechanism, not in custody. [DE
 So the MPC fork now dominates FHE (a) everywhere, and trades evenly with FHE (b) on wire while winning
 on proof size and custody. That is a model result. The next measurement that could overturn it is the
 HE-assisted matvec built and counted in the harness.
+
+
+## 11. ✅ The HE-assisted matvec, built and counted (2026-11-06; `he_matvec.py`, `run_he_matvec.py`)
+
+§10's priced replacement for SPDZ's d² matvec, now executed.
+
+**How it works.** Each custodian has its OWN BFV key (N = 8192, Q = 3 × 61-bit, t = the SPDZ prime p).
+For each ordered pair (i, j):
+1. j sends Enc_j(v^(j)) in the block layout, with exact scaling.
+2. i returns Σ_blocks W^(i)·Enc_j(v_block), plaintext × ciphertext only, with three additions:
+   - a uniform mask M on all N coefficients;
+   - a fresh Enc_pk_j(0), without which j could divide out W^(i) from W^(i)·a_j;
+   - flooding noise.
+3. j decrypts its masked cross term; i keeps −M.
+
+The plain shares of z are then authenticated, and ONE SPDZ Freivalds check, with ρ drawn after the
+shares are fixed, opens ρ^T[z] − ⟨ρ^T[W], [v]⟩ and requires 0. That costs d Beaver products and is
+MAC-checked.
+
+Exact scaling of j's vector is mandatory here too. The plaintext multiplier W^(i) has full-size
+coefficients (about 2^60), so textbook Δ·v's rounding error would be multiplied past the margin: the F2
+phenomenon in a third place.
+
+**Results** (hbox, `swarm-build`; `he_matvec_results_{64,128,attacks}.json`):
+
+| run | verdict | step online wire | of which HE ciphertexts | SPDZ-matvec step wire |
+|---|---|---:|---:|---:|
+| d = 64 | ACCEPT, refines `step_spec` exactly | 1,829,790 | 1,769,472 | 131,724 |
+| d = 128 (two column blocks; exercises block sums) | ACCEPT, refines exactly | 2,823,966 | 2,654,208 | 469,260 |
+| j encrypts a vector other than its share | **REFUSED** (Freivalds) | | | |
+| i returns a wrong cross term | **REFUSED** (Freivalds) | | | |
+| a custodian shifts its share at authentication | **REFUSED** (Freivalds) | | | |
+
+**The count formula matches the executed runs exactly at d = 64 and d = 128:** online wire,
+preprocessing values, and ciphertexts sent and returned. The formula for the rest of the step is
+`step_counts.mpc_counts` with the executed shifts.
+
+**At width, steady state per step** (formula validated above):
+
+| d | SPDZ matvec: online wire | HE matvec: online wire | ratio | HE matvec: preprocessing values | ZKPoPKs (bits) |
+|---:|---:|---:|---:|---:|---:|
+| 64 | 107,148 | 1,805,214 | ×0.06 | 34,688 | 18 (1.2×10^8) |
+| 1024 | 1.97×10^7 | 2.21×10^7 | ×0.89 | 2.61×10^6 | 240 (1.6×10^9) |
+| 4096 | 3.06×10^8 | **8.90×10^7** | **×3.44** | 3.58×10^7 | 960 (6.2×10^9) |
+
+**What it decides:**
+1. **Below d ≈ 1200 the SPDZ matvec is cheaper.** A ciphertext is N·L·2 = 49,152 elements whatever
+   it carries. Above that width the HE matvec wins, ×3.4 at d = 4096. That is better than §10's ×2.7,
+   because the Freivalds check replaces the MAC-share products.
+2. **Preprocessing collapses.** The matrix triples were most of the MPC fork's preprocessing. Steady
+   preprocessing at d = 4096 falls from 8.6×10^7 to 3.6×10^7 authenticated values. The MPC-in-the-head
+   views shrink from 31.5 to 13.1 Gbit. With §9's proof they are no longer the integrity mechanism
+   anyway.
+3. **The fork at d = 4096, all counts per step, SPDZ preprocessing still ideal in both forks:**
+
+| fork | wire | committed bits |
+|---|---|---|
+| MPC with HE matvec | 8.9×10^7 online | 13.1 Gbit views + 4.2 Gbit collaborative proof (spine) + 6.2 Gbit ZKPoPK |
+| FHE (b) | 2.75×10^7 online + 7.1×10^7 offline masks | ≥ 1.26 Tbit (16-bit digits) or 2.37 Tbit (61-bit) |
+| FHE (a) | 2.29×10^8 online + 9.5×10^8 offline | ≥ 0.66 Tbit |
+
+   **The MPC fork now matches FHE (b) on total wire and is about ×50–100 smaller on committed bits.** It
+   also holds integrity against full collusion (§9) and keeps every key, including the HE keys, inside
+   custody. This is now a measured-at-small-d, formula-at-width result. What could still overturn it:
+   the unpriced SPDZ preprocessing, which is the same object in both forks, and the elementwise gates'
+   proving wire (+7.2×10^7, MODEL), which only the MPC fork pays for full-collusion integrity.
+
+**Not built:**
+- the ZKPoPK on each sent ciphertext (a privacy leg for i's share; priced);
+- circuit-privacy parameters chosen against a stated distance (flooding is 40 bits over a public noise
+  bound);
+- the MPC-in-the-head audit's replay of the HE path, which the collaborative proof supersedes.

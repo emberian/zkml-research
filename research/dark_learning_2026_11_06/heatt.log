@@ -1,0 +1,4 @@
+('wrong_vector', 1) REFUSED HE matvec: Freivalds check failed (a custodian's vector, product or share is wrong)
+('wrong_return', 2) REFUSED HE matvec: Freivalds check failed (a custodian's vector, product or share is wrong)
+('shift_share', 0) REFUSED HE matvec: Freivalds check failed (a custodian's vector, product or share is wrong)
+d4096 88989726 {'he_send_wire': 47185920, 'he_return_wire': 37748736, 'auth_wire': 73728, 'freivalds_wire': 147474, 'he_wire': 84934656, 'spdz_wire': 221202, 'cts_sent': 960, 'cts_returned': 768, 'zkpopk_proofs': 960, 'zkpopk_bits': 6236054400, 'prep_auth_values': 49152}
