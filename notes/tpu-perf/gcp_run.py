@@ -60,13 +60,15 @@ def exists(name, zone):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--name", required=True)
-    ap.add_argument("--zone", default="us-west4-a")
+    ap.add_argument("--zones", nargs="*", default=["us-east1-c", "us-central1-a", "us-east5-b", "us-south1-a", "us-west1-c",
+                    "us-west4-a", "europe-west4-b"],
+                    help="tried in order until a spot create succeeds (one VM at a time)")
     ap.add_argument("--network", default="tpuperf-net")
-    ap.add_argument("--subnet", default="tpuperf-usw4")
     ap.add_argument("--type", default="v5litepod-1")
     ap.add_argument("--wall", type=int, default=3600)
     ap.add_argument("--jax", default="0.12.0.1")
-    ap.add_argument("--root", default=str(HERE), help="directory holding tpuperf/ and run_profile.py to bundle")
+    ap.add_argument("--root", default=str(HERE), help="directory to bundle (its whole tree)")
+    ap.add_argument("--pull", nargs="*", default=["results.json", "run.log"], help="files under ~/b to fetch")
     ap.add_argument("cmd", nargs=argparse.REMAINDER)
     a = ap.parse_args()
     cmd = " ".join(a.cmd[1:] if a.cmd and a.cmd[0] == "--" else a.cmd) or "python3 run_profile.py"
@@ -75,15 +77,17 @@ def main():
     worst = already + chips * rate * (a.wall + 900) / 3600
     if worst > CAP_STOP:
         sys.exit(f"refusing: spent {already:.2f} + worst case {worst - already:.2f} would pass ${CAP_STOP}")
-    _, lst = sh(G + ["list", "--zone", a.zone, "--format=value(name)"], timeout=120)
-    if lst.strip():
-        sys.exit(f"refusing: a TPU VM already exists in {a.zone}: {lst}")
+    _, lst = sh(G + ["list", "--zone", "-", "--format=value(name)"], timeout=180)
+    if any(l.strip() and not l.startswith(("ERROR", "WARNING", "Listed")) for l in lst.splitlines()):
+        sys.exit(f"refusing: a TPU VM already exists: {lst}")
     out = HERE / "results" / "gcp" / a.name
     out.mkdir(parents=True, exist_ok=True)
     t0 = dt.datetime.now(dt.timezone.utc)
     deadline = time.time() + a.wall
     # detached reaper: deletes the VM after wall + 600 s no matter what happens to this process
-    reaper = subprocess.Popen(["sh", "-c", f"sleep {a.wall + 600}; " + " ".join(G + ["delete", a.name, "--zone", a.zone, "--quiet"])],
+    a.zone = a.zones[0]
+    kill_all = "; ".join(" ".join(G + ["delete", a.name, "--zone", z, "--quiet"]) for z in a.zones)
+    reaper = subprocess.Popen(["sh", "-c", f"sleep {a.wall + 600}; {kill_all}"],
                               stdout=open(out / "reaper.log", "w"), stderr=subprocess.STDOUT, start_new_session=True)
     pidf = HERE / f".reaper-{a.name}.pid"
     pidf.write_text(str(reaper.pid))
@@ -91,30 +95,46 @@ def main():
     created = False
     try:
         vt = VERSION["v6e" if a.type.startswith("v6e") else "v5litepod"]
-        rc, o = sh(G + ["create", a.name, "--zone", a.zone, "--accelerator-type", a.type, "--version", vt, "--spot",
-                         "--network", a.network, "--subnetwork", a.subnet],
-                   timeout=900)
-        created = rc == 0 or exists(a.name, a.zone)
+        tried = []
+        for z in a.zones:
+            a.zone = z
+            region = z.rsplit("-", 1)[0]
+            subnet = "tpuperf-usw4" if region == "us-west4" else f"tpuperf-{region}"
+            rc, o = sh(G + ["create", a.name, "--zone", z, "--accelerator-type", a.type, "--version", vt, "--spot",
+                             "--network", a.network, "--subnetwork", subnet], timeout=900)
+            created = rc == 0 or exists(a.name, z)
+            if created:
+                break
+            reason = "capacity" if "capacity" in o.lower() else (o.strip().splitlines()[-1][:60] if o.strip() else "?")
+            tried.append(f"{z}:{reason}")
+            if time.time() > deadline - 1200:
+                break
         if not created:
-            outcome = "create failed: " + o.strip().splitlines()[-1][:120] if o.strip() else "create failed"
+            outcome = "create failed: " + "; ".join(tried)[:300]
             return
+        outcome = "created in " + a.zone + (" after " + ", ".join(tried) if tried else "")
         ssh = G + ["ssh", a.name, "--zone", a.zone, "--command"]
         scp = G + ["scp", "--zone", a.zone]
         tar = out / "bundle.tgz"
-        subprocess.run(["tar", "czf", str(tar), "--exclude", "__pycache__", "tpuperf", "run_profile.py"], cwd=a.root, check=True)
+        subprocess.run(["tar", "czf", str(tar), "--exclude", "__pycache__", "."], cwd=a.root, check=True)
         sh(scp + [str(tar), f"{a.name}:bundle.tgz"], timeout=600, check=True)
-        setup = (f"python3 --version; mkdir -p b && tar xzf bundle.tgz -C b && "
-                 f"(pip install -q 'jax[tpu]=={a.jax}' || pip install -q -U 'jax[tpu]') 2>&1 | tail -3; "
-                 "python3 -c 'import jax; print(jax.__version__, jax.devices())'")
+        # The image's python is 3.10 (no venv module); JAX >= 0.7 needs 3.11+. uv brings its own 3.12.
+        # /tmp/tp is the measurement env (pinned jax); the bundle's session script uses $HOME/b/py.
+        setup = (f"mkdir -p b && tar xzf bundle.tgz -C b && (curl -LsSf https://astral.sh/uv/install.sh | sh) >/dev/null 2>&1; "
+                 f"export PATH=$HOME/.local/bin:$PATH; uv venv -p 3.12 /tmp/tp 2>&1 | tail -2 && "
+                 f"uv pip install -q -p /tmp/tp/bin/python 'jax[tpu]=={a.jax}' numpy 2>&1 | tail -3; "
+                 "printf '#!/bin/sh\\nexec /tmp/tp/bin/python \"$@\"\\n' > b/py && chmod +x b/py; b/py -c 'import jax, sys; print(sys.version.split()[0], jax.__version__, jax.devices())'")
         sh(ssh + [setup], timeout=900, check=True)
         left = int(deadline - time.time()) - 120
-        run = (f"cd b && ACCEL_RESULTS=$HOME/b/results.json timeout {left} {cmd} > run.log 2>&1; echo RC=$?; tail -40 run.log")
+        run = (f"export PATH=$HOME/.local/bin:$PATH; cd b && ACCEL_RESULTS=$HOME/b/results.json timeout {left} {cmd} > run.log 2>&1; "
+               "echo RC=$?; tail -n 40 run.log")
         rc, o = sh(ssh + [run], timeout=left + 60)
         (out / "ssh-tail.txt").write_text(o)
-        for f in ("results.json", "run.log"):
+        for f in a.pull:
+            (out / f).parent.mkdir(parents=True, exist_ok=True)
             sh(scp + [f"{a.name}:b/{f}", str(out / f)], timeout=300)
         m = re.search(r"RC=(\d+)", o)
-        outcome = f"rc {m.group(1) if m else '?'}"
+        outcome += f"; rc {m.group(1) if m else '?'}"
         if not m and "preempt" in o.lower():
             outcome = "PREEMPTED"
     except Exception as e:
