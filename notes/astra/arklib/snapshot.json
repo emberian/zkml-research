@@ -1,0 +1,138 @@
+{
+  "recorded_utc": "2026-11-06T04:57:53.980714+00:00",
+  "metadata": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "/Users/ember/src/ArkLib-latest",
+        "log",
+        "-1",
+        "--format=fuller"
+      ],
+      "exit_code": 0,
+      "stdout": "commit 4d9d67be64634f09a85206238df9380aa3733a93\nAuthor:     Quang Dao <qvd@andrew.cmu.edu>\nAuthorDate: Thu Nov 5 20:48:55 2026 -0700\nCommit:     GitHub <noreply@github.com>\nCommitDate: Thu Nov 5 20:48:55 2026 -0700\n\n    Drop unnecessary hypotheses in Reed-Solomon list decoding and MCA (#1464)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/Users/ember/dev/minidregg",
+        "log",
+        "-1",
+        "--format=fuller"
+      ],
+      "exit_code": 0,
+      "stdout": "commit c4ecabe0fad1c8b9eb32a6b3cc2340f689078f55\nAuthor:     ember arlynx <ember@lunar.town>\nAuthorDate: Sat Oct 31 20:38:28 2026 -0700\nCommit:     ember arlynx <ember@lunar.town>\nCommitDate: Sat Oct 31 20:38:30 2026 -0700\n\n    store-retained: hold served cell state in a persistent map and bind replayed suffixes once\n    \n    Replace Served.state (which recomputed a full linear fold over the\n    admitted journal and cell-state list on every Held lookup) with a\n    Std.TreeMap-backed Held map and @[inline] accessors (Held.bytesOf,\n    Held.rootOf, Held.available, Served.canonicalBytes, Served.roots,\n    Served.available, Served.viewAt). Bind replayed journal suffixes once in\n    CredentialAuthorityServed.replayFrom and ServedBasis.advance.\n",
+      "stderr": ""
+    }
+  ],
+  "disk": {
+    "command": [
+      "df",
+      "-h",
+      "/System/Volumes/Data"
+    ],
+    "exit_code": 0,
+    "stdout": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   7.3Ti   7.1Ti   133Gi    99%     33M  1.4G    2%   /System/Volumes/Data\n",
+    "stderr": ""
+  },
+  "toolchains": {
+    "/Users/ember/src/ArkLib-latest": "leanprover/lean4:v4.35.0",
+    "/Users/ember/dev/minidregg": "leanprover/lean4:v4.35.0"
+  },
+  "shared_pins": {
+    "Cli": {
+      "ArkLib": "c24fe6078c630e89b489bffe59b3e20ac30d12c8",
+      "minidregg": "c24fe6078c630e89b489bffe59b3e20ac30d12c8",
+      "equal": true
+    },
+    "LeanSearchClient": {
+      "ArkLib": "d6b4c7be5be75ec4917c873ac50c756dc1436372",
+      "minidregg": "d6b4c7be5be75ec4917c873ac50c756dc1436372",
+      "equal": true
+    },
+    "Qq": {
+      "ArkLib": "dce0ad79c486cb1fb504af04f953c3466b0c6db8",
+      "minidregg": "dce0ad79c486cb1fb504af04f953c3466b0c6db8",
+      "equal": true
+    },
+    "aesop": {
+      "ArkLib": "4a174c490d8707121c4a9290800489f105d85e07",
+      "minidregg": "4a174c490d8707121c4a9290800489f105d85e07",
+      "equal": true
+    },
+    "batteries": {
+      "ArkLib": "66e469188fe07963e5cf666c7d4433f45b8131c5",
+      "minidregg": "66e469188fe07963e5cf666c7d4433f45b8131c5",
+      "equal": true
+    },
+    "importGraph": {
+      "ArkLib": "a41f0e9a4dea23188ea9cc1c41ac9f8bbafe0b93",
+      "minidregg": "a41f0e9a4dea23188ea9cc1c41ac9f8bbafe0b93",
+      "equal": true
+    },
+    "mathlib": {
+      "ArkLib": "56a005855ea17e0b0958f73ec801ae140b0a1679",
+      "minidregg": "56a005855ea17e0b0958f73ec801ae140b0a1679",
+      "equal": true
+    },
+    "plausible": {
+      "ArkLib": "dfa4f38190d07c37e315953e08b90fe2d95b3c24",
+      "minidregg": "dfa4f38190d07c37e315953e08b90fe2d95b3c24",
+      "equal": true
+    },
+    "proofwidgets": {
+      "ArkLib": "df72b022e558978a1c50264cfc4d7fec86fa8e04",
+      "minidregg": "df72b022e558978a1c50264cfc4d7fec86fa8e04",
+      "equal": true
+    }
+  },
+  "ArkLib_only_pins": {
+    "BibtexQuery": "876b844aa52183cbcc0d82fdd4d1fc349f0dac34",
+    "CompPoly": "a1ac8925bde72472724e978d7aa9b94bef3149d9",
+    "MD4Lean": "31907cc18f48a95384f99cee5582c00fb39e0f67",
+    "PolyFun": "4181c82238142d9b73403fbf4c4b13e1a801e400",
+    "QuantumFoundations": "901aaab7967ceecd2240d0b38bbde7cf3e2c14ac",
+    "UnicodeBasic": "6e48acac3a91665fcdc4a20d50b7ce6b7b41711f",
+    "VCVio": "9054989327a7185ff19ef9ff0f119cccea479501",
+    "checkdecls": "3d425859e73fcfbef85b9638c2a91708ef4a22d4",
+    "cslib": "5b56df99362532c46e1175381fbbdd755bd56030",
+    "leansqlite": "4ed2f27ecf81792abc8ff848670ac4356d0c4794",
+    "\u00abdoc-gen4\u00bb": "0e1ffe2e4ba5ecfdfaf15c65b8d3805dbb7134ae"
+  },
+  "build_feasibility": {
+    "ArkLib_has_lake": false,
+    "ArkLib_has_build": false,
+    "existing_ArkLib_has_lake": false,
+    "local_build_attempted": false,
+    "reason": "Cold dependency graph, full production and acceptance build not light. Must run on hbox under swarm-build after machine rules are read."
+  },
+  "reported_upstream_axiom_baseline": {
+    "sorry": [],
+    "solicited": [
+      {
+        "name": "CodingTheory.exists_rs_epsCa_large_near_capacity",
+        "issue": "https://github.com/Verified-zkEVM/ArkLib/issues/1352"
+      },
+      {
+        "name": "CodingTheory.random_linear_lambda_lower",
+        "issue": "https://github.com/Verified-zkEVM/ArkLib/issues/1352"
+      },
+      {
+        "name": "CodingTheory.random_linear_lambda_lower_exists",
+        "issue": "https://github.com/Verified-zkEVM/ArkLib/issues/1352"
+      },
+      {
+        "name": "CodingTheory.rs_lambda_superpoly_extension",
+        "issue": "https://github.com/Verified-zkEVM/ArkLib/issues/1352"
+      },
+      {
+        "name": "CodingTheory.rs_random_domain_lambda_le",
+        "issue": "https://github.com/Verified-zkEVM/ArkLib/issues/1352"
+      }
+    ],
+    "nonstandard": []
+  }
+}

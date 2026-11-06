@@ -1,0 +1,7 @@
+{
+  "command": "Read-only Python comparison of git ls-files ArkLib/*.lean with multiline ArkLib.lean import clauses",
+  "files": 1152,
+  "umbrella_imports": 1152,
+  "missing": [],
+  "extra": []
+}

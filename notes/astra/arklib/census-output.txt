@@ -1,0 +1,79 @@
+{
+  "command": "python3 notes/astra/arklib/census.py /Users/ember/src/ArkLib-latest",
+  "head": "4d9d67be64634f09a85206238df9380aa3733a93",
+  "origin_main": "4d9d67be64634f09a85206238df9380aa3733a93",
+  "scopes": {
+    "ArkLib/": {
+      "files": 1152,
+      "lines": 332566,
+      "sorry": 4,
+      "axiom": 0,
+      "native_decide": 0,
+      "opaque": 0,
+      "implemented_by": 0,
+      "unsafe": 23,
+      "maxHeartbeats": 0
+    },
+    "ArkLibTest/": {
+      "files": 253,
+      "lines": 44468,
+      "sorry": 0,
+      "axiom": 0,
+      "native_decide": 0,
+      "opaque": 0,
+      "implemented_by": 0,
+      "unsafe": 0,
+      "maxHeartbeats": 0
+    },
+    "scripts/": {
+      "files": 27,
+      "lines": 3798,
+      "sorry": 0,
+      "axiom": 7,
+      "native_decide": 0,
+      "opaque": 2,
+      "implemented_by": 0,
+      "unsafe": 4,
+      "maxHeartbeats": 0
+    },
+    "blueprint/": {
+      "files": 1,
+      "lines": 16,
+      "sorry": 0,
+      "axiom": 0,
+      "native_decide": 0,
+      "opaque": 0,
+      "implemented_by": 0,
+      "unsafe": 0,
+      "maxHeartbeats": 0
+    }
+  }
+}
+Production occurrences:
+ArkLib/Data/CodingTheory/ListDecodability/Bounds/Linear.lean:1041: sorry: sorry -- external admit: [GLMRSW22, Theorem 4.1].
+ArkLib/Data/CodingTheory/ListDecodability/Bounds/ReedSolomon.lean:86: sorry: sorry -- external admit: [BKR06, Corollary 2.2].
+ArkLib/Data/CodingTheory/ListDecodability/Bounds/ReedSolomon.lean:611: sorry: sorry -- external admit: [AGL24, Theorem 1.1].
+ArkLib/Data/CodingTheory/ProximityGap/CapacityBounds.lean:341: sorry: sorry -- ABF26-T4.16; external admit [KKH26].
+ArkLib/Data/CodingTheory/ProximityGap/Folding.lean:723: unsafe: (add unsafe [(by rw [Polynomial.eval_map, Polynomial.eval₂_map, eval₂])])
+ArkLib/Data/CodingTheory/ProximityGap/Folding.lean:788: unsafe: (add unsafe (by rw [←Finset.compl_filter, Finset.card_compl]))
+ArkLib/Data/CodingTheory/ProximityGap/Folding/ListDecodability.lean:74: unsafe: (add unsafe (by rw [←CosetFftDomainClass.mem_toFinset_iff_mem]))
+ArkLib/Data/CodingTheory/ProximityGap/Folding/ListDecodability.lean:78: unsafe: (add unsafe (by rw [←CosetFftDomainClass.mem_toFinset_iff_mem]))
+ArkLib/Data/CodingTheory/ProximityGap/Folding/ListDecodability.lean:91: unsafe: (add unsafe folding_contracts_block_distance)
+ArkLib/Data/CodingTheory/ProximityGap/Folding/Multilinear.lean:69: unsafe: (add unsafe
+ArkLib/Data/Domain/CosetFftDomain/Block.lean:73: unsafe: (add unsafe cases Nat)
+ArkLib/Data/Domain/CosetFftDomain/Block.lean:79: unsafe: (add unsafe cases Nat)
+ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:377: unsafe: (add unsafe (by rw [←Finset.card_ne_zero]))
+ArkLib/Data/Domain/CosetFftDomain/ToFftDomain.lean:90: unsafe: (add unsafe [Eq.symm])
+ArkLib/Data/Domain/FftDomain/Subdomain.lean:79: unsafe: (add unsafe forward [mem_subdomain_of_le_of_mem_subdomain])
+ArkLib/Data/Domain/FftDomain/Subdomain.lean:86: unsafe: aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])
+ArkLib/Data/Domain/FftDomain/Subdomain.lean:93: unsafe: aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])
+ArkLib/Data/Domain/FftDomain/Subdomain.lean:123: unsafe: (add unsafe [FftDomainClass.mem_subdomain_of_mem_subdomain_of_le,
+ArkLib/Data/MvPolynomial/Degrees.lean:258: unsafe: attribute [aesop unsafe 50%] degreeOf_add_le degreeOf_mul_le degreeOf_sum_le degreeOf_prod_le
+ArkLib/Data/MvPolynomial/EvenAndOdd.lean:169: unsafe: (add unsafe [(by ring_nf), (by erw [←map_mul])])
+ArkLib/Data/MvPolynomial/EvenAndOdd.lean:370: unsafe: (add unsafe (by ring_nf))
+ArkLib/Data/MvPolynomial/EvenAndOdd.lean:392: unsafe: (add unsafe (by rw [powAlgHom]))
+ArkLib/Data/Polynomial/Interface.lean:23: unsafe: aesop (add unsafe [(by by_contra), (by specialize h p.natDegree)])
+ArkLib/Data/Polynomial/SplitFold.lean:98: unsafe: (add unsafe [cases Fin])
+ArkLib/Data/Polynomial/SplitFold.lean:155: unsafe: (add unsafe (by rw [← pow_mul]))
+ArkLib/Data/Polynomial/SplitFold.lean:191: unsafe: exact Nat.lt_of_le_pred (by aesop (add unsafe Nat.zero_lt_of_ne_zero)) <| by
+ArkLib/Data/Polynomial/SplitFold.lean:213: unsafe: · aesop (add unsafe (by rw [←expand_eq_comp_X_pow]))

@@ -1,0 +1,10 @@
+## Source trust inventory
+
+No comparison ref supplied; reporting the current tracked source tree.
+
+| Construct | Current |
+| --- | ---: |
+| `admission` | 4 |
+| `example` | 1862 |
+| `explicit_axiom` | 0 |
+| `native_trust` | 0 |

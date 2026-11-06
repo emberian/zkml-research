@@ -1,0 +1,242 @@
+[
+  {
+    "path": "ArkLib/Data/CodingTheory/ListDecodability/Bounds/Linear.lean",
+    "line": 1041,
+    "kind": "sorry",
+    "source": "  sorry -- external admit: [GLMRSW22, Theorem 4.1]."
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ListDecodability/Bounds/ReedSolomon.lean",
+    "line": 86,
+    "kind": "sorry",
+    "source": "  sorry -- external admit: [BKR06, Corollary 2.2]."
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ListDecodability/Bounds/ReedSolomon.lean",
+    "line": 611,
+    "kind": "sorry",
+    "source": "  sorry -- external admit: [AGL24, Theorem 1.1]."
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ProximityGap/CapacityBounds.lean",
+    "line": 341,
+    "kind": "sorry",
+    "source": "  sorry -- ABF26-T4.16; external admit [KKH26]."
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ProximityGap/Folding.lean",
+    "line": 723,
+    "kind": "unsafe",
+    "source": "      (add unsafe [(by rw [Polynomial.eval_map, Polynomial.eval\u2082_map, eval\u2082])])"
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ProximityGap/Folding.lean",
+    "line": 788,
+    "kind": "unsafe",
+    "source": "      (add unsafe (by rw [\u2190Finset.compl_filter, Finset.card_compl]))"
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ProximityGap/Folding/ListDecodability.lean",
+    "line": 74,
+    "kind": "unsafe",
+    "source": "          (add unsafe (by rw [\u2190CosetFftDomainClass.mem_toFinset_iff_mem]))"
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ProximityGap/Folding/ListDecodability.lean",
+    "line": 78,
+    "kind": "unsafe",
+    "source": "          (add unsafe (by rw [\u2190CosetFftDomainClass.mem_toFinset_iff_mem]))"
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ProximityGap/Folding/ListDecodability.lean",
+    "line": 91,
+    "kind": "unsafe",
+    "source": "    (add unsafe folding_contracts_block_distance)"
+  },
+  {
+    "path": "ArkLib/Data/CodingTheory/ProximityGap/Folding/Multilinear.lean",
+    "line": 69,
+    "kind": "unsafe",
+    "source": "    (add unsafe"
+  },
+  {
+    "path": "ArkLib/Data/Domain/CosetFftDomain/Block.lean",
+    "line": 73,
+    "kind": "unsafe",
+    "source": "    (add unsafe cases Nat)"
+  },
+  {
+    "path": "ArkLib/Data/Domain/CosetFftDomain/Block.lean",
+    "line": 79,
+    "kind": "unsafe",
+    "source": "    (add unsafe cases Nat)"
+  },
+  {
+    "path": "ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean",
+    "line": 377,
+    "kind": "unsafe",
+    "source": "      (add unsafe (by rw [\u2190Finset.card_ne_zero]))"
+  },
+  {
+    "path": "ArkLib/Data/Domain/CosetFftDomain/ToFftDomain.lean",
+    "line": 90,
+    "kind": "unsafe",
+    "source": "    (add unsafe [Eq.symm])"
+  },
+  {
+    "path": "ArkLib/Data/Domain/FftDomain/Subdomain.lean",
+    "line": 79,
+    "kind": "unsafe",
+    "source": "    (add unsafe forward [mem_subdomain_of_le_of_mem_subdomain])"
+  },
+  {
+    "path": "ArkLib/Data/Domain/FftDomain/Subdomain.lean",
+    "line": 86,
+    "kind": "unsafe",
+    "source": "  aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])"
+  },
+  {
+    "path": "ArkLib/Data/Domain/FftDomain/Subdomain.lean",
+    "line": 93,
+    "kind": "unsafe",
+    "source": "  aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])"
+  },
+  {
+    "path": "ArkLib/Data/Domain/FftDomain/Subdomain.lean",
+    "line": 123,
+    "kind": "unsafe",
+    "source": "    (add unsafe [FftDomainClass.mem_subdomain_of_mem_subdomain_of_le,"
+  },
+  {
+    "path": "ArkLib/Data/MvPolynomial/Degrees.lean",
+    "line": 258,
+    "kind": "unsafe",
+    "source": "attribute [aesop unsafe 50%] degreeOf_add_le degreeOf_mul_le degreeOf_sum_le degreeOf_prod_le"
+  },
+  {
+    "path": "ArkLib/Data/MvPolynomial/EvenAndOdd.lean",
+    "line": 169,
+    "kind": "unsafe",
+    "source": "      (add unsafe [(by ring_nf), (by erw [\u2190map_mul])])"
+  },
+  {
+    "path": "ArkLib/Data/MvPolynomial/EvenAndOdd.lean",
+    "line": 370,
+    "kind": "unsafe",
+    "source": "      (add unsafe (by ring_nf))"
+  },
+  {
+    "path": "ArkLib/Data/MvPolynomial/EvenAndOdd.lean",
+    "line": 392,
+    "kind": "unsafe",
+    "source": "    (add unsafe (by rw [powAlgHom]))"
+  },
+  {
+    "path": "ArkLib/Data/Polynomial/Interface.lean",
+    "line": 23,
+    "kind": "unsafe",
+    "source": "  aesop (add unsafe [(by by_contra), (by specialize h p.natDegree)])"
+  },
+  {
+    "path": "ArkLib/Data/Polynomial/SplitFold.lean",
+    "line": 98,
+    "kind": "unsafe",
+    "source": "    (add unsafe [cases Fin])"
+  },
+  {
+    "path": "ArkLib/Data/Polynomial/SplitFold.lean",
+    "line": 155,
+    "kind": "unsafe",
+    "source": "      (add unsafe (by rw [\u2190 pow_mul]))"
+  },
+  {
+    "path": "ArkLib/Data/Polynomial/SplitFold.lean",
+    "line": 191,
+    "kind": "unsafe",
+    "source": "    exact Nat.lt_of_le_pred (by aesop (add unsafe Nat.zero_lt_of_ne_zero)) <| by"
+  },
+  {
+    "path": "ArkLib/Data/Polynomial/SplitFold.lean",
+    "line": 213,
+    "kind": "unsafe",
+    "source": "  \u00b7 aesop (add unsafe (by rw [\u2190expand_eq_comp_X_pow]))"
+  },
+  {
+    "path": "scripts/AxiomSweep.lean",
+    "line": 413,
+    "kind": "unsafe",
+    "source": "unsafe def run (args : List String) : IO UInt32 := do"
+  },
+  {
+    "path": "scripts/AxiomSweep.lean",
+    "line": 471,
+    "kind": "unsafe",
+    "source": "unsafe def main (args : List String) : IO UInt32 := do"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/AxiomInType.lean",
+    "line": 14,
+    "kind": "axiom",
+    "source": "axiom typeIndex : Nat"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/AxiomInType.lean",
+    "line": 16,
+    "kind": "axiom",
+    "source": "axiom axiomInType : Fin (typeIndex + 1)"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/DirectSorry.lean",
+    "line": 14,
+    "kind": "opaque",
+    "source": "opaque directSorry : Nat := sorryAx Nat true"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/Mutual.lean",
+    "line": 14,
+    "kind": "axiom",
+    "source": "axiom mutualAxiom : True"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/NativeNames.lean",
+    "line": 14,
+    "kind": "axiom",
+    "source": "axiom ax_12_34 : True"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/NativeNames.lean",
+    "line": 20,
+    "kind": "axiom",
+    "source": "axiom ax_12_extra : True"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/NativeNames.lean",
+    "line": 21,
+    "kind": "axiom",
+    "source": "axiom ax_x_34 : True"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Tainted/NativeNames.lean",
+    "line": 25,
+    "kind": "axiom",
+    "source": "axiom extra : True"
+  },
+  {
+    "path": "scripts/AxiomSweepTestFixtures/Unimported.lean",
+    "line": 14,
+    "kind": "opaque",
+    "source": "opaque hiddenSorry : Nat := sorryAx Nat true"
+  },
+  {
+    "path": "scripts/RetiredProbabilitySweep.lean",
+    "line": 186,
+    "kind": "unsafe",
+    "source": "unsafe def run (args : List String) : IO UInt32 := do"
+  },
+  {
+    "path": "scripts/RetiredProbabilitySweep.lean",
+    "line": 233,
+    "kind": "unsafe",
+    "source": "unsafe def main (args : List String) : IO UInt32 := do"
+  }
+]
