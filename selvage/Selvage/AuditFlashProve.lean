@@ -454,6 +454,19 @@ def badOpening : World Claim (Fin (2 ^ 64)) :=
 theorem badOpening_rejects (h : List (Fin (2 ^ 64))) (ω : Fin (2 ^ 64)) :
     badOpening.verdict h ω = .reject := rfl
 
+/-- A checker that ACCEPTS the false claim (its opening checks out and `cp_verify` prints the
+accepting transcript): the bad event has content. A fact about concrete strings, so it is checked
+by compiled evaluation (`native_decide`; in this toolchain each use is its own `…native_decide.ax` axiom, pinned below in place of `Lean.ofReduceBool`), per the house policy
+for concrete data; the general theorems above stay kernel-proved. -/
+def acceptingChecker : World Claim (Fin (2 ^ 64)) := { honestChecker with call := fun _ _ => yes }
+
+theorem acceptingChecker_verdict : acceptingChecker.verdict [] 0 = .accept := by native_decide
+
+/-- Its first round, fired at any positive rate, is live, corrupt and accepted: `BadAt`. -/
+theorem acceptingChecker_badAt :
+    World.BadAt acceptingChecker coin64 pNum020 [] (0 : Fin (2 ^ 64)) :=
+  ⟨rfl, rfl, by native_decide, acceptingChecker_verdict⟩
+
 /-- **The withholding prover**: always corrupt, its opening checks out, it hands no proof, and
 `cp_verify` ends with no exit status of its own. -/
 def withholder : World Claim (Fin (2 ^ 64)) :=
@@ -530,6 +543,8 @@ end Teeth
 #guard_msgs (whitespace := lax) in #print axioms beacon_ideal
 /-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_2_64' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms fpSoundErr_2_64
+/-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.acceptingChecker_badAt' depends on axioms: [propext, Classical.choice, Quot.sound, Teeth.acceptingChecker_badAt._native.native_decide.ax_1_1, Teeth.acceptingChecker_verdict._native.native_decide.ax_1_1] -/
+#guard_msgs (whitespace := lax) in #print axioms Teeth.acceptingChecker_badAt
 /-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_zero_floor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms fpSoundErr_zero_floor
 /-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_reduction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
