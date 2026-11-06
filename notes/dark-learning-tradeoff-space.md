@@ -35,41 +35,60 @@ crossings ≥ what the update needs; **wrap** (plaintext does not wrap over the 
 
 The script asserts two published counts before printing anything: 49,152 committed felts per deployed
 ciphertext in the bridged row-interleaved layout (`cross-limb-binding.md` §3 table) and the
-3·4096·109 = 1,339,392 booleanity figure (VERDICTS §7.5, 09-05). If either drifts, it refuses to print.
+3·4096·109 = 1,339,392 booleanity figure (VERDICTS §7.5, 09-05). It prints the derived k_wrap (longest
+wrap-free signed dot product, 10,532 at 4×4-bit against `bfv_coeff_matmul.rs`'s 504 at 4×8-bit) and the
+integer-state wrap period (10,532 steps).
 
-## 4. Results at d = 4096, L = 32 [MEASURED, script]
+## 4. v1 was wrong in ways that mattered; v2 is the version to read
 
-- **784 constructions; 104 pass all four gates.** Failures: read 336, depth 368, PQ 112, wrap 96. Every
-  bootstrapping row fails depth (RNS-202 gives ~4 levels [MODEL]; one bootstrap ~15 [MODEL]); every
-  p61/gold64/RNS3 FHE+MPC row fails the read budget (2^-6.1 over the run at 2^-32 per session).
-- **The deployed reference** (RNS3-109@4096, fully dark, backprop, p = 0.01): 1.87×10^9 proof felts per
-  step, fails PQ and read.
-- **G1 block** (Hole B certificate per ct×ct): 9 integer limbs / 307,200 felts at the deployed modulus over
-  BabyBear; 3 limbs / 159,744 at native p61; 15 limbs / 1,056,768 at RNS-202@8192. The certificate is
-  3–20× the ciphertext's own felts at every row: **on the fully-dark route Hole B is the bill.**
-- **Pareto set (tier C, all gates): 8 rows, every one public-trunk low-rank r = 8**, MPC-only custody at
-  every audit rate and FHE+MPC at RNS-202@8192 at every audit rate. MPC wins proof felts and host work;
-  FHE wins online traffic (6.45×10^7 vs 1.01×10^8 elements per step).
-- **Welfare price** (cheapest fully-dark gated point vs cheapest public-trunk point, p = 0.01): FHE route
-  ×125 proof felts, ×0.6 online; MPC route ×3.4 proof felts, ×65 online.
-- **Per family at p = 0.01**: low-rank is undominated; backprop-full dominated by 3 rows; append-rank1 by
-  6 (it saves depth, not work, once the merge is charged); ZO by 5 (the 12× step multiplier [CLAIM]).
-- **Audit knee** (p61 native, public, r = 16): p 1 → 0.01 cuts amortized felts 87× (2.68×10^9 →
-  3.09×10^7) and raises E[undetected injected displacement] from 1.05B to 105B.
+v1 (commit `9443850d`) was attacked by Codex round 2 (`notes/dark-learning-codex-synthesis.md` §Round 2).
+Its defects, all repaired in v2: a double-counted dense product in full backprop; "public full training"
+kept public after the first secret update; d²/N packing that ignored the t-wrap of split dot products and
+the ceil(N/k) tiling; fractional crossings (2Ld/N instead of 2L·⌈d/N⌉); no split-sign doubling of ct×pt
+(`bfv_coeff_matmul.rs:17-36` evaluates W⁺v and W⁻v); low-rank A(Bx) at depth 1 instead of 2; append-only
+backward not traversing the factor history; dense updates granted free weight refreshes; the envelope
+charged as committed felts instead of as an unconditional proof; a log-Q step function for smudging
+instead of a ledger; 1/q instead of 2B/q; and a "welfare price" that compared dark FHE against public MPC.
+**v1's headline numbers (×125 welfare price, the 87× audit knee, "every Pareto point is public-trunk
+low-rank") are withdrawn.**
 
-## 5. Sensitivity (one run each, same script)
+## 5. Results, v2, at d = 4096, L = 32 [MEASURED, script]
 
-- `--d 1024 --L 12`: 9 Pareto rows; **MPC public backprop-full enters the frontier at p = 0.001** (the
-  d²/N ct×ct terms shrink faster than the low-rank adapter's crossings). The low-rank dominance is a
-  large-d fact, not a law.
-- What would flip the FHE-vs-MPC fork: C_PRE (host cost per Beaver triple, [MODEL] 100) and the ct×ct
-  certificate size. Both are what the first hbox experiment measures (program §6.3).
+- **784 constructions; 112 pass all four gates.** Failures: depth 528, read 336, PQ 112, wrap 0 (with
+  4-bit activations the wrap is no longer binding at d = 4096; at 8-bit activations it would be, k = 504).
+  Single-prime rows (p61, gold64) now fail BOTH depth (A(Bx) is depth 2) and the read budget (2^+7.6 per
+  event: the smudge does not fit a 61-bit modulus). Every bootstrapping row fails depth.
+- **The deployed reference** (RNS3-109@4096, fully dark, backprop, p = 0.01): 1.45×10^9 proof felts per
+  step, fails PQ (quantum-128 table) and read (2^-14.2 over the run).
+- **Separate frontiers per opacity regime.** Fully dark: 11 Pareto rows — MPC-only (backprop at p = 0.001,
+  low-rank r = 8 at every rate) and FHE+MPC at RNS-202@8192 (backprop, append-rank1, low-rank). Public
+  trunk: 10 rows, same two custodies, low-rank and append-rank1.
+- **The opacity price within a custody** (cheapest fully-dark vs cheapest public-trunk, p = 0.01): FHE+MPC
+  ×2.0 proof, ×1.2 host, ×1.0 online; MPC ×2.9 proof, ×39.9 host, ×65 online. Full opacity is cheap on the
+  FHE route and expensive in bandwidth on the MPC route.
+- **The envelope is the new floor.** With the unconditional envelope priced as proof work on ciphertexts,
+  the audit knee flattens: RNS-202, public, r = 16 goes 5.48×10^10 → 1.82×10^9 → 1.34×10^9 proof felts from
+  p = 1 → 0.01 → 0.001, and the envelope is 70.6% of the cost at p = 0.01 and 96% at p = 0.001. **Below
+  p ≈ 0.01 sampling buys almost nothing; the cheap mandatory checks are no longer cheap once they must be
+  proved on ciphertexts.** This is the dark-learning version of "the commitment is the step"
+  (VERDICTS §5b): once the sampled proof is cheap, the unconditional envelope is the step.
+- E[undetected injected displacement] = 2B/q: 2.1B at p = 1, 210B at p = 0.01.
 
-## 6. What the model leaves out (said so it is not mistaken for a price)
+## 6. Sensitivity
 
-- Ciphertext packing beyond "N inner-product terms per ct×ct"; rotations/key-switches; repacking.
-- MPC round latency (only elements are counted), network topology, preprocessing storage.
-- Accuracy: every integer recipe (F1 factor quantization, ZO) is assumed to train. It may not.
-- The envelope's own cost beyond committed factor felts (the norm range proof is small but nonzero).
-- ε_chk is a constant 2^-100; at today's UDR (34 bits) q is still set by p, so the ranking does not
-  change, but no soundness number from this script may be quoted.
+- `--d 1024 --L 12`: 14 dark and 12 public Pareto rows; MPC fully-dark backprop leads proof felts at
+  p ≤ 0.01; MPC public ZO-on-adapter enters at p = 0.001 (its envelope is one scalar).
+- What would flip the FHE-vs-MPC fork: C_PRE (host cost per Beaver triple, [MODEL] 100), KAPPA, the ct×ct
+  certificate size, and whether the envelope can be proved by the quorum on shares (F13 route b) instead of
+  by the host on ciphertexts. The first hbox experiment measures the certificate and crossing counts.
+
+## 7. What the model leaves out (so it is not mistaken for a price)
+
+- Rotations, key-switches, extraction and repacking schedules (Codex round 2 b names them; only the tile
+  count and the partial-sum crossings are charged).
+- MPC round latency, topology, preprocessing storage, distributed proving for public verifiability.
+- Accuracy: every integer recipe (4-bit factors, ZO) is assumed to train equally well. It may not; ZO's 12×
+  is not an equal-utility comparison.
+- E = 2^32 in the smudging window is a fold envelope, not established for training ct×ct outputs.
+- Quantum-128 table passes are conditional (ternary-secret table; deployed secret is CBD(20)).
+- ε_chk is a constant 2^-100; no soundness number from this script may be quoted.

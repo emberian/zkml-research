@@ -1,0 +1,354 @@
+codex
+1. Cost model
+
+[EXECUTED] I ran both requested commands. The default reproduces 784 constructions, 104 passing rows and eight Pareto points. At d=1024, L=12 it produces 112 passing rows and nine Pareto points. Those outputs are reproducible; the frontier is not yet a defensible ranking of implementations.
+
+[DERIVED] MPC public-trunk low-rank is a plausible cheap regime. Its actual dominance is largely built into the model: public linear algebra requires no secret multiplications, smaller ranks always cost less, and neither learning capacity nor equal attained utility is an objective. Rank 8 consequently wins against ranks 16 and 64 by construction. Public-trunk and fully dark custody also satisfy different opacity requirements. They should have separate frontiers, with a cross-regime comparison explicitly showing the concession.
+
+The concrete defects are:
+
+a. Full backprop has an extra dense product, and “public full training” loses its public status.
+
+At tradeoff_space.py:93, dark full backprop costs 4d²/N ct×ct operations: two from “2*fwd_ctct” and two additional “per” terms. Forward, backward and the outer-product update require three, under the script’s own abstraction.
+
+Dark full-backprop rows move down in proof and compute; MPC rows also move down in communication. In an in-memory correction changing only this count, default-size dark MPC at p=.01 moves from 86.27 million to 64.79 million proof felts, and from 12.95 billion to 9.73 billion online elements.
+
+Conversely, the public full-backprop row cannot keep treating both matvecs as public-matrix operations after the first secret update. Either materialize the now-secret W, or retain W=W₀+D and evaluate both secret D matvecs. The latter needs three secret dense products plus two public ones, not the script’s two secret plus two public products. Public full-backprop rows move up. The same defect affects public full-parameter ZO: a secret dense accumulated update does not become free public linear algebra.
+
+b. d²/N is a possible packing throughput, not the demonstrated executable matvec price.
+
+The coefficient construction packs several dot products into one polynomial multiplication. With inner window k, it can produce floor(N/k) outputs. Thus the appropriate tiled operation count is approximately
+
+    ceil(d/k) · ceil(d/floor(N/k)).
+
+It is wrong to simply replace d²/N with d²/504. Shorter dot products permit more rows per polynomial.
+
+But the script omits the consequences of that packing:
+
+• At k=504, d=4096, N=8192, the tiled count is 2304 rather than 2048.
+• At d=1024, N=8192, it is 192 rather than 128.
+• These are partial dot products in sparse extraction positions, not a densely packed activation vector ready for the next layer.
+• Extraction, repacking, backward transposition and outer-product layout conversion need explicit schedules.
+
+Most seriously, splitting a length-4096 dot product into safe length-504 pieces does not make their sum wrap-free. Adding those ciphertext pieces still computes modulo t. To retain integer semantics, reconstruct and accumulate the pieces in a larger MPC domain, use another representation, reduce the operand ranges, or increase t.
+
+[SOURCE] The implementation states the signed condition explicitly:
+
+    inner_dim · weight_bound · activation_bound ≤ (t−1)/2.
+
+At actual t=1,032,193, signed 4×8-bit bounds give 504. Literal t=2²⁰ gives 511 under those same absolute bounds. The 504 limit is a message-range constraint, not a limit on how many scalar multiplications a polynomial multiplication performs. See bfv_coeff_matmul.rs:45–108.
+
+Effect: FHE rows move up in work and crossings, or fail the wrap gate. Dense matvecs are affected most; low-rank rows still contain length-d contractions and are not exempt. MPC does not automatically inherit the same BFV modulus restriction.
+
+c. The crossing count assumes fractional ciphertexts and free compaction.
+
+“2Ld/N” gives 32 crossings at d=4096, L=32, N=8192. Even with already compacted vectors, sequential forward/backward boundaries require at least 2L·ceil(d/N)=64 ciphertext events. At d=1024, L=12, N=8192, the script says three; the compacted-vector count is at least 24.
+
+Packing independent examples can amortize this. Packing successive dependent layers cannot.
+
+Coefficient-encoded outputs can require substantially more than this lower bound unless extraction and compaction are implemented. Correcting it moves FHE online traffic and the read-budget bound upward, particularly at small d. The reported small-model sensitivity therefore rests partly on impossible fractional crossings.
+
+d. Public coefficient multiplication is undercharged relative to the implementation being cited.
+
+[SOURCE] bfv_coeff_matmul.rs:17–36 explains that its default split-sign implementation evaluates W⁺v and W⁻v separately. It charges two ct×pt multiplications per block to recover the small-plaintext noise advantage. The script charges one.
+
+Public-trunk FHE rows move up in compute and ciphertext-trace proof work. MPC’s multiplication of shares by a public matrix does not need this split-sign doubling. A centered-lift implementation could remove the extra multiplication, but it must be the implementation being priced.
+
+e. The low-rank depth and lifetime models describe different algorithms.
+
+For encrypted A, B and x, A(Bx) has multiplicative depth two, not one. Adapter ZO has the same issue. At minimum, p61/gold64 low-rank rows must fail the depth gate or pay an additional crossing. Backward derivative products and factor-gradient scheduling need their own dependency graph.
+
+The script also mixes a fixed mutable adapter with an appended factor history. Updating A and B changes the represented matrix by
+
+    Δ(AB) = ΔA·B + A·ΔB + ΔA·ΔB.
+
+Committing 2rd entries is not itself an envelope proof for that matrix change. Nor does a fixed-size adapter naturally have the history merge period d/(2r).
+
+These corrections move low-rank FHE rows upward or remove them. Mutable-adapter envelope costs increase for MPC too.
+
+f. Append-only backward and merge accounting is inconsistent.
+
+The script prices the forward factor history, then inserts one dense backward product. If the dense current matrix has not been materialized, backward must traverse the factor history too.
+
+For the straightforward factor-history schedule, with H live rank-one factors per layer:
+
+    forward + backward history work = 4Hd scalar secret products.
+
+Including one amortized dense outer-product merge gives, in the script’s units:
+
+    public base: 4Hd/N + d²/N secret, plus 2d²/N public;
+    dark base:   4Hd/N + 3d²/N secret.
+
+At H=d/4, these are respectively 2 and 4 dense secret-product equivalents. The script charges 2.5 and 3.5, with only one public-base matvec. Thus public append-only rows exchange fewer secret products for more public products; dark append-only rows move up. Other schedules are possible, but they must pay for materialization.
+
+g. The wrap gate grants refreshes that are absent from the cost model.
+
+Full backprop and ZO get refresh_period=1, while their counted crossings touch activations, not weights. Refreshing ciphertext noise also does not reduce plaintext magnitude. Requantization or clipping changes the numerical state and must be specified and charged.
+
+Full dense updates therefore need dense weight crossings, a proved range-preserving optimizer, or a finite lifetime. Append-only merges likewise do not reset magnitude or noise merely by adding factors together.
+
+FHE full-update rows move sharply upward or become infeasible. MPC needs corresponding integer range and truncation semantics rather than an unconditional wrap=True.
+
+h. The mandatory envelope is almost free in the script, but carries most of the promised security.
+
+The script amortizes all “proof” work by p and adds only committed factor entries. C2/C8 require unconditional range, transition-binding and decryption-safety checks. A host cannot prove secret factor norms merely by committing their supposed values.
+
+Also, F12’s “power-iteration certificate” is not an upper-bound certificate for operator norm: an exhibited direction supplies a lower bound. A product-of-Frobenius-norms bound is conservative but sound; an upper spectral certificate needs additional machinery.
+
+All sampled rows move up when these checks are priced. FHE rows are especially exposed because proving that a decryption endpoint is the actual evaluation of the certified circuit may require much of the supposedly sampled ciphertext trace. “The envelope includes a noise bound” does not establish that the ciphertext has that noise.
+
+i. The read-budget step function is not a fair general reading.
+
+[SOURCE] Smudging.lean:330–376 proves a particular window: ciphertext noise bounded by 2³², smudge radius 2⁸⁰, and at most 16 parties. That gives a scalar statistical-distance bound of 2⁻⁴⁸. The polynomial transcript correspondence remains a separate hypothesis.
+
+The actual ledger has the form
+
+    ε_run ≤ Σevents Σexposed scalar shares ε_scalar,
+    ε_scalar approximately E/S,
+    with E + nS below the decryption margin.
+
+It is not a function of log Q alone.
+
+Consequences:
+
+• Assigning the deployed 2⁻³² session bound to p61 and gold64 is unjustified: the deployed smudge does not fit those moduli.
+• Assigning 2⁻⁸⁰ per session whenever log Q≥138 confuses scalar and transcript security. An 80-bit scalar bound with N=8192 and 16 party polynomials gives roughly 63 bits per ciphertext event.
+• Using the script’s original 32 million such events, the resulting run bound is about 2⁻³⁸·⁰⁷, not 2⁻⁵⁵·⁰⁷. Correcting the minimum crossing count worsens it further.
+• The code prices three parties but imports a session bound derived using sixteen.
+• E=2³² is a fold envelope, not an established envelope for these training ct×ct outputs.
+
+A loose union upper bound also does not prove that the run actually leaks that much. “Our confidentiality bound fails the target” is justified; “the run leaks 2⁻⁶” is not.
+
+Low-modulus FHE rows need independently justified parameters. RNS-202 rows lose their automatic read pass until their actual E, smudge, transcript and event counts are supplied. A larger modulus remains plausible, but 138 is not a universal threshold.
+
+j. Several remaining comparisons are assumptions masquerading as gates.
+
+The 101/202/411 quantum ceilings are real entries in the standard’s ternary-secret BKZ.qsieve table; they were not misremembered. They do not certify the deployed CBD(20) secret, evaluation-key distribution or entire proof/MPC stack. See the [HE Standard, printed page 31](https://homomorphicencryption.org/wp-content/uploads/2024/08/Homomorphic-Encryption-Standard-v1.1.pdf). The RNS-202 point should be conditional, not “PQ verified.”
+
+Likewise, “one felt per linear operation, three per triple” does not instantiate publicly auditable, malicious-secure, PQ MPC. It is a cost hypothesis. MPC needs distributed proving, commitments, preprocessing and MAC costs; FHE already pays some of these at its boundaries. The current “host work” also mixes host computation with quorum preprocessing.
+
+The fixed 12× ZO multiplier is not an equal-utility comparison with the other integer learners. Reducing it moves ZO rows down. The missing factor two in “undetected=1/q” should become 2/q for the proposed update cap; this changes the reported quantities but, uniformly applied, not Pareto membership.
+
+Finally, the reported 125× FHE “welfare price” compares dark FHE against public MPC. Within FHE, the script’s corresponding proof ratio is about 6.1×. Those are different comparisons.
+
+My verdict: keep MPC public-trunk low-rank as a serious candidate. Withdraw “good enough to rank” until there is one consistent numerical program, packing schedule and mandatory-proof schedule per row.
+
+
+2. displacement_bound and the Lean statement
+
+[DERIVED] Yes, it follows from leakage_bound at b=2B, but it is not literally that theorem’s existing conclusion.
+
+[SOURCE] AuditSampling.lean:611 bounds E[b·R.count]. It has no displacement variable. You first need the pathwise inequality
+
+    accumulated injected displacement ≤ 2B · R.count.
+
+The necessary corruption predicate is semantic:
+
+    corrupt(h) := the committed transition differs from the prescribed
+                  transition on the same committed pre-state, batch,
+                  optimizer state and prescribed randomness.
+
+A broader predicate is fine, provided every nonzero injected deviation implies corrupt=true. “The prover is malicious,” “the proof is missing,” or “the trace is δ-far” is insufficient without that implication.
+
+The comparator must be the honest update from the actual pre-step state. Comparing against a separate never-corrupted trajectory counts amplification during later honest rounds as fresh injection; the theorem does not cover that.
+
+Both updates must be capped. Bounding only the submitted Δ by B does not establish ‖Δ−Δhonest‖≤2B. The prescribed learner must clip or otherwise bound Δhonest too.
+
+An adversarial amount is fine. It can depend arbitrarily on the history. Once
+
+    0 ≤ amount(h) ≤ 2B · 1{corrupt(h)},
+
+the existing count supermartingale and monotonicity of expectation suffice. No independence between corruption amount and past audits is required. A direct weighted supermartingale also works:
+
+    q·accumulated_amount − 2B·1{alarm has occurred}.
+
+Its expected increment on a corrupt round is at most q·2B−2B·Pr(alarm|h)≤0.
+
+Here is the finite-horizon Lean target I would accept. This is a proposed statement, not a claim that I compiled it:
+
+    noncomputable def injected
+        {Ω V : Type} [NormedAddCommGroup V]
+        (R : Round Ω) (delta honest : List Ω → V) :
+        List Ω → ℝ
+      | [] => 0
+      | _ :: h =>
+          injected R delta honest h +
+            if R.stopped h then 0 else ‖delta h - honest h‖
+
+    theorem displacement_bound
+        {Ω V : Type}
+        [Fintype Ω] [Nonempty Ω] [NormedAddCommGroup V]
+        (R : Round Ω) (delta honest : List Ω → V)
+        {B q : ℝ}
+        (hB : 0 ≤ B)
+        (hq : 0 < q)
+        (hactual : ∀ h, ‖delta h‖ ≤ B)
+        (hhonest : ∀ h, ‖honest h‖ ≤ B)
+        (hcoverage : ∀ h,
+          R.corrupt h = false → delta h = honest h)
+        (hdetect : ∀ h,
+          R.stopped h = false →
+          R.corrupt h = true →
+          q ≤ uniformProb Ω (fun ω => R.alarms h ω))
+        (n : ℕ) :
+        expOver Ω n (injected R delta honest) [] ≤ (2 * B) / q
+
+The proof is triangle inequality, induction establishing injected≤2B·count, expOver.mono, then leakage_bound.
+
+Three qualifications matter:
+
+• The existing count includes the alarm-triggering round. This gives the same upper bound for a sum strictly before the alarm, but the indexing should be stated accurately.
+• The existing Lean result is finite-horizon. Infinite-horizon expectation requires the monotone-limit argument, which the file explicitly leaves unformalized.
+• AuditSampling.lean:1036 identifies a live obstruction: the instantiated light-client theorem covers δ-far falseness. A small nonzero semantic update error need not satisfy that hypothesis. You must close that transport gap, or separately bound the accumulated undetected “near” errors.
+
+Finally, “unconditional envelope” is doing real work. A computationally sound range proof can fail with small probability. To obtain an unconditional numerical expectation, carry a global damage bound on that bad event or explicitly state a conditional/idealized theorem. A tiny failure probability does not bound an otherwise unbounded payload.
+
+
+3. C13 / NoUnsanctionedExecution
+
+[REFUTED: the stated execution prohibition] C13 is not established, and its proposed depth-gating proof cannot follow from the supplied noise theorems.
+
+A noise upper bound gives:
+
+    bound below margin ⇒ correct decryption.
+
+It does not give:
+
+    bound above margin ⇒ incorrect decryption,
+    much less inability to compute a meaningful function.
+
+Mul.lean’s header explicitly says its model covers one scalar multiplication, leaves the real centered-lift correspondence open, and does not establish a multiplicative-depth budget. Filling those gaps would still produce correctness bounds, not an impossibility theorem for deeper computation.
+
+Relinearization keys are reusable algebraic keys, not consumable depth permits. Even withholding them does not prohibit every multiplication: ciphertext degree can grow instead.
+
+Concrete counterexamples to the intended reading:
+
+• With encrypted W and chosen public x, the host computes Enc(Wx) using ct×pt operations.
+• If a layer has a quadratic activation, its nonlinearity can fit within the remaining shallow budget.
+• For an adapter A(Bx), chosen public x makes the first multiplication ct×pt, reducing the secret multiplicative depth relative to the script’s dark-input case.
+• The host can run arbitrarily many independent shallow fragments on copied starting ciphertexts. Noise is a per-computation correctness constraint, not a global quota.
+• Old ciphertexts and previously issued intermediate states remain copyable and replayable.
+
+These do not automatically yield plaintext extraction or a faithful complete recurrent execution. They do demonstrate unauthorized model-dependent computation. Whether a fragment constitutes experience is outside the cryptographic theorem; the program cannot resolve that question by defining only full passes as execution.
+
+The strongest presently defensible statement is:
+
+[DERIVED] Under threshold-security, proof-soundness and state-consensus assumptions, every accepted refresh, secret nonlinear service, state activation or plaintext release is bound to one authorized transition in the quorum’s canonical log. The host cannot obtain those services for an unauthorized or stale transition except by breaking the assumptions.
+
+That is “NoUnauthorizedService/Activation,” not “NoUnsanctionedExecution.”
+
+Even SingleTimeline needs more than a hash chain. Quorum certificates must have honest intersection, honest signers need durable anti-equivocation state, and crashes, recovery and membership changes must preserve it. Otherwise two different quorums can each sign a different child without any individual honest signer signing twice.
+
+The log establishes a single accepted timeline. It neither erases local forks nor prevents the host from withholding computation or killing availability. “Every exact prescribed pass contains L designated quorum services” can be an architectural invariant; “every possible execution requires L crossings” is a much stronger claim.
+
+
+4. C8 / proof-gated threshold decryption
+
+[DERIVED] The proposed route can support a restricted security theorem. It does not establish unrestricted IND-CPA-D for BFV, and the displayed reduction omits important terms and assumptions.
+
+The right game is a stateful, policy-restricted IND-CPA-D game, followed by a threshold-transcript simulation theorem.
+
+Use the standard left/right ledger:
+
+    Each handle stores (m₀, m₁, ciphertext, provenance, epoch).
+
+Evaluation records both ideal outputs. Decryption requires:
+
+• a valid proof and admissible state transition;
+• the exact certified ciphertext-evaluation relation;
+• universally valid bounds for all accepted inputs and randomness;
+• equal ideal outputs in the two challenge worlds.
+
+That last condition is essential. “Approved circuit” alone does not prevent an approved identity circuit from decrypting the challenge. For actual application releases that intentionally differ across worlds, the goal must instead be simulation relative to an ideal functionality exposing those authorized outputs.
+
+[SOURCE] The local 2026/203 paper’s §2.2 explicitly uses equal left/right outputs for decryption and explicitly permits unrestricted polynomial-size evaluation. Proposition 11 exploits legitimate additions to give the challenge ciphertext a second, nominally zero-valued provenance. A restricted gate changes that oracle; it does not refute the proposition. [Paper page](https://eprint.iacr.org/2026/203).
+
+The clean reduction argument is:
+
+    If every accepted query decrypts exactly to its recorded ideal value,
+    then an admissible equal-output decryption query can be answered
+    without the secret key.
+
+For that result-only oracle, deterministic exact correctness really does remove the failure channel.
+
+The two attacks sharpen what “every accepted query” requires:
+
+• Proposition 11’s reconstructed challenge must be rejected because its zero-labelled evaluation is outside the certified-correct domain. One need not prove that every possible representation uses individually enormous αᵢ. The essential contradiction is that a sound correctness certificate cannot certify this ciphertext as decrypting to zero when it decrypts to one.
+• Crafted plaintexts require worst-case bounds on the actual accepted plaintext coefficients.
+• Selected Enc(0) masks require bounds valid under adversarial selection, not Gaussian or independence heuristics.
+
+[SOURCE] The 2026/2546 abstract confirms that its plaintext attack defeats heuristic noise bounds and that its ciphertext attack selects an encryption of zero to enlarge mask norm; the latter breaks indistinguishability rather than claiming key recovery. I verified that abstract, not its full construction. [Paper page](https://eprint.iacr.org/2026/2546).
+
+A ZKPoK of encryption coins proves knowledge of a valid opening. It does not prove that those coins were uniformly sampled, fresh, independent or not selected from a million candidates. There are two valid ways forward:
+
+    Prove correctness for every allowed bounded witness, including
+    adversarially selected ones; or enforce and prove the required
+    randomness-generation discipline.
+
+Under genuinely universal worst-case bounds, unbiased sampling is not needed for that correctness argument. Under the current heuristic bounds, “ZKPoK’d fresh inputs” does not repair the attack.
+
+The remaining central hole is threshold transcript simulation. Correct final plaintexts do not imply secret-independent partial decryptions. Unsanitized partial decryptions can reveal key-dependent linear information even when the final result is perfectly correct. The simulator must cover every released share, malicious participants, adaptive ciphertext selection, mask ownership, roster changes, retries, aborts and all reused key material.
+
+TranscriptHybridLedger assumes precisely the conditional hybrid bounds that this protocol proof must establish.
+
+A realistic target therefore looks like
+
+    Adv_restricted-threshold
+      ≤ Adv_CPA-with-issued-evaluation-keys
+        + ε_proof/extraction
+        + ε_binding/authentication
+        + ε_keygen/correctness
+        + ε_MPC-simulation
+        + Σqueries ε_conditional-transcript(query).
+
+Some terms can vanish in a specified idealization. They cannot simply disappear from the theorem statement.
+
+There is also a direct cost conflict with C2. A proof that a declared circuit has safe noise does not prove that the submitted ciphertext was computed by that circuit. If exact evaluation provenance is established only by the sampled step proof, unsampled decryption requests lack the premise of C8. The mandatory gate must independently establish that relation, or a different sound ciphertext-membership relation. Consequently “zero beyond C1/C2” is unsupported.
+
+My verdict: promising restricted correctness-to-security reduction; no unrestricted CPA-D fix, no completed threshold reduction, and no demonstrated negligible-cost composition with sampled arithmetic proofs.
+
+
+5. Further constructions
+
+[HYPOTHESIS] I would add three construction targets.
+
+A. Instance-bound delegated transitions, with no reusable encrypted model exported.
+
+Replace C13’s noise barrier with an execution architecture: keep the reusable model inside reactive MPC; export only a one-instance randomized encoding or garbled computation bound to an authorized input commitment, parent state and nonce. Input labels, correlated randomness and output decoding belong to that one transition. The host never receives a reusable Enc(W) evaluation object.
+
+Target: the host’s entire view is simulatable from authorized transition outputs and public metadata. Copying an instance can repeat that instance’s computation, but cannot supply a different input or advance a different state through the service.
+
+This is a concrete strengthening of C15, not a new name for threshold FHE. It forces the program to price the cost of keeping reusable computation capability inside custody.
+
+Falsifiers: reuse labels with a different input; splice two transitions’ encodings; obtain valid decoding for a stale parent; or show that the exported material supports arbitrary chosen-input model evaluation. The construction must also admit explicitly that classical copyable messages cannot enforce “physically evaluated exactly once.”
+
+B. Proactive, forward-secure custody with cryptographic retirement of epochs.
+
+Use independent epoch keys, private MPC migration of the accepted state, proactive share refresh and explicit erasure assumptions. Retire old signing/decryption authority together with the old state root. Do not publish a reusable key-switch path that later compromise can traverse backward.
+
+Target: an adversary corrupting different subthreshold sets over time cannot accumulate a read-all credential for a recorded historical state. Retired epochs cannot obtain service even if the host retained every ciphertext.
+
+Refreshing shares of the same permanent secret is not enough to protect old ciphertexts against eventual reconstruction of that secret. Independent epoch secrets and erasure are the substantive construction.
+
+Falsifiers: combine shares from different epochs; recover a retired epoch after a later compromise; use migration material to decrypt backward; or restore an old custodian snapshot and obtain a valid release. This adds a temporal custody property missing from the current static “tier C” description.
+
+C. A contractive continual learner with a certified bound on persistent poisoning.
+
+Make TRAIN-amplify a construction axis. Start with a restricted learner whose complete state transition is contractive—such as bounded exponentially weighted sufficient statistics or a suitably specified regularized projected learner—and prove the implementation’s integer/rounding refinement.
+
+For identical authorized inputs and coupled prescribed randomness, target
+
+    distance(s′, ŝ′) ≤ ρ·distance(s, ŝ) + injected_error + rounding_residual,
+    with ρ < 1.
+
+Then derive the pathwise bound
+
+    distance(s_T, ŝ_T)
+      ≤ ρ^T·distance(s_0, ŝ_0)
+        + Σt ρ^(T−1−t)·(injected_error_t + rounding_residual_t).
+
+This converts an audit bound on injected displacement into an actual bound on persistent state deviation. A per-step injection cap also yields a horizon-independent geometric bound. The certificate must cover the full relevant state, including optimizer and memory; certifying only a linear layer is insufficient.
+
+Falsifiers: a pair of allowed states violating contraction; quantization that invalidates the claimed inequality; hidden optimizer state that amplifies error; or a learning task whose necessary long-term memory is destroyed by the contraction.
+
+That last falsifier is important: the construction buys a real robustness property by restricting the learner. Its utility cost belongs beside its cryptographic cost.

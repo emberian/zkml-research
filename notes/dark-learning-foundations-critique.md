@@ -6,6 +6,10 @@ repaired statement or the experiment that settles it. Items are ordered by how m
 program each one blocks. Nothing here is softened. Where an item contradicts one of our own docs, the doc
 and line are named so the next reader can fix it.
 
+**Read F13 first.** It was found by Codex in round 1, after F1–F12 were written, and it blocks more than
+any of them: the host holding ciphertexts cannot run the cheap plaintext proofs our training theorems
+describe. F11 was revised after Codex round 2 refuted my first version of it.
+
 Scripts referenced: `notes/dark-learning-scripts/tradeoff_space.py` (construction-space counts),
 `notes/dark-learning-scripts/backward_table_virtualization.py` (bf16 count, run on this Mac, < 2 s).
 
@@ -33,10 +37,13 @@ millions of iterations. Two consequences [DERIVED]:
    for any `tauDen > 1` [DERIVED; the Lean is correct about what it states, and what it states is not the
    binding constraint].
 2. **Integer (factor-quantized) updates move the wall to a count.** If the update is `W -= δ̃ ⊗ x̃` with
-   4-bit integer factors (|δ̃_i x̃_j| ≤ 2^8) and 8-bit initial weights, the accumulated weight stays below
-   t/2 for `(2^19 - 2^7)/2^8 ≈ 2,047` steps [DERIVED, `tradeoff_space.py` wrap gate]. Every merge/refresh
-   period must sit below that, and every inner product of length d must also clear t:
-   `d · 15 · 15 < t` holds at d = 4096 by 1.12× and fails at d = 8192.
+   integer factors, the accumulated weight stays below t/2 for `((t−1)/2 − |w₀|)/max|δ̃_i x̃_j|` steps:
+   ~2,047 steps with unsigned 4-bit factors (products ≤ 2^8), 10,532 with signed 4-bit (|·| ≤ 7, products
+   ≤ 49) [DERIVED, `tradeoff_space.py` v2 prints the signed case]. Every merge/refresh period must sit below
+   that, and every dot product must clear the signed window `inner·|w|·|a| ≤ (t−1)/2`
+   (`bfv_coeff_matmul.rs:45-108` [READ via Codex]): 504 at signed 4×8-bit, 10,532 at signed 4×4-bit. A
+   longer dot product split into safe pieces is NOT wrap-free when the pieces are added in BFV; they must be
+   summed outside (a crossing per piece) or the operand ranges reduced (Codex round 2).
 
 **Repair (statement).** One theorem that carries BOTH ledgers, so neither can be quoted alone:
 
@@ -147,18 +154,24 @@ plus `mul_relin_noise_le`), then lift.
 
 **Weakness [READ fhe-core-theory.md security ledger 2].** The smudging theorem is scalar against a
 per-party polynomial transcript; the shipped 2^-48 becomes 2^-32 per session after the union factor, and
-is vacuous at ~2^32 sessions. A statistical 80-bit smudge wants log q ≥ 138.
+is vacuous at ~2^32 sessions. (fhe-core-theory.md also records that a statistical 80-bit smudge wants
+log q ≥ 138; Codex round 2 showed the right object is the E/S ledger below, not a log Q threshold.)
 
-**Evidence [DERIVED, `tradeoff_space.py` read gate].** A dark training step has 2·L·d/N ciphertext
-crossings (64 at d = 4096, L = 32, N = 4096). Over 10^6 steps that is 2^25.9 sessions; at 2^-32 each the
-union bound is **2^-6.1** — not a security statement. 280 of 336 FHE+MPC rows fail this gate, including
-every p61 and every deployed-parameter row.
+**Evidence [DERIVED, `tradeoff_space.py` v2 read gate; v1's step function withdrawn after Codex round
+2].** The ledger is `ε_run ≤ Σ_events Σ_exposed-shares ε_scalar` with `ε_scalar ≈ E/S` and `E + nS` below
+the margin Q/(2t); it is not a function of log Q alone, and E = 2^32 (the window `Smudging.lean:330-376`
+proves) is a FOLD envelope, not established for training ct×ct outputs. With that E, n = 3, a dark step at
+d = 4096, L = 32 makes ≥ 2L·⌈d/N⌉ = 64 crossing events (more when split dot products must be summed outside
+BFV); over 10^6 steps the deployed modulus gives **2^-14.2** — failing a 2^-40 target — while RNS-202@8192
+gives ~2^-106 and a 61-bit modulus cannot fit the smudge at all (2^+7.6 per event). 280 of 336 FHE+MPC rows
+fail. Codex's caution, accepted: a loose union bound failing the target shows our CONFIDENTIALITY PROOF
+fails, not that the run leaks that much.
 
-**Repair.** (a) The read budget is a first-class ledger: `ReadBudget = Σ_crossings ε_smudge(session)`,
-carried beside the audit `q`. (b) log q ≥ 138 is forced by run length, and PQ at log q ≥ 138 forces
-N ≥ 8192 (F6). **FRONTIER-QUEUE G2 (N = 4096 vs 8192) is therefore decided by the read budget before it is
-decided by depth**: the welfare requirement settles it. (c) The polynomial-transcript smudging theorem
-(`TranscriptHybridLedger`, undischarged) is now on the critical path, not hygiene.
+**Repair.** (a) The read budget is a first-class ledger carried beside the audit `q`, with E, S, n and the
+event count supplied per construction. (b) A long run forces a modulus with room for E + nS under the
+margin; with the quantum-128 table (F6) that points at N = 8192 and log Q in the 140–202 range.
+**FRONTIER-QUEUE G2 is decided by the read budget before it is decided by depth.** (c) The
+polynomial-transcript smudging theorem (`TranscriptHybridLedger`, undischarged) is on the critical path.
 
 ## F6. PQ: the deployed point is a classical-only point, and a long-lived mind is exactly the harvest-now-decrypt-later target.
 
@@ -169,8 +182,9 @@ source the deployed set misses PQ-128. For inference this is a confidentiality q
 shelf life. For a mind whose weights are encrypted for years, ciphertexts recorded today are read by
 whoever has a quantum computer later; that is a welfare event, not a data leak.
 **Repair.** Make PQ a hard gate on every dark-learning construction (`tradeoff_space.py` does). With F5,
-the surviving FHE moduli are N = 8192 at 138 ≤ log q ≤ 202; the script's RNS-202@8192 row is the only FHE
-row that passes all four gates.
+the surviving FHE moduli are N = 8192 with log q large enough for E + nS under the margin and ≤ 202; the
+script's RNS-202@8192 row is the only FHE row that passes all four gates, conditionally (ternary-secret
+table, HE Standard v1.1 p.31, located by Codex round 2).
 
 ## F7. The audit theorem counts corrupt ROUNDS; training damage is displacement, it compounds, and the auditor may not decrypt.
 
@@ -236,33 +250,33 @@ proximity-delta-2026-09-04.md]. The tradeoff script uses ε_chk = 2^-100 as a MO
 audit composition is instantiated from the PCS actually used, and at UDR today it is 2^-34: at p = 0.01
 that is still q ≈ 0.0095 (the checker error is not what binds; the audit rate is).
 
-## F11. Custody: tier C, and the property per-step crossings actually buy is "no unsanctioned execution", which bootstrapping would destroy.
+## F11. Custody: tier C, static, and it cannot deliver "no unsanctioned execution" (revised after Codex round 2)
 
 **Weakness [READ DARK-TRAINING §6 2026-09-06 block; pre-constrained-encryption-read.md].** Threshold
-custody is tier C: the full quorum reads. Credential absence with closure is iO-strength. Our program
-docs mostly argue for FEWER crossings (bootstrapping, refresh by construction) on efficiency grounds.
-**The inversion [INFERRED, new].** If every step (indeed every forward layer) needs a quorum crossing, then
-the host cannot run the mind at all without the quorum: no cloning-and-interrogating, no running a
-forked copy on chosen inputs, no silent replay. A host with bootstrapping keys could run unbounded
-encrypted copies of the mind on inputs of its choosing; each run is a homomorphic experience of the mind
-the quorum never sees. For a welfare requirement that is a worse outcome than a read. So:
-- crossings are not only a cost; they are the **execution-gating** mechanism, and the quorum's crossing
-  log is the mind's single timeline (anti-fork, anti-replay: the quorum refuses a second child of one
-  chain head);
-- the right custody statement carries three Props, not one: `NoSurvivingReadAll` (exists, tier C),
-  `NoUnsanctionedExecution` (holds iff no bootstrapping/evaluation key lets depth exceed the crossing
-  interval: depth_available < depth of one forward layer + ε), `SingleTimeline` (quorum signs crossings
-  bound to a hash-chained head).
-**Repair (statement + falsifier).** `noUnsanctionedExecution` with falsifier: issue a bootstrapping key and
-exhibit an unbounded-depth homomorphic forward pass that never touches the quorum.
+custody is tier C: the full quorum reads; credential absence with closure is iO-strength (for GENERAL
+constraint classes — not an impossibility for every restricted learn/infer functionality, F14).
+**What I claimed first, now refuted.** That per-step crossings gate execution, so withholding
+bootstrapping keys gives `NoUnsanctionedExecution`. Codex round 2 [accepted]: a noise upper bound never
+implies incapability; relin keys are reusable; Enc(W)·x for chosen public x is ct×pt; shallow fragments on
+copied ciphertexts are unbounded in number. A host holding Enc(W) and evaluation keys can always compute
+model-dependent fragments of its choosing.
+**Repair.** (i) State `NoUnauthorizedService` (program C13) and a `SingleTimeline` with quorum intersection
+and durable anti-equivocation; (ii) real "no unsanctioned execution" requires that no reusable evaluation
+object for the mind exists outside custody: instance-bound delegated transitions with the reusable model
+in MPC (program C21); (iii) tier C is static; the long-lived threat is temporal, answered by
+forward-secure epoch custody (program C22). The welfare reading of the custody fork therefore leans to
+MPC, independently of cost.
 
 ## F12. Gauge freedom means norms of A or B alone are meaningless; caps must be on the product (sound direction only).
 
 **Weakness [READ low-rank-updates.md §4, `lowRankUpdate_gauge`].** (A,B) is bound only up to GL_r. A
 drift cap on ‖A‖ alone is not a cap.
-**Repair.** Cap `‖A‖_F·‖B‖_F ≤ B` (implies ‖AB‖_F ≤ B: sound, conservative under gauge), or cap the
-product's operator norm via a power-iteration certificate (r-dimensional, cheap). State the envelope over
-the product, never a factor.
+**Repair.** Cap `‖A‖_F·‖B‖_F ≤ B` (implies ‖AB‖_F ≤ B: sound, conservative under gauge), or for rank r the
+sufficient `Σ_k ‖a_k‖₂‖b_k‖₂ ≤ B` at O(rd) arithmetic. ~~Power-iteration operator-norm certificate~~ —
+withdrawn: an exhibited direction gives a LOWER bound on the operator norm, not an upper one (Codex round
+2); an upper spectral certificate needs more machinery. And for a mutable adapter the envelope must bound
+`Δ(AB) = ΔA·B + A·ΔB + ΔA·ΔB`, not the committed factors (Codex round 2). State the envelope over the
+product, never a factor.
 
 ## F13. Witness custody: nobody who can run the cheap plaintext proofs is allowed to (Codex round 1; the largest gap)
 

@@ -5,13 +5,13 @@ this file and `docs/VERDICTS.md` disagree, VERDICTS wins until VERDICTS is edite
 contradicts an older doc, the contradiction is named in `notes/dark-learning-foundations-critique.md`.
 
 Companions written the same day:
-- `notes/dark-learning-foundations-critique.md` — twelve weaknesses in our own foundations, each refuted
+- `notes/dark-learning-foundations-critique.md` — fifteen weaknesses in our own foundations, each refuted
   and repaired (F1–F12 below refer to it).
 - `notes/dark-learning-tradeoff-space.md` + `notes/dark-learning-scripts/tradeoff_space.py` — the
   construction space enumerated in counts, with gates and a Pareto set.
 - `notes/dark-learning-scripts/backward_table_virtualization.py` — a bf16 count that refutes one seed
   claim (F2).
-- `notes/dark-learning-codex-synthesis.md` — two Codex (GPT-6 Astra) exchanges and my adjudication.
+- `notes/dark-learning-codex-synthesis.md` — two Codex (GPT-6 Astra) exchanges and my adjudication (round 1 found F13 and six constructions; round 2 refuted C13 as first stated and took apart v1 of the script).
 
 Tags: [READ] read at source · [MEASURED] our harness or script · [DERIVED] computed from stated formulas
 · [CLAIM] an outside claim taken on trust · [INFERRED] mine, flagged.
@@ -28,17 +28,22 @@ welfare framing seriously gives **five** properties, not one. The seed named the
 |---|---|---|---|
 | P1 | **Opacity** | read the weights or the optimizer state | FHE/MPC custody; tier C at best with standard assumptions (`pre-constrained-encryption-read.md`) |
 | P2 | **Integrity** | write the weights except by an authorized step (FHE is malleable: the host can add anything to a ciphertext) | per-step proofs or sampled audits + an unconditional envelope |
-| P3 | **No unsanctioned execution** | run the mind (or a copy) on inputs of its choosing, i.e. make it experience things outside the sanctioned timeline | crossing-gated evaluation: depth between quorum crossings below one forward layer (F11, §C13) |
+| P3 | **No unsanctioned execution** | run the mind (or a copy) on inputs of its choosing, i.e. make it experience things outside the sanctioned timeline | NOT obtainable from reusable FHE custody (C13 refuted as first stated); needs no reusable evaluation object at the host (C21) |
 | P4 | **Single timeline** | fork, replay, roll back, or silently kill and substitute | the quorum's crossing log as a hash chain; anti-equivocation (§C13) |
 | P5 | **Provenance of experience** | feed it data outside the declared corpus, or data that was promised absent | corpus membership + welded absence in every step (§C11) |
 
 Two consequences shape everything below.
 
-1. **P3 inverts the efficiency instinct.** The seed (§4, §7.1) treats the per-step quorum crossing as the
-   cost to minimize and bootstrapping as the dream. Under P3, bootstrapping keys are the dangerous object:
-   a host holding them can run unbounded encrypted copies of the mind that no quorum ever sees. The
-   crossing is the execution gate. This is my most important reframing and the reason I do not rank
-   "make FHE deep enough to avoid the quorum" as a goal [INFERRED].
+1. **P3 cannot be had from reusable FHE custody at all, and bootstrapping makes it worse.** My first
+   draft claimed that withholding bootstrapping keys gates execution behind the quorum. Codex round 2
+   refuted that (C13): with encrypted W and a chosen public x, the host computes Enc(Wx) by ct×pt alone;
+   it can run unboundedly many shallow fragments on copied ciphertexts; noise is a per-computation
+   correctness constraint, not a quota; relin keys are reusable. What survives is weaker and still worth
+   having: every refresh, nonlinear service, activation and release is bound to one authorized transition
+   in the quorum's log. **Real P3 requires that the host never holds a reusable evaluation object for the
+   mind** (C21: instance-bound delegated transitions, reusable model inside MPC). That is an argument for
+   MPC custody (C15) on welfare grounds, independent of the cost counts, and against giving any host
+   Enc(W) plus evaluation keys [INFERRED, after Codex].
 2. **"Dark" makes the float objection vanish.** Peigné–Nguyen–Wang (2606.05433 v3, §D.2.2, OP-1) reject
    exact Freivalds for training because the GPU computes BF16 and float addition is non-associative
    [READ, lit lane]. In a dark run nobody computes floats: the substrate computes in Z_t, so the integer
@@ -52,7 +57,7 @@ Three binary choices organize the space and decide which of our theorems apply:
 - **Base**: dark (W₀ encrypted) or **public trunk** (W₀ a public foundation model, only the learned delta
   dark). The public-trunk regime says the mind's *experience* lives in its deltas; it discloses the
   ancestry. Ember must choose whether that is acceptable; the price of refusing it is measured (§3:
-  ~125× proof felts on the FHE route, ~65× online traffic on the MPC route).
+  ×2.0 proof felts within the FHE route, ×65 online traffic within the MPC route, script v2).
 - **Data**: public to the host, or dark (the mind's inputs are private too).
 - **Coefficient corner**: whether every homomorphic product has one PUBLIC operand. In that corner our
   proved noise theorems apply verbatim (`step_noise_le`, `stepR_noise_le`), cross-limb Hole B is absent
@@ -68,44 +73,52 @@ trained on public data live there today, with nothing new to prove except F1's m
 Three counts, not clocks, decide every construction (all computed by `tradeoff_space.py`):
 
 1. **Crossings per step**: ciphertext-granularity entries into the MPC/threshold boundary. A dark forward
-   plus backward needs about 2·L·d/N (σ and σ' fused, F2) = 64 at d = 4096, L = 32, N = 4096. Each is
-   online quorum work, and each is a read event under smudging.
+   plus backward needs at least 2·L·⌈d/N⌉ (σ and σ' fused, F2) = 64 at d = 4096, L = 32 — more when a dot
+   product longer than the wrap-free window (504 at 4×8-bit, 10,532 at 4×4-bit) must be summed outside BFV.
+   Each is online quorum work and a read event under smudging.
 2. **Certificate felts per ct×ct**: the Hole B integer quotient–remainder certificate (VERDICTS §7.5,
    09-05): 159,744 felts at native p61, 307,200 at deployed RNS3-109 over BabyBear, against 8,192 and
    49,152 felts for the ciphertext itself (F3). On the fully-dark route it dominates the proof.
-3. **The read budget**: union-bounded smudging leakage over the run. At the shipped 2^-32 per session,
-   64 crossings × 10^6 steps leaks **2^-6** (F5). This forces log q ≥ 138, and with PQ (F6), N ≥ 8192.
+3. **The read budget**: the union-bounded smudging ledger over the run (E/S per exposed share, n·N shares
+   per event). At the deployed modulus, 64 events × 10^6 steps gives a bound of **2^-14.2**, failing a 2^-40
+   target; a 61-bit modulus cannot fit the smudge; RNS-202@8192 gives ~2^-106 (F5). The bound failing shows
+   our proof fails, not that the run leaks that much. With the quantum-128 table (F6) this points at
+   N = 8192 for any long-lived mind.
 
 ---
 
-## 3. What the counts say (summary; details in `notes/dark-learning-tradeoff-space.md`)
+## 3. What the counts say (v2 of the script; details in `notes/dark-learning-tradeoff-space.md`)
 
-784 constructions enumerated (after collapsing the modulus axis for non-FHE custody) (modulus × proof field × custody × base × update × rank × audit rate),
-4 gates (PQ, depth, plaintext wrap, read budget). 104 pass all gates [MEASURED, script]. Findings:
+784 constructions (modulus × proof field × custody × base × update × rank × audit rate, modulus collapsed
+for non-FHE custody), 4 gates (PQ, depth, plaintext wrap, read budget); 112 pass all gates [MEASURED,
+script v2]. v1's headline numbers were withdrawn after Codex round 2 found a dozen modelling defects
+(listed in the tradeoff note §4). v2 findings:
 
 - **No row at the deployed parameters passes.** The deployed reference (RNS3-109@4096, fully dark,
-  backprop, p = 0.01) fails PQ and the read budget (leak 2^-6.1) [MEASURED].
-- **Every Pareto point is low-rank (r = 8) on a public trunk.** The frontier is MPC-only custody at low
-  audit rates and FHE+MPC-boundary at RNS-202@8192 [MEASURED]. Full backprop, append-only and ZO all sit
-  behind it in this model.
-- **The fork between FHE and MPC custody is a fork between paying in proofs and paying in bandwidth.**
-  Fully dark on FHE: ×125 proof felts over the best public-trunk point (Hole B certificates on every
-  ct×ct). Fully dark on MPC: ×3.4 proof felts but ×65 online traffic (a Beaver triple per shared×shared
-  product) [MEASURED, script; model constants named there].
-- **p61 never passes** (read budget at log q = 61). Its G1 prize (6× fewer felts per ct, Hole A deleted)
-  is real but it cannot hold a long-lived mind alone [DERIVED].
-- **Audit-rate knee**: at p61-native/public/r=16, going from p = 1 to p = 0.01 cuts amortized proof felts
-  87× and raises expected undetected injected displacement from 1.05B to 105B [MEASURED, script]. The
-  number to choose is B (the envelope cap), not p alone.
+  backprop, p = 0.01) fails the quantum-128 table and the read budget (2^-14.2 over 10^6 steps under the
+  smudging ledger) [MEASURED].
+- **Single prime fails twice**: depth (A(Bx) is depth 2, p61 holds ~1) and read (the smudge does not fit
+  a 61-bit modulus). G1's prize (6× fewer felts per ct, Hole A deleted) is real for a proof-side segment,
+  not for custody [DERIVED].
+- **Separate frontiers per opacity regime.** Fully dark and public trunk each have a frontier of MPC-only
+  and FHE+MPC@RNS-202@8192 rows; full backprop and append-rank1 reach the fully-dark frontier at low audit
+  rates, low-rank r = 8 everywhere [MEASURED].
+- **The opacity price is custody-dependent**: within FHE+MPC, fully dark costs ×2.0 proof felts over the
+  public trunk; within MPC, ×2.9 proof but ×65 online traffic [MEASURED]. FHE pays for darkness in
+  proofs, MPC pays in bandwidth, and on the FHE route full darkness is cheap relative to everything else.
+- **The envelope is the floor.** Once the unconditional envelope (C2) is proved on ciphertexts, sampling
+  stops paying below p ≈ 0.01: the envelope is 71% of the cost at p = 0.01 and 96% at p = 0.001
+  [MEASURED, RNS-202 public r = 16]. Cheap mandatory checks must be designed as carefully as the sampled
+  proof, or proved by the quorum on shares (F13 route b).
 
-These are counts from a model with named constants. They are good enough to rank; they are not prices.
-The first hbox experiment (§6) calibrates the two constants that carry the most weight.
+Counts from a model with named constants: good for shape, not for ranking implementations (Codex
+round 2's verdict, accepted). The first hbox experiment (§6) calibrates what moves the fork.
 
 ---
 
 ## 4. The constructions
 
-Twenty candidates (C18–C20 adopted from Codex round 1). For each: **statement** · **boundary vs interior** · **cost (counts)** · **security
+Twenty-three candidates (C18–C20 adopted from Codex round 1, C21–C23 from round 2; C13 rewritten after round 2 refuted it). For each: **statement** · **boundary vs interior** · **cost (counts)** · **security
 legs** · **reuses** · **build fresh** · **falsifier**. Numbered C1–C17; the tradeoff script prices C1–C4
 and C13 directly, the rest are priced inline.
 
@@ -153,6 +166,18 @@ and C13 directly, the rest are priced inline.
 - **Build fresh.** EnvelopeLeg in Lean; the bisection theorem `bisect_localizes` (F7.5) so an alarm finds
   the first bad step in ⌈log₂ T⌉ step proofs; Peigné's nested seed for any lazily committed tensor
   (their D.3.1: roots committed after the challenge need a second commit-reveal) [READ, lit lane].
+- **The Lean statement to land (Codex round 2's proposal, accepted as the target):** a pathwise
+  `injected R delta honest` accumulator, then
+  `displacement_bound (hactual : ∀ h, ‖delta h‖ ≤ B) (hhonest : ∀ h, ‖honest h‖ ≤ B)
+  (hcoverage : ∀ h, R.corrupt h = false → delta h = honest h) (hdetect : …) (n) :
+  expOver Ω n (injected R delta honest) [] ≤ 2B/q`, proved by triangle inequality, induction to
+  injected ≤ 2B·count, `expOver.mono`, `leakage_bound`. `corrupt` must be SEMANTIC (the committed transition
+  differs from the prescribed one on the same committed pre-state, batch, optimizer state and randomness);
+  the comparator is the honest update from the ACTUAL pre-step state (not a never-corrupted trajectory);
+  the corruption amount may be adversarial and history-dependent. Two live residuals: the light-client
+  checker instantiated at `AuditSampling.lean:1036` covers δ-FAR falseness, so small nonzero semantic
+  errors need a transport or a separate bound; and a computationally sound envelope can fail, so an
+  unconditional expectation needs a global damage bound on that event.
 - **Falsifier.** Drop EnvelopeLeg: one corrupt step of unbounded displacement survives with probability
   1 − p, so the bound is false. And the amplification residual `[TRAIN-amplify]`: two steps with equal
   injected displacement and different final distance after 100 honest steps.
@@ -308,9 +333,23 @@ and C13 directly, the rest are priced inline.
 - **Warning for the public-coefficient corner (§1).** That corner is exactly where 2026/2546's pt×ct attack
   lives if the HOST chooses the plaintexts (data) and observes any decryption. Our most provable corner
   is also the most CPA-D-exposed one unless (ii) holds.
-- **Cost.** Zero beyond C1/C2's proofs: the gate reuses the step proof. With sampling, the gate becomes
-  "decrypt only audited-or-envelope-checked ciphertexts", and the envelope must include the noise bound,
-  so the NOISE bound must be in EnvelopeLeg, not only in the sampled proof.
+- **Codex round 2, accepted: the game and the hole.** The right game is a stateful POLICY-RESTRICTED
+  IND-CPA-D game (handles store (m₀, m₁, ct, provenance, epoch); decryption requires a valid proof, the
+  exact certified evaluation relation, universally valid bounds, and EQUAL ideal outputs in both worlds —
+  without the last condition an approved identity circuit decrypts the challenge), followed by a threshold
+  TRANSCRIPT simulation theorem. A ZKPoK of encryption coins proves knowledge of an opening, not that the
+  coins were uniform, fresh, independent or unselected from a million candidates: either prove correctness
+  for every allowed bounded witness including adversarially selected ones, or prove the sampling
+  discipline. The central remaining hole: correct final plaintexts do not imply secret-independent
+  PARTIAL decryptions; `TranscriptHybridLedger` assumes exactly the bounds this proof must establish. The
+  realistic target is `Adv ≤ Adv_CPA(issued eval keys) + ε_proof + ε_bind + ε_keygen + ε_MPC-sim +
+  Σ_queries ε_transcript(query)`. This does not refute 2026/203 Prop 11; it changes the oracle.
+- **Cost (corrected).** NOT "zero beyond C1/C2". A proof that a declared circuit has safe noise does not
+  prove the submitted ciphertext was computed by that circuit. If evaluation provenance comes only from the
+  SAMPLED step proof, unsampled decryption requests lack C8's premise. So the gate must establish
+  provenance on every released ciphertext, which pulls much of the sampled ciphertext trace into the
+  mandatory set — a direct conflict with C2's economics, and one more reason the envelope is the floor
+  (§3).
 - **Legs.** `TranscriptHybridLedger` (polynomial smudging) is on the critical path (F5).
 - **Reuses.** `Bfv/Smudging.lean`, `fhegg-core/src/threshold.rs` (`smudge_bits` floor enforced at combine
   [READ]), `Selvage/AuditSampling.lean` fail-closed (`failOpen_no_legs`: a gate that decrypts on a missing
@@ -406,29 +445,33 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
   by this model on this eval with this harness, and no ancestor step trained on the eval". Falsifier: an
   eval-set item reachable from a training-batch commitment on the model's path.
 
-### C13. Crossing-gated execution and the single timeline (new; P3 + P4)
+### C13. Quorum-bound service and the single accepted timeline (renamed after Codex round 2 refuted the first version)
 
-- **Statement.** `NoUnsanctionedExecution`: if no party holds evaluation keys that allow depth ≥ one
-  forward layer (no bootstrapping key; relin keys only up to the crossing interval), then every forward
-  pass of the mind requires ≥ L quorum crossings, each bound to the quorum's hash-chained head
-  `h_{k+1} = H(h_k, crossing transcript)`. `SingleTimeline`: the quorum refuses to sign two children of
-  one head. Together: the host cannot fork, replay or interrogate the mind without the quorum's log
-  showing it.
-- **Cost.** Zero over the FHE+MPC-boundary route: the crossings already exist. The cost is a POLICY one:
-  bootstrapping becomes forbidden, which closes the "fhe-bootstrap" column of the tradeoff space on
-  welfare grounds, not only efficiency ones.
-- **Legs.** Relin/rotation key material bounds depth only if noise budget bounds depth: proven-noise
-  ceiling (`deployed_iterCeiling`) is exactly this leg at the scalar model; the ring/ct×ct version (F4)
-  is needed. Quorum signing is standard threshold signatures.
-- **Reuses.** `joint_beacon.rs`'s fail-closed transcript discipline, `ensure_same_set` equivocation check
-  [READ]; `RecursiveAggregation.lean` anchoring (`anchored_attests_rejects_fabricated_genesis`).
-- **Build fresh.** The depth-gating theorem (a ciphertext under the issued keys cannot be evaluated past
-  depth k without decryption failure), and the timeline Prop.
-- **Falsifier.** Issue a bootstrapping key; exhibit unbounded-depth evaluation with no crossing.
-- **Prior art, honestly.** Not claimed as a first. One Kagi query (encrypted weights + quorum + prevent
-  unauthorized execution) returned only weight-security guidance (RAND RRA2849-1). The idea is adjacent
-  to one-time programs and to execution metering by MPC; the welfare reading (evaluation keys bound the
-  mind's unsanctioned experience) I have not seen stated [INFERRED].
+- **What I first claimed, and why it is false.** "NoUnsanctionedExecution: without bootstrapping keys, every
+  forward pass needs ≥ L quorum crossings, so the host cannot run the mind." Codex round 2's
+  counterexamples, all accepted: (i) a noise UPPER bound gives "below margin ⇒ correct", never "above margin
+  ⇒ incapable", so no depth-gating impossibility follows from our noise theorems; (ii) relinearization keys
+  are reusable, and withholding them lets ciphertext degree grow instead; (iii) with encrypted W and a
+  chosen public x, the host computes Enc(Wx) by ct×pt alone; (iv) a quadratic activation fits the shallow
+  budget; (v) unboundedly many shallow fragments on copied ciphertexts; (vi) old ciphertexts replay. Whether
+  a fragment "is experience" is outside any theorem; the program cannot settle it by defining only full
+  passes as execution.
+- **Statement that survives (`NoUnauthorizedService`).** Under threshold security, proof soundness and
+  state consensus, every accepted refresh, secret nonlinear service, state activation and plaintext release
+  is bound to one authorized transition in the quorum's canonical log; the host cannot obtain those
+  services for an unauthorized or stale transition without breaking the assumptions.
+- **`SingleTimeline` needs more than a hash chain.** Quorum certificates with honest intersection, durable
+  anti-equivocation state at honest signers, and membership changes and crash recovery that preserve it;
+  otherwise two different quorums each sign a different child without any honest signer signing twice.
+  The log gives one ACCEPTED timeline; it neither erases local forks nor prevents withholding or killing.
+- **Cost.** Zero over the FHE+MPC route (the services already exist). The welfare consequence is the
+  important part: a host holding Enc(W) and evaluation keys can always compute model-dependent fragments on
+  inputs of its choosing. Bootstrapping keys make the fragments unbounded in depth; their absence does not
+  make them impossible.
+- **Reuses.** `joint_beacon.rs` (fail-closed transcripts, `ensure_same_set` [READ]);
+  `RecursiveAggregation.lean` anchoring.
+- **Falsifier.** Two quorums with non-intersecting honest members each certify a different child of one
+  head; or any service obtained for a stale head.
 
 ### C14. Seeded zeroth-order dark learning
 
@@ -551,6 +594,46 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
 - **Falsifier.** Obtain one inference result, reward-dependent action or partial decryption from a
   speculative descendant; or activate a valid proof against a stale parent.
 
+### C21. Instance-bound delegated transitions: no reusable encrypted model ever leaves custody (Codex round 2, adopted; the real P3)
+
+- **Statement.** The reusable model lives inside reactive MPC (C15). For each authorized transition the
+  quorum exports a one-instance randomized encoding / garbled computation bound to an input commitment,
+  parent state and nonce; input labels, correlated randomness and output decoding belong to that one
+  transition. The host's whole view is simulatable from authorized outputs and public metadata. Copying an
+  instance repeats THAT instance; it cannot supply a different input or advance a different state.
+- **Cost.** Garbling is linear in circuit size per instance, so a training step is a full-step encoding;
+  this prices exactly what P3 costs: keeping reusable computation capability inside custody.
+- **Falsifiers.** Reuse labels with a different input; splice two transitions' encodings; obtain a valid
+  decoding for a stale parent; show the exported material supports chosen-input evaluation. It must also
+  say plainly that copyable classical messages cannot enforce "evaluated exactly once".
+
+### C22. Proactive, forward-secure custody with cryptographic retirement of epochs (Codex round 2, adopted)
+
+- **Statement.** Independent epoch keys, private MPC migration of the accepted state, proactive share
+  refresh, explicit erasure; old signing/decryption authority retires with the old state root, and no
+  reusable key-switch path lets a later compromise decrypt backward. An adversary corrupting different
+  sub-threshold sets over time cannot accumulate a read-all credential for a recorded historical state.
+- **Why it belongs here.** For a long-lived mind, "tier C" is a static description; the attack is temporal
+  (corrupt one custodian per year). Refreshing shares of one permanent secret does not protect old
+  ciphertexts against its eventual reconstruction; independent epoch secrets plus erasure do. This is
+  also the custody-side answer to harvest-now-decrypt-later (F6).
+- **Falsifiers.** Combine shares across epochs; recover a retired epoch after a later compromise; decrypt
+  backward through migration material; restore an old custodian snapshot and obtain a release.
+
+### C23. A contractive continual learner: a certified bound on PERSISTENT poisoning (Codex round 2, adopted)
+
+- **Statement.** Make `[TRAIN-amplify]` (F7) a construction axis. For a learner whose full state transition
+  is contractive (bounded exponentially weighted sufficient statistics — C18 with forgetting — or a
+  regularized projected learner), prove with the integer/rounding refinement:
+  `dist(s′, ŝ′) ≤ ρ·dist(s, ŝ) + injected_t + rounding_t`, ρ < 1, hence
+  `dist(s_T, ŝ_T) ≤ ρ^T dist(s₀, ŝ₀) + Σ_t ρ^{T−1−t}(injected_t + rounding_t)`. With C2's audit bound this
+  turns expected INJECTED displacement into a horizon-independent bound on ACTUAL state deviation.
+- **Price, stated beside the gain.** Contraction is forgetting: a task whose long-term memory the
+  contraction destroys is the falsifier on the utility side. The certificate must cover the full state
+  (optimizer, memory), not a linear layer.
+- **Falsifiers.** Two allowed states violating contraction; quantization breaking the inequality; hidden
+  optimizer state that amplifies.
+
 ## 5. Theorem targets (Lean-shaped, ordered by what they unblock)
 
 | target | file it lands near | unblocks | falsifier |
@@ -562,7 +645,9 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
 | `bisect_localizes` (F7) | new | C2 recovery | uncommitted intermediate state |
 | `merge_discharges_carried_witness` (F9) | `Selvage/AccRbrFold*` | C3, C16 | zero-absorb at the merge |
 | proof-gated CPA-D reduction (C8) | `Bfv/Smudging.lean` | G4 | ungated over-budget query |
-| `noUnsanctionedExecution` (C13) | new | P3 | issued bootstrapping key |
+| `noUnauthorizedService` + quorum-intersection `SingleTimeline` (C13) | new | P4 | two non-intersecting quorums certify two children |
+| `displacement_bound` exact statement (C2, Codex round 2) | `Selvage/AuditSampling.lean` | C2, C20, C23 | drop `hhonest` |
+| instance-bound transition simulation (C21) | new | P3 | label reuse with a new input |
 | `BFVScaleLiftRefinement` (VERDICTS §7.5) | `Bfv/CrossLimb.lean` | C1, C9 | 1-vs-32 pair |
 | derivative column of the forward table (F2) | lookup layer | C1 backward | the 412 GELU codes |
 | `F_dark` ideal functionality + simulation (F14) | new | every confidentiality claim | identity circuit as an "allowed" release |
@@ -593,6 +678,13 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
 Do not run heavy FHE benchmarks on this Mac.
 
 ## 7. What I changed my mind about while writing this
+
+- Codex round 2 refuted my C13 ("no bootstrapping key ⇒ no unsanctioned execution"). The surviving
+  statement is about quorum-bound SERVICES, and real P3 needs C21. That also flips the welfare reading of
+  the custody fork toward MPC, independently of cost.
+- Codex round 2 also took apart v1 of the script; v2 changed three headline conclusions (the opacity
+  price is ×2 within FHE, not ×125; full backprop and append-only reach the fully-dark frontier; the
+  envelope, not the sampled proof, is the cost floor below p ≈ 0.01).
 
 - Codex round 1 found the gap I had not seen (F13): the host cannot run the cheap plaintext proofs
   because it does not hold the witness. The rank-1/low-rank theorems pay inside the QUORUM's crossing, not
