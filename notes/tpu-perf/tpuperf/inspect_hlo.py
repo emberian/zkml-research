@@ -37,6 +37,18 @@ def _shape(s):
     return m.group(1), [int(x) for x in m.group(2).split(",") if x]
 
 
+BITS = {"pred": 8, "s8": 8, "u8": 8, "s16": 16, "u16": 16, "bf16": 16, "f16": 16, "s32": 32, "u32": 32, "f32": 32,
+        "s64": 64, "u64": 64, "f64": 64}
+
+
+def _bytes(shape_str):
+    dt, dims = _shape(shape_str)
+    n = 1
+    for d in dims:
+        n *= d
+    return n * BITS.get(dt, 32) // 8
+
+
 def inspect(text, mxu_edge=128):
     comps = computations(text)
     parent = {}  # computation -> (caller computation, caller fusion kind, caller is MXU fusion)
@@ -77,7 +89,8 @@ def inspect(text, mxu_edge=128):
                     where = "in-MXU-fusion (VMEM, on the fly)" if in_mxu_fusion(name) else (
                         "ENTRY (HBM pass)" if c["entry"] else "standalone fusion (HBM pass)")
                 lay = re.findall(r"\{[\d,]+:T[^}]*\}", ln)
-                findings.append(dict(kind=opname, where=where, comp=name, layouts=lay[:3], line=ln.strip()[:240]))
+                findings.append(dict(kind=opname, where=where, comp=name, layouts=lay[:3], bytes=_bytes(dst),
+                                     line=ln.strip()[:240]))
             if opname == "convolution":
                 ops = re.findall(r"(\w+)\[([\d,]*)\]\{", ln)
                 dts = [o[0] for o in ops[1:3]]
@@ -111,6 +124,8 @@ def inspect(text, mxu_edge=128):
     for f in findings:
         key = f["kind"] + (" @ " + f["where"] if f["kind"] in ("copy", "transpose", "pad") else "")
         kinds[key] = kinds.get(key, 0) + 1
+        if "bytes" in f:
+            kinds[key + " bytes"] = kinds.get(key + " bytes", 0) + f["bytes"]
     has_mosaic = any(f.get("target") == "tpu_custom_call" for f in findings)
     return dict(summary=kinds, compiler_estimate_covers_mosaic=not has_mosaic, findings=findings[:40], entry_fusions=fusions, est_cycles_entry=est_cycles,
                 scoped_vmem_max=max(vmem) if vmem else 0, n_instructions=n_instr,

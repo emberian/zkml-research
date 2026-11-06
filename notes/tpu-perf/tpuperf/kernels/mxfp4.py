@@ -109,3 +109,90 @@ KERNELS = [dict(
     },
     inputs=inputs, ref=ref, impl=impl, count=count, arg_specs=arg_specs,
 )]
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Packed variant for small T (HBM-bound on weights): the narrow columns stay as E2M1 nibbles (two output
+# columns per byte: low nibble = even, high nibble = odd of each 2-column pair, so the output column order is
+# a fixed permutation, folded downstream) plus one int8 shift per (32-block, column). The kernel decodes the
+# tile on the VPU once per grid step and feeds the MXU int8. The last 128 columns (all wide ones, padded) stay
+# prefolded as in the dense kernel. Weight bytes: 0.5 + 1/32 per weight instead of 1.
+# ---------------------------------------------------------------------------------------------------------
+import functools as _ft
+
+from jax.experimental import pallas as pl
+from jax.experimental.pallas import tpu as pltpu
+
+
+def _decode(code, sh):
+    """code int32 nibble [K, n], sh int32 [K, n] -> int32 doubled E2M1 value << sh (|.| <= 96)."""
+    e = (code >> 1) & 3
+    m = code & 1
+    mag = jnp.where(e == 0, m, (2 + m) << jnp.maximum(e - 1, 0))
+    mag = mag << sh
+    return jnp.where((code & 8) != 0, -mag, mag)
+
+
+def _packed_kernel(x_ref, p_ref, s_ref, o_ref):
+    p = p_ref[...].astype(jnp.int32) & 255                      # [K, bn/2] bytes
+    K = p.shape[0]
+    sh = s_ref[...].astype(jnp.int32)                           # [K/32, bn/2, 2] -> per nibble plane below
+    s_lo = jnp.broadcast_to(sh[:, None, :, 0], (K // 32, 32, sh.shape[1])).reshape(K, sh.shape[1])
+    s_hi = jnp.broadcast_to(sh[:, None, :, 1], (K // 32, 32, sh.shape[1])).reshape(K, sh.shape[1])
+    w_lo = _decode(p & 15, s_lo).astype(jnp.int8)
+    w_hi = _decode(p >> 4, s_hi).astype(jnp.int8)
+    x = x_ref[...]
+    half = p.shape[1]
+    o_ref[:, :half] = jnp.dot(x, w_lo, preferred_element_type=jnp.int32)
+    o_ref[:, half:] = jnp.dot(x, w_hi, preferred_element_type=jnp.int32)
+
+
+def pack_narrow(codes, e, order, n_narrow_cols):
+    """From the permuted codes/exponents: columns [0, n_narrow_cols) -> nibble bytes [K, n/2] and shifts
+    [K/32, n/2, 2]; within each bn-tile the even/odd split is per 2-column pair (cols 2i, 2i+1)."""
+    cp = codes[order][:n_narrow_cols]                           # [n, K]
+    s = (e - e.min(axis=1, keepdims=True))[order][:n_narrow_cols]   # [n, K/32]
+    assert s.max() <= 3
+    lo, hi = cp[0::2], cp[1::2]
+    packed = (lo | (hi << 4)).T.astype(np.uint8)                # [K, n/2]
+    sh = np.stack([s[0::2].T, s[1::2].T], axis=-1).astype(np.int8)   # [K/32, n/2, 2]
+    return packed, sh
+
+
+def packed_out_order(n, bn):
+    """Output column position -> permuted-column index produced by the packed kernel (per bn tile:
+    first half = even columns of the tile's pairs, second half = odd)."""
+    idx = []
+    for t0 in range(0, n, bn):
+        cols = np.arange(t0, t0 + bn)
+        idx += list(cols[0::2]) + list(cols[1::2])
+    return np.array(idx)
+
+
+def _tail_kernel(y_ref, x_ref, wt_ref, wh_ref, o_ref):
+    x = x_ref[...]
+    o_ref[...] = (jnp.dot(x, wt_ref[...], preferred_element_type=jnp.int32)
+                  + 128 * jnp.dot(x, wh_ref[...], preferred_element_type=jnp.int32))
+
+
+def impl_packed(T, K, N, bn=512, interpret=False):
+    nn = N - 128
+    assert nn % bn == 0
+
+    def f(x, packed, sh, W1_tail, Whi):
+        """Writes the whole [T, N] output in place: the packed kernel fills [0, N-128), a second kernel aliased
+        to the same buffer fills the wide tail (no concatenate, so no extra pass over the output)."""
+        y = pl.pallas_call(
+            _packed_kernel, out_shape=jax.ShapeDtypeStruct((T, N), jnp.int32), grid=(nn // bn,),
+            in_specs=[pl.BlockSpec((T, K), lambda j: (0, 0)), pl.BlockSpec((K, bn // 2), lambda j: (0, j)),
+                      pl.BlockSpec((K // 32, bn // 2, 2), lambda j: (0, j, 0))],
+            out_specs=pl.BlockSpec((T, bn), lambda j: (0, j)),
+            compiler_params=pltpu.CompilerParams(dimension_semantics=("parallel",), vmem_limit_bytes=64 * 2**20),
+            interpret=interpret)(x, packed, sh)
+        return pl.pallas_call(
+            _tail_kernel, out_shape=jax.ShapeDtypeStruct((T, N), jnp.int32), grid=(1,),
+            in_specs=[pl.BlockSpec(memory_space=pl.ANY), pl.BlockSpec((T, K), lambda j: (0, 0)),
+                      pl.BlockSpec((K, 128), lambda j: (0, 0)), pl.BlockSpec((K, 128), lambda j: (0, 0))],
+            out_specs=pl.BlockSpec((T, 128), lambda j: (0, nn // 128)),
+            input_output_aliases={0: 0}, interpret=interpret)(y, x, W1_tail, Whi)
+    return f

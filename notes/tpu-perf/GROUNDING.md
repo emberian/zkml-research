@@ -66,3 +66,17 @@ dregg-forge was not tried: hbox suffices, and forge is shared with fn2's measure
   `mxfp4_w4a8` (Pallas, interpret mode, vs int64 from the E2M1 codes), `rns_ntt61` (vs a Python-int radix-2
   negacyclic NTT, itself checked against the O(N^2) definition), `sumcheck_bb4_round` (vs Python-int
   BabyBear^4 fold and round sums).
+
+## 2. What "the bound" means here
+
+- **Per kernel, for its algorithm:** the best time a perfectly pipelined implementation of THIS algorithm
+  could reach on the chip. That is the max over units of (work / peak). MXU work is padded to the
+  128-granular K and output-lane dims (`mxu@pad`), since the hardware cannot do less. The unpadded value is
+  kept so the padding gap can be named, e.g. K = 2880 caps gpt-oss matmuls at 97.8%. HBM work is the
+  compulsory bytes (inputs read once, outputs written once). VPU work is the elementwise ops of the
+  counted formulation at the measured int32 rate.
+- **Algorithm choice is a separate, documented decision.** Examples: full vs lazy reduction in the NTT,
+  per-k1 twiddle matrices (64 MiB, more HBM) vs a diagonal twiddle on the VPU, and prefolded 1-byte
+  MXFP4 weights vs packed 0.53-byte weights decoded on the VPU. A kernel at 95% of a worse algorithm's
+  bound is reported with the better algorithm's bound beside it.
+- v6e: VMEM 128 MiB per the compiler, same as v5e. The VPU rate is unknown, so v6e bounds are lower bounds.
