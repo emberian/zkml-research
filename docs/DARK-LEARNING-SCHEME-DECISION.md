@@ -1,0 +1,229 @@
+# Dark learning: the scheme decision for the two custody forks
+
+2026-11-06. Written before building the d = 64 step, on ember's instruction: "are you sure those tasks are
+actually meaningful? i don't want to be grinding on bad/legacy parts of our code that should just get
+rewritten/redesigned/reconsidered now that we are smarter models." Ember also said of the custody fork,
+"i think we should probably explore both." Reading order: `docs/DARK-LEARNING-PROGRAM.md` (constructions
+C1–C23), `notes/dark-learning-foundations-critique.md` (F1–F15). Measured inputs from experiment 1:
+`research/dark_learning_2026_11_06/` (run on hbox under `swarm-build`, counts only).
+
+**The decision, in one line per fork.**
+- **FHE fork:** exact BFV, rebuilt from scratch rather than on the legacy fhegg 3×36-bit engine. N = 8192.
+  Q is three ~61-bit NTT-friendly primes, and **each prime is its own proof field**; cross-field
+  consistency comes from PRISM-style canonical-integer witnesses. The plaintext modulus rises to a ~32-bit
+  prime. Packing is coefficient encoding, so a rank-1 update is one polynomial product. Nonlinearity and
+  requantization go through an MPC crossing (encrypt-to-shares, function, shares-to-encrypt), and
+  decryption happens only on proof. Rejected for this fork: CKKS, TFHE-PBS nonlinearities, bootstrapping,
+  and single big-prime GBFV.
+- **MPC fork:** SPDZ-style dishonest-majority authenticated additive shares among n = 3 custodians, over
+  one ~61-bit prime field. That field is shared with the FHE fork and with the proof system. The
+  custodians compute the step themselves, and the host stores and transports only commitments and masked
+  openings. Every output is opened only on proof. C21's one-time garbled encoding is an optional
+  "host-evaluated" mode, priced below, and is not the default.
+
+---
+
+## 1. What experiment 1 measured (it decides several of the rejections)
+
+**One ct×ct with its integer rescale certificate**, built on a real BFV product. Every relation is checked:
+the column identities over ℤ, the field bounds that lift a field check to ℤ, and decryption to m₁·m₂. The
+Q = 31, t = 4 falsifier is accepted by a mod-Q check and refused by the integer certificate, in every run.
+Each count is for that concrete design: an upper bound for the design, not a lower bound for every
+protocol.
+
+| design | N | log Q | field | certificate elements | committed bits | bits / coefficient | v2 model predicted |
+|---|---:|---:|---|---:|---:|---:|---:|
+| A: native p61, digits w = 22 | 4096 | 61 | p61 | 593,899 | 36.2 M | 8,842 | 159,744 (×3.7 low) |
+| B: PRISM-style, 6×34-bit + 8 ext primes | 8192 | 204 | per-prime 34-bit | 1,572,822 | 53.5 M | 6,528 | — |
+| **B61: PRISM-style, 3×61-bit + 4 ext primes** | 8192 | 183 | per-prime 61-bit | **827,371** | **50.5 M** | **6,161** | — |
+| C: row-interleaved into BabyBear, digits w = 5 | 8192 | 204 | BabyBear | 32,055,047 | 993.7 M | 121,302 | 1,056,768 (×30 low) |
+
+[MEASURED, `rescale_certificates.py`; logs `exp1_{A,B,B61,C}.log` in the experiment directory.]
+
+⚠ **Correction found while building the d = 64 verifier (same day).** The B/B61 counts above treat the
+base-extension quotient u as a free witness of one element. It is not free: with u unpinned, a prover can
+shift any extended value by a multiple of the basis product, and an output forged that way passes every
+residue check (`cert_b61.py` exhibits it: shift one output coefficient by B, set u−1, and the residue checks
+still pass; pinned, it is refused). The verifier must pin u to the canonical representative, which is a
+range proof of the reconstructed value. Counted as 16-bit digits, that adds 1,081,344 digit elements to B61
+(+17.3 Mbit, giving 67.8 Mbit and **8,277 bits/coef**) and 1,163,264 to B (+18.6 Mbit, giving 72.1 Mbit and
+8,800 bits/coef). B61 stays the cheapest per coefficient, now only 6% below A's 8,842. Design A does not
+have the problem: bounded digits define the integer uniquely. PRISM's single range proof via its
+auxiliary prime is exactly this pin; it is not optional.
+
+What this says:
+1. **The model was low by ×3.7 for design A.** The rescale relation `t z + ⌊Q/2⌋ = Q y + s` costs more
+   than the product itself: 270,336 of A's 593,899 elements. y, s and s's complement are each multi-digit,
+   and so are the carries.
+2. **Per-prime native fields win per coefficient, narrowly.** After the u-pin correction B61 commits
+   8,277 bits per coefficient against A's 8,842, even though A has the "ideal" single prime. With
+   PRISM-style binding, every per-prime polynomial identity is native. Only the canonical-integer
+   witnesses (v, the pinned u) cross fields.
+3. **Per prime, larger primes win.** B61 commits 827,371 elements against B's 1,572,822, in nearly the
+   same bits, and with half the limbs and fewer cross-field witnesses.
+4. **BabyBear-hosted row interleaving (C) is the expensive outlier.** At N = 8192 a 31-bit field forces
+   5-bit digits, because N·2^{2w} must stay below the field. That makes 42 digits per coefficient and 83
+   columns per product. See §1a for the measured count.
+
+### 1a. Design C
+
+[MEASURED, `exp1_C.log`] 32,055,047 committed elements, 993.7 Mbit, 33.4 M range lookups for one ct×ct.
+Of these, 19.1 M are the CRT lift of the inputs and the per-prime output reduction; 5.4 M are the
+rescale; the product columns account for the rest. That is ×30 the v2 model's prediction and ×15 B61 in
+bits. **The deployed proof layout (all residues bridged into one 31-bit field) is the wrong layout for
+any ct×ct at N = 8192.** At N = 8192, digits of more than 5 bits cannot be summed in BabyBear, and every
+cross-prime fact becomes integer emulation.
+
+**The fused activation/derivative crossing**, executed at N = 8192, RNS-204, 3 parties, d = 4096 values in,
+σ and σ' (8192 values) out. Encrypt-to-shares (E2S) and shares-to-encrypt (S2E) are real polynomials
+checked by decryption; the function's openings run on shares. [MEASURED, `crossing_wire.py`, `exp1_X.log`]
+
+| phase | wire elements |
+|---|---:|
+| E2S (n−1 polynomials of N×L residues to party 1) | 98,304 |
+| function online (2 masked openings per value, each to n−1 parties) | 49,152 |
+| S2E (n polynomials to the host) | 147,456 |
+| **online total, one crossing** | **294,912** |
+| preprocessing, rotated-table lookup (2^16 table, 2 columns) | 1,610,612,736 |
+| preprocessing, 2-party DPF lookup | 1,703,936 |
+
+The online cost is dominated by moving whole ciphertexts: 245,760 of 294,912 elements are E2S and S2E,
+and that cost does not shrink with d. **A crossing costs N-sized messages whatever the layer width.** The
+preprocessing of an exact 16-bit lookup in MPC is where the real cost hides: ~1.6×10^9 elements for a
+rotated table. Function secret sharing (DPF) is 1,000× smaller but two-party.
+
+---
+
+## 2. FHE fork: is BFV-RNS the right scheme?
+
+### Kept: exact BFV, re-based
+- **Exactness is the asset.** In dark learning nobody runs floats, so the integer program IS the run, and
+  the float objection to exact Freivalds (Peigné v3 §D.2.2) disappears (program §0). Only an exact scheme
+  keeps that property.
+- **N = 8192 is forced.** The smudging ledger fails at 10^6 steps at log Q = 109 (2^-14.2, F5), and the
+  quantum-128 table caps log Q at 202 for N = 8192 (conditional: ternary-secret table, F6). Q = 3 primes of
+  61 bits = 183 bits fits both constraints.
+- **Each RNS prime is a proof field** (B61). This closes Hole A by canonical integers rather than by the
+  2-felt bridge, and it is the cheapest certificate measured. It also replaces the "single prime" dream
+  of FRONTIER-QUEUE G1: one prime cannot hold depth or the read budget; three proof-field primes can.
+- **Plaintext modulus = the MPC field prime, ~2^61** (revised while building: better than the 2^32 first
+  written). Encryption-to-shares then lands directly in F_t, the SPDZ field: the FHE plaintext space, the
+  MPC field and one proof field are the same prime. This also removes the precision wall (F1) at any
+  d we consider. Δ = Q/t ≈ 2^122, and a ct×ct costs about log t + log N + small ≈ 80 bits, so depth 1 per
+  crossing with margin. That is all the d = 64 step uses: no relinearization, every product goes into a
+  crossing.
+- **Coefficient encoding, with the outer product as one polynomial product.** For d² ≤ N,
+  δ(X^d)·x(X) puts δ_i x_j at coefficient d·i + j, which is exactly the row-major layout the forward
+  matvec W(X)·rev(x)(X) reads. A rank-1 update is one ct×ct; the forward and backward matvecs are one each
+  at d = 64.
+
+### Rejected, with the reason
+
+| candidate | why not |
+|---|---|
+| Legacy fhegg BFV (3×36-bit, N = 4096, t = 2^20) | Fails PQ, the read budget and the precision wall (F5, F6, F1). Its proof layout is the BabyBear bridge, the most expensive design measured. Its threshold and smudging code survives as a reference implementation, not as the engine. |
+| CKKS for the training arithmetic | Approximate decryption makes every release a noise leak (the Li–Micciancio class), so every crossing needs flooding wide enough to cost precision. Worse for us: under CKKS the host's choice among valid evaluations (which Enc(0) to add, the 2026/2546 mask-selection move) steers the plaintext itself. That is Zamir's tolerance-as-channel with the host holding the steering wheel. Exact BFV removes the channel. |
+| TFHE PBS for the nonlinearities | A PBS is a native lookup, which is attractive, but proving one is the dominant cost. 2026/1127 runs 2^23 constraints in ~1,469 s and OOMs at 2^22 on 768 GB; an activation per neuron means d PBS per layer. The MPC crossing proves its function on shares at plaintext size. Kept as a research option only. |
+| Bootstrapping (any scheme) | It removes no welfare risk (Codex round 2: FHE custody cannot gate execution anyway), and it makes the host's unsanctioned fragments unbounded in depth. Its cost is ~15 levels per refresh. |
+| Single big prime, GBFV at large modulus | The proof field would be ~180–200 bits (multi-word arithmetic everywhere), and the rescale certificate still needs integer limbs. B61 dominates it. |
+
+### What the FHE fork cannot give, stated so nobody builds expecting it
+P3 (no unsanctioned execution) is unobtainable: the host holds Enc(W) and evaluation keys (C13 refuted).
+Confidentiality is tier C plus the read budget. The fork exists for host-local linear algebra at large d,
+where the MPC fork's bandwidth explodes (×65 online traffic fully dark, tradeoff note §5).
+
+## 3. MPC fork: C21 from first principles
+
+**Which MPC.** SPDZ-style dishonest-majority, actively secure with abort: authenticated additive shares
+with a global MAC key, over F_p with p a ~61-bit prime. The prime is chosen so p ≡ 1 mod 2^k for the proof
+system and equal to one of the FHE fork's RNS primes, so both forks share field code, commitments and the
+proof system.
+- **Why dishonest-majority.** Confidentiality and integrity then fail only if ALL n custodians collude.
+  That is the same tier C as n-of-n threshold FHE, and stronger than honest-majority replicated sharing.
+- **Preprocessing.** OT-based (MASCOT-class over lattice OT) to keep FHE out of the trust base, or
+  LWE-HE-based (LowGear-class), which is where the FHE fork's BFV could supply triples. Both are PQ.
+- **Rejected:**
+  - Honest-majority 3PC: one corruption already breaks it, and its speed is not the binding constraint
+    at d = 64.
+  - Garbled circuits as the default: ~150× the wire cost; see C21 mode below.
+
+**Who the custodians are, and what the host sees.** Three custodians in independent trust domains
+(organizations, jurisdictions, hardware vendors). The host can be one of them or none. The host stores and
+moves only share commitments, masked openings (uniform field elements), MAC-check transcripts and sizes.
+It never holds an evaluation object for the mind. ~~**That alone satisfies P3**~~ — narrowed after the
+Astra statement audit (`notes/astra/dark-learning-statement-audit.md` DL20/DL27, accepted): it gives
+**"no accepted new transition beyond authorized instances, and no host-held reusable evaluation object"**,
+not a physical prohibition on computation — anything deducible from authorized outputs remains computable,
+and copies of any classical message can be re-run. That narrower property, which no FHE configuration
+does, without C21's garbling. Releases are openings of shared outputs, gated by a proof (C8's MPC
+analogue). There is no CPA-D at all: an opening reveals exactly the authorized output, with no noise
+channel.
+
+**Numerics.**
+- Integer training with exact semantics (factor-quantized 8-bit, F1), embedded in F_p with no wrap (proved
+  bounds).
+- Truncation is exact and deterministic (bit decomposition, ~log p triples per value), so the prescribed
+  transition is a function of state and committed randomness only.
+- Nonlinearity is a masked-index lookup against a preprocessed one-hot table: two output columns (σ, σ'
+  keyed on the input code, F2), 2^8 entries at the d = 64 build.
+
+**Per-step wire cost at d = 64** [DERIVED; the build replaces these with measured counts]:
+- Two layers, batch 1, n = 3.
+- Online: opening W−A for each layer (4,096), the activation and error vectors (~256), and the
+  outer-product masks (128 per layer), broadcast to n−1 parties: about 5.2×10^4 elements per step. Lookups
+  and truncations add about 1.5×10^3.
+- Preprocessing: about 2.5×10^4 multiplicative relations per step.
+- For comparison, the FHE fork at d = 64: ~4 crossings per step × 294,912/2 elements (N-sized messages at
+  half the residues, three primes instead of six) ≈ 6×10^5 online elements.
+
+**At d = 64 the MPC fork wins bandwidth ~10× and proofs by orders of magnitude.** The FHE crossing moves
+N = 8192-sized messages to carry 64 values. The fork flips at large d (tradeoff note).
+
+**C21, the host-evaluated mode** (optional, priced):
+- The custodians jointly garble the step (BMR/authenticated-garbling class), and the host evaluates the
+  one-time encoding.
+- At d = 64 the step is ≈ 2×10^6 AND gates, so ≈ 64 MB per step plus the distributed-garbling cost,
+  against ~0.4 MB of SPDZ online traffic.
+- Worth it only when no custodian can do the compute. Not the default.
+
+**How the audit theorem's three legs attach (MPC fork).**
+- **ε_bind.** Each custodian commits per step to its share trace with a linearly homomorphic commitment
+  over F_p, so Σ commit(share_i) = commit(W), plus SPDZ MAC soundness (2/p per batched check). A second
+  MAC key or extension-field MACs bring that to ~2^-120.
+- **ε_chk.** Two tiers:
+  - Against a single deviating custodian, the online MAC check catches deviation on EVERY step: an
+    envelope, not a sample.
+  - For public verifiability, at the sampled step the beacon opens n−1 of the n committed views. This is
+    MPC-in-the-head over the real MPC: it reveals nothing under n-out-of-n sharing, and the auditor
+    re-executes and checks message consistency, catching a deviating party with probability ≥ (n−1)/n.
+  - Against full collusion, consistent fake views pass, so integrity against all n needs a collaborative
+    SNARK over the homomorphic commitment. That is the named next layer; full collusion is also the point
+    where confidentiality is gone.
+- **ε_beacon.** `joint_beacon.rs` among the custodians; last-revealer abort bias is the α term.
+- **The envelope (C2's hactual/hhonest).** Norm caps on the factor shares, checked in MPC on every step at
+  O(rd) triples.
+
+**FHE fork legs, for symmetry.**
+- ε_bind: per-prime commitments plus canonical-integer witnesses.
+- ε_chk: soundness of the B61 certificate plus the crossing's share proof.
+- ε_beacon: as above.
+- The envelope must be proved on ciphertexts, which is why it dominates the FHE fork's cost below
+  p ≈ 0.01 (tradeoff note §5).
+
+## 4. What gets built next (the d = 64 step, both forks, one harness)
+
+- One complete step per fork, two layers, d = 64, integer recipe identical in both.
+  - FHE fork: B61 parameters, host ct×ct with certificates, a quorum crossing.
+  - MPC fork: SPDZ shares with MACs, exact truncation, one-hot lookups, an MPC-in-the-head audit of
+    sampled views.
+- Same counts columns for both: committed elements and bits, online wire elements, preprocessing
+  elements, crossings or openings, checker verdict.
+- Attacked with Codex's list, each attack expected to be REFUSED by the checker: wrong δ, mixed source
+  limbs, unrelated boundary shares, wrong quotient, stale parent, missing audit response.
+- "Proved" here means: every certificate relation the verifier would check is computed and checked over
+  the stated field with the stated bounds. Compiling the checker into a succinct argument is the next
+  layer and is priced, not run.
+- Reusable from our code, after this critique: the BFV reference (`bfv_ref.py`, new), the certificate
+  builders (new), `AuditSampling.lean` + `AuditDisplacement.lean` (the audit statement), and the
+  `joint_beacon.rs` design. Not reused: the fhegg 3-limb engine, its BabyBear bridge layout, the
+  rank-1-at-the-host proof route (F13).

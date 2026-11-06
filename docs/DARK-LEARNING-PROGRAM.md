@@ -40,7 +40,9 @@ Two consequences shape everything below.
    it can run unboundedly many shallow fragments on copied ciphertexts; noise is a per-computation
    correctness constraint, not a quota; relin keys are reusable. What survives is weaker and still worth
    having: every refresh, nonlinear service, activation and release is bound to one authorized transition
-   in the quorum's log. **Real P3 requires that the host never holds a reusable evaluation object for the
+   in the quorum's log. (⚠ Astra DL20/DL27: even C21 gives only "no accepted transition beyond authorized
+   instances + ideal-output leakage", not a physical prohibition; read "real P3" below in that sense.)
+   **Real P3 requires that the host never holds a reusable evaluation object for the
    mind** (C21: instance-bound delegated transitions, reusable model inside MPC). That is an argument for
    MPC custody (C15) on welfare grounds, independent of the cost counts, and against giving any host
    Enc(W) plus evaluation keys [INFERRED, after Codex].
@@ -163,7 +165,9 @@ and C13 directly, the rest are priced inline.
   `fhegg-fhe/src/joint_beacon.rs` commit-reveal (its header names last-revealer abort bias [READ]: that
   bias IS ε_beacon's G ≥ 2 term with α = abort probability).
 - **Reuses.** `AuditSampling.lean` unchanged (`leakage_bound` at b = 2B); `joint_beacon.rs`.
-- **Build fresh.** EnvelopeLeg in Lean; the bisection theorem `bisect_localizes` (F7.5) so an alarm finds
+- **Build fresh.** EnvelopeLeg in Lean; ~~the bisection theorem `bisect_localizes` (F7.5)~~ ⚠ withdrawn
+  (Astra DL03: isolated step validity is not monotone — two cancelling bad steps restore an honest
+  endpoint, so bisection must test PREFIX validity against an honest replay, not single steps) so an alarm finds
   the first bad step in ⌈log₂ T⌉ step proofs; Peigné's nested seed for any lazily committed tensor
   (their D.3.1: roots committed after the challenge need a second commit-reveal) [READ, lit lane].
 - **The Lean statement to land (Codex round 2's proposal, accepted as the target):** a pathwise
@@ -312,7 +316,8 @@ and C13 directly, the rest are priced inline.
 
 - **Statement (target).** If every partial decryption is released only after a verified proof that the
   ciphertext is the output of an allowed circuit whose PROVEN worst-case noise (δ_R = N, proved tight)
-  is below the decryption margin, then decryption failure has probability 0, and IND-CPA-D for BFV under
+  is below the decryption margin, then decryption failure has probability 0 *within the ideal certified
+  relation* (⚠ Astra DL09: overall it is ≤ ε_proof + ε_bind + ε_keygen, not 0), and IND-CPA-D for BFV under
   that gate reduces to IND-CPA plus the per-query smudging leg: `Adv_CPA-D ≤ Adv_CPA + K·ε_smudge`.
 - **Why it is the hinge.** 2026/203 Prop 11 [READ, crypto lane]: no scheme whose homomorphic addition is
   linear on ciphertexts (BFV, BGV, CKKS, unbootstrapped TFHE) is CPA-D under unrestricted evaluation — the
@@ -594,7 +599,7 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
 - **Falsifier.** Obtain one inference result, reward-dependent action or partial decryption from a
   speculative descendant; or activate a valid proof against a stale parent.
 
-### C21. Instance-bound delegated transitions: no reusable encrypted model ever leaves custody (Codex round 2, adopted; the real P3)
+### C21. Instance-bound delegated transitions: no reusable encrypted model ever leaves custody (Codex round 2, adopted; P3 in its narrowed sense — Astra DL27)
 
 - **Statement.** The reusable model lives inside reactive MPC (C15). For each authorized transition the
   quorum exports a one-instance randomized encoding / garbled computation bound to an input commitment,
@@ -642,7 +647,7 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
 | `appendOnly_noise_history_free` (F4) | `Bfv/Ring.lean` + `Mul.lean` | C4 | homomorphic δ chain at s = 2 |
 | `stepRR_noise_le` ring ct×ct (F4) | `Bfv/Ring.lean` | C1, C13 | `N−1` expansion refuted (exists) |
 | `displacement_bound` + EnvelopeLeg (F7) | `Selvage/AuditSampling.lean` | C2, C5 | drop the envelope |
-| `bisect_localizes` (F7) | new | C2 recovery | uncommitted intermediate state |
+| ~~`bisect_localizes`~~ prefix-validity bisection (F7, Astra DL03) | new | C2 recovery | two cancelling bad steps |
 | `merge_discharges_carried_witness` (F9) | `Selvage/AccRbrFold*` | C3, C16 | zero-absorb at the merge |
 | proof-gated CPA-D reduction (C8) | `Bfv/Smudging.lean` | G4 | ungated over-budget query |
 | `noUnauthorizedService` + quorum-intersection `SingleTimeline` (C13) | new | P4 | two non-intersecting quorums certify two children |
@@ -658,7 +663,18 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
 1. **[ran, Mac] bf16 derivative virtualization** — refuted for sigmoid/tanh/GELU/SiLU (F2). Done.
 2. **[ran, Mac] construction-space counts** — `tradeoff_space.py`; deployed point fails PQ and read
    budget; frontier = public-trunk low-rank (§3). Done; constants named.
-3. **[hbox, first] Calibrate the two constants that carry the frontier**: (a) committed felts of one
+3. **✅ RAN 2026-11-06 (hbox, counts only; table in VERDICTS §9 and `docs/DARK-LEARNING-SCHEME-DECISION.md`
+   §1).** One real ct×ct with the full integer rescale certificate:
+
+   | design | committed elements | bits per coefficient |
+   |---|---:|---:|
+   | native p61 @ 4096 | 593,899 | 8,842 |
+   | PRISM-style 3×61-bit @ 8192, u pinned | 1,908,715 | **8,277** |
+   | BabyBear row-interleaved @ 8192 | 32,055,047 | 121,302 |
+
+   The model was low by ×3.7 to ×30. One fused crossing at N = 8192 moves 294,912 online elements, and its
+   exact 16-bit lookup costs 1.6×10^9 preprocessing elements with a rotated table (1.7×10^6 with a DPF).
+   Original plan, kept for the record: **Calibrate the two constants that carry the frontier**: (a) committed felts of one
    ct×ct with the integer certificate at p61-native and at RNS-202@8192 (prediction 159,744 and
    1,056,768); (b) online elements of one fused σ/σ' crossing of an N = 8192 ciphertext through the
    existing threshold path. Run as `swarm-build cargo run --release --bin <new counter>` with a counting
