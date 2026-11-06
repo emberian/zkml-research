@@ -1,0 +1,111 @@
+HARDWARE OK: Tesla T4
+out /tmp/tower256-out shrink 1 ells 10,12,14,16,18,20
+cupy 14.0.1 numpy 2.1.3
+pycryptodome 4.2.0
+== CPU reference and timings
+{"kind":"primitives","clmul":"x86_64-pclmulqdq","keccak_node_ns":571.1,"p256_mul_ns":24.92,"fanpaar_ref_mul_ns":42234.0,"basis_conversion_ns":81.9,"sink":"d1797d6c"}
+{"kind":"prove","ell":8,"m":4,"q":148,"threads":1,"total_ms":3.184,"encode_ms":0.186,"merkle_ms":0.778,"folds_ms":0.010,"openings_ms":1.641,"other_ms":0.564,"merkle_keccak_f":987,"encode_mults":1152,"fold_mults":240,"receipt_sha3_256":"b9e40d5c4a31474bba30792ea5383f55c342cd9865d84714823a3cb964d91c1d"}
+{"kind":"reference","ell":8,"reference_s":1.2,"identical":true}
+{"kind":"prove","ell":10,"m":6,"q":148,"threads":1,"total_ms":5.941,"encode_ms":0.447,"merkle_ms":2.600,"folds_ms":0.033,"openings_ms":2.248,"other_ms":0.608,"merkle_keccak_f":4057,"encode_mults":6144,"fold_mults":1008,"receipt_sha3_256":"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f"}
+{"kind":"reference","ell":10,"reference_s":12.5,"identical":true}
+{"kind":"primitives","clmul":"x86_64-pclmulqdq","keccak_node_ns":577.9,"p256_mul_ns":22.88,"fanpaar_ref_mul_ns":41623.8,"basis_conversion_ns":87.8,"sink":"d1797d6c"}
+{"kind":"prove","ell":10,"m":6,"q":148,"threads":1,"total_ms":6.012,"encode_ms":0.430,"merkle_ms":2.598,"folds_ms":0.033,"openings_ms":2.287,"other_ms":0.659,"merkle_keccak_f":4057,"encode_mults":6144,"fold_mults":1008,"receipt_sha3_256":"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f"}
+{"kind":"prove","ell":10,"m":6,"q":148,"threads":4,"total_ms":5.442,"encode_ms":0.380,"merkle_ms":2.453,"folds_ms":0.031,"openings_ms":2.026,"other_ms":0.548,"merkle_keccak_f":4057,"encode_mults":6144,"fold_mults":1008,"receipt_sha3_256":"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f"}
+{"kind":"prove","ell":12,"m":8,"q":148,"threads":1,"total_ms":15.556,"encode_ms":1.529,"merkle_ms":9.931,"folds_ms":0.124,"openings_ms":3.295,"other_ms":0.671,"merkle_keccak_f":16343,"encode_mults":30720,"fold_mults":4080,"receipt_sha3_256":"49d394f304ccc2989e3ea742f189b0a92f46a8b7ed32f61c822259158464a2f1"}
+{"kind":"prove","ell":12,"m":8,"q":148,"threads":4,"total_ms":15.548,"encode_ms":3.136,"merkle_ms":8.261,"folds_ms":0.326,"openings_ms":3.167,"other_ms":0.653,"merkle_keccak_f":16343,"encode_mults":30720,"fold_mults":4080,"receipt_sha3_256":"49d394f304ccc2989e3ea742f189b0a92f46a8b7ed32f61c822259158464a2f1"}
+{"kind":"prove","ell":14,"m":10,"q":148,"threads":1,"total_ms":53.799,"encode_ms":7.390,"merkle_ms":40.365,"folds_ms":0.489,"openings_ms":4.772,"other_ms":0.777,"merkle_keccak_f":65493,"encode_mults":147456,"fold_mults":16368,"receipt_sha3_256":"6bbf02524af213b8a6af156e5e59379b3ef3a7972b8cc06fc4f987b076ef5d36"}
+{"kind":"prove","ell":14,"m":10,"q":148,"threads":4,"total_ms":57.146,"encode_ms":22.115,"merkle_ms":27.946,"folds_ms":0.802,"openings_ms":5.404,"other_ms":0.870,"merkle_keccak_f":65493,"encode_mults":147456,"fold_mults":16368,"receipt_sha3_256":"6bbf02524af213b8a6af156e5e59379b3ef3a7972b8cc06fc4f987b076ef5d36"}
+{"kind":"prove","ell":16,"m":12,"q":148,"threads":1,"total_ms":212.282,"encode_ms":32.332,"merkle_ms":169.936,"folds_ms":2.215,"openings_ms":6.778,"other_ms":1.006,"merkle_keccak_f":262099,"encode_mults":688128,"fold_mults":65520,"receipt_sha3_256":"b22254bca43c0918c9ee7b572da47957a56f162e32a11e5d6a5a9cc66d70280b"}
+{"kind":"prove","ell":16,"m":12,"q":148,"threads":4,"total_ms":146.332,"encode_ms":41.428,"merkle_ms":94.677,"folds_ms":2.261,"openings_ms":6.898,"other_ms":1.052,"merkle_keccak_f":262099,"encode_mults":688128,"fold_mults":65520,"receipt_sha3_256":"b22254bca43c0918c9ee7b572da47957a56f162e32a11e5d6a5a9cc66d70280b"}
+{"kind":"prove","ell":18,"m":14,"q":148,"threads":1,"total_ms":831.073,"encode_ms":153.301,"merkle_ms":659.643,"folds_ms":9.060,"openings_ms":7.911,"other_ms":1.139,"merkle_keccak_f":1048529,"encode_mults":3145728,"fold_mults":262128,"receipt_sha3_256":"c547d53eb1a29744635b6f8d990f6eb257249611639ed0ba40a4f46eb91241eb"}
+{"kind":"prove","ell":18,"m":14,"q":148,"threads":4,"total_ms":466.802,"encode_ms":108.762,"merkle_ms":341.160,"folds_ms":6.985,"openings_ms":8.719,"other_ms":1.159,"merkle_keccak_f":1048529,"encode_mults":3145728,"fold_mults":262128,"receipt_sha3_256":"c547d53eb1a29744635b6f8d990f6eb257249611639ed0ba40a4f46eb91241eb"}
+{"kind":"prove","ell":20,"m":16,"q":148,"threads":1,"total_ms":3450.303,"encode_ms":723.546,"merkle_ms":2658.446,"folds_ms":56.588,"openings_ms":10.320,"other_ms":1.368,"merkle_keccak_f":4194255,"encode_mults":14155776,"fold_mults":1048560,"receipt_sha3_256":"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b"}
+{"kind":"prove","ell":20,"m":16,"q":148,"threads":4,"total_ms":1752.018,"encode_ms":362.171,"merkle_ms":1351.845,"folds_ms":26.066,"openings_ms":10.556,"other_ms":1.355,"merkle_keccak_f":4194255,"encode_mults":14155776,"fold_mults":1048560,"receipt_sha3_256":"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b"}
+Cuda compilation tools, release 13.0, V13.0.88
+Build cuda_13.0.r13.0/compiler.36424714_0
+ptxas info    : Compile time = 5.788 ms
+ptxas info    : Compiling entry function 'ntt_deinterleave' for 'sm_75'
+ptxas info    : Function properties for ntt_deinterleave
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 7.127 ms
+ptxas info    : Compiling entry function 'ntt_taylor_step' for 'sm_75'
+ptxas info    : Function properties for ntt_taylor_step
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 7.528 ms
+ptxas info    : Compiling entry function 'ntt_scale' for 'sm_75'
+ptxas info    : Function properties for ntt_scale
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compile time = 186.087 ms
+ptxas info    : Compiling entry function 't256_span' for 'sm_75'
+ptxas info    : Function properties for t256_span
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 3.555 ms
+ptxas info    : Compiling entry function 't256_pow_combine' for 'sm_75'
+ptxas info    : Function properties for t256_pow_combine
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compile time = 176.699 ms
+ptxas info    : Compiling entry function 't256_pow_small' for 'sm_75'
+ptxas info    : Function properties for t256_pow_small
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 384 bytes cmem[0]
+ptxas info    : Compile time = 309.554 ms
+ptxas info    : Compiling entry function 't256_pivot_map' for 'sm_75'
+ptxas info    : Function properties for t256_pivot_map
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 105 registers, used 1 barriers, 1024 bytes smem, 384 bytes cmem[0]
+ptxas info    : Compile time = 299.615 ms
+ptxas info    : Compiling entry function 't256_inv' for 'sm_75'
+ptxas info    : Function properties for t256_inv
+    136 bytes stack frame, 132 bytes spill stores, 132 bytes spill loads
+ptxas info    : Used 255 registers, used 1 barriers, 136 bytes cumulative stack size, 1024 bytes smem, 376 bytes cmem[0]
+ptxas info    : Compile time = 541.955 ms
+ptxas info    : Compiling entry function 't256_mul' for 'sm_75'
+ptxas info    : Function properties for t256_mul
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compile time = 165.334 ms
+ptxas info    : Compiling entry function 'init_prod' for 'sm_75'
+ptxas info    : Function properties for init_prod
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 360 bytes cmem[0]
+ptxas info    : Compile time = 1.888 ms
+ptxas info    : Compiling entry function 'init_tables' for 'sm_75'
+ptxas info    : Function properties for init_tables
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 29 registers, used 0 barriers, 360 bytes cmem[0]
+ptxas info    : Compile time = 12.891 ms
+ptxas info    : Function properties for _Z8bits_genij
+    32 bytes stack frame, 28 bytes spill stores, 28 bytes spill loads
+ptxas info    : Function properties for _Z8bits_mulijj
+    48 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+== GPU
+backend cupy Tesla T4
+checks {'keccak_checked': 1024, 'keccak_mismatch': 0, 'keccak_reference': 'pycryptodome cSHAKE256', 'mul_checked': 1024, 'mul_mismatch': 0, 'inv_checked': 16, 'inv_mismatch': 0}
+lean [{'name': 'ell2_m1_q2', 'identical': True, 'bytes': 376}, {'name': 'ell3_m0_q0', 'identical': True, 'bytes': 296}, {'name': 'ell4_m2_q3_offset9', 'identical': True, 'bytes': 1141}, {'name': 'ell6_m3_q3', 'identical': True, 'bytes': 2102}, {'name': 'ell8_m3_q4', 'identical': True, 'bytes': 3553}]
+rate keccak 318680153.77711445
+rate keccak_u2 318569857.7767625
+Traceback (most recent call last):
+  File "/tmp/accel/accel-tower-tune-02/cuda/tower256_gpu.py", line 939, in <module>
+    main()
+    ~~~~^^
+  File "/tmp/accel/accel-tower-tune-02/cuda/tower256_gpu.py", line 850, in main
+    r_, t_ = rate(be, dev, kind, a.rate_threads, it)
+             ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/accel/accel-tower-tune-02/cuda/tower256_gpu.py", line 783, in rate
+    be.call(name, threads, *args)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/accel/accel-tower-tune-02/cuda/tower256_gpu.py", line 320, in call
+    f((min(self.sms, (n + 1023) // 1024),), (1024,), conv, shared_mem=65536)
+    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cupy/_core/raw.pyx", line 101, in cupy._core.raw.RawKernel.__call__
+  File "cupy/cuda/function.pyx", line 147, in cupy.cuda.function.Function.__call__
+  File "cupy/cuda/function.pyx", line 129, in cupy.cuda.function._launch
+  File "cupy_backends/cuda/api/driver.pyx", line 273, in cupy_backends.cuda.api.driver.launchKernel
+  File "cupy_backends/cuda/api/driver.pyx", line 63, in cupy_backends.cuda.api.driver.check_status
+cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES: too many resources requested for launch
+ENTRY_DONE rc 1 all_bit_exact None
