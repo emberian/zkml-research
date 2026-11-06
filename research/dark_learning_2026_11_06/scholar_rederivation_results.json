@@ -1,0 +1,167 @@
+{
+  "source_sha256": {
+    "he_matvec.py": "a3911408c7502ba7d674d336909a9f1ff39e25a162d57406a4040a3ffbb8e85a",
+    "cosnark.py": "d2174190e1f25f11daf1e3ddabe5dc767a3849db599eb14a7072714884d22968",
+    "spdz.py": "82757bff877a0ad281afbc306ed80f6d8bdc37dee4648ffb1bc0fad097345c20",
+    "step_counts.py": "5c0d6d9a5753db34a84016c6ce332f89a24c468bc2651a5eefb8a9df14bf5e35"
+  },
+  "counts": [
+    {
+      "d": 64,
+      "send": 18,
+      "returned": 18,
+      "spdz_online": 107148,
+      "he_online": 1805214,
+      "he_auth_values": 34688,
+      "spdz_auth_values": 46592,
+      "spine": {
+        "witness_elems": 16960,
+        "codeword_elems_per_party": 67840,
+        "proof_field_elems": 65733,
+        "proof_hashes": 14823,
+        "proving_openings": 1716,
+        "proving_wire": 10308,
+        "raw_share_bits": 3103680,
+        "encoded_share_bits": 12414720,
+        "root_bits": 9984
+      },
+      "spine_t148": {
+        "witness_elems": 16960,
+        "codeword_elems_per_party": 67840,
+        "proof_field_elems": 148389,
+        "proof_hashes": 34227,
+        "proving_openings": 1716,
+        "proving_wire": 10308,
+        "raw_share_bits": 3103680,
+        "encoded_share_bits": 12414720,
+        "root_bits": 9984
+      }
+    },
+    {
+      "d": 1024,
+      "send": 240,
+      "returned": 192,
+      "spdz_online": 19703820,
+      "he_online": 22099998,
+      "he_auth_values": 2607104,
+      "spdz_auth_values": 5746688,
+      "spine": {
+        "witness_elems": 4203520,
+        "codeword_elems_per_party": 16814080,
+        "proof_field_elems": 877801,
+        "proof_hashes": 21351,
+        "proving_openings": 26728,
+        "proving_wire": 160380,
+        "raw_share_bits": 769244160,
+        "encoded_share_bits": 3076976640,
+        "root_bits": 9984
+      },
+      "spine_t148": {
+        "witness_elems": 4203520,
+        "codeword_elems_per_party": 16814080,
+        "proof_field_elems": 1982569,
+        "proof_hashes": 49323,
+        "proving_openings": 26728,
+        "proving_wire": 160380,
+        "raw_share_bits": 769244160,
+        "encoded_share_bits": 3076976640,
+        "root_bits": 9984
+      }
+    },
+    {
+      "d": 4096,
+      "send": 960,
+      "returned": 768,
+      "spdz_online": 305897484,
+      "he_online": 88989726,
+      "he_auth_values": 35766272,
+      "spdz_auth_values": 86073344,
+      "spine": {
+        "witness_elems": 67145728,
+        "codeword_elems_per_party": 268582912,
+        "proof_field_elems": 3395907,
+        "proof_hashes": 24615,
+        "proving_openings": 106626,
+        "proving_wire": 639768,
+        "raw_share_bits": 12287668224,
+        "encoded_share_bits": 49150672896,
+        "root_bits": 9984
+      },
+      "spine_t148": {
+        "witness_elems": 67145728,
+        "codeword_elems_per_party": 268582912,
+        "proof_field_elems": 7669827,
+        "proof_hashes": 56871,
+        "proving_openings": 106626,
+        "proving_wire": 639768,
+        "raw_share_bits": 12287668224,
+        "encoded_share_bits": 49150672896,
+        "root_bits": 9984
+      }
+    }
+  ],
+  "small_execution": [
+    {
+      "d": 4,
+      "accept": true,
+      "independent_counts_match": true
+    },
+    {
+      "d": 16,
+      "accept": true,
+      "independent_counts_match": true
+    },
+    {
+      "d": 32,
+      "accept": true,
+      "independent_counts_match": true
+    },
+    {
+      "d": 64,
+      "accept": true,
+      "independent_counts_match": true
+    }
+  ],
+  "attacks": {
+    "freivalds_early_challenge_kernel": {
+      "early_accepts": true,
+      "actual_auth_rehash_refuses": true,
+      "residual": 803702003040716618
+    },
+    "freivalds_context_omitted": {
+      "old_prefix_change_keeps_rho": true,
+      "scope": "requires separate committed input/state binding"
+    },
+    "fixed_seed_mac_cancellation": {
+      "legacy_accepts_wrong_broadcasts": true,
+      "transcript_bound_control_refuses": true,
+      "scope": "reference ROM control; production requires commit-then-joint-unpredictable coins and checked sigma commitments"
+    },
+    "chain_occurrence": {
+      "honest_accepts": true,
+      "duplicate_no_update_edge_accepts": true,
+      "stale_parent_refused": true,
+      "stale_reason": "parent commitment is not the previous step's child commitment",
+      "reference_ledger_replay_refused": true,
+      "reference_ledger_context_splice_refused": true,
+      "scope": "ledger is an in-memory specification, not persistent quorum consensus"
+    },
+    "forge_W1n": {
+      "refused": true,
+      "why": "rank-1 update W1n: W'(r) != W(r) - d(r_row) v(r_col)"
+    },
+    "forge_z1": {
+      "refused": true,
+      "why": "sumcheck z1: round sum does not match the claim"
+    },
+    "forge_sumcheck": {
+      "refused": true,
+      "why": "sumcheck z1: final check fails against the committed W and vector"
+    },
+    "lie_in_u": {
+      "refused": true,
+      "why": "evaluation consistency fails at an opened column (W1n)"
+    }
+  },
+  "pass": true
+}
