@@ -76,6 +76,11 @@ the claim (ID, request, tokens) must be built by the checker's side, not taken f
 
 ## 3. Where the brief's bar is wrong, and the bar I am setting
 
+**Status: these five corrections were accepted by the root on 2026-11-06 and are the bar.** They
+are recorded in the docstring of `minidregg/Selvage/AuditFlashProve.lean` (lane branch
+`lane/init8-flashprove-audit`). Codex round 1 (gpt-6-astra) then sharpened (1), (4) and the
+binding term; the refinements are listed after (5).
+
 **(1) ε_chk does not enter as a per-round `εchk`.** Their bound is over one random oracle shared by
 every round and a total query budget Q. `ChkLeg` wants, per round, checker coins independent of the
 beacon and fresh each round (`chkLeg_of_product`, residual "fresh coins" of §8). A fixed hash is
@@ -123,6 +128,20 @@ fires about 1/f audits before its first alarm, so 1,000 seeds at f = 0.25 is abo
 round ‖ position), one real drand round per seed; the live path uses one drand round per request.
 The expected result is the bound nearly attained (E[C_τ] ≈ 1/p with δ, ε_bind ≈ 0), and the
 falsifiers diverging. That is the measurement, not a weakness of it.
+
+**Refinements after codex round 1.** (1′) The bad event is read on the sampled run, not over
+every history: `BadPath` = some round of this run was live, corrupt, fired and accepted; off it
+the real run equals an `ideal` comparison round (`agree_ideal`), and the composition goes through
+the landed `ComputationalBinding.leakage_with_global_binding`. δchk is stated at the
+run-to-one-game reduction's query count, `fpSoundErr(Q + n·(2^23+1))`, which keeps the damage at
+`n·δ` rather than the `n²·δ` of a per-round union bound. (4′) Openings, files and verdicts may
+depend on the current coin; only the served claim is fixed before the beacon. (Binding) charged
+only on ACCEPTED openings; a failed opening (files not hashing to the record, or the record not
+opening under the root) is rejected by the exported `auditVerdict`. (Parser) prose only after
+` (` on `covered:`; every other word `key=value`; bare tag lines count; single-token ranges are
+rejected rather than guessed. (Beacon) the theorem needs a FRESH coin per round; a reused coin
+meets the marginal rate and breaks it, which is why the position is inside the coin's hash and
+the round is `seen + 2`.
 
 ## 4. Plan
 
