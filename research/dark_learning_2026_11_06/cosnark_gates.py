@@ -416,3 +416,18 @@ def counts_optimized_MODEL(d, S1=5, K1=13, S2=4, K2=8, S3=8, K3=13, n=3):
     muls = 2 * had
     opens = 2 * muls
     return dict(hadamard=had, proving_openings=opens, proving_wire_total=opens * n * (n - 1))
+
+def counts_honest_majority_MODEL(d, n, S1=5, K1=13, S2=4, K2=8, S3=8, K3=13):
+    """MODEL (IV-MPC's choice, ePrint 2026/2721 §5.2.1): Shamir shares with t < n/2, so every product in a
+    sumcheck round is LOCAL (degree-2t shares) and only the round polynomials are opened. The proving wire
+    of the middle and the spine is then the openings alone: each round polynomial of degree deg is deg + 1
+    values, each value broadcast by every party (n (n - 1) elements)."""
+    f = counts_formula(d, S1, K1, S2, K2, S3, K3)
+    p2 = lambda x: 1 << max(0, (x - 1).bit_length())
+    lg = lambda x: x.bit_length() - 1
+    L, PL, dl = p2(f["hadamard"]), p2(f["atoms"]), p2(d)
+    ld = lg(dl)
+    middle_vals = 4 * lg(L) + 3 * lg(PL) + 3 * 3 * lg(L) + 9 * 3 * ld + 13
+    spine_vals = 3 * 3 * ld + 4 * ld
+    return dict(n=n, t=(n - 1) // 2, middle_proving_wire=middle_vals * n * (n - 1),
+                spine_proving_wire=spine_vals * n * (n - 1))
