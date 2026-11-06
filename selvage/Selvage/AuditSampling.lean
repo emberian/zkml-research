@@ -38,8 +38,11 @@ fields* of `AuditParams` — never folded into a `negl`:
   statement privileges neither. Section 7 instantiates it from the landed
   `Selvage/LightClientSound.lean` bound, under two named transport
   obligations that this file does NOT discharge.
-* `ε_bind` — commitment binding, priced as a term. Open in the light-client
-  vocabulary as `[ACC-extract]`.
+* `ε_bind` — a uniform bound for EACH history, not a global run advantage.
+  `BindingBudget.bindLeg_of_history_game` discharges this from per-history
+  resource/security obligations. Ordinary global computational binding instead
+  uses `BindingBudget.leakage_with_global_binding`, adding `M * ε_global`
+  under an explicit pathwise coupling and finite-horizon damage cap.
 * `ε_beacon` — the beacon's grindability, defined as an *additive* degradation
   of the selection-fire probability, quantified over the option set as it
   stands at **beacon-emission** time (`BeaconLeg`). This is NOT the
@@ -246,9 +249,11 @@ def ChkLeg (A : AuditParams) (R : Round Ω) : Prop :=
     uniformProb Ω (fun ω => R.fires h ω ∧ R.chkErr h ω)
       ≤ uniformProb Ω (fun ω => R.fires h ω) * A.εchk
 
-/-- **The `ε_bind` leg.** The commitment is equivocated with probability at
-most `ε_bind`. Open in the light-client vocabulary as `[ACC-extract]`; named
-here so that a deployment cannot forget it exists. -/
+/-- **The history-conditional `ε_bind` leg.** For EVERY history, the next-round
+equivocation probability is at most `ε_bind`. A small global binding advantage
+does not imply this: a rare history may already reveal a collision. Use the
+global bad-event transfer in `Selvage.BindingBudget` unless conditional
+admissibility and resource bounds are independently established. -/
 def BindLeg (A : AuditParams) (R : Round Ω) : Prop :=
   ∀ h : List Ω, uniformProb Ω (fun ω => R.bindBreak h ω) ≤ A.εbind
 
