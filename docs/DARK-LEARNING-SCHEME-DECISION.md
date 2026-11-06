@@ -227,3 +227,67 @@ N = 8192-sized messages to carry 64 values. The fork flips at large d (tradeoff 
   builders (new), `AuditSampling.lean` + `AuditDisplacement.lean` (the audit statement), and the
   `joint_beacon.rs` design. Not reused: the fhegg 3-limb engine, its BabyBear bridge layout, the
   rank-1-at-the-host proof route (F13).
+
+
+## 5. ✅ The d = 64 step, built both ways (2026-11-06, `research/dark_learning_2026_11_06/run_d64.py`)
+
+**The setup.**
+- One complete training step: two dense 64×64 layers, batch 1, exact integer recipe (`step_spec.py`).
+- Each fork is built on the candidate this decision chose. Both forks reproduce the reference learner's
+  new weights EXACTLY (integer equality), and both use one ~61-bit prime as the MPC field. In the FHE
+  fork that prime is also the plaintext modulus.
+- FHE fork: N = 8192, Q = 3×61-bit, 5 extension primes, 3 ct×ct per step, each gated by the B61
+  certificate before any partial decryption; 3 custodian crossings. MPC fork: SPDZ, n = 3, whole step on
+  shares.
+- The FHE run on hbox exited normally, as `run_d64.py fhe` (its log is `d64_fhe.log`); the MPC fork ran
+  on the Mac and on hbox.
+
+| counts per step | FHE fork | MPC fork |
+|---|---:|---:|
+| committed elements (61-bit) | 3,718,968 | 328,704 |
+| + certificate range digits (16-bit) | 7,077,888 | — |
+| committed bits | 340.1 M | 20.1 M |
+| online wire elements | 795,660 | 131,724 (107,148 without the genesis input of W) |
+| preprocessing elements | 204,672 | 328,704 |
+| openings | 5,632 | 17,792 |
+| ct×ct / crossings | 3 / 3 | 0 / 0 |
+| certificate per ct×ct | 933,864 elements + 2,359,296 range digits | — |
+
+[MEASURED, `d64_results_fhe.json`, `d64_results_mpc.json`]
+
+**Codex's attack list, run against both:**
+
+| attack | FHE fork | MPC fork |
+|---|---|---|
+| wrong δ | REFUSED, decryption gate (input handle ≠ the custodians' committed δ) | REFUSED, online MAC check |
+| mixed source limbs / sources | REFUSED, gate (opened residues ≠ committed handle) | REFUSED, online MAC check |
+| unrelated boundary shares | **ACCEPTED online, output wrong**; the sampled conversion audit detects it in 2/3 beacon selections | REFUSED, online MAC check |
+| wrong quotient | REFUSED, gate (pinned-u output base extension) | REFUSED, online MAC check |
+| stale parent | REFUSED, gate (handle ≠ head) | REFUSED, chain check |
+| missing audit response | REFUSED, fail-closed alarm | REFUSED, fail-closed alarm |
+
+The MPC-in-the-head audit (n−1 of n views re-executed against the public transcript) catches a deviating
+custodian in 2/3 of beacon selections. The online MAC check catches it on every step.
+
+**What the build decided:**
+1. **At d = 64 the MPC fork dominates**: ×17 fewer committed bits, ×6–7 less online wire. That is what §3
+   predicted. Measured MPC online traffic is ~2× the derived 5.2×10^4, because exact truncation costs
+   10 multiplications per value.
+2. **The FHE fork's one open hole is the conversion relation.** A custodian who authenticates a share of
+   the wrong source ciphertext produces a wrong step that every always-on check accepts; only the
+   sampled audit sees it. Codex named this in round 1. The build makes it concrete and shows the fix is
+   a per-crossing proof that E2S is well formed. Until that exists, the FHE fork's integrity for the
+   conversion is sampled-only, at 2p/3.
+3. **Two numerical bugs a paper analysis would have missed, both in BFV with a large t:**
+   - textbook Δ·m encoding of a non-centered m;
+   - Δ·M in shares-to-encryption, where shares sum to m + kt.
+
+   Either leaves a noise of order (Q mod t) ≈ 2^61–2^62. The next ct×ct multiplies it by t·N·|s|, so
+   decryption fails. The fixes are centered encoding and KPZ-exact round(Q·M/t) encoding in S2E. **Any
+   design with t = the MPC prime needs both.**
+4. **Not built yet:**
+   - a succinct argument compiling these checkers;
+   - real preprocessing (an ideal dealer stands in);
+   - the E2S well-formedness proof;
+   - the collaborative SNARK that the MPC fork needs against full collusion;
+   - the d = 4096 point where the counts say the fork flips.

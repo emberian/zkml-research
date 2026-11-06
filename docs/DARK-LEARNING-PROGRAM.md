@@ -680,7 +680,12 @@ host erased old ciphertexts or prior releases: custodians must refuse stale mode
    existing threshold path. Run as `swarm-build cargo run --release --bin <new counter>` with a counting
    harness in `fhegg-fhe` (counts, no clock; same discipline as `low_rank_commit_cost.rs`). These two
    numbers move the FHE-vs-MPC fork in §3 more than anything else.
-4. **[hbox] One complete small dark transition, both proving routes (F13)** — ciphertext-trace proving by
+4. **✅ BUILT 2026-11-06 (`research/dark_learning_2026_11_06/run_d64.py`; results in the scheme decision §5).**
+   Both forks reproduce the reference learner exactly. Per step, FHE vs MPC: 340.1 M vs 20.1 M committed
+   bits, 795,660 vs 131,724 online elements. Every Codex attack is refused by an always-on check in the
+   MPC fork. In the FHE fork every attack is refused except unrelated boundary shares, which only the
+   sampled conversion audit catches (2/3 per audit). Original plan: **[hbox] One complete small dark
+   transition, both proving routes (F13)** — ciphertext-trace proving by
    the host vs distributed plaintext proving by the quorum inside the crossing, on a d = 64 two-layer
    learner, attacked with wrong δ, mixed limbs, unrelated boundary shares, wrong quotient, stale parent,
    missing audit response. This replaces every extrapolation of the rank-1 saving to the dark setting.

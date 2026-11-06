@@ -1,0 +1,85 @@
+{
+ "fork": "FHE (BFV N=8192, 3x61-bit Q, t = SPDZ prime) + MPC crossings",
+ "counts": {
+  "committed_elems": 3718968,
+  "committed_bits": 226857048,
+  "certificate_elems_per_ctct": 933864,
+  "certificate_range_lookups_per_ctct": 2359296,
+  "online_wire": 795660,
+  "wire_by_phase": {
+   "E2S": 245760,
+   "S2E": 294912,
+   "auth": 1920,
+   "trunc": 1536,
+   "mul": 28416,
+   "lookup": 384,
+   "outer": 1536,
+   "mac_check": 12,
+   "host->custodians": 221184
+  },
+  "preprocessing_auth_values": 34112,
+  "preprocessing_elems": 204672,
+  "openings": 5632,
+  "crossings": 3,
+  "ct_x_ct": 3,
+  "N": 8192,
+  "logQ": 183,
+  "B_primes": 5
+ },
+ "rows": {
+  "honest": {
+   "verdict": "ACCEPT",
+   "refines_spec": true,
+   "gate": [
+    [
+     "z1 = W1 x",
+     true,
+     "accept"
+    ],
+    [
+     "z2 = W2 h",
+     true,
+     "accept"
+    ],
+    [
+     "b = W2^T d2",
+     true,
+     "accept"
+    ]
+   ],
+   "audit": [
+    [
+     0,
+     1
+    ],
+    true,
+    "accept"
+   ]
+  },
+  "wrong_delta": {
+   "verdict": "REFUSED",
+   "by": "gate / MAC (every step): decryption refused at b = W2^T d2: handle mismatch (an input or output is not the committed ciphertext)"
+  },
+  "mixed_limbs": {
+   "verdict": "REFUSED",
+   "by": "gate / MAC (every step): decryption refused at z1 = W1 x: handle mismatch (an input or output is not the committed ciphertext)"
+  },
+  "wrong_quotient": {
+   "verdict": "REFUSED",
+   "by": "gate / MAC (every step): decryption refused at z1 = W1 x: y / output base extension (component 2, coefficient 4095)"
+  },
+  "stale_parent": {
+   "verdict": "REFUSED",
+   "by": "gate / MAC (every step): decryption refused at z1 = W1 x: handle mismatch (an input or output is not the committed ciphertext)"
+  },
+  "unrelated_boundary_shares": {
+   "verdict": "ACCEPT online; audit detects in 2/3 beacon selections",
+   "output_wrong": true,
+   "note": "the conversion relation is SAMPLED here; making it an envelope needs a per-crossing proof of E2S well-formedness"
+  },
+  "missing_audit_response": {
+   "verdict": "REFUSED",
+   "by": "fail-closed: alarm on a missing view"
+  }
+ }
+}
