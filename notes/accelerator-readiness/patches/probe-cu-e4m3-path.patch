@@ -1,0 +1,62 @@
+--- a/experiments/mma-accumulator-probe/probe.cu
++++ b/experiments/mma-accumulator-probe/probe.cu
+@@ -1,5 +1,13 @@
+-// Accumulator probe for tensor-core MMA kinds (initiative 14, F3).  UNCOMPILED on the Mac (no nvcc):
+-// first action on a GPU box is `make` and fixing what nvcc reports.  Layout-free by construction: every
++// Accumulator probe for tensor-core MMA kinds (initiative 14, F3).  probe_fixed.cu: probe.cu with the two
++// interpretation fixes of initiative 17 (patch: zkml-research notes/accelerator-readiness/patches/
++// probe-cu-e4m3-path.patch).  probe.cu itself compiles unchanged for sm_80..sm_103a (nvcc 13.0.88).
++//   1. ptxas lowers mma.sync e4m3 to F2FP unpack + HMMA (FP16) on sm_90a and sm_100a/103a (SASS census,
++//      Kaggle accel-mma-t4-dry-01): only sm_89 runs it on QMMA.  The e4m3 rows below are labelled with
++//      the path; on Hopper use wgmma (probe_sm80.cu wgcheck), on Blackwell cuBLASLt (gemm_probe.cu).
++//   2. With fractional products (2^-5 each) the C path drops each product separately once it falls below
++//      the alignment window, so "m = j + 1" under-reads the window by log2(1/product) = 5 bits (T4 HMMA,
++//      fp16 analogue: 22 fractional vs 25 integer).  The integer-addend probe below (C = 2^j, every
++//      product 1, D = 2^j + 32) reads the window that Lean's HoldsBelow uses for integer limb sums.  Layout-free by construction: every
+ // element of A and of B holds the same value, so D[i][j] = C[i][j] + K*a*b for every fragment layout.
+ //
+ //   probe_wrap_u8   : u8 x u8 -> s32 (sm_80+). Chains D -> C past 2^31 and 2^32; checks the register
+@@ -29,10 +37,11 @@
+   if (threadIdx.x == 0) { out[0] = d0; out[1] = d1; out[2] = d2; out[3] = d3; }
+ }
+ 
+-__global__ void probe_cacc_e4m3(int j, float *out) {
++__global__ void probe_cacc_e4m3(int j, int integer_addends, float *out) {
+ #if __CUDA_ARCH__ >= 890
+-  __nv_fp8x4_e4m3 qa(make_float4(0.25f, 0.25f, 0.25f, 0.25f));
+-  __nv_fp8x4_e4m3 qb(make_float4(0.125f, 0.125f, 0.125f, 0.125f));
++  float va = integer_addends ? 1.0f : 0.25f, vb = integer_addends ? 1.0f : 0.125f;
++  __nv_fp8x4_e4m3 qa(make_float4(va, va, va, va));
++  __nv_fp8x4_e4m3 qb(make_float4(vb, vb, vb, vb));
+   uint32_t a = *reinterpret_cast<uint32_t *>(&qa), b = *reinterpret_cast<uint32_t *>(&qb);
+   float c = ldexpf(1.0f, j);
+   float d0 = c, d1 = c, d2 = c, d3 = c;
+@@ -57,12 +66,22 @@
+            (long long)its[t] * 32, (long long)exact, h[0], (uint32_t)h[0] == want ? "yes" : "NO",
+            (int64_t)h[0] == exact ? "yes" : "no");
+   }
+-  for (int j = 8; j <= 26; j++) {
+-    probe_cacc_e4m3<<<1, 32>>>(j, df);
+-    float h; cudaMemcpy(&h, df, 4, cudaMemcpyDeviceToHost);
+-    double want = ldexp(1.0, j) + 1.0;
+-    printf("e4m3 C-acc j=%2d  D=%.1f  exact=%s\n", j, (double)h, (double)h == want ? "yes" : "NO");
++  int dev = 0, maj = 0, min = 0;
++  cudaGetDevice(&dev);
++  cudaDeviceGetAttribute(&maj, cudaDevAttrComputeCapabilityMajor, dev);
++  cudaDeviceGetAttribute(&min, cudaDevAttrComputeCapabilityMinor, dev);
++  const char *path = (maj == 8 && min == 9) ? "QMMA (native fp8)" : "F2FP+HMMA (fp8 widened to fp16; not the fp8 datapath)";
++  printf("e4m3 mma.sync path on sm_%d%d: %s\n", maj, min, path);
++  for (int ia = 0; ia < 2; ia++) {
++    for (int j = 8; j <= 30; j++) {
++      probe_cacc_e4m3<<<1, 32>>>(j, ia, df);
++      float h; cudaMemcpy(&h, df, 4, cudaMemcpyDeviceToHost);
++      double want = ldexp(1.0, j) + (ia ? 32.0 : 1.0);
++      printf("e4m3 C-acc %s j=%2d  D=%.1f  exact=%s\n", ia ? "integer   " : "fractional", j, (double)h,
++             (double)h == want ? "yes" : "NO");
++    }
+   }
+-  printf("m(e4m3, C path) = 1 + largest j with exact=yes.  Record SKU, driver, nvcc, sm.\n");
++  printf("integer rows: window m = 1 + largest j with exact=yes (2^j + 32 is an f32 up to j = 28).\n"
++         "fractional rows: 1 + largest j reads m - 5 under per-product alignment.  Record SKU, driver, nvcc, sm.\n");
+   return 0;
+ }
