@@ -352,4 +352,72 @@ these parameters, and its repair is a larger Q or fewer published coefficients (
 masking, which is already the case, plus extraction, which would need key switching).
 
 What is still not built: the succinct compilation of R_PD and of the gate, a real preprocessing protocol
-for the mask pairs, and the collaborative SNARK (MPC fork, §7 when it lands).
+for the mask pairs, and the collaborative SNARK (MPC fork, §9).
+
+
+## 7. ✅ d = 4096: the predicted flip, measured in counts (2026-11-06)
+
+`research/dark_learning_2026_11_06/step_counts.py` replays the step's protocol schedule at any width and
+charges each primitive its count. At d = 4096 one FHE matvec is 2,048 certified ct×ct and one MPC
+matvec opens 16.7 M values, so the step cannot be executed in Python. The evidence that the schedule
+IS the protocol:
+- `--validate` reproduces every count column of the executed runs exactly: MPC at d = 16, 32 and 64,
+  and FHE v2 at d = 64, including wire per phase.
+- `--layout-check` (hbox, under `swarm-build`) executes, at N = 8192 on real ciphertexts, one block of
+  each kind the d = 4096 layout uses (128 rows × 64 columns per ciphertext). The forward, backward
+  (colrev) and outer-product blocks all decrypt to the right values.
+
+**Recipe at width d.** step_spec's learner, with shifts widened so every truncation stays in budget:
+S1 = ceil(log2(49d/128)), so S1 = 11 at d = 4096.
+
+**Steady state, per step** (the weights are already in custody; FHE bits include certificate digits):
+
+| d | fork | committed bits | online wire | preprocessing elems | ct×ct |
+|---:|---|---:|---:|---:|---:|
+| 64 | MPC | 1.71×10^7 | 107,148 | 2.80×10^5 | 0 |
+| 64 | FHE (a) | 3.75×10^8 | 671,628 | 6.97×10^5 | 3 |
+| 1024 | MPC | 2.10×10^9 | 1.97×10^7 | 3.45×10^7 | 0 |
+| 1024 | FHE (a) | 4.18×10^10 | 1.94×10^7 | 4.44×10^7 | 384 |
+| 1024 | FHE (b) | 7.97×10^10 | 6.79×10^6 | 8.96×10^6 | 640 |
+| 4096 | MPC | 3.15×10^10 | 3.06×10^8 | 5.16×10^8 | 0 |
+| 4096 | FHE (a) | 6.61×10^11 | 2.29×10^8 | 6.31×10^8 | 6,144 |
+| 4096 | FHE (b) | 1.26×10^12 | 2.75×10^7 | 3.67×10^7 | 10,240 |
+
+The variants:
+- **(a)** is the built design: SPDZ outer product, then masked S2E of the d² update.
+- **(b)** replaces that with a homomorphic outer product, which the layout check confirms, plus
+  relinearization. Relinearization is **priced by MODEL** as one key-switch certificate ≈ one ct×ct
+  certificate; it is not built. Variant (b) also needs an evaluation (relinearization) key, which §3's
+  custody argument treats as a reusable evaluation object.
+
+**Verdict:**
+1. **The wire flip is CONFIRMED.**
+   - FHE/MPC online wire: ×6.3 at d = 64 → ×1.85 at d = 256 → ×0.98 at d = 1024 → ×0.75 at d = 4096
+     for (a); ×0.09 at d = 4096 for (b).
+   - MPC wire is 99% matvec openings of W − A (3(d² + d) n(n−1)). The FHE fork carries the weights
+     inside ciphertexts and opens only vectors, plus the d² update in (a).
+   - The crossover is at d ≈ 1024 for (a), and between 256 and 1024 for (b).
+2. **There is NO flip in committed bits.** FHE stays ×17 to ×40 above MPC at every width. At d = 4096,
+   (a) commits 661 Gbit per step, 99% of it ct×ct certificates (6,144 × 108 Mbit), against MPC's 31.5
+   Gbit of views. The certificate is the FHE fork's bill at every scale. Halving it means halving the
+   per-product certificate (§1's design space), not changing the layout.
+3. **Preprocessing.** MPC (5.2×10^8 elements) and FHE (a) (6.3×10^8) are comparable. FHE (b) is ×14
+   lower.
+
+**What this does to the fork.**
+- Below d ≈ 1000, MPC dominates on every column.
+- Above it, the choice is wire versus proof size:
+  - FHE (a) trades ×21 committed bits for ×0.75 wire;
+  - FHE (b) trades ×40 committed bits for ×0.09 wire, and needs a relinearization key.
+- Neither fork dominates at d = 4096, which is what "explore both" requires.
+
+**An MPC-side idea the counts point to (DERIVED, not built): a drifting matrix mask.** The MPC
+matvec opens W − A afresh every time because a reused mask would reveal the update. Alternative:
+1. Keep P = W − A public and move it by a PUBLIC random rank-1 u⊗w each step, so P' = P − u⊗w. The
+   mask then drifts as A' = A − dW + u⊗w, so it stays secret.
+2. Compute [A_t b] for a fresh b from the dealer's [A_0 b] plus the t logged rank-1 terms (O(t d) online).
+3. Re-mask with a fresh d² opening every T steps.
+
+The amortized cost per matvec is about d²/T + T·d. At T ≈ √d that is O(d^1.5): about 5×10^5 rather than
+1.7×10^7 openings at d = 4096, which would undo FHE (a)'s wire advantage. It needs its own privacy
+argument (P's trajectory is public) before it is priced.

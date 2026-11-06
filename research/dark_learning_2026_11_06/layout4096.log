@@ -1,0 +1,1 @@
+layout d_r=128 d_c=64 at N=8192: forward True, backward True, outer (variant b) True

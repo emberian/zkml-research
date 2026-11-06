@@ -1,0 +1,478 @@
+{
+ "64": {
+  "mpc": {
+   "steady": {
+    "committed_bits": 17052672,
+    "online_wire": 107148,
+    "preprocessing_elems": 279552
+   },
+   "committed_elems": 328704,
+   "committed_bits": 20050944,
+   "online_wire": 131724,
+   "wire_by_phase": {
+    "input": 24960,
+    "matvec": 74880,
+    "trunc": 1536,
+    "mul": 28416,
+    "lookup": 384,
+    "outer": 1536,
+    "mac_check": 12
+   },
+   "preprocessing_auth_values": 54784,
+   "preprocessing_elems": 328704,
+   "openings": 17792,
+   "crossings": 0,
+   "params": {
+    "S1": 5,
+    "K1": 13,
+    "S2": 4,
+    "K2": 8,
+    "S3": 8,
+    "K3": 13
+   }
+  },
+  "fhe_a": {
+   "steady": {
+    "committed_bits": 375364767,
+    "online_wire": 671628,
+    "preprocessing_elems": 696960
+   },
+   "certificate_digit_bits": 113246208,
+   "committed_elems": 5120523,
+   "committed_bits": 268115103,
+   "online_wire": 671628,
+   "wire_by_phase": {
+    "E2S": 368640,
+    "S2E": 49920,
+    "trunc": 1536,
+    "mul": 28416,
+    "lookup": 384,
+    "outer": 1536,
+    "mac_check": 12,
+    "host->custodians": 221184
+   },
+   "preprocessing_auth_values": 42432,
+   "preprocessing_elems": 696960,
+   "preprocessing_mask_ct_elems": 442368,
+   "openings": 13632,
+   "ct_x_ct": 3,
+   "relinearizations": 0,
+   "pd_proofs": 15,
+   "pd_elems": 1351635,
+   "pd_bits": 38212935,
+   "layout": {
+    "d_c": 64,
+    "d_r": 64,
+    "blocks": 1
+   },
+   "params": {
+    "S1": 5,
+    "K1": 13,
+    "S2": 4,
+    "K2": 8,
+    "S3": 8,
+    "K3": 13
+   }
+  },
+  "fhe_b": {
+   "steady": {
+    "committed_bits": 687719871,
+    "online_wire": 622476,
+    "preprocessing_elems": 696960
+   },
+   "certificate_digit_bits": 188743680,
+   "committed_elems": 9003435,
+   "committed_bits": 504972735,
+   "online_wire": 622476,
+   "wire_by_phase": {
+    "E2S": 368640,
+    "S2E": 2304,
+    "trunc": 1536,
+    "mul": 28416,
+    "lookup": 384,
+    "outer": 0,
+    "mac_check": 12,
+    "host->custodians": 221184
+   },
+   "preprocessing_auth_values": 26048,
+   "preprocessing_elems": 696960,
+   "preprocessing_mask_ct_elems": 540672,
+   "openings": 5440,
+   "ct_x_ct": 5,
+   "relinearizations": 2,
+   "pd_proofs": 15,
+   "pd_elems": 1351635,
+   "pd_bits": 38212935,
+   "layout": {
+    "d_c": 64,
+    "d_r": 64,
+    "blocks": 1
+   },
+   "params": {
+    "S1": 5,
+    "K1": 13,
+    "S2": 4,
+    "K2": 8,
+    "S3": 8,
+    "K3": 13
+   }
+  }
+ },
+ "256": {
+  "mpc": {
+   "steady": {
+    "committed_bits": 162094080,
+    "online_wire": 1350156,
+    "preprocessing_elems": 2657280
+   },
+   "committed_elems": 3443712,
+   "committed_bits": 210066432,
+   "online_wire": 1743372,
+   "wire_by_phase": {
+    "input": 394752,
+    "matvec": 1184256,
+    "trunc": 6144,
+    "mul": 150528,
+    "lookup": 1536,
+    "outer": 6144,
+    "mac_check": 12
+   },
+   "preprocessing_auth_values": 573952,
+   "preprocessing_elems": 3443712,
+   "openings": 224768,
+   "crossings": 0,
+   "params": {
+    "S1": 7,
+    "K1": 15,
+    "S2": 4,
+    "K2": 8,
+    "S3": 10,
+    "K3": 15
+   }
+  },
+  "fhe_a": {
+   "steady": {
+    "committed_bits": 2747377887,
+    "online_wire": 2502156,
+    "preprocessing_elems": 3982848
+   },
+   "certificate_digit_bits": 905969664,
+   "committed_elems": 32858955,
+   "committed_bits": 1889380575,
+   "online_wire": 2502156,
+   "wire_by_phase": {
+    "E2S": 958464,
+    "S2E": 789504,
+    "trunc": 6144,
+    "mul": 150528,
+    "lookup": 1536,
+    "outer": 6144,
+    "mac_check": 12,
+    "host->custodians": 589824
+   },
+   "preprocessing_auth_values": 377088,
+   "preprocessing_elems": 3982848,
+   "preprocessing_mask_ct_elems": 1720320,
+   "openings": 158976,
+   "ct_x_ct": 24,
+   "relinearizations": 0,
+   "pd_proofs": 39,
+   "pd_elems": 3514251,
+   "pd_bits": 99353631,
+   "layout": {
+    "d_c": 64,
+    "d_r": 128,
+    "blocks": 8
+   },
+   "params": {
+    "S1": 7,
+    "K1": 15,
+    "S2": 4,
+    "K2": 8,
+    "S3": 10,
+    "K3": 15
+   }
+  },
+  "fhe_b": {
+   "steady": {
+    "committed_bits": 5138280927,
+    "online_wire": 1715724,
+    "preprocessing_elems": 2213376
+   },
+   "certificate_digit_bits": 1509949440,
+   "committed_elems": 62152779,
+   "committed_bits": 3676303839,
+   "online_wire": 1715724,
+   "wire_by_phase": {
+    "E2S": 958464,
+    "S2E": 9216,
+    "trunc": 6144,
+    "mul": 150528,
+    "lookup": 1536,
+    "outer": 0,
+    "mac_check": 12,
+    "host->custodians": 589824
+   },
+   "preprocessing_auth_values": 114944,
+   "preprocessing_elems": 2213376,
+   "preprocessing_mask_ct_elems": 1523712,
+   "openings": 27904,
+   "ct_x_ct": 40,
+   "relinearizations": 16,
+   "pd_proofs": 39,
+   "pd_elems": 3514251,
+   "pd_bits": 99353631,
+   "layout": {
+    "d_c": 64,
+    "d_r": 128,
+    "blocks": 8
+   },
+   "params": {
+    "S1": 7,
+    "K1": 15,
+    "S2": 4,
+    "K2": 8,
+    "S3": 10,
+    "K3": 15
+   }
+  }
+ },
+ "1024": {
+  "mpc": {
+   "steady": {
+    "committed_bits": 2103287808,
+    "online_wire": 19703820,
+    "preprocessing_elems": 34480128
+   },
+   "committed_elems": 47063040,
+   "committed_bits": 2870845440,
+   "online_wire": 25995276,
+   "wire_by_phase": {
+    "input": 6297600,
+    "matvec": 18892800,
+    "trunc": 24576,
+    "mul": 749568,
+    "lookup": 6144,
+    "outer": 24576,
+    "mac_check": 12
+   },
+   "preprocessing_auth_values": 7843840,
+   "preprocessing_elems": 47063040,
+   "openings": 3282944,
+   "crossings": 0,
+   "params": {
+    "S1": 9,
+    "K1": 17,
+    "S2": 4,
+    "K2": 8,
+    "S3": 12,
+    "K3": 17
+   }
+  },
+  "fhe_a": {
+   "steady": {
+    "committed_bits": 41849015019,
+    "online_wire": 19372044,
+    "preprocessing_elems": 44353536
+   },
+   "certificate_digit_bits": 14495514624,
+   "committed_elems": 468107847,
+   "committed_bits": 28121058027,
+   "online_wire": 19372044,
+   "wire_by_phase": {
+    "E2S": 3612672,
+    "S2E": 12595200,
+    "trunc": 24576,
+    "mul": 749568,
+    "lookup": 6144,
+    "outer": 24576,
+    "mac_check": 12,
+    "host->custodians": 2359296
+   },
+   "preprocessing_auth_values": 4697088,
+   "preprocessing_elems": 44353536,
+   "preprocessing_mask_ct_elems": 16171008,
+   "openings": 2233344,
+   "ct_x_ct": 384,
+   "relinearizations": 0,
+   "pd_proofs": 147,
+   "pd_elems": 13246023,
+   "pd_bits": 374486763,
+   "layout": {
+    "d_c": 64,
+    "d_r": 128,
+    "blocks": 128
+   },
+   "params": {
+    "S1": 9,
+    "K1": 17,
+    "S2": 4,
+    "K2": 8,
+    "S3": 12,
+    "K3": 17
+   }
+  },
+  "fhe_b": {
+   "steady": {
+    "committed_bits": 79671712491,
+    "online_wire": 6789132,
+    "preprocessing_elems": 8964096
+   },
+   "certificate_digit_bits": 24159191040,
+   "committed_elems": 929731143,
+   "committed_bits": 56280079083,
+   "online_wire": 6789132,
+   "wire_by_phase": {
+    "E2S": 3612672,
+    "S2E": 36864,
+    "trunc": 24576,
+    "mul": 749568,
+    "lookup": 6144,
+    "outer": 0,
+    "mac_check": 12,
+    "host->custodians": 2359296
+   },
+   "preprocessing_auth_values": 502784,
+   "preprocessing_elems": 8964096,
+   "preprocessing_mask_ct_elems": 5947392,
+   "openings": 136192,
+   "ct_x_ct": 640,
+   "relinearizations": 256,
+   "pd_proofs": 147,
+   "pd_elems": 13246023,
+   "pd_bits": 374486763,
+   "layout": {
+    "d_c": 64,
+    "d_r": 128,
+    "blocks": 128
+   },
+   "params": {
+    "S1": 9,
+    "K1": 17,
+    "S2": 4,
+    "K2": 8,
+    "S3": 12,
+    "K3": 17
+   }
+  }
+ },
+ "4096": {
+  "mpc": {
+   "steady": {
+    "committed_bits": 31502843904,
+    "online_wire": 305897484,
+    "preprocessing_elems": 516440064
+   },
+   "committed_elems": 717766656,
+   "committed_bits": 43783766016,
+   "online_wire": 406560780,
+   "wire_by_phase": {
+    "input": 100687872,
+    "matvec": 302063616,
+    "trunc": 98304,
+    "mul": 3588096,
+    "lookup": 24576,
+    "outer": 98304,
+    "mac_check": 12
+   },
+   "preprocessing_auth_values": 119627776,
+   "preprocessing_elems": 717766656,
+   "openings": 50978816,
+   "crossings": 0,
+   "params": {
+    "S1": 11,
+    "K1": 19,
+    "S2": 4,
+    "K2": 8,
+    "S3": 14,
+    "K3": 19
+   }
+  },
+  "fhe_a": {
+   "steady": {
+    "committed_bits": 661438063131,
+    "online_wire": 228851724,
+    "preprocessing_elems": 631283712
+   },
+   "certificate_digit_bits": 231928233984,
+   "committed_elems": 7270463799,
+   "committed_bits": 441790751259,
+   "online_wire": 228851724,
+   "wire_by_phase": {
+    "E2S": 14229504,
+    "S2E": 201375744,
+    "trunc": 98304,
+    "mul": 3588096,
+    "lookup": 24576,
+    "outer": 98304,
+    "mac_check": 12,
+    "host->custodians": 9437184
+   },
+   "preprocessing_auth_values": 69292032,
+   "preprocessing_elems": 631283712,
+   "preprocessing_mask_ct_elems": 215531520,
+   "openings": 34197504,
+   "ct_x_ct": 6144,
+   "relinearizations": 0,
+   "pd_proofs": 579,
+   "pd_elems": 52173111,
+   "pd_bits": 1475019291,
+   "layout": {
+    "d_c": 64,
+    "d_r": 128,
+    "blocks": 2048
+   },
+   "params": {
+    "S1": 11,
+    "K1": 19,
+    "S2": 4,
+    "K2": 8,
+    "S3": 14,
+    "K3": 19
+   }
+  },
+  "fhe_b": {
+   "steady": {
+    "committed_bits": 1264874218011,
+    "online_wire": 27525132,
+    "preprocessing_elems": 36741120
+   },
+   "certificate_digit_bits": 386547056640,
+   "committed_elems": 14628124983,
+   "committed_bits": 890608083483,
+   "online_wire": 27525132,
+   "wire_by_phase": {
+    "E2S": 14229504,
+    "S2E": 147456,
+    "trunc": 98304,
+    "mul": 3588096,
+    "lookup": 24576,
+    "outer": 0,
+    "mac_check": 12,
+    "host->custodians": 9437184
+   },
+   "preprocessing_auth_values": 2183168,
+   "preprocessing_elems": 36741120,
+   "preprocessing_mask_ct_elems": 23642112,
+   "openings": 643072,
+   "ct_x_ct": 10240,
+   "relinearizations": 4096,
+   "pd_proofs": 579,
+   "pd_elems": 52173111,
+   "pd_bits": 1475019291,
+   "layout": {
+    "d_c": 64,
+    "d_r": 128,
+    "blocks": 2048
+   },
+   "params": {
+    "S1": 11,
+    "K1": 19,
+    "S2": 4,
+    "K2": 8,
+    "S3": 14,
+    "K3": 19
+   }
+  }
+ }
+}
