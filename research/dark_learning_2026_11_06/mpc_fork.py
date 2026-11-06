@@ -50,7 +50,7 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None):
     G1 = eng.outer(d1, sx)
     W2n = [[eng.sub(M2[i][j], G2[i][j]) for j in range(d)] for i in range(d)]
     W1n = [[eng.sub(M1[i][j], G1[i][j]) for j in range(d)] for i in range(d)]
-    return W1n, W2n, dict(h=h, d2=d2, d1=d1)
+    return W1n, W2n, dict(h=h, d2=d2, d1=d1, x=sx, y=sy, z1=z1, z2=z2, b=b, g1=g1, bg=bg, W1=M1, W2=M2)
 
 def reveal(eng, X):
     """Test-only reconstruction (NOT part of the protocol): sum all parties' shares."""

@@ -421,3 +421,116 @@ matvec opens W − A afresh every time because a reused mask would reveal the up
 The amortized cost per matvec is about d²/T + T·d. At T ≈ √d that is O(d^1.5): about 5×10^5 rather than
 1.7×10^7 openings at d = 4096, which would undo FHE (a)'s wire advantage. It needs its own privacy
 argument (P's trajectory is public) before it is priced.
+
+
+## 9. ✅ The MPC fork's hole: a collaborative proof, prototyped (2026-11-06)
+
+**The hole.** The MPC fork's integrity comes from two things, and full collusion defeats both:
+- SPDZ's MAC check holds only if at least one custodian is honest.
+- The MPC-in-the-head audit is fooled by consistent fake views.
+
+A collaborative SNARK fixes this. The custodians run a SNARK prover inside the MPC, and the verifier
+sees only commitments, prover messages and openings. Soundness is the SNARK's, so it holds against all
+provers together. Privacy against fewer than n custodians is the MPC's.
+
+**Survey (2022–2026).** Abstracts were read via ePrint/arXiv pages; tags as shown.
+
+| work | proof system / PCS | sharing, threshold | fit for us |
+|---|---|---|---|
+| Ozdemir–Boneh, USENIX Sec 2022 [READ abstract] | Groth16, Marlin, Plonk (pairings) | SPDZ / GSZ; malicious minority at about single-prover runtime | the template (SPDZ, dishonest majority, public verifiability); its pairing PCS does not exist over our 61-bit prime |
+| zkSaaS, Garg et al. USENIX Sec 2023 [CLAIM, via the next two abstracts] | Plonk-style | packed secret sharing, one powerful server | the packed threshold needs many servers and an honest fraction; not n = 3 |
+| Liu et al., ePrint 2024/143 (USENIX Sec 2025) [READ abstract] | Libra (GKR) and collaborative HyperPlonk (2024/940) | fully distributed, "adaptable" to malicious | sumcheck-based, a good fit; its sharing/threshold were not on the abstract page |
+| Fang, Garg, Roberts, Wu, Zhang, ePrint 2025/1388 [READ abstract] | Plonkish, bivariate PCS on packed shares, 960 B proofs | packed, fewer than n/4 corrupt | the threshold rules it out for 3 custodians |
+| Alghazwi et al., arXiv 2407.19212 [READ abstract] | commit-and-prove (LegoSNARK), Groth16 / Bulletproofs | not stated on the page | its commit-and-prove composition is the right shape for chaining |
+| Brüggemann–Nof–Schneider, ePrint 2026/1741 [READ abstract] | distributed ZK over Z_2^k, dealer | dishonest majority, active | verification among the parties only: no public proof, no full-collusion integrity |
+| Khoshakhlagh–Kallesøe–Dalskov, ePrint 2026/2721 [READ abstract] | sumcheck + compressed Σ; private-opening PCS for committee handover; IVC by an external prover | long-running MPC with committee rotation | **directly relevant to C22 (epoch custody) and to chaining**; read in full next |
+
+**Choice.** Three constraints decide it:
+- **The field.** It is the shared 61-bit prime, so there are no pairings and the PCS is hash-based.
+- **The threshold.** Three custodians with dishonest-majority privacy rules out packed sharing.
+- **Integrity against all n.** This needs a publicly verifiable proof, not a distributed ZK check.
+
+The result is Ozdemir–Boneh's SPDZ route with a sumcheck IOP (Libra/HyperPlonk style) and a
+Ligero/Brakedown-style PCS. One adaptation keeps hashing out of the MPC. Each custodian RS-encodes its
+OWN share matrix and Merkle-commits its own columns. Encoding is linear, so the commitment (the n-tuple
+of roots) binds the sum matrix, and every PCS test runs on the sum: parties send their share row
+combinations, and the verifier adds them and checks each party's opened columns against the codeword of
+the summed combination. Binding, proximity and evaluation soundness are the single-prover scheme's,
+applied to the sum. [INFERRED; whether this per-party share commitment appears in the collaborative-SNARK
+literature was NOT searched: no novelty claim.]
+
+**Statements proved, per step:**
+- three matvecs, by sumcheck (log d rounds, degree 2), each ending in ONE evaluation of W's MLE;
+- the rank-1 updates, by the zero-round check W'(r) = W(r) − d(r_row)·v(r_col) (program construction (a),
+  here used where it was meant to be, inside the custody: F13's witness-custody objection does not apply,
+  because the custodians hold the factors);
+- Hadamard gates, by a degree-3 zerocheck.
+
+The products inside the prover are SPDZ Beaver multiplications, so the prover messages are MAC-checked
+openings. The parent commitment of step t+1 is the W' commitment of step t.
+
+**Prototype: built and run** (`research/dark_learning_2026_11_06/cosnark.py`, `run_cosnark.py`,
+`cosnark_results.json`).
+- **Scope.** The linear-algebra spine of the step: z1 = W1x, z2 = W2h, b = W2ᵀd2, bg = b∘g1, both rank-1
+  updates, and parent/child chaining. It is one Fiat–Shamir proof, and the verifier sees roots, messages
+  and openings only.
+- **Every attack is a full collusion: all three custodians agree.**
+
+| attack (d = 64) | verdict |
+|---|---|
+| honest | ACCEPT |
+| commit a wrong W1' (one entry +1) | REFUSED: rank-1 check |
+| commit a wrong z1, prove honestly | REFUSED: sumcheck round sum |
+| wrong z1, forge every sumcheck round to match | REFUSED: final check against the committed W, x |
+| wrong W1' committed, custodian 0 reports its HONEST share's row combination | REFUSED: evaluation consistency at an opened column |
+| two-step chain, step 2's parent = step 1's child | ACCEPT |
+| step 2 verified against an older W | REFUSED: parent ≠ previous child |
+
+- **Counts.** The count formula equals the executed counts exactly at d = 16, 32 and 64 (every column).
+
+| per step | d = 64 (executed) | d = 4096 (formula) |
+|---|---:|---:|
+| committed witness elements (spine) | 16,960 | 6.71×10^7 (4.1 Gbit) |
+| codeword elements per custodian (rate 1/4, local) | 67,840 | 2.69×10^8 |
+| proof field elements, t = 64 / t = 148 columns | 65,733 / — | 3.40×10^6 / 7.67×10^6 |
+| proof hashes (t = 64 / 148) | 14,823 / — | 24,615 / 56,871 |
+| custodians' proving openings | 1,716 | 106,626 |
+| custodians' proving wire | 10,308 | 639,768 |
+| elementwise gates, MODEL (not built): committed / Hadamard constraints / proving wire | 20,544 / 19,968 / 958,824 | 1.54×10^6 / 1.50×10^6 / 7.20×10^7 |
+
+**What the counts say:**
+1. **The full-collusion proof costs less than the audit it replaces.** At d = 4096 its witness is 4.1
+   Gbit, plus about 0.1 Gbit for the elementwise gates. The MPC-in-the-head audit commits 31.5 Gbit of
+   views (§7), because a proof of the step commits W, the vectors and the gate wires, while the views
+   commit every preprocessed mask. The FHE fork's certificates are 661 Gbit.
+2. **The proving wire is dominated by the elementwise gates, not the spine.** 7.2×10^7 against 6.4×10^5:
+   - the lookup is re-proved through its 255 committed powers;
+   - each truncation through its own SPDZ circuit;
+   - a degree-3 zerocheck needs four products per pair per round in MPC.
+
+   That is +24% on the MPC step's 3.06×10^8 online wire. Halving it is easy: the X = 0, 1 points of each
+   round are products the parties already hold. Replacing the power chain by a LogUp argument with
+   committed multiplicities is the bigger lever and is not priced.
+3. **With proofs, the audit theorem attaches with p chosen freely.** The custodians commit their
+   share-codeword roots EVERY step (local hashing, no wire) and prove on beacon-sampled steps. That is
+   exactly the commit-then-audit shape of `AuditSampling.lean`, with
+   - ε_chk = this proof's soundness (sumcheck 2·deg·log d / |F_ext|, proximity (1−δ)^t, Fiat–Shamir);
+   - ε_bind = the hash.
+
+   C2's `displacement_bound` then holds against full collusion, with the envelope proved on every step:
+   the norm caps on the factors are a range check on committed vectors, so it is cheap here.
+
+**Not built (named, and why each is not an obstruction):**
+- **Zero knowledge.** The opened row combinations a^T V leak linear functionals of W to the VERIFIER.
+  Mask rows and a masked sumcheck are standard and cost O(√size) extra elements. Without them the proof
+  must not be published beyond the custodians.
+- **The elementwise gates.** These are the same zerocheck machinery, priced above.
+- **Challenges are drawn in F_p here.** A deployment needs F_{p^2}/F_{p^3} challenges: extension
+  arithmetic in the MPC at about 3 base multiplications per product.
+- **The proximity parameters.** t = 64 at rate 1/4 gives about 2^-43 at unique decoding, and t ≈ 148
+  gives 100 bits (both priced). The Ligero-style proof is O(√N) (7.7×10^6 elements ≈ 59 MB at d = 4096);
+  recursion or a FRI/WHIR-style PCS shrinks it.
+- **The binding commitment is not hiding,** and step-to-step equality of roots requires the custodians
+  to carry their shares unchanged. Re-sharing between steps needs a proof that the new share commitments
+  sum to the same matrix: one random linear-combination check on the sums. That is the handover problem
+  ePrint 2026/2721 addresses.
