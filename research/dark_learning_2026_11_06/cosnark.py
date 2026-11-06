@@ -59,6 +59,20 @@ class Transcript:
             out.append(int(self.state, 16) % p)
         return out
 
+def distinct_cols(tr, p, T, npts):
+    """T DISTINCT column indices from the transcript (sampling without replacement: a repeated index is drawn
+    again). With replacement, 64 draws over a few hundred columns give about 60 distinct columns."""
+    out, seen = [], set()
+    while len(out) < min(T, npts):
+        j = tr.chal(p)[0] % npts
+        if j not in seen:
+            seen.add(j)
+            out.append(j)
+    return out
+
+class LifeExhausted(Exception):
+    pass
+
 def eqv(r, p):
     """eq(r, idx) for idx in [0, 2^len(r)), bit k of idx paired with r[k]."""
     v = [1]
@@ -195,7 +209,13 @@ def pcs_prove(com, evals, tr, n, p, u_hook=None):
     cols = {}
     for k in sorted(com):
         c = com[k]
-        J = [x % len(c.pts) for x in tr.chal(p, T_COLS)]
+        # a hiding commitment may be opened in at most LIVES proofs: its tails cover LIVES * T_COLS columns. A third
+        # opening (a retry, a refused bundle) would let anyone interpolate the data (review3 lives_leak). The
+        # custodians keep this counter (durably, in a deployment) and refuse the opening.
+        c.opened_lives = getattr(c, "opened_lives", 0) + 1
+        if c.hide and c.opened_lives > getattr(c, "max_lives", LIVES):
+            raise LifeExhausted(f"commitment {k} already opened in {LIVES} proofs; a further opening reveals it")
+        J = distinct_cols(tr, p, T_COLS, len(c.pts))
         cols[k] = (J, [[c.open_col(i, j) for j in J] for i in range(n)])
     return msgs, prox, cols
 
@@ -225,7 +245,7 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
     for k in sorted(com):
         c = com[k]
         npts = len(c.pts)
-        J = [x % npts for x in vt.chal(p, T_COLS)]
+        J = distinct_cols(vt, p, T_COLS, npts)
         if J != cols[k][0]:
             return False, "column challenge mismatch"
         gam, gs = gams[k], prox[k][1]

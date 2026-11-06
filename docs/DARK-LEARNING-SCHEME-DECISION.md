@@ -1250,5 +1250,132 @@ This is an argument, not a proved impossibility theorem.
 - Use (b) only as an additional leg.
 - Do not pursue (c).
 
-The Astra decisions scholar's recommendations (`notes/astra-decisions/`) will be answered here when
-they appear.
+### Answer to the Astra decisions scholar (`notes/astra-decisions/CUSTODY.md`, RECOMMENDATIONS §1)
+
+We agree on the verdict: three independent custodians, all three required, malicious-secure MPC with
+abort; one-provider FHE only for the narrower promise; TEE and iO not custody. Adopted from it, and
+repaired here:
+- **The owner holds a share, not the key.** If no single person or machine should hold a readable
+  model, (d)'s owner-as-K becomes the owner as ONE custodian. That is the scholar's suggested committee:
+  an owner-controlled device, a university lab, and a separately governed nonprofit or cooperative
+  operator, with different administrators, credentials, backups and failure domains. Three containers
+  under ember's root credentials are one compromise domain.
+- **Five parties need a timeline protocol of their own.**
+  - Two 3-of-5 quorums can intersect in one corrupt party and certify conflicting children; 4-of-5
+    intersects in at least three but stalls when two withhold.
+  - The fast five-party prover multiplies degree-2 shares into degree 4, so it needs all five parties
+    online, even though three reconstruct.
+  - This corrects the reading of `notes/dark-learning-handover-2721.md` §4: its five-party row is a
+    MODEL of proving wire only. It excludes the MPC step and resharing, and implies no "three online"
+    operating mode. I accept the scholar's switch criterion: a whole-system, malicious-secure, ZK
+    five-party build plus five genuinely independent operators.
+- **Output leakage and genesis.** Outputs can reveal weights (basis queries recover a linear map), and
+  importing a plaintext checkpoint already breaks "never readable anywhere" (`who-learns-what.md`).
+  The custody promise is stated together with protected genesis, output leakage, recovery and
+  retirement, not alone.
+- **iO references.** Jain–Lin–Sahai is ePrint 2020/1003 (STOC 2021). Ragavan–Vafa–Vaikuntanathan,
+  ePrint 2024/856, improves the assumptions and still uses bilinear groups. Both are existence results,
+  not priced routes, and neither is post-quantum. (c) stands as an argument, not an impossibility claim.
+- **The governance residual-trust arms** (`degg-research/research/governance-foundations-critique.md:221`,
+  [1,377,1,1]) enumerate permitted outputs under stipulated assumptions. They are not a measured
+  probability. (b) cites them in that sense only.
+
+
+## 18. The untrusted-input verifier, the durable ledger, and signed-input binding: built, on branch `dark-learning/untrusted-verifier` pending the Codex gate (2026-11-06; repairs in §19)
+
+`proofwire.py`, `run_proofwire.py`, `owner_sig.py`, `run_signed_input.py`.
+
+**The untrusted-input verifier.** A step travels as bytes:
+- a header: magic, model id, epoch, step, d, n, chained;
+- the ZK spine proof;
+- the public SPDZ transcript (the opened values);
+- the ZK middle proof;
+- the owner's signature.
+
+The parser is schema-driven: every length is a function of (d, n, parameters) and of the verifier's
+OWN symbolic replay of the step program against the public transcript, and the replay must consume
+exactly that transcript. Field elements must be canonical (< p), column indices in range, and there
+must be no trailing bytes. Nothing is shared with the prover: the verifier rebuilds every shape and
+constraint from public data.
+
+**The ledger** (one append-only, fsync'd file per model).
+- It hands the verifier the EXPECTED (model, epoch, step = last + 1), the parent roots and the owner's
+  public key; the bytes never choose them.
+- The head is reconstructed on open.
+- A torn or out-of-sequence line fails closed: the ledger refuses to open, and an operator decides.
+- Rotation starts a new epoch on the same chain.
+
+| attack (d = 4, Mac) | verdict, by |
+|---|---|
+| honest genesis step; honest chained step 2 | ACCEPT |
+| step 1 replayed | REFUSED: binding mismatch (expected step 2) |
+| truncated by one byte / one trailing byte | REFUSED: parse |
+| a non-canonical field element (= p) | REFUSED: parse |
+| one bit flipped in: model id / a commitment root / a field element / mid-blob / last byte | REFUSED: binding mismatch / parent ≠ previous child / FS challenge mismatch / Merkle opening (middle) / Ligero Merkle opening |
+| step 3's proof under a header patched to say step 2 | REFUSED: FS challenge mismatch (the transcript binds the context) |
+| another model id | REFUSED: binding mismatch |
+| a second valid proof of step 2 after step 2 is accepted (equivocation) | REFUSED: expected step 3 |
+| restart: a new Ledger object from the file | same head |
+| after rotation to epoch 1, a proof bound to epoch 0 | REFUSED: binding mismatch |
+
+**Signed-input binding** (ePrint 2026/2721's input authority, adapted; P5).
+- **The owner** deals each batch (x, y) as a share-tuple commitment with secret tails and signs
+  (model, epoch, step, roots of x, roots of y). The signature is hash-based and post-quantum: a Merkle
+  tree of 2^10 Lamport one-time keys with leaf = step, 16,708 bytes, and the owner refuses a second
+  signature for a step.
+- **The spine** adds the owner's x commitment and one evaluation pair at a fresh point, with the linear
+  constraint x(r) = x_owner(r). **The middle** does the same for y. The verifier checks the signature
+  against the ledger's owner key.
+
+| attack (d = 4) | verdict, by |
+|---|---|
+| fully colluding custodians train on x' while presenting the owner's signed x | REFUSED: violates "signed input binding: the custodians' x = the owner's signed x" |
+| the same for y' | REFUSED: the middle's binding constraint |
+| custodians commit x' themselves and sign with their own key | REFUSED: owner signature |
+| step 2 re-using the owner's step-1 signature (old batch) | REFUSED: owner signature (context and leaf) |
+| honest owner-signed steps 1 and 2 | ACCEPT |
+
+**Cost of binding** at d = 4: +177,252 bytes per step (4,339,620 → 4,516,872, +4.1%). That is the
+signature plus two small commitments with their openings, and +129 linear constraints per proof (two
+evaluations' consistency at 64 columns, plus one equality). At width it is constant apart from the two
+d-length commitments.
+
+**Limits.**
+- An owner tree has 2^10 leaves, so 1,024 steps per owner key. Leaves are step numbers, which run
+  across epochs.
+- The owner is a trusted input authority: independent of the custodians, and honest about which data
+  it signs. That is an assumption to name (2721 §1.3), not to derive.
+- The required Codex (gpt-6-astra) review of this verifier was attempted twice and withheld by Codex
+  authentication ("approved for Daybreak Blue … not authenticated with one of your authorized hardware
+  keys"). An independent Claude review ran instead; its findings are answered in §19.
+
+
+## 19. Review of the verifier stack: four breaks, all repaired (2026-11-06)
+
+The required Codex (gpt-6-astra) attack ran twice. Both times Codex withheld its final answer
+("approved for Daybreak Blue, but … not authenticated with one of your authorized hardware keys"), so
+the review below is an independent Claude agent's read. It is not anchored on mine, and its demos ran
+against the code. Every finding is accepted.
+
+| # | finding | demo against the unfixed code | repair | regression |
+|---|---|---|---|---|
+| 1 | **BREAK: the public SPDZ transcript was not bound into Fiat–Shamir.** Fully colluding custodians committed a wrong d1 (and the matching W1′), saw the batch challenge, and then picked one dead opening (the f-opening of the last borrow-prefix product) so that the whole batch identity held. One free value defeats every middle constraint at once. | **The ledger ACCEPTED** a step whose committed W1′ row 0 was off by −12345·x | both proofs absorb a digest of the public transcript right after the context, on prover and verifier | `fs_public_falsifier.py`: the same attack must be REFUSED |
+| 2 | **BREAK (ZK): a third opening of a commitment reveals it.** HIDE = 2T covers exactly two lives, and a retry or a refused bundle opens a third | 167–168 distinct points against row degree < 132; interpolation recovered W exactly | a per-commitment life counter: the custodians refuse a third opening (`cosnark.LifeExhausted`). In a deployment the counter is durable custodian state | `lives_falsifier.py`: the honest counter refuses, and a forced (colluding) third opening leaks |
+| 3 | **BREAK (ledger): rotation was not durable and excluded no one.** A restart returned to the old epoch, and nothing tied an epoch to a custodian set | (by construction) | rotation is a durable `rotate` record carrying the new custodian set and **the new committee's commitment of the current weights**. Old-committee proofs, made on the old share tuple, no longer match the parent. The handover proof that the new roots commit the same weights is NOT built; the record says so (handover note §2e) | `run_proofwire.py`: a restart after rotation keeps the epoch and the new roots; the old committee's step-3 proof is refused |
+| 4 | **BREAK (DoS): a non-UTF-8 model id crashed the verifier** | `UnicodeDecodeError` escaped `Ledger.accept` | model ids are compared as raw bytes; any exception during parsing is a refusal | `run_proofwire.py` row "model id that is not UTF-8" |
+| 5 | WEAKNESS: about 2^-25 provable soundness; column draws repeated (about 60 distinct of 64) | — | columns are sampled without replacement (`cosnark.distinct_cols`) in both PCS and Ligero. The level is stated, not hidden: (3/4)^64 ≈ 2^-26.6 is the prototype target, pinned in `proofwire.PARAMS`; 2^-40 needs T ≈ 97 and 2^-128 needs T ≈ 309 at rate 1/4 | — |
+| 6 | OK as stated: evaluation binding with u hidden (u is committed before the proximity and column draws) | — | — | — |
+| 7 | OK as stated: ZK within two lives (layer-1 randomness exactly tight; Ligero t = T; masked messages) | — | — | — |
+| 8 | WEAKNESS: the verifier's parameters came from mutable module globals | — | `proofwire.PARAMS`, pinned at import and on every verification, recorded in the ledger's genesis record (a ledger with other parameters refuses to open) | — |
+| 9 | WEAKNESS: d, the genesis weights and the owner key were not pinned; no file lock; no directory fsync | — | a **genesis record** pins model, d, PARAMS, the owner key (or an explicit "none", so binding cannot be dropped silently), the custodian set and the genesis W commitment. Step 1 must chain to it, and every step is now `chained`. `accept` holds an exclusive lock and re-reads the head under it. A newly created file gets its directory fsync'd | `run_proofwire.py` |
+| 10 | WEAKNESS: owner leaf = step (the chain stops at 2^h); the used-leaf set was in memory only | — | a durable owner counter (persisted before the signature is released), strictly increasing leaves independent of step, and h = 12. The ledger records each accepted leaf and requires the next to be higher | `run_signed_input.py`: a replayed old signature is refused |
+| 11 | minor: input/matvec/outer openings in `public` were unconstrained | — | now bound through finding 1's transcript digest | — |
+
+**Why the earlier forgery tests missed finding 1.** They forged an opening BEFORE the challenge, so the
+batch caught it. The break needs a value chosen AFTER the challenge, which only an unbound public input
+allows. Any untrusted input to a Fiat–Shamir verifier belongs in the transcript.
+
+**Landing.** The fixes to the item-2 code (binding of the public transcript, distinct columns, the life
+counter) are on `dev`. The verifier stack is on branch `dark-learning/untrusted-verifier`: `proofwire.py`,
+the ledger, `owner_sig.py`, the signed-input binding and their harnesses. It stays there until a Codex
+gpt-6-astra attack can run (ember's hardware-key re-authentication) or the coordinator waives that gate.

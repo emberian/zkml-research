@@ -26,7 +26,7 @@ f_x f_y = C + E B + F A + E F locally. Integrity of the product needs no MAC: th
 """
 import random
 
-from cosnark import H, Transcript, verify_path
+from cosnark import H, Transcript, distinct_cols, verify_path
 
 def pmul(a, b, p):
     out = [0] * (len(a) + len(b) - 1)
@@ -230,7 +230,7 @@ class Prover:
         pq = self.open_poly(acc)
         tr.absorb("lig-p", pq)
         # columns
-        J = [x % P.npts for x in tr.chal(p, P.T)]
+        J = distinct_cols(tr, p, P.T, P.npts)
         cols = []
         for g in self.groups + [self.mask_group]:
             cols.append([[([c[j] for c in g["codes"][i]], path(g["trees"][i], j)) for j in J] for i in range(n)])
@@ -270,7 +270,7 @@ def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
     if any(peval(pq, z, p) for z in P.zeta):
         return False, "Ligero quadratic test: a product gate does not hold"
     tr.absorb("lig-p", pq)
-    J = [x % P.npts for x in tr.chal(p, P.T)]
+    J = distinct_cols(tr, p, P.T, P.npts)
     roots = list(group_roots) + [mask_roots]
     sizes = list(group_sizes) + [3]
     if len(cols) != len(roots):

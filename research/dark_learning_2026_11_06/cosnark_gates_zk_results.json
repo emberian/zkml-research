@@ -41,7 +41,7 @@
    "hashes": 70005,
    "bits": 21664484
   },
-  "seconds": 56.8,
+  "seconds": 19.3,
   "formula": {
    "hidden_rows": 75,
    "lin_constraints": 1208,
@@ -103,7 +103,7 @@
    "hashes": 76929,
    "bits": 25700738
   },
-  "seconds": 232.8,
+  "seconds": 77.0,
   "formula": {
    "hidden_rows": 86,
    "lin_constraints": 1236,
