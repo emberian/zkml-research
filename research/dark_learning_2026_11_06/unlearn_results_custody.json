@@ -1,0 +1,91 @@
+{
+ "custody": {
+  "attacks": [
+   {
+    "attack": "K1 commitments unchanged (deletion claimed, nothing subtracted)",
+    "outcome_as_expected": true
+   },
+   {
+    "attack": "K2 commitment subtracts a different record",
+    "outcome_as_expected": true
+   },
+   {
+    "attack": "K3 custodian 1 updates its share with a different record (honest commitment published)",
+    "outcome_as_expected": true
+   },
+   {
+    "attack": "K4 ... and lies at the opening back to 0: ACCEPTED as expected (the authenticated value is the honest one; the raw share is not what any opening can use)",
+    "outcome_as_expected": true
+   },
+   {
+    "attack": "K7 an error orthogonal to predictable coins: ACCEPTED by the legacy zero test (falsifier bites)",
+    "outcome_as_expected": true
+   },
+   {
+    "attack": "K7 ... refused once the coins hash the custodians' committed updated shares (a custodian that does not lie at the opening)",
+    "outcome_as_expected": true
+   }
+  ],
+  "link_entry": true,
+  "link_entry_exponentiations": 12,
+  "K5_refused": true,
+  "K6_refused": true,
+  "custodians": 3,
+  "field_bits": 256,
+  "group_bits": 2048,
+  "shared_values": 4875,
+  "entry_exponentiations": 29250,
+  "deletions": [
+   {
+    "multiplicity": 2,
+    "log_legs": true,
+    "stranger_check": true,
+    "custodian_zero_test": true,
+    "link_check": true,
+    "link_check_exponentiations": 12,
+    "local_updates_per_party": 702,
+    "stranger_small_exponentiations": 702,
+    "wire_elements": 18
+   },
+   {
+    "multiplicity": 1,
+    "log_legs": true,
+    "stranger_check": true,
+    "custodian_zero_test": true,
+    "link_check": true,
+    "link_check_exponentiations": 12,
+    "local_updates_per_party": 930,
+    "stranger_small_exponentiations": 930,
+    "wire_elements": 18
+   },
+   {
+    "multiplicity": 1,
+    "log_legs": true,
+    "stranger_check": true,
+    "custodian_zero_test": true,
+    "link_check": true,
+    "link_check_exponentiations": 12,
+    "local_updates_per_party": 930,
+    "stranger_small_exponentiations": 930,
+    "wire_elements": 18
+   },
+   {
+    "multiplicity": 1,
+    "log_legs": true,
+    "stranger_check": true,
+    "custodian_zero_test": true,
+    "link_check": true,
+    "link_check_exponentiations": 12,
+    "local_updates_per_party": 650,
+    "stranger_small_exponentiations": 650,
+    "wire_elements": 18
+   }
+  ],
+  "dark_state_exact": true,
+  "all_ok": true,
+  "not_built": [
+   "release from custody (MPC solve)",
+   "post-quantum commitment"
+  ]
+ }
+}

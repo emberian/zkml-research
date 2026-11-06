@@ -1,0 +1,545 @@
+{
+ "c18": {
+  "D": 65,
+  "lam": 1,
+  "lam_validation": null,
+  "records": 3824,
+  "duplicate_inserted": true,
+  "test_accuracy_before": 1660,
+  "test_accuracy_after": 1660,
+  "test_size": 1797,
+  "keys_deleted": 10,
+  "records_deleted": 11,
+  "exact_stats_equal_never_trained": true,
+  "exact_model_equal_never_trained": true,
+  "tombstones": 11,
+  "every_key_absent": true,
+  "per_certificate_counts": {
+   "insert": {
+    "hash": 27,
+    "certs_checked": 1,
+    "contrib_mult": 2145
+   },
+   "training_total_verifier": {
+    "hash": 71536,
+    "certs_checked": 3824,
+    "contrib_mult": 8202480
+   },
+   "release": {
+    "hash": 2,
+    "certs_checked": 1,
+    "release_bigmult": 42250
+   },
+   "delete_m2": {
+    "hash": 7734,
+    "certs_checked": 1,
+    "contrib_mult": 2145,
+    "absence_compare": 3824
+   },
+   "delete_m1": {
+    "hash": 7693,
+    "certs_checked": 1,
+    "contrib_mult": 2145,
+    "absence_compare": 3824
+   }
+  },
+  "attacks": [
+   {
+    "attack": "A1a keep the record in the statistics (log tombstoned)",
+    "accepted": false,
+    "reason": "delete: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A1b keep the record in the log (no position tombstoned)",
+    "accepted": false,
+    "reason": "delete: positions empty or repeated",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A1c claim deletion with the log unchanged",
+    "accepted": false,
+    "reason": "absence: whole-log values do not rebuild the post-deletion root",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A2a tombstone a different record's position",
+    "accepted": false,
+    "reason": "delete: position does not open to the claimed old value",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A2b present a different record's bytes for the key",
+    "accepted": false,
+    "reason": "delete: record bytes do not hash to the requested key",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A2c tombstone the right leaf, subtract a different record",
+    "accepted": false,
+    "reason": "delete: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A3a release the model trained on d after its deletion",
+    "accepted": false,
+    "reason": "release: (lam I + A) N != delta B",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A3b serve the pre-deletion model after deletion (C20)",
+    "accepted": false,
+    "reason": "serve: no active model (a deletion invalidated it; awaiting a release certificate)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A3c re-train on d silently inside a later insert",
+    "accepted": false,
+    "reason": "insert: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A4 duplicate deleted once (C18 falsifier 1)",
+    "accepted": false,
+    "reason": "absence: Count(key) = 1 != 0 after deletion",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A5a subtract with a changed feature map (C18 falsifier 2)",
+    "accepted": false,
+    "reason": "delete: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A5b a head under a different genesis (phi, lam)",
+    "accepted": false,
+    "reason": "new head does not extend the ledger head",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A6a genesis with lam = 0 (C18 falsifier 3, singular system)",
+    "accepted": false,
+    "reason": "Genesis refuses lam <= 0",
+    "refused_by_expected_check": true,
+    "lam0_nonuniqueness": {
+     "zero_feature_columns": [
+      0,
+      39
+     ],
+     "two_distinct_models_pass_at_lam0": true
+    }
+   },
+   {
+    "attack": "A6b a second encoding of the same model (non-canonical)",
+    "accepted": false,
+    "reason": "release: (N, delta) not in canonical form",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A7 replay the deletion against the next head (stale parent)",
+    "accepted": false,
+    "reason": "parent is not the ledger head (stale or forked)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A8a drop one leaf from the whole-log opening",
+    "accepted": false,
+    "reason": "absence: whole-log values do not rebuild the post-deletion root",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A8b substitute one leaf in the whole-log opening",
+    "accepted": false,
+    "reason": "absence: whole-log values do not rebuild the post-deletion root",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A9 a second child of the same parent (fork)",
+    "accepted": false,
+    "reason": "parent is not the ledger head (stale or forked)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A10 delete a record that was never inserted",
+    "accepted": false,
+    "reason": "delete: position does not open to the claimed old value",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A11 release with an extra row carrying the deleted record (Codex r1)",
+    "accepted": false,
+    "reason": "release: N is not a D x 10 integer matrix",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A13 a head with an extra field carrying the deleted record (Codex r2)",
+    "accepted": false,
+    "reason": "delete: claimed head has fields other than the ledger's (Codex round 2)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A12 a record with a trailing payload element",
+    "accepted": false,
+    "reason": "delete: record is not a 64-feature optdigits record with a label",
+    "refused_by_expected_check": true
+   }
+  ],
+  "all_attacks_refused": true,
+  "verifier_holds": {
+   "stats_integers": 4875,
+   "head_fields": 7
+  },
+  "absence_leg_bytes": 122368
+ },
+ "c19": {
+  "D": 16,
+  "lam": 1,
+  "lam_validation": null,
+  "records": 3824,
+  "duplicate_inserted": true,
+  "test_accuracy_before": 1553,
+  "test_accuracy_after": 1554,
+  "test_size": 1797,
+  "keys_deleted": 10,
+  "records_deleted": 11,
+  "exact_stats_equal_never_trained": true,
+  "exact_model_equal_never_trained": true,
+  "tombstones": 11,
+  "every_key_absent": true,
+  "per_certificate_counts": {
+   "insert": {
+    "hash": 27,
+    "certs_checked": 1,
+    "contrib_mult": 136,
+    "phi_mult": 1040
+   },
+   "training_total_verifier": {
+    "hash": 71536,
+    "certs_checked": 3824,
+    "contrib_mult": 520064,
+    "phi_mult": 3976960
+   },
+   "release": {
+    "hash": 2,
+    "certs_checked": 1,
+    "release_bigmult": 2560
+   },
+   "delete_m2": {
+    "hash": 7734,
+    "certs_checked": 1,
+    "contrib_mult": 136,
+    "absence_compare": 3824,
+    "phi_mult": 1040
+   },
+   "delete_m1": {
+    "hash": 7693,
+    "certs_checked": 1,
+    "contrib_mult": 136,
+    "absence_compare": 3824,
+    "phi_mult": 1040
+   }
+  },
+  "attacks": [
+   {
+    "attack": "A1a keep the record in the statistics (log tombstoned)",
+    "accepted": false,
+    "reason": "delete: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A1b keep the record in the log (no position tombstoned)",
+    "accepted": false,
+    "reason": "delete: positions empty or repeated",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A1c claim deletion with the log unchanged",
+    "accepted": false,
+    "reason": "absence: whole-log values do not rebuild the post-deletion root",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A2a tombstone a different record's position",
+    "accepted": false,
+    "reason": "delete: position does not open to the claimed old value",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A2b present a different record's bytes for the key",
+    "accepted": false,
+    "reason": "delete: record bytes do not hash to the requested key",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A2c tombstone the right leaf, subtract a different record",
+    "accepted": false,
+    "reason": "delete: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A3a release the model trained on d after its deletion",
+    "accepted": false,
+    "reason": "release: (lam I + A) N != delta B",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A3b serve the pre-deletion model after deletion (C20)",
+    "accepted": false,
+    "reason": "serve: no active model (a deletion invalidated it; awaiting a release certificate)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A3c re-train on d silently inside a later insert",
+    "accepted": false,
+    "reason": "insert: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A4 duplicate deleted once (C18 falsifier 1)",
+    "accepted": false,
+    "reason": "absence: Count(key) = 1 != 0 after deletion",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A5a subtract with a changed feature map (C18 falsifier 2)",
+    "accepted": false,
+    "reason": "delete: claimed head field 'stats' is not the one the certificate determines",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A5b a head under a different genesis (phi, lam)",
+    "accepted": false,
+    "reason": "new head does not extend the ledger head",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A6a genesis with lam = 0 (C18 falsifier 3, singular system)",
+    "accepted": false,
+    "reason": "Genesis refuses lam <= 0",
+    "refused_by_expected_check": true,
+    "lam0_nonuniqueness": null
+   },
+   {
+    "attack": "A6b a second encoding of the same model (non-canonical)",
+    "accepted": false,
+    "reason": "release: (N, delta) not in canonical form",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A7 replay the deletion against the next head (stale parent)",
+    "accepted": false,
+    "reason": "parent is not the ledger head (stale or forked)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A8a drop one leaf from the whole-log opening",
+    "accepted": false,
+    "reason": "absence: whole-log values do not rebuild the post-deletion root",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A8b substitute one leaf in the whole-log opening",
+    "accepted": false,
+    "reason": "absence: whole-log values do not rebuild the post-deletion root",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A9 a second child of the same parent (fork)",
+    "accepted": false,
+    "reason": "parent is not the ledger head (stale or forked)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A10 delete a record that was never inserted",
+    "accepted": false,
+    "reason": "delete: position does not open to the claimed old value",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A11 release with an extra row carrying the deleted record (Codex r1)",
+    "accepted": false,
+    "reason": "release: N is not a D x 10 integer matrix",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A13 a head with an extra field carrying the deleted record (Codex r2)",
+    "accepted": false,
+    "reason": "delete: claimed head has fields other than the ledger's (Codex round 2)",
+    "refused_by_expected_check": true
+   },
+   {
+    "attack": "A12 a record with a trailing payload element",
+    "accepted": false,
+    "reason": "delete: record is not a 64-feature optdigits record with a label",
+    "refused_by_expected_check": true
+   }
+  ],
+  "all_attacks_refused": true,
+  "verifier_holds": {
+   "stats_integers": 416,
+   "head_fields": 7
+  },
+  "absence_leg_bytes": 122368
+ },
+ "c19_pca_falsifier": {
+  "basis_entries_moved": 846,
+  "subtracted_equals_retrained": false,
+  "bites": true
+ },
+ "sgd": {
+  "n": 3823,
+  "B0": 32,
+  "lam": 0.05,
+  "eta": 0.030721966205837177,
+  "rho": 0.9984639016897081,
+  "L": 32.5,
+  "T": 600,
+  "epochs": 5,
+  "continuation_epochs": 3,
+  "test_accuracy": 1622,
+  "test_size": 1797,
+  "deletions": [
+   {
+    "record": 1480,
+    "steps_using_d": [
+     83,
+     171,
+     317,
+     390,
+     527
+    ],
+    "first_use": 83,
+    "replayed_steps": 517,
+    "exact_replay_bit_identical": true,
+    "measured_distance": 0.0032904501574753465,
+    "certified_bound": 0.016734372977538627,
+    "bound_holds": true,
+    "continuation": [
+     {
+      "extra_epochs": 1,
+      "measured": 0.0024136901554641277,
+      "bound": 0.013915333309807867
+     },
+     {
+      "extra_epochs": 2,
+      "measured": 0.001788845260748311,
+      "bound": 0.011571183538394477
+     },
+     {
+      "extra_epochs": 3,
+      "measured": 0.0013415869752747601,
+      "bound": 0.00962192464228225
+     }
+    ]
+   },
+   {
+    "record": 1921,
+    "steps_using_d": [
+     42,
+     123,
+     341,
+     438,
+     510
+    ],
+    "first_use": 42,
+    "replayed_steps": 558,
+    "exact_replay_bit_identical": true,
+    "measured_distance": 0.0036206094487600073,
+    "certified_bound": 0.016426906629675067,
+    "bound_holds": true,
+    "continuation": [
+     {
+      "extra_epochs": 1,
+      "measured": 0.002781363296888229,
+      "bound": 0.013659662140185108
+     },
+     {
+      "extra_epochs": 2,
+      "measured": 0.002155076512542664,
+      "bound": 0.011358582232819155
+     },
+     {
+      "extra_epochs": 3,
+      "measured": 0.0016800097914812203,
+      "bound": 0.009445137735885949
+     }
+    ]
+   },
+   {
+    "record": 1968,
+    "steps_using_d": [
+     19,
+     186,
+     355,
+     374,
+     557
+    ],
+    "first_use": 19,
+    "replayed_steps": 581,
+    "exact_replay_bit_identical": true,
+    "measured_distance": 0.002823654141798381,
+    "certified_bound": 0.015643958523409846,
+    "bound_holds": true,
+    "continuation": [
+     {
+      "extra_epochs": 1,
+      "measured": 0.002113996637942989,
+      "bound": 0.013008607937103404
+     },
+     {
+      "extra_epochs": 2,
+      "measured": 0.0016294289464493055,
+      "bound": 0.010817203344539722
+     },
+     {
+      "extra_epochs": 3,
+      "measured": 0.0012670683505702587,
+      "bound": 0.00899495847387158
+     }
+    ]
+   },
+   {
+    "record": 1167,
+    "steps_using_d": [
+     39,
+     148,
+     347,
+     455,
+     568
+    ],
+    "first_use": 39,
+    "replayed_steps": 561,
+    "exact_replay_bit_identical": true,
+    "measured_distance": 0.0035185915052395665,
+    "certified_bound": 0.016862181432162504,
+    "bound_holds": true,
+    "continuation": [
+     {
+      "extra_epochs": 1,
+      "measured": 0.002685039437255145,
+      "bound": 0.01402161140270623
+     },
+     {
+      "extra_epochs": 2,
+      "measured": 0.0021289173307165697,
+      "bound": 0.011659558232098058
+     },
+     {
+      "extra_epochs": 3,
+      "measured": 0.0016936949097731053,
+      "bound": 0.009695411908323716
+     }
+    ]
+   }
+  ],
+  "host_reinjection": {
+   "p_audit": 0.05,
+   "trials": 40,
+   "mean_deviation_at_stop": 0.031043085659748247,
+   "displacement_bound_D_over_q": 0.10333211833539392,
+   "a_priori_round_gap": 0.005166605916769696,
+   "max_observed_round_gap": 0.0026301363511891484
+  },
+  "all_hold": true
+ }
+}
