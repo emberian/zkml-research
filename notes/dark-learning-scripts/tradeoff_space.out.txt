@@ -1,68 +1,57 @@
-controls: felts/ct deployed = 49,152 [MEASURED cross-limb-binding.md]; booleanity 3*4096*109 = 1,339,392
+controls: felts/ct deployed = 49,152; booleanity 3*4096*109 = 1,339,392; k_wrap at signed 4x4-bit = 10,532; wrap_steps = 10,532
 
--- G1 experiment: Hole-B integer certificate limbs per ct x ct (proof field bits in parentheses)
-   RNS3-109@4096  proof field  31b: |t*z| ~ 2^251, integer limbs 9, certificate felts 307,200, ct felts 49,152, PQ-128 NO
-   p61@4096       proof field  31b: |t*z| ~ 2^155, integer limbs 6, certificate felts 196,608, ct felts 24,576, PQ-128 yes
-   p61@4096       proof field  61b: |t*z| ~ 2^155, integer limbs 3, certificate felts 159,744, ct felts 8,192, PQ-128 yes
-   gold64@4096    proof field  31b: |t*z| ~ 2^161, integer limbs 6, certificate felts 208,896, ct felts 24,576, PQ-128 yes
-   gold64@4096    proof field  64b: |t*z| ~ 2^161, integer limbs 3, certificate felts 172,032, ct felts 8,192, PQ-128 yes
-   RNS-202@8192   proof field  31b: |t*z| ~ 2^438, integer limbs 15, certificate felts 1,056,768, ct felts 196,608, PQ-128 yes
+-- G1: Hole-B integer certificate per ct x ct
+   RNS3-109@4096  BabyBear: integer limbs  9, certificate felts   307,200, ct felts  49,152, quantum-128 table FAIL, smudge per event 2^-40.4
+   p61@4096       BabyBear: integer limbs  6, certificate felts   196,608, ct felts  24,576, quantum-128 table pass (conditional), smudge per event 2^7.6
+   p61@4096       native  : integer limbs  3, certificate felts   159,744, ct felts   8,192, quantum-128 table pass (conditional), smudge per event 2^7.6
+   gold64@4096    BabyBear: integer limbs  6, certificate felts   208,896, ct felts  24,576, quantum-128 table pass (conditional), smudge per event 2^4.6
+   gold64@4096    native  : integer limbs  3, certificate felts   172,032, ct felts   8,192, quantum-128 table pass (conditional), smudge per event 2^4.6
+   RNS-202@8192   BabyBear: integer limbs 15, certificate felts 1,056,768, ct felts 196,608, quantum-128 table pass (conditional), smudge per event 2^-132.4
 
-enumerated 784 constructions at d=4096, L=32
-gate failures: {'pq': 112, 'depth': 368, 'wrap': 96, 'read': 336}; passing all gates: 104
-
-== PARETO SET, tier C custody (weights never in one party's clear), all gates passing (8 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-n/a            bb  mpc-only          public lowrank          8  0.001 |   3.21e+06  2.76e+09  1.01e+08   -999    1053 | PDWR C
-n/a            bb  mpc-only          public lowrank          8   0.01 |   1.32e+07  2.76e+09  1.01e+08   -999   105.3 | PDWR C
-RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8  0.001 |   2.88e+07  3.41e+11  6.45e+07 -55.07    1053 | PDWR C
-n/a            bb  mpc-only          public lowrank          8    0.1 |   1.13e+08  2.76e+09  1.01e+08   -999   10.53 | PDWR C
-RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8   0.01 |   2.70e+08  3.41e+11  6.45e+07 -55.07   105.3 | PDWR C
-n/a            bb  mpc-only          public lowrank          8      1 |   1.11e+09  2.76e+09  1.01e+08   -999   1.053 | PDWR C
-RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8    0.1 |   2.68e+09  3.41e+11  6.45e+07 -55.07   10.53 | PDWR C
-RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8      1 |   2.67e+10  3.41e+11  6.45e+07 -55.07   1.053 | PDWR C
-
--- gate failures by custody (a row can fail several gates)
-   fhe+mpc-boundary  rows  336  pq:56  depth:32  wrap:48  read:280
-   fhe-bootstrap     rows  336  pq:56  depth:336  wrap:48  read:0
+enumerated 784 constructions at d=4096, L=32; passing all gates: 112; gate failures {'pq': 112, 'depth': 528, 'wrap': 0, 'read': 336}
+-- gate failures by custody
+   fhe+mpc-boundary  rows  336  pq:56  depth:192  wrap:0  read:280
+   fhe-bootstrap     rows  336  pq:56  depth:336  wrap:0  read:0
    mpc-only          rows   56  pq:0  depth:0  wrap:0  read:0
    tee-plaintext     rows   56  pq:0  depth:0  wrap:0  read:56
 
--- best gated tier-C point per update family at p=0.01 (by proof_felts), and who dominates it
+== PARETO SET, tier C, base=dark (separate frontier per opacity regime) (11 rows)
+modulus        pf  custody           base   update           r      p | proof_felts host_work    online   leak2   undet  env% | gates tier
+n/a            bb  mpc-only          dark   backprop-full    1  0.001 |   7.24e+06  1.64e+11  9.73e+09    -999    2105  10.9 | PDWR C
+n/a            bb  mpc-only          dark   lowrank          8  0.001 |   1.06e+07  1.10e+11  6.54e+09    -999    2105  59.2 | PDWR C
+n/a            bb  mpc-only          dark   lowrank          8   0.01 |   4.96e+07  1.10e+11  6.54e+09    -999   210.5  12.7 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  dark   backprop-full    1  0.001 |   3.27e+08  1.26e+12  6.64e+07  -106.3    2105  24.6 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  dark   append-rank1     1  0.001 |   4.09e+08  1.68e+12  6.61e+07  -106.5    2105  19.6 | PDWR C
+n/a            bb  mpc-only          dark   lowrank          8    0.1 |   4.39e+08  1.10e+11  6.54e+09    -999   21.05   1.4 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  dark   lowrank          8  0.001 |   8.07e+08  8.43e+11  6.61e+07  -106.5    2105  79.5 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  dark   lowrank          8   0.01 |   2.29e+09  8.43e+11  6.61e+07  -106.5   210.5  28.0 | PDWR C
+n/a            bb  mpc-only          dark   lowrank          8      1 |   4.34e+09  1.10e+11  6.54e+09    -999   2.105   0.1 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  dark   lowrank          8    0.1 |   1.72e+10  8.43e+11  6.61e+07  -106.5   21.05   3.7 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  dark   lowrank          8      1 |   1.66e+11  8.43e+11  6.61e+07  -106.5   2.105   0.4 | PDWR C
 
-== backprop-full: best; dominated by 3 gated rows (1 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-n/a            bb  mpc-only          public backprop-full    1   0.01 |   5.41e+07  1.11e+11  6.51e+09   -999   105.3 | PDWR C
+== PARETO SET, tier C, base=public (separate frontier per opacity regime) (10 rows)
+modulus        pf  custody           base   update           r      p | proof_felts host_work    online   leak2   undet  env% | gates tier
+n/a            bb  mpc-only          public append-rank1     1  0.001 |   6.17e+06  1.11e+11  6.51e+09    -999    2105  12.8 | PDWR C
+n/a            bb  mpc-only          public lowrank          8  0.001 |   7.40e+06  2.76e+09  1.01e+08    -999    2105  85.0 | PDWR C
+n/a            bb  mpc-only          public lowrank          8   0.01 |   1.74e+07  2.76e+09  1.01e+08    -999   210.5  36.2 | PDWR C
+n/a            bb  mpc-only          public lowrank          8    0.1 |   1.17e+08  2.76e+09  1.01e+08    -999   21.05   5.4 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  public append-rank1     1  0.001 |   2.96e+08  1.51e+12  6.61e+07  -106.5    2105  27.1 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8  0.001 |   6.94e+08  6.76e+11  6.61e+07  -106.5    2105  92.4 | PDWR C
+n/a            bb  mpc-only          public lowrank          8      1 |   1.12e+09  2.76e+09  1.01e+08    -999   2.105   0.6 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8   0.01 |   1.17e+09  6.76e+11  6.61e+07  -106.5   210.5  55.0 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8    0.1 |   5.89e+09  6.76e+11  6.61e+07  -106.5   21.05  10.9 | PDWR C
+RNS-202@8192   bb  fhe+mpc-boundary  public lowrank          8      1 |   5.32e+10  6.76e+11  6.61e+07  -106.5   2.105   1.2 | PDWR C
 
-== append-rank1: best; dominated by 6 gated rows (1 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-n/a            bb  mpc-only          public append-rank1     1   0.01 |   5.94e+07  1.37e+11  8.12e+09   -999   105.3 | PDWR C
+-- the opacity price WITHIN each custody (fully dark vs public trunk, cheapest gated, p=0.01)
+   fhe+mpc-boundary  proof x2.0, host x1.2, online x1.0  (lowrank r=8 vs lowrank r=8)
+   mpc-only          proof x2.9, host x39.9, online x65.0  (lowrank r=8 vs lowrank r=8)
 
-== lowrank: best; dominated by 0 gated rows (1 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-n/a            bb  mpc-only          public lowrank          8   0.01 |   1.32e+07  2.76e+09  1.01e+08   -999   105.3 | PDWR C
+== DEPLOYED-PARAMETER reference point (1 rows)
+modulus        pf  custody           base   update           r      p | proof_felts host_work    online   leak2   undet  env% | gates tier
+RNS3-109@4096  bb  fhe+mpc-boundary  dark   backprop-full    1   0.01 |   1.45e+09  5.81e+11  6.48e+07  -14.23   210.5   3.2 | -DW- C
 
-== zo-seeded: best; dominated by 5 gated rows (1 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-n/a            bb  mpc-only          public zo-seeded       16   0.01 |   1.35e+08  3.57e+10  1.36e+09   -999   105.3 | PDWR C
-
--- THE WELFARE PRICE: cheapest gated tier-C point with the WHOLE model dark (base=dark), per custody, p=0.01
-
-== fhe+mpc-boundary: fully dark; x125.4 proof felts, x0.6 online vs best public-trunk point (1 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-RNS-202@8192   bb  fhe+mpc-boundary  dark   lowrank          8   0.01 |   1.65e+09  8.43e+11  6.45e+07 -55.07   105.3 | PDWR C
-
-== mpc-only: fully dark; x3.4 proof felts, x65.0 online vs best public-trunk point (1 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-n/a            bb  mpc-only          dark   lowrank          8   0.01 |   4.54e+07  1.10e+11  6.54e+09   -999   105.3 | PDWR C
-   fhe-bootstrap     none passes the gates
-
-== DEPLOYED-PARAMETER reference point (fails PQ; shown regardless) (1 rows)
-modulus        pf  custody           base   update           r      p | proof_felts host_work    online  leak2   undet | gates tier
-RNS3-109@4096  bb  fhe+mpc-boundary  dark   backprop-full    1   0.01 |   1.87e+09  7.74e+11  6.45e+07 -6.068   105.3 | -DW- C
-
--- audit-rate knee: undetected displacement (units of B) vs amortized proof felts, p61 native, public base, lowrank r=16
-   p=1      proof_felts/step=  2.68e+09  E[undetected]=1.053
-   p=0.1    proof_felts/step=  2.72e+08  E[undetected]=10.53
-   p=0.01   proof_felts/step=  3.09e+07  E[undetected]=105.3
-   p=0.001  proof_felts/step=  6.87e+06  E[undetected]=1053
+-- audit-rate knee with the envelope charged (RNS-202@8192, FHE+MPC, public, lowrank r=16)
+   p=1      proof_felts/step=  5.48e+10  envelope share=  2.3%  E[undetected injected]=2.105 B
+   p=0.1    proof_felts/step=  6.63e+09  envelope share= 19.4%  E[undetected injected]=21.05 B
+   p=0.01   proof_felts/step=  1.82e+09  envelope share= 70.6%  E[undetected injected]=210.5 B
+   p=0.001  proof_felts/step=  1.34e+09  envelope share= 96.0%  E[undetected injected]=2105 B
