@@ -1,0 +1,7 @@
+q=1000003, trial-division prime=True; n=16; dimension k=5; domain i |-> i mod q
+UDR=11/32, local one-third limit=11/48, witness delta_ud=5/16, ArkLib epsilon=16/1000003
+Johnson rho_minus=1/4, sqrt=1/2, delta=3/8, eta=1/8, m=4
+Johnson printed comparison numerator=157527; epsilon=157527/1000003 = 0.15752652742 < 1
+Nonzero bad-event witness: f0=0, f1=X^5; exact probability 1/q=1/1000003 by root counting
+BCIKS line/space delta=1/4, epsilon=16/1000003; quadratic curve epsilon=32/1000003
+Old ZMod17,n16,k4 printed Johnson epsilon > 16807/51 > 1 for every allowed delta
