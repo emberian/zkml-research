@@ -3,6 +3,7 @@ mir-verify: the receipt verifier CLI. Its verdict is `Mir.verify` / `Mir.accepts
 parsed receipt with SHA-256 and Ed25519 from Mir.Crypto; nothing here decides acceptance on its own.
 
   mir-verify check RECEIPT.json --cid HEX --trust PK[,PK..] [--strict] [--recomputer PK[,PK..]] [--fp-verdict yes|no]
+    exit 0 accept, 1 refuse, 3 receipt verified but no proof verdict given
   mir-verify fields RECEIPT.json OUT.bin          the bytes the evaluator signs (Ed25519 over these, raw)
   mir-verify edge-fields RECEIPT.json N OUT.bin   the bytes a recomputer signs for edge N (from 0)
   mir-verify graph-digest RECEIPT.json
@@ -89,7 +90,10 @@ def check (path : String) (args : List String) : IO UInt32 := do
   let trusted := splitKeys (opt args "--trust")
   let recs := splitKeys (opt args "--recomputer")
   let strict := args.contains "--strict"
-  let fpYes := opt args "--fp-verdict" == some "yes"
+  let verdict := opt args "--fp-verdict"
+  if !(verdict == none || verdict == some "yes" || verdict == some "no") then
+    throw (IO.userError "--fp-verdict takes yes or no: cp_verify's verdict on the proof, checked against --cid")
+  let fpYes := verdict == some "yes"
   let c := crypto
   IO.println s!"receipt {path}"
   IO.println s!"  commitment ID {r.commitmentId}"
@@ -111,20 +115,23 @@ def check (path : String) (args : List String) : IO UInt32 := do
   for e in r.graph.edges do
     IO.println s!"  {e.src} -{e.rel.tag}-> {e.dst} [{e.rule}]: {basisText e.basis}"
   IO.println ""
-  if v && cid == r.commitmentId then
-    if fpYes then
-      IO.println "ACCEPT. By Mir.identity_sound: the claim of a proof that cp_verify accepted against this ID holds for"
-      IO.println "the integers converted from the files named here, whose registry v2 root set is the receipt's, inside the"
-      IO.println "deployment the evaluation record signs; or FlashProve's verifier or binding failed, or SHA-256 collided"
-      IO.println "on the file list. It rests on FlashProve's soundness and on edges E2 and E3 as vouched for above"
-      IO.println (if strict then "(strict: both recomputed and signed by keys you trust; Mir.identity_sound_strict)."
-                  else "(not strict: whatever their basis says; --strict demands trusted recomputers).")
-    else
-      IO.println "RECEIPT VERIFIED for this ID. No proof verdict given (--fp-verdict yes after cp_verify says YES)."
-    pure (if a || !fpYes then 0 else 1)
-  else
+  if !(v && cid == r.commitmentId) then
     IO.println "REFUSE"
     pure 1
+  else if verdict == some "no" then
+    IO.println "REFUSE: the receipt verifies, but FlashProve's verifier rejected the proof."
+    pure 1
+  else if fpYes then
+    IO.println "ACCEPT. By Mir.identity_sound: the claim of a proof that cp_verify accepted against this ID holds for"
+    IO.println "the integers converted from the files named here, whose registry v2 root set is the receipt's, inside the"
+    IO.println "deployment the evaluation record signs; or FlashProve's verifier or binding failed, or SHA-256 collided"
+    IO.println "on the file list. It rests on FlashProve's soundness and on edges E2 and E3 as vouched for above"
+    IO.println (if strict then "(strict: both attested by recomputer keys you trust; Mir.identity_sound_strict)."
+                else "(not strict: whatever their basis says; --strict demands trusted recomputers).")
+    pure (if a then 0 else 1)
+  else
+    IO.println "RECEIPT VERIFIED for this ID; no proof verdict given (run cp_verify with this ID, then --fp-verdict)."
+    pure 3
 
 def main (args : List String) : IO UInt32 := do
   match args with

@@ -53,8 +53,11 @@ digest FlashProve published (E2), and those integers are what cp_commit commits 
 byte-exactly; E3 is recomputation-only. Until a machine with an H100 and 330 GB exists for this (ember's decision,
 it is money), the receipt carries E3 as an **attested edge**: FlashProve's published expected values plus their
 reproduction record, typed in the receipt as "recomputable, not recomputed by us", never as checked. With a secret
-seed (the hiding mode), E2's digest is itself secret (`wsums.txt` is "as secret as the weights") and E3 cannot be
-recomputed by anyone but the provider: the binding then degrades to the provider's signature. The receipt types
+seed (the hiding mode), E3 cannot be recomputed by anyone but the provider, because the ID hashes randomness only
+the provider holds; E2 stays computable by anyone who has the weights (for public weights, anyone). If the weights
+are private too, FlashProve asks that `wsums.txt` be kept as secret as the weights, and neither edge has a stranger
+to check it: the binding then degrades to the provider's signature. (Corrected after attack 2, which caught the
+earlier text conflating the secret seed with private weights.) The receipt types
 every edge by who can check it, and the Lean theorem quantifies over that typing.
 
 "Same bytes" across quantization: what FlashProve commits is not Meta's bf16 checkpoint and not even the GGUF bytes;
@@ -106,3 +109,38 @@ published, and E3 is either recomputed (H100, 330 GB) or carried as attested and
 It says the registry is the missing public name. By WHAT-THIS-IS-NOT.md, the v1 registry is a checksum no proof
 opens, and by hollow-LLM, a name only helps for published weights. The update shows the real receipt, the three
 edges, and which of them a reader can check.
+
+## 6. What the first cross-model attack changed (2026-11-06, notes/attack-1.md)
+
+gpt-6-astra executed six malformed receipts that version 1 accepted under `--strict`, and showed that version 1's
+commit edge ("every integer set committed under the ID has the published sums digest") was a universal premise
+FlashProve does not give: the ID does not hash `wsums.txt`, and binding is not proved of `cp_commit`. Version 2:
+
+- **The decomposition of E3.** The receipt asserts one *run*: `cp_commit` on the files with the published list
+  digest produced this ID (`CommitRun`). Binding is FlashProve's, and its failure is a named disjunct
+  (`BindingBreak`), as are their verifier's soundness error (`bad p`) and a SHA-256 collision on the file list.
+  The sums digest leaves the theorem: it is the evidence that our §11 implementation is theirs (gate G12), not a
+  premise. A public-seed reproduction establishes the run; with a hidden seed nobody but the provider can.
+- **The integers node is named by the v2 root set**, which binds names, shapes, exponents and every row, so "same
+  integers" no longer rests on a sums file that records element counts but not dimensions.
+- **No evaluation transfer along edges.** An evaluation names the deployment node, whose digest `verify`
+  recomputes from its six components (integers, FlashProve configuration, tokenizer, adapter, system prompt,
+  tools). An evaluation of Meta's bf16 model, of the GGUF in another runtime, of a digest or of a prover release
+  names another node and is refused.
+- **Graph discipline.** Unique ids, exactly one node per role, edges only between existing nodes, 64-hex digests,
+  size bounds; reachability is gone.
+- **Strict mode means something.** The two required edges must be signed by a recomputer key the client trusts,
+  over relation, endpoint kinds, endpoint digests and rule; `identity_sound_strict` derives both edges from those
+  signatures and the recomputers' honesty instead of assuming them.
+
+## 7. What the second cross-model attack changed (notes/attack-2.md)
+
+It found no unsound deduction; it found the gaps between the predicates and execution. Fixed: the deployment's
+components are now the integers, the commitment ID (which hashes FlashProve's whole configuration, not just
+`KL.bin`), a `runtime` node naming the program that runs the integer model, tokenizer, adapter, system prompt,
+tools, so an evaluation run on the GGUF in llama.cpp is another deployment; `--fp-verdict no` refuses and a missing
+verdict exits 3, not 0; the builder fails closed on file, sums or e_res mismatch; the evaluator's name is signed;
+Ed25519 refuses small-order public keys (the identity key with R = identity, S = 0 verified every message). Stated
+rather than fixed: `CommitRun` folds the committer's correctness in with the run (named in its docstring);
+`FpSoundUpTo` is unquantified (their bound, not ours); strict mode is authenticated recomputer attestation, trust
+moved not removed; `FilesCollision` is not yet reduced to two concrete byte strings in Lean.

@@ -28,7 +28,7 @@ def sign(pem, data_path):
     return subprocess.run(["openssl", "pkeyutl", "-sign", "-inkey", pem, "-rawin", "-in", data_path],
                           capture_output=True, check=True).stdout.hex()
 
-COMPONENTS = ["integers", "flashprove-config", "tokenizer", "adapter", "system-prompt", "tools"]
+COMPONENTS = ["integers", "flashprove-commitment", "runtime", "tokenizer", "adapter", "system-prompt", "tools"]
 
 def deployment_digest(nodes):
     by = {n["kind"]: n["digest"] for n in nodes}
@@ -37,11 +37,15 @@ def deployment_digest(nodes):
 def build(m, exp, weights_sha_text, args):
     files_digest = hashlib.sha256(weights_sha_text.encode()).hexdigest()
     ours = "".join(f"{f['sha256']}  {f['name']}\n" for f in m["files"])
+    problems = []
     if ours != weights_sha_text:
-        msg = "the streamed file digests differ from the published list"
-        if args.require_match:
-            sys.exit("make_receipt: " + msg)
-        print("note: " + msg, file=sys.stderr)
+        problems.append("the streamed file digests differ from the published list")
+    if m["wsums_sha256"] != exp["model/wsums.txt"]:
+        problems.append("the streamed sums digest differs from FlashProve's expected.txt")
+    if m["eres"] != 10:
+        problems.append("the stream's e_res is not 10, the one the edges name")
+    if problems and not args.synthetic:
+        sys.exit("make_receipt: " + "; ".join(problems) + " (--synthetic only for test fixtures)")
     fp_rel = "FlashProve 0.16.0-rc.26 @ 9e2bdd8ff5bf9c62f18263d7dac189b0400b260c"
     nodes = [
         {"id": "meta-bf16", "kind": "base",
@@ -50,7 +54,9 @@ def build(m, exp, weights_sha_text, args):
         {"id": "integers", "kind": "integers", "digest": m["rootset"]},
         {"id": "wsums", "kind": "wsums", "digest": m["wsums_sha256"]},
         {"id": "commitment", "kind": "flashprove-commitment", "digest": exp["commitment-id"]},
-        {"id": "fp-config", "kind": "flashprove-config", "digest": exp["config/KL.bin"]},
+        {"id": "fp-scales", "kind": "flashprove-scales", "digest": exp["config/KL.bin"]},
+        {"id": "runtime", "kind": "runtime",
+         "digest": sha("FlashProve integer model (integrations/vllm/integer_model) @ 9e2bdd8ff5bf9c62f18263d7dac189b0400b260c")},
         {"id": "fp-key", "kind": "flashprove-key-file", "digest": exp["ivk/key.bin"]},
         {"id": "fp-release", "kind": "prover-release", "digest": sha(fp_rel)},
         {"id": "tokenizer", "kind": "tokenizer", "digest": m["files"][0]["sha256"]},
@@ -66,7 +72,7 @@ def build(m, exp, weights_sha_text, args):
          "rule": "unsloth UD-Q4_K_XL dynamic 4-bit quantization, rev 41032e5471dd6ea5b349062d978626215d6c5bba",
          "basis": pub("unsloth model card tag base_model:quantized:meta-llama/Llama-4-Maverick-17B-128E-Instruct")},
         {"src": "gguf", "dst": "integers", "rel": "converts",
-         "rule": "FlashProve docs/model.md section 11 at e_res 10; registry v2 roots per ROOTS-V2.md",
+         "rule": "FlashProve docs/model.md section 11 at e_res 10; registry v2 roots per ROOTS-V2.md (mir13/registry-v2/1)",
          "basis": rer("mir-stream remote --eres 10 (stream/); gates.sh G11-G13")},
         {"src": "integers", "dst": "wsums", "rel": "digest-of",
          "rule": "SHA-256 of wsums.txt as weight_sums/ writes it",
@@ -74,7 +80,7 @@ def build(m, exp, weights_sha_text, args):
         {"src": "gguf", "dst": "commitment", "rel": "commits",
          "rule": "cp_commit -public-weights, examples/maverick/public-seed.bin, e_res 10, fitted KL.bin",
          "basis": pub("FlashProve examples/maverick/expected.txt and README reproduction record (one H100, 330 GB host memory)")},
-        {"src": "fp-config", "dst": "commitment", "rel": "digest-of", "rule": "R4.11: the ID hashes the configuration",
+        {"src": "fp-scales", "dst": "commitment", "rel": "digest-of", "rule": "R4.11: the ID hashes the configuration",
          "basis": pub("FlashProve examples/maverick/expected.txt")},
         {"src": "fp-key", "dst": "commitment", "rel": "digest-of",
          "rule": "R4.11: the ID hashes the anchor root and OOD answers held in key.bin",
@@ -113,7 +119,7 @@ def main():
     a.add_argument("--eval-node", default="deployment")
     a.add_argument("--adapter", default="none")
     a.add_argument("--tools", default="none")
-    a.add_argument("--require-match", action="store_true")
+    a.add_argument("--synthetic", action="store_true", help="test fixtures only: skip the fail-closed checks")
     a.add_argument("--recomputer-key")
     a.add_argument("--recompute", default="converts")
     a.add_argument("--evaluator", default="demonstration key of the mir13 lane: no lab has signed an evaluation of this checkpoint")
