@@ -1,0 +1,14 @@
+## 1. FlashProve's own accepted-proof example (cp_verify on bb2, last line):
+YES
+## presented under the Maverick receipt with the ID it was checked against:
+  fp-key -digest-of-> commitment [R4.11: the ID hashes the anchor root and OOD answers held in key.bin]: published	FlashProve examples/maverick/expected.txt
+
+REFUSE
+## 2. Meta's bf16 scores, signed, presented for the 4-bit commitment:
+  NO   the roles carry the receipt's digests; the deployment digest is its components'; the evaluation names it
+REFUSE
+## 3. strict mode (E3 is only published):
+  NO   edge E3 present (files -> commitment, cp_commit), recomputed and signed by a trusted recomputer
+REFUSE
+## 4. no proof verdict:
+RECEIPT VERIFIED for this ID; no proof verdict given (run cp_verify with this ID, then --fp-verdict).

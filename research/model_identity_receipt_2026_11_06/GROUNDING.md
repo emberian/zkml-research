@@ -144,3 +144,16 @@ Ed25519 refuses small-order public keys (the identity key with R = identity, S =
 rather than fixed: `CommitRun` folds the committer's correctness in with the run (named in its docstring);
 `FpSoundUpTo` is unquantified (their bound, not ours); strict mode is authenticated recomputer attestation, trust
 moved not removed; `FilesCollision` is not yet reduced to two concrete byte strings in Lean.
+
+## 8. L3 on the real checkpoint (2026-11-06)
+
+mir-stream streamed all five Maverick UD-Q4_K_XL files on bb2 (232,134,674,688 bytes, 2,089 s, 14 threads, no
+weights on disk; three dropped connections resumed by range). Results in `maverick/`: the five file digests equal
+FlashProve's `weights.sha256` byte for byte (G13); our `wsums.txt`, from an independent implementation of §11,
+has SHA-256 689cd1d0...b519, the digest FlashProve published for theirs (G12); 434 committed tensors, 3,072 routed
+experts (24 MoE layers x 128), root set bf23bfb3a93ec879d63a471359099098faa634238977fd515dd25b62ac9ee830; G11
+re-fetched six tensors by range request (one a 3.0 GB expert tensor) and all six reproduce. The receipt
+(`receipt/maverick-receipt.json`) verifies; E2 is signed by the lane's recomputer key (it ran the stream), E3 is
+published, so `--strict` refuses it, as it should until someone recomputes `cp_commit` on an H100 with 330 GB.
+`maverick/demonstrations.txt`: FlashProve's own accepted-proof example (cp_verify YES) presented under this receipt
+is refused; Meta's bf16 scores, properly signed, presented for the 4-bit commitment are refused.

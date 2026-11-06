@@ -1,0 +1,158 @@
+{
+ "format": "mir13/receipt/v1",
+ "commitment_id": "c7982f8a090b5e47c2f04e3b10bda65600d53322480cdd8f3ded328529271f46",
+ "rootset": "bf23bfb3a93ec879d63a471359099098faa634238977fd515dd25b62ac9ee830",
+ "wsums_sha256": "689cd1d0e84e6c6059cd1c4056c8532a436d88f7fa3803d835d2964be33eb519",
+ "files_digest": "b9ff9e6da120980158cfc5bc879049ef36e27a81a8027a020647aa31d7e304cd",
+ "graph": {
+  "nodes": [
+   {
+    "id": "meta-bf16",
+    "kind": "base",
+    "digest": "bfed72eef68135ecb9aa3d53ddd156c31b94e78b68de8725de73f270e0bc6ef5"
+   },
+   {
+    "id": "gguf",
+    "kind": "gguf-files",
+    "digest": "b9ff9e6da120980158cfc5bc879049ef36e27a81a8027a020647aa31d7e304cd"
+   },
+   {
+    "id": "integers",
+    "kind": "integers",
+    "digest": "bf23bfb3a93ec879d63a471359099098faa634238977fd515dd25b62ac9ee830"
+   },
+   {
+    "id": "wsums",
+    "kind": "wsums",
+    "digest": "689cd1d0e84e6c6059cd1c4056c8532a436d88f7fa3803d835d2964be33eb519"
+   },
+   {
+    "id": "commitment",
+    "kind": "flashprove-commitment",
+    "digest": "c7982f8a090b5e47c2f04e3b10bda65600d53322480cdd8f3ded328529271f46"
+   },
+   {
+    "id": "fp-scales",
+    "kind": "flashprove-scales",
+    "digest": "df29bd823d62431945c3124138ed52e1f677db9224c4196505a91663ac48ab1a"
+   },
+   {
+    "id": "runtime",
+    "kind": "runtime",
+    "digest": "32365b26269f9fd0933b1704bd0741c9a8f5a9454baa02a4e0b7e11694f19fda"
+   },
+   {
+    "id": "fp-key",
+    "kind": "flashprove-key-file",
+    "digest": "178d8814def56f88fae45f273c7f70152dac887ddc9075b6aca2f895c24c7c38"
+   },
+   {
+    "id": "fp-release",
+    "kind": "prover-release",
+    "digest": "232ecb185f9882d35b2ba62ea9c0a0efe5a156b6f8810a83b32a4a16edbcec9c"
+   },
+   {
+    "id": "tokenizer",
+    "kind": "tokenizer",
+    "digest": "6e2b84934ae72ce77611e0612f7b3cccaf75b363c630f45a8faafccea999562a"
+   },
+   {
+    "id": "adapter",
+    "kind": "adapter",
+    "digest": "140bedbf9c3f6d56a9846d2ba7088798683f4da0c248231336e6a05679e4fdfe"
+   },
+   {
+    "id": "system-prompt",
+    "kind": "system-prompt",
+    "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   {
+    "id": "tools",
+    "kind": "tools",
+    "digest": "140bedbf9c3f6d56a9846d2ba7088798683f4da0c248231336e6a05679e4fdfe"
+   },
+   {
+    "id": "deployment",
+    "kind": "deployment",
+    "digest": "02987eebbd84858fce10e2bed1147d42e32429daffdbbe7b3ba3a5f371f794ea"
+   }
+  ],
+  "edges": [
+   {
+    "src": "meta-bf16",
+    "dst": "gguf",
+    "rel": "quantizes",
+    "rule": "unsloth UD-Q4_K_XL dynamic 4-bit quantization, rev 41032e5471dd6ea5b349062d978626215d6c5bba",
+    "basis": {
+     "kind": "published",
+     "source": "unsloth model card tag base_model:quantized:meta-llama/Llama-4-Maverick-17B-128E-Instruct"
+    }
+   },
+   {
+    "src": "gguf",
+    "dst": "integers",
+    "rel": "converts",
+    "rule": "FlashProve docs/model.md section 11 at e_res 10; registry v2 roots per ROOTS-V2.md (mir13/registry-v2/1)",
+    "basis": {
+     "kind": "recomputed",
+     "signer": "b34d2c838214c2bdb26f6b1bea6f1bb3263b9ad66c7b16f7c54cede9422685f0",
+     "signature": "ceed95f97903d426e48254a1d711474d8a669f2f13b90c51079cb9738a1ab368e802566e8164e519a8ae0cb67a84e9a1b352fc742d5a373bfae2e7bcce5c9d05"
+    }
+   },
+   {
+    "src": "integers",
+    "dst": "wsums",
+    "rel": "digest-of",
+    "rule": "SHA-256 of wsums.txt as weight_sums/ writes it",
+    "basis": {
+     "kind": "rerunnable",
+     "how": "mir-stream; equals FlashProve examples/maverick/expected.txt (gate G12)"
+    }
+   },
+   {
+    "src": "gguf",
+    "dst": "commitment",
+    "rel": "commits",
+    "rule": "cp_commit -public-weights, examples/maverick/public-seed.bin, e_res 10, fitted KL.bin",
+    "basis": {
+     "kind": "published",
+     "source": "FlashProve examples/maverick/expected.txt and README reproduction record (one H100, 330 GB host memory)"
+    }
+   },
+   {
+    "src": "fp-scales",
+    "dst": "commitment",
+    "rel": "digest-of",
+    "rule": "R4.11: the ID hashes the configuration",
+    "basis": {
+     "kind": "published",
+     "source": "FlashProve examples/maverick/expected.txt"
+    }
+   },
+   {
+    "src": "fp-key",
+    "dst": "commitment",
+    "rel": "digest-of",
+    "rule": "R4.11: the ID hashes the anchor root and OOD answers held in key.bin",
+    "basis": {
+     "kind": "published",
+     "source": "FlashProve examples/maverick/expected.txt"
+    }
+   }
+  ]
+ },
+ "eval": {
+  "evaluator": "demonstration key of the mir13 lane: no lab has signed an evaluation of this checkpoint",
+  "public_key": "55da7a5a5b8ceb3bd902fe83e828acaa252245ce6dee438d00a3633a6b0fa9e4",
+  "node": "deployment",
+  "benchmark": "none run: this record signs the identity fields only",
+  "scores": "none",
+  "signature": "5a915bc3eaa27fcfa4fc81cc2cb75e7c394a49bde3b5beea8667bf625685c5ab47915f54deb2b038cba3afd779ed7332707eb54b6142de2f7d88ec7dd70b8e02"
+ },
+ "stream": {
+  "tensors": 434,
+  "experts": 3072,
+  "eres": 10,
+  "files_match_expected": true
+ }
+}
