@@ -1,0 +1,26 @@
+{
+ "N": 8192,
+ "L": 3,
+ "M": 64,
+ "T": 97,
+ "P_bits": 255,
+ "rows": {
+  "honest secret-key batch": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true
+  }
+ },
+ "counts": {
+  "sk": {
+   "bytes": 2645440,
+   "formula_bits": 21163520,
+   "exact": true,
+   "k": 8192,
+   "rows": 389,
+   "digits": 3179099,
+   "prove_s": 605.9,
+   "verify_s": 121.5
+  }
+ }
+}

@@ -995,7 +995,7 @@ imported unmodified; their twelve saved rows reproduce exactly, `inventory_he_ou
    collaborative proof runs on every step, integrity no longer needs SPDZ MACs on G, and dropping the
    MAC returns gives about 0.99 T, ×1.09 [DERIVED, not built]. Doing so trades SPDZ's cheap abort for
    the proof's cost.
-3. **The ZKPoPK decides the fork, and today it decides for FHE (b).** At the model price both forks pay
+3. ⚠ **Withdrawn by §20: built, the ZKPoPK costs 0.61 G (MPC) and 0.50 G (FHE (b)) per step and no longer decides the fork.** Original: **The ZKPoPK decides the fork, and today it decides for FHE (b).** At the model price both forks pay
    a few Gbit. At the only executable price, MPC pays 406 T against FHE (b)'s 113 T, ×3.6, because
    MPC sends 1,728 fresh ciphertexts per step and FHE (b) 481. Whichever lattice proof the LaZer/LNS
    route delivers (scholar's NEXT) sets this row. Fewer sent ciphertexts per step is MPC's lever:
@@ -1099,7 +1099,7 @@ groups [DERIVED, not built].
 **Soundness level, stated plainly.** With T = 64 opened columns at rate 1/4, the proximity error is
 about (3/4)^64 ≈ 2^-26.6. That is the same class as layer 1's T_COLS = 64. 2^-40 needs T ≈ 97 in both;
 128-bit security needs T ≈ 309, or extension-field challenges and a larger distance. This is a
-parameter, not a construction change; it is not yet set.
+parameter, not a construction change; it is not yet set. **Set to T = 97 in §20.1.**
 
 
 ## 17. "Is there no way to do it over a single untrusted provider?" (2026-11-06)
@@ -1379,3 +1379,129 @@ allows. Any untrusted input to a Fiat–Shamir verifier belongs in the transcrip
 counter) are on `dev`. The verifier stack is on branch `dark-learning/untrusted-verifier`: `proofwire.py`,
 the ledger, `owner_sig.py`, the signed-input binding and their harnesses. It stays there until a Codex
 gpt-6-astra attack can run (ember's hardware-key re-authentication) or the coordinator waives that gate.
+
+
+## 20. Gen 4: the soundness knob set to 2^-40, and an efficient ZKPoPK built; the ZKPoPK no longer decides the fork (2026-11-06)
+
+`notes/dark-learning-gen4/GROUNDING.md` (what is reused, and why the backend is not a lattice proof);
+`zkpopk_ligero.py`, `run_zkpopk_ligero.py`, `zkpopk_counts.py`; results `zkpopk_ligero_results_*.json`,
+`zkpopk_counts.json`.
+
+### 20.1 Opened columns: T = 97
+
+`cosnark.T_COLS`, `cosnark_zk.T_HIDE/T_OPEN` and `proofwire.PARAMS` are now 97 (PCS tails HIDE = 2 × 97): the column
+error is at most (3/4)^97 = 2^-40.26 per PCS and per Ligero [DERIVED]. `cosnark_zk.counts_formula` had bound
+K_L/T_HIDE/T_OPEN as default arguments at definition time, so a pinned T never reached the formula; it reads them at
+call time now. Re-run on the Mac at T = 97: spine d = 16/32/64 ACCEPT with the formula exact and every §16 forgery
+refused; middle d = 4/16, proofwire d = 4 and signed input d = 4 re-run (logs and results files beside them).
+
+| d = 4096, per proof | T = 64 (2^-26.6) | **T = 97 (2^-40.3)** | T = 309 (2^-128.3) |
+|---|---:|---:|---:|
+| spine | 238.4 Mbit | **364.8 Mbit** | 1,176.0 Mbit |
+| middle | 136.7 Mbit | **211.1 Mbit** | 687.5 Mbit |
+
+⚠ **2^-40 is a statistical figure, not a non-interactive security level.** The proofs are Fiat-Shamir: colluding
+custodians who grind 2^g transcripts succeed with about 2^(g−40), and 2^40 hashes is cheap. A 128-bit
+non-interactive level needs T ≈ 309 (the right column), or a lower rate and extension-field challenges. Which target
+the ledger pins is a decision for ember.
+
+### 20.2 The efficient ZKPoPK, built (hash-based Ligero, not LNS)
+
+**Why not the lattice route** (GROUNDING.md): the scholar's relation commits m and eta at every coefficient (268
+binary columns per coefficient), but every schedule here puts plaintext in at most d_c = 64 or d_r = 128 (256 at
+N = 16384) coefficients. Off those slots m = 0 and the relation is `c0 + c1 s + e = 0 mod q_i`: 5 digits per
+coefficient. With that witness a lattice proof's masked response is still linear in the witness (15–20 bits per
+coefficient) while Ligero's grows as its square root, and the lattice route needs a parameter estimate and a toolchain
+(Sage, AVX-512 LaZer) that a hash-based proof does not [INFERRED]. The scholar's relation is kept exactly; only the
+witness encoding and the backend change.
+
+**Relation** (secret-key batch, the MPC helpers' sends): registered key `b + a s + e_pk = 0` with
+`a = public_a(seed)`; per ciphertext `t(c0 + c1 s + e) − r = 0 (mod q_i)` for every prime, `(Q mod t) m + r = 0
+(mod t)` at the slots, r = 0 off them; s ternary, e and e_pk in [−8, 8], m in [0, t), |r| ≤ (t−1)/2. Together:
+`c0 + c1 s = round(Q m / t) − e (mod Q)`, exact scaling, the plaintext zero off the layout, one integer s across every
+limb and the key. Public-key batch (FHE (b)'s masks under the joint key): u ternary, e0, e1 in [−8, 8], same scaling.
+
+**Proof.** Every private integer is binary digits (the top digit has adjusted weight, so [lo, hi] is covered
+exactly). The digits are rows of one Reed-Solomon code over a 255-bit NTT prime; Ligero's proximity, linear and
+quadratic (b² = b) tests run on them, masks committed in the first root, salted leaves. **Cross-limb:** after the
+digits are committed, Fiat–Shamir draws per prime q_i a weight in [0, q_i) for every coefficient equation; the prover
+then commits quotients with `Σ ρ·LHS_i = q_i K_i` and `Σ ρ_t·LHS_t = t K_t` over the integers, both sides
+asserted below P/2, K range-proved. A coefficient equation that fails mod q_i survives with probability 1/q_i
+≈ 2^-61. Order: statement → digits and masks (root 1) → ρ → quotients (root 2) → test challenges → messages →
+columns. One proof per (sender, HE call): a recipient must verify before it returns a product, so a batch cannot
+span calls. Soundness: column test 2^-40.26 at T = 97 (statistical, as 20.1), fold 2^-60.9 [INFERRED: the standard
+Ligero analysis as cozk.py uses it; no machine-checked proof, no QROM theorem].
+
+**Executed** (`run_zkpopk_ligero.py`; small ring on the Mac, deployed rings on hbox under `swarm-build`; every
+executed proof's byte length equals the count formula):
+
+| run | batch | digits | proof (bytes = formula) | prove / verify (Python, one core) | attacks |
+|---|---|---:|---:|---:|---|
+| Mac, N = 16, three 61-bit primes | 3 sk cts + 2 pk cts | 3,807 | 186,848 B | 3 s / 2 s | all 30 rows as expected |
+| hbox, **N = 8192, three primes** (deployed) | 2 sk cts (forward + transpose layout); 1 pk ct | 155,463 | 681,536 B = 5.45 Mbit; pk 4.61 Mbit | 33 s / 9 s | all 30 rows as expected |
+| hbox, **N = 16384, four primes** (privacy point) | 2 sk cts; 1 pk ct | 294,886 | 892,608 B = 7.14 Mbit; pk 5.97 Mbit | 65 s / 16 s | all 30 rows as expected |
+| hbox, **N = 8192, one full d = 4096 forward call** (64 cts, 64 slots each) | 64 sk cts | 3,179,099 | 2,645,440 B = **21.16 Mbit** | 606 s / 122 s | honest only |
+
+The last row is one of the 15 batches the d = 4096 step sends; its size is exactly what `zkpopk_counts.py` prices for
+that batch, so the per-step table below rests on an executed batch at full size, not only on the formula.
+
+| attack | verdict, and the check that refuses it |
+|---|---|
+| stale context (next step, other epoch), other recipient set, replay into another call | REFUSED: the folded equations (challenges are bound to the context) |
+| verified against another custodian's registered key | REFUSED: folded equations |
+| malformed key: a = 1 presented as registered (the scholar's privacy attack) | REFUSED: a is not the pinned seed's |
+| malformed key: b random, the prover forges e_pk = −(b + a s) in non-binary digits | REFUSED: quadratic test (the linear test passes) |
+| mixed limbs: limb 0 encrypts m, limbs 1+ encrypt m′ | REFUSED: folded limb equations |
+| oversized error 9, in a non-binary digit / claimed as 8 | REFUSED: quadratic / folded equations |
+| plaintext nonzero off the layout | REFUSED: folded equations |
+| changed w, q, p, opened column, salt, either root | REFUSED: Merkle path / linear / quadratic |
+| truncated, trailing byte, noncanonical element | REFUSED: codec |
+| **Fiat–Shamir ordering falsifier:** the honest-verifier simulator, given statement-only challenges, forges a proof for a junk ciphertext | **legacy verifier ACCEPTS; real verifier REFUSES** |
+| public-key batch: oversized e0 claimed as 8 | REFUSED: folded equations |
+| recipient gate before `he_matvec.ptxct` | accepted batch multiplies; the forged batch is refused with zero `ptxct` calls |
+
+**Review (cross-model gate).** Codex (gpt-6-astra) ran its analysis, then its final answer was withheld ("not
+authenticated with one of your authorized hardware keys"). Its visible trace still showed two defects, and an
+independent Claude (Opus) review, briefed only with the code and the attack questions, found one more and two smaller
+ones. All are fixed, each with a regression row:
+- **Codex trace:** a five-prime registry crashed the verifier (OverflowError in the statement digest); and the
+  wraparound guards were `assert`s, so under `python3 -O` an out-of-profile 256-bit "prime" let a false statement
+  verify. The guards are now explicit refusals, the digest is width-correct, and the suite passes under `-O`.
+- **Claude review, the real break:** the registry admitted any prime below 2^61. With a 17-bit limb, a mixed-limb
+  ciphertext was accepted after 28 regrinds of root 1, because the fold's error is 1/q_i per try. The profile now
+  pins every q_i and t to (2^60, 2^61).
+- **Claude review, smaller:** the prover drew its hiding randomness, masks and salts from the caller's seedable
+  `rng` (now always `secrets`); the context was hashed by `repr` (now canonical JSON).
+- The review's other notes: the mod-t row is redundant, since Q is invertible mod t, so any in-range r has a matching
+  m (kept for now: it costs about 8% of the digits of a forward-layout ciphertext at N = 8192, and dropping it is a cheap follow-up). And a public-key batch bounds its encryption randomness, not the phase:
+  that phase is bounded by the scholar's 16N + 8 envelope, by design.
+
+**Per step, delivered proof bits** (`zkpopk_counts.py`; posted is half: each proof goes to two recipients):
+
+| d | MPC (HE matvec + outer): distinct cts, proofs | MPC, T = 97 | MPC, T = 309 | old MODEL (§11) | Stern (scholar) | FHE (b): mask cts | FHE (b), T = 97 | FHE (b), T = 309 |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| 64 | 15, 15 | 0.144 G | 0.292 G | 0.195 G | 7.05 T | 33 | 0.080 G | 0.151 G |
+| 1024 | 216, 15 | 0.328 G | 0.637 G | 2.81 G | 101.6 T | 363 | 0.253 G | 0.466 G |
+| 4096 | 864, 15 | **0.611 G** | 1.146 G | 11.2 G | 406.3 T | 1,443 | **0.499 G** | 0.909 G |
+
+At the privacy-correct point (N = 16384, four primes, d_r = 256), MPC pays 0.181 / 0.434 / 0.807 G (T = 97) and
+0.371 / 0.808 / 1.461 G (T = 309) at d = 64 / 1024 / 4096. FHE (b)'s Stern figure here counts all three custodians'
+mask ciphertexts (1,443 at d = 4096, 339 T); §15's 113 T counted 481.
+
+### 20.3 The fork at d = 4096, with the ZKPoPK built (bits per step; T = 97, delivered)
+
+| | MPC: HE matvec + HE outer | FHE (b) |
+|---|---:|---:|
+| MASCOT preprocessing + online (§15, scholar's model) | 1.067 T | 0.914 T |
+| ZKPoPK, **built** | **0.61 G** (was 11.2 G MODEL / 406 T Stern) | **0.50 G** (was ≈ 7.2 G MODEL / Stern) |
+| integrity proof | spine + middle 0.58 G at T = 97 (§20.1) | ct×ct + relinearization certificates ≥ 1.26 T |
+| evaluation objects outside custody | none | a relinearization key on the host |
+
+**Verdict.** The ZKPoPK no longer decides the fork: built, it costs under 0.1% of either fork's per-step total, and
+the two forks are within ×1.2 of each other on it. §15's "today it decides for FHE (b)" is withdrawn. What separates
+the forks is again custody (no host-held evaluation key in MPC) and the integrity proof (MPC's is about ×2,000
+smaller), against FHE (b)'s ×1.17 lower preprocessing-plus-online total.
+
+**Still unbuilt:** whole-ciphertext circuit privacy and the key-generation ceremony (next brick, §20 item 3); the
+joint key FHE (b)'s masks rely on; a QROM or knowledge-soundness proof for the Fiat–Shamir Ligero; a native
+(non-Python) prover; reuse of one batch proof between the matvec and the outer product that encrypt the same h.
