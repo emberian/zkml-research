@@ -1,0 +1,25 @@
+device Tesla T4 sm 75
+N8192_L3 {"mode": 0, "logE": 10, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 0, "logE": 10, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 0, "logE": 11, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 0, "logE": 11, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 0, "logE": 12, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 0, "logE": 12, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 0, "logE": 13, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 0, "logE": 13, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 10, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 10, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 11, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 11, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 12, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 12, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 13, "logC": 4, "threads": 256, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+N8192_L3 {"mode": 1, "logE": 13, "logC": 4, "threads": 512, "error": "CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')"}
+Traceback (most recent call last):
+  File "/tmp/accel/accel-bfv-ntt-t4-01/accel_bench_cuda.py", line 226, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/tmp/accel/accel-bfv-ntt-t4-01/accel_bench_cuda.py", line 220, in main
+    res["compile_s"] = Ctx.compile_s
+                       ^^^^^^^^^^^^^
+AttributeError: type object 'Ctx' has no attribute 'compile_s'
