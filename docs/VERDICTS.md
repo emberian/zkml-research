@@ -1727,3 +1727,30 @@ relation quoted as a ratio for a system. A distribution's tail read as a mean.
 Every lane that measured first found the target somewhere else; every estimate
 we carried without a measurement was wrong in the same direction — flattering
 the thing we had already decided to work on.
+
+## 9. 2026-11-05 deltas (proof-system space lane)
+
+Detail: `docs/PROOF-SYSTEM-SPACE.md`, `docs/CERTIFICATES.md`,
+`notes/selvage-foundations-critique-2026-11-05.md`, `notes/proof-system-codex-synthesis.md`.
+
+- **BinarySpartan is public** (ePrint 2026/1656), and so is its zkVM successor Magnetar
+  (2026/2423). Both report **provable unique-decoding bits only** (100 and 120). Measured against
+  that standard, our deployed IR-v2 proofs carry **UDR 34**. The Johnson 73 rests on a hypothesis
+  in our own Lean (`JohnsonMcaBridge.hHab`).
+- **ArkLib now proves RS MCA up to Johnson, full-UDR MCA, FRI soundness, and Binary BaseFold with
+  ring switching** (292 → 4 live sorries since 09-04; toolchain and Mathlib identical to
+  minidregg's). Import it to discharge our Johnson hypothesis and our one-third UD band. Our
+  RBR→FS/BCS compiler is still ahead of ArkLib, which has none.
+- **§4c's "≈65× worse per turn" is stale**: the per-turn total is **×3.21**
+  (LEAF-VS-RECURSION corrections). The blowup drop wins iff `K = wrap/leaf < 0.41`
+  [INFERRED from §4c's three numbers]. That makes it a per-descriptor knob, right for big zkML
+  leaves and wrong for today's recursed small leaves.
+- **§4b's "BAT not free for an MLE fold" is partly refuted**: the fold's scalar `r` is known once
+  it is sampled. TensorZKP (2026/1250) runs BabyBear sumcheck on INT8 tensor cores at 13-36×
+  SIMT. The 1.26× ceiling is a property of our AIR prover's phase mix, not of tensor cores.
+- **At frontier scale the proof system is ~5% of GPU time** (SASH; witness generation is the
+  rest). Tensor cores are a ~1.5× system lever only after the statement shrinks the witness.
+- **`Selvage/Commitment.lean:113` `PositionBinding` is perfect binding.** No compressing scheme
+  can inhabit it; its only inhabitant is the identity root. **`Dregg2/Crypto/Dfa.lean`'s
+  statement binds no word**, so `dfa_verify_sound` cannot by itself support an absence claim.
+  Repairs: `CERTIFICATES.md` P1 and P6.
