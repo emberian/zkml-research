@@ -30,23 +30,31 @@ one named reduction outputs a BLAKE3 or SHA-256 collision from an accepted openi
 served record. The horizon term is the honest price of one oracle shared by every round; the
 brief's per-round `εchk` was not justified by a theorem about a shared oracle (GROUNDING §3).
 
-## The table (hbox, 2026-11-06; arms still running are added when they finish)
+## The table (hbox, 2026-11-06)
 
-Corrupt rounds before the first alarm, mean over seeds, against the ideal 1/p. Every fired audit is a real `cp_verify` call.
+Corrupt rounds before the first alarm, mean over seeds, against the ideal 1/p. Every fired audit is a real `cp_verify` call; 27,635 calls in all.
 
 | arm | adversary | p | seeds | mean corrupt before alarm (± s.e.) | 1/p | censored at horizon | cp_verify calls | false claims accepted | honest rounds not accepted |
 |---|---|---|---|---|---|---|---|---|---|
 | E1-rate-p01 | rate f=0.25, fixed schedule | 0.01 | 1000 | 101.44 ± 3.25 | 100 | 0 of 1000 (n=6000) | 4206 | 0 | 0 |
 | E2-rate-p05 | rate f=0.25, fixed schedule | 0.05 | 1000 | 19.68 ± 0.63 | 20 | 0 of 1000 (n=1200) | 3850 | 0 | 0 |
 | E3-rate-p20 | rate f=0.25, fixed schedule | 0.20 | 1000 | 4.98 ± 0.13 | 5 | 0 of 1000 (n=300) | 3996 | 0 | 0 |
+| E4-burst-p05 | burst: f=0.1 + 20 rounds after each fired audit | 0.05 | 1000 | 19.61 ± 0.60 | 20 | 0 of 1000 (n=1200) | 2300 | 0 | 0 |
 | E5-always-p05 | always corrupt | 0.05 | 1000 | 20.69 ± 0.65 | 20 | 0 of 1000 (n=1200) | 1000 | 0 | 0 |
+| E6-fullsize-p20 | rate f=0.5, full-size proof (1,001 tokens) | 0.20 | 60 | 3.83 ± 0.37 | 5 | 0 of 60 (n=300) | 103 | 0 | 0 |
+| F1-open-p05 | FALSIFIER fail-open: withholds proofs | 0.05 | 200 | 100.11 ± 0.63 | 20 | 200 of 200 (n=400) | 4090 | 0 | 0 |
+| F2-peek-p05 | FALSIFIER commit-after-coin | 0.05 | 200 | 379.55 ± 0.31 | 20 | 200 of 200 (n=400) | 4090 | 0 | 0 |
 
 - E1-rate-p01: exits {'0': 3206, '1': 805, '2': 107, 'signal': 88}; verdicts {'Equivocate/Reject': 88, 'Honest/Accept': 3206, 'ReplyToken/Reject': 393, 'Withheld/NoVerdict': 107, 'YToken/Reject': 412}; staging faults 88; call seconds 8317
 - E2-rate-p05: exits {'0': 2850, '1': 800, '2': 100, 'signal': 100}; verdicts {'Equivocate/Reject': 100, 'Honest/Accept': 2850, 'ReplyToken/Reject': 368, 'Withheld/NoVerdict': 100, 'YToken/Reject': 432}; staging faults 100; call seconds 4680
 - E3-rate-p20: exits {'0': 2996, '1': 819, '2': 81, 'signal': 100}; verdicts {'Equivocate/Reject': 100, 'Honest/Accept': 2996, 'ReplyToken/Reject': 372, 'Withheld/NoVerdict': 81, 'YToken/Reject': 447}; staging faults 100; call seconds 7012
+- E4-burst-p05: exits {'0': 1300, '1': 790, '2': 102, 'signal': 108}; verdicts {'Equivocate/Reject': 108, 'Honest/Accept': 1300, 'ReplyToken/Reject': 375, 'Withheld/NoVerdict': 102, 'YToken/Reject': 415}; staging faults 108; call seconds 3974
 - E5-always-p05: exits {'1': 784, '2': 107, 'signal': 109}; verdicts {'Equivocate/Reject': 109, 'ReplyToken/Reject': 388, 'Withheld/NoVerdict': 107, 'YToken/Reject': 396}; staging faults 109; call seconds 1090
+- E6-fullsize-p20: exits {'0': 43, '1': 49, '2': 7, 'signal': 4}; verdicts {'Equivocate/Reject': 4, 'Honest/Accept': 43, 'ReplyToken/Reject': 20, 'Withheld/NoVerdict': 7, 'YToken/Reject': 29}; staging faults 4; call seconds 1204
+- F1-open-p05: exits {'0': 3076, '2': 1014}; verdicts {'Honest/Accept': 3076, 'Withheld/NoVerdict': 1014}; staging faults 0; call seconds 6467
+- F2-peek-p05: exits {'0': 4090}; verdicts {'Honest/Accept': 4090}; staging faults 0; call seconds 6465
 
-"signal" in the exit counts is a call not made because staging refused the handed files (the equivocation kind); each is a failed opening, a rejection, an alarm. Every measured mean is within 1.3 standard errors of 1/p: the bound is attained, as it must be for a checker that never accepts a false claim and a fresh coin.
+Reading it. Every closed-arm mean on the small proof is within 1.3 standard errors of 1/p: the bound is attained, as it must be for a checker that accepted no false claim and a fresh coin, and the adaptive burst adversary gains nothing (19.61 against 20). E6 (60 seeds, full-size proof) sits below its bound (3.83 against 5), which an upper bound allows; 60 seeds is a small sample. The falsifiers run to the horizon in every seed: under fail-open the withholding prover served 100 corrupt rounds of 400 with no alarm, and the prover that commits after seeing the coin served 379.55 of 400 with no alarm. "signal" in the exit counts is a call not made because staging refused the handed files (the equivocation kind); each is a failed opening, a rejection, an alarm. Wall clock: 27,635 calls took 46,209 call-seconds on 6 workers (secondary).
 
 ## What the measurement is, and is not
 
