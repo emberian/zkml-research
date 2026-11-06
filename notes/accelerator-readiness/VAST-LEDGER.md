@@ -11,3 +11,11 @@ rate x elapsed estimate is beside it).
 | end | 2026-11-06 22:56Z | 59479712 | 56928727 RTX 3060 Ti | 0.050 | accel-smoke-01 | $0.00 | est $0.01 over 10.4 min; destroyed+verified True; reason boot_timeout; credit after $27.70 |
 | start | 2026-11-06 22:57Z | 59480687 | 55350610 RTX 3060 | 0.060 | accel-smoke-02 |  | cap $0.25, watchdog 15 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $27.70 |
 | end | 2026-11-06 23:02Z | 59480687 | 55350610 RTX 3060 | 0.060 | accel-smoke-02 | $0.00 | est $0.01 over 5.2 min; destroyed+verified True; reason ok; credit after $27.70 |
+| start | 2026-11-06 23:09Z | 59481839 | 50255943 B200 | 7.502 | accel-b200-mma-01 |  | cap $6.50, watchdog 50 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $27.70 |
+| end | 2026-11-06 23:24Z | 59481839 | 50255943 B200 | 7.502 | accel-b200-mma-01 | $1.83 | est $1.91 over 15.3 min; destroyed+verified True; reason boot_timeout; credit after $25.87 |
+| start | 2026-11-06 23:26Z | 59483602 | 50255943 B200 | 7.502 | accel-b200-mma-02 |  | cap $6.50, watchdog 50 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $25.79 |
+| end | 2026-11-06 23:31Z | 59483602 | 50255943 B200 | 7.502 | accel-b200-mma-02 | $0.87 | est $0.72 over 5.7 min; destroyed+verified True; reason ssh_unreachable; credit after $24.92 |
+| start | 2026-11-06 23:32Z | 59484211 | 56442968 H100 SXM | 2.278 | accel-h100-all-01 |  | cap $4.00, watchdog 95 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $24.92 |
+| end | 2026-11-06 23:40Z | 59484211 | 56442968 H100 SXM | 2.278 | accel-h100-all-01 | $0.34 | est $0.30 over 7.8 min; destroyed+verified True; reason TimeoutExpired(['ssh', '-i', '/Users/ember/.ssh/id_ed25519', '-p', '29142', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'UserKnownHostsFile=/Users/ember/.cache/accel-ready/vast_known_hosts.5948421; credit after $24.58 |
+| start | 2026-11-06 23:41Z | 59485029 | 56442968 H100 SXM | 2.278 | accel-h100-all-02 |  | cap $4.00, watchdog 95 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $24.55 |
+| end | 2026-11-06 23:56Z | 59485029 | 56442968 H100 SXM | 2.278 | accel-h100-all-02 | $0.75 | est $0.59 over 15.5 min; destroyed+verified True; reason ok; credit after $23.80 |

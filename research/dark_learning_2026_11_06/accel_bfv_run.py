@@ -37,10 +37,14 @@ def main():
         rows = (384 if shrink else 1536) * L // 3
         recs = B.sweep(N, L, rows, shrink, lambda s: log(key + " " + s))
         good = [r for r in recs if "error" not in r and r["same_words_as_first"] and r["roundtrip_ok"]]
+        # a shape the device cannot launch (too many registers/threads for this SKU, e.g. 1024 threads at
+        # E = 2^14 on H100) is unsupported, not inexact; every other error and every mismatch still fails
+        unsupported = [r for r in recs if "LAUNCH_OUT_OF_RESOURCES" in r.get("error", "")]
         ref = recs[0].get("ref_check", {})
-        exact = bool(ref.get("fwd_ok") and ref.get("roundtrip_ok")) and len(good) == len(recs)
+        exact = (bool(ref.get("fwd_ok") and ref.get("roundtrip_ok")) and len(good) >= 1
+                 and len(good) + len(unsupported) == len(recs))
         best = min(good, key=lambda r: r["fwd_us_per_ntt"] + r["inv_us_per_ntt"]) if good else None
-        res["sweeps"][key] = dict(records=recs, best=best, ref_check=ref, all_exact=exact)
+        res["sweeps"][key] = dict(records=recs, best=best, ref_check=ref, all_exact=exact, unsupported=len(unsupported))
         ok &= exact
         log("%s sweep exact=%s best=%s" % (key, exact, json.dumps(best)))
         out.write_text(json.dumps(res, indent=1))
