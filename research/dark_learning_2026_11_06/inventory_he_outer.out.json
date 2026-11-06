@@ -1,0 +1,152 @@
+{
+ "control_scholar_rows_unchanged": true,
+ "rows": [
+  {
+   "d": 64,
+   "fork": "mpc",
+   "total_payload_bits": 21103791068,
+   "preprocessing_payload_bits": 21097255040,
+   "online_bits": 6536028,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 64,
+   "fork": "he_mpc",
+   "total_payload_bits": 16191357734,
+   "preprocessing_payload_bits": 16081239680,
+   "online_bits": 110118054,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 64,
+   "fork": "fhe_a",
+   "total_payload_bits": 16323803130,
+   "preprocessing_payload_bits": 16197127236,
+   "online_bits": 40969308,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 64,
+   "fork": "fhe_b",
+   "total_payload_bits": 12940441302,
+   "preprocessing_payload_bits": 12803128716,
+   "online_bits": 37971036,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 64,
+   "fork": "he_mpc_outer",
+   "outer_products": 0,
+   "scalar_triples": 18818,
+   "jointly_hidden_random_fields": 256,
+   "preprocessing_payload_bits": 12868061264,
+   "online_bits": 217968006,
+   "total_payload_bits": 13086029270,
+   "he_outer_ciphertexts": {
+    "sent": 12,
+    "returned": 24
+   },
+   "zkpopk_proofs": 30,
+   "zkpopk_bits_model": 194876700,
+   "zkpopk_bits_stern": 7053415819440
+  },
+  {
+   "d": 1024,
+   "fork": "mpc",
+   "total_payload_bits": 2345272095452,
+   "preprocessing_payload_bits": 2344070162432,
+   "online_bits": 1201933020,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 1024,
+   "fork": "he_mpc",
+   "total_payload_bits": 1043306211110,
+   "preprocessing_payload_bits": 1041958111232,
+   "online_bits": 1348099878,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 1024,
+   "fork": "fhe_a",
+   "total_payload_bits": 1093727419578,
+   "preprocessing_payload_bits": 1088430797508,
+   "online_bits": 1181694684,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 1024,
+   "fork": "fhe_b",
+   "total_payload_bits": 221059664730,
+   "preprocessing_payload_bits": 219550838148,
+   "online_bits": 414137052,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 1024,
+   "fork": "he_mpc_outer",
+   "outer_products": 0,
+   "scalar_triples": 325634,
+   "jointly_hidden_random_fields": 4096,
+   "preprocessing_payload_bits": 220579280336,
+   "online_bits": 11132966406,
+   "total_payload_bits": 231712246742,
+   "he_outer_ciphertexts": {
+    "sent": 192,
+    "returned": 3072
+   },
+   "zkpopk_proofs": 432,
+   "zkpopk_bits_model": 2806224480,
+   "zkpopk_bits_stern": 101569187799936
+  },
+  {
+   "d": 4096,
+   "fork": "mpc",
+   "total_payload_bits": 34919538754268,
+   "preprocessing_payload_bits": 34900879007744,
+   "online_bits": 18659746524,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 4096,
+   "fork": "he_mpc",
+   "total_payload_bits": 14058104866598,
+   "preprocessing_payload_bits": 14052676493312,
+   "online_bits": 5428373286,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 4096,
+   "fork": "fhe_a",
+   "total_payload_bits": 14881543920522,
+   "preprocessing_payload_bits": 14809699758372,
+   "online_bits": 13959955164,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 4096,
+   "fork": "fhe_b",
+   "total_payload_bits": 913638141450,
+   "preprocessing_payload_bits": 907607338020,
+   "online_bits": 1679033052,
+   "equals_scholar_saved": true
+  },
+  {
+   "d": 4096,
+   "fork": "he_mpc_outer",
+   "outer_products": 0,
+   "scalar_triples": 1351682,
+   "jointly_hidden_random_fields": 16384,
+   "preprocessing_payload_bits": 911718829520,
+   "online_bits": 155096120838,
+   "total_payload_bits": 1066814950358,
+   "he_outer_ciphertexts": {
+    "sent": 768,
+    "returned": 49152
+   },
+   "zkpopk_proofs": 1728,
+   "zkpopk_bits_model": 11224897920,
+   "zkpopk_bits_stern": 406276751199744
+  }
+ ]
+}

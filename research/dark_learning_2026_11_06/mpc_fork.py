@@ -19,7 +19,7 @@ def tables(p):
 def centered(v, p):
     return v - p if v > p // 2 else v
 
-def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None):
+def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None, ou=None):
     """The protocol, identical in live and audit mode. W1, W2, x, y are PLAIN values for the owner's input
     (ignored in audit mode, which reads the owner's broadcasts from the transcript)."""
     d = len(x)
@@ -65,8 +65,9 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None):
     d1 = [eng.trunc(v, S.S3, 13) for v in bg]
     if ro:
         ro("d1", d1)
-    G2 = eng.outer(d2, h)
-    G1 = eng.outer(d1, sx)
+    outer = ou or eng.outer          # ou: HE-assisted outer product (he_outer.HEOuter), same interface
+    G2 = outer(d2, h)
+    G1 = outer(d1, sx)
     W2n = [[eng.sub(M2[i][j], G2[i][j]) for j in range(d)] for i in range(d)]
     W1n = [[eng.sub(M1[i][j], G1[i][j]) for j in range(d)] for i in range(d)]
     return W1n, W2n, dict(h=h, d2=d2, d1=d1, x=sx, y=sy, z1=z1, z2=z2, b=b, g1=g1, bg=bg, W1=M1, W2=M2)

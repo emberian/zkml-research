@@ -1,0 +1,23 @@
+{
+ "d128": {
+  "verdict": "ACCEPT",
+  "refines_spec": true,
+  "counts": {
+   "online_wire": 6359934,
+   "prep_auth_values": 85254,
+   "outer_cts_sent": 24,
+   "outer_cts_returned": 48,
+   "matvec_cts_sent": 30,
+   "matvec_cts_returned": 24
+  },
+  "formula": {
+   "online_wire": 6359934,
+   "prep_auth_values": 85254,
+   "outer_cts_sent": 24,
+   "outer_cts_returned": 48,
+   "matvec_cts_sent": 30,
+   "matvec_cts_returned": 24
+  },
+  "formula_exact": true
+ }
+}
