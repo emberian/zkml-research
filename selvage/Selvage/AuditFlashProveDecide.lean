@@ -5,10 +5,10 @@ The functions a commit-then-audit auditor over FlashProve's `cp_verify` decides 
 core Lean only (no Mathlib), so the compiled objects are small enough to link into the Rust auditor
 (`breadstuffs/audit-flashprove`). `Selvage/AuditFlashProve.lean` builds the `Round` of
 `Selvage/AuditSampling.lean` from THESE constants and proves its legs; the auditor calls THESE
-constants through `@[export]`. There is no second copy of the decision anywhere.
+constants through `@[export]`. There is no second copy of the decision anywhere. What every
+checker shares (the verdict type, `fires`, the fail-closed `alarm` and its fail-open falsifier
+`alarmOpen`, the opening, round and rate rules, the line parser) is `Selvage/AuditDecideCore.lean`.
 
-* `fires coin pNum` — the selection rule `Sel`: the round's 64-bit coin is below `pNum`, so the
-  nominal rate is `pNum / 2^64`.
 * `auditVerdict openOk stdout exit expect` — a failed opening of the committed files is a
   rejection; otherwise `verdictOf stdout exit expect`, the checker's verdict on one `cp_verify` call, following
   FlashProve's own acceptance rule (`docs/verifying.md`, "When to accept", points 1, 3, 4, 5, 6;
@@ -20,19 +20,13 @@ constants through `@[export]`. There is no second copy of the decision anywhere.
   proof of work is accepted. Every word of those two lines must be `key=value` (prose is allowed
   only after ` (` on the `covered:` line). Exit 1 is `reject`. Every other ending (any other exit code, a signal,
   a timeout, a missing proof, a spawn failure: `exit = none`) is `noVerdict`.
-* `alarm fired v` — FAIL-CLOSED: a fired audit alarms on every verdict but `accept`.
-* `alarmOpen fired v` — the FAIL-OPEN falsifier: a fired audit alarms only on `reject`, so a
-  `noVerdict` reads as acceptance. `Selvage/AuditFlashProve.lean` proves it collapses `q`.
 -/
+
+import Selvage.AuditDecideCore
 
 namespace Minidregg.Selvage.AuditFlashProve
 
-/-- The checker's verdict on one call. -/
-inductive Verdict where
-  | accept
-  | reject
-  | noVerdict
-  deriving DecidableEq, Repr, Inhabited
+open Minidregg.Selvage.AuditCore
 
 /-- What the auditor already holds before the call: none of it comes from the server or from the
 files sent with the proof. -/
@@ -47,53 +41,6 @@ structure Expect where
   /-- whether proof of work may count towards the verifier's bits (point 6) -/
   acceptWork : Bool
   deriving Repr, Inhabited
-
-/-- **The selection rule.** The audit fires iff the 64-bit coin is below `pNum`. -/
-def fires (coin pNum : UInt64) : Bool := decide (coin < pNum)
-
-/-- The lines of standard output. A trailing newline ends the last line; it does not open an empty
-one. Any other empty line is kept, so `"YES\n\n"` ends in an empty line, not in `YES`. -/
-def outputLines (stdout : String) : List String :=
-  let ls := stdout.splitOn "\n"
-  match ls.getLast? with
-  | some "" => ls.dropLast
-  | _ => ls
-
-/-- The last line of standard output, if there is one. -/
-def lastLine (stdout : String) : Option String := (outputLines stdout).getLast?
-
-/-- The lines whose first space-separated word is exactly `tag`. -/
-def taggedLines (stdout tag : String) : List String :=
-  (outputLines stdout).filter fun l => (l.splitOn " ").head? == some tag
-
-/-- The unique line tagged `tag`; `none` if there are zero or several. -/
-def uniqueTagged (stdout tag : String) : Option String :=
-  match taggedLines stdout tag with
-  | [l] => some l
-  | _ => none
-
-/-- One word as `key=value`: exactly one `=`, a nonempty key. Anything else is malformed. -/
-def kv? (w : String) : Option (String × String) :=
-  match w.splitOn "=" with
-  | [k, v] => if k.isEmpty then none else some (k, v)
-  | _ => none
-
-/-- The fields of a tagged line: every word after the tag must be `key=value`, or the line is
-malformed (`none`). For the `covered:` line the words are read up to the first ` (`, which opens
-the prose `cp_verify` appends there; no other line may carry prose. -/
-def fieldsOf (line : String) (prose : Bool) : Option (List (String × String)) :=
-  let head := if prose then (line.splitOn " (").headD "" else line
-  ((head.splitOn " ").drop 1).mapM kv?
-
-/-- The value of `key` if it occurs exactly once among the fields. -/
-def field (fs : List (String × String)) (key : String) : Option String :=
-  match fs.filter (fun kv => kv.1 == key) with
-  | [kv] => some kv.2
-  | _ => none
-
-/-- `field fs key = some v`, as a Boolean. -/
-def fieldIs (fs : List (String × String)) (key v : String) : Bool :=
-  field fs key == some v
 
 /-- The `tokens=` value the auditor asks for: the reply tokens `r+1 .. e-1`. A request with a
 single checked reply token (`r + 1 = e - 1`) is not in the population and its formatting is not
@@ -141,85 +88,16 @@ root. A failed opening is a rejection: the provider did not produce what it comm
 def auditVerdict (openOk : Bool) (stdout : String) (exit : Option UInt32) (x : Expect) : Verdict :=
   if openOk then verdictOf stdout exit x else .reject
 
-/-! ## The audit's own eligibility rules (codex round 2: pure rules live here, not in Rust) -/
-
-/-- A digest as the record and the staging step write it: exactly 64 lowercase hex digits. -/
-def isDigest (d : String) : Bool :=
-  d.length == 64 && d.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f')
-
-/-- **The opening check.** Staging succeeded (every handed file was a regular file, read within
-the cap, into a fresh private directory); the request and token digests are well-formed and equal
-the record's; the proof digest equals the record's, or both say "no proof"; and the record opens at
-its position under the root (`mmrOk`, the `dregg-query` `verify_range` result, whose own Lean model
-is `Dregg2.Lightclient.MMR`). -/
-def openingOk (stageOk mmrOk : Bool) (reqC yC reqS yS : String) (proofC proofS : Option String) :
-    Bool :=
-  stageOk && mmrOk && isDigest reqC && isDigest yC && reqC == reqS && yC == yS
-    && match proofC, proofS with
-      | some a, some b => isDigest a && a == b
-      | none, none => true
-      | _, _ => false
-
-/-- The audit round is the requester's seen round plus two. -/
-def auditRoundOk (seen round : UInt64) : Bool := seen < 0xFFFFFFFFFFFFFFF0 && round == seen + 2
-
-/-- The rate in parts per million as `⌊ppm · 2^64 / 10^6⌋`, or `none` outside `0 < ppm < 10^6`:
-a 100% rate is not representable as `coin < pNum`, and a 0% rate has `q = 0`. -/
-def pNumOfPpm (ppm : UInt64) : Option UInt64 :=
-  if 0 < ppm && ppm < 1000000 then some (UInt64.ofNat (ppm.toNat * 2 ^ 64 / 1000000)) else none
-
-/-- **Fail-closed alarm.** A fired audit alarms on every verdict but `accept`. -/
-def alarm (fired : Bool) (v : Verdict) : Bool := fired && v != .accept
-
-/-- **Fail-open alarm, the falsifier.** A fired audit alarms only on `reject`. -/
-def alarmOpen (fired : Bool) (v : Verdict) : Bool := fired && v == .reject
-
-/-- The verdict as a byte: 0 accept, 1 reject, 2 no verdict. -/
-def Verdict.code : Verdict → UInt8
-  | .accept => 0
-  | .reject => 1
-  | .noVerdict => 2
-
-/-- The byte back to a verdict; anything unknown is `noVerdict`. -/
-def Verdict.ofCode (c : UInt8) : Verdict :=
-  if c = 0 then .accept else if c = 1 then .reject else .noVerdict
-
 /-! ## The C ABI
 
 Bytes and fixed-width words only, plus Lean `String`s that the caller makes with
 `lean_mk_string` (owned: the callee consumes them; Lean's `@[export]` takes no borrow annotation). `hasExit = 0` means `exit = none`. -/
-
-@[export minidregg_fp_audit_fires]
-def firesC (coin pNum : UInt64) : UInt8 := if fires coin pNum then 1 else 0
 
 @[export minidregg_fp_audit_verdict]
 def verdictC (openOk : UInt8) (stdout : String) (hasExit : UInt8) (exitCode : UInt32) (id build : String)
     (r e : UInt32) (acceptWork : UInt8) : UInt8 :=
   (auditVerdict (openOk ≠ 0) stdout (if hasExit = 0 then none else some exitCode)
     { id, build, r := r.toNat, e := e.toNat, acceptWork := acceptWork ≠ 0 }).code
-
-@[export minidregg_fp_audit_alarm]
-def alarmC (fired verdict : UInt8) : UInt8 :=
-  if alarm (fired ≠ 0) (Verdict.ofCode verdict) then 1 else 0
-
-@[export minidregg_fp_audit_alarm_open]
-def alarmOpenC (fired verdict : UInt8) : UInt8 :=
-  if alarmOpen (fired ≠ 0) (Verdict.ofCode verdict) then 1 else 0
-
-@[export minidregg_fp_audit_opening_ok]
-def openingOkC (stageOk mmrOk : UInt8) (reqC yC reqS yS : String) (hasProofC : UInt8)
-    (proofC : String) (hasProofS : UInt8) (proofS : String) : UInt8 :=
-  if openingOk (stageOk ≠ 0) (mmrOk ≠ 0) reqC yC reqS yS
-      (if hasProofC = 0 then none else some proofC) (if hasProofS = 0 then none else some proofS)
-  then 1 else 0
-
-@[export minidregg_fp_audit_round_ok]
-def auditRoundOkC (seen round : UInt64) : UInt8 := if auditRoundOk seen round then 1 else 0
-
-/-- `0` for an unrepresentable rate, else `pNum` (never `0` for a valid rate: `ppm ≥ 1` gives
-`pNum ≥ 2^64/10^6 > 0`). -/
-@[export minidregg_fp_audit_pnum_of_ppm]
-def pNumOfPpmC (ppm : UInt64) : UInt64 := (pNumOfPpm ppm).getD 0
 
 /-! ## Teeth, by evaluation -/
 
@@ -249,8 +127,6 @@ private def sampleExpect : Expect := { id := "79a5", build := "93af", r := 60, e
 #guard verdictOf sampleOut (some 124) sampleExpect == .noVerdict
 #guard verdictOf sampleOut none sampleExpect == .noVerdict
 #guard verdictOf "NO: proof-refused\n" (some 1) sampleExpect == .reject
-#guard alarm true .noVerdict && !alarmOpen true .noVerdict
-#guard fires 4 5 && !fires 5 5
 -- codex round 1: prose smuggled onto the result-v1 line
 #guard verdictOf ((sampleOut.splitOn "build=93af").headD "" ++ "build=93af ( work=99 status=1\nYES\n") (some 0) sampleExpect == .reject
 -- a bare second covered: line

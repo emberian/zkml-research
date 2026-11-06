@@ -1,11 +1,12 @@
 /-
 # Selvage.AuditFlashProve — the commit-then-audit theorem instantiated over FlashProve's verifier
 
-`Selvage/AuditSampling.lean` proves, for an abstract `Round`, that the expected number of corrupt
-rounds before the first alarm is at most `1/q`. This file builds the `Round` whose selection,
-verdict and alarm are the compiled, exported functions of `Selvage/AuditFlashProveDecide.lean`
-(`fires`, `verdictOf`, `alarm`), the functions the Rust auditor `breadstuffs/audit-flashprove`
-calls; it proves that `Round` fail-closed and its detection legs, and composes the result with
+`Selvage/AuditChecked.lean` proves the composed commit-then-audit bound for any checker whose
+verdict is a function of the history and the round's coin. This file is its instance over
+FlashProve: the verdict is the compiled, exported `auditVerdict` of
+`Selvage/AuditFlashProveDecide.lean` on one `cp_verify` call, selection and alarm the exported
+`fires` and `alarm` of `Selvage/AuditDecideCore.lean`, the functions the Rust auditor
+`breadstuffs/audit-flashprove` calls; the bound is composed with
 FlashProve's own soundness bound (`lean/Ladder/Bits.lean`, `soundnessErrorInQueries`, behind
 `sound_of_verify_at` in FlashProve's `lean/THEOREM.md`).
 
@@ -76,13 +77,14 @@ run is a collision. A garbage opening is not charged here; it fails `openOk`, an
 `Selvage/BindingFixedHash.lean`; no adversary class is quantified, so the term is not vacuous at a
 fixed hash. Its value is a human-ignorance bound, not a theorem.
 -/
-import Selvage.AuditSampling
-import Selvage.BindingBudget
+import Selvage.AuditChecked
 import Selvage.AuditFlashProveDecide
 
 namespace Minidregg.Selvage.AuditFlashProve
 
-open Finset Minidregg.Selvage
+open Finset Minidregg.Selvage Minidregg.Selvage.AuditCore
+open Minidregg.Selvage.AuditChecked (runProb coin64 beacon_ideal pNum001 pNum005 pNum020
+  expected_count_le)
 
 set_option autoImplicit false
 
@@ -104,259 +106,18 @@ structure World (Claim Ω : Type) where
 
 namespace World
 
-variable {Claim Ω : Type} [DecidableEq Claim]
+variable {Claim Ω : Type}
 
 /-- The verdict: the exported `auditVerdict`. -/
 def verdict (W : World Claim Ω) (h : List Ω) (ω : Ω) : Verdict :=
   auditVerdict (W.openOk h ω) (W.call h ω).1 (W.call h ω).2 (W.expect h)
 
-/-- **The round.** Selection is the exported `fires` on the round's coin; the alarm is `alarmFn`
-(the exported `alarm`, or the falsifier `alarmOpen`) of that and the verdict. -/
-def round (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64)
-    (alarmFn : Bool → Verdict → Bool) : Round Ω where
-  corrupt h := W.isFalse (W.served h)
-  fires _ ω := fires (coin ω) pNum
-  alarms h ω := alarmFn (fires (coin ω) pNum) (W.verdict h ω)
-  chkErr h ω := W.verdict h ω == .accept && decide (W.opened h ω = W.served h)
-  chkAbort h ω := W.verdict h ω == .noVerdict
-  bindBreak h ω := W.verdict h ω == .accept && decide (W.opened h ω ≠ W.served h)
-
-/-- **Fail-closed, proved for the exported `alarm`.** -/
-theorem round_failClosed (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
-    Round.FailClosed (W.round coin pNum alarm) := by
-  intro h ω hf hab
-  simp only [round, alarm] at *
-  simp only [beq_iff_eq] at hab
-  simp [hf, hab]
-
-/-- The miss decomposition, from fail-closedness via the landed `missDecomp_of_failClosed`: a
-fired corrupt round that does not alarm was accepted, with the served record (a checker error) or
-another one (a binding break). -/
-theorem round_missDecomp (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
-    Round.MissDecomp (W.round coin pNum alarm) := by
-  refine Round.missDecomp_of_failClosed (round_failClosed W coin pNum) ?_
-  intro h ω _ hf _ hno
-  simp only [round, alarm] at hf hno ⊢
-  rw [hf] at hno
-  have hacc : W.verdict h ω = .accept := by
-    cases hv : W.verdict h ω <;> simp_all
-  by_cases heq : W.opened h ω = W.served h
-  · left; simp [hacc, heq]
-  · right; simp [hacc, heq]
-
-/-- **The comparison round**: the same process, except that every fired audit of a corrupt round
-alarms. It is what the real round is on runs where the checker and the binding never fail. -/
-def ideal (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : Round Ω :=
-  { W.round coin pNum alarm with
-    alarms := fun h ω => alarm (fires (coin ω) pNum) (W.verdict h ω)
-      || (W.isFalse (W.served h) && fires (coin ω) pNum) }
-
-/-- The run-level bad event at one round: live, corrupt, fired, accepted. -/
-def BadAt (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) (h : List Ω) (ω : Ω) : Prop :=
-  (W.round coin pNum alarm).stopped h = false ∧ W.isFalse (W.served h) = true ∧
-    fires (coin ω) pNum = true ∧ W.verdict h ω = .accept
-
-/-- **The bad event on the sampled run**: some round of THIS run was live, corrupt, fired and
-accepted. Histories are most recent first, so this reads every round of `h` once. -/
-def BadPath (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : List Ω → Prop
-  | [] => False
-  | ω :: h => BadPath W coin pNum h ∨ BadAt W coin pNum h ω
-
-/-- Off the bad event the real run IS the ideal run: same stops, same count. -/
-theorem agree_ideal (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
-    ∀ h, ¬ BadPath W coin pNum h →
-      (W.round coin pNum alarm).stopped h = (W.ideal coin pNum).stopped h ∧
-      (W.round coin pNum alarm).count h = (W.ideal coin pNum).count h
-  | [] => fun _ => ⟨rfl, rfl⟩
-  | ω :: h => by
-    intro hb
-    simp only [BadPath, not_or] at hb
-    obtain ⟨hs, hc⟩ := agree_ideal W coin pNum h hb.1
-    have hcorr : (W.ideal coin pNum).corrupt h = (W.round coin pNum alarm).corrupt h := rfl
-    have halarm : (W.round coin pNum alarm).stopped h = false →
-        (W.round coin pNum alarm).alarms h ω = (W.ideal coin pNum).alarms h ω := by
-      intro hlive
-      show alarm _ _ = (alarm _ _ || _)
-      by_cases hf : fires (coin ω) pNum = true
-      · by_cases hcr : W.isFalse (W.served h) = true
-        · have hv : W.verdict h ω ≠ .accept := fun hv => hb.2 ⟨hlive, hcr, hf, hv⟩
-          simp [alarm, hf, hcr, hv]
-        · simp [hcr]
-      · simp [hf, alarm]
-    refine ⟨?_, ?_⟩
-    · simp only [Round.stopped]
-      rw [← hs]
-      cases hst : (W.round coin pNum alarm).stopped h
-      · rw [halarm hst]
-      · rfl
-    · simp only [Round.count]
-      rw [← hs, hc, hcorr]
-
-/-- On the ideal round a live corrupt round alarms at least at the fire rate. -/
-theorem ideal_detect [Fintype Ω] (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) {q : ℝ}
-    (hbeacon : q ≤ uniformProb Ω (fun ω => fires (coin ω) pNum = true)) :
-    ∀ h, (W.ideal coin pNum).stopped h = false → (W.ideal coin pNum).corrupt h = true →
-      q ≤ uniformProb Ω (fun ω => (W.ideal coin pNum).alarms h ω = true) := by
-  intro h _ hc
-  refine le_trans hbeacon (uniformProb_mono fun ω hf => ?_)
-  have hc' : W.isFalse (W.served h) = true := hc
-  show (alarm _ _ || _) = true
-  simp [hc', hf]
+/-- The checked world `Selvage/AuditChecked.lean` runs: every theorem there (`round_failClosed`,
+`agree_ideal`, `expected_count_le`) applies to `W.toC`. -/
+def toC (W : World Claim Ω) : AuditChecked.World Claim Ω :=
+  { served := W.served, opened := W.opened, isFalse := W.isFalse, verdict := W.verdict }
 
 end World
-
-/-! ## 2. The count never exceeds the horizon -/
-
-theorem count_le_length {Ω : Type} (R : Round Ω) : ∀ h : List Ω, R.count h ≤ h.length
-  | [] => by simp [Round.count]
-  | _ :: h => by
-    have ih := count_le_length R h
-    simp only [Round.count, List.length_cons]
-    split_ifs <;> omega
-
-theorem expOver_add {Ω : Type} [Fintype Ω] (f g : List Ω → ℝ) :
-    ∀ (n : ℕ) (h : List Ω),
-      expOver Ω n (fun x => f x + g x) h = expOver Ω n f h + expOver Ω n g h := by
-  intro n
-  induction n with
-  | zero => intro h; rfl
-  | succ n ih =>
-    intro h
-    rw [expOver.succ, expOver.succ, expOver.succ]
-    simp only [ih]
-    rw [Finset.sum_add_distrib, add_div]
-
-/-! ## 3. The composed theorem -/
-
-section Composed
-
-variable {Orc Claim Ω Witness : Type} [Fintype Orc] [Nonempty Orc] [Fintype Ω] [Nonempty Ω]
-  [DecidableEq Claim]
-
-/-- The checker-bad event on the run: a live corrupt fired round accepted WITH its served record.
--/
-def ChkBadPath (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : List Ω → Prop
-  | [] => False
-  | ω :: h => ChkBadPath W coin pNum h ∨ (World.BadAt W coin pNum h ω ∧ W.opened h ω = W.served h)
-
-/-- The binding-bad event on the run: a live corrupt fired round accepted with ANOTHER record. -/
-def BindBadPath (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : List Ω → Prop
-  | [] => False
-  | ω :: h => BindBadPath W coin pNum h ∨ (World.BadAt W coin pNum h ω ∧ W.opened h ω ≠ W.served h)
-
-omit [Fintype Ω] [Nonempty Ω] in
-theorem badPath_split (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
-    ∀ h, World.BadPath W coin pNum h → ChkBadPath W coin pNum h ∨ BindBadPath W coin pNum h
-  | [] => fun h => h.elim
-  | ω :: h => by
-    intro hb
-    rcases hb with hb | hb
-    · rcases badPath_split W coin pNum h hb with hc | hc
-      · exact Or.inl (Or.inl hc)
-      · exact Or.inr (Or.inl hc)
-    · by_cases heq : W.opened h ω = W.served h
-      · exact Or.inl (Or.inr ⟨hb, heq⟩)
-      · exact Or.inr (Or.inr ⟨hb, heq⟩)
-
-/-- `Pr` over the run at horizon `n`, as `expOver` of an indicator. -/
-noncomputable def runProb (n : ℕ) (P : List Ω → Prop) : ℝ :=
-  by classical exact expOver Ω n (fun h => if P h then 1 else 0) []
-
-/-- **THE COMPOSED BOUND.** Draw the oracle `o` once; run `n` rounds with fresh coins. The
-expected number of corrupt rounds before the first alarm, averaged over the oracle, is at most
-`1/(p − εb) + n·(δchk + δbind)`, where
-
-* `hbeacon`: each fresh coin fires with probability at least `p − εb` (`beacon_ideal` discharges
-  it with `εb = 0` for a uniform 64-bit coin);
-* `hsnd` **[FP-chk-transport]**: averaged over the oracle, the run accepts a false claim with its
-  served record with probability at most `δchk`;
-* `hext`: a run that accepted another record makes the named reduction output a collision
-  (`Coll`), and `δbind` is the averaged probability of that.
-
-The proof runs the landed `leakage_with_global_binding` per oracle against the `ideal` round, then
-averages. -/
-theorem expected_count_le (W : Orc → World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64)
-    {q δchk : ℝ} (hq : 0 < q)
-    (hbeacon : q ≤ uniformProb Ω (fun ω => fires (coin ω) pNum = true))
-    (n : ℕ)
-    (hsnd : (∑ o : Orc, runProb n (ChkBadPath (W o) coin pNum)) / (Fintype.card Orc : ℝ) ≤ δchk)
-    (Coll : Orc → List Ω → Prop)
-    (hext : ∀ o h, BindBadPath (W o) coin pNum h → Coll o h) :
-    (∑ o : Orc, expOver Ω n (fun h => ((W o).round coin pNum alarm |>.count h : ℝ)) [])
-        / (Fintype.card Orc : ℝ)
-      ≤ 1 / q + n * (δchk + (∑ o : Orc, runProb n (Coll o)) / (Fintype.card Orc : ℝ)) := by
-  classical
-  have hcard : (0 : ℝ) < (Fintype.card Orc : ℝ) := by exact_mod_cast Fintype.card_pos
-  have hn : (0 : ℝ) ≤ n := Nat.cast_nonneg n
-  -- per oracle
-  have hper : ∀ o, expOver Ω n (fun h => ((W o).round coin pNum alarm |>.count h : ℝ)) []
-      ≤ 1 / q + n * (runProb n (ChkBadPath (W o) coin pNum) + runProb n (Coll o)) := by
-    intro o
-    have hbadle : expOver Ω n (fun h => if World.BadPath (W o) coin pNum h then (1 : ℝ) else 0) []
-        ≤ runProb n (ChkBadPath (W o) coin pNum) + runProb n (Coll o) := by
-      unfold runProb
-      rw [← expOver_add]
-      refine expOver.mono (fun h => ?_) n []
-      by_cases hb : World.BadPath (W o) coin pNum h
-      · rcases badPath_split (W o) coin pNum h hb with hc | hc
-        · have := hext o h
-          by_cases hcl : Coll o h <;> simp [hb, hc, hcl]
-        · simp [hb, hext o h hc]
-          split_ifs <;> norm_num
-      · simp only [hb, if_false]
-        split_ifs <;> norm_num
-    have := ComputationalBinding.leakage_with_global_binding ((W o).ideal coin pNum)
-      (fun h => ((W o).round coin pNum alarm |>.count h : ℝ)) (World.BadPath (W o) coin pNum) n
-      1 q n _ hq zero_le_one ((W o).ideal_detect coin pNum hbeacon) hn
-      (fun h _ hb => by
-        rw [((W o).agree_ideal coin pNum h hb).2, one_mul])
-      (fun h hl _ => by
-        have := count_le_length ((W o).round coin pNum alarm) h
-        rw [hl] at this; exact_mod_cast this)
-      le_rfl
-    calc _ ≤ 1 / q + n * expOver Ω n
-            (fun h => if World.BadPath (W o) coin pNum h then (1 : ℝ) else 0) [] := this
-      _ ≤ _ := by gcongr
-  have hsum := Finset.sum_le_sum fun o (_ : o ∈ Finset.univ) => hper o
-  rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, nsmul_eq_mul,
-    ← Finset.mul_sum, Finset.sum_add_distrib] at hsum
-  rw [div_le_iff₀ hcard]
-  have h1 : (∑ o : Orc, runProb n (ChkBadPath (W o) coin pNum)) ≤ δchk * (Fintype.card Orc : ℝ) :=
-    (div_le_iff₀ hcard).mp hsnd
-  have h2 : (∑ o : Orc, runProb n (Coll o))
-      = ((∑ o : Orc, runProb n (Coll o)) / (Fintype.card Orc : ℝ)) * (Fintype.card Orc : ℝ) := by
-    field_simp
-  nlinarith
-
-end Composed
-
-/-! ## 4. The ideal beacon: the fire rate is exactly `pNum / 2^64` -/
-
-/-- A uniform 64-bit coin, as `Fin (2^64)`. -/
-def coin64 (ω : Fin (2 ^ 64)) : UInt64 := UInt64.ofNat ω.val
-
-theorem fires_coin64_iff (ω : Fin (2 ^ 64)) (pNum : UInt64) :
-    fires (coin64 ω) pNum = true ↔ ω.val < pNum.toNat := by
-  have hlt : ω.val < 2 ^ 64 := ω.isLt
-  simp [fires, coin64, UInt64.lt_iff_toNat_lt]
-
-/-- **The ideal beacon's fire rate.** -/
-theorem beacon_ideal (pNum : UInt64) :
-    uniformProb (Fin (2 ^ 64)) (fun ω => fires (coin64 ω) pNum = true)
-      = (pNum.toNat : ℝ) / 2 ^ 64 := by
-  classical
-  rw [uniformProb_congr (fires_coin64_iff · pNum)]
-  unfold uniformProb
-  have hle : pNum.toNat ≤ 2 ^ 64 := le_of_lt pNum.toNat_lt
-  have hc : Nat.card {ω : Fin (2 ^ 64) // ω.val < pNum.toNat} = pNum.toNat := by
-    rw [Nat.card_eq_fintype_card, Fintype.card_subtype]
-    rw [show (Finset.univ.filter fun ω : Fin (2 ^ 64) => ω.val < pNum.toNat)
-        = (Finset.range pNum.toNat).attachFin (fun m hm => lt_of_lt_of_le (Finset.mem_range.mp hm) hle) from by
-      ext ω; simp]
-    simp
-  rw [hc, Fintype.card_fin]
-  push_cast
-  ring
 
 /-! ## 5. The numbers -/
 
@@ -374,15 +135,6 @@ theorem fpSoundErr_2_64 : fpSoundErr (2 ^ 64) < 1 / 2 ^ 59 := by
 theorem fpSoundErr_zero_floor : 1 / 2 ^ 102 < fpSoundErr 0 := by
   unfold fpSoundErr; norm_num
 
-/-- The three nominal rates, as `⌊p · 2^64⌋`. -/
-def pNum001 : UInt64 := 184467440737095516
-def pNum005 : UInt64 := 922337203685477580
-def pNum020 : UInt64 := 3689348814741910323
-
-#guard pNum001.toNat = 18446744073709551616 / 100
-#guard pNum005.toNat = 18446744073709551616 / 20
-#guard pNum020.toNat = 18446744073709551616 / 5
-
 /-- The query budget the run-to-one-game reduction spends: the adversary's `Q`, plus, for each of
 the `n` rounds, the verifier's own allowance and the parser's query. -/
 def reductionQueries (Q n : ℕ) : ℕ := Q + n * (2 ^ 23 + 1)
@@ -396,18 +148,19 @@ alarm, at horizon `n`, at most `2^64/⌊0.01·2^64⌋ + n·(fpSoundErr (Q + n·(
 **[FP-chk-transport]** (`hsnd`, at the reduction's query count) and the collision extractor. -/
 theorem flashprove_p001 {Orc Claim : Type} [Fintype Orc] [Nonempty Orc] [DecidableEq Claim]
     (W : Orc → World Claim (Fin (2 ^ 64))) (Q n : ℕ)
-    (hsnd : (∑ o : Orc, runProb n (ChkBadPath (W o) coin64 pNum001)) / (Fintype.card Orc : ℝ)
+    (hsnd : (∑ o : Orc, runProb n (AuditChecked.ChkBadPath (W o).toC coin64 pNum001))
+      / (Fintype.card Orc : ℝ)
       ≤ (fpSoundErr (reductionQueries Q n) : ℝ))
     (Coll : Orc → List (Fin (2 ^ 64)) → Prop)
-    (hext : ∀ o h, BindBadPath (W o) coin64 pNum001 h → Coll o h) :
+    (hext : ∀ o h, AuditChecked.BindBadPath (W o).toC coin64 pNum001 h → Coll o h) :
     (∑ o : Orc, expOver (Fin (2 ^ 64)) n
-        (fun h => ((W o).round coin64 pNum001 alarm |>.count h : ℝ)) []) / (Fintype.card Orc : ℝ)
+        (fun h => ((W o).toC.round coin64 pNum001 alarm |>.count h : ℝ)) []) / (Fintype.card Orc : ℝ)
       ≤ 1 / ((pNum001.toNat : ℝ) / 2 ^ 64)
         + n * ((fpSoundErr (reductionQueries Q n) : ℝ)
           + (∑ o : Orc, runProb n (Coll o)) / (Fintype.card Orc : ℝ)) := by
   have hp : (0 : ℝ) < (pNum001.toNat : ℝ) / 2 ^ 64 := by
     apply div_pos _ (by norm_num); exact_mod_cast (by decide : 0 < pNum001.toNat)
-  exact expected_count_le W coin64 pNum001 hp (by rw [beacon_ideal]) n hsnd Coll hext
+  exact expected_count_le (fun o => (W o).toC) coin64 pNum001 hp (by rw [beacon_ideal]) n hsnd Coll hext
 
 /-! ## 6. Teeth -/
 
@@ -434,12 +187,12 @@ def honestChecker : World Claim (Fin (2 ^ 64)) where
   expect _ := ex
 
 theorem honestChecker_verdict (h : List (Fin (2 ^ 64))) (ω : Fin (2 ^ 64)) :
-    honestChecker.verdict h ω = .reject := rfl
+    honestChecker.toC.verdict h ω = .reject := rfl
 
 /-- Its run never meets the bad event: `hsnd` and `hext` hold at `δchk = δbind = 0`, so the
 hypotheses of `expected_count_le` are inhabited. -/
 theorem honestChecker_noBad (coin : Fin (2 ^ 64) → UInt64) (pNum : UInt64) :
-    ∀ h, ¬ World.BadPath honestChecker coin pNum h
+    ∀ h, ¬ AuditChecked.World.BadPath honestChecker.toC coin pNum h
   | [] => id
   | ω :: h => by
     rintro (hb | ⟨_, _, _, hv⟩)
@@ -452,7 +205,7 @@ def badOpening : World Claim (Fin (2 ^ 64)) :=
   { honestChecker with openOk := fun _ _ => false, call := fun _ _ => yes }
 
 theorem badOpening_rejects (h : List (Fin (2 ^ 64))) (ω : Fin (2 ^ 64)) :
-    badOpening.verdict h ω = .reject := rfl
+    badOpening.toC.verdict h ω = .reject := rfl
 
 /-- A checker that ACCEPTS the false claim (its opening checks out and `cp_verify` prints the
 accepting transcript): the bad event has content. A fact about concrete strings, so it is checked
@@ -460,11 +213,11 @@ by compiled evaluation (`native_decide`; in this toolchain each use is its own `
 for concrete data; the general theorems above stay kernel-proved. -/
 def acceptingChecker : World Claim (Fin (2 ^ 64)) := { honestChecker with call := fun _ _ => yes }
 
-theorem acceptingChecker_verdict : acceptingChecker.verdict [] 0 = .accept := by native_decide
+theorem acceptingChecker_verdict : acceptingChecker.toC.verdict [] 0 = .accept := by native_decide
 
 /-- Its first round, fired at any positive rate, is live, corrupt and accepted: `BadAt`. -/
 theorem acceptingChecker_badAt :
-    World.BadAt acceptingChecker coin64 pNum020 [] (0 : Fin (2 ^ 64)) :=
+    AuditChecked.World.BadAt acceptingChecker.toC coin64 pNum020 [] (0 : Fin (2 ^ 64)) :=
   ⟨rfl, rfl, by native_decide, acceptingChecker_verdict⟩
 
 /-- **The withholding prover**: always corrupt, its opening checks out, it hands no proof, and
@@ -473,42 +226,43 @@ def withholder : World Claim (Fin (2 ^ 64)) :=
   { honestChecker with call := fun _ _ => ("", none) }
 
 theorem withholder_verdict (h : List (Fin (2 ^ 64))) (ω : Fin (2 ^ 64)) :
-    withholder.verdict h ω = .noVerdict := rfl
+    withholder.toC.verdict h ω = .noVerdict := rfl
 
 /-- **FAIL-OPEN COLLAPSES.** Under `alarmOpen` the withholder is never caught: the expected
 corrupt count at horizon `n` is exactly `n`, for every `n` and every rate `pNum`. -/
 theorem FailOpen.collapse (pNum : UInt64) (n : ℕ) :
-    expOver (Fin (2 ^ 64)) n (fun h => ((withholder.round coin64 pNum alarmOpen).count h : ℝ)) []
+    expOver (Fin (2 ^ 64)) n (fun h => ((withholder.toC.round coin64 pNum alarmOpen).count h : ℝ)) []
       = n := by
-  have halarm : ∀ h ω, (withholder.round coin64 pNum alarmOpen).alarms h ω = false := by
+  have halarm : ∀ h ω, (withholder.toC.round coin64 pNum alarmOpen).alarms h ω = false := by
     intro h ω
-    show alarmOpen _ (withholder.verdict h ω) = false
+    show alarmOpen _ (withholder.toC.verdict h ω) = false
     rw [withholder_verdict]; simp [alarmOpen]
   have hstop : ∀ h : List (Fin (2 ^ 64)),
-      (withholder.round coin64 pNum alarmOpen).stopped h = false := by
+      (withholder.toC.round coin64 pNum alarmOpen).stopped h = false := by
     intro h; induction h with
     | nil => rfl
     | cons ω h ih => simp [Round.stopped, ih, halarm]
   have hcount : ∀ h : List (Fin (2 ^ 64)),
-      (withholder.round coin64 pNum alarmOpen).count h = h.length := by
+      (withholder.toC.round coin64 pNum alarmOpen).count h = h.length := by
     intro h; induction h with
     | nil => rfl
     | cons ω h ih =>
-      have hc : (withholder.round coin64 pNum alarmOpen).corrupt h = true := rfl
+      have hc : (withholder.toC.round coin64 pNum alarmOpen).corrupt h = true := rfl
       simp [Round.count, hstop h, ih, hc]
   simp only [hcount]
   rw [expOver.length]; simp
 
 /-- The fail-open round is `FailOpen` in `AuditSampling`'s sense. -/
 theorem withholder_failOpen (pNum : UInt64) :
-    Round.FailOpen (withholder.round coin64 pNum alarmOpen) := by
+    Round.FailOpen (withholder.toC.round coin64 pNum alarmOpen) := by
   intro h ω _
-  show alarmOpen _ (withholder.verdict h ω) = false
+  show alarmOpen _ (withholder.toC.verdict h ω) = false
   rw [withholder_verdict]; simp [alarmOpen]
 
 /-- **Fail-closed meets the same prover at no cost**: its run never meets the bad event, so
 `expected_count_le` bounds it at `1/p` with `δchk = δbind = 0`. -/
-theorem withholder_noBad (pNum : UInt64) : ∀ h, ¬ World.BadPath withholder coin64 pNum h
+theorem withholder_noBad (pNum : UInt64) :
+    ∀ h, ¬ AuditChecked.World.BadPath withholder.toC coin64 pNum h
   | [] => id
   | ω :: h => by
     rintro (hb | ⟨_, _, _, hv⟩)
@@ -518,7 +272,7 @@ theorem withholder_noBad (pNum : UInt64) : ∀ h, ¬ World.BadPath withholder co
 /-- At `p = 0.2` the fail-open count passes the fail-closed bound `1/p = 5` at horizon 6. -/
 theorem failOpen_beats_bound :
     1 / ((pNum020.toNat : ℝ) / 2 ^ 64) <
-      expOver (Fin (2 ^ 64)) 6 (fun h => ((withholder.round coin64 pNum020 alarmOpen).count h : ℝ)) [] := by
+      expOver (Fin (2 ^ 64)) 6 (fun h => ((withholder.toC.round coin64 pNum020 alarmOpen).count h : ℝ)) [] := by
   rw [FailOpen.collapse]
   have : (pNum020.toNat : ℝ) = 3689348814741910323 := by norm_cast
   rw [this]; norm_num
@@ -527,20 +281,8 @@ end Teeth
 
 /-! ## Axioms -/
 
-/-- info: 'Minidregg.Selvage.AuditFlashProve.expected_count_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms expected_count_le
 /-- info: 'Minidregg.Selvage.AuditFlashProve.flashprove_p001' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms flashprove_p001
-/-- info: 'Minidregg.Selvage.AuditFlashProve.World.round_failClosed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms World.round_failClosed
-/-- info: 'Minidregg.Selvage.AuditFlashProve.World.round_missDecomp' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms World.round_missDecomp
-/-- info: 'Minidregg.Selvage.AuditFlashProve.World.agree_ideal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms World.agree_ideal
-/-- info: 'Minidregg.Selvage.AuditFlashProve.World.ideal_detect' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms World.ideal_detect
-/-- info: 'Minidregg.Selvage.AuditFlashProve.beacon_ideal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms beacon_ideal
 /-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_2_64' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms fpSoundErr_2_64
 /-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.acceptingChecker_badAt' depends on axioms: [propext, Classical.choice, Quot.sound, Teeth.acceptingChecker_badAt._native.native_decide.ax_1_1, Teeth.acceptingChecker_verdict._native.native_decide.ax_1_1] -/
