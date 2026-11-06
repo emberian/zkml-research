@@ -85,3 +85,9 @@ is an ideal dealer whose per-party streams are committed.
 | `zkpopk_ligero.py` | Batched Ligero ZKPoPK over a 255-bit NTT field: secret-key batches bound to the registered key (MPC helper sends), public-key batches (FHE (b) masks); per-prime folding with committed integer quotients; legacy statement-only transcript and a simulator, for the falsifier only |
 | `run_zkpopk_ligero.py` | `python3 run_zkpopk_ligero.py [N L M T [honest]]`: honest batches, the attack table, the FS-ordering falsifier, Codex-trace regressions, the gate in front of `he_matvec.ptxct`; writes `zkpopk_ligero_results_N*_L*_M*.json` |
 | `zkpopk_counts.py` | per-step proof bits at d = 64/1024/4096 for both forks, T = 97 and 309, N = 8192 and 16384; writes `zkpopk_counts.json` |
+| `leaf_salt_falsifier.py` | unsalted Merkle leaves as a guess-confirmation oracle (n-1 custodians plus a guess of a committed row), refused once leaves are salted (`cosnark.SALT_LEAVES`) |
+| `keygen_ceremony.py` | commit-reveal key-generation ceremony, key-only ZKPoPK per custodian, `CeremonyKey` for he_matvec/he_outer, the whole-ciphertext simulator, the envelopes and distances (decision doc §21) |
+| `run_keygen_ceremony.py` | `python3 run_keygen_ceremony.py N L d F_bits T`: ceremony and its attacks, an MPC step (HE matvec + outer) on the ceremony's keys, realized shift versus envelope per return kind, the simulator on every return; writes `keygen_ceremony_results_N*_L*_d*.json` |
+
+Profiles (gen 4): `proofwire.PROFILES` holds `ledger` (T = 309, the default) and `demo` (T = 97); run scripts and
+`zkpopk_ligero` default to 309. Result files without a `_T97` suffix are the ledger profile.
