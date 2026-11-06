@@ -3,16 +3,24 @@ STEADY STATE (weights already in custody: no genesis input of W; FHE bits includ
    64 mpc             17,052,672        107,148          279,552       17,792        0
    64 fhe_a          375,364,767        671,628          696,960       13,632        3
    64 fhe_b          687,719,871        622,476          696,960        5,440        5
+      fhe_a non-ideal masks: +134,027,622 committed bits (16-bit digits), +1,405,026 offline wire, 9 pairs; bits with 61-bit digits: 1,021,433,349
+      fhe_b non-ideal masks: +163,811,538 committed bits (16-bit digits), +1,628,550 offline wire, 11 pairs; bits with 61-bit digits: 1,609,086,609
       ratio FHE/MPC  (a) bits x22.0  wire x6.268   (b) bits x40.3  wire x5.809
   256 mpc            162,094,080      1,350,156        2,657,280      224,768        0
   256 fhe_a        2,747,377,887      2,502,156        3,982,848      158,976       24
   256 fhe_b        5,138,280,927      1,715,724        2,213,376       27,904       40
+      fhe_a non-ideal masks: +521,218,530 committed bits (16-bit digits), +6,357,366 offline wire, 35 pairs; bits with 61-bit digits: 6,512,259,777
+      fhe_b non-ideal masks: +461,650,698 committed bits (16-bit digits), +4,597,038 offline wire, 31 pairs; bits with 61-bit digits: 10,475,932,905
       ratio FHE/MPC  (a) bits x16.9  wire x1.853   (b) bits x31.7  wire x1.271
  1024 mpc          2,103,287,808     19,703,820       34,480,128    3,282,944        0
  1024 fhe_a       41,849,015,019     19,372,044       44,353,536    2,233,344      384
  1024 fhe_b       79,671,712,491      6,789,132        8,964,096      136,192      640
+      fhe_a non-ideal masks: +4,899,454,182 committed bits (16-bit digits), +67,457,826 offline wire, 329 pairs; bits with 61-bit digits: 93,408,339,921
+      fhe_b non-ideal masks: +1,801,926,918 committed bits (16-bit digits), +17,945,730 offline wire, 121 pairs; bits with 61-bit digits: 151,862,129,649
       ratio FHE/MPC  (a) bits x19.9  wire x0.983   (b) bits x37.9  wire x0.345
  4096 mpc         31,502,843,904    305,897,484      516,440,064   50,978,816        0
  4096 fhe_a      661,438,063,131    228,851,724      631,283,712   34,197,504    6,144
  4096 fhe_b    1,264,874,218,011     27,525,132       36,741,120      643,072   10,240
+      fhe_a non-ideal masks: +65,301,235,830 committed bits (16-bit digits), +948,921,426 offline wire, 4385 pairs; bits with 61-bit digits: 1,453,486,885,521
+      fhe_b non-ideal masks: +7,163,031,798 committed bits (16-bit digits), +71,340,498 offline wire, 481 pairs; bits with 61-bit digits: 2,368,887,599,889
       ratio FHE/MPC  (a) bits x21.0  wire x0.748   (b) bits x40.2  wire x0.090
