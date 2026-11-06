@@ -1,0 +1,264 @@
+{
+  "command": "python3 research/dark_learning_2026_11_06/scholar_privacy.py",
+  "source_sha256": {
+    "bfv_ref.py": "3a5601ec294790aa0e185ee8d2cf75079daa78b24da841affddd9f0eeaf22753",
+    "he_matvec.py": "a3911408c7502ba7d674d336909a9f1ff39e25a162d57406a4040a3ffbb8e85a"
+  },
+  "controls": {
+    "cube": {
+      "exact_tv": "19/49",
+      "scalar_bound_refuted": "2/7",
+      "ring_union_bound": "3/7"
+    },
+    "c1_support": {
+      "N": 2,
+      "q": 65537,
+      "support": 2601,
+      "random_coin_vectors": 2601,
+      "shift": [
+        5000,
+        0
+      ],
+      "exact_c1_tv": "1",
+      "unaffected_by_c0_flood": true
+    },
+    "malicious_key": {
+      "variants": {
+        "symmetric_input": {
+          "trials": 25,
+          "every_coefficient_recovered": true,
+          "masked_decryption_correct": true,
+          "input_plaintext_zero": true,
+          "public_key_opening_available": false,
+          "matrix_coefficient_grid": 1
+        },
+        "public_key_openable_input": {
+          "trials": 25,
+          "every_coefficient_recovered": true,
+          "masked_decryption_correct": true,
+          "input_plaintext_zero": true,
+          "public_key_opening_available": true,
+          "matrix_coefficient_grid": 32
+        }
+      },
+      "key_and_ciphertext_bounded_equations_hold": true,
+      "caveat": "attacker-chosen public key polynomial; honest-key generation is not attacked"
+    }
+  },
+  "deployed_rows": [
+    {
+      "d": 64,
+      "N": 8192,
+      "L": 3,
+      "t": 2305843009212399617,
+      "Q_primes": [
+        2305843009213317121,
+        2305843009213120513,
+        2305843009212694529
+      ],
+      "log2_Q": 182.99999999999878,
+      "legacy_flood_bits": 118,
+      "legacy_gate": {
+        "phase_budget_ok": false,
+        "decrypt_margin_ok": true
+      },
+      "forward_bound": 40140115104369452646409,
+      "backward_bound": 40140115104369452646409,
+      "forward_returns": 12,
+      "backward_returns": 6,
+      "legacy_log2_phase_step_union": -26.74261215730816,
+      "legacy_log2_phase_million_union": -6.811043587983984,
+      "phase_targets": [
+        {
+          "steps": 1,
+          "minimum_F": 3253950133679647531696863600308285079553,
+          "power_of_two_F_bits": 132,
+          "log2_minimum_modulus": 193.25738784269103,
+          "power_of_two_choice_fits_Q": false,
+          "gate": {
+            "phase_budget_ok": true,
+            "decrypt_margin_ok": false
+          },
+          "log2_phase_budget": -40.74261215730816
+        },
+        {
+          "steps": 1000000,
+          "minimum_F": 3253950133679647531696863600308285079552000001,
+          "power_of_two_F_bits": 152,
+          "log2_minimum_modulus": 213.18895641201522,
+          "power_of_two_choice_fits_Q": false,
+          "gate": {
+            "phase_budget_ok": true,
+            "decrypt_margin_ok": false
+          },
+          "log2_phase_budget": -40.81104358798398
+        }
+      ],
+      "he_wire_elements": 1769472,
+      "ciphertexts_sent": 18,
+      "ciphertexts_returned": 18,
+      "log2_c1_support_ratio": -1452667.4915985595
+    },
+    {
+      "d": 1024,
+      "N": 8192,
+      "L": 3,
+      "t": 2305843009212399617,
+      "Q_primes": [
+        2305843009213317121,
+        2305843009213120513,
+        2305843009212694529
+      ],
+      "log2_Q": 182.99999999999878,
+      "legacy_flood_bits": 118,
+      "legacy_gate": {
+        "phase_budget_ok": false,
+        "decrypt_margin_ok": true
+      },
+      "forward_bound": 1284483683339822480621577,
+      "backward_bound": 642241841669911240376329,
+      "forward_returns": 96,
+      "backward_returns": 96,
+      "legacy_log2_phase_step_union": -18.74261215730816,
+      "legacy_log2_phase_million_union": 1.1889564120160159,
+      "phase_targets": [
+        {
+          "steps": 1,
+          "minimum_F": 833011234221989765507471792071286609412097,
+          "power_of_two_F_bits": 140,
+          "log2_minimum_modulus": 201.25738784269103,
+          "power_of_two_choice_fits_Q": false,
+          "gate": {
+            "phase_budget_ok": true,
+            "decrypt_margin_ok": false
+          },
+          "log2_phase_budget": -40.74261215730816
+        },
+        {
+          "steps": 1000000,
+          "minimum_F": 833011234221989765507471792071286609412096000001,
+          "power_of_two_F_bits": 160,
+          "log2_minimum_modulus": 221.18895641201522,
+          "power_of_two_choice_fits_Q": false,
+          "gate": {
+            "phase_budget_ok": true,
+            "decrypt_margin_ok": false
+          },
+          "log2_phase_budget": -40.81104358798398
+        }
+      ],
+      "he_wire_elements": 21233664,
+      "ciphertexts_sent": 240,
+      "ciphertexts_returned": 192,
+      "log2_c1_support_ratio": -1452667.4915985595
+    },
+    {
+      "d": 4096,
+      "N": 8192,
+      "L": 3,
+      "t": 2305843009212399617,
+      "Q_primes": [
+        2305843009213317121,
+        2305843009213120513,
+        2305843009212694529
+      ],
+      "log2_Q": 182.99999999999878,
+      "legacy_flood_bits": 118,
+      "legacy_gate": {
+        "phase_budget_ok": false,
+        "decrypt_margin_ok": true
+      },
+      "forward_bound": 5137934733359289922093065,
+      "backward_bound": 2568967366679644961112073,
+      "forward_returns": 384,
+      "backward_returns": 384,
+      "legacy_log2_phase_step_union": -14.742612157308159,
+      "legacy_log2_phase_million_union": 5.188956412016016,
+      "phase_targets": [
+        {
+          "steps": 1,
+          "minimum_F": 13328179747551836246759413739432254774444033,
+          "power_of_two_F_bits": 144,
+          "log2_minimum_modulus": 205.25738784269103,
+          "power_of_two_choice_fits_Q": false,
+          "gate": {
+            "phase_budget_ok": true,
+            "decrypt_margin_ok": false
+          },
+          "log2_phase_budget": -40.74261215730816
+        },
+        {
+          "steps": 1000000,
+          "minimum_F": 13328179747551836246759413739432254774444032000001,
+          "power_of_two_F_bits": 164,
+          "log2_minimum_modulus": 225.18895641201522,
+          "power_of_two_choice_fits_Q": false,
+          "gate": {
+            "phase_budget_ok": true,
+            "decrypt_margin_ok": false
+          },
+          "log2_phase_budget": -40.81104358798398
+        }
+      ],
+      "he_wire_elements": 84934656,
+      "ciphertexts_sent": 960,
+      "ciphertexts_returned": 768,
+      "log2_c1_support_ratio": -1452667.4915985595
+    }
+  ],
+  "alternative": {
+    "d": 4096,
+    "N": 16384,
+    "L": 4,
+    "t": 2305843009212399617,
+    "Q_primes": [
+      2305843009211662337,
+      2305843009211596801,
+      2305843009211400193,
+      2305843009210580993
+    ],
+    "log2_Q": 243.99999999999403,
+    "legacy_flood_bits": 119,
+    "legacy_gate": {
+      "phase_budget_ok": false,
+      "decrypt_margin_ok": true
+    },
+    "forward_bound": 10275869466718579844186121,
+    "backward_bound": 2568967366679644961243145,
+    "forward_returns": 192,
+    "backward_returns": 384,
+    "legacy_log2_phase_step_union": -14.742612157308159,
+    "legacy_log2_phase_million_union": 5.188956412016016,
+    "phase_targets": [
+      {
+        "steps": 1,
+        "minimum_F": 26656359495103672493972159096779683296968705,
+        "power_of_two_F_bits": 145,
+        "log2_minimum_modulus": 206.25738784269103,
+        "power_of_two_choice_fits_Q": true,
+        "gate": {
+          "phase_budget_ok": true,
+          "decrypt_margin_ok": true
+        },
+        "log2_phase_budget": -40.74261215730816
+      },
+      {
+        "steps": 1000000,
+        "minimum_F": 26656359495103672493972159096779683296968704000001,
+        "power_of_two_F_bits": 165,
+        "log2_minimum_modulus": 226.18895641201522,
+        "power_of_two_choice_fits_Q": true,
+        "gate": {
+          "phase_budget_ok": true,
+          "decrypt_margin_ok": true
+        },
+        "log2_phase_budget": -40.81104358798398
+      }
+    ],
+    "he_wire_elements": 188743680,
+    "ciphertexts_sent": 864,
+    "ciphertexts_returned": 576,
+    "log2_c1_support_ratio": -3904758.9831970413
+  },
+  "scope": "Phase statistical budget is conditional; not a full-ciphertext statistical guarantee."
+}
