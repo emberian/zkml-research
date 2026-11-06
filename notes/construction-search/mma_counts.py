@@ -519,10 +519,328 @@ def ntt_table(ell=20):
               f"(layers (i, util, bound): {worst}); SIMT bit-sliced reference {simt_ref * 1e3:.3f} ms")
 
 
+# ================================================================================================
+# 7. THE ROTATION (2026-11-06, after the T4 dry run): per target, the fastest exact-integer datapath that
+#    actually exists, and each workload re-mapped onto it.  Evidence: notes/accelerator-readiness/MMA.md.
+# ================================================================================================
+# Per target and datapath: dense MAC/s, accumulator class, m (integer-exact width), status tag.
+#   m=24 "spec": PTX says f16/bf16 accumulate "at least single precision" [READ]; T4 HMMA integer-addend C path
+#   measured exact through 2^24 [MEASURED: MMA.md section 4].  FP8 on Hopper: "higher than half, lower than
+#   single" [READ PTX 9.2], m unmeasured (12..23, 14 at DeepSeek).  tcgen05 f8f6f4/mxf4: unpublished.
+#   "emulated" = the SASS census shows a software sequence, not a tensor instruction [MEASURED: MMA.md section 3].
+TARGETS = {
+    "T4": dict(bw=2.42e11, simt=40 * 64 * 1.59e9, paths={
+        "int8": (6.28e13, "int", 31, "MEASURED mma.sync m8n8k16"),
+        "fp16": (0.48 * 6.28e13, "fp", 24, "MEASURED HMMA, m=24 measured"),
+        "b1x": (7.94 * 6.28e13, "int", 31, "MEASURED BMMA xor.popc (GF(2) via xor identity)")}),
+    "A100": dict(bw=2.039e12 * 0.75, simt=108 * 64 * 1.41e9, paths={
+        "int8": (624e12 / 2, "int", 31, "X datasheet"),
+        "fp16": (312e12 / 2, "fp", 24, "X datasheet; PTX: multiply and accumulate at least single precision"),
+        "bf16": (312e12 / 2, "fp", 24, "X datasheet; product precision 16 bits UNVERIFIED (PTX: specified precision)"),
+        "b1": (4992e12 / 2, "int", 31, "X datasheet; BMMA and/xor native (SASS)")}),
+    "H100": dict(bw=3.35e12 * 0.75, simt=16.7e12, paths={
+        "int8": (1979e12 / 2, "int", 31, "X datasheet; wgmma IGMMA"),
+        "fp8": (1979e12 / 2, "fp", 12, "X datasheet; wgmma QGMMA only (mma.sync e4m3 -> HMMA); m UNMEASURED"),
+        "fp16": (989e12 / 2, "fp", 24, "X datasheet; PTX: at least single precision (mma.sync/wgmma)"),
+        "bf16": (989e12 / 2, "fp", 24, "X datasheet; product precision UNVERIFIED"),
+        "b1": (None, "int", 31, "wgmma BGMMA and.popc native, RATE UNMEASURED; xor emulated")}),
+    "B200": dict(bw=8.0e12 * 0.75, simt=148 * 128 * 1.9e9, paths={
+        "int8": (4.5e15 / 2, "int", 31, "X 2608.11693"),
+        "fp8": (4.5e15 / 2, "fp", 12, "X; tcgen05 m UNPUBLISHED"),
+        "fp4": (9e15 / 2, "fp", 12, "X; tcgen05 m UNPUBLISHED"),
+        "fp16": (2.25e15 / 2, "fp", 24, "X; m=24 [A for tcgen05: no precision text found]"),
+        "b1": (None, "int", 31, "EMULATED (SASS: CALL + IMMA)")}),
+    "B300": dict(bw=7.7e12 * 0.75, simt=160 * 128 * 1.9e9, paths={
+        "int8": (0.15e15 / 2, "int", 31, "X 2608.11693: FP8/30, no kind::i8 on sm_103a"),
+        "fp8": (4.5e15 / 2, "fp", 12, "X; tcgen05 m UNPUBLISHED"),
+        "fp4": (14e15 / 2, "fp", 12, "X HGX B300 datasheet 14 P dense (mxf4 kind); tcgen05 m UNPUBLISHED"),
+        "fp16": (2.25e15 / 2, "fp", 24, "X 4.5 P sparse / 2; m=24 [A for tcgen05: no precision text found]"),
+        "b1": (None, "int", 31, "EMULATED")}),
+    "TPUv5e": dict(bw=8.19e11 * 0.75, simt=None, paths={
+        "int8": (394e12 / 2, "int", 31, "X Google spec; int32 accumulate, overflow semantics UNVERIFIED"),
+        "bf16": (197e12 / 2, "fp", 24, "X Google: bf16 multiply, f32 accumulate; m=24 [A, unmeasured]")}),
+    "TPUv6e": dict(bw=1.64e12 * 0.75, simt=None, paths={
+        "int8": (1836e12 / 2, "int", 31, "X Google spec [A int8 rate]"),
+        "bf16": (918e12 / 2, "fp", 24, "X Google spec; m=24 [A]")}),
+}
+# bw carries a 0.75 copy-efficiency factor: T4 measured 0.75-0.76 of datasheet copy (MMA.md section 4) [A elsewhere].
+
+# Exact operand classes: max |integer| the format holds exactly, and limb base for BabyBear.
+#   int8: u8 limbs base 256 (P 65025) or 0/1; fp16: integers <= 2048 -> base 256 limbs (P 65025);
+#   bf16: integers <= 256 -> base 256 limbs (P 65025); fp8 e4m3: integers <= 16 -> base 16 (P 225);
+#   fp4 e2m1 doubled: base 13 gapped (P 64); b1: bits.
+ROT_LIMB = {"int8": (4, 65025, 0.0), "fp16": (4, 65025, 1.0), "bf16": (4, 65025, 1.0),
+            "fp8": (8, 225, 1.0), "fp4": (9, 64, 4.0)}   # (limbs per 31-bit base element, P, SIMT encode ops/limb [A])
+LIMB_B = {"int8": 1, "fp16": 2, "bf16": 2, "fp8": 1, "fp4": 0.5}
+# operand expansion for 0/1 operands from packed bits, SIMT ops per operand [D/A]:
+#   int8 0/1: nibble extract + (v*0x00204081)&0x01010101 = 4 ops / 4 operands; fp8 adds *0x38 (e4m3 1.0);
+#   fp16/bf16: 2-byte operands, 2x the words; fp4 e2m1: 8 nibbles per word, ~5 ops per 8 [A]; b1: none.
+UNPACK01 = {"int8": 1.0, "fp8": 1.25, "fp16": 2.0, "bf16": 2.0, "fp4": 0.625, "b1": 0.0, "b1x": 0.0}
+# parity repack per output bit: m>=24 path: accumulator initialised to 2^23 so the raw low mantissa bit IS the
+# parity (needs count < 2^23), then and + ballot: 2 ops/bit; m<24 or int: cvt/and + ballot: 2-3 ops/bit [D].
+# Generalised bias (Codex audit): initialise the FP32 accumulator to 2^(m-1), keep the count below 2^(m-1), and the
+# raw bit (24 - m) of the register is the parity (m <= 24, given the exactness premise): and + ballot = 2 ops/bit for
+# every m; the price is a halved block (2^(m-1) - 1).  Fragment-to-packed-word layout is NOT costed [A].
+REPACK = {"fp": 2.0, "int": 2.0, "fp-m14": 2.0}
+
+
+def block_exact(acc, m, P, reading="signed"):
+    if acc == "int":
+        return math.inf if reading == "parity" else I32 // P
+    return (2 ** m - 1) // P
+
+
+def best_rate(tgt, kinds):
+    T = TARGETS[tgt]["paths"]
+    return [(k, T[k]) for k in kinds if k in T and T[k][0]]
+
+
+def rot_datapaths():
+    print("\nROTATION 1: per target, the exact-integer datapaths that exist (dense MAC/s; exact block per accumulator)")
+    print(f"  {'target':7} {'path':5} {'MAC/s':>9} {'acc':4} {'m':>3} {'blk BB limbs':>12} {'blk 0/1':>10} {'status'}")
+    for tgt, T in TARGETS.items():
+        for k, (r, acc, m, tag) in T["paths"].items():
+            P = ROT_LIMB.get(k, (0, 1, 0))[1]
+            bl = block_exact(acc, m, P) if k in ROT_LIMB else "-"
+            b01 = "inf (parity)" if acc == "int" else f"{2 ** m - 1:,}"
+            rs = f"{r:9.2e}" if r else "  unmeas."
+            print(f"  {tgt:7} {k:5} {rs} {acc:4} {m:3d} {str(bl):>12} {b01:>10} {tag}")
+    print("  0/1 column: parity read; with promotion by parity XOR every block it is exact at every length.  Integer limb")
+    print("  totals promoted by cvt + iadd.s32 stay bounded by the INT32 total (33,025 u8 products) unless reduced")
+    print("  mod p or widened.  m=12 rows: PTX's floor for FP8 wgmma ('higher than half'); tcgen05 has no precision")
+    print("  text at all, so 12 is a placeholder until the probe measures it.  bf16 byte limbs need 16-bit products,")
+    print("  which PTX does not promise for bf16 ('specified precision'); fp16 byte limbs are promised (single precision).")
+
+
+def rot_prime(N=2 ** 25, k=8):
+    """(a) BabyBear^k degree-2 sumcheck at 2^mu, best exact datapath per target.  Inner products + matrix folds;
+    canonical storage (32-bit coefficients) with SIMT encode on read; promotion SIMT per block."""
+    print(f"\nROTATION 2a: BabyBear^{k} degree-2 sumcheck, 2^{int(math.log2(N))} (canonical storage; floor = max of HBM, TC, SIMT)")
+    out = {}
+    for tgt, T in TARGETS.items():
+        rows = []
+        for kind, (r, acc, m, tag) in T["paths"].items():
+            if kind not in ROT_LIMB or not r:
+                continue
+            L, P, enc = ROT_LIMB[kind]
+            kL = k * L
+            blk = block_exact(acc, m, P)
+            # per round t: 3 inner products (S(0), S(1), S(2) via f(2) on SIMT) of kL^2 MACs/pair; 2 folds of
+            # kL x k(2L-1) MACs/element; bytes 128 t (4 half-vectors) + 2 x 96 t (folds); SIMT encode on read
+            # (4 vectors x kL limbs x enc), promotion, fold recombine (k(2L-1+6)) + re-encode.
+            tot = dict(macs=0.0, bytes=0.0, simt=0.0)
+            for i in range(1, int(math.log2(N)) + 1):
+                t = 2 ** (int(math.log2(N)) - i)
+                tot["macs"] += t * (3 * kL * kL + 2 * kL * k * (2 * L - 1))
+                tot["bytes"] += t * (4 * 4 * k + 2 * 3 * 4 * k)
+                prom = 0 if acc == "int" else 2 * (3 * kL * kL) / max(1, min(blk, 1 << 30))
+                tot["simt"] += t * (4 * kL * enc + 2 * kL * enc + prom + 2 * k * (2 * L - 1 + 6) + 2 * kL * enc)
+            terms = {"hbm": tot["bytes"] / T["bw"], "tc": tot["macs"] / r}
+            if T["simt"]:
+                terms["simt"] = tot["simt"] / T["simt"]
+            b = max(terms, key=terms.get)
+            # tie-break HBM-bound ties by headroom: the smaller non-HBM term wins
+            rows.append((terms[b], max(v for k_, v in terms.items() if k_ != "hbm"), kind, b, blk, tag))
+        rows.sort()
+        rows = [(f, k_, b_, bl_, tg_) for f, _, k_, b_, bl_, tg_ in rows]
+        best = rows[0]
+        out[tgt] = best
+        alts = ", ".join(f"{k_} {f * 1e3:.2f} ({b_})" for f, k_, b_, _, _ in rows[1:])
+        print(f"  {tgt:7} best {best[1]:5} {best[0] * 1e3:7.3f} ms ({best[2]}-bound, block {best[3]}); others: {alts}")
+    print("  TPU rows have no VPU term (encode/promotion unmodelled there).")
+    return out
+
+
+def tower_ip_cost(kind, acc, m, macs_rate, simt_rate, bw, kar=True):
+    """Tower256 inner product per element pair: Karatsuba to 16-bit pieces (81 x 16 x 16 bit-MACs) when operands
+    are packed bits (b1); dense 256 x 256 when they must be unpacked (fewer operands to expand: 256 vs 1,296)."""
+    cands = []
+    for kar_ in ((True,) if kind.startswith("b1") else (False, True)):
+        if kar_:
+            macs, unpack = 81 * 256, 2 * kar_xor_ops(256, 4) + (0 if kind.startswith("b1") else 2 * 1296 * UNPACK01[kind])
+        else:
+            macs, unpack = 256 * 256, 2 * 256 * UNPACK01[kind]
+        # promotion: per accumulator per block (cvt/and/xor = 3 ops) when the block is finite (fp paths)
+        blk = (2 ** (m - 1) - 1) if acc == "fp" else math.inf
+        prom = 0.0 if blk == math.inf else 3 * macs / blk
+        t = {"tc": macs / macs_rate, "simt": (unpack + prom) / simt_rate if simt_rate else 0.0, "hbm": 64 / bw}
+        cands.append((max(t.values()), t))
+    return min(cands, key=lambda c: c[0])
+
+
+def tower_lin_cost(kind, acc, m, macs_rate, simt_rate, bw):
+    """Tower256 multiply by a FIXED element (fold by r, NTT twiddle): dense 256 x 256 GF(2) matrix (B operand,
+    expanded once), A operand unpacked per element, 256 counts repacked to bits per element; plus 64 B traffic."""
+    macs = 256 * 256
+    unpack = 256 * UNPACK01.get(kind, 0.0)
+    repack = 256 * (REPACK["fp"] if (acc == "fp" and m >= 24) else (REPACK["int"] if acc == "int" else REPACK["fp-m14"]))
+    t = {"tc": macs / macs_rate, "simt": (unpack + repack) / simt_rate if simt_rate else 0.0, "hbm": 96 / bw}
+    return max(t.values()), t
+
+
+# Measured SIMT anchors (T4, notes/accelerator-readiness/TOWER256.md section 4), in T4 int32-op equivalents.
+KECCAK_OPS_MEAS = 5900          # 6.9e8 Keccak-f/s on T4 (tune-03); 9,350 at 4.35e8 (dryrun-04)
+T256_MUL_TABLE_OPS = 14200      # log/exp GF(2^8) tables, 2.87e8/s on T4
+T256_MUL_BITSLICED_OPS = 718    # [A] unbuilt bit-sliced kernel
+
+
+def rot_binary(N=2 ** 25):
+    print(f"\nROTATION 2b: Tower256 on the tensor units, per element (ns); SIMT multiply = table {T256_MUL_TABLE_OPS} "
+          f"[MEASURED T4] / bit-sliced {T256_MUL_BITSLICED_OPS} [A]")
+    print(f"  {'target':7} {'path':5} {'inner product':>14} {'fixed-r mult':>13} {'SIMT mult tbl':>13} {'bitsl':>7}  binding")
+    res = {}
+    for tgt, T in TARGETS.items():
+        if not T["simt"]:
+            continue
+        sm_tbl = T256_MUL_TABLE_OPS / T["simt"]
+        sm_bs = T256_MUL_BITSLICED_OPS / T["simt"]
+        for kind, (r, acc, m, tag) in T["paths"].items():
+            if not r or kind in ("fp16",) and tgt not in ("T4",):
+                continue
+            ip, ipt = tower_ip_cost(kind, acc, m, r, T["simt"], T["bw"])
+            ln, lnt = tower_lin_cost(kind, acc, m, r, T["simt"], T["bw"])
+            bi = max(ipt, key=ipt.get)
+            bl = max(lnt, key=lnt.get)
+            res[(tgt, kind)] = (ip, ln, sm_tbl, sm_bs)
+            print(f"  {tgt:7} {kind:5} {ip * 1e9:11.3f} ns {ln * 1e9:10.3f} ns {sm_tbl * 1e9:10.3f} ns {sm_bs * 1e9:6.3f}"
+                  f"  ip:{bi} lin:{bl}")
+    print("  Comparators are T4-derived op-equivalents scaled by SIMT rate: the table (14,200) is measured on T4 only,")
+    print("  the bit-sliced 718 is unbuilt.  Read row by row; no row is a measured win.")
+    return res
+
+
+def ntt_tensor_layer(tgt, kind, n, layer, tile=64):
+    """One additive-NTT layer on the tensor path: the twiddle of a block is shared by 2^layer butterflies, so the
+    twiddle matrix (65,536 operand bits, expanded on chip from 8 KiB packed: 65,536 x UNPACK01 SIMT ops) is
+    amortised over 2^layer rows and the MMA tile pads to min(1, 2^layer / tile).  Per butterfly: one fixed-r
+    multiply (unpack 256 + repack 256 bits), plus the shared matrix."""
+    T = TARGETS[tgt]
+    r, acc, m, _ = T["paths"][kind]
+    share = 2 ** layer
+    util = min(1.0, share / tile)
+    _, lt = tower_lin_cost(kind, acc, m, r, T["simt"], T["bw"])
+    tc = lt["tc"] / util
+    simt = lt["simt"] + (65536 * UNPACK01.get(kind, 0.0) / T["simt"]) / share
+    hbm = lt["hbm"] + (8192 / share) / T["bw"]
+    return max(tc, simt, hbm)
+
+
+def rot_tower_prover(ells=(14, 20, 22)):
+    print("\nROTATION 2c: Tower256 FRI prover (one column) per target, ms per proof [proxy].  Encode = additive NTT with")
+    print("  per-layer twiddle reuse (fine layers fall back to SIMT); folds = fixed-r multiplies; hash on SIMT.")
+    for tgt, T in TARGETS.items():
+        if not T["simt"]:
+            continue
+        kinds = [k for k, v in T["paths"].items() if v[0]]
+        for ell in ells:
+            n = 2 ** ell
+            kf = 4 * n
+            m_ = ell - 4
+            h = kf * KECCAK_OPS_MEAS / T["simt"]
+            fold_mults = sum(2 * 2 ** (ell - j - 1) for j in range(m_))
+            per = lambda ops: ops / T["simt"]
+            tbl = ((n // 2) * ell + fold_mults) * per(T256_MUL_TABLE_OPS)
+            bs = ((n // 2) * ell + fold_mults) * per(T256_MUL_BITSLICED_OPS)
+            best_k, best_t = None, math.inf
+            for k in kinds:
+                enc = sum((n // 2) * min(ntt_tensor_layer(tgt, k, n, L), per(T256_MUL_TABLE_OPS)) for L in range(ell))
+                r, acc, m, _ = T["paths"][k]
+                fo = fold_mults * tower_lin_cost(k, acc, m, r, T["simt"], T["bw"])[0]
+                if enc + fo < best_t:
+                    best_k, best_t = k, enc + fo
+            tc = best_t
+            print(f"  {tgt:5} ell {ell:2d}: hash {h * 1e3:8.3f} | arith: table {tbl * 1e3:8.3f}, tensor({best_k}) "
+                  f"{tc * 1e3:7.3f}, bit-sliced[A] {bs * 1e3:7.3f} | hash share: table {h / (h + tbl):.2f}, "
+                  f"tensor {h / (h + tc):.2f}")
+
+
+def rot_keccak():
+    print("\nROTATION 2c': Keccak-f has no tensor mapping (theta is the only arithmetic linear step; dense GEMM 240x")
+    print(f"  slower at INT8 peak).  Bit-sliced SIMT bound: {KECCAK_OPS_MEAS} op-eq per Keccak-f measured on T4 "
+          f"(model 4,320). Per target Keccak-f/s:")
+    for tgt, T in TARGETS.items():
+        if T["simt"]:
+            print(f"  {tgt:5} {T['simt'] / KECCAK_OPS_MEAS:.2e}/s")
+
+
+def rot_mxfp4(M=4096, Nn=4096, K=4096):
+    """(d) MXFP4 exact recompute of one GEMM: per 32-block the dot of e2m1 values is an exact multiple of 1/4 with
+    |sum| <= 32 x 36 = 1152 (4608 quarter units < 2^13): exact on any accumulator with m >= 13.  Exact path:
+    run block dots with unit scales, apply the E8M0 scale pair per block per output on SIMT as an exact integer
+    shift-add into a wide (Kulisch-style) accumulator: 2 ops per output per block."""
+    print(f"\nROTATION 2d: MXFP4 exact recompute, {M}x{Nn}x{K} GEMM (scales applied exactly on SIMT per 32-block)")
+    macs = M * Nn * K
+    # per output per 32-block: shift + add-with-carry into a 2-word window of a wide accumulator (the 13-bit block
+    # sum spans <= 2 words) = 4 ops [A]; worst case over all finite E8M0 scales needs 529 bits (17 words).
+    simt = 4 * M * Nn * (K // 32)
+    for tgt in ("B200", "B300", "H100", "A100", "T4"):
+        T = TARGETS[tgt]
+        # separate 32-blocks need one block per instruction: tcgen05 kind::f8f6f4 (K=32) runs e2m1 at the FP8 rate;
+        # the faster mxf4 kind (K=64) merges two differently scaled blocks.  Else FP8 / fp16 (e2m1 values exact).
+        k = "fp8" if "fp8" in T["paths"] else "fp16"
+        r = T["paths"][k][0]
+        tc, sm = macs / r, simt / T["simt"]
+        print(f"  {tgt:5} via {k:4}: TC {tc * 1e3:7.3f} ms, SIMT scale-apply {sm * 1e3:7.3f} ms -> "
+              f"{max(tc, sm) * 1e3:7.3f} ms ({'SIMT' if sm > tc else 'TC'}-bound)")
+    print("  a 32-block's dot is <= 32 x 36 = 1,152 (4,608 quarter-units < 2^13): exact inside any accumulator with")
+    print(f"  m >= 13; equal-scale blocks per accumulator before promotion: m=14 -> {(2 ** 14 - 1) // 4608}, m=24 -> {(2 ** 24 - 1) // 4608:,}")
+    print("  Faster variant [INFERRED]: mxf4 with hardware scales when, per K-chunk, the scale span s_max - s_min")
+    print("  + 13 + log2(chunk/32) < m AND every scaled partial stays inside FP32's normal range (span alone is not")
+    print("  enough: equal scales of 2^-127 underflow); certify per tile, fall back to f8f6f4 otherwise.")
+
+
+def rot_rns_ntt(N=16384, L=4, P=128):
+    """(e) BFV RNS NTT, four-step as matrix products (BFV.md section 5b).  int8 / fp16: 8 balanced bytes; the top
+    digit of a canonical 61-bit residue is <= 16, so |Y| <= 15,204,352 < 2^24 (Codex): exact at m = 24.  fp8: 16
+    balanced nibbles [-8, 7], |Y| <= 124,928 < 2^17: exact at m >= 17, else promote every (2^m - 1) // 64 terms.
+    SIMT per output digit-row: carry chain + Barrett-style fold ~ 3 D + 10 ops, plus promotion 3 ops per accumulator
+    per block.  MACs per NTT per prime = N1 (D N2)^2 + (D N1)^2 N2."""
+    N1 = 64 if N == 8192 else 128
+    N2 = N // N1
+    print(f"\nROTATION 2e: RNS NTT, N={N}, L={L} primes, batch P={P} polynomials, forward only, four-step N1={N1}")
+    for tgt, T in TARGETS.items():
+        rows = []
+        for kind, (r, acc, m, tag) in T["paths"].items():
+            if not r or kind in ("b1", "b1x", "fp4", "bf16"):
+                continue
+            D = 16 if kind == "fp8" else 8
+            macs = (N1 * (D * N2) ** 2 + (D * N1) ** 2 * N2) * L * P
+            mat = (N1 * N2 ** 2 + N1 ** 2) * D * D * (1 if kind in ("int8", "fp8") else 2) * L
+            data = 2 * P * L * N * 8
+            outs = 2 * P * L * N * D                       # two stages, D output digits per coefficient
+            Kterm = D * max(N1, N2)
+            blk = math.inf if acc == "int" else ((2 ** m - 1) // (64 if kind == "fp8" else 2 ** 14))
+            blk = math.inf if (acc == "fp" and kind == "fp8" and m >= 17) or (acc == "fp" and kind != "fp8" and m >= 24) else blk
+            prom = 0 if blk == math.inf else outs * 3 * math.ceil(Kterm / blk)
+            simt = outs * (3 * D + 10) / D + prom
+            terms = {"tc": macs / r, "hbm": (mat + data) / T["bw"]}
+            if T["simt"]:
+                terms["simt"] = simt / T["simt"]
+            t = max(terms.values())
+            rows.append((t, kind, max(terms, key=terms.get)))
+        rows.sort()
+        print(f"  {tgt:7} " + ", ".join(f"{k} {t * 1e3:.3f} ms ({b})" for t, k, b in rows))
+    print("  TPU rows: no VPU term.  bf16 excluded (16-bit products unpromised); fp16 carries the byte digits.")
+
+
+def rotation():
+    rot_datapaths()
+    rot_prime()
+    rot_binary()
+    rot_tower_prover()
+    rot_keccak()
+    rot_mxfp4()
+    rot_rns_ntt()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--validate", action="store_true")
+    ap.add_argument("--rotation", action="store_true", help="only the per-target rotation tables (section 7)")
     a = ap.parse_args()
+    if a.rotation:
+        rotation()
+        return
     ok = validate()
     if a.validate:
         raise SystemExit(0 if ok else 1)
@@ -531,6 +849,7 @@ def main():
     tower_prover()
     tower_prover(mult_scale=4.0)
     ntt_table()
+    rotation()
     print("\nSKU sources:")
     for k, v in SKUS.items():
         print(f"  {k}: {v['src']}")
