@@ -92,9 +92,10 @@ structure Crypto where
   hash : String → String
   sigOk : String → List String → String → Bool
 
-/-- A key never accepts one signature on two different field lists (with a fixed-width injective encoding, this is
-what a forgery would violate). -/
-def EncodingInjective (c : Crypto) : Prop :=
+/-- No key accepts one signature on two different field lists. Not a standard unforgeability game: it is the
+property whose violation `swap_needs_forgery` exhibits. With the CLI's fixed-width encoding (tag, count, 32 raw
+bytes per field) a violation is a signature valid on two different messages under one key. -/
+def OneListPerSignature (c : Crypto) : Prop :=
   ∀ pk sig (l₁ l₂ : List String), c.sigOk pk l₁ sig = true → c.sigOk pk l₂ sig = true → l₁ = l₂
 
 def isHex64 (s : String) : Bool :=
@@ -122,12 +123,16 @@ def graphText (g : Graph) : String :=
 
 def graphDigest (c : Crypto) (g : Graph) : String := c.hash (graphText g)
 
-/-- The roles: each must be held by exactly one node. The last six are the deployment's components. -/
+/-- The roles: each must be held by exactly one node. -/
 def roles : List String :=
   ["gguf-files", "integers", "flashprove-commitment", "deployment",
-   "flashprove-config", "tokenizer", "adapter", "system-prompt", "tools"]
+   "runtime", "tokenizer", "adapter", "system-prompt", "tools"]
 
-def componentRoles : List String := ["integers", "flashprove-config", "tokenizer", "adapter", "system-prompt", "tools"]
+/-- The deployment's components. The commitment ID stands for FlashProve's whole configuration (R4.11 hashes
+policy, scales and layout); `runtime` names the program that runs the integer model, so an evaluation run on another
+runtime (the GGUF in llama.cpp, say) is a different deployment, and signing it as this one is the evaluator's lie. -/
+def componentRoles : List String :=
+  ["integers", "flashprove-commitment", "runtime", "tokenizer", "adapter", "system-prompt", "tools"]
 
 def nodeById (g : Graph) (i : String) : Option Node := g.nodes.find? (fun n => n.id == i)
 
@@ -182,7 +187,7 @@ def requiredEdge (c : Crypto) (strict : Bool) (recs : List String) (g : Graph) (
 /-- The fields the evaluator signs. -/
 def evalFields (c : Crypto) (r : Receipt) : List String :=
   [c.hash "mir13/eval/v2", r.commitmentId, r.rootset, r.wsums, r.filesDigest, graphDigest c r.graph,
-   c.hash r.eval.node, c.hash r.eval.benchmark, c.hash r.eval.scores]
+   c.hash r.eval.node, c.hash r.eval.benchmark, c.hash r.eval.scores, c.hash r.eval.evaluator]
 
 /-- The accept decision. `trusted`: evaluator keys the client accepts; `recs`: recomputer keys (strict mode). Both
 come from the client, never from the receipt. -/
@@ -230,8 +235,9 @@ structure World (W G Pf : Type) where
 
 variable {W G Pf : Type}
 
-/-- FlashProve's soundness up to a failure event `bad` (their theorem has a soundness error; protocol.md section 3
-also says nothing is proved of `cp_commit` itself). A hypothesis, never an axiom. -/
+/-- FlashProve's soundness up to a failure event `bad`. A hypothesis, never an axiom, and unquantified here: `bad`
+is whatever their soundness error covers (their bound, not ours); with `bad := True` the theorem is empty, as it
+should be when nothing is known of the verifier. -/
 def FpSoundUpTo (w : World W G Pf) (bad : Pf → Prop) : Prop :=
   ∀ cid p, w.fpAccept cid p = true → (∃ x, w.committed cid x ∧ w.satisfies x p) ∨ bad p
 
@@ -239,7 +245,9 @@ def FpSoundUpTo (w : World W G Pf) (bad : Pf → Prop) : Prop :=
 def BindingBreak (w : World W G Pf) (cid : String) : Prop :=
   ∃ x y, x ≠ y ∧ w.committed cid x ∧ w.committed cid y
 
-/-- A SHA-256 collision on the file list: two different file sets with one `weights.sha256` digest. -/
+/-- Two different file sets with one file-list digest. `G` is the files' bytes, named; `files g` is SHA-256 of
+the list of each file's SHA-256, so a witness is a SHA-256 collision at the file layer or at the list layer. The
+reduction to two concrete byte strings is not formalised here. -/
 def FilesCollision (w : World W G Pf) (f : String) : Prop :=
   ∃ g₁ g₂, g₁ ≠ g₂ ∧ w.files g₁ = f ∧ w.files g₂ = f
 
@@ -252,8 +260,11 @@ def EdgeHolds (w : World W G Pf) : Rel → String → String → Prop
 /-- Edge E2 (our stream; re-runnable by a stranger, gates G11-G13). -/
 def StreamTranscript (w : World W G Pf) (r : Receipt) : Prop := EdgeHolds w .converts r.filesDigest r.rootset
 
-/-- Edge E3: one run of `cp_commit` on these files produced this ID (public seed: recomputable on an H100 with
-330 GB; FlashProve published its result). A statement about a run, not about every integer set under the ID. -/
+/-- Edge E3: what one run of `cp_commit` on these files gives, read semantically: the ID it produced commits to the
+§11 integers of those files. Two things are folded in and named here: the run itself (public seed: recomputable on
+an H100 with 330 GB; FlashProve published its result) and the committer's correctness (it encodes what it read;
+FlashProve proves this of no program, protocol.md section 3). A statement about a run, not about every integer set
+under the ID; a hidden-seed commitment needs its own witnessed run, and reproducing this one says nothing of it. -/
 def CommitRun (w : World W G Pf) (r : Receipt) : Prop := EdgeHolds w .commits r.filesDigest r.commitmentId
 
 /-- A recomputer key is honest about edges: whatever edge content it signs holds. -/
@@ -311,8 +322,9 @@ theorem requiredEdge_strict {c : Crypto} {recs : List String} {g : Graph} {rel :
     · simp at hb
   · simp at h
 
-/-- **identity_sound_strict.** In strict mode the two edges are not hypotheses: each was signed, over its content,
-by a recomputer key the client trusts, and an honest recomputer's signed edge holds. -/
+/-- **identity_sound_strict.** In strict mode the two edges come from authenticated recomputer attestations: each
+was signed, over relation, endpoint kinds and digests and rule, by a key the client trusts. Trust is not removed;
+it moves to `HonestRecomputer`, a premise about every edge such a key signs. -/
 theorem identity_sound_strict (c : Crypto) (trusted recs : List String) (r : Receipt)
     (w : World W G Pf) (bad : Pf → Prop) (cid : String) (p : Pf)
     (hv : verify c trusted true recs r = true) (hcid : cid = r.commitmentId) (hp : w.fpAccept cid p = true)
@@ -365,7 +377,7 @@ theorem swap_needs_forgery (c : Crypto) (t rc : List String) (s : Bool) (r r' : 
     (hv : verify c t s rc r = true) (hv' : verify c t s rc r' = true)
     (hk : r'.eval.publicKey = r.eval.publicKey) (hsig : r'.eval.signature = r.eval.signature)
     (hdiff : evalFields c r ≠ evalFields c r') :
-    ¬ EncodingInjective c := by
+    ¬ OneListPerSignature c := by
   intro hinj
   obtain ⟨_, _, _, _, _, h1⟩ := verify_spec hv
   obtain ⟨_, _, _, _, _, h2⟩ := verify_spec hv'

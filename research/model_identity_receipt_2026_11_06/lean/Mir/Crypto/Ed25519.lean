@@ -117,7 +117,9 @@ def B : Point :=
 end Ed25519
 
 open Ed25519 in
-/-- Ed25519 verification (RFC 8032 5.1.7, cofactorless, strict). -/
+/-- Ed25519 verification (RFC 8032 5.1.7, cofactorless, strict). A public key of small order (8A = identity, the
+identity among them) is refused: with A = R = identity and S = 0 every message would verify (second cross-model
+attack, notes/attack-2.md). -/
 def ed25519Verify (pk : ByteArray) (msg : ByteArray) (sig : ByteArray) : Bool :=
   if pk.size != 32 || sig.size != 64 then false else
   let rBytes := sig.extract 0 32
@@ -125,6 +127,7 @@ def ed25519Verify (pk : ByteArray) (msg : ByteArray) (sig : ByteArray) : Bool :=
   if s ≥ L then false else
   match decodePoint pk, decodePoint rBytes with
   | some A, some R =>
+    if eq (scalarMul 8 A) identity then false else
     let k := leNat (sha512 (rBytes ++ pk ++ msg)) % L
     eq (scalarMul s B) (add R (scalarMul k A))
   | _, _ => false

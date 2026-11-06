@@ -16,15 +16,15 @@ a.add_argument("--negative"); a.add_argument("--eval-key")
 a.add_argument("--strict-receipt"); a.add_argument("--recomputer")
 args = a.parse_args()
 V = args.mir_verify
-COMPONENTS = ["integers", "flashprove-config", "tokenizer", "adapter", "system-prompt", "tools"]
+COMPONENTS = ["integers", "flashprove-commitment", "runtime", "tokenizer", "adapter", "system-prompt", "tools"]
 sha = lambda s: hashlib.sha256(s.encode()).hexdigest()
 other = sha("another")
 
-def run(r, cid=None, trust=None, extra=()):
+def run(r, cid=None, trust=None, extra=(), verdict="yes"):
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
         json.dump(r, f)
     p = subprocess.run([V, "check", f.name, "--cid", cid or r["commitment_id"], "--trust", trust or r["eval"]["public_key"],
-                        "--fp-verdict", "yes", *extra], capture_output=True, text=True)
+                        "--fp-verdict", verdict, *extra], capture_output=True, text=True)
     os.unlink(f.name)
     return p.returncode, [l.strip()[3:].strip() for l in p.stdout.splitlines() if l.startswith("  NO ")] or [p.stderr.strip()[:90]]
 
@@ -77,6 +77,12 @@ alt("evaluated node changed to meta-bf16", lambda r: r["eval"].update(node="meta
 alt("hollow commitment: the proof was checked against another ID", lambda r: None, cid=other)
 alt("evaluator key not trusted by the client", lambda r: None, trust=sha("k"))
 alt("strict mode with E3 only published", lambda r: None, extra=("--strict",))
+alt("FlashProve's verifier said no", lambda r: None, verdict="no")
+alt("evaluator's name changed after signing", lambda r: r["eval"].update(evaluator="Meta Platforms evaluation team"))
+alt("runtime changed (the GGUF in llama.cpp)", lambda r: (node(r, "runtime").update(digest=sha("llama.cpp b5000")), redeploy(r)))
+ident = "01" + "00" * 31
+alt("identity public key with the universal signature (R = identity, S = 0)",
+    lambda r: r["eval"].update(public_key=ident, signature=ident + "00" * 32), trust=ident)
 if args.eval_key:
     alt("evaluated node meta-bf16", lambda r: r["eval"].update(node="meta-bf16"), collude=True)
     alt("evaluated node wsums (a digest, not a model)", lambda r: r["eval"].update(node="wsums"), collude=True)
