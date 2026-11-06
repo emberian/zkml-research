@@ -1,0 +1,60 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 python3: load tower256_fri_counts.py; counts(ell,2,ell-4,q_for(2),unary=u,cache=cache), ell=14,20",
+  "scope": "Existing 7015c0c06-era cost model, not current compact receipt or runtime benchmark",
+  "rows": [
+    {
+      "codec": "unary",
+      "ell": 14,
+      "seed_kf": 7666,
+      "challenge_kf": 426,
+      "query_prefix_bytes": 6824,
+      "prover_kf": 73585,
+      "verifier_kf": 53263
+    },
+    {
+      "codec": "unary+cache",
+      "ell": 14,
+      "seed_kf": 316,
+      "challenge_kf": 426,
+      "query_prefix_bytes": 6824,
+      "prover_kf": 66235,
+      "verifier_kf": 45913
+    },
+    {
+      "codec": "u32+cache",
+      "ell": 14,
+      "seed_kf": 161,
+      "challenge_kf": 95,
+      "query_prefix_bytes": 1832,
+      "prover_kf": 65749,
+      "verifier_kf": 45427
+    },
+    {
+      "codec": "unary",
+      "ell": 20,
+      "seed_kf": 11410,
+      "challenge_kf": 1005,
+      "query_prefix_bytes": 10268,
+      "prover_kf": 4206670,
+      "verifier_kf": 105982
+    },
+    {
+      "codec": "unary+cache",
+      "ell": 20,
+      "seed_kf": 385,
+      "challenge_kf": 1005,
+      "query_prefix_bytes": 10268,
+      "prover_kf": 4195645,
+      "verifier_kf": 94957
+    },
+    {
+      "codec": "u32+cache",
+      "ell": 20,
+      "seed_kf": 167,
+      "challenge_kf": 202,
+      "query_prefix_bytes": 2600,
+      "prover_kf": 4194624,
+      "verifier_kf": 93936
+    }
+  ]
+}
