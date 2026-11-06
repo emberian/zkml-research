@@ -1,0 +1,33 @@
+[{"stream_name":"stdout","time":4.425994365,"data":"device Tesla T4 sm 75\n"}
+,{"stream_name":"stdout","time":5.811930041,"data":"N8192_L3 {\"mode\": 0, \"logE\": 10, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.819048178,"data":"N8192_L3 {\"mode\": 0, \"logE\": 10, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.826289623,"data":"N8192_L3 {\"mode\": 0, \"logE\": 11, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.833459506,"data":"N8192_L3 {\"mode\": 0, \"logE\": 11, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.840504788,"data":"N8192_L3 {\"mode\": 0, \"logE\": 12, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.847728895,"data":"N8192_L3 {\"mode\": 0, \"logE\": 12, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.854751607,"data":"N8192_L3 {\"mode\": 0, \"logE\": 13, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.862891456,"data":"N8192_L3 {\"mode\": 0, \"logE\": 13, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.870187637,"data":"N8192_L3 {\"mode\": 1, \"logE\": 10, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.877375917,"data":"N8192_L3 {\"mode\": 1, \"logE\": 10, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.884398752,"data":"N8192_L3 {\"mode\": 1, \"logE\": 11, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.891621157,"data":"N8192_L3 {\"mode\": 1, \"logE\": 11, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.899000998,"data":"N8192_L3 {\"mode\": 1, \"logE\": 12, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.906025082,"data":"N8192_L3 {\"mode\": 1, \"logE\": 12, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.913067153,"data":"N8192_L3 {\"mode\": 1, \"logE\": 13, \"logC\": 4, \"threads\": 256, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.920030541,"data":"N8192_L3 {\"mode\": 1, \"logE\": 13, \"logC\": 4, \"threads\": 512, \"error\": \"CUDADriverError('CUDA_ERROR_NOT_FOUND: named symbol not found')\"}\n"}
+,{"stream_name":"stdout","time":5.920843732,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":5.921350232,"data":"  File \"/tmp/accel/accel-bfv-ntt-t4-01/accel_bench_cuda.py\", line 226, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":5.92136303,"data":"    sys.exit(main())\n"}
+,{"stream_name":"stdout","time":5.921368445,"data":"             ~~~~^^\n"}
+,{"stream_name":"stdout","time":5.921371831,"data":"  File \"/tmp/accel/accel-bfv-ntt-t4-01/accel_bench_cuda.py\", line 220, in main\n"}
+,{"stream_name":"stdout","time":5.921389559,"data":"    res[\"compile_s\"] = Ctx.compile_s\n"}
+,{"stream_name":"stdout","time":5.921395269,"data":"                       ^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":5.921398786,"data":"AttributeError: type object 'Ctx' has no attribute 'compile_s'\n"}
+,{"stream_name":"stdout","time":8.877777446,"data":"ACCEL_JOB_DONE rc=1 killed=None elapsed=8.1\n"}
+,{"stream_name":"stderr","time":11.06981884,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":11.069851213,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":11.395193588,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":11.395236553,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":13.026938426,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":13.985645509,"data":"[NbConvertApp] Writing 310804 bytes to __results__.html\n"}
+]
