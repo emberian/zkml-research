@@ -50,7 +50,8 @@ def carry(limbs):
 
 
 def reduce_limbs(z, mod):
-    """z: list of nl int32 arrays, value V = sum_c 256^c z_c with |z_c| < 2^25 and |V| / mod < 2^22.
+    """z: list of nl int32 arrays, value V = sum_c 256^c z_c with |z_c| <= 2^27 and |V| / mod < 2^22
+    (the float32 quotient estimate needs the latter; int32 carries need the former).
     Returns nl uint8-valued int32 limbs of V mod `mod` (canonical). VPU only, no 64-bit type:
     carry, float32 quotient estimate from the top three limbs and the carry (error <= 1), subtract qhat*mod
     limbwise, carry, then one conditional +mod and one conditional -mod."""

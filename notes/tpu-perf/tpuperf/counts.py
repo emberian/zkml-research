@@ -28,6 +28,10 @@ MOVE_OPS = {"broadcast_in_dim", "reshape", "transpose", "slice", "concatenate", 
 TENSOR = re.compile(r"tensor<([^>]*)>")
 
 
+def _ceil(x, m):
+    return -(-x // m) * m
+
+
 def parse_tensor(t):
     parts = t.split("x")
     dt = parts[-1]
@@ -86,6 +90,9 @@ def _count_func(name, funcs, memo):
             if ldt != rdt:
                 unit += "x" + rdt
             c["mxu"][unit] += on * k
+            # MXU-granular work: K and the output minor (lane) dim padded to 128 (the v5e edge; on v6e, edge 256,
+            # this undercounts). The leading output dims are streamed rows and are not padded.
+            c["mxu"][unit + "@pad"] += (on // max(odims[-1], 1)) * _ceil(odims[-1], 128) * _ceil(k, 128)
             if unit not in ("mxu_int8", "mxu_bf16"):
                 c["flags"].add(f"dot with operands {ldt}x{rdt}: not a native MXU dtype on v5e (int8/bf16)")
         elif op in VPU_OPS or op == "reduce":
@@ -132,8 +139,9 @@ def bound(cnt, gen, vpu_ops=None):
     g = GEN[gen]
     t = {}
     m = cnt["mxu_macs"]
-    t["mxu"] = 2 * m.get("mxu_int8", 0) / g["int8"] + 2 * m.get("mxu_bf16", 0) / g["bf16"]
-    other = {k: v for k, v in m.items() if k not in ("mxu_int8", "mxu_bf16")}
+    t["mxu"] = 2 * m.get("mxu_int8@pad", 0) / g["int8"] + 2 * m.get("mxu_bf16@pad", 0) / g["bf16"]
+    ideal_mxu = 2 * m.get("mxu_int8", 0) / g["int8"] + 2 * m.get("mxu_bf16", 0) / g["bf16"]
+    other = {k: v for k, v in m.items() if k not in ("mxu_int8", "mxu_bf16") and not k.endswith("@pad")}
     if other:
         t["mxu_nonnative"] = sum(2 * v for v in other.values()) / (g["bf16"] / 6)  # [INFERRED] f32-like multipass
     vp = vpu_ops or g["vpu_ops"]
@@ -142,7 +150,8 @@ def bound(cnt, gen, vpu_ops=None):
         t["vpu"] = (v.get("32", 0) + 4 * v.get("64", 0)) / vp  # 64-bit charged 4x [INFERRED]
     t["hbm"] = (cnt["hbm_in"] + cnt["hbm_out"]) / g["hbm_bw"]
     unit = max(t, key=t.get)
-    out = dict(bound_s=t[unit], unit=unit, per_unit_s=t, vpu_peak=vp, vpu_src=g.get("vpu_src"))
+    out = dict(bound_s=t[unit], unit=unit, per_unit_s=t, vpu_peak=vp, vpu_src=g.get("vpu_src"),
+               mxu_ideal_unpadded_s=ideal_mxu)
     if not vp and sum(cnt["vpu_elems"].values()):
         out["caveat"] = "VPU peak unknown for this generation: the bound omits VPU work and is a lower bound only"
     return out
