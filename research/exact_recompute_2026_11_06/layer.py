@@ -154,7 +154,7 @@ def layer_int(xp, kern, Wt: LayerWeights, x, P, trace=None):
     rep = H // KV
     kk = xp.repeat(k, rep, axis=1)          # [t, H, HD]
     vv = xp.repeat(v, rep, axis=1)
-    sc = xp.einsum("ihc,jhc->hij", q, kk)   # exact int64, at 2^-(2 fqk); the 1/8 is in fsc
+    sc = kern.einsum("ihc,jhc->hij", q, kk, 2, 2)   # exact int64, at 2^-(2 fqk); the 1/8 is in fsc
     sc = xp.where(mask[None], sc, xp.iinfo(xp.int64).min // 4)
     mx = xp.maximum(sc.max(axis=2), sink[:, None])                      # [H, t]
     def ex(z):
@@ -163,7 +163,7 @@ def layer_int(xp, kern, Wt: LayerWeights, x, P, trace=None):
     e = xp.where(mask[None], ex(sc), 0)                                  # [H, t, t]
     es = ex(xp.broadcast_to(sink[:, None], mx.shape))                    # [H, t]
     Z = e.sum(axis=2) + es
-    acc = xp.einsum("hij,jhc->ihc", e, vv)                               # [t, H, HD]
+    acc = kern.einsum("hij,jhc->ihc", e, vv, 3, 2)                             # [t, H, HD]
     Zt = xp.transpose(Z)[:, :, None]
     o = (2 * acc + Zt) // (2 * Zt)
     o = M.clamp(xp, o, M.ACLAMP_LO, CL).reshape(t, H * HD)

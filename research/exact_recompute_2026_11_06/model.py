@@ -107,6 +107,10 @@ class ExactF64:
         return dh, dl
 
 
+    def einsum(self, spec, a, b, na, nb):
+        return np.einsum(spec, a, b)          # int64, exact at these sizes
+
+
 class InexactF32(ExactF64):
     """The falsifier: the same limbs through float32 BLAS. Partial sums exceed 2^24, so the
     result depends on the library's summation order and rounding; G1 shows its digests differ."""
