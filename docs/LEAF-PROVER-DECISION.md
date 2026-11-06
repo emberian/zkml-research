@@ -121,3 +121,71 @@ Taken in this lane:
    element, against BinarySpartan's published rates.
 4. The first certificate leaf on it: a content-bound DFA run (CERTIFICATES P6) over
    cSHAKE-committed bytes.
+
+## 6. Leaf interface (the target for the first content-bound regex certificate)
+
+2026-11-06. Written for the automata deputy, which owns `Dfa.lean` and Weld8. This section
+states what a certificate leaf on the Tower256 path has to give its consumers, and what it can
+build on today. Commits it refers to: minidregg `lane/tower256-final-check` `4f04995bd` (step a),
+`lane/binding-term` `049bfc450`, `lane/arklib-ud-bridge` `a3ca7bfa3`.
+
+**Statement (data, no functions).** The leaf proves a claim about one committed record:
+
+```lean
+structure ContentCert where
+  contentRoot     : Digest      -- cSHAKE256 Merkle root over the record's bytes (RULINGS: no Poseidon2)
+  recordLength    : Nat         -- whole-subject binding: length is part of the subject
+  automatonDigest : Digest      -- cSHAKE256 of the canonical DFA table encoding (states, alphabet, δ, q₀, F)
+  claim           : Bool        -- accepted (true) or rejected (false) by that automaton
+```
+
+The relation is
+`∃ w : List UInt8, w.length = recordLength ∧ merkleCommit w = contentRoot ∧ (dfaRun table w ∈ F ↔ claim = true)`,
+where `table` is the unique decoding of `automatonDigest`'s preimage, carried as public input.
+Absence of a pattern P is `claim = true` for the padded complement `neg(any*·P·any*)`
+(CERTIFICATES §0.1 and §3). It is never a whole-word complement.
+
+**Theorem shape the leaf must export**, mirroring the raw controller:
+
+```lean
+theorem cert_accepts_or_collision (stmt : ContentCert) (receipt : CertReceipt)
+    (accepted : CertAccepts stmt receipt) :
+    CertCollision stmt receipt ∨ ContentCertHolds stmt (extractBytes receipt)
+```
+
+`CertCollision` must be an explicit `FramedXofCollision` at a named path. That form is
+`Tower256AdditiveFriRawController.accepts_ideal_or_receiptCollision`, and its probability is
+charged through `BindingGame.cert_and` with `εb := Pr[the reduction outputs a cSHAKE
+collision]` (`notes/binding-patch-verdict-2026-11-06.md`). **Do not** state it over
+`BindingCommitment`/`PositionBinding`: no compressing root inhabits those. **Do not**
+instantiate `SecureAt` for cSHAKE over an unrestricted code class.
+
+**Arithmetization the leaf should target.**
+- Trace over Tower256:
+  - a byte column, read as GF(2^8) ⊂ Tower256, i.e. `Coordinate 3` embedded;
+  - a state column, as `Coordinate k` with `2^(2^k)` at least the number of states;
+  - a position column.
+- Transition: one lookup per byte into the committed table `(state, byte) ↦ state'`.
+- Boundaries: `state₀ = q₀`, `accept(state_len) ↔ claim`, `len = recordLength`.
+- Content binding: the byte column's commitment must be the record's cSHAKE Merkle root itself,
+  or be tied to it by an in-circuit Keccak-f evaluation. This choice is the cost driver (§1): 31
+  Keccak-f per 4 KiB record in char 2.
+- The low-degree closing step uses the raw additive FRI. Its final polynomial is checked by
+  `Tower256FinalPolynomialCheck.finalCheck`, which is computable.
+
+**Available now:**
+- computable Tower256 `add`/`mul` on coordinates, proved equal to the field (`Theory/BinaryTowerCoordinateArith.lean`);
+- the computable final-polynomial check, with soundness and completeness;
+- `accepts_ideal_or_receiptCollision`;
+- the binding composition algebra (`Selvage/BindingGame.lean`);
+- RS mutual correlated agreement on the whole unique-decoding radius at error `n/q`, with no
+  `hPG` (`bridges/arklib-ud`).
+
+**Not yet available (do not mirror; wait or ask):**
+- step (b), the succinct statement over roots, which the `ContentCert` shape above anticipates;
+- step (c), the native prover work item;
+- a Lean AIR/zerocheck layer for Tower256 traces.
+
+The deputy's first deliverable can be the `ContentCert` relation plus `dfaRun` over
+`List UInt8`, with `tableDfa_faithful` reused from breadstuffs `Dregg2/Crypto/Deriv`. The
+arithmetization lands on (b).
