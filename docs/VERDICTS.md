@@ -1829,3 +1829,21 @@ function's openings run on shares.
 
 A crossing costs N-sized messages whatever the layer width. At d = 64 the FHE fork moves 8,192-coefficient
 ciphertexts to carry 64 values, and that is why the MPC fork wins bandwidth at small d.
+
+**Two large-t BFV encoding fixes, landed with falsifiers (2026-11-06).**
+`research/dark_learning_2026_11_06/encoding_regressions.py`, at N = 8192 with log Q = 183, a 61-bit t
+and Q mod t a 58-bit value. Each broken encoding FAILS after one ct×ct and its fix PASSES; any other
+outcome exits 1.
+- **F1. Textbook Δ·m with a NON-centered representative breaks ct×ct.** A negative message stored as
+  t − |m| leaves an error (Q mod t)(t − |m|)/t ≈ 2^57, which the product multiplies past the margin. Fix:
+  centered representative (`bfv_ref.BFV.encrypt`).
+- **F2. Δ·(m + kt) breaks ct×ct.** This is the integer that additive shares or a mask pair reconstruct to
+  before reduction mod t. Fix: exact scaling round(Q(m + kt)/t) = round(Qm/t) + kQ
+  (`bfv_ref.BFV.encrypt_exact`). The v2 crossings use it for every mask ciphertext.
+
+**Scope.**
+- Neither failure is visible on a fresh ciphertext: decryption is correct in all four cases.
+- At N = 1024 with the same primes (Q mod t ≈ 2^49), both broken encodings survive one product. So the
+  falsifier needs the deployed N, and a test at toy parameters would have passed.
+- Any design whose plaintext modulus is a large prime shared with an MPC field needs both fixes. Our
+  deployed t ≈ 2^20 makes both errors small, but not zero.

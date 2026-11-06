@@ -1,0 +1,8 @@
+N = 8192, log Q = 183, t = 61-bit, Q mod t = 58-bit
+  F1 textbook, non-centered representative      fresh decrypts: True  after ct x ct: False  (expected False)  ok
+  F1 fix: textbook, centered representative     fresh decrypts: True  after ct x ct: True  (expected True)  ok
+  F2 textbook Delta (m + k t)                   fresh decrypts: True  after ct x ct: False  (expected False)  ok
+  F2 fix: exact round(Q (m + k t) / t)          fresh decrypts: True  after ct x ct: True  (expected True)  ok
+  bfv_ref.encrypt (centered)                    after ct x ct: True  ok
+  bfv_ref.encrypt_exact on shares sum           after ct x ct: True  ok
+ENCODING REGRESSIONS PASS

@@ -398,7 +398,7 @@ The variants:
      inside ciphertexts and opens only vectors, plus the d² update in (a).
    - The crossover is at d ≈ 1024 for (a), and between 256 and 1024 for (b).
 2. **There is NO flip in committed bits.** FHE stays ×17 to ×40 above MPC at every width. At d = 4096,
-   (a) commits 661 Gbit per step, 99% of it ct×ct certificates (6,144 × 108 Mbit), against MPC's 31.5
+   (a) commits 661 Gbit per step, 88% of it ct×ct certificates (6,144 × 94.7 Mbit), against MPC's 31.5
    Gbit of views. The certificate is the FHE fork's bill at every scale. Halving it means halving the
    per-product certificate (§1's design space), not changing the layout.
 3. **Preprocessing.** MPC (5.2×10^8 elements) and FHE (a) (6.3×10^8) are comparable. FHE (b) is ×14
