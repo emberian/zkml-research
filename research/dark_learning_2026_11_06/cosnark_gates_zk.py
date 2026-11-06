@@ -349,8 +349,8 @@ def counts_formula(d, n=3, k=None, t=None, T=None, **gate_shifts):
     groups = lh + 1 + Lmax + 1
     lin = len(ev) * CS.T_COLS + (lh + 3) + 1 + len(lens) * (Lmax + 1)
     npts = 4 * (k + t)
-    lgL = (npts - 1).bit_length()
-    lgp = lambda kk: (CS.BLOW * W[kk] - 1).bit_length()
+    lgL = (npts - 1).bit_length() + 1                              # + the leaf salt
+    lgp = lambda kk: (CS.BLOW * W[kk] - 1).bit_length() + 1
     pcs_fe = sum(n * W[kk] + n * CS.T_COLS * (R_[kk] + CS.NMASK) + CS.T_COLS for kk in lens)
     pcs_h = sum(n * CS.T_COLS * lgp(kk) + n for kk in lens)
     lig_fe = (k + t) + (2 * k + t - 1) + (2 * (k + t) - 1) + n * T * (rows + 3)

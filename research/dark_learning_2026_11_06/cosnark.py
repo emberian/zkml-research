@@ -37,7 +37,19 @@ import math
 import spdz
 
 BLOW = 4          # RS rate 1/4
-T_COLS = 97       # opened columns per commitment: (3/4)^97 = 2^-40.26 proximity error at rate 1/4 (gen 4; was 64, 2^-26.6)
+T_COLS = 309      # opened columns per commitment: (3/4)^309 = 2^-128.25 at rate 1/4 (the ledger profile; the demo profile
+                  # is 97, 2^-40.26, set by proofwire.set_profile("demo"); was 64 before gen 4)
+
+SALT_LEAVES = True   # every Merkle leaf is H("leaf", salt, column) with a secret 256-bit salt, opened with its column as
+                     # the first element of the path. False (leaf_salt_falsifier.py only) reproduces the unsalted leaves:
+                     # with hiding points = opened columns, an unopened sibling leaf let a verifier test a guess of a row.
+
+class Tree(list):
+    """Merkle levels, leaves first; .salts[j] is leaf j's salt."""
+
+def leaf_salts(n):
+    import secrets as _s
+    return [_s.token_hex(32) if SALT_LEAVES else "" for _ in range(n)]
 
 def H(*parts):
     m = hashlib.sha256()
@@ -139,16 +151,18 @@ class SharePCS:
         return out
 
     def merkle(self, E):
-        level = [H("leaf", [E[r][j] for r in range(len(E))]) for j in range(len(self.pts))]
+        salts = leaf_salts(len(self.pts))
+        level = [H("leaf", salts[j], [E[r][j] for r in range(len(E))]) for j in range(len(self.pts))]
         level += [H("pad", j) for j in range((1 << (len(level) - 1).bit_length()) - len(level))]
-        tree = [level]
+        tree = Tree([level])
+        tree.salts = salts
         while len(level) > 1:
             level = [H(level[i], level[i + 1]) for i in range(0, len(level), 2)]
             tree.append(level)
         return tree
 
     def open_col(self, i, j):
-        path, k = [], j
+        path, k = [self.trees[i].salts[j]], j
         for lvl in self.trees[i][:-1]:
             path.append(lvl[k ^ 1])
             k //= 2
@@ -267,9 +281,12 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
     return True, "accept"
 
 def verify_path(root, col, j, path):
-    h = H("leaf", col)
+    """path = [salt, sibling, sibling, ...]."""
+    if not path or not isinstance(path[0], str):
+        return False
+    h = H("leaf", path[0], col)
     k = j
-    for sib in path:
+    for sib in path[1:]:
         h = H(h, sib) if k % 2 == 0 else H(sib, h)
         k //= 2
     return h == root
@@ -504,7 +521,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None, carry=None, context=(
     u_elems = sum(n * com[k].W for k, _ in evals) + (n * nev if any(com[k].nmask for k in com) else 0)
     g_elems = sum(n * com[k].W for k in com)
     col_elems = sum(n * T_COLS * com[k].R for k in com)
-    hashes = sum(n * T_COLS * (len(com[k].trees[0]) - 1) for k in com)   # path length = levels - 1
+    hashes = sum(n * T_COLS * len(com[k].trees[0]) for k in com)   # path = salt + (levels - 1) siblings
     counts = dict(witness_elems=wit, codeword_elems_per_party=cw, merkle_leaves_per_party=sum(len(com[k].pts) for k in com),
                   commitments=len(com), pcs_evaluations=len(evals),
                   proof_field_elems=sc_elems + u_elems + g_elems + col_elems + n * len(com),
@@ -526,7 +543,7 @@ def counts_formula(d, n=3, t=T_COLS, hide=0, nmask=0):
     vec, mat = shape(ld), shape(2 * ld)
     coms = [vec] * 9 + [mat] * 4
     evals = [vec, vec, mat] * 3 + [vec] * 3 + [mat, mat, vec, vec] * 2
-    lg = lambda C: (BLOW * (C + hide) - 1).bit_length()
+    lg = lambda C: (BLOW * (C + hide) - 1).bit_length() + 1        # + the leaf salt
     sc = 3 * ld * 3 + ld * 4
     u = sum(n * (C + hide) for _, C in evals) + (n * len(evals) if nmask else 0)
     g = sum(n * (C + hide) for _, C in coms)

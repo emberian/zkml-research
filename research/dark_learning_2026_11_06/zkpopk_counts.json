@@ -10,53 +10,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 4787200,
+     "proof_bits": 4687872,
      "k": 1024,
-     "rows": 105,
-     "digits": 106691
+     "rows": 101,
+     "digits": 102658
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 4787200,
+     "proof_bits": 4687872,
      "k": 1024,
-     "rows": 105,
-     "digits": 106691
+     "rows": 101,
+     "digits": 102658
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 4787200,
+     "proof_bits": 4687872,
      "k": 1024,
-     "rows": 105,
-     "digits": 106691
+     "rows": 101,
+     "digits": 102658
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 4787200,
+     "proof_bits": 4687872,
      "k": 1024,
-     "rows": 105,
-     "digits": 106691
+     "rows": 101,
+     "digits": 102658
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 4787200,
+     "proof_bits": 4687872,
      "k": 1024,
-     "rows": 105,
-     "digits": 106691
+     "rows": 101,
+     "digits": 102658
     }
    ],
    "proofs": 15,
    "distinct_cts": 15,
    "deliveries": 30,
-   "posted_bits": 71808000,
-   "delivered_bits": 143616000,
+   "posted_bits": 70318080,
+   "delivered_bits": 140636160,
    "stern_delivered_bits": 7053415819440,
    "old_model_delivered_bits": 194876700
   },
@@ -64,11 +64,11 @@
    "proofs": 3,
    "cts_per_custodian": 11,
    "slots_per_custodian": 704,
-   "proof_bits": 13313280,
+   "proof_bits": 13064960,
    "k": 4096,
-   "digits": 1167824,
-   "posted_bits": 39939840,
-   "delivered_bits": 79879680,
+   "digits": 1124747,
+   "posted_bits": 39194880,
+   "delivered_bits": 78389760,
    "stern_bits": 7758757401384
   }
  },
@@ -83,53 +83,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 6048256,
+     "proof_bits": 5998592,
      "k": 2048,
-     "rows": 101,
-     "digits": 205153
+     "rows": 99,
+     "digits": 201120
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 6048256,
+     "proof_bits": 5998592,
      "k": 2048,
-     "rows": 101,
-     "digits": 205153
+     "rows": 99,
+     "digits": 201120
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 6048256,
+     "proof_bits": 5998592,
      "k": 2048,
-     "rows": 101,
-     "digits": 205153
+     "rows": 99,
+     "digits": 201120
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 6048256,
+     "proof_bits": 5998592,
      "k": 2048,
-     "rows": 101,
-     "digits": 205153
+     "rows": 99,
+     "digits": 201120
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 6048256,
+     "proof_bits": 5998592,
      "k": 2048,
-     "rows": 101,
-     "digits": 205153
+     "rows": 99,
+     "digits": 201120
     }
    ],
    "proofs": 15,
    "distinct_cts": 15,
    "deliveries": 30,
-   "posted_bits": 90723840,
-   "delivered_bits": 181447680,
+   "posted_bits": 89978880,
+   "delivered_bits": 179957760,
    "stern_delivered_bits": 7053415819440,
    "old_model_delivered_bits": 449726160
   }
@@ -145,53 +145,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 11326720,
+     "proof_bits": 10954240,
      "k": 4096,
-     "rows": 206,
-     "digits": 838227
+     "rows": 191,
+     "digits": 775630
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 11326720,
+     "proof_bits": 10954240,
      "k": 4096,
-     "rows": 206,
-     "digits": 838227
+     "rows": 191,
+     "digits": 775630
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 8,
      "slots": 128,
-     "proof_bits": 9340160,
+     "proof_bits": 8967680,
      "k": 4096,
-     "rows": 126,
-     "digits": 510544
+     "rows": 111,
+     "digits": 447947
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 11326720,
+     "proof_bits": 10954240,
      "k": 4096,
-     "rows": 206,
-     "digits": 838227
+     "rows": 191,
+     "digits": 775630
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 11326720,
+     "proof_bits": 10954240,
      "k": 4096,
-     "rows": 206,
-     "digits": 838227
+     "rows": 191,
+     "digits": 775630
     }
    ],
    "proofs": 15,
    "distinct_cts": 216,
    "deliveries": 432,
-   "posted_bits": 163941120,
-   "delivered_bits": 327882240,
+   "posted_bits": 158353920,
+   "delivered_bits": 316707840,
    "stern_delivered_bits": 101569187799936,
    "old_model_delivered_bits": 2806224480
   },
@@ -199,11 +199,11 @@
    "proofs": 3,
    "cts_per_custodian": 121,
    "slots_per_custodian": 11264,
-   "proof_bits": 42178048,
+   "proof_bits": 41135104,
    "k": 16384,
-   "digits": 13269597,
-   "posted_bits": 126534144,
-   "delivered_bits": 253068288,
+   "digits": 12582356,
+   "posted_bits": 123405312,
+   "delivered_bits": 246810624,
    "stern_bits": 85346331415224
   }
  },
@@ -218,53 +218,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 15647488,
+     "proof_bits": 15275008,
      "k": 4096,
-     "rows": 380,
-     "digits": 1551093
+     "rows": 365,
+     "digits": 1488496
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 15647488,
+     "proof_bits": 15275008,
      "k": 4096,
-     "rows": 380,
-     "digits": 1551093
+     "rows": 365,
+     "digits": 1488496
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 4,
      "slots": 256,
-     "proof_bits": 9687808,
+     "proof_bits": 9315328,
      "k": 4096,
-     "rows": 140,
-     "digits": 568045
+     "rows": 125,
+     "digits": 505448
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 15647488,
+     "proof_bits": 15275008,
      "k": 4096,
-     "rows": 380,
-     "digits": 1551093
+     "rows": 365,
+     "digits": 1488496
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 15647488,
+     "proof_bits": 15275008,
      "k": 4096,
-     "rows": 380,
-     "digits": 1551093
+     "rows": 365,
+     "digits": 1488496
     }
    ],
    "proofs": 15,
    "distinct_cts": 204,
    "deliveries": 408,
-   "posted_bits": 216833280,
-   "delivered_bits": 433666560,
+   "posted_bits": 211246080,
+   "delivered_bits": 422492160,
    "stern_delivered_bits": 95926455144384,
    "old_model_delivered_bits": 6116275776
   }
@@ -280,53 +280,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 21163520,
+     "proof_bits": 20418560,
      "k": 8192,
-     "rows": 389,
-     "digits": 3179099
+     "rows": 359,
+     "digits": 2929108
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 21163520,
+     "proof_bits": 20418560,
      "k": 8192,
-     "rows": 389,
-     "digits": 3179099
+     "rows": 359,
+     "digits": 2929108
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 32,
      "slots": 128,
-     "proof_bits": 17190400,
-     "k": 8192,
-     "rows": 229,
-     "digits": 1868376
+     "proof_bits": 16044800,
+     "k": 4096,
+     "rows": 396,
+     "digits": 1618385
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 21163520,
+     "proof_bits": 20418560,
      "k": 8192,
-     "rows": 389,
-     "digits": 3179099
+     "rows": 359,
+     "digits": 2929108
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 21163520,
+     "proof_bits": 20418560,
      "k": 8192,
-     "rows": 389,
-     "digits": 3179099
+     "rows": 359,
+     "digits": 2929108
     }
    ],
    "proofs": 15,
    "distinct_cts": 864,
    "deliveries": 1728,
-   "posted_bits": 305533440,
-   "delivered_bits": 611066880,
+   "posted_bits": 293157120,
+   "delivered_bits": 586314240,
    "stern_delivered_bits": 406276751199744,
    "old_model_delivered_bits": 11224897920
   },
@@ -334,11 +334,11 @@
    "proofs": 3,
    "cts_per_custodian": 481,
    "slots_per_custodian": 45056,
-   "proof_bits": 83089664,
+   "proof_bits": 81003776,
    "k": 32768,
-   "digits": 52781669,
-   "posted_bits": 249268992,
-   "delivered_bits": 498537984,
+   "digits": 50033114,
+   "posted_bits": 243011328,
+   "delivered_bits": 486022656,
    "stern_bits": 339269300915064
   }
  },
@@ -353,53 +353,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 29283584,
+     "proof_bits": 28538624,
      "k": 8192,
-     "rows": 716,
-     "digits": 5858047
+     "rows": 686,
+     "digits": 5608056
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 29283584,
+     "proof_bits": 28538624,
      "k": 8192,
-     "rows": 716,
-     "digits": 5858047
+     "rows": 686,
+     "digits": 5608056
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 16,
      "slots": 256,
-     "proof_bits": 17364224,
-     "k": 8192,
-     "rows": 236,
-     "digits": 1925879
+     "proof_bits": 16392448,
+     "k": 4096,
+     "rows": 410,
+     "digits": 1675888
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 29283584,
+     "proof_bits": 28538624,
      "k": 8192,
-     "rows": 716,
-     "digits": 5858047
+     "rows": 686,
+     "digits": 5608056
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 29283584,
+     "proof_bits": 28538624,
      "k": 8192,
-     "rows": 716,
-     "digits": 5858047
+     "rows": 686,
+     "digits": 5608056
     }
    ],
    "proofs": 15,
    "distinct_cts": 816,
    "deliveries": 1632,
-   "posted_bits": 403495680,
-   "delivered_bits": 806991360,
+   "posted_bits": 391640832,
+   "delivered_bits": 783281664,
    "stern_delivered_bits": 383705820577536,
    "old_model_delivered_bits": 24465103104
   }
@@ -415,53 +415,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 9740800,
+     "proof_bits": 9582592,
      "k": 2048,
-     "rows": 53,
-     "digits": 106691
+     "rows": 51,
+     "digits": 103558
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 9740800,
+     "proof_bits": 9582592,
      "k": 2048,
-     "rows": 53,
-     "digits": 106691
+     "rows": 51,
+     "digits": 103558
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 9740800,
+     "proof_bits": 9582592,
      "k": 2048,
-     "rows": 53,
-     "digits": 106691
+     "rows": 51,
+     "digits": 103558
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 9740800,
+     "proof_bits": 9582592,
      "k": 2048,
-     "rows": 53,
-     "digits": 106691
+     "rows": 51,
+     "digits": 103558
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 9740800,
+     "proof_bits": 9582592,
      "k": 2048,
-     "rows": 53,
-     "digits": 106691
+     "rows": 51,
+     "digits": 103558
     }
    ],
    "proofs": 15,
    "distinct_cts": 15,
    "deliveries": 30,
-   "posted_bits": 146112000,
-   "delivered_bits": 292224000,
+   "posted_bits": 143738880,
+   "delivered_bits": 287477760,
    "stern_delivered_bits": 7053415819440,
    "old_model_delivered_bits": 194876700
   },
@@ -469,11 +469,11 @@
    "proofs": 3,
    "cts_per_custodian": 11,
    "slots_per_custodian": 704,
-   "proof_bits": 25120000,
+   "proof_bits": 24724480,
    "k": 8192,
-   "digits": 1167824,
-   "posted_bits": 75360000,
-   "delivered_bits": 150720000,
+   "digits": 1125665,
+   "posted_bits": 74173440,
+   "delivered_bits": 148346880,
    "stern_bits": 7758757401384
   }
  },
@@ -488,53 +488,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 12362240,
+     "proof_bits": 12283136,
      "k": 4096,
-     "rows": 51,
-     "digits": 205153
+     "rows": 50,
+     "digits": 202336
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 12362240,
+     "proof_bits": 12283136,
      "k": 4096,
-     "rows": 51,
-     "digits": 205153
+     "rows": 50,
+     "digits": 202336
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 12362240,
+     "proof_bits": 12283136,
      "k": 4096,
-     "rows": 51,
-     "digits": 205153
+     "rows": 50,
+     "digits": 202336
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 12362240,
+     "proof_bits": 12283136,
      "k": 4096,
-     "rows": 51,
-     "digits": 205153
+     "rows": 50,
+     "digits": 202336
     },
     {
      "call": "outer",
      "cts_per_sender": 1,
      "slots": 64,
-     "proof_bits": 12362240,
+     "proof_bits": 12283136,
      "k": 4096,
-     "rows": 51,
-     "digits": 205153
+     "rows": 50,
+     "digits": 202336
     }
    ],
    "proofs": 15,
    "distinct_cts": 15,
    "deliveries": 30,
-   "posted_bits": 185433600,
-   "delivered_bits": 370867200,
+   "posted_bits": 184247040,
+   "delivered_bits": 368494080,
    "stern_delivered_bits": 7053415819440,
    "old_model_delivered_bits": 449726160
   }
@@ -550,53 +550,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 21955840,
+     "proof_bits": 21323008,
      "k": 8192,
-     "rows": 104,
-     "digits": 838227
+     "rows": 96,
+     "digits": 776554
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 21955840,
+     "proof_bits": 21323008,
      "k": 8192,
-     "rows": 104,
-     "digits": 838227
+     "rows": 96,
+     "digits": 776554
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 8,
      "slots": 128,
-     "proof_bits": 18295040,
+     "proof_bits": 17108480,
      "k": 4096,
-     "rows": 126,
-     "digits": 510544
+     "rows": 111,
+     "digits": 448865
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 21955840,
+     "proof_bits": 21323008,
      "k": 8192,
-     "rows": 104,
-     "digits": 838227
+     "rows": 96,
+     "digits": 776554
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 21955840,
+     "proof_bits": 21323008,
      "k": 8192,
-     "rows": 104,
-     "digits": 838227
+     "rows": 96,
+     "digits": 776554
     }
    ],
    "proofs": 15,
    "distinct_cts": 216,
    "deliveries": 432,
-   "posted_bits": 318355200,
-   "delivered_bits": 636710400,
+   "posted_bits": 307201536,
+   "delivered_bits": 614403072,
    "stern_delivered_bits": 101569187799936,
    "old_model_delivered_bits": 2806224480
   },
@@ -604,11 +604,11 @@
    "proofs": 3,
    "cts_per_custodian": 121,
    "slots_per_custodian": 11264,
-   "proof_bits": 77618944,
+   "proof_bits": 75957760,
    "k": 32768,
-   "digits": 13269597,
-   "posted_bits": 232856832,
-   "delivered_bits": 465713664,
+   "digits": 12583292,
+   "posted_bits": 227873280,
+   "delivered_bits": 455746560,
    "stern_bits": 85346331415224
   }
  },
@@ -623,53 +623,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 28837888,
+     "proof_bits": 28205056,
      "k": 8192,
-     "rows": 191,
-     "digits": 1551093
+     "rows": 183,
+     "digits": 1489744
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 28837888,
+     "proof_bits": 28205056,
      "k": 8192,
-     "rows": 191,
-     "digits": 1551093
+     "rows": 183,
+     "digits": 1489744
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 4,
      "slots": 256,
-     "proof_bits": 19345408,
-     "k": 8192,
-     "rows": 71,
-     "digits": 568045
+     "proof_bits": 18215936,
+     "k": 4096,
+     "rows": 125,
+     "digits": 506680
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 28837888,
+     "proof_bits": 28205056,
      "k": 8192,
-     "rows": 191,
-     "digits": 1551093
+     "rows": 183,
+     "digits": 1489744
     },
     {
      "call": "outer",
      "cts_per_sender": 16,
      "slots": 64,
-     "proof_bits": 28837888,
+     "proof_bits": 28205056,
      "k": 8192,
-     "rows": 191,
-     "digits": 1551093
+     "rows": 183,
+     "digits": 1489744
     }
    ],
    "proofs": 15,
    "distinct_cts": 204,
    "deliveries": 408,
-   "posted_bits": 404090880,
-   "delivered_bits": 808181760,
+   "posted_bits": 393108480,
+   "delivered_bits": 786216960,
    "stern_delivered_bits": 95926455144384,
    "old_model_delivered_bits": 6116275776
   }
@@ -685,53 +685,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 39798272,
+     "proof_bits": 38611712,
      "k": 16384,
-     "rows": 195,
-     "digits": 3179099
+     "rows": 180,
+     "digits": 2930044
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 39798272,
+     "proof_bits": 38611712,
      "k": 16384,
-     "rows": 195,
-     "digits": 3179099
+     "rows": 180,
+     "digits": 2930044
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 32,
      "slots": 128,
-     "proof_bits": 31843840,
+     "proof_bits": 29470720,
      "k": 8192,
-     "rows": 229,
-     "digits": 1868376
+     "rows": 199,
+     "digits": 1619315
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 39798272,
+     "proof_bits": 38611712,
      "k": 16384,
-     "rows": 195,
-     "digits": 3179099
+     "rows": 180,
+     "digits": 2930044
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 39798272,
+     "proof_bits": 38611712,
      "k": 16384,
-     "rows": 195,
-     "digits": 3179099
+     "rows": 180,
+     "digits": 2930044
     }
    ],
    "proofs": 15,
    "distinct_cts": 864,
    "deliveries": 1728,
-   "posted_bits": 573110784,
-   "delivered_bits": 1146221568,
+   "posted_bits": 551752704,
+   "delivered_bits": 1103505408,
    "stern_delivered_bits": 406276751199744,
    "old_model_delivered_bits": 11224897920
   },
@@ -739,11 +739,11 @@
    "proofs": 3,
    "cts_per_custodian": 481,
    "slots_per_custodian": 45056,
-   "proof_bits": 151440896,
+   "proof_bits": 148118528,
    "k": 65536,
-   "digits": 52781669,
-   "posted_bits": 454322688,
-   "delivered_bits": 908645376,
+   "digits": 50034062,
+   "posted_bits": 444355584,
+   "delivered_bits": 888711168,
    "stern_bits": 339269300915064
   }
  },
@@ -758,53 +758,53 @@
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 52771328,
+     "proof_bits": 51584768,
      "k": 16384,
-     "rows": 359,
-     "digits": 5858047
+     "rows": 344,
+     "digits": 5609320
     },
     {
      "call": "matvec-fwd",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 52771328,
+     "proof_bits": 51584768,
      "k": 16384,
-     "rows": 359,
-     "digits": 5858047
+     "rows": 344,
+     "digits": 5609320
     },
     {
      "call": "matvec-T",
      "cts_per_sender": 16,
      "slots": 256,
-     "proof_bits": 32397568,
+     "proof_bits": 30024448,
      "k": 8192,
-     "rows": 236,
-     "digits": 1925879
+     "rows": 206,
+     "digits": 1677136
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 52771328,
+     "proof_bits": 51584768,
      "k": 16384,
-     "rows": 359,
-     "digits": 5858047
+     "rows": 344,
+     "digits": 5609320
     },
     {
      "call": "outer",
      "cts_per_sender": 64,
      "slots": 64,
-     "proof_bits": 52771328,
+     "proof_bits": 51584768,
      "k": 16384,
-     "rows": 359,
-     "digits": 5858047
+     "rows": 344,
+     "digits": 5609320
     }
    ],
    "proofs": 15,
    "distinct_cts": 816,
    "deliveries": 1632,
-   "posted_bits": 730448640,
-   "delivered_bits": 1460897280,
+   "posted_bits": 709090560,
+   "delivered_bits": 1418181120,
    "stern_delivered_bits": 383705820577536,
    "old_model_delivered_bits": 24465103104
   }

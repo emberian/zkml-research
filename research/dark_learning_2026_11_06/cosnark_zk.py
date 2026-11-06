@@ -22,7 +22,7 @@ import cosnark as CS
 import cozk as Z
 from cosnark import Transcript, eqv, mle
 
-K_L, T_HIDE, T_OPEN = 64, 97, 97        # Ligero row width, hiding points (>= opened), opened columns (as the PCS: T_COLS)
+K_L, T_HIDE, T_OPEN = 64, 309, 309       # Ligero row width, hiding points (>= opened), opened columns (as the PCS: T_COLS)
 NPROD = 6
 
 class ZKPCS(CS.SharePCS):
@@ -409,11 +409,11 @@ def counts_formula(d, n=3, hide=None, nmask=None, k=None, t=None, T=None):
     coms = [vec] * 9 + [mat] * 4
     evals = [vec, vec, mat] * 3 + [vec] * 3 + [mat, mat, vec, vec] * 2
     W = lambda C: C + hide
-    lgp = lambda C: (CS.BLOW * W(C) - 1).bit_length()
+    lgp = lambda C: (CS.BLOW * W(C) - 1).bit_length() + 1       # + the leaf salt
     rows = 4 * ld + sum(-(-W(C) // k) for _, C in evals) + 3
     groups = 4 * ld + 1
     npts = 4 * (k + t)
-    lgL = (npts - 1).bit_length()
+    lgL = (npts - 1).bit_length() + 1
     lin = len(evals) * CS.T_COLS + 4 * (ld + 1) + 2 * NPROD + 2
     muls = 9 * (d - 1) + 4 * (d - 1)
     pcs_fe = sum(n * W(C) for _, C in coms) + sum(n * CS.T_COLS * (R + nmask) for R, _ in coms)

@@ -26,7 +26,7 @@ f_x f_y = C + E B + F A + E F locally. Integrity of the product needs no MAC: th
 """
 import random
 
-from cosnark import H, Transcript, distinct_cols, verify_path
+from cosnark import H, Transcript, Tree, distinct_cols, leaf_salts, verify_path
 
 def pmul(a, b, p):
     out = [0] * (len(a) + len(b) - 1)
@@ -102,16 +102,18 @@ class Params:
         return [peval(poly, x, self.p) for x in range(1, self.npts + 1)]
 
 def merkle(cols):
-    level = [H("leaf", c) for c in cols]
+    salts = leaf_salts(len(cols))
+    level = [H("leaf", s, c) for s, c in zip(salts, cols)]
     level += [H("pad", j) for j in range((1 << (len(level) - 1).bit_length()) - len(level))]
-    tree = [level]
+    tree = Tree([level])
+    tree.salts = salts
     while len(level) > 1:
         level = [H(level[i], level[i + 1]) for i in range(0, len(level), 2)]
         tree.append(level)
     return tree
 
 def path(tree, j):
-    out, k = [], j
+    out, k = [tree.salts[j]], j
     for lvl in tree[:-1]:
         out.append(lvl[k ^ 1])
         k //= 2

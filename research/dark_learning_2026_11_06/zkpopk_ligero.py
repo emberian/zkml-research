@@ -7,33 +7,34 @@ to the sender's REGISTERED key.
 Relation, secret-key batch (the MPC fork's HE helpers). Public: registry (N, primes q_0..q_{L-1}, t, seed, b) with
 a = public_a(seed) (Astra scholar, unchanged); ciphertexts (c0_j, c1_j) in R_Q; per ciphertext a public slot set S_j
 (the layout: the plaintext may be nonzero only there); the context. Private: s in {-1,0,1}^N, e_pk in [-8,8]^N, and
-per ciphertext e_j in [-8,8]^N, m_j in [0,t)^{S_j}, r_j in [-(t-1)/2,(t-1)/2]^{S_j}, such that for every prime q_i
-and coefficient k
+per ciphertext e_j in [-8,8]^N and r_j in [-(t-1)/2,(t-1)/2]^{S_j}, such that for every prime q_i and
+coefficient k
     b + a s + e_pk                    = 0                 (mod q_i)     the registered key
     t (c0_j + c1_j s + e_j) - r_j     = 0                 (mod q_i)     r_j = 0 off the slots
-    (Q mod t) m_j + r_j               = 0                 (mod t)       at the slots
-These say: c0_j + c1_j s = round(Q m_j / t) - e_j (mod Q), exact scaling, |e_j| <= 8, m_j zero off the layout, and
-the same integer s in every limb and in the key. (u_j = (Q m_j + r_j)/t is an integer by the third line and
-t u_j = t(phase + e_j) mod Q by the second; |r_j| <= (t-1)/2 makes u_j = round(Q m_j / t).)
+These say: c0_j + c1_j s = round(Q m_j / t) - e_j (mod Q) with m_j = -r_j Q^-1 mod t (exact scaling: Q is invertible
+mod t, so t | Q m_j + r_j, u_j = (Q m_j + r_j)/t = round(Q m_j / t) since |r_j| <= (t-1)/2, and t u_j = r_j =
+t (phase + e_j) mod Q), |e_j| <= 8, m_j zero off the layout, and the same integer s in every limb and in the key.
+(The scholar's form also committed m_j and a mod-t equation; both are implied, and gen 4 dropped them.)
 
 Public-key batch (FHE (b)'s mask ciphertexts, under the joint key (b, a)): per ciphertext u in {-1,0,1}^N,
-e0, e1 in [-8,8]^N, m, r at the slots, with t (c0 - b u - e0) - r = 0 and c1 - a u - e1 = 0 (mod q_i), and the
-same mod-t line.
+e0, e1 in [-8,8]^N, r at the slots, with t (c0 - b u - e0) - r = 0 and c1 - a u - e1 = 0 (mod q_i). It bounds the
+encryption randomness; the phase bound is the scholar's public-key envelope.
 
 Proof. Every private integer is a sum of binary digits (top digit of adjusted weight, so [lo, hi] is covered
 exactly). The digits are rows of one interleaved Reed-Solomon code over F_P; the Ligero tests (proximity, linear,
-quadratic b^2 = b) run on them. Cross-limb: after the digits are committed, Fiat-Shamir draws per prime q_i
-weights rho in [0, q_i) for every coefficient equation; the prover then commits integer quotients K_i, K_t with
-    sum rho * LHS_i = q_i K_i,   sum rho_t * LHS_t = t K_t     over Z,
-both sides bounded below P/2 (checked; a statement that does not fit is refused), K range-proved. A coefficient equation that fails mod q_i survives the
-fold with probability 1/q_i. Order: statement -> digit rows and all masks (root 1) -> rho -> quotient rows
+quadratic b^2 = b) run on them. Cross-limb: after the digits are committed, Fiat-Shamir draws, for each of F folds
+and each prime q_i, weights rho in [0, q_i) for every coefficient equation; the prover then commits integer
+quotients with sum rho * LHS_i = q_i K_{f,i} over Z, with |LHS - q K| <= 2B + q < P checked (a statement
+that does not fit is refused), K range-proved. A coefficient equation that fails mod q_i survives one fold with probability
+1/q_i < 2^-60 and F folds with 2^-60F; F = folds_for(T) keeps pace with the column test (3 at T = 309, 1 at 97),
+because a prover can regrind root 1 against the fold as against the columns. Order: statement -> digit rows and all masks (root 1) -> rho -> quotient rows
 (root 2) -> gamma, lambda, gamma' -> messages w, q, p -> T distinct columns. Every challenge follows the
 commitments it must follow; `legacy=True` reproduces the hole (challenges from the statement only) for the
 falsifier and is never used by a recipient.
 
 Soundness, stated plainly [INFERRED, standard Ligero analysis as used in cozk.py]: column test about
-(1 - delta)^T with delta = (1 - rate)/3 >= 1/4 here, so T = 97 gives <= 2^-40.26 (statistical; Fiat-Shamir
-grinding of 2^g tries gives about 2^(g-40)); T = 309 for 2^-128. Fold: 2^-60.9. Field terms: rows/P, < 2^-200.
+(1 - delta)^T with delta = (1 - rate)/3 >= 1/4 here: the default T = 309 gives <= 2^-128.25 (the ledger
+profile); T = 97 gives 2^-40.26, statistical only (demo profile; Fiat-Shamir grinding of 2^g tries gives 2^(g-40)). Fold: 2^-60 per fold. Field terms: rows/P, < 2^-200.
 Zero knowledge [INFERRED]: each row has th >= T random coefficients times (X^k - 1), so T openings are uniform;
 w, q, p are masked by fresh polynomials committed in root 1; leaves are salted. No QROM proof is claimed.
 """
@@ -264,6 +265,8 @@ class KeyRegistry:
                         for q in self.primes)
                 and type(t) is int and MIN_MODULUS < t < MAX_MODULUS and t % 2 == 1 and bfv.is_probable_prime(t)
                 and t not in self.primes
+                and self.Q > 17 * t        # decryption margin: |e| + 1/2 <= 8.5 < Q/(2t) (Codex review: one limb with
+                                           # Q ~ t accepted a proof whose decryption left the layout)
                 and len(self.b) == N and all(type(x) is int and 0 <= x < Q for x in self.b))
 
     def public(self):
@@ -316,14 +319,14 @@ def encrypt_pk(reg, m, slots, rng, e0=None):
 
 class Statement:
     def __init__(self, reg, kind, cts, slots, context):
-        if kind not in ("sk", "pk"):
+        if kind not in ("sk", "pk", "key"):
             raise ValueError("kind")
         self.reg, self.kind, self.context = reg, kind, context
         N, Q = reg.N, reg.Q
         self.cts = [tuple(tuple(c) for c in ct) for ct in cts]
         self.slots = [tuple(S) for S in slots]
-        if not self.cts or len(self.slots) != len(self.cts):
-            raise ValueError("batch shape")
+        if (kind == "key") != (not self.cts) or len(self.slots) != len(self.cts):
+            raise ValueError("batch shape")         # a key statement has no ciphertexts; a batch has at least one
         for (c0, c1), S in zip(self.cts, self.slots):
             if len(c0) != N or len(c1) != N:
                 raise ValueError("ciphertext shape")
@@ -359,46 +362,49 @@ def digits(z, U):
     return [(z >> j) & 1 for j in range(len(ws) - 1)] + [top]
 
 
+def folds_for(T):
+    """Independent per-prime folds so that the fold keeps pace with the column test: each fold errs with 1/q_i < 2^-60,
+    and a prover can regrind root 1, so the ledger profile (T = 309, 128 bits) needs 3 folds, the demo profile 1."""
+    bits = T * math.log2(4 / 3)
+    return max(1, math.ceil(bits / 60))
+
+
 def quotient_bounds(st):
-    """|F_i| <= B_i and |F_t| <= B_t for any in-range witness and any rho; K_i in [-(B_i // q_i + 1), +]."""
+    """|F_i| <= B_i for any in-range witness and any rho; K in [-(B_i // q_i + 1), +]."""
     reg = st.reg
     N, t, M = reg.N, reg.t, len(st.cts)
-    S = sum(len(x) for x in st.slots)
     out = []
     for q in reg.primes:
         ring = (q - 1) * (N + 1) + 8
         ct0 = t * ring + (t - 1) // 2
-        if st.kind == "sk":
+        if st.kind in ("sk", "key"):
             B = (q - 1) * N * (ring + M * ct0)
         else:
             B = (q - 1) * N * M * (ct0 + ring)
-        out.append(B)
-    Bt = (t - 1) * S * ((t - 1) * (t - 1) + (t - 1) // 2)
-    for B, q in zip(out, list(reg.primes)):
         if not 2 * B + q < P:
             raise ValueError("field too small for this batch: the folded limb equation could wrap modulo P")
-    if not 2 * Bt + t < P:
-        raise ValueError("field too small for this batch: the mod-t equation could wrap modulo P")
-    return out, Bt
+        out.append(B)
+    return out
 
 
-def layout(st):
-    """Round-1 groups (name, length, lo, hi) in wire order, and round-2 (quotients)."""
+def layout(st, F=1):
+    """Round-1 groups (name, length, lo, hi) in wire order, and round-2 (quotients, one per fold and prime).
+    No plaintext digits: with Q invertible mod t, any r with |r| <= (t-1)/2 has the unique m = -r Q^-1 mod t, and
+    t | Q m + r, so u = (Q m + r)/t = round(Q m / t) and t (phase + e) = r (mod Q) says phase + e = u (mod Q).
+    (Gen 4 dropped the mod-t row and the m digits; the independent review showed them redundant.)"""
     reg = st.reg
     N, t = reg.N, reg.t
     E, R = (-8, 8), (-((t - 1) // 2), (t - 1) // 2)
     g1 = []
-    if st.kind == "sk":
+    if st.kind in ("sk", "key"):
         g1 += [("s", N, -1, 1), ("e_pk", N, -8, 8)]
         for j, S in enumerate(st.slots):
-            g1 += [(f"e{j}", N) + E, (f"m{j}", len(S), 0, t - 1), (f"r{j}", len(S)) + R]
+            g1 += [(f"e{j}", N) + E, (f"r{j}", len(S)) + R]
     else:
         for j, S in enumerate(st.slots):
-            g1 += [(f"u{j}", N, -1, 1), (f"e0_{j}", N) + E, (f"e1_{j}", N) + E,
-                   (f"m{j}", len(S), 0, t - 1), (f"r{j}", len(S)) + R]
-    Bs, Bt = quotient_bounds(st)
-    g2 = [(f"K{i}", 1, -(B // q + 1), B // q + 1) for i, (B, q) in enumerate(zip(Bs, reg.primes))]
-    g2 += [("Kt", 1, -(Bt // t + 1), Bt // t + 1)]
+            g1 += [(f"u{j}", N, -1, 1), (f"e0_{j}", N) + E, (f"e1_{j}", N) + E, (f"r{j}", len(S)) + R]
+    Bs = quotient_bounds(st)
+    g2 = [(f"K{f}_{i}", 1, -(B // q + 1), B // q + 1) for f in range(F) for i, (B, q) in enumerate(zip(Bs, reg.primes))]
     return g1, g2
 
 
@@ -411,73 +417,66 @@ def adj(c):
     return [c[0]] + [-x for x in reversed(c[1:])]
 
 
-def draw_rho(tr, st):
+def draw_rho(tr, st, F=1):
     reg = st.reg
-    N, t = reg.N, reg.t
+    N = reg.N
     rho = {}
-    for i, q in enumerate(reg.primes):
-        if st.kind == "sk":
-            rho[("key", i)] = tr.ints(f"rho-key-{i}", N, q)
-            for j in range(len(st.cts)):
-                rho[(j, i)] = tr.ints(f"rho-ct-{j}-{i}", N, q)
-        else:
-            for j in range(len(st.cts)):
-                rho[(j, i, 0)] = tr.ints(f"rho-ct-{j}-{i}-0", N, q)
-                rho[(j, i, 1)] = tr.ints(f"rho-ct-{j}-{i}-1", N, q)
-    for j, S in enumerate(st.slots):
-        rho[(j, "t")] = tr.ints(f"rho-t-{j}", len(S), t)
+    for f in range(F):
+        for i, q in enumerate(reg.primes):
+            if st.kind in ("sk", "key"):
+                rho[(f, "key", i)] = tr.ints(f"rho-{f}-key-{i}", N, q)
+                for j in range(len(st.cts)):
+                    rho[(f, j, i)] = tr.ints(f"rho-{f}-ct-{j}-{i}", N, q)
+            else:
+                for j in range(len(st.cts)):
+                    rho[(f, j, i, 0)] = tr.ints(f"rho-{f}-ct-{j}-{i}-0", N, q)
+                    rho[(f, j, i, 1)] = tr.ints(f"rho-{f}-ct-{j}-{i}-1", N, q)
     return rho
 
 
-def linear_system(st, rho):
-    """Constraints c = 0..L: coefficient vectors per group (exact integers) and a constant, with
-    sum_g <coef_g, value_g> + const = 0 over Z for an honest witness."""
+def linear_system(st, rho, F=1):
+    """One constraint per (fold, prime): coefficient vectors per group (exact integers), a constant, the modulus and
+    the quotient's name, with sum_g <coef_g, value_g> + const - q K = 0 over Z for an honest witness."""
     reg = st.reg
-    N, t, L = reg.N, reg.t, len(reg.primes)
-    Qt = reg.Q % t
+    t = reg.t
     cons = []
-    for i, q in enumerate(reg.primes):
-        co, const = {}, 0
+    for f in range(F):
+        for i, q in enumerate(reg.primes):
+            co, const = {}, 0
 
-        def addv(name, vec):
-            co[name] = [x + y for x, y in zip(co[name], vec)] if name in co else list(vec)
+            def addv(name, vec):
+                co[name] = [x + y for x, y in zip(co[name], vec)] if name in co else list(vec)
 
-        if st.kind == "sk":
-            rk = rho[("key", i)]
-            ai = [x % q for x in reg.a]
-            sco, _ = bfv.negacyclic_mul(adj(ai), rk)
-            const += sum(r * (x % q) for r, x in zip(rk, reg.b))
-            addv("e_pk", rk)
-            for j, ((c0, c1), S) in enumerate(zip(st.cts, st.slots)):
-                rc = rho[(j, i)]
-                p1, _ = bfv.negacyclic_mul(adj([x % q for x in c1]), rc)
-                sco = [x + t * y for x, y in zip(sco, p1)]
-                const += t * sum(r * (x % q) for r, x in zip(rc, c0))
-                addv(f"e{j}", [t * r for r in rc])
-                addv(f"r{j}", [-rc[k] for k in S])
-            co["s"] = sco
-        else:
-            bi = adj([x % q for x in reg.b])
-            ai = adj([x % q for x in reg.a])
-            for j, ((c0, c1), S) in enumerate(zip(st.cts, st.slots)):
-                r0, r1 = rho[(j, i, 0)], rho[(j, i, 1)]
-                p0, _ = bfv.negacyclic_mul(bi, r0)
-                p1, _ = bfv.negacyclic_mul(ai, r1)
-                co[f"u{j}"] = [-t * x - y for x, y in zip(p0, p1)]
-                co[f"e0_{j}"] = [-t * r for r in r0]
-                co[f"e1_{j}"] = [-r for r in r1]
-                co[f"r{j}"] = [-r0[k] for k in S]
-                const += t * sum(r * (x % q) for r, x in zip(r0, c0)) + sum(r * (x % q) for r, x in zip(r1, c1))
-        co[f"K{i}"] = [-q]
-        cons.append((co, const))
-    co = {}
-    for j in range(len(st.cts)):
-        rt = rho[(j, "t")]
-        co[f"m{j}"] = [r * Qt for r in rt]
-        co[f"r{j}"] = list(rt)
-    co["Kt"] = [-t]
-    cons.append((co, 0))
-    if len(cons) != L + 1:
+            if st.kind in ("sk", "key"):
+                rk = rho[(f, "key", i)]
+                ai = [x % q for x in reg.a]
+                sco, _ = bfv.negacyclic_mul(adj(ai), rk)
+                const += sum(r * (x % q) for r, x in zip(rk, reg.b))
+                addv("e_pk", rk)
+                for j, ((c0, c1), S) in enumerate(zip(st.cts, st.slots)):
+                    rc = rho[(f, j, i)]
+                    p1, _ = bfv.negacyclic_mul(adj([x % q for x in c1]), rc)
+                    sco = [x + t * y for x, y in zip(sco, p1)]
+                    const += t * sum(r * (x % q) for r, x in zip(rc, c0))
+                    addv(f"e{j}", [t * r for r in rc])
+                    addv(f"r{j}", [-rc[k] for k in S])
+                co["s"] = sco
+            else:
+                bi = adj([x % q for x in reg.b])
+                ai = adj([x % q for x in reg.a])
+                for j, ((c0, c1), S) in enumerate(zip(st.cts, st.slots)):
+                    r0, r1 = rho[(f, j, i, 0)], rho[(f, j, i, 1)]
+                    p0, _ = bfv.negacyclic_mul(bi, r0)
+                    p1, _ = bfv.negacyclic_mul(ai, r1)
+                    co[f"u{j}"] = [-t * x - y for x, y in zip(p0, p1)]
+                    co[f"e0_{j}"] = [-t * r for r in r0]
+                    co[f"e1_{j}"] = [-r for r in r1]
+                    co[f"r{j}"] = [-r0[k] for k in S]
+                    const += t * sum(r * (x % q) for r, x in zip(r0, c0)) + sum(r * (x % q) for r, x in zip(r1, c1))
+            kn = f"K{f}_{i}"
+            co[kn] = [-q]
+            cons.append((co, const, q, kn))
+    if len(cons) != F * len(reg.primes):
         raise ValueError("constraint count")
     return cons
 
@@ -485,12 +484,12 @@ def linear_system(st, rho):
 def alpha_beta(groups, cons, lam):
     """alpha over the flat digit vector (rows 1 then rows 2) and beta with <alpha, digits> = beta."""
     alpha, beta = [], 0
-    for c, (co, const) in zip(lam, cons):
+    for c, (co, const, _, _) in zip(lam, cons):
         beta -= c * const
     for name, n, lo, hi in groups:
         ws = weights(hi - lo)
         comb = [0] * n
-        for c, (co, _) in zip(lam, cons):
+        for c, (co, _, _, _) in zip(lam, cons):
             if name in co:
                 v = co[name]
                 comb = [(x + c * y) % P for x, y in zip(comb, v)]
@@ -525,9 +524,10 @@ def proof_bytes(k, th, T, m1, m2):
     return EB * (2 + msgs + T * per_col)
 
 
-def shape(st, T=97, th=None):
+def shape(st, T=309, th=None):
     th = th or T
-    g1, g2 = layout(st)
+    F = folds_for(T)
+    g1, g2 = layout(st, F)
     n1, n2 = nbits(g1), nbits(g2)
     best = None
     for lk in range(4, 20):
@@ -537,7 +537,7 @@ def shape(st, T=97, th=None):
         if best is None or b < best[0]:
             best = (b, k, m1, m2)
     _, k, m1, m2 = best
-    return dict(k=k, th=th, T=T, m1=m1, m2=m2, n1=n1, n2=n2, g1=g1, g2=g2)
+    return dict(k=k, th=th, T=T, F=F, m1=m1, m2=m2, n1=n1, n2=n2, g1=g1, g2=g2)
 
 
 # ------------------------------------------------------------------------------------------- Merkle
@@ -576,7 +576,7 @@ def _rows(bits, k, m):
     return [bits[r * k:(r + 1) * k] for r in range(m)]
 
 
-def prove(st, wit, context_check=None, T=97, rng=None, legacy=False, cheat=None):
+def prove(st, wit, context_check=None, T=309, rng=None, legacy=False, cheat=None):
     """wit: sk: dict(s, e_pk, cts=[dict(e, m, r)]) ; pk: dict(cts=[dict(u, e0, e1, m, r)]).
     cheat (falsifiers only): dict(digits1=..., K=...) overrides, skipping the prover's own checks."""
     rng = secrets.SystemRandom()          # hiding randomness, masks and salts: never the caller's (seedable) rng
@@ -585,14 +585,14 @@ def prove(st, wit, context_check=None, T=97, rng=None, legacy=False, cheat=None)
     code = Code(k, th)
     nD = code.nD
     vals = {}
-    if st.kind == "sk":
+    if st.kind in ("sk", "key"):
         vals["s"], vals["e_pk"] = wit["s"], wit["e_pk"]
-        for j, w in enumerate(wit["cts"]):
-            vals[f"e{j}"], vals[f"m{j}"], vals[f"r{j}"] = w["e"], w["m"], w["r"]
+        for j, w in enumerate(wit.get("cts", [])):
+            vals[f"e{j}"], vals[f"r{j}"] = w["e"], w["r"]
     else:
         for j, w in enumerate(wit["cts"]):
             vals[f"u{j}"], vals[f"e0_{j}"], vals[f"e1_{j}"] = w["u"], w["e0"], w["e1"]
-            vals[f"m{j}"], vals[f"r{j}"] = w["m"], w["r"]
+            vals[f"r{j}"] = w["r"]
     if cheat and "values1" in cheat:
         vals.update(cheat["values1"])
     d1 = (cheat or {}).get("digits1") or values_to_digits(sh["g1"], vals, raw=bool(cheat and cheat.get("raw")))
@@ -612,17 +612,15 @@ def prove(st, wit, context_check=None, T=97, rng=None, legacy=False, cheat=None)
     salts1 = [secrets.token_bytes(32) for _ in range(nD)]
     T1 = merkle([colbytes(E1, j) for j in range(nD)], salts1)
     tr.absorb("root1", T1[-1][0])
-    rho = draw_rho(tr, st)
-    cons = linear_system(st, rho)
+    rho = draw_rho(tr, st, sh["F"])
+    cons = linear_system(st, rho, sh["F"])
     # round 2: quotients
     Ks = {}
-    for i, (co, const) in enumerate(cons):
+    for co, const, mod, kn in cons:
         tot = const + sum(sum(a * b for a, b in zip(co[nm], vals[nm])) for nm in co if not nm.startswith("K"))
-        mod = st.reg.primes[i] if i < len(st.reg.primes) else st.reg.t
-        Kn = f"K{i}" if i < len(st.reg.primes) else "Kt"
         if tot % mod and not cheat:
-            raise ValueError(f"witness does not satisfy constraint {Kn}")
-        Ks[Kn] = [tot // mod]
+            raise ValueError(f"witness does not satisfy constraint {kn}")
+        Ks[kn] = [tot // mod]
     if cheat and "K" in cheat:
         Ks.update(cheat["K"])
     d2 = (cheat or {}).get("digits2") or values_to_digits(sh["g2"], Ks, raw=bool(cheat and cheat.get("raw")))
@@ -669,7 +667,7 @@ def prove(st, wit, context_check=None, T=97, rng=None, legacy=False, cheat=None)
 
 
 # ------------------------------------------------------------------------------------------- verifier
-def verify(st, blob, T=97, legacy=False):
+def verify(st, blob, T=309, legacy=False):
     """Untrusted bytes against a statement the recipient built from its OWN expected context and the pinned
     registry. Returns (ok, reason)."""
     try:
@@ -709,8 +707,8 @@ def verify(st, blob, T=97, legacy=False):
         msg = blob[mstart:at]
         tr = Transcript(st.digest(), legacy)
         tr.absorb("root1", root1)
-        rho = draw_rho(tr, st)
-        cons = linear_system(st, rho)
+        rho = draw_rho(tr, st, sh["F"])
+        cons = linear_system(st, rho, sh["F"])
         tr.absorb("root2", root2)
         mrows = m1 + m2
         gam = tr.ints("gamma", mrows, P)
@@ -724,7 +722,7 @@ def verify(st, blob, T=97, legacy=False):
         arows = _rows(a1, k, m1) + _rows(a2, k, m2)
         # linear: sum over H of q = beta; quadratic: (X^k - 1) | p
         if k * sum(q[0::k]) % P != beta:
-            return False, "linear test: the folded limb and mod-t equations do not hold"
+            return False, "linear test: the folded limb equations do not hold"
         fold = [0] * k
         for i, x in enumerate(p):
             fold[i % k] = (fold[i % k] + x) % P
@@ -765,12 +763,12 @@ def verify(st, blob, T=97, legacy=False):
             if peval(p, x) != (mq_ + sum(g * (u * u - u) for g, u in zip(gq, U))) % P:
                 return False, "quadratic test (column)"
         return True, "accept"
-    except (ValueError, IndexError, TypeError, AssertionError, OverflowError, KeyError) as ex:
+    except (ValueError, IndexError, TypeError, AssertionError, OverflowError, KeyError, AttributeError) as ex:
         return False, f"malformed: {ex}"
 
 
 # ------------------------------------------------------------------------------------------- simulator / falsifier
-def simulate_legacy(st, T=97, rng=None):
+def simulate_legacy(st, T=309, rng=None):
     """Honest-verifier simulator run as an ATTACK: if every challenge is computable from the statement alone
     (legacy transcript), it fabricates an accepting proof for ANY statement, true or false, with no witness."""
     rng = rng or secrets.SystemRandom()
@@ -779,8 +777,8 @@ def simulate_legacy(st, T=97, rng=None):
     code = Code(k, th)
     nD = code.nD
     tr = Transcript(st.digest(), legacy=True)
-    rho = draw_rho(tr, st)
-    cons = linear_system(st, rho)
+    rho = draw_rho(tr, st, sh["F"])
+    cons = linear_system(st, rho, sh["F"])
     mrows = m1 + m2
     gam = tr.ints("gamma", mrows, P)
     lam = tr.ints("lambda", len(cons), P)
@@ -839,6 +837,6 @@ class ShapeOnly:
         self.cts = [None] * len(slot_sizes)
 
 
-def batch_proof_bits(kind, N, primes, t, slot_sizes, T=97):
+def batch_proof_bits(kind, N, primes, t, slot_sizes, T=309):
     sh = shape(ShapeOnly(kind, N, primes, t, slot_sizes), T)
     return 8 * proof_bytes(sh["k"], sh["th"], T, sh["m1"], sh["m2"]), sh
