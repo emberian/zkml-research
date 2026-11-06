@@ -56,7 +56,8 @@ ran it, [INFERRED] derived here, [CLAIM] someone's assertion we have not checked
    it is a statement to prove, not a hope.
 2. Governance critique W2 / repairs R2: "at 14 bits the FP4 point is probably dead" assumes no promotion. DeepSeek-V3
    promotes the tensor-core partial to FP32 CUDA-core registers every 128 elements; with an integer promotion the
-   exact block becomes N·64 < 2^31 for FP4 base 13, at roughly one SIMT op per field-element pair. The 14-bit
+   exact block becomes N·64 < 2^31 for FP4 base 13, at ~61 SIMT ops per BabyBear^8 element pair
+   (5,184 accumulators x 3 ops / 255; corrected after the Codex audit, see F3-MODEL.md). The 14-bit
    accumulator caps the promotion interval, not the design.
 3. The break-even ratio 5.06 is per SKU: B200 has FP4/INT8 = 2 (FP4 loses); B300 has FP4/INT8 = 100 (INT8 is gone).
    But when the kernel is HBM-bound neither ratio decides: the binding term is bytes, then the SIMT cost of limb
