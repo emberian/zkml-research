@@ -22,7 +22,7 @@ import cosnark as CS
 import cozk as Z
 from cosnark import Transcript, eqv, mle
 
-K_L, T_HIDE, T_OPEN = 64, 64, 64        # Ligero row width, hiding points, opened columns (as the PCS: T_COLS)
+K_L, T_HIDE, T_OPEN = 64, 97, 97        # Ligero row width, hiding points (>= opened), opened columns (as the PCS: T_COLS)
 NPROD = 6
 
 class ZKPCS(CS.SharePCS):
@@ -399,7 +399,9 @@ def measure(proof, n):
                 fe += len(col); hs += len(path)
     return dict(field_elems=fe, hashes=hs, indices=idx, bits=61 * fe + 256 * hs)
 
-def counts_formula(d, n=3, hide=None, nmask=None, k=K_L, t=T_HIDE, T=T_OPEN):
+def counts_formula(d, n=3, hide=None, nmask=None, k=None, t=None, T=None):
+    # read at call time: defaults bound at def time ignored a pinned T (proofwire.pin_params)
+    k, t, T = k or K_L, t or T_HIDE, T or T_OPEN
     hide = CS.HIDE if hide is None else hide
     nmask = CS.NMASK if nmask is None else nmask
     ld = d.bit_length() - 1

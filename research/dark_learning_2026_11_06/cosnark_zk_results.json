@@ -8,11 +8,11 @@
    "exact": true,
    "mismatches": [],
    "counts": {
-    "hidden_rows": 79,
-    "hidden_values": 5056,
-    "lin_constraints": 1314,
+    "hidden_rows": 99,
+    "hidden_values": 6336,
+    "lin_constraints": 1974,
     "products": 6,
-    "ligero_wire": 5052,
+    "ligero_wire": 6240,
     "ligero_beaver_scalar": 6,
     "ligero_poly_triples": 1,
     "spdz_wire": {
@@ -21,10 +21,10 @@
     },
     "spdz_openings": 390,
     "proof": {
-     "field_elems": 45802,
-     "hashes": 56157,
-     "indices": 832,
-     "bits": 17170114
+     "field_elems": 74920,
+     "hashes": 90303,
+     "indices": 1261,
+     "bits": 27687688
     }
    }
   },
@@ -36,11 +36,11 @@
    "exact": true,
    "mismatches": [],
    "counts": {
-    "hidden_rows": 83,
-    "hidden_values": 5312,
-    "lin_constraints": 1318,
+    "hidden_rows": 103,
+    "hidden_values": 6592,
+    "lin_constraints": 1978,
     "products": 6,
-    "ligero_wire": 5052,
+    "ligero_wire": 6240,
     "ligero_beaver_scalar": 6,
     "ligero_poly_triples": 1,
     "spdz_wire": {
@@ -49,10 +49,10 @@
     },
     "spdz_openings": 806,
     "proof": {
-     "field_elems": 59158,
-     "hashes": 63081,
-     "indices": 832,
-     "bits": 19757374
+     "field_elems": 95008,
+     "hashes": 101955,
+     "indices": 1261,
+     "bits": 31895968
     }
    }
   },
@@ -64,11 +64,11 @@
    "exact": true,
    "mismatches": [],
    "counts": {
-    "hidden_rows": 87,
-    "hidden_values": 5568,
-    "lin_constraints": 1322,
+    "hidden_rows": 114,
+    "hidden_values": 7296,
+    "lin_constraints": 1982,
     "products": 6,
-    "ligero_wire": 5052,
+    "ligero_wire": 6240,
     "ligero_beaver_scalar": 6,
     "ligero_poly_triples": 1,
     "spdz_wire": {
@@ -77,10 +77,10 @@
     },
     "spdz_openings": 1638,
     "proof": {
-     "field_elems": 91798,
-     "hashes": 70005,
-     "indices": 832,
-     "bits": 23520958
+     "field_elems": 146317,
+     "hashes": 114771,
+     "indices": 1261,
+     "bits": 38306713
     }
    }
   }
@@ -121,11 +121,11 @@
  },
  "d4096": {
   "zk_layers_1_2_3": {
-   "hidden_rows": 552,
-   "hidden_values": 35328,
-   "lin_constraints": 1346,
+   "hidden_rows": 592,
+   "hidden_values": 37888,
+   "lin_constraints": 2006,
    "products": 6,
-   "ligero_wire": 5052,
+   "ligero_wire": 6240,
    "ligero_beaver_scalar": 6,
    "ligero_poly_triples": 1,
    "spdz_wire": {
@@ -134,25 +134,25 @@
    },
    "spdz_openings": 106470,
    "proof": {
-    "field_elems": 3424318,
-    "hashes": 115389,
-    "indices": 832,
-    "bits": 238422982
+    "field_elems": 5175223,
+    "hashes": 191958,
+    "indices": 1261,
+    "bits": 364829851
    },
-   "pcs_part_bits": 209731008,
-   "ligero_part_bits": 28691974
+   "pcs_part_bits": 316938540,
+   "ligero_part_bits": 47891311
   },
   "layer1_only": {
    "witness_elems": 67145728,
-   "codeword_elems_per_party": 277862400,
-   "merkle_leaves_per_party": 74496,
+   "codeword_elems_per_party": 282367296,
+   "merkle_leaves_per_party": 77928,
    "commitments": 13,
    "pcs_evaluations": 20,
-   "proof_field_elems": 3428607,
-   "proof_hashes": 28839,
+   "proof_field_elems": 5124477,
+   "proof_hashes": 46308,
    "sumcheck_msg_elems": 156,
-   "row_combo_elems": 152124,
-   "opened_column_elems": 3276288,
+   "row_combo_elems": 158658,
+   "opened_column_elems": 4965624,
    "proving_openings": 106626,
    "proving_wire": {
     "mul": 638820,

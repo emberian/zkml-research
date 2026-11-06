@@ -33,9 +33,9 @@
   ],
   "substitute_x_violates": "signed input binding: the custodians' x = the owner's signed x",
   "substitute_y_violates": "signed input binding: the custodians' y = the owner's signed y",
-  "bytes_bound_step": 4516936,
+  "bytes_bound_step": 7307776,
   "signature_bytes": 16772,
-  "spine_lin_constraints": 1435,
-  "middle_lin_constraints": 1337
+  "spine_lin_constraints": 2161,
+  "middle_lin_constraints": 1931
  }
 }

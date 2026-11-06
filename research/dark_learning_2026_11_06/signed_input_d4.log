@@ -1,0 +1,7 @@
+custodians train on x' while presenting the owner's signed x REFUSED  spine: Ligero linear test: the constraints do not hold
+custodians train on y' while presenting the owner's signed y REFUSED  middle: Ligero linear test: the constraints do not hold
+custodians commit x' themselves and sign with their own key REFUSED  owner signature does not verify over (context, x and y commitments), or its leaf was used
+step 1, honest, owner-signed                               ACCEPT   accept
+step 2 re-using the owner's step-1 signature (old batch, used leaf) REFUSED  owner signature does not verify over (context, x and y commitments), or its leaf was used
+step 2, honest, owner-signed                               ACCEPT   accept
+{"first_violated_honest": [null, null], "substitute_x_violates": "signed input binding: the custodians' x = the owner's signed x", "substitute_y_violates": "signed input binding: the custodians' y = the owner's signed y", "bytes_bound_step": 7307776, "signature_bytes": 16772, "spine_lin_constraints": 2161, "middle_lin_constraints": 1931}

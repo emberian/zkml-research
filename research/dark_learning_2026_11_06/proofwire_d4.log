@@ -1,0 +1,20 @@
+honest custodians asked to open step 1's child a third time REFUSED  LifeExhausted: commitment W1 already opened in 2 proofs; a further opening reveals it
+step 1, honest (parent = genesis record)             ACCEPT   accept
+step 1 replayed                                      REFUSED  binding mismatch: proof is for ('mind-0', 0, 1), expected ('mind-0', 0, 2)
+step 2 truncated by one byte                         REFUSED  parse: truncated
+step 2 with one trailing byte                        REFUSED  parse: trailing bytes
+step 2 with a non-canonical field element            REFUSED  parse: non-canonical field element
+step 2 with a byte in the header's model id flipped  REFUSED  binding mismatch: proof is for ('lind-0', 0, 2), expected ('mind-0', 0, 2)
+step 2 with a byte in a commitment root flipped      REFUSED  spine: parent commitment is not the previous step's child commitment
+step 2 with a byte in a field element (prox) flipped REFUSED  spine: column challenge mismatch
+step 2 with a byte in the middle of the blob flipped REFUSED  middle: Merkle opening fails (b, custodian 1)
+step 2 with the last byte flipped                    REFUSED  middle: Ligero: Merkle opening fails (group 25, custodian 2)
+step 2 with a model id that is not UTF-8             REFUSED  binding mismatch: proof is for ('������', 0, 2), expected ('mind-0', 0, 2)
+step 3's proof under a header patched to step 2      REFUSED  spine: column challenge mismatch
+step 2 claiming another model id                     REFUSED  binding mismatch: proof is for ('mind-1', 0, 2), expected ('mind-0', 0, 2)
+step 2, honest                                       ACCEPT   accept
+a second valid proof of step 2 (equivocation)        REFUSED  binding mismatch: proof is for ('mind-0', 0, 2), expected ('mind-0', 0, 3)
+restart head ('mind-0', 0, 3) True
+restart after rotation ('mind-0', 1, 3) True
+after rotation: the OLD committee's step 3 (epoch 1 header) REFUSED  spine: parent commitment is not the previous step's child commitment
+sizes {'step1_bytes': 7038516, 'step2_bytes': 7038516}

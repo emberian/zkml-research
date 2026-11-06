@@ -38,11 +38,12 @@ MAGIC = b"DLSTEP01"
 OWNER_H = 12                 # 2^12 one-time keys per owner tree
 
 # The verifier's parameters, pinned here (not taken from whichever run script set module globals) and recorded in
-# every ledger's genesis record. Soundness at these values, stated plainly: T = 64 distinct columns at rate 1/4 gives
-# a provable proximity error of about (3/4)^64 = 2^-26.6 per PCS and per Ligero (Fiat-Shamir, no grinding cost).
-# That is the PROTOTYPE target. 2^-40 needs T of about 97, and 2^-128 needs T of about 309 at this rate, or a lower
-# rate and extension-field challenges.
-PARAMS = dict(HIDE=128, NMASK=2, LIVES=2, T_COLS=64, BLOW=4, K_L=64, T_HIDE=64, T_OPEN=64, OWNER_H=OWNER_H)
+# every ledger's genesis record. Soundness at these values, stated plainly: T = 97 distinct columns at rate 1/4 gives
+# a proximity error of at most (3/4)^97 = 2^-40.26 per PCS and per Ligero (gen 4; was T = 64, 2^-26.6). That is a
+# STATISTICAL figure: under Fiat-Shamir a prover that grinds 2^g transcripts succeeds with about 2^(g-40), so it is
+# not a 128-bit non-interactive security level. 2^-128 needs T of about 309 at this rate, or a lower rate and
+# extension-field challenges.
+PARAMS = dict(HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=64, T_HIDE=97, T_OPEN=97, OWNER_H=OWNER_H)
 
 def pin_params():
     CS.HIDE, CS.NMASK, CS.LIVES, CS.T_COLS, CS.BLOW = (PARAMS[k] for k in ("HIDE", "NMASK", "LIVES", "T_COLS", "BLOW"))
