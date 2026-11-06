@@ -732,3 +732,84 @@ preprocessing values, and ciphertexts sent and returned. The formula for the res
 - circuit-privacy parameters chosen against a stated distance (flooding is 40 bits over a public noise
   bound);
 - the MPC-in-the-head audit's replay of the HE path, which the collaborative proof supersedes.
+
+
+## 12. ✅ The elementwise gates of the collaborative proof, built and counted (2026-11-06; `cosnark_gates.py`)
+
+**The idea.** In SPDZ every shared value is a public-linear form in the preprocessed values ("atoms")
+and the public openings. So "the custodians executed the program" for the nonlinear middle (both
+truncations of z, the table lookup, e = trunc(z2) − y, d2, bg = b·g1, d1) is exactly three things:
+- **(O)** each opening equals its form evaluated on the atoms. These are linear constraints with public
+  values.
+- **(P) The preprocessing is well formed:**
+  - Beaver triples satisfy ta·tb = tc;
+  - truncation mask bits are boolean;
+  - tr = Σ 2^i trb_i + 2^s trh;
+  - **trh ∈ [0, 2^(K+κ−s)) via its bits.** Without this, rhi is a free field element: u = (c≫s) − rhi −
+    borrow stops being floor(z/2^s), and colluders steer the lookup input. The bits are proof-only
+    preprocessing (dealer-provided), so the MPC's execution counts do not change.
+  - lookup powers satisfy pw_j = pw_1·pw_{j−1}.
+- **(X)** the middle's inputs (z1, z2, b, y) and outputs (h, g1, d2, bg, d1) are the spine's
+  committed vectors.
+
+**The verifier derives this constraint system ITSELF.** It replays `run_step` symbolically against the
+public transcript: openings read the transcript, each preprocessing call makes a fresh atom. No form
+comes from the prover; a prover/verifier mismatch is refused.
+
+**The proof.**
+- Commit P (the atoms plus proof-only bits) and the operand vectors A, B, C, with the per-party
+  share-codeword PCS.
+- Zerocheck A∘B − C = 0, using Beaver products in the MPC.
+- Batch every linear, copy and IO constraint with random γ into Σ_X ⟨q_X, X⟩ = const. Each ⟨q_X, X⟩ is a
+  sumcheck against a PUBLIC table, so its round polynomials are local on shares, with no MPC
+  multiplication.
+- The semantics proved are the SPDZ program's. They equal `step_spec` whenever the spec's input bounds
+  hold, and those bounds are C2's envelope, not this proof's.
+
+**Results** (hbox, `cosnark_gates_results.json`; spine and middle proved together):
+
+| run | spine | middle |
+|---|---|---|
+| honest d = 16, d = 64 | ACCEPT | ACCEPT |
+| forged truncation opening (full collusion, MACs forged) | **ACCEPT** | **REFUSED**: linear batch |
+| forged lookup opening | **ACCEPT** | **REFUSED**: linear batch |
+| malformed Beaver triple (colluding dealer) | **ACCEPT** | **REFUSED**: zerocheck |
+| non-boolean truncation mask bit | **ACCEPT** | **REFUSED**: zerocheck |
+| truncation mask out of range | **ACCEPT** | **REFUSED**: linear batch (mask relation) |
+
+The spine accepts every one of these. That is why the middle exists: each attack keeps the linear
+algebra consistent and corrupts only the nonlinear gates.
+
+**Counts.** The formula is exact against execution at d = 4, 16 and 64 on every column.
+
+| per step | d = 64 (executed) | d = 4096 (formula, widened shifts) | §9's MODEL at d = 4096 |
+|---|---:|---:|---:|
+| atoms (incl. proof-only bits) | 37,184 (11,840) | 2.90×10^6 (7.58×10^5) | — |
+| Hadamard constraints | 31,872 | 2.26×10^6 | 1.50×10^6 |
+| linear constraints | 5,888 | 6.72×10^5 | — |
+| committed elements (P, A, B, C, padded) | 163,840 | 1.68×10^7 | 1.54×10^6 |
+| custodians' proving wire | 1,575,336 | **2.01×10^8** | 7.20×10^7 |
+
+**§9's MODEL was low by ×2.8 on proving wire and ×11 on committed elements.** It left out three
+things: the trh range bits (κ = 40 statistical-masking bits dominate each truncation), padding to a power
+of two, and the four products per pair per round of the degree-3 zerocheck. At d = 4096 the executed
+design's proving wire is ×2.3 the step's online wire with the HE matvec (8.9×10^7). **That makes the
+collaborative proof, not the step, the MPC fork's dominant online cost.**
+
+**Three levers (MODEL, not built: `counts_optimized_MODEL`):**
+1. The lookup by LogUp instead of a 254-product power chain.
+2. rhi's range by three 16-bit LogUp chunks instead of ~48 boolean bits.
+3. A zerocheck that reuses the products already held at X = 0, 1 and skips padding.
+
+Together: 5,440 Hadamards and 1.31×10^5 proving wire at d = 64, and **1.37×10^7 at d = 4096**: ×15 less,
+and 15% of the step's online wire. LogUp in the MPC needs shared inverses (one masked opening each) and
+committed multiplicities, which the parties compute from public table indices only for the range
+chunks. For the activation lookup the multiplicities are secret and need their own argument.
+
+**Where this leaves the MPC fork's full-collusion integrity.**
+- The whole step is proved: spine plus middle. Every gate is checked, and the verifier derives the
+  constraint system itself.
+- The price, as built, is ×2.3 the step's online wire, with a modelled path to ×0.15.
+- **Zero knowledge is still missing** (next item). The opened claims ⟨q_X, X⟩, the row combinations
+  and the sumcheck messages leak linear functionals of the atoms and the spine vectors. Until it is
+  built, the proof stays among the custodians.

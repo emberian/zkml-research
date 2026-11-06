@@ -31,6 +31,7 @@ coefficient means 42² digit products per term.
 | `fs_binding_falsifiers.py` | adaptive-quotient forgeries that the LEGACY verifiers (public-data Fiat-Shamir point) accept and the fixed ones (point hashes the witness) refuse |
 | `encoding_regressions.py` | falsifiers for the two large-t encoding fixes (fail under the broken encoding, pass under the fix) |
 | `cosnark.py`, `run_cosnark.py` | the MPC fork's collaborative proof (per-party share-codeword PCS, MPC sumchecks, rank-1 checks, chaining), full-collusion attacks, count formula checked against execution |
+| `cosnark_gates.py`, `run_cosnark_gates.py` | the middle of the collaborative proof: SPDZ execution integrity (openings, preprocessing well-formedness, IO), constraint system re-derived by the verifier from the public transcript; full-collusion attacks; exact count formula |
 | `he_matvec.py`, `run_he_matvec.py` | MPC fork's HE-assisted matvec (own-key pt x ct cross terms + SPDZ Freivalds check), honest at d = 64/128, falsifiers, counts checked against execution |
 | `cert_b61.py` | the FHE fork's ct×ct certificate: explicit witness + verifier (the decryption gate) |
 | `fhe_fork.py` | FHE fork of the step: host ct×ct with certificates, custodian crossings, conversion audit |
