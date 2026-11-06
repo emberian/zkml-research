@@ -1,0 +1,3 @@
+Command: lean +leanprover/lean4:v4.35.0 notes/astra/governance/GovernanceAudit.lean
+Exit code: 0
+

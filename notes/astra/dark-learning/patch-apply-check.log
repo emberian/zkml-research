@@ -1,0 +1,3 @@
+COMMAND git -C /Users/ember/dev/minidregg apply --check /Users/ember/dev/zkml-research/notes/astra/displacement-bound.patch
+EXIT 0
+Patch not applied; companion tree read-only.

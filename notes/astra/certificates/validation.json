@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-06T05:03:56.764050+00:00",
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "notes/astra/certificates/CertificateAudit.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "notes/astra/certificates/StatementSchemas.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

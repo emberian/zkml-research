@@ -1,0 +1,33 @@
+COMMAND ['/Users/ember/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean', '/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean']
+/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean:556:14: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean:556:43: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean:563:37: warning: `if_false` has been deprecated: Use `ite_false` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵f̵a̵l̵s̵e̵i̲t̲e̲_̲f̲a̲l̲s̲e̲
+/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean:572:14: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean:572:43: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean:578:37: warning: `if_false` has been deprecated: Use `ite_false` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵f̵a̵l̵s̵e̵i̲t̲e̲_̲f̲a̲l̲s̲e̲
+/Users/ember/dev/zkml-research/notes/astra/dark-learning/DisplacementSourceCheck.lean:739:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.AuditDisplacement.injected_le_count`:
+  [Fintype Ω]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype Ω] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+
+EXIT 0
