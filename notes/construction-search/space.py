@@ -607,6 +607,9 @@ AUTOMATA_PINS = {
     "dl-substs":   ("Dregg2/Datalog/FixpointCert.lean", 652, "(varBound rStep)).length == 216"),
     "dl-domdef":   ("Dregg2/Datalog/FixpointCert.lean", 139, "edb.flatMap (·.2) ++ P.flatMap ruleConsts"),
     "p2-wide":     (E + "Poseidon2RoundGates.lean", 121, "POSEIDON2_AUX_COLS == 352"),
+    "tree-kf":     ("Dregg2/Tree/Automaton.lean", 251, "def keccakFOf (n : Nat) : Nat := n / 136 + 1"),
+    "tree-prefix": ("Dregg2/Tree/Automaton.lean", 254, "def nodePrefixLen : Nat := 19"),
+    "tree-frame":  ("Dregg2/Tree/Merkle.lean", 48, "| .obj es => .arr [.uint 2, .map (es.map fun e => (.text e.1, .bytes e.2))]"),
 }
 
 # Per-family record. Semantic block: rows/symbol, lookups/symbol (abstract), degree.
@@ -925,7 +928,63 @@ def certs_markdown():
     w(f"  (`{pin_ref('dl-dom')}`), 6³ = 216 candidates for the 3-variable step rule (`{pin_ref('dl-substs')}`).")
     w("- Not arithmetized: the fixpoint and the closure leg have no descriptor; their cost is checker steps.")
     w("")
+    tree_section(w)
     return "\n".join(L) + "\n"
+
+
+TREE_SUMMARY_DEFAULT = "~/dev/breadstuffs/demo/tree-absence/summary.json"
+
+
+def tree_frame_bytes(entries, key_len=8, digest=32):
+    """Bytes of one object frame `[2, {text k: bstr d}]` with `entries` keys of `key_len` bytes
+    (all heads short: < 24 entries, keys < 24 bytes): 1 (array head) + 1 (uint 2) + 1 (map head)
+    + entries * (1 + key_len + 2 + digest)."""
+    return 3 + entries * (1 + key_len + 2 + digest)
+
+
+def tree_section(w):
+    """Initiative 12: per opened level and per record, the semantic counts of `tree-check`."""
+    import json, os
+    w("## 6. Tree certificates (initiative 12, `Dregg2/Tree`, `lake exe tree-check`)")
+    w("")
+    w("Route (ii) of note 07: a record is a Merkle tree of kind-tagged CBOR frames; a path opening hashes one")
+    w(f"frame per level with SHAKE256 at `keccakFOf(19 + frame bytes)` Keccak-f (`{pin_ref('tree-kf')}`,")
+    w(f"`{pin_ref('tree-prefix')}`; object frame `{pin_ref('tree-frame')}`). Semantic work per opened level: one")
+    w("frame hash and one child selection (key search over the frame's entries); per string leaf: one byte-table")
+    w("lookup per byte; per schema node: one horizontal transition per child edge and one `hfinal`. No AIR exists")
+    w("for this family; these are checker operations, the commitment-term analogue of §3 [INFERRED model below,")
+    w("MEASURED rows from the demo].")
+    w("")
+    w("| object frame entries (8-byte keys) | frame bytes | Keccak-f |")
+    w("|---:|---:|---:|")
+    for e in (2, 4, 8, 16):
+        fb = tree_frame_bytes(e)
+        w(f"| {e} | {fb} | {(19 + fb) // 136 + 1} |")
+    w("")
+    path = os.path.expanduser(TREE_SUMMARY_DEFAULT)
+    try:
+        d = json.load(open(path))
+    except OSError:
+        w(f"(demo summary not found at `{path}`; run `demo/tree-absence/run.sh`)")
+        w("")
+        return
+    w("Measured on demo/tree-absence (3,382 Claude Code tool-call records; `summary.json`, `tree-check verify`):")
+    w("")
+    w("| certificate | records | count | frames | frame bytes | Keccak-f | Keccak-f / record | nodes disclosed |")
+    w("|---|---:|---:|---:|---:|---:|---:|---:|")
+    rows = [("A contains `pkill -f`", "mention", "real"), ("B command position", "invocation", "invocation-real"),
+            ("C absence (no backtick)", "invocation_nobacktick", "invocation-nobacktick-real")]
+    for label, q, v in rows:
+        qr = d.get(q, {}).get("real", {})
+        wk = d.get("verify", {}).get(v, {}).get("work", {})
+        n = qr.get("n", 0) or 1
+        w(f"| {label} | {qr.get('n', '?'):,} | {qr.get('count', '?')} | {wk.get('frames_hashed', 0):,} | "
+          f"{wk.get('frame_bytes', 0):,} | {wk.get('keccak_f', 0):,} | {wk.get('keccak_f', 0) / n:.1f} | "
+          f"{wk.get('nodes_disclosed', 0):,} |")
+    w("")
+    w("Frame bytes are dominated by the disclosed `input.command` leaves (full disclosure of the opened field);")
+    w("a private-leaf variant replaces the leaf frame by its digest plus the Layer B′ DFA leg (`Spec.field_accept_bound`).")
+    w("")
 
 
 def main():
