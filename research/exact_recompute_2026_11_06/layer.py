@@ -11,6 +11,7 @@ from weights import Shards, bf16_to_int
 
 D, H, KV, HD, NE, TOPK = 2880, 64, 8, 64, 32, 4
 EPS = 1e-5
+FDT = np.float64     # the float reference's dtype; float32 gives a second honest float backend
 
 
 class LayerWeights:
@@ -28,7 +29,7 @@ class LayerWeights:
         self._mx = {}
 
     def f(self, n):
-        return (self.bits[n].astype(np.uint32) << 16).view(np.float32).astype(np.float64)
+        return (self.bits[n].astype(np.uint32) << 16).view(np.float32).astype(FDT)
 
     def expert(self, which, e):
         key = (which, e)
@@ -48,14 +49,14 @@ class LayerWeights:
 
 
 def expert_float(W: M.IntMatrix):
-    return (W.wh * float(1 << M.L20) + W.wl) * np.exp2(W.rowexp.astype(np.float64))[:, None]
+    return ((W.wh * float(1 << M.L20) + W.wl) * np.exp2(W.rowexp.astype(np.float64))[:, None]).astype(FDT)
 
 
 # ---------------------------------------------------------------- float64 reference
 def rope_f_at(x, pos0):
     inv, att = T.yarn_inv_freq()
     ang = np.arange(pos0, pos0 + x.shape[0])[:, None] * inv[None, :]
-    c, s = np.cos(ang) * att, np.sin(ang) * att
+    c, s = (np.cos(ang) * att).astype(FDT), (np.sin(ang) * att).astype(FDT)
     a, b = x[..., :HD // 2], x[..., HD // 2:]
     return np.concatenate([a * c[:, None] - b * s[:, None], b * c[:, None] + a * s[:, None]], axis=-1)
 
@@ -92,6 +93,7 @@ def route(lg_row):
 
 
 def layer_float(Wt: LayerWeights, x, trace=None, cache=None, pos0=0):
+    x = x.astype(FDT)
     t = x.shape[0]
     def norm(v, g):
         return v / np.sqrt((v * v).mean(-1, keepdims=True) + EPS) * g
@@ -106,7 +108,7 @@ def layer_float(Wt: LayerWeights, x, trace=None, cache=None, pos0=0):
         k, v = cache.extend(np, k, v)
     n = k.shape[0]
     sinks = Wt.f("self_attn.sinks")
-    o = np.zeros((t, H, HD))
+    o = np.zeros((t, H, HD), dtype=FDT)
     mask = causal_mask(pos0, t, n, Wt.sliding)
     for h in range(H):
         g = h // (H // KV)
@@ -134,7 +136,7 @@ def layer_float(Wt: LayerWeights, x, trace=None, cache=None, pos0=0):
         gu = m[rows] @ expert_float(Wt.expert("gate_up_proj", e)).T + gub[e]
         gate, up = np.minimum(gu[:, 0::2], 7.0), np.clip(gu[:, 1::2], -7.0, 7.0)
         h_ = (up + 1.0) * gate / (1.0 + np.exp(-1.702 * gate))
-        np.add.at(out, rows, ws[:, None] * (h_ @ expert_float(Wt.expert("down_proj", e)).T + db[e]))
+        np.add.at(out, rows, (ws[:, None] * (h_ @ expert_float(Wt.expert("down_proj", e)).T + db[e])).astype(FDT))
     if trace is not None:
         trace.update(a=a, q=q, k=k, v=v, o=o, x1=x1, m=m, logits=logits, x2=x1 + out)
     return x1 + out
@@ -156,12 +158,28 @@ def gain_const(g_bits):
     return T.rha(g * math.sqrt(D) * 2.0 ** GS)
 
 
+NB = 25          # the norm's sum of squares runs on values below 2^NB (2880 * 2^50 < 2^62)
+
+
+def rq0(xp, a, k):
+    """rq for k >= 0 (k = 0 is the identity), k per row."""
+    return xp.where(k == 0, a, M.rq(xp, a, xp.maximum(k, 1)))
+
+
 def norm_int(xp, x, gs, fa):
-    V = xp.sum(x * x, axis=-1, keepdims=True)
+    """Integer RMS norm. gpt-oss's residual carries massive activations (|x| up to ~42,000 between
+    layers 6 and 16), so the sum of squares runs on x shifted right by s per row, s the number of
+    k in 0..13 with max|x_row| >= 2^(NB+k); rows below 2^NB have s = 0 and are unchanged. The
+    numerator keeps every bit of x: t = rq(x * Rc', RM - 24 + s), Rc' = 2^RM / sigma'."""
+    mx = xp.max(xp.abs(x), axis=-1, keepdims=True)
+    assert int(xp.max(mx)) < (1 << (NB + 14)), "residual beyond the v0 norm window"
+    s = sum((mx >= (1 << (NB + k))).astype(xp.int64) for k in range(14))
+    xs = rq0(xp, x, s)
+    V = xp.sum(xs * xs, axis=-1, keepdims=True)
     E = int(round(EPS * D * 2.0 ** (2 * FS)))
-    sigma = M.isqrt(xp, V + E)
+    sigma = M.isqrt(xp, V + rq0(xp, xp.full(V.shape, E, dtype=xp.int64), 2 * s))
     Rc = (xp.left_shift(xp.int64(1), RM) + xp.right_shift(sigma, 1)) // sigma
-    t = M.rq(xp, x * Rc, RM - 24)
+    t = M.rq(xp, x * Rc, RM - 24 + s)
     return M.clamp(xp, M.rq(xp, t * gs[None, :], 24 + GS - fa), M.ACLAMP_LO, CL)
 
 
