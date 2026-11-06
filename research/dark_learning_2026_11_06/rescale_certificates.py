@@ -1,8 +1,9 @@
 """Experiment 1a: the ct x ct integer rescale certificate (VERDICTS 7.5 Hole B), priced three ways.
 
-2026-11-06. For ONE real BFV ct x ct we build the complete witness of a concrete certificate design,
-CHECK every relation the verifier would check (over the integers, and the field bounds that make the
-field check imply the integer one), and COUNT the committed elements. Counts only; no clock.
+2026-11-06. For ONE real BFV ct x ct we construct honest arithmetic witnesses and estimate elements
+for several candidate certificate designs. This is not an independent verifier: some relations
+are checked on honest values, others are only counted. Counts omit a complete sound range/carry
+argument and the later B/B61 canonical-quotient pin. Counts only; no clock.
 
 What is certified, per output component k in {0,1,2} and coefficient j:
     d_k = lifted integer tensor (d0 = a0 b0, d1 = a0 b1 + a1 b0, d2 = a1 b1 in Z[X]/(X^N+1))
@@ -45,6 +46,11 @@ def signed_digits(x, w, L):
         x = (x - d) >> w
     assert x == 0, "value does not fit in L signed digits"
     return ds
+
+def unsigned_digits(x, w, L):
+    """Canonical nonnegative base-2^w digits, used for interval witnesses."""
+    assert 0 <= x < 1 << (w * L), "value outside unsigned digit range"
+    return [(x >> (w * i)) & ((1 << w) - 1) for i in range(L)]
 
 def digit_polys(poly, w, L):
     cols = [signed_digits(c, w, L) for c in poly]
@@ -127,8 +133,8 @@ def scale_certificate(z, Q, N, w, pbits, native_mod_P):
     for x in range(N):
         assert T * z[x] + Q // 2 - Q * ys[x] - ss[x] == 0
         signed_digits(ys[x], w, Ly)
-        signed_digits(ss[x], w, Ls)
-        signed_digits(Q - 1 - ss[x], w, Ls)     # s < Q: the complement is a nonnegative digit vector
+        unsigned_digits(ss[x], w, Ls)
+        unsigned_digits(Q - 1 - ss[x], w, Ls)     # s < Q: the complement is a nonnegative digit vector
     cols = Ly + Lq                              # columns of the linear identity
     col_bits = (Lq * (1 << (2 * w))).bit_length() + 2
     assert col_bits <= pbits - 2
@@ -160,7 +166,7 @@ def crt_lift_certificate(n_polys, moduli, N, w, Q):
 
 # ---------------------------------------------------------------- design B (PRISM-style, native per prime)
 def prism_style(ct1, ct2, Qprimes, Bprimes, N, scheme):
-    """Every relation below is CHECKED on the real data, in the field where the verifier would check it."""
+    """Honest-data checks for selected input/product relations; scale and output extension are counted only."""
     Q = math.prod(Qprimes)
     Bm = math.prod(Bprimes)
     allp = Qprimes + Bprimes
@@ -185,8 +191,8 @@ def prism_style(ct1, ct2, Qprimes, Bprimes, N, scheme):
     # 2. per-prime tensor identity, native in each F_p: lhs = z_p + (X^N+1) K_p   (K_p committed)
     zbits = max(abs(c).bit_length() for comp in d for c in comp) + 1
     assert Q * Bm > 2 ** (zbits + 1), "Q.B too small to hold the lifted tensor"
-    # verify per-prime: (a b) mod p == z mod p, with z the integer tensor (one prime suffices to show the
-    # mechanism on every coefficient; all primes checked on a coefficient sample to bound runtime)
+    # verify per-prime: (a b) mod p == z mod p, with z the integer tensor (only three primes are exercised below, at fixed
+    # illustrative points; this is not a sound adversarial polynomial-identity verifier)
     for p in allp[:2] + allp[-1:]:
         for comp_pairs, dk, kk in (([(a0, b0)], d[0], ks[0]), ([(a0, b1), (a1, b0)], d[1], ks[1]), ([(a1, b1)], d[2], ks[2])):
             acc_z = [0] * N
