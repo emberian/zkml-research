@@ -191,7 +191,13 @@ def constraints(p, d, sh, scs, evals, cols, rows, urows, prod):
     return lin, quad, labels
 
 # ------------------------------------------------------------------------------------------------- prover
-def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=1, owner_x=None):
+def public_digest(public):
+    """The public SPDZ transcript (the opened values), bound into Fiat-Shamir right after the context. Without
+    it, colluding custodians could choose an opening value AFTER seeing the batch challenge (review3
+    forge_public: a steered weight update accepted by the ledger)."""
+    return CS.H("public-transcript", len(public), tuple(public))
+
+def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=1, owner_x=None, public=()):
     """owner_x: the data owner's share-tuple commitment to x (dealt to the custodians with its opening), whose
     roots the owner signed; when given, the proof binds the custodians' x to it."""
     p, n = eng.p, eng.n
@@ -221,6 +227,7 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
     L = Z.Prover(Z.Params(p, K_L, T_HIDE, T_OPEN), n, (seed, context))
     tr = Transcript("step-zk")
     tr.absorb("ctx", context)
+    tr.absorb("public", public_digest(public))
     for k in sorted(com):
         tr.absorb(k, com[k].roots)
     state = {}
@@ -324,7 +331,7 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
     return proof, stats
 
 # ------------------------------------------------------------------------------------------------- verifier
-def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False):
+def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public=()):
     """Public data only. parent_roots: the previous step's child roots for W1, W2 (None at genesis). bind: the
     proof must carry the owner's commitment "xo" and the binding constraint (its roots are checked against the
     owner's signature by the caller)."""
@@ -337,6 +344,7 @@ def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False):
         return False, "parent commitment is not the previous step's child commitment"
     tr = Transcript("step-zk")
     tr.absorb("ctx", context)
+    tr.absorb("public", public_digest(public))
     for k in sorted(roots):
         tr.absorb(k, roots[k])
     rr = proof["round_roots"]

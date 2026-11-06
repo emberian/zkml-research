@@ -40,3 +40,22 @@ note says so.
 Fixed in code today: MAC coins, Freivalds coins, the proof's step context. Repaired in the docs:
 §11's parity, privacy and ZKPoPK claims, and the units. Adopted as next bricks: the HE-assisted outer
 product (priced above) and the hostile-input verifier.
+
+## Second round (2026-11-06, after the scholar's REPORT), by brick
+
+The coordinator routed the scholar's verdict: keep MPC custody as the default research direction, and
+withdraw the present price and privacy closure. I agree with both. Status of each brick it named:
+
+| scholar brick | status | where |
+|---|---|---|
+| batched authenticated HE/OT preprocessing in place of the dense scalar outer correlations | **BUILT** for the outer product. HE pairs under own keys; MAC shares come from the same exchange; one committed check. Under the scholar's MASCOT compiler (imported unmodified, its 12 rows reproduced), MPC preprocessing at d = 4096 drops to 0.912 Tbit against FHE (b)'s 0.908 | decision §15, `he_outer.py`, `inventory_he_outer.py` |
+| MAC challenge timing | **BUILT.** Coins hash the frozen transcript (earlier commit). sigma_i is now commit-then-open, enforced: a rushing custodian that shifted an opening and opens −Σ of the others' sigma is ACCEPTED without commitments and REFUSED with them. A distributed version needs authenticated broadcast and a commitment round per party; in one process the order is simulated | `spdz.mac_check`, `mac_timing_falsifier.py` |
+| durable parent/counter/epoch acceptance | **BUILT, on branch `dark-learning/untrusted-verifier` pending the Codex gate; hardened after review (decision §19: genesis record, durable rotation, lock).** `proofwire.Ledger` is an append-only fsync'd file per model. The head is reconstructed on open; a step is accepted only as the child of the head at the expected (model, epoch, step). Replay, equivocation, a patched header, a wrong model and a wrong epoch after rotation are all refused | `proofwire.py`, `run_proofwire.py` |
+| a strictly parsed verifier, not sharing the prover's objects | **BUILT, same branch.** A review found four breaks, including an unbound public transcript that let colluders steer the update; all are repaired (§19). Schema-driven bytes in: every length comes from public (d, n, parameters) and from the verifier's own symbolic replay of the public SPDZ transcript. Canonical field elements; no trailing bytes | same |
+| sizes per unit | **ADOPTED.** §16 gives proof payload (61-bit elements and 256-bit hashes, separately) and proving wire; witness and encoding volumes are no longer quoted as proof sizes | §16 |
+| the shorter lattice ZKPoPK, with whole-ciphertext simulation and pinned keygen | **NOT STARTED.** It is the next brick and it decides the fork (§15: at the Stern price MPC pays 406 Tbit/step and FHE (b) 113). Plan: the scholar's LNS/LaZer relation compiler as the target, recipient-pinned key generation proved once per epoch, and a computational simulation of the returned ciphertext rather than a flood | queue |
+
+**A finding that bears on the scholar's who-learns-what page.** Layer-1 hiding, as I built it, seeded
+tails from public data and did not hide (decision §16, `zk_seed_falsifier.py`); it is fixed. The scholar's
+page lists what the verifier learns from the proof. That list is now: Merkle roots, uniform columns,
+masked proximity combinations, and Ligero's three masked messages. That holds only with secret seeds.

@@ -1,0 +1,3 @@
+honest third opening: REFUSED commitment W1n already opened in 2 proofs; a further opening reveals it
+forced third opening: 168 distinct points for rows of degree < 132 ; data recovered: True
+FALSIFIER PASS

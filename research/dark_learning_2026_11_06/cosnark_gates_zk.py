@@ -202,6 +202,7 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     L = Z.Prover(Z.Params(p, ZK.K_L, ZK.T_HIDE, ZK.T_OPEN), n, (seed, context))
     tr = Transcript("middle-zk")
     tr.absorb("ctx", context)
+    tr.absorb("public", ZK.public_digest([v for _, _, v in live.transcript]))
     for k in sorted(com):
         tr.absorb(k, com[k].roots)
     st = {}
@@ -301,6 +302,7 @@ def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False):
             return False, f"middle's {nm} is not the spine's committed {nm}"
     tr = Transcript("middle-zk")
     tr.absorb("ctx", context)
+    tr.absorb("public", ZK.public_digest([v for _, _, v in sym.transcript]))
     for k in sorted(roots):
         tr.absorb(k, roots[k])
     lh = (lens["A"] - 1).bit_length()
