@@ -1,0 +1,68 @@
+{
+ "mpc": {
+  "fork": "MPC (SPDZ, n=3, F_p)",
+  "field_bits": 61,
+  "counts": {
+   "committed_elems": 328704,
+   "committed_bits": 20050944,
+   "online_wire": 131724,
+   "wire_by_phase": {
+    "input": 24960,
+    "matvec": 74880,
+    "trunc": 1536,
+    "mul": 28416,
+    "lookup": 384,
+    "outer": 1536,
+    "mac_check": 12
+   },
+   "preprocessing_auth_values": 54784,
+   "preprocessing_elems": 328704,
+   "openings": 17792,
+   "crossings": 0
+  },
+  "rows": {
+   "honest": {
+    "verdict": "ACCEPT",
+    "refines_spec": true,
+    "audit": [
+     [
+      0,
+      1
+     ],
+     true,
+     "accept"
+    ]
+   },
+   "wrong_delta": {
+    "verdict": "REFUSED",
+    "by": "online MAC check (every step): MAC check failed: an opened value is not the authenticated one",
+    "at": "outer"
+   },
+   "mixed_sources": {
+    "verdict": "REFUSED",
+    "by": "online MAC check (every step): MAC check failed: an opened value is not the authenticated one",
+    "at": "matvec"
+   },
+   "unrelated_boundary_shares": {
+    "verdict": "REFUSED",
+    "by": "online MAC check (every step): MAC check failed: an opened value is not the authenticated one",
+    "at": null
+   },
+   "wrong_quotient": {
+    "verdict": "REFUSED",
+    "by": "online MAC check (every step): MAC check failed: an opened value is not the authenticated one",
+    "at": "trunc"
+   },
+   "stale_parent": {
+    "verdict": "REFUSED",
+    "by": "chain: custodian 1's input commitment is not the current head",
+    "at": null
+   },
+   "missing_audit_response": {
+    "verdict": "REFUSED",
+    "by": "fail-closed: selected custodian did not return its view (alarm)"
+   },
+   "audit_detection_of_deviating_custodian": "2/3 beacon selections"
+  }
+ }
+}
