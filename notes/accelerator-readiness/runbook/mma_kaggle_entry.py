@@ -10,7 +10,8 @@ import sys
 here = pathlib.Path(__file__).resolve().parent
 out = pathlib.Path("/tmp/accel/mma-sh-out")
 env = dict(os.environ, ACCEL_OUT=str(out), ACCEL_CACHE="/tmp/accel/cache")
-args = sys.argv[1:] or ["--shrink", "--sku", "T4", "--toolkit", "conda"]
+PRESETS = {"nocutlass": ["--no-cutlass"]}   # bare words: the Kaggle harness cannot pass dashed arguments
+args = ["--shrink", "--sku", "T4", "--toolkit", "conda"] + [x for w in sys.argv[1:] for x in PRESETS.get(w, [w])]
 cmd = ["bash", str(here / "mma.sh")] + args
 print("RUN", " ".join(cmd), flush=True)
 rc = subprocess.call(cmd, env=env)

@@ -13,7 +13,10 @@
 # --toolkit  auto (default): the system nvcc if it is new enough for this GPU (12.0 for sm_90a, 12.8 for
 #            sm_100a, 12.9 for sm_103a), else a pinned conda-forge CUDA 12.9 env (micromamba 2.3.3-0,
 #            sha256-checked; no root).  conda: always that env.  system: never download a toolkit.
-# --no-cutlass  skip the pinned CUTLASS v4.8.1 step (the probe's own kernels still give the b1 rate).
+# --no-cutlass / --cutlass  CUTLASS v4.8.1 step; default on for sm_100/103 (tcgen05 example GEMMs), off elsewhere
+#            (the probe's own wgmma BGMMA kernel gives the H100 b1 rate; cutlass_profiler's b1 is mma.sync BMMA).
+# --sections LIST  mma_run.py sections; default per box: H100 the four ROTATION.md H100 items, B300/B200 the
+#            rotation items in priority order, T4 (--shrink) everything.
 #
 # Protocol steps (README) and where they run:
 #   1 hardware, driver, toolkit, builds, compile check for sm_75..sm_103a with a SASS census  -> mma_run.py
@@ -29,12 +32,14 @@
 HERE=$(cd "$(dirname "$0")" && pwd)
 . "$HERE/common.sh"
 accel_init mma "$@"
-SKU=B300; TOOLKIT=auto; CUTLASS=1; GPU=0
+SKU=B300; TOOLKIT=auto; CUTLASS=auto; GPU=0; SECTIONS=auto
 while (( $# )); do
   case $1 in
     --sku) SKU=$2; shift;;
     --toolkit) TOOLKIT=$2; shift;;
     --no-cutlass) CUTLASS=0;;
+    --cutlass) CUTLASS=1;;
+    --sections) SECTIONS=$2; shift;;
     --gpu) GPU=$2; shift;;
   esac
   shift
@@ -103,8 +108,21 @@ fi
 export NVCC NVCC_FLAGS
 
 # ---------------------------------------------------------------------------------------------- steps 1-6 (own kernels)
-ARGS=(--out "$OUT/probe" --sku "$SKU" --gpu "$GPU")
-(( SHRINK )) && ARGS+=(--shrink)
+# Section sets per box (ROTATION.md section 5).  The H100 hour also carries bfv.sh and tower256.sh, so its set is
+# the four H100 items only; B300/B200 run the rotation items in priority order.  --shrink (T4) runs everything.
+if [[ $SECTIONS == auto ]]; then
+  case $ARCH in
+    90a) SECTIONS=compile,rates_sm80,wgmma,wgmma_bias,ltparity,copy,i8ip,peak,f16parity;;
+    100a|103a) SECTIONS=compile,ltparity,f16parity,copy,peak,f16ip,towermul,i8ip,rates_sm80;;
+    *) SECTIONS=all;;
+  esac
+fi
+if [[ $CUTLASS == auto ]]; then
+  case $ARCH in 100a|103a) CUTLASS=1;; *) CUTLASS=0;; esac   # H100: BGMMA comes from the probe's own wgmma kernel
+fi
+ARGS=(--out "$OUT/probe" --sku "$SKU" --gpu "$GPU" --sections "$SECTIONS")
+if (( SHRINK )); then ARGS+=(--shrink); else ARGS+=(--arches "sm_$ARCH"); fi
+echo "sections $SECTIONS cutlass $CUTLASS"
 set +e
 accel_run 3300 600 "$PY" -u "$SRC/mma_run.py" "${ARGS[@]}"
 RC_PROBE=$?

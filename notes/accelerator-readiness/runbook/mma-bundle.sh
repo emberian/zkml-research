@@ -10,10 +10,10 @@ STAGE=$(mktemp -d); trap 'rm -rf "$STAGE"' EXIT
 B="$STAGE/mma"; mkdir -p "$B/src"
 cp "$HERE/mma.sh" "$HERE/common.sh" "$HERE/mma_kaggle_entry.py" "$B/"
 D=experiments/mma-accumulator-probe
-for f in probe.cu probe_fixed.cu probe_sm75.cu probe_sm80.cu gemm_probe.cu mma_run.py README.md; do
+for f in probe.cu probe_fixed.cu probe_sm75.cu probe_sm80.cu gemm_probe.cu rotation_probe.cu mma_run.py t256_vectors.jsonl README.md; do
   git -C "$REPO" show "$REV:$D/$f" > "$B/src/$f"
 done
-( cd "$B/src" && sha256sum probe.cu probe_fixed.cu probe_sm75.cu probe_sm80.cu gemm_probe.cu mma_run.py > MANIFEST )
+( cd "$B/src" && sha256sum probe.cu probe_fixed.cu probe_sm75.cu probe_sm80.cu gemm_probe.cu rotation_probe.cu mma_run.py t256_vectors.jsonl > MANIFEST )
 git -C "$REPO" rev-parse "$REV" > "$B/src/COMMIT"
 ( cd "$STAGE" && tar czf "$TAR" mma )
 echo "$TAR $(cat "$B/src/COMMIT")"

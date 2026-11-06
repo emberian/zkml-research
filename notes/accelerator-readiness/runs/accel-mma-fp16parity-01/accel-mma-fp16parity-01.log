@@ -1,0 +1,63 @@
+[{"stream_name":"stdout","time":1.560694655,"data":"RUN /usr/bin/python3 -u /tmp/accel/accel-mma-fp16parity-01/mma_run.py --out /tmp/accel/mma-out --shrink --sku T4 --sections copy,f16parity,f16ip,ltparity,towermul\n"}
+,{"stream_name":"stdout","time":2.074584004,"data":"[    0.1s] device Tesla T4 7.5 sm_75 nvcc /usr/local/cuda/bin/nvcc\n"}
+,{"stream_name":"stdout","time":9.180327468,"data":"[    7.2s] build gemm_probe.cu sm_75 rc 0 7.1s\n"}
+,{"stream_name":"stdout","time":12.294861741,"data":"[   10.3s] build rotation_probe.cu sm_75 rc 0 3.1s\n"}
+,{"stream_name":"stdout","time":12.336546928,"data":"[   10.3s] == section copy\n"}
+,{"stream_name":"stdout","time":17.156900683,"data":"[   15.1s] == section ltparity\n"}
+,{"stream_name":"stdout","time":19.137977219,"data":"[   17.1s] ltparity f16 fast 0 first inexact K None [(1024, [True, True]), (4096, [True, True]), (16384, [True, True]), (65536, [True, True]), (262144, [True, True]), (1048576, [True, True])]\n"}
+,{"stream_name":"stdout","time":19.142816077,"data":"[   17.1s] == section towermul\n"}
+,{"stream_name":"stdout","time":19.970666101,"data":"[   18.0s] PASS towermul.f16.r0 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 4096}\n"}
+,{"stream_name":"stdout","time":19.972247395,"data":"[   18.0s] towermul f16 26.899 ns/element (gemm 7.936)\n"}
+,{"stream_name":"stdout","time":20.511859193,"data":"[   18.5s] PASS towermul.f16.r1 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":21.054905285,"data":"[   19.0s] PASS towermul.f16.r2 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":21.626401768,"data":"[   19.6s] PASS towermul.f16.r3 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":22.392565385,"data":"[   20.4s] PASS towermul.i8.r0 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 4096}\n"}
+,{"stream_name":"stdout","time":22.392587017,"data":"[   20.4s] towermul i8 23.764 ns/element (gemm 6.811)\n"}
+,{"stream_name":"stdout","time":22.950222776,"data":"[   20.9s] PASS towermul.i8.r1 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":24.496297543,"data":"[   22.5s] PASS towermul.i8.r2 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":25.009314449,"data":"[   23.0s] PASS towermul.i8.r3 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":25.010359657,"data":"[   23.0s] == section f16parity\n"}
+,{"stream_name":"stdout","time":25.594874649,"data":"[   23.6s] PASS f16parity.m24.R0.T538 {\"m\": 24, \"P\": 1024, \"R\": 0, \"T\": 538, \"count_min\": 1009, \"count_max\": 1124, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.596944102,"data":"[   23.6s] PASS f16parity.m24.R1028.T248 {\"m\": 24, \"P\": 1024, \"R\": 1028, \"T\": 248, \"count_min\": 2006102, \"count_max\": 2168567, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.596967716,"data":"[   23.6s] PASS f16parity.m24.R3990.T733 {\"m\": 24, \"P\": 1024, \"R\": 3990, \"T\": 733, \"count_min\": 7785892, \"count_max\": 8416426, \"inside\": 127, \"inside_ok\": 127, \"past\": 1, \"past_read_matches\": 1}\n"}
+,{"stream_name":"stdout","time":25.596975634,"data":"[   23.6s] PASS f16parity.m24.R4237.T725 {\"m\": 24, \"P\": 1024, \"R\": 4237, \"T\": 725, \"count_min\": 8267775, \"count_max\": 8937326, \"inside\": 5, \"inside_ok\": 5, \"past\": 123, \"past_read_matches\": 54}\n"}
+,{"stream_name":"stdout","time":25.596983462,"data":"[   23.6s] PASS f16parity.m24.R6171.T235 {\"m\": 24, \"P\": 1024, \"R\": 6171, \"T\": 235, \"count_min\": 12040078, \"count_max\": 13015124, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 73}\n"}
+,{"stream_name":"stdout","time":25.597500838,"data":"[   23.6s] PASS f16parity.m24.R0.T7 {\"m\": 24, \"P\": 7, \"R\": 0, \"T\": 7, \"count_min\": 7, \"count_max\": 23, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.59808676,"data":"[   23.6s] PASS f16parity.m20.R0.T244 {\"m\": 20, \"P\": 1024, \"R\": 0, \"T\": 244, \"count_min\": 449, \"count_max\": 515, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.598612347,"data":"[   23.6s] PASS f16parity.m20.R64.T678 {\"m\": 20, \"P\": 1024, \"R\": 64, \"T\": 678, \"count_min\": 126155, \"count_max\": 136368, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.599236879,"data":"[   23.6s] PASS f16parity.m20.R249.T348 {\"m\": 20, \"P\": 1024, \"R\": 249, \"T\": 348, \"count_min\": 486471, \"count_max\": 525893, \"inside\": 127, \"inside_ok\": 127, \"past\": 1, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.599532579,"data":"[   23.6s] PASS f16parity.m20.R264.T41 {\"m\": 20, \"P\": 1024, \"R\": 264, \"T\": 41, \"count_min\": 515145, \"count_max\": 556864, \"inside\": 8, \"inside_ok\": 8, \"past\": 120, \"past_read_matches\": 54}\n"}
+,{"stream_name":"stdout","time":25.599853676,"data":"[   23.6s] PASS f16parity.m20.R385.T790 {\"m\": 20, \"P\": 1024, \"R\": 385, \"T\": 790, \"count_min\": 752643, \"count_max\": 813588, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 71}\n"}
+,{"stream_name":"stdout","time":25.600442245,"data":"[   23.6s] PASS f16parity.m20.R0.T7 {\"m\": 20, \"P\": 7, \"R\": 0, \"T\": 7, \"count_min\": 7, \"count_max\": 23, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.601100139,"data":"[   23.6s] PASS f16parity.m16.R0.T732 {\"m\": 16, \"P\": 1024, \"R\": 0, \"T\": 732, \"count_min\": 1387, \"count_max\": 1513, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.60161732,"data":"[   23.6s] PASS f16parity.m16.R4.T710 {\"m\": 16, \"P\": 1024, \"R\": 4, \"T\": 710, \"count_min\": 9159, \"count_max\": 9901, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.602276819,"data":"[   23.6s] PASS f16parity.m16.R15.T97 {\"m\": 16, \"P\": 1024, \"R\": 15, \"T\": 97, \"count_min\": 29445, \"count_max\": 31838, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.602481381,"data":"[   23.6s] PASS f16parity.m16.R16.T940 {\"m\": 16, \"P\": 1024, \"R\": 16, \"T\": 940, \"count_min\": 33009, \"count_max\": 35686, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 59}\n"}
+,{"stream_name":"stdout","time":25.602875813,"data":"[   23.6s] PASS f16parity.m16.R24.T318 {\"m\": 16, \"P\": 1024, \"R\": 24, \"T\": 318, \"count_min\": 47442, \"count_max\": 51303, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 62}\n"}
+,{"stream_name":"stdout","time":25.603409972,"data":"[   23.6s] PASS f16parity.m16.R0.T7 {\"m\": 16, \"P\": 7, \"R\": 0, \"T\": 7, \"count_min\": 7, \"count_max\": 23, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.604003447,"data":"[   23.6s] PASS f16parity.m13.R0.T250 {\"m\": 13, \"P\": 1024, \"R\": 0, \"T\": 250, \"count_min\": 460, \"count_max\": 526, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.604516533,"data":"[   23.6s] PASS f16parity.m13.R0.T783 {\"m\": 13, \"P\": 1024, \"R\": 0, \"T\": 783, \"count_min\": 1483, \"count_max\": 1616, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.605070388,"data":"[   23.6s] PASS f16parity.m13.R1.T551 {\"m\": 13, \"P\": 1024, \"R\": 1, \"T\": 551, \"count_min\": 3000, \"count_max\": 3252, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.605363451,"data":"[   23.6s] PASS f16parity.m13.R2.T243 {\"m\": 13, \"P\": 1024, \"R\": 2, \"T\": 243, \"count_min\": 4370, \"count_max\": 4720, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 62}\n"}
+,{"stream_name":"stdout","time":25.605700953,"data":"[   23.6s] PASS f16parity.m13.R3.T480 {\"m\": 13, \"P\": 1024, \"R\": 3, \"T\": 480, \"count_min\": 6760, \"count_max\": 7331, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 66}\n"}
+,{"stream_name":"stdout","time":25.606201445,"data":"[   23.6s] PASS f16parity.m13.R0.T7 {\"m\": 13, \"P\": 7, \"R\": 0, \"T\": 7, \"count_min\": 7, \"count_max\": 23, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n"}
+,{"stream_name":"stdout","time":25.606219517,"data":"[   23.6s] PASS f16parity.falsifier_past_bound {\"note\": \"past 2^(m-1) the bit no longer reads the parity\", \"tests_with_wrong_reads\": 9}\n"}
+,{"stream_name":"stdout","time":25.643327823,"data":"[   23.6s] == section f16ip\n"}
+,{"stream_name":"stdout","time":26.627013338,"data":"[   24.6s] PASS f16ip.2^20 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n"}
+,{"stream_name":"stdout","time":26.627041878,"data":"[   24.6s] f16ip 20 1.0447 ms 1.285e+11 B/s x copy 0.53\n"}
+,{"stream_name":"stdout","time":29.574595202,"data":"[   27.6s] PASS f16ip.2^22 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n"}
+,{"stream_name":"stdout","time":29.574624218,"data":"[   27.6s] f16ip 22 4.3049 ms 1.247e+11 B/s x copy 0.52\n"}
+,{"stream_name":"stdout","time":30.469225684,"data":"[   28.5s] PASS f16ip.2^24 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n"}
+,{"stream_name":"stdout","time":30.47074978,"data":"[   28.5s] f16ip 24 18.6895 ms 1.149e+11 B/s x copy 0.47\n"}
+,{"stream_name":"stdout","time":31.823893049,"data":"[   29.8s] PASS f16ip.2^25 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n"}
+,{"stream_name":"stdout","time":31.823917881,"data":"[   29.8s] f16ip 25 35.8869 ms 1.197e+11 B/s x copy 0.49\n"}
+,{"stream_name":"stdout","time":31.832970696,"data":"[   29.8s] DONE checks 37 failed 0 errors []\n"}
+,{"stream_name":"stdout","time":31.861373422,"data":"rc 0 results at /kaggle/working/results.json\n"}
+,{"stream_name":"stdout","time":33.365622212,"data":"ACCEL_JOB_DONE rc=0 killed=None elapsed=32.2\n"}
+,{"stream_name":"stderr","time":35.942625113,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":35.942659051,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":36.32657632,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":36.326616329,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":38.46694254,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":39.614226955,"data":"[NbConvertApp] Writing 473192 bytes to __results__.html\n"}
+]
