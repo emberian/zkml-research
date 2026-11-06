@@ -158,14 +158,18 @@ class Engine:
     def open_vec(self, xs, phase="open"):
         return [self.open(x, phase) for x in xs]
 
-    def mac_check(self, coin_seed):
+    def mac_check(self, coin_seed, commit_sigma=True):
         """Batched MAC check: sigma_i = sum_k rho_k (m_{i,k} - alpha_i v_k); sum sigma_i must be 0.
-        Each party commits then opens sigma_i: 2 n (n-1) wire elements."""
+        Coins come AFTER every broadcast is fixed: the seed hashes the label and the whole frozen transcript.
+        With a caller-chosen seed alone the coins are predictable, and one party can shift two openings by
+        (rho_1, -rho_0) so that its MAC errors cancel (Astra scholar, rederivation.md).
+        Then every party COMMITS to sigma_i (hash with a fresh nonce) before any sigma is opened, and each
+        opening must match its commitment. Without the commitment a rushing party that shifted an opening
+        waits for the others' sigma_i and opens -sum of them, so the sum is 0 without knowing alpha
+        (mac_timing_falsifier.py; commit_sigma=False keeps that legacy behaviour for the falsifier only).
+        Wire: commitments n (n-1) (a hash counted as one element) + openings n (n-1) = 2 n (n-1)."""
+        import secrets
         p = self.p
-        # Coins AFTER every broadcast is fixed: the seed hashes the label and the whole frozen transcript.
-        # With a caller-chosen seed alone the coins are predictable, and one party can shift two openings by
-        # (rho_1, -rho_0) so that its MAC errors cancel (Astra scholar, rederivation.md: accepted by the
-        # previous code). Remaining obligation: the sigma_i commit-then-open is counted but not enforced here.
         rng = random.Random(h("mac-coins", coin_seed, self.open_log and [v for _, v in self.open_log],
                               [t for t in self.transcript]))
         rho = [rng.randrange(p) for _ in self.open_log]
@@ -173,8 +177,19 @@ class Engine:
         for r, (macs, v) in zip(rho, self.open_log):
             for i in self.active:
                 sig[i] = (sig[i] + r * (macs[i] - self.alpha_sh(i) * v)) % p
+        nonce = {i: secrets.token_hex(16) for i in self.active}
+        com = {i: h("sigma", i, sig[i], nonce[i]) for i in self.active} if commit_sigma else None
+        opened = dict(sig)
+        rush = self.cheat.get("rush_sigma")
+        if rush is not None and not self.audit:
+            # the rushing party sees every other sigma first and opens the value that makes the sum vanish
+            opened[rush] = (-sum(v for i, v in sig.items() if i != rush)) % p
+        if commit_sigma:
+            for i in self.active:
+                if h("sigma", i, opened[i], nonce[i]) != com[i]:
+                    raise Abort(f"MAC check: party {i}'s opened sigma does not match its commitment")
         self.count("mac_check", 2 * self.n * (self.n - 1))
-        if not self.audit and sum(sig.values()) % p != 0:
+        if not self.audit and sum(opened.values()) % p != 0:
             raise Abort("MAC check failed: an opened value is not the authenticated one")
         return sig
 

@@ -1018,3 +1018,85 @@ imported unmodified; their twelve saved rows reproduce exactly, `inventory_he_ou
   - mask-pair ZKPoPKs;
   - circuit privacy;
   - a real preprocessing backend.
+
+
+## 16. ✅ ZK layers 2–3 built (spine and middle); a layer-1 hiding defect found and fixed (2026-11-06)
+
+`cozk.py` (collaborative Ligero over additive shares), `cosnark_zk.py` + `run_cosnark_zk.py` (spine),
+`cosnark_gates_zk.py` + `run_cosnark_gates_zk.py` (middle), `zk_seed_falsifier.py`.
+
+**⚠ Defect in layer 1 as built (§13), found while building layers 2–3.** `SharePCS` seeded every
+custodian's tail coefficients and mask rows from public data: (label, party, hide, nmask). Anyone could
+recompute them and subtract them from an opened column, which reveals the data part of every row at that
+point, a linear functional of the committed vector.
+- `zk_seed_falsifier.py`: with the legacy seed, the verifier recovers every row's data part at the
+  opened column; with secret seeds it does not. Exit 0 requires both outcomes.
+- **Fix:** tails, masks and the Ligero hiding values come from each custodian's secret randomness.
+- **Consequence:** a commitment can no longer be recomputed, only carried. The middle now reuses the
+  spine's commitment objects for the vectors they share, where it used to recompute them and compare
+  roots. §13's "layer 1 is built" claim held for the code paths, not for hiding, until this fix.
+
+**Design.** Layer 2 commits the transcript; layer 3 proves the verifier's checks on it.
+- **Hidden rows of one collaborative Ligero** (rows of width k = 64, t = 64 hiding points, T = 64 opened
+  columns, rate 1/4):
+  - every sumcheck round message, committed as its own group before the round's challenge is drawn;
+  - every PCS evaluation's row combination u_e;
+  - the middle's 13 claims ⟨q_X, X⟩;
+  - three product rows.
+- **Evaluation consistency moves inside the proof.** The layer-1 check "encode(u_e) agrees with
+  a_e·(opened column)" becomes Ligero LINEAR constraints on the hidden u_e at the PCS's opened columns.
+  So no evaluation mask rows are needed, only one proximity mask per life. §13's design kept them and
+  revealed m_e; hiding m_e would have needed a second proof linking it to the committed mask row.
+- **Products.** Everything the verifier checks is linear in the hidden values except the product gates:
+  - spine, 6: three matvec finals Y_W·Y_v, the zerocheck's Y_b·Y_g, and **the two zero-round rank-1
+    checks Y_d·Y_v, so construction (a) stays one exact product gate**;
+  - middle, 1: the zerocheck's A~·B~.
+  The 13 linear sumchecks are linear, because their tables are public.
+- **Collaborative execution.**
+  - Proximity and linear messages are local.
+  - The quadratic message uses one polynomial Beaver triple: open f_x − A and f_y − B, uniform
+    coefficient vectors, and compute the rest locally.
+  - The product-row z values use scalar Beaver products without MACs, because the quadratic test
+    checks them.
+  - **The middle's 13 linear sumchecks run in lockstep** with shared challenges after zero-padding,
+    using X_pad~(r) = X~(r[:m])·Π_{j≥m}(1 − r_j). That is one hidden row per round instead of 13
+    Merkle groups.
+- **A vector opened in two proofs uses two lives.** The eight spine vectors the middle also opens use
+  their second proximity mask there. Tails of 128 cover 2 × 64 opened columns.
+
+**Results.** Mac, secret seeds; `cosnark_zk_results.json`, `cosnark_gates_zk_results.json`.
+
+| run | verdict |
+|---|---|
+| spine d = 16, 32, 64 | ACCEPT; **count formula exact** (hidden rows, constraints, Ligero wire, SPDZ wire, proof elements and hashes) |
+| spine full collusion: wrong W1′ / wrong z1 / forged rounds / lied row combination | REFUSED. The check violated, read off the hidden witness: rank-1 update W1n; z1 first round = claim; z1 final = product gate; PCS evaluation consistency (W1n) |
+| spine chain (step 2's W = step 1's carried child) / stale parent / replay as the next step | ACCEPT / REFUSED / REFUSED |
+| middle d = 4 (and 16) | ACCEPT; formula exact |
+| middle: forged trunc opening, forged lookup opening, bad triple, non-boolean bit, mask out of range | REFUSED. The spine accepts all five; the middle refuses them through the linear batch (openings and mask relation) or the zerocheck |
+
+**Sizes, per unit** (the scholar's rule; 61-bit field elements and 256-bit hashes counted separately):
+
+| spine proof payload | d = 64 | d = 4096 (formula) |
+|---|---:|---:|
+| layer 1 only (u and m revealed) | — | 216.5 Mbit |
+| layers 1–3 (nothing revealed but uniform values) | 23.5 Mbit | **238.4 Mbit** (+10%) |
+| of which the Ligero (hidden transcript) | — | 28.7 Mbit (35,328 hidden values, 1,346 constraints) |
+| custodians' extra proving wire for ZK | 5,052 elements | 5,052 elements (constant) |
+| **middle** proof payload, layers 1–3 | 21.7 Mbit (d = 4); 25.7 Mbit (d = 16) | **136.7 Mbit** (313 hidden rows, 1,349 constraints; formula exact at d = 4, 16) |
+
+The custodians' proving wire for the middle is unchanged by ZK: 2.01×10^8 elements of Beaver products in
+the degree-3 zerocheck at d = 4096 (§12). ZK removes 13 claim openings and every round-value opening,
+and adds 4,992 elements of Ligero wire.
+
+**MAC timing (scholar brick), built alongside.** `spdz.mac_check` now enforces sigma commit-then-open.
+`mac_timing_falsifier.py`: a rushing custodian that shifted an opening and opens −Σ of the others' sigma
+is ACCEPTED without commitments and REFUSED with them.
+
+The hash count rises from 28.8 k to 115 k at d = 4096 because each of the 48 sumcheck rounds is its own
+Merkle group. Running the spine's four sumchecks in lockstep, as the middle's are, would make that 12
+groups [DERIVED, not built].
+
+**Soundness level, stated plainly.** With T = 64 opened columns at rate 1/4, the proximity error is
+about (3/4)^64 ≈ 2^-26.6. That is the same class as layer 1's T_COLS = 64. 2^-40 needs T ≈ 97 in both;
+128-bit security needs T ≈ 309, or extension-field challenges and a larger distance. This is a
+parameter, not a construction change; it is not yet set.

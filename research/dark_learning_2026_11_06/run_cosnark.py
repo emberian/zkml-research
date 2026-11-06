@@ -42,7 +42,7 @@ def main():
         print(d, ok, why, "formula", "EXACT" if all(same.values()) else same, flush=True)
         if d != 64:
             continue
-        out["counts_d64"] = {k: v for k, v in c.items() if k not in ("child_roots", "carry", "roots")}
+        out["counts_d64"] = {k: v for k, v in c.items() if k not in ("child_roots", "carry", "roots", "coms")}
         out["rows"]["honest"] = dict(verdict="ACCEPT" if ok else "FAIL", by=why)
         for att, what in (("forge_W1n", "all custodians commit a wrong W1' (one entry +1)"),
                           ("forge_z1", "all custodians commit a wrong z1 and prove honestly"),

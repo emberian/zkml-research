@@ -1,0 +1,164 @@
+{
+ "formula_check": {
+  "16": {
+   "honest": [
+    true,
+    "accept"
+   ],
+   "exact": true,
+   "mismatches": [],
+   "counts": {
+    "hidden_rows": 79,
+    "hidden_values": 5056,
+    "lin_constraints": 1314,
+    "products": 6,
+    "ligero_wire": 5052,
+    "ligero_beaver_scalar": 6,
+    "ligero_poly_triples": 1,
+    "spdz_wire": {
+     "mul": 2340,
+     "mac_check": 12
+    },
+    "spdz_openings": 390,
+    "proof": {
+     "field_elems": 45802,
+     "hashes": 56157,
+     "indices": 832,
+     "bits": 17170114
+    }
+   }
+  },
+  "32": {
+   "honest": [
+    true,
+    "accept"
+   ],
+   "exact": true,
+   "mismatches": [],
+   "counts": {
+    "hidden_rows": 83,
+    "hidden_values": 5312,
+    "lin_constraints": 1318,
+    "products": 6,
+    "ligero_wire": 5052,
+    "ligero_beaver_scalar": 6,
+    "ligero_poly_triples": 1,
+    "spdz_wire": {
+     "mul": 4836,
+     "mac_check": 12
+    },
+    "spdz_openings": 806,
+    "proof": {
+     "field_elems": 59158,
+     "hashes": 63081,
+     "indices": 832,
+     "bits": 19757374
+    }
+   }
+  },
+  "64": {
+   "honest": [
+    true,
+    "accept"
+   ],
+   "exact": true,
+   "mismatches": [],
+   "counts": {
+    "hidden_rows": 87,
+    "hidden_values": 5568,
+    "lin_constraints": 1322,
+    "products": 6,
+    "ligero_wire": 5052,
+    "ligero_beaver_scalar": 6,
+    "ligero_poly_triples": 1,
+    "spdz_wire": {
+     "mul": 9828,
+     "mac_check": 12
+    },
+    "spdz_openings": 1638,
+    "proof": {
+     "field_elems": 91798,
+     "hashes": 70005,
+     "indices": 832,
+     "bits": 23520958
+    }
+   }
+  }
+ },
+ "rows": {
+  "forge_W1n": {
+   "verdict": "REFUSED",
+   "by": "Ligero linear test: the constraints do not hold",
+   "violates": "rank-1 update W1n: W'(r) = W(r) - d(r_row) v(r_col)"
+  },
+  "forge_z1": {
+   "verdict": "REFUSED",
+   "by": "Ligero linear test: the constraints do not hold",
+   "violates": "sumcheck z1: first round sum = claim"
+  },
+  "forge_sumcheck": {
+   "verdict": "REFUSED",
+   "by": "Ligero linear test: the constraints do not hold",
+   "violates": "sumcheck z1: final claim = product gate"
+  },
+  "lie_in_u": {
+   "verdict": "REFUSED",
+   "by": "Ligero linear test: the constraints do not hold",
+   "violates": "PCS evaluation consistency (W1n)"
+  },
+  "replayed_as_next_step": {
+   "verdict": "REFUSED",
+   "by": "column challenge mismatch"
+  },
+  "chain_step2": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  },
+  "stale_parent": {
+   "verdict": "REFUSED",
+   "by": "parent commitment is not the previous step's child commitment"
+  }
+ },
+ "d4096": {
+  "zk_layers_1_2_3": {
+   "hidden_rows": 552,
+   "hidden_values": 35328,
+   "lin_constraints": 1346,
+   "products": 6,
+   "ligero_wire": 5052,
+   "ligero_beaver_scalar": 6,
+   "ligero_poly_triples": 1,
+   "spdz_wire": {
+    "mul": 638820,
+    "mac_check": 12
+   },
+   "spdz_openings": 106470,
+   "proof": {
+    "field_elems": 3424318,
+    "hashes": 115389,
+    "indices": 832,
+    "bits": 238422982
+   },
+   "pcs_part_bits": 209731008,
+   "ligero_part_bits": 28691974
+  },
+  "layer1_only": {
+   "witness_elems": 67145728,
+   "codeword_elems_per_party": 277862400,
+   "merkle_leaves_per_party": 74496,
+   "commitments": 13,
+   "pcs_evaluations": 20,
+   "proof_field_elems": 3428607,
+   "proof_hashes": 28839,
+   "sumcheck_msg_elems": 156,
+   "row_combo_elems": 152124,
+   "opened_column_elems": 3276288,
+   "proving_openings": 106626,
+   "proving_wire": {
+    "mul": 638820,
+    "mac_check": 12,
+    "cosnark": 936
+   }
+  }
+ }
+}

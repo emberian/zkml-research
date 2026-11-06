@@ -252,7 +252,7 @@ def sumcheck_pub(eng, tr, q, X, p):
         X = [eng.lin([(1 - r, X[2 * k]), (r, X[2 * k + 1])]) for k in range(half)]
     return msgs, rs
 
-def prove_and_verify_middle(live, sym, wires, spine_roots, attack=None):
+def prove_and_verify_middle(live, sym, wires, spine_roots, attack=None, spine_coms=None):
     """live: RecEngine run by the custodians (shares); sym: RecEngine replayed by the verifier from the
     public transcript. wires: spine SPDZ vectors (z1, z2, b, y, h, g1, d2, bg, d1)."""
     p, n = live.p, live.n
@@ -284,7 +284,10 @@ def prove_and_verify_middle(live, sym, wires, spine_roots, attack=None):
         extv["h"][0][0] = ((extv["h"][0][0][0] + 1) % p, extv["h"][0][0][1])
     vecs = dict(P=Pv, A=Av, B=Bv, C=Cv, **extv)
     sh = lambda V: [[x[i][0] for x in V] for i in range(n)]
-    com = {k: CS.SharePCS(p, sh(V), k) for k, V in vecs.items()}
+    # a vector the spine already committed is NOT recommitted: with secret tails a recomputed root would differ,
+    # and the custodians hold the spine's commitment (opening) anyway
+    com = {k: (spine_coms[k] if spine_coms and k in spine_coms and k != "y" else CS.SharePCS(p, sh(V), k))
+           for k, V in vecs.items()}
     tr = CS.Transcript("middle")
     for k in sorted(com):
         tr.absorb(k, com[k].roots)
