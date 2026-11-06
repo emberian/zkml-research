@@ -1,0 +1,174 @@
+{
+  "scope": "N=8 exact ZK reference, classical ROM only; N=8192 count-only",
+  "tests": {
+    "honest": [
+      true,
+      "accept"
+    ],
+    "compact_roundtrip": [
+      true,
+      "accept"
+    ],
+    "gate_then_matvec_product": [
+      true,
+      "decrypts to P*m exactly"
+    ],
+    "proof_none": [
+      false,
+      "malformed proof"
+    ],
+    "proof_list": [
+      false,
+      "malformed proof"
+    ],
+    "lattice_relation_compiler": [
+      true,
+      {
+        "shape": [
+          6,
+          92
+        ],
+        "degree": 8
+      }
+    ],
+    "three_branch_extraction": [
+      true,
+      "binary extracted witness satisfies A*x=target"
+    ],
+    "wrong_plaintext_offset": [
+      false,
+      "Fiat-Shamir challenge mismatch"
+    ],
+    "mixed_limb_ciphertext": [
+      false,
+      "linear relation commitment mismatch"
+    ],
+    "stale_parent": [
+      false,
+      "Fiat-Shamir challenge mismatch"
+    ],
+    "different_recipient": [
+      false,
+      "Fiat-Shamir challenge mismatch"
+    ],
+    "different_epoch": [
+      false,
+      "Fiat-Shamir challenge mismatch"
+    ],
+    "changed_response": [
+      false,
+      "masked witness commitment mismatch"
+    ],
+    "short_response": [
+      false,
+      "response shape/range"
+    ],
+    "noncanonical_response": [
+      false,
+      "response shape/range"
+    ],
+    "missing_repetition": [
+      false,
+      "wrong repetition count"
+    ],
+    "nonbinary_secret": [
+      false,
+      "pair is not a permuted bit/complement"
+    ],
+    "truncated_packet": [
+      false,
+      "wire length"
+    ],
+    "trailing_bytes": [
+      false,
+      "wire length"
+    ],
+    "malicious_key_a_is_one": [
+      false,
+      "key registry or pinned public a mismatch"
+    ],
+    "out_of_range_secret": [
+      false,
+      "s outside exact interval"
+    ],
+    "known_challenge_forgery_legacy": [
+      true,
+      "accept"
+    ],
+    "known_challenge_forgery_bound": [
+      false,
+      "Fiat-Shamir challenge mismatch"
+    ],
+    "false_statement_distance": [
+      true,
+      {
+        "distance": 1122903718247860,
+        "allowed": 1111536
+      }
+    ],
+    "gate_refuses_before_product": [
+      false,
+      "ciphertext envelope refused: Fiat-Shamir challenge mismatch"
+    ],
+    "rejected_ciphertext_product_calls": [
+      true,
+      0
+    ]
+  },
+  "toy": {
+    "N": 8,
+    "primes": [
+      131041,
+      131009,
+      130817
+    ],
+    "t": 130769,
+    "measured_wire_bytes": 2795545,
+    "formula_wire_bytes": 2795545,
+    "proof_contains_raw_witness": false,
+    "statement_bits": 68,
+    "binary_witness_bits": 736
+  },
+  "N8192_count_only": {
+    "N": 8192,
+    "statement_modulus_bits": 244,
+    "range_widths": {
+      "s": 2,
+      "e_pk": 5,
+      "m": 61,
+      "eta": 66
+    },
+    "binary_witness_bits": 2195456,
+    "extended_witness_coordinates": 4390912,
+    "repetitions": 219,
+    "classical_interactive_error_log2": -128.10678765793324,
+    "compact_proof_bits": 235113860648,
+    "compact_proof_bytes": 29389232581,
+    "caveat": "compact codec count; Python JSON is larger; no QROM reduction"
+  },
+  "step_counts": {
+    "64": {
+      "delivered_proofs": 18,
+      "delivered_proof_bits": 4232049491664,
+      "previous_unbuilt_commitment_bits": 116926020
+    },
+    "1024": {
+      "delivered_proofs": 240,
+      "delivered_proof_bits": 56427326555520,
+      "previous_unbuilt_commitment_bits": 1559013600
+    },
+    "4096": {
+      "delivered_proofs": 960,
+      "delivered_proof_bits": 225709306222080,
+      "previous_unbuilt_commitment_bits": 6236054400
+    }
+  },
+  "source_sha256": {
+    "scholar_zkpopk.py": "93604563729a82ac1d4e97616d0f502c7d0ed35a056da98a49d40cf6fc59c54d",
+    "scholar_zkpopk_tests.py": "38590cd041287d0ff89249924c60c9c394764ca9aee7cb7190fa315d9101f3b1",
+    "scholar_zkpopk_lazer_params.py": "2fdfee94c19edb8ddcd1675ec169f7354601141e089bf7710651d47e4ef110cd",
+    "he_matvec.py": "a3911408c7502ba7d674d336909a9f1ff39e25a162d57406a4040a3ffbb8e85a",
+    "bfv_ref.py": "3a5601ec294790aa0e185ee8d2cf75079daa78b24da841affddd9f0eeaf22753"
+  },
+  "all_expected_outcomes": true
+}
