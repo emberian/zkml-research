@@ -17,9 +17,9 @@ import jax.numpy as jnp
 
 import remote
 
-res = {"jax": jax.__version__, "backend": jax.default_backend(),
+res = {"jax_version": jax.__version__, "backend": jax.default_backend(),
        "devices": [str(d.device_kind) for d in jax.devices()][:8]}
-want = os.environ.get("G2_WANT", "gpu")
+want = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("G2_WANT", "gpu")
 out_path = os.environ["ACCEL_RESULTS"]
 
 

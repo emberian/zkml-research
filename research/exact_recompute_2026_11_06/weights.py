@@ -58,10 +58,13 @@ class Shards:
         assert dt == "U8", (name, dt)
         return np.frombuffer(buf, dtype=np.uint8).reshape(shape)
 
-    def mxfp4(self, prefix):
-        """(q, e) for an expert weight: q int8 [E, out, nblk, 32], e int32 [E, out, nblk]; w = q*2^(e-128)."""
+    def mxfp4(self, prefix, e=None):
+        """(q, e) for an expert weight: q int8 [E, out, nblk, 32], e int32 [E, out, nblk]; w = q*2^(e-128).
+        With e given, only that expert ([out, nblk, 32], [out, nblk])."""
         blocks = self.u8(prefix + "_blocks")  # [E, out, nblk, 16]
         scales = self.u8(prefix + "_scales")  # [E, out, nblk]
+        if e is not None:
+            blocks, scales = blocks[e], scales[e]
         q = np.empty(blocks.shape[:-1] + (32,), dtype=np.int8)
         q[..., 0::2] = FP4_X2[blocks & 0x0F]
         q[..., 1::2] = FP4_X2[blocks >> 4]
