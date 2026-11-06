@@ -1,0 +1,19 @@
+# Opt-in bridge package: Selvage's RS proximity-generator premise discharged by ArkLib's
+# BCIKS20 unique-decoding correlated agreement. Kept out of the minidregg root package so the
+# root manifest does not take ArkLib's dependency tree; it builds the two Selvage source files
+# it needs (Mathlib-only imports) from the repository root.
+name = "selvage_arklib"
+defaultTargets = ["SelvageArkLib"]
+
+[[require]]
+name = "ArkLib"
+git = "https://github.com/Verified-zkEVM/ArkLib"
+rev = "4d9d67be64634f09a85206238df9380aa3733a93"
+
+[[lean_lib]]
+name = "Selvage"
+srcDir = "../.."
+roots = ["Selvage.CorrelatedAgreement", "Selvage.ReedSolomon"]
+
+[[lean_lib]]
+name = "SelvageArkLib"
