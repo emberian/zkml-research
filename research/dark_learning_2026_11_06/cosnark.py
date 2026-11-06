@@ -83,8 +83,9 @@ class SharePCS:
     row e with weight 1 (its revealed row combination is uniform; the custodians send m_e = <M_e, b> so the
     verifier can still subtract it). The proximity combination adds the LAST mask row with weight 1. Each
     custodian draws its own mask and tail shares locally: no communication."""
-    def __init__(self, p, shares, label, hide=None, nmask=None):
+    def __init__(self, p, shares, label, hide=None, nmask=None, legacy_public_seed=False):
         import random as _r
+        import secrets as _s
         self.p, self.label = p, label
         self.hide = HIDE if hide is None else hide
         self.nmask = NMASK if nmask is None else nmask
@@ -100,7 +101,12 @@ class SharePCS:
         self.rows = [[s[r * self.C:(r + 1) * self.C] for r in range(self.Rd)] for s in shares]
         self.ext = []
         for i, rows in enumerate(self.rows):
-            rng = _r.Random(H("mask", label, i, self.hide, self.nmask))
+            # Each custodian's tails and mask rows come from ITS OWN secret randomness. Until 2026-11-06 they were
+            # seeded from public data (label, party, hide, nmask): anyone could recompute them and strip them from
+            # the opened columns, so layer 1 did not hide (zk_seed_falsifier.py). legacy_public_seed keeps the old
+            # behaviour for that falsifier only.
+            rng = _r.Random(H("mask", label, i, self.hide, self.nmask)) if legacy_public_seed else \
+                _r.Random(_s.randbits(256))
             ext = [list(r) + [rng.randrange(p) for _ in range(self.W - self.C)] for r in rows]
             ext += [[rng.randrange(p) for _ in range(self.W)] for _ in range(self.nmask)]
             self.ext.append(ext)
@@ -207,7 +213,7 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
     for k in sorted(com):
         c = com[k]
         gams[k] = c.prox_weights(vt.chal(p, c.prox_len()))
-        if gams[k] != prox[k][0]:
+        if prox[k][0] is not None and gams[k] != prox[k][0]:
             return False, "proximity challenge mismatch"
         vt.absorb("g", k, prox[k][1])
     used = {}
@@ -222,7 +228,7 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
         J = [x % npts for x in vt.chal(p, T_COLS)]
         if J != cols[k][0]:
             return False, "column challenge mismatch"
-        gam, gs = prox[k]
+        gam, gs = gams[k], prox[k][1]
         gcode = encode_pub(p, [sum(g[cc] for g in gs) % p for cc in range(c.W)], npts)
         ucodes = [(eweights[ie], encode_pub(p, [sum(ui[cc] for ui in msgs[ie][0]) % p for cc in range(c.W)], npts))
                   for ie, (kk, pt) in enumerate(evals) if kk == k]
@@ -486,7 +492,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None, carry=None, context=(
                   opened_column_elems=col_elems, proving_openings=proving_opens, proving_wire=proving_wire,
                   child_roots={"W1": com["W1n"].roots, "W2": com["W2n"].roots},
                   carry={"W1": com["W1n"], "W2": com["W2n"]},
-                  roots={k: com[k].roots for k in com})
+                  roots={k: com[k].roots for k in com}, coms=com)
     return ok, why, counts
 
 # ------------------------------------------------------------------------------------------- counts at any d

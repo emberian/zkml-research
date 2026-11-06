@@ -1,0 +1,9 @@
+16 True accept formula EXACT {'field_elems': 45802, 'hashes': 56157, 'indices': 832, 'bits': 17170114}
+32 True accept formula EXACT {'field_elems': 59158, 'hashes': 63081, 'indices': 832, 'bits': 19757374}
+64 True accept formula EXACT {'field_elems': 91798, 'hashes': 70005, 'indices': 832, 'bits': 23520958}
+forge_W1n False Ligero linear test: the constraints do not hold | rank-1 update W1n: W'(r) = W(r) - d(r_row) v(r_col)
+forge_z1 False Ligero linear test: the constraints do not hold | sumcheck z1: first round sum = claim
+forge_sumcheck False Ligero linear test: the constraints do not hold | sumcheck z1: final claim = product gate
+lie_in_u False Ligero linear test: the constraints do not hold | PCS evaluation consistency (W1n)
+replay False column challenge mismatch
+chain True accept | stale False parent commitment is not the previous step's child commitment

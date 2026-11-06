@@ -1,0 +1,3 @@
+no sigma commitment (rushing party): ACCEPT
+sigma commit-then-open             : REFUSED (MAC check: party 1's opened sigma does not match its commitment)
+FALSIFIER PASS

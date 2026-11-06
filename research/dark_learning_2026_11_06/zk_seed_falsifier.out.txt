@@ -1,0 +1,3 @@
+legacy_public_seed verifier recovers the data part of every row at the opened column: True
+secret_seed verifier recovers the data part of every row at the opened column: False
+FALSIFIER PASS

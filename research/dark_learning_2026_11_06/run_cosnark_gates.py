@@ -40,9 +40,9 @@ def run(d, attack=None, cheat_phase=None):
     ok_s, why_s, cs = CS.prove_and_verify(spdz.Engine(p, 3, dealer), wires)
     sym = G.RecEngine(p, 3, None, symbolic=True, transcript=list(live.transcript))
     MF.run_step(sym, None, None, [0] * d, [0] * d, tab, 9)
-    ok_m, why_m, cm = G.prove_and_verify_middle(live, sym, wires, cs["roots"])
+    ok_m, why_m, cm = G.prove_and_verify_middle(live, sym, wires, cs["roots"], spine_coms=cs["coms"])
     return dict(spine=(ok_s, why_s), middle=(ok_m, why_m), middle_counts=cm,
-                spine_counts={k: v for k, v in cs.items() if k not in ("child_roots", "roots", "carry")},
+                spine_counts={k: v for k, v in cs.items() if k not in ("child_roots", "roots", "carry", "coms")},
                 seconds=round(time.time() - t0, 1))
 
 def main():
