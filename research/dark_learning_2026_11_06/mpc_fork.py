@@ -19,7 +19,7 @@ def tables(p):
 def centered(v, p):
     return v - p if v > p // 2 else v
 
-def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None):
+def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None):
     """The protocol, identical in live and audit mode. W1, W2, x, y are PLAIN values for the owner's input
     (ignored in audit mode, which reads the owner's broadcasts from the transcript)."""
     d = len(x)
@@ -32,7 +32,8 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None):
     eng.parent = [hash_shares(sW1 + sW2, i) for i in eng.active]
     M1 = [sW1[i * d:(i + 1) * d] for i in range(d)]
     M2 = [sW2[i * d:(i + 1) * d] for i in range(d)]
-    z1 = eng.matvec(M1, sx)
+    matvec = mv or eng.matvec        # mv: HE-assisted matvec (he_matvec.HEMatvec), same interface
+    z1 = matvec(M1, sx)
     u1 = [eng.trunc(z, S.S1, 13) for z in z1]
     hg = [eng.lookup2(u, 128, tab, 255) for u in u1]
     h = [a for a, _ in hg]
@@ -40,10 +41,10 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None):
     if tamper == "swap_share" and not eng.audit:
         # custodian 2 substitutes its (share, MAC share) of h[0] with those of an unrelated sharing (h[1])
         h[0] = dict(h[0]); h[0][2] = h[1][2]
-    z2 = eng.matvec(M2, h)
+    z2 = matvec(M2, h)
     e = [eng.sub(eng.trunc(z, S.S1, 13), yy) for z, yy in zip(z2, sy)]
     d2 = [eng.trunc(v, S.S2, 8) for v in e]
-    b = eng.matvec(M2, d2, transpose=True)
+    b = matvec(M2, d2, transpose=True)
     bg = [eng.mul(bb, g) for bb, g in zip(b, g1)]
     d1 = [eng.trunc(v, S.S3, 13) for v in bg]
     G2 = eng.outer(d2, h)

@@ -92,8 +92,8 @@ def spdz_core(T, d, P):
     T.outer(d, d)                    # G2
     T.outer(d, d)                    # G1
 
-def mpc_counts(d, pbits=61):
-    P = params(d)
+def mpc_counts(d, pbits=61, P=None):
+    P = P or params(d)
     T = Tally()
     T.input(2 * d * d + 2 * d)
     T.matvec(d)                      # z1
