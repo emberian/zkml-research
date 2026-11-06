@@ -52,4 +52,4 @@ Selvage modules plus Mathlib, built fresh on hbox under `swarm-build` with 0 err
 `scripts/check-import-boundary.sh` passes with the new files staged. The patch is applied
 verbatim on minidregg branch **`lane/binding-term` @ `049bfc450`** (pushed). Its only addition
 is two import lines in the `Selvage.lean` umbrella; without them the new modules would be
-orphans that `lake build` never compiles. The two additions proposed above are not written yet.
+orphans that `lake build` never compiles. The two additions proposed above landed on the same branch at `28824e21d` (`Selvage/BindingFixedHash.lean`: `secureAt_false_of_compressing`, `cert_and_of_collisionExtractor`, with teeth).
