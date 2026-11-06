@@ -601,14 +601,14 @@ AUTOMATA_FAMILIES = [
          declared=lambda n: n, declared_note="k·n (one exact-public table per lane)",
          bytes_note="672/1168/1664/2160 at k=1..4, word length 8",
          pins=["lanes-cost", "lanes-area"], binds_c="no"),
-    dict(name="dfa-hash-chained", served="dfa-routing-toggle-2state::poseidon2-v1",
+    dict(name="dfa-hash-chained", served="dfa-routing-injection-3state::poseidon2-v1",
          sym="byte", rows=lambda n: n, lookups=2, degree="7 (chip S-box) [READ note 01 §3; unpinned]",
          cols=22, cons=14, tables=0, chip=2, chip_w=352,
          declared=lambda n: 0, declared_note="0 (transition is an interpolant gate)",
          bytes_note="byte-pinned golden",
          pins=["gen-width", "gen-shape", "gen-chip", "p2-wide"],
          binds_c="by the route chain (CollisionFree carrier), not in the theorem"),
-    dict(name="dfa-attested-weld8", served="attested-automaton-map-committed-weld8-v1",
+    dict(name="dfa-attested-weld8", served="dregg-attested-automaton::map-committed-weld8-v1",
          sym="binary (ASYM = 2: 8 rows per byte)", rows=lambda n: 8 * n, lookups="1 map-op + 2 range",
          degree="1 [READ: 0 nonlinear mults, w8-cost]",
          cols=11, cons=22, tables=3, chip=16, chip_w=352,
@@ -787,6 +787,10 @@ def certs_markdown():
     w(f"- Dyck: the deployed grammar caps nesting at k ≤ 3, so its language is `[ᵏ]ᵏ` for k ≤ 3, at most")
     w(f"  {DYCK_MAX_TOKENS} tokens; record-size rows below are n/a, not a cost.")
     w("- degree: no emitter pins a maximum constraint degree; the column says where each number was read.")
+    w("- names are the descriptors' own `name` fields. The hash-chained row is the 3-state injection object")
+    w("  `DfaRoutingGeneralEmit` emits; the served toggle `dfa-routing-toggle-2state::poseidon2-v1` comes from")
+    w("  `metatheory/Dregg2/Circuit/Emit/DfaRoutingEmit.lean` [READ `circuit/src/descriptor_by_name.rs:83`]; the")
+    w("  injection object is not routed by name.")
     w("")
     w("## 2. Run term per record (BabyBear realization)")
     w("")
