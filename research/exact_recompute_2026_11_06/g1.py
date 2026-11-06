@@ -13,12 +13,13 @@ import model as M
 from weights import Shards, bf16_to_int
 
 PROMPT = "The capital of France is Paris. The capital of Japan is"
-OUT = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.environ.get("G1_OUT", HERE)          # where results go; params are always read from HERE
 
 
 def tokens():
     if os.environ.get("GPTOSS_IDS_FROM_PARAMS") == "1":     # remote jobs: ids pinned in params-v0.json
-        return json.load(open(os.path.join(OUT, "params-v0.json")))["ids"]
+        return json.load(open(os.path.join(HERE, "params-v0.json")))["ids"]
     from tokenizers import Tokenizer
     tok = Tokenizer.from_file(os.path.join(os.environ.get("GPTOSS_DIR", "/Users/ember/models/gpt-oss-20b/6cee5e81"), "tokenizer.json"))
     return tok.encode(PROMPT).ids
@@ -40,7 +41,7 @@ def main(backend="numpy"):
     Wt = Lr.LayerWeights(S, 0)
     if backend == "numpy-f32":
         xp, kern = np, M.InexactF32()
-        P = json.load(open(os.path.join(OUT, "params-v0.json")))["P"]
+        P = json.load(open(os.path.join(HERE, "params-v0.json")))["P"]
         x0 = embed_int(np, S, ids)
     elif backend == "numpy":
         xp, kern = np, M.ExactF64()
@@ -55,7 +56,7 @@ def main(backend="numpy"):
         import jax.numpy as jnp
         import jaxint
         xp, kern = jnp, (jaxint.F32Dot() if backend == "jax-f32" else jaxint.Int8Mxu())
-        cfg = json.load(open(os.path.join(OUT, "params-v0.json")))
+        cfg = json.load(open(os.path.join(HERE, "params-v0.json")))
         assert cfg["ids"] == ids
         P = cfg["P"]
         x0 = embed_int(jnp, S, ids)

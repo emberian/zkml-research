@@ -1,6 +1,12 @@
-"""G2 on a Kaggle accelerator: fetch layer 0's pinned bytes, run gptoss-int v0 layer 0 with the int8-limb
-JAX kernel on the device, compare every intermediate's digest with the Mac's numpy reference, then run
-the float32 falsifier on the same device. Results go to $ACCEL_RESULTS."""
+"""G2 on any accelerator: fetch layer 0's pinned bytes, run gptoss-int v0 layer 0 with the int8-limb JAX
+kernel on the device, compare every intermediate's digest with the Mac's numpy reference, then run the
+float32 falsifier on the same device.
+
+    python3 g2_entry.py tpu|gpu|cpu        (README: "G2 on a fresh machine")
+
+Results go to $ACCEL_RESULTS (the Kaggle harness sets it), else ./g2-<backend>.json. The weights are
+fetched into $GPTOSS_DIR (default /tmp/gptoss); per-run files go to a fresh temporary directory, so
+the checkout is not written."""
 import json
 import os
 import sys
@@ -11,6 +17,9 @@ sys.path.insert(0, HERE)
 os.environ.setdefault("GPTOSS_DIR", "/tmp/gptoss")
 os.environ["GPTOSS_IDS_FROM_PARAMS"] = "1"
 
+import tempfile
+os.environ.setdefault("G1_OUT", tempfile.mkdtemp(prefix="g2-"))
+
 import jax
 jax.config.update("jax_enable_x64", True)
 import jax.numpy as jnp
@@ -20,7 +29,7 @@ import remote
 res = {"jax_version": jax.__version__, "backend": jax.default_backend(),
        "devices": [str(d.device_kind) for d in jax.devices()][:8]}
 want = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("G2_WANT", "gpu")
-out_path = os.environ["ACCEL_RESULTS"]
+out_path = os.environ.get("ACCEL_RESULTS") or os.path.abspath(f"g2-{want}.json")
 
 
 def save():
@@ -49,7 +58,7 @@ for be in ("jax", "jax-f32"):
     t0 = time.time()
     try:
         g1.main(be)
-        rec = json.load(open(os.path.join(HERE, f"g1-{be}.json")))
+        rec = json.load(open(os.path.join(os.environ["G1_OUT"], f"g1-{be}.json")))
         res[be] = {"kernel": rec["backend"], "seconds": rec["seconds"], "digests": rec["digests"],
                    "equal_to_mac_numpy": {k: rec["digests"][k] == ref[k] for k in ref}}
     except Exception as e:
