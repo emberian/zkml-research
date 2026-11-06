@@ -146,7 +146,7 @@ def run(a):
     if spent + a.max_usd > TOTAL_CAP:
         sys.exit(f"refused: ledger spend ${spent:.2f} + this cap ${a.max_usd:.2f} > ${TOTAL_CAP:.2f}")
     c0 = credit()
-    offer = api("GET", "/bundles/?q=" + urllib.parse.quote(json.dumps({"id": {"eq": a.offer}})))["offers"]
+    offer = api("GET", "/bundles/?q=" + urllib.parse.quote(json.dumps({"ask_contract_id": {"eq": a.offer}})))["offers"]
     if not offer:
         sys.exit(f"offer {a.offer} not available")
     o = offer[0]
@@ -179,7 +179,13 @@ def run(a):
                 host, port = inst["ssh_host"], inst["ssh_port"]
                 if ssh(host, port, "true", 60).returncode == 0:
                     break
-            log("boot:", st, inst.get("status_msg", "")[:80] if inst.get("status_msg") else "")
+            msg = (inst.get("status_msg") or "").strip()
+            log("boot:", st, msg[:100])
+            bad = any(w in msg.lower() for w in ("no space left", "error response", "failed to", "unauthorized"))
+            state["bad_boot"] = state.get("bad_boot", 0) + 1 if bad else 0
+            if state["bad_boot"] >= 4:
+                state["reason"] = "host_boot_error: " + msg[:80]
+                raise RuntimeError("host cannot start the image")
             time.sleep(20)
         else:
             state["reason"] = "boot_timeout"
