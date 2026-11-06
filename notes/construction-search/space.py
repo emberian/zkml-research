@@ -527,9 +527,11 @@ def sensitivity():
 # "lookups" are per symbol; "chip" rows are Poseidon2 permutations per symbol.
 CERT_FAMILIES = {
     # family:            (main cells/symbol, lookups/symbol, chip perms/symbol, binds word?)
-    "dfa-table-routing":  (3,  1, 0,    False),   # [M] DfaRoutingTableEmit: 3 cols, 1 table lookup
+    "dfa-table-routing":  (3,  1, 0,    False),
+    "dfa-table-route8":   (20, 2, 1,    True),    # [M] RouteChain8 + exact-public table   # [M] DfaRoutingTableEmit: 3 cols, 1 table lookup
     "dfa-hash-chained":   (22, 2, 2,    True),    # [M] DfaRoutingGeneralEmit: 22 cols, 2 chip lookups
-    "dfa-attested-weld8": (11, 1, 16,   False),   # [M] Weld8: 11 cols, 1 map-op, 16 chip rows (binary symbols)
+    "dfa-attested-weld8": (11, 1, 16,   False),
+    "dfa-weld8-route8":   (28, 2, 17,   True),    # [M] full8 root-seeded route; binary symbols   # [M] Weld8: 11 cols, 1 map-op, 16 chip rows (binary symbols)
     "bracket-replay":     (24, 2, 4,    False),   # [M] DyckStackEmit: 24 cols, ~2 rows/token, 2 chip/row
     "nfa-subset":         (9,  6, 0,    False),   # [I] 03-nfa: 9 cols vs a 64-row determinized table
     "detokenizer":        (4,  1, 0,    True),    # [I] 06-transducers: 1 row + 1 vocab lookup/token
@@ -570,6 +572,12 @@ BREADSTUFFS_MT_DEFAULT = "~/dev/breadstuffs/metatheory"
 E = "Dregg2/Circuit/Emit/"
 
 AUTOMATA_PINS = {
+    "route-shape": (E + "RouteChain8.lean", 62, "constraints.length = d.constraints.length + 28"),
+    "trb-width": (E + "DfaRoutingTableRoute8.lean", 22, ".traceWidth = 20"),
+    "trb-pi": (E + "DfaRoutingTableRoute8.lean", 23, ".piCount = 11"),
+    "trb-cons": (E + "DfaRoutingTableRoute8.lean", 24, ".constraints.length = 32"),
+    "wbr-width": (E + "AttestedAutomatonRoute8.lean", 30, "weldBoundInstance.traceWidth = 28"),
+    "wbr-cons": (E + "AttestedAutomatonRoute8.lean", 31, "weldBoundInstance.constraints.length = 50"),
     "trt-shape":   (E + "DfaRoutingTableEmit.lean", 540, "demoRoutingDesc.traceWidth == TRT_WIDTH"),
     "trt-width":   (E + "DfaRoutingTableEmit.lean", 109, "def TRT_WIDTH : Nat := 3"),
     "trt-cons":    (E + "DfaRoutingTableEmit.lean", 542, "constraints.length == 4"),
@@ -579,7 +587,7 @@ AUTOMATA_PINS = {
     "gen-width":   (E + "DfaRoutingGeneralEmit.lean", 90, "def DFA_WIDTH : Nat := 22"),
     "tog-width":   (E + "DfaRoutingEmit.lean", 105, "def DFA_WIDTH : Nat := 8"),
     "tog-shape":   (E + "DfaRoutingEmit.lean", 277, "constraints.length == 14"),
-    "tog-narrow":  (E + "DyckStackEmit.lean", 641, "poseidon2narrow.wireId == 8"),
+    "tog-narrow":  (E + "DyckStackEmit.lean", 655, "poseidon2narrow.wireId == 8"),
     "gen-shape":   (E + "DfaRoutingGeneralEmit.lean", 274, "constraints.length == 14"),
     "gen-chip":    (E + "DfaRoutingGeneralEmit.lean", 275, "chipLookupTuple"),
     "w8-cost":     (E + "AttestedAutomatonWeld8.lean", 943, "#guard costOf weldInstance =="),
@@ -588,15 +596,15 @@ AUTOMATA_PINS = {
     "w8-cross":    (E + "AttestedAutomatonWeld8.lean", 963, "jsonBytes (prodRunDesc 4 (wordN n))"),
     "w8-aux":      (E + "AttestedAutomatonWeld8.lean", 980, "MAP_TREE_DEPTH * n"),
     "asym":        (E + "AttestedAutomatonEmit.lean", 164, "def ASYM : Nat := 2"),
-    "dyck-shape":  (E + "DyckStackEmit.lean", 632, "dyckParseDesc.constraints.length == 79"),
-    "dyck-width":  (E + "DyckStackEmit.lean", 639, "DYCK_WIDTH + 2 * (CHIP_OUT_LANES - 1) == 38"),
-    "dyck-chip":   (E + "DyckStackEmit.lean", 633, "chipLookupTupleNarrow"),
+    "dyck-shape":  (E + "DyckStackEmit.lean", 645, "theorem constraint_count : dyckParseDesc.constraints.length = 85"),
+    "dyck-width":  (E + "DyckStackEmit.lean", 653, "DYCK_WIDTH + 2 * (CHIP_OUT_LANES - 1) == 38"),
+    "dyck-chip":   (E + "DyckStackEmit.lean", 647, "#guard (chipLookupTupleNarrow [.var RULE_ID"),
     "dyck-rows":   (E + "DyckStackReplay.lean", 963, "(decodeRun [op, cl] witTrace 5).length = 5"),
     "deriv-width": (E + "DerivationEmit.lean", 393, "DERIV_TRACE_WIDTH == 386"),
     "deriv-cons":  (E + "DerivationEmit.lean", 397, "derivationConstraints.length == 393"),
     "deriv-pi":    (E + "DerivationEmit.lean", 398, "derivationDesc.piCount == 13"),
-    "dl-dom":      ("Dregg2/Datalog/FixpointCert.lean", 642, "(activeDomain tc edb).length == 6"),
-    "dl-substs":   ("Dregg2/Datalog/FixpointCert.lean", 643, "(varBound rStep)).length == 216"),
+    "dl-dom":      ("Dregg2/Datalog/FixpointCert.lean", 651, "(activeDomain tc edb).length == 6"),
+    "dl-substs":   ("Dregg2/Datalog/FixpointCert.lean", 652, "(varBound rStep)).length == 216"),
     "dl-domdef":   ("Dregg2/Datalog/FixpointCert.lean", 139, "edb.flatMap (·.2) ++ P.flatMap ruleConsts"),
     "p2-wide":     (E + "Poseidon2RoundGates.lean", 121, "POSEIDON2_AUX_COLS == 352"),
 }
@@ -613,26 +621,33 @@ AUTOMATA_FAMILIES = [
          bytes_note="~10 B/symbol (run shipped; w8-cross)",
          pins=["trt-width", "trt-shape", "trt-cons", "trt-golden", "lanes-cost"],
          binds_c="no (word read off the SYMBOL column)"),
+    dict(name="dfa-table-route8", served="dregg-dfa-routing-table::route8-bound-v1",
+         sym="byte", rows=lambda n: n, lookups="1 table + 1 chip", degree="1 main; chip S-box separate",
+         cols=20, cons=32, tables=2, chip=1, chip_w=352,
+         declared=lambda n: n, declared_note="n (same exact-public edge multiset; route pins order)",
+         bytes_note="table-dependent; generated bound artifact",
+         pins=["route-shape", "trb-width", "trb-pi", "trb-cons", "p2-wide"],
+         binds_c="full8 ordered route + checked exact height; named canonical arity16 collision"),
     dict(name="dfa-product-lanes-k", served=None,
-         sym="binary (pinned at NSYM = 2)", rows=lambda n: n, lookups="k", degree="1 [READ]",
+         sym="binary (pinned at NSYM = 2)", rows=lambda n: 8 * n, lookups="k", degree="1 [READ]",
          cols="2k+1", cons="4k", tables="k", chip=0, chip_w=0,
-         declared=lambda n: n, declared_note="k·n (one exact-public table per lane)",
+         declared=lambda n: 8 * n, declared_note="k·n_symbols (one exact-public table per lane)",
          bytes_note="672/1168/1664/2160 at k=1..4, word length 8",
          pins=["lanes-cost", "lanes-area"], binds_c="no"),
     dict(name="dfa-hash-chained-toggle", served="dfa-routing-toggle-2state::poseidon2-v1",
-         sym="bit (2-state toggle)", rows=lambda n: n, lookups=2, degree="7 (chip S-box) [READ note 01 §3; unpinned]",
+         sym="bit (2-state toggle)", rows=lambda n: 8 * n, lookups=2, degree="7 (chip S-box) [READ note 01 §3; unpinned]",
          cols=8, cons=14, tables=0, chip=2, chip_w=141,
          declared=lambda n: 0, declared_note="0 (transition is an interpolant gate)",
          bytes_note="byte-pinned golden (table 8 = narrow chip)",
          pins=["tog-width", "tog-shape", "tog-narrow"],
-         binds_c="by the route chain (CollisionFree carrier), not in the theorem"),
+         binds_c="route commitment + explicit record length; named-chain collision theorem, scalar hash residual"),
     dict(name="dfa-hash-chained-injection", served="dfa-routing-injection-3state::poseidon2-v1",
          sym="byte", rows=lambda n: n, lookups=2, degree="7 (chip S-box) [READ note 01 §3; unpinned]",
          cols=22, cons=14, tables=0, chip=2, chip_w=352,
          declared=lambda n: 0, declared_note="0 (transition is an interpolant gate)",
          bytes_note="byte-pinned golden",
          pins=["gen-width", "gen-shape", "gen-chip", "p2-wide"],
-         binds_c="by the route chain (CollisionFree carrier), not in the theorem"),
+         binds_c="route commitment + explicit record length; named-chain collision theorem, scalar hash residual"),
     dict(name="dfa-attested-weld8", served="dregg-attested-automaton::map-committed-weld8-v1",
          sym="binary (ASYM = 2: 8 rows per byte)", rows=lambda n: 8 * n, lookups="1 map-op + 2 range",
          degree="1 [READ: 0 nonlinear mults, w8-cost]",
@@ -641,13 +656,21 @@ AUTOMATA_FAMILIES = [
          bytes_note="2803, constant in word length and table size",
          pins=["w8-cost", "w8-carriers", "w8-bytes", "w8-aux", "asym", "p2-wide"],
          binds_c="automaton: yes (8-felt root); word: no"),
+    dict(name="dfa-weld8-route8", served="dregg-attested-automaton::map-committed-weld8-bound-v1",
+         sym="binary (8 rows per byte)", rows=lambda n: 8 * n,
+         lookups="1 map-op + 2 range + 1 chip", degree="1 main; chip S-box separate",
+         cols=28, cons=50, tables=4, chip=17, chip_w=352,
+         declared=lambda n: 0, declared_note="0 (same 2^16-leaf map root)",
+         bytes_note="6036, constant in word length and table size",
+         pins=["wbr-width", "wbr-cons", "route-shape", "w8-aux", "asym", "p2-wide"],
+         binds_c="full8 root-seeded route + checked exact height; row-specific map or route collision"),
     dict(name="dyck-bracket-replay", served="dregg-dyck-parse-v1",
          sym="bracket token", rows=None, lookups="2 chip per row", degree="8 [READ note 04; unpinned]",
-         cols=24, cons=79, tables=0, chip=2, chip_w=141,
+         cols=24, cons=85, tables=0, chip=2, chip_w=141,
          declared=lambda n: 0, declared_note="0",
          bytes_note="-",
          pins=["dyck-width", "dyck-shape", "dyck-chip", "dyck-rows"],
-         binds_c="no (PI_TABLE/PI_ROUTE absent from the theorem)"),
+         binds_c="canonical record wrapper pins route + padded row count; named scalar-chain collision"),
 ]
 
 DYCK_MAX_TOKENS = 6   # depth cap k <= 3 => the deployed grammar's language is finite: [^k]^k, k <= 3
@@ -714,7 +737,7 @@ def automata_rows(n):
     out = []
     for f in AUTOMATA_FAMILIES:
         if f["rows"] is None:      # Dyck: finite language
-            run_rows = None if n > DYCK_MAX_TOKENS else 2 * n + 1
+            run_rows = None if n > DYCK_MAX_TOKENS or n % 2 else 1 << (3 * (n // 2) + 2).bit_length()
         else:
             run_rows = f["rows"](n)
         if run_rows is None:
@@ -754,7 +777,7 @@ def certs(n_bytes=None):
             if r["run_rows"] is None:
                 print(f"  {r['name']:22} {'n/a: language finite (<= 6 tokens)':>60}")
                 continue
-            mc = f"{r['main_cells']:,}" if r["main_cells"] is not None else "(2k+1)n"
+            mc = f"{r['main_cells']:,}" if r["main_cells"] is not None else "(2k+1)·rows"
             print(f"  {r['name']:22} {r['run_rows']:9,} {mc:>12} {r['chip_perms']:11,} "
                   f"{r['chip_cells']:13,} {r['declared_rows']:9,}")
 
@@ -780,22 +803,21 @@ def certs_markdown():
       f"(zkml-research {rev}); edit the script, not this file. -->")
     w("")
     w("2026-11-06, lane C of the automata program (`SUBSTRATE-DECISION.md` §4). Tags: [MEASURED] a pinned")
-    w("`#guard` at the cited `file:line` (the generator re-reads every cited line and refuses to print if")
+    w("named theorem or legacy `#guard` at the cited `file:line` (the generator re-reads each line and refuses if")
     w("one moved); [READ] read off an emitted golden or a note; [INFERRED] a model number. Counts, not clocks.")
     w("")
     w("Two blocks per family, kept apart on purpose (codex round 3, finding 16): the **semantic** operation")
     w("counts (what the checker does per symbol) and the **BabyBear realization** (what the served")
     w("descriptor spends). A \"lookup\" is an abstract operation; its realization cost (LogUp auxiliary")
-    w("columns, table authentication) belongs to the target and is not pinned in Lean today. Tower256 has")
-    w("no AIR layer yet (LEAF-PROVER-DECISION §6 \"not yet available\"), so it has a commitment column and")
-    w("no realization column.")
+    w("columns, table authentication) belongs to the target. This model prices the Tower256 commitment")
+    w("term only; it does not yet contain a Tower256 realization column.")
     w("")
     w("## 1. Per symbol: semantics and the BabyBear realization")
     w("")
     w("| family | served descriptor | symbol | rows / symbol | lookups / symbol | degree | main cols | constraints | tables | chip perms / row (cells each) | declared table rows | descriptor bytes | binds `c`? | pins |")
     w("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for f in AUTOMATA_FAMILIES:
-        rps = {"dyck-bracket-replay": "5 rows for 2 tokens", "dfa-attested-weld8": "1 (8 per byte)"}.get(f["name"], "1")
+        rps = "nextPow2(3k+3) / 2k (canonical padding)" if f["name"] == "dyck-bracket-replay" else ("1 (8 per byte)" if "binary" in f["sym"] or f["name"] == "dfa-hash-chained-toggle" else "1")
         chip = f"{f['chip']} ({f['chip_w']})" if f["chip"] else "0"
         pins = ", ".join(f"`{pin_ref(p)}`" for p in f["pins"])
         w(f"| {f['name']} | {('`' + f['served'] + '`') if f['served'] else '-'} | {f['sym']} | {rps} | {f['lookups']} | "
@@ -803,6 +825,12 @@ def certs_markdown():
           f"{f['bytes_note']} | {f['binds_c']} | {pins} |")
     w("")
     w("Notes on the rows [READ unless tagged]:")
+    w("- the route8 variants add 17 columns, nine PIs, 28 constraints and one wide arity-16 permutation per row.")
+    w("  Their current executable wrappers require power-of-two rows and reject padding/height mismatches;")
+    w("  arbitrary-length inactive padding is not yet supplied. The legacy rows remain explicit controls.")
+    w("- binary product and toggle rows also cost eight rows per byte; earlier bills incorrectly used one.")
+    w("- Dyck canonical physical rows are nextPow2(3k+3), k=0..3: 4,8,16,16; two chip permutations per row.")
+    w("  The minimal two-token semantic replay is five rows; it is not the padded proving height.")
     w(f"- table routing's exact-public table IS the run: unit-capacity exact-public receives pin the trace")
     w(f"  length to the declared rows (`{pin_ref('lanes-cost')}`, `forcedTraceRows := .pinned 8` at word length 8), so the")
     w("  descriptor grows with the word and the word is public. That is the served shape today; a private-word")
@@ -814,7 +842,7 @@ def certs_markdown():
     w("- degree: no emitter pins a maximum constraint degree; the column says where each number was read.")
     w("- names are the descriptors' own `name` fields. The served toggle `dfa-routing-toggle-2state::poseidon2-v1`")
     w("  comes from `metatheory/Dregg2/Circuit/Emit/DfaRoutingEmit.lean` [READ `circuit/src/descriptor_by_name.rs:83`];")
-    w("  the 3-state injection object `DfaRoutingGeneralEmit` emits is not routed by name.")
+    w("  the 3-state injection object now has an `EmitByName` artifact route consumed by zkOracle.")
     w("")
     w("## 2. Run term per record (BabyBear realization)")
     w("")
@@ -828,7 +856,7 @@ def certs_markdown():
             if r["run_rows"] is None:
                 w(f"| {r['name']} | {n:,} | n/a (finite language) | | | | |")
                 continue
-            mc = f"{r['main_cells']:,}" if r["main_cells"] is not None else "(2k+1)·n"
+            mc = f"{r['main_cells']:,}" if r["main_cells"] is not None else "(2k+1)·rows"
             dr = f"{r['declared_rows']:,}" if r["name"] != "dfa-product-lanes-k" else f"k·{n:,}"
             w(f"| {r['name']} | {n:,} | {r['run_rows']:,} | {mc} | {r['chip_perms']:,} | {r['chip_cells']:,} | {dr} |")
     w("")
