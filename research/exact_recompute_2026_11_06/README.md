@@ -34,3 +34,34 @@ backends; what differs is the matmul route and the array library executing the i
 
 Run: `uv run --no-project --with numpy --with tokenizers python g1.py numpy`, then
 `... --with "jax[cpu]" python g1.py jax`.
+
+## G2: the same integers on other silicon
+
+| machine | kernel | all nine layer-0 digests equal to the Mac numpy reference |
+|---|---|---|
+| Mac (arm64), numpy float64 BLAS limbs | reference | (itself) |
+| Mac, JAX 0.12.0.1 XLA:CPU, int8 limbs | `jaxint.Int8Mxu` | yes |
+| bb2 (x86), numpy OpenBLAS limbs | `model.ExactF64` | yes |
+| Kaggle Tesla T4, JAX 0.11.1 (cublasLt s8 x s8 -> s32), `runs/er-g2-layer0-t4-01` | `jaxint.Int8Mxu` | yes |
+| the same T4, float32 dots (falsifier) | `jaxint.F32Dot` | no: `a`, `q`, `k` equal, from `v` on different |
+
+Since G1 the attention dots also run as int8 limbs (q.k as 2 x 2 limbs, e.v as 3 x 2 because the exp
+table reaches 2^15), so every product in the layer is an INT8-unit operation.
+
+### G2 on a fresh machine (TPU VM, GPU box or CPU)
+
+Needs Python 3.10+, network access to huggingface.co, about 1 GB of disk under `$GPTOSS_DIR`.
+
+    python3 -m venv /tmp/er && . /tmp/er/bin/activate
+    pip install "jax[tpu]==0.11.1" numpy        # GPU: "jax[cuda13]==0.11.1"; CPU: "jax[cpu]==0.11.1"
+    cd research/exact_recompute_2026_11_06
+    GPTOSS_DIR=/tmp/gptoss python3 g2_entry.py tpu      # or gpu, cpu: the backend it must find
+
+It fetches layer 0's 31 byte ranges (477 MB) from `openai/gpt-oss-20b` at revision `6cee5e81…`,
+refuses any range whose SHA-256 differs from `plan-layer0.json` (computed from shards whose file
+hashes equal the registry's full-mode commitment), runs layer 0 with the int8-limb kernel and the
+float32 falsifier, and writes `g2-<backend>.json`: `bit_identical`, per-intermediate equality with
+`g1-numpy.json`, the compiled HLO of an int8 dot, timings. Nothing in the checkout is written.
+JAX 0.11.1 is the version of the T4 run; a clean copy ran it to `bit_identical: true` on XLA:CPU.
+Not yet seen on a TPU: XLA's int64 elementwise path there (shifts, integer division, gathers),
+which the layer uses between the int8 dots.
