@@ -1,0 +1,12 @@
+[custody] share-to-commitment link (MAC in the exponent) at entry: True (12 exponentiations)
+  REFUSED  K5 a custodian's commitment does not commit to its share (off by contrib(d))
+  REFUSED  K6 ... and it offsets its MAC commitment by alpha_1 * e (it does not know alpha)
+[custody] 3 custodians, SPDZ over a 256-bit field; 4875 shared statistics; per-custodian Pedersen commitments (29250 exponentiations at custody entry)
+  AS EXPECTED  K1 commitments unchanged (deletion claimed, nothing subtracted)
+  AS EXPECTED  K2 commitment subtracts a different record
+  AS EXPECTED  K3 custodian 1 updates its share with a different record (honest commitment published)
+  AS EXPECTED  K4 ... and lies at the opening back to 0: ACCEPTED as expected (the authenticated value is the honest one; the raw share is not what any opening can use)
+  AS EXPECTED  K7 an error orthogonal to predictable coins: ACCEPTED by the legacy zero test (falsifier bites)
+  AS EXPECTED  K7 ... refused once the coins hash the custodians' committed updated shares (a custodian that does not lie at the opening)
+[custody] 4 deletions: log legs, stranger check and custodian zero test all pass: True; reconstructed dark state == host-visible fold over the remaining records: True
+UNLEARN PASS

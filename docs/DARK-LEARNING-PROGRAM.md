@@ -721,3 +721,32 @@ Do not run heavy FHE benchmarks on this Mac.
 - I expected FHE to dominate MPC for dark weights; the counts say they trade proofs for bandwidth and the
   public-trunk regime favours MPC. That is a model result with named constants, and experiment 3 is
   designed to overturn it if it is wrong.
+
+---
+
+## §C18–C20 status (initiative 16, 2026-11-06; appended by the unlearning lane, nothing above edited)
+
+Note: `docs/UNLEARNING-CERTIFICATES.md`. Grounding and corrections to the bar: `notes/unlearning/GROUNDING.md`.
+Harness: `research/dark_learning_2026_11_06/unlearn_*.py`, `run_unlearn.py`. Lean: minidregg branch
+`lane/unlearning-certs`, `Assurance/UnlearningExact.lean`, `Assurance/UnlearningSgd.lean`.
+
+- **C18 built, exact, L2.** Ridge on UCI optdigits (D = 65, 3,823 records + a duplicate). Insert, delete (by
+  content key, every copy) and release are certificates a ledger checks from the head and the public statistics;
+  the delete certificate carries the whole-log Count = 0 absence leg. After eleven deletions the statistics and
+  model commitments are byte-identical to a from-scratch run. All three C18 falsifiers are refused (duplicate
+  deleted once by Count = 1; φ changed by the state leg; λ = 0 refused at genesis, where two distinct models pass).
+  Lean: `delete_exact`, `delete_absence`, `deleted_equals_never_trained`, `release_unique` (λ > 0, δ ≠ 0).
+- **C19 built in its sufficient-statistics instance** (fixed DCT subspace, r = 16): exact, same attacks refused;
+  1,553 vs 1,660 test digits is the capacity price. A data-dependent U (PCA of D) is the measured falsifier. The
+  SGD adapter form of C19 is in the approximate row below.
+- **C20 in the ledger**: a deletion clears the active model; nothing is served until a release certificate verifies;
+  the pre-deletion model is refused.
+- **SGD (C10's approximate case): a bound, never equality.** `sgd_delete_bound` (contraction-discounted influence of
+  d's steps) and `sgd_delete_bound_audited` (+ 2B/q from `Round.displacement_bound` under sampled audits). Exact
+  only by replaying the suffix from d's first step with a full proof (DL12), bit-identical in the harness.
+- **Custody.** SPDZ-shared statistics; deletion is a local public-coefficient update; a stranger checks it on
+  Pedersen commitments; a MAC check in the exponent ties commitments to the authenticated shares. Release from
+  custody (an MPC solve) is not built; the commitment is not post-quantum.
+- **Corrections recorded:** the displacement theorem bounds host injection, not a datum's influence; any
+  hyperparameter or feature map chosen on deletable records weakens the comparator (Codex round 1); the transcript
+  is accountability and is not unlearned.

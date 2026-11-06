@@ -1,0 +1,65 @@
+swarm-build: swarm-harness-1682592 cap=8G :: python3 -u run_unlearn.py
+[c18] D = 65; lam = 1 PINNED a priori (a lam chosen on deletable records would depend on them: Codex round 1; no data-dependent sweep is run: Codex round 2)
+[c18] trained on 3824 records; test accuracy 1660/1797; delta bits 830
+[c18] deleted 10 keys (11 records); test accuracy 1660/1797
+[c18] EXACT: stats commitment equal to never-trained: True; model commitment equal: True; log differs by 11 tombstones (accountability); every key absent: True
+  REFUSED  A1a keep the record in the statistics (log tombstoned): delete: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A1b keep the record in the log (no position tombstoned): delete: positions empty or repeated
+  REFUSED  A1c claim deletion with the log unchanged: absence: whole-log values do not rebuild the post-deletion root
+  REFUSED  A2a tombstone a different record's position: delete: position does not open to the claimed old value
+  REFUSED  A2b present a different record's bytes for the key: delete: record bytes do not hash to the requested key
+  REFUSED  A2c tombstone the right leaf, subtract a different record: delete: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A3a release the model trained on d after its deletion: release: (lam I + A) N != delta B
+  REFUSED  A3b serve the pre-deletion model after deletion (C20): serve: no active model (a deletion invalidated it; awaiting a release certificate)
+  REFUSED  A3c re-train on d silently inside a later insert: insert: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A4 duplicate deleted once (C18 falsifier 1): absence: Count(key) = 1 != 0 after deletion
+  REFUSED  A5a subtract with a changed feature map (C18 falsifier 2): delete: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A5b a head under a different genesis (phi, lam): new head does not extend the ledger head
+  [falsifier bites] lam = 0: two distinct canonical models pass (lam I + A) N = delta B: True
+  REFUSED  A6a genesis with lam = 0; zero feature columns in A: [0, 39]
+  REFUSED  A6b a second encoding of the same model (non-canonical): release: (N, delta) not in canonical form
+  REFUSED  A7 replay the deletion against the next head (stale parent): parent is not the ledger head (stale or forked)
+  REFUSED  A8a drop one leaf from the whole-log opening: absence: whole-log values do not rebuild the post-deletion root
+  REFUSED  A8b substitute one leaf in the whole-log opening: absence: whole-log values do not rebuild the post-deletion root
+  REFUSED  A9 a second child of the same parent (fork): parent is not the ledger head (stale or forked)
+  REFUSED  A10 delete a record that was never inserted: delete: position does not open to the claimed old value
+  REFUSED  A11 release with an extra row carrying the deleted record (Codex r1): release: N is not a D x 10 integer matrix
+  REFUSED  A13 a head with an extra field carrying the deleted record (Codex r2): delete: claimed head has fields other than the ledger's (Codex round 2)
+  REFUSED  A12 a record with a trailing payload element: delete: record is not a 64-feature optdigits record with a label
+[c18] attacks: 22/22 refused by the expected check
+[c19] D = 16; lam = 1 PINNED a priori (a lam chosen on deletable records would depend on them: Codex round 1; no data-dependent sweep is run: Codex round 2)
+[c19] trained on 3824 records; test accuracy 1553/1797; delta bits 501
+[c19] deleted 10 keys (11 records); test accuracy 1554/1797
+[c19] EXACT: stats commitment equal to never-trained: True; model commitment equal: True; log differs by 11 tombstones (accountability); every key absent: True
+  REFUSED  A1a keep the record in the statistics (log tombstoned): delete: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A1b keep the record in the log (no position tombstoned): delete: positions empty or repeated
+  REFUSED  A1c claim deletion with the log unchanged: absence: whole-log values do not rebuild the post-deletion root
+  REFUSED  A2a tombstone a different record's position: delete: position does not open to the claimed old value
+  REFUSED  A2b present a different record's bytes for the key: delete: record bytes do not hash to the requested key
+  REFUSED  A2c tombstone the right leaf, subtract a different record: delete: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A3a release the model trained on d after its deletion: release: (lam I + A) N != delta B
+  REFUSED  A3b serve the pre-deletion model after deletion (C20): serve: no active model (a deletion invalidated it; awaiting a release certificate)
+  REFUSED  A3c re-train on d silently inside a later insert: insert: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A4 duplicate deleted once (C18 falsifier 1): absence: Count(key) = 1 != 0 after deletion
+  REFUSED  A5a subtract with a changed feature map (C18 falsifier 2): delete: claimed head field 'stats' is not the one the certificate determines
+  REFUSED  A5b a head under a different genesis (phi, lam): new head does not extend the ledger head
+  REFUSED  A6a genesis with lam = 0; zero feature columns in A: []
+  REFUSED  A6b a second encoding of the same model (non-canonical): release: (N, delta) not in canonical form
+  REFUSED  A7 replay the deletion against the next head (stale parent): parent is not the ledger head (stale or forked)
+  REFUSED  A8a drop one leaf from the whole-log opening: absence: whole-log values do not rebuild the post-deletion root
+  REFUSED  A8b substitute one leaf in the whole-log opening: absence: whole-log values do not rebuild the post-deletion root
+  REFUSED  A9 a second child of the same parent (fork): parent is not the ledger head (stale or forked)
+  REFUSED  A10 delete a record that was never inserted: delete: position does not open to the claimed old value
+  REFUSED  A11 release with an extra row carrying the deleted record (Codex r1): release: N is not a D x 10 integer matrix
+  REFUSED  A13 a head with an extra field carrying the deleted record (Codex r2): delete: claimed head has fields other than the ledger's (Codex round 2)
+  REFUSED  A12 a record with a trailing payload element: delete: record is not a 64-feature optdigits record with a label
+[c19] attacks: 22/22 refused by the expected check
+[c19] falsifier (U = PCA of D): deleting one record moves 846 of 1040 basis entries; subtracted state == learner on D \ d: False (must be False)
+[sgd] n = 3823, B0 = 32, lam = 0.05, L = 32.500, eta = 0.03072, rho = 0.998464, T = 600 steps (5 epochs) + 360 continuation steps
+[sgd] trained on D: test accuracy 1622/1797
+[sgd] d = 1480: replay 517/600 steps, bit-identical True; ||W - W_cmp|| = 3.290e-03 <= eps = 1.673e-02: True; after 3 more epochs: 1.342e-03 <= 9.622e-03
+[sgd] d = 1921: replay 558/600 steps, bit-identical True; ||W - W_cmp|| = 3.621e-03 <= eps = 1.643e-02: True; after 3 more epochs: 1.680e-03 <= 9.445e-03
+[sgd] d = 1968: replay 581/600 steps, bit-identical True; ||W - W_cmp|| = 2.824e-03 <= eps = 1.564e-02: True; after 3 more epochs: 1.267e-03 <= 8.995e-03
+[sgd] d = 1167: replay 561/600 steps, bit-identical True; ||W - W_cmp|| = 3.519e-03 <= eps = 1.686e-02: True; after 3 more epochs: 1.694e-03 <= 9.695e-03
+[sgd] host re-injects d's gradient every round, audit rate 0.05: mean deviation at stop 3.104e-02 over 40 trials <= D/q = 1.033e-01: True
+# custody section of this bb2 run superseded: K4's expectation was wrong (see unlearn_custody.log, hbox)

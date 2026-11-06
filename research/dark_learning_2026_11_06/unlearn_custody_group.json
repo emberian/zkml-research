@@ -1,0 +1,5 @@
+{
+ "p": "0xaad6f19ecef55225e1639ddd752ab9e7af4b7b4041bd61da703c6fc73ef6860cd7ddeb71eff02356fa72d523ead93da414ea36ec8f08171127d0247a791800b84df9f65ae3498b5de6f5d68d9996bd277ffa853c2f9aabee1eb005a90e8c86e357d2fe4fd42c629f2183bcad835aae838492e81c2948f2ce8f24cdcdd3449b743d38ae14a470063eb944da6ec07fa179366bc6ef15d0dbadb9c19fc5943a4f86cb9773fe43a570e9b9db633855563e26d33d4a84093949e772056e9c6e1bb00dd3b40cd8b3690db4c388b5a14922fd2880841d6a8326f03040bbb275a5a06c59a8b833ebc8ec1f66cb1fc7abdd527ef78b8b95e328571cf63fc0d7a63c2de2cf",
+ "q": "0xe61201558d19c69827eeaf9fc0216752f1afc27032b0ec1a4c5b870ca6c4b439",
+ "how": "Nothing-up-my-sleeve Schnorr group: q = first prime >= hash-derived 256-bit odd; p = k q + 1, the first prime\nwith k >= a hash-derived 1792-bit even start. Cached in unlearn_custody_group.json and re-checked on load."
+}
