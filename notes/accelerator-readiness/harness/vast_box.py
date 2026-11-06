@@ -18,6 +18,7 @@ import datetime as dt
 import json
 import pathlib
 import re
+import shlex
 import signal
 import subprocess
 import sys
@@ -29,6 +30,9 @@ HERE = pathlib.Path(__file__).resolve().parent
 LEDGER = HERE.parent / "VAST-LEDGER.md"
 API = "https://console.vast.ai/api/v0"
 TOTAL_CAP = 25.0
+# offers whose host rejected the account and per-instance ssh key on every attempt (2026-11-06: B200 Oregon,
+# accel-b200-mma-01 and -02). Never rent these again.
+BLACKLIST = {50255943}
 SSH_KEY = pathlib.Path.home() / ".ssh" / "id_ed25519"      # its .pub is the account's registered key
 KNOWN = pathlib.Path.home() / ".cache" / "accel-ready" / "vast_known_hosts"
 DEFAULT_IMAGE = "nvidia/cuda:12.9.1-devel-ubuntu24.04"
@@ -142,6 +146,8 @@ def ssh(host, port, cmd, timeout=600):
 def run(a):
     if instances():
         sys.exit("an instance already exists on the account: one box at a time (vast_box.py list)")
+    if a.offer in BLACKLIST:
+        sys.exit(f"offer {a.offer} is blacklisted (ssh never answered)")
     spent = ledger_spent()
     if spent + a.max_usd > TOTAL_CAP:
         sys.exit(f"refused: ledger spend ${spent:.2f} + this cap ${a.max_usd:.2f} > ${TOTAL_CAP:.2f}")
@@ -160,6 +166,12 @@ def run(a):
     if not iid:
         sys.exit(f"create failed: {str(r)[:300]}")
     t0 = now()
+    try:   # attach the key to this instance too (the account key alone did not reach a B200 host, 2026-11-06)
+        api("POST", f"/instances/{iid}/ssh/", {"ssh_key": SSH_KEY.with_suffix(".pub").read_text().strip()})
+    except Exception as e:
+        log("attach ssh key:", str(e)[:160])
+    global KNOWN
+    KNOWN = KNOWN.parent / f"vast_known_hosts.{iid}"     # fresh per instance: proxy host:port pairs get reused
     ledger(["start", t0.strftime("%Y-%m-%d %H:%MZ"), iid, f"{a.offer} {o['gpu_name']}", f"{rate:.3f}", a.label, "",
             f"cap ${a.max_usd:.2f}, watchdog {hours * 60:.0f} min, image {a.image}, credit before ${c0:.2f}"])
     state = {"rc": None, "reason": None}
@@ -176,9 +188,26 @@ def run(a):
             inst = api("GET", f"/instances/{iid}/").get("instances") or {}
             st = inst.get("actual_status")
             if st == "running" and inst.get("ssh_host"):
-                host, port = inst["ssh_host"], inst["ssh_port"]
-                if ssh(host, port, "true", 60).returncode == 0:
+                state.setdefault("running_since", time.time())
+                cands = [(inst["ssh_host"], inst["ssh_port"])]
+                try:
+                    hp = (inst.get("ports") or {}).get("22/tcp") or []
+                    if inst.get("public_ipaddr") and hp:
+                        cands.append((inst["public_ipaddr"].strip(), int(hp[0]["HostPort"])))
+                except Exception:
+                    pass
+                ok = False
+                for h, pt in cands:
+                    r = ssh(h, pt, "true", 60)
+                    if r.returncode == 0:
+                        host, port, ok = h, pt, True
+                        break
+                    log(f"ssh {h}:{pt} rc {r.returncode}: {r.stderr.strip()[-160:]}")
+                if ok:
                     break
+                if time.time() - state["running_since"] > a.ssh_timeout:
+                    state["reason"] = "ssh_unreachable"
+                    raise RuntimeError("running but ssh unreachable")
             msg = (inst.get("status_msg") or "").strip()
             log("boot:", st, msg[:100])
             bad = any(w in msg.lower() for w in ("no space left", "error response", "failed to", "unauthorized"))
@@ -191,7 +220,7 @@ def run(a):
             state["reason"] = "boot_timeout"
             raise RuntimeError("instance did not become reachable")
         log(f"ssh root@{host} -p {port} up after {(now() - t0).total_seconds():.0f} s")
-        prep = ("set -e; (command -v python3 >/dev/null && python3 -c 'import venv' 2>/dev/null) || "
+        prep = ("set -e; (command -v python3 >/dev/null && python3 -c 'import venv, ensurepip' 2>/dev/null) || "
                 "(apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 python3-venv "
                 "python3-pip curl git ca-certificates >/dev/null); mkdir -p /root/run; nvidia-smi -L")
         r = ssh(host, port, prep, 900)
@@ -200,8 +229,10 @@ def run(a):
             subprocess.run(["scp"] + ["-P" if x == "-p" else x for x in ssh_base(host, port)] +
                            [b, f"root@{host}:/root/run/"], check=True, capture_output=True, timeout=600)
         untar = "; ".join(f"tar xzf /root/run/{pathlib.Path(b).name} -C /root/run" for b in a.bundle)
-        job = (f"cd /root/run && {untar} && nohup setsid bash -c {json.dumps(a.cmd)} > /root/run/job.log 2>&1 "
-               f"< /dev/null & echo $! > /root/run/job.pid; sleep 1; cat /root/run/job.pid")
+        # shlex.quote, not json.dumps: inside double quotes the launching shell expanded the job's own $? (every
+        # step's RC printed as 0, accel-h100-all-02). The & must cover only the job (an `a && b &` chain backgrounds the untar too, with ssh's stdout open)
+        job = (f"cd /root/run && {untar} && {{ nohup setsid bash -c {shlex.quote(a.cmd)} > /root/run/job.log 2>&1 "
+               f"< /dev/null & echo $! > /root/run/job.pid; }}; sleep 1; cat /root/run/job.pid")
         r = ssh(host, port, job, 300)
         log("job started, remote pid", r.stdout.strip(), r.stderr.strip()[-200:])
         last = ""
@@ -264,6 +295,7 @@ def main():
     p.add_argument("--image", default=DEFAULT_IMAGE)
     p.add_argument("--disk", type=int, default=60)
     p.add_argument("--boot-timeout", type=int, default=1200)
+    p.add_argument("--ssh-timeout", type=int, default=300)
     a = ap.parse_args()
     if a.cmd == "offers":
         offers(a)

@@ -121,10 +121,12 @@ res["ptxas"] = ptx if p.exists() else "nvrtc"
 res["box"] = json.loads((out / "box.json").read_text())
 res["cpu_model"] = next((l.split(":", 1)[1].strip() for l in open("/proc/cpuinfo") if l.startswith("model name")), "?")
 res["nproc"] = len([l for l in open("/proc/cpuinfo") if l.startswith("processor")])
-ref_ok = all(r.get("identical") for r in res["rust_reference"] if r.get("kind") == "reference")
+refs = [r for r in res["rust_reference"] if r.get("kind") == "reference"]
+ref_ok = bool(refs) and all(r.get("identical") for r in refs)     # no reference records is a failure, not a pass
 res["cpu_reference_identical"] = ref_ok
 res["all_bit_exact"] = bool(res.get("all_bit_exact")) and ref_ok
 (out / "results.json").write_text(json.dumps(res, indent=1))
 print("ALL_BIT_EXACT", res["all_bit_exact"])
+sys.exit(0 if res["all_bit_exact"] else 1)
 PYEOF
 echo "done in $(( $(date +%s) - T0 )) s; results $OUT/results.json"
