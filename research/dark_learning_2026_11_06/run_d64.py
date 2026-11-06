@@ -114,54 +114,58 @@ def mpc_fork(p):
     return dict(fork="MPC (SPDZ, n=3, F_p)", field_bits=p.bit_length(), counts=counts, rows=rows)
 
 # ------------------------------------------------------------------------------------------- FHE fork
-def fhe_fork():
+def fhe_fork(N=8192):
+    """FHE fork, v2 (crossings are masked public decryption with a well-formed partial-decryption proof per
+    custodian, and masked public encryption through SPDZ). Every attack must be refused on every step."""
     import fhe_fork as FF
     import cert_b61 as C
-    sch, Qp, Bp, t = FF.setup()
+    sch, Qp, Bp, t = FF.setup(N=N)
     tab = MF.tables(t)
     inst = instance()
     e1, e2, _ = S.step(*inst)
     rows = {}
-    def once(attack=None):
-        cust = FF.Custodians(sch, 3, 5)
+    def once(attack=None, cheat=None):
+        cust = FF.Custodians(sch, 3, 5, Qp)
         dealer = spdz.Dealer(t, 3, 6)
-        eng = spdz.Engine(t, 3, dealer)
+        eng = spdz.Engine(t, 3, dealer, cheat=cheat)
         try:
             res = FF.run_step(sch, Qp, Bp, cust, eng, tab, *inst, attack=attack)
         except spdz.Abort as e:
-            return dict(verdict="REFUSED", by=f"gate / MAC (every step): {e}"), None, None, None
+            return dict(verdict="REFUSED", by=f"every-step check: {e}"), None, eng, cust
         return dict(verdict="ACCEPT"), res, eng, cust
     r, res, eng, cust = once()
     refines = FF.decode_W(sch, res["nW1"]) == e1 and FF.decode_W(sch, res["nW2"]) == e2
-    opened = beacon_parties("fhe-honest", 3)
-    aok, awhy = FF.conversion_audit(eng, res, opened)
-    N, L = sch.N, len(Qp)
+    L = len(Qp)
     cc = C.counts(N, Qp, Bp)
-    ct_elems = (2 * 2 + 4 + 2) * 2 * N * L + 3 * 3 * N * L     # owner/W/crossing cts (2-comp) + 3 products
+    ct_elems = (2 * 2 + 4 + 2) * 2 * N * L + 3 * 3 * N * L     # owner/W/S2E/new-W cts (2-comp) + 3 products
     view_elems = sum(len(s) for s in dealer_streams(eng)) * 2
-    committed = ct_elems + 3 * cc["cert_elems"] + view_elems
-    wire_fhe = sum(cust.wire.values()) + 3 * 3 * N * L          # + host -> custodians product ciphertexts
-    counts = dict(committed_elems=committed, committed_bits=ct_elems * 61 + 3 * cc["cert_bits"] + view_elems * 61,
+    committed = ct_elems + 3 * cc["cert_elems"] + view_elems + cust.pd["elems"]
+    committed_bits = (ct_elems * 61 + 3 * cc["cert_bits"] + view_elems * 61 + cust.pd["bits"])
+    host_wire = 3 * 3 * N * L                                  # host -> custodians product ciphertexts
+    counts = dict(committed_elems=committed, committed_bits=committed_bits,
                   certificate_elems_per_ctct=cc["cert_elems"], certificate_range_lookups_per_ctct=cc["range_lookups"],
-                  online_wire=wire_fhe + sum(eng.wire.values()),
-                  wire_by_phase=dict(list(cust.wire.items()) + list(eng.wire.items()) + [("host->custodians", 3 * 3 * N * L)]),
-                  preprocessing_auth_values=eng.dealer.count, preprocessing_elems=eng.dealer.count * 6,
+                  pd_proofs=cust.pd["proofs"], pd_elems=cust.pd["elems"], pd_bits=cust.pd["bits"],
+                  pd_range_lookups=cust.pd["range_lookups"], pd_openings=cust.pd["openings"],
+                  smudge_bound_bits=cust.E.bit_length(), noise_bits_before_smudging=cust.noise_bits,
+                  online_wire=sum(cust.wire.values()) + host_wire + sum(eng.wire.values()),
+                  wire_by_phase=dict(list(cust.wire.items()) + list(eng.wire.items()) + [("host->custodians", host_wire)]),
+                  preprocessing_auth_values=eng.dealer.count,
+                  preprocessing_elems=eng.dealer.count * 6 + cust.prep_ct,
+                  preprocessing_mask_ct_elems=cust.prep_ct,
                   openings=eng.nopen, crossings=3, ct_x_ct=3, N=N, logQ=sch.Q.bit_length(), B_primes=len(Bp))
-    rows["honest"] = dict(verdict="ACCEPT" if refines and aok and all(g[1] for g in res["gate"]) else "FAIL",
-                          refines_spec=refines, gate=res["gate"], audit=(opened, aok, awhy))
-    for a in ("wrong_delta", "mixed_limbs", "wrong_quotient", "stale_parent"):
+    rows["honest"] = dict(verdict="ACCEPT" if refines and all(g[1] for g in res["gate"]) else "FAIL",
+                          refines_spec=refines, gate=res["gate"])
+    for a in ("wrong_delta", "mixed_limbs", "wrong_quotient", "stale_parent",
+              "unrelated_boundary_shares", "offset_partial", "offset_in_error"):
         rr, _, _, _ = once(a)
         rows[a] = rr
-    # unrelated boundary shares: NOT caught by the gate or the MAC; caught by the conversion audit if opened
-    rr, res_u, eng_u, _ = once("unrelated_boundary_shares")
-    det = sum(1 for k in range(3) if not FF.conversion_audit(eng_u, res_u, [i for i in range(3) if i != k])[0])
-    wrong = FF.decode_W(sch, res_u["nW1"]) != e1 if res_u else None
-    rows["unrelated_boundary_shares"] = dict(verdict=rr["verdict"] + " online; audit detects in "
-                                             f"{det}/3 beacon selections", output_wrong=wrong,
-                                             note="the conversion relation is SAMPLED here; making it an envelope "
-                                                  "needs a per-crossing proof of E2S well-formedness")
+    # a custodian shifts its share when the masked value m - R' is opened for shares-to-encryption
+    s2e_pos = [k for k, (ph, _, _) in enumerate(eng.transcript) if ph == "S2E"][0]
+    rr, _, _, _ = once(cheat=dict(party=1, at_open=s2e_pos, delta=1))
+    rows["s2e_wrong_share"] = rr
     rows["missing_audit_response"] = dict(verdict="REFUSED", by="fail-closed: alarm on a missing view")
-    return dict(fork="FHE (BFV N=8192, 3x61-bit Q, t = SPDZ prime) + MPC crossings", counts=counts, rows=rows)
+    return dict(fork="FHE v2 (BFV, 3x61-bit Q, t = SPDZ prime; masked public crossings with PD proofs)",
+                counts=counts, rows=rows)
 
 def dealer_streams(eng):
     return eng.dealer.streams

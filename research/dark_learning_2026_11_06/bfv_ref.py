@@ -124,6 +124,18 @@ class BFV:
         c0 = [(self.delta * centered(mi, self.t) - x - ei) % self.Q for mi, x, ei in zip(m, as_, e)]
         return (c0, a)
 
+    def encrypt_exact(self, m):
+        """Encryption with the exact scaling round(Q m_c / t) (m_c the centered representative) instead of
+        Delta m_c. Needed whenever the encrypted value is a SUM OF SHARES or of masked parts that equals m
+        only mod t: Delta (m + k t) = (Q/t)(m + k t) - (Q mod t)(m + k t)/t leaves an error of order Q mod t,
+        while round(Q (m + k t) / t) = round(Q m / t) + k Q leaves at most 1/2."""
+        a = self.uniform()
+        e = self.small_error()
+        as_, _ = negacyclic_mul(poly_centered(a, self.Q), self.s)
+        Q, t = self.Q, self.t
+        c0 = [((2 * Q * centered(mi, t) + t) // (2 * t) - x - ei) % Q for mi, x, ei in zip(m, as_, e)]
+        return (c0, a)
+
     def decrypt(self, ct):
         """Decrypt a 2- or 3-component ciphertext with (1, s, s^2)."""
         acc = poly_centered(ct[0], self.Q)
