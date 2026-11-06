@@ -326,7 +326,11 @@ class Prover:
                 eqt = [(eqt[2 * k] * (1 - r) + eqt[2 * k + 1] * r) % p for k in range(half)]
         return msgs, rs
 
-def prove_and_verify(eng, wires, parent=None, attack=None, carry=None):
+def prove_and_verify(eng, wires, parent=None, attack=None, carry=None, context=("model", 0, 0), expect=None):
+    """context = (model id, epoch, step index) is bound into the transcript; the verifier checks the proof
+    against `expect` (default: the same). A proof for step t cannot be accepted as step t + 1, so a valid
+    edge (including a no-update edge whose child equals its parent) cannot be replayed (Astra scholar).
+    Durable one-acceptance-per-counter is the acceptance ledger's job, outside this function."""
     """Runs the custodians' prover and the public verifier on one step. Returns (ok, why, counts).
     `wires`: x, z1, h, z2, d2, b, g1, bg, d1, W1, W2, W1n, W2n as SPDZ-shared values (matrices row-major)."""
     p, n = eng.p, eng.n
@@ -359,6 +363,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None, carry=None):
     else:
         parent_roots = {"W1": com["W1"].roots, "W2": com["W2"].roots}
     tr = Transcript("step")
+    tr.absorb("ctx", context)
     for k in sorted(com):
         tr.absorb(k, com[k].roots)
     evals = []                                  # (commitment name, point) the verifier will need
@@ -415,6 +420,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None, carry=None):
     # =============================================================== VERIFIER (sees roots, messages, openings)
     def V():
         vt = Transcript("step")
+        vt.absorb("ctx", expect if expect is not None else context)
         roots = {k: com[k].roots for k in com}
         if roots["W1"] != parent_roots["W1"] or roots["W2"] != parent_roots["W2"]:
             return False, "parent commitment is not the previous step's child commitment"

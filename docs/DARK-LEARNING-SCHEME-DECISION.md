@@ -721,7 +721,12 @@ preprocessing values, and ciphertexts sent and returned. The formula for the res
 | FHE (b) | 2.75×10^7 online + 7.1×10^7 offline masks | ≥ 1.26 Tbit (16-bit digits) or 2.37 Tbit (61-bit) |
 | FHE (a) | 2.29×10^8 online + 9.5×10^8 offline | ≥ 0.66 Tbit |
 
-   **The MPC fork now matches FHE (b) on total wire and is about ×50–100 smaller on committed bits.** It
+   ⚠ **WITHDRAWN (Astra scholar, `notes/dark-learning-scholar-response.md`).** The next sentence compared
+   online wire with SPDZ preprocessing left ideal, and committed bits across heterogeneous units. With
+   MASCOT preprocessing priced, HE-MPC is 14.06 Tbit/step against FHE (b)'s 0.914. Replacing the outer
+   tuples by an HE-assisted outer product brings it to about 0.99 Tbit (§14). Original text, kept for
+   the record: **The MPC fork now matches FHE (b) on total wire and is about ×50–100 smaller on
+   committed bits.** It
    also holds integrity against full collusion (§9) and keeps every key, including the HE keys, inside
    custody. This is now a measured-at-small-d, formula-at-width result. What could still overturn it:
    the unpriced SPDZ preprocessing, which is the same object in both forks, and the elementwise gates'
@@ -729,8 +734,13 @@ preprocessing values, and ciphertexts sent and returned. The formula for the res
 
 **Not built:**
 - the ZKPoPK on each sent ciphertext (a privacy leg for i's share; priced);
-- circuit-privacy parameters chosen against a stated distance (flooding is 40 bits over a public noise
-  bound);
+- circuit privacy. ⚠ The scholar REFUTED whole-ciphertext hiding: flooding the first component
+  leaves the second distinguishing multipliers information-theoretically. Even the decrypted phase
+  reaches only about 2^-14.74 per step at d = 4096, against a 2^-40 target. N = 16384, four 61-bit
+  primes and a 2^165 flood give a phase-only million-step bound below 2^-40; whole-ciphertext privacy
+  needs a computational simulation and a well-formed key;
+- the ZKPoPK, priced between 6.2 Gbit/step (an efficient lattice proof, MODEL) and **225.7 Tbit/step**
+  (the executable Stern fallback, scholar);
 - the MPC-in-the-head audit's replay of the HE path, which the collaborative proof supersedes.
 
 
@@ -902,3 +912,30 @@ no novelty claim.]
 **Build status.** Layer 1 is built and tested. Layers 2 and 3 are not built. They are a refactor of both
 verifiers into "emit constraints over hidden values" plus about 150 lines of collaborative ZK-Ligero.
 Their counts above are derived from the executed transcripts' shapes.
+
+
+## 14. After the scholar's bricks: the corrected fork picture at d = 4096 (2026-11-06)
+
+All figures are per step, in bits, conservative MASCOT preprocessing (scholar), proofs excluded.
+
+| fork | preprocessing + online | what dominates |
+|---|---:|---|
+| MPC, SPDZ matvec | 34.9 Tbit | matrix triples |
+| MPC, HE matvec | 14.06 Tbit | two dense outer-product tuples (13.14 Tbit) |
+| MPC, HE matvec + **HE-assisted outer** [DERIVED] | **≈ 0.99 Tbit** | lookup power chain, truncation bits |
+| FHE (a) | 14.88 Tbit | outer tuples in its crossings, plus 9.5×10^8 mask wire |
+| FHE (b) (model: relinearization unbuilt) | **0.914 Tbit** | — |
+
+**The corrected verdict.** MPC with an HE matvec and an HE outer product is within ×1.1 of FHE (b).
+Both rows rest on unbuilt pieces: the HE outer product for one, relinearization and its key for the
+other. Neither is cheaper by a margin that survives those builds.
+
+**What still separates them:**
+- **Custody:** MPC keeps every evaluation object inside custody; FHE (b) hands the host a
+  relinearization key.
+- **The proof's cost under the threshold decision:** see the handover note's §4.
+- **Circuit privacy:** both forks' pt×ct and ct×ct paths owe it, and the MPC fork's HE helpers owe it
+  per custodian pair.
+
+**The cheapest next measurement:** build the HE-assisted outer product in the harness, the same code
+shape as `he_matvec.py`, and re-run the scholar's `scholar_preprocessing.py` inventory against it.

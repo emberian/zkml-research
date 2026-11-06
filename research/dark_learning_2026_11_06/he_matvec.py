@@ -63,12 +63,13 @@ def ptxct(P, ct, Q):
 
 class HEMatvec:
     """Drop-in for eng.matvec(W, v, transpose) on an spdz.Engine (live mode)."""
-    def __init__(self, eng, keys, N, Q, seed=11, flood_bits=40, attack=None):
+    def __init__(self, eng, keys, N, Q, seed=11, flood_bits=40, attack=None, context=("model", 0, 0)):
         self.eng, self.keys, self.N, self.Q = eng, keys, N, Q
         self.p = eng.p
         self.rng = random.Random(seed)
         self.flood_bits = flood_bits
         self.attack = attack           # (kind, party) for falsifiers
+        self.context = context
         self.wire = {"he_send": 0, "he_return": 0}
         self.cts_sent = 0
         self.cts_returned = 0
@@ -151,7 +152,7 @@ class HEMatvec:
                 plain[self.attack[1]] = (plain[self.attack[1]] + 1) % p
             zs.append(eng.auth_plain(plain, "he_auth"))
         # Freivalds: rho after the shares are fixed (Fiat-Shamir on the transcript so far)
-        rho = self.coins(d)
+        rho = self.coins(d, transpose)
         lhs = eng.lin([(rho[r], zs[r]) for r in range(d)])
         if not transpose:
             u = [eng.lin([(rho[r], W[r][c]) for r in range(d)]) for c in range(d)]
@@ -171,9 +172,13 @@ class HEMatvec:
         # |P|_inf <= p/2, product noise ~ N * (p/2) * e: a public bound
         return (self.N * (self.p // 2) * 16 * 2).bit_length()
 
-    def coins(self, d):
+    def coins(self, d, transpose=False):
+        """Freivalds coins bound to the WHOLE transcript so far (not a suffix), the invocation index, the
+        shape and the transpose flag, plus the caller's context (model, epoch, step). Astra scholar: the
+        suffix-only seed omitted context, so an older prefix could be changed without moving rho."""
         import hashlib
-        h = hashlib.sha256(repr(self.eng.transcript[-3 * d:]).encode()).hexdigest()
+        h = hashlib.sha256(repr(("freivalds", self.context, self.calls, d, transpose,
+                                 self.eng.transcript)).encode()).hexdigest()
         r = random.Random(int(h, 16))
         return [r.randrange(self.p) for _ in range(d)]
 
