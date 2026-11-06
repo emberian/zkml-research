@@ -8,6 +8,8 @@ with a COUNTS model and print Pareto fronts under several objectives.
     python3 notes/construction-search/space.py            # all fronts
     python3 notes/construction-search/space.py --point U1 # one named point, itemized
     python3 notes/construction-search/space.py --calibrate
+    python3 notes/construction-search/space.py --certs [N]     # automata counts (pinned)
+    python3 notes/construction-search/space.py --certs --markdown > COUNTS.md
 
 CURRENCY.  The primary outputs are COUNTS: committed cells, field multiplications
 (base-field, scalar-equivalent), hash compressions/permutations, INT8 MACs.  A
@@ -535,13 +537,340 @@ def cert_cost(family, n_symbols, n_bytes=None, h="poseidon2"):
     commit = commitment_perms(n_bytes) * perm
     return run, commit, run + commit
 
-def certs(n_bytes=4096):
-    """Print the per-family bill at one record size; the hub's cost law in numbers."""
-    print(f"certificate families at n = {n_bytes} bytes, {INCIRCUIT_CELLS['poseidon2']}-cell permutations")
-    print(f"{'family':22} {'run cells':>12} {'commit cells':>13} {'commit/run':>11}")
-    for fam in CERT_FAMILIES:
-        run, commit, _ = cert_cost(fam, n_bytes)
-        print(f"{fam:22} {run:12,} {commit:13,} {commit / run:11.2f}")
+# ---------------------------------------------------------------------------
+# Automata COUNTS, pinned (breadstuffs docs/automata/COUNTS.md is generated from here:
+#     python3 notes/construction-search/space.py --certs --markdown > .../docs/automata/COUNTS.md
+# ). 2026-11-06, lane C of the automata program.
+#
+# Separation the table keeps (codex round 3, finding 16): SEMANTIC operation counts (rows, lookups,
+# degree per symbol: what the certificate checker does) are one block; the REALIZATION on a target
+# (columns, constraints, tables, chip permutations, declared table rows, descriptor bytes) is
+# another, and only BabyBear has one today. Tower256 has no AIR layer (LEAF-PROVER-DECISION §6 "not
+# yet available"), so its realization column is empty and only its commitment term is modelled.
+#
+# Every realization number carries PIN = (path under breadstuffs/metatheory, line, substring that
+# must occur on that line). `--check-pins` (and --markdown) re-reads each cited line and refuses to
+# print if any pin has moved, so a cited file:line cannot rot silently.
+BREADSTUFFS_MT_DEFAULT = "~/dev/breadstuffs/metatheory"
+E = "Dregg2/Circuit/Emit/"
+
+AUTOMATA_PINS = {
+    "trt-shape":   (E + "DfaRoutingTableEmit.lean", 540, "demoRoutingDesc.traceWidth == TRT_WIDTH"),
+    "trt-width":   (E + "DfaRoutingTableEmit.lean", 109, "def TRT_WIDTH : Nat := 3"),
+    "trt-cons":    (E + "DfaRoutingTableEmit.lean", 542, "constraints.length == 4"),
+    "trt-golden":  (E + "DfaRoutingTableEmit.lean", 536, "#guard emitVmJson2 demoRoutingDesc =="),
+    "lanes-cost":  (E + "TinyAutomataLanesK.lean", 784, "costOf (lanesRunIK k probeW)"),
+    "lanes-area":  (E + "TinyAutomataLanesK.lean", 796, "(costOf (prodRunDesc k probeW)).area"),
+    "gen-width":   (E + "DfaRoutingGeneralEmit.lean", 90, "def DFA_WIDTH : Nat := 22"),
+    "gen-shape":   (E + "DfaRoutingGeneralEmit.lean", 274, "constraints.length == 14"),
+    "gen-chip":    (E + "DfaRoutingGeneralEmit.lean", 275, "chipLookupTuple"),
+    "w8-cost":     (E + "AttestedAutomatonWeld8.lean", 943, "#guard costOf weldInstance =="),
+    "w8-carriers": (E + "AttestedAutomatonWeld8.lean", 946, "hashSites.isEmpty && weldInstance.ranges.isEmpty"),
+    "w8-bytes":    (E + "AttestedAutomatonWeld8.lean", 957, "(2803, 1205)"),
+    "w8-cross":    (E + "AttestedAutomatonWeld8.lean", 963, "jsonBytes (prodRunDesc 4 (wordN n))"),
+    "w8-aux":      (E + "AttestedAutomatonWeld8.lean", 980, "MAP_TREE_DEPTH * n"),
+    "asym":        (E + "AttestedAutomatonEmit.lean", 164, "def ASYM : Nat := 2"),
+    "dyck-shape":  (E + "DyckStackEmit.lean", 632, "dyckParseDesc.constraints.length == 79"),
+    "dyck-width":  (E + "DyckStackEmit.lean", 639, "DYCK_WIDTH + 2 * (CHIP_OUT_LANES - 1) == 38"),
+    "dyck-chip":   (E + "DyckStackEmit.lean", 633, "chipLookupTupleNarrow"),
+    "dyck-rows":   (E + "DyckStackReplay.lean", 963, "(decodeRun [op, cl] witTrace 5).length = 5"),
+    "deriv-width": (E + "DerivationEmit.lean", 393, "DERIV_TRACE_WIDTH == 386"),
+    "deriv-cons":  (E + "DerivationEmit.lean", 397, "derivationConstraints.length == 393"),
+    "deriv-pi":    (E + "DerivationEmit.lean", 398, "derivationDesc.piCount == 13"),
+    "dl-dom":      ("Dregg2/Datalog/FixpointCert.lean", 642, "(activeDomain tc edb).length == 6"),
+    "dl-substs":   ("Dregg2/Datalog/FixpointCert.lean", 643, "(varBound rStep)).length == 216"),
+    "dl-domdef":   ("Dregg2/Datalog/FixpointCert.lean", 139, "edb.flatMap (·.2) ++ P.flatMap ruleConsts"),
+    "p2-wide":     (E + "Poseidon2RoundGates.lean", 121, "POSEIDON2_AUX_COLS == 352"),
+}
+
+# Per-family record. Semantic block: rows/symbol, lookups/symbol (abstract), degree.
+# BabyBear block: main columns, constraints, tables, chip permutations per symbol and their width,
+# declared table rows (as a function of n and of the policy), descriptor bytes, and the pins.
+# `rows(n)` is the trace height for an n-symbol word before power-of-two padding.
+AUTOMATA_FAMILIES = [
+    dict(name="dfa-table-routing", served="dregg-dfa-routing-table::exact-public-v1",
+         sym="byte", rows=lambda n: n, lookups=1, degree="1 [READ golden :536]",
+         cols=3, cons=4, tables=1, chip=0, chip_w=0,
+         declared=lambda n: n, declared_note="n (exact-public rows: the run itself is public)",
+         bytes_note="~10 B/symbol (run shipped; w8-cross)",
+         pins=["trt-width", "trt-shape", "trt-cons", "trt-golden", "lanes-cost"],
+         binds_c="no (word read off the SYMBOL column)"),
+    dict(name="dfa-product-lanes-k", served=None,
+         sym="binary (pinned at NSYM = 2)", rows=lambda n: n, lookups="k", degree="1 [READ]",
+         cols="2k+1", cons="4k", tables="k", chip=0, chip_w=0,
+         declared=lambda n: n, declared_note="k·n (one exact-public table per lane)",
+         bytes_note="672/1168/1664/2160 at k=1..4, word length 8",
+         pins=["lanes-cost", "lanes-area"], binds_c="no"),
+    dict(name="dfa-hash-chained", served="dfa-routing-toggle-2state::poseidon2-v1",
+         sym="byte", rows=lambda n: n, lookups=2, degree="7 (chip S-box) [READ note 01 §3; unpinned]",
+         cols=22, cons=14, tables=0, chip=2, chip_w=352,
+         declared=lambda n: 0, declared_note="0 (transition is an interpolant gate)",
+         bytes_note="byte-pinned golden",
+         pins=["gen-width", "gen-shape", "gen-chip", "p2-wide"],
+         binds_c="by the route chain (CollisionFree carrier), not in the theorem"),
+    dict(name="dfa-attested-weld8", served="attested-automaton-map-committed-weld8-v1",
+         sym="binary (ASYM = 2: 8 rows per byte)", rows=lambda n: 8 * n, lookups="1 map-op + 2 range",
+         degree="1 [READ: 0 nonlinear mults, w8-cost]",
+         cols=11, cons=22, tables=3, chip=16, chip_w=352,
+         declared=lambda n: 0, declared_note="0 (automaton is a 2^16-leaf map root, not rows)",
+         bytes_note="2803, constant in word length and table size",
+         pins=["w8-cost", "w8-carriers", "w8-bytes", "w8-aux", "asym", "p2-wide"],
+         binds_c="automaton: yes (8-felt root); word: no"),
+    dict(name="dyck-bracket-replay", served="dregg-dyck-parse-v1",
+         sym="bracket token", rows=None, lookups="2 chip per row", degree="8 [READ note 04; unpinned]",
+         cols=24, cons=79, tables=0, chip=2, chip_w=141,
+         declared=lambda n: 0, declared_note="0",
+         bytes_note="-",
+         pins=["dyck-width", "dyck-shape", "dyck-chip", "dyck-rows"],
+         binds_c="no (PI_TABLE/PI_ROUTE absent from the theorem)"),
+]
+
+DYCK_MAX_TOKENS = 6   # depth cap k <= 3 => the deployed grammar's language is finite: [^k]^k, k <= 3
+
+
+def check_automata_pins(mt=None):
+    """Re-read every cited line; return a list of (key, problem). Empty = all pins hold."""
+    import os
+    mt = os.path.expanduser(mt or os.environ.get("BREADSTUFFS_MT", BREADSTUFFS_MT_DEFAULT))
+    bad = []
+    for key, (path, line, needle) in AUTOMATA_PINS.items():
+        p = os.path.join(mt, path)
+        try:
+            lines = open(p, encoding="utf-8").read().splitlines()
+        except OSError as e:
+            bad.append((key, f"{path}: {e.strerror}"))
+            continue
+        if line > len(lines) or needle not in lines[line - 1]:
+            got = lines[line - 1].strip() if line <= len(lines) else "<past EOF>"
+            bad.append((key, f"{path}:{line} expected {needle!r}, found {got!r}"))
+    return bad
+
+
+def pin_ref(key):
+    path, line, _ = AUTOMATA_PINS[key]
+    return f"metatheory/{path}:{line}"
+
+
+# ---- commitment term ---------------------------------------------------------------------------
+KECCAK_RATE = 136          # cSHAKE256 rate in bytes (1088 bits)
+MERKLE_LEAF_BYTES = 32     # [INFERRED] LEAF-PROVER-DECISION §7: leaf input 66 B unary / 37 B u32 = a 32-B payload
+
+
+def keccak_sponge(n_absorbed, prefix_precomputed=True):
+    """Keccak-f calls for SHAKE/cSHAKE256 over n_absorbed bytes with a 32-byte output:
+    floor(n/136) + 1 including pad10*1 (FIPS 202 Alg. 8; the first 32 output bytes need no extra
+    squeeze), +1 for the cSHAKE bytepad(N,S) prefix block unless its state is precomputed
+    (SP 800-185 §3.3). Codex round 3, finding 15."""
+    return n_absorbed // KECCAK_RATE + 1 + (0 if prefix_precomputed else 1)
+
+
+def frame_len(n, codec):
+    """Bytes absorbed for one framed payload of n bytes: `0 :: envelope b` (hashLeaf)."""
+    return 1 + (n + 1 if codec == "unary" else 4) + n
+
+
+def tower_merkle(n, codec="unary", prefix_precomputed=True):
+    """cSHAKE Merkle over 32-byte leaves: leaves + internal nodes, one sponge each."""
+    leaves = max(1, -(-n // MERKLE_LEAF_BYTES))
+    node_in = 1 + 2 * ((32 + 1 if codec == "unary" else 4) + 32)
+    return (leaves * keccak_sponge(frame_len(MERKLE_LEAF_BYTES, codec), prefix_precomputed)
+            + (leaves - 1) * keccak_sponge(node_in, prefix_precomputed))
+
+
+def babybear_commit_perms(n):
+    return commitment_perms(n)          # ceil(n/8) + 2, hash_bytes_8 (poseidon2.rs:704)
+
+
+AUTOMATA_SIZES = (256, 4096, 65536)
+
+
+def automata_rows(n):
+    """One dict per (family, n) with the run term and both commitment columns."""
+    out = []
+    for f in AUTOMATA_FAMILIES:
+        if f["rows"] is None:      # Dyck: finite language
+            run_rows = None if n > DYCK_MAX_TOKENS else 2 * n + 1
+        else:
+            run_rows = f["rows"](n)
+        if run_rows is None:
+            out.append(dict(f, n=n, run_rows=None))
+            continue
+        cols = f["cols"] if isinstance(f["cols"], int) else None
+        main = run_rows * cols if cols else None
+        chip_cells = run_rows * f["chip"] * f["chip_w"]
+        out.append(dict(f, n=n, run_rows=run_rows, main_cells=main, chip_perms=run_rows * f["chip"],
+                        chip_cells=chip_cells, declared_rows=f["declared"](n)))
+    return out
+
+
+def commitment_rows(n):
+    bb = babybear_commit_perms(n)
+    return dict(
+        n=n, bb_perms=bb, bb_cells=bb * INCIRCUIT_CELLS["poseidon2"],
+        k_payload=keccak_sponge(n), k_payload_cold=keccak_sponge(n, prefix_precomputed=False),
+        k_env_unary=keccak_sponge(frame_len(n, "unary")), k_env_u32=keccak_sponge(frame_len(n, "u32")),
+        k_merkle_unary=tower_merkle(n, "unary"), k_merkle_u32=tower_merkle(n, "u32"),
+        k_merkle_cold=tower_merkle(n, "unary", prefix_precomputed=False),
+        frame_rows_unary=n + 1, frame_rows_u32=4)
+
+
+def certs(n_bytes=None):
+    """Plain-text bill at one record size (or all three)."""
+    sizes = AUTOMATA_SIZES if not n_bytes or n_bytes < 0 else (n_bytes,)
+    for n in sizes:
+        c = commitment_rows(n)
+        print(f"\n== n = {n} bytes")
+        print(f"  commit BabyBear: {c['bb_perms']:,} Poseidon2 perms x 352 = {c['bb_cells']:,} cells")
+        print(f"  commit Tower256 [INFERRED]: payload sponge {c['k_payload']:,} Keccak-f "
+              f"(+1 cold prefix = {c['k_payload_cold']:,}); unary envelope {c['k_env_unary']:,} vs u32 "
+              f"{c['k_env_u32']:,}; Merkle/32-B leaves {c['k_merkle_unary']:,} (cold {c['k_merkle_cold']:,})")
+        print(f"  {'family':22} {'rows':>9} {'main cells':>12} {'chip perms':>11} {'chip cells':>13} {'decl rows':>9}")
+        for r in automata_rows(n):
+            if r["run_rows"] is None:
+                print(f"  {r['name']:22} {'n/a: language finite (<= 6 tokens)':>60}")
+                continue
+            mc = f"{r['main_cells']:,}" if r["main_cells"] is not None else "(2k+1)n"
+            print(f"  {r['name']:22} {r['run_rows']:9,} {mc:>12} {r['chip_perms']:11,} "
+                  f"{r['chip_cells']:13,} {r['declared_rows']:9,}")
+
+
+def certs_markdown():
+    """COUNTS.md, generated. Refuses (exit 1) if any cited pin has moved."""
+    import subprocess, sys
+    bad = check_automata_pins()
+    if bad:
+        for k, why in bad:
+            print(f"PIN MOVED {k}: {why}", file=sys.stderr)
+        sys.exit(1)
+    try:
+        rev = subprocess.run(["git", "-C", __import__("os").path.dirname(__file__) or ".", "rev-parse", "--short", "HEAD"],
+                             capture_output=True, text=True).stdout.strip()
+    except OSError:
+        rev = "?"
+    L = []
+    w = L.append
+    w("# Automata counts")
+    w("")
+    w("<!-- GENERATED by zkml-research `notes/construction-search/space.py --certs --markdown` "
+      f"(zkml-research {rev}); edit the script, not this file. -->")
+    w("")
+    w("2026-11-06, lane C of the automata program (`SUBSTRATE-DECISION.md` §4). Tags: [MEASURED] a pinned")
+    w("`#guard` at the cited `file:line` (the generator re-reads every cited line and refuses to print if")
+    w("one moved); [READ] read off an emitted golden or a note; [INFERRED] a model number. Counts, not clocks.")
+    w("")
+    w("Two blocks per family, kept apart on purpose (codex round 3, finding 16): the **semantic** operation")
+    w("counts (what the checker does per symbol) and the **BabyBear realization** (what the served")
+    w("descriptor spends). A \"lookup\" is an abstract operation; its realization cost (LogUp auxiliary")
+    w("columns, table authentication) belongs to the target and is not pinned in Lean today. Tower256 has")
+    w("no AIR layer yet (LEAF-PROVER-DECISION §6 \"not yet available\"), so it has a commitment column and")
+    w("no realization column.")
+    w("")
+    w("## 1. Per symbol: semantics and the BabyBear realization")
+    w("")
+    w("| family | served descriptor | symbol | rows / symbol | lookups / symbol | degree | main cols | constraints | tables | chip perms / row (cells each) | declared table rows | descriptor bytes | binds `c`? | pins |")
+    w("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for f in AUTOMATA_FAMILIES:
+        rps = {"dyck-bracket-replay": "5 rows for 2 tokens", "dfa-attested-weld8": "1 (8 per byte)"}.get(f["name"], "1")
+        chip = f"{f['chip']} ({f['chip_w']})" if f["chip"] else "0"
+        pins = ", ".join(f"`{pin_ref(p)}`" for p in f["pins"])
+        w(f"| {f['name']} | {('`' + f['served'] + '`') if f['served'] else '-'} | {f['sym']} | {rps} | {f['lookups']} | "
+          f"{f['degree']} | {f['cols']} | {f['cons']} | {f['tables']} | {chip} | {f['declared_note']} | "
+          f"{f['bytes_note']} | {f['binds_c']} | {pins} |")
+    w("")
+    w("Notes on the rows [READ unless tagged]:")
+    w(f"- table routing's exact-public table IS the run: unit-capacity exact-public receives pin the trace")
+    w(f"  length to the declared rows (`{pin_ref('lanes-cost')}`, `forcedTraceRows := .pinned 8` at word length 8), so the")
+    w("  descriptor grows with the word and the word is public. That is the served shape today; a private-word")
+    w("  table routing needs a committed transition table (the weld's shape) or a LogUp table of `|Q|·|Σ|` rows.")
+    w(f"- the weld is over binary symbols (`{pin_ref('asym')}`); a byte costs 8 rows, each with")
+    w(f"  `MAP_TREE_DEPTH` = 16 chip permutations of map authentication (`{pin_ref('w8-aux')}`).")
+    w(f"- Dyck: the deployed grammar caps nesting at k ≤ 3, so its language is `[ᵏ]ᵏ` for k ≤ 3, at most")
+    w(f"  {DYCK_MAX_TOKENS} tokens; record-size rows below are n/a, not a cost.")
+    w("- degree: no emitter pins a maximum constraint degree; the column says where each number was read.")
+    w("")
+    w("## 2. Run term per record (BabyBear realization)")
+    w("")
+    w("Main cells = rows × main columns; chip cells = chip permutations × 352 (wide, "
+      f"`{pin_ref('p2-wide')}`) or × 141 (narrow, hub §2 [MEASURED]). Trace height before power-of-two padding.")
+    w("")
+    w("| family | n bytes | rows | main cells | chip perms | chip cells | declared table rows |")
+    w("|---|---:|---:|---:|---:|---:|---:|")
+    for n in AUTOMATA_SIZES:
+        for r in automata_rows(n):
+            if r["run_rows"] is None:
+                w(f"| {r['name']} | {n:,} | n/a (finite language) | | | | |")
+                continue
+            mc = f"{r['main_cells']:,}" if r["main_cells"] is not None else "(2k+1)·n"
+            dr = f"{r['declared_rows']:,}" if r["name"] != "dfa-product-lanes-k" else f"k·{n:,}"
+            w(f"| {r['name']} | {n:,} | {r['run_rows']:,} | {mc} | {r['chip_perms']:,} | {r['chip_cells']:,} | {dr} |")
+    w("")
+    w("## 3. Commitment term (once per record, shared by every statement over the same `c`)")
+    w("")
+    w("BabyBear: `hash_bytes_8`, `⌈n/8⌉+2` Poseidon2 permutations × 352 cells [READ `circuit/src/poseidon2.rs:704`;")
+    w("the +2 is the length lanes' absorb and the squeeze]. Tower256 [INFERRED, all of it]: cSHAKE256 over")
+    w("byte-aligned input with a 32-byte output costs `⌊n/136⌋ + 1` Keccak-f including padding (FIPS 202")
+    w("Algorithm 8; the first output block needs no extra squeeze), plus one block for the cSHAKE `bytepad(N, S)`")
+    w("prefix (SP 800-185 §3.3) unless that state is precomputed (\"cold\" below counts it). The \"31 per 4 KiB\" of")
+    w("LEAF-PROVER-DECISION §1 is the **payload sponge only**, not the commitment price: the leaf commits by a")
+    w("Merkle root, modelled here over 32-byte leaves (§7's 66-byte unary / 37-byte u32 leaf inputs), one Keccak-f")
+    w("per leaf and per node.")
+    w("")
+    w("| n bytes | BabyBear perms | BabyBear cells | Keccak-f payload sponge (warm / cold prefix) | Keccak-f Merkle, 32-B leaves (warm / cold) |")
+    w("|---:|---:|---:|---:|---:|")
+    for n in AUTOMATA_SIZES:
+        c = commitment_rows(n)
+        w(f"| {n:,} | {c['bb_perms']:,} | {c['bb_cells']:,} | {c['k_payload']:,} / {c['k_payload_cold']:,} | "
+          f"{c['k_merkle_unary']:,} / {c['k_merkle_cold']:,} |")
+    w("")
+    w("Commitment sharing: one `c` serves every statement over the same record bytes under the same scheme")
+    w("(the DFA, product, and padded-complement runs over one record share it). A BabyBear `c` and a Tower256")
+    w("`c` are different objects; the weld's 8-felt root commits the automaton, not the record, and is a")
+    w("second commitment.")
+    w("")
+    w("## 4. The two hot spots, with the binary length lane")
+    w("")
+    w("**Unary length framing** (`Tower256CshakeMerkleController.encodeLength n` = n zero bytes then 1;")
+    w("`hashLeaf` absorbs `0 :: envelope b`, i.e. 2n+2 bytes for an n-byte payload) [READ minidregg")
+    w("Compiler/Tower256CshakeMerkleController.lean, quoted in zkml-research LEAF-PROVER-DECISION §7].")
+    w("In the run term it is one padding row per symbol wherever the byte column absorbs the framed payload;")
+    w("a u32 length lane (LEAF-PROVER-DECISION §7) makes it 4 rows. In the sponge it doubles the absorbed bytes.")
+    w("Inside 32-byte Merkle leaves it costs nothing (66 and 37 bytes are both one block).")
+    w("")
+    w("[INFERRED: the saving applies where a family's byte column absorbs the framed payload; no served descriptor does today.]")
+    w("")
+    w("| n bytes | framing rows unary → u32 | rows saved | table-routing main cells saved (×3) | weld8 main cells saved (×8 rows × 11) | flat-sponge Keccak-f unary → u32 | Merkle Keccak-f unary → u32 |")
+    w("|---:|---:|---:|---:|---:|---:|---:|")
+    for n in AUTOMATA_SIZES:
+        c = commitment_rows(n)
+        saved = c["frame_rows_unary"] - c["frame_rows_u32"]
+        w(f"| {n:,} | {c['frame_rows_unary']:,} → {c['frame_rows_u32']} | {saved:,} | {3 * saved:,} | {88 * saved:,} | "
+          f"{c['k_env_unary']:,} → {c['k_env_u32']:,} | {c['k_merkle_unary']:,} → {c['k_merkle_u32']:,} |")
+    w("")
+    w("**`⌈n/8⌉+2` Poseidon2 permutations** are the BabyBear commitment; they do not transfer. The same record on")
+    w("Tower256 is the Merkle column of §3. In committed-bit terms the comparison is LEAF-PROVER-DECISION §1's")
+    w("(Keccak-f on BabyBear is 63,192 cells; in char 2 about 51× fewer committed bits), which is why the")
+    w("BabyBear Keccak path is not modelled here.")
+    w("")
+    w("| n bytes | BabyBear perms | BabyBear cells | Tower256 Keccak-f (Merkle, warm) |")
+    w("|---:|---:|---:|---:|")
+    for n in AUTOMATA_SIZES:
+        c = commitment_rows(n)
+        w(f"| {n:,} | {c['bb_perms']:,} | {c['bb_cells']:,} | {c['k_merkle_unary']:,} |")
+    w("")
+    w("## 5. Datalog: per firing, and the universal leg")
+    w("")
+    w(f"- One rule firing (`DerivationEmit`): 386 columns (`{pin_ref('deriv-width')}`), 393 constraints")
+    w(f"  (`{pin_ref('deriv-cons')}`), 13 PIs (`{pin_ref('deriv-pi')}`); degree 8 [READ hub §2; unpinned]. Per")
+    w("  firing, not per symbol.")
+    w("- The closure (universal) leg of `FixpointCert.verify` enumerates, per rule r, every substitution over the")
+    w("  active domain: Σ_r |dom|^varBound(r) candidates, each a body check. `activeDomain` is")
+    w(f"  `edb.flatMap (·.2) ++ P.flatMap ruleConsts` (`{pin_ref('dl-domdef')}`), a LIST with duplicates, so the")
+    w("  executable count is larger than the set count. Pinned on the transitive-closure example: |dom| = 6")
+    w(f"  (`{pin_ref('dl-dom')}`), 6³ = 216 candidates for the 3-variable step rule (`{pin_ref('dl-substs')}`).")
+    w("- Not arithmetized: the fixpoint and the closure leg have no descriptor; their cost is checker steps.")
+    w("")
+    return "\n".join(L) + "\n"
+
 
 def main():
     _calibrate_witgen()
@@ -550,11 +879,24 @@ def main():
     ap.add_argument("--calibrate", action="store_true")
     ap.add_argument("--sensitivity", action="store_true")
     ap.add_argument("--top", type=int, default=12)
-    ap.add_argument("--certs", type=int, metavar="N_BYTES",
-                    help="print the certificate-family bill at N_BYTES (breadstuffs docs/automata)")
+    ap.add_argument("--certs", type=int, nargs="?", const=-1, metavar="N_BYTES",
+                    help="automata counts at N_BYTES, or at 256/4096/65536 with no value (breadstuffs docs/automata)")
+    ap.add_argument("--markdown", action="store_true",
+                    help="with --certs: print breadstuffs docs/automata/COUNTS.md (pins re-read first)")
+    ap.add_argument("--check-pins", action="store_true",
+                    help="re-read every cited #guard line under $BREADSTUFFS_MT; exit 1 if one moved")
     a = ap.parse_args()
-    if a.certs:
-        certs(a.certs)
+    if a.check_pins:
+        bad = check_automata_pins()
+        for k, why in bad:
+            print(f"PIN MOVED {k}: {why}")
+        print(f"{len(AUTOMATA_PINS) - len(bad)}/{len(AUTOMATA_PINS)} pins hold")
+        raise SystemExit(1 if bad else 0)
+    if a.certs is not None:
+        if a.markdown:
+            print(certs_markdown(), end="")
+        else:
+            certs(a.certs)
         return
     if a.calibrate:
         calibrate()
