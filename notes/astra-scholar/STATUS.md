@@ -1,5 +1,9 @@
 # Scholar status
 
-2026-11-06. [READ] Study completed at research snapshot `1fdf80cd`; four disjoint implementation/research lanes active. No existing lane file changed. `STUDY.md` records scope and initial doubts.
+2026-11-06. [READ] Scholar study and deliverables completed against initial research snapshot `1fdf80cd`. Claude's concurrent elementwise-gate commit `57951225` is separate; our §9 counts concern the original linear-algebra spine. No existing lane file changed. `STUDY.md` records the complete reading scope and initial doubts; `REPORT.md` gives the integrated verdict.
 
-[OPEN] Pending: ZKPoPK design and harness; circuit-privacy ledger and attacks; concrete preprocessing price; independent schedule derivation and transcript attacks; integrated welfare page and report. No deployment/security closure claimed.
+[MEASURED] Executed small-parameter proof, serialization, relation-compiler, privacy, dealer-inventory, counting and transcript-falsifier checks are saved beside the `scholar_` scripts. Root reviewed the proof code and literature-derived preprocessing formula; privacy independently reviewed the proof relation, and preprocessing independently reviewed the privacy ledger. One rederivation subagent failed authentication; root completed that work directly. No N8192 batch or hbox job was run. No clock-based performance claim is made.
+
+[INFERRED] Outcomes: an executable but impractically large Stern proof gate plus an LNS compiler target; a refutation of whole-ciphertext statistical hiding under first-component flooding; ring-wide phase bounds and a larger-parameter alternative; explicit non-ideal preprocessing prices that reverse the proposed parity; reproduced online counts with corrected storage/transmission units; executable MAC-cancellation and replay adversaries; a party-by-party custody statement.
+
+[OPEN] Not delivered as a deployed secure system: optimized lattice proof backend, whole-ciphertext computational simulation, non-ideal OT implementation, full-run statistical budget, durable verifier/acceptance service, or integrated collaborative ZK. These are named engineering/proof obligations in NEXT, not silently completed by reference tests. VERDICTS remains unchanged for the maintainer to reconcile.
