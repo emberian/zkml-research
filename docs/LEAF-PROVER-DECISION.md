@@ -288,7 +288,7 @@ node inputs are already one Keccak-f block each under either codec (66→37 and 
 - No artifact catalog entry pins these bytes today.
 
 **Recommendation.** Do the prefix-state cache first: native ABI only, transcript unchanged,
-and it captures about 96% of the seed saving. Fold the codec change into the next flag day that
+and it captures about 98% of the seed saving (7,350 of 7,505 Keccak-f at ell = 14). Fold the codec change into the next flag day that
 changes Tower256 transcript bytes anyway. The receipt codec and work-profile registration of
 `docs/TOWER256-FRI-PROVER-WORK.md` §4 is the natural one, since nothing native has frozen the
 bytes yet. On its own it buys about 1% after caching, which is not worth a flag day.
