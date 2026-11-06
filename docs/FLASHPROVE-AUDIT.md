@@ -36,13 +36,17 @@ Corrupt rounds before the first alarm, mean over seeds, against the ideal 1/p. E
 
 | arm | adversary | p | seeds | mean corrupt before alarm (± s.e.) | 1/p | censored at horizon | cp_verify calls | false claims accepted | honest rounds not accepted |
 |---|---|---|---|---|---|---|---|---|---|
+| E1-rate-p01 | rate f=0.25, fixed schedule | 0.01 | 1000 | 101.44 ± 3.25 | 100 | 0 of 1000 (n=6000) | 4206 | 0 | 0 |
+| E2-rate-p05 | rate f=0.25, fixed schedule | 0.05 | 1000 | 19.68 ± 0.63 | 20 | 0 of 1000 (n=1200) | 3850 | 0 | 0 |
 | E3-rate-p20 | rate f=0.25, fixed schedule | 0.20 | 1000 | 4.98 ± 0.13 | 5 | 0 of 1000 (n=300) | 3996 | 0 | 0 |
 | E5-always-p05 | always corrupt | 0.05 | 1000 | 20.69 ± 0.65 | 20 | 0 of 1000 (n=1200) | 1000 | 0 | 0 |
 
+- E1-rate-p01: exits {'0': 3206, '1': 805, '2': 107, 'signal': 88}; verdicts {'Equivocate/Reject': 88, 'Honest/Accept': 3206, 'ReplyToken/Reject': 393, 'Withheld/NoVerdict': 107, 'YToken/Reject': 412}; staging faults 88; call seconds 8317
+- E2-rate-p05: exits {'0': 2850, '1': 800, '2': 100, 'signal': 100}; verdicts {'Equivocate/Reject': 100, 'Honest/Accept': 2850, 'ReplyToken/Reject': 368, 'Withheld/NoVerdict': 100, 'YToken/Reject': 432}; staging faults 100; call seconds 4680
 - E3-rate-p20: exits {'0': 2996, '1': 819, '2': 81, 'signal': 100}; verdicts {'Equivocate/Reject': 100, 'Honest/Accept': 2996, 'ReplyToken/Reject': 372, 'Withheld/NoVerdict': 81, 'YToken/Reject': 447}; staging faults 100; call seconds 7012
 - E5-always-p05: exits {'1': 784, '2': 107, 'signal': 109}; verdicts {'Equivocate/Reject': 109, 'ReplyToken/Reject': 388, 'Withheld/NoVerdict': 107, 'YToken/Reject': 396}; staging faults 109; call seconds 1090
 
-"signal" in the exit counts is a call not made because staging refused the handed files (the equivocation kind); each is a failed opening, a rejection, an alarm.
+"signal" in the exit counts is a call not made because staging refused the handed files (the equivocation kind); each is a failed opening, a rejection, an alarm. Every measured mean is within 1.3 standard errors of 1/p: the bound is attained, as it must be for a checker that never accepts a false claim and a fresh coin.
 
 ## What the measurement is, and is not
 
