@@ -65,24 +65,33 @@ def isFalse (W : World Ω) (c : Claim) : Bool := decide (W.M c ≠ c.output)
 def toC (W : World Ω) : AuditChecked.World Claim Ω :=
   { served := W.served, opened := W.opened, isFalse := W.isFalse, verdict := W.verdict }
 
-/-- **[EX-transport].** A report, when there is one, is the spec's argmax list of the opened
-claim. -/
+/-- **[EX-transport].** On a call whose files opened and which exited 0, a report, when there is
+one, is the spec's argmax list of the opened claim. Nothing is asked of calls that failed or of
+openings that did not check out (codex round 3: the first form quantified over every call). An
+always-failing recompute satisfies it, and buys no availability: fail-closed alarms on it. -/
 def Transport (W : World Ω) : Prop :=
-  ∀ h ω ts, reported (W.call h ω).1 (W.expect h ω) = some ts → ts = W.M (W.opened h ω)
+  ∀ h ω ts, W.openOk h ω = true → (W.call h ω).2 = some 0 →
+    reported (W.call h ω).1 (W.expect h ω) = some ts → ts = W.M (W.opened h ω)
 
-/-- **An accept means the recompute reported exactly the committed output.** -/
+/-- **An accept means the files opened, the recompute exited 0, and it reported exactly the
+committed output.** -/
 theorem accept_reported (W : World Ω) (h : List Ω) (ω : Ω) (hv : W.verdict h ω = .accept) :
-    reported (W.call h ω).1 (W.expect h ω) = some (W.opened h ω).output := by
-  unfold verdict auditVerdict verdictOf at hv
-  split_ifs at hv
-  split at hv
-  · split at hv
-    · rename_i ts hr
-      split_ifs at hv with heq
-      have : ts = (W.expect h ω).output := by simpa using heq
-      rw [hr, this]; rfl
+    W.openOk h ω = true ∧ (W.call h ω).2 = some 0 ∧
+      reported (W.call h ω).1 (W.expect h ω) = some (W.opened h ω).output := by
+  unfold verdict auditVerdict at hv
+  by_cases hok : W.openOk h ω = true
+  · simp only [hok, if_true] at hv
+    unfold verdictOf at hv
+    split at hv
+    · rename_i hx
+      split at hv
+      · rename_i ts hr
+        split_ifs at hv with heq
+        have : ts = (W.expect h ω).output := by simpa using heq
+        exact ⟨hok, hx, by rw [hr, this]; rfl⟩
+      · cases hv
     · cases hv
-  · cases hv
+  · simp [hok] at hv
 
 /-- **No false transcript is accepted with its committed record.** Under [EX-transport] an
 accepted opening's output is the spec's argmax list, so the opened claim is true; if it is the
@@ -93,8 +102,8 @@ theorem no_chkBad (W : World Ω) (hT : W.Transport) (coin : Ω → UInt64) (pNum
   | ω :: h => by
     rintro (hb | ⟨⟨_, hcr, _, hv⟩, heq⟩)
     · exact no_chkBad W hT coin pNum h hb
-    · have hrep := accept_reported W h ω hv
-      have hM := hT h ω _ hrep
+    · obtain ⟨hok, hx, hrep⟩ := accept_reported W h ω hv
+      have hM := hT h ω _ hok hx hrep
       have heq' : W.opened h ω = W.served h := heq
       have : W.isFalse (W.served h) = false := by
         simp [isFalse, ← heq', ← hM]
@@ -163,7 +172,7 @@ def honest : World (Fin (2 ^ 64)) where
 theorem honest_report : reported (report "7").1 (honest.expect [] 0) = some [7] := by native_decide
 
 theorem honest_transport : honest.Transport := by
-  intro h ω ts hr
+  intro h ω ts _ _ hr
   have hr' : reported (report "7").1 (honest.expect [] 0) = some ts := hr
   rw [honest_report] at hr'
   cases hr'; rfl
@@ -186,7 +195,7 @@ theorem lying_badAt : AuditChecked.World.BadAt lyingRecompute.toC coin64 AuditCh
 theorem lying_not_transport : ¬ lyingRecompute.Transport := by
   intro hT
   have hr : reported (report "8").1 (lyingRecompute.expect [] 0) = some [8] := by native_decide
-  have := hT [] 0 [8] hr
+  have := hT [] 0 [8] rfl rfl hr
   simp [lyingRecompute, honest] at this
 
 end Teeth
