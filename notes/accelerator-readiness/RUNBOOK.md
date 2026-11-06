@@ -4,9 +4,12 @@
 Every script below passed its shrunk dry run on a Kaggle T4 first (KAGGLE-LEDGER.md). Prices are vast.ai
 on-demand offers read from the public offers API at 2026-11-06 22:25 UTC, single GPU, so they move.
 
-**STATUS: box order provisional.** The hardware lane (initiative 14) is remapping the workloads onto each
-chip's fastest exact datapath (including GF(2) as the parity of exact FP8 0/1 sums on B300) and will hand
-over a revised probe list. §3 is rewritten when it arrives; §1, §2 and §4 stand.
+**STATUS: final (2026-11-06 23:10 UTC).** Initiative 14's revised probe list (`notes/tensor-core-holography/
+ROTATION.md` §5, dev a82e4738) is folded into `runbook/mma.sh` (T4 dry run `accel-mma-t4-runbook-03`, 81/81).
+Its free T4 items ran first: the bit-sliced Tower256 multiply (`accel-tower-bitslice-01`: ~52,700 int32-op
+equivalents, the tables ~12,000-17,400; F3's 718 is below the ideal ~860 LOP3 count) and the FP16 0/1 parity
+bias read (`accel-mma-fp16parity-01`, 37/37: exact below 2^(m-1), coin-flip past it, as predicted).
+Rentals go through `harness/vast_box.py` (smoke-tested end to end, VAST-LEDGER.md).
 
 ## 1. vast.ai prices read (on-demand, 1 GPU, $/h)
 
@@ -32,18 +35,23 @@ watchdog with a PID file (`runbook/common.sh`), results in `~/accel-results/<wor
 (`results.json`, `log.txt`, `box.json`). Copy that directory back to
 `notes/accelerator-readiness/runs/paid-<sku>-<workload>/` and commit it.
 
-## 3. Order and cost (PROVISIONAL, pending initiative 14's revised probe list)
+## 3. Order and cost (final)
 
-| # | box | runs | wall | cost |
-|---|---|---|---|---|
-| 1 | one H100 SXM (~$2.33-2.83/h) | mma.sh `--sku H100` (BGMMA vs IGMMA b1 rate, QGMMA FP8 width), bfv.sh, tower256.sh | ~1.75 h | **~$4-5** |
-| 2 | one B200 ($12.51/h; B300 if one appears) | mma.sh `--sku B200` (tcgen05 e4m3/e2m1 accumulator widths, FP4 promotion interval) | 1 h | **~$12.5** |
-| | | total | | **~$17-18**, leaving ~$12 for a rerun or the remapped probes |
+No B300 is listed on vast.ai (checked 23:05 UTC); the B200 runs the B300 items. Re-read at 23:05: B200 $7.50/h
+(Oregon, reliability 0.99, two offers), H100 SXM $2.335/h (Japan, 0.99).
 
-Why this order: box 1 is cheap and settles two workloads plus the Hopper half of the probe in one rental;
-box 2 is the expensive single question (the unpublished Blackwell accumulator widths). If the credit must
-shrink, drop tower256 first (it does not need paid hardware, §4), then BFV's H100 run (the T4 numbers
-already answer the fork verdict).
+| # | box (vast.ai, 1 GPU, image nvidia/cuda:12.9.1-devel-ubuntu24.04) | runs | expected wall incl. boot | expected cost | cap / watchdog |
+|---|---|---|---|---|---|
+| 1 | B200 ($7.50/h) | `mma.sh --sku B200`: mxf4 and FP8 0/1 count/parity sweeps K = 2^10..2^20 (fast accum on/off), bias read, FP16 byte-limb BabyBear^8 IP, peak INT8/FP8/FP4/FP16 rates and copy, Tower256 fixed-r 0/1 GEMM, CUTLASS tcgen05 examples | 20-25 min (14-18 run + boot) | **~$3** | $6.50 / 50 min |
+| 2 | H100 SXM ($2.34/h) | `mma.sh --sku H100 --no-cutlass` (wgmma IGMMA/QGMMA/HGMMA/BGMMA and.popc rates; QGMMA m, expected 12; bias read in-accumulator; FP8 0/1 parity; TensorZKP-shape INT8 IP vs copy), then `bfv.sh --sku H100`, then `tower256.sh --sku H100` | 50-65 min | **~$2.5** | $4.00 / 95 min |
+| | | total | | **~$5.5**, caps sum $10.50 (< the $25 stop) | |
+
+B300 items that do not transfer to the B200 (w3, MMA.md §9): the INT8 rate and hence which prime-field path
+wins (INT8 on B200, FP16 bytes on B300), the FP4 and peak rates, and (probably) the tcgen05 accumulator width,
+which is evidence for B300 rather than a measurement of it. On Blackwell the bias read is checked at the cuBLAS
+level only (C enters in the fp32 epilogue); an in-accumulator read needs a CUTLASS-72a-derived kernel (not written).
+mxf4 through cuBLASLt (VEC32_UE8M0) has not run anywhere before the box; nvfp4 runs beside it.
+The tower256.sh used on the box gained argument pass-through after its dry run 04 (w2's bit-slice jobs ran it).
 
 ## 4. What each result decides
 
