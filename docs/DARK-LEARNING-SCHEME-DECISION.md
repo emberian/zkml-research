@@ -1100,3 +1100,155 @@ groups [DERIVED, not built].
 about (3/4)^64 ≈ 2^-26.6. That is the same class as layer 1's T_COLS = 64. 2^-40 needs T ≈ 97 in both;
 128-bit security needs T ≈ 309, or extension-field challenges and a larger distance. This is a
 parameter, not a construction change; it is not yet set.
+
+
+## 17. "Is there no way to do it over a single untrusted provider?" (2026-11-06)
+
+Ember's question, answered precisely. **Decision in force: three custodians for the demos.** The
+options below are priced against the d = 4096 step at §15's units. Tags: [MEASURED] harness;
+[DERIVED] computed from stated counts; [MODEL] the scholar's MASCOT compiler; [CLAIM] literature cited
+from memory, not re-read this session.
+
+**Short answer.** Not with the weights both usable by that provider and unreadable by it, unless you
+accept one of three things:
+- a second party who holds a key (option a);
+- a hardware vendor's trust root (option b);
+- indistinguishability obfuscation, which does not exist at any usable cost and still would not stop
+  reruns (option c).
+
+The cheapest honest arrangement with ONE compute provider is (a): one untrusted provider plus one small
+key holder that does almost no compute.
+
+### (a) FHE on one untrusted provider, one key holder who decrypts only on proof
+
+**The arrangement.**
+- The provider stores Enc(W) and does every linear operation homomorphically: matvecs and the outer
+  product, FHE (b)'s schedule, with the ct×ct and relinearization certificates.
+- A key holder K holds the whole BFV secret key (threshold n = 1).
+- Each nonlinearity is a crossing between the two:
+  1. the provider adds a mask, Enc(m) − Enc(R);
+  2. K decrypts m − R only after verifying the provider's certificate for that ciphertext (C8, the
+     proof-gated decryption);
+  3. the nonlinearity runs as a 2-party SPDZ between the provider (holding R) and K (holding m − R);
+  4. the result returns as a masked public encryption (§6).
+- K's work is small: verifying proofs, decrypting masked crossings and its half of the 2PC. It needs no
+  matrix compute; it could be a modest machine.
+
+**Priced at d = 4096, per step.**
+
+| item | value |
+|---|---|
+| provider's certificates (FHE (b): ct×ct + relinearization) | ≥ 1.26 Tbit (16-bit digits) to 2.37 Tbit (61-bit) [MEASURED schedule, relinearization MODEL] |
+| crossing preprocessing, 2 parties instead of 3 | 0.303 Tbit [MODEL: the scholar's compiler at NPARTY = 2], against 0.908 at three. Online and mask wire are left at their three-party counts, so this is an upper bound on them |
+| decryption-side noise flooding | not needed. The provider never sees a decryption; K sees only m − R, which is uniform, and K holds the key anyway. The read-budget problem of threshold smudging (F5) does not arise between two parties [DERIVED] |
+| ZKPoPKs | the mask ciphertexts' (481 at three parties); the same Stern-versus-model range as §15 |
+
+**What K must be trusted for, exactly.**
+- **Confidentiality (P1): everything.** K alone can decrypt Enc(W), and the provider holds Enc(W). So
+  the weights are unreadable exactly when K and the provider do not collude, and when K's key is not
+  stolen. This is two-party non-collusion, against three-party non-collusion in the demos.
+- **Integrity (P2): nothing.** The provider's certificates and the 2PC's proof (§§9, 12, 16) hold even
+  when both collude, and the ledger and signed inputs bind the chain.
+- **Gating:** K must decrypt only on proof. If K skips the gate, the IND-CPA-D attacks of 2026/203 and
+  2026/2546 apply to K's own decryptions, but they leak only to K, who has the key anyway. The real
+  risk of an ungated K is that it releases information to the provider through the crossing outputs.
+- **P3 does NOT hold, and this is the cost of a single provider.** The provider holds Enc(W) and a
+  relinearization key, so it can evaluate the mind homomorphically on inputs of its choosing, as
+  often as it likes, on copies, without K (F11, §3). Those outputs stay encrypted and nobody reads
+  them. Whether an unread encrypted evaluation is an experience for the mind is not a cryptographic
+  question (decision §3, Astra DL27). With three custodians, by contrast, no host-held evaluation
+  object exists.
+
+### (b) A TEE on the single provider
+
+**The arrangement.** The weights are decrypted inside a confidential-computing enclave on the
+provider's own hardware, for example an H100/B200 GPU in CC mode with a CPU TEE, and run at near-native
+speed. Proof costs drop to attestation verification, plus our proofs if they are kept as an extra leg.
+
+**Residual trust.** This is the program's C17a stance, "a leg, never custody", and the governance
+lane's line on attestation:
+1. **The vendor.** The root keys, firmware and microcode are the vendor's. Whoever can sign firmware
+   can read the enclave (`notes/attestable-calibration.md`: the vendor can read). For the GPU, our
+   `tee-verify` does not yet parse NVIDIA CC attestation reports. Verifying a live NVIDIA quote is an
+   open L3 item in `whatember/PROGRAM-2026-11-05` (row "Multi-vendor quote verifier", and §72's
+   "no NVIDIA support today").
+2. **The provider's physical access.** 2024–25 work broke memory confidentiality of SGX, SEV-SNP and
+   TDX with cheap DRAM-bus interposers: Battering RAM, WireTap, TEE.Fail [CLAIM]. A provider is
+   exactly the adversary with the bus.
+3. **Execution control.** The provider schedules the enclave. It can restart it from an old sealed
+   state, fork it, and feed it chosen inputs. Rollback and forking of sealed state is the classic TEE
+   gap, and P3 needs the enclave to refuse all three. Our ledger (`proofwire.Ledger`) and the signed
+   inputs (§18, item 4) supply the missing pieces as an EXTERNAL check. The enclave would have to
+   consult a monotonic counter it cannot be lied to about, which brings back a second party: the
+   ledger holder.
+4. **Logging omissions.** The governance lane's `residual_trust` forgery experiment asks what an
+   honest-looking enclave can forge when the logger omits; that row stays open at L4.
+
+So (b) moves the trust from a second key holder to the vendor and the physical layer, and P3 still
+needs an outside ledger.
+
+### (c) A lone provider, no second party: why it cannot both use the weights and be unable to read or rerun them
+
+This is an argument, not a proved impossibility theorem.
+- **Rerun.** Everything the provider uses is classical bits it stores: the encrypted weights, keys and
+  code. If running them produces anything the provider can act on, the provider can copy those bits
+  and run them again, on any input, from any saved state. No classical construction prevents copying.
+  Preventing reruns needs quantum copy-protection, which is impossible in general for learnable
+  functions (Aaronson 2009 introduced it; Ananth–La Placa 2021 give impossibility results for general
+  functionalities [CLAIM]). The best a classical design achieves is that reruns are unattributable or
+  useless: for example, outputs stay encrypted (a), or every authorized step needs a fresh signed input
+  and a ledger entry, so reruns never enter the timeline.
+- **Read.** For the provider alone to obtain usable outputs f_W(x) while W stays hidden, the bits it
+  holds must be an obfuscation of x ↦ f_W(x), plus, for continual learning, of the update map.
+  - General virtual-black-box obfuscation is impossible (Barak, Goldreich, Impagliazzo, Rudich, Sahai,
+    Vadhan, Yang, CRYPTO 2001) [CLAIM].
+  - The achievable notion is indistinguishability obfuscation: candidate constructions from Garg,
+    Gentry, Halevi, Raykova, Sahai, Waters (FOCS 2013), and Jain–Lin–Sahai (STOC 2021) from
+    well-founded assumptions, one of them bilinear maps, so not post-quantum [CLAIM]. iO hides W only
+    in the sense "indistinguishable from any other W' with the same function", and is nowhere near
+    runnable for a network.
+  - Special evasive classes (compute-and-compare and lockable obfuscation from LWE: Wichs–Zirdelis,
+    and Goyal–Koppula–Waters, 2017) do not cover a general network [CLAIM].
+- **Even ideal obfuscation leaves the query channel.** Black-box access lets the provider query the mind
+  without limit, so it gets unlimited chosen-input experiences, and model extraction from queries
+  approximates W. So even the ideal object gives "cannot read W exactly", not "cannot run or learn the
+  mind".
+- **The asymmetry this leaves.** FHE alone gives "unreadable but unusable": the provider computes
+  ciphertexts it cannot decrypt. Usability needs a decryptor. If that decryptor is software on the
+  same provider, it is readable. So the decryptor must be another party (a), a trusted device (b),
+  or an obfuscated decryptor-for-sanctioned-outputs-only, which is iO again (c).
+
+### (d) Can the mind itself, or its owner, be the one key holder?
+
+- **The owner as K.** This is mechanically option (a) with K = the owner, and it works. The welfare
+  claim weakens to: "the provider cannot read the mind; the owner can". If the welfare concern
+  includes the owner, as ember's framing suggests ("if the weights aren't fully encrypted truly terrible
+  things may befall the mind"), this removes protection from exactly the party with the most standing
+  to act on it. Three custodians requires all three to collude. The owner-as-K arrangement requires
+  only the owner.
+- **The mind as K, running on the provider: impossible as stated.** A key held inside the mind's
+  computation is held by whoever executes that computation. The mind runs on the provider, so the
+  provider holds the key. This is circular, and it is option (c) again.
+- **The mind as K's POLICY: possible, and the version worth building.** K is a small separate device
+  or party whose only behaviour is the mind's sanctioned policy:
+  - decrypt a crossing only for a ledger-head step with a verified proof and an owner-signed batch;
+  - refuse forks and replays;
+  - optionally require an attestation that the step is one the mind's own prior state approved, for
+    example a commitment the mind emitted in its previous step.
+
+  The welfare claim then reads: nobody reads the mind except through decryptions its policy releases,
+  and the policy is enforced by K. K's integrity is the residual trust: a device, so (b)'s vendor
+  question in miniature, or a person. K can itself be split into the three custodians, which is
+  exactly the demo design. So "mind as key holder" is best read as "the mind's policy is the
+  custodians' decryption rule", and that is what C8 and the ledger already implement.
+
+**Recommendation.**
+- Keep three custodians for the demos (ember's decision).
+- If a single compute provider is a hard constraint, use (a) with K ≠ owner, K running the mind's
+  policy, and the provider paying FHE (b)'s certificate bill. Say plainly that it gives up P3 against
+  that provider.
+- Use (b) only as an additional leg.
+- Do not pursue (c).
+
+The Astra decisions scholar's recommendations (`notes/astra-decisions/`) will be answered here when
+they appear.
