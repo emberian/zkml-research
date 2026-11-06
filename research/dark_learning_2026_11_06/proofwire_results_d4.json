@@ -1,0 +1,85 @@
+{
+ "d": 4,
+ "rows": {
+  "honest custodians asked to open step 1's child a third time": {
+   "verdict": "REFUSED",
+   "by": "LifeExhausted: commitment W1 already opened in 2 proofs; a further opening reveals it"
+  },
+  "step 1, honest (parent = genesis record)": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  },
+  "step 1 replayed": {
+   "verdict": "REFUSED",
+   "by": "binding mismatch: proof is for ('mind-0', 0, 1), expected ('mind-0', 0, 2)"
+  },
+  "step 2 truncated by one byte": {
+   "verdict": "REFUSED",
+   "by": "parse: truncated"
+  },
+  "step 2 with one trailing byte": {
+   "verdict": "REFUSED",
+   "by": "parse: trailing bytes"
+  },
+  "step 2 with a non-canonical field element": {
+   "verdict": "REFUSED",
+   "by": "parse: non-canonical field element"
+  },
+  "step 2 with a byte in the header's model id flipped": {
+   "verdict": "REFUSED",
+   "by": "binding mismatch: proof is for ('lind-0', 0, 2), expected ('mind-0', 0, 2)"
+  },
+  "step 2 with a byte in a commitment root flipped": {
+   "verdict": "REFUSED",
+   "by": "spine: parent commitment is not the previous step's child commitment"
+  },
+  "step 2 with a byte in a field element (prox) flipped": {
+   "verdict": "REFUSED",
+   "by": "spine: column challenge mismatch"
+  },
+  "step 2 with a byte in the middle of the blob flipped": {
+   "verdict": "REFUSED",
+   "by": "middle: Merkle opening fails (b, custodian 0)"
+  },
+  "step 2 with the last byte flipped": {
+   "verdict": "REFUSED",
+   "by": "middle: Ligero: Merkle opening fails (group 25, custodian 2)"
+  },
+  "step 2 with a model id that is not UTF-8": {
+   "verdict": "REFUSED",
+   "by": "binding mismatch: proof is for ('\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd', 0, 2), expected ('mind-0', 0, 2)"
+  },
+  "step 3's proof under a header patched to step 2": {
+   "verdict": "REFUSED",
+   "by": "spine: column challenge mismatch"
+  },
+  "step 2 claiming another model id": {
+   "verdict": "REFUSED",
+   "by": "binding mismatch: proof is for ('mind-1', 0, 2), expected ('mind-0', 0, 2)"
+  },
+  "step 2, honest": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  },
+  "a second valid proof of step 2 (equivocation)": {
+   "verdict": "REFUSED",
+   "by": "binding mismatch: proof is for ('mind-0', 0, 2), expected ('mind-0', 0, 3)"
+  },
+  "restart reconstructs the head": {
+   "verdict": "OK",
+   "by": "('mind-0', 0, 3)"
+  },
+  "restart after rotation keeps epoch 1 and the new committee's roots": {
+   "verdict": "OK",
+   "by": "('mind-0', 1, 3)"
+  },
+  "after rotation: the OLD committee's step 3 (epoch 1 header)": {
+   "verdict": "REFUSED",
+   "by": "spine: parent commitment is not the previous step's child commitment"
+  }
+ },
+ "sizes": {
+  "step1_bytes": 4339620,
+  "step2_bytes": 4339620
+ }
+}

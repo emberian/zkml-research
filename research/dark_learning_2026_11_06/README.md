@@ -37,6 +37,10 @@ coefficient means 42² digit products per term.
 | `encoding_regressions.py` | falsifiers for the two large-t encoding fixes (fail under the broken encoding, pass under the fix) |
 | `cosnark.py`, `run_cosnark.py` | the MPC fork's collaborative proof (per-party share-codeword PCS, MPC sumchecks, rank-1 checks, chaining), full-collusion attacks, count formula checked against execution |
 | `cosnark_gates.py`, `run_cosnark_gates.py` | the middle of the collaborative proof: SPDZ execution integrity (openings, preprocessing well-formedness, IO), constraint system re-derived by the verifier from the public transcript; full-collusion attacks; exact count formula |
+| `proofwire.py`, `run_proofwire.py` | the untrusted-input verifier (schema-driven bytes in, pinned PARAMS) and the durable Ledger (genesis record, rotation record, lock); tamper, replay, equivocation, rotation and restart rows |
+| `owner_sig.py`, `run_signed_input.py` | signed-input binding: hash-based owner signature (Lamport + Merkle, durable leaf counter) over the batch commitments; substituted x/y, forged and replayed signatures refused |
+| `fs_public_falsifier.py` | review3's forgery through the unbound public transcript, now REFUSED |
+| `rerun19.log` | the hbox re-run of every falsifier and harness after the review repairs |
 | `cozk.py` | collaborative zero-knowledge Ligero over additive shares (rows in groups, polynomial Beaver triple) |
 | `cosnark_zk.py`, `run_cosnark_zk.py` | the spine with ZK layers 2-3: hidden rounds and evaluations, the verifier's checks as Ligero constraints (rank-1 check = one product gate); forgeries with the violated check; chain; exact counts |
 | `cosnark_gates_zk.py`, `run_cosnark_gates_zk.py` | the middle with ZK layers 2-3 (lockstep linear sumchecks), gate forgeries, exact counts |
