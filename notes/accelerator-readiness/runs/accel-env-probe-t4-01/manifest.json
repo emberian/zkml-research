@@ -1,0 +1,16 @@
+{
+ "slug": "accel-env-probe-t4-01",
+ "acc": "t4",
+ "source_sha256": "846d5fe80c9247027f9b281d290cd1f0d824cfcfe10dd71c3ceb52deadf83105",
+ "entry": "env_probe_gpu.py",
+ "args": [],
+ "watchdog_s": 600,
+ "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+ "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+ "nvidia_smi": "Tesla T4, 15360 MiB, 580.178.04, 7.5\nTesla T4, 15360 MiB, 580.178.04, 7.5",
+ "nvcc": "Cuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0\n/usr/local/cuda\n/usr/local/cuda-13\n/usr/local/cuda-13.0",
+ "hardware_ok": true,
+ "elapsed_s": 10.1,
+ "rc": 0,
+ "killed": null
+}
