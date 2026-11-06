@@ -1,9 +1,7 @@
 # Resume points
 
-[READ] Task 1 audit reviewed and ready for commit/push. Follow-on import engineering is explicitly outside this audit: prove code/event/probability adapters and run fresh hbox dependency/axiom checks before landing a dependency.
+[READ] Tasks 1–2 complete. ArkLib selective import requires adapters and fresh build-host checks. The statement audit contains the complete 109-row census and proposed repairs; displacement has a checked additive patch.
 
-[OPEN] Integrate certificate, dark-learning and governance/silicon statement inventories into `statement-audit-2026-11-06.md`, preserving exact sources, repaired Lean signatures, counterexamples, and checked-versus-proposed distinction; commit and push Task 2.
+[OPEN] Finish independent review of the binding patch and its fresh-source manifests, then commit/push Task 3. Preserve the distinction between history-conditional and global binding assumptions.
 
-[OPEN] Review binding patch against current minidregg and validate from isolated copies if light. Distinguish history-conditional audit assumptions from global computational-binding game bounds; commit and push Task 3.
-
-[OPEN] Audit all recent local commits in four requested repositories, including newly landing work. Start quiet-hour clock after Tasks 1–3, reset on any observed new commit, and keep evidence in watch-log. Finish with FINAL.md listing component verdicts, statement/defect counts, patch path and every pushed SHA.
+[OPEN] Continue auditing new local commits in the four requested repositories. Start the quiet-hour clock only after the Task 3 push. Complete FINAL.md and commit/push the watch evidence after a full quiet hour with all observed commits covered.

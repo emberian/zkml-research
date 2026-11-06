@@ -1,0 +1,3 @@
+COMMAND: Lean v4.35.0; read-only warm Mathlib package LEAN_PATH; input DisplacementCore.lean; #guard_msgs axiom pins enabled
+
+EXIT: 0

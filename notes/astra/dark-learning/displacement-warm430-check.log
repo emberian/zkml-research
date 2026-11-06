@@ -1,0 +1,4 @@
+COMMAND: Lean v4.30.0 with read-only warm minidregg LEAN_PATH; input notes/astra/dark-learning/Displacement.lean; NOT current v4.35.0 pin
+notes/astra/dark-learning/Displacement.lean:1:0: error: failed to read file '/Users/ember/dev/minidregg/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Algebra/BigOperators/Fin.olean', incompatible header
+
+EXIT: 1

@@ -1,0 +1,30 @@
+[
+  {
+    "path": "Selvage/Rbr.lean",
+    "first_line": 105,
+    "sha256": "745c6198b5eea3c6164f2845d44ab04855fd319b8ae940c815907748de35bb5e"
+  },
+  {
+    "path": "Selvage/Depth.lean",
+    "first_line": 61,
+    "sha256": "07bfcaffbbe762e61273b2f3c8076c1bc1561df630090574dfebea58f530ef6d"
+  },
+  {
+    "path": "Selvage/AuditSampling.lean",
+    "first_line": 75,
+    "sha256": "3b7144ff8e604e2282484ed3e25f1a867e65242692eed650dbae56c35964b770"
+  },
+  {
+    "path": "Selvage/AuditSampling.lean",
+    "first_line": 668,
+    "sha256": "40537785a1b47d78f25a31f326233406f8afe3ec1bc945d5b7af3c75d0751953"
+  },
+  {
+    "generated_path": "notes/astra/dark-learning/source/Selvage/AuditDisplacement.lean",
+    "sha256": "46f647eea135627c133b66534b7663b9c2adc762ccd667b903374f6a836ead4f"
+  },
+  {
+    "generated_path": "notes/astra/dark-learning/DisplacementSourceCheck.lean",
+    "sha256": "cab18aea2b482e99877b03af4eddcec6ad4b9beb2d2b111b49448bea422d2f11"
+  }
+]

@@ -1,0 +1,89 @@
+import Selvage.AuditSampling
+import Mathlib.Analysis.Normed.Group.Real
+
+/-! A standalone candidate repair; no source file in minidregg is changed.
+The stopping convention includes the corrupt step that raises the alarm. -/
+namespace Astra.DarkLearning
+open Minidregg.Selvage
+variable {Ω V : Type} [Fintype Ω] [NormedAddCommGroup V]
+
+noncomputable def injected (R : Round Ω) (delta honest : List Ω → V) : List Ω → ℝ
+  | [] => 0
+  | _ :: h => if R.stopped h then injected R delta honest h
+    else injected R delta honest h + ‖delta h - honest h‖
+
+theorem injected_le_count (R : Round Ω) (delta honest : List Ω → V) (B : ℝ)
+    (hactual : ∀ h, ‖delta h‖ ≤ B) (hhonest : ∀ h, ‖honest h‖ ≤ B)
+    (hcoverage : ∀ h, R.corrupt h = false → delta h = honest h) :
+    ∀ h, injected R delta honest h ≤ (2 * B) * (R.count h : ℝ) := by
+  intro h
+  induction h with
+  | nil => simp [injected, Round.count]
+  | cons w h ih =>
+    by_cases hs : R.stopped h = true
+    · simpa [injected, Round.count, hs] using ih
+    · have hs' : R.stopped h = false := Bool.eq_false_iff.mpr hs
+      by_cases hc : R.corrupt h = true
+      · have hd : ‖delta h - honest h‖ ≤ 2 * B :=
+          (norm_sub_le _ _).trans (by linarith [hactual h, hhonest h])
+        simp only [injected, Round.count, hs', Bool.false_eq_true, ↓reduceIte, hc,
+          Nat.cast_add, Nat.cast_one]
+        nlinarith
+      · have hc' : R.corrupt h = false := Bool.eq_false_iff.mpr hc
+        simpa [injected, Round.count, hs', hc', hcoverage h hc'] using ih
+
+theorem displacement_bound [Nonempty Ω]
+    (R : Round Ω) (delta honest : List Ω → V) (B q : ℝ)
+    (hactual : ∀ h, ‖delta h‖ ≤ B) (hhonest : ∀ h, ‖honest h‖ ≤ B)
+    (hcoverage : ∀ h, R.corrupt h = false → delta h = honest h)
+    (hq : 0 < q)
+    (hdetect : ∀ h, R.stopped h = false → R.corrupt h = true →
+      q ≤ uniformProb Ω (fun w => R.alarms h w)) (n : ℕ) :
+    expOver Ω n (injected R delta honest) [] ≤ 2 * B / q := by
+  have hb : 0 ≤ B := (norm_nonneg (delta [])).trans (hactual [])
+  exact (expOver.mono (injected_le_count R delta honest B hactual hhonest hcoverage) n []).trans
+    (Round.leakage_bound hq (by linarith) hdetect n)
+
+-- Nonvacuity: an actual corrupt delta of +1, honest delta -1, B = 1,
+-- and the pre-existing non-grindable q = 1/2 witness.
+theorem displacement_witness (n : ℕ) :
+    expOver (Fin 4) n (injected AuditWitness.round
+      (fun _ => (1 : ℝ)) (fun _ => (-1 : ℝ))) [] ≤ 4 := by
+  have h := displacement_bound AuditWitness.round (fun _ => (1 : ℝ))
+    (fun _ => (-1 : ℝ)) 1 AuditWitness.params.q
+    (by intro h; norm_num) (by intro h; norm_num)
+    (by intro h hc; simp [AuditWitness.round] at hc)
+    (by rw [AuditWitness.params_q]; norm_num)
+    (fun h _ hc => Round.detect AuditWitness.legs hc) n
+  norm_num [AuditWitness.params_q] at h
+  exact h
+
+-- C10b: public linear transitions do not mean naive deletion commutes with later updates.
+-- x <- 2*x+d; first teaching a=1, second b=0. Remove a's original contribution
+-- from final state gives 1, while retraining without a gives 0.
+theorem public_linear_expiry_counterexample :
+    (2 * (2 * (0 : ℤ) + 1) + 0) - 1 ≠ 2 * 0 + 0 := by decide
+
+-- C2/F7: invalid steps can cancel, so endpoint equality does not imply prefix validity.
+theorem cancelling_corrupt_steps :
+    (0 : ℤ) + 1 - 1 = 0 ∧ (0 : ℤ) + 1 ≠ 0 := by decide
+
+-- C23 needs rho >= 0 for monotone substitution in the recurrence proof.
+theorem negative_rho_substitution_false :
+    ¬ (∀ a b : ℝ, a ≤ b → (-1 : ℝ) * a ≤ (-1 : ℝ) * b) := by
+  intro h
+  have hx := h 0 1 (by norm_num)
+  norm_num at hx
+
+-- Include exactly the axioms observed by the kernel after compilation.
+/-- info: 'Astra.DarkLearning.displacement_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms displacement_bound
+/-- info: 'Astra.DarkLearning.displacement_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms displacement_witness
+/-- info: 'Astra.DarkLearning.public_linear_expiry_counterexample' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms public_linear_expiry_counterexample
+/-- info: 'Astra.DarkLearning.cancelling_corrupt_steps' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms cancelling_corrupt_steps
+/-- info: 'Astra.DarkLearning.negative_rho_substitution_false' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms negative_rho_substitution_false
+end Astra.DarkLearning

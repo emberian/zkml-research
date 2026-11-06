@@ -1,0 +1,233 @@
+{
+  "source": "docs/CERTIFICATES.md",
+  "audited": 28,
+  "defects": 7,
+  "qualifications": 6,
+  "fine": 15,
+  "rows": [
+    {
+      "id": "CS01",
+      "source_lines": "60–68; P1 233–237",
+      "statement": "`ContentScheme`, claimed computational binding",
+      "category": "defect",
+      "verdict": "Too weak / unconnected bound",
+      "repair": "Put executions, admissibility, setup/oracle world, actual winning event and reduction cost in the contract; add length completeness/binding. §1"
+    },
+    {
+      "id": "CS02",
+      "source_lines": "75; P2 239–241",
+      "statement": "`SubstringAt`",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "Explicit range and exact slice; six-symbol positive/negative example. §2"
+    },
+    {
+      "id": "CS03",
+      "source_lines": "76; P2",
+      "statement": "`OccursIn`",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "Existential position; do not claim position privacy without ZK. §2"
+    },
+    {
+      "id": "CS04",
+      "source_lines": "77",
+      "statement": "`MatchesAt`",
+      "category": "defect",
+      "verdict": "Too weak",
+      "repair": "Require `i ≤ j ≤ length`; clamped invalid spans otherwise match nullable regexes. §2"
+    },
+    {
+      "id": "CS05",
+      "source_lines": "78",
+      "statement": "`FormOK`",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "Grammar language is an explicit semantic predicate. §2"
+    },
+    {
+      "id": "CS06",
+      "source_lines": "79",
+      "statement": "`Framed`",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "Exact render plus separately defined guarded-safety predicate; no global safety claim. §2"
+    },
+    {
+      "id": "CS07",
+      "source_lines": "80; P2",
+      "statement": "`Absent`",
+      "category": "fine",
+      "verdict": "Fine after disambiguating literal vs language",
+      "repair": "Nullable patterns occur at empty spans; absence then false. §2"
+    },
+    {
+      "id": "CS08",
+      "source_lines": "81",
+      "statement": "`AllRecords`",
+      "category": "fine",
+      "verdict": "Fine as existential committed-list relation",
+      "repair": "Bind `L` explicitly and preserve length/order in its root; not coverage of real-world arrivals. §2"
+    },
+    {
+      "id": "CS09",
+      "source_lines": "82",
+      "statement": "`Produced`",
+      "category": "qualification",
+      "verdict": "Qualification: input/context interpretation unspecified",
+      "repair": "Bind an actual input witness and complete inference context, not an unexplained `prompt c_in`. §2"
+    },
+    {
+      "id": "CS10",
+      "source_lines": "84–90",
+      "statement": "Certificate / `Sound`",
+      "category": "qualification",
+      "verdict": "Qualification: experiment/extractor interface unspecified",
+      "repair": "Quantify adversary, experiment and efficient log extractor; preserve relation and encoding on instantiation. §3"
+    },
+    {
+      "id": "CS11",
+      "source_lines": "L0 99–101",
+      "statement": "Content well-formedness",
+      "category": "fine",
+      "verdict": "Fine, deliberately structural",
+      "repair": "`R x w → commit w = root x`; does not prove that verifier checks R. §3"
+    },
+    {
+      "id": "CS12",
+      "source_lines": "L1 103–107; P5 261–269",
+      "statement": "`cert_and`",
+      "category": "defect",
+      "verdict": "Missing hypotheses / bound unjustified",
+      "repair": "Shared execution, whole-word including length binding, admissible joint extraction reduction and its budget. §4"
+    },
+    {
+      "id": "CS13",
+      "source_lines": "L2 109–114; P7 282–285",
+      "statement": "Aggregation and replacement by `ε_engine`",
+      "category": "qualification",
+      "verdict": "Qualification: numeric/semantic scope unspecified",
+      "repair": "Distinguish existential aggregate from canonical-content claim; no automatic disappearance of leaf errors under recursion. §5"
+    },
+    {
+      "id": "CS14",
+      "source_lines": "L3 116–121; P4 252–255",
+      "statement": "Padded complement",
+      "category": "fine",
+      "verdict": "Fine mathematically",
+      "repair": "Use actual `.cat` syntax and bounded spans or prefix/middle/suffix decomposition. §6"
+    },
+    {
+      "id": "CS15",
+      "source_lines": "L4 123–128; P8 287–290",
+      "statement": "Model/certificate bridge",
+      "category": "defect",
+      "verdict": "Missing binding legs",
+      "repair": "Three proof errors plus two same-content binding reductions, unless bridge error explicitly includes them. §7"
+    },
+    {
+      "id": "CS16",
+      "source_lines": "L5 130–133",
+      "statement": "Scheme morphism transport",
+      "category": "qualification",
+      "verdict": "Qualification: morphism undefined; mere computability insufficient",
+      "repair": "Prove same-word commitment square commutes; existential transport itself adds no binding loss. §8"
+    },
+    {
+      "id": "CS17",
+      "source_lines": "L6 135–137; P3 243–250",
+      "statement": "Openings imply substring certificate",
+      "category": "defect",
+      "verdict": "Too weak in P3; too strong as §1 knowledge certificate",
+      "repair": "Verify length and range; provide reference content or separate extraction. No phantom-word inference. §9"
+    },
+    {
+      "id": "CS18",
+      "source_lines": "P6 271–280",
+      "statement": "Content-bound DFA soundness",
+      "category": "qualification",
+      "verdict": "Qualification: new kernel/crypto hypotheses elided",
+      "repair": "Word-linked extracted trace, content-aware verifier, probabilistic error; handle empty-word acceptance. §10"
+    },
+    {
+      "id": "CS19",
+      "source_lines": "P9 292–295",
+      "statement": "All-lane weld denotation",
+      "category": "fine",
+      "verdict": "Fine target, not sufficient alone",
+      "repair": "Check every recomputed opening lane; still need routing and computational binding. §11"
+    },
+    {
+      "id": "CF01",
+      "source_lines": "P1 234–237",
+      "statement": "Toy equivocation falsifier",
+      "category": "fine",
+      "verdict": "Fine for named toy",
+      "repair": "Explicit colliding pair and executable attack; not “all compression implies easy collision at every budget.” §12"
+    },
+    {
+      "id": "CF02",
+      "source_lines": "P2 239–241",
+      "statement": "Position-sensitive six-byte test",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "`position_matters`. §12"
+    },
+    {
+      "id": "CF03",
+      "source_lines": "P3 250",
+      "statement": "Omitted-opening falsifier",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "`[0,1]` vs claimed `[0,2]`, opening only index zero. §12"
+    },
+    {
+      "id": "CF04",
+      "source_lines": "P4 256–259",
+      "statement": "Whole-word complement is not absence",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "Word `[0,1,0]`, literal language `{[1]}`. §6/§12"
+    },
+    {
+      "id": "CF05",
+      "source_lines": "P5 267–269",
+      "statement": "Two sound legs, false conjunction",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "Same root for `[]` and `[()]`, predicates length zero and one. §4/§12"
+    },
+    {
+      "id": "CF06",
+      "source_lines": "P6 278–280",
+      "statement": "Old DFA accepts splice, new relation refuses",
+      "category": "fine",
+      "verdict": "Fine",
+      "repair": "Accepting nonempty all-zero run; target word contains one. §10/§12"
+    },
+    {
+      "id": "CF07",
+      "source_lines": "P7 282–285",
+      "statement": "One-felt collision refutes `AllRecords` soundness",
+      "category": "qualification",
+      "verdict": "Qualification: bound and reference semantics unspecified",
+      "repair": "Exhibit two concrete histories/properties, accepted evidence, failure event and bound violated. Width alone is not soundness. §5/§12"
+    },
+    {
+      "id": "CF08",
+      "source_lines": "P8 287–290",
+      "statement": "Different word necessarily refused unless K collides",
+      "category": "defect",
+      "verdict": "Too strong",
+      "repair": "Invalid proofs can accept on proof-soundness failure too; total bad event includes all proof and binding legs. §7/§12"
+    },
+    {
+      "id": "CF09",
+      "source_lines": "P9 292–295",
+      "statement": "No two different lane vectors may satisfy descriptor",
+      "category": "defect",
+      "verdict": "Too strong as stated in prose",
+      "repair": "Fix opening transcript/leaf/path and public context; one altered lane must refuse. Distinct honest roots remain legal. §11/§12"
+    }
+  ]
+}
