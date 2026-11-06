@@ -32,13 +32,13 @@ Snapshots: minidregg `c4ecabe0f` (2026-10-31); ArkLib HEAD `4d9d67b` (2026-11-05
    Johnson (BCHKS25 Thm 4.6 via DKT26), and **Binary BaseFold plus ring switching, composed**.
    Sequential composition of RBR knowledge soundness is proved for *guarded* verifiers. Some of
    the drop is deletion (STIR main theorem, duplex-sponge FS), not proof.
-3. **The FS/BCS compilation layer is still where Selvage is ahead of both.** ArkLib has no
+3. ~~**The FS/BCS compilation layer is still where Selvage is ahead of both.** ArkLib has no
    IOP→NARG theorem: `OracleReduction/BCS/Basic.lean` is a stub, and `FiatShamir/
    Completeness.lean:748` still says "TODO: state-restoration … soundness implies … soundness
    after Fiat–Shamir". FlashProve has a monolithic end-to-end theorem for one system. Selvage has
    the general RBR→FS compiler over an inhabited lazy oracle (`FiatShamir.lean:512`,
    `Depth.lean:1956`, error `(t+k)ε`). Codex confirmed it is proved, not an axiom. This is the
-   piece to keep, harden and upstream.
+   piece to keep, harden and upstream.~~ **[Struck 2026-11-06]** Wrong: ArkLib has RBR⇒SR knowledge soundness merged (`stateRestoration_knowledge_soundness`, #1263/#1264, same `(t+k)ε`, plus a per-round form), and SR⇒FS is in review (#1274/#1277/#1283). BCS is absent on both sides. See `arklib-upstream/CORRECTIONS-2026-11-06.md`.
 4. **Toolchains are identical today.** minidregg is on `leanprover/lean4:v4.35.0` with Mathlib
    `56a00585…`, and so is ArkLib HEAD [MEASURED, both `lean-toolchain`s and manifests].
    **Importing ArkLib's MCA theorem to discharge our Johnson hypothesis is a dependency edit, not
@@ -57,7 +57,7 @@ Snapshots: minidregg `c4ecabe0f` (2026-10-31); ArkLib HEAD `4d9d67b` (2026-11-05
 | proximity, Johnson | `JohnsonMcaBridge`: Haböck 2025/2110 Thm 2 as **explicit hypothesis** `hHab`; `WHIRConjecture412` a named hypothesis (`JohnsonRegime.lean:432-507`) | **proved**: `rs_mcaError_le_in_johnson_range` (`CapacityBounds.lean:235`) | proved `Cb.BCHKS46At` from adapted ArkLib; all 341 closeness rounds rest on it |
 | FRI | multiplicative FRI (`Proximity.lean`, `HalfThresholdFri*`), additive FRI with real UD bound (`AdditiveFriQuery`) | `Fri/Spec/Soundness.lean:81`, error parametric in worst-case MCA error, numeric via BCGM25 Thm 8.2 (1.5-Johnson) | WHIR/STIR-like code switching (CFW ePrint 2026/391), ZK RS, rate 0.104 |
 | WHIR / STIR | CA for WHIR Lemma 4.10 (domain-general, with errata repairs) | STIR components only; **no WHIR protocol** | own |
-| BCS / FS | **proved general compiler** + state restoration + BCS at deployed alphabet | **absent** (stub; SR game in interaction layer, no bridge) | proved for its system, in the ROM with a query-count error |
+| BCS / FS | **proved general compiler** + state restoration + BCS at deployed alphabet | ~~**absent** (stub; SR game in interaction layer, no bridge)~~ **[2026-11-06]** RBR⇒SR theorem merged (#1263/#1264); SR⇒FS in review; BCS stub | proved for its system, in the ROM with a query-count error |
 | commitment binding | `PositionBinding` **perfect** (`Commitment.lean:113`), inhabited by the identity root (`:220-228`) | no Merkle in ArkLib (VCVio claims shared-ROM Merkle extraction [CLAIM]) | ROM, birthday term `(t+n+2^23+2)²/2^256` |
 | binary fields | additive FRI tower, `AdditiveBaseFold`, `CharTwoWall`; **no ring switching** | Binary BaseFold + ring switching **composed**, sorry-free | none |
 | end-to-end | none deployed: **0 of 153 modules reached by the Host** (`ASSURANCE-CENSUS-2026-10-27.md:36`) | none (library) | `sound_of_verify_at` about an executable-equivalent Lean verifier, `q/2^124 + 2^-101` |
@@ -69,10 +69,10 @@ Snapshots: minidregg `c4ecabe0f` (2026-10-31); ArkLib HEAD `4d9d67b` (2026-11-05
 ## 2. Stronger, weaker, incomparable
 
 ### 2.1 Where Selvage is stronger
-- **The compiler.** The general RBR→FS theorem, state restoration, accumulation depth (including
+- ~~**The compiler.** The general RBR→FS theorem, state restoration, accumulation depth (including
   the machine-checked corner refutation of a published theorem) and BCS at the deployed
   alphabet. Neither comparator has a reusable compiler. ArkLib's absence is explicit
-  (`00-current-status.md:435`: "no Fiat–Shamir or BCS bridge from state restoration").
+  (`00-current-status.md:435`: "no Fiat–Shamir or BCS bridge from state restoration").~~ **[Struck 2026-11-06]** ArkLib's RBR⇒SR theorem is reusable; the "published theorem" refutation is of Selvage's own transcription (`Depth.lean:544`). See `arklib-upstream/CORRECTIONS-2026-11-06.md`.
 - **Commit-then-audit.** It is unique, and the only formal object that prices *not proving*.
   FlashProve proves every request; its "amortization" is a shared weight opening per batch.
 - **Domain-generality.** `ReedSolomon.lean:87` uses an abstract `dom : ι ↪ F`, so 13 of 18
@@ -197,7 +197,7 @@ recommendations; I did not edit those files in this lane because other agents ow
 | BCIKS20 CA lines/curves/affine spaces | **IMPORT** | same |
 | FRI protocol soundness | **MIRROR** (keep ours; cross-check the numeric bound against ArkLib's `Fri/ErrorBounds.lean`) | ArkLib's FRI lives in its `Reduction` framework, which our compiler cannot consume; its numeric bound is 1.5-Johnson, not full Johnson (the full-Johnson MCA is not wired into its FRI) |
 | sumcheck RBR | **MIRROR** | ours feeds our compiler; equate error terms in a bridge lemma |
-| RBR→FS, BCS, state restoration, depth | **DIVERGE** (ours is ahead), and offer upstream | ArkLib's own status file names this as missing |
+| RBR→FS, BCS, state restoration, depth | ~~**DIVERGE** (ours is ahead), and offer upstream~~ **[2026-11-06]** MIRROR, then candidate IMPORT (upstream at least as strong on finite alphabets); BCS absent on both | ~~ArkLib's own status file names this as missing~~ only the FS/BCS bridge is missing upstream, and FS is in review |
 | ring switching, Binary BaseFold | **IMPORT** the statements; mirror inside our compiler | the #1 structural gap in our binary cone, proved there |
 | commitment binding | **DIVERGE** from both: computational advantage, as FlashProve does it, but generic | neither ArkLib (no Merkle) nor our perfect binding is right |
 | end-to-end inference soundness | **COMPOSE** with FlashProve (take `Sound` as a hypothesis object), do not re-prove | they have it for one model, and we are the surround (PROGRAM §0) |
