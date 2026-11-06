@@ -1,0 +1,182 @@
+{
+ "d16": {
+  "spine": [
+   true,
+   "accept"
+  ],
+  "middle": [
+   true,
+   "accept"
+  ],
+  "middle_counts": {
+   "atoms": 9296,
+   "proofprep_bits": 2960,
+   "hadamard": 7968,
+   "linear_constraints": 1472,
+   "committed_elems": 40960,
+   "proving_openings": 65860,
+   "proving_wire": {
+    "mul": 393168,
+    "cosnark": 312,
+    "cosnark-lin": 1680,
+    "mac_check": 12
+   },
+   "proving_wire_total": 395172,
+   "public_openings_in_constraints": 1264
+  },
+  "spine_counts": {
+   "witness_elems": 1168,
+   "codeword_elems_per_party": 4672,
+   "merkle_leaves_per_party": 400,
+   "commitments": 13,
+   "pcs_evaluations": 20,
+   "proof_field_elems": 20083,
+   "proof_hashes": 11559,
+   "sumcheck_msg_elems": 52,
+   "row_combo_elems": 792,
+   "opened_column_elems": 19200,
+   "proving_openings": 442,
+   "proving_wire": {
+    "mul": 2340,
+    "cosnark": 312,
+    "mac_check": 12
+   }
+  },
+  "seconds": 6.1,
+  "formula": {
+   "atoms": 9296,
+   "proofprep_bits": 2960,
+   "hadamard": 7968,
+   "linear_constraints": 1472,
+   "committed_elems": 40960,
+   "proving_openings": 65860,
+   "proving_wire_total": 395172
+  },
+  "formula_exact": true
+ },
+ "d64": {
+  "spine": [
+   true,
+   "accept"
+  ],
+  "middle": [
+   true,
+   "accept"
+  ],
+  "middle_counts": {
+   "atoms": 37184,
+   "proofprep_bits": 11840,
+   "hadamard": 31872,
+   "linear_constraints": 5888,
+   "committed_elems": 163840,
+   "proving_openings": 262554,
+   "proving_wire": {
+    "mul": 1572816,
+    "cosnark": 360,
+    "cosnark-lin": 2148,
+    "mac_check": 12
+   },
+   "proving_wire_total": 1575336,
+   "public_openings_in_constraints": 5056
+  },
+  "spine_counts": {
+   "witness_elems": 16960,
+   "codeword_elems_per_party": 67840,
+   "merkle_leaves_per_party": 1312,
+   "commitments": 13,
+   "pcs_evaluations": 20,
+   "proof_field_elems": 65733,
+   "proof_hashes": 14823,
+   "sumcheck_msg_elems": 78,
+   "row_combo_elems": 2640,
+   "opened_column_elems": 62976,
+   "proving_openings": 1716,
+   "proving_wire": {
+    "mul": 9828,
+    "cosnark": 468,
+    "mac_check": 12
+   }
+  },
+  "seconds": 43.2,
+  "formula": {
+   "atoms": 37184,
+   "proofprep_bits": 11840,
+   "hadamard": 31872,
+   "linear_constraints": 5888,
+   "committed_elems": 163840,
+   "proving_openings": 262554,
+   "proving_wire_total": 1575336
+  },
+  "formula_exact": true
+ },
+ "attacks": {
+  "forged_trunc_opening": {
+   "spine": [
+    true,
+    "accept"
+   ],
+   "middle": [
+    false,
+    "linear batch: openings/IO/copy constraints do not hold"
+   ]
+  },
+  "forged_lookup_opening": {
+   "spine": [
+    true,
+    "accept"
+   ],
+   "middle": [
+    false,
+    "linear batch: openings/IO/copy constraints do not hold"
+   ]
+  },
+  "bad_triple": {
+   "spine": [
+    true,
+    "accept"
+   ],
+   "middle": [
+    false,
+    "Hadamard zerocheck (preprocessing well-formedness): round sum fails"
+   ]
+  },
+  "nonboolean_bit": {
+   "spine": [
+    true,
+    "accept"
+   ],
+   "middle": [
+    false,
+    "Hadamard zerocheck (preprocessing well-formedness): round sum fails"
+   ]
+  },
+  "mask_out_of_range": {
+   "spine": [
+    true,
+    "accept"
+   ],
+   "middle": [
+    false,
+    "linear batch: openings/IO/copy constraints do not hold"
+   ]
+  }
+ },
+ "formula_d64": {
+  "atoms": 37184,
+  "proofprep_bits": 11840,
+  "hadamard": 31872,
+  "linear_constraints": 5888,
+  "committed_elems": 163840,
+  "proving_openings": 262554,
+  "proving_wire_total": 1575336
+ },
+ "formula_d4096": {
+  "atoms": 2895872,
+  "proofprep_bits": 757760,
+  "hadamard": 2260992,
+  "linear_constraints": 671744,
+  "committed_elems": 16777216,
+  "proving_openings": 33555113,
+  "proving_wire_total": 201330690
+ }
+}

@@ -34,19 +34,37 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None):
     M2 = [sW2[i * d:(i + 1) * d] for i in range(d)]
     matvec = mv or eng.matvec        # mv: HE-assisted matvec (he_matvec.HEMatvec), same interface
     z1 = matvec(M1, sx)
+    ri = getattr(eng, "rec_in", None)          # cosnark_gates.RecEngine: the middle's IO for its proof
+    ro = getattr(eng, "rec_out", None)
+    if ri:
+        z1 = ri("z1", z1)
     u1 = [eng.trunc(z, S.S1, 13) for z in z1]
     hg = [eng.lookup2(u, 128, tab, 255) for u in u1]
     h = [a for a, _ in hg]
     g1 = [b for _, b in hg]
+    if ro:
+        ro("h", h)
+        ro("g1", g1)
     if tamper == "swap_share" and not eng.audit:
         # custodian 2 substitutes its (share, MAC share) of h[0] with those of an unrelated sharing (h[1])
         h[0] = dict(h[0]); h[0][2] = h[1][2]
     z2 = matvec(M2, h)
+    if ri:
+        z2 = ri("z2", z2)
+        sy = ri("y", sy)
     e = [eng.sub(eng.trunc(z, S.S1, 13), yy) for z, yy in zip(z2, sy)]
     d2 = [eng.trunc(v, S.S2, 8) for v in e]
+    if ro:
+        ro("d2", d2)
     b = matvec(M2, d2, transpose=True)
+    if ri:
+        b = ri("b", b)
     bg = [eng.mul(bb, g) for bb, g in zip(b, g1)]
+    if ro:
+        ro("bg", bg)
     d1 = [eng.trunc(v, S.S3, 13) for v in bg]
+    if ro:
+        ro("d1", d1)
     G2 = eng.outer(d2, h)
     G1 = eng.outer(d1, sx)
     W2n = [[eng.sub(M2[i][j], G2[i][j]) for j in range(d)] for i in range(d)]

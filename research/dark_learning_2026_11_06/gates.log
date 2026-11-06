@@ -1,0 +1,7 @@
+16 spine (True, 'accept') middle (True, 'accept') formula exact True {'atoms': 9296, 'proofprep_bits': 2960, 'hadamard': 7968, 'linear_constraints': 1472, 'committed_elems': 40960, 'proving_openings': 65860, 'proving_wire': {'mul': 393168, 'cosnark': 312, 'cosnark-lin': 1680, 'mac_check': 12}, 'proving_wire_total': 395172, 'public_openings_in_constraints': 1264}
+64 spine (True, 'accept') middle (True, 'accept') formula exact True {'atoms': 37184, 'proofprep_bits': 11840, 'hadamard': 31872, 'linear_constraints': 5888, 'committed_elems': 163840, 'proving_openings': 262554, 'proving_wire': {'mul': 1572816, 'cosnark': 360, 'cosnark-lin': 2148, 'mac_check': 12}, 'proving_wire_total': 1575336, 'public_openings_in_constraints': 5056}
+forged_trunc_opening spine (True, 'accept') middle (False, 'linear batch: openings/IO/copy constraints do not hold')
+forged_lookup_opening spine (True, 'accept') middle (False, 'linear batch: openings/IO/copy constraints do not hold')
+bad_triple spine (True, 'accept') middle (False, 'Hadamard zerocheck (preprocessing well-formedness): round sum fails')
+nonboolean_bit spine (True, 'accept') middle (False, 'Hadamard zerocheck (preprocessing well-formedness): round sum fails')
+mask_out_of_range spine (True, 'accept') middle (False, 'linear batch: openings/IO/copy constraints do not hold')

@@ -392,7 +392,8 @@ def prove_and_verify(eng, wires, parent=None, attack=None):
                   proof_field_elems=sc_elems + u_elems + g_elems + col_elems + n * len(com),
                   proof_hashes=hashes + n * len(com), sumcheck_msg_elems=sc_elems, row_combo_elems=u_elems + g_elems,
                   opened_column_elems=col_elems, proving_openings=proving_opens, proving_wire=proving_wire,
-                  child_roots={"W1": com["W1n"].roots, "W2": com["W2n"].roots})
+                  child_roots={"W1": com["W1n"].roots, "W2": com["W2n"].roots},
+                  roots={k: com[k].roots for k in com})
     return ok, why, counts
 
 # ------------------------------------------------------------------------------------------- counts at any d
