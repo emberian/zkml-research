@@ -9,8 +9,9 @@ sized from the bounds. Layouts (coefficient encoding, d = 64, no negacyclic wrap
   W row-major: W(X) = sum W[i][j] X^(64 i + j)
   forward:  W(X) * rev(v)(X),   rev(v) = sum v_j X^(63 - j)        ->  (W v)_i at coefficient 64 i + 63
   backward: W(X) * colrev(e)(X), colrev(e) = sum e_i X^(64 (63 - i)) ->  (W^T e)_j at coefficient 4032 + j
-No relinearization: every ct x ct output (3 components) goes straight into a crossing, which decrypts
-with shares of (1, s, s^2). The rank-1 update is computed by the custodians on shares and re-encrypted
+No relinearization: every ct x ct output (3 components) goes straight into a crossing, a masked public
+decryption with shares of (1, s, s^2) and a proof per custodian that its partial decryption is well formed
+(e2s_proof.py). Shares-to-encryption is a masked public encryption opened through SPDZ. The rank-1 update is computed by the custodians on shares and re-encrypted
 (the alternative, a homomorphic outer product, would need relinearization and its own certificate).
 """
 import hashlib
@@ -19,6 +20,7 @@ import random
 
 import bfv_ref as bfv
 import cert_b61 as C
+import e2s_proof as P
 import spdz
 import step_spec as S
 
@@ -50,10 +52,11 @@ def colrev(e):
     return {64 * (63 - i): e[i] for i in range(D)}
 
 class Custodians:
-    """n custodians holding additive shares s_i of the BFV secret and shares of s^2 (ideal keygen), plus the
-    SPDZ engine. Their E2S/S2E messages are recorded per party (the view) for the audit."""
-    def __init__(self, sch, n, seed):
-        self.sch, self.n = sch, n
+    """n custodians holding additive shares s_i of the BFV secret and shares of s^2 (ideal keygen), with a
+    long-term commitment K_i to (s_i, s2_i). Crossings are masked public decryption / encryption
+    (`e2s_proof.py`): no custodian holds a private plain share at any point."""
+    def __init__(self, sch, n, seed, Qp):
+        self.sch, self.n, self.Qp = sch, n, Qp
         rng = random.Random(seed)
         self.s_sh = [sch.ternary() for _ in range(n)]
         sch.s = [sum(c) for c in zip(*self.s_sh)]
@@ -61,60 +64,75 @@ class Custodians:
         parts = [[rng.randrange(-(1 << 20), 1 << 20) for _ in range(sch.N)] for _ in range(n - 1)]
         parts.append([a - sum(c) for a, c in zip(s2, zip(*parts))])
         self.s2_sh = parts
+        self.K = [P.key_commit(a, b) for a, b in zip(self.s_sh, self.s2_sh)]
+        # public smudging bound: as wide as the decryption margin allows (Q / 2t shared by n smudges + noise)
+        self.E = (sch.Q // (2 * sch.t)) // (8 * n)
         self.rng = rng
         self.wire = {}
-        self.views = [[] for _ in range(n)]
+        self.pd = dict(proofs=0, elems=0, bits=0, range_lookups=0, openings=0)
+        self.prep_ct = 0           # preprocessing ciphertexts (mask pairs), in Z_q elements
+        self.noise_bits = []       # measured noise of each designated ct before smudging (for the ratio)
 
     def count(self, phase, k):
         self.wire[phase] = self.wire.get(phase, 0) + k
 
-    def e2s(self, ct, L):
-        """Encryption-to-shares; returns plain additive shares mod t of every coefficient."""
-        sch = self.sch
-        Q, t, N = sch.Q, sch.t, sch.N
-        delta = Q // t
-        comps = [bfv.poly_centered(c, Q) for c in ct]
-        def part(i):
-            acc, _ = bfv.negacyclic_mul(self.s_sh[i], comps[1])
-            if len(comps) == 3:
-                x2, _ = bfv.negacyclic_mul(self.s2_sh[i], comps[2])
-                acc = bfv.poly_add(acc, x2)
-            return acc
-        shares, hs = [None] * self.n, []
-        for i in range(1, self.n):
-            Mi = [self.rng.randrange(t) for _ in range(N)]
-            e = [self.rng.randrange(-(1 << 30), 1 << 30) for _ in range(N)]     # smudging (toy width)
-            hi = [(x - delta * m + ee) % Q for x, m, ee in zip(part(i), Mi, e)]
-            self.views[i].append(("e2s", Mi, e))
-            self.count("E2S", N * L)
-            hs.append(hi)
-            shares[i] = Mi
-        acc = [(c0 + x + sum(h[j] for h in hs)) % Q for j, (c0, x) in enumerate(zip(comps[0], part(0)))]
-        shares[0] = [((t * bfv.centered(x, Q) * 2 + Q) // (2 * Q)) % t for x in acc]
-        self.views[0].append(("e2s-decode", acc))
-        return shares
+    def _mask_pair(self, eng, coefs, full, tag):
+        sch, t, N = self.sch, self.sch.t, self.sch.N
+        R = [self.rng.randrange(t) for _ in range(N)] if full else [0] * N
+        if not full:
+            for k in coefs:
+                R[k] = self.rng.randrange(t)
+        sh = [eng.prep(tag, lambda v=R[k]: v) for k in coefs]
+        self.prep_ct += 2 * N * len(self.Qp)
+        return sch.encrypt_exact(R), sh
 
-    def s2e(self, plain_shares_by_coef, L):
-        """Shares-to-encryption with a common reference polynomial; plain_shares_by_coef[i] = {coef: share}."""
-        sch = self.sch
-        Q, t, N = sch.Q, sch.t, sch.N
-        delta = Q // t
-        a = sch.uniform()
-        total = [0] * N
+    def e2s(self, eng, ct, coefs, tag, attack=None, alt=None):
+        """Masked public decryption of the DESIGNATED ct at `coefs`; returns authenticated SPDZ shares."""
+        sch, Qp = self.sch, self.Qp
+        Q, t, N, L = sch.Q, sch.t, sch.N, len(Qp)
+        cR, Rsh = self._mask_pair(eng, coefs, True, "e2s-mask")
+        def masked(c):
+            out = [[(u - v) % Q for u, v in zip(c[0], cR[0])], [(u - v) % Q for u, v in zip(c[1], cR[1])]]
+            return tuple(out + ([list(c[2])] if len(c) == 3 else []))
+        ctm = masked(ct)
+        acc = list(ctm[0])
+        noiseless = list(ctm[0])
         for i in range(self.n):
-            Mi = [0] * N
-            for k, v in plain_shares_by_coef[i].items():
-                Mi[k] = v % t
-            sa, _ = bfv.negacyclic_mul(self.s_sh[i], bfv.poly_centered(a, Q))
-            e = [self.rng.randrange(-(1 << 30), 1 << 30) for _ in range(N)]
-            # KPZ-exact encoding round(Q M / t), NOT Delta M: the shares sum to m + k t, and Delta (m + k t)
-            # leaves a noise k (Q mod t) ~ 2^62 that the next ct x ct multiplies by t N |s| (fatal at t ~ 2^61);
-            # with round(Q M_i / t) the k t part becomes k Q = 0 mod Q and the error is <= n/2.
-            hi = [(-x + (Q * m * 2 + t) // (2 * t) + ee) % Q for x, m, ee in zip(sa, Mi, e)]
-            self.views[i].append(("s2e", Mi, e))
-            self.count("S2E", N * L)
-            total = [(u + v) % Q for u, v in zip(total, hi)]
-        return (total, a)
+            e = [self.rng.randrange(-self.E, self.E + 1) for _ in range(N)]
+            src = masked(alt) if (attack == "unrelated_boundary_shares" and i == 1 and alt is not None) else ctm
+            if attack == "offset_in_error" and i == 1:
+                e[coefs[0]] += sch.delta * 5          # an offset of 5 in the plaintext, hidden in the error
+            p, w = P.prove(sch, Qp, self.s_sh[i], self.s2_sh[i], src, e)
+            if attack == "offset_partial" and i == 1:
+                p[coefs[0]] = (p[coefs[0]] + sch.delta * 5) % Q
+            c = P.counts(N, Qp, self.E, len(ct))
+            self.pd["proofs"] += 1
+            for k in ("elems", "bits", "range_lookups", "openings"):
+                self.pd[k] += c["pd_" + k]
+            self.count("E2S", N * L)
+            ok, why = P.verify(sch, Qp, ctm, p, self.K[i], w, self.E, tag)
+            if not ok:
+                raise spdz.Abort(f"partial decryption of {tag} refused (custodian {i}): {why}")
+            acc = [(u + v) % Q for u, v in zip(acc, p)]
+            q0, _ = P.partial(sch, self.s_sh[i], self.s2_sh[i], ctm, [0] * N)
+            noiseless = [(u + v) % Q for u, v in zip(noiseless, q0)]
+        v = [((t * bfv.centered(x, Q) * 2 + Q) // (2 * Q)) % t for x in acc]
+        v0 = [((t * bfv.centered(x, Q) * 2 + Q) // (2 * Q)) % t for x in noiseless]
+        nz = max(abs(bfv.centered(x - (2 * Q * bfv.centered(m, t) + t) // (2 * t), Q)) for x, m in zip(noiseless, v0))
+        self.noise_bits.append((tag, nz.bit_length()))
+        return [eng.cadd(v[k], r) for k, r in zip(coefs, Rsh)]
+
+    def s2e(self, eng, vals_by_coef):
+        """Masked public encryption: open m - R' through SPDZ (MAC checked), add it to Enc_exact(R')."""
+        sch = self.sch
+        Q, t = sch.Q, sch.t
+        coefs = list(vals_by_coef)
+        cR, Rsh = self._mask_pair(eng, coefs, False, "s2e-mask")
+        c0 = list(cR[0])
+        for k, r in zip(coefs, Rsh):
+            v = eng.open(eng.sub(vals_by_coef[k], r), "S2E")
+            c0[k] = (c0[k] + (2 * Q * bfv.centered(v, t) + t) // (2 * t)) % Q
+        return (c0, list(cR[1]))
 
 def shares_at(shares, coefs):
     return [{i: shares[i][k] for i in range(len(shares))} for k in coefs]
@@ -140,19 +158,6 @@ def run_step(sch, Qp, Bp, cust, eng, tab, W1, W2, x, y, attack=None, chain="gene
     """Returns dict with verdict, counts, and the new encrypted weights (for the reference check)."""
     N, L = sch.N, len(Qp)
     gate = []
-    conv_log = []           # (transcript position, source tag, coefficient, dealer stream index per party)
-    e2s_out = {}
-    def e2s(tag, ct):
-        e2s_out[tag] = cust.e2s(ct, L)
-        return e2s_out[tag]
-    def conv(tag, coef, override=None):
-        plain = {i: e2s_out[tag][i][coef] for i in range(cust.n)}
-        if override:
-            plain.update(override)
-        pos = len(eng.transcript)
-        x = eng.auth_plain(plain)
-        conv_log.append((pos, tag, coef, {i: len(eng.dealer.streams[i]) - 1 for i in range(cust.n)}))
-        return x
     def gate_check(name, h_a, h_b, out, w):
         ok, why = C.verify(sch, Qp, Bp, h_a, h_b, C.handle(out, Qp), out, w)
         gate.append((name, ok, why))
@@ -183,34 +188,27 @@ def run_step(sch, Qp, Bp, cust, eng, tab, W1, W2, x, y, attack=None, chain="gene
         z1[k][j] = (z1[k][j] + 1) % sch.Q
     gate_check("z1 = W1 x", hW1, hx, z1, w1)
     # ---- crossing 1
-    e2s("z1", z1)
-    e2s("x", cx)
-    sz1 = [conv("z1", 64 * i + 63) for i in range(D)]
-    if attack == "unrelated_boundary_shares":
-        # custodian 1 authenticates a share from a DIFFERENT encryption-to-shares (here: y's ciphertext)
-        e2s("y-alt", cy)
-        sxs = [conv("x", 63, override={1: e2s_out["y-alt"][1][0]})] + [conv("x", 63 - j) for j in range(1, D)]
-    else:
-        sxs = [conv("x", 63 - j) for j in range(D)]
+    pd_attack = attack if attack in ("unrelated_boundary_shares", "offset_partial", "offset_in_error") else None
+    sz1 = cust.e2s(eng, z1, [64 * i + 63 for i in range(D)], "z1")
+    # attack hook: custodian 1 contributes a partial decryption of a DIFFERENT ciphertext (y's) to x's crossing
+    sxs = cust.e2s(eng, cx, [63 - j for j in range(D)], "x", attack=pd_attack, alt=cy)
     u1 = [eng.trunc(z, S.S1, 13) for z in sz1]
     hg = [eng.lookup2(u, 128, tab, 255) for u in u1]
     hsh, g1 = [a for a, _ in hg], [b for _, b in hg]
-    c_h = cust.s2e([{63 - j: hsh[j][i][0] for j in range(D)} for i in range(cust.n)], L)
+    c_h = cust.s2e(eng, {63 - j: hsh[j] for j in range(D)})
     h_h = C.handle(c_h, Qp)
     committed.add(h_h)
     # ---- host: z2 = W2 h
     z2, w2 = C.build(sch, Qp, Bp, cW2, c_h)
     gate_check("z2 = W2 h", hW2, h_h, z2, w2)
     # ---- crossing 2
-    e2s("z2", z2)
-    e2s("y", cy)
-    sz2 = [conv("z2", 64 * i + 63) for i in range(D)]
-    sy = [conv("y", i) for i in range(D)]
+    sz2 = cust.e2s(eng, z2, [64 * i + 63 for i in range(D)], "z2")
+    sy = cust.e2s(eng, cy, list(range(D)), "y")
     e = [eng.sub(eng.trunc(z, S.S1, 13), yy) for z, yy in zip(sz2, sy)]
     d2 = [eng.trunc(v, S.S2, 8) for v in e]
     G2 = eng.outer(d2, hsh)
-    c_dW2 = cust.s2e([{64 * r + c: G2[r][c][i][0] for r in range(D) for c in range(D)} for i in range(cust.n)], L)
-    c_d2 = cust.s2e([{64 * (63 - r): d2[r][i][0] for r in range(D)} for i in range(cust.n)], L)
+    c_dW2 = cust.s2e(eng, {64 * r + c: G2[r][c] for r in range(D) for c in range(D)})
+    c_d2 = cust.s2e(eng, {64 * (63 - r): d2[r] for r in range(D)})
     h_d2 = C.handle(c_d2, Qp)
     committed.update({C.handle(c_dW2, Qp), h_d2})
     # ---- host: b = W2^T d2 (old W2), then W2' = W2 - Enc(dW2)
@@ -221,34 +219,17 @@ def run_step(sch, Qp, Bp, cust, eng, tab, W1, W2, x, y, attack=None, chain="gene
     gate_check("b = W2^T d2", hW2, h_d2, bct, wb)
     nW2 = tuple([(u - v) % sch.Q for u, v in zip(cc, dd)] for cc, dd in zip(cW2, c_dW2))
     # ---- crossing 3
-    e2s("b", bct)
-    sb = [conv("b", 4032 + j) for j in range(D)]
+    sb = cust.e2s(eng, bct, [4032 + j for j in range(D)], "b")
     bg = [eng.mul(bb, g) for bb, g in zip(sb, g1)]
     d1 = [eng.trunc(v, S.S3, 13) for v in bg]
     G1 = eng.outer(d1, sxs)
-    c_dW1 = cust.s2e([{64 * r + c: G1[r][c][i][0] for r in range(D) for c in range(D)} for i in range(cust.n)], L)
+    c_dW1 = cust.s2e(eng, {64 * r + c: G1[r][c] for r in range(D) for c in range(D)})
     nW1 = tuple([(u - v) % sch.Q for u, v in zip(cc, dd)] for cc, dd in zip(cW1, c_dW1))
     if dbg is not None:
         dbg.update(z1=z1, c_h=c_h, z2=z2, c_dW2=c_dW2, c_d2=c_d2, b=bct, c_dW1=c_dW1)
     eng.mac_check("fhe-step")
     new_head = head(hd, C.handle(nW1, Qp), C.handle(nW2, Qp))
-    return dict(nW1=nW1, nW2=nW2, gate=gate, head=new_head, conv_log=conv_log, e2s_out=e2s_out)
-
-def conversion_audit(eng, res, opened, honest_tags=None):
-    """Sampled audit of the encryption-to-shares -> authenticated-shares conversion (Codex's conversion
-    relation): for each opened custodian, its broadcast at every authentication must equal its own E2S
-    share of the PROTOCOL-DESIGNATED source ciphertext at the designated coefficient, minus its share of
-    the dealer's mask. The auditor reads the custodian's E2S view (its share of each source) and its
-    committed preprocessing stream."""
-    p = eng.p
-    for pos, tag, coef, sidx in res["conv_log"]:
-        ph, bs, v = eng.transcript[pos]
-        for i in opened:
-            share = res["e2s_out"][tag][i][coef]
-            r_i = eng.dealer.streams[i][sidx[i]][1][0]
-            if bs[i] != (share - r_i) % p:
-                return False, f"custodian {i} authenticated a value that is not its share of {tag}[{coef}]"
-    return True, "accept"
+    return dict(nW1=nW1, nW2=nW2, gate=gate, head=new_head)
 
 def decode_W(sch, ct):
     m = sch.decrypt(ct)

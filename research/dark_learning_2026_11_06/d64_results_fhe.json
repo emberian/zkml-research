@@ -1,26 +1,54 @@
 {
  "fhe": {
-  "fork": "FHE (BFV N=8192, 3x61-bit Q, t = SPDZ prime) + MPC crossings",
+  "fork": "FHE v2 (BFV, 3x61-bit Q, t = SPDZ prime; masked public crossings with PD proofs)",
   "counts": {
-   "committed_elems": 3718968,
-   "committed_bits": 226857048,
+   "committed_elems": 5120523,
+   "committed_bits": 268115103,
    "certificate_elems_per_ctct": 933864,
    "certificate_range_lookups_per_ctct": 2359296,
-   "online_wire": 795660,
+   "pd_proofs": 15,
+   "pd_elems": 1351635,
+   "pd_bits": 38212935,
+   "pd_range_lookups": 983040,
+   "pd_openings": 207,
+   "smudge_bound_bits": 117,
+   "noise_bits_before_smudging": [
+    [
+     "z1",
+     78
+    ],
+    [
+     "x",
+     5
+    ],
+    [
+     "z2",
+     78
+    ],
+    [
+     "y",
+     5
+    ],
+    [
+     "b",
+     78
+    ]
+   ],
+   "online_wire": 671628,
    "wire_by_phase": {
-    "E2S": 245760,
-    "S2E": 294912,
-    "auth": 1920,
+    "E2S": 368640,
     "trunc": 1536,
     "mul": 28416,
     "lookup": 384,
+    "S2E": 49920,
     "outer": 1536,
     "mac_check": 12,
     "host->custodians": 221184
    },
-   "preprocessing_auth_values": 34112,
-   "preprocessing_elems": 204672,
-   "openings": 5632,
+   "preprocessing_auth_values": 42432,
+   "preprocessing_elems": 696960,
+   "preprocessing_mask_ct_elems": 442368,
+   "openings": 13632,
    "crossings": 3,
    "ct_x_ct": 3,
    "N": 8192,
@@ -47,36 +75,39 @@
       true,
       "accept"
      ]
-    ],
-    "audit": [
-     [
-      0,
-      1
-     ],
-     true,
-     "accept"
     ]
    },
    "wrong_delta": {
     "verdict": "REFUSED",
-    "by": "gate / MAC (every step): decryption refused at b = W2^T d2: handle mismatch (an input or output is not the committed ciphertext)"
+    "by": "every-step check: decryption refused at b = W2^T d2: handle mismatch (an input or output is not the committed ciphertext)"
    },
    "mixed_limbs": {
     "verdict": "REFUSED",
-    "by": "gate / MAC (every step): decryption refused at z1 = W1 x: handle mismatch (an input or output is not the committed ciphertext)"
+    "by": "every-step check: decryption refused at z1 = W1 x: handle mismatch (an input or output is not the committed ciphertext)"
    },
    "wrong_quotient": {
     "verdict": "REFUSED",
-    "by": "gate / MAC (every step): decryption refused at z1 = W1 x: y / output base extension (component 2, coefficient 4095)"
+    "by": "every-step check: decryption refused at z1 = W1 x: y / output base extension (component 2, coefficient 4095)"
    },
    "stale_parent": {
     "verdict": "REFUSED",
-    "by": "gate / MAC (every step): decryption refused at z1 = W1 x: handle mismatch (an input or output is not the committed ciphertext)"
+    "by": "every-step check: decryption refused at z1 = W1 x: handle mismatch (an input or output is not the committed ciphertext)"
    },
    "unrelated_boundary_shares": {
-    "verdict": "ACCEPT online; audit detects in 2/3 beacon selections",
-    "output_wrong": true,
-    "note": "the conversion relation is SAMPLED here; making it an envelope needs a per-crossing proof of E2S well-formedness"
+    "verdict": "REFUSED",
+    "by": "every-step check: partial decryption of x refused (custodian 1): partial-decryption identity fails in F_q (q = 61-bit prime)"
+   },
+   "offset_partial": {
+    "verdict": "REFUSED",
+    "by": "every-step check: partial decryption of x refused (custodian 1): partial-decryption identity fails in F_q (q = 61-bit prime)"
+   },
+   "offset_in_error": {
+    "verdict": "REFUSED",
+    "by": "every-step check: partial decryption of x refused (custodian 1): smudging term out of range (|e| > E): an offset hidden in the error"
+   },
+   "s2e_wrong_share": {
+    "verdict": "REFUSED",
+    "by": "every-step check: MAC check failed: an opened value is not the authenticated one"
    },
    "missing_audit_response": {
     "verdict": "REFUSED",

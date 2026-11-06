@@ -24,11 +24,14 @@ coefficient means 42² digit products per term.
 | `crossing_wire.py` | E2S and S2E executed and counted; lookup openings executed; preprocessing by formula |
 | `step_spec.py` | the reference integer learner both forks must reproduce exactly |
 | `spdz.py` | SPDZ-style engine: MACs, Beaver/matrix/outer triples, exact truncation, exact lookup, MPC-in-the-head audit by re-execution |
+| `e2s_proof.py` | v2 crossings: masked public decryption with a well-formed partial-decryption proof (R_PD) per custodian; masked public encryption through SPDZ |
+| `step_counts.py` | schedule-level counts at any width d (both forks), validated exactly against the executed runs; `--layout-check` executes the d = 4096 block layout at N = 8192 |
+| `encoding_regressions.py` | falsifiers for the two large-t encoding fixes (fail under the broken encoding, pass under the fix) |
 | `cert_b61.py` | the FHE fork's ct×ct certificate: explicit witness + verifier (the decryption gate) |
 | `fhe_fork.py` | FHE fork of the step: host ct×ct with certificates, custodian crossings, conversion audit |
 | `mpc_fork.py` | MPC fork of the step: whole step in SPDZ |
 | `run_d64.py` | the milestone: honest run + Codex's attack list on both forks, same counts columns |
-| `*.log`, `d64_results*.json` | outputs of the recorded runs |
+| `*.log`, `d64_results*.json` | outputs of the recorded runs (`*_fhe_v1.*` = the sampled-conversion FHE fork, superseded) |
 
 ## What "proved" means here
 
@@ -48,7 +51,7 @@ is an ideal dealer whose per-party streams are committed.
 |---|---|---|
 | wrong δ | decryption gate: certificate input handle ≠ the custodians' committed δ ciphertext | online MAC check |
 | mixed source limbs / sources | gate: opened residues do not hash to the committed handle | online MAC check |
-| unrelated boundary shares | NOT caught online. The conversion audit catches it when the deviating custodian's view is opened (2 of 3 beacon selections) | online MAC check |
+| unrelated boundary shares | v1: NOT caught online (sampled conversion audit, 2 of 3). **v2: refused on every step by R_PD** | online MAC check |
 | wrong quotient | gate: output base extension (pinned u) fails | online MAC check (truncation opening) |
 | stale parent | gate: input handle ≠ current head | chain: input commitment ≠ head |
 | missing audit response | fail-closed alarm | fail-closed alarm |

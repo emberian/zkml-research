@@ -291,3 +291,65 @@ custodian in 2/3 of beacon selections. The online MAC check catches it on every 
    - the E2S well-formedness proof;
    - the collaborative SNARK that the MPC fork needs against full collusion;
    - the d = 4096 point where the counts say the fork flips.
+
+
+## 6. ✅ The FHE fork's conversion hole, closed by construction (2026-11-06, v2 of the d = 64 FHE step)
+
+§5 left one wrong step that every always-on check accepted: a custodian authenticated its plain share
+of the WRONG source ciphertext. The fix is not a proof bolted onto the old crossing. It removes the
+private plain share altogether (`research/dark_learning_2026_11_06/e2s_proof.py`):
+
+- **Encryption-to-shares is a masked public decryption.** Preprocessing hands out a pair
+  (Enc(R), [R_k]) with R uniform mod t on all N coefficients. Anyone computes ct' = ct − Enc(R) from the
+  handle-bound ct. Each custodian publishes a partial decryption p_i = s_i c1' + s2_i c2' + e_i with a
+  proof of R_PD:
+  - the per-prime identity p_i = s_i c1' + s2_i c2' + e_i − (X^N+1) k_q, at a Fiat–Shamir point;
+  - s_i and s2_i opened against the custodian's long-term key commitment;
+  - |e_i| ≤ E as 16-bit digits.
+
+  The sum is decoded PUBLICLY to v = m − R, and [m_k] = [R_k] + v_k. With no private share there is
+  nothing to substitute. A custodian can only deviate in its partial decryption, which R_PD refuses
+  on every step.
+- **Shares-to-encryption is a masked public encryption.** Preprocessing supplies (Enc_exact(R'), [R'_k]).
+  The custodians open m − R' through SPDZ, and the MAC check covers that opening. Anyone then computes
+  Enc_exact(R') + round(Q(m − R')/t). No new proof is needed. The exact scaling is mandatory here,
+  because R' + (m − R') = m + kt (encoding fix F2, §8).
+
+**Attacks, each refused by a check that runs on every step** (`d64_results_fhe.json`, run on hbox):
+
+| attack | refused by |
+|---|---|
+| wrong δ, mixed limbs, stale parent | decryption gate (handle mismatch) |
+| wrong quotient | decryption gate (pinned-u output base extension) |
+| **unrelated boundary shares** (custodian 1 decrypts y's ciphertext into x's crossing) | **R_PD identity fails in F_q** |
+| offset added to a partial decryption | R_PD identity fails |
+| offset hidden in the smudging term | R_PD range: \|e\| > E |
+| custodian shifts its share in the S2E opening | online MAC check |
+| missing audit response | fail-closed alarm |
+
+The step still reproduces `step_spec` exactly.
+
+**Price of the fix (d = 64, per step; v1 → v2):**
+
+| | v1 (sampled conversion) | v2 (R_PD on every crossing) |
+|---|---:|---:|
+| committed bits, including certificate digits | 340.1 M | 381.4 M |
+| of which R_PD proofs (15 = 5 crossings × 3 custodians) | — | 38.2 M (1,351,635 elements, 983,040 digit lookups) |
+| online wire elements | 795,660 | **671,628** |
+| E2S wire / S2E wire | 245,760 / 294,912 | 368,640 / 49,920 |
+| preprocessing elements | 204,672 | 696,960 (442,368 of them mask ciphertexts) |
+
+Integrity of the conversion now costs +12% committed bits. Online wire went DOWN 16%, because a masked
+public encryption opens only the values it carries (n(n−1) per value), while v1 sent N·L per party.
+The cost moves into preprocessing: one mask ciphertext per crossing, whose well-formedness the
+preprocessing must prove. That proof is unpriced, and the dealer is still ideal.
+
+**Smudging, measured.** The public bound is E = 2^117 (the decryption margin shared by three smudges).
+The designated ciphertexts carry noise of 2^78 after a ct×ct and 2^5 fresh. So each coefficient is
+smudged at a ratio of 2^-39, and over the N = 8192 coefficients of one partial decryption the
+statistical distance is about 2^-26. This is the F5 weakness in a measured form: the read leg is weak at
+these parameters, and its repair is a larger Q or fewer published coefficients (decrypt only after
+masking, which is already the case, plus extraction, which would need key switching).
+
+What is still not built: the succinct compilation of R_PD and of the gate, a real preprocessing protocol
+for the mask pairs, and the collaborative SNARK (MPC fork, §7 when it lands).
