@@ -534,3 +534,54 @@ openings. The parent commitment of step t+1 is the W' commitment of step t.
   to carry their shares unchanged. Re-sharing between steps needs a proof that the new share commitments
   sum to the same matrix: one random linear-combination check on the sums. That is the handover problem
   ePrint 2026/2721 addresses.
+
+
+## 8. The FHE crossing's two idealizations, priced (2026-11-06; MODEL, `step_counts.py: mask_nonideal`)
+
+§6's table left two things ideal: the mask pairs (Enc(R), [R_k]) came from an ideal dealer, and their
+well-formedness was not proved. The non-ideal replacement, per pair, per custodian i:
+
+1. **Post** Enc_pk(R_i) under the joint public key, 2NL elements. The scaling is exact:
+   round(QR_i/t) = ΔR_i + c_i with c_i = round(rR_i/t) and r = Q mod t, so the F2 fix holds for the sum.
+2. **Prove it well formed (ZKPoPK):**
+   - per prime, the two component identities with native quotients, 2L(N−1) elements;
+   - 16-bit digits for R_i (4), c_i (4), the remainder of c_i (4), u (1), e0 (1) and e1 (1), so 15N digits;
+   - the integer relation t·c_i = r·R_i + rem, checked modulo two auxiliary primes.
+3. **SPDZ-input R_i[k]** for the coefficients the crossing uses, so that [R_k] = Σ_i [R_i[k]].
+4. **Link** those inputs to the committed R_i with one batched check, using a sacrificed random input:
+   O(1). Without this link the conversion hole reopens in preprocessing: a custodian could encrypt one
+   mask and input another.
+
+**What it adds, per step:**
+
+| d | variant | mask pairs | committed bits (16-bit digits) | offline wire |
+|---:|---|---:|---:|---:|
+| 64 | (a) | 9 | +1.34×10^8 (+36% on 3.75×10^8) | 1.41×10^6 (×2.1 the online wire) |
+| 4096 | (a) | 4,385 | +6.53×10^10 (+10%) | 9.49×10^8 (×4.1 the online wire) |
+| 4096 | (b) | 481 | +7.16×10^9 (+0.6%) | 7.13×10^7 (×2.6 the online wire) |
+
+**The digit convention (Astra's E8, accepted).** Counting a committed 16-bit digit at 16 bits assumes
+a packing mechanism nobody has defined. If each digit is its own committed field element (61 bits), the
+FHE fork's committed bits per step become:
+
+| d | variant | committed bits (61-bit digits, non-ideal masks included) | ratio to MPC (views) |
+|---:|---|---:|---:|
+| 64 | (a) | 1.02×10^9 | ×60 |
+| 4096 | (a) | 1.45×10^12 | ×46 |
+| 4096 | (b) | 2.37×10^12 | ×75 |
+
+The MPC fork commits only field elements, so its numbers do not move. **Both conventions are now
+printed by `step_counts.py`.** The 61-bit one is the headline until a digit-packing PCS is specified
+and priced.
+
+**What this does to §7's verdict.**
+- The wire flip survives for (b): 27.5 M online plus 71 M offline against MPC's 306 M.
+- **It does NOT survive for (a) once the masks are real:** 229 M online plus 949 M offline. The d²
+  update crosses as 2,048 mask ciphertexts per layer, each posted by three custodians.
+- So if FHE custody is chosen at large d, the update must stay homomorphic (variant (b): relinearization
+  and its key, with the custody cost §3 names), or the update must be low-rank so it crosses as vectors.
+
+**One idealization remains in BOTH forks:** SPDZ's own preprocessing (triples, truncation masks, power
+tuples) still comes from an ideal dealer, in the MPC fork and inside the FHE fork's crossings. It is the
+same object in both, so the fork comparison is fair about it. Its price (an Overdrive/LowGear-style
+protocol) is not yet in any table here.

@@ -35,7 +35,28 @@
    "steady": {
     "committed_bits": 375364767,
     "online_wire": 671628,
-    "preprocessing_elems": 696960
+    "preprocessing_elems": 696960,
+    "committed_bits_digits61": 738106527
+   },
+   "nonideal_masks": {
+    "committed_bits": 509392389,
+    "committed_bits_digits61": 1021433349,
+    "online_wire": 671628,
+    "offline_wire": 1405026,
+    "preprocessing_elems": 410274
+   },
+   "mask_pairs": {
+    "pairs": 9,
+    "used": 8640
+   },
+   "mask_cost": {
+    "wire": 1405026,
+    "posted_ct_elems": 1327104,
+    "proof_native_elems": 1326942,
+    "proof_digits": 3317760,
+    "committed_bits16": 134027622,
+    "committed_bits61": 283326822,
+    "prep_auth_values": 25947
    },
    "certificate_digit_bits": 113246208,
    "committed_elems": 5120523,
@@ -78,7 +99,28 @@
    "steady": {
     "committed_bits": 687719871,
     "online_wire": 622476,
-    "preprocessing_elems": 696960
+    "preprocessing_elems": 696960,
+    "committed_bits_digits61": 1262798271
+   },
+   "nonideal_masks": {
+    "committed_bits": 851531409,
+    "committed_bits_digits61": 1609086609,
+    "online_wire": 622476,
+    "offline_wire": 1628550,
+    "preprocessing_elems": 169158
+   },
+   "mask_pairs": {
+    "pairs": 11,
+    "used": 704
+   },
+   "mask_cost": {
+    "wire": 1628550,
+    "posted_ct_elems": 1622016,
+    "proof_native_elems": 1621818,
+    "proof_digits": 4055040,
+    "committed_bits16": 163811538,
+    "committed_bits61": 346288338,
+    "prep_auth_values": 2145
    },
    "certificate_digit_bits": 188743680,
    "committed_elems": 9003435,
@@ -154,7 +196,28 @@
    "steady": {
     "committed_bits": 2747377887,
     "online_wire": 2502156,
-    "preprocessing_elems": 3982848
+    "preprocessing_elems": 3982848,
+    "committed_bits_digits61": 5410433247
+   },
+   "nonideal_masks": {
+    "committed_bits": 3268596417,
+    "committed_bits_digits61": 6512259777,
+    "online_wire": 2502156,
+    "offline_wire": 6357366,
+    "preprocessing_elems": 4654710
+   },
+   "mask_pairs": {
+    "pairs": 35,
+    "used": 132864
+   },
+   "mask_cost": {
+    "wire": 6357366,
+    "posted_ct_elems": 5160960,
+    "proof_native_elems": 5160330,
+    "proof_digits": 12902400,
+    "committed_bits16": 521218530,
+    "committed_bits61": 1101826530,
+    "prep_auth_values": 398697
    },
    "certificate_digit_bits": 905969664,
    "committed_elems": 32858955,
@@ -197,7 +260,28 @@
    "steady": {
     "committed_bits": 5138280927,
     "online_wire": 1715724,
-    "preprocessing_elems": 2213376
+    "preprocessing_elems": 2213376,
+    "committed_bits_digits61": 9500029407
+   },
+   "nonideal_masks": {
+    "committed_bits": 5599931625,
+    "committed_bits_digits61": 10475932905,
+    "online_wire": 1715724,
+    "offline_wire": 4597038,
+    "preprocessing_elems": 740910
+   },
+   "mask_pairs": {
+    "pairs": 31,
+    "used": 2816
+   },
+   "mask_cost": {
+    "wire": 4597038,
+    "posted_ct_elems": 4571136,
+    "proof_native_elems": 4570578,
+    "proof_digits": 11427840,
+    "committed_bits16": 461650698,
+    "committed_bits61": 975903498,
+    "prep_auth_values": 8541
    },
    "certificate_digit_bits": 1509949440,
    "committed_elems": 62152779,
@@ -273,7 +357,28 @@
    "steady": {
     "committed_bits": 41849015019,
     "online_wire": 19372044,
-    "preprocessing_elems": 44353536
+    "preprocessing_elems": 44353536,
+    "committed_bits_digits61": 83051170539
+   },
+   "nonideal_masks": {
+    "committed_bits": 46748469201,
+    "committed_bits_digits61": 93408339921,
+    "online_wire": 19372044,
+    "offline_wire": 67457826,
+    "preprocessing_elems": 66066210
+   },
+   "mask_pairs": {
+    "pairs": 329,
+    "used": 2104320
+   },
+   "mask_cost": {
+    "wire": 67457826,
+    "posted_ct_elems": 48513024,
+    "proof_native_elems": 48507102,
+    "proof_digits": 121282560,
+    "committed_bits16": 4899454182,
+    "committed_bits61": 10357169382,
+    "prep_auth_values": 6313947
    },
    "certificate_digit_bits": 14495514624,
    "committed_elems": 468107847,
@@ -316,7 +421,28 @@
    "steady": {
     "committed_bits": 79671712491,
     "online_wire": 6789132,
-    "preprocessing_elems": 8964096
+    "preprocessing_elems": 8964096,
+    "committed_bits_digits61": 148052957931
+   },
+   "nonideal_masks": {
+    "committed_bits": 81473639409,
+    "committed_bits_digits61": 151862129649,
+    "online_wire": 6789132,
+    "offline_wire": 17945730,
+    "preprocessing_elems": 3221634
+   },
+   "mask_pairs": {
+    "pairs": 121,
+    "used": 11264
+   },
+   "mask_cost": {
+    "wire": 17945730,
+    "posted_ct_elems": 17842176,
+    "proof_native_elems": 17839998,
+    "proof_digits": 44605440,
+    "committed_bits16": 1801926918,
+    "committed_bits61": 3809171718,
+    "prep_auth_values": 34155
    },
    "certificate_digit_bits": 24159191040,
    "committed_elems": 929731143,
@@ -392,7 +518,28 @@
    "steady": {
     "committed_bits": 661438063131,
     "online_wire": 228851724,
-    "preprocessing_elems": 631283712
+    "preprocessing_elems": 631283712,
+    "committed_bits_digits61": 1315443761691
+   },
+   "nonideal_masks": {
+    "committed_bits": 726739298961,
+    "committed_bits_digits61": 1453486885521,
+    "online_wire": 228851724,
+    "offline_wire": 948921426,
+    "preprocessing_elems": 1020326994
+   },
+   "mask_pairs": {
+    "pairs": 4385,
+    "used": 33583104
+   },
+   "mask_cost": {
+    "wire": 948921426,
+    "posted_ct_elems": 646594560,
+    "proof_native_elems": 646515630,
+    "proof_digits": 1616486400,
+    "committed_bits16": 65301235830,
+    "committed_bits61": 138043123830,
+    "prep_auth_values": 100762467
    },
    "certificate_digit_bits": 231928233984,
    "committed_elems": 7270463799,
@@ -435,7 +582,28 @@
    "steady": {
     "committed_bits": 1264874218011,
     "online_wire": 27525132,
-    "preprocessing_elems": 36741120
+    "preprocessing_elems": 36741120,
+    "committed_bits_digits61": 2353745355291
+   },
+   "nonideal_masks": {
+    "committed_bits": 1272037249809,
+    "committed_bits_digits61": 2368887599889,
+    "online_wire": 27525132,
+    "offline_wire": 71340498,
+    "preprocessing_elems": 13918674
+   },
+   "mask_pairs": {
+    "pairs": 481,
+    "used": 45056
+   },
+   "mask_cost": {
+    "wire": 71340498,
+    "posted_ct_elems": 70926336,
+    "proof_native_elems": 70917678,
+    "proof_digits": 177315840,
+    "committed_bits16": 7163031798,
+    "committed_bits61": 15142244598,
+    "prep_auth_values": 136611
    },
    "certificate_digit_bits": 386547056640,
    "committed_elems": 14628124983,
