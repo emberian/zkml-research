@@ -1,0 +1,2 @@
+sk counts {'bytes': 2645440, 'formula_bits': 21163520, 'exact': True, 'k': 8192, 'rows': 389, 'digits': 3179099, 'prove_s': 605.9, 'verify_s': 121.5}
+honest secret-key batch                              ACCEPT  accept

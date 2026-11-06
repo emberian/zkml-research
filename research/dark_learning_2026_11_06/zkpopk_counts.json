@@ -1,0 +1,812 @@
+{
+ "N8192_L3_T97_d64": {
+  "d": 64,
+  "N": 8192,
+  "L": 3,
+  "T": 97,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 4787200,
+     "k": 1024,
+     "rows": 105,
+     "digits": 106691
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 4787200,
+     "k": 1024,
+     "rows": 105,
+     "digits": 106691
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 4787200,
+     "k": 1024,
+     "rows": 105,
+     "digits": 106691
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 4787200,
+     "k": 1024,
+     "rows": 105,
+     "digits": 106691
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 4787200,
+     "k": 1024,
+     "rows": 105,
+     "digits": 106691
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 15,
+   "deliveries": 30,
+   "posted_bits": 71808000,
+   "delivered_bits": 143616000,
+   "stern_delivered_bits": 7053415819440,
+   "old_model_delivered_bits": 194876700
+  },
+  "fhe_b": {
+   "proofs": 3,
+   "cts_per_custodian": 11,
+   "slots_per_custodian": 704,
+   "proof_bits": 13313280,
+   "k": 4096,
+   "digits": 1167824,
+   "posted_bits": 39939840,
+   "delivered_bits": 79879680,
+   "stern_bits": 7758757401384
+  }
+ },
+ "N16384_L4_T97_d64": {
+  "d": 64,
+  "N": 16384,
+  "L": 4,
+  "T": 97,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 6048256,
+     "k": 2048,
+     "rows": 101,
+     "digits": 205153
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 6048256,
+     "k": 2048,
+     "rows": 101,
+     "digits": 205153
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 6048256,
+     "k": 2048,
+     "rows": 101,
+     "digits": 205153
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 6048256,
+     "k": 2048,
+     "rows": 101,
+     "digits": 205153
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 6048256,
+     "k": 2048,
+     "rows": 101,
+     "digits": 205153
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 15,
+   "deliveries": 30,
+   "posted_bits": 90723840,
+   "delivered_bits": 181447680,
+   "stern_delivered_bits": 7053415819440,
+   "old_model_delivered_bits": 449726160
+  }
+ },
+ "N8192_L3_T97_d1024": {
+  "d": 1024,
+  "N": 8192,
+  "L": 3,
+  "T": 97,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 11326720,
+     "k": 4096,
+     "rows": 206,
+     "digits": 838227
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 11326720,
+     "k": 4096,
+     "rows": 206,
+     "digits": 838227
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 8,
+     "slots": 128,
+     "proof_bits": 9340160,
+     "k": 4096,
+     "rows": 126,
+     "digits": 510544
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 11326720,
+     "k": 4096,
+     "rows": 206,
+     "digits": 838227
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 11326720,
+     "k": 4096,
+     "rows": 206,
+     "digits": 838227
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 216,
+   "deliveries": 432,
+   "posted_bits": 163941120,
+   "delivered_bits": 327882240,
+   "stern_delivered_bits": 101569187799936,
+   "old_model_delivered_bits": 2806224480
+  },
+  "fhe_b": {
+   "proofs": 3,
+   "cts_per_custodian": 121,
+   "slots_per_custodian": 11264,
+   "proof_bits": 42178048,
+   "k": 16384,
+   "digits": 13269597,
+   "posted_bits": 126534144,
+   "delivered_bits": 253068288,
+   "stern_bits": 85346331415224
+  }
+ },
+ "N16384_L4_T97_d1024": {
+  "d": 1024,
+  "N": 16384,
+  "L": 4,
+  "T": 97,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 15647488,
+     "k": 4096,
+     "rows": 380,
+     "digits": 1551093
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 15647488,
+     "k": 4096,
+     "rows": 380,
+     "digits": 1551093
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 4,
+     "slots": 256,
+     "proof_bits": 9687808,
+     "k": 4096,
+     "rows": 140,
+     "digits": 568045
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 15647488,
+     "k": 4096,
+     "rows": 380,
+     "digits": 1551093
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 15647488,
+     "k": 4096,
+     "rows": 380,
+     "digits": 1551093
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 204,
+   "deliveries": 408,
+   "posted_bits": 216833280,
+   "delivered_bits": 433666560,
+   "stern_delivered_bits": 95926455144384,
+   "old_model_delivered_bits": 6116275776
+  }
+ },
+ "N8192_L3_T97_d4096": {
+  "d": 4096,
+  "N": 8192,
+  "L": 3,
+  "T": 97,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 21163520,
+     "k": 8192,
+     "rows": 389,
+     "digits": 3179099
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 21163520,
+     "k": 8192,
+     "rows": 389,
+     "digits": 3179099
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 32,
+     "slots": 128,
+     "proof_bits": 17190400,
+     "k": 8192,
+     "rows": 229,
+     "digits": 1868376
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 21163520,
+     "k": 8192,
+     "rows": 389,
+     "digits": 3179099
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 21163520,
+     "k": 8192,
+     "rows": 389,
+     "digits": 3179099
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 864,
+   "deliveries": 1728,
+   "posted_bits": 305533440,
+   "delivered_bits": 611066880,
+   "stern_delivered_bits": 406276751199744,
+   "old_model_delivered_bits": 11224897920
+  },
+  "fhe_b": {
+   "proofs": 3,
+   "cts_per_custodian": 481,
+   "slots_per_custodian": 45056,
+   "proof_bits": 83089664,
+   "k": 32768,
+   "digits": 52781669,
+   "posted_bits": 249268992,
+   "delivered_bits": 498537984,
+   "stern_bits": 339269300915064
+  }
+ },
+ "N16384_L4_T97_d4096": {
+  "d": 4096,
+  "N": 16384,
+  "L": 4,
+  "T": 97,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 29283584,
+     "k": 8192,
+     "rows": 716,
+     "digits": 5858047
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 29283584,
+     "k": 8192,
+     "rows": 716,
+     "digits": 5858047
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 16,
+     "slots": 256,
+     "proof_bits": 17364224,
+     "k": 8192,
+     "rows": 236,
+     "digits": 1925879
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 29283584,
+     "k": 8192,
+     "rows": 716,
+     "digits": 5858047
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 29283584,
+     "k": 8192,
+     "rows": 716,
+     "digits": 5858047
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 816,
+   "deliveries": 1632,
+   "posted_bits": 403495680,
+   "delivered_bits": 806991360,
+   "stern_delivered_bits": 383705820577536,
+   "old_model_delivered_bits": 24465103104
+  }
+ },
+ "N8192_L3_T309_d64": {
+  "d": 64,
+  "N": 8192,
+  "L": 3,
+  "T": 309,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 9740800,
+     "k": 2048,
+     "rows": 53,
+     "digits": 106691
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 9740800,
+     "k": 2048,
+     "rows": 53,
+     "digits": 106691
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 9740800,
+     "k": 2048,
+     "rows": 53,
+     "digits": 106691
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 9740800,
+     "k": 2048,
+     "rows": 53,
+     "digits": 106691
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 9740800,
+     "k": 2048,
+     "rows": 53,
+     "digits": 106691
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 15,
+   "deliveries": 30,
+   "posted_bits": 146112000,
+   "delivered_bits": 292224000,
+   "stern_delivered_bits": 7053415819440,
+   "old_model_delivered_bits": 194876700
+  },
+  "fhe_b": {
+   "proofs": 3,
+   "cts_per_custodian": 11,
+   "slots_per_custodian": 704,
+   "proof_bits": 25120000,
+   "k": 8192,
+   "digits": 1167824,
+   "posted_bits": 75360000,
+   "delivered_bits": 150720000,
+   "stern_bits": 7758757401384
+  }
+ },
+ "N16384_L4_T309_d64": {
+  "d": 64,
+  "N": 16384,
+  "L": 4,
+  "T": 309,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 12362240,
+     "k": 4096,
+     "rows": 51,
+     "digits": 205153
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 12362240,
+     "k": 4096,
+     "rows": 51,
+     "digits": 205153
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 12362240,
+     "k": 4096,
+     "rows": 51,
+     "digits": 205153
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 12362240,
+     "k": 4096,
+     "rows": 51,
+     "digits": 205153
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 1,
+     "slots": 64,
+     "proof_bits": 12362240,
+     "k": 4096,
+     "rows": 51,
+     "digits": 205153
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 15,
+   "deliveries": 30,
+   "posted_bits": 185433600,
+   "delivered_bits": 370867200,
+   "stern_delivered_bits": 7053415819440,
+   "old_model_delivered_bits": 449726160
+  }
+ },
+ "N8192_L3_T309_d1024": {
+  "d": 1024,
+  "N": 8192,
+  "L": 3,
+  "T": 309,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 21955840,
+     "k": 8192,
+     "rows": 104,
+     "digits": 838227
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 21955840,
+     "k": 8192,
+     "rows": 104,
+     "digits": 838227
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 8,
+     "slots": 128,
+     "proof_bits": 18295040,
+     "k": 4096,
+     "rows": 126,
+     "digits": 510544
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 21955840,
+     "k": 8192,
+     "rows": 104,
+     "digits": 838227
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 21955840,
+     "k": 8192,
+     "rows": 104,
+     "digits": 838227
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 216,
+   "deliveries": 432,
+   "posted_bits": 318355200,
+   "delivered_bits": 636710400,
+   "stern_delivered_bits": 101569187799936,
+   "old_model_delivered_bits": 2806224480
+  },
+  "fhe_b": {
+   "proofs": 3,
+   "cts_per_custodian": 121,
+   "slots_per_custodian": 11264,
+   "proof_bits": 77618944,
+   "k": 32768,
+   "digits": 13269597,
+   "posted_bits": 232856832,
+   "delivered_bits": 465713664,
+   "stern_bits": 85346331415224
+  }
+ },
+ "N16384_L4_T309_d1024": {
+  "d": 1024,
+  "N": 16384,
+  "L": 4,
+  "T": 309,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 28837888,
+     "k": 8192,
+     "rows": 191,
+     "digits": 1551093
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 28837888,
+     "k": 8192,
+     "rows": 191,
+     "digits": 1551093
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 4,
+     "slots": 256,
+     "proof_bits": 19345408,
+     "k": 8192,
+     "rows": 71,
+     "digits": 568045
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 28837888,
+     "k": 8192,
+     "rows": 191,
+     "digits": 1551093
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 16,
+     "slots": 64,
+     "proof_bits": 28837888,
+     "k": 8192,
+     "rows": 191,
+     "digits": 1551093
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 204,
+   "deliveries": 408,
+   "posted_bits": 404090880,
+   "delivered_bits": 808181760,
+   "stern_delivered_bits": 95926455144384,
+   "old_model_delivered_bits": 6116275776
+  }
+ },
+ "N8192_L3_T309_d4096": {
+  "d": 4096,
+  "N": 8192,
+  "L": 3,
+  "T": 309,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 39798272,
+     "k": 16384,
+     "rows": 195,
+     "digits": 3179099
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 39798272,
+     "k": 16384,
+     "rows": 195,
+     "digits": 3179099
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 32,
+     "slots": 128,
+     "proof_bits": 31843840,
+     "k": 8192,
+     "rows": 229,
+     "digits": 1868376
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 39798272,
+     "k": 16384,
+     "rows": 195,
+     "digits": 3179099
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 39798272,
+     "k": 16384,
+     "rows": 195,
+     "digits": 3179099
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 864,
+   "deliveries": 1728,
+   "posted_bits": 573110784,
+   "delivered_bits": 1146221568,
+   "stern_delivered_bits": 406276751199744,
+   "old_model_delivered_bits": 11224897920
+  },
+  "fhe_b": {
+   "proofs": 3,
+   "cts_per_custodian": 481,
+   "slots_per_custodian": 45056,
+   "proof_bits": 151440896,
+   "k": 65536,
+   "digits": 52781669,
+   "posted_bits": 454322688,
+   "delivered_bits": 908645376,
+   "stern_bits": 339269300915064
+  }
+ },
+ "N16384_L4_T309_d4096": {
+  "d": 4096,
+  "N": 16384,
+  "L": 4,
+  "T": 309,
+  "mpc": {
+   "batches": [
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 52771328,
+     "k": 16384,
+     "rows": 359,
+     "digits": 5858047
+    },
+    {
+     "call": "matvec-fwd",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 52771328,
+     "k": 16384,
+     "rows": 359,
+     "digits": 5858047
+    },
+    {
+     "call": "matvec-T",
+     "cts_per_sender": 16,
+     "slots": 256,
+     "proof_bits": 32397568,
+     "k": 8192,
+     "rows": 236,
+     "digits": 1925879
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 52771328,
+     "k": 16384,
+     "rows": 359,
+     "digits": 5858047
+    },
+    {
+     "call": "outer",
+     "cts_per_sender": 64,
+     "slots": 64,
+     "proof_bits": 52771328,
+     "k": 16384,
+     "rows": 359,
+     "digits": 5858047
+    }
+   ],
+   "proofs": 15,
+   "distinct_cts": 816,
+   "deliveries": 1632,
+   "posted_bits": 730448640,
+   "delivered_bits": 1460897280,
+   "stern_delivered_bits": 383705820577536,
+   "old_model_delivered_bits": 24465103104
+  }
+ }
+}

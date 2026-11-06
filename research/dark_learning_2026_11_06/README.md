@@ -77,3 +77,11 @@ is an ideal dealer whose per-party streams are committed.
 | wrong quotient | gate: output base extension (pinned u) fails | online MAC check (truncation opening) |
 | stale parent | gate: input handle ≠ current head | chain: input commitment ≠ head |
 | missing audit response | fail-closed alarm | fail-closed alarm |
+
+## Gen 4 (2026-11-06): batched ZKPoPK (decision doc §20)
+
+| file | what |
+|---|---|
+| `zkpopk_ligero.py` | Batched Ligero ZKPoPK over a 255-bit NTT field: secret-key batches bound to the registered key (MPC helper sends), public-key batches (FHE (b) masks); per-prime folding with committed integer quotients; legacy statement-only transcript and a simulator, for the falsifier only |
+| `run_zkpopk_ligero.py` | `python3 run_zkpopk_ligero.py [N L M T [honest]]`: honest batches, the attack table, the FS-ordering falsifier, Codex-trace regressions, the gate in front of `he_matvec.ptxct`; writes `zkpopk_ligero_results_N*_L*_M*.json` |
+| `zkpopk_counts.py` | per-step proof bits at d = 64/1024/4096 for both forks, T = 97 and 309, N = 8192 and 16384; writes `zkpopk_counts.json` |
