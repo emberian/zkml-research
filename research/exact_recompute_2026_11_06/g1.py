@@ -17,6 +17,8 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 
 
 def tokens():
+    if os.environ.get("GPTOSS_IDS_FROM_PARAMS") == "1":     # remote jobs: ids pinned in params-v0.json
+        return json.load(open(os.path.join(OUT, "params-v0.json")))["ids"]
     from tokenizers import Tokenizer
     tok = Tokenizer.from_file(os.path.join(os.environ.get("GPTOSS_DIR", "/Users/ember/models/gpt-oss-20b/6cee5e81"), "tokenizer.json"))
     return tok.encode(PROMPT).ids
@@ -52,7 +54,7 @@ def main(backend="numpy"):
         jax.config.update("jax_enable_x64", True)
         import jax.numpy as jnp
         import jaxint
-        xp, kern = jnp, jaxint.Int8Mxu()
+        xp, kern = jnp, (jaxint.F32Dot() if backend == "jax-f32" else jaxint.Int8Mxu())
         cfg = json.load(open(os.path.join(OUT, "params-v0.json")))
         assert cfg["ids"] == ids
         P = cfg["P"]
