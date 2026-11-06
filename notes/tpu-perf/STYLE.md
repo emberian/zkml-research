@@ -51,3 +51,13 @@ Every rule cites what it rests on: [READ] published, [CC] read off the real TPU 
   int8 GEMM at 97.8% of MXU peak. Pad weights to 23 x 128 offline, or accept the 2.2% and name it.
 - **Exactness by construction:** offset-128 bytes and balanced-digit constant matrices keep every int8
   product within 2^14, so an int32 accumulator is exact for K <= 2^17. Chunk longer contractions.
+- **BabyBear residues are 31-bit, so x + y overflows int32 (2P > 2^31).** Write x - (P - y) and add P back
+  when the result is negative. The first Pallas fold got 44% of its outputs wrong this way. In XLA, u32
+  hid the bug.
+- **The four-step transpose is a strided VMEM load, not an HBM pass.** NTT stage 2 reads `x[a, :, kk, :]`,
+  which is one sublane of each (b, k1) tile. With the layouts chosen this way the two-kernel NTT has zero
+  HBM copies [CC]. The first planar version reshaped between kernels, and the compiler inserted two
+  64 MiB relayout copies, estimated at 0.62 and 0.53 ms against a 0.54 ms bound.
+- **Pack small matrices onto the MXU through the row axis of the storage layout.** Storing a table as
+  [coords, ..., rows, 1024 lanes] makes 8 consecutive rows the 8 block-diagonal groups, so packing is a
+  merge of major dims (free) and not a lane shuffle.

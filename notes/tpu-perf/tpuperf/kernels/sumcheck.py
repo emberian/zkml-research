@@ -176,24 +176,176 @@ def ref(rd, H, sample=None):
     return fp, gp, s
 
 
-def impl(H, **kw):
-    return round_fn
+def impl(H, interpret=False, **kw):
+    return round_pallas(interpret=interpret)
 
 
 def count(H):
-    return round_fn, arg_specs(H)
+    """Counts from the XLA formulation (same algorithm, same packing factor)."""
+    return round_fn, [((4, 2, 2, H), jnp.uint32), ((4, 2, 2, H), jnp.uint32), ((128, 128), jnp.int8),
+                      ((4, 4), jnp.int32)]
 
 
 def arg_specs(H):
-    return [((4, 2, 2, H), jnp.uint32), ((4, 2, 2, H), jnp.uint32), ((128, 128), jnp.int8), ((4, 4), jnp.int32)]
+    return [((4, 2, 2, H // LW, LW), jnp.uint32), ((4, 2, 2, H // LW, LW), jnp.uint32), ((128, 128), jnp.int8),
+            ((4, 4 * G, 1), jnp.int32)]
+
+
+def inputs_pallas(rng, H):
+    (f, g, _, _), rd = inputs(rng, H)
+    Wp, C = fold_consts_pallas(rd["r"])
+    return (f.reshape(4, 2, 2, H // LW, LW), g.reshape(4, 2, 2, H // LW, LW), Wp, C), rd
+
+
+def check_pallas(out, rd, H, sample_cols=4096):
+    """f', g' on a column sample plus the full round sums, all against the Python-int reference."""
+    fo, go, glo, ghi, S = out
+    rng = np.random.default_rng(0)
+    cols = sorted(rng.choice(H, min(H, sample_cols), replace=False).tolist()) if H > sample_cols else list(range(H))
+    efp, egp, _ = ref(rd, H, sample=cols)
+    fo, go = np.asarray(fo).reshape(4, 2, H)[:, :, cols], np.asarray(go).reshape(4, 2, H)[:, :, cols]
+    ok_f = (fo.astype(object) == efp).all() and (go.astype(object) == egp).all()
+    return bool(ok_f), combine_pallas(glo, ghi, S, H)
 
 
 KERNELS = [dict(
     name="sumcheck_bb4_round",
     module=__name__,
     cfgs={
-        "mac": dict(H=2**14),
+        "mac": dict(H=2**14),       # 16 rows of LW = 1024: two grid steps
         "H2p22": dict(H=2**22),     # 2^24 evaluations per table: 1 GiB read, 0.5 GiB written per round
     },
-    inputs=inputs, ref=ref, impl=impl, count=count, arg_specs=arg_specs,
+    inputs=None, ref=ref, impl=impl, count=count, arg_specs=arg_specs,
 )]
+KERNELS[0]["inputs"] = lambda rng, **p: inputs_pallas(rng, **p)
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Pallas version. Storage: tables as [4 coord, 2 b_i, 2 b_i+1, R, LW] u32 with H = R * LW (column h = r*LW + l):
+# the column axis is split into rows of LW lanes, so 8 consecutive rows ARE the 8 MXU packing groups and the
+# packing is a merge of major dims into sublanes (free). One grid step = 8 rows = 8*LW columns.
+#   limbs  D[(j, a, g), l] int8 offset bytes                          [128, LW]
+#   fold   Z = Wp @ D, Wp[(c, m, g'), (j, a, g)] = Wm[(m, c), (j, a)] d(g, g')   -> limb c is Z[c] : [32 (m, g), LW]
+#   sums   Gram A @ B^T [128, 128] per step, accumulated as (G & 0xffff, G >> 16) so int32 never overflows
+# ---------------------------------------------------------------------------------------------------------
+import functools
+
+from jax.experimental import pallas as pl
+from jax.experimental.pallas import tpu as pltpu
+
+LW = 1024
+
+
+def fold_consts_pallas(r):
+    R = rmat(r)
+    Wp = np.zeros((4, 4, G, 4, 4, G), np.int8)     # [c, m, g', j, a, g]
+    C = np.zeros((4, 4 * G, 1), np.int32)          # [c, (m, g), 1]
+    for m in range(4):
+        tot = 0
+        for j in range(4):
+            for a in range(4):
+                v = R[m][j] * pow(2, 8 * a, P) % P
+                tot += v
+                for c, dg in enumerate(bal4(v)):
+                    for g in range(G):
+                        Wp[c, m, g, j, a, g] = dg
+        for c, byte in enumerate((128 * tot % P).to_bytes(4, "little")):
+            C[c, m * G:(m + 1) * G, 0] = byte
+    return Wp.reshape(128, 128), C
+
+
+def _limbs_packed(x):
+    """u32 [4 j, 8 g, LW] -> int8 [(j, a, g) = 128, LW] offset bytes."""
+    xi = x.astype(jnp.int32)  # values < 2^31 (canonical mod P), so the signed view is exact
+    planes = [(((xi >> (8 * a)) & 255) - 128) for a in range(4)]      # each [4, 8, LW]
+    return jnp.stack(planes, axis=1).reshape(128, x.shape[-1]).astype(jnp.int8)
+
+
+def _submod(a, b):
+    d = a - b
+    return jnp.where(d < 0, d + P, d)
+
+
+def _fold_tile(x0, x1, w, cc):
+    """x0, x1 int32 [4, 8, LW] canonical -> x0 + r (x1 - x0) mod P, int32 [4, 8, LW]."""
+    d = _limbs_packed(_submod(x1, x0))
+    z = jnp.dot(w, d, preferred_element_type=jnp.int32).reshape(4, 4 * G, x0.shape[-1])
+    L = reduce_limbs([z[c] + cc[c] for c in range(4)], P)
+    rd = (L[0] | (L[1] << 8) | (L[2] << 16) | (L[3] << 24)).reshape(4, G, x0.shape[-1])
+    s = x0 - (P - rd)                     # int32: x0 + rd would overflow (2P > 2^31)
+    return jnp.where(s < 0, s + P, s)
+
+
+def _round_kernel(f_ref, g_ref, w_ref, c_ref, fo_ref, go_ref, glo_ref, ghi_ref, s_ref):
+    @pl.when(pl.program_id(0) == 0)
+    def _():
+        glo_ref[...] = jnp.zeros_like(glo_ref)
+        ghi_ref[...] = jnp.zeros_like(ghi_ref)
+        s_ref[...] = jnp.zeros_like(s_ref)
+
+    w = w_ref[...]
+    cc = c_ref[...]
+    f = f_ref[...].astype(jnp.int32)
+    g = g_ref[...].astype(jnp.int32)
+    f0, f1 = _fold_tile(f[:, 0, 0], f[:, 1, 0], w, cc), _fold_tile(f[:, 0, 1], f[:, 1, 1], w, cc)
+    g0, g1 = _fold_tile(g[:, 0, 0], g[:, 1, 0], w, cc), _fold_tile(g[:, 0, 1], g[:, 1, 1], w, cc)
+    fo_ref[:, 0] = f0.astype(jnp.uint32)
+    fo_ref[:, 1] = f1.astype(jnp.uint32)
+    go_ref[:, 0] = g0.astype(jnp.uint32)
+    go_ref[:, 1] = g1.astype(jnp.uint32)
+
+    def two_minus(x1, x0):
+        t = x1 - (P - x1)                 # 2 x1 mod P without leaving int32
+        t = jnp.where(t < 0, t + P, t)
+        return _submod(t, x0)
+    for t, (a, b) in enumerate(((f0, g0), (f1, g1), (two_minus(f1, f0), two_minus(g1, g0)))):
+        A, B = _limbs_packed(a), _limbs_packed(b)
+        Gm = jax.lax.dot_general(A, B, (((1,), (1,)), ((), ())), preferred_element_type=jnp.int32)
+        glo_ref[t] += Gm & 0xFFFF
+        ghi_ref[t] += Gm >> 16
+        s_ref[t, 0] += A.astype(jnp.int32).sum(axis=1, keepdims=True)
+        s_ref[t, 1] += B.astype(jnp.int32).sum(axis=1, keepdims=True)
+
+
+def round_pallas(interpret=False):
+    def f(fz, gz, Wp, C):
+        """fz, gz u32 [4, 2, 2, R, LW]; returns f', g' u32 [4, 2, R, LW], Gram lo/hi int32 [3, 128, 128],
+        column sums int32 [3, 2, 128, 1]."""
+        R, lw = fz.shape[3], fz.shape[4]
+        tab = lambda: pl.BlockSpec((4, 2, 2, G, lw), lambda i: (0, 0, 0, i, 0))
+        out = lambda: pl.BlockSpec((4, 2, G, lw), lambda i: (0, 0, i, 0))
+        acc = lambda shp: pl.BlockSpec(shp, lambda i: (0,) * len(shp))
+        return pl.pallas_call(
+            _round_kernel,
+            out_shape=(jax.ShapeDtypeStruct((4, 2, R, lw), jnp.uint32), jax.ShapeDtypeStruct((4, 2, R, lw), jnp.uint32),
+                       jax.ShapeDtypeStruct((3, 128, 128), jnp.int32), jax.ShapeDtypeStruct((3, 128, 128), jnp.int32),
+                       jax.ShapeDtypeStruct((3, 2, 128, 1), jnp.int32)),
+            grid=(R // G,),
+            in_specs=[tab(), tab(), acc((128, 128)), acc((4, 4 * G, 1))],
+            out_specs=(out(), out(), acc((3, 128, 128)), acc((3, 128, 128)), acc((3, 2, 128, 1))),
+            compiler_params=pltpu.CompilerParams(dimension_semantics=("arbitrary",), vmem_limit_bytes=96 * 2**20),
+            interpret=interpret,
+        )(fz, gz, Wp, C)
+    return f
+
+
+def combine_pallas(glo, ghi, S, H):
+    """Host: Gram (lo, hi) + column sums -> s(t) in BabyBear^4, exact (Python ints). Rows (j, a, g)."""
+    glo, ghi, S = (np.asarray(x).astype(np.int64) for x in (glo, ghi, S))
+    out = []
+    for t in range(3):
+        Gt = glo[t] + (ghi[t] << 16)
+        Sa, Sb = S[t, 0, :, 0], S[t, 1, :, 0]
+        acc = [0] * 7
+        for j in range(4):
+            for a in range(4):
+                for l in range(4):
+                    for b in range(4):
+                        tot = 0
+                        for g in range(G):
+                            ia, ib = (j * 4 + a) * G + g, (l * 4 + b) * G + g
+                            tot += int(Gt[ia, ib]) + 128 * int(Sb[ib]) + 128 * int(Sa[ia])
+                        tot += 128 * 128 * H
+                        acc[j + l] += tot << (8 * (a + b))
+        out.append([(acc[m] + W * (acc[m + 4] if m + 4 < 7 else 0)) % P for m in range(4)])
+    return out
