@@ -79,6 +79,13 @@ TC_MAC_OPEQ = 16.7e12 / 990e12
 # measured 13.1x (inner product) and 36.2x (end to end) over SIMT.  The model below
 # gives 6/(16*0.0169) = 22x before reduction, which sits between their two numbers.
 TC_LIMBS = {"BabyBear": 4, "KoalaBear": 4, "M31": 4, "Goldilocks": 8, "p61": 8}
+# GF(2^128) on the same INT8 tensor cores (initiative 14, mma_counts.py): bits as 0/1 operands, the
+# .s32 register read for its parity (exact at every length: minidregg lane/mma-exact
+# Theory/MmaAccumulatorExact.lean s32_parity_exact), three Karatsuba levels down to 16-bit pieces with
+# lazy reduction (kar_lazy_commutes): 27 x 16 x 16 = 6,912 bit-MACs per multiply, plus ~2 x 108 SIMT
+# ops to unpack bits into byte operands [D: mma_counts.kar_macs / unpack_ops].  "L*L" equivalent:
+TC_GF2_MACS = {"GF2^128": 27 * 16 * 16}
+TC_GF2_UNPACK_OPS = {"GF2^128": 2 * 27 * 16 / 4}
 # Spec throughputs (op-equiv/s) for the proxy column [X: datasheets; A for CPU]
 HW_THROUGHPUT = {"cpu": 3.4e11,   # 12 cores x 4 lanes x 3.5 GHz x ~2 IPC [A]
                  "simt": 16.7e12, "tc": 16.7e12}  # tc rows already discount MACs
@@ -246,7 +253,12 @@ RECURSION = {
     "none": dict(wrap=False),
     "full-recursion": dict(wrap=True, overhead=1.0),
     "atomic-acc": dict(wrap=True, overhead=0.35),     # [A] defer PCS openings: WARP/Arc-style
-    "holography-acc": dict(wrap=True, overhead=0.25), # [A] 2026/538: accumulate holographic checks
+    # 2026/538 over a HASH PCS (every PCS this file pairs it with): its Def 4 "accumulatable evaluation
+    # proofs" fail for Merkle commitments and its own fallback (sec 1.1) verifies each child's FRI/WHIR proof
+    # in-circuit; only the fixed-matrix (holographic) claims accumulate, and on today's Tower256 leaf (a bare
+    # low-degree test) that share is 0 [D: notes/holography-accumulation-verdict.md, initiative 14].  So = full
+    # recursion until a relation is arithmetized.  (Was 0.25 [A].)
+    "holography-acc": dict(wrap=True, overhead=1.0),
     "folding": dict(wrap=True, overhead=0.0, step_rows=27.5e6),  # Nightstream recursive step,
                                                      # 27,537,894 R1CS rows [M: notes/nightstream-read.md]
 }
@@ -279,7 +291,7 @@ def compatible(field, pcs_name, piop, lookup, rec, hw, h):
         return False
     if piop == "AIR" and p["ml"] and pcs_name not in ("WHIR",):
         return False
-    if hw == "tc" and field not in TC_LIMBS:
+    if hw == "tc" and field not in TC_LIMBS and field not in TC_GF2_MACS:
         return False
     if rec == "folding" and pcs_name != "Ajtai":
         return False
@@ -351,10 +363,13 @@ def evaluate(field, pcs_name, rate, h, piop, lookup, rec, hw, shape, amort,
     # hardware proxy (int32-op equivalents)
     mops = MULT_OPS[field]["cpu" if hw == "cpu" else "simt"]
     if hw == "tc":
-        L = TC_LIMBS[field]
         # Eligible work and total work must use the same audit amortization.
         tc_share = min(1.0, p * (tc_cell * commit + S["virt"] * PIOP[piop]["virt_mult"]) / max(mults, 1))
-        mult_cost = mults * (tc_share * (L * L * TC_MAC_OPEQ + 0.25) + (1 - tc_share) * mops)
+        if field in TC_GF2_MACS:
+            per = TC_GF2_MACS[field] * TC_MAC_OPEQ + TC_GF2_UNPACK_OPS[field]
+        else:
+            per = TC_LIMBS[field] ** 2 * TC_MAC_OPEQ + 0.25
+        mult_cost = mults * (tc_share * per + (1 - tc_share) * mops)
     else:
         mult_cost = mults * mops
     hash_cost = hashes * hash_ops(h)
@@ -892,6 +907,8 @@ def main():
     ap.add_argument("--calibrate", action="store_true")
     ap.add_argument("--sensitivity", action="store_true")
     ap.add_argument("--top", type=int, default=12)
+    ap.add_argument("--hw-axis", action="store_true",
+                    help="per-SKU tensor-core table (H100/B200/B300/A100, INT8/FP8/FP4/b1, HBM term) from mma_counts.py")
     ap.add_argument("--certs", type=int, nargs="?", const=-1, metavar="N_BYTES",
                     help="automata counts at N_BYTES, or at 256/4096/65536 with no value (breadstuffs docs/automata)")
     ap.add_argument("--markdown", action="store_true",
@@ -899,6 +916,16 @@ def main():
     ap.add_argument("--check-pins", action="store_true",
                     help="re-read every cited #guard line under $BREADSTUFFS_MT; exit 1 if one moved")
     a = ap.parse_args()
+    if a.hw_axis:
+        import importlib.util, os
+        spec = importlib.util.spec_from_file_location(
+            "mma_counts", os.path.join(os.path.dirname(os.path.abspath(__file__)), "mma_counts.py"))
+        mc = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mc)
+        mc.validate()
+        mc.exactness_table()
+        mc.pareto_table()
+        return
     if a.check_pins:
         bad = check_automata_pins()
         for k, why in bad:
@@ -956,10 +983,17 @@ NAMED INADEQUACIES (read before quoting any number above)
     absolute terms.  Only same-hardware ratios are meaningful, and only as shape.
  3. 'boundary-only' and 'vm' committed-cell figures are DERIVED shapes, not emitted objects.
     'semantic-air' is the only shape anchored to a measurement (SASH 79.0M cells/position).
- 4. GF(2^128) on GPU at 150 ops/mult is an assumption; a published binary-tower GPU sumcheck
-    rate would replace it.  Binary fields cannot do integer matmul natively; the model charges
-    the boundary-only shape the same cell count in char 2, which FLATTERS the binary row.
- 5. Recursion overheads (atomic 0.35, holography 0.25) are placeholders, flagged [A]; only the
+ 4. GF(2^128) on GPU at 150 ops/mult is an assumption.  The published binary-tower GPU sumcheck
+    (DATE'26 SumCATS, bit-sliced SIMT, A100) sits ~80x above mma_counts.py's HBM floor, so it does
+    not pin the SIMT rate.  Binary fields DO run on integer tensor cores (parity read of the .s32
+    register, Karatsuba-lazy; 2026-11-06, initiative 14); the tc row now admits GF(2^128).  The model
+    still charges the boundary-only shape the same cell count in char 2, which FLATTERS the binary row.
+ 7. Every tc row is MAC-priced with no memory term.  mma_counts.py shows TensorZKP's own primitives
+    are HBM-bound (tensor cores ~4% busy), so tc rows understate time wherever bytes bind; read
+    --hw-axis for the per-SKU floors with the HBM term.
+ 5. Recursion overheads: atomic 0.35 is a placeholder [A] (the F4 note's single-codeword path model is
+    ~0.12-0.19 of full recursion per step in Keccak-f at ell 14-22, K=2, and it carries codeword state);
+    holography 1.0 is counted for hash PCS today (initiative 14); only the
     folding step (27.5M rows) and the deployed wrap identity (child verifier = wrap table) are
     measured.
  6. Soundness 'bits' is min(query term at the stated regime, field wall, LogUp wall).  It does
