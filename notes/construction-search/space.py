@@ -562,6 +562,9 @@ AUTOMATA_PINS = {
     "lanes-cost":  (E + "TinyAutomataLanesK.lean", 784, "costOf (lanesRunIK k probeW)"),
     "lanes-area":  (E + "TinyAutomataLanesK.lean", 796, "(costOf (prodRunDesc k probeW)).area"),
     "gen-width":   (E + "DfaRoutingGeneralEmit.lean", 90, "def DFA_WIDTH : Nat := 22"),
+    "tog-width":   (E + "DfaRoutingEmit.lean", 105, "def DFA_WIDTH : Nat := 8"),
+    "tog-shape":   (E + "DfaRoutingEmit.lean", 277, "constraints.length == 14"),
+    "tog-narrow":  (E + "DyckStackEmit.lean", 641, "poseidon2narrow.wireId == 8"),
     "gen-shape":   (E + "DfaRoutingGeneralEmit.lean", 274, "constraints.length == 14"),
     "gen-chip":    (E + "DfaRoutingGeneralEmit.lean", 275, "chipLookupTuple"),
     "w8-cost":     (E + "AttestedAutomatonWeld8.lean", 943, "#guard costOf weldInstance =="),
@@ -601,7 +604,14 @@ AUTOMATA_FAMILIES = [
          declared=lambda n: n, declared_note="k·n (one exact-public table per lane)",
          bytes_note="672/1168/1664/2160 at k=1..4, word length 8",
          pins=["lanes-cost", "lanes-area"], binds_c="no"),
-    dict(name="dfa-hash-chained", served="dfa-routing-injection-3state::poseidon2-v1",
+    dict(name="dfa-hash-chained-toggle", served="dfa-routing-toggle-2state::poseidon2-v1",
+         sym="bit (2-state toggle)", rows=lambda n: n, lookups=2, degree="7 (chip S-box) [READ note 01 §3; unpinned]",
+         cols=8, cons=14, tables=0, chip=2, chip_w=141,
+         declared=lambda n: 0, declared_note="0 (transition is an interpolant gate)",
+         bytes_note="byte-pinned golden (table 8 = narrow chip)",
+         pins=["tog-width", "tog-shape", "tog-narrow"],
+         binds_c="by the route chain (CollisionFree carrier), not in the theorem"),
+    dict(name="dfa-hash-chained-injection", served="dfa-routing-injection-3state::poseidon2-v1",
          sym="byte", rows=lambda n: n, lookups=2, degree="7 (chip S-box) [READ note 01 §3; unpinned]",
          cols=22, cons=14, tables=0, chip=2, chip_w=352,
          declared=lambda n: 0, declared_note="0 (transition is an interpolant gate)",
@@ -787,10 +797,9 @@ def certs_markdown():
     w(f"- Dyck: the deployed grammar caps nesting at k ≤ 3, so its language is `[ᵏ]ᵏ` for k ≤ 3, at most")
     w(f"  {DYCK_MAX_TOKENS} tokens; record-size rows below are n/a, not a cost.")
     w("- degree: no emitter pins a maximum constraint degree; the column says where each number was read.")
-    w("- names are the descriptors' own `name` fields. The hash-chained row is the 3-state injection object")
-    w("  `DfaRoutingGeneralEmit` emits; the served toggle `dfa-routing-toggle-2state::poseidon2-v1` comes from")
-    w("  `metatheory/Dregg2/Circuit/Emit/DfaRoutingEmit.lean` [READ `circuit/src/descriptor_by_name.rs:83`]; the")
-    w("  injection object is not routed by name.")
+    w("- names are the descriptors' own `name` fields. The served toggle `dfa-routing-toggle-2state::poseidon2-v1`")
+    w("  comes from `metatheory/Dregg2/Circuit/Emit/DfaRoutingEmit.lean` [READ `circuit/src/descriptor_by_name.rs:83`];")
+    w("  the 3-state injection object `DfaRoutingGeneralEmit` emits is not routed by name.")
     w("")
     w("## 2. Run term per record (BabyBear realization)")
     w("")
