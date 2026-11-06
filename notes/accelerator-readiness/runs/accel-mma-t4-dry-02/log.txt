@@ -1,0 +1,99 @@
+RUN /usr/bin/python3 -u /tmp/accel/accel-mma-t4-dry-02/mma_run.py --out /tmp/accel/mma-out --shrink --sku T4
+[    0.1s] device Tesla T4 7.5 sm_75 nvcc /usr/local/cuda/bin/nvcc
+[    0.1s] == section compile
+[    2.1s] compile probe.cu sm_75 rc 255 2.0s {}
+[    3.4s] compile probe.cu sm_80 rc 0 0.9s {"IMMA.16832.U8.U8": 29}
+[    4.5s] compile probe.cu sm_89 rc 0 0.7s {"QMMA.16832.F32.E4M3.E4M3": 1, "IMMA.16832.U8.U8": 29}
+[    5.8s] compile probe.cu sm_90a rc 0 0.8s {"F2FP.F16.E4M3.UNPACK": 4, "HMMA.16816.F32": 2, "IMMA.16832.U8.U8": 29}
+[    7.2s] compile probe.cu sm_100a rc 0 1.0s {"F2FP.F16.E4M3.UNPACK": 4, "HMMA.16816.F32": 2, "IMMA.16832.U8.U8": 29}
+[    8.4s] compile probe.cu sm_103a rc 0 0.7s {"F2FP.F16.E4M3.UNPACK": 4, "HMMA.16816.F32": 2, "IMMA.16832.U8.U8": 29}
+[    9.6s] compile probe_sm75.cu sm_75 rc 0 0.9s {"IMMA.8816.U8.U8": 41, "IMMA.8816.S8.S8": 1, "HMMA.1688.F32": 41, "BMMA.88128.XOR.POPC": 70, "IMMA.8832.U4.U4": 40}
+[   10.9s] compile probe_sm75.cu sm_80 rc 0 0.8s {"IMMA.8816.U8.U8": 41, "IMMA.8816.S8.S8": 1, "HMMA.1688.F32": 41, "BMMA.88128.XOR.POPC": 70, "IMMA.8832.U4.U4": 40}
+[   12.2s] compile probe_sm75.cu sm_89 rc 0 0.9s {"IMMA.8816.U8.U8": 41, "IMMA.8816.S8.S8": 1, "HMMA.1688.F32": 41, "BMMA.88128.XOR.POPC": 70, "IMMA.8832.U4.U4": 40}
+[   13.7s] compile probe_sm75.cu sm_90a rc 0 0.9s {"IMMA.8816.U8.U8": 43, "IMMA.8816.S8.S8": 1, "HMMA.1688.F32": 41, "CALL.REL.NOINC": 86, "BMMA.88128.AND.POPC": 6}
+[   15.5s] compile probe_sm75.cu sm_100a rc 0 1.3s {"IMMA.16816.U8.U8": 235, "IMMA.16816.S8.S8": 1, "HMMA.1688.F32": 233, "CALL.REL.NOINC": 500, "IMMA.16832.U8.U8": 12}
+[   17.4s] compile probe_sm75.cu sm_103a rc 0 1.3s {"IMMA.16816.U8.U8": 235, "IMMA.16816.S8.S8": 1, "HMMA.1688.F32": 233, "CALL.REL.NOINC": 500, "IMMA.16832.U8.U8": 12}
+[   18.3s] compile probe_sm80.cu sm_75 rc 0 0.6s {}
+[   19.5s] compile probe_sm80.cu sm_80 rc 0 0.8s {"HMMA.16816.F32": 40, "BMMA.168256.XOR.POPC": 45, "BMMA.168256.AND.POPC": 45, "IMMA.16832.S8.S8": 42, "IMMA.16832.U8.U8": 2}
+[   20.8s] compile probe_sm80.cu sm_89 rc 0 0.8s {"HMMA.16816.F32": 40, "QMMA.16832.F32.E4M3.E4M3": 41, "BMMA.168256.XOR.POPC": 45, "BMMA.168256.AND.POPC": 45, "IMMA.16832.S8.S8": 42, "IMMA.16832.U8.U8": 2}
+[   23.6s] compile probe_sm80.cu sm_90a rc 0 2.1s {"HMMA.16816.F32": 46, "F2FP.F16.E4M3.UNPACK": 18, "CALL.REL.NOINC": 45, "BMMA.168256.AND.POPC": 49, "IMMA.16832.S8.S8": 42, "HGMMA.64x128x16.F32": 25, "QGMMA.64x128x32.F32.E4M3.E4M3": 25, "BGMMA.64x1
+[   26.1s] compile probe_sm80.cu sm_100a rc 0 1.9s {"HMMA.16816.F32": 242, "F2FP.F16.E4M3.UNPACK": 24, "CALL.REL.NOINC": 498, "IMMA.16832.U8.U8": 34, "IMMA.16832.S8.S8": 234}
+[   28.5s] compile probe_sm80.cu sm_103a rc 0 1.8s {"HMMA.16816.F32": 242, "F2FP.F16.E4M3.UNPACK": 24, "CALL.REL.NOINC": 498, "IMMA.16832.U8.U8": 34, "IMMA.16832.S8.S8": 234}
+[   30.1s] compile gemm_probe.cu sm_75 rc 0 1.3s {}
+[   31.8s] compile gemm_probe.cu sm_80 rc 0 1.3s {}
+[   33.5s] compile gemm_probe.cu sm_89 rc 0 1.3s {}
+[   35.4s] compile gemm_probe.cu sm_90a rc 0 1.3s {}
+[   37.1s] compile gemm_probe.cu sm_100a rc 0 1.3s {}
+[   38.8s] compile gemm_probe.cu sm_103a rc 0 1.2s {}
+[   41.8s] build probe_sm75.cu sm_75 rc 0 3.0s
+[   46.2s] build gemm_probe.cu sm_75 rc 0 4.4s
+[   46.2s] == section turing
+[   46.7s] PASS t4.wrap.u8.a255b255.P16 {"exact": 1040400, "reg": 1040400, "signed_exact": true, "predicted_signed_exact": true}
+[   46.7s] PASS t4.wrap.u8.a255b255.P33024 {"exact": 2147385600, "reg": 2147385600, "signed_exact": true, "predicted_signed_exact": true}
+[   46.7s] PASS t4.wrap.u8.a255b255.P33025 {"exact": 2147450625, "reg": 2147450625, "signed_exact": true, "predicted_signed_exact": true}
+[   46.7s] PASS t4.wrap.u8.a255b255.P33026 {"exact": 2147515650, "reg": -2147451646, "signed_exact": false, "predicted_signed_exact": false}
+[   46.7s] PASS t4.wrap.u8.a255b255.P33040 {"exact": 2148426000, "reg": -2146541296, "signed_exact": false, "predicted_signed_exact": false}
+[   46.7s] PASS t4.wrap.u8.a255b255.P66048 {"exact": 4294771200, "reg": -196096, "signed_exact": false, "predicted_signed_exact": false}
+[   46.7s] PASS t4.wrap.u8.a255b255.P66051 {"exact": 4294966275, "reg": -1021, "signed_exact": false, "predicted_signed_exact": false}
+[   46.8s] PASS t4.wrap.u8.a255b255.P66052 {"exact": 4295031300, "reg": 64004, "signed_exact": false, "predicted_signed_exact": false}
+[   46.8s] PASS t4.wrap.u8.a255b255.P66064 {"exact": 4295811600, "reg": 844304, "signed_exact": false, "predicted_signed_exact": false}
+[   46.8s] PASS t4.wrap.u8.a255b255.P1000000 {"exact": 65025000000, "reg": 600490560, "signed_exact": false, "predicted_signed_exact": false}
+[   46.8s] PASS t4.wrap.u8.a255b255.P16777216 {"exact": 1090938470400, "reg": 16777216, "signed_exact": false, "predicted_signed_exact": false}
+[   47.2s] PASS t4.wrap.s8.a-128b-128.P131056 {"exact": 2147221504, "reg": 2147221504, "signed_exact": true, "predicted_signed_exact": true}
+[   47.2s] PASS t4.wrap.s8.a-128b-128.P131071 {"exact": 2147467264, "reg": 2147467264, "signed_exact": true, "predicted_signed_exact": true}
+[   47.2s] PASS t4.wrap.s8.a-128b-128.P131072 {"exact": 2147483648, "reg": -2147483648, "signed_exact": false, "predicted_signed_exact": false}
+[   47.2s] PASS t4.wrap.s8.a-128b-128.P131088 {"exact": 2147745792, "reg": -2147221504, "signed_exact": false, "predicted_signed_exact": false}
+[   47.2s] PASS t4.wrap.s8.a-128b-128.P262144 {"exact": 4294967296, "reg": 0, "signed_exact": false, "predicted_signed_exact": false}
+[   47.2s] PASS t4.wrap.s8.a-128b127.P132096 {"exact": -2147352576, "reg": -2147352576, "signed_exact": true, "predicted_signed_exact": true}
+[   47.2s] PASS t4.wrap.s8.a-128b127.P132104 {"exact": -2147482624, "reg": -2147482624, "signed_exact": true, "predicted_signed_exact": true}
+[   47.2s] PASS t4.wrap.s8.a-128b127.P132105 {"exact": -2147498880, "reg": 2147468416, "signed_exact": false, "predicted_signed_exact": false}
+[   47.2s] PASS t4.wrap.s8.a-128b127.P132112 {"exact": -2147612672, "reg": 2147354624, "signed_exact": false, "predicted_signed_exact": false}
+[   47.2s] PASS lean.tensorzkp_bound {}
+[   47.2s] PASS lean.u8_unsigned_bound {}
+[   48.3s] PASS t4.b1chain.affffffff.b00000000.c0.n1 {"exact": 128, "reg": 128}
+[   48.3s] PASS t4.b1chain.affffffff.b00000000.c0.n16777215 {"exact": 2147483520, "reg": 2147483520}
+[   48.3s] PASS t4.b1chain.affffffff.b00000000.c0.n16777216 {"exact": 2147483648, "reg": -2147483648}
+[   48.3s] PASS t4.b1chain.affffffff.b00000000.c0.n33554437 {"exact": 4294967936, "reg": 640}
+[   48.3s] PASS t4.b1chain.affffffff.b00000000.c-7.n1 {"exact": 121, "reg": 121}
+[   48.3s] PASS t4.b1chain.aaaaaaaaa.b0f0f0f0f.c1.n1000003 {"exact": 64000193, "reg": 64000193}
+[   48.3s] PASS t4.b1chain.affffffff.b00000000.c-2147483645.n16777216 {"exact": 3, "reg": 3}
+[   49.1s] PASS t4.b1rand.exact_mod_2_32 {"elements": 4096, "mismatches": 0, "sums_crossing_2_32": 1009, "S": 64, "L": 1024}
+[   49.1s] PASS t4.b1rand.gf2_parity_from_xor_through_wrap {"elements": 4096, "mismatches": 0, "sums_crossing_2_32": 1009}
+[   49.7s] PASS t4.f16frag.layout_sanity {"mismatches": 0, "tests": 16, "elements": 2048}
+[   49.7s] f16 C-path m 22 group m by position: [24, 25]
+[   49.7s] == section rates_sm75
+[   50.2s] rate u8 62820270000000.0 
+[   50.7s] rate u4 124143500000000.0 
+[   51.3s] rate b1 498713100000000.0 
+[   51.7s] rate f16 30305350000000.0 
+[   52.1s] rate lop3 2998577000000.0 
+[   52.1s] == section copy
+[   56.3s] == section peak
+[   57.1s] peak i8 SUCCESS 2.203e+13 MAC/s
+[   58.0s] peak f16 SUCCESS 1.580e+13 MAC/s
+[   58.0s] == section i8ip
+[   58.4s] i8ip elem 20 NOT_SUPPORTED None ms 0.000e+00 B/s
+[   58.8s] i8ip elem 22 NOT_SUPPORTED None ms 0.000e+00 B/s
+[   59.2s] i8ip elem 24 NOT_SUPPORTED None ms 0.000e+00 B/s
+[   59.6s] i8ip elem 25 NOT_SUPPORTED None ms 0.000e+00 B/s
+[   60.2s] PASS i8ip.plane.2^20 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[   60.2s] i8ip plane 20 SUCCESS 0.4035 ms 1.663e+11 B/s
+[   61.0s] PASS i8ip.plane.2^22 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[   61.0s] i8ip plane 22 SUCCESS 1.5918 ms 1.686e+11 B/s
+[   62.1s] PASS i8ip.plane.2^24 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[   62.1s] i8ip plane 24 SUCCESS 5.3984 ms 1.989e+11 B/s
+[   63.9s] PASS i8ip.plane.2^25 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[   63.9s] i8ip plane 25 SUCCESS 13.832 ms 1.553e+11 B/s
+[   63.9s] == section ltip
+[   64.8s] PASS ltip.f16.fast0.2^20 {"host_sample_mismatches": 0, "max_sum": 1881773, "note": "sums of 32,768 products of base-16 digits stay below 2^23"}
+[   64.8s] ltip f16 0 20 SUCCESS 1.3846 ms
+[   65.8s] PASS ltip.f16.fast0.2^22 {"host_sample_mismatches": 0, "max_sum": 1880624, "note": "sums of 32,768 products of base-16 digits stay below 2^23"}
+[   65.8s] ltip f16 0 22 SUCCESS 5.6771 ms
+[   67.1s] PASS ltip.f16.fast0.2^24 {"host_sample_mismatches": 0, "max_sum": 1886013, "note": "sums of 32,768 products of base-16 digits stay below 2^23"}
+[   67.1s] ltip f16 0 24 SUCCESS 21.6531 ms
+[   67.1s] == section ltprobe
+[   67.9s] PASS lt.f16.fast0.sanity {"mismatches_per_algo": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "algos": [{"algo_id": 21, "tile": 11, "splitk": 13, "reduction": 4, "stages": 20}, {"algo_id": 21, "tile": 11, "splitk": 20, "reduction": 4, "stages": 20}, {"algo_id": 21, "tile": 11, "splitk": 32, "reduction": 4, "stages": 20
+[   68.7s] lt f16 fast 0 count probe first inexact n per algo: [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
+[   70.2s] lt f16 fast 0 gap m (algo 0): {'ks1_-': 25, 'ks1_+': 24, 'ks2_-': 25, 'ks2_+': 24, 'ks3_-': 25, 'ks3_+': 24, 'ks4_-': 25, 'ks4_+': 24, 'ks7_-': 25, 'ks7_+': 24, 'ks8_-': 25, 'ks8_+': 24, 'ks15_-': 25, 'ks15_+': 24, 'ks16_-': 25, 'ks16_+': 24, 'ks31_-': 25, 'ks31_+': 24, 'ks32_-': 25, 'ks32_+': 24, 'ks63_-': 25, 'ks63_+': 24, 'ks64_-': 25, 'ks64_+': 24, 'ks127_-': 25, 'ks127_+': 24, 'ks128_-': 25, 'ks128_+': 24, 'ks255_-': 25, 'ks255_+': 24, 'ks256_-': 25, 'ks256_+': 24, 'ks511_-': 25, 'ks511_+': 24, 'ks1024_-': 25, 'ks1024_+': 24, 'ks2047_-': 25, 'ks2047_+': 24}
+[   70.2s] DONE checks 40 failed 0 errors []
+rc 0 results at /kaggle/working/results.json
