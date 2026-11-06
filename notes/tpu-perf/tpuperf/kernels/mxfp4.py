@@ -196,3 +196,49 @@ def impl_packed(T, K, N, bn=512, interpret=False):
             out_specs=pl.BlockSpec((T, 128), lambda j: (0, nn // 128)),
             input_output_aliases={0: 0}, interpret=interpret)(y, x, W1_tail, Whi)
     return f
+
+
+def prepare(rng, T, K, N, packed=False, check_rows=64):
+    """(device args, check(out) -> bool) for the profiler: exact on the first check_rows rows vs int64."""
+    codes, e = synth_weights(rng, N, K)
+    W1, Whi, order, w2, s = prefold(codes, e)
+    x = rng.integers(-128, 128, (T, K)).astype(np.int8)
+    exp = ref(dict(x=x[:check_rows], w2=w2, s=s, order=order), check_rows, K, N)
+    if packed:
+        bn = 512
+        pk, sh = pack_narrow(codes, e, order, N - 128)
+        pos = np.concatenate([packed_out_order(N - 128, bn), np.arange(N - 128, N)])
+        exp = exp[:, pos]
+        args = (x, pk, sh, np.ascontiguousarray(W1[:, N - 128:]), Whi)
+    else:
+        args = (x, W1, Whi)
+    return args, lambda o: bool((np.asarray(o)[:check_rows].astype(np.int64) == exp).all())
+
+
+def impl_any(T, K, N, packed=False, **kw):
+    return impl_packed(T, K, N, **kw) if packed else impl(T, K, N, **kw)
+
+
+def arg_specs_any(T, K, N, packed=False):
+    if packed:
+        return [((T, K), jnp.int8), ((K, (N - 128) // 2), jnp.uint8), ((K // 32, (N - 128) // 2, 2), jnp.int8),
+                ((K, 128), jnp.int8), ((K, 128), jnp.int8)]
+    return arg_specs(T, K, N)
+
+
+def count_any(T, K, N, packed=False):
+    """Ideal for the packed variant: one MAC per (t, n, k); 0.5 B per narrow weight + 1/32 B shift."""
+    if not packed:
+        return count(T, K, N)
+
+    def f(x, pk, sh, wt, wh):
+        # MACs: T*N*K (+ the wide tail's hi limb); reads every argument once via a cheap reduction of each
+        w = jnp.concatenate([pk.astype(jnp.int8), pk.astype(jnp.int8)], axis=1)[:, :N - 128]
+        w = jnp.concatenate([w, wt], axis=1)
+        y = jnp.dot(x, w, preferred_element_type=jnp.int32)
+        return y + (sh.sum() + wh.sum()).astype(jnp.int32)
+    return f, arg_specs_any(T, K, N, True)
+
+
+KERNELS[0].update(impl=impl_any, arg_specs=arg_specs_any, count=count_any, prepare=prepare)
+KERNELS[0]["cfgs"]["gateup_T256_packed"] = dict(T=256, K=2880, N=5760, packed=True)

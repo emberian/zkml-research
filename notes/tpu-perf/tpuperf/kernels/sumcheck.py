@@ -349,3 +349,38 @@ def combine_pallas(glo, ghi, S, H):
                         acc[j + l] += tot << (8 * (a + b))
         out.append([(acc[m] + W * (acc[m + 4] if m + 4 < 7 else 0)) % P for m in range(4)])
     return out
+
+
+def sums_numpy(rd, H):
+    """Exact round sums, vectorized int64 (products of residues < 2^62, reduced before summing)."""
+    f, g, r = rd["f"].astype(np.int64), rd["g"].astype(np.int64), rd["r"]
+
+    def emul(a, b):
+        c = [np.zeros(a.shape[1], np.int64) for _ in range(7)]
+        for i in range(4):
+            for j in range(4):
+                c[i + j] = (c[i + j] + a[i] * b[j] % P) % P
+        return np.stack([(c[m] + W * c[m + 4] % P) % P if m + 4 < 7 else c[m] for m in range(4)])
+    rr = np.array(r, np.int64)[:, None] * np.ones((1, H), np.int64)
+
+    def fold(x0, x1):
+        return (x0 + emul(rr, (x1 - x0) % P)) % P
+    f0, f1 = fold(f[:, 0, 0], f[:, 1, 0]), fold(f[:, 0, 1], f[:, 1, 1])
+    g0, g1 = fold(g[:, 0, 0], g[:, 1, 0]), fold(g[:, 0, 1], g[:, 1, 1])
+    out = []
+    for ft, gt in ((f0, g0), (f1, g1), ((2 * f1 - f0) % P, (2 * g1 - g0) % P)):
+        out.append([int(v) for v in emul(ft, gt).sum(axis=1) % P])
+    return out
+
+
+def prepare(rng, H):
+    args, rd = inputs_pallas(rng, H)
+    es = sums_numpy(rd, H)
+
+    def check(o):
+        okf, s = check_pallas(o, rd, H, sample_cols=2048)
+        return bool(okf and s == es)
+    return args, check
+
+
+KERNELS[0]["prepare"] = prepare

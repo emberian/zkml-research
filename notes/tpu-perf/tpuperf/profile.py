@@ -147,7 +147,7 @@ def calib(reps):
     return c
 
 
-def run_kernels(reps, vpu_rate, only=None):
+def run_kernels(reps, vpu_rate, only=None, only_cfg=None, variants=None):
     import jax
     import jax.numpy as jnp
     from . import counts as C
@@ -157,38 +157,15 @@ def run_kernels(reps, vpu_rate, only=None):
     rng = np.random.default_rng(7)
     for name, k in KERNELS.items():
         for cfg_name, p in k["cfgs"].items():
-            if cfg_name == "mac" or (only and name not in only):
+            if cfg_name == "mac" or (only and name not in only) or (only_cfg and cfg_name not in only_cfg):
                 continue
             row = dict(kernel=name, cfg=cfg_name, params=p)
             try:
                 t0 = time.time()
-                if name == "mxfp4_w4a8":
-                    args, rd = mxfp4.inputs(rng, **p)
-                    sub = dict(rd, x=rd["x"][:64])
-                    expect = mxfp4.ref(sub, **dict(p, T=64))
-                    check = lambda o: bool((np.asarray(o)[:64].astype(np.int64) == expect).all())
-                elif name == "rns_ntt61":
-                    B, N, N1 = p["B"], p["N"], p["N1"]
-                    plan = rns_ntt.plan_for(N, N1)
-                    raw = rng.integers(0, 2**60, (B, N), dtype=np.int64).astype(np.uint64)    # < 2^60 < q
-                    xb = raw.view(np.uint8).reshape(B, N, 8)
-                    xo = ((xb.reshape(B, N1, N // N1, 8).transpose(3, 0, 1, 2)).astype(np.int16) - 128).astype(np.int8)
-                    T1p, T2p = rns_ntt.pallas_operands(plan)
-                    args = (np.ascontiguousarray(xo), T1p, T2p)
-                    polys = [0, B - 1]
-                    sub = dict(x=[[int(v) for v in raw[b]] for b in polys])
-                    exp_sub = rns_ntt.ref(sub, B=len(polys), N=N, N1=N1)                # [N1, 8, 2, N2]
-                    check = lambda o: bool((np.asarray(o)[:, :, polys, :] == exp_sub).all())
-                else:
-                    H = p["H"]
-                    args, rd = sumcheck.inputs_pallas(rng, H)
-                    es = sumcheck_sums_numpy(rd, H)
-                    def check(o, rd=rd, H=H, es=es):
-                        okf, s = sumcheck.check_pallas(o, rd, H, sample_cols=2048)
-                        return bool(okf and s == es)
+                args, check = k["prepare"](rng, **p)
                 row["host_prep_s"] = round(time.time() - t0, 1)
                 dev = [jnp.asarray(a) for a in args]
-                f = jax.jit(k["impl"](**p))
+                f = jax.jit(k["impl"](**p, **(variants or {}).get(name, {})))
                 t0 = time.time()
                 o = jax.block_until_ready(f(*dev))
                 row["first_call_s"] = round(time.time() - t0, 2)
@@ -266,6 +243,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sections", default="calib,kernels,xla")
     ap.add_argument("--reps", type=int, default=20)
+    ap.add_argument("--only", nargs="*")
+    ap.add_argument("--only-cfg", nargs="*")
+    ap.add_argument("--variants", default="{}", help='JSON {kernel: {impl kwarg: value}} for tuning sweeps')
+    ap.add_argument("--vpu", type=float, help="VPU rate to use when calib is skipped")
     a = ap.parse_args()
     import jax
     R["jax"] = jax.__version__
@@ -275,7 +256,7 @@ def main():
     assert R["backend"] == "tpu", R["backend"]
     save()
     secs = a.sections.split(",")
-    vpu = None
+    vpu = a.vpu
     if "calib" in secs:
         try:
             R["sections"]["calib"] = calib(a.reps)
@@ -284,7 +265,7 @@ def main():
             R["sections"]["calib_error"] = traceback.format_exc()[-1500:]
         save()
     if "kernels" in secs:
-        run_kernels(a.reps, vpu)
+        run_kernels(a.reps, vpu, a.only, a.only_cfg, json.loads(a.variants))
     if "xla" in secs:
         try:
             R["sections"]["xla"] = xla_baselines(a.reps)
