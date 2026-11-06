@@ -680,20 +680,25 @@ def tower_lin_cost(kind, acc, m, macs_rate, simt_rate, bw):
 
 # Measured SIMT anchors (T4, notes/accelerator-readiness/TOWER256.md section 4), in T4 int32-op equivalents.
 KECCAK_OPS_MEAS = 5900          # 6.9e8 Keccak-f/s on T4 (tune-03); 9,350 at 4.35e8 (dryrun-04)
-T256_MUL_TABLE_OPS = 14200      # log/exp GF(2^8) tables, 2.87e8/s on T4
-T256_MUL_BITSLICED_OPS = 718    # [A] unbuilt bit-sliced kernel
+T256_MUL_TABLE_OPS = 12000      # log/exp GF(2^8) tables: 12,000-17,400 [MEASURED T4, TOWER256.md section 8]
+T256_MUL_TABLE_HI = 17400
+T256_MUL_BITSLICED_OPS = 52700  # bit-sliced, resident planes, v2 [MEASURED T4, section 8]; fused 71,500
+T256_MUL_IDEAL_OPS = 860        # Karatsuba-to-bits instruction count with LOP3 fusion (1,284 two-input) [D, section 8]
+T256_MUL_WARPCOOP_EST = 1700    # warp-cooperative bit slicing, readiness lane's estimate [A, unbuilt]
 
 
 def rot_binary(N=2 ** 25):
-    print(f"\nROTATION 2b: Tower256 on the tensor units, per element (ns); SIMT multiply = table {T256_MUL_TABLE_OPS} "
-          f"[MEASURED T4] / bit-sliced {T256_MUL_BITSLICED_OPS} [A]")
-    print(f"  {'target':7} {'path':5} {'inner product':>14} {'fixed-r mult':>13} {'SIMT mult tbl':>13} {'bitsl':>7}  binding")
+    print(f"\nROTATION 2b: Tower256 on the tensor units, per element (ns).  SIMT baselines in T4 op-eq scaled by SIMT rate:")
+    print(f"  table {T256_MUL_TABLE_OPS:,}-{T256_MUL_TABLE_HI:,} and bit-sliced {T256_MUL_BITSLICED_OPS:,} [MEASURED T4]; "
+          f"ideal instruction count {T256_MUL_IDEAL_OPS} [D, unreachable: 256 planes do not fit 255 registers]")
+    print(f"  {'target':7} {'path':5} {'inner product':>14} {'fixed-r mult':>13} {'table (best)':>12} {'ideal':>7} "
+          f"{'win vs table':>12} {'vs ideal':>9}  binding")
     res = {}
     for tgt, T in TARGETS.items():
         if not T["simt"]:
             continue
         sm_tbl = T256_MUL_TABLE_OPS / T["simt"]
-        sm_bs = T256_MUL_BITSLICED_OPS / T["simt"]
+        sm_bs = T256_MUL_IDEAL_OPS / T["simt"]
         for kind, (r, acc, m, tag) in T["paths"].items():
             if not r or kind in ("fp16",) and tgt not in ("T4",):
                 continue
@@ -702,10 +707,10 @@ def rot_binary(N=2 ** 25):
             bi = max(ipt, key=ipt.get)
             bl = max(lnt, key=lnt.get)
             res[(tgt, kind)] = (ip, ln, sm_tbl, sm_bs)
-            print(f"  {tgt:7} {kind:5} {ip * 1e9:11.3f} ns {ln * 1e9:10.3f} ns {sm_tbl * 1e9:10.3f} ns {sm_bs * 1e9:6.3f}"
-                  f"  ip:{bi} lin:{bl}")
-    print("  Comparators are T4-derived op-equivalents scaled by SIMT rate: the table (14,200) is measured on T4 only,")
-    print("  the bit-sliced 718 is unbuilt.  Read row by row; no row is a measured win.")
+            print(f"  {tgt:7} {kind:5} {ip * 1e9:11.3f} ns {ln * 1e9:10.3f} ns {sm_tbl * 1e9:9.3f} ns {sm_bs * 1e9:6.3f}"
+                  f" {sm_tbl / ln:10.1f}x {sm_bs / ln:8.2f}x  ip:{bi} lin:{bl}")
+    print("  'win' columns compare the fixed-r multiply (the harder case; inner products win by more).  The table")
+    print("  and bit-sliced rates are measured on T4 only and scaled by SIMT throughput; the tensor rows are model.")
     return res
 
 
@@ -740,7 +745,7 @@ def rot_tower_prover(ells=(14, 20, 22)):
             fold_mults = sum(2 * 2 ** (ell - j - 1) for j in range(m_))
             per = lambda ops: ops / T["simt"]
             tbl = ((n // 2) * ell + fold_mults) * per(T256_MUL_TABLE_OPS)
-            bs = ((n // 2) * ell + fold_mults) * per(T256_MUL_BITSLICED_OPS)
+            bs = ((n // 2) * ell + fold_mults) * per(T256_MUL_IDEAL_OPS)
             best_k, best_t = None, math.inf
             for k in kinds:
                 enc = sum((n // 2) * min(ntt_tensor_layer(tgt, k, n, L), per(T256_MUL_TABLE_OPS)) for L in range(ell))
@@ -750,8 +755,8 @@ def rot_tower_prover(ells=(14, 20, 22)):
                     best_k, best_t = k, enc + fo
             tc = best_t
             print(f"  {tgt:5} ell {ell:2d}: hash {h * 1e3:8.3f} | arith: table {tbl * 1e3:8.3f}, tensor({best_k}) "
-                  f"{tc * 1e3:7.3f}, bit-sliced[A] {bs * 1e3:7.3f} | hash share: table {h / (h + tbl):.2f}, "
-                  f"tensor {h / (h + tc):.2f}")
+                  f"{tc * 1e3:7.3f} ({tbl / tc:.1f}x), ideal-SIMT {bs * 1e3:7.3f} | proof: table {(h + tbl) * 1e3:7.3f} -> "
+                  f"tensor {(h + tc) * 1e3:7.3f} ({(h + tbl) / (h + tc):.2f}x); hash share {h / (h + tbl):.2f} -> {h / (h + tc):.2f}")
 
 
 def rot_keccak():
