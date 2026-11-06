@@ -1,0 +1,109 @@
+[{"stream_name":"stdout","time":1.219897404,"data":"HARDWARE OK: Tesla T4\n"}
+,{"stream_name":"stdout","time":1.2199328999999999,"data":"out /tmp/tower256-out shrink 1 ells 10,12,14,16,18,20\n"}
+,{"stream_name":"stdout","time":5.236271473,"data":"cupy 14.0.1 numpy 2.1.3\n"}
+,{"stream_name":"stdout","time":6.657320875,"data":"pycryptodome 4.2.0\n"}
+,{"stream_name":"stdout","time":6.686773881,"data":"== CPU reference and timings\n"}
+,{"stream_name":"stdout","time":36.732519578,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":526.0,\"p256_mul_ns\":22.58,\"fanpaar_ref_mul_ns\":38612.7,\"basis_conversion_ns\":83.7,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":36.732558399,"data":"{\"kind\":\"prove\",\"ell\":8,\"m\":4,\"q\":148,\"threads\":1,\"total_ms\":2.950,\"encode_ms\":0.140,\"merkle_ms\":0.745,\"folds_ms\":0.010,\"openings_ms\":1.431,\"other_ms\":0.621,\"merkle_keccak_f\":987,\"encode_mults\":1152,\"fold_mults\":240,\"receipt_sha3_256\":\"b9e40d5c4a31474bba30792ea5383f55c342cd9865d84714823a3cb964d91c1d\"}\n"}
+,{"stream_name":"stdout","time":36.732582546,"data":"{\"kind\":\"reference\",\"ell\":8,\"reference_s\":1.1,\"identical\":true}\n"}
+,{"stream_name":"stdout","time":36.732588798,"data":"{\"kind\":\"prove\",\"ell\":10,\"m\":6,\"q\":148,\"threads\":1,\"total_ms\":5.731,\"encode_ms\":0.428,\"merkle_ms\":2.486,\"folds_ms\":0.031,\"openings_ms\":2.182,\"other_ms\":0.599,\"merkle_keccak_f\":4057,\"encode_mults\":6144,\"fold_mults\":1008,\"receipt_sha3_256\":\"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f\"}\n"}
+,{"stream_name":"stdout","time":36.732595244,"data":"{\"kind\":\"reference\",\"ell\":10,\"reference_s\":12.2,\"identical\":true}\n"}
+,{"stream_name":"stdout","time":36.733012593,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":560.0,\"p256_mul_ns\":21.86,\"fanpaar_ref_mul_ns\":38448.9,\"basis_conversion_ns\":95.1,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":36.733029224,"data":"{\"kind\":\"prove\",\"ell\":10,\"m\":6,\"q\":148,\"threads\":1,\"total_ms\":5.751,\"encode_ms\":0.449,\"merkle_ms\":2.485,\"folds_ms\":0.034,\"openings_ms\":2.176,\"other_ms\":0.601,\"merkle_keccak_f\":4057,\"encode_mults\":6144,\"fold_mults\":1008,\"receipt_sha3_256\":\"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f\"}\n"}
+,{"stream_name":"stdout","time":36.733040858,"data":"{\"kind\":\"prove\",\"ell\":10,\"m\":6,\"q\":148,\"threads\":4,\"total_ms\":5.268,\"encode_ms\":0.360,\"merkle_ms\":2.405,\"folds_ms\":0.029,\"openings_ms\":1.919,\"other_ms\":0.550,\"merkle_keccak_f\":4057,\"encode_mults\":6144,\"fold_mults\":1008,\"receipt_sha3_256\":\"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f\"}\n"}
+,{"stream_name":"stdout","time":36.733055962,"data":"{\"kind\":\"prove\",\"ell\":12,\"m\":8,\"q\":148,\"threads\":1,\"total_ms\":15.342,\"encode_ms\":1.548,\"merkle_ms\":9.933,\"folds_ms\":0.114,\"openings_ms\":3.132,\"other_ms\":0.609,\"merkle_keccak_f\":16343,\"encode_mults\":30720,\"fold_mults\":4080,\"receipt_sha3_256\":\"49d394f304ccc2989e3ea742f189b0a92f46a8b7ed32f61c822259158464a2f1\"}\n"}
+,{"stream_name":"stdout","time":36.733063321,"data":"{\"kind\":\"prove\",\"ell\":12,\"m\":8,\"q\":148,\"threads\":4,\"total_ms\":15.340,\"encode_ms\":2.785,\"merkle_ms\":8.551,\"folds_ms\":0.295,\"openings_ms\":3.068,\"other_ms\":0.635,\"merkle_keccak_f\":16343,\"encode_mults\":30720,\"fold_mults\":4080,\"receipt_sha3_256\":\"49d394f304ccc2989e3ea742f189b0a92f46a8b7ed32f61c822259158464a2f1\"}\n"}
+,{"stream_name":"stdout","time":36.733070794,"data":"{\"kind\":\"prove\",\"ell\":14,\"m\":10,\"q\":148,\"threads\":1,\"total_ms\":52.159,\"encode_ms\":6.903,\"merkle_ms\":39.500,\"folds_ms\":0.509,\"openings_ms\":4.432,\"other_ms\":0.807,\"merkle_keccak_f\":65493,\"encode_mults\":147456,\"fold_mults\":16368,\"receipt_sha3_256\":\"6bbf02524af213b8a6af156e5e59379b3ef3a7972b8cc06fc4f987b076ef5d36\"}\n"}
+,{"stream_name":"stdout","time":36.733085763,"data":"{\"kind\":\"prove\",\"ell\":14,\"m\":10,\"q\":148,\"threads\":4,\"total_ms\":52.964,\"encode_ms\":20.848,\"merkle_ms\":25.901,\"folds_ms\":0.791,\"openings_ms\":4.676,\"other_ms\":0.738,\"merkle_keccak_f\":65493,\"encode_mults\":147456,\"fold_mults\":16368,\"receipt_sha3_256\":\"6bbf02524af213b8a6af156e5e59379b3ef3a7972b8cc06fc4f987b076ef5d36\"}\n"}
+,{"stream_name":"stdout","time":36.733091913,"data":"{\"kind\":\"prove\",\"ell\":16,\"m\":12,\"q\":148,\"threads\":1,\"total_ms\":200.594,\"encode_ms\":32.564,\"merkle_ms\":158.835,\"folds_ms\":2.052,\"openings_ms\":6.185,\"other_ms\":0.943,\"merkle_keccak_f\":262099,\"encode_mults\":688128,\"fold_mults\":65520,\"receipt_sha3_256\":\"b22254bca43c0918c9ee7b572da47957a56f162e32a11e5d6a5a9cc66d70280b\"}\n"}
+,{"stream_name":"stdout","time":36.733096996,"data":"{\"kind\":\"prove\",\"ell\":16,\"m\":12,\"q\":148,\"threads\":4,\"total_ms\":135.102,\"encode_ms\":39.335,\"merkle_ms\":86.501,\"folds_ms\":1.927,\"openings_ms\":6.440,\"other_ms\":0.887,\"merkle_keccak_f\":262099,\"encode_mults\":688128,\"fold_mults\":65520,\"receipt_sha3_256\":\"b22254bca43c0918c9ee7b572da47957a56f162e32a11e5d6a5a9cc66d70280b\"}\n"}
+,{"stream_name":"stdout","time":36.733101931,"data":"{\"kind\":\"prove\",\"ell\":18,\"m\":14,\"q\":148,\"threads\":1,\"total_ms\":804.524,\"encode_ms\":148.278,\"merkle_ms\":638.489,\"folds_ms\":9.003,\"openings_ms\":7.682,\"other_ms\":1.053,\"merkle_keccak_f\":1048529,\"encode_mults\":3145728,\"fold_mults\":262128,\"receipt_sha3_256\":\"c547d53eb1a29744635b6f8d990f6eb257249611639ed0ba40a4f46eb91241eb\"}\n"}
+,{"stream_name":"stdout","time":36.733107077,"data":"{\"kind\":\"prove\",\"ell\":18,\"m\":14,\"q\":148,\"threads\":4,\"total_ms\":441.958,\"encode_ms\":103.487,\"merkle_ms\":322.530,\"folds_ms\":6.629,\"openings_ms\":8.190,\"other_ms\":1.101,\"merkle_keccak_f\":1048529,\"encode_mults\":3145728,\"fold_mults\":262128,\"receipt_sha3_256\":\"c547d53eb1a29744635b6f8d990f6eb257249611639ed0ba40a4f46eb91241eb\"}\n"}
+,{"stream_name":"stdout","time":36.733111941,"data":"{\"kind\":\"prove\",\"ell\":20,\"m\":16,\"q\":148,\"threads\":1,\"total_ms\":3322.037,\"encode_ms\":662.005,\"merkle_ms\":2612.139,\"folds_ms\":36.823,\"openings_ms\":9.768,\"other_ms\":1.271,\"merkle_keccak_f\":4194255,\"encode_mults\":14155776,\"fold_mults\":1048560,\"receipt_sha3_256\":\"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b\"}\n"}
+,{"stream_name":"stdout","time":36.733116998,"data":"{\"kind\":\"prove\",\"ell\":20,\"m\":16,\"q\":148,\"threads\":4,\"total_ms\":1681.148,\"encode_ms\":347.834,\"merkle_ms\":1297.102,\"folds_ms\":24.680,\"openings_ms\":10.100,\"other_ms\":1.404,\"merkle_keccak_f\":4194255,\"encode_mults\":14155776,\"fold_mults\":1048560,\"receipt_sha3_256\":\"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b\"}\n"}
+,{"stream_name":"stdout","time":36.777642554,"data":"Cuda compilation tools, release 13.0, V13.0.88\n"}
+,{"stream_name":"stdout","time":36.777671758,"data":"Build cuda_13.0.r13.0/compiler.36424714_0\n"}
+,{"stream_name":"stdout","time":88.52227087,"data":"ptxas info    : Compile time = 253.180 ms\n"}
+,{"stream_name":"stdout","time":88.522301511,"data":"ptxas info    : Compiling entry function 'ntt_fill' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522307373,"data":"ptxas info    : Function properties for ntt_fill\n"}
+,{"stream_name":"stdout","time":88.522312571,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522317977,"data":"ptxas info    : Used 16 registers, used 0 barriers, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.52232267,"data":"ptxas info    : Compile time = 5.828 ms\n"}
+,{"stream_name":"stdout","time":88.522328319,"data":"ptxas info    : Compiling entry function 'ntt_deinterleave' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522343038,"data":"ptxas info    : Function properties for ntt_deinterleave\n"}
+,{"stream_name":"stdout","time":88.522346909,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522350961,"data":"ptxas info    : Used 22 registers, used 0 barriers, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522354761,"data":"ptxas info    : Compile time = 7.257 ms\n"}
+,{"stream_name":"stdout","time":88.522358667,"data":"ptxas info    : Compiling entry function 'ntt_taylor_step' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.52236259,"data":"ptxas info    : Function properties for ntt_taylor_step\n"}
+,{"stream_name":"stdout","time":88.522366271,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522370063,"data":"ptxas info    : Used 22 registers, used 0 barriers, 376 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.52237392,"data":"ptxas info    : Compile time = 7.620 ms\n"}
+,{"stream_name":"stdout","time":88.522377652,"data":"ptxas info    : Compiling entry function 'ntt_scale' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522381234,"data":"ptxas info    : Function properties for ntt_scale\n"}
+,{"stream_name":"stdout","time":88.522385076,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522388924,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522392933,"data":"ptxas info    : Compile time = 179.548 ms\n"}
+,{"stream_name":"stdout","time":88.522396572,"data":"ptxas info    : Compiling entry function 't256_span' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522400621,"data":"ptxas info    : Function properties for t256_span\n"}
+,{"stream_name":"stdout","time":88.522404841,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522409774,"data":"ptxas info    : Used 30 registers, used 0 barriers, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522414151,"data":"ptxas info    : Compile time = 3.459 ms\n"}
+,{"stream_name":"stdout","time":88.522418049,"data":"ptxas info    : Compiling entry function 't256_pow_combine' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522422504,"data":"ptxas info    : Function properties for t256_pow_combine\n"}
+,{"stream_name":"stdout","time":88.522426666,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522430429,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522434316,"data":"ptxas info    : Compile time = 161.616 ms\n"}
+,{"stream_name":"stdout","time":88.522438534,"data":"ptxas info    : Compiling entry function 't256_pow_small' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522442679,"data":"ptxas info    : Function properties for t256_pow_small\n"}
+,{"stream_name":"stdout","time":88.522448015,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522452212,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522473178,"data":"ptxas info    : Compile time = 303.720 ms\n"}
+,{"stream_name":"stdout","time":88.522496166,"data":"ptxas info    : Compiling entry function 't256_pivot_map' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522500279,"data":"ptxas info    : Function properties for t256_pivot_map\n"}
+,{"stream_name":"stdout","time":88.522507996,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.52251192,"data":"ptxas info    : Used 105 registers, used 1 barriers, 1024 bytes smem, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522515609,"data":"ptxas info    : Compile time = 294.991 ms\n"}
+,{"stream_name":"stdout","time":88.522519424,"data":"ptxas info    : Compiling entry function 't256_inv' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522522897,"data":"ptxas info    : Function properties for t256_inv\n"}
+,{"stream_name":"stdout","time":88.522526428,"data":"    136 bytes stack frame, 132 bytes spill stores, 132 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522530136,"data":"ptxas info    : Used 255 registers, used 1 barriers, 136 bytes cumulative stack size, 1024 bytes smem, 376 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522534379,"data":"ptxas info    : Compile time = 537.597 ms\n"}
+,{"stream_name":"stdout","time":88.522537949,"data":"ptxas info    : Compiling entry function 't256_mul' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522541901,"data":"ptxas info    : Function properties for t256_mul\n"}
+,{"stream_name":"stdout","time":88.522545319,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522549081,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522552652,"data":"ptxas info    : Compile time = 162.224 ms\n"}
+,{"stream_name":"stdout","time":88.522556618,"data":"ptxas info    : Compiling entry function 'init_tables' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":88.522560396,"data":"ptxas info    : Function properties for init_tables\n"}
+,{"stream_name":"stdout","time":88.522564433,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522568184,"data":"ptxas info    : Used 29 registers, used 0 barriers, 360 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":88.522571836,"data":"ptxas info    : Compile time = 13.886 ms\n"}
+,{"stream_name":"stdout","time":88.522580043,"data":"ptxas info    : Function properties for _Z8bits_genij\n"}
+,{"stream_name":"stdout","time":88.522583859,"data":"    32 bytes stack frame, 28 bytes spill stores, 28 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522587534,"data":"ptxas info    : Function properties for _Z8bits_mulijj\n"}
+,{"stream_name":"stdout","time":88.522591562,"data":"    48 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads\n"}
+,{"stream_name":"stdout","time":88.522595501,"data":"== GPU\n"}
+,{"stream_name":"stdout","time":90.524798817,"data":"backend cupy Tesla T4\n"}
+,{"stream_name":"stdout","time":90.524822152,"data":"checks {'keccak_checked': 1024, 'keccak_mismatch': 0, 'keccak_reference': 'pycryptodome cSHAKE256', 'mul_checked': 1024, 'mul_mismatch': 0, 'inv_checked': 16, 'inv_mismatch': 0}\n"}
+,{"stream_name":"stdout","time":91.524942795,"data":"lean [{'name': 'ell2_m1_q2', 'identical': True, 'bytes': 376}, {'name': 'ell3_m0_q0', 'identical': True, 'bytes': 296}, {'name': 'ell4_m2_q3_offset9', 'identical': True, 'bytes': 1141}, {'name': 'ell6_m3_q3', 'identical': True, 'bytes': 2102}, {'name': 'ell8_m3_q4', 'identical': True, 'bytes': 3553}]\n"}
+,{"stream_name":"stdout","time":91.524965474,"data":"rates 318698711.7660547 290254575.0878873\n"}
+,{"stream_name":"stdout","time":91.524970219,"data":"prove {'ell': 10, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 250624, 'best_s': 0.07108004100001608, 'phases_s': {'encode': 0.0042119809999690005, 'merkle': 0.0018002070000306958, 'folds': 0.0011889520000636367, 'openings': 0.054061040000021876, 'other': 0.009439986000018052, 'upload': 0.00020646900003384872}, 'request_gen_s': 0.0010881029999723069, 'device_mults': 7995, 'device_keccak_f': 4057}\n"}
+,{"stream_name":"stdout","time":91.524987832,"data":"prove {'ell': 12, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 373269, 'best_s': 0.10520001700001558, 'phases_s': {'encode': 0.005903468000042267, 'merkle': 0.0025610179999944194, 'folds': 0.0016496430000074724, 'openings': 0.08380249399999684, 'other': 0.010580759999982092, 'upload': 0.00044333300002108444}, 'request_gen_s': 0.0038453669999967133, 'device_mults': 37347, 'device_keccak_f': 16343}\n"}
+,{"stream_name":"stdout","time":92.525255966,"data":"prove {'ell': 14, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 515301, 'best_s': 0.165821176999998, 'phases_s': {'encode': 0.008296272999984922, 'merkle': 0.0036192620000292663, 'folds': 0.0022796659998789437, 'openings': 0.13827001800001426, 'other': 0.012565937000090344, 'upload': 0.00043563100001620114}, 'request_gen_s': 0.01567327300000443, 'device_mults': 172715, 'device_keccak_f': 65493}\n"}
+,{"stream_name":"stdout","time":92.525280668,"data":"prove {'ell': 16, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 677407, 'best_s': 0.19306646600000477, 'phases_s': {'encode': 0.01402938199998971, 'merkle': 0.005393070999957672, 'folds': 0.0028856339999947522, 'openings': 0.15529969300001767, 'other': 0.013341008000054444, 'upload': 0.00175666600000568}, 'request_gen_s': 0.06629184199999827, 'device_mults': 787347, 'device_keccak_f': 262099}\n"}
+,{"stream_name":"stdout","time":94.525584771,"data":"prove {'ell': 18, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 858610, 'best_s': 0.26563459299995884, 'phases_s': {'encode': 0.033243057999982284, 'merkle': 0.00907614999988482, 'folds': 0.004498012999988532, 'openings': 0.19971384900003386, 'other': 0.014933761000122558, 'upload': 0.0036671409999939897}, 'request_gen_s': 0.23795667999996795, 'device_mults': 3540123, 'device_keccak_f': 1048529}\n"}
+,{"stream_name":"stdout","time":96.526131694,"data":"prove {'ell': 20, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 1059985, 'best_s': 0.40580851800001483, 'phases_s': {'encode': 0.09723776900000303, 'merkle': 0.015922866999858343, 'folds': 0.007476712000084262, 'openings': 0.2528286819999721, 'other': 0.015172546000030707, 'upload': 0.016576453000027414}, 'request_gen_s': 0.950889482999969, 'device_mults': 15730115, 'device_keccak_f': 4194255}\n"}
+,{"stream_name":"stdout","time":96.526157574,"data":"batch {'ell': 14, 'words': 64, 'best_s': 0.05976431900000989, 'encode_s': 0.05409195199996475, 'merkle_s': 0.005672367000045142, 'per_word_ms': 0.9338174843751545, 'keccak_f_per_s': 369702454.0166937, 'roots_match_single': True}\n"}
+,{"stream_name":"stdout","time":96.526162319,"data":"ALL_BIT_EXACT True\n"}
+,{"stream_name":"stdout","time":98.601990545,"data":"ALL_BIT_EXACT True\n"}
+,{"stream_name":"stdout","time":98.615020146,"data":"done in 97 s; results /tmp/tower256-out/results.json\n"}
+,{"stream_name":"stdout","time":98.616706046,"data":"ENTRY_DONE rc 0 all_bit_exact True\n"}
+,{"stream_name":"stdout","time":99.073754985,"data":"ACCEL_JOB_DONE rc=0 killed=None elapsed=98.1\n"}
+,{"stream_name":"stderr","time":101.380625175,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":101.380762544,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":101.767735906,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":101.767766268,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":103.572548762,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":104.663802763,"data":"[NbConvertApp] Writing 715353 bytes to __results__.html\n"}
+]

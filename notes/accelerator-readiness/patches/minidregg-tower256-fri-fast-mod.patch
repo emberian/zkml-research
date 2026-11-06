@@ -1,0 +1,51 @@
+From 987945eb78b5acd96dc955e6354f5deb58264b2e Mon Sep 17 00:00:00 2001
+From: ember arlynx <ember@lunar.town>
+Date: Fri, 6 Nov 2026 13:32:51 -0800
+Subject: [PATCH] tower256: a fast work-9104 prover and its CUDA port,
+ byte-identical to the conformance kernel
+
+prover/src/tower256_fri_fast.rs replaces the conformance kernel's three loops that run above
+the counts in docs/TOWER256-FRI-PROVER-WORK.md, without changing the receipt bytes:
+- encode: a Gao-Mateer additive FFT of the monomial word on offset + span(beta), for any basis.
+  Every subproblem at one depth shares its basis and offset, so each depth needs one inversion.
+  A dependent basis falls back to Horner.
+- Merkle: every tree level is stored once, and openings read their siblings from it.
+- domains: each round map is GF(2)-linear, so a domain is the XOR span of its images. Each fold
+  is one multiply per point.
+Arithmetic runs in a polynomial basis reached by the field isomorphism y -> y(omega), with
+PMULL/PCLMULQDQ and Barrett reduction. Hashes are a raw Keccak-f from the cSHAKE midstates.
+
+tests/tower256_fri_fast_conformance.rs checks byte equality on the five Lean vectors. It also
+checks 30 random requests against the conformance kernel (any basis, offsets, m and q, words
+longer than the domain, a dependent basis), the production shape at ell 8 and 10, and the
+additive FFT against Horner.
+
+src/bin/tower256_fri_fast_bench.rs reports timings by phase and writes the device check data.
+
+prover/cuda/: Keccak leaves and nodes from the midstate, Tower256 Karatsuba down to GF(2^8)
+with log/exp tables in shared memory, norm inversion, the additive FFT pieces, the fold and the
+final interpolation. tower256_gpu.py is the cupy host. The same .cu also builds as host C++
+(-DHOST_EMU), and that build is bit-exact on the Lean vectors and on ell 8..20.
+
+The lib.rs line is a proposal to the Tower256 lane.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ prover/src/lib.rs | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/prover/src/lib.rs b/prover/src/lib.rs
+index f90b4e0c0..d3232bf7b 100644
+--- a/prover/src/lib.rs
++++ b/prover/src/lib.rs
+@@ -23,6 +23,7 @@ pub mod native_dispatch;
+ pub mod rank1;
+ pub mod semantic_artifact_arithmetic;
+ pub mod sumcheck;
++pub mod tower256_fri_fast;
+ pub mod tower256_fri_prove;
+ pub mod tower256_kernels;
+ 
+-- 
+2.54.0 (Apple Git-157)
+

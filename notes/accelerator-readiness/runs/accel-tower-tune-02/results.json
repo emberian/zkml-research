@@ -1,0 +1,49 @@
+{
+ "host": "Linux-6.18.55+-x86_64-with-glibc2.39",
+ "python": "3.13.16",
+ "backend": "cupy",
+ "transcript_hash": "pycryptodome",
+ "device": "Tesla T4",
+ "device_count": 2,
+ "sm": "7.5",
+ "sm_count": 40,
+ "clock_khz": 1590000,
+ "mul_variant": "full",
+ "checks": {
+  "keccak_checked": 1024,
+  "keccak_mismatch": 0,
+  "keccak_reference": "pycryptodome cSHAKE256",
+  "mul_checked": 1024,
+  "mul_mismatch": 0,
+  "inv_checked": 16,
+  "inv_mismatch": 0
+ },
+ "lean_vectors": [
+  {
+   "name": "ell2_m1_q2",
+   "identical": true,
+   "bytes": 376
+  },
+  {
+   "name": "ell3_m0_q0",
+   "identical": true,
+   "bytes": 296
+  },
+  {
+   "name": "ell4_m2_q3_offset9",
+   "identical": true,
+   "bytes": 1141
+  },
+  {
+   "name": "ell6_m3_q3",
+   "identical": true,
+   "bytes": 2102
+  },
+  {
+   "name": "ell8_m3_q4",
+   "identical": true,
+   "bytes": 3553
+  }
+ ],
+ "script_rc": 1
+}
