@@ -37,7 +37,7 @@ import math
 import spdz
 
 BLOW = 4          # RS rate 1/4
-T_COLS = 64       # opened columns per commitment (proximity soundness about (1 - delta)^t; see counts)
+T_COLS = 97       # opened columns per commitment: (3/4)^97 = 2^-40.26 proximity error at rate 1/4 (gen 4; was 64, 2^-26.6)
 
 def H(*parts):
     m = hashlib.sha256()

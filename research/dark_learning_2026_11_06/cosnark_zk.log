@@ -1,6 +1,6 @@
-16 True accept formula EXACT {'field_elems': 45802, 'hashes': 56157, 'indices': 832, 'bits': 17170114}
-32 True accept formula EXACT {'field_elems': 59158, 'hashes': 63081, 'indices': 832, 'bits': 19757374}
-64 True accept formula EXACT {'field_elems': 91798, 'hashes': 70005, 'indices': 832, 'bits': 23520958}
+16 True accept formula EXACT {'field_elems': 74920, 'hashes': 90303, 'indices': 1261, 'bits': 27687688}
+32 True accept formula EXACT {'field_elems': 95008, 'hashes': 101955, 'indices': 1261, 'bits': 31895968}
+64 True accept formula EXACT {'field_elems': 146317, 'hashes': 114771, 'indices': 1261, 'bits': 38306713}
 forge_W1n False Ligero linear test: the constraints do not hold | rank-1 update W1n: W'(r) = W(r) - d(r_row) v(r_col)
 forge_z1 False Ligero linear test: the constraints do not hold | sumcheck z1: first round sum = claim
 forge_sumcheck False Ligero linear test: the constraints do not hold | sumcheck z1: final claim = product gate
