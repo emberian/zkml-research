@@ -1,0 +1,17 @@
+{"note": "Fixed text for G3, written for this purpose. calib fits the fixed points; eval is held out.",
+ "calib": [
+  "The mitochondrion is the organelle in which most of a cell's ATP is made. Its inner membrane folds into cristae, which carry the electron transport chain and ATP synthase.",
+  "def merge(a, b):\n    out = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            out.append(a[i]); i += 1\n        else:\n            out.append(b[j]); j += 1\n    return out + a[i:] + b[j:]",
+  "<|start|>user<|message|>What is the boiling point of water at the top of Mount Everest, roughly?<|end|><|start|>assistant<|channel|>final<|message|>About 70 degrees Celsius, because the air pressure there is roughly a third of the pressure at sea level.",
+  "In 1869 Dmitri Mendeleev arranged the known elements by atomic weight and left gaps where he predicted elements not yet discovered, among them gallium and germanium."
+ ],
+ "eval": [
+  "The capital of France is Paris. The capital of Japan is Tokyo. The capital of Canada is Ottawa, and the capital of Australia is Canberra, not Sydney.",
+  "A prime number has exactly two divisors. The first ten primes are 2, 3, 5, 7, 11, 13, 17, 19, 23 and 29. Every integer greater than one factors uniquely into primes.",
+  "<|start|>user<|message|>Write one sentence about why the sky is blue.<|end|><|start|>assistant<|channel|>final<|message|>Sunlight scatters off the molecules of the air, and short blue wavelengths scatter far more than red ones, so blue light reaches your eyes from every direction.",
+  "for (int i = 0; i < n; i++) {\n    sum += a[i] * b[i];\n}\nreturn sum;",
+  "The river rose through the night, and by morning the lower fields were under water. The farmers moved their animals to the hill behind the church and waited.",
+  "Photosynthesis converts carbon dioxide and water into glucose and oxygen, using the energy of light absorbed by chlorophyll in the chloroplasts of plant cells.",
+  "To make bread, mix flour, water, salt and yeast, knead the dough until it is smooth, let it rise for an hour, shape it, let it rise again, and bake it in a hot oven.",
+  "The derivative of x squared is two x. The derivative of the sine function is the cosine function, and the derivative of the exponential function is itself."
+ ]}
