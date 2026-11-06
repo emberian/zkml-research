@@ -175,3 +175,17 @@ def pad128(RA):
     out = np.zeros(RA.shape[:-1] + (128,), np.int8)
     out[..., :RA.shape[-1]] = RA
     return out
+
+
+def prepare(rng, T, K, N, s):
+    args, rd = inputs(rng, T, K, N, s)
+    sub = dict(rd, X=rd["X"][:64], Y=rd["Y"][:64])
+    el, er = ref(sub, 64, K, N, s)
+
+    def check(o):
+        lhs, rhs = (np.asarray(v)[:64] for v in o)
+        return bool((lhs == el).all() and (rhs == er).all() and (lhs[0] != rhs[0]).all() and (lhs[1:] == rhs[1:]).all())
+    return args, check
+
+
+KERNELS[0]["prepare"] = prepare

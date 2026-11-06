@@ -320,3 +320,17 @@ def pallas_operands(plan):
     T1p = np.ascontiguousarray(plan.T1.reshape(N1, 8, 8 * N1).transpose(1, 0, 2))  # [(k1,c),.] -> [c, k1, .]
     T2p = np.ascontiguousarray(plan.T2.reshape(N1, 8, N2, 8 * N2))
     return T1p, T2p
+
+
+def prepare(rng, B, N, N1, polys=(0, -1)):
+    plan = plan_for(N, N1)
+    raw = rng.integers(0, 2**60, (B, N), dtype=np.int64).astype(np.uint64)      # < 2^60 < q
+    xb = raw.view(np.uint8).reshape(B, N, 8)
+    xo = ((xb.reshape(B, N1, N // N1, 8).transpose(3, 0, 1, 2)).astype(np.int16) - 128).astype(np.int8)
+    T1p, T2p = pallas_operands(plan)
+    pl_ = [p % B for p in polys]
+    exp = ref(dict(x=[[int(v) for v in raw[b]] for b in pl_]), B=len(pl_), N=N, N1=N1)
+    return (np.ascontiguousarray(xo), T1p, T2p), lambda o: bool((np.asarray(o)[:, :, pl_, :] == exp).all())
+
+
+KERNELS[0]["prepare"] = prepare
