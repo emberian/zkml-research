@@ -1,0 +1,81 @@
+honest ceremony: three keys registered with proofs           ACCEPT  seed 3ed2118e6e7958dc..
+reveal before every commitment is posted (rushing)           REFUSED reveal refused: not every commitment is on the ledger yet
+equivocation: reveal a different r than committed            REFUSED reveal refused: custodian 1 does not open its commitment (blamed)
+second commitment by the same custodian                      REFUSED commit refused: out of phase, duplicate or unknown custodian
+commitment after the seed is fixed                           REFUSED commit refused: out of phase, duplicate or unknown custodian
+key built on a chosen a = 1, proof forged against the ceremony's a REFUSED key refused: custodian 0's key proof: quadratic test: a committed digit is not binary
+random b (no short secret), forged digits                    REFUSED key refused: custodian 1's key proof: quadratic test: a committed digit is not binary
+custodian index 0.0 (aliases 0 in a dict)                    REFUSED unknown custodian index
+custodian index True                                         REFUSED unknown custodian index
+reveal by an unknown custodian                               REFUSED unknown custodian index
+custodian 2's honest key proof registered as custodian 1's   REFUSED key refused: custodian 1's key proof: linear test: the folded limb equations do not hold
+epoch 1's key proof replayed into epoch 2                    REFUSED key refused: custodian 0's key proof: linear test: the folded limb equations do not hold
+honest key, epoch 2                                          ACCEPT  accepted
+MPC step (HE matvec + HE outer) on the ceremony's keys refines step_spec ACCEPT  
+every return's realized shift is inside its kind's envelope  ACCEPT  (realized, envelope) log2: {'f': (69.74, 75.09), 'b': (69.63, 75.09), 'o': (66.72, 69.09)}
+simulator: decrypts to the same y on every return            ACCEPT  42 returns
+simulator: phase within the flood of Encode(y)               ACCEPT  
+returns captured = the step's return count (formula)         ACCEPT  42 vs 42
+{
+ "d64": {
+  "d": 64,
+  "N": 16384,
+  "L": 4,
+  "log2_Q": 244.0,
+  "F_bits": 175,
+  "B_forward": 40140115104336653320201,
+  "B_backward": 40140115104336653320201,
+  "B_outer": 627189298505260466185,
+  "returns_forward": 12,
+  "returns_backward": 6,
+  "returns_outer": 24,
+  "returns": 42,
+  "decrypt_margin_ok": true,
+  "log2_margin_bits": 7.0,
+  "log2_stat_per_step": -82.71,
+  "log2_stat_million": -62.78,
+  "rlwe_samples_per_step": 42,
+  "rlwe_samples_million": 42000000
+ },
+ "d1024": {
+  "d": 1024,
+  "N": 16384,
+  "L": 4,
+  "log2_Q": 244.0,
+  "F_bits": 175,
+  "B_forward": 2568967366677545795977225,
+  "B_backward": 642241841669386449190921,
+  "B_outer": 2508757194021041078281,
+  "returns_forward": 48,
+  "returns_backward": 96,
+  "returns_outer": 1536,
+  "returns": 1680,
+  "decrypt_margin_ok": true,
+  "log2_margin_bits": 7.0,
+  "log2_stat_per_step": -74.71,
+  "log2_stat_million": -54.78,
+  "rlwe_samples_per_step": 1680,
+  "rlwe_samples_million": 1680000000
+ },
+ "d4096": {
+  "d": 4096,
+  "N": 16384,
+  "L": 4,
+  "log2_Q": 244.0,
+  "F_bits": 175,
+  "B_forward": 10275869466710183183122441,
+  "B_backward": 2568967366677545795977225,
+  "B_outer": 2508757194021041078281,
+  "returns_forward": 192,
+  "returns_backward": 384,
+  "returns_outer": 24576,
+  "returns": 25152,
+  "decrypt_margin_ok": true,
+  "log2_margin_bits": 7.0,
+  "log2_stat_per_step": -70.71,
+  "log2_stat_million": -50.78,
+  "rlwe_samples_per_step": 25152,
+  "rlwe_samples_million": 25152000000
+ }
+}
+ALL AS EXPECTED

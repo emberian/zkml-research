@@ -1387,6 +1387,58 @@ gpt-6-astra attack can run (ember's hardware-key re-authentication) or the coord
 `zkpopk_ligero.py`, `run_zkpopk_ligero.py`, `zkpopk_counts.py`; results `zkpopk_ligero_results_*.json`,
 `zkpopk_counts.json`.
 
+### 20.0 Root decisions applied after this section was first written (2026-11-06, reversible by ember)
+
+- **Profiles.** `proofwire.PROFILES`: **ledger (default) T = 309, 2^-128.25**, grinding-resistant; **demo T = 97**,
+  2^-40.26 statistical, only by explicit `set_profile("demo")`. The profile name is in the pinned parameters, so a
+  genesis record of one profile refuses steps of the other. `cosnark`, `cosnark_zk` and `zkpopk_ligero` default to
+  309.
+- **The ZKPoPK's fold keeps pace.** At 128 bits a single per-prime fold (2^-60) would be the weak link under
+  grinding. `folds_for(T)` gives 3 independent folds at T = 309 and 1 at 97.
+- **Mod-t row and plaintext digits dropped.** They were redundant: Q is invertible mod t, so a bounded r determines
+  m. Both the Claude review and Codex agree.
+- **Every Merkle leaf in the harness is salted**: `cosnark.SharePCS`, `cozk`, and the codec, which carries the salt
+  as the first path element.
+  - `leaf_salt_falsifier.py` shows the guess test that worked before. Custodians 0 and 1 of three, with a guess of
+    a committed row, derive custodian 2's share, interpolate it with the opened columns, and compare against the
+    sibling leaf every authentication path reveals. A right guess is CONFIRMED with unsalted leaves; with salted
+    leaves no guess is.
+  - Cost: one hash per opened column per tree.
+
+**Sizes with all of the above** (formulas; d = 4096):
+
+| | demo, T = 97 | **ledger, T = 309** |
+|---|---:|---:|
+| spine proof | 369.5 Mbit | **1,191.0 Mbit** |
+| middle proof | 215.5 Mbit | **701.7 Mbit** |
+| ZKPoPK per step, MPC, delivered (N = 8192) | 0.586 G | **1.104 G** |
+| ZKPoPK per step, FHE (b), delivered | 0.486 G | **0.889 G** |
+| ZKPoPK per step, MPC at N = 16384 | 0.783 G | **1.418 G** |
+
+**Re-executed on dregg-forge with all of the above** (ledger profile, T = 309, 3 folds; every proof's byte length
+equals the formula; the 30 attack rows as expected; the Mac N = 16 run also has the two Codex-2 rows, 32 in all):
+
+| run | proof | prove / verify (Python, one core) |
+|---|---:|---:|
+| N = 8192, three primes, 2 sk cts + 1 pk ct | 11.25 Mbit | 19 s / 15 s |
+| N = 16384, four primes, 2 sk cts + 1 pk ct | 13.94 Mbit | 40 s / 29 s |
+| **N = 8192, one full d = 4096 forward call (64 cts)** | **38.61 Mbit** | 417 s / 217 s |
+| N = 8192, demo profile (T = 97), 2 sk cts | 5.35 Mbit | 15 s / 4 s |
+
+At d = 64 / 1024 (ledger profile) MPC pays 0.287 / 0.614 G and FHE (b) 0.148 / 0.456 G. The tables further down
+were written at T = 97, before the folds and the dropped row, and are kept as they were; this table supersedes them.
+
+**Second Codex review** (after ember re-authenticated; answered in full). No counterexample to the relation was
+found: one witness across limbs, Fiat–Shamir order, no-wrap bounds, and zero knowledge under the ROM argument all
+held. Its findings, all fixed with regression rows:
+- **Decryption margin.** With one limb and Q ≈ t, a proof accepted whose decryption left the layout. The registry
+  now requires Q > 17t.
+- **Ceremony index aliasing.** `0.0` and `True` aliased custodian 0 in the dictionaries, so a key could be derived
+  from seed/0.0. Indices must now be ints.
+- **Uncaught errors.** `KeyError` on an unknown revealer and `AttributeError` on `verify(None)` now fail closed.
+- **Selective abort** is restated as (k+1)·p for k aborts (§21).
+- **The simulator's key-consistency premise** is discharged in §21.
+
 ### 20.1 Opened columns: T = 97
 
 `cosnark.T_COLS`, `cosnark_zk.T_HIDE/T_OPEN` and `proofwire.PARAMS` are now 97 (PCS tails HIDE = 2 × 97): the column
@@ -1505,3 +1557,123 @@ smaller), against FHE (b)'s ×1.17 lower preprocessing-plus-online total.
 **Still unbuilt:** whole-ciphertext circuit privacy and the key-generation ceremony (next brick, §20 item 3); the
 joint key FHE (b)'s masks rely on; a QROM or knowledge-soundness proof for the Fiat–Shamir Ligero; a native
 (non-Python) prover; reuse of one batch proof between the matvec and the outer product that encrypt the same h.
+
+
+## 21. Gen 4, item 3: pinned key generation, the whole-ciphertext simulator, and the distances at runnable parameters (2026-11-06)
+
+`keygen_ceremony.py`, `run_keygen_ceremony.py`; results `keygen_ceremony_results_N*_L*_d64.json`.
+
+### 21.1 The ceremony (built)
+
+Each epoch, over the ledger's authenticated broadcast:
+1. **Commit.** Custodian i posts H(epoch, i, r_i, salt_i) for a fresh 256-bit r_i.
+2. **Reveal.** Reveals are accepted only once all n commitments are posted. seed = H(epoch, commitments, reveals).
+   One honest custodian makes the seed uniform, and nobody can choose its coins after seeing another's.
+   - A custodian that does not open its commitment is blamed.
+   - Under 3-of-3 custody an abort stops the ceremony, and every abort is on the ledger.
+   - **Selective abort** (Codex review 2): the last revealer can compute the seed first. With k aborts it makes any
+     event of probability p happen with probability at most (k+1)p. A delay function or threshold reveal would
+     remove this; neither is built.
+3. **Keys.** Custodian j sets a_j = public_a(seed/j) (the scholar's sampler), samples s_j ternary and e_j in
+   [−8, 8], and posts b_j = −(a_j s_j + e_j) with a ZKPoPK of the key relation alone. The proof is
+   `zkpopk_ligero`'s new `"key"` statement, bound to (epoch, j, the ceremony transcript).
+   It costs 7.84 Mbit at N = 8192 and 10.06 Mbit at N = 16384 (T = 309), once per epoch per custodian.
+4. **Registry.** Every custodian verifies every key proof. HE traffic is accepted only under registered keys, and
+   `zkpopk_ligero.verify` re-derives a_j from the seed.
+
+FHE (b)'s joint key is the same ceremony with a = public_a(seed/"joint") and b = Σ b_j. Every share is proved, so the
+joint secret is bounded by n and the joint error by 8n.
+
+What it proves:
+- a_j is the ceremony's;
+- j knows a short (s_j, e_j).
+
+It does not prove s_j was sampled honestly, and the argument below does not need it.
+
+**Refused** (attack rows in the results files):
+- a reveal before all commitments (rushing);
+- equivocation (blamed);
+- a second commitment;
+- a commitment after the seed is fixed;
+- **a key built on a chosen a = 1** (the scholar's attack), proof forged against the ceremony's a: quadratic test;
+- a random b with no short secret: quadratic test;
+- custodian indices `0.0` and `True` (they aliased custodian 0), and a reveal by an unknown custodian;
+- one custodian's honest proof registered as another's;
+- epoch 1's proof replayed into epoch 2.
+
+### 21.2 The simulation argument (written down; the hybrids are argued, not machine-checked)
+
+Returner i, recipient j corrupt and holding s_j. i returns c1 = P c1_in + a_j u + e1 and
+c0 = P c0_in + b_j u + e0 + Encode(M) + U, with U uniform in [−F, F]^N. Substituting b_j = −(a_j s_j + e_j):
+
+    c0 = −s_j c1 + Encode(y) + shift + U,   y = P m + M (mod t),
+    shift = P(phase_in − Encode(m)) + (P Encode(m) + Encode(M) − Encode(y)) + (e0 + s_j e1 − e_j u),
+
+and ‖shift‖∞ ≤ B, the scholar's envelope (§11). This file adds the HE outer product's value and MAC returns,
+B_outer = d_r·⌊t/2⌋·8.5 + 16N + 9. The hybrids:
+
+- **H0.** The real return.
+- **H1 (statistical).** Drop the shift. TV ≤ N·B/(2F+1) per return, by the ring smudging lemma, conditionally on
+  c1 and everything else, because U is fresh. This needs phase_in bounded, which **the ZKPoPK (§20)** gives.
+- **H2 (computational).** Replace a_j u + e1 by uniform: decisional RLWE with i's fresh ternary u and a_j uniform,
+  which **the ceremony** gives. After H1 nothing else depends on (u, e1). One sample per return. Exactly:
+  RLWE with a_j = public_a(seed/j) from a public seed, i.e. a random-oracle-derived a (programmable XOF model).
+  [READ, via the scholar's citation] The HE Standard's ternary tables list log q ≤ 202 at N = 8192 and ≤ 411 at
+  N = 16384. Our 183 and 244 bits sit inside them, with uniform [−8, 8] errors (σ ≈ 4.9 > 3.2). No estimator was
+  run for our exact distributions.
+- **H3: the simulator** `simulate_return(y, s_j)`. c1 is uniform and c0 = −s_j c1 + Encode(y) + U. It needs only y,
+  which j learns anyway (masked by M), and a short s **extracted from the batch proof that admitted the input**. That
+  proof carries the key relation, and the rewrite of b_j u holds for any short pair satisfying it, so no lemma that
+  two proofs extract the same s is needed (Codex review 2). The key proof's role is to pin a_j.
+- The ZK proofs' simulators and the Fiat–Shamir random-oracle programming compose on top; that composition is
+  argued, not machine-checked.
+
+The scholar's refutation stands: no statistical whole-ciphertext privacy, because c1 needs RLWE. What is new is a
+complete computational simulator with every premise built: a pinned a_j, a bounded input, and an extractable s_j.
+
+**Executed** (`run_keygen_ceremony.py`; Mac N = 256, dregg-forge N = 8192 and 16384; all 18 rows as expected):
+
+| run | ceremony (3 keys, proofs) | MPC d = 64 step (HE matvec + outer) on ceremony keys | returns | realized ‖shift‖∞ vs envelope (log2: forward, transpose, outer) |
+|---|---:|---|---:|---|
+| N = 8192, three primes, F = 2^118 | 41 s; key proof 7.84 Mbit | refines `step_spec`; 114 s | 42 = formula | 69.7 ≤ 75.1, 69.6 ≤ 75.1, 66.7 ≤ 69.1 |
+| N = 16384, four primes, F = 2^175 | 84 s; key proof 10.06 Mbit | refines `step_spec`; 455 s | 42 = formula | 69.7 ≤ 75.1, 69.6 ≤ 75.1, 66.7 ≤ 69.1 |
+
+On every return the simulator's output decrypts to the same y, with phase within the flood of Encode(y). The
+realized shifts sit 2^2.4 to 2^5.4 below the envelopes the distance bound uses, so the bound is conservative and
+measured, not assumed. The simulator is tested for functional agreement only: no test can show computational
+indistinguishability, and the H2 step is an assumption.
+
+### 21.3 Distances (per step and over 10^6 steps)
+
+The statistical term is Σ over returns of N·B/(2F+1), in log2. The computational term is (returns) × Adv_RLWE.
+
+| N / L | F | d | decrypt margin (bits) | statistical, per step | over 10^6 steps | RLWE samples per step |
+|---|---|---:|---:|---:|---:|---:|
+| 8192 / 3 | 2^118 | 64 | 3.0 | 2^-26.71 | 2^-6.78 | 42 |
+| 8192 / 3 | 2^118 | 1024 | 3.0 | 2^-18.71 | 1 (vacuous) | 3,264 |
+| 8192 / 3 | 2^118 | 4096 | 3.0 | 2^-14.71 | 1 (vacuous) | 49,920 |
+| 8192 / 3 | 2^120 (largest that decrypts) | 4096 | 1.0 | 2^-16.71 | 1 (vacuous) | 49,920 |
+| 16384 / 4 | 2^165 (scholar) | 64 | 17.0 | 2^-72.71 | 2^-52.78 | 42 |
+| 16384 / 4 | 2^165 | 1024 | 17.0 | 2^-64.71 | 2^-44.78 | 1,680 |
+| 16384 / 4 | 2^165 | 4096 | 17.0 | 2^-60.71 | 2^-40.78 | 25,152 |
+| **16384 / 4** | **2^175 (executed)** | 64 | 7.0 | 2^-82.71 | 2^-62.78 | 42 |
+| **16384 / 4** | **2^175** | 1024 | 7.0 | 2^-74.71 | 2^-54.78 | 1,680 |
+| **16384 / 4** | **2^175** | **4096** | 7.0 | **2^-70.71** | **2^-50.78** | 25,152 |
+
+The returns now include the HE outer product's value and MAC returns (49,152 of the 49,920 at N = 8192, d = 4096);
+the scholar's table counted matvec returns only. Their envelope is small, so the statistical term moves by under
+0.1 bit.
+
+**What this says.**
+- **N = 8192 with three primes cannot reach a million-step bound** at any flood that still decrypts.
+- **N = 16384 with four primes and F = 2^175**, executed at d = 64 and with 7 bits of decryption margin, gives
+  **2^-70.7 per step and 2^-50.8 over 10^6 steps, statistically, at d = 4096**.
+- Add (25,152 × 10^6 ≈ 2^34.5) × Adv_RLWE for the computational part; at 128-bit RLWE that is about 2^-93.5.
+- The SPDZ truncation masking (KAPPA = 40), the ZK proofs' simulators and the MAC/abort leakage are separate terms,
+  not included here (scholar's OPEN list).
+
+**Unbuilt in item 3:**
+- a lattice-estimator run for these exact RLWE distributions;
+- a delay function or threshold reveal against selective abort;
+- the joint-key (FHE (b)) variant of the ceremony as code. It is described above; only the per-custodian keys are
+  executed.

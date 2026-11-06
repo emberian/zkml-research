@@ -1,0 +1,181 @@
+{
+ "N": 256,
+ "L": 3,
+ "d": 4,
+ "F_bits": 118,
+ "T": 309,
+ "rows": {
+  "honest ceremony: three keys registered with proofs": {
+   "verdict": "ACCEPT",
+   "by": "seed 071ecca28dd65631..",
+   "as_expected": true
+  },
+  "reveal before every commitment is posted (rushing)": {
+   "verdict": "REFUSED",
+   "by": "reveal refused: not every commitment is on the ledger yet",
+   "as_expected": true
+  },
+  "equivocation: reveal a different r than committed": {
+   "verdict": "REFUSED",
+   "by": "reveal refused: custodian 1 does not open its commitment (blamed)",
+   "as_expected": true
+  },
+  "second commitment by the same custodian": {
+   "verdict": "REFUSED",
+   "by": "commit refused: out of phase, duplicate or unknown custodian",
+   "as_expected": true
+  },
+  "commitment after the seed is fixed": {
+   "verdict": "REFUSED",
+   "by": "commit refused: out of phase, duplicate or unknown custodian",
+   "as_expected": true
+  },
+  "key built on a chosen a = 1, proof forged against the ceremony's a": {
+   "verdict": "REFUSED",
+   "by": "key refused: custodian 0's key proof: quadratic test: a committed digit is not binary",
+   "as_expected": true
+  },
+  "random b (no short secret), forged digits": {
+   "verdict": "REFUSED",
+   "by": "key refused: custodian 1's key proof: quadratic test: a committed digit is not binary",
+   "as_expected": true
+  },
+  "custodian index 0.0 (aliases 0 in a dict)": {
+   "verdict": "REFUSED",
+   "by": "unknown custodian index",
+   "as_expected": true
+  },
+  "custodian index True": {
+   "verdict": "REFUSED",
+   "by": "unknown custodian index",
+   "as_expected": true
+  },
+  "reveal by an unknown custodian": {
+   "verdict": "REFUSED",
+   "by": "unknown custodian index",
+   "as_expected": true
+  },
+  "custodian 2's honest key proof registered as custodian 1's": {
+   "verdict": "REFUSED",
+   "by": "key refused: custodian 1's key proof: linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "epoch 1's key proof replayed into epoch 2": {
+   "verdict": "REFUSED",
+   "by": "key refused: custodian 0's key proof: linear test: the folded limb equations do not hold",
+   "as_expected": true
+  },
+  "honest key, epoch 2": {
+   "verdict": "ACCEPT",
+   "by": "accepted",
+   "as_expected": true
+  },
+  "MPC step (HE matvec + HE outer) on the ceremony's keys refines step_spec": {
+   "verdict": "ACCEPT",
+   "by": "",
+   "as_expected": true
+  },
+  "every return's realized shift is inside its kind's envelope": {
+   "verdict": "ACCEPT",
+   "by": "(realized, envelope) log2: {'f': (65.41, 67.09), 'b': (65.12, 67.09), 'o': (64.37, 65.09)}",
+   "as_expected": true
+  },
+  "simulator: decrypts to the same y on every return": {
+   "verdict": "ACCEPT",
+   "by": "42 returns",
+   "as_expected": true
+  },
+  "simulator: phase within the flood of Encode(y)": {
+   "verdict": "ACCEPT",
+   "by": "",
+   "as_expected": true
+  },
+  "returns captured = the step's return count (formula)": {
+   "verdict": "ACCEPT",
+   "by": "42 vs 42",
+   "as_expected": true
+  }
+ },
+ "ceremony_seconds": 12.4,
+ "key_proof_bytes": 466144,
+ "step_seconds": 1.8,
+ "returns_captured": 42,
+ "returns_formula": 42,
+ "realized_vs_envelope_log2": {
+  "f": [
+   65.41,
+   67.09
+  ],
+  "b": [
+   65.12,
+   67.09
+  ],
+  "o": [
+   64.37,
+   65.09
+  ]
+ },
+ "distances": {
+  "d64": {
+   "d": 64,
+   "N": 256,
+   "L": 3,
+   "log2_Q": 183.0,
+   "F_bits": 118,
+   "B_forward": 2508757194024456130569,
+   "B_backward": 40140115104391298027529,
+   "B_outer": 39199331156632131081,
+   "returns_forward": 192,
+   "returns_backward": 6,
+   "returns_outer": 384,
+   "returns": 582,
+   "decrypt_margin_ok": true,
+   "log2_margin_bits": 3.0,
+   "log2_stat_per_step": -31.71,
+   "log2_stat_million": -11.78,
+   "rlwe_samples_per_step": 582,
+   "rlwe_samples_million": 582000000
+  },
+  "d1024": {
+   "d": 1024,
+   "N": 256,
+   "L": 3,
+   "log2_Q": 183.0,
+   "F_bits": 118,
+   "B_forward": 40140115104391298027529,
+   "B_backward": 642241841670260768378889,
+   "B_outer": 39199331156632131081,
+   "returns_forward": 3072,
+   "returns_backward": 96,
+   "returns_outer": 98304,
+   "returns": 101472,
+   "decrypt_margin_ok": true,
+   "log2_margin_bits": 3.0,
+   "log2_stat_per_step": -23.71,
+   "log2_stat_million": -3.78,
+   "rlwe_samples_per_step": 101472,
+   "rlwe_samples_million": 101472000000
+  },
+  "d4096": {
+   "d": 4096,
+   "N": 256,
+   "L": 3,
+   "log2_Q": 183.0,
+   "F_bits": 118,
+   "B_forward": 160560460417565192097801,
+   "B_backward": 2568967366681043073503241,
+   "B_outer": 39199331156632131081,
+   "returns_forward": 12288,
+   "returns_backward": 384,
+   "returns_outer": 1572864,
+   "returns": 1585536,
+   "decrypt_margin_ok": true,
+   "log2_margin_bits": 3.0,
+   "log2_stat_per_step": -19.71,
+   "log2_stat_million": 0.0,
+   "rlwe_samples_per_step": 1585536,
+   "rlwe_samples_million": 1585536000000
+  }
+ },
+ "all_as_expected": true
+}
