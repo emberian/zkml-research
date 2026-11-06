@@ -81,9 +81,90 @@ impl Source {
                 16 << 20,
                 std::fs::File::open(p).unwrap_or_else(|e| die(&format!("open {p}: {e}"))),
             )),
-            Source::Remote(u) => {
-                let resp = ureq::get(u).call().unwrap_or_else(|e| die(&format!("GET {u}: {e}")));
-                Box::new(std::io::BufReader::with_capacity(16 << 20, resp.into_reader()))
+            Source::Remote(u) => Box::new(std::io::BufReader::with_capacity(16 << 20, RangeReader::new(u.clone()))),
+        }
+    }
+}
+
+/// Sequential reads by range requests of CHUNK bytes; a request that fails or ends early is resumed from the
+/// current offset, so one dropped connection costs one reconnect, not the file.
+struct RangeReader {
+    url: String,
+    pos: u64,
+    total: Option<u64>,
+    cur: Option<(Box<dyn Read + Send>, u64)>,
+    retries: u32,
+}
+const CHUNK: u64 = 1 << 30;
+impl RangeReader {
+    fn new(url: String) -> Self {
+        RangeReader { url, pos: 0, total: None, cur: None, retries: 0 }
+    }
+    fn open(&mut self) -> std::io::Result<()> {
+        let end = match self.total {
+            Some(t) => (self.pos + CHUNK).min(t) - 1,
+            None => self.pos + CHUNK - 1,
+        };
+        let resp = ureq::get(&self.url)
+            .set("Range", &format!("bytes={}-{}", self.pos, end))
+            .call()
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+        if resp.status() != 206 {
+            return Err(std::io::Error::new(std::io::ErrorKind::Other, format!("status {}", resp.status())));
+        }
+        if let Some(cr) = resp.header("Content-Range") {
+            if let Some(t) = cr.rsplit('/').next().and_then(|t| t.parse::<u64>().ok()) {
+                self.total = Some(t);
+            }
+        }
+        let end = match self.total {
+            Some(t) => end.min(t - 1),
+            None => end,
+        };
+        self.cur = Some((Box::new(resp.into_reader()), end + 1 - self.pos));
+        Ok(())
+    }
+}
+impl Read for RangeReader {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        loop {
+            if let Some(t) = self.total {
+                if self.pos >= t {
+                    return Ok(0);
+                }
+            }
+            if self.cur.is_none() {
+                if let Err(e) = self.open() {
+                    self.retries += 1;
+                    if self.retries > 30 {
+                        return Err(e);
+                    }
+                    eprintln!("{}: reopen at {} ({e}), retry {}", self.url, self.pos, self.retries);
+                    std::thread::sleep(std::time::Duration::from_secs(5));
+                    continue;
+                }
+            }
+            let (r, left) = self.cur.as_mut().unwrap();
+            if *left == 0 {
+                self.cur = None;
+                continue;
+            }
+            let k = (buf.len() as u64).min(*left) as usize;
+            match r.read(&mut buf[..k]) {
+                Ok(0) | Err(_) => {
+                    self.retries += 1;
+                    if self.retries > 30 {
+                        return Err(std::io::Error::new(std::io::ErrorKind::Other, "too many dropped connections"));
+                    }
+                    eprintln!("{}: connection dropped at {}, retry {}", self.url, self.pos, self.retries);
+                    self.cur = None;
+                    std::thread::sleep(std::time::Duration::from_secs(3));
+                }
+                Ok(n) => {
+                    *left -= n as u64;
+                    self.pos += n as u64;
+                    return Ok(n);
+                }
             }
         }
     }
@@ -472,6 +553,15 @@ fn main() {
     if cmd == "sample" {
         return sample(&args);
     }
+    if cmd == "layout" {
+        for path in positional(&args) {
+            let h = header_of(&Source::Local(path.clone()));
+            for t in &h.tensors {
+                println!("{} {} {:?} {} {}", t.name, type_name(t.ggml_type), t.dims, h.data_start + t.rel_offset, t.n_bytes.unwrap_or(0));
+            }
+        }
+        return;
+    }
     let eres: i32 = arg(&args, "--eres").unwrap_or_else(|| "11".into()).parse().unwrap();
     let out = arg(&args, "--out").unwrap_or_else(|| die("--out DIR is required"));
     let parallel: usize = arg(&args, "--parallel").unwrap_or_else(|| "1".into()).parse().unwrap();
@@ -500,9 +590,23 @@ fn main() {
         let line = format!("{:.0}s {m}\n", began.elapsed().as_secs_f64());
         let _ = logf.lock().unwrap().write_all(line.as_bytes());
     };
-    let pool = rayon::ThreadPoolBuilder::new().num_threads(parallel).build().unwrap();
-    let per: Vec<(FileOut, Vec<Result1>)> =
-        pool.install(|| (0..p.shards.len()).into_par_iter().map(|s| run_shard(&p, s, &log)).collect());
+    // Shards run on `parallel` plain threads, so that each tensor's work uses the global rayon pool (--threads).
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let slots: Vec<std::sync::Mutex<Option<(FileOut, Vec<Result1>)>>> =
+        (0..p.shards.len()).map(|_| std::sync::Mutex::new(None)).collect();
+    std::thread::scope(|sc| {
+        for _ in 0..parallel {
+            sc.spawn(|| loop {
+                let s = next.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                if s >= p.shards.len() {
+                    break;
+                }
+                let r = run_shard(&p, s, &log);
+                *slots[s].lock().unwrap() = Some(r);
+            });
+        }
+    });
+    let per: Vec<(FileOut, Vec<Result1>)> = slots.into_iter().map(|m| m.into_inner().unwrap().unwrap()).collect();
     let mut files = vec![];
     let mut results: BTreeMap<Vec<u8>, Result1> = BTreeMap::new();
     for (f, rs) in per {
