@@ -970,17 +970,18 @@ def tree_section(w):
         return
     w("Measured on demo/tree-absence (3,382 Claude Code tool-call records; `summary.json`, `tree-check verify`):")
     w("")
-    w("| certificate | records | count | frames | frame bytes | Keccak-f | Keccak-f / record | nodes disclosed |")
-    w("|---|---:|---:|---:|---:|---:|---:|---:|")
+    w("| certificate | records | count | frames | frame bytes | Keccak-f (openings) | per record | Keccak-f total (+ tables + MMR) | nodes disclosed |")
+    w("|---|---:|---:|---:|---:|---:|---:|---:|---:|")
     rows = [("A contains `pkill -f`", "mention", "real"), ("B command position", "invocation", "invocation-real"),
             ("C absence (no backtick)", "invocation_nobacktick", "invocation-nobacktick-real")]
     for label, q, v in rows:
         qr = d.get(q, {}).get("real", {})
-        wk = d.get("verify", {}).get(v, {}).get("work", {})
+        wk0 = d.get("verify", {}).get(v, {}).get("work", {})
+        wk = wk0.get("openings", wk0)
         n = qr.get("n", 0) or 1
         w(f"| {label} | {qr.get('n', '?'):,} | {qr.get('count', '?')} | {wk.get('frames_hashed', 0):,} | "
           f"{wk.get('frame_bytes', 0):,} | {wk.get('keccak_f', 0):,} | {wk.get('keccak_f', 0) / n:.1f} | "
-          f"{wk.get('nodes_disclosed', 0):,} |")
+          f"{wk0.get('keccak_f_total', 0):,} | {wk.get('nodes_disclosed', 0):,} |")
     w("")
     w("Frame bytes are dominated by the disclosed `input.command` leaves (full disclosure of the opened field);")
     w("a private-leaf variant replaces the leaf frame by its digest plus the Layer B′ DFA leg (`Spec.field_accept_bound`).")
