@@ -23,3 +23,4 @@ deleted at the end of the campaign. Nothing else is opened.
 | tpuperf-calib-02b | us-west4-a | v5litepod-1 | spot | 23:12:04 | 23:13:48 | 0.029 | 0.000 | create failed: } | 0.000 |
 | tpuperf-s1 | us-east1-c | v5litepod-1 | spot | 23:16:33 | 23:27:56 | 0.190 | 0.068 | created in us-east1-c after us-central1-a:capacity, us-east5-a:}, us-east5-b:capacity, us-east5-c:}; rc 1 | 0.068 |
 | tpuperf-s2 | us-east1-c | v5litepod-1 | spot | 23:28:08 | 23:37:37 | 0.158 | 0.057 | error: RuntimeError('rc=1: Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.\nSSH: Attempting to connect to worker 0...\nT | 0.125 |
+| tpuperf-s3 | us-east1-c | v5litepod-1 | spot | 23:37:40 | 23:49:13 | 0.193 | 0.069 | created in us-east1-c; rc 0 | 0.194 |

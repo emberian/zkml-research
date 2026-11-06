@@ -1,0 +1,84 @@
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone - --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-s3 --zone us-east1-c --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-us-east1
+Create request issued for: [tpuperf-s3]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east1-c/operations/operation-1794008261924-65fa4192d1747-9d58b441-42a1fa22] to complete...
+........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................done.
+Created tpu [tpuperf-s3].
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/bundle.tgz tpuperf-s3:bundle.tgz
+Propagating SSH public key to all TPU workers...
+...................................................................done.
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
+Warning: Permanently added 'tpu.3056268581514248771-0-5u53f1' (ED25519) to the list of known hosts.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm ssh tpuperf-s3 --zone us-east1-c --command mkdir -p b && tar xzf bundle.tgz -C b && (curl -LsSf https://astral.sh/uv/install.sh | sh) >/dev/null 2>&1; export PATH=$HOME/.local/bin:$PATH; uv venv -p 3.12 /tmp/tp 2>&1 | tail -2 && uv pip 
+Creating virtual environment at: /tmp/tp
+Activate with: source /tmp/tp/bin/activate
+3.12.16 0.12.0.1 [TpuDevice(id=0, process_index=0, coords=(0,0,0), core_on_chip=0)]
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm ssh tpuperf-s3 --zone us-east1-c --command export PATH=$HOME/.local/bin:$PATH; cd b && ACCEL_RESULTS=$HOME/b/results.json timeout 3943 bash session.sh > run.log 2>&1; echo RC=$?; tail -n 40 run.log
+RC=0
+CALIB_RC=0
+ER_PIP_RC=0
+ER_RC=0
+KERNELS_RC=0
+== calib02.log
+23:40:21 mxfp4_w4a8 gateup_T256 exact True meas 56.5 us bound 28.3 us (hbm) 50.1%
+23:40:23 mxfp4_w4a8 gateup_T2048 exact True meas 285.2 us bound 172.5 us (mxu) 60.5%
+23:40:24 mxfp4_w4a8 down_T2048 exact True meas 157.2 us bound 88.1 us (mxu) 56.1%
+23:40:40 rns_ntt61 N8192_B1024 exact True meas 1142.3 us bound 800.5 us (vpu) 70.1%
+23:40:53 sumcheck_bb4_round H2p22 exact True meas 1909.0 us bound 2728.2 us (vpu) 142.9%
+23:40:56 xla ntt {'ntt_xla_s': 0.006669406333334867}
+23:41:04 xla sumcheck {'ntt_xla_s': 0.006669406333334867, 'sumcheck_xla_s': 0.10101896133333337}
+23:41:04 DONE
+== er.log
+   "m": false,
+   "logits": false,
+   "x2": false
+  },
+  "wall": 12.1
+ },
+ "bit_identical": true
+}
+== kernels.log
+23:44:48 mxfp4_w4a8 gateup_T256 exact True meas 57.5 us bound 28.3 us (hbm) 49.3%
+23:44:50 mxfp4_w4a8 gateup_T2048 exact True meas 301.1 us bound 176.3 us (mxu) 58.5%
+23:44:51 mxfp4_w4a8 down_T2048 exact True meas 159.3 us bound 90.1 us (mxu) 56.6%
+23:45:00 mxfp4_w4a8 gateup_T256_packed exact True meas 312.2 us bound 22.0 us (mxu) 7.1%
+23:45:16 rns_ntt61 N8192_B1024 exact True meas 1142.3 us bound 800.5 us (vpu) 70.1%
+23:45:29 sumcheck_bb4_round H2p22 exact True meas 1909.0 us bound 2728.2 us (vpu) 142.9%
+23:47:12 freivalds_bb gateup_T2048 exact True meas 79.5 us bound 85.3 us (hbm) 107.3%
+23:47:12 DONE
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/calib02.json /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/calib02.json
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/calib02.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/calib02.log
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/g2-tpu.json /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/g2-tpu.json
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/er.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/er.log
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/er-pip.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/er-pip.log
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/kernels.json /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/kernels.json
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/kernels.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/kernels.log
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s3:b/run.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s3/run.log
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm delete tpuperf-s3 --zone us-east1-c --quiet
+Delete request issued for: [tpuperf-s3]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east1-c/operations/operation-1794008873786-65fa43da55c15-a9977509-016ccf1f] to complete...
+..................................................................................................................................................................................................................................................................................................................................................................................................done.
+Deleted tpu [tpuperf-s3].
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-east1-c --format=value(name)
+{"name": "tpuperf-s3", "outcome": "created in us-east1-c; rc 0", "gone": true, "hours": 0.19265930305555556, "cost": 0.06922807470764973, "cumulative": 0.19422807470764974}

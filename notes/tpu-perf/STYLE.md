@@ -61,3 +61,32 @@ Every rule cites what it rests on: [READ] published, [CC] read off the real TPU 
 - **Pack small matrices onto the MXU through the row axis of the storage layout.** Storing a table as
   [coords, ..., rows, 1024 lanes] makes 8 consecutive rows the 8 block-diagonal groups, so packing is a
   merge of major dims (free) and not a lane shuffle.
+
+## Measured on a spot Cloud TPU v5e (`v5litepod-1`, us-east1-c, jax 0.12.0.1, session tpuperf-s3) [MEASURED]
+
+| rate | measured | published | % |
+|---|---|---|---|
+| HBM read (`sum` over 1 GiB int32) | 752 GB/s | 820 | 92 |
+| HBM copy (read + write, `x + 1`) | 656 GB/s | 820 | 80 |
+| XLA int8 matmul 8192^3 | 384 TOPS | 394 | 97.4 |
+| XLA int8 matmul 4096^3 | 376 TOPS | 394 | 95.3 |
+| XLA int8 matmul 1024^3 | 46 TOPS (46 us) | 394 | HBM and launch bound; the bound is 7.7 us |
+| XLA bf16 matmul 8192^3 | 182 TFLOPS | 197 | 92.6 |
+| Pallas int8 8192^3, (512, 512, 2048) tiles | 300 TOPS | 394 | 76: XLA's emitter beats a naive Pallas tiling |
+| VPU int32, chain of mul, add, shift, xor | 2.65e12 ops/s | unpublished | |
+| VPU int32, chain of and, shift, sub, compare, add, select | 4.11e12 ops/s | unpublished | |
+| Pallas grid step | 0.20 us | | |
+
+- **A dimension that is not a multiple of 128 flips XLA's default parameter layout.** `s8[2048, 2880]`
+  is stored column-major (`{0,1}`), because 2048 tiles cleanly and 2880 does not. Every Pallas consumer
+  then pays a relayout copy: 14 us of the MXFP4 kernel's 301 us. *Rule:* pad such dims to a multiple of
+  128 at the data's source, not inside the kernel.
+- **A tiny trailing dim makes XLA move it.** The packed MXFP4 shifts `s8[90, 2816, 2]` got layout
+  `{1,0,2}`, and the relayout cost 158 us, more than the kernel itself. Never end an array in a 2.
+- **Cross-program prefetch hides weight reads between back-to-back calls.** XLA prefetches a parameter
+  into VMEM (`S(1)`) during the previous execution. Freivalds read W this way and measured 79.5 us
+  against an 85 us bound that charges W's bytes. Benchmark with the operand pattern of the real workload.
+- **E2M1 decode on the v5e VPU costs about 17 int32 ops per weight.** At the measured VPU rate that is
+  slower than reading a prefolded int8 weight from HBM (1 B per weight). The packed-nibble MXFP4 kernel
+  measured 312 us against the prefolded 57 us, so prefolded int8 is the v5e format. Packed only pays on
+  a part with a narrow-int VPU or MXU (MXFP4-native hardware).

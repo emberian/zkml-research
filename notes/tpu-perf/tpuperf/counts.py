@@ -155,3 +155,72 @@ def bound(cnt, gen, vpu_ops=None):
     if not vp and sum(cnt["vpu_elems"].values()):
         out["caveat"] = "VPU peak unknown for this generation: the bound omits VPU work and is a lower bound only"
     return out
+
+
+# ---------------------------------------------------------------------------------------------------------
+# jaxpr counter: counts what the KERNEL as written does, including inside Pallas bodies (x grid steps). This
+# is the VPU model for Pallas kernels; the StableHLO counter above counts an XLA formulation of the algorithm.
+# ---------------------------------------------------------------------------------------------------------
+JAXPR_VPU = {"add", "sub", "mul", "and", "or", "xor", "not", "neg", "shift_left", "shift_right_arithmetic",
+             "shift_right_logical", "lt", "le", "gt", "ge", "eq", "ne", "select_n", "convert_element_type", "max",
+             "min", "floor", "abs", "sign", "rem", "div", "reduce_sum", "reduce_max", "bitcast_convert_type"}
+
+
+def _np_size(shape):
+    n = 1
+    for d in shape:
+        n *= int(d)
+    return n
+
+
+def _walk_counts(jaxpr, mult, c):
+    import numpy as np
+    for e in jaxpr.eqns:
+        name = e.primitive.name
+        if name == "pallas_call":
+            gm = e.params["grid_mapping"]
+            steps = _np_size(gm.grid) if gm.grid else 1
+            _walk_counts(e.params["jaxpr"], mult * steps, c)
+            continue
+        if name == "dot_general":
+            (lc, rc), _ = e.params["dimension_numbers"]
+            ls = e.invars[0].aval.shape
+            K = _np_size([ls[i] for i in lc])
+            out = e.outvars[0].aval.shape
+            dt = str(e.invars[0].aval.dtype)
+            unit = {"int8": "mxu_int8", "bfloat16": "mxu_bf16"}.get(dt, "dot_" + dt)
+            c["mxu"][unit] += mult * _np_size(out) * K
+            c["mxu"][unit + "@pad"] += mult * (_np_size(out) // max(out[-1], 1)) * _ceil(out[-1], 128) * _ceil(K, 128)
+            continue
+        subs = [v for v in e.params.values() if hasattr(v, "eqns") or hasattr(getattr(v, "jaxpr", None), "eqns")]
+        if subs and name not in JAXPR_VPU:
+            for v in subs:
+                _walk_counts(v if hasattr(v, "eqns") else v.jaxpr, mult, c)
+            continue
+        if name in JAXPR_VPU:
+            av = e.invars[0].aval if name.startswith("reduce") else e.outvars[0].aval
+            dt = str(av.dtype)
+            c["vpu_by_op"][f"{name}:{dt}"] += mult * _np_size(av.shape)
+            bits = np.dtype(av.dtype).itemsize * 8
+            c["vpu"]["64" if bits == 64 else "32"] += mult * _np_size(av.shape)
+
+
+def counts_jaxpr(fn, *args):
+    import jax
+    from collections import Counter
+    j = jax.make_jaxpr(fn)(*args)
+    c = dict(mxu=Counter(), vpu=Counter(), vpu_by_op=Counter())
+    _walk_counts(j.jaxpr, 1, c)
+    nb = lambda a: _np_size(a.shape) * a.dtype.itemsize
+    out_avals = [v.aval for v in j.jaxpr.outvars]
+    return dict(mxu_macs=dict(c["mxu"]), vpu_elems=dict(c["vpu"]), vpu_by_op=dict(c["vpu_by_op"]),
+                move_elems=0, hbm_in=sum(nb(a) for a in args), hbm_out=sum(nb(a) for a in out_avals), flags=[])
+
+
+def vpu_time(cnt, op_rates, default_rate):
+    """Per-op VPU model: sum over (op, dtype) of elements / measured rate for that op (default otherwise)."""
+    t = 0.0
+    for k, n in cnt["vpu_by_op"].items():
+        op = k.split(":")[0]
+        t += n / op_rates.get(op, default_rate)
+    return t

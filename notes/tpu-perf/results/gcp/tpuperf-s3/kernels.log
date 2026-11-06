@@ -1,0 +1,8 @@
+23:44:48 mxfp4_w4a8 gateup_T256 exact True meas 57.5 us bound 28.3 us (hbm) 49.3%
+23:44:50 mxfp4_w4a8 gateup_T2048 exact True meas 301.1 us bound 176.3 us (mxu) 58.5%
+23:44:51 mxfp4_w4a8 down_T2048 exact True meas 159.3 us bound 90.1 us (mxu) 56.6%
+23:45:00 mxfp4_w4a8 gateup_T256_packed exact True meas 312.2 us bound 22.0 us (mxu) 7.1%
+23:45:16 rns_ntt61 N8192_B1024 exact True meas 1142.3 us bound 800.5 us (vpu) 70.1%
+23:45:29 sumcheck_bb4_round H2p22 exact True meas 1909.0 us bound 2728.2 us (vpu) 142.9%
+23:47:12 freivalds_bb gateup_T2048 exact True meas 79.5 us bound 85.3 us (hbm) 107.3%
+23:47:12 DONE

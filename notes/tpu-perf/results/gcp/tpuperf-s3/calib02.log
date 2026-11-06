@@ -1,0 +1,14 @@
+23:40:02 hbm {'hbm_copy_GBps': 656.3928652623833, 'hbm_read_GBps': 752.4899716587734}
+23:40:13 vpu {'hbm_copy_GBps': 656.3928652623833, 'hbm_read_GBps': 752.4899716587734, 'vpu_int32_ops_per_s': 2647380111812.4717, 'vpu_int32_ops_per_s_reduction_mix': 4107953598485.516}
+23:40:13 grid {'hbm_copy_GBps': 656.3928652623833, 'hbm_read_GBps': 752.4899716587734, 'vpu_int32_ops_per_s': 2647380111812.4717, 'vpu_int32_ops_per_s_reduction_mix': 4107953598485.516, 'grid_step_s_1024': 2.029921875000562e-07, 'grid_step_s_8192': 1.995057312011335e-07}
+23:40:14 mm 1024 {'grid_step_s_1024': 2.029921875000562e-07, 'xla_int8_1024_s': 4.618649999983404e-05, 'xla_int8_1024_TOPS': 46.49591651256788}
+23:40:16 mm 4096 {'xla_int8_4096_s': 0.00036599600000002396, 'xla_int8_4096_TOPS': 375.52037036467885}
+23:40:19 mm 8192 {'grid_step_s_8192': 1.995057312011335e-07, 'xla_int8_8192_s': 0.0028654223499998467, 'xla_int8_8192_TOPS': 383.7171256014175, 'pallas_int8_8192_TOPS': 300.0665182103695, 'xla_bf16_8192_TFLOPS': 182.37328777857772, 'xla_int8_8192_device': {'module_s': {'jit__lambda(216826683837611240)': 0.002857529}, 'top_ops': [(0.002857476, '%fusion = s32[8192,8192]{1,0:T(8,128)} fusion(s8[8192,8192]{1,0:T(32,128)(4,1)S(1)} %copy-done, s8[8192,8192]{1,0:T(32,128)(4,1)} %v.1), kind=kOutput, calls=%fused_computation'), (1.3e-08, '%copy-start = (s8[8192,8192]{1,0:T(32,128)(4,1)S(1)}, s8[8192,8192]{1,0:T(32,128)(4,1)}, u32[]{:S(2)}) copy-start(s8[8192,8192]{1,0:T(32,128)(4,1)} %u.1), cross_program_prefetch_index=0'), (2.8e-09, '%copy-done = s8[8192,8192]{1,0:T(32,128)(4,1)S(1)} copy-done((s8[8192,8192]{1,0:T(32,128)(4,1)S(1)}, s8[8192,8192]{1,0:T(32,128)(4,1)}, u32[]{:S(2)}) %copy-start)')], 'total_module_s': 0.002857529}}
+23:40:21 mxfp4_w4a8 gateup_T256 exact True meas 56.5 us bound 28.3 us (hbm) 50.1%
+23:40:23 mxfp4_w4a8 gateup_T2048 exact True meas 285.2 us bound 172.5 us (mxu) 60.5%
+23:40:24 mxfp4_w4a8 down_T2048 exact True meas 157.2 us bound 88.1 us (mxu) 56.1%
+23:40:40 rns_ntt61 N8192_B1024 exact True meas 1142.3 us bound 800.5 us (vpu) 70.1%
+23:40:53 sumcheck_bb4_round H2p22 exact True meas 1909.0 us bound 2728.2 us (vpu) 142.9%
+23:40:56 xla ntt {'ntt_xla_s': 0.006669406333334867}
+23:41:04 xla sumcheck {'ntt_xla_s': 0.006669406333334867, 'sumcheck_xla_s': 0.10101896133333337}
+23:41:04 DONE
