@@ -15,48 +15,69 @@ machine-checked composition over a real proof system's shipped verifier.
 
 ## The bar (initiative 8, the five corrections accepted 2026-11-06)
 
-1. **ε_chk is a good-oracle event, not a per-round `εchk`.** FlashProve's bound is over ONE
-   random oracle shared by every round, and a total budget `Q` of hash queries. `ChkLeg` wants
+1. **ε_chk is an execution-level bad event, not a per-round `εchk`.** FlashProve's bound is over
+   ONE random oracle shared by every round, and a total budget `Q` of hash queries. `ChkLeg` wants
    checker coins fresh each round and independent of the beacon (`chkLeg_of_product`; residual
    "fresh coins" of `AuditSampling` §8). A fixed hash is neither. So the oracle `o : Orc` is drawn
-   once; `Good o` says the checker accepts no false claim and no opened record differs from the
-   served one; on `Good o` the round has `εchk = εbind = 0` and the sequential bound gives `1/q₀`;
-   off it the count is at most the horizon `n`. Averaging over the oracle:
-   `E[C_{τ∧n}] ≤ 1/q₀ + n·(δchk + δbind)` (`expected_count_le`). The horizon appears; that is the
-   honest price of a shared oracle. It is the shape of `ComputationalBinding.leakage_of_global_game`
+   once, and the bad event is read on the SAMPLED RUN: `BadPath` says that at some round of this
+   run, live and corrupt, the audit fired and the verdict was `accept`. Off that event the run is
+   the run of the `ideal` comparison round (`count_eq_ideal`), which alarms on every fired corrupt
+   round and so meets the sequential bound at `1/q₀`; on it the count is at most the horizon `n`.
+   Averaged: `E[C_{τ∧n}] ≤ 1/q₀ + n·(δchk + δbind)` (`expected_count_le`, through the landed
+   `ComputationalBinding.leakage_with_global_binding`). The horizon appears; that is the honest
+   price of a shared oracle. (Codex round 1 refuted an earlier form whose bad event ranged over
+   every history, counterfactual branches included.) It is the shape of `ComputationalBinding.leakage_of_global_game`
    (`Selvage/BindingBudget.lean`, `b/q + M·ε`), with two differences: the bad event lives on a
    separately drawn oracle, not on the run's own coins, and binding enters through a named
    extractor rather than that theorem's `SecureAt`, which `BindingFixedHash` shows vacuous at a
    fixed hash.
 2. **Their bound is about the Lean `verify`, not `cp_verify`.** `δchk` enters as the hypothesis
-   `hsnd`, named **[FP-chk-transport]**: the probability over the oracle that `cp_verify`, as the
-   auditor runs it, accepts a false claim is at most `fpSoundErr Q`. FlashProve's `sound` proves
-   that bound for `verify`; no theorem relates `cp_verify` to `verify` (their `lean/LIMITS.md`,
-   L9 and L53). The `lean-verify` cross-check on bb2 is evidence for it, not a discharge.
+   `hsnd`, named **[FP-chk-transport]**: averaged over the oracle and the run's coins, the
+   probability that some live corrupt fired round of the run is accepted with its committed
+   record is at most `δchk`. What discharging it needs, none of which is proved here: the public
+   files fixed before the oracle is drawn; `isFalse` equal to FlashProve's falsity (not the
+   model's output at the extracted weights); `cp_verify` accepting only where `verify` accepts
+   (no theorem: their `lean/LIMITS.md`, L9, L53); and a reduction from the n-round run to ONE
+   `Sound` game: run the whole audit, output the first accepted false claim. That reduction makes
+   the auditor's own verifications part of the adversary, so the value is
+   `fpSoundErr (Q + n·(2^23 + 1))`, not `fpSoundErr Q`, and the damage term stays `n·δ`, not the
+   `n²·δ` a per-round union bound would give. `fpSoundErr` is a transcription of their
+   definition; nothing imports it. The `lean-verify` cross-check is evidence, not a discharge.
+   Like every random-oracle bound, the average over `Orc` says nothing about one deployed hash.
 3. **Exact match only.** Their theorem asks for exact match; `verdictOf` accepts only `YES` with
    `policy=exact-match` and `sh=8`. At a clipped-gap policy no bound of this strength exists, the
    honest `δchk` is 1, and `expected_count_le` says nothing, which is the right verdict.
-4. **Fail-closed on every non-accept.** `alarm` raises on `reject` and `noVerdict` alike: exit 1,
+4. **Fail-closed on every non-accept.** The opening, the files and the verdict may depend on the
+   current round's coin (`World.opened`, `World.call` read `ω`): only the served claim is fixed
+   before the beacon. `alarm` raises on `reject` and `noVerdict` alike: exit 1,
    any other exit code, a timeout, a kill, a missing proof, a hostile file. `round_failClosed` is
    proved, and `FailOpen.collapse` shows the fail-open `alarmOpen` lets an adversary that withholds
    proofs run every round uncaught, at every horizon, against the same beacon.
 5. **The beacon round is anchored by the requester.** The coin of position `t` is
    `BLAKE3(drand signature of round (seen_t + 2) ‖ position)`, where `seen_t` is the latest drand
    round named in the requester's countersigned commitment. In this file the coin space is
-   abstract; `beacon_ideal` proves the fire rate exactly `pNum/2^64` for a uniform 64-bit coin, and
-   the general theorem carries `εbeacon` as the hypothesis `hbeacon`. What `εbeacon` must absorb —
+   abstract and each round's coin is FRESH (the `expOver` model); `beacon_ideal` proves the fire
+   rate exactly `pNum/2^64` for a uniform 64-bit coin, and the general theorem carries `εbeacon`
+   as the hypothesis `hbeacon` on that fresh coin. The deployment owes the freshness: a coin
+   reused across rounds meets the marginal rate and breaks the theorem (codex round 1: one coin
+   forever gives `p + (1−p)n` against an always-corrupt prover); the position inside the hash and
+   the `seen + 2` round are what make each round's coin unseen at commitment. What `εbeacon` must absorb —
    drand's threshold honesty, the requester's honesty about the round it saw, BLAKE3 as a random
    function — is an assumption, not a number this file computes.
 
 ## What the binding term is
 
-`δbind` is the probability that ONE named deterministic reduction outputs a BLAKE3 collision:
-`hext` says that whenever some opened record differs from the served one under the same MMR root,
-`reduce o` is a collision. That is the `cert_and_of_collisionExtractor` form of
+`δbind` is the probability that ONE named deterministic reduction outputs a collision (BLAKE3 in
+the MMR, or SHA-256 between the files and the record): `hext` says that whenever a fired audit of a
+live corrupt round ACCEPTED an opening (so the auditor's `openOk` check passed: the files hash to a
+record that opens at the position under the root) that is not the served record, `reduce` of the
+run is a collision. A garbage opening is not charged here; it fails `openOk`, and
+`auditVerdict` rejects it. That is the `cert_and_of_collisionExtractor` form of
 `Selvage/BindingFixedHash.lean`; no adversary class is quantified, so the term is not vacuous at a
 fixed hash. Its value is a human-ignorance bound, not a theorem.
 -/
 import Selvage.AuditSampling
+import Selvage.BindingBudget
 import Selvage.AuditFlashProveDecide
 
 namespace Minidregg.Selvage.AuditFlashProve
@@ -67,42 +88,38 @@ set_option autoImplicit false
 
 /-! ## 1. The world one oracle draw determines -/
 
-/-- What one draw of the oracle `o` fixes: the adversary's whole strategy and the checker's
-answers. `served h` is the claim the round served at history `h`; `opened h` the record the auditor
-reads back through the MMR opening; `call c` the `cp_verify` call on the files of claim `c` (its
-standard output and its exit status, `none` for no exit status of its own); `expect h` what the
-auditor holds for the request (ID, build, `r`, `e`). Nothing here reads the current round's coin:
-the claim is committed before the beacon emits. -/
+/-- What one draw of the oracle fixes: the prover's whole strategy and the checker's answers.
+`served h` is the claim the round served, fixed at commitment, before the round's coin. Everything
+handed over at audit time may depend on the coin `ω`: `opened h ω` is the record the files the
+auditor obtained open to, `openOk h ω` the auditor's own check that they open under the root at
+the position and hash to that record, `call h ω` the `cp_verify` call on them. `expect h` is what
+the auditor holds (ID, build, `r`, `e`). -/
 structure World (Claim Ω : Type) where
   served : List Ω → Claim
-  opened : List Ω → Claim
+  opened : List Ω → Ω → Claim
+  openOk : List Ω → Ω → Bool
   isFalse : Claim → Bool
-  call : Claim → String × Option UInt32
+  call : List Ω → Ω → String × Option UInt32
   expect : List Ω → Expect
 
 namespace World
 
 variable {Claim Ω : Type} [DecidableEq Claim]
 
-/-- The verdict at history `h`: `verdictOf` on the call made for the OPENED record. -/
-def verdict (W : World Claim Ω) (h : List Ω) : Verdict :=
-  verdictOf (W.call (W.opened h)).1 (W.call (W.opened h)).2 (W.expect h)
+/-- The verdict: the exported `auditVerdict`. -/
+def verdict (W : World Claim Ω) (h : List Ω) (ω : Ω) : Verdict :=
+  auditVerdict (W.openOk h ω) (W.call h ω).1 (W.call h ω).2 (W.expect h)
 
-/-- **The round.** Selection is `fires` on the round's coin; the alarm is `alarmFn` (the exported
-`alarm`, or the falsifier `alarmOpen`) of that and the verdict. -/
+/-- **The round.** Selection is the exported `fires` on the round's coin; the alarm is `alarmFn`
+(the exported `alarm`, or the falsifier `alarmOpen`) of that and the verdict. -/
 def round (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64)
     (alarmFn : Bool → Verdict → Bool) : Round Ω where
   corrupt h := W.isFalse (W.served h)
   fires _ ω := fires (coin ω) pNum
-  alarms h ω := alarmFn (fires (coin ω) pNum) (W.verdict h)
-  chkErr h _ := W.verdict h == .accept && decide (W.opened h = W.served h)
-  chkAbort h _ := W.verdict h == .noVerdict
-  bindBreak h _ := decide (W.opened h ≠ W.served h)
-
-/-- The good-oracle event: the auditor's openings are the served records, and no false claim is
-accepted. -/
-def Good (W : World Claim Ω) : Prop :=
-  (∀ h, W.opened h = W.served h) ∧ (∀ h, W.isFalse (W.served h) = true → W.verdict h ≠ .accept)
+  alarms h ω := alarmFn (fires (coin ω) pNum) (W.verdict h ω)
+  chkErr h ω := W.verdict h ω == .accept && decide (W.opened h ω = W.served h)
+  chkAbort h ω := W.verdict h ω == .noVerdict
+  bindBreak h ω := W.verdict h ω == .accept && decide (W.opened h ω ≠ W.served h)
 
 /-- **Fail-closed, proved for the exported `alarm`.** -/
 theorem round_failClosed (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
@@ -112,58 +129,79 @@ theorem round_failClosed (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UIn
   simp only [beq_iff_eq] at hab
   simp [hf, hab]
 
-/-- The miss decomposition, from fail-closedness via the landed `missDecomp_of_failClosed`. -/
+/-- The miss decomposition, from fail-closedness via the landed `missDecomp_of_failClosed`: a
+fired corrupt round that does not alarm was accepted, with the served record (a checker error) or
+another one (a binding break). -/
 theorem round_missDecomp (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
     Round.MissDecomp (W.round coin pNum alarm) := by
   refine Round.missDecomp_of_failClosed (round_failClosed W coin pNum) ?_
   intro h ω _ hf _ hno
   simp only [round, alarm] at hf hno ⊢
   rw [hf] at hno
-  have hacc : W.verdict h = .accept := by
-    cases hv : W.verdict h <;> simp_all
-  by_cases heq : W.opened h = W.served h
+  have hacc : W.verdict h ω = .accept := by
+    cases hv : W.verdict h ω <;> simp_all
+  by_cases heq : W.opened h ω = W.served h
   · left; simp [hacc, heq]
-  · right; simp [heq]
+  · right; simp [hacc, heq]
 
-/-- The parameters on the good event: nominal rate `p`, beacon shortfall `εb`, and nothing else. -/
-noncomputable def goodParams (p εb : ℝ) (hp0 : 0 ≤ p) (hp1 : p ≤ 1) (hεb : 0 ≤ εb) :
-    AuditParams where
-  p := p
-  εchk := 0
-  εbind := 0
-  εbeacon := εb
-  p_nonneg := hp0
-  p_le_one := hp1
-  εchk_nonneg := le_refl 0
-  εchk_le_one := zero_le_one
-  εbind_nonneg := le_refl 0
-  εbeacon_nonneg := hεb
+/-- **The comparison round**: the same process, except that every fired audit of a corrupt round
+alarms. It is what the real round is on runs where the checker and the binding never fail. -/
+def ideal (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : Round Ω :=
+  { W.round coin pNum alarm with
+    alarms := fun h ω => alarm (fires (coin ω) pNum) (W.verdict h ω)
+      || (W.isFalse (W.served h) && fires (coin ω) pNum) }
 
-theorem goodParams_q (p εb : ℝ) (hp0 : 0 ≤ p) (hp1 : p ≤ 1) (hεb : 0 ≤ εb) :
-    (goodParams p εb hp0 hp1 hεb).q = p - εb := by
-  simp [goodParams, AuditParams.q]
+/-- The run-level bad event at one round: live, corrupt, fired, accepted. -/
+def BadAt (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) (h : List Ω) (ω : Ω) : Prop :=
+  (W.round coin pNum alarm).stopped h = false ∧ W.isFalse (W.served h) = true ∧
+    fires (coin ω) pNum = true ∧ W.verdict h ω = .accept
 
-/-- **On the good event, the four legs hold**, with `εchk = εbind = 0` and the beacon's shortfall
-`εb` as given. -/
-theorem legs_of_good [Fintype Ω] (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64)
-    {p εb : ℝ} (hp0 : 0 ≤ p) (hp1 : p ≤ 1) (hεb : 0 ≤ εb)
-    (hbeacon : p - εb ≤ uniformProb Ω (fun ω => fires (coin ω) pNum = true))
-    (hG : W.Good) :
-    Round.DetectionLegs (goodParams p εb hp0 hp1 hεb) (W.round coin pNum alarm) where
-  beacon := fun _ => by simpa [Round.BeaconLeg, goodParams, round] using hbeacon
-  chk := by
-    intro h hc
-    have hna : W.verdict h ≠ .accept := hG.2 h (by simpa [round] using hc)
-    have : uniformProb Ω (fun ω => (W.round coin pNum alarm).fires h ω = true ∧
-        (W.round coin pNum alarm).chkErr h ω = true) = 0 :=
-      uniformProb_false (fun ω hω => by simp [round, hna] at hω)
-    rw [this]; simp [goodParams]
-  bind := by
-    intro h
-    have : uniformProb Ω (fun ω => (W.round coin pNum alarm).bindBreak h ω = true) = 0 :=
-      uniformProb_false (fun ω hω => by simp [round, hG.1 h] at hω)
-    rw [this]; simp [goodParams]
-  miss := round_missDecomp W coin pNum
+/-- **The bad event on the sampled run**: some round of THIS run was live, corrupt, fired and
+accepted. Histories are most recent first, so this reads every round of `h` once. -/
+def BadPath (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : List Ω → Prop
+  | [] => False
+  | ω :: h => BadPath W coin pNum h ∨ BadAt W coin pNum h ω
+
+/-- Off the bad event the real run IS the ideal run: same stops, same count. -/
+theorem agree_ideal (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
+    ∀ h, ¬ BadPath W coin pNum h →
+      (W.round coin pNum alarm).stopped h = (W.ideal coin pNum).stopped h ∧
+      (W.round coin pNum alarm).count h = (W.ideal coin pNum).count h
+  | [] => fun _ => ⟨rfl, rfl⟩
+  | ω :: h => by
+    intro hb
+    simp only [BadPath, not_or] at hb
+    obtain ⟨hs, hc⟩ := agree_ideal W coin pNum h hb.1
+    have hcorr : (W.ideal coin pNum).corrupt h = (W.round coin pNum alarm).corrupt h := rfl
+    have halarm : (W.round coin pNum alarm).stopped h = false →
+        (W.round coin pNum alarm).alarms h ω = (W.ideal coin pNum).alarms h ω := by
+      intro hlive
+      show alarm _ _ = (alarm _ _ || _)
+      by_cases hf : fires (coin ω) pNum = true
+      · by_cases hcr : W.isFalse (W.served h) = true
+        · have hv : W.verdict h ω ≠ .accept := fun hv => hb.2 ⟨hlive, hcr, hf, hv⟩
+          simp [alarm, hf, hcr, hv]
+        · simp [hcr]
+      · simp [hf, alarm]
+    refine ⟨?_, ?_⟩
+    · simp only [Round.stopped]
+      rw [← hs]
+      cases hst : (W.round coin pNum alarm).stopped h
+      · rw [halarm hst]
+      · rfl
+    · simp only [Round.count]
+      rw [← hs, hc, hcorr]
+
+/-- On the ideal round a live corrupt round alarms at least at the fire rate. -/
+theorem ideal_detect [Fintype Ω] (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) {q : ℝ}
+    (hbeacon : q ≤ uniformProb Ω (fun ω => fires (coin ω) pNum = true)) :
+    ∀ h, (W.ideal coin pNum).stopped h = false → (W.ideal coin pNum).corrupt h = true →
+      q ≤ uniformProb Ω (fun ω => (W.ideal coin pNum).alarms h ω = true) := by
+  intro h _ hc
+  refine le_trans hbeacon (uniformProb_mono fun ω hf => ?_)
+  have hc' : W.isFalse (W.served h) = true := hc
+  show (alarm _ _ || _) = true
+  simp [hc', hf]
 
 end World
 
@@ -176,86 +214,118 @@ theorem count_le_length {Ω : Type} (R : Round Ω) : ∀ h : List Ω, R.count h 
     simp only [Round.count, List.length_cons]
     split_ifs <;> omega
 
-theorem expOver_count_le {Ω : Type} [Fintype Ω] [Nonempty Ω] (R : Round Ω) (n : ℕ) :
-    expOver Ω n (fun h => (R.count h : ℝ)) [] ≤ n := by
-  have := expOver.mono (Ω := Ω) (f := fun h => (R.count h : ℝ)) (g := fun h => (h.length : ℝ))
-    (fun h => by exact_mod_cast count_le_length R h) n []
-  rw [expOver.length] at this
-  simpa using this
+theorem expOver_add {Ω : Type} [Fintype Ω] (f g : List Ω → ℝ) :
+    ∀ (n : ℕ) (h : List Ω),
+      expOver Ω n (fun x => f x + g x) h = expOver Ω n f h + expOver Ω n g h := by
+  intro n
+  induction n with
+  | zero => intro h; rfl
+  | succ n ih =>
+    intro h
+    rw [expOver.succ, expOver.succ, expOver.succ]
+    simp only [ih]
+    rw [Finset.sum_add_distrib, add_div]
 
-/-! ## 3. The composed theorem: averaged over the oracle -/
+/-! ## 3. The composed theorem -/
 
 section Composed
 
 variable {Orc Claim Ω Witness : Type} [Fintype Orc] [Nonempty Orc] [Fintype Ω] [Nonempty Ω]
   [DecidableEq Claim]
 
-/-- The checker-bad event: some false claim is accepted. -/
-def ChkBad (W : World Claim Ω) : Prop :=
-  ∃ h, W.isFalse (W.opened h) = true ∧ W.verdict h = .accept
+/-- The checker-bad event on the run: a live corrupt fired round accepted WITH its served record.
+-/
+def ChkBadPath (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : List Ω → Prop
+  | [] => False
+  | ω :: h => ChkBadPath W coin pNum h ∨ (World.BadAt W coin pNum h ω ∧ W.opened h ω = W.served h)
 
-/-- The binding-bad event: some opened record is not the served one. -/
-def BindBad (W : World Claim Ω) : Prop := ∃ h, W.opened h ≠ W.served h
+/-- The binding-bad event on the run: a live corrupt fired round accepted with ANOTHER record. -/
+def BindBadPath (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) : List Ω → Prop
+  | [] => False
+  | ω :: h => BindBadPath W coin pNum h ∨ (World.BadAt W coin pNum h ω ∧ W.opened h ω ≠ W.served h)
 
 omit [Fintype Ω] [Nonempty Ω] in
-theorem good_of_not_bad (W : World Claim Ω) (hc : ¬ ChkBad W) (hb : ¬ BindBad W) : W.Good := by
-  refine ⟨fun h => ?_, fun h hf hacc => hc ⟨h, ?_, hacc⟩⟩
-  · by_contra hne; exact hb ⟨h, hne⟩
-  · have : W.opened h = W.served h := by by_contra hne; exact hb ⟨h, hne⟩
-    rwa [this]
+theorem badPath_split (W : World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64) :
+    ∀ h, World.BadPath W coin pNum h → ChkBadPath W coin pNum h ∨ BindBadPath W coin pNum h
+  | [] => fun h => h.elim
+  | ω :: h => by
+    intro hb
+    rcases hb with hb | hb
+    · rcases badPath_split W coin pNum h hb with hc | hc
+      · exact Or.inl (Or.inl hc)
+      · exact Or.inr (Or.inl hc)
+    · by_cases heq : W.opened h ω = W.served h
+      · exact Or.inl (Or.inr ⟨hb, heq⟩)
+      · exact Or.inr (Or.inr ⟨hb, heq⟩)
 
-/-- **THE COMPOSED BOUND.** Draw the oracle `o` once. The expected number of corrupt rounds
-before the first alarm, at horizon `n`, averaged over the oracle, is at most
+/-- `Pr` over the run at horizon `n`, as `expOver` of an indicator. -/
+noncomputable def runProb (n : ℕ) (P : List Ω → Prop) : ℝ :=
+  by classical exact expOver Ω n (fun h => if P h then 1 else 0) []
+
+/-- **THE COMPOSED BOUND.** Draw the oracle `o` once; run `n` rounds with fresh coins. The
+expected number of corrupt rounds before the first alarm, averaged over the oracle, is at most
 `1/(p − εb) + n·(δchk + δbind)`, where
 
-* `hbeacon`: the coin fires with probability at least `p − εb` (`beacon_ideal` discharges it with
-  `εb = 0` for a uniform 64-bit coin);
-* `hsnd` **[FP-chk-transport]**: the oracle makes `cp_verify` accept some false claim with
-  probability at most `δchk` (FlashProve's `sound`, for `verify`, gives `fpSoundErr Q`);
-* `hext`: whenever an opening differs from the served record, the named reduction `reduce o` is a
-  collision (`Coll`); `δbind` is the probability of that.
+* `hbeacon`: each fresh coin fires with probability at least `p − εb` (`beacon_ideal` discharges
+  it with `εb = 0` for a uniform 64-bit coin);
+* `hsnd` **[FP-chk-transport]**: averaged over the oracle, the run accepts a false claim with its
+  served record with probability at most `δchk`;
+* `hext`: a run that accepted another record makes the named reduction output a collision
+  (`Coll`), and `δbind` is the averaged probability of that.
 
-Every hypothesis is about a named object; none quantifies over an adversary class. -/
+The proof runs the landed `leakage_with_global_binding` per oracle against the `ideal` round, then
+averages. -/
 theorem expected_count_le (W : Orc → World Claim Ω) (coin : Ω → UInt64) (pNum : UInt64)
-    {p εb δchk : ℝ} (hp0 : 0 ≤ p) (hp1 : p ≤ 1) (hεb : 0 ≤ εb) (hq : 0 < p - εb)
-    (hbeacon : p - εb ≤ uniformProb Ω (fun ω => fires (coin ω) pNum = true))
-    (hsnd : uniformProb Orc (fun o => ChkBad (W o)) ≤ δchk)
-    (Coll : Orc → Witness → Prop) (reduce : Orc → Witness)
-    (hext : ∀ o, BindBad (W o) → Coll o (reduce o)) (n : ℕ) :
+    {q δchk : ℝ} (hq : 0 < q)
+    (hbeacon : q ≤ uniformProb Ω (fun ω => fires (coin ω) pNum = true))
+    (n : ℕ)
+    (hsnd : (∑ o : Orc, runProb n (ChkBadPath (W o) coin pNum)) / (Fintype.card Orc : ℝ) ≤ δchk)
+    (Coll : Orc → List Ω → Prop)
+    (hext : ∀ o h, BindBadPath (W o) coin pNum h → Coll o h) :
     (∑ o : Orc, expOver Ω n (fun h => ((W o).round coin pNum alarm |>.count h : ℝ)) [])
         / (Fintype.card Orc : ℝ)
-      ≤ 1 / (p - εb) + n * (δchk + uniformProb Orc (fun o => Coll o (reduce o))) := by
+      ≤ 1 / q + n * (δchk + (∑ o : Orc, runProb n (Coll o)) / (Fintype.card Orc : ℝ)) := by
   classical
-  set E : Orc → ℝ := fun o => expOver Ω n (fun h => ((W o).round coin pNum alarm |>.count h : ℝ)) []
   have hcard : (0 : ℝ) < (Fintype.card Orc : ℝ) := by exact_mod_cast Fintype.card_pos
-  -- per oracle: good gives 1/q₀, bad gives n
-  have hper : ∀ o, E o ≤ 1 / (p - εb) + n * (if ChkBad (W o) ∨ Coll o (reduce o) then 1 else 0) := by
-    intro o
-    have hn0 : (0 : ℝ) ≤ 1 / (p - εb) := le_of_lt (one_div_pos.mpr hq)
-    by_cases hb : ChkBad (W o) ∨ Coll o (reduce o)
-    · simp only [hb, ite_true, mul_one]
-      have := expOver_count_le ((W o).round coin pNum alarm) n
-      linarith
-    · simp only [hb, ite_false, mul_zero, add_zero]
-      push Not at hb
-      have hG := good_of_not_bad (W o) hb.1 (fun hbb => hb.2 (hext o hbb))
-      have hL := World.legs_of_good (W o) coin pNum hp0 hp1 hεb hbeacon hG
-      have hq' : 0 < (World.goodParams p εb hp0 hp1 hεb).q := by
-        rw [World.goodParams_q]; exact hq
-      have := Round.sequential_bound_of_legs hL hq' n
-      rwa [World.goodParams_q] at this
-  have hsum : ∑ o, E o ≤ ∑ o, (1 / (p - εb) + n * (if ChkBad (W o) ∨ Coll o (reduce o) then (1 : ℝ) else 0)) :=
-    Finset.sum_le_sum fun o _ => hper o
-  rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, nsmul_eq_mul,
-    ← Finset.mul_sum] at hsum
-  have hpr : (∑ o : Orc, if ChkBad (W o) ∨ Coll o (reduce o) then (1 : ℝ) else 0)
-      / (Fintype.card Orc : ℝ) ≤ δchk + uniformProb Orc (fun o => Coll o (reduce o)) := by
-    rw [← uniformProb_eq_avg_indicator]
-    exact le_trans (uniformProb_or_le _ _) (by linarith [hsnd])
   have hn : (0 : ℝ) ≤ n := Nat.cast_nonneg n
+  -- per oracle
+  have hper : ∀ o, expOver Ω n (fun h => ((W o).round coin pNum alarm |>.count h : ℝ)) []
+      ≤ 1 / q + n * (runProb n (ChkBadPath (W o) coin pNum) + runProb n (Coll o)) := by
+    intro o
+    have hbadle : expOver Ω n (fun h => if World.BadPath (W o) coin pNum h then (1 : ℝ) else 0) []
+        ≤ runProb n (ChkBadPath (W o) coin pNum) + runProb n (Coll o) := by
+      unfold runProb
+      rw [← expOver_add]
+      refine expOver.mono (fun h => ?_) n []
+      by_cases hb : World.BadPath (W o) coin pNum h
+      · rcases badPath_split (W o) coin pNum h hb with hc | hc
+        · have := hext o h
+          by_cases hcl : Coll o h <;> simp [hb, hc, hcl]
+        · simp [hb, hext o h hc]
+          split_ifs <;> norm_num
+      · simp only [hb, if_false]
+        split_ifs <;> norm_num
+    have := ComputationalBinding.leakage_with_global_binding ((W o).ideal coin pNum)
+      (fun h => ((W o).round coin pNum alarm |>.count h : ℝ)) (World.BadPath (W o) coin pNum) n
+      1 q n _ hq zero_le_one ((W o).ideal_detect coin pNum hbeacon) hn
+      (fun h _ hb => by
+        rw [((W o).agree_ideal coin pNum h hb).2, one_mul])
+      (fun h hl _ => by
+        have := count_le_length ((W o).round coin pNum alarm) h
+        rw [hl] at this; exact_mod_cast this)
+      le_rfl
+    calc _ ≤ 1 / q + n * expOver Ω n
+            (fun h => if World.BadPath (W o) coin pNum h then (1 : ℝ) else 0) [] := this
+      _ ≤ _ := by gcongr
+  have hsum := Finset.sum_le_sum fun o (_ : o ∈ Finset.univ) => hper o
+  rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, nsmul_eq_mul,
+    ← Finset.mul_sum, Finset.sum_add_distrib] at hsum
   rw [div_le_iff₀ hcard]
-  have h2 := mul_le_mul_of_nonneg_left hpr hn
-  rw [mul_div_assoc', div_le_iff₀ hcard] at h2
+  have h1 : (∑ o : Orc, runProb n (ChkBadPath (W o) coin pNum)) ≤ δchk * (Fintype.card Orc : ℝ) :=
+    (div_le_iff₀ hcard).mp hsnd
+  have h2 : (∑ o : Orc, runProb n (Coll o))
+      = ((∑ o : Orc, runProb n (Coll o)) / (Fintype.card Orc : ℝ)) * (Fintype.card Orc : ℝ) := by
+    field_simp
   nlinarith
 
 end Composed
@@ -313,25 +383,31 @@ def pNum020 : UInt64 := 3689348814741910323
 #guard pNum005.toNat = 18446744073709551616 / 20
 #guard pNum020.toNat = 18446744073709551616 / 5
 
-/-- **The instance at `p = 0.01`, the ideal beacon, and `Q = 2^64`.** Expected corrupt rounds
-before the first alarm, at any horizon `n`, at most `2^64/⌊0.01·2^64⌋ + n·(fpSoundErr 2^64 + δbind)`,
-under **[FP-chk-transport]** (`hsnd`) and the collision extractor (`hext`). -/
-theorem flashprove_p001 {Orc Claim Witness : Type} [Fintype Orc] [Nonempty Orc] [DecidableEq Claim]
-    (W : Orc → World Claim (Fin (2 ^ 64)))
-    (hsnd : uniformProb Orc (fun o => ChkBad (W o)) ≤ (fpSoundErr (2 ^ 64) : ℝ))
-    (Coll : Orc → Witness → Prop) (reduce : Orc → Witness)
-    (hext : ∀ o, BindBad (W o) → Coll o (reduce o)) (n : ℕ) :
+/-- The query budget the run-to-one-game reduction spends: the adversary's `Q`, plus, for each of
+the `n` rounds, the verifier's own allowance and the parser's query. -/
+def reductionQueries (Q n : ℕ) : ℕ := Q + n * (2 ^ 23 + 1)
+
+/-- At `Q = 2^64` and a horizon of `2^20` rounds the reduction's bound is still below `2^-59`. -/
+theorem fpSoundErr_reduction : fpSoundErr (reductionQueries (2 ^ 64) (2 ^ 20)) < 1 / 2 ^ 59 := by
+  unfold fpSoundErr reductionQueries; norm_num
+
+/-- **The instance at `p = 0.01`, the ideal beacon.** Expected corrupt rounds before the first
+alarm, at horizon `n`, at most `2^64/⌊0.01·2^64⌋ + n·(fpSoundErr (Q + n·(2^23+1)) + δbind)`, under
+**[FP-chk-transport]** (`hsnd`, at the reduction's query count) and the collision extractor. -/
+theorem flashprove_p001 {Orc Claim : Type} [Fintype Orc] [Nonempty Orc] [DecidableEq Claim]
+    (W : Orc → World Claim (Fin (2 ^ 64))) (Q n : ℕ)
+    (hsnd : (∑ o : Orc, runProb n (ChkBadPath (W o) coin64 pNum001)) / (Fintype.card Orc : ℝ)
+      ≤ (fpSoundErr (reductionQueries Q n) : ℝ))
+    (Coll : Orc → List (Fin (2 ^ 64)) → Prop)
+    (hext : ∀ o h, BindBadPath (W o) coin64 pNum001 h → Coll o h) :
     (∑ o : Orc, expOver (Fin (2 ^ 64)) n
         (fun h => ((W o).round coin64 pNum001 alarm |>.count h : ℝ)) []) / (Fintype.card Orc : ℝ)
       ≤ 1 / ((pNum001.toNat : ℝ) / 2 ^ 64)
-        + n * ((fpSoundErr (2 ^ 64) : ℝ) + uniformProb Orc (fun o => Coll o (reduce o))) := by
+        + n * ((fpSoundErr (reductionQueries Q n) : ℝ)
+          + (∑ o : Orc, runProb n (Coll o)) / (Fintype.card Orc : ℝ)) := by
   have hp : (0 : ℝ) < (pNum001.toNat : ℝ) / 2 ^ 64 := by
     apply div_pos _ (by norm_num); exact_mod_cast (by decide : 0 < pNum001.toNat)
-  have hp1 : (pNum001.toNat : ℝ) / 2 ^ 64 ≤ 1 := by
-    rw [div_le_one (by norm_num)]; exact_mod_cast le_of_lt pNum001.toNat_lt
-  have := expected_count_le W coin64 pNum001 (le_of_lt hp) hp1 (le_refl 0)
-    (by simpa using hp) (by rw [beacon_ideal]; simp) hsnd Coll reduce hext n
-  simpa using this
+  exact expected_count_le W coin64 pNum001 hp (by rw [beacon_ideal]) n hsnd Coll hext
 
 /-! ## 6. Teeth -/
 
@@ -346,45 +422,54 @@ private def yes : String × Option UInt32 :=
 
 private def ex : Expect := { id := "A", build := "B", r := 60, e := 64, acceptWork := true }
 
-#guard verdictOf yes.1 yes.2 ex == .accept
+#guard auditVerdict true yes.1 yes.2 ex == .accept
 
-/-- The honest world: always corrupt, the checker rejects false claims (exit 1). -/
+/-- An always-corrupt prover against a checker that rejects (exit 1). -/
 def honestChecker : World Claim (Fin (2 ^ 64)) where
   served _ := true
-  opened _ := true
+  opened _ _ := true
+  openOk _ _ := true
   isFalse c := c
-  call c := if c then ("NO: reply-differs\n", some 1) else yes
+  call _ _ := ("NO: reply-differs\n", some 1)
   expect _ := ex
 
-/-- It is good: the hypotheses of `expected_count_le` are inhabited with `δchk = δbind = 0`. -/
-theorem honestChecker_verdict (h : List (Fin (2 ^ 64))) :
-    honestChecker.verdict h = .reject := rfl
+theorem honestChecker_verdict (h : List (Fin (2 ^ 64))) (ω : Fin (2 ^ 64)) :
+    honestChecker.verdict h ω = .reject := rfl
 
-theorem honestChecker_good : honestChecker.Good :=
-  ⟨fun _ => rfl, fun h _ => by rw [honestChecker_verdict]; simp⟩
+/-- Its run never meets the bad event: `hsnd` and `hext` hold at `δchk = δbind = 0`, so the
+hypotheses of `expected_count_le` are inhabited. -/
+theorem honestChecker_noBad (coin : Fin (2 ^ 64) → UInt64) (pNum : UInt64) :
+    ∀ h, ¬ World.BadPath honestChecker coin pNum h
+  | [] => id
+  | ω :: h => by
+    rintro (hb | ⟨_, _, _, hv⟩)
+    · exact honestChecker_noBad coin pNum h hb
+    · rw [honestChecker_verdict] at hv; cases hv
 
-/-- A world whose opening is not the served record is NOT good: `Good` has content. (That an
-accepting checker is not good is the `#guard` above read against `Good`'s second conjunct; the
-kernel does not evaluate `String` parsing, so that case is checked by evaluation, not by proof.) -/
-def bindBreaker : World Claim (Fin (2 ^ 64)) := { honestChecker with opened := fun _ => false }
+/-- A prover whose files fail the auditor's opening check is rejected whatever `cp_verify` says:
+a garbage opening is an alarm, never a binding charge. -/
+def badOpening : World Claim (Fin (2 ^ 64)) :=
+  { honestChecker with openOk := fun _ _ => false, call := fun _ _ => yes }
 
-theorem bindBreaker_not_good : ¬ bindBreaker.Good := fun hG => by
-  have := hG.1 []; simp [bindBreaker, honestChecker] at this
+theorem badOpening_rejects (h : List (Fin (2 ^ 64))) (ω : Fin (2 ^ 64)) :
+    badOpening.verdict h ω = .reject := rfl
 
-/-- **The withholding adversary**: always corrupt, never hands a proof (no exit status). -/
+/-- **The withholding prover**: always corrupt, its opening checks out, it hands no proof, and
+`cp_verify` ends with no exit status of its own. -/
 def withholder : World Claim (Fin (2 ^ 64)) :=
-  { honestChecker with call := fun _ => ("", none) }
+  { honestChecker with call := fun _ _ => ("", none) }
+
+theorem withholder_verdict (h : List (Fin (2 ^ 64))) (ω : Fin (2 ^ 64)) :
+    withholder.verdict h ω = .noVerdict := rfl
 
 /-- **FAIL-OPEN COLLAPSES.** Under `alarmOpen` the withholder is never caught: the expected
 corrupt count at horizon `n` is exactly `n`, for every `n` and every rate `pNum`. -/
-theorem withholder_verdict (h : List (Fin (2 ^ 64))) : withholder.verdict h = .noVerdict := rfl
-
 theorem FailOpen.collapse (pNum : UInt64) (n : ℕ) :
     expOver (Fin (2 ^ 64)) n (fun h => ((withholder.round coin64 pNum alarmOpen).count h : ℝ)) []
       = n := by
   have halarm : ∀ h ω, (withholder.round coin64 pNum alarmOpen).alarms h ω = false := by
     intro h ω
-    show alarmOpen _ (withholder.verdict h) = false
+    show alarmOpen _ (withholder.verdict h ω) = false
     rw [withholder_verdict]; simp [alarmOpen]
   have hstop : ∀ h : List (Fin (2 ^ 64)),
       (withholder.round coin64 pNum alarmOpen).stopped h = false := by
@@ -405,14 +490,17 @@ theorem FailOpen.collapse (pNum : UInt64) (n : ℕ) :
 theorem withholder_failOpen (pNum : UInt64) :
     Round.FailOpen (withholder.round coin64 pNum alarmOpen) := by
   intro h ω _
-  show alarmOpen _ (withholder.verdict h) = false
+  show alarmOpen _ (withholder.verdict h ω) = false
   rw [withholder_verdict]; simp [alarmOpen]
 
-/-- **And fail-closed catches the same adversary at the nominal rate**: the withholder's world is
-good-for-binding, and its verdict is `noVerdict`, never `accept`, so `legs_of_good` applies and the
-bound is `1/p`. -/
-theorem withholder_good : withholder.Good :=
-  ⟨fun _ => rfl, fun h _ => by rw [withholder_verdict]; simp⟩
+/-- **Fail-closed meets the same prover at no cost**: its run never meets the bad event, so
+`expected_count_le` bounds it at `1/p` with `δchk = δbind = 0`. -/
+theorem withholder_noBad (pNum : UInt64) : ∀ h, ¬ World.BadPath withholder coin64 pNum h
+  | [] => id
+  | ω :: h => by
+    rintro (hb | ⟨_, _, _, hv⟩)
+    · exact withholder_noBad pNum h hb
+    · rw [withholder_verdict] at hv; cases hv
 
 /-- At `p = 0.2` the fail-open count passes the fail-closed bound `1/p = 5` at horizon 6. -/
 theorem failOpen_beats_bound :
@@ -432,28 +520,29 @@ end Teeth
 #guard_msgs (whitespace := lax) in #print axioms flashprove_p001
 /-- info: 'Minidregg.Selvage.AuditFlashProve.World.round_failClosed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms World.round_failClosed
+/-- info: 'Minidregg.Selvage.AuditFlashProve.World.round_missDecomp' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms World.round_missDecomp
+/-- info: 'Minidregg.Selvage.AuditFlashProve.World.agree_ideal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms World.agree_ideal
+/-- info: 'Minidregg.Selvage.AuditFlashProve.World.ideal_detect' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms World.ideal_detect
 /-- info: 'Minidregg.Selvage.AuditFlashProve.beacon_ideal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms beacon_ideal
+/-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_2_64' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms fpSoundErr_2_64
+/-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_zero_floor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms fpSoundErr_zero_floor
+/-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_reduction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms fpSoundErr_reduction
 /-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.FailOpen.collapse' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms Teeth.FailOpen.collapse
 /-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.failOpen_beats_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms Teeth.failOpen_beats_bound
-/-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_2_64' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms fpSoundErr_2_64
-
-/-- info: 'Minidregg.Selvage.AuditFlashProve.World.round_missDecomp' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms World.round_missDecomp
-/-- info: 'Minidregg.Selvage.AuditFlashProve.World.legs_of_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms World.legs_of_good
 /-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.withholder_failOpen' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms Teeth.withholder_failOpen
-/-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.withholder_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms Teeth.withholder_good
-/-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.honestChecker_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms Teeth.honestChecker_good
-/-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.bindBreaker_not_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms Teeth.bindBreaker_not_good
-/-- info: 'Minidregg.Selvage.AuditFlashProve.fpSoundErr_zero_floor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms fpSoundErr_zero_floor
+/-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.withholder_noBad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Teeth.withholder_noBad
+/-- info: 'Minidregg.Selvage.AuditFlashProve.Teeth.honestChecker_noBad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Teeth.honestChecker_noBad
 
 end Minidregg.Selvage.AuditFlashProve
