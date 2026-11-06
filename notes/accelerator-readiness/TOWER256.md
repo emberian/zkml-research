@@ -177,11 +177,82 @@ multiply kernel improves.
 
 ## 7. What is left (owned here unless noted)
 
-- **A bit-sliced Tower256 multiply on SIMT,** measured on the T4 against the 2.87e8 table
-  kernel. It is the GPU encode's lever: 80% of device time at ell 20.
+- **The GPU multiply is still the encode's lever** (80% of device time at ell 20). The
+  per-thread bit-sliced kernel did not move it (§8). The design to try next is warp-cooperative
+  (below).
 - **A Rust host for the device kernels,** to remove the Python openings (100-220 ms).
 - **Tower256 lane's call** whether `tower256_fri_fast` (or its pieces: the Gao-Mateer encode, the
   stored trees, the polynomial-basis multiply) replaces the conformance kernel behind
   `tower256_additive_fri_prove_bytes`. Its receipts are byte-identical, and the conformance
   kernel stays as the pinned reference.
 - The `lib.rs` line is in `patches/minidregg-tower256-fri-fast-mod.patch`.
+
+## 8. The bit-sliced Tower256 multiply on the T4 (`accel-tower-bitslice-01`, 2 versions)
+
+This tests the ~718 SIMT ops per multiply that F3-MODEL and ROTATION compare against.
+Runs: `runs/accel-tower-bitslice-01-v1`, `runs/accel-tower-bitslice-01-v2`. Each version is the
+whole shrunk script with `TOWER256_GPU_ARGS="--mul bs --bitslice-bench"`.
+
+**The kernels** (`prover/cuda/tower256_fri.cu`, after `transpose32`):
+- One thread multiplies a group of 32 products held as 256 bit planes (plane p, bit l = bit p
+  of element l).
+- The arithmetic is the Fan-Paar Karatsuba recursion on planes: AND at T_0, and the generator
+  map `y_{K-1}` as XORs.
+- `t256_mul_bs` works on resident sliced data: plane p of group g at `p*G + g`, coalesced.
+- `t256_mul_bsx` and `ntt_scale_bsx` / `ntt_butterfly_bsx` / `fri_fold_bsx` are fused: they
+  gather 32 elements, transpose 32x32 with five SWAR stages, multiply, and transpose back.
+  They replace the bulk kernels under `--mul bs`.
+- v1 cut the tree at T_5 (27 leaves in registers) and recombined through a flat table of 166
+  terms into a 256-word accumulator, generated symbolically by the lane's
+  `bs/gen_tables.py` (scratch, not committed).
+- v2 cuts at T_4 (81 leaves in registers) and combines depth-first through 720 words of
+  scratch. Levels 5-8 are out-of-line calls.
+
+**Bit-exact, both versions:**
+- 1,024 products against `binary_tower_256.rs` (`mul_check.bin`), through both the resident
+  path (to_sliced, mul, from_sliced) and the fused path.
+- 2^20 random products against the table kernel.
+- With `--mul bs` in the encode and folds: the five Lean receipts and the ell 10..20 receipts
+  and roots against the CPU prover.
+
+**Rates** (2^20 products, warm, synchronized; int32-op equivalents = 40 SM x 64 x 1.59 GHz /
+rate):
+
+| kernel | v1 (T_5 leaves, table recombination) | v2 (T_4 leaves, depth-first) |
+|---|---:|---:|
+| bit-sliced, resident planes | 7.96e7/s = 51,100 ops | 7.72e7/s = **52,700 ops** |
+| bit-sliced, fused with transposes | 3.22e7/s = 126,500 ops | 5.69e7/s = 71,500 ops |
+| log/exp table kernel, same session | 3.40e8/s = 12,000 ops | 2.33e8/s = 17,400 ops |
+| to_sliced / from_sliced (elements/s) | 4.4e8 / 1.07e8 | 4.3e8 / 1.06e8 |
+| ptxas, `t256_mul_bs` | 255 regs, 6.5 KB spill | 248 regs, no spill |
+
+`tower256_mul_per_s` (7.72e7) and `ops_per_mul` (52,700) are in v2's `results.json`.
+
+**Per proof at ell 20 with `--mul bs`** (v2): encode 236 ms, folds 26 ms. With the tables
+(dryrun-04) they are 87 ms and 7 ms. The bit-sliced kernel loses, so the tables stay the GPU
+path.
+
+**What this says about 718:**
+- The arithmetic count of this formula is fixed: 3^8 = 6,561 ANDs and 34,550 XORs per 32
+  products, from the recursion `X(K) = 3 X(K-1) + 3·2^K - 1`. That is 1,284 two-input ops per
+  product, or about 860 if every XOR pair fused into a three-input LOP3.
+- So 718 sits below even the ideal instruction count of Karatsuba-to-bits. It is not a
+  measured or attainable SIMT figure for this multiply.
+- The measured 52,700 is about 40x that count. What costs is data movement, not arithmetic:
+  - 256 planes per operand cannot live in 255 registers, so the tree runs through per-thread
+    local memory (L1/L2);
+  - at 248 registers only 8 warps fit per SM, too few to hide that traffic.
+- The table kernel (12,000-17,400 ops-equivalent, also latency-bound on bank-conflicted shared
+  loads) stays 3-4x ahead on sm_75.
+
+**For F3-MODEL and ROTATION:** use about 12,000-17,000 measured int32-op equivalents per
+Tower256 multiply on SIMT (T4, tables), not 718. With that, the multiply rather than the hash
+dominates the GPU prover. F3 item 6's "at 4x that multiply cost" branch is the one that holds,
+and the real factor is about 20x.
+
+**The next design**, if the multiply's GPU rate matters to a decision: warp-cooperative bit
+slicing. Each lane owns one leaf product in registers, the 32 lanes of a warp share one group's
+planes in shared memory (padded to stride 33 against bank conflicts), and the evaluation and
+recombination trees are spread across lanes. Estimate: about 1,700 lane-ops per product,
+around 7-10x the tables, if shared-memory traffic hides at moderate occupancy. It can be
+measured on the free T4.
