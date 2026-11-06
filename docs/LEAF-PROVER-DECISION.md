@@ -236,3 +236,59 @@ is `Deriv.Correctness.derives_neg` plus the L3 padding, already in the certifica
 
 What waits on (b)/(c): everything above is relation-level; no Tower256 AIR for automata is
 started, and none should be until the root-only statement lands.
+
+## 7. Proposal (ember's decision, not landed): a binary length codec for the Tower256 transcript
+
+2026-11-06. **Status: proposed, priced, not applied.** It changes transcript bytes and Merkle
+hash inputs, so it is a flag day.
+
+**What is there.** `Tower256CshakeMerkleController.encodeLength n` is unary: `n` zero bytes,
+then a 1 (`:63`). `envelope b = encodeLength |b| ++ b` therefore costs `2|b| + 1` bytes. The
+source comment already says a deployment codec "may replace its cost model without changing
+the ownership boundary".
+
+**The change.** `encodeLength n := u32_le n`, 4 bytes, so `envelope b` costs `|b| + 4`. The
+proof obligations stay the same and remain cheap: prefix-freeness of `envelope` and
+injectivity of `basisPrefix` (`basisPrefix_inj`, `envelope_append_inj`). A `u32` bound
+hypothesis on lengths, `< 2^32`, enters where unary needed none. That is a real new side
+condition, though every frame here is far below it.
+
+**What it saves**, counted by `notes/construction-search/tower256_fri_counts.py` at UD-100,
+`lb = 2`:
+
+| ell | codec | query-prefix bytes | seed Keccak-f | challenge Keccak-f | prover Keccak-f | verifier Keccak-f |
+|---:|---|---:|---:|---:|---:|---:|
+| 14 | unary (today) | 6,824 | 7,666 | 426 | 73,585 | 53,263 |
+| 14 | unary + prefix-state cache | 6,824 | 316 | 426 | 66,235 | 45,913 |
+| 14 | u32 | 1,832 | 2,072 | 95 | 67,660 | 47,338 |
+| 14 | u32 + cache | 1,832 | 161 | 95 | 65,749 | 45,427 |
+| 20 | unary (today) | 10,268 | 11,410 | 1,005 | 4,206,670 | 105,982 |
+| 20 | unary + cache | 10,268 | 385 | 1,005 | 4,195,645 | 94,957 |
+| 20 | u32 + cache | 2,600 | 167 | 202 | 4,194,624 | 93,936 |
+
+Per query seed, the input shrinks from about 6.8–10.3 KB to about 1.8–2.6 KB. Uncached, that
+is about 50 Keccak-f per seed against about 14. **With the absorbed prefix cached, an ABI-only
+change to `mini_cshake256_32` that keeps output identical, the codec change saves 1.1% of
+verifier hashing at ell = 14 and 1.1% at ell = 20.** Merkle hashing is unchanged: leaf and
+node inputs are already one Keccak-f block each under either codec (66→37 and 131→73 bytes).
+
+**What it invalidates.**
+- Every Tower256 cSHAKE root and transcript draw. Eleven Lean modules use this controller's
+  `envelope`/`encodeLength`:
+  - `Compiler/Tower256CshakeMerkleController`, `…MerkleBinding`;
+  - `Compiler/Tower256AdditiveFri{,Raw,Succinct}Controller`;
+  - `Compiler/{Bfv,NoteSpend,Ext6Gate}ProofController`;
+  - `Compiler/Ext6GateProofPositiveRun`;
+  - `Assurance/Tower256RawHistoryFsController`;
+  - the `Compiler.lean` umbrella.
+- Any accepted-receipt witness computed over them: the raw deployment's bootstrap receipt
+  and the Ext6 positive run.
+- Native code: none. No Rust implements these Merkle or transcript bytes yet (grep finds no
+  `hashLeaf`/`hashNode` port).
+- No artifact catalog entry pins these bytes today.
+
+**Recommendation.** Do the prefix-state cache first: native ABI only, transcript unchanged,
+and it captures about 96% of the seed saving. Fold the codec change into the next flag day that
+changes Tower256 transcript bytes anyway. The receipt codec and work-profile registration of
+`docs/TOWER256-FRI-PROVER-WORK.md` §4 is the natural one, since nothing native has frozen the
+bytes yet. On its own it buys about 1% after caching, which is not worth a flag day.
