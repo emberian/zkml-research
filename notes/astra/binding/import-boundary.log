@@ -1,0 +1,13 @@
+COMMAND ['bash', '/Users/ember/dev/zkml-research/notes/astra/binding/build/boundary-overlay/scripts/check-import-boundary.sh']
+Theory    -> Lean:10 Mathlib:210 Std:1 Theory:419
+Selvage   -> Mathlib:115 Selvage:426 Theory:13
+Effects   -> Effects:16 Lean:1 Theory:8
+Pred      -> Mathlib:2 Pred:20 Theory:5
+Kernel    -> Compiler:269 Effects:6 Init:2 Kernel:1306 Lean:1 Mathlib:48 Pred:16 Std:11 Theory:193
+Compiler  -> Assurance:2 Compiler:703 Effects:2 Init:8 Kernel:87 Lean:19 Mathlib:47 Pred:10 Selvage:10 Std:14 Theory:158
+Assurance -> Assurance:273 Compiler:65 Kernel:50 Mathlib:13 Pred:2 Selvage:47 Theory:43
+Host      -> Compiler:64 Host:301 Kernel:321 Lean:52 Mathlib:1 Pred:1 Std:4 Theory:16
+library components, dependencies first: Theory < Selvage < Effects < Pred < {Kernel, Compiler, Assurance} < Host
+OK: import-boundary: every import of Theory Selvage Effects Pred Kernel Compiler Assurance Host is inside its row; no library cycle outside {Kernel, Compiler, Assurance}
+
+EXIT 0

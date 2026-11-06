@@ -1,0 +1,42 @@
+{
+  "patch_sha256": "94b94700e709e931e9b9bd5c30834620e1b9a51603ea15a70a134ae4e71de534",
+  "checks": {
+    "core_source_matches": true,
+    "core_olean_matches": true,
+    "adapter_source_matches": true,
+    "adapter_core_matches": true,
+    "adapter_harness_matches": true,
+    "core_exit_zero": true,
+    "adapter_exit_zero": true,
+    "boundary_exit_zero": true,
+    "slice_Selvage/Rbr.lean": true,
+    "slice_Selvage/Depth.lean": true,
+    "slice_Selvage/Commitment.lean": true,
+    "slice_Selvage/CollisionResistanceROM.lean": true,
+    "slice_Selvage/AuditSampling.lean": true,
+    "exact_five_paths": true
+  },
+  "patch_checks": {
+    "baseline": {
+      "scratch": "/Users/ember/dev/zkml-research/notes/astra/binding/build/reviewer-baseline-vou8_ba_",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "all_five_match_source": true
+    },
+    "current": {
+      "scratch": "/Users/ember/dev/zkml-research/notes/astra/binding/build/reviewer-current-_ukldrim",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "all_five_match_source": true
+    }
+  },
+  "source_sha256": {
+    "Selvage/AuditSampling.lean": "81ff2f5d5914f1afdd3d54054050ea4defa271189868a37d71b100bc0db34372",
+    "Selvage/BindingBudget.lean": "46ed39e74b6b026577895a55966cab5f4cf581d4a551ed3202ec3e19fe85f51b",
+    "Selvage/BindingGame.lean": "e48cbb598e44001ff60bd50161da238f209b701521726e213049151ea2deaf27",
+    "Selvage/CollisionResistanceROM.lean": "ed5da9b5173b1e1ac309d76076f96d1070b612ad40c19e9debf10f1593c0cab9",
+    "Selvage/Commitment.lean": "28c453a73aa0afee3da26ebd0a36268dfa925f1531d7451f0056a640577453b0"
+  }
+}

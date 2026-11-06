@@ -1,0 +1,555 @@
+namespace Minidregg.Selvage
+
+open Finset
+
+/-! ## 0. Counting toolkit
+
+Three `uniformProb` facts the audit layer needs and `Selvage/Depth.lean` does
+not yet carry: the indicator-sum rendering (the bridge between the counting
+probability and the finite averages the supermartingale argument takes),
+independence on a product coin space, and the certain event. -/
+
+section Counting
+
+variable {Ω : Type} [Fintype Ω]
+
+/-- `Pr[p]` as an average of indicators. The bridge from `uniformProb`'s
+`Nat.card`-over-`Fintype.card` counting to `Finset.sum`-based averaging. -/
+lemma uniformProb_eq_avg_indicator (p : Ω → Prop) [DecidablePred p] :
+    uniformProb Ω p = (∑ ω : Ω, if p ω then (1 : ℝ) else 0) / (Fintype.card Ω : ℝ) := by
+  classical
+  unfold uniformProb
+  congr 1
+  rw [Finset.sum_boole, Nat.card_eq_fintype_card, Fintype.card_subtype]
+
+/-- The certain event has probability one on a nonempty space. -/
+lemma uniformProb_true [Nonempty Ω] : uniformProb Ω (fun _ => True) = 1 := by
+  classical
+  unfold uniformProb
+  have hcard : Nat.card {_ω : Ω // True} = Fintype.card Ω := by
+    rw [Nat.card_eq_fintype_card]
+    exact Fintype.card_congr (Equiv.subtypeUnivEquiv fun _ => trivial)
+  rw [hcard]
+  exact div_self (by exact_mod_cast Fintype.card_ne_zero)
+
+/-- **Independence on a product coin space.** An event depending only on the
+first coordinate and one depending only on the second have product
+probability. This is what "the beacon's randomness and the checker's coins are
+drawn independently" MEANS in the counting model — and it is the only place the
+audit layer uses independence at all (the adversary is never assumed
+independent of anything). -/
+lemma uniformProb_prod_indep {A B : Type} [Fintype A] [Fintype B]
+    (p : A → Prop) (q : B → Prop) :
+    uniformProb (A × B) (fun x => p x.1 ∧ q x.2)
+      = uniformProb A p * uniformProb B q := by
+  classical
+  unfold uniformProb
+  rw [Nat.card_congr (Equiv.subtypeProdEquivProd (p := p) (q := q)), Nat.card_prod,
+    Fintype.card_prod]
+  push_cast
+  ring
+
+end Counting
+
+/-! ## 1. The composed error budget
+
+Three parameters, three legs, one derived detection rate `q`. Every field is
+named and carried; there is no `negl` in this file. -/
+
+/-- The audit's parameters. `p` is the NOMINAL selection rate — the rate the
+public rule `Sel` advertises — and the three `ε`s are the three ways the
+nominal rate fails to be a detection rate. -/
+structure AuditParams where
+  /-- Nominal audit rate advertised by the public selection rule `Sel`. -/
+  p : ℝ
+  /-- Checker error, CONDITIONAL on the audit firing: the probability that a
+  fired checker fails to reject a corrupt round it was handed honestly.
+  Instantiates as a cryptographic soundness error or as a statistical
+  trace-test error; the statement privileges neither. -/
+  εchk : ℝ
+  /-- Commitment binding error: the probability that the audited object is not
+  the object the round actually ran. Priced as a term, never folded away. -/
+  εbind : ℝ
+  /-- Beacon grindability: the ADDITIVE shortfall of the worst-case realized
+  fire probability below the nominal rate, over histories as they stand at
+  beacon-emission time. See `BeaconLeg`. -/
+  εbeacon : ℝ
+  p_nonneg : 0 ≤ p
+  p_le_one : p ≤ 1
+  εchk_nonneg : 0 ≤ εchk
+  /-- A checker with `εchk > 1` is not a checker; the bound would read as a
+  spurious gain from a doubly-wrong checker. -/
+  εchk_le_one : εchk ≤ 1
+  εbind_nonneg : 0 ≤ εbind
+  εbeacon_nonneg : 0 ≤ εbeacon
+
+namespace AuditParams
+
+/-- The composed per-round detection rate `q = p(1 − ε_chk) − ε_bind − ε_beacon`.
+May be zero or negative — and IS, for a beacon the prover controls
+(`grind_honest_q_eq_zero`) or a checker that fails open (`failOpen_no_legs`).
+At `q ≤ 0` every statement below is honestly silent, which is the correct
+verdict, not a defect. -/
+def q (A : AuditParams) : ℝ := A.p * (1 - A.εchk) - A.εbind - A.εbeacon
+
+/-- Detection never beats selection: `q ≤ p`. -/
+theorem q_le_p (A : AuditParams) : A.q ≤ A.p := by
+  have := A.p_nonneg; have := A.εchk_nonneg; have := A.εbind_nonneg
+  have := A.εbeacon_nonneg
+  unfold q; nlinarith
+
+theorem q_le_one (A : AuditParams) : A.q ≤ 1 := le_trans A.q_le_p A.p_le_one
+
+end AuditParams
+
+/-! ## 2. The round mechanism
+
+A `Round` is the whole public process, rendered as Boolean decisions of the
+history. Histories are coin lists **most recent first**, so extending a history
+`h` by this round's coin `ω` is `ω :: h`.
+
+The key modelling commitment, and the one that makes the sequential theorem
+about a fully adaptive adversary: `corrupt : List Ω → Bool` takes the history
+and NOT the current round's coin. The adversary may condition its cheating on
+every past beacon, every past verdict and every past alarm — that is what an
+arbitrary function of the history is — but not on the coin of the round it is
+cheating in, because the commitment is posted before the beacon emits. That is
+exactly `F_{t−1}`-measurability, enforced by the type rather than assumed. -/
+
+/-- The commit-then-audit round, as Boolean decisions of the public history.
+`Ω` is the round's whole randomness: the beacon draw together with whatever
+coins the checker consumes. -/
+structure Round (Ω : Type) where
+  /-- The adversary's cheating rule: is this round corrupt? An ARBITRARY
+  function of the history — full adaptivity — and, by not taking `ω`, a rule
+  fixed before this round's beacon emits. -/
+  corrupt : List Ω → Bool
+  /-- `Sel(ρ_t, t)`: did the audit fire? -/
+  fires : List Ω → Ω → Bool
+  /-- Did the round raise an alarm? -/
+  alarms : List Ω → Ω → Bool
+  /-- Did the checker render a WRONG verdict — accept a corrupt round it was
+  handed honestly? Priced by `ε_chk`. -/
+  chkErr : List Ω → Ω → Bool
+  /-- Did the checker fail to render a verdict at all — crash, time out, refuse
+  to parse? Priced by NOTHING; it must force an alarm (`FailClosed`). -/
+  chkAbort : List Ω → Ω → Bool
+  /-- Was the commitment equivocated — is the audited object not the object the
+  round ran? Priced by `ε_bind`. -/
+  bindBreak : List Ω → Ω → Bool
+
+namespace Round
+
+variable {Ω : Type} [Fintype Ω] {R : Round Ω} {A : AuditParams}
+
+/-! ### 2.1 The three legs -/
+
+/-- **The `ε_beacon` leg, and the definition of `ε_beacon`.** For EVERY history,
+the realized fire probability is within `ε_beacon` of the nominal rate. This is
+the spec's `ε_beacon := max_t (p − ess inf Pr[Sel(ρ_t,t) = 1 | F_{t−1}, c_t])`
+rendered as a hypothesis: the essential infimum is the `∀ h`, and the option
+set is the one available **at beacon-emission time**, since `h` ranges over
+every history the adversary can have driven the process into, including ones a
+commitment-time quantification would have closed out early (the Gaži et al.
+cutoff lesson — later events retroactively promote candidates, so closing the
+option set at commitment under-counts).
+
+Not to be confused with the multiplicative `(t + n)` try-count factor of
+`Selvage/LightClientGrinding.lean`: that prices a challenge-oracle adversary on
+the CHECKER side of the FS/ROM model. Here the degradation is additive and
+lands on the SELECTION probability. `BeaconRefutation` below shows the term is
+load-bearing, not decoration. -/
+def BeaconLeg (A : AuditParams) (R : Round Ω) : Prop :=
+  ∀ h : List Ω, A.p - A.εbeacon ≤ uniformProb Ω (fun ω => R.fires h ω)
+
+/-- **The `ε_chk` leg.** Conditional on the audit firing, the checker errs on a
+corrupt round with probability at most `ε_chk` — written in the product form
+`Pr[fire ∧ chkErr] ≤ Pr[fire] · ε_chk`, which is what independence of the
+checker's coins from the beacon's gives (`chkLeg_of_product`). Section 6
+instantiates it from the landed light-client bound. -/
+def ChkLeg (A : AuditParams) (R : Round Ω) : Prop :=
+  ∀ h : List Ω, R.corrupt h = true →
+    uniformProb Ω (fun ω => R.fires h ω ∧ R.chkErr h ω)
+      ≤ uniformProb Ω (fun ω => R.fires h ω) * A.εchk
+
+/-- **The `ε_bind` leg.** The commitment is equivocated with probability at
+most `ε_bind`. Open in the light-client vocabulary as `[ACC-extract]`; named
+here so that a deployment cannot forget it exists. -/
+def BindLeg (A : AuditParams) (R : Round Ω) : Prop :=
+  ∀ h : List Ω, uniformProb Ω (fun ω => R.bindBreak h ω) ≤ A.εbind
+
+/-- **The miss decomposition.** A fired audit of a corrupt round that does not
+alarm is a checker error or a binding break — there is no third way to miss.
+This is the leg that a fail-open checker breaks (`failOpen_no_legs`), and the
+one `missDecomp_of_failClosed` discharges from fail-closedness plus
+non-aborting soundness. -/
+def MissDecomp (R : Round Ω) : Prop :=
+  ∀ (h : List Ω) (ω : Ω), R.corrupt h = true → R.fires h ω = true →
+    R.alarms h ω = false → R.chkErr h ω = true ∨ R.bindBreak h ω = true
+
+/-- The four hypotheses of the per-round detection lemma, bundled. -/
+structure DetectionLegs (A : AuditParams) (R : Round Ω) : Prop where
+  beacon : BeaconLeg A R
+  chk : ChkLeg A R
+  bind : BindLeg A R
+  miss : MissDecomp R
+
+/-! ### 2.2 Fail-closed
+
+Not in any paper on this subject; taken from our own wound-classes. A verdict
+that cannot be rendered must not RENDER AS the expected verdict. -/
+
+/-- **Fail-closed.** A fired audit whose checker cannot render a verdict
+alarms. -/
+def FailClosed (R : Round Ω) : Prop :=
+  ∀ (h : List Ω) (ω : Ω), R.fires h ω = true → R.chkAbort h ω = true →
+    R.alarms h ω = true
+
+/-- **Fail-open** — the wound. The checker's failure to render a verdict reads
+as acceptance. `failOpen_no_legs` shows this is not a hygiene preference: it
+makes `DetectionLegs` uninhabitable at any positive `q`. -/
+def FailOpen (R : Round Ω) : Prop :=
+  ∀ (h : List Ω) (ω : Ω), R.chkAbort h ω = true → R.alarms h ω = false
+
+omit [Fintype Ω] in
+/-- Fail-closedness discharges the miss decomposition from the checker's
+soundness ON THE RUNS WHERE IT ANSWERS. Without it the `∀ ω` in `MissDecomp`
+ranges over aborting runs too, and `ε_chk` would have to absorb them — which is
+precisely the substitution that turns a refusal into a verdict. -/
+theorem missDecomp_of_failClosed (hfc : FailClosed R)
+    (hsound : ∀ (h : List Ω) (ω : Ω), R.corrupt h = true → R.fires h ω = true →
+      R.chkAbort h ω = false → R.alarms h ω = false →
+      R.chkErr h ω = true ∨ R.bindBreak h ω = true) :
+    MissDecomp R := by
+  intro h ω hc hf hno
+  by_cases hab : R.chkAbort h ω = true
+  · exact absurd (hfc h ω hf hab) (by simp [hno])
+  · exact hsound h ω hc hf (by simpa using hab) hno
+
+/-! ### 2.3 The per-round detection lemma -/
+
+/-- **Per-round detection.** For EVERY history, a corrupt round alarms with
+probability at least `q = p(1 − ε_chk) − ε_bind − ε_beacon`.
+
+Proof shape: `Pr[fire] ≤ Pr[fire ∧ alarm] + Pr[fire ∧ ¬alarm]`; the first term
+is at most `Pr[alarm]`, the second is at most `Pr[fire]·ε_chk + ε_bind` by the
+miss decomposition; so `Pr[alarm] ≥ Pr[fire](1 − ε_chk) − ε_bind`, and
+`Pr[fire] ≥ p − ε_beacon` closes it. The last step is where the composed budget
+is slightly generous to the adversary: the sharp form is
+`(p − ε_beacon)(1 − ε_chk) − ε_bind`, and `q` drops the `ε_beacon·ε_chk`
+cross-term. -/
+theorem detect [Nonempty Ω] (hL : DetectionLegs A R) {h : List Ω}
+    (hc : R.corrupt h = true) :
+    A.q ≤ uniformProb Ω (fun ω => R.alarms h ω) := by
+  classical
+  set P := uniformProb Ω (fun ω => R.fires h ω) with hP
+  set Al := uniformProb Ω (fun ω => R.alarms h ω) with hAl
+  -- fire splits into (fire ∧ alarm) ∨ (fire ∧ ¬alarm)
+  have hsplit : P ≤ uniformProb Ω (fun ω => R.fires h ω ∧ R.alarms h ω)
+      + uniformProb Ω (fun ω => R.fires h ω ∧ ¬ (R.alarms h ω = true)) := by
+    refine le_trans (uniformProb_mono (q := fun ω =>
+      (R.fires h ω ∧ R.alarms h ω) ∨ (R.fires h ω ∧ ¬ (R.alarms h ω = true)))
+      (fun ω hω => ?_)) (uniformProb_or_le _ _)
+    by_cases ha : R.alarms h ω = true
+    · exact Or.inl ⟨hω, ha⟩
+    · exact Or.inr ⟨hω, ha⟩
+  have hhit : uniformProb Ω (fun ω => R.fires h ω ∧ R.alarms h ω) ≤ Al :=
+    uniformProb_mono fun _ hω => hω.2
+  -- the miss is a checker error or a binding break
+  have hmiss : uniformProb Ω (fun ω => R.fires h ω ∧ ¬ (R.alarms h ω = true))
+      ≤ uniformProb Ω (fun ω => R.fires h ω ∧ R.chkErr h ω)
+        + uniformProb Ω (fun ω => R.bindBreak h ω) := by
+    refine le_trans (uniformProb_mono (q := fun ω =>
+      (R.fires h ω ∧ R.chkErr h ω) ∨ R.bindBreak h ω) (fun ω hω => ?_))
+      (uniformProb_or_le _ _)
+    rcases hL.miss h ω hc hω.1 (by simpa using hω.2) with he | hb
+    · exact Or.inl ⟨hω.1, he⟩
+    · exact Or.inr hb
+  have hchk := hL.chk h hc
+  have hbind := hL.bind h
+  have hbeacon := hL.beacon h
+  have hP1 : P ≤ 1 := uniformProb_le_one _
+  have hchk1 := A.εchk_le_one
+  have hchk0 := A.εchk_nonneg
+  have hbe0 := A.εbeacon_nonneg
+  -- P ≤ Al + P·εchk + εbind, and P ≥ p − εbeacon
+  have hkey : P ≤ Al + P * A.εchk + A.εbind := by linarith
+  have hmul : (A.p - A.εbeacon) * (1 - A.εchk) ≤ P * (1 - A.εchk) :=
+    mul_le_mul_of_nonneg_right hbeacon (by linarith)
+  show A.q ≤ Al
+  unfold AuditParams.q
+  nlinarith
+
+end Round
+
+/-! ## 3. Finite-horizon expectation
+
+The sequential theorem needs expectations over independent uniform draws, one
+per round. `expOver n f h` averages `f` over the `n` further coins drawn after
+the history `h` — a plain recursive average, so the tower property is
+DEFINITIONAL and no measure theory enters. -/
+
+/-- `E[f(H_{|h|+n}) | H_{|h|} = h]` under `n` further independent uniform draws
+from `Ω`, most recent first. -/
+noncomputable def expOver (Ω : Type) [Fintype Ω] : ℕ → (List Ω → ℝ) → List Ω → ℝ
+  | 0, f, h => f h
+  | n + 1, f, h => (∑ ω : Ω, expOver Ω n f (ω :: h)) / (Fintype.card Ω : ℝ)
+
+namespace expOver
+
+variable {Ω : Type} [Fintype Ω] [Nonempty Ω]
+
+private lemma card_pos : (0 : ℝ) < (Fintype.card Ω : ℝ) := by
+  exact_mod_cast Fintype.card_pos
+
+/-- The average of a constant is the constant. -/
+private lemma avg_const (a : ℝ) : (∑ _ω : Ω, a) / (Fintype.card Ω : ℝ) = a := by
+  rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
+  field_simp
+
+private lemma avg_le {f : Ω → ℝ} {c : ℝ} (h : ∀ ω, f ω ≤ c) :
+    (∑ ω : Ω, f ω) / (Fintype.card Ω : ℝ) ≤ c := by
+  rw [div_le_iff₀ card_pos]
+  calc ∑ ω : Ω, f ω ≤ ∑ _ω : Ω, c := Finset.sum_le_sum fun ω _ => h ω
+    _ = (Fintype.card Ω : ℝ) * c := by
+        rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
+    _ = c * (Fintype.card Ω : ℝ) := mul_comm _ _
+
+/-- The average of `a − 1{p}` is `a − Pr[p]`: the one computation the
+supermartingale step needs. -/
+private lemma avg_sub_indicator (a : ℝ) (p : Ω → Prop) [DecidablePred p] :
+    (∑ ω : Ω, (a - if p ω then (1 : ℝ) else 0)) / (Fintype.card Ω : ℝ)
+      = a - uniformProb Ω p := by
+  rw [Finset.sum_sub_distrib, sub_div, avg_const, uniformProb_eq_avg_indicator]
+
+omit [Nonempty Ω] in
+@[simp] lemma zero (f : List Ω → ℝ) (h : List Ω) : expOver Ω 0 f h = f h := rfl
+
+omit [Nonempty Ω] in
+lemma succ (n : ℕ) (f : List Ω → ℝ) (h : List Ω) :
+    expOver Ω (n + 1) f h
+      = (∑ ω : Ω, expOver Ω n f (ω :: h)) / (Fintype.card Ω : ℝ) := rfl
+
+lemma const (a : ℝ) : ∀ (n : ℕ) (h : List Ω), expOver Ω n (fun _ => a) h = a := by
+  intro n
+  induction n with
+  | zero => intro h; rfl
+  | succ n ih => intro h; rw [succ]; simp only [ih]; exact avg_const a
+
+lemma mono {f g : List Ω → ℝ} (hfg : ∀ h, f h ≤ g h) :
+    ∀ (n : ℕ) (h : List Ω), expOver Ω n f h ≤ expOver Ω n g h := by
+  intro n
+  induction n with
+  | zero => intro h; exact hfg h
+  | succ n ih =>
+    intro h
+    rw [succ, succ, div_le_div_iff_of_pos_right card_pos]
+    exact Finset.sum_le_sum fun ω _ => ih (ω :: h)
+
+omit [Nonempty Ω] in
+lemma smul (c : ℝ) (f : List Ω → ℝ) :
+    ∀ (n : ℕ) (h : List Ω),
+      expOver Ω n (fun x => c * f x) h = c * expOver Ω n f h := by
+  intro n
+  induction n with
+  | zero => intro h; rfl
+  | succ n ih =>
+    intro h
+    rw [succ, succ]
+    simp only [ih]
+    rw [← Finset.mul_sum, mul_div_assoc]
+
+omit [Nonempty Ω] in
+lemma sub (f g : List Ω → ℝ) :
+    ∀ (n : ℕ) (h : List Ω),
+      expOver Ω n (fun x => f x - g x) h = expOver Ω n f h - expOver Ω n g h := by
+  intro n
+  induction n with
+  | zero => intro h; rfl
+  | succ n ih =>
+    intro h
+    rw [succ, succ, succ]
+    simp only [ih]
+    rw [Finset.sum_sub_distrib, sub_div]
+
+/-- The history grows by exactly one round per draw. Used by the `ε_beacon`
+refutation, where the adversary cheats every round and is never caught. -/
+lemma length : ∀ (n : ℕ) (h : List Ω),
+    expOver Ω n (fun x => (x.length : ℝ)) h = (h.length : ℝ) + n := by
+  intro n
+  induction n with
+  | zero => intro h; simp
+  | succ n ih =>
+    intro h
+    rw [succ]
+    simp only [ih, List.length_cons]
+    push_cast
+    rw [avg_const]
+    ring
+
+/-- **Finite-horizon optional stopping.** A one-step supermartingale
+inequality — holding at EVERY history, which is what makes the adversary fully
+adaptive — dominates the whole horizon. The tower property is the definitional
+unfolding of `expOver`; the induction is the entire content. -/
+theorem le_of_step {Φ : List Ω → ℝ}
+    (hstep : ∀ h, (∑ ω : Ω, Φ (ω :: h)) / (Fintype.card Ω : ℝ) ≤ Φ h) :
+    ∀ (n : ℕ) (h : List Ω), expOver Ω n Φ h ≤ Φ h := by
+  intro n
+  induction n with
+  | zero => intro h; exact le_refl _
+  | succ n ih =>
+    intro h
+    refine le_trans ?_ (hstep h)
+    rw [succ, div_le_div_iff_of_pos_right card_pos]
+    exact Finset.sum_le_sum fun ω _ => ih (ω :: h)
+
+end expOver
+
+/-! ## 4. The sequential theorem
+
+The run's two observables, the supermartingale, and optional stopping. -/
+
+namespace Round
+
+variable {Ω : Type} [Fintype Ω]
+
+/-- `1{τ ≤ t}` — has an alarm fired at or before the head of the history? -/
+def stopped (R : Round Ω) : List Ω → Bool
+  | [] => false
+  | ω :: h => R.stopped h || R.alarms h ω
+
+/-- `C_{t∧τ}` — corrupt rounds up to and including the first alarm. A corrupt
+round that alarms still COUNTS: it leaked its payload before it was caught,
+which is exactly why the residual channel is `1/q` rounds wide and not zero.
+
+Note that `count (ω :: h)` does not read `ω`: whether the round is corrupt was
+decided before its beacon emitted. -/
+def count (R : Round Ω) : List Ω → ℕ
+  | [] => 0
+  | _ :: h =>
+      if R.stopped h then R.count h
+      else if R.corrupt h then R.count h + 1 else R.count h
+
+/-- The supermartingale `M_t := q·C_{t∧τ} − 1{τ ≤ t}`. -/
+noncomputable def mart (R : Round Ω) (q : ℝ) (h : List Ω) : ℝ :=
+  q * (R.count h : ℝ) - (if R.stopped h = true then (1 : ℝ) else 0)
+
+omit [Fintype Ω] in
+@[simp] lemma mart_nil (R : Round Ω) (q : ℝ) : R.mart q [] = 0 := by
+  simp [mart, count, stopped]
+
+/-- **The supermartingale step.** At every history, one more uniform draw does
+not increase `M`. Three cases, and each is the process saying something
+different: already stopped (`M` is frozen), honest round (`M` can only fall by
+an alarm), corrupt round (`M` gains `q` from the count and loses at least `q`
+to the detection probability — this is the only place `detect`'s conclusion is
+consumed). -/
+theorem mart_step [Nonempty Ω] {R : Round Ω} {q : ℝ}
+    (hdet : ∀ h : List Ω, R.stopped h = false → R.corrupt h = true →
+      q ≤ uniformProb Ω (fun ω => R.alarms h ω))
+    (h : List Ω) :
+    (∑ ω : Ω, R.mart q (ω :: h)) / (Fintype.card Ω : ℝ) ≤ R.mart q h := by
+  classical
+  by_cases hs : R.stopped h = true
+  · -- already stopped: M is frozen, with equality
+    have hval : ∀ ω : Ω, R.mart q (ω :: h) = R.mart q h := by
+      intro ω
+      have hs' : R.stopped (ω :: h) = true := by simp [stopped, hs]
+      simp [mart, count, stopped, hs]
+    simp only [hval]
+    exact le_of_eq (expOver.avg_const _)
+  · have hs' : R.stopped h = false := by simpa using hs
+    have hstopcons : ∀ ω : Ω, R.stopped (ω :: h) = R.alarms h ω := by
+      intro ω; simp [stopped, hs']
+    by_cases hc : R.corrupt h = true
+    · -- corrupt round: the count gains q, detection takes at least q back
+      have hval : ∀ ω : Ω, R.mart q (ω :: h)
+          = (q * ((R.count h : ℝ) + 1)) - (if R.alarms h ω = true then (1 : ℝ) else 0) := by
+        intro ω
+        have hcnt : R.count (ω :: h) = R.count h + 1 := by
+          show (if R.stopped h then R.count h
+            else if R.corrupt h then R.count h + 1 else R.count h) = _
+          rw [if_neg (by simpa using hs'), if_pos (by simpa using hc)]
+        rw [mart, hcnt, hstopcons ω]
+        push_cast; ring
+      simp only [hval]
+      rw [expOver.avg_sub_indicator]
+      have := hdet h hs' hc
+      rw [mart, hs']
+      simp only [Bool.false_eq_true, if_false]
+      linarith
+    · -- honest round: the count is unchanged, an alarm can only help
+      have hval : ∀ ω : Ω, R.mart q (ω :: h)
+          = (q * (R.count h : ℝ)) - (if R.alarms h ω = true then (1 : ℝ) else 0) := by
+        intro ω
+        have hcnt : R.count (ω :: h) = R.count h := by
+          show (if R.stopped h then R.count h
+            else if R.corrupt h then R.count h + 1 else R.count h) = _
+          rw [if_neg (by simpa using hs'), if_neg (by simpa using hc)]
+        rw [mart, hcnt, hstopcons ω]
+      simp only [hval]
+      rw [expOver.avg_sub_indicator]
+      have hnn := uniformProb_nonneg (C := Ω) (fun ω => R.alarms h ω)
+      rw [mart, hs']
+      simp only [Bool.false_eq_true, if_false]
+      linarith
+
+/-- **THE SEQUENTIAL THEOREM.** For an adversary whose per-round cheating rule
+is an arbitrary function of the public history, the expected number of corrupt
+rounds before the first alarm is at most `1/q`, at every horizon — hence in the
+limit.
+
+No independence between rounds, no fixed cheating rate, no binomial: the only
+hypothesis on the adversary is that its choice at round `t` does not read round
+`t`'s beacon, which is the type of `Round.corrupt`. `hdet` is required only at
+histories where no alarm has yet fired — a deployment stops auditing once it has
+raised one — and is discharged there by `Round.detect` from the three legs.
+
+The bound is at horizon `n` and does not depend on `n`; the statement quantifies
+over every horizon. The passage to the infinite-horizon `E[C_τ]` is not
+formalized (see the residuals). -/
+theorem sequential_bound [Nonempty Ω] {R : Round Ω} {q : ℝ} (hq : 0 < q)
+    (hdet : ∀ h : List Ω, R.stopped h = false → R.corrupt h = true →
+      q ≤ uniformProb Ω (fun ω => R.alarms h ω))
+    (n : ℕ) :
+    expOver Ω n (fun h => (R.count h : ℝ)) [] ≤ 1 / q := by
+  classical
+  have hmart : expOver Ω n (R.mart q) [] ≤ 0 := by
+    simpa using expOver.le_of_step (Φ := R.mart q) (mart_step hdet) n []
+  have hsplit : expOver Ω n (R.mart q) []
+      = q * expOver Ω n (fun h => (R.count h : ℝ)) []
+        - expOver Ω n (fun h => if R.stopped h = true then (1 : ℝ) else 0) [] := by
+    rw [show R.mart q = fun h => q * (R.count h : ℝ)
+        - (if R.stopped h = true then (1 : ℝ) else 0) from rfl,
+      expOver.sub, expOver.smul]
+  have hind : expOver Ω n (fun h => if R.stopped h = true then (1 : ℝ) else 0) [] ≤ 1 := by
+    refine le_trans (expOver.mono (g := fun _ => (1 : ℝ)) (fun h => ?_) n []) ?_
+    · by_cases hs : R.stopped h = true <;> simp [hs]
+    · exact le_of_eq (expOver.const 1 n [])
+  rw [hsplit] at hmart
+  rw [le_div_iff₀ hq]
+  linarith
+
+/-- **Expected leakage.** With a per-round payload cap `b`, the expected total
+leakage before the first alarm is at most `b/q`. `b` is a HYPOTHESIS, not
+decoration: without a capacity cap there is no bound at all, since `L` bits in
+one message exfiltrate with probability at least `1 − q`. -/
+theorem leakage_bound [Nonempty Ω] {R : Round Ω} {q b : ℝ} (hq : 0 < q)
+    (hb : 0 ≤ b)
+    (hdet : ∀ h : List Ω, R.stopped h = false → R.corrupt h = true →
+      q ≤ uniformProb Ω (fun ω => R.alarms h ω))
+    (n : ℕ) :
+    expOver Ω n (fun h => b * (R.count h : ℝ)) [] ≤ b / q := by
+  rw [expOver.smul]
+  calc b * expOver Ω n (fun h => (R.count h : ℝ)) []
+      ≤ b * (1 / q) := mul_le_mul_of_nonneg_left (sequential_bound hq hdet n) hb
+    _ = b / q := by ring
+
+/-- The composed statement: the three legs give the sequential bound directly. -/
+theorem sequential_bound_of_legs [Nonempty Ω] {A : AuditParams} {R : Round Ω}
+    (hL : DetectionLegs A R) (hq : 0 < A.q) (n : ℕ) :
+    expOver Ω n (fun h => (R.count h : ℝ)) [] ≤ 1 / A.q :=
+  sequential_bound hq (fun _ _ hc => detect hL hc) n
+
+end Round
+

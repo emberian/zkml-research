@@ -1,0 +1,7 @@
+def roScheme (F ι : Type*) {N : ℕ} (H : (ι → F) → Fin N) :
+    OpeningScheme (Fin N) F ι (ι → F) where
+  commit := H
+  openAt := fun w _ => w
+  verifyOpen := fun rt i v o => H o = rt ∧ o i = v
+  verifyOpen_commit := fun _ _ => ⟨rfl, rfl⟩
+

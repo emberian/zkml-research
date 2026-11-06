@@ -1,0 +1,45 @@
+COMMAND ['/Users/ember/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean', '-o', '/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.olean', '/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean']
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:584:14: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:584:43: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:591:37: warning: `if_false` has been deprecated: Use `ite_false` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵f̵a̵l̵s̵e̵i̲t̲e̲_̲f̲a̲l̲s̲e̲
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:600:14: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:600:43: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:606:37: warning: `if_false` has been deprecated: Use `ite_false` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵f̵a̵l̵s̵e̵i̲t̲e̲_̲f̲a̲l̲s̲e̲
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:732:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ComputationalBinding.prob_eq_uniformProb`:
+  [Nonempty Ω]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Nonempty Ω] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:768:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ComputationalBinding.expOver_add`:
+  [Nonempty Ω]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Nonempty Ω] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+/Users/ember/dev/zkml-research/notes/astra/binding/build/AdapterSourceCheck.lean:776:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ComputationalBinding.expOver_mono_final`:
+  [Nonempty Ω]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Nonempty Ω] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+
+EXIT 0

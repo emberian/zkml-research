@@ -1,0 +1,3 @@
+noncomputable def uniformProb (C : Type) [Fintype C] (p : C → Prop) : ℝ :=
+  (Nat.card {c : C // p c} : ℝ) / (Fintype.card C : ℝ)
+

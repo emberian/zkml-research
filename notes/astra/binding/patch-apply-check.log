@@ -1,0 +1,4 @@
+COMMAND ['git', '-C', '/Users/ember/dev/minidregg', 'apply', '--check', '/Users/ember/dev/zkml-research/notes/astra/binding-term.patch']
+
+EXIT 0
+PATCH_SHA256 94b94700e709e931e9b9bd5c30834620e1b9a51603ea15a70a134ae4e71de534
