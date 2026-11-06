@@ -70,6 +70,13 @@ class IntMatrix:
         self.wl = wint & ((1 << L20) - 1)
         self.rowexp = rowexp.astype(np.int64)
         self.width = int(np.ceil(np.log2(np.abs(wint).max() + 1))) + 1
+        self._absmax = None
+
+    def abs_row_sum_max(self):
+        """max over rows of the larger limb's sum of |entries| (exact Python integers)."""
+        if self._absmax is None:
+            self._absmax = max(int(np.abs(self.wh).sum(axis=1).max()), int(np.abs(self.wl).sum(axis=1).max()))
+        return self._absmax
 
     @staticmethod
     def from_bf16(bits):
@@ -100,7 +107,9 @@ class ExactF64:
 
     def limbs(self, x, W):
         assert x.min() >= ACLAMP_LO and x.max() <= ACLAMP_HI and x.shape[1] <= 4096
-        assert W.width <= 50
+        # exactness: every partial sum is bounded by max|x| * sum_k |W[o, k]| per limb, and must stay
+        # below 2^53 (codex round 3: the width bound alone allowed sums past it)
+        assert W.abs_row_sum_max() * max(-int(x.min()), int(x.max()), 1) < (1 << 53)
         xf = x.astype(np.float64)
         dh = (xf @ W.wh.T.astype(np.float64)).astype(np.int64)
         dl = (xf @ W.wl.T.astype(np.float64)).astype(np.int64)
@@ -127,8 +136,8 @@ def linear(xp, kern, x, xf, W, bias_bits, fo):
     """x at 2^-xf, W exact, bias BF16; result at 2^-fo, int64."""
     dh, dl = kern.limbs(x, W)
     s = xf - W.rowexp - fo
-    if np.any(np.asarray(s) < -16):
-        raise ValueError("output scale too fine for v0")
+    if np.any(np.asarray(s) < -16) or np.any(np.asarray(s) > 62):
+        raise ValueError("output shift outside the v0 window [-16, 62]")
     y = rq2(xp, dh, dl, xp.asarray(s)[None, :])
     if bias_bits is not None:
         bm, be = bf16_to_int(bias_bits)

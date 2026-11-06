@@ -66,6 +66,7 @@ class Int8Mxu:
     name = "jax-int8-limbs"
 
     def __init__(self):
+        assert jax.config.jax_enable_x64, "the int8-limb kernel recombines in int64: enable jax_enable_x64"
         self.backend = jax.default_backend()
         self.name = f"jax-int8-limbs-{self.backend}"
         self._cache = {}
@@ -76,8 +77,9 @@ class Int8Mxu:
             arr = W.wh if which == "h" else W.wl
             width = int(np.ceil(np.log2(np.abs(arr).max() + 1))) + 2 if np.any(arr) else 1
             n = max(1, -(-width // 8))
-            self._cache[key] = [jnp.asarray(l) for l in split_w(arr, n)]
-        return self._cache[key]
+            # the entry holds W itself, so id(W) cannot be reused by another matrix while cached
+            self._cache[key] = (W, [jnp.asarray(l) for l in split_w(arr, n)])
+        return self._cache[key][1]
 
     def _limb_dot(self, xs, wl):
         acc = jnp.zeros((xs[0].shape[0], wl[0].shape[0]), dtype=jnp.int64)
@@ -105,8 +107,8 @@ class Int8Mxu:
     def _mxfp4(self, xs, W):
         key = (id(W), "q")
         if key not in self._cache:
-            self._cache[key] = (jnp.asarray(W.q), jnp.asarray((W.e - W.emin[:, None]).astype(np.int64)))
-        q, sh = self._cache[key]                         # q [o, nb, 32] int8, sh [o, nb]
+            self._cache[key] = (W, jnp.asarray(W.q), jnp.asarray((W.e - W.emin[:, None]).astype(np.int64)))
+        _, q, sh = self._cache[key]                         # q [o, nb, 32] int8, sh [o, nb]
         t = xs[0].shape[0]
         nb = q.shape[1]
         total = jnp.zeros((t, q.shape[0]), dtype=jnp.int64)
