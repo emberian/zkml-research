@@ -3,9 +3,11 @@
 A tolerance checker must accept every honest server whose arithmetic differs from its own, so it accepts
 a token y at a position when its own logits put y within tau of the maximum (the acceptance set common to
 TOPLOC/DiFR-style thresholds, abstracted to logits; neither tool is reimplemented here). tau is set from
-measured honest discrepancies: float32 and the integer model, each against the float64 checker. The
-adversary decodes with a KV cache and, wherever that set holds a token other than the honest one, takes
-the best such token. The exact checker recomputes gptoss-int v0 over the committed transcript and
+measured honest discrepancies (float32 and the integer model, each against the float64 checker; see
+`tau`). The adversary decodes with a KV cache and, wherever that set holds a token that is NEITHER the
+integer model's argmax NOR the float64 checker's own argmax, takes the best such token: a choice no
+honest backend in the comparison would make (codex round 3: choosing the float64 argmax where the two
+models disagree is honest disagreement, not steering). The exact checker recomputes gptoss-int v0 over the committed transcript and
 accepts a token only if it is the integer argmax.
 
     python steer.py tau                   -> g5-tau.json (honest discrepancies on the eval passages)
@@ -103,7 +105,11 @@ def run(pi, n, tau_value=None):
     S = Shards()
     T = F.tok()
     P = json.load(open(os.path.join(HERE, "params-v1.json")))
-    tv = tau_value if tau_value is not None else json.load(open(os.path.join(HERE, "g5-tau.json")))["max"]["inf_f32"]
+    if tau_value is None:
+        m = json.load(open(os.path.join(HERE, "g5-tau.json")))["max"]
+        tv = max(m["inf_f32"], m["inf_int"])     # a logit-vector check must accept both honest backends
+    else:
+        tv = tau_value
     prompt = T.encode(PROMPTS[pi]).ids
     res = {"prompt": PROMPTS[pi], "tau": tv, "n": n}
     for mode in ("honest", "steered"):
@@ -113,10 +119,12 @@ def run(pi, n, tau_value=None):
         for k in range(n):
             l64 = lf[np.float64]
             hon = int(li.argmax())
+            f64 = int(l64.argmax())
             adm = np.nonzero(l64.max() - l64 <= tv)[0]
-            alt = [int(y) for y in adm[np.argsort(-l64[adm])] if int(y) != hon]
+            alt = [int(y) for y in adm[np.argsort(-l64[adm])] if int(y) not in (hon, f64)]
             y = alt[0] if (mode == "steered" and alt) else hon
-            steps.append({"k": k, "chosen": y, "int_argmax": hon, "f64_argmax": int(l64.argmax()),
+            steps.append({"k": k, "chosen": y, "int_argmax": hon, "f64_argmax": f64,
+                          "steered": y not in (hon, f64),
                           "admissible": [int(z) for z in adm[np.argsort(-l64[adm])][:5]],
                           "tolerance_accepts": bool(l64.max() - l64[y] <= tv), "exact_accepts": y == hon,
                           "f64_gap_of_chosen": float(l64.max() - l64[y])})
@@ -126,9 +134,11 @@ def run(pi, n, tau_value=None):
             li, lf = E.feed([y])
         res[mode] = {"tokens": toks, "text": T.decode(toks), "steps": steps,
                      "tolerance_accepts_all": all(s["tolerance_accepts"] for s in steps),
-                     "exact_refusals": [s["k"] for s in steps if not s["exact_accepts"]]}
+                     "exact_refusals": [s["k"] for s in steps if not s["exact_accepts"]],
+                     "steered_positions": [s["k"] for s in steps if s["steered"]]}
         print(mode, repr(res[mode]["text"]), "tolerance:", res[mode]["tolerance_accepts_all"],
-              "exact refusals:", res[mode]["exact_refusals"], flush=True)
+              "exact refusals:", res[mode]["exact_refusals"], "steered at:", res[mode]["steered_positions"],
+              flush=True)
     json.dump(res, open(os.path.join(HERE, f"g5-run-{pi}.json"), "w"), indent=1)
     return res
 
