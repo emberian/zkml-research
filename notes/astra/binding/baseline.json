@@ -1,0 +1,14 @@
+{
+  "Selvage/Commitment.lean": {
+    "sha256": "19dd10f03065c7fc41cccc2ead7ff34477e06f5dbe1a0418a07da9ce2d794662",
+    "git_head": "c4ecabe0fad1c8b9eb32a6b3cc2340f689078f55"
+  },
+  "Selvage/AuditSampling.lean": {
+    "sha256": "e4a487464308b8cdeaf367692390d25f7c30229b2840f038b825de3a7306362a",
+    "git_head": "c4ecabe0fad1c8b9eb32a6b3cc2340f689078f55"
+  },
+  "Selvage/CollisionResistanceROM.lean": {
+    "sha256": "79464910d31f244ae9ba3f4af7cf3589ddc97b9c401d0d31de47e087fe349957",
+    "git_head": "c4ecabe0fad1c8b9eb32a6b3cc2340f689078f55"
+  }
+}

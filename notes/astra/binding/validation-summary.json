@@ -1,0 +1,30 @@
+{
+  "checks": {
+    "BindingGame": {
+      "theorems": 25,
+      "axiom_pins": 25,
+      "forbidden_escapes": 0
+    },
+    "BindingBudget": {
+      "theorems": 14,
+      "axiom_pins": 14,
+      "forbidden_escapes": 0
+    },
+    "Commitment": "Comments only; executable tokens unchanged",
+    "AuditSampling": "Comments only; executable tokens unchanged",
+    "CollisionResistanceROM": "Comments only; executable tokens unchanged",
+    "build-core.log": "PASS (scope described in binding-term-design.md)",
+    "build-adapter.log": "PASS (scope described in binding-term-design.md)",
+    "import-boundary.log": "PASS (scope described in binding-term-design.md)",
+    "patch-apply-check.log": "PASS (scope described in binding-term-design.md)"
+  },
+  "source_hashes": {
+    "source/Selvage/BindingGame.lean": "e48cbb598e44001ff60bd50161da238f209b701521726e213049151ea2deaf27",
+    "source/Selvage/BindingBudget.lean": "46ed39e74b6b026577895a55966cab5f4cf581d4a551ed3202ec3e19fe85f51b",
+    "source/Selvage/Commitment.lean": "28c453a73aa0afee3da26ebd0a36268dfa925f1531d7451f0056a640577453b0",
+    "source/Selvage/AuditSampling.lean": "81ff2f5d5914f1afdd3d54054050ea4defa271189868a37d71b100bc0db34372",
+    "source/Selvage/CollisionResistanceROM.lean": "ed5da9b5173b1e1ac309d76076f96d1070b612ad40c19e9debf10f1593c0cab9"
+  },
+  "patch_sha256": "94b94700e709e931e9b9bd5c30834620e1b9a51603ea15a70a134ae4e71de534",
+  "whole_project_build": "NOT RUN: local Selvage 4.30 oleans incompatible with pinned Lean/Mathlib 4.35; hbox integration required"
+}

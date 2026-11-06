@@ -1,0 +1,891 @@
+diff --git a/Selvage/AuditSampling.lean b/Selvage/AuditSampling.lean
+--- a/Selvage/AuditSampling.lean
++++ b/Selvage/AuditSampling.lean
+@@ -38,8 +38,11 @@
+   statement privileges neither. Section 7 instantiates it from the landed
+   `Selvage/LightClientSound.lean` bound, under two named transport
+   obligations that this file does NOT discharge.
+-* `ε_bind` — commitment binding, priced as a term. Open in the light-client
+-  vocabulary as `[ACC-extract]`.
++* `ε_bind` — a uniform bound for EACH history, not a global run advantage.
++  `BindingBudget.bindLeg_of_history_game` discharges this from per-history
++  resource/security obligations. Ordinary global computational binding instead
++  uses `BindingBudget.leakage_with_global_binding`, adding `M * ε_global`
++  under an explicit pathwise coupling and finite-horizon damage cap.
+ * `ε_beacon` — the beacon's grindability, defined as an *additive* degradation
+   of the selection-fire probability, quantified over the option set as it
+   stands at **beacon-emission** time (`BeaconLeg`). This is NOT the
+@@ -246,9 +249,11 @@
+     uniformProb Ω (fun ω => R.fires h ω ∧ R.chkErr h ω)
+       ≤ uniformProb Ω (fun ω => R.fires h ω) * A.εchk
+ 
+-/-- **The `ε_bind` leg.** The commitment is equivocated with probability at
+-most `ε_bind`. Open in the light-client vocabulary as `[ACC-extract]`; named
+-here so that a deployment cannot forget it exists. -/
++/-- **The history-conditional `ε_bind` leg.** For EVERY history, the next-round
++equivocation probability is at most `ε_bind`. A small global binding advantage
++does not imply this: a rare history may already reveal a collision. Use the
++global bad-event transfer in `Selvage.BindingBudget` unless conditional
++admissibility and resource bounds are independently established. -/
+ def BindLeg (A : AuditParams) (R : Round Ω) : Prop :=
+   ∀ h : List Ω, uniformProb Ω (fun ω => R.bindBreak h ω) ≤ A.εbind
+ 
+diff --git a/Selvage/BindingBudget.lean b/Selvage/BindingBudget.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/BindingBudget.lean
+@@ -0,0 +1,280 @@
++/-
++Computational binding adapters for the existing commitment and audit interfaces.
++The conditional adapter is deliberately stronger than a one-shot CR assumption.
++The global adapter pays a finite-horizon damage term, without conditioning the
++comparison process on a future good event. See BindingGame for checked algebra.
++-/
++import Selvage.BindingGame
++import Selvage.CollisionResistanceROM
++import Selvage.AuditSampling
++
++namespace Minidregg.Selvage
++
++set_option autoImplicit false
++
++namespace ComputationalBinding
++
++variable {Ω Code Root F ι Op : Type} [Fintype Ω] [Nonempty Ω]
++
++/-- An adversary's concrete two-opening output, with all witness bytes retained. -/
++structure Attempt (Root F ι Op : Type) where
++  root : Root
++  index : ι
++  left : F
++  right : F
++  leftOpening : Op
++  rightOpening : Op
++
++def Attempt.Wins (S : OpeningScheme Root F ι Op) (a : Attempt Root F ι Op) : Prop :=
++  S.verifyOpen a.root a.index a.left a.leftOpening ∧
++  S.verifyOpen a.root a.index a.right a.rightOpening ∧ a.left ≠ a.right
++
++/-- Exact position binding is the zero-event idealization, not the definition
++of computational security. In a compressing scheme this universal property can
++fail while resource-limited attempts have small success probability. -/
++theorem perfect_iff_no_attempt (S : OpeningScheme Root F ι Op) :
++    S.PositionBinding ↔ ∀ a : Attempt Root F ι Op, ¬ a.Wins S := by
++  constructor
++  · intro hb a h
++    exact h.2.2 (hb a.root a.index a.left a.right a.leftOpening a.rightOpening h.1 h.2.1)
++  · intro hb rt i v v' o o' h h'
++    by_contra hne
++    exact hb ⟨rt, i, v, v', o, o'⟩ ⟨h, h', hne⟩
++
++/-- Concrete flat-opening reduction: the output pair is the two supplied words,
++not an unbounded search for a collision of the fixed hash. -/
++theorem flat_attempt_collision {N : ℕ} (H : (ι → F) → Fin N)
++    (a : Attempt (Fin N) F ι (ι → F)) (h : a.Wins (roScheme F ι H)) :
++    a.leftOpening ≠ a.rightOpening ∧ H a.leftOpening = H a.rightOpening := by
++  refine ⟨?_, h.1.1.trans h.2.1.1.symm⟩
++  intro heq
++  exact h.2.2 (h.1.2.symm.trans ((congrFun heq a.index).trans h.2.1.2))
++
++/-- Same global experiment, actual transformed code, two output hash queries
++included. `extraSteps` must cover the concrete output encoding/comparison cost. -/
++theorem flat_binding_advantage {N : ℕ} (H : Ω → (ι → F) → Fin N)
++    (G : BindingGame.Experiment Ω Code (Attempt (Fin N) F ι (ι → F)))
++    (a : Code) (q t extraSteps : ℕ) (ε : ℝ)
++    (hbudget : G.Within a q t)
++    (hCR : (G.map (fun x => (x.leftOpening, x.rightOpening)) 2 extraSteps).SecureAt
++      (fun ω pair => pair.1 ≠ pair.2 ∧ H ω pair.1 = H ω pair.2)
++      (q + 2) (t + extraSteps) ε) :
++    G.advantage (fun ω out => out.Wins (roScheme F ι (H ω))) a ≤ ε := by
++  apply BindingGame.advantage_reduction G
++    (G.map (fun x => (x.leftOpening, x.rightOpening)) 2 extraSteps)
++    (fun ω out => out.Wins (roScheme F ι (H ω)))
++    (fun ω pair => pair.1 ≠ pair.2 ∧ H ω pair.1 = H ω pair.2)
++    id a (q + 2) (t + extraSteps) ε hCR
++  · exact G.within_map _ 2 extraSteps a q t hbudget
++  · intro ω h
++    exact flat_attempt_collision (H ω) (G.run a ω) h
++
++/-- The common finite probability vocabulary agrees with AuditSampling's. -/
++theorem prob_eq_uniformProb (p : Ω → Prop) :
++    BindingGame.prob p = uniformProb Ω p := by
++  classical
++  exact (uniformProb_eq_avg_indicator p).symm
++
++/-- A separate admissible bounded adversary for EVERY history is required.
++A global success bound alone does not prove this premise: conditioning on an
++already discovered collision can make the next-round success probability one. -/
++theorem bindLeg_of_history_game {Result : Type}
++    (G : BindingGame.Experiment Ω Code Result) (bad : Ω → Result → Prop)
++    (R : Round Ω) (A : AuditParams) (q t : ℕ) (code : List Ω → Code)
++    (hsecure : G.SecureAt bad q t A.εbind)
++    (hbudget : ∀ h, G.Within (code h) q t)
++    (hcover : ∀ h ω, R.bindBreak h ω = true → bad ω (G.run (code h) ω)) :
++    Round.BindLeg A R := by
++  intro h
++  rw [← prob_eq_uniformProb]
++  exact le_trans (BindingGame.prob_mono (hcover h)) (hsecure (code h) (hbudget h))
++
++/-- The adapter feeds the EXISTING detection theorem; it does not restate the
++whole conclusion as an assumption. Checker, beacon and semantic miss-decomposition
++remain independently required. No cryptographic term is silently set to zero. -/
++theorem sequential_of_history_game {Result : Type}
++    (G : BindingGame.Experiment Ω Code Result) (bad : Ω → Result → Prop)
++    (R : Round Ω) (A : AuditParams) (q t : ℕ) (code : List Ω → Code)
++    (hsecure : G.SecureAt bad q t A.εbind)
++    (hbudget : ∀ h, G.Within (code h) q t)
++    (hcover : ∀ h ω, R.bindBreak h ω = true → bad ω (G.run (code h) ω))
++    (hbeacon : Round.BeaconLeg A R) (hcheck : Round.ChkLeg A R)
++    (hmiss : Round.MissDecomp R) (hq : 0 < A.q) (n : ℕ) :
++    expOver Ω n (fun h => (R.count h : ℝ)) [] ≤ 1 / A.q :=
++  Round.sequential_bound_of_legs
++    ⟨hbeacon, hcheck, bindLeg_of_history_game G bad R A q t code hsecure hbudget hcover, hmiss⟩ hq n
++
++/-- Finite history expectation is linear; stated here to avoid changing the
++existing AuditSampling file during another lane's flag day. -/
++theorem expOver_add (f g : List Ω → ℝ) (n : ℕ) (h : List Ω) :
++    expOver Ω n (fun x => f x + g x) h = expOver Ω n f h + expOver Ω n g h := by
++  have hneg : expOver Ω n (fun x => -g x) h = -expOver Ω n g h := by
++    simpa using expOver.smul (-1) g n h
++  have hs := expOver.sub f (fun x => -g x) n h
++  simpa [hneg] using hs
++
++/-- Monotonicity needs only the histories actually reached at this horizon. -/
++theorem expOver_mono_final (f g : List Ω → ℝ) (n : ℕ) (h : List Ω)
++    (hfg : ∀ k, k.length = h.length + n → f k ≤ g k) :
++    expOver Ω n f h ≤ expOver Ω n g h := by
++  induction n generalizing h with
++  | zero => exact hfg h (by simp)
++  | succ n ih =>
++    rw [expOver.succ, expOver.succ]
++    apply div_le_div_of_nonneg_right _ (Nat.cast_nonneg _)
++    apply Finset.sum_le_sum
++    intro ω _
++    apply ih (ω :: h)
++    intro k hk
++    apply hfg k
++    simpa [List.length_cons, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hk
++
++/-- A finite, genuinely sampled run coin space, one independent coordinate per
++round. It avoids an implicit probability distribution over arbitrary lists. -/
++def RunCoins (Ω : Type) : ℕ → Type
++  | 0 => Unit
++  | n + 1 => Ω × RunCoins Ω n
++
++instance runCoinsFintype (n : ℕ) : Fintype (RunCoins Ω n) := by
++  induction n with
++  | zero => exact inferInstanceAs (Fintype Unit)
++  | succ n ih => exact inferInstanceAs (Fintype (Ω × RunCoins Ω n))
++
++instance runCoinsNonempty (n : ℕ) : Nonempty (RunCoins Ω n) := by
++  induction n with
++  | zero => exact inferInstanceAs (Nonempty Unit)
++  | succ n ih => exact inferInstanceAs (Nonempty (Ω × RunCoins Ω n))
++
++def runHistory : (n : ℕ) → RunCoins Ω n → List Ω → List Ω
++  | 0, _, h => h
++  | n + 1, coins, h => runHistory n coins.2 (coins.1 :: h)
++
++omit [Fintype Ω] [Nonempty Ω] in
++theorem runHistory_length (n : ℕ) (coins : RunCoins Ω n) (h : List Ω) :
++    (runHistory n coins h).length = h.length + n := by
++  induction n generalizing h with
++  | zero => simp [runHistory]
++  | succ n ih => simpa [runHistory, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
++      (ih coins.2 (coins.1 :: h))
++
++/-- Exact transport from the finite resource game to the existing recursive
++expectation operator, including its most-recent-first history convention. -/
++theorem mean_runHistory (n : ℕ) (f : List Ω → ℝ) (h : List Ω) :
++    BindingGame.mean (fun coins : RunCoins Ω n => f (runHistory n coins h)) =
++      expOver Ω n f h := by
++  classical
++  induction n generalizing h with
++  | zero =>
++    change BindingGame.mean (fun _ : RunCoins Ω 0 => f h) = f h
++    exact BindingGame.mean_const (f h)
++  | succ n ih =>
++    change (∑ coins : Ω × RunCoins Ω n, f (runHistory n coins.2 (coins.1 :: h))) /
++        (Fintype.card (Ω × RunCoins Ω n) : ℝ) = _
++    rw [Fintype.sum_prod_type, Fintype.card_prod, Nat.cast_mul, expOver.succ]
++    simp only [← ih]
++    unfold BindingGame.mean
++    rw [← Finset.sum_div, div_div]
++    congr 1
++    ring
++
++theorem prob_runHistory (n : ℕ) (bad : List Ω → Prop)
++    [DecidablePred bad] :
++    BindingGame.prob (fun coins : RunCoins Ω n => bad (runHistory n coins [])) =
++      expOver Ω n (fun h => if bad h then 1 else 0) [] := by
++  classical
++  rw [BindingGame.prob_eq_mean]
++  exact mean_runHistory n (fun h => if bad h then 1 else 0) []
++
++/-- Global finite-horizon error transfer in AuditSampling's actual expectation
++operator. `bad` refers to the whole transcript; hbad is a global game bound.
++The comparison X must be coupled pathwise, not obtained by conditioning on ¬bad.
++For a run of n rounds with per-step damage b, M = n*b is a typical cap. -/
++theorem expOver_bad_transfer (X Y : List Ω → ℝ)
++    (bad : List Ω → Prop) [DecidablePred bad] (n : ℕ) (M B ε : ℝ)
++    (hM : 0 ≤ M) (hX : ∀ h, h.length = n → 0 ≤ X h)
++    (hgood : ∀ h, h.length = n → ¬ bad h → Y h ≤ X h)
++    (hcap : ∀ h, h.length = n → bad h → Y h ≤ M)
++    (hmean : expOver Ω n X [] ≤ B)
++    (hbad : expOver Ω n (fun h => if bad h then 1 else 0) [] ≤ ε) :
++    expOver Ω n Y [] ≤ B + M * ε := by
++  have hp : ∀ h, h.length = n → Y h ≤ X h + M * (if bad h then 1 else 0) := by
++    intro h hlen
++    by_cases hb : bad h
++    · simp only [ite_eq_left hb, mul_one]
++      linarith [hcap h hlen hb, hX h hlen]
++    · simpa [hb] using hgood h hlen hb
++  have hs := expOver_mono_final Y
++    (fun h => X h + M * (if bad h then 1 else 0)) n [] (by simpa using hp)
++  rw [expOver_add, expOver.smul] at hs
++  exact le_trans hs (add_le_add hmean (mul_le_mul_of_nonneg_left hbad hM))
++
++/-- Concrete hookup of the global game route to the existing leakage theorem.
++The comparison process has its own valid detection guarantee on the original
++coin space. The real process is dominated off bad and capped everywhere on bad.
++No per-history εbind hypothesis is claimed for the real process. -/
++theorem leakage_with_global_binding
++    (comparison : Round Ω) (Y : List Ω → ℝ) (bad : List Ω → Prop)
++    [DecidablePred bad] (n : ℕ) (b q M ε : ℝ) (hq : 0 < q) (hb : 0 ≤ b)
++    (hdet : ∀ h : List Ω, comparison.stopped h = false → comparison.corrupt h = true →
++      q ≤ uniformProb Ω (fun ω => comparison.alarms h ω))
++    (hM : 0 ≤ M)
++    (hgood : ∀ h, h.length = n → ¬ bad h → Y h ≤ b * (comparison.count h : ℝ))
++    (hcap : ∀ h, h.length = n → bad h → Y h ≤ M)
++    (hbad : expOver Ω n (fun h => if bad h then 1 else 0) [] ≤ ε) :
++    expOver Ω n Y [] ≤ b / q + M * ε :=
++  expOver_bad_transfer (fun h => b * (comparison.count h : ℝ)) Y bad n M (b / q) ε
++    hM (fun _ _ => mul_nonneg hb (Nat.cast_nonneg _)) hgood hcap
++    (Round.leakage_bound hq hb hdet n) hbad
++
++/-- A resource-indexed GLOBAL computational game instantiates the whole-run bad
++probability. This is the ordinary computational-security route; unlike the
++history adapter it does not require an adversary for every conditioned history. -/
++theorem leakage_of_global_game {Result : Type}
++    (comparison : Round Ω) (Y : List Ω → ℝ) (bad : List Ω → Prop)
++    [DecidablePred bad] (n : ℕ) (b q M ε : ℝ) (hq : 0 < q) (hb : 0 ≤ b)
++    (hdet : ∀ h : List Ω, comparison.stopped h = false → comparison.corrupt h = true →
++      q ≤ uniformProb Ω (fun ω => comparison.alarms h ω))
++    (hM : 0 ≤ M)
++    (hgood : ∀ h, h.length = n → ¬ bad h → Y h ≤ b * (comparison.count h : ℝ))
++    (hcap : ∀ h, h.length = n → bad h → Y h ≤ M)
++    (G : BindingGame.Experiment (RunCoins Ω n) Code Result)
++    (gameBad : RunCoins Ω n → Result → Prop) (a : Code) (queries steps : ℕ)
++    (hsecure : G.SecureAt gameBad queries steps ε) (hbudget : G.Within a queries steps)
++    (hcover : ∀ coins, bad (runHistory n coins []) → gameBad coins (G.run a coins)) :
++    expOver Ω n Y [] ≤ b / q + M * ε := by
++  apply leakage_with_global_binding comparison Y bad n b q M ε hq hb hdet hM hgood hcap
++  rw [← prob_runHistory]
++  exact le_trans (BindingGame.prob_mono hcover) (hsecure a hbudget)
++
++end ComputationalBinding
++end Minidregg.Selvage
++
++/-! Axiom audit: exact declarations, no unpinned theorem exports. -/
++/-- info: 'Minidregg.Selvage.ComputationalBinding.perfect_iff_no_attempt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.perfect_iff_no_attempt
++/-- info: 'Minidregg.Selvage.ComputationalBinding.flat_attempt_collision' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.flat_attempt_collision
++/-- info: 'Minidregg.Selvage.ComputationalBinding.flat_binding_advantage' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.flat_binding_advantage
++/-- info: 'Minidregg.Selvage.ComputationalBinding.prob_eq_uniformProb' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.prob_eq_uniformProb
++/-- info: 'Minidregg.Selvage.ComputationalBinding.bindLeg_of_history_game' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.bindLeg_of_history_game
++/-- info: 'Minidregg.Selvage.ComputationalBinding.sequential_of_history_game' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.sequential_of_history_game
++/-- info: 'Minidregg.Selvage.ComputationalBinding.expOver_add' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.expOver_add
++/-- info: 'Minidregg.Selvage.ComputationalBinding.expOver_mono_final' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.expOver_mono_final
++/-- info: 'Minidregg.Selvage.ComputationalBinding.runHistory_length' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.runHistory_length
++/-- info: 'Minidregg.Selvage.ComputationalBinding.mean_runHistory' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.mean_runHistory
++/-- info: 'Minidregg.Selvage.ComputationalBinding.prob_runHistory' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.prob_runHistory
++/-- info: 'Minidregg.Selvage.ComputationalBinding.expOver_bad_transfer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.expOver_bad_transfer
++/-- info: 'Minidregg.Selvage.ComputationalBinding.leakage_with_global_binding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.leakage_with_global_binding
++/-- info: 'Minidregg.Selvage.ComputationalBinding.leakage_of_global_game' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.ComputationalBinding.leakage_of_global_game
+diff --git a/Selvage/BindingGame.lean b/Selvage/BindingGame.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/BindingGame.lean
+@@ -0,0 +1,416 @@
++/-
++Finite computational-security games and common-experiment error composition.
++The code type and its resource semantics are fixed BEFORE security is assumed;
++resource counters are not numbers supplied by the adversary. A concrete machine/
++oracle interpreter must justify that these semantics model the deployment.
++No random-oracle or concrete hash bound is asserted by this module.
++-/
++import Mathlib.Data.Fintype.Card
++import Mathlib.Basic.Real.Basic
++import Mathlib.Data.Fintype.BigOperators
++import Mathlib.Data.Fintype.Prod
++import Mathlib.Algebra.BigOperators.Ring.Finset
++import Mathlib.Algebra.Order.BigOperators.Group.Finset
++import Mathlib.Tactic.Linarith
++import Mathlib.Tactic.Ring
++import Mathlib.Tactic.NormNum
++import Mathlib.Tactic.FinCases
++
++namespace Minidregg.Selvage.BindingGame
++
++set_option autoImplicit false
++open Finset
++
++variable {Ω Code Result Subject Digest : Type} [Fintype Ω]
++
++noncomputable def prob (p : Ω → Prop) : ℝ := by
++  classical
++  exact (∑ ω : Ω, if p ω then (1 : ℝ) else 0) / Fintype.card Ω
++
++noncomputable def mean (f : Ω → ℝ) : ℝ :=
++  (∑ ω : Ω, f ω) / Fintype.card Ω
++
++theorem mean_const [Nonempty Ω] (a : ℝ) : mean (fun _ : Ω => a) = a := by
++  unfold mean
++  rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
++  exact mul_div_cancel_left₀ a (by exact_mod_cast Fintype.card_ne_zero)
++
++theorem prob_eq_mean (p : Ω → Prop) [DecidablePred p] :
++    prob p = mean (fun ω => if p ω then 1 else 0) := by
++  unfold prob mean
++  congr 1
++  apply Finset.sum_congr rfl
++  intro ω _
++  by_cases h : p ω <;> simp [h]
++
++theorem prob_mono {p q : Ω → Prop} (h : ∀ ω, p ω → q ω) : prob p ≤ prob q := by
++  classical
++  apply div_le_div_of_nonneg_right _ (Nat.cast_nonneg _)
++  apply Finset.sum_le_sum
++  intro ω _
++  by_cases hp : p ω <;> by_cases hq : q ω <;> simp_all
++
++theorem prob_or (p q : Ω → Prop) : prob (fun ω => p ω ∨ q ω) ≤ prob p + prob q := by
++  classical
++  unfold prob
++  rw [← add_div, ← Finset.sum_add_distrib]
++  apply div_le_div_of_nonneg_right _ (Nat.cast_nonneg _)
++  apply Finset.sum_le_sum
++  intro ω _
++  by_cases hp : p ω <;> by_cases hq : q ω <;> simp [hp, hq]
++
++theorem prob_le_one (p : Ω → Prop) : prob p ≤ 1 := by
++  classical
++  have hs : (∑ ω : Ω, if p ω then (1 : ℝ) else 0) ≤ Fintype.card Ω := by
++    calc _ ≤ ∑ _ω : Ω, (1 : ℝ) := Finset.sum_le_sum (fun ω _ => by split_ifs <;> norm_num)
++         _ = _ := by simp
++  by_cases h : Fintype.card Ω = 0
++  · simp [prob, h]
++  · unfold prob
++    exact (div_le_one (by exact_mod_cast Nat.pos_of_ne_zero h)).2 hs
++
++/-- Normalization is required at every security API; empty spaces are only
++allowed for the algebraic zero-measure lemmas above. -/
++theorem prob_true [Nonempty Ω] : prob (fun _ : Ω => True) = 1 := by
++  classical
++  simp [prob, ne_of_gt (Fintype.card_pos : 0 < Fintype.card Ω)]
++
++/-- The resource model belongs to the experiment, not to its submitted code. -/
++structure Experiment (Ω Code Result : Type) where
++  run : Code → Ω → Result
++  queries : Code → Ω → ℕ
++  steps : Code → Ω → ℕ
++
++/-- Worst-case resources, including extraction, verification and output queries
++when those operations belong to the reduction. -/
++def Experiment.Within (G : Experiment Ω Code Result) (a : Code) (q t : ℕ) : Prop :=
++  ∀ ω, G.queries a ω ≤ q ∧ G.steps a ω ≤ t
++
++noncomputable def Experiment.advantage (G : Experiment Ω Code Result)
++    (bad : Ω → Result → Prop) (a : Code) : ℝ := prob (fun ω => bad ω (G.run a ω))
++
++/-- Explicit security assumption at one resource budget, on THIS experiment.
++A security parameter or public setup can index a family of these games.
++A bound for a smaller adversary class is not a bound for a larger one. -/
++def Experiment.SecureAt [Nonempty Ω] (G : Experiment Ω Code Result) (bad : Ω → Result → Prop)
++    (q t : ℕ) (ε : ℝ) : Prop :=
++  ∀ a, G.Within a q t → G.advantage bad a ≤ ε
++
++/-- Output transformation with explicit worst-case reduction overhead. The
++chosen time bound includes scanning/encoding the outputs; zero is not implicit. -/
++def Experiment.map (G : Experiment Ω Code Result) {Result' : Type}
++    (f : Result → Result') (extraQueries extraSteps : ℕ) : Experiment Ω Code Result' where
++  run a ω := f (G.run a ω)
++  queries a ω := G.queries a ω + extraQueries
++  steps a ω := G.steps a ω + extraSteps
++
++omit [Fintype Ω] in
++theorem Experiment.within_map (G : Experiment Ω Code Result) {Result' : Type}
++    (f : Result → Result') (extraQueries extraSteps : ℕ) (a : Code) (q t : ℕ)
++    (h : G.Within a q t) :
++    (G.map f extraQueries extraSteps).Within a (q + extraQueries) (t + extraSteps) := by
++  intro ω
++  exact ⟨Nat.add_le_add_right (h ω).1 _, Nat.add_le_add_right (h ω).2 _⟩
++
++/-- A reduction produces a named output pair in the fixed code model.
++Computability and interpreter adequacy require a concrete instantiation. Its resource bounds
++must be proved for the transformed code, not inherited from the original code. -/
++theorem advantage_reduction [Nonempty Ω] {Code' Result' : Type}
++    (G : Experiment Ω Code Result) (H : Experiment Ω Code' Result')
++    (bad : Ω → Result → Prop) (wins : Ω → Result' → Prop)
++    (reduce : Code → Code') (a : Code) (q t : ℕ) (ε : ℝ)
++    (hsecure : H.SecureAt wins q t ε)
++    (hresource : H.Within (reduce a) q t)
++    (hcover : ∀ ω, bad ω (G.run a ω) → wins ω (H.run (reduce a) ω)) :
++    G.advantage bad a ≤ ε :=
++  le_trans (prob_mono hcover) (hsecure (reduce a) hresource)
++
++/-- Whole-subject binding includes length: instantiate Subject := List Byte,
++not a fixed-length projection which loses the empty/prefix distinction. -/
++def SameRootDifferentSubject (commit : Subject → Digest) (s : Subject × Subject) : Prop :=
++  commit s.1 = commit s.2 ∧ s.1 ≠ s.2
++
++/-- In the flat hash scheme the reduction is the actual two extracted inputs;
++there is no existential assertion that some collision somewhere exists. -/
++theorem flat_collision_reduction (H : Subject → Digest) (s : Subject × Subject) :
++    SameRootDifferentSubject H s → s.1 ≠ s.2 ∧ H s.1 = H s.2 :=
++  fun h => ⟨h.2, h.1⟩
++
++/-- Common-experiment conjunction, relative to the FIRST extracted subject.
++Each verifier binds its own subject to the advertised root; their disagreement
++is the third bad event. No independence assumption. All extraction overhead
++belongs in the budget used to establish hb. -/
++theorem cert_and [Nonempty Ω] (commit : Ω → Subject → Digest) (root : Ω → Digest)
++    (w₁ w₂ : Ω → Subject) (V₁ V₂ : Ω → Prop) (P₁ P₂ : Subject → Prop)
++    (ε₁ ε₂ εb : ℝ)
++    (h₁ : prob (fun ω => V₁ ω ∧ ¬ (commit ω (w₁ ω) = root ω ∧ P₁ (w₁ ω))) ≤ ε₁)
++    (h₂ : prob (fun ω => V₂ ω ∧ ¬ (commit ω (w₂ ω) = root ω ∧ P₂ (w₂ ω))) ≤ ε₂)
++    (hb : prob (fun ω => SameRootDifferentSubject (commit ω) (w₁ ω, w₂ ω)) ≤ εb) :
++    prob (fun ω => V₁ ω ∧ V₂ ω ∧
++      ¬ (commit ω (w₁ ω) = root ω ∧ P₁ (w₁ ω) ∧ P₂ (w₁ ω)))
++      ≤ min 1 (ε₁ + ε₂ + εb) := by
++  classical
++  apply le_min (prob_le_one _)
++  have hc : prob (fun ω => V₁ ω ∧ V₂ ω ∧
++      ¬ (commit ω (w₁ ω) = root ω ∧ P₁ (w₁ ω) ∧ P₂ (w₁ ω))) ≤
++      prob (fun ω => (V₁ ω ∧ ¬ (commit ω (w₁ ω) = root ω ∧ P₁ (w₁ ω))) ∨
++        (V₂ ω ∧ ¬ (commit ω (w₂ ω) = root ω ∧ P₂ (w₂ ω))) ∨
++        SameRootDifferentSubject (commit ω) (w₁ ω, w₂ ω)) := by
++    apply prob_mono
++    intro ω h
++    by_cases hfirst : commit ω (w₁ ω) = root ω ∧ P₁ (w₁ ω)
++    · by_cases hsecond : commit ω (w₂ ω) = root ω ∧ P₂ (w₂ ω)
++      · right; right
++        exact ⟨hfirst.1.trans hsecond.1.symm, fun heq => h.2.2
++          ⟨hfirst.1, hfirst.2, (by simpa only [show w₁ ω = w₂ ω from heq] using hsecond.2)⟩⟩
++      · exact Or.inr (Or.inl ⟨h.2.1, hsecond⟩)
++    · exact Or.inl ⟨h.1, hfirst⟩
++  have hu := prob_or
++    (fun ω => V₁ ω ∧ ¬ (commit ω (w₁ ω) = root ω ∧ P₁ (w₁ ω)))
++    (fun ω => (V₂ ω ∧ ¬ (commit ω (w₂ ω) = root ω ∧ P₂ (w₂ ω))) ∨
++      SameRootDifferentSubject (commit ω) (w₁ ω, w₂ ω))
++  have hv := prob_or
++    (fun ω => V₂ ω ∧ ¬ (commit ω (w₂ ω) = root ω ∧ P₂ (w₂ ω)))
++    (fun ω => SameRootDifferentSubject (commit ω) (w₁ ω, w₂ ω))
++  linarith
++
++/-- Computational conjunction with witnesses tied to the actual resource-
++bounded extractor output. Bounds for merely existential witnesses do not suffice. -/
++theorem cert_and_of_game [Nonempty Ω]
++    (G : Experiment Ω Code (Subject × Subject)) (a : Code) (queries steps : ℕ)
++    (commit : Ω → Subject → Digest) (root : Ω → Digest)
++    (V₁ V₂ : Ω → Prop) (P₁ P₂ : Subject → Prop) (ε₁ ε₂ εb : ℝ)
++    (h₁ : prob (fun ω => V₁ ω ∧ ¬ (commit ω (G.run a ω).1 = root ω ∧ P₁ (G.run a ω).1)) ≤ ε₁)
++    (h₂ : prob (fun ω => V₂ ω ∧ ¬ (commit ω (G.run a ω).2 = root ω ∧ P₂ (G.run a ω).2)) ≤ ε₂)
++    (hsecure : G.SecureAt (fun ω => SameRootDifferentSubject (commit ω)) queries steps εb)
++    (hbudget : G.Within a queries steps) :
++    prob (fun ω => V₁ ω ∧ V₂ ω ∧
++      ¬ (commit ω (G.run a ω).1 = root ω ∧ P₁ (G.run a ω).1 ∧ P₂ (G.run a ω).1))
++      ≤ min 1 (ε₁ + ε₂ + εb) :=
++  cert_and commit root (fun ω => (G.run a ω).1) (fun ω => (G.run a ω).2)
++    V₁ V₂ P₁ P₂ ε₁ ε₂ εb h₁ h₂ (hsecure a hbudget)
++
++/-- Receipt composition permits a nontrivial subject projection. The binding
++check establishes that projection agrees, outside its explicitly charged event.
++This theorem does not equate occurrence with validity or sampling with safety. -/
++theorem receipt_and [Nonempty Ω] (V₁ V₂ Bind P₁ P₂ BadBind : Ω → Prop) (ε₁ ε₂ εb : ℝ)
++    (h₁ : prob (fun ω => V₁ ω ∧ ¬ P₁ ω) ≤ ε₁)
++    (h₂ : prob (fun ω => V₂ ω ∧ ¬ P₂ ω) ≤ ε₂)
++    (hb : prob BadBind ≤ εb)
++    (Target : Ω → Prop)
++    (hjoin : ∀ ω, Bind ω → ¬ BadBind ω → P₁ ω → P₂ ω → Target ω) :
++    prob (fun ω => V₁ ω ∧ V₂ ω ∧ Bind ω ∧ ¬ Target ω)
++      ≤ min 1 (ε₁ + ε₂ + εb) := by
++  classical
++  apply le_min (prob_le_one _)
++  have hc : prob (fun ω => V₁ ω ∧ V₂ ω ∧ Bind ω ∧ ¬ Target ω) ≤
++      prob (fun ω => (V₁ ω ∧ ¬ P₁ ω) ∨ (V₂ ω ∧ ¬ P₂ ω) ∨ BadBind ω) := by
++    apply prob_mono
++    intro ω h
++    by_cases hp : P₁ ω
++    · by_cases hq : P₂ ω
++      · by_cases hb' : BadBind ω
++        · exact Or.inr (Or.inr hb')
++        · exact False.elim (h.2.2.2 (hjoin ω h.2.2.1 hb' hp hq))
++      · exact Or.inr (Or.inl ⟨h.2.1, hq⟩)
++    · exact Or.inl ⟨h.1, hp⟩
++  have hu := prob_or (fun ω => V₁ ω ∧ ¬ P₁ ω)
++    (fun ω => (V₂ ω ∧ ¬ P₂ ω) ∨ BadBind ω)
++  have hv := prob_or (fun ω => V₂ ω ∧ ¬ P₂ ω) BadBind
++  linarith
++
++/-- Finite-horizon global-bad-event repair. X is a comparison process on the
++SAME sample space, not the real process conditioned on a future good event.
++Y ≤ X off bad, Y ≤ M on bad, and X ≥ 0 imply E[Y] ≤ E[X] + M Pr[bad]. -/
++theorem mean_bad_transfer (X Y : Ω → ℝ) (bad : Ω → Prop) (M B ε : ℝ)
++    (hM : 0 ≤ M) (hX : ∀ ω, 0 ≤ X ω)
++    (hgood : ∀ ω, ¬ bad ω → Y ω ≤ X ω)
++    (hcap : ∀ ω, bad ω → Y ω ≤ M)
++    (hmean : mean X ≤ B) (hbad : prob bad ≤ ε) :
++    mean Y ≤ B + M * ε := by
++  classical
++  have hp : ∀ ω, Y ω ≤ X ω + M * (if bad ω then 1 else 0) := by
++    intro ω
++    by_cases h : bad ω
++    · simp only [ite_eq_left h, mul_one]
++      linarith [hcap ω h, hX ω]
++    · simpa [h] using hgood ω h
++  have hs : mean Y ≤ mean X + M * prob bad := by
++    unfold mean prob
++    rw [← mul_div_assoc, ← add_div, Finset.mul_sum, ← Finset.sum_add_distrib]
++    exact div_le_div_of_nonneg_right (Finset.sum_le_sum (fun ω _ => hp ω)) (Nat.cast_nonneg _)
++  exact le_trans hs (add_le_add hmean (mul_le_mul_of_nonneg_left hbad hM))
++
++/-! Keystones: accepted nontrivial instance, failure when binding is omitted,
++and a rare-history countermodel to global-to-conditional security. -/
++
++namespace Keystone
++
++def constantHash (_ : Bool) : Unit := ()
++def pairGame : Experiment Unit Unit (Bool × Bool) where
++  run _ _ := (false, true)
++  queries _ _ := 2
++  steps _ _ := 1
++
++theorem pairGame_inhabited : pairGame.Within () 2 1 := by
++  intro ω; exact ⟨le_rfl, le_rfl⟩
++
++theorem pairGame_advantage : pairGame.advantage
++    (fun _ => SameRootDifferentSubject constantHash) () = 1 := by
++  norm_num [Experiment.advantage, prob, pairGame, SameRootDifferentSubject, constantHash]
++
++theorem zero_budget_refuted : ¬ pairGame.SecureAt
++    (fun _ => SameRootDifferentSubject constantHash) 2 1 0 := by
++  intro h
++  have hh := h () pairGame_inhabited
++  rw [pairGame_advantage] at hh
++  norm_num at hh
++
++theorem budget_inhabited : pairGame.SecureAt
++    (fun _ => SameRootDifferentSubject constantHash) 2 1 1 := by
++  intro a _; exact prob_le_one _
++
++/-- Each certificate is true of its extracted subject, but there is no common
++subject satisfying both predicates. Both leg errors are zero; binding costs one. -/
++theorem conjunction_requires_binding :
++    (false = false ∧ true = true) ∧ ¬ ∃ b : Bool, b = false ∧ b = true := by
++  constructor
++  · exact ⟨rfl, rfl⟩
++  · rintro ⟨b, h₁, h₂⟩; cases h₁.symm.trans h₂
++
++/-- The bad event is the rare prefix 0. Given that prefix, every current coin
++is bad. The global probability is 1/2 here, while the conditional value is 1. -/
++theorem global_not_history_conditional :
++    prob (fun x : Bool × Bool => x.1 = false) = 1 / 2 ∧
++    prob (fun _x : Bool => (false : Bool) = false) = 1 := by
++  norm_num [prob, Fintype.sum_prod_type, Fintype.sum_bool]
++
++/-- The same conditioning defect with a 1/128 global event. No zero-
++probability history is involved. The frozen prefix 0 makes the event certain. -/
++theorem rare_history_counterexample :
++    prob (fun x : Fin 128 => x = 0) = 1 / 128 ∧
++    prob (fun _x : Bool => (0 : Fin 128) = 0) = 1 := by
++  classical
++  have hsum : (∑ x : Fin 128, if x = 0 then (1 : ℝ) else 0) = 1 := by
++    rw [Finset.sum_eq_single (0 : Fin 128)]
++    · simp
++    · intro x _ hx; simp [hx]
++    · simp
++  constructor
++  · rw [prob_eq_mean]
++    unfold mean
++    rw [hsum]
++    norm_num
++  · norm_num [prob, Fintype.sum_bool]
++
++theorem identity_secure_zero [Nonempty Ω] (G : Experiment Ω Code (Bool × Bool)) (q t : ℕ) :
++    G.SecureAt (fun _ => SameRootDifferentSubject (fun b : Bool => b)) q t 0 := by
++  classical
++  intro a _
++  have hfalse : ∀ ω, ¬ SameRootDifferentSubject (fun b : Bool => b) (G.run a ω) :=
++    fun _ h => h.2 h.1
++  simp [Experiment.advantage, prob, hfalse]
++
++theorem global_transfer_tight :
++    mean (fun b : Bool => if b = false then (1 : ℝ) else 0) = 1 / 2 := by
++  norm_num [mean, Fintype.sum_bool]
++
++/-- A sampled compressing family: three messages, two digests, two random bits.
++This is only a pairwise-universal, nonadaptive two-query toy, NOT deployed CR. -/
++def sampledHash (coins : Bool × Bool) (x : Fin 3) : Bool :=
++  if x = 0 then coins.1 else if x = 1 then coins.2 else xor coins.1 coins.2
++
++def sampledPairGame : Experiment (Bool × Bool) (Fin 3 × Fin 3) (Fin 3 × Fin 3) where
++  run a _ := a
++  queries _ _ := 2
++  steps _ _ := 1
++
++theorem sampled_budget_inhabited : sampledPairGame.Within (0, 1) 2 1 := by
++  intro ω; exact ⟨le_rfl, le_rfl⟩
++
++theorem sampled_compressing_secure : sampledPairGame.SecureAt
++    (fun ω => SameRootDifferentSubject (sampledHash ω)) 2 1 (1 / 2) := by
++  intro a _
++  rcases a with ⟨x, y⟩
++  unfold Experiment.advantage prob
++  rw [Fintype.sum_prod_type]
++  simp only [Fintype.sum_bool]
++  fin_cases x <;> fin_cases y <;>
++    norm_num [sampledPairGame, SameRootDifferentSubject, sampledHash, Fintype.sum_bool]
++
++/-- Composition fires on the compressing toy: leg one proves message 0,
++leg two proves message 1, and both accept one root exactly on a collision. -/
++theorem certificate_game_fires :
++    prob (fun ω : Bool × Bool => sampledHash ω 1 = sampledHash ω 0) ≤ 1 / 2 := by
++  have h₁ : prob (fun ω : Bool × Bool => True ∧
++      ¬ (sampledHash ω (sampledPairGame.run (0, 1) ω).1 = sampledHash ω 0 ∧
++        (sampledPairGame.run (0, 1) ω).1 = 0)) ≤ 0 := by
++    simp [sampledPairGame, prob]
++  have h₂ : prob (fun ω : Bool × Bool => sampledHash ω 1 = sampledHash ω 0 ∧
++      ¬ (sampledHash ω (sampledPairGame.run (0, 1) ω).2 = sampledHash ω 0 ∧
++        (sampledPairGame.run (0, 1) ω).2 = 1)) ≤ 0 := by
++    simp [sampledPairGame, prob]
++  have h := cert_and_of_game sampledPairGame (0, 1) 2 1 sampledHash
++    (fun ω => sampledHash ω 0) (fun _ => True)
++    (fun ω => sampledHash ω 1 = sampledHash ω 0)
++    (fun x => x = 0) (fun x => x = 1) 0 0 (1 / 2)
++    h₁ h₂ sampled_compressing_secure sampled_budget_inhabited
++  norm_num [sampledPairGame] at h
++  exact h
++
++end Keystone
++
++end Minidregg.Selvage.BindingGame
++
++/-! Axiom audit: exact declarations, no unpinned theorem exports. -/
++/-- info: 'Minidregg.Selvage.BindingGame.mean_const' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.mean_const
++/-- info: 'Minidregg.Selvage.BindingGame.prob_eq_mean' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.prob_eq_mean
++/-- info: 'Minidregg.Selvage.BindingGame.prob_true' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.prob_true
++/-- info: 'Minidregg.Selvage.BindingGame.prob_mono' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.prob_mono
++/-- info: 'Minidregg.Selvage.BindingGame.prob_or' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.prob_or
++/-- info: 'Minidregg.Selvage.BindingGame.prob_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.prob_le_one
++/-- info: 'Minidregg.Selvage.BindingGame.Experiment.within_map' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Experiment.within_map
++/-- info: 'Minidregg.Selvage.BindingGame.advantage_reduction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.advantage_reduction
++/-- info: 'Minidregg.Selvage.BindingGame.flat_collision_reduction' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.flat_collision_reduction
++/-- info: 'Minidregg.Selvage.BindingGame.cert_and_of_game' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.cert_and_of_game
++/-- info: 'Minidregg.Selvage.BindingGame.cert_and' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.cert_and
++/-- info: 'Minidregg.Selvage.BindingGame.receipt_and' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.receipt_and
++/-- info: 'Minidregg.Selvage.BindingGame.mean_bad_transfer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.mean_bad_transfer
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.pairGame_inhabited' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.pairGame_inhabited
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.pairGame_advantage' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.pairGame_advantage
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.zero_budget_refuted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.zero_budget_refuted
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.budget_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.budget_inhabited
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.conjunction_requires_binding' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.conjunction_requires_binding
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.global_not_history_conditional' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.global_not_history_conditional
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.rare_history_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.rare_history_counterexample
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.identity_secure_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.identity_secure_zero
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.global_transfer_tight' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.global_transfer_tight
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.sampled_budget_inhabited' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.sampled_budget_inhabited
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.sampled_compressing_secure' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.sampled_compressing_secure
++
++/-- info: 'Minidregg.Selvage.BindingGame.Keystone.certificate_game_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.BindingGame.Keystone.certificate_game_fires
+diff --git a/Selvage/CollisionResistanceROM.lean b/Selvage/CollisionResistanceROM.lean
+--- a/Selvage/CollisionResistanceROM.lean
++++ b/Selvage/CollisionResistanceROM.lean
+@@ -38,8 +38,8 @@
+   has a collision (equivocation ⇒ collision is `[COMMIT-CR]`(ii) at this
+   resolution, and collision ⇒ equivocation makes the reduction lossless);
+   `roBinding`: a collision-free `H` yields a full `BindingCommitment` — the
+-  exact "binding conditional on a NAMED CR hypothesis carried as structure"
+-  shape `[COMMIT-CR]` asked for.
++  unconditional ideal object only when the word-to-root map is injective.
++  This is impossible at compressing parameters and is not a computational realizer.
+ * **`commitCR_of_RO`** — the discharge: a `BreakAdversary` (distinct queries
+   + a claimed colliding pair chosen AFTER seeing the answers) wins — exhibits
+   two distinct queried words with equal roots — with probability
+@@ -329,12 +329,10 @@
+     obtain ⟨a, ha⟩ := Function.ne_iff.mp hne
+     exact ha (hbind (H x) a (x a) (y a) x y ⟨rfl, rfl⟩ ⟨hcol.symm, rfl⟩)
+ 
+-/-- The positive direction as carried structure — the exact `[COMMIT-CR]`
+-shape ("binding conditional on a NAMED CR hypothesis carried as structure,
+-never an axiom"): a collision-free oracle function yields a full
+-`BindingCommitment`. What this file adds is the PRICE of that hypothesis:
+-over the RO's coins it fails with probability `≤ q(q−1)/(2N)`
+-(`commitCR_of_RO`), so CR is no longer a standalone assumption. -/
++/-- Ideal injection-to-perfect-binding construction. Its `hcr` premise is
++uninhabited when the word space exceeds the digest space. `commitCR_of_RO`
++bounds a specified adversary's output collision event; it does NOT bound the
++failure probability of this universally quantified injectivity premise. -/
+ def roBinding {F ι : Type*} {N : ℕ} (H : (ι → F) → Fin N)
+     (hcr : ∀ x y : ι → F, H x = H y → x = y) :
+     BindingCommitment (Fin N) F ι (ι → F) where
+@@ -507,8 +505,8 @@
+ (`roScheme_break_iff_collision`) — `[COMMIT-CR]`(ii) at the flat resolution,
+ LOSSLESS (an iff, not a one-way inequality). (3) The discharge
+ `commitCR_of_RO`: binding breaks by query-bounded adversaries are priced by
+-the birthday bound, so the CR hypothesis `roBinding` carries is no longer
+-standalone — its failure probability is a theorem in the ROM. (4) The
++the birthday bound for this adversary class. The universal injectivity
++hypothesis of `roBinding` is separate and is NOT discharged by that theorem. (4) The
+ modeling step "distinct fresh queries = independent uniform coins" is
+ machine-checked against the LANDED handler (`roAnswers_eq_coins`), not
+ narrated.
+diff --git a/Selvage/Commitment.lean b/Selvage/Commitment.lean
+--- a/Selvage/Commitment.lean
++++ b/Selvage/Commitment.lean
+@@ -24,16 +24,17 @@
+   from the commitment is this.
+ * `BindingCommitment` — an opening scheme CARRYING its binding as a Prop field.
+ 
+-**The honest floor (read before auditing).** Position-binding is not provable
+-from nothing: for the deployed Merkle/sponge it rests on collision-resistance
+-of the hash. Following the discipline of `Selvage/FiatShamir.lean`'s ROM (an
+-INHABITED handler, `Oracle.empty` — never an unproved axiom), the idealization
+-here is a STRUCTURE with binding as a field, and it is INHABITED:
+-`idealCommitment`, the identity scheme (`Root := ι → F`, `commit = id`,
+-`verifyOpen rt i v _ := rt i = v`), has its binding PROVED — a binding scheme
+-EXISTS, the abstraction is non-vacuous, and no axiom enters the tree. The
+-deployed sponge realizing `BindingCommitment` is the one named residual
+-`[COMMIT-CR]` below, priced at deployment exactly like `[FS-ROM]`.
++**Scope of the ideal layer.** `PositionBinding` is PERFECT binding. Completeness
++makes `commit` injective (`BindingCommitment.commit_injective`), so a digest
++smaller than the word space cannot realize this type under any hash assumption.
++`idealCommitment` inhabits it by retaining the whole word; this establishes only
++an ideal, non-compressing instance. A deployed hash commitment instead uses
++`OpeningScheme` with a resource-indexed adversary success bound. See
++`Selvage/BindingGame.lean` and `Selvage/BindingBudget.lean`: explicit games,
++flat-opening collision reduction, certificate/receipt error composition, and
++both history-conditional and global finite-horizon audit transports. The
++concrete Merkle reduction is `Selvage/AuthMapCommitment.lean`. None of these
++probabilistic bounds constructs a `BindingCommitment` for a short root.
+ 
+ **Transcription notes:**
+ 
+@@ -107,18 +108,17 @@
+ 
+ /-- **Position-binding** — the load-bearing property of the whole layer: one
+ root cannot be opened to two DIFFERENT values at the same position, whatever
+-the two openings. This is what the deployed Merkle tree buys with
+-collision-resistance, and it is everything `[ACC-extract-bind]`(a)/(c) and
++the two openings. This is an unconditional ideal law, stronger than computational Merkle
++binding; it is everything `[ACC-extract-bind]`(a)/(c) and
+ `[DEC-open]` consume. -/
+ def OpeningScheme.PositionBinding (S : OpeningScheme Root F ι Op) : Prop :=
+   ∀ (rt : Root) (i : ι) (v v' : F) (o o' : Op),
+     S.verifyOpen rt i v o → S.verifyOpen rt i v' o' → v = v'
+ 
+ /-- **A binding vector commitment**: an opening scheme carrying its
+-position-binding as a Prop field. The honest-floor shape: binding rests on
+-collision-resistance in deployment, so it enters as CARRIED STRUCTURE —
+-inhabited below by `idealCommitment` (binding PROVED), never an axiom; the
+-sponge realizer is the named residual `[COMMIT-CR]`. -/
++perfect position-binding as a Prop field. Inhabited below by the
++non-compressing `idealCommitment`, never an axiom. A compressing sponge cannot
++realize this structure; computational bounds are in `BindingBudget`. -/
+ structure BindingCommitment (Root : Type*) (F : Type*) (ι : Type*) (Op : Type*)
+     extends OpeningScheme Root F ι Op where
+   /-- Position-binding — the field the seam theorems apply. -/
+@@ -218,13 +218,13 @@
+ theorem (`rt i = v` and `rt i = v'` force `v = v'`). This is the exact
+ `Oracle.empty` move: the idealized layer is inhabited, so every theorem taking
+ a `BindingCommitment` has a non-vacuous instance, and no axiom is ever
+-declared. What the identity scheme idealizes away — succinctness of the root
+-and the hash realizing it — is `[COMMIT-CR]`'s ledger, not a soundness gap. -/
++declared. The identity witness does not inhabit the short-root deployment premises.
++Those require the separate computational game and collision reduction. -/
+ 
+ /-- **The ideal (identity) commitment** — the inhabitation witness of the
+ honest floor: the root IS the word, verification is symbol equality, binding
+-is proved. Trivially succinctness-free; the deployed Merkle/sponge scheme
+-realizing `BindingCommitment` with a short root is `[COMMIT-CR]`. -/
++is proved. Trivially succinctness-free. A short-root Merkle/sponge scheme cannot realize
++`BindingCommitment`; it consumes the computational binding budget instead. -/
+ def idealCommitment (F ι : Type*) : BindingCommitment (ι → F) F ι Unit where
+   commit := id
+   openAt := fun _ _ => ()
+@@ -478,26 +478,17 @@
+ the seams below over it, and `Assurance/SelvageV0.lean`'s capstone consumes
+ that form.  Everything in this file about `BindingCommitment` is a statement
+ about non-compressing commitments (the identity scheme and injections into an
+-unbounded root).  The paragraph below is the original residual, kept for
+-the record of what was asked for.  In deployment `Root` is a short digest: `commit` Merkle-hashes the word with the
+-stack's sponge (the same hash family `[FS-ROM]` idealizes for the transcript
+-layer), `openAt` produces the authentication path, and `verifyOpen` re-hashes
+-the leaf up the path and compares roots. Its `binding` field is a theorem ONLY
+-relative to collision-resistance of the compression function: an adversary
+-opening one root to two values at a position exhibits a hash collision along
+-the paths — the standard Merkle binding reduction. What this residual owes:
+-(i) the Merkle `commit`/`openAt`/`verifyOpen` as derived objects over the
+-chosen sponge; (ii) the reduction "equivocation ⇒ collision" as a real
+-theorem, making `binding` conditional on a NAMED CR hypothesis carried as
+-structure (exactly as this file carries `binding`), never an axiom; (iii) the
+-succinctness accounting (root and path sizes — the reason the identity scheme,
+-sound as it is, is not the deployed one). Until it lands, the honest label:
+-the commitment LAYER is proved and inhabited (identity scheme, binding a
+-theorem); the seams are closed GIVEN any `BindingCommitment`; the deployed
+-Merkle/sponge instance is priced, not assumed. The `t`-column erasure lift
+-(partial openings to full words inside the mutual-agreement set) is
+-`[ACC-extract-bind]`(b), owed in `Selvage/AccExtract.lean`'s ledger, riding
+-`Selvage/CorrelatedAgreement.lean` — not re-owed here.
++unbounded root). Computational security bounds only the probability that a
++resource-bounded adversary produces a specified collision witness; it never
++bounds the probability that a fixed compressing hash is globally injective.
++`ComputationalBinding.flat_binding_advantage` retains the output pair and charges
++query/time overhead. `BindingGame.cert_and` and `receipt_and` charge the same
++experiment's error once per binding reduction. For audits, `bindLeg_of_history_game`
++requires a bound for every history; `leakage_with_global_binding` instead
++transfers a global bad-event bound with a finite damage cap. Realizer, encoding,
++resource, coupling and numerical hash assumptions remain explicit obligations.
++The `t`-column erasure lift (partial openings to full words inside the
++mutual-agreement set) is `[ACC-extract-bind]`(b), owed upstream.
+ 
+ ## Ledger
+ 

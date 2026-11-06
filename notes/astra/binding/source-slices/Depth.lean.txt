@@ -1,0 +1,76 @@
+section UniformProb
+
+variable {C : Type} [Fintype C]
+
+/-- The counted set, as a `Nat.card` inequality against the whole space. -/
+lemma card_le_of_subtype (p : C → Prop) :
+    (Nat.card {c : C // p c} : ℝ) ≤ (Fintype.card C : ℝ) := by
+  classical
+  rw [Nat.card_eq_fintype_card]
+  exact_mod_cast Fintype.card_subtype_le p
+
+lemma uniformProb_nonneg (p : C → Prop) : 0 ≤ uniformProb C p :=
+  div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _)
+
+lemma uniformProb_le_one (p : C → Prop) : uniformProb C p ≤ 1 := by
+  classical
+  unfold uniformProb
+  rcases Nat.eq_zero_or_pos (Fintype.card C) with h0 | hpos
+  · simp [h0]
+  · have hpos' : (0 : ℝ) < (Fintype.card C : ℝ) := by exact_mod_cast hpos
+    calc (Nat.card {c : C // p c} : ℝ) / (Fintype.card C : ℝ)
+        ≤ (Fintype.card C : ℝ) / (Fintype.card C : ℝ) := by
+          gcongr
+          rw [Nat.card_eq_fintype_card]
+          exact Fintype.card_subtype_le p
+      _ = 1 := div_self (ne_of_gt hpos')
+
+lemma uniformProb_congr {p q : C → Prop} (h : ∀ c, p c ↔ q c) :
+    uniformProb C p = uniformProb C q := by
+  unfold uniformProb
+  rw [Nat.card_congr (Equiv.subtypeEquivRight h)]
+
+lemma uniformProb_false {p : C → Prop} (h : ∀ c, ¬ p c) :
+    uniformProb C p = 0 := by
+  unfold uniformProb
+  have : IsEmpty {c : C // p c} := ⟨fun x => h x.1 x.2⟩
+  rw [Nat.card_of_isEmpty]
+  simp
+
+/-- Monotone counting: pointwise implication gives a card inequality. -/
+lemma card_mono_of_imp {p q : C → Prop} (h : ∀ c, p c → q c) :
+    (Nat.card {c : C // p c} : ℝ) ≤ (Nat.card {c : C // q c} : ℝ) := by
+  classical
+  have : Nat.card {c : C // p c} ≤ Nat.card {c : C // q c} :=
+    Nat.card_mono (Set.toFinite {c | q c}) (fun c hc => h c hc)
+  exact_mod_cast this
+
+lemma uniformProb_mono {p q : C → Prop} (h : ∀ c, p c → q c) :
+    uniformProb C p ≤ uniformProb C q := by
+  classical
+  unfold uniformProb
+  rcases Nat.eq_zero_or_pos (Fintype.card C) with h0 | hpos
+  · simp [h0]
+  · have hpos' : (0 : ℝ) < (Fintype.card C : ℝ) := by exact_mod_cast hpos
+    gcongr
+    · exact Nat.card_mono (Set.toFinite {c | q c}) (fun c hc => h c hc)
+
+/-- Counting form of `Pr[p ∨ q] ≤ Pr[p] + Pr[q]`. -/
+lemma uniformProb_or_le (p q : C → Prop) :
+    uniformProb C (fun c => p c ∨ q c) ≤ uniformProb C p + uniformProb C q := by
+  classical
+  unfold uniformProb
+  rw [← add_div]
+  have hle : Nat.card {c : C // p c ∨ q c} ≤
+      Nat.card {c : C // p c} + Nat.card {c : C // q c} := by
+    have hunion : {c : C | p c ∨ q c} = {c : C | p c} ∪ {c : C | q c} := rfl
+    calc Nat.card {c : C // p c ∨ q c}
+        = ({c : C | p c} ∪ {c : C | q c} : Set C).ncard := by
+          rw [← Nat.card_coe_set_eq, ← hunion]; rfl
+      _ ≤ ({c : C | p c} : Set C).ncard + ({c : C | q c} : Set C).ncard :=
+          Set.ncard_union_le _ _
+      _ = Nat.card {c : C // p c} + Nat.card {c : C // q c} := by
+          rw [← Nat.card_coe_set_eq, ← Nat.card_coe_set_eq]; rfl
+  gcongr
+  exact_mod_cast hle
+

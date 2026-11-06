@@ -1,0 +1,277 @@
+COMMAND rg -n 'BindingCommitment|PositionBinding' /Users/ember/dev/minidregg/Selvage --glob '*.lean'
+/Users/ember/dev/minidregg/Selvage/HeteroCompositionSuccinct.lean:311:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/HeteroCompositionSuccinct.lean:327:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogExtraction.lean:284:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/AuthMapCommitment.lean:4:`Selvage/Commitment.lean`'s `BindingCommitment` carries *unconditional*
+/Users/ember/dev/minidregg/Selvage/AuthMapCommitment.lean:6:(`BindingCommitment.commit_injective`): none exists at a root type smaller than
+/Users/ember/dev/minidregg/Selvage/AuthMapCommitment.lean:7:the word space (`BindingCommitment.isEmpty_of_card_lt`).  A deployed Merkle
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhase.lean:19:  (S : BindingCommitment Root F ι Op) (V : RootPreimageScheme S)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhase.lean:73:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhase.lean:182:    {n t : ℕ} (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:110:noncomputable def shiftedMsg (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:119:theorem shiftedMsg_opens (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:129:theorem shiftedMsg_word (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:146:theorem shiftedMsg_committable (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:161:theorem shifted_alignment (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:179:theorem shifted_increment_recovered (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:218:    (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:259:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:316:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean:372:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseGame.lean:29:    (S : BindingCommitment Root F (Fin m) Op) (V : RootPreimageScheme S)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseGame.lean:92:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseGame.lean:227:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseGame.lean:481:    {n t : ℕ} (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:37:  `roScheme_break_iff_collision`: the scheme's `PositionBinding` FAILS iff `H`
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:40:  `roBinding`: a collision-free `H` yields a full `BindingCommitment` — the
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:47:  event is a genuine `PositionBinding` break of `roScheme H` for EVERY oracle
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:65:computed `PositionBinding` refutation through the bridge (`A₂_breaks`).
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:299:verifiers; it does not pass through a proof-by-negation of `PositionBinding`. -/
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:320:    ¬ (roScheme F ι H).PositionBinding ↔ ∃ x y : ι → F, x ≠ y ∧ H x = H y := by
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:323:    unfold OpeningScheme.PositionBinding at hb
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:335:`BindingCommitment`. What this file adds is the PRICE of that hypothesis:
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:340:    BindingCommitment (Fin N) F ι (ι → F) where
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:372:`(roScheme H).PositionBinding` (through the collision direction of the
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:377:    ¬ (roScheme F ι H).PositionBinding := by
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:474:`PositionBinding` of the RO scheme at the consistent oracle (the constant-`0`
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:477:    ¬ (roScheme (Fin 2) (Fin 1) (fun _ => (0 : Fin 2))).PositionBinding :=
+/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean:552:  carried structure in `Selvage/Commitment.lean`'s `BindingCommitment` shape.
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:11:1. A `BindingCommitment` supplies position binding, but a `BcsMsg` carries
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:55:def RootInCommitRange (S : BindingCommitment Root' F ι Op) (rt : Root') : Prop :=
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:61:    (S : BindingCommitment Root' F ι Op) (rt : Root') : Option (ι → F) := by
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:68:    (S : BindingCommitment Root' F ι Op) (rt : Root') (w : ι → F) :
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:85:    (S : BindingCommitment Root' F ι Op) (w : ι → F) :
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:101:    (S : BindingCommitment Root' F (Fin m) Op) (ρ : F)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:110:    (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:120:    (S : BindingCommitment Root' F (Fin m) Op) (ρ : F)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:131:    (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:145:    (S : BindingCommitment Root' F (Fin m) Op) (q : Fin t → Fin m)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:167:    (S : BindingCommitment Root' F (Fin m) Op) (q : Fin t → Fin m)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:185:    (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:206:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:272:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean:308:def junkCommitment : BindingCommitment JunkRoot F₅ (Fin 1) Unit where
+/Users/ember/dev/minidregg/Selvage/ZkExtraction.lean:764:commits a word ARE that word's symbols — `BindingCommitment.binding` against
+/Users/ember/dev/minidregg/Selvage/ZkExtraction.lean:767:theorem binding_columns {Root' Op : Type*} (S : BindingCommitment Root' F ι Op)
+/Users/ember/dev/minidregg/Selvage/ZkExtraction.lean:782:    (S : BindingCommitment Root' F ι Op) (dom : ι ↪ F) {d t : ℕ}
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAttributed.lean:40:structure RootAttribution (S : BindingCommitment Root F ι Op) where
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAttributed.lean:53:    (S : BindingCommitment Root F ι Op) : RootAttribution S where
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAttributed.lean:60:    (S : BindingCommitment Root F ι Op) (rt : Root) :
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAttributed.lean:66:    (S : BindingCommitment Root F ι Op) (A : RootAttribution S)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAttributed.lean:84:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinked.lean:178:    (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) {d : ℕ}
+/Users/ember/dev/minidregg/Selvage/OracleLogLinked.lean:305:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinked.lean:419:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:40:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n)) where
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:147:    (Sbig : BindingCommitment RootBig F ι OpBig)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:148:    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:165:    (Sbig : BindingCommitment RootBig F ι OpBig)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:166:    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:271:    (Sbig : BindingCommitment RootBig F ι OpBig)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:272:    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:291:    (Sbig : BindingCommitment RootBig F ι OpBig)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:292:    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:322:    (Sbig : BindingCommitment RootBig F ι OpBig)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:323:    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:342:    (Sbig : BindingCommitment RootBig F ι OpBig)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:343:    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:364:variable (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:440:variable (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:518:    BindingCommitment (idealRoot n) (ZMod 5) (levels n) (idealOp n) :=
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean:692:  rather than pretending a short-root `BindingCommitment` is unconditional.
+/Users/ember/dev/minidregg/Selvage/BaseFoldRawCommittedIor.lean:5:`BindingCommitment`.  That is the right ideal theorem, but it is one layer too
+/Users/ember/dev/minidregg/Selvage/BaseFoldRawCommittedIor.lean:67:    (B : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldRawCommittedIor.lean:142:    (B : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:169:columns enter ONLY through verified openings against a `BindingCommitment`
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:173:theorem extractTable_committed (S : BindingCommitment Root F ι Op) (dom : ι ↪ F)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:232:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F) (q : Fin t → ι) : Reduction where
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:261:theorem basefoldTable_source_iff (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:274:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F) (q : Fin t → ι)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:284:theorem basefoldTable_source_teeth (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:305:def TableStateProp (S : BindingCommitment Root F ι Op) (dom : ι ↪ F) (q : Fin t → ι)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:350:noncomputable def basefoldTableKState (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:410:theorem basefoldTableKState_state_eq (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:457:noncomputable def basefoldTableRbr (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:495:@[simp] theorem basefoldTableRbr_err (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:503:theorem basefoldTableRbr_extract_eq (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:516:theorem basefoldTableRbr_wAt_zero (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:531:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F) (q : Fin t → ι)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:552:theorem basefoldTable_fs_sound (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:570:theorem basefoldTable_fs_holds (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:598:theorem basefoldLeg_fs_both (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:691:def BaseFoldTableAcceptsEverywhere (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:703:noncomputable def honestTableStrategy (S : BindingCommitment Root F ι Op) (dom : ι ↪ F)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:710:@[simp] theorem honestTableStrategy_poly (S : BindingCommitment Root F ι Op) (dom : ι ↪ F)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:720:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F) (q : Fin t → ι)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:759:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F) (q : Fin t → ι)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean:831:abbrev S₄ : BindingCommitment (Fin 4 → ZMod 5) (ZMod 5) (Fin 4) Unit :=
+/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean:287:    (hfree : ¬ Collision H) : (openingScheme H k).PositionBinding := by
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:305:theorem descentExtract_committed {OpSmall : Type} (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:319:    (S : BindingCommitment Root F ι Op) (Ssmall : OpeningScheme RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:396:noncomputable def basefoldTableRbrAllQueries (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:433:@[simp] theorem basefoldTableRbrAllQueries_err (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:439:theorem basefoldTableRbrAllQueries_extract_eq (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:459:theorem basefoldTableRbrAllQueries_srExtract (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:468:theorem basefoldTable_target_pins (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:480:theorem basefoldTable_fs_sound_allQueries (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:491:theorem basefoldTable_fs_holds_allQueries (hm : 0 < m) (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:525:    (S : ∀ n, BindingCommitment (RootL n) F (ιL n) (OpL n)) (T : FoldingTower F ιL m)
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:539:def DescentMiss (S : ∀ n, BindingCommitment (RootL n) F (ιL n) (OpL n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean:550:variable (SP : ∀ n, BindingCommitment (RootP n) F (PowerTwoFriLevels ell n) (OpP n))
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:276:    (Smain : BindingCommitment RootMain F ι OpMain)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:277:    (Squotient : BindingCommitment RootQuotient F ι OpQuotient)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:288:    (Smain : BindingCommitment RootMain F ι OpMain)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:289:    (Squotient : BindingCommitment RootQuotient F ι OpQuotient)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:316:    (Smain : BindingCommitment RootMain F ι OpMain)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:317:    (Squotient : BindingCommitment RootQuotient F ι OpQuotient)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:327:    (Smain : BindingCommitment RootMain F ι OpMain)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:328:    (Squotient : BindingCommitment RootQuotient F ι OpQuotient)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:339:    (Smain : BindingCommitment RootMain F ι OpMain)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:340:    (Squotient : BindingCommitment RootQuotient F ι OpQuotient)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:386:    (Smain : BindingCommitment RootMain F ι OpMain)
+/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean:387:    (Squotient : BindingCommitment RootQuotient F ι OpQuotient)
+/Users/ember/dev/minidregg/Selvage/HashFamily.lean:135:    (openingScheme H.suite k).PositionBinding :=
+/Users/ember/dev/minidregg/Selvage/HashFamily.lean:240:    (openingScheme poseidon2Family.suite k).PositionBinding :=
+/Users/ember/dev/minidregg/Selvage/ZkRbrGame.lean:60:  Merkle scheme realizes `BindingCommitment`; `Selvage/Commitment.lean`), and
+/Users/ember/dev/minidregg/Selvage/ZkRbrGame.lean:190:  straightline_seam : ∀ {Root' Op : Type} (S : BindingCommitment Root' F ι Op)
+/Users/ember/dev/minidregg/Selvage/ZkRbrGame.lean:311:`[COMMIT-CR]` (deployed Merkle ↦ `BindingCommitment`), and the standing `hPG`
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:39:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:51:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:67:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:99:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:117:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:137:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:164:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:198:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:228:variable (SP : ∀ n, BindingCommitment (RootP n) F
+/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean:338:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean:42:    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n)) where
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean:50:variable {S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n)}
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean:91:variable (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean:164:    (Sbig : BindingCommitment RootBig F ι OpBig)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean:165:    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean:191:variable (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean:311:variable (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:127:it. Binding-typed call sites are unchanged — `BindingCommitment` coerces. -/
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:189:theorem bcsWord_committed (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:230:`BindingCommitment` the retained attempt does not merely go unused, it is
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:232:theorem not_columnEquivocation (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:242:values (`BindingCommitment.binding`, CITED, pointwise) and hence EQUAL
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:245:theorem bcs_root_pins_word (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:321:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:362:    (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:384:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:466:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:530:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:648:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:708:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:752:    (hδone : δs ≤ 1) (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:1010:`BindingCommitment` extends the equivocator, so `bcsWord_committed` is
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:1014:    ¬ ∃ S : BindingCommitment Unit (ZMod 5) (Fin 4) Unit,
+/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean:1065:  `[COMMIT-CR]` (the Merkle/sponge scheme realizing `BindingCommitment`), and
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseSoundness.lean:24:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedOpenedSampling.lean:28:structure RootPreimageScheme (S : BindingCommitment Root F ι Op) where
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedOpenedSampling.lean:39:structure PreimageBcsMsg (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedOpenedSampling.lean:48:    (S : BindingCommitment Root F ι Op) : RootPreimageScheme S where
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedOpenedSampling.lean:72:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedOpenedSampling.lean:295:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:22:* `PositionBinding` — THE load-bearing property: one root cannot open to two
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:25:* `BindingCommitment` — an opening scheme CARRYING its binding as a Prop field.
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:35:deployed sponge realizing `BindingCommitment` is the one named residual
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:78:`BindingCommitment` extension (`equivocal_no_binding_extension`) and it BREAKS
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:96:prover's side. Binding is NOT a field here — `PositionBinding` below is the
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:113:def OpeningScheme.PositionBinding (S : OpeningScheme Root F ι Op) : Prop :=
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:122:structure BindingCommitment (Root : Type*) (F : Type*) (ι : Type*) (Op : Type*)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:125:  binding : toOpeningScheme.PositionBinding
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:127:/-! **Forgetting binding, silently.** A `BindingCommitment` may be handed to
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:131:STATED at `OpeningScheme` without a second copy at `BindingCommitment`: the
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:134:`word_binding`) the argument stays a `BindingCommitment` and the coercion never
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:136:attribute [coe] BindingCommitment.toOpeningScheme
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:138:instance : CoeOut (BindingCommitment Root F ι Op) (OpeningScheme Root F ι Op) :=
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:139:  ⟨BindingCommitment.toOpeningScheme⟩
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:146:theorem BindingCommitment.word_binding (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:154:theorem BindingCommitment.opened_eq_committed (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:161:theorem BindingCommitment.commit_injective (S : BindingCommitment Root F ι Op) :
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:167:so a `BindingCommitment` exists only when `Root` is at least as large as the
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:171:`BindingCommitment` under any hash assumption.  Use `Theory.AuthMap` and
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:174:theorem BindingCommitment.card_le [Fintype Root] [Fintype (ι → F)]
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:175:    (S : BindingCommitment Root F ι Op) :
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:179:/-- No `BindingCommitment` exists at a root type smaller than the word space. -/
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:180:theorem BindingCommitment.isEmpty_of_card_lt [Fintype Root] [Fintype (ι → F)]
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:182:    IsEmpty (BindingCommitment Root F ι Op) :=
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:196:collision reduction consumes; unlike a `BindingCommitment` premise, it keeps
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:205:resistance reduction rather than constructing `BindingCommitment` for free. -/
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:206:theorem BindingCommitment.not_positionEquivocation
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:207:    (S : BindingCommitment Root F ι Op) (rt : Root) (i : ι)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:220:a `BindingCommitment` has a non-vacuous instance, and no axiom is ever
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:227:realizing `BindingCommitment` with a short root is `[COMMIT-CR]`. -/
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:228:def idealCommitment (F ι : Type*) : BindingCommitment (ι → F) F ι Unit where
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:245:instance : Inhabited (BindingCommitment (ι → F) F ι Unit) :=
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:252:`BindingCommitment` and full openings, yes — and the claim-level conclusion
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:269:theorem committed_extract_bind (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:284:theorem committed_fold_bind (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:297:theorem decider_open_sound (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:309:theorem decider_open_complete (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:337:  `equivocal_no_binding_extension` shows NO `BindingCommitment` has it as its
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:349:def S₅ : BindingCommitment (Fin 4 → ZMod 5) (ZMod 5) (Fin 4) Unit :=
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:425:with NO binding. Everything a `BindingCommitment` carries EXCEPT the binding
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:435:theorem equivocal_not_binding : ¬ equivocal.PositionBinding :=
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:438:/-- No `BindingCommitment` extends the equivocator: the binding FIELD cannot
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:442:    ¬ ∃ S : BindingCommitment Unit (ZMod 5) (Fin 4) Unit,
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:460:four (`25 < 625`): no `BindingCommitment` exists, whatever `verifyOpen` is.
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:463:    IsEmpty (BindingCommitment (Fin 2 → ZMod 5) (ZMod 5) (Fin 4) Unit) :=
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:464:  BindingCommitment.isEmpty_of_card_lt (by simp [ZMod.card])
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:473:**[COMMIT-CR] — cannot land in this type.**  `BindingCommitment.isEmpty_of_card_lt`:
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:474:a `BindingCommitment` with a root smaller than its word space does not exist,
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:479:that form.  Everything in this file about `BindingCommitment` is a statement
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:496:theorem); the seams are closed GIVEN any `BindingCommitment`; the deployed
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:504:* `OpeningScheme` / `PositionBinding` / `BindingCommitment` — the layer's
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:510:* `BindingCommitment.card_le` / `isEmpty_of_card_lt` — the type's scope: no
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:530:/-- info: 'Minidregg.Selvage.BindingCommitment.card_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:531:#guard_msgs (whitespace := lax) in #print axioms BindingCommitment.card_le
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:532:/-- info: 'Minidregg.Selvage.BindingCommitment.isEmpty_of_card_lt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/Users/ember/dev/minidregg/Selvage/Commitment.lean:533:#guard_msgs (whitespace := lax) in #print axioms BindingCommitment.isEmpty_of_card_lt
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShiftedTransport.lean:175:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShiftedTransport.lean:211:variable (S : BindingCommitment Root' F (Fin m) Op) (q : Fin t → Fin m)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsShiftedTransport.lean:500:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTarget.lean:36:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/AccRbrBcsRaw.lean:5:its verifier, but its carrier is parameterized by `BindingCommitment`.  This
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAssembly.lean:75:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/OracleLogProgram.lean:436:def LinkOpened (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogProgram.lean:447:theorem linkOpened_honest {n : ℕ} (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogProgram.lean:469:theorem linkOpened_increment_pinned (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/OracleLogProgram.lean:502:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:410:    (Sbig : BindingCommitment RootBig F (AdditiveFriLevels ell j) OpBig)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:411:    (Ssmall : BindingCommitment RootSmall F (AdditiveFriLevels ell (j + 1)) OpSmall)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:425:    (Sbig : BindingCommitment RootBig F (AdditiveFriLevels ell j) OpBig)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:426:    (Ssmall : BindingCommitment RootSmall F (AdditiveFriLevels ell (j + 1)) OpSmall)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:452:    (Sbig : BindingCommitment RootBig F (AdditiveFriLevels ell j) OpBig)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:453:    (Ssmall : BindingCommitment RootSmall F (AdditiveFriLevels ell (j + 1)) OpSmall)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:464:    (Sbig : BindingCommitment RootBig F (AdditiveFriLevels ell j) OpBig)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:465:    (Ssmall : BindingCommitment RootSmall F (AdditiveFriLevels ell (j + 1)) OpSmall)
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:516:variable (S : ∀ n, BindingCommitment (Root n) F (AdditiveFriLevels ell n) (Op n))
+/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean:655:variable (S : ∀ n, BindingCommitment (Root n) F (AdditiveFriLevels ell n) (Op n))
+/Users/ember/dev/minidregg/Selvage/MultilinearCommitment.lean:58:def MleEvalClaim.Holds [Field F] (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/MultilinearCommitment.lean:69:theorem MleEvalClaim.holds_of_commit (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/MultilinearCommitment.lean:78:theorem basefoldWord_injective (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/MultilinearCommitment.lean:97:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F)
+/Users/ember/dev/minidregg/Selvage/MultilinearCommitment.lean:114:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F)
+/Users/ember/dev/minidregg/Selvage/MultilinearCommitment.lean:128:    (S : BindingCommitment Root F ι Op) (dom : ι ↪ F)
+/Users/ember/dev/minidregg/Selvage/DeciderProximity.lean:56:  — under a `BindingCommitment`, the word the proximity decider checked, fully
+/Users/ember/dev/minidregg/Selvage/DeciderProximity.lean:192:theorem deciderProx_open_sound {Op : Type*} (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/DeciderProximity.lean:244:    (S : BindingCommitment Root F (ι 0) Op) {T : FoldingTower F ι m}
+/Users/ember/dev/minidregg/Selvage/OracleLogSatisfiable.lean:31:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/OracleLogSatisfiable.lean:55:  (S : BindingCommitment Root' F (Fin m) Op) (dom : Fin m ↪ F) (d : ℕ)
+/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseHorns.lean:26:  (S : BindingCommitment Root' F (Fin m) Op)
+/Users/ember/dev/minidregg/Selvage/Erasure.lean:35:  `BindingCommitment` whose root commits a genuine codeword `w`, and `t ≥ d`
+/Users/ember/dev/minidregg/Selvage/Erasure.lean:161:`BindingCommitment` root committing a genuine RS codeword `w`, opened AND
+/Users/ember/dev/minidregg/Selvage/Erasure.lean:170:theorem committed_word_recovered (S : BindingCommitment Root F ι Op)
+/Users/ember/dev/minidregg/Selvage/Erasure.lean:275:for free from `BindingCommitment` binding (the prover's committed word IS in
+/Users/ember/dev/minidregg/Selvage/Erasure.lean:289:  `BindingCommitment` position-binding with `recoverFromColumns_sound`.
+/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean:158:variable (S : ∀ n, BindingCommitment (Root n) F
+/Users/ember/dev/minidregg/Selvage/LightClientKnowledge.lean:55:  entering ONLY through verified openings against a `BindingCommitment` of
+/Users/ember/dev/minidregg/Selvage/LightClientKnowledge.lean:141:against a `BindingCommitment` of each recommitted partial fold
+/Users/ember/dev/minidregg/Selvage/LightClientKnowledge.lean:145:    (S : BindingCommitment Root' F ι Op) (dom : ι ↪ F) {d t : ℕ} (hdt : d ≤ t)
+/Users/ember/dev/minidregg/Selvage/LightClientKnowledge.lean:340:openings against a `BindingCommitment` of each recommitted partial fold
+/Users/ember/dev/minidregg/Selvage/LightClientKnowledge.lean:351:    {Root' Op : Type*} (S : BindingCommitment Root' F ι Op)
+/Users/ember/dev/minidregg/Selvage/LightClientKnowledge.lean:671:  hash-derived schedule), `[COMMIT-CR]` (the deployed `BindingCommitment`),
