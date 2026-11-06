@@ -1,0 +1,71 @@
+{
+ "jax": {
+  "kernel": "jax-int8-limbs-gpu",
+  "seconds": 152.5,
+  "digests": {
+   "a": "f5d145fb0dbdf694059ff20a14ee81fab3ab46b23548133530504870e23a6f5d",
+   "q": "5cce2ddb3a6285070a767d5396c2186d8ae51b296e9193a3f9614ee36279b873",
+   "k": "dfddab2736e0d3bc9f051c3c4de2215b5bf5a506f9c06b7f3e7ff809cb629c30",
+   "v": "28879b85ec1c460bb14d0fceabb9e3eab3d7c37bf5cf7d3bd152dc0752ad9e0a",
+   "o": "2a4057a29ba478ca889c8178c5b9398637126190e7d7380dfed7bb8f6a5c70dd",
+   "x1": "bcba32b70cd5a7dbf7db6aa5f1a2e53fa7b69c7fcfaf2220f0e5d4a4c58b56b1",
+   "m": "6b29321ebcfde35c3fb29566069cbd004a32660bd0656cea7b149489113b93eb",
+   "logits": "3634df339e5e84b6a637dd0c5ce1192b48ed31be3fc89f6adfbd19d65b8aa7a2",
+   "x2": "5be6487fbe04b8b809d3b0fcf0d3ef566d00cbf81a8f58a73b4a933189d69479"
+  },
+  "equal_to_mac_numpy": {
+   "a": true,
+   "q": true,
+   "k": true,
+   "v": true,
+   "o": true,
+   "x1": true,
+   "m": true,
+   "logits": true,
+   "x2": true
+  },
+  "wall": 153.2
+ },
+ "backend": "gpu",
+ "devices": [
+  "Tesla T4",
+  "Tesla T4"
+ ],
+ "int8_dot_hlo": [
+  "%custom-call.1 = (s32[64,512]{1,0}, s8[4194304]{0}) custom-call(%a.1, %b.1), custom_call_target=\"__cublas$lt$matmul\", metadata={op_name=\"jit(<lambda>)/dot_gener",
+  "ROOT %get-tuple-element.1 = s32[64,512]{1,0} get-tuple-element(%custom-call.1), index=0, metadata={op_name=\"jit(<lambda>)/dot_general\" stack_frame_id=2}"
+ ],
+ "fetch": {
+  "ranges": 31,
+  "bytes": 476967528,
+  "seconds": 16.3
+ },
+ "jax-f32": {
+  "kernel": "jax-f32-FALSIFIER-gpu",
+  "seconds": 85.35,
+  "digests": {
+   "a": "f5d145fb0dbdf694059ff20a14ee81fab3ab46b23548133530504870e23a6f5d",
+   "q": "5cce2ddb3a6285070a767d5396c2186d8ae51b296e9193a3f9614ee36279b873",
+   "k": "dfddab2736e0d3bc9f051c3c4de2215b5bf5a506f9c06b7f3e7ff809cb629c30",
+   "v": "f77e1d72d1473b70909a16d7764052486ccc3a07e643eca545e9adb2affa7765",
+   "o": "39dbf7741a7a1a5e2506ba300980b844f6d7f9cc07be36eb5cd5ca05b8fc6eaf",
+   "x1": "93204969ebba8429d09bde545cff972fa4d1b77d30ad008a27912d11bd42c905",
+   "m": "0734bbf1c0c3dba8f4028a65d22dc53af4918121e997d60e84f94e7e9bb15ab4",
+   "logits": "4ed70aa32f68ae96cc8bb3c707fa57a0552b182606de44d723d63842a95ea010",
+   "x2": "de6fe144e43dd34eac98bc6f60015b6f6cbe81041be26e0c33a6b651e4170232"
+  },
+  "equal_to_mac_numpy": {
+   "a": true,
+   "q": true,
+   "k": true,
+   "v": false,
+   "o": false,
+   "x1": false,
+   "m": false,
+   "logits": false,
+   "x2": false
+  },
+  "wall": 85.5
+ },
+ "bit_identical": true
+}
