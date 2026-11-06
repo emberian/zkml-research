@@ -1,0 +1,36 @@
+{
+ "backend": "numpy-f32blas-FALSIFIER",
+ "ids": [
+  976,
+  9029,
+  328,
+  10128,
+  382,
+  12650,
+  13,
+  623,
+  9029,
+  328,
+  10198,
+  382
+ ],
+ "P": {
+  "fa": 10,
+  "fqk": 8,
+  "fv": 12,
+  "fm": 12,
+  "fh": 9
+ },
+ "digests": {
+  "a": "f5d145fb0dbdf694059ff20a14ee81fab3ab46b23548133530504870e23a6f5d",
+  "q": "4dcbf10974c0dba6a89f27b434138531c9f2f370ddf4bb4dddbf5b5a37568b60",
+  "k": "c542c49c18ac410b8d9e32429b738e7ad8a2a7fc1617dde2bfa7340b3976a816",
+  "v": "b70bd4fb1643d603eb22218534da3a711ebd284d4824a32f86bf7d728e55cd89",
+  "o": "1bd37510695018a77b9436758c410f380f9cf58963854ae3dca3218ef4eb9b6b",
+  "x1": "748bf9bf6cc9e00120689a61e3a24e7779bd50ba5f677a481b63f5df3051c3a7",
+  "m": "0ca9b00f6ac1b15f1ceea29640b71c45b7546c54dd2295f70bb1098748ebcf6f",
+  "logits": "74a21ca41fe0c9b0142d19d2c17bbafdb43b63a41464dc740cd0a54d22aa2fdb",
+  "x2": "97835f10426602fdb20b29e50c232c099a07d38405b99185f12b0c3721d6fcf7"
+ },
+ "seconds": 124.69
+}
