@@ -183,3 +183,68 @@ tcgen05 on Blackwell) and the Hopper `wgmma .b1` rate are unpublished, decide F3
 Hopper, and are now one command away with every check bit-exact and dry-run. Not needed from paid hardware any more:
 whether Blackwell has a 1-bit MMA (it has none: SASS), the INT8-limb exactness boundaries (bit-exact on T4, same PTX
 semantics), and the HBM-bound classification of the INT8 inner product (holds on T4).
+
+## 9. Rotation probes (initiative 14 ROTATION.md section 5), added after the first dry runs
+
+Built (degg-research aa5e77a, f23b3b5): `rotation_probe.cu` (FP16 0/1 parity with the bias read on HMMA;
+BabyBear^8 byte limbs as FP16, promoted every 256 products), `gemm_probe.cu` `ltparity` (0/1 count and parity
+over K = 2^10..2^20 through cuBLASLt: f16, e4m3 with fast accum on and off, nvfp4 and mxf4 with unit block scales
+0x38 / 0x7f) and `towermul` (Tower256 fixed-r multiply as a 0/1 GEMM: unpack, GEMM against M_r, parity repack),
+the in-accumulator bias read on wgmma QGMMA/HGMMA at the measured m, and `t256_vectors.jsonl`. These are Tower256
+(r, r*e_j, x, r*x) vectors produced by minidregg's own `binary_tower_256.rs` (lane/accel-tower256-gpu 367f9370,
+compiled verbatim minus the TowerElem embed; `t256vec/make_vectors.sh` regenerates them byte-identically).
+Dropped: the emulated Blackwell b1 rate, and probe.cu's e4m3 mma.sync C path on sm_90+.
+
+### T4 results [MEASURED]: `accel-mma-fp16parity-01` (37/37), `accel-mma-t4-runbook-03` (81/81, 158 s)
+- **FP16 0/1 parity with the bias read works as stated.** C = 2^(m-1), m = 24, 20, 16, 13. Every one of the 128
+  outputs per test with count < 2^(m-1) equals 2^(m-1) + count exactly, and raw f32 bit 24 - m equals count mod 2,
+  with counts up to 8.4M at m = 24. Past 2^(m-1) the bit reads the parity only about half the time (54/123,
+  73/128, ...), which is the falsifier the trick predicts.
+- cuBLASLt f16 0/1 sweep: count and parity exact at every K up to 2^20, for both the heuristic algorithm and its
+  split-K = 1 variant.
+- **Tower256 fixed-r multiply as a 0/1 GEMM:** all 4 r values, each with 256 Rust test products, plus 3,840 random
+  rows checked against XORs of the Rust basis images: 0 mismatches, in f16 and in INT8. Unfused T4 cost:
+  INT8 22.6 ns/element (6.6 ns of it the GEMM); f16 27-37 ns/element (7.9-9.6 ns GEMM). Unpack and repack through
+  HBM dominate. A fused kernel is the B300 question.
+- **FP16 byte-limb inner product** (the B300 prime path): exact at 2^20..2^25 (every output against the SIMT
+  int64 kernel, 2^20 and 2^22 also against numpy). With 16-byte loads under a shared k permutation it reads
+  1.92e11 B/s = **0.82-0.83 of copy** (1.22x the copy floor). The first version read 0.47-0.53x.
+
+### Per box: sections, minutes, total (estimates from the T4 section times; [A] until a paid run)
+`mma.sh` picks the section set from the GPU's arch (`--sections` overrides) and compile-checks only the box's
+own arch.
+
+| step | B300 / B200 (sm_103a / sm_100a) | H100 (sm_90a) |
+|---|---:|---:|
+| toolkit (conda env; 0 with a system nvcc >= 12.9 / 12.0) | 1 | 1 |
+| sha256 check, compile check (own arch), builds | 1 | 1 |
+| `ltparity` (mxf4, nvfp4, e4m3 fast 0/1, f16) | 2 | 1 (e4m3 0/1, f16) |
+| `f16parity` (HMMA bias read) | 0.2 | 0.2 |
+| `copy` (8 GiB) and `peak` (INT8, FP8, mxf4, nvfp4, FP16) | 1 | 0.5 |
+| `f16ip` 2^20..2^25 | 0.5 | - |
+| `towermul` (mxf4, nvfp4, e4m3, f16, INT8) | 1 | - |
+| `i8ip` (TensorZKP shape, both layouts) | 0.5 | 0.5 |
+| `rates_sm80` (B: legacy s8/f16; H: + IGMMA/QGMMA/HGMMA/BGMMA) | 0.3 | 0.7 |
+| `wgmma` m probes (count, gap, integer C path) + `wgmma_bias` | - | 3 |
+| CUTLASS tcgen05 examples 70 fp8, 72a nvfp4 (build bounded 25 min) | 6-10 | off |
+| **total** | **about 14-18 min** (hard wall 55 min) | **about 8 min** |
+
+The H100 set is the four ROTATION.md H100 items plus the cheap HMMA bias read. That leaves about 50 min of the H100
+hour for bfv.sh (20-35 min) and tower256.sh (about 10 min).
+
+### What does not transfer from B300 to B200
+- INT8: B300 runs it at about 1/30 of FP8 with no `kind::i8`; B200 runs INT8 at the FP8 rate. On B200 the prime
+  path stays INT8 (ROTATION section 2(a)), and the FP16 byte-limb result there is a comparison, not the decision.
+- FP4 rate (B300 mxf4 about 1.5x B200's FP4) and every peak rate; sm_103a and sm_100a are separate builds.
+- The tcgen05 accumulator m (`ltparity` first inexact K, mxf4 vs f8f6f4): probably the same datapath, but B300 is
+  a different SM revision. Unverified, so a B200 m is evidence for B300, not a measurement of it.
+- Transfers: the HMMA FP16 bias read (same PTX path), the Tower256 GEMM's correctness, copy-relative efficiency
+  (both HBM3e at about 8 TB/s).
+
+### Limits
+- On Blackwell the bias read is checked only at API level: cuBLAS adds C in its fp32 epilogue, so `ltparity`'s
+  C = 2^23 tests the read at m = 24. An in-accumulator read at the tcgen05 m needs a tcgen05 kernel (CUTLASS
+  72a-derived), not written. On H100 the in-accumulator read runs on QGMMA and HGMMA (`wgmma_bias`).
+- `towermul` is unfused (three kernels through HBM), so its ns/element is an upper bound for the fused kernel
+  ROTATION section 2(b) costs.
+- Not in this lane: the bit-sliced Tower256 multiply (ROTATION's other free T4 item).
