@@ -39,7 +39,7 @@
   },
   "step 2 with a byte in the middle of the blob flipped": {
    "verdict": "REFUSED",
-   "by": "middle: Merkle opening fails (b, custodian 1)"
+   "by": "middle: Merkle opening fails (b, custodian 2)"
   },
   "step 2 with the last byte flipped": {
    "verdict": "REFUSED",
@@ -79,7 +79,7 @@
   }
  },
  "sizes": {
-  "step1_bytes": 7038516,
-  "step2_bytes": 7038516
+  "step1_bytes": 28306548,
+  "step2_bytes": 28306548
  }
 }
