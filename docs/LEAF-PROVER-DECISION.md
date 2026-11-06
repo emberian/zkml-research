@@ -189,3 +189,50 @@ instantiate `SecureAt` for cSHAKE over an unrestricted code class.
 The deputy's first deliverable can be the `ContentCert` relation plus `dfaRun` over
 `List UInt8`, with `tableDfa_faithful` reused from breadstuffs `Dregg2/Crypto/Deriv`. The
 arithmetization lands on (b).
+
+### 6.1 Automata deputy's response (2026-11-06, breadstuffs `8c9a744fd` and the A1/D commits after it)
+
+[READ this section; MEASURED where a `#guard` is cited.] The interface fits automata certificates
+with three amendments, none of which changes the theorem shape.
+
+**What already matches.** Every theorem landed today has the "accept ⇒ relation ∨ explicit
+collision at a named pair" form and none is stated over `BindingCommitment`/`PositionBinding`:
+`Dfa.dfa_bound_identifies_record_or_collides` (the extracted word is the record, or a different
+preimage of the same commitment — two named words), `AttestedAutomatonLanes8.weld8_forged_edge_refused`
+(a forged step forces `MapRootColl` between the row's heap and the committing heap, the pair
+`mapRoot8Find` returns), `Datalog.FixpointCert.count_unique_or_collides` (`MRootColl` at the
+`mrootFind` pair). `ContentCert`'s relation is `Dfa.BoundStatement` with `S.commit := merkleCommit`
+and `claim` folded into `accept`; `dfaRun table w ∈ F` is `DfaAcceptanceAir.classifyFrom` /
+`Deriv.TableDfa.accepts`, and `tableDfa_faithful` is reusable as the section says, with its
+agreement premise discharged per table.
+
+**Amendment 1: `automatonDigest` must admit a per-edge-openable root, not only a flat cSHAKE of the
+table.** For a PUBLIC automaton a flat digest of the canonical table is right (the verifier decodes
+it). For the attested shape — the automaton is witness, the policy is private, the statement is
+"a run of the automaton behind this root" — the table is opened per transition (`key = 2s + y ↦
+step s y`, one opening per row), so the digest must be a Merkle root over the table with the chip
+the leaf prover uses (cSHAKE on Tower256). The `ContentCert` field should therefore be
+`automatonRoot : Digest` with the encoding `(public-table-digest | committed-table-root)` as part of
+the claim, or two statement shapes. Cost note: on BabyBear a depth-16 opening is 16 chip rows per
+row [MEASURED `AttestedAutomatonEmit`]; on Tower256 it is `16` cSHAKE compressions per row, which
+is the `|w| · 16` Keccak-f budget — the committed-automaton shape is 16× the hash cost of the
+public one, and that is the price of policy privacy.
+
+**Amendment 2: `claim : Bool` is too narrow for the families that are not acceptance.** Count
+(the Datalog certificate: `(programDigest, edbRoot, pred, count : Nat)`), weighted/budget
+accumulators (`sum ≤ limit`), and timed windows (`lo ≤ t ≤ hi`) need `claim : ClaimData` with a
+small sum type `accept (b : Bool) | count (n : Nat) | bound (lo hi : Nat)`. The relation and the
+theorem shape are unchanged.
+
+**Amendment 3: say which occupancy model the root commits.** Breadstuffs has three heap models for
+one deployed object (dense `mapRoot8`, sentinel-headed `padImtRoot8`, scalar IMT `opensTo`); the
+weld's lane-complete denotation landed under the dense one (`codex-synthesis.md` round 1 §3). The
+Tower256 leaf should fix ONE canonical encoding of `(table → leaves → root)` in `ContentCert`'s
+docstring, or the `tableDfa_faithful` premise cannot be discharged by anyone.
+
+**Not a change to §6, just recorded:** `recordLength` in the subject is exactly what
+`Dfa.traceWord trace = w` plus `w.length = recordLength` gives; absence as the padded complement
+is `Deriv.Correctness.derives_neg` plus the L3 padding, already in the certificate algebra.
+
+What waits on (b)/(c): everything above is relation-level; no Tower256 AIR for automata is
+started, and none should be until the root-only statement lands.
