@@ -29,7 +29,10 @@ TARGETS = {
                  tag_keccak="MEASURED:accel-tower-dryrun-04", tag_t256="MEASURED:accel-tower-dryrun-04"),
     # 64-core CPU box at 2x the Kaggle core per core (TOWER256.md section 5 comparison: "a 64-core host at about 2x
     # the Kaggle core"); leaves are embarrassingly parallel, so linear [MODEL].
-    "cpu64": dict(keccak=128 / 536e-9, t256=128 / 22.9e-9, tag_keccak="MODEL:TOWER256.md s5", tag_t256="MODEL"),
+    # 64 Genoa-class cores. Per core 1.3x the Kaggle core: dregg-forge (EPYC Genoa) runs the PIOP kernel at
+    # 128-141 ns/row against the Kaggle core's 161-186 [MEASURED: runs/redesign-piop-t4-03, MODEL.md section 8];
+    # 16 threads on forge reached 94% of linear. 64 x 1.3 x 0.94 = 78 Kaggle cores [MODEL]. (Was 128 [A].)
+    "cpu64": dict(keccak=78 / 536e-9, t256=78 / 22.9e-9, tag_keccak="MODEL:forge ratio", tag_t256="MODEL:forge ratio"),
     # T4: Keccak-f 4.35e8 (dryrun-04) .. 6.9e8 (tune-03) batched Merkle; Tower256 log/exp table mult 2.87e8
     # [MEASURED: TOWER256.md section 4]. Low end used.
     "T4": dict(keccak=4.35e8, t256=2.87e8, tag_keccak="MEASURED:accel-tower-dryrun-04",
@@ -62,14 +65,24 @@ TENSOR_ARITH_SPEEDUP = {"T4": 37.1 / 12.6, "H100": 9.0 / 2.3, "B200": 4.2 / 0.9,
 #         32 KiB (launch-bound) [MEASURED: runs/redesign-encode-t4-01]; fused kernel: see FUSED below.
 PACKED_ENC_NS = {
     "cpu1": (5.5, "MEASURED:redesign-encode-t4-01"),
-    "cpu64": (5.5 / 128, "MODEL: cpu1 x 128"),
+    "cpu64": (5.5 / 78, "MODEL: cpu1 x 78"),
     # fused kernel (6 layers per shared-memory pass): 0.074-0.088 at 8-34 MiB, 0.10-0.14 at ell 14
     # [MEASURED: runs/redesign-encode-t4-02]; bank-conflicted nibble lookups, ~3x above its HBM floor.
-    "T4": (0.088, "MEASURED:redesign-encode-t4-02"),
+    # basis-table variant (16 gathers per twiddle, entries by XOR): 0.055-0.067 at 2-34 MiB; S_MAX 5 / 64 row-words
+    # 0.072-0.079 at ell 14 [MEASURED: runs/redesign-piop-t4-03]. 0.063 used.
+    "T4": (0.063, "MEASURED:redesign-piop-t4-03"),
 }
 # PIOP extension multiplies per trace row for the packed design (zerocheck + Shout read-check + ring switching).
 # Not built anywhere in our stack: [A], varied by --sensitivity.
 PIOP_MULTS_PER_ROW = 16
+# MEASURED (kernels/piop.c, runs/redesign-piop-t4-03 and forge): the minimal packed layer (3-column degree-2
+# zerocheck + one 16-entry Shout read-check + one-hot opening claims) is 8.00 Tower256 multiplies per row,
+# 161-186 ns/row on one Kaggle Xeon core. The DFA leaf's layer is that with four 16-entry address chunks
+# sharing one eq table and a ~6-column zerocheck: 5n (zerocheck, 3 cols) -> ~8n, lookup 2n -> 0.5n + 4 x 1.5n,
+# openings n -> 15.5n, i.e. ~2x the measured layer [INFERRED from the measured per-component counts]. So 16
+# multiplies per row stands, and on CPUs the measured ns/row x 2 replaces multiplies x rate.
+PIOP_LAYER_SCALE = 2.0
+PIOP_NS_PER_ROW_MEASURED = {"cpu1": 174.0}      # ell 14, one Kaggle core (161 at ell 12, 186 at ell 18)
 # T4 calibration for design (a): measured batched encode+commit 0.82 ms per ell-14 word (64-word batch,
 # TOWER256.md section 4) against this model's 0.55 ms -> GPU efficiency 0.67 applied to (a)/(b) GPU rows.
 GPU_EFF_UNPACKED = 0.55 / 0.82
@@ -90,7 +103,7 @@ Q_UD100 = 148        # queries, rate 1/4, UD-100 [READ minidregg TOWER256-FRI-PR
 REC_KECCAK_PER_CORE_S = 287e3 / 12
 # A GPU-hosted binary recursion prover: no published number. [A] 100 CPU cores-equivalent per GPU (the T4
 # Tower256 batch measured ~57-59 Xeon cores, TOWER256.md section 4; H100 ~4x T4).
-REC_GPU_CORE_EQUIV = {"cpu64": 128, "T4": 57, "H100": 230, "B200": 250, "B300": 270, "TPUv5e": 30}
+REC_GPU_CORE_EQUIV = {"cpu64": 78, "T4": 57, "H100": 230, "B200": 250, "B300": 270, "TPUv5e": 30}
 
 
 # =====================================================================================================  designs
@@ -158,6 +171,11 @@ def leaf_packed(target, rec=REC, bits_per_row=80, blake_internal=False, ext="t25
     mult_rate = t["t256"] * ((4 if target.startswith("cpu") else 3) if ext == "t128" else 1)
     fold = 2 * (cw * 8 / 256) / mult_rate
     piop = PIOP_MULTS_PER_ROW * rows / mult_rate
+    cpu_meas = PIOP_NS_PER_ROW_MEASURED["cpu1"] * PIOP_LAYER_SCALE * (PIOP_MULTS_PER_ROW / 16) * 1e-9 * rows
+    if target == "cpu1":
+        piop = cpu_meas / (4 if ext == "t128" else 1)
+    elif target == "cpu64":
+        piop = cpu_meas / 78 / (4 if ext == "t128" else 1)
     # verifier: q x (leaf blocks + path) at level 0 and ~log2(cw/32) BaseFold rounds of ext-element paths
     depth = math.log2(leaves)
     rounds = max(1, math.log2(cw / 32) - 4)
@@ -190,7 +208,7 @@ def prime_brakedown(target, rec=REC):
     [X: PROOF-SYSTEM-SPACE section 3 calibration]; tensor cores buy 1.01-1.5x on that shape [MODEL: space.py]."""
     cells = rec * 7 + 31 * 63_192
     h100_cells_s = 1.3e9
-    scale = {"cpu1": 1 / 400, "cpu64": 128 / 400, "T4": 1 / 5, "H100": 1, "B200": 1.3, "B300": 1.4, "TPUv5e": 1 / 3}[target]
+    scale = {"cpu1": 1 / 400, "cpu64": 78 / 400, "T4": 1 / 5, "H100": 1, "B200": 1.3, "B300": 1.4, "TPUv5e": 1 / 3}[target]
     prove = cells / (h100_cells_s * scale)
     # recursion of a BabyBear Keccak-committed proof: its verifier hashes are Keccak (ruling), each 63,192 cells
     ver_keccak = 53_263
@@ -219,7 +237,7 @@ def recursion_time(d, target, blake_internal=False):
     vk = r["ver_keccak"]
     if d == "d":
         # BabyBear recursion over Keccak paths: 63,192 cells per Keccak-f at 1.3e9 cells/s on an H100 [X/A]
-        dev = {"cpu1": 1 / 400, "cpu64": 128 / 400, "T4": 1 / 5, "H100": 1, "B200": 1.3, "B300": 1.4, "TPUv5e": 1 / 3}[target]
+        dev = {"cpu1": 1 / 400, "cpu64": 78 / 400, "T4": 1 / 5, "H100": 1, "B200": 1.3, "B300": 1.4, "TPUv5e": 1 / 3}[target]
         return vk * 63_192 / (1.3e9 * dev)
     if d in ("b", "cB"):
         vk = vk / BLAKE3_SPEEDUP["node_r1cs"]  # paths are 64-byte nodes

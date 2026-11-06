@@ -1,0 +1,50 @@
+$ nvidia-smi --query-gpu=compute_cap --format=csv,noheader 
+ 7.5
+7.5
+
+$ nvcc -arch=sm_75 -O3 -cubin -o t.cubin tower256_fri.cu 
+ 
+$ cc -O2 -shared -fPIC -o tower256_openings.so tower256_openings.c 
+ 
+$ /usr/bin/python3 tower256_gpu.py --data data --cubin /tmp/accel/redesign-openings-t4-02/t.cubin --ells 14,18,20 --reps 3 --out r_python.json  
+ backend cupy Tesla T4
+checks {'keccak_checked': 1024, 'keccak_mismatch': 0, 'keccak_reference': 'pycryptodome cSHAKE256', 'mul_checked': 1024, 'mul_mismatch': 0, 'inv_checked': 16, 'inv_mismatch': 0}
+lean [{'name': 'ell2_m1_q2', 'identical': True, 'bytes': 376}, {'name': 'ell3_m0_q0', 'identical': True, 'bytes': 296}, {'name': 'ell4_m2_q3_offset9', 'identical': True, 'bytes': 1141}, {'name': 'ell6_m3_q3', 'identical': True, 'bytes': 2102}, {'name': 'ell8_m3_q4', 'identical': True, 'bytes': 3553}]
+rate keccak 318586815.4648009
+rate keccak_shf 317919667.50720966
+rate keccak_u2 318591345.5645181
+rate mul 288800773.4767306
+rate mul_full 66946741.913557984
+prove {'ell': 14, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 515301, 'best_s': 0.11914330100000825, 'phases_s': {'encode': 0.005130056999973931, 'merkle': 0.002832486000102108, 'folds': 0.0020697949999544107, 'openings': 0.09845708800003194, 'other': 0.010130577999973411, 'upload': 0.0003110539999511275}, 'request_gen_s': 0.01672901000000593, 'device_mults': 172715, 'device_keccak_f': 65493}
+prove {'ell': 18, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 858610, 'best_s': 0.20281799299999648, 'phases_s': {'encode': 0.018700950999971155, 'merkle': 0.0054399790000161374, 'folds': 0.003366772999982004, 'openings': 0.15971401499996318, 'other': 0.012782607000019652, 'upload': 0.002453345000049012}, 'request_gen_s': 0.23333462699997654, 'device_mults': 3540123, 'device_keccak_f': 1048529}
+prove {'ell': 20, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 1059985, 'best_s': 0.33462753599997086, 'phases_s': {'encode': 0.074842273999991, 'merkle': 0.011620824999965862, 'folds': 0.006107659999884163, 'openings': 0.21199646200000188, 'other': 0.014679181000190056, 'upload': 0.01485265899998467}, 'request_gen_s': 0.945412776000012, 'device_mults': 15730115, 'device_keccak_f': 4194255}
+ALL_BIT_EXACT True
+
+$ /usr/bin/python3 tower256_gpu.py --data data --cubin /tmp/accel/redesign-openings-t4-02/t.cubin --ells 14,18,20 --reps 3 --out r_native_checked.json --native-openings --openings-check 
+ backend cupy Tesla T4
+checks {'keccak_checked': 1024, 'keccak_mismatch': 0, 'keccak_reference': 'pycryptodome cSHAKE256', 'mul_checked': 1024, 'mul_mismatch': 0, 'inv_checked': 16, 'inv_mismatch': 0}
+lean [{'name': 'ell2_m1_q2', 'identical': True, 'bytes': 376}, {'name': 'ell3_m0_q0', 'identical': True, 'bytes': 296}, {'name': 'ell4_m2_q3_offset9', 'identical': True, 'bytes': 1141}, {'name': 'ell6_m3_q3', 'identical': True, 'bytes': 2102}, {'name': 'ell8_m3_q4', 'identical': True, 'bytes': 3553}]
+rate keccak 391733348.03914833
+rate keccak_shf 390277948.57592386
+rate keccak_u2 389924588.0655522
+rate mul 341578487.05906796
+rate mul_full 41897243.9661683
+prove {'ell': 14, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 515301, 'best_s': 0.13367733300003692, 'phases_s': {'encode': 0.007339071999979296, 'merkle': 0.00431791600010456, 'folds': 0.0029302109998639025, 'openings': 0.10647981899995784, 'other': 0.012008186000173282, 'upload': 0.00034244500000113476}, 'request_gen_s': 0.014815886999997474, 'device_mults': 172715, 'device_keccak_f': 65493}
+prove {'ell': 18, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 858610, 'best_s': 0.21028266899998016, 'phases_s': {'encode': 0.015761413000006996, 'merkle': 0.005079520999913711, 'folds': 0.0032323419999329417, 'openings': 0.16994995199996765, 'other': 0.012219428000094013, 'upload': 0.003736957999990409}, 'request_gen_s': 0.23991330600000538, 'device_mults': 3540123, 'device_keccak_f': 1048529}
+prove {'ell': 20, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 1059985, 'best_s': 0.3671895869999844, 'phases_s': {'encode': 0.10401974600000585, 'merkle': 0.01527765400004455, 'folds': 0.007255860000043413, 'openings': 0.2103059579999922, 'other': 0.014961066999831019, 'upload': 0.014885364999997819}, 'request_gen_s': 0.9479138949999992, 'device_mults': 15730115, 'device_keccak_f': 4194255}
+ALL_BIT_EXACT True
+
+$ /usr/bin/python3 tower256_gpu.py --data data --cubin /tmp/accel/redesign-openings-t4-02/t.cubin --ells 14,18,20 --reps 3 --out r_native.json --native-openings 
+ backend cupy Tesla T4
+checks {'keccak_checked': 1024, 'keccak_mismatch': 0, 'keccak_reference': 'pycryptodome cSHAKE256', 'mul_checked': 1024, 'mul_mismatch': 0, 'inv_checked': 16, 'inv_mismatch': 0}
+lean [{'name': 'ell2_m1_q2', 'identical': True, 'bytes': 376}, {'name': 'ell3_m0_q0', 'identical': True, 'bytes': 296}, {'name': 'ell4_m2_q3_offset9', 'identical': True, 'bytes': 1141}, {'name': 'ell6_m3_q3', 'identical': True, 'bytes': 2102}, {'name': 'ell8_m3_q4', 'identical': True, 'bytes': 3553}]
+rate keccak 457235430.09503686
+rate keccak_shf 465491903.8249442
+rate keccak_u2 465287745.7496126
+rate mul 382088215.6492159
+rate mul_full 49743623.29658453
+prove {'ell': 14, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 515301, 'best_s': 0.04260641299998724, 'phases_s': {'encode': 0.0052849919999857775, 'merkle': 0.0028837290000183202, 'folds': 0.001996946000076605, 'openings': 0.021338388999993185, 'other': 0.010589509999817892, 'upload': 0.00029710900003010465}, 'request_gen_s': 0.014934378999953424, 'device_mults': 172715, 'device_keccak_f': 65493}
+prove {'ell': 18, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 858610, 'best_s': 0.07873803899997256, 'phases_s': {'encode': 0.01815488199997617, 'merkle': 0.005634227999962604, 'folds': 0.0034029610000629873, 'openings': 0.0354639059999613, 'other': 0.013222332000054848, 'upload': 0.0025338330000295173}, 'request_gen_s': 0.2471936619999724, 'device_mults': 3540123, 'device_keccak_f': 1048529}
+prove {'ell': 20, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 1059985, 'best_s': 0.1537628389999668, 'phases_s': {'encode': 0.06742324699996516, 'merkle': 0.010703729999931966, 'folds': 0.0055777850000708895, 'openings': 0.04276255100000981, 'other': 0.013916080999706537, 'upload': 0.013031620999981897}, 'request_gen_s': 0.9494971739999869, 'device_mults': 15730115, 'device_keccak_f': 4194255}
+ALL_BIT_EXACT True
+

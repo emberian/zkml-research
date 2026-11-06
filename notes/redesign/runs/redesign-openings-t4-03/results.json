@@ -1,0 +1,301 @@
+{
+ "runs": {
+  "native_checked": {
+   "host": "Linux-6.18.55+-x86_64-with-glibc2.39",
+   "python": "3.13.16",
+   "backend": "cupy",
+   "transcript_hash": "pycryptodome",
+   "device": "Tesla T4",
+   "device_count": 2,
+   "sm": "7.5",
+   "sm_count": 40,
+   "clock_khz": 1590000,
+   "mul_variant": "logexp",
+   "openings": "native+check",
+   "checks": {
+    "keccak_checked": 1024,
+    "keccak_mismatch": 0,
+    "keccak_reference": "pycryptodome cSHAKE256",
+    "mul_checked": 1024,
+    "mul_mismatch": 0,
+    "inv_checked": 16,
+    "inv_mismatch": 0
+   },
+   "lean_vectors": [
+    {
+     "name": "ell2_m1_q2",
+     "identical": true,
+     "bytes": 376
+    },
+    {
+     "name": "ell3_m0_q0",
+     "identical": true,
+     "bytes": 296
+    },
+    {
+     "name": "ell4_m2_q3_offset9",
+     "identical": true,
+     "bytes": 1141
+    },
+    {
+     "name": "ell6_m3_q3",
+     "identical": true,
+     "bytes": 2102
+    },
+    {
+     "name": "ell8_m3_q4",
+     "identical": true,
+     "bytes": 3553
+    }
+   ],
+   "rates": {
+    "keccak": {
+     "per_s": 318460721.3483896,
+     "seconds": 0.008231595999973251,
+     "threads": 40960,
+     "iters": 64,
+     "implied_int32_ops": 12781.482070270966
+    },
+    "keccak_shf": {
+     "per_s": 318676550.91142416,
+     "seconds": 0.008226020999984485,
+     "threads": 40960,
+     "iters": 64,
+     "implied_int32_ops": 12772.825576147785
+    },
+    "keccak_u2": {
+     "per_s": 318530567.78645426,
+     "seconds": 0.008229791000019304,
+     "threads": 40960,
+     "iters": 64,
+     "implied_int32_ops": 12778.679384795598
+    },
+    "mul": {
+     "per_s": 289473289.0021722,
+     "seconds": 0.002263974000015878,
+     "threads": 40960,
+     "iters": 16,
+     "implied_int32_ops": 14061.401015723617
+    },
+    "mul_full": {
+     "per_s": 34043476.286927804,
+     "seconds": 0.019250677999991694,
+     "threads": 40960,
+     "iters": 16,
+     "implied_int32_ops": 119564.75789057341
+    }
+   },
+   "keccak_f_per_s": 318676550.91142416,
+   "keccak_f_per_s_source": "rate probe keccak_shf",
+   "implied_int32_ops_per_keccak_f": 12772.825576147785,
+   "t256_mul_per_s": 289473289.0021722,
+   "merkle_keccak_variant": "keccak_shf",
+   "prove": [
+    {
+     "ell": 14,
+     "request_identical": true,
+     "receipt_identical": true,
+     "receipt_len": 515301,
+     "best_s": 0.12676585200000545,
+     "phases_s": {
+      "encode": 0.0055269339999881595,
+      "merkle": 0.003005752999968081,
+      "folds": 0.0020907419999502963,
+      "openings": 0.10434952500003192,
+      "other": 0.011090323000018998,
+      "upload": 0.00037585399996942215
+     },
+     "request_gen_s": 0.01725046699999666,
+     "device_mults": 172715,
+     "device_keccak_f": 65493
+    },
+    {
+     "ell": 18,
+     "request_identical": true,
+     "receipt_identical": true,
+     "receipt_len": 858610,
+     "best_s": 0.21164113600002565,
+     "phases_s": {
+      "encode": 0.018933219999951234,
+      "merkle": 0.005739306000066335,
+      "folds": 0.0036166979999734394,
+      "openings": 0.16387864600000057,
+      "other": 0.014016135000019858,
+      "upload": 0.004944396000041706
+     },
+     "request_gen_s": 0.2646893840000075,
+     "device_mults": 3540123,
+     "device_keccak_f": 1048529
+    },
+    {
+     "ell": 20,
+     "request_identical": true,
+     "receipt_identical": true,
+     "receipt_len": 1059985,
+     "best_s": 0.377675666000016,
+     "phases_s": {
+      "encode": 0.11015963400001283,
+      "merkle": 0.016846889000021292,
+      "folds": 0.008084387000053539,
+      "openings": 0.20925740199999154,
+      "other": 0.016904501999817967,
+      "upload": 0.01577220599995144
+     },
+     "request_gen_s": 1.026372053999978,
+     "device_mults": 15730115,
+     "device_keccak_f": 4194255
+    }
+   ],
+   "all_bit_exact": true
+  },
+  "native": {
+   "host": "Linux-6.18.55+-x86_64-with-glibc2.39",
+   "python": "3.13.16",
+   "backend": "cupy",
+   "transcript_hash": "pycryptodome",
+   "device": "Tesla T4",
+   "device_count": 2,
+   "sm": "7.5",
+   "sm_count": 40,
+   "clock_khz": 1590000,
+   "mul_variant": "logexp",
+   "openings": "native",
+   "checks": {
+    "keccak_checked": 1024,
+    "keccak_mismatch": 0,
+    "keccak_reference": "pycryptodome cSHAKE256",
+    "mul_checked": 1024,
+    "mul_mismatch": 0,
+    "inv_checked": 16,
+    "inv_mismatch": 0
+   },
+   "lean_vectors": [
+    {
+     "name": "ell2_m1_q2",
+     "identical": true,
+     "bytes": 376
+    },
+    {
+     "name": "ell3_m0_q0",
+     "identical": true,
+     "bytes": 296
+    },
+    {
+     "name": "ell4_m2_q3_offset9",
+     "identical": true,
+     "bytes": 1141
+    },
+    {
+     "name": "ell6_m3_q3",
+     "identical": true,
+     "bytes": 2102
+    },
+    {
+     "name": "ell8_m3_q4",
+     "identical": true,
+     "bytes": 3553
+    }
+   ],
+   "rates": {
+    "keccak": {
+     "per_s": 416289181.7426135,
+     "seconds": 0.006297161000020424,
+     "threads": 40960,
+     "iters": 64,
+     "implied_int32_ops": 9777.818349641087
+    },
+    "keccak_shf": {
+     "per_s": 416445386.10443705,
+     "seconds": 0.006294798999988416,
+     "threads": 40960,
+     "iters": 64,
+     "implied_int32_ops": 9774.150790997637
+    },
+    "keccak_u2": {
+     "per_s": 412146939.28964466,
+     "seconds": 0.006360449999988305,
+     "threads": 40960,
+     "iters": 64,
+     "implied_int32_ops": 9876.08935545059
+    },
+    "mul": {
+     "per_s": 341953301.80018675,
+     "seconds": 0.001916518999962591,
+     "threads": 40960,
+     "iters": 16,
+     "implied_int32_ops": 11903.379726330155
+    },
+    "mul_full": {
+     "per_s": 41864853.868746616,
+     "seconds": 0.015654181000002154,
+     "threads": 40960,
+     "iters": 16,
+     "implied_int32_ops": 97227.13980470088
+    }
+   },
+   "keccak_f_per_s": 416445386.10443705,
+   "keccak_f_per_s_source": "rate probe keccak_shf",
+   "implied_int32_ops_per_keccak_f": 9774.150790997637,
+   "t256_mul_per_s": 341953301.80018675,
+   "merkle_keccak_variant": "keccak_shf",
+   "prove": [
+    {
+     "ell": 14,
+     "request_identical": true,
+     "receipt_identical": true,
+     "receipt_len": 515301,
+     "best_s": 0.0406472519999852,
+     "phases_s": {
+      "encode": 0.005993460000013329,
+      "merkle": 0.002896577999990768,
+      "folds": 0.0020457730000771335,
+      "openings": 0.01777212799999006,
+      "other": 0.011354549999907704,
+      "upload": 0.0003480240000044432
+     },
+     "request_gen_s": 0.01665037499998334,
+     "device_mults": 172715,
+     "device_keccak_f": 65493
+    },
+    {
+     "ell": 18,
+     "request_identical": true,
+     "receipt_identical": true,
+     "receipt_len": 858610,
+     "best_s": 0.0762462239999877,
+     "phases_s": {
+      "encode": 0.02012880000000905,
+      "merkle": 0.006039839999971264,
+      "folds": 0.0036364449999837234,
+      "openings": 0.02883656000000201,
+      "other": 0.014283197999930053,
+      "upload": 0.0029818390000286854
+     },
+     "request_gen_s": 0.24247651000001724,
+     "device_mults": 3540123,
+     "device_keccak_f": 1048529
+    },
+    {
+     "ell": 20,
+     "request_identical": true,
+     "receipt_identical": true,
+     "receipt_len": 1059985,
+     "best_s": 0.1435299209999812,
+     "phases_s": {
+      "encode": 0.06612359000001788,
+      "merkle": 0.010133151000161433,
+      "folds": 0.005750014999989617,
+      "openings": 0.03154721100003144,
+      "other": 0.014610098999867205,
+      "upload": 0.01488511100001233
+     },
+     "request_gen_s": 0.9560529780000024,
+     "device_mults": 15730115,
+     "device_keccak_f": 4194255
+    }
+   ],
+   "all_bit_exact": true
+  }
+ },
+ "ok": true
+}
