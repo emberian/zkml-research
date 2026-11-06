@@ -60,8 +60,12 @@ __global__ void layer(uint32_t *lo, uint32_t *hi, size_t base, int i, int ell, i
 
 // FUSED: up to S_MAX consecutive layers [lo, lo+s) of one block in shared memory per pass (the per-layer kernel
 // above makes one HBM round trip per layer; T4 run redesign-encode-t4-01 measured that HBM-bound).
+#ifndef S_MAX
 #define S_MAX 6
+#endif
+#ifndef RWT
 #define RWT 32
+#endif
 __global__ void fused(uint32_t *lo_, uint32_t *hi_, size_t base, int lo, int s, int ell, int Rw,
                       const uint16_t *const *twl, const uint16_t *exp_t, const int32_t *log_t, int inv) {
     __shared__ uint32_t DL[(1 << S_MAX) * RWT], DH[(1 << S_MAX) * RWT];
@@ -79,10 +83,24 @@ __global__ void fused(uint32_t *lo_, uint32_t *hi_, size_t base, int lo, int s, 
         for (int q = threadIdx.x; q < nt; q += blockDim.x) TW[nt - 1 + q] = twl[i][g0 + q];
     }
     __syncthreads();
+#ifdef TABLE_GATHER
     for (int e = threadIdx.x; e < (M - 1) * 64; e += blockDim.x) {
         int slot = e >> 6, k = (e >> 4) & 3, v = e & 15; uint16_t t = TW[slot]; uint32_t x = (uint32_t)v << (4 * k);
         TB[e] = (t && x) ? exp_t[log_t[t] + log_t[x]] : 0;
     }
+#else
+    // t*x is GF(2)-linear in x: gather only t * 2^m (16 per twiddle), then each entry is an XOR of <= 4 of them
+    __shared__ uint16_t BAS[(1 << S_MAX) * 16];
+    for (int e = threadIdx.x; e < (M - 1) * 16; e += blockDim.x) {
+        int slot = e >> 4, m = e & 15; uint16_t t = TW[slot];
+        BAS[e] = t ? exp_t[log_t[t] + log_t[1u << m]] : 0;  // t times the basis element with bit m set
+    }
+    __syncthreads();
+    for (int e = threadIdx.x; e < (M - 1) * 64; e += blockDim.x) {
+        int slot = e >> 6, k = (e >> 4) & 3, v = e & 15; const uint16_t *bs = BAS + slot * 16 + 4 * k;
+        TB[e] = (v & 1 ? bs[0] : 0) ^ (v & 2 ? bs[1] : 0) ^ (v & 4 ? bs[2] : 0) ^ (v & 8 ? bs[3] : 0);
+    }
+#endif
     for (int e = threadIdx.x; e < M * RWT; e += blockDim.x) {
         int m = e / RWT, r = e % RWT; size_t gi = (p0 + ((size_t)m << lo)) * Rw + ch * RWT + r;
         DL[e] = lo_[gi]; DH[e] = hi_[gi];

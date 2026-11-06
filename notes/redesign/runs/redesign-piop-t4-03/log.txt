@@ -1,0 +1,143 @@
+$ grep -m1 'model name' /proc/cpuinfo 
+ model name	: Intel(R) Xeon(R) CPU @ 2.00GHz
+
+$ gcc -O3 -march=native -o encode encode.c 
+ 
+$ /usr/bin/python3 -I check_encode.py ./encode 3 3 
+ {"ell": 3, "R": 3, "codeword_symbols": 96, "mismatches": 0, "tower256_scalar_chunkwise_mismatches": 0, "pass": true}
+
+$ /usr/bin/python3 -I check_encode.py ./encode 4 17 
+ {"ell": 4, "R": 17, "codeword_symbols": 1088, "mismatches": 0, "tower256_scalar_chunkwise_mismatches": 0, "pass": true}
+
+$ /usr/bin/python3 -I check_encode.py ./encode 5 36 
+ {"ell": 5, "R": 36, "codeword_symbols": 4608, "mismatches": 0, "tower256_scalar_chunkwise_mismatches": 0, "pass": true}
+
+$ ./encode keccak 2000000 
+ {"keccak_f_per_s": 8.9014e+05, "ns_per_f": 1123.4, "chk": "206a514b126b83a1"}
+shake256(abc)=483366601360a8771c6863080cc4114d8db44530f8f1e1ee4f94ea37e78b5739
+
+$ ./encode bench 8 16 5 
+ {"ell": 8, "R": 16, "message_bytes": 8192, "codeword_bytes": 32768, "encode_ms": 0.3001, "merkle_ms": 2.2448, "keccak_f": 2047, "encode_ns_per_codeword_byte": 9.157, "merkle_ns_per_codeword_byte": 68.507, "root": "39c7f9e27469b77a", "cw_lo_digest": "e6aaa1636d78937d44b6072e7f2390fd"}
+
+$ ./encode bench 10 64 5 
+ {"ell": 10, "R": 64, "message_bytes": 131072, "codeword_bytes": 524288, "encode_ms": 3.0784, "merkle_ms": 9.0324, "keccak_f": 8191, "encode_ns_per_codeword_byte": 5.872, "merkle_ns_per_codeword_byte": 17.228, "root": "7c78bde8d7326657", "cw_lo_digest": "82eca76969d29a9f595480c1ca8939a6"}
+
+$ ./encode bench 10 256 5 
+ {"ell": 10, "R": 256, "message_bytes": 524288, "codeword_bytes": 2097152, "encode_ms": 9.0060, "merkle_ms": 22.4917, "keccak_f": 20479, "encode_ns_per_codeword_byte": 4.294, "merkle_ns_per_codeword_byte": 10.725, "root": "785be282dbdfe788", "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36"}
+
+$ ./encode bench 12 256 5 
+ {"ell": 12, "R": 256, "message_bytes": 2097152, "codeword_bytes": 8388608, "encode_ms": 43.7973, "merkle_ms": 90.9131, "keccak_f": 81919, "encode_ns_per_codeword_byte": 5.221, "merkle_ns_per_codeword_byte": 10.838, "root": "5007a183f4c6ef86", "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a"}
+
+$ ./encode bench 12 1024 5 
+ {"ell": 12, "R": 1024, "message_bytes": 8388608, "codeword_bytes": 33554432, "encode_ms": 185.9649, "merkle_ms": 308.5531, "keccak_f": 278527, "encode_ns_per_codeword_byte": 5.542, "merkle_ns_per_codeword_byte": 9.196, "root": "2813b3853edf66dc", "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7"}
+
+$ ./encode bench 14 256 5 
+ {"ell": 14, "R": 256, "message_bytes": 8388608, "codeword_bytes": 33554432, "encode_ms": 342.3324, "merkle_ms": 364.1825, "keccak_f": 327679, "encode_ns_per_codeword_byte": 10.202, "merkle_ns_per_codeword_byte": 10.853, "root": "8ebc85f284ef745a", "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8"}
+
+$ gcc -O3 -march=native -o piop piop.c -lpthread 
+ 
+$ /usr/bin/python3 -I piop_ref.py ./piop 5 
+ {"ell": 5, "bad": 0, "irreducible": true, "transcript_mismatches": 0, "zerocheck_accepts": true, "lookup_accepts": true, "onehot_openings_ok": true, "c_mults": 291, "pass": true}
+
+$ /usr/bin/python3 -I piop_ref.py ./piop 8 
+ {"ell": 8, "bad": 0, "irreducible": true, "transcript_mismatches": 0, "zerocheck_accepts": true, "lookup_accepts": true, "onehot_openings_ok": true, "c_mults": 2083, "pass": true}
+
+$ /usr/bin/python3 -I piop_ref.py ./piop 8 77 
+ {"ell": 8, "bad": 77, "irreducible": true, "transcript_mismatches": 0, "zerocheck_accepts": false, "lookup_accepts": true, "onehot_openings_ok": true, "c_mults": 2083, "pass": true}
+
+$ /usr/bin/python3 -I piop_ref.py ./piop 9 300 
+ {"ell": 9, "bad": 300, "irreducible": true, "transcript_mismatches": 0, "zerocheck_accepts": false, "lookup_accepts": true, "onehot_openings_ok": true, "c_mults": 4131, "pass": true}
+
+$ ./piop bench 12 30 1 
+ {"ell": 12, "rows": 4096, "threads": 1, "reps": 30, "mul_ns": 23.84, "best_proof_ms_mean": 0.6593, "ns_per_row_one_core": 160.96, "aggregate_rows_per_s": 6.2127e+06, "wall_s": 0.023, "mults_per_row": 8.009}
+
+$ ./piop bench 14 30 1 
+ {"ell": 14, "rows": 16384, "threads": 1, "reps": 30, "mul_ns": 24.25, "best_proof_ms_mean": 2.8521, "ns_per_row_one_core": 174.08, "aggregate_rows_per_s": 5.7446e+06, "wall_s": 0.088, "mults_per_row": 8.002}
+
+$ ./piop bench 18 5 1 
+ {"ell": 18, "rows": 262144, "threads": 1, "reps": 5, "mul_ns": 24.05, "best_proof_ms_mean": 48.7467, "ns_per_row_one_core": 185.95, "aggregate_rows_per_s": 5.3777e+06, "wall_s": 0.253, "mults_per_row": 8.000}
+
+$ ./piop bench 14 30 4 
+ {"ell": 14, "rows": 16384, "threads": 4, "reps": 30, "mul_ns": 24.22, "best_proof_ms_mean": 4.4235, "ns_per_row_one_core": 269.99, "aggregate_rows_per_s": 1.4596e+07, "wall_s": 0.139, "mults_per_row": 8.002}
+
+$ nvcc -O3 -arch=sm_75 -o encode_gpu encode_gpu.cu 
+ 
+$ nvcc -O3 -arch=sm_75 -DTABLE_GATHER -o encode_gpu_gather encode_gpu.cu 
+ 
+$ nvcc -O3 -arch=sm_75 -DS_MAX=5 -DRWT=64 -o encode_gpu_s5 encode_gpu.cu 
+ 
+$ nvidia-smi --query-gpu=name,clocks.sm,clocks.max.sm,power.limit --format=csv,noheader 
+ Tesla T4, 300 MHz, 1590 MHz, 70.00 W
+Tesla T4, 300 MHz, 1590 MHz, 70.00 W
+
+$ ./encode_gpu 8 16 10 
+ {"mode": "per-layer", "ell": 8, "R": 16, "codeword_bytes": 32768, "gpu_encode_ms": 0.2256, "gpu_encode_ns_per_codeword_byte": 6.8848, "launches": 40, "cw_lo_digest": "e6aaa1636d78937d44b6072e7f2390fd"}
+
+$ ./encode_gpu 10 64 10 
+ {"mode": "per-layer", "ell": 10, "R": 64, "codeword_bytes": 524288, "gpu_encode_ms": 0.2841, "gpu_encode_ns_per_codeword_byte": 0.5418, "launches": 50, "cw_lo_digest": "82eca76969d29a9f595480c1ca8939a6"}
+
+$ ./encode_gpu 10 256 10 
+ {"mode": "per-layer", "ell": 10, "R": 256, "codeword_bytes": 2097152, "gpu_encode_ms": 0.3475, "gpu_encode_ns_per_codeword_byte": 0.1657, "launches": 50, "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36"}
+
+$ ./encode_gpu 12 256 10 
+ {"mode": "per-layer", "ell": 12, "R": 256, "codeword_bytes": 8388608, "gpu_encode_ms": 0.8892, "gpu_encode_ns_per_codeword_byte": 0.1060, "launches": 60, "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a"}
+
+$ ./encode_gpu 12 1024 10 
+ {"mode": "per-layer", "ell": 12, "R": 1024, "codeword_bytes": 33554432, "gpu_encode_ms": 3.8503, "gpu_encode_ns_per_codeword_byte": 0.1147, "launches": 60, "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7"}
+
+$ ./encode_gpu 14 256 10 
+ {"mode": "per-layer", "ell": 14, "R": 256, "codeword_bytes": 33554432, "gpu_encode_ms": 4.7739, "gpu_encode_ns_per_codeword_byte": 0.1423, "launches": 70, "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8"}
+
+$ ./encode_gpu 14 1024 10 
+ {"mode": "per-layer", "ell": 14, "R": 1024, "codeword_bytes": 134217728, "gpu_encode_ms": 17.1066, "gpu_encode_ns_per_codeword_byte": 0.1275, "launches": 70, "cw_lo_digest": "17a410ca94c34b4772f78fefa7d3f4b9"}
+
+$ ./encode_gpu_gather 10 256 10 fused 
+ {"mode": "fused", "ell": 10, "R": 256, "codeword_bytes": 2097152, "gpu_encode_ms": 0.1716, "gpu_encode_ns_per_codeword_byte": 0.0818, "launches": 10, "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36"}
+
+$ ./encode_gpu_gather 12 256 10 fused 
+ {"mode": "fused", "ell": 12, "R": 256, "codeword_bytes": 8388608, "gpu_encode_ms": 0.5756, "gpu_encode_ns_per_codeword_byte": 0.0686, "launches": 10, "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a"}
+
+$ ./encode_gpu_gather 12 1024 10 fused 
+ {"mode": "fused", "ell": 12, "R": 1024, "codeword_bytes": 33554432, "gpu_encode_ms": 2.6666, "gpu_encode_ns_per_codeword_byte": 0.0795, "launches": 10, "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7"}
+
+$ ./encode_gpu_gather 14 256 10 fused 
+ {"mode": "fused", "ell": 14, "R": 256, "codeword_bytes": 33554432, "gpu_encode_ms": 4.3418, "gpu_encode_ns_per_codeword_byte": 0.1294, "launches": 15, "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8"}
+
+$ ./encode_gpu_gather 14 1024 10 fused 
+ {"mode": "fused", "ell": 14, "R": 1024, "codeword_bytes": 134217728, "gpu_encode_ms": 13.3980, "gpu_encode_ns_per_codeword_byte": 0.0998, "launches": 15, "cw_lo_digest": "17a410ca94c34b4772f78fefa7d3f4b9"}
+
+$ ./encode_gpu 10 256 10 fused 
+ {"mode": "fused", "ell": 10, "R": 256, "codeword_bytes": 2097152, "gpu_encode_ms": 0.1398, "gpu_encode_ns_per_codeword_byte": 0.0667, "launches": 10, "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36"}
+
+$ ./encode_gpu 12 256 10 fused 
+ {"mode": "fused", "ell": 12, "R": 256, "codeword_bytes": 8388608, "gpu_encode_ms": 0.4608, "gpu_encode_ns_per_codeword_byte": 0.0549, "launches": 10, "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a"}
+
+$ ./encode_gpu 12 1024 10 fused 
+ {"mode": "fused", "ell": 12, "R": 1024, "codeword_bytes": 33554432, "gpu_encode_ms": 2.1237, "gpu_encode_ns_per_codeword_byte": 0.0633, "launches": 10, "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7"}
+
+$ ./encode_gpu 14 256 10 fused 
+ {"mode": "fused", "ell": 14, "R": 256, "codeword_bytes": 33554432, "gpu_encode_ms": 3.6620, "gpu_encode_ns_per_codeword_byte": 0.1091, "launches": 15, "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8"}
+
+$ ./encode_gpu 14 1024 10 fused 
+ {"mode": "fused", "ell": 14, "R": 1024, "codeword_bytes": 134217728, "gpu_encode_ms": 14.9372, "gpu_encode_ns_per_codeword_byte": 0.1113, "launches": 15, "cw_lo_digest": "17a410ca94c34b4772f78fefa7d3f4b9"}
+
+$ ./encode_gpu_s5 10 256 10 fused 
+ {"mode": "fused", "ell": 10, "R": 256, "codeword_bytes": 2097152, "gpu_encode_ms": 0.1659, "gpu_encode_ns_per_codeword_byte": 0.0791, "launches": 10, "cw_lo_digest": "e62072dcea62720c51eecb9aef27ea36"}
+
+$ ./encode_gpu_s5 12 256 10 fused 
+ {"mode": "fused", "ell": 12, "R": 256, "codeword_bytes": 8388608, "gpu_encode_ms": 0.5630, "gpu_encode_ns_per_codeword_byte": 0.0671, "launches": 15, "cw_lo_digest": "79b9c60cd8397c2e3d7724d4552ecb4a"}
+
+$ ./encode_gpu_s5 12 1024 10 fused 
+ {"mode": "fused", "ell": 12, "R": 1024, "codeword_bytes": 33554432, "gpu_encode_ms": 2.3531, "gpu_encode_ns_per_codeword_byte": 0.0701, "launches": 15, "cw_lo_digest": "4f245f5f395a06c5782bfc2f8441b2a7"}
+
+$ ./encode_gpu_s5 14 256 10 fused 
+ {"mode": "fused", "ell": 14, "R": 256, "codeword_bytes": 33554432, "gpu_encode_ms": 2.6443, "gpu_encode_ns_per_codeword_byte": 0.0788, "launches": 15, "cw_lo_digest": "e6a369ad3341058d4a9630d49d02ecd8"}
+
+$ ./encode_gpu_s5 14 1024 10 fused 
+ {"mode": "fused", "ell": 14, "R": 1024, "codeword_bytes": 134217728, "gpu_encode_ms": 9.6092, "gpu_encode_ns_per_codeword_byte": 0.0716, "launches": 15, "cw_lo_digest": "17a410ca94c34b4772f78fefa7d3f4b9"}
+
+$ nvidia-smi --query-gpu=clocks.sm --format=csv,noheader 
+ 915 MHz
+300 MHz
+
+{"ok": true}

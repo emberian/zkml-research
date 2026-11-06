@@ -13,13 +13,14 @@ everywhere (roots and internal trees), UD-100 proximity, the additive-FRI/BaseFo
 extraction, Lean-owned acceptance. **Aggregate by batching**, never by per-leaf recursion. Run the leaf prover
 **CPU-first**.
 
-Expected end-to-end gain [MODEL, inputs MEASURED where tagged in MODEL.md]:
+Expected end-to-end gain [MODEL; the PIOP, the packed encode, today's leaf rates and the 64-core per-core rate
+are MEASURED, MODEL.md sections 3 and 8]:
 
 | | today (a) | packed (c) | gain |
 |---|---:|---:|---:|
-| per 4 KiB record, batched, one Kaggle core | 69.8 ms | 4.6 ms | 15x (5-50x over the [A] range) |
-| per record, 64-core box | 545 us | 36 us | 15x |
-| per record, H100 | 1.27 ms | 69 us | 18x |
+| per 4 KiB record, batched, one Kaggle core | 69.8 ms | 4.5 ms | 15x (PIOP measured; 10-18x over the encode range) |
+| per record, 64-core Genoa-class box | 894 us | 58 us | 15x |
+| per record, H100 [MODEL] | 1.27 ms | 69 us | 18x |
 | per record with per-leaf recursion instead of batching, one core | 2.29 s | 222 ms | batching removes ~98% of either |
 | audit at 1%, per record, one core | 0.70 ms | 46 us | 15x |
 | light-client verify | 28.6 ms | 2.8 ms | 10x |
@@ -48,12 +49,12 @@ then everything hardware-shaped (tensor GF(2) 2.5-3.5x on GPUs if a fused kernel
 
 | step | what | where | cost |
 |---|---|---|---|
-| 1 | Native batched openings (Rust host behind the device kernels) | minidregg prover | removes 223 of 362 ms of today's measured T4 wall; independent of the design |
+| 1 | **Done (native openings).** `tower256_openings.c` behind the GPU host, minidregg `lane/redesign-native-openings` 95463f3ae | minidregg prover/cuda | **measured on a T4, receipts identical:** ell 20 openings 212 -> 31.5 ms, wall 335 -> 144 ms (2.3x); ell 14 119 -> 41 ms. Left: one gather kernel per round instead of k - 1 (the 31.5 ms), and the Rust host for production |
 | 2 | Lean: subfield-twiddle domain (basis in T_4, twiddle closure, computable) | minidregg Theory/Compiler | one bounded statement; `Coordinate` arithmetic and the T_4 embedding exist |
 | 3 | Lean: systematic-subtree binding, `named_or_collision` for the message subtree of a codeword tree | Compiler/Tower256ContentCert successor | one bounded statement, same shape as the landed one |
 | 4 | Lean: ring switching instantiated at Tower256 with T_4 packing, feeding the succinct controller | Selvage/RingSwitching.lean exists (Diamond-Posen compiler) | instantiation, not new theory |
 | 5 | Native packed commit: blocked LCH encode + the tuned Keccak, CPU first (kernels/encode.c is the bit-exact reference shape) | minidregg prover | encode is 4.7-9.9 ns per codeword byte unblocked on a Xeon core; blocking is the known 2-3x |
-| 6 | The leaf PIOP: binary zerocheck + Shout read-check over the packed DFA trace; **measure its multiplies per row** (the model's [A] 16) | Selvage/MultilinearZeroTest, BinaryLookup exist; owed by any design | the largest open input of the model |
+| 6 | The leaf PIOP: binary zerocheck + Shout read-check over the packed DFA trace. **Minimal layer built and measured** (`kernels/piop.c`): 8.00 multiplies, 161-186 ns per row on one Kaggle core, 128-141 on Genoa, 94% thread scaling on 16 cores; the full DFA layer composes to ~16/row, as the model assumed | Selvage/MultilinearZeroTest, BinaryLookup exist; owed by any design | the full layer (4 address chunks, ~6 constraint columns) is the next run, not a new unknown |
 | 7 | Batch-first aggregation: 1,024 records (or one 64 KiB stream window) per proof; recursion only to compress a final proof | composition layer | removes per-leaf recursion |
 | later | Ligerito instead of BaseFold (after its soundness bridge), bit-sliced fused GPU encode (predicted 0.03 ns/B), GPU PIOP via fixed-r tensor folds, BLAKE3 internal trees, T_7 challenges | | each gated on an end-to-end measurement |
 
@@ -68,8 +69,8 @@ fixes the one-hot semantics). Weld8's binary hot spot (8 rows x 11 columns per b
 
 ## 4. What would make this wrong
 
-- The leaf PIOP costs more than ~64 Tower256 multiplies per row (then (c) leads (a) by only ~5x on GPUs; it still
-  leads).
+- The full DFA layer costs more than ~64 Tower256 multiplies per row (the measured minimal layer is 8; then (c)
+  would lead (a) by only ~5x on GPUs; it would still lead).
 - A measured binary recursion step much cheaper than 38,400 constraints per Keccak-f (then per-leaf recursion
   matters less and the hash question returns).
 - The store cannot adopt wide content leaves (then content binding costs ~9.8M constraints per 4 KiB in-circuit
@@ -80,5 +81,12 @@ fixes the one-hot semantics). Weld8's binary hot spot (8 rows x 11 columns per b
 `kernels/encode.c` and `kernels/encode_gpu.cu`: the packed commit's encode, bit-exact against a Lagrange
 reference (an independent port of minidregg's Fan-Paar multiply) and identical across Mac NEON, Xeon SSSE3, T4
 per-layer and T4 fused kernels. Kaggle runs `redesign-encode-t4-01` and `-02` (KAGGLE-LEDGER.md rows; results in
-`runs/`). Nothing was rented. Not measured: the PIOP, any H100/B200/TPU number for this design (the model scales
-T4 and CPU measurements), and BLAKE3.
+`runs/`). Since then (`redesign-piop-t4-03`, `redesign-openings-t4-02/-03`, dregg-forge):
+- the PIOP's minimal layer (`kernels/piop.c`, checked by `piop_ref.py`: transcript identical to an independent
+  Python prover, the verifier accepts, one violated row makes it reject): 8.00 multiplies and 161-186 ns per row
+  on the Kaggle core, 128-141 on Genoa, 1.18e8 rows/s on 16 Genoa cores; the model's guess was within 5%;
+- the T4 fused encode with basis-built tables: 0.055-0.079 ns per codeword byte (1.2-1.4x); the earlier
+  "bank conflict" diagnosis was wrong (MODEL.md section 3);
+- native openings (step 1) on the T4: wall 2.3x at ell 20.
+Nothing was rented. Not measured: the full DFA layer, any H100/B200/TPU number for this design (the model scales
+T4 and CPU measurements), a GPU PIOP, and BLAKE3. bb2 was not used (load 35 on 32 vCPUs from obend).

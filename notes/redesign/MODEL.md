@@ -34,10 +34,10 @@ GPU and TPU rows are **batch throughput per record**. A single 4 KiB leaf on a G
 | Keccak-f/s, H100/B200/B300 | SASS bound x 0.8 (3.6e9/3.9e9/4.2e9 bound) | [MODEL predict.py section 1] |
 | Tower256 multiply, H100/B200/B300 | T4 x SIMT lanes x clock (4.1x, 4.4x, 4.8x) | [MODEL TOWER256.md section 5, OPTIMAL Rule 2] |
 | Tensor GF(2) route speedup on arithmetic, design (b) | 2.9x T4, 3.9x H100, 4.7x B200, 4.5x B300 (fused, unbuilt) | [MODEL ROTATION 2(c)]; the unfused T4 kernel measured 5-8x **slower** than the table (MMA.md section 9) |
-| Packed GF(2^16) encode, ns per codeword byte | Xeon core 4.7-9.9 (5.5 used); T4 per-layer 0.115-0.15; **T4 fused 0.074-0.14 (0.088 used)**; H100+ = T4 x SIMT ratio | [MEASURED runs/redesign-encode-t4-01, -02]; [MODEL] beyond T4 |
-| 64-core CPU box | 128x one Kaggle core (2x per core, linear: leaves are independent) | [MODEL TOWER256.md section 5] |
+| Packed GF(2^16) encode, ns per codeword byte | Xeon core 4.3-10.2 (5.5 used); T4 per-layer 0.106-0.15; T4 fused 0.074-0.14; **T4 fused, basis tables 0.055-0.079 (0.063 used)**; H100+ = T4 x SIMT ratio | [MEASURED runs/redesign-encode-t4-01, -02, redesign-piop-t4-03]; [MODEL] beyond T4 |
+| 64-core CPU box | 64 Genoa-class cores = 78 Kaggle cores (1.3x per core, 94% thread scaling, both measured on the PIOP kernel on dregg-forge) | [MEASURED ratio, MODEL extrapolation]; was 128 [A] |
 | TPU v5e | Keccak-f 6.1e8/s (1.0e4 VPU int32 ops, 32-bit bit-interleaved, no rotate); Tower256 at T4's op-equivalents | [A]: VPU rate unpublished, uncalibrated |
-| PIOP for the packed design (zerocheck + Shout read-check + ring switching) | 16 Tower256 mults per row | **[A]**, the largest open input; --sensitivity varies it 4x |
+| PIOP for the packed design (zerocheck + Shout read-check + one-hot openings) | measured minimal layer: **8.00 Tower256 mults/row, 161-186 ns/row** on one Kaggle core; DFA leaf = 2x that (16/row) | [MEASURED kernels/piop.c, section 8] x [INFERRED 2x composition] |
 | PIOP for design (a) | 8 Tower256 mults per row per column, 4 columns | [A] |
 | Packed trace width | byte 8 + state 8 + Shout one-hot d = 4 x 16 = 80 bits per row; position virtual | [A] |
 | Recursion | verifier Keccak-f x 38,400 binary constraints; BinarySpartan 287k Keccak-f/s on 12 M4 Max cores | [X ePrint 2026/1656 section 4] |
@@ -73,66 +73,71 @@ What the kernel says:
 - **T4:** the fused kernel is 1.2-1.6x the per-layer one, and still ~3x above its HBM floor: the four nibble
   lookups per element hit shared-memory bank conflicts (16 random indices over 8 banks). The fix is a bit-sliced
   constant multiply (16 planes per GF(2^16) element fit in registers, unlike Tower256's 256), predicted ~0.03 ns/B
-  [MODEL]. Even unfixed, per byte of record content the T4 encode costs ~3.5 ns for the whole packed 80-bit
+  [MODEL]. **Correction (run redesign-piop-t4-03):** the bank-conflict diagnosis was wrong. A table of 16 u16
+  entries spans 8 consecutive words, i.e. 8 distinct banks, and equal words broadcast, so these lookups are
+  conflict-free. The measured overhead was the per-tile table build (64 dependent global gathers per twiddle):
+  gathering only t x 2^m (16 per twiddle) and building entries by XOR gives 0.055-0.067 ns/B (1.2-1.4x), and
+  5 layers per pass with 64 row-words gives 0.072-0.079 at ell 14. What remains is ALU + LDS per element
+  (~20 ops and 4 table loads per constant multiply); a bit-sliced constant multiply is still the next step. Even unfixed, per byte of record content the T4 encode costs ~3.5 ns for the whole packed 80-bit
   trace (160 KiB codeword x 0.088 ns/B per 4 KiB record), against ~146 ns **per trace column** today (0.6 ms per
   ell-14 column: 114,688 Tower256 multiplies at 2.87e8/s and the measured 0.67 efficiency).
 
-## 4. Results (`composed.py --markdown`)
+## 4. Results (`composed.py --markdown`, after the measured PIOP of section 8)
 
 **leaf** (seconds per record)
 
 | design | cpu1 | cpu64 | T4 | H100 | B200 | B300 | TPUv5e |
 |---|---|---|---|---|---|---|---|
-| a | 62.27 ms | 486.5 us | 3.32 ms | 780.5 us | 722.5 us | 672.6 us | 1.71 ms |
+| a | 62.27 ms | 798.4 us | 3.32 ms | 780.5 us | 722.5 us | 672.6 us | 1.71 ms |
 | b | - | - | 1.49 ms | 295.8 us | 250.1 us | 236.1 us | - |
-| c | 4.53 ms | 35.4 us | 286.6 us | 68.2 us | 63.2 us | 58.8 us | 143.3 us |
-| c128 | 3.23 ms | 25.2 us | 110.5 us | 25.3 us | 23.4 us | 21.8 us | 56.4 us |
-| cB | 2.21 ms | 17.3 us | 106.6 us | 24.7 us | 22.9 us | 21.3 us | 53.5 us |
-| d | 611.58 ms | 4.78 ms | 7.64 ms | 1.53 ms | 1.18 ms | 1.09 ms | 4.59 ms |
+| c | 4.45 ms | 57.1 us | 282.5 us | 67.5 us | 62.5 us | 58.2 us | 141.3 us |
+| c128 | 3.21 ms | 41.1 us | 106.5 us | 24.5 us | 22.7 us | 21.2 us | 54.3 us |
+| cB | 2.19 ms | 28.1 us | 102.5 us | 23.9 us | 22.2 us | 20.6 us | 51.5 us |
+| d | 611.58 ms | 7.84 ms | 7.64 ms | 1.53 ms | 1.18 ms | 1.09 ms | 4.59 ms |
 
 **aggregate-recursive** (seconds per record)
 
 | design | cpu1 | cpu64 | T4 | H100 | B200 | B300 | TPUv5e |
 |---|---|---|---|---|---|---|---|
-| a | 2.29 s | 17.89 ms | 42.39 ms | 10.46 ms | 9.63 ms | 8.92 ms | 75.94 ms |
+| a | 2.29 s | 29.35 ms | 42.39 ms | 10.46 ms | 9.63 ms | 8.92 ms | 75.94 ms |
 | b | - | - | 15.96 ms | 3.88 ms | 3.55 ms | 3.29 ms | - |
-| c | 222.18 ms | 1.74 ms | 4.11 ms | 1.01 ms | 933.8 us | 864.9 us | 7.40 ms |
-| c128 | 220.88 ms | 1.73 ms | 3.93 ms | 971.6 us | 894.0 us | 827.9 us | 7.31 ms |
-| cB | 82.82 ms | 647.1 us | 1.52 ms | 375.2 us | 345.3 us | 319.8 us | 2.74 ms |
-| d | 1036.24 s | 8.10 s | 12.95 s | 2.59 s | 1.99 s | 1.85 s | 7.77 s |
+| c | 222.11 ms | 2.85 ms | 4.10 ms | 1.01 ms | 933.1 us | 864.3 us | 7.40 ms |
+| c128 | 220.86 ms | 2.83 ms | 3.92 ms | 970.9 us | 893.3 us | 827.3 us | 7.31 ms |
+| cB | 82.80 ms | 1.06 ms | 1.52 ms | 374.4 us | 344.6 us | 319.2 us | 2.74 ms |
+| d | 1036.24 s | 13.29 s | 12.95 s | 2.59 s | 1.99 s | 1.85 s | 7.77 s |
 
 **aggregate-batch** (seconds per record)
 
 | design | cpu1 | cpu64 | T4 | H100 | B200 | B300 | TPUv5e |
 |---|---|---|---|---|---|---|---|
-| a | 69.75 ms | 544.9 us | 5.33 ms | 1.27 ms | 1.18 ms | 1.10 ms | 2.76 ms |
+| a | 69.75 ms | 894.3 us | 5.33 ms | 1.27 ms | 1.18 ms | 1.10 ms | 2.76 ms |
 | b | - | - | 2.16 ms | 420.2 us | 346.7 us | 328.7 us | - |
-| c | 4.59 ms | 35.9 us | 290.5 us | 69.3 us | 64.1 us | 59.7 us | 151.9 us |
-| c128 | 3.29 ms | 25.7 us | 114.5 us | 26.3 us | 24.4 us | 22.7 us | 64.9 us |
-| cB | 2.10 ms | 16.4 us | 107.5 us | 25.0 us | 23.1 us | 21.5 us | 56.3 us |
-| d | 1.32 s | 10.35 ms | 16.55 ms | 3.31 ms | 2.55 ms | 2.36 ms | 9.93 ms |
+| c | 4.52 ms | 57.9 us | 286.4 us | 68.5 us | 63.5 us | 59.1 us | 149.9 us |
+| c128 | 3.27 ms | 41.9 us | 110.4 us | 25.6 us | 23.7 us | 22.1 us | 62.9 us |
+| cB | 2.08 ms | 26.7 us | 103.4 us | 24.3 us | 22.5 us | 20.9 us | 54.3 us |
+| d | 1.32 s | 16.98 ms | 16.55 ms | 3.31 ms | 2.55 ms | 2.36 ms | 9.93 ms |
 
 **audit@0.01** (seconds per record)
 
 | design | cpu1 | cpu64 | T4 | H100 | B200 | B300 | TPUv5e |
 |---|---|---|---|---|---|---|---|
-| a | 697.5 us | 5.4 us | 53.3 us | 12.7 us | 11.8 us | 11.0 us | 27.6 us |
+| a | 697.5 us | 8.9 us | 53.3 us | 12.7 us | 11.8 us | 11.0 us | 27.6 us |
 | b | - | - | 21.6 us | 4.2 us | 3.5 us | 3.3 us | - |
-| c | 45.9 us | 0.4 us | 2.9 us | 0.7 us | 0.6 us | 0.6 us | 1.5 us |
-| c128 | 32.9 us | 0.3 us | 1.1 us | 0.3 us | 0.2 us | 0.2 us | 0.6 us |
-| cB | 21.0 us | 0.2 us | 1.1 us | 0.2 us | 0.2 us | 0.2 us | 0.6 us |
-| d | 13.24 ms | 103.5 us | 165.5 us | 33.1 us | 25.5 us | 23.6 us | 99.3 us |
+| c | 45.2 us | 0.6 us | 2.9 us | 0.7 us | 0.6 us | 0.6 us | 1.5 us |
+| c128 | 32.7 us | 0.4 us | 1.1 us | 0.3 us | 0.2 us | 0.2 us | 0.6 us |
+| cB | 20.8 us | 0.3 us | 1.0 us | 0.2 us | 0.2 us | 0.2 us | 0.5 us |
+| d | 13.24 ms | 169.8 us | 165.5 us | 33.1 us | 25.5 us | 23.6 us | 99.3 us |
 
 **stream** (seconds per record)
 
 | design | cpu1 | cpu64 | T4 | H100 | B200 | B300 | TPUv5e |
 |---|---|---|---|---|---|---|---|
-| a | 103.68 ms | 810.0 us | 4.82 ms | 1.15 ms | 1.07 ms | 991.1 us | 3.47 ms |
+| a | 103.68 ms | 1.33 ms | 4.82 ms | 1.15 ms | 1.07 ms | 991.1 us | 3.47 ms |
 | b | - | - | 2.01 ms | 408.9 us | 346.9 us | 327.0 us | - |
-| c | 8.41 ms | 65.7 us | 357.3 us | 85.8 us | 79.4 us | 73.8 us | 278.7 us |
-| c128 | 7.11 ms | 55.5 us | 181.3 us | 42.9 us | 39.6 us | 36.8 us | 191.8 us |
-| cB | 3.52 ms | 27.5 us | 132.3 us | 31.1 us | 28.8 us | 26.8 us | 103.3 us |
-| d | 19.46 s | 152.07 ms | 243.31 ms | 48.66 ms | 37.43 ms | 34.76 ms | 145.98 ms |
+| c | 8.33 ms | 106.8 us | 353.2 us | 85.1 us | 78.7 us | 73.2 us | 276.7 us |
+| c128 | 7.09 ms | 90.9 us | 177.2 us | 42.2 us | 38.9 us | 36.2 us | 189.8 us |
+| cB | 3.50 ms | 44.9 us | 128.2 us | 30.4 us | 28.1 us | 26.1 us | 101.3 us |
+| d | 19.46 s | 249.55 ms | 243.31 ms | 48.66 ms | 37.43 ms | 34.76 ms | 145.98 ms |
 
 **verify** (seconds per record)
 
@@ -149,25 +154,26 @@ What the kernel says:
 
 | design | cpu1 | cpu64 | T4 | H100 | B200 | B300 | TPUv5e |
 |---|---|---|---|---|---|---|---|
-| a | 0.45 | 0.23 | 0.52 | 0.82 | 2.46 | 2.29 | 0.28 |
+| a | 0.45 | 0.37 | 0.52 | 0.82 | 2.46 | 2.29 | 0.28 |
 | b | - | - | 0.21 | 0.27 | 0.72 | 0.68 | - |
-| c | 0.03 | 0.01 | 0.03 | 0.04 | 0.13 | 0.12 | 0.02 |
-| c128 | 0.02 | 0.01 | 0.01 | 0.02 | 0.05 | 0.05 | 0.01 |
+| c | 0.03 | 0.02 | 0.03 | 0.04 | 0.13 | 0.12 | 0.01 |
+| c128 | 0.02 | 0.02 | 0.01 | 0.02 | 0.05 | 0.05 | 0.01 |
 | cB | 0.01 | 0.01 | 0.01 | 0.02 | 0.05 | 0.04 | 0.01 |
-| d | 8.62 | 4.31 | 1.61 | 2.14 | 5.31 | 4.93 | 0.99 |
+| d | 8.62 | 7.07 | 1.61 | 2.14 | 5.31 | 4.93 | 0.99 |
+
 
 Phase split for one record (`--breakdown`, abridged): design (a) on one Xeon core is hash 48 ms + encode/fold 11 ms
 + PIOP 3 ms; design (c) is hash 1.9 ms + encode/fold 1.1 ms + PIOP 1.5 ms. On a T4, (a) is arithmetic-bound
-(as measured) and (c) is PIOP-bound (the [A] input).
+(as measured) and (c) is PIOP-bound (multiplies measured on CPUs, section 8; no GPU PIOP kernel).
 
 ## 5. Sensitivity (`--sensitivity`)
 
 ```
-ratio a / c, aggregate-batch: cpu1 15.2x, cpu64 15.2x, T4 18.3x, H100 18.4x, B200 18.4x, B300 18.4x, TPUv5e 18.2x
-packed encode x0.25: cpu1 17.8x, cpu64 17.8x, T4 19.0x, H100 19.0x, B200 19.0x, B300 19.0x, TPUv5e 19.0x
-packed encode x4.0: cpu1 9.6x, cpu64 9.6x, T4 16.0x, H100 11.8x, B200 11.8x, B300 11.8x, TPUv5e 10.7x
-piop mults/row 4: a/c cpu1 20.1x, cpu64 20.1x, T4 44.7x, H100 46.3x, B200 46.3x, B300 46.3x, TPUv5e 41.1x
-piop mults/row 64: a/c cpu1 7.7x, cpu64 7.7x, T4 5.5x, H100 5.4x, B200 5.4x, B300 5.4x, TPUv5e 5.6x
+ratio a / c, aggregate-batch: cpu1 15.4x, cpu64 15.4x, T4 18.6x, H100 18.6x, B200 18.6x, B300 18.6x, TPUv5e 18.4x
+packed encode x0.25: cpu1 18.2x, cpu64 18.2x, T4 19.1x, H100 19.1x, B200 19.1x, B300 19.1x, TPUv5e 19.0x
+packed encode x4.0: cpu1 9.7x, cpu64 9.7x, T4 16.8x, H100 13.2x, B200 13.2x, B300 13.2x, TPUv5e 12.2x
+piop mults/row 4: a/c cpu1 20.2x, cpu64 20.2x, T4 46.3x, H100 47.6x, B200 47.6x, B300 47.6x, TPUv5e 42.3x
+piop mults/row 64: a/c cpu1 7.9x, cpu64 7.9x, T4 5.5x, H100 5.4x, B200 5.4x, B300 5.4x, TPUv5e 5.7x
 ```
 
 The ranking of (c) over (a) holds at every target under a 4x move of either uncertain input: 5.4-50x per record.
@@ -183,7 +189,8 @@ The PIOP constant decides whether the packed leaf is 5x or 50x better on GPUs; i
    content and hashes one element per Merkle leaf (65k Keccak-f per column for 31 Keccak-f of content).
 3. **After packing, the hot operation is the extension-field multiply in the PIOP, and CPUs do it natively**
    (PCLMUL: 22.9 ns per Tower256 multiply against 12,000-17,400 int32-op equivalents on SIMT). A 64-core CPU box
-   is modelled at 36 us per record against an H100's 69 us, and at about a quarter of the H100's $ per record.
+   (Genoa-class, per-core rate and thread scaling measured on dregg-forge, section 8) is modelled at 58 us per
+   record against an H100's 69 us, at half the H100's $ per record.
    GPUs pay for the packed leaf only if the PIOP's multiplies move to a tensor path (folds by a sampled r are
    fixed-r multiplies: ROTATION 2(b)) or get a bit-sliced GF(2^128) kernel; neither is built.
 4. **Audit sampling multiplies everything by p.** At 1%, the packed design costs 0.3-0.7 us per record on any
@@ -195,7 +202,66 @@ The PIOP constant decides whether the packed leaf is 5x or 50x better on GPUs; i
 
 ## 7. What would change these numbers
 
-- A measured PIOP: the binary zerocheck + Shout read-check over a packed DFA trace, per row (the [A] 16).
+- ~~A measured PIOP~~ done (section 8): 8.00 multiplies and 161-186 ns per row for the minimal layer; the full DFA
+  layer's 2x is still a composition from measured parts, not a run of the full layer.
 - The B200/H100 runs in flight (accel-b200-mma-01): Keccak-f/s and Tower256 table rate on Hopper/Blackwell.
 - A bit-sliced fused GF(2^16) encode on the T4 (predicted 0.03 ns/B; the unbuilt fix in section 3).
 - A measured binary recursion step for a Keccak-path verifier (BinarySpartan's rate is on M4 Max, not ours).
+
+## 8. The measured PIOP (closes the model's one guessed input)
+
+`kernels/piop.c` (+ `gf256.h`), checked by `kernels/piop_ref.py`. The minimal packed-binary leaf layer:
+
+1. **zerocheck** `sum_x eq(tau,x) (a b + c) = 0` over three committed binary columns packed 64 rows per word,
+   Gruen-factored eq (`eq(t,x) = 1 + t + x` in characteristic 2), round 0 on bits with no field multiplies,
+   rounds >= 1 at 9 multiplies per pair, the eq tables for later rounds by pairwise XOR;
+2. **Shout read-check** (one 16-entry Tower256 table, 4-bit address column): round 0 bucketed (16 multiplies),
+   its fold by a 16-entry `rho * val` table, later rounds 3 multiplies per pair;
+3. **one-hot opening claims** `ra~(rho, v)` for v < 16: one eq table and bucketed XORs.
+
+Challenges and arithmetic in GF(2^256) in the polynomial basis mod x^256 + x^10 + x^5 + x^2 + 1 (Rabin-checked
+irreducible in the reference), isomorphic to Tower256 (minidregg's fast prover computes the same way and converts
+at the boundary). Multiply: PMULL (aarch64) or Karatsuba PCLMULQDQ (x86) plus a two-step sparse reduction.
+
+**Checks (all pass, on the Mac, dregg-forge and the Kaggle Xeon):** `piop_ref.py` regenerates the instance from
+the same SplitMix64 stream, recomputes every prover message with Python integers and unfactored sums (0
+mismatches at ell 3, 5, 7, 8, 9), then runs the verifier: round consistency for both sumchecks, the final
+zerocheck claim against the trace's multilinear extensions evaluated directly, the lookup claim and final value
+against `sum_x eq val[addr]` directly, the 16 one-hot claims against their MLEs and `sum_v val[v] ra~ = g~`. With
+one violated row (`bad` 5, 77, 300) the zerocheck **rejects** while the transcript still matches the reference.
+
+| machine | ell | ns/row, one core | mults/row | multi-core |
+|---|---:|---:|---:|---|
+| Kaggle Xeon @2.0 GHz (redesign-piop-t4-03) | 12 / 14 / 18 | 161 / 174 / 186 | 8.01 / 8.00 / 8.00 | 4 threads on 4 vCPU: 1.46e7 rows/s (2.5x) |
+| dregg-forge, EPYC Genoa, 16 cores | 14 / 18 | 139-141 / 128 | 8.00 | 16 threads: 8.3e7 (ell 14), 1.18e8 (ell 18) rows/s = 94% of linear |
+| Mac (M-series, load ~40) | 12-18 | 57-60 | 8.00 | - |
+
+Per multiply inside the proof: ~20-23 ns on the Xeon (the minidregg prover's 22.9 ns standalone), ~16-17 ns on
+Genoa, ~7 ns on the Mac. bb2 (32 cores) was not used: its load was 35 on 32 vCPUs from obend's jobs, so a
+throughput number there would have measured the neighbour and slowed it.
+
+**Into the model.** The DFA leaf's layer is the measured one with four address chunks sharing one eq table and
+~6 zerocheck columns: 15.5 multiplies per row by the measured per-component counts (zerocheck 5n for 3 columns,
+lookup 0.5n + 1.5n per chunk, openings n). The model keeps 16 multiplies per row and, on CPUs, uses the measured
+174 ns/row x 2 instead of multiplies x rate. The [A] it replaces predicted 366 ns/row on the Kaggle core; the
+measurement gives 348. **The guessed input was right to 5%;** the ranking and every headline number stand. On
+GPUs the PIOP is still multiplies x the measured table rate (no GPU PIOP kernel): it is 80% of a packed leaf on a
+T4 and H100, the one place left where a GPU kernel (bit-sliced GF(2^128)/Tower256, or fixed-r tensor folds)
+would change a ranking.
+
+## 9. Native openings (migration step 1), measured
+
+minidregg `lane/redesign-native-openings` 95463f3ae: `prover/cuda/tower256_openings.c` assembles each round's
+openings (leaf pair, `encode_nat(k - 1)`, base-255 sibling digests) through ctypes; the Python path is kept as the
+fallback and, with `--openings-check`, compared byte for byte every round. Entry: `kernels/openings_entry.py`.
+Every receipt below is identical to the CPU prover's expected bytes (`expect_ell*.json`).
+
+| T4, ms (runs/redesign-openings-t4-02, -03) | ell 14 wall | ell 18 wall | ell 20 wall | ell 20 openings |
+|---|---:|---:|---:|---:|
+| Python openings | 119.1 | 202.8 | 334.6 | 212.0 |
+| native assembly | 42.6 | 78.7 | 153.8 | 42.8 |
+| + device-side sibling indices | 40.6 | 76.2 | **143.5** | **31.5** |
+
+The remaining 31.5 ms are k - 1 small gathers per round plus their copies; one gather kernel per round is the next
+cut. Host emulation on the Mac: ell 20 openings 77.7 -> 7.2 ms. Run t4-01 failed before proving (the entry parsed
+two GPUs' compute capabilities as one); kept in `runs/` as the record.

@@ -24,16 +24,17 @@ the right shape and is ranked separately in section 4.
 
 ## 2. Ranking for the certificate pipeline
 
-Per record, aggregate-batch (1,024 records per proof), from `composed.py`:
+Per record, aggregate-batch (1,024 records per proof), from `composed.py` with the measured PIOP (MODEL.md
+section 8; cpu64 = 64 Genoa-class cores, per-core rate measured on dregg-forge):
 
 | rank | design | cpu1 | cpu64 | T4 | H100 | B200 | B300 | TPU v5e [A] | $ / M records (best target) |
 |---:|---|---:|---:|---:|---:|---:|---:|---:|---|
-| 1 | **c** packed binary | 4.59 ms | 35.9 us | 291 us | 69 us | 64 us | 60 us | 152 us | 0.01 (cpu64) |
-| (1) | c128 (knob) | 3.29 ms | 25.7 us | 115 us | 26 us | 24 us | 23 us | 65 us | 0.01 |
-| (1) | cB (knob) | 2.10 ms | 16.4 us | 108 us | 25 us | 23 us | 22 us | 56 us | 0.01 |
+| 1 | **c** packed binary | 4.52 ms | 57.9 us | 286 us | 69 us | 64 us | 59 us | 150 us | 0.01 (TPU [A]), 0.02 (cpu64) |
+| (1) | c128 (knob) | 3.27 ms | 41.9 us | 110 us | 26 us | 24 us | 22 us | 63 us | 0.01 |
+| (1) | cB (knob) | 2.08 ms | 26.7 us | 103 us | 24 us | 23 us | 21 us | 54 us | 0.01 |
 | 2 | b Tower256 + tensor + BLAKE3 | - | - | 2.16 ms | 420 us | 347 us | 329 us | - | 0.21 (T4) |
-| 3 | a today | 69.8 ms | 545 us | 5.33 ms | 1.27 ms | 1.18 ms | 1.10 ms | 2.76 ms | 0.23 (cpu64) |
-| 4 | d/e BabyBear | 1.32 s | 10.4 ms | 16.6 ms | 3.31 ms | 2.55 ms | 2.36 ms | 9.93 ms | 0.99 (TPU) |
+| 3 | a today | 69.8 ms | 894 us | 5.33 ms | 1.27 ms | 1.18 ms | 1.10 ms | 2.76 ms | 0.28 (TPU [A]), 0.37 (cpu64) |
+| 4 | d/e BabyBear | 1.32 s | 17.0 ms | 16.6 ms | 3.31 ms | 2.55 ms | 2.36 ms | 9.93 ms | 0.99 (TPU) |
 
 Other columns of the same model (MODEL.md section 4), for (a) -> (c):
 - **per-leaf recursion** (aggregate-recursive): 2.29 s -> 222 ms on one core; 10.5 ms -> 1.0 ms on an H100. It is
@@ -42,7 +43,7 @@ Other columns of the same model (MODEL.md section 4), for (a) -> (c):
 - **light-client verify** (one core): 28.6 ms -> 2.8 ms; verifier Keccak-f 53,263 -> ~5,200; proof 1.46 MB -> ~0.45 MB [A].
 - **stream** (64 KiB windows, accumulated): 104 ms -> 8.4 ms per record on one core.
 
-Sensitivity: (c) beats (a) by 5.4-50x on every target when the packed encode moves 4x or the PIOP constant moves 4x
+Sensitivity: (c) beats (a) by 5.4-48x on every target when the packed encode moves 4x or the PIOP constant moves 4x
 either way (MODEL.md section 5). (b) beats (a) only on GPUs, by 2.5-3.5x, and only if the fused tensor kernel is
 built; the unfused one measured 5-8x slower than the table on the T4 (MMA.md section 9).
 

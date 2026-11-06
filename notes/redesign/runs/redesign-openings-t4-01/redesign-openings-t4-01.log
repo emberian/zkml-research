@@ -1,0 +1,88 @@
+[{"stream_name":"stdout","time":1.268691405,"data":"$ nvidia-smi --query-gpu=compute_cap --format=csv,noheader \n"}
+,{"stream_name":"stdout","time":1.268811886,"data":" 7.5\n"}
+,{"stream_name":"stdout","time":1.268840201,"data":"7.5\n"}
+,{"stream_name":"stdout","time":1.268893534,"data":"\n"}
+,{"stream_name":"stdout","time":1.284417026,"data":"$ nvcc -arch=sm_75\n"}
+,{"stream_name":"stdout","time":1.284440356,"data":"75 -O3 -cubin -o t.cubin tower256_fri.cu \n"}
+,{"stream_name":"stdout","time":1.284444755,"data":" nvcc fatal   : No input files specified; use option --help for more information\n"}
+,{"stream_name":"stdout","time":1.2844489829999999,"data":"/bin/sh: 2: 75: not found\n"}
+,{"stream_name":"stdout","time":1.284452556,"data":"\n"}
+,{"stream_name":"stdout","time":1.738571022,"data":"$ cc -O2 -shared -fPIC -o tower256_openings.so tower256_openings.c \n"}
+,{"stream_name":"stdout","time":1.738591804,"data":" \n"}
+,{"stream_name":"stdout","time":7.473002509,"data":"$ /usr/bin/python3 tower256_gpu.py --data data --cubin t.cubin --ells 14,18,20 --reps 3 --out r_python.json  \n"}
+,{"stream_name":"stdout","time":7.473031295,"data":" Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":7.473036953,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 1094, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":7.473042153,"data":"    main()\n"}
+,{"stream_name":"stdout","time":7.473046032,"data":"    ~~~~^^\n"}
+,{"stream_name":"stdout","time":7.473049692,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 949, in main\n"}
+,{"stream_name":"stdout","time":7.473053192,"data":"    be = CupyBackend(a.cubin, a.source)\n"}
+,{"stream_name":"stdout","time":7.47305685,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 337, in __init__\n"}
+,{"stream_name":"stdout","time":7.473061069,"data":"    self.call(\"init_tables\", 1)\n"}
+,{"stream_name":"stdout","time":7.473065427,"data":"    ~~~~~~~~~^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":7.4730689120000005,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 346, in call\n"}
+,{"stream_name":"stdout","time":7.473073135,"data":"    f = self.fns[name] = self.mod.get_function(name)\n"}
+,{"stream_name":"stdout","time":7.473076958,"data":"                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^\n"}
+,{"stream_name":"stdout","time":7.473080774,"data":"  File \"cupy/_core/raw.pyx\", line 498, in cupy._core.raw.RawModule.get_function\n"}
+,{"stream_name":"stdout","time":7.473084357,"data":"  File \"cupy/_core/raw.pyx\", line 108, in cupy._core.raw.RawKernel.kernel.__get__\n"}
+,{"stream_name":"stdout","time":7.473087909,"data":"  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n"}
+,{"stream_name":"stdout","time":7.473108488,"data":"  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n"}
+,{"stream_name":"stdout","time":7.473112212,"data":"  File \"cupy/_core/raw.pyx\", line 557, in cupy._core.raw._get_raw_module\n"}
+,{"stream_name":"stdout","time":7.473115802,"data":"  File \"cupy/cuda/function.pyx\", line 185, in cupy.cuda.function.Module.load_file\n"}
+,{"stream_name":"stdout","time":7.47312308,"data":"  File \"cupy_backends/cuda/api/driver.pyx\", line 216, in cupy_backends.cuda.api.driver.moduleLoad\n"}
+,{"stream_name":"stdout","time":7.473126938,"data":"  File \"cupy_backends/cuda/api/driver.pyx\", line 63, in cupy_backends.cuda.api.driver.check_status\n"}
+,{"stream_name":"stdout","time":7.47313252,"data":"cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_FILE_NOT_FOUND: file not found\n"}
+,{"stream_name":"stdout","time":7.47317413,"data":"\n"}
+,{"stream_name":"stdout","time":8.483021472,"data":"$ /usr/bin/python3 tower256_gpu.py --data data --cubin t.cubin --ells 14,18,20 --reps 3 --out r_native_checked.json --native-openings --openings-check \n"}
+,{"stream_name":"stdout","time":8.483048264,"data":" Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":8.483056204,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 1094, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":8.483059411,"data":"    main()\n"}
+,{"stream_name":"stdout","time":8.483061689,"data":"    ~~~~^^\n"}
+,{"stream_name":"stdout","time":8.483063956,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 949, in main\n"}
+,{"stream_name":"stdout","time":8.483066418,"data":"    be = CupyBackend(a.cubin, a.source)\n"}
+,{"stream_name":"stdout","time":8.483068841,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 337, in __init__\n"}
+,{"stream_name":"stdout","time":8.483071554,"data":"    self.call(\"init_tables\", 1)\n"}
+,{"stream_name":"stdout","time":8.483073937,"data":"    ~~~~~~~~~^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":8.483076164,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 346, in call\n"}
+,{"stream_name":"stdout","time":8.483078582,"data":"    f = self.fns[name] = self.mod.get_function(name)\n"}
+,{"stream_name":"stdout","time":8.483080876,"data":"                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^\n"}
+,{"stream_name":"stdout","time":8.483083103,"data":"  File \"cupy/_core/raw.pyx\", line 498, in cupy._core.raw.RawModule.get_function\n"}
+,{"stream_name":"stdout","time":8.483085483,"data":"  File \"cupy/_core/raw.pyx\", line 108, in cupy._core.raw.RawKernel.kernel.__get__\n"}
+,{"stream_name":"stdout","time":8.483087866,"data":"  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n"}
+,{"stream_name":"stdout","time":8.483090159,"data":"  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n"}
+,{"stream_name":"stdout","time":8.483092468,"data":"  File \"cupy/_core/raw.pyx\", line 557, in cupy._core.raw._get_raw_module\n"}
+,{"stream_name":"stdout","time":8.483094777,"data":"  File \"cupy/cuda/function.pyx\", line 185, in cupy.cuda.function.Module.load_file\n"}
+,{"stream_name":"stdout","time":8.483097208,"data":"  File \"cupy_backends/cuda/api/driver.pyx\", line 216, in cupy_backends.cuda.api.driver.moduleLoad\n"}
+,{"stream_name":"stdout","time":8.483099598,"data":"  File \"cupy_backends/cuda/api/driver.pyx\", line 63, in cupy_backends.cuda.api.driver.check_status\n"}
+,{"stream_name":"stdout","time":8.483102027,"data":"cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_FILE_NOT_FOUND: file not found\n"}
+,{"stream_name":"stdout","time":8.483104419,"data":"\n"}
+,{"stream_name":"stdout","time":9.477496942,"data":"$ /usr/bin/python3 tower256_gpu.py --data data --cubin t.cubin --ells 14,18,20 --reps 3 --out r_native.json --native-openings \n"}
+,{"stream_name":"stdout","time":9.477519706,"data":" Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":9.477523999,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 1094, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":9.477527981,"data":"    main()\n"}
+,{"stream_name":"stdout","time":9.477531363,"data":"    ~~~~^^\n"}
+,{"stream_name":"stdout","time":9.47753519,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 949, in main\n"}
+,{"stream_name":"stdout","time":9.477555963,"data":"    be = CupyBackend(a.cubin, a.source)\n"}
+,{"stream_name":"stdout","time":9.477570614,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 337, in __init__\n"}
+,{"stream_name":"stdout","time":9.477574671,"data":"    self.call(\"init_tables\", 1)\n"}
+,{"stream_name":"stdout","time":9.477578539,"data":"    ~~~~~~~~~^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":9.477582027,"data":"  File \"/tmp/accel/redesign-openings-t4-01/tower256_gpu.py\", line 346, in call\n"}
+,{"stream_name":"stdout","time":9.477585801,"data":"    f = self.fns[name] = self.mod.get_function(name)\n"}
+,{"stream_name":"stdout","time":9.477589071,"data":"                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^\n"}
+,{"stream_name":"stdout","time":9.477592786,"data":"  File \"cupy/_core/raw.pyx\", line 498, in cupy._core.raw.RawModule.get_function\n"}
+,{"stream_name":"stdout","time":9.477598472,"data":"  File \"cupy/_core/raw.pyx\", line 108, in cupy._core.raw.RawKernel.kernel.__get__\n"}
+,{"stream_name":"stdout","time":9.477602655,"data":"  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n"}
+,{"stream_name":"stdout","time":9.477606818,"data":"  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n"}
+,{"stream_name":"stdout","time":9.477610976,"data":"  File \"cupy/_core/raw.pyx\", line 557, in cupy._core.raw._get_raw_module\n"}
+,{"stream_name":"stdout","time":9.477614817,"data":"  File \"cupy/cuda/function.pyx\", line 185, in cupy.cuda.function.Module.load_file\n"}
+,{"stream_name":"stdout","time":9.477618846,"data":"  File \"cupy_backends/cuda/api/driver.pyx\", line 216, in cupy_backends.cuda.api.driver.moduleLoad\n"}
+,{"stream_name":"stdout","time":9.477635203,"data":"  File \"cupy_backends/cuda/api/driver.pyx\", line 63, in cupy_backends.cuda.api.driver.check_status\n"}
+,{"stream_name":"stdout","time":9.477639207,"data":"cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_FILE_NOT_FOUND: file not found\n"}
+,{"stream_name":"stdout","time":9.477642733,"data":"\n"}
+,{"stream_name":"stdout","time":11.053781058,"data":"ACCEL_JOB_DONE rc=1 killed=None elapsed=10.1\n"}
+,{"stream_name":"stderr","time":13.424959146,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":13.424984529,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":13.748012009,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":13.748051656,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":15.452042299,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":16.499439813,"data":"[NbConvertApp] Writing 472033 bytes to __results__.html\n"}
+]

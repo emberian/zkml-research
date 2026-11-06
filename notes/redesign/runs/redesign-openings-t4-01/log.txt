@@ -1,0 +1,80 @@
+$ nvidia-smi --query-gpu=compute_cap --format=csv,noheader 
+ 7.5
+7.5
+
+$ nvcc -arch=sm_75
+75 -O3 -cubin -o t.cubin tower256_fri.cu 
+ nvcc fatal   : No input files specified; use option --help for more information
+/bin/sh: 2: 75: not found
+
+$ cc -O2 -shared -fPIC -o tower256_openings.so tower256_openings.c 
+ 
+$ /usr/bin/python3 tower256_gpu.py --data data --cubin t.cubin --ells 14,18,20 --reps 3 --out r_python.json  
+ Traceback (most recent call last):
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 1094, in <module>
+    main()
+    ~~~~^^
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 949, in main
+    be = CupyBackend(a.cubin, a.source)
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 337, in __init__
+    self.call("init_tables", 1)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 346, in call
+    f = self.fns[name] = self.mod.get_function(name)
+                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "cupy/_core/raw.pyx", line 498, in cupy._core.raw.RawModule.get_function
+  File "cupy/_core/raw.pyx", line 108, in cupy._core.raw.RawKernel.kernel.__get__
+  File "cupy/_core/raw.pyx", line 125, in cupy._core.raw.RawKernel._kernel
+  File "cupy/_util.pyx", line 68, in cupy._util.memoize.decorator.ret
+  File "cupy/_core/raw.pyx", line 557, in cupy._core.raw._get_raw_module
+  File "cupy/cuda/function.pyx", line 185, in cupy.cuda.function.Module.load_file
+  File "cupy_backends/cuda/api/driver.pyx", line 216, in cupy_backends.cuda.api.driver.moduleLoad
+  File "cupy_backends/cuda/api/driver.pyx", line 63, in cupy_backends.cuda.api.driver.check_status
+cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_FILE_NOT_FOUND: file not found
+
+$ /usr/bin/python3 tower256_gpu.py --data data --cubin t.cubin --ells 14,18,20 --reps 3 --out r_native_checked.json --native-openings --openings-check 
+ Traceback (most recent call last):
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 1094, in <module>
+    main()
+    ~~~~^^
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 949, in main
+    be = CupyBackend(a.cubin, a.source)
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 337, in __init__
+    self.call("init_tables", 1)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 346, in call
+    f = self.fns[name] = self.mod.get_function(name)
+                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "cupy/_core/raw.pyx", line 498, in cupy._core.raw.RawModule.get_function
+  File "cupy/_core/raw.pyx", line 108, in cupy._core.raw.RawKernel.kernel.__get__
+  File "cupy/_core/raw.pyx", line 125, in cupy._core.raw.RawKernel._kernel
+  File "cupy/_util.pyx", line 68, in cupy._util.memoize.decorator.ret
+  File "cupy/_core/raw.pyx", line 557, in cupy._core.raw._get_raw_module
+  File "cupy/cuda/function.pyx", line 185, in cupy.cuda.function.Module.load_file
+  File "cupy_backends/cuda/api/driver.pyx", line 216, in cupy_backends.cuda.api.driver.moduleLoad
+  File "cupy_backends/cuda/api/driver.pyx", line 63, in cupy_backends.cuda.api.driver.check_status
+cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_FILE_NOT_FOUND: file not found
+
+$ /usr/bin/python3 tower256_gpu.py --data data --cubin t.cubin --ells 14,18,20 --reps 3 --out r_native.json --native-openings 
+ Traceback (most recent call last):
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 1094, in <module>
+    main()
+    ~~~~^^
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 949, in main
+    be = CupyBackend(a.cubin, a.source)
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 337, in __init__
+    self.call("init_tables", 1)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/tmp/accel/redesign-openings-t4-01/tower256_gpu.py", line 346, in call
+    f = self.fns[name] = self.mod.get_function(name)
+                         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "cupy/_core/raw.pyx", line 498, in cupy._core.raw.RawModule.get_function
+  File "cupy/_core/raw.pyx", line 108, in cupy._core.raw.RawKernel.kernel.__get__
+  File "cupy/_core/raw.pyx", line 125, in cupy._core.raw.RawKernel._kernel
+  File "cupy/_util.pyx", line 68, in cupy._util.memoize.decorator.ret
+  File "cupy/_core/raw.pyx", line 557, in cupy._core.raw._get_raw_module
+  File "cupy/cuda/function.pyx", line 185, in cupy.cuda.function.Module.load_file
+  File "cupy_backends/cuda/api/driver.pyx", line 216, in cupy_backends.cuda.api.driver.moduleLoad
+  File "cupy_backends/cuda/api/driver.pyx", line 63, in cupy_backends.cuda.api.driver.check_status
+cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_FILE_NOT_FOUND: file not found
+
