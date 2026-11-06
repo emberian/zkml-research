@@ -350,7 +350,8 @@ def evaluate(field, pcs_name, rate, h, piop, lookup, rec, hw, shape, amort,
     mops = MULT_OPS[field]["cpu" if hw == "cpu" else "simt"]
     if hw == "tc":
         L = TC_LIMBS[field]
-        tc_share = min(1.0, (tc_cell * commit + S["virt"] * PIOP[piop]["virt_mult"]) / max(mults, 1))
+        # Eligible work and total work must use the same audit amortization.
+        tc_share = min(1.0, p * (tc_cell * commit + S["virt"] * PIOP[piop]["virt_mult"]) / max(mults, 1))
         mult_cost = mults * (tc_share * (L * L * TC_MAC_OPEQ + 0.25) + (1 - tc_share) * mops)
     else:
         mult_cost = mults * mops
@@ -359,7 +360,7 @@ def evaluate(field, pcs_name, rate, h, piop, lookup, rec, hw, shape, amort,
     wg_rate = HW_THROUGHPUT["simt" if hw == "tc" else hw]
     witgen_s = (S["commit"] * (WITGEN_OPS_PER_CELL or 0) * p) / wg_rate
     proxy_s = crypto_s + witgen_s
-    pq = field != "lattice-Rq" or True
+    pq = None  # Unknown: requires a scheme, parameter set, and adversary model; field choice cannot certify PQ.
     formal = min(FORMAL[pcs_name], FORMAL[piop], FORMAL[lookup], FORMAL[rec])
     return dict(field=field, pcs=pcs_name, rate=rate, hash=h, piop=piop, lookup=lookup, rec=rec,
                 hw=hw, shape=shape, amort=amort, regime=regime, weights=weights, q=q,

@@ -1754,3 +1754,34 @@ Detail: `docs/PROOF-SYSTEM-SPACE.md`, `docs/CERTIFICATES.md`,
   can inhabit it; its only inhabitant is the identity root. **`Dregg2/Crypto/Dfa.lean`'s
   statement binds no word**, so `dfa_verify_sound` cannot by itself support an absence claim.
   Repairs: `CERTIFICATES.md` P1 and P6.
+
+### 9a. The UD-100 / blowup-drop tower grid, MEASURED (2026-11-05, hbox, counts only)
+
+`circuit-prove/tests/recursion_tower_profile.rs::ud_grid_*` (breadstuffs branch
+`lane/tower-ud-grid` @ `1874f16db`, base `22fad151e`; hbox `swarm-build`, 48G cap; marshal-only
+build (`DREGG_REQUIRE_LEAN=0`), which does not touch the p3 prover or the recursion circuit). The
+child is minted at `(lb, q, pow)` and the leaf wrap verifies it at the same knobs. The in-circuit
+Poseidon2 count is the exact op census. Wrap cells are `cells(main+prep)` at the deployed packing
+`p1/a4`; wrap leaf perms are native leaf-sponge permutations at the wrap's mint `lb 3`. Child perms
+are **approximate**: LDE cells / 8 (leaf sponge only, no tree compressions). Sanity tooth: the
+deployed point reproduces the recorded **38,168** in-circuit permutations exactly.
+
+| child | (lb, q, pow) | UD bits | in-circuit P2 perms | wrap cells | wrap leaf perms | child perms (≈) | K = wrap/child | per-turn × deployed |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| rotated transfer (deployed leaf) | (6,19,16) | 34.6 | 38,168 | 58.2M | 63.5M | 2.5M | 25.4 | **1.00** |
+| | (6,86,16) | 100.1 | 133,517 | 229.7M | 245.5M | 2.5M | 98 | **3.75** |
+| | (2,57,16) | 54.7 | 89,739 | 185.7M | 198.3M | 0.16M | 1,266 | **3.00** |
+| | (2,148,0) | 100.4 | 215,239 | 371.2M | 396.5M | 0.16M | 2,531 | **6.01** |
+| 2^16-row × 694 arithmetic child | (6,19,16) | 34.6 | 15,243 | 14.6M | 15.9M | 364M | 0.044 | **1.00** |
+| | (6,86,16) | 100.1 | 58,399 | 57.4M | 61.4M | 364M | 0.17 | **1.12** |
+| | (2,57,16) | 54.7 | 35,388 | 57.4M | 61.4M | 22.7M | 2.7 | **0.22** |
+| | (2,148,0) | 100.4 | 87,087 | 114.8M | 122.7M | 22.7M | 5.4 | **0.38** |
+
+**Per-descriptor decision.** On today's small recursed leaves, provable-UD-100 costs **×3.75 per
+turn** at `(6,86,16)`, and every blowup drop is worse: ×3.0 at 54 bits, ×6.0 at 100 bits. On a
+2^16-row wide leaf, UD-100 at `(2,148,0)` is **2.6× cheaper than today's 34-bit config**, and at
+`lb 6` UD-100 costs only ×1.12. So: small/recursed descriptors go to `(6,86,16)`; leaves whose
+child work dominates the wrap (the measured case is K ≤ 0.17 at lb6) go to `(2,148,0)`. **Nothing
+is cut over**: per `docs/LEAF-PROVER-DECISION.md` the p3 fork is legacy. These numbers price the
+flag day for whoever revives the breadstuffs devnet, and they carry one lesson into the Tower256
+path: **leaf size, not the field, decides the blowup.**
