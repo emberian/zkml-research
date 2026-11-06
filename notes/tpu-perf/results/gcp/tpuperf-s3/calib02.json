@@ -1,0 +1,288 @@
+{
+ "sections": {
+  "calib": {
+   "hbm_copy_GBps": 656.3928652623833,
+   "hbm_read_GBps": 752.4899716587734,
+   "vpu_int32_ops_per_s": 2647380111812.4717,
+   "vpu_int32_ops_per_s_reduction_mix": 4107953598485.516,
+   "grid_step_s_1024": 2.029921875000562e-07,
+   "grid_step_s_8192": 1.995057312011335e-07,
+   "xla_int8_1024_s": 4.618649999983404e-05,
+   "xla_int8_1024_TOPS": 46.49591651256788,
+   "xla_int8_4096_s": 0.00036599600000002396,
+   "xla_int8_4096_TOPS": 375.52037036467885,
+   "xla_int8_8192_s": 0.0028654223499998467,
+   "xla_int8_8192_TOPS": 383.7171256014175,
+   "pallas_int8_8192_TOPS": 300.0665182103695,
+   "xla_bf16_8192_TFLOPS": 182.37328777857772,
+   "xla_int8_8192_device": {
+    "module_s": {
+     "jit__lambda(216826683837611240)": 0.002857529
+    },
+    "top_ops": [
+     [
+      0.002857476,
+      "%fusion = s32[8192,8192]{1,0:T(8,128)} fusion(s8[8192,8192]{1,0:T(32,128)(4,1)S(1)} %copy-done, s8[8192,8192]{1,0:T(32,128)(4,1)} %v.1), kind=kOutput, calls=%fused_computation"
+     ],
+     [
+      1.3e-08,
+      "%copy-start = (s8[8192,8192]{1,0:T(32,128)(4,1)S(1)}, s8[8192,8192]{1,0:T(32,128)(4,1)}, u32[]{:S(2)}) copy-start(s8[8192,8192]{1,0:T(32,128)(4,1)} %u.1), cross_program_prefetch_index=0"
+     ],
+     [
+      2.8e-09,
+      "%copy-done = s8[8192,8192]{1,0:T(32,128)(4,1)S(1)} copy-done((s8[8192,8192]{1,0:T(32,128)(4,1)S(1)}, s8[8192,8192]{1,0:T(32,128)(4,1)}, u32[]{:S(2)}) %copy-start)"
+     ]
+    ],
+    "total_module_s": 0.002857529
+   }
+  },
+  "kernels": [
+   {
+    "kernel": "mxfp4_w4a8",
+    "cfg": "gateup_T256",
+    "params": {
+     "T": 256,
+     "K": 2880,
+     "N": 5760
+    },
+    "host_prep_s": 1.2,
+    "first_call_s": 0.2,
+    "exact": true,
+    "wall_s": 6.362450000096942e-05,
+    "device": {
+     "module_s": {
+      "jit_f(15940382630863285754)": 5.65222e-05
+     },
+     "top_ops": [
+      [
+       5.09964e-05,
+       "%f.2 = s32[256,5760]{1,0:T(8,128)} custom-call(s8[256,2880]{1,0:T(32,128)(4,1)S(1)} %copy.x_ref, s8[2880,5760]{1,0:T(32,128)(4,1)} %w_ref.2), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[256,2880]{1,0}, s8[2880,5760]{1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       2.8931999999999997e-06,
+       "%copy.x_ref = s8[256,2880]{1,0:T(32,128)(4,1)S(1)} copy(s8[256,2880]{0,1:T(32,128)(4,1)} %x_ref.1)"
+      ],
+      [
+       1.5156e-06,
+       "%f.3 = s32[256,128]{1,0:T(8,128)S(1)} custom-call(s8[256,2880]{1,0:T(32,128)(4,1)S(1)} %copy.x_ref, s8[2880,128]{1,0:T(32,128)(4,1)} %w_ref.3), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[256,2880]{1,0}, s8[2880,128]{1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       1.0924000000000001e-06,
+       "%fusion = s32[256,5760]{1,0:T(8,128)} fusion(s32[256,5760]{1,0:T(8,128)} %f.2, s32[256,128]{1,0:T(8,128)S(1)} %f.3), kind=kLoop, calls=%fused_computation.1"
+      ]
+     ],
+     "total_module_s": 5.65222e-05
+    },
+    "bound": {
+     "bound_s": 2.8322341463414633e-05,
+     "unit": "hbm",
+     "per_unit_s": {
+      "mxu": 2.15570192893401e-05,
+      "vpu": 0.0,
+      "hbm": 2.8322341463414633e-05
+     },
+     "vpu_peak": 4107953598485.516,
+     "vpu_src": "INFERRED-unverified"
+    },
+    "t_meas_s": 5.65222e-05,
+    "pct_of_bound": 50.10834939796157
+   },
+   {
+    "kernel": "mxfp4_w4a8",
+    "cfg": "gateup_T2048",
+    "params": {
+     "T": 2048,
+     "K": 2880,
+     "N": 5760
+    },
+    "host_prep_s": 1.2,
+    "first_call_s": 0.34,
+    "exact": true,
+    "wall_s": 0.00029189244999940913,
+    "device": {
+     "module_s": {
+      "jit_f(2985520467134421454)": 0.0002852486
+     },
+     "top_ops": [
+      [
+       0.0002619046,
+       "%f.2 = s32[2048,5760]{1,0:T(8,128)} custom-call(s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} %copy.x_ref, s8[2880,5760]{1,0:T(32,128)(4,1)} %w_ref.2), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[2048,2880]{1,0}, s8[2880,5760]{1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       1.39926e-05,
+       "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(s8[2048,2880]{0,1:T(32,128)(4,1)} %x_ref.1)"
+      ],
+      [
+       5.2803999999999995e-06,
+       "%f.3 = s32[2048,128]{1,0:T(8,128)S(1)} custom-call(s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} %copy.x_ref, s8[2880,128]{1,0:T(32,128)(4,1)} %w_ref.3), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[2048,2880]{1,0}, s8[2880,128]{1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       4.0294e-06,
+       "%fusion = s32[2048,5760]{1,0:T(8,128)} fusion(s32[2048,5760]{1,0:T(8,128)} %f.2, s32[2048,128]{1,0:T(8,128)S(1)} %f.3), kind=kLoop, calls=%fused_computation.1"
+      ]
+     ],
+     "total_module_s": 0.0002852486
+    },
+    "bound": {
+     "bound_s": 0.0001724561543147208,
+     "unit": "mxu",
+     "per_unit_s": {
+      "mxu": 0.0001724561543147208,
+      "vpu": 0.0,
+      "hbm": 8.496702439024391e-05
+     },
+     "vpu_peak": 4107953598485.516,
+     "vpu_src": "INFERRED-unverified"
+    },
+    "t_meas_s": 0.0002852486,
+    "pct_of_bound": 60.458194821892484
+   },
+   {
+    "kernel": "mxfp4_w4a8",
+    "cfg": "down_T2048",
+    "params": {
+     "T": 2048,
+     "K": 2880,
+     "N": 2944
+    },
+    "host_prep_s": 0.6,
+    "first_call_s": 0.33,
+    "exact": true,
+    "wall_s": 0.00016471194999923,
+    "device": {
+     "module_s": {
+      "jit_f(11367990036197218055)": 0.000157221
+     },
+     "top_ops": [
+      [
+       0.00013401779999999998,
+       "%f.2 = s32[2048,2944]{1,0:T(8,128)} custom-call(s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} %copy.x_ref, s8[2880,2944]{1,0:T(32,128)(4,1)} %w_ref.2), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[2048,2880]{1,0}, s8[2880,2944]{1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       1.40566e-05,
+       "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(s8[2048,2880]{0,1:T(32,128)(4,1)} %x_ref.1)"
+      ],
+      [
+       5.2276000000000006e-06,
+       "%f.3 = s32[2048,128]{1,0:T(8,128)S(1)} custom-call(s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} %copy.x_ref, s8[2880,128]{1,0:T(32,128)(4,1)} %w_ref.3), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[2048,2880]{1,0}, s8[2880,128]{1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       3.8766e-06,
+       "%fusion = s32[2048,2944]{1,0:T(8,128)} fusion(s32[2048,2944]{1,0:T(8,128)} %f.2, s32[2048,128]{1,0:T(8,128)S(1)} %f.3), kind=kLoop, calls=%fused_computation.1"
+      ]
+     ],
+     "total_module_s": 0.000157221
+    },
+    "bound": {
+     "bound_s": 8.814425664974619e-05,
+     "unit": "mxu",
+     "per_unit_s": {
+      "mxu": 8.814425664974619e-05,
+      "vpu": 0.0,
+      "hbm": 4.6944156097560974e-05
+     },
+     "vpu_peak": 4107953598485.516,
+     "vpu_src": "INFERRED-unverified"
+    },
+    "t_meas_s": 0.000157221,
+    "pct_of_bound": 56.06392062749009
+   },
+   {
+    "kernel": "rns_ntt61",
+    "cfg": "N8192_B1024",
+    "params": {
+     "B": 1024,
+     "N": 8192,
+     "N1": 64
+    },
+    "host_prep_s": 1.1,
+    "first_call_s": 14.98,
+    "exact": true,
+    "wall_s": 0.0011499894500005326,
+    "device": {
+     "module_s": {
+      "jit_ntt(12527265096629739029)": 0.0011422604
+     },
+     "top_ops": [
+      [
+       0.0007548474,
+       "%ntt.3 = s8[64,8,1024,128]{3,2,1,0:T(32,128)(4,1)} custom-call(s8[8,1024,64,128]{3,2,1,0:T(32,128)(4,1)} %ntt.2.a_ref, s8[64,8,128,1024]{3,2,1,0:T(32,128)(4,1)} %t_ref.3, s32[64,8,128]{2,1,0:T(8,128)} %constant.3.c_ref), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[8,1024,64,128]{3,2,1,0}, s8[64,8,128,1024]{3,2,1,0}, s32[64,8,128]{2,1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       0.000387391,
+       "%ntt.2.a_ref = s8[8,1024,64,128]{3,2,1,0:T(32,128)(4,1)} custom-call(s8[8,64,512]{2,1,0:T(32,128)(4,1)} %t_ref.2, s8[8,1024,64,128]{3,2,1,0:T(32,128)(4,1)} %x_ref.1, s32[8,64,1]{2,1,0:T(8,128)} %constant.2.c_ref), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={s8[8,64,512]{2,1,0}, s8[8,1024,64,128]{3,2,1,0}, s32[8,64,1]{2,1,0}}, frontend_attributes={kernel_metadata={}}"
+      ]
+     ],
+     "total_module_s": 0.0011422604
+    },
+    "bound": {
+     "bound_s": 0.0008004799433986581,
+     "unit": "vpu",
+     "per_unit_s": {
+      "mxu": 0.0005232447467208122,
+      "vpu": 0.0008004799433986581,
+      "hbm": 0.0002458399219512195
+     },
+     "vpu_peak": 4107953598485.516,
+     "vpu_src": "INFERRED-unverified"
+    },
+    "t_meas_s": 0.0011422604,
+    "pct_of_bound": 70.07858658136605
+   },
+   {
+    "kernel": "sumcheck_bb4_round",
+    "cfg": "H2p22",
+    "params": {
+     "H": 4194304
+    },
+    "host_prep_s": 5.5,
+    "first_call_s": 0.95,
+    "exact": true,
+    "wall_s": 0.0019193608999998446,
+    "device": {
+     "module_s": {
+      "jit_f(3046242383902120980)": 0.0019089826
+     },
+     "top_ops": [
+      [
+       0.0019077468000000002,
+       "%f.1 = (u32[4,2,4096,1024]{3,2,1,0:T(8,128)}, u32[4,2,4096,1024]{3,2,1,0:T(8,128)}, s32[3,128,128]{2,1,0:T(8,128)}, s32[3,128,128]{2,1,0:T(8,128)}, s32[3,2,128,1]{3,2,1,0:T(8,128)S(1)}) custom-call(u32[4,2,2,4096,1024]{4,3,2,1,0:T(8,128)} %f_ref.1, u32[4,2,2,4096,1024]{4,3,2,1,0:T(8,128)} %g_ref.1, s8[128,128]{1,0:T(32,128)(4,1)} %w_ref.1, s32[4,32,1]{2,1,0:T(8,128)S(1)} %copy.c_ref), custom_call_target=\"tpu_custom_call\", operand_layout_constraints={u32[4,2,2,4096,1024]{4,3,2,1,0}, u32[4,2,2,4096,1024]{4,3,2,1,0}, s8[128,128]{1,0}, s32[4,32,1]{2,1,0}}, frontend_attributes={kernel_metadata={}}"
+      ],
+      [
+       4.896e-07,
+       "%copy.c_ref = s32[4,32,1]{2,1,0:T(8,128)S(1)} copy(s32[4,32,1]{1,2,0:T(1,128)} %c_ref)"
+      ],
+      [
+       4.568e-07,
+       "%copy.1 = s32[3,2,128,1]{2,3,1,0:T(1,128)} copy(s32[3,2,128,1]{3,2,1,0:T(8,128)S(1)} %get-tuple-element.4), frontend_attributes={kernel_metadata={}}"
+      ]
+     ],
+     "total_module_s": 0.0019089826
+    },
+    "bound": {
+     "bound_s": 0.0027281662315104447,
+     "unit": "vpu",
+     "per_unit_s": {
+      "mxu": 0.0003052261022538071,
+      "vpu": 0.0027281662315104447,
+      "hbm": 0.0009830750439024391
+     },
+     "vpu_peak": 4107953598485.516,
+     "vpu_src": "INFERRED-unverified"
+    },
+    "t_meas_s": 0.0019089826,
+    "pct_of_bound": 142.91205333723025
+   }
+  ],
+  "xla": {
+   "ntt_xla_s": 0.006669406333334867,
+   "sumcheck_xla_s": 0.10101896133333337
+  }
+ },
+ "jax": "0.12.0.1",
+ "backend": "tpu",
+ "devices": [
+  "TPU_0(process=0,(0,0,0,0))"
+ ],
+ "device_kind": "TPU v5 lite"
+}

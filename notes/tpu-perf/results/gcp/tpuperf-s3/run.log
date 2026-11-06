@@ -1,0 +1,31 @@
+CALIB_RC=0
+ER_PIP_RC=0
+ER_RC=0
+KERNELS_RC=0
+== calib02.log
+23:40:21 mxfp4_w4a8 gateup_T256 exact True meas 56.5 us bound 28.3 us (hbm) 50.1%
+23:40:23 mxfp4_w4a8 gateup_T2048 exact True meas 285.2 us bound 172.5 us (mxu) 60.5%
+23:40:24 mxfp4_w4a8 down_T2048 exact True meas 157.2 us bound 88.1 us (mxu) 56.1%
+23:40:40 rns_ntt61 N8192_B1024 exact True meas 1142.3 us bound 800.5 us (vpu) 70.1%
+23:40:53 sumcheck_bb4_round H2p22 exact True meas 1909.0 us bound 2728.2 us (vpu) 142.9%
+23:40:56 xla ntt {'ntt_xla_s': 0.006669406333334867}
+23:41:04 xla sumcheck {'ntt_xla_s': 0.006669406333334867, 'sumcheck_xla_s': 0.10101896133333337}
+23:41:04 DONE
+== er.log
+   "m": false,
+   "logits": false,
+   "x2": false
+  },
+  "wall": 12.1
+ },
+ "bit_identical": true
+}
+== kernels.log
+23:44:48 mxfp4_w4a8 gateup_T256 exact True meas 57.5 us bound 28.3 us (hbm) 49.3%
+23:44:50 mxfp4_w4a8 gateup_T2048 exact True meas 301.1 us bound 176.3 us (mxu) 58.5%
+23:44:51 mxfp4_w4a8 down_T2048 exact True meas 159.3 us bound 90.1 us (mxu) 56.6%
+23:45:00 mxfp4_w4a8 gateup_T256_packed exact True meas 312.2 us bound 22.0 us (mxu) 7.1%
+23:45:16 rns_ntt61 N8192_B1024 exact True meas 1142.3 us bound 800.5 us (vpu) 70.1%
+23:45:29 sumcheck_bb4_round H2p22 exact True meas 1909.0 us bound 2728.2 us (vpu) 142.9%
+23:47:12 freivalds_bb gateup_T2048 exact True meas 79.5 us bound 85.3 us (hbm) 107.3%
+23:47:12 DONE
