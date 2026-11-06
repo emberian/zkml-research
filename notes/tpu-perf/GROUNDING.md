@@ -48,3 +48,21 @@ Consequences for the method:
    numbers after the first profile.
 
 dregg-forge was not tried: hbox suffices, and forge is shared with fn2's measurement box.
+
+## 1. Method and tools (2026-11-06 evening)
+
+- `tpuperf/counts.py`: op and byte counts from the pre-optimization StableHLO (Mac). MXU MACs per dtype;
+  VPU element-ops (64-bit flagged); compulsory HBM bytes. `bound()` = max over units of work / peak
+  (`hw.py`, tagged). The VPU peak is **not published** for v5e/v6e: the v5e value is an unverified
+  placeholder until the Kaggle calibration measures it. v6e bounds omit the VPU and say so.
+- `tpuperf/inspect_hlo.py`: reads the optimized TPU HLO. Flags copies, transposes and pads by location,
+  non-MXU dot dtypes, MXU underfill, 64-bit types, while loops and custom calls. Sums `estimated_cycles`
+  and scoped VMEM.
+- `tpuperf/pallas_lint.py`: block shapes vs (8|16|32, 128) tiles, in-kernel dot dims vs the MXU edge,
+  double-buffered VMEM vs the scoped limit, 64-bit values, grid steps.
+- `tpuperf/static_check.py` and `run_static.sh` (one command from the Mac): every kernel and config on
+  v5e and v6e. Results land in `results/static/`; the HLO stays on hbox under `~/lanes/tpu-perf/src/out-*`.
+- Kernels (`tpuperf/kernels/`), each bit-exact against an independent reference on the Mac:
+  `mxfp4_w4a8` (Pallas, interpret mode, vs int64 from the E2M1 codes), `rns_ntt61` (vs a Python-int radix-2
+  negacyclic NTT, itself checked against the O(N^2) definition), `sumcheck_bb4_round` (vs Python-int
+  BabyBear^4 fold and round sums).
