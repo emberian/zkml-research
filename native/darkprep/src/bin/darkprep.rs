@@ -297,6 +297,15 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     if sp.phase != darkprep::schedule::Phase::Step && (steps != 1 || m.contains_key("genesis")) {
         return Err("a release or handover chunk is one tape: --steps 1, no --genesis".into());
     }
+    if !m.contains_key("new-mac-key") && !m.contains_key("plaintext") {
+        // MP-SPDZ silently draws a fresh MAC key when it finds none, so a chunk meant for an existing key (whose files
+        // a handover just erased, say) would come out under a key no other chunk shares: refuse instead
+        let backend = m.get("backend").map(|s| s.as_str()).unwrap_or("mascot");
+        let dir = PathBuf::from(m.get("mpspdz").expect("--mpspdz")).join("Player-Data");
+        if !darkprep::mpspdz::has_mac_key(&dir, backend, party) {
+            return Err(format!("no {backend} MAC key share for party {party} in {}; pass --new-mac-key to draw a fresh one", dir.display()));
+        }
+    }
     if m.contains_key("new-mac-key") {
         // this custodian's MAC key share is retired first, so MP-SPDZ generates a fresh one for this run (a new
         // committee, or the same seats after an abort); later chunks reuse it
