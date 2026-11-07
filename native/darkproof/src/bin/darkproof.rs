@@ -683,6 +683,16 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     }
     if no_release {
         println!("steps only (DP_NO_RELEASE): proof-section triples per custodian {nts:?}; peak RSS {:.2} GB", peak_rss_gb());
+        if let Ok(sv) = std::env::var("DP_SAVE") {
+            // the steps' ledger and bundles (for the Python replay: proofwire.py replay)
+            let sv = Path::new(&sv);
+            std::fs::create_dir_all(sv).unwrap();
+            for (k, b) in parts_blobs.iter().enumerate() {
+                std::fs::write(sv.join(format!("step{}.bin", k + 1)), b).unwrap();
+            }
+            std::fs::copy(&lpath, sv.join("mind-0.ledger")).unwrap();
+            println!("saved the ledger and its bundles to {}", sv.display());
+        }
         println!("{}", if ok_all { "DS-CHAIN STEPS PASS" } else { "DS-CHAIN STEPS FAIL" });
         std::process::exit(if ok_all { 0 } else { 1 });
     }
