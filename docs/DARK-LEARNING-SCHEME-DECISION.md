@@ -1866,3 +1866,13 @@ child (life counter), and the old committee's step 2 after rotation (parent mism
 2. **Preprocessing configuration:** tau = 5 (tau = 3 as released is vacuous here), TLS (+35% wall), and F_p² sacrifice
    and MAC checks, which MP-SPDZ lacks for prime fields (our own code, or a larger field)?
 3. **MP-SPDZ's status:** accept an unreviewed research implementation and Bristol's usage-report request?
+4. **The step program at width.** darkstep and native_ref.py keep the harness's shifts (5/13, 4/8, 8/13) and shrink
+   the weights above d = 256 ([-1, 1] at d = 4096) to stay in the table's domain; the native ledger (darkproof) pins
+   §12's wide shifts (11/19, 4/8, 14/19) above d = 1024 with weights in [-7, 7]. One program must be pinned in genesis
+   and run by both; the wide shifts are the natural learner, and making darkstep take the shifts from the genesis
+   parameters is a small change.
+
+Proof of the step at d = 4096 (native, ledger profile, forge, three custodians in one 12 GB scope): prove 247 s (219 s
+of it codeword encoding), verify 12.7 s, bundle 922 MB (spine 1,191.0 Mbit and middle 701.7 Mbit, equal to the formulas;
+the rest is the 676 MB public transcript). Cross-model review (gpt-6-astra) of the native prover and verifier ran; its
+six findings are fixed (`notes/dark-learning-gen5/proof.md`).
