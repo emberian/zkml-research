@@ -65,8 +65,14 @@ fn recv_decrypt<F: Fn(&[u64], &[u64]) + Sync>(net: &crate::net::Net, key: &OwnKe
                 let (claimed, sink) = (&claimed, &sink);
                 sc.spawn(move || {
                     while claimed[pi].fetch_add(1, Ordering::Relaxed) < per_peer {
-                        let (h, ct) = ct_parse(&net.recv(i, net::HE_RET), nh, ln);
-                        let dec = key.decrypt(&ct, Some(coefs));
+                        let b = net.recv(i, net::HE_RET);
+                        let (h, dec) = if key.compress.is_some() {
+                            let v = bytes_to_u64s(&b);
+                            (v[..nh].to_vec(), key.decrypt_compressed(&v[nh..], coefs))
+                        } else {
+                            let (h, ct) = ct_parse(&b, nh, ln);
+                            (h, key.decrypt(&ct, Some(coefs)))
+                        };
                         sink(&h, &dec);
                     }
                 });
@@ -86,6 +92,19 @@ pub fn layout(d: usize, n: usize) -> (usize, usize) {
 }
 
 impl He {
+    /// One HE return on the wire: header, then the full ciphertext, or (compressed returns) the modulus-switched
+    /// c0 at the recipient's coefficients and c1.
+    fn return_bytes(&self, hdr: &[u64], ct: &Ct, coefs: &[usize]) -> Vec<u8> {
+        match &self.key.compress {
+            None => ct_bytes(hdr, ct),
+            Some(c) => {
+                let mut v = hdr.to_vec();
+                v.extend(crate::bfv::compress_return(&self.rns, ct, c.small.l(), coefs));
+                u64s_to_bytes(&v)
+            }
+        }
+    }
+
     fn ntt_ct(&self, ct: &Ct) -> (Vec<u64>, Vec<u64>) {
         let (mut a, mut b) = (ct.c0.clone(), ct.c1.clone());
         self.rns.fwd(&mut a);
@@ -223,6 +242,7 @@ impl He {
         };
         let he = &*self;
         let net_ref = &pt.net;
+        let mv_coefs: Vec<usize> = idx_of(0).iter().map(|x| x.0).collect();
         let (zadd, zsub) = std::thread::scope(|sc| {
             // recipient: decrypt the returns others make for me
             let recv = sc.spawn(|| {
@@ -272,7 +292,7 @@ impl He {
                             he.mv_seed, calls, transpose as u8, me, j, o
                         ));
                         let (ct, m) = make_return(&he.rns, &he.pks[j], (&accs[jj].0, &accs[jj].1), &mut rg, he.f_bits);
-                        tx.send((net::HE_RET, ct_bytes(&[o as u64], &ct))).expect("peer writer gone");
+                        tx.send((net::HE_RET, he.return_bytes(&[o as u64], &ct, &mv_coefs))).expect("peer writer gone");
                         for &(coef, out) in &idx_of(o) {
                             keep.push((out, m[coef]));
                         }
@@ -438,7 +458,7 @@ impl He {
                             he.ou_seed, calls, me, j, ab, b, kname
                         ));
                         let (ct, m) = make_return(&he.rns, &he.pks[j], (&acc0, &acc1), &mut rg, he.f_bits);
-                        tx.send((net::HE_RET, ct_bytes(&[ab as u64, b as u64, kind as u64], &ct))).expect("peer gone");
+                        tx.send((net::HE_RET, he.return_bytes(&[ab as u64, b as u64, kind as u64], &ct, &coefs))).expect("peer gone");
                         let base = if kind == 0 { gp } else { gmp };
                         // block (ab, b) is written by this job only
                         for r in 0..dr {
