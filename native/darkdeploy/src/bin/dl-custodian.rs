@@ -3,7 +3,7 @@
 //!
 //!   dl-custodian serve <darkstep serve arguments> [--prove [--pipeline-proofs --proof-mesh A0,A1,A2]
 //!       [--profile NAME] [--proof-archive ADIR]] [--model NAME]
-//!       [--handover-at K --mesh6 A0,..,A5 --tls6 DIR6 [--listen6 HOST:PORT]]
+//!       [--handover-at K --mesh6 A0,..,A5 --tls6 DIR6 [--listen6 HOST:PORT] [--erase-extra FILE].. [--scan-extra PATH]..]
 //!       [--self-handover-tape FILE --recover-mesh A0,A1,A2 --recover-mesh6 A0,..,A5 --tapes2 PAT --owner-msgs2 PAT]
 //!       [--release --release-data MNISTDIR [--release-m M (default: the cfg's release.M)] [--release-tape FILE]]
 //!   dl-custodian join J <N L F d> DIR A0 A1 A2 --tls TLSDIR --owner HOST:PORT --steps K --mesh6 A0,..,A5
@@ -411,6 +411,16 @@ impl Prove {
                             scan.push(c.to_path_buf());
                         }
                     }
+                }
+            }
+        }
+        // this seat's retired MAC key outside the tapes, e.g. its MP-SPDZ key files (--erase-extra FILE, repeatable)
+        let mut files = files;
+        for (n, x) in args.iter().enumerate() {
+            if x == "--erase-extra" {
+                let f = PathBuf::from(&args[n + 1]);
+                if f.exists() && !files.contains(&f) {
+                    files.push(f);
                 }
             }
         }
