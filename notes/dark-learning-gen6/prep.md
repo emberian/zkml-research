@@ -501,3 +501,17 @@ that lg64e runs on. Do not rebuild g2 while lg64e runs.
 - MP-SPDZ's built-in sizing gives about 87 bits for this field, far below 128. Its comment cites "alpha = 0.7 sqrt(2 pi) / q", which matches these distributions, but `min_phi_m = 15.1 log q` does not reproduce its own table.
 - N = 16,384 clears 128 bits with margin, at both the rough and the full count. The 314 bits are an estimate; MP-SPDZ fixes the exact length when it builds the parameters.
 - The run's LowGear must be at N = 16,384: patch `min_phi_m` in build-mpspdz.sh. lg64e (N = 8,192) is for cost measurement only.
+
+**run13-rel, the sealed release chunk [EXECUTED, wired layout, MASCOT tau = 5, TLS, same key as run13-c0]**: 157,182,170 entries per
+seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
+
+| seat | wall | CPU user / sys | peak RSS | MP-SPDZ sent | assembly |
+|---|---:|---:|---:|---:|---:|
+| 0 (forge) | 1,467.2 s | 6,707 / 1,791 s | 1.37 GB | 946.8 GB | 7.4 s |
+| 1 (bb2) | 1,465.1 s | 7,229 / 2,069 s | 1.42 GB | 946.3 GB | 8.4 s |
+| 2 (bb2) | 1,462.3 s | 7,199 / 2,100 s | 1.40 GB | 946.3 GB | 8.1 s |
+
+- Price check: 63.45M triple-equivalents in 24.4 min, against 4.48M in 3.4 min for the step. That is 23.1 versus 22.4 triple-eq per ms.
+- Bytes: 946 GB per seat, about 119 kbit per triple-eq per seat, so 357 k for all parties. That matches the 362 k unit price of §3.
+- The §10 estimate of about 27 min was right.
+- The Transactions file was in RAM, and assembly wiped it.
