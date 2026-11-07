@@ -2,6 +2,9 @@
 name = "darkprep"
 version = "0.1.0"
 edition.workspace = true
+description = "Real preprocessing for the dark-learning MPC fork: MASCOT via MP-SPDZ, per-party tapes in run_step order."
 
 [dependencies]
 pycompat = { path = "../pycompat" }
+# only for `darkprep export-darkstep`: the online step's own tape format and the harness inputs
+darkstep = { path = "../darkstep" }
