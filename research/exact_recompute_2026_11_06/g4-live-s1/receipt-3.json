@@ -1,0 +1,64 @@
+{
+  "version": "fpaudit-receipt-v3",
+  "decide_src_sha256": "ee8622cf4a5c3b89056e29e18803a6e25ef99433fd9f6407bf1f38a39067b2a1",
+  "record": {
+    "session": "b3e75dbc134c154aef46c88d735108fb1806c999fc02a09af424ab5ae053b44a",
+    "position": 3,
+    "nonce": "2e6b9f16732972cdf46c1bf099dd7c21e351df8006178f0e34cc626b1058c9f3",
+    "commitment_id": "3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f",
+    "r": 17,
+    "e": 29,
+    "req_sha256": "3c8b6d172abe44047ea57faa7f09d4b19b3565435bb84afe8bd9564287c844e4",
+    "y_sha256": "3ecfabbd0bdd707e6ad3ec03f4d06c3ad51f6f43a4e6d85acc92595a35f4c717",
+    "proof_sha256": null,
+    "seen_round": 33736325
+  },
+  "record_digest": "6b1ad8164a6fc8e8ac567f12652dca545d3c54fd1f584212de2653ead2eaa90a",
+  "mmr_root": "15be879ce4a73a63d71a2ec5c8006d1ff64afa88e6bbc14c40a50a1d85ee7a49",
+  "opening": {
+    "peaks": [
+      {
+        "height": 2,
+        "hash": "5e94f27fe4f8afde33e7a376f5543986981ab2aaecc034dd66b92bed4ace302a"
+      }
+    ],
+    "paths": [
+      [
+        "204d04ff575d1e0ce7d5d1848ca6d5af972e97fdfcb09673f8af607c902f67de",
+        "03e603ea2ed7627694d0fd151ef1b7b26b26fb078ab7e4c1c5d7c688301e73fa"
+      ]
+    ]
+  },
+  "countersig": "31b5f42ce1481817d4764fc82f30c5a51f4f6ba922b762e29fa82ca27f38d8349746d093a35fd8ff8533cce70613744e296522d02bf8a0f72855d21cc7c87f03",
+  "beacon": {
+    "round": 33736327,
+    "randomness": "89f68dfd3688e82b2aafa6aec1a0bffdb521cd3222cd1fa44141fd78a2670ca1",
+    "signature": "ae053b0396d746ee12b79c69fa118d81a72907c2d2f749fb6dbc2cec0e0b5c5f2db62a8d4f94de8330b982910cb3be85"
+  },
+  "coin": 17994488103219456737,
+  "fired": true,
+  "expect": {
+    "id": "3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f",
+    "build": "",
+    "r": 17,
+    "e": 29,
+    "accept_work": false
+  },
+  "staged": {
+    "req_sha256": "3c8b6d172abe44047ea57faa7f09d4b19b3565435bb84afe8bd9564287c844e4",
+    "y_sha256": "3ecfabbd0bdd707e6ad3ec03f4d06c3ad51f6f43a4e6d85acc92595a35f4c717",
+    "proof_sha256": null,
+    "fault": null
+  },
+  "open_ok": true,
+  "call": {
+    "stdout": "pins spec=e87f05728a8e6a39a901741c97f26d29e7dbc7dab7ed38061d7d81542a8310a7 params=e80f63ffbd7a984672a1771d28a587f7feb3511ad5514718cfff6a8e53de2040 weights=3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f\nshape prompt=17 output=12\nargmax tokens=112251,1422,2381,32499,220,1860,314,220,37410,59,741,200002\nDONE\n",
+    "exit": 0,
+    "millis": 310951,
+    "killed_for_time": false,
+    "fault": null
+  },
+  "committed_output": "112251,1422,2381,32499,220,1860,314,220,37410,59,741,200002",
+  "verdict": "accept",
+  "alarm": false
+}

@@ -1,0 +1,63 @@
+{
+ "version": "fpaudit-receipt-v3",
+ "decide_src_sha256": "ee8622cf4a5c3b89056e29e18803a6e25ef99433fd9f6407bf1f38a39067b2a1",
+ "record": {
+  "session": "b3e75dbc134c154aef46c88d735108fb1806c999fc02a09af424ab5ae053b44a",
+  "position": 1,
+  "nonce": "e547337ab6fcd015367e092cd5b7d703884b42393afeb9f86ea6f75f58c87e76",
+  "commitment_id": "3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f",
+  "r": 22,
+  "e": 25,
+  "req_sha256": "d94874e3f73f14a2b39f7d44c11a2d0613f8393e108518a2949886d1b927155d",
+  "y_sha256": "a6844293478ec0e22a37226a809b9b20a0d8d056fccab15b5bd774321abfa484",
+  "proof_sha256": null,
+  "seen_round": 33736159
+ },
+ "record_digest": "1a0ddcce208029f9eb0a7751654abdf6762b161e94cd4bc7dbad30c1f4a033ad",
+ "mmr_root": "1feb3eadf7bcbf5f2f5a2e3ee185049c32c50a7b23123214d9d0cbe876dbc3c4",
+ "opening": {
+  "peaks": [
+   {
+    "height": 1,
+    "hash": "03e603ea2ed7627694d0fd151ef1b7b26b26fb078ab7e4c1c5d7c688301e73fa"
+   }
+  ],
+  "paths": [
+   [
+    "6cf92bf4e090b9d5a0283ba790b8fd65ac70d8561e2fc06ab20d301b4044374f"
+   ]
+  ]
+ },
+ "countersig": "58bc7b8b1c8ca854fbb42dd44d08b3b68338fb91c66abea818c74db7714b181e8f9eb82b683324df5e9090e798a31581eb41f71594735c48c31dcef544562705",
+ "beacon": {
+  "round": 33736161,
+  "randomness": "a7e9e743a8fa9f81fbe60a0123b9f6d6a928f6b1c099b58311aa3265d3119a5a",
+  "signature": "b0185f29bde74870bef15630e3c2fe8f0a2ae57da7f0bb19cd0eaa46ab0abe5d44a9c24c5385b8761c2909d8c2b6e066"
+ },
+ "coin": 11237523848136332876,
+ "fired": true,
+ "expect": {
+  "id": "3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f",
+  "build": "",
+  "r": 22,
+  "e": 25,
+  "accept_work": false
+ },
+ "staged": {
+  "req_sha256": "d94874e3f73f14a2b39f7d44c11a2d0613f8393e108518a2949886d1b927155d",
+  "y_sha256": "a6844293478ec0e22a37226a809b9b20a0d8d056fccab15b5bd774321abfa484",
+  "proof_sha256": null,
+  "fault": null
+ },
+ "open_ok": true,
+ "call": {
+  "stdout": "pins spec=e87f05728a8e6a39a901741c97f26d29e7dbc7dab7ed38061d7d81542a8310a7 params=e80f63ffbd7a984672a1771d28a587f7feb3511ad5514718cfff6a8e53de2040 weights=3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f\nshape prompt=22 output=3\nargmax tokens=8475,113353,13\nDONE\n",
+  "exit": 0,
+  "millis": 241134,
+  "killed_for_time": false,
+  "fault": null
+ },
+ "committed_output": "8475,113353,13,200002",
+ "verdict": "reject",
+ "alarm": true
+}
