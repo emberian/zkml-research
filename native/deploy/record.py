@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""The run of record's config for run.py, for either third box.
+
+    record.py LAYOUT --steps N --handover-at K --chunks NAME [--chunk-steps S] [--third HOST,IP,ROOT] > RUN.json
+
+LAYOUT:
+  hbox    forge (seat 0) + bb2 (seat 1) + hbox (seat 2; swarm-build, SWARM_MEM_MAX=16G, /othersys, disk line 25 GB)
+  wired   forge + bb2 + a wired third box (--third HOST,IP,ROOT; the default is a placeholder that run.py's gate
+          and check refuse, so a config cannot launch before ember names the box)
+One custodian per machine in each committee: the new committee is three new processes, one on each of the same three
+boxes, with their own TLS identities, their own MP-SPDZ key (prep's handover chunk) and their own HE ceremony.
+
+What it pins (the posture of the run; change it here, not by hand in the JSON):
+- profile ledger-x2 (F_{p^2} challenges; the genesis record carries "EXT": 2 and Ledger::open refuses another);
+- every tape single-use (the box registry), checked against the profile before step 0, waited for (--tape-wait)
+  when prep runs behind, wiped once spent (--wipe-spent);
+- pipelined proofs on their own mesh per committee; every bundle archived on bb2 (latest only elsewhere);
+- forge's nightly 10:00-11:00 UTC: custodian 0 votes the pause, run.py drive resumes after the window;
+- the handover after step K (the new committee started by drive after step K - 1, launch_new "deferred");
+- the release at the end, from the release's own tape on each box (loaded after the steps' tape is freed).
+Chunk paths follow the prep lane's layout ROOT/chunks/NAME-P<I>/step-<j>/{tape_I.bin,owner-msg-P<I>.bin} with
+--chunk-steps S steps per chunk dir: NAME-c<c>-P<I> for chunk c (the old committee from step 0, the new one from K+1);
+the handover tapes NAME-ho-P<I>/step-0/tape_I.bin and the release tapes NAME-rel-P<I>/release_I.bin.
+"""
+import argparse, json, sys
+
+GEN = "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/train_genesis_gen6.json"
+OUT = "/private/tmp/claude-501/-Users-ember-dev-aidev/78fef112-a52f-425f-8503-f3fa24ff087c/scratchpad/dl-gen5/deploy2/runs"
+
+FORGE = {"host": "dregg-forge", "ip": "178.105.4.114", "root": "/srv/lanes/dl-gen6-deploy", "prep": "/srv/lanes/dl-gen6-prep",
+         "scope": "systemd-run --scope -p MemoryMax=12G", "env": "DS_THREADS=16"}
+BB2 = {"host": "bb2", "ip": "2.31.77.40", "root": "/home/build/lanes/dl-gen6-deploy", "prep": "/home/build/lanes/dl-gen6-prep",
+       "scope": "systemd-run --user --scope -p MemoryMax=16G", "env": "DS_THREADS=16"}
+HBOX = {"host": "hbox", "ip": None, "root": "/othersys/lanes/dl-gen6-deploy", "prep": "/othersys/lanes/dl-gen6-prep",
+        "scope": "env SWARM_MEM_MAX=16G swarm-build", "env": "DS_THREADS=16", "disk_line_gb": 25}
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("layout", choices=["hbox", "wired"])
+    ap.add_argument("--steps", type=int, required=True, help="N, the run's steps")
+    ap.add_argument("--handover-at", type=int, required=True, help="K: the rotation after step K")
+    ap.add_argument("--chunks", required=True, help="the prep lane's chunk name for this run")
+    ap.add_argument("--chunk-steps", type=int, default=2)
+    ap.add_argument("--third", default="NEWBOX,0.0.0.0,/srv/lanes/dl-gen6-deploy", help="HOST,IP,ROOT of the wired third box")
+    ap.add_argument("--name", default="record")
+    ap.add_argument("--key-dir", default=None, help="the old committee's MP-SPDZ runtime dir name in prep's ROOT (e.g. wired: "
+                    "ROOT/wired<I>/mpspdz); its p-61 MAC-key and secrets files are erased at the handover and the dir scanned")
+    ap.add_argument("--key-hash", default="519717d82129ff48ce3a78ec360a737b5b3d8a5f", help="the p-61 Mascot-Secrets file's parameter hash")
+    a = ap.parse_args()
+    if not 0 <= a.handover_at < a.steps - 1:
+        sys.exit("the handover must leave the new committee at least one step")
+    if a.layout == "hbox":
+        third = HBOX
+        # hbox is behind NAT: it can only dial. In the 3-meshes seat 2 dials every lower seat; in the six-party
+        # mesh old seat 2 (index 2) must accept indices 3-5: --dial-only (not built) or a relay. [OPEN]
+    else:
+        h, ip, root = a.third.split(",")
+        third = {"host": h, "ip": ip, "root": root, "prep": root.replace("dl-gen6-deploy", "dl-gen6-prep"),
+                 "scope": "systemd-run --scope -p MemoryMax=16G", "env": "DS_THREADS=16"}
+    boxes = [FORGE, BB2, third]
+    ip = lambda b: b["ip"] or "0.0.0.0"
+    base = 28600
+    pp = lambda b, k: f"{ip(b)}:{base + k}"
+    mesh_old, mesh_new = [pp(b, i) for i, b in enumerate(boxes)], [pp(b, 20 + i) for i, b in enumerate(boxes)]
+    proof_old, proof_new = ",".join(pp(b, 10 + i) for i, b in enumerate(boxes)), ",".join(pp(b, 30 + i) for i, b in enumerate(boxes))
+    mesh6 = ",".join([pp(b, 40 + i) for i, b in enumerate(boxes)] + [pp(b, 43 + i) for i, b in enumerate(boxes)])
+    # --ret-round (the rounded returns) joins once item 3 has run it on hbox and the proof lane has the proof of
+    # the rounded step; until then the run sends the switched returns unrounded
+    common = ["--ret-primes", "2", "--prove", "--profile", "ledger-x2", "--wipe-spent", "--tape-wait", "7200",
+              "--pause-utc", "10:00-11:00", "--timeout", "3600", "--pipeline-proofs"]
+    def bin_(b):
+        return f"{b['root']}/ws-target-run/release"
+    def seat(b, i, new):
+        c = f"{b['prep']}/chunks/{a.chunks}-c{{c}}-P{i}/step-{{j}}"
+        s = {"host": b["host"], "root": b["root"], "bin": bin_(b), "scope": b["scope"], "env": b["env"],
+             "addr": (mesh_new if new else mesh_old)[i],
+             "tapes": f"{c}/tape_{i}.bin", "owner_msgs": f"{c}/owner-msg-P{i}.bin",
+             "extra": ["--proof-mesh", proof_new if new else proof_old]}
+        if b.get("disk_line_gb"):
+            s["disk_line_gb"] = b["disk_line_gb"]
+        if b is BB2:
+            s["archive"] = True
+        if new:
+            s["handover_tape"] = f"{b['prep']}/chunks/{a.chunks}-ho-P{i}/step-0/tape_{i}.bin"
+            s["extra"] += ["--release-data", f"{b['root']}/data/mnist",
+                           "--release-tape", f"{b['prep']}/chunks/{a.chunks}-rel-P{i}/release_{i}.bin"]
+        elif a.key_dir:
+            k = f"{b['prep']}/{a.key_dir}{i}/mpspdz"
+            s["extra"] += ["--erase-extra", f"{k}/Player-Data/Mascot-Secrets-p-61-{a.key_hash}-P{i}-3",
+                           "--erase-extra", f"{k}/Player-Data/3-p-61/Player-MAC-Keys-p-P{i}", "--scan-extra", k]
+        return s
+    cfg = {
+        "name": a.name, "out": OUT, "prof": [16384, 4, 175, 4096], "t": 2305843009210515457, "gate": 309, "program": "gen6",
+        "steps": a.handover_at + 1, "bundle_bytes": 76_000_000,
+        "flags": common + ["--chunk-steps", str(a.chunk_steps)],
+        "genesis_cfg": GEN, "owner_cfg": f"{OUT}/owner_cfg_bb2.json",
+        "seats": [seat(b, i, False) for i, b in enumerate(boxes)],
+        "owner": {"host": "bb2", "root": BB2["root"], "bin": bin_(BB2), "scope": "systemd-run --user --scope -p MemoryMax=8G",
+                  "addr": f"{BB2['ip']}:{base + 9}"},
+        "handover": {"at": a.handover_at, "steps_after": a.steps - a.handover_at - 1, "mesh6": mesh6, "launch_new": "deferred",
+                     "new_seats": [seat(b, i, True) for i, b in enumerate(boxes)],
+                     "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1), "--release"]},
+        "drive_poll_s": 60,
+    }
+    json.dump(cfg, sys.stdout, indent=1)
+    print()
+
+if __name__ == "__main__":
+    main()
