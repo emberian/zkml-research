@@ -182,3 +182,108 @@ fn without_a_spare_the_custodians_stop_for_a_redo_and_keep_the_key() {
         assert_eq!(s["next_step"], 1, "the checkpoint is at the step before the redo");
     }
 }
+
+
+/// The run driver's redo (native/deploy/run.py, exit 5): per-step tape files; step 1's is forced into the wrap zone.
+/// The custodians stop with code 5 at step 1; `serve --resume --steps 1` on step 1's fresh tape (a pattern keyed by
+/// {k}, like rec's chunk paths) redoes it under the same key, and `serve --resume` on the normal pattern runs step 2:
+/// the three steps equal the plaintext twin. This is the sequence run.py issues.
+#[test]
+fn exit_5_then_resume_on_a_fresh_step_tape_equals_the_twin() {
+    let pf = prof(&A.map(String::from));
+    let (p, d) = (pf.t, pf.d);
+    let base = std::env::temp_dir().join(format!("darkstep-serve-xt-{}-resume", std::process::id()));
+    let _ = std::fs::remove_dir_all(&base);
+    let (dir, tls) = (base.join("run"), base.join("tls"));
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::create_dir_all(&tls).unwrap();
+    let plain = inputs_for(d, &Program::HARNESS);
+    let later: Vec<Vec<i64>> = (1..3)
+        .map(|s| {
+            let mut r = pycompat::PyRandom::from_u64(1000 + s as u64);
+            (0..2 * d).map(|_| r.randint_i64(-7, 7)).collect()
+        })
+        .collect();
+    let m = |v: &[i64]| -> Vec<u64> { v.iter().map(|&x| darkstep::arith::from_i64(x, p)).collect() };
+    let mut dl = Dealer::new(p, 3, DEALER_SEED);
+    dl.xt = true;
+    let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
+    let fresh = |dl: &Dealer| -> Vec<Tape> { dl.alpha_sh.iter().map(|&a| Tape { alpha_i: a, ..Default::default() }).collect() };
+    let mut per_step: Vec<Vec<Tape>> = Vec::new();
+    let mut cs = Vec::new();
+    for k in 0..3 {
+        let inp = if k == 0 { plain.flat_mod(p) } else { m(&later[k - 1]) };
+        cs.push(deal_one_step(&mut dl, &mut owner, d, &inp, &Program::HARNESS));
+        let f = fresh(&dl);
+        per_step.push(std::mem::replace(&mut dl.tapes, f));
+    }
+    let spare_cs = deal_one_step(&mut dl, &mut owner, d, &m(&later[0]), &Program::HARNESS);
+    // step 1's first mask moved so its opening is 0
+    let at = per_step[1][0].tags.iter().position(|&t| t == Tag::Tr as u8).unwrap();
+    let w0 = twin(&later, 1);
+    let z1_0: i64 = (0..d).map(|j| w0.w1[0][j] * later[0][j]).sum();
+    let r: u64 = (0..3).fold(0u64, |a, i| darkstep::arith::addmod(a, per_step[1][i].sh[at], p));
+    let c = darkstep::arith::addmod(darkstep::arith::addmod(darkstep::arith::from_i64(z1_0, p), 1 << Program::HARNESS.k1, p), r, p);
+    per_step[1][0].sh[at] = darkstep::arith::submod(per_step[1][0].sh[at], c, p);
+    for i in 0..3 {
+        per_step[1][i].mac[at] = darkstep::arith::submod(per_step[1][i].mac[at], darkstep::arith::mulmod(dl.alpha_sh[i], c, p), p);
+    }
+    let write = |t: &Tape, f: PathBuf| t.write_to(&mut std::io::BufWriter::new(std::fs::File::create(f).unwrap())).unwrap();
+    for i in 0..3 {
+        for k in 0..3 {
+            write(&per_step[k][i], dir.join(format!("step_{k}_{i}.bin")));
+        }
+        write(&dl.tapes[i], dir.join(format!("xs_1_{i}.bin")));
+    }
+    for seat in ["0", "1", "2", "owner"] {
+        assert!(Command::new(env!("CARGO_BIN_EXE_darkstep")).args(["tls-keygen", seat]).arg(&tls).output().unwrap().status.success());
+    }
+    let run = |steps: usize, pat: &str, owner_vals: Vec<Option<Vec<u64>>>, resume: bool| -> Vec<i32> {
+        let ports: Vec<u16> = (0..4).map(|_| free_port()).collect();
+        let addrs: Vec<String> = (0..3).map(|j| format!("127.0.0.1:{}", ports[j])).collect();
+        let owner_at = format!("127.0.0.1:{}", ports[3]);
+        let l = std::net::TcpListener::bind(&owner_at).unwrap();
+        let id = darkstep::tls::Identity { key_der: std::fs::read(tls.join("tls_owner.key")).unwrap(), cert_der: std::fs::read(tls.join("cert_owner.der")).unwrap() };
+        let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tls.join(format!("cert_{j}.der"))).unwrap()).collect();
+        let ow = std::thread::spawn(move || darkstep::serve::owner_serve(l, &id, &certs, move |k, _| owner_vals.get(k).cloned().flatten().ok_or("no such step".into())));
+        let kids: Vec<_> = (0..3)
+            .map(|i| {
+                let own = base.join(format!("tls_seat{i}"));
+                std::fs::create_dir_all(&own).unwrap();
+                for f in ["cert_0.der", "cert_1.der", "cert_2.der", "cert_owner.der"] {
+                    std::fs::copy(tls.join(f), own.join(f)).unwrap();
+                }
+                std::fs::copy(tls.join(format!("tls_{i}.key")), own.join(format!("tls_{i}.key"))).unwrap();
+                Command::new(env!("CARGO_BIN_EXE_darkstep"))
+                    .args(["serve", &i.to_string()])
+                    .args(A)
+                    .arg(&dir)
+                    .args(&addrs)
+                    .args(["--tls", own.to_str().unwrap(), "--owner", &owner_at, "--steps", &steps.to_string(), "--xt"])
+                    .args(["--tapes", dir.join(pat.replace("{i}", &i.to_string())).to_str().unwrap(), "--timeout", "60", "--test-keep-shares"])
+                    .args(if resume { vec!["--resume"] } else { vec![] })
+                    .env("DS_THREADS", "4")
+                    .spawn()
+                    .unwrap()
+            })
+            .collect();
+        let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
+        if codes.iter().all(|&c| c != 2) {
+            ow.join().unwrap().unwrap();
+        }
+        codes
+    };
+    let normal: Vec<Option<Vec<u64>>> = cs.iter().cloned().map(Some).collect();
+    assert_eq!(run(3, "step_{k}_{i}.bin", normal.clone(), false), vec![5, 5, 5], "the wrap at step 1: a redo");
+    for i in 0..3 {
+        assert_eq!(report(&dir, 1, i)["verdict"], "REDO");
+    }
+    let redo = vec![None, Some(spare_cs.clone())];
+    assert_eq!(run(1, "xs_{k}_{i}.bin", redo, true), vec![0, 0, 0], "step 1 redone on its fresh tape");
+    for i in 0..3 {
+        assert_eq!(report(&dir, 1, i)["verdict"], "ACCEPT");
+    }
+    assert_eq!(run(1, "step_{k}_{i}.bin", normal, true), vec![0, 0, 0], "step 2 on the normal pattern");
+    let t = twin(&later, 3);
+    assert_eq!(reveal(&dir, d, p), (t.w1, t.w2), "exit 5, the redo resume and the next resume = the 3-step twin");
+}

@@ -11,6 +11,9 @@
                               summary.json (per step: wall, bytes per link, CPU and peak RSS per party, proof sizes)
     run.py RUN.json stop      stops every process of this run by its PID file (and only that), the nightly pauser too
     run.py RUN.json resume    after a pause: relaunch with --resume for the steps left (owner included)
+    run.py RUN.json redo      after an XT redo (every custodian exited 5 at step k, notes/dark-learning-gen6/xtrunc.md):
+                              wait for step k's fresh preprocessing (each seat's xt_redo_tapes), then resume step k
+                              alone on it; `drive` does this itself and then resumes the steps left
     run.py RUN.json plan      the disk plan: per filesystem, what the run still writes and what is left above its line
                               (also for each N in cfg "plan_steps"); `gate` (and every launch) refuses a config that
                               would end under a line; `drive` rechecks every disk_poll_s and pauses the committee
@@ -22,6 +25,9 @@ RUN.json:
   "data" is a path on the owner's box), custodian ("dl-custodian" or "darkstep"),
   seats: [{host, root, bin, scope, addr, tapes, owner_msgs, env}], owner: {host, root, bin, scope, addr}
 Each seat's dir is ROOT/NAME/seatI; the owner's is ROOT/NAME/owner. Paths in tapes/owner_msgs may use {k}.
+  Exact truncation (flag --xt): each seat (and each handover new_seat) may carry xt_redo_tapes and
+  xt_redo_owner_msgs, patterns with {k} (the redone step) and optionally {r} (the redo count of the run): the
+  fresh one-step chunk a redo of step k consumes (prep makes it on demand, under the seat's same MAC key).
 """
 import json, os, shlex, subprocess, sys, time
 
@@ -447,7 +453,8 @@ def resume(cfg):
     print(f"resuming at step {done}, {left} steps left" + (" (the release alone)" if left == 0 else ""))
     launch(c, with_new=False)
 
-def resume_new(cfg):
+def resume_new(cfg, redo=None):
+    """redo = (k, r): step k alone on each new seat's xt_redo_tapes (XT redo r of the run)."""
     N, L, F, d = cfg["prof"]
     ho = cfg["handover"]
     s0 = ho["new_seats"][0]
@@ -455,7 +462,9 @@ def resume_new(cfg):
     done = rep["next_step"]
     left = ho["at"] + 1 + ho["steps_after"] - done
     extra = ""
-    if left <= 0:
+    if redo:
+        left = 1
+    elif left <= 0:
         # every step ran; a deferred release (handover "release": "deferred") runs alone from the checkpoint once
         # its own tapes are made (--steps 0 --release; single use: a claimed tape is refused)
         if ho.get("release") != "deferred" or release_done(cfg):
@@ -473,11 +482,76 @@ def resume_new(cfg):
     naddrs = " ".join(s["addr"] for s in ho["new_seats"])
     for j, s in enumerate(ho["new_seats"]):
         nd = new_dir(cfg, s, j)
+        tp, om = (redo_paths(s, redo) if redo else (s["tapes"], s["owner_msgs"]))
         args = f"serve {j} {N} {L} {F} {d} {nd}/D {naddrs} --tls {nd}/tls --owner {o['addr']} --steps {left} " \
-               f"--gate {cfg['gate']} --program {cfg['program']} --tapes {s['tapes']} --owner-msgs {s['owner_msgs']} " + new_args(cfg, s, j) + " --resume" + extra
+               f"--gate {cfg['gate']} --program {cfg['program']} --tapes {tp} --owner-msgs {om} " + new_args(cfg, s, j) + " --resume" + extra
         start(s["host"], nd, f"new{j}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/dl-custodian {args}", env=s.get("env", ""))
     start_nightly(cfg)
     print(f"new committee resuming at step {done}, {left} steps left" + (" (the release alone)" if extra else ""))
+
+def redo_paths(s, redo):
+    """A seat's tape and owner-message patterns for the XT redo (k, r): {r} filled, {k} left for serve."""
+    k, r = redo
+    if not s.get("xt_redo_tapes"):
+        raise SystemExit("an XT redo needs each seat's xt_redo_tapes (and xt_redo_owner_msgs) in the config")
+    return (s["xt_redo_tapes"].replace("{r}", str(r)), s.get("xt_redo_owner_msgs", s["owner_msgs"]).replace("{r}", str(r)))
+
+def redo_seats(cfg):
+    """The active committee's seats as (seat, index, dir)."""
+    if phase(cfg) == "new":
+        return [(s, j, new_dir(cfg, s, j)) for j, s in enumerate(cfg["handover"]["new_seats"])]
+    return [(s, i, seat_dir(cfg, s, i)) for i, s in enumerate(cfg["seats"])]
+
+def redo_state(cfg):
+    """OUT/NAME/xt_redo.json: {"count": redos launched so far, "pending": step k of the segment in flight or null}."""
+    p = os.path.join(cfg["out"], cfg["name"], "xt_redo.json")
+    return json.load(open(p)) if os.path.exists(p) else {"count": 0, "pending": None}
+
+def save_redo_state(cfg, st):
+    p = os.path.join(cfg["out"], cfg["name"], "xt_redo.json")
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    json.dump(st, open(p + ".tmp", "w"))
+    os.replace(p + ".tmp", p)
+
+def redo_ready(cfg, k, r):
+    """Every active seat's fresh one-step chunk for the redo of step k exists: its tape and owner message, and for
+    a prep chunk (CHUNK/step-J/tape_I.bin) its chunk-P<I>.json, which darkprep writes last."""
+    for s, i, _ in redo_seats(cfg):
+        tp, om = redo_paths(s, (k, r))
+        tp, om = tp.replace("{k}", str(k)), om.replace("{k}", str(k))
+        cj = f"{os.path.dirname(os.path.dirname(tp))}/chunk-P{i}.json"
+        test = f"test -f {tp} && test -f {om}" + (f" && test -f {cj}" if os.path.basename(os.path.dirname(tp)).startswith("step-") else "")
+        if sh(s["host"], f"{test} && echo y || echo n", check=False) != "y":
+            return False
+    return True
+
+def redo(cfg, wait_s=None):
+    """After every custodian of the active committee exited 5 (an XT redo, step k; the checkpoint is at step k - 1
+    and the MAC key is kept): wait until step k's fresh preprocessing is on every seat, then resume step k alone on
+    it (serve --resume --steps 1 --tapes <xt_redo_tapes>). The steps after it are resumed as usual once it ends."""
+    seats = redo_seats(cfg)
+    reps = [json.loads(sh(s["host"], f"cat {d}/D/serve_P{i}.json")) for s, i, d in seats]
+    if not all(x.get("exit") == 5 for x in reps):
+        raise SystemExit("not an XT redo: " + json.dumps([x.get("exit") for x in reps]))
+    k = reps[0]["next_step"]
+    st = redo_state(cfg)
+    r = st["count"]
+    while not redo_ready(cfg, k, r):
+        if wait_s is None:
+            raise SystemExit(f"the XT redo of step {k} waits for its fresh preprocessing (xt_redo_tapes, redo {r})")
+        time.sleep(wait_s)
+    st = {"count": r + 1, "pending": k}
+    save_redo_state(cfg, st)
+    for h, d, n in procs(cfg):
+        sh(h, f"cd {d} && for f in {n}.log {n}.mon; do test -f $f && mv $f $f.redo{k}; done; true")
+    if phase(cfg) == "new":
+        resume_new(cfg, redo=(k, r))
+    else:
+        c = dict(cfg, steps=1, flags=cfg.get("flags", []) + ["--resume"],
+                 seats=[dict(s, tape=None, tapes=redo_paths(s, (k, r))[0], owner_msgs=redo_paths(s, (k, r))[1]) for s in cfg["seats"]])
+        launch(c, with_new=False)
+    print(f"XT redo {r}: step {k} resumed alone on its fresh preprocessing")
+    return k
 
 def release_tape(s):
     x = s.get("extra", [])
@@ -574,6 +648,23 @@ def drive(cfg):
                 if all(x != "null" and '"error"' not in x for x in hand):
                     ev("old committee handed over and exited")
                     continue
+            if all(r and r.get("exit") == 5 for r in reps):
+                k = reps[0]["next_step"]
+                ev(f"XT redo at step {k} ({ph} committee): a wrap-zone opening, public and data-independent; the key is "
+                   f"kept; waiting for step {k}'s fresh preprocessing")
+                redo(cfg, wait_s=cfg.get("disk_poll_s", 600))
+                ev(f"XT redo: step {k} launched alone on its fresh preprocessing")
+                continue
+            st = redo_state(cfg)
+            if st["pending"] is not None and all(r and r.get("exit") == 0 for r in reps):
+                k = st["pending"]
+                save_redo_state(cfg, dict(st, pending=None))
+                try:
+                    resume(cfg)
+                    ev(f"XT redo of step {k} done; the steps after it resumed")
+                    continue
+                except SystemExit as e:
+                    ev(f"XT redo of step {k} done; {e}")
             if all(r and r.get("paused") for r in reps):
                 ev(f"paused at step {reps[0]['next_step']} ({ph} committee)")
                 while win and in_window(win):
@@ -612,4 +703,4 @@ if __name__ == "__main__":
     if sys.argv[2] == "launch-seats":
         launch(cfg, seats_only=True)
         sys.exit(0)
-    {"setup": setup, "check": check, "gate": disk_gate, "plan": plan, "resume": resume, "launch": launch, "launch-new": launch_new, "drive": drive, "status": status, "stop": stop, "collect": collect}[sys.argv[2]](cfg)
+    {"setup": setup, "check": check, "gate": disk_gate, "plan": plan, "resume": resume, "redo": redo, "launch": launch, "launch-new": launch_new, "drive": drive, "status": status, "stop": stop, "collect": collect}[sys.argv[2]](cfg)
