@@ -324,7 +324,10 @@ fn keep_erased_copy(args: &[String], files: &[PathBuf]) {
         let d = PathBuf::from(d);
         let _ = std::fs::create_dir_all(&d);
         for f in files {
-            if f.exists() && serve::sealing() {
+            // only sealed files: a copy of a plain secret (an --erase-extra MP-SPDZ key file) would outlive the erasure
+            let mut head = [0u8; 8];
+            let sealed = std::fs::File::open(f).and_then(|mut h| std::io::Read::read_exact(&mut h, &mut head)).is_ok() && &head == serve::SEALED_MAGIC;
+            if sealed {
                 let _ = std::fs::copy(f, d.join(f.file_name().unwrap()));
             }
         }
