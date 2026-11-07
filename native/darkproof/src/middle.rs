@@ -3,6 +3,7 @@
 //! verifier's own symbolic replay of the step (`step::replay`). Generic over the challenges' field F_{p^E} (cosnark_ext).
 use crate::ext::{self, Tab};
 use crate::field;
+use crate::gmask::{self, GMask, MaskZ};
 use crate::h::Hash;
 use crate::ligero::{self, LigParams, LigParty, LigProof, LinSink, LinSystem};
 use crate::net::{gather_hashes, Net};
@@ -21,14 +22,23 @@ pub const SPINE: [&str; 8] = ["z1", "z2", "b", "h", "g1", "d2", "bg", "d1"];
 #[derive(Clone, Debug, PartialEq)]
 pub struct MiddleProof {
     pub roots: BTreeMap<String, Vec<Hash>>,
+    /// ZKSC "rows" (empty under "mask")
     pub zc_roots: Vec<Vec<Hash>>,
     pub claims_root: Vec<Hash>,
+    /// ZKSC "rows" (empty under "mask")
     pub lsc_roots: Vec<Vec<Hash>>,
     pub eval_roots: Vec<Hash>,
     pub mask_roots: Vec<Hash>,
     pub prox: BTreeMap<String, Vec<Vec<u64>>>,
     pub pcs_cols: BTreeMap<String, PcsCols>,
     pub ligero: LigProof,
+    /// ZKSC "mask" (cut D; all empty under "rows"): the g group's roots, the opened G values (spec order, flat), the
+    /// opened zerocheck rounds (4 E values each), the opened linear rounds (per round: every sumcheck's 3 E values,
+    /// in sorted name order)
+    pub g_roots: Vec<Hash>,
+    pub g_open: Vec<u64>,
+    pub zc: Vec<Vec<u64>>,
+    pub lsc: Vec<Vec<u64>>,
 }
 
 pub fn plen(x: usize) -> usize {
@@ -170,6 +180,8 @@ pub fn evaluations<const E: usize>(
 }
 
 pub struct MLayout {
+    /// ZKSC "mask": the g group's rows, first (0 under "rows"; zrows and lrows are then empty)
+    pub ng: usize,
     pub zrows: Vec<usize>,
     pub crow: usize,
     pub lrows: Vec<usize>,
@@ -181,20 +193,35 @@ pub struct MLayout {
 /// Row numbering: zerocheck rounds, the claims row, the linear rounds (a value j, component k at j E + k), every
 /// evaluation's u rows (E component blocks), the product rows.
 pub fn row_layout<T>(sh: &BTreeMap<String, Shape>, ev: &[(String, T)], lh: usize, lmax: usize, kl: usize, e: usize) -> MLayout {
+    row_layout_g(sh, ev, lh, lmax, kl, e, None)
+}
+
+/// The same with ZKSC "mask": ng = Some(the g group's rows), first, then the claims row (no round rows).
+#[allow(clippy::too_many_arguments)]
+pub fn row_layout_g<T>(sh: &BTreeMap<String, Shape>, ev: &[(String, T)], lh: usize, lmax: usize, kl: usize, e: usize, ng: Option<usize>) -> MLayout {
     let mut nxt = 0;
-    let zrows = (nxt..nxt + lh).collect();
-    nxt += lh;
-    let crow = nxt;
-    nxt += 1;
-    let lrows = (nxt..nxt + lmax).collect();
-    nxt += lmax;
+    let (zrows, crow, lrows);
+    if let Some(g) = ng {
+        nxt = g;
+        zrows = Vec::new();
+        crow = nxt;
+        nxt += 1;
+        lrows = Vec::new();
+    } else {
+        zrows = (nxt..nxt + lh).collect();
+        nxt += lh;
+        crow = nxt;
+        nxt += 1;
+        lrows = (nxt..nxt + lmax).collect();
+        nxt += lmax;
+    }
     let mut urows = Vec::new();
     for (k, _) in ev {
         let nr = sh[k].w.div_ceil(kl);
         urows.push((nxt..nxt + e * nr).collect());
         nxt += e * nr;
     }
-    MLayout { zrows, crow, lrows, urows, prod: (nxt, nxt + 1, nxt + 2), nrows: nxt + 3 }
+    MLayout { ng: ng.unwrap_or(0), zrows, crow, lrows, urows, prod: (nxt, nxt + 1, nxt + 2), nrows: nxt + 3 }
 }
 
 pub struct MiddleSys<const E: usize> {
@@ -210,6 +237,8 @@ pub struct MiddleSys<const E: usize> {
     /// per k in ks: the final coefficient mle(q_pad)(rr) * prod_{j >= m} (1 - r_j)
     pub coef: Vec<[u64; E]>,
     pub cst: [u64; E],
+    /// ZKSC "mask": the opened masking data (None: hidden round rows)
+    pub mz: Option<MaskZ<E>>,
 }
 
 impl<const E: usize> MiddleSys<E> {
@@ -227,6 +256,24 @@ impl<const E: usize> LinSystem for MiddleSys<E> {
         let zero = ext::zero::<E>();
         let pf = prod_forms::<E>(self.lay.prod, 0);
         let z = &self.lay.zrows;
+        let eq = ext::mle(&ext::eqv(&self.tau), &self.zrs);
+        if let Some(mz) = &self.mz {
+            mz.sumcheck(&mut em, "zc", &self.zrs, None, &|em: &mut EEm<E>| {
+                em.form(&pf.z, eq);
+                self.y(em, 2, ext::neg(eq));
+            });
+            operands(&mut em, &pf, "product operands", "product operand sums", &|em| self.y(em, 0, m1), &|em| self.y(em, 1, m1));
+            for i in 0..self.ks.len() {
+                rc(&mut em, self.lay.crow, i, one);
+            }
+            em.done("linear batch: openings/IO/copy constraints", ext::neg(self.cst));
+            for (i, k) in self.ks.iter().enumerate() {
+                let first = |em: &mut EEm<E>| rc(em, self.lay.crow, i, one);
+                mz.sumcheck(&mut em, &format!("l:{k}"), &self.rr, Some(&first), &|em: &mut EEm<E>| self.y(em, 3 + i, self.coef[i]));
+            }
+            self.binding(&mut em);
+            return;
+        }
         rc(&mut em, z[0], 0, one);
         rc(&mut em, z[0], 1, one);
         em.done("Hadamard zerocheck: round sums", zero);
@@ -240,7 +287,6 @@ impl<const E: usize> LinSystem for MiddleSys<E> {
             em.done("Hadamard zerocheck: round sums", zero);
         }
         let lc = ext::lagc(3, *self.zrs.last().unwrap());
-        let eq = ext::mle(&ext::eqv(&self.tau), &self.zrs);
         for j in 0..4 {
             rc(&mut em, *z.last().unwrap(), j, lc[j]);
         }
@@ -275,11 +321,17 @@ impl<const E: usize> LinSystem for MiddleSys<E> {
             self.y(&mut em, 3 + i, ext::neg(self.coef[i]));
             em.done(&format!("linear sumcheck {k}: final"), zero);
         }
+        self.binding(&mut em);
+    }
+}
+
+impl<const E: usize> MiddleSys<E> {
+    fn binding(&self, em: &mut EEm<E>) {
         if self.ev.len() == 3 + self.ks.len() + 2 {
             let e = self.ev.len();
-            self.y(&mut em, e - 2, one);
-            self.y(&mut em, e - 1, m1);
-            em.done("signed input binding: the custodians' y = the owner's signed y", zero);
+            self.y(em, e - 2, ext::one());
+            self.y(em, e - 1, ext::neg(ext::one()));
+            em.done("signed input binding: the custodians' y = the owner's signed y", ext::zero());
         }
     }
 }
@@ -670,6 +722,14 @@ fn prove_g<const E: usize>(
     }
     // zerocheck A * B - C = 0
     let lh = lg(lens["A"]);
+    let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
+    let ks: Vec<String> = lens.keys().cloned().collect();
+    // cut D: every g of the middle committed as one group, the G values opened, rho drawn (before tau)
+    let mut gmz: Option<(MaskZ<E>, Vec<u64>, Vec<Hash>)> = None;
+    if pr.mask {
+        let gm = GMask::new(gmask::middle_specs(lh, lmax, &ks), 0, kl, E);
+        gmz = Some(gmask::commit::<E>(gm, &mut lg_, net, &mut tr, None));
+    }
     let tau = ext::chal::<E>(&mut tr, lh);
     let mut zrs: Vec<[u64; E]> = Vec::new();
     let mut zc_roots = Vec::new();
@@ -709,6 +769,17 @@ fn prove_g<const E: usize>(
         }
         let (vals, p_) = zc_round(sp, net, &st, &prev, live);
         pp = p_;
+        if let Some((mz, gsh, _)) = &mut gmz {
+            let fv: Vec<[u64; E]> = vals.iter().map(|v| ext::shares(v)).collect();
+            let plain = gmask::open_round::<E>(mz, gsh, net, &["zc"], rnd, &zrs, &[fv], None).remove(0);
+            let fl = gmask::flat(&plain);
+            mz.msgs.entry("zc".into()).or_default().push(plain);
+            tr.absorb(|h| {
+                h.s("zc").list(&fl);
+            });
+            zrs.push(ext::chal1::<E>(&mut tr));
+            continue;
+        }
         lg_.add_row(&vals.iter().flat_map(|v| ext::shares(v)).collect::<Vec<_>>());
         let rts = lg_.commit(net);
         tr.absorb(|h| {
@@ -733,7 +804,6 @@ fn prove_g<const E: usize>(
     }
     drop(gam);
     tt.lap("gamma and build_q");
-    let ks: Vec<String> = lens.keys().cloned().collect();
     // claims <q_X, X> (shares only: they are never opened)
     let claims: Vec<[u64; E]> = ks
         .iter()
@@ -751,7 +821,6 @@ fn prove_g<const E: usize>(
     tr.absorb(|h| {
         h.s("claims").list_hx(&croot);
     });
-    let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
     // lockstep linear sumchecks; a vector's zero padding is never materialized (folds of zeros stay zero)
     let mut tabs: Vec<(Vec<[u64; E]>, UT<E>)> = ks.iter().map(|k| (q[k].clone(), UT::B(xs.remove(k).unwrap()))).collect();
     let mut rr: Vec<[u64; E]> = Vec::new();
@@ -769,7 +838,9 @@ fn prove_g<const E: usize>(
             }
         }
         let mut row = Vec::with_capacity(3 * E * ks.len());
+        let mut per: Vec<Vec<[u64; E]>> = Vec::with_capacity(ks.len());
         for (qq, xx) in &tabs {
+            let mut vs = Vec::with_capacity(3);
             for t in 0..3u64 {
                 let omt = field::one_minus(t);
                 let v = (0..qq.len().div_ceil(2))
@@ -783,7 +854,24 @@ fn prove_g<const E: usize>(
                     })
                     .reduce(ext::zero::<E>, ext::add);
                 row.extend(v);
+                vs.push(v);
             }
+            per.push(vs);
+        }
+        if let Some((mz, gsh, _)) = &mut gmz {
+            let names: Vec<String> = ks.iter().map(|k| format!("l:{k}")).collect();
+            let nref: Vec<&str> = names.iter().map(|x| x.as_str()).collect();
+            let opened = gmask::open_round::<E>(mz, gsh, net, &nref, rnd, &rr, &per, None);
+            let mut fl = Vec::with_capacity(3 * E * ks.len());
+            for (nm, m) in names.into_iter().zip(opened) {
+                fl.extend(gmask::flat(&m));
+                mz.msgs.entry(nm).or_default().push(m);
+            }
+            tr.absorb(|h| {
+                h.s("lsc").list(&fl);
+            });
+            rr.push(ext::chal1::<E>(&mut tr));
+            continue;
         }
         lg_.add_row(&row);
         let rts = lg_.commit(net);
@@ -798,7 +886,7 @@ fn prove_g<const E: usize>(
     let rb = if bind { Some(ext::chal::<E>(&mut tr, lg(plen(d)))) } else { None };
     let ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
     let shp: BTreeMap<String, Shape> = com.iter().map(|(k, c)| (k.clone(), c.shape.clone())).collect();
-    let lay = row_layout(&shp, &ev, lh, lmax, kl, E);
+    let lay = row_layout_g(&shp, &ev, lh, lmax, kl, E, gmz.as_ref().map(|g| g.0.gm.nrows));
     let mut ys = Vec::new();
     for (k, pt) in &ev {
         let c = &com[k];
@@ -825,6 +913,18 @@ fn prove_g<const E: usize>(
     tt.lap("pcs openings");
     let cols = pcs_cols.iter().map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r)))).collect();
     let coef = final_coefs(&q, &lens, &rr);
+    let (mz, g_roots) = match gmz {
+        Some((mz, _, gr)) => (Some(mz), gr),
+        None => (None, Vec::new()),
+    };
+    let (g_open, zc, lsc) = match &mz {
+        Some(m) => (
+            m.g_flat(),
+            m.msgs["zc"].iter().map(|x| gmask::flat(x)).collect(),
+            (0..lmax).map(|r| ks.iter().flat_map(|k| gmask::flat(&m.msgs[&format!("l:{k}")][r])).collect()).collect(),
+        ),
+        None => (Vec::new(), Vec::new(), Vec::new()),
+    };
     let sys = MiddleSys::<E> {
         kl,
         shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(),
@@ -837,6 +937,7 @@ fn prove_g<const E: usize>(
         ks,
         coef,
         cst,
+        mz,
     };
     let quad = vec![sys.lay.prod];
     let lig = lg_.prove(net, &mut tr, &sys, &quad);
@@ -858,6 +959,10 @@ fn prove_g<const E: usize>(
         prox,
         pcs_cols,
         ligero: lig,
+        g_roots,
+        g_open,
+        zc,
+        lsc,
     };
     Ok(MiddleOut { proof, lig_rows: lg_.rows.clone(), sys: Box::new(sys), quad, stats })
 }
@@ -936,22 +1041,48 @@ fn verify_g<const E: usize>(
         });
     }
     let lh = lg(lens["A"]);
-    if proof.zc_roots.len() != lh {
+    let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
+    let ks: Vec<String> = lens.keys().cloned().collect();
+    let mut mz: Option<MaskZ<E>> = None;
+    if pr.mask {
+        let sp = gmask::middle_specs(lh, lmax, &ks);
+        if proof.zc.len() != lh || proof.zc.iter().any(|v| v.len() != 4 * E) {
+            return Err("wrong number of zerocheck rounds".into());
+        }
+        if proof.lsc.len() != lmax || proof.lsc.iter().any(|v| v.len() != 3 * E * ks.len()) {
+            return Err("wrong number of linear sumcheck rounds".into());
+        }
+        if proof.g_open.len() != E * sp.len() || proof.g_roots.len() != n {
+            return Err("masking polynomials of the wrong shape".into());
+        }
+        let gm = GMask::new(sp, 0, pr.k_l, E);
+        let mut m = MaskZ::<E>::from_wire(gm, &proof.g_roots, &proof.g_open, &mut tr);
+        m.msgs.insert("zc".into(), proof.zc.iter().map(|v| gmask::unflat::<E>(v)).collect());
+        for (i, k) in ks.iter().enumerate() {
+            m.msgs.insert(format!("l:{k}"), proof.lsc.iter().map(|v| gmask::unflat::<E>(&v[3 * E * i..3 * E * (i + 1)])).collect());
+        }
+        mz = Some(m);
+    } else if proof.zc_roots.len() != lh {
         return Err("wrong number of zerocheck rounds".into());
     }
     let tau = ext::chal::<E>(&mut tr, lh);
     let mut zrs = Vec::new();
     for rnd in 0..lh {
-        tr.absorb(|h| {
-            h.s("zc").list_hx(&proof.zc_roots[rnd]);
-        });
+        if mz.is_some() {
+            tr.absorb(|h| {
+                h.s("zc").list(&proof.zc[rnd]);
+            });
+        } else {
+            tr.absorb(|h| {
+                h.s("zc").list_hx(&proof.zc_roots[rnd]);
+            });
+        }
         zrs.push(ext::chal1::<E>(&mut tr));
     }
     let gam = ext::chal::<E>(&mut tr, rec.cons.len() + 3 * rec.had.len());
     let (q, cst) = build_q::<E>(rec, &lens, &gam);
     drop(gam);
-    let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
-    if proof.lsc_roots.len() != lmax {
+    if mz.is_none() && proof.lsc_roots.len() != lmax {
         return Err("wrong number of linear sumcheck rounds".into());
     }
     tr.absorb(|h| {
@@ -959,14 +1090,28 @@ fn verify_g<const E: usize>(
     });
     let mut rr = Vec::new();
     for rnd in 0..lmax {
-        tr.absorb(|h| {
-            h.s("lsc").list_hx(&proof.lsc_roots[rnd]);
-        });
+        if mz.is_some() {
+            tr.absorb(|h| {
+                h.s("lsc").list(&proof.lsc[rnd]);
+            });
+        } else {
+            tr.absorb(|h| {
+                h.s("lsc").list_hx(&proof.lsc_roots[rnd]);
+            });
+        }
         rr.push(ext::chal1::<E>(&mut tr));
+    }
+    if let Some(m) = &mz {
+        // cut D: the round sums in the clear (the zerocheck's claim is public: rho G)
+        gmask::check_rounds::<E>("zc", &m.msgs["zc"], &zrs, 3, Some(ext::mul(m.rho, m.g["zc"])))?;
+        for k in &ks {
+            let nm = format!("l:{k}");
+            gmask::check_rounds::<E>(&nm, &m.msgs[&nm], &rr, 2, None)?;
+        }
     }
     let rb = if bind { Some(ext::chal::<E>(&mut tr, lg(plen(d)))) } else { None };
     let ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
-    let lay = row_layout(&sh, &ev, lh, lmax, pr.k_l, E);
+    let lay = row_layout_g(&sh, &ev, lh, lmax, pr.k_l, E, mz.as_ref().map(|m| m.gm.nrows));
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
     });
@@ -982,8 +1127,9 @@ fn verify_g<const E: usize>(
         .collect();
     let coef = final_coefs(&q, &lens, &rr);
     drop(q);
-    let ks: Vec<String> = lens.keys().cloned().collect();
     let nrows = lay.nrows;
+    let ng = lay.ng;
+    let masked = mz.is_some();
     let sys = MiddleSys::<E> {
         kl: pr.k_l,
         shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(),
@@ -996,13 +1142,19 @@ fn verify_g<const E: usize>(
         ks,
         coef,
         cst,
+        mz,
     };
-    let mut groups: Vec<Vec<Hash>> = proof.zc_roots.clone();
-    groups.push(proof.claims_root.clone());
-    groups.extend(proof.lsc_roots.iter().cloned());
-    groups.push(proof.eval_roots.clone());
-    let mut sizes = vec![1usize; lh + 1 + lmax];
-    sizes.push(nrows - lh - 1 - lmax);
+    let (groups, sizes) = if masked {
+        (vec![proof.g_roots.clone(), proof.claims_root.clone(), proof.eval_roots.clone()], vec![ng, 1, nrows - ng - 1])
+    } else {
+        let mut groups: Vec<Vec<Hash>> = proof.zc_roots.clone();
+        groups.push(proof.claims_root.clone());
+        groups.extend(proof.lsc_roots.iter().cloned());
+        groups.push(proof.eval_roots.clone());
+        let mut sizes = vec![1usize; lh + 1 + lmax];
+        sizes.push(nrows - lh - 1 - lmax);
+        (groups, sizes)
+    };
     let quad = vec![sys.lay.prod];
     ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
 }

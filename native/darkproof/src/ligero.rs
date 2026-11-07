@@ -302,6 +302,12 @@ impl<'p> LigParty<'p> {
         self
     }
 
+    /// k values from this party's own stream (cosnark_zk.GMask.commit: the g shares, drawn before the rows' hiding
+    /// values).
+    pub fn draw(&mut self, k: usize) -> Vec<u64> {
+        (0..k).map(|_| self.rng.randrange_u64(field::p())).collect()
+    }
+
     pub fn add_row(&mut self, share: &[u64]) -> usize {
         let pp = self.pp;
         assert!(share.len() <= pp.k);

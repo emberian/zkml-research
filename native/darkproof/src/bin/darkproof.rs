@@ -1075,6 +1075,40 @@ fn ext_rows(dir: &Path, tag: &str, dir1: &Path, tag1: &str) {
     let mut t = sp.clone();
     plus1(&mut t.prox.get_mut("W1n").unwrap()[0][0]);
     row("PCS proximity row of W1n, custodian 0, base entry 0 + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    // cut D (ZKSC "mask"): the opened rounds (cosnark_ext_rows.py's D rows)
+    let prx = profile(pr.name.trim_end_matches('d'));
+    if pr.mask {
+        for (att, what) in [
+            ("forge_W1n", "forged W1n (custodian 0's committed share off by one)"),
+            ("forge_z1", "forged z1 (custodian 0's committed share off by one)"),
+            ("forge_round", "forged round message (z2 round 1: +5 at X = 0, -5 at X = 1, sum kept)"),
+            ("forge_G", "G not the committed g's sum (custodian 0's G share of z2 + 1)"),
+            ("bad_share", "one custodian's broadcast share off by one (b, round 0, X = 0)"),
+        ] {
+            opts.spine_attack = Some(att);
+            let fb = darkproof::witness::make_bundle(&opts, w.clone(), &ctx, Some(darkproof::witness::clone_carry(&carry)), None);
+            opts.spine_attack = None;
+            match fb {
+                Err(e) => row(what, Err(format!("in proving: {e}")), false),
+                Ok(fb) => row(what, vs(&pr, &lp, &fb.blob, &groots, d, prm), false),
+            }
+        }
+        let mut t = sp.clone();
+        plus1(&mut t.rounds.get_mut("z1").unwrap()[1][0]);
+        row("opened round message (z1, round 1) + 1 in the bundle", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+        let mut t = sp.clone();
+        {
+            let m = &mut t.rounds.get_mut("bg").unwrap()[0];
+            plus1(&mut m[0]);
+            m[2] = darkproof::field::sub(m[2], 1);
+        }
+        row("opened round message (bg, round 0): +1 at X = 0, -1 at X = 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+        let mut t = sp.clone();
+        plus1(&mut t.g_open[0]);
+        row("opened G (z1) + 1 in the bundle", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+        let lpx = prx.ligero();
+        row(&format!("the {} bundle verified under {} (hidden rounds)", pr.name, prx.name), vs(&prx, &lpx, &pyb, &groots, d, prm), false);
+    }
     // the profile is part of the statement
     row("the EXT = 2 bundle verified under the EXT = 1 profile", vs(&pr1, &lp1, &pyb, &groots, d, prm), false);
     row("the EXT = 1 bundle verified under the EXT = 2 profile", vs(&pr, &lp, &pyb1, &groots1, d1, prm1), false);
@@ -1093,6 +1127,9 @@ fn ext_rows(dir: &Path, tag: &str, dir1: &Path, tag1: &str) {
     let p1 = tmp.join("x1.ledger");
     Ledger::open(&p1, "mind-0", &pr1, Some(Genesis { d: d1, program: prm1, owner_pk: None, custodians: cust, roots: groots1 })).unwrap();
     row("ledger written under the EXT = 1 profile, reopened under the EXT = 2 one", Ledger::open(&p1, "mind-0", &pr, None).map(|_| ()), false);
+    if pr.mask {
+        row(&format!("ledger written under {}, reopened under {}", pr.name, prx.name), Ledger::open(&p2, "mind-0", &prx, None).map(|_| ()), false);
+    }
     let _ = std::fs::remove_dir_all(&tmp);
     println!("{}", if ok { "EXT-ROWS PASS" } else { "EXT-ROWS FAIL" });
     std::process::exit(if ok { 0 } else { 1 });
