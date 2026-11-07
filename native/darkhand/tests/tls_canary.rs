@@ -45,3 +45,35 @@ fn not_a_p256_key() {
     let id = darkstep::tls::generate(2);
     assert!(p256_scalar(&id.cert_der).is_none(), "the certificate carries no private scalar");
 }
+
+#[test]
+fn the_der_canary_words_are_private_only() {
+    // the words of the DER that the canary keeps (those overlapping the scalar) occur nowhere in the certificate,
+    // while some other DER words (the public key) can: the reason they are left out
+    for i in 0..32 {
+        let id = darkstep::tls::generate(i);
+        let d = p256_scalar(&id.key_der).unwrap();
+        let a = id.key_der.windows(32).position(|w| w == d).unwrap();
+        let cert = &id.cert_der;
+        for (k, c) in id.key_der.chunks_exact(8).enumerate() {
+            if 8 * k + 8 > a && 8 * k < a + 32 {
+                assert!(!cert.windows(8).any(|w| w == c), "a scalar word of the DER is in the certificate");
+            }
+        }
+        let pubk = &id.key_der[id.key_der.len() - 65..];
+        assert!(cert.windows(65).any(|w| w == pubk), "the DER's public key is the certificate's");
+    }
+}
+
+#[test]
+fn der_words_aligned_in_the_certificate() {
+    // how many of the DER's aligned words a certificate buffer holds at aligned offsets (what a heap scan sees)
+    for i in 0..3 {
+        let id = darkstep::tls::generate(i);
+        let cw: Vec<&[u8]> = id.cert_der.chunks_exact(8).collect();
+        let n = id.key_der.chunks_exact(8).filter(|w| cw.contains(w)).count();
+        println!("custodian {i}: {n} of {} DER words at aligned offsets of the certificate", id.key_der.len() / 8);
+        // reh (2026-11-07): exactly these 8 words were the after-erasure hits on every seat: the public certificate
+        assert_eq!(n, 8);
+    }
+}

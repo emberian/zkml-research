@@ -117,7 +117,7 @@ def main():
             hb = sb.get("hits_by_kind") or []
             ck(who, "the TLS private key is among the memory canaries", o["tls_key_files_canaried"] != [] and tls != [],
                o["tls_key_files_canaried"])
-            ck(who, "memory scan before erasure finds the live TLS key (control)", sum(hb[n] for n in tls if n < len(hb)) > 0,
+            ck(who, "memory scan before erasure finds the TLS private key (control: the key file's plaintext, held through the scan)", sum(hb[n] for n in tls if n < len(hb)) > 0,
                {kinds[n]: hb[n] for n in tls if n < len(hb)})
         if o.get("vault_destroyed") is not None:     # sealed state files (darkhand::vault)
             vb, vd, va = o.get("vault_before_erasure") or {}, o["vault_destroyed"], o.get("vault_after_erasure") or {}
@@ -196,7 +196,11 @@ def main():
                              [argv[k + 1].split("{")[0] for k, t in enumerate(argv[:-1]) if t in ("--tapes", "--tape")]
                     missing = [x for x in secret if x in tail]
                     ok = code not in (0, 124, None) and bool(missing) and ("No such file" in tail or "own TLS key" in tail)
-                    ck(who, f"relaunch of the same `{variant}` command exits non-zero at a missing erased secret (TLS key, checkpoint or tape)", ok,
+                    # a vault build stops earlier, at its own epoch's file key (erased: invalidated in the keyring)
+                    vname = (rep_old[i].get("vault_destroyed") or {}).get("name")
+                    if vname and f"vault {vname}: no file key in the keyring" in tail and code not in (0, 124, None):
+                        ok = True
+                    ck(who, f"relaunch of the same `{variant}` command exits non-zero at a missing erased secret (TLS key, checkpoint, tape or vault key)", ok,
                        {"exit": code, "seconds": round(dt, 1), "tail": tail[-300:]})
     # ---- new seats
     epoch = None
