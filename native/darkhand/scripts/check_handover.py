@@ -111,7 +111,8 @@ def main():
            {"hit_files": da.get("hit_files"), "unreadable": da.get("unreadable")})
         ck(who, "the zeroizing allocator was active", (o.get("allocator_wiped_bytes") or 0) > 0)
         kinds = [k for k, _ in o.get("canary_kinds", [])]
-        if "tls_key_files_canaried" in o:            # darkhand 45bb7255 and later
+        # the TLS key retires with the seat in a rotation; a self-handover keeps the seat's identity (not erased)
+        if "tls_key_files_canaried" in o and not self_mode:   # darkhand 45bb7255 and later
             tls = [n for n, k in enumerate(kinds) if k.startswith("TLS ")]
             hb = sb.get("hits_by_kind") or []
             ck(who, "the TLS private key is among the memory canaries", o["tls_key_files_canaried"] != [] and tls != [],

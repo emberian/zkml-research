@@ -390,6 +390,78 @@ What holds:
 - the erase-extra files gone;
 - the MAC check, the kept key, the same-set rotation, verify-rotation and one digest.
 
+### run12c: three-box rotation at d = 4096, ledger-x2 [EXECUTED 2026-11-07 11:05-11:14 UTC, dl-custodian 8319ea81]
+Layout as run9 (old: forge 0, bb2 1, bb2 2; new: bb2 0, forge 1, bb2 2). Prep's fresh chunks (w4096h6, ho-sh3,
+ho-sh3-steps). The binary has main's scrub_stack_all before the handover and darkhand 09fd154d's non-inlined setup
+frame. Checker (tools at 8319ea81):
+
+    check_handover.py runs/run12c.json OUT --profile ledger-x2 --tools dregg-forge=.../target-8319/release/dl-hand bb2=...
+
+**Result: 74 of 74 checks hold.** For the first time the after-erasure memory scan is 0 on every old seat.
+Output: scratchpad dl-gen5/handover/run12c/check2 (an earlier check1 ran before seat 1's report existed).
+
+| check | old 0 (forge) | old 1 (bb2) | old 2 (bb2) |
+|---|---|---|---|
+| memory hits before erasure (control) | 2,994,265 | 2,994,265 | 2,994,265 |
+| memory hits after erasure | **0** | **0** | **0** |
+| memory scanned before / after | 4.12 / 3.00 GB | 4.27 / 3.15 GB | 4.22 / 3.10 GB |
+| disk hits before (control) / after, files scanned | 393,220 / 0, 140 / 135 | 393,220 / 0, 138 / 133 | 393,220 / 0, 138 / 133 |
+| decrypts its ciphertext before / after erasure | yes / no | yes / no | yes / no |
+| state files left; wipe errors | none; none | none; none | none; none |
+| restarted: no TLS key, ckpt, carry, tape or owner msg on disk; loads nothing | ok | ok | ok |
+| restarted: decrypts neither its old ct nor any new seat's (each found) | ok | ok | ok |
+| relaunch `serve` / `serve --resume`: exit non-zero at an erased secret | 2 / 2 (0.4 s) | 2 / 2 (2.1 s) | 2 / 2 (2.2 s) |
+| reshare / prove / erase / handover total | 1.83 / 28.95 / 0.87 / 64.2 s | 2.53 / 28.16 / 1.44 / 94.9 s | 2.78 / 27.92 / 1.26 / 91.9 s |
+| peak RSS | 8.2 GB | 8.3 GB | 8.2 GB |
+
+The control's hits are every kind in the canaries: W shares and MAC shares, the commitment rows, tails and unopened
+salts, the tape shares and MAC shares, the alpha share, and the HE key in NTT form.
+
+| check | new 0 (bb2) | new 1 (forge) | new 2 (bb2) |
+|---|---|---|---|
+| MAC check under its own key; alpha nonzero | ok | ok | ok |
+| decrypts its own ct under the new key (control) | ok | ok | ok |
+| verify-rotation (native): accepted, sha256 = record | 5.98 s | 5.43 s | 6.20 s |
+| one-byte flip refused | "Merkle opening fails (W1, custodian 2)" | same | same |
+| ceremony / reshare / commit / prove / re-auth / total | 1.41 / 0.63 / 9.10 / 10.94 / 5.76 / 34.6 s | 2.62 / 0.49 / 6.71 / 13.92 / 5.78 / 36.2 s | 1.36 / 0.67 / 8.80 / 11.24 / 5.57 / 34.6 s |
+
+All six seats hold one proof (sha256 86ccfd3c..., 37,603,856 B under ledger-x2), and the three replicas are equal
+through the rotation. The binary predates the vault and the TLS canaries, so their checks start with the next build.
+
+### run11c: self-handover after an abort at d = 4096, ledger-x2de + RS, cut E live [EXECUTED 2026-11-07 11:22-11:27 UTC, dl-custodian 11e84d91]
+Seat 0 bb2, seat 1 forge (`--attack wrong_return:1`), seat 2 bb2. Prep's tapes: sh-abort (the refused step), ho-x
+(the self-handover) and ho-x-steps (the redo and step 1). Each seat runs `--erase-extra` on its wired-new<I>-sh
+p-61 files and `--scan-extra` on that dir. There is no vault in this run.
+- Step 0 was refused at all three seats (Freivalds).
+- Each seat self-handed over at the public-genesis head. The head was final, so no old carries; the handover leaves
+  the epoch-1 head pending through its carries.
+- The rotate record carries `pending`. This is the first deployed cut E handover.
+- Checker: `check_handover.py runs/run11c.json OUT --self --profile ledger-x2de` with tools at d01c914a.
+
+**Result: 37 of 37 checks hold.** The after-erasure memory scan is 0 on every seat.
+- A first pass (check1) also applied the TLS-key checks. A self-handover keeps the seat's TLS identity, which is
+  not erased, so those checks now apply to rotations only (checker fix).
+- Output: scratchpad dl-gen5/handover/run11c/check2.
+
+| check | seat 0 (bb2) | seat 1 (forge) | seat 2 (bb2) |
+|---|---|---|---|
+| memory hits before erasure (control) | 3,338,307 | 3,338,307 | 3,338,307 |
+| memory hits after erasure | **0** | **0** | **0** |
+| memory scanned before / after | 7.21 / 8.85 GB | 7.10 / 7.75 GB | 7.06 / 8.73 GB |
+| disk hits before (control) / after, files scanned | 3,338,371 / 0, 118 / 113 | 3,338,371 / 0, 117 / 112 | 3,338,371 / 0, 117 / 112 |
+| control's hit files | ckpt, owner msg, tape, Player-MAC-Keys, Mascot-Secrets | same | same |
+| state files left; erase-extra files gone | none; yes | none; yes | none; yes |
+| old role: reshare / prove / erase / total | 3.01 / 16.06 / 1.13 / 102.6 s | 2.11 / 16.92 / 0.87 / 55.6 s | 2.88 / 16.09 / 1.02 / 99.5 s |
+| new role: MAC check under the new key; the kept key decrypts | ok; ok | ok; ok | ok; ok |
+| new role: reshare / commit / prove / re-auth / total | 3.18 / 9.79 / 5.91 / 10.93 / 41.0 s | 3.54 / 6.55 / 8.80 / 10.32 / 41.0 s | 3.20 / 9.54 / 6.14 / 11.44 / 41.0 s |
+| replica rotated to the same set at epoch 1 (with pending) | ok | ok | ok |
+| verify-rotation (native, x2de): accepted, sha256 = record; flip refused | 3.28 s; "Merkle opening fails (W2, custodian 1)" | 2.54 s; same | 3.21 s; same |
+| peak RSS (old role) | 8.9 GB | 8.0 GB | 8.5 GB |
+
+- All three hold one proof: sha256 5085b746..., 19,427,648 B.
+- The x2de handover proof is about half of run12c's x2 one (37.6 MB), because the new W is not opened in it.
+- The public genesis carry (`public_carry` W1, W2) is not canaried as a share, as in 09fd154d.
+
 ## 8. The handover proof in F_{p^2} (profiles demo-x2, ledger-x2) [EXECUTED, 1bfb04a3]
 The proof lane's x2 cut (proof.md §19) draws every challenge in F_{p^2}. The handover follows it:
 - the point per matrix is `X.chal` / `ext::chal`;
