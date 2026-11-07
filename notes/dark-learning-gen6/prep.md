@@ -211,3 +211,72 @@ That gives about 29 Gbit from hbox, about 25 min (estimate). Measure it as in §
   step is;
 - the wired-layout test directories `wired<I>/` and `lgtest/` are test-only. Never route a deployed custodian
   through them.
+
+## 9. Generation 2 (2026-11-07 morning): forge's nightly pause, chunks for the dry run and the handover
+
+**The LowGear key setup across fn2's nightly.** The setup runs about 9 h, from 05:00 UTC, so it crosses forge's
+10:00-11:00 pause. The coordinator's call was to pause it. `runs/nightly-pause.sh` on forge (PID file
+`nightly-pause.pid`) sends SIGSTOP to forge's lowgear-party.x by its PID file at 10:00:00 and SIGCONT at 10:58:30.
+Why a stop is safe [SOURCE]:
+- the parties run with `-e`, and every player read goes through boost::asio::ssl::stream;
+- asio's `sync_recv` (boost/asio/detail/impl/socket_ops.ipp:817-858) treats a SO_RCVTIMEO expiry (EAGAIN) as
+  would_block and waits in `poll_read(-1)`, so the patched 3600 s player timeout never fires under TLS;
+- send timeouts are patched to 0, and a stopped process's kernel keeps ACKing and answering keepalives.
+[EXECUTED] Per-socket counters, sampled 66 s apart at 06:07 UTC: all six directed links carry about 0.9 MB/s, all
+paced by hbox, so a stop on forge stalls the whole computation rather than one link. The parties' idle loopback
+sockets had passed 3600 s by then without an abort.
+
+**The release schedule** [EXECUTED, commits bb20a601 (swept into the proof lane's commit from the shared index) and
+e0aa498a]:
+- `StepParams.phase = Phase::Release(Release { m, ncls, kc })`, following darkproof::run::deal_release's order:
+  - Trunc(11, 19) x d M;
+  - Lookup x d M;
+  - Mul x ncls M d;
+  - Trunc(11, 19) x ncls M;
+  - Trunc(kc, kc) x M (ncls - 1);
+  - Mul x M (ncls - 2);
+  - then the proof section.
+- Trhb atoms are on, as the proof lane confirmed.
+- The tags equal darkproof's dealer with proof_rng on, at (d, M) = (4, 2) and (8, 3) with GEN6 RC + LB.
+- CLI: `party-chunk --release 64,10,10 --proof-triples N`. N always comes from darkproof::run::release_section
+  (58,679,793 at the current profile; the proof lane's Ligero-width change will move it).
+- `darkprep plan` at d = 4096, M = 64: 66,567,793 triples, 262,144 power chains, truncation classes (11, 19) x 262,784
+  and (10, 10) x 576. That is 282.6M tape entries per seat: 4.5 GB of Transactions plus 4.8 GB of tape.
+
+**Release-sized memory** [EXECUTED, e931d52a]:
+- Transactions is a read-only mmap, decoded on access, and the schedule is run-length (`runs`, `n_entries`).
+- Assembly streams through `tape::DarkstepWriter`, which writes DLTAPE01 by column at fixed offsets. A one-step
+  chunk's combined tape is a hard link.
+- Unit test: the stream is byte-identical to darkstep's `write_to`.
+- On real MASCOT (`shtest64`, d = 64, 2 steps, three seats): the streamed tapes reconstruct with 0 MAC failures
+  over 95,996 entries and 0 bad triples among 10,964. Negative control: one share + 1 gives one MAC failure.
+- A 33.5M-entry handover tape assembled in 214 MB peak RSS.
+
+**Handover tapes** [EXECUTED]:
+- `Phase::Handover(n)` is n auth_plain entries (darkhand::side::new_side needs 2 d^2 + 2; the deploy lane asked for
+  2 d^2 + 16 = 33,554,448).
+- `--new-mac-key` retires the seat's key share first. Under LowGear it would also retire LowGear-Secrets, so a new
+  key there means a new key setup.
+- Test seats come from `build/seats.sh new|sh`, launched with `launch3.sh LAYOUT=wired-new|wired-sh` and `BIN=`
+  (a second target dir, so a running job's binary is never replaced).
+
+**Chunks made (wired layout, MASCOT tau = 5, TLS, d = 4096 GEN6 Steady, RC + LB proof section 3,192,275)**:
+
+| chunk | seats | per seat: wall | CPU user | peak RSS | sent |
+|---|---|---:|---:|---:|---:|
+| w4096p2 (2 steps) | wired | 268-272 s | 1,203-1,275 s | 1.83 GB | 162.7 GB |
+| w4096s10-c0..c4 (5 x 2 steps, consecutive, one key) | wired | 262-296 s each | 1,174-1,335 s | 1.84 GB | 162.7 GB |
+| ho-new (handover, 33,554,448 Ar, new key) | wired-new: 0 bb2, 1 forge, 2 bb2 | 163-165 s | 396-449 s | 0.21 GB | 32.8 GB |
+| ho-new-steps (2 steps, the same new key) | wired-new | 248-250 s | 1,215-1,264 s | 1.84 GB | 162.7 GB |
+
+Each new seat's alpha_i in the DLTAPE01 header is the same in ho-new and ho-new-steps, and differs from the wired key.
+Auth_plain on MASCOT costs about 32.8 GB x 8 x 3 / 33.5M = 23.5 kbit per value (gen 5 measured 23.5 k).
+
+**Release, priced [DERIVED]**:
+- Counts: 66,567,793 triples, 66,584,576 power products and 15,533,056 random bits, so 148.7M triple-equivalents.
+  Without the proof section it is 90.0M; the 262,144 degree-255 lookups dominate that part.
+- hbox upload is total / 3:
+  - MASCOT tau = 5: 53.8 Tbit, 17.9 Tbit from hbox, 258 h at 19.3 Mbit/s;
+  - LowGear: 5.6 Tbit, 1.87 Tbit from hbox, 27 h at 19.3 Mbit/s or 13 h at 40 Mbit/s.
+- The earlier §5 estimate (0.7 Tbit, 10 h) counted the proof section only.
+- On the wired layout (MASCOT, forge + bb2), the w4096p unit cost scales to about 1 h of wall time.
