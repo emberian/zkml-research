@@ -43,10 +43,15 @@ OWNER_H = 12                 # 2^12 one-time keys per owner tree
 #   ledger (default): T = 309 distinct columns at rate 1/4, (3/4)^309 = 2^-128.25 per PCS and per Ligero, so
 #                     grinding 2^g Fiat-Shamir transcripts still leaves about 2^(g-128);
 #   demo:             T = 97, 2^-40.26, a STATISTICAL figure only: under Fiat-Shamir 2^g grinding gives about 2^(g-40).
+# HE parameters travel with the profile (root decision, gen 4): the ledger profile's HE helpers run at N = 16384 with
+# four 61-bit primes and a 2^175 flood, the only set measured to reach a million-step privacy bound (decision doc
+# section 21); the demo profile keeps N = 8192, three primes, 2^118.
+HE_LEDGER = dict(N=16384, L=4, F_BITS=175)
+HE_DEMO = dict(N=8192, L=3, F_BITS=118)
 PROFILES = {
-    "ledger": dict(PROFILE="ledger", HIDE=618, NMASK=2, LIVES=2, T_COLS=309, BLOW=4, K_L=64, T_HIDE=309, T_OPEN=309,
+    "ledger": dict(PROFILE="ledger", HE=HE_LEDGER, HIDE=618, NMASK=2, LIVES=2, T_COLS=309, BLOW=4, K_L=64, T_HIDE=309, T_OPEN=309,
                    OWNER_H=OWNER_H),
-    "demo": dict(PROFILE="demo", HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=64, T_HIDE=97, T_OPEN=97,
+    "demo": dict(PROFILE="demo", HE=HE_DEMO, HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=64, T_HIDE=97, T_OPEN=97,
                  OWNER_H=OWNER_H),
 }
 PARAMS = dict(PROFILES["ledger"])

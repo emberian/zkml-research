@@ -1,0 +1,32 @@
+{
+ "deployed N=16384 L=4": {
+  "log2_q": 244.0,
+  "rough": {
+   "usvp": 214.3,
+   "dual_hybrid": 213.2
+  },
+  "full": {
+   "usvp": 240.9,
+   "bdd": 240.6,
+   "bdd_hybrid": 240.7,
+   "bdd_mitm_hybrid": 342.1,
+   "dual": 242.4,
+   "dual_hybrid": 240.9
+  }
+ },
+ "demo N=8192 L=3": {
+  "log2_q": 183.0,
+  "rough": {
+   "usvp": 122.9,
+   "dual_hybrid": 122.4
+  },
+  "full": {
+   "usvp": 152.6,
+   "bdd": 152.2,
+   "bdd_hybrid": 152.2,
+   "bdd_mitm_hybrid": 215.6,
+   "dual": 154.0,
+   "dual_hybrid": 152.9
+  }
+ }
+}

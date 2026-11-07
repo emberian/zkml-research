@@ -91,3 +91,4 @@ is an ideal dealer whose per-party streams are committed.
 
 Profiles (gen 4): `proofwire.PROFILES` holds `ledger` (T = 309, the default) and `demo` (T = 97); run scripts and
 `zkpopk_ligero` default to 309. Result files without a `_T97` suffix are the ledger profile.
+| `rlwe_estimate.py` | lattice-estimator (malb, commit d8576372) under Sage for the exact RLWE instances at both HE parameter sets; run on dregg-forge; results `rlwe_estimate.json`, `rlwe_estimate.log` (decision doc §22) |
