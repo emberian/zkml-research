@@ -475,6 +475,11 @@ fn resume_acceptor(stream: &mut TcpStream, c: &mut rustls::Connection, mine: imp
 /// Dial party j (TLS client pinned to its certificate) and resume the session.
 pub fn dial(s: &Session, addr: SocketAddr, cfg: Arc<rustls::ClientConfig>, j: usize, timeout: Duration) -> Result<(), String> {
     let mut sock = TcpStream::connect_timeout(&addr, timeout).map_err(|e| format!("cannot reach party {j} at {addr}: {e}"))?;
+    // a port in the ephemeral range with no listener yet can connect to itself (TCP simultaneous open from the same
+    // source port): that is not the peer, so drop it and let the caller retry (run 12 died of this on forge)
+    if sock.local_addr().ok() == sock.peer_addr().ok() {
+        return Err(format!("cannot reach party {j} at {addr}: the socket connected to itself (no listener yet)"));
+    }
     sock.set_read_timeout(Some(timeout)).ok();
     sock.set_write_timeout(Some(timeout)).ok();
     let name = rustls::pki_types::ServerName::try_from(format!("custodian-{j}")).map_err(|e| e.to_string())?;
