@@ -10,6 +10,7 @@
 //!                        [--release M,NCLS,KC --proof-triples N]  (the release chunk instead of K steps)
 //!                        [--handover-ar N]  (a new seat's handover tape: N auth_plain entries)  [--new-mac-key]
 //!                        [--step-tapes-only]  (no whole-chunk tape_<I>.bin: only step-<j>/tape_<I>.bin)
+//!                        [--rs]  (the proof program's "RS": K + 1 - s Trhb bits)  [--lookup-triples T]  (release, L cut)
 //!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
 //!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
 //!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
@@ -267,13 +268,17 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
         assert_eq!(v.len(), 6, "--truncs s1,k1,s2,k2,s3,k3");
         sp.trunc = [(v[0], v[1]), (v[0], v[1]), (v[2], v[3]), (v[4], v[5])];
     }
+    // --rs: the proof program's "RS" flag (K + 1 - s Trhb bits per truncation)
+    sp.rs = m.contains_key("rs");
     if let Some(r) = m.get("release") {
         // the mind's release (darkproof::run::deal_release): M examples, ncls classes, comparisons (kc, kc); its
         // proof section's count is the proof lane's (darkproof::run::release_section), never a default here
         let v: Vec<usize> = r.split(',').map(|x| x.parse().expect("--release M,NCLS,KC")).collect();
         assert_eq!(v.len(), 3, "--release M,NCLS,KC");
         let n = m.get("proof-triples").expect("--release needs --proof-triples N (darkproof::run::release_section)").parse().expect("--proof-triples");
-        return sp.release(darkprep::schedule::Release { m: v[0], ncls: v[1], kc: v[2] as u32 }, n);
+        // --lookup-triples T: the release's lookups as T Beaver triples each (darkproof's L cut, RS + LB; 27 at GEN6)
+        let lt: usize = get(m, "lookup-triples", 0);
+        return sp.release(darkprep::schedule::Release { m: v[0], ncls: v[1], kc: v[2] as u32, lookup_triples: lt }, n);
     }
     if let Some(n) = m.get("handover-ar") {
         // a new seat's handover tape: N auth_plain entries (2 d^2 + 16 for darkhand::side::new_side)

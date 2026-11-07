@@ -98,9 +98,10 @@ pub fn verify_step(sp: &StepParams, tapes: &[Tape], owner: &[u64]) -> Result<Rep
                 }
                 pos += s as usize + 2;
                 if sp.proof_atoms {
-                    let nb = (k + KAPPA - s) as usize;
+                    let nb = sp.trhb(s, k);
                     let hb = &vals[pos..pos + nb];
-                    if hb.iter().any(|&b| b > 1) || hb.iter().enumerate().fold(0u64, |a, (i, &b)| a | (b << i)) != hi {
+                    let want = if nb >= 64 { hi } else { hi & ((1u64 << nb) - 1) };
+                    if hb.iter().any(|&b| b > 1) || hb.iter().enumerate().fold(0u64, |a, (i, &b)| a | (b << i)) != want {
                         return Err(format!("truncation at entry {pos}: the Trhb bits are not the bits of r >> s"));
                     }
                     pos += nb;

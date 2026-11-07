@@ -84,7 +84,7 @@ fn build(sp: &StepParams, files: &[Vec<u8>]) -> Result<(Vec<Tape>, Vec<u64>), St
 }
 
 fn small() -> StepParams {
-    StepParams { d: 4, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step }
+    StepParams { d: 4, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false }
 }
 
 #[test]
@@ -174,7 +174,7 @@ fn hadamard_count_matches_recorded_runs() {
 
 #[test]
 fn chunk_steps_assemble_disjoint_slices_that_verify() {
-    let sp = StepParams { d: 4, inputs: Inputs::Steady, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: true, proof_triples: 7, phase: Phase::Step };
+    let sp = StepParams { d: 4, inputs: Inputs::Steady, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: true, proof_triples: 7, phase: Phase::Step, rs: false };
     let steps = 3;
     // synthetic chunk: the plan of 3 steps, built through the same synth() with a chunk-sized StepParams stand-in
     let (files, _) = synth_plan(&Plan::of_chunk(&sp, steps), 5);
@@ -216,7 +216,7 @@ fn gen6_program_chunk_equals_darkstep_dealer_tags() {
     // Program::GEN6's truncations ((11,19), (11,19), (7,8), (8,19)); its r3 = 128 is a public cadd (no tape entry)
     let d = 4;
     let pg = darkstep::step::Program::GEN6;
-    let base = StepParams { d, inputs: Inputs::Harness, trunc: pg.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step };
+    let base = StepParams { d, inputs: Inputs::Harness, trunc: pg.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false };
     let chunk: Vec<StepParams> = (0..2).map(|j| StepParams { inputs: if j == 0 { Inputs::Harness } else { Inputs::Steady }, ..base }).collect();
     let (tapes, _) = darkstep::tape::deal_steps_prog(P, d, 5, 9, &vec![0u64; 2 * d * d + 2 * d], &[vec![0u64; 2 * d]], false, &pg);
     let ours: Vec<u8> = chunk.iter().flat_map(|sp| tags(sp)).map(|t| t as u8 + 1).collect();
@@ -225,8 +225,12 @@ fn gen6_program_chunk_equals_darkstep_dealer_tags() {
 
 /// darkproof's deployed GEN6 program with RC + LB (the release's (s1, k1) = (11, 19)).
 fn gen6_proof_params() -> darkproof::step::StepParams {
+    gen6_proof_params_rs(false)
+}
+
+fn gen6_proof_params_rs(rs: bool) -> darkproof::step::StepParams {
     let g = darkstep::step::Program::GEN6;
-    darkproof::step::StepParams { s1: g.s1, k1: g.k1, s2: g.s2, k2: g.k2, s3: g.s3, k3: g.k3, he: true, rc: true, r3: g.r3, t_lo: g.t_lo, lb: true, rs: false, pg: None }
+    darkproof::step::StepParams { s1: g.s1, k1: g.k1, s2: g.s2, k2: g.k2, s3: g.s3, k3: g.k3, he: true, rc: true, r3: g.r3, t_lo: g.t_lo, lb: true, rs, pg: None }
 }
 
 #[test]
@@ -246,8 +250,8 @@ fn release_schedule_equals_darkproof_release_dealer_tags() {
         darkproof::run::deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol);
         let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
         let g = darkstep::step::Program::GEN6;
-        let base = StepParams { d, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step };
-        let sp = base.release(Release { m, ncls, kc }, nrt);
+        let base = StepParams { d, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false };
+        let sp = base.release(Release { m, ncls, kc, lookup_triples: 0 }, nrt);
         let ours: Vec<u8> = tags(&sp).iter().map(|t| *t as u8 + 1).collect();
         assert_eq!(ours.len(), dl.tapes[0].tags.len(), "d = {d}, M = {m}");
         assert_eq!(ours, dl.tapes[0].tags, "d = {d}, M = {m}");
@@ -260,8 +264,8 @@ fn release_schedule_equals_darkproof_release_dealer_tags() {
 #[test]
 fn synthetic_release_chunk_assembles_and_verifies() {
     let g = darkstep::step::Program::GEN6;
-    let base = StepParams { d: 4, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step };
-    let sp = base.release(Release { m: 2, ncls: 4, kc: 10 }, 11);
+    let base = StepParams { d: 4, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false };
+    let sp = base.release(Release { m: 2, ncls: 4, kc: 10, lookup_triples: 0 }, 11);
     let plan = Plan::of(&sp);
     // two truncation classes, (11, 19) then (10, 10); no inputs
     assert_eq!(plan.trunc_classes, vec![(11, 19, 4 * 2 + 4 * 2), (10, 10, 2 * 3)]);
@@ -388,4 +392,71 @@ fn has_mac_key_sees_only_the_partys_live_key() {
     assert!(darkprep::mpspdz::has_mac_key(&pd, "mascot", 1));
     assert!(darkprep::mpspdz::has_mac_key(&pd, "lowgear", 0));
     std::fs::remove_dir_all(&pd).unwrap();
+}
+
+#[test]
+fn rs_release_and_step_equal_their_dealers_tags() {
+    // RS: K + 1 - s Trhb per truncation; L: each release lookup is lookup_bits_products Beaver triples
+    let pr = darkproof::Profile::ledger();
+    let p = darkproof::wire::he_field(&pr).unwrap();
+    darkproof::field::set_p(p);
+    let lp = pr.ligero();
+    let prm = gen6_proof_params_rs(true);
+    let tables = darkproof::step::tables_for(prm.t_lo);
+    let lt = darkproof::step::lookup_bits_products(prm);
+    let g = darkstep::step::Program::GEN6;
+    for (d, m) in [(4usize, 2usize), (8, 3)] {
+        let (ncls, kc) = (d.min(10), 10u32);
+        let pol = darkproof::run::Policy { x: vec![0; d * m], labels: vec![0; m], ncls, kc, ignore_range: false };
+        let mut dl = darkstep::tape::Dealer::new(p, 3, 5);
+        dl.proof_rng = Some(PyRandom::from_u64(1));
+        dl.rs = true;
+        darkproof::run::deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol);
+        let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
+        let base = StepParams { d, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: true };
+        let sp = base.release(Release { m, ncls, kc, lookup_triples: lt }, nrt);
+        let ours: Vec<u8> = tags(&sp).iter().map(|t| *t as u8 + 1).collect();
+        assert_eq!(ours, dl.tapes[0].tags, "release d = {d}, M = {m}");
+        assert_eq!(darkprep::schedule::n_entries(&sp), ours.len());
+        // negative controls: without RS, or with the power chains, the tape differs
+        assert_ne!(tags(&StepParams { rs: false, ..sp }).iter().map(|t| *t as u8 + 1).collect::<Vec<u8>>(), dl.tapes[0].tags);
+        let pw = base.release(Release { m, ncls, kc, lookup_triples: 0 }, nrt);
+        assert_ne!(tags(&pw).iter().map(|t| *t as u8 + 1).collect::<Vec<u8>>(), dl.tapes[0].tags);
+        // the step under RS: darkstep's dealer with Dealer::rs, then the proof section
+        let inputs = vec![0u64; 2 * d * d + 2 * d];
+        let (_, mut ds) = darkstep::tape::deal_step_dealer_prog_rs(P, d, 5, 9, &inputs, true, &g, true);
+        darkstep::tape::deal_proof_section(&mut ds, 13);
+        let st = StepParams { d, inputs: Inputs::Harness, trunc: g.truncs(), proof_atoms: true, proof_triples: 13, phase: Phase::Step, rs: true };
+        let ours: Vec<u8> = tags(&st).iter().map(|t| *t as u8 + 1).collect();
+        assert_eq!(ours, ds.tapes[0].tags, "step d = {d}");
+    }
+}
+
+#[test]
+fn rs_synthetic_tapes_verify_and_a_wrong_low_bit_is_refused() {
+    let g = darkstep::step::Program::GEN6;
+    let sp = StepParams { d: 4, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: true, proof_triples: 5, phase: Phase::Step, rs: true };
+    let (files, _) = synth(&sp, 11);
+    let txs: Vec<Transactions> = files.iter().map(|f| Transactions::parse(f, P).unwrap()).collect();
+    let tapes: Vec<Tape> = txs.iter().enumerate().map(|(i, t)| assemble(&sp, t, i as u32).unwrap()).collect();
+    let msgs: Vec<_> = txs.iter().map(|t| owner::custodian_message(&sp, t)).collect();
+    let rs = owner::owner_masks(Fp::new(P), &msgs).unwrap();
+    darkprep::verify::verify_step(&sp, &tapes, &rs).unwrap();
+    // swap the first Trhb's entries with the second's on every tape (both bits stay 0/1 and MAC-valid): refused
+    // unless the two bits are equal, so pick a truncation where they differ
+    let n = tapes[0].entries.len();
+    let mut done = false;
+    for k in 0..n - 1 {
+        if tapes[0].entries[k].0 == Tag::Trhb && tapes[0].entries[k + 1].0 == Tag::Trhb {
+            let mut t = tapes.clone();
+            for tp in t.iter_mut() {
+                tp.entries.swap(k, k + 1);
+            }
+            if darkprep::verify::verify_step(&sp, &t, &rs).is_err() {
+                done = true;
+                break;
+            }
+        }
+    }
+    assert!(done, "no Trhb swap was refused");
 }
