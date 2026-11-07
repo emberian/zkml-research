@@ -11,6 +11,10 @@
                               summary.json (per step: wall, bytes per link, CPU and peak RSS per party, proof sizes)
     run.py RUN.json stop      stops every process of this run by its PID file (and only that)
     run.py RUN.json resume    after a pause: relaunch with --resume for the steps left (owner included)
+    run.py RUN.json plan      the disk plan: per filesystem, what the run still writes and what is left above its line
+                              (also for each N in cfg "plan_steps"); `gate` (and every launch) refuses a config that
+                              would end under a line; `drive` rechecks every disk_poll_s and pauses the committee
+                              (each seat's DIR/PAUSE, serve --pause-file) until the boxes are back above their lines
 
 RUN.json:
   name, out (local results dir), prof [N, L, F, d], gate, program, steps, flags [extra serve flags],
@@ -135,28 +139,107 @@ def start_sampler(host, d, name):
     samp = SAMPLER.format(pidf=f"{d}/{name}.pid")
     sh(host, f"cd {d} || exit 1; nohup sh -c {shlex.quote(samp)} > {d}/{name}.mon 2>&1 < /dev/null & echo $! > {d}/{name}.mon.pid")
 
-def disk_gate(cfg):
-    """Stop before launch if any box would fall under its free-space line by the run's end. Projected per seat: its
-    checkpoint, carry and latest bundle (fixed), plus every bundle on the archive seat (steps x bundle_bytes)."""
-    d = cfg["prof"][3]
-    fixed = 2 * 8 * 2 * d * d * 2 + int(cfg.get("bundle_bytes", 251e6)) * 2   # ckpt + shares (test) + carry ~ bundles
-    need = {}
-    for i, s in enumerate(cfg["seats"]):
-        b = fixed + (cfg["steps"] * int(cfg.get("bundle_bytes", 251e6)) if s.get("archive") else 0)
-        key = (s["host"], s["root"])
+# Measured sizes (bytes) behind the disk plan; a run's cfg "disk" overrides any of them.
+#   bundle: one step's proof bundle under ledger-x2de + RS (reh: 47,466,293-47,475,509; ledger-x2: ~76 MB)
+#   handover_bundle: handover_e1.bin (reh: 27,552,248); release_bundle: the release's (run10c: 260,069,187)
+#   state: a process's dir without its archive (ckpt 536,870,996 + carry 288,873,140 + latest bundle + join/ledger/
+#     logs: reh 0.875-0.903 GB), plus 4 KB of ledger, step json and sampler log per step
+#   tape: one sealed step file (run13-c0: 151,581,665 + 196,660 owner msg); handover_tape: 33,554,448 entries
+#     (24 + 17 n, sealed + 36); release_tape: run13-rel (2,672,137,730)
+#   lookahead: how many step files per process prep holds ahead of the run (spent ones are wiped: --wipe-spent)
+DISK = {"bundle": 47.5e6, "handover_bundle": 27.6e6, "release_bundle": 260.1e6, "state": 0.95e9, "per_step": 4096,
+        "tape": 151.8e6, "handover_tape": 570.4e6, "release_tape": 2672.2e6, "lookahead": 20}
+
+def total_steps(cfg):
+    ho = cfg.get("handover")
+    return cfg["steps"] + (ho["steps_after"] if ho else 0)
+
+def has_release(cfg):
+    ho = cfg.get("handover")
+    return "--release" in ((ho or {}).get("flags") or cfg.get("flags", []))
+
+def prep_dir(s):
+    """The box's preprocessing dir: the tape pattern up to its /chunks/."""
+    t = s.get("tapes") or s.get("tape") or s["root"]
+    return t.split("/chunks/")[0] + "/chunks" if "/chunks/" in t else s["root"]
+
+def mount_of(h, path):
+    # the nearest existing ancestor's filesystem (a chunk dir may not exist yet)
+    return sh(h, f"p={shlex.quote(path)}; while [ ! -e \"$p\" ]; do p=$(dirname \"$p\"); done; df -Pk \"$p\" | tail -1 | awk '{{print $6, $4}}'")
+
+def disk_need(cfg, done=0):
+    """Bytes each filesystem still takes from step `done` to the run's end, keyed by (host, mount point). Per process:
+    its state dir and its tapes ahead (lookahead step files, its handover and release tapes when not made yet); the
+    archive seat (one per committee) adds every remaining bundle, the handover's and the release's. Conservative: an
+    old seat's dir is kept after its erasure, and a tape already on disk is counted as ahead."""
+    k = dict(DISK, **cfg.get("disk", {}))
+    n_all = total_steps(cfg)
+    left = max(0, n_all - done)
+    ho = cfg.get("handover")
+    at = ho["at"] if ho else None
+    procs_ = [(s, seat_dir(cfg, s, i), False) for i, s in enumerate(cfg["seats"])] + \
+             [(s, new_dir(cfg, s, j), True) for j, s in enumerate((ho or {}).get("new_seats", []))]
+    need, lines, avail, items = {}, {}, {}, {}
+    def add(h, path, b, what, line):
+        mp, av = mount_of(h, path).split()
+        key = (h, mp)
         need[key] = need.get(key, 0) + b
-    ok = True
-    report = []
-    for (h, root), b in need.items():
-        line = next((s.get("disk_line_gb", 30) for s in cfg["seats"] if s["host"] == h), 30)
-        avail = int(sh(h, f"df -Pk {root} | tail -1 | awk '{{print $4}}'")) * 1024
-        after = (avail - b) / 2**30
-        report.append({"host": h, "root": root, "avail_gb": round(avail / 2**30, 1), "projected_gb": round(b / 2**30, 1), "after_gb": round(after, 1), "line_gb": line})
-        ok &= after >= line
+        avail[key] = int(av) * 1024
+        lines[key] = max(lines.get(key, 0), line)
+        items.setdefault(key, {})
+        items[key][what] = items[key].get(what, 0) + b
+    for s, d, new in procs_:
+        h, line = s["host"], s.get("disk_line_gb", 30)
+        # this process's steps still to run
+        mine = (n_all - at - 1 if new else (at + 1 if ho else n_all))
+        first = (at + 1 if new else 0)
+        todo = max(0, min(mine, first + mine - done))
+        add(h, s["root"], k["state"] + k["per_step"] * todo, "state", line)
+        add(h, prep_dir(s), k["tape"] * min(todo, k["lookahead"]), "tapes ahead", line)
+        last = new or not ho
+        if new and s.get("handover_tape") and done <= at and sh(h, f"test -e {s['handover_tape']} && echo y || echo n", check=False) == "n":
+            add(h, prep_dir(s), k["handover_tape"], "handover tape", line)
+        rel = next((x for a, x in zip(s.get("extra", []), s.get("extra", [])[1:]) if a == "--release-tape"), None)
+        if last and has_release(cfg) and rel and sh(h, f"test -e {rel} && echo y || echo n", check=False) == "n":
+            add(h, prep_dir(s), k["release_tape"], "release tape", line)
+        if s.get("archive"):
+            b = k["bundle"] * todo
+            if new or not ho:
+                b += k["release_bundle"] if has_release(cfg) else 0
+            if new:
+                b += k["handover_bundle"] if done <= at else 0
+            add(h, s["root"], b, "archive", line)
+    out = []
+    for key, b in need.items():
+        out.append({"host": key[0], "mount": key[1], "avail_gb": round(avail[key] / 2**30, 1), "projected_gb": round(b / 2**30, 1),
+                    "after_gb": round((avail[key] - b) / 2**30, 1), "line_gb": lines[key],
+                    "items_gb": {w: round(v / 2**30, 2) for w, v in items[key].items()}})
+    return out
+
+def disk_gate(cfg, done=0):
+    """Stop before launch if any filesystem would fall under its free-space line by the run's end (disk_need)."""
+    report = disk_need(cfg, done)
     print(json.dumps(report))
-    if not ok:
+    if any(r["after_gb"] < r["line_gb"] for r in report):
         raise SystemExit("disk gate: a box would fall under its line; not launching (tell the coordinator)")
     return report
+
+def plan(cfg):
+    """The disk plan without launching: the projection for this config, and for each N in cfg "plan_steps"."""
+    print(json.dumps({"steps": total_steps(cfg), "boxes": disk_need(cfg)}, indent=1))
+    for n in cfg.get("plan_steps", []):
+        c = json.loads(json.dumps(cfg))
+        ho = c.get("handover")
+        if ho:
+            # the handover at the same fraction of the run
+            at = max(0, min(n - 2, round(ho["at"] * n / total_steps(cfg))))
+            ho["at"], c["steps"], ho["steps_after"] = at, at + 1, n - at - 1
+        else:
+            c["steps"] = n
+        print(json.dumps({"steps": n, "boxes": disk_need(c)}, indent=1))
+
+def pause_file(d):
+    return f"{d}/PAUSE"
 
 def launch(cfg, seats_only=False, with_new=True):
     N, L, F, d = cfg["prof"]
@@ -184,6 +267,7 @@ def launch(cfg, seats_only=False, with_new=True):
             args += " --vault"
         if s.get("archive"):
             args += f" --proof-archive {sd}/archive"
+        args += f" --pause-file {pause_file(sd)}"
         if s.get("listen"):
             args += f" --listen {s['listen']}"
         if s.get("extra"):
@@ -206,6 +290,7 @@ def new_args(cfg, s, j):
         a += " --vault"
     if s.get("archive"):
         a += f" --proof-archive {new_dir(cfg, s, j)}/archive"
+    a += f" --pause-file {pause_file(new_dir(cfg, s, j))}"
     if s.get("extra"):
         a += " " + " ".join(s["extra"])
     return a
@@ -376,6 +461,25 @@ def drive(cfg):
     win = next((cfg["flags"][k + 1] for k, x in enumerate(cfg.get("flags", [])) if x == "--pause-utc"), None)
     ho = cfg.get("handover")
     s0 = cfg["seats"][0]
+    def active():
+        if phase(cfg) == "new":
+            return [(s["host"], new_dir(cfg, s, j), j) for j, s in enumerate(ho["new_seats"])]
+        return [(s["host"], seat_dir(cfg, s, i), i) for i, s in enumerate(cfg["seats"])]
+    def done_steps():
+        h, d, _ = active()[0]
+        last = sh(h, f"ls {d}/D 2>/dev/null | sed -n 's/^step_\\([0-9]*\\)_P0.json$/\\1/p' | sort -n | tail -1", check=False)
+        return int(last) + 1 if last.isdigit() else (ho["at"] + 1 if phase(cfg) == "new" else 0)
+    def disk_low():
+        # the remaining run against every filesystem's line: low means it would end under its line
+        try:
+            low = [r for r in disk_need(cfg, done_steps()) if r["after_gb"] < r["line_gb"]]
+        except SystemExit as e:
+            ev(f"disk check failed: {e}")
+            return False
+        if low:
+            ev("disk low: " + json.dumps(low))
+        return bool(low)
+    next_disk = 0.0
     if sh(s0["host"], f"test -f {seat_dir(cfg, s0, 0)}/serve0.pid && echo y || echo n", check=False) == "n":
         launch(cfg)
         ev("launched")
@@ -398,6 +502,13 @@ def drive(cfg):
                 seats = [(s["host"], new_dir(cfg, s, j), f"new{j}", j) for j, s in enumerate(ho["new_seats"])]
             live = [alive(h, d, n) for h, d, n, _ in seats]
             if any(live):
+                if time.time() >= next_disk:
+                    next_disk = time.time() + cfg.get("disk_poll_s", 600)
+                    if disk_low():
+                        # every live seat of the committee asks for the pause at the next step boundary
+                        for h, d, _ in active():
+                            sh(h, f"touch {pause_file(d)}", check=False)
+                        ev("pause files set: the committee checkpoints at the next boundary and waits for disk")
                 continue
             reps = [json.loads(sh(h, f"cat {d}/D/serve_P{i}.json 2>/dev/null || echo null", check=False) or "null") for h, d, n, i in seats]
             if ph == "old" and ho:
@@ -410,6 +521,13 @@ def drive(cfg):
                 ev(f"paused at step {reps[0]['next_step']} ({ph} committee)")
                 while win and in_window(win):
                     time.sleep(60)
+                while any(sh(h, f"test -e {pause_file(d)} && echo y || echo n", check=False) == "y" for h, d, _ in active()):
+                    if not disk_low():
+                        for h, d, _ in active():
+                            sh(h, f"rm -f {pause_file(d)}", check=False)
+                        ev("disk back above every line: pause files removed")
+                        break
+                    time.sleep(cfg.get("disk_poll_s", 600))
                 resume(cfg)
                 ev("resumed")
                 continue
@@ -430,4 +548,4 @@ if __name__ == "__main__":
     if sys.argv[2] == "launch-seats":
         launch(cfg, seats_only=True)
         sys.exit(0)
-    {"setup": setup, "check": check, "gate": disk_gate, "resume": resume, "launch": launch, "launch-new": launch_new, "drive": drive, "status": status, "stop": stop, "collect": collect}[sys.argv[2]](cfg)
+    {"setup": setup, "check": check, "gate": disk_gate, "plan": plan, "resume": resume, "launch": launch, "launch-new": launch_new, "drive": drive, "status": status, "stop": stop, "collect": collect}[sys.argv[2]](cfg)

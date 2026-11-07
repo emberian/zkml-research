@@ -15,12 +15,13 @@
 //!       DIR/cert_I.der (public; copy it to every seat)
 //!   darkstep serve I N L F_bits d DIR HOST:PORT HOST:PORT HOST:PORT --tls TLSDIR --owner HOST:PORT --steps K
 //!       [--gate T] [--program harness|gen6] [--tape FILE | --tapes PATTERN] [--owner-msgs PATTERN] [--resume]
-//!       [--listen HOST:PORT] [--pause-utc HH:MM-HH:MM] [--timeout SECS] [--ret-primes K]
+//!       [--listen HOST:PORT] [--pause-utc HH:MM-HH:MM] [--pause-file PATH] [--timeout SECS] [--ret-primes K]
 //!       one custodian for K steps over mutual TLS (pinned certificates in TLSDIR: tls_I.key, cert_{0,1,2,owner}.der).
 //!       Its weight shares stay in this process; each step's inputs come from the owner; after every step it writes
 //!       DIR/step_<k>_P<I>.json and its own checkpoint DIR/ckpt_P<I>.bin. PATTERN holds {k} (the step), or {c} and {j} with --chunk-steps S [--chunk-first K0] (chunk (k-K0)/S, step (k-K0)%S in it). With
 //!       --pause-utc, custodian 0 decides at each step boundary whether the run pauses (all three checkpoint and exit
-//!       with code 3); --resume continues from the checkpoint. --ret-primes K (party, serve, local): HE returns
+//!       with code 3); with --pause-file PATH ({i} = I), any custodian whose file exists at a step boundary pauses
+//!       the committee the same way (the driver's disk line); --resume continues from the checkpoint. --ret-primes K (party, serve, local): HE returns
 //!       modulus-switched to K primes with c0 only where decrypted (K = 2; every custodian the same)
 //!   darkstep relay I HOST:PORT HOST:PORT HOST:PORT --tls TLSDIR --local 127.0.0.1:P --forward-base L
 //!       a resumable TCP relay over the TLS mesh (src/relay.rs): local connections to 127.0.0.1:L+j reach peer j's

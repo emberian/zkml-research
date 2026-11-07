@@ -1239,17 +1239,14 @@ fn test_deal(args: &[String]) {
 /// The run's proof profile against its tapes, before step 0 (or the first step after a resume or a join): the first
 /// step's tape file (--tapes) must hold exactly the step's entries (darkprep's schedule for this program) plus the
 /// proof section this profile needs (run::step_section). A chunk made for another profile is refused here instead
-/// of dying after its step.
+/// of dying after its step. A sealed tape's count is read inside its seal (serve::tape_len).
 fn check_profile(args: &[String], first: usize) -> Result<(), String> {
     if !args.iter().any(|a| a == "--prove") {
         return Ok(());
     }
     let Some(pat) = flag(args, "--tapes") else { return Ok(()) };
     let path = serve::step_path(args, &pat, first);
-    let mut hdr = [0u8; 24];
-    use std::io::Read;
-    std::fs::File::open(&path).and_then(|mut f| f.read_exact(&mut hdr)).map_err(|e| format!("{path}: {e}"))?;
-    let n = u64::from_le_bytes(hdr[16..24].try_into().unwrap()) as usize;
+    let n = serve::tape_len(&path)?;
     let pf = darkstep::node::prof(&args[3..7]);
     darkproof::field::set_p(pf.t);
     let pr = profile_of(args);

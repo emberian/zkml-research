@@ -4,7 +4,8 @@
     record.py LAYOUT --steps N --handover-at K --chunks NAME [--chunk-steps S] [--third HOST,IP,ROOT] > RUN.json
 
 LAYOUT:
-  hbox    forge (seat 0) + bb2 (seat 1) + hbox (seat 2; swarm-build, SWARM_MEM_MAX=16G, /othersys, disk line 25 GB)
+  hbox    forge (seat 0) + bb2 (seat 1) + hbox (seat 2; swarm-build, SWARM_MEM_MAX=16G, /othersys, disk line 30 GB;
+          nothing is written to hbox's root fs)
   wired   forge + bb2 + a wired third box (--third HOST,IP,ROOT; the default is a placeholder that run.py's gate
           and check refuse, so a config cannot launch before ember names the box)
 One custodian per machine in each committee: the new committee is three new processes, one on each of the same three
@@ -14,7 +15,8 @@ What it pins (the posture of the run; change it here, not by hand in the JSON):
 - profile ledger-x2de with RS by default (F_{p^2} challenges, cuts D and E, one masked zero test per truncation; the genesis record carries "EXT": 2 and Ledger::open refuses another);
 - every tape single-use (the box registry), checked against the profile before step 0, waited for (--tape-wait)
   when prep runs behind, wiped once spent (--wipe-spent);
-- pipelined proofs on their own mesh per committee; every bundle archived on bb2 (latest only elsewhere);
+- pipelined proofs on their own mesh per committee; every bundle archived on one seat per committee (--archive-on, forge
+  by default; latest only elsewhere); the disk plan (run.py plan / gate / drive's disk pause) against every box's line;
 - forge's nightly 10:00-11:00 UTC: custodian 0 votes the pause, run.py drive resumes after the window;
 - the handover after step K (the new committee started by drive after step K - 1, launch_new "deferred");
 - the release at the end, from the release's own tape on each box (loaded after the steps' tape is freed);
@@ -23,7 +25,7 @@ What it pins (the posture of the run; change it here, not by hand in the JSON):
 Chunk paths follow the prep lane's layout ROOT/chunks/NAME-P<I>/step-<j>/{tape_I.bin,owner-msg-P<I>.bin} with
 --chunk-steps S steps per chunk dir: NAME-c<c>-P<I> for the old committee's chunk c (from step 0) and NAME-n-c<c>-P<I>
 for the new committee's (from step K + 1);
-the handover tapes NAME-ho-P<I>/step-0/tape_I.bin and the release tapes NAME-rel-P<I>/release_I.bin.
+the handover tapes NAME-ho-P<I>/step-0/tape_I.bin and the release tapes NAME-rel-P<I>/step-0/tape_I.bin.
 """
 import argparse, json, sys
 
@@ -35,7 +37,7 @@ FORGE = {"host": "dregg-forge", "ip": "178.105.4.114", "root": "/srv/lanes/dl-ge
 BB2 = {"host": "bb2", "ip": "2.31.77.40", "root": "/home/build/lanes/dl-gen6-deploy", "prep": "/home/build/lanes/dl-gen6-prep",
        "scope": "systemd-run --user --scope -p MemoryMax=16G", "env": "DS_THREADS=16"}
 HBOX = {"host": "hbox", "ip": None, "root": "/othersys/lanes/dl-gen6-deploy", "prep": "/othersys/lanes/dl-gen6-prep",
-        "scope": "env SWARM_MEM_MAX=16G swarm-build", "env": "DS_THREADS=16", "disk_line_gb": 25}
+        "scope": "env SWARM_MEM_MAX=16G swarm-build", "env": "DS_THREADS=16", "disk_line_gb": 30}
 
 def main():
     ap = argparse.ArgumentParser()
@@ -47,6 +49,8 @@ def main():
     ap.add_argument("--chunk-steps", type=int, default=2)
     ap.add_argument("--third", default="NEWBOX,0.0.0.0,/srv/lanes/dl-gen6-deploy", help="HOST,IP,ROOT of the wired third box")
     ap.add_argument("--name", default="record")
+    ap.add_argument("--archive-on", default="dregg-forge", help="the box whose seat keeps every bundle (one seat per committee); "
+                    "forge by default: at ~47.5 MB a step, 2,000 steps are ~89 GiB, which only forge holds above its line (run.py plan)")
     ap.add_argument("--profile", default="ledger-x2de", help="the proof profile (the coordinator's: ledger-x2de with the program flag RS)")
     ap.add_argument("--no-rs", action="store_true", help="without the program flag RS (its tapes differ: K + 1 - s bits per truncation)")
     ap.add_argument("--key-dir", default=None, help="the old committee's MP-SPDZ runtime dir name in prep's ROOT (e.g. wired: "
@@ -91,13 +95,13 @@ def main():
              "extra": ["--proof-mesh", proof_new if new else proof_old]}
         if b.get("disk_line_gb"):
             s["disk_line_gb"] = b["disk_line_gb"]
-        if b is BB2 and i == 1:
+        if b["host"] == a.archive_on and i == [x["host"] for x in boxes].index(a.archive_on):
             s["archive"] = True
         if new:
             s["handover_tape"] = f"{b['prep']}/chunks/{a.chunks}-ho-P{i}/step-0/tape_{i}.bin"
             if not a.no_release:
                 s["extra"] += ["--release-data", f"{b['root']}/data/mnist",
-                               "--release-tape", f"{b['prep']}/chunks/{a.chunks}-rel-P{i}/release_{i}.bin"]
+                               "--release-tape", f"{b['prep']}/chunks/{a.chunks}-rel-P{i}/step-0/tape_{i}.bin"]
         elif a.key_dir:
             k = f"{b['prep']}/{a.key_dir}{i}/mpspdz"
             s["extra"] += ["--erase-extra", f"{k}/Player-Data/Mascot-Secrets-p-61-{a.key_hash}-P{i}-3",
@@ -105,7 +109,7 @@ def main():
         return s
     cfg = {
         "name": a.name, "out": OUT, "prof": [16384, 4, 175, 4096], "t": 2305843009210515457, "gate": 309, "program": "gen6",
-        "steps": a.handover_at + 1, "bundle_bytes": 76_000_000,
+        "steps": a.handover_at + 1,
         "flags": common + ["--chunk-steps", str(a.chunk_steps)],
         "genesis_cfg": GEN, "owner_cfg": f"{OUT}/owner_cfg_bb2.json",
         "seats": [seat(b, i, False) for i, b in enumerate(boxes)],
