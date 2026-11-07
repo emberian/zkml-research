@@ -1,0 +1,13 @@
+[package]
+name = "darktrain"
+version = "0.1.0"
+edition.workspace = true
+description = "Plaintext training of the dark-learning integer model (step_spec's program) on a real dataset: the exact integer trainer, the float baseline of the same architecture, the data owner's encoder, and the custodians' evaluation."
+
+[dependencies]
+darkstep = { path = "../darkstep" }
+pycompat = { path = "../pycompat" }
+rayon = "1.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
