@@ -489,9 +489,18 @@ pub fn dial(s: &Session, addr: SocketAddr, cfg: Arc<rustls::ClientConfig>, j: us
     }
     let peer_expected = resume_dialer(&mut sock, &mut c, s.recv_next.load(Ordering::Relaxed)).map_err(|e| format!("resume with party {j}: {e}"))?;
     sock.set_read_timeout(None).ok();
-    sock.set_write_timeout(Some(Duration::from_secs(120))).ok();
+    sock.set_write_timeout(Some(write_timeout())).ok();
     s.install(sock, c, peer_expected);
     Ok(())
+}
+
+/// An established link's write timeout: 120 s, or DS_WRITE_TIMEOUT_SECS. A write blocked longer than this takes the
+/// link down (a resumable outage, within DS_RECONNECT_SECS). A run whose peer is stopped in place for its box's
+/// nightly window (SIGSTOP, then SIGCONT ~58 min later) sets both past the window: the stopped kernel keeps
+/// acknowledging with a zero window, so the blocked write simply waits and no link drops (a drop in a check phase
+/// would abort the step).
+fn write_timeout() -> Duration {
+    Duration::from_secs(std::env::var("DS_WRITE_TIMEOUT_SECS").ok().and_then(|s| s.parse().ok()).unwrap_or(120))
 }
 
 /// Accept one dialer: TLS server with the pinned peer certificates; identify it; resume its session.
@@ -509,7 +518,7 @@ pub fn accept_one(mut sock: TcpStream, scfg: Arc<rustls::ServerConfig>, idx: &[(
     let mut c = rustls::Connection::Server(c);
     let peer_expected = resume_acceptor(&mut sock, &mut c, || s.recv_next.load(Ordering::Relaxed)).map_err(|e| format!("resume with party {j}: {e}"))?;
     sock.set_read_timeout(None).ok();
-    sock.set_write_timeout(Some(Duration::from_secs(120))).ok();
+    sock.set_write_timeout(Some(write_timeout())).ok();
     s.install(sock, c, peer_expected);
     Ok(j)
 }

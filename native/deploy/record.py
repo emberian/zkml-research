@@ -17,7 +17,8 @@ What it pins (the posture of the run; change it here, not by hand in the JSON):
   when prep runs behind, wiped once spent (--wipe-spent);
 - pipelined proofs on their own mesh per committee; every bundle archived on one seat per committee (--archive-on, forge
   by default; latest only elsewhere); the disk plan (run.py plan / gate / drive's disk pause) against every box's line;
-- forge's nightly 10:00-11:00 UTC: custodian 0 votes the pause, run.py drive resumes after the window;
+- forge's nightly 10:00-11:00 UTC: its processes stopped in place by PID file (SIGSTOP 10:00:00, SIGCONT 10:58:30,
+  nightly.sh on forge), the peers waiting on their receives (--timeout 7200);
 - the handover after step K (the new committee started by drive after step K - 1, launch_new "deferred");
 - the release at the end, from the release's own tape on each box (loaded after the steps' tape is freed);
 - every state file (checkpoint, carry, TLS key) sealed under the epoch's file key (darkhand::vault), destroyed at
@@ -33,11 +34,11 @@ GEN = "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/train_ge
 OUT = "/private/tmp/claude-501/-Users-ember-dev-aidev/78fef112-a52f-425f-8503-f3fa24ff087c/scratchpad/dl-gen5/deploy2/runs"
 
 FORGE = {"host": "dregg-forge", "ip": "178.105.4.114", "root": "/srv/lanes/dl-gen6-deploy", "prep": "/srv/lanes/dl-gen6-prep",
-         "scope": "systemd-run --scope -p MemoryMax=12G", "env": "DS_THREADS=16"}
+         "scope": "systemd-run --scope -p MemoryMax=12G", "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500"}
 BB2 = {"host": "bb2", "ip": "2.31.77.40", "root": "/home/build/lanes/dl-gen6-deploy", "prep": "/home/build/lanes/dl-gen6-prep",
-       "scope": "systemd-run --user --scope -p MemoryMax=16G", "env": "DS_THREADS=16"}
+       "scope": "systemd-run --user --scope -p MemoryMax=16G", "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500"}
 HBOX = {"host": "hbox", "ip": None, "root": "/othersys/lanes/dl-gen6-deploy", "prep": "/othersys/lanes/dl-gen6-prep",
-        "scope": "env SWARM_MEM_MAX=16G swarm-build", "env": "DS_THREADS=16", "disk_line_gb": 30}
+        "scope": "env SWARM_MEM_MAX=16G swarm-build", "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500", "disk_line_gb": 30}
 
 def main():
     ap = argparse.ArgumentParser()
@@ -70,7 +71,7 @@ def main():
     else:
         h, ip, root = a.third.split(",")
         third = {"host": h, "ip": ip, "root": root, "prep": root.replace("dl-gen6-deploy", "dl-gen6-prep"),
-                 "scope": "systemd-run --scope -p MemoryMax=16G", "env": "DS_THREADS=16"}
+                 "scope": "systemd-run --scope -p MemoryMax=16G", "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500"}
     boxes = [FORGE, BB2, third]
     ip = lambda b: b["ip"] or "0.0.0.0"
     base = 28600
@@ -84,7 +85,7 @@ def main():
     # --ret-round: the switched returns rounded to their noise bits (run7 through hbox: 0.59 of the bytes; run13: the
     # rounded step proved and accepted at d = 4096, and its release's C equals the plaintext twin's)
     common = ["--ret-primes", "2", "--ret-round", "--prove", "--profile", a.profile] + ([] if a.no_rs else ["--rs"]) + [ "--wipe-spent", "--tape-wait", "7200",
-              "--pause-utc", "10:00-11:00", "--timeout", "3600", "--pipeline-proofs"] + \
+              "--timeout", "7200", "--pipeline-proofs"] + \
              (["--nat", "2", "--nat6", "2,5"] if a.layout == "hbox" else [])
     def bin_(b):
         return f"{b['root']}/ws-target-run/release"
@@ -121,6 +122,9 @@ def main():
                      "new_seats": [seat(b, i, True) for i, b in enumerate(boxes)],
                      "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1)] + ([] if a.no_release else ["--release"])},
         "drive_poll_s": 60,
+        # forge's nightly (fn2, 10:00-11:00 UTC): every process of the run on forge is stopped in place by PID file
+        # (SIGSTOP 10:00:00, SIGCONT 10:58:30, nightly.sh on forge) and its peers wait on their receives (--timeout 7200)
+        "nightly": {"host": "dregg-forge", "stop": "100000", "cont": "105830"},
         "disk": {"lookahead": (a.prep_max_ready + 1) * a.chunk_steps},
         "vault": True,
     }
