@@ -19,3 +19,5 @@ rate x elapsed estimate is beside it).
 | end | 2026-11-06 23:40Z | 59484211 | 56442968 H100 SXM | 2.278 | accel-h100-all-01 | $0.34 | est $0.30 over 7.8 min; destroyed+verified True; reason TimeoutExpired(['ssh', '-i', '/Users/ember/.ssh/id_ed25519', '-p', '29142', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'UserKnownHostsFile=/Users/ember/.cache/accel-ready/vast_known_hosts.5948421; credit after $24.58 |
 | start | 2026-11-06 23:41Z | 59485029 | 56442968 H100 SXM | 2.278 | accel-h100-all-02 |  | cap $4.00, watchdog 95 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $24.55 |
 | end | 2026-11-06 23:56Z | 59485029 | 56442968 H100 SXM | 2.278 | accel-h100-all-02 | $0.75 | est $0.59 over 15.5 min; destroyed+verified True; reason ok; credit after $23.80 |
+| start | 2026-11-07 00:19Z | 59488860 | 59433350 H100 SXM | 2.335 | accel-h100-mma-03 |  | cap $1.50, watchdog 39 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $23.67 |
+| end | 2026-11-07 00:29Z | 59488860 | 59433350 H100 SXM | 2.335 | accel-h100-mma-03 | $0.38 | est $0.38 over 9.9 min; destroyed+verified True; reason ok; credit after $23.29 |

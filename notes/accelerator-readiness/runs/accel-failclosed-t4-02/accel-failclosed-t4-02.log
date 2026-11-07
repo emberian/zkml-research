@@ -1,0 +1,16 @@
+[{"stream_name":"stdout","time":160.901816925,"data":"tower256_good rc 0 ok True 159.0 s\n"}
+,{"stream_name":"stdout","time":414.101922568,"data":"bfv_good rc 0 ok True 253.2 s\n"}
+,{"stream_name":"stdout","time":515.151689402,"data":"mma_good rc 0 ok True 101.0 s\n"}
+,{"stream_name":"stdout","time":550.825760746,"data":"tower256_broken_build rc 101 ok True 35.7 s\n"}
+,{"stream_name":"stdout","time":587.035127115,"data":"bfv_broken_build rc 1 ok True 36.2 s\n"}
+,{"stream_name":"stdout","time":587.126801399,"data":"mma_broken_manifest rc 1 ok True 0.1 s\n"}
+,{"stream_name":"stdout","time":677.961759699,"data":"mma_broken_build rc 1 ok True 90.8 s\n"}
+,{"stream_name":"stdout","time":677.962593709,"data":"ALL_OK True\n"}
+,{"stream_name":"stdout","time":679.750915686,"data":"ACCEL_JOB_DONE rc=0 killed=None elapsed=678.2\n"}
+,{"stream_name":"stderr","time":682.099446306,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":682.09947979,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":682.490221086,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":682.490259834,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":684.442015773,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":685.5096657510001,"data":"[NbConvertApp] Writing 790366 bytes to __results__.html\n"}
+]

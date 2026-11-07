@@ -1,0 +1,6 @@
+{
+"workload": "mma", "shrink": 0,
+"start_utc": "2026-11-07T00:21:05Z",
+"host": "466f58a7a111", "kernel": "6.8.0-146-generic",
+"gpu": "NVIDIA H100 80GB HBM3, 81559 MiB, 615.71.09, 9.0;"
+}
