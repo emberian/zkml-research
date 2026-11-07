@@ -93,13 +93,18 @@ def budget(d=4096, steps=10**6, N=16384, L=4, F_bits=175, kappa=40, mac_ext=1, e
 
 GEN6_TRUNCS = ((19, "z1"), (19, "z2"), (8, "e"), (19, "bg"))     # GEN6: shifts 11/7/8, bounds 2^19/2^8/2^19
 GEN6_STEP = dict(objs=4_482_247, truncs=16_384, owner_inputs=8_192, lg_batches=54.7, lg_drowned=13_132)
+XT_OBJ_FACTOR = {False: 1.0978, True: 1.081}   # measured +9.78% per step (darkprep plan), +8.1% for the release
 GEN6_RELEASE = dict(objs=63_446_882, truncs=213_980, owner_inputs=0, lg_batches=775, lg_drowned=185_880)
 
 
-def gen6_terms(c, backend, p, kappa=40, S=60):
-    """One step's (or the release's) distance terms for the deployed gen-6 run."""
+def gen6_terms(c, backend, p, kappa=40, S=60, xt=False):
+    """One step's (or the release's) distance terms for the deployed gen-6 run. xt: exact truncation (genesis flag
+    "XT", notes/dark-learning-gen6/xtrunc.md): masks uniform on [0, p), so the opened values are perfectly hidden and
+    the trunc term is 0; XT adds 9.7% triple-equivalents (61 bits plus a 22-product r < p check per mask)."""
     k = math.log2(p)
-    t = dict(trunc=c["truncs"] * 2.0 ** -kappa, mac=2.0 / p)
+    if xt:
+        c = dict(c, objs=c["objs"] * XT_OBJ_FACTOR[c is GEN6_RELEASE or c.get("_release", False)])
+    t = dict(trunc=0.0 if xt else c["truncs"] * 2.0 ** -kappa, mac=2.0 / p)
     if backend == "mascot5":
         t["prep_combine"] = c["objs"] * 2.0 ** -prep_combine_bits(k, 5)
         t["prep_sacrifice"] = c["objs"] * 2.0 ** -k
@@ -112,7 +117,7 @@ def gen6_terms(c, backend, p, kappa=40, S=60):
     return t
 
 
-def gen6(steps=2000, N=16384, L=4, F_bits=175, d=4096, kappa=40):
+def gen6(steps=2000, N=16384, L=4, F_bits=175, d=4096, kappa=40, xt=False):
     for Kb, _w in GEN6_TRUNCS:
         assert (1 << (Kb + kappa)) + (1 << (Kb + 1)) < 2 ** 61, f"kappa {kappa} wraps the field at K = {Kb}"
     pr = bfv.ntt_primes(61, L + 1, 2 * N)
@@ -120,13 +125,13 @@ def gen6(steps=2000, N=16384, L=4, F_bits=175, d=4096, kappa=40):
     he = K.distances(d, N, L, F_bits, steps)
     out = {}
     for backend in ("mascot5", "lowgear"):
-        st = gen6_terms(GEN6_STEP, backend, p, kappa)
+        st = gen6_terms(GEN6_STEP, backend, p, kappa, xt=xt)
         st["he_stat"] = 2.0 ** he["log2_stat_per_step"]
         st["he_rlwe"] = he["returns"] * 2.0 ** -128
-        rel = gen6_terms(GEN6_RELEASE, backend, p, kappa)
+        rel = gen6_terms(GEN6_RELEASE, backend, p, kappa, xt=xt)
         run = {k: min(1.0, v * steps + rel.get(k, 0.0)) for k, v in st.items()}
         total = min(1.0, sum(v * steps for v in st.values()) + sum(rel.values()))
-        out[backend] = dict(steps=steps, d=d, p=p, kappa=kappa,
+        out[backend] = dict(steps=steps, d=d, p=p, kappa=kappa, exact_trunc=xt,
                             log2_per_step={k: log2(v) for k, v in st.items()},
                             log2_release={k: log2(v) for k, v in rel.items()},
                             log2_run={k: log2(v) for k, v in run.items()},
@@ -137,11 +142,12 @@ def gen6(steps=2000, N=16384, L=4, F_bits=175, d=4096, kappa=40):
 def main():
     if sys.argv[1:2] == ["gen6"]:
         steps = int(sys.argv[2]) if len(sys.argv) > 2 else 2000
-        out = gen6(steps)
+        xt = "--xt" in sys.argv
+        out = gen6(steps, xt=xt)
         for b, v in out.items():
-            print(f"gen6 {b:8s} {steps} steps + release: total 2^{v['log2_run_total']:>7}  dominant {v['dominant']}"
+            print(f"gen6{' XT' if xt else ''} {b:8s} {steps} steps + release: total 2^{v['log2_run_total']:>7}  dominant {v['dominant']}"
                   f"\n  per step {v['log2_per_step']}\n  release  {v['log2_release']}")
-        json.dump(out, open(f"privacy_budget_gen6_{steps}.json", "w"), indent=1)
+        json.dump(out, open(f"privacy_budget_gen6_{steps}{'_xt' if xt else ''}.json", "w"), indent=1)
         return
     a = [int(x) for x in sys.argv[1:]]
     d = a[0] if a else 4096
