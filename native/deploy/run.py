@@ -87,6 +87,11 @@ def setup(cfg):
             scp_to(os.path.join(nloc, f"cert_{j}.der"), cfg["owner"]["host"], f"{od}/tls-next/")
     print("setup: identities made per seat; certificates distributed")
 
+def consumed_log(s):
+    """The box's single-use registry: ROOT/consumed.jsonl, one per box. A seat may name another ("consumed_log") only
+    for public-seed test-dealer tapes (a memory measurement), never for real preprocessing."""
+    return s.get("consumed_log", f"{s['root']}/consumed.jsonl")
+
 def new_dir(cfg, s, j):
     return f"{s['root']}/{cfg['name']}/new{j}"
 
@@ -146,7 +151,7 @@ def disk_gate(cfg):
         raise SystemExit("disk gate: a box would fall under its line; not launching (tell the coordinator)")
     return report
 
-def launch(cfg, seats_only=False):
+def launch(cfg, seats_only=False, with_new=True):
     N, L, F, d = cfg["prof"]
     gate = disk_gate(cfg)
     os.makedirs(os.path.join(cfg["out"], cfg["name"]), exist_ok=True)
@@ -170,7 +175,7 @@ def launch(cfg, seats_only=False):
         if cfg.get("genesis_cfg"):
             args += f"--genesis-cfg {sd}/genesis.json "
         args += " ".join(cfg.get("flags", []))
-        args += f" --consumed-log {s['root']}/consumed.jsonl"
+        args += f" --consumed-log {consumed_log(s)}"
         if s.get("archive"):
             args += f" --proof-archive {sd}/archive"
         if s.get("listen"):
@@ -181,6 +186,26 @@ def launch(cfg, seats_only=False):
         if ho:
             args += f" --handover-at {ho['at']} --mesh6 {ho['mesh6']} --tls6 {sd}/tls6"
         start(s["host"], sd, f"serve{i}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/{exe} {args}", env=s.get("env", ""))
+    if cfg.get("handover") and with_new and cfg["handover"].get("launch_new", "at_start") == "at_start":
+        launch_new(cfg)
+    print("launched; status with: run.py RUN.json status")
+
+def new_args(cfg, s, j):
+    a = ""
+    if cfg.get("genesis_cfg"):
+        a += f"--genesis-cfg {new_dir(cfg, s, j)}/genesis.json "
+    a += " ".join(cfg["handover"].get("flags", []))
+    a += f" --consumed-log {consumed_log(s)}"
+    if s.get("archive"):
+        a += f" --proof-archive {new_dir(cfg, s, j)}/archive"
+    if s.get("extra"):
+        a += " " + " ".join(s["extra"])
+    return a
+
+def launch_new(cfg):
+    """The new committee's join processes (they wait for the old seats on the six-party mesh after step `at`)."""
+    N, L, F, d = cfg["prof"]
+    o = cfg["owner"]
     ho = cfg.get("handover")
     if ho:
         naddrs = " ".join(s["addr"] for s in ho["new_seats"])
@@ -189,14 +214,8 @@ def launch(cfg, seats_only=False):
             args = f"join {j} {N} {L} {F} {d} {nd}/D {naddrs} --tls {nd}/tls --owner {o['addr']} --steps {ho['steps_after']} " \
                    f"--after-step {ho['at']} --gate {cfg['gate']} --program {cfg['program']} --tapes {s['tapes']} " \
                    f"--owner-msgs {s['owner_msgs']} --handover-tape {s['handover_tape']} --mesh6 {ho['mesh6']} --tls6 {nd}/tls6 "
-            if cfg.get("genesis_cfg"):
-                args += f"--genesis-cfg {nd}/genesis.json "
-            args += " ".join(ho.get("flags", []))
-            args += f" --consumed-log {s['root']}/consumed.jsonl"
-            if s.get("archive"):
-                args += f" --proof-archive {nd}/archive"
+            args += new_args(cfg, s, j)
             start(s["host"], nd, f"new{j}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/dl-custodian {args}", env=s.get("env", ""))
-    print("launched; status with: run.py RUN.json status")
 
 def procs(cfg):
     yield cfg["owner"]["host"], owner_dir(cfg), "owner"

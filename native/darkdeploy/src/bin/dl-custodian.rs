@@ -583,6 +583,8 @@ impl Prove {
         let m: usize = flag(&args, "--release-m").map(|x| x.parse().unwrap()).or(pinned.map(|x| x as usize)).ok_or("release: no M (--release-m or the cfg's release.M)")?;
         let pol = darkproof::run::mnist_policy(cfg, &data, m)?;
         if let Some(f) = flag(&args, "--release-tape") {
+            // the steps' tape is spent: freed (and zeroed by the allocator) before the release's is read
+            st.pt.tape = darkstep::tape::Tape { alpha_i: st.pt.tape.alpha_i, ..Default::default() };
             st.load_tape(serve::read_tape(&f))?;
         }
         let model = self.model.clone();
@@ -937,7 +939,7 @@ fn join_main(args: &[String]) -> i32 {
 }
 
 /// TEST ONLY: `dl-custodian test-deal CFG STEPS I DIR --genesis-cfg GEN [--program gen6] [--profile P] [--release]
-/// [--public]`: seat I's tape from the public-seed test dealer (darkstep's Dealer, kept to seat I's entries) for STEPS
+/// [--public] [--split-release]`: seat I's tape from the public-seed test dealer (darkstep's Dealer, kept to seat I's entries) for STEPS
 /// carried steps after a public genesis, each with its proof section, then (with --release) the release section
 /// (darkproof::run::deal_release, policy mnist_policy at the genesis cfg's M), in the order a custodian consumes
 /// them: DIR/tape_I.bin. With --public also the owner's broadcasts DIR/public_step<k>.bin for `dl-owner
@@ -984,6 +986,7 @@ fn test_deal(args: &[String]) {
         }
     }
     let mut rel = json!(null);
+    let steps_len = dl.tapes[i].len();
     if args.iter().any(|a| a == "--release") {
         let gm = serde_json::from_slice::<Value>(&gbytes).unwrap()["release"]["M"].as_u64().expect("the genesis cfg's release.M") as usize;
         let pol = darkproof::run::mnist_policy(&gbytes, Path::new(&c.data), gm).unwrap();
@@ -991,8 +994,19 @@ fn test_deal(args: &[String]) {
         darkproof::run::deal_release(&mut dl, d, gm, pol.ncls, prm, pol.kc, &lp, &tables, &pol);
         rel = json!({"M": gm, "entries": dl.tapes[i].len() - before, "proof_section": darkproof::run::release_section(&lp, d, gm, prm, &pol)});
     }
-    dl.tapes[i].write_to(&mut std::io::BufWriter::new(std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();
-    println!("{}", json!({"party": i, "steps": steps, "tape_len": dl.tapes[i].len(), "release": rel}));
+    let write = |t: &darkstep::tape::Tape, name: String| {
+        t.write_to(&mut std::io::BufWriter::new(std::fs::File::create(dir.join(name)).unwrap())).unwrap();
+    };
+    let t = &dl.tapes[i];
+    if args.iter().any(|a| a == "--split-release") && t.len() > steps_len {
+        // as in a deployment: the steps' tape and the release's (loaded only when the release starts)
+        let part = |r: std::ops::Range<usize>| darkstep::tape::Tape { alpha_i: t.alpha_i, tags: t.tags[r.clone()].to_vec(), sh: t.sh[r.clone()].to_vec(), mac: t.mac[r].to_vec() };
+        write(&part(0..steps_len), format!("tape_{i}.bin"));
+        write(&part(steps_len..t.len()), format!("release_{i}.bin"));
+    } else {
+        write(t, format!("tape_{i}.bin"));
+    }
+    println!("{}", json!({"party": i, "steps": steps, "tape_len": dl.tapes[i].len(), "steps_len": steps_len, "release": rel}));
 }
 
 /// The run's proof profile against its tapes, before step 0 (or the first step after a resume or a join): the first
