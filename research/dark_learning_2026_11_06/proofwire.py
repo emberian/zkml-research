@@ -279,7 +279,7 @@ def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None,
                 if p != he_field():
                     raise ParseError("the deployed program's field is the HE profile's plaintext modulus")
                 prog = CH.Prog.of(program)
-                sym = CH.replay(p, public, d, prog.tables(p), prog, carried=expect_ctx[2] > 1)
+                sym = CH.replay(p, public, d, prog.tables(p), prog, carried=expect_ctx[2] > 1 or bool(program.get("PG")))
             elif program:
                 raise ParseError("a plain-SPDZ program other than the harness's is not supported")
             else:
@@ -385,6 +385,32 @@ def verify_release(p, blob, expect_ctx, head_roots, X, labels, program, ncls, d_
         return False, f"release: {why}", None
     return True, "accept", (M, C)
 
+# ----------------------------------------------------------------------------------------------- public genesis
+def public_weights(cfg_bytes):
+    """The public initial weights pinned by a darktrain cfg json (native run::public_weights): (d, W1, W2) with
+    W = train_owner.init(cfg).weights(d), d x d integer rows."""
+    import train_owner as TO
+    g = json.loads(cfg_bytes)
+    W1, W2 = TO.init(g).weights(g["d"])
+    return g["d"], W1, W2
+
+def public_genesis(p, d, W1, W2, n=3):
+    """Public genesis (program "PG", native run::public_genesis): W enters custody as a public constant (custodian
+    0's share W, the others' 0) committed with PUBLIC coins (SharePCS public=True), so every custodian and every
+    verifier computes the same commitments. Returns (carry: {"W1", "W2"} commitments, step 1's parent; roots: the
+    genesis record's, every custodian's root per matrix)."""
+    carry = {}
+    for k, Wk in (("W1", W1), ("W2", W2)):
+        assert len(Wk) == d and all(len(r) == d for r in Wk), "public genesis: W must be d x d"
+        flat = [v % p for r in Wk for v in r]
+        carry[k] = ZK.ZKPCS(p, [flat] + [[0] * (d * d) for _ in range(n - 1)], k, public=True)
+    return carry, {k: list(c.roots) for k, c in carry.items()}
+
+def public_genesis_shares(p, W, alpha_sh):
+    """The public constant W as custody holds it: element (j, k) is {0: (W_jk, alpha_0 W_jk), 1: (0, alpha_1 W_jk), ...},
+    custodian 0 holding W and every custodian its MAC share alpha_i W (alpha_sh: the MAC key's shares)."""
+    return [[{i: ((v if i == 0 else 0) % p, a * v % p) for i, a in enumerate(alpha_sh)} for v in r] for r in W]
+
 # ----------------------------------------------------------------------------------------------- ledger
 class Ledger:
     """Durable acceptance: one append-only file per model, one JSON record per line, each fsync'd.
@@ -427,6 +453,7 @@ class Ledger:
         self.owner_pk = None if g["owner_pk"] == "none" else bytes.fromhex(g["owner_pk"])
         self.epoch, self.step, self.parent, self.next_leaf, self.custodians = 0, 0, g["roots"], 0, g["custodians"]
         self.released = None
+        self.genesis_roots = g["roots"]
         for no, rec in enumerate(self.recs[1:], 2):
             if self.released is not None:
                 raise RuntimeError(f"ledger line {no}: a record after the release (fail closed)")
@@ -461,6 +488,30 @@ class Ledger:
 
     def head(self):
         return (self.model, self.epoch, self.step + 1), self.parent
+
+    def check_public_genesis(self, cfg_bytes):
+        """Public genesis: check the genesis record against the cfg json it pins (program "PG" = sha256 of the bytes):
+        W = train_owner.init(cfg) is recomputed and committed with public coins (public_genesis); the record's roots
+        must equal those. Until this succeeds the ledger accepts no step and no release. Returns (ok, why)."""
+        want = (self.program or {}).get("PG")
+        if not want:
+            return False, "public genesis refused: the genesis program pins no PG"
+        if hashlib.sha256(cfg_bytes).hexdigest() != want:
+            return False, "public genesis refused: the cfg is not the one the genesis record pins"
+        d, W1, W2 = public_weights(cfg_bytes)
+        if d != self.d:
+            return False, f"public genesis refused: the cfg's d = {d}, the ledger's {self.d}"
+        p = he_field()
+        _, roots = public_genesis(p, d, W1, W2, len(self.custodians))
+        if roots != self.genesis_roots:
+            return False, "public genesis refused: the genesis roots are not the public commitment of the cfg's W"
+        self.pg_verified = roots
+        return True, "accept"
+
+    def _pg_gate(self):
+        if (self.program or {}).get("PG") and getattr(self, "pg_verified", None) != self.genesis_roots:
+            return "public genesis not checked against its cfg (check_public_genesis): nothing accepted"
+        return None
 
     def handover_context(self, custodians):
         import handover as HO
@@ -503,6 +554,8 @@ class Ledger:
             fcntl.flock(f, fcntl.LOCK_EX)
             self.recs = [json.loads(l) for l in open(self.path)]
             self._replay()
+            if self._pg_gate():
+                return False, self._pg_gate()
             if self.released is not None:
                 return False, "the ledger is released: no further release"
             if self.step == 0:
@@ -524,6 +577,8 @@ class Ledger:
             fcntl.flock(f, fcntl.LOCK_EX)          # one acceptor at a time; re-read the head under the lock
             self.recs = [json.loads(l) for l in open(self.path)]
             self._replay()
+            if self._pg_gate():
+                return False, self._pg_gate()
             if self.released is not None:
                 return False, "the ledger is released: no further steps"
             ctx, parent = self.head()

@@ -486,3 +486,103 @@ pub fn colsums(c: &PcsCols, r: usize) -> Vec<Vec<u64>> {
         })
         .collect()
 }
+
+/// A carry checkpoint (secret: the share rows, tails, mask rows and salts): the child commitments a custodian carries
+/// into its next step, written so a resumed custodian process can prove that step. Format: b"DLCARRY1", u32 LE count,
+/// then per entry (in key order): key, label (u32 LE length + bytes each), m, base, opened_lives, max_lives (u32 LE),
+/// ext (u64 LE count + u64 LE words), salts (u32 LE count + 32 bytes each), root (32 bytes). read_carry rebuilds each
+/// tree (and the coset codeword) from ext and salts and refuses a root that differs.
+pub fn write_carry(carry: &std::collections::BTreeMap<String, PcsParty>, out: &mut impl std::io::Write) -> std::io::Result<()> {
+    let u32w = |o: &mut dyn std::io::Write, v: usize| o.write_all(&(v as u32).to_le_bytes());
+    out.write_all(b"DLCARRY1")?;
+    u32w(out, carry.len())?;
+    for (k, c) in carry {
+        for s in [k, &c.label] {
+            u32w(out, s.len())?;
+            out.write_all(s.as_bytes())?;
+        }
+        for v in [c.shape.m, c.shape.base, c.opened_lives, c.max_lives] {
+            u32w(out, v)?;
+        }
+        out.write_all(&(c.ext.len() as u64).to_le_bytes())?;
+        let mut buf = Vec::with_capacity(8 * c.ext.len());
+        for x in &c.ext {
+            buf.extend_from_slice(&x.to_le_bytes());
+        }
+        out.write_all(&buf)?;
+        u32w(out, c.salts.len())?;
+        for s in &c.salts {
+            out.write_all(s)?;
+        }
+        out.write_all(&c.root)?;
+    }
+    out.flush()
+}
+
+/// Read a carry checkpoint (write_carry) under profile `pr`; every root is recomputed and must equal the stored one.
+pub fn read_carry(inp: &mut impl std::io::Read, pr: &Profile) -> Result<std::collections::BTreeMap<String, PcsParty>, String> {
+    let e = |x: std::io::Error| format!("carry checkpoint: {x}");
+    let mut b4 = [0u8; 4];
+    let mut rd32 = |i: &mut dyn std::io::Read| -> Result<usize, String> {
+        i.read_exact(&mut b4).map_err(e)?;
+        Ok(u32::from_le_bytes(b4) as usize)
+    };
+    let mut magic = [0u8; 8];
+    inp.read_exact(&mut magic).map_err(e)?;
+    if &magic != b"DLCARRY1" {
+        return Err("carry checkpoint: bad magic".into());
+    }
+    let n = rd32(inp)?;
+    let mut out = std::collections::BTreeMap::new();
+    for _ in 0..n {
+        let mut strs = Vec::new();
+        for _ in 0..2 {
+            let l = rd32(inp)?;
+            if l > 64 {
+                return Err("carry checkpoint: name too long".into());
+            }
+            let mut s = vec![0u8; l];
+            inp.read_exact(&mut s).map_err(e)?;
+            strs.push(String::from_utf8(s).map_err(|_| "carry checkpoint: name not utf-8")?);
+        }
+        let (m, base, opened_lives, max_lives) = (rd32(inp)?, rd32(inp)?, rd32(inp)?, rd32(inp)?);
+        if m > 40 {
+            return Err("carry checkpoint: m out of range".into());
+        }
+        let shape = Shape::new(pr, m, base);
+        let mut b8 = [0u8; 8];
+        inp.read_exact(&mut b8).map_err(e)?;
+        let ne = u64::from_le_bytes(b8) as usize;
+        if ne != shape.r * shape.w {
+            return Err(format!("carry checkpoint: {} holds {ne} words, its shape {}", strs[0], shape.r * shape.w));
+        }
+        let mut raw = vec![0u8; 8 * ne];
+        inp.read_exact(&mut raw).map_err(e)?;
+        let ext: Vec<u64> = raw.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+        drop(raw);
+        if ext.iter().any(|&x| x >= field::p()) {
+            return Err("carry checkpoint: a word is not a field element".into());
+        }
+        let ns = rd32(inp)?;
+        if ns != shape.npts {
+            return Err("carry checkpoint: salt count differs from the shape".into());
+        }
+        let mut salts = vec![[0u8; 32]; ns];
+        for s in salts.iter_mut() {
+            inp.read_exact(s).map_err(e)?;
+        }
+        let mut root = [0u8; 32];
+        inp.read_exact(&mut root).map_err(e)?;
+        let mut c = PcsParty { label: strs[1].clone(), shape, ext, salts, tree: Vec::new(), root: [0; 32], opened_lives, max_lives, cw: Vec::new() };
+        c.build_tree();
+        if c.root != root {
+            return Err(format!("carry checkpoint: {}'s recomputed root differs from the stored one", strs[0]));
+        }
+        out.insert(strs[0].clone(), c);
+    }
+    let mut rest = [0u8; 1];
+    if inp.read(&mut rest).map_err(e)? != 0 {
+        return Err("carry checkpoint: trailing bytes".into());
+    }
+    Ok(out)
+}

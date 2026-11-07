@@ -68,7 +68,11 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
             let w = darkproof::step::StepParams::for_width(d);
             let f = |k: &str, dflt: u32| p.get(k).and_then(|v| v.as_u64()).map(|v| v as u32).unwrap_or(dflt);
             let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
-            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), pg: None }
+            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), pg: p.get("PG").map(|h| {
+                let b = h.as_str().expect("PG hex");
+                let v: Vec<u8> = (0..32).map(|k| u8::from_str_radix(&b[2 * k..2 * k + 2], 16).expect("PG hex")).collect();
+                v.try_into().unwrap()
+            }) }
         }
     }
 }
@@ -86,6 +90,19 @@ fn check(dir: &Path, tag: &str) {
     let mut ok_all = true;
     let groots = roots_of(&meta["genesis_roots"]);
     let mut carry = None;
+    if let Some(h) = prm.pg {
+        // public genesis: the cfg the program pins, its W committed with public coins by every custodian; those
+        // roots must be the vectors' genesis roots
+        use sha2::{Digest, Sha256};
+        let cfg = std::fs::read(meta["pg_cfg"].as_str().expect("PG vectors carry pg_cfg")).unwrap();
+        assert_eq!(<[u8; 32]>::from(Sha256::digest(&cfg)), h, "pg_cfg is not the cfg the program pins");
+        let (d, w1, w2) = darkproof::run::public_weights(&cfg).unwrap();
+        let parts: Vec<_> = (0..3).map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3)).collect();
+        let eq = parts[0].1 == groots;
+        println!("{tag} public genesis: native public commitment of the cfg's W {} the Python genesis roots", if eq { "EQUALS" } else { "DIFFERS FROM" });
+        ok_all &= eq;
+        carry = Some(parts.into_iter().map(|p| p.0).collect());
+    }
     let mut parent = groots.clone();
     let mut names: Vec<String> =
         meta["bundles"].as_object().unwrap().keys().filter(|k| k.starts_with("pw") || k.starts_with("he")).cloned().collect();
@@ -541,6 +558,15 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                         }
                         blobs.push(sp.blob);
                         carry = Some(sp.child);
+                        if std::env::var_os("DP_CARRY_RT").is_some() {
+                            // a resumed custodian: the carry through its checkpoint (pcs::write_carry / read_carry)
+                            let mut buf = Vec::new();
+                            darkproof::pcs::write_carry(carry.as_ref().unwrap(), &mut buf).unwrap();
+                            carry = Some(darkproof::pcs::read_carry(&mut buf.as_slice(), pr).expect("carry checkpoint"));
+                            if i == 0 {
+                                println!("step {}: carry checkpoint {} bytes, read back", k + 1, buf.len());
+                            }
+                        }
                         head = Some((out.w1n, out.w2n));
                     }
                     let (w1n, w2n) = head.unwrap();
