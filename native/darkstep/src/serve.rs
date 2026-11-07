@@ -675,15 +675,21 @@ pub fn read_tape_once(path: &str) -> Result<Tape, String> {
 
 /// Claim a tape file in the registry without loading it (a tape another reader streams, e.g. the release's proof
 /// section): its sha256 streamed from disk, its MAC key share from the header; refused if already consumed.
-pub fn claim_tape_file(path: &str) -> Result<(), String> {
+/// A plain tape (DLTAPE01) gives its MAC key share in its header; a sealed one (DLVAULT1 / DLVAULT2, hashed as it is
+/// on disk, like read_tape_once) needs `alpha_i` from the opened tape, so it is claimed after it is opened and
+/// before any of it is used.
+pub fn claim_tape_file(path: &str, alpha_i: Option<u64>) -> Result<(), String> {
     use sha2::Digest;
     let mut f = std::io::BufReader::with_capacity(1 << 20, std::fs::File::open(path).map_err(|e| format!("{path}: {e}"))?);
     let mut h = sha2::Sha256::new();
     let mut hdr = [0u8; 24];
     f.read_exact(&mut hdr).map_err(|e| format!("{path}: {e}"))?;
-    if &hdr[..8] != b"DLTAPE01" {
-        return Err(format!("{path}: not a tape"));
-    }
+    let alpha_i = match (&hdr[..8], alpha_i) {
+        (b"DLTAPE01", _) => u64::from_le_bytes(hdr[8..16].try_into().unwrap()),
+        (b"DLVAULT1" | b"DLVAULT2", Some(a)) => a,
+        (b"DLVAULT1" | b"DLVAULT2", None) => return Err(format!("{path}: a sealed tape is claimed once opened (its MAC key share)")),
+        _ => return Err(format!("{path}: not a tape")),
+    };
     h.update(hdr);
     let mut buf = vec![0u8; 1 << 20];
     loop {
@@ -696,7 +702,7 @@ pub fn claim_tape_file(path: &str) -> Result<(), String> {
     drop_cache(std::path::Path::new(path));
     if let Some(log) = consumed_log() {
         let digest = pycompat::repr::hex(&h.finalize());
-        claim(log, &digest, path, u64::from_le_bytes(hdr[8..16].try_into().unwrap()))?;
+        claim(log, &digest, path, alpha_i)?;
     }
     Ok(())
 }
@@ -780,7 +786,11 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
     let resume = args.iter().any(|a| a == "--resume");
     let ck = if resume { Some(read_checkpoint(&ckpt).unwrap_or_else(|e| panic!("--resume: {e}"))) } else { None };
     let first = ck.as_ref().map(|c| c.step).unwrap_or(0);
+    let no_steps = flag(args, "--steps").map(|k| k == "0").unwrap_or(false);
     let tape = match (flag(args, "--tape"), tape_pattern(args, first)) {
+        // --resume --steps 0: no step to run (the release alone after the last step's checkpoint); no step tape is
+        // loaded or claimed, only the checkpoint's MAC key share, which the release's own tape must carry
+        _ if no_steps && ck.is_some() => Tape { alpha_i: ck.as_ref().unwrap().alpha_i, ..Default::default() },
         (Some(f), _) => read_tape(&f),
         (None, Some(f)) => read_tape(&f),
         _ => panic!("--tape FILE or --tapes PATTERN"),

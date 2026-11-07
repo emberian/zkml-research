@@ -408,12 +408,17 @@ def resume(cfg):
     done = rep["next_step"]
     left = cfg["steps"] - done
     if left <= 0:
-        raise SystemExit("nothing left to run")
+        # every step ran: what can be left is the release (it failed after the last checkpoint); --steps 0 runs it
+        # alone from the checkpoint, on the release's own tape (single use: a claimed one is refused)
+        rel = sh(s0["host"], f"cat {sd}/D/release_P0.json 2>/dev/null || echo null", check=False)
+        if cfg.get("handover") or "--release" not in cfg.get("flags", []) or (rel != "null" and '"error"' not in rel):
+            raise SystemExit("nothing left to run")
+        left = 0
     for h, d, n in procs(cfg):
         if not n.startswith("new"):
             sh(h, f"cd {d} && for f in {n}.log {n}.mon; do test -f $f && mv $f $f.part{done}; done; true")
     c = dict(cfg, steps=left, flags=cfg.get("flags", []) + ["--resume"])
-    print(f"resuming at step {done}, {left} steps left")
+    print(f"resuming at step {done}, {left} steps left" + (" (the release alone)" if left == 0 else ""))
     launch(c, with_new=False)
 
 def resume_new(cfg):
