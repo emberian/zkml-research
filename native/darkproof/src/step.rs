@@ -4,7 +4,7 @@
 //! well-formedness relations (P) and the IO ties (X). Only the middle's atoms are numbered (input, matvec and outer
 //! preprocessing never enters a middle constraint, and only the relative order of atoms matters), and the input,
 //! matvec and outer openings are consumed without forms.
-use crate::field::{self, P};
+use crate::field;
 
 pub const KAPPA: u32 = 40;
 pub const NAMES: [&str; 9] = ["z1", "z2", "b", "y", "h", "g1", "d2", "bg", "d1"];
@@ -18,16 +18,40 @@ pub struct StepParams {
     pub k2: u32,
     pub s3: u32,
     pub k3: u32,
+    /// the deployed step (research cosnark_he): HE matvec and HE outer, weights carried from step 2 on, over the HE
+    /// profile's field; false: the harness's plain-SPDZ step (matrix and outer-product triples, W input every step)
+    pub he: bool,
 }
 
 impl StepParams {
     /// The harness's step (step_spec S1, S2, S3 = 5, 4, 8; run_step's K = 13, 8, 13).
-    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13 };
+    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false };
     /// The d = 4096 shifts of the decision doc's count formulas (§12; cosnark_gates.counts_formula at width).
-    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19 };
+    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false };
     /// The program a ledger of width d runs: the harness's up to d = 1024, the wide shifts beyond.
     pub fn for_width(d: usize) -> StepParams {
         if d <= 1024 { Self::HARNESS } else { Self::WIDE }
+    }
+    /// The same shifts, deployed (HE helpers).
+    pub const fn deployed(self) -> StepParams {
+        StepParams { he: true, ..self }
+    }
+    /// Does step `step` (1-based, the ledger's counter) take carried weights? The deployed program inputs W at
+    /// genesis only.
+    pub fn carried(&self, step: u64) -> bool {
+        self.he && step > 1
+    }
+    /// Entries of the public transcript (data-independent): owner inputs, the three matvecs, the middle's openings
+    /// (truncations: c plus 2 (s - 1) products; lookups; the b * g1 products), the two outer products.
+    pub fn transcript_len(&self, d: usize, carried: bool) -> usize {
+        let tr = |s: u32| 1 + 4 * (s as usize - 1);
+        let middle = d * (2 * tr(self.s1) + 1 + tr(self.s2) + tr(self.s3) + 2);
+        if self.he {
+            // per HE matvec: d he_auth + d Freivalds products + 1 check; per HE outer: commit + 1 product + check
+            (if carried { 0 } else { 2 * d * d }) + 2 * d + 3 * (3 * d + 1) + middle + 2 * 4
+        } else {
+            2 * d * d + 2 * d + 3 * (d * d + d) + middle + 4 * d
+        }
     }
 }
 
@@ -88,7 +112,12 @@ pub struct Rec<'t> {
 }
 
 #[derive(Debug)]
-pub struct Short;
+pub enum Short {
+    /// the transcript ends before the program does
+    Short,
+    /// a deployed step's he_outer_commit entry is not 0 (cosnark_he.SymOuter)
+    Commit,
+}
 
 fn neg_form(f: &Form) -> Vec<(Atom, u64)> {
     f.terms.iter().map(|&(a, c)| (a, field::neg(c))).collect()
@@ -96,14 +125,14 @@ fn neg_form(f: &Form) -> Vec<(Atom, u64)> {
 
 impl<'t> Rec<'t> {
     fn open(&mut self, form: Form, phase: Phase) -> Result<u64, Short> {
-        let v = *self.transcript.get(self.tpos).ok_or(Short)?;
+        let v = *self.transcript.get(self.tpos).ok_or(Short::Short)?;
         self.tpos += 1;
         self.cons.push(Con { form, value: v, phase, pos: self.tpos - 1 });
         Ok(v)
     }
     fn skip(&mut self, k: usize) -> Result<(), Short> {
         if self.tpos + k > self.transcript.len() {
-            return Err(Short);
+            return Err(Short::Short);
         }
         self.tpos += k;
         Ok(())
@@ -118,10 +147,10 @@ impl<'t> Rec<'t> {
         let c = self.atom(Tag::Tc);
         self.had.push((a, b, c));
         let mut fx = x.terms.clone();
-        fx.push((Atom::Prep(a), P - 1));
+        fx.push((Atom::Prep(a), field::p() - 1));
         let e = self.open(Form { terms: fx, c: x.c }, Phase::Mul)?;
         let mut fy = y.terms.clone();
-        fy.push((Atom::Prep(b), P - 1));
+        fy.push((Atom::Prep(b), field::p() - 1));
         let f = self.open(Form { terms: fy, c: y.c }, Phase::Mul)?;
         let mut terms = vec![(Atom::Prep(c), 1)];
         if e != 0 {
@@ -195,7 +224,7 @@ impl<'t> Rec<'t> {
         }
         let borrow = borrow.unwrap();
         let q = field::from_i64((c >> s) as i64 - (1i64 << (k - s)));
-        let mut terms = vec![(Atom::Prep(rhi), P - 1)];
+        let mut terms = vec![(Atom::Prep(rhi), field::p() - 1)];
         terms.extend(neg_form(&borrow));
         Ok(Form { terms, c: field::sub(q, borrow.c) })
     }
@@ -210,7 +239,7 @@ impl<'t> Rec<'t> {
             }
         }
         let mut f = u.terms.clone();
-        f.push((Atom::Prep(pw[0]), P - 1));
+        f.push((Atom::Prep(pw[0]), field::p() - 1));
         let c = self.open(Form { terms: f, c: field::add(u.c, offset) }, Phase::Lookup)?;
         let mk = |coeffs: &[u64]| {
             let tay = taylor_shift(coeffs, c);
@@ -235,14 +264,16 @@ impl<'t> Rec<'t> {
     fn rec_out(&mut self, name: &str, v: &[Form]) {
         for (k, x) in v.iter().enumerate() {
             let mut f = x.terms.clone();
-            f.push((self.ext(name, k), P - 1));
+            f.push((self.ext(name, k), field::p() - 1));
             self.cons.push(Con { form: Form { terms: f, c: x.c }, value: 0, phase: Phase::Io, pos: usize::MAX });
         }
     }
 }
 
-/// mpc_fork.run_step(sym, ...) against the public transcript. Err if the transcript is shorter than the program.
-pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Vec<u64>, Vec<u64>)) -> Result<Rec<'t>, Short> {
+/// mpc_fork.run_step(sym, ...) (prm.he: cosnark_he.replay) against the public transcript. Err if the transcript is
+/// shorter than the program. carried: the step takes the previous step's weights (no W input; deployed only).
+pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Vec<u64>, Vec<u64>), carried: bool) -> Result<Rec<'t>, Short> {
+    assert!(prm.he || !carried, "the plain-SPDZ program inputs W every step");
     let mut r = Rec {
         prm,
         d,
@@ -253,8 +284,13 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         tpos: 0,
         tables: tables.clone(),
     };
-    r.skip(2 * d * d + 2 * d)?; // owner inputs W1, W2, x, y
-    r.skip(d * d + d)?; // matvec z1
+    // HE matvec: d he_auth, d Freivalds products (2 openings each), the check; plain: W - A (d^2) and v - b (d)
+    let mv = if prm.he { 3 * d + 1 } else { d * d + d };
+    if !carried {
+        r.skip(2 * d * d)?; // owner inputs W1, W2
+    }
+    r.skip(2 * d)?; // owner inputs x, y
+    r.skip(mv)?; // matvec z1
     let z1 = r.rec_in("z1");
     let mut u1 = Vec::with_capacity(d);
     for z in &z1 {
@@ -269,7 +305,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     }
     r.rec_out("h", &h);
     r.rec_out("g1", &g1);
-    r.skip(d * d + d)?; // matvec z2
+    r.skip(mv)?; // matvec z2
     let z2 = r.rec_in("z2");
     let y = r.rec_in("y");
     let mut e = Vec::with_capacity(d);
@@ -284,7 +320,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         d2.push(r.trunc(v, prm.s2, prm.k2)?);
     }
     r.rec_out("d2", &d2);
-    r.skip(d * d + d)?; // matvec b (transposed)
+    r.skip(mv)?; // matvec b (transposed)
     let b = r.rec_in("b");
     let mut bg = Vec::with_capacity(d);
     for (bb, g) in b.iter().zip(&g1) {
@@ -296,8 +332,18 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         d1.push(r.trunc(v, prm.s3, prm.k3)?);
     }
     r.rec_out("d1", &d1);
-    r.skip(2 * d)?; // outer(d2, h)
-    r.skip(2 * d)?; // outer(d1, x)
+    for _ in 0..2 {
+        // outer(d2, h), then outer(d1, x)
+        if prm.he {
+            // the commitment entry (value 0), one Beaver product, the check opening
+            if *r.transcript.get(r.tpos).ok_or(Short::Short)? != 0 {
+                return Err(Short::Commit);
+            }
+            r.skip(4)?;
+        } else {
+            r.skip(2 * d)?;
+        }
+    }
     Ok(r)
 }
 

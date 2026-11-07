@@ -44,8 +44,19 @@ def mk(sh, form, const=0):
     v.form, v.const = form, const
     return v
 
+def _form(x):
+    """A value's form; a plain share dict (an HE outer product's output) has none."""
+    return getattr(x, "form", {})
+
+def _const(x):
+    return getattr(x, "const", 0)
+
 class RecEngine(spdz.Engine):
-    """Live (custodians: real shares) or symbolic (verifier: no shares, reads the public transcript)."""
+    """Live (custodians: real shares) or symbolic (verifier: no shares, reads the public transcript).
+    he: True while an HE helper (he_matvec / he_outer, cosnark_he) runs. Its openings are recorded with kind
+    "he:<phase>" and its Beaver triples add no Hadamard rows, so none of them enters the middle (MIDDLE_PHASES): they
+    are bound by the public transcript's digest only, and matvec / outer correctness is the spine's (decision §22)."""
+    he = False
     def __init__(self, p, n, dealer, symbolic=False, transcript=None, seed=1, cheat=None, attack=None):
         if symbolic:
             super().__init__(p, n, dealer, active=[], transcript=transcript)
@@ -97,7 +108,7 @@ class RecEngine(spdz.Engine):
         a = self._atom("prep", tag, vals)
         p = self.p
         # well-formedness relations, recorded by tag (the same in live and symbolic mode)
-        if tag == "tc":
+        if tag == "tc" and not self.he:
             ta, tb = self.last[-2], self.last[-1]
             self.had.append((ta, tb, a))
         elif tag == "trb":
@@ -135,27 +146,27 @@ class RecEngine(spdz.Engine):
         p = self.p
         f = {}
         for c, x in terms:
-            for k, v in x.form.items():
+            for k, v in _form(x).items():
                 f[k] = (f.get(k, 0) + c * v) % p
         return {k: v for k, v in f.items() if v}, const % p
 
     def add(self, x, y):
-        f, c = self._comb([(1, x), (1, y)], x.const + y.const)
+        f, c = self._comb([(1, x), (1, y)], _const(x) + _const(y))
         return mk(super().add(x, y), f, c)
 
     def sub(self, x, y):
-        f, c = self._comb([(1, x), (-1, y)], x.const - y.const)
+        f, c = self._comb([(1, x), (-1, y)], _const(x) - _const(y))
         return mk(super().sub(x, y), f, c)
 
     def cmul(self, c0, x):
-        f, c = self._comb([(c0, x)], c0 * x.const)
+        f, c = self._comb([(c0, x)], c0 * _const(x))
         return mk(super().cmul(c0, x), f, c)
 
     def cadd(self, c0, x):
-        return mk(super().cadd(c0, x), dict(x.form), x.const + c0)
+        return mk(super().cadd(c0, x), dict(_form(x)), _const(x) + c0)
 
     def lin(self, terms, const=0):
-        f, c = self._comb([(cc, x) for cc, x in terms if cc % self.p], const + sum(cc * x.const for cc, x in terms))
+        f, c = self._comb([(cc, x) for cc, x in terms if cc % self.p], const + sum(cc * _const(x) for cc, x in terms))
         sh = super().lin([(cc, x) for cc, x in terms], 0) if self.active else {}
         if not self.active:
             return mk({}, f, c)
@@ -170,7 +181,7 @@ class RecEngine(spdz.Engine):
             self.open_log.append(({}, v))
         else:
             v = super().open(x, phase)
-        self.cons.append((dict(x.form), x.const, v, phase))
+        self.cons.append((dict(_form(x)), _const(x), v, "he:" + phase if self.he else phase))
         return v
 
     # ------------------------------------------------------------ gadget context

@@ -1,6 +1,6 @@
 //! cozk.py: collaborative zero-knowledge Ligero over additive shares, split per custodian (`LigParty` is one
 //! custodian's state; openings go through `Net`), and the public verifier.
-use crate::field::{self, P};
+use crate::field;
 use crate::h::{h_leaf, h_pad, Hash};
 use crate::net::{gather_hashes, Net};
 use crate::pcs::{auth_path, bitlen, merkle_levels, verify_path, Opening};
@@ -26,8 +26,8 @@ pub struct LigParams {
 impl LigParams {
     pub fn new(k: usize, t: usize, tt: usize, blow: usize) -> Self {
         assert!(tt <= t);
-        let zeta: Vec<u64> = (0..k).map(|i| P - 1 - i as u64).collect();
-        let eta: Vec<u64> = (0..t).map(|l| P - 1 - k as u64 - l as u64).collect();
+        let zeta: Vec<u64> = (0..k).map(|i| field::p() - 1 - i as u64).collect();
+        let eta: Vec<u64> = (0..t).map(|l| field::p() - 1 - k as u64 - l as u64).collect();
         let mut nodes = zeta.clone();
         nodes.extend(&eta);
         let l = lagrange_basis(&nodes);
@@ -157,6 +157,9 @@ pub struct LigParty<'p> {
     det: bool,
     rng: PyRandom,
     dealer: PyRandom,
+    /// this party's tape triples (value shares of authenticated triples; the MAC shares are unused: the quadratic
+    /// test checks z = x y). None: the ideal dealer stream.
+    tape: Option<(Vec<(u64, u64, u64)>, usize)>,
     /// this party's shares of every row's k message values (row-major, commit order)
     pub rows: Vec<Vec<u64>>,
     pub polys: Vec<Vec<u64>>,
@@ -173,7 +176,7 @@ pub struct LigParty<'p> {
 fn deal(dealer: &mut PyRandom, v: &[u64], n: usize, i: usize) -> Vec<u64> {
     let mut xs: Vec<Vec<u64>> = Vec::with_capacity(n);
     for _ in 0..n - 1 {
-        xs.push(v.iter().map(|_| dealer.randrange_u64(P)).collect());
+        xs.push(v.iter().map(|_| dealer.randrange_u64(field::p())).collect());
     }
     if i < n - 1 {
         return xs.swap_remove(i);
@@ -204,6 +207,7 @@ impl<'p> LigParty<'p> {
             det: on,
             rng,
             dealer,
+            tape: None,
             rows: Vec::new(),
             polys: Vec::new(),
             groups: Vec::new(),
@@ -214,6 +218,59 @@ impl<'p> LigParty<'p> {
             scalar_triples: 0,
             poly_triples: 0,
         }
+    }
+
+    /// Take the products' triples from this party's tape instead of a dealer (the deployed run).
+    pub fn with_tape(mut self, t: Vec<(u64, u64, u64)>) -> Self {
+        self.tape = Some((t, 0));
+        self
+    }
+
+    /// Triples a tape must hold for one cozk proof with `scalars` plain products and `quads` row triples:
+    /// one per plain product, 2 (k + t) - 1 per polynomial triple (tape mode builds it pointwise).
+    pub fn tape_triples(pp: &LigParams, scalars: usize, quads: usize) -> usize {
+        scalars + quads * (2 * (pp.k + pp.t) - 1)
+    }
+
+    fn scalar_triple(&mut self) -> (u64, u64, u64) {
+        let (n, i) = (self.n, self.i);
+        if let Some((t, pos)) = &mut self.tape {
+            let x = *t.get(*pos).expect("the tape's Ligero triples are exhausted");
+            *pos += 1;
+            return x;
+        }
+        let a = self.dealer.randrange_u64(field::p());
+        let b = self.dealer.randrange_u64(field::p());
+        let ai = deal(&mut self.dealer, &[a], n, i)[0];
+        let bi = deal(&mut self.dealer, &[b], n, i)[0];
+        let ci = deal(&mut self.dealer, &[field::mul(a, b)], n, i)[0];
+        (ai, bi, ci)
+    }
+
+    /// One polynomial triple (a, b, a b) of degree < deg, this party's shares. Dealer mode: cozk's ideal dealer.
+    /// Tape mode: each party picks its own random share polynomials of a and b, the shares of a(x), b(x) at the 2 deg - 1
+    /// points x = 0 .. 2 deg - 2 are multiplied with tape triples, and c is interpolated locally.
+    fn poly_triple(&mut self, net: &mut dyn Net, deg: usize) -> (Vec<u64>, Vec<u64>, Vec<u64>) {
+        let (n, i) = (self.n, self.i);
+        if self.tape.is_none() {
+            let a: Vec<u64> = (0..deg).map(|_| self.dealer.randrange_u64(field::p())).collect();
+            let b: Vec<u64> = (0..deg).map(|_| self.dealer.randrange_u64(field::p())).collect();
+            let cpoly = pmul(&a, &b);
+            let as_ = deal(&mut self.dealer, &a, n, i);
+            let bs_ = deal(&mut self.dealer, &b, n, i);
+            let cs_ = deal(&mut self.dealer, &cpoly, n, i);
+            return (as_, bs_, cs_);
+        }
+        let a: Vec<u64> = (0..deg).map(|_| self.rng.randrange_u64(field::p())).collect();
+        let b: Vec<u64> = (0..deg).map(|_| self.rng.randrange_u64(field::p())).collect();
+        let m = 2 * deg - 1;
+        let ev = |f: &[u64], x: u64| f.iter().rev().fold(0u64, |acc, &c| field::add(field::mul(acc, x), c));
+        let ea: Vec<u64> = (0..m as u64).map(|x| ev(&a, x)).collect();
+        let eb: Vec<u64> = (0..m as u64).map(|x| ev(&b, x)).collect();
+        let ec = self.mul_plain_batch(net, &ea, &eb);
+        self.scalar_triples -= m as u64;
+        let c = crate::step::interpolate(&ec);
+        (a, b, c)
     }
 
     /// Replace the dealer stream (all parties must hold the same one: the ideal dealer).
@@ -229,7 +286,7 @@ impl<'p> LigParty<'p> {
         vals.resize(pp.k, 0);
         self.rows.push(vals.clone());
         for _ in 0..pp.t {
-            vals.push(self.rng.randrange_u64(P));
+            vals.push(self.rng.randrange_u64(field::p()));
         }
         self.polys.push(pp.interp(&vals));
         self.pending.push(self.rows.len() - 1);
@@ -270,11 +327,11 @@ impl<'p> LigParty<'p> {
     pub fn commit_masks(&mut self, net: &mut dyn Net) -> Vec<Hash> {
         let pp = self.pp;
         let (k, t) = (pp.k, pp.t);
-        let mp: Vec<u64> = (0..k + t).map(|_| self.rng.randrange_u64(P)).collect();
-        let mut ml: Vec<u64> = (0..2 * k + t - 1).map(|_| self.rng.randrange_u64(P)).collect();
+        let mp: Vec<u64> = (0..k + t).map(|_| self.rng.randrange_u64(field::p())).collect();
+        let mut ml: Vec<u64> = (0..2 * k + t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
         let s = pp.zeta.iter().fold(0u64, |a, &z| field::add(a, peval(&ml, z)));
         ml[0] = field::sub(ml[0], field::mul(s, field::inv(k as u64)));
-        let r: Vec<u64> = (0..k + 2 * t - 1).map(|_| self.rng.randrange_u64(P)).collect();
+        let r: Vec<u64> = (0..k + 2 * t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
         let mq = pmul(&pp.vz, &r);
         self.masks = vec![mp, ml, mq];
         let masks = self.masks.clone();
@@ -302,15 +359,10 @@ impl<'p> LigParty<'p> {
     /// Shares of x_m * y_m for every pair, each with a scalar Beaver triple from the dealer (cozk mul_plain); all
     /// openings in one exchange. No MAC: the quadratic test checks z = x y.
     pub fn mul_plain_batch(&mut self, net: &mut dyn Net, xs: &[u64], ys: &[u64]) -> Vec<u64> {
-        let (n, i) = (self.n, self.i);
+        let i = self.i;
         let mut trip = Vec::with_capacity(xs.len());
         for _ in 0..xs.len() {
-            let a = self.dealer.randrange_u64(P);
-            let b = self.dealer.randrange_u64(P);
-            let ai = deal(&mut self.dealer, &[a], n, i)[0];
-            let bi = deal(&mut self.dealer, &[b], n, i)[0];
-            let ci = deal(&mut self.dealer, &[field::mul(a, b)], n, i)[0];
-            trip.push((ai, bi, ci));
+            trip.push(self.scalar_triple());
             self.scalar_triples += 1;
         }
         // Python opens e then f per product; the opened values and wire counts are the same in one batch
@@ -345,7 +397,7 @@ impl<'p> LigParty<'p> {
         quad: &[(usize, usize, usize)],
     ) -> LigProof {
         let pp = self.pp;
-        let (n, i) = (self.n, self.i);
+        let i = self.i;
         let nrows = self.rows.len();
         // proximity
         let gam = tr.chal(nrows);
@@ -383,16 +435,10 @@ impl<'p> LigParty<'p> {
         let rho = tr.chal(quad.len());
         let mut acc = self.masks[2].clone();
         for (&(rx, ry, rz), &c) in quad.iter().zip(&rho) {
-            let deg = pp.k + pp.t;
-            let a: Vec<u64> = (0..deg).map(|_| self.dealer.randrange_u64(P)).collect();
-            let b: Vec<u64> = (0..deg).map(|_| self.dealer.randrange_u64(P)).collect();
-            let cpoly = pmul(&a, &b);
-            let as_ = deal(&mut self.dealer, &a, n, i);
-            let bs_ = deal(&mut self.dealer, &b, n, i);
-            let cs_ = deal(&mut self.dealer, &cpoly, n, i);
+            let (as_, bs_, cs_) = self.poly_triple(net, pp.k + pp.t);
             self.poly_triples += 1;
-            let e = self.open_poly(net, padd(&self.polys[rx], &pscale(P - 1, &as_)));
-            let f = self.open_poly(net, padd(&self.polys[ry], &pscale(P - 1, &bs_)));
+            let e = self.open_poly(net, padd(&self.polys[rx], &pscale(field::p() - 1, &as_)));
+            let f = self.open_poly(net, padd(&self.polys[ry], &pscale(field::p() - 1, &bs_)));
             let ef = pmul(&e, &f);
             let mut prod = vec![0u64];
             poly::padd_into(&mut prod, &cs_);
@@ -404,7 +450,7 @@ impl<'p> LigParty<'p> {
             let mut nacc = vec![0u64];
             poly::padd_into(&mut nacc, &acc);
             poly::paxpy(&mut nacc, c, &prod);
-            poly::paxpy(&mut nacc, P - c, &self.polys[rz]);
+            poly::paxpy(&mut nacc, field::p() - c, &self.polys[rz]);
             acc = nacc;
         }
         let pq = self.open_poly(net, acc);

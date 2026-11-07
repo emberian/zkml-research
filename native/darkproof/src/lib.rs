@@ -13,6 +13,7 @@ pub mod owner;
 pub mod pcs;
 pub mod poly;
 pub mod rng;
+pub mod run;
 pub mod spdz;
 pub mod spine;
 pub mod step;

@@ -40,7 +40,7 @@ fn shs(v: &Value) -> Vec<Sh> {
 impl Witness {
     pub fn load(path: &std::path::Path) -> Self {
         let v: Value = serde_json::from_slice(&std::fs::read(path).expect("witness file")).expect("json");
-        assert_eq!(u(&v["p"]), crate::field::P);
+        crate::field::set_p(u(&v["p"]));
         let n = u(&v["n"]) as usize;
         let wires = (0..n)
             .map(|i| {
@@ -77,7 +77,7 @@ pub fn owner_commit(pr: &Profile, vec: &[u64], label: &str, n: usize, det: &Det)
         true => det.rng(&["owner-commit", label, &crate::h::h_list_hex(vec)]).unwrap(),
         false => crate::rng::secret_rng(),
     };
-    let mut sh: Vec<Vec<u64>> = (0..n - 1).map(|_| vec.iter().map(|_| rng.randrange_u64(crate::field::P)).collect()).collect();
+    let mut sh: Vec<Vec<u64>> = (0..n - 1).map(|_| vec.iter().map(|_| rng.randrange_u64(crate::field::p())).collect()).collect();
     let last: Vec<u64> =
         vec.iter().enumerate().map(|(c, &x)| sh.iter().fold(x, |a, s| crate::field::sub(a, s[c]))).collect();
     sh.push(last);
@@ -114,6 +114,8 @@ pub struct BundleOpts<'a> {
     pub fs_public_attack: bool,
     pub diagnose: bool,
     pub transport: Transport,
+    /// the step program (None: the harness's, StepParams::for_width(d))
+    pub prm: Option<StepParams>,
 }
 
 /// run_proofwire.make_bundle with three custodian threads over the in-memory transport. carry: per party, the
@@ -158,7 +160,8 @@ pub fn make_bundle(
         ox = Some(cx);
         oy = Some(cy);
     }
-    let rec = step::replay(&w.public, d, StepParams::for_width(d), o.tables).map_err(|_| "transcript short")?;
+    let prm = o.prm.unwrap_or(StepParams::for_width(d));
+    let rec = step::replay(&w.public, d, prm, o.tables, prm.carried(ctx.step)).map_err(|_| "transcript short")?;
     assert_eq!(rec.tpos, w.public.len());
     // real runs: one secret stream per Ligero for the ideal dealer, the same for every party
     let (dl_s, dl_m) = if o.det.on() { (None, None) } else { (Some(crate::rng::secret_rng()), Some(crate::rng::secret_rng())) };
@@ -234,6 +237,7 @@ pub fn make_bundle(
                     det: &o.det,
                     attack: o.spine_attack,
                     lig_dealer: dl_s,
+                    lig_tape: None,
                 };
                 let mut so = spine::prove(&si, &mut *net, &mut sp, carry_i, ox_i)?;
                 for k in spine::MAT {
@@ -263,6 +267,7 @@ pub fn make_bundle(
                     ctx,
                     det: &o.det,
                     lig_dealer: dl_m,
+                    lig_tape: None,
                     cst_patch: patch_ref,
                 };
                 let mo = middle::prove(&mi, &mut *net, &mut sp, spine_coms, oy_i)?;

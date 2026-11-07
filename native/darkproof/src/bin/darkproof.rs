@@ -32,22 +32,40 @@ fn main() {
         Some("rows") => rows(Path::new(&args[2]), &args[3]),
         Some("gen-check") => gen_check(Path::new(&args[2]), &args[3]),
         Some("bench") => bench(args[2].parse().unwrap(), &args[3]),
+        Some("run-check") => run_check(Path::new(&args[2]), &args[3]),
         _ => eprintln!("usage: darkproof check VECDIR TAG"),
     }
 }
 
+/// The step program a vector set was made with (meta "program"; absent: the harness's).
+fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
+    match meta.get("program") {
+        None => darkproof::step::StepParams::for_width(d),
+        Some(p) => {
+            let f = |k: &str| p[k].as_u64().unwrap() as u32;
+            darkproof::step::StepParams { s1: f("S1"), k1: f("K1"), s2: f("S2"), k2: f("K2"), s3: f("S3"), k3: f("K3"), he: p["he"].as_bool().unwrap_or(false) }
+        }
+    }
+}
+
+/// TAG e.g. demo_d4 (the harness's pw bundles) or demo_d4_he (the deployed step's chain he1, he2, ...).
 fn check(dir: &Path, tag: &str) {
     let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    darkproof::field::set_p(meta["p"].as_u64().unwrap());
+    let prm = program_of(&meta, meta["d"].as_u64().unwrap() as usize);
     let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
-    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: true, transport: darkproof::net::transport_from_env() };
+    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: true, transport: darkproof::net::transport_from_env(), prm: Some(prm) };
     let mut ok_all = true;
     let groots = roots_of(&meta["genesis_roots"]);
     let mut carry = None;
     let mut parent = groots.clone();
-    for name in ["pw1", "pw2"] {
+    let mut names: Vec<String> =
+        meta["bundles"].as_object().unwrap().keys().filter(|k| k.starts_with("pw") || k.starts_with("he")).cloned().collect();
+    names.sort();
+    for name in names.iter().map(|s| s.as_str()) {
         let b = &meta["bundles"][name];
         let c = b["ctx"].as_array().unwrap();
         let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
@@ -71,13 +89,13 @@ fn check(dir: &Path, tag: &str) {
             out.middle_violates
         );
         let t = std::time::Instant::now();
-        let v = wire::verify_step(&pr, &lp, &pyb, &ctx, &parent, &tables, w.d, darkproof::step::StepParams::for_width(w.d), None, 0);
+        let v = wire::verify_step(&pr, &lp, &pyb, &ctx, &parent, &tables, w.d, prm, None, 0);
         println!("  native verify of the python bundle: {:?} ({:.2}s)", v.as_ref().map(|_| "accept"), t.elapsed().as_secs_f64());
         ok_all &= v.is_ok();
         let mut bad = pyb.clone();
         let pos = bad.len() / 2;
         bad[pos] ^= 1;
-        let v2 = wire::verify_step(&pr, &lp, &bad, &ctx, &parent, &tables, w.d, darkproof::step::StepParams::for_width(w.d), None, 0);
+        let v2 = wire::verify_step(&pr, &lp, &bad, &ctx, &parent, &tables, w.d, prm, None, 0);
         println!("  native verify, one flipped byte at {pos}: {:?}", v2.as_ref().map(|_| "accept"));
         ok_all &= v2.is_err();
         std::fs::write(dir.join(format!("{tag}_{name}.native.bin")), &out.blob).unwrap();
@@ -116,6 +134,126 @@ fn check(dir: &Path, tag: &str) {
     std::process::exit(if ok_all { 0 } else { 1 });
 }
 
+/// The deployed run's per-party prover (darkproof::run::prove_step) on a vector chain (TAG e.g. demo_d4_he): three
+/// custodian threads, each with ONLY its own shares, MAC key share and tape (a seeded stand-in for its MASCOT tape:
+/// authenticated triples under the step's MAC key, never a shared dealer stream). Checks: every party ends with the
+/// same bundle; the native verifier accepts it chained from the genesis roots; a tape triple off by one at one
+/// custodian aborts the proof (MAC check).
+fn run_check(dir: &Path, tag: &str) {
+    use darkproof::run::{n_had, prove_step, tape_triples, PartyStep};
+    use darkproof::spdz::{Dealer, Triple};
+    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    darkproof::field::set_p(meta["p"].as_u64().unwrap());
+    let d = meta["d"].as_u64().unwrap() as usize;
+    let prm = program_of(&meta, d);
+    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let lp = pr.ligero();
+    let tables = darkproof::step::tables();
+    let mut names: Vec<String> = meta["bundles"].as_object().unwrap().keys().cloned().collect();
+    names.sort();
+    let mut parent = roots_of(&meta["genesis_roots"]);
+    let mut carry: Vec<Option<BTreeMap<String, darkproof::pcs::PcsParty>>> = vec![None, None, None];
+    let mut ok_all = true;
+    for (k, name) in names.iter().enumerate() {
+        let b = &meta["bundles"][name.as_str()];
+        let c = b["ctx"].as_array().unwrap();
+        let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+        let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
+        let nt = tape_triples(&lp, d, n_had(d, prm, prm.carried(ctx.step), &tables));
+        // the custodians' tapes: authenticated triples under the step's alpha (stand-in for MASCOT)
+        let mut tdl = Dealer::from_state(&pycompat::PyRandom::from_u64(1000 + k as u64).state(), w.alpha_sh.clone());
+        let mut tapes: Vec<Vec<Triple>> = vec![Vec::with_capacity(nt); 3];
+        for _ in 0..nt {
+            let av = tdl.rng.randrange_u64(darkproof::field::p());
+            let bv = tdl.rng.randrange_u64(darkproof::field::p());
+            let (a, b2, cc) = (tdl.auth_all(av), tdl.auth_all(bv), tdl.auth_all(darkproof::field::mul(av, bv)));
+            for i in 0..3 {
+                tapes[i].push((a[i], b2[i], cc[i]));
+            }
+        }
+        let run = |tapes: Vec<Vec<Triple>>, carry: Vec<Option<BTreeMap<String, darkproof::pcs::PcsParty>>>| {
+            let nets = darkproof::net::Nets::new(darkproof::net::transport_from_env(), 3);
+            let t0 = std::time::Instant::now();
+            let outs: Vec<Result<darkproof::run::StepProof, String>> = std::thread::scope(|s| {
+                let hs: Vec<_> = tapes
+                    .into_iter()
+                    .zip(carry)
+                    .enumerate()
+                    .map(|(i, (tp, cy))| {
+                        let (nets, w, pr, lp, tables, ctx) = (&nets, &w, &pr, &lp, &tables, &ctx);
+                        s.spawn(move || {
+                            let mut net = nets.take(i);
+                            let st = PartyStep {
+                                i,
+                                n: 3,
+                                d,
+                                alpha_i: w.alpha_sh[i],
+                                wires: w.wires[i].clone(),
+                                public: w.public.clone(),
+                                atoms: w.atoms[i].clone(),
+                                triples: tp,
+                            };
+                            prove_step(pr, lp, tables, prm, &mut *net, ctx, st, cy)
+                        })
+                    })
+                    .collect();
+                hs.into_iter().map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into()))).collect()
+            });
+            (outs, t0.elapsed().as_secs_f64())
+        };
+        // negative controls first (on clones of the carry), at custodian 1's first middle triple:
+        //   c's value share off by one (a wrong product: its MAC is untouched, the proof's constraints catch it)
+        //   a's value share off by one (the opened e is not the authenticated one: the MAC check aborts)
+        let jb = darkproof::spine::beaver_count(d);
+        for (what, slot) in [("c", 2usize), ("a", 0usize)] {
+            let mut bad = tapes.clone();
+            let t = &mut bad[1][jb];
+            let sh = match slot { 0 => &mut t.0, _ => &mut t.2 };
+            sh.0 = darkproof::field::add(sh.0, 1);
+            let cl = carry.iter().map(|c| c.as_ref().map(|m| m.iter().map(|(k, p)| (k.clone(), darkproof::witness::clone_pcs(p))).collect())).collect();
+            let (bo, _) = run(bad, cl);
+            let verdict = match &bo[0] {
+                Err(e) => format!("REFUSED in proving ({e})"),
+                Ok(p) => {
+                    let gp = p.genesis_roots.clone().unwrap_or_else(|| parent.clone());
+                    match wire::verify_step(&pr, &lp, &p.blob, &ctx, &gp, &tables, d, prm, None, 0) {
+                        Err(e) => format!("REFUSED by the verifier ({e})"),
+                        Ok(_) => "ACCEPTED".into(),
+                    }
+                }
+            };
+            println!("{tag} {name}: tape triple {what} share off by one at custodian 1: {verdict}");
+            ok_all &= verdict.starts_with("REFUSED");
+        }
+        let (outs, secs) = run(tapes, std::mem::take(&mut carry));
+        let mut parts = Vec::new();
+        for o in outs {
+            match o {
+                Ok(p) => parts.push(p),
+                Err(e) => {
+                    println!("{tag} {name}: prove failed: {e}");
+                    std::process::exit(1);
+                }
+            }
+        }
+        let same = parts.iter().all(|p| p.blob == parts[0].blob);
+        if let Some(g) = &parts[0].genesis_roots {
+            parent = g.clone();
+        }
+        let t = std::time::Instant::now();
+        let v = wire::verify_step(&pr, &lp, &parts[0].blob, &ctx, &parent, &tables, d, prm, None, 0);
+        println!(
+            "{tag} {name}: {} triples per tape; prove {:.2}s; {} bytes; parties agree: {}; sent per party {} elements; verify {:?} ({:.2}s)",
+            nt, secs, parts[0].blob.len(), same, parts[0].sent, v.as_ref().map(|_| "accept"), t.elapsed().as_secs_f64()
+        );
+        ok_all &= same && v.is_ok();
+        parent = v.map(|a| a.child).unwrap_or(parent);
+        carry = parts.into_iter().map(|p| Some(p.child)).collect();
+    }
+    println!("{}", if ok_all { "RUN-CHECK PASS" } else { "RUN-CHECK FAIL" });
+    std::process::exit(if ok_all { 0 } else { 1 });
+}
+
 struct Rows {
     out: Vec<(String, String, String)>,
 }
@@ -146,7 +284,7 @@ fn rows(dir: &Path, tag: &str) {
     let tables = darkproof::step::tables();
     let seed = meta["seed"].as_str().unwrap().to_string();
     let det = Det(Some(seed.clone()));
-    let mut opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: true, transport: darkproof::net::transport_from_env() };
+    let mut opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: true, transport: darkproof::net::transport_from_env(), prm: None };
     let model = "mind-0";
     let c = |e, s| Ctx::new(model, e, s);
     let tmp = std::env::temp_dir().join(format!("dl-native-ledger-{}", std::process::id()));
@@ -181,7 +319,7 @@ fn rows(dir: &Path, tag: &str) {
     let ld = w1.d.trailing_zeros() as usize;
     let off = hdr + 16 + (13 + 4 * ld + 2) * 3 * 32;
     let mut t = b2.clone();
-    t[off..off + 8].copy_from_slice(&darkproof::field::P.to_be_bytes());
+    t[off..off + 8].copy_from_slice(&darkproof::field::p().to_be_bytes());
     rows.rec("step 2 with a non-canonical field element", lg.accept(&lp, &t, &tables));
     for (what, pos) in [
         ("a byte in the header's model id", 10),
@@ -417,7 +555,7 @@ fn bench(d: usize, prof: &str) {
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let prm = StepParams::for_width(d);
-    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: Det(None), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env() };
+    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: Det(None), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: None };
     let t = std::time::Instant::now();
     let (w1, w2, x, y) = live::harness_inputs(d);
     let wit1 = live::run_step(&w1, &w2, &x, &y, d, prm, &tables);
@@ -458,7 +596,7 @@ fn bench(d: usize, prof: &str) {
     let blob = &b2.blob;
     let _ = &mut r;
     let n_public = public2.len();
-    let rec = darkproof::step::replay(&public2, d, prm, &tables).unwrap();
+    let rec = darkproof::step::replay(&public2, d, prm, &tables, false).unwrap();
     let mut rd = blob.clone();
     let _ = &mut rd;
     let sp = {

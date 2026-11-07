@@ -8,7 +8,7 @@
 //! MAC-check coins: the harness seeds them from repr() of the whole frozen transcript; here they come from a
 //! SHA-256 chain over every opening (phase, every party's broadcast share, value) as it happens. Both are fixed
 //! only after the last broadcast. The coins never appear in a proof, so proof bytes are unaffected.
-use crate::field::{self, P};
+use crate::field;
 use crate::net::Net;
 use pycompat::PyRandom;
 use sha2::{Digest, Sha256};
@@ -25,7 +25,7 @@ pub struct Dealer {
 impl Dealer {
     pub fn from_seed(seed: u64, n: usize) -> Self {
         let mut rng = PyRandom::from_u64(seed);
-        let alpha_sh: Vec<u64> = (0..n).map(|_| rng.randrange_u64(P)).collect();
+        let alpha_sh: Vec<u64> = (0..n).map(|_| rng.randrange_u64(field::p())).collect();
         let alpha = alpha_sh.iter().fold(0, |a, &b| field::add(a, b));
         Dealer { rng, alpha_sh, alpha }
     }
@@ -39,10 +39,10 @@ impl Dealer {
     /// dealer.auth(v): every party's (share, MAC share).
     pub fn auth_all(&mut self, v: u64) -> Vec<Sh> {
         let n = self.alpha_sh.len();
-        let mut xs: Vec<u64> = (0..n - 1).map(|_| self.rng.randrange_u64(P)).collect();
+        let mut xs: Vec<u64> = (0..n - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
         let sx = xs.iter().fold(0, |a, &b| field::add(a, b));
         xs.push(field::sub(v, sx));
-        let mut ms: Vec<u64> = (0..n - 1).map(|_| self.rng.randrange_u64(P)).collect();
+        let mut ms: Vec<u64> = (0..n - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
         let sm = ms.iter().fold(0, |a, &b| field::add(a, b));
         ms.push(field::sub(field::mul(self.alpha, v), sm));
         xs.into_iter().zip(ms).collect()
@@ -53,11 +53,41 @@ impl Dealer {
     }
 }
 
+/// One authenticated Beaver triple, this party's shares ([a], [b], [ab]).
+pub type Triple = (Sh, Sh, Sh);
+
+/// Where the proof's Beaver triples come from: the ideal dealer (the harness; in-process every party replays its MT
+/// stream) or this party's preprocessing tape (the proof section of a darkstep / darkprep tape, MASCOT in the run).
+pub enum Triples {
+    Dealer(Dealer),
+    Tape { t: Vec<Triple>, pos: usize },
+}
+
+impl Triples {
+    fn next(&mut self, i: usize) -> Triple {
+        match self {
+            Triples::Dealer(dl) => {
+                let av = dl.rng.randrange_u64(field::p());
+                let bv = dl.rng.randrange_u64(field::p());
+                let a = dl.auth(av, i);
+                let b = dl.auth(bv, i);
+                let c = dl.auth(field::mul(av, bv), i);
+                (a, b, c)
+            }
+            Triples::Tape { t, pos } => {
+                let x = *t.get(*pos).expect("the tape's proof section is exhausted");
+                *pos += 1;
+                x
+            }
+        }
+    }
+}
+
 pub struct Spdz {
     pub i: usize,
     pub n: usize,
     pub alpha_i: u64,
-    pub dealer: Dealer,
+    pub src: Triples,
     open_log: Vec<(u64, u64)>,
     coins: Sha256,
     pub nopen: u64,
@@ -88,11 +118,20 @@ pub fn cmul(c: u64, x: Sh) -> Sh {
 impl Spdz {
     pub fn new(i: usize, n: usize, dealer: Dealer) -> Self {
         let alpha_i = dealer.alpha_sh[i];
+        Self::with_source(i, n, alpha_i, Triples::Dealer(dealer))
+    }
+
+    /// Party i with MAC key share alpha_i and its tape's proof-section triples.
+    pub fn from_tape(i: usize, n: usize, alpha_i: u64, triples: Vec<Triple>) -> Self {
+        Self::with_source(i, n, alpha_i, Triples::Tape { t: triples, pos: 0 })
+    }
+
+    fn with_source(i: usize, n: usize, alpha_i: u64, src: Triples) -> Self {
         Spdz {
             i,
             n,
             alpha_i,
-            dealer,
+            src,
             open_log: Vec::new(),
             coins: Sha256::new(),
             nopen: 0,
@@ -143,15 +182,7 @@ impl Spdz {
     fn mul_chunk(&mut self, net: &mut dyn Net, xs: &[Sh], ys: &[Sh]) -> Vec<Sh> {
         let i = self.i;
         self.triples += xs.len() as u64;
-        let mut trip = Vec::with_capacity(xs.len());
-        for _ in 0..xs.len() {
-            let av = self.dealer.rng.randrange_u64(P);
-            let bv = self.dealer.rng.randrange_u64(P);
-            let a = self.dealer.auth(av, i);
-            let b = self.dealer.auth(bv, i);
-            let c = self.dealer.auth(field::mul(av, bv), i);
-            trip.push((a, b, c));
-        }
+        let trip: Vec<Triple> = (0..xs.len()).map(|_| self.src.next(i)).collect();
         let mut ef = Vec::with_capacity(2 * xs.len());
         for (k, &(a, b, _)) in trip.iter().enumerate() {
             ef.push(shsub(xs[k], a));
@@ -179,7 +210,7 @@ impl Spdz {
         let mut rng = PyRandom::from_str_seed(&seed);
         let mut sig = 0u64;
         for &(m, v) in &self.open_log {
-            let r = rng.randrange_u64(P);
+            let r = rng.randrange_u64(field::p());
             sig = field::add(sig, field::mul(r, field::sub(m, field::mul(self.alpha_i, v))));
         }
         let nonce = crate::rng::secret_bytes(16);

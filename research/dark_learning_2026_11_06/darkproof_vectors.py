@@ -5,7 +5,8 @@ after the step) and the Python bundle bytes the native bytes must equal.
 
     DL_DETERMINISTIC=7 python3 darkproof_vectors.py OUTDIR d [profile] [flows...]
       flows: pw (run_proofwire's steps 1 and 2), si (owner-signed steps 1 and 2), check (assert this file's bundle
-      flow is byte-identical to run_proofwire.make_bundle)
+      flow is byte-identical to run_proofwire.make_bundle), he (the DEPLOYED step, cosnark_he: HE matvec and outer
+      over the HE profile's field, native_ref's inputs; step 1 genesis, steps 2 and 3 carried)
 """
 import json
 import os
@@ -82,6 +83,72 @@ def make_bundle(p, tab, d, W1, W2, x, y, ctx, carry=None, carry_wires=None, owne
     blob = PW.encode_step(p, ctx, d, 3, True, spine, public, middle, sym, owner_sig=sig)
     return dict(blob=blob, child=sst["child"], wires=wires, genesis=gen, sst=sst, mst=mst)
 
+HE_PROGRAM = dict(S1=5, K1=13, S2=4, K2=8, S3=8, K3=13, he=True)
+
+def he_flow(out, d, prof, steps=3):
+    """The deployed step chained over `steps` steps: native_ref's keys, inputs, dealer (seed 5, ONE stream for the
+    run: step 1, its proof's triples, step 2, ...) and per-return HE streams. Step k uses HE seeds MV_SEED + 100 (k - 1),
+    OU_SEED + 100 (k - 1) and owner seed OWNER_SEED + 100 (k - 1), so step 1 is native_ref's step exactly."""
+    import cosnark_he as CH
+    import he_matvec as HM
+    import he_outer as HO
+    import native_ref as NR
+    he = PW.PARAMS["HE"]
+    N, L, F = he["N"], he["L"], he["F_BITS"]
+    Qp, t, Q = NR.setup(N, L)
+    p = t
+    assert p == PW.he_field()
+    keys = [HM.OwnKey(N, Q, t, seed=NR.KEY_SEED0 + i) for i in range(3)]
+    tab = MF.tables(p)
+    rng = random.Random(d)
+    wm = NR.wmax_for(d)
+    W1 = [[rng.randint(-wm, wm) % p for _ in range(d)] for _ in range(d)]
+    W2 = [[rng.randint(-wm, wm) % p for _ in range(d)] for _ in range(d)]
+    x = [rng.randint(-7, 7) % p for _ in range(d)]
+    y = [rng.randint(-7, 7) % p for _ in range(d)]
+    prog = CH.Prog(*(HE_PROGRAM[k] for k in ("S1", "K1", "S2", "K2", "S3", "K3")))
+    dealer = spdz.Dealer(p, 3, NR.DEALER_SEED)
+    tag = f"{prof}_d{d}"
+    meta = dict(d=d, profile=prof, seed=os.environ["DL_DETERMINISTIC"], p=p, program=HE_PROGRAM, he=dict(N=N, L=L, F=F),
+                bundles={})
+    model, carry, carried, parent = "mind-0", None, None, None
+    for k in range(1, steps + 1):
+        live = G.RecEngine(p, 3, dealer)
+        noise = (N * (t // 2) * 32).bit_length()
+        mv = CH.LiveHE(live, HM.HEMatvec(live, keys, N, Q, seed=NR.MV_SEED + 100 * (k - 1), flood_bits=F - noise,
+                                         per_return_rng=True))
+        ou = CH.LiveHE(live, HO.HEOuter(live, keys, N, Q, seed=NR.OU_SEED + 100 * (k - 1),
+                                        flood_bits=F - (N * (t // 2) * 16 * 2).bit_length(), per_return_rng=True),
+                       outer=True)
+        W1n, W2n, wires = CH.run_step(live, W1, W2, x, y, tab, NR.OWNER_SEED + 100 * (k - 1), mv, ou, prog=prog,
+                                      carried=carried)
+        live.mac_check("he")
+        wires.update(W1n=W1n, W2n=W2n)
+        public = [v for _, _, v in live.transcript]
+        assert len(public) == CH.schedule_len(d, prog, carried=k > 1), (len(public), CH.schedule_len(d, prog, k > 1))
+        gen = None
+        if carry is None:
+            carry = gen = RP.genesis_commit(p, wires)
+            parent = {kk: gen[kk].roots for kk in ("W1", "W2")}
+            meta["genesis_roots"] = parent
+        name = f"he{k}"
+        json.dump(witness(p, d, dealer, live, wires), open(os.path.join(out, f"{tag}_{name}.json"), "w"))
+        ctx = (model, 0, k)
+        spine, sst = ZK.prove_zk(spdz.Engine(p, 3, dealer), wires, carry=carry, context=ctx, public=public)
+        sym = CH.replay(p, public, d, tab, prog, carried=k > 1)
+        assert sym.tpos == len(public)
+        middle, mst = GZ.prove_middle_zk(live, sym, wires, sst["coms"], context=ctx)
+        blob = PW.encode_step(p, ctx, d, 3, True, spine, public, middle, sym)
+        ok, why, res = PW.verify_step(p, blob, ctx, parent, tab, d, program=HE_PROGRAM)
+        assert ok, why
+        open(os.path.join(out, f"{tag}_{name}.bin"), "wb").write(blob)
+        meta["bundles"][name] = dict(ctx=list(ctx), witness=f"{tag}_{name}.json", blob=f"{tag}_{name}.bin",
+                                     owner_pk=None, carried=k > 1)
+        print(name, len(blob), len(public), "python verify:", why, flush=True)
+        parent, carry, carried = res[0], sst["child"], (W1n, W2n)
+        W1 = W2 = None
+    json.dump(meta, open(os.path.join(out, f"{tag}_he_meta.json"), "w"), indent=1)
+
 def verify_native(out, tag):
     """Python's verifier on the native bundles (TAG_<name>.native.bin), with a one-byte-flip control each."""
     meta = json.load(open(os.path.join(out, f"{tag}_meta.json")))
@@ -119,6 +186,8 @@ def main():
     if prof != "ledger":
         PW.set_profile(prof)
     os.makedirs(out, exist_ok=True)
+    if "he" in flows:
+        return he_flow(out, d, prof)
     p = bfv.ntt_primes(61, 4, 16384)[3]
     tab = MF.tables(p)
     rng = random.Random(d)

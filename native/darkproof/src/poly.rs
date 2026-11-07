@@ -1,6 +1,6 @@
 //! cozk.py's polynomial helpers over F_p (coefficient vectors, lowest degree first). Lengths follow Python exactly:
 //! no trimming of leading zeros anywhere, because message lengths are part of the wire schema.
-use crate::field::{self, P};
+use crate::field;
 
 pub fn pmul(a: &[u64], b: &[u64]) -> Vec<u64> {
     if a.is_empty() || b.is_empty() {
@@ -120,6 +120,6 @@ pub fn combine(vals: &[u64], basis: &[Vec<u64>], len: usize) -> Vec<u64> {
     out
 }
 
-pub const fn p() -> u64 {
-    P
+pub fn p() -> u64 {
+    field::p()
 }

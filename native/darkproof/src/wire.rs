@@ -332,9 +332,17 @@ pub fn encode_step(
 }
 
 /// The step program's public transcript length (data-independent).
-pub fn transcript_len(d: usize, prm: StepParams) -> usize {
-    let tr = |s: u32| 1 + 4 * (s as usize - 1);
-    2 * d * d + 2 * d + 3 * (d * d + d) + d * (2 * tr(prm.s1) + 1 + tr(prm.s2) + tr(prm.s3) + 2) + 4 * d
+pub fn transcript_len(d: usize, prm: StepParams, carried: bool) -> usize {
+    prm.transcript_len(d, carried)
+}
+
+/// The deployed program's field: the HE profile's plaintext modulus (bfv.ntt_primes(61, L + 1, 2N)[L]).
+pub fn he_field(pr: &Profile) -> Option<u64> {
+    match (pr.he.0, pr.he.1) {
+        (8192, 3) => Some(field::P_DEMO),
+        (16384, 4) => Some(field::P_LEDGER),
+        _ => None,
+    }
 }
 
 pub struct Accepted {
@@ -410,11 +418,14 @@ fn verify_inner(
             return Err("shape or chaining differs from the ledger's genesis record".into());
         }
         let n = n as usize;
+        if prm.he && he_field(pr) != Some(field::p()) {
+            return Err("the deployed program's field is the HE profile's plaintext modulus".into());
+        }
         let spine = read_spine(&mut r, pr, n, d, true, bind)?;
         let cnt = u32::from_be_bytes(r.take(4)?.try_into().unwrap()) as usize;
         // the step program's transcript length is a function of d and the pinned program alone: anything else is
         // refused before a single value is read (Python caps at 2^24, which d = 4096's 84.5M values exceed)
-        let want = transcript_len(d, prm);
+        let want = transcript_len(d, prm, prm.carried(expect.step));
         if cnt > want {
             return Err(if cnt > 1 << 24 { "public transcript too long" } else { "public transcript longer than the step program" }.into());
         }
@@ -429,9 +440,10 @@ fn verify_inner(
         Ok(Err(e)) => return Err(e),
         Ok(Ok(x)) => x,
     };
-    let rec = match step::replay(&public, d, prm, tables) {
+    let rec = match step::replay(&public, d, prm, tables, prm.carried(expect.step)) {
         Ok(rec) => rec,
-        Err(_) => return Err("parse: public transcript shorter than the step program".into()),
+        Err(step::Short::Commit) => return Err("parse: he_outer_commit entry is not 0".into()),
+        Err(step::Short::Short) => return Err("parse: public transcript shorter than the step program".into()),
     };
     if rec.tpos != public.len() {
         return Err("parse: public transcript longer than the step program".into());

@@ -28,6 +28,7 @@ import struct
 
 import cosnark as CS
 import cosnark_gates as G
+import cosnark_he as CH
 import cosnark_gates_zk as GZ
 import cosnark_zk as ZK
 import cozk as Z
@@ -238,9 +239,17 @@ def _plain(obj):
         return [_plain(x) for x in obj]
     return obj
 
-def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None, min_leaf=0):
-    """The untrusted-input verifier. expect_ctx, parent_roots, d_pinned, owner_pk and min_leaf come from the ledger,
-    never from the blob. Returns (ok, why, (child roots, owner leaf))."""
+def he_field(params=None):
+    """The deployed (HE) program's field: the HE profile's plaintext modulus t = ntt_primes(61, L + 1, 2N)[L]."""
+    import bfv_ref as bfv
+    he = (params or PARAMS)["HE"]
+    return bfv.ntt_primes(61, he["L"] + 1, 2 * he["N"])[he["L"]]
+
+def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None, min_leaf=0, program=None):
+    """The untrusted-input verifier. expect_ctx, parent_roots, d_pinned, owner_pk, min_leaf and program come from the
+    ledger, never from the blob. program: None (the harness's plain-SPDZ step) or the genesis record's program dict;
+    with "he": true it is the deployed step (cosnark_he: HE matvec and outer, the shifts S1..K3, carried weights from
+    step 2 on), over the HE profile's field. Returns (ok, why, (child roots, owner leaf))."""
     pin_params()
     bind = owner_pk is not None
     try:
@@ -262,11 +271,21 @@ def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None,
         if cnt > 1 << 24:
             raise ParseError("public transcript too long")
         public = [r.fe() for _ in range(cnt)]
-        sym = G.RecEngine(p, n, None, symbolic=True, transcript=[("open", {}, v) for v in public])
         try:
-            MF.run_step(sym, None, None, [0] * d, [0] * d, tab, 9)
+            if program and program.get("he"):
+                if p != he_field():
+                    raise ParseError("the deployed program's field is the HE profile's plaintext modulus")
+                prog = CH.Prog(*(program[k] for k in ("S1", "K1", "S2", "K2", "S3", "K3")))
+                sym = CH.replay(p, public, d, tab, prog, carried=expect_ctx[2] > 1)
+            elif program:
+                raise ParseError("a plain-SPDZ program other than the harness's is not supported")
+            else:
+                sym = G.RecEngine(p, n, None, symbolic=True, transcript=[("open", {}, v) for v in public])
+                MF.run_step(sym, None, None, [0] * d, [0] * d, tab, 9)
         except IndexError:
             raise ParseError("public transcript shorter than the step program")
+        except CH.ScheduleError as e:
+            raise ParseError(str(e))
         if sym.tpos != cnt:
             raise ParseError("public transcript longer than the step program")
         middle = walk(r, middle_schema(p, n, sym, d, bind))
@@ -311,6 +330,8 @@ class Ledger:
             g = dict(kind="genesis", model=model, d=genesis["d"], params=PARAMS,
                      owner_pk=genesis["owner_pk"].hex() if genesis.get("owner_pk") else "none",
                      custodians=genesis["custodians"], roots=genesis["roots"])
+            if genesis.get("program"):
+                g["program"] = genesis["program"]
             self._append(g, new=True)
         with open(path) as f:
             for no, line in enumerate(f):
@@ -327,6 +348,7 @@ class Ledger:
     def _replay(self):
         g = self.recs[0]
         self.d = g["d"]
+        self.program = g.get("program")
         self.owner_pk = None if g["owner_pk"] == "none" else bytes.fromhex(g["owner_pk"])
         self.epoch, self.step, self.parent, self.next_leaf, self.custodians = 0, 0, g["roots"], 0, g["custodians"]
         for no, rec in enumerate(self.recs[1:], 2):
@@ -397,7 +419,7 @@ class Ledger:
             self._replay()
             ctx, parent = self.head()
             ok, why, out = verify_step(p, blob, ctx, parent, tab, self.d, owner_pk=self.owner_pk,
-                                       min_leaf=self.next_leaf)
+                                       min_leaf=self.next_leaf, program=self.program)
             if not ok:
                 return False, why
             child, leaf = out

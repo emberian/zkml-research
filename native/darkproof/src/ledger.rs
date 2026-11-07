@@ -123,7 +123,8 @@ impl Ledger {
                 String::new()
             } else {
                 let p = g.program;
-                format!(", \"program\": {{\"S1\": {}, \"K1\": {}, \"S2\": {}, \"K2\": {}, \"S3\": {}, \"K3\": {}}}", p.s1, p.k1, p.s2, p.k2, p.s3, p.k3)
+                let he = if p.he { ", \"he\": true" } else { "" };
+                format!(", \"program\": {{\"S1\": {}, \"K1\": {}, \"S2\": {}, \"K2\": {}, \"S3\": {}, \"K3\": {}{}}}", p.s1, p.k1, p.s2, p.k2, p.s3, p.k3, he)
             };
             let line = format!(
                 "{{\"kind\": \"genesis\", \"model\": {}, \"d\": {}, \"params\": {}, \"owner_pk\": {}, \"custodians\": {}, \"roots\": {}{}}}",
@@ -179,7 +180,12 @@ impl Ledger {
             None => crate::step::StepParams::HARNESS,
             Some(p) => {
                 let f = |k: &str| p[k].as_u64().map(|v| v as u32).ok_or("genesis program");
-                crate::step::StepParams { s1: f("S1")?, k1: f("K1")?, s2: f("S2")?, k2: f("K2")?, s3: f("S3")?, k3: f("K3")? }
+                let he = match p.get("he") {
+                    None => false,
+                    Some(Value::Bool(b)) => *b,
+                    Some(_) => return Err("genesis program: he must be a boolean".into()),
+                };
+                crate::step::StepParams { s1: f("S1")?, k1: f("K1")?, s2: f("S2")?, k2: f("K2")?, s3: f("S3")?, k3: f("K3")?, he }
             }
         };
         let pk = g["owner_pk"].as_str().ok_or("owner_pk")?;
