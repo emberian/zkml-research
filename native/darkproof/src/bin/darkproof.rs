@@ -39,6 +39,8 @@ fn main() {
         Some("run-check") => run_check(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
+        #[cfg(feature = "tcp")]
+        Some("ds-bench") => ds_bench(args[2].parse().unwrap(), &args[3]),
         _ => eprintln!("usage: darkproof check VECDIR TAG"),
     }
 }
@@ -49,7 +51,8 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
         None => darkproof::step::StepParams::for_width(d),
         Some(p) => {
             let f = |k: &str| p[k].as_u64().unwrap() as u32;
-            darkproof::step::StepParams { s1: f("S1"), k1: f("K1"), s2: f("S2"), k2: f("K2"), s3: f("S3"), k3: f("K3"), he: p["he"].as_bool().unwrap_or(false) }
+            let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
+            darkproof::step::StepParams { s1: f("S1"), k1: f("K1"), s2: f("S2"), k2: f("K2"), s3: f("S3"), k3: f("K3"), he: p["he"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128) }
         }
     }
 }
@@ -271,6 +274,109 @@ fn run_check(dir: &Path, tag: &str) {
     std::process::exit(if ok_all { 0 } else { 1 });
 }
 
+/// One custodian's HE helper state as darkstep's node builds it (OwnKey from the harness's key seed, public keys
+/// exchanged over CTRL; ungated).
+#[cfg(feature = "tcp")]
+fn ds_he(i: usize, pf: &darkstep::node::Prof, net: &darkstep::net::Net) -> darkstep::he::He {
+    use darkstep::net::{bytes_to_u64s, u64s_to_bytes};
+    use std::sync::Arc;
+    let rns = Arc::new(darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t));
+    let key = darkstep::bfv::OwnKey::new(rns.clone(), darkstep::node::KEY_SEED0 + i as u64);
+    let mut mine = key.pk.pk0_ntt.clone();
+    mine.extend_from_slice(&key.pk.pk1_ntt);
+    let all = net.exchange_bytes(darkstep::net::CTRL, &u64s_to_bytes(&mine));
+    let ln = rns.l() * rns.n;
+    let pks = all
+        .iter()
+        .map(|b| {
+            let v = bytes_to_u64s(b);
+            darkstep::bfv::PubKey { pk0_ntt: v[..ln].to_vec(), pk1_ntt: v[ln..].to_vec() }
+        })
+        .collect();
+    darkstep::he::He {
+        rns, key, pks, f_bits: pf.f_bits, mv_seed: darkstep::node::MV_SEED, ou_seed: darkstep::node::OU_SEED,
+        mv_calls: 0, ou_calls: 0, context: ("model".into(), 0, 0), he_send: 0, he_return: 0, ou_send: 0,
+        ou_return: 0, ou_commit: 0, cts_sent: 0, cts_returned: 0, attack: None, gate: None,
+    }
+}
+
+/// Timing of the deployed step and its proof in one process: darkstep's genesis HE step (ideal-dealer tapes with
+/// the proof atoms and the FULL proof section, Ligero triples included) and darkproof::run::prove_step with
+/// production coins, three custodian threads over 127.0.0.1 sockets. D = width, PROFILE = demo | ledger; the program
+/// is StepParams::for_width(D).deployed() unless DP_PROGRAM='{"S1":..,"R3":..,"T_LO":..}' says otherwise.
+#[cfg(feature = "tcp")]
+fn ds_bench(d: usize, prof: &str) {
+    use darkproof::run::{from_darkstep, n_had, prove_step, tape_triples, TcpRef};
+    use std::sync::Arc;
+    let pr = Profile::by_name(prof).unwrap();
+    let p = wire::he_field(&pr).unwrap();
+    darkproof::field::set_p(p);
+    let lp = pr.ligero();
+    let prm = match std::env::var("DP_PROGRAM") {
+        Ok(j) => program_of(&serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }), d).deployed(),
+        Err(_) => darkproof::step::StepParams::for_width(d).deployed(),
+    };
+    let tables = darkproof::step::tables_for(prm.t_lo);
+    let pf = darkstep::node::prof(&[pr.he.0.to_string(), pr.he.1.to_string(), pr.he.2.to_string(), d.to_string()]);
+    assert_eq!(pf.t, p);
+    let pg = darkstep::step::Program { s1: prm.s1, k1: prm.k1, s2: prm.s2, k2: prm.k2, s3: prm.s3, k3: prm.k3, r3: prm.r3, t_lo: prm.t_lo, xmax: 7, wmax: None, check_k: false };
+    let t0 = std::time::Instant::now();
+    let nt = tape_triples(&lp, d, n_had(d, prm, false, &tables));
+    let plain = darkstep::step::inputs(d);
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg);
+    darkstep::tape::deal_proof_section(&mut dl, nt);
+    let tapes = dl.tapes;
+    println!("d={d} profile={prof} program={prm:?} proof-section triples {nt}; dealing {:.1}s", t0.elapsed().as_secs_f64());
+    let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
+    let cs = Arc::new(cs);
+    let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(4);
+    let outs: Vec<(f64, f64, Vec<u8>, u64, BTreeMap<String, Vec<[u8; 32]>>)> = std::thread::scope(|s| {
+        let hs: Vec<_> = ls
+            .into_iter()
+            .zip(tapes)
+            .enumerate()
+            .map(|(i, (l, tape))| {
+                let (addrs, cs, pf, pr, lp, tables, pg) = (&addrs, cs.clone(), &pf, &pr, &lp, &tables, &pg);
+                s.spawn(move || {
+                    let net = darkstep::net::Net::connect(i, l, addrs);
+                    let mut he = ds_he(i, pf, &net);
+                    let tab = pg.tables(pf.t);
+                    let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
+                    let t = std::time::Instant::now();
+                    let out = pool.install(|| darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)).expect("darkstep step");
+                    let step_s = t.elapsed().as_secs_f64();
+                    let st = from_darkstep(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Det::off()).expect("record");
+                    drop(out);
+                    let mut tn = TcpRef(&pt.net);
+                    let ctx = Ctx::new("mind-0", 0, 1);
+                    let sp = pool.install(|| prove_step(pr, lp, tables, prm, &mut tn, &ctx, st, None)).expect("prove");
+                    (step_s, sp.secs, sp.blob, sp.sent, sp.genesis_roots.unwrap())
+                })
+            })
+            .collect();
+        hs.into_iter().map(|h| h.join().unwrap()).collect()
+    });
+    let agree = outs.iter().all(|o| o.2 == outs[0].2);
+    for (i, o) in outs.iter().enumerate() {
+        println!("party {i}: step {:.1}s, prove {:.1}s, proof sent {} elements ({:.1} MB)", o.0, o.1, o.3, o.3 as f64 * 8.0 / 1e6);
+    }
+    println!("bundle {} bytes; parties agree {agree}; peak RSS {:.2} GB", outs[0].2.len(), peak_rss_gb());
+    let t = std::time::Instant::now();
+    let v = wire::verify_step(&pr, &lp, &outs[0].2, &Ctx::new("mind-0", 0, 1), &outs[0].4, &tables, d, prm, None, 0);
+    println!("verify {:.1}s {:?}", t.elapsed().as_secs_f64(), v.as_ref().map(|_| "accept"));
+    println!("bench rows");
+}
+
+#[cfg(feature = "tcp")]
+fn peak_rss_gb() -> f64 {
+    std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|s| s.lines().find(|l| l.starts_with("VmHWM")).map(|l| l.split_whitespace().nth(1).unwrap().parse::<f64>().unwrap() / 1e6))
+        .unwrap_or(f64::NAN)
+}
+
 /// darkstep's genesis step (HE matvec + outer, ideal-dealer tapes with the proof atoms and the proof section) feeds
 /// darkproof::run::prove_step through its ProofRecord, over darkstep's own sockets: the record must equal the
 /// harness's witness (wires, middle atoms vs RecEngine.atom_sh, public transcript, alpha), and in the deterministic
@@ -311,26 +417,8 @@ fn ds_check(dir: &Path, tag: &str) {
             .map(|(i, (l, tape))| {
                 let (addrs, cs, pf, w, pr, lp, tables, ctx, seed) = (&addrs, cs.clone(), &pf, &w, &pr, &lp, &tables, &ctx, seed.clone());
                 s.spawn(move || {
-                    use darkstep::net::{bytes_to_u64s, u64s_to_bytes};
                     let net = darkstep::net::Net::connect(i, l, addrs);
-                    let rns = Arc::new(darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t));
-                    let key = darkstep::bfv::OwnKey::new(rns.clone(), darkstep::node::KEY_SEED0 + i as u64);
-                    let mut mine = key.pk.pk0_ntt.clone();
-                    mine.extend_from_slice(&key.pk.pk1_ntt);
-                    let all = net.exchange_bytes(darkstep::net::CTRL, &u64s_to_bytes(&mine));
-                    let ln = rns.l() * rns.n;
-                    let pks = all
-                        .iter()
-                        .map(|b| {
-                            let v = bytes_to_u64s(b);
-                            darkstep::bfv::PubKey { pk0_ntt: v[..ln].to_vec(), pk1_ntt: v[ln..].to_vec() }
-                        })
-                        .collect();
-                    let mut he = darkstep::he::He {
-                        rns: rns.clone(), key, pks, f_bits: pf.f_bits, mv_seed: darkstep::node::MV_SEED, ou_seed: darkstep::node::OU_SEED,
-                        mv_calls: 0, ou_calls: 0, context: ("model".into(), 0, 0), he_send: 0, he_return: 0, ou_send: 0,
-                        ou_return: 0, ou_commit: 0, cts_sent: 0, cts_returned: 0, attack: None, gate: None,
-                    };
+                    let mut he = ds_he(i, pf, &net);
                     let tab = darkstep::step::tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(4).build().unwrap();

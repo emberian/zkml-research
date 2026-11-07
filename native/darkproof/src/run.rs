@@ -84,6 +84,13 @@ pub fn prove_step(
     if net.me() != i || net.n() != n {
         return Err("transport is for another party or committee size".into());
     }
+    let own_tables;
+    let tables = if prm.t_lo == -128 {
+        tables
+    } else {
+        own_tables = step::tables_for(prm.t_lo);
+        &own_tables
+    };
     let det = st.det;
     let carried = prm.carried(ctx.step);
     let rec = step::replay(&st.public, d, prm, tables, carried).map_err(|e| format!("own transcript: {e:?}"))?;

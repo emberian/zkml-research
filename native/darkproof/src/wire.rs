@@ -391,6 +391,14 @@ fn verify_inner(
     min_leaf: u64,
 ) -> Result<Accepted, String> {
     let bind = owner_pk.is_some();
+    // the lookup tables are the program's (its domain [t_lo, t_lo + 256)), never the caller's
+    let own_tables;
+    let tables = if prm.t_lo == -128 {
+        tables
+    } else {
+        own_tables = step::tables_for(prm.t_lo);
+        &own_tables
+    };
     let mut r = R { d: blob, o: 0 };
     let parsed = (|| -> PR<_> {
         if r.take(8)? != MAGIC {

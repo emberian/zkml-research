@@ -21,13 +21,17 @@ pub struct StepParams {
     /// the deployed step (research cosnark_he): HE matvec and HE outer, weights carried from step 2 on, over the HE
     /// profile's field; false: the harness's plain-SPDZ step (matrix and outer-product triples, W input every step)
     pub he: bool,
+    /// public constant added to b * g1 before its truncation (step_spec.Program.R3; 0 floors)
+    pub r3: i64,
+    /// the table's domain is [t_lo, t_lo + 256) (step_spec.Program.T_LO; the harness's -128)
+    pub t_lo: i64,
 }
 
 impl StepParams {
     /// The harness's step (step_spec S1, S2, S3 = 5, 4, 8; run_step's K = 13, 8, 13).
-    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false };
+    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, r3: 0, t_lo: -128 };
     /// The d = 4096 shifts of the decision doc's count formulas (§12; cosnark_gates.counts_formula at width).
-    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false };
+    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, r3: 0, t_lo: -128 };
     /// The program a ledger of width d runs: the harness's up to d = 1024, the wide shifts beyond.
     pub fn for_width(d: usize) -> StepParams {
         if d <= 1024 { Self::HARNESS } else { Self::WIDE }
@@ -299,7 +303,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     let mut h = Vec::with_capacity(d);
     let mut g1 = Vec::with_capacity(d);
     for u in &u1 {
-        let (a, b) = r.lookup2(u, 128)?;
+        let (a, b) = r.lookup2(u, field::from_i64(-prm.t_lo))?;
         h.push(a);
         g1.push(b);
     }
@@ -329,7 +333,9 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     r.rec_out("bg", &bg);
     let mut d1 = Vec::with_capacity(d);
     for v in &bg {
-        d1.push(r.trunc(v, prm.s3, prm.k3)?);
+        // b * g1 + r3 (a public constant: the form's constant moves)
+        let v = Form { terms: v.terms.clone(), c: field::add(v.c, field::from_i64(prm.r3)) };
+        d1.push(r.trunc(&v, prm.s3, prm.k3)?);
     }
     r.rec_out("d1", &d1);
     for _ in 0..2 {
@@ -394,10 +400,15 @@ pub fn interpolate(values: &[u64]) -> Vec<u64> {
 
 /// mpc_fork.tables: the activation and its derivative on u in [-128, 128), interpolated.
 pub fn tables() -> (Vec<u64>, Vec<u64>) {
+    tables_for(-128)
+}
+
+/// The tables over [t_lo, t_lo + 256) (cosnark_he.Prog.tables; darkstep Program::tables).
+pub fn tables_for(t_lo: i64) -> (Vec<u64>, Vec<u64>) {
     let sig = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
     let dsig = |u: i64| if (-28..32).contains(&u) { 1 } else { 0 };
-    let s: Vec<u64> = (0..256).map(|u| field::from_i64(sig(u - 128))).collect();
-    let ds: Vec<u64> = (0..256).map(|u| field::from_i64(dsig(u - 128))).collect();
+    let s: Vec<u64> = (0..256).map(|u| field::from_i64(sig(u + t_lo))).collect();
+    let ds: Vec<u64> = (0..256).map(|u| field::from_i64(dsig(u + t_lo))).collect();
     (interpolate(&s), interpolate(&ds))
 }
 

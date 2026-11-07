@@ -29,14 +29,28 @@ class ScheduleError(Exception):
 
 
 class Prog:
-    """Truncation shifts and bounds: (s1, k1) for z1 and z2, (s2, k2) for e, (s3, k3) for b * g1."""
-    HARNESS = (5, 13, 4, 8, 8, 13)
+    """The step program's proof-relevant parameters (step_spec.Program; its bounds XMAX, WMAX, CHECK_K are the C2
+    envelope's, not the proof's): (s1, k1) for z1 and z2, (s2, k2) for e, (s3, k3) for b * g1 + r3; the table's domain
+    [t_lo, t_lo + 256)."""
+    KEYS = ("S1", "K1", "S2", "K2", "S3", "K3", "R3", "T_LO")
 
-    def __init__(self, s1=5, k1=13, s2=4, k2=8, s3=8, k3=13):
+    def __init__(self, s1=5, k1=13, s2=4, k2=8, s3=8, k3=13, r3=0, t_lo=-128):
         self.s1, self.k1, self.s2, self.k2, self.s3, self.k3 = s1, k1, s2, k2, s3, k3
+        self.r3, self.t_lo = r3, t_lo
 
-    def tuple(self):
-        return (self.s1, self.k1, self.s2, self.k2, self.s3, self.k3)
+    @classmethod
+    def of(cls, program):
+        """From a ledger genesis "program" dict (R3, T_LO default to the harness's)."""
+        dflt = dict(R3=0, T_LO=-128)
+        return cls(*(program.get(k, dflt.get(k)) for k in cls.KEYS))
+
+    def tables(self, p):
+        """mpc_fork.tables(p) over [t_lo, t_lo + 256): SIG, DSIG interpolated at u - t_lo = 0..255."""
+        import spdz
+        import step_spec as S
+        sig = [S.sig(u + self.t_lo) % p for u in range(256)]
+        dsig = [S.dsig(u + self.t_lo) % p for u in range(256)]
+        return spdz.interpolate(sig, p), spdz.interpolate(dsig, p)
 
 
 class LiveHE:
@@ -119,7 +133,7 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None
     sy = eng.input(y if y else [0] * d, orng, "input")
     z1 = eng.rec_in("z1", mv(M1, sx))
     u1 = [eng.trunc(z, pg.s1, pg.k1) for z in z1]
-    hg = [eng.lookup2(u, 128, tab, 255) for u in u1]
+    hg = [eng.lookup2(u, -pg.t_lo, tab, 255) for u in u1]
     h = [a for a, _ in hg]
     g1 = [b for _, b in hg]
     eng.rec_out("h", h)
@@ -132,7 +146,8 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None
     b = eng.rec_in("b", mv(M2, d2, transpose=True))
     bg = [eng.mul(bb, g) for bb, g in zip(b, g1)]
     eng.rec_out("bg", bg)
-    d1 = [eng.trunc(v, pg.s3, pg.k3) for v in bg]
+    bgr = [eng.cadd(pg.r3 % eng.p, v) for v in bg] if pg.r3 else bg
+    d1 = [eng.trunc(v, pg.s3, pg.k3) for v in bgr]
     eng.rec_out("d1", d1)
     G2 = ou(d2, h)
     G1 = ou(d1, sx)
