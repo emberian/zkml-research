@@ -96,6 +96,21 @@ fn scan_json(r: &ScanReport) -> Value {
 }
 
 /// An old custodian's state at the end of step k (everything it must erase).
+/// A custodian's HE key secret: its key s and key error e, and its registered public key (b, a).
+pub struct HeSecret {
+    pub s: Vec<i64>,
+    pub e: Vec<i64>,
+    pub reg: Arc<dzkpopk::KeyRegistry>,
+}
+
+impl HeSecret {
+    pub fn from_ceremony(cust: Custodian, cer: &Ceremony) -> Self {
+        let mut cust = cust;
+        let reg = cer.registry(cust.i).expect("own key registered");
+        HeSecret { s: std::mem::take(&mut cust.s), e: std::mem::take(&mut cust.e), reg }
+    }
+}
+
 pub struct OldCustodian {
     pub i: usize,
     /// authenticated W1, W2 shares (d * d each, row-major)
@@ -103,7 +118,7 @@ pub struct OldCustodian {
     pub tape: Tape,
     /// the HE key's ceremony secret and view, and the key: Some in a rotation (erased with the rest); None in a
     /// self-handover, where the same custodian keeps its HE key and only the MAC key is retired
-    pub keys: Option<(Custodian, Ceremony)>,
+    pub keys: Option<HeSecret>,
     pub key: Option<OwnKey>,
     /// the child commitment's parts (first life spent in step k)
     pub carry: BTreeMap<String, PcsParty>,
@@ -229,8 +244,8 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     can.add_words("tape shares", &st.tape.sh, 1 << 16);
     can.add_words("tape MAC shares", &st.tape.mac, 1 << 16);
     can.add_words("alpha share", std::slice::from_ref(&st.tape.alpha_i), 1);
-    if let Some((cust, _)) = st.keys.as_ref() {
-        let mut s_ntt = c.rns.from_signed(&cust.s);
+    if let Some(hs) = st.keys.as_ref() {
+        let mut s_ntt = c.rns.from_signed(&hs.s);
         c.rns.fwd(&mut s_ntt);
         can.add_words("HE secret key (NTT form)", &s_ntt, 1 << 16);
         s_ntt.wipe();
@@ -255,8 +270,9 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     }
     st.carry.clear();
     st.tape.wipe();
-    if let Some((cust, _)) = st.keys.as_mut() {
-        cust.wipe();
+    if let Some(hs) = st.keys.as_mut() {
+        hs.s.wipe();
+        hs.e.wipe();
     }
     if let Some(k) = st.key.as_mut() {
         k.s.wipe();
@@ -279,10 +295,7 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     }
     let erase_s = te.elapsed().as_secs_f64();
     let (mut s_left, b, a) = match st.keys.as_ref() {
-        Some((cust, cer)) => {
-            let reg = cer.registry(i).unwrap();
-            (cust.s.clone(), reg.b_res().clone(), reg.a_res().clone())
-        }
+        Some(hs) => (hs.s.clone(), hs.reg.b_res().clone(), hs.reg.a_res().clone()),
         None => (Vec::new(), Vec::new(), Vec::new()),
     };
     s_left.resize(c.rns.n, 0);
@@ -291,7 +304,7 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
         "proof_sha256": proof_digest, "canaries": can.len(),
         "scan_before_erasure": scan_json(&pre),
         "decrypts_captured_before_erasure": pre_dec,
-        "key_material_left": {"s_len": st.keys.as_ref().map(|k| k.0.s.len()).unwrap_or(0), "w_len": st.w.len(), "tape_len": st.tape.len(),
+        "key_material_left": {"s_len": st.keys.as_ref().map(|k| k.s.len()).unwrap_or(0), "w_len": st.w.len(), "tape_len": st.tape.len(),
                               "carry_len": st.carry.len()},
         "file_wipe_errors": file_errs,
     });
@@ -309,8 +322,8 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
 /// A new custodian's state after the handover: what the next step runs on.
 pub struct NewCustodian {
     pub j: usize,
-    pub cust: Custodian,
-    pub cer: Ceremony,
+    /// the fresh ceremony's secret and view (a rotation); None in a self-handover (the seat kept its key)
+    pub keys: Option<(HeSecret, Ceremony)>,
     pub key: OwnKey,
     pub party: Party,
     pub w: BTreeMap<String, Vec<Sh>>,
@@ -326,18 +339,18 @@ pub struct NewCustodian {
 /// new); None in a rotation (a fresh ceremony at `epoch`).
 #[allow(clippy::too_many_arguments)]
 pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i64, check: usize,
-                keep: Option<(Custodian, Ceremony, OwnKey)>) -> Result<NewCustodian, String> {
+                keep: Option<OwnKey>) -> Result<NewCustodian, String> {
     let t0 = Instant::now();
     let (n_old, n_new) = (c.n_old, c.n_new);
     assert!(net6.me == n_old + j && net3.me == j && net3.n == n_new);
     let tc = Instant::now();
-    let (cust, cer, key) = match keep {
-        Some(k) => k,
+    let (keys, key) = match keep {
+        Some(k) => (None, k),
         None => {
             let (cust, cer) = crate::ceremony::run(&net3, j, c.rns.n, &c.rns.qs, c.t, c.pr.t_cols, epoch)?;
-            let regs = (0..n_new).map(|k| cer.registry(k).unwrap()).collect::<Vec<_>>();
-            let key = OwnKey::from_ceremony_secure(c.rns.clone(), &cust.s, regs[j].b_res(), regs[j].a_res());
-            (cust, cer, key)
+            let hs = HeSecret::from_ceremony(cust, &cer);
+            let key = OwnKey::from_ceremony_secure(c.rns.clone(), &hs.s, hs.reg.b_res(), hs.reg.a_res());
+            (Some((hs, cer)), key)
         }
     };
     let ceremony_s = tc.elapsed().as_secs_f64();
@@ -399,5 +412,5 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
         "alpha_differs_from_zero": party.alpha() != 0, "ct_under_new_key": pycompat::repr::hex(&ct_bytes(&ct)),
         "ct_plain_sha256": digest(&m), "decrypts_own_ct": own_dec, "seconds": t0.elapsed().as_secs_f64(),
     });
-    Ok(NewCustodian { j, cust, cer, key: key2, party, w, carry, proof: blob, new_roots: proof.new_roots, report })
+    Ok(NewCustodian { j, keys, key: key2, party, w, carry, proof: blob, new_roots: proof.new_roots, report })
 }

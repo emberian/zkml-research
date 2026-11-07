@@ -185,7 +185,7 @@ fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldC
         i,
         w,
         tape: *tape,
-        keys: Some((cust, cer)),
+        keys: Some(side::HeSecret::from_ceremony(cust, &cer)),
         key: Some(key),
         carry,
         files: vec![dir.join("tape.bin"), dir.join("key.bin")],
@@ -299,7 +299,7 @@ fn seat(work: &Path, i: usize, d: usize, prof: &str, base: u16) {
         let new_t = std::thread::Builder::new().stack_size(64 << 20).spawn_scoped(s, move || {
             let net3 = mesh(base, 3, 3, i);
             let net6 = mesh(base, 6, 6, 3 + i);
-            match side::new_side(c, i, net3, net6, new_tape, 1, CHECK, Some((cust, cer, key))) {
+            match side::new_side(c, i, net3, net6, new_tape, 1, CHECK, Some(key)) {
                 Ok(out) => {
                     let mut rep = out.report.clone();
                     if i == 0 {
