@@ -116,7 +116,7 @@ pub fn build_q<const E: usize>(
     gam: &[[u64; E]],
 ) -> (BTreeMap<String, Vec<[u64; E]>>, [u64; E]) {
     let mut it = gam.iter();
-    build_q_src(rec, lens, &mut || *it.next().expect("gamma"))
+    build_q_src(rec, &rec.cons, lens, &mut || *it.next().expect("gamma"))
 }
 
 /// build_q drawing gamma in order from `next` (cons.len() + 3 had.len() elements: the constraints', then each
@@ -124,6 +124,7 @@ pub fn build_q<const E: usize>(
 #[allow(clippy::type_complexity)]
 pub fn build_q_src<const E: usize>(
     rec: &Rec,
+    cons: &crate::step::Cons,
     lens: &BTreeMap<String, usize>,
     next: &mut dyn FnMut() -> [u64; E],
 ) -> (BTreeMap<String, Vec<[u64; E]>>, [u64; E]) {
@@ -134,7 +135,7 @@ pub fn build_q_src<const E: usize>(
         let qp = q.get_mut("P").unwrap();
         let pmr = rec.pubmat.as_ref().map_or(0..0, |pm| pm.start..pm.start + pm.d * pm.m);
         let mut pmg: Vec<[u64; E]> = Vec::with_capacity(pmr.len());
-        for (j, con) in rec.cons.iter().enumerate() {
+        for (j, con) in cons.iter().enumerate() {
             let gj = next();
             if pmr.contains(&j) {
                 pmg.push(gj);
@@ -408,6 +409,17 @@ pub struct MiddleIn<'a> {
     pub ignore_range: bool,
     /// ATTACK HOOK (fs_public_falsifier; EXT = 1 only): colluders rewrite the batch constant after seeing gamma
     pub cst_patch: Option<&'a (dyn Fn(&BTreeMap<String, Vec<u64>>, u64, &[u64]) -> u64 + Sync)>,
+    /// the release's inputs moved out of rec and the party record, freed as soon as they are spent (None: read rec.cons
+    /// and `atoms`)
+    pub spent: Option<&'a Spent>,
+}
+
+/// Inputs prove_g frees once spent (the release, memory at M = 52): the constraint list after build_q (1.6 GB), the
+/// party's middle atoms after the witness is made (0.4 GB).
+#[derive(Default)]
+pub struct Spent {
+    pub cons: std::sync::Mutex<Option<crate::step::Cons>>,
+    pub atoms: std::sync::Mutex<Option<Vec<Sh>>>,
 }
 
 /// Plain (unauthenticated) products in the middle's Ligero at EXT = 1: the zerocheck's final product.
@@ -732,8 +744,14 @@ fn prove_g<const E: usize>(
     let nr = ext::nr();
     let mut tt = crate::Trace::new("middle", i);
     let (lens, _) = public_shapes_io(pr, rec.n_prep(), rec.had.len(), d, false, rec.io.as_ref());
-    let mut atoms_v: Vec<Sh> = rec.witness_atoms(inp.atoms)?;
-    tt.lap(&format!("witness atoms ({} cons, {} hadamard rows, {} atoms)", rec.cons.len(), rec.had.len(), atoms_v.len()));
+    let mut atoms_v: Vec<Sh> = match inp.spent.and_then(|s| s.atoms.lock().unwrap().take()) {
+        Some(a) if a.len() == rec.n_program_atoms() => a,
+        Some(a) => rec.witness_atoms(&a)?,
+        None => rec.witness_atoms(inp.atoms)?,
+    };
+    let cons_own: Option<crate::step::Cons> = inp.spent.and_then(|s| s.cons.lock().unwrap().take());
+    let cons = cons_own.as_ref().unwrap_or(&rec.cons);
+    tt.lap(&format!("witness atoms ({} cons, {} hadamard rows, {} atoms)", cons.len(), rec.had.len(), atoms_v.len()));
     if !rec.range_rows.is_empty() {
         atoms_v.resize(rec.n_prep(), (0, 0));
         let bad = fill_range(rec, &mut atoms_v, net, sp);
@@ -916,13 +934,14 @@ fn prove_g<const E: usize>(
     drop(prev);
     drop(pp);
     tt.lap("zerocheck");
-    let ng = rec.cons.len() + 3 * rec.had.len();
+    let ng = cons.len() + 3 * rec.had.len();
     let (mut q, mut cst) = if let Some(f) = inp.cst_patch {
         if E != 1 {
             return Err("the fs_public attack hook is EXT = 1 only".into());
         }
         let gam = ext::chal::<E>(&mut tr, ng);
-        let (q, mut cst) = build_q::<E>(rec, &lens, &gam);
+        let mut it = gam.iter();
+        let (q, mut cst) = build_q_src::<E>(rec, cons, &lens, &mut || *it.next().expect("gamma"));
         let q1: BTreeMap<String, Vec<u64>> = q.iter().map(|(k, v)| (k.clone(), v.iter().map(|x| x[0]).collect())).collect();
         let g1: Vec<u64> = gam.iter().map(|x| x[0]).collect();
         cst[0] = f(&q1, cst[0], &g1);
@@ -930,10 +949,12 @@ fn prove_g<const E: usize>(
     } else {
         // gamma streamed into build_q (memory: never the 70M-element table at M = 52)
         let mut gs = ext::ChalStream::<E>::new(&mut tr, ng);
-        let out = build_q_src::<E>(rec, &lens, &mut || gs.next());
+        let out = build_q_src::<E>(rec, cons, &lens, &mut || gs.next());
         assert!(gs.done(), "build_q drew every gamma");
         out
     };
+    // the constraint list is spent (the release moved it here: freed now)
+    drop(cons_own);
     tt.lap("gamma and build_q");
     let mut xt: BTreeMap<String, UT<E>> = ks
         .iter()
