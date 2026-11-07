@@ -176,3 +176,61 @@ equal to the plaintext twin) needs three things from other lanes:
   (`shares_rows`), the carry (the next parent), the keys, and the proof for `Ledger::rotate`.
 - The binary declares `#[global_allocator] static A: darkhand::erase::ZeroOnFree`.
 - The resharing tag is `side::RESHARE` (PROOF until the deploy lane's RESHARE = 5).
+
+## Continuation (handover lane, 2026-11-07; for a successor)
+State: every handover piece is on dev (latest darkhand commit 4ce5d616). The three-box run waits on the deploy lane
+(a68410e60434efcda) wiring the hooks below into native/darkdeploy/src/bin/dl-custodian.rs. The step-k child
+commitment ("carry") lives there in `Prove.carry`, not in darkstep::serve::CustodianState.
+
+### Hooks requested from the deploy lane (sent 2026-11-07)
+1. **`--handover-at k`, old seat i, after step k:**
+   - `let parts = darkhand::serve::old_from_serve(state, prove.carry.take().unwrap(), files, true, captured_opt);`
+   - `files` = ckpt_P<i>.bin, the tape file and tls_<i>.key.
+   - Then `darkhand::side::old_side(&common, move || parts.old, || <6-party TLS Net, index i>)`. Write the report
+     JSON, then exit.
+2. **Join mode, new seat j:**
+   - `darkhand::side::new_side(&common, j, <new 3-party TLS Net>, <6-party TLS Net, index 3 + j>, tape, epoch + 1, 8, None)`.
+   - Build the next CustodianState from `nc.party`, `serve::shares_rows(&nc.w, d)`, `nc.key` / `nc.keys` (asked for
+     `CustodianState::from_parts`), and set `Prove.carry = Some(nc.carry)`.
+   - Seat 0 calls `Ledger::rotate(new_set, &nc.new_roots, &nc.proof)`.
+3. **`common`:** `darkhand::side::Common { pr, lp (built AFTER field::set_p), d, n_old: 3, n_new: 3, ctx: ledger.handover_context(&new_set), rns, t }`.
+4. **Allocator:** `#[global_allocator] static A: darkhand::erase::ZeroOnFree = darkhand::erase::ZeroOnFree;` in dl-custodian.
+5. **Self-handover after an SPDZ abort:**
+   - `old_from_serve(.., false, None)` keeps `parts.he` and `parts.net3`.
+   - Run two threads with 64 MiB stacks: `old_side` at index i, and
+     `new_side(.., parts.net3, net6(3 + i), NEW tape, epoch + 1, 8, Some(parts.he.key))`.
+   - new_set = old_set.
+
+### Three-box checks still to write (once the command lines exist)
+The local versions are `dl-hand local` / `local-self` (darkhand/src/bin/dl-hand.rs). Port each check to read the
+seats' report JSONs. Each seat runs on its own box: bb2, forge and hbox, with hbox under swarm-build and on /othersys.
+
+| check | how |
+|---|---|
+| all six seats exit 0 and hold the same proof | `proof_sha256` in each seat's report |
+| the ledger accepts the rotation; its head is the new roots | seat 0's report (`rotation`, `ledger_head_is_new_roots`); also reopen the ledger file with darkproof Ledger::open |
+| MAC check under the new key; opened W equals the twin | new seats' `mac_check`, `opened`, against the train lane's plaintext twin at step k |
+| memory scan before (control) and after erasure, per old seat | `scan_before_erasure.hits > 0`, `scan_after_erasure.hits == 0`, `available == true` (Linux /proc on every box) |
+| old seat decrypts its captured ct before erasure, not after | pass `captured` = one HE_CT it sent in step k (the ct and the sha256 of its plaintext) |
+| state files gone | `state_files_left == []`; then `ls` the seat dir on its box |
+| restarted old seat holds nothing | port `dl-hand restart` (loads key, tape and checkpoint files from the seat dir; tries to decrypt its old ct and a new seat's ct) and run it on each old box after the handover |
+| d = 4096 | the same at full width (about 2 GB per seat) |
+
+### Run-level abort test (self-handover)
+- **Steps:** run darkstep or dl-custodian for k steps, inject an SPDZ abort mid-step k+1 (a MAC-check failure; the
+  deploy lane's attack hook), then self-handover at k. The run continues from k under the new MAC key and fresh
+  preprocessing.
+- **Pass:** the revealed weights after the last step equal the train lane's plaintext integer twin bit for bit, and
+  the ledger has epoch + 1 with the same custodian set.
+- **Needs:** the deploy lane's `--handover-at` and join mode in self mode; the train lane's twin; prep-lane tapes
+  under the new alpha (the ideal dealer in dl-hand stands in until then).
+
+### Reproduce what is green
+- `HANDOVER_PROVER_VECTORS=<dir> cargo test --release -p darkproof --features test-det --test handover_prover_vs_python`
+  The vectors come from `DL_DETERMINISTIC=7 python3 handover_vectors.py <dir> <4|16> <demo|ledger>`.
+- `HANDOVER_VECTORS=<dirs> cargo test --release -p darkproof --test handover_vs_python`
+  The dirs come from `HANDOVER_DUMP=<dir> run_handover.py 4 <profile>`.
+- `cargo test --release -p darkproof --test handover_production`
+- On forge, under `nice -n 15 systemd-run --scope -p MemoryMax=12G`: `dl-hand local|local-self <work> <d> <profile> <port>`.
+  Use ports below 32768, since forge's ephemeral range collides above it.
+- `dl-handover bench 4096 <profile>`
