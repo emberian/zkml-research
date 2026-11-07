@@ -27,7 +27,13 @@ where
 
 fn main() {
     let a: Vec<String> = std::env::args().collect();
+    #[cfg(feature = "test-det")]
     let det = std::env::var("DL_DETERMINISTIC").ok();
+    #[cfg(not(feature = "test-det"))]
+    if std::env::var("DL_DETERMINISTIC").is_ok() {
+        eprintln!("DL_DETERMINISTIC needs a build with --features test-det");
+        std::process::exit(2);
+    }
     match a.get(1).map(|s| s.as_str()) {
         Some("vectors") => {
             let (n, l, m, t): (usize, usize, usize, usize) = (arg(&a, 2), arg(&a, 3), arg(&a, 4), arg(&a, 5));
@@ -39,7 +45,10 @@ fn main() {
                     continue;
                 }
                 let t0 = Instant::now();
+                #[cfg(feature = "test-det")]
                 let mut opts = ProveOpts { det_seed: det.clone(), ..Default::default() };
+                #[cfg(not(feature = "test-det"))]
+                let mut opts = ProveOpts::default();
                 let blob = prove_with(&st, &wit, t, &mut opts).unwrap();
                 let tp = t0.elapsed().as_secs_f64();
                 let t0 = Instant::now();
@@ -72,7 +81,13 @@ fn main() {
         Some("ceremony") => {
             let (n, l, t): (usize, usize, usize) = (arg(&a, 2), arg(&a, 3), arg(&a, 4));
             let (qp, tt) = params(n, l);
-            let (cer, _) = ceremony::run_ceremony(1, 3, n, &qp, tt, t, det.as_deref()).unwrap();
+            #[cfg(feature = "test-det")]
+            let (cer, _) = match det.as_deref() {
+                Some(s) => ceremony::run_ceremony_det(1, 3, n, &qp, tt, t, s).unwrap(),
+                None => ceremony::run_ceremony(1, 3, n, &qp, tt, t).unwrap(),
+            };
+            #[cfg(not(feature = "test-det"))]
+            let (cer, _) = ceremony::run_ceremony(1, 3, n, &qp, tt, t).unwrap();
             let bd: Vec<String> = (0..3)
                 .map(|i| {
                     let b = &cer.registry(i).unwrap().b;

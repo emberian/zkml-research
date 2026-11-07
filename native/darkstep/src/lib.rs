@@ -10,3 +10,4 @@ pub mod party;
 pub mod step;
 pub mod tape;
 pub mod node;
+pub mod gate;

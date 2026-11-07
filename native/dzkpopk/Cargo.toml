@@ -4,6 +4,15 @@ version = "0.1.0"
 edition.workspace = true
 description = "Batched hash-based Ligero ZKPoPK for BFV ciphertext batches and the key ceremony; bit-exact port of research/dark_learning_2026_11_06/zkpopk_ligero.py and keygen_ceremony.py."
 
+[features]
+# TEST ONLY: seeded hiding randomness (the harness's DL_DETERMINISTIC hook). A seeded proof is not zero knowledge;
+# custodian builds leave this off, so no code path there can set a seed.
+test-det = []
+
+[[test]]
+name = "vs_python"
+required-features = ["test-det"]
+
 [dependencies]
 pycompat = { path = "../pycompat" }
 sha2 = "0.10"

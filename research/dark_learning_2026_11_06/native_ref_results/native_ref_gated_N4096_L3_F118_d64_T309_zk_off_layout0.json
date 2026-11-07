@@ -1,0 +1,25 @@
+{
+ "verdict": "REFUSED",
+ "by": "ZKPoPK gate: custodian 1 refused custodian 0's batch (mv call 1): linear test: the folded limb equations do not hold",
+ "transcript_len": 8320,
+ "gate": {
+  "T": 309,
+  "ceremony_seed": "35646604fc93af842ba3af595268746246efb580db459bd2b8a64c12e2d2f853",
+  "ceremony_seconds": 41.2,
+  "key_b_sha256": [
+   "4a27e2b60f232b2c877e8e91a1e9ba74c9b03d2ef2a2173a1bc672a05ec14e49",
+   "3fc83a61c716aee522f4d5614c9b5c3faa1ad1a202c4767dc85bb8a1af76c50d",
+   "c5eed63b9103cbe15ef9ed0c6ac4a4c19c101b60c10245cf75d5c56b256ed67d"
+  ],
+  "proofs": {
+   "0": [
+    [
+     "mv-1-0-0",
+     "624f760b5be833994e3179420734e0ac8723b58c53a71c35034a6b9a07ccbd10"
+    ]
+   ]
+  },
+  "gate_seconds": 0.0,
+  "products": 0
+ }
+}

@@ -63,12 +63,15 @@ impl BigPoly {
         }
         BigPoly { nl, data }
     }
-    /// From residues per prime (each < q_i) by CRT; the primes must be distinct primes.
+    /// From residues per prime (each reduced mod q_i) by CRT in fixed-width limbs; the primes must be distinct
+    /// primes. res[i][k] is coefficient k mod primes[i].
     pub fn from_rns(res: &[Vec<u64>], primes: &[u64]) -> BigPoly {
         let n = res[0].len();
         let crt = Crt::new(primes);
-        let v: Vec<BigUint> = (0..n).into_par_iter().map(|k| crt.combine(&res.iter().map(|r| r[k]).collect::<Vec<_>>())).collect();
-        BigPoly::from_big(&v)
+        let nl = crt.ql.len();
+        let mut data = vec![0u64; n * nl];
+        data.par_chunks_mut(nl).enumerate().for_each(|(k, out)| crt.combine_limbs(&res.iter().map(|r| r[k]).collect::<Vec<_>>(), out));
+        BigPoly { nl, data }
     }
     pub fn coeff(&self, i: usize) -> &[u64] {
         &self.data[i * self.nl..(i + 1) * self.nl]
@@ -126,6 +129,10 @@ fn lt_limbs(a: &[u64], b: &[u64]) -> bool {
 pub struct Crt {
     q: BigUint,
     terms: Vec<BigUint>, // (Q/q_i) * ((Q/q_i)^-1 mod q_i)
+    primes: Vec<u64>,
+    ql: Vec<u64>,      // Q, little-endian limbs
+    mi: Vec<Vec<u64>>, // Q/q_i, limbs padded to ql.len()
+    inv: Vec<u64>,     // (Q/q_i)^-1 mod q_i
 }
 
 impl Crt {
@@ -139,7 +146,47 @@ impl Crt {
                 mq * BigUint::from(inv_mod_u64(r, p))
             })
             .collect();
-        Crt { q, terms }
+        let ql = limbs_of(&q);
+        let mi = primes
+            .iter()
+            .map(|&p| {
+                let mut v = limbs_of(&(&q / p));
+                v.resize(ql.len(), 0);
+                v
+            })
+            .collect();
+        let inv = primes.iter().map(|&p| inv_mod_u64(((&q / p) % p).to_u64().unwrap(), p)).collect();
+        Crt { q, terms, primes: primes.to_vec(), ql, mi, inv }
+    }
+    /// sum_i ((r_i inv_i) mod q_i) (Q/q_i) mod Q, into out (ql.len() limbs). The sum is below L Q.
+    pub fn combine_limbs(&self, r: &[u64], out: &mut [u64]) {
+        let nl = self.ql.len();
+        let mut acc = vec![0u64; nl + 1];
+        for (i, &ri) in r.iter().enumerate() {
+            let y = mul_mod(ri % self.primes[i], self.inv[i], self.primes[i]);
+            let mut c: u128 = 0;
+            for k in 0..nl {
+                let v = acc[k] as u128 + self.mi[i][k] as u128 * y as u128 + c;
+                acc[k] = v as u64;
+                c = v >> 64;
+            }
+            acc[nl] = acc[nl].wrapping_add(c as u64);
+        }
+        // subtract Q while acc >= Q
+        loop {
+            let ge = acc[nl] != 0 || !lt_limbs(&acc[..nl], &self.ql);
+            if !ge {
+                break;
+            }
+            let mut br = 0u128;
+            for k in 0..nl {
+                let v = (acc[k] as u128).wrapping_sub(self.ql[k] as u128).wrapping_sub(br);
+                acc[k] = v as u64;
+                br = (v >> 127) & 1;
+            }
+            acc[nl] = acc[nl].wrapping_sub(br as u64);
+        }
+        out.copy_from_slice(&acc[..nl]);
     }
     pub fn combine(&self, r: &[u64]) -> BigUint {
         let mut x = BigUint::zero();
@@ -268,6 +315,10 @@ impl KeyRegistry {
 
     pub fn with_a(n: usize, primes: &[u64], t: u64, seed: &str, key_id: &str, b: BigPoly, a: BigPoly) -> KeyRegistry {
         let q: BigUint = primes.iter().map(|&p| BigUint::from(p)).product();
+        let res_b = OnceLock::new();
+        let res_a = OnceLock::new();
+        let _ = res_b.set(primes.par_iter().map(|&q| b.residues(q)).collect());
+        let _ = res_a.set(primes.par_iter().map(|&q| a.residues(q)).collect());
         KeyRegistry {
             n,
             primes: primes.to_vec(),
@@ -277,8 +328,8 @@ impl KeyRegistry {
             q,
             b,
             a,
-            res_b: OnceLock::new(),
-            res_a: OnceLock::new(),
+            res_b,
+            res_a,
         }
     }
 
@@ -392,6 +443,11 @@ impl Statement {
         }
         let mut st = Statement { reg, kind, cts, slots, context, digest: [0; 32], res: OnceLock::new() };
         st.digest = st.compute_digest();
+        // residues eagerly and in parallel here, outside any OnceLock initializer
+        let res: Vec<Vec<(Vec<u64>, Vec<u64>)>> =
+            st.reg.primes.par_iter().map(|&q| st.cts.par_iter().map(|(c0, c1)| (c0.residues(q), c1.residues(q))).collect()).collect();
+        let _ = st.res.set(res);
+        let _ = (st.reg.a_res(), st.reg.b_res());
         Ok(st)
     }
 
@@ -402,13 +458,20 @@ impl Statement {
         let slots = Json::List(self.slots.iter().map(|s| Json::List(s.iter().map(|&k| Json::Int(BigInt::from(k))).collect())).collect());
         h.update(Json::list(vec![Json::s(self.kind.name()), self.context.clone(), slots]).canonical());
         let wb = ((self.reg.q.bits() + 7) / 8) as usize;
-        for (c0, c1) in &self.cts {
-            let mut buf = Vec::with_capacity(2 * c0.len() * wb);
-            for p in [c0, c1] {
-                for i in 0..p.len() {
-                    p.write_be(i, wb, &mut buf);
+        let bufs: Vec<Vec<u8>> = self
+            .cts
+            .par_iter()
+            .map(|(c0, c1)| {
+                let mut buf = Vec::with_capacity(2 * c0.len() * wb);
+                for p in [c0, c1] {
+                    for i in 0..p.len() {
+                        p.write_be(i, wb, &mut buf);
+                    }
                 }
-            }
+                buf
+            })
+            .collect();
+        for buf in bufs {
             h.update(&buf);
         }
         h.finalize().into()

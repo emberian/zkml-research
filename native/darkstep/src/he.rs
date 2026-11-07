@@ -30,6 +30,8 @@ pub struct He {
     pub cts_sent: u64,
     pub cts_returned: u64,
     pub attack: Option<(String, usize)>,
+    /// the recipient's ZKPoPK gate (None: the ungated OwnKey path, bit-exact with native_ref.py)
+    pub gate: Option<crate::gate::Gate>,
 }
 
 fn ct_bytes(hdr: &[u64], ct: &Ct) -> Vec<u8> {
@@ -104,25 +106,64 @@ impl He {
         out
     }
 
-    /// Send my ciphertexts to both other parties; receive theirs (index by party).
-    fn swap_cts(&mut self, pt: &Party, msgs: Vec<Vec<u64>>) -> Vec<Vec<Ct>> {
-        let cts: Vec<Ct> = msgs.iter().map(|m| self.key.encrypt_exact(m)).collect();
+    /// Send my ciphertexts to both other parties; receive theirs (index by party). Gated: my batch's ZKPoPK follows
+    /// my ciphertexts on HE_CT, and I verify both senders' batches (and all three agree on the verdicts) before
+    /// returning, so no ptxct ever touches an unverified ciphertext.
+    fn swap_cts(&mut self, pt: &Party, mut msgs: Vec<Vec<u64>>, kind: &str, call: u64, transpose: bool, slots: &[usize]) -> Result<Vec<Vec<Ct>>, String> {
+        let me = pt.i;
+        let mut forge = false;
+        if let (Some(_), Some((ak, who))) = (&self.gate, &self.attack) {
+            // falsifier: my first matvec batch carries a plaintext coefficient off the layout, with a forged proof
+            if ak == "zk_off_layout" && *who == me && kind == "mv" && call == 1 {
+                let off = (0..self.rns.n).find(|k| !slots.contains(k)).unwrap();
+                msgs[0][off] = 12345;
+                forge = true;
+            }
+        }
+        let (cts, es): (Vec<Ct>, Vec<Vec<i64>>) = msgs.iter().map(|m| self.key.encrypt_exact_w(m)).unzip();
         let ln = self.rns.l() * self.rns.n;
         for j in pt.net.others() {
             for ct in &cts {
                 pt.net.send(j, net::HE_CT, ct_bytes(&[], ct));
             }
         }
+        if let Some(g) = self.gate.as_mut() {
+            let ws: Vec<dzkpopk::SkCt> = msgs.iter().zip(es).map(|(m, e)| dzkpopk::SkCt { e, r: crate::gate::witness_r(&self.rns, m, slots) }).collect();
+            let ctx = crate::gate::context(kind, call, transpose, me);
+            let proof = g.prove(&self.rns, me, &cts, ws, slots, ctx, &crate::gate::label(kind, call, transpose, me), forge)?;
+            for j in pt.net.others() {
+                pt.net.send(j, net::HE_CT, proof.clone());
+            }
+        }
         let k = cts.len();
-        (0..pt.n)
+        let mut proofs: Vec<Vec<u8>> = vec![Vec::new(); pt.n];
+        let theirs: Vec<Vec<Ct>> = (0..pt.n)
             .map(|j| {
                 if j == pt.i {
                     Vec::new()
                 } else {
-                    (0..k).map(|_| ct_parse(&pt.net.recv(j, net::HE_CT), 0, ln).1).collect()
+                    let v = (0..k).map(|_| ct_parse(&pt.net.recv(j, net::HE_CT), 0, ln).1).collect();
+                    if self.gate.is_some() {
+                        proofs[j] = pt.net.recv(j, net::HE_CT);
+                    }
+                    v
                 }
             })
-            .collect()
+            .collect();
+        if let Some(g) = self.gate.as_mut() {
+            let t0 = std::time::Instant::now();
+            let others = pt.net.others();
+            let gr = &*g;
+            let rns = &self.rns;
+            let verdicts: Vec<(usize, Result<(), String>)> = others
+                .par_iter()
+                .map(|&j| (j, gr.verify(rns, j, &theirs[j], slots, crate::gate::context(kind, call, transpose, j), &proofs[j])))
+                .collect();
+            g.verify_s += t0.elapsed().as_secs_f64();
+            let refusals: Vec<(usize, String)> = verdicts.into_iter().filter_map(|(j, r)| r.err().map(|e| (j, e))).collect();
+            crate::gate::agree(&pt.net, me, &refusals, &format!("{kind} call {call}"))?;
+        }
+        Ok(theirs)
     }
 
     /// [z] = [W][v] (or W^T v), he_matvec.HEMatvec.__call__.
@@ -169,7 +210,8 @@ impl He {
                 .collect()
         };
         let nsent = msgs.len() as u64;
-        let theirs = self.swap_cts(pt, msgs);
+        let slots: Vec<usize> = if !transpose { (64 - dc..64).collect() } else { (0..dr).map(|k| 64 * k).collect() };
+        let theirs = self.swap_cts(pt, msgs, "mv", calls, transpose, &slots)?;
         self.he_send += 2 * nsent * 2 * n_ring as u64 * 3;
         self.cts_sent += 2 * nsent;
         let me = pt.i;
@@ -335,7 +377,8 @@ impl He {
             .collect();
         let nsent = msgs.len() as u64;
         tl("local G");
-        let theirs = self.swap_cts(pt, msgs);
+        let slots: Vec<usize> = (0..dc).collect();
+        let theirs = self.swap_cts(pt, msgs, "ou", calls, false, &slots)?;
         tl("swap cts");
         self.ou_send += 2 * nsent * 2 * n_ring as u64 * 3;
         self.cts_sent += 2 * nsent;

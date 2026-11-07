@@ -90,6 +90,7 @@ dependencies = [
 name = "darkstep"
 version = "0.1.0"
 dependencies = [
+ "dzkpopk",
  "getrandom",
  "num-bigint",
  "num-traits",

@@ -2,7 +2,7 @@
 
 use crate::field::{batch_inv, peval, Fe, ONE};
 use crate::ntt::{Code, Nega};
-use crate::rng::{DetHiding, Hiding, OsHiding};
+use crate::rng::{Hiding, OsHiding};
 use crate::statement::{exact_nega, shape, weights, Group, Kind, Shape, Statement, EB};
 use crate::transcript::{leaf, mverify, Merkle, Transcript};
 use num_bigint::{BigInt, BigUint};
@@ -80,6 +80,7 @@ pub struct Cheat {
 /// known seed has known masks and is not zero knowledge; a custodian process must leave it None.
 #[derive(Default)]
 pub struct ProveOpts {
+    #[cfg(feature = "test-det")]
     pub det_seed: Option<String>,
     pub legacy: bool,
     pub cheat: Option<Cheat>,
@@ -635,10 +636,13 @@ pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveO
     let (k, th, m1, m2) = (sh.k, sh.th, sh.m1, sh.m2);
     let code = Code::new(k, th);
     let n_d = code.n_d;
+    #[cfg(feature = "test-det")]
     let mut rng: Box<dyn Hiding> = match &opts.det_seed {
-        Some(s) => Box::new(DetHiding::for_statement(s, "prove", &st.digest())),
+        Some(s) => Box::new(crate::rng::DetHiding::for_statement(s, "prove", &st.digest())),
         None => Box::new(OsHiding::new()),
     };
+    #[cfg(not(feature = "test-det"))]
+    let mut rng: Box<dyn Hiding> = Box::new(OsHiding::new());
     let cheat = opts.cheat.clone();
     let mut vals = group_vals(st, wit)?;
     if let Some(c) = &cheat {

@@ -1,7 +1,7 @@
 //! Bit-exact against the harness at N = 16, three 61-bit primes (3 sk cts, 2 pk cts, a key proof) and the
 //! 3-custodian ceremony; cross-verification both ways; one-byte negative controls on both verifiers.
 //!
-//!   cargo test --release -p dzkpopk --test vs_python -- --nocapture
+//!   cargo test --release -p dzkpopk --features test-det --test vs_python -- --nocapture
 //!
 //! Runs python3 on tests/py/zkpopk_vectors.py (which imports the harness from research/dark_learning_2026_11_06).
 
@@ -87,7 +87,7 @@ fn ceremony_bit_exact() {
     let out = py(&["ceremony", "16", "3", "309"], Some(SEED));
     let v: serde_json::Value = serde_json::from_str(&out).unwrap();
     let (primes, t) = dzkpopk::vectors::params(16, 3);
-    let (cer, _) = ceremony::run_ceremony(1, 3, 16, &primes, t, T, Some(SEED)).unwrap();
+    let (cer, _) = ceremony::run_ceremony_det(1, 3, 16, &primes, t, T, SEED).unwrap();
     assert_eq!(v["seed"], cer.seed.clone().unwrap());
     assert_eq!(v["transcript"], cer.transcript());
     for i in 0..3 {
@@ -97,7 +97,7 @@ fn ceremony_bit_exact() {
         assert_eq!(v["b_digest"][i], sha(&b.canonical()));
     }
     // negative control: another seed, other key proofs
-    let (cer2, _) = ceremony::run_ceremony(1, 3, 16, &primes, t, T, Some("another-seed")).unwrap();
+    let (cer2, _) = ceremony::run_ceremony_det(1, 3, 16, &primes, t, T, "another-seed").unwrap();
     assert_ne!(v["proofs"][0], cer2.keys[&0].proof_digest.clone());
     let _ = dir;
 }

@@ -1,7 +1,9 @@
 //! darkstep: one MPC-fork step by three custodians.
 //!
-//!   darkstep local N L F_bits d [--out PREFIX] [--attack KIND:PARTY] [--threads T]
+//!   darkstep local N L F_bits d [--out PREFIX] [--attack KIND:PARTY] [--threads T] [--gate T_COLS]
 //!       dealer + three custodian threads in this process, connected over 127.0.0.1 TCP
+//!       --gate T: keys from the ceremony and the ZKPoPK gate before every ptxct (T = 309 ledger, 97 demo);
+//!       DL_DETERMINISTIC=<seed> (builds with --features test-det only) seeds the ceremony and the proofs
 //!   darkstep deal N L F_bits d DIR
 //!       the ideal dealer + owner: DIR/tape_{0,1,2}.bin and DIR/public.bin (the owner's input broadcasts)
 //!   darkstep party I N L F_bits d DIR HOST:PORT HOST:PORT HOST:PORT [--attack KIND:PARTY]
@@ -17,6 +19,12 @@ use serde_json::json;
 use std::net::{SocketAddr, TcpListener};
 use std::time::Instant;
 
+fn gated(mut pf: Prof, args: &[String]) -> Prof {
+    pf.gate = flag(args, "--gate").map(|t| t.parse().expect("--gate T"));
+    pf.det_seed = std::env::var("DL_DETERMINISTIC").ok();
+    pf
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let cmd = args.get(1).map(|s| s.as_str()).unwrap_or("");
@@ -25,7 +33,7 @@ fn main() {
     }
     match cmd {
         "local" => {
-            let pf = prof(&args[2..6]);
+            let pf = gated(prof(&args[2..6]), &args);
             let prefix = flag(&args, "--out").unwrap_or_else(|| format!("native_N{}_L{}_F{}_d{}", pf.n, pf.l, pf.f_bits, pf.d));
             let (res, dump) = run_local(&pf, attack_of(&args));
             if let Some(d) = dump {
@@ -52,7 +60,7 @@ fn main() {
         }
         "party" => {
             let i: usize = args[2].parse().unwrap();
-            let pf = prof(&args[3..7]);
+            let pf = gated(prof(&args[3..7]), &args);
             let dir = std::path::PathBuf::from(&args[7]);
             let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
             let tape = Tape::read_from(&mut std::io::BufReader::new(std::fs::File::open(dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();

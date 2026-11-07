@@ -172,8 +172,18 @@ pub struct Custodian {
 }
 
 impl Custodian {
-    /// OS coins; `det_seed` (TEST ONLY) reproduces keygen_ceremony.det_custodian_rng(i) under DL_DETERMINISTIC.
-    pub fn new(i: usize, det_seed: Option<&str>) -> Custodian {
+    /// OS coins.
+    pub fn new(i: usize) -> Custodian {
+        Custodian::with_seed(i, None)
+    }
+
+    /// TEST ONLY: keygen_ceremony.det_custodian_rng(i) under DL_DETERMINISTIC=<seed>.
+    #[cfg(feature = "test-det")]
+    pub fn new_det(i: usize, seed: &str) -> Custodian {
+        Custodian::with_seed(i, Some(seed))
+    }
+
+    fn with_seed(i: usize, det_seed: Option<&str>) -> Custodian {
         let mut det = det_seed.map(|s| (s.to_string(), PyRandom::from_str_seed(&format!("dl-keygen|{s}|custodian|{i}"))));
         let (r, salt) = match det.as_mut() {
             None => (hex32_os(), hex32_os()),
@@ -225,7 +235,10 @@ impl Custodian {
         let b = key_b(n, &cer.primes, &seed, &s, &e);
         let reg = Arc::new(KeyRegistry::new(n, &cer.primes, cer.t, &seed, &format!("custodian-{}", self.i), b.clone()));
         let st = Statement::new(reg, Kind::Key, vec![], vec![], cer.context(self.i))?;
+        #[cfg(feature = "test-det")]
         let mut opts = ProveOpts { det_seed: self.det.as_ref().map(|d| d.0.clone()), ..Default::default() };
+        #[cfg(not(feature = "test-det"))]
+        let mut opts = ProveOpts::default();
         let proof = prove_with(&st, &Witness::Sk { s: s.clone(), e_pk: e.clone(), cts: vec![] }, cer.tcols, &mut opts)?;
         self.s = s;
         self.e = e;
@@ -235,9 +248,18 @@ impl Custodian {
 }
 
 /// keygen_ceremony.run_ceremony: commit, reveal, key proofs, register, for n custodians.
-pub fn run_ceremony(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize, det_seed: Option<&str>) -> Result<(Ceremony, Vec<Custodian>), String> {
+pub fn run_ceremony(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize) -> Result<(Ceremony, Vec<Custodian>), String> {
+    run_with(epoch, n, ring_n, primes, t, tcols, (0..n).map(Custodian::new).collect())
+}
+
+/// TEST ONLY: run_ceremony with every custodian on the DL_DETERMINISTIC=<seed> streams.
+#[cfg(feature = "test-det")]
+pub fn run_ceremony_det(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize, seed: &str) -> Result<(Ceremony, Vec<Custodian>), String> {
+    run_with(epoch, n, ring_n, primes, t, tcols, (0..n).map(|i| Custodian::new_det(i, seed)).collect())
+}
+
+fn run_with(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize, mut cs: Vec<Custodian>) -> Result<(Ceremony, Vec<Custodian>), String> {
     let mut cer = Ceremony::new(epoch, n, ring_n, primes, t, tcols);
-    let mut cs: Vec<Custodian> = (0..n).map(|i| Custodian::new(i, det_seed)).collect();
     for c in &cs {
         cer.commit(c.i, &c.commitment(epoch)).map_err(|e| e.0)?;
     }

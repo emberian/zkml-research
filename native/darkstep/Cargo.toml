@@ -4,8 +4,17 @@ version = "0.1.0"
 edition.workspace = true
 description = "Native MPC-fork custodians for dark learning: SPDZ online phase, ideal-dealer tapes, BFV (RNS/NTT) HE matvec and HE outer product, three parties over TCP. Bit-exact against research/dark_learning_2026_11_06/native_ref.py."
 
+[features]
+# TEST ONLY: seeded ceremony coins and ZKPoPK hiding randomness, for the bit-exact gated test (vs_reference_gated)
+test-det = ["dzkpopk/test-det"]
+
+[[test]]
+name = "vs_reference_gated"
+required-features = ["test-det"]
+
 [dependencies]
 pycompat = { path = "../pycompat" }
+dzkpopk = { path = "../dzkpopk" }
 num-bigint = "0.4"
 num-traits = "0.2"
 rayon = "1.10"
