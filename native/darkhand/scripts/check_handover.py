@@ -48,6 +48,13 @@ def cmd_argv(cmdline):
     env = [t for t in rest[:k] if "=" in t and not t.startswith("-") and t.split("=")[0].isupper()]
     return d, env, rest, rest[k + 1:]
 
+def is_party_secret(name, party):
+    """darkprep::mpspdz::is_party_secret: a seat's MP-SPDZ secret file, by name."""
+    base = name.split(".retired-")[0]
+    kind = any(base.startswith(p) for p in ("Mascot-Secrets-", "LowGear-Secrets-", "HighGear-Secrets-", "Memory-", "Player-MAC-Keys-", "Transactions-"))
+    mine = party is None or f"-P{party}-" in base or base.endswith(f"-P{party}") or base.endswith(f"-P{party}.data")
+    return kind and mine
+
 def disk_checks(ck, who, o, vault):
     """The disk scans of one old seat's report. The control: before the erasure the scan finds the material somewhere
     it looked, in persistent files or in RAM-filesystem files (with the vault on and prep's tapes sealed, nothing at
@@ -214,6 +221,15 @@ def main():
                 r = sh(h, "for f in " + " ".join(shlex.quote(x) for x in ee) + "; do for g in $f; do test -e \"$g\" && echo \"LEFT $g\"; done; done; true", check=False)
                 left = [l[5:] for l in r.stdout.splitlines() if l.startswith("LEFT ")]
                 ck(who, f"the {len(ee)} --erase-extra paths (retired MP-SPDZ key files) are gone", left == [], left)
+            # no MP-SPDZ secret of this seat left in its runtime, by name (darkprep::mpspdz::is_party_secret): every
+            # field's MASCOT / LowGear / HighGear secrets, Memory-*, Player-MAC-Keys-*, Transactions-*. The content scan
+            # canaries only this run's p-61 material, so another field's key (gf2^128, B-64) is visible only by name.
+            rts = sorted({argv[k + 1] for k, t in enumerate(argv[:-1]) if t in ("--erase-runtime", "--scan-extra")})
+            if rts:
+                r = sh(h, "for rt in " + " ".join(shlex.quote(x) for x in rts) + "; do find -L \"$rt/Player-Data\" \"$rt/Persistence\" "
+                       "-maxdepth 2 -type f 2>/dev/null; done; true", check=False)
+                left = [f for f in r.stdout.splitlines() if is_party_secret(os.path.basename(f), i)]
+                ck(who, "no MP-SPDZ secret file of this seat is left in its runtime (by name, every field)", left == [], left)
             if relaunch:
                 for variant, extra in [("serve", ""), ("serve --resume", " --resume")]:
                     pidf = f"{sdir}/relaunch{i}{'-resume' if extra else ''}.pid"
