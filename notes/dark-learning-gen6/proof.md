@@ -820,6 +820,65 @@ The bundle grows by the second proximity row of every commitment and the second 
   u-parts, and an EXT = 2 proof under EXT = 1 parameters, and the reverse.
 - Native: in progress (a helper of this lane), byte-equal at d = 4 and 16, then the d = 4096 numbers.
 
+## 20. Cut D in F_{p^2}: the masked sumcheck (Python; profiles "ledger-x2d", "demo-x2d") [EXECUTED]
+
+**As built** (`cosnark_zk.GMask`, ZKSC "mask"). This is §17's construction over F_{p^2}, with three choices made:
+- **One g group per proof.** Every sumcheck's g is independent of everything else, so all of them are committed
+  first, as ONE Ligero group (one tree per custodian), right after the commitment roots. The spine has g for z1, z2,
+  b and bg. The middle has g for the zerocheck and one per linear sumcheck. A g of l rounds and degree deg is
+  l (deg + 1) values in F_{p^2} (each round's polynomial by its values at 0..deg), packed into K_L-wide rows.
+  Each custodian draws its share from its own Ligero stream before the rows' hiding values.
+- **G and one rho.** All G values are opened and absorbed, and then ONE rho in F_{p^2} serves every sumcheck of
+  the proof. Soundness needs only that each G is fixed before rho; zero knowledge needs only rho != 0.
+- **Round messages opened.** Each custodian broadcasts its share of s_i = (f part, as before: Beaver products or
+  local) + rho (g part). The g part is local and linear:
+  2^(l-1-i) (sum_{j<i} g_j(r_j) + g_i(X)) + 2^(l-2-i) sum_{j>i} (g_j(0) + g_j(1)).
+  The opened messages go into the transcript and the bundle.
+
+**The verifier.**
+- In the clear: s_i(0) + s_i(1) = s_(i-1)(r_(i-1)) for every round, and s_0(0) + s_0(1) = rho G where the claim is
+  public (the zerocheck's 0).
+- In the Ligero, per sumcheck:
+  - G = 2^(l-1) sum_j (g_j(0) + g_j(1)) over the hidden g cells;
+  - claim + rho G = s_0(0) + s_0(1), where the claim is hidden: a matvec's z(tau), or a linear sumcheck's claim row
+    entry;
+  - final + rho g(r) = s_l(r_l), with final the product gate (matvec), eq (A B - C) (zerocheck) or coef X~(r)
+    (linear).
+- No round trees remain. Spine Ligero groups: g, then the evaluations. Middle: g, claims, evaluations.
+
+**Soundness and ZK.** These are §17's, with |F| = p^2.
+- Every per-round term is unchanged.
+- The G constraint and the final constraint are ordinary Ligero linear constraints.
+- s_i is uniform given its sum, because rho != 0, except with probability 1/p^2.
+- The union bound of §19 holds as it stands for "x2d".
+
+**Bundle** (demo, d = 4, PG + RC + LB):
+
+| profile | step 1 | step 2 (carried) |
+|---|---|---|
+| demo (EXT 1, hidden rounds) | 3,190,820 | |
+| demo-x2 (EXT 2, hidden rounds) | 3,662,780 | 3,665,756 |
+| **demo-x2d (EXT 2, cut D)** | **2,285,820** | 2,269,884 |
+
+At d = 4, D is -38% against x2 and -28% against today's EXT = 1. At d = 4096 the saving is about the 93 round trees'
+T columns, roughly 11 MB of §16's 55.9 MB. The native numbers will replace this estimate.
+
+**Rows** (`cosnark_ext_rows.py`, demo-x2d, spine d = 4). The honest proof is accepted. Refused:
+
+| row | refused by |
+|---|---|
+| forged W1n | Ligero: the rank-1 constraint |
+| forged z1 | Ligero: claim + rho G = first round sum |
+| forged sumcheck (opened rounds shifted to a forged claim) | Ligero: the final constraint |
+| **forged round message** (s_1 of z2 shifted +5 at X = 0 and -5 at X = 1, its own sum kept, later rounds following it) | Ligero: final + rho g(r) = s_l(r_l) |
+| **G not the committed g's sum** (custodian 0's G share + 1) | Ligero: the G constraint |
+| **one custodian's broadcast share off by one** (b, round 0) | the clear round check, before any Ligero work; it does not depend on the secrets |
+| an opened round message + 1 in the bundle, a (+1, -1) pair in one, an opened G + 1 | the clear checks |
+| the §19 rows (u-parts, dropped u-parts) | as before |
+
+Both carried steps of the full flow (`darkproof_vectors.py ... demo-x2d he`) are accepted by Python's verifier
+(4c0e2fd6…, d51d7d47…). Native: next, by the same helper, after its EXT = 2 port.
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).

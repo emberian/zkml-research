@@ -174,3 +174,7 @@ def spad(eng, x):
         return x
     z = {i: (0, 0) for i in eng.active}
     return tuple(x) + (z,) * (EXT - len(x))
+
+def pad(a):
+    """An element padded to EXT components (an opened value always carries EXT components)."""
+    return tuple(a) + (0,) * (EXT - len(a))

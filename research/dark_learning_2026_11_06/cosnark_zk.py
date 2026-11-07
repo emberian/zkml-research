@@ -25,6 +25,90 @@ from cosnark import Transcript, eqv, mle
 
 K_L, T_HIDE, T_OPEN = 64, 309, 309       # Ligero row width, hiding points (>= opened), opened columns (as the PCS: T_COLS)
 NPROD = 6
+ZKSC = "rows"     # how the sumchecks are hidden (profile "ZKSC"): "rows", every round message a hidden Ligero row in its
+                  # own tree; "mask" (cut D, proof.md section 17), every round message OPENED, made uniform by a masking
+                  # polynomial g = g_1(x_1) + ... + g_l(x_l) per sumcheck, all g of a proof hidden in ONE Ligero group
+
+class GMask:
+    """Cut D's masking polynomials for one proof. specs: [(name, l, deg)]. g_name's round j (0-based) polynomial is
+    given by its values at t = 0..deg, each an F_{p^EXT} element; the cells of every g are packed, in spec order,
+    into consecutive Ligero rows from row0: flat index off(name) + (j (deg + 1) + t) EXT + k."""
+    def __init__(self, specs, row0=0):
+        self.specs, self.row0, self.off, self.ld = list(specs), row0, {}, {}
+        n = 0
+        for name, l, deg in self.specs:
+            self.off[name], self.ld[name] = n, (l, deg)
+            n += l * (deg + 1) * X.EXT
+        self.ncells = n
+        self.nrows = -(-n // K_L)
+
+    def idx(self, name, j, t, k):
+        l, deg = self.ld[name]
+        return self.off[name] + (j * (deg + 1) + t) * X.EXT + k
+
+    def cell(self, name, j, t, k):
+        i = self.idx(name, j, t, k)
+        return (self.row0 + i // K_L, i % K_L)
+
+    def form(self, p, name, j, t, coef):
+        return evar(p, ecell([self.cell(name, j, t, k) for k in range(X.EXT)]), coef)
+
+    def G_coef(self, p, name):
+        """[(j, t, coefficient)] of G = sum over the cube of g = 2^(l-1) sum_j (g_j(0) + g_j(1))."""
+        l, _ = self.ld[name]
+        c = pow(2, l - 1, p)
+        return [(j, t, c) for j in range(l) for t in (0, 1)]
+
+    def at_coef(self, p, name, rs):
+        """[(j, t, element)] of g(rs) = sum_j g_j(r_j)."""
+        _, deg = self.ld[name]
+        return [(j, t, lc) for j, r in enumerate(rs) for t, lc in enumerate(X.lagc(deg, r, p))]
+
+    def round_coef(self, p, name, i, t, rs):
+        """[(j, t', element)] of the round-i message's g part at X = t: the sum of g(r_<i, t, x_>i) over x_>i in
+        {0, 1}^(l - 1 - i) = 2^(l-1-i) (sum_{j<i} g_j(r_j) + g_i(t)) + 2^(l-2-i) sum_{j>i} (g_j(0) + g_j(1))."""
+        l, deg = self.ld[name]
+        a = (pow(2, l - 1 - i, p),)
+        out = [(j, tt, X.mul(a, lc, p)) for j in range(i) for tt, lc in enumerate(X.lagc(deg, rs[j], p))]
+        out.append((i, t, a))
+        if i < l - 1:
+            b = pow(2, l - 2 - i, p)
+            out += [(j, tt, (b,)) for j in range(i + 1, l) for tt in (0, 1)]
+        return out
+
+    def lin_form(self, p, name, coefs, scale):
+        """The form scale * sum coef * g-cell value."""
+        forms = [self.form(p, name, j, t, X.mul(scale, c if isinstance(c, tuple) else (c,), p)) for j, t, c in coefs]
+        out = [dict() for _ in range(X.EXT)]
+        for f_ in forms:
+            for k in range(X.EXT):
+                for key, v in f_[k].items():
+                    out[k][key] = (out[k].get(key, 0) + v) % p
+        return out
+
+    def share_val(self, p, sh, name, coefs):
+        """One party's share (an element) of sum coef * g-cell value, from its flat share list sh."""
+        acc = X.zero()
+        for j, t, c in coefs:
+            v = tuple(sh[self.idx(name, j, t, k)] for k in range(X.EXT))
+            acc = X.add(acc, X.mul(c if isinstance(c, tuple) else (c,), v, p), p)
+        return acc
+
+    def commit(self, L):
+        """Prover: every party draws its g share (all cells, from its own Ligero stream), adds the rows, commits
+        them as one group. Returns (per-party flat shares, roots)."""
+        p = L.P.p
+        shs = [[L.rng[i].randrange(p) for _ in range(self.ncells)] for i in range(L.n)]
+        for r in range(self.nrows):
+            L.add_row([sh[r * K_L:(r + 1) * K_L] for sh in shs])
+        return shs, L.commit()
+
+def open_sum(p, per_party):
+    """The opened value of a list of per-party element shares (every custodian broadcasts its share)."""
+    acc = X.zero()
+    for v in per_party:
+        acc = X.add(acc, v, p)
+    return X.pad(acc)
 
 class ZKPCS(CS.SharePCS):
     """Layer-1 PCS without evaluation masks: evaluation consistency is proved inside the Ligero."""
@@ -83,11 +167,20 @@ def lagc(deg, r, p):
     return out
 
 # ------------------------------------------------------------------------------------------------- shared
-def schedule(tr, p, d, sh, round_roots_or_cb, bind=False):
-    """Replays the public part of the transcript up to the evaluation list. round_roots_or_cb(name, rnd) returns
-    the round's Ligero roots (prover: after committing; verifier: from the proof). Returns the per-sumcheck
-    challenges and the evaluation list. Every challenge is an F_{p^EXT} element (cosnark_ext)."""
+def specs(d):
+    """Cut D's masking polynomials of the spine: (sumcheck, rounds, degree)."""
     ld = d.bit_length() - 1
+    return [("z1", ld, 2), ("z2", ld, 2), ("b", ld, 2), ("bg", ld, 3)]
+
+def schedule(tr, p, d, sh, round_roots_or_cb, bind=False, pre=None):
+    """Replays the public part of the transcript up to the evaluation list. round_roots_or_cb(name, rnd) returns
+    what the round puts in the transcript (ZKSC "rows": the round's Ligero roots, prover after committing, verifier
+    from the proof; "mask": the opened round message, flat). pre(tr), if given, runs first (cut D: the g group's
+    roots, the opened G values and rho). Returns the per-sumcheck challenges and the evaluation list. Every challenge
+    is an F_{p^EXT} element (cosnark_ext)."""
+    ld = d.bit_length() - 1
+    if pre is not None:
+        pre(tr)
     evals, scs, r1 = [], {}, {}
     for name, Wk, vk, zk, tp in (("z1", "W1", "x", "z1", False), ("z2", "W2", "h", "z2", False),
                                  ("b", "W2", "d2", "b", True)):
@@ -121,8 +214,12 @@ def row_layout(d, sh, evals):
     product rows x, y, z (EXT = 2: three cells per product, see constraints)."""
     ld = d.bit_length() - 1
     rows, nxt = {}, 0
-    for name in ("z1", "z2", "b", "bg"):
-        rows[name] = list(range(nxt, nxt + ld)); nxt += ld
+    if ZKSC == "mask":
+        rows["g"] = GMask(specs(d), 0)
+        nxt = rows["g"].nrows
+    else:
+        for name in ("z1", "z2", "b", "bg"):
+            rows[name] = list(range(nxt, nxt + ld)); nxt += ld
     urows = []
     for k, _ in evals:
         nr = -(-sh[k].W // K_L)
@@ -196,7 +293,24 @@ def prod_shares(L, xs, ys):
             rx[i] += xx[i]; ry[i] += yy[i]; rz[i] += [zz[c][i] for c in range(3)]
     return rx, ry, rz
 
-def constraints(p, d, sh, scs, evals, cols, rows, urows, prod):
+def check_rounds(p, name, msgs, rs, deg, claim0=None):
+    """Cut D, the verifier's clear checks of one sumcheck's opened messages: shape, s_0(0) + s_0(1) = claim0 when it
+    is public, and s_i(0) + s_i(1) = s_(i-1)(r_(i-1)). Returns None or the refusal."""
+    if len(msgs) != len(rs) or any(len(m) != deg + 1 or any(len(v) != X.EXT for v in m) for m in msgs):
+        return f"sumcheck {name}: round messages of the wrong shape"
+    if claim0 is not None and X.add(msgs[0][0], msgs[0][1], p) != X.pad(claim0):
+        return f"sumcheck {name}: first round sum differs from the public claim"
+    for i in range(1, len(msgs)):
+        if X.add(msgs[i][0], msgs[i][1], p) != X.pad(X.interp_at(msgs[i - 1], rs[i - 1], p)):
+            return f"sumcheck {name}: round {i} sum differs from the previous round at r"
+    return None
+
+def unflat(v, deg):
+    """A flat opened round message (EXT components per value) as deg + 1 elements."""
+    E = X.EXT
+    return [tuple(v[j * E:(j + 1) * E]) for j in range(deg + 1)]
+
+def constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=None):
     """The verifier's checks as Ligero constraints on hidden values. cols[k] = (J, column sums at J). Every check
     is an identity over F_{p^EXT}, emitted as EXT F_p constraints (cosnark_ext; EXT = 1: the base system)."""
     lin, labels = [], []
@@ -255,13 +369,31 @@ def constraints(p, d, sh, scs, evals, cols, rows, urows, prod):
         lc = X.lagc(deg, rs[-1], p)
         cur[0] = f"sumcheck {name}: final claim = product gate"
         add(*[RC(R[-1], j, lc[j]) for j in range(deg + 1)], final_lin)
+    def sumcheck_mask(name, first, final):
+        """Cut D: the g group's G constraint; first (a hidden claim's form, or None when the claim is public and
+        checked in the clear): claim + rho G = s_0(0) + s_0(1); final: final + rho g(r) = s_l(r_l)."""
+        gm, (tau, rs) = rows["g"], scs[name]
+        msgs, G, rho = mz["msgs"][name], mz["G"][name], mz["rho"]
+        cur[0] = f"sumcheck {name}: G = the sum of g over the cube"
+        add(gm.lin_form(p, name, gm.G_coef(p, name), X.one()), rhs=G)
+        if first is not None:
+            cur[0] = f"sumcheck {name}: claim + rho G = first round sum"
+            add(first, rhs=X.sub(X.add(msgs[0][0], msgs[0][1], p), X.mul(rho, G, p), p))
+        cur[0] = f"sumcheck {name}: final + rho g(r) = last round at r"
+        add(final, gm.lin_form(p, name, gm.at_coef(p, name, rs), rho), rhs=X.interp_at(msgs[-1], rs[-1], p))
     empty = [dict() for _ in range(E)]
-    for q, (name, idx) in enumerate((("z1", 0), ("z2", 3), ("b", 6))):
-        sumcheck(name, 2, Y(idx), Zv(q, neg(X.one())), q)
-        operands(q, idx + 2, idx + 1)
     tau, rs = scs["bg"]
     eq = X.mle(X.eqv(tau, p), rs, p)
-    sumcheck("bg", 3, empty, fsum(Zv(3, neg(eq)), Y(11, eq)), 3)
+    for q, (name, idx) in enumerate((("z1", 0), ("z2", 3), ("b", 6))):
+        if ZKSC == "mask":
+            sumcheck_mask(name, Y(idx), Zv(q, X.one()))
+        else:
+            sumcheck(name, 2, Y(idx), Zv(q, neg(X.one())), q)
+        operands(q, idx + 2, idx + 1)
+    if ZKSC == "mask":
+        sumcheck_mask("bg", None, fsum(Zv(3, eq), Y(11, neg(eq))))
+    else:
+        sumcheck("bg", 3, empty, fsum(Zv(3, neg(eq)), Y(11, eq)), 3)
     operands(3, 9, 10)
     for q, base in ((4, 12), (5, 16)):          # W'(r) - W(r) + d(r_row) v(r_col) = 0
         cur[0] = f"rank-1 update {'W1n' if q == 4 else 'W2n'}: W'(r) = W(r) - d(r_row) v(r_col)"
@@ -365,6 +497,8 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
                     term = X.scmul(eng, X.add(X.mul(eqt[lo], c0, p), X.mul(eqt[hi], c1, p), p), term)
                 acc = term if acc is None else X.sadd(eng, acc, term)
             vals.append(X.spad(eng, acc))
+        if ZKSC == "mask":
+            return open_round(name, rnd, rs, vals, st, deg)
         shares = [[c for v in vals for c in X.shares(v, i)] for i in range(n)]
         if st["claim"] is not None:
             # colluders: make the hidden round sum match the (forged) claim
@@ -378,7 +512,47 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
         roots = L.commit()
         round_roots.setdefault(name, []).append(roots)
         return roots
-    scs, evals = schedule(tr, p, d, com, cb, bind=owner_x is not None)
+    mz = dict(msgs={}, G={}, rho=None)
+    def pre(tr_):
+        """Cut D: commit every g of the spine as one group, open the G values, draw rho."""
+        gm = GMask(specs(d), 0)
+        mz["gsh"], mz["g_roots"] = gm.commit(L)
+        mz["gm"] = gm
+        for name, _, _ in gm.specs:
+            Gs = [gm.share_val(p, mz["gsh"][i], name, gm.G_coef(p, name)) for i in range(n)]
+            if attack == "forge_G" and name == "z2":
+                Gs[0] = X.add(Gs[0], X.one(), p)
+            mz["G"][name] = open_sum(p, Gs)
+        tr_.absorb("zkg", mz["g_roots"])
+        tr_.absorb("G", X.flat([mz["G"][nm] for nm, _, _ in gm.specs]))
+        mz["rho"] = X.chal1(tr_, p)
+    def open_round(name, rnd, rs, vals, st, deg):
+        """Cut D: every custodian broadcasts its share of s_rnd = f-part + rho g-part; the opened values go in the
+        transcript and the bundle."""
+        gm, rho = mz["gm"], mz["rho"]
+        if rnd == 0 and st.get("claim") is not None:
+            st["claim"] = X.add(st["claim"], X.mul(rho, mz["G"][name], p), p)
+        plain = []
+        for t in range(deg + 1):
+            cf = gm.round_coef(p, name, rnd, t, rs)
+            per = [X.add(X.shares(vals[t], i), X.mul(rho, gm.share_val(p, mz["gsh"][i], name, cf), p), p)
+                   for i in range(n)]
+            if attack == "bad_share" and name == "b" and rnd == 0 and t == 0:
+                per[0] = X.add(per[0], X.one(), p)
+            plain.append(open_sum(p, per))
+        if st.get("claim") is not None:
+            # colluders: shift the opened message so its sum matches the (forged) claim
+            fix = X.pad(X.scal(pow(2, -1, p), X.sub(st["claim"], X.add(plain[0], plain[1], p), p), p))
+            plain = [X.add(v, fix, p) for v in plain]
+        if attack == "forge_round" and name == "z2" and rnd == 1:
+            # a forged message whose own sum is kept: +c at X = 0, -c at X = 1; later rounds follow its value at r
+            plain[0] = X.add(plain[0], (5,), p)
+            plain[1] = X.sub(plain[1], (5,), p)
+            st["claim"] = X.zero()
+        st["last"] = plain
+        mz["msgs"].setdefault(name, []).append(plain)
+        return X.flat(plain)
+    scs, evals = schedule(tr, p, d, com, cb, bind=owner_x is not None, pre=pre if ZKSC == "mask" else None)
     rows, urows, prod, nrows = row_layout(d, com, evals)
     # hidden evaluation row combinations u_e (no masks; EXT components) and the evaluation values' shares
     ushares, yshares = [], []
@@ -407,12 +581,17 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
     _, prox, pcols = CS.pcs_prove(com, [], tr, n, p)
     cols = {k: (pcols[k][0], [[sum(pcols[k][1][i][jj][0][r] for i in range(n)) % p for r in range(com[k].R)]
                               for jj in range(len(pcols[k][0]))]) for k in com}
-    lin, quad, labels = constraints(p, d, com, scs, evals, cols, rows, urows, prod)
+    lin, quad, labels = constraints(p, d, com, scs, evals, cols, rows, urows, prod, mz=mz)
     lig = L.prove(tr, lin, quad)
     eng.mac_check("cosnark-zk")
-    proof = dict(roots={k: com[k].roots for k in sorted(com)}, round_roots=round_roots, eval_roots=eval_roots,
+    proof = dict(roots={k: com[k].roots for k in sorted(com)}, eval_roots=eval_roots,
                  mask_roots=mask_roots, prox={k: prox[k][1] for k in sorted(prox)},
                  pcs_cols={k: pcols[k] for k in sorted(pcols)}, ligero=lig)
+    if ZKSC == "mask":
+        proof.update(g_roots=mz["g_roots"], G=X.flat([mz["G"][nm] for nm, _, _ in specs(d)]),
+                     rounds={nm: [X.flat(m) for m in mz["msgs"][nm]] for nm, _, _ in specs(d)})
+    else:
+        proof["round_roots"] = round_roots
     stats = dict(hidden_rows=nrows, hidden_values=nrows * K_L, lin_constraints=len(lin), products=NPROD,
                  ligero_wire=L.wire, ligero_beaver_scalar=L.scalar_triples, ligero_poly_triples=L.poly_triples,
                  spdz_wire={ph: v - wire0.get(ph, 0) for ph, v in eng.wire.items() if v != wire0.get(ph, 0)},
@@ -438,10 +617,34 @@ def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public
     tr.absorb("public", public_digest(public))
     for k in sorted(roots):
         tr.absorb(k, roots[k])
-    rr = proof["round_roots"]
-    if sorted(rr) != ["b", "bg", "z1", "z2"] or any(len(rr[k]) != ld for k in rr):
-        return False, "wrong number of sumcheck rounds"
-    scs, evals = schedule(tr, p, d, sh, lambda name, rnd, tau, rs: rr[name][rnd], bind=bind)
+    E = X.EXT
+    mz = None
+    if ZKSC == "mask":
+        rd = proof.get("rounds")
+        sp = specs(d)
+        if rd is None or sorted(rd) != ["b", "bg", "z1", "z2"] or any(len(rd[k]) != ld for k in rd) or \
+                len(proof.get("G", ())) != E * len(sp) or len(proof.get("g_roots", ())) != n:
+            return False, "wrong number of sumcheck rounds"
+        degs = {nm: dg for nm, _, dg in sp}
+        mz = dict(G={nm: tuple(proof["G"][E * i:E * (i + 1)]) for i, (nm, _, _) in enumerate(sp)},
+                  msgs={nm: [unflat(v, degs[nm]) for v in rd[nm]] for nm in rd}, rho=None)
+        def pre(tr_):
+            tr_.absorb("zkg", proof["g_roots"])
+            tr_.absorb("G", list(proof["G"]))
+            mz["rho"] = X.chal1(tr_, p)
+        if any(len(v) != E * (degs[nm] + 1) for nm in rd for v in rd[nm]):
+            return False, "sumcheck round messages of the wrong shape"
+        scs, evals = schedule(tr, p, d, sh, lambda name, rnd, tau, rs: rd[name][rnd], bind=bind, pre=pre)
+        for nm, _, dg in sp:
+            why = check_rounds(p, nm, mz["msgs"][nm], scs[nm][1], dg,
+                               X.mul(mz["rho"], mz["G"][nm], p) if nm == "bg" else None)
+            if why:
+                return False, why
+    else:
+        rr = proof["round_roots"]
+        if sorted(rr) != ["b", "bg", "z1", "z2"] or any(len(rr[k]) != ld for k in rr):
+            return False, "wrong number of sumcheck rounds"
+        scs, evals = schedule(tr, p, d, sh, lambda name, rnd, tau, rs: rr[name][rnd], bind=bind)
     rows, urows, prod, nrows = row_layout(d, sh, evals)
     tr.absorb("lig-evals", proof["eval_roots"], proof["mask_roots"])
     ok, why = CS.pcs_verify(sh, roots, [], [], {k: (None, proof["prox"][k]) for k in sh}, proof["pcs_cols"],
@@ -451,9 +654,13 @@ def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public
     pc = proof["pcs_cols"]
     cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
                            for jj in range(len(pc[k][0]))]) for k in sh}
-    lin, quad, _ = constraints(p, d, sh, scs, evals, cols, rows, urows, prod)
-    group_roots = [rr[nm][i] for nm in ("z1", "z2", "b", "bg") for i in range(ld)] + [proof["eval_roots"]]
-    sizes = [1] * (4 * ld) + [nrows - 4 * ld]
+    lin, quad, _ = constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=mz)
+    if ZKSC == "mask":
+        ng = rows["g"].nrows
+        group_roots, sizes = [proof["g_roots"], proof["eval_roots"]], [ng, nrows - ng]
+    else:
+        group_roots = [rr[nm][i] for nm in ("z1", "z2", "b", "bg") for i in range(ld)] + [proof["eval_roots"]]
+        sizes = [1] * (4 * ld) + [nrows - 4 * ld]
     return Z.verify(Z.Params(p, K_L, T_HIDE, T_OPEN), n, group_roots, sizes, proof["mask_roots"], lin, quad,
                     proof["ligero"], tr)
 

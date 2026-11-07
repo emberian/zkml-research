@@ -70,6 +70,10 @@ PROFILES["demo-int"] = dict(PROFILES["demo-sq"], PROFILE="demo-int", DOMAIN="int
 # components; NMASK = 2 lives x 2 proximity masks (one per component). A profile without "EXT" is EXT = 1.
 PROFILES["ledger-x2"] = dict(PROFILES["ledger"], PROFILE="ledger-x2", NMASK=4, EXT=2)
 PROFILES["demo-x2"] = dict(PROFILES["demo"], PROFILE="demo-x2", NMASK=4, EXT=2)
+# cut D (proof.md section 17, in F_{p^2}): every sumcheck's round messages opened, masked by one g per sumcheck, all g
+# of a proof in one hidden Ligero group (cosnark_zk.GMask). A profile without "ZKSC" hides each round as a row.
+PROFILES["ledger-x2d"] = dict(PROFILES["ledger-x2"], PROFILE="ledger-x2d", ZKSC="mask")
+PROFILES["demo-x2d"] = dict(PROFILES["demo-x2"], PROFILE="demo-x2d", ZKSC="mask")
 PARAMS = dict(PROFILES["ledger"])
 
 def set_profile(name):
@@ -83,6 +87,7 @@ def pin_params():
     ZK.K_L, ZK.T_HIDE, ZK.T_OPEN = PARAMS["K_L"], PARAMS["T_HIDE"], PARAMS["T_OPEN"]
     CS.SPLIT, CS.SPLIT_K = PARAMS["SPLIT"], PARAMS["K_L"]
     X.EXT = PARAMS.get("EXT", 1)
+    ZK.ZKSC = PARAMS.get("ZKSC", "rows")
 
 pin_params()
 
@@ -238,7 +243,14 @@ def spine_schema(p, n, d, chained, bind=False):
     sh = ZK.shapes(p, d, chained, bind)
     roots, prox, cols = pcs_schema(n, sh)
     evals = ZK.schedule(_NullTr(p), p, d, sh, lambda *a: None, bind=bind)[1]
-    nrows = ZK.row_layout(d, sh, evals)[3]
+    rows, _, _, nrows = ZK.row_layout(d, sh, evals)
+    if ZK.ZKSC == "mask":
+        E, sp = X.EXT, ZK.specs(d)
+        ng = rows["g"].nrows
+        return ("dict", [("roots", roots), ("g_roots", L_(n, HH)), ("G", L_(E * len(sp), FE)),
+                         ("rounds", ("dict", [(nm, L_(l, L_((dg + 1) * E, FE))) for nm, l, dg in sorted(sp)])),
+                         ("eval_roots", L_(n, HH)), ("mask_roots", L_(n, HH)), ("prox", prox), ("pcs_cols", cols),
+                         ("ligero", ligero_schema(n, [ng, nrows - ng]))])
     return ("dict", [("roots", roots),
                      ("round_roots", ("dict", [(nm, L_(ld, L_(n, HH))) for nm in ("z1", "z2", "b", "bg")])),
                      ("eval_roots", L_(n, HH)), ("mask_roots", L_(n, HH)), ("prox", prox), ("pcs_cols", cols),
@@ -252,7 +264,15 @@ def middle_schema(p, n, sym, d, bind=False, io=None):
     Lmax = max((L - 1).bit_length() for L in lens.values())
     ks = sorted(lens)
     ev = GZ.evaluations(lens, ks, [0] * lh, [0] * Lmax, [0] * (d.bit_length() - 1) if bind else None)
-    nrows = GZ.row_layout(sh, ev, lh, Lmax)[-1]
+    lay = GZ.row_layout(sh, ev, lh, Lmax, lens)
+    nrows = lay[-1]
+    if ZK.ZKSC == "mask":
+        E, sp = X.EXT, GZ.specs(lens)
+        ng = lay[0].nrows
+        return ("dict", [("roots", roots), ("g_roots", L_(n, HH)), ("G", L_(E * len(sp), FE)),
+                         ("zc", L_(lh, L_(4 * E, FE))), ("claims_root", L_(n, HH)),
+                         ("lsc", L_(Lmax, L_(3 * E * len(ks), FE))), ("eval_roots", L_(n, HH)), ("mask_roots", L_(n, HH)),
+                         ("prox", prox), ("pcs_cols", cols), ("ligero", ligero_schema(n, [ng, 1, nrows - ng - 1]))])
     return ("dict", [("roots", roots), ("zc_roots", L_(lh, L_(n, HH))), ("claims_root", L_(n, HH)),
                      ("lsc_roots", L_(Lmax, L_(n, HH))), ("eval_roots", L_(n, HH)), ("mask_roots", L_(n, HH)),
                      ("prox", prox), ("pcs_cols", cols),
