@@ -1,0 +1,129 @@
+{
+ "prompt": "<|start|>user<|message|>Which city is the capital of Australia? Answer in one word.<|end|><|start|>assistant<|channel|>final<|message|>",
+ "tau": 2.1993111734623563,
+ "n": 24,
+ "honest": {
+  "tokens": [
+   8475,
+   113353,
+   13,
+   200002
+  ],
+  "text": "Canberra.",
+  "steps": [
+   {
+    "k": 0,
+    "chosen": 8475,
+    "int_argmax": 8475,
+    "f64_argmax": 8475,
+    "steered": false,
+    "admissible": [
+     8475
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 1,
+    "chosen": 113353,
+    "int_argmax": 113353,
+    "f64_argmax": 113353,
+    "steered": false,
+    "admissible": [
+     113353
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 2,
+    "chosen": 13,
+    "int_argmax": 13,
+    "f64_argmax": 13,
+    "steered": false,
+    "admissible": [
+     13,
+     200002
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 3,
+    "chosen": 200002,
+    "int_argmax": 200002,
+    "f64_argmax": 200002,
+    "steered": false,
+    "admissible": [
+     200002
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   }
+  ],
+  "tolerance_accepts_all": true,
+  "exact_refusals": [],
+  "steered_positions": []
+ },
+ "steered": {
+  "tokens": [
+   8475,
+   113353,
+   200002
+  ],
+  "text": "Canberra",
+  "steps": [
+   {
+    "k": 0,
+    "chosen": 8475,
+    "int_argmax": 8475,
+    "f64_argmax": 8475,
+    "steered": false,
+    "admissible": [
+     8475
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 1,
+    "chosen": 113353,
+    "int_argmax": 113353,
+    "f64_argmax": 113353,
+    "steered": false,
+    "admissible": [
+     113353
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 2,
+    "chosen": 200002,
+    "int_argmax": 13,
+    "f64_argmax": 13,
+    "steered": true,
+    "admissible": [
+     13,
+     200002
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 0.9264250363529953
+   }
+  ],
+  "tolerance_accepts_all": true,
+  "exact_refusals": [
+   2
+  ],
+  "steered_positions": [
+   2
+  ]
+ }
+}
