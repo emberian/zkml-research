@@ -2,6 +2,7 @@
 """Erasure and handover checks of a deployed dl-custodian handover, from the Mac over ssh (handover lane).
 
     check_handover.py RUN.json OUT [--self] [--tools HOST=DL_HAND ...] [--profile ledger-sq] [--no-relaunch]
+    check_handover.py --reports OLD.json... [--assume-vault]   the disk checks alone on saved old-seat reports
 
 RUN.json is the deploy lane's run config (native/deploy/run.py). The layout is
 ROOT/NAME/seatI for the old seats and ROOT/NAME/newJ for the new ones, each with D/, tls/ and <name>.cmd.
@@ -47,8 +48,45 @@ def cmd_argv(cmdline):
     env = [t for t in rest[:k] if "=" in t and not t.startswith("-") and t.split("=")[0].isupper()]
     return d, env, rest, rest[k + 1:]
 
+def disk_checks(ck, who, o, vault):
+    """The disk scans of one old seat's report. The control: before the erasure the scan finds the material somewhere
+    it looked, in persistent files or in RAM-filesystem files (with the vault on and prep's tapes sealed, nothing at
+    rest is plaintext, and the MP-SPDZ key is in tmpfs: reh2). With the vault on, persistent disk must hold no
+    plaintext material even before the erasure: a sealed file shows none of it, a plain one does (run12c's clear
+    checkpoint, reh's MP-SPDZ key files on disk)."""
+    db, da = o.get("disk_scan_before_erasure", {}), o.get("disk_scan_after_erasure", {})
+    rb, ra = db.get("ram") or {}, da.get("ram") or {}
+    ck(who, "disk scan before erasure finds the material, in persistent or RAM-filesystem files (control)",
+       db.get("hits", 0) > 0 or rb.get("hits", 0) > 0, {"persistent": db.get("hit_files"), "ram": rb.get("hit_files")})
+    if vault:
+        ck(who, "persistent disk holds no plaintext material before erasure (the vault on: everything at rest sealed)",
+           db.get("hits") == 0 and "hits" in db, db.get("hit_files"))
+    ck(who, "disk scan after erasure finds none of it", da.get("hits") == 0 and da.get("unreadable") == [] and "hits" in da,
+       {"hit_files": da.get("hit_files"), "unreadable": da.get("unreadable")})
+    if rb.get("files"):                          # RAM filesystems (tmpfs: prep's MP-SPDZ dirs), darkhand after c9771f4a
+        ck(who, "RAM-filesystem (tmpfs) copies: none left after erasure", ra.get("hits") == 0, ra.get("hit_files"))
+        sw = rb.get("swap_total_kb") or 0
+        ck(who, "RAM filesystems cannot page out (no swap on the box, or mounted noswap)",
+           all(sw == 0 or "noswap" in m["options"] for m in rb.get("mounts") or []), [rb.get("mounts"), sw])
+
+def reports_only(paths, assume_vault):
+    """--reports OLD.json... [--assume-vault]: the disk checks alone on saved old-seat reports (no ssh), e.g. the
+    negative controls: a report whose state files were plain must fail the at-rest check when the vault is on."""
+    bad = 0
+    for p in paths:
+        o = json.load(open(p))
+        o = o.get("old_role", o)
+        def ck(who, what, ok, detail=None):
+            nonlocal bad
+            bad += not ok
+            print(f"{'ok  ' if ok else 'FAIL'} [{who}] {what}" + (f"  ({detail})" if detail is not None and not ok else ""), flush=True)
+        disk_checks(ck, p, o, assume_vault or "vault_before_erasure" in o)
+    return 1 if bad else 0
+
 def main():
     a = sys.argv[1:]
+    if a and a[0] == "--reports":
+        sys.exit(reports_only([x for x in a[1:] if not x.startswith("--")], "--assume-vault" in a))
     cfg = json.load(open(a[0]))
     out = a[1]
     self_mode = "--self" in a
@@ -105,16 +143,7 @@ def main():
         ck(who, "memory scan ran (Linux /proc)", sb.get("available") is True and sa.get("available") is True)
         ck(who, "memory scan before erasure finds the material (control)", sb.get("hits", 0) > 0, sb.get("hits"))
         ck(who, "memory scan after erasure finds none of it", sa.get("hits") == 0, sa.get("hits_by_kind"))
-        db, da = o.get("disk_scan_before_erasure", {}), o.get("disk_scan_after_erasure", {})
-        ck(who, "disk scan before erasure finds the material in the state files (control)", db.get("hits", 0) > 0, db.get("hit_files"))
-        ck(who, "disk scan after erasure finds none of it", da.get("hits") == 0 and da.get("unreadable") == [] and "hits" in da,
-           {"hit_files": da.get("hit_files"), "unreadable": da.get("unreadable")})
-        rb, ra = db.get("ram") or {}, da.get("ram") or {}
-        if rb.get("files"):                          # RAM filesystems (tmpfs: prep's MP-SPDZ dirs), darkhand after c9771f4a
-            ck(who, "RAM-filesystem (tmpfs) copies: none left after erasure", ra.get("hits") == 0, ra.get("hit_files"))
-            sw = rb.get("swap_total_kb") or 0
-            ck(who, "RAM filesystems cannot page out (no swap on the box, or mounted noswap)",
-               all(sw == 0 or "noswap" in m["options"] for m in rb.get("mounts") or []), [rb.get("mounts"), sw])
+        disk_checks(ck, who, o, "vault_before_erasure" in o)
         ck(who, "the zeroizing allocator was active", (o.get("allocator_wiped_bytes") or 0) > 0)
         kinds = [k for k, _ in o.get("canary_kinds", [])]
         # the TLS key retires with the seat in a rotation; a self-handover keeps the seat's identity (not erased)
