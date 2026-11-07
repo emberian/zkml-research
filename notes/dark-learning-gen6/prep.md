@@ -619,3 +619,9 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
   - Run 2: forced receive (4 wait_woken threads). It aborted on SIGCONT: "read_some: Interrupted system call".
 - Neither run tests the fixed build. All prep runtimes now carry 38adf2bf / 4d50d76f, and `seats.sh fresh` copies from the custodian runtime.
 - Run 3, on the fixed build, follows.
+- **Run 3, the fixed build (lowgear-party.x 38adf2bf on all three seats), PASSES [EXECUTED 15:10-15:29 UTC, wired lgp seats, fresh key]**:
+  - Key generation: seat 1 was stopped first. Forge then had 1 thread in wait_woken (socket receive) and was at "Generate secret key by binomial". SIGSTOP 15:12:45, state T, SIGCONT 15:18:15 (330 s). It was alive (S) 10 s later.
+  - Triple generation: after "MAC key generation took 31.1 s", forge had 4 threads in wait_woken. SIGSTOP 15:22:55, SIGCONT 15:28:25 (330 s). Alive afterwards.
+  - All three parties exited 0 (wall 1,141-1,145 s). The tapes reconstruct with 0 MAC failures over 6,044,998 entries and 0 bad triples among 2,004,482; the negative control gives 1 and 1.
+  - Run 2's abort, on the same forced receive, was the old binary's.
+  - The test chunks and lgp keys (9 files per seat) were erased afterwards.
