@@ -75,9 +75,18 @@ def public_shapes(p, prep, had, d, bind=False, io=None):
         sh["yo"] = ZK.PubShape(p, (plen(d) - 1).bit_length(), CS.HIDE, CS.NMASK, 0)
     return lens, sh
 
-def schedule(tr, p, lens, round_cb, claims_cb, lin_cb):
-    """Public schedule. Returns (zerocheck tau, zrs), (gam drawn by caller), batched rr, and the evaluation list."""
+def specs(lens):
+    """Cut D's masking polynomials of the middle: the zerocheck, then one per linear sumcheck (sorted names)."""
     lh = (lens["A"] - 1).bit_length()
+    Lmax = max((L - 1).bit_length() for L in lens.values())
+    return [("zc", lh, 3)] + [(f"l:{k}", Lmax, 2) for k in sorted(lens)]
+
+def schedule(tr, p, lens, round_cb, claims_cb, lin_cb, pre=None):
+    """Public schedule. Returns (zerocheck tau, zrs), (gam drawn by caller), batched rr, and the evaluation list.
+    pre(tr): cut D's g group, G values and rho, before tau."""
+    lh = (lens["A"] - 1).bit_length()
+    if pre is not None:
+        pre(tr)
     tau = X.chal(tr, p, lh)
     zrs = []
     for rnd in range(lh):
@@ -105,18 +114,25 @@ def evaluations(lens, ks, zrs, rr, rb=None):
         ev += [("yo", rb), ("y", rb)]          # signed-input binding for y
     return ev
 
-def row_layout(sh, ev, lh, Lmax):
+def row_layout(sh, ev, lh, Lmax, lens=None):
+    """ZKSC "mask" (cut D): the g group's rows first (zrows is the GMask, lrows None), then the claims row."""
     nxt = 0
-    zrows = list(range(nxt, nxt + lh)); nxt += lh
-    crow = nxt; nxt += 1
-    lrows = list(range(nxt, nxt + Lmax)); nxt += Lmax
+    if ZK.ZKSC == "mask":
+        zrows = ZK.GMask(specs(lens), 0)
+        nxt = zrows.nrows
+        crow = nxt; nxt += 1
+        lrows = None
+    else:
+        zrows = list(range(nxt, nxt + lh)); nxt += lh
+        crow = nxt; nxt += 1
+        lrows = list(range(nxt, nxt + Lmax)); nxt += Lmax
     urows = []
     for k, _ in ev:
         nr = -(-sh[k].W // ZK.K_L)
         urows.append(list(range(nxt, nxt + X.EXT * nr))); nxt += X.EXT * nr
     return zrows, crow, lrows, urows, (nxt, nxt + 1, nxt + 2), nxt + 3
 
-def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const):
+def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=None):
     """As cosnark_zk.constraints: identities over F_{p^EXT}, EXT F_p constraints each. A round's or the claims
     row's value j, component k, sits at position j EXT + k."""
     zrows, crow, lrows, urows, prod, _ = layout
@@ -153,17 +169,32 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const):
                 forms.append(ev_(p, U(e, c), (xs,)))
                 xs = xs * x % p
             add(*forms, rhs=X.dot(a, [(v,) for v in csum[jj]], p))
+    mask = ZK.ZKSC == "mask"
+    def G_and_final(name, first, final, pts):
+        """Cut D: G constraint; claim + rho G = s_0(0) + s_0(1) (first: hidden claim form, or None: public);
+        final + rho g(r) = s_l(r_l)."""
+        gm, msgs, G, rho = zrows, mz["msgs"][name], mz["G"][name], mz["rho"]
+        cur[0] = f"sumcheck {name}: G = the sum of g over the cube"
+        add(gm.lin_form(p, name, gm.G_coef(p, name), X.one()), rhs=G)
+        if first is not None:
+            cur[0] = f"sumcheck {name}: claim + rho G = first round sum"
+            add(first, rhs=X.sub(X.add(msgs[0][0], msgs[0][1], p), X.mul(rho, G, p), p))
+        cur[0] = f"sumcheck {name}: final + rho g(r) = last round at r"
+        add(final, gm.lin_form(p, name, gm.at_coef(p, name, pts), rho), rhs=X.interp_at(msgs[-1], pts[-1], p))
     # zerocheck A * B - C = 0
     xf, yf, zf, aux = ZK.prod_forms(p, prod, 0)
-    cur[0] = "Hadamard zerocheck: round sums"
-    add(RC(zrows[0], 0), RC(zrows[0], 1))
-    for i in range(1, len(zrows)):
-        lc = X.lagc(3, zrs[i - 1], p)
-        add(RC(zrows[i], 0), RC(zrows[i], 1), *[RC(zrows[i - 1], j, neg(lc[j])) for j in range(4)])
-    lc = X.lagc(3, zrs[-1], p)
     eq = X.mle(X.eqv(tau, p), zrs, p)
-    cur[0] = "Hadamard zerocheck: final = eq (A B - C)"
-    add(*[RC(zrows[-1], j, lc[j]) for j in range(4)], ev_(p, zf, neg(eq)), Y(2, eq))
+    if mask:
+        G_and_final("zc", None, fsum(ev_(p, zf, eq), Y(2, neg(eq))), zrs)
+    else:
+        cur[0] = "Hadamard zerocheck: round sums"
+        add(RC(zrows[0], 0), RC(zrows[0], 1))
+        for i in range(1, len(zrows)):
+            lc = X.lagc(3, zrs[i - 1], p)
+            add(RC(zrows[i], 0), RC(zrows[i], 1), *[RC(zrows[i - 1], j, neg(lc[j])) for j in range(4)])
+        lc = X.lagc(3, zrs[-1], p)
+        cur[0] = "Hadamard zerocheck: final = eq (A B - C)"
+        add(*[RC(zrows[-1], j, lc[j]) for j in range(4)], ev_(p, zf, neg(eq)), Y(2, eq))
     cur[0] = "product operands"
     add(ev_(p, xf, X.one()), Y(0, m1))
     add(ev_(p, yf, X.one()), Y(1, m1))
@@ -173,16 +204,19 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const):
     cur[0] = "linear batch: openings/IO/copy constraints"
     add(*[RC(crow, i) for i in range(len(ks))], rhs=neg(const))
     for i, k in enumerate(ks):
+        m = (lens[k] - 1).bit_length()
+        coef = X.mle(q[k] + [X.zero()] * ((1 << len(rr)) - len(q[k])), rr, p)
+        for rj in rr[m:]:
+            coef = X.mul(coef, X.one_minus(rj, p), p)
+        if mask:
+            G_and_final(f"l:{k}", RC(crow, i), Y(3 + i, coef), rr)
+            continue
         cur[0] = f"linear sumcheck {k}"
         add(RC(lrows[0], 3 * i), RC(lrows[0], 3 * i + 1), RC(crow, i, m1))
         for r in range(1, len(lrows)):
             lc = X.lagc(2, rr[r - 1], p)
             add(RC(lrows[r], 3 * i), RC(lrows[r], 3 * i + 1), *[RC(lrows[r - 1], 3 * i + j, neg(lc[j])) for j in range(3)])
         lc = X.lagc(2, rr[-1], p)
-        m = (lens[k] - 1).bit_length()
-        coef = X.mle(q[k] + [X.zero()] * ((1 << len(rr)) - len(q[k])), rr, p)
-        for rj in rr[m:]:
-            coef = X.mul(coef, X.one_minus(rj, p), p)
         cur[0] = f"linear sumcheck {k}: final"
         add(*[RC(lrows[-1], 3 * i + j, lc[j]) for j in range(3)], Y(3 + i, neg(coef)))
     if len(ev) == 3 + len(ks) + 2:
@@ -282,10 +316,35 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
                 term = X.scmul(eng, X.add(X.mul(eqt[lo], c0, p), X.mul(eqt[hi], c1, p), p), term)
                 acc = term if acc is None else X.sadd(eng, acc, term)
             vals.append(X.spad(eng, acc))
+        if mask:
+            return open_round("zc", rnd, zrs, vals)
         L.add_row([[c for v in vals for c in X.shares(v, i)] for i in range(n)])
         return L.commit()
     inv2 = pow(2, p - 2, p)
-    tau, zrs, ks = schedule(tr, p, lens, zround, None, None)
+    mask = ZK.ZKSC == "mask"
+    mz = dict(msgs={}, G={}, rho=None)
+    def pre(tr_):
+        """Cut D: every g of the middle committed as one group, the G values opened, rho drawn."""
+        gm = ZK.GMask(specs(lens), 0)
+        mz["gsh"], mz["g_roots"] = gm.commit(L)
+        mz["gm"] = gm
+        for name, _, _ in gm.specs:
+            mz["G"][name] = ZK.open_sum(p, [gm.share_val(p, mz["gsh"][i], name, gm.G_coef(p, name)) for i in range(n)])
+        tr_.absorb("zkg", mz["g_roots"])
+        tr_.absorb("G", X.flat([mz["G"][nm] for nm, _, _ in gm.specs]))
+        mz["rho"] = X.chal1(tr_, p)
+    def open_round(name, rnd, pts, vals):
+        """Cut D: the opened round message s_rnd = f-part + rho g-part (every custodian broadcasts its share)."""
+        gm, rho = mz["gm"], mz["rho"]
+        plain = []
+        for t in range(len(vals)):
+            cf = gm.round_coef(p, name, rnd, t, pts)
+            plain.append(ZK.open_sum(p, [X.add(X.shares(vals[t], i), X.mul(rho, gm.share_val(p, mz["gsh"][i], name, cf), p), p)
+                                         for i in range(n)]))
+        mz["msgs"].setdefault(name, []).append(plain)
+        return plain
+    tau, zrs, ks = schedule(tr, p, lens, lambda rnd, tau, zrs: X.flat(zround(rnd, tau, zrs)) if mask else zround(rnd, tau, zrs),
+                            None, None, pre=pre if mask else None)
     gam = X.chal(tr, p, len(cons) + 3 * len(had))
     q, const = build_q(p, sym, cons, had, prep, lens, gam)
     nz = lambda c: any(c)
@@ -305,8 +364,10 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
                 tabs[k] = ([X.add(X.mul(qq[2 * j], om, p), X.mul(qq[2 * j + 1], r, p), p) for j in range(len(qq) // 2)],
                            [X.slin(eng, [(om, XX[2 * j]), (r, XX[2 * j + 1])]) for j in range(len(XX) // 2)])
         shares = [[] for _ in range(n)]
+        opened = []
         for k in ks:
             qq, XX = tabs[k]
+            vs = []
             for t in range(3):
                 c0, c1 = ((1 - t) % p,), (t,)
                 terms = []
@@ -314,14 +375,19 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
                     qa = X.add(X.mul(qq[2 * j], c0, p), X.mul(qq[2 * j + 1], c1, p), p)
                     terms += [(X.mul(qa, c0, p), XX[2 * j]), (X.mul(qa, c1, p), XX[2 * j + 1])]
                 v = X.spad(eng, X.slin(eng, [(c, x) for c, x in terms if nz(c)]))
+                vs.append(v)
                 for i in range(n):
                     shares[i] += list(X.shares(v, i))
+            if mask:
+                opened += X.flat(open_round(f"l:{k}", rnd, rr, vs))
+        if mask:
+            return opened
         L.add_row(shares)
         return L.commit()
     rr = run_linear_schedule(tr, p, lens, ks, croot, lround)
     rb = X.chal(tr, p, (plen(d) - 1).bit_length()) if owner_y is not None else None
     ev = evaluations(lens, ks, zrs, rr, rb)
-    layout = row_layout(com, ev, len(zrs), Lmax)
+    layout = row_layout(com, ev, len(zrs), Lmax, lens)
     ys = []
     for e, (k, pt) in enumerate(ev):
         c = com[k]
@@ -340,15 +406,20 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     _, prox, pcols = CS.pcs_prove(com, [], tr, n, p)
     cols = {k: (pcols[k][0], [[sum(pcols[k][1][i][jj][0][r] for i in range(n)) % p for r in range(com[k].R)]
                               for jj in range(len(pcols[k][0]))]) for k in com}
-    lin, quad, labels = constraints(p, com, lens, ks, ev, cols, layout, tau, zrs, rr, q, const)
+    lin, quad, labels = constraints(p, com, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz)
     lig = L.prove(tr, lin, quad)
     eng.mac_check("middle-zk")
-    proof = dict(roots={k: com[k].roots for k in sorted(com)}, zc_roots=None, claims_root=croot,
+    proof = dict(roots={k: com[k].roots for k in sorted(com)}, claims_root=croot,
                  eval_roots=eval_roots, mask_roots=mask_roots, prox={k: prox[k][1] for k in sorted(prox)},
                  pcs_cols={k: pcols[k] for k in sorted(pcols)}, ligero=lig)
-    ngz = len(zrs)
-    proof["zc_roots"] = [[t[-1][0] for t in g["trees"]] for g in L.groups[:ngz]]
-    proof["lsc_roots"] = [[t[-1][0] for t in g["trees"]] for g in L.groups[ngz + 1:ngz + 1 + Lmax]]
+    if mask:
+        proof.update(g_roots=mz["g_roots"], G=X.flat([mz["G"][nm] for nm, _, _ in specs(lens)]),
+                     zc=[X.flat(m) for m in mz["msgs"]["zc"]],
+                     lsc=[[c for k in ks for c in X.flat(mz["msgs"][f"l:{k}"][r])] for r in range(Lmax)])
+    else:
+        ngz = len(zrs)
+        proof["zc_roots"] = [[t[-1][0] for t in g["trees"]] for g in L.groups[:ngz]]
+        proof["lsc_roots"] = [[t[-1][0] for t in g["trees"]] for g in L.groups[ngz + 1:ngz + 1 + Lmax]]
     stats = dict(hidden_rows=layout[-1], lin_constraints=len(lin), ligero_wire=L.wire,
                  spdz_wire=dict(eng.wire), spdz_openings=eng.nopen, atoms=len(prep), hadamard=len(had),
                  first_violated=ZK.first_violated(p, L.rows, lin, quad, labels))
@@ -371,18 +442,47 @@ def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=N
     for k in sorted(roots):
         tr.absorb(k, roots[k])
     lh = (lens["A"] - 1).bit_length()
-    if len(proof["zc_roots"]) != lh:
-        return False, "wrong number of zerocheck rounds"
-    tau, zrs, ks = schedule(tr, p, lens, lambda rnd, tau, zrs: proof["zc_roots"][rnd], None, None)
+    Lmax = max((L - 1).bit_length() for L in lens.values())
+    ks = sorted(lens)
+    E = X.EXT
+    mask = ZK.ZKSC == "mask"
+    mz = None
+    if mask:
+        sp = specs(lens)
+        if len(proof.get("zc", ())) != lh or any(len(v) != 4 * E for v in proof["zc"]):
+            return False, "wrong number of zerocheck rounds"
+        if len(proof.get("lsc", ())) != Lmax or any(len(v) != 3 * E * len(ks) for v in proof["lsc"]):
+            return False, "wrong number of linear sumcheck rounds"
+        if len(proof.get("G", ())) != E * len(sp) or len(proof.get("g_roots", ())) != n:
+            return False, "masking polynomials of the wrong shape"
+        msgs = {"zc": [ZK.unflat(v, 3) for v in proof["zc"]]}
+        for i, k in enumerate(ks):
+            msgs[f"l:{k}"] = [ZK.unflat(v[3 * E * i:3 * E * (i + 1)], 2) for v in proof["lsc"]]
+        mz = dict(G={nm: tuple(proof["G"][E * i:E * (i + 1)]) for i, (nm, _, _) in enumerate(sp)}, msgs=msgs, rho=None)
+        def pre(tr_):
+            tr_.absorb("zkg", proof["g_roots"])
+            tr_.absorb("G", list(proof["G"]))
+            mz["rho"] = X.chal1(tr_, p)
+        tau, zrs, _ = schedule(tr, p, lens, lambda rnd, tau, zrs: proof["zc"][rnd], None, None, pre=pre)
+    else:
+        if len(proof["zc_roots"]) != lh:
+            return False, "wrong number of zerocheck rounds"
+        tau, zrs, _ = schedule(tr, p, lens, lambda rnd, tau, zrs: proof["zc_roots"][rnd], None, None)
+        if len(proof["lsc_roots"]) != Lmax:
+            return False, "wrong number of linear sumcheck rounds"
     gam = X.chal(tr, p, len(cons) + 3 * len(had))
     q, const = build_q(p, sym, cons, had, prep, lens, gam)
-    Lmax = max((lens[k] - 1).bit_length() for k in ks)
-    if len(proof["lsc_roots"]) != Lmax:
-        return False, "wrong number of linear sumcheck rounds"
-    rr = run_linear_schedule(tr, p, lens, ks, proof["claims_root"], lambda rnd, rr_: proof["lsc_roots"][rnd])
+    rr = run_linear_schedule(tr, p, lens, ks, proof["claims_root"],
+                             (lambda rnd, rr_: proof["lsc"][rnd]) if mask else (lambda rnd, rr_: proof["lsc_roots"][rnd]))
+    if mask:
+        why = ZK.check_rounds(p, "zc", mz["msgs"]["zc"], zrs, 3, X.mul(mz["rho"], mz["G"]["zc"], p))
+        for k in ks:
+            why = why or ZK.check_rounds(p, f"l:{k}", mz["msgs"][f"l:{k}"], rr, 2)
+        if why:
+            return False, why
     rb = X.chal(tr, p, (plen(d) - 1).bit_length()) if bind else None
     ev = evaluations(lens, ks, zrs, rr, rb)
-    layout = row_layout(sh, ev, lh, Lmax)
+    layout = row_layout(sh, ev, lh, Lmax, lens)
     tr.absorb("lig-evals", proof["eval_roots"], proof["mask_roots"])
     ok, why = CS.pcs_verify(sh, roots, [], [], {k: (None, proof["prox"][k]) for k in sh}, proof["pcs_cols"], tr, n, p)
     if not ok:
@@ -390,9 +490,14 @@ def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=N
     pc = proof["pcs_cols"]
     cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
                            for jj in range(len(pc[k][0]))]) for k in sh}
-    lin, quad, _ = constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const)
-    groups = list(proof["zc_roots"]) + [proof["claims_root"]] + list(proof["lsc_roots"]) + [proof["eval_roots"]]
-    sizes = [1] * lh + [1] + [1] * Lmax + [layout[-1] - lh - 1 - Lmax]
+    lin, quad, _ = constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz)
+    if mask:
+        ng = layout[0].nrows
+        groups = [proof["g_roots"], proof["claims_root"], proof["eval_roots"]]
+        sizes = [ng, 1, layout[-1] - ng - 1]
+    else:
+        groups = list(proof["zc_roots"]) + [proof["claims_root"]] + list(proof["lsc_roots"]) + [proof["eval_roots"]]
+        sizes = [1] * lh + [1] + [1] * Lmax + [layout[-1] - lh - 1 - Lmax]
     return Z.verify(Z.Params(p, ZK.K_L, ZK.T_HIDE, ZK.T_OPEN), n, groups, sizes, proof["mask_roots"], lin, quad,
                     proof["ligero"], tr)
 

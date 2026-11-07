@@ -1,6 +1,6 @@
 """Refusal rows for the F_{p^2} challenges (cosnark_ext), on the spine (cosnark_zk) at a small width.
 
-    python3 cosnark_ext_rows.py [d]          (default d = 8; profiles demo and demo-x2)
+    python3 cosnark_ext_rows.py [d]          (default d = 8; profiles demo, demo-x2 and demo-x2d (cut D))
 
 Rows, for EXT = 1 (control) and EXT = 2: the honest proof accepted; the full-collusion forgeries of
 run_cosnark_zk.py (forged W1n, z1, a sumcheck whose hidden round messages are shifted to match a forged claim, a lie
@@ -32,10 +32,24 @@ def rows(d, prof):
     proof, st = ZK.prove_zk(eng, w, context=ctx)
     V = lambda pr: ZK.verify_zk(p, 3, d, ctx, None, False, pr)
     rec("honest", V(proof))
-    for att in ("forge_W1n", "forge_z1", "forge_sumcheck", "lie_in_u"):
+    atts = ("forge_W1n", "forge_z1", "forge_sumcheck", "lie_in_u")
+    if ZK.ZKSC == "mask":
+        atts += ("forge_round", "forge_G", "bad_share")
+    for att in atts:
         e2, w2 = step(p, tab, W1, W2, x, y)
         pr2, st2 = ZK.prove_zk(e2, w2, attack=att, context=ctx)
         rec(f"{att} (violates: {st2['first_violated']})", V(pr2))
+    if ZK.ZKSC == "mask":
+        t = copy.deepcopy(proof)
+        t["rounds"]["z1"][1][0] = (t["rounds"]["z1"][1][0] + 1) % p
+        rec("opened round message (z1, round 1) +1 in the bundle", V(t))
+        t = copy.deepcopy(proof)
+        t["rounds"]["bg"][0][0] = (t["rounds"]["bg"][0][0] + 1) % p
+        t["rounds"]["bg"][0][2] = (t["rounds"]["bg"][0][2] - 1) % p
+        rec("opened round message (bg, round 0): +1 at X=0, -1 at X=1", V(t))
+        t = copy.deepcopy(proof)
+        t["G"][0] = (t["G"][0] + 1) % p
+        rec("opened G (z1) +1 in the bundle", V(t))
     if X.EXT == 2:
         t = copy.deepcopy(proof)
         t["ligero"]["w1"][3] = (t["ligero"]["w1"][3] + 1) % p
@@ -58,6 +72,7 @@ def main():
     d = int(sys.argv[1]) if len(sys.argv) > 1 else 8
     pr1 = rows(d, "demo")
     pr2 = rows(d, "demo-x2")
+    rows(d, "demo-x2d")
     # cross-profile: each proof under the other's parameters
     p = PW.he_field()
     ctx = ("model", 0, 1)
