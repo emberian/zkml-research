@@ -65,6 +65,8 @@ pub fn flag(args: &[String], name: &str) -> Option<String> {
 pub fn gated(mut pf: Prof, args: &[String]) -> Prof {
     pf.gate = flag(args, "--gate").map(|t| t.parse().expect("--gate T"));
     pf.det_seed = std::env::var("DL_DETERMINISTIC").ok();
+    // --xt: exact truncation (genesis "XT"; the tapes' masks must be XT's: darkprep --xt or a dealer with xt)
+    pf.xt = args.iter().any(|a| a == "--xt");
     if let Some(k) = flag(args, "--ret-primes") {
         pf.ret_primes = k.parse().expect("--ret-primes K");
     }

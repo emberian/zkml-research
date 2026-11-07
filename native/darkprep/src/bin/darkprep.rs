@@ -61,7 +61,14 @@ fn step(m: &HashMap<String, String>) -> StepParams {
         "steady" => Inputs::Steady,
         x => panic!("unknown mode {x}"),
     };
-    StepParams::at(d, mode)
+    let mut sp = StepParams::at(d, mode);
+    // --xt: exact truncation (notes/dark-learning-gen6/xtrunc.md): 61-bit masks checked r < p inside the MPC
+    if m.contains_key("xt") {
+        let p: u64 = get(m, "p", 0);
+        assert!(p > 1 << 60 && p < 1 << 61, "--xt needs --p, the 61-bit SPDZ prime");
+        sp.xt = Some(p);
+    }
+    sp
 }
 
 fn get<T: std::str::FromStr>(m: &HashMap<String, String>, k: &str, dflt: T) -> T {
@@ -87,7 +94,7 @@ fn assemble_all(sp: &StepParams, p: u64, txdir: &Path, out: &Path, check: bool) 
     let asm_s = t0.elapsed().as_secs_f64();
     let mut s = format!("\"assemble_s\": {asm_s:.3}, \"tape_entries\": {}, \"owner_masks\": {}", tapes[0].entries.len(), rs.len());
     if check {
-        let r = verify::verify(&tapes, &rs)?;
+        let r = verify::verify_xt(&tapes, &rs, sp.xt)?;
         s += &format!(", \"verify\": \"{:?}\"", r);
     }
     Ok(s)
@@ -156,7 +163,7 @@ fn main() {
         }
         "verify" => {
             let (tapes, rs) = load_tapes(Path::new(m.get("tapes").expect("--tapes")))?;
-            let r = verify::verify(&tapes, &rs)?;
+            let r = verify::verify_xt(&tapes, &rs, if m.contains_key("xt") { Some(get(&m, "p", 0)) } else { None })?;
             println!("OK {:?}", r);
             Ok(())
         }

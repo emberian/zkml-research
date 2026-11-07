@@ -288,6 +288,10 @@ impl Ledger {
                     None => false,
                     Some(Value::Bool(b)) => *b,
                     Some(_) => return Err("genesis program: RS must be a boolean".into()),
+                }, xt: match p.get("XT") {
+                    None => false,
+                    Some(Value::Bool(b)) => *b,
+                    Some(_) => return Err("genesis program: XT must be a boolean".into()),
                 }, pg: match p.get("PG") {
                     None => None,
                     Some(v) => Some(v.as_str().and_then(unhex32).ok_or("genesis program: PG must be a sha256 hex")?),

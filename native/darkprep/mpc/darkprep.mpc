@@ -7,6 +7,7 @@
 #   AR   r                n_ar    jointly random values (auth_plain masks)
 #   TRI  a, b, c          n_tri   Beaver triples
 #   TR_t bit_0..bit_{K+KAPPA-1}  count_t   random bits per truncation class t (s, K): r, low bits, r >> s
+#        (arg xt<p>, exact truncation: bit_0..bit_60, each mask checked r < p in the MPC; xtrunc.md)
 #   LP   r^1..r^255       n_lp    power chains (one jointly random r, 254 products)
 # native/darkprep (Rust) reads the sections and assembles each party's tape in program order.
 KAPPA = 40
@@ -30,9 +31,44 @@ for a in program.args[1:]:
         spec['th'] = int(a[2:])
     elif a.startswith('b'):
         spec['b'] = int(a[1:])
+    elif a.startswith('xt'):
+        spec['xt'] = int(a[2:])
 n_in, n_ar, n_tri, n_lp = (spec.get(k, 0) for k in ('in', 'ar', 'tri', 'lp'))
 TH = spec.get('th', 1)
 B = spec.get('b', 1000)
+XT = spec.get('xt')
+
+def mask_bits(K):
+    # exact truncation (notes/dark-learning-gen6/xtrunc.md): 61 bits, r uniform in [0, p) after the check below
+    return 61 if XT else K + KAPPA
+
+if XT:
+    assert 2 ** 60 < XT < 2 ** 61
+    XT_T = 0
+    while XT_T < 61 and (XT >> (60 - XT_T)) & 1:
+        XT_T += 1
+    XT_L = 61 - XT_T
+    XT_P = XT % (1 << XT_L)
+    XT_M = min(i for i in range(XT_L) if (XT_P >> i) & 1)
+    print('darkprep XT: p', XT, 'T', XT_T, 'L', XT_L, 'P', hex(XT_P), 'products per mask', XT_L - XT_M)
+
+def xt_check(b):
+    """Open only [r >= p] per mask (r = sum 2^i b_i): y = (T - sum of the top T bits) + [r mod 2^L < P] is 0 iff
+    r >= p; rho y is opened (rho fresh, joint random): 0 iff y = 0 (or rho = 0), else uniform. Any zero aborts the
+    run (the chunk is regenerated): the masks kept are uniform on [0, p), independent of every opened value."""
+    a = XT_T - sum(b[XT_L:])
+    cur = None
+    lt = 0
+    for i in range(XT_L - 1, XT_M - 1, -1):
+        e = b[i] if (XT_P >> i) & 1 else 1 - b[i]
+        nxt = e if cur is None else cur * e
+        if (XT_P >> i) & 1:
+            lt = lt + ((1 if cur is None else cur) - nxt)
+        cur = nxt
+    y = a + lt
+    z = (y * sint.get_random(size=y.size)).reveal()
+    runtime_error_if(regint.conv(z == 0).sum(),
+                     'darkprep XT: a mask r >= p (or rho = 0): discard this chunk and regenerate (reveals nothing)')
 
 sections = []
 base = 0
@@ -44,7 +80,7 @@ def section(name, ncomp, m):
 b_in = section('in', 3, n_in)
 b_ar = section('ar', 1, n_ar)
 b_tri = section('tri', 3, n_tri)
-b_tr = [section('tr', K + KAPPA, m) for s, K, m in truncs]
+b_tr = [section('tr', mask_bits(K), m) for s, K, m in truncs]
 b_lp = section('lp', DEG, n_lp)
 total = base
 print('darkprep sections', sections, 'total', total)
@@ -71,6 +107,8 @@ def gen(kind, size, pos, m, extra=None):
         vs = [sint.get_random(size=size)]
     elif kind == 'tr':
         vs = [sint.get_random_bit(size=size) for _ in range(extra)]
+        if XT:
+            xt_check(vs)
     elif kind == 'lp':
         vs = powers(sint.get_random(size=size))[1:]
     for j, v in enumerate(vs):
@@ -91,5 +129,5 @@ run('in', b_in, n_in)
 run('ar', b_ar, n_ar)
 run('tri', b_tri, n_tri)
 for (s, K, m), b0 in zip(truncs, b_tr):
-    run('tr', b0, m, K + KAPPA)
+    run('tr', b0, m, mask_bits(K))
 run('lp', b_lp, n_lp)
