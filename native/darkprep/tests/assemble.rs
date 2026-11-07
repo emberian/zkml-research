@@ -460,3 +460,86 @@ fn rs_synthetic_tapes_verify_and_a_wrong_low_bit_is_refused() {
     }
     assert!(done, "no Trhb swap was refused");
 }
+
+/// A synthetic step tape sealed as party-chunk seals it, and its plain DLTAPE01 bytes.
+fn sealed_fixture(v: &darkhand::vault::Vault, dir: &std::path::Path) -> (std::path::PathBuf, Vec<u8>) {
+    let sp = StepParams::at(4, Inputs::Steady).with_proof();
+    let (files, _) = synth(&sp, 12);
+    let tx = Transactions::parse(&files[1], P).unwrap();
+    let mut buf = darkprep::tape::DarkstepBuf::new(tx.alpha_i, darkprep::schedule::n_entries(&sp));
+    darkprep::tape::assemble_in_chunk_emit(&[sp], &tx, 1, 0, &mut |t, sm| buf.push(t, sm).unwrap()).unwrap();
+    let plain = buf.finish().unwrap();
+    // the in-memory image equals the streamed file's bytes
+    let pp = dir.join("plain.bin");
+    let mut w = darkprep::tape::DarkstepWriter::create(&pp, tx.alpha_i, darkprep::schedule::n_entries(&sp)).unwrap();
+    darkprep::tape::assemble_in_chunk_emit(&[sp], &tx, 1, 0, &mut |t, sm| w.push(t, sm).unwrap()).unwrap();
+    w.finish().unwrap();
+    assert_eq!(std::fs::read(&pp).unwrap(), plain);
+    let path = dir.join("tape_1.bin");
+    v.seal_to(&path, &darkprep::tape::tape_role("reh-c0-P1", 0), plain.clone()).unwrap();
+    (path, plain)
+}
+
+#[test]
+fn sealed_tape_opens_only_as_itself_and_never_after_its_key_is_destroyed() {
+    let dir = std::env::temp_dir().join(format!("darkprep-vault-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let v = darkhand::vault::Vault::create("dl-vault:test:1:0:00", false).unwrap();
+    let (path, plain) = sealed_fixture(&v, &dir);
+    let on_disk = std::fs::read(&path).unwrap();
+    assert!(on_disk.starts_with(b"DLVAULT1") && !on_disk.windows(16).any(|w| w == &plain[24..40]), "plaintext on disk");
+    let t = darkprep::tape::open_sealed(&v, &path, "reh-c0-P1", 0).unwrap();
+    let mut back = Vec::new();
+    t.write_to(&mut back).unwrap();
+    assert_eq!(back, plain);
+    // another step, another chunk, another key: refused
+    assert!(darkprep::tape::open_sealed(&v, &path, "reh-c0-P1", 1).is_err());
+    assert!(darkprep::tape::open_sealed(&v, &path, "reh-c1-P1", 0).is_err());
+    let other = darkhand::vault::Vault::create("dl-vault:test:1:0:00", false).unwrap();
+    assert!(darkprep::tape::open_sealed(&other, &path, "reh-c0-P1", 0).is_err());
+    // a plain DLTAPE01 tape is refused
+    assert!(darkprep::tape::open_sealed(&v, &dir.join("plain.bin"), "reh-c0-P1", 0).err().unwrap().contains("unsealed"));
+    // erasure: after destroy, neither the zero key (what a zeroed copy would give) nor a keyring load opens it
+    let name = v.name.clone();
+    v.destroy();
+    assert!(darkprep::tape::open_sealed(&darkhand::vault::Vault::with_key(&name, [0; 32]), &path, "reh-c0-P1", 0).is_err());
+    assert!(darkhand::vault::Vault::load(&name).is_err());
+    std::fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn sealed_tape_under_the_kernel_keyring_dies_with_its_invalidated_key() {
+    // the deployment's path: the key in the uid's persistent keyring, loaded by name (as party-chunk does)
+    let dir = std::env::temp_dir().join(format!("darkprep-vault-kr-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let name = format!("dl-vault:darkprep-test:1:0:{:016x}", std::process::id());
+    let made = darkhand::vault::Vault::create(&name, true).unwrap();
+    let v = darkhand::vault::Vault::load(&name).unwrap();
+    let (path, _) = sealed_fixture(&v, &dir);
+    assert!(darkprep::tape::open_sealed(&darkhand::vault::Vault::load(&name).unwrap(), &path, "reh-c0-P1", 0).is_ok());
+    drop(v);
+    let rep = made.destroy();
+    assert_eq!(rep["key_in_keyring_after"], false, "{rep}");
+    assert!(darkhand::vault::Vault::load(&name).is_err(), "the invalidated key still loads");
+    std::fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg(not(feature = "test-plain-tapes"))]
+#[test]
+fn a_production_build_refuses_to_write_an_unsealed_chunk() {
+    // no --vault: refused before any MASCOT run, --plain-tapes or not
+    let out = std::process::Command::new(env!("CARGO_BIN_EXE_darkprep"))
+        .args(["party-chunk", "--party", "0", "--d", "4", "--mode", "steady", "--plain-tapes", "--out", "/nonexistent/x-P0"])
+        .output()
+        .unwrap();
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(!out.status.success() && err.contains("is required"), "{err}");
+    // a vault name that no keyring holds: refused too (darkprep never makes a key)
+    let out = std::process::Command::new(env!("CARGO_BIN_EXE_darkprep"))
+        .args(["party-chunk", "--party", "0", "--d", "4", "--mode", "steady", "--vault", "dl-vault:none:0:0:00", "--out", "/nonexistent/x-P0"])
+        .output()
+        .unwrap();
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(!out.status.success() && (err.contains("vault") || err.contains("keyring")), "{err}");
+}

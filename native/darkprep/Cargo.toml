@@ -9,6 +9,12 @@ pycompat = { path = "../pycompat" }
 # only for `darkprep export-darkstep`: the online step's own tape format and the harness inputs
 darkstep = { path = "../darkstep" }
 libc = "0.2"
+# every tape and owner message at rest is sealed under the seat's epoch file key (cryptographic erasure)
+darkhand = { path = "../darkhand" }
+
+[features]
+# TEST ONLY: party-chunk may write plain (unsealed) tapes with --plain-tapes (loopback and synthetic tests)
+test-plain-tapes = []
 
 [dev-dependencies]
 # the release's authority on tag order: darkproof::run::deal_release over darkstep's dealer
