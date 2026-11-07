@@ -250,7 +250,8 @@ def verify_native(out, tag):
     if rm and os.path.exists(path):
         wit = json.load(open(os.path.join(out, rm["witness"])))
         blob = open(path, "rb").read()
-        prog_r = dict(meta.get("program") or {}, **({"RC": True} if rm.get("rc") else {}), **({"LB": True} if rm.get("lb") else {}))
+        prog_r = dict(meta.get("program") or {}, **({"RC": True} if rm.get("rc") else {}), **({"LB": True} if rm.get("lb") else {}),
+                      **({"RS": True} if rm.get("rs") else {}))
         ok, why, res = PW.verify_release(p, blob, tuple(rm["ctx"]), rm["head_roots"], wit["X"], wit["labels"],
                                          prog_r, rm["ncls"], d)
         bad = bytearray(blob); bad[len(bad) // 2] ^= 1
@@ -343,8 +344,8 @@ def main():
         rr = random.Random(1000 + d)
         xs = int(os.environ.get("DP_XSCALE", "1"))        # > 1: a release whose z1 leaves the table's domain
         X = [[rr.randint(0, 100) * xs for _ in range(M)] for _ in range(d)]
-        prog = CH.Prog(rc=bool(os.environ.get("DP_RC")), lb=bool(os.environ.get("DP_LB")))
-        rprog = dict(RC=True, **({"LB": True} if prog.lb else {})) if prog.rc else None
+        prog = CH.Prog(rc=bool(os.environ.get("DP_RC")), lb=bool(os.environ.get("DP_LB")), rs=bool(os.environ.get("DP_RS")))
+        rprog = dict(RC=True, **({"LB": True} if prog.lb else {}), **({"RS": True} if prog.rs else {})) if prog.rc else None
         head = s2["wires"]
         dec = lambda Mx: [[MF.centered(sum(v[i][0] for i in range(3)) % p, p) for v in r] for r in Mx]
         # half the labels are the plain model's strict argmax (so C > 0), the rest random
@@ -352,7 +353,8 @@ def main():
         labels = [max(range(ncls), key=lambda c: osc[c][t]) if t % 2 == 0 else rr.randrange(ncls) for t in range(M)]
         flat = lambda Mx: [v for r in Mx for v in r]
         dealer = spdz.Dealer(p, 3, 5)
-        live = G.RecEngine(p, 3, dealer)
+        rattack = os.environ.get("DP_REL_ATTACK")          # TEST: "lb_h", a custodian set's h share off by one
+        live = G.RecEngine(p, 3, dealer, attack=rattack)
         C, z1h = CR.run_release(live, head["W1n"], head["W2n"], X, labels, prog, ncls)
         live.mac_check("release")
         public = [v for _, _, v in live.transcript]
@@ -385,11 +387,15 @@ def main():
             sd = s2["sst"]["deferred"]
             rdef = dict(points=sd["points"], carry_roots={k: sd["carries"][k].roots for k in ZK.CARRY_IN})
         ok, why, res = PW.verify_release(p, blob, ctx, heads, X, labels, rprog, ncls, d, deferred=rdef)
+        if rattack:
+            print(f"rel attack {rattack}: MAC check passed; verify_release -> {ok}, {why}", flush=True)
+            assert not ok, "the attacked release was accepted"
+            return
         assert ok, why
         Cp = CR.plain_count(dec(head["W1n"]), dec(head["W2n"]), X, labels, prog, ncls)
         assert C == Cp, (C, Cp)
         meta["release"] = dict(blob=f"{tag}_rel.bin", witness=f"{tag}_rel.json", ctx=list(ctx), M=M, ncls=ncls, C=C,
-                               head_roots=heads, rc=prog.rc, lb=prog.lb)
+                               head_roots=heads, rc=prog.rc, lb=prog.lb, **({"rs": True} if prog.rs else {}))
         print("rel", len(blob), "C =", C, "of M =", M, flush=True)
     if "si" in flows:
         rng2 = random.Random(d)

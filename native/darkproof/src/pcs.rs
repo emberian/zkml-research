@@ -385,7 +385,8 @@ impl PcsParty {
             .salts
             .iter()
             .map(|sa| {
-                let mut h = crate::h::Py::new();
+                // lean: npts hashers live at once (a 64 KiB buffer each held R npts repr bytes, 2^26: 6 GB)
+                let mut h = crate::h::Py::lean();
                 h.s("leaf").hx(sa).raw(b"[");
                 h
             })

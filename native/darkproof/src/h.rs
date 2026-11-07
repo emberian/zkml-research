@@ -60,6 +60,10 @@ impl Py {
     pub fn new() -> Self {
         Py(ReprHasher::new())
     }
+    /// A hasher with a 256-byte write buffer: for the many hashers of a streamed level (same digest as `new`).
+    pub fn lean() -> Self {
+        Py(ReprHasher::with_capacity(256))
+    }
     #[inline]
     pub fn raw(&mut self, b: &[u8]) -> &mut Self {
         self.0.raw(b);

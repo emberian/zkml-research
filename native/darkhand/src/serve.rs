@@ -70,7 +70,7 @@ pub fn old_from_serve(
     scan_paths.sort();
     scan_paths.dedup();
     OldParts {
-        old: Box::new(OldCustodian { i, w: wm, tape, keys, key, carry, files, scan_paths, captured: if retire_he { captured } else { None }, vault: None }),
+        old: Box::new(OldCustodian { i, w: wm, tape, keys, key, carry, files, scan_paths, captured: if retire_he { captured } else { None }, vault: None, old_carries: None }),
         he,
         net3,
     }
@@ -135,6 +135,16 @@ pub fn with_vault(setup: impl FnOnce() -> Box<OldCustodian>, vault: crate::vault
     move || {
         let mut old = setup();
         old.vault = Some(vault);
+        old
+    }
+}
+
+/// Cut E with a pending head: give the old custodian its carries c1p, c2p of the head step (the step's DeferIn
+/// carries), which the handover's discharge opens and the erasure wipes; run old_side_e with the ledger's pending.
+pub fn with_old_carries(setup: impl FnOnce() -> Box<OldCustodian>, carries: BTreeMap<String, PcsParty>) -> impl FnOnce() -> Box<OldCustodian> {
+    move || {
+        let mut old = setup();
+        old.old_carries = Some(carries);
         old
     }
 }

@@ -78,6 +78,8 @@ class RecEngine(spdz.Engine):
         self.range_rows = []       # their rows, appended after the program (append_range)
         self.range_fail = []       # (name, index) whose PUBLIC c - lo is already outside [0, 2^L)
         self.lb = False            # the lookup proved by a bit circuit on z1's range bits (append_lookup; "LB": true)
+        self.rs = False            # R1 + R2 (proof.md 23; "RS": true): range chains to bit B; K + 1 - s rhi bits
+        self.quiet = False         # MPC work outside the proof (L's lookup by bits): no atoms, rows or constraints
         self.lb_req = []           # per lookup: dict(k, ext={column: ext atom}) (rec_out fills ext)
         self.lb_pend = {}          # id(output value) -> (lookup index, column), until rec_out binds it
         self.lb_rows = []          # the circuit's rows per lookup (append_lookup), filled at proof time (fill_lookup)
@@ -99,6 +101,8 @@ class RecEngine(spdz.Engine):
         return {i: (xs[i], ms[i]) for i in range(n)}
 
     def prep(self, tag, value_fn):
+        if self.quiet:
+            return mk({} if self.symbolic else super().prep(tag, value_fn), {})
         if self.symbolic:
             sh = {}
             vals = None
@@ -125,7 +129,7 @@ class RecEngine(spdz.Engine):
             self.tctx["r"] = a
         elif tag == "trh":
             s, K = self.tctx["s"], self.tctx["K"]
-            nb = K + KAPPA - s
+            nb = K + 1 - s if self.rs else K + KAPPA - s
             val = None if self.symbolic else sum(x[0] for x in vals.values()) % p
             bits = []
             for j in range(nb):
@@ -137,10 +141,12 @@ class RecEngine(spdz.Engine):
             for i, rb in enumerate(self.tctx["bits"]):
                 form[rb] = (-(1 << i)) % p
             self.cons.append((form, 0, 0, "trunc-mask"))
-            form = {a: 1}
-            for j, b in enumerate(bits):
-                form[b] = (-(1 << j)) % p
-            self.cons.append((form, 0, 0, "trh-range"))
+            if not self.rs:
+                # under RS rhi has no bound row: every truncation's range (R1) makes the output exact without it
+                form = {a: 1}
+                for j, b in enumerate(bits):
+                    form[b] = (-(1 << j)) % p
+                self.cons.append((form, 0, 0, "trh-range"))
             self.tctx["hbits"] = bits
         elif tag == "lp" and not self.lb:
             self.lp_run.append(a)
@@ -189,6 +195,8 @@ class RecEngine(spdz.Engine):
             self.open_log.append(({}, v))
         else:
             v = super().open(x, phase)
+        if self.quiet:
+            return v
         kind = "he:" + phase if self.he else ("lookup-lb" if self.lb and phase == "lookup" else phase)
         self.cons.append((dict(_form(x)), _const(x), v, kind))
         if self.tctx is not None and phase == "trunc":
@@ -198,14 +206,81 @@ class RecEngine(spdz.Engine):
     # ------------------------------------------------------------ gadget context
     def trunc(self, x, s, K, rc=None):
         """rc = (name, a, B): the proof also checks the input x in [a, a + 2^B) (append_range)."""
+        if self.rs:
+            # R2's soundness needs every truncation range-checked, a a multiple of 2^s, and s <= B <= K + 1
+            if rc is None or rc[1] % (1 << s) or not s <= rc[2] <= K + 1:
+                raise ValueError(f"RS: truncation (s={s}, K={K}) needs a range with 2^s | a and s <= B <= K + 1: {rc}")
         self.tctx = dict(s=s, K=K, bits=[])
         out = super().trunc(x, s, K)
         if rc is not None:
             name, a, B = rc
             self.ranges.append(dict(R=self.tctx["bits"] + self.tctx["hbits"], c=self.tctx["c"], K=K, s=s, a=a, B=B,
-                                    name=name, k=sum(1 for r in self.ranges if r["name"] == name)))
+                                    name=name, k=sum(1 for r in self.ranges if r["name"] == name),
+                                    r=self.tctx["r"], rs=self.rs))
         self.tctx = None
         return out
+
+    def lookup_bits(self, t_lo, s1):
+        """L (proof.md 23): the release MPC's h = SIG[u1] for every z1 truncation so far, by the LB circuit on shares
+        instead of the masked powers. Outside the proof (quiet): z1's borrow chain c' - r to bit B = s1 + 8 (R_i the
+        dealt trb and trhb bits, c' public after the truncation's opening; one Beaver product per bit from i = 1, all
+        lookups per round), the difference bits v_j = diff_(s1 + j), then lookup_bits_ops' circuit level by level
+        (products batched over every lookup in creation order). Opens only Beaver differences. Each output is bound
+        to its external atom h[k] like lb's (rec_out), and append_lookup proves it."""
+        p, B = self.p, s1 + 8
+        Ds = [D for D in self.ranges if D["name"] == "z1"]
+        if not Ds or any((D["a"], D["B"], D["s"]) != (t_lo << s1, B, s1) for D in Ds):
+            raise ValueError("L: the lookup by bits needs RC with z1's interval the table's domain")
+        sv = lambda a: mk({} if self.symbolic else dict(self.atom_sh[a]), {})
+        self.quiet = True
+        R = [[sv(D["R"][i]) for i in range(B)] for D in Ds]
+        cb = []
+        for D in Ds:
+            L = D["K"] + KAPPA + 1
+            cp = (D["c"] - (1 << D["K"]) - D["a"]) % (1 << L)
+            cb.append([(cp >> i) & 1 for i in range(B)])
+        n = len(Ds)
+        beta = [[None] for _ in range(n)]          # beta[k][i] = beta_i
+        for i in range(B):
+            T = [self.mul(R[k][i], beta[k][i]) for k in range(n)] if i else [None] * n
+            for k in range(n):
+                if cb[k][i]:
+                    nb = T[k] if i else self.lin([], 0)
+                else:
+                    nb = self.lin([(1, R[k][i])] + ([(1, beta[k][i]), (-1, T[k])] if i else []))
+                beta[k].append(nb)
+        vin = [[self.lin([(-1, R[k][s1 + j]), (-1, beta[k][s1 + j]), (2, beta[k][s1 + j + 1])], cb[k][s1 + j])
+                for j in range(8)] for k in range(n)]
+        ops, vph, hout = lookup_bits_ops(p, t_lo)
+        lvl = {}
+        for op in ops:
+            lvl[op[1]] = max([lvl.get(x, 0) for x in op[2]] + [0]) if op[0] == "lin" else max(lvl.get(op[2], 0), lvl.get(op[3], 0)) + 1
+        val = [dict(zip(vph, vin[k])) for k in range(n)]
+        for Lv in range(max(lvl.values()) + 1):
+            for k in range(n):
+                for op in ops:
+                    if op[0] == "lin" and lvl[op[1]] == Lv:
+                        val[k][op[1]] = self.lin([(c, val[k][x]) for x, c in op[2].items()], op[3])
+            for k in range(n):
+                for op in ops:
+                    if op[0] == "mul" and lvl[op[1]] == Lv + 1:
+                        val[k][op[1]] = self.mul(val[k][op[2]], val[k][op[3]])
+        hs = [self.lin([(c, val[k][x]) for x, c in hout[0].items()], hout[1]) for k in range(n)]
+        self.quiet = False
+        res = []
+        for k, h in enumerate(hs):
+            j = len(self.lb_req)
+            self.lb_req.append(dict(k=j, ext={}))
+            o = dict(h)
+            if (self.attack, j, self.symbolic) == ("lb_h", 1, False):
+                # a colluding custodian set shifts lookup 1's output by one, MAC-consistently (they hold alpha)
+                s0, m0 = o[1]
+                o[1] = ((s0 + 1) % self.p, (m0 + self.dealer.alpha) % self.p)
+                self.attack_done = True
+            v = mk(o, {})
+            self.lb_pend[id(v)] = (j, 0)
+            res.append(v)
+        return res
 
     def lookup2(self, u, offset, tables_coeffs, deg):
         """With lb, the MPC is unchanged but the proof drops the masked-power relations: the opening is recorded as
@@ -280,6 +355,38 @@ def append_range(eng):
             eng.range_fail.append((D["name"], D["k"]))
         cb = [((cp % (1 << L)) >> i) & 1 for i in range(L)]
         R = D["R"]
+        assert len(R) == (K + 1 if D["rs"] else K + KAPPA)
+        if D["rs"]:
+            # R1 (proof.md 23): the chain over i < B, then r - sum_(i<B) 2^i R_i + 2^B beta_B = 2^B floor(c' / 2^B)
+            ts, bs = [], []
+            beta = None
+            for i in range(B):
+                Ri = R[i]
+                t = None
+                if beta is not None:
+                    t = eng._atom("proofrange", "rt", None)
+                    eng.had.append((Ri, beta, t))
+                nb = eng._atom("proofrange", "rb", None)
+                f = {nb: 1}
+                if cb[i]:
+                    if t is not None:
+                        f[t] = (f.get(t, 0) - 1) % p
+                else:
+                    for x, co in ((Ri, -1), (beta, -1), (t, 1)):
+                        if x is not None:
+                            f[x] = (f.get(x, 0) + co) % p
+                eng.cons.append((f, 0, 0, "range"))
+                ts.append(t)
+                bs.append(nb)
+                beta = nb
+            chi = cp >> B
+            g = {D["r"]: 1}
+            for i in range(B):
+                g[R[i]] = (g.get(R[i], 0) - (1 << i)) % p
+            g[beta] = (g.get(beta, 0) + (1 << B)) % p
+            eng.cons.append((g, -(chi << B) % p, 0, "range"))
+            eng.range_rows.append(dict(D, L=B, cb=cb, t=ts, b=bs, chi=chi))
+            continue
         assert len(R) == K + KAPPA
         ts, bs = [], []
         beta = None
@@ -342,6 +449,27 @@ def fill_range(live, eng):
                 nb = nb if (Ri is not None or bt is not None) else zero
             live.atom_sh[D["b"][i]] = dict(nb)
             beta[k] = nb
+    if rows[0].get("rs"):
+        # RS: one masked zero test over every truncation, so a refused run opens only whether some input left its
+        # bound: S = sum_k g_k E_k (E_k the high row's value, g_k public coins keyed by every c), then rho S with rho a
+        # fresh triple's a (uniform, authenticated) is opened: 0 iff S = 0, else uniform (proof.md 23)
+        import hashlib, random
+        p = eng.p
+        hx = hashlib.sha256(b"dl-range-zero-test" + b"".join(D["c"].to_bytes(8, "little") for D in rows)).hexdigest()
+        g = random.Random(int(hx, 16))
+        terms, cst = [], 0
+        for D in rows:
+            B, gk = D["B"], g.randrange(p)
+            terms += [(gk, sh(D["r"]))] + [(-gk * (1 << i) % p, sh(D["R"][i])) for i in range(B)]
+            terms.append((gk * (1 << B) % p, sh(D["b"][B - 1])))
+            cst -= gk * (D["chi"] << B)
+        S = eng.lin(terms, cst % p)
+        av, bv = eng.dealer.rng.randrange(p), eng.dealer.rng.randrange(p)
+        rho = eng.prep("ta", lambda: av)
+        eng.prep("tb", lambda: bv)
+        eng.prep("tc", lambda: av * bv)
+        v = eng.open(eng.mul(S, rho), "range-check")
+        return [("some truncation (RS: one masked zero test)", None)] if v else []
     ind = []
     for D in rows:
         terms = [(1, sh(D["b"][-1]))]
@@ -478,6 +606,40 @@ def append_lookup(eng, t_lo, s1):
             f[a] = (f.get(a, 0) - 1) % p
             eng.cons.append(({k: x for k, x in f.items() if x}, c, 0, "lookup-bits"))
         eng.lb_rows.append(bx.ops)
+
+
+class _OpsEng:
+    """A stand-in engine for _Bits that only numbers atoms (lookup_bits_ops)."""
+
+    def __init__(self, p):
+        self.p, self.n_atoms, self.cons, self.had = p, 0, [], []
+
+    def _atom(self, kind, tag, sh=None):
+        self.n_atoms += 1
+        return self.n_atoms - 1
+
+
+def lookup_bits_ops(p, t_lo):
+    """The LB circuit for h alone (append_lookup's), as ops over 8 placeholder atoms v_j (atoms 0..7, set by the caller):
+    returns (ops after the placeholders, the placeholder ids, h as (form, const)). The release MPC evaluates it on
+    shares (RecEngine.lookup_bits); natively darkproof run::lookup_bits_ops."""
+    q = t_lo // 4
+    eng = _OpsEng(p)
+    vph = [eng._atom("ph", "v") for _ in range(8)]
+    bx = _Bits(eng)
+    v = [bx.atom({vph[j]: 1}, 0) for j in range(8)]
+    lo = bx.lt(v[2:], -7 - q)
+    Bf = bx.lt(v[2:], 8 - q)
+    if lo[0] or Bf[0]:
+        w = bx.atom({v[2 + j]: 1 << j for j in range(6)}, 0)
+        wB = bx.mul(w, Bf)
+        wl = bx.mul(w, lo)
+    else:
+        wf = ({v[2 + j]: 1 << j for j in range(6)}, 0)
+        wB = (wf[0], 0) if Bf[1] else ({}, 0)
+        wl = (wf[0], 0) if lo[1] else ({}, 0)
+    h = _addf((1, wB), (-1, wl), (q - 7, Bf), (-(q + 7), lo), (7, ({}, 1)), p)
+    return bx.ops, vph, h
 
 
 def fill_lookup(live, eng):

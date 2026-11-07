@@ -38,6 +38,7 @@ def run_release(eng, W1, W2, X, labels, prog, ncls=10, kc=KC):
     public (mod p), labels: M ints < ncls. Returns (C, the external vectors z1 and h as shares)."""
     p = eng.p
     eng.lb = prog.lb
+    eng.rs = getattr(prog, "rs", False)
     d, M = len(X), len(X[0])
     z = lambda: {}
     W1f = [W1[j][k] for j in range(d) for k in range(d)] if W1 else [z() for _ in range(d * d)]
@@ -60,7 +61,11 @@ def run_release(eng, W1, W2, X, labels, prog, ncls=10, kc=KC):
             z1.append(G.mk(dict(sh), {a: 1}))
     tab = (sig_table(p, prog.t_lo),)
     u1 = [eng.trunc(v, prog.s1, prog.k1, rc=prog.rc_of("z1", kc)) for v in z1]
-    h = [eng.lookup2(u, -prog.t_lo % p, tab, 255)[0] for u in u1]
+    if getattr(prog, "rs", False) and prog.lb:
+        # L (proof.md 23): h by the bit circuit in the MPC, not the masked powers
+        h = eng.lookup_bits(prog.t_lo, prog.s1)
+    else:
+        h = [eng.lookup2(u, -prog.t_lo % p, tab, 255)[0] for u in u1]
     eng.rec_out("h", h)
     hb = [G.mk(dict(x), {eng.ext[("h", k)]: 1}) for k, x in enumerate(h)]
     # batch-friendly order (the custodians run each stage as one vector operation): every class-row product, then

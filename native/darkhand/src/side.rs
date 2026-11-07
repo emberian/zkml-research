@@ -14,6 +14,7 @@
 //! wires and its commitment parts: the state for the next step.
 use crate::erase::{wipe_file, Wipe};
 use crate::scan::{Canaries, DiskReport, ScanReport};
+use darkproof::defer::{DeferIn, Pending};
 use darkproof::handover::{self, HandoverCtx};
 use darkproof::ligero::LigParams;
 use darkproof::net::TcpNet;
@@ -171,6 +172,9 @@ pub struct OldCustodian {
     /// the epoch's file key (`vault`): its state files are sealed under it, and erasing it erases them wherever
     /// their blocks lie. None: the files are plain (wipes only).
     pub vault: Option<crate::vault::Vault>,
+    /// cut E (Profile::defer) with a pending head: this custodian's carries c1p, c2p of the head step (first life
+    /// spent there), opened by the handover's discharge and then erased with the rest
+    pub old_carries: Option<BTreeMap<String, PcsParty>>,
 }
 
 /// What the shallow frame needs after the erasure: the canaries, the public pieces of the decryption attempt, the
@@ -333,9 +337,15 @@ fn run_setup<F: FnOnce() -> Box<OldCustodian>>(setup: F) -> Box<OldCustodian> {
 /// dead and scrubbed before the final scan; `connect6` then joins the six-party mesh. Returns its report; the caller
 /// exits the process.
 pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6: impl FnOnce() -> Net) -> Result<Value, String> {
+    old_side_e(c, None, setup, connect6)
+}
+
+/// old_side under cut E: `pend` = the ledger head's pending claims (None: a final head, or outside DEFER). The
+/// handover proof discharges them with the custodian's `old_carries`.
+pub fn old_side_e(c: &Common, pend: Option<&Pending>, setup: impl FnOnce() -> Box<OldCustodian>, connect6: impl FnOnce() -> Net) -> Result<Value, String> {
     let t0 = Instant::now();
     let st = run_setup(setup);
-    let e = old_side_erase(c, st, connect6())?;
+    let e = old_side_erase(c, pend, st, connect6())?;
     let scrubbed_kb = scrub_stack_all();
     let post_disk = e.dcan.scan_paths(&e.scan_paths);
     let post = e.can.scan();
@@ -377,7 +387,7 @@ pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6:
 }
 
 #[inline(never)]
-fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Erased, String> {
+fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>, net6: Net) -> Result<Erased, String> {
     let (n_old, n_new) = (c.n_old, c.n_new);
     let i = st.i;
     assert!(net6.me == i && net6.n == n_old + n_new);
@@ -404,7 +414,11 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     // ---- the joint proof
     let tp = Instant::now();
     let mut tn = TcpNet(net6);
-    let proof = handover::prove(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut st.carry, &mut tn, &Det(None))?;
+    let proof = if c.pr.defer {
+        handover::prove_defer(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut st.carry, pend, st.old_carries.as_mut(), &mut tn, &Det(None))?.0
+    } else {
+        handover::prove(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut st.carry, &mut tn, &Det(None))?
+    };
     let prove_s = tp.elapsed().as_secs_f64();
     let blob = handover::encode(&c.pr, c.d, &proof);
     let proof_digest = pycompat::repr::hex(&Sha256::digest(&blob));
@@ -448,6 +462,11 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
             .collect();
         can.add_bytes(&format!("{k} unopened commitment salts"), &salts);
         salts.wipe();
+    }
+    if let Some(oc) = st.old_carries.as_ref() {
+        for (k, pc) in oc {
+            can.add_words(&format!("{k} carry rows and tails"), &pc.ext, 1 << 16);
+        }
     }
     can.add_words("tape shares", &st.tape.sh, 1 << 16);
     can.add_words("tape MAC shares", &st.tape.mac, 1 << 16);
@@ -513,6 +532,11 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
         v.wipe();
     }
     st.carry.clear();
+    if let Some(mut oc) = st.old_carries.take() {
+        for v in oc.values_mut() {
+            v.wipe();
+        }
+    }
     st.tape.wipe();
     if let Some(hs) = st.keys.as_mut() {
         hs.s.wipe();
@@ -594,6 +618,9 @@ pub struct NewCustodian {
     pub proof: Vec<u8>,
     pub new_roots: BTreeMap<String, Vec<[u8; 32]>>,
     pub report: Value,
+    /// cut E: this new custodian's side of the new head's pending claims (points r, carries c1p = cN1, c2p = cN2),
+    /// the next step's DeferIn; None outside DEFER
+    pub defer: Option<DeferIn>,
 }
 
 /// The new custodian's part. `net3` is the new committee's own mesh (index j), `net6` the joint one (index
@@ -609,6 +636,15 @@ pub struct NewCustodian {
 #[allow(clippy::too_many_arguments)]
 pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i64, test_reveal: usize,
                 keep: Option<OwnKey>) -> Result<NewCustodian, String> {
+    new_side_e(c, None, j, net3, net6, tape, epoch, test_reveal, keep)
+}
+
+/// new_side under cut E: `pend` = the ledger head's pending claims (public; None for a final head). The new W is
+/// committed with one life and not opened; the returned NewCustodian's `defer` is its side of the new head's
+/// pending claims (the next step's DeferIn).
+#[allow(clippy::too_many_arguments)]
+pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i64, test_reveal: usize,
+                  keep: Option<OwnKey>) -> Result<NewCustodian, String> {
     let t0 = Instant::now();
     let (n_old, n_new) = (c.n_old, c.n_new);
     assert!(net6.me == n_old + j && net3.me == j && net3.n == n_new);
@@ -644,12 +680,17 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
     }
     let reshare_s = tr.elapsed().as_secs_f64();
     let tcm = Instant::now();
+    let wp = c.pr.w_life();
     let mut carry: BTreeMap<String, PcsParty> =
-        KINDS.iter().map(|k| (k.to_string(), PcsParty::commit(&c.pr, &plain[*k], k, j, &Det(None)))).collect();
+        KINDS.iter().map(|k| (k.to_string(), PcsParty::commit(&wp, &plain[*k], k, j, &Det(None)))).collect();
     let commit_s = tcm.elapsed().as_secs_f64();
     let tp = Instant::now();
     let mut tn = TcpNet(net6);
-    let proof = handover::prove(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut carry, &mut tn, &Det(None))?;
+    let (proof, defer) = if c.pr.defer {
+        handover::prove_defer(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut carry, pend, None, &mut tn, &Det(None))?
+    } else {
+        (handover::prove(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut carry, &mut tn, &Det(None))?, None)
+    };
     let prove_s = tp.elapsed().as_secs_f64();
     let sent6 = sent_json(&tn.0);
     let sent3_before_auth = sent_json(&net3);
@@ -714,5 +755,5 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
         "bytes_sent_per_peer_mesh6": sent6, "bytes_sent_per_peer_mesh3_ceremony": sent3_before_auth,
         "bytes_sent_per_peer_mesh3_total": sent_json(&party.net), "peak_rss_mb": peak_rss_mb(),
     });
-    Ok(NewCustodian { j, keys, key: key2, party, w, carry, proof: blob, new_roots: proof.new_roots, report })
+    Ok(NewCustodian { j, keys, key: key2, party, w, carry, proof: blob, new_roots: proof.new_roots, report, defer })
 }

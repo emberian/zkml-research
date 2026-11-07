@@ -60,6 +60,26 @@ fn repr_hash_matches() {
 }
 
 #[test]
+fn repr_hash_any_buffer_capacity() {
+    // a list of 3000 61-bit ints (over 64 KiB of repr), fed int by int, as a streamed Merkle leaf is
+    let want = py("import hashlib,random\nr=random.Random(9)\nv=[r.randrange(2**61) for _ in range(3000)]\nprint(hashlib.sha256(repr(('leaf', v)).encode()).hexdigest())");
+    let mut r = PyRandom::from_u64(9);
+    let v: Vec<u64> = (0..3000).map(|_| r.randrange_u64(1 << 61)).collect();
+    for cap in [None, Some(0), Some(1), Some(7), Some(256)] {
+        let mut h = cap.map_or_else(ReprHasher::new, ReprHasher::with_capacity);
+        h.raw(b"('leaf', [");
+        for (k, &x) in v.iter().enumerate() {
+            if k > 0 {
+                h.raw(b", ");
+            }
+            h.u64(x);
+        }
+        h.raw(b"])");
+        assert_eq!(h.finish_hex(), want, "capacity {cap:?}");
+    }
+}
+
+#[test]
 fn from_state_continues_the_stream() {
     let want = py("import random\nr=random.Random(5)\nfor _ in range(1000): r.randrange(2**61)\nst=r.getstate()[1]\nprint(' '.join(map(str,st)))\nprint(' '.join(str(r.randrange(2305843009212399617)) for _ in range(1500)))");
     let mut lines = want.lines();

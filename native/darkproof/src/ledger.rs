@@ -197,6 +197,9 @@ impl Ledger {
                 if p.lb {
                     more.push_str(", \"LB\": true");
                 }
+                if p.rs {
+                    more.push_str(", \"RS\": true");
+                }
                 if let Some(h) = p.pg {
                     more.push_str(&format!(", \"PG\": \"{}\"", crate::h::hex(&h)));
                 }
@@ -281,6 +284,10 @@ impl Ledger {
                     None => false,
                     Some(Value::Bool(b)) => *b,
                     Some(_) => return Err("genesis program: LB must be a boolean".into()),
+                }, rs: match p.get("RS") {
+                    None => false,
+                    Some(Value::Bool(b)) => *b,
+                    Some(_) => return Err("genesis program: RS must be a boolean".into()),
                 }, pg: match p.get("PG") {
                     None => None,
                     Some(v) => Some(v.as_str().and_then(unhex32).ok_or("genesis program: PG must be a sha256 hex")?),

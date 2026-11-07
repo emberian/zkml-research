@@ -17,6 +17,8 @@ type V = [Sh; N];
 struct Eng {
     dealer: Dealer,
     prng: PyRandom,
+    /// "RS": K + 1 - s proof bits per truncation (cosnark_gates RecEngine.prep "trh")
+    rs: bool,
     public: Vec<u64>,
     atoms: Vec<V>,
 }
@@ -162,7 +164,7 @@ impl Eng {
         let rhi = self.auth(rv >> s);
         let rhi = self.rec(rhi);
         let val = rv >> s;
-        for j in 0..k + KAPPA - s {
+        for j in 0..if self.rs { k + 1 - s } else { k + KAPPA - s } {
             let v = (val >> j) & 1;
             let xs: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(field::p())).collect();
             let ms: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(field::p())).collect();
@@ -232,7 +234,7 @@ pub fn harness_inputs(d: usize) -> (Vec<u64>, Vec<u64>, Vec<u64>, Vec<u64>) {
 
 /// mpc_fork.run_step under spdz.Dealer(p, 3, 5), owner seed 9, RecEngine seed 1.
 pub fn run_step(w1: &[u64], w2: &[u64], x: &[u64], y: &[u64], d: usize, prm: StepParams, tables: &(Vec<u64>, Vec<u64>)) -> Witness {
-    let mut e = Eng { dealer: Dealer::from_seed(5, N), prng: PyRandom::from_u64(1), public: Vec::new(), atoms: Vec::new() };
+    let mut e = Eng { dealer: Dealer::from_seed(5, N), prng: PyRandom::from_u64(1), rs: prm.rs, public: Vec::new(), atoms: Vec::new() };
     let mut orng = PyRandom::from_u64(9);
     let sw1 = e.input(w1, &mut orng);
     let sw2 = e.input(w2, &mut orng);

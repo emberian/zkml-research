@@ -248,7 +248,7 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     G.fill_lookup(live, eng)
     if bad and not ignore_range:
         return None, dict(error="proving refused: truncation input outside its proved bound: "
-                          + ", ".join(f"{nm}[{k}]" for nm, k in bad[:4]) + (" ..." if len(bad) > 4 else ""))
+                          + ", ".join(nm if k is None else f"{nm}[{k}]" for nm, k in bad[:4]) + (" ..." if len(bad) > 4 else ""))
     pos = {a: k for k, a in enumerate(prep)}
     Pv = G.pad([live.atom_sh[a] for a in prep], zero)
     if attack == "bad_triple":

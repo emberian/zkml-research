@@ -21,6 +21,12 @@ impl ReprHasher {
         ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(1 << 16), grow: false, flushed: false }
     }
 
+    /// A hasher whose write buffer holds `cap` bytes (`new` holds 64 KiB), for many live hashers at once (a streamed
+    /// Merkle level keeps one per column). The digest does not depend on the capacity.
+    pub fn with_capacity(cap: usize) -> Self {
+        ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(cap), grow: false, flushed: false }
+    }
+
     #[inline]
     pub fn raw(&mut self, b: &[u8]) {
         if self.grow {
