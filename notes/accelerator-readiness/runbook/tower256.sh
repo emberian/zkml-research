@@ -42,12 +42,11 @@ echo "out $OUT shrink $SHRINK ells $ELLS"
 if (( OFFLINE )); then
   PY=python3
 else
-  python3 -m venv "$OUT/venv"
-  PY="$OUT/venv/bin/python"
+  accel_venv "$OUT/venv"
   CUDA_MAJOR=$(nvidia-smi | sed -n 's/.*CUDA Version: \([0-9]*\).*/\1/p' | head -1)
   CUPY=cupy-cuda12x==13.6.0; [[ ${CUDA_MAJOR:-12} -ge 13 ]] && CUPY=cupy-cuda13x==14.0.1
-  "$PY" -m pip install -q --upgrade pip==25.2
-  "$PY" -m pip install -q numpy==2.1.3 pycryptodome==3.23.0 "$CUPY"
+  "${PIP[@]}" install -q --upgrade pip==25.2
+  "${PIP[@]}" install -q numpy==2.1.3 pycryptodome==3.23.0 "$CUPY"
 fi
 # Test hook: ACCEL_TOWER256_EMU_LIB=<host-emulation build of cuda/tower256_fri.cu> runs the same
 # host code on the CPU emulation (no GPU); only for checking this script off-GPU.

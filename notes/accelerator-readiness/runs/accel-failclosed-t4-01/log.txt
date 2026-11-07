@@ -1,0 +1,6 @@
+tower256_good rc 1 ok False 0.3 s
+tower256_broken_build rc 1 ok True 0.2 s
+bfv_broken_build rc 1 ok True 14.0 s
+mma_broken_manifest rc 1 ok True 0.1 s
+mma_broken_build rc 0 ok False 91.1 s
+ALL_OK False
