@@ -843,3 +843,31 @@ never the shared tree (other lanes' half-written darkproof edits).
 
 **Agents**: coordinator aa3209e8d10294bc2; prep a5caa478aac6a0658; proof aafff52532f04d20a (E helper
 a93e0325f167a4ed2); handover afc2a88b82c0cca1a; train ad36593ec00657538.
+
+### run12c: the rotation on the shallow-handover build, ledger-x2 (11:05-11:22 UTC) [EXECUTED]
+
+As run12b with darkhand 09fd154d (r5 at 8319ea81), profile ledger-x2, chunks w4096h6 (a fresh wired key) /
+ho-sh3 / ho-sh3-steps (wired-new-sh), ports 28300-28335. Prep's MASCOT chunks ran on forge and bb2 throughout
+(11:00 queue): upper bounds.
+
+| | old 0 (forge) | old 1 | old 2 | new 0 | new 1 (forge) | new 2 |
+|---|---:|---:|---:|---:|---:|---:|
+| step 0 / 1 / 2 seconds | 221.7 | 221.4 | 221.6 | 189.6 / 107.2 | 189.4 / 107.2 | 189.6 / 107.2 |
+| prove / verify (s) | 74.6 / 31.3 | 75.3 / 42.5 | 74.7 / 43.8 | 63.6-82.4 / 36.0-36.4 | 63.5-82.6 / 29.9-31.0 | 63.6-82.3 / 35.7-37.8 |
+| old_side s (reshare, prove, erase) | 64.2 (1.8, 28.9, 0.87) | 94.9 (2.5, 28.2, 1.44) | 91.9 (2.8, 27.9, 1.26) | | | |
+| cgroup peak | 8.63 GB | 8.73 GB | 8.61 GB | 10.29 GB | 9.67 GB | 10.05 GB |
+
+One transcript per step; bundles 75,989,589 / 76,297,173 / 76,393,653 B (ledger-x2; ledger-sq's were 250.9 MB);
+after erasure: no decryption, disk scan 0. The handover lane's count: pending.
+- Handover lane's count for run12c: **74/74**, memory scan after erasure 0 at every old seat (handover.md §7).
+
+### run11c: the self-handover under ledger-x2de + RS, cut E live (11:22-11:35 UTC) [EXECUTED]
+
+Seat 0 bb2, 1 forge (attack), 2 bb2; prep's sh-abort (wired-new-sh) / ho-x / ho-x-steps (a fresh key), all
+ledger-x2de + RS (8,916,565 entries per step = `step-entries ... --profile ledger-x2de --rs`); ws-target-test6 at
+11e84d91 (E through the handover, darkproof's rotate under DEFER c18e41f8). Prep's chunks ran beside it.
+- Step 0 REFUSED at all three (Freivalds); old role 102.6 / 55.6 / 99.5 s (its handover proof 16.1-16.9 s, erase
+  0.87-1.13 s); new role 41.0 s; redo step 0 207.6 s and step 1 158.9 s, ACCEPT, one transcript each.
+- Prove 37.8 / 55.0-55.5 s, verify 17.6-23.1 s; bundles 47,487,701 / 47,467,925 B (ledger-x2de; x2's ~76 MB).
+- cgroup peaks 10.94 / 9.49 / 10.71 GB.
+- Handover lane's `--self` count: **37/37**, memory scan after erasure 0.
