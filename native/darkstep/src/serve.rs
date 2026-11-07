@@ -89,6 +89,23 @@ impl CustodianState {
         self.he.ou_seed = OU_SEED + 100 * k as u64;
         self.he.key.refresh_return_key();
         let t0 = Instant::now();
+        // link counters sampled every 50 ms, to split each link's bytes by phase at the phase boundaries
+        let counters = self.pt.net.sent_by_peer.clone();
+        let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let sampler = {
+            let (counters, stop) = (counters.clone(), stop.clone());
+            std::thread::spawn(move || {
+                let mut v: Vec<(f64, Vec<u64>)> = Vec::new();
+                let snap = |c: &Vec<[std::sync::atomic::AtomicU64; 5]>| c.iter().map(|r| r.iter().map(|x| x.load(std::sync::atomic::Ordering::Relaxed)).sum::<u64>()).collect::<Vec<u64>>();
+                loop {
+                    v.push((t0.elapsed().as_secs_f64(), snap(&counters)));
+                    if stop.load(std::sync::atomic::Ordering::Relaxed) {
+                        return v;
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(50));
+                }
+            })
+        };
         let pg = self.pf.program;
         let (pt, he, tab) = (&mut self.pt, &mut self.he, &self.tab);
         let w = self.w.take();
@@ -114,7 +131,20 @@ impl CustodianState {
             }
         });
         let step_s = t0.elapsed().as_secs_f64();
+        stop.store(true, std::sync::atomic::Ordering::Relaxed);
+        let samples = sampler.join().unwrap();
         let out = res?;
+        // bytes sent to each peer during each phase (counter at the sample nearest each boundary)
+        let at = |t: f64| -> &Vec<u64> { &samples.iter().min_by(|a, b| (a.0 - t).abs().partial_cmp(&(b.0 - t).abs()).unwrap()).unwrap().1 };
+        let mut tb = 0.0;
+        let mut phase_bytes = Vec::new();
+        for (name, secs) in &out.phases {
+            let (a, b) = (at(tb), at(tb + secs));
+            let per: serde_json::Map<String, serde_json::Value> =
+                (0..a.len()).filter(|&j| j != self.i).map(|j| (j.to_string(), json!(b[j] - a[j]))).collect();
+            phase_bytes.push(json!([name, per]));
+            tb += secs;
+        }
         let per = self.pt.net.sent_per_peer();
         let links: serde_json::Map<String, serde_json::Value> = per
             .iter()
@@ -134,6 +164,7 @@ impl CustodianState {
             "sigma": out.sigma, "tape_used": self.pt.cur - cur0,
             "phases": out.phases.iter().map(|(n, s)| json!([n, s])).collect::<Vec<_>>(),
             "bytes_sent_to": links,
+            "bytes_sent_to_by_phase": phase_bytes,
         });
         if let Some(g) = &self.he.gate {
             rep["gate"] = json!({
