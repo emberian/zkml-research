@@ -1,0 +1,17 @@
++ echo '== live 2026-11-07T01:38:23Z'
+== live 2026-11-07T01:38:23Z
+position 0 [p1-honest]: seen 33737379 audit round 33737381 coin d79960133637df82 fired true verdict Some(Accept) alarm false recompute 263.7s -> s2/receipt-0.json
+position 1 [p1-steered]: seen 33737469 audit round 33737471 coin 92b12e05efe4de73 fired true verdict Some(Reject) alarm true recompute 258.0s -> s2/receipt-1.json
+position 2 [p1-edited]: seen 33737557 audit round 33737559 coin b74ea1cad875e57e fired true verdict Some(Reject) alarm true recompute 306.3s -> s2/receipt-2.json
++ echo '== recheck 2026-11-07T01:52:29Z'
+== recheck 2026-11-07T01:52:29Z
+s2/receipt-0.json: OK {"position":0,"audit_round":33737381,"fired":true,"open_ok":true,"verdict":"accept","alarm":false}
+s2/receipt-1.json: OK {"position":1,"audit_round":33737471,"fired":true,"open_ok":true,"verdict":"reject","alarm":true}
+s2/receipt-2.json: OK {"position":2,"audit_round":33737559,"fired":true,"open_ok":true,"verdict":"reject","alarm":true}
++ echo '== recheck-recompute 2026-11-07T01:52:29Z'
+== recheck-recompute 2026-11-07T01:52:29Z
+s2/receipt-0.json: OK {"position":0,"audit_round":33737381,"fired":true,"open_ok":true,"verdict":"accept","alarm":false} recompute Accept
+s2/receipt-1.json: OK {"position":1,"audit_round":33737471,"fired":true,"open_ok":true,"verdict":"reject","alarm":true} recompute Reject
+s2/receipt-2.json: OK {"position":2,"audit_round":33737559,"fired":true,"open_ok":true,"verdict":"reject","alarm":true} recompute Reject
++ echo '== done 2026-11-07T02:06:03Z'
+== done 2026-11-07T02:06:03Z

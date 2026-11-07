@@ -101,4 +101,4 @@ hashes. A verified-kernel rerun is a later phase.
 
 ## Register row
 
-| 8 | Audit theorem over a bit-exact recompute of gpt-oss-20b (FlashProve kept as a comparison point) | init-8 lane | zkml-research, minidregg, breadstuffs | L1 (FlashProve instance L2-L3) | integer gpt-oss-20b spec reproduced bit-exactly by NumPy, JAX-TPU (INT8 MXU), JAX-T4; auditor recomputes sampled requests fail-closed; steered output accepted by a tolerance checker and refused by exact recompute, on real weights | G1 first bit-exact layer | 2026-11-06 |
+| 8 | Audit theorem over a bit-exact recompute of gpt-oss-20b (FlashProve kept as a comparison point) | init-8 lane | zkml-research, minidregg, breadstuffs | L3 (G1-G5 reached; 2026-11-07) | gptoss-int v0 bit-identical on Mac, x86, T4, TPU v5e (layer 0); 24 layers agree with float64 at 301/302; auditor recomputes fail-closed with compiled-Lean verdicts (9 live receipts); steered transcripts accepted by a logit-tolerance checker and refused by exact recompute, on real weights | 24 layers in JAX on accelerator; a bf16 GPU server as the honest float backend; umbrella build and merge of the Lean lane branch | `docs/EXACT-RECOMPUTE.md` |

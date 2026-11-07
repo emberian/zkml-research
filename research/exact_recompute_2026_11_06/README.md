@@ -66,3 +66,18 @@ float32 falsifier, and writes `g2-<backend>.json`: `bit_identical`, per-intermed
 `g1-numpy.json`, the compiled HLO of an int8 dot, timings. Nothing in the checkout is written.
 JAX 0.11.1 is the version of the T4 and TPU v5e runs; a clean copy also ran it to
 `bit_identical: true` on XLA:CPU.
+
+## G3-G5 (write-up: `docs/EXACT-RECOMPUTE.md`)
+
+    GPTOSS_DIR=... uv run --no-project --with numpy --with tokenizers python forward.py fit    # params-v1.json
+    GPTOSS_DIR=... uv run --no-project --with numpy --with tokenizers python forward.py eval   # g3-numpy.json
+    GPTOSS_DIR=... uv run --no-project --with numpy --with tokenizers python steer.py tau      # g5-tau.json
+    GPTOSS_DIR=... uv run --no-project --with numpy --with tokenizers python steer.py run I 24 # g5-run-I.json
+    uv run --no-project --with numpy python recompute.py pins                                  # the auditor's pins
+    python g4_requests.py OUT.json g5-run-*.json                                               # transcripts to audit
+    fpaudit exact-live --requests OUT.json --recompute "uv run --no-project --with numpy python recompute.py" \
+        --spec S --params P --weights W --out DIR --p-ppm 999999                               # breadstuffs audit-flashprove
+    fpaudit recheck --pins DIR/pins.json DIR/receipt-*.json [--recompute "..." --files DIR]
+
+`GPTOSS_DIR` holds the pinned shards (`recompute.py` refuses any that differ from the registry).
+`g4-live-s1/`, `g4-live-s2/`: the live receipts, pins, requests, tampered copies and logs.
