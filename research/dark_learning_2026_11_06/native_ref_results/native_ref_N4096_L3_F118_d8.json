@@ -1,0 +1,54 @@
+{
+ "verdict": "ACCEPT",
+ "refines_spec": true,
+ "N": 4096,
+ "L": 3,
+ "F_bits": 118,
+ "d": 8,
+ "t": 2305843009213243393,
+ "Q_primes": [
+  2305843009213554689,
+  2305843009213489153,
+  2305843009213317121
+ ],
+ "seconds": 91.9,
+ "transcript_len": 859,
+ "transcript": "d649f46ffd9a795c11667a5e580f91d053999544f5f36dba4036b4d60d44512f",
+ "parties": {
+  "0": "05f99ea0cfe3e08ca2b91a1fe9f28f251fef95a4bf367dd9c2b2499c0716d9a4",
+  "1": "f73695c9ea1900fac410034daabfad8fd47a2a89d1a5c31a199e4fc2919e83e3",
+  "2": "6b03df3fc545ab718d6d0bb961d882bb855f28195c5427dad6d8b253456211e4"
+ },
+ "sigma": {
+  "0": 238214448699235756,
+  "1": 36428820644653648,
+  "2": 2031199739869353989
+ },
+ "wire": {
+  "freivalds": 18,
+  "he_auth": 144,
+  "he_outer_check": 12,
+  "input": 432,
+  "lookup": 48,
+  "mac_check": 12,
+  "mul": 3864,
+  "trunc": 192
+ },
+ "he_wire": {
+  "mv": {
+   "he_send": 442368,
+   "he_return": 442368
+  },
+  "ou": {
+   "he_send": 294912,
+   "he_return": 589824,
+   "commit": 60
+  }
+ },
+ "cts": {
+  "mv_sent": 18,
+  "mv_ret": 18,
+  "ou_sent": 12,
+  "ou_ret": 24
+ }
+}

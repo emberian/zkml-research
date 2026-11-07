@@ -1,0 +1,401 @@
+{
+ "machine": "dregg-forge (16 vCPU), MP-SPDZ v0.4.4 release binaries (Linux-adx), mascot-party.x -d, 3 processes on 127.0.0.1, p = 2305843009210515457, N_AMPLIFY (tau) = 3",
+ "runs": {
+  "d64h": {
+   "d": 64,
+   "mode": "Harness",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in8320-ar192-tri2562-lp64-tr5x13x128-tr4x8x64-tr8x13x64-th1-b1000",
+   "plan": {
+    "in": 8320,
+    "ar": 192,
+    "tri": 2562,
+    "lp": 64,
+    "trunc_classes": [
+     [
+      5,
+      13,
+      128
+     ],
+     [
+      4,
+      8,
+      64
+     ],
+     [
+      8,
+      13,
+      64
+     ]
+    ]
+   },
+   "compile_s": 0.135,
+   "wall_s": 2.891,
+   "parties": [
+    {
+     "time_s": 2.75233,
+     "sent_bytes": 460403000,
+     "rounds": 1516
+    },
+    {
+     "time_s": 2.74987,
+     "sent_bytes": 460067000,
+     "rounds": 1426
+    },
+    {
+     "time_s": 2.74991,
+     "sent_bytes": 460067000,
+     "rounds": 1426
+    }
+   ],
+   "total_sent_bytes": 1380537000,
+   "total_sent_bits": 11044296000,
+   "assemble_s": 0.011,
+   "tape_entries": 34438,
+   "owner_masks": 8320,
+   "verify": "Report { entries: 34438, macs: 103314, triples: 2562, truncs: 256, chains: 64, inputs: 8320 }"
+  },
+  "d64s_th1": {
+   "d": 64,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in128-ar192-tri2562-lp64-tr5x13x128-tr4x8x64-tr8x13x64-th1-b1000",
+   "plan": {
+    "in": 128,
+    "ar": 192,
+    "tri": 2562,
+    "lp": 64,
+    "trunc_classes": [
+     [
+      5,
+      13,
+      128
+     ],
+     [
+      4,
+      8,
+      64
+     ],
+     [
+      8,
+      13,
+      64
+     ]
+    ]
+   },
+   "compile_s": 0.112,
+   "wall_s": 2.247,
+   "parties": [
+    {
+     "time_s": 2.11813,
+     "sent_bytes": 362162000,
+     "rounds": 1209
+    },
+    {
+     "time_s": 2.10423,
+     "sent_bytes": 361898000,
+     "rounds": 1137
+    },
+    {
+     "time_s": 2.10876,
+     "sent_bytes": 361898000,
+     "rounds": 1137
+    }
+   ],
+   "total_sent_bytes": 1085958000,
+   "total_sent_bits": 8687664000,
+   "assemble_s": 0.02,
+   "tape_entries": 26246,
+   "owner_masks": 128,
+   "verify": "Report { entries: 26246, macs: 78738, triples: 2562, truncs: 256, chains: 64, inputs: 128 }"
+  },
+  "d1024s_th1": {
+   "d": 1024,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in2048-ar3072-tri65538-lp1024-tr9x17x2048-tr4x8x1024-tr12x17x1024-th1-b1000",
+   "plan": {
+    "in": 2048,
+    "ar": 3072,
+    "tri": 65538,
+    "lp": 1024,
+    "trunc_classes": [
+     [
+      9,
+      17,
+      2048
+     ],
+     [
+      4,
+      8,
+      1024
+     ],
+     [
+      12,
+      17,
+      1024
+     ]
+    ]
+   },
+   "compile_s": 0.245,
+   "wall_s": 34.902,
+   "parties": [
+    {
+     "time_s": 34.7435,
+     "sent_bytes": 6056770000,
+     "rounds": 19466
+    },
+    {
+     "time_s": 34.7363,
+     "sent_bytes": 6052340000,
+     "rounds": 18330
+    },
+    {
+     "time_s": 34.7387,
+     "sent_bytes": 6052340000,
+     "rounds": 18330
+    }
+   ],
+   "total_sent_bytes": 18161450000,
+   "total_sent_bits": 145291600000,
+   "assemble_s": 0.11,
+   "tape_entries": 505862,
+   "owner_masks": 2048,
+   "verify": "Report { entries: 505862, macs: 1517586, triples: 65538, truncs: 4096, chains: 1024, inputs: 2048 }"
+  },
+  "d1024s_th4": {
+   "d": 1024,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in2048-ar3072-tri65538-lp1024-tr9x17x2048-tr4x8x1024-tr12x17x1024-th4-b1000",
+   "plan": {
+    "in": 2048,
+    "ar": 3072,
+    "tri": 65538,
+    "lp": 1024,
+    "trunc_classes": [
+     [
+      9,
+      17,
+      2048
+     ],
+     [
+      4,
+      8,
+      1024
+     ],
+     [
+      12,
+      17,
+      1024
+     ]
+    ]
+   },
+   "compile_s": 0.269,
+   "wall_s": 27.673,
+   "parties": [
+    {
+     "time_s": 27.3905,
+     "sent_bytes": 6056940000,
+     "rounds": 19821
+    },
+    {
+     "time_s": 27.3956,
+     "sent_bytes": 6052520000,
+     "rounds": 18653
+    },
+    {
+     "time_s": 27.3898,
+     "sent_bytes": 6052520000,
+     "rounds": 18651
+    }
+   ],
+   "total_sent_bytes": 18161980000,
+   "total_sent_bits": 145295840000,
+   "assemble_s": 0.14,
+   "tape_entries": 505862,
+   "owner_masks": 2048,
+   "verify": "Report { entries: 505862, macs: 1517586, triples: 65538, truncs: 4096, chains: 1024, inputs: 2048 }"
+  },
+  "d4096s_th4": {
+   "d": 4096,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in8192-ar12288-tri311298-lp4096-tr11x19x8192-tr4x8x4096-tr14x19x4096-th4-b1000",
+   "plan": {
+    "in": 8192,
+    "ar": 12288,
+    "tri": 311298,
+    "lp": 4096,
+    "trunc_classes": [
+     [
+      11,
+      19,
+      8192
+     ],
+     [
+      4,
+      8,
+      4096
+     ],
+     [
+      14,
+      19,
+      4096
+     ]
+    ]
+   },
+   "compile_s": 0.319,
+   "wall_s": 40.92,
+   "parties": [
+    {
+     "time_s": 40.6173,
+     "sent_bytes": 24989100000,
+     "rounds": 81300
+    },
+    {
+     "time_s": 40.6136,
+     "sent_bytes": 24970800000,
+     "rounds": 76612
+    },
+    {
+     "time_s": 40.6008,
+     "sent_bytes": 24970800000,
+     "rounds": 76576
+    }
+   ],
+   "total_sent_bytes": 74930700000,
+   "total_sent_bits": 599445600000,
+   "assemble_s": 0.478,
+   "tape_entries": 2195462,
+   "owner_masks": 8192,
+   "verify": "Report { entries: 2195462, macs: 6586386, triples: 311298, truncs: 16384, chains: 4096, inputs: 8192 }"
+  },
+  "d4096s_th1": {
+   "d": 4096,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in8192-ar12288-tri311298-lp4096-tr11x19x8192-tr4x8x4096-tr14x19x4096-th1-b1000",
+   "plan": {
+    "in": 8192,
+    "ar": 12288,
+    "tri": 311298,
+    "lp": 4096,
+    "trunc_classes": [
+     [
+      11,
+      19,
+      8192
+     ],
+     [
+      4,
+      8,
+      4096
+     ],
+     [
+      14,
+      19,
+      4096
+     ]
+    ]
+   },
+   "compile_s": 0.36,
+   "wall_s": 143.511,
+   "parties": [
+    {
+     "time_s": 143.364,
+     "sent_bytes": 24988900000,
+     "rounds": 80143
+    },
+    {
+     "time_s": 143.363,
+     "sent_bytes": 24970700000,
+     "rounds": 75481
+    },
+    {
+     "time_s": 143.355,
+     "sent_bytes": 24970700000,
+     "rounds": 75477
+    }
+   ],
+   "total_sent_bytes": 74930300000,
+   "total_sent_bits": 599442400000,
+   "assemble_s": 0.473,
+   "tape_entries": 2195462,
+   "owner_masks": 8192,
+   "verify": "Report { entries: 2195462, macs: 6586386, triples: 311298, truncs: 16384, chains: 4096, inputs: 8192 }"
+  }
+ },
+ "units": {
+  "tri100000": {
+   "objects": 100000,
+   "sent_bytes": [
+    1091570000.0,
+    1090770000.0,
+    1090770000.0
+   ],
+   "time_s": [
+    5.93805,
+    5.93756,
+    5.93815
+   ],
+   "wall_s": 6.084939007
+  },
+  "ar100000": {
+   "objects": 100000,
+   "sent_bytes": [
+    97738500.0,
+    97736100.0,
+    97736100.0
+   ],
+   "time_s": [
+    2.28227,
+    2.28305,
+    2.28018
+   ],
+   "wall_s": 2.41949023
+  },
+  "tr1x60x1000": {
+   "objects": 100000,
+   "sent_bytes": [
+    1094770000.0,
+    1093970000.0,
+    1093970000.0
+   ],
+   "time_s": [
+    6.88133,
+    6.88201,
+    6.88106
+   ],
+   "wall_s": 6.981310602
+  },
+  "lp400": {
+   "objects": 400,
+   "sent_bytes": [
+    1117630000.0,
+    1116810000.0,
+    1116810000.0
+   ],
+   "time_s": [
+    6.3822,
+    6.37958,
+    6.37973
+   ],
+   "wall_s": 6.478162873
+  },
+  "in100000": {
+   "objects": 100000,
+   "sent_bytes": [
+    1091570000.0,
+    1090770000.0,
+    1090770000.0
+   ],
+   "time_s": [
+    5.59472,
+    5.58386,
+    5.59097
+   ],
+   "wall_s": 5.725412475
+  }
+ }
+}

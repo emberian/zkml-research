@@ -63,10 +63,18 @@ def ptxct(P, ct, Q):
 
 class HEMatvec:
     """Drop-in for eng.matvec(W, v, transpose) on an spdz.Engine (live mode)."""
-    def __init__(self, eng, keys, N, Q, seed=11, flood_bits=40, attack=None, context=("model", 0, 0)):
+    def __init__(self, eng, keys, N, Q, seed=11, flood_bits=40, attack=None, context=("model", 0, 0),
+                 per_return_rng=False):
         self.eng, self.keys, self.N, self.Q = eng, keys, N, Q
         self.p = eng.p
+        self.seed = seed
         self.rng = random.Random(seed)
+        # per_return_rng: each return's randomness (mask M, Enc_pk_j(0), flood) comes from its own stream, keyed by
+        # (seed, call, transpose, returner i, recipient j, output block o). A distributed custodian draws only its own
+        # returns' randomness, so it cannot share one sequential stream with the others; the native custodians
+        # (native/darkstep) use this mode, and so does the bit-exact reference (native_ref.py). The default keeps the
+        # single shared stream every recorded result was produced with.
+        self.per_return_rng = per_return_rng
         self.flood_bits = flood_bits
         self.attack = attack           # (kind, party) for falsifiers
         self.context = context
@@ -128,10 +136,12 @@ class HEMatvec:
                         prod = ptxct(P, sent[b] if not transpose else sent[a], Q)
                         acc = prod if acc is None else ([(x + y) % Q for x, y in zip(acc[0], prod[0])],
                                                         [(x + y) % Q for x, y in zip(acc[1], prod[1])])
-                    M = [self.rng.randrange(p) for _ in range(N)]
-                    z0 = kj.enc_zero_pk(self.rng)
+                    rg = (random.Random(f"hm|{self.seed}|{self.calls}|{int(transpose)}|{i}|{j}|{o}")
+                          if self.per_return_rng else self.rng)
+                    M = [rg.randrange(p) for _ in range(N)]
+                    z0 = kj.enc_zero_pk(rg)
                     F = 1 << (self.noise_bits(dr, dc) + self.flood_bits)
-                    c0 = [(x + y + (2 * Q * bfv.centered(mm, p) + p) // (2 * p) + self.rng.randint(-F, F)) % Q
+                    c0 = [(x + y + (2 * Q * bfv.centered(mm, p) + p) // (2 * p) + rg.randint(-F, F)) % Q
                           for x, y, mm in zip(acc[0], z0[0], M)]
                     c1 = [(x + y) % Q for x, y in zip(acc[1], z0[1])]
                     self.wire["he_return"] += 2 * N * 3

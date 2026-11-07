@@ -1,0 +1,95 @@
+# darkprep: the dark-learning step's preprocessing over MP-SPDZ MASCOT (malicious, dishonest majority, F_p).
+# Compile:  ./compile.py -F 61 darkprep in<N> ar<N> tri<N> lp<N> tr<s>x<K>x<N>... th<T> b<B>
+# Run:      ./mascot-party.x -N 3 -p <i> -P <p> -d darkprep-in...   (one process per custodian)
+# Output:   Persistence/Transactions-P<i>.data, sections in this order, each component-major
+#           (component j of a kind with count m occupies positions [base + j m, base + (j+1) m)):
+#   IN   a, b, c          n_in    triples whose a is the input mask; the owner checks a b = c (client input)
+#   AR   r                n_ar    jointly random values (auth_plain masks)
+#   TRI  a, b, c          n_tri   Beaver triples
+#   TR_t bit_0..bit_{K+KAPPA-1}  count_t   random bits per truncation class t (s, K): r, low bits, r >> s
+#   LP   r^1..r^255       n_lp    power chains (one jointly random r, 254 products)
+# native/darkprep (Rust) reads the sections and assembles each party's tape in program order.
+KAPPA = 40
+DEG = 255
+
+spec = {}
+truncs = []
+for a in program.args[1:]:
+    if a.startswith('tri'):
+        spec['tri'] = int(a[3:])
+    elif a.startswith('tr'):
+        s, K, m = (int(v) for v in a[2:].split('x'))
+        truncs.append((s, K, m))
+    elif a.startswith('in'):
+        spec['in'] = int(a[2:])
+    elif a.startswith('ar'):
+        spec['ar'] = int(a[2:])
+    elif a.startswith('lp'):
+        spec['lp'] = int(a[2:])
+    elif a.startswith('th'):
+        spec['th'] = int(a[2:])
+    elif a.startswith('b'):
+        spec['b'] = int(a[1:])
+n_in, n_ar, n_tri, n_lp = (spec.get(k, 0) for k in ('in', 'ar', 'tri', 'lp'))
+TH = spec.get('th', 1)
+B = spec.get('b', 1000)
+
+sections = []
+base = 0
+def section(name, ncomp, m):
+    global base
+    sections.append((name, base, ncomp, m))
+    base += ncomp * m
+    return base - ncomp * m
+b_in = section('in', 3, n_in)
+b_ar = section('ar', 1, n_ar)
+b_tri = section('tri', 3, n_tri)
+b_tr = [section('tr', K + KAPPA, m) for s, K, m in truncs]
+b_lp = section('lp', DEG, n_lp)
+total = base
+print('darkprep sections', sections, 'total', total)
+
+# Size the file once so that concurrent writers at disjoint positions never zero-fill over each other.
+if total:
+    sint.write_to_file(sint(0), position=total - 1)
+
+def powers(r):
+    pw = [None, r]
+    k = 1
+    while k < DEG:
+        for j in range(1, k + 1):
+            if k + j <= DEG:
+                pw.append(pw[j] * pw[k])
+        k *= 2
+    return pw
+
+def gen(kind, size, pos, m, extra=None):
+    """Generate `size` objects of `kind` and write component j at pos + j m."""
+    if kind in ('in', 'tri'):
+        vs = sint.get_random_triple(size=size)
+    elif kind == 'ar':
+        vs = [sint.get_random(size=size)]
+    elif kind == 'tr':
+        vs = [sint.get_random_bit(size=size) for _ in range(extra)]
+    elif kind == 'lp':
+        vs = powers(sint.get_random(size=size))[1:]
+    for j, v in enumerate(vs):
+        sint.write_to_file(v, position=pos + j * m)
+
+def run(kind, b0, m, extra=None):
+    if m == 0:
+        return
+    nb, tail = m // B, m % B
+    if nb:
+        @for_range_opt_multithread(TH, nb)
+        def _(i):
+            gen(kind, B, b0 + i * B, m, extra)
+    if tail:
+        gen(kind, tail, b0 + nb * B, m, extra)
+
+run('in', b_in, n_in)
+run('ar', b_ar, n_ar)
+run('tri', b_tri, n_tri)
+for (s, K, m), b0 in zip(truncs, b_tr):
+    run('tr', b0, m, K + KAPPA)
+run('lp', b_lp, n_lp)

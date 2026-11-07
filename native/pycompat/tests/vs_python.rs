@@ -58,3 +58,36 @@ fn repr_hash_matches() {
     h.raw(b"('freivalds', ('model', 0, 0), 1, 64, False, [('input', {}, 5), ('mul', {0: 1, 1: 2, 2: 3}, 6), ('he_outer_commit', {0: 'ab', 1: 'cd', 2: 'ef'}, 0)])");
     assert_eq!(h.finish_hex(), want);
 }
+
+#[test]
+fn from_state_continues_the_stream() {
+    let want = py("import random\nr=random.Random(5)\nfor _ in range(1000): r.randrange(2**61)\nst=r.getstate()[1]\nprint(' '.join(map(str,st)))\nprint(' '.join(str(r.randrange(2305843009212399617)) for _ in range(1500)))");
+    let mut lines = want.lines();
+    let st: Vec<u64> = lines.next().unwrap().split(' ').map(|x| x.parse().unwrap()).collect();
+    let mut r = PyRandom::from_state(&st);
+    assert_eq!(r.state(), st);
+    let got: Vec<String> = (0..1500).map(|_| r.randrange_u64(2305843009212399617).to_string()).collect();
+    assert_eq!(got.join(" "), lines.next().unwrap());
+    let mut a = PyRandom::from_u64(5);
+    for _ in 0..1000 {
+        a.randrange_u64(1 << 61);
+    }
+    assert_eq!(a.state(), st, "state() after the same draws");
+}
+
+#[test]
+fn fixed_width_draws_equal_vec_draws() {
+    // the allocation-free variants must consume the same stream and return the same values
+    let mut a = PyRandom::from_str_seed("fixed");
+    let mut b = PyRandom::from_str_seed("fixed");
+    let q: [u64; 5] = [12345, 0, 0, u64::MAX >> 12, 0];
+    for _ in 0..500 {
+        let (n1, m1) = a.randint_sym_pow2(175);
+        let (n2, m2) = b.randint_sym_pow2_arr::<4>(175);
+        assert_eq!((n1, &m1[..]), (n2, &m2[..m1.len()]));
+        let u1 = a.randbelow_limbs(&q[..4]);
+        let u2 = b.randbelow_arr::<5>(&q);
+        assert_eq!(&u1[..], &u2[..u1.len()]);
+    }
+    assert_ne!(a.genrand_u32(), PyRandom::from_str_seed("fixed").genrand_u32());
+}
