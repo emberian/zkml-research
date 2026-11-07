@@ -1787,6 +1787,45 @@ flag day for whoever revives the breadstuffs devnet, and they carry one lesson i
 path: **leaf size, not the field, decides the blowup.**
 
 
+## 9. ⚑ Audit theorem instantiated, 2026-11-06: over FlashProve's verifier, then over a bit-exact recompute of gpt-oss-20b (initiative 8)
+
+`docs/FLASHPROVE-AUDIT.md`, `docs/EXACT-RECOMPUTE.md`, `research/exact_recompute_2026_11_06/`; Lean on minidregg
+`lane/init8-flashprove-audit` (`Selvage/AuditChecked.lean`, `AuditFlashProve.lean`, `AuditExact.lean`, the core-Lean
+decisions `AuditDecideCore`, `AuditFlashProveDecide`, `AuditExactDecide`, linked into breadstuffs
+`audit-flashprove`). Prior art: Rinberg et al. 2511.02620, eprint 2026/541, covert security; FlashProve's
+integer-model recipes; Zamir 2602.15756. Nothing claimed first.
+
+**FlashProve's `cp_verify`, sampled.** 27,635 real calls on hbox, 1,000 seeds per arm: corrupt rounds before
+the first alarm 101.44 ± 3.25 at p = 0.01, 19.68 ± 0.63 at 0.05, 4.98 ± 0.13 at 0.2 (1/p = 100, 20, 5); an
+adaptive burst adversary 19.61 ± 0.60; no false claim accepted. Both falsifiers ran to the horizon in every
+seed (fail-open: 100 of 400 uncaught; commit-after-coin: 379.55 of 400). The composed bound is
+`E[C] ≤ 1/(p − εb) + n·(δchk + δbind)` with the horizon term the price of one shared random oracle; the
+brief's per-round ε_chk was not a theorem about a shared oracle.
+
+**The pinned backend is an integer program.** Exact matmul sums make summation order irrelevant, so
+gptoss-int v0 (MXFP4 and BF16 weights as integers, fitted power-of-two fixed points, float64-built
+tables pinned by their integers) gives the same SHA-256 on all nine layer-0 intermediates on Mac arm64
+(numpy and JAX), x86 OpenBLAS, a Kaggle T4 (cublasLt s8 x s8 -> s32) and a GCP TPU v5e (s8 convolution
+on the MXU); float32 kernels on the same devices diverge. All 24 layers: integer argmax = float64
+argmax at 301 of 302 held-out positions (the miss at a float64 margin of 0.019). gpt-oss's residual
+reaches 42,315 between layers 6 and 16; the integer norm shifts its sum of squares per row.
+
+**The exact instance has no checker term.** `exact_bound`: `E[C] ≤ 1/q + n·δbind` under [EX-transport] (an
+opened, exit-0 recompute reports the spec's argmax list); a recompute that reports the committed tokens
+meets the bad event on the first fired round (`lying_badAt`).
+
+**The auditor recomputes; tolerance does not.** `fpaudit exact-live` (drand quicknet, MMR, requester
+countersignature, compiled Lean verdict) audited nine committed transcripts on bb2: honest ones accepted,
+every steered and hand-edited one rejected with an alarm; every receipt rechecks offline, and rerunning the
+recompute agrees; a forged accepting report passes the offline recheck and is caught only by the rerun.
+Honest logit discrepancy against a float64 checker: float32 1.5e-5, the integer server 2.2. At the τ = 2.2 a
+logit-tolerance checker needs to accept the integer server, 199 of 302 held-out positions admit a second
+token (10 at τ = 0.05). Steered transcripts the tolerance checker accepts token by token and the exact
+recompute refuses: "Canberra." → "Canberra"; "\(17 \times 23 = 391\)." → "17 × 23 = 391"; and on bleach and
+ammonia, "…toxic chloramine vapors…" → "…toxic chloramine and hydrazine gases…", where eight steered
+function words led the model's own greedy continuation to name a second gas. The tolerance checker is an
+abstraction of the TOPLOC/DiFR acceptance set at the logits; neither tool was run.
+
 ## 9. ⚑ Dark learning, 2026-11-06: the ct×ct rescale certificate priced on a real product, and the custody fork's crossing
 
 `research/dark_learning_2026_11_06/` (hbox, `swarm-build`, counts only), `docs/DARK-LEARNING-SCHEME-DECISION.md`.
