@@ -2,6 +2,7 @@
 //! (research/dark_learning_2026_11_06) is the bit-exact reference: `native_ref.py` there.
 pub mod arith;
 pub mod bfv;
+pub mod coins;
 pub mod ntt;
 pub mod rns;
 pub mod he;

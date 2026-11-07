@@ -63,7 +63,7 @@ print(pr, H(k.pk[0]), H(k.pk[1]), H(ct[0]), H(ct[1]), H(k.sch.decrypt(ct)), H(M)
     rns.inv(&mut pk0);
     let mut pk1 = k.pk.pk1_ntt.clone();
     rns.inv(&mut pk1);
-    let mut rg = PyRandom::from_str_seed("ho|13|1|0|1|0|0|val");
+    let mut rg = darkstep::coins::Coins::Py(PyRandom::from_str_seed("ho|13|1|0|1|0|0|val"));
     let p: Vec<i64> = (0..n as i64).map(|i| ((i * 31337) % 2001) - 1000).collect();
     let mut p_ntt = rns.from_signed(&p);
     rns.fwd(&mut p_ntt);
@@ -89,7 +89,7 @@ print(pr, H(k.pk[0]), H(k.pk[1]), H(ct[0]), H(ct[1]), H(k.sch.decrypt(ct)), H(M)
     );
     assert_eq!(got, want);
     // negative control: a different returner stream must change the reply
-    let mut rg2 = PyRandom::from_str_seed("ho|13|1|0|1|0|0|mac");
+    let mut rg2 = darkstep::coins::Coins::Py(PyRandom::from_str_seed("ho|13|1|0|1|0|0|mac"));
     let (ret2, _) = bfv::make_return(&rns, &k.pk, (&a0, &a1), &mut rg2, fbits);
     assert_ne!(h_big(&rns.poly_big(&ret2.c0)), h_big(&rns.poly_big(&ret.c0)));
 }

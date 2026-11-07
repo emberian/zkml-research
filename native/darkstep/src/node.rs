@@ -34,6 +34,11 @@ pub struct Prof {
     pub det_seed: Option<String>,
     /// the three custodians share this process and machine (`darkstep local`): low-memory ZK proving
     pub colocated: bool,
+    /// HE encryption and return coins from OS randomness (every party process); false = the harness's public
+    /// reference streams, which only the in-process test harness (`run_local`) uses
+    pub secure_coins: bool,
+    /// the step program (step::Program; HARNESS unless set)
+    pub program: Program,
 }
 
 pub fn prof(a: &[String]) -> Prof {
@@ -42,7 +47,7 @@ pub fn prof(a: &[String]) -> Prof {
     let pr = ntt_primes(61, l + 1, 2 * n as u64);
     let cores = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(cores);
-    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false }
+    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false, secure_coins: false, program: Program::HARNESS }
 }
 
 pub fn flag(args: &[String], name: &str) -> Option<String> {
@@ -62,7 +67,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
     let rns = Arc::new(Rns::new(pf.n, &pf.qs, pf.t));
     let (key, pks, gate) = match pf.gate {
         None => {
-            let key = OwnKey::new(rns.clone(), KEY_SEED0 + i as u64);
+            let key = if pf.secure_coins { OwnKey::new_secure(rns.clone()) } else { OwnKey::new(rns.clone(), KEY_SEED0 + i as u64) };
             // public keys: exchange (pk0_ntt, pk1_ntt)
             let mut mine = key.pk.pk0_ntt.clone();
             mine.extend_from_slice(&key.pk.pk1_ntt);
@@ -88,7 +93,11 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
                 }
             };
             let regs: Vec<Arc<dzkpopk::KeyRegistry>> = (0..3).map(|k| cer.registry(k).unwrap()).collect();
-            let key = OwnKey::from_ceremony(rns.clone(), KEY_SEED0 + i as u64, &cust.s, regs[i].b_res(), regs[i].a_res());
+            let key = if pf.secure_coins {
+                OwnKey::from_ceremony_secure(rns.clone(), &cust.s, regs[i].b_res(), regs[i].a_res())
+            } else {
+                OwnKey::from_ceremony(rns.clone(), KEY_SEED0 + i as u64, &cust.s, regs[i].b_res(), regs[i].a_res())
+            };
             let pks = regs
                 .iter()
                 .map(|r| OwnKey::from_ceremony(rns.clone(), 0, &vec![0; pf.n], r.b_res(), r.a_res()).pk)
@@ -131,13 +140,13 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
         gate,
     };
     let setup = t0.elapsed().as_secs_f64();
-    let tab = tables(pf.t);
+    let tab = pf.program.tables(pf.t);
     let mut pt = Party::new(i, pf.t, net, tape);
     let t1 = Instant::now();
     // each custodian computes on its own pool: a pool shared by the three in-process parties lets one party's blocked
     // returner jobs starve the others (they are separate machines in deployment)
     let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
-    let res = pool.install(|| run_step(&mut pt, &mut he, cs, pf.d, &tab));
+    let res = pool.install(|| run_step_prog(&mut pt, &mut he, cs, pf.d, &tab, &pf.program));
     let step_s = t1.elapsed().as_secs_f64();
     let sent = pt.net.total_sent();
     let per_peer = pt.net.sent_per_peer();
@@ -187,7 +196,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
 pub fn reveal_check(pf: &Prof, shares: &[(Vec<Vec<Sh>>, Vec<Vec<Sh>>)]) -> bool {
     let p = pf.t;
     let plain = inputs(pf.d);
-    let (e1, e2) = match plain.step() {
+    let (e1, e2) = match plain.step_prog(&pf.program) {
         Ok(x) => x,
         Err(e) => {
             eprintln!("{e}");
@@ -219,8 +228,9 @@ pub fn run_local(pf: &Prof, attack: Option<(String, usize)>) -> (serde_json::Val
 pub fn run_local_opts(pf: &Prof, attack: Option<(String, usize)>, proof_atoms: bool) -> (serde_json::Value, Option<String>) {
     let t0 = Instant::now();
     let plain = inputs(pf.d);
-    let (tapes, cs) =
-        crate::tape::deal_step_opts(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), proof_atoms);
+    let (cs, dl) =
+        crate::tape::deal_step_dealer_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), proof_atoms, &pf.program);
+    let tapes = dl.tapes;
     let deal_s = t0.elapsed().as_secs_f64();
     let listeners: Vec<TcpListener> = (0..3).map(|_| TcpListener::bind("127.0.0.1:0").unwrap()).collect();
     let addrs: Vec<SocketAddr> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();

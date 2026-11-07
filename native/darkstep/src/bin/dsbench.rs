@@ -32,11 +32,17 @@ fn main() {
     }
     println!("mul_pw {:.2} ms", t.elapsed().as_secs_f64() * 1e3 / it as f64);
     let t = Instant::now();
-    let mut r = PyRandom::from_str_seed("x");
+    let mut r = darkstep::coins::Coins::Py(PyRandom::from_str_seed("x"));
     for _ in 0..it {
         let _ = make_return(&rns, &key.pk, (&x, &x), &mut r, f);
     }
-    println!("make_return {:.2} ms", t.elapsed().as_secs_f64() * 1e3 / it as f64);
+    println!("make_return (reference coins) {:.2} ms", t.elapsed().as_secs_f64() * 1e3 / it as f64);
+    let t = Instant::now();
+    let mut r = darkstep::coins::Coins::Prf(darkstep::coins::Prf::new(&darkstep::coins::os_key(), "x"));
+    for _ in 0..it {
+        let _ = make_return(&rns, &key.pk, (&x, &x), &mut r, f);
+    }
+    println!("make_return (OS-keyed PRF coins) {:.2} ms", t.elapsed().as_secs_f64() * 1e3 / it as f64);
     let t = Instant::now();
     let mut r = PyRandom::from_str_seed("y");
     let mut s = 0u64;

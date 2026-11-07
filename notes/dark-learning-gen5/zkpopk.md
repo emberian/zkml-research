@@ -259,7 +259,8 @@ returning), so the slowest sender sets the pace.
 
 ## Executed: the gated d = 4096 step as three custodian processes on forge + bb2 (lane xbox, 2026-11-07)
 
-Code: darkstep at a996539e (dev): `Net::sent_per_peer` ([peer][tag] counter, frame headers included; `total_sent`
+Code: darkstep at a996539e (dev). That binary still drew its HE coins from public seeds, a break found and fixed
+afterwards (notes/dark-learning-gen6/deploy.md). The fix changes no work done, so these costs stand. Code: `Net::sent_per_peer` ([peer][tag] counter, frame headers included; `total_sent`
 unchanged), `bytes_sent_to` in result_i.json, and in party mode `wall_seconds` and `peak_rss_kb` (VmHWM).
 `cargo test --release -p darkstep --test vs_reference`: 6 passed; it now also checks that each party's links sum to
 its per-tag totals (negative control: a writer that miscounts by one byte per frame fails `d8_n4096`).
@@ -277,8 +278,8 @@ Setup [EXECUTED]:
   (`party_<mode>_<i>.pid`); launcher `party.sh` in each lane dir.
 - **Contention caveat.** bb2 was shared with other tenants' work (Lean builds, a 400%-CPU session, sort/emit jobs):
   load average 73 at the gated start and 105 at the ungated run, on 32 cores. forge was quiet (load ~1). bb2's
-  seats ran at roughly a third of their uncontended speed; read the times below as a lower bound on what the shape
-  can do, not a measurement of it. bb2 is EPYC Milan, forge EPYC Genoa.
+  seats ran at roughly a third of their uncontended speed. **Every time below is an UPPER BOUND** on the step in this
+  shape, not a measurement of it; a timed run needs a quiet window on all boxes. bb2 is EPYC Milan, forge EPYC Genoa.
 
 Results [EXECUTED] (N = 16384, L = 4, F = 175, d = 4096, T = 309; result_i.json per custodian):
 
