@@ -714,18 +714,51 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     };
     let cp = plain_count(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc);
     let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
+    // DEFER: the ledger replica's pending claims of the head (the release, or a closing proof, discharges them)
+    let pend = lg.pending.clone();
+    if pr.defer {
+        println!("ledger status after the steps: {:?}", lg.status);
+    }
+    if std::env::var_os("DP_CLOSE").is_some() {
+        // a halted run (cut E): every custodian proves the head's closing proof over its darkstep net (run::close_custodian)
+        let ctx = Ctx::new(model, 0, steps as u64);
+        let pd = pend.clone().expect("DP_CLOSE: the head is not pending (a DEFER profile?)");
+        let outs: Vec<Result<darkproof::run::CloseOut, String>> = std::thread::scope(|s| {
+            let hs: Vec<_> = parts
+                .drain(..)
+                .map(|(pt, carry, _, _, _, _)| {
+                    let (pr, lp, ctx, pd) = (&pr, &lp, &ctx, &pd);
+                    s.spawn(move || darkproof::run::close_custodian(pr, lp, &pt.net, pt.i, 3, ctx, carry, pd, d))
+                })
+                .collect();
+            hs.into_iter().map(|h| h.join().unwrap()).collect()
+        });
+        let blobs: Vec<Vec<u8>> = outs.into_iter().map(|o| o.expect("close").blob).collect();
+        let agree = blobs.iter().all(|b| b == &blobs[0]);
+        println!("closing proof: {} bytes; parties agree {agree}", blobs[0].len());
+        let r = lg.close(&lp, &blobs[0]);
+        println!("ledger accepts the closing proof: {r:?}; status {:?}", lg.status);
+        let r2 = lg.close(&lp, &blobs[0]);
+        println!("a second close: {r2:?}");
+        let r3 = lg.release(&lp, &parts_blob_dummy(), &pol);
+        println!("a release after the close: {r3:?}");
+        ok_all &= agree && r.is_ok() && r2.is_err() && r3.is_err();
+        println!("ledger file: {}", lpath.display());
+        println!("{}", if ok_all { "DS-CHAIN CLOSE PASS" } else { "DS-CHAIN CLOSE FAIL" });
+        std::process::exit(if ok_all { 0 } else { 1 });
+    }
     // phase 2: the release
     let ctx = Ctx::new(model, 0, steps as u64);
     let outs: Vec<(u64, Vec<u8>, f64, f64)> = std::thread::scope(|s| {
         let hs: Vec<_> = parts
             .drain(..)
             .map(|(mut pt, carry, w1n, w2n, _, _)| {
-                let (pol, pr, lp, ctx) = (&pol, &pr, &lp, &ctx);
+                let (pol, pr, lp, ctx, pend) = (&pol, &pr, &lp, &ctx, &pend);
                 s.spawn(move || {
                     let i = pt.i;
                     darkproof::heap::set_who(i);
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
-                    let o = pool.install(|| darkproof::run::release_custodian(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None)).expect("release");
+                    let o = pool.install(|| darkproof::run::release_custodian_l(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None, pend.as_ref())).expect("release");
                     assert_eq!(o.triples, nrt);
                     (o.c, o.blob, o.mpc_secs, o.prove_secs)
                 })
@@ -737,7 +770,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     println!("release: MPC {:.1}s, proof {:.1}s, bundle {} bytes; parties agree {agree}; opened C = {}", outs[0].2, outs[0].3, outs[0].1.len(), outs[0].0);
     let t = std::time::Instant::now();
     let r = lg.release(&lp, &outs[0].1, &pol);
-    println!("ledger accepts the release: {:?} ({:.1}s); plaintext twin C = {cp}", r, t.elapsed().as_secs_f64());
+    println!("ledger accepts the release: {:?} ({:.1}s); plaintext twin C = {cp}{}", r, t.elapsed().as_secs_f64(), if pr.defer { format!("; status {:?}", lg.status) } else { String::new() });
     ok_all &= agree && r.as_ref().map(|x| x.1 == cp && x.1 == outs[0].0).unwrap_or(false);
     let r2 = lg.accept(&lp, &parts_blob_dummy(), &tables);
     println!("a step after the release: {:?}", r2);
