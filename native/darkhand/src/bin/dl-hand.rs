@@ -8,6 +8,11 @@
 //!   dl-hand old <work> <i> <d> <profile> <port_base>
 //!   dl-hand new <work> <j> <d> <profile> <port_base>       (j = 0 also submits the rotation to the ledger)
 //!   dl-hand restart <work> <i> <d> <profile>                (an old custodian started again after the handover)
+//!   dl-hand local-self <work> <d> <profile> <port_base>
+//!       the self-handover after an SPDZ abort: the same three seats (one process each, its old and new roles as two
+//!       threads on the joint mesh), the HE keys kept, the W shares reshared and re-authenticated under a NEW MAC key,
+//!       the handover proof binding them to the ledger head; the old shares, tape and alpha share erased.
+//!   dl-hand seat <work> <i> <d> <profile> <port_base>        (one seat of local-self)
 //!
 //! Ports: old mesh base+0..2, new mesh base+3..5, joint mesh base+6..11. Every process uses the zeroizing allocator.
 use darkhand::erase::{Wipe, ZeroOnFree};
@@ -39,6 +44,11 @@ const OLD_SET: [&str; 3] = ["c0", "c1", "c2"];
 const NEW_SET: [&str; 3] = ["c3", "c4", "c5"];
 
 fn common(d: usize, prof: &str) -> Common {
+    common_mode(d, prof, false)
+}
+
+/// `self_mode`: a self-handover (the same seats, the MAC key retired): the new set is the old set.
+fn common_mode(d: usize, prof: &str, self_mode: bool) -> Common {
     let he: [&str; 3] = match prof {
         "demo" => ["8192", "3", "118"],
         "ledger" => ["16384", "4", "175"],
@@ -55,7 +65,7 @@ fn common(d: usize, prof: &str) -> Common {
         epoch_new: 1,
         after_step: 0,
         old_set: OLD_SET.iter().map(|s| s.to_string()).collect(),
-        new_set: NEW_SET.iter().map(|s| s.to_string()).collect(),
+        new_set: if self_mode { OLD_SET } else { NEW_SET }.iter().map(|s| s.to_string()).collect(),
     };
     Common { pr, lp, d, n_old: 3, n_new: 3, ctx, rns: Arc::new(Rns::new(pf.n, &pf.qs, pf.t)), t: pf.t }
 }
@@ -175,8 +185,7 @@ fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldC
         i,
         w,
         tape: *tape,
-        cust,
-        cer,
+        keys: Some((cust, cer)),
         key: Some(key),
         carry,
         files: vec![dir.join("tape.bin"), dir.join("key.bin")],
@@ -192,7 +201,7 @@ fn new(work: &Path, j: usize, d: usize, prof: &str, base: u16) {
     let tape = read_tape(&dir.join("tape.bin")).expect("new tape");
     let net3 = mesh(base, 3, 3, j);
     let net6 = mesh(base, 6, 6, 3 + j);
-    let out = match side::new_side(&c, j, net3, net6, tape, 2, CHECK) {
+    let out = match side::new_side(&c, j, net3, net6, tape, 2, CHECK, None) {
         Ok(o) => o,
         Err(e) => {
             write_json(&work.join(format!("pub/new{j}.json")), &json!({"role": "new", "party": j, "error": e}));
@@ -268,24 +277,136 @@ fn read_json(p: &Path) -> Value {
     std::fs::read_to_string(p).ok().and_then(|s| serde_json::from_str(&s).ok()).unwrap_or(Value::Null)
 }
 
-fn local(work: &Path, d: usize, prof: &str, base: u16) -> bool {
+/// One seat of a self-handover: keys from its (epoch-1) ceremony, kept; its old role reshares and erases its W
+/// shares, tape and alpha share; its new role receives, re-authenticates under the new tape, and continues.
+fn seat(work: &Path, i: usize, d: usize, prof: &str, base: u16) {
+    let c = common_mode(d, prof, true);
+    let dir = work.join(format!("old{i}"));
+    let net3 = mesh(base, 0, 3, i);
+    let (cust, cer) = darkhand::ceremony::run(&net3, i, c.rns.n, &c.rns.qs, c.t, c.pr.t_cols, 1).expect("ceremony");
+    net3.shutdown();
+    let reg = cer.registry(i).unwrap();
+    let key = OwnKey::from_ceremony_secure(c.rns.clone(), &cust.s, reg.b_res(), reg.a_res());
+    let new_tape = read_tape(&work.join(format!("new{i}/tape.bin"))).expect("new tape");
+    let (rep_old, rep_new) = std::thread::scope(|s| {
+        let c = &c;
+        let dir = &dir;
+        // 64 MiB stacks: the old role scrubs 4 MiB of its stack before its final scan
+        let old_t = std::thread::Builder::new().stack_size(64 << 20).spawn_scoped(s, move || {
+            side::old_side(c, || old_seat_state(c, work, dir, i, d), || mesh(base, 6, 6, i))
+                .unwrap_or_else(|e| json!({"role": "old", "party": i, "error": e}))
+        }).unwrap();
+        let new_t = std::thread::Builder::new().stack_size(64 << 20).spawn_scoped(s, move || {
+            let net3 = mesh(base, 3, 3, i);
+            let net6 = mesh(base, 6, 6, 3 + i);
+            match side::new_side(c, i, net3, net6, new_tape, 1, CHECK, Some((cust, cer, key))) {
+                Ok(out) => {
+                    let mut rep = out.report.clone();
+                    if i == 0 {
+                        let lpath = work.join("ledger.jsonl");
+                        wait_for(&lpath);
+                        let mut lg = Ledger::open(&lpath, MODEL, &c.pr, None).expect("ledger");
+                        let cust: Vec<String> = OLD_SET.iter().map(|s| s.to_string()).collect();
+                        rep["rotation"] = json!(match lg.rotate(&cust, &out.new_roots, &out.proof) {
+                            Ok(()) => "accept".to_string(),
+                            Err(e) => e,
+                        });
+                        rep["ledger_head_is_new_roots"] = json!(lg.head().1 == out.new_roots);
+                        rep["ledger_custodians"] = json!(lg.custodians);
+                    }
+                    rep.as_object_mut().unwrap().remove("ct_under_new_key");
+                    out.party.net.shutdown();
+                    rep
+                }
+                Err(e) => json!({"role": "new", "party": i, "error": e}),
+            }
+        }).unwrap();
+        (old_t.join().unwrap(), new_t.join().unwrap())
+    });
+    let mut rep_old = rep_old;
+    rep_old["peak_rss_mb"] = json!(peak_rss_mb());
+    write_json(&work.join(format!("pub/old{i}.json")), &rep_old);
+    write_json(&work.join(format!("pub/new{i}.json")), &rep_new);
+}
+
+#[inline(never)]
+fn old_seat_state(c: &Common, work: &Path, dir: &Path, i: usize, d: usize) -> Box<OldCustodian> {
+    let tape = Box::new(read_tape(&dir.join("tape.bin")).expect("old tape"));
+    let w: BTreeMap<String, Vec<Sh>> = KINDS
+        .iter()
+        .enumerate()
+        .map(|(q, k)| (k.to_string(), (q * d * d..(q + 1) * d * d).map(|p| Sh { s: tape.sh[p], m: tape.mac[p] }).collect()))
+        .collect();
+    let carry: BTreeMap<String, PcsParty> = KINDS
+        .iter()
+        .map(|k| {
+            let mut plain: Vec<u64> = w[*k].iter().map(|x| x.s).collect();
+            let mut pc = PcsParty::commit(&c.pr, &plain, &format!("{k}n"), i, &Det(None));
+            pc.opened_lives = 1;
+            plain.wipe();
+            (k.to_string(), pc)
+        })
+        .collect();
+    let roots: BTreeMap<String, Vec<[u8; 32]>> = carry.iter().map(|(k, p)| (k.clone(), vec![p.root])).collect();
+    write_json(&work.join(format!("pub/old{i}.roots.json")), &roots_json(&roots));
+    Box::new(OldCustodian { i, w, tape: *tape, keys: None, key: None, carry, files: vec![dir.join("tape.bin")], captured: None })
+}
+
+fn local_self(work: &Path, d: usize, prof: &str, base: u16) -> bool {
     for sub in ["logs", "pids", "pub"] {
         std::fs::create_dir_all(work.join(sub)).unwrap();
     }
     let t0 = std::time::Instant::now();
     deal(work, d, prof);
     let ws = work.display().to_string();
-    let mut kids = Vec::new();
-    for i in 0..3 {
-        let a = ["old", &ws, &i.to_string(), &d.to_string(), prof, &base.to_string()].map(String::from).to_vec();
-        kids.push((format!("old{i}"), spawn(work, &a, &format!("old{i}"))));
+    let mut kids: Vec<(String, std::process::Child)> = (0..3)
+        .map(|i| {
+            let a = ["seat", &ws, &i.to_string(), &d.to_string(), prof, &base.to_string()].map(String::from).to_vec();
+            (format!("seat{i}"), spawn(work, &a, &format!("seat{i}")))
+        })
+        .collect();
+    let c = common_mode(d, prof, true);
+    make_ledger(work, &c, d);
+    let exits = wait_all(work, &mut kids);
+    let olds: Vec<Value> = (0..3).map(|i| read_json(&work.join(format!("pub/old{i}.json")))).collect();
+    let news: Vec<Value> = (0..3).map(|j| read_json(&work.join(format!("pub/new{j}.json")))).collect();
+    let truth = read_json(&work.join("truth.json"));
+    let mut checks: Vec<(String, bool)> = Vec::new();
+    let mut ck = |name: &str, ok: bool| checks.push((name.to_string(), ok));
+    ck("all three seat processes exited 0", exits.values().all(|c| *c == Some(0)));
+    let digests: Vec<&str> = olds.iter().chain(&news).map(|v| v["proof_sha256"].as_str().unwrap_or("")).collect();
+    ck("both roles of every seat hold the same handover proof", !digests[0].is_empty() && digests.iter().all(|x| *x == digests[0]));
+    ck("the ledger accepts the self-rotation (same custodians, epoch + 1)", news[0]["rotation"] == "accept");
+    ck("the ledger head is the re-committed roots", news[0]["ledger_head_is_new_roots"] == true);
+    ck("the ledger's custodian set is unchanged", news[0]["ledger_custodians"] == json!(OLD_SET));
+    ck("MAC check under the NEW MAC key passes", news.iter().all(|v| v["mac_check"] == "ok"));
+    ck("opened W1, W2 entries equal the plaintext W",
+       news.iter().all(|v| v["opened"]["W1"] == truth["W1_head"] && v["opened"]["W2"] == truth["W2_head"]));
+    ck("the new MAC key differs from the old", truth["alphas_differ"] == true);
+    ck("the kept HE key still decrypts (each seat, own ciphertext)", news.iter().all(|v| v["decrypts_own_ct"] == true));
+    ck("before erasure the scan finds the old shares, tape and alpha (control)",
+       olds.iter().all(|v| v["scan_before_erasure"]["available"] == false || v["scan_before_erasure"]["hits"].as_u64().unwrap_or(0) > 0));
+    ck("after erasure the scan finds none of them (the seat's process still runs its new role)",
+       olds.iter().all(|v| v["scan_after_erasure"]["available"] == false || v["scan_after_erasure"]["hits"] == 0));
+    ck("the memory scan ran (Linux)", olds.iter().all(|v| v["scan_after_erasure"]["available"] == true));
+    ck("no old tape file left", olds.iter().all(|v| v["state_files_left"].as_array().map(|a| a.is_empty()).unwrap_or(false)));
+    let all = checks.iter().all(|c| c.1);
+    let summary = json!({
+        "mode": "self-handover", "d": d, "profile": prof, "all_checks": all, "seconds": t0.elapsed().as_secs_f64(),
+        "checks": checks.iter().map(|(n, ok)| json!({"check": n, "ok": ok})).collect::<Vec<_>>(),
+        "exits": exits, "old": olds, "new": news,
+    });
+    write_json(&work.join("summary.json"), &summary);
+    for (n, ok) in &checks {
+        println!("{} {n}", if *ok { "ok  " } else { "FAIL" });
     }
-    for j in 0..3 {
-        let a = ["new", &ws, &j.to_string(), &d.to_string(), prof, &base.to_string()].map(String::from).to_vec();
-        kids.push((format!("new{j}"), spawn(work, &a, &format!("new{j}"))));
-    }
-    // the ledger: its head is the old committee's commitment (the child of step k)
-    let c = common(d, prof);
+    println!("all checks: {all}");
+    all
+}
+
+/// The ledger, its head the old committee's commitment (the child of step k), from the roots the old custodians
+/// publish.
+fn make_ledger(work: &Path, c: &Common, d: usize) {
     let mut roots: BTreeMap<String, Vec<[u8; 32]>> = KINDS.iter().map(|k| (k.to_string(), Vec::new())).collect();
     for i in 0..3 {
         let p = work.join(format!("pub/old{i}.roots.json"));
@@ -297,15 +418,18 @@ fn local(work: &Path, d: usize, prof: &str, base: u16) -> bool {
             roots.get_mut(k).unwrap().push(darkproof::h::unhex32(h).unwrap());
         }
     }
-    let g = Genesis { d, program: darkproof::step::StepParams::HARNESS, owner_pk: None, custodians: OLD_SET.iter().map(|s| s.to_string()).collect(), roots: roots.clone() };
+    let g = Genesis { d, program: darkproof::step::StepParams::HARNESS, owner_pk: None,
+                      custodians: OLD_SET.iter().map(|s| s.to_string()).collect(), roots };
     let tmp = work.join("ledger.jsonl.tmp");
     drop(Ledger::open(&tmp, MODEL, &c.pr, Some(g)).expect("genesis"));
     std::fs::rename(&tmp, work.join("ledger.jsonl")).unwrap();
-    // wait for all six; if one fails or the run exceeds its deadline, stop the rest (the children this driver
-    // started, by the PIDs it recorded for them) so nobody waits forever on a dead peer
+}
+
+/// Wait for every child; if one fails or the run passes its deadline, stop the rest (the children this driver
+/// started, by the PIDs it recorded for them) so nobody waits forever on a dead peer.
+fn wait_all(work: &Path, kids: &mut [(String, std::process::Child)]) -> BTreeMap<String, Option<i32>> {
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(DEADLINE_S);
     let mut exits: BTreeMap<String, Option<i32>> = BTreeMap::new();
-    let mut kids = kids;
     while exits.len() < kids.len() {
         let mut failed = false;
         for (name, k) in kids.iter_mut() {
@@ -330,6 +454,28 @@ fn local(work: &Path, d: usize, prof: &str, base: u16) -> bool {
         }
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
+    exits
+}
+
+fn local(work: &Path, d: usize, prof: &str, base: u16) -> bool {
+    for sub in ["logs", "pids", "pub"] {
+        std::fs::create_dir_all(work.join(sub)).unwrap();
+    }
+    let t0 = std::time::Instant::now();
+    deal(work, d, prof);
+    let ws = work.display().to_string();
+    let mut kids = Vec::new();
+    for i in 0..3 {
+        let a = ["old", &ws, &i.to_string(), &d.to_string(), prof, &base.to_string()].map(String::from).to_vec();
+        kids.push((format!("old{i}"), spawn(work, &a, &format!("old{i}"))));
+    }
+    for j in 0..3 {
+        let a = ["new", &ws, &j.to_string(), &d.to_string(), prof, &base.to_string()].map(String::from).to_vec();
+        kids.push((format!("new{j}"), spawn(work, &a, &format!("new{j}"))));
+    }
+    let c = common(d, prof);
+    make_ledger(work, &c, d);
+    let exits = wait_all(work, &mut kids);
     let restarts: Vec<Value> = (0..3).map(|i| restart(work, i, d, prof)).collect();
     let olds: Vec<Value> = (0..3).map(|i| read_json(&work.join(format!("pub/old{i}.json")))).collect();
     let news: Vec<Value> = (0..3).map(|j| read_json(&work.join(format!("pub/new{j}.json")))).collect();
@@ -386,6 +532,11 @@ fn main() {
         Some("deal") => deal(&work, arg(3).parse().unwrap(), &arg(4)),
         Some("old") => old(&work, arg(3).parse().unwrap(), arg(4).parse().unwrap(), &arg(5), arg(6).parse().unwrap()),
         Some("new") => new(&work, arg(3).parse().unwrap(), arg(4).parse().unwrap(), &arg(5), arg(6).parse().unwrap()),
+        Some("local-self") => {
+            let ok = local_self(&work, arg(3).parse().unwrap(), &arg(4), arg(5).parse().unwrap());
+            std::process::exit(if ok { 0 } else { 1 });
+        }
+        Some("seat") => seat(&work, arg(3).parse().unwrap(), arg(4).parse().unwrap(), &arg(5), arg(6).parse().unwrap()),
         Some("restart") => {
             let v = restart(&work, arg(3).parse().unwrap(), arg(4).parse().unwrap(), &arg(5));
             println!("{}", serde_json::to_string_pretty(&v).unwrap());
