@@ -704,6 +704,13 @@ fn main() {
             let v = restart_seat(&work, Path::new(&arg(3)), &joins, &a[dd + 1..]);
             println!("{}", serde_json::to_string_pretty(&v).unwrap());
         }
+        Some("vault-present") => {
+            // dl-hand vault-present NAME: whether the uid's persistent keyring still holds that file key (exit 0: absent)
+            let name = arg(2);
+            let present = darkhand::vault::present(&name);
+            println!("{}", json!({"name": name, "present": present}));
+            std::process::exit(if present { 1 } else { 0 });
+        }
         Some("verify-rotation") => {
             // dl-hand verify-rotation WORKDIR LEDGER.jsonl HANDOVER.bin N L F d [PROFILE]
             let v = verify_rotation(Path::new(&arg(3)), Path::new(&arg(4)), &a[5..9], a.get(9).map(|s| s.as_str()).unwrap_or("ledger"), &work);
