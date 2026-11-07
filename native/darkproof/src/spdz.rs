@@ -63,6 +63,8 @@ pub enum Triples {
     /// the tape's triples in REVERSE order (the next one last): a drawn triple is popped and the spent part of the
     /// buffer returned as it empties (memory: a release's proof section is 47.7M triples, 2.3 GB, at M = 52)
     Tape { t: Vec<Triple>, pos: usize },
+    /// the tape's triples in order from a reader (the deployed release streams its proof section from the tape file)
+    Iter(Box<dyn Iterator<Item = Triple> + Send>),
 }
 
 impl Triples {
@@ -84,6 +86,7 @@ impl Triples {
                 }
                 x
             }
+            Triples::Iter(it) => it.next().expect("the tape's proof section is exhausted"),
         }
     }
 }
@@ -135,6 +138,11 @@ impl Spdz {
     pub fn from_tape(i: usize, n: usize, alpha_i: u64, mut triples: Vec<Triple>) -> Self {
         triples.reverse();
         Self::with_source(i, n, alpha_i, Triples::Tape { t: triples, pos: 0 })
+    }
+
+    /// Party i with its proof-section triples drawn in order from `it`.
+    pub fn from_iter(i: usize, n: usize, alpha_i: u64, it: Box<dyn Iterator<Item = Triple> + Send>) -> Self {
+        Self::with_source(i, n, alpha_i, Triples::Iter(it))
     }
 
     fn with_source(i: usize, n: usize, alpha_i: u64, src: Triples) -> Self {

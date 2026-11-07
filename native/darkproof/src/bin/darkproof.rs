@@ -519,8 +519,36 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     if !no_release {
         deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol0);
     }
-    let tapes = dl.tapes;
+    let mut tapes = dl.tapes;
     println!("d={d} profile={prof} steps={steps} M={m} program={prm:?}; dealing {:.1}s, tape {} entries per party", t0.elapsed().as_secs_f64(), tapes[0].len());
+    // DP_TAPE_DIR: each custodian's tape goes through a file, as dl-custodian runs the release: all but the release's
+    // proof section loaded, that section streamed into the prover (run::load_release_tape, release_custodian_src)
+    let rts: Vec<std::sync::Mutex<Option<darkproof::run::ReleaseTape>>> = (0..3).map(|_| std::sync::Mutex::new(None)).collect();
+    if let Some(dir) = std::env::var("DP_TAPE_DIR").ok().filter(|v| !v.is_empty()) {
+        let nrt0 = darkproof::run::release_section(&lp, d, m, prm, &pol0);
+        for (i, t) in tapes.iter_mut().enumerate() {
+            let path = Path::new(&dir).join(format!("release_{i}.tape"));
+            t.write_to(&mut std::io::BufWriter::new(std::fs::File::create(&path).unwrap())).unwrap();
+            if i == 1 && std::env::var_os("DP_TAPE_FLIP").is_some() {
+                // CONTROL: custodian 1's file has one proof-section share off by one (its a of triple 10)
+                use std::io::{Read, Seek, SeekFrom, Write};
+                let n = t.len();
+                let at = (24 + n + 8 * (n - 3 * nrt0 + 30)) as u64;
+                let mut f = std::fs::OpenOptions::new().read(true).write(true).open(&path).unwrap();
+                let mut b = [0u8; 8];
+                f.seek(SeekFrom::Start(at)).unwrap();
+                f.read_exact(&mut b).unwrap();
+                let v = darkproof::field::add(u64::from_le_bytes(b), 1);
+                f.seek(SeekFrom::Start(at)).unwrap();
+                f.write_all(&v.to_le_bytes()).unwrap();
+            }
+            *t = darkstep::tape::Tape::default();
+            let (pre, rt) = darkproof::run::load_release_tape(&path, nrt0).unwrap();
+            *t = pre;
+            *rts[i].lock().unwrap() = Some(rt);
+        }
+        println!("tapes through {dir}: {} entries loaded, proof section {nrt0} triples streamed", tapes[0].len());
+    }
     let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
     let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
     let css = Arc::new(css);
@@ -763,12 +791,13 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         let hs: Vec<_> = parts
             .drain(..)
             .map(|(mut pt, carry, w1n, w2n, _, _)| {
-                let (pol, pr, lp, ctx, pend) = (&pol, &pr, &lp, &ctx, &pend);
+                let (pol, pr, lp, ctx, pend, rts) = (&pol, &pr, &lp, &ctx, &pend, &rts);
                 s.spawn(move || {
                     let i = pt.i;
                     darkproof::heap::set_who(i);
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
-                    let o = pool.install(|| darkproof::run::release_custodian_l(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None, pend.as_ref())).expect("release");
+                    let rt = rts[i].lock().unwrap().take();
+                    let o = pool.install(|| darkproof::run::release_custodian_src(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None, pend.as_ref(), rt)).expect("release");
                     assert_eq!(o.triples, nrt);
                     (o.c, o.blob, o.mpc_secs, o.prove_secs)
                 })
@@ -997,7 +1026,7 @@ fn rel_check(dir: &Path, tag: &str) {
                 wires.insert("h".to_string(), ext("h", i));
                 s.spawn(move || {
                     let mut net = nets.take(i);
-                    let st = PartyRelease { i, n: 3, d, alpha_i: w.alpha_sh[i], wires, public: w.public.clone(), atoms: w.atoms[i].clone(), triples: tp, det };
+                    let st = PartyRelease { i, n: 3, d, alpha_i: w.alpha_sh[i], wires, public: w.public.clone(), atoms: w.atoms[i].clone(), triples: tp, det, tape_file: None };
                     darkproof::run::prove_release_d(pr, lp, prm, &mut *net, ctx, pol, st, hd, df)
                 })
             })
