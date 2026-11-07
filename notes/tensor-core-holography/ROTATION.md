@@ -152,7 +152,56 @@ the fixed-r multiply, the harder case.
 | A100 | b1 (native) | 0.042 | 0.063 | 1.231 | **19.6x** | 1.41x |
 | T4 | b1 xor | 0.264 | 0.397 | 2.948 | 7.4x | 0.53x |
 
-**Yes, the tensor GF(2) routes now win by more:**
+### The end-to-end check on T4 refutes the INT8 prediction there (2026-11-07)
+
+The readiness lane timed the whole route on T4 (`notes/accelerator-readiness/runs/accel-towermul-vs-table-01`,
+2^18 elements, bit-exact against minidregg's `binary_tower_256.rs`). It was built as three kernels: unpack,
+GEMM, repack.
+
+| T4, per element | measured | model fused (this table, before) | model unfused (now in `mma_counts.py`) |
+|---|---:|---:|---:|
+| table multiply (same session) | **1.85 ns** | 2.95 (12,000 op-eq) | — |
+| INT8 route, end to end | **21.4 ns (0.086x the table)** | 1.04 (2.8x) | 10.8 HBM floor |
+| unpack (32 B in, 256 B out) | 2.26 | — | 1.19 floor |
+| GEMM (256 B operands in, 1 KiB of int32 counts out) | 6.47 | 1.04 (tensor) | 5.29 floor |
+| repack (1 KiB in, 32 B out) | 12.67 | — | 4.36 floor |
+| FP16 route, end to end | 35.2 ns (0.052x) | 2.17 | 13.0 |
+
+**Where the model lost the time:**
+
+1. **The model priced a fused kernel that was not built.** It charged 96 B of HBM per element (32 B in,
+   32 B r-operand share, 32 B out). The unfused route moves 2,624 B per element:
+   - 256 unpacked operand bytes, written and read back;
+   - 256 counts of 4 bytes, written and read back.
+
+   That is 27x the bytes. At T4's measured copy rate it is a 10.8 ns floor before any compute.
+2. **Each pass runs at a fraction of copy speed.** Measured over its own HBM floor: GEMM 1.22x, unpack 1.9x,
+   repack 2.9x (the repack also does the parity extraction and the packing).
+3. **Turing has no wgmma, and cuBLAS INT8 on T4 runs at 0.35 of `mma.sync` peak** (MMA.md §4). So even a
+   fused T4 INT8 kernel is about 1-3 ns against a 1.85 ns table: parity at best.
+   - **On T4 only the 1-bit xor route could win when fused** (predicted 0.40 ns, 4.6x).
+   - The T4 table also ran faster this session than the anchor: 8,824 op-eq against 12,000.
+
+**The T4 INT8 row is now marked measured: 0.086x, a loss.**
+
+**The H100 claim is predicted, not measured.**
+
+- The 22.7x per multiply and 3.2-3.4x per proof (b1/BGMMA) used rates measured per instruction on H100, but a
+  fused byte count.
+- Unfused, the same packing overhead applies. The b1 operands need no unpack, but the 1 KiB of counts per
+  element still round-trips HBM. The model then gives 0.70 ns against a 0.72 ns table: **1.03x, a tie.**
+  - Unfused, every target sits at 0.23-1.03x the table.
+- The win exists only if the parity repack runs in the GEMM epilogue, so counts never leave registers. On
+  Hopper the wgmma accumulator is in registers, so the 2^(m-1) bias read plus a ballot is a natural epilogue.
+  Nobody has built it.
+- **Label: H100 3.2-3.4x per proof and B200/B300 17.9x per multiply are PREDICTED, for a fused kernel, until an
+  end-to-end fused run confirms them.**
+- **Inner products are less exposed:**
+  - Their output is one 256 x 256 count block per chunk, not per element, so no per-element repack traffic.
+  - On b1 there is no unpack either.
+  - Still unmeasured end to end.
+
+**The earlier reading, now conditional on a fused kernel:**
 
 - **Fixed-r multiply:** 10.6-19.6x the measured SIMT multiply on every target with a counting unit, against
   the old 12-21x over a 14,200 table and roughly a tie against 718. They beat even the unreachable ideal SIMT
@@ -181,6 +230,8 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 | B300, 20 | 0.64 | 3.9 | 0.86 (FP4) | 4.5 → 1.5 (**3.0x**) | 0.14 → 0.43 |
 | B300, 22 | 2.5 | 16.8 | 3.5 (FP4) | 19.4 → 6.1 (**3.2x**) | 0.13 → 0.42 |
 
+- **The tensor columns in this table assume the fused fixed-r kernel: PREDICTED.** With today's unfused
+  kernels the tensor route loses (T4 measured 0.086x), and the table stays the GPU path.
 - **The GPU prover is arithmetic-bound today.** Hash share is 0.13-0.18, matching T4's measured 80% encode.
   The tensor route makes it 2.3-3.2x faster per proof; the arithmetic alone drops 3-5x.
 - **The fine NTT layers are what cap that win.** Layers 0-5, where a twiddle is shared by fewer than 64
@@ -226,9 +277,12 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 
 1. **B300 prime path:** FP16 byte limbs, not FP4 base-13 or FP8.
 2. **Binary tower on Blackwell:** FP4/FP8 0/1 parity path. It was "nothing / bit-sliced SIMT".
-3. **The Tower256 GPU prover is arithmetic-bound.** The measured SIMT multiply is 12,000-17,400 op-eq (table)
-   or 52,700 (bit-sliced), not 718. The tensor fixed-r route is the lever, at 10.6-19.6x per multiply and
-   2.3-3.2x per proof (5.3x with tensor fine layers). F3-MODEL said hash-bound.
+3. **The Tower256 GPU prover is arithmetic-bound.** The measured SIMT multiply is 8,800-17,400 op-eq (table)
+   or 52,700 (bit-sliced), not 718. The tensor fixed-r route is the lever **only as a fused kernel**:
+   - predicted 10.6-22.7x per multiply and 2.3-3.4x per proof;
+   - unfused it measured 0.086x the table on T4, and models at 0.23-1.03x elsewhere.
+
+   F3-MODEL said hash-bound.
 4. **Hopper's FP8 accumulator is m = 14, measured.** The interim "m = 12" (a PTX reading) is withdrawn.
    **Hopper's binary unit is BGMMA `and.popc` at 8.0x INT8.** Tower256 on H100 moves from INT8 0/1 to b1:
    the fixed-r multiply is 22.7x the table (it was 11.0x on INT8) and 3.2-3.4x per proof.
@@ -242,6 +296,9 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 - TPU int32 overflow semantics.
 - The repack layout cost.
 - Whether the fine NTT layers can be moved onto the tensor path.
+- **A fused fixed-r kernel** (GEMM with the parity repack in its epilogue) and its end-to-end time on H100 and
+  Blackwell. Every tensor win for folds and NTT layers rests on it. The next measurement is the H100 BGMMA
+  fused kernel against the table.
 - Lean: the Tower256 instance of `lazy_bilinear`, and any hardware refinement theorem. The measured widths
   enter as hypotheses: `qgmma_gf2_dot` takes `HoldsBelow 14` and gives up to 16,382 products;
   `hgmma_gf2_dot` takes `HoldsBelow 24`; `qgmma_m14_blocks` and `hgmma_m24_blocks` give the block lengths
