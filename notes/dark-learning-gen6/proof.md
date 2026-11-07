@@ -192,15 +192,109 @@ log2(|x| / 2^K) of the 40 statistical bits for that element; at |x| ≥ 2^(K+40)
 halts the run: dl-custodian exits with the named reason, and the ledger accepts nothing after it. So the loss is
 bounded by one step's openings.
 
+## 5. Proof-time triples: the zerocheck cut, counts, authentication
+
+**The cut.** The zerocheck draws ONE Beaver product per live pair per round, down from four per padded pair
+(cosnark_gates_zk.zround, middle::zc_round):
+- f·g is quadratic in X, so its values at X = 0 and 1 are already known. In round 0 they are the C atoms. In later
+  rounds they are the previous round's pair products interpolated at r.
+- X = 2 is the one product; X = 3 follows by interpolation.
+- Pairs inside the zero padding are zero.
+- Soundness does not depend on how the prover computed its values, since the verifier's final check uses the
+  PCS evaluations of A, B and C.
+- `middle::beaver_count(n) = Σ_i ceil(n_i / 2)`, with n_0 = n and n_(i+1) = ceil(n_i / 2).
+- [EXECUTED] Byte-identical with Python: `rel-check` demo d = 4 (2daefc89), and the HE steps below.
+
+**Counts per custodian** at d = 4096, GEN6 (`darkproof counts 4096 ledger`):
+
+| section | gen 5 method | now |
+|---|---|---|
+| step, no RC | 16,831,944 | 2,291,149 |
+| step, RC: spine | | 53,235 = 13(d - 1) |
+| step, RC: range products | | 905,216 = 221 d |
+| step, RC: zerocheck | | 3,141,633 |
+| step, RC: Ligero | | 1,497 |
+| step, RC: total | | 4,101,581 |
+| release, M = 64, RC: zerocheck | 536,870,908 | 105,275,336 |
+| release, M = 64, RC: total | | 120,545,778 |
+
+Row formulas:
+- A step's n_had is d [254 + Σ_truncs (K + 40 + 2(s - 1)) + 1], plus d Σ_truncs (K + 39) with RC.
+- A checked truncation adds K + 39 range products.
+- The Ligero uses 2(2(k + t) - 1) + 7 products.
+
+**Authentication** (coordinator's decision, following my default).
+- **Authenticated (SPDZ, MAC-checked before the bundle leaves custody):** spine, zerocheck and range products.
+  Without MACs, a custodian could add δ to its share of an opened e = x - a. The product becomes xy + δ y, so the
+  proof fails iff y ≠ 0. That is a selective-failure zero test on a secret operand (a mask bit, a borrow bit, a
+  lookup power, or "these 2^i consecutive atoms are all zero"; folding by r does not remove it, since zero atoms
+  stay zero). With MACs the check aborts independently of the secret.
+- **Unauthenticated:** only the Ligero's 1,497 products. Their operands are PCS evaluations combined with uniformly
+  random tail coefficients, so an operand is 0 with probability 1/p and a zero test on it reveals nothing.
+
+**d = 4096, GEN6, RC on vs off** [EXECUTED]. The runs were on bb2 (three custodians in one process, 8 threads
+each, shared box) with the gen 5 zerocheck. Proof time is within noise:
+
+| | proof | bundle | verify |
+|---|---|---|---|
+| RC on | 405.7 s | 520,030,532 B | 10.5 s accept |
+| RC off | 437.0 s | 519,350,924 B | 8.9 s accept |
+
+The PCS commitments of the d² matrices dominate. Peak RSS was 21.0 GB vs 19.6 GB.
+
+## 6. GEN6 agreement (train lane's request) [EXECUTED]
+
+- **Inputs.** The deployed step under GEN6 + RC at d = 64, demo HE profile, with native_ref.inputs_for(64, GEN6).
+- **Agreement.** The Python reference (cosnark_he over RecEngine), darkstep's record and the native proof agree:
+  - the record equals the harness's witness: 17,803 public values and 44,096 middle atoms;
+  - the bundle is byte-identical (sha256 052e5156…, 13,456,604 B);
+  - Python verifies the native bundle and refuses a flipped byte.
+- **HE + RC at d = 4.** Steps he1, he2 and he3 are byte-identical (eac6a540…, f8be9d38…, e9240e7f…), and so is
+  ds-check.
+
+## 7. The lookup: LogUp priced, and the alternative (analysis, not built)
+
+**LogUp is not cheaper here.** With secret lookup inputs, LogUp needs these, per element unless noted:
+- **Inverses** w = 1/(α - v) on the secret v, by masked inversion: one random authenticated value, one Beaver
+  product and one opening (of (α - v) ρ, which is uniform). Plus one Hadamard row for w (α - v) = 1.
+- **Multiplicities** m_t over the table, which must stay committed and hidden. The custodians would have to compute
+  them in MPC. That is a histogram of secret values: an equality test of each element against each of the 256
+  entries, or building every element's 8-bit eq basis (255 products per element), or an MPC sort. Each of these
+  costs at least as much as the 254-row power chain.
+
+So LogUp at our sizes does NOT beat the power chain. Stopped there, as the condition said.
+
+**The cheaper route: a bit circuit on the bits the range check already proves.**
+- With RC, the z1 truncation's borrow chain yields the bits of z1 + 2^18 as linear forms. Its top 8 bits are
+  exactly the table index u1 + 128.
+- So h = SIG[u1] = clamp(floor(u1 / 4), -7, 7) and g1 = DSIG[u1] = [-28 ≤ u1 < 32] can be proved by a small
+  circuit on those bits:
+  - two comparisons of a 6-bit value with constants, plus 2 products, for h;
+  - two 8-bit window comparisons for g1;
+  - about 27 products per element in all, instead of 254.
+- The step's MPC keeps its masked-power lookup. The proof then checks h and g1 against u1 directly, so the power
+  atoms no longer need well-formedness rows.
+
+Estimated savings:
+
+| | rows per element now | rows per element with the circuit | saving |
+|---|---|---|---|
+| step | 767 d | ≈ 540 d | about 30% |
+| release | 391 d M | ≈ 164 d M | 2.4x fewer rows |
+
+The release case cuts its 105M zerocheck triples to about 45M. It is table-specific (SIG/DSIG), Python reference
+first. **[OPEN] awaiting the coordinator's go.**
+
 ## [OPEN]
 
 
 - **Ledger-profile bit-exactness.** The ledger-profile HE vectors (d = 4 and 16, `~/lanes/dl-gen6-proof/vec`
   on bb2) are still being generated by Python.
-- **The HE step with RC, bit-exact at d = 4.** Running locally: `scratchpad/dl-gen6/proof/he_rc_d4.log`, tag
-  `demo_d4_rc_he`.
-- **GEN6 three-way agreement.** For the train lane, my proof should ACCEPT native_ref's GEN6 step. Still to do:
-  the Python he flow with the GEN6 program plus RC, and native ds-check.
+- **HE + RC at d = 16 (demo) and ledger d = 4.** Python vectors running on bb2: `~/lanes/dl-gen6-proof/vec`, logs
+  `he_rc_16.log` and `he_rc_l4.log`, PID files there. Then `check` / `ds-check` / `darkproof_vectors.py verify`
+  with tags `demo_d16_rc_he` and `ledger_d4_rc_he`.
+- **The d = 4096 measurement on the new zerocheck.** The gen 5 numbers are above. Rerun with
+  `rc4096.sh` on bb2 after rebuilding there.
 - **The run, on three boxes.** The deploy lane's dl-custodian proves each step over TLS (571825d0, with rc). Then
   the d = 4096 sizes and times in the run, and the release in the run.
 - **d = 4096 cost of RC.** Measured on bb2 (`~/lanes/dl-gen6-proof/rc4096_{on,off}.log`, PID file `rc4096.pid`);
