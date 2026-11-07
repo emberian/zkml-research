@@ -219,7 +219,7 @@ process, 16 vCPU, nice 15, `/srv/lanes/dl-gen5-zkpopk/step4096b.sh`. Same binary
 `dzkpopk bench` rows and has not been measured as a 3-machine run. Two things would hide part of it: verifying one
 sender's batch while proving one's own, and starting to verify the first batch as it arrives.
 
-## Run plan: the gated d = 4096 step as deployed (three `darkstep party` processes, forge + bb2) [OPEN]
+## Run plan: the gated d = 4096 step as deployed (three `darkstep party` processes, forge + bb2) [EXECUTED below]
 
 Handed on: the lane stopped here, near its context limit. Facts were checked on 2026-11-07.
 - **Machines.** forge is 178.105.4.114 (16 vCPU, 12 GB job cap). bb2 is 2.31.77.40 (32 cores, 122 GB, 96 GB
@@ -256,3 +256,68 @@ Handed on: the lane stopped here, near its context limit. Facts were checked on 
 
 Expected: about 90 s per step [DERIVED, see above]. The parties of one call wait on one another (verify before
 returning), so the slowest sender sets the pace.
+
+## Executed: the gated d = 4096 step as three custodian processes on forge + bb2 (lane xbox, 2026-11-07)
+
+Code: darkstep at a996539e (dev): `Net::sent_per_peer` ([peer][tag] counter, frame headers included; `total_sent`
+unchanged), `bytes_sent_to` in result_i.json, and in party mode `wall_seconds` and `peak_rss_kb` (VmHWM).
+`cargo test --release -p darkstep --test vs_reference`: 6 passed; it now also checks that each party's links sum to
+its per-tag totals (negative control: a writer that miscounts by one byte per frame fails `d8_n4096`).
+
+Setup [EXECUTED]:
+- Production build (no `test-det`), `cargo build --release --offline -p darkstep` on each box from the same sources
+  and the zkpopk lane's vendored tree (`/srv/lanes/dl-gen5-xbox/native`, `~/lanes/dl-gen5-xbox/native` on bb2).
+- `darkstep deal 16384 4 175 4096` on bb2: 8.8 s, 2.6 GB peak; tape_i.bin is 599 MB each, public.bin 269 MB.
+  tape_0 and public relayed to forge through the Mac (`scp -3`, about 9 min, ~1.1 MB/s; sha256 equal both ends);
+  tape_1 and tape_2 never left bb2.
+- Reachability: `nc -l` on 178.105.4.114:47300 (forge) and 2.31.77.40:47301/47302 (bb2), each PID-filed with a 60 s
+  timeout; connections succeeded both ways, so no tunnel was needed. Custodian sockets bound to those addresses.
+- Custodian 0 on forge (`nice -n 15 systemd-run --scope -p MemoryMax=12G`, DS_THREADS=16); custodians 1 and 2 on bb2
+  (`nice -n 15 systemd-run --user --scope -p MemoryMax=12G`, DS_THREADS=16 each). Each its own PID file
+  (`party_<mode>_<i>.pid`); launcher `party.sh` in each lane dir.
+- **Contention caveat.** bb2 was shared with other tenants' work (Lean builds, a 400%-CPU session, sort/emit jobs):
+  load average 73 at the gated start and 105 at the ungated run, on 32 cores. forge was quiet (load ~1). bb2's
+  seats ran at roughly a third of their uncontended speed; read the times below as a lower bound on what the shape
+  can do, not a measurement of it. bb2 is EPYC Milan, forge EPYC Genoa.
+
+Results [EXECUTED] (N = 16384, L = 4, F = 175, d = 4096, T = 309; result_i.json per custodian):
+
+| | step | wall (process) | matvec z1 / z2 / b | outer G2 / G1 | peak RSS c0 / c1 / c2 |
+|---|---:|---:|---:|---:|---:|
+| ungated, cross-box | 153.4 s | 161-167 s | 11.4 / 12.8 / 9.6 | 63.4 / 51.1 | 3.8 / 4.3 / 4.3 GB |
+| **gated, cross-box** | **301.7 s** | 311-319 s | 50.6 / 39.9 / 17.1 | 71.2 / 117.7 | 4.7 / 5.2 / 4.9 GB |
+| gated, one process on forge (above) | 198.3 s | | 38.1 / 37.8 / 13.7 | 52.2 / 54.1 | 11.4 GB total |
+
+- Gate per custodian (stored prover, `low_memory` false): c0 on forge prove 34.0 s / verify 27.5 s; c1 and c2 on
+  bb2 prove 89.3 / 89.0 s, verify 73.6 / 73.1 s. Ceremony 2.3-3.6 s. `zk_lock_wait_seconds` about 2e-6 s on all
+  three: the lock is uncontended in its own process, as expected. Proof bytes sent 59.1 MB per custodian.
+- All three ACCEPT in both runs. Transcript `081b142f263bb0df...`, the same as the one-process runs. The per-party
+  share digests of the gated run equal the ungated run's (c0 `fca75fa7...`, c1 `ced3eb70...`, c2 `d401317e...`):
+  the gate does not change the step's outputs across boxes either.
+- `darkstep reveal 16384 4 175 4096 run/gated` on bb2 (shares_0.bin relayed from forge): `{"refines_spec":true}` (6.5 s, 3.1 GB). This test-only
+  reveal is the one place the three share files met on one box; the gen 6 deployment must not do this.
+
+Bytes per link [EXECUTED] (each custodian's bytes sent to each peer; all six directed links measured equal):
+
+| per directed link | open | he_ct | he_ret | ctrl | total |
+|---|---:|---:|---:|---:|---:|
+| ungated | 2.9 MB | 285.2 MB | 4,395.8 MB | 1.0 MB | 4,684.9 MB |
+| gated | 2.9 MB | 314.8 MB | 4,395.8 MB | 1.8 MB | 4,715.2 MB |
+
+- The proofs ride on HE_CT: +29.6 MB per link = 59.1 MB per custodian over two recipients. The ceremony adds 0.8 MB
+  of CTRL per link. The gate costs 0.6% of the wire.
+- HE returns are 93% of the wire. One gated step moves 6 x 4.715 GB = 28.3 GB (0.226 Tbit); 4 of the 6 directed
+  links (18.9 GB) cross forge <-> bb2, the c1 <-> c2 pair is loopback on bb2.
+- [DERIVED] At hbox's measured 39-44 Mbit/s uplink, one seat's 9.43 GB of sends per step take about 30 min; the
+  he_ret stream is where to cut (modulus-switch the returns down to the primes decryption needs, seeded `a`).
+
+What the numbers say [DERIVED]:
+- The gate adds 148 s cross-box (301.7 vs 153.4), close to the one-process 148 s. It did not drop to the ~40 s the
+  separate-machine estimate predicted because bb2's two seats proved and verified at ~2.6x forge's time (89 vs 34 s
+  prove) on a box at load 73-105; the slowest sender sets the pace of every call.
+- The ungated step was 3x slower cross-box than in one process (153 vs 50 s), mostly in outer G2/G1 (114 vs 37 s),
+  the he_ret-heavy calls: bb2 contention plus 18.9 GB over the forge <-> bb2 link. Separating those two needs a run
+  on an uncontended bb2 (or a third quiet box) [OPEN].
+- Teardown: every party process exited on its own (verified by its PID file); the nc listeners exited after their
+  one connection. Run directories kept for the gen 6 deploy lane: forge `/srv/lanes/dl-gen5-xbox/run/`, bb2
+  `~/lanes/dl-gen5-xbox/run/`.
