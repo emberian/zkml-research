@@ -170,13 +170,23 @@ impl Run {
     /// `Player-Data/Mascot-Secrets-p-*`; renaming the files makes the next run generate fresh keys (tapes not yet
     /// consumed under the old key must be regenerated). Files are renamed, not deleted.
     pub fn retire_mac_keys(&self) -> Vec<PathBuf> {
-        let dir = self.mpspdz.join("Player-Data");
+        retire_mac_keys(&self.mpspdz, None)
+    }
+}
+
+/// Retire (rename) the MASCOT MAC key files of the 61-bit field, for one party (a custodian box) or all of them
+/// (a loopback test). Only `Mascot-Secrets-p-61-*` files: other protocols' material in the same directory is
+/// left alone.
+pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
+    {
+        let dir = mpspdz.join("Player-Data");
         let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
         let mut out = Vec::new();
         if let Ok(rd) = std::fs::read_dir(&dir) {
             for e in rd.flatten() {
                 let name = e.file_name().to_string_lossy().into_owned();
-                if name.starts_with("Mascot-Secrets-p-") && !name.contains(".retired-") {
+                let mine = party.map(|i| name.contains(&format!("-P{i}-"))).unwrap_or(true);
+                if name.starts_with("Mascot-Secrets-p-61-") && mine && !name.contains(".retired-") {
                     let to = dir.join(format!("{name}.retired-{stamp}"));
                     if std::fs::rename(e.path(), &to).is_ok() {
                         out.push(to);
@@ -184,6 +194,135 @@ impl Run {
                 }
             }
         }
+        // MP-SPDZ also writes a copy of alpha_i to Player-Data/<n>-p-61/Player-MAC-Keys-p-P<i>
+        if let Ok(rd) = std::fs::read_dir(dir.join("3-p-61")) {
+            for e in rd.flatten() {
+                let name = e.file_name().to_string_lossy().into_owned();
+                let mine = party.map(|i| name == format!("Player-MAC-Keys-p-P{i}")).unwrap_or(true);
+                if name.starts_with("Player-MAC-Keys-p-P") && mine && !name.contains(".retired-") {
+                    let to = dir.join("3-p-61").join(format!("{name}.retired-{stamp}"));
+                    if std::fs::rename(e.path(), &to).is_ok() {
+                        out.push(to);
+                    }
+                }
+            }
+        }
         out
+    }
+}
+
+/// One custodian's MASCOT process on its own box (the distributed run): `mascot-party.x -p I --ip-file-name F`,
+/// TLS (`-e`) unless `plaintext`, measured: wall, the process's own CPU and peak RSS (wait4), MP-SPDZ's byte counter,
+/// and wire bytes per peer from the kernel's TCP counters (`ss -tinp`, sampled while it runs; TLS records included).
+pub struct PartyRun {
+    pub mpspdz: PathBuf,
+    pub prog: String,
+    pub p: u64,
+    pub party: usize,
+    pub ipfile: PathBuf,
+    pub plaintext: bool,
+    pub extra: Vec<String>,
+    pub workdir: PathBuf,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct PartyResult {
+    pub wall_s: f64,
+    pub stats: PartyStats,
+    pub cpu_user_s: f64,
+    pub cpu_sys_s: f64,
+    pub max_rss_kb: i64,
+    /// (peer ip, bytes_acked we sent, bytes_received), summed over sockets, last sample before close
+    pub links: Vec<(String, u64, u64)>,
+}
+
+fn ss_sample(pid: u32, acc: &mut std::collections::BTreeMap<(String, String), (u64, u64)>) {
+    let Ok(out) = std::process::Command::new("ss").args(["-tinpH"]).output() else { return };
+    let txt = String::from_utf8_lossy(&out.stdout);
+    let mut cur: Option<(String, String)> = None;
+    let tag = format!("pid={pid},");
+    for line in txt.lines() {
+        if !line.starts_with(char::is_whitespace) {
+            cur = None;
+            if line.contains(&tag) {
+                let f: Vec<&str> = line.split_whitespace().collect();
+                if f.len() >= 5 {
+                    cur = Some((f[3].to_string(), f[4].to_string()));
+                }
+            }
+        } else if let Some(k) = &cur {
+            let get = |key: &str| {
+                line.split_whitespace().find_map(|w| w.strip_prefix(key)).and_then(|v| v.parse::<u64>().ok()).unwrap_or(0)
+            };
+            let e = acc.entry(k.clone()).or_default();
+            e.0 = e.0.max(get("bytes_acked:"));
+            e.1 = e.1.max(get("bytes_received:"));
+        }
+    }
+}
+
+impl PartyRun {
+    pub fn execute(&self) -> Result<PartyResult, String> {
+        let pers = self.mpspdz.join("Persistence");
+        let _ = std::fs::remove_file(pers.join(format!("Transactions-P{}.data", self.party)));
+        std::fs::create_dir_all(&self.workdir).map_err(|e| e.to_string())?;
+        let log = std::fs::File::create(self.workdir.join(format!("P{}.log", self.party))).map_err(|e| e.to_string())?;
+        let mut cmd = std::process::Command::new("./mascot-party.x");
+        cmd.current_dir(&self.mpspdz)
+            .args(["-N", "3", "-p", &self.party.to_string(), "--ip-file-name"])
+            .arg(&self.ipfile)
+            .arg("-P")
+            .arg(self.p.to_string());
+        if !self.plaintext {
+            cmd.arg("-e");
+        }
+        cmd.args(&self.extra).arg(&self.prog).stdout(log.try_clone().map_err(|e| e.to_string())?).stderr(log);
+        let t0 = std::time::Instant::now();
+        let child = cmd.spawn().map_err(|e| e.to_string())?;
+        let pid = child.id();
+        let pidfile = self.workdir.join(format!("mascot-P{}.pid", self.party));
+        std::fs::write(&pidfile, pid.to_string()).map_err(|e| e.to_string())?;
+        let done = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let d2 = done.clone();
+        let sampler = std::thread::spawn(move || {
+            let mut acc = std::collections::BTreeMap::new();
+            while !d2.load(std::sync::atomic::Ordering::Relaxed) {
+                ss_sample(pid, &mut acc);
+                std::thread::sleep(std::time::Duration::from_millis(250));
+            }
+            acc
+        });
+        let mut status = 0i32;
+        let mut ru: libc::rusage = unsafe { std::mem::zeroed() };
+        let r = unsafe { libc::wait4(pid as i32, &mut status, 0, &mut ru) };
+        let wall = t0.elapsed().as_secs_f64();
+        done.store(true, std::sync::atomic::Ordering::Relaxed);
+        let acc = sampler.join().unwrap_or_default();
+        let _ = std::fs::remove_file(&pidfile);
+        drop(child);
+        let ok = r == pid as i32 && libc::WIFEXITED(status) && libc::WEXITSTATUS(status) == 0;
+        if !ok {
+            let retired = retire_mac_keys(&self.mpspdz, Some(self.party));
+            return Err(format!("party {} failed (abort, status {status}); see {}; MAC key share retired: {retired:?}",
+                               self.party, self.workdir.join(format!("P{}.log", self.party)).display()));
+        }
+        let logtxt = std::fs::read_to_string(self.workdir.join(format!("P{}.log", self.party))).map_err(|e| e.to_string())?;
+        let stats = parse_stats(&logtxt).ok_or("no stats in the party log")?;
+        let mut by_peer: std::collections::BTreeMap<String, (u64, u64)> = Default::default();
+        for ((_local, peer), (s, rcv)) in acc {
+            let ip = peer.rsplit_once(':').map(|x| x.0.to_string()).unwrap_or(peer);
+            let e = by_peer.entry(ip).or_default();
+            e.0 += s;
+            e.1 += rcv;
+        }
+        let tv = |t: libc::timeval| t.tv_sec as f64 + t.tv_usec as f64 * 1e-6;
+        Ok(PartyResult {
+            wall_s: wall,
+            stats,
+            cpu_user_s: tv(ru.ru_utime),
+            cpu_sys_s: tv(ru.ru_stime),
+            max_rss_kb: ru.ru_maxrss as i64,
+            links: by_peer.into_iter().map(|(k, (a, b))| (k, a, b)).collect(),
+        })
     }
 }

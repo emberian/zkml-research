@@ -79,15 +79,30 @@ impl Tape {
             d: self.d as usize,
             inputs: if self.inputs == 0 { Inputs::Harness } else { Inputs::Steady },
             trunc: self.trunc.map(|(s, k)| (s as u32, k as u32)),
+            proof_atoms: false,
+            proof_triples: 0,
         }
     }
 }
 
 /// Assemble party `party`'s tape from its own Transactions file (party-local: no communication).
 pub fn assemble(sp: &StepParams, tx: &Transactions, party: u32) -> Result<Tape, String> {
+    assemble_step(sp, tx, party, 0, 1)
+}
+
+/// Step `j` of a chunk of `steps` steps generated in one MASCOT run (Plan::of_chunk): each kind's j-th slice.
+pub fn assemble_step(sp: &StepParams, tx: &Transactions, party: u32, j: usize, steps: usize) -> Result<Tape, String> {
+    assemble_in_chunk(&vec![*sp; steps], tx, party, j)
+}
+
+/// Step `j` of a chunk whose steps are `chunk` (crate::schedule::plan_of_steps).
+pub fn assemble_in_chunk(chunk: &[StepParams], tx: &Transactions, party: u32, j: usize) -> Result<Tape, String> {
+    let sp = &chunk[j];
     let fp: Fp = tx.fp;
-    let plan = Plan::of(sp);
+    let one = Plan::of(sp);
+    let plan = crate::schedule::plan_of_steps(chunk);
     let sec = plan.sections();
+    let (o_in, o_ar, o_tri, o_lp, o_tr) = crate::schedule::offsets(chunk, j);
     if tx.shares.len() != sec.total {
         return Err(format!("Transactions holds {} shares, the plan needs {}", tx.shares.len(), sec.total));
     }
@@ -95,11 +110,11 @@ pub fn assemble(sp: &StepParams, tx: &Transactions, party: u32) -> Result<Tape, 
     let lin = |terms: &[(u64, (u64, u64))]| {
         terms.iter().fold((0u64, 0u64), |(s, m), &(c, (x, y))| (fp.add(s, fp.mul(c, x)), fp.add(m, fp.mul(c, y))))
     };
-    let mut cur_in = 0;
-    let mut cur_ar = 0;
-    let mut cur_tri = 0;
-    let mut cur_lp = 0;
-    let mut cur_tr = vec![0usize; plan.trunc_classes.len()];
+    let mut cur_in = o_in;
+    let mut cur_ar = o_ar;
+    let mut cur_tri = o_tri;
+    let mut cur_lp = o_lp;
+    let mut cur_tr: Vec<usize> = o_tr;
     let mut out = Vec::new();
     let push = |out: &mut Vec<(Tag, u64, u64)>, t: Tag, (s, m): (u64, u64)| out.push((t, s, m));
     let triple = |out: &mut Vec<(Tag, u64, u64)>, cur: &mut usize| {
@@ -133,6 +148,11 @@ pub fn assemble(sp: &StepParams, tx: &Transactions, party: u32) -> Result<Tape, 
                 }
                 let hi: Vec<_> = (s as usize..nb).map(|j| (fp.two_pow(j as u32 - s), bits[j])).collect();
                 push(&mut out, Tag::Trh, lin(&hi));
+                if sp.proof_atoms {
+                    for b in &bits[s as usize..] {
+                        push(&mut out, Tag::Trhb, *b);
+                    }
+                }
                 for _ in 0..2 * (s - 1) {
                     triple(&mut out, &mut cur_tri);
                 }
@@ -145,7 +165,7 @@ pub fn assemble(sp: &StepParams, tx: &Transactions, party: u32) -> Result<Tape, 
             }
         }
     }
-    debug_assert_eq!((cur_in, cur_ar, cur_tri, cur_lp), (plan.n_in, plan.n_ar, plan.n_tri, plan.n_lp));
+    debug_assert_eq!((cur_in, cur_ar, cur_tri, cur_lp), (o_in + one.n_in, o_ar + one.n_ar, o_tri + one.n_tri, o_lp + one.n_lp));
     Ok(Tape {
         p: fp.p,
         n_parties: 3,
