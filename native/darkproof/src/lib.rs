@@ -225,6 +225,13 @@ pub mod heap {
     pub fn set_who(i: usize) {
         WHO.with(|w| w.set(i.min(3)));
     }
+    /// Move n bytes of accounting from slot `from` to slot `to` (an allocation handed to another custodian's thread,
+    /// e.g. the tape a harness dealt on its main thread).
+    pub fn transfer(from: usize, to: usize, n: usize) {
+        LIVE[from].fetch_sub(n as isize, Relaxed);
+        let v = LIVE[to].fetch_add(n as isize, Relaxed) + n as isize;
+        PEAK[to].fetch_max(v, Relaxed);
+    }
     /// (live bytes, peak since the last take) of slot k; the peak restarts from the live count.
     pub fn take(k: usize) -> (isize, isize) {
         let live = LIVE[k].load(Relaxed);

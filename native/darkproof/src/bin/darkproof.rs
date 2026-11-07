@@ -400,6 +400,7 @@ fn ds_bench(d: usize, prof: &str) {
                 let (addrs, cs, pf, pr, lp, tables, pg) = (&addrs, cs.clone(), &pf, &pr, &lp, &tables, &pg);
                 s.spawn(move || {
                     darkproof::heap::set_who(i);
+                    darkproof::heap::transfer(3, i, tape.tags.capacity() + 8 * (tape.sh.capacity() + tape.mac.capacity()));
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
@@ -537,6 +538,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                 let (addrs, css, pf, pr, lp, tables, pg, nts, pgw) = (&addrs, css.clone(), &pf, &pr, &lp, &tables, &pg, &nts, &pgw);
                 s.spawn(move || {
                     darkproof::heap::set_who(i);
+                    darkproof::heap::transfer(3, i, tape.tags.capacity() + 8 * (tape.sh.capacity() + tape.mac.capacity()));
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
