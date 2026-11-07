@@ -169,8 +169,15 @@ pub(crate) fn w_ligero(w: &mut W, pr: &Profile, n: usize, sizes: &[usize], l: &L
     w.fes(&l.w, k + t);
     w.fes(&l.q, 2 * k + t - 1);
     w.fes(&l.pq, 2 * (k + t) - 1);
+    // the F_{p^E} tests' further components (cozk w1, q1, pq1, ..): E = pr.ext
+    assert_eq!(l.more.len() + 1, pr.ext, "Ligero message components differ from the profile's EXT");
+    for (wk, qk, pqk) in &l.more {
+        w.fes(wk, k + t);
+        w.fes(qk, 2 * k + t - 1);
+        w.fes(pqk, 2 * (k + t) - 1);
+    }
     let mut sz = sizes.to_vec();
-    sz.push(3);
+    sz.push(3 * pr.ext);
     assert_eq!(l.cols.len(), sz.len());
     let npts = pr.blow * (k + t);
     if pr.multiproof {
@@ -196,17 +203,20 @@ pub(crate) fn r_ligero(r: &mut R, pr: &Profile, n: usize, sizes: &[usize]) -> PR
     let wv = r.fes(k + t)?;
     let q = r.fes(2 * k + t - 1)?;
     let pq = r.fes(2 * (k + t) - 1)?;
+    let more = (1..pr.ext)
+        .map(|_| Ok((r.fes(k + t)?, r.fes(2 * k + t - 1)?, r.fes(2 * (k + t) - 1)?)))
+        .collect::<PR<Vec<_>>>()?;
     let npts = pr.blow * (k + t);
     let j = if pr.multiproof { (0..tt).map(|_| r.idx(npts)).collect::<PR<Vec<_>>>()? } else { Vec::new() };
     let mut cols = Vec::new();
-    for &s in sizes.iter().chain(std::iter::once(&3)) {
+    for &s in sizes.iter().chain(std::iter::once(&(3 * pr.ext))) {
         cols.push(
             (0..n)
                 .map(|_| if pr.multiproof { r_multi(r, &j, s, lg - 1) } else { r_openings(r, tt, s, lg) })
                 .collect::<PR<Vec<_>>>()?,
         );
     }
-    Ok(LigProof { w: wv, q, pq, cols, j })
+    Ok(LigProof { w: wv, q, pq, cols, j, more })
 }
 
 pub(crate) type PcsParts = (BTreeMap<String, Vec<Hash>>, BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>);
@@ -225,11 +235,23 @@ pub(crate) fn w_prox_cols(
     prox: &BTreeMap<String, Vec<Vec<u64>>>,
     cols: &BTreeMap<String, PcsCols>,
 ) {
+    w_prox_cols_e(w, pr, n, sh, prox, cols, 1)
+}
+/// The PCS proximity rows (length ext W: the F_{p^ext} combination's components concatenated) and openings.
+pub(crate) fn w_prox_cols_e(
+    w: &mut W,
+    pr: &Profile,
+    n: usize,
+    sh: &BTreeMap<String, Shape>,
+    prox: &BTreeMap<String, Vec<Vec<u64>>>,
+    cols: &BTreeMap<String, PcsCols>,
+    ext: usize,
+) {
     assert!(prox.keys().eq(sh.keys()) && cols.keys().eq(sh.keys()), "dict keys differ from schema");
     for (k, s) in sh {
         assert_eq!(prox[k].len(), n);
         for v in &prox[k] {
-            w.fes(v, s.w);
+            w.fes(v, ext * s.w);
         }
     }
     for (k, s) in sh {
@@ -255,8 +277,11 @@ pub(crate) fn r_pcs(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<String, Sha
     Ok((roots, BTreeMap::new(), BTreeMap::new()))
 }
 pub(crate) fn r_prox_cols(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<String, Shape>, parts: &mut PcsParts) -> PR<()> {
+    r_prox_cols_e(r, pr, n, sh, parts, 1)
+}
+pub(crate) fn r_prox_cols_e(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<String, Shape>, parts: &mut PcsParts, ext: usize) -> PR<()> {
     for (k, s) in sh {
-        parts.1.insert(k.clone(), (0..n).map(|_| r.fes(s.w)).collect::<PR<Vec<_>>>()?);
+        parts.1.insert(k.clone(), (0..n).map(|_| r.fes(ext * s.w)).collect::<PR<Vec<_>>>()?);
     }
     for (k, s) in sh {
         let j = (0..pr.t_cols).map(|_| r.idx(s.npts)).collect::<PR<Vec<_>>>()?;
@@ -272,16 +297,16 @@ pub const RNAMES: [&str; 4] = ["z1", "z2", "b", "bg"];
 
 fn spine_sizes(pr: &Profile, d: usize, sh: &BTreeMap<String, Shape>, bind: bool) -> Vec<usize> {
     let ld = log2(d);
-    let mut s = spine::Sched::default();
+    let mut s = spine::Sched::<1>::default();
     for nm in RNAMES {
-        s.scs.insert(nm.into(), (vec![0; ld], vec![0; ld]));
+        s.scs.insert(nm.into(), (vec![[0]; ld], vec![[0]; ld]));
     }
-    s.r1 = vec![(vec![0; ld], vec![0; ld]); 2];
+    s.r1 = vec![(vec![[0]; ld], vec![[0]; ld]); 2];
     if bind {
-        s.rb = Some(vec![0; ld]);
+        s.rb = Some(vec![[0]; ld]);
     }
     let ev = spine::evals_of(&s);
-    let nrows = spine::row_layout(ld, sh, &ev, pr.k_l).nrows;
+    let nrows = spine::row_layout(ld, sh, &ev, pr.k_l, pr.ext).nrows;
     let mut sizes = vec![1usize; 4 * ld];
     sizes.push(nrows - 4 * ld);
     sizes
@@ -299,7 +324,7 @@ pub fn write_spine(w: &mut W, pr: &Profile, n: usize, d: usize, chained: bool, b
     }
     w.hs(&p.eval_roots, n);
     w.hs(&p.mask_roots, n);
-    w_prox_cols(w, pr, n, &sh, &p.prox, &p.pcs_cols);
+    w_prox_cols_e(w, pr, n, &sh, &p.prox, &p.pcs_cols, pr.ext);
     w_ligero(w, pr, n, &spine_sizes(pr, d, &sh, bind), &p.ligero);
 }
 
@@ -313,7 +338,7 @@ pub fn read_spine(r: &mut R, pr: &Profile, n: usize, d: usize, chained: bool, bi
     }
     let eval_roots = r.hs(n)?;
     let mask_roots = r.hs(n)?;
-    r_prox_cols(r, pr, n, &sh, &mut parts)?;
+    r_prox_cols_e(r, pr, n, &sh, &mut parts, pr.ext)?;
     let ligero = r_ligero(r, pr, n, &spine_sizes(pr, d, &sh, bind))?;
     Ok(SpineProof { roots: parts.0, round_roots, eval_roots, mask_roots, prox: parts.1, pcs_cols: parts.2, ligero })
 }
@@ -330,9 +355,9 @@ fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool,
     let lg = |x: usize| crate::pcs::bitlen(x - 1);
     let lh = lg(lens["A"]);
     let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
-    let rb = vec![0u64; log2(d)];
-    let ev = middle::evaluations(&lens, &vec![0; lh], &vec![0; lmax], if bind { Some(&rb) } else { None });
-    let nrows = middle::row_layout(&sh, &ev, lh, lmax, pr.k_l).nrows;
+    let rb = vec![[0u64]; log2(d)];
+    let ev = middle::evaluations::<1>(&lens, &vec![[0]; lh], &vec![[0]; lmax], if bind { Some(&rb) } else { None });
+    let nrows = middle::row_layout(&sh, &ev, lh, lmax, pr.k_l, pr.ext).nrows;
     let mut sizes = vec![1usize; lh + 1 + lmax];
     sizes.push(nrows - lh - 1 - lmax);
     MShape { sh, lh, lmax, sizes }
@@ -357,7 +382,7 @@ pub fn write_middle_io(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usiz
     }
     w.hs(&p.eval_roots, n);
     w.hs(&p.mask_roots, n);
-    w_prox_cols(w, pr, n, &ms.sh, &p.prox, &p.pcs_cols);
+    w_prox_cols_e(w, pr, n, &ms.sh, &p.prox, &p.pcs_cols, pr.ext);
     w_ligero(w, pr, n, &ms.sizes, &p.ligero);
 }
 
@@ -374,7 +399,7 @@ pub fn read_middle_io(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize
     let lsc_roots = (0..ms.lmax).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?;
     let eval_roots = r.hs(n)?;
     let mask_roots = r.hs(n)?;
-    r_prox_cols(r, pr, n, &ms.sh, &mut parts)?;
+    r_prox_cols_e(r, pr, n, &ms.sh, &mut parts, pr.ext)?;
     let ligero = r_ligero(r, pr, n, &ms.sizes)?;
     Ok(MiddleProof {
         roots: parts.0,

@@ -21,6 +21,8 @@ pub struct LigParams {
     pub vz: Vec<u64>,
     /// pw[j] = powers of (j + 1), length 2(k + t) - 1
     pub pw: Vec<Vec<u64>>,
+    /// the test coefficients' field F_{p^ext} (cozk under cosnark_ext.EXT; Profile::ligero sets it)
+    pub ext: usize,
 }
 
 impl LigParams {
@@ -39,7 +41,7 @@ impl LigParams {
         let npts = blow * (k + t);
         let maxlen = 2 * (k + t) - 1;
         let pw = (0..npts).map(|j| poly::powers((j + 1) as u64, maxlen)).collect();
-        LigParams { k, t, tt, npts, zeta, l, lz, vz, pw }
+        LigParams { k, t, tt, npts, zeta, l, lz, vz, pw, ext: 1 }
     }
     pub fn interp(&self, vals: &[u64]) -> Vec<u64> {
         poly::combine(vals, &self.l, self.k + self.t)
@@ -76,19 +78,27 @@ impl LinSink for Counter {
     }
 }
 
+/// alpha[comp][row][pos] = sum_c rr_c[comp] A_c[row][pos]; rr holds ext components per constraint, consecutively.
 struct Alpha<'a> {
     rr: &'a [u64],
+    ext: usize,
     idx: usize,
-    alpha: Vec<Vec<u64>>,
+    alpha: Vec<Vec<Vec<u64>>>,
 }
 impl LinSink for Alpha<'_> {
     fn con(&mut self, _l: &str, terms: &[(u32, u32, u64)], _rhs: u64) {
-        let c = self.rr[self.idx];
-        self.idx += 1;
-        for &(r, pos, a) in terms {
-            let s = &mut self.alpha[r as usize][pos as usize];
-            *s = field::add(*s, field::mul(c, a));
+        for kk in 0..self.ext {
+            let c = self.rr[self.idx * self.ext + kk];
+            if c == 0 {
+                continue;
+            }
+            let al = &mut self.alpha[kk];
+            for &(r, pos, a) in terms {
+                let s = &mut al[r as usize][pos as usize];
+                *s = field::add(*s, field::mul(c, a));
+            }
         }
+        self.idx += 1;
     }
 }
 
@@ -127,10 +137,15 @@ pub fn first_violated(rows: &[Vec<u64>], sys: &dyn LinSystem, quad: &[(usize, us
     None
 }
 
-fn alpha_of(sys: &dyn LinSystem, rr: &[u64], nrows: usize, k: usize) -> Vec<Vec<u64>> {
-    let mut a = Alpha { rr, idx: 0, alpha: vec![vec![0u64; k]; nrows] };
+fn alpha_of(sys: &dyn LinSystem, rr: &[u64], nrows: usize, k: usize, ext: usize) -> Vec<Vec<Vec<u64>>> {
+    let mut a = Alpha { rr, ext, idx: 0, alpha: vec![vec![vec![0u64; k]; nrows]; ext] };
     sys.emit(&mut a);
     a.alpha
+}
+
+/// The component kk of every challenge of a flat E k draw (chal grouped consecutively).
+fn comp(v: &[u64], ext: usize, kk: usize) -> Vec<u64> {
+    v.iter().skip(kk).step_by(ext).copied().collect()
 }
 
 pub struct Group {
@@ -149,6 +164,8 @@ pub struct LigProof {
     pub cols: Vec<Vec<Vec<Opening>>>,
     /// the opened column indices (on the wire only under multiproofs; the verifier checks them against its own draw)
     pub j: Vec<usize>,
+    /// components 1.. of the F_{p^E} tests' messages (w_k, q_k, pq_k: cozk w1, q1, pq1); empty at E = 1
+    pub more: Vec<(Vec<u64>, Vec<u64>, Vec<u64>)>,
 }
 
 /// One custodian's Ligero prover state.
@@ -330,16 +347,26 @@ impl<'p> LigParty<'p> {
         gather_hashes(net, &[root]).into_iter().map(|v| v[0]).collect()
     }
 
+    /// Per component of the F_{p^E} test coefficients: mask_p (deg < k + t), mask_l (deg < 2k + t - 1, zero sum on
+    /// zeta), mask_q (vanishing on zeta). Order (and draw order): the E mask_p, the E mask_l, the E mask_q.
     pub fn commit_masks(&mut self, net: &mut dyn Net) -> Vec<Hash> {
         let pp = self.pp;
-        let (k, t) = (pp.k, pp.t);
-        let mp: Vec<u64> = (0..k + t).map(|_| self.rng.randrange_u64(field::p())).collect();
-        let mut ml: Vec<u64> = (0..2 * k + t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
-        let s = pp.zeta.iter().fold(0u64, |a, &z| field::add(a, peval(&ml, z)));
-        ml[0] = field::sub(ml[0], field::mul(s, field::inv(k as u64)));
-        let r: Vec<u64> = (0..k + 2 * t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
-        let mq = pmul(&pp.vz, &r);
-        self.masks = vec![mp, ml, mq];
+        let (k, t, e) = (pp.k, pp.t, pp.ext);
+        let mut masks = Vec::with_capacity(3 * e);
+        for _ in 0..e {
+            masks.push((0..k + t).map(|_| self.rng.randrange_u64(field::p())).collect());
+        }
+        for _ in 0..e {
+            let mut ml: Vec<u64> = (0..2 * k + t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
+            let s = pp.zeta.iter().fold(0u64, |a, &z| field::add(a, peval(&ml, z)));
+            ml[0] = field::sub(ml[0], field::mul(s, field::inv(k as u64)));
+            masks.push(ml);
+        }
+        for _ in 0..e {
+            let r: Vec<u64> = (0..k + 2 * t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
+            masks.push(pmul(&pp.vz, &r));
+        }
+        self.masks = masks;
         let masks = self.masks.clone();
         let refs: Vec<&Vec<u64>> = masks.iter().collect();
         let (codes, tree, salts) = self.commit_polys(&refs);
@@ -394,7 +421,8 @@ impl<'p> LigParty<'p> {
             .collect()
     }
 
-    /// cozk.Prover.prove. `quad`: row triples (x, y, z).
+    /// cozk.Prover.prove. `quad`: row triples (x, y, z). The test coefficients are F_{p^E} elements (E = pp.ext);
+    /// component k of each message uses component k of the coefficients and its own masks.
     pub fn prove(
         &mut self,
         net: &mut dyn Net,
@@ -404,64 +432,89 @@ impl<'p> LigParty<'p> {
     ) -> LigProof {
         let pp = self.pp;
         let i = self.i;
+        let e = pp.ext;
         let nrows = self.rows.len();
         // proximity
-        let gam = tr.chal(nrows);
-        let mut wv = vec![0u64];
-        for (r, &g) in gam.iter().enumerate() {
-            poly::paxpy(&mut wv, g, &self.polys[r]);
+        let gam = tr.chal(e * nrows);
+        let mut w: Vec<Vec<u64>> = Vec::with_capacity(e);
+        for kk in 0..e {
+            let mut wv = vec![0u64];
+            for r in 0..nrows {
+                poly::paxpy(&mut wv, gam[r * e + kk], &self.polys[r]);
+            }
+            poly::padd_into(&mut wv, &self.masks[kk]);
+            w.push(self.open_poly(net, wv));
         }
-        poly::padd_into(&mut wv, &self.masks[0]);
-        let w = self.open_poly(net, wv);
         tr.absorb(|h| {
-            h.s("lig-w").list(&w);
+            h.s("lig-w");
+            for x in &w {
+                h.list(x);
+            }
         });
         // linear
         let mut cnt = Counter { n: 0, rhs: Vec::new() };
         sys.emit(&mut cnt);
-        let rr = tr.chal(cnt.n);
-        let alpha = alpha_of(sys, &rr, nrows, pp.k);
-        let rp: Vec<Option<Vec<u64>>> =
-            alpha.par_iter().map(|a| if a.iter().any(|&x| x != 0) { Some(pp.interp_z(a)) } else { None }).collect();
-        let prods: Vec<Vec<u64>> = rp
-            .par_iter()
-            .zip(self.polys.par_iter())
-            .filter_map(|(r, f)| r.as_ref().map(|r| pmul(r, f)))
-            .collect();
-        let mut qv = vec![0u64];
-        for pr in &prods {
-            poly::padd_into(&mut qv, pr);
+        let rr = tr.chal(e * cnt.n);
+        let alpha = alpha_of(sys, &rr, nrows, pp.k, e);
+        let mut q: Vec<Vec<u64>> = Vec::with_capacity(e);
+        for kk in 0..e {
+            let rp: Vec<Option<Vec<u64>>> = alpha[kk]
+                .par_iter()
+                .map(|a| if a.iter().any(|&x| x != 0) { Some(pp.interp_z(a)) } else { None })
+                .collect();
+            let prods: Vec<Vec<u64>> = rp
+                .par_iter()
+                .zip(self.polys.par_iter())
+                .filter_map(|(r, f)| r.as_ref().map(|r| pmul(r, f)))
+                .collect();
+            let mut qv = vec![0u64];
+            for pr in &prods {
+                poly::padd_into(&mut qv, pr);
+            }
+            poly::padd_into(&mut qv, &self.masks[e + kk]);
+            q.push(self.open_poly(net, qv));
         }
-        poly::padd_into(&mut qv, &self.masks[1]);
-        let q = self.open_poly(net, qv);
         tr.absorb(|h| {
-            h.s("lig-q").list(&q);
+            h.s("lig-q");
+            for x in &q {
+                h.list(x);
+            }
         });
-        // quadratic, one polynomial Beaver triple per row triple
-        let rho = tr.chal(quad.len());
-        let mut acc = self.masks[2].clone();
-        for (&(rx, ry, rz), &c) in quad.iter().zip(&rho) {
+        // quadratic, one polynomial Beaver triple per row triple (the products are base polynomials: the components
+        // only weight them differently)
+        let rho = tr.chal(e * quad.len());
+        let mut acc: Vec<Vec<u64>> = (0..e).map(|kk| self.masks[2 * e + kk].clone()).collect();
+        for (qi, &(rx, ry, rz)) in quad.iter().enumerate() {
             let (as_, bs_, cs_) = self.poly_triple(net, pp.k + pp.t);
             self.poly_triples += 1;
-            let e = self.open_poly(net, padd(&self.polys[rx], &pscale(field::p() - 1, &as_)));
+            let ep = self.open_poly(net, padd(&self.polys[rx], &pscale(field::p() - 1, &as_)));
             let f = self.open_poly(net, padd(&self.polys[ry], &pscale(field::p() - 1, &bs_)));
-            let ef = pmul(&e, &f);
+            let ef = pmul(&ep, &f);
             let mut prod = vec![0u64];
             poly::padd_into(&mut prod, &cs_);
-            poly::padd_into(&mut prod, &pmul(&e, &bs_));
+            poly::padd_into(&mut prod, &pmul(&ep, &bs_));
             poly::padd_into(&mut prod, &pmul(&f, &as_));
             if i == 0 {
                 poly::padd_into(&mut prod, &ef);
             }
-            let mut nacc = vec![0u64];
-            poly::padd_into(&mut nacc, &acc);
-            poly::paxpy(&mut nacc, c, &prod);
-            poly::paxpy(&mut nacc, field::p() - c, &self.polys[rz]);
-            acc = nacc;
+            for kk in 0..e {
+                let c = rho[qi * e + kk];
+                let mut nacc = vec![0u64];
+                poly::padd_into(&mut nacc, &acc[kk]);
+                poly::paxpy(&mut nacc, c, &prod);
+                poly::paxpy(&mut nacc, field::neg(c), &self.polys[rz]);
+                acc[kk] = nacc;
+            }
         }
-        let pq = self.open_poly(net, acc);
+        let mut pq: Vec<Vec<u64>> = Vec::with_capacity(e);
+        for a in acc {
+            pq.push(self.open_poly(net, a));
+        }
         tr.absorb(|h| {
-            h.s("lig-p").list(&pq);
+            h.s("lig-p");
+            for x in &pq {
+                h.list(x);
+            }
         });
         // columns
         let jj = tr.distinct_cols(pp.tt, pp.npts);
@@ -476,7 +529,9 @@ impl<'p> LigParty<'p> {
             })
             .collect();
         let cols = gather_openings(net, mine);
-        LigProof { w, q, pq, cols, j: jj }
+        let more = (1..e).map(|kk| (w[kk].clone(), q[kk].clone(), pq[kk].clone())).collect();
+        let (w, q, pq) = (w.swap_remove(0), q.swap_remove(0), pq.swap_remove(0));
+        LigProof { w, q, pq, cols, j: jj, more }
     }
 }
 
@@ -541,36 +596,56 @@ pub fn verify(
     msg: &LigProof,
     tr: &mut Transcript,
 ) -> Result<(), String> {
-    let (k, t) = (pp.k, pp.t);
+    let (k, t, e) = (pp.k, pp.t, pp.ext);
     let nrows: usize = group_sizes.iter().sum();
-    let (w, q, pq) = (&msg.w, &msg.q, &msg.pq);
-    if w.len() > k + t || q.len() > 2 * k + t - 1 || pq.len() > 2 * (k + t) - 1 {
+    if msg.more.len() + 1 != e {
+        return Err("Ligero: a message component is missing".into());
+    }
+    let comps = |f: fn(&(Vec<u64>, Vec<u64>, Vec<u64>)) -> &Vec<u64>, c0: &Vec<u64>| -> Vec<Vec<u64>> {
+        std::iter::once(c0.clone()).chain(msg.more.iter().map(|m| f(m).clone())).collect()
+    };
+    let w = comps(|m| &m.0, &msg.w);
+    let q = comps(|m| &m.1, &msg.q);
+    let pq = comps(|m| &m.2, &msg.pq);
+    if w.iter().any(|x| x.len() > k + t) || q.iter().any(|x| x.len() > 2 * k + t - 1) || pq.iter().any(|x| x.len() > 2 * (k + t) - 1) {
         return Err("Ligero: a message exceeds its degree bound".into());
     }
-    let gam = tr.chal(nrows);
+    let gam = tr.chal(e * nrows);
     tr.absorb(|h| {
-        h.s("lig-w").list(w);
+        h.s("lig-w");
+        for x in &w {
+            h.list(x);
+        }
     });
     let mut cnt = Counter { n: 0, rhs: Vec::new() };
     sys.emit(&mut cnt);
-    let rr = tr.chal(cnt.n);
-    let lhs = pp.zeta.iter().fold(0u64, |a, &z| field::add(a, peval(q, z)));
-    let rhs = field::dot(&rr, &cnt.rhs);
-    if lhs != rhs {
-        return Err("Ligero linear test: the constraints do not hold".into());
+    let rr = tr.chal(e * cnt.n);
+    for kk in 0..e {
+        let lhs = pp.zeta.iter().fold(0u64, |a, &z| field::add(a, peval(&q[kk], z)));
+        if lhs != field::dot(&comp(&rr, e, kk), &cnt.rhs) {
+            return Err("Ligero linear test: the constraints do not hold".into());
+        }
     }
-    let alpha = alpha_of(sys, &rr, nrows, k);
-    let rp: Vec<Option<Vec<u64>>> =
-        alpha.par_iter().map(|a| if a.iter().any(|&x| x != 0) { Some(pp.interp_z(a)) } else { None }).collect();
+    let alpha = alpha_of(sys, &rr, nrows, k, e);
+    let rp: Vec<Vec<Option<Vec<u64>>>> = alpha
+        .iter()
+        .map(|al| al.par_iter().map(|a| if a.iter().any(|&x| x != 0) { Some(pp.interp_z(a)) } else { None }).collect())
+        .collect();
     tr.absorb(|h| {
-        h.s("lig-q").list(q);
+        h.s("lig-q");
+        for x in &q {
+            h.list(x);
+        }
     });
-    let rho = tr.chal(quad.len());
-    if pp.zeta.iter().any(|&z| peval(pq, z) != 0) {
+    let rho = tr.chal(e * quad.len());
+    if pq.iter().any(|x| pp.zeta.iter().any(|&z| peval(x, z) != 0)) {
         return Err("Ligero quadratic test: a product gate does not hold".into());
     }
     tr.absorb(|h| {
-        h.s("lig-p").list(pq);
+        h.s("lig-p");
+        for x in &pq {
+            h.list(x);
+        }
     });
     let jj = tr.distinct_cols(pp.tt, pp.npts);
     if !msg.j.is_empty() && msg.j != jj {
@@ -580,14 +655,16 @@ pub fn verify(
         return Err("Ligero: wrong number of column groups".into());
     }
     let mut sizes = group_sizes.to_vec();
-    sizes.push(3);
+    sizes.push(3 * e);
+    let gamc: Vec<Vec<u64>> = (0..e).map(|kk| comp(&gam, e, kk)).collect();
+    let rhoc: Vec<Vec<u64>> = (0..e).map(|kk| comp(&rho, e, kk)).collect();
     let fails: Vec<Option<String>> = jj
         .par_iter()
         .enumerate()
         .map(|(t_, &j)| {
             let x = (j + 1) as u64;
             let mut colsum: Vec<u64> = Vec::with_capacity(nrows);
-            let mut msum = vec![0u64; 3];
+            let mut msum = vec![0u64; 3 * e];
             for g in 0..sizes.len() {
                 let rts = if g < group_roots.len() { &group_roots[g] } else { &mask_roots.to_vec() };
                 let mut s = vec![0u64; sizes[g]];
@@ -606,25 +683,25 @@ pub fn verify(
                     msum = s;
                 }
             }
-            let prox = field::add(field::dot(&gam, &colsum), msum[0]);
-            if peval(w, x) != prox {
-                return Some("Ligero proximity test fails at an opened column".into());
-            }
-            let mut lin = msum[1];
-            for (r, rpr) in rp.iter().enumerate() {
-                if let Some(rpr) = rpr {
-                    lin = field::add(lin, field::mul(peval(rpr, x), colsum[r]));
+            let sq: Vec<u64> = quad.iter().map(|&(a, b, z)| field::sub(field::mul(colsum[a], colsum[b]), colsum[z])).collect();
+            for kk in 0..e {
+                let prox = field::add(field::dot(&gamc[kk], &colsum), msum[kk]);
+                if peval(&w[kk], x) != prox {
+                    return Some("Ligero proximity test fails at an opened column".into());
                 }
-            }
-            if peval(q, x) != lin {
-                return Some("Ligero linear test fails at an opened column".into());
-            }
-            let mut qd = msum[2];
-            for (&(a, b, z), &c) in quad.iter().zip(&rho) {
-                qd = field::add(qd, field::mul(c, field::sub(field::mul(colsum[a], colsum[b]), colsum[z])));
-            }
-            if peval(pq, x) != qd {
-                return Some("Ligero quadratic test fails at an opened column".into());
+                let mut lin = msum[e + kk];
+                for (r, rpr) in rp[kk].iter().enumerate() {
+                    if let Some(rpr) = rpr {
+                        lin = field::add(lin, field::mul(peval(rpr, x), colsum[r]));
+                    }
+                }
+                if peval(&q[kk], x) != lin {
+                    return Some("Ligero linear test fails at an opened column".into());
+                }
+                let qd = field::add(msum[2 * e + kk], field::dot(&rhoc[kk], &sq));
+                if peval(&pq[kk], x) != qd {
+                    return Some("Ligero quadratic test fails at an opened column".into());
+                }
             }
             None
         })

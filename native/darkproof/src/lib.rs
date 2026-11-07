@@ -1,6 +1,7 @@
 //! The dark-learning MPC fork's collaborative ZK proof and its untrusted-input verifier, natively.
 //! Reference: research/dark_learning_2026_11_06/ (cozk, cosnark, cosnark_zk, cosnark_gates, cosnark_gates_zk,
 //! proofwire, owner_sig). Every proof byte equals the harness's for the same seed (`rng::Det`).
+pub mod ext;
 pub mod field;
 pub mod h;
 pub mod handover;
@@ -61,6 +62,8 @@ pub struct Profile {
     pub split: Split,
     /// every tree's openings as one multiproof (proofwire MERKLE "multi"), or one path per column ("paths")
     pub multiproof: bool,
+    /// the challenges' field F_{p^ext} (proofwire EXT; cosnark_ext): 1, or 2 for the "-x2" profiles
+    pub ext: usize,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -92,6 +95,7 @@ impl Profile {
             domain: Domain::Coset,
             split: Split::Balanced,
             multiproof: true,
+            ext: 1,
         }
     }
     pub fn demo() -> Self {
@@ -110,6 +114,7 @@ impl Profile {
             domain: Domain::Coset,
             split: Split::Balanced,
             multiproof: true,
+            ext: 1,
         }
     }
     pub fn by_name(s: &str) -> Option<Self> {
@@ -122,11 +127,16 @@ impl Profile {
             "demo-sq" => Some(Profile { name: "demo-sq", k_l: 64, split: Split::Square, multiproof: false, ..Self::demo() }),
             "ledger-int" => Some(Profile { name: "ledger-int", domain: Domain::Int, k_l: 64, split: Split::Square, multiproof: false, ..Self::ledger() }),
             "demo-int" => Some(Profile { name: "demo-int", domain: Domain::Int, k_l: 64, split: Split::Square, multiproof: false, ..Self::demo() }),
+            // F_{p^2} challenges: two lives x two proximity masks (one per component)
+            "ledger-x2" => Some(Profile { name: "ledger-x2", nmask: 4, ext: 2, ..Self::ledger() }),
+            "demo-x2" => Some(Profile { name: "demo-x2", nmask: 4, ext: 2, ..Self::demo() }),
             _ => None,
         }
     }
     pub fn ligero(&self) -> ligero::LigParams {
-        ligero::LigParams::new(self.k_l, self.t_hide, self.t_open, self.blow)
+        let mut lp = ligero::LigParams::new(self.k_l, self.t_hide, self.t_open, self.blow);
+        lp.ext = self.ext;
+        lp
     }
 }
 

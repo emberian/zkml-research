@@ -240,7 +240,7 @@ pub fn make_bundle(
                 for k in spine::MAT {
                     wires.remove(k); // the matrices are committed; the middle needs only the vectors
                 }
-                assert_eq!(sp.triples as usize, spine::beaver_count(d), "spine Beaver count");
+                assert_eq!(sp.triples as usize, spine::beaver_count_e(d, o.lp.ext), "spine Beaver count");
                 let child: BTreeMap<String, PcsParty> = [("W1", "W1n"), ("W2", "W2n")]
                     .iter()
                     .map(|(c, k)| (c.to_string(), so.coms.remove(*k).unwrap()))
@@ -269,7 +269,7 @@ pub fn make_bundle(
                     cst_patch: patch_ref,
                 };
                 let mo = middle::prove(&mi, &mut *net, &mut sp, spine_coms, oy_i)?;
-                assert_eq!(sp.triples as usize, spine::beaver_count(d) + rec.proof_products() + middle::beaver_count(rec.had.len()), "middle Beaver count");
+                assert_eq!(sp.triples as usize, spine::beaver_count_e(d, o.lp.ext) + rec.proof_products() + middle::beaver_count_e(rec.had.len(), o.lp.ext), "middle Beaver count");
                 Ok((so, mo, child, carried))
             }));
         }
@@ -292,8 +292,8 @@ pub fn make_bundle(
         let sr = sum_rows(parts.iter().map(|p| &p.0.lig_rows).collect());
         let mr = sum_rows(parts.iter().map(|p| &p.1.lig_rows).collect());
         (
-            crate::ligero::first_violated(&sr, &parts[0].0.sys, &parts[0].0.quad),
-            crate::ligero::first_violated(&mr, &parts[0].1.sys, &parts[0].1.quad),
+            crate::ligero::first_violated(&sr, &*parts[0].0.sys, &parts[0].0.quad),
+            crate::ligero::first_violated(&mr, &*parts[0].1.sys, &parts[0].1.quad),
         )
     } else {
         (None, None)

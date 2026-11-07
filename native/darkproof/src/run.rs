@@ -4,8 +4,9 @@
 //!
 //! Inputs come from the custodian's own step (darkstep::step::ProofRecord plus W1n, W2n) and its own preprocessing
 //! tape: the proof section holds `tape_triples(..)` authenticated Beaver triples, consumed in this order:
-//!   [spine Beaver products: spine::beaver_count(d)] [middle Beaver products: middle::beaver_count(n_had)]
-//!   [spine Ligero: LigParty::tape_triples(lp, spine::LIG_SCALARS, 1)] [middle Ligero: (.., middle::LIG_SCALARS, 1)]
+//!   [spine Beaver products: spine::beaver_count_e(d, ext)] [middle Beaver products: middle::beaver_count_e(n_had, ext)]
+//!   [spine Ligero: LigParty::tape_triples(lp, spine::lig_scalars(ext), 1)] [middle Ligero: (.., middle::lig_scalars(ext), 1)]
+//! with ext = lp.ext, the challenges' field (cosnark_ext; the products' structural lengths set the counts).
 //! No dealer stream is consulted. PCS tails, masks, salts and Ligero randomness are each party's own secret stream.
 use crate::h::Hash;
 use crate::ligero::{LigParams, LigParty};
@@ -116,11 +117,13 @@ pub fn step_section(lp: &LigParams, d: usize, prm: StepParams, carried: bool, ta
 
 /// Triples one custodian's tape must hold in its proof section for one step (without proved bounds; with them use
 /// step_section).
+/// Counts follow the challenges' field (lp.ext): the products' structural lengths (spine::beaver_count_e,
+/// middle::beaver_count_e) and the Ligeros' plain products (lig_scalars).
 pub fn tape_triples(lp: &LigParams, d: usize, n_had: usize) -> usize {
-    spine::beaver_count(d)
-        + middle::beaver_count(n_had)
-        + LigParty::tape_triples(lp, spine::LIG_SCALARS, 1)
-        + LigParty::tape_triples(lp, middle::LIG_SCALARS, 1)
+    spine::beaver_count_e(d, lp.ext)
+        + middle::beaver_count_e(n_had, lp.ext)
+        + LigParty::tape_triples(lp, spine::lig_scalars(lp.ext), 1)
+        + LigParty::tape_triples(lp, middle::lig_scalars(lp.ext), 1)
 }
 
 /// The proof of step ctx by custodian st.i. carry: this party's previous child commitments (None at genesis: W1, W2
@@ -156,11 +159,11 @@ pub fn prove_step(
         return Err("own transcript is longer than the step program".into());
     }
     st.atoms = rec.witness_atoms(&st.atoms).map_err(|e| format!("middle: {e}"))?;
-    let nb = spine::beaver_count(d) + rec.proof_products() + middle::beaver_count(rec.had.len());
+    let nb = spine::beaver_count_e(d, lp.ext) + rec.proof_products() + middle::beaver_count_e(rec.had.len(), lp.ext);
     let (ls, lm) = if det.on() {
         (0, 0)
     } else {
-        (LigParty::tape_triples(lp, spine::LIG_SCALARS, 1), LigParty::tape_triples(lp, middle::LIG_SCALARS, 1))
+        (LigParty::tape_triples(lp, spine::lig_scalars(lp.ext), 1), LigParty::tape_triples(lp, middle::lig_scalars(lp.ext), 1))
     };
     if st.triples.len() != nb + ls + lm {
         return Err(format!("the tape's proof section has {} triples, the proof needs {}", st.triples.len(), nb + ls + lm));
@@ -357,7 +360,7 @@ pub struct Policy {
 
 /// Triples one custodian's tape must hold for the release proof.
 pub fn release_triples(lp: &LigParams, n_had: usize) -> usize {
-    middle::beaver_count(n_had) + LigParty::tape_triples(lp, middle::LIG_SCALARS, 1)
+    middle::beaver_count_e(n_had, lp.ext) + LigParty::tape_triples(lp, middle::lig_scalars(lp.ext), 1)
 }
 
 /// The release proof by custodian st.i: ctx = (model, epoch, head step); head: this party's carried commitments of
@@ -388,8 +391,8 @@ pub fn prove_release(
     }
     st.atoms = rec.witness_atoms(&st.atoms).map_err(|e| format!("release: {e}"))?;
     let det = st.det;
-    let nb = rec.proof_products() + middle::beaver_count(rec.had.len());
-    let lm = if det.on() { 0 } else { LigParty::tape_triples(lp, middle::LIG_SCALARS, 1) };
+    let nb = rec.proof_products() + middle::beaver_count_e(rec.had.len(), lp.ext);
+    let lm = if det.on() { 0 } else { LigParty::tape_triples(lp, middle::lig_scalars(lp.ext), 1) };
     if st.triples.len() != nb + lm {
         return Err(format!("the tape's release section has {} triples, the proof needs {}", st.triples.len(), nb + lm));
     }
