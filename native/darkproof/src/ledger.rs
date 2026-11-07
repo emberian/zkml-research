@@ -90,6 +90,11 @@ pub struct Ledger {
     /// the mind's release was accepted: the head's commitments have no life left, so the ledger takes no further
     /// step or rotation
     pub released: Option<(u64, u64)>,
+    /// the genesis record's roots
+    pub genesis_roots: BTreeMap<String, Vec<Hash>>,
+    /// public genesis (program.pg): the roots this process recomputed from the cfg (check_public_genesis). Until
+    /// they equal the genesis record's, the ledger accepts nothing (fail closed).
+    pg_verified: Option<BTreeMap<String, Vec<Hash>>>,
 }
 
 pub struct Genesis {
@@ -133,7 +138,14 @@ impl Ledger {
                     (false, false) => "",
                 };
                 let ext = if (p.r3, p.t_lo) != (0, -128) { format!(", \"R3\": {}, \"T_LO\": {}", p.r3, p.t_lo) } else { String::new() };
-                format!(", \"program\": {{\"S1\": {}, \"K1\": {}, \"S2\": {}, \"K2\": {}, \"S3\": {}, \"K3\": {}{}{}}}", p.s1, p.k1, p.s2, p.k2, p.s3, p.k3, ext, he)
+                let mut more = String::new();
+                if p.lb {
+                    more.push_str(", \"LB\": true");
+                }
+                if let Some(h) = p.pg {
+                    more.push_str(&format!(", \"PG\": \"{}\"", crate::h::hex(&h)));
+                }
+                format!(", \"program\": {{\"S1\": {}, \"K1\": {}, \"S2\": {}, \"K2\": {}, \"S3\": {}, \"K3\": {}{}{}{}}}", p.s1, p.k1, p.s2, p.k2, p.s3, p.k3, ext, he, more)
             };
             let line = format!(
                 "{{\"kind\": \"genesis\", \"model\": {}, \"d\": {}, \"params\": {}, \"owner_pk\": {}, \"custodians\": {}, \"roots\": {}{}}}",
@@ -161,6 +173,8 @@ impl Ledger {
             next_leaf: 0,
             custodians: vec![],
             released: None,
+            genesis_roots: BTreeMap::new(),
+            pg_verified: None,
         };
         l.reload()?;
         Ok(l)
@@ -209,6 +223,9 @@ impl Ledger {
                     None => false,
                     Some(Value::Bool(b)) => *b,
                     Some(_) => return Err("genesis program: LB must be a boolean".into()),
+                }, pg: match p.get("PG") {
+                    None => None,
+                    Some(v) => Some(v.as_str().and_then(unhex32).ok_or("genesis program: PG must be a sha256 hex")?),
                 } }
             }
         };
@@ -217,6 +234,7 @@ impl Ledger {
         self.epoch = 0;
         self.step = 0;
         self.parent = roots_of(&g["roots"])?;
+        self.genesis_roots = self.parent.clone();
         self.next_leaf = 0;
         self.released = None;
         self.custodians =
@@ -331,6 +349,7 @@ impl Ledger {
     pub fn release(&mut self, lp: &LigParams, blob: &[u8], pol: &crate::run::Policy) -> Result<(usize, u64), String> {
         let _l = self.lock()?;
         self.reload()?;
+        self.pg_gate()?;
         if self.released.is_some() {
             return Err("the ledger is released: no further release".into());
         }
@@ -353,9 +372,40 @@ impl Ledger {
         Ok((m, c))
     }
 
+    /// Public genesis: check the genesis record against the cfg json it pins (program.pg = sha256 of the bytes).
+    /// W = darktrain::init(cfg) is recomputed here and committed with public coins (run::public_genesis_roots); the
+    /// record's roots must equal them. Until this succeeds the ledger accepts no step and no release.
+    #[cfg(feature = "tcp")]
+    pub fn check_public_genesis(&mut self, cfg_json: &[u8]) -> Result<(), String> {
+        use sha2::{Digest, Sha256};
+        let want = self.program.pg.ok_or("public genesis refused: the genesis program pins no PG")?;
+        let got: [u8; 32] = Sha256::digest(cfg_json).into();
+        if got != want {
+            return Err("public genesis refused: the cfg is not the one the genesis record pins".into());
+        }
+        let (d, w1, w2) = crate::run::public_weights(cfg_json)?;
+        if d != self.d {
+            return Err(format!("public genesis refused: the cfg's d = {d}, the ledger's {}", self.d));
+        }
+        let roots = crate::run::public_genesis_roots(&self.pr, d, &w1, &w2, 3);
+        if roots != self.genesis_roots {
+            return Err("public genesis refused: the genesis roots are not the public commitment of the cfg's W".into());
+        }
+        self.pg_verified = Some(roots);
+        Ok(())
+    }
+
+    fn pg_gate(&self) -> Result<(), String> {
+        if self.program.pg.is_some() && self.pg_verified.as_ref() != Some(&self.genesis_roots) {
+            return Err("public genesis not checked against its cfg (check_public_genesis): nothing accepted".into());
+        }
+        Ok(())
+    }
+
     pub fn accept(&mut self, lp: &LigParams, blob: &[u8], tables: &(Vec<u64>, Vec<u64>)) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
+        self.pg_gate()?;
         if self.released.is_some() {
             return Err("the ledger is released: no further steps".into());
         }

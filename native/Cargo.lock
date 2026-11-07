@@ -117,6 +117,7 @@ name = "darkproof"
 version = "0.1.0"
 dependencies = [
  "darkstep",
+ "darktrain",
  "getrandom",
  "pycompat",
  "rayon",

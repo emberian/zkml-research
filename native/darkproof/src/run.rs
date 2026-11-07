@@ -17,7 +17,7 @@ use crate::spdz::{Sh, Spdz, Triple};
 use crate::spine;
 use crate::step::{self, StepParams};
 use crate::wire;
-use crate::{Ctx, Profile};
+use crate::{field, Ctx, Profile};
 use std::collections::BTreeMap;
 
 /// One custodian's inputs for the proof of one step.
@@ -51,6 +51,54 @@ pub struct StepProof {
     pub secs: f64,
     /// field elements this party sent during the proof
     pub sent: u64,
+}
+
+/// Public genesis (StepParams.pg): the public initial weights W1, W2 (d x d, row-major, integers) enter custody as a
+/// public constant (custodian 0's share W, the others' 0), committed with PUBLIC coins (PcsParty::commit_public), so
+/// every custodian and every verifier computes the same commitments. Returns custodian `i`'s carry (its W1, W2
+/// commitments: step 1's parent, at their second life like any carried step's) and every custodian's roots (the
+/// genesis record's). Equal shares commit equally, so this is two d^2 commitments whatever n.
+pub fn public_genesis(pr: &Profile, d: usize, i: usize, w1: &[i64], w2: &[i64], n: usize) -> (BTreeMap<String, PcsParty>, BTreeMap<String, Vec<Hash>>) {
+    let (coms, roots) = public_commit(pr, d, w1, w2, n, Some(i));
+    (coms.unwrap(), roots)
+}
+
+/// The roots of public_genesis alone (the verifier's side).
+pub fn public_genesis_roots(pr: &Profile, d: usize, w1: &[i64], w2: &[i64], n: usize) -> BTreeMap<String, Vec<Hash>> {
+    public_commit(pr, d, w1, w2, n, None).1
+}
+
+fn public_commit(
+    pr: &Profile,
+    d: usize,
+    w1: &[i64],
+    w2: &[i64],
+    n: usize,
+    me: Option<usize>,
+) -> (Option<BTreeMap<String, PcsParty>>, BTreeMap<String, Vec<Hash>>) {
+    assert!(w1.len() == d * d && w2.len() == d * d, "public genesis: W must be d x d");
+    let zero = PcsParty::commit_public(pr, &vec![0u64; d * d], "zero");
+    let mut coms = BTreeMap::new();
+    let mut roots = BTreeMap::new();
+    for (k, w) in [("W1", w1), ("W2", w2)] {
+        let share: Vec<u64> = w.iter().map(|&v| field::from_i64(v)).collect();
+        let c0 = if w.iter().all(|&v| v == 0) { zero.clone() } else { PcsParty::commit_public(pr, &share, k) };
+        roots.insert(k.to_string(), (0..n).map(|p| if p == 0 { c0.root } else { zero.root }).collect());
+        if let Some(i) = me {
+            let mut c = if i == 0 { c0 } else { zero.clone() };
+            c.label = k.to_string();
+            coms.insert(k.to_string(), c);
+        }
+    }
+    (me.map(|_| coms), roots)
+}
+
+/// The public initial weights pinned by a darktrain cfg json: (d, W1, W2) = darktrain::init(cfg).
+#[cfg(feature = "tcp")]
+pub fn public_weights(cfg_json: &[u8]) -> Result<(usize, Vec<i64>, Vec<i64>), String> {
+    let c: darktrain::Cfg = serde_json::from_slice(cfg_json).map_err(|e| format!("public genesis cfg: {e}"))?;
+    let (w1, w2) = darktrain::init(&c);
+    Ok((c.d, w1, w2))
 }
 
 /// Hadamard rows of the middle for width d under program prm (data-independent: a replay on a zero transcript).
@@ -125,6 +173,7 @@ pub fn prove_step(
     let mut genesis_roots = None;
     let carry = match carry {
         Some(c) => c,
+        None if prm.pg.is_some() => return Err("public genesis: step 1 takes run::public_genesis's carry".into()),
         None => {
             let g: BTreeMap<String, PcsParty> = ["W1", "W2"]
                 .iter()

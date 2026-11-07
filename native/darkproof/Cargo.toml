@@ -11,10 +11,12 @@ rayon = "1.10"
 serde_json = "1"
 getrandom = "0.2"
 darkstep = { path = "../darkstep", optional = true }
+# the public genesis's weights (darktrain::init of the pinned cfg), recomputed by the ledger
+darktrain = { path = "../darktrain", optional = true }
 
 [features]
 # the proof over darkstep's custodian sockets (tag net::PROOF)
-tcp = ["dep:darkstep"]
+tcp = ["dep:darkstep", "dep:darktrain"]
 # TEST ONLY: the deterministic hook (Det seeds, bit-exact with the harness's DL_DETERMINISTIC). Without it every secret
 # coin is drawn from the OS CSPRNG whatever Det says.
 test-det = []
