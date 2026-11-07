@@ -133,7 +133,10 @@ Plumbing:
 
 ## 4. Release policy and evaluation (`train_eval.py`; sent to the proof lane)
 
-- **What leaves custody:** one integer C, the number of the first M = 64 official test images (t10k indices 0..63, public, with their labels) that the custodied model classifies strictly correctly.
+- **What leaves custody:** one integer C, the number of the first M = 52 official test images (t10k indices 0..51, public, with their labels) that the custodied model classifies strictly correctly.
+  - Repinned from 64 to 52 (coordinator's decision): 64 padded the release proof to 2^26 rows, beyond forge's 12 GB per custodian; 52 fits 2^25.
+  - The route back to 64 (two proofs with a deferred opening) comes later.
+  - Genesis digest: sha256(train_genesis_gen6.json) = e3380572deaf4fdf088c35ce593df50c64f8147756d03483a8210be1d225c43b (`train_check.py genesis` prints it and checks eval_n = release.M = train_eval.RELEASE_M).
 - Never released: the weights, the scores, or per-example predictions.
 - The evaluation, per public example:
   - z1 = W1 x is local on shares, since x is public;
@@ -144,10 +147,10 @@ Plumbing:
   - ok = prod (1 + q_k), 8 products.
 - C = sum ok, then a single opening.
 - The comparison is the existing truncation gate with s = K, so the proof needs no new gate type.
-- The proof lane prices it at ~150 s of proof per example, so M = 64 is ~2.7 h per custodian, batched into one proof.
+- The proof lane prices it at ~150 s of proof per example, so M = 52 is ~2.2 h per custodian, batched into one proof.
 - **Check:** the run is bit-exact, so the released C must EQUAL the plaintext twin's.
-  - `darktrain shadow '<genesis + seed_order>' STEPS 64` prints it, with the weight digest the revealed weights must match (tests only).
-  - Order 2: C = 50 / 55 / 57 of 64 after 500 / 1000 / 2000 steps.
+  - `darktrain shadow '<genesis + seed_order>' STEPS` prints it (M from the genesis), with the weight digest the revealed weights must match (tests only).
+  - Order 2: C = 43 / 46 / 47 of 52 after 500 / 1000 / 2000 steps (weight digest at 2000: 791ca2ff…).
 - **Input feed (deploy lane):** `darktrain feed '<genesis + seed_order>' START COUNT` prints one JSON line {t, k, x, y} per step.
   - The genesis weights go in once (darktrain::init).
   - Later steps input only x, y.
@@ -155,7 +158,7 @@ Plumbing:
 ## 5. Open, for ember
 
 - [OPEN] The run length: 2000 steps, the knee above, or fewer.
-- [OPEN] Releasing per-example predictions on the 64 (b) instead of the count (c) would let a verifier recompute accuracy itself, at 64 x log2(10) bits of leakage against ~6.
+- [OPEN] Releasing per-example predictions on the 52 (b) instead of the count (c) would let a verifier recompute accuracy itself, at 52 x log2(10) bits of leakage against ~6.
 - [OPEN] The bound margins (x1.5 on e, x1.6 on z2) are empirical for this data stream. A violation in deployment would silently break the truncation's correctness and masking. An in-MPC range check would make them enforced; it is not built.
 
 ## Review

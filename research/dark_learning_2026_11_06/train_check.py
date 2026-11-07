@@ -75,7 +75,10 @@ def genesis(path):
     rel_ok = {k: list(v) for k, v in rel.items()} == g["intervals"]["release"]
     print(dict(genesis=path, program=O.program(g).as_dict(), equals_GEN6=ok, control_equal=bad, intervals_ok=iv_ok,
                release_intervals_ok=rel_ok))
-    assert ok and not bad and iv_ok and rel_ok
+    m_ok = g["eval_n"] == g["release"]["M"] == TE.RELEASE_M
+    import hashlib
+    print(dict(release_M=g["release"]["M"], m_ok=m_ok, genesis_sha256=hashlib.sha256(open(path, "rb").read()).hexdigest()))
+    assert ok and not bad and iv_ok and rel_ok and m_ok
 
 
 if __name__ == "__main__":

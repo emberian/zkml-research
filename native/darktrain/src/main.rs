@@ -1,7 +1,7 @@
 //! darktrain run '<cfg json>'   : integer training, one JSON line per eval point, then a summary line
 //! darktrain float '<cfg json>' : the float baseline of the same architecture
 //! darktrain feed '<cfg json>' START COUNT : the data owner's step inputs, one JSON line per step {t, k, x, y}
-//! darktrain shadow '<cfg json>' STEPS N_EVAL : the plaintext shadow of a custody run: train STEPS steps, then the
+//! darktrain shadow '<cfg json>' STEPS [N_EVAL] : (N_EVAL defaults to the genesis's eval_n, the release's M) the plaintext shadow of a custody run: train STEPS steps, then the
 //!     custodians' evaluation (the count of strictly correct predictions on test examples 0..N_EVAL) and the weight
 //!     digest sha256(repr((W1, W2))) the custody run's revealed weights must equal (tests only: custody never reveals)
 use darktrain::*;
@@ -33,7 +33,7 @@ fn main() {
             }
         }
         "shadow" => {
-            let (steps, ne): (usize, usize) = (a[3].parse().unwrap(), a[4].parse().unwrap());
+            let (steps, ne): (usize, usize) = (a[3].parse().unwrap(), a.get(4).map(|s| s.parse().unwrap()).unwrap_or(c.eval_n));
             let mut c2 = c.clone();
             c2.steps = steps;
             c2.evals = vec![];
