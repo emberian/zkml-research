@@ -66,3 +66,19 @@ fn keyring_survives_the_process_and_destroy_erases_it() {
     child(false);
     std::fs::remove_file(&f).unwrap();
 }
+
+#[cfg(target_os = "linux")]
+#[test]
+fn an_expired_file_key_fails_closed() {
+    let mut fp = [0u8; 8];
+    getrandom::getrandom(&mut fp).unwrap();
+    let name = key_name("test-expiry", 0, 1, &pycompat::repr::hex(&fp));
+    let v = Vault::create(&name, true).unwrap();
+    assert!(Vault::load(&name).is_ok(), "control: before the timeout the key loads");
+    v.expire_after_for_test(1).unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(2500));
+    let e = Vault::load(&name).err().expect("a resume after the expiry must fail");
+    println!("{e}");
+    assert!(e.contains("EXPIRED") || e.contains("no file key"), "{e}");
+    println!("persistent keyring expiry: {:?} s", Vault::persistent_keyring_expiry());
+}

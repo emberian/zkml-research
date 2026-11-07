@@ -538,7 +538,17 @@ The coordinator's additions: in-place overwrites are not erasure on ZFS or SSDs,
   reaches a disk.
 - **Bounds** [DERIVED]:
   - a reboot loses K, so a reboot erases the files: a run cannot resume across a reboot;
-  - the persistent keyring expires after kernel.keys.persistent_keyring_expiry of disuse (3 days by default);
+  - the persistent keyring expires after kernel.keys.persistent_keyring_expiry seconds of disuse (259,200 s = 3
+    days on forge and bb2). **Policy:** every access resets that timer. `Vault::seal_to` refreshes it on every
+    checkpoint (each step), and `Vault::load` refreshes it on every resume. So the key is lost only by a pause with no
+    step and no resume for more than 3 days. Forge's nightly pause is 1 hour. A seat that does pause longer fails
+    closed at its resume:
+    - `load` reports "the file key EXPIRED ... unrecoverable, fail closed" (EKEYEXPIRED), or "no file key ...
+      expired with its keyring";
+    - it never runs on a missing key.
+    `tests/vault.rs an_expired_file_key_fails_closed` (bb2) simulates the expiry with KEYCTL_SET_TIMEOUT 1 s: the
+    load before it succeeds (control), and the load after it fails with the EXPIRED message. A run that must pause
+    longer raises the sysctl first (root);
   - neither forge nor bb2 has swap (SwapTotal 0). Check hbox's swap before routing a seat there;
   - two seats under one uid on one box (the development layouts on bb2) can read each other's K. The deployment is
     one custodian per machine (or per uid).
