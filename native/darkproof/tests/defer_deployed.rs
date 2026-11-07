@@ -141,3 +141,32 @@ fn three_steps_then_the_closing_proof() {
     assert!(s.contains("a release after the close: Err"), "{s}");
     assert!(s.contains("DS-CHAIN CLOSE PASS"), "{s}");
 }
+
+fn mnist() -> String {
+    // the repo's MNIST (untracked data), or DL_MNIST=<dir>
+    let m = std::env::var("DL_MNIST").map(std::path::PathBuf::from).unwrap_or_else(|_| std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../research/dark_learning_2026_11_06/data/mnist"));
+    assert!(m.join("t10k-images-idx3-ubyte").exists(), "MNIST is expected at {} (or set DL_MNIST)", m.display());
+    m.to_str().unwrap().to_string()
+}
+
+/// The release's test set is the owner's encoder over t10k 0..M-1 (run::mnist_policy), bound to the pinned cfg
+/// (Ledger::release_checked): a policy with one x entry changed is refused by the digest check, the cfg's own is
+/// accepted and discharges the head.
+#[test]
+fn the_release_policy_is_the_pinned_cfgs_encoding() {
+    let m = mnist();
+    let (ok, s) = ds_chain_run("3", &[("DP_MNIST", m.as_str())]);
+    assert!(ok, "ds-chain failed:\n{s}");
+    assert!(s.contains(r#"a release whose policy has one x entry changed: Err("release refused: the policy is not the pinned cfg's encoding of t10k 0..M-1")"#), "{s}");
+    assert!(s.contains("ledger accepts the release: Ok((4, "), "{s}");
+    assert!(s.contains(r#"3: "final (the release opened its child)""#), "{s}");
+}
+
+/// A release forced past the range check (DP_IGNORE_RANGE, TEST ONLY) over an out-of-domain set: proved, and refused
+/// by the ledger (its count, or its proof).
+#[test]
+fn a_forced_out_of_range_release_is_refused_by_the_ledger() {
+    let (ok, s) = ds_chain_run("3", &[("DP_XWIDE", "10000"), ("DP_IGNORE_RANGE", "1")]);
+    assert!(!ok, "the forced release was accepted:\n{s}");
+    assert!(s.contains("ledger accepts the release: Err("), "{s}");
+}

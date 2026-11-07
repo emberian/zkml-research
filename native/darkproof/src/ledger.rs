@@ -507,6 +507,31 @@ impl Ledger {
         Ok((m, c))
     }
 
+    /// The release with its policy bound to the data owner's encoder: when the genesis pins a public-genesis cfg
+    /// (program.pg), the release's test set must be exactly run::mnist_policy(cfg, MNIST, M), the cfg's encoder over
+    /// t10k 0..M-1 (|x| <= 7), never a separate draw. cfg_json must be the pinned cfg; the policy's digest must equal
+    /// the recomputed one's (policy_digest). Then as release. The deployed run calls this.
+    #[cfg(feature = "tcp")]
+    pub fn release_checked(
+        &mut self,
+        lp: &LigParams,
+        blob: &[u8],
+        pol: &crate::run::Policy,
+        cfg_json: &[u8],
+        mnist_dir: &Path,
+    ) -> Result<(usize, u64), String> {
+        let want = self.program.pg.ok_or("release refused: the genesis pins no public-genesis cfg to bind the policy to")?;
+        let got: [u8; 32] = Sha256::digest(cfg_json).into();
+        if got != want {
+            return Err("release refused: the cfg is not the one the genesis record pins".into());
+        }
+        let own = crate::run::mnist_policy(cfg_json, mnist_dir, pol.labels.len())?;
+        if policy_digest(&own) != policy_digest(pol) {
+            return Err("release refused: the policy is not the pinned cfg's encoding of t10k 0..M-1".into());
+        }
+        self.release(lp, blob, pol)
+    }
+
     /// Public genesis: check the genesis record against the cfg json it pins (program.pg = sha256 of the bytes).
     /// W = darktrain::init(cfg) is recomputed here and committed with public coins (run::public_genesis_roots); the
     /// record's roots must equal them. Until this succeeds the ledger accepts no step and no release.
