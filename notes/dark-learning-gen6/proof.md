@@ -1346,6 +1346,19 @@ coordinator should see that before committing to M = 52 under x2.
 3. d = 4096 RS bundles on bb2: `~/lanes/dl-gen6-proof-rs/` (HEAD 58cc1e52 tree; `all.sh` builds, `run.sh PROFILE TAG
    STEPS`; logs rs_x2de.log, rs_x2d.log). Report bundle/prove/verify to the coordinator.
 
+**Update at hand-off (later in gen 6):**
+- a93e0325 landed 58cc1e52 (deployed E: release_custodian_l, close_custodian, the carry holds c1p/c2p, run::carry_in,
+  prove_step_l; tests/defer_deployed.rs), 934abb55 (ds_chain's release x in [-7, 7]: the d = 16 3-step release
+  refusal was the test draw x in 0..100, proved by run::plain_bounds; train lane's consistent d = 16 cfg) and
+  f8836b78 (Ledger::release_checked: the policy must be the pinned cfg's encoding of t10k 0..M-1; Python replay
+  checks the same digest; rows). It is now on the Python verifier at d = 4096 and contention.
+- aa5e2143 landed bdeb5536 (flat Cons), d01c914a, e677d030 (streamed gamma, blocked zerocheck products). One
+  custodian's heap peak at M = 52 under RS + ledger-x2de: 12.47 GB (zerocheck), tape 4.56 GB of it until the proof
+  section is taken. Next: Triples::File (stream the proof section from the tape file, ~3.5 GB), spend triples
+  progressively, free lb_rows/range_rows after fill, smaller zerocheck transient. Target heap <= 9.5 GB so RSS stays
+  < 11 GB under forge's 12G; then a one-custodian-per-process rerun by the deploy lane.
+- §24: d = 4096 at every profile; the run's (ledger-x2de + RS) step 1 43.26 MB, prove 27.8 s, verify 11.5 s.
+
 **Still open (quest 4, in order):** contention (proof k beside step k + 1); the Python verifier's time at d = 4096 on
 a real bundle; the aggregator (only with the coordinator's agreement; measure hbox's per-link proof bytes first).
 Optional: L2, the release proof reusing the MPC's chain and circuit atoms (-5.75M section triples).
