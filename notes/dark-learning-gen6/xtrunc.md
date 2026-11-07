@@ -301,3 +301,31 @@ Run-side changes (b1a485f8):
   every replica, the genesis pins XT, and the weights equal the twin.
 
 Still to do: the prep streams A and B were waiting on the key setups and must be restarted to pick up the new script.
+
+## Continuation (XT lane, gen 6)
+
+- **State.** XT is built, tested and switched on for the run of record (991b29fd). What remains is the prep lane's
+  restart of `rec-stream.sh` A and B (PID files in `research/dark_learning_2026_11_06/runs/rec/prep/`).
+  - They were in their key-wait loops on the pre-XT script.
+  - If they are not restarted before lg64n (about 09:45 Nov 8) and lg64f (about 11:45 Nov 8), the chunks come out
+    statistical.
+  - That mismatches the custodians' `--xt` only in the public check: a statistical c is always >= 2^(K+1) with
+    overwhelming probability, so such a run works but is not XT.
+  - Check `events.log` and a chunk JSON's prog name containing `xt2305843009210515457`.
+- **Tests.**
+  - Python: `run_xtrunc.py 8`, `DL_DETERMINISTIC=7 run_xtrunc_proof.py demo-x2de [row]` (about 25 min per row).
+  - Native:
+    - darkstep `--test xt_reference`;
+    - darkstep `--features test-harness --test serve_xt`;
+    - darkproof `--features tcp --test xt_replay`;
+    - darkdeploy `--features test-harness --test xt_redo`;
+    - darkprep `--test assemble xt_plan`.
+  - Vectors: `scratchpad/dl-gen5/xt/vec/{xt,rs}`.
+- **bb2 lane dir** `~/lanes/dl-gen6-xt` (1.1 GB): the XT MP-SPDZ test runtime with a test LowGear key, and the
+  measurement runs. These are test-only and safe to delete. The r14 build is in the deploy roots (`ws14`,
+  `ws-target-r14`).
+- **Open.**
+  - run.py has no code-5 (REDO) handling.
+  - No spare chunk exists for rec.
+  - The privacy_budget.py gen6 terms with XT (truncs 0, objs +438,272 per step and +5,139,732 for the release) are
+    the coordinator's file: `scratchpad/dl-gen5/xt/budget_xt.py` has the numbers.
