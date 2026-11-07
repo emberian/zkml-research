@@ -1177,3 +1177,49 @@ recovery (`run.py resume` covers a release that failed after the last checkpoint
 bytes (collect's summary.json, the samplers, nightly.log) for the cost report.
 
 **Agents**: coordinator aa3209e8d10294bc2; prep a8fd625fd8dbd4f54; train ad36593ec00657538; proof aafff52532f04d20a.
+
+### Continuation addendum: launching rec from a cold start
+
+S = /private/tmp/claude-501/-Users-ember-dev-aidev/78fef112-a52f-425f-8503-f3fa24ff087c/scratchpad/dl-gen5/deploy2/runs,
+RUN = native/deploy/run.py (repo /Users/ember/dev/zkml-research). **Where things run**: `drive` runs on the Mac (it reaches
+the boxes over ssh; keep the Mac awake or run it under `caffeinate -i`); the custodians, the owner, the samplers and forge's
+nightly pauser run on the boxes and outlive drive. If drive dies, rerun the same drive command: it attaches to a launched
+run (it checks seat 0's serve0.pid) and carries on.
+
+**Readiness checks** (all must hold):
+1. LowGear pause test: prep's report (prep.md, "LowGear pause") says the party was SIGSTOPped >= 5 min and the chunk verifies.
+2. Chunks complete, per box (ROOT = /srv/lanes/dl-gen6-prep, /home/build/lanes/dl-gen6-prep, /othersys/lanes/dl-gen6-prep; I = 0, 1, 2):
+   `for c in rec-c0 rec-c1 rec-c2 rec-c3 rec-ho rec-n-c0; do test -f ROOT/chunks/$c-PI/chunk-PI.json && echo ok $c || echo MISSING $c; done`
+   (rec-rel is NOT required at launch; drive waits for it before the release.) Also each first step-0 tape starts DLVAULT1:
+   `head -c 8 ROOT/chunks/rec-c0-PI/step-0/tape_I.bin`.
+3. The old key's runtime: `ls ROOT/rec-old<I>/mpspdz/Player-Data/` shows this seat's LowGear/Mascot secrets (else ask prep
+   for the runtime path and fix "--erase-runtime"/"--scan-extra" in rec.json's seats[I].extra).
+4. Keys: `ssh <box> <bin>/dl-hand vault-present <name>` exits 1 (present) for all six names in rec.json's seat dirs
+   (`cat <seat dir>/tls/vault.name`); bins: <root>/ws-target-r13/release.
+5. `python3 RUN S/rec.json check` (ports free; hbox reachable: `ssh hbox true`) and `python3 RUN S/rec.json gate` (no SystemExit).
+
+**Launch** (from /Users/ember/dev/zkml-research/native/deploy):
+    mkdir -p S/rec && nohup caffeinate -i python3 run.py S/rec.json drive > S/rec/drive.out 2>&1 < /dev/null & echo $! > S/rec/drive.pid
+Stop everything only by `python3 run.py S/rec.json stop` (PID files; it also stops forge's nightly pauser and SIGCONTs).
+
+**Where the results land**: S/rec/drive.log (events: launched, new committee started, steps done / release waiting / release
+launched, run ended, collected), S/rec/summary.json and S/rec/<proc>/ (collect: step_*.json, proof_*.json, handover_P*.json,
+join_P*.json, release_P*.json, logs, samplers). On the boxes: <root>/rec/seat<I>/ and new<J>/ (D/, <name>.log, <name>.mon),
+forge's /srv/lanes/dl-gen6-deploy/rec/nightly.log (every SIGSTOP / SIGCONT), the archive at forge's rec/seat0/archive and
+rec/new0/archive.
+
+**A pause or a stall?**
+- Pause: forge's nightly.log shows SIGSTOP at 10:00:0x and SIGCONT at 10:58:3x; during it forge's processes are state T
+  (`grep State /proc/$(cat <dir>/serveI.pid)/status`), the peers sleep with full send queues (`ss -tn`), the .mon files
+  on forge stop advancing, and every step json resumes after 10:58:30. Expected; do nothing.
+- Waiting for a chunk: a seat's log says the CTRL vote found preprocessing not ready; --tape-wait 7200 s, then an abort
+  ("preprocessing not ready ... (--tape-wait)") — none expected, since every step chunk exists at launch.
+- Waiting for the release tapes: drive.log "the release waits for its tapes" (expected until rec-rel lands, ~1 day).
+- A stall: outside 10:00-10:58:30, a live custodian whose .mon RSS/load and link byte counters (`ss -tin` bytes_acked)
+  do not move for > 15 min, or a log "link to party J: down for over ...: abort" (DS_RECONNECT_SECS 4500). drive logs
+  "stopped unexpectedly" and stops the run by PID file. Recovery: read the seat logs; a checkpoint exists after every
+  step, so `python3 RUN S/rec.json resume` continues (the step in progress needs fresh preprocessing for that step: ask
+  prep; spent tapes are single use). Report the cause and the recovery to the coordinator.
+
+**Twin check at the end**: `cd research/dark_learning_2026_11_06 && /Users/ember/dev/zkml-research/native/target-deploy2/release/darktrain shadow "$(cat train_genesis_gen6.json)" 8 52`
+gives the twin's C; it must equal release_P<I>.json "C" at all three new seats.
