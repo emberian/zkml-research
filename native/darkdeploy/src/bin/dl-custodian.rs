@@ -502,6 +502,15 @@ impl Prove {
                 files.push(q);
             }
         }
+        // the old key's files outside the tapes (its MP-SPDZ MAC-key and secrets files), retired with it
+        for (n, x) in args.iter().enumerate() {
+            if x == "--erase-extra" {
+                let f = PathBuf::from(&args[n + 1]);
+                if !files.contains(&f) {
+                    files.push(f);
+                }
+            }
+        }
         files.retain(|f| f.exists());
         for (n, x) in args.iter().enumerate() {
             if x == "--scan-extra" {
