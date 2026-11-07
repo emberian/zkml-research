@@ -35,6 +35,9 @@ pub struct PartyStep {
     pub atoms: Vec<Sh>,
     /// the tape's proof section (tape_triples(..) triples)
     pub triples: Vec<Triple>,
+    /// TEST ONLY: the deterministic hook (bit-exact with the harness). PCS and Ligero randomness come from it and the
+    /// Ligeros' triples from cozk's dealer stream, so the tape holds only the Beaver section.
+    pub det: Det,
 }
 
 pub struct StepProof {
@@ -81,7 +84,7 @@ pub fn prove_step(
     if net.me() != i || net.n() != n {
         return Err("transport is for another party or committee size".into());
     }
-    let det = Det(None);
+    let det = st.det;
     let carried = prm.carried(ctx.step);
     let rec = step::replay(&st.public, d, prm, tables, carried).map_err(|e| format!("own transcript: {e:?}"))?;
     if rec.tpos != st.public.len() {
@@ -91,8 +94,11 @@ pub fn prove_step(
         return Err(format!("{} middle atoms, the program has {}", st.atoms.len(), rec.n_prep()));
     }
     let nb = spine::beaver_count(d) + middle::beaver_count(rec.had.len());
-    let ls = LigParty::tape_triples(lp, spine::LIG_SCALARS, 1);
-    let lm = LigParty::tape_triples(lp, middle::LIG_SCALARS, 1);
+    let (ls, lm) = if det.on() {
+        (0, 0)
+    } else {
+        (LigParty::tape_triples(lp, spine::LIG_SCALARS, 1), LigParty::tape_triples(lp, middle::LIG_SCALARS, 1))
+    };
     if st.triples.len() != nb + ls + lm {
         return Err(format!("the tape's proof section has {} triples, the proof needs {}", st.triples.len(), nb + ls + lm));
     }
@@ -131,7 +137,7 @@ pub fn prove_step(
         det: &det,
         attack: None,
         lig_dealer: None,
-        lig_tape: Some(lig_s),
+        lig_tape: if det.on() { None } else { Some(lig_s) },
     };
     let mut so = spine::prove(&si, net, &mut sp, carry, None)?;
     for k in spine::MAT {
@@ -154,12 +160,59 @@ pub fn prove_step(
         ctx,
         det: &det,
         lig_dealer: None,
-        lig_tape: Some(lig_m),
+        lig_tape: if det.on() { None } else { Some(lig_m) },
         cst_patch: None,
     };
     let mo = middle::prove(&mi, net, &mut sp, spine_coms, None)?;
     let blob = wire::encode_step(pr, ctx, d, n, true, &so.proof, &st.public, &mo.proof, rec.n_prep(), rec.had.len(), None);
     Ok(StepProof { blob, child, genesis_roots, secs: t0.elapsed().as_secs_f64(), sent: net.sent() - sent0 })
+}
+
+/// One custodian's PartyStep from its darkstep step: the ProofRecord, W1n, W2n and the tape's proof section (the
+/// (Ta, Tb, Tc) entries after the step's cursor).
+#[cfg(feature = "tcp")]
+pub fn from_darkstep(
+    i: usize,
+    d: usize,
+    rec: &darkstep::step::ProofRecord,
+    w1n: &[Vec<darkstep::party::Sh>],
+    w2n: &[Vec<darkstep::party::Sh>],
+    tape: &darkstep::tape::Tape,
+    det: Det,
+) -> Result<PartyStep, String> {
+    use darkstep::tape::Tag;
+    let sh = |x: &darkstep::party::Sh| (x.s, x.m);
+    let mut wires: BTreeMap<String, Vec<Sh>> = rec.wires.iter().map(|(k, v)| (k.to_string(), v.iter().map(sh).collect())).collect();
+    wires.insert("W1n".into(), w1n.iter().flatten().map(sh).collect());
+    wires.insert("W2n".into(), w2n.iter().flatten().map(sh).collect());
+    let mut triples = Vec::new();
+    let mut k = rec.tape_cursor;
+    while k < tape.len() {
+        if k + 3 > tape.len() {
+            return Err("the tape's proof section ends inside a triple".into());
+        }
+        let tg = |j: usize| tape.tags[j];
+        if (tg(k), tg(k + 1), tg(k + 2)) != (Tag::Ta as u8, Tag::Tb as u8, Tag::Tc as u8) {
+            return Err(format!("the tape's proof section is not (Ta, Tb, Tc) triples at entry {k}"));
+        }
+        let e = |j: usize| (tape.sh[j], tape.mac[j]);
+        triples.push((e(k), e(k + 1), e(k + 2)));
+        k += 3;
+    }
+    if k != tape.len() {
+        return Err("the tape's proof section ends inside a triple".into());
+    }
+    Ok(PartyStep {
+        i,
+        n: 3,
+        d,
+        alpha_i: rec.alpha_i,
+        wires,
+        public: rec.public.clone(),
+        atoms: rec.middle_atoms.iter().map(sh).collect(),
+        triples,
+        det,
+    })
 }
 
 /// darkstep's custodian sockets by reference (the step's other tags keep running beside the proof's).

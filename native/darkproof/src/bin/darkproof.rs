@@ -33,6 +33,8 @@ fn main() {
         Some("gen-check") => gen_check(Path::new(&args[2]), &args[3]),
         Some("bench") => bench(args[2].parse().unwrap(), &args[3]),
         Some("run-check") => run_check(Path::new(&args[2]), &args[3]),
+        #[cfg(feature = "tcp")]
+        Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
         _ => eprintln!("usage: darkproof check VECDIR TAG"),
     }
 }
@@ -192,6 +194,7 @@ fn run_check(dir: &Path, tag: &str) {
                                 public: w.public.clone(),
                                 atoms: w.atoms[i].clone(),
                                 triples: tp,
+                                det: darkproof::rng::Det(None),
                             };
                             prove_step(pr, lp, tables, prm, &mut *net, ctx, st, cy)
                         })
@@ -252,6 +255,106 @@ fn run_check(dir: &Path, tag: &str) {
     }
     println!("{}", if ok_all { "RUN-CHECK PASS" } else { "RUN-CHECK FAIL" });
     std::process::exit(if ok_all { 0 } else { 1 });
+}
+
+/// darkstep's genesis step (HE matvec + outer, ideal-dealer tapes with the proof atoms and the proof section) feeds
+/// darkproof::run::prove_step through its ProofRecord, over darkstep's own sockets: the record must equal the
+/// harness's witness (wires, middle atoms vs RecEngine.atom_sh, public transcript, alpha), and in the deterministic
+/// mode the bundle must equal the Python bundle byte for byte. TAG e.g. demo_d4_he (its he1).
+#[cfg(feature = "tcp")]
+fn ds_check(dir: &Path, tag: &str) {
+    use darkproof::run::{from_darkstep, n_had, prove_step, TcpRef};
+    use std::sync::Arc;
+    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    let p = meta["p"].as_u64().unwrap();
+    darkproof::field::set_p(p);
+    let d = meta["d"].as_u64().unwrap() as usize;
+    let prm = program_of(&meta, d);
+    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let lp = pr.ligero();
+    let tables = darkproof::step::tables();
+    let he = &meta["he"];
+    let pf = darkstep::node::prof(&[he["N"].to_string(), he["L"].to_string(), he["F"].to_string(), d.to_string()]);
+    assert_eq!(pf.t, p, "darkstep's plaintext modulus differs");
+    let b1 = &meta["bundles"]["he1"];
+    let w = Witness::load(&dir.join(b1["witness"].as_str().unwrap()));
+    let pyb = std::fs::read(dir.join(b1["blob"].as_str().unwrap())).unwrap();
+    let seed = meta["seed"].as_str().unwrap().to_string();
+    let ctx = Ctx::new("mind-0", 0, 1);
+    let nb = darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had(d, prm, false, &tables));
+    let plain = darkstep::step::inputs(d);
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true);
+    darkstep::tape::deal_proof_section(&mut dl, nb);
+    let tapes = dl.tapes;
+    let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
+    let cs = Arc::new(cs);
+    let outs: Vec<(bool, Vec<u8>)> = std::thread::scope(|s| {
+        let hs: Vec<_> = ls
+            .into_iter()
+            .zip(tapes)
+            .enumerate()
+            .map(|(i, (l, tape))| {
+                let (addrs, cs, pf, w, pr, lp, tables, ctx, seed) = (&addrs, cs.clone(), &pf, &w, &pr, &lp, &tables, &ctx, seed.clone());
+                s.spawn(move || {
+                    use darkstep::net::{bytes_to_u64s, u64s_to_bytes};
+                    let net = darkstep::net::Net::connect(i, l, addrs);
+                    let rns = Arc::new(darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t));
+                    let key = darkstep::bfv::OwnKey::new(rns.clone(), darkstep::node::KEY_SEED0 + i as u64);
+                    let mut mine = key.pk.pk0_ntt.clone();
+                    mine.extend_from_slice(&key.pk.pk1_ntt);
+                    let all = net.exchange_bytes(darkstep::net::CTRL, &u64s_to_bytes(&mine));
+                    let ln = rns.l() * rns.n;
+                    let pks = all
+                        .iter()
+                        .map(|b| {
+                            let v = bytes_to_u64s(b);
+                            darkstep::bfv::PubKey { pk0_ntt: v[..ln].to_vec(), pk1_ntt: v[ln..].to_vec() }
+                        })
+                        .collect();
+                    let mut he = darkstep::he::He {
+                        rns: rns.clone(), key, pks, f_bits: pf.f_bits, mv_seed: darkstep::node::MV_SEED, ou_seed: darkstep::node::OU_SEED,
+                        mv_calls: 0, ou_calls: 0, context: ("model".into(), 0, 0), he_send: 0, he_return: 0, ou_send: 0,
+                        ou_return: 0, ou_commit: 0, cts_sent: 0, cts_returned: 0, attack: None, gate: None,
+                    };
+                    let tab = darkstep::step::tables(pf.t);
+                    let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(4).build().unwrap();
+                    let out = pool.install(|| darkstep::step::run_step(&mut pt, &mut he, &cs, d, &tab)).expect("darkstep step");
+                    let st = from_darkstep(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Det(Some(seed))).expect("record");
+                    // the record against the harness's witness
+                    let mut same = st.alpha_i == w.alpha_sh[i] && st.public == w.public && st.atoms == w.atoms[i];
+                    for (k, v) in &w.wires[i] {
+                        if st.wires.get(k) != Some(v) {
+                            println!("party {i}: wire {k} differs from the harness's");
+                            same = false;
+                        }
+                    }
+                    println!(
+                        "party {i}: record vs harness: alpha {}, public {} ({} values), middle atoms {} ({} atoms), wires {}; proof-section triples {}",
+                        st.alpha_i == w.alpha_sh[i], st.public == w.public, st.public.len(), st.atoms == w.atoms[i], st.atoms.len(),
+                        w.wires[i].iter().all(|(k, v)| st.wires.get(k) == Some(v)), st.triples.len()
+                    );
+                    let mut tn = TcpRef(&pt.net);
+                    let sp = pool.install(|| prove_step(pr, lp, tables, prm, &mut tn, ctx, st, None)).expect("prove");
+                    (same, sp.blob)
+                })
+            })
+            .collect();
+        hs.into_iter().map(|h| h.join().unwrap()).collect()
+    });
+    let rec_ok = outs.iter().all(|o| o.0);
+    let blob = &outs[0].1;
+    let agree = outs.iter().all(|o| &o.1 == blob);
+    let eq = blob == &pyb;
+    println!(
+        "{tag} he1 via darkstep: native {} bytes sha256 {} | python {} bytes sha256 {} | {} | parties agree {}",
+        blob.len(), &sha(blob)[..16], pyb.len(), &sha(&pyb)[..16],
+        if eq { "EQUAL".to_string() } else { format!("DIFFER at offset {:?}", first_diff(blob, &pyb)) }, agree
+    );
+    let ok = rec_ok && agree && eq;
+    println!("{}", if ok { "DS-CHECK PASS" } else { "DS-CHECK FAIL" });
+    std::process::exit(if ok { 0 } else { 1 });
 }
 
 struct Rows {
