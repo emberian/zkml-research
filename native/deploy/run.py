@@ -156,7 +156,7 @@ def total_steps(cfg):
 
 def has_release(cfg):
     ho = cfg.get("handover")
-    return "--release" in ((ho or {}).get("flags") or cfg.get("flags", []))
+    return (ho or {}).get("release") == "deferred" or "--release" in ((ho or {}).get("flags") or cfg.get("flags", []))
 
 def prep_dir(s):
     """The box's preprocessing dir: the tape pattern up to its /chunks/."""
@@ -454,8 +454,15 @@ def resume_new(cfg):
     rep = json.loads(sh(s0["host"], f"cat {new_dir(cfg, s0, 0)}/D/serve_P0.json"))
     done = rep["next_step"]
     left = ho["at"] + 1 + ho["steps_after"] - done
+    extra = ""
     if left <= 0:
-        raise SystemExit("nothing left to run")
+        # every step ran; a deferred release (handover "release": "deferred") runs alone from the checkpoint once
+        # its own tapes are made (--steps 0 --release; single use: a claimed tape is refused)
+        if ho.get("release") != "deferred" or release_done(cfg):
+            raise SystemExit("nothing left to run")
+        if not release_ready(cfg):
+            raise SystemExit("the release's tapes are not complete yet")
+        left, extra = 0, " --release"
     o, od = cfg["owner"], owner_dir(cfg)
     # the owner's identity with the new committee's certificates only (its key stays on its box)
     sh(o["host"], f"mkdir -p {od}/tls-new && cp {od}/tls/tls_owner.key {od}/tls/cert_owner.der {od}/tls-next/cert_*.der {od}/tls-new/")
@@ -467,9 +474,28 @@ def resume_new(cfg):
     for j, s in enumerate(ho["new_seats"]):
         nd = new_dir(cfg, s, j)
         args = f"serve {j} {N} {L} {F} {d} {nd}/D {naddrs} --tls {nd}/tls --owner {o['addr']} --steps {left} " \
-               f"--gate {cfg['gate']} --program {cfg['program']} --tapes {s['tapes']} --owner-msgs {s['owner_msgs']} " + new_args(cfg, s, j) + " --resume"
+               f"--gate {cfg['gate']} --program {cfg['program']} --tapes {s['tapes']} --owner-msgs {s['owner_msgs']} " + new_args(cfg, s, j) + " --resume" + extra
         start(s["host"], nd, f"new{j}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/dl-custodian {args}", env=s.get("env", ""))
-    print(f"new committee resuming at step {done}, {left} steps left")
+    start_nightly(cfg)
+    print(f"new committee resuming at step {done}, {left} steps left" + (" (the release alone)" if extra else ""))
+
+def release_tape(s):
+    x = s.get("extra", [])
+    return next((b for a, b in zip(x, x[1:]) if a == "--release-tape"), None)
+
+def release_ready(cfg):
+    """Every new seat's release chunk is complete: its chunk-P<I>.json (prep writes it last) beside step-0."""
+    for j, s in enumerate(cfg["handover"]["new_seats"]):
+        t = release_tape(s)
+        cd = os.path.dirname(os.path.dirname(t))
+        if sh(s["host"], f"test -f {cd}/chunk-P{j}.json && test -f {t} && echo y || echo n", check=False) != "y":
+            return False
+    return True
+
+def release_done(cfg):
+    s = cfg["handover"]["new_seats"][0]
+    r = sh(s["host"], f"cat {new_dir(cfg, s, 0)}/D/release_P0.json 2>/dev/null || echo null", check=False)
+    return r != "null" and '"error"' not in r
 
 def in_window(w, now=None):
     a, b = [int(x[:2]) * 60 + int(x[3:]) for x in w.split("-")]
@@ -563,6 +589,13 @@ def drive(cfg):
                 ev("resumed")
                 continue
             if all(r and r.get("exit") == 0 for r in reps) and (ph == "new" or not ho):
+                if ho and ho.get("release") == "deferred" and not release_done(cfg):
+                    ev(f"steps done at step {reps[0]['next_step']}; the release waits for its tapes")
+                    while not release_ready(cfg):
+                        time.sleep(cfg.get("disk_poll_s", 600))
+                    resume_new(cfg)
+                    ev("the release's tapes are complete: the release launched alone from the checkpoint")
+                    continue
                 ev(f"run ended at step {reps[0]['next_step']}")
                 break
             ev(f"stopped unexpectedly ({ph} committee): " + json.dumps([r and {k: r.get(k) for k in ("next_step", "exit", "paused")} for r in reps]))
