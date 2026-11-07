@@ -543,3 +543,75 @@ fn a_production_build_refuses_to_write_an_unsealed_chunk() {
     let err = String::from_utf8_lossy(&out.stderr);
     assert!(!out.status.success() && (err.contains("vault") || err.contains("keyring")), "{err}");
 }
+
+#[test]
+fn sealed_release_tape_streams_byte_equal_and_refuses_tampering() {
+    use std::sync::Arc;
+    let dir = std::env::temp_dir().join(format!("darkprep-v2-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let g = darkstep::step::Program::GEN6;
+    let base = StepParams { d: 4, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: true };
+    let nrt = 40;
+    let sp = base.release(Release { m: 2, ncls: 4, kc: 10, lookup_triples: 27 }, nrt);
+    let (files, _) = synth_plan(&Plan::of(&sp), 13);
+    let tx = Transactions::parse(&files[2], P).unwrap();
+    let n = darkprep::schedule::n_entries(&sp);
+    let v = darkhand::vault::Vault::create("dl-vault:test:2:1:00", false).unwrap();
+    let key = dlvault::Key::new(&v.name, v.key_bytes());
+    let role = darkprep::tape::tape_role("rel-P2", 0);
+    let bs = 4096; // many blocks from a small tape
+    let write = |path: &std::path::Path| {
+        let mut w = darkprep::tape::SealedDarkstepWriter::create_bs(path, &key, &role, tx.alpha_i, n, bs).unwrap();
+        darkprep::tape::assemble_in_chunk_emit(&[sp], &tx, 2, 0, &mut |t, sm| w.push(t, sm).unwrap()).unwrap();
+        w.finish().unwrap();
+    };
+    let (pp, sa, sb) = (dir.join("plain.bin"), dir.join("a.bin"), dir.join("b.bin"));
+    let mut w = darkprep::tape::DarkstepWriter::create(&pp, tx.alpha_i, n).unwrap();
+    darkprep::tape::assemble_in_chunk_emit(&[sp], &tx, 2, 0, &mut |t, sm| w.push(t, sm).unwrap()).unwrap();
+    w.finish().unwrap();
+    write(&sa);
+    write(&sb);
+    let plain = std::fs::read(&pp).unwrap();
+    assert!(std::fs::read(&sa).unwrap().starts_with(b"DLVAULT2"));
+    // the streaming loader: the MPC part and every proof-section triple equal the plain tape's
+    let k = Arc::new(dlvault::Key::new(&v.name, v.key_bytes()));
+    let (tp, rp) = darkproof::run::load_release_tape(&pp, nrt).unwrap();
+    let (ts, rs) = darkproof::run::load_release_tape_sealed(&sa, nrt, k.clone(), &role).unwrap();
+    assert_eq!((tp.alpha_i, &tp.tags, &tp.sh, &tp.mac), (ts.alpha_i, &ts.tags, &ts.sh, &ts.mac));
+    assert_eq!(rp.triples(0, nrt).unwrap().collect::<Vec<_>>(), rs.triples(0, nrt).unwrap().collect::<Vec<_>>());
+    assert_eq!(rp.triples(17, 9).unwrap().collect::<Vec<_>>(), rs.triples(17, 9).unwrap().collect::<Vec<_>>());
+    // and the whole plaintext byte-equal through dlvault's reader
+    let mut back = Vec::new();
+    std::io::Read::read_to_end(&mut dlvault::Reader::open(&sa, k.clone(), &role).unwrap(), &mut back).unwrap();
+    assert_eq!(back, plain);
+    // each loader refuses the other kind
+    assert!(darkproof::run::load_release_tape(&sa, nrt).is_err());
+    assert!(darkproof::run::load_release_tape_sealed(&pp, nrt, k.clone(), &role).is_err());
+    // tampering: swapped blocks, a dropped final block, a block of another tape, another role
+    let fa = std::fs::read(&sa).unwrap();
+    let fb = std::fs::read(&sb).unwrap();
+    let blk = |i: u64| (32 + i * (bs as u64 + 16)) as usize..(32 + (i + 1) * (bs as u64 + 16)) as usize;
+    let load = |b: &[u8]| {
+        let p = dir.join("t.bin");
+        std::fs::write(&p, b).unwrap();
+        darkproof::run::load_release_tape_sealed(&p, nrt, k.clone(), &role).map(|_| ())
+    };
+    let mut s = fa.clone();
+    s[blk(0)].copy_from_slice(&fa[blk(1)]);
+    s[blk(1)].copy_from_slice(&fa[blk(0)]);
+    assert!(load(&s).is_err(), "swapped blocks loaded");
+    let last = fa.len() - ((24 + 17 * n) % bs as usize + 16);
+    assert!(load(&fa[..last]).is_err(), "a tape without its final block loaded");
+    let mut s = fa.clone();
+    s[blk(1)].copy_from_slice(&fb[blk(1)]);
+    assert!(load(&s).is_err(), "a block of another tape loaded");
+    assert!(darkproof::run::load_release_tape_sealed(&sa, nrt, k.clone(), &darkprep::tape::tape_role("rel-P2", 1)).is_err());
+    assert!(load(&fa).is_ok(), "control: the untouched tape loads");
+    // erasure: after destroy, the zero key opens nothing
+    let name = v.name.clone();
+    drop(key);
+    v.destroy();
+    let z = Arc::new(dlvault::Key::new(&name, &[0; 32]));
+    assert!(darkproof::run::load_release_tape_sealed(&sa, nrt, z, &role).is_err());
+    std::fs::remove_dir_all(&dir).unwrap();
+}

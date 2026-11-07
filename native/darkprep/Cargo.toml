@@ -11,6 +11,8 @@ darkstep = { path = "../darkstep" }
 libc = "0.2"
 # every tape and owner message at rest is sealed under the seat's epoch file key (cryptographic erasure)
 darkhand = { path = "../darkhand" }
+# the release tape (gigabytes) sealed in blocks (DLVAULT2), so it is never whole in memory, written or read
+dlvault = { path = "../dlvault" }
 
 [features]
 # TEST ONLY: party-chunk may write plain (unsealed) tapes with --plain-tapes (loopback and synthetic tests)

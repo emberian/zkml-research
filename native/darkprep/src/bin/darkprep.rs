@@ -13,7 +13,8 @@
 //!                        [--rs]  (the proof program's "RS": K + 1 - s Trhb bits)  [--lookup-triples T]  (release, L cut)
 //!                        --vault NAME | --vault-file TLSDIR/vault.name  (required: every step's tape_<I>.bin and
 //!                        owner-msg-P<I>.bin is sealed, DLVAULT1, roles "tape|<chunk>|<j>" / "owner-msg|<chunk>|<j>";
-//!                        a build with feature test-plain-tapes may write plain files with --plain-tapes instead)
+//!                        the release tape as DLVAULT2 blocks under the same key and role; a build with feature
+//!                        test-plain-tapes may write plain files with --plain-tapes instead)
 //!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
 //!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
 //!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
@@ -388,7 +389,22 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
         std::fs::create_dir_all(&sd).map_err(|e| e.to_string())?;
         let tpath = sd.join(format!("tape_{party}.bin"));
         let mut n = 0usize;
-        if let Some(v) = &vault {
+        if let (Some(v), darkprep::schedule::Phase::Release(_)) = (&vault, chunk[j].phase) {
+            // the release tape (gigabytes): DLVAULT2 blocks, written as assembled, never whole in memory
+            let key = dlvault::Key::new(&v.name, v.key_bytes());
+            let mut w = darkprep::tape::SealedDarkstepWriter::create(&tpath, &key, &darkprep::tape::tape_role(&chunk_name, j), tx.alpha_i, ns[j]).map_err(|e| e.to_string())?;
+            let mut err: Option<std::io::Error> = None;
+            darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
+                n += 1;
+                if let Err(e) = w.push(t, sm) {
+                    err.get_or_insert(e);
+                }
+            })?;
+            if let Some(e) = err {
+                return Err(e.to_string());
+            }
+            w.finish().map_err(|e| e.to_string())?;
+        } else if let Some(v) = &vault {
             let mut buf = darkprep::tape::DarkstepBuf::new(tx.alpha_i, ns[j]);
             let mut err: Option<String> = None;
             darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
