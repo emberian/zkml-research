@@ -150,7 +150,7 @@ fn profile_of(args: &[String]) -> darkproof::Profile {
 }
 
 fn params_of(pg: &Program) -> StepParams {
-    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
+    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs: false, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
 }
 
 fn hex_roots(g: &Roots) -> String {
