@@ -55,10 +55,11 @@ fn common(d: usize, prof: &str) -> Common {
 
 /// `self_mode`: a self-handover (the same seats, the MAC key retired): the new set is the old set.
 fn common_mode(d: usize, prof: &str, self_mode: bool) -> Common {
-    let he: [&str; 3] = match prof {
-        "demo" => ["8192", "3", "118"],
-        "ledger" => ["16384", "4", "175"],
-        _ => panic!("profile: demo or ledger"),
+    // the HE parameters by the profile's family (demo-x2, ledger-x2de, ...: the proof profile varies, the HE does not)
+    let he: [&str; 3] = match prof.split('-').next() {
+        Some("demo") => ["8192", "3", "118"],
+        Some("ledger") => ["16384", "4", "175"],
+        _ => panic!("profile: demo* or ledger*"),
     };
     let args: Vec<String> = he.iter().map(|s| s.to_string()).chain(std::iter::once(d.to_string())).collect();
     let pf = darkstep::node::prof(&args);
@@ -200,6 +201,13 @@ fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldC
         .collect();
     let roots: BTreeMap<String, Vec<[u8; 32]>> = carry.iter().map(|(k, p)| (k.clone(), vec![p.root])).collect();
     write_json(&work.join(format!("pub/old{i}.roots.json")), &roots_json(&roots));
+    // the seat's epoch file key (in the kernel's persistent keyring on Linux) and its TLS key sealed under it
+    let id = darkstep::tls::generate(i);
+    let vname = darkhand::vault::key_name("dlh-local", i, 1, &darkstep::tls::cert_fingerprint(&id.cert_der));
+    let vault = darkhand::vault::Vault::create(&vname, cfg!(target_os = "linux")).expect("vault");
+    let tls = dir.join(format!("tls_{i}.key"));
+    vault.seal_to(&tls, "tls", id.key_der.clone()).expect("sealed TLS key");
+    drop(id);
     Box::new(OldCustodian {
         i,
         w,
@@ -207,9 +215,10 @@ fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldC
         keys: Some(side::HeSecret::from_ceremony(cust, &cer)),
         key: Some(key),
         carry,
-        files: vec![dir.join("tape.bin"), dir.join("key.bin")],
+        files: vec![dir.join("tape.bin"), dir.join("key.bin"), tls],
         scan_paths: vec![dir.clone()],
         captured: Some((ct, mdig)),
+        vault: Some(vault),
     })
 }
 
@@ -479,7 +488,7 @@ fn old_seat_state(c: &Common, work: &Path, dir: &Path, i: usize, d: usize) -> Bo
         .collect();
     let roots: BTreeMap<String, Vec<[u8; 32]>> = carry.iter().map(|(k, p)| (k.clone(), vec![p.root])).collect();
     write_json(&work.join(format!("pub/old{i}.roots.json")), &roots_json(&roots));
-    Box::new(OldCustodian { i, w, tape: *tape, keys: None, key: None, carry, files: vec![dir.join("tape.bin")], scan_paths: vec![dir.to_path_buf()], captured: None })
+    Box::new(OldCustodian { i, w, tape: *tape, keys: None, key: None, carry, files: vec![dir.join("tape.bin")], scan_paths: vec![dir.to_path_buf()], captured: None, vault: None })
 }
 
 fn local_self(work: &Path, d: usize, prof: &str, base: u16) -> bool {
@@ -639,6 +648,15 @@ fn local(work: &Path, d: usize, prof: &str, base: u16) -> bool {
        olds.iter().all(|v| v["disk_scan_before_erasure"]["hits"].as_u64().unwrap_or(0) > 0));
     ck("old: after erasure the disk scan of the seat's directories finds none of it",
        olds.iter().all(|v| v["disk_scan_after_erasure"]["hits"] == 0 && v["disk_scan_after_erasure"]["unreadable"] == json!([])));
+    ck("old: the sealed files open under the vault key before erasure (control)",
+       olds.iter().all(|v| v["vault_before_erasure"]["sealed_copies_open_before_erasure"].as_array().is_some_and(|a| !a.is_empty() && a.iter().all(|t| t[2] == true))));
+    ck("old: the vault key is invalidated and gone from the keyring (Linux) and memory",
+       olds.iter().all(|v| v["vault_destroyed"]["invalidate_error"].is_null() && v["vault_destroyed"]["key_in_keyring_after"] == false
+           && v["vault_after_erasure"]["key_in_keyring"] == false && v["vault_after_erasure"]["load_error"].is_string()
+           && (cfg!(not(target_os = "linux")) || v["vault_destroyed"]["in_keyring"] == true)));
+    ck("old: after erasure no key the seat holds opens a copy of its sealed files",
+       olds.iter().all(|v| v["vault_after_erasure"]["sealed_copies"].as_array().is_some_and(|a| !a.is_empty()
+           && a.iter().all(|t| t["opens_by_keyring"] == false && t["opens_by_zero_key"] == false))));
     ck("old: no state files left", olds.iter().all(|v| v["state_files_left"].as_array().map(|a| a.is_empty()).unwrap_or(false)));
     ck("old restarted: no key or share material on disk",
        restarts.iter().all(|v| v["key_file_present"] == false && v["tape_file_present"] == false && v["share_entries_loaded"] == 0));

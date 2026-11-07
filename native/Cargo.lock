@@ -100,7 +100,10 @@ dependencies = [
  "darkstep",
  "dzkpopk",
  "getrandom",
+ "libc",
+ "num-bigint",
  "pycompat",
+ "ring",
  "serde_json",
  "sha2",
 ]

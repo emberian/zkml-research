@@ -7,3 +7,4 @@ pub mod erase;
 pub mod scan;
 pub mod serve;
 pub mod side;
+pub mod vault;

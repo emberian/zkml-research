@@ -168,6 +168,9 @@ pub struct OldCustodian {
     /// a ciphertext under this custodian's key from before the handover (an eavesdropper's capture of its HE_CT)
     /// and the digest of its plaintext
     pub captured: Option<(Ct, String)>,
+    /// the epoch's file key (`vault`): its state files are sealed under it, and erasing it erases them wherever
+    /// their blocks lie. None: the files are plain (wipes only).
+    pub vault: Option<crate::vault::Vault>,
 }
 
 /// What the shallow frame needs after the erasure: the canaries, the public pieces of the decryption attempt, the
@@ -182,6 +185,8 @@ struct Erased {
     b: Vec<Vec<u64>>,
     a: Vec<Vec<u64>>,
     files: Vec<PathBuf>,
+    /// the vault's name and copies of the small sealed state files (role, bytes), taken before the erasure
+    vault_copies: Option<(String, Vec<(String, String, Vec<u8>)>)>,
 }
 
 /// Whether a carried commitment is a PUBLIC one (darkproof's public genesis: `PcsParty::commit_public`, its tails
@@ -200,6 +205,76 @@ pub fn carry_is_public(pc: &PcsParty, p: u64) -> bool {
     share.resize(1 << darkproof::pcs::bitlen(share.len().max(2) - 1), 0);
     let mut rng = darkproof::rng::public_coins(&["dl-public-genesis", &darkproof::h::h_list_hex(&share)]);
     rng.randrange_u64(p) == pc.ext[s.c] && rng.randrange_u64(p) == pc.ext[s.c + 1]
+}
+
+/// The P-256 group order n, big-endian.
+const P256_N: [u8; 32] = [
+    0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xbc, 0xe6, 0xfa, 0xad,
+    0xa7, 0x17, 0x9e, 0x84, 0xf3, 0xb9, 0xca, 0xc2, 0xfc, 0x63, 0x25, 0x51,
+];
+
+/// The private scalar of a PKCS#8 ECDSA P-256 key (darkstep::tls, rcgen's serialize_der): the ECPrivateKey's
+/// `INTEGER 1, OCTET STRING (32)` (02 01 01 04 20), after the ecPublicKey and prime256v1 OIDs.
+pub fn p256_scalar(der: &[u8]) -> Option<[u8; 32]> {
+    const OID_P256: [u8; 8] = [0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07];
+    let has = |pat: &[u8]| der.windows(pat.len()).position(|w| w == pat);
+    has(&OID_P256)?;
+    let at = has(&[0x02, 0x01, 0x01, 0x04, 0x20])? + 5;
+    der.get(at..at + 32).map(|b| b.try_into().unwrap())
+}
+
+/// The forms a P-256 private scalar takes in this process's memory, as aligned 64-bit words: its big-endian bytes
+/// (rcgen's and the DER's copy, read as words), its little-endian limbs, and ring's Montgomery limbs (d 2^256 mod n,
+/// the form ring's EcdsaKeyPair keeps).
+pub fn p256_scalar_words(d: &[u8; 32]) -> [(&'static str, Vec<u64>); 3] {
+    use num_bigint::BigUint;
+    let be: Vec<u64> = d.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+    let limbs = |x: &BigUint| -> Vec<u64> {
+        let mut v = x.to_u64_digits();
+        v.resize(4, 0);
+        v
+    };
+    let x = BigUint::from_bytes_be(d);
+    let mont = (&x << 256u32) % BigUint::from_bytes_be(&P256_N);
+    [
+        ("TLS private scalar (big-endian bytes)", be),
+        ("TLS private scalar (limbs)", limbs(&x)),
+        ("TLS private scalar (Montgomery limbs)", limbs(&mont)),
+    ]
+}
+
+/// Canaries of the TLS private key among the state files (`tls_*.key`, PKCS#8 DER, sealed under the vault when it
+/// starts with vault::MAGIC): in memory its DER words and the scalar's three forms; on disk the scalar's first 16
+/// bytes at any offset of small files. Returns the files used.
+fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], vault: Option<&crate::vault::Vault>) -> Vec<String> {
+    let mut used = Vec::new();
+    for f in files {
+        let name = f.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
+        if !(name.starts_with("tls_") && name.ends_with(".key")) {
+            continue;
+        }
+        let Ok(raw) = std::fs::read(f) else { continue };
+        let mut der = if raw.starts_with(crate::vault::MAGIC) {
+            match vault.map(|v| v.open(&vault_role(f), raw)) {
+                Some(Ok(d)) => d,
+                _ => continue,
+            }
+        } else {
+            raw
+        };
+        can.add_bytes("TLS private key (PKCS#8 DER)", &der);
+        if let Some(mut d) = p256_scalar(&der) {
+            for (kind, mut ws) in p256_scalar_words(&d) {
+                can.add_words(kind, &ws, ws.len());
+                ws.wipe();
+            }
+            dcan.add_text16("TLS private scalar (bytes)", &d[..16]);
+            unsafe { crate::erase::zero_raw(d.as_mut_ptr(), d.len()) };
+        }
+        der.wipe();
+        used.push(f.display().to_string());
+    }
+    used
 }
 
 /// Overwrite ALL of this thread's stack below the caller's frame: from here down to the low end of the stack
@@ -270,7 +345,23 @@ pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6:
         digest(&rem.decrypt(ct, None)) == *dg
     });
     let files_left: Vec<String> = e.files.iter().filter(|f| f.exists()).map(|f| f.display().to_string()).collect();
+    // the sealed copies after the erasure: the keyring has no key of the vault's name, so nothing the seat (or its
+    // uid) holds opens them; and the zero key, the only one memory can still give, does not either
+    let vault_post = e.vault_copies.as_ref().map(|(name, copies)| {
+        let load = crate::vault::Vault::load(name);
+        let zero = crate::vault::Vault::with_key(name, [0u8; 32]);
+        let tries: Vec<Value> = copies
+            .iter()
+            .map(|(f, role, b)| {
+                let by_keyring = load.as_ref().map(|v| v.open(role, b.clone()).is_ok()).unwrap_or(false);
+                let by_zero = zero.open(role, b.clone()).is_ok();
+                json!({"file": f, "role": role, "opens_by_keyring": by_keyring, "opens_by_zero_key": by_zero})
+            })
+            .collect();
+        json!({"name": name, "key_in_keyring": crate::vault::present(name), "load_error": load.err(), "sealed_copies": tries})
+    });
     let mut rep = e.rep;
+    rep["vault_after_erasure"] = json!(vault_post);
     rep["scan_after_erasure"] = scan_json(&post);
     rep["stack_scrubbed_kb"] = json!(scrubbed_kb);
     rep["disk_scan_after_erasure"] = disk_json(&post_disk);
@@ -382,6 +473,29 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     if let Some(rk) = st.key.as_ref().and_then(|k| k.return_key.as_ref()) {
         can.add_bytes("HE return-coin key", rk);
     }
+    // the seat's TLS private key (its identity on the meshes: kept, it could still join a mesh as this custodian)
+    let tls_kinds = tls_key_canaries(&mut can, &mut dcan, &st.files, st.vault.as_ref());
+    // the file key, and copies of the small sealed files (ciphertext) for the check that nothing opens them after
+    let mut vault_pre = serde_json::Value::Null;
+    let vault_copies = st.vault.as_ref().map(|v| {
+        let kw = v.key_words();
+        can.add_words("vault file key", &kw, 4);
+        dcan.add_text16("vault file key", &v.key_bytes()[..16]);
+        let mut copies = Vec::new();
+        let mut opened = Vec::new();
+        for f in &st.files {
+            let Ok(b) = std::fs::read(f) else { continue };
+            if b.len() > (1 << 20) || !b.starts_with(crate::vault::MAGIC) {
+                continue;
+            }
+            let role = vault_role(f);
+            let ok = v.open(&role, b.clone()).map(|mut x| x.wipe()).is_ok();
+            opened.push(json!([f.display().to_string(), role, ok]));
+            copies.push((f.display().to_string(), role, b));
+        }
+        vault_pre = json!({"name": v.name, "sealed_copies_open_before_erasure": opened});
+        (v.name.clone(), copies)
+    });
     // control: before erasure the scan finds the material, and the key decrypts the captured ciphertext
     let pre = can.scan();
     let pre_disk = dcan.scan_paths(&st.scan_paths);
@@ -423,6 +537,7 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
             file_errs.push(format!("{}: {e}", f.display()));
         }
     }
+    let vault_destroyed = st.vault.take().map(|v| v.destroy());
     let erase_s = te.elapsed().as_secs_f64();
     let (mut s_left, b, a) = match st.keys.as_ref() {
         Some(hs) => (hs.s.clone(), hs.reg.b_res().clone(), hs.reg.a_res().clone()),
@@ -435,6 +550,9 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
         "scan_before_erasure": scan_json(&pre),
         "disk_scan_before_erasure": disk_json(&pre_disk),
         "public_carry": public_carry,
+        "tls_key_files_canaried": tls_kinds,
+        "vault_before_erasure": vault_pre,
+        "vault_destroyed": vault_destroyed,
         "bytes_sent_per_peer": sent6,
         "captured_ct": st.captured.as_ref().map(|(ct, _)| pycompat::repr::hex(&ct_bytes(ct))),
         "captured_plain_sha256": st.captured.as_ref().map(|(_, dg)| dg.clone()),
@@ -453,7 +571,15 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
         b,
         a,
         files: std::mem::take(&mut st.files),
+        vault_copies,
     })
+}
+
+/// A sealed state file's role (the AAD's last part): its file name without the seat digits and extension, e.g.
+/// "ckpt_P0.bin" -> "ckpt", "tls_2.key" -> "tls". The deploy lane seals with the same roles (`vault_role`).
+pub fn vault_role(f: &std::path::Path) -> String {
+    let n = f.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
+    n.split(['_', '.']).next().unwrap_or("").to_string()
 }
 
 /// A new custodian's state after the handover: what the next step runs on.
