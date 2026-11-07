@@ -221,6 +221,10 @@ impl serve::Sealer for VaultSlot {
         let g = self.0.lock().unwrap();
         g.as_ref().ok_or("the file key was handed to the erasure")?.open_file(path, &side::vault_role(path))
     }
+    fn open_role(&self, path: &Path, role: &str) -> Result<Vec<u8>, String> {
+        let g = self.0.lock().unwrap();
+        g.as_ref().ok_or("the file key was handed to the erasure")?.open_file(path, role)
+    }
 }
 
 static VAULT: std::sync::OnceLock<std::sync::Arc<VaultSlot>> = std::sync::OnceLock::new();
@@ -269,7 +273,16 @@ fn vault_init(args: &[String]) -> Result<(), String> {
     let v = darkhand::vault::Vault::create(&name, true)?;
     v.seal_to(&key, &side::vault_role(&key), plain).map_err(|e| e.to_string())?;
     std::fs::write(tls.join("vault.name"), &name).map_err(|e| e.to_string())?;
-    println!("{}", json!({"seat": i, "vault": name}));
+    // --with-next: the next epoch's key too (a self-handover's new role: the prep lane seals its tapes under it
+    // before the handover), named in vault.name.next
+    let mut next = Value::Null;
+    if args.iter().any(|a| a == "--with-next") {
+        let n2 = darkhand::vault::key_name(&model, i, epoch + 1, &darkstep::tls::cert_fingerprint(&cert));
+        drop(darkhand::vault::Vault::create(&n2, true)?);
+        std::fs::write(tls.join("vault.name.next"), &n2).map_err(|e| e.to_string())?;
+        next = json!(n2);
+    }
+    println!("{}", json!({"seat": i, "vault": name, "next": next}));
     Ok(())
 }
 
@@ -718,7 +731,11 @@ impl Prove {
             // the new epoch's file key (the old one is destroyed): the state under the new MAC key is sealed under it
             let cert = std::fs::read(tlsdir.join(format!("cert_{i}.der"))).map_err(|e| e.to_string())?;
             let name = darkhand::vault::key_name(&self.model, i, epoch as u64 + 1, &darkstep::tls::cert_fingerprint(&cert));
-            let v = darkhand::vault::Vault::create(&name, true)?;
+            // made at setup (vault-init --with-next) when the prep lane sealed the new key's tapes under it
+            let v = match darkhand::vault::Vault::load(&name) {
+                Ok(v) => v,
+                Err(_) => darkhand::vault::Vault::create(&name, true)?,
+            };
             *VAULT.get().unwrap().0.lock().unwrap() = Some(v);
             serve::write_secret(&tlsdir.join(format!("tls_{i}.key")), tls_key.unwrap()).map_err(|e| format!("TLS key: {e}"))?;
             std::fs::write(tlsdir.join("vault.name"), &name).map_err(|e| e.to_string())?;

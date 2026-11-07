@@ -59,6 +59,10 @@ fn prof_args() -> Vec<String> {
     if rs() {
         v.push("--rs".into());
     }
+    // DL_EXTRA: more serve flags for every custodian (e.g. "--ret-round")
+    if let Ok(x) = std::env::var("DL_EXTRA") {
+        v.extend(x.split_whitespace().map(String::from));
+    }
     v
 }
 
