@@ -911,3 +911,21 @@ reh-ho, reh-n-c0; ledger-x2de + RS, plain), pipelined proofs on a proof mesh per
 
 All ACCEPT, one transcript per step; cgroup peaks 8.49-8.69 GB (old), 9.27-9.82 GB (new); old seats after the
 erasure: file key gone from the keyring, the captured ciphertext does not decrypt.
+
+### run10c: the release fits forge's 12G, one custodian per process (12:04-12:27 UTC) [EXECUTED]
+
+Test-dealer tapes under ledger-x2de + RS (`test-deal ... --rs --release --split-release`, dealt on bb2, seat 0's
+streamed to forge and checked by sha256): steps' tape 151,581,629 B, release tape 2,672,096,914 B (157,182,170
+entries, 38,666,490 of them the proof section); test7 at fb173e20 (the release's proof section streamed from its
+own tape, the proof lane's heap cuts); DP_TRACE=1 DP_CW_HOLD_MB=256 DS_THREADS=12; seat 0 forge MemoryMax=12G,
+seats 1-2 bb2 32G; a test-only registry.
+
+| | seat 0 (forge, 12G) | 1 (bb2) | 2 (bb2) |
+|---|---:|---:|---:|
+| VmHWM | **10.32 GB** | 10.57 GB | 10.44 GB |
+| cgroup memory.peak (sampled) | **10.91 GB** | 11.16 GB | 11.02 GB |
+| release s (MPC / prove / verify) | 878.8 (93.4 / 353.8 / 215.0) | 914.1 (18.2 / 354.0 / 265.6) | 895.6 (19.9 / 354.0 / 260.4) |
+
+Seat 0's trace: MPC 6.44 GB; replay 66 s, 9.54 GB; middle commitments to 9.78 GB, zerocheck 10.17, build_q (124 s)
+10.20 GB. C = 8 of 52 at all three after one step (untrained); one bundle 260,069,187 B (sha256 b8eaf2e6...),
+accepted by every replica through release_checked. Step 0 ACCEPT 200.3 s.
