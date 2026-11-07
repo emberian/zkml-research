@@ -100,9 +100,25 @@ pub fn ntt(a: &mut [u64], tw: &[u64]) {
     }
 }
 
+/// cosnark.row_split: the row count exponent mr of a commitment to 2^m values. Square: m / 2. Balanced: the mr in 0..m
+/// minimising T K (2^mr + nmask) + (2^(m - mr) + hide) (K + T) (an opening's column values, plus its proximity row and
+/// one evaluation's Ligero rows, per custodian); ties to the smaller mr.
+pub fn row_split(pr: &Profile, m: usize) -> usize {
+    match pr.split {
+        crate::Split::Square => m / 2,
+        crate::Split::Balanced => {
+            let (t, k) = (pr.t_cols as u128, pr.k_l as u128);
+            (0..=m)
+                .min_by_key(|&r| (t * k * ((1u128 << r) + pr.nmask as u128) + ((1u128 << (m - r)) + pr.hide as u128) * (k + t), r))
+                .unwrap()
+        }
+    }
+}
+
 impl Shape {
     pub fn new(pr: &Profile, m: usize, base: usize) -> Self {
-        let (mr, mc) = (m / 2, m - m / 2);
+        let mr = row_split(pr, m);
+        let mc = m - mr;
         let (rd, c) = (1usize << mr, 1usize << mc);
         let nmask = pr.nmask;
         let w = c + pr.hide;
@@ -296,12 +312,106 @@ impl PcsParty {
         cw
     }
 
+    /// Rows r0..r0 + nb encoded on the coset domain, row-major (nb x npts).
+    fn encode_rows(&self, r0: usize, nb: usize) -> Vec<u64> {
+        let s = &self.shape;
+        let Dom::Coset { k, t, omega, z } = s.dom else { unreachable!() };
+        let n = 1usize << k;
+        let tw = powers(omega, n / 2);
+        let scale: Vec<Vec<u64>> = (0..t).map(|tt| powers(field::pow(z, tt as u64), s.w)).collect();
+        let (w, npts) = (s.w, s.npts);
+        let mut rows = vec![0u64; nb * npts];
+        rows.par_chunks_mut(npts).enumerate().for_each(|(dr, dst)| {
+            let row = &self.ext[(r0 + dr) * w..(r0 + dr + 1) * w];
+            let mut buf = vec![0u64; n];
+            for (tt, sc) in scale.iter().enumerate() {
+                buf.iter_mut().for_each(|x| *x = 0);
+                for (c, (&a, &f)) in row.iter().zip(sc).enumerate() {
+                    let b = &mut buf[c & (n - 1)];
+                    *b = field::add(*b, field::mul(a, f));
+                }
+                ntt(&mut buf, &tw);
+                let lo = tt * n;
+                if lo < npts {
+                    let hi = (lo + n).min(npts);
+                    dst[lo..hi].copy_from_slice(&buf[..hi - lo]);
+                }
+            }
+        });
+        rows
+    }
+
+    /// Hold the coset codeword (R npts words) from the commitment to its first opening only when it is at most
+    /// DP_CW_HOLD_MB (default 1024) MiB; a larger one is streamed: the leaves are hashed block by block of rows, and
+    /// an opening re-encodes the rows to read its columns. Same bytes either way.
+    fn hold_cw(&self) -> bool {
+        let lim: usize = std::env::var("DP_CW_HOLD_MB").ok().and_then(|v| v.parse().ok()).unwrap_or(1024);
+        self.shape.r * self.shape.npts * 8 <= lim << 20
+    }
+
+    /// The leaves of the coset codeword, streamed over blocks of rows (h_leaf = H("leaf", salt, column) with the
+    /// column fed in row order), never holding the codeword.
+    fn stream_leaves(&self) -> Vec<Hash> {
+        const B: usize = 256;
+        let (r, npts) = (self.shape.r, self.shape.npts);
+        let mut st: Vec<crate::h::Py> = self
+            .salts
+            .iter()
+            .map(|sa| {
+                let mut h = crate::h::Py::new();
+                h.s("leaf").hx(sa).raw(b"[");
+                h
+            })
+            .collect();
+        for r0 in (0..r).step_by(B) {
+            let nb = B.min(r - r0);
+            let rows = self.encode_rows(r0, nb);
+            st.par_iter_mut().enumerate().for_each(|(j, h)| {
+                for dr in 0..nb {
+                    if r0 + dr > 0 {
+                        h.raw(b", ");
+                    }
+                    h.int(rows[dr * npts + j]);
+                }
+            });
+        }
+        st.into_par_iter()
+            .map(|mut h| {
+                h.raw(b"]");
+                h.done()
+            })
+            .collect()
+    }
+
+    /// The columns js of the coset codeword, streamed (re-encoding every row, holding only the chosen columns).
+    fn stream_columns(&self, js: &[usize]) -> Vec<Vec<u64>> {
+        const B: usize = 256;
+        let (r, npts) = (self.shape.r, self.shape.npts);
+        let mut cols = vec![Vec::with_capacity(r); js.len()];
+        for r0 in (0..r).step_by(B) {
+            let nb = B.min(r - r0);
+            let rows = self.encode_rows(r0, nb);
+            cols.par_iter_mut().zip(js.par_iter()).for_each(|(c, &j)| {
+                for dr in 0..nb {
+                    c.push(rows[dr * npts + j]);
+                }
+            });
+        }
+        cols
+    }
+
     fn build_tree(&mut self) {
         let npts = self.shape.npts;
-        if matches!(self.shape.dom, Dom::Coset { .. }) {
-            self.cw = self.encode_coset();
-        }
-        let mut level: Vec<Hash> = (0..npts).into_par_iter().map(|j| h_leaf(&self.salts[j], &self.column(j))).collect();
+        let coset = matches!(self.shape.dom, Dom::Coset { .. });
+        let mut level: Vec<Hash> = if coset && !self.hold_cw() {
+            self.cw = Vec::new();
+            self.stream_leaves()
+        } else {
+            if coset {
+                self.cw = self.encode_coset();
+            }
+            (0..npts).into_par_iter().map(|j| h_leaf(&self.salts[j], &self.column(j))).collect()
+        };
         let full = 1usize << bitlen(npts - 1);
         for j in 0..full - npts {
             level.push(h_pad(j as u64));
@@ -313,6 +423,10 @@ impl PcsParty {
     /// The openings of columns js. On the coset domain the codeword is held from the commitment until its first
     /// opening and released after it (memory: R npts per commitment); a later life re-encodes it once.
     pub fn open_batch(&mut self, js: &[usize]) -> Vec<Opening> {
+        if matches!(self.shape.dom, Dom::Coset { .. }) && self.cw.is_empty() && !self.hold_cw() {
+            let cols = self.stream_columns(js);
+            return cols.into_iter().zip(js).map(|(c, &j)| (c, auth_path(&self.tree, &self.salts[j], j))).collect();
+        }
         if matches!(self.shape.dom, Dom::Coset { .. }) && self.cw.is_empty() {
             self.cw = self.encode_coset();
         }

@@ -37,7 +37,8 @@ class PubShape:
     """The public shape of a ZKPCS commitment to a vector of length 2^m (what the verifier may know)."""
     def __init__(self, p, m, hide, nmask, base):
         self.p, self.m = p, m
-        self.mr, self.mc = m // 2, m - m // 2
+        self.mr = CS.row_split(m, nmask, hide)
+        self.mc = m - self.mr
         self.Rd, self.C = 1 << self.mr, 1 << self.mc
         self.nmask, self.hide = nmask, hide
         self.R = self.Rd + nmask

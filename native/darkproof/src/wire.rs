@@ -98,6 +98,71 @@ fn r_openings(r: &mut R, t: usize, sz: usize, lg: usize) -> PR<Vec<Opening>> {
     (0..t).map(|_| Ok((r.fes(sz)?, r.hs(lg)?))).collect()
 }
 
+/// cosnark.mp_needed: the siblings a multiproof of the distinct leaves js carries, (level, node) in canonical order
+/// (level 0 up, node ascending), each sent only when node ^ 1 is not itself known at that level.
+pub fn mp_needed(js: &[usize], levels: usize) -> Vec<(usize, usize)> {
+    let mut out = Vec::new();
+    for l in 0..levels {
+        let known: std::collections::BTreeSet<usize> = js.iter().map(|&j| j >> l).collect();
+        out.extend(known.iter().filter(|&&x| !known.contains(&(x ^ 1))).map(|&x| (l, x)));
+    }
+    out
+}
+
+/// One tree's openings at js as a multiproof (cosnark.mp_encode): the columns, the salts, then the needed siblings.
+fn w_multi(w: &mut W, ops: &[Opening], js: &[usize], sz: usize, levels: usize) {
+    assert_eq!(ops.len(), js.len());
+    for (col, _) in ops {
+        w.fes(col, sz);
+    }
+    for (_, path) in ops {
+        w.h(&path[0]);
+    }
+    let mut by: std::collections::HashMap<(usize, usize), Hash> = std::collections::HashMap::new();
+    for (&j, (_, path)) in js.iter().zip(ops) {
+        for l in 0..levels {
+            by.entry((l, j >> l)).or_insert(path[1 + l]);
+        }
+    }
+    for nx in mp_needed(js, levels) {
+        w.h(&by[&nx]);
+    }
+}
+
+/// cosnark.mp_decode: read a multiproof and rebuild every opened leaf's full path, computed nodes hashed from their
+/// children; a forged sibling or column yields paths that miss the root (pcs::verify_path refuses them).
+fn r_multi(r: &mut R, js: &[usize], sz: usize, levels: usize) -> PR<Vec<Opening>> {
+    let cols: Vec<Vec<u64>> = js.iter().map(|_| r.fes(sz)).collect::<PR<_>>()?;
+    let salts: Vec<Hash> = js.iter().map(|_| r.h()).collect::<PR<_>>()?;
+    let need = mp_needed(js, levels);
+    let mut sibs = r.hs(need.len())?.into_iter();
+    let mut known: std::collections::BTreeMap<usize, Hash> =
+        js.iter().zip(&salts).zip(&cols).map(|((&j, s), c)| (j, crate::h::h_leaf(s, c))).collect();
+    let mut sib: std::collections::HashMap<(usize, usize), Hash> = std::collections::HashMap::new();
+    for l in 0..levels {
+        let mut nxt = std::collections::BTreeMap::new();
+        for (&x, hx) in &known {
+            let sb = match known.get(&(x ^ 1)) {
+                Some(h) => *h,
+                None => sibs.next().expect("counted"),
+            };
+            sib.insert((l, x), sb);
+            nxt.insert(x >> 1, if x % 2 == 0 { crate::h::h_node(hx, &sb) } else { crate::h::h_node(&sb, hx) });
+        }
+        known = nxt;
+    }
+    Ok(js
+        .iter()
+        .zip(cols)
+        .zip(salts)
+        .map(|((&j, c), s)| {
+            let mut path = vec![s];
+            path.extend((0..levels).map(|l| sib[&(l, j >> l)]));
+            (c, path)
+        })
+        .collect())
+}
+
 pub(crate) fn w_ligero(w: &mut W, pr: &Profile, n: usize, sizes: &[usize], l: &LigProof) {
     let (k, t, tt) = (pr.k_l, pr.t_hide, pr.t_open);
     let lg = crate::pcs::bitlen(pr.blow * (k + t) - 1) + 1;
@@ -107,10 +172,21 @@ pub(crate) fn w_ligero(w: &mut W, pr: &Profile, n: usize, sizes: &[usize], l: &L
     let mut sz = sizes.to_vec();
     sz.push(3);
     assert_eq!(l.cols.len(), sz.len());
+    let npts = pr.blow * (k + t);
+    if pr.multiproof {
+        assert_eq!(l.j.len(), tt);
+        for &j in &l.j {
+            w.idx(j, npts);
+        }
+    }
     for (g, s) in l.cols.iter().zip(&sz) {
         assert_eq!(g.len(), n);
         for party in g {
-            w_openings(w, party, tt, *s, lg);
+            if pr.multiproof {
+                w_multi(w, party, &l.j, *s, lg - 1);
+            } else {
+                w_openings(w, party, tt, *s, lg);
+            }
         }
     }
 }
@@ -120,11 +196,17 @@ pub(crate) fn r_ligero(r: &mut R, pr: &Profile, n: usize, sizes: &[usize]) -> PR
     let wv = r.fes(k + t)?;
     let q = r.fes(2 * k + t - 1)?;
     let pq = r.fes(2 * (k + t) - 1)?;
+    let npts = pr.blow * (k + t);
+    let j = if pr.multiproof { (0..tt).map(|_| r.idx(npts)).collect::<PR<Vec<_>>>()? } else { Vec::new() };
     let mut cols = Vec::new();
     for &s in sizes.iter().chain(std::iter::once(&3)) {
-        cols.push((0..n).map(|_| r_openings(r, tt, s, lg)).collect::<PR<Vec<_>>>()?);
+        cols.push(
+            (0..n)
+                .map(|_| if pr.multiproof { r_multi(r, &j, s, lg - 1) } else { r_openings(r, tt, s, lg) })
+                .collect::<PR<Vec<_>>>()?,
+        );
     }
-    Ok(LigProof { w: wv, q, pq, cols })
+    Ok(LigProof { w: wv, q, pq, cols, j })
 }
 
 pub(crate) type PcsParts = (BTreeMap<String, Vec<Hash>>, BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>);
@@ -157,7 +239,11 @@ pub(crate) fn w_prox_cols(
             w.idx(j, s.npts);
         }
         for party in &c.open {
-            w_openings(w, party, pr.t_cols, s.r, s.path_len());
+            if pr.multiproof {
+                w_multi(w, party, &c.j, s.r, s.path_len() - 1);
+            } else {
+                w_openings(w, party, pr.t_cols, s.r, s.path_len());
+            }
         }
     }
 }
@@ -174,7 +260,9 @@ pub(crate) fn r_prox_cols(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<Strin
     }
     for (k, s) in sh {
         let j = (0..pr.t_cols).map(|_| r.idx(s.npts)).collect::<PR<Vec<_>>>()?;
-        let open = (0..n).map(|_| r_openings(r, pr.t_cols, s.r, s.path_len())).collect::<PR<Vec<_>>>()?;
+        let open = (0..n)
+            .map(|_| if pr.multiproof { r_multi(r, &j, s.r, s.path_len() - 1) } else { r_openings(r, pr.t_cols, s.r, s.path_len()) })
+            .collect::<PR<Vec<_>>>()?;
         parts.2.insert(k.clone(), PcsCols { j, open });
     }
     Ok(())

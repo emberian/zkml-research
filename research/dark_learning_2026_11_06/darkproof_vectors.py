@@ -85,7 +85,8 @@ def make_bundle(p, tab, d, W1, W2, x, y, ctx, carry=None, carry_wires=None, owne
     return dict(blob=blob, child=sst["child"], wires=wires, genesis=gen, sst=sst, mst=mst)
 
 # DP_DOMAIN=int: the gen 5 evaluation points x_j = j + 1 (the "<profile>-int" twin; vectors made before the coset domain)
-DOMAIN_SUFFIX = "-int" if os.environ.get("DP_DOMAIN") == "int" else ""
+# vectors made before the coset domain (DP_DOMAIN=int) or before bundle cut A (DP_SPLIT=square)
+DOMAIN_SUFFIX = "-int" if os.environ.get("DP_DOMAIN") == "int" else "-sq" if os.environ.get("DP_SPLIT") == "square" else ""
 
 HE_PROGRAM = dict(S1=5, K1=13, S2=4, K2=8, S3=8, K3=13, he=True)
 

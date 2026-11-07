@@ -49,15 +49,22 @@ OWNER_H = 12                 # 2^12 one-time keys per owner tree
 # section 21); the demo profile keeps N = 8192, three primes, 2^118.
 HE_LEDGER = dict(N=16384, L=4, F_BITS=175)
 HE_DEMO = dict(N=8192, L=3, F_BITS=118)
+# Bundle cut A (gen 6, 2026-11-07): the PCS row split is "balanced" (cosnark.row_split) and the Ligero row is
+# K_L = 512 wide; same rate, columns and hiding, so soundness and zero knowledge are unchanged. Cut B: every Merkle
+# tree's T openings travel as one multiproof (MERKLE "multi": columns, salts, then only the siblings not computable
+# from the opened leaves, cosnark.mp_needed). 251 -> 56 MB per d = 4096 step. The "-sq" profiles keep the square
+# split, K_L = 64 and one path per column (every bundle made before the cut).
 PROFILES = {
-    "ledger": dict(PROFILE="ledger", HE=HE_LEDGER, HIDE=618, NMASK=2, LIVES=2, T_COLS=309, BLOW=4, K_L=64, T_HIDE=309, T_OPEN=309,
-                   OWNER_H=OWNER_H, DOMAIN="coset"),
-    "demo": dict(PROFILE="demo", HE=HE_DEMO, HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=64, T_HIDE=97, T_OPEN=97,
-                 OWNER_H=OWNER_H, DOMAIN="coset"),
+    "ledger": dict(PROFILE="ledger", HE=HE_LEDGER, HIDE=618, NMASK=2, LIVES=2, T_COLS=309, BLOW=4, K_L=512, T_HIDE=309, T_OPEN=309,
+                   OWNER_H=OWNER_H, DOMAIN="coset", SPLIT="balanced", MERKLE="multi"),
+    "demo": dict(PROFILE="demo", HE=HE_DEMO, HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=512, T_HIDE=97, T_OPEN=97,
+                 OWNER_H=OWNER_H, DOMAIN="coset", SPLIT="balanced", MERKLE="multi"),
 }
+PROFILES["ledger-sq"] = dict(PROFILES["ledger"], PROFILE="ledger-sq", K_L=64, SPLIT="square", MERKLE="paths")
+PROFILES["demo-sq"] = dict(PROFILES["demo"], PROFILE="demo-sq", K_L=64, SPLIT="square", MERKLE="paths")
 # the gen 5 evaluation points x_j = j + 1 (the before/after comparison, and the vectors made before the coset domain)
-PROFILES["ledger-int"] = dict(PROFILES["ledger"], PROFILE="ledger-int", DOMAIN="int")
-PROFILES["demo-int"] = dict(PROFILES["demo"], PROFILE="demo-int", DOMAIN="int")
+PROFILES["ledger-int"] = dict(PROFILES["ledger-sq"], PROFILE="ledger-int", DOMAIN="int")
+PROFILES["demo-int"] = dict(PROFILES["demo-sq"], PROFILE="demo-int", DOMAIN="int")
 PARAMS = dict(PROFILES["ledger"])
 
 def set_profile(name):
@@ -69,6 +76,7 @@ def set_profile(name):
 def pin_params():
     CS.HIDE, CS.NMASK, CS.LIVES, CS.T_COLS, CS.BLOW, CS.DOMAIN = (PARAMS[k] for k in ("HIDE", "NMASK", "LIVES", "T_COLS", "BLOW", "DOMAIN"))
     ZK.K_L, ZK.T_HIDE, ZK.T_OPEN = PARAMS["K_L"], PARAMS["T_HIDE"], PARAMS["T_OPEN"]
+    CS.SPLIT, CS.SPLIT_K = PARAMS["SPLIT"], PARAMS["K_L"]
 
 pin_params()
 
@@ -124,11 +132,42 @@ class R:
         if self.o != len(self.d):
             raise ParseError("trailing bytes")
 
+_J = None   # the column indices of the "mp" openings being walked (set by the "jl" entry before them)
+
 def walk(io, spec, obj=None):
     """spec: ("fe",) | ("h",) | ("idx", bound) | ("list", count, spec) | ("dict", [(key, spec)]) | ("tup", [spec]).
     Writer (io is W): walks obj. Reader (io is R): returns the object."""
+    global _J
     kind = spec[0]
     rd = isinstance(io, R)
+    if kind == "jl":                                    # the opened column indices; later "mp" entries use them
+        if rd:
+            _J = [io.idx(spec[2]) for _ in range(spec[1])]
+            return _J
+        if len(obj) != spec[1]:
+            raise ValueError("column index count")
+        for j in obj:
+            io.idx(j, spec[2])
+        _J = list(obj)
+        return None
+    if kind == "mp":                                    # ("mp", T, column size, levels): one tree's T openings
+        _, T, sz, L = spec
+        if rd:
+            cols = [[io.fe() for _ in range(sz)] for _ in range(T)]
+            salts = [io.h() for _ in range(T)]
+            sibs = [io.h() for _ in CS.mp_needed(_J, L)]
+            return list(zip(cols, CS.mp_decode(_J, cols, salts, sibs, L)))
+        if len(obj) != T:
+            raise ValueError("opening count")
+        for col, _ in obj:
+            if len(col) != sz:
+                raise ValueError("column length")
+            for x in col:
+                io.fe(x)
+        salts, sibs = CS.mp_encode(_J, [pth for _, pth in obj], L)
+        for x in salts + sibs:
+            io.h(x)
+        return None
     if kind == "fe":
         return io.fe() if rd else io.fe(obj)
     if kind == "h":
@@ -146,7 +185,7 @@ def walk(io, spec, obj=None):
     if kind == "dict":
         if rd:
             return {k: walk(io, s) for k, s in spec[1]}
-        if sorted(obj) != sorted(k for k, _ in spec[1]):
+        if sorted(k for k in obj if not (k == "J" and "J" not in dict(spec[1]))) != sorted(k for k, _ in spec[1]):
             raise ValueError("dict keys differ from schema")
         for k, s in spec[1]:
             walk(io, s, obj[k])
@@ -167,6 +206,10 @@ def ligero_schema(n, group_sizes):
     k, t, T = ZK.K_L, ZK.T_HIDE, ZK.T_OPEN
     npts = 4 * (k + t)
     lg = (npts - 1).bit_length() + 1                    # salt + siblings
+    if PARAMS.get("MERKLE") == "multi":
+        cols = [L_(n, ("mp", T, sz, lg - 1)) for sz in list(group_sizes) + [3]]
+        return ("dict", [("w", L_(k + t, FE)), ("q", L_(2 * k + t - 1, FE)), ("pq", L_(2 * (k + t) - 1, FE)),
+                         ("J", ("jl", T, npts)), ("cols", ("tup", cols))])
     cols = [L_(n, L_(T, ("tup", [L_(sz, FE), L_(lg, HH)]))) for sz in list(group_sizes) + [3]]
     return ("dict", [("w", L_(k + t, FE)), ("q", L_(2 * k + t - 1, FE)), ("pq", L_(2 * (k + t) - 1, FE)),
                      ("cols", ("tup", cols))])
@@ -175,6 +218,8 @@ def pcs_schema(n, sh):
     keys = sorted(sh)
     def cols(s):
         lg = (len(s.pts) - 1).bit_length() + 1
+        if PARAMS.get("MERKLE") == "multi":
+            return ("tup", [("jl", CS.T_COLS, len(s.pts)), L_(n, ("mp", CS.T_COLS, s.R, lg - 1))])
         return ("tup", [L_(CS.T_COLS, ("idx", len(s.pts))), L_(n, L_(CS.T_COLS, ("tup", [L_(s.R, FE), L_(lg, HH)])))])
     return (("dict", [(k, L_(n, HH)) for k in keys]),
             ("dict", [(k, L_(n, L_(sh[k].W, FE))) for k in keys]),

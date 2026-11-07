@@ -243,7 +243,7 @@ class Prover:
         cols = []
         for g in self.groups + [self.mask_group]:
             cols.append([[([c[j] for c in g["codes"][i]], path(g["trees"][i], j)) for j in J] for i in range(n)])
-        return dict(w=w, q=q, pq=pq, cols=cols)
+        return dict(w=w, q=q, pq=pq, J=J, cols=cols)
 
 def _lincomb(terms, p):
     out = [0]
@@ -280,6 +280,8 @@ def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
         return False, "Ligero quadratic test: a product gate does not hold"
     tr.absorb("lig-p", pq)
     J = distinct_cols(tr, p, P.T, P.npts)
+    if msgs.get("J") is not None and list(msgs["J"]) != J:
+        return False, "Ligero column challenge mismatch"
     roots = list(group_roots) + [mask_roots]
     sizes = list(group_sizes) + [3]
     if len(cols) != len(roots):

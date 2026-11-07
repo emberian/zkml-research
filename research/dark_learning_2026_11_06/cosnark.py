@@ -163,7 +163,8 @@ class SharePCS:
         self.nmask = NMASK if nmask is None else nmask
         m = (len(shares[0]) - 1).bit_length()
         self.m = m
-        self.mr, self.mc = m // 2, m - m // 2
+        self.mr = row_split(m, self.nmask, self.hide)
+        self.mc = m - self.mr
         self.Rd, self.C = 1 << self.mr, 1 << self.mc
         self.R = self.Rd + self.nmask
         self.base = 0                     # which block of mask rows this proof uses (0: first life)
@@ -335,6 +336,45 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
                     return False, f"evaluation consistency fails at an opened column ({k})"
     return True, "accept"
 
+# --------------------------------------------------------------------------- Merkle multiproofs (bundle cut B)
+def mp_needed(J, L):
+    """The siblings a multiproof of the distinct leaves J carries, in canonical order: level 0 up, node index
+    ascending within a level; (l, x) means "the sibling of node x at level l", sent only when node x ^ 1 is not
+    itself known at level l (a leaf of J or a node computed from them)."""
+    out = []
+    for l in range(L):
+        known = sorted(set(j >> l for j in J))
+        ks = set(known)
+        out += [(l, x) for x in known if x ^ 1 not in ks]
+    return out
+
+def mp_encode(J, paths, L):
+    """Full paths [salt, sib_0, .., sib_(L-1)] of the leaves J -> (salts in J order, the needed siblings)."""
+    by_node = {}
+    for j, pth in zip(J, paths):
+        for l in range(L):
+            by_node.setdefault((l, j >> l), pth[1 + l])
+    return [pth[0] for pth in paths], [by_node[nx] for nx in mp_needed(J, L)]
+
+def mp_decode(J, cols, salts, sibs, L):
+    """The inverse of mp_encode on (columns, salts, siblings): every leaf's full path, every computed node hashed from
+    its children (H("leaf", salt, col) at the bottom, H(left, right) above). A forged sibling or column gives paths that
+    do not reach the root, which verify_path then refuses."""
+    need = mp_needed(J, L)
+    if len(sibs) != len(need):
+        raise ValueError("multiproof sibling count")
+    it = iter(sibs)
+    known = {j: H("leaf", sa, c) for j, sa, c in zip(J, salts, cols)}
+    sib = {}
+    for l in range(L):
+        nxt = {}
+        for x in sorted(known):
+            sb = known[x ^ 1] if (x ^ 1) in known else next(it)
+            sib[(l, x)] = sb
+            nxt[x >> 1] = H(known[x], sb) if x % 2 == 0 else H(sb, known[x])
+        known = nxt
+    return [[sa] + [sib[(l, j >> l)] for l in range(L)] for j, sa in zip(J, salts)]
+
 def verify_path(root, col, j, path):
     """path = [salt, sibling, sibling, ...]."""
     if not path or not isinstance(path[0], str):
@@ -345,6 +385,26 @@ def verify_path(root, col, j, path):
         h = H(h, sib) if k % 2 == 0 else H(sib, h)
         k //= 2
     return h == root
+
+SPLIT = "square"  # the PCS row split (pinned by the profile): "square" mr = m // 2; "balanced" (row_split)
+SPLIT_K = 64      # the Ligero row width the balanced split prices (proofwire pins it to the profile's K_L)
+
+def row_split(m, nmask=None, hide=None):
+    """The row count exponent mr of a commitment to 2^m values (R = 2^mr + nmask rows of W = 2^(m - mr) + hide).
+    "square": m // 2. "balanced": the mr in 0..m minimising what an opening costs on the wire, per custodian,
+    T (2^mr + nmask) column values plus (2^(m - mr) + hide) (1 + T / K) for the proximity row and one evaluation's
+    Ligero rows, in integers: T K (2^mr + nmask) + (2^(m - mr) + hide) (K + T); ties to the smaller mr."""
+    if SPLIT == "square":
+        return m // 2
+    nmask = NMASK if nmask is None else nmask
+    hide = HIDE if hide is None else hide
+    T, K = T_COLS, SPLIT_K
+    best = None
+    for r in range(m + 1):
+        cost = T * K * ((1 << r) + nmask) + ((1 << (m - r)) + hide) * (K + T)
+        if best is None or cost < best[0]:
+            best = (cost, r)
+    return best[1]
 
 DOMAIN = "int"    # the codeword's evaluation points (pinned by the profile): "int" x_j = j + 1 (gen 5); "coset" (gen 6)
 
@@ -699,7 +759,7 @@ def prove_and_verify(eng, wires, parent=None, attack=None, carry=None, context=(
 
 # ------------------------------------------------------------------------------------------- counts at any d
 def shape(m):
-    return 1 << (m // 2), 1 << (m - m // 2)
+    return 1 << row_split(m), 1 << (m - row_split(m))
 
 def counts_formula(d, n=3, t=T_COLS, hide=0, nmask=0):
     """The built spine's counts as a function of d (validated against executed runs by run_cosnark.py,

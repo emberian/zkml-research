@@ -375,8 +375,8 @@ def counts_formula(d, n=3, k=None, t=None, T=None, **gate_shifts):
     lens = dict(P=plen(g["atoms"]), A=plen(g["hadamard"]), B=plen(g["hadamard"]), C=plen(g["hadamard"]))
     lens.update({nm: plen(d) for nm in NAMES})
     m = {kk: (L - 1).bit_length() for kk, L in lens.items()}
-    C_ = {kk: 1 << (mm - mm // 2) for kk, mm in m.items()}
-    R_ = {kk: 1 << (mm // 2) for kk, mm in m.items()}
+    C_ = {kk: 1 << (mm - CS.row_split(mm)) for kk, mm in m.items()}
+    R_ = {kk: 1 << CS.row_split(mm) for kk, mm in m.items()}
     W = {kk: C_[kk] + CS.HIDE for kk in lens}
     lh, Lmax = m["A"], max(m.values())
     ev = ["A", "B", "C"] + sorted(lens)
