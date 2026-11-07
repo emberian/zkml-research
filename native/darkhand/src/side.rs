@@ -202,6 +202,33 @@ pub fn carry_is_public(pc: &PcsParty, p: u64) -> bool {
     rng.randrange_u64(p) == pc.ext[s.c] && rng.randrange_u64(p) == pc.ext[s.c + 1]
 }
 
+/// Overwrite ALL of this thread's stack below the caller's frame: from here down to the low end of the stack
+/// mapping that holds this frame (/proc/self/maps; the main thread's [stack] has grown to the deepest page ever
+/// touched, so this reaches every dead frame of earlier work), less a margin (1/16 of it, for the scrub's own frame
+/// overhead, plus 64 KiB). Elsewhere (no /proc) it falls
+/// back to 4 MiB. Call it at the shallowest point before the erasure, so that the frames pushed afterwards start on
+/// zeroed memory (a new frame's unused slots keep whatever an earlier, deeper call left there).
+#[inline(never)]
+pub fn scrub_stack_all() -> usize {
+    let here = 0u8;
+    let sp = std::hint::black_box(&here) as *const u8 as u64;
+    let low = std::fs::read_to_string("/proc/self/maps").ok().and_then(|m| {
+        m.lines().find_map(|l| {
+            let (a, b) = l.split_whitespace().next()?.split_once('-')?;
+            let (a, b) = (u64::from_str_radix(a, 16).ok()?, u64::from_str_radix(b, 16).ok()?);
+            (a <= sp && sp < b).then_some(a)
+        })
+    });
+    let kb = match low {
+        // each 16 KiB page frame of scrub_stack costs a little more than 16 KiB of stack: leave 1/16 + 64 KiB
+        Some(a) if sp > a + (64 << 10) => (((sp - a) * 15 / 16 - (64 << 10)) >> 10) as usize,
+        Some(_) => 0,
+        None => 4096,
+    };
+    scrub_stack(kb);
+    kb
+}
+
 /// Overwrite `kb` KiB of the stack below the caller's frame (the dead frames of the setup and the handover, which
 /// held keys and shares by value: Rust moves are copies and leave the old bytes behind).
 #[inline(never)]
@@ -225,7 +252,7 @@ pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6:
     let t0 = Instant::now();
     let st = setup();
     let e = old_side_erase(c, st, connect6())?;
-    scrub_stack(4096);
+    let scrubbed_kb = scrub_stack_all();
     let post_disk = e.dcan.scan_paths(&e.scan_paths);
     let post = e.can.scan();
     // ---- the attempt: decrypt the captured ciphertext with the key material this custodian still holds
@@ -236,6 +263,7 @@ pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6:
     let files_left: Vec<String> = e.files.iter().filter(|f| f.exists()).map(|f| f.display().to_string()).collect();
     let mut rep = e.rep;
     rep["scan_after_erasure"] = scan_json(&post);
+    rep["stack_scrubbed_kb"] = json!(scrubbed_kb);
     rep["disk_scan_after_erasure"] = disk_json(&post_disk);
     rep["disk_canary_kinds"] = json!(e.dcan.kinds);
     rep["scan_paths"] = json!(e.scan_paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>());
