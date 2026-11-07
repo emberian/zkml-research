@@ -4,13 +4,15 @@
 #   seats.sh new   wired-new<I>: new committee, seat 0 bb2, 1 forge, 2 bb2; ips-wired-new.txt, ports 15700 + I
 #   seats.sh sh    wired<I>-sh:  per-seat copies of wired<I> (same box, same TLS identity, a MAC key of its own);
 #                  ips-wired-sh.txt, ports 15800 + I
+#   seats.sh newsh wired-new<I>-sh: the same for the wired-new committee; ips-wired-new-sh.txt, ports 15900 + I
 set -euo pipefail
 FR=/srv/lanes/dl-gen6-prep; BR=/home/build/lanes/dl-gen6-prep
 FIP=178.105.4.114; BIP=2.31.77.40
 case $1 in
   new) H=(bb2 dregg-forge bb2); R=($BR $FR $BR); D=(wired-new0 wired-new1 wired-new2); IP=($BIP $FIP $BIP); PORT=15700; IPF=ips-wired-new.txt;;
-  sh)  H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(wired0-sh wired1-sh wired2-sh); IP=($FIP $BIP $BIP); PORT=15800; IPF=ips-wired-sh.txt;;
-  *) echo "usage: seats.sh new|sh"; exit 2;;
+  sh)  H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(wired0-sh wired1-sh wired2-sh); SRC=(wired0 wired1 wired2); IP=($FIP $BIP $BIP); PORT=15800; IPF=ips-wired-sh.txt;;
+  newsh) H=(bb2 dregg-forge bb2); R=($BR $FR $BR); D=(wired-new0-sh wired-new1-sh wired-new2-sh); SRC=(wired-new0 wired-new1 wired-new2); IP=($BIP $FIP $BIP); PORT=15900; IPF=ips-wired-new-sh.txt;;
+  *) echo "usage: seats.sh new|sh|newsh"; exit 2;;
 esac
 S=$(mktemp -d)
 for i in 0 1 2; do
@@ -19,7 +21,7 @@ for i in 0 1 2; do
     ssh ${H[$i]} "cd $r && bash native/darkprep/build/setup-box.sh $d $i $r/mpspdz-tau5.tar.xz"
   else
     # copy the binaries, compiler and this seat's TLS identity; leave every MAC key / secrets file behind
-    ssh ${H[$i]} "set -e; src=$r/wired$i/mpspdz; dst=$d/mpspdz; mkdir -p \$dst/Player-Data \$dst/Persistence; cp -a \$src/*-party.x \$src/compile.py \$src/Compiler \$src/Programs \$dst/; cp -a \$src/Player-Data/P$i.key \$src/Player-Data/P$i.pem \$dst/Player-Data/; rm -f \$dst/Programs/Bytecode/* \$dst/Programs/Schedules/* 2>/dev/null; ls \$dst/Player-Data"
+    ssh ${H[$i]} "set -e; src=$r/${SRC[$i]}/mpspdz; dst=$d/mpspdz; mkdir -p \$dst/Player-Data \$dst/Persistence; cp -a \$src/*-party.x \$src/compile.py \$src/Compiler \$src/Programs \$dst/; cp -a \$src/Player-Data/P$i.key \$src/Player-Data/P$i.pem \$dst/Player-Data/; rm -f \$dst/Programs/Bytecode/* \$dst/Programs/Schedules/* 2>/dev/null; ls \$dst/Player-Data"
   fi
   scp -q ${H[$i]}:$d/mpspdz/Player-Data/P$i.pem $S/P$i.pem
 done
