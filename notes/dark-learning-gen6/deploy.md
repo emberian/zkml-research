@@ -929,3 +929,33 @@ seats 1-2 bb2 32G; a test-only registry.
 Seat 0's trace: MPC 6.44 GB; replay 66 s, 9.54 GB; middle commitments to 9.78 GB, zerocheck 10.17, build_q (124 s)
 10.20 GB. C = 8 of 52 at all three after one step (untrained); one bundle 260,069,187 B (sha256 b8eaf2e6...),
 accepted by every replica through release_checked. Step 0 ACCEPT 200.3 s.
+
+## Continuation, updated (deploy lane generation 3, 2026-11-07 ~12:35 UTC, near its context limit)
+
+Supersedes the ~10:50 continuation. Last code commit c2319a8d (pushed). Builds on the boxes: r7 at 665a092b
+(forge, bb2: vault, E, RS, sealed tapes DLVAULT1/2, streamed release; lacks only c2319a8d's keep-erased-copy fix),
+test7 at fb173e20, test6/r6 at 11e84d91, hbox bin/ws4 (darkstep test4). Mac builds: HEAD export into
+.../scratchpad/dl-gen5/deploy3/wt2 plus this lane's files, target-deploy2.
+
+**Done this generation** (all in sections above): run12b/12c (rotation 74/74), run11b/11c (self-handover 37/37
+under x2de + RS + E), run10/10b/10c (the release now fits forge: VmHWM 10.32 GB, cgroup 10.91 GB at M = 52), item 3
+(run7: 791 s through hbox), the orchestrator rehearsal (reh: drive, vault, rotation, pipelined proofs; vault check
+9/9 copies unopenable), NAT seats, the vault, cut E / RS / close, sealed tapes, tape-wait, the new committee's
+pause/resume, record.py.
+
+**Next, in order**:
+1. run13 (`runs/run13.json`, set up: vault keys made): prep's REAL sealed chunks under ledger-x2de + RS on the wired
+   layout, 1 step + release, `--ret-round` on (the d = 4096 proof-with-rounding check). Launch when prep
+   (a8fd625fd8dbd4f54) reports run13-rel-P<I>/step-0/tape_I.bin landed (~13:00): `run.py runs/run13.json launch`.
+   run13-c0 is ready. Report forge's release VmHWM / cgroup peak and whether step 0 (rounded, proved) ACCEPTs to the
+   coordinator. Rebuild at >= c2319a8d first if --keep-erased-copy is used (run13 does not use it).
+2. reh2: a second rehearsal on a build >= c9771f4a (darkhand TLS canary fix) and c2319a8d, for the handover lane
+   (afc2a88b82c0cca1a) to confirm 0 TLS-canary hits after erasure on the boxes. Ask prep for fresh-key reh2 chunks,
+   SEALED (send the vault.name paths after `run.py setup`; vault-init --with-next only if a self-handover).
+3. The run of record: `record.py hbox|wired --steps N --handover-at K --chunks NAME --key-dir D` once the coordinator
+   sends N, K and the layout (ember is choosing the third box; hbox costs ~13 min/step on its link: run7). The
+   release now fits. Re-key at launch if more than 3 days pass after setup (keyring expiry).
+4. [OPEN] weights-equal-twin at d = 4096 with rounding (needs a test build + dl-reveal; d = 64 passes).
+
+**Agents**: coordinator aa3209e8d10294bc2; prep a8fd625fd8dbd4f54; proof aafff52532f04d20a (memory helper
+aa5e2143a94a1698c, E helper a93e0325f167a4ed2); handover afc2a88b82c0cca1a; train ad36593ec00657538.
