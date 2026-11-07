@@ -510,38 +510,73 @@ at d = 4096 (ledger: hide 618, blow 4). The commitments were 169 s + 50 s of the
 
 ## [OPEN]
 
-- **The run on three boxes (forge, bb2, hbox).** The deploy lane wires `run::public_genesis` (d0b170b7) and
-  `lb: true`. Then:
-  - the first proved three-box step;
-  - proof bytes per link, from darkstep's `sent_per_peer()[peer][PROOF]`;
-  - the release proof checked against the ledger head.
-- **Proof bytes on hbox's link.** Every custodian currently receives the whole bundle. A designated aggregator (one
-  custodian assembles and publishes) would roughly halve hbox's proof upload and remove its download. Not built: it
-  changes "every party ends with the same bundle".
+- **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).
+  - It is wiring `run::public_genesis` and `lb: true`, with pg = sha256 of train_genesis_gen6.json, into
+    dl-custodian. The proof lane's part:
+    - the first proved three-box step, every bundle accepted by the native ledger and chained;
+    - per-custodian proof time and memory (seat 0 on forge under its 12 GB cap);
+    - proof bytes per link from darkstep `Net::sent_per_peer()[peer][PROOF]` (about 134 MB each way per step
+      expected at d = 4096);
+    - pipelining contention (proof k beside step k + 1);
+    - then the release: C over t10k 0..63 (train lane's policy), checked against the ledger head.
+- **Proof bytes on hbox's link.** Today every custodian receives the whole bundle. A designated aggregator (one
+  custodian assembles and publishes) would roughly halve hbox's proof traffic. Not built; raise it with measured bytes.
+- **Memory knob.** The genesis step holds four d² codewords per custodian until the spine opens them (2.5 GB).
+  Release them after commit (`cw = Vec::new()` at the end of `build_tree`) if seat 0 exceeds 12 GB; that costs about
+  5 s.
+- **Next kernel.** Leaf hashing (repr-format SHA-256, 1.0 s per d² commitment); changing it is a wire-format change.
 
 ## Continuation
 
-- **APIs.**
-  - Steps: `run::prove_step(pr, lp, tables, prm, net, ctx, PartyStep, carry)`, with `run::step_section` for the
-    tape. It takes darkstep's ProofRecord as is: `Rec::witness_atoms` drops the LB power block.
-  - Public genesis: `run::public_genesis(pr, d, i, w1, w2, 3) -> (carry, roots)`, `run::public_weights(cfg)`, and
-    `Ledger::check_public_genesis(cfg)` before accept or release.
-  - Release: `run::release_mpc`, `release_section` and `prove_release`, then `Ledger::release`.
-- **PCS domain.** Profile DOMAIN: "coset" is the default; "ledger-int" / "demo-int" keep the old points. The CLI
-  and `darkproof_vectors.py` take `DP_DOMAIN=int` for vectors made before 28769b6a. `darkproof pcs-bench M PROFILE`
-  times one commitment.
-- **Proof speed, still open.**
-  - The one-custodian-per-box time and memory (seat 0 on forge under 12 GB).
-  - Pipelining contention, on the three-box run.
-  - Leaf hashing (repr-format SHA-256, 1.0 s per d² commitment) is the next kernel; changing it changes the wire
-    format.
-- **Program flags.** "RC" (proved bounds), "LB" (bit lookup; needs RC) and "PG" (public genesis; sha256 of the cfg
-  bytes). `StepParams { rc, lb, pg }`; the genesis writer pins all three.
-- **End to end:** `ds_chain` in bin/darkproof.rs.
-  - `DP_PG_CFG=<cfg>` for public genesis.
-  - Controls: `DP_PG_TAMPER`, `DP_W1SCALE` / `DP_W2SCALE`, `DP_IGNORE_RANGE`.
-- **Bit-exact checks:** `check`, `ds-check`, `rel-check`, which need `--features tcp,test-det`. Vector flags:
-  `DP_PROGRAM` (with "LB"), `DP_ATTACK=lb_h|lb_g1`, `DP_RC=1 DP_LB=1` for the release.
-- **Where things live.**
-  - Vectors: local `scratchpad/dl-gen6/proof/{vec,lb,pg}`; bb2 `~/lanes/dl-gen6-proof/vec`.
-  - Builds on bb2: `target-det` and `target` (`build.sh`).
+**State** (HEAD 047a3601 and before):
+- Proofs: RC (proved bounds), LB (bit lookup), PG (public genesis) and the coset-domain PCS (DOMAIN "coset").
+- All of it is byte-identical with Python, except PG, which is native only.
+- d = 4096 GEN6 + RC + LB: 3,192,275 triples per custodian (`run::step_section`) and a 21.3 s proof (three in one
+  process on bb2).
+
+**APIs the deploy lane uses.**
+- `run::public_genesis(pr, d, i, &w1, &w2, 3) -> (carry, roots)` and `run::public_weights(cfg_bytes) -> (d, w1, w2)`.
+- `StepParams { rc: true, lb: true, pg: Some(sha256(cfg_bytes)), ..}.deployed()`; `prm.carried(step)` is true from
+  step 1.
+- `run::from_darkstep_n(i, d, &record, &w1n, &w2n, &tape, Some(run::step_section(..)), Det::off())`, then
+  `run::prove_step(pr, lp, tables, prm, &mut TcpRef(&net), &ctx, st, Some(carry))`. The carry is public_genesis's at
+  step 1, then the previous StepProof.child.
+- `Ledger::open(path, model, pr, Some(Genesis { program: prm, roots: <public roots>, .. }))`, then
+  `lg.check_public_genesis(&cfg_bytes)?`, then `lg.accept(lp, &blob, &tables)` per step.
+- Release: `run::release_mpc`, `run::release_section`, `run::prove_release`, then `lg.release(lp, &blob, &pol)`.
+
+**Exact commands** (from `/Users/ember/dev/zkml-research/native`).
+- **Builds.**
+  - `CARGO_TARGET_DIR=$PWD/target-proof cargo build --release -p darkproof --features tcp,test-det --bin darkproof`
+    (the bit-exact checks);
+  - `CARGO_TARGET_DIR=$PWD/target-proof-prod cargo build --release -p darkproof --features tcp --bin darkproof`
+    (production coins).
+- **The proved chain in one process, as a reference before the three-box step.** This gives three steps, ledger
+  acceptance, the release and its refusals:
+  `DP_PG_CFG=<cfg.json> DP_PROGRAM='{"he": true, "RC": true, "LB": true}' ./target-proof-prod/release/darkproof ds-chain 16 demo 3 8`.
+  At d = 4096 use the GEN6 program:
+  `DP_PROGRAM='{"S1": 11, "K1": 19, "S2": 7, "K2": 8, "S3": 8, "K3": 19, "R3": 128, "he": true, "RC": true, "LB": true}'`,
+  with the cfg `research/dark_learning_2026_11_06/train_genesis_gen6.json`, profile `ledger`.
+- **Timed d = 4096 proof** (three in one process):
+  `DS_THREADS=8 DP_TRACE=1 DP_PROGRAM='{GEN6, "RC": true, "LB": true}' ./target/release/darkproof ds-bench 4096 ledger`.
+  On bb2 this is `~/lanes/dl-gen6-proof/cos4096.sh`, which records the box before and after.
+- **Counts:** `DP_PROGRAM=... darkproof counts 4096 ledger`. **One commitment:** `darkproof pcs-bench 24 ledger`.
+- **Bit-exact:** `darkproof check VEC TAG`, `ds-check VEC TAG`, `rel-check VEC TAG`, plus
+  `python3 darkproof_vectors.py verify VEC TAG`. Vectors made before 28769b6a need `DP_DOMAIN=int`.
+- **New vectors:** `DL_DETERMINISTIC=7 DP_PROGRAM='{..}' [DP_INPUTS=GEN6] [DP_TAGSUFFIX=_x] python3 darkproof_vectors.py OUT d demo|ledger he`.
+  For the release: `DP_RC=1 DP_LB=1 ... OUT d PROFILE pw rel`. Refusal rows: `DP_ATTACK=lb_h|lb_g1`.
+- **The three-box step itself** is the deploy lane's orchestrator (darkdeploy, dl-custodian, TLS, its scripts under
+  native/deploy/). Ask it for the invocation.
+
+**Where the vectors live.**
+- Local, under `/private/tmp/claude-501/-Users-ember-dev-aidev/78fef112-a52f-425f-8503-f3fa24ff087c/scratchpad/dl-gen6/proof/`:
+  - `vec`: the x_j = j + 1 domain;
+  - `lb`: LB, int domain, with the attack rows;
+  - `cos`: the coset domain (demo_d4_lb_he; plus demo_d4 pw/rel, from a Python job that may still be finishing:
+    `rel_d4.log`, `rel_d4.pid`);
+  - `pg/cfg16.json`: a d = 16 darktrain cfg;
+  - `lb_plain.py`: the circuit's plaintext check.
+- bb2, `~/lanes/dl-gen6-proof/`:
+  - `vec`: every int-domain set; checks.sh, the checks*.log files, rc4096b_* and cos4096_* logs;
+  - builds: `target-det` (pre-coset), `target` (coset, a40857d1). Rebuild after syncing `native/`.
+  - No jobs of mine are running there.
