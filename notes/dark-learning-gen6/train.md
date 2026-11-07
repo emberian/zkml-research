@@ -157,3 +157,13 @@ Plumbing:
 - [OPEN] The run length: 2000 steps, the knee above, or fewer.
 - [OPEN] Releasing per-example predictions on the 64 (b) instead of the count (c) would let a verifier recompute accuracy itself, at 64 x log2(10) bits of leakage against ~6.
 - [OPEN] The bound margins (x1.5 on e, x1.6 on z2) are empirical for this data stream. A violation in deployment would silently break the truncation's correctness and masking. An in-MPC range check would make them enforced; it is not built.
+
+## Review
+
+Cross-model review (`codex exec -m gpt-6-astra --sandbox read-only`) covered commits f26c8289, 5d02dad3, 0b26d20c and 364a02d9.
+- It found no correctness bugs in four areas:
+  - HARNESS is byte-identical and Plain::step_prog equals step_spec(prog), with R3 before the last truncation;
+  - the dealer order matches consumption, and carried steps deal 2d inputs;
+  - the fast step, encoder, init and order equal Python;
+  - the strict comparison under |v| < 2^10 is correct.
+- It reran the trainer tests and the harness identity. The MPC tests could not run in its sandbox (sockets), so it reviewed them statically.
