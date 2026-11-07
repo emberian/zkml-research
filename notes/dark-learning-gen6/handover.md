@@ -551,7 +551,26 @@ aafff52532f04d20a; its interface is proof.md §21-22, 2adc6652):**
 - **Open question, asked of the proof lane:** the new commitment's lives. Either (a) the new W keeps two lives and
   the next step accepts that parent shape, or (b) my preference: the handover leaves the new head pending through
   new carries cN = new W(r), committed by the new committee, and the next step discharges them.
-- **Native E** waits for the proof lane's native D/E helpers.
+- **Decided (proof lane gen 6, aafff52532f04d20a): (b).** Its conditions:
+  1. **Fiat-Shamir order.** The new committee's W roots are absorbed BEFORE r is drawn; today's handover already
+     absorbs every root before _schedule. The roots of cN1 and cN2 are absorbed after r and before any challenge
+     their constraints use (the Ligero's, the PCS columns).
+  2. **Record schema.** The rotate record's `pending` is exactly `pending_json(out)`:
+     - points keyed "W1" and "W2" (flat F_{p^EXT});
+     - `carry_roots` under the keys a step's pending uses (the next step reads them as CARRY_IN c1p, c2p), so the
+       new carries map onto those keys.
+     - In `_replay`, on a rotate record: `discharge("handover")` of the old head first, then
+       `self.pending = rec.get("pending")` and `self.status[self.step] = "pending"`.
+     - Drop the "rotation refused: the head is pending" refusal only once HO.verify_bytes takes
+       `deferred_of(self.pending)` and checks it.
+  3. **Refusal rows wanted:**
+     - (i) a new share altered so new W(r) != cN: the rotation is accepted as pending, and the next step is refused
+       at the discharge;
+     - (ii) the old head's carry not satisfied (forge_W1n on the last step): the handover is refused;
+     - (iii) a step after the rotation under the pending head is accepted, and the head is final after it;
+     - (iv) a close right after a rotation discharges it.
+- **Native E:** the proof lane's helper a93e0325 is porting E. The native handover discharge calls the same
+  deferred-eval path once that lands (the proof lane sends the commit).
 
 **Open:**
 - the LowGear-Secrets alpha form, which the prep lane reports;
