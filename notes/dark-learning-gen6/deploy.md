@@ -1066,3 +1066,40 @@ The handover lane's checker, run by this lane (coordinator's request; that lane 
   set "bin" to ws-target-r11 (the generator writes ws-target-run), `run.py runs/record.json plan` (prep's lookahead
   20), `setup`, hand prep the six vault.name paths for sealed chunks, then `run.py runs/record.json drive` in the
   background with drive.pid. Never forge + bb2 + bb2 (development only).
+
+### reh2's checker after the criterion fix, and every MP-SPDZ secret at the erasure [EXECUTED]
+
+- 7739184b (check_handover.py, at the coordinator's request; its owner is retired): the disk control holds on
+  persistent OR RAM-filesystem hits; with the vault on, a new check: persistent disk holds no plaintext material before
+  the erasure. `--reports OLD.json... [--assume-vault]` evaluates saved reports. Negative controls on real reports:
+  reh (vault on, MP-SPDZ's plaintext key files on disk) and run12c (clear ckpt / carry, --assume-vault) fail it at every
+  old seat. **Live re-run on reh2: 104/104.**
+- That count could not see what prep found: reh2's old seats kept their gf2^128 and B-64 MASCOT secrets in tmpfs after
+  the handover (--erase-extra named only p-61's files; the content scan canaries only p-61 material). Prep erased them
+  by hand. 902b44c4: dl-custodian `--erase-runtime RT` (rotation and self-handover) erases every file
+  darkprep::mpspdz::is_party_secret names for the seat in RT (Player-Data through its symlink, per-field subdirectories,
+  Persistence); record.py --key-dir passes it; the checker adds "no MP-SPDZ secret file of this seat is left in its
+  runtime (by name, every field)". handover_steps rotation and self-handover give each old seat a 7-secret multi-field
+  runtime: Mac 2 passed, bb2 vault variants 2 passed; control: without the flag the rotation fails at the first secret.
+- The run of record's binaries are now r12 (902b44c4) on forge, bb2 and hbox (`ws-target-r12`).
+
+## Continuation (deploy lane generation 4, 2026-11-07 ~14:05 UTC)
+
+**State**: everything to 902b44c4 pushed. Builds r12 = 902b44c4 (with dl-hand) on forge /srv/lanes/dl-gen6-deploy/ws-target-r12,
+bb2 ~/lanes/dl-gen6-deploy/ws-target-r12, hbox /othersys/lanes/dl-gen6-deploy/ws-target-r12. Mac builds from a HEAD export in
+.../scratchpad/dl-gen5/deploy4/wt plus this lane's files, target-deploy2. Configs: .../scratchpad/dl-gen5/deploy2/runs/
+(run13.json, reh2.json); checker outputs .../deploy4/check-reh2{,b}/.
+
+**Done**: run13 (rounded proved step ACCEPT at d = 4096; the release fits forge, 10.27 GB peak; C = 8 = the twin), reh2
+(104/104 after the criterion fix; TLS canary 0 after; 9 erased copies open under nothing), the disk plan (run.py plan /
+gate / drive's disk pause, archive on forge), the bb2 cleanup (58.59 GiB), sealed-tape fixes (tape_len, the sealed claim,
+the release alone after a checkpoint, the release tape wiped), --erase-runtime.
+
+**Next**: the run of record, only after the coordinator sends N, K and the layout (ember chooses the third box; never
+forge + bb2 + bb2): `record.py hbox|wired --steps N --handover-at K --chunks NAME --key-dir D [--third H,IP,ROOT]`, bins
+to ws-target-r12, `run.py plan`, `setup`, send prep the six vault.name paths, `drive` in the background with drive.pid.
+After the handover run check_handover.py (rotation, --profile ledger-x2de, dl-hand r12) and dl-hand vault-open only if
+--keep-erased-copy was used (not in the run of record). [OPEN] a rehearsal of --erase-runtime on the boxes (reh3) if
+the coordinator wants one before the run of record.
+
+**Agents**: coordinator aa3209e8d10294bc2; prep a8fd625fd8dbd4f54; train ad36593ec00657538; proof aafff52532f04d20a.
