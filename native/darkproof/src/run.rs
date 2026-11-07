@@ -453,6 +453,104 @@ pub struct PartyRelease {
     pub triples: Vec<Triple>,
     /// TEST ONLY (feature test-det), as PartyStep.det
     pub det: Det,
+    /// the deployed release: the proof section read from the tape file (then `triples` is empty)
+    pub tape_file: Option<ReleaseTape>,
+}
+
+/// A release tape file's proof section (darkstep's DLTAPE01: a 24-byte header, n tags, n shares, n MACs), read in
+/// order from disk: the release loads only the MPC part of its tape (load_release_tape), and the prover draws the
+/// section's triples from here, never holding them (at M = 52: 38.7M triples, 1.9 GB; the tape itself 2.7 GB).
+#[derive(Clone, Debug)]
+pub struct ReleaseTape {
+    path: std::path::PathBuf,
+    n: usize,
+    from: usize,
+    count: usize,
+}
+
+impl ReleaseTape {
+    pub fn count(&self) -> usize {
+        self.count
+    }
+    /// triples j0 .. j0 + cnt of the section, in order
+    pub fn triples(&self, j0: usize, cnt: usize) -> Result<TapeTriples, String> {
+        use std::io::{Seek, SeekFrom};
+        if j0 + cnt > self.count {
+            return Err("the release tape's proof section is shorter than asked".into());
+        }
+        let k = (self.from + 3 * j0) as u64;
+        let open = |base: u64| -> Result<std::io::BufReader<std::fs::File>, String> {
+            let mut f = std::fs::File::open(&self.path).map_err(|e| format!("{}: {e}", self.path.display()))?;
+            f.seek(SeekFrom::Start(base + 8 * k)).map_err(|e| e.to_string())?;
+            Ok(std::io::BufReader::with_capacity(1 << 20, f))
+        };
+        let n = self.n as u64;
+        Ok(TapeTriples { sh: open(24 + n)?, mac: open(24 + 9 * n)?, left: cnt })
+    }
+}
+
+/// The reader of ReleaseTape::triples.
+pub struct TapeTriples {
+    sh: std::io::BufReader<std::fs::File>,
+    mac: std::io::BufReader<std::fs::File>,
+    left: usize,
+}
+
+impl Iterator for TapeTriples {
+    type Item = Triple;
+    fn next(&mut self) -> Option<Triple> {
+        use std::io::Read;
+        if self.left == 0 {
+            return None;
+        }
+        self.left -= 1;
+        let (mut a, mut b) = ([0u8; 24], [0u8; 24]);
+        self.sh.read_exact(&mut a).expect("release tape: shares");
+        self.mac.read_exact(&mut b).expect("release tape: MACs");
+        let w = |x: &[u8; 24], j: usize| u64::from_le_bytes(x[8 * j..8 * j + 8].try_into().unwrap());
+        Some(((w(&a, 0), w(&b, 0)), (w(&a, 1), w(&b, 1)), (w(&a, 2), w(&b, 2))))
+    }
+}
+
+/// Load a release tape file's MPC part (the tape but its last 3 nrt entries; nrt = release_section) and the handle
+/// of its proof section, whose tags are checked to be (Ta, Tb, Tc) triples. Reads the file once, sequentially.
+#[cfg(feature = "tcp")]
+pub fn load_release_tape(path: &std::path::Path, nrt: usize) -> Result<(darkstep::tape::Tape, ReleaseTape), String> {
+    use darkstep::tape::Tag;
+    use std::io::{Read, Seek, SeekFrom};
+    let ioe = |e: std::io::Error| format!("{}: {e}", path.display());
+    let mut f = std::io::BufReader::with_capacity(1 << 20, std::fs::File::open(path).map_err(ioe)?);
+    let mut hdr = [0u8; 24];
+    f.read_exact(&mut hdr).map_err(ioe)?;
+    if &hdr[..8] != b"DLTAPE01" {
+        return Err(format!("{}: not a tape", path.display()));
+    }
+    let alpha_i = u64::from_le_bytes(hdr[8..16].try_into().unwrap());
+    let n = u64::from_le_bytes(hdr[16..24].try_into().unwrap()) as usize;
+    if 3 * nrt > n {
+        return Err(format!("{}: the tape has {n} entries, the release's proof section alone {}", path.display(), 3 * nrt));
+    }
+    let k = n - 3 * nrt;
+    let mut tags = vec![0u8; n];
+    f.read_exact(&mut tags).map_err(ioe)?;
+    if let Some(j) = (k..n).step_by(3).find(|&j| (tags[j], tags[j + 1], tags[j + 2]) != (Tag::Ta as u8, Tag::Tb as u8, Tag::Tc as u8)) {
+        return Err(format!("{}: the release's proof section is not (Ta, Tb, Tc) triples at entry {j}", path.display()));
+    }
+    tags.truncate(k);
+    tags.shrink_to_fit();
+    let mut words = |f: &mut std::io::BufReader<std::fs::File>| -> Result<Vec<u64>, String> {
+        let mut b = vec![0u8; 8 * k];
+        f.read_exact(&mut b).map_err(ioe)?;
+        Ok(b.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect())
+    };
+    let sh = words(&mut f)?;
+    f.seek(SeekFrom::Start((24 + 9 * n) as u64)).map_err(ioe)?;
+    let mac = words(&mut f)?;
+    let len = f.seek(SeekFrom::End(0)).map_err(ioe)?;
+    if len != (24 + 17 * n) as u64 {
+        return Err(format!("{}: {len} bytes, a tape of {n} entries has {}", path.display(), 24 + 17 * n));
+    }
+    Ok((darkstep::tape::Tape { alpha_i, tags, sh, mac }, ReleaseTape { path: path.to_path_buf(), n, from: k, count: nrt }))
 }
 
 /// The release's public policy: X[k][t] at k M + t (mod p), labels, classes, the comparison shift.
@@ -516,12 +614,18 @@ pub fn prove_release_d(
     let det = st.det;
     let nb = rec.proof_products() + middle::beaver_count_e(rec.had.len(), lp.ext);
     let lm = if det.on() { 0 } else { LigParty::tape_triples(lp, middle::lig_scalars(lp.ext), 1) };
-    if st.triples.len() != nb + lm {
-        return Err(format!("the tape's release section has {} triples, the proof needs {}", st.triples.len(), nb + lm));
+    let have = st.tape_file.as_ref().map_or(st.triples.len(), |t| t.count());
+    if have != nb + lm {
+        return Err(format!("the tape's release section has {have} triples, the proof needs {}", nb + lm));
     }
-    let mut tri = st.triples;
-    let lig_m: Vec<(u64, u64, u64)> = tri.split_off(nb).into_iter().map(|(a, b, c)| (a.0, b.0, c.0)).collect();
-    let mut sp = Spdz::from_tape(i, n, st.alpha_i, tri);
+    let shares = |t: Vec<Triple>| -> Vec<(u64, u64, u64)> { t.into_iter().map(|(a, b, c)| (a.0, b.0, c.0)).collect() };
+    let (lig_m, mut sp) = match st.tape_file.take() {
+        Some(tf) => (shares(tf.triples(nb, lm)?.collect()), Spdz::from_iter(i, n, st.alpha_i, Box::new(tf.triples(0, nb)?))),
+        None => {
+            let mut tri = std::mem::take(&mut st.triples);
+            (shares(tri.split_off(nb)), Spdz::from_tape(i, n, st.alpha_i, tri))
+        }
+    };
     let mi = middle::MiddleIn {
         pr,
         lp,
@@ -640,6 +744,7 @@ pub fn release_mpc(
         atoms,
         triples: Vec::new(),
         det: Det::off(),
+        tape_file: None,
     };
     Ok((c, st))
 }
@@ -697,9 +802,30 @@ pub fn release_custodian_l(
     w2: &[Vec<darkstep::party::Sh>],
     pol: &Policy,
     ctx: &Ctx,
+    head: BTreeMap<String, PcsParty>,
+    head_roots: Option<&BTreeMap<String, Vec<Hash>>>,
+    pend: Option<&crate::defer::Pending>,
+) -> Result<ReleaseOut, String> {
+    release_custodian_src(pr, lp, prm, pt, w1, w2, pol, ctx, head, head_roots, pend, None)
+}
+
+/// release_custodian_l with the proof section streamed from the tape file: pt.tape holds only the MPC part
+/// (load_release_tape), which the MPC must consume exactly.
+#[cfg(feature = "tcp")]
+#[allow(clippy::too_many_arguments)]
+pub fn release_custodian_src(
+    pr: &Profile,
+    lp: &LigParams,
+    prm: StepParams,
+    pt: &mut darkstep::party::Party,
+    w1: &[Vec<darkstep::party::Sh>],
+    w2: &[Vec<darkstep::party::Sh>],
+    pol: &Policy,
+    ctx: &Ctx,
     mut head: BTreeMap<String, PcsParty>,
     head_roots: Option<&BTreeMap<String, Vec<Hash>>>,
     pend: Option<&crate::defer::Pending>,
+    tape_file: Option<ReleaseTape>,
 ) -> Result<ReleaseOut, String> {
     let dfr = carry_in(&mut head, pend)?;
     let d = w1.len();
@@ -720,8 +846,20 @@ pub fn release_custodian_l(
     // the release is terminal: its proof section is the rest of the tape (prove_release refuses a count that is not
     // the proof's), taken from the tape's end as the tape shrinks, and the rest of the tape freed before proving. The
     // count is not recomputed here: release_section replays the program (at M = 52 a transient Rec of about 7 GB).
-    st.triples = take_tape_triples(&mut pt.tape, pt.cur)?;
-    let nrt = st.triples.len();
+    let nrt = match tape_file {
+        Some(tf) => {
+            if pt.cur != pt.tape.len() {
+                return Err(format!("the release tape's MPC part has {} entries, the MPC used {}", pt.tape.len(), pt.cur));
+            }
+            let c = tf.count();
+            st.tape_file = Some(tf);
+            c
+        }
+        None => {
+            st.triples = take_tape_triples(&mut pt.tape, pt.cur)?;
+            st.triples.len()
+        }
+    };
     let cur_after = pt.cur + 3 * nrt;
     pt.tape = darkstep::tape::Tape { alpha_i: pt.tape.alpha_i, ..Default::default() };
     pt.atom_log = Vec::new();
