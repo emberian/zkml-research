@@ -183,3 +183,39 @@ fairness on `bumpCounter`; restore now re-queues persisted frames; the handover 
 trace soundness vs completeness of the checker separated; `LawfulHashable` is not collision freedom;
 `#updr` does emit kernel theorems; "ours ahead on trust" narrowed to per-path; our
 `always_iff_reachable` premise noted. Not yet acted on: running the pilots at larger instances.
+
+## 7. Follow-on: Ariadne state continuity for the chokepoint device (ember's choice)
+
+Ariadne read from `/Users/ember/paperbin/strackx2016-ariadne-state-continuity.txt` (USENIX Security
+2016, open access; §4.1 Listing 2, §4.2 Gray codes, §5 a 4,823-line proof of the base
+algorithm). [READ]
+
+- **Veil model** `/Users/ember/dev/veil-pilot/VeilPilot/ChokepointAriadne.lean` (commit `1f83fe8`):
+  `#check_invariants` with `veil.smt.trust false` passes every obligation (333 reconstructed, none
+  trusted) except the variants' own non-omission clause, which is the attacks; for Ariadne's
+  parameters that clause is vacuous, so the induction closes (Codex's review forced this split: an
+  unproved clause left in the antecedent would have made the rest conditional). Model checks
+  (`frame := Fin 2`, `runs/ariadne-run15.txt`): safe under rollback (1,874 states) and rollback plus
+  counter tampering (2,684); honest disk: safe and never halts (14,318), `recovers` (6,678 product
+  states) and `committed_forwarded` (23,558) hold; seven controls fail as they must; accept-one-behind
+  omits (even with the honest disk, which still holds the stale package) and one-increment retrieve
+  omits (Ariadne's Appendix A.3, 17 steps, three crashes). [MEASURED]
+- **A vacuity the controls caught**: without an idle step, every infinite run of the bounded instance
+  must crash forever, so "once crashes stop, it recovers" held with 0 product states explored. Adding
+  `idle` and an impossible-consequent control (`ctrl_same_antecedent`) fixed it. Worth a Veil doc note.
+- **Counter word** `/Users/ember/dev/veil-pilot/VeilPilot/CounterWord.lean`: a binary word torn by a
+  crash mid-increment reads below the old value (1 → 2 interrupted reads 0); the Gray word never does.
+- **Device, kernel-proved for every hash and every run**:
+  `/Users/ember/dev/degg-research/experiments/chokepoint-step/AriadneStep.lean` and `GrayCounter.lean`
+  (commit `248f1cf`, bare Lean 4.33.1 and 4.35.0, axioms `propext`, `Classical.choice`, `Quot.sound`):
+  `non_omission`, `restore_accepts_only_current`, `occ_binds`, `honest_never_halts`,
+  `honest_recovers`, `gray_one_flip`, `grayEnc_injective`; falsifiers `tolerateOne_omits`,
+  `singleInc_omits` by `decide`.
+- **Codex astra review 2** (`codex-astra-review-2.md`): duplicate forwards are real (recovery
+  re-queues), so `occ_binds` was added; a wrong control comment fixed; model boundary named (MAC,
+  synchronous atomic writes, NV single-bit atomicity and counter width, membership not order,
+  purge only initial, single instance).
+- **Not done yet**: the refinement theorem from `AriadneStep.step` to Veil's
+  `ChokepointAriadne.relationalTransitionSystem`. Feasibility shown: Veil's generated transition for
+  `commitInc` reduces definitionally (`exact ⟨hpc, hh, rfl⟩` after unfolding `Next`, `NextAct`,
+  `commitInc.ext.derived_eq`, `commitInc.ext.tr`); the rest is list-index bookkeeping for package ids.
