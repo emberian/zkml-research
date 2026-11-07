@@ -57,7 +57,7 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
             let w = darkproof::step::StepParams::for_width(d);
             let f = |k: &str, dflt: u32| p.get(k).and_then(|v| v.as_u64()).map(|v| v as u32).unwrap_or(dflt);
             let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
-            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false) }
+            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), pg: None }
         }
     }
 }
@@ -394,6 +394,19 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         Ok(j) => program_of(&serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }), d).deployed(),
         Err(_) => darkproof::step::StepParams::for_width(d).deployed(),
     };
+    // PUBLIC GENESIS (DP_PG_CFG=<darktrain cfg json>): W = darktrain::init(cfg) enters custody as a public constant,
+    // committed with public coins; every step is the carried program
+    let pg_cfg: Option<Vec<u8>> = std::env::var("DP_PG_CFG").ok().map(|f| std::fs::read(f).expect("DP_PG_CFG"));
+    let mut prm = prm;
+    if let Some(c) = &pg_cfg {
+        use sha2::{Digest, Sha256};
+        prm.pg = Some(Sha256::digest(c).into());
+    }
+    let pgw: Option<(Vec<i64>, Vec<i64>)> = pg_cfg.as_ref().map(|c| {
+        let (dd, w1, w2) = darkproof::run::public_weights(c).unwrap();
+        assert_eq!(dd, d, "the public genesis cfg's d");
+        (w1, w2)
+    });
     let tables = darkproof::step::tables_for(prm.t_lo);
     let pf = darkstep::node::prof(&[pr.he.0.to_string(), pr.he.1.to_string(), pr.he.2.to_string(), d.to_string()]);
     let pg = darkstep::step::Program { s1: prm.s1, k1: prm.k1, s2: prm.s2, k2: prm.k2, s3: prm.s3, k3: prm.k3, r3: prm.r3, t_lo: prm.t_lo, xmax: 7, wmax: None, check_k: false };
@@ -423,14 +436,18 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         }
     }
     let w2scale = w2scale.or(w1scale);
+    if let Some((w1, w2)) = &pgw {
+        plain.w1 = (0..d).map(|j| w1[j * d..(j + 1) * d].to_vec()).collect();
+        plain.w2 = (0..d).map(|j| w2[j * d..(j + 1) * d].to_vec()).collect();
+    }
     let genesis = plain.flat_mod(p);
     let xy = genesis[2 * d * d..].to_vec();
     let mut css = Vec::new();
     let mut nts = Vec::new();
     for k in 0..steps {
-        let inp = if k == 0 { genesis.clone() } else { xy.clone() };
+        let inp = if k == 0 && pgw.is_none() { genesis.clone() } else { xy.clone() };
         css.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, d, &inp, &pg));
-        let nt = darkproof::run::step_section(&lp, d, prm, k > 0, &tables);
+        let nt = darkproof::run::step_section(&lp, d, prm, prm.carried(k as u64 + 1), &tables);
         darkstep::tape::deal_proof_section(&mut dl, nt);
         nts.push(nt);
     }
@@ -452,7 +469,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             .zip(tapes)
             .enumerate()
             .map(|(i, (l, tape))| {
-                let (addrs, css, pf, pr, lp, tables, pg, nts) = (&addrs, css.clone(), &pf, &pr, &lp, &tables, &pg, &nts);
+                let (addrs, css, pf, pr, lp, tables, pg, nts, pgw) = (&addrs, css.clone(), &pf, &pr, &lp, &tables, &pg, &nts, &pgw);
                 s.spawn(move || {
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
@@ -460,6 +477,20 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
                     let (mut carry, mut head, mut blobs, mut groots): (Option<Carry>, Option<(DS, DS)>, Vec<Vec<u8>>, _) = (None, None, Vec::new(), None);
+                    if let Some((w1, w2)) = pgw {
+                        let (c, roots) = darkproof::run::public_genesis(pr, d, i, w1, w2, 3);
+                        let sh = |w: &[i64]| -> DS {
+                            (0..d).map(|j| (0..d).map(|k| pt.cadd(darkproof::field::from_i64(w[j * d + k]), darkstep::party::Sh { s: 0, m: 0 })).collect()).collect()
+                        };
+                        // CONTROL (DP_PG_TAMPER): custody holds W1 + e_00, not the public W its commitment is of
+                        let mut w1c = w1.clone();
+                        if std::env::var_os("DP_PG_TAMPER").is_some() {
+                            w1c[0] += 1;
+                        }
+                        head = Some((sh(&w1c), sh(w2)));
+                        carry = Some(c);
+                        groots = Some(roots);
+                    }
                     for k in 0..steps {
                         let ts = std::time::Instant::now();
                         // ProofRecord.public and .middle_atoms are cumulative over the party's life: keep this step's
@@ -515,6 +546,26 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let cust = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<String>>();
     let mut lg = darkproof::ledger::Ledger::open(&lpath, model, &pr, Some(darkproof::ledger::Genesis { d, program: prm, owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: parts[0].5.clone().unwrap() })).unwrap();
     let mut ok_all = parts.iter().all(|p| p.4 == parts[0].4);
+    if let (Some(cfg), Some((w1, _))) = (&pg_cfg, &pgw) {
+        // public genesis: refused before the check, with another cfg, and with roots that are not the cfg's W
+        let r0 = lg.accept(&lp, &parts[0].4[0], &tables);
+        println!("public genesis: step 1 before the cfg check: {r0:?}");
+        let mut other = cfg.clone();
+        other.push(b'\n');
+        let r1 = lg.check_public_genesis(&other);
+        println!("public genesis: another cfg: {r1:?}");
+        let mut w1b = w1.clone();
+        w1b[0] += 1;
+        let forged = darkproof::run::public_genesis_roots(&pr, d, &w1b, &vec![0; d * d], 3);
+        let fpath = dir.join("forged.ledger");
+        let mut fl = darkproof::ledger::Ledger::open(&fpath, model, &pr, Some(darkproof::ledger::Genesis { d, program: prm, owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: forged })).unwrap();
+        let r2 = fl.check_public_genesis(cfg);
+        println!("public genesis: roots of another W under the pinned cfg: {r2:?}");
+        let t = std::time::Instant::now();
+        let r3 = lg.check_public_genesis(cfg);
+        println!("public genesis: the pinned cfg: {r3:?} ({:.1}s)", t.elapsed().as_secs_f64());
+        ok_all &= r0.is_err() && r1.is_err() && r2.is_err() && r3.is_ok();
+    }
     for (k, b) in parts[0].4.iter().enumerate() {
         let t = std::time::Instant::now();
         let r = lg.accept(&lp, b, &tables);

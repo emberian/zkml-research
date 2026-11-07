@@ -54,12 +54,63 @@ impl Det {
     }
 }
 
-/// A source of secret coins.
+/// A source of coins.
 pub enum Coins {
     /// TEST ONLY: a seeded CPython stream (bit-exact with the harness under the hook)
     Seeded(PyRandom),
     /// the OS CSPRNG
     Os(OsCoins),
+    /// PUBLIC coins, for a commitment to a public vector only (the public genesis): SHA-256 in counter mode over a
+    /// public label, so anyone recomputes the commitment. Never for anything secret.
+    Public(PubCoins),
+}
+
+pub struct PubCoins {
+    key: [u8; 32],
+    ctr: u64,
+    buf: [u8; 32],
+    pos: usize,
+}
+
+impl PubCoins {
+    fn word(&mut self) -> u64 {
+        use sha2::{Digest, Sha256};
+        if self.pos + 8 > 32 {
+            let mut h = Sha256::new();
+            h.update(b"dl-public-coins");
+            h.update(self.key);
+            h.update(self.ctr.to_le_bytes());
+            self.buf = h.finalize().into();
+            self.ctr += 1;
+            self.pos = 0;
+        }
+        let w = u64::from_le_bytes(self.buf[self.pos..self.pos + 8].try_into().unwrap());
+        self.pos += 8;
+        w
+    }
+}
+
+/// Public coins keyed by the label parts (Coins::Public).
+pub fn public_coins(parts: &[&str]) -> Coins {
+    use sha2::{Digest, Sha256};
+    let mut h = Sha256::new();
+    for p in parts {
+        h.update((p.len() as u64).to_le_bytes());
+        h.update(p.as_bytes());
+    }
+    Coins::Public(PubCoins { key: h.finalize().into(), ctr: 0, buf: [0; 32], pos: 32 })
+}
+
+fn rejection(n: u64, mut word: impl FnMut() -> u64) -> u64 {
+    assert!(n > 0);
+    let bits = 64 - (n - 1).leading_zeros();
+    let mask = if bits == 64 { u64::MAX } else { (1u64 << bits) - 1 };
+    loop {
+        let x = word() & mask;
+        if x < n {
+            return x;
+        }
+    }
 }
 
 pub struct OsCoins {
@@ -84,17 +135,8 @@ impl Coins {
     pub fn randrange_u64(&mut self, n: u64) -> u64 {
         match self {
             Coins::Seeded(r) => r.randrange_u64(n),
-            Coins::Os(o) => {
-                assert!(n > 0);
-                let bits = 64 - (n - 1).leading_zeros();
-                let mask = if bits == 64 { u64::MAX } else { (1u64 << bits) - 1 };
-                loop {
-                    let x = o.word() & mask;
-                    if x < n {
-                        return x;
-                    }
-                }
-            }
+            Coins::Os(o) => rejection(n, || o.word()),
+            Coins::Public(o) => rejection(n, || o.word()),
         }
     }
     pub fn is_seeded(&self) -> bool {
@@ -138,5 +180,12 @@ pub fn salt(c: &mut Coins) -> [u8; 32] {
             out
         }
         Coins::Os(_) => os_bytes(32).try_into().unwrap(),
+        Coins::Public(o) => {
+            let mut out = [0u8; 32];
+            for k in 0..4 {
+                out[8 * k..8 * k + 8].copy_from_slice(&o.word().to_le_bytes());
+            }
+            out
+        }
     }
 }

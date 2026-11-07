@@ -80,6 +80,7 @@ pub fn bitlen(x: usize) -> usize {
 
 pub type Opening = (Vec<u64>, Vec<Hash>);
 
+#[derive(Clone)]
 pub struct PcsParty {
     pub label: String,
     pub shape: Shape,
@@ -101,8 +102,7 @@ impl PcsParty {
         let m = bitlen(share.len() - 1);
         assert_eq!(share.len(), 1 << m);
         let shape = Shape::new(pr, m, 0);
-        // the share's hash labels the seeded stream only under the hook (never computed for OS coins)
-        let mut rng = if det.on() {
+        let rng = if det.on() {
             det.coins(&[
                 "pcs",
                 label,
@@ -114,6 +114,20 @@ impl PcsParty {
         } else {
             crate::rng::secret_coins()
         };
+        Self::commit_with(pr, share, label, rng)
+    }
+
+    /// A commitment to a PUBLIC share (the public genesis): its tails, mask rows and salts are public coins keyed by
+    /// the share's hash alone, so anyone recomputes the root, and equal shares give equal commitments.
+    pub fn commit_public(pr: &Profile, share: &[u64], label: &str) -> Self {
+        let rng = crate::rng::public_coins(&["dl-public-genesis", &crate::h::h_list_hex(share)]);
+        Self::commit_with(pr, share, label, rng)
+    }
+
+    fn commit_with(pr: &Profile, share: &[u64], label: &str, mut rng: crate::rng::Coins) -> Self {
+        let m = bitlen(share.len() - 1);
+        assert_eq!(share.len(), 1 << m);
+        let shape = Shape::new(pr, m, 0);
         let (w, c) = (shape.w, shape.c);
         let mut ext = vec![0u64; shape.r * w];
         for r in 0..shape.rd {

@@ -30,13 +30,17 @@ pub struct StepParams {
     /// the lookup is proved by a bit circuit on z1's range bits instead of the masked powers (cosnark_gates
     /// append_lookup; genesis "LB": true; needs rc)
     pub lb: bool,
+    /// public genesis: the initial weights are public, W = darktrain::init(cfg), committed with public coins
+    /// (run::public_genesis); this is sha256 of the cfg json (genesis "PG"). Every step is then the carried
+    /// program, step 1's parent being the public commitment.
+    pub pg: Option<[u8; 32]>,
 }
 
 impl StepParams {
     /// The harness's step (step_spec S1, S2, S3 = 5, 4, 8; run_step's K = 13, 8, 13).
-    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, rc: false, r3: 0, t_lo: -128, lb: false };
+    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, rc: false, r3: 0, t_lo: -128, lb: false, pg: None };
     /// The d = 4096 shifts of the decision doc's count formulas (§12; cosnark_gates.counts_formula at width).
-    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, rc: false, r3: 0, t_lo: -128, lb: false };
+    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, rc: false, r3: 0, t_lo: -128, lb: false, pg: None };
     /// The program a ledger of width d runs: the harness's up to d = 1024, the wide shifts beyond.
     pub fn for_width(d: usize) -> StepParams {
         if d <= 1024 { Self::HARNESS } else { Self::WIDE }
@@ -48,7 +52,7 @@ impl StepParams {
     /// Does step `step` (1-based, the ledger's counter) take carried weights? The deployed program inputs W at
     /// genesis only.
     pub fn carried(&self, step: u64) -> bool {
-        self.he && step > 1
+        self.he && (step > 1 || self.pg.is_some())
     }
     /// Entries of the public transcript (data-independent): owner inputs, the three matvecs, the middle's openings
     /// (truncations: c plus 2 (s - 1) products; lookups; the b * g1 products), the two outer products.
