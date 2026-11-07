@@ -12,7 +12,8 @@ labels), so z1 = W1 x is local on shares. Per example t, with label l:
     ok_t = prod_{k != l} (1 + q_k)       (8 Beaver products)
     C = sum_t ok_t                       -> the ONLY opening of the release
 
-The release is (n, C): the number of the first n public test examples the custodied model classifies strictly
+The release is (M, C) with M = RELEASE_M = 52 (t10k indices 0..51; 52 fits the proof's 2^25-row instance in
+forge's 12 GB per custodian, 64 did not): the number of the first M public test examples the custodied model classifies strictly
 correctly (ties count as wrong). Nothing else leaves custody: no weights, no scores, no per-example predictions.
 KC = K1 - S1 + 2 + ceil(log2 R) bounds |s_l - s_k - 1|.
 """
@@ -21,6 +22,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import step_spec as S
+
+
+RELEASE_M = 52
 
 
 def kc(prog, reps):

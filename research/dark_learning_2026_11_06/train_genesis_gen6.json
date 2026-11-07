@@ -20,7 +20,7 @@
  "seed_init": 1,
  "a1": 512,
  "a2": 0,
- "eval_n": 64,
+ "eval_n": 52,
  "intervals": {
   "_doc": "each truncation input in [a, a + 2^B), as [a, B]; proved, the ledger refuses a step outside",
   "step": {
@@ -57,8 +57,9 @@
   }
  },
  "release": {
-  "examples": "t10k indices 0..63",
-  "opened": "C = count strictly correct",
+  "M": 52,
+  "examples": "t10k indices 0..51 (official order, public images and labels)",
+  "opened": "C = count strictly correct (ties wrong); nothing else",
   "KC": 10
  }
 }
