@@ -1,0 +1,71 @@
+{
+ "mascot5": {
+  "steps": 2000,
+  "d": 4096,
+  "p": 2305843009210515457,
+  "kappa": 40,
+  "log2_per_step": {
+   "trunc": -26.0,
+   "mac": -60.0,
+   "prep_combine": -69.4,
+   "prep_sacrifice": -38.9,
+   "prep_auth": -37.01,
+   "prep_owner_check": -48.0,
+   "he_stat": -70.71,
+   "he_rlwe": -113.38
+  },
+  "log2_release": {
+   "trunc": -22.29,
+   "mac": -60.0,
+   "prep_combine": -65.58,
+   "prep_sacrifice": -35.08,
+   "prep_auth": -33.19,
+   "prep_owner_check": -Infinity
+  },
+  "log2_run": {
+   "trunc": -15.02,
+   "mac": -49.03,
+   "prep_combine": -58.43,
+   "prep_sacrifice": -27.93,
+   "prep_auth": -26.03,
+   "prep_owner_check": -37.03,
+   "he_stat": -59.74,
+   "he_rlwe": -102.42
+  },
+  "log2_run_total": -15.02,
+  "dominant": "trunc"
+ },
+ "lowgear": {
+  "steps": 2000,
+  "d": 4096,
+  "p": 2305843009210515457,
+  "kappa": 40,
+  "log2_per_step": {
+   "trunc": -26.0,
+   "mac": -60.0,
+   "prep_drowning": -34.9,
+   "prep_zk": -52.64,
+   "prep_sacrifice": -38.9,
+   "he_stat": -70.71,
+   "he_rlwe": -113.38
+  },
+  "log2_release": {
+   "trunc": -22.29,
+   "mac": -60.0,
+   "prep_drowning": -31.08,
+   "prep_zk": -48.82,
+   "prep_sacrifice": -35.08
+  },
+  "log2_run": {
+   "trunc": -15.02,
+   "mac": -49.03,
+   "prep_drowning": -23.93,
+   "prep_zk": -41.67,
+   "prep_sacrifice": -27.93,
+   "he_stat": -59.74,
+   "he_rlwe": -102.42
+  },
+  "log2_run_total": -15.02,
+  "dominant": "trunc"
+ }
+}

@@ -427,3 +427,55 @@ that lg64e runs on. Do not rebuild g2 while lg64e runs.
 - The test chunks on forge and bb2 (`ROOT/chunks/{w4096h*,ho-*,wn-abort,sh-abort,ho-x*,reh-*}`) are the deploy
   lane's until it says they are spent; then wipe them (`shred -n 0 -z -u`).
 - `ROOT/lgtest/` on forge is a loopback test dir with all three parties' keys. The handover lane does not scan it.
+
+## 11. Generation 3 (2026-11-07 afternoon): MP-SPDZ secrets in RAM, sealed run13 chunks, budget objects
+
+**MP-SPDZ secrets on tmpfs [EXECUTED, `build/ramdir.sh`]** (the handover lane's request, via the coordinator):
+- Each runtime's `Player-Data` and `Persistence` are symlinks into RAM. That covers the MAC key shares, Mascot-/LowGear-/HighGear-Secrets, `Memory-*` and the Transactions file.
+  - Forge and bb2: `/dev/shm/dl-gen6-prep/<seat>/`. Neither box has swap.
+  - hbox: `ROOT/ram/mpspdz`. hbox has an 8 GB swap file, full, so this is a dedicated `noswap` tmpfs (`sudo mount -t tmpfs -o size=8G,mode=700,uid=1000,gid=1000,noswap,nosuid,nodev`; kernel 6.11).
+- The script refuses a target that is not tmpfs, and a tmpfs with swap behind it. The disk copies are `shred -n 0 -z -u`.
+- A disk skeleton `Player-Data.skel` keeps only the certificates, their c_rehash links, the TLS key and PairwiseParams.
+- Test (dummy runtime on bb2), all passed: refusal on ext4; move; no secret left on disk; idempotent rerun; reboot simulation (RAM dir removed) rebuilds without a key.
+- Applied to every prep runtime on the three boxes. That includes lg64e's runtime, live: it had no Player-Data file open, and it writes LowGear-Secrets only at the end. Also shredded: hbox's spent `eintr*/` loopback test keys.
+- A scan of the three lane roots (find, which does not follow symlinks) finds no MP-SPDZ secret on disk.
+- Earlier copies were overwritten in place on ext4 (forge, bb2) and on ZFS (hbox: rpool/lanes is aes-256-gcm encrypted, with no snapshots). On ZFS that is not physical erasure.
+- Resume costs:
+  - a process restart, the nightly pause or `serve --resume`: nothing, since the tmpfs outlives processes;
+  - a reboot: a re-key. The chunk guard refuses until `--new-mac-key`, and unconsumed tapes are void. That is free under MASCOT and a key setup under LowGear (about 4 min wired, about 9 h via hbox). The seat's epoch vault key in the persistent keyring is also lost on a reboot.
+- The TLS private key stays on disk: it is an identity, not erased at handover.
+
+**Sealed chunks for run13 (wired: seat 0 forge, seats 1 and 2 bb2; MASCOT tau = 5, TLS) [EXECUTED]**
+- `run13-c0` is one carried step: `--rs --proof --proof-triples 2225349 --new-mac-key --vault-file ../dl-gen6-deploy/run13/seat<I>/tls/vault.name`.
+  - 8,916,565 entries per seat, as the deploy lane counted.
+  - DLVAULT1 tape (151.6 MB) and owner message.
+  - The MAC key share was born in RAM.
+
+| seat | wall | CPU user / sys | peak RSS | MP-SPDZ sent | wire sent per link |
+|---|---:|---:|---:|---:|---|
+| 0 (forge) | 204.4 s | 555.2 / 136.3 s | 1.54 GB | 66.95 GB | 67.06 GB to bb2 |
+| 1 (bb2) | 202.2 s | 541.9 / 126.1 s | 1.57 GB | 66.92 GB | 33.53 GB forge, 33.50 GB seat 2 |
+| 2 (bb2) | 200.0 s | 539.5 / 124.4 s | 1.55 GB | 66.92 GB | 33.53 GB forge, 33.49 GB seat 1 |
+
+- The §10 estimate was about 115 s per step. It was 200 s: the bytes are as predicted (67 GB per seat), and the wall time is 1.75x.
+- `run13-rel` is the release under the same key: `--release 52,10,10 --lookup-triples 27 --rs --proof-triples 38666490`. Its DLVAULT2 tape is at `run13-rel-P<I>/step-0/tape_<I>.bin`, with role `tape|run13-rel-P<I>|0`.
+
+**Budget objects under ledger-x2de + RS [EXECUTED `darkprep plan`; DERIVED terms]**
+
+| | triples | bits | power products | inputs | randoms | triple-eq | truncations |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| step | 2,512,071 | 921,600 | 1,040,384 | 8,192 | 16,384 | 4,482,247 (2^22.10) | 16,384 |
+| release M = 52 | 50,826,274 | 12,620,608 | 0 | 0 | 0 | 63,446,882 (2^25.92) | 213,980 |
+
+- RS shortens the Trhb tape entries only; MASCOT still generates K + 40 bits per truncation.
+- MASCOT tau = 5, per step: combine 2^-69.4, sacrifice 2^-38.9, auth 2^-37.0, owner check 2^-48.0. Release: 2^-65.6, 2^-35.1, 2^-33.2.
+- LowGear, S = 60 [EXECUTED `-o verbose_he_setup`, bb2 loopback, stopped by PID file before key generation]:
+  - "Need ciphertext modulus of length 312 and 8192 slots".
+  - TopGear: V = ceil(62 / log2(16385)) = 5, so U = 10 ciphertexts per proof, which is 81,920 triples per batch.
+  - [SOURCE] Per batch, each ordered pair sends 4U drowned ciphertexts: the a·b cross term (SimpleEncCommit.cpp:398) plus the MACs on a, b and c (PairwiseGenerator::run). Each party proves once per batch.
+  - [SOURCE] `Ciphertext::rerandomize` adds uniform noise of about p0/2 per coefficient. Since p0 >= B_clean (1 + 3·2^S) p, the bound is 2^-48.6 per ciphertext.
+  - Per step: 54.7 batches, 13,132 drowned ciphertexts (2^-34.9), 164 proofs (2^-52.6), sacrifice 2^-38.9.
+  - Release: 775 batches, 2^-31.1 drowning, 2^-48.8 proofs, 2^-35.1 sacrifice.
+  - At S = 80, drowning is 2^-54.9 per step.
+  - Every term is below the statistical-truncation term (2^-26 per step).
+- [SOURCE NoiseBounds.cpp:77-89, OPEN for ember or the coordinator] MP-SPDZ sizes the ring as phi(m) >= 15.1 log q, from its own estimator run. That gives N = 8,192 for q = 2^312, while the HE standard's 128-bit bound for N = 8,192 is 218 bits. N = 16,384 needs a patched min_phi_m and a new key setup. lg64e is at N = 8,192.
