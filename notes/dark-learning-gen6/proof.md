@@ -1375,3 +1375,85 @@ is unsigned. Hunk filter: scratch `proof/rs/mkpatch.py` (diff against HEAD, sele
 
 **Peers:** coordinator aa3209e8d10294bc2; deploy afcd36ed0af383db4; prep a5caa478aac6a0658; handover afc2a88b82c0cca1a;
 train ad36593ec00657538; helpers a93e0325f167a4ed2 (D, E), aa5e2143a94a1698c (release memory).
+
+## Continuation (native helper a93e0325 of the proof lane, at its context limit; the skeptic's replay memory fix)
+
+**Landed by this helper**, all on origin/dev:
+- 8319ea81: cut D natively, byte-equal.
+- db6fda63: cut E natively, byte-equal; rows natively.
+- 58cc1e52: E in the deployed run (carry_in, prove_step_l, release_custodian_l, close_custodian).
+- 934abb55: ds-chain's release x in [-7, 7]; run::plain_bounds; the d = 16 test on the train lane's consistent program.
+- f8836b78: Ledger::release_checked (the release policy is the pinned cfg's encoding of t10k); replay and
+  verify_native under DEFER.
+- eeef684f: ds-chain DP_SAVE in a steps-only run.
+- 4787a240: the public-genesis check streamed (cosnark.public_commit_root, proofwire.public_genesis_roots).
+
+**The skeptic's replay at d = 4096, ledger-x2de + RS** (bb2, load 9-100 on 32 cores; all times are upper bounds).
+- The native chain (f8836b78 + the DP_SAVE hunk), 2 PG steps, GEN6 + RC + LB + RS:
+
+  | | step 1 | step 2 (discharges step 1) |
+  |---|---|---|
+  | bundle | 43,249,372 B | 47,489,332 B |
+  | prove | 62.5 s | 52.4 s |
+  | ledger verify | 14.6 s | 19.4 s |
+
+  Proof section: 2,225,349 triples per custodian per step. Peak 24.4 GB for 3 custodians in one process.
+- Python, before 4787a240: still inside the public-genesis check after 37 min, at 20.3 GB. Stopped by its scope unit.
+- Python, after 4787a240: the public genesis accepted in 1,153 s at a 0.90 GB peak. Step 1's verify was then
+  OOM-killed at the 16G cap, about 7 min in, during the flipped-byte copy, which runs first.
+- **Step-1 profile** (mem_step.py: RSS plus the main thread's innermost frames every 30 s; 24G cap):
+  - 0-60 s, about 3 GB: the symbolic replay (cosnark_he.replay, lookup2 / taylor_shift), the public transcript
+    (84.5M values) included.
+  - 90-155 s, rising to 12.0 GB: the replay's linear forms (cosnark_he.run_step -> cosnark_gates sub / _comb).
+    Then released (RSS back to 3.2 GB at 189 s).
+  - 189 s on, about +1.1 GB per 30 s (14.1 GB at 492 s, still growing when this was written): the spine's PCS
+    evaluation-consistency constraints (cosnark_zk.constraints, the loop "for jj, j in enumerate(J): forms.append(evar(p,
+    U(e, c), (xs,)))"). Each is a dict of W terms per opened column. For a W matrix W = 65,845, so T x W x (about 8
+    evaluations on W) x EXT is about 3e8 dict entries: it cannot fit. The middle's constraints (P, A, B, C at 2^22)
+    come after and were not reached.
+- Scaling measured on the Mac (Python, demo-x2de + RS, one step): d = 256 38 s / 0.8 GB; d = 1024 187 s / 1.9 GB.
+
+**Fix plan** (keeps what is checked; the verdicts stay byte-equal to the native ones):
+1. Stream the constraints into the Ligero verifier.
+   - cozk.verify takes `lin` as a callable that emits into a sink, instead of a list.
+   - The challenges rr are drawn lazily in the same order: tr.chal's H(state, "c", i) chain with one running counter
+     i, E draws per constraint. The final transcript state equals one chal(len(lin)) call.
+   - The sink accumulates sum c b (the first linear check) and alpha (R x k x E) directly.
+   - constraints() in cosnark_zk and cosnark_gates_zk take an optional sink in place of their lin list. Labels are
+     kept only for diagnostics.
+2. The PCS consistency rows in closed form.
+   - Constraint jj contributes r_jj x_j^c to alpha at u-cell (e, c). Per evaluation, accumulate g[c] = sum_jj r_jj
+     x_j^c over the T opened columns. That is T W multiplications, about 20M per W evaluation, with no per-term dicts.
+   - The rhs sum is r_jj times the dot of a with csum[jj], as today.
+3. The middle: mle without eqv tables (fold the vector by each r_k: the same field arithmetic). build_q's vectors stay,
+   about 0.5 GB each at 2^22.
+4. The symbolic replay's 12 GB peak (the forms of run_step): keep only what verify needs (cons, had, prep and the
+   transcript position), or store forms as flat arrays. Measure again after 1-3: the target is a full replay under
+   16 GB.
+5. Then rerun, alone under a 16G cap: vrun2.sh (prof_replay.py: the genesis line, the flipped byte on step 1, every
+   step with its child roots against the native record's, the status line). Report time and peak per record.
+   numpy is installed on neither the Mac (Python 3.15) nor bb2, so pure Python unless a venv is made in the lane dir.
+
+**Where things are** (bb2, ~/lanes/dl-gen6-proof-x2; every job under `systemd-run --user --scope -p MemoryMax=...`,
+nice 15, a PID file beside it):
+- Native build: native-v/ (the committed tree), target-v/ (its target dir).
+- The saved chain: vsave/ (mind-0.ledger, step1.bin, step2.bin). train_genesis_gen6.json is the PG cfg.
+- Python: research/ is a copy of the working-tree research dir; it holds prof_replay.py and mem_step.py, also in
+  scratchpad/dl-gen6/proof5/native/escripts/.
+- Replay command (vrun2.sh): `cd research && /usr/bin/time -v python3 -u prof_replay.py ledger-x2de ../vsave/mind-0.ledger
+  ../train_genesis_gen6.json ../vsave > ../v2_python.log`. Run it with `nohup nice -n 15 systemd-run --user --scope -p
+  MemoryMax=16G ./vrun2.sh & echo $! > vrun2.pid`.
+- Logs and PID files:
+  - v_native.log: the native chain.
+  - v_python.log: the unstreamed replay, stopped.
+  - v2_python.log, vrun2.pid / vrun2.out: the streamed replay, oom-kill at 16G.
+  - vmem.log, vmem.pid / vmem.out: the step-1 profile. Its unit is run-p87518-i8475641.scope, under a 24G cap. It
+    was left running to its cap, and ends there by itself.
+- Contention runs: cont/inline, cont/pipe2 (run.py RUN.json in scratchpad/dl-gen6/proof5/native/cont/). cont/pipe was
+  stopped by its PID files for memory.
+
+**Contention** (reported to the coordinator): pipelined against inline under ledger-x2de + RS, 3 steps:
+- wall about 559 s against about 875 s (-36%);
+- no step waited for a proof;
+- the proof beside the next step takes 48-72 s (alone 41-70 s), the verify 23-37 s (alone 19-25 s);
+- 8.5-8.7 GB per seat.
