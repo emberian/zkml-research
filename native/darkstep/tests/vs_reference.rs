@@ -4,12 +4,17 @@
 use darkstep::node::{prof, run_local};
 
 fn check(n: usize, l: usize, f: u32, d: usize) {
+    check_with(n, l, f, d, 0);
+}
+
+fn check_with(n: usize, l: usize, f: u32, d: usize, ret_primes: usize) -> serde_json::Value {
     let path = format!(
         "{}/../../research/dark_learning_2026_11_06/native_ref_results/native_ref_N{n}_L{l}_F{f}_d{d}.json",
         env!("CARGO_MANIFEST_DIR")
     );
     let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
-    let pf = prof(&[n.to_string(), l.to_string(), f.to_string(), d.to_string()]);
+    let mut pf = prof(&[n.to_string(), l.to_string(), f.to_string(), d.to_string()]);
+    pf.ret_primes = ret_primes;
     let (res, _) = run_local(&pf, None);
     assert_eq!(res["verdict"], "ACCEPT");
     assert_eq!(res["refines_spec"], true);
@@ -29,6 +34,21 @@ fn check(n: usize, l: usize, f: u32, d: usize) {
             assert_eq!(links, det["bytes_sent"][tag].as_u64().unwrap(), "party {i} tag {tag}: links sum to the total");
         }
         assert!(to.values().all(|l| l["he_ct"].as_u64().unwrap() > 0), "party {i}: HE ciphertexts go to both peers");
+    }
+    res
+}
+
+/// HE returns modulus-switched to 2 primes, c0 only where the recipient decrypts: every decryption is still exact,
+/// so the transcript, all shares and sigmas stay equal to the Python reference, on fewer bytes.
+#[test]
+fn compressed_returns_stay_bit_exact() {
+    for (n, l, f) in [(4096, 3, 118), (16384, 4, 175)] {
+        let full = check_with(n, l, f, 64, 0);
+        let small = check_with(n, l, f, 64, 2);
+        let ret = |r: &serde_json::Value| r["detail"][0]["bytes_sent"]["he_ret"].as_u64().unwrap();
+        let ratio = ret(&small) as f64 / ret(&full) as f64;
+        eprintln!("N = {n}, L = {l}: he_ret {} -> {} bytes per party ({ratio:.3})", ret(&full), ret(&small));
+        assert!(ratio < 0.5 + 0.1 / l as f64, "ratio {ratio}");
     }
 }
 
@@ -78,4 +98,21 @@ fn proof_atoms_on_the_tape_leave_the_step_unchanged() {
     let ma = a["detail"][0]["middle_atoms"].as_u64().unwrap();
     let mb = b["detail"][0]["middle_atoms"].as_u64().unwrap();
     assert_eq!(mb - ma, bits);
+}
+
+/// Control: one prime is too few (the switching rounding swamps Q_1 / 2t), so decryptions go wrong and the shares
+/// no longer equal the reference; the comparison above can fail.
+#[test]
+#[should_panic]
+fn compressed_to_one_prime_breaks_decryption() {
+    check_with(16384, 4, 175, 64, 1);
+}
+
+#[test]
+fn return_primes_needed_is_two_at_both_profiles() {
+    for (n, l) in [(4096usize, 3usize), (16384, 4)] {
+        let pf = prof(&[n.to_string(), l.to_string(), "118".into(), "8".into()]);
+        let rns = darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t);
+        assert_eq!(darkstep::bfv::return_primes_needed(&rns), 2);
+    }
 }

@@ -26,9 +26,63 @@ pub struct OwnKey {
     pub rng: Coins,
     /// the key for this custodian's HE-return coins; None = the public reference labels (test harness only)
     pub return_key: Option<[u8; 32]>,
+    /// HE returns on the wire: None = (c0, c1) in full; Some = modulus-switched down to its first primes, c0 only at
+    /// the coefficients the recipient decrypts (`set_return_primes`)
+    pub compress: Option<Arc<Compress>>,
     pub s: Vec<i64>,
     s_ntt: Vec<u64>,
     pub pk: PubKey,
+}
+
+pub struct Compress {
+    pub small: Arc<Rns>,
+    s_ntt: Vec<u64>,
+}
+
+/// The fewest primes an HE return can be switched to with decryption still exact: the switching rounding term,
+/// at most (1 + N)/2, must stay under Q_k / (4 t), with a factor-2 margin (the flood's ratio to Q is unchanged).
+pub fn return_primes_needed(rns: &Rns) -> usize {
+    let t = rns.t as f64;
+    let mut q = 1f64;
+    for (k, &qk) in rns.qs.iter().enumerate() {
+        q *= qk as f64;
+        if (1.0 + rns.n as f64) / 2.0 < q / (8.0 * t) {
+            return k + 1;
+        }
+    }
+    rns.l()
+}
+
+/// Modulus-switch a coefficient-form ciphertext from all of `rns`'s primes down to the first `k` (dropping the last
+/// prime at a time: c <- (c - [c]_q) / q with [c]_q centered, i.e. round(c / q)), keeping c0 only at `coefs`.
+/// Wire layout: c0 [k x |coefs|] then c1 [k x N], residue-major.
+pub fn compress_return(rns: &Rns, ct: &Ct, k: usize, coefs: &[usize]) -> Vec<u64> {
+    let n = rns.n;
+    let l = rns.l();
+    let drop = |c: &[u64], pos: &dyn Fn(usize) -> usize, cnt: usize| -> Vec<u64> {
+        // c: residues limb-major over `cnt` coefficients (limb stride n, position pos(j))
+        let mut cur: Vec<Vec<u64>> = (0..l).map(|kk| (0..cnt).map(|j| c[kk * n + pos(j)]).collect()).collect();
+        for top in (k..l).rev() {
+            let qt = rns.qs[top];
+            let half = qt / 2;
+            let last = cur.pop().unwrap();
+            for (kk, row) in cur.iter_mut().enumerate() {
+                let q = rns.qs[kk];
+                let inv = invmod(qt % q, q);
+                for (j, x) in row.iter_mut().enumerate() {
+                    let r = last[j];
+                    // centered remainder r in (-qt/2, qt/2]
+                    let rq = if r > half { submod(0, (qt - r) % q, q) } else { r % q };
+                    *x = mulmod(submod(*x, rq, q), inv, q);
+                }
+            }
+            let _ = top;
+        }
+        cur.into_iter().flatten().collect()
+    };
+    let mut out = drop(&ct.c0, &|j| coefs[j], coefs.len());
+    out.extend(drop(&ct.c1, &|j| j, n));
+    out
 }
 
 /// bfv.uniform(): N draws randrange(Q), as residues.
@@ -81,7 +135,7 @@ impl OwnKey {
             }
         }
         rns.fwd(&mut pk0);
-        OwnKey { rns, rng, return_key, s, s_ntt, pk: PubKey { pk0_ntt: pk0, pk1_ntt: a_ntt } }
+        OwnKey { rns, rng, return_key, compress: None, s, s_ntt, pk: PubKey { pk0_ntt: pk0, pk1_ntt: a_ntt } }
     }
 
     /// keygen_ceremony.CeremonyKey(N, Q, t, cust, seed): the ceremony's (s, b, a); the encryption coins come from
@@ -104,7 +158,43 @@ impl OwnKey {
             x
         };
         let pk = PubKey { pk0_ntt: flat(b), pk1_ntt: flat(a) };
-        OwnKey { rns: rns.clone(), rng, return_key, s: s.to_vec(), s_ntt, pk }
+        OwnKey { rns: rns.clone(), rng, return_key, compress: None, s: s.to_vec(), s_ntt, pk }
+    }
+
+    /// Send and receive HE returns modulus-switched to the first `k` primes (k < L), c0 only at the decrypted
+    /// coefficients. Decryption stays exact while the return's noise relative to Q stays under 1/(2t): the 2^F flood
+    /// keeps its ratio, and switching adds a rounding term of at most (1 + N)/2 per coefficient, so k = 2 suffices at
+    /// the profiles here (`return_primes_needed`). Every custodian must use the same k.
+    pub fn set_return_primes(&mut self, k: usize) {
+        assert!(k >= 1 && k < self.rns.l());
+        let small = Arc::new(Rns::new(self.rns.n, &self.rns.qs[..k], self.rns.t));
+        let mut s_ntt = small.from_signed(&self.s);
+        small.fwd(&mut s_ntt);
+        self.compress = Some(Arc::new(Compress { small, s_ntt }));
+    }
+
+    /// Decrypt a compressed return (`compress_return`) at `coefs`.
+    pub fn decrypt_compressed(&self, wire: &[u64], coefs: &[usize]) -> Vec<u64> {
+        let c = self.compress.as_ref().expect("compressed returns not configured");
+        let rns = &c.small;
+        let (n, k) = (rns.n, rns.l());
+        let m = coefs.len();
+        assert_eq!(wire.len(), k * m + k * n, "compressed return length");
+        let mut c1 = wire[k * m..].to_vec();
+        rns.fwd(&mut c1);
+        let mut x = rns.mul_pw(&c1, &c.s_ntt);
+        rns.inv(&mut x);
+        let mut res = [0u64; 8];
+        coefs
+            .iter()
+            .enumerate()
+            .map(|(j, &i)| {
+                for kk in 0..k {
+                    res[kk] = addmod(x[kk * n + i], wire[kk * m + j], rns.qs[kk]);
+                }
+                rns.decrypt_round(&res[..k])
+            })
+            .collect()
     }
 
     /// A fresh HE-return key (a secure key only; the reference key keeps its public labels). The loop calls it per step.

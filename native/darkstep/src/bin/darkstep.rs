@@ -15,14 +15,16 @@
 //!       DIR/cert_I.der (public; copy it to every seat)
 //!   darkstep serve I N L F_bits d DIR HOST:PORT HOST:PORT HOST:PORT --tls TLSDIR --owner HOST:PORT --steps K
 //!       [--gate T] [--program harness|gen6] [--tape FILE | --tapes PATTERN] [--owner-msgs PATTERN] [--resume]
-//!       [--listen HOST:PORT] [--pause-utc HH:MM-HH:MM] [--timeout SECS]
+//!       [--listen HOST:PORT] [--pause-utc HH:MM-HH:MM] [--timeout SECS] [--ret-primes K]
 //!       one custodian for K steps over mutual TLS (pinned certificates in TLSDIR: tls_I.key, cert_{0,1,2,owner}.der).
 //!       Its weight shares stay in this process; each step's inputs come from the owner; after every step it writes
 //!       DIR/step_<k>_P<I>.json and its own checkpoint DIR/ckpt_P<I>.bin. PATTERN holds {k} (the step). With
 //!       --pause-utc, custodian 0 decides at each step boundary whether the run pauses (all three checkpoint and exit
-//!       with code 3); --resume continues from the checkpoint
-//!   darkstep deal-steps N L F_bits d K DIR                (feature test-harness only)
-//!       the public-seed test dealer for K steps: DIR/tape_{0,1,2}.bin (continuous) and DIR/public_step<k>.bin
+//!       with code 3); --resume continues from the checkpoint. --ret-primes K (party, serve, local): HE returns
+//!       modulus-switched to K primes with c0 only where decrypted (K = 2; every custodian the same)
+//!   darkstep deal-steps N L F_bits d K DIR [--program P] [--only I [--public]]   (feature test-harness only)
+//!       the public-seed test dealer for K steps: DIR/tape_{0,1,2}.bin (continuous) and DIR/public_step<k>.bin;
+//!       --only I writes custodian I's tape alone (and the broadcasts only with --public)
 //!   darkstep reveal N L F_bits d DIR                     (feature test-harness only)
 //!       sums DIR/shares_*.bin and checks the new weights against step_spec; it reassembles the model, so a
 //!       deployed party binary cannot run it
@@ -43,6 +45,9 @@ use std::time::Instant;
 fn gated(mut pf: Prof, args: &[String]) -> Prof {
     pf.gate = flag(args, "--gate").map(|t| t.parse().expect("--gate T"));
     pf.det_seed = std::env::var("DL_DETERMINISTIC").ok();
+    if let Some(k) = flag(args, "--ret-primes") {
+        pf.ret_primes = k.parse().expect("--ret-primes K");
+    }
     pf
 }
 
@@ -238,6 +243,25 @@ fn main() {
             println!("{}", json!({"seat": seat, "cert_sha256": darkstep::tls::cert_fingerprint(&id.cert_der)}));
         }
         #[cfg(feature = "test-harness")]
+        "owner-test" => {
+            // TEST: the owner serving the test dealer's broadcasts DIR/public_step<k>.bin; owner-test HOST:PORT TLSDIR DIR
+            let tls = std::path::PathBuf::from(&args[3]);
+            let dir = std::path::PathBuf::from(&args[4]);
+            let id = darkstep::tls::Identity {
+                key_der: std::fs::read(tls.join("tls_owner.key")).expect("owner key"),
+                cert_der: std::fs::read(tls.join("cert_owner.der")).expect("owner cert"),
+            };
+            let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tls.join(format!("cert_{j}.der"))).unwrap()).collect();
+            let l = TcpListener::bind(&args[2]).unwrap();
+            let r = darkstep::serve::owner_serve(l, &id, &certs, |k, _| {
+                std::fs::read(dir.join(format!("public_step{k}.bin"))).map(|b| bytes_to_u64s(&b)).map_err(|e| e.to_string())
+            });
+            if let Err(e) = r {
+                eprintln!("{e}");
+                std::process::exit(1);
+            }
+        }
+        #[cfg(feature = "test-harness")]
         "deal-steps" => {
             let mut pf = prof(&args[2..6]);
             pf.program = program_of(&args);
@@ -252,11 +276,16 @@ fn main() {
                 })
                 .collect();
             let (tapes, cs) = darkstep::tape::deal_steps_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), &later, false, &pf.program);
+            // --only I: write custodian I's tape only (run the dealer on each custodian's own box)
+            let only: Option<usize> = flag(&args, "--only").map(|x| x.parse().unwrap());
             for (i, tp) in tapes.iter().enumerate() {
+                if only.is_some_and(|o| o != i) {
+                    continue;
+                }
                 let mut f = std::io::BufWriter::new(std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap());
                 tp.write_to(&mut f).unwrap();
             }
-            for (s, c) in cs.iter().enumerate() {
+            for (s, c) in cs.iter().enumerate().filter(|_| only.is_none() || args.iter().any(|a| a == "--public")) {
                 std::fs::write(dir.join(format!("public_step{s}.bin")), u64s_to_bytes(c)).unwrap();
             }
             let raw: Vec<Vec<i64>> = later.iter().map(|v| v.iter().map(|&x| if x > pf.t / 2 { x as i64 - pf.t as i64 } else { x as i64 }).collect()).collect();
@@ -320,7 +349,8 @@ fn main() {
         }
         #[cfg(feature = "test-harness")]
         "reveal" => {
-            let pf = prof(&args[2..6]);
+            let mut pf = prof(&args[2..6]);
+            pf.program = program_of(&args);
             let dir = std::path::PathBuf::from(&args[6]);
             let d = pf.d;
             let shares: Vec<(Vec<Vec<Sh>>, Vec<Vec<Sh>>)> = (0..3)

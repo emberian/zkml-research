@@ -39,6 +39,8 @@ pub struct Prof {
     pub secure_coins: bool,
     /// the step program (step::Program; HARNESS unless set)
     pub program: Program,
+    /// HE returns modulus-switched to this many primes (0: full ciphertexts; see OwnKey::set_return_primes)
+    pub ret_primes: usize,
 }
 
 pub fn prof(a: &[String]) -> Prof {
@@ -47,7 +49,7 @@ pub fn prof(a: &[String]) -> Prof {
     let pr = ntt_primes(61, l + 1, 2 * n as u64);
     let cores = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(cores);
-    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false, secure_coins: false, program: Program::HARNESS }
+    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false, secure_coins: false, program: Program::HARNESS, ret_primes: std::env::var("DS_RET_PRIMES").ok().and_then(|s| s.parse().ok()).unwrap_or(0) }
 }
 
 pub fn flag(args: &[String], name: &str) -> Option<String> {
@@ -116,6 +118,10 @@ pub fn setup_he(i: usize, pf: &Prof, net: &Net, attack: Option<(String, usize)>)
             (key, pks, Some(g))
         }
     };
+    let mut key = key;
+    if pf.ret_primes > 0 {
+        key.set_return_primes(pf.ret_primes);
+    }
     let he = He {
         rns: rns.clone(),
         key,
