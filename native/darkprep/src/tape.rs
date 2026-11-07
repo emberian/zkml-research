@@ -6,6 +6,8 @@ use crate::schedule::{events, Event, Inputs, Plan, StepParams, Tag, DEG, KAPPA};
 use std::io::{Read, Write};
 
 pub const MAGIC: &[u8; 8] = b"DLTAPE1\n";
+/// Tape header `inputs` byte of a release tape (its shape, M / ncls / kc, is not in the header: verify_step).
+pub const RELEASE_INPUTS: u8 = 2;
 pub const OWNER_MAGIC: &[u8; 8] = b"DLOWNR1\n";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -81,6 +83,7 @@ impl Tape {
             trunc: self.trunc.map(|(s, k)| (s as u32, k as u32)),
             proof_atoms: false,
             proof_triples: 0,
+            release: None,
         }
     }
 }
@@ -134,9 +137,8 @@ pub fn assemble_in_chunk(chunk: &[StepParams], tx: &Transactions, party: u32, j:
                 cur_ar += 1;
             }
             Event::Mul => triple(&mut out, &mut cur_tri),
-            Event::Trunc(t) => {
-                let (s, k) = sp.trunc[t];
-                let c = plan.slot_class[t];
+            Event::Trunc(s, k) => {
+                let c = plan.class_of(s, k);
                 let i = cur_tr[c];
                 cur_tr[c] += 1;
                 let nb = (k + KAPPA) as usize;
@@ -172,7 +174,7 @@ pub fn assemble_in_chunk(chunk: &[StepParams], tx: &Transactions, party: u32, j:
         party,
         alpha_i: tx.alpha_i,
         d: sp.d as u32,
-        inputs: sp.inputs as u8,
+        inputs: if sp.release.is_some() { RELEASE_INPUTS } else { sp.inputs as u8 },
         trunc: sp.trunc.map(|(s, k)| (s as u8, k as u8)),
         entries: out,
     })

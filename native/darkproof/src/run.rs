@@ -511,6 +511,91 @@ pub fn release_mpc(
     Ok((c, st))
 }
 
+/// One custodian's release, as the run's party binary calls it after its last step: what it opened, the bundle, and
+/// what it cost.
+pub struct ReleaseOut {
+    /// the opened count C (the only value that leaves custody)
+    pub c: u64,
+    /// the release bundle (wire::encode_release); every custodian holds the same bytes
+    pub blob: Vec<u8>,
+    /// proof-section triples consumed from the tape (release_section)
+    pub triples: usize,
+    pub mpc_secs: f64,
+    pub prove_secs: f64,
+    /// this custodian's own check of the bundle against the head roots (0 when no roots were given)
+    pub verify_secs: f64,
+    /// field elements this custodian sent on tag PROOF during the release proof
+    pub sent: u64,
+}
+
+/// The release hook of a custodian process: release_mpc over the party's tape from its cursor (the release
+/// program's preprocessing, then its proof section of release_section(..) triples), prove_release over the party's
+/// own Net (tag PROOF), the cursor moved past both, and, with `head_roots` (the head's W1, W2 roots: the last
+/// accepted step's child roots), the bundle checked as the ledger checks it. ctx = (model, epoch, head step);
+/// head = this party's carried commitments of the head's weights (the last StepProof.child); w1, w2 = its shares of
+/// the head's weights (d x d). Every custodian must call it with the same policy.
+#[cfg(feature = "tcp")]
+#[allow(clippy::too_many_arguments)]
+pub fn release_custodian(
+    pr: &Profile,
+    lp: &LigParams,
+    prm: StepParams,
+    pt: &mut darkstep::party::Party,
+    w1: &[Vec<darkstep::party::Sh>],
+    w2: &[Vec<darkstep::party::Sh>],
+    pol: &Policy,
+    ctx: &Ctx,
+    head: BTreeMap<String, PcsParty>,
+    head_roots: Option<&BTreeMap<String, Vec<Hash>>>,
+) -> Result<ReleaseOut, String> {
+    let d = w1.len();
+    let m = pol.labels.len();
+    if pol.x.len() != d * m || w2.len() != d || pol.ncls > d {
+        return Err("release: the policy's shape is not the weights'".into());
+    }
+    let nrt = release_section(lp, d, m, prm, pol);
+    let t0 = std::time::Instant::now();
+    let (c, mut st) = release_mpc(pt, w1, w2, pol, prm)?;
+    let mpc_secs = t0.elapsed().as_secs_f64();
+    st.triples = tape_triples_at(&pt.tape, pt.cur, Some(nrt))?;
+    let mut net = TcpRef(&pt.net);
+    let sent0 = net.sent();
+    let (blob, prove_secs) = prove_release(pr, lp, prm, &mut net, ctx, pol, st, head)?;
+    let sent = net.sent() - sent0;
+    pt.cur += 3 * nrt;
+    let mut verify_secs = 0.0;
+    if let Some(roots) = head_roots {
+        let tv = std::time::Instant::now();
+        let (_, cv) = wire::verify_release(pr, lp, &blob, ctx, roots, &pol.x, &pol.labels, prm, pol.ncls, d, pol.kc)?;
+        verify_secs = tv.elapsed().as_secs_f64();
+        if cv != c {
+            return Err(format!("release: the bundle's count {cv} is not the opened {c}"));
+        }
+    }
+    Ok(ReleaseOut { c, blob, triples: nrt, mpc_secs, prove_secs, verify_secs, sent })
+}
+
+/// The gen 6 release policy (train lane, train_eval.py): the first `m` official test images (t10k 0..m-1, public, with
+/// their labels), encoded by the run's own encoder (the cfg's, with the training split's means), 10 classes (one W2
+/// row each: reps = 1), comparison shift kc = 10.
+#[cfg(feature = "tcp")]
+pub fn mnist_policy(cfg_json: &[u8], mnist_dir: &std::path::Path, m: usize) -> Result<Policy, String> {
+    let c: darktrain::Cfg = serde_json::from_slice(cfg_json).map_err(|e| format!("release policy cfg: {e}"))?;
+    c.validate()?;
+    if c.nout() != 10 {
+        return Err("release policy: one W2 row per class (reps = 1)".into());
+    }
+    let mn = darktrain::data::load(mnist_dir)?;
+    if m == 0 || m > mn.test.n {
+        return Err(format!("release policy: M = {m} test images, the split has {}", mn.test.n));
+    }
+    let c = c.with_means(&mn);
+    let xs: Vec<Vec<i64>> = (0..m).map(|t| darktrain::encode(&c, mn.test.image(t), mn.test.lab[t]).0).collect();
+    let x = (0..c.d).flat_map(|k| xs.iter().map(move |xt| crate::field::from_i64(xt[k]))).collect();
+    let labels = (0..m).map(|t| mn.test.lab[t] as usize).collect();
+    Ok(Policy { x, labels, ncls: 10, kc: 10, ignore_range: false })
+}
+
 /// The release section of a TEST dealer's tapes (cosnark_release's order), then its proof section; the run's tapes
 /// come from MASCOT in this order.
 #[cfg(feature = "tcp")]

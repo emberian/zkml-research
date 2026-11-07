@@ -107,6 +107,7 @@ dependencies = [
 name = "darkprep"
 version = "0.1.0"
 dependencies = [
+ "darkproof",
  "darkstep",
  "libc",
  "pycompat",
