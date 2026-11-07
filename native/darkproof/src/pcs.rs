@@ -784,7 +784,8 @@ pub fn read_carry(inp: &mut impl std::io::Read, pr: &Profile) -> Result<std::col
         if m > 40 {
             return Err("carry checkpoint: m out of range".into());
         }
-        let shape = Shape::new(pr, m, base);
+        // DEFER: a carried W (key W1, W2) has one life (Profile::w_life)
+        let shape = if pr.defer && strs[0].starts_with('W') { Shape::new(&pr.w_life(), m, base) } else { Shape::new(pr, m, base) };
         let mut b8 = [0u8; 8];
         inp.read_exact(&mut b8).map_err(e)?;
         let ne = u64::from_le_bytes(b8) as usize;

@@ -93,6 +93,8 @@ pub struct Bundle {
     pub spine_stats: BTreeMap<String, u64>,
     pub middle_stats: BTreeMap<String, u64>,
     pub prove_secs: f64,
+    /// DEFER: per party, this step's pending claims (its points and carries) for the discharging proof
+    pub deferred: Vec<Option<crate::defer::DeferIn>>,
 }
 
 pub struct OwnerIn<'a> {
@@ -124,7 +126,24 @@ pub fn make_bundle(
     carry: Option<Vec<BTreeMap<String, PcsParty>>>,
     owner: Option<OwnerIn>,
 ) -> Result<Bundle, String> {
+    make_bundle_d(o, w, ctx, carry, owner, None)
+}
+
+/// make_bundle with DEFER's input: per party, the previous step's pending claims (Bundle.deferred), which this
+/// step discharges (None: the parent is final).
+pub fn make_bundle_d(
+    o: &BundleOpts,
+    w: Witness,
+    ctx: &Ctx,
+    carry: Option<Vec<BTreeMap<String, PcsParty>>>,
+    owner: Option<OwnerIn>,
+    dfr: Option<Vec<crate::defer::DeferIn>>,
+) -> Result<Bundle, String> {
     let (pr, n, d) = (o.pr, w.n, w.d);
+    let mut dfr: Vec<Option<crate::defer::DeferIn>> = match dfr {
+        Some(v) => v.into_iter().map(Some).collect(),
+        None => (0..n).map(|_| None).collect(),
+    };
     let mut genesis_roots = None;
     let carry = match carry {
         Some(c) => c,
@@ -136,7 +155,8 @@ pub fn make_bundle(
                         .iter()
                         .map(|k| {
                             let s: Vec<u64> = pw[*k].iter().map(|x| x.0).collect();
-                            (k.to_string(), PcsParty::commit(pr, &s, k, i, &o.det))
+                            // DEFER: a W has one life (cosnark_zk.w_pcs)
+                            (k.to_string(), PcsParty::commit(&pr.w_life(), &s, k, i, &o.det))
                         })
                         .collect()
                 })
@@ -213,6 +233,7 @@ pub fn make_bundle(
         for i in 0..n {
             let nets = &nets;
             let carry_i = std::mem::take(&mut carry[i]);
+            let dfr_i = dfr[i].take();
             let ox_i = ox[i].take();
             let oy_i = oy[i].take();
             let rec = &rec;
@@ -236,7 +257,8 @@ pub fn make_bundle(
                     lig_dealer: dl_s,
                     lig_tape: None,
                 };
-                let mut so = spine::prove(&si, &mut *net, &mut sp, carry_i, ox_i)?;
+                let mut so = spine::prove_d(&si, &mut *net, &mut sp, carry_i, ox_i, dfr_i)?;
+                let dout = so.deferred.take();
                 for k in spine::MAT {
                     wires.remove(k); // the matrices are committed; the middle needs only the vectors
                 }
@@ -270,7 +292,7 @@ pub fn make_bundle(
                 };
                 let mo = middle::prove(&mi, &mut *net, &mut sp, spine_coms, oy_i)?;
                 assert_eq!(sp.triples as usize, spine::beaver_count_e(d, o.lp.ext) + rec.proof_products() + middle::beaver_count_e(rec.had.len(), o.lp.ext), "middle Beaver count");
-                Ok((so, mo, child, carried))
+                Ok((so, mo, child, carried, dout))
             }));
         }
         hs.into_iter().map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into()))).collect()
@@ -320,9 +342,11 @@ pub fn make_bundle(
     let middle_stats = parts[0].1.stats.clone();
     let mut child = Vec::new();
     let mut carried = Vec::new();
+    let mut deferred = Vec::new();
     for p in parts {
         child.push(p.2);
         carried.push(p.3);
+        deferred.push(p.4);
     }
     Ok(Bundle {
         blob,
@@ -334,6 +358,7 @@ pub fn make_bundle(
         spine_stats,
         middle_stats,
         prove_secs,
+        deferred,
     })
 }
 

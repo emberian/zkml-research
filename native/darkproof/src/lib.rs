@@ -2,6 +2,7 @@
 //! Reference: research/dark_learning_2026_11_06/ (cozk, cosnark, cosnark_zk, cosnark_gates, cosnark_gates_zk,
 //! proofwire, owner_sig). Every proof byte equals the harness's for the same seed (`rng::Det`).
 pub mod ext;
+pub mod defer;
 pub mod field;
 pub mod gmask;
 pub mod h;
@@ -68,6 +69,9 @@ pub struct Profile {
     /// proofwire ZKSC "mask" (cut D, cosnark_zk.GMask): every sumcheck's round messages opened, masked by one g per
     /// sumcheck, all of a proof's g in one hidden Ligero group; false ("rows"): each round message a hidden row
     pub mask: bool,
+    /// proofwire DEFER (cut E, cosnark_zk.DEFER): a step does not open its children; it commits carries c1, c2 and
+    /// the child's next opening discharges W_(k+1)(r_k) = c_k. Every W has one life (hide T, EXT masks).
+    pub defer: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -101,6 +105,7 @@ impl Profile {
             multiproof: true,
             ext: 1,
             mask: false,
+            defer: false,
         }
     }
     pub fn demo() -> Self {
@@ -121,6 +126,7 @@ impl Profile {
             multiproof: true,
             ext: 1,
             mask: false,
+            defer: false,
         }
     }
     pub fn by_name(s: &str) -> Option<Self> {
@@ -139,7 +145,19 @@ impl Profile {
             // cut D in F_{p^2}: the masked sumcheck
             "ledger-x2d" => Some(Profile { name: "ledger-x2d", nmask: 4, ext: 2, mask: true, ..Self::ledger() }),
             "demo-x2d" => Some(Profile { name: "demo-x2d", nmask: 4, ext: 2, mask: true, ..Self::demo() }),
+            // cut E: deferred child opening
+            "ledger-x2de" => Some(Profile { name: "ledger-x2de", nmask: 4, ext: 2, mask: true, defer: true, ..Self::ledger() }),
+            "demo-x2de" => Some(Profile { name: "demo-x2de", nmask: 4, ext: 2, mask: true, defer: true, ..Self::demo() }),
             _ => None,
+        }
+    }
+    /// The commitment parameters of a W matrix (cosnark_zk.w_pcs / w_shape): under DEFER one life, hide T, EXT
+    /// proximity masks; otherwise the profile's own.
+    pub fn w_life(&self) -> Profile {
+        if self.defer {
+            Profile { hide: self.t_cols, nmask: self.ext, lives: 1, ..self.clone() }
+        } else {
+            self.clone()
         }
     }
     pub fn ligero(&self) -> ligero::LigParams {

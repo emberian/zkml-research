@@ -2,6 +2,7 @@
 //! `prove` is ONE custodian's prover; `verify` the public verifier. The constraint system comes from the
 //! verifier's own symbolic replay of the step (`step::replay`). Generic over the challenges' field F_{p^E} (cosnark_ext).
 use crate::ext::{self, Tab};
+use crate::defer::{self, DeferIn, Pending, CARRY_IN};
 use crate::field;
 use crate::gmask::{self, GMask, MaskZ};
 use crate::h::Hash;
@@ -92,6 +93,14 @@ pub fn public_shapes_io(
         .iter()
         .map(|(k, &l)| (k.clone(), Shape::new(pr, lg(l), if carried.contains(&k.as_str()) { block } else { 0 })))
         .collect();
+    if pr.defer && io.is_some() {
+        // the release's head W (cosnark_release.io_spec: cosnark_zk.shapes' W1, W2): one life under DEFER
+        for k in ["W1", "W2"] {
+            if let Some(&l) = lens.get(k) {
+                sh.insert(k.to_string(), Shape::new(&pr.w_life(), lg(l), 0));
+            }
+        }
+    }
     if bind {
         sh.insert("yo".into(), Shape::new(pr, lg(plen(d)), 0));
     }
@@ -239,6 +248,8 @@ pub struct MiddleSys<const E: usize> {
     pub cst: [u64; E],
     /// ZKSC "mask": the opened masking data (None: hidden round rows)
     pub mz: Option<MaskZ<E>>,
+    /// DEFER: the last four evaluations are the head W's pending claims (W1, c1p, W2, c2p), discharged here
+    pub dfr: bool,
 }
 
 impl<const E: usize> MiddleSys<E> {
@@ -327,7 +338,15 @@ impl<const E: usize> LinSystem for MiddleSys<E> {
 
 impl<const E: usize> MiddleSys<E> {
     fn binding(&self, em: &mut EEm<E>) {
-        if self.ev.len() == 3 + self.ks.len() + 2 {
+        if self.dfr {
+            let e0 = self.ev.len() - 4;
+            for i in 0..2 {
+                self.y(em, e0 + 2 * i, ext::one());
+                let r0 = self.lay.urows[e0 + 2 * i + 1][0];
+                em.var(std::array::from_fn(|k| (r0, k)), ext::neg(ext::one()));
+                em.done("deferred claim of the head: W(r_k) = c_k", ext::zero());
+            }
+        } else if self.ev.len() == 3 + self.ks.len() + 2 {
             let e = self.ev.len();
             self.y(em, e - 2, ext::one());
             self.y(em, e - 1, ext::neg(ext::one()));
@@ -614,14 +633,32 @@ pub fn prove(
     spine_coms: BTreeMap<String, PcsParty>,
     owner_y: Option<PcsParty>,
 ) -> Result<MiddleOut, String> {
+    prove_d(inp, net, sp, spine_coms, owner_y, None)
+}
+
+/// prove with DEFER's input (the release: the head step's pending claims, discharged here; GZ.deferred_evals).
+pub fn prove_d(
+    inp: &MiddleIn,
+    net: &mut dyn Net,
+    sp: &mut Spdz,
+    spine_coms: BTreeMap<String, PcsParty>,
+    owner_y: Option<PcsParty>,
+    dfr: Option<DeferIn>,
+) -> Result<MiddleOut, String> {
     if inp.lp.ext != inp.pr.ext {
         return Err("the Ligero's EXT is not the profile's".into());
     }
     match inp.pr.ext {
-        1 => prove_g::<1>(inp, net, sp, spine_coms, owner_y),
-        2 => prove_g::<2>(inp, net, sp, spine_coms, owner_y),
+        1 => prove_g::<1>(inp, net, sp, spine_coms, owner_y, dfr),
+        2 => prove_g::<2>(inp, net, sp, spine_coms, owner_y, dfr),
         e => Err(format!("unsupported EXT {e}")),
     }
+}
+
+/// GZ.deferred_evals: the head W's pending claims at the last step's points.
+fn deferred_evals<const E: usize>(w1: Vec<[u64; E]>, w2: Vec<[u64; E]>) -> EvalsE<E> {
+    let cpt = vec![ext::zero::<E>(); defer::carry_m(E)];
+    vec![("W1".into(), w1), ("c1p".into(), cpt.clone()), ("W2".into(), w2), ("c2p".into(), cpt)]
 }
 
 fn prove_g<const E: usize>(
@@ -630,6 +667,7 @@ fn prove_g<const E: usize>(
     sp: &mut Spdz,
     mut spine_coms: BTreeMap<String, PcsParty>,
     owner_y: Option<PcsParty>,
+    dfr: Option<DeferIn>,
 ) -> Result<MiddleOut, String> {
     let (pr, lp, i, n, d) = (inp.pr, inp.lp, inp.i, inp.n, inp.d);
     let rec = inp.rec;
@@ -679,21 +717,36 @@ fn prove_g<const E: usize>(
             abc.insert(k, v);
         }
     }
+    tt.lap("vectors gathered (shares, A B C with MACs)");
     let carried: Vec<&str> = rec.io.as_ref().map(|io| io.carried.clone()).unwrap_or_else(|| SPINE.to_vec());
     let mut com: BTreeMap<String, PcsParty> = BTreeMap::new();
     for (k, v) in &xs {
         if carried.contains(&k.as_str()) {
             let mut c = spine_coms.remove(k).expect("spine commitment");
-            c.shape.base = c.shape.block;
+            // DEFER: the head W has one life, opened here
+            if !(pr.defer && (k == "W1" || k == "W2")) {
+                c.shape.base = c.shape.block;
+            }
             com.insert(k.clone(), c);
         } else {
             com.insert(k.clone(), PcsParty::commit(pr, v, k, i, inp.det));
+            if v.len() >= 1 << 20 {
+                tt.lap(&format!("commitment {k} (2^{})", v.len().trailing_zeros()));
+            }
         }
     }
     tt.lap("vectors and commitments");
     let bind = owner_y.is_some();
     if let Some(oy) = owner_y {
         com.insert("yo".into(), oy);
+    }
+    let dpts = dfr.as_ref().map(|d| (d.points_e::<E>("W1"), d.points_e::<E>("W2")));
+    if let Some(d) = dfr {
+        for k in CARRY_IN {
+            let mut c = d.carries[k].clone();
+            c.shape.base = c.shape.block; // the carry's second life
+            com.insert(k.to_string(), c);
+        }
     }
     let keys: Vec<String> = com.keys().cloned().collect();
     let my: Vec<Hash> = keys.iter().map(|k| com[k].root).collect();
@@ -884,7 +937,11 @@ fn prove_g<const E: usize>(
     drop(tabs);
     tt.lap("claims and linear sumchecks");
     let rb = if bind { Some(ext::chal::<E>(&mut tr, lg(plen(d)))) } else { None };
-    let ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
+    let mut ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
+    let dfr_on = dpts.is_some();
+    if let Some((w1, w2)) = dpts {
+        ev.extend(deferred_evals(w1, w2));
+    }
     let shp: BTreeMap<String, Shape> = com.iter().map(|(k, c)| (k.clone(), c.shape.clone())).collect();
     let lay = row_layout_g(&shp, &ev, lh, lmax, kl, E, gmz.as_ref().map(|g| g.0.gm.nrows));
     let mut ys = Vec::new();
@@ -938,6 +995,7 @@ fn prove_g<const E: usize>(
         coef,
         cst,
         mz,
+        dfr: dfr_on,
     };
     let quad = vec![sys.lay.prod];
     let lig = lg_.prove(net, &mut tr, &sys, &quad);
@@ -981,14 +1039,43 @@ pub fn verify(
     bind: bool,
     public: &[u64],
 ) -> Result<(), String> {
+    verify_d(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public, None)
+}
+
+/// verify with DEFER (the release): dfr = the head's pending claims from the ledger, discharged by this proof.
+#[allow(clippy::too_many_arguments)]
+pub fn verify_d(
+    pr: &Profile,
+    lp: &LigParams,
+    n: usize,
+    rec: &Rec,
+    d: usize,
+    spine_roots: &BTreeMap<String, Vec<Hash>>,
+    ctx: &Ctx,
+    proof: &MiddleProof,
+    bind: bool,
+    public: &[u64],
+    dfr: Option<&Pending>,
+) -> Result<(), String> {
     if lp.ext != pr.ext {
         return Err("the Ligero's EXT is not the profile's".into());
     }
     match pr.ext {
-        1 => verify_g::<1>(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public),
-        2 => verify_g::<2>(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public),
+        1 => verify_g::<1>(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public, dfr),
+        2 => verify_g::<2>(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public, dfr),
         e => Err(format!("unsupported EXT {e}")),
     }
+}
+
+/// The middle's commitment shapes with DEFER's carried-in carries (the release discharging the head).
+pub fn shapes_d(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool, io: Option<&Io>, deferred_in: bool) -> (BTreeMap<String, usize>, BTreeMap<String, Shape>) {
+    let (lens, mut sh) = public_shapes_io(pr, n_prep, n_had, d, bind, io);
+    if deferred_in {
+        for k in CARRY_IN {
+            sh.insert(k.to_string(), defer::carry_shape(pr, true));
+        }
+    }
+    (lens, sh)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1003,11 +1090,17 @@ fn verify_g<const E: usize>(
     proof: &MiddleProof,
     bind: bool,
     public: &[u64],
+    dfr: Option<&Pending>,
 ) -> Result<(), String> {
-    let (lens, sh) = public_shapes_io(pr, rec.n_prep(), rec.had.len(), d, bind, rec.io.as_ref());
+    let (lens, sh) = shapes_d(pr, rec.n_prep(), rec.had.len(), d, bind, rec.io.as_ref(), dfr.is_some());
     let roots = &proof.roots;
     if roots.keys().ne(sh.keys()) {
         return Err("proof names the wrong commitments".into());
+    }
+    if let Some(df) = dfr {
+        if CARRY_IN.iter().any(|k| Some(&roots[*k]) != df.carry_roots.get(*k)) {
+            return Err("the head's carry commitments are not the last step's".into());
+        }
     }
     match &rec.io {
         None => {
@@ -1110,7 +1203,11 @@ fn verify_g<const E: usize>(
         }
     }
     let rb = if bind { Some(ext::chal::<E>(&mut tr, lg(plen(d)))) } else { None };
-    let ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
+    let mut ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
+    let dfr_on = dfr.is_some();
+    if let Some(df) = dfr {
+        ev.extend(deferred_evals(df.points_e::<E>("W1"), df.points_e::<E>("W2")));
+    }
     let lay = row_layout_g(&sh, &ev, lh, lmax, pr.k_l, E, mz.as_ref().map(|m| m.gm.nrows));
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
@@ -1143,6 +1240,7 @@ fn verify_g<const E: usize>(
         coef,
         cst,
         mz,
+        dfr: dfr_on,
     };
     let (groups, sizes) = if masked {
         (vec![proof.g_roots.clone(), proof.claims_root.clone(), proof.eval_roots.clone()], vec![ng, 1, nrows - ng - 1])

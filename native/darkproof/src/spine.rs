@@ -2,6 +2,7 @@
 //! `verify` is the public verifier. Every challenge is an F_{p^E} element (E = the profile's EXT; cosnark_ext): the
 //! code is generic over E and dispatched once at the top, so E = 1 is the base-field protocol byte for byte.
 use crate::ext::{self, Tab};
+use crate::defer::{self, DeferIn, Pending, CARRY, CARRY_IN};
 use crate::field;
 use crate::gmask::{self, GMask, MaskZ};
 use crate::h::{Hash, Py};
@@ -43,13 +44,33 @@ pub fn log2(d: usize) -> usize {
 
 /// cosnark_zk.shapes.
 pub fn shapes(pr: &Profile, d: usize, chained: bool, bind: bool) -> BTreeMap<String, Shape> {
+    shapes_d(pr, d, chained, bind, false)
+}
+
+/// The same with DEFER (cut E): every W one life (Profile::w_life), the carries c1, c2, and with deferred_in (the
+/// parent W's carry a pending claim) the previous step's carries c1p, c2p in their second life.
+pub fn shapes_d(pr: &Profile, d: usize, chained: bool, bind: bool, deferred_in: bool) -> BTreeMap<String, Shape> {
     let ld = log2(d);
     let mut out = BTreeMap::new();
     let block = if pr.nmask > 0 { pr.nmask / pr.lives } else { 0 };
     for k in VEC.iter().chain(MAT.iter()).chain(if bind { ["xo"].iter() } else { [].iter() }) {
         let m = if MAT.contains(k) { 2 * ld } else { ld };
+        if pr.defer && MAT.contains(k) {
+            out.insert(k.to_string(), Shape::new(&pr.w_life(), m, 0));
+            continue;
+        }
         let base = if chained && (*k == "W1" || *k == "W2") { block } else { 0 };
         out.insert(k.to_string(), Shape::new(pr, m, base));
+    }
+    if pr.defer {
+        for k in CARRY {
+            out.insert(k.to_string(), defer::carry_shape(pr, false));
+        }
+        if deferred_in {
+            for k in CARRY_IN {
+                out.insert(k.to_string(), defer::carry_shape(pr, true));
+            }
+        }
     }
     out
 }
@@ -79,6 +100,10 @@ pub struct Sched<const E: usize> {
     pub scs: BTreeMap<String, (Vec<[u64; E]>, Vec<[u64; E]>)>,
     pub r1: Vec<(Vec<[u64; E]>, Vec<[u64; E]>)>,
     pub rb: Option<Vec<[u64; E]>>,
+    /// DEFER: the rank-1 evaluations are the carries' (the children are not opened)
+    pub defer: bool,
+    /// DEFER: the parent's pending points (W1, W2) from the ledger, discharged in this proof
+    pub dpts: Option<Vec<Vec<[u64; E]>>>,
 }
 
 pub fn evals_of<const E: usize>(s: &Sched<E>) -> EvalsE<E> {
@@ -95,10 +120,15 @@ pub fn evals_of<const E: usize>(s: &Sched<E>) -> EvalsE<E> {
     for k in ["b", "g1", "bg"] {
         ev.push((k.into(), rs.clone()));
     }
+    let cpt = vec![ext::zero::<E>(); defer::carry_m(E)];
     for (q, (wn, wo, dv, vv)) in [("W1n", "W1", "d1", "x"), ("W2n", "W2", "d2", "h")].iter().enumerate() {
         let (rc, rr) = &s.r1[q];
         let rcr = cat(rc, rr);
-        ev.push((wn.to_string(), rcr.clone()));
+        if s.defer {
+            ev.push((CARRY[q].to_string(), cpt.clone()));
+        } else {
+            ev.push((wn.to_string(), rcr.clone()));
+        }
         ev.push((wo.to_string(), rcr));
         ev.push((dv.to_string(), rr.clone()));
         ev.push((vv.to_string(), rc.clone()));
@@ -106,6 +136,12 @@ pub fn evals_of<const E: usize>(s: &Sched<E>) -> EvalsE<E> {
     if let Some(rb) = &s.rb {
         ev.push(("xo".into(), rb.clone()));
         ev.push(("x".into(), rb.clone()));
+    }
+    if let Some(dp) = &s.dpts {
+        for (i, (wo, cn)) in [("W1", "c1p"), ("W2", "c2p")].iter().enumerate() {
+            ev.push((wo.to_string(), dp[i].clone()));
+            ev.push((cn.to_string(), cpt.clone()));
+        }
     }
     ev
 }
@@ -293,9 +329,16 @@ pub struct SpineSys<const E: usize> {
     pub sched: Sched<E>,
     /// ZKSC "mask": the opened masking data (None: hidden round rows)
     pub mz: Option<MaskZ<E>>,
+    /// the owner binding is on (its two evaluations follow the rank-1 ones)
+    pub bind: bool,
 }
 
 impl<const E: usize> SpineSys<E> {
+    /// DEFER: a carry's value, its single u row's first E cells (component 0's row), times coef.
+    fn cv(&self, em: &mut EEm<E>, e: usize, coef: [u64; E]) {
+        let r0 = self.lay.urows[e][0];
+        em.var(std::array::from_fn(|k| (r0, k)), coef);
+    }
     fn y(&self, em: &mut EEm<E>, e: usize, coef: [u64; E]) {
         y_form(em, &self.ev, &self.shapes, &self.lay.urows, self.kl, e, coef);
     }
@@ -417,7 +460,11 @@ impl<const E: usize> LinSystem for SpineSys<E> {
         operands(&mut em, &pf[3], "product 3 operands", "product 3 operand sums", &|em| self.y(em, 9, m1), &|em| self.y(em, 10, m1));
         for (q, base) in [(4usize, 12usize), (5, 16)] {
             let wn = if q == 4 { "W1n" } else { "W2n" };
-            self.y(&mut em, base, one);
+            if self.sched.defer {
+                self.cv(&mut em, base, one);
+            } else {
+                self.y(&mut em, base, one);
+            }
             self.y(&mut em, base + 1, m1);
             em.form(&pf[q].z, one);
             em.done(&format!("rank-1 update {wn}: W'(r) = W(r) - d(r_row) v(r_col)"), ext::zero());
@@ -430,10 +477,18 @@ impl<const E: usize> LinSystem for SpineSys<E> {
                 &|em| self.y(em, base + 3, m1),
             );
         }
-        if self.ev.len() == 22 {
+        if self.bind {
             self.y(&mut em, 20, one);
             self.y(&mut em, 21, m1);
             em.done("signed input binding: the custodians' x = the owner's signed x", ext::zero());
+        }
+        if self.sched.dpts.is_some() {
+            let e0 = if self.bind { 22 } else { 20 };
+            for i in 0..2 {
+                self.y(&mut em, e0 + 2 * i, one);
+                self.cv(&mut em, e0 + 2 * i + 1, m1);
+                em.done("deferred claim of the parent: W(r_prev) = c_prev", ext::zero());
+            }
         }
     }
 }
@@ -544,6 +599,8 @@ pub struct SpineOut {
     pub sys: Box<dyn LinSystem + Send>,
     pub quad: Vec<(usize, usize, usize)>,
     pub stats: BTreeMap<String, u64>,
+    /// DEFER: this step's pending claims (its points and this party's carries) for the discharging proof
+    pub deferred: Option<DeferIn>,
 }
 
 /// The product rows' shares from the operands' (cosnark_zk.prod_shares): one plain product per gate at E = 1;
@@ -571,12 +628,28 @@ pub fn prove(
     carry: BTreeMap<String, PcsParty>,
     owner_x: Option<PcsParty>,
 ) -> Result<SpineOut, String> {
+    prove_d(inp, net, sp, carry, owner_x, None)
+}
+
+/// prove with DEFER's input: the previous step's pending claims (its points and this party's carries), which this
+/// step discharges at its single opening of the parent W (None: the parent is final, or no DEFER).
+pub fn prove_d(
+    inp: &SpineIn,
+    net: &mut dyn Net,
+    sp: &mut Spdz,
+    carry: BTreeMap<String, PcsParty>,
+    owner_x: Option<PcsParty>,
+    dfr: Option<DeferIn>,
+) -> Result<SpineOut, String> {
     if inp.lp.ext != inp.pr.ext {
         return Err("the Ligero's EXT is not the profile's".into());
     }
+    if dfr.is_some() && !inp.pr.defer {
+        return Err("deferred claims under a profile without DEFER".into());
+    }
     match inp.pr.ext {
-        1 => prove_g::<1>(inp, net, sp, carry, owner_x),
-        2 => prove_g::<2>(inp, net, sp, carry, owner_x),
+        1 => prove_g::<1>(inp, net, sp, carry, owner_x, dfr),
+        2 => prove_g::<2>(inp, net, sp, carry, owner_x, dfr),
         e => Err(format!("unsupported EXT {e}")),
     }
 }
@@ -587,6 +660,7 @@ fn prove_g<const E: usize>(
     sp: &mut Spdz,
     mut carry: BTreeMap<String, PcsParty>,
     owner_x: Option<PcsParty>,
+    dfr: Option<DeferIn>,
 ) -> Result<SpineOut, String> {
     let (pr, lp, i, n, d) = (inp.pr, inp.lp, inp.i, inp.n, inp.d);
     let ld = log2(d);
@@ -609,8 +683,15 @@ fn prove_g<const E: usize>(
             sh[3] = field::add(sh[3], 1);
         }
         if let Some(mut c) = carry.remove(*k) {
-            c.shape.base = c.shape.block;
+            // DEFER: the carried W has one life, opened here (base 0)
+            if !pr.defer {
+                c.shape.base = c.shape.block;
+            }
             com.insert(k.to_string(), c);
+            continue;
+        }
+        if pr.defer && MAT.contains(k) {
+            com.insert(k.to_string(), PcsParty::commit(&pr.w_life(), &sh, k, i, inp.det));
             continue;
         }
         com.insert(k.to_string(), PcsParty::commit(pr, &sh, k, i, inp.det));
@@ -619,6 +700,14 @@ fn prove_g<const E: usize>(
     let bind = owner_x.is_some();
     if let Some(ox) = owner_x {
         com.insert("xo".into(), ox);
+    }
+    let dpts: Option<Vec<Vec<[u64; E]>>> = dfr.as_ref().map(|d| vec![d.points_e::<E>("W1"), d.points_e::<E>("W2")]);
+    if let Some(d) = dfr {
+        for k in CARRY_IN {
+            let mut c = d.carries[k].clone();
+            c.shape.base = c.shape.block; // the carry's second life
+            com.insert(k.to_string(), c);
+        }
     }
     let keys: Vec<String> = com.keys().cloned().collect();
     let my_roots: Vec<Hash> = keys.iter().map(|k| com[k].root).collect();
@@ -647,7 +736,7 @@ fn prove_g<const E: usize>(
             h.s(k).list_hx(&roots[k]);
         });
     }
-    let mut sched = Sched::<E>::default();
+    let mut sched = Sched::<E> { defer: pr.defer, dpts, ..Default::default() };
     let mut round_roots: BTreeMap<String, Vec<Vec<Hash>>> = BTreeMap::new();
     // cut D: every g of the spine committed as one group, the G values opened, rho drawn (before the first tau)
     let mut gmz: Option<(MaskZ<E>, Vec<u64>, Vec<Hash>)> = None;
@@ -787,6 +876,47 @@ fn prove_g<const E: usize>(
         sched.rb = Some(ext::chal::<E>(&mut tr, ld));
     }
     let ev = evals_of(&sched);
+    let pairs = [(2usize, 1usize), (5, 4), (8, 7), (9, 10), (14, 15), (18, 19)];
+    let mut prod_rows: Option<(Vec<u64>, Vec<u64>, Vec<u64>)> = None;
+    let mut roots = roots;
+    if pr.defer {
+        // the products first (none involves a carry), then the carries c = W(r) - d(r_row) v(r_col), committed and
+        // absorbed after every schedule challenge and before the evaluation rows
+        let mut ys0: BTreeMap<usize, [u64; E]> = BTreeMap::new();
+        for e in pairs.iter().flat_map(|&(a, b)| [a, b]).chain([13, 17]) {
+            let (k, pt) = &ev[e];
+            ys0.entry(e).or_insert_with(|| com[k].eval_share_e(pt).1);
+        }
+        let xs: Vec<[u64; E]> = pairs.iter().map(|&(a, _)| ys0[&a]).collect();
+        let yv: Vec<[u64; E]> = pairs.iter().map(|&(_, b)| ys0[&b]).collect();
+        let (rx, ry, rz) = prod_shares::<E>(&mut lg, net, &xs, &yv);
+        let nrr = ext::nr();
+        let zval = |q: usize| -> [u64; E] {
+            if E == 1 {
+                std::array::from_fn(|_| rz[q])
+            } else {
+                let (p1, p2, p3) = (rz[3 * q], rz[3 * q + 1], rz[3 * q + 2]);
+                std::array::from_fn(|k| if k == 0 { field::add(p1, field::mul(nrr, p2)) } else { field::sub(field::sub(p3, p1), p2) })
+            }
+        };
+        let mut mine = Vec::new();
+        for (q, wi, cn) in [(4usize, 13usize, "c1"), (5, 17, "c2")] {
+            let dl = ext::sub(ys0[&wi], zval(q));
+            let mut v = dl.to_vec();
+            v.resize(1 << defer::carry_m(E), 0);
+            let c = PcsParty::commit(pr, &v, cn, i, inp.det);
+            mine.push(c.root);
+            com.insert(cn.to_string(), c);
+        }
+        let all = gather_hashes(net, &mine);
+        for (ci, cn) in CARRY.iter().enumerate() {
+            roots.insert(cn.to_string(), (0..n).map(|p| all[p][ci]).collect());
+        }
+        tr.absorb(|h| {
+            h.s("carry").list_hx(&roots["c1"]).list_hx(&roots["c2"]);
+        });
+        prod_rows = Some((rx, ry, rz));
+    }
     let shp: BTreeMap<String, Shape> = com.iter().map(|(k, c)| (k.clone(), c.shape.clone())).collect();
     let lay = row_layout_g(ld, &shp, &ev, kl, E, gmz.as_ref().map(|g| g.0.gm.nrows));
     let mut ys: Vec<[u64; E]> = Vec::with_capacity(ev.len());
@@ -813,10 +943,14 @@ fn prove_g<const E: usize>(
         }
     }
     tt.lap("evaluation rows");
-    let pairs = [(2usize, 1usize), (5, 4), (8, 7), (9, 10), (14, 15), (18, 19)];
-    let xs: Vec<[u64; E]> = pairs.iter().map(|&(a, _)| ys[a]).collect();
-    let yv: Vec<[u64; E]> = pairs.iter().map(|&(_, b)| ys[b]).collect();
-    let (rx, ry, rz) = prod_shares::<E>(&mut lg, net, &xs, &yv);
+    let (rx, ry, rz) = match prod_rows {
+        Some(r) => r,
+        None => {
+            let xs: Vec<[u64; E]> = pairs.iter().map(|&(a, _)| ys[a]).collect();
+            let yv: Vec<[u64; E]> = pairs.iter().map(|&(_, b)| ys[b]).collect();
+            prod_shares::<E>(&mut lg, net, &xs, &yv)
+        }
+    };
     lg.add_row(&rx);
     lg.add_row(&ry);
     lg.add_row(&rz);
@@ -826,7 +960,15 @@ fn prove_g<const E: usize>(
         h.s("lig-evals").list_hx(&eval_roots).list_hx(&mask_roots);
     });
     tt.lap("ligero commits");
+    // DEFER: the children are committed, not opened
+    let mut unopened: BTreeMap<String, PcsParty> = BTreeMap::new();
+    if pr.defer {
+        for k in ["W1n", "W2n"] {
+            unopened.insert(k.to_string(), com.remove(k).unwrap());
+        }
+    }
     let (prox, pcs_cols) = pcs_prove_e::<E>(pr, &mut com, &mut tr, net, n)?;
+    com.extend(unopened);
     tt.lap("pcs openings");
     let cols = pcs_cols.iter().map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r)))).collect();
     let (mz, g_roots) = match gmz {
@@ -837,7 +979,18 @@ fn prove_g<const E: usize>(
         Some(m) => (m.g_flat(), m.msgs.iter().map(|(k, v)| (k.clone(), v.iter().map(|x| gmask::flat(x)).collect())).collect()),
         None => (Vec::new(), BTreeMap::new()),
     };
-    let sys = SpineSys::<E> { kl, shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(), ev, cols, lay, sched, mz };
+    let dout = if pr.defer {
+        let mut points = BTreeMap::new();
+        points.insert("W1".to_string(), ev[13].1.iter().flat_map(|x| x.iter().copied()).collect());
+        points.insert("W2".to_string(), ev[17].1.iter().flat_map(|x| x.iter().copied()).collect());
+        let mut carries = BTreeMap::new();
+        carries.insert("c1p".to_string(), com["c1"].clone());
+        carries.insert("c2p".to_string(), com["c2"].clone());
+        Some(DeferIn { points, carries })
+    } else {
+        None
+    };
+    let sys = SpineSys::<E> { kl, shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(), ev, cols, lay, sched, mz, bind };
     let quad = vec![sys.lay.prod];
     let lig = lg.prove(net, &mut tr, &sys, &quad);
     tt.lap("ligero prove");
@@ -861,7 +1014,7 @@ fn prove_g<const E: usize>(
         g_open,
         rounds,
     };
-    Ok(SpineOut { proof, coms: com, lig_rows: lg.rows.clone(), sys: Box::new(sys), quad, stats })
+    Ok(SpineOut { proof, coms: com, lig_rows: lg.rows.clone(), sys: Box::new(sys), quad, stats, deferred: dout })
 }
 
 fn shallow(c: &PcsParty) -> PcsParty {
@@ -918,7 +1071,8 @@ pub fn pcs_prove_e<const E: usize>(
     }
     let mut cols = BTreeMap::new();
     for (k, c) in com.iter_mut() {
-        c.take_life(k, pr.lives).map_err(|e| format!("LifeExhausted: {}", e.0))?;
+        let ml = c.max_lives;
+        c.take_life(k, ml).map_err(|e| format!("LifeExhausted: {}", e.0))?;
         let jj = tr.distinct_cols(pr.t_cols, c.shape.npts);
         let mine: Vec<pcs::Opening> = c.open_batch(&jj);
         let all = ligero::gather_openings(net, vec![mine]);
@@ -943,12 +1097,31 @@ pub fn verify(
     bind: bool,
     public: &[u64],
 ) -> Result<(), String> {
+    verify_d(pr, lp, n, d, ctx, parent_roots, chained, proof, bind, public, None).map(|_| ())
+}
+
+/// verify with DEFER: dfr = the parent's pending claims from the LEDGER (None: the parent is final); returns this
+/// step's own pending claims (None without DEFER).
+#[allow(clippy::too_many_arguments)]
+pub fn verify_d(
+    pr: &Profile,
+    lp: &LigParams,
+    n: usize,
+    d: usize,
+    ctx: &Ctx,
+    parent_roots: Option<&BTreeMap<String, Vec<Hash>>>,
+    chained: bool,
+    proof: &SpineProof,
+    bind: bool,
+    public: &[u64],
+    dfr: Option<&Pending>,
+) -> Result<Option<Pending>, String> {
     if lp.ext != pr.ext {
         return Err("the Ligero's EXT is not the profile's".into());
     }
     match pr.ext {
-        1 => verify_g::<1>(pr, lp, n, d, ctx, parent_roots, chained, proof, bind, public),
-        2 => verify_g::<2>(pr, lp, n, d, ctx, parent_roots, chained, proof, bind, public),
+        1 => verify_g::<1>(pr, lp, n, d, ctx, parent_roots, chained, proof, bind, public, dfr),
+        2 => verify_g::<2>(pr, lp, n, d, ctx, parent_roots, chained, proof, bind, public, dfr),
         e => Err(format!("unsupported EXT {e}")),
     }
 }
@@ -965,9 +1138,10 @@ fn verify_g<const E: usize>(
     proof: &SpineProof,
     bind: bool,
     public: &[u64],
-) -> Result<(), String> {
+    dfr: Option<&Pending>,
+) -> Result<Option<Pending>, String> {
     let ld = log2(d);
-    let sh = shapes(pr, d, chained, bind);
+    let sh = shapes_d(pr, d, chained, bind, dfr.is_some());
     let roots = &proof.roots;
     if roots.keys().ne(sh.keys()) {
         return Err("proof names the wrong commitments".into());
@@ -975,6 +1149,11 @@ fn verify_g<const E: usize>(
     if let Some(par) = parent_roots {
         if roots["W1"] != par["W1"] || roots["W2"] != par["W2"] {
             return Err("parent commitment is not the previous step's child commitment".into());
+        }
+    }
+    if let Some(df) = dfr {
+        if CARRY_IN.iter().any(|k| Some(&roots[*k]) != df.carry_roots.get(*k)) {
+            return Err("the parent's carry commitments are not the previous step's".into());
         }
     }
     let mut tr = Transcript::new("step-zk");
@@ -986,6 +1165,9 @@ fn verify_g<const E: usize>(
         h.s("public").hx(&pd);
     });
     for (k, r) in roots {
+        if pr.defer && CARRY.contains(&k.as_str()) {
+            continue; // committed after r_k: absorbed below ("carry")
+        }
         tr.absorb(|h| {
             h.s(k).list_hx(r);
         });
@@ -1012,7 +1194,8 @@ fn verify_g<const E: usize>(
     } else if rr.keys().map(|s| s.as_str()).ne(["b", "bg", "z1", "z2"]) || rr.values().any(|v| v.len() != ld) {
         return Err("wrong number of sumcheck rounds".into());
     }
-    let mut sched = Sched::<E>::default();
+    let dpts = dfr.map(|df| vec![df.points_e::<E>("W1"), df.points_e::<E>("W2")]);
+    let mut sched = Sched::<E> { defer: pr.defer, dpts, ..Default::default() };
     for name in ["z1", "z2", "b", "bg"] {
         let tau = ext::chal::<E>(&mut tr, ld);
         let mut rs = Vec::new();
@@ -1046,12 +1229,29 @@ fn verify_g<const E: usize>(
         sched.rb = Some(ext::chal::<E>(&mut tr, ld));
     }
     let ev = evals_of(&sched);
+    let mut out = None;
+    if pr.defer {
+        tr.absorb(|h| {
+            h.s("carry").list_hx(&roots["c1"]).list_hx(&roots["c2"]);
+        });
+        let flat = |v: &[[u64; E]]| v.iter().flat_map(|x| x.iter().copied()).collect::<Vec<u64>>();
+        let mut points = BTreeMap::new();
+        points.insert("W1".to_string(), flat(&ev[13].1));
+        points.insert("W2".to_string(), flat(&ev[17].1));
+        let mut carry_roots = BTreeMap::new();
+        carry_roots.insert("c1p".to_string(), roots["c1"].clone());
+        carry_roots.insert("c2p".to_string(), roots["c2"].clone());
+        out = Some(Pending { points, carry_roots });
+    }
     let lay = row_layout_g(ld, &sh, &ev, pr.k_l, E, mz.as_ref().map(|m| m.gm.nrows));
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
     });
-    let keys: Vec<String> = sh.keys().cloned().collect();
-    let shv: Vec<Shape> = sh.values().cloned().collect();
+    // DEFER: the children are committed, not opened
+    let osh: BTreeMap<String, Shape> =
+        sh.iter().filter(|(k, _)| !(pr.defer && (k.as_str() == "W1n" || k.as_str() == "W2n"))).map(|(k, v)| (k.clone(), v.clone())).collect();
+    let keys: Vec<String> = osh.keys().cloned().collect();
+    let shv: Vec<Shape> = osh.values().cloned().collect();
     let rootv: Vec<Vec<Hash>> = keys.iter().map(|k| roots[k].clone()).collect();
     let proxv: Vec<Vec<Vec<u64>>> = keys.iter().map(|k| proof.prox[k].clone()).collect();
     let colv: Vec<PcsCols> = keys.iter().map(|k| proof.pcs_cols[k].clone()).collect();
@@ -1063,7 +1263,7 @@ fn verify_g<const E: usize>(
     let nrows = lay.nrows;
     let ng = lay.ng;
     let masked = mz.is_some();
-    let sys = SpineSys::<E> { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(), ev, cols, lay, sched, mz };
+    let sys = SpineSys::<E> { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(), ev, cols, lay, sched, mz, bind };
     let mut groups: Vec<Vec<Hash>> = Vec::new();
     let mut sizes;
     if masked {
@@ -1081,7 +1281,8 @@ fn verify_g<const E: usize>(
     }
     groups.push(proof.eval_roots.clone());
     let quad = vec![sys.lay.prod];
-    ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
+    ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)?;
+    Ok(out)
 }
 
 /// Beaver triples the spine's sumcheck rounds consume at EXT = 1 (three degree-2 matvec sumchecks and the degree-3
