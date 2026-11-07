@@ -1,0 +1,201 @@
+diff --git a/libcuda/cuda_api_object.h b/libcuda/cuda_api_object.h
+index 3e34641e..2e75101a 100644
+--- a/libcuda/cuda_api_object.h
++++ b/libcuda/cuda_api_object.h
+@@ -157,6 +157,7 @@ class kernel_config {
+   void set_block_dim(dim3 *d) { m_BlockDim = *d; }
+   gpgpu_ptx_sim_arg_list_t get_args() { return m_args; }
+   struct CUstream_st *get_stream() { return m_stream; }
++  size_t shared_mem() const { return m_sharedMem; }  // hw-opt-sim
+ 
+  private:
+   dim3 m_GridDim;
+diff --git a/libcuda/cuda_runtime_api.cc b/libcuda/cuda_runtime_api.cc
+index 9b139fa2..271e98b0 100644
+--- a/libcuda/cuda_runtime_api.cc
++++ b/libcuda/cuda_runtime_api.cc
+@@ -1020,6 +1020,16 @@ cudaError_t cudaLaunchInternal(const char *hostFun,
+   // do dynamic PDOM analysis for performance simulation scenario
+   std::string kname = grid->name();
+   function_info *kernel_func_info = grid->entry();
++  {  // hw-opt-sim: count the launchs dynamic shared memory in the CTAs smem (occupancy, L1 carve-out);
++     // upstream stores m_sharedMem and never reads it, so a 64 KiB dynamic-smem kernel ran 4 CTAs/SM.
++    static std::map<const function_info *, unsigned> static_smem;
++    gpgpu_ptx_sim_info ki = *kernel_func_info->get_kernel_info();
++    if (!static_smem.count(kernel_func_info)) static_smem[kernel_func_info] = ki.smem;
++    ki.smem = static_smem[kernel_func_info] + (unsigned)config.shared_mem();
++    kernel_func_info->set_kernel_info(ki);
++    printf("GPGPU-Sim PTX: hw-opt-sim smem per CTA = %u (static %u + dynamic %zu)\n", ki.smem,
++           static_smem[kernel_func_info], config.shared_mem());
++  }
+   if (kernel_func_info->is_pdom_set()) {
+     printf("GPGPU-Sim PTX: PDOM analysis already done for %s \n",
+            kname.c_str());
+diff --git a/src/cuda-sim/instructions.cc b/src/cuda-sim/instructions.cc
+index f6324fbf..e08338c0 100644
+--- a/src/cuda-sim/instructions.cc
++++ b/src/cuda-sim/instructions.cc
+@@ -1707,13 +1707,19 @@ void bfi_impl(const ptx_instruction *pI, ptx_thread_info *thread) {
+       assert(0);
+       break;
+   }
++  // hw-opt-sim: the old loop worked on .u32 with 32-bit shifts, so bfi.b64 dropped the high word.
+   data = src2_data;
+   unsigned pos = src3_data.u32 & 0xFF;
+   unsigned len = src4_data.u32 & 0xFF;
+-  for (i = 0; i < len && pos + i < max; i++) {
+-    data.u32 = (~((0x00000001) << (pos + i))) & data.u32;
+-    data.u32 = data.u32 | ((src1_data.u32 & ((0x00000001) << (i))) << (pos));
+-  }
++  if (pos < (unsigned)max && len > 0) {
++    if (pos + len > (unsigned)max) len = max - pos;
++    unsigned long long m = len >= 64 ? ~0ull : ((1ull << len) - 1);
++    unsigned long long base = max == 32 ? (unsigned long long)src2_data.u32 : src2_data.u64;
++    unsigned long long ins = max == 32 ? (unsigned long long)src1_data.u32 : src1_data.u64;
++    unsigned long long r = (base & ~(m << pos)) | ((ins & m) << pos);
++    if (max == 32) data.u32 = (unsigned)r; else data.u64 = r;
++  }
++  (void)i;
+   thread->set_operand_value(dst, data, i_type, thread, pI);
+ }
+ void bfind_impl(const ptx_instruction *pI, ptx_thread_info *thread) {
+@@ -1949,7 +1955,7 @@ void mma_impl(const ptx_instruction *pI, core_t *core, warp_inst_t inst) {
+             hex_val = (v[k / 2].s64 & 0xffff);
+           else
+             hex_val = ((v[k / 2].s64 & 0xffff0000) >> 16);
+-          nw_v[k].f16 = *(reinterpret_cast<half *>(hex_val));
++          nw_v[k].f16 = *(reinterpret_cast<half *>(&hex_val));
+         }
+       }
+       if (!((operand_num == 3) && (type2 == F32_TYPE))) {
+@@ -4327,8 +4333,10 @@ void mul_impl(const ptx_instruction *pI, ptx_thread_info *thread) {
+     case S64_TYPE:
+       t.s64 = a.s64 * b.s64;
+       assert(!pI->is_wide());
+-      // assert(!pI->is_hi());
+-      d.s64 = t.s64;
++      if (pI->is_hi())  // hw-opt-sim: was silently the low half
++        d.s64 = (long long)(((__int128)a.s64 * (__int128)b.s64) >> 64);
++      else
++        d.s64 = t.s64;
+       break;
+     case U16_TYPE:
+       t.u32 = ((unsigned)a.u16) * ((unsigned)b.u16);
+@@ -4355,8 +4363,9 @@ void mul_impl(const ptx_instruction *pI, ptx_thread_info *thread) {
+     case U64_TYPE:
+       t.u64 = a.u64 * b.u64;
+       assert(!pI->is_wide());
+-      assert(!pI->is_hi());
+-      if (pI->is_lo())
++      if (pI->is_hi())  // hw-opt-sim: mul.hi.u64 (__umul64hi) was an assert
++        d.u64 = (unsigned long long)(((unsigned __int128)a.u64 * b.u64) >> 64);
++      else if (pI->is_lo())
+         d.u64 = t.u64;
+       else
+         assert(0);
+diff --git a/src/cuda-sim/ptx.l b/src/cuda-sim/ptx.l
+index 3d4bd50e..e62de6c3 100644
+--- a/src/cuda-sim/ptx.l
++++ b/src/cuda-sim/ptx.l
+@@ -266,10 +266,10 @@ breakaddr  TC; yylval->int_value = BREAKADDR_OP; return OPCODE;
+ 
+ [0-9]+\.[0-9]+ 	 TC; sscanf(yytext,"%lf", &yylval->double_value); return DOUBLE_OPERAND;
+ 	
+-0[xX][0-9a-fA-F]+U? TC; CHECK_UNSIGNED; sscanf(yytext,"%x", &yylval->int_value); return INT_OPERAND;
++0[xX][0-9a-fA-F]+U? TC; CHECK_UNSIGNED; yylval->int64_value = (long long)strtoull(yytext, NULL, 16); return INT_OPERAND;
+ 0[0-7]+U?   	TC; printf("GPGPU-Sim: ERROR ** parsing octal not (yet) implemented\n"); abort(); return INT_OPERAND;
+ 0[bB][01]+U?  	TC; printf("GPGPU-Sim: ERROR ** parsing binary not (yet) implemented\n"); abort(); return INT_OPERAND;
+-[-]?[0-9]+U?    TC; CHECK_UNSIGNED; yylval->int_value =  atoi(yytext); return INT_OPERAND;
++[-]?[0-9]+U?    TC; CHECK_UNSIGNED; yylval->int64_value = (yytext[0] == '-') ? strtoll(yytext, NULL, 10) : (long long)strtoull(yytext, NULL, 10); return INT_OPERAND;
+ 
+ 0[fF][0-9a-fA-F]{8}  TC; sscanf(yytext+2,"%x", (unsigned*)(void*)&yylval->float_value); return FLOAT_OPERAND;
+ 0[dD][0-9a-fA-F]{16}  TC; sscanf(yytext+2,"%Lx", (unsigned long long*)(void*)&yylval->double_value); return DOUBLE_OPERAND;
+diff --git a/src/cuda-sim/ptx.y b/src/cuda-sim/ptx.y
+index 5e1a51c4..892775b1 100644
+--- a/src/cuda-sim/ptx.y
++++ b/src/cuda-sim/ptx.y
+@@ -43,6 +43,7 @@ class ptx_recognizer;
+   double double_value;
+   float  float_value;
+   int    int_value;
++  long long int64_value;  /* hw-opt-sim: full-width integer literals */
+   char * string_value;
+   void * ptr_value;
+ }
+@@ -636,7 +637,7 @@ twin_operand : IDENTIFIER PLUS IDENTIFIER { recognizer->add_double_operand($1,$3
+ 	| IDENTIFIER PLUS EQUALS INT_OPERAND  { recognizer->add_address_operand($1,$4); recognizer->change_double_operand_type(3); }
+ 	;
+ 
+-literal_operand : INT_OPERAND { recognizer->add_literal_int($1); }
++literal_operand : INT_OPERAND { recognizer->add_literal_int($<int64_value>1); }
+ 	| FLOAT_OPERAND { recognizer->add_literal_float($1); }
+ 	| DOUBLE_OPERAND { recognizer->add_literal_double($1); }
+ 	;
+diff --git a/src/cuda-sim/ptx_ir.h b/src/cuda-sim/ptx_ir.h
+index 4a7d39b6..240e95a9 100644
+--- a/src/cuda-sim/ptx_ir.h
++++ b/src/cuda-sim/ptx_ir.h
+@@ -530,7 +530,7 @@ class operand_info {
+     m_valid = true;
+     m_vector = false;
+     m_type = int_t;
+-    m_value.m_int = x;
++    m_value.m_int64 = x;  // hw-opt-sim: low word is m_int
+     m_addr_offset = 0;
+     m_neg_pred = false;
+     m_is_return_var = false;
+@@ -809,7 +809,7 @@ class operand_info {
+     ptx_reg_t result;
+     switch (m_type) {
+       case int_t:
+-        result.s64 = m_value.m_int;
++        result.s64 = m_value.m_int64;
+         break;
+       case float_op_t:
+         result.f32 = m_value.m_float;
+@@ -827,6 +827,7 @@ class operand_info {
+     return result;
+   }
+   int get_int() const { return m_value.m_int; }
++  void set_int64(long long v) { m_value.m_int64 = v; }  // hw-opt-sim
+   int get_addr_offset() const { return m_addr_offset; }
+   const symbol *get_symbol() const { return m_value.m_symbolic; }
+   void set_type(enum operand_type type) { m_type = type; }
+@@ -869,6 +870,7 @@ class operand_info {
+   bool m_operand_neg;
+   addr_t m_const_mem_offset;
+   union {
++    long long m_int64;
+     int m_int;
+     unsigned int m_unsigned;
+     float m_float;
+diff --git a/src/cuda-sim/ptx_parser.cc b/src/cuda-sim/ptx_parser.cc
+index a80eeae6..0aaf79de 100644
+--- a/src/cuda-sim/ptx_parser.cc
++++ b/src/cuda-sim/ptx_parser.cc
+@@ -866,9 +866,10 @@ void ptx_recognizer::change_operand_neg() {
+   g_operands.back().set_operand_neg();
+ }
+ 
+-void ptx_recognizer::add_literal_int(int value) {
++void ptx_recognizer::add_literal_int(long long value) {
+   PTX_PARSE_DPRINTF("add_literal_int");
+-  g_operands.push_back(operand_info(value, gpgpu_ctx));
++  g_operands.push_back(operand_info((int)value, gpgpu_ctx));
++  g_operands.back().set_int64(value);  // hw-opt-sim: 64-bit immediates were truncated to int
+ }
+ 
+ void ptx_recognizer::add_literal_float(float value) {
+diff --git a/src/cuda-sim/ptx_parser.h b/src/cuda-sim/ptx_parser.h
+index 96eadf6d..e5a1bb76 100644
+--- a/src/cuda-sim/ptx_parser.h
++++ b/src/cuda-sim/ptx_parser.h
+@@ -139,7 +139,7 @@ class ptx_recognizer {
+   void add_wmma_option(int option);
+   void add_builtin_operand(int builtin, int dim_modifier);
+   void add_memory_operand();
+-  void add_literal_int(int value);
++  void add_literal_int(long long value);
+   void add_literal_float(float value);
+   void add_literal_double(double value);
+   void add_address_operand(const char *identifier, int offset);
