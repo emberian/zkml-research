@@ -85,6 +85,7 @@ impl Tape {
             proof_atoms: false,
             proof_triples: 0,
             phase: crate::schedule::Phase::Step,
+            rs: false,
         }
     }
 }
@@ -162,7 +163,7 @@ pub fn assemble_in_chunk_emit(chunk: &[StepParams], tx: &Transactions, party: u3
                     let hi: Vec<_> = (s as usize..nb).map(|j| (fp.two_pow(j as u32 - s), bits[j])).collect();
                     emit(Tag::Trh, lin(&hi));
                     if sp.proof_atoms {
-                        for b in &bits[s as usize..] {
+                        for b in &bits[s as usize..s as usize + sp.trhb(s, k)] {
                             emit(Tag::Trhb, *b);
                         }
                     }

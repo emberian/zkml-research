@@ -51,6 +51,9 @@ pub struct StepParams {
     pub proof_triples: usize,
     /// What this tape is for: a training step, the mind's release, or a new committee's handover tape.
     pub phase: Phase,
+    /// the proof program's "RS" flag (darkstep Dealer::rs, darkproof StepParams::rs): K + 1 - s Trhb bits per
+    /// truncation (the low bits of r >> s) instead of K + KAPPA - s
+    pub rs: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -70,18 +73,21 @@ pub struct Release {
     pub m: usize,
     pub ncls: usize,
     pub kc: u32,
+    /// 0: each lookup is a degree-255 power chain; n > 0: n Beaver triples per lookup instead (darkproof's "L" cut
+    /// under RS + LB: step::lookup_bits_products, 27 at GEN6), in the same place on the tape
+    pub lookup_triples: usize,
 }
 
 impl StepParams {
     /// The harness's d = 64 step (mpc_fork.run_step hard-codes K = 13, 13, 8, 13 with S1, S2, S3 = 5, 4, 8).
     pub fn harness_d64() -> Self {
-        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step }
+        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false }
     }
     /// `step_counts.params(d)`: S1 = max(5, ceil(log2(49 d / 128))), K1 = S1 + 8, S2 = 4, K2 = 8, S3 = S1 + 3, K3 = S1 + 8.
     pub fn at(d: usize, inputs: Inputs) -> Self {
         let x = 49.0 * d as f64 / 128.0;
         let s1 = (x.log2().ceil() as i64).max(5) as u32;
-        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0, phase: Phase::Step }
+        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false }
     }
     /// The step with the collaborative proof's preprocessing: Trhb atoms and the proof section's triples,
     /// darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had).
@@ -104,6 +110,10 @@ impl StepParams {
         self.proof_atoms = true;
         self.proof_triples = proof_triples;
         self
+    }
+    /// Trhb entries per truncation (s, K) when proof_atoms is on.
+    pub fn trhb(&self, s: u32, k: u32) -> usize {
+        if self.rs { (k + 1 - s) as usize } else { (k + KAPPA - s) as usize }
     }
     /// A new seat's handover tape of n auth_plain entries.
     pub fn handover(mut self, n: usize) -> Self {
@@ -157,7 +167,11 @@ pub fn runs(sp: &StepParams) -> Vec<(Event, usize)> {
         // darkproof::run::deal_release (cosnark_release's order), then its proof section
         let (m, c) = (r.m, r.ncls);
         rep(&mut ev, tr(0), d * m); // u1 = z1 >> s1 per example
-        rep(&mut ev, Event::Lookup, d * m); // h
+        if r.lookup_triples > 0 {
+            rep(&mut ev, Event::Mul, d * m * r.lookup_triples); // h by the bit circuit (L)
+        } else {
+            rep(&mut ev, Event::Lookup, d * m); // h
+        }
         rep(&mut ev, Event::Mul, c * m * d); // o = W2 h
         rep(&mut ev, tr(0), c * m); // o >> s1
         rep(&mut ev, Event::Trunc(r.kc, r.kc), m * (c - 1)); // the comparisons against the label's score
@@ -195,7 +209,7 @@ pub fn expand(sp: &StepParams, e: Event, out: &mut Vec<Tag>) {
             out.extend(std::iter::repeat(Tag::Trb).take(s as usize));
             out.push(Tag::Trh);
             if sp.proof_atoms {
-                out.extend(std::iter::repeat(Tag::Trhb).take((k + KAPPA - s) as usize));
+                out.extend(std::iter::repeat(Tag::Trhb).take(sp.trhb(s, k)));
             }
             // borrow computation: 2 (s - 1) Beaver products
             for _ in 0..2 * (s - 1) {
@@ -219,7 +233,7 @@ pub fn event_len(sp: &StepParams, e: Event) -> usize {
     match e {
         Event::Input | Event::AuthPlain => 1,
         Event::Mul => 3,
-        Event::Trunc(s, k) => 2 + s as usize + if sp.proof_atoms { (k + KAPPA - s) as usize } else { 0 } + 6 * (s as usize - 1),
+        Event::Trunc(s, k) => 2 + s as usize + if sp.proof_atoms { sp.trhb(s, k) } else { 0 } + 6 * (s as usize - 1),
         Event::Lookup => DEG,
     }
 }
