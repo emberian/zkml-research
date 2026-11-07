@@ -828,6 +828,7 @@ aafff52532f04d20a; its interface is proof.md §21-22, 2adc6652):**
 - Vectors: `vec-e/d4-demo-x2de` (handover_defer_vs_python) and `dump-e` (handover_vs_python, cut E rotations).
 
 **Not done / open:**
-- Prep's tapes and owner messages under the vault (or MP-SPDZ Player-Data on tmpfs). Raise it with prep.
+- Prep's tapes and owner messages under the vault (or MP-SPDZ Player-Data on tmpfs). Raise it with the prep lane
+  (now a8fd625fd8dbd4f54; a5caa478 is retired).
 - hbox: check its swap before routing a seat there (the vault's memory-only claim needs no swap, or encrypted swap).
 - The vault checks have not run on a deployed binary yet (see above).
