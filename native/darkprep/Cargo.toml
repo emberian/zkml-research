@@ -9,3 +9,7 @@ pycompat = { path = "../pycompat" }
 # only for `darkprep export-darkstep`: the online step's own tape format and the harness inputs
 darkstep = { path = "../darkstep" }
 libc = "0.2"
+
+[dev-dependencies]
+# the release's authority on tag order: darkproof::run::deal_release over darkstep's dealer
+darkproof = { path = "../darkproof", features = ["tcp"] }

@@ -395,7 +395,7 @@ fn ds_bench(d: usize, prof: &str) {
 /// model's strict argmax.
 #[cfg(feature = "tcp")]
 fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
-    use darkproof::run::{deal_release, from_darkstep_n, n_had, plain_count, prove_release, prove_step, release_mpc, release_n_had, release_triples, tape_triples, tape_triples_at, Policy, TcpRef};
+    use darkproof::run::{deal_release, from_darkstep_n, plain_count, prove_step, Policy, TcpRef};
     use std::sync::Arc;
     let pr = profile(prof);
     let p = wire::he_field(&pr).unwrap();
@@ -632,6 +632,18 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         })
         .collect();
     let pol = Policy { x, labels, ncls, kc, ignore_range: std::env::var_os("DP_IGNORE_RANGE").is_some() };
+    // DP_MNIST=<mnist dir> (with DP_PG_CFG): the run's release policy, t10k 0..M-1 under the cfg's encoder
+    let (pol, xi) = match std::env::var("DP_MNIST") {
+        Ok(dir) => {
+            let mut q = darkproof::run::mnist_policy(pg_cfg.as_ref().expect("DP_MNIST needs DP_PG_CFG"), Path::new(&dir), m).unwrap();
+            q.ignore_range = pol.ignore_range;
+            let sg = |v: u64| if v > p / 2 { v as i64 - p as i64 } else { v as i64 };
+            let xq: Vec<Vec<i64>> = (0..d).map(|k| (0..m).map(|t| sg(q.x[k * m + t])).collect()).collect();
+            println!("release policy: t10k 0..{} (labels {:?}...)", m - 1, &q.labels[..m.min(8)]);
+            (q, xq)
+        }
+        Err(_) => (pol, xi),
+    };
     let cp = plain_count(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc);
     let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
     // phase 2: the release
@@ -643,13 +655,9 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                 let (pol, pr, lp, ctx) = (&pol, &pr, &lp, &ctx);
                 s.spawn(move || {
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
-                    let tm = std::time::Instant::now();
-                    let (c, mut st) = pool.install(|| release_mpc(&mut pt, &w1n, &w2n, pol, prm)).expect("release mpc");
-                    let mpc_s = tm.elapsed().as_secs_f64();
-                    st.triples = tape_triples_at(&pt.tape, pt.cur, Some(nrt)).expect("release proof section");
-                    let mut tn = TcpRef(&pt.net);
-                    let (blob, secs) = pool.install(|| prove_release(pr, lp, prm, &mut tn, ctx, pol, st, carry)).expect("release proof");
-                    (c, blob, mpc_s, secs)
+                    let o = pool.install(|| darkproof::run::release_custodian(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None)).expect("release");
+                    assert_eq!(o.triples, nrt);
+                    (o.c, o.blob, o.mpc_secs, o.prove_secs)
                 })
             })
             .collect();

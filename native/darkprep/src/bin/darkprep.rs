@@ -1,5 +1,5 @@
 //! darkprep CLI.
-//!   darkprep plan     --d D --mode harness|steady [--threads T] [--batch B]
+//!   darkprep plan     --d D --mode harness|steady [--truncs ..] [--proof|--release M,NCLS,KC --proof-triples N] [--threads T] [--batch B]
 //!   darkprep run      --mpspdz DIR --d D --mode M --p P --out DIR [--threads T] [--batch B] [--port N] [--verify] [--no-tapes] [--mpc-src FILE] [--extra a,b]
 //!   darkprep assemble --tx DIR --d D --mode M --p P --out DIR [--verify]
 //!   darkprep verify   --tapes DIR
@@ -7,6 +7,7 @@
 //!   darkprep party-chunk --party I --mpspdz DIR --ipfile F --p P --d D --mode harness|steady --steps K [--proof]
 //!                        [--proof-triples N] --out CHUNKDIR [--threads T] [--batch B] [--plaintext] [--mpc-src FILE]
 //!                        [--backend mascot|lowgear|highgear] [--extra a,b,..]  (lowgear: --extra -S,60,-lg2,64)
+//!                        [--release M,NCLS,KC --proof-triples N]  (the release chunk instead of K steps)
 //!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
 //!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
 //!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
@@ -99,7 +100,7 @@ fn main() {
     let (cmd, m) = args();
     let res: Result<(), String> = (|| match cmd.as_str() {
         "plan" => {
-            let sp = step(&m);
+            let sp = chunk_step(&m);
             let plan = Plan::of(&sp);
             println!("{:?}\n{:?}\nmpc args: {}", sp, plan, plan.mpc_args(get(&m, "threads", 1), get(&m, "batch", 1000)).join(" "));
             Ok(())
@@ -264,6 +265,14 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
         assert_eq!(v.len(), 6, "--truncs s1,k1,s2,k2,s3,k3");
         sp.trunc = [(v[0], v[1]), (v[0], v[1]), (v[2], v[3]), (v[4], v[5])];
     }
+    if let Some(r) = m.get("release") {
+        // the mind's release (darkproof::run::deal_release): M examples, ncls classes, comparisons (kc, kc); its
+        // proof section's count is the proof lane's (darkproof::run::release_section), never a default here
+        let v: Vec<usize> = r.split(',').map(|x| x.parse().expect("--release M,NCLS,KC")).collect();
+        assert_eq!(v.len(), 3, "--release M,NCLS,KC");
+        let n = m.get("proof-triples").expect("--release needs --proof-triples N (darkproof::run::release_section)").parse().expect("--proof-triples");
+        return sp.release(darkprep::schedule::Release { m: v[0], ncls: v[1], kc: v[2] as u32 }, n);
+    }
     if m.contains_key("proof") {
         // the count is the proof lane's (darkproof::run::step_section; `darkproof counts D PROFILE`), which changes
         // with its method; there is no default here so a stale formula can never size a tape
@@ -287,6 +296,9 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     let party: usize = m.get("party").expect("--party").parse().unwrap();
     let sp = chunk_step(m);
     let steps: usize = get(m, "steps", 1);
+    if sp.release.is_some() && (steps != 1 || m.contains_key("genesis")) {
+        return Err("a release chunk is one release: --steps 1, no --genesis".into());
+    }
     let p: u64 = get(m, "p", 0);
     let mpspdz = PathBuf::from(m.get("mpspdz").expect("--mpspdz"));
     // --genesis: step 0 of this chunk inputs W1, W2, x, y (2 d^2 + 2 d); the others carry the weights (x, y: 2 d)

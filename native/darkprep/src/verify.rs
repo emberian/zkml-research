@@ -18,6 +18,9 @@ pub struct Report {
 }
 
 pub fn verify(tapes: &[Tape], owner: &[u64]) -> Result<Report, String> {
+    if tapes[0].inputs == crate::tape::RELEASE_INPUTS {
+        return Err("a release tape: its shape is not in the header; use verify_step with the release's StepParams".into());
+    }
     verify_step(&tapes[0].step_params(), tapes, owner)
 }
 
@@ -82,8 +85,7 @@ pub fn verify_step(sp: &StepParams, tapes: &[Tape], owner: &[u64]) -> Result<Rep
             }
             Event::AuthPlain => pos += 1,
             Event::Mul => tri(&mut pos, &mut rep)?,
-            Event::Trunc(t) => {
-                let (s, k) = sp.trunc[t];
+            Event::Trunc(s, k) => {
                 let r = vals[pos];
                 let bits = &vals[pos + 1..pos + 1 + s as usize];
                 let hi = vals[pos + 1 + s as usize];
