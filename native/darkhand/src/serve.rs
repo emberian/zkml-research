@@ -70,7 +70,7 @@ pub fn old_from_serve(
     scan_paths.sort();
     scan_paths.dedup();
     OldParts {
-        old: Box::new(OldCustodian { i, w: wm, tape, keys, key, carry, files, scan_paths, captured: if retire_he { captured } else { None } }),
+        old: Box::new(OldCustodian { i, w: wm, tape, keys, key, carry, files, scan_paths, captured: if retire_he { captured } else { None }, vault: None }),
         he,
         net3,
     }
@@ -126,4 +126,15 @@ pub fn self_setup(
 pub fn shares_rows(w: &BTreeMap<String, Vec<Sh>>, d: usize) -> Shares {
     let rows = |k: &str| w[k].chunks(d).map(|r| r.to_vec()).collect::<Vec<_>>();
     (rows("W1"), rows("W2"))
+}
+
+/// Give the old custodian its epoch's file key (darkhand::vault): old_side canaries it, checks the small sealed
+/// files open under it (control), destroys it (keyring invalidated, memory zeroed) and checks nothing opens them after.
+///   let setup = serve::with_vault(serve::rotation_setup(..), vault);   // or self_setup's closure
+pub fn with_vault(setup: impl FnOnce() -> Box<OldCustodian>, vault: crate::vault::Vault) -> impl FnOnce() -> Box<OldCustodian> {
+    move || {
+        let mut old = setup();
+        old.vault = Some(vault);
+        old
+    }
 }
