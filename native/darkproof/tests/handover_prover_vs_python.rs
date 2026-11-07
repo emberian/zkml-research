@@ -78,6 +78,11 @@ fn handover_prover_equals_python() {
             ["W1", "W2"].iter().map(|k| (k.to_string(), v["old_labels"][*k].as_str().unwrap().to_string())).collect();
         let spent = v["old_lives_spent"].as_u64().unwrap() as usize;
         let py = std::fs::read(dir.join(v["bytes"].as_str().unwrap())).unwrap();
+        // native resharing equals handover.reshare under random.Random(1234) (W1 then W2, as the vector script)
+        let mut rs = vec![pycompat::PyRandom::from_u64(1234)];
+        for k in ["W1", "W2"] {
+            assert_eq!(handover::reshare(&old[k], 3, &mut rs).1, new[k], "resharing of {k} differs from Python's");
+        }
 
         let t = std::time::Instant::now();
         let outs = run(&pr, d, &ctx, &old, &new, &labels, spent, &det);
