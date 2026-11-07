@@ -149,16 +149,18 @@ fn main() {
             let sh = shape(&st, t).unwrap();
             for rep in 0..reps {
                 let t0 = Instant::now();
-                let blob = prove(&st, &wit, t).unwrap();
+                let mut o = ProveOpts { low_memory: std::env::var("DZK_LOW_MEMORY").is_ok_and(|v| v != "0"), ..Default::default() };
+                let blob = prove_with(&st, &wit, t, &mut o).unwrap();
                 let tp = t0.elapsed().as_secs_f64();
                 let t0 = Instant::now();
                 let v = verify(&st, &blob, t);
                 let tv = t0.elapsed().as_secs_f64();
                 let formula = proof_bytes(sh.k, sh.th, t, sh.m1, sh.m2);
                 println!(
-                    "{{\"kind\": \"{}\", \"N\": {n}, \"L\": {l}, \"M\": {m}, \"S\": {s}, \"T\": {t}, \"rep\": {rep}, \"threads\": {}, \"gen_s\": {:.2}, \"prove_s\": {:.3}, \"verify_s\": {:.3}, \"verify\": \"{:?}\", \"bytes\": {}, \"formula\": {}, \"exact\": {}, \"k\": {}, \"rows\": {}, \"digits\": {}}}",
+                    "{{\"kind\": \"{}\", \"N\": {n}, \"L\": {l}, \"M\": {m}, \"S\": {s}, \"T\": {t}, \"rep\": {rep}, \"threads\": {}, \"low_memory\": {}, \"gen_s\": {:.2}, \"prove_s\": {:.3}, \"verify_s\": {:.3}, \"verify\": \"{:?}\", \"bytes\": {}, \"formula\": {}, \"exact\": {}, \"k\": {}, \"rows\": {}, \"digits\": {}}}",
                     kind.name(),
                     rayon::current_num_threads(),
+                    o.low_memory,
                     tgen,
                     tp,
                     tv,

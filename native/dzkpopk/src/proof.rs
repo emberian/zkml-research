@@ -84,6 +84,9 @@ pub struct ProveOpts {
     pub det_seed: Option<String>,
     pub legacy: bool,
     pub cheat: Option<Cheat>,
+    /// re-encode the round-1 rows on each pass instead of keeping them (same bytes; about 3 x the encoding work,
+    /// and no m1 x nD table: for several provers sharing one machine)
+    pub low_memory: bool,
 }
 
 fn group_vals(st: &Statement, wit: &Witness) -> Result<Vec<(String, Vals)>, String> {
@@ -599,21 +602,86 @@ fn commit(rows: &[Vec<Fe>], salts: &[[u8; 32]]) -> Merkle {
     Merkle::build(leaves)
 }
 
+fn encode_row(code: &Code, msg: &[Fe], rv: &[Fe]) -> Vec<Fe> {
+    let mut c = code.interp(msg);
+    c.resize(code.k + code.th, Fe::ZERO);
+    for (l, r) in rv.iter().enumerate() {
+        c[l] = c[l].sub(*r);
+        c[code.k + l] = c[code.k + l].add(*r);
+    }
+    code.eval_d(&c)
+}
+
+fn draw_row_rand(code: &Code, n: usize, rng: &mut dyn Hiding) -> Vec<Vec<Fe>> {
+    (0..n).map(|_| (0..code.th).map(|_| rng.fe()).collect()).collect()
+}
+
 fn encode_rows(code: &Code, msgs: &[Vec<Fe>], rng: &mut dyn Hiding) -> Vec<Vec<Fe>> {
     // the row randomness is drawn in row order, then the rows are encoded in parallel
-    let rand: Vec<Vec<Fe>> = msgs.iter().map(|_| (0..code.th).map(|_| rng.fe()).collect()).collect();
-    msgs.par_iter()
-        .zip(rand.par_iter())
-        .map(|(msg, rv)| {
-            let mut c = code.interp(msg);
-            c.resize(code.k + code.th, Fe::ZERO);
-            for (l, r) in rv.iter().enumerate() {
-                c[l] = c[l].sub(*r);
-                c[code.k + l] = c[code.k + l].add(*r);
+    let rand = draw_row_rand(code, msgs.len(), rng);
+    msgs.par_iter().zip(rand.par_iter()).map(|(msg, rv)| encode_row(code, msg, rv)).collect()
+}
+
+/// The round-1 data rows' codewords: kept (fast), or re-encoded from (message, randomness) on every pass (low
+/// memory: three encodings instead of one, and no m1 x nD table). Same field values either way.
+enum Rows1 {
+    Stored(Vec<Vec<Fe>>),
+    Lean { msgs: Vec<Vec<Fe>>, rand: Vec<Vec<Fe>> },
+}
+
+impl Rows1 {
+    /// Visit the codewords in row order, in chunks: f(first row index, rows).
+    fn chunks(&self, code: &Code, mut f: impl FnMut(usize, &[Vec<Fe>])) {
+        match self {
+            Rows1::Stored(e) => {
+                let c = 2 * rayon::current_num_threads().max(1);
+                for (b, ch) in e.chunks(c).enumerate() {
+                    f(b * c, ch);
+                }
             }
-            code.eval_d(&c)
+            Rows1::Lean { msgs, rand } => {
+                let c = 2 * rayon::current_num_threads().max(1);
+                let mut r0 = 0;
+                while r0 < msgs.len() {
+                    let r1 = (r0 + c).min(msgs.len());
+                    let enc: Vec<Vec<Fe>> = (r0..r1).into_par_iter().map(|r| encode_row(code, &msgs[r], &rand[r])).collect();
+                    f(r0, &enc);
+                    r0 = r1;
+                }
+            }
+        }
+    }
+}
+
+/// Merkle tree over the columns of (rows, then extra rows), hashing each leaf as a stream over the rows.
+fn commit_streamed(code: &Code, rows: &Rows1, nrows: usize, extra: &[Vec<Fe>], salts: &[[u8; 32]]) -> Merkle {
+    use sha2::{Digest, Sha256};
+    let n_d = salts.len();
+    let colb = ((nrows + extra.len()) * EB) as u64;
+    let mut hs: Vec<Sha256> = salts
+        .par_iter()
+        .map(|s| {
+            let mut h = Sha256::new();
+            h.update(4u64.to_be_bytes());
+            h.update(b"leaf");
+            h.update(32u64.to_be_bytes());
+            h.update(s);
+            h.update(colb.to_be_bytes());
+            h
         })
-        .collect()
+        .collect();
+    let feed = |hs: &mut Vec<Sha256>, ch: &[Vec<Fe>]| {
+        hs.par_iter_mut().enumerate().for_each(|(j, h)| {
+            for r in ch {
+                h.update(r[j].to_be32());
+            }
+        });
+    };
+    rows.chunks(code, |_, ch| feed(&mut hs, ch));
+    feed(&mut hs, extra);
+    let leaves: Vec<[u8; 32]> = hs.into_par_iter().map(|h| h.finalize().into()).collect();
+    debug_assert_eq!(leaves.len(), n_d);
+    Merkle::build(leaves)
 }
 
 fn alpha_rows(sh: &Shape, alpha: &[Fe]) -> Vec<Vec<Fe>> {
@@ -661,7 +729,15 @@ pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveO
     let mut tr = Transcript::new(&st.digest(), opts.legacy);
     // round 1: digit rows and every mask
     let r1 = rows(&d1, k, m1);
-    let mut e1 = encode_rows(&code, &r1, rng.as_mut());
+    drop(d1);
+    let rand1 = draw_row_rand(&code, m1, rng.as_mut());
+    let rows1 = if opts.low_memory {
+        Rows1::Lean { msgs: r1, rand: rand1 }
+    } else {
+        let e = r1.par_iter().zip(rand1.par_iter()).map(|(m, rv)| encode_row(&code, m, rv)).collect();
+        drop(r1);
+        Rows1::Stored(e)
+    };
     let mp: Vec<Fe> = (0..k + th).map(|_| rng.fe()).collect();
     let mut ml: Vec<Fe> = (0..2 * k + th - 1).map(|_| rng.fe()).collect();
     let s0 = ml.iter().step_by(k).fold(Fe::ZERO, |a, x| a.add(*x));
@@ -673,13 +749,13 @@ pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveO
         mq[i + k] = mq[i + k].add(*x);
     }
     let masks: Vec<Vec<Fe>> = [mp, ml, mq].par_iter().map(|c| code.eval_d(c)).collect();
-    e1.extend(masks);
     let salts1: Vec<[u8; 32]> = (0..n_d).map(|_| rng.salt()).collect();
-    let t1 = commit(&e1, &salts1);
+    let t1 = commit_streamed(&code, &rows1, m1, &masks, &salts1);
     tr.absorb("root1", &t1.root());
     let rho = draw_rho(&mut tr, st, sh.f);
     // round 2: quotients
     let tots = totals(st, &rho, &vals, sh.f)?;
+    drop(vals);
     let mut ks: Vec<(String, Vals)> = vec![];
     for (c, tot) in tots.iter().enumerate() {
         let (fi, i) = (c / st.reg().primes.len(), c % st.reg().primes.len());
@@ -711,31 +787,37 @@ pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveO
     let lam = tr.ints_p("lambda", sh.f * st.reg().primes.len());
     let gq = tr.ints_p("gamma-q", mrows);
     let (comb, constant) = combine(st, &rho, &lam, sh.f);
+    drop(rho);
     let groups: Vec<Group> = sh.g1.iter().chain(&sh.g2).cloned().collect();
     let (alpha, _beta) = alpha_beta(&groups, &comb, constant);
+    drop(comb);
     let arows = alpha_rows(&sh, &alpha);
-    let erows: Vec<&Vec<Fe>> = e1[..m1].iter().chain(e2.iter()).collect();
-    let zero3 = || (vec![Fe::ZERO; n_d], vec![Fe::ZERO; n_d], vec![Fe::ZERO; n_d]);
-    let (wd, qd, pd) = (0..mrows)
-        .into_par_iter()
-        .fold(zero3, |(mut w, mut q, mut p), r| {
-            let er = erows[r];
-            let rd = code.eval_d(&code.interp(&arows[r]));
-            let (gr, gqr) = (gam[r], gq[r]);
-            for j in 0..n_d {
-                let y = er[j];
-                w[j] = w[j].add(gr.mul(y));
-                q[j] = q[j].add(rd[j].mul(y));
-                p[j] = p[j].add(gqr.mul(y.mul(y).sub(y)));
+    drop(alpha);
+    // w, q, p on D: masks + sum over rows of gamma_r E_r, RD_r E_r, gamma'_r (E_r^2 - E_r), in row chunks
+    let mut wd = masks[0].clone();
+    let mut qd = masks[1].clone();
+    let mut pd = masks[2].clone();
+    let mut acc = |r0: usize, ch: &[Vec<Fe>]| {
+        let rds: Vec<Vec<Fe>> = (0..ch.len()).into_par_iter().map(|x| code.eval_d(&code.interp(&arows[r0 + x]))).collect();
+        let blk = 4096.min(n_d);
+        wd.par_chunks_mut(blk).zip(qd.par_chunks_mut(blk)).zip(pd.par_chunks_mut(blk)).enumerate().for_each(|(b, ((w, q), p))| {
+            for (x, er) in ch.iter().enumerate() {
+                let (gr, gqr) = (gam[r0 + x], gq[r0 + x]);
+                let rd = &rds[x];
+                for o in 0..w.len() {
+                    let j = b * blk + o;
+                    let y = er[j];
+                    w[o] = w[o].add(gr.mul(y));
+                    q[o] = q[o].add(rd[j].mul(y));
+                    p[o] = p[o].add(gqr.mul(y.mul(y).sub(y)));
+                }
             }
-            (w, q, p)
-        })
-        .reduce(zero3, |a, b| {
-            let add = |x: Vec<Fe>, y: Vec<Fe>| x.into_iter().zip(y).map(|(u, v)| u.add(v)).collect::<Vec<Fe>>();
-            (add(a.0, b.0), add(a.1, b.1), add(a.2, b.2))
         });
-    let addv = |x: &[Fe], y: Vec<Fe>| x.iter().zip(y).map(|(u, v)| u.add(v)).collect::<Vec<Fe>>();
-    let (wd, qd, pd) = (addv(&e1[m1], wd), addv(&e1[m1 + 1], qd), addv(&e1[m1 + 2], pd));
+    };
+    rows1.chunks(&code, |r0, ch| acc(r0, ch));
+    for (x, ch) in e2.chunks(2 * rayon::current_num_threads().max(1)).enumerate() {
+        acc(m1 + x * 2 * rayon::current_num_threads().max(1), ch);
+    }
     let polys: Vec<Vec<Fe>> = [wd, qd, pd].par_iter().map(|v| code.coeffs_d(v)).collect();
     let (lw, lq, lp) = (k + th, 2 * k + th - 1, 2 * k + 2 * th - 1);
     if cheat.is_none() && (polys[0][lw..].iter().any(|x| !x.is_zero()) || polys[1][lq..].iter().any(|x| !x.is_zero()) || polys[2][lp..].iter().any(|x| !x.is_zero())) {
@@ -751,8 +833,22 @@ pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveO
     out.extend_from_slice(&t1.root());
     out.extend_from_slice(&t2.root());
     out.extend_from_slice(&msg);
-    for &j in &jcols {
-        out.extend(colbytes(&e1, j));
+    // the opened round-1 columns (one more pass in low-memory mode)
+    let mut cols1: Vec<Vec<u8>> = vec![Vec::with_capacity((m1 + 3) * EB); jcols.len()];
+    rows1.chunks(&code, |_, ch| {
+        for (c, &j) in jcols.iter().enumerate() {
+            for r in ch {
+                cols1[c].extend_from_slice(&r[j].to_be32());
+            }
+        }
+    });
+    for (c, &j) in jcols.iter().enumerate() {
+        for m in &masks {
+            cols1[c].extend_from_slice(&m[j].to_be32());
+        }
+    }
+    for (c, &j) in jcols.iter().enumerate() {
+        out.extend_from_slice(&cols1[c]);
         out.extend_from_slice(&salts1[j]);
         for h in t1.path(j) {
             out.extend_from_slice(&h);
@@ -828,9 +924,12 @@ pub fn verify_opts(st: &Statement, blob: &[u8], tcols: usize, legacy: bool) -> R
     tr.absorb("msgs", msg);
     let jcols = tr.distinct("cols", tcols, n_d);
     let (comb, constant) = combine(st, &rho, &lam, sh.f);
+    drop(rho);
     let groups: Vec<Group> = sh.g1.iter().chain(&sh.g2).cloned().collect();
     let (alpha, beta) = alpha_beta(&groups, &comb, constant);
+    drop(comb);
     let arows = alpha_rows(&sh, &alpha);
+    drop(alpha);
     // linear: sum over H of q = beta; quadratic: (X^k - 1) | p
     let sq = q.iter().step_by(k).fold(Fe::ZERO, |a, x| a.add(*x));
     if Fe::from_u64(k as u64).mul(sq) != beta {
@@ -872,6 +971,7 @@ pub fn verify_opts(st: &Statement, blob: &[u8], tcols: usize, legacy: bool) -> R
             jcols.iter().map(|&j| rd[j]).collect()
         })
         .collect();
+    drop(arows);
     let results: Vec<Result<(), String>> = cols
         .par_iter()
         .enumerate()
