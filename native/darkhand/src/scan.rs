@@ -51,7 +51,7 @@ pub struct ScanReport {
     pub where_: Vec<String>,
     /// hits per canary kind (index into Canaries::kinds)
     pub by_kind: Vec<u64>,
-    /// the first hits in detail: (kind index, mapping name, mapping start, mapping length, offset of the word in it)
+    /// up to 16 hits of each kind in detail: (kind index, mapping name, mapping start, mapping length, offset of the word in it)
     pub detail: Vec<(usize, String, u64, u64, u64)>,
     /// an address in the scanning frame (the stack pointer's neighbourhood): a [stack] hit above it is in a live caller
     /// frame, one below it in dead stack
@@ -170,7 +170,8 @@ impl Canaries {
                         if rep.where_.len() < 8 {
                             rep.where_.push(name.clone());
                         }
-                        if rep.detail.len() < 64 {
+                        // up to 16 hits of each kind in detail
+                        if rep.by_kind[kd] <= 16 {
                             rep.detail.push((kd, name.clone(), a, b - a, off - a + 8 * ci as u64));
                         }
                     }
