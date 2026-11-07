@@ -1,0 +1,16 @@
+{
+  "policy": {
+    "session": "b3e75dbc134c154aef46c88d735108fb1806c999fc02a09af424ab5ae053b44a",
+    "checker": {
+      "exact": {
+        "spec": "e87f05728a8e6a39a901741c97f26d29e7dbc7dab7ed38061d7d81542a8310a7",
+        "params": "e80f63ffbd7a984672a1771d28a587f7feb3511ad5514718cfff6a8e53de2040"
+      }
+    },
+    "commitment_id": "3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f",
+    "build": "",
+    "accept_work": false,
+    "p_num": 18446725626965477906
+  },
+  "requester_pk": "21f10698b4517760de8daccfefca60493c415674ca86f17b449536e887b74390"
+}

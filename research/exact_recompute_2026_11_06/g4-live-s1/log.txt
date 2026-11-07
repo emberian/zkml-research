@@ -1,0 +1,30 @@
++ echo '== live 2026-11-07T00:33:08Z'
+== live 2026-11-07T00:33:08Z
+position 0 [p0-honest]: seen 33736074 audit round 33736076 coin 7c66067536087c0e fired true verdict Some(Accept) alarm false recompute 248.4s -> s1/receipt-0.json
+position 1 [p0-steered]: seen 33736159 audit round 33736161 coin 9bf3b466a325964c fired true verdict Some(Reject) alarm true recompute 241.1s -> s1/receipt-1.json
+position 2 [p0-edited]: seen 33736241 audit round 33736243 coin d676514e71dbaf30 fired true verdict Some(Reject) alarm true recompute 247.4s -> s1/receipt-2.json
+position 3 [p2-honest]: seen 33736325 audit round 33736327 coin f9b943974b636ae1 fired true verdict Some(Accept) alarm false recompute 311.0s -> s1/receipt-3.json
+position 4 [p2-steered]: seen 33736431 audit round 33736433 coin 8e627c137302f0ac fired true verdict Some(Reject) alarm true recompute 227.1s -> s1/receipt-4.json
+position 5 [p2-edited]: seen 33736508 audit round 33736510 coin 8283abeacadfce4c fired true verdict Some(Reject) alarm true recompute 243.6s -> s1/receipt-5.json
++ echo '== recheck 2026-11-07T00:58:57Z'
+== recheck 2026-11-07T00:58:57Z
+s1/receipt-0.json: OK {"position":0,"audit_round":33736076,"fired":true,"open_ok":true,"verdict":"accept","alarm":false}
+s1/receipt-1.json: OK {"position":1,"audit_round":33736161,"fired":true,"open_ok":true,"verdict":"reject","alarm":true}
+s1/receipt-2.json: OK {"position":2,"audit_round":33736243,"fired":true,"open_ok":true,"verdict":"reject","alarm":true}
+s1/receipt-3.json: OK {"position":3,"audit_round":33736327,"fired":true,"open_ok":true,"verdict":"accept","alarm":false}
+s1/receipt-4.json: OK {"position":4,"audit_round":33736433,"fired":true,"open_ok":true,"verdict":"reject","alarm":true}
+s1/receipt-5.json: OK {"position":5,"audit_round":33736510,"fired":true,"open_ok":true,"verdict":"reject","alarm":true}
++ echo '== recheck-recompute 2026-11-07T00:58:57Z'
+== recheck-recompute 2026-11-07T00:58:57Z
+s1/receipt-0.json: OK {"position":0,"audit_round":33736076,"fired":true,"open_ok":true,"verdict":"accept","alarm":false} recompute Accept
+s1/receipt-1.json: OK {"position":1,"audit_round":33736161,"fired":true,"open_ok":true,"verdict":"reject","alarm":true} recompute Reject
+s1/receipt-2.json: OK {"position":2,"audit_round":33736243,"fired":true,"open_ok":true,"verdict":"reject","alarm":true} recompute Reject
+s1/receipt-3.json: OK {"position":3,"audit_round":33736327,"fired":true,"open_ok":true,"verdict":"accept","alarm":false} recompute Accept
+s1/receipt-4.json: OK {"position":4,"audit_round":33736433,"fired":true,"open_ok":true,"verdict":"reject","alarm":true} recompute Reject
+s1/receipt-5.json: OK {"position":5,"audit_round":33736510,"fired":true,"open_ok":true,"verdict":"reject","alarm":true} recompute Reject
++ echo '== done 2026-11-07T01:25:04Z'
+== done 2026-11-07T01:25:04Z
+s1-tamper/forged-report-1.json: OK {"position":1,"audit_round":33736161,"fired":true,"open_ok":true,"verdict":"accept","alarm":false} RECOMPUTE DISAGREES Reject
+s1-tamper/alarm-dropped-1.json: FAIL recheck: alarm
+s1-tamper/coin-bit-0.json: FAIL recheck: coin
+s1-tamper/output-swapped-1.json: FAIL recheck: the committed output is not the staged token file

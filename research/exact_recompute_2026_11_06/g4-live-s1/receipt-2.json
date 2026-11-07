@@ -1,0 +1,65 @@
+{
+  "version": "fpaudit-receipt-v3",
+  "decide_src_sha256": "ee8622cf4a5c3b89056e29e18803a6e25ef99433fd9f6407bf1f38a39067b2a1",
+  "record": {
+    "session": "b3e75dbc134c154aef46c88d735108fb1806c999fc02a09af424ab5ae053b44a",
+    "position": 2,
+    "nonce": "14b60d5236707a35c780cad3adebf0fcf6a8a8222fca4ac65e0b750e9923fca1",
+    "commitment_id": "3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f",
+    "r": 22,
+    "e": 26,
+    "req_sha256": "d94874e3f73f14a2b39f7d44c11a2d0613f8393e108518a2949886d1b927155d",
+    "y_sha256": "be62490df6ddb49617da61fa0953810f5e474954cdb0722c550128f57b9b75ab",
+    "proof_sha256": null,
+    "seen_round": 33736241
+  },
+  "record_digest": "7c2da9e20a7c705c904fb87680a5e58eb666e490d955e98a765b4cbd6064eaf2",
+  "mmr_root": "e3cda55d1cf7c75fb41fe165b57e0876fbecbbe2d4859bea4796d3cf90093686",
+  "opening": {
+    "peaks": [
+      {
+        "height": 1,
+        "hash": "03e603ea2ed7627694d0fd151ef1b7b26b26fb078ab7e4c1c5d7c688301e73fa"
+      },
+      {
+        "height": 0,
+        "hash": "204d04ff575d1e0ce7d5d1848ca6d5af972e97fdfcb09673f8af607c902f67de"
+      }
+    ],
+    "paths": [
+      []
+    ]
+  },
+  "countersig": "85a6251e5cd8cb5ad7bcea0d1aacd608cfacb76a612c09ec1bf642c04397fedba7ed34f7042d31d098611fc369e9079510d0e3f53f172d2a5d3d9c7417923603",
+  "beacon": {
+    "round": 33736243,
+    "randomness": "69ae16f918f63943843daab75a8957b4b97efe6c11579a6e637c790df685e0d7",
+    "signature": "859bf4d73fc98fdd8411cd78206dce2052f493503d32d2b49313ce35234c12fba56d5b47b6c5488b4ccf6759ca5011cb"
+  },
+  "coin": 15453628568727957296,
+  "fired": true,
+  "expect": {
+    "id": "3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f",
+    "build": "",
+    "r": 22,
+    "e": 26,
+    "accept_work": false
+  },
+  "staged": {
+    "req_sha256": "d94874e3f73f14a2b39f7d44c11a2d0613f8393e108518a2949886d1b927155d",
+    "y_sha256": "be62490df6ddb49617da61fa0953810f5e474954cdb0722c550128f57b9b75ab",
+    "proof_sha256": null,
+    "fault": null
+  },
+  "open_ok": true,
+  "call": {
+    "stdout": "pins spec=e87f05728a8e6a39a901741c97f26d29e7dbc7dab7ed38061d7d81542a8310a7 params=e80f63ffbd7a984672a1771d28a587f7feb3511ad5514718cfff6a8e53de2040 weights=3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f\nshape prompt=22 output=4\nargmax tokens=8475,113353,13,200002\nDONE\n",
+    "exit": 0,
+    "millis": 247430,
+    "killed_for_time": false,
+    "fault": null
+  },
+  "committed_output": "8475,113353,13,3395",
+  "verdict": "reject",
+  "alarm": true
+}
