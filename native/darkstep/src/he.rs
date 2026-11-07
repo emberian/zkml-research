@@ -139,13 +139,27 @@ impl He {
                 forge = true;
             }
         }
-        let (cts, es): (Vec<Ct>, Vec<Vec<i64>>) = msgs.iter().map(|m| self.key.encrypt_exact_w(m)).unzip();
+        let enc: Vec<(Ct, Vec<i64>, Option<[u8; 32]>)> = msgs.iter().map(|m| self.key.encrypt_seeded(m)).collect();
         let ln = self.rns.l() * self.rns.n;
+        // a seeded ciphertext travels as c0 and the 32-byte seed of a (half the bytes)
+        let wires: Vec<Vec<u8>> = enc
+            .iter()
+            .map(|(ct, _, sd)| match sd {
+                None => ct_bytes(&[], ct),
+                Some(sd) => {
+                    let mut b = u64s_to_bytes(&ct.c0);
+                    b.extend_from_slice(sd);
+                    b
+                }
+            })
+            .collect();
         for j in pt.net.others() {
-            for ct in &cts {
-                pt.net.send(j, net::HE_CT, ct_bytes(&[], ct));
+            for w in &wires {
+                pt.net.send(j, net::HE_CT, w.clone());
             }
         }
+        drop(wires);
+        let (cts, es): (Vec<Ct>, Vec<Vec<i64>>) = enc.into_iter().map(|(c, e, _)| (c, e)).unzip();
         if let Some(g) = self.gate.as_mut() {
             let ws: Vec<dzkpopk::SkCt> = msgs.iter().zip(es).map(|(m, e)| dzkpopk::SkCt { e, r: crate::gate::witness_r(&self.rns, m, slots) }).collect();
             let ctx = crate::gate::context(kind, call, transpose, me);
@@ -161,7 +175,17 @@ impl He {
                 if j == pt.i {
                     Vec::new()
                 } else {
-                    let v = (0..k).map(|_| ct_parse(&pt.net.recv(j, net::HE_CT), 0, ln).1).collect();
+                    let v = (0..k)
+                        .map(|_| {
+                            let b = pt.net.recv(j, net::HE_CT);
+                            if b.len() == ln * 8 + 32 {
+                                let sd: [u8; 32] = b[ln * 8..].try_into().unwrap();
+                                Ct { c0: bytes_to_u64s(&b[..ln * 8]), c1: crate::bfv::expand_a(&self.rns, &sd) }
+                            } else {
+                                ct_parse(&b, 0, ln).1
+                            }
+                        })
+                        .collect();
                     if self.gate.is_some() {
                         proofs[j] = pt.net.recv(j, net::HE_CT);
                     }

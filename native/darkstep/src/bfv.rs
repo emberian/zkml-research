@@ -85,6 +85,12 @@ pub fn compress_return(rns: &Rns, ct: &Ct, k: usize, coefs: &[usize]) -> Vec<u64
     out
 }
 
+/// A ciphertext's uniform half a from its 32-byte seed (the PRF stream "bfv-a" under the seed): seeded ciphertexts
+/// travel as (c0, seed).
+pub fn expand_a(rns: &Rns, seed: &[u8; 32]) -> Vec<u64> {
+    uniform(rns, &mut Coins::Prf(Prf::new(seed, "bfv-a")))
+}
+
 /// bfv.uniform(): N draws randrange(Q), as residues.
 fn uniform(rns: &Rns, rng: &mut Coins) -> Vec<u64> {
     let mut ql = [0u64; 5];
@@ -216,9 +222,25 @@ impl OwnKey {
 
     /// encrypt_exact, also returning the error e (the sender's ZKPoPK witness).
     pub fn encrypt_exact_w(&mut self, m: &[u64]) -> (Ct, Vec<i64>) {
+        let (ct, e, _) = self.encrypt_seeded(m);
+        (ct, e)
+    }
+
+    /// encrypt_exact_w; with the OS-keyed coins (`*_secure` keys) a = expand_a(seed) for a fresh 32-byte seed, which
+    /// is returned so the ciphertext can travel as (c0, seed). The reference coins draw a in full, as the harness.
+    pub fn encrypt_seeded(&mut self, m: &[u64]) -> (Ct, Vec<i64>, Option<[u8; 32]>) {
         let rns = self.rns.clone();
         let n = rns.n;
-        let a = uniform(&rns, &mut self.rng);
+        let (a, seed) = match &mut self.rng {
+            Coins::Prf(r) => {
+                let mut sd = [0u8; 32];
+                for c in sd.chunks_mut(8) {
+                    c.copy_from_slice(&r.next_u64().to_le_bytes());
+                }
+                (expand_a(&rns, &sd), Some(sd))
+            }
+            Coins::Py(_) => (uniform(&rns, &mut self.rng), None),
+        };
         let e = small_error(n, &mut self.rng);
         let mut a_ntt = a.clone();
         rns.fwd(&mut a_ntt);
@@ -232,7 +254,7 @@ impl OwnKey {
                 c0[k * n + i] = submod(enc[k], addmod(as_[k * n + i], from_i64(e[i], q), q), q);
             }
         }
-        (Ct { c0, c1: a }, e)
+        (Ct { c0, c1: a }, e, seed)
     }
 
     /// bfv.decrypt((c0, c1)) at the given coefficients (all when idx is None).
