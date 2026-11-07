@@ -1,0 +1,80 @@
+diff --git a/gpu-simulator/trace-driven/trace_driven.cc b/gpu-simulator/trace-driven/trace_driven.cc
+index 4b070ed..37b4577 100644
+--- a/gpu-simulator/trace-driven/trace_driven.cc
++++ b/gpu-simulator/trace-driven/trace_driven.cc
+@@ -341,6 +341,7 @@ bool trace_warp_inst_t::parse_from_trace_struct(
+ 
+   // fill latency and initl
+   tconfig->set_latency(op, latency, initiation_interval);
++  tconfig->override_latency(trace.opcode, latency, initiation_interval);  // hw-opt-sim
+ 
+   // fill addresses
+   if (trace.tma_memadd_info != nullptr) {
+@@ -904,6 +905,9 @@ void trace_config::reg_options(option_parser_t opp) {
+                          "driven mode <latency,initiation>",
+                          "4,1");
+ 
++  option_parser_register(opp, "-trace_opcode_latency_initiation_override", OPT_CSTR,
++                         &trace_opcode_latency_initiation_override,
++                         "hw-opt-sim: per-opcode-prefix latency,initiation: PREFIX:lat,ii;PREFIX:lat,ii", "");
+   for (unsigned j = 0; j < SPECIALIZED_UNIT_NUM; ++j) {
+     std::stringstream ss;
+     ss << "-trace_opcode_latency_initiation_spec_op_" << j + 1;
+@@ -923,11 +927,35 @@ void trace_config::parse_config() {
+   sscanf(trace_opcode_latency_initiation_tensor, "%u,%u", &tensor_latency,
+          &tensor_init);
+ 
++  m_lat_override.clear();
++  if (trace_opcode_latency_initiation_override) {
++    std::stringstream ss(trace_opcode_latency_initiation_override);
++    std::string item;
++    while (std::getline(ss, item, ';')) {
++      size_t c = item.find(':');
++      if (c == std::string::npos) continue;
++      unsigned l = 0, ii = 0;
++      if (sscanf(item.c_str() + c + 1, "%u,%u", &l, &ii) == 2) {
++        m_lat_override.push_back({item.substr(0, c), {l, ii}});
++        printf("hw-opt-sim latency override %s -> %u,%u\n", item.substr(0, c).c_str(), l, ii);
++      }
++    }
++  }
+   for (unsigned j = 0; j < SPECIALIZED_UNIT_NUM; ++j) {
+     sscanf(trace_opcode_latency_initiation_specialized_op[j], "%u,%u",
+            &specialized_unit_latency[j], &specialized_unit_initiation[j]);
+   }
+ }
++void trace_config::override_latency(const std::string &opcode, unsigned &latency,
++                                    unsigned &initiation_interval) const {
++  size_t best = 0;
++  for (const auto &e : m_lat_override)
++    if (e.first.size() > best && opcode.compare(0, e.first.size(), e.first) == 0) {
++      best = e.first.size();
++      latency = e.second.first;
++      initiation_interval = e.second.second;
++    }
++}
+ void trace_config::set_latency(unsigned category, unsigned &latency,
+                                unsigned &initiation_interval) const {
+   initiation_interval = latency = 1;
+diff --git a/gpu-simulator/trace-driven/trace_driven.h b/gpu-simulator/trace-driven/trace_driven.h
+index b340e08..dc53c1d 100644
+--- a/gpu-simulator/trace-driven/trace_driven.h
++++ b/gpu-simulator/trace-driven/trace_driven.h
+@@ -130,6 +130,8 @@ class trace_config {
+   void set_latency(unsigned category, unsigned &latency,
+                    unsigned &initiation_interval) const;
+   void parse_config();
++  // hw-opt-sim: per-opcode <latency,initiation> by longest SASS-opcode prefix, e.g. "IMMA.8816:16,4;HMMA.1688:16,8"
++  void override_latency(const std::string &opcode, unsigned &latency, unsigned &initiation_interval) const;
+   void reg_options(option_parser_t opp);
+   char *get_traces_filename() { return g_traces_filename; }
+ 
+@@ -145,6 +147,8 @@ class trace_config {
+   char *trace_opcode_latency_initiation_dp;
+   char *trace_opcode_latency_initiation_sfu;
+   char *trace_opcode_latency_initiation_tensor;
++  char *trace_opcode_latency_initiation_override;
++  std::vector<std::pair<std::string, std::pair<unsigned, unsigned>>> m_lat_override;
+   char *trace_opcode_latency_initiation_specialized_op[SPECIALIZED_UNIT_NUM];
+ };
+ 

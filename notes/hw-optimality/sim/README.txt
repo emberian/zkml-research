@@ -73,9 +73,8 @@ A100 (tested-cfgs SM80_A100, PTX mode, 1410 MHz): NTT N=8192 L=3 one-pass r8 256
   221,575 cycles = 157 us = 0.364 us/NTT incl. launch and tail; all 3,538,944 words correct. No measurement to compare.
 H100 (tested-cfgs SM90_H100, PTX mode, 1980 MHz): copy kernel 128 MiB r+w: 125,193 cycles = 63 us = 4.25 TB/s, ABOVE the
   3.35 TB/s HBM3 datasheet: the H100 PTX-mode memory model is not credible for bandwidth (L2 50 MB, simple_dram_model).
-Still running when the lane closed (bb2, PID files = process-group leaders, logs in work/runs/<name>/out.log):
-  h100-ntt792 (runs/h100-ntt792.pid), a100-copy128m (runs/a100-copy128m.pid), h100-copy128m read kernel.
-  Harvest: grep -E "kernel_name|gpu_sim_cycle|^\{" ~/lanes/hw-opt-sim/work/runs/<name>/out.log ; stop: kill -- -$(cat <pid>)
+Stopped 2026-11-07 ~01:00Z by PID file (calibration dropped by ember): h100-ntt792, a100-copy128m, and the read
+  half of h100-copy128m. Their partial logs stay on bb2 under work/runs/; no numbers beyond those above.
 
 What these simulators can and cannot do for us
   Configs shipped: SM2 GTX480, SM3 Kepler Titan, SM6 TitanX, SM7 GV100/QV100/TitanV, SM75 RTX2060(+_S), SM80 A100,
@@ -87,6 +86,34 @@ What these simulators can and cannot do for us
   Trace mode: needs NVBit on a real GPU (SASS is captured at run time). No GPU here, so no traces of our kernels; only
   synthetic SASS streams (gen_trace.py) for issue-rate questions. Hopper: HGMMA/IGMMA/QGMMA latency = f(N) table only
   (no BGMMA: unknown opcode asserts), TMA/mbarrier/cluster modelled. Turing/Ampere: HMMA/IMMA/BMMA share one unit, one II.
-  Calibration that would fix it, all on free Kaggle T4 (NVBit runs there): trace our NTT, Keccak, copy and probe_sm75
-  rate kernels with util/tracer_nvbit, replay on bb2 with the t4 config; set the tensor II per measured rate (needs a
-  per-opcode II: one code change in trace_driven.cc). For H100/B200 there is nothing to calibrate against yet.
+  Calibration that would fix it (NOT done; ember dropped simulator calibration 2026-11-07), on free Kaggle T4 (NVBit runs there): trace our NTT, Keccak, copy and probe_sm75
+  rate kernels with util/tracer_nvbit, replay on bb2 with the t4 config; set the tensor II per measured rate with the
+  per-opcode override in accelsim-lane.patch. For H100/B200 there is nothing to calibrate against yet.
+
+accelsim-lane.patch: trace mode option -trace_opcode_latency_initiation_override "PREFIX:lat,ii;..." (longest SASS
+  opcode prefix wins), so HMMA/IMMA/BMMA can get separate issue intervals. Tested on a synthetic IMMA trace only
+  (IMMA.8816:16,4 took the u8 run from 71,293 to 22,152 cycles); no values were fitted.
+
+NOTE FOR WHOEVER NEEDS IT LATER: a functional checker for 64-bit integer PTX
+-------------------------------------------------------------------------
+Patched GPGPU-Sim PTX mode (gpgpusim-lane.patch) runs our 64-bit integer kernels bit-exactly on a CPU: the BFV NTT
+(every word = accel_rns_ref, T4 and A100 configs) and the tower256 Keccak leaves/chain (every digest = host Keccak).
+Upstream dev @4195dd4f gets these wrong or crashes, silently in two cases:
+  1. wmma f16: operand decode dereferenced the half bit pattern as a pointer (since 68a91076, 2023-06): segfault.
+  2. mul.hi.u64 asserted; mul.hi.s64 returned the LOW half (silent).
+  3. dynamic shared memory ignored for occupancy (4x too many CTAs/SM for a 64 KiB kernel; timing only).
+  4. bfi.b64 operated on the low 32 bits only (silent).
+  5. integer immediates lexed into a 32-bit int: every 64-bit literal truncated (silent).
+Still unsupported in PTX mode: mma.sync, ldmatrix, cp.async, lop3, wgmma, mbarrier, cp.bulk; `U`-suffixed literals.
+Use it as a functional checker; do not use its cycle counts for 64-bit integer code.
+
+Trust table (pred/meas on T4 unless stated)
+  memory-bound streaming (T4)            1.08-1.22        usable
+  32-bit integer SIMT (T4)               ~1.2             usable as a rough number
+  64-bit integer SIMT (T4)               1.05-4.0         ranking reverses (Keccak chain vs batch); functional only
+  tensor core int8/b1/f16 (T4, trace)    0.24-0.30 abs    u4/u8 and b1/u8 ratios ok; f16 2x wrong; uncalibrated
+  H100 wgmma (trace)                     0.98 of datasheet, by construction (N -> latency table)
+  H100 bandwidth (PTX)                   4.25 TB/s > 3.35 datasheet: not credible
+  A100/H100 integer kernels              no measurement; not usable for absolute numbers
+  Blackwell / tcgen05                    no model
+
