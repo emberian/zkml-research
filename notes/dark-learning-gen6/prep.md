@@ -529,5 +529,6 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
 | reh2-ho (handover) | reh2-new, new key; new<I> | 33,554,448 Ar | 123-127 s | 0.22 GB | 32.8 GB |
 | reh2-n-c0 (steps 2-3) | reh2-new; new<I> | 2 x 8,916,565 | 201-205 s | 1.83 GB | 133.8 GB |
 
-- Two steps per chunk took about the same wall time as one: 209 s against 200 s for run13-c0, with twice the bytes.
-- So the single-step chunk is latency- or setup-bound. A per-step price comes from the 2-step chunks: about 105 s per step on the wired layout.
+- Two steps per chunk took about the same wall time as one: 209 s against 200 s for run13-c0, with twice the bytes. So run13-c0 moved bytes at half the rate.
+- [OPEN] The cause is not established. It may be a concurrent load on forge or bb2 at 12:06, or fixed setup cost.
+- The 2-step chunks (and the release, 22-23 triple-eq per ms) give about 105 s per step on the wired layout.
