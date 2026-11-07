@@ -51,6 +51,17 @@ class Program:
         self.SIG = {u: sig(u) for u in range(T_LO, T_LO + 256)}
         self.DSIG = {u: dsig(u) for u in range(T_LO, T_LO + 256)}
 
+    def intervals(self):
+        """Each truncation input's interval [a, a + 2^B) as {name: (a, B)}: the MPC's statistical truncation needs
+        -2^K <= v < 2^K; z1's is also cut to the table's domain (u1 = z1 >> S1 in [T_LO, T_LO + 256)). The proof
+        proves these and the ledger refuses a step outside them."""
+        lo = max(-(1 << self.K1), self.T_LO << self.S1)
+        hi = min(1 << self.K1, (self.T_LO + 256) << self.S1)
+        B = (hi - lo).bit_length() - 1
+        assert hi - lo == 1 << B, "z1's interval must have power-of-two width"
+        return {"z1": (lo, B), "z2": (-(1 << self.K1), self.K1 + 1), "e": (-(1 << self.K2), self.K2 + 1),
+                "bg": (-(1 << self.K3), self.K3 + 1)}
+
     def as_dict(self):
         return {k: getattr(self, k) for k in self.FIELDS}
 
@@ -122,9 +133,11 @@ def step(W1, W2, x, y, prog=HARNESS):
     b = matTvec(W2, d2)
     bg = [bb * g + P.R3 for bb, g in zip(b, g1)]
     if P.CHECK_K:
-        assert all(abs(v) < 1 << P.K1 for v in z1 + z2), "z1/z2 outside the truncation bound 2^K1"
-        assert all(abs(v) < 1 << P.K2 for v in e), "e outside 2^K2"
-        assert all(abs(v) < 1 << P.K3 for v in bg), "b*g1 + R3 outside 2^K3"
+        iv = P.intervals()
+        inside = lambda vs, k: all(iv[k][0] <= v < iv[k][0] + (1 << iv[k][1]) for v in vs)
+        assert inside(z1, "z1") and inside(z2, "z2"), "z1/z2 outside the truncation bound [-2^K1, 2^K1)"
+        assert inside(e, "e"), "e outside [-2^K2, 2^K2)"
+        assert inside(bg, "bg"), "b*g1 + R3 outside [-2^K3, 2^K3)"
     d1 = [fdiv(v, P.S3) for v in bg]
     G2 = outer(d2, h)
     G1 = outer(d1, x)

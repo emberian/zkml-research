@@ -167,3 +167,22 @@ Cross-model review (`codex exec -m gpt-6-astra --sandbox read-only`) covered com
   - the fast step, encoder, init and order equal Python;
   - the strict comparison under |v| < 2^10 is correct.
 - It reran the trainer tests and the harness identity. The MPC tests could not run in its sandbox (sockets), so it reviewed them statically.
+
+## 6. The harness runs GEN6; explicit truncation intervals (follow-on)
+
+- `mpc_fork.run_step(..., prog)` and `tables(p, prog)` take the program, including R3 as a public cadd before the d1 truncation.
+  - The default is unchanged [EXECUTED]: native_ref at d = 8 gives a transcript, shares, sigma and wire identical to the committed file.
+- `native_ref.py --program GEN6` uses `inputs_for(d, prog)`, which mirrors darkstep.
+  - [EXECUTED] At N = 4096, L = 3, F = 118, d = 64 the result is ACCEPT and refines step_spec(GEN6). It is committed as native_ref_results/native_ref_N4096_L3_F118_d64_GEN6.json.
+  - [EXECUTED, `cargo test --release -p darkstep --test program`] darkstep under GEN6 equals that reference on the transcript, every party's shares and sigma, and the SPDZ wire counts. Control: the HARNESS reference differs.
+- Truncation intervals are now explicit, as [a, a + 2^B) (`Program.intervals()` and `step::Program::intervals`, also listed in the genesis JSON):
+
+  | value | GEN6 interval |
+  |---|---|
+  | z1 | [-2^18, 2^18) (B 19, the table domain) |
+  | z2 | [-2^19, 2^19) (B 20) |
+  | e | [-2^8, 2^8) (B 9) |
+  | b g1 + R3 | [-2^19, 2^19) (B 20) |
+  | release comparisons | [-2^10, 2^10) (B 11) |
+
+  - The non-harness check changed from |v| < 2^K to -2^K <= v < 2^K, which is the MPC's exact precondition. The proof proves these intervals and the ledger refuses a step outside them.

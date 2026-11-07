@@ -47,6 +47,16 @@ impl Program {
         vec![interpolate(&s, p), interpolate(&g, p)]
     }
 
+    /// Each truncation input's interval [a, a + 2^B) as (a, B), for z1, z2, e, b * g1 + R3 (step_spec
+    /// Program.intervals): -2^K <= v < 2^K, z1's also cut to the table's domain. The proof proves these.
+    pub fn intervals(&self) -> [(i64, u32); 4] {
+        let lo = (-(1i64 << self.k1)).max(self.t_lo << self.s1);
+        let hi = (1i64 << self.k1).min((self.t_lo + 256) << self.s1);
+        let b = 63 - ((hi - lo) as u64).leading_zeros();
+        assert_eq!(hi - lo, 1i64 << b, "z1's interval must have power-of-two width");
+        [(lo, b), (-(1i64 << self.k1), self.k1 + 1), (-(1i64 << self.k2), self.k2 + 1), (-(1i64 << self.k3), self.k3 + 1)]
+    }
+
     /// The truncation calls of run_step as (shift, bound): z1, z2, e, b * g1 + R3.
     pub fn truncs(&self) -> [(u32, u32); 4] {
         [(self.s1, self.k1), (self.s1, self.k1), (self.s2, self.k2), (self.s3, self.k3)]
@@ -152,14 +162,15 @@ impl Plain {
         let b: Vec<i64> = (0..d).map(|j| (0..d).map(|i| self.w2[i][j] * d2[i]).sum()).collect();
         let bg: Vec<i64> = b.iter().zip(&g1).map(|(bb, g)| bb * g + pg.r3).collect();
         if pg.check_k || pg.wmax.is_none() {
-            let out = |v: &[i64], k: u32| v.iter().any(|x| x.abs() >= 1i64 << k);
-            if out(&z1, pg.k1) || out(&z2, pg.k1) {
+            let iv = pg.intervals();
+            let out = |v: &[i64], k: usize| v.iter().any(|x| !(iv[k].0..iv[k].0 + (1i64 << iv[k].1)).contains(x));
+            if out(&z1, 0) || out(&z2, 1) {
                 return Err("step_spec: z1/z2 outside the truncation bound 2^K1".into());
             }
-            if out(&e, pg.k2) {
+            if out(&e, 2) {
                 return Err("step_spec: e outside 2^K2".into());
             }
-            if out(&bg, pg.k3) {
+            if out(&bg, 3) {
                 return Err("step_spec: b*g1 + R3 outside 2^K3".into());
             }
         }

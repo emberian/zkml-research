@@ -31,12 +31,13 @@ def correct_one(prog, W1, W2, x, label, reps):
     """ok_t, computed with the gate sequence above (floor shifts; bounds asserted as the MPC needs them)."""
     d = len(x)
     z1 = [sum(W1[i][j] * x[j] for j in range(d) if x[j]) for i in range(d)]
-    assert all(abs(v) < 1 << prog.K1 for v in z1)
+    iv = prog.intervals()
+    assert all(iv["z1"][0] <= v < iv["z1"][0] + (1 << iv["z1"][1]) for v in z1)
     u1 = [v >> prog.S1 for v in z1]
     assert all(prog.T_LO <= u < prog.T_LO + 256 for u in u1)
     h = [prog.SIG[u] for u in u1]
     z2 = [sum(a * b for a, b in zip(W2[c], h)) for c in range(10 * reps)]
-    assert all(abs(v) < 1 << prog.K1 for v in z2)
+    assert all(-(1 << prog.K1) <= v < 1 << prog.K1 for v in z2)
     o = [v >> prog.S1 for v in z2]
     s = [sum(o[c] for c in range(10 * reps) if c % 10 == k) for k in range(10)]
     K = kc(prog, reps)
@@ -45,9 +46,17 @@ def correct_one(prog, W1, W2, x, label, reps):
         if k == label:
             continue
         v = s[label] - s[k] - 1
-        assert abs(v) < 1 << K
+        assert -(1 << K) <= v < 1 << K
         ok *= 1 + (v >> K)
     return ok
+
+
+def release_intervals(prog, reps=1):
+    """The release proof's truncation input intervals [a, a + 2^B) as {name: (a, B)}: z1 as in the step, the class
+    rows' z2 as the step's z2, the comparisons [-2^KC, 2^KC)."""
+    iv = prog.intervals()
+    K = kc(prog, reps)
+    return {"z1": iv["z1"], "z2_class": iv["z2"], "cmp": (-(1 << K), K + 1)}
 
 
 def release(prog, W1, W2, examples, reps):

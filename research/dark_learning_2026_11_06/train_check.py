@@ -5,7 +5,7 @@
         04d28e15:research/dark_learning_2026_11_06/step_spec.py`): outputs, traces and raised assertions, on random
         cases at d = 8 and 64 including out-of-bound ones; a control with another program differs.
     python3 -I train_check.py genesis train_genesis_gen6.json
-        the genesis JSON's program is step_spec.GEN6.
+        the genesis JSON program and its truncation intervals are step_spec.GEN6 / train_eval.release_intervals.
 """
 import hashlib
 import importlib.util
@@ -67,8 +67,15 @@ def genesis(path):
     g = dict(O.DEFAULTS, **json.load(open(path)))
     ok = O.program(g) == S.GEN6
     bad = O.program(dict(g, s3=g["s3"] + 1)) == S.GEN6
-    print(dict(genesis=path, program=O.program(g).as_dict(), equals_GEN6=ok, control_equal=bad))
-    assert ok and not bad
+    import train_eval as TE
+    iv = S.GEN6.intervals()
+    st = g["intervals"]["step"]
+    iv_ok = [st["z1"], st["z2"], st["e"], st["bg_plus_R3"]] == [list(iv[k]) for k in ("z1", "z2", "e", "bg")]
+    rel = TE.release_intervals(S.GEN6)
+    rel_ok = {k: list(v) for k, v in rel.items()} == g["intervals"]["release"]
+    print(dict(genesis=path, program=O.program(g).as_dict(), equals_GEN6=ok, control_equal=bad, intervals_ok=iv_ok,
+               release_intervals_ok=rel_ok))
+    assert ok and not bad and iv_ok and rel_ok
 
 
 if __name__ == "__main__":

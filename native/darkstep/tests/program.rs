@@ -58,3 +58,10 @@ fn gen6_equals_native_ref() {
     let h: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(path.replace("_GEN6", "")).unwrap()).unwrap();
     assert_ne!(h["transcript"], r["transcript"]);
 }
+
+/// The intervals the proof proves: GEN6's are the genesis's ([a, B] for z1, z2, e, b g1 + R3).
+#[test]
+fn gen6_intervals() {
+    assert_eq!(Program::GEN6.intervals(), [(-(1 << 18), 19), (-(1 << 19), 20), (-(1 << 8), 9), (-(1 << 19), 20)]);
+    assert_eq!(Program::HARNESS.intervals()[0], (-(1 << 12), 13));
+}

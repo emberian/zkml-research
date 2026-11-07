@@ -295,17 +295,17 @@ pub fn fast_step(c: &Cfg, w1: &mut [i64], w2: &mut [i64], x: &[i64], y: &[i64], 
     for j in 0..d {
         let (a, u) = (z1[j].abs(), u1[j]);
         bd.max_z1 = bd.max_z1.max(a);
-        bd.v_z1 += (a >= lim1) as u64;
+        bd.v_z1 += !(-lim1..lim1).contains(&z1[j]) as u64;
         bd.v_u1 += !(c.t_lo..c.t_lo + 256).contains(&u) as u64;
         let a2 = z2[j].abs();
         bd.max_z2 = bd.max_z2.max(a2);
-        bd.v_z2 += (a2 >= lim1) as u64;
+        bd.v_z2 += !(-lim1..lim1).contains(&z2[j]) as u64;
         let ae = e[j].abs();
         bd.max_e = bd.max_e.max(ae);
-        bd.v_e += (ae >= lim2) as u64;
-        let ab = (b[j] * g1[j] + r3).abs();
-        bd.max_bg = bd.max_bg.max(ab);
-        bd.v_bg += (ab >= lim3) as u64;
+        bd.v_e += !(-lim2..lim2).contains(&e[j]) as u64;
+        let bgv = b[j] * g1[j] + r3;
+        bd.max_bg = bd.max_bg.max(bgv.abs());
+        bd.v_bg += !(-lim3..lim3).contains(&bgv) as u64;
     }
     w2.par_chunks_mut(d).zip(d2.par_iter()).filter(|(_, &v)| v != 0).for_each(|(r, &v)| {
         for &(k, hv) in &hz {
@@ -376,7 +376,7 @@ pub fn evaluate(c: &Cfg, w1: &[i64], w2: &[i64], m: &data::Split, n: usize) -> E
                 let z: i64 = nz.iter().map(|&(k, v)| r[k] * v).sum();
                 let u = z >> c.s1a;
                 bd.max_z1 = bd.max_z1.max(z.abs());
-                bd.v_z1 += (z.abs() >= lim1) as u64;
+                bd.v_z1 += !(-lim1..lim1).contains(&z) as u64;
                 bd.v_u1 += !(c.t_lo..c.t_lo + 256).contains(&u) as u64;
                 h[j] = sig(u);
             }
@@ -385,7 +385,7 @@ pub fn evaluate(c: &Cfg, w1: &[i64], w2: &[i64], m: &data::Split, n: usize) -> E
                 let r = &w2[i * d..(i + 1) * d];
                 z2[i] = r.iter().zip(&h).map(|(a, b)| a * b).sum();
                 bd.max_z2 = bd.max_z2.max(z2[i].abs());
-                bd.v_z2 += (z2[i].abs() >= lim1) as u64;
+                bd.v_z2 += !(-lim1..lim1).contains(&z2[i]) as u64;
             }
             let (so, sz) = scores(c, &z2);
             let l = m.lab[t];
