@@ -87,6 +87,9 @@ pub struct Ledger {
     pub parent: BTreeMap<String, Vec<Hash>>,
     pub next_leaf: u64,
     pub custodians: Vec<String>,
+    /// the mind's release was accepted: the head's commitments have no life left, so the ledger takes no further
+    /// step or rotation
+    pub released: Option<(u64, u64)>,
 }
 
 pub struct Genesis {
@@ -152,6 +155,7 @@ impl Ledger {
             parent: BTreeMap::new(),
             next_leaf: 0,
             custodians: vec![],
+            released: None,
         };
         l.reload()?;
         Ok(l)
@@ -201,11 +205,24 @@ impl Ledger {
         self.step = 0;
         self.parent = roots_of(&g["roots"])?;
         self.next_leaf = 0;
+        self.released = None;
         self.custodians =
             g["custodians"].as_array().ok_or("custodians")?.iter().map(|c| c.as_str().unwrap_or("").to_string()).collect();
         for (no, rec) in self.recs[1..].iter().enumerate() {
             let no = no + 2;
+            if self.released.is_some() {
+                return Err(format!("ledger line {no}: a record after the release (fail closed)"));
+            }
             match rec["kind"].as_str() {
+                Some("release") => {
+                    if (rec["epoch"].as_u64(), rec["step"].as_u64()) != (Some(self.epoch), Some(self.step)) {
+                        return Err(format!("ledger line {no}: the release is not at the head (fail closed)"));
+                    }
+                    match (rec["M"].as_u64(), rec["C"].as_u64()) {
+                        (Some(m), Some(c)) if c <= m => self.released = Some((m, c)),
+                        _ => return Err(format!("ledger line {no}: release record malformed (fail closed)")),
+                    }
+                }
                 Some("step") => {
                     if (rec["epoch"].as_u64(), rec["step"].as_u64()) != (Some(self.epoch), Some(self.step + 1)) {
                         return Err(format!("ledger line {no} breaks the sequence (fail closed)"));
@@ -271,6 +288,9 @@ impl Ledger {
     pub fn rotate(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>, handover: &[u8]) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
+        if self.released.is_some() {
+            return Err("rotation refused: the ledger is released".into());
+        }
         if handover.is_empty() {
             return Err("rotation refused: no handover proof".into());
         }
@@ -292,9 +312,40 @@ impl Ledger {
         self.reload()
     }
 
+    /// The mind's release (proofwire.Ledger.release): verified against the head's W1, W2 roots and the published
+    /// policy; the record carries M, C, sha256 of the bundle and of the policy. Terminal: the head's commitments were
+    /// opened at their last life.
+    pub fn release(&mut self, lp: &LigParams, blob: &[u8], pol: &crate::run::Policy) -> Result<(usize, u64), String> {
+        let _l = self.lock()?;
+        self.reload()?;
+        if self.released.is_some() {
+            return Err("the ledger is released: no further release".into());
+        }
+        if self.step == 0 {
+            return Err("no step accepted: nothing to release".into());
+        }
+        let ctx = Ctx::new(&self.model, self.epoch, self.step);
+        let (m, c) = wire::verify_release(&self.pr, lp, blob, &ctx, &self.parent, &pol.x, &pol.labels, self.program, pol.ncls, self.d, pol.kc)?;
+        let line = format!(
+            "{{\"kind\": \"release\", \"epoch\": {}, \"step\": {}, \"M\": {}, \"C\": {}, \"digest\": {}, \"policy\": {}}}",
+            ctx.epoch,
+            ctx.step,
+            m,
+            c,
+            jstr(&hex(&Sha256::digest(blob))),
+            jstr(&policy_digest(pol))
+        );
+        append(&self.path, &line, false)?;
+        self.reload()?;
+        Ok((m, c))
+    }
+
     pub fn accept(&mut self, lp: &LigParams, blob: &[u8], tables: &(Vec<u64>, Vec<u64>)) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
+        if self.released.is_some() {
+            return Err("the ledger is released: no further steps".into());
+        }
         let (ctx, parent) = self.head();
         let acc = wire::verify_step(&self.pr, lp, blob, &ctx, &parent, tables, self.d, self.program, self.owner_pk.as_ref(), self.next_leaf)?;
         let line = format!(
@@ -308,4 +359,19 @@ impl Ledger {
         append(&self.path, &line, false)?;
         self.reload()
     }
+}
+
+/// sha256 of the release policy: M, ncls, kc (u32 each, big-endian), X (k M + t order, u64 each) and labels (u8).
+pub fn policy_digest(pol: &crate::run::Policy) -> String {
+    let mut h = Sha256::new();
+    for v in [pol.labels.len() as u32, pol.ncls as u32, pol.kc] {
+        h.update(v.to_be_bytes());
+    }
+    for x in &pol.x {
+        h.update(x.to_be_bytes());
+    }
+    for &l in &pol.labels {
+        h.update([l as u8]);
+    }
+    hex(&h.finalize())
 }

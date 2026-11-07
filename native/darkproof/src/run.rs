@@ -175,27 +175,21 @@ pub fn prove_step(
     Ok(StepProof { blob, child, genesis_roots, secs: t0.elapsed().as_secs_f64(), sent: net.sent() - sent0 })
 }
 
-/// One custodian's PartyStep from its darkstep step: the ProofRecord, W1n, W2n and the tape's proof section (the
-/// (Ta, Tb, Tc) entries after the step's cursor).
+/// The (Ta, Tb, Tc) triples of a tape section: `count` triples from entry `from` (None: to the tape's end).
 #[cfg(feature = "tcp")]
-pub fn from_darkstep(
-    i: usize,
-    d: usize,
-    rec: &darkstep::step::ProofRecord,
-    w1n: &[Vec<darkstep::party::Sh>],
-    w2n: &[Vec<darkstep::party::Sh>],
-    tape: &darkstep::tape::Tape,
-    det: Det,
-) -> Result<PartyStep, String> {
+pub fn tape_triples_at(tape: &darkstep::tape::Tape, from: usize, count: Option<usize>) -> Result<Vec<Triple>, String> {
     use darkstep::tape::Tag;
-    let sh = |x: &darkstep::party::Sh| (x.s, x.m);
-    let mut wires: BTreeMap<String, Vec<Sh>> = rec.wires.iter().map(|(k, v)| (k.to_string(), v.iter().map(sh).collect())).collect();
-    wires.insert("W1n".into(), w1n.iter().flatten().map(sh).collect());
-    wires.insert("W2n".into(), w2n.iter().flatten().map(sh).collect());
-    let mut triples = Vec::new();
-    let mut k = rec.tape_cursor;
-    while k < tape.len() {
-        if k + 3 > tape.len() {
+    let end = match count {
+        Some(c) => from + 3 * c,
+        None => tape.len(),
+    };
+    if end > tape.len() {
+        return Err("the tape's proof section is shorter than the proof needs".into());
+    }
+    let mut triples = Vec::with_capacity((end - from) / 3);
+    let mut k = from;
+    while k < end {
+        if k + 3 > end {
             return Err("the tape's proof section ends inside a triple".into());
         }
         let tg = |j: usize| tape.tags[j];
@@ -206,9 +200,43 @@ pub fn from_darkstep(
         triples.push((e(k), e(k + 1), e(k + 2)));
         k += 3;
     }
-    if k != tape.len() {
-        return Err("the tape's proof section ends inside a triple".into());
-    }
+    Ok(triples)
+}
+
+/// One custodian's PartyStep from its darkstep step: the ProofRecord, W1n, W2n and the tape's proof section (the
+/// (Ta, Tb, Tc) entries after the step's cursor, to the tape's end).
+#[cfg(feature = "tcp")]
+pub fn from_darkstep(
+    i: usize,
+    d: usize,
+    rec: &darkstep::step::ProofRecord,
+    w1n: &[Vec<darkstep::party::Sh>],
+    w2n: &[Vec<darkstep::party::Sh>],
+    tape: &darkstep::tape::Tape,
+    det: Det,
+) -> Result<PartyStep, String> {
+    from_darkstep_n(i, d, rec, w1n, w2n, tape, None, det)
+}
+
+/// from_darkstep with a proof section of exactly `count` triples (a run's tape continues with the next step after
+/// it: advance the party's cursor by 3 count).
+#[cfg(feature = "tcp")]
+#[allow(clippy::too_many_arguments)]
+pub fn from_darkstep_n(
+    i: usize,
+    d: usize,
+    rec: &darkstep::step::ProofRecord,
+    w1n: &[Vec<darkstep::party::Sh>],
+    w2n: &[Vec<darkstep::party::Sh>],
+    tape: &darkstep::tape::Tape,
+    count: Option<usize>,
+    det: Det,
+) -> Result<PartyStep, String> {
+    let sh = |x: &darkstep::party::Sh| (x.s, x.m);
+    let mut wires: BTreeMap<String, Vec<Sh>> = rec.wires.iter().map(|(k, v)| (k.to_string(), v.iter().map(sh).collect())).collect();
+    wires.insert("W1n".into(), w1n.iter().flatten().map(sh).collect());
+    wires.insert("W2n".into(), w2n.iter().flatten().map(sh).collect());
+    let triples = tape_triples_at(tape, rec.tape_cursor, count)?;
     Ok(PartyStep {
         i,
         n: 3,
@@ -326,4 +354,151 @@ pub fn prove_release(
     let mo = middle::prove(&mi, net, &mut sp, head, None)?;
     let blob = wire::encode_release(pr, ctx, d, n, m, pol.ncls, &st.public, &mo.proof, &rec);
     Ok((blob, t0.elapsed().as_secs_f64()))
+}
+
+/// The release program (cosnark_release.run_release, its batch-friendly order) run by one custodian on darkstep's
+/// party, over the release section of its tape: w1, w2 = its shares of the head's weights (d x d). Returns the opened
+/// count C and the PartyRelease record (without triples; take them from the tape after the party's cursor:
+/// release_triples(lp, n_had)). The MAC check runs before returning.
+#[cfg(feature = "tcp")]
+pub fn release_mpc(
+    pt: &mut darkstep::party::Party,
+    w1: &[Vec<darkstep::party::Sh>],
+    w2: &[Vec<darkstep::party::Sh>],
+    pol: &Policy,
+    prm: StepParams,
+) -> Result<(u64, PartyRelease), String> {
+    use darkstep::party::Sh as DSh;
+    use rayon::prelude::*;
+    let d = w1.len();
+    let m = pol.labels.len();
+    let p = pt.p;
+    assert_eq!(p, crate::field::p(), "darkstep's field is not darkproof's");
+    let (a0, t0) = (pt.atom_log.len(), pt.tr.v.len());
+    // z1 = W1 X, local: row j of W1 against column t of X
+    let xt: Vec<Vec<u64>> = (0..m).map(|t| (0..d).map(|k| pol.x[k * m + t]).collect()).collect();
+    let z1: Vec<DSh> = (0..d)
+        .into_par_iter()
+        .flat_map_iter(|j| {
+            let ws: Vec<u64> = w1[j].iter().map(|x| x.s).collect();
+            let wm: Vec<u64> = w1[j].iter().map(|x| x.m).collect();
+            let xt = &xt;
+            (0..m).map(move |t| DSh { s: crate::field::dot(&ws, &xt[t]), m: crate::field::dot(&wm, &xt[t]) })
+        })
+        .collect();
+    let u1 = pt.trunc_vec(&z1, prm.s1, prm.k1);
+    let sig = vec![step::tables_for(prm.t_lo).0];
+    let h: Vec<DSh> = pt.lookup_vec(&u1, crate::field::from_i64(-prm.t_lo), &sig, 255).into_iter().map(|v| v[0]).collect();
+    drop(u1);
+    pt.middle_mul = true;
+    let mut xs = Vec::with_capacity(pol.ncls * m * d);
+    let mut ys = Vec::with_capacity(pol.ncls * m * d);
+    for c in 0..pol.ncls {
+        for t in 0..m {
+            for k in 0..d {
+                xs.push(w2[c][k]);
+                ys.push(h[k * m + t]);
+            }
+        }
+    }
+    let prods = pt.mul_vec(&xs, &ys);
+    drop((xs, ys));
+    let sums: Vec<DSh> = prods.chunks(d).map(|ch| ch.iter().fold(DSh { s: 0, m: 0 }, |a, x| pt.add(a, *x))).collect();
+    drop(prods);
+    let o = pt.trunc_vec(&sums, prm.s1, prm.k1);
+    let mut diffs = Vec::with_capacity(m * (pol.ncls - 1));
+    for t in 0..m {
+        let l = pol.labels[t];
+        for k in 0..pol.ncls {
+            if k != l {
+                diffs.push(pt.lin(&[(1, o[l * m + t]), (p - 1, o[k * m + t])], p - 1));
+            }
+        }
+    }
+    let q = pt.trunc_vec(&diffs, pol.kc, pol.kc);
+    let f: Vec<DSh> = q.iter().map(|x| pt.cadd(1, *x)).collect();
+    let nf = pol.ncls - 1;
+    let mut acc: Vec<DSh> = (0..m).map(|t| f[t * nf]).collect();
+    for j in 1..nf {
+        let ys: Vec<DSh> = (0..m).map(|t| f[t * nf + j]).collect();
+        acc = pt.mul_vec(&acc, &ys);
+    }
+    pt.middle_mul = false;
+    let total = acc.iter().fold(DSh { s: 0, m: 0 }, |a, x| pt.add(a, *x));
+    let c = pt.open_vec(&[total], darkstep::party::PH_MUL)[0];
+    pt.mac_check("release")?;
+    let sh = |x: &DSh| (x.s, x.m);
+    let mut wires = BTreeMap::new();
+    wires.insert("W1".to_string(), w1.iter().flatten().map(sh).collect());
+    wires.insert("W2".to_string(), w2.iter().flatten().map(sh).collect());
+    wires.insert("z1".to_string(), z1.iter().map(sh).collect());
+    wires.insert("h".to_string(), h.iter().map(sh).collect());
+    let atoms: Vec<Sh> = pt.atom_log[a0..]
+        .iter()
+        .flat_map(|r| r.clone().map(|k| (pt.tape.sh[k], pt.tape.mac[k])))
+        .collect();
+    let st = PartyRelease {
+        i: pt.i,
+        n: 3,
+        d,
+        alpha_i: pt.alpha(),
+        wires,
+        public: pt.tr.v[t0..].to_vec(),
+        atoms,
+        triples: Vec::new(),
+        det: Det::off(),
+    };
+    Ok((c, st))
+}
+
+/// The release section of a TEST dealer's tapes (cosnark_release's order), then its proof section; the run's tapes
+/// come from MASCOT in this order.
+#[cfg(feature = "tcp")]
+pub fn deal_release(dl: &mut darkstep::tape::Dealer, d: usize, m: usize, ncls: usize, prm: StepParams, kc: u32, lp: &LigParams, tables: &(Vec<u64>, Vec<u64>), pol: &Policy) {
+    for _ in 0..d * m {
+        dl.trunc(prm.s1, prm.k1);
+    }
+    for _ in 0..d * m {
+        dl.lookup(255);
+    }
+    for _ in 0..ncls * m * d {
+        dl.mul();
+    }
+    for _ in 0..ncls * m {
+        dl.trunc(prm.s1, prm.k1);
+    }
+    for _ in 0..m * (ncls - 1) {
+        dl.trunc(kc, kc);
+    }
+    for _ in 0..m * (ncls - 2) {
+        dl.mul();
+    }
+    let _ = tables;
+    let nh = release_n_had(d, m, prm, pol);
+    for _ in 0..release_triples(lp, nh) {
+        dl.mul();
+    }
+}
+
+/// Hadamard rows of the release proof (data-independent: a replay on a zero transcript).
+pub fn release_n_had(d: usize, m: usize, prm: StepParams, pol: &Policy) -> usize {
+    let zeros = vec![0u64; wire::release_len(d, m, prm, pol.ncls, pol.kc)];
+    step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc).expect("release replay").had.len()
+}
+
+/// The plaintext twin of the release (cosnark_release.plain_count): the count over the integers.
+pub fn plain_count(w1: &[Vec<i64>], w2: &[Vec<i64>], x: &[Vec<i64>], labels: &[usize], prm: StepParams, ncls: usize, kc: u32) -> u64 {
+    let d = w1.len();
+    let m = labels.len();
+    let sig = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
+    let mut c = 0;
+    for t in 0..m {
+        let h: Vec<i64> = (0..d).map(|j| sig((0..d).map(|k| w1[j][k] * x[k][t]).sum::<i64>() >> prm.s1)).collect();
+        let o: Vec<i64> = (0..ncls).map(|cl| (0..d).map(|k| w2[cl][k] * h[k]).sum::<i64>() >> prm.s1).collect();
+        let l = labels[t];
+        if (0..ncls).filter(|&k| k != l).all(|k| (o[l] - o[k] - 1) >> kc == 0) {
+            c += 1;
+        }
+    }
+    c
 }

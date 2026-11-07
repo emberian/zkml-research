@@ -437,9 +437,10 @@ pub fn replay_release<'t>(
     drop(u1);
     r.rec_out("h", &h);
     drop(h);
-    let mut o: Vec<Vec<Form>> = Vec::with_capacity(ncls);
+    // every class-row product (c, t, k), then every score truncation (c, t), then every comparison (t, k != l), then
+    // the comparisons' products stage by stage (cosnark_release's batch-friendly order)
+    let mut sums: Vec<Form> = Vec::with_capacity(ncls * m);
     for c in 0..ncls {
-        let mut row = Vec::with_capacity(m);
         for t in 0..m {
             let mut acc = Form::default();
             for k in 0..d {
@@ -449,14 +450,22 @@ pub fn replay_release<'t>(
                 acc.terms.extend(pr_.terms);
                 acc.c = field::add(acc.c, pr_.c);
             }
-            row.push(r.trunc(&acc, prm.s1, prm.k1)?);
+            sums.push(acc);
+        }
+    }
+    let mut o: Vec<Vec<Form>> = Vec::with_capacity(ncls);
+    for c in 0..ncls {
+        let mut row = Vec::with_capacity(m);
+        for t in 0..m {
+            row.push(r.trunc(&sums[c * m + t], prm.s1, prm.k1)?);
         }
         o.push(row);
     }
-    let mut oks = Form::default();
+    drop(sums);
+    let mut fs: Vec<Vec<Form>> = Vec::with_capacity(m);
     for t in 0..m {
         let l = labels[t];
-        let mut acc: Option<Form> = None;
+        let mut f_t = Vec::with_capacity(ncls - 1);
         for k in 0..ncls {
             if k == l {
                 continue;
@@ -465,13 +474,18 @@ pub fn replay_release<'t>(
             terms.extend(neg_form(&o[k][t]));
             let diff = Form { terms, c: field::sub(field::sub(o[l][t].c, o[k][t].c), 1) };
             let q = r.trunc(&diff, kc, kc)?;
-            let f = Form { terms: q.terms, c: field::add(q.c, 1) };
-            acc = Some(match acc {
-                None => f,
-                Some(a) => r.mul(&a, &f)?,
-            });
+            f_t.push(Form { terms: q.terms, c: field::add(q.c, 1) });
         }
-        let a = acc.expect("ncls >= 2");
+        fs.push(f_t);
+    }
+    let mut acc: Vec<Form> = fs.iter().map(|f| f[0].clone()).collect();
+    for j in 1..ncls - 1 {
+        for t in 0..m {
+            acc[t] = r.mul(&acc[t], &fs[t][j])?;
+        }
+    }
+    let mut oks = Form::default();
+    for a in acc {
         oks.terms.extend(a.terms);
         oks.c = field::add(oks.c, a.c);
     }
