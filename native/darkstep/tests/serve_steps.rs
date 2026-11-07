@@ -48,6 +48,10 @@ fn setup(name: &str, k: usize) -> Run {
 
 /// Serve `steps` steps from the run's state; returns the three exit codes and the owner's log.
 fn serve(r: &Run, steps: usize, first: usize, extra: &[&str]) -> (Vec<i32>, Vec<serde_json::Value>) {
+    serve_env(r, steps, first, extra, None)
+}
+
+fn serve_env(r: &Run, steps: usize, first: usize, extra: &[&str], env1: Option<(&str, &str)>) -> (Vec<i32>, Vec<serde_json::Value>) {
     let ports: Vec<u16> = (0..4).map(|_| free_port()).collect();
     let addrs: Vec<String> = (0..3).map(|j| format!("127.0.0.1:{}", ports[j])).collect();
     let owner_at = format!("127.0.0.1:{}", ports[3]);
@@ -77,6 +81,8 @@ fn serve(r: &Run, steps: usize, first: usize, extra: &[&str]) -> (Vec<i32>, Vec<
                 .args(["--tape", r.dir.join(format!("tape_{i}.bin")).to_str().unwrap(), "--timeout", "60", "--test-keep-shares"])
                 .args(extra)
                 .env("DS_THREADS", "4")
+                .envs(env1.filter(|_| i == 1))
+                .env("DS_RECONNECT_SECS", "30")
                 .spawn()
                 .unwrap()
         })
@@ -160,4 +166,28 @@ fn pause_checkpoint_and_resume_equal_the_straight_run() {
     assert_eq!(codes, vec![0, 0, 0]);
     assert_eq!(report(&r.dir, 2, 0)["verdict"], "ACCEPT");
     assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 3), "2 steps + resume 1 = the 3-step twin");
+}
+
+/// Custodian 1's link to custodian 0 is cut mid-step (after 1 MB sent, inside the HE matvec): the link resumes under
+/// the same pinned identities and the steps still equal the plaintext twin.
+#[test]
+fn a_link_cut_mid_step_resumes_and_the_steps_equal_the_twin() {
+    let r = setup("cut", 2);
+    let pf = prof(&A.map(String::from));
+    let (codes, _) = serve_env(&r, 2, 0, &[], Some(("DS_TEST_KILL", "0,1000000")));
+    assert_eq!(codes, vec![0, 0, 0]);
+    let rep = report(&r.dir, 0, 1);
+    assert!(rep["reconnects"][0].as_u64().unwrap() >= 1, "the link was resumed: {}", rep["reconnects"]);
+    assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 2));
+}
+
+/// The same cut during a check phase (the first Freivalds opening) aborts the step for all three.
+#[test]
+fn a_link_cut_in_a_check_phase_aborts() {
+    let r = setup("cutcheck", 1);
+    let (codes, log) = serve_env(&r, 1, 0, &["--timeout", "20"], Some(("DS_TEST_KILL", "0,critical")));
+    assert!(codes.iter().all(|&c| c != 0), "every custodian stops: {codes:?}");
+    assert!(log.len() <= 1);
+    let reps: Vec<String> = (0..3).filter_map(|i| std::fs::read_to_string(r.dir.join(format!("step_0_P{i}.json"))).ok()).collect();
+    assert!(reps.iter().all(|t| !t.contains("\"ACCEPT\"")), "no custodian accepted the step");
 }

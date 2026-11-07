@@ -474,6 +474,14 @@ impl Party {
 
     /// spdz.Engine.mac_check(coin_seed) with sigma commit-then-open. Returns this party's sigma; Err on abort.
     pub fn mac_check(&mut self, coin_seed: &str) -> Result<u64, String> {
+        // the commit-and-open of sigma: a link drop here is an abort, not a resume
+        self.net.set_critical(true);
+        let r = self.mac_check_inner(coin_seed);
+        self.net.set_critical(false);
+        r
+    }
+
+    fn mac_check_inner(&mut self, coin_seed: &str) -> Result<u64, String> {
         let p = self.p;
         let mut h = ReprHasher::new();
         h.s("mac-coins");

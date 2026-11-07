@@ -369,12 +369,15 @@ impl He {
                 }
             })
             .collect();
+        // the check's openings: a link drop from here on is an abort, not a resume
+        pt.net.set_critical(true);
         let prods = pt.mul_vec(&u, v);
         let mut ip = prods[0];
         for x in &prods[1..] {
             ip = pt.add(ip, *x);
         }
         let chk = pt.open_vec(&[pt.sub(lhs, ip)], PH_FREIVALDS);
+        pt.net.set_critical(false);
         if chk[0] != 0 {
             return Err("HE matvec: Freivalds check failed (a custodian's vector, product or share is wrong)".into());
         }
@@ -566,8 +569,10 @@ impl He {
         let ra = pt.lin(&(0..d1).map(|r| (r1[r], a[r])).collect::<Vec<_>>(), 0);
         let xr = pt.lin(&(0..d2).map(|c| (r2[c], x[c])).collect::<Vec<_>>(), 0);
         tl("lin");
+        pt.net.set_critical(true);
         let prod = pt.mul_vec(&[ra], &[xr])[0];
         let chk = pt.open_vec(&[pt.sub(lhs, prod)], PH_OUTER_CHECK);
+        pt.net.set_critical(false);
         if chk[0] != 0 {
             return Err("HE outer: Freivalds check failed (a custodian's vector, product or share is wrong)".into());
         }
