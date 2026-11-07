@@ -372,6 +372,55 @@ What changed against run9:
 
 Bytes per link are as in run9: d and the profile are the same, and the Net counters agree byte for byte.
 
+### run11b: self-handover rerun at d = 4096 [EXECUTED, dl-custodian 453d8e0f]
+The self-handover now runs from main after `scrub_stack_all()` (the deploy lane's Prove::run_deferred). Seat 1
+attacks (`wrong_return:1`). Checker `--self`: **33 of 37 hold.** There are no main-thread hits any more.
+
+The red items, both fixed in darkhand 09fd154d:
+1. **One alpha copy per seat, in the old role's own thread stack**, 3.9 KB above its scanning frame. The generic
+   setup closure was inlined into old_side, so the by-value CustodianState it takes apart lived in old_side's live
+   frame. Fix: `#[inline(never)] run_setup`. dl-hand local and local-self at d = 256 then pass on bb2.
+2. **Seat 0's 470 K memory hits and 515 K disk hits in MP-SPDZ .pyc files, kind "W1 share": a false positive.** At
+   a step-0 abort the carry is the public genesis, so custodian 0's share IS the public W. When the carry is public,
+   its committed share is not canaried; the MAC shares stay canaried.
+
+What holds:
+- the disk controls (ckpt, tape, owner msg, and the wired-new key files on seats 1 and 2), and 0 hits after erasure
+  on seats 1 and 2;
+- the erase-extra files gone;
+- the MAC check, the kept key, the same-set rotation, verify-rotation and one digest.
+
+## 8. The handover proof in F_{p^2} (profiles demo-x2, ledger-x2) [EXECUTED, 1bfb04a3]
+The proof lane's x2 cut (proof.md §19) draws every challenge in F_{p^2}. The handover follows it:
+- the point per matrix is `X.chal` / `ext::chal`;
+- the u rows come in EXT component blocks;
+- each identity is EXT F_p constraints, component 0 first;
+- the PCS proximity weights are in F_{p^2} (a row is EXT W long, checked by pcs::verify_e);
+- the Ligero mask group is 3 EXT.
+
+Native is generic over E (dispatch on pr.ext). Results:
+
+| check | result |
+|---|---|
+| EXT = 1 unchanged | the d = 4 demo vector is byte-identical to the cut-B one; native == Python on d4 demo, d16 demo, d16 ledger |
+| native prover == Python (x2), and byte_len == length | demo-x2 d = 4 512,480 B; d = 16 573,536 B; ledger-x2 d = 4 1,521,968 B |
+| run_handover.py 4 demo-x2 | all rows as expected, step 2 by the new committee included |
+| handover_vs_python (demo-x2 dump) | native verdict and ledger file equal to Python's on all 14 rotations |
+| new refusal row: proximity row u-part + 1 (component 1) | refused, "column challenge mismatch" (the row is absorbed before the columns are drawn) |
+
+**Soundness of one handover** (`handover_soundness.py ledger 4096`; union bound; |F| = p^EXT):
+
+| term | EXT = 1 | EXT = 2 |
+|---|---|---|
+| Schwartz-Zippel old W(r) = new W(r), per matrix (24 variables) | 2^-56.4 | 2^-117.4 |
+| PCS proximity per commitment (4: old and new W1, W2; n = 264,616) | 2^-43.0 | 2^-104.0 |
+| PCS columns per commitment ((3/4)^309) | 2^-128.2 | 2^-128.2 |
+| Ligero proximity (n = 3,284) / linear / quadratic | 2^-49.3 / 2^-61 / 2^-61 | 2^-110.3 / 2^-122 / 2^-122 |
+| Ligero columns | 2^-128.2 | 2^-128.2 |
+| **the handover** | **2^-41.0** | **2^-102.0** |
+
+Not in the table: Merkle binding (computational) and Fiat-Shamir grinding.
+
 ### Bounds this check does not cover [OPEN]
 - **Copy-on-write and SSD storage.** An in-place overwrite is not physical erasure there. hbox's /othersys is ZFS:
   old blocks can survive in free space and snapshots. An SSD's FTL can keep old pages on bb2 and forge too. Against

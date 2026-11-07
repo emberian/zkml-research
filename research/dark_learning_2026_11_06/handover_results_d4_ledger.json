@@ -1,7 +1,7 @@
 {
  "d": 4,
  "profile": "ledger",
- "seconds": 1409.7,
+ "seconds": 804.0,
  "all_as_expected": true,
  "rows": {
   "step 1 by the old committee": {
@@ -13,34 +13,34 @@
    "verdict": "REFUSED",
    "by": "rotation refused: Ligero linear test: the constraints do not hold",
    "as_expected": true,
-   "verify_seconds": 1.468,
+   "verify_seconds": 1.129,
    "violated": "handover: old W1(r) = new W1(r)"
   },
   "resharing whose subshares do not sum to the old shares": {
    "verdict": "REFUSED",
    "by": "rotation refused: Ligero linear test: the constraints do not hold",
    "as_expected": true,
-   "verify_seconds": 1.681,
+   "verify_seconds": 1.133,
    "violated": "handover: old W2(r) = new W2(r)"
   },
   "handover proof stats": {
-   "hidden_rows": 40,
+   "hidden_rows": 8,
    "lin_constraints": 1238,
-   "ligero_wire": 46620,
-   "bytes": 3860028,
-   "prove_seconds": 34.63
+   "ligero_wire": 113820,
+   "bytes": 1197520,
+   "prove_seconds": 35.49
   },
   "honest proof, but recorded with other new roots": {
    "verdict": "REFUSED",
    "by": "rotation refused: the handover proof is for other new roots",
    "as_expected": true,
-   "verify_seconds": 2.202
+   "verify_seconds": 2.023
   },
   "honest proof for another new custodian set": {
    "verdict": "REFUSED",
    "by": "rotation refused: handover (old committee): column challenge mismatch",
    "as_expected": true,
-   "verify_seconds": 0.088
+   "verify_seconds": 0.087
   },
   "honest proof for a committee of four": {
    "verdict": "REFUSED",
@@ -58,25 +58,25 @@
    "verdict": "REFUSED",
    "by": "rotation refused: Ligero linear test: the constraints do not hold",
    "as_expected": true,
-   "verify_seconds": 1.756
+   "verify_seconds": 1.15
   },
   "the proof bytes with one byte flipped (middle)": {
    "verdict": "REFUSED",
    "by": "rotation refused: Ligero: Merkle opening fails (group 0, custodian 0)",
    "as_expected": true,
-   "verify_seconds": 2.302
+   "verify_seconds": 1.642
   },
   "the proof bytes truncated by one byte": {
    "verdict": "REFUSED",
    "by": "rotation refused: parse: truncated",
    "as_expected": true,
-   "verify_seconds": 0.092
+   "verify_seconds": 0.104
   },
   "the proof bytes with a trailing byte": {
    "verdict": "REFUSED",
    "by": "rotation refused: parse: trailing bytes",
    "as_expected": true,
-   "verify_seconds": 0.125
+   "verify_seconds": 0.085
   },
   "the proof bytes with a non-canonical field element": {
    "verdict": "REFUSED",
@@ -88,13 +88,13 @@
    "verdict": "ACCEPT",
    "by": "accept",
    "as_expected": true,
-   "verify_seconds": 1.962
+   "verify_seconds": 1.987
   },
   "the same handover proof replayed (now epoch 1 -> 2)": {
    "verdict": "REFUSED",
    "by": "rotation refused: handover: old roots are not the ledger head's",
    "as_expected": true,
-   "verify_seconds": 0.114
+   "verify_seconds": 0.081
   },
   "a third opening of the old child": {
    "verdict": "REFUSED",
