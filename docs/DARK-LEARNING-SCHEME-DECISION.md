@@ -1876,3 +1876,52 @@ Proof of the step at d = 4096 (native, ledger profile, forge, three custodians i
 of it codeword encoding), verify 12.7 s, bundle 922 MB (spine 1,191.0 Mbit and middle 701.7 Mbit, equal to the formulas;
 the rest is the 676 MB public transcript). Cross-model review (gpt-6-astra) of the native prover and verifier ran; its
 six findings are fixed (`notes/dark-learning-gen5/proof.md`).
+
+
+## 24. Gen 6: the deployment (2026-11-07, interim; the run of record is scheduled)
+
+Goal (ember, via root): a run a skeptic would call a deployment: three custodians on three machines with distributed
+keys and TLS; a real model trained under custody with the privacy budget accounted; real preprocessing; a mid-run
+handover with enforced erasure; only the policy output released, with its proof; measured end to end. Lane notes:
+`notes/dark-learning-gen6/{deploy,prep,proof,handover,train}.md`.
+
+### 24.1 What is built and measured [EXECUTED unless marked]
+- **Model and data** (train): MNIST, GEN6 program at d = 4096 (shifts 11/7/8 with a rounding add before d1; §12's wide
+  program diverges). Plaintext integer accuracy 86.6% at 2,000 steps (float twin 83.9%). Release policy: only C, the
+  count of t10k 0..51 classified strictly correctly, bound to the data owner's encoder by digest (M = 52 because
+  M = 64 did not fit 12 GB per seat). Public genesis: W_0 is public by design.
+- **Three machines** (deploy): pinned-certificate mutual TLS, resumable links, a NAT (dial-only) seat, the key ceremony
+  over the links, one custodian per box with its own keys and tapes. Gated d = 4096 step: 94 s with a wired third seat;
+  791 s with hbox (home Wi-Fi, about 18 Mbit/s up) after rounding the switched HE returns (2 primes, noise bits off,
+  seeded ciphertexts: 2,352 -> 1,386 MB per directed link).
+- **A privacy break found and fixed**: production parties drew HE masks from public seeds (any custodian could recover
+  the model); all secret coins now come from the OS CSPRNG, test seeds behind a cargo feature, audited in every crate.
+- **Proof** (proof lanes): the deployed HE step proved (HE openings bound by digest); range checks on every truncation
+  (a control showed out-of-bound steps were accepted before); bit-circuit lookup; coset-NTT PCS (408 s -> 21 s);
+  F_{p^2} challenges (the step was 2^-40 sound, now 2^-101; run of 2000 steps + release 2^-90.3); masked-polynomial
+  sumcheck (D); deferred child opening (E; ledger "pending until its child is opened", standalone close); shorter
+  range chain and fewer truncation bits (RS). d = 4096 step under ledger-x2de + RS: 43-47 MB bundle, 28-33 s prove,
+  12-13 s verify, 2,225,349 preprocessing triples; pipelined proofs hide behind the next step (3-step wall -36%).
+  Release at M = 52: 260 MB, 670 s, one custodian 10.27 GB cgroup peak on forge's 12 GB with real sealed tapes.
+  The Python replay (the skeptic's verifier) checks a native ledger; at d = 4096 its genesis check is 0.9 GB and step
+  1 verifies with child roots equal (step 2 and the flipped-byte row in progress).
+- **Preprocessing** (prep): MP-SPDZ MASCOT tau = 5 per box over TLS, each seat's tape made on its own box and sealed
+  under a per-epoch key; MP-SPDZ secrets on tmpfs. LowGear as MP-SPDZ builds it (N = 8,192, q = 2^312) is 2^86.8 by
+  the lattice estimator; the run uses N = 16,384 (2^179.0).
+- **Handover with erasure** (handover): native prover and verifier byte-equal with Python; rotation and self-handover
+  after an abort on the boxes at d = 4096 with the checker all green (memory scan 0 hits after erasure against ~3M
+  before; restarted old seats decrypt nothing; state sealed under a keyring file key that is invalidated;
+  cryptographic erasure, since overwriting is not erasure on ZFS/SSD). Handover soundness 2^-103.
+- **Privacy budget** (`privacy_budget.py gen6`): 2000 steps + release 2^-15.0, dominated by statistical truncation
+  masking (2^-26 per step); next the preprocessing authentication (2^-37 per step).
+
+### 24.2 The run of record (scheduled)
+forge + bb2 + hbox, N = 8 proved steps, handover after step 6, release at M = 52, ledger-x2de + RS, LowGear N = 16,384,
+planned SIGSTOP/SIGCONT of forge's processes at 10:00-10:58:30 UTC (pause tests passed). hbox's uplink carries
+everything: key setup 14.0 h per committee, a proved step's preprocessing 1.92 h, the release's 27.2 h. Expected end
+about 20:00 UTC Nov 10 [DERIVED]. The 2,000-step accuracy run waits for a better-connected third box.
+
+### 24.3 Decisions for ember
+1. The third custodian box for the 2,000-step run (a wired box: about 2 min per step, 3-4 days).
+2. Exact truncation (removes the dominant privacy term; 2000-step budget then about 2^-26 [DERIVED]).
+3. MP-SPDZ's unreviewed status and Bristol's usage-report request.
