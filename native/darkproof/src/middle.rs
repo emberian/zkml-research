@@ -121,8 +121,8 @@ pub fn build_q<const E: usize>(
     {
         let mut qn: Vec<Vec<[u64; E]>> = rec.names.iter().map(|nm| std::mem::take(q.get_mut(*nm).unwrap())).collect();
         let qp = q.get_mut("P").unwrap();
-        for (g, con) in gam.iter().zip(&rec.cons) {
-            for &(a, co) in &con.form.terms {
+        for (g, con) in gam.iter().zip(rec.cons.iter()) {
+            for &(a, co) in con.terms {
                 let v = ext::scal(co, *g);
                 match a {
                     Atom::Ext(nm, k) => {
@@ -135,7 +135,7 @@ pub fn build_q<const E: usize>(
                     }
                 }
             }
-            cst = ext::add(cst, ext::scal(field::sub(con.form.c, con.value), *g));
+            cst = ext::add(cst, ext::scal(field::sub(con.c, con.value), *g));
         }
         if let Some(pm) = &rec.pubmat {
             // z1[j M + t] - sum_k X[k][t] W1[j d + k], with gamma at start + j M + t

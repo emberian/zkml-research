@@ -322,7 +322,7 @@ pub fn make_bundle_d(
     };
     let mut public = public;
     if let Some(dv) = *patched.lock().unwrap() {
-        let tp = rec.cons[jstar].pos;
+        let tp = rec.cons.get(jstar).pos;
         public[tp] = crate::field::add(public[tp], dv);
     }
     let blob = wire::encode_step(
