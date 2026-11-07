@@ -546,8 +546,24 @@ pub fn read_tape_once(path: &str) -> Result<Tape, String> {
     drop_cache(std::path::Path::new(path));
     if let Some(log) = consumed_log() {
         claim(log, &digest, path, t.alpha_i)?;
+        *LAST_CLAIM.lock().unwrap() = Some((digest, path.to_string()));
     }
     Ok(t)
+}
+
+/// The last tape this process claimed in the registry (sha256, path).
+static LAST_CLAIM: std::sync::Mutex<Option<(String, String)>> = std::sync::Mutex::new(None);
+
+/// Give back the last claimed tape: only when not one of its entries was used (a pause voted before the first step
+/// of this process, whose tape was loaded at start). Recorded as {"sha256", "released": true}; the next claim of the
+/// same digest then goes through.
+fn unclaim_last() -> Result<(), String> {
+    let (Some(log), Some((digest, path))) = (consumed_log(), LAST_CLAIM.lock().unwrap().take()) else { return Ok(()) };
+    let mut f = std::fs::OpenOptions::new().append(true).open(log).map_err(|e| format!("{}: {e}", log.display()))?;
+    f.lock().map_err(|e| e.to_string())?;
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    let line = json!({"sha256": digest, "path": path, "released": true, "unix": now, "pid": std::process::id()}).to_string();
+    f.write_all(line.as_bytes()).and_then(|_| f.write_all(b"\n")).and_then(|_| f.sync_all()).map_err(|e| e.to_string())
 }
 
 fn claim(log: &std::path::Path, digest: &str, path: &str, alpha_i: u64) -> Result<(), String> {
@@ -555,7 +571,8 @@ fn claim(log: &std::path::Path, digest: &str, path: &str, alpha_i: u64) -> Resul
     f.lock().map_err(|e| e.to_string())?;
     let mut have = String::new();
     f.read_to_string(&mut have).map_err(|e| e.to_string())?;
-    if let Some(l) = have.lines().find(|l| l.contains(digest)) {
+    // the digest's last record decides: a claim (consumed), or a release of an unused claim (available again)
+    if let Some(l) = have.lines().filter(|l| l.contains(digest)).last().filter(|l| !l.contains("\"released\":true")) {
         return Err(format!("preprocessing already consumed (single use): {path} has sha256 {digest}, recorded as {l}"));
     }
     // the alpha share is secret: only a digest of it, to tell keys apart in the log
@@ -755,6 +772,7 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
     let pause = flag(args, "--pause-utc");
     let tape_wait: Option<u64> = flag(args, "--tape-wait").map(|x| x.parse().expect("--tape-wait SECONDS"));
     let (mut waited_s, mut waited_total_s) = (0.0f64, 0.0f64);
+    let cur_first = st.pt.cur;
     let mut end = End { code: 0, refused: None };
     while st.step < first + steps {
         let k = st.step;
@@ -764,6 +782,12 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
         let mine = [if i == 0 { pause.as_deref().map(in_window).unwrap_or(false) as u64 } else { 0 }, not_ready as u64];
         let votes = st.pt.net.exchange(crate::net::CTRL, &mine);
         if votes[0][0] == 1 {
+            // paused before this process's first step: its tape (loaded at start) is unused, so the resume may load it
+            if k == first && st.pt.cur == cur_first {
+                if let Err(e) = unclaim_last() {
+                    eprintln!("registry: {e}");
+                }
+            }
             end.code = 3;
             break;
         }

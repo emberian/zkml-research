@@ -159,10 +159,7 @@ def launch(cfg, seats_only=False, with_new=True):
               open(os.path.join(cfg["out"], cfg["name"], "loads_start.json"), "w"), indent=1)
     o = cfg["owner"]
     od = owner_dir(cfg)
-    ocmd = f"nice -n 15 {o.get('scope', '')} {o['bin']}/dl-owner --listen {o['addr']} --tls {od}/tls --t {cfg['t']} --d {d} " + \
-           (f"--train {od}/cfg.json" + (" --public-genesis" if cfg.get("genesis_cfg") else "") if cfg.get("owner_cfg") else f"--test-public {o['test_public']}") + \
-           (f" --next-tls {od}/tls-next" if cfg.get("handover") else "") + \
-           (f" --next-tls {od}/tls" * cfg.get("owner_repeat", 0))
+    ocmd = owner_cmd(cfg, f"{od}/tls", ([f"{od}/tls-next"] if cfg.get("handover") else []) + [f"{od}/tls"] * cfg.get("owner_repeat", 0))
     if not seats_only:
         start(o["host"], od, "owner", ocmd)
     addrs = " ".join(s["addr"] for s in cfg["seats"])
@@ -284,9 +281,31 @@ def collect(cfg):
         print(json.dumps(row))
     print(json.dumps(party))
 
+def alive(host, d, n):
+    return sh(host, f"test -f {d}/{n}.pid && kill -0 $(cat {d}/{n}.pid) 2>/dev/null && echo yes || echo no", check=False) == "yes"
+
+def phase(cfg):
+    """"old" until the new committee has taken over (its join processes were started), then "new"."""
+    ho = cfg.get("handover")
+    if not ho:
+        return "old"
+    s = ho["new_seats"][0]
+    return "new" if sh(s["host"], f"test -f {new_dir(cfg, s, 0)}/new0.pid && echo y || echo n", check=False) == "y" else "old"
+
+def owner_cmd(cfg, tls, nxt):
+    o, d = cfg["owner"], cfg["prof"][3]
+    return f"nice -n 15 {o.get('scope', '')} {o['bin']}/dl-owner --listen {o['addr']} --tls {tls} --t {cfg['t']} --d {d} " + \
+        (f"--train {owner_dir(cfg)}/cfg.json" + (" --public-genesis" if cfg.get("genesis_cfg") else "") if cfg.get("owner_cfg") else f"--test-public {o['test_public']}") + \
+        "".join(f" --next-tls {x}" for x in nxt)
+
 def resume(cfg):
-    """After a pause (custodian 0's --pause-utc window; all three checkpointed and exited 3): relaunch the owner and
-    the three custodians with --resume for the steps that are left. The logs of the earlier part are kept."""
+    """After a pause (the committee's custodian 0 voted for its --pause-utc window; all three checkpointed and exited
+    3): relaunch the owner and the active committee's custodians with --resume for the steps that are left. Before
+    the handover that is the old committee (the new one is left alone: it is started by launch_new); after it, the
+    new committee's seats come back as `serve --resume` in their own dirs, and the owner serves only them. The
+    logs of the earlier part are kept (NAME.log.part<step>)."""
+    if phase(cfg) == "new" and all(not alive(s["host"], new_dir(cfg, s, j), f"new{j}") for j, s in enumerate(cfg["handover"]["new_seats"])):
+        return resume_new(cfg)
     s0 = cfg["seats"][0]
     sd = seat_dir(cfg, s0, 0)
     rep = json.loads(sh(s0["host"], f"cat {sd}/D/serve_P0.json"))
@@ -295,14 +314,109 @@ def resume(cfg):
     if left <= 0:
         raise SystemExit("nothing left to run")
     for h, d, n in procs(cfg):
-        sh(h, f"cd {d} && for f in {n}.log {n}.mon; do test -f $f && mv $f $f.part{done}; done; true")
+        if not n.startswith("new"):
+            sh(h, f"cd {d} && for f in {n}.log {n}.mon; do test -f $f && mv $f $f.part{done}; done; true")
     c = dict(cfg, steps=left, flags=cfg.get("flags", []) + ["--resume"])
     print(f"resuming at step {done}, {left} steps left")
-    launch(c)
+    launch(c, with_new=False)
+
+def resume_new(cfg):
+    N, L, F, d = cfg["prof"]
+    ho = cfg["handover"]
+    s0 = ho["new_seats"][0]
+    rep = json.loads(sh(s0["host"], f"cat {new_dir(cfg, s0, 0)}/D/serve_P0.json"))
+    done = rep["next_step"]
+    left = ho["at"] + 1 + ho["steps_after"] - done
+    if left <= 0:
+        raise SystemExit("nothing left to run")
+    o, od = cfg["owner"], owner_dir(cfg)
+    # the owner's identity with the new committee's certificates only (its key stays on its box)
+    sh(o["host"], f"mkdir -p {od}/tls-new && cp {od}/tls/tls_owner.key {od}/tls/cert_owner.der {od}/tls-next/cert_*.der {od}/tls-new/")
+    for h, dd, n in procs(cfg):
+        if n == "owner" or n.startswith("new"):
+            sh(h, f"cd {dd} && for f in {n}.log {n}.mon; do test -f $f && mv $f $f.part{done}; done; true")
+    start(o["host"], od, "owner", owner_cmd(cfg, f"{od}/tls-new", []))
+    naddrs = " ".join(s["addr"] for s in ho["new_seats"])
+    for j, s in enumerate(ho["new_seats"]):
+        nd = new_dir(cfg, s, j)
+        args = f"serve {j} {N} {L} {F} {d} {nd}/D {naddrs} --tls {nd}/tls --owner {o['addr']} --steps {left} " \
+               f"--gate {cfg['gate']} --program {cfg['program']} --tapes {s['tapes']} --owner-msgs {s['owner_msgs']} " + new_args(cfg, s, j) + " --resume"
+        start(s["host"], nd, f"new{j}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/dl-custodian {args}", env=s.get("env", ""))
+    print(f"new committee resuming at step {done}, {left} steps left")
+
+def in_window(w, now=None):
+    a, b = [int(x[:2]) * 60 + int(x[3:]) for x in w.split("-")]
+    t = now if now is not None else time.gmtime()
+    m = t.tm_hour * 60 + t.tm_min
+    return a <= m < b if a <= b else (m >= a or m < b)
+
+def drive(cfg):
+    """The whole run, unattended, from the Mac: launch; start the new committee once the old one has finished step
+    at - 1 (handover.launch_new "deferred"; "at_start" starts it with the old one); after a pause, wait out the
+    window and resume (either committee); stop everything by PID file on any other exit; collect at the end.
+    Events go to OUT/NAME/drive.log. Stop it by its own PID file (drive.pid beside the log)."""
+    loc = os.path.join(cfg["out"], cfg["name"])
+    os.makedirs(loc, exist_ok=True)
+    log = open(os.path.join(loc, "drive.log"), "a")
+    def ev(m):
+        line = f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} {m}"
+        print(line, file=log, flush=True)
+        print(line, flush=True)
+    win = next((cfg["flags"][k + 1] for k, x in enumerate(cfg.get("flags", [])) if x == "--pause-utc"), None)
+    ho = cfg.get("handover")
+    s0 = cfg["seats"][0]
+    if sh(s0["host"], f"test -f {seat_dir(cfg, s0, 0)}/serve0.pid && echo y || echo n", check=False) == "n":
+        launch(cfg)
+        ev("launched")
+    else:
+        ev("attached to a launched run")
+    while True:
+        time.sleep(cfg.get("drive_poll_s", 60))
+        try:
+            ph = phase(cfg)
+            if ph == "old":
+                if ho and ho.get("launch_new") == "deferred":
+                    at = ho["at"]
+                    sd = seat_dir(cfg, s0, 0)
+                    if at == 0 or sh(s0["host"], f"test -f {sd}/D/step_{at - 1}_P0.json && echo y || echo n", check=False) == "y":
+                        launch_new(cfg)
+                        ev(f"new committee started (old committee past step {at - 1})")
+                        continue
+                seats = [(s["host"], seat_dir(cfg, s, i), f"serve{i}", i) for i, s in enumerate(cfg["seats"])]
+            else:
+                seats = [(s["host"], new_dir(cfg, s, j), f"new{j}", j) for j, s in enumerate(ho["new_seats"])]
+            live = [alive(h, d, n) for h, d, n, _ in seats]
+            if any(live):
+                continue
+            reps = [json.loads(sh(h, f"cat {d}/D/serve_P{i}.json 2>/dev/null || echo null", check=False) or "null") for h, d, n, i in seats]
+            if ph == "old" and ho:
+                # the old committee's normal end is the handover: then the new committee carries on
+                hand = [sh(h, f"cat {d}/D/handover_P{i}.json 2>/dev/null || echo null", check=False) for h, d, n, i in seats]
+                if all(x != "null" and '"error"' not in x for x in hand):
+                    ev("old committee handed over and exited")
+                    continue
+            if all(r and r.get("paused") for r in reps):
+                ev(f"paused at step {reps[0]['next_step']} ({ph} committee)")
+                while win and in_window(win):
+                    time.sleep(60)
+                resume(cfg)
+                ev("resumed")
+                continue
+            if all(r and r.get("exit") == 0 for r in reps) and (ph == "new" or not ho):
+                ev(f"run ended at step {reps[0]['next_step']}")
+                break
+            ev(f"stopped unexpectedly ({ph} committee): " + json.dumps([r and {k: r.get(k) for k in ("next_step", "exit", "paused")} for r in reps]))
+            stop(cfg)
+            break
+        except SystemExit as e:
+            ev(f"driver error: {e}")
+            continue
+    collect(cfg)
+    ev("collected")
 
 if __name__ == "__main__":
     cfg = json.load(open(sys.argv[1]))
     if sys.argv[2] == "launch-seats":
         launch(cfg, seats_only=True)
         sys.exit(0)
-    {"setup": setup, "check": check, "gate": disk_gate, "resume": resume, "launch": launch, "status": status, "stop": stop, "collect": collect}[sys.argv[2]](cfg)
+    {"setup": setup, "check": check, "gate": disk_gate, "resume": resume, "launch": launch, "launch-new": launch_new, "drive": drive, "status": status, "stop": stop, "collect": collect}[sys.argv[2]](cfg)
