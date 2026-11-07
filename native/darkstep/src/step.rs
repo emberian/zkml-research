@@ -85,6 +85,19 @@ pub struct StepOut {
     pub w2n: Vec<Vec<Sh>>,
     pub sigma: u64,
     pub phases: Vec<(&'static str, f64)>,
+    pub record: ProofRecord,
+}
+
+/// What the collaborative proof needs from one custodian's step (the proof lane's spec): its MAC key share, its
+/// shares of every wire, the public transcript values in order, and the tape entries the middle constrains
+/// (truncations with their range bits, lookups, the b * g1 products) in creation order. `w1n`/`w2n` are in StepOut.
+#[derive(Default)]
+pub struct ProofRecord {
+    pub alpha_i: u64,
+    pub wires: std::collections::BTreeMap<&'static str, Vec<Sh>>,
+    pub public: Vec<u64>,
+    pub middle_atoms: Vec<Sh>,
+    pub tape_cursor: usize,
 }
 
 pub fn run_step(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u64>]) -> Result<StepOut, String> {
@@ -119,11 +132,17 @@ pub fn run_step(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u6
     lap("trunc_e_d2", &mut t, &mut phases);
     let b = he.matvec(pt, &m2, &d2, true)?;
     lap("matvec_b", &mut t, &mut phases);
+    pt.middle_mul = true;
     let bg = pt.mul_vec(&b, &g1);
+    pt.middle_mul = false;
     let d1 = pt.trunc_vec(&bg, 8, 13);
     lap("mul_trunc_d1", &mut t, &mut phases);
     let g2 = he.outer(pt, &d2, &h)?;
     let w2n: Vec<Vec<Sh>> = (0..d).map(|i| (0..d).map(|j| pt.sub(m2[i][j], g2[i][j])).collect()).collect();
+    let mut record = ProofRecord { alpha_i: pt.alpha(), ..Default::default() };
+    for (k, v) in [("x", &sx), ("y", &sy), ("z1", &z1), ("h", &h), ("z2", &z2), ("d2", &d2), ("b", &b), ("g1", &g1), ("bg", &bg), ("d1", &d1)] {
+        record.wires.insert(k, v.clone());
+    }
     drop(g2);
     lap("outer_G2", &mut t, &mut phases);
     let g1o = he.outer(pt, &d1, &sx)?;
@@ -132,7 +151,16 @@ pub fn run_step(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u6
     lap("outer_G1", &mut t, &mut phases);
     let sigma = pt.mac_check("he")?;
     lap("mac_check", &mut t, &mut phases);
-    Ok(StepOut { w1n, w2n, sigma, phases })
+    record.wires.insert("W1", m1.into_iter().flatten().collect());
+    record.wires.insert("W2", m2.into_iter().flatten().collect());
+    record.public = pt.tr.v.clone();
+    record.middle_atoms = pt
+        .atom_log
+        .iter()
+        .flat_map(|r| r.clone().map(|k| Sh { s: pt.tape.sh[k], m: pt.tape.mac[k] }))
+        .collect();
+    record.tape_cursor = pt.cur;
+    Ok(StepOut { w1n, w2n, sigma, phases, record })
 }
 
 /// sha256(repr((W1n_i, W2n_i))) with entries (share, mac).

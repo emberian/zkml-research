@@ -182,6 +182,10 @@ pub struct Party {
     pub open_log: Vec<(u64, u64)>,
     pub wire: BTreeMap<&'static str, u64>,
     pub nopen: u64,
+    /// tape ranges the collaborative proof's middle consumes (truncations, lookups, middle multiplications), in order
+    pub atom_log: Vec<std::ops::Range<usize>>,
+    /// set around the multiplications the middle constrains (b * g1); the HE helpers' Beaver products are not
+    pub middle_mul: bool,
 }
 
 /// One opening staged for the transcript: phase, all broadcast shares, value, this party's MAC share.
@@ -189,7 +193,8 @@ type Staged = (u8, [u64; 3], u64, u64);
 
 impl Party {
     pub fn new(i: usize, p: u64, net: Net, tape: Tape) -> Self {
-        Party { i, n: 3, p, net, tape, cur: 0, tr: Transcript::default(), open_log: Vec::new(), wire: BTreeMap::new(), nopen: 0 }
+        Party { i, n: 3, p, net, tape, cur: 0, tr: Transcript::default(), open_log: Vec::new(), wire: BTreeMap::new(), nopen: 0,
+                atom_log: Vec::new(), middle_mul: false }
     }
 
     pub fn alpha(&self) -> u64 {
@@ -306,6 +311,9 @@ impl Party {
     pub fn mul_vec(&mut self, xs: &[Sh], ys: &[Sh]) -> Vec<Sh> {
         let d = xs.len();
         let b = self.take(3 * d);
+        if self.middle_mul {
+            self.atom_log.push(b..b + 3 * d);
+        }
         let mut opens = Vec::with_capacity(2 * d);
         let mut trip = Vec::with_capacity(d);
         for k in 0..d {
@@ -331,9 +339,18 @@ impl Party {
         let p = self.p;
         let d = xs.len();
         let su = s as usize;
-        let per = 2 + su + 6 * (su - 1);
+        // a tape with proof atoms carries K + KAPPA - s Trhb entries after each Trh
+        let first = self.cur;
+        let nb = if self.tape.tags.get(first + 2 + su) == Some(&(Tag::Trhb as u8)) {
+            (kk + crate::tape::KAPPA - s) as usize
+        } else {
+            0
+        };
+        let mo = 2 + su + nb; // offset of the first multiplication triple
+        let per = mo + 6 * (su - 1);
         let ent = 1 + 4 * (su - 1);
         let base = self.take(d * per);
+        self.atom_log.push(base..base + d * per);
         let mut staged: Vec<Staged> = vec![(0, [0; 3], 0, 0); d * ent];
         // round 0: open c = x + 2^K + r
         let mut copen = Vec::with_capacity(d);
@@ -368,7 +385,7 @@ impl Party {
             let mut opens = Vec::with_capacity(4 * d);
             let mut trips = Vec::with_capacity(2 * d);
             for k in 0..d {
-                let tb = base + k * per + 2 + su + 6 * it;
+                let tb = base + k * per + mo + 6 * it;
                 let t1 = (self.tape_at(tb, Tag::Ta), self.tape_at(tb + 1, Tag::Tb), self.tape_at(tb + 2, Tag::Tc));
                 let t2 = (self.tape_at(tb + 3, Tag::Ta), self.tape_at(tb + 4, Tag::Tb), self.tape_at(tb + 5, Tag::Tc));
                 let term = self.cmul(1 - abits[k][i], rbits[k][i]);
@@ -406,6 +423,7 @@ impl Party {
         use rayon::prelude::*;
         let d = us.len();
         let base = self.take(d * deg);
+        self.atom_log.push(base..base + d * deg);
         let mut opens = Vec::with_capacity(d);
         for k in 0..d {
             let r1 = self.tape_at(base + k * deg, Tag::Lp);

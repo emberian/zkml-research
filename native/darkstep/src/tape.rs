@@ -18,6 +18,9 @@ pub enum Tag {
     Trh,
     Lp,
     Ar,
+    /// proof-only preprocessing: the K + KAPPA - s bits of each truncation's rhi (cosnark_gates.RecEngine), so the
+    /// middle can range-check rhi
+    Trhb,
 }
 
 #[derive(Default, Clone)]
@@ -67,6 +70,8 @@ pub struct Dealer {
     pub p: u64,
     pub n: usize,
     pub rng: PyRandom,
+    /// RecEngine's proof-preprocessing stream (random.Random(1)); None: no proof atoms on the tape
+    pub proof_rng: Option<PyRandom>,
     pub alpha_sh: Vec<u64>,
     pub alpha: u64,
     pub tapes: Vec<Tape>,
@@ -78,7 +83,7 @@ impl Dealer {
         let alpha_sh: Vec<u64> = (0..n).map(|_| rng.randrange_u64(p)).collect();
         let alpha = alpha_sh.iter().fold(0, |a, &x| addmod(a, x, p));
         let tapes = alpha_sh.iter().map(|&a| Tape { alpha_i: a, ..Default::default() }).collect();
-        Dealer { p, n, rng, alpha_sh, alpha, tapes }
+        Dealer { p, n, rng, proof_rng: None, alpha_sh, alpha, tapes }
     }
 
     /// spdz.Dealer.auth(v, tag), v in [0, p).
@@ -114,6 +119,26 @@ impl Dealer {
             self.auth((r >> i) & 1, Tag::Trb);
         }
         self.auth(r >> s, Tag::Trh);
+        if let Some(mut pr) = self.proof_rng.take() {
+            // RecEngine._share with the dealer's alpha, from its own stream
+            let (p, n) = (self.p, self.n);
+            for j in 0..(k + KAPPA - s) {
+                let v = (r >> s >> j) & 1;
+                let mut xs: Vec<u64> = (0..n - 1).map(|_| pr.randrange_u64(p)).collect();
+                let sx = xs.iter().fold(0, |a, &x| addmod(a, x, p));
+                xs.push(submod(v, sx, p));
+                let mut ms: Vec<u64> = (0..n - 1).map(|_| pr.randrange_u64(p)).collect();
+                let sm = ms.iter().fold(0, |a, &x| addmod(a, x, p));
+                ms.push(submod(mulmod(self.alpha, v, p), sm, p));
+                for i in 0..n {
+                    let t = &mut self.tapes[i];
+                    t.tags.push(Tag::Trhb as u8);
+                    t.sh.push(xs[i]);
+                    t.mac.push(ms[i]);
+                }
+            }
+            self.proof_rng = Some(pr);
+        }
         for _ in 0..2 * (s - 1) {
             self.mul();
         }
@@ -138,7 +163,16 @@ impl Dealer {
 /// Dealer + owner for one step (mpc_fork.run_step with HE matvec and HE outer): returns each party's tape and the
 /// owner's public input broadcasts c = v - r, in the harness's order.
 pub fn deal_step(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64]) -> (Vec<Tape>, Vec<u64>) {
+    deal_step_opts(p, d, dealer_seed, owner_seed, inputs, false)
+}
+
+/// proof_atoms: also deal the collaborative proof's truncation range bits (Tag::Trhb after each Trh), from
+/// random.Random(1) as cosnark_gates.RecEngine does.
+pub fn deal_step_opts(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool) -> (Vec<Tape>, Vec<u64>) {
     let mut dl = Dealer::new(p, 3, dealer_seed);
+    if proof_atoms {
+        dl.proof_rng = Some(PyRandom::from_u64(1));
+    }
     let mut owner = PyRandom::from_u64(owner_seed);
     assert_eq!(inputs.len(), 2 * d * d + 2 * d);
     let mut cs = Vec::with_capacity(inputs.len());

@@ -6,7 +6,7 @@ use crate::net::{self, bytes_to_u64s, u64s_to_bytes, Net};
 use crate::party::{Party, Sh};
 use crate::rns::Rns;
 use crate::step::*;
-use crate::tape::{deal_step, Tape};
+use crate::tape::Tape;
 use serde_json::json;
 use std::net::{SocketAddr, TcpListener};
 use std::sync::Arc;
@@ -99,6 +99,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
     let base = json!({
         "party": i, "setup_seconds": setup, "step_seconds": step_s,
         "transcript_len": pt.tr.len(), "tape_used": pt.cur, "tape_len": pt.tape.len(),
+        "middle_atoms": pt.atom_log.iter().map(|r| r.len()).sum::<usize>(),
         "wire": pt.wire, "bytes_sent": {"open": sent[0], "he_ct": sent[1], "he_ret": sent[2], "ctrl": sent[3], "proof": sent[4]},
         "he_wire": {"mv": {"he_send": he.he_send, "he_return": he.he_return},
                     "ou": {"he_send": he.ou_send, "he_return": he.ou_return, "commit": he.ou_commit}},
@@ -156,9 +157,15 @@ pub type Shares = (Vec<Vec<Sh>>, Vec<Vec<Sh>>);
 /// The whole step in this process: dealer, then three custodian threads over 127.0.0.1 TCP. Returns the summary JSON
 /// (what `darkstep local` prints and writes) and party 0's transcript dump (d <= 128).
 pub fn run_local(pf: &Prof, attack: Option<(String, usize)>) -> (serde_json::Value, Option<String>) {
+    run_local_opts(pf, attack, std::env::var("DS_PROOF_ATOMS").is_ok())
+}
+
+/// proof_atoms: deal the collaborative proof's truncation range bits onto the tapes too (the step skips them).
+pub fn run_local_opts(pf: &Prof, attack: Option<(String, usize)>, proof_atoms: bool) -> (serde_json::Value, Option<String>) {
     let t0 = Instant::now();
     let plain = inputs(pf.d);
-    let (tapes, cs) = deal_step(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t));
+    let (tapes, cs) =
+        crate::tape::deal_step_opts(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), proof_atoms);
     let deal_s = t0.elapsed().as_secs_f64();
     let listeners: Vec<TcpListener> = (0..3).map(|_| TcpListener::bind("127.0.0.1:0").unwrap()).collect();
     let addrs: Vec<SocketAddr> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
