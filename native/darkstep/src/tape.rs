@@ -169,6 +169,13 @@ pub fn deal_step(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[
 /// proof_atoms: also deal the collaborative proof's truncation range bits (Tag::Trhb after each Trh), from
 /// random.Random(1) as cosnark_gates.RecEngine does.
 pub fn deal_step_opts(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool) -> (Vec<Tape>, Vec<u64>) {
+    let (c, dl) = deal_step_dealer(p, d, dealer_seed, owner_seed, inputs, proof_atoms);
+    (dl.tapes, c)
+}
+
+/// deal_step_opts, returning the owner's broadcasts and the dealer itself (its `tapes`; continue its stream with
+/// deal_proof_section before taking them).
+pub fn deal_step_dealer(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool) -> (Vec<u64>, Dealer) {
     let mut dl = Dealer::new(p, 3, dealer_seed);
     if proof_atoms {
         dl.proof_rng = Some(PyRandom::from_u64(1));
@@ -212,5 +219,13 @@ pub fn deal_step_opts(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, input
     }
     dl.mul(); // outer check (d2 x h)
     dl.mul(); // outer check (d1 x x)
-    (dl.tapes, cs)
+    (cs, dl)
+}
+
+/// The collaborative proof's Beaver triples, dealt after the step from the same dealer stream (as the harness's prover
+/// continues the step dealer): `count` = darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had).
+pub fn deal_proof_section(dl: &mut Dealer, count: usize) {
+    for _ in 0..count {
+        dl.mul();
+    }
 }
