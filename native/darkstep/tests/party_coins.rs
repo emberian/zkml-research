@@ -66,6 +66,11 @@ fn production_party_coins_gated() {
 
 fn check(extra: &[&str], refname: &str) {
     let r = reference(refname);
+    // the in-process harness (reference coins, full ciphertexts) for the wire comparison
+    let mut pfh = prof(&["4096", "3", "118", "64"].map(String::from));
+    pfh.gate = extra.get(1).map(|t| t.parse().unwrap());
+    let (harness, _) = darkstep::node::run_local(&pfh, None);
+    let he_ct_ref = harness["detail"][0]["bytes_sent"]["he_ct"].as_u64().unwrap();
     let a = ["4096", "3", "118", "64"].map(String::from);
     let pf = prof(&a);
     let base = std::env::temp_dir().join(format!("darkstep-party-coins-{}-{}", std::process::id(), extra.len()));
@@ -86,6 +91,11 @@ fn check(extra: &[&str], refname: &str) {
             assert_eq!(v["transcript"], res[0]["transcript"], "the three custodians agree on the transcript");
         }
         assert!(refines, "run {run_k}: the revealed weights refine step_spec");
+        // seeded ciphertexts: c0 and a 32-byte seed instead of (c0, c1)
+        let he_ct = res[0]["bytes_sent"]["he_ct"].as_u64().unwrap();
+        let proof = res[0]["gate"]["proof_bytes_sent"].as_u64().unwrap_or(0);
+        let ratio = (he_ct - proof) as f64 / (he_ct_ref - proof) as f64;
+        assert!((0.49..0.51).contains(&ratio), "seeded ciphertexts halve HE_CT: {ratio}");
         let mut row: Vec<String> = res.iter().map(|v| v["digest"].as_str().unwrap().to_string()).collect();
         row.push(res[0]["transcript"].as_str().unwrap().to_string());
         runs.push(row);
