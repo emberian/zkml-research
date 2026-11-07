@@ -899,7 +899,8 @@ aafff52532f04d20a; its interface is proof.md §21-22, 2adc6652):**
 - hbox: check its swap before routing a seat there (the vault's memory-only claim needs no swap, or encrypted swap).
 - The vault checks ran on deploy's rehearsal "reh" (§7). Its 9 sealed erased copies open under nothing. Its 9 reds
   were fixed in c9771f4a (relaunch criterion; the TLS DER canary's public words). Wanted: one rotation on darkhand
-  c9771f4a to confirm 0 after-erasure hits on the boxes.
+  c9771f4a to confirm 0 after-erasure hits on the boxes. That is reh2, run by the deploy lane, now a21cca37f7d4f4bb7
+  (afcd36ed is retired).
   - Tools with vault-open: target-vo on bb2, at c9771f4a's darkhand.
   - Forge's target-vo predates the canary fix. That matters only for dl-hand local; the checker's tools just read
     reports.
