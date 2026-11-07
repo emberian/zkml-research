@@ -18,6 +18,10 @@ required-features = ["test-det"]
 name = "party_coins"
 required-features = ["test-harness"]
 
+[[test]]
+name = "serve_steps"
+required-features = ["test-harness"]
+
 [dependencies]
 pycompat = { path = "../pycompat" }
 dzkpopk = { path = "../dzkpopk" }

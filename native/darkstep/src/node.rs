@@ -61,9 +61,9 @@ pub fn attack_of(args: &[String]) -> Option<(String, usize)> {
     })
 }
 
-/// One custodian: keygen, public-key exchange, the step. Returns its result JSON and final shares.
-pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: Option<(String, usize)>) -> (serde_json::Value, Option<(Vec<Vec<Sh>>, Vec<Vec<Sh>>)>, Option<String>) {
-    let t0 = Instant::now();
+/// A custodian's HE state: its key (ungated: own keygen and a public-key exchange; gated: the distributed ceremony
+/// over `net`, every key registered with its key proof) and the HE call state.
+pub fn setup_he(i: usize, pf: &Prof, net: &Net, attack: Option<(String, usize)>) -> Result<He, String> {
     let rns = Arc::new(Rns::new(pf.n, &pf.qs, pf.t));
     let (key, pks, gate) = match pf.gate {
         None => {
@@ -87,10 +87,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
             let tc = Instant::now();
             let (cust, cer) = match crate::gate::ceremony(&net, i, pf.n, &pf.qs, pf.t, tcols, pf.det_seed.as_deref()) {
                 Ok(x) => x,
-                Err(e) => {
-                    net.shutdown();
-                    return (json!({"party": i, "verdict": "REFUSED", "by": format!("ceremony: {e}")}), None, None);
-                }
+                Err(e) => return Err(format!("ceremony: {e}")),
             };
             let regs: Vec<Arc<dzkpopk::KeyRegistry>> = (0..3).map(|k| cer.registry(k).unwrap()).collect();
             let key = if pf.secure_coins {
@@ -119,7 +116,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
             (key, pks, Some(g))
         }
     };
-    let mut he = He {
+    let he = He {
         rns: rns.clone(),
         key,
         pks,
@@ -138,6 +135,19 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
         cts_returned: 0,
         attack,
         gate,
+    };
+    Ok(he)
+}
+
+/// One custodian: keygen, public-key exchange, the step. Returns its result JSON and final shares.
+pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: Option<(String, usize)>) -> (serde_json::Value, Option<(Vec<Vec<Sh>>, Vec<Vec<Sh>>)>, Option<String>) {
+    let t0 = Instant::now();
+    let mut he = match setup_he(i, pf, &net, attack) {
+        Ok(he) => he,
+        Err(e) => {
+            net.shutdown();
+            return (json!({"party": i, "verdict": "REFUSED", "by": e}), None, None);
+        }
     };
     let setup = t0.elapsed().as_secs_f64();
     let tab = pf.program.tables(pf.t);
