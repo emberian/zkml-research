@@ -11,6 +11,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 def run(binary, cfg, threads):
+    given = dict(cfg)
+    cfg = dict(cfg)
     env = dict(os.environ, RAYON_NUM_THREADS=str(threads))
     out = subprocess.run([binary, "float" if cfg.pop("_float", False) else "run", json.dumps(cfg)],
                          capture_output=True, text=True, env=env)
@@ -19,6 +21,7 @@ def run(binary, cfg, threads):
         return dict(cfg=cfg, error=out.stderr[-2000:])
     s = lines[-1]
     s["curve"] = lines[:-1]
+    s["input"] = given
     return s
 
 
