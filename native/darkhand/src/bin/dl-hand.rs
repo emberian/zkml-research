@@ -136,6 +136,14 @@ fn deal(work: &Path, d: usize, prof: &str) {
         // TEST ONLY negative control of the disk scan: a stray copy the erasure does not know about
         if std::env::var("DLH_STRAY_COPY").is_ok() {
             write_tape(&od.join("stray-copy.bin"), &old.tapes[i]);
+            // MP-SPDZ's forms of the alpha share (Player-MAC-Keys decimal text; a Montgomery word at an odd offset)
+            let al = old.tapes[i].alpha_i;
+            std::fs::write(od.join("stray-mac-keys.txt"), format!("3\n{al}")).unwrap();
+            let r64 = ((1u128 << 64) % c.t as u128) as u64;
+            let mont = ((al as u128 * r64 as u128) % c.t as u128) as u64;
+            let mut b = b"SPDZ gfp\0".to_vec();
+            b.extend_from_slice(&mont.to_le_bytes());
+            std::fs::write(od.join("stray-transactions.data"), b).unwrap();
         }
         write_tape(&nd.join("tape.bin"), &new.tapes[i]);
     }

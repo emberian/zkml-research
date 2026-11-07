@@ -13,6 +13,18 @@ pub struct Canaries {
     pub kinds: Vec<(String, usize)>,
     /// words at or above this are never canaries (`bounded`): the disk scan then tags only words below it
     below: Option<u64>,
+    /// tags of 16-byte strings (`add_text16`, e.g. a key share as decimal text), looked for at every offset of files
+    /// up to TEXT_MAX bytes (key files are small)
+    text16: std::collections::HashMap<u64, usize>,
+}
+
+const TEXT_MAX: u64 = 1 << 20;
+
+#[allow(deprecated)]
+fn tag16(k0: u64, k1: u64, b: &[u8]) -> u64 {
+    let mut h = std::hash::SipHasher::new_with_keys(k0, k1);
+    h.write(&b[..16]);
+    h.finish()
 }
 
 /// A scan of files on disk (`Canaries::scan_paths`).
@@ -39,6 +51,11 @@ pub struct ScanReport {
     pub where_: Vec<String>,
     /// hits per canary kind (index into Canaries::kinds)
     pub by_kind: Vec<u64>,
+    /// the first hits in detail: (kind index, mapping name, mapping start, mapping length, offset of the word in it)
+    pub detail: Vec<(usize, String, u64, u64, u64)>,
+    /// an address in the scanning frame (the stack pointer's neighbourhood): a [stack] hit above it is in a live caller
+    /// frame, one below it in dead stack
+    pub sp: u64,
     pub seconds: f64,
 }
 
@@ -59,6 +76,7 @@ impl Canaries {
             tags: std::collections::HashMap::new(),
             kinds: Vec::new(),
             below: None,
+            text16: std::collections::HashMap::new(),
         }
     }
 
@@ -88,8 +106,19 @@ impl Canaries {
         self.add_words(kind, &ws, ws.len());
     }
 
+    /// Add the first 16 bytes of a string (shorter strings are not added: the kind then counts 0).
+    pub fn add_text16(&mut self, kind: &str, b: &[u8]) {
+        let k = if b.len() >= 16 {
+            self.text16.insert(tag16(self.k0, self.k1, b), self.kinds.len());
+            1
+        } else {
+            0
+        };
+        self.kinds.push((kind.to_string(), k));
+    }
+
     pub fn len(&self) -> usize {
-        self.tags.len()
+        self.tags.len() + self.text16.len()
     }
 
     pub fn is_empty(&self) -> bool {
@@ -104,10 +133,12 @@ impl Canaries {
         let mut mem = match std::fs::File::open("/proc/self/mem") {
             Ok(f) => f,
             Err(_) => {
-                return ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], seconds: 0.0 }
+                return ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], detail: vec![], sp: 0, seconds: 0.0 }
             }
         };
-        let mut rep = ScanReport { available: true, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![0; self.kinds.len()], seconds: 0.0 };
+        let here = 0u8;
+        let sp = std::hint::black_box(&here) as *const u8 as u64;
+        let mut rep = ScanReport { available: true, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![0; self.kinds.len()], detail: vec![], sp, seconds: 0.0 };
         let mut buf = vec![0u8; 1 << 22];
         for line in maps.lines() {
             let mut it = line.split_whitespace();
@@ -130,7 +161,7 @@ impl Canaries {
                     continue;
                 }
                 rep.bytes += k as u64;
-                for c in buf[..k].chunks_exact(8) {
+                for (ci, c) in buf[..k].chunks_exact(8).enumerate() {
                     let w = u64::from_le_bytes(c.try_into().unwrap());
                     if w > 1 {
                         let Some(&kd) = self.tags.get(&tag(self.k0, self.k1, w)) else { continue };
@@ -138,6 +169,9 @@ impl Canaries {
                         rep.by_kind[kd] += 1;
                         if rep.where_.len() < 8 {
                             rep.where_.push(name.clone());
+                        }
+                        if rep.detail.len() < 64 {
+                            rep.detail.push((kd, name.clone(), a, b - a, off - a + 8 * ci as u64));
                         }
                     }
                 }
@@ -151,7 +185,7 @@ impl Canaries {
 
     #[cfg(not(target_os = "linux"))]
     pub fn scan(&self) -> ScanReport {
-        ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], seconds: 0.0 }
+        ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], detail: vec![], sp: 0, seconds: 0.0 }
     }
 }
 
@@ -235,6 +269,14 @@ impl Canaries {
                             let w = u64::from_le_bytes(buf[p..p + 8].try_into().unwrap());
                             if w > 1 && w < below {
                                 if let Some(&kd) = self.tags.get(&tag(self.k0, self.k1, w)) {
+                                    hits += 1;
+                                    by_kind[kd].fetch_add(1, Ordering::Relaxed);
+                                }
+                            }
+                        }
+                        if !self.text16.is_empty() && files[f].1 <= TEXT_MAX && got >= 16 {
+                            for p in 0..=got - 16 {
+                                if let Some(&kd) = self.text16.get(&tag16(self.k0, self.k1, &buf[p..p + 16])) {
                                     hits += 1;
                                     by_kind[kd].fetch_add(1, Ordering::Relaxed);
                                 }
