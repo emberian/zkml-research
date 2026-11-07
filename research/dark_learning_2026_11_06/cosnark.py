@@ -551,6 +551,54 @@ def encode_coset(p, row, npts):
             break
     return out[:npts]
 
+def _h_list_stream(xs, chunk=1 << 16):
+    """H(xs) for a list of ints (sha256 of repr(xs)), its repr fed in chunks: the same digest, without the string."""
+    m = hashlib.sha256()
+    m.update(b"[")
+    for i in range(0, len(xs), chunk):
+        part = ", ".join(map(str, xs[i:i + chunk]))
+        m.update(((", " if i else "") + part).encode())
+    m.update(b"]")
+    return m.hexdigest()
+
+def public_commit_root(p, share, hide=None, nmask=None):
+    """The root of SharePCS(p, [share, ...], label, hide, nmask, public=True) for this share, streamed: the same bytes
+    (the public coins drawn in the same order: every data row's tails, the mask rows, the leaf salts), but one row's
+    codeword at a time feeding every column's leaf hash, so memory is one row, its codeword and the npts column
+    hashers, never the R x npts codeword (the skeptic's replay at d = 4096: SharePCS holds every party's rows,
+    extended rows and codewords). The label does not enter a public commitment."""
+    hide = HIDE if hide is None else hide
+    nmask = NMASK if nmask is None else nmask
+    m = (len(share) - 1).bit_length()
+    mr = row_split(m, nmask, hide)
+    Rd, C = 1 << mr, 1 << (m - mr)
+    W = C + hide
+    npts = BLOW * W
+    rng = PubCoins("dl-public-genesis", _h_list_stream(share))
+    tails = [[rng.randrange(p) for _ in range(W - C)] for _ in range(Rd)]
+    masks = [[rng.randrange(p) for _ in range(W)] for _ in range(nmask)]
+    salts = leaf_salts(npts, rng)
+    hs = []
+    for j in range(npts):
+        h = hashlib.sha256(repr("leaf").encode())
+        h.update(repr(salts[j]).encode())
+        h.update(b"[")
+        hs.append(h)
+    for r in range(Rd + nmask):
+        row = list(share[r * C:(r + 1) * C]) + tails[r] if r < Rd else masks[r - Rd]
+        enc = encode_pub(p, row, npts)
+        sep = ", " if r else ""
+        for h, v in zip(hs, enc):
+            h.update((sep + str(v)).encode())
+    level = []
+    for h in hs:
+        h.update(b"]")
+        level.append(h.hexdigest())
+    level += [H("pad", j) for j in range((1 << (len(level) - 1).bit_length()) - len(level))]
+    while len(level) > 1:
+        level = [H(level[i], level[i + 1]) for i in range(0, len(level), 2)]
+    return level[0]
+
 def encode_pub(p, row, npts):
     if DOMAIN == "coset":
         return encode_coset(p, row, npts)

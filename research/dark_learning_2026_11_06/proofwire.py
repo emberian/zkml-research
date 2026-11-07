@@ -544,6 +544,22 @@ def public_genesis(p, d, W1, W2, n=3):
         carry[k] = ZK.w_pcs(p, [flat] + [[0] * (d * d) for _ in range(n - 1)], k, public=True)
     return carry, {k: list(c.roots) for k, c in carry.items()}
 
+def public_genesis_roots(p, d, W1, W2, n=3):
+    """The roots of public_genesis alone, for the verifier (Ledger.check_public_genesis), streamed
+    (cosnark.public_commit_root): the same roots, without holding every party's codewords (at d = 4096 that is tens of
+    GB). The parties 1..n-1 hold equal (zero) shares, which commit equally: one commitment serves them all."""
+    kw = dict(hide=CS.T_COLS, nmask=X.EXT) if ZK.DEFER else {}
+    zero = None
+    roots = {}
+    for k, Wk in (("W1", W1), ("W2", W2)):
+        assert len(Wk) == d and all(len(r) == d for r in Wk), "public genesis: W must be d x d"
+        flat = [v % p for r in Wk for v in r]
+        r0 = CS.public_commit_root(p, flat, **kw)
+        if n > 1 and zero is None:
+            zero = CS.public_commit_root(p, [0] * (d * d), **kw)
+        roots[k] = [r0] + [zero] * (n - 1)
+    return roots
+
 def public_genesis_shares(p, W, alpha_sh):
     """The public constant W as custody holds it: element (j, k) is {0: (W_jk, alpha_0 W_jk), 1: (0, alpha_1 W_jk), ...},
     custodian 0 holding W and every custodian its MAC share alpha_i W (alpha_sh: the MAC key's shares)."""
@@ -666,7 +682,7 @@ class Ledger:
         if d != self.d:
             return False, f"public genesis refused: the cfg's d = {d}, the ledger's {self.d}"
         p = he_field()
-        _, roots = public_genesis(p, d, W1, W2, len(self.custodians))
+        roots = public_genesis_roots(p, d, W1, W2, len(self.custodians))
         if roots != self.genesis_roots:
             return False, "public genesis refused: the genesis roots are not the public commitment of the cfg's W"
         self.pg_verified = roots
