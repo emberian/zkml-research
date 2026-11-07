@@ -532,3 +532,9 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
 - Two steps per chunk took about the same wall time as one: 209 s against 200 s for run13-c0, with twice the bytes. So run13-c0 moved bytes at half the rate.
 - [OPEN] The cause is not established. It may be a concurrent load on forge or bb2 at 12:06, or fixed setup cost.
 - The 2-step chunks (and the release, 22-23 triple-eq per ms) give about 105 s per step on the wired layout.
+
+**The release on a sealed tape fits forge [the deploy lane's measurement, run13, with fixes fa9b08c7 and 345782da on its side]**
+- Forge, seat 0 (one custodian per process, MemoryMax=12G, `load_release_tape_sealed`): cgroup memory.peak **10.27 GB**, VmHWM 8.94 GB.
+- bb2's seats: memory.peak 10.64 and 10.95 GB, VmHWM 9.32 and 9.60 GB.
+- Release: 670 s (MPC 14.4 s, prove 251 s, verify 201 s). C = 8 of 52 at all three, as in the plaintext twin.
+- The run13 chunks are spent and were shredded (`shred -n 0 -z -u`).
