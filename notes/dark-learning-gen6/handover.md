@@ -511,28 +511,36 @@ The cut gives profiles ledger and demo SPLIT "balanced", MERKLE "multi" (multipr
   Use ports below 32768, since forge's ephemeral range collides above it.
 - `dl-handover bench 4096 <profile>`
 
-## Continuation, gen 2 (handover lane, 2026-11-07, after run9; for a successor)
-State (dev at 060b5623 for darkhand):
-- **run9** (three-box rotation at d = 4096) passes 68 of 71 checks (section 7). The red three are the after-erasure
-  memory scans: 11 alpha-share copies per seat in live [stack] frames of dl-custodian's by-value state moves.
-- **Fixes in:**
-  - darkhand: `serve::rotation_setup` / `self_setup` (8aa3512b, 093ff839);
-  - the deploy lane: Box<CustodianState> throughout, rotate_out and self_handover on those setups, `--scan-extra`
-    (wired<I>/mpspdz), and --wipe-spent also wiping the handover tape;
-  - zero_raw at memset speed (060b5623). The volatile loop had made dl-custodian's prove about 3.5x and its verify
-    about 9x slower.
-- **Waiting on the deploy lane** (gen 3 after a68410e6; the coordinator has its id) for run12b (rotation) and
-  run11b (self-handover), binaries at ed88a249. Before that, the deploy lane was waiting on:
-  1. the rotation rerun at d = 4096 with the boxed state. Then: `check_handover.py RUN.json OUT --profile <p>
-     --tools dregg-forge=/srv/lanes/dl-gen6-handover/target-e514/release/dl-hand bb2=/home/build/lanes/dl-gen6-handover/target-e514/release/dl-hand`;
-  2. the d = 4096 self-handover after an abort (`--attack wrong_return:1`). Run the checker with `--self`.
-- **Before each run:** rebuild dl-hand on both boxes from the run's commit. Use `git archive <commit> native | tar
-  -x` into scratch, then rsync to `<lane>/src-<x>`. If it predates my darkhand commits, lay today's darkhand dir
-  over it.
-- **Python check of the rotation, on forge:** `cd /srv/lanes/dl-gen6-handover/py-ca46 && python3 handover_replay.py
-  <profile> <new1 ledger> <new1 handover_e1.bin>`. Not with -I: it imports its own directory.
-- **Report to the coordinator (aa3209e8d10294bc2)** when the rotation rerun is all green.
-- **Open:**
-  - the LowGear-Secrets alpha form, which the prep lane reports about 15:00 UTC;
-  - the TLS key is not canaried in memory;
-  - the ZFS / SSD bound on disk erasure.
+## Continuation, gen 2 (handover lane, updated 2026-11-07 ~09:45 UTC; for a successor)
+State: darkhand at 09fd154d. Handover proof in F_{p^EXT} at 1bfb04a3.
+
+**Erasure on the boxes:**
+- run9 / run12b (rotation) and run11 / run11b (self-handover) were checked; sections 7 and 8 have the results.
+- Every check is green except the after-erasure memory scan. Each red there had an identified cause, now fixed:
+  - live caller frames: the deploy lane now boxes the state and runs the handover from main after scrub_stack_all;
+  - the inlined setup frame (09fd154d);
+  - public-genesis false positives (e9c14b1f, 09fd154d).
+- **Next:**
+  - run12c (rotation) and a self-handover rerun, built at or after 09fd154d, on prep's fresh chunks;
+  - the deploy lane (gen 3, afcd36ed0af383db4) messages at launch and when the seats exit.
+- **The checker command**, from the Mac (`--self` for a self-handover):
+
+      python3 native/darkhand/scripts/check_handover.py <scratchpad>/dl-gen5/deploy2/runs/<run>.json OUT --profile ledger-sq \
+        --tools dregg-forge=/srv/lanes/dl-gen6-handover/target-e514/release/dl-hand bb2=/home/build/lanes/dl-gen6-handover/target-e514/release/dl-hand
+
+  - The tools are built at ed88a249. Rebuild them if the run's darkproof wire format changes: use `git archive
+    <commit> native` into scratch, rsync it to `<lane>/src-<x>`, then `cargo build -p darkhand --bin dl-hand` under
+    the box's scope.
+- **Python rotation check:** `python3 handover_replay.py <profile> <new seat ledger> <handover_e1.bin>`, run in
+  `<lane>/py-ca46` on forge or bb2 (not with -I).
+- **Report to the coordinator (aa3209e8d10294bc2)** when run12c and the self rerun are all green.
+- **Shell gotcha:** in Monitor and Bash commands, zsh does not word-split `set -- $x`. Wrap such loops in `bash -c`.
+  An earlier zsh monitor stayed silent because of this.
+
+**F_{p^2}:** done for the handover. The proof lane (a8ee5558dd7fe5a45) will send cut E's interface: the handover
+becomes the discharge of the head's pending claims, proof.md §21.
+
+**Open:**
+- the LowGear-Secrets alpha form, which the prep lane reports;
+- the TLS key is not canaried in memory;
+- the ZFS / SSD bound on disk erasure.
