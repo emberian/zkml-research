@@ -25,13 +25,7 @@ fn roots_of(v: &Value) -> BTreeMap<String, Vec<[u8; 32]>> {
         .collect()
 }
 
-#[global_allocator]
-static HEAP: darkproof::heap::Counting = darkproof::heap::Counting;
-
 fn main() {
-    if std::env::var_os("DP_HEAP").is_some() {
-        darkproof::heap::start();
-    }
     let args: Vec<String> = std::env::args().collect();
     if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check" | "ext-rows" | "e-rows")) && !cfg!(feature = "test-det") {
         eprintln!("bit-exact checks need the deterministic hook: build with --features test-det");
@@ -80,7 +74,7 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
             let w = darkproof::step::StepParams::for_width(d);
             let f = |k: &str, dflt: u32| p.get(k).and_then(|v| v.as_u64()).map(|v| v as u32).unwrap_or(dflt);
             let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
-            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), pg: p.get("PG").map(|h| {
+            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), rs: p["RS"].as_bool().unwrap_or(false), pg: p.get("PG").map(|h| {
                 let b = h.as_str().expect("PG hex");
                 let v: Vec<u8> = (0..32).map(|k| u8::from_str_radix(&b[2 * k..2 * k + 2], 16).expect("PG hex")).collect();
                 v.try_into().unwrap()
@@ -383,7 +377,7 @@ fn ds_bench(d: usize, prof: &str) {
     let t0 = std::time::Instant::now();
     let nt = darkproof::run::step_section(&lp, d, prm, false, &tables);
     let plain = darkstep::step::inputs(d);
-    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg);
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_rs(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs);
     darkstep::tape::deal_proof_section(&mut dl, nt);
     let tapes = dl.tapes;
     println!("d={d} profile={prof} program={prm:?} proof-section triples {nt}; dealing {:.1}s", t0.elapsed().as_secs_f64());
@@ -399,12 +393,11 @@ fn ds_bench(d: usize, prof: &str) {
             .map(|(i, (l, tape))| {
                 let (addrs, cs, pf, pr, lp, tables, pg) = (&addrs, cs.clone(), &pf, &pr, &lp, &tables, &pg);
                 s.spawn(move || {
-                    darkproof::heap::set_who(i);
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
                     let t = std::time::Instant::now();
                     let out = pool.install(|| darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)).expect("darkstep step");
                     let step_s = t.elapsed().as_secs_f64();
@@ -475,6 +468,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let t0 = std::time::Instant::now();
     let mut dl = darkstep::tape::Dealer::new(p, 3, darkstep::node::DEALER_SEED);
     dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
+    dl.rs = prm.rs;
     let mut owner = pycompat::PyRandom::from_u64(darkstep::node::OWNER_SEED);
     let mut plain = darkstep::step::inputs(d);
     // BOUND CONTROL (DP_W2SCALE=s): W2 scaled at genesis so z2 leaves its declared bound 2^K1
@@ -530,12 +524,11 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             .map(|(i, (l, tape))| {
                 let (addrs, css, pf, pr, lp, tables, pg, nts, pgw) = (&addrs, css.clone(), &pf, &pr, &lp, &tables, &pg, &nts, &pgw);
                 s.spawn(move || {
-                    darkproof::heap::set_who(i);
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
                     let (mut carry, mut head, mut blobs, mut groots): (Option<Carry>, Option<(DS, DS)>, Vec<Vec<u8>>, _) = (None, None, Vec::new(), None);
                     if let Some((w1, w2)) = pgw {
                         let (c, roots) = darkproof::run::public_genesis(pr, d, i, w1, w2, 3);
@@ -620,7 +613,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let mut ok_all = parts.iter().all(|p| p.4 == parts[0].4);
     if let (Some(cfg), Some((w1, _))) = (&pg_cfg, &pgw) {
         // public genesis: refused before the check, with another cfg, and with roots that are not the cfg's W
-        let r0 = match parts[0].4.first() { Some(b) => lg.accept(&lp, b, &tables).map(|_| ()), None => Err("no step (STEPS = 0: the release from the public genesis)".to_string()) };
+        let r0 = lg.accept(&lp, &parts[0].4[0], &tables);
         println!("public genesis: step 1 before the cfg check: {r0:?}");
         let mut other = cfg.clone();
         other.push(b'\n');
@@ -721,9 +714,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             .map(|(mut pt, carry, w1n, w2n, _, _)| {
                 let (pol, pr, lp, ctx) = (&pol, &pr, &lp, &ctx);
                 s.spawn(move || {
-                    let i = pt.i;
-                    darkproof::heap::set_who(i);
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
                     let o = pool.install(|| darkproof::run::release_custodian(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None)).expect("release");
                     assert_eq!(o.triples, nrt);
                     (o.c, o.blob, o.mpc_secs, o.prove_secs)
@@ -804,7 +795,7 @@ fn ds_check(dir: &Path, tag: &str) {
     let rec0 = darkproof::step::replay(&zeros, d, prm, &tables, false).unwrap();
     let nb = darkproof::spine::beaver_count_e(d, lp.ext) + rec0.proof_products() + darkproof::middle::beaver_count_e(rec0.had.len(), lp.ext);
     let plain = if pg == darkstep::step::Program::HARNESS { darkstep::step::inputs(d) } else { darkstep::step::inputs_for(d, &pg) };
-    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg);
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_rs(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs);
     darkstep::tape::deal_proof_section(&mut dl, nb);
     let tapes = dl.tapes;
     let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
@@ -909,7 +900,7 @@ fn rel_check(dir: &Path, tag: &str) {
     let x: Vec<u64> = (0..d).flat_map(|k| (0..m).map(move |t| (k, t))).map(|(k, t)| darkproof::field::from_i64(xm[k][t].as_i64().unwrap())).collect();
     let labels: Vec<usize> = raw["labels"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap() as usize).collect();
     let pol = Policy { x, labels, ncls, kc: 10, ignore_range: false };
-    let prm = darkproof::step::StepParams { rc: rm["rc"].as_bool().unwrap_or(false), lb: rm["lb"].as_bool().unwrap_or(false), ..darkproof::step::StepParams::HARNESS };
+    let prm = darkproof::step::StepParams { rc: rm["rc"].as_bool().unwrap_or(false), lb: rm["lb"].as_bool().unwrap_or(false), rs: rm["rs"].as_bool().unwrap_or(false), ..darkproof::step::StepParams::HARNESS };
     let rec = darkproof::step::replay_release(&w.public, d, m, prm, &pol.x, &pol.labels, ncls, 10).expect("replay");
     let nb = rec.proof_products() + darkproof::middle::beaver_count_e(rec.had.len(), lp.ext);
     let mut dl = Dealer::from_state(&w.dealer_state, w.alpha_sh.clone());

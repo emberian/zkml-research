@@ -259,43 +259,6 @@ pub fn prove_step_d(
     Ok(StepProof { deferred, blob, child, genesis_roots, secs: t0.elapsed().as_secs_f64(), sent: net.sent() - sent0 })
 }
 
-/// tape_triples_at(tape, from, None) for a terminal section: the tape is cut to `from` as the triples are read (from
-/// its end, its buffers shrinking every 2^20 triples), so the section and the tape are never both held.
-#[cfg(feature = "tcp")]
-pub fn take_tape_triples(tape: &mut darkstep::tape::Tape, from: usize) -> Result<Vec<Triple>, String> {
-    use darkstep::tape::Tag;
-    let end = tape.len();
-    if from > end || (end - from) % 3 != 0 {
-        return Err("the tape's proof section is not whole triples".into());
-    }
-    let count = (end - from) / 3;
-    let cut = |tape: &mut darkstep::tape::Tape, k: usize| {
-        tape.tags.truncate(k);
-        tape.sh.truncate(k);
-        tape.mac.truncate(k);
-        tape.tags.shrink_to_fit();
-        tape.sh.shrink_to_fit();
-        tape.mac.shrink_to_fit();
-    };
-    let mut triples = Vec::with_capacity(count);
-    let mut k = end;
-    while k > from {
-        let j = k - 3;
-        if (tape.tags[j], tape.tags[j + 1], tape.tags[j + 2]) != (Tag::Ta as u8, Tag::Tb as u8, Tag::Tc as u8) {
-            return Err(format!("the tape's proof section is not (Ta, Tb, Tc) triples at entry {j}"));
-        }
-        let e = |j: usize| (tape.sh[j], tape.mac[j]);
-        triples.push((e(j), e(j + 1), e(j + 2)));
-        k = j;
-        if triples.len() % (1 << 20) == 0 {
-            cut(tape, k);
-        }
-    }
-    cut(tape, from);
-    triples.reverse();
-    Ok(triples)
-}
-
 /// The (Ta, Tb, Tc) triples of a tape section: `count` triples from entry `from` (None: to the tape's end).
 #[cfg(feature = "tcp")]
 pub fn tape_triples_at(tape: &darkstep::tape::Tape, from: usize, count: Option<usize>) -> Result<Vec<Triple>, String> {
@@ -527,9 +490,14 @@ pub fn release_mpc(
             (0..m).map(move |t| DSh { s: crate::field::dot(&ws, &xt[t]), m: crate::field::dot(&wm, &xt[t]) })
         })
         .collect();
+    let (tb, tv) = (pt.cur, pt.tr.v.len());
     let u1 = pt.trunc_vec(&z1, prm.s1, prm.k1);
-    let sig = vec![step::tables_for(prm.t_lo).0];
-    let h: Vec<DSh> = pt.lookup_vec(&u1, crate::field::from_i64(-prm.t_lo), &sig, 255).into_iter().map(|v| v[0]).collect();
+    let h: Vec<DSh> = if prm.rs && prm.lb {
+        lookup_bits(pt, tb, tv, d * m, prm)
+    } else {
+        let sig = vec![step::tables_for(prm.t_lo).0];
+        pt.lookup_vec(&u1, crate::field::from_i64(-prm.t_lo), &sig, 255).into_iter().map(|v| v[0]).collect()
+    };
     drop(u1);
     pt.middle_mul = true;
     let mut xs = Vec::with_capacity(pol.ncls * m * d);
@@ -634,17 +602,15 @@ pub fn release_custodian(
     if pol.x.len() != d * m || w2.len() != d || pol.ncls > d {
         return Err("release: the policy's shape is not the weights'".into());
     }
+    let nrt = release_section(lp, d, m, prm, pol);
     let mut tt = crate::Trace::new("release", pt.i);
     tt.lap("start");
     let t0 = std::time::Instant::now();
     let (c, mut st) = release_mpc(pt, w1, w2, pol, prm)?;
     let mpc_secs = t0.elapsed().as_secs_f64();
     tt.lap("MPC");
-    // the release is terminal: its proof section is the rest of the tape (prove_release refuses a count that is not
-    // the proof's), taken from the tape's end as the tape shrinks, and the rest of the tape freed before proving. The
-    // count is not recomputed here: release_section replays the program (at M = 52 a transient Rec of about 7 GB).
-    st.triples = take_tape_triples(&mut pt.tape, pt.cur)?;
-    let nrt = st.triples.len();
+    st.triples = tape_triples_at(&pt.tape, pt.cur, Some(nrt))?;
+    // the release is terminal: nothing reads the tape after its proof section, so free it before proving
     let cur_after = pt.cur + 3 * nrt;
     pt.tape = darkstep::tape::Tape { alpha_i: pt.tape.alpha_i, ..Default::default() };
     pt.atom_log = Vec::new();
@@ -690,12 +656,128 @@ pub fn mnist_policy(cfg_json: &[u8], mnist_dir: &std::path::Path, m: usize) -> R
 /// The release section of a TEST dealer's tapes (cosnark_release's order), then its proof section; the run's tapes
 /// come from MASCOT in this order.
 #[cfg(feature = "tcp")]
+/// L (proof.md 23; cosnark_gates.RecEngine.lookup_bits): h = SIG[u1] for the n z1 truncations just run (their tape
+/// block at `tb`, their transcript at `tv`), by z1's borrow chain to bit B = s1 + 8 and the LB circuit on shares, every
+/// product a Beaver product outside the proof (not logged as middle atoms). Opens only Beaver differences.
+fn lookup_bits(pt: &mut darkstep::party::Party, tb: usize, tv: usize, n: usize, prm: StepParams) -> Vec<darkstep::party::Sh> {
+    use darkstep::party::Sh as DSh;
+    let p = pt.p;
+    let (s, kk) = (prm.s1 as usize, prm.k1);
+    let b = s + 8;
+    let trhb = darkstep::tape::Tag::Trhb as u8;
+    let mut nb = 0;
+    while pt.tape.tags.get(tb + 2 + s + nb) == Some(&trhb) {
+        nb += 1;
+    }
+    assert!(s + nb >= b, "L: the tape carries {nb} rhi bits, fewer than B - s");
+    let per = 2 + s + nb + 6 * (s - 1);
+    let ent = 1 + 4 * (s - 1);
+    let l = (kk + darkstep::tape::KAPPA + 1) as u32;
+    let lo = (1i128 << kk) + ((prm.t_lo as i128) << s);
+    let sh = |pt: &darkstep::party::Party, x: usize| DSh { s: pt.tape.sh[x], m: pt.tape.mac[x] };
+    let r: Vec<Vec<DSh>> = (0..n)
+        .map(|k| (0..b).map(|i| sh(pt, tb + k * per + if i < s { 1 + i } else { 2 + i })).collect())
+        .collect();
+    let cb: Vec<Vec<u64>> = (0..n)
+        .map(|k| {
+            let cp = (pt.tr.v[tv + k * ent] as i128 - lo).rem_euclid(1i128 << l);
+            (0..b).map(|i| ((cp >> i) & 1) as u64).collect()
+        })
+        .collect();
+    let zero = DSh { s: 0, m: 0 };
+    let mut beta: Vec<Vec<DSh>> = vec![vec![zero]; n];
+    for i in 0..b {
+        let t = if i > 0 {
+            let xs: Vec<DSh> = (0..n).map(|k| r[k][i]).collect();
+            let ys: Vec<DSh> = (0..n).map(|k| beta[k][i]).collect();
+            pt.mul_vec(&xs, &ys)
+        } else {
+            Vec::new()
+        };
+        for k in 0..n {
+            let nbv = match (cb[k][i], i) {
+                (1, 0) => zero,
+                (1, _) => t[k],
+                (_, 0) => pt.lin(&[(1, r[k][i])], 0),
+                _ => pt.lin(&[(1, r[k][i]), (1, beta[k][i]), (p - 1, t[k])], 0),
+            };
+            beta[k].push(nbv);
+        }
+    }
+    let (ops, vph, (hf, hc)) = step::lookup_bits_ops(prm.t_lo);
+    let na = ops.iter().map(|o| match o {
+        step::LbOp::Lin(a, ..) | step::LbOp::Mul(a, ..) => *a as usize + 1,
+    }).max().unwrap_or(0).max(vph.len());
+    let mut lvl = vec![0u32; na];
+    for op in &ops {
+        match op {
+            step::LbOp::Lin(a, f, _) => lvl[*a as usize] = f.iter().map(|&(y, _)| lvl[y as usize]).max().unwrap_or(0),
+            step::LbOp::Mul(a, x, y) => lvl[*a as usize] = lvl[*x as usize].max(lvl[*y as usize]) + 1,
+        }
+    }
+    let top = lvl.iter().copied().max().unwrap_or(0);
+    let mut val: Vec<Vec<DSh>> = (0..n)
+        .map(|k| {
+            let mut v = vec![zero; na];
+            for (j, &ph) in vph.iter().enumerate() {
+                let i = s + j;
+                v[ph as usize] = pt.lin(&[(p - 1, r[k][i]), (p - 1, beta[k][i]), (2, beta[k][i + 1])], cb[k][i]);
+            }
+            v
+        })
+        .collect();
+    for lv in 0..=top {
+        for vk in val.iter_mut() {
+            for op in &ops {
+                if let step::LbOp::Lin(a, f, c) = op {
+                    if lvl[*a as usize] == lv {
+                        let terms: Vec<(u64, DSh)> = f.iter().map(|&(y, co)| (co, vk[y as usize])).collect();
+                        vk[*a as usize] = pt.lin(&terms, *c);
+                    }
+                }
+            }
+        }
+        let mut xs = Vec::new();
+        let mut ys = Vec::new();
+        let mut at = Vec::new();
+        for (k, vk) in val.iter().enumerate() {
+            for op in &ops {
+                if let step::LbOp::Mul(a, x, y) = op {
+                    if lvl[*a as usize] == lv + 1 {
+                        xs.push(vk[*x as usize]);
+                        ys.push(vk[*y as usize]);
+                        at.push((k, *a as usize));
+                    }
+                }
+            }
+        }
+        if !xs.is_empty() {
+            for ((k, a), pr) in at.into_iter().zip(pt.mul_vec(&xs, &ys)) {
+                val[k][a] = pr;
+            }
+        }
+    }
+    val.iter()
+        .map(|vk| {
+            let terms: Vec<(u64, DSh)> = hf.iter().map(|&(y, co)| (co, vk[y as usize])).collect();
+            pt.lin(&terms, hc)
+        })
+        .collect()
+}
+
 pub fn deal_release(dl: &mut darkstep::tape::Dealer, d: usize, m: usize, ncls: usize, prm: StepParams, kc: u32, lp: &LigParams, tables: &(Vec<u64>, Vec<u64>), pol: &Policy) {
     for _ in 0..d * m {
         dl.trunc(prm.s1, prm.k1);
     }
-    for _ in 0..d * m {
-        dl.lookup(255);
+    if prm.rs && prm.lb {
+        // L: Beaver triples for the lookups by bits (their order on the tape is the products' order; all alike)
+        for _ in 0..d * m * step::lookup_bits_products(prm) {
+            dl.mul();
+        }
+    } else {
+        for _ in 0..d * m {
+            dl.lookup(255);
+        }
     }
     for _ in 0..ncls * m * d {
         dl.mul();
