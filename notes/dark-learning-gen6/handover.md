@@ -216,6 +216,16 @@ seats' report JSONs. Each seat runs on its own box: bb2, forge and hbox, with hb
 | restarted old seat holds nothing | port `dl-hand restart` (loads key, tape and checkpoint files from the seat dir; tries to decrypt its old ct and a new seat's ct) and run it on each old box after the handover |
 | d = 4096 | the same at full width (about 2 GB per seat) |
 
+### Since the continuation was written (985197b8)
+- **New check after re-authentication.** new_side's check opens nothing secret now: one masked random combination
+  per matrix, then the MAC check. A failed MAC check is an Err; tested with `DLH_CORRUPT_MAC=1`.
+- **`test_reveal`.** The 7th argument of new_side is `test_reveal`, which is TEST ONLY (dl-hand passes 8).
+  dl-custodian must pass 0.
+- **Deploy lane's wiring (not yet pushed when written).** Its command lines are in its message of 2026-11-07:
+  - old seat: `dl-custodian serve ... --prove --handover-at K --mesh6 .. --tls6 DIR6`;
+  - new seat: `dl-custodian join J ... --after-step K --mesh6 .. --tls6 DIR6 --handover-tape FILE --prove`;
+  - self-handover: `--self-handover-tape FILE --recover-mesh .. --recover-mesh6 .. --tapes2 PAT --owner-msgs2 PAT`.
+
 ### Run-level abort test (self-handover)
 - **Steps:** run darkstep or dl-custodian for k steps, inject an SPDZ abort mid-step k+1 (a MAC-check failure; the
   deploy lane's attack hook), then self-handover at k. The run continues from k under the new MAC key and fresh
