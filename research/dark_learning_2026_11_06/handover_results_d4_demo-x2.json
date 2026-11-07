@@ -1,0 +1,125 @@
+{
+ "d": 4,
+ "profile": "demo-x2",
+ "seconds": 875.3,
+ "all_as_expected": true,
+ "rows": {
+  "step 1 by the old committee": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true
+  },
+  "handover to a commitment of shifted weights": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 1.058,
+   "violated": "handover: old W1(r) = new W1(r)"
+  },
+  "resharing whose subshares do not sum to the old shares": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 1.102,
+   "violated": "handover: old W2(r) = new W2(r)"
+  },
+  "handover proof stats": {
+   "hidden_rows": 8,
+   "lin_constraints": 780,
+   "ligero_wire": 176760,
+   "bytes": 507872,
+   "prove_seconds": 48.7
+  },
+  "honest proof, but recorded with other new roots": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: the handover proof is for other new roots",
+   "as_expected": true,
+   "verify_seconds": 2.163
+  },
+  "honest proof for another new custodian set": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: handover (old committee): column challenge mismatch",
+   "as_expected": true,
+   "verify_seconds": 0.035
+  },
+  "honest proof for a committee of four": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: parse: width or committee sizes differ from the ledger's",
+   "as_expected": true,
+   "verify_seconds": 0.0
+  },
+  "no handover proof": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: no handover proof",
+   "as_expected": true,
+   "verify_seconds": 0.0
+  },
+  "a tampered handover proof (Ligero q[0] + 1, re-encoded)": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 1.101
+  },
+  "a tampered proximity row (new W1, custodian 0, component 1 u-part + 1, re-encoded)": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: handover (new committee): column challenge mismatch",
+   "as_expected": true,
+   "verify_seconds": 0.052
+  },
+  "the proof bytes with one byte flipped (middle)": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 1.748
+  },
+  "the proof bytes truncated by one byte": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: parse: truncated",
+   "as_expected": true,
+   "verify_seconds": 0.033
+  },
+  "the proof bytes with a trailing byte": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: parse: trailing bytes",
+   "as_expected": true,
+   "verify_seconds": 0.121
+  },
+  "the proof bytes with a non-canonical field element": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: parse: non-canonical field element",
+   "as_expected": true,
+   "verify_seconds": 0.0
+  },
+  "honest handover": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true,
+   "verify_seconds": 2.92
+  },
+  "the same handover proof replayed (now epoch 1 -> 2)": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: handover: old roots are not the ledger head's",
+   "as_expected": true,
+   "verify_seconds": 0.087
+  },
+  "a third opening of the old child": {
+   "verdict": "REFUSED",
+   "by": "commitment W1 already opened in 2 proof(s); a further opening reveals it",
+   "as_expected": true
+  },
+  "restart after rotation": {
+   "verdict": "OK",
+   "as_expected": true
+  },
+  "after rotation: the OLD committee's step 2": {
+   "verdict": "REFUSED",
+   "by": "spine: parent commitment is not the previous step's child commitment",
+   "as_expected": true
+  },
+  "step 2 by the new committee, chained to the handover's roots": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true
+  }
+ }
+}
