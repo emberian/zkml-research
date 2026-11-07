@@ -18,8 +18,8 @@ pub struct Report {
 }
 
 pub fn verify(tapes: &[Tape], owner: &[u64]) -> Result<Report, String> {
-    if tapes[0].inputs == crate::tape::RELEASE_INPUTS {
-        return Err("a release tape: its shape is not in the header; use verify_step with the release's StepParams".into());
+    if tapes[0].inputs == crate::tape::RELEASE_INPUTS || tapes[0].inputs == crate::tape::HANDOVER_INPUTS {
+        return Err("a release or handover tape: its shape is not in the header; use verify_step with its StepParams".into());
     }
     verify_step(&tapes[0].step_params(), tapes, owner)
 }

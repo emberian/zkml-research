@@ -4,7 +4,7 @@
 use darkprep::field::Fp;
 use darkprep::mpspdz::Transactions;
 use darkprep::owner;
-use darkprep::schedule::{tags, Inputs, Plan, Release, StepParams, Tag, DEG, KAPPA};
+use darkprep::schedule::{tags, Inputs, Phase, Plan, Release, StepParams, Tag, DEG, KAPPA};
 use darkprep::tape::{assemble, Tape};
 use darkprep::verify::verify;
 use pycompat::PyRandom;
@@ -84,7 +84,7 @@ fn build(sp: &StepParams, files: &[Vec<u8>]) -> Result<(Vec<Tape>, Vec<u64>), St
 }
 
 fn small() -> StepParams {
-    StepParams { d: 4, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, release: None }
+    StepParams { d: 4, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step }
 }
 
 #[test]
@@ -174,7 +174,7 @@ fn hadamard_count_matches_recorded_runs() {
 
 #[test]
 fn chunk_steps_assemble_disjoint_slices_that_verify() {
-    let sp = StepParams { d: 4, inputs: Inputs::Steady, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: true, proof_triples: 7, release: None };
+    let sp = StepParams { d: 4, inputs: Inputs::Steady, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: true, proof_triples: 7, phase: Phase::Step };
     let steps = 3;
     // synthetic chunk: the plan of 3 steps, built through the same synth() with a chunk-sized StepParams stand-in
     let (files, _) = synth_plan(&Plan::of_chunk(&sp, steps), 5);
@@ -216,7 +216,7 @@ fn gen6_program_chunk_equals_darkstep_dealer_tags() {
     // Program::GEN6's truncations ((11,19), (11,19), (7,8), (8,19)); its r3 = 128 is a public cadd (no tape entry)
     let d = 4;
     let pg = darkstep::step::Program::GEN6;
-    let base = StepParams { d, inputs: Inputs::Harness, trunc: pg.truncs(), proof_atoms: false, proof_triples: 0, release: None };
+    let base = StepParams { d, inputs: Inputs::Harness, trunc: pg.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step };
     let chunk: Vec<StepParams> = (0..2).map(|j| StepParams { inputs: if j == 0 { Inputs::Harness } else { Inputs::Steady }, ..base }).collect();
     let (tapes, _) = darkstep::tape::deal_steps_prog(P, d, 5, 9, &vec![0u64; 2 * d * d + 2 * d], &[vec![0u64; 2 * d]], false, &pg);
     let ours: Vec<u8> = chunk.iter().flat_map(|sp| tags(sp)).map(|t| t as u8 + 1).collect();
@@ -246,7 +246,7 @@ fn release_schedule_equals_darkproof_release_dealer_tags() {
         darkproof::run::deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol);
         let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
         let g = darkstep::step::Program::GEN6;
-        let base = StepParams { d, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, release: None };
+        let base = StepParams { d, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step };
         let sp = base.release(Release { m, ncls, kc }, nrt);
         let ours: Vec<u8> = tags(&sp).iter().map(|t| *t as u8 + 1).collect();
         assert_eq!(ours.len(), dl.tapes[0].tags.len(), "d = {d}, M = {m}");
@@ -260,7 +260,7 @@ fn release_schedule_equals_darkproof_release_dealer_tags() {
 #[test]
 fn synthetic_release_chunk_assembles_and_verifies() {
     let g = darkstep::step::Program::GEN6;
-    let base = StepParams { d: 4, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, release: None };
+    let base = StepParams { d: 4, inputs: Inputs::Steady, trunc: g.truncs(), proof_atoms: false, proof_triples: 0, phase: Phase::Step };
     let sp = base.release(Release { m: 2, ncls: 4, kc: 10 }, 11);
     let plan = Plan::of(&sp);
     // two truncation classes, (11, 19) then (10, 10); no inputs
@@ -277,4 +277,22 @@ fn synthetic_release_chunk_assembles_and_verifies() {
     bad[0].entries[k].1 = (bad[0].entries[k].1 + 1) % P;
     bad[0].entries[k].2 = (bad[0].entries[k].2 + 1) % P;
     assert!(darkprep::verify::verify_step(&sp, &bad, &[]).is_err(), "a corrupted Trhb verified");
+}
+
+#[test]
+fn handover_tape_is_auth_plain_only_and_verifies() {
+    let d = 4;
+    let n = 2 * d * d + 16;
+    let sp = StepParams::at(d, Inputs::Steady).with_proof().handover(n);
+    assert_eq!(tags(&sp), vec![Tag::Ar; n]);
+    let plan = Plan::of(&sp);
+    assert_eq!((plan.n_in, plan.n_ar, plan.n_tri, plan.n_lp, plan.trunc_classes.len()), (0, n, 0, 0, 0));
+    let (files, _) = synth_plan(&plan, 8);
+    let txs: Vec<Transactions> = files.iter().map(|f| Transactions::parse(f, P).unwrap()).collect();
+    let tapes: Vec<Tape> = txs.iter().enumerate().map(|(i, t)| assemble(&sp, t, i as u32).unwrap()).collect();
+    assert_eq!(darkprep::verify::verify_step(&sp, &tapes, &[]).unwrap().entries, n);
+    assert!(verify(&tapes, &[]).is_err(), "a handover tape verified as a step");
+    let mut bad = tapes.clone();
+    bad[2].entries[n - 1].2 ^= 1;
+    assert!(darkprep::verify::verify_step(&sp, &bad, &[]).is_err(), "a corrupted MAC verified");
 }
