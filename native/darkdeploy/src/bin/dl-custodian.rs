@@ -567,6 +567,8 @@ impl Prove {
         if let Some(p) = flag(&a2, "--tapes") {
             st2.load_tape(serve::read_tape(&serve::step_path(&a2, &p, k)))?;
         }
+        // the state under the new key, carry beside checkpoint (the old role erased both under the old key)
+        write_carry(&dir.join(format!("carry_P{i}.bin")), &nc.carry).map_err(|e| format!("carry checkpoint: {e}"))?;
         self.c().carry = Some(nc.carry);
         self.next = None;
         st2.checkpoint(&dir.join(format!("ckpt_P{i}.bin"))).map_err(|e| e.to_string())?;
@@ -916,6 +918,9 @@ fn join_main(args: &[String]) -> i32 {
         if let Some(p) = flag(args, "--tapes") {
             st.load_tape(serve::read_tape(&serve::step_path(args, &p, after + 1)))?;
         }
+        // the carried commitment of the reshared weights beside the checkpoint: a pause before this seat's first step
+        // resumes from both (serve --resume)
+        write_carry(&dir.join(format!("carry_P{j}.bin")), &nc.carry).map_err(|e| format!("carry checkpoint: {e}"))?;
         hook.c().carry = Some(nc.carry);
         hook.next = None;
         st.checkpoint(&dir.join(format!("ckpt_P{j}.bin"))).map_err(|e| e.to_string())?;

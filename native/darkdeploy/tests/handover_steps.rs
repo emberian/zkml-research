@@ -137,7 +137,26 @@ fn s(v: &[&str]) -> Vec<String> {
 
 #[test]
 fn rotation_to_a_new_committee_after_step_0() {
-    let cs = Case::new("rot");
+    rotation(false);
+}
+
+/// The new committee pauses (forge's nightly window) before its first step, right after the handover: each joined
+/// seat checkpointed, gives its unused first tape back to the box registry and exits 3; `serve --resume` in its own
+/// dir (run.py's resume_new) then runs step 1 under the new key, at epoch 1, from that checkpoint.
+#[test]
+fn the_new_committee_pauses_and_resumes_as_serve() {
+    rotation(true);
+}
+
+/// "HH:MM-HH:MM" from this UTC minute to 15 minutes on.
+fn window_now() -> String {
+    let m = (std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() / 60) % 1440;
+    let f = |m: u64| format!("{:02}:{:02}", (m % 1440) / 60, m % 60);
+    format!("{}-{}", f(m), f(m + 15))
+}
+
+fn rotation(pause: bool) {
+    let cs = Case::new(if pause { "rotp" } else { "rot" });
     let d = cs.d;
     // the old committee's tape: step 0; the new committee's: its handover section (2 d^2 + 16 authenticated randoms)
     // and then step 1, under its own MAC key
@@ -167,8 +186,12 @@ fn rotation_to_a_new_committee_after_step_0() {
     }
     let ow = owner(&o_at, darkstep::tls::Identity { key_der: oid.key_der.clone(), cert_der: oid.cert_der.clone() }, vec![
         (oldids.iter().map(|x| x.cert_der.clone()).collect(), vec![c0]),
-        (newids.iter().map(|x| x.cert_der.clone()).collect(), vec![vec![], c1]),
-    ]);
+        (newids.iter().map(|x| x.cert_der.clone()).collect(), vec![vec![], c1.clone()]),
+    ]
+    .into_iter()
+    .chain(pause.then(|| (newids.iter().map(|x| x.cert_der.clone()).collect(), vec![vec![], c1.clone()])))
+    .collect());
+    let reg = cs.base.join("consumed_new.jsonl");
     let gen = cs.base.join("genesis.json").to_str().unwrap().to_string();
     let mut kids = Vec::new();
     let mut odirs = Vec::new();
@@ -197,11 +220,36 @@ fn rotation_to_a_new_committee_after_step_0() {
         a.extend(s(&["--tls", own.to_str().unwrap(), "--owner", &o_at, "--steps", "1", "--after-step", "0", "--gate", "309", "--ret-primes", "2"]));
         a.extend(s(&["--timeout", "180", "--handover-tape", own.join("handover.bin").to_str().unwrap(), "--tapes", own.join("tape1.bin").to_str().unwrap()]));
         a.extend(s(&["--prove", "--genesis-cfg", &gen, "--mesh6", &mesh6, "--tls6", tls6.to_str().unwrap(), "--test-keep-shares", "--wipe-spent"]));
+        if pause {
+            a.extend(s(&["--pause-utc", &window_now(), "--consumed-log", reg.to_str().unwrap()]));
+        }
         kids.push(run(a));
         ndirs.push(own);
     }
     let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
-    assert_eq!(codes, vec![0; 6], "every old and new seat exits 0");
+    if pause {
+        assert_eq!(codes, vec![0, 0, 0, 3, 3, 3], "the old seats hand over; the new ones pause before step 1");
+        let r = std::fs::read_to_string(&reg).unwrap();
+        assert_eq!(r.lines().filter(|l| l.contains("\"released\":true")).count(), 3, "each new seat gave its unused tape back: {r}");
+        let a_res = ports(3);
+        let kids: Vec<_> = (0..3)
+            .map(|j| {
+                let own = &ndirs[j];
+                let mut a = s(&["serve", &j.to_string()]);
+                a.extend(s(&A));
+                a.push(own.join("D").to_str().unwrap().into());
+                a.extend(a_res.clone());
+                a.extend(s(&["--tls", own.to_str().unwrap(), "--owner", &o_at, "--steps", "1", "--gate", "309", "--ret-primes", "2", "--timeout", "180"]));
+                a.extend(s(&["--tapes", own.join("tape1.bin").to_str().unwrap(), "--prove", "--genesis-cfg", &gen, "--test-keep-shares", "--wipe-spent", "--resume"]));
+                a.extend(s(&["--consumed-log", reg.to_str().unwrap()]));
+                run(a)
+            })
+            .collect();
+        let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
+        assert_eq!(codes, vec![0; 3], "the new committee resumed as serve");
+    } else {
+        assert_eq!(codes, vec![0; 6], "every old and new seat exits 0");
+    }
     ow.join().unwrap();
     for (i, own) in odirs.iter().enumerate() {
         let r = json(&own.join("D").join(format!("handover_P{i}.json")));
