@@ -37,6 +37,7 @@ import os
 import random as _random
 
 import spdz
+import cosnark_ext as X
 
 BLOW = 4          # RS rate 1/4
 T_COLS = 309      # opened columns per commitment: (3/4)^309 = 2^-128.25 at rate 1/4 (the ledger profile; the demo profile
@@ -247,6 +248,37 @@ class SharePCS:
     def prox_len(self):
         return self.R - (1 if self.nmask else 0)
 
+    def prox_rows_e(self):
+        """This life's proximity mask rows: the last EXT rows of its block (one per component of the F_{p^EXT}
+        combination; EXT = 1: prox_row())."""
+        return [self.Rd + self.base + self.block - X.EXT + k for k in range(X.EXT)]
+
+    def prox_len_e(self):
+        return self.R - (X.EXT if self.nmask else 0)
+
+    def prox_weights_e(self, gam):
+        """gam: prox_len_e() elements. This life's k-th proximity mask row gets the unit u^k, so each component of the
+        revealed combination is masked by its own uniform row (EXT = 1: prox_weights, as elements)."""
+        g = list(gam)
+        if self.nmask:
+            for k, r in enumerate(self.prox_rows_e()):
+                g.insert(r, tuple(1 if c == k else 0 for c in range(X.EXT)))
+        return g
+
+    def row_combo_e(self, i, a):
+        """sum_r a_r row_r over this party's extended rows for weights a (elements): EXT component lists (a weight of
+        length 1 feeds component 0 only)."""
+        p = self.p
+        out = [[0] * self.W for _ in range(X.EXT)]
+        for r, ar in enumerate(a):
+            row = self.ext[i][r]
+            for k, ak in enumerate(ar):
+                if ak:
+                    o = out[k]
+                    for c in range(self.W):
+                        o[c] = (o[c] + ak * row[c]) % p
+        return out
+
     def prox_weights(self, gam):
         """gamma on every row except this life's proximity mask, which gets weight 1 (so the revealed
         combination is uniform). Rows of the OTHER life are still tested (their weights are random)."""
@@ -273,8 +305,9 @@ def pcs_prove(com, evals, tr, n, p, u_hook=None):
     prox = {}
     for k in sorted(com):
         c = com[k]
-        gam = c.prox_weights(tr.chal(p, c.prox_len()))
-        prox[k] = (gam, [c.row_combo(i, gam) for i in range(n)])
+        gam = c.prox_weights_e(X.chal(tr, p, c.prox_len_e()))
+        # one row per custodian: the EXT components of its combination, concatenated (EXT = 1: the base row)
+        prox[k] = (gam, [[v for comp in c.row_combo_e(i, gam) for v in comp] for i in range(n)])
         tr.absorb("g", k, prox[k][1])
     cols = {}
     for k in sorted(com):
@@ -302,9 +335,11 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
     gams = {}
     for k in sorted(com):
         c = com[k]
-        gams[k] = c.prox_weights(vt.chal(p, c.prox_len()))
+        gams[k] = c.prox_weights_e(X.chal(vt, p, c.prox_len_e()))
         if prox[k][0] is not None and gams[k] != prox[k][0]:
             return False, "proximity challenge mismatch"
+        if len(prox[k][1]) != n or any(len(g) != X.EXT * c.W for g in prox[k][1]):
+            return False, f"proximity combination of the wrong shape ({k})"
         vt.absorb("g", k, prox[k][1])
     used = {}
     eweights = []
@@ -319,7 +354,7 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
         if J != cols[k][0]:
             return False, "column challenge mismatch"
         gam, gs = gams[k], prox[k][1]
-        gcode = encode_pub(p, [sum(g[cc] for g in gs) % p for cc in range(c.W)], npts)
+        gcodes = [encode_pub(p, [sum(g[kk * c.W + cc] for g in gs) % p for cc in range(c.W)], npts) for kk in range(X.EXT)]
         ucodes = [(eweights[ie], encode_pub(p, [sum(ui[cc] for ui in msgs[ie][0]) % p for cc in range(c.W)], npts))
                   for ie, (kk, pt) in enumerate(evals) if kk == k]
         for jj, j in enumerate(J):
@@ -329,7 +364,7 @@ def pcs_verify(com, roots, evals, msgs, prox, cols, vt, n, p):
                 if not verify_path(roots[k][i], col, j, path):
                     return False, f"Merkle opening fails ({k}, custodian {i})"
                 colsum = [(a + b) % p for a, b in zip(colsum, col)]
-            if sum(g * x for g, x in zip(gam, colsum)) % p != gcode[j]:
+            if any(sum(g[kk] * x for g, x in zip(gam, colsum) if kk < len(g)) % p != gcodes[kk][j] for kk in range(X.EXT)):
                 return False, f"proximity test fails ({k})"
             for a, ucode in ucodes:
                 if sum(ai * x for ai, x in zip(a, colsum)) % p != ucode[j]:
