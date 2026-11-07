@@ -37,6 +37,9 @@ elif L=${LAYOUT:-}; [ "${L#dir:}" != "$L" ]; then
   N=${L#dir:}
   HOST=(dregg-forge bb2 bb2); ROOT=(/srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
   WRAP=("${WRAP[0]}" "${WRAP[1]}" "${WRAP[1]}"); MP=(${N}0/mpspdz ${N}1/mpspdz ${N}2/mpspdz)
+elif [ "${L#dir3:}" != "$L" ]; then
+  # LAYOUT=dir3:NAME: a seat set from seats.sh fresh3 NAME PORT on the three custodian boxes (0 forge, 1 bb2, 2 hbox)
+  N=${L#dir3:}; MP=(${N}0/mpspdz ${N}1/mpspdz ${N}2/mpspdz)
 elif [ "${LAYOUT:-}" = wired-new-sh2 ]; then
   # TEST: the wired-new-sh seats after an abort (seats.sh newsh2)
   HOST=(bb2 dregg-forge bb2); ROOT=(/home/build/lanes/dl-gen6-prep /srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)

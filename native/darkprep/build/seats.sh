@@ -23,7 +23,11 @@ case $1 in
           # from wired<I>, new TLS keys and no MAC key; ips-NAME.txt, ports PORT + I; launch3.sh LAYOUT=dir:NAME
     N=${2:?seats.sh fresh NAME PORT}; H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(${N}0 ${N}1 ${N}2); SRC=(wired0 wired1 wired2)
     IP=($FIP $BIP $BIP); PORT=${3:?seats.sh fresh NAME PORT}; IPF=ips-$N.txt;;
-  *) echo "usage: seats.sh new|sh|newsh|newsh2|rehold|rehnew | fresh NAME PORT"; exit 2;;
+  fresh3)  # seats.sh fresh3 NAME PORT: a fresh seat set NAME<I> on the three custodian boxes (0 forge, 1 bb2, 2 hbox,
+           # which only dials out), binaries from each box's mpspdz/; ips-NAME.txt, ports PORT + I; LAYOUT=dir3:NAME
+    N=${2:?seats.sh fresh3 NAME PORT}; H=(dregg-forge bb2 hbox); R=($FR $BR /othersys/lanes/dl-gen6-prep); D=(${N}0 ${N}1 ${N}2)
+    SRC=(. . .); IP=($FIP $BIP 127.0.0.1); PORT=${3:?seats.sh fresh3 NAME PORT}; IPF=ips-$N.txt;;
+  *) echo "usage: seats.sh new|sh|newsh|newsh2|rehold|rehnew | fresh NAME PORT | fresh3 NAME PORT"; exit 2;;
 esac
 S=$(mktemp -d)
 for i in 0 1 2; do
