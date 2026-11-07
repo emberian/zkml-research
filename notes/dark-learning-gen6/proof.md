@@ -1122,9 +1122,8 @@ Not yet: the handover's discharge (handover lane) and E natively.
 **In flight:**
 1. **Native D**: helper a93e0325f167a4ed2 (distilled successor of af3806d6). Target: e6076bcb, profiles *-x2d. It
    reports when it lands; then report D's d = 4096 size to the coordinator.
-2. **Cut E in Python**: uncommitted when this was written, in cosnark_zk.py, cosnark_gates_zk.py, cosnark.py,
-   cosnark_release.py, proofwire.py, darkproof_vectors.py and run_proofwire.py. Profiles ledger-x2de and demo-x2de
-   (DEFER). §22 has the results if it landed.
+2. **Cut E in Python**: landed in 2adc6652 (§22). Profiles ledger-x2de and demo-x2de (DEFER). The handover lane
+   (1bfb04a3: its handover at EXT = 2, byte-equal) has the E interface for its discharge.
    - Spine-level checks [EXECUTED, scratch `proof5/e_chain.py`, `e_close.log`, `e_forge.log`]:
      - a two-step chain is accepted;
      - the closing proof is accepted, and refused against the wrong step's claims;
