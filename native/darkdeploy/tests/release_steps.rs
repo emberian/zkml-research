@@ -15,10 +15,21 @@ fn free_port() -> u16 {
 
 #[test]
 fn release_after_one_proved_step() {
+    release_run(false);
+}
+
+/// As in a deployment: the release's preprocessing is its own tape (`--release-tape`), read only when the release
+/// starts, after the steps' tape is freed.
+#[test]
+fn release_from_its_own_tape() {
+    release_run(true);
+}
+
+fn release_run(split: bool) {
     let pf = prof(&A.map(String::from));
     let (d, p) = (pf.d, pf.t);
     let mnist = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../research/dark_learning_2026_11_06/data/mnist");
-    let base = std::env::temp_dir().join(format!("dl-release-{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("dl-release-{}-{split}", std::process::id()));
     let _ = std::fs::remove_dir_all(&base);
     std::fs::create_dir_all(base.join("run")).unwrap();
     let cfg = format!(
@@ -34,6 +45,9 @@ fn release_after_one_proved_step() {
         c.args(["test-deal", cfgp.to_str().unwrap(), "1", &i.to_string(), own.to_str().unwrap(), "--genesis-cfg", cfgp.to_str().unwrap(), "--release"]);
         if i == 1 {
             c.arg("--public");
+        }
+        if split {
+            c.arg("--split-release");
         }
         assert!(c.status().unwrap().success(), "test-deal {i}");
     }
@@ -59,17 +73,21 @@ fn release_after_one_proved_step() {
     let kids: Vec<_> = (0..3)
         .map(|i| {
             let own = base.join(format!("seat{i}"));
-            Command::new(exe)
-                .args(["serve", &i.to_string()])
+            let mut c = Command::new(exe);
+            c.args(["serve", &i.to_string()])
                 .args(A)
                 .arg(&dir)
                 .args(&addrs)
                 .args(["--tls", own.to_str().unwrap(), "--owner", &owner_at, "--steps", "1", "--gate", "309", "--ret-primes", "2"])
                 .args(["--tape", own.join(format!("tape_{i}.bin")).to_str().unwrap(), "--timeout", "120", "--test-keep-shares", "--prove"])
                 .args(["--genesis-cfg", cfgp.to_str().unwrap(), "--release", "--release-data", mnist.to_str().unwrap()])
-                .env("DS_THREADS", "4")
-                .spawn()
-                .unwrap()
+                .env("DS_THREADS", "4");
+            if split {
+                let r = own.join(format!("release_{i}.bin"));
+                assert!(r.exists(), "the release's own tape");
+                c.args(["--release-tape", r.to_str().unwrap()]);
+            }
+            c.spawn().unwrap()
         })
         .collect();
     let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();

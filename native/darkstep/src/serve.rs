@@ -781,6 +781,9 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
         waited_s = 0.0;
         if k > first {
             if let Some(f) = tape_pattern(args, k) {
+                // the last step's tape is spent (its proof section was copied out by the hook): free it first, so a
+                // step never holds two tapes
+                st.pt.tape = Tape { alpha_i: st.pt.tape.alpha_i, ..Default::default() };
                 if let Err(e) = read_tape_once(&f).and_then(|t| st.load_tape(t)) {
                     eprintln!("{e}");
                     end.code = 1;
