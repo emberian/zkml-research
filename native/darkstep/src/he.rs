@@ -50,21 +50,25 @@ fn ct_parse(b: &[u8], nh: usize, ln: usize) -> (Vec<u64>, Ct) {
 pub const DEC_THREADS: usize = 4;
 
 /// Receive `per_peer` returns from each of `peers`, decrypt each at `coefs`, and hand (header, plaintexts) to `sink`.
+/// Every peer has its own decryption threads, so a slow peer never holds up the drain of another (the returners'
+/// bounded queues would otherwise couple all three parties into a wait cycle).
 fn recv_decrypt<F: Fn(&[u64], &[u64]) + Sync>(net: &crate::net::Net, key: &OwnKey, peers: &[usize], per_peer: usize, nh: usize, coefs: &[usize], sink: F) {
     use std::sync::atomic::{AtomicUsize, Ordering};
     let ln = key.rns.l() * key.rns.n;
     let claimed: Vec<AtomicUsize> = peers.iter().map(|_| AtomicUsize::new(0)).collect();
+    let per_thread = (DEC_THREADS / peers.len().max(1)).max(1);
     std::thread::scope(|sc| {
-        for _ in 0..DEC_THREADS {
-            sc.spawn(|| {
-                for (pi, &i) in peers.iter().enumerate() {
+        for (pi, &i) in peers.iter().enumerate() {
+            for _ in 0..per_thread {
+                let (claimed, sink) = (&claimed, &sink);
+                sc.spawn(move || {
                     while claimed[pi].fetch_add(1, Ordering::Relaxed) < per_peer {
                         let (h, ct) = ct_parse(&net.recv(i, net::HE_RET), nh, ln);
                         let dec = key.decrypt(&ct, Some(coefs));
                         sink(&h, &dec);
                     }
-                }
-            });
+                });
+            }
         }
     });
 }
@@ -487,8 +491,43 @@ impl He {
     }
 }
 
-/// repr of a list of lists of ints (row-major flat, `cols` per row).
+/// repr of a list of lists of ints (row-major flat, `cols` per row); rows rendered in parallel windows.
 pub fn repr_matrix(h: &mut ReprHasher, m: &[u64], cols: usize) {
+    use rayon::prelude::*;
+    let rows = m.len() / cols.max(1);
+    if rows < 64 {
+        return repr_matrix_seq(h, m, cols);
+    }
+    h.raw(b"[");
+    let per = 16usize;
+    let window = per * 4 * rayon::current_num_threads().max(1);
+    let mut r0 = 0;
+    while r0 < rows {
+        let r1 = (r0 + window).min(rows);
+        let bufs: Vec<Vec<u8>> = (r0..r1)
+            .step_by(per)
+            .collect::<Vec<_>>()
+            .into_par_iter()
+            .map(|a| {
+                let mut sub = ReprHasher::new_buffer();
+                for r in a..(a + per).min(r1) {
+                    if r > 0 {
+                        sub.sep();
+                    }
+                    sub.list_u64(&m[r * cols..(r + 1) * cols]);
+                }
+                sub.into_buffer()
+            })
+            .collect();
+        for b in bufs {
+            h.raw(&b);
+        }
+        r0 = r1;
+    }
+    h.raw(b"]");
+}
+
+fn repr_matrix_seq(h: &mut ReprHasher, m: &[u64], cols: usize) {
     h.raw(b"[");
     for (k, row) in m.chunks(cols).enumerate() {
         if k > 0 {

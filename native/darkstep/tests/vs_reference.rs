@@ -47,3 +47,8 @@ fn attacks_refused() {
         assert!(res["by"][0].as_str().unwrap().starts_with(by), "{att}: {}", res["by"]);
     }
 }
+
+#[test]
+fn d64_n16384_ledger_profile() {
+    check(16384, 4, 175, 64);
+}

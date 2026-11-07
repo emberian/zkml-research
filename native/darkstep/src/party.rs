@@ -49,11 +49,59 @@ impl Transcript {
         self.sh.push(sh);
     }
 
-    /// repr(transcript) streamed into h: [('input', {}, c), ('mul', {0: a, 1: b, 2: c}, v), ...].
+    /// repr(transcript) streamed into h: [('input', {}, c), ('mul', {0: a, 1: b, 2: c}, v), ...]. Rendering runs in
+    /// parallel chunks (a window at a time, to bound memory); hashing stays sequential.
     pub fn repr_into(&self, h: &mut ReprHasher) {
+        use rayon::prelude::*;
+        const CH: usize = 1 << 16;
+        let n = self.len();
+        if n < 4 * CH {
+            return self.repr_range(h, 0, n, 0, 0, true);
+        }
+        // offsets into sh / commits at every chunk start
+        let nch = n.div_ceil(CH);
+        let mut so = vec![0usize; nch + 1];
+        let mut co = vec![0usize; nch + 1];
+        for c in 0..nch {
+            let (mut a, mut b) = (0usize, 0usize);
+            for &ph in &self.phase[c * CH..((c + 1) * CH).min(n)] {
+                match ph {
+                    PH_INPUT => {}
+                    PH_OUTER_COMMIT => b += 1,
+                    _ => a += 1,
+                }
+            }
+            so[c + 1] = so[c] + a;
+            co[c + 1] = co[c] + b;
+        }
         h.raw(b"[");
-        let (mut si, mut ci) = (0usize, 0usize);
-        for k in 0..self.len() {
+        let window = 4 * rayon::current_num_threads().max(1);
+        let mut c0 = 0;
+        while c0 < nch {
+            let c1 = (c0 + window).min(nch);
+            let bufs: Vec<Vec<u8>> = (c0..c1)
+                .into_par_iter()
+                .map(|c| {
+                    let mut sub = ReprHasher::new_buffer();
+                    self.repr_range(&mut sub, c * CH, ((c + 1) * CH).min(n), so[c], co[c], false);
+                    sub.into_buffer()
+                })
+                .collect();
+            for b in bufs {
+                h.raw(&b);
+            }
+            c0 = c1;
+        }
+        h.raw(b"]");
+    }
+
+    /// Entries [a, b) with sh/commit cursors (si, ci); `whole` adds the brackets (the full list).
+    fn repr_range(&self, h: &mut ReprHasher, a: usize, b: usize, si0: usize, ci0: usize, whole: bool) {
+        if whole {
+            h.raw(b"[");
+        }
+        let (mut si, mut ci) = (si0, ci0);
+        for k in a..b {
             if k > 0 {
                 h.raw(b", ");
             }
@@ -94,7 +142,9 @@ impl Transcript {
             h.u64(self.v[k]);
             h.raw(b")");
         }
-        h.raw(b"]");
+        if whole {
+            h.raw(b"]");
+        }
     }
 
     /// One repr per line (as native_ref.py writes), for diffing.
