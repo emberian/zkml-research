@@ -18,6 +18,9 @@ use std::io::Write;
 use std::path::Path;
 
 pub const MAGIC: &[u8; 8] = b"DLVAULT1";
+/// Linux errnos of a key search (asm-generic/errno.h)
+const EKEYEXPIRED: i32 = 127;
+const EKEYREVOKED: i32 = 128;
 const NONCE: usize = 12;
 const TAG: usize = 16;
 
@@ -47,6 +50,7 @@ mod kr {
     const KEYCTL_READ: libc::c_long = 11;
     const KEYCTL_INVALIDATE: libc::c_long = 21;
     const KEY_SPEC_PROCESS_KEYRING: libc::c_long = -2;
+    const KEYCTL_SET_TIMEOUT: libc::c_long = 15;
 
     fn err(what: &str) -> String {
         format!("{what}: {}", std::io::Error::last_os_error())
@@ -65,9 +69,23 @@ mod kr {
     }
 
     pub fn search(name: &str, ring: i64) -> Option<i64> {
-        let (t, d) = (CString::new("user").unwrap(), CString::new(name).ok()?);
+        search_err(name, ring).ok()
+    }
+
+    /// The search with its errno: ENOKEY (none), EKEYEXPIRED (it timed out), EKEYREVOKED.
+    pub fn search_err(name: &str, ring: i64) -> Result<i64, std::io::Error> {
+        let (t, d) = (CString::new("user").unwrap(), CString::new(name).map_err(|_| std::io::Error::from_raw_os_error(libc::EINVAL))?);
         let r = unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_SEARCH, ring as libc::c_long, t.as_ptr(), d.as_ptr(), 0 as libc::c_long) };
-        (r >= 0).then_some(r)
+        if r < 0 { Err(std::io::Error::last_os_error()) } else { Ok(r) }
+    }
+
+    pub fn set_timeout(serial: i64, secs: u32) -> Result<(), String> {
+        let r = unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_SET_TIMEOUT, serial as libc::c_long, secs as libc::c_long) };
+        if r < 0 { Err(err("keyctl set_timeout")) } else { Ok(()) }
+    }
+
+    pub fn expiry_secs() -> Option<u64> {
+        std::fs::read_to_string("/proc/sys/kernel/keys/persistent_keyring_expiry").ok()?.trim().parse().ok()
     }
 
     pub fn read(serial: i64, out: &mut [u8; 32]) -> Result<(), String> {
@@ -90,6 +108,15 @@ mod kr {
         Err("no kernel keyring on this OS".into())
     }
     pub fn search(_: &str, _: i64) -> Option<i64> {
+        None
+    }
+    pub fn search_err(_: &str, _: i64) -> Result<i64, std::io::Error> {
+        Err(std::io::Error::other("no kernel keyring on this OS"))
+    }
+    pub fn set_timeout(_: i64, _: u32) -> Result<(), String> {
+        Err("no kernel keyring on this OS".into())
+    }
+    pub fn expiry_secs() -> Option<u64> {
         None
     }
     pub fn read(_: i64, _: &mut [u8; 32]) -> Result<(), String> {
@@ -126,7 +153,11 @@ impl Vault {
     /// The file key from the persistent keyring (a restarted process: `serve --resume`).
     pub fn load(name: &str) -> Result<Vault, String> {
         let r = kr::persistent()?;
-        let s = kr::search(name, r).ok_or_else(|| format!("vault {name}: no file key in the keyring (erased, rebooted or never made)"))?;
+        let s = kr::search_err(name, r).map_err(|e| match e.raw_os_error() {
+            Some(EKEYEXPIRED) => format!("vault {name}: the file key EXPIRED in the keyring (a pause longer than its timeout): the sealed state is unrecoverable, fail closed"),
+            Some(EKEYREVOKED) => format!("vault {name}: the file key was revoked"),
+            _ => format!("vault {name}: no file key in the keyring (erased, rebooted, expired with its keyring, or never made)"),
+        })?;
         let mut key = Box::new([0u8; 32]);
         kr::read(s, &mut key)?;
         Ok(Vault { name: name.to_string(), key, serial: Some(s) })
@@ -135,6 +166,27 @@ impl Vault {
     /// A vault of a given key, in memory only (the post-erasure attempt with the zero key; tests).
     pub fn with_key(name: &str, key: [u8; 32]) -> Vault {
         Vault { name: name.to_string(), key: Box::new(key), serial: None }
+    }
+
+    /// Reset the persistent keyring's expiry timer (KEYCTL_GET_PERSISTENT resets it on every call). `seal_to` (every
+    /// checkpoint, every step) and `load` (every resume) call it, so the keyring expires only after
+    /// `persistent_keyring_expiry()` seconds with NO step and no resume: a pause longer than that loses the key, and a
+    /// resume then fails closed (`load`'s "EXPIRED" or "no file key" error), never silently.
+    pub fn refresh(&self) -> Result<(), String> {
+        if self.serial.is_some() {
+            kr::persistent()?;
+        }
+        Ok(())
+    }
+
+    /// The kernel's persistent keyring expiry in seconds (/proc/sys/kernel/keys/persistent_keyring_expiry), when known.
+    pub fn persistent_keyring_expiry() -> Option<u64> {
+        kr::expiry_secs()
+    }
+
+    /// TEST ONLY: give the kernel key a timeout of `secs` (KEYCTL_SET_TIMEOUT), to simulate an expiry.
+    pub fn expire_after_for_test(&self, secs: u32) -> Result<(), String> {
+        kr::set_timeout(self.serial.ok_or("not in the keyring")?, secs)
     }
 
     /// The key's 8-byte words, for the memory scan's canaries.
@@ -180,6 +232,7 @@ impl Vault {
 
     /// Seal `plain` into `path`: a temporary file (mode 0600), synced, renamed over it.
     pub fn seal_to(&self, path: &Path, role: &str, plain: Vec<u8>) -> std::io::Result<()> {
+        self.refresh().map_err(std::io::Error::other)?;
         let blob = self.seal(role, plain);
         let tmp = path.with_extension("sealing");
         {
