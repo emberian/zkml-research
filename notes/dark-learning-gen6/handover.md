@@ -226,6 +226,18 @@ seats' report JSONs. Each seat runs on its own box: bb2, forge and hbox, with hb
   - new seat: `dl-custodian join J ... --after-step K --mesh6 .. --tls6 DIR6 --handover-tape FILE --prove`;
   - self-handover: `--self-handover-tape FILE --recover-mesh .. --recover-mesh6 .. --tapes2 PAT --owner-msgs2 PAT`.
 
+### Pending: the proof lane's bundle cut (a1cf256613423191a, announced 2026-11-07)
+The cut gives profiles ledger and demo SPLIT "balanced", MERKLE "multi" (multiproofs) and K_L 512.
+- **Follows automatically:** the handover codecs on both sides (proofwire schemas and walk; wire.rs readers and
+  writers).
+- **Breaks:** `handover::byte_len` hardcodes the old layout (one path per column). Rederive it from wire::mp_needed,
+  or replace it with the encoder's length; it is asserted in handover_vs_python and the dl-handover bench.
+- **To re-run once it lands:**
+  - regenerate the handover_vectors.py vectors and the HANDOVER_DUMP dirs;
+  - run handover_prover_vs_python, handover_vs_python and handover_production;
+  - re-run with the old vectors under "<profile>-sq";
+  - redo the d = 4096 bench.
+
 ### Run-level abort test (self-handover)
 - **Steps:** run darkstep or dl-custodian for k steps, inject an SPDZ abort mid-step k+1 (a MAC-check failure; the
   deploy lane's attack hook), then self-handover at k. The run continues from k under the new MAC key and fresh
