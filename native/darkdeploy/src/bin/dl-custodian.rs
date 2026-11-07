@@ -195,6 +195,15 @@ fn save_handover_proof(args: &[String], dir: &Path, epoch: i64, proof: &[u8]) ->
     Ok(())
 }
 
+/// The weight shares and step of a checkpoint, without leaving its alpha share in the caller's frame.
+#[inline(never)]
+fn reload_shares(path: &Path) -> Result<(darkstep::serve::Shares, usize), String> {
+    let mut ck = serve::read_checkpoint(path)?;
+    let out = (std::mem::take(&mut ck.w), ck.step);
+    unsafe { std::ptr::write_volatile(&mut ck.alpha_i, 0) };
+    Ok(out)
+}
+
 /// The serve arguments after a self-handover at refused step k: the remaining steps, the new key's tapes and owner
 /// messages (--tapes2, --owner-msgs2; their chunks start at --chunk-first2, default k), and no second recovery.
 fn after_self_handover(args: &[String], k: usize, end_step: usize) -> Vec<String> {
@@ -450,12 +459,15 @@ impl Prove {
         let args = self.args.clone();
         let mut st = st;
         let (i, d, t) = (st.i, st.pf.d, st.pf.t);
-        let ck = serve::read_checkpoint(&dir.join(format!("ckpt_P{i}.bin")))?;
-        if ck.step != k {
-            return Err(format!("self-handover: the checkpoint is at step {}, the refused step is {k}", ck.step));
+        let (w, ck_step) = reload_shares(&dir.join(format!("ckpt_P{i}.bin")))?;
+        if ck_step != k {
+            return Err(format!("self-handover: the checkpoint is at step {ck_step}, the refused step is {k}"));
         }
-        st.w = Some(ck.w);
-        st.step = ck.step;
+        st.w = Some(w);
+        st.step = ck_step;
+        // the refused step's dead frames below this one used the alpha share (its MAC check, its openings): scrub
+        // them on this thread (the roles run on their own threads, and old_side scrubs only its own)
+        side::scrub_stack(4096);
         let tlsdir = PathBuf::from(flag(&args, "--tls").unwrap());
         let (id, certs) = serve::identity(&tlsdir, i);
         let timeout = timeout_of(&args);

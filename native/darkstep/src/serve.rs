@@ -340,6 +340,8 @@ pub fn dial_owner(addr: std::net::SocketAddr, id: &crate::tls::Identity, owner_c
     let deadline = Instant::now() + timeout;
     let s = loop {
         match std::net::TcpStream::connect(addr) {
+            // a self-connection (no listener yet on an ephemeral-range port) is not the owner: retry
+            Ok(s) if s.local_addr().ok() == s.peer_addr().ok() => std::thread::sleep(std::time::Duration::from_millis(100)),
             Ok(s) => break s,
             Err(e) if Instant::now() > deadline => return Err(format!("owner at {addr}: {e}")),
             Err(_) => std::thread::sleep(std::time::Duration::from_millis(100)),

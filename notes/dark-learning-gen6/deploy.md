@@ -615,3 +615,27 @@ check: b838f9dc).
 
 **Agents**: coordinator aa3209e8d10294bc2; prep a5caa478aac6a0658; proof a8ee5558dd7fe5a45; handover
 ac3b201ab6a366ff6; train ad36593ec00657538.
+
+### Run 11 (self-handover, d = 4096) and run 12 (rotation rerun) [EXECUTED]
+
+- **run11** (08:19-08:27 UTC, test build for `--attack wrong_return:1` on seat 1; wired key chunk w4096h3, then the
+  prep lane's wired-sh key ho-sh / ho-sh-steps): step 0 REFUSED at all three ("HE outer: Freivalds check failed");
+  every seat recovered from its checkpoint; old role 50.6 / 76.5 / 77.6 s (reshare 2.7-2.8, handover proof 6.6-6.7,
+  erase 0.17-0.23 s), new role 22.0 s, MAC check under the new key ok, handover proof 129,790,908 B; ledger
+  replicas rotated to the same set at epoch 1; step 0 redone (138.8 s), step 1 (86.4 s), both ACCEPT with one
+  transcript and proved at epoch 1. Prove 20-28 s and verify 9.5-10 s (the handover lane's memset-speed zeroing;
+  45 / 34 s in run 9). The handover lane's checker: 31/37. Reds: (i) the binary on the boxes predated 68083b34, so
+  the old role got no files and no scan paths (the refused step's tape is still on disk: this is how it shows);
+  (ii) 5 real alpha residues per seat (the partially moved checkpoint struct in self_handover's frame, and the
+  refused step's dead frames on the main thread); the rest were false positives on the public-genesis carry (fixed
+  on its side, e9c14b1f). Fixed here: `reload_shares` takes only w and step from the checkpoint and zeroes its
+  alpha_i in that frame; `side::scrub_stack(4096)` on the main thread before the roles spawn. Rerun pending fresh
+  chunks on the wired-new committee.
+- **run12** (08:32 UTC, rotation rerun on w4096h2 / ho-new2): died before the handover. New seat 1 (forge) dialled
+  old seat 0's six-party port 47330 on the same box before it listened, and the socket connected to itself (TCP
+  self-connect: 473xx is inside the ephemeral range 32768-60999): "TLS handshake ... got ClientHello". Stopped by
+  PID files. Fixed: `resil::dial` and `serve::dial_owner` reject a socket whose local and peer addresses are equal
+  and retry; run configs move to ports below 32768. It consumed w4096h2 and ho-new2 (the registry recorded both);
+  the wired key's MP-SPDZ files were not reached.
+- `native/deploy/sync.sh` now ships `git archive` of a commit, not the shared working tree (another lane's
+  half-written darkproof edit would otherwise reach the boxes); binaries on a box are always one commit.
