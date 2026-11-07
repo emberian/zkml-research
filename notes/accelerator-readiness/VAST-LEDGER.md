@@ -23,3 +23,5 @@ rate x elapsed estimate is beside it).
 | end | 2026-11-07 00:29Z | 59488860 | 59433350 H100 SXM | 2.335 | accel-h100-mma-03 | $0.38 | est $0.38 over 9.9 min; destroyed+verified True; reason ok; credit after $23.29 |
 | start | 2026-11-07 00:31Z | 59490068 | 59157383 B200 | 12.510 | accel-b200-mma-03 |  | cap $7.00, watchdog 34 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $23.24 |
 | end | 2026-11-07 00:38Z | 59490068 | 59157383 B200 | 12.510 | accel-b200-mma-03 | $1.25 | est $1.42 over 6.8 min; destroyed+verified True; reason ssh_unreachable; credit after $21.98 |
+| start | 2026-11-07 17:33Z | 59603385 | 57922449 Tesla V100 | 0.267 | dl-gen6-cloud-seat-01 |  | cap $10.00, watchdog 1800 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $21.98 |
+| start | 2026-11-07 17:34Z | 59603497 | 59433367 H100 SXM | 2.335 | accel-h100-tower-e2e-01 |  | cap $2.30, watchdog 57 min, image nvidia/cuda:12.9.1-devel-ubuntu24.04, credit before $21.98 |
