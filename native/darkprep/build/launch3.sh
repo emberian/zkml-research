@@ -32,6 +32,11 @@ elif [ "${LAYOUT:-}" = reh-old ] || [ "${LAYOUT:-}" = reh-new ]; then
   # TEST: the orchestrator rehearsal's committees (seats.sh rehold / rehnew), on the wired seats
   HOST=(dregg-forge bb2 bb2); ROOT=(/srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
   WRAP=("${WRAP[0]}" "${WRAP[1]}" "${WRAP[1]}"); MP=(${LAYOUT}0/mpspdz ${LAYOUT}1/mpspdz ${LAYOUT}2/mpspdz)
+elif L=${LAYOUT:-}; [ "${L#dir:}" != "$L" ]; then
+  # LAYOUT=dir:NAME: a seat set from seats.sh fresh NAME PORT (0 forge, 1 bb2, 2 bb2), runtimes NAME<I>/mpspdz
+  N=${L#dir:}
+  HOST=(dregg-forge bb2 bb2); ROOT=(/srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
+  WRAP=("${WRAP[0]}" "${WRAP[1]}" "${WRAP[1]}"); MP=(${N}0/mpspdz ${N}1/mpspdz ${N}2/mpspdz)
 elif [ "${LAYOUT:-}" = wired-new-sh2 ]; then
   # TEST: the wired-new-sh seats after an abort (seats.sh newsh2)
   HOST=(bb2 dregg-forge bb2); ROOT=(/home/build/lanes/dl-gen6-prep /srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
