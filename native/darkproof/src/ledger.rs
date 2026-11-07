@@ -48,6 +48,34 @@ fn jroots(r: &BTreeMap<String, Vec<Hash>>) -> String {
     format!("{{{}}}", items.join(", "))
 }
 
+/// A step record's "pending" (proofwire.pending_json, as json.dumps writes it).
+fn jpending(p: &crate::defer::Pending) -> String {
+    let pts: Vec<String> = ["W1", "W2"]
+        .iter()
+        .map(|k| format!("{}: [{}]", jstr(k), p.points[*k].iter().map(|v| v.to_string()).collect::<Vec<_>>().join(", ")))
+        .collect();
+    let crs: Vec<String> = crate::defer::CARRY_IN
+        .iter()
+        .map(|k| format!("{}: [{}]", jstr(k), p.carry_roots[*k].iter().map(|h| jstr(&hex(h))).collect::<Vec<_>>().join(", ")))
+        .collect();
+    format!("{{\"points\": {{{}}}, \"carry_roots\": {{{}}}}}", pts.join(", "), crs.join(", "))
+}
+
+fn pending_of(v: &Value) -> Result<crate::defer::Pending, String> {
+    let bad = || "a step record's pending claims are malformed (fail closed)".to_string();
+    let mut points = BTreeMap::new();
+    for k in ["W1", "W2"] {
+        let a = v["points"][k].as_array().ok_or_else(bad)?;
+        points.insert(k.to_string(), a.iter().map(|x| x.as_u64().ok_or_else(bad)).collect::<Result<Vec<u64>, String>>()?);
+    }
+    let mut carry_roots = BTreeMap::new();
+    for k in crate::defer::CARRY_IN {
+        let a = v["carry_roots"][k].as_array().ok_or_else(bad)?;
+        carry_roots.insert(k.to_string(), a.iter().map(|h| h.as_str().and_then(unhex32).ok_or_else(bad)).collect::<Result<Vec<Hash>, String>>()?);
+    }
+    Ok(crate::defer::Pending { points, carry_roots })
+}
+
 fn jlist(xs: &[String]) -> String {
     format!("[{}]", xs.iter().map(|s| jstr(s)).collect::<Vec<_>>().join(", "))
 }
@@ -63,6 +91,10 @@ pub fn jparams(p: &Profile) -> String {
     if p.mask {
         s.pop();
         s.push_str(", \"ZKSC\": \"mask\"}");
+    }
+    if p.defer {
+        s.pop();
+        s.push_str(", \"DEFER\": true}");
     }
     s
 }
@@ -109,6 +141,12 @@ pub struct Ledger {
     pub released: Option<(u64, u64)>,
     /// the genesis record's roots
     pub genesis_roots: BTreeMap<String, Vec<Hash>>,
+    /// cut E: the head step's undischarged claims (None: the head is final)
+    pub pending: Option<crate::defer::Pending>,
+    /// cut E: a closing proof discharged the head; no further step, release or rotation
+    pub closed: bool,
+    /// cut E: step -> "final (how)" | "pending" (the replay tool's status line)
+    pub status: BTreeMap<u64, String>,
     /// public genesis (program.pg): the roots this process recomputed from the cfg (check_public_genesis). Until
     /// they equal the genesis record's, the ledger accepts nothing (fail closed).
     pg_verified: Option<BTreeMap<String, Vec<Hash>>>,
@@ -191,6 +229,9 @@ impl Ledger {
             custodians: vec![],
             released: None,
             genesis_roots: BTreeMap::new(),
+            pending: None,
+            closed: false,
+            status: BTreeMap::new(),
             pg_verified: None,
         };
         l.reload()?;
@@ -254,6 +295,9 @@ impl Ledger {
         self.genesis_roots = self.parent.clone();
         self.next_leaf = 0;
         self.released = None;
+        self.pending = None;
+        self.closed = false;
+        self.status.clear();
         self.custodians =
             g["custodians"].as_array().ok_or("custodians")?.iter().map(|c| c.as_str().unwrap_or("").to_string()).collect();
         for (no, rec) in self.recs[1..].iter().enumerate() {
@@ -270,13 +314,30 @@ impl Ledger {
                         (Some(m), Some(c)) if c <= m => self.released = Some((m, c)),
                         _ => return Err(format!("ledger line {no}: release record malformed (fail closed)")),
                     }
+                    Self::discharge(&mut self.pending, &mut self.status, self.step, "the release opened its child");
+                }
+                Some("close") => {
+                    if (rec["epoch"].as_u64(), rec["step"].as_u64()) != (Some(self.epoch), Some(self.step)) || self.pending.is_none() {
+                        return Err(format!("ledger line {no}: a closing record not at a pending head (fail closed)"));
+                    }
+                    Self::discharge(&mut self.pending, &mut self.status, self.step, "closing proof");
+                    self.closed = true;
                 }
                 Some("step") => {
                     if (rec["epoch"].as_u64(), rec["step"].as_u64()) != (Some(self.epoch), Some(self.step + 1)) {
                         return Err(format!("ledger line {no} breaks the sequence (fail closed)"));
                     }
+                    if self.closed {
+                        return Err(format!("ledger line {no}: a step after the closing record (fail closed)"));
+                    }
+                    Self::discharge(&mut self.pending, &mut self.status, self.step, &format!("step {} opened its child", self.step + 1));
                     self.step += 1;
                     self.parent = roots_of(&rec["child"])?;
+                    self.pending = match rec.get("pending") {
+                        None | Some(Value::Null) => None,
+                        Some(v) => Some(pending_of(v).map_err(|e| format!("ledger line {no}: {e}"))?),
+                    };
+                    self.status.insert(self.step, if self.pending.is_some() { "pending".into() } else { "final".into() });
                     // the anti-reuse counter: an owner-bound ledger needs an integer leaf above the last one, in
                     // the owner tree; an unbound one needs null (codex review, finding 5)
                     match (self.owner_pk.is_some(), &rec["leaf"]) {
@@ -304,6 +365,30 @@ impl Ledger {
             }
         }
         Ok(())
+    }
+
+    fn discharge(pending: &mut Option<crate::defer::Pending>, status: &mut BTreeMap<u64, String>, step: u64, how: &str) {
+        if pending.take().is_some() {
+            status.insert(step, format!("final ({how})"));
+        }
+    }
+
+    /// Cut E: a halted run's standalone closing proof (wire::encode_close) discharges the head's pending claims.
+    /// Terminal for steps: the head's W have had their one opening.
+    pub fn close(&mut self, lp: &LigParams, blob: &[u8]) -> Result<(), String> {
+        let _l = self.lock()?;
+        self.reload()?;
+        let pend = self.pending.clone().ok_or("the head is not pending: nothing to close")?;
+        let ctx = Ctx::new(&self.model, self.epoch, self.step);
+        wire::verify_close(&self.pr, lp, blob, &ctx, &self.parent, &pend, self.d)?;
+        let line = format!(
+            "{{\"kind\": \"close\", \"epoch\": {}, \"step\": {}, \"digest\": {}}}",
+            self.epoch,
+            self.step,
+            jstr(&hex(&Sha256::digest(blob)))
+        );
+        append(&self.path, &line, false)?;
+        self.reload()
     }
 
     pub fn head(&self) -> (Ctx, BTreeMap<String, Vec<Hash>>) {
@@ -339,6 +424,9 @@ impl Ledger {
         if self.released.is_some() {
             return Err("rotation refused: the ledger is released".into());
         }
+        if self.pending.is_some() || self.closed {
+            return Err("rotation refused: the head is pending (cut E) and the handover proof does not discharge it yet".into());
+        }
         if handover.is_empty() {
             return Err("rotation refused: no handover proof".into());
         }
@@ -373,8 +461,11 @@ impl Ledger {
         if self.step == 0 {
             return Err("no step accepted: nothing to release".into());
         }
+        if self.closed {
+            return Err("the ledger is closed: the head's W have had their one opening".into());
+        }
         let ctx = Ctx::new(&self.model, self.epoch, self.step);
-        let (m, c) = wire::verify_release(&self.pr, lp, blob, &ctx, &self.parent, &pol.x, &pol.labels, self.program, pol.ncls, self.d, pol.kc)?;
+        let (m, c) = wire::verify_release_d(&self.pr, lp, blob, &ctx, &self.parent, &pol.x, &pol.labels, self.program, pol.ncls, self.d, pol.kc, self.pending.as_ref())?;
         let line = format!(
             "{{\"kind\": \"release\", \"epoch\": {}, \"step\": {}, \"M\": {}, \"C\": {}, \"digest\": {}, \"policy\": {}}}",
             ctx.epoch,
@@ -426,15 +517,19 @@ impl Ledger {
         if self.released.is_some() {
             return Err("the ledger is released: no further steps".into());
         }
+        if self.closed {
+            return Err("the ledger is closed: the head's W were opened by the closing proof".into());
+        }
         let (ctx, parent) = self.head();
-        let acc = wire::verify_step(&self.pr, lp, blob, &ctx, &parent, tables, self.d, self.program, self.owner_pk.as_ref(), self.next_leaf)?;
+        let acc = wire::verify_step_d(&self.pr, lp, blob, &ctx, &parent, tables, self.d, self.program, self.owner_pk.as_ref(), self.next_leaf, self.pending.as_ref())?;
         let line = format!(
-            "{{\"kind\": \"step\", \"epoch\": {}, \"step\": {}, \"digest\": {}, \"child\": {}, \"leaf\": {}}}",
+            "{{\"kind\": \"step\", \"epoch\": {}, \"step\": {}, \"digest\": {}, \"child\": {}, \"leaf\": {}{}}}",
             ctx.epoch,
             ctx.step,
             jstr(&hex(&Sha256::digest(blob))),
             jroots(&acc.child),
-            acc.leaf.map(|l| l.to_string()).unwrap_or_else(|| "null".into())
+            acc.leaf.map(|l| l.to_string()).unwrap_or_else(|| "null".into()),
+            acc.pending.as_ref().map(|p| format!(", \"pending\": {}", jpending(p))).unwrap_or_default()
         );
         append(&self.path, &line, false)?;
         self.reload()

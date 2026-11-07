@@ -52,6 +52,8 @@ pub struct StepProof {
     pub secs: f64,
     /// field elements this party sent during the proof
     pub sent: u64,
+    /// DEFER: this step's pending claims (this party's side), for the discharging proof
+    pub deferred: Option<crate::defer::DeferIn>,
 }
 
 /// Public genesis (StepParams.pg): the public initial weights W1, W2 (d x d, row-major, integers) enter custody as a
@@ -78,6 +80,9 @@ fn public_commit(
     me: Option<usize>,
 ) -> (Option<BTreeMap<String, PcsParty>>, BTreeMap<String, Vec<Hash>>) {
     assert!(w1.len() == d * d && w2.len() == d * d, "public genesis: W must be d x d");
+    // DEFER: a W has one life (cosnark_zk.w_pcs)
+    let pw = pr.w_life();
+    let pr = &pw;
     let zero = PcsParty::commit_public(pr, &vec![0u64; d * d], "zero");
     let mut coms = BTreeMap::new();
     let mut roots = BTreeMap::new();
@@ -136,8 +141,24 @@ pub fn prove_step(
     prm: StepParams,
     net: &mut dyn Net,
     ctx: &Ctx,
+    st: PartyStep,
+    carry: Option<BTreeMap<String, PcsParty>>,
+) -> Result<StepProof, String> {
+    prove_step_d(pr, lp, tables, prm, net, ctx, st, carry, None)
+}
+
+/// prove_step with DEFER's input: this party's side of the parent's pending claims (StepProof.deferred).
+#[allow(clippy::too_many_arguments)]
+pub fn prove_step_d(
+    pr: &Profile,
+    lp: &LigParams,
+    tables: &(Vec<u64>, Vec<u64>),
+    prm: StepParams,
+    net: &mut dyn Net,
+    ctx: &Ctx,
     mut st: PartyStep,
     carry: Option<BTreeMap<String, PcsParty>>,
+    dfr: Option<crate::defer::DeferIn>,
 ) -> Result<StepProof, String> {
     let t0 = std::time::Instant::now();
     let sent0 = net.sent();
@@ -182,7 +203,8 @@ pub fn prove_step(
                 .iter()
                 .map(|k| {
                     let s: Vec<u64> = wires[*k].iter().map(|x| x.0).collect();
-                    (k.to_string(), PcsParty::commit(pr, &s, k, i, &det))
+                    // DEFER: a W has one life (cosnark_zk.w_pcs)
+                    (k.to_string(), PcsParty::commit(&pr.w_life(), &s, k, i, &det))
                 })
                 .collect();
             let all = gather_hashes(net, &[g["W1"].root, g["W2"].root]);
@@ -206,7 +228,8 @@ pub fn prove_step(
         lig_dealer: None,
         lig_tape: if det.on() { None } else { Some(lig_s) },
     };
-    let mut so = spine::prove(&si, net, &mut sp, carry, None)?;
+    let mut so = spine::prove_d(&si, net, &mut sp, carry, None, dfr)?;
+    let deferred = so.deferred.take();
     for k in spine::MAT {
         wires.remove(k);
     }
@@ -233,7 +256,7 @@ pub fn prove_step(
     };
     let mo = middle::prove(&mi, net, &mut sp, spine_coms, None)?;
     let blob = wire::encode_step(pr, ctx, d, n, true, &so.proof, &st.public, &mo.proof, rec.n_prep(), rec.had.len(), None);
-    Ok(StepProof { blob, child, genesis_roots, secs: t0.elapsed().as_secs_f64(), sent: net.sent() - sent0 })
+    Ok(StepProof { deferred, blob, child, genesis_roots, secs: t0.elapsed().as_secs_f64(), sent: net.sent() - sent0 })
 }
 
 /// The (Ta, Tb, Tc) triples of a tape section: `count` triples from entry `from` (None: to the tape's end).
@@ -373,8 +396,24 @@ pub fn prove_release(
     net: &mut dyn Net,
     ctx: &Ctx,
     pol: &Policy,
+    st: PartyRelease,
+    head: BTreeMap<String, PcsParty>,
+) -> Result<(Vec<u8>, f64), String> {
+    prove_release_d(pr, lp, prm, net, ctx, pol, st, head, None)
+}
+
+/// prove_release with DEFER: dfr = this party's side of the head step's pending claims, discharged by the release.
+#[allow(clippy::too_many_arguments)]
+pub fn prove_release_d(
+    pr: &Profile,
+    lp: &LigParams,
+    prm: StepParams,
+    net: &mut dyn Net,
+    ctx: &Ctx,
+    pol: &Policy,
     mut st: PartyRelease,
     head: BTreeMap<String, PcsParty>,
+    dfr: Option<crate::defer::DeferIn>,
 ) -> Result<(Vec<u8>, f64), String> {
     let t0 = std::time::Instant::now();
     let (i, n, d) = (st.i, st.n, st.d);
@@ -416,7 +455,7 @@ pub fn prove_release(
         ignore_range: pol.ignore_range,
         cst_patch: None,
     };
-    let mo = middle::prove(&mi, net, &mut sp, head, None)?;
+    let mo = middle::prove_d(&mi, net, &mut sp, head, None, dfr)?;
     let blob = wire::encode_release(pr, ctx, d, n, m, pol.ncls, &st.public, &mo.proof, &rec);
     Ok((blob, t0.elapsed().as_secs_f64()))
 }

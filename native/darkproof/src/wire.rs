@@ -1,5 +1,6 @@
 //! proofwire.py: the step bundle's bytes (schema-driven: every length is a function of d, n, the pinned profile and
 //! the verifier's own replay of the step against the public transcript) and the untrusted-input verifier.
+use crate::defer::Pending;
 use crate::field;
 use crate::h::{py_str_repr, Hash};
 use crate::ligero::LigProof;
@@ -297,7 +298,10 @@ pub const RNAMES: [&str; 4] = ["z1", "z2", "b", "bg"];
 
 fn spine_sizes(pr: &Profile, d: usize, sh: &BTreeMap<String, Shape>, bind: bool) -> Vec<usize> {
     let ld = log2(d);
-    let mut s = spine::Sched::<1>::default();
+    let mut s = spine::Sched::<1> { defer: pr.defer, ..Default::default() };
+    if sh.contains_key("c1p") {
+        s.dpts = Some(vec![vec![[0]; 2 * ld]; 2]);
+    }
     for nm in RNAMES {
         s.scs.insert(nm.into(), (vec![[0]; ld], vec![[0]; ld]));
     }
@@ -341,8 +345,13 @@ fn sorted_specs(gm: &crate::gmask::GMask) -> Vec<(String, usize, usize)> {
     sp
 }
 
+/// The commitments a step opens (cosnark_zk.opened): under DEFER, not its children.
+fn opened(pr: &Profile, sh: &BTreeMap<String, Shape>) -> BTreeMap<String, Shape> {
+    sh.iter().filter(|(k, _)| !(pr.defer && (k.as_str() == "W1n" || k.as_str() == "W2n"))).map(|(k, v)| (k.clone(), v.clone())).collect()
+}
+
 pub fn write_spine(w: &mut W, pr: &Profile, n: usize, d: usize, chained: bool, bind: bool, p: &SpineProof) {
-    let sh = spine::shapes(pr, d, chained, bind);
+    let sh = spine::shapes_d(pr, d, chained, bind, p.roots.contains_key("c1p"));
     let ld = log2(d);
     w_roots(w, n, &sh, &p.roots);
     if pr.mask {
@@ -357,12 +366,17 @@ pub fn write_spine(w: &mut W, pr: &Profile, n: usize, d: usize, chained: bool, b
     }
     w.hs(&p.eval_roots, n);
     w.hs(&p.mask_roots, n);
-    w_prox_cols_e(w, pr, n, &sh, &p.prox, &p.pcs_cols, pr.ext);
+    w_prox_cols_e(w, pr, n, &opened(pr, &sh), &p.prox, &p.pcs_cols, pr.ext);
     w_ligero(w, pr, n, &spine_sizes(pr, d, &sh, bind), &p.ligero);
 }
 
 pub fn read_spine(r: &mut R, pr: &Profile, n: usize, d: usize, chained: bool, bind: bool) -> PR<SpineProof> {
-    let sh = spine::shapes(pr, d, chained, bind);
+    read_spine_d(r, pr, n, d, chained, bind, false)
+}
+
+/// read_spine with DEFER's deferred_in (the parent pending: the step carries the previous carries c1p, c2p).
+pub fn read_spine_d(r: &mut R, pr: &Profile, n: usize, d: usize, chained: bool, bind: bool, deferred_in: bool) -> PR<SpineProof> {
+    let sh = spine::shapes_d(pr, d, chained, bind, deferred_in);
     let ld = log2(d);
     let mut parts = r_pcs(r, pr, n, &sh)?;
     let mut round_roots = BTreeMap::new();
@@ -381,7 +395,7 @@ pub fn read_spine(r: &mut R, pr: &Profile, n: usize, d: usize, chained: bool, bi
     }
     let eval_roots = r.hs(n)?;
     let mask_roots = r.hs(n)?;
-    r_prox_cols_e(r, pr, n, &sh, &mut parts, pr.ext)?;
+    r_prox_cols_e(r, pr, n, &opened(pr, &sh), &mut parts, pr.ext)?;
     let ligero = r_ligero(r, pr, n, &spine_sizes(pr, d, &sh, bind))?;
     Ok(SpineProof { roots: parts.0, round_roots, eval_roots, mask_roots, prox: parts.1, pcs_cols: parts.2, ligero, g_roots, g_open, rounds })
 }
@@ -396,13 +410,20 @@ struct MShape {
     nks: usize,
 }
 
-fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool, io: Option<&step::Io>) -> MShape {
-    let (lens, sh) = middle::public_shapes_io(pr, n_prep, n_had, d, bind, io);
+#[allow(clippy::too_many_arguments)]
+fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool, io: Option<&step::Io>, deferred_in: bool) -> MShape {
+    let (lens, sh) = middle::shapes_d(pr, n_prep, n_had, d, bind, io, deferred_in);
     let lg = |x: usize| crate::pcs::bitlen(x - 1);
     let lh = lg(lens["A"]);
     let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
     let rb = vec![[0u64]; log2(d)];
-    let ev = middle::evaluations::<1>(&lens, &vec![[0]; lh], &vec![[0]; lmax], if bind { Some(&rb) } else { None });
+    let mut ev = middle::evaluations::<1>(&lens, &vec![[0]; lh], &vec![[0]; lmax], if bind { Some(&rb) } else { None });
+    if deferred_in {
+        // GZ.deferred_evals: the head W's pending claims (the layout needs only the names)
+        for k in ["W1", "c1p", "W2", "c2p"] {
+            ev.push((k.to_string(), Vec::new()));
+        }
+    }
     let ks: Vec<String> = lens.keys().cloned().collect();
     if pr.mask {
         let gm = crate::gmask::GMask::new(crate::gmask::middle_specs(lh, lmax, &ks), 0, pr.k_l, pr.ext);
@@ -422,7 +443,7 @@ pub fn write_middle(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, 
 
 #[allow(clippy::too_many_arguments)]
 pub fn write_middle_io(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, io: Option<&step::Io>, p: &MiddleProof) {
-    let ms = middle_shape(pr, n_prep, n_had, d, bind, io);
+    let ms = middle_shape(pr, n_prep, n_had, d, bind, io, p.roots.contains_key("c1p"));
     w_roots(w, n, &ms.sh, &p.roots);
     let e = pr.ext;
     if pr.mask {
@@ -460,7 +481,13 @@ pub fn read_middle(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize, n
 
 #[allow(clippy::too_many_arguments)]
 pub fn read_middle_io(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, io: Option<&step::Io>) -> PR<MiddleProof> {
-    let ms = middle_shape(pr, n_prep, n_had, d, bind, io);
+    read_middle_io_d(r, pr, n, d, n_prep, n_had, bind, io, false)
+}
+
+/// read_middle_io with DEFER's deferred_in (the release over a pending head carries its carries c1p, c2p).
+#[allow(clippy::too_many_arguments)]
+pub fn read_middle_io_d(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, io: Option<&step::Io>, deferred_in: bool) -> PR<MiddleProof> {
+    let ms = middle_shape(pr, n_prep, n_had, d, bind, io, deferred_in);
     let mut parts = r_pcs(r, pr, n, &ms.sh)?;
     let e = pr.ext;
     let (mut zc_roots, mut lsc_roots, mut g_roots, mut g_open, mut zc, mut lsc) =
@@ -586,8 +613,27 @@ pub fn verify_release(
     d_pinned: usize,
     kc: u32,
 ) -> Result<(usize, u64), String> {
+    verify_release_d(pr, lp, blob, expect, head_roots, x, labels, prm, ncls, d_pinned, kc, None)
+}
+
+/// verify_release with DEFER: dfr = the head's pending claims from the ledger (the release discharges them).
+#[allow(clippy::too_many_arguments)]
+pub fn verify_release_d(
+    pr: &Profile,
+    lp: &crate::ligero::LigParams,
+    blob: &[u8],
+    expect: &Ctx,
+    head_roots: &BTreeMap<String, Vec<Hash>>,
+    x: &[u64],
+    labels: &[usize],
+    prm: StepParams,
+    ncls: usize,
+    d_pinned: usize,
+    kc: u32,
+    dfr: Option<&Pending>,
+) -> Result<(usize, u64), String> {
     let res = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        verify_release_inner(pr, lp, blob, expect, head_roots, x, labels, prm, ncls, d_pinned, kc)
+        verify_release_inner(pr, lp, blob, expect, head_roots, x, labels, prm, ncls, d_pinned, kc, dfr)
     }));
     match res {
         Ok(r) => r,
@@ -608,6 +654,7 @@ fn verify_release_inner(
     ncls: usize,
     d_pinned: usize,
     kc: u32,
+    dfr: Option<&Pending>,
 ) -> Result<(usize, u64), String> {
     let m = labels.len();
     let mut r = R { d: blob, o: 0 };
@@ -656,7 +703,7 @@ fn verify_release_inner(
         return Err("parse: public transcript longer than the release program".into());
     }
     let rel = (|| -> PR<_> {
-        let p = read_middle_io(&mut r, pr, n, d, rec.n_prep(), rec.had.len(), false, rec.io.as_ref())?;
+        let p = read_middle_io_d(&mut r, pr, n, d, rec.n_prep(), rec.had.len(), false, rec.io.as_ref(), dfr.is_some())?;
         if r.o != r.d.len() {
             return Err("trailing bytes".into());
         }
@@ -667,7 +714,7 @@ fn verify_release_inner(
     if c > m as u64 {
         return Err("released count exceeds M".into());
     }
-    middle::verify(pr, lp, n, &rec, d, head_roots, expect, &rel, false, &public).map_err(|e| format!("release: {e}"))?;
+    middle::verify_d(pr, lp, n, &rec, d, head_roots, expect, &rel, false, &public, dfr).map_err(|e| format!("release: {e}"))?;
     Ok((m, c))
 }
 
@@ -688,6 +735,8 @@ pub fn he_field(pr: &Profile) -> Option<u64> {
 pub struct Accepted {
     pub child: BTreeMap<String, Vec<Hash>>,
     pub leaf: Option<u64>,
+    /// DEFER: this step's pending claims (for the ledger record; final when its child is opened)
+    pub pending: Option<Pending>,
 }
 
 fn tuple_repr(model: &str, epoch: u64, step: u64) -> String {
@@ -708,8 +757,26 @@ pub fn verify_step(
     owner_pk: Option<&Hash>,
     min_leaf: u64,
 ) -> Result<Accepted, String> {
+    verify_step_d(pr, lp, blob, expect, parent_roots, tables, d_pinned, prm, owner_pk, min_leaf, None)
+}
+
+/// verify_step with DEFER: dfr = the parent's pending claims from the LEDGER (None: the parent is final).
+#[allow(clippy::too_many_arguments)]
+pub fn verify_step_d(
+    pr: &Profile,
+    lp: &crate::ligero::LigParams,
+    blob: &[u8],
+    expect: &Ctx,
+    parent_roots: &BTreeMap<String, Vec<Hash>>,
+    tables: &(Vec<u64>, Vec<u64>),
+    d_pinned: usize,
+    prm: StepParams,
+    owner_pk: Option<&Hash>,
+    min_leaf: u64,
+    dfr: Option<&Pending>,
+) -> Result<Accepted, String> {
     let res = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        verify_inner(pr, lp, blob, expect, parent_roots, tables, d_pinned, prm, owner_pk, min_leaf)
+        verify_inner(pr, lp, blob, expect, parent_roots, tables, d_pinned, prm, owner_pk, min_leaf, dfr)
     }));
     match res {
         Ok(r) => r,
@@ -729,6 +796,7 @@ fn verify_inner(
     prm: StepParams,
     owner_pk: Option<&Hash>,
     min_leaf: u64,
+    dfr: Option<&Pending>,
 ) -> Result<Accepted, String> {
     let bind = owner_pk.is_some();
     // the lookup tables are the program's (its domain [t_lo, t_lo + 256)), never the caller's
@@ -769,7 +837,7 @@ fn verify_inner(
         if prm.he && he_field(pr) != Some(field::p()) {
             return Err("the deployed program's field is the HE profile's plaintext modulus".into());
         }
-        let spine = read_spine(&mut r, pr, n, d, true, bind)?;
+        let spine = read_spine_d(&mut r, pr, n, d, true, bind, dfr.is_some())?;
         let cnt = u32::from_be_bytes(r.take(4)?.try_into().unwrap()) as usize;
         // the step program's transcript length is a function of d and the pinned program alone: anything else is
         // refused before a single value is read (Python caps at 2^24, which d = 4096's 84.5M values exceed)
@@ -817,12 +885,99 @@ fn verify_inner(
         }
         leaf = Some(owner::sig_leaf(&sig));
     }
-    spine::verify(pr, lp, n, d, expect, Some(parent_roots), true, &spine, bind, &public)
+    let pending = spine::verify_d(pr, lp, n, d, expect, Some(parent_roots), true, &spine, bind, &public, dfr)
         .map_err(|e| format!("spine: {e}"))?;
     middle::verify(pr, lp, n, &rec, d, &spine.roots, expect, &middle, bind, &public)
         .map_err(|e| format!("middle: {e}"))?;
     let mut child = BTreeMap::new();
     child.insert("W1".to_string(), spine.roots["W1n"].clone());
     child.insert("W2".to_string(), spine.roots["W2n"].clone());
-    Ok(Accepted { child, leaf })
+    Ok(Accepted { child, leaf, pending })
+}
+
+// ----------------------------------------------------------------------------------------- closing proof (cut E)
+pub const CMAGIC: &[u8; 8] = b"DLCLOS01";
+
+fn close_sizes(pr: &Profile, d: usize) -> (BTreeMap<String, Shape>, Vec<usize>) {
+    let sh = crate::defer::close_shapes(pr, d);
+    let nrows = crate::defer::close_rows(&sh, pr.k_l, pr.ext).1;
+    (sh, vec![nrows])
+}
+
+/// proofwire.encode_close: ctx = (model, epoch, step), the head step whose pending claims the proof discharges.
+pub fn encode_close(pr: &Profile, ctx: &Ctx, d: usize, n: usize, p: &crate::defer::CloseProof) -> Vec<u8> {
+    let mut w = W { b: Vec::new() };
+    let mb = ctx.model.as_bytes();
+    assert!((1..=64).contains(&mb.len()));
+    w.b.extend_from_slice(CMAGIC);
+    w.b.extend_from_slice(&(mb.len() as u16).to_be_bytes());
+    w.b.extend_from_slice(mb);
+    w.b.extend_from_slice(&(ctx.epoch as u32).to_be_bytes());
+    w.b.extend_from_slice(&ctx.step.to_be_bytes());
+    w.b.extend_from_slice(&(d as u16).to_be_bytes());
+    w.b.push(n as u8);
+    let (sh, sizes) = close_sizes(pr, d);
+    w_roots(&mut w, n, &sh, &p.roots);
+    w.hs(&p.eval_roots, n);
+    w.hs(&p.mask_roots, n);
+    w_prox_cols_e(&mut w, pr, n, &sh, &p.prox, &p.pcs_cols, pr.ext);
+    w_ligero(&mut w, pr, n, &sizes, &p.ligero);
+    w.b
+}
+
+/// proofwire.verify_close: ctx, head_roots and the pending claims come from the ledger, never from the blob.
+#[allow(clippy::too_many_arguments)]
+pub fn verify_close(
+    pr: &Profile,
+    lp: &crate::ligero::LigParams,
+    blob: &[u8],
+    expect: &Ctx,
+    head_roots: &BTreeMap<String, Vec<Hash>>,
+    pend: &Pending,
+    d_pinned: usize,
+) -> Result<(), String> {
+    let res = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| -> Result<(), String> {
+        let mut r = R { d: blob, o: 0 };
+        let parsed = (|| -> PR<_> {
+            if r.take(8)? != CMAGIC {
+                return Err("bad magic".into());
+            }
+            let ml = u16::from_be_bytes(r.take(2)?.try_into().unwrap()) as usize;
+            if !(1..=64).contains(&ml) {
+                return Err("bad model id length".into());
+            }
+            let model_b = r.take(ml)?.to_vec();
+            let hdr = r.take(15)?;
+            let epoch = u32::from_be_bytes(hdr[0..4].try_into().unwrap()) as u64;
+            let step = u64::from_be_bytes(hdr[4..12].try_into().unwrap());
+            let d = u16::from_be_bytes(hdr[12..14].try_into().unwrap()) as usize;
+            let n = hdr[14] as usize;
+            if (model_b.as_slice(), epoch, step) != (expect.model.as_bytes(), expect.epoch, expect.step) {
+                return Ok(Err("binding mismatch: the closing proof is for another head".to_string()));
+            }
+            if d != d_pinned || n != 3 {
+                return Err("shape differs from the ledger's genesis record".into());
+            }
+            let (sh, sizes) = close_sizes(pr, d);
+            let mut parts = r_pcs(&mut r, pr, n, &sh)?;
+            let eval_roots = r.hs(n)?;
+            let mask_roots = r.hs(n)?;
+            r_prox_cols_e(&mut r, pr, n, &sh, &mut parts, pr.ext)?;
+            let ligero = r_ligero(&mut r, pr, n, &sizes)?;
+            if r.o != r.d.len() {
+                return Err("trailing bytes".into());
+            }
+            Ok(Ok((crate::defer::CloseProof { roots: parts.0, eval_roots, mask_roots, prox: parts.1, pcs_cols: parts.2, ligero }, n, d)))
+        })();
+        let (proof, n, d) = match parsed {
+            Err(e) => return Err(format!("parse: {e}")),
+            Ok(Err(e)) => return Err(e),
+            Ok(Ok(x)) => x,
+        };
+        crate::defer::verify_close(pr, lp, n, d, expect, head_roots, pend, &proof).map_err(|e| format!("close: {e}"))
+    }));
+    match res {
+        Ok(r) => r,
+        Err(_) => Err("parse: panic".into()),
+    }
 }

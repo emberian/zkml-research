@@ -27,7 +27,7 @@ fn roots_of(v: &Value) -> BTreeMap<String, Vec<[u8; 32]>> {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check" | "ext-rows")) && !cfg!(feature = "test-det") {
+    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check" | "ext-rows" | "e-rows")) && !cfg!(feature = "test-det") {
         eprintln!("bit-exact checks need the deterministic hook: build with --features test-det");
         std::process::exit(2);
     }
@@ -44,6 +44,8 @@ fn main() {
         Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ext-rows") => ext_rows(Path::new(&args[2]), &args[3], Path::new(&args[4]), &args[5]),
+        #[cfg(feature = "tcp")]
+        Some("e-rows") => e_rows(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ds-bench") => ds_bench(args[2].parse().unwrap(), &args[3]),
         #[cfg(feature = "tcp")]
@@ -108,6 +110,9 @@ fn check(dir: &Path, tag: &str) {
         carry = Some(parts.into_iter().map(|p| p.0).collect());
     }
     let mut parent = groots.clone();
+    // DEFER: the previous step's pending claims, prover side (per party) and ledger side
+    let mut dfr: Option<Vec<darkproof::defer::DeferIn>> = None;
+    let mut pend: Option<darkproof::defer::Pending> = None;
     let mut names: Vec<String> =
         meta["bundles"].as_object().unwrap().keys().filter(|k| k.starts_with("pw") || k.starts_with("he")).cloned().collect();
     names.sort();
@@ -117,7 +122,7 @@ fn check(dir: &Path, tag: &str) {
         let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
         let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
         let pyb = std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap();
-        let out = make_bundle(&opts, w.clone(), &ctx, carry.take(), None).expect("prove");
+        let out = darkproof::witness::make_bundle_d(&opts, w.clone(), &ctx, carry.take(), None, dfr.take()).expect("prove");
         if let Some(g) = &out.genesis_roots {
             assert_eq!(g, &groots, "genesis roots differ");
         }
@@ -135,18 +140,29 @@ fn check(dir: &Path, tag: &str) {
             out.middle_violates
         );
         let t = std::time::Instant::now();
-        let v = wire::verify_step(&pr, &lp, &pyb, &ctx, &parent, &tables, w.d, prm, None, 0);
-        println!("  native verify of the python bundle: {:?} ({:.2}s)", v.as_ref().map(|_| "accept"), t.elapsed().as_secs_f64());
+        let v = wire::verify_step_d(&pr, &lp, &pyb, &ctx, &parent, &tables, w.d, prm, None, 0, pend.as_ref());
+        println!(
+            "  native verify of the python bundle: {:?} ({:.2}s){}",
+            v.as_ref().map(|_| "accept"),
+            t.elapsed().as_secs_f64(),
+            if pr.defer { if pend.is_some() { ", discharging the parent's pending claims" } else { ", the parent final" } } else { "" }
+        );
         ok_all &= v.is_ok();
         let mut bad = pyb.clone();
         let pos = bad.len() / 2;
         bad[pos] ^= 1;
-        let v2 = wire::verify_step(&pr, &lp, &bad, &ctx, &parent, &tables, w.d, prm, None, 0);
+        let v2 = wire::verify_step_d(&pr, &lp, &bad, &ctx, &parent, &tables, w.d, prm, None, 0, pend.as_ref());
         println!("  native verify, one flipped byte at {pos}: {:?}", v2.as_ref().map(|_| "accept"));
         ok_all &= v2.is_err();
         std::fs::write(dir.join(format!("{tag}_{name}.native.bin")), &out.blob).unwrap();
-        parent = v.map(|a| a.child).unwrap_or(parent);
+        if let Ok(a) = v {
+            parent = a.child;
+            pend = a.pending;
+        }
         carry = Some(out.child);
+        if pr.defer {
+            dfr = Some(out.deferred.into_iter().map(|d| d.expect("DEFER: a step leaves pending claims")).collect());
+        }
     }
     if let Some(b) = meta["bundles"].get("si1") {
         let xy = &meta["si_xy"];
@@ -527,6 +543,8 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                         carry = Some(c);
                         groots = Some(roots);
                     }
+                    // DEFER: this party's side of the previous step's pending claims
+                    let mut dfr: Option<darkproof::defer::DeferIn> = None;
                     for k in 0..steps {
                         let ts = std::time::Instant::now();
                         // ProofRecord.public and .middle_atoms are cumulative over the party's life: keep this step's
@@ -547,7 +565,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                         let ctx = Ctx::new(model, 0, k as u64 + 1);
                         let sp = {
                             let mut tn = TcpRef(&pt.net);
-                            match pool.install(|| prove_step(pr, lp, tables, prm, &mut tn, &ctx, st, carry.take())) {
+                            match pool.install(|| darkproof::run::prove_step_d(pr, lp, tables, prm, &mut tn, &ctx, st, carry.take(), dfr.take())) {
                                 Ok(sp) => sp,
                                 Err(e) => {
                                     println!("step {}: custodian {i}: {e}", k + 1);
@@ -566,6 +584,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                         }
                         blobs.push(sp.blob);
                         carry = Some(sp.child);
+                        dfr = sp.deferred;
                         if std::env::var_os("DP_CARRY_RT").is_some() {
                             // a resumed custodian: the carry through its checkpoint (pcs::write_carry / read_carry)
                             let mut buf = Vec::new();
@@ -838,7 +857,7 @@ fn ds_check(dir: &Path, tag: &str) {
 /// Python's, the native verifier must accept it against the head's roots and the published policy, and refuse a
 /// flipped byte, a wrong count claim (the count's opening changed) and another label set.
 fn rel_check(dir: &Path, tag: &str) {
-    use darkproof::run::{prove_release, PartyRelease, Policy};
+    use darkproof::run::{PartyRelease, Policy};
     use darkproof::spdz::{Dealer, Triple};
     let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
@@ -849,15 +868,25 @@ fn rel_check(dir: &Path, tag: &str) {
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
     let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: det.clone(), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: None };
     let mut carry = None;
+    // DEFER: pw2 discharges pw1's claims; the release discharges pw2's
+    let mut dfr: Option<Vec<darkproof::defer::DeferIn>> = None;
     for name in ["pw1", "pw2"] {
         let b = &meta["bundles"][name];
         let c = b["ctx"].as_array().unwrap();
         let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
         let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
-        let out = make_bundle(&opts, w, &ctx, carry.take(), None).expect("prove");
+        let out = darkproof::witness::make_bundle_d(&opts, w, &ctx, carry.take(), None, dfr.take()).expect("prove");
         assert_eq!(out.blob, std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap(), "{name} differs");
         carry = Some(out.child);
+        if pr.defer {
+            dfr = Some(out.deferred.into_iter().map(|d| d.expect("DEFER: a step leaves pending claims")).collect());
+        }
     }
+    let pend = dfr.as_ref().map(|v| darkproof::defer::pending_of(v));
+    let mut dfr_i: Vec<Option<darkproof::defer::DeferIn>> = match dfr {
+        Some(v) => v.into_iter().map(Some).collect(),
+        None => vec![None, None, None],
+    };
     let rm = &meta["release"];
     let c = rm["ctx"].as_array().unwrap();
     let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
@@ -895,6 +924,7 @@ fn rel_check(dir: &Path, tag: &str) {
             .enumerate()
             .map(|(i, (tp, hd))| {
                 let (nets, w, pr, lp, ctx, pol, det) = (&nets, &w, &pr, &lp, &ctx, &pol, det.clone());
+                let df = dfr_i[i].take();
                 let mut wires = BTreeMap::new();
                 wires.insert("W1".to_string(), w.wires[i]["W1"].clone());
                 wires.insert("W2".to_string(), w.wires[i]["W2"].clone());
@@ -903,7 +933,7 @@ fn rel_check(dir: &Path, tag: &str) {
                 s.spawn(move || {
                     let mut net = nets.take(i);
                     let st = PartyRelease { i, n: 3, d, alpha_i: w.alpha_sh[i], wires, public: w.public.clone(), atoms: w.atoms[i].clone(), triples: tp, det };
-                    prove_release(pr, lp, prm, &mut *net, ctx, pol, st, hd)
+                    darkproof::run::prove_release_d(pr, lp, prm, &mut *net, ctx, pol, st, hd, df)
                 })
             })
             .collect();
@@ -920,13 +950,13 @@ fn rel_check(dir: &Path, tag: &str) {
     );
     std::fs::write(dir.join(format!("{tag}_rel.native.bin")), &blobs[0]).unwrap();
     let heads_r = roots_of(&rm["head_roots"]);
-    let v = wire::verify_release(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10);
+    let v = wire::verify_release_d(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
     println!("  native verify of the python release: {:?} (C = {} in the harness)", v, rm["C"]);
     let mut ok = eq && agree && v.as_ref().map(|r| r.1 == rm["C"].as_u64().unwrap()).unwrap_or(false);
     let mut bad = pyb.clone();
     let pos = bad.len() / 2;
     bad[pos] ^= 1;
-    let v2 = wire::verify_release(&pr, &lp, &bad, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10);
+    let v2 = wire::verify_release_d(&pr, &lp, &bad, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
     println!("  one flipped byte at {pos}: {:?}", v2);
     ok &= v2.is_err();
     // the count's field element (the transcript's last value) claims one more correct example
@@ -934,17 +964,17 @@ fn rel_check(dir: &Path, tag: &str) {
     let mut lie = pyb.clone();
     let cv = u64::from_be_bytes(lie[off..off + 8].try_into().unwrap());
     lie[off..off + 8].copy_from_slice(&(cv + 1).to_be_bytes());
-    let v3 = wire::verify_release(&pr, &lp, &lie, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10);
+    let v3 = wire::verify_release_d(&pr, &lp, &lie, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
     println!("  the released count raised by one (C = {}): {:?}", cv + 1, v3);
     ok &= v3.is_err();
     let mut other = pol.labels.clone();
     other[0] = (other[0] + 1) % ncls;
-    let v4 = wire::verify_release(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &other, prm, ncls, d, 10);
+    let v4 = wire::verify_release_d(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &other, prm, ncls, d, 10, pend.as_ref());
     println!("  verified against another label set: {:?}", v4);
     ok &= v4.is_err();
     let mut wrong_head = heads_r.clone();
     wrong_head.insert("W1".into(), roots_of(&meta["genesis_roots"])["W1"].clone());
-    let v5 = wire::verify_release(&pr, &lp, &pyb, &ctx, &wrong_head, &pol.x, &pol.labels, prm, ncls, d, 10);
+    let v5 = wire::verify_release_d(&pr, &lp, &pyb, &ctx, &wrong_head, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
     println!("  verified against the genesis W1 instead of the head's: {:?}", v5);
     ok &= v5.is_err();
     println!("{}", if ok { "REL-CHECK PASS" } else { "REL-CHECK FAIL" });
@@ -983,6 +1013,114 @@ fn counts(d: usize, prof: &str) {
     );
 }
 
+
+/// Cut E (DEFER) natively on a demo-x2de / ledger-x2de public-genesis chain (TAG: he1, he2 and Python's closing
+/// proof, darkproof_vectors.py ... he with defer_ledger): the closing proof's bytes against Python's; the native
+/// ledger's statuses (pending, final), the close, a flipped close byte, a second close and a step after the close;
+/// a child violating the deferred claim (forge_W1n) accepted PENDING, then refused at its discharge; a second
+/// opening of a W refused by its life counter. Writes TAG_close.native.bin and TAG.native.ledger.
+#[cfg(feature = "tcp")]
+fn e_rows(dir: &Path, tag: &str) {
+    use darkproof::ledger::{Genesis, Ledger};
+    use darkproof::witness::make_bundle_d;
+    use sha2::{Digest, Sha256};
+    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    darkproof::field::set_p(meta["p"].as_u64().unwrap());
+    let d = meta["d"].as_u64().unwrap() as usize;
+    let prm = program_of(&meta, d);
+    let pr = profile(meta["profile"].as_str().unwrap());
+    assert!(pr.defer, "TAG must be a DEFER (x2de) vector set");
+    let lp = pr.ligero();
+    let tables = darkproof::step::tables();
+    let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
+    let mut opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: det.clone(), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: Some(prm) };
+    let cfg = std::fs::read(meta["pg_cfg"].as_str().expect("a PG vector set")).unwrap();
+    assert_eq!(<[u8; 32]>::from(Sha256::digest(&cfg)), prm.pg.unwrap(), "pg_cfg is not the cfg the program pins");
+    let (_, w1, w2) = darkproof::run::public_weights(&cfg).unwrap();
+    let genesis = || -> Vec<BTreeMap<String, darkproof::pcs::PcsParty>> { (0..3).map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3).0).collect() };
+    let groots = roots_of(&meta["genesis_roots"]);
+    let bundle = |name: &str| -> (Ctx, Witness, Vec<u8>) {
+        let b = &meta["bundles"][name];
+        let c = b["ctx"].as_array().unwrap();
+        let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+        (ctx, Witness::load(&dir.join(b["witness"].as_str().unwrap())), std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap())
+    };
+    let (ctx1, wt1, pyb1) = bundle("he1");
+    let (ctx2, wt2, pyb2) = bundle("he2");
+    let mut ok = true;
+    let mut row = |what: &str, r: Result<String, String>, want_accept: bool| {
+        println!("{:74} {:8} {}", what, if r.is_ok() { "accept" } else { "REFUSED" }, match &r { Ok(s) => s.clone(), Err(e) => e.clone() });
+        ok &= r.is_ok() == want_accept;
+    };
+    let b1 = make_bundle_d(&opts, wt1.clone(), &ctx1, Some(genesis()), None, None).expect("prove he1");
+    let d1: Vec<darkproof::defer::DeferIn> = b1.deferred.iter().map(|x| x.clone().unwrap()).collect();
+    let b2 = make_bundle_d(&opts, wt2.clone(), &ctx2, Some(b1.child), None, Some(d1.clone())).expect("prove he2");
+    let same = |a: &[u8], b: &[u8]| if a == b { Ok(format!("EQUAL to Python ({} B, sha256 {})", a.len(), &sha(a)[..16])) } else { Err(format!("DIFFER at {:?}", first_diff(a, b))) };
+    row("he1 (the parent final: public genesis)", same(&b1.blob, &pyb1), true);
+    row("he2 (discharges he1's claims)", same(&b2.blob, &pyb2), true);
+    // the closing proof of the halted head (he2): every custodian over the in-memory transport
+    let nets = darkproof::net::Nets::new(darkproof::net::transport_from_env(), 3);
+    let blobs: Vec<Result<Vec<u8>, String>> = std::thread::scope(|s| {
+        let hs: Vec<_> = (0..3)
+            .map(|i| {
+                let (nets, pr, lp, ctx2, det) = (&nets, &pr, &lp, &ctx2, &det);
+                let (hd, df) = (&b2.child[i], b2.deferred[i].as_ref().unwrap());
+                s.spawn(move || {
+                    let mut net = nets.take(i);
+                    darkproof::defer::prove_close(pr, lp, i, 3, &mut *net, ctx2, hd, df, det).map(|p| wire::encode_close(pr, ctx2, d, 3, &p))
+                })
+            })
+            .collect();
+        hs.into_iter().map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into()))).collect()
+    });
+    let cblob = blobs[0].clone().expect("closing proof");
+    let agree = blobs.iter().all(|b| b.as_ref().ok() == Some(&cblob));
+    let pyc = std::fs::read(dir.join(meta["close"]["blob"].as_str().unwrap())).unwrap();
+    row(&format!("closing proof of the head (step 2), parties agree: {agree}"), same(&cblob, &pyc), true);
+    std::fs::write(dir.join(format!("{tag}_close.native.bin")), &cblob).unwrap();
+    // the ledger: statuses, the close and its refusals
+    let tmp = std::env::temp_dir().join(format!("dl-e-rows-{}", std::process::id()));
+    std::fs::create_dir_all(&tmp).unwrap();
+    let cust = vec!["c0".to_string(), "c1".to_string(), "c2".to_string()];
+    let gen = || Genesis { d, program: prm, owner_pk: None, custodians: cust.clone(), roots: groots.clone() };
+    let lpath = tmp.join("mind-0.ledger");
+    let mut lg = Ledger::open(&lpath, "mind-0", &pr, Some(gen())).unwrap();
+    let st = |lg: &Ledger| format!("{:?}", lg.status);
+    row("ledger: the pinned public-genesis cfg", lg.check_public_genesis(&cfg).map(|_| String::new()), true);
+    row("ledger: he1 (Python's bytes)", lg.accept(&lp, &pyb1, &tables).map(|_| st(&lg)), true);
+    row("ledger: he2 (Python's bytes), discharging he1", lg.accept(&lp, &pyb2, &tables).map(|_| st(&lg)), true);
+    row("ledger: a release-free rotation of the pending head", lg.rotate(&cust, &groots, b"x").map(|_| String::new()), false);
+    let mut bad = cblob.clone();
+    let l = bad.len();
+    bad[l - 40] ^= 1;
+    row("ledger: a flipped byte in the closing proof", lg.close(&lp, &bad).map(|_| String::new()), false);
+    row("ledger: the closing proof (native bytes)", lg.close(&lp, &cblob).map(|_| st(&lg)), true);
+    row("ledger: a second close", lg.close(&lp, &cblob).map(|_| String::new()), false);
+    row("ledger: a step after the close", lg.accept(&lp, &pyb2, &tables).map(|_| String::new()), false);
+    row("ledger: reopened, the status replayed", Ledger::open(&lpath, "mind-0", &pr, None).map(|l| format!("{:?}, closed {}", l.status, l.closed)), true);
+    std::fs::copy(&lpath, dir.join(format!("{tag}.native.ledger"))).unwrap();
+    // a step whose child violates the deferred claim: accepted pending, refused at its discharge
+    opts.spine_attack = Some("forge_W1n");
+    let f1 = make_bundle_d(&opts, wt1.clone(), &ctx1, Some(genesis()), None, None).expect("prove the forged he1");
+    opts.spine_attack = None;
+    let fd: Vec<darkproof::defer::DeferIn> = f1.deferred.iter().map(|x| x.clone().unwrap()).collect();
+    let f2 = make_bundle_d(&opts, wt2.clone(), &ctx2, Some(f1.child), None, Some(fd));
+    let fpath = tmp.join("forge.ledger");
+    let mut fl = Ledger::open(&fpath, "mind-0", &pr, Some(gen())).unwrap();
+    fl.check_public_genesis(&cfg).unwrap();
+    row("forge_W1n: step 1 (its child is not opened there)", fl.accept(&lp, &f1.blob, &tables).map(|_| st(&fl)), true);
+    match f2 {
+        Err(e) => row("forge_W1n: step 2, the discharge", Err(format!("in proving: {e}")), false),
+        Ok(f2) => row("forge_W1n: step 2, the discharge", fl.accept(&lp, &f2.blob, &tables).map(|_| st(&fl)), false),
+    }
+    println!("{:74} {:8} {}", "forge_W1n: the ledger's status after the refusal", "", st(&Ledger::open(&fpath, "mind-0", &pr, None).unwrap()));
+    // a second opening of a W (step 2 retried on the W it already opened)
+    let again = make_bundle_d(&opts, wt2.clone(), &ctx2, Some(b2.carried), None, Some(d1));
+    row("a second opening of a W (step 2 retried)", again.map(|_| String::new()), false);
+    let _ = std::fs::remove_dir_all(&tmp);
+    println!("{}", if ok { "E-ROWS PASS" } else { "E-ROWS FAIL" });
+    std::process::exit(if ok { 0 } else { 1 });
+}
 
 /// The EXT = 2 refusal rows (cosnark_ext_rows.py's, natively) on an F_{p^2} public-genesis chain (TAG's he1, a
 /// demo-x2 or ledger-x2 vector set), with an EXT = 1 PG chain (TAG1 in DIR1) for the cross-profile rows: the honest
