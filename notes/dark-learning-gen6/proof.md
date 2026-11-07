@@ -1147,6 +1147,22 @@ its d M lookups' 255 Lp entries by `step::lookup_bits_products(prm)` = 27 Beaver
 | truncation bits (prep) | 12.6M | about 4.2M | |
 | tape per seat (prep's 154.2M) | 154.2M | about 103M | about 55M |
 
+## 24. d = 4096 natively at every profile (bb2, three custodians in one process, PG, GEN6 + RC + LB) [EXECUTED]
+
+| profile | bundle step 1 | bundle step 2 | prove 1 / 2 (s) | ledger verify 1 / 2 (s) | step_section | peak RSS (3 in one) |
+|---|---|---|---|---|---|---|
+| ledger-x2 | 76,407,284 | | 46.0 | 22.5 | 5,432,533 | 23.81 GB |
+| ledger-x2d (D, 8319ea81) | 65,662,956 | 65,647,980 | 38.8 / 42.1 | 18.2 / 20.2 | 5,432,533 | 23.79 GB |
+| ledger-x2de (E, db6fda63) | 51,258,444 | 55,485,828 (discharge) | 38.3 / 42.2 | 16.7 / 18.9 | 5,432,533 | 26.63 GB |
+| ledger-x2d + RS | 57,631,900 | | 26.2 | 13.5 | 2,225,349 | 22.24 GB |
+| **ledger-x2de + RS (the run's)** | **43,264,444** | **47,470,132** | **27.8 / 32.9** | **11.5 / 13.2** | **2,225,349** | 24.69 GB |
+
+- Rows 1-3: helper a93e0325, `~/lanes/dl-gen6-proof-x2/` (x2d_4096_pair.log, x2[d|de]_4096_2s.log); rows 4-5:
+  `~/lanes/dl-gen6-proof-rs/` (rs_x2d.log, rs_x2de.log), tree 58cc1e52. bb2 was loaded (load 13-60), so the times
+  are rough; the bundle varies about 0.5% run to run (multiproof).
+- Against x2, the run's profile is -43% bundle (step 1), -40% prove, -49% verify, -59% proof-section triples.
+- The darkstep MPC itself (not in the table) took 43-54 s per step in the same runs.
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).
