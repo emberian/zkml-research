@@ -9,6 +9,7 @@
 //!                        [--backend mascot|lowgear|highgear] [--extra a,b,..]  (lowgear: --extra -S,60,-lg2,64)
 //!                        [--release M,NCLS,KC --proof-triples N]  (the release chunk instead of K steps)
 //!                        [--handover-ar N]  (a new seat's handover tape: N auth_plain entries)  [--new-mac-key]
+//!                        [--step-tapes-only]  (no whole-chunk tape_<I>.bin: only step-<j>/tape_<I>.bin)
 //!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
 //!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
 //!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
@@ -343,7 +344,9 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     // step of the chunk back to back under one alpha (darkstep's multi-step tape; a hard link when there is one step)
     let ns: Vec<usize> = chunk.iter().map(darkprep::schedule::n_entries).collect();
     let all_path = tmp.join(format!("tape_{party}.bin"));
-    let mut all = if steps > 1 { Some(darkprep::tape::DarkstepWriter::create(&all_path, tx.alpha_i, ns.iter().sum()).map_err(|e| e.to_string())?) } else { None };
+    // --step-tapes-only: no whole-chunk file, so a custodian that wipes each spent step's files leaves no copy behind
+    let whole = !m.contains_key("step-tapes-only");
+    let mut all = if whole && steps > 1 { Some(darkprep::tape::DarkstepWriter::create(&all_path, tx.alpha_i, ns.iter().sum()).map_err(|e| e.to_string())?) } else { None };
     let mut entries = Vec::new();
     for j in 0..steps {
         let sd = tmp.join(format!("step-{j}"));
@@ -372,6 +375,7 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     }
     match all {
         Some(a) => a.finish().map_err(|e| e.to_string())?,
+        None if !whole => {}
         None => std::fs::hard_link(tmp.join(format!("step-0/tape_{party}.bin")), &all_path).map_err(|e| e.to_string())?,
     }
     drop(tx);
