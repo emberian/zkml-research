@@ -488,3 +488,16 @@ that lg64e runs on. Do not rebuild g2 while lg64e runs.
   - A deployed rotation must take its new committee's MP-SPDZ runtimes from `seats.sh new` (or one of the modes above, as fixed), never a copy that carries the old key.
 - **lg64e is under strength.** It is N = 8,192 with q = 2^312 (MP-SPDZ's own ring choice), so it is used only to measure LowGear's cost through hbox. A LowGear key the run uses must be at N = 16,384 (min_phi_m patched in build-mpspdz.sh), or at whatever the lattice estimator says reaches 128 bits. No N = 16,384 key setup through hbox until ember has chosen the third box.
 - **hbox mount.** Recorded in ~/swarm/MACHINES.md under hbox (local commit 350825f). Undo with `sudo umount /othersys/lanes/dl-gen6-prep/ram` when the lane no longer needs it, after its processes there have exited.
+
+**LowGear RLWE, estimated [EXECUTED on forge: `est/lowgear_rlwe.py`, gen 4's lattice-estimator under Sage, `nice` + `systemd-run MemoryMax=12G`]**
+- Instance: MP-SPDZ v0.4.4 LowGear keys at -S 60. The secret and error are both centered binomial with eta = 1 (`FHE_Params` Chi(0.7), so NewHopeB = round(2 · 0.49) = 1), with m = N samples. 0-level q is 2^312.
+- The estimator's full run excluded arora-gb and bkw, as gen 4 did.
+
+| N | log2 q | rough (core-SVP) | usvp | bdd | dual | dual_hybrid | minimum |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 8,192 (as built, lg64e) | 312 | 53.7 | 87.0 | 86.8 | 88.1 | 87.8 | **86.8** |
+| 16,384 | 314 | 149.2 | 179.2 | 179.0 | 180.5 | 179.4 | **179.0** |
+
+- MP-SPDZ's built-in sizing gives about 87 bits for this field, far below 128. Its comment cites "alpha = 0.7 sqrt(2 pi) / q", which matches these distributions, but `min_phi_m = 15.1 log q` does not reproduce its own table.
+- N = 16,384 clears 128 bits with margin, at both the rough and the full count. The 314 bits are an estimate; MP-SPDZ fixes the exact length when it builds the parameters.
+- The run's LowGear must be at N = 16,384: patch `min_phi_m` in build-mpspdz.sh. lg64e (N = 8,192) is for cost measurement only.
