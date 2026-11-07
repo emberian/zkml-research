@@ -9,6 +9,7 @@ use crate::step::*;
 use crate::tape::Tape;
 use serde_json::json;
 use std::io::{Read, Write};
+use std::net::{SocketAddr, TcpListener};
 use std::time::Instant;
 
 pub type Shares = (Vec<Vec<Sh>>, Vec<Vec<Sh>>);
@@ -349,3 +350,198 @@ pub fn owner_serve(
     }
     res
 }
+
+/// What a deployment does after each accepted step, inside the custodian process (the per-step proof, the
+/// handover). It may move the tape cursor past what it consumed (a proof section).
+pub trait StepHook {
+    fn after_step(&mut self, st: &mut CustodianState, k: usize, record: &ProofRecord, dir: &std::path::Path) -> Result<serde_json::Value, String>;
+}
+
+pub struct NoHook;
+
+impl StepHook for NoHook {
+    fn after_step(&mut self, _: &mut CustodianState, _: usize, _: &ProofRecord, _: &std::path::Path) -> Result<serde_json::Value, String> {
+        Ok(serde_json::Value::Null)
+    }
+}
+
+fn flag(args: &[String], name: &str) -> Option<String> {
+    crate::node::flag(args, name)
+}
+
+pub fn program_of(args: &[String]) -> Program {
+    match flag(args, "--program").as_deref() {
+        None | Some("harness") => Program::HARNESS,
+        Some("gen6") => Program::GEN6,
+        Some(x) => panic!("--program {x}: harness or gen6"),
+    }
+}
+
+fn utc_minutes() -> u64 {
+    (std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() / 60) % (24 * 60)
+}
+
+/// "HH:MM-HH:MM" contains the current UTC minute.
+pub fn in_window(w: &str) -> bool {
+    let m = |x: &str| -> u64 {
+        let (h, mi) = x.split_once(':').expect("HH:MM");
+        h.parse::<u64>().unwrap() * 60 + mi.parse::<u64>().unwrap()
+    };
+    let (a, b) = w.split_once('-').expect("HH:MM-HH:MM");
+    let (a, b, now) = (m(a), m(b), utc_minutes());
+    if a <= b { (a..b).contains(&now) } else { now >= a || now < b }
+}
+
+pub fn read_tape(path: &str) -> Tape {
+    Tape::read_from(&mut std::io::BufReader::new(std::fs::File::open(path).unwrap_or_else(|e| panic!("{path}: {e}")))).unwrap()
+}
+
+pub fn serve_main(args: &[String], hook: &mut dyn StepHook) -> i32 {
+    let i: usize = args[2].parse().unwrap();
+    let mut pf = crate::node::gated(crate::node::prof(&args[3..7]), args);
+    pf.secure_coins = true;
+    pf.program = program_of(args);
+    let dir = std::path::PathBuf::from(&args[7]);
+    std::fs::create_dir_all(&dir).unwrap();
+    let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
+    let tlsdir = std::path::PathBuf::from(flag(args, "--tls").expect("--tls TLSDIR"));
+    let owner_addr: SocketAddr = flag(args, "--owner").expect("--owner HOST:PORT").parse().unwrap();
+    let steps: usize = flag(args, "--steps").expect("--steps K").parse().unwrap();
+    let timeout = std::time::Duration::from_secs(flag(args, "--timeout").map(|t| t.parse().unwrap()).unwrap_or(600));
+    let id = crate::tls::Identity {
+        key_der: std::fs::read(tlsdir.join(format!("tls_{i}.key"))).expect("own TLS key"),
+        cert_der: std::fs::read(tlsdir.join(format!("cert_{i}.der"))).expect("own certificate"),
+    };
+    let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tlsdir.join(format!("cert_{j}.der"))).expect("peer certificate")).collect();
+    let owner_cert = std::fs::read(tlsdir.join("cert_owner.der")).expect("owner certificate");
+    let tape_for = |k: usize| -> Option<String> {
+        flag(args, "--tapes").map(|p| p.replace("{k}", &k.to_string()))
+    };
+    let ckpt = dir.join(format!("ckpt_P{i}.bin"));
+    let resume = args.iter().any(|a| a == "--resume");
+    let ck = if resume { Some(read_checkpoint(&ckpt).unwrap_or_else(|e| panic!("--resume: {e}"))) } else { None };
+    let first = ck.as_ref().map(|c| c.step).unwrap_or(0);
+    let tape = match (flag(args, "--tape"), tape_for(first)) {
+        (Some(f), _) => read_tape(&f),
+        (None, Some(f)) => read_tape(&f),
+        _ => panic!("--tape FILE or --tapes PATTERN"),
+    };
+    let t_start = Instant::now();
+    let listener = if i + 1 < 3 {
+        let at: SocketAddr = flag(args, "--listen").map(|a| a.parse().unwrap()).unwrap_or(addrs[i]);
+        Some(TcpListener::bind(at).unwrap_or_else(|e| panic!("bind {at}: {e}")))
+    } else {
+        None
+    };
+    let net = match crate::net::Net::connect_tls(i, listener, &addrs, &id, &certs, timeout) {
+        Ok(n) => n,
+        Err(e) => {
+            eprintln!("{e}");
+            return 2;
+        }
+    };
+    let mut owner = match dial_owner(owner_addr, &id, &owner_cert, timeout) {
+        Ok(o) => o,
+        Err(e) => {
+            eprintln!("{e}");
+            net.shutdown();
+            return 2;
+        }
+    };
+    let connect_s = t_start.elapsed().as_secs_f64();
+    let tc = Instant::now();
+    let mut st = match CustodianState::new(i, pf.clone(), net, tape, crate::node::attack_of(args)) {
+        Ok(s) => s,
+        Err((e, net)) => {
+            eprintln!("setup: {e}");
+            net.shutdown();
+            return 1;
+        }
+    };
+    let setup_s = tc.elapsed().as_secs_f64();
+    if let Some(c) = ck {
+        if let Err(e) = st.resume(c) {
+            eprintln!("{e}");
+            st.pt.net.shutdown();
+            return 2;
+        }
+    }
+    let pause = flag(args, "--pause-utc");
+    let mut code = 0;
+    let mut reports = Vec::new();
+    while st.step < first + steps {
+        let k = st.step;
+        // custodian 0 decides whether to pause here; the three agree on CTRL
+        let mine = [if i == 0 { pause.as_deref().map(in_window).unwrap_or(false) as u64 } else { 0 }];
+        let votes = st.pt.net.exchange(crate::net::CTRL, &mine);
+        if votes[0][0] == 1 {
+            code = 3;
+            break;
+        }
+        if k > first {
+            if let Some(f) = tape_for(k) {
+                if let Err(e) = st.load_tape(read_tape(&f)) {
+                    eprintln!("{e}");
+                    code = 1;
+                    break;
+                }
+            }
+        }
+        let msg = flag(args, "--owner-msgs").map(|p| std::fs::read(p.replace("{k}", &k.to_string())).expect("owner message")).unwrap_or_default();
+        let tw = Instant::now();
+        let cs = match owner_inputs(&mut owner, &st.pt.net, k, &msg) {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("{e}");
+                code = 1;
+                break;
+            }
+        };
+        let owner_s = tw.elapsed().as_secs_f64();
+        match st.run(&cs) {
+            Ok((mut rep, record)) => {
+                rep["owner_wait_seconds"] = json!(owner_s);
+                match hook.after_step(&mut st, k, &record, &dir) {
+                    Ok(extra) => rep["after_step"] = extra,
+                    Err(e) => {
+                        eprintln!("after step {k}: {e}");
+                        rep["after_step_error"] = json!(e);
+                        std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
+                        code = 1;
+                        break;
+                    }
+                }
+                st.checkpoint(&ckpt).expect("checkpoint");
+                std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
+                println!("{}", json!({"party": i, "step": k, "verdict": "ACCEPT", "step_seconds": rep["step_seconds"]}));
+                reports.push(rep);
+            }
+            Err(e) => {
+                let rep = json!({"party": i, "step": k, "verdict": "REFUSED", "by": e});
+                std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
+                println!("{rep}");
+                code = 1;
+                break;
+            }
+        }
+    }
+    let (cpu, rss) = proc_usage();
+    let summary = json!({"party": i, "first_step": first, "next_step": st.step, "exit": code, "paused": code == 3,
+        "connect_seconds": connect_s, "setup_seconds": setup_s, "wall_seconds": t_start.elapsed().as_secs_f64(),
+        "cpu_seconds": cpu, "peak_rss_kb": rss, "ceremony_seconds": st.he.gate.as_ref().map(|g| g.ceremony_s),
+        "cert_sha256": (0..3).map(|j| crate::tls::cert_fingerprint(&certs[j])).collect::<Vec<_>>()});
+    std::fs::write(dir.join(format!("serve_P{i}.json")), serde_json::to_string_pretty(&summary).unwrap()).unwrap();
+    #[cfg(feature = "test-harness")]
+    if args.iter().any(|a| a == "--test-keep-shares") {
+        if let Some((w1, w2)) = &st.w {
+            let flat: Vec<u64> = w1.iter().chain(w2.iter()).flat_map(|r| r.iter().flat_map(|x| [x.s, x.m])).collect();
+            std::fs::write(dir.join(format!("shares_{i}.bin")), u64s_to_bytes(&flat)).unwrap();
+        }
+    }
+    let _ = write_frame(&mut owner, &u64::MAX.to_le_bytes());
+    owner.conn.send_close_notify();
+    let _ = owner.conn.complete_io(&mut owner.sock);
+    st.pt.net.shutdown();
+    code
+}
+
