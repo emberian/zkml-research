@@ -1223,3 +1223,9 @@ rec/new0/archive.
 
 **Twin check at the end**: `cd research/dark_learning_2026_11_06 && /Users/ember/dev/zkml-research/native/target-deploy2/release/darktrain shadow "$(cat train_genesis_gen6.json)" 8 52`
 gives the twin's C; it must equal release_P<I>.json "C" at all three new seats.
+- Prep (15:10 UTC): ROOT/rec-old<I>/mpspdz -> ROOT/mpspdz (lg64f's runtime; RAM behind it: /dev/shm/dl-gen6-prep/mpspdz on
+  forge and bb2, ROOT/ram/mpspdz on hbox), so rec.json's --erase-runtime erases lg64f's key at the handover;
+  ROOT/rec-new<I>/mpspdz -> ROOT/lgnew<I>/mpspdz (the new key, lg64n, started ~14:4x beside lg64f as a 20-min aggregate-uplink
+  test: kept if hbox's aggregate rises >= 1.4x, else restarted after lg64f). Chunk times at 17.9 Mbit/s: rec-ho 0.67 h,
+  rec-n-c0 1.92, rec-c0..c2 3.85 each, rec-c3 1.92, rec-rel 27.2. Prep's forge pauser (runs/nightly-pause.pid) stops only
+  its *-party.x / darkprep PIDs in the same window. The LowGear pause test (condition i) is running on wired seats.
