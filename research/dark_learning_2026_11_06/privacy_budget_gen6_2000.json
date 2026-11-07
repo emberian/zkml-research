@@ -4,6 +4,7 @@
   "d": 4096,
   "p": 2305843009210515457,
   "kappa": 40,
+  "exact_trunc": false,
   "log2_per_step": {
    "trunc": -26.0,
    "mac": -60.0,
@@ -40,6 +41,7 @@
   "d": 4096,
   "p": 2305843009210515457,
   "kappa": 40,
+  "exact_trunc": false,
   "log2_per_step": {
    "trunc": -26.0,
    "mac": -60.0,
