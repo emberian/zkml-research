@@ -176,12 +176,26 @@ pub fn deal_step_opts(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, input
 /// deal_step_opts, returning the owner's broadcasts and the dealer itself (its `tapes`; continue its stream with
 /// deal_proof_section before taking them).
 pub fn deal_step_dealer(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool) -> (Vec<u64>, Dealer) {
+    deal_step_dealer_prog(p, d, dealer_seed, owner_seed, inputs, proof_atoms, &crate::step::Program::HARNESS)
+}
+
+/// deal_step_dealer for a step program (its truncation shifts and bounds; step::Program::truncs).
+pub fn deal_step_dealer_prog(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool, pg: &crate::step::Program) -> (Vec<u64>, Dealer) {
     let mut dl = Dealer::new(p, 3, dealer_seed);
     if proof_atoms {
         dl.proof_rng = Some(PyRandom::from_u64(1));
     }
     let mut owner = PyRandom::from_u64(owner_seed);
     assert_eq!(inputs.len(), 2 * d * d + 2 * d);
+    let cs = deal_one_step(&mut dl, &mut owner, d, inputs, pg);
+    (cs, dl)
+}
+
+/// One step on a continuing dealer and owner stream: the owner's masks for `inputs` (2d^2 + 2d at genesis, 2d for a
+/// carried step: x then y), then the step's preprocessing in run_step_shares' order. Returns the owner's broadcasts.
+pub fn deal_one_step(dl: &mut Dealer, owner: &mut PyRandom, d: usize, inputs: &[u64], pg: &crate::step::Program) -> Vec<u64> {
+    let p = dl.p;
+    let [(sa, ka), (sb, kb), (sc, kc), (sd, kd)] = pg.truncs();
     let mut cs = Vec::with_capacity(inputs.len());
     for &v in inputs {
         let r = owner.randrange_u64(p);
@@ -196,30 +210,50 @@ pub fn deal_step_dealer(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inp
             dl.mul();
         }
     };
-    matvec(&mut dl); // z1 = W1 x
+    matvec(dl); // z1 = W1 x
     for _ in 0..d {
-        dl.trunc(5, 13);
+        dl.trunc(sa, ka);
     }
     for _ in 0..d {
         dl.lookup(255);
     }
-    matvec(&mut dl); // z2 = W2 h
+    matvec(dl); // z2 = W2 h
     for _ in 0..d {
-        dl.trunc(5, 13);
+        dl.trunc(sb, kb);
     }
     for _ in 0..d {
-        dl.trunc(4, 8);
+        dl.trunc(sc, kc);
     }
-    matvec(&mut dl); // b = W2^T d2
+    matvec(dl); // b = W2^T d2
     for _ in 0..d {
         dl.mul();
     }
     for _ in 0..d {
-        dl.trunc(8, 13);
+        dl.trunc(sd, kd);
     }
     dl.mul(); // outer check (d2 x h)
     dl.mul(); // outer check (d1 x x)
-    (cs, dl)
+    cs
+}
+
+/// The test dealer for a run of 1 + later_inputs.len() steps on one continuing dealer stream (one alpha) and one owner
+/// stream: step 0 deals the genesis inputs (W1, W2, x, y), every later step only its own x, y (2d). Each party's tape
+/// holds the steps back to back. Replaced by the prep lane's MASCOT tapes in deployment.
+#[allow(clippy::too_many_arguments)]
+pub fn deal_steps_prog(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, genesis_inputs: &[u64], later_inputs: &[Vec<u64>], proof_atoms: bool, pg: &crate::step::Program) -> (Vec<Tape>, Vec<Vec<u64>>) {
+    let mut dl = Dealer::new(p, 3, dealer_seed);
+    if proof_atoms {
+        dl.proof_rng = Some(PyRandom::from_u64(1));
+    }
+    let mut owner = PyRandom::from_u64(owner_seed);
+    assert_eq!(genesis_inputs.len(), 2 * d * d + 2 * d);
+    let c0 = deal_one_step(&mut dl, &mut owner, d, genesis_inputs, pg);
+    let mut out = vec![c0];
+    for xs in later_inputs {
+        assert_eq!(xs.len(), 2 * d, "a carried step inputs x and y only");
+        out.push(deal_one_step(&mut dl, &mut owner, d, xs, pg));
+    }
+    (dl.tapes, out)
 }
 
 /// The collaborative proof's Beaver triples, dealt after the step from the same dealer stream (as the harness's prover
