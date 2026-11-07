@@ -25,6 +25,12 @@ fn gated(mut pf: Prof, args: &[String]) -> Prof {
     pf
 }
 
+/// The process's peak resident set (VmHWM), where /proc exists.
+fn peak_rss_kb() -> Option<u64> {
+    let st = std::fs::read_to_string("/proc/self/status").ok()?;
+    st.lines().find_map(|l| l.strip_prefix("VmHWM:")).and_then(|r| r.trim().trim_end_matches("kB").trim().parse().ok())
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let cmd = args.get(1).map(|s| s.as_str()).unwrap_or("");
@@ -59,6 +65,7 @@ fn main() {
             println!("{}", json!({"deal_seconds": t0.elapsed().as_secs_f64(), "tape_len": tapes[0].len(), "inputs": cs.len()}));
         }
         "party" => {
+            let t_start = Instant::now();
             let i: usize = args[2].parse().unwrap();
             let pf = gated(prof(&args[3..7]), &args);
             let dir = std::path::PathBuf::from(&args[7]);
@@ -67,7 +74,11 @@ fn main() {
             let cs = bytes_to_u64s(&std::fs::read(dir.join("public.bin")).unwrap());
             let listener = TcpListener::bind(addrs[i]).unwrap();
             let net = Net::connect(i, listener, &addrs);
-            let (v, shares, dump) = custodian(i, &pf, net, tape, &cs, attack_of(&args));
+            let (mut v, shares, dump) = custodian(i, &pf, net, tape, &cs, attack_of(&args));
+            v["wall_seconds"] = json!(t_start.elapsed().as_secs_f64());
+            if let Some(kb) = peak_rss_kb() {
+                v["peak_rss_kb"] = json!(kb);
+            }
             std::fs::write(dir.join(format!("result_{i}.json")), serde_json::to_string_pretty(&v).unwrap()).unwrap();
             if let Some((w1, w2)) = shares {
                 let flat: Vec<u64> = w1.iter().chain(w2.iter()).flat_map(|r| r.iter().flat_map(|x| [x.s, x.m])).collect();
