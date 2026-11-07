@@ -17,15 +17,17 @@ pub enum Tag {
     Trh = 6,
     Lp = 7,
     Ar = 8,
+    /// proof-only: the K + KAPPA - s bits of each truncation's r >> s (darkproof's range check on rhi)
+    Trhb = 9,
 }
 
 impl Tag {
     pub fn name(self) -> &'static str {
-        ["in", "ta", "tb", "tc", "tr", "trb", "trh", "lp", "ar"][self as usize]
+        ["in", "ta", "tb", "tc", "tr", "trb", "trh", "lp", "ar", "trhb"][self as usize]
     }
     pub fn from_code(c: u8) -> Option<Tag> {
         use Tag::*;
-        [In, Ta, Tb, Tc, Tr, Trb, Trh, Lp, Ar].get(c as usize).copied()
+        [In, Ta, Tb, Tc, Tr, Trb, Trh, Lp, Ar, Trhb].get(c as usize).copied()
     }
 }
 
@@ -43,18 +45,37 @@ pub struct StepParams {
     pub inputs: Inputs,
     /// (s, K) for the four truncations in program order: u1, e, d2, d1.
     pub trunc: [(u32, u32); 4],
+    /// emit Trhb after each Trh (darkstep `proof_atoms`; the online step skips them, the proof reads them)
+    pub proof_atoms: bool,
+    /// Beaver triples dealt after the step for the collaborative proof (darkstep `deal_proof_section`)
+    pub proof_triples: usize,
 }
 
 impl StepParams {
     /// The harness's d = 64 step (mpc_fork.run_step hard-codes K = 13, 13, 8, 13 with S1, S2, S3 = 5, 4, 8).
     pub fn harness_d64() -> Self {
-        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)] }
+        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0 }
     }
     /// `step_counts.params(d)`: S1 = max(5, ceil(log2(49 d / 128))), K1 = S1 + 8, S2 = 4, K2 = 8, S3 = S1 + 3, K3 = S1 + 8.
     pub fn at(d: usize, inputs: Inputs) -> Self {
         let x = 49.0 * d as f64 / 128.0;
         let s1 = (x.log2().ceil() as i64).max(5) as u32;
-        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)] }
+        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0 }
+    }
+    /// The step with the collaborative proof's preprocessing: Trhb atoms and the proof section's triples,
+    /// darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had).
+    pub fn with_proof(mut self) -> Self {
+        self.proof_atoms = true;
+        self.proof_triples = spine_beaver_count(self.d) + middle_beaver_count(self.n_had());
+        self
+    }
+    /// darkproof's Hadamard records for one step (darkproof/src/step.rs): one per online Beaver product of the
+    /// recorded step (the borrow chains and b * g1; the HE Freivalds and outer checks are not recorded), one per
+    /// truncation bit (s low bits and K + KAPPA - s high bits), and 254 per lookup power chain.
+    /// Checked against cosnark_gates results: 1,992 / 7,968 / 31,872 at d = 4, 16, 64 and 2,260,992 at d = 4096.
+    pub fn n_had(&self) -> usize {
+        let per: usize = self.trunc.iter().map(|&(s, k)| 2 * (s as usize - 1) + (k + KAPPA) as usize).sum();
+        self.d * (per + 1 + (DEG - 1))
     }
     pub fn n_inputs(&self) -> usize {
         match self.inputs {
@@ -94,6 +115,7 @@ pub fn events(sp: &StepParams) -> Vec<Event> {
     rep(&mut ev, Event::Mul, d); // bg = b * g1
     rep(&mut ev, Event::Trunc(3), d); // d1
     rep(&mut ev, Event::Mul, 2); // the two HE outer checks: one Beaver product each
+    rep(&mut ev, Event::Mul, sp.proof_triples); // the collaborative proof's section, after the step
     ev
 }
 
@@ -104,10 +126,13 @@ pub fn expand(sp: &StepParams, e: Event, out: &mut Vec<Tag>) {
         Event::AuthPlain => out.push(Tag::Ar),
         Event::Mul => out.extend([Tag::Ta, Tag::Tb, Tag::Tc]),
         Event::Trunc(t) => {
-            let (s, _) = sp.trunc[t];
+            let (s, k) = sp.trunc[t];
             out.push(Tag::Tr);
             out.extend(std::iter::repeat(Tag::Trb).take(s as usize));
             out.push(Tag::Trh);
+            if sp.proof_atoms {
+                out.extend(std::iter::repeat(Tag::Trhb).take((k + KAPPA - s) as usize));
+            }
             // borrow computation: 2 (s - 1) Beaver products
             for _ in 0..2 * (s - 1) {
                 out.extend([Tag::Ta, Tag::Tb, Tag::Tc]);
@@ -204,4 +229,58 @@ pub struct Sections {
     pub tr: Vec<(usize, usize, usize)>,
     pub lp: (usize, usize, usize),
     pub total: usize,
+}
+
+/// darkproof::spine::beaver_count: three degree-2 matvec sumchecks and the degree-3 Hadamard zerocheck over d entries.
+pub fn spine_beaver_count(d: usize) -> usize {
+    13 * (d - 1)
+}
+
+/// darkproof::middle::beaver_count: the degree-3 zerocheck over plen(n_had) entries.
+pub fn middle_beaver_count(n_had: usize) -> usize {
+    4 * (n_had.max(1).next_power_of_two() - 1)
+}
+
+/// A chunk: consecutive steps generated in one MASCOT run, each its own StepParams (e.g. a genesis step that inputs
+/// W1, W2, x, y, then carried steps that input x, y). All steps must share the truncation parameters.
+pub fn plan_of_steps(steps: &[StepParams]) -> Plan {
+    let mut p = Plan::of(&steps[0]);
+    for sp in &steps[1..] {
+        let q = Plan::of(sp);
+        assert_eq!(q.trunc_classes.iter().map(|c| (c.0, c.1)).collect::<Vec<_>>(),
+                   p.trunc_classes.iter().map(|c| (c.0, c.1)).collect::<Vec<_>>(), "steps of a chunk share truncations");
+        p.n_in += q.n_in;
+        p.n_ar += q.n_ar;
+        p.n_tri += q.n_tri;
+        p.n_lp += q.n_lp;
+        for (a, b) in p.trunc_classes.iter_mut().zip(&q.trunc_classes) {
+            a.2 += b.2;
+        }
+    }
+    p
+}
+
+/// Where step j's slice of each kind starts in a chunk: (in, ar, tri, lp, per truncation class).
+pub fn offsets(steps: &[StepParams], j: usize) -> (usize, usize, usize, usize, Vec<usize>) {
+    if j == 0 {
+        return (0, 0, 0, 0, vec![0; Plan::of(&steps[0]).trunc_classes.len()]);
+    }
+    let p = plan_of_steps(&steps[..j]);
+    (p.n_in, p.n_ar, p.n_tri, p.n_lp, p.trunc_classes.iter().map(|c| c.2).collect())
+}
+
+impl Plan {
+    /// The plan for a chunk of `steps` identical steps: every count multiplied (sections stay one per kind; step j
+    /// takes the j-th slice of each, see tape::assemble_step).
+    pub fn of_chunk(sp: &StepParams, steps: usize) -> Plan {
+        let mut p = Plan::of(sp);
+        p.n_in *= steps;
+        p.n_ar *= steps;
+        p.n_tri *= steps;
+        p.n_lp *= steps;
+        for c in p.trunc_classes.iter_mut() {
+            c.2 *= steps;
+        }
+        p
+    }
 }

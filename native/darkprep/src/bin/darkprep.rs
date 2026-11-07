@@ -4,6 +4,18 @@
 //!   darkprep assemble --tx DIR --d D --mode M --p P --out DIR [--verify]
 //!   darkprep verify   --tapes DIR
 //!   darkprep corrupt  --tape FILE --entry K --what share|mac|tag --out FILE      (test-only negative controls)
+//!   darkprep party-chunk --party I --mpspdz DIR --ipfile F --p P --d D --mode harness|steady --steps K [--proof]
+//!                        [--proof-triples N] --out CHUNKDIR [--threads T] [--batch B] [--plaintext] [--mpc-src FILE]
+//!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
+//!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
+//!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
+//!       CHUNKDIR.tmp-P<I> and renamed when complete, so a CHUNKDIR that exists is whole.
+//!   darkprep produce --queue QDIR --max-ready N --start C --count M  + party-chunk's options except --out
+//!       a continuous producer: chunks QDIR/chunk-<c> while fewer than N unconsumed chunks are ready; the consumer
+//!       deletes (or moves away) a chunk when it has used it; a file QDIR/STOP ends the loop after the current chunk.
+//!   darkprep owner --msgs F0,F1,F2 --p P --out OWNER.bin [--public-d D --public PUBLIC.bin]
+//!       the data owner: checks a b = c per input tuple, writes its masks r; with --public-d, also the broadcasts
+//!       c = v - r for darkstep::step::inputs(D) (the harness inputs) in darkstep's public.bin layout
 //!   darkprep export-darkstep --tapes DIR --out DIR
 //!       native/darkstep's party input: DIR/tape_{0,1,2}.bin (its DLTAPE01 layout) and DIR/public.bin, the data
 //!       owner's broadcasts c = v - r for the harness inputs (darkstep::step::inputs(d)) under the owner's masks
@@ -184,10 +196,165 @@ fn main() {
             println!("exported {} entries per party and {} owner broadcasts to {}", t0.entries.len(), cs.len(), out.display());
             Ok(())
         }
-        _ => Err("usage: darkprep plan|run|assemble|verify|corrupt|export-darkstep ...".into()),
+        "party-chunk" => {
+            let out = PathBuf::from(m.get("out").expect("--out"));
+            party_chunk(&m, &out).map(|j| println!("{j}"))
+        }
+        "produce" => {
+            let q = PathBuf::from(m.get("queue").expect("--queue"));
+            std::fs::create_dir_all(&q).map_err(|e| e.to_string())?;
+            let max_ready: usize = get(&m, "max-ready", 2);
+            let start: usize = get(&m, "start", 0);
+            let count: usize = get(&m, "count", 1);
+            let party: usize = get(&m, "party", 9);
+            let mut log = std::fs::OpenOptions::new().create(true).append(true).open(q.join(format!("producer-P{party}.jsonl"))).map_err(|e| e.to_string())?;
+            for c in start..start + count {
+                loop {
+                    if q.join("STOP").exists() {
+                        return Ok(());
+                    }
+                    let ready = std::fs::read_dir(&q).map_err(|e| e.to_string())?.flatten()
+                        .filter(|e| { let n = e.file_name().to_string_lossy().into_owned(); n.starts_with("chunk-") && !n.contains(".tmp") })
+                        .count();
+                    if ready < max_ready {
+                        break;
+                    }
+                    std::thread::sleep(std::time::Duration::from_secs(2));
+                }
+                let j = party_chunk(&m, &q.join(format!("chunk-{c:06}")))?;
+                use std::io::Write;
+                writeln!(log, "{j}").map_err(|e| e.to_string())?;
+            }
+            Ok(())
+        }
+        "owner" => {
+            let p: u64 = get(&m, "p", 0);
+            let fp = Fp::new(p);
+            let msgs: Vec<Vec<[u64; 3]>> = m.get("msgs").expect("--msgs").split(',')
+                .map(|f| std::fs::read(f).map_err(|e| format!("{f}: {e}")).and_then(|b| owner::read_message(&b)))
+                .collect::<Result<_, _>>()?;
+            let rs = owner::owner_masks(fp, &msgs)?;
+            let mut f = std::fs::File::create(m.get("out").expect("--out")).map_err(|e| e.to_string())?;
+            write_owner(&mut f, p, &rs).map_err(|e| e.to_string())?;
+            if let Some(d) = m.get("public-d") {
+                let v = darkstep::step::inputs(d.parse().unwrap()).flat_mod(p);
+                if v.len() != rs.len() {
+                    return Err(format!("{} inputs, {} masks", v.len(), rs.len()));
+                }
+                let cs: Vec<u64> = v.iter().zip(&rs).map(|(&x, &r)| fp.sub(x, r)).collect();
+                std::fs::write(m.get("public").expect("--public"), darkstep::net::u64s_to_bytes(&cs)).map_err(|e| e.to_string())?;
+            }
+            println!("owner: {} masks checked (a b = c)", rs.len());
+            Ok(())
+        }
+        _ => Err("usage: darkprep plan|run|assemble|verify|corrupt|export-darkstep|party-chunk|produce|owner ...".into()),
     })();
     if let Err(e) = res {
         eprintln!("darkprep: {e}");
         std::process::exit(1);
     }
+}
+
+fn chunk_step(m: &HashMap<String, String>) -> StepParams {
+    let mut sp = step(m);
+    if let Some(t) = m.get("truncs") {
+        // the step program's (s1, k1, s2, k2, s3, k3): darkstep::step::Program::truncs()
+        let v: Vec<u32> = t.split(',').map(|x| x.parse().expect("--truncs s1,k1,s2,k2,s3,k3")).collect();
+        assert_eq!(v.len(), 6, "--truncs s1,k1,s2,k2,s3,k3");
+        sp.trunc = [(v[0], v[1]), (v[0], v[1]), (v[2], v[3]), (v[4], v[5])];
+    }
+    if m.contains_key("proof") {
+        sp = sp.with_proof();
+    }
+    if let Some(n) = m.get("proof-triples") {
+        sp.proof_triples = n.parse().expect("--proof-triples");
+    }
+    sp
+}
+
+fn darkstep_tape(t: &Tape) -> darkstep::tape::Tape {
+    darkstep::tape::Tape {
+        alpha_i: t.alpha_i,
+        tags: t.entries.iter().map(|e| e.0 as u8 + 1).collect(), // darkstep numbers In = 1 .. Ar = 9, Trhb = 10
+        sh: t.entries.iter().map(|e| e.1).collect(),
+        mac: t.entries.iter().map(|e| e.2).collect(),
+    }
+}
+
+/// One custodian's part of one chunk (see the header). Returns the measurement JSON.
+fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String> {
+    let party: usize = m.get("party").expect("--party").parse().unwrap();
+    let sp = chunk_step(m);
+    let steps: usize = get(m, "steps", 1);
+    let p: u64 = get(m, "p", 0);
+    let mpspdz = PathBuf::from(m.get("mpspdz").expect("--mpspdz"));
+    // --genesis: step 0 of this chunk inputs W1, W2, x, y (2 d^2 + 2 d); the others carry the weights (x, y: 2 d)
+    let chunk: Vec<StepParams> = (0..steps)
+        .map(|j| {
+            let mut q = sp;
+            if m.contains_key("genesis") {
+                q.inputs = if j == 0 { darkprep::schedule::Inputs::Harness } else { darkprep::schedule::Inputs::Steady };
+            }
+            q
+        })
+        .collect();
+    let plan = darkprep::schedule::plan_of_steps(&chunk);
+    if let Some(src) = m.get("mpc-src") {
+        std::fs::copy(src, mpspdz.join("Programs/Source/darkprep.mpc")).map_err(|e| e.to_string())?;
+    }
+    let margs = plan.mpc_args(get(m, "threads", 1), get(m, "batch", 1000));
+    let tc = std::time::Instant::now();
+    let prog = Run::compile(&mpspdz, &margs)?;
+    let compile_s = tc.elapsed().as_secs_f64();
+    let tmp = PathBuf::from(format!("{}.tmp-P{party}", out.display()));
+    let _ = std::fs::remove_dir_all(&tmp);
+    std::fs::create_dir_all(&tmp).map_err(|e| e.to_string())?;
+    let mut extra = vec!["-d".to_string()];
+    if let Some(x) = m.get("extra") {
+        extra.extend(x.split(',').map(String::from));
+    }
+    let run = darkprep::mpspdz::PartyRun {
+        mpspdz: mpspdz.clone(), prog: prog.clone(), p, party,
+        ipfile: PathBuf::from(m.get("ipfile").expect("--ipfile")).canonicalize().map_err(|e| e.to_string())?,
+        plaintext: m.contains_key("plaintext"), extra, workdir: tmp.clone(),
+    };
+    let r = run.execute()?;
+    let ta = std::time::Instant::now();
+    let txf = mpspdz.join(format!("Persistence/Transactions-P{party}.data"));
+    let tx = Transactions::read(&txf, p)?;
+    let mut entries = Vec::new();
+    let mut all = darkstep::tape::Tape { alpha_i: tx.alpha_i, ..Default::default() };
+    for j in 0..steps {
+        let t = darkprep::tape::assemble_in_chunk(&chunk, &tx, party as u32, j)?;
+        entries.push(t.entries.len());
+        let sd = tmp.join(format!("step-{j}"));
+        std::fs::create_dir_all(&sd).map_err(|e| e.to_string())?;
+        let dt = darkstep_tape(&t);
+        all.tags.extend_from_slice(&dt.tags);
+        all.sh.extend_from_slice(&dt.sh);
+        all.mac.extend_from_slice(&dt.mac);
+        let mut f = std::io::BufWriter::new(std::fs::File::create(sd.join(format!("tape_{party}.bin"))).map_err(|e| e.to_string())?);
+        dt.write_to(&mut f).map_err(|e| e.to_string())?;
+        let msg = owner::custodian_message_in_chunk(&chunk, &tx, j);
+        let mut f = std::fs::File::create(sd.join(format!("owner-msg-P{party}.bin"))).map_err(|e| e.to_string())?;
+        owner::write_message(&mut f, &msg).map_err(|e| e.to_string())?;
+    }
+    // every step of the chunk back to back, one alpha: darkstep's multi-step tape
+    let mut f = std::io::BufWriter::new(std::fs::File::create(tmp.join(format!("tape_{party}.bin"))).map_err(|e| e.to_string())?);
+    all.write_to(&mut f).map_err(|e| e.to_string())?;
+    drop(f);
+    drop(tx);
+    std::fs::remove_file(&txf).map_err(|e| e.to_string())?; // the tapes are now the only copy of this party's shares
+    let asm_s = ta.elapsed().as_secs_f64();
+    let links = r.links.iter().map(|(ip, s, rcv)| format!("{{\"peer\": \"{ip}\", \"sent_bytes\": {s}, \"received_bytes\": {rcv}}}")).collect::<Vec<_>>().join(", ");
+    let j = format!(
+        "{{\"party\": {party}, \"chunk\": \"{}\", \"d\": {}, \"mode\": \"{:?}\", \"steps\": {steps}, \"proof_atoms\": {}, \"proof_triples_per_step\": {}, \"tape_entries_per_step\": {entries:?}, \"genesis\": {}, \"plan\": {{\"in\": {}, \"ar\": {}, \"tri\": {}, \"lp\": {}, \"trunc_classes\": [{}]}}, \"prog\": \"{prog}\", \"tls\": {}, \"compile_s\": {compile_s:.3}, \"wall_s\": {:.3}, \"assemble_s\": {asm_s:.3}, \"cpu_user_s\": {:.2}, \"cpu_sys_s\": {:.2}, \"max_rss_kb\": {}, \"mpspdz_sent_bytes\": {:.0}, \"mpspdz_rounds\": {}, \"links\": [{links}]}}",
+        out.display(), sp.d, sp.inputs, sp.proof_atoms, sp.proof_triples, m.contains_key("genesis"), plan.n_in, plan.n_ar, plan.n_tri, plan.n_lp,
+        plan.trunc_classes.iter().map(|(a, b, c)| format!("[{a}, {b}, {c}]")).collect::<Vec<_>>().join(", "),
+        !m.contains_key("plaintext"), r.wall_s, r.cpu_user_s, r.cpu_sys_s, r.max_rss_kb, r.stats.sent_bytes, r.stats.rounds
+    );
+    std::fs::write(tmp.join(format!("chunk-P{party}.json")), &j).map_err(|e| e.to_string())?;
+    let _ = std::fs::remove_dir_all(out);
+    std::fs::rename(&tmp, out).map_err(|e| e.to_string())?;
+    Ok(j)
 }

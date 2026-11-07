@@ -18,9 +18,15 @@ pub struct Report {
 }
 
 pub fn verify(tapes: &[Tape], owner: &[u64]) -> Result<Report, String> {
+    verify_step(&tapes[0].step_params(), tapes, owner)
+}
+
+/// As verify, for a step whose proof atoms / proof triples are given by `sp` (the tape header carries d, the
+/// input mode and the truncation parameters only).
+pub fn verify_step(sp: &StepParams, tapes: &[Tape], owner: &[u64]) -> Result<Report, String> {
+    let sp = *sp;
     let t0 = &tapes[0];
     let fp = Fp::new(t0.p);
-    let sp: StepParams = t0.step_params();
     for t in tapes {
         if (t.p, t.d, t.inputs, t.trunc) != (t0.p, t0.d, t0.inputs, t0.trunc) {
             return Err("tapes disagree on parameters".into());
@@ -89,6 +95,14 @@ pub fn verify(tapes: &[Tape], owner: &[u64]) -> Result<Report, String> {
                     return Err(format!("truncation at entry {pos}: r, bits, r >> s inconsistent or out of range"));
                 }
                 pos += s as usize + 2;
+                if sp.proof_atoms {
+                    let nb = (k + KAPPA - s) as usize;
+                    let hb = &vals[pos..pos + nb];
+                    if hb.iter().any(|&b| b > 1) || hb.iter().enumerate().fold(0u64, |a, (i, &b)| a | (b << i)) != hi {
+                        return Err(format!("truncation at entry {pos}: the Trhb bits are not the bits of r >> s"));
+                    }
+                    pos += nb;
+                }
                 for _ in 0..2 * (s - 1) {
                     tri(&mut pos, &mut rep)?;
                 }

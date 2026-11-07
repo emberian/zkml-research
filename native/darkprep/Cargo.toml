@@ -8,3 +8,4 @@ description = "Real preprocessing for the dark-learning MPC fork: MASCOT via MP-
 pycompat = { path = "../pycompat" }
 # only for `darkprep export-darkstep`: the online step's own tape format and the harness inputs
 darkstep = { path = "../darkstep" }
+libc = "0.2"

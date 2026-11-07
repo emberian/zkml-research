@@ -13,10 +13,13 @@ const P: u64 = 2305843009210515457;
 
 /// Ideal values for every section of the plan, then n additive (share, MAC) sharings, serialized like MP-SPDZ.
 fn synth(sp: &StepParams, seed: u64) -> (Vec<Vec<u8>>, u64) {
+    synth_plan(&Plan::of(sp), seed)
+}
+
+fn synth_plan(plan: &Plan, seed: u64) -> (Vec<Vec<u8>>, u64) {
     let fp = Fp::new(P);
     let mut rng = PyRandom::from_u64(seed);
     let mut r = |n: u64| rng.randbelow_u64(n);
-    let plan = Plan::of(sp);
     let sec = plan.sections();
     let mut vals = vec![0u64; sec.total];
     let mut put = |(base, _nc, m): (usize, usize, usize), comp: usize, k: usize, v: u64| vals[base + comp * m + k] = v;
@@ -81,7 +84,7 @@ fn build(sp: &StepParams, files: &[Vec<u8>]) -> Result<(Vec<Tape>, Vec<u64>), St
 }
 
 fn small() -> StepParams {
-    StepParams { d: 4, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)] }
+    StepParams { d: 4, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0 }
 }
 
 #[test]
@@ -142,4 +145,68 @@ fn a_wrong_prime_or_length_is_refused() {
     assert!(Transactions::parse(&files[0], P - 2).is_err());
     let t = Transactions::parse(&files[0][..files[0].len() - 16], P).unwrap();
     assert!(assemble(&sp, &t, 0).is_err());
+}
+
+#[test]
+fn schedule_with_proof_equals_darkstep_dealer_tags() {
+    // darkstep's own dealer, with the proof atoms and the proof section, is the authority on the tag order
+    for d in [4usize, 8] {
+        let sp = StepParams::at(d, Inputs::Harness).with_proof();
+        let inputs = vec![0u64; 2 * d * d + 2 * d];
+        let (_, mut dl) = darkstep::tape::deal_step_dealer(P, d, 5, 9, &inputs, true);
+        darkstep::tape::deal_proof_section(&mut dl, sp.proof_triples);
+        let theirs: Vec<u8> = dl.tapes[0].tags.clone();
+        let ours: Vec<u8> = tags(&sp).iter().map(|t| *t as u8 + 1).collect();
+        assert_eq!(ours.len(), theirs.len(), "d = {d}");
+        assert_eq!(ours, theirs, "d = {d}");
+    }
+}
+
+#[test]
+fn hadamard_count_matches_recorded_runs() {
+    // cosnark_gates results: "hadamard" at d = 4, 16, 64, and 4096 (step_counts parameters)
+    for (d, want) in [(4usize, 1992usize), (16, 7968), (64, 31872), (4096, 2260992)] {
+        assert_eq!(StepParams::at(d, Inputs::Steady).n_had(), want, "d = {d}");
+    }
+    let sp = StepParams::at(4096, Inputs::Steady).with_proof();
+    assert_eq!(sp.proof_triples, 13 * 4095 + 4 * (4194304 - 1));
+}
+
+#[test]
+fn chunk_steps_assemble_disjoint_slices_that_verify() {
+    let sp = StepParams { d: 4, inputs: Inputs::Steady, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: true, proof_triples: 7 };
+    let steps = 3;
+    // synthetic chunk: the plan of 3 steps, built through the same synth() with a chunk-sized StepParams stand-in
+    let (files, _) = synth_plan(&Plan::of_chunk(&sp, steps), 5);
+    let txs: Vec<Transactions> = files.iter().map(|f| Transactions::parse(f, P).unwrap()).collect();
+    let mut firsts = Vec::new();
+    for j in 0..steps {
+        let tapes: Vec<Tape> = txs.iter().enumerate().map(|(i, t)| darkprep::tape::assemble_step(&sp, t, i as u32, j, steps).unwrap()).collect();
+        let msgs: Vec<_> = txs.iter().map(|t| owner::custodian_message_step(&sp, t, j, steps)).collect();
+        let rs = owner::owner_masks(Fp::new(P), &msgs).unwrap();
+        darkprep::verify::verify_step(&sp, &tapes, &rs).unwrap();
+        firsts.push(tapes[0].entries[0]);
+    }
+    assert!(firsts[0] != firsts[1] && firsts[1] != firsts[2], "steps of a chunk reuse preprocessing");
+}
+
+#[test]
+fn genesis_chunk_equals_darkstep_multistep_dealer_tags() {
+    // darkstep::tape::deal_steps_prog: step 0 inputs W1, W2, x, y; later steps x, y; one stream, back to back
+    let d = 4;
+    let base = StepParams::at(d, Inputs::Harness);
+    let chunk: Vec<StepParams> = (0..3).map(|j| StepParams { inputs: if j == 0 { Inputs::Harness } else { Inputs::Steady }, ..base }).collect();
+    let later = vec![vec![0u64; 2 * d]; 2];
+    let (tapes, _) = darkstep::tape::deal_steps_prog(P, d, 5, 9, &vec![0u64; 2 * d * d + 2 * d], &later, false, &darkstep::step::Program::HARNESS);
+    let ours: Vec<u8> = chunk.iter().flat_map(|sp| tags(sp)).map(|t| t as u8 + 1).collect();
+    assert_eq!(ours, tapes[0].tags);
+    // and the synthetic chunk assembles step by step, each verifying
+    let (files, _) = synth_plan(&darkprep::schedule::plan_of_steps(&chunk), 6);
+    let txs: Vec<Transactions> = files.iter().map(|f| Transactions::parse(f, P).unwrap()).collect();
+    for j in 0..3 {
+        let tp: Vec<Tape> = txs.iter().enumerate().map(|(i, t)| darkprep::tape::assemble_in_chunk(&chunk, t, i as u32, j).unwrap()).collect();
+        let msgs: Vec<_> = txs.iter().map(|t| owner::custodian_message_in_chunk(&chunk, t, j)).collect();
+        let rs = owner::owner_masks(Fp::new(P), &msgs).unwrap();
+        darkprep::verify::verify_step(&chunk[j], &tp, &rs).unwrap();
+    }
 }
