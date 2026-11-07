@@ -464,6 +464,46 @@ p-61 files and `--scan-extra` on that dir. There is no vault in this run.
 - The x2de handover proof is about half of run12c's x2 one (37.6 MB), because the new W is not opened in it.
 - The public genesis carry (`public_carry` W1, W2) is not canaried as a share, as in 09fd154d.
 
+### reh: the first rotation on a vault build (deploy's rehearsal, 11:51-12:01 UTC, r6 at 11e84d91, ledger-x2de + RS) [EXECUTED]
+Four steps, with the handover after step 1. Old seats forge 0, bb2 1, bb2 2; new seats forge 0, bb2 1, bb2 2.
+Every seat ran `--vault`; the old seats also ran `--keep-erased-copy`. Checker: rotation mode, tools at the
+vault-open build.
+
+**Result: 86 of 95 checks pass, and the 9 reds have two causes.**
+
+What holds:
+- every vault check: the key was in the keyring, is invalidated and is absent after; the sealed files open under it
+  before the erasure;
+- every TLS canary check;
+- the restarted seat loads and decrypts nothing;
+- verify-rotation, and one proof digest.
+
+The erased copies (`dl-hand vault-open NAME FILE...` on each old box, run after the handover):
+- 9 sealed files (ckpt 536,870,996 B, carry 288,873,140 B and the TLS key 174 B, per seat);
+- none opens, neither by the uid's keyring (the old epoch's key name is absent) nor by the zero key.
+
+**Red 1: relaunch (6 checks), a checker criterion only.** The relaunched serve and serve --resume exit 2 at
+"vault <name>: no file key in the keyring". The erased file key is now the first missing secret, before the TLS key
+and the checkpoint. The checker now accepts the seat's own vault name in that message.
+
+**Red 2: the after-erasure memory scan (3 checks), 8 hits of "TLS private key (PKCS#8 DER)" per seat. A false
+positive of the canary design.**
+- The 8 hits were present before and after the erasure, and are 8 consecutive words in [heap].
+- The scalar's three forms (big-endian, limbs, Montgomery) have 0 hits both times.
+- tests/tls_canary.rs shows that exactly 8 of the DER's 17 aligned words also sit at aligned offsets of the seat's
+  own certificate: the public key and the OIDs. The certificate is public and stays live.
+- Fix: the DER canary keeps only the words that overlap the private scalar (5), with a test that none of them
+  occurs in the certificate.
+- This also showed that rustls's key is gone by the time of the before-scan, since the meshes are closed. The TLS
+  control is now the key file's plaintext, held through the before-scan and then wiped.
+- dl-hand local at d = 256 on bb2 with the fix: the DER private words have 5 hits before and 0 after on every old
+  seat, the vault key 12 before and 0 after, and all checks hold.
+- A rotation rerun on this darkhand will confirm it on the boxes.
+
+**Also found:** `--keep-erased-copy` copies the `--erase-extra` MP-SPDZ files too (Player-MAC-Keys-p-P<I>,
+Mascot-Secrets-...). They are plaintext, not sealed, so the erased dir holds a live copy of the old MAC key share.
+The deploy lane removes them (a test artifact). Sealing or tmpfs for MP-SPDZ's files is the open prep item.
+
 ## 8. The handover proof in F_{p^2} (profiles demo-x2, ledger-x2) [EXECUTED, 1bfb04a3]
 The proof lane's x2 cut (proof.md §19) draws every challenge in F_{p^2}. The handover follows it:
 - the point per matrix is `X.chal` / `ext::chal`;

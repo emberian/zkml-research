@@ -712,6 +712,28 @@ fn main() {
             println!("{}", json!({"name": name, "present": present}));
             std::process::exit(if present { 1 } else { 0 });
         }
+        Some("vault-open") => {
+            // dl-hand vault-open NAME FILE...: try to open each sealed copy (role from its file name) with every key this uid can still get
+            // (the keyring by NAME, the zero key); exit 0 when none opens and each file is a sealed one
+            let name = arg(2);
+            let role_of = |f: &Path| darkhand::side::vault_role(f);
+            let load = darkhand::vault::Vault::load(&name);
+            let zero = darkhand::vault::Vault::with_key(&name, [0u8; 32]);
+            let mut all_closed = true;
+            let mut rows = Vec::new();
+            for f in &a[3..] {
+                let fp = Path::new(f);
+                let b = std::fs::read(fp).unwrap_or_default();
+                let sealed = b.starts_with(darkhand::vault::MAGIC);
+                let role = role_of(fp);
+                let by_key = load.as_ref().map(|v| v.open(&role, b.clone()).is_ok()).unwrap_or(false);
+                let by_zero = sealed && zero.open(&role, b.clone()).is_ok();
+                all_closed &= sealed && !by_key && !by_zero;
+                rows.push(json!({"file": f, "bytes": b.len(), "sealed": sealed, "role": role, "opens_by_keyring": by_key, "opens_by_zero_key": by_zero}));
+            }
+            println!("{}", json!({"name": name, "key_in_keyring": load.is_ok(), "load_error": load.err(), "files": rows, "none_opens": all_closed}));
+            std::process::exit(if all_closed { 0 } else { 1 });
+        }
         Some("verify-rotation") => {
             // dl-hand verify-rotation WORKDIR LEDGER.jsonl HANDOVER.bin N L F d [PROFILE]
             let v = verify_rotation(Path::new(&arg(3)), Path::new(&arg(4)), &a[5..9], a.get(9).map(|s| s.as_str()).unwrap_or("ledger"), &work);

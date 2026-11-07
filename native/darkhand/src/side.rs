@@ -250,8 +250,11 @@ pub fn p256_scalar_words(d: &[u8; 32]) -> [(&'static str, Vec<u64>); 3] {
 /// Canaries of the TLS private key among the state files (`tls_*.key`, PKCS#8 DER, sealed under the vault when it
 /// starts with vault::MAGIC): in memory its DER words and the scalar's three forms; on disk the scalar's first 16
 /// bytes at any offset of small files. Returns the files used.
-fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], vault: Option<&crate::vault::Vault>) -> Vec<String> {
+/// Also returns the key files' plaintext, kept live through the before-erasure scan as its control (by the time of
+/// that scan the meshes are closed and rustls's key is gone; reh showed it), then wiped by the caller.
+fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], vault: Option<&crate::vault::Vault>) -> (Vec<String>, Vec<Vec<u8>>) {
     let mut used = Vec::new();
+    let mut live = Vec::new();
     for f in files {
         let name = f.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
         if !(name.starts_with("tls_") && name.ends_with(".key")) {
@@ -266,7 +269,15 @@ fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], 
         } else {
             raw
         };
-        can.add_bytes("TLS private key (PKCS#8 DER)", &der);
+        // only the DER's words that hold scalar bytes: the rest is the algorithm OIDs and the PUBLIC key, which the
+        // certificate (public, kept) also holds; reh found 8 such words live in the heap after erasure on every seat
+        let ws: Vec<u64> = der.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+        let at = p256_scalar(&der).and_then(|d| der.windows(32).position(|w| w == d));
+        let priv_words: Vec<u64> = match at {
+            Some(a) => ws.iter().enumerate().filter(|(k, _)| 8 * k + 8 > a && 8 * k < a + 32).map(|(_, w)| *w).collect(),
+            None => Vec::new(),
+        };
+        can.add_words("TLS private key (PKCS#8 DER, the scalar's words)", &priv_words, priv_words.len());
         if let Some(mut d) = p256_scalar(&der) {
             for (kind, mut ws) in p256_scalar_words(&d) {
                 can.add_words(kind, &ws, ws.len());
@@ -275,10 +286,10 @@ fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], 
             dcan.add_text16("TLS private scalar (bytes)", &d[..16]);
             unsafe { crate::erase::zero_raw(d.as_mut_ptr(), d.len()) };
         }
-        der.wipe();
+        live.push(der);
         used.push(f.display().to_string());
     }
-    used
+    (used, live)
 }
 
 /// Overwrite ALL of this thread's stack below the caller's frame: from here down to the low end of the stack
@@ -493,7 +504,7 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
         can.add_bytes("HE return-coin key", rk);
     }
     // the seat's TLS private key (its identity on the meshes: kept, it could still join a mesh as this custodian)
-    let tls_kinds = tls_key_canaries(&mut can, &mut dcan, &st.files, st.vault.as_ref());
+    let (tls_kinds, mut tls_live) = tls_key_canaries(&mut can, &mut dcan, &st.files, st.vault.as_ref());
     // the file key, and copies of the small sealed files (ciphertext) for the check that nothing opens them after
     let mut vault_pre = serde_json::Value::Null;
     let vault_copies = st.vault.as_ref().map(|v| {
@@ -517,6 +528,10 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
     });
     // control: before erasure the scan finds the material, and the key decrypts the captured ciphertext
     let pre = can.scan();
+    for d in tls_live.iter_mut() {
+        d.wipe();
+    }
+    tls_live.clear();
     let pre_disk = dcan.scan_paths(&st.scan_paths);
     let pre_dec = st.captured.as_ref().map(|(ct, dg)| {
         let k = st.key.as_ref().unwrap();
