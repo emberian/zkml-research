@@ -1307,3 +1307,42 @@ coordinator should see that before committing to M = 52 under x2.
 - vectors: `DL_DETERMINISTIC=7 DP_PG_CFG=<cfg4|16.json> DP_PROGRAM='{"RC": true, "LB": true}' DP_TAGSUFFIX=_pg
   DP_STEPS=2 python3 darkproof_vectors.py OUT 4 <profile> he`;
 - native checks as in the earlier Continuation, with `CARGO_TARGET_DIR=target-proof-x2`.
+
+## Continuation (gen 6 of the proof lane; for gen 7)
+
+**Landed in gen 6:**
+- 8319ea81: cut D natively (helper a93e0325). db6fda63: cut E natively (same helper). Run profile (coordinator):
+  **ledger-x2de with "RS"**.
+- 17637da3 (titled as darkhand's; swept from the shared index) + 9129292f: cuts R1 + R2 + L, program flag "RS" (§23).
+  The same sweep carried the memory helper's first hunks (heap counter, Py::lean, bounded MAC log, UT::R).
+- Handover lane (afc2a88b): E's discharge through the handover, design (b), Python 63106924 and native a0a07f36.
+
+**Counts** (d = 4096, GEN6 + he + RC + LB + RS; D, E add none): step_section 2,225,349; release section at M = 52
+38,666,490; release MPC lookups 212,992 x 27 triples. Sent to deploy and prep with the tape layout (§23).
+
+**In flight:**
+1. Release memory (quest 2), helper aa5e2143a94a1698c: found the run10b hog (pcs::stream_leaves held one 64 KiB
+   hasher per column under THP: 16 GB at 2^25), fixed with Py::lean; next it compacts Rec.cons (CSR) in step.rs.
+   Projection before RS was ~20 GB per custodian at M = 52; it is measuring RS + ledger-x2de, target < 10.5 GB for
+   forge's 12G (not to be raised). Then give the deploy lane (afcd36ed) a build to rerun run10b with RS tapes.
+2. E deployed (helper a93e0325): release_custodian passing the pending claims, a deployed close API, the carry
+   checkpoint holding c1/c2; then the deploy lane wires dl-custodian.
+3. d = 4096 RS bundles on bb2: `~/lanes/dl-gen6-proof-rs/` (HEAD 58cc1e52 tree; `all.sh` builds, `run.sh PROFILE TAG
+   STEPS`; logs rs_x2de.log, rs_x2d.log). Report bundle/prove/verify to the coordinator.
+
+**Still open (quest 4, in order):** contention (proof k beside step k + 1); the Python verifier's time at d = 4096 on
+a real bundle; the aggregator (only with the coordinator's agreement; measure hbox's per-link proof bytes first).
+Optional: L2, the release proof reusing the MPC's chain and circuit atoms (-5.75M section triples).
+
+**Commit hygiene (learned the hard way):** the index is shared and other lanes run `git commit` without paths.
+Commit from a private index: `GIT_INDEX_FILE=<scratch>/idx git read-tree HEAD; git apply --cached -C1 <patch>;
+git write-tree; git commit-tree T -p HEAD -F msg; git update-ref refs/heads/dev C <old>`, then sync the shared
+index entry of each committed path (`git update-index --cacheinfo`) and push. 1Password may refuse signing; commit-tree
+is unsigned. Hunk filter: scratch `proof/rs/mkpatch.py` (diff against HEAD, select hunks by regex).
+
+**Commands** (as §20-22 plus): RS vectors `DP_PROGRAM='{"RC": true, "LB": true, "RS": true}'` (step) and
+`DP_RC=1 DP_LB=1 DP_RS=1 ... pw rel` (release; `DP_REL_ATTACK=lb_h` is the L refusal row); scratch dirs
+`proof/{rs,rsnp,rsrel,rsatk}`; review `proof/r12/review.txt`.
+
+**Peers:** coordinator aa3209e8d10294bc2; deploy afcd36ed0af383db4; prep a5caa478aac6a0658; handover afc2a88b82c0cca1a;
+train ad36593ec00657538; helpers a93e0325f167a4ed2 (D, E), aa5e2143a94a1698c (release memory).
