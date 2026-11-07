@@ -11,24 +11,30 @@ use std::sync::atomic::{compiler_fence, AtomicU64, Ordering};
 
 pub static WIPED_BYTES: AtomicU64 = AtomicU64::new(0);
 
-/// Volatile zeroing (the stores cannot be elided as dead before a free).
+/// Zeroing that cannot be elided as dead stores before a free: a plain memset (`write_bytes`, memset speed), then an
+/// empty asm statement that takes the pointer and may read memory, so the compiler must assume the zeros are observed.
+/// (The earlier loop of volatile word stores ran at a fraction of memset speed: with the allocator on every free,
+/// dl-custodian's proof was about 3.5x slower and its verify about 9x.)
 ///
 /// # Safety
 /// `p..p + n` must be writable.
+#[inline]
 pub unsafe fn zero_raw(p: *mut u8, n: usize) {
-    let mut i = 0;
-    let al = p.align_offset(8).min(n);
-    while i < al {
-        std::ptr::write_volatile(p.add(i), 0);
-        i += 1;
+    if n == 0 {
+        return;
     }
-    while i + 8 <= n {
-        std::ptr::write_volatile(p.add(i) as *mut u64, 0);
-        i += 8;
-    }
-    while i < n {
-        std::ptr::write_volatile(p.add(i), 0);
-        i += 1;
+    std::ptr::write_bytes(p, 0, n);
+    #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+    std::arch::asm!("/* {0} */", in(reg) p, options(nostack, preserves_flags));
+    #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+    {
+        std::hint::black_box(p);
+        // other targets: fall back to one volatile store per word after the memset
+        let mut i = 0;
+        while i + 8 <= n {
+            std::ptr::write_volatile(p.add(i) as *mut u64, 0);
+            i += 8;
+        }
     }
     compiler_fence(Ordering::SeqCst);
 }
