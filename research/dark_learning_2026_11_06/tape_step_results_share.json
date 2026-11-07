@@ -1,0 +1,10 @@
+{
+ "share": {
+  "verdict": "REFUSED",
+  "stage": "mac_check",
+  "by": "MAC check failed: an opened value is not the authenticated one",
+  "refines_spec": false,
+  "consumed": 34438,
+  "secs": 1684
+ }
+}
