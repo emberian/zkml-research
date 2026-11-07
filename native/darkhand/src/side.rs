@@ -334,11 +334,17 @@ pub struct NewCustodian {
 }
 
 /// The new custodian's part. `net3` is the new committee's own mesh (index j), `net6` the joint one (index
-/// n_old + j); `tape` its own preprocessing (alpha share and at least 2 d^2 + 2 * check auth_plain entries).
+/// n_old + j); `tape` its own preprocessing (alpha share and at least 2 d^2 + 2 auth_plain entries, plus
+/// `test_reveal` per matrix).
+///
+/// The check after re-authentication opens nothing secret: per matrix, one opening of sum_k rho_k w_k + r with
+/// rho from the proof bytes (Fiat-Shamir, public) and r a fresh authenticated random value, then the MAC check; a
+/// failed MAC check is an Err (the seat must not join). `test_reveal` > 0 (TEST ONLY: dl-hand's comparison with the
+/// plaintext W) additionally opens that many leading entries of each matrix; production passes 0.
 /// `keep`: Some((custodian, ceremony, key)) in a self-handover (the same seat keeps its HE key; only the MAC key is
 /// new); None in a rotation (a fresh ceremony at `epoch`).
 #[allow(clippy::too_many_arguments)]
-pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i64, check: usize,
+pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i64, test_reveal: usize,
                 keep: Option<OwnKey>) -> Result<NewCustodian, String> {
     let t0 = Instant::now();
     let (n_old, n_new) = (c.n_old, c.n_new);
@@ -394,12 +400,41 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
         pl.wipe();
     }
     let auth_s = ta.elapsed().as_secs_f64();
+    // masked random linear combination per matrix: rho_k = H(proof digest, matrix, k) mod p, r from the tape
+    let pd = Sha256::digest(&blob);
+    let mut masked = Vec::new();
+    for (q, k) in KINDS.iter().enumerate() {
+        let terms: Vec<(u64, Sh)> = w[*k]
+            .iter()
+            .enumerate()
+            .map(|(idx, &x)| {
+                let mut h = Sha256::new();
+                h.update(pd);
+                h.update([q as u8]);
+                h.update((idx as u64).to_le_bytes());
+                let b = h.finalize();
+                (u64::from_le_bytes(b[..8].try_into().unwrap()) % c.t, x)
+            })
+            .collect();
+        let pos = party.take(1);
+        let r = party.tape_at(pos, darkstep::tape::Tag::Ar);
+        let y = party.lin(&terms, 0);
+        let y = Sh { s: darkstep::arith::addmod(y.s, r.s, c.t), m: darkstep::arith::addmod(y.m, r.m, c.t) };
+        masked.push(y);
+    }
+    let masked_open = party.open_vec(&masked, darkstep::party::PH_HE_AUTH);
     let mut opened = BTreeMap::new();
-    for k in KINDS {
-        let xs: Vec<Sh> = w[k][..check.min(c.d * c.d)].to_vec();
-        opened.insert(k.to_string(), party.open_vec(&xs, darkstep::party::PH_HE_AUTH));
+    if test_reveal > 0 {
+        for k in KINDS {
+            let xs: Vec<Sh> = w[k][..test_reveal.min(c.d * c.d)].to_vec();
+            opened.insert(k.to_string(), party.open_vec(&xs, darkstep::party::PH_HE_AUTH));
+        }
     }
     let mac = match party.mac_check("handover") { Ok(_) => "ok".to_string(), Err(e) => e };
+    if mac != "ok" {
+        return Err(format!("re-authentication: {mac}"));
+    }
+    let _ = masked_open;
     // ---- a ciphertext under the new key (the attempt's target) and its own decryption (control)
     let mut key2 = key;
     let m = os_field(c.rns.n, c.t);
