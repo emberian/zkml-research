@@ -121,6 +121,15 @@ def he_flow(out, d, prof, steps=3):
         y = [rng.randint(-7, 7) % p for _ in range(d)]
     steps = int(os.environ.get("DP_STEPS", steps))
     program = dict(HE_PROGRAM, **json.loads(os.environ.get("DP_PROGRAM", "{}")))
+    # PUBLIC GENESIS (DP_PG_CFG=<darktrain cfg json>): W = train_owner.init(cfg) enters custody as a public constant
+    # committed with public coins (PW.public_genesis); every step, step 1 included, is the carried program
+    pg_cfg = os.environ.get("DP_PG_CFG")
+    if pg_cfg:
+        import hashlib
+        cfg_bytes = open(pg_cfg, "rb").read()
+        program["PG"] = hashlib.sha256(cfg_bytes).hexdigest()
+        dd, W1, W2 = PW.public_weights(cfg_bytes)
+        assert dd == d, "the public genesis cfg's d"
     prog = CH.Prog.of(program)
     tab = prog.tables(p)
     dealer = spdz.Dealer(p, 3, NR.DEALER_SEED)
@@ -128,7 +137,12 @@ def he_flow(out, d, prof, steps=3):
     meta = dict(d=d, profile=prof, seed=os.environ["DL_DETERMINISTIC"], p=p, program=program, he=dict(N=N, L=L, F=F),
                 bundles={})
     model, carry, carried, parent = "mind-0", None, None, None
+    if pg_cfg:
+        carry, parent = PW.public_genesis(p, d, W1, W2)
+        carried = (PW.public_genesis_shares(p, W1, dealer.alpha_sh), PW.public_genesis_shares(p, W2, dealer.alpha_sh))
+        meta["genesis_roots"], meta["pg_cfg"] = parent, os.path.abspath(pg_cfg)
     for k in range(1, steps + 1):
+        cr = k > 1 or bool(pg_cfg)
         attack = os.environ.get("DP_ATTACK") if k == 1 else None   # TEST: a malformed step 1 (refusal rows)
         live = G.RecEngine(p, 3, dealer, attack=attack)
         noise = (N * (t // 2) * 32).bit_length()
@@ -142,7 +156,7 @@ def he_flow(out, d, prof, steps=3):
         live.mac_check("he")
         wires.update(W1n=W1n, W2n=W2n)
         public = [v for _, _, v in live.transcript]
-        assert len(public) == CH.schedule_len(d, prog, carried=k > 1), (len(public), CH.schedule_len(d, prog, k > 1))
+        assert len(public) == CH.schedule_len(d, prog, carried=cr), (len(public), CH.schedule_len(d, prog, cr))
         gen = None
         if carry is None:
             carry = gen = RP.genesis_commit(p, wires)
@@ -152,7 +166,7 @@ def he_flow(out, d, prof, steps=3):
         json.dump(witness(p, d, dealer, live, wires), open(os.path.join(out, f"{tag}_{name}.json"), "w"))
         ctx = (model, 0, k)
         spine, sst = ZK.prove_zk(spdz.Engine(p, 3, dealer), wires, carry=carry, context=ctx, public=public)
-        sym = CH.replay(p, public, d, tab, prog, carried=k > 1)
+        sym = CH.replay(p, public, d, tab, prog, carried=cr)
         assert sym.tpos == len(public)
         middle, mst = GZ.prove_middle_zk(live, sym, wires, sst["coms"], context=ctx)
         blob = PW.encode_step(p, ctx, d, 3, True, spine, public, middle, sym)
@@ -161,12 +175,12 @@ def he_flow(out, d, prof, steps=3):
             print(f"attack {attack}: python verify: {ok} {why} | first violated row: {mst.get('first_violated')}", flush=True)
             open(os.path.join(out, f"{tag}_{name}.bin"), "wb").write(blob)
             meta["bundles"][name] = dict(ctx=list(ctx), witness=f"{tag}_{name}.json", blob=f"{tag}_{name}.bin",
-                                         owner_pk=None, carried=k > 1, attack=attack, python_accepts=ok)
+                                         owner_pk=None, carried=cr, attack=attack, python_accepts=ok)
             break
         assert ok, why
         open(os.path.join(out, f"{tag}_{name}.bin"), "wb").write(blob)
         meta["bundles"][name] = dict(ctx=list(ctx), witness=f"{tag}_{name}.json", blob=f"{tag}_{name}.bin",
-                                     owner_pk=None, carried=k > 1)
+                                     owner_pk=None, carried=cr)
         print(name, len(blob), len(public), "python verify:", why, flush=True)
         parent, carry, carried = res[0], sst["child"], (W1n, W2n)
         W1 = W2 = None
@@ -196,6 +210,8 @@ def verify_native(out, tag):
             ok_all &= ok and not ok2
             if ok:
                 parent = res[0]
+    if meta.get("pg_cfg"):
+        ok_all &= pg_ledger_check(out, tag, meta, p, tab)
     rm = meta.get("release")
     path = os.path.join(out, f"{tag}_rel.native.bin")
     if rm and os.path.exists(path):
@@ -211,6 +227,39 @@ def verify_native(out, tag):
         ok_all &= ok and not ok2 and res[1] == rm["C"]
     print("PYVERIFY", "PASS" if ok_all else "FAIL")
     sys.exit(0 if ok_all else 1)
+
+def pg_ledger_check(out, tag, meta, p, tab):
+    """Public genesis through Python's Ledger, on the native bundles: refused before the cfg check, with another cfg,
+    and with the roots of another W; accepted with the pinned cfg, then every native bundle in order. Control: the
+    same first bundle against a genesis program without "PG" (step 1 then is not the carried program) is refused."""
+    import tempfile
+    cfg = open(meta["pg_cfg"], "rb").read()
+    d = meta["d"]
+    names = sorted(b for b in meta["bundles"] if b.startswith("he"))
+    blobs = [open(os.path.join(out, f"{tag}_{n}.native.bin"), "rb").read() for n in names]
+    tmp = tempfile.mkdtemp(prefix="pg-ledger-")
+    gen = lambda roots, prog: dict(d=d, owner_pk=None, custodians=["c0", "c1", "c2"], roots=roots, program=prog)
+    lg = PW.Ledger(os.path.join(tmp, "mind-0.ledger"), "mind-0", gen(meta["genesis_roots"], meta["program"]))
+    r0 = lg.accept(p, blobs[0], tab)
+    r1 = lg.check_public_genesis(cfg + b"\n")
+    _, W1, W2 = PW.public_weights(cfg)
+    W1b = [r[:] for r in W1]
+    W1b[0][0] += 1
+    _, forged = PW.public_genesis(p, d, W1b, W2)
+    fl = PW.Ledger(os.path.join(tmp, "forged.ledger"), "mind-0", gen(forged, meta["program"]))
+    r2 = fl.check_public_genesis(cfg)
+    r3 = lg.check_public_genesis(cfg)
+    acc = [lg.accept(p, b, tab) for b in blobs]
+    nopg = {k: v for k, v in meta["program"].items() if k != "PG"}
+    ctl = PW.Ledger(os.path.join(tmp, "nopg.ledger"), "mind-0", gen(meta["genesis_roots"], nopg))
+    r4 = ctl.accept(p, blobs[0], tab)
+    for nm, r in (("step 1 before the cfg check", r0), ("another cfg", r1), ("roots of another W", r2),
+                  ("the pinned cfg", r3)):
+        print(f"python ledger {tag} public genesis: {nm}: {r}", flush=True)
+    for nm, r in zip(names, acc):
+        print(f"python ledger {tag} accepts native {nm}: {r}", flush=True)
+    print(f"python ledger {tag} control, the same step 1 under a genesis without PG: {r4}", flush=True)
+    return (not r0[0]) and (not r1[0]) and (not r2[0]) and r3[0] and all(r[0] for r in acc) and not r4[0]
 
 def main():
     if sys.argv[1] == "verify":

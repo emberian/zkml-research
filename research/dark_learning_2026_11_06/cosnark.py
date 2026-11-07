@@ -58,6 +58,38 @@ def det_rng(*label):
         return None
     return _random.Random("|".join(["dl-proof", seed] + [str(x) for x in label]))
 
+class PubCoins:
+    """PUBLIC coins (native rng::public_coins), for a commitment to a PUBLIC vector only (the public genesis): SHA-256
+    in counter mode, keyed by sha256 over the label parts (each as its u64 LE byte length, then its bytes); block k is
+    sha256(b"dl-public-coins" || key || k as u64 LE), read as u64 LE words. randrange is rejection sampling on the
+    masked word; getrandbits(256) is four words, little-endian. Anyone recomputes them: never for anything secret."""
+    def __init__(self, *parts):
+        h = hashlib.sha256()
+        for x in parts:
+            b = x.encode()
+            h.update(len(b).to_bytes(8, "little"))
+            h.update(b)
+        self.key, self.ctr, self.buf, self.pos = h.digest(), 0, b"", 32
+
+    def word(self):
+        if self.pos + 8 > 32:
+            self.buf = hashlib.sha256(b"dl-public-coins" + self.key + self.ctr.to_bytes(8, "little")).digest()
+            self.ctr, self.pos = self.ctr + 1, 0
+        w = int.from_bytes(self.buf[self.pos:self.pos + 8], "little")
+        self.pos += 8
+        return w
+
+    def randrange(self, n):
+        mask = (1 << (n - 1).bit_length()) - 1
+        while True:
+            x = self.word() & mask
+            if x < n:
+                return x
+
+    def getrandbits(self, k):
+        assert k == 256, "public coins draw 256-bit salts only"
+        return int.from_bytes(b"".join(self.word().to_bytes(8, "little") for _ in range(4)), "little")
+
 def leaf_salts(n, det=None):
     """det: the deterministic stream of the tree's owner (TEST ONLY, see det_rng); None draws from `secrets`."""
     if det is not None and SALT_LEAVES:
@@ -123,7 +155,7 @@ class SharePCS:
     row e with weight 1 (its revealed row combination is uniform; the custodians send m_e = <M_e, b> so the
     verifier can still subtract it). The proximity combination adds the LAST mask row with weight 1. Each
     custodian draws its own mask and tail shares locally: no communication."""
-    def __init__(self, p, shares, label, hide=None, nmask=None, legacy_public_seed=False):
+    def __init__(self, p, shares, label, hide=None, nmask=None, legacy_public_seed=False, public=False):
         import random as _r
         import secrets as _s
         self.p, self.label = p, label
@@ -140,7 +172,11 @@ class SharePCS:
         self.pts = domain(p, BLOW * self.W, self.W)
         self.rows = [[s[r * self.C:(r + 1) * self.C] for r in range(self.Rd)] for s in shares]
         self.ext = []
-        dets = [det_rng("pcs", label, i, self.hide, self.nmask, H(shares[i]))
+        # public=True: a commitment to PUBLIC shares (the public genesis, native PcsParty::commit_public): each share's
+        # tails, mask rows and salts are public coins keyed by the share's hash alone, so anyone recomputes the root
+        # and equal shares commit equally
+        dets = [PubCoins("dl-public-genesis", H(shares[i])) if public else
+                det_rng("pcs", label, i, self.hide, self.nmask, H(shares[i]))
                 if os.environ.get("DL_DETERMINISTIC") is not None and not legacy_public_seed else None
                 for i in range(len(shares))]
         for i, rows in enumerate(self.rows):
