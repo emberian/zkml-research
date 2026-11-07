@@ -341,6 +341,42 @@ fn padv(v: &[Sh], l: usize) -> Vec<Sh> {
     o
 }
 
+/// One zerocheck round with one product per live pair: returns the round's values at X = 0..3 and every pair's
+/// products at X = 0, 1, 2.
+fn zc_round(sp: &mut Spdz, net: &mut dyn Net, st: &Sc, prev: &[Sh], live: usize) -> (Vec<Sh>, Vec<(Sh, Sh, Sh)>) {
+    use crate::spdz::{cmul, lin2, shadd, shsub};
+    let half = st.f.len() / 2;
+    let na = live.div_ceil(2).min(half);
+    let m1 = field::p() - 1;
+    let (xs, ys): (Vec<Sh>, Vec<Sh>) =
+        (0..na).into_par_iter().map(|k| (lin2(m1, st.f[2 * k], 2, st.f[2 * k + 1]), lin2(m1, st.g[2 * k], 2, st.g[2 * k + 1]))).unzip();
+    let p2 = sp.mul_batch(net, &xs, &ys);
+    let pp: Vec<(Sh, Sh, Sh)> = (0..half).map(|k| (prev[2 * k], prev[2 * k + 1], if k < na { p2[k] } else { (0, 0) })).collect();
+    let sub = st.sub.as_ref().unwrap();
+    let eq = st.eq.as_ref().unwrap();
+    let vals = (0..4u64)
+        .map(|xv| {
+            let om = field::one_minus(xv);
+            (0..half)
+                .into_par_iter()
+                .map(|k| {
+                    let (a, b, c) = pp[k];
+                    let prod = match xv {
+                        0 => a,
+                        1 => b,
+                        2 => c,
+                        _ => shadd(lin2(1, a, m1 - 2, b), cmul(3, c)),
+                    };
+                    let term = shsub(prod, lin2(om, sub[2 * k], xv, sub[2 * k + 1]));
+                    let e = field::add(field::mul(eq[2 * k], om), field::mul(eq[2 * k + 1], xv));
+                    cmul(e, term)
+                })
+                .reduce(|| (0, 0), shadd)
+        })
+        .collect();
+    (vals, pp)
+}
+
 /// cosnark_gates.fill_range: this party's shares of the range rows' atoms (Beaver products round by round over every
 /// checked truncation), then every truncation's violation indicator opened; returns the violated ones.
 fn fill_range(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) -> Vec<(&'static str, usize)> {
@@ -500,6 +536,12 @@ pub fn prove(
         claim: None,
         last: vec![],
     };
+    // one Beaver product per live pair per round (cosnark_gates_zk.zround): f g is quadratic in X, its X = 0, 1 values
+    // are known (round 0: the C atoms; later: the previous round's pair products at r), X = 3 by interpolation
+    let mut prev: Vec<Sh> = vecs["C"].clone();
+    let mut live = rec.had.len();
+    let mut pp: Vec<(Sh, Sh, Sh)> = Vec::new();
+    let inv2 = field::inv(2);
     for rnd in 0..lh {
         if rnd > 0 {
             let r = *zrs.last().unwrap();
@@ -510,8 +552,17 @@ pub fn prove(
             st.eq = Some(
                 st.eq.as_ref().unwrap().chunks(2).map(|c| field::add(field::mul(c[0], om), field::mul(c[1], r))).collect(),
             );
+            let l0 = field::mul(field::mul(field::sub(r, 1), field::sub(r, 2)), inv2);
+            let l1 = field::neg(field::mul(r, field::sub(r, 2)));
+            let l2 = field::mul(field::mul(r, field::sub(r, 1)), inv2);
+            prev = pp
+                .par_iter()
+                .map(|&(a, b, c)| crate::spdz::shadd(crate::spdz::lin2(l0, a, l1, b), crate::spdz::cmul(l2, c)))
+                .collect();
+            live = (live + 1) / 2;
         }
-        let vals = round_vals(sp, net, &st);
+        let (vals, p_) = zc_round(sp, net, &st, &prev, live);
+        pp = p_;
         lg_.add_row(&vals.iter().map(|v| v.0).collect::<Vec<_>>());
         let rts = lg_.commit(net);
         tr.absorb(|h| {
@@ -778,7 +829,15 @@ pub fn verify(
     ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
 }
 
-/// Beaver triples the middle's degree-3 zerocheck consumes over plen(n_had) entries: 4 (L - 1).
+/// Beaver triples the middle's degree-3 zerocheck consumes: one per live pair per round, sum over the lg(plen(n_had))
+/// rounds of ceil(n_i / 2), n_0 = n_had, n_(i+1) = ceil(n_i / 2) (about n_had + log2 n_had; gen 5 drew 4 (plen - 1)).
 pub fn beaver_count(n_had: usize) -> usize {
-    4 * (plen(n_had) - 1)
+    let mut live = n_had;
+    let mut tot = 0;
+    for _ in 0..lg(plen(n_had)) {
+        let na = live.div_ceil(2);
+        tot += na;
+        live = na;
+    }
+    tot
 }

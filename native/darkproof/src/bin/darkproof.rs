@@ -38,6 +38,7 @@ fn main() {
         Some("bench") => bench(args[2].parse().unwrap(), &args[3]),
         Some("run-check") => run_check(Path::new(&args[2]), &args[3]),
         Some("rel-check") => rel_check(Path::new(&args[2]), &args[3]),
+        Some("counts") => counts(args[2].parse().unwrap(), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
@@ -634,7 +635,10 @@ fn ds_check(dir: &Path, tag: &str) {
     let prm = program_of(&meta, d);
     let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
     let lp = pr.ligero();
-    let tables = darkproof::step::tables();
+    let tables = darkproof::step::tables_for(prm.t_lo);
+    // the darkstep program: GEN6 when the shifts are GEN6's (its inputs_for), else the harness's
+    let g6 = darkstep::step::Program::GEN6;
+    let pg = if (prm.s1, prm.k1, prm.s2, prm.k2, prm.s3, prm.k3, prm.r3) == (g6.s1, g6.k1, g6.s2, g6.k2, g6.s3, g6.k3, g6.r3) { g6 } else { darkstep::step::Program::HARNESS };
     let he = &meta["he"];
     let pf = darkstep::node::prof(&[he["N"].to_string(), he["L"].to_string(), he["F"].to_string(), d.to_string()]);
     assert_eq!(pf.t, p, "darkstep's plaintext modulus differs");
@@ -643,9 +647,11 @@ fn ds_check(dir: &Path, tag: &str) {
     let pyb = std::fs::read(dir.join(b1["blob"].as_str().unwrap())).unwrap();
     let seed = meta["seed"].as_str().unwrap().to_string();
     let ctx = Ctx::new("mind-0", 0, 1);
-    let nb = darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had(d, prm, false, &tables));
-    let plain = darkstep::step::inputs(d);
-    let (cs, mut dl) = darkstep::tape::deal_step_dealer(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true);
+    let zeros = vec![0u64; prm.transcript_len(d, false)];
+    let rec0 = darkproof::step::replay(&zeros, d, prm, &tables, false).unwrap();
+    let nb = darkproof::spine::beaver_count(d) + rec0.range_products() + darkproof::middle::beaver_count(rec0.had.len());
+    let plain = if pg == darkstep::step::Program::HARNESS { darkstep::step::inputs(d) } else { darkstep::step::inputs_for(d, &pg) };
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg);
     darkstep::tape::deal_proof_section(&mut dl, nb);
     let tapes = dl.tapes;
     let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
@@ -657,14 +663,14 @@ fn ds_check(dir: &Path, tag: &str) {
             .zip(tapes)
             .enumerate()
             .map(|(i, (l, tape))| {
-                let (addrs, cs, pf, w, pr, lp, tables, ctx, seed) = (&addrs, cs.clone(), &pf, &w, &pr, &lp, &tables, &ctx, seed.clone());
+                let (addrs, cs, pf, w, pr, lp, tables, ctx, seed, pg) = (&addrs, cs.clone(), &pf, &w, &pr, &lp, &tables, &ctx, seed.clone(), &pg);
                 s.spawn(move || {
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
-                    let tab = darkstep::step::tables(pf.t);
+                    let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(4).build().unwrap();
-                    let out = pool.install(|| darkstep::step::run_step(&mut pt, &mut he, &cs, d, &tab)).expect("darkstep step");
+                    let out = pool.install(|| darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)).expect("darkstep step");
                     let st = from_darkstep(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Det(Some(seed))).expect("record");
                     // the record against the harness's witness
                     let mut same = st.alpha_i == w.alpha_sh[i] && st.public == w.public && st.atoms == w.atoms[i];
@@ -817,6 +823,38 @@ fn rel_check(dir: &Path, tag: &str) {
     ok &= v5.is_err();
     println!("{}", if ok { "REL-CHECK PASS" } else { "REL-CHECK FAIL" });
     std::process::exit(if ok { 0 } else { 1 });
+}
+
+/// The proof sections' triple counts for one step and for the release (DP_PROGRAM as ds-bench; M = 64, 10 classes).
+fn counts(d: usize, prof: &str) {
+    let pr = Profile::by_name(prof).unwrap();
+    darkproof::field::set_p(wire::he_field(&pr).unwrap());
+    let lp = pr.ligero();
+    let prm = match std::env::var("DP_PROGRAM") {
+        Ok(j) => program_of(&serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }), d).deployed(),
+        Err(_) => darkproof::step::StepParams::for_width(d).deployed(),
+    };
+    let tables = darkproof::step::tables_for(prm.t_lo);
+    for carried in [false, true] {
+        let zeros = vec![0u64; prm.transcript_len(d, carried)];
+        let rec = darkproof::step::replay(&zeros, d, prm, &tables, carried).unwrap();
+        let nh = rec.had.len();
+        let lig = darkproof::ligero::LigParty::tape_triples(&lp, darkproof::spine::LIG_SCALARS, 1) + darkproof::ligero::LigParty::tape_triples(&lp, darkproof::middle::LIG_SCALARS, 1);
+        let gen5 = 4 * (nh.next_power_of_two() - 1);
+        println!(
+            "step (carried {carried}) {prm:?}: hadamard rows {nh} (range rows included), atoms {}, spine Beaver {}, range products {}, zerocheck {} (gen 5 method: {gen5}), Ligero (unauthenticated) {lig}; section total {}",
+            rec.n_prep(), darkproof::spine::beaver_count(d), rec.range_products(), darkproof::middle::beaver_count(nh), darkproof::run::step_section(&lp, d, prm, carried, &tables)
+        );
+    }
+    let m = 64;
+    let pol = darkproof::run::Policy { x: vec![0; d * m], labels: vec![0; m], ncls: 10, kc: 10, ignore_range: false };
+    let zeros = vec![0u64; wire::release_len(d, m, prm, 10, 10)];
+    let rec = darkproof::step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, 10, 10).unwrap();
+    let nh = rec.had.len();
+    println!(
+        "release M = 64: hadamard rows {nh}, atoms {}, range products {}, zerocheck {} (gen 5 method: {}), section total {}",
+        rec.n_prep(), rec.range_products(), darkproof::middle::beaver_count(nh), 4 * (nh.next_power_of_two() - 1), darkproof::run::release_section(&lp, d, m, prm, &pol)
+    );
 }
 
 struct Rows {
