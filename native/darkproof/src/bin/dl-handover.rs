@@ -118,7 +118,7 @@ fn main() {
     let nr = handover::verify(&pr, &lp, d, 3, 3, &ctx, &outs[0].0.old_roots, &blob).expect("verifier accepts");
     let verify_s = tv.elapsed().as_secs_f64();
     assert_eq!(nr, outs[0].0.new_roots);
-    assert_eq!(blob.len(), handover::byte_len(&pr, d, 3, 3));
+    assert_eq!(blob.len(), handover::byte_len(&pr, d, &outs[0].0));
     let sent: Vec<u64> = outs.iter().map(|o| o.1).collect();
     println!(
         "{{\"d\": {d}, \"profile\": \"{}\", \"bytes\": {}, \"reshare_s\": {reshare_s:.2}, \"commit_old_s\": {commit_old_s:.2}, \"commit_new_s\": {commit_new_s:.2}, \"prove_s\": {prove_s:.2}, \"encode_s\": {encode_s:.2}, \"verify_s\": {verify_s:.2}, \"elements_sent_per_party\": {:?}, \"peak_rss_mb\": {:.0}, \"total_s\": {:.1}, \"threads\": {}}}",

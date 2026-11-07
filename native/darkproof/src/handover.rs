@@ -85,16 +85,31 @@ fn sizes_ok(d: usize, n_old: usize, n_new: usize) -> bool {
     d >= 2 && d.is_power_of_two() && d < 1 << 16 && (1..=255).contains(&n_old) && (1..=255).contains(&n_new)
 }
 
-/// The byte length the schema fixes (handover.encode's output length).
-pub fn byte_len(pr: &Profile, d: usize, n_old: usize, n_new: usize) -> usize {
-    let (so, _) = shapes(pr, d);
-    let s = &so["W1"];
+/// The byte length the schema fixes for this proof (handover.encode's output length). Under multiproofs it depends
+/// on the drawn columns (wire::mp_needed), so it takes the proof; it is derived from the schema, not the encoder.
+pub fn byte_len(pr: &Profile, d: usize, p: &HandoverProof) -> usize {
+    let (n_old, n_new) = (p.old_roots["W1"].len(), p.new_roots["W1"].len());
     let n = n_old + n_new;
-    let pcs_side = |nn: usize| 2 * (32 * nn + 8 * nn * s.w + 4 * pr.t_cols + nn * pr.t_cols * (8 * s.r + 32 * s.path_len()));
-    let lp_len = crate::pcs::bitlen(pr.blow * (pr.k_l + pr.t_hide) - 1) + 1;
-    let lig = 8 * ((pr.k_l + pr.t_hide) + (2 * pr.k_l + pr.t_hide - 1) + (2 * (pr.k_l + pr.t_hide) - 1))
-        + n * pr.t_open * ((8 * nrows(pr, d) + 32 * lp_len) + (8 * 3 + 32 * lp_len));
-    12 + pcs_side(n_old) + pcs_side(n_new) + 2 * 32 * n + lig
+    let (so, sn) = shapes(pr, d);
+    // one tree's openings of `sz`-element columns at js: one path per column, or a multiproof (columns, salts, the
+    // siblings mp_needed names); the multiproof's length depends on the drawn js
+    let tree = |js: &[usize], sz: usize, path_len: usize| -> usize {
+        if pr.multiproof {
+            js.len() * (8 * sz + 32) + 32 * crate::wire::mp_needed(js, path_len - 1).len()
+        } else {
+            js.len() * (8 * sz + 32 * path_len)
+        }
+    };
+    let pcs_side = |nn: usize, sh: &BTreeMap<String, Shape>, cols: &BTreeMap<String, PcsCols>| -> usize {
+        sh.iter().map(|(k, s)| 32 * nn + 8 * nn * s.w + 4 * pr.t_cols + nn * tree(&cols[k].j, s.r, s.path_len())).sum::<usize>()
+    };
+    let (k, t) = (pr.k_l, pr.t_hide);
+    let lg = crate::pcs::bitlen(pr.blow * (k + t) - 1) + 1;
+    let lj: Vec<usize> = if pr.multiproof { p.ligero.j.clone() } else { (0..pr.t_open).collect() };
+    let lig = 8 * ((k + t) + (2 * k + t - 1) + (2 * (k + t) - 1))
+        + if pr.multiproof { 4 * pr.t_open } else { 0 }
+        + n * (tree(&lj, nrows(pr, d), lg) + tree(&lj, 3, lg));
+    12 + pcs_side(n_old, &so, &p.cols_old) + pcs_side(n_new, &sn, &p.cols_new) + 2 * 32 * n + lig
 }
 
 /// handover.decode: d, n_old and n_new come from the ledger; any deviation from the schema is a parse error.
