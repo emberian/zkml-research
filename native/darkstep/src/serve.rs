@@ -46,7 +46,9 @@ pub fn proc_usage() -> (Option<f64>, Option<u64>) {
 
 impl CustodianState {
     /// Keys (the ceremony when gated) over `net`, then a party on `tape` at cursor `cur`.
-    pub fn new(i: usize, pf: Prof, net: Net, tape: Tape, attack: Option<(String, usize)>) -> Result<Self, (String, Net)> {
+    /// Boxed from the start: the state (its MAC key share inside the tape, its weight shares) then moves between the
+    /// serve loop, the hook and the handover as a pointer, and no live stack frame holds a copy of it.
+    pub fn new(i: usize, pf: Prof, net: Net, tape: Tape, attack: Option<(String, usize)>) -> Result<Box<Self>, (String, Net)> {
         let he = match setup_he(i, &pf, &net, attack) {
             Ok(h) => h,
             Err(e) => return Err((e, net)),
@@ -55,16 +57,16 @@ impl CustodianState {
         let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
         let n = net.n;
         let pt = Party::new(i, pf.t, net, tape);
-        Ok(CustodianState { i, pf, he, pt, w: None, step: 0, tab, pool, last_sent: vec![[0; crate::net::NTAGS]; n], last_gate: [0.0; 3], last_proof_bytes: 0 })
+        Ok(Box::new(CustodianState { i, pf, he, pt, w: None, step: 0, tab, pool, last_sent: vec![[0; crate::net::NTAGS]; n], last_gate: [0.0; 3], last_proof_bytes: 0 }))
     }
 
     /// A custodian from parts made elsewhere (a new committee's seat after a handover: its HE side from the new
     /// ceremony, its SPDZ party under the new MAC key, its weight shares from the resharing), at step `step`.
-    pub fn from_parts(i: usize, pf: Prof, he: He, pt: Party, w: Shares, step: usize) -> Self {
+    pub fn from_parts(i: usize, pf: Prof, he: He, pt: Party, w: Shares, step: usize) -> Box<Self> {
         let tab = pf.program.tables(pf.t);
         let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
         let last_sent = pt.net.sent_per_peer();
-        CustodianState { i, pf, he, pt, w: Some(w), step, tab, pool, last_sent, last_gate: [0.0; 3], last_proof_bytes: 0 }
+        Box::new(CustodianState { i, pf, he, pt, w: Some(w), step, tab, pool, last_sent, last_gate: [0.0; 3], last_proof_bytes: 0 })
     }
 
     /// Count link bytes for the next step from now (after a hook that sent on the mesh).
@@ -446,7 +448,7 @@ pub trait StepHook {
     }
     /// After the loop (the owner link already closed): the hook may take the state (a handover, the release).
     /// Ok(code): it did, and the process exits with `code`; Err(st): serve shuts the mesh down as usual.
-    fn finish(&mut self, st: CustodianState, _end: &End, _dir: &std::path::Path) -> Result<i32, CustodianState> {
+    fn finish(&mut self, st: Box<CustodianState>, _end: &End, _dir: &std::path::Path) -> Result<i32, Box<CustodianState>> {
         Err(st)
     }
 }
@@ -707,7 +709,7 @@ fn tape_pattern(args: &[String], k: usize) -> Option<String> {
 /// The step loop from `st.step` on a custodian that holds its keys and shares (a fresh run, a resumed one, or a new
 /// committee's seat after a handover): dial the owner, run `--steps K` steps with the hook after each, write the
 /// summary, close the owner link, then hand the state to the hook's `finish` or shut the mesh down.
-pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: CustodianState, t_start: Instant, connect_s: f64, setup_s: f64) -> i32 {
+pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianState>, t_start: Instant, connect_s: f64, setup_s: f64) -> i32 {
     let mut st = st;
     let i = st.i;
     let dir = std::path::PathBuf::from(&args[7]);

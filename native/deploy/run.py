@@ -164,7 +164,7 @@ def launch(cfg, seats_only=False):
     for i, s in enumerate(cfg["seats"]):
         sd = seat_dir(cfg, s, i)
         args = f"serve {i} {N} {L} {F} {d} {sd}/D {addrs} --tls {sd}/tls --owner {o['addr']} --steps {cfg['steps']} " \
-               f"--gate {cfg['gate']} --program {cfg['program']} --tapes {s['tapes']} " + \
+               f"--gate {cfg['gate']} --program {cfg['program']} " + (f"--tape {s['tape']} " if s.get("tape") else f"--tapes {s['tapes']} ") + \
                (f"--owner-msgs {s['owner_msgs']} " if s.get("owner_msgs") else "")
         if cfg.get("genesis_cfg"):
             args += f"--genesis-cfg {sd}/genesis.json "
@@ -174,6 +174,8 @@ def launch(cfg, seats_only=False):
             args += f" --proof-archive {sd}/archive"
         if s.get("listen"):
             args += f" --listen {s['listen']}"
+        if s.get("extra"):
+            args += " " + " ".join(s["extra"])
         ho = cfg.get("handover")
         if ho:
             args += f" --handover-at {ho['at']} --mesh6 {ho['mesh6']} --tls6 {sd}/tls6"

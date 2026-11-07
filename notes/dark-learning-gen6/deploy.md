@@ -539,3 +539,37 @@ T = 309, `--ret-primes 2`, `--prove --pipeline-proofs --proof-mesh ... --profile
    genesis record is the proof lane's format (asked).
 - Page cache: `serve::drop_cache` (fdatasync + POSIX_FADV_DONTNEED) after every tape read, checkpoint, carry and
   bundle write.
+
+### Item 4 on the three boxes: the rotation (run9, 07:58-08:08 UTC) [EXECUTED]
+
+Old committee on the wired key (seat 0 forge, 1 and 2 bb2; chunk w4096h, 1 proved step), new committee on the
+prep lane's wired-new key in other processes on other seats (new 0 bb2, new 1 forge, new 2 bb2; handover tapes
+ho-new, then ho-new-steps for steps 1-2). Public genesis, dl-owner --train with `--next-tls` (two sessions),
+`--profile ledger-sq --wipe-spent`, inline proofs; binaries at ca46c2fd.
+
+| | old 0 | old 1 | old 2 | new 0 | new 1 | new 2 |
+|---|---:|---:|---:|---:|---:|---:|
+| step 0 / step 1 / step 2 seconds | 101.9 | 101.9 | 101.9 | 90.2 / 90.0 | 90.2 / 90.0 | 90.2 / 90.0 |
+| prove / verify per step | 45.3 / 34.5 | 45.7 / 34.2 | 45.7 / 34.4 | 44.9-46.4 / 34.3-34.9 | 44.6-46.3 / 34.7-35.2 | 44.9-46.3 / 34.2-35.1 |
+| old_side seconds (reshare, prove, erase) | 21.2 (1.8, 8.6, 0.8) | 23.7 (2.2, 8.2, 1.0) | 23.3 (2.1, 8.2, 1.0) | | | |
+| join seconds (ceremony, reshare, commit, prove, re-auth) | | | | 17.6 (0.77, 0.48, 2.46, 2.85, 3.47) | 17.8 (0.96, 0.53, 1.88, 3.33, 4.55) | 17.6 (0.77, 0.50, 2.47, 2.80, 3.68) |
+| VmHWM | 7.65 GB | 7.97 GB | 7.98 GB | 8.92 GB | 8.51 GB | 8.91 GB |
+
+- One transcript per step; the handover proof is 129,790,908 B, the same at all six; the new seats' MAC check under
+  their key is ok and each decrypts its own fresh ciphertext; every new replica holds genesis, step 1 (epoch 0),
+  the rotate record, steps 2-3 (epoch 1).
+- Old seats after the erasure: the captured ciphertext decrypts before and not after; no state file left; the disk
+  scan finds 0 canaries (393,217 before, in ckpt and carry; the step's tape was already wiped by --wipe-spent).
+- The handover lane's three-box checker: 68 of 71 green (restarted old seats find no key/checkpoint/carry/tape and
+  exit at "own TLS key", verify-rotation on all three replicas with a flipped-byte control, equal replicas). Red:
+  the after-erasure memory scan finds the alpha share 11-12 times on [stack] in each old seat: copies of the
+  by-value CustodianState (its tape holds alpha_i inline) in the live frames serve_main_with -> serve_state ->
+  finish -> rotate_out.
+- Fix (local, Mac tests green): CustodianState is boxed from `new` / `from_parts` through serve_state, finish,
+  rotate_out and self_handover; the old seat calls `old_side(common, darkhand::serve::rotation_setup(st, ..), ..)`
+  and the self-handover `darkhand::serve::self_setup`, so the state is taken apart only in darkhand's scrubbed
+  setup frame (on the old role's own thread in a self-handover). `--scan-extra PATH` adds e.g. the seat's MP-SPDZ
+  dir to the disk scan; --wipe-spent also wipes the consumed handover tape.
+- Cost found: proof 45 s / verify 34 s here and in the dry run against 12.7 / 3.9 s in run 5 (same d, profile):
+  the ZeroOnFree allocator's byte-wise volatile zeroing. The handover lane has replaced it with memset-speed
+  zeroing plus a compiler barrier (darkhand); the next run measures the recovery.
