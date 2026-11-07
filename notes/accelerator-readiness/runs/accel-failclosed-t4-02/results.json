@@ -1,0 +1,56 @@
+{
+ "cases": {
+  "tower256_good": {
+   "rc": 0,
+   "expect_zero": true,
+   "ok": true,
+   "seconds": 159.0,
+   "tail": ": 0.6606324374995864, 'keccak_f_per_s': 584678660.4887551, 'roots_match_single': True}\nALL_BIT_EXACT True\nALL_BIT_EXACT True\ndone in 159 s; results /tmp/accel/fc/good/out-tower256_good/results.json\nX_RC=0\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\n    Updating crates.io index\n Downloading crates ...\n  Downloaded generic-array v0.14.7\n  Downloaded block-buffer v0.10.4\n  Downloaded keccak v0.1.6\n  Downloaded sha3 v0.10.9\n  Downloaded typenum v1.20.1\n  Downloaded digest v0.10.7\n  Downloaded crypto-common v0.1.7\n  Downloaded version_check v0.9.5\n   Compiling version_check v0.9.5\n   Compiling typenum v1.20.1\n   Compiling keccak v0.1.6\n   Compiling generic-array v0.14.7\n   Compiling crypto-common v0.1.7\n   Compiling block-buffer v0.10.4\n   Compiling digest v0.10.7\n   Compiling sha3 v0.10.9\n   Compiling minidregg-prover v0.1.0 (/tmp/accel/fc/good/tower256/prover)\n    Finished `release` profile [optimized] target(s) in 6.41s\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\n"
+  },
+  "bfv_good": {
+   "rc": 0,
+   "expect_zero": true,
+   "ok": true,
+   "seconds": 253.2,
+   "tail": "874}}\nbench {\"nret\": 16, \"K\": 64, \"us_per_return\": {\"gen\": 8.910666530330975, \"fwd_u\": 17.571999380985897, \"mac\": 542.0960187911987, \"inv_acc\": 39.210667212804154, \"finalize\": 13.273333509763082, \"decrypt\": 52.26266880830129, \"return_total\": 696.6293652852377, \"sender\": 621.0626854250828}}\nN16384_L4 step {\"outer_returns\": 24576, \"outer_sent\": 768, \"outer_plaintexts\": 192, \"matvec_returns\": 576, \"matvec_sent\": 864, \"matvec_plaintexts\": 9216, \"outer_s\": 3.8347412667274465, \"matvec_s\": 0.45538066775458197, \"step_s\": 4.290121934482029, \"per_party_step_s\": 1.4300406448273428, \"model\": \"returns x measured us/return + amortized NTTs x measured us/NTT; matvec block MAC cost linear in K from the K=1 and K=64 runs\"} clocks 1005 MHz, 67.26 W, 73\nALL EXACT\ndevice Tesla T4 all_exact True elapsed_s 172\nN8192_L3   check True  NTT 2.00 us (shoup E=2^13 th=256 G=3)  return 49.8 us  step 2.74 s (per party 0.91 s)\nN16384_L3  check True  NTT 5.12 us (shoup E=2^10 th=128 G=3)  return 105.6 us  step 2.96 s (per party 0.99 s)\nN8192_L4   check True  NTT 2.17 us (shoup E=2^13 th=256 G=3)  return 69.1 us  step 3.80 s (per party 1.27 s)\nN16384_L4  check True  NTT 4.87 us (shoup E=2^10 th=128 G=3)  return 154.7 us  step 4.29 s (per party 1.43 s)\nresults in /tmp/accel/fc/bgood/out-bfv_good (rc 0)\nX_RC=0\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\n"
+  },
+  "mma_good": {
+   "rc": 0,
+   "expect_zero": true,
+   "ok": true,
+   "seconds": 101.0,
+   "tail": "\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n[   90.9s] PASS f16parity.m13.R2.T243 {\"m\": 13, \"P\": 1024, \"R\": 2, \"T\": 243, \"count_min\": 4370, \"count_max\": 4720, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 62}\n[   90.9s] PASS f16parity.m13.R3.T480 {\"m\": 13, \"P\": 1024, \"R\": 3, \"T\": 480, \"count_min\": 6760, \"count_max\": 7331, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 66}\n[   90.9s] PASS f16parity.m13.R0.T7 {\"m\": 13, \"P\": 7, \"R\": 0, \"T\": 7, \"count_min\": 7, \"count_max\": 23, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n[   90.9s] PASS f16parity.falsifier_past_bound {\"note\": \"past 2^(m-1) the bit no longer reads the parity\", \"tests_with_wrong_reads\": 9}\n[   91.0s] == section f16ip\n[   91.9s] PASS f16ip.2^20 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n[   91.9s] f16ip 20 0.6902 ms 1.945e+11 B/s x copy 0.83\n[   94.9s] PASS f16ip.2^22 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n[   94.9s] f16ip 22 2.7503 ms 1.952e+11 B/s x copy 0.83\n[   95.8s] PASS f16ip.2^24 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n[   95.8s] f16ip 24 11.2126 ms 1.915e+11 B/s x copy 0.81\n[   97.1s] PASS f16ip.2^25 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n[   97.1s] f16ip 25 22.5099 ms 1.908e+11 B/s x copy 0.81\n[   97.1s] DONE checks 77 failed 0 errors []\nresults /tmp/accel/fc/mgood/out-mma_good/results.json checks 77 failed 0 errors []\ndone in 101 s; results /tmp/accel/fc/mgood/out-mma_good/results.json\nX_RC=0\n"
+  },
+  "tower256_broken_build": {
+   "rc": 101,
+   "expect_zero": false,
+   "ok": true,
+   "seconds": 35.7,
+   "tail": "ged=CFLAGS_x86_64-unknown-linux-gnu\nCFLAGS_x86_64-unknown-linux-gnu = None\nX_RC=101\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\n    Updating crates.io index\n Downloading crates ...\n  Downloaded crypto-common v0.1.7\n  Downloaded digest v0.10.7\n  Downloaded keccak v0.1.6\n  Downloaded generic-array v0.14.7\n  Downloaded block-buffer v0.10.4\n  Downloaded version_check v0.9.5\n  Downloaded typenum v1.20.1\n  Downloaded sha3 v0.10.9\n   Compiling version_check v0.9.5\n   Compiling typenum v1.20.1\n   Compiling keccak v0.1.6\n   Compiling generic-array v0.14.7\n   Compiling block-buffer v0.10.4\n   Compiling crypto-common v0.1.7\n   Compiling digest v0.10.7\n   Compiling sha3 v0.10.9\n   Compiling minidregg-prover v0.1.0 (/tmp/accel/fc/tbad/tower256/prover)\nerror: this file contains an unclosed delimiter\n   --> src/bin/tower256_fri_fast_bench.rs:104:5\n    |\n51  | fn main() {\n    |           - unclosed delimiter\n...\n104 |     \n    |     ^\n\nerror: could not compile `minidregg-prover` (bin \"tower256_fri_fast_bench\") due to 1 previous error\n"
+  },
+  "bfv_broken_build": {
+   "rc": 1,
+   "expect_zero": false,
+   "ok": true,
+   "seconds": 36.2,
+   "tail": "v_mangled_name fwdAr<0, 2>\\n                          ^\\n\\n__nv_name_map(5): error: Error in parsing name expression for lowered name lookup\"}\nN16384_L4 {\"mode\": 1, \"logE\": 13, \"logC\": 4, \"threads\": 128, \"G\": 3, \"error\": \"__nv_name_map(4): error: identifier \\\"fwdAr\\\" is undefined\\n  #pragma nv_mangled_name fwdAr<0, 2>\\n                          ^\\n\\n__nv_name_map(4): error: Error in parsing name expression for lowered name lookup. Input name expression was: \\\" fwdAr < 0, 2 >\\\"\\n  #pragma nv_mangled_name fwdAr<0, 2>\\n                          ^\\n\\n__nv_name_map(5): error: Error in parsing name expression for lowered name lookup\"}\nN16384_L4 {\"mode\": 1, \"logE\": 13, \"logC\": 4, \"threads\": 256, \"G\": 3, \"error\": \"__nv_name_map(4): error: identifier \\\"fwdAr\\\" is undefined\\n  #pragma nv_mangled_name fwdAr<0, 2>\\n                          ^\\n\\n__nv_name_map(4): error: Error in parsing name expression for lowered name lookup. Input name expression was: \\\" fwdAr < 0, 2 >\\\"\\n  #pragma nv_mangled_name fwdAr<0, 2>\\n                          ^\\n\\n__nv_name_map(5): error: Error in parsing name expression for lowered name lookup\"}\nN16384_L4 sweep exact=False best=null\nEXACTNESS FAILURE\ndevice Tesla T4 all_exact False elapsed_s 4\nresults in /tmp/accel/fc/bbad/out-bfv_broken_build (rc 1)\nX_RC=1\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\nError in sitecustomize; set PYTHONVERBOSE for traceback:\nModuleNotFoundError: No module named 'wrapt'\n"
+  },
+  "mma_broken_manifest": {
+   "rc": 1,
+   "expect_zero": false,
+   "ok": true,
+   "seconds": 0.1,
+   "tail": "HARDWARE OK: Tesla T4\nout /tmp/accel/fc/mbad1/out-mma_broken_manifest sku T4 shrink 1 toolkit auto cutlass auto\nprobe.cu: OK\nprobe_fixed.cu: OK\nprobe_sm75.cu: FAILED\nprobe_sm80.cu: OK\ngemm_probe.cu: OK\nrotation_probe.cu: OK\nmma_run.py: OK\nt256_vectors.jsonl: OK\nX_RC=1\nsha256sum: WARNING: 1 computed checksum did NOT match\n"
+  },
+  "mma_broken_build": {
+   "rc": 1,
+   "expect_zero": false,
+   "ok": true,
+   "seconds": 90.8,
+   "tail": "S f16parity.m13.R0.T7 {\"m\": 13, \"P\": 7, \"R\": 0, \"T\": 7, \"count_min\": 7, \"count_max\": 23, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n[   79.2s] PASS f16parity.falsifier_past_bound {\"note\": \"past 2^(m-1) the bit no longer reads the parity\", \"tests_with_wrong_reads\": 9}\n[   79.3s] == section f16ip\n[   80.2s] PASS f16ip.2^20 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n[   80.2s] f16ip 20 0.6939 ms 1.934e+11 B/s x copy 0.80\n[   83.2s] PASS f16ip.2^22 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n[   83.2s] f16ip 22 2.7505 ms 1.952e+11 B/s x copy 0.81\n[   84.0s] PASS f16ip.2^24 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n[   84.0s] f16ip 24 11.2758 ms 1.905e+11 B/s x copy 0.79\n[   85.3s] PASS f16ip.2^25 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n[   85.3s] f16ip 25 22.3741 ms 1.920e+11 B/s x copy 0.79\n[   85.3s] DONE checks 45 failed 0 errors ['compile probe_sm75.cu@sm_75', 'compile probe_sm75.cu@sm_80', 'compile probe_sm75.cu@sm_89', 'compile probe_sm75.cu@sm_90a', 'compile probe_sm75.cu@sm_100a', 'compile probe_sm75.cu@sm_103a', 'build probe_sm75.cu']\nresults /tmp/accel/fc/mbad2/out-mma_broken_build/results.json checks 45 failed 0 errors ['compile probe_sm75.cu@sm_75', 'compile probe_sm75.cu@sm_80', 'compile probe_sm75.cu@sm_89', 'compile probe_sm75.cu@sm_90a', 'compile probe_sm75.cu@sm_100a', 'compile probe_sm75.cu@sm_103a', 'build probe_sm75.cu']\ndone in 91 s; results /tmp/accel/fc/mbad2/out-mma_broken_build/results.json\nX_RC=1\n"
+  }
+ },
+ "tower256_broken_file": "tower256_fri_fast_bench.rs",
+ "all_ok": true,
+ "tower256_good_all_bit_exact": true
+}

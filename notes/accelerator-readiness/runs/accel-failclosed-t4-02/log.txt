@@ -1,0 +1,8 @@
+tower256_good rc 0 ok True 159.0 s
+bfv_good rc 0 ok True 253.2 s
+mma_good rc 0 ok True 101.0 s
+tower256_broken_build rc 101 ok True 35.7 s
+bfv_broken_build rc 1 ok True 36.2 s
+mma_broken_manifest rc 1 ok True 0.1 s
+mma_broken_build rc 1 ok True 90.8 s
+ALL_OK True

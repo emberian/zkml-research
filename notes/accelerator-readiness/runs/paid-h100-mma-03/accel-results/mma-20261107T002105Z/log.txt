@@ -1,0 +1,122 @@
+[    0.0s] device NVIDIA H100 80GB HBM3 9.0 sm_90a nvcc /usr/local/cuda/bin/nvcc
+[    0.0s] == section compile
+[    1.0s] compile probe.cu sm_90a rc 0 0.6s {"F2FP.F16.E4M3.UNPACK": 4, "HMMA.16816.F32": 2, "IMMA.16832.U8.U8": 29}
+[    2.2s] compile probe_fixed.cu sm_90a rc 0 0.6s {"F2FP.F16.E4M3.UNPACK": 4, "HMMA.16816.F32": 2, "IMMA.16832.U8.U8": 29}
+[    3.4s] compile probe_sm75.cu sm_90a rc 0 0.8s {"IMMA.8816.U8.U8": 43, "IMMA.8816.S8.S8": 1, "HMMA.1688.F32": 41, "CALL.REL.NOINC": 86, "BMMA.88128.AND.POPC": 6}
+[    5.4s] compile probe_sm80.cu sm_90a rc 0 1.5s {"HMMA.16816.F32": 46, "F2FP.F16.E4M3.UNPACK": 18, "CALL.REL.NOINC": 45, "BMMA.168256.AND.POPC": 49, "IMMA.16832.S8.S8": 42, "HGMMA.64x128x16.F32": 25, "QGMMA.64x128x32.F32.E4M3.E4M3": 25, "BGMMA.64x1
+[    6.8s] compile gemm_probe.cu sm_90a rc 0 1.1s {}
+[    7.8s] compile rotation_probe.cu sm_90a rc 0 0.6s {"HMMA.1688.F32": 124}
+[   10.2s] build probe_sm75.cu sm_90a rc 0 2.4s
+[   13.8s] build probe_sm80.cu sm_90a rc 0 3.6s
+[   18.0s] build gemm_probe.cu sm_90a rc 0 4.2s
+[   20.7s] build rotation_probe.cu sm_90a rc 0 2.7s
+[   20.7s] == section rates_sm80
+[   21.8s] rate s8 655724000000000.0 
+[   22.7s] rate f16 327170000000000.0 
+[   23.5s] rate b1and 5238136000000000.0 
+[   24.4s] rate b1xor 1087074000000000.0 
+[   25.3s] rate wg_s8 999882900000000.0 
+[   26.3s] rate wg_b1 7987894000000000.0 
+[   26.9s] rate wg_e4m3 881973600000000.0 
+[   27.5s] rate wg_f16 454110700000000.0 
+[   27.5s] == section wgmma
+[   28.1s] PASS wgmma.s8.uniform.n1 {"exact": 516128, "reg": 516128, "wraps": false}
+[   28.6s] PASS wgmma.s8.uniform.n4161 {"exact": 2147608608, "reg": 2147608608, "wraps": true}
+[   29.2s] PASS wgmma.b1.uniform.n1 {"exact": 256, "reg": 256, "wraps": false}
+[   30.4s] PASS wgmma.b1.uniform.n16777219 {"exact": 4294968064, "reg": 768, "wraps": true}
+[  162.5s] wgmma e4m3 group widths {'p1_+': 14, 'p1_-': 14, 'p3_+': 14, 'p3_-': 14, 'p15_+': 14, 'p15_-': 14}
+[  259.3s] wgmma f16 group widths {'p1_+': 24, 'p1_-': 25, 'p3_+': 24, 'p3_-': 25, 'p7_+': 24, 'p7_-': 25}
+[  323.6s] == section wgmma_bias
+[  324.1s] PASS wgmma.bias.e4m3.m12.c0.n1024 {"raw": "0x45400000"}
+[  324.6s] PASS wgmma.bias.e4m3.m12.c0.n1944 {"raw": "0x45798000"}
+[  325.7s] PASS wgmma.bias.e4m3.m12.c1.n1021 {"raw": "0x453fd000"}
+[  326.3s] PASS wgmma.bias.e4m3.m12.c1.n1945 {"raw": "0x45799000"}
+[  327.4s] PASS wgmma.bias.e4m3.m13.c0.n2046 {"raw": "0x45bff000"}
+[  327.9s] PASS wgmma.bias.e4m3.m13.c0.n3888 {"raw": "0x45f98000"}
+[  329.0s] PASS wgmma.bias.e4m3.m13.c1.n2047 {"raw": "0x45bff800"}
+[  329.5s] PASS wgmma.bias.e4m3.m13.c1.n3889 {"raw": "0x45f98800"}
+[  330.6s] PASS wgmma.bias.e4m3.m14.c0.n4092 {"raw": "0x463ff000"}
+[  331.1s] PASS wgmma.bias.e4m3.m14.c0.n7776 {"raw": "0x46798000"}
+[  332.2s] PASS wgmma.bias.e4m3.m14.c1.n4097 {"raw": "0x46400400"}
+[  332.7s] PASS wgmma.bias.e4m3.m14.c1.n7777 {"raw": "0x46798400"}
+[  333.8s] FAIL wgmma.bias.e4m3.m24.c0.n4194304 {"raw": "0x4b000000"}
+[  334.4s] FAIL wgmma.bias.e4m3.m24.c0.n7969176 {"raw": "0x4b000000"}
+[  335.5s] FAIL wgmma.bias.e4m3.m24.c1.n4194301 {"raw": "0x4b000000"}
+[  336.1s] FAIL wgmma.bias.e4m3.m24.c1.n7969171 {"raw": "0x4b000000"}
+[  337.3s] PASS wgmma.bias.f16.m12.c0.n1024 {"raw": "0x45400000"}
+[  337.9s] PASS wgmma.bias.f16.m12.c0.n1944 {"raw": "0x45798000"}
+[  339.0s] PASS wgmma.bias.f16.m12.c1.n1025 {"raw": "0x45401000"}
+[  339.5s] PASS wgmma.bias.f16.m12.c1.n1945 {"raw": "0x45799000"}
+[  340.6s] PASS wgmma.bias.f16.m13.c0.n2048 {"raw": "0x45c00000"}
+[  341.1s] PASS wgmma.bias.f16.m13.c0.n3888 {"raw": "0x45f98000"}
+[  342.2s] PASS wgmma.bias.f16.m13.c1.n2049 {"raw": "0x45c00800"}
+[  342.7s] PASS wgmma.bias.f16.m13.c1.n3889 {"raw": "0x45f98800"}
+[  343.8s] PASS wgmma.bias.f16.m14.c0.n4092 {"raw": "0x463ff000"}
+[  344.3s] PASS wgmma.bias.f16.m14.c0.n7776 {"raw": "0x46798000"}
+[  345.4s] PASS wgmma.bias.f16.m14.c1.n4093 {"raw": "0x463ff400"}
+[  346.0s] PASS wgmma.bias.f16.m14.c1.n7783 {"raw": "0x46799c00"}
+[  347.2s] PASS wgmma.bias.f16.m24.c0.n4194300 {"raw": "0x4b3ffffc"}
+[  347.8s] PASS wgmma.bias.f16.m24.c0.n7969176 {"raw": "0x4b799998"}
+[  349.0s] PASS wgmma.bias.f16.m24.c1.n4194301 {"raw": "0x4b3ffffd"}
+[  349.6s] PASS wgmma.bias.f16.m24.c1.n7969177 {"raw": "0x4b799999"}
+[  350.4s] == section copy
+[  351.3s] == section peak
+[  352.0s] peak i8 SUCCESS 6.964e+14 MAC/s
+[  352.7s] peak f16 SUCCESS 4.313e+14 MAC/s
+[  353.4s] peak e4m3 SUCCESS 7.627e+14 MAC/s
+[  353.4s] == section i8ip
+[  355.0s] PASS i8ip.elem.2^20 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  355.0s] i8ip elem 20 SUCCESS 1.0866 ms 6.176e+10 B/s
+[  356.6s] PASS i8ip.elem.2^21 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  356.6s] i8ip elem 21 SUCCESS 1.0865 ms 1.235e+11 B/s
+[  358.2s] PASS i8ip.elem.2^22 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  358.2s] i8ip elem 22 SUCCESS 1.0874 ms 2.469e+11 B/s
+[  359.8s] PASS i8ip.elem.2^23 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  359.8s] i8ip elem 23 SUCCESS 2.0192 ms 2.659e+11 B/s
+[  361.5s] PASS i8ip.elem.2^24 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  361.5s] i8ip elem 24 SUCCESS 3.9835 ms 2.695e+11 B/s
+[  363.2s] PASS i8ip.elem.2^25 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  363.2s] i8ip elem 25 SUCCESS 7.8049 ms 2.751e+11 B/s
+[  363.9s] PASS i8ip.plane.2^20 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  363.9s] i8ip plane 20 SUCCESS 0.0582 ms 1.154e+12 B/s
+[  364.7s] PASS i8ip.plane.2^21 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  364.7s] i8ip plane 21 SUCCESS 0.0748 ms 1.796e+12 B/s
+[  365.5s] PASS i8ip.plane.2^22 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  365.5s] i8ip plane 22 SUCCESS 0.106 ms 2.531e+12 B/s
+[  366.3s] PASS i8ip.plane.2^23 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  366.3s] i8ip plane 23 SUCCESS 0.196 ms 2.739e+12 B/s
+[  367.2s] PASS i8ip.plane.2^24 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  367.2s] i8ip plane 24 SUCCESS 0.3748 ms 2.864e+12 B/s
+[  368.1s] PASS i8ip.plane.2^25 {"host_sample_mismatches": 0, "simt_ref_mismatches": 0}
+[  368.1s] i8ip plane 25 SUCCESS 0.7343 ms 2.925e+12 B/s
+[  368.1s] == section ltparity
+[  370.0s] ltparity f16 fast 0 first inexact K None [(1024, [True]), (4096, [True, True]), (16384, [True, True]), (65536, [True, True]), (262144, [True, True]), (1048576, [True, True])]
+[  371.7s] ltparity e4m3 fast 0 first inexact K None [(1024, [True]), (4096, [True]), (16384, [True, True]), (65536, [True, True]), (262144, [True, True]), (1048576, [True, True])]
+[  373.4s] ltparity e4m3 fast 1 first inexact K 65536 [(1024, [True]), (4096, [True]), (16384, [True, True]), (65536, [True, False]), (262144, [True, False]), (1048576, [False, False])]
+[  373.4s] == section f16parity
+[  374.5s] PASS f16parity.m24.R0.T538 {"m": 24, "P": 1024, "R": 0, "T": 538, "count_min": 1009, "count_max": 1124, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.5s] PASS f16parity.m24.R1028.T248 {"m": 24, "P": 1024, "R": 1028, "T": 248, "count_min": 2006102, "count_max": 2168567, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.5s] PASS f16parity.m24.R3990.T733 {"m": 24, "P": 1024, "R": 3990, "T": 733, "count_min": 7785892, "count_max": 8416426, "inside": 127, "inside_ok": 127, "past": 1, "past_read_matches": 1}
+[  374.5s] PASS f16parity.m24.R4237.T725 {"m": 24, "P": 1024, "R": 4237, "T": 725, "count_min": 8267775, "count_max": 8937326, "inside": 5, "inside_ok": 5, "past": 123, "past_read_matches": 54}
+[  374.5s] PASS f16parity.m24.R6171.T235 {"m": 24, "P": 1024, "R": 6171, "T": 235, "count_min": 12040078, "count_max": 13015124, "inside": 0, "inside_ok": 0, "past": 128, "past_read_matches": 73}
+[  374.5s] PASS f16parity.m24.R0.T7 {"m": 24, "P": 7, "R": 0, "T": 7, "count_min": 7, "count_max": 23, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.5s] PASS f16parity.m20.R0.T244 {"m": 20, "P": 1024, "R": 0, "T": 244, "count_min": 449, "count_max": 515, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.5s] PASS f16parity.m20.R64.T678 {"m": 20, "P": 1024, "R": 64, "T": 678, "count_min": 126155, "count_max": 136368, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.5s] PASS f16parity.m20.R249.T348 {"m": 20, "P": 1024, "R": 249, "T": 348, "count_min": 486471, "count_max": 525893, "inside": 127, "inside_ok": 127, "past": 1, "past_read_matches": 0}
+[  374.5s] PASS f16parity.m20.R264.T41 {"m": 20, "P": 1024, "R": 264, "T": 41, "count_min": 515145, "count_max": 556864, "inside": 8, "inside_ok": 8, "past": 120, "past_read_matches": 54}
+[  374.5s] PASS f16parity.m20.R385.T790 {"m": 20, "P": 1024, "R": 385, "T": 790, "count_min": 752643, "count_max": 813588, "inside": 0, "inside_ok": 0, "past": 128, "past_read_matches": 71}
+[  374.5s] PASS f16parity.m20.R0.T7 {"m": 20, "P": 7, "R": 0, "T": 7, "count_min": 7, "count_max": 23, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.5s] PASS f16parity.m16.R0.T732 {"m": 16, "P": 1024, "R": 0, "T": 732, "count_min": 1387, "count_max": 1513, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.m16.R4.T710 {"m": 16, "P": 1024, "R": 4, "T": 710, "count_min": 9159, "count_max": 9901, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.m16.R15.T97 {"m": 16, "P": 1024, "R": 15, "T": 97, "count_min": 29445, "count_max": 31838, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.m16.R16.T940 {"m": 16, "P": 1024, "R": 16, "T": 940, "count_min": 33009, "count_max": 35686, "inside": 0, "inside_ok": 0, "past": 128, "past_read_matches": 59}
+[  374.6s] PASS f16parity.m16.R24.T318 {"m": 16, "P": 1024, "R": 24, "T": 318, "count_min": 47442, "count_max": 51303, "inside": 0, "inside_ok": 0, "past": 128, "past_read_matches": 62}
+[  374.6s] PASS f16parity.m16.R0.T7 {"m": 16, "P": 7, "R": 0, "T": 7, "count_min": 7, "count_max": 23, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.m13.R0.T250 {"m": 13, "P": 1024, "R": 0, "T": 250, "count_min": 460, "count_max": 526, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.m13.R0.T783 {"m": 13, "P": 1024, "R": 0, "T": 783, "count_min": 1483, "count_max": 1616, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.m13.R1.T551 {"m": 13, "P": 1024, "R": 1, "T": 551, "count_min": 3000, "count_max": 3252, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.m13.R2.T243 {"m": 13, "P": 1024, "R": 2, "T": 243, "count_min": 4370, "count_max": 4720, "inside": 0, "inside_ok": 0, "past": 128, "past_read_matches": 62}
+[  374.6s] PASS f16parity.m13.R3.T480 {"m": 13, "P": 1024, "R": 3, "T": 480, "count_min": 6760, "count_max": 7331, "inside": 0, "inside_ok": 0, "past": 128, "past_read_matches": 66}
+[  374.6s] PASS f16parity.m13.R0.T7 {"m": 13, "P": 7, "R": 0, "T": 7, "count_min": 7, "count_max": 23, "inside": 128, "inside_ok": 128, "past": 0, "past_read_matches": 0}
+[  374.6s] PASS f16parity.falsifier_past_bound {"note": "past 2^(m-1) the bit no longer reads the parity", "tests_with_wrong_reads": 9}
+[  374.6s] DONE checks 73 failed 4 errors []
