@@ -8,6 +8,7 @@
 #   seats.sh newsh2 wired-new<I>-sh2: the same again from wired-new<I>-sh; ips-wired-new-sh2.txt, ports 16000 + I
 #   seats.sh rehold|rehnew  reh-old<I> / reh-new<I>: the orchestrator rehearsal's two committees on the wired seats
 #                  (copies of wired<I>'s binaries; fresh TLS identities); ips-reh-old.txt / ips-reh-new.txt, ports 16100 / 16200 + I
+#   seats.sh fresh NAME PORT  NAME<I>: any new seat set on the wired boxes (fresh TLS keys, no MAC key, RAM secrets)
 set -euo pipefail
 FR=/srv/lanes/dl-gen6-prep; BR=/home/build/lanes/dl-gen6-prep
 FIP=178.105.4.114; BIP=2.31.77.40
@@ -18,7 +19,11 @@ case $1 in
   newsh2) H=(bb2 dregg-forge bb2); R=($BR $FR $BR); D=(wired-new0-sh2 wired-new1-sh2 wired-new2-sh2); SRC=(wired-new0-sh wired-new1-sh wired-new2-sh); IP=($BIP $FIP $BIP); PORT=16000; IPF=ips-wired-new-sh2.txt;;
   rehold) H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(reh-old0 reh-old1 reh-old2); SRC=(wired0 wired1 wired2); IP=($FIP $BIP $BIP); PORT=16100; IPF=ips-reh-old.txt;;
   rehnew) H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(reh-new0 reh-new1 reh-new2); SRC=(wired0 wired1 wired2); IP=($FIP $BIP $BIP); PORT=16200; IPF=ips-reh-new.txt;;
-  *) echo "usage: seats.sh new|sh|newsh|newsh2|rehold|rehnew"; exit 2;;
+  fresh)  # seats.sh fresh NAME PORT: a fresh seat set NAME<I> on the wired boxes (0 forge, 1 bb2, 2 bb2), binaries
+          # from wired<I>, new TLS keys and no MAC key; ips-NAME.txt, ports PORT + I; launch3.sh LAYOUT=dir:NAME
+    N=${2:?seats.sh fresh NAME PORT}; H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(${N}0 ${N}1 ${N}2); SRC=(wired0 wired1 wired2)
+    IP=($FIP $BIP $BIP); PORT=${3:?seats.sh fresh NAME PORT}; IPF=ips-$N.txt;;
+  *) echo "usage: seats.sh new|sh|newsh|newsh2|rehold|rehnew | fresh NAME PORT"; exit 2;;
 esac
 S=$(mktemp -d)
 for i in 0 1 2; do
