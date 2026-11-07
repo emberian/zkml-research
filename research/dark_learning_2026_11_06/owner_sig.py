@@ -19,6 +19,18 @@ def H(*xs):
         m.update(x if isinstance(x, bytes) else repr(x).encode())
     return m.digest()
 
+_DET_OWNERS = [0]
+
+def _det_seed():
+    """TEST ONLY (native bit-exact checks): with DL_DETERMINISTIC=<seed> set, the k-th Owner made without a seed in
+    this process gets sha256("dl-proof|<seed>|owner|<k>"). Unset, None (the seed comes from `secrets`)."""
+    seed = os.environ.get("DL_DETERMINISTIC")
+    if seed is None:
+        return None
+    k = _DET_OWNERS[0]
+    _DET_OWNERS[0] += 1
+    return hashlib.sha256(f"dl-proof|{seed}|owner|{k}".encode()).digest()
+
 class Owner:
     """state_path: the owner's durable record of the next unused leaf. One-time keys are used in strictly
     increasing leaf order, independent of step numbers. A restart reads the counter, so it never reuses a key;
@@ -26,7 +38,7 @@ class Owner:
     def __init__(self, h=12, seed=None, state_path=None):
         self.state_path = state_path
         self.h = h
-        self.seed = seed or secrets.token_bytes(32)
+        self.seed = seed or _det_seed() or secrets.token_bytes(32)
         self.leaves = [self._pkhash(i) for i in range(1 << h)]
         self.tree = [self.leaves]
         lvl = self.leaves

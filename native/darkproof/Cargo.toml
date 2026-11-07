@@ -2,6 +2,11 @@
 name = "darkproof"
 version = "0.1.0"
 edition.workspace = true
+description = "The dark-learning MPC fork's collaborative ZK proof (cozk Ligero, ZK spine, ZK middle) among three custodian party states over a transport trait, and the untrusted-input verifier (proofwire codec, durable ledger, owner signature). Bit-exact port of research/dark_learning_2026_11_06/{cozk,cosnark,cosnark_zk,cosnark_gates,cosnark_gates_zk,proofwire,owner_sig}.py."
 
 [dependencies]
 pycompat = { path = "../pycompat" }
+sha2 = "0.10"
+rayon = "1.10"
+serde_json = "1"
+getrandom = "0.2"

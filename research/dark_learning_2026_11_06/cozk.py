@@ -101,8 +101,8 @@ class Params:
     def code(self, poly):
         return [peval(poly, x, self.p) for x in range(1, self.npts + 1)]
 
-def merkle(cols):
-    salts = leaf_salts(len(cols))
+def merkle(cols, det=None):
+    salts = leaf_salts(len(cols), det)
     level = [H("leaf", s, c) for s, c in zip(salts, cols)]
     level += [H("pad", j) for j in range((1 << (len(level) - 1).bit_length()) - len(level))]
     tree = Tree([level])
@@ -125,8 +125,14 @@ class Prover:
         self.P, self.n = P, n
         # hiding values and the dealer's triples come from secret randomness, never from public data
         import secrets
-        self.rng = [random.Random(secrets.randbits(256)) for i in range(n)]
-        self.dealer = random.Random(secrets.randbits(256))
+        from cosnark import det_rng
+        self.det = det_rng("cozk", seed, "dealer") is not None      # TEST ONLY streams (cosnark.det_rng)
+        if self.det:
+            self.rng = [det_rng("cozk", seed, "party", i) for i in range(n)]
+            self.dealer = det_rng("cozk", seed, "dealer")
+        else:
+            self.rng = [random.Random(secrets.randbits(256)) for i in range(n)]
+            self.dealer = random.Random(secrets.randbits(256))
         self.rows, self.polys, self.groups = [], [], []
         self.pending = []
         self.wire = 0               # field elements sent between custodians (openings)
@@ -146,7 +152,8 @@ class Prover:
     def _commit(self, polys_by_party):
         P = self.P
         codes = [[P.code(f) for f in fs] for fs in polys_by_party]
-        trees = [merkle([[c[j] for c in codes[i]] for j in range(P.npts)]) for i in range(self.n)]
+        trees = [merkle([[c[j] for c in codes[i]] for j in range(P.npts)], self.rng[i] if self.det else None)
+                 for i in range(self.n)]
         return codes, trees
 
     def commit(self):

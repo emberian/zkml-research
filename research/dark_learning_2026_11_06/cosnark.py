@@ -33,6 +33,8 @@ sumcheck), without which the opened row combinations leak linear functionals of 
 """
 import hashlib
 import math
+import os
+import random as _random
 
 import spdz
 
@@ -47,7 +49,19 @@ SALT_LEAVES = True   # every Merkle leaf is H("leaf", salt, column) with a secre
 class Tree(list):
     """Merkle levels, leaves first; .salts[j] is leaf j's salt."""
 
-def leaf_salts(n):
+def det_rng(*label):
+    """TEST ONLY (native bit-exact checks, native/darkproof): with DL_DETERMINISTIC=<seed> set, a prover-side secret
+    stream is random.Random("dl-proof|<seed>|<label parts joined by |>"). Unset (every real run), this returns None and
+    the caller draws from `secrets` exactly as before."""
+    seed = os.environ.get("DL_DETERMINISTIC")
+    if seed is None:
+        return None
+    return _random.Random("|".join(["dl-proof", seed] + [str(x) for x in label]))
+
+def leaf_salts(n, det=None):
+    """det: the deterministic stream of the tree's owner (TEST ONLY, see det_rng); None draws from `secrets`."""
+    if det is not None and SALT_LEAVES:
+        return [det.getrandbits(256).to_bytes(32, "little").hex() for _ in range(n)]
     import secrets as _s
     return [_s.token_hex(32) if SALT_LEAVES else "" for _ in range(n)]
 
@@ -126,18 +140,21 @@ class SharePCS:
         self.pts = list(range(1, BLOW * self.W + 1))
         self.rows = [[s[r * self.C:(r + 1) * self.C] for r in range(self.Rd)] for s in shares]
         self.ext = []
+        dets = [det_rng("pcs", label, i, self.hide, self.nmask, H(shares[i]))
+                if os.environ.get("DL_DETERMINISTIC") is not None and not legacy_public_seed else None
+                for i in range(len(shares))]
         for i, rows in enumerate(self.rows):
             # Each custodian's tails and mask rows come from ITS OWN secret randomness. Until 2026-11-06 they were
             # seeded from public data (label, party, hide, nmask): anyone could recompute them and strip them from
             # the opened columns, so layer 1 did not hide (zk_seed_falsifier.py). legacy_public_seed keeps the old
             # behaviour for that falsifier only.
             rng = _r.Random(H("mask", label, i, self.hide, self.nmask)) if legacy_public_seed else \
-                _r.Random(_s.randbits(256))
+                (dets[i] or _r.Random(_s.randbits(256)))
             ext = [list(r) + [rng.randrange(p) for _ in range(self.W - self.C)] for r in rows]
             ext += [[rng.randrange(p) for _ in range(self.W)] for _ in range(self.nmask)]
             self.ext.append(ext)
         self.enc = [[self.encode(row) for row in rows] for rows in self.ext]
-        self.trees = [self.merkle(E) for E in self.enc]
+        self.trees = [self.merkle(E, det) for E, det in zip(self.enc, dets)]
         self.roots = [t[-1][0] for t in self.trees]
 
     def encode(self, row):
@@ -150,8 +167,8 @@ class SharePCS:
             out.append(acc)
         return out
 
-    def merkle(self, E):
-        salts = leaf_salts(len(self.pts))
+    def merkle(self, E, det=None):
+        salts = leaf_salts(len(self.pts), det)
         level = [H("leaf", salts[j], [E[r][j] for r in range(len(E))]) for j in range(len(self.pts))]
         level += [H("pad", j) for j in range((1 << (len(level) - 1).bit_length()) - len(level))]
         tree = Tree([level])

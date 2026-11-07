@@ -40,6 +40,8 @@ w, q, p are masked by fresh polynomials committed in root 1; leaves are salted. 
 """
 import hashlib
 import math
+import os
+import random
 import secrets
 
 import bfv_ref as bfv
@@ -241,6 +243,22 @@ def H(*parts):
         h.update(len(x).to_bytes(8, "big"))
         h.update(x)
     return h.digest()
+
+
+def det_rng(label, st):
+    """TEST ONLY (native bit-exact checks, native/dzkpopk): with DL_DETERMINISTIC=<seed> set, the prover's hiding
+    randomness, masks and salts come from random.Random("dl-zkpopk|<seed>|<label>|<statement digest hex>"). Unset
+    (every real run), this returns None and they come from `secrets`, exactly as before."""
+    seed = os.environ.get("DL_DETERMINISTIC")
+    if seed is None:
+        return None
+    return random.Random(f"dl-zkpopk|{seed}|{label}|{st.digest().hex()}")
+
+
+def _salts(det, n):
+    if det is None:
+        return [secrets.token_bytes(32) for _ in range(n)]
+    return [det.getrandbits(256).to_bytes(32, "little") for _ in range(n)]
 
 
 def fe(x):
@@ -579,7 +597,8 @@ def _rows(bits, k, m):
 def prove(st, wit, context_check=None, T=309, rng=None, legacy=False, cheat=None):
     """wit: sk: dict(s, e_pk, cts=[dict(e, m, r)]) ; pk: dict(cts=[dict(u, e0, e1, m, r)]).
     cheat (falsifiers only): dict(digits1=..., K=...) overrides, skipping the prover's own checks."""
-    rng = secrets.SystemRandom()          # hiding randomness, masks and salts: never the caller's (seedable) rng
+    det = det_rng("prove", st)
+    rng = secrets.SystemRandom() if det is None else det   # hiding randomness, masks and salts: never the caller's rng
     sh = shape(st, T)
     k, th, m1, m2 = sh["k"], sh["th"], sh["m1"], sh["m2"]
     code = Code(k, th)
@@ -609,7 +628,7 @@ def prove(st, wit, context_check=None, T=309, rng=None, legacy=False, cheat=None
         mq[i] = (mq[i] - x) % P
         mq[i + k] = (mq[i + k] + x) % P
     E1 = [code.evalD(c) for c in P1] + [code.evalD(mp), code.evalD(ml), code.evalD(mq)]
-    salts1 = [secrets.token_bytes(32) for _ in range(nD)]
+    salts1 = _salts(det, nD)
     T1 = merkle([colbytes(E1, j) for j in range(nD)], salts1)
     tr.absorb("root1", T1[-1][0])
     rho = draw_rho(tr, st, sh["F"])
@@ -627,7 +646,7 @@ def prove(st, wit, context_check=None, T=309, rng=None, legacy=False, cheat=None
     R2 = _rows(d2, k, m2)
     P2 = [code.row_poly(r, rng) for r in R2]
     E2 = [code.evalD(c) for c in P2]
-    salts2 = [secrets.token_bytes(32) for _ in range(nD)]
+    salts2 = _salts(det, nD)
     T2 = merkle([colbytes(E2, j) for j in range(nD)], salts2)
     tr.absorb("root2", T2[-1][0])
     mrows = m1 + m2
@@ -810,8 +829,8 @@ def simulate_legacy(st, T=309, rng=None):
         E1[m1 + 1][j] = (peval(q, x) - sum(u * (sum(a * b for a, b in zip(ar, Wb)) % P)
                                            for ar, u in zip(arows, U))) % P
         E1[m1 + 2][j] = (peval(p, x) - sum(a * (u * u - u) for a, u in zip(gq, U))) % P
-    salts1 = [secrets.token_bytes(32) for _ in range(nD)]
-    salts2 = [secrets.token_bytes(32) for _ in range(nD)]
+    det = det_rng("simulate", st)
+    salts1, salts2 = _salts(det, nD), _salts(det, nD)
     T1 = merkle([colbytes(E1, j) for j in range(nD)], salts1)
     T2 = merkle([colbytes(E2, j) for j in range(nD)], salts2)
     out = bytearray(T1[-1][0] + T2[-1][0] + b"".join(fe(x) for x in w + q + p))
