@@ -117,7 +117,8 @@ fn deal(work: &Path, d: usize, prof: &str) {
         old.auth(v, Tag::Ar);
     }
     let mut new = Dealer::new(c.t, 3, seed(()));
-    for _ in 0..2 * d * d + 2 * CHECK {
+    // re-authentication, one mask per matrix for the masked check, and the TEST-ONLY revealed entries
+    for _ in 0..2 * d * d + 2 + 2 * CHECK {
         new.auth_plain();
     }
     for i in 0..3 {
@@ -198,7 +199,11 @@ fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldC
 fn new(work: &Path, j: usize, d: usize, prof: &str, base: u16) {
     let c = common(d, prof);
     let dir = work.join(format!("new{j}"));
-    let tape = read_tape(&dir.join("tape.bin")).expect("new tape");
+    let mut tape = read_tape(&dir.join("tape.bin")).expect("new tape");
+    if j == 0 && std::env::var_os("DLH_CORRUPT_MAC").is_some() {
+        // TEST ONLY: a wrong MAC share on new custodian 0's first auth_plain entry; the joint MAC check must fail
+        tape.mac[0] = darkstep::arith::addmod(tape.mac[0], 1, c.t);
+    }
     let net3 = mesh(base, 3, 3, j);
     let net6 = mesh(base, 6, 6, 3 + j);
     let out = match side::new_side(&c, j, net3, net6, tape, 2, CHECK, None) {
