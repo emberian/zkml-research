@@ -350,33 +350,57 @@ fn wipe_file_zeroes_every_hard_link_then_unlinks() {
 }
 
 #[test]
-fn retiring_a_mac_key_erases_it_and_only_it() {
+fn retiring_a_seat_erases_every_secret_of_that_party_and_only_those() {
     let root = std::env::temp_dir().join(format!("darkprep-retire-{}", std::process::id()));
     let pd = root.join("Player-Data");
-    std::fs::create_dir_all(pd.join("3-p-61")).unwrap();
+    for d in ["3-p-61", "3-2-128", "3-p-319"] {
+        std::fs::create_dir_all(pd.join(d)).unwrap();
+    }
+    std::fs::create_dir_all(root.join("Persistence")).unwrap();
+    // (file, secret of party 0)
     let files = [
-        "Mascot-Secrets-p-61-abc-P0-3",
-        "Mascot-Secrets-p-61-abc-P0-3.retired-17",
-        "LowGear-Secrets-60-def-P0-3",
-        "Mascot-Secrets-p-61-abc-P1-3",
-        "Mascot-Secrets-2-128-abc-P0-3",
-        "3-p-61/Player-MAC-Keys-p-P0",
-        "3-p-61/Player-MAC-Keys-p-P0.retired-17",
-        "3-p-61/Player-MAC-Keys-p-P1",
+        ("Player-Data/Mascot-Secrets-p-61-abc-P0-3", true),
+        ("Player-Data/Mascot-Secrets-p-61-abc-P0-3.retired-17", true),
+        ("Player-Data/Mascot-Secrets-2-128-abc-P0-3", true),
+        ("Player-Data/Mascot-Secrets-B-64-abc-P0-3", true),
+        ("Player-Data/Mascot-Secrets-p-319-abc-P0-3", true),
+        ("Player-Data/LowGear-Secrets-60-def-P0-3", true),
+        ("Player-Data/Memory-p-P0", true),
+        ("Player-Data/Memory-B-P0", true),
+        ("Player-Data/3-p-61/Player-MAC-Keys-p-P0", true),
+        ("Player-Data/3-p-61/Player-MAC-Keys-p-P0.retired-17", true),
+        ("Player-Data/3-2-128/Player-MAC-Keys-2-P0", true),
+        ("Player-Data/3-p-319/Player-MAC-Keys-p-P0", true),
+        ("Persistence/Transactions-P0.data", true),
+        ("Persistence/Transactions-gf2n-P0.data", true),
+        // another party's material, in a loopback directory
+        ("Player-Data/Mascot-Secrets-p-61-abc-P1-3", false),
+        ("Player-Data/Memory-p-P1", false),
+        ("Player-Data/3-p-61/Player-MAC-Keys-p-P1", false),
+        ("Persistence/Transactions-P1.data", false),
+        // public files of the seat
+        ("Player-Data/P0.key", false),
+        ("Player-Data/P0.pem", false),
+        ("Player-Data/PairwiseParams-gfp-61-60-60-128-1-23-1-P0-3", false),
     ];
-    for f in files {
-        std::fs::write(pd.join(f), b"alpha share").unwrap();
+    for (f, _) in files {
+        std::fs::write(root.join(f), b"alpha share").unwrap();
     }
     let keep = pd.join("keep-link");
-    std::fs::hard_link(pd.join("Mascot-Secrets-p-61-abc-P0-3"), &keep).unwrap();
+    std::fs::hard_link(pd.join("Mascot-Secrets-2-128-abc-P0-3"), &keep).unwrap();
     let gone = darkprep::mpspdz::retire_mac_keys(&root, Some(0));
-    assert_eq!(gone.len(), 5, "{gone:?}");
-    for f in files {
-        let party0_key = f.contains("P0") && !f.contains("2-128");
-        assert_eq!(pd.join(f).exists(), !party0_key, "{f}");
+    assert_eq!(gone.len(), files.iter().filter(|f| f.1).count(), "{gone:?}");
+    for (f, secret0) in files {
+        assert_eq!(root.join(f).exists(), !secret0, "{f}");
     }
     // erased, not renamed: a second name for the same inode now reads zeros
     assert!(std::fs::read(&keep).unwrap().iter().all(|&b| b == 0));
+    // loopback (None): every party's secrets, still no public file
+    darkprep::mpspdz::retire_mac_keys(&root, None);
+    for (f, _) in files {
+        let public = f.ends_with(".key") || f.ends_with(".pem") || f.contains("PairwiseParams");
+        assert_eq!(root.join(f).exists(), public, "{f}");
+    }
     std::fs::remove_dir_all(&root).unwrap();
 }
 

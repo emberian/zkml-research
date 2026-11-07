@@ -90,6 +90,12 @@ if "darkprep: EINTR" not in s:
     open(f, "w").write(s)
 PY
 grep -q "timeout_milli = 0" Networking/sockets.cpp && grep -q "num_keepalive_strobes = 120" Networking/sockets.cpp && grep -q "tv.tv_sec = 0;" Networking/Player.cpp && grep -q "darkprep: EINTR" Networking/ssl_sockets.h
+# BGV ring size (LowGear/HighGear): stock min_phi_m = 15.1 log q gives N = 8192 for LowGear's 312-bit q at -S 60, which
+# the lattice estimator puts at 2^86.8 (secret and error CBD(1), m = N; est/lowgear_rlwe.json); N = 16384, q ~ 2^314
+# is 2^179.0. Security there scales as ~3.3 N / log q, so 128 bits needs N >= ~39 log q: use 40 log q (N = 16384 for
+# any q up to 409 bits). The field prime must be 1 mod 2N: 2305843009210515457 is 1 mod 32768, not mod 65536.
+sed -i "s|^    return 15.1 \* log_q;|    return 40 * log_q; // darkprep: 128-bit by the lattice estimator (was 15.1)|" FHE/NoiseBounds.cpp
+grep -q "return 40 \* log_q; // darkprep" FHE/NoiseBounds.cpp
 grep -q -- "-lz -lzstd" Makefile || sed -i "s/\$(LDLIBS) -lz -Wl,-Bdynamic/\$(LDLIBS) -lz -lzstd -Wl,-Bdynamic/" Makefile
 make -j$J static/mascot-party.x static/lowgear-party.x static/highgear-party.x
 ldd static/mascot-party.x || true

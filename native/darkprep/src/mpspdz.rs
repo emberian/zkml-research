@@ -269,38 +269,51 @@ pub fn wipe_file(path: &Path) -> std::io::Result<()> {
     std::fs::remove_file(path)
 }
 
-/// Retire (wipe: overwrite, sync, unlink) the MAC key files of the 61-bit field, for one party (a custodian box) or
-/// all of them (a loopback test): `Mascot-Secrets-p-61-*`, `LowGear-` / `HighGear-Secrets-*` and
-/// `3-p-61/Player-MAC-Keys-p-P<i>`, and any `*.retired-*` copy an older build left by renaming. Other fields'
-/// material in the same directory is left alone.
+/// Is `name` (a file in Player-Data, Player-Data/<n>-<field>/ or Persistence) secret material of party `party` (or of any
+/// party, for None)? Every field's MAC key (Mascot-Secrets-*: p-61, the 2-128 and B-64 MASCOT instances, LowGear's
+/// key-generation field p-3xx), LowGear-/HighGear-Secrets-*, the memory dumps Memory-*-P<i>, Player-MAC-Keys-*-P<i> and
+/// any `*.retired-*` copy an older build left, and the Transactions files. Public files (certificates, the TLS key,
+/// c_rehash links, PairwiseParams-*) are not.
+pub fn is_party_secret(name: &str, party: Option<usize>) -> bool {
+    let base = name.split(".retired-").next().unwrap_or(name);
+    let kind = ["Mascot-Secrets-", "LowGear-Secrets-", "HighGear-Secrets-", "Memory-", "Player-MAC-Keys-", "Transactions-"]
+        .iter()
+        .any(|p| base.starts_with(p));
+    let mine = match party {
+        None => true,
+        Some(i) => base.contains(&format!("-P{i}-")) || base.ends_with(&format!("-P{i}")) || base.ends_with(&format!("-P{i}.data")),
+    };
+    kind && mine
+}
+
+/// Retire (wipe: overwrite, sync, unlink) every secret file of one party (a custodian box) or of all of them (a
+/// loopback test) in this runtime, in every field: anything `is_party_secret` names in Player-Data, in its
+/// per-field subdirectories (3-p-61, 3-2-128, 3-p-319, ...) and in Persistence. Every such file belongs to the seat's
+/// epoch, so a new key (or the seat's erasure at a handover) must take all of them, not only the 61-bit MAC key.
 pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
-    {
-        let dir = mpspdz.join("Player-Data");
-        let mut out = Vec::new();
-        if let Ok(rd) = std::fs::read_dir(&dir) {
-            for e in rd.flatten() {
-                let name = e.file_name().to_string_lossy().into_owned();
-                let mine = party.map(|i| name.contains(&format!("-P{i}-"))).unwrap_or(true);
-                // MASCOT keeps alpha_i in Mascot-Secrets-p-61-*; LowGear/HighGear in LowGear-/HighGear-Secrets-*
-                let keyfile = name.starts_with("Mascot-Secrets-p-61-") || name.starts_with("LowGear-Secrets-") || name.starts_with("HighGear-Secrets-");
-                if keyfile && mine && wipe_file(&e.path()).is_ok() {
-                    out.push(e.path());
-                }
+    let mut out = Vec::new();
+    let mut dirs = vec![mpspdz.join("Player-Data"), mpspdz.join("Persistence")];
+    if let Ok(rd) = std::fs::read_dir(mpspdz.join("Player-Data")) {
+        for e in rd.flatten() {
+            if e.file_type().map(|t| t.is_dir()).unwrap_or(false) {
+                dirs.push(e.path());
             }
         }
-        // MP-SPDZ also writes a copy of alpha_i to Player-Data/<n>-p-61/Player-MAC-Keys-p-P<i>
-        if let Ok(rd) = std::fs::read_dir(dir.join("3-p-61")) {
-            for e in rd.flatten() {
-                let name = e.file_name().to_string_lossy().into_owned();
-                let mine = party.map(|i| name == format!("Player-MAC-Keys-p-P{i}")).unwrap_or(true);
-                let mine = mine || party.map(|i| name.starts_with(&format!("Player-MAC-Keys-p-P{i}.retired-"))).unwrap_or(false);
-                if name.starts_with("Player-MAC-Keys-p-P") && mine && wipe_file(&e.path()).is_ok() {
-                    out.push(e.path());
-                }
-            }
-        }
-        out
     }
+    for dir in dirs {
+        let Ok(rd) = std::fs::read_dir(&dir) else { continue };
+        for e in rd.flatten() {
+            if !e.file_type().map(|t| t.is_file()).unwrap_or(false) {
+                continue;
+            }
+            let name = e.file_name().to_string_lossy().into_owned();
+            if is_party_secret(&name, party) && wipe_file(&e.path()).is_ok() {
+                out.push(e.path());
+            }
+        }
+    }
+    out.sort();
+    out
 }
 
 /// One custodian's MASCOT process on its own box (the distributed run): `mascot-party.x -p I --ip-file-name F`,
