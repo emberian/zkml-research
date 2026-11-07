@@ -9,7 +9,7 @@
     run.py RUN.json status    alive or exited, the last line of each log
     run.py RUN.json collect   pulls every step_*.json / serve_*.json / sampler log into OUT/<name>/ and writes
                               summary.json (per step: wall, bytes per link, CPU and peak RSS per party, proof sizes)
-    run.py RUN.json stop      stops every process of this run by its PID file (and only that)
+    run.py RUN.json stop      stops every process of this run by its PID file (and only that), the nightly pauser too
     run.py RUN.json resume    after a pause: relaunch with --resume for the steps left (owner included)
     run.py RUN.json plan      the disk plan: per filesystem, what the run still writes and what is left above its line
                               (also for each N in cfg "plan_steps"); `gate` (and every launch) refuses a config that
@@ -238,6 +238,25 @@ def plan(cfg):
             c["steps"] = n
         print(json.dumps({"steps": n, "boxes": disk_need(c)}, indent=1))
 
+def start_nightly(cfg):
+    """cfg "nightly": {"host", "stop": "HHMMSS", "cont": "HHMMSS"} (forge: 100000-105830): nightly.sh on that box,
+    run there (not from the Mac, which may sleep), SIGSTOPs every process of this run on it by PID file at stop and
+    SIGCONTs them at cont, every day; its own PID file ROOT/NAME/nightly.pid. Peers wait on their receives meanwhile
+    (serve --timeout must exceed the window: 7200 s)."""
+    nt = cfg.get("nightly")
+    if not nt:
+        return
+    h = nt["host"]
+    s = next(s for s in cfg["seats"] + (cfg.get("handover") or {}).get("new_seats", []) if s["host"] == h)
+    d = f"{s['root']}/{cfg['name']}"
+    if sh(h, f"test -f {d}/nightly.pid && kill -0 $(cat {d}/nightly.pid) 2>/dev/null && echo y || echo n", check=False) == "y":
+        return
+    pfs = [f"{dd}/{n}{x}" for hh, dd, n in procs(cfg) if hh == h for x in (".pid", ".mon.pid")]
+    sh(h, f"mkdir -p {d}")
+    scp_to(os.path.join(os.path.dirname(os.path.abspath(__file__)), "nightly.sh"), h, f"{d}/nightly.sh")
+    sh(h, f"cd {d} && nohup bash {d}/nightly.sh {d}/nightly.log {nt['stop']} {nt['cont']} {' '.join(pfs)} > /dev/null 2>&1 < /dev/null & echo $! > {d}/nightly.pid")
+    print(f"nightly pause on {h}: {nt['stop']}-{nt['cont']} UTC over {len(pfs)} PID files")
+
 def pause_file(d):
     return f"{d}/PAUSE"
 
@@ -278,6 +297,7 @@ def launch(cfg, seats_only=False, with_new=True):
         start(s["host"], sd, f"serve{i}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/{exe} {args}", env=s.get("env", ""))
     if cfg.get("handover") and with_new and cfg["handover"].get("launch_new", "at_start") == "at_start":
         launch_new(cfg)
+    start_nightly(cfg)
     print("launched; status with: run.py RUN.json status")
 
 def new_args(cfg, s, j):
@@ -323,9 +343,15 @@ def status(cfg):
                                    f"tail -1 {d}/{n}.log; tail -1 {d}/{n}.mon", check=False))
 
 def stop(cfg):
+    nt = cfg.get("nightly")
+    if nt:
+        s = next(s for s in cfg["seats"] + (cfg.get("handover") or {}).get("new_seats", []) if s["host"] == nt["host"])
+        f = f"{s['root']}/{cfg['name']}/nightly.pid"
+        print(nt["host"], f, sh(nt["host"], f"test -f {f} && (kill $(cat {f}) 2>/dev/null && echo stopped || echo 'not running')", check=False))
     for h, d, n in procs(cfg):
         for f in [f"{d}/{n}.pid", f"{d}/{n}.mon.pid"]:
-            print(h, f, sh(h, f"test -f {f} && (kill $(cat {f}) 2>/dev/null && echo stopped || echo 'not running')", check=False))
+            # SIGCONT after the TERM: a process the nightly pause stopped would otherwise hold the signal
+            print(h, f, sh(h, f"test -f {f} && (kill $(cat {f}) 2>/dev/null && {{ kill -CONT $(cat {f}) 2>/dev/null; echo stopped; }} || echo 'not running')", check=False))
 
 def collect(cfg):
     loc = os.path.join(cfg["out"], cfg["name"])
