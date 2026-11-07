@@ -37,13 +37,16 @@ pub struct StepParams {
     /// (run::public_genesis); this is sha256 of the cfg json (genesis "PG"). Every step is then the carried
     /// program, step 1's parent being the public commitment.
     pub pg: Option<[u8; 32]>,
+    /// exact truncation (genesis "XT": true; needs rs; notes/dark-learning-gen6/xtrunc.md): masks uniform in [0, p); the
+    /// public check on each truncation opening is c >= 2^(K+1) (below it a wrap is possible: refused by name)
+    pub xt: bool,
 }
 
 impl StepParams {
     /// The harness's step (step_spec S1, S2, S3 = 5, 4, 8; run_step's K = 13, 8, 13).
-    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, rc: false, r3: 0, t_lo: -128, lb: false, rs: false, pg: None };
+    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, rc: false, r3: 0, t_lo: -128, lb: false, rs: false, pg: None, xt: false };
     /// The d = 4096 shifts of the decision doc's count formulas (§12; cosnark_gates.counts_formula at width).
-    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, rc: false, r3: 0, t_lo: -128, lb: false, rs: false, pg: None };
+    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, rc: false, r3: 0, t_lo: -128, lb: false, rs: false, pg: None, xt: false };
     /// The program a ledger of width d runs: the harness's up to d = 1024, the wide shifts beyond.
     pub fn for_width(d: usize) -> StepParams {
         if d <= 1024 { Self::HARNESS } else { Self::WIDE }
@@ -631,6 +634,10 @@ impl<'t> Rec<'t> {
         let mut fo = x.terms.clone();
         fo.push((Atom::Prep(r), 1));
         let c = self.open(Form { terms: fo, c: field::add(x.c, 1u64 << k) }, Phase::Trunc)?;
+        if self.prm.xt && c < 1u64 << (k + 1) {
+            // XT: the custodians must have redone the step (a wrap is possible only here); refused by name
+            return Err(Short::Program("XT: truncation opening in the wrap zone (c < 2^(K+1), public)"));
+        }
         if let Some((name, a, b)) = rc {
             let kidx = self.ranges.iter().filter(|r| r.name == name).count();
             let mut all = bits.clone();

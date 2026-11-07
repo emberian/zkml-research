@@ -18,10 +18,15 @@ pub struct Report {
 }
 
 pub fn verify(tapes: &[Tape], owner: &[u64]) -> Result<Report, String> {
+    verify_xt(tapes, owner, None)
+}
+
+/// verify, for tapes whose masks are exact truncation's (xt = Some(p): r < p instead of r < 2^(K + KAPPA)).
+pub fn verify_xt(tapes: &[Tape], owner: &[u64], xt: Option<u64>) -> Result<Report, String> {
     if tapes[0].inputs == crate::tape::RELEASE_INPUTS || tapes[0].inputs == crate::tape::HANDOVER_INPUTS {
         return Err("a release or handover tape: its shape is not in the header; use verify_step with its StepParams".into());
     }
-    verify_step(&tapes[0].step_params(), tapes, owner)
+    verify_step(&crate::schedule::StepParams { xt, ..tapes[0].step_params() }, tapes, owner)
 }
 
 /// As verify, for a step whose proof atoms / proof triples are given by `sp` (the tape header carries d, the
@@ -93,7 +98,8 @@ pub fn verify_step(sp: &StepParams, tapes: &[Tape], owner: &[u64]) -> Result<Rep
                     return Err(format!("truncation at entry {pos}: a low bit is not 0/1"));
                 }
                 let low = bits.iter().enumerate().fold(0u64, |a, (i, &b)| a | (b << i));
-                if (r as u128) >= (1u128 << (k + KAPPA)) || hi >= (1u64 << (k + KAPPA - s)) || r != low + (hi << s) {
+                let bound: u128 = match sp.xt { Some(p) => p as u128, None => 1u128 << (k + KAPPA) };
+                if (r as u128) >= bound || (hi as u128) << s >= bound || r != low + (hi << s) {
                     return Err(format!("truncation at entry {pos}: r, bits, r >> s inconsistent or out of range"));
                 }
                 pos += s as usize + 2;

@@ -86,6 +86,8 @@ impl Tape {
             proof_triples: 0,
             phase: crate::schedule::Phase::Step,
             rs: false,
+            // the header does not say whether the masks are XT's: a verifier of an XT tape sets xt itself
+            xt: None,
         }
     }
 }
@@ -152,7 +154,7 @@ pub fn assemble_in_chunk_emit(chunk: &[StepParams], tx: &Transactions, party: u3
                     let c = plan.class_of(s, k);
                     let i = cur_tr[c];
                     cur_tr[c] += 1;
-                    let nb = (k + KAPPA) as usize;
+                    let nb = crate::schedule::mask_bits(plan.xt, k);
                     bits.clear();
                     bits.extend((0..nb).map(|j| at(sec.tr[c], j, i)));
                     let r: Vec<_> = (0..nb).map(|j| (fp.two_pow(j as u32), bits[j])).collect();

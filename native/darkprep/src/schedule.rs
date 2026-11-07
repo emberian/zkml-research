@@ -54,6 +54,15 @@ pub struct StepParams {
     /// the proof program's "RS" flag (darkstep Dealer::rs, darkproof StepParams::rs): K + 1 - s Trhb bits per
     /// truncation (the low bits of r >> s) instead of K + KAPPA - s
     pub rs: bool,
+    /// exact truncation (genesis "XT"; notes/dark-learning-gen6/xtrunc.md): Some(p): each mask is 61 random bits with
+    /// r < p checked inside the MPC (the opened test rho y; a zero discards the chunk), r uniform in [0, p); None: the
+    /// statistical mask of K + KAPPA bits. The tape layout is the same either way.
+    pub xt: Option<u64>,
+}
+
+/// Random bits per truncation mask: 61 under XT (r uniform in [0, p), p < 2^61), K + KAPPA statistically.
+pub fn mask_bits(xt: Option<u64>, k: u32) -> usize {
+    if xt.is_some() { 61 } else { (k + KAPPA) as usize }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -81,13 +90,13 @@ pub struct Release {
 impl StepParams {
     /// The harness's d = 64 step (mpc_fork.run_step hard-codes K = 13, 13, 8, 13 with S1, S2, S3 = 5, 4, 8).
     pub fn harness_d64() -> Self {
-        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false }
+        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false, xt: None }
     }
     /// `step_counts.params(d)`: S1 = max(5, ceil(log2(49 d / 128))), K1 = S1 + 8, S2 = 4, K2 = 8, S3 = S1 + 3, K3 = S1 + 8.
     pub fn at(d: usize, inputs: Inputs) -> Self {
         let x = 49.0 * d as f64 / 128.0;
         let s1 = (x.log2().ceil() as i64).max(5) as u32;
-        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false }
+        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false, xt: None }
     }
     /// The step with the collaborative proof's preprocessing: Trhb atoms and the proof section's triples,
     /// darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had).
@@ -252,11 +261,13 @@ pub struct Plan {
     pub n_lp: usize,
     /// distinct (s, K) classes in order of first use, with counts
     pub trunc_classes: Vec<(u32, u32, usize)>,
+    /// StepParams::xt: Some(p) generates 61-bit masks checked against p
+    pub xt: Option<u64>,
 }
 
 impl Plan {
     pub fn of(sp: &StepParams) -> Plan {
-        let mut p = Plan { n_in: 0, n_ar: 0, n_tri: 0, n_lp: 0, trunc_classes: vec![] };
+        let mut p = Plan { n_in: 0, n_ar: 0, n_tri: 0, n_lp: 0, trunc_classes: vec![], xt: sp.xt };
         for (e, n) in runs(sp) {
             match e {
                 Event::Input => p.n_in += n,
@@ -287,6 +298,9 @@ impl Plan {
         for &(s, k, m) in &self.trunc_classes {
             a.push(format!("tr{}x{}x{}", s, k, m));
         }
+        if let Some(p) = self.xt {
+            a.push(format!("xt{p}"));
+        }
         a.push(format!("th{}", threads));
         a.push(format!("b{}", batch));
         a
@@ -303,7 +317,7 @@ impl Plan {
         let input = sec(3, self.n_in);
         let ar = sec(1, self.n_ar);
         let tri = sec(3, self.n_tri);
-        let tr: Vec<_> = self.trunc_classes.iter().map(|&(_, k, m)| sec((k + KAPPA) as usize, m)).collect();
+        let tr: Vec<_> = self.trunc_classes.iter().map(|&(_, k, m)| sec(mask_bits(self.xt, k), m)).collect();
         let lp = sec(DEG, self.n_lp);
         Sections { input, ar, tri, tr, lp, total: base }
     }
@@ -335,6 +349,7 @@ pub fn plan_of_steps(steps: &[StepParams]) -> Plan {
     let mut p = Plan::of(&steps[0]);
     for sp in &steps[1..] {
         let q = Plan::of(sp);
+        assert_eq!(q.xt, p.xt, "steps of a chunk share the truncation mask (XT or statistical)");
         assert_eq!(q.trunc_classes.iter().map(|c| (c.0, c.1)).collect::<Vec<_>>(),
                    p.trunc_classes.iter().map(|c| (c.0, c.1)).collect::<Vec<_>>(), "steps of a chunk share truncations");
         p.n_in += q.n_in;

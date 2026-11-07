@@ -168,7 +168,7 @@ fn rs_of(args: &[String]) -> bool {
 }
 
 fn params_of(pg: &Program, rs: bool) -> StepParams {
-    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
+    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs, pg: None, r3: pg.r3, t_lo: pg.t_lo, xt: false }.deployed()
 }
 
 fn hex_roots(g: &Roots) -> String {
@@ -1341,7 +1341,7 @@ fn check_profile(args: &[String], first: usize) -> Result<(), String> {
 fn step_entries(lp: &darkproof::ligero::LigParams, d: usize, pg: &Program, prm: StepParams, tb: &(Vec<u64>, Vec<u64>)) -> (usize, usize) {
     let count = darkproof::run::step_section(lp, d, prm, true, tb);
     use darkprep::schedule::*;
-    let sp = StepParams { d, inputs: Inputs::Steady, trunc: [(pg.s1, pg.k1), (pg.s1, pg.k1), (pg.s2, pg.k2), (pg.s3, pg.k3)], proof_atoms: true, proof_triples: count, phase: Phase::Step, rs: prm.rs };
+    let sp = StepParams { d, inputs: Inputs::Steady, trunc: [(pg.s1, pg.k1), (pg.s1, pg.k1), (pg.s2, pg.k2), (pg.s3, pg.k3)], proof_atoms: true, proof_triples: count, phase: Phase::Step, rs: prm.rs, xt: None };
     (count, tags(&sp).len())
 }
 

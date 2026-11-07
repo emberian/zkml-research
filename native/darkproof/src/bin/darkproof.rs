@@ -80,7 +80,7 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
             let w = darkproof::step::StepParams::for_width(d);
             let f = |k: &str, dflt: u32| p.get(k).and_then(|v| v.as_u64()).map(|v| v as u32).unwrap_or(dflt);
             let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
-            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), rs: p["RS"].as_bool().unwrap_or(false), pg: p.get("PG").map(|h| {
+            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), rs: p["RS"].as_bool().unwrap_or(false), xt: p["XT"].as_bool().unwrap_or(false), pg: p.get("PG").map(|h| {
                 let b = h.as_str().expect("PG hex");
                 let v: Vec<u8> = (0..32).map(|k| u8::from_str_radix(&b[2 * k..2 * k + 2], 16).expect("PG hex")).collect();
                 v.try_into().unwrap()
@@ -898,7 +898,7 @@ fn ds_check(dir: &Path, tag: &str) {
     let rec0 = darkproof::step::replay(&zeros, d, prm, &tables, false).unwrap();
     let nb = darkproof::spine::beaver_count_e(d, lp.ext) + rec0.proof_products() + darkproof::middle::beaver_count_e(rec0.had.len(), lp.ext);
     let plain = if pg == darkstep::step::Program::HARNESS { darkstep::step::inputs(d) } else { darkstep::step::inputs_for(d, &pg) };
-    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_rs(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs);
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_xt(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs, prm.xt);
     darkstep::tape::deal_proof_section(&mut dl, nb);
     let tapes = dl.tapes;
     let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
@@ -916,6 +916,7 @@ fn ds_check(dir: &Path, tag: &str) {
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
+                    pt.xt = prm.xt;
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(4).build().unwrap();
                     let out = pool.install(|| darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)).expect("darkstep step");
                     let st = from_darkstep(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Det(Some(seed))).expect("record");
