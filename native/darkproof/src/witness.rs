@@ -289,6 +289,7 @@ pub fn make_bundle_d(
                     lig_tape: None,
                     ignore_range: false,
                     cst_patch: patch_ref,
+                    spent: None,
                 };
                 let mo = middle::prove(&mi, &mut *net, &mut sp, spine_coms, oy_i)?;
                 assert_eq!(sp.triples as usize, spine::beaver_count_e(d, o.lp.ext) + rec.proof_products() + middle::beaver_count_e(rec.had.len(), o.lp.ext), "middle Beaver count");

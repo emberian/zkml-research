@@ -300,6 +300,7 @@ pub fn prove_step_d(
         lig_tape: if det.on() { None } else { Some(lig_m) },
         ignore_range: st.ignore_range,
         cst_patch: None,
+        spent: None,
     };
     let mo = middle::prove(&mi, net, &mut sp, spine_coms, None)?;
     let blob = wire::encode_step(pr, ctx, d, n, true, &so.proof, &st.public, &mo.proof, rec.n_prep(), rec.had.len(), None);
@@ -604,7 +605,7 @@ pub fn prove_release_d(
         return Err("transport is for another party or committee size".into());
     }
     let mut tt = crate::Trace::new("release", i);
-    let rec = step::replay_release(&st.public, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc)
+    let mut rec = step::replay_release(&st.public, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc)
         .map_err(|e| format!("own transcript: {e:?}"))?;
     tt.lap("replay of the release program");
     if rec.tpos != st.public.len() {
@@ -626,6 +627,11 @@ pub fn prove_release_d(
             (shares(tri.split_off(nb)), Spdz::from_tape(i, n, st.alpha_i, tri))
         }
     };
+    // the constraint list and the atoms go to the middle by value, which frees them once spent
+    let spent = middle::Spent {
+        cons: std::sync::Mutex::new(Some(std::mem::take(&mut rec.cons))),
+        atoms: std::sync::Mutex::new(Some(std::mem::take(&mut st.atoms))),
+    };
     let mi = middle::MiddleIn {
         pr,
         lp,
@@ -642,6 +648,7 @@ pub fn prove_release_d(
         lig_tape: if det.on() { None } else { Some(lig_m) },
         ignore_range: pol.ignore_range,
         cst_patch: None,
+        spent: Some(&spent),
     };
     let mo = middle::prove_d(&mi, net, &mut sp, head, None, dfr)?;
     let blob = wire::encode_release(pr, ctx, d, n, m, pol.ncls, &st.public, &mo.proof, &rec);
