@@ -515,3 +515,19 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
 - Bytes: 946 GB per seat, about 119 kbit per triple-eq per seat, so 357 k for all parties. That matches the 362 k unit price of §3.
 - The §10 estimate of about 27 min was right.
 - The Transactions file was in RAM, and assembly wiped it.
+
+**reh2's sealed chunks [EXECUTED; fresh seat sets `seats.sh fresh reh2-old 16300` / `reh2-new 16400`, MASCOT tau = 5, TLS]**
+- Both seat sets got fresh TLS keys, made on their boxes. The pinned fingerprints are disjoint:
+  - old: 67:F7.., 29:B7.., 03:40..;
+  - new: 4F:EC.., 0D:08.., E3:DB...
+- MAC key shares: reh2-old, reh2-new and wired are pairwise different (sha256 of the alpha_i word at offset 8 of Mascot-Secrets).
+- Everything is held in RAM.
+
+| chunk | key / vault | entries per seat | wall per seat | peak RSS | sent per seat |
+|---|---|---:|---:|---:|---:|
+| reh2-c0 (steps 0-1) | reh2-old, new key; seat<I> | 2 x 8,916,565 | 209-213 s | 1.83 GB | 133.8 GB |
+| reh2-ho (handover) | reh2-new, new key; new<I> | 33,554,448 Ar | 123-127 s | 0.22 GB | 32.8 GB |
+| reh2-n-c0 (steps 2-3) | reh2-new; new<I> | 2 x 8,916,565 | 201-205 s | 1.83 GB | 133.8 GB |
+
+- Two steps per chunk took about the same wall time as one: 209 s against 200 s for run13-c0, with twice the bytes.
+- So the single-step chunk is latency- or setup-bound. A per-step price comes from the 2-step chunks: about 105 s per step on the wired layout.
