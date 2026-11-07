@@ -186,7 +186,9 @@ pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
             for e in rd.flatten() {
                 let name = e.file_name().to_string_lossy().into_owned();
                 let mine = party.map(|i| name.contains(&format!("-P{i}-"))).unwrap_or(true);
-                if name.starts_with("Mascot-Secrets-p-61-") && mine && !name.contains(".retired-") {
+                // MASCOT keeps alpha_i in Mascot-Secrets-p-61-*; LowGear/HighGear in LowGear-/HighGear-Secrets-*
+                let keyfile = name.starts_with("Mascot-Secrets-p-61-") || name.starts_with("LowGear-Secrets-") || name.starts_with("HighGear-Secrets-");
+                if keyfile && mine && !name.contains(".retired-") {
                     let to = dir.join(format!("{name}.retired-{stamp}"));
                     if std::fs::rename(e.path(), &to).is_ok() {
                         out.push(to);
@@ -215,6 +217,8 @@ pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
 /// TLS (`-e`) unless `plaintext`, measured: wall, the process's own CPU and peak RSS (wait4), MP-SPDZ's byte counter,
 /// and wire bytes per peer from the kernel's TCP counters (`ss -tinp`, sampled while it runs; TLS records included).
 pub struct PartyRun {
+    /// "mascot" (default), "lowgear" or "highgear": the MP-SPDZ binary <backend>-party.x
+    pub backend: String,
     pub mpspdz: PathBuf,
     pub prog: String,
     pub p: u64,
@@ -267,7 +271,7 @@ impl PartyRun {
         let _ = std::fs::remove_file(pers.join(format!("Transactions-P{}.data", self.party)));
         std::fs::create_dir_all(&self.workdir).map_err(|e| e.to_string())?;
         let log = std::fs::File::create(self.workdir.join(format!("P{}.log", self.party))).map_err(|e| e.to_string())?;
-        let mut cmd = std::process::Command::new("./mascot-party.x");
+        let mut cmd = std::process::Command::new(format!("./{}-party.x", self.backend));
         cmd.current_dir(&self.mpspdz)
             .args(["-N", "3", "-p", &self.party.to_string(), "--ip-file-name"])
             .arg(&self.ipfile)

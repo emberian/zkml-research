@@ -6,6 +6,7 @@
 //!   darkprep corrupt  --tape FILE --entry K --what share|mac|tag --out FILE      (test-only negative controls)
 //!   darkprep party-chunk --party I --mpspdz DIR --ipfile F --p P --d D --mode harness|steady --steps K [--proof]
 //!                        [--proof-triples N] --out CHUNKDIR [--threads T] [--batch B] [--plaintext] [--mpc-src FILE]
+//!                        [--backend mascot|lowgear|highgear] [--extra a,b,..]  (lowgear: --extra -S,60,-lg2,64)
 //!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
 //!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
 //!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
@@ -264,10 +265,10 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
         sp.trunc = [(v[0], v[1]), (v[0], v[1]), (v[2], v[3]), (v[4], v[5])];
     }
     if m.contains_key("proof") {
-        sp = sp.with_proof();
-    }
-    if let Some(n) = m.get("proof-triples") {
-        sp.proof_triples = n.parse().expect("--proof-triples");
+        // the count is the proof lane's (darkproof::run::step_section; `darkproof counts D PROFILE`), which changes
+        // with its method; there is no default here so a stale formula can never size a tape
+        sp.proof_atoms = true;
+        sp.proof_triples = m.get("proof-triples").expect("--proof needs --proof-triples N (darkproof counts)").parse().expect("--proof-triples");
     }
     sp
 }
@@ -314,6 +315,7 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
         extra.extend(x.split(',').map(String::from));
     }
     let run = darkprep::mpspdz::PartyRun {
+        backend: m.get("backend").cloned().unwrap_or_else(|| "mascot".into()),
         mpspdz: mpspdz.clone(), prog: prog.clone(), p, party,
         ipfile: PathBuf::from(m.get("ipfile").expect("--ipfile")).canonicalize().map_err(|e| e.to_string())?,
         plaintext: m.contains_key("plaintext"), extra, workdir: tmp.clone(),
@@ -348,10 +350,10 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     let asm_s = ta.elapsed().as_secs_f64();
     let links = r.links.iter().map(|(ip, s, rcv)| format!("{{\"peer\": \"{ip}\", \"sent_bytes\": {s}, \"received_bytes\": {rcv}}}")).collect::<Vec<_>>().join(", ");
     let j = format!(
-        "{{\"party\": {party}, \"chunk\": \"{}\", \"d\": {}, \"mode\": \"{:?}\", \"steps\": {steps}, \"proof_atoms\": {}, \"proof_triples_per_step\": {}, \"tape_entries_per_step\": {entries:?}, \"genesis\": {}, \"plan\": {{\"in\": {}, \"ar\": {}, \"tri\": {}, \"lp\": {}, \"trunc_classes\": [{}]}}, \"prog\": \"{prog}\", \"tls\": {}, \"compile_s\": {compile_s:.3}, \"wall_s\": {:.3}, \"assemble_s\": {asm_s:.3}, \"cpu_user_s\": {:.2}, \"cpu_sys_s\": {:.2}, \"max_rss_kb\": {}, \"mpspdz_sent_bytes\": {:.0}, \"mpspdz_rounds\": {}, \"links\": [{links}]}}",
+        "{{\"party\": {party}, \"chunk\": \"{}\", \"d\": {}, \"mode\": \"{:?}\", \"steps\": {steps}, \"proof_atoms\": {}, \"proof_triples_per_step\": {}, \"tape_entries_per_step\": {entries:?}, \"genesis\": {}, \"plan\": {{\"in\": {}, \"ar\": {}, \"tri\": {}, \"lp\": {}, \"trunc_classes\": [{}]}}, \"prog\": \"{prog}\", \"backend\": \"{}\", \"tls\": {}, \"compile_s\": {compile_s:.3}, \"wall_s\": {:.3}, \"assemble_s\": {asm_s:.3}, \"cpu_user_s\": {:.2}, \"cpu_sys_s\": {:.2}, \"max_rss_kb\": {}, \"mpspdz_sent_bytes\": {:.0}, \"mpspdz_rounds\": {}, \"links\": [{links}]}}",
         out.display(), sp.d, sp.inputs, sp.proof_atoms, sp.proof_triples, m.contains_key("genesis"), plan.n_in, plan.n_ar, plan.n_tri, plan.n_lp,
         plan.trunc_classes.iter().map(|(a, b, c)| format!("[{a}, {b}, {c}]")).collect::<Vec<_>>().join(", "),
-        !m.contains_key("plaintext"), r.wall_s, r.cpu_user_s, r.cpu_sys_s, r.max_rss_kb, r.stats.sent_bytes, r.stats.rounds
+        m.get("backend").map(|s| s.as_str()).unwrap_or("mascot"), !m.contains_key("plaintext"), r.wall_s, r.cpu_user_s, r.cpu_sys_s, r.max_rss_kb, r.stats.sent_bytes, r.stats.rounds
     );
     std::fs::write(tmp.join(format!("chunk-P{party}.json")), &j).map_err(|e| e.to_string())?;
     let _ = std::fs::remove_dir_all(out);

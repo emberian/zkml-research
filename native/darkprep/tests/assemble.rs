@@ -210,3 +210,15 @@ fn genesis_chunk_equals_darkstep_multistep_dealer_tags() {
         darkprep::verify::verify_step(&chunk[j], &tp, &rs).unwrap();
     }
 }
+
+#[test]
+fn gen6_program_chunk_equals_darkstep_dealer_tags() {
+    // Program::GEN6's truncations ((11,19), (11,19), (7,8), (8,19)); its r3 = 128 is a public cadd (no tape entry)
+    let d = 4;
+    let pg = darkstep::step::Program::GEN6;
+    let base = StepParams { d, inputs: Inputs::Harness, trunc: pg.truncs(), proof_atoms: false, proof_triples: 0 };
+    let chunk: Vec<StepParams> = (0..2).map(|j| StepParams { inputs: if j == 0 { Inputs::Harness } else { Inputs::Steady }, ..base }).collect();
+    let (tapes, _) = darkstep::tape::deal_steps_prog(P, d, 5, 9, &vec![0u64; 2 * d * d + 2 * d], &[vec![0u64; 2 * d]], false, &pg);
+    let ours: Vec<u8> = chunk.iter().flat_map(|sp| tags(sp)).map(|t| t as u8 + 1).collect();
+    assert_eq!(ours, tapes[0].tags);
+}
