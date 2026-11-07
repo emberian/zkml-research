@@ -75,7 +75,13 @@ pub fn gated(mut pf: Prof, args: &[String]) -> Prof {
     pf
 }
 
+/// --attack KIND:PARTY, the fault-injection flag of the tests: only in a test-harness / test-det build (a deployed
+/// party binary refuses it rather than ignoring it).
 pub fn attack_of(args: &[String]) -> Option<(String, usize)> {
+    #[cfg(not(any(feature = "test-harness", feature = "test-det")))]
+    if flag(args, "--attack").is_some() {
+        panic!("--attack is a test flag: build with --features test-harness");
+    }
     flag(args, "--attack").map(|s| {
         let (k, p) = s.split_once(':').expect("KIND:PARTY");
         (k.to_string(), p.parse().unwrap())
@@ -137,6 +143,33 @@ pub fn setup_he(i: usize, pf: &Prof, net: &Net, attack: Option<(String, usize)>)
             (key, pks, Some(g))
         }
     };
+    Ok(he_of(pf, rns, key, pks, gate, attack))
+}
+
+/// The HE side of a custodian whose key came from a ceremony run elsewhere (a new committee's seat after a handover:
+/// darkhand's ceremony): its key, every member's registered key (the public keys ARE the registry) and its own
+/// secret (s, e) for the ZKPoPK gate.
+pub fn he_from_ceremony(pf: &Prof, key: OwnKey, regs: Vec<Arc<dzkpopk::KeyRegistry>>, s: Vec<i64>, e: Vec<i64>, ceremony_s: f64) -> He {
+    let rns = key.rns.clone();
+    let pks = regs.iter().map(|r| OwnKey::from_ceremony(rns.clone(), 0, &vec![0; pf.n], r.b_res(), r.a_res()).pk).collect();
+    let gate = pf.gate.map(|tcols| crate::gate::Gate {
+        regs,
+        s,
+        e_pk: e,
+        tcols,
+        det_seed: pf.det_seed.clone(),
+        ceremony_s,
+        prove_s: 0.0,
+        verify_s: 0.0,
+        wait_s: 0.0,
+        low_memory: std::env::var("DS_ZK_LOWMEM").map(|v| v != "0").unwrap_or(pf.colocated),
+        proof_bytes_sent: 0,
+        proofs: vec![],
+    });
+    he_of(pf, rns, key, pks, gate, None)
+}
+
+fn he_of(pf: &Prof, rns: Arc<Rns>, key: OwnKey, pks: Vec<crate::bfv::PubKey>, gate: Option<crate::gate::Gate>, attack: Option<(String, usize)>) -> He {
     let mut key = key;
     if pf.ret_primes > 0 {
         key.set_return_primes(pf.ret_primes);
@@ -144,7 +177,7 @@ pub fn setup_he(i: usize, pf: &Prof, net: &Net, attack: Option<(String, usize)>)
             key.set_return_rounding(b0, b1);
         }
     }
-    let he = He {
+    He {
         rns: rns.clone(),
         key,
         pks,
@@ -163,8 +196,7 @@ pub fn setup_he(i: usize, pf: &Prof, net: &Net, attack: Option<(String, usize)>)
         cts_returned: 0,
         attack,
         gate,
-    };
-    Ok(he)
+    }
 }
 
 /// One custodian: keygen, public-key exchange, the step. Returns its result JSON and final shares.
