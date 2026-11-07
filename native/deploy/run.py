@@ -156,7 +156,8 @@ def launch(cfg, seats_only=False):
     od = owner_dir(cfg)
     ocmd = f"nice -n 15 {o.get('scope', '')} {o['bin']}/dl-owner --listen {o['addr']} --tls {od}/tls --t {cfg['t']} --d {d} " + \
            (f"--train {od}/cfg.json" + (" --public-genesis" if cfg.get("genesis_cfg") else "") if cfg.get("owner_cfg") else f"--test-public {o['test_public']}") + \
-           (f" --next-tls {od}/tls-next" if cfg.get("handover") else "")
+           (f" --next-tls {od}/tls-next" if cfg.get("handover") else "") + \
+           (f" --next-tls {od}/tls" * cfg.get("owner_repeat", 0))
     if not seats_only:
         start(o["host"], od, "owner", ocmd)
     addrs = " ".join(s["addr"] for s in cfg["seats"])
