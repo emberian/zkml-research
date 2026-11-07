@@ -251,3 +251,84 @@ All three ACCEPT with one transcript. The home link costs about 1,258 s of the 1
   coefficient, against 2 x 64 each switched. That is 0.555 of run 2's returns: he_ret about 1,206 MB per link,
   about 1,430 MB per link in total, and hbox uploading about 2.9 GB per step. With run 2's rate on hbox's link
   the step would take about 820 s. Not yet measured.
+
+## Continuation (deploy lane, xbox, 2026-11-07 ~05:30 UTC, at ~400K tokens)
+
+**State on dev.** See the commits above. In the working tree, not yet committed: `lb: true` in dl-custodian and
+per-link proof bytes in serve (`after_step_bytes_to`). Commit both by name once
+`-p darkdeploy --features test-harness --test prove_steps` passes with lb on.
+
+**Boxes and dirs (this lane's).**
+- forge `/srv/lanes/dl-gen6-deploy/` (builds native/ and native2/; run1..run3; Rust via
+  `/srv/lanes/dl-gen5/rust/env.sh`);
+- bb2 `~/lanes/dl-gen6-deploy/` (native/ and native2/, run1..run3, owner dirs);
+- hbox `/othersys/lanes/dl-gen6-deploy/` (bin/darkstep-test, darkstep2-test, built on bb2 and copied: glibc
+  2.34 symbols suffice). Never write to hbox's / (24-25 GB free).
+- Every process ran under a PID file in its run dir. All have exited.
+- Ports: forge 47300 (seat 0), bb2 47301 (seat 1), owner 2.31.77.40:47309; hbox only dials. Check them with
+  `nc` before each run.
+
+**Launch recipe** (run2/run3 dirs show it): per seat, `darkstep tls-keygen I tls` on its own box; copy only the
+`cert_*.der`; give each seat its tape (prep chunk or test dealer `--only I`); owner process; then on each box
+`DS_THREADS=16 nohup nice -n 15 <scope> darkstep serve I 16384 4 175 4096 D A0 A1 A2 --tls tls --owner O
+--steps K --gate 309 --program gen6 --tape ... --ret-primes 2 [--ret-round] & echo $! > serveI.pid`. Scope: forge
+`systemd-run --scope -p MemoryMax=12G`, bb2 `systemd-run --user --scope -p MemoryMax=12G`, hbox
+`SWARM_MEM_MAX=16G swarm-build`. Record loads first. The `( cd X && nohup ... & echo $! > pid )` form must write
+an absolute pid path: a relative one once landed in /build.pid on forge (moved to the lane dir).
+
+**Next, in order.**
+1. Commit lb + per-link proof bytes. Rebuild the run binary with `--ret-round` and measure the rounded step through
+   hbox (derived about 820 s).
+2. First proved three-box step: `dl-custodian serve ... --prove --genesis-cfg train_genesis_gen6.json`, public
+   genesis, on the prep lane's real carried chunk (they will send CHUNKDIR paths:
+   /srv/lanes/dl-gen6-prep/chunks/c4096-0, /home/build/lanes/dl-gen6-prep/chunks/c4096-0,
+   /othersys/lanes/dl-gen6-prep/chunks/c4096-0; tape_I.bin with the proof section if made with --proof, plus
+   step-0/owner-msg-P<I>.bin). The owner is `dl-owner --train CFG` (data from research/.../data/mnist), with
+   custodians passing `--owner-msgs CHUNKDIR/step-{k}/owner-msg-P<I>.bin`. Measure forge's peak RSS with the proof
+   (must stay under 12 GB; do not raise the cap). The tape cursor moves past the proof section in the hook.
+3. Ledger node and release: the proof lane's `Ledger` with `Genesis { program: prm (pg set), roots }`,
+   `check_public_genesis(cfg_bytes)` before accept. Release via darkproof::run::release_mpc / prove_release (ask
+   af16018ee013ba703 for the call shape).
+4. Handover: the handover lane (a1742ccf37483c10d) asked for a 6-party Net (connect_tls works for n = 6), the
+   RESHARE tag (landed, = 5), `--handover-at k` calling darkhand::old_side(state, net6) and a join mode for the new
+   seats, and the ZeroOnFree allocator in the party binary (that one belongs in dl-custodian). The self-handover
+   after an abort comes from them.
+5. The prep lane uses `darkstep relay` (9869e89f) for MP-SPDZ over the resumable mesh.
+
+**Agents.** Coordinator aa3209e8d10294bc2; prep aa66b1f8ba5714d45; proof af16018ee013ba703 (a02632eb retired);
+train ad36593ec00657538; handover a1742ccf37483c10d.
+
+### Continuation addendum (after the section above)
+
+- **Bug fixed in the working tree** (net.rs connect_tls): a dial error containing "Connection refused" (the peer
+  not yet listening) was treated as a TLS refusal and failed at once. Now only "TLS handshake" errors are fatal and
+  TCP refusals are retried. This was the hang in prove_steps when it ran after another test.
+- **Uncommitted, to commit by name once `-p darkdeploy --features test-harness --test prove_steps --
+  --test-threads=1` passes:** native/darkstep/src/net.rs (the fix), native/darkstep/src/serve.rs (per-link
+  proof bytes, `after_step_bytes_to`, `rebase_sent`), native/darkdeploy/src/bin/dl-custodian.rs (lb: true),
+  native/darkdeploy/src/bin/dl-reveal.rs plus darkdeploy/Cargo.toml (test-only twin check: `dl-reveal CFG STEPS
+  DIR0 DIR1 DIR2` compares darktrain::weights_digest), native/darkdeploy/tests/prove_steps.rs (lb in its own
+  verify; run with --test-threads=1).
+- **Real MASCOT chunks from the prep lane** (wired layout: seat 0 forge, seats 1 and 2 bb2):
+  - no proof section: forge `/srv/lanes/dl-gen6-prep/chunks/w4096-/srv/lanes/dl-gen6-prep/wired0/mpspdz`; bb2
+    `/home/build/lanes/dl-gen6-prep/chunks/w4096-/home/build/lanes/dl-gen6-prep/wired{1,2}/mpspdz` (paths as
+    given, launcher placeholder);
+  - with RC + LB proof section (3,192,275 triples): forge `/srv/lanes/dl-gen6-prep/chunks/w4096p-P0`; bb2
+    `/home/build/lanes/dl-gen6-prep/chunks/w4096p-P1`, `-P2`.
+  - Each holds tape_<I>.bin and step-0/{tape_<I>.bin, owner-msg-P<I>.bin}. The MAC key persists per seat
+    across chunks unless a run aborts.
+  - Next milestone: `dl-custodian serve I 16384 4 175 4096 D A0 A1 A2 --tls tls --owner O --steps 1 --gate 309
+    --program gen6 --tape CHUNK/tape_I.bin --owner-msgs CHUNK/step-{k}/owner-msg-P<I>.bin --genesis-cfg
+    train_genesis_gen6.json --ret-primes 2 [--prove]`, with `dl-owner --listen O --tls OWNERTLS --t
+    2305843009210515457 --d 4096 --train CFG.json` (CFG = the genesis json plus "data": the MNIST dir and
+    "seed_order": 2), then `dl-reveal` (test build) against the twin. The prep lane generation 2
+    (a5caa478aac6a0658) is making LowGear chunks lg4096{,p}-P<I> and has hbox's link 14:00-15:00 UTC.
+- **Handover API landed** (handover lane, 6338de5e, doc at native/darkhand/src/serve.rs top): old seat
+  `darkhand::serve::old_from_serve(state, carry, files, true, ct)` then `side::old_side(..)`; new seat
+  `side::new_side(..)` returns party, wires, carry, keys and the proof for Ledger::rotate. The self-handover after
+  an abort uses the same calls with `false`. The carry (the step's child PcsParty map) is `Prove.carry` in
+  dl-custodian, so the handover hook belongs there, next to the proof. RESHARE = 5 has landed (9869e89f); tell
+  them so they point darkhand::side::RESHARE at it. They also ask for the ZeroOnFree global allocator in the
+  party binary (dl-custodian).
+- **Release layout** for the prep lane: none in darkstep yet. It comes from the proof lane's release section
+  (58,679,793 triples at M = 64, RC + LB).

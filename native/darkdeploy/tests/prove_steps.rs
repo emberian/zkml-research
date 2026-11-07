@@ -9,6 +9,8 @@ use std::process::Command;
 
 const A: [&str; 4] = ["16384", "4", "175", "64"];
 
+// Run these one at a time (`-- --test-threads=1`): each starts three processes on freshly picked free ports.
+
 fn free_port() -> u16 {
     std::net::TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
 }
@@ -104,7 +106,7 @@ fn three_proved_steps_over_tls() {
                 .into_iter()
                 .map(|(k, v)| (k, v.iter().map(|h| { let b = hex(h); let mut a = [0u8; 32]; a.copy_from_slice(&b); a }).collect()))
                 .collect();
-            let prm = darkproof::step::StepParams { rc: true, ..darkproof::step::StepParams::HARNESS }.deployed();
+            let prm = darkproof::step::StepParams { rc: true, lb: true, ..darkproof::step::StepParams::HARNESS }.deployed();
             let ok = darkproof::wire::verify_step(&pr, &pr.ligero(), &b0, &darkproof::Ctx::new("dl-gen6", 0, 1), &roots, &darkproof::step::tables(), d, prm, None, 0);
             assert!(ok.is_ok(), "the stored bundle verifies: {:?}", ok.err());
             let refused = darkproof::wire::verify_step(&pr, &pr.ligero(), &bad, &darkproof::Ctx::new("dl-gen6", 0, 1), &roots, &darkproof::step::tables(), d, prm, None, 0);
