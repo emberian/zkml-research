@@ -1,6 +1,6 @@
 //! proofwire.py: the step bundle's bytes (schema-driven: every length is a function of d, n, the pinned profile and
 //! the verifier's own replay of the step against the public transcript) and the untrusted-input verifier.
-use crate::field::P;
+use crate::field;
 use crate::h::{py_str_repr, Hash};
 use crate::ligero::LigProof;
 use crate::middle::{self, MiddleProof};
@@ -18,7 +18,7 @@ pub struct W {
 }
 impl W {
     fn fe(&mut self, x: u64) {
-        assert!(x < P, "non-canonical field element");
+        assert!(x < field::p(), "non-canonical field element");
         self.b.extend_from_slice(&x.to_be_bytes());
     }
     fn h(&mut self, x: &Hash) {
@@ -34,7 +34,7 @@ impl W {
             self.fe(x);
         }
     }
-    fn hs(&mut self, xs: &[Hash], n: usize) {
+    pub(crate) fn hs(&mut self, xs: &[Hash], n: usize) {
         assert_eq!(xs.len(), n, "list length differs from schema");
         for x in xs {
             self.h(x);
@@ -63,7 +63,7 @@ impl<'a> R<'a> {
     }
     pub(crate) fn fe(&mut self) -> PR<u64> {
         let x = u64::from_be_bytes(self.take(8)?.try_into().unwrap());
-        if x >= P {
+        if x >= field::p() {
             return Err("non-canonical field element".into());
         }
         Ok(x)
@@ -98,7 +98,7 @@ fn r_openings(r: &mut R, t: usize, sz: usize, lg: usize) -> PR<Vec<Opening>> {
     (0..t).map(|_| Ok((r.fes(sz)?, r.hs(lg)?))).collect()
 }
 
-fn w_ligero(w: &mut W, pr: &Profile, n: usize, sizes: &[usize], l: &LigProof) {
+pub(crate) fn w_ligero(w: &mut W, pr: &Profile, n: usize, sizes: &[usize], l: &LigProof) {
     let (k, t, tt) = (pr.k_l, pr.t_hide, pr.t_open);
     let lg = crate::pcs::bitlen(pr.blow * (k + t) - 1) + 1;
     w.fes(&l.w, k + t);
@@ -129,13 +129,13 @@ pub(crate) fn r_ligero(r: &mut R, pr: &Profile, n: usize, sizes: &[usize]) -> PR
 
 pub(crate) type PcsParts = (BTreeMap<String, Vec<Hash>>, BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>);
 
-fn w_roots(w: &mut W, n: usize, sh: &BTreeMap<String, Shape>, roots: &BTreeMap<String, Vec<Hash>>) {
+pub(crate) fn w_roots(w: &mut W, n: usize, sh: &BTreeMap<String, Shape>, roots: &BTreeMap<String, Vec<Hash>>) {
     assert!(roots.keys().eq(sh.keys()), "dict keys differ from schema");
     for k in sh.keys() {
         w.hs(&roots[k], n);
     }
 }
-fn w_prox_cols(
+pub(crate) fn w_prox_cols(
     w: &mut W,
     pr: &Profile,
     n: usize,
