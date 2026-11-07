@@ -417,8 +417,15 @@ class Ledger:
         self.program = g.get("program")
         self.owner_pk = None if g["owner_pk"] == "none" else bytes.fromhex(g["owner_pk"])
         self.epoch, self.step, self.parent, self.next_leaf, self.custodians = 0, 0, g["roots"], 0, g["custodians"]
+        self.released = None
         for no, rec in enumerate(self.recs[1:], 2):
-            if rec["kind"] == "step":
+            if self.released is not None:
+                raise RuntimeError(f"ledger line {no}: a record after the release (fail closed)")
+            if rec["kind"] == "release":
+                if (rec["epoch"], rec["step"]) != (self.epoch, self.step) or not 0 <= rec["C"] <= rec["M"]:
+                    raise RuntimeError(f"ledger line {no}: the release is not at the head (fail closed)")
+                self.released = (rec["M"], rec["C"])
+            elif rec["kind"] == "step":
                 if (rec["epoch"], rec["step"]) != (self.epoch, self.step + 1):
                     raise RuntimeError(f"ledger line {no} breaks the sequence (fail closed)")
                 self.step, self.parent = rec["step"], rec["child"]
@@ -460,6 +467,8 @@ class Ledger:
             fcntl.flock(f, fcntl.LOCK_EX)
             self.recs = [json.loads(l) for l in open(self.path)]
             self._replay()
+            if self.released is not None:
+                return False, "rotation refused: the ledger is released"
             if not handover:
                 return False, "rotation refused: no handover proof"
             try:
@@ -478,11 +487,36 @@ class Ledger:
             self._replay()
         return True, "accept"
 
+    def release(self, p, blob, X, labels, ncls, kc=10):
+        """The mind's release: verified against the head's roots and the published policy; terminal (the head's
+        commitments were opened at their last life). The record carries M, C and the bundle's and policy's sha256."""
+        with open(self.path) as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            self.recs = [json.loads(l) for l in open(self.path)]
+            self._replay()
+            if self.released is not None:
+                return False, "the ledger is released: no further release"
+            if self.step == 0:
+                return False, "no step accepted: nothing to release"
+            ctx = (self.model, self.epoch, self.step)
+            ok, why, out = verify_release(p, blob, ctx, self.parent, X, labels, self.program, ncls, self.d, kc)
+            if not ok:
+                return False, why
+            M, C = out
+            rec = dict(kind="release", epoch=self.epoch, step=self.step, M=M, C=C,
+                       digest=hashlib.sha256(blob).hexdigest(), policy=policy_digest(X, labels, ncls, kc))
+            self._append(rec)
+            self.recs.append(rec)
+            self._replay()
+        return True, "accept"
+
     def accept(self, p, blob, tab):
         with open(self.path) as f:
             fcntl.flock(f, fcntl.LOCK_EX)          # one acceptor at a time; re-read the head under the lock
             self.recs = [json.loads(l) for l in open(self.path)]
             self._replay()
+            if self.released is not None:
+                return False, "the ledger is released: no further steps"
             ctx, parent = self.head()
             ok, why, out = verify_step(p, blob, ctx, parent, tab, self.d, owner_pk=self.owner_pk,
                                        min_leaf=self.next_leaf, program=self.program)
@@ -495,3 +529,15 @@ class Ledger:
             self.recs.append(rec)
             self._replay()
         return True, "accept"
+
+
+def policy_digest(X, labels, ncls, kc):
+    """sha256 of the release policy (native ledger::policy_digest): M, ncls, kc as u32 BE, X in k M + t order as u64 BE
+    (mod p), labels as u8."""
+    M = len(labels)
+    h = hashlib.sha256(struct.pack(">III", M, ncls, kc))
+    for k in range(len(X)):
+        for t in range(M):
+            h.update(struct.pack(">Q", X[k][t]))
+    h.update(bytes(labels))
+    return h.hexdigest()

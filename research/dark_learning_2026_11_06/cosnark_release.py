@@ -9,7 +9,7 @@ the weights committed at the ledger head (gen 6; policy by the train lane).
     z2_c = W2[c] . h  for c < ncls   (Beaver products; only the class rows of W2)
     o_c = trunc(z2_c, S1, K1)
     q_k = trunc(o_l - o_k - 1, KC, KC) for k != l      (-1 iff o_l <= o_k, else 0; s = K = KC)
-    ok_t = prod_{k != l} (1 + q_k)   (Beaver products)
+    ok_t = prod_{k != l} (1 + q_k)   (Beaver products, stage by stage over t)
     C = sum_t ok_t                   the ONE opening ("release")
 The proof is the collaborative ZK middle (cosnark_gates_zk) over this program's record, with external vectors
     W1, W2   the ledger head's commitments, CARRIED at their second life (the last step's spine used the first);
@@ -62,24 +62,18 @@ def run_release(eng, W1, W2, X, labels, prog, ncls=10, kc=KC):
     h = [eng.lookup2(u, -prog.t_lo % p, tab, 255)[0] for u in u1]
     eng.rec_out("h", h)
     hb = [G.mk(dict(x), {eng.ext[("h", k)]: 1}) for k, x in enumerate(h)]
-    o = []
-    for c in range(ncls):
-        row = []
-        for t in range(M):
-            prods = [eng.mul(W2v[c * d + k], hb[k * M + t]) for k in range(d)]
-            row.append(eng.trunc(eng.lin([(1, x) for x in prods]), prog.s1, prog.k1))
-        o.append(row)
-    oks = []
+    # batch-friendly order (the custodians run each stage as one vector operation): every class-row product, then
+    # every score truncation, then every comparison, then the products of the comparisons stage by stage
+    prods = [[[eng.mul(W2v[c * d + k], hb[k * M + t]) for k in range(d)] for t in range(M)] for c in range(ncls)]
+    o = [[eng.trunc(eng.lin([(1, x) for x in prods[c][t]]), prog.s1, prog.k1) for t in range(M)] for c in range(ncls)]
+    fs = []
     for t in range(M):
         l = labels[t]
-        acc = None
-        for k in range(ncls):
-            if k == l:
-                continue
-            q = eng.trunc(eng.lin([(1, o[l][t]), (-1, o[k][t])], -1), kc, kc)
-            f = eng.cadd(1, q)
-            acc = f if acc is None else eng.mul(acc, f)
-        oks.append(acc)
+        qs = [eng.trunc(eng.lin([(1, o[l][t]), (-1, o[k][t])], -1), kc, kc) for k in range(ncls) if k != l]
+        fs.append([eng.cadd(1, q) for q in qs])
+    oks = [f[0] for f in fs]
+    for j in range(1, ncls - 1):
+        oks = [eng.mul(oks[t], fs[t][j]) for t in range(M)]
     C = eng.open(eng.lin([(1, x) for x in oks]), "release")
     return C, dict(z1=[dict(x) for x in z1], h=[dict(x) for x in h])
 

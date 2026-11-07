@@ -42,6 +42,8 @@ fn main() {
         Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ds-bench") => ds_bench(args[2].parse().unwrap(), &args[3]),
+        #[cfg(feature = "tcp")]
+        Some("ds-chain") => ds_chain(args[2].parse().unwrap(), &args[3], args[4].parse().unwrap(), args[5].parse().unwrap()),
         _ => eprintln!("usage: darkproof check VECDIR TAG"),
     }
 }
@@ -368,6 +370,235 @@ fn ds_bench(d: usize, prof: &str) {
     let v = wire::verify_step(&pr, &lp, &outs[0].2, &Ctx::new("mind-0", 0, 1), &outs[0].4, &tables, d, prm, None, 0);
     println!("verify {:.1}s {:?}", t.elapsed().as_secs_f64(), v.as_ref().map(|_| "accept"));
     println!("bench rows");
+}
+
+/// The run in one process: three custodian threads over 127.0.0.1 sockets run STEPS deployed steps (genesis, then
+/// carried) on ONE tape each (a test dealer standing in for MASCOT: step, its proof section, the next step, ..., the
+/// release section, the release's proof section), prove every step with run::prove_step (production coins), a
+/// native ledger accepts every bundle, then the custodians run the release program on the head's shares, prove it
+/// (run::prove_release) and the ledger accepts the release. The released count must equal the plaintext twin's on
+/// the revealed head (a test-only reveal). M public examples, X random in [0, 100], half the labels the plain
+/// model's strict argmax.
+#[cfg(feature = "tcp")]
+fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
+    use darkproof::run::{deal_release, from_darkstep_n, n_had, plain_count, prove_release, prove_step, release_mpc, release_n_had, release_triples, tape_triples, tape_triples_at, Policy, TcpRef};
+    use std::sync::Arc;
+    let pr = Profile::by_name(prof).unwrap();
+    let p = wire::he_field(&pr).unwrap();
+    darkproof::field::set_p(p);
+    let lp = pr.ligero();
+    let prm = match std::env::var("DP_PROGRAM") {
+        Ok(j) => program_of(&serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }), d).deployed(),
+        Err(_) => darkproof::step::StepParams::for_width(d).deployed(),
+    };
+    let tables = darkproof::step::tables_for(prm.t_lo);
+    let pf = darkstep::node::prof(&[pr.he.0.to_string(), pr.he.1.to_string(), pr.he.2.to_string(), d.to_string()]);
+    let pg = darkstep::step::Program { s1: prm.s1, k1: prm.k1, s2: prm.s2, k2: prm.k2, s3: prm.s3, k3: prm.k3, r3: prm.r3, t_lo: prm.t_lo, xmax: 7, wmax: None, check_k: false };
+    let ncls = d.min(10);
+    let kc = 10;
+    // the public test set
+    let mut xr = pycompat::PyRandom::from_u64(77);
+    let xi: Vec<Vec<i64>> = (0..d).map(|_| (0..m).map(|_| xr.randrange_u64(101) as i64).collect()).collect();
+    let x: Vec<u64> = (0..d).flat_map(|k| (0..m).map(move |t| (k, t))).map(|(k, t)| darkproof::field::from_i64(xi[k][t])).collect();
+    // one test dealer for the run
+    let t0 = std::time::Instant::now();
+    let mut dl = darkstep::tape::Dealer::new(p, 3, darkstep::node::DEALER_SEED);
+    dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
+    let mut owner = pycompat::PyRandom::from_u64(darkstep::node::OWNER_SEED);
+    let mut plain = darkstep::step::inputs(d);
+    // BOUND CONTROL (DP_W2SCALE=s): W2 scaled at genesis so z2 leaves its declared bound 2^K1
+    // (DP_W1SCALE=s: W1 scaled, so u1 = z1 >> S1 leaves the table's domain)
+    let w2scale: Option<i64> = std::env::var("DP_W2SCALE").ok().map(|v| v.parse().unwrap());
+    let w1scale: Option<i64> = std::env::var("DP_W1SCALE").ok().map(|v| v.parse().unwrap());
+    for (sc, mtx) in [(w2scale, &mut plain.w2), (w1scale, &mut plain.w1)] {
+        if let Some(sc) = sc {
+            for r in mtx.iter_mut() {
+                for v in r.iter_mut() {
+                    *v *= sc;
+                }
+            }
+        }
+    }
+    let w2scale = w2scale.or(w1scale);
+    let genesis = plain.flat_mod(p);
+    let xy = genesis[2 * d * d..].to_vec();
+    let mut css = Vec::new();
+    let mut nts = Vec::new();
+    for k in 0..steps {
+        let inp = if k == 0 { genesis.clone() } else { xy.clone() };
+        css.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, d, &inp, &pg));
+        let nt = tape_triples(&lp, d, n_had(d, prm, k > 0, &tables));
+        darkstep::tape::deal_proof_section(&mut dl, nt);
+        nts.push(nt);
+    }
+    let pol0 = Policy { x: x.clone(), labels: vec![0; m], ncls, kc };
+    deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol0);
+    let tapes = dl.tapes;
+    println!("d={d} profile={prof} steps={steps} M={m} program={prm:?}; dealing {:.1}s, tape {} entries per party", t0.elapsed().as_secs_f64(), tapes[0].len());
+    let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
+    let css = Arc::new(css);
+    let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(4);
+    type Carry = BTreeMap<String, darkproof::pcs::PcsParty>;
+    type DS = Vec<Vec<darkstep::party::Sh>>;
+    let model = "mind-0";
+    // phase 1: the steps and their proofs
+    let mut parts: Vec<(darkstep::party::Party, Carry, DS, DS, Vec<Vec<u8>>, Option<BTreeMap<String, Vec<[u8; 32]>>>)> = std::thread::scope(|s| {
+        let hs: Vec<_> = ls
+            .into_iter()
+            .zip(tapes)
+            .enumerate()
+            .map(|(i, (l, tape))| {
+                let (addrs, css, pf, pr, lp, tables, pg, nts) = (&addrs, css.clone(), &pf, &pr, &lp, &tables, &pg, &nts);
+                s.spawn(move || {
+                    let net = darkstep::net::Net::connect(i, l, addrs);
+                    let mut he = ds_he(i, pf, &net);
+                    let tab = pg.tables(pf.t);
+                    let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
+                    let (mut carry, mut head, mut blobs, mut groots): (Option<Carry>, Option<(DS, DS)>, Vec<Vec<u8>>, _) = (None, None, Vec::new(), None);
+                    for k in 0..steps {
+                        let ts = std::time::Instant::now();
+                        // ProofRecord.public and .middle_atoms are cumulative over the party's life: keep this step's
+                        let (t_from, a_from) = (pt.tr.v.len(), pt.atom_log.len());
+                        let out = pool.install(|| match head.take() {
+                            None => darkstep::step::run_step_prog(&mut pt, &mut he, &css[k], d, &tab, pg),
+                            Some((m1, m2)) => {
+                                let sx = pt.input_vec(&css[k][..d]);
+                                let sy = pt.input_vec(&css[k][d..]);
+                                darkstep::step::run_step_shares(&mut pt, &mut he, m1, m2, sx, sy, d, &tab, pg)
+                            }
+                        }).expect("darkstep step");
+                        let step_s = ts.elapsed().as_secs_f64();
+                        let mut st = from_darkstep_n(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Some(nts[k]), Det::off()).expect("record");
+                        st.public = pt.tr.v[t_from..].to_vec();
+                        st.atoms = pt.atom_log[a_from..].iter().flat_map(|r| r.clone().map(|j| (pt.tape.sh[j], pt.tape.mac[j]))).collect();
+                        let ctx = Ctx::new(model, 0, k as u64 + 1);
+                        let sp = {
+                            let mut tn = TcpRef(&pt.net);
+                            pool.install(|| prove_step(pr, lp, tables, prm, &mut tn, &ctx, st, carry.take())).expect("prove")
+                        };
+                        pt.cur += 3 * nts[k];
+                        if i == 0 {
+                            println!("step {}: darkstep {:.1}s, proof {:.1}s, bundle {} bytes, proof sent {} elements", k + 1, step_s, sp.secs, sp.blob.len(), sp.sent);
+                        }
+                        if sp.genesis_roots.is_some() {
+                            groots = sp.genesis_roots.clone();
+                        }
+                        blobs.push(sp.blob);
+                        carry = Some(sp.child);
+                        head = Some((out.w1n, out.w2n));
+                    }
+                    let (w1n, w2n) = head.unwrap();
+                    (pt, carry.unwrap(), w1n, w2n, blobs, groots)
+                })
+            })
+            .collect();
+        hs.into_iter().map(|h| h.join().unwrap()).collect()
+    });
+    // the ledger accepts every step
+    let dir = std::env::temp_dir().join(format!("dp-chain-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let lpath = dir.join("mind-0.ledger");
+    let cust = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<String>>();
+    let mut lg = darkproof::ledger::Ledger::open(&lpath, model, &pr, Some(darkproof::ledger::Genesis { d, program: prm, owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: parts[0].5.clone().unwrap() })).unwrap();
+    let mut ok_all = parts.iter().all(|p| p.4 == parts[0].4);
+    for (k, b) in parts[0].4.iter().enumerate() {
+        let t = std::time::Instant::now();
+        let r = lg.accept(&lp, b, &tables);
+        println!("ledger accepts step {}: {:?} ({:.1}s)", k + 1, r, t.elapsed().as_secs_f64());
+        ok_all &= r.is_ok();
+    }
+    if w2scale.is_some() {
+        // the integer spec of one step (step_spec, exact floors, SIG/DSIG by their formulas) against the revealed head
+        let (w1, w2, xv, yv) = (&plain.w1, &plain.w2, &plain.x, &plain.y);
+        let sigf = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
+        let dsigf = |u: i64| if (-28..32).contains(&u) { 1 } else { 0 };
+        let z1: Vec<i64> = (0..d).map(|j| (0..d).map(|k| w1[j][k] * xv[k]).sum()).collect();
+        let u1: Vec<i64> = z1.iter().map(|z| z >> prm.s1).collect();
+        let h: Vec<i64> = u1.iter().map(|&u| sigf(u)).collect();
+        let g1: Vec<i64> = u1.iter().map(|&u| dsigf(u)).collect();
+        let z2: Vec<i64> = (0..d).map(|j| (0..d).map(|k| w2[j][k] * h[k]).sum()).collect();
+        let e: Vec<i64> = (0..d).map(|j| (z2[j] >> prm.s1) - yv[j]).collect();
+        let d2: Vec<i64> = e.iter().map(|v| v >> prm.s2).collect();
+        let b: Vec<i64> = (0..d).map(|k| (0..d).map(|j| w2[j][k] * d2[j]).sum()).collect();
+        let d1: Vec<i64> = (0..d).map(|k| (b[k] * g1[k] + prm.r3) >> prm.s3).collect();
+        let w2n: Vec<Vec<i64>> = (0..d).map(|j| (0..d).map(|k| w2[j][k] - d2[j] * h[k]).collect()).collect();
+        let w1n: Vec<Vec<i64>> = (0..d).map(|j| (0..d).map(|k| w1[j][k] - d1[j] * xv[k]).collect()).collect();
+        let mx = |v: &[i64]| v.iter().map(|x| x.abs()).max().unwrap();
+        fn rev(ms: [&Vec<Vec<darkstep::party::Sh>>; 3], d: usize, p: u64) -> Vec<Vec<i64>> {
+            (0..d).map(|r| (0..d).map(|c| { let v = (0..3).fold(0u64, |a, i| darkproof::field::add(a, ms[i][r][c].s)); if v > p / 2 { v as i64 - p as i64 } else { v as i64 } }).collect()).collect()
+        }
+        let hw1 = rev([&parts[0].2, &parts[1].2, &parts[2].2], d, p);
+        let hw2 = rev([&parts[0].3, &parts[1].3, &parts[2].3], d, p);
+        println!(
+            "BOUND CONTROL: max |z1| = {} (bound 2^{} = {}), max |z2| = {} (bound 2^{} = {}), max |e| = {} (bound 2^{}), max |b g1 + R3| = {} (bound 2^{}); u1 in the table's domain: {}",
+            mx(&z1), prm.k1, 1i64 << prm.k1, mx(&z2), prm.k1, 1i64 << prm.k1, mx(&e), prm.k2,
+            (0..d).map(|k| (b[k] * g1[k] + prm.r3).abs()).max().unwrap(), prm.k3,
+            u1.iter().all(|&u| u >= prm.t_lo && u < prm.t_lo + 256)
+        );
+        println!("BOUND CONTROL: the custodians' W1n equals the integer spec's: {}; W2n: {}", hw1 == w1n, hw2 == w2n);
+        println!("{}", if ok_all { "BOUND CONTROL: the ledger ACCEPTED the out-of-bound step" } else { "BOUND CONTROL: refused" });
+        std::process::exit(0);
+    }
+    // the plaintext twin on the revealed head (TEST ONLY)
+    fn rev(ms: [&Vec<Vec<darkstep::party::Sh>>; 3], d: usize, p: u64) -> Vec<Vec<i64>> {
+        (0..d).map(|r| (0..d).map(|c| { let v = (0..3).fold(0u64, |a, i| darkproof::field::add(a, ms[i][r][c].s)); if v > p / 2 { v as i64 - p as i64 } else { v as i64 } }).collect()).collect()
+    }
+    let hw1 = rev([&parts[0].2, &parts[1].2, &parts[2].2], d, p);
+    let hw2 = rev([&parts[0].3, &parts[1].3, &parts[2].3], d, p);
+    let sig = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
+    let mut lr = pycompat::PyRandom::from_u64(78);
+    let labels: Vec<usize> = (0..m)
+        .map(|t| {
+            let h: Vec<i64> = (0..d).map(|j| sig((0..d).map(|k| hw1[j][k] * xi[k][t]).sum::<i64>() >> prm.s1)).collect();
+            let o: Vec<i64> = (0..ncls).map(|c| (0..d).map(|k| hw2[c][k] * h[k]).sum::<i64>() >> prm.s1).collect();
+            let r = lr.randrange_u64(ncls as u64) as usize;
+            if t % 2 == 0 { (0..ncls).max_by_key(|&c| (o[c], std::cmp::Reverse(c))).unwrap() } else { r }
+        })
+        .collect();
+    let pol = Policy { x, labels, ncls, kc };
+    let cp = plain_count(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc);
+    let nh = release_n_had(d, m, prm, &pol);
+    let nrt = release_triples(&lp, nh);
+    // phase 2: the release
+    let ctx = Ctx::new(model, 0, steps as u64);
+    let outs: Vec<(u64, Vec<u8>, f64, f64)> = std::thread::scope(|s| {
+        let hs: Vec<_> = parts
+            .drain(..)
+            .map(|(mut pt, carry, w1n, w2n, _, _)| {
+                let (pol, pr, lp, ctx) = (&pol, &pr, &lp, &ctx);
+                s.spawn(move || {
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
+                    let tm = std::time::Instant::now();
+                    let (c, mut st) = pool.install(|| release_mpc(&mut pt, &w1n, &w2n, pol, prm)).expect("release mpc");
+                    let mpc_s = tm.elapsed().as_secs_f64();
+                    st.triples = tape_triples_at(&pt.tape, pt.cur, Some(nrt)).expect("release proof section");
+                    let mut tn = TcpRef(&pt.net);
+                    let (blob, secs) = pool.install(|| prove_release(pr, lp, prm, &mut tn, ctx, pol, st, carry)).expect("release proof");
+                    (c, blob, mpc_s, secs)
+                })
+            })
+            .collect();
+        hs.into_iter().map(|h| h.join().unwrap()).collect()
+    });
+    let agree = outs.iter().all(|o| o.1 == outs[0].1 && o.0 == outs[0].0);
+    println!("release: MPC {:.1}s, proof {:.1}s, bundle {} bytes; parties agree {agree}; opened C = {}", outs[0].2, outs[0].3, outs[0].1.len(), outs[0].0);
+    let t = std::time::Instant::now();
+    let r = lg.release(&lp, &outs[0].1, &pol);
+    println!("ledger accepts the release: {:?} ({:.1}s); plaintext twin C = {cp}", r, t.elapsed().as_secs_f64());
+    ok_all &= agree && r.as_ref().map(|x| x.1 == cp && x.1 == outs[0].0).unwrap_or(false);
+    let r2 = lg.accept(&lp, &parts_blob_dummy(), &tables);
+    println!("a step after the release: {:?}", r2);
+    ok_all &= r2.is_err();
+    println!("ledger file: {}", lpath.display());
+    println!("{}", if ok_all { "DS-CHAIN PASS" } else { "DS-CHAIN FAIL" });
+    std::process::exit(if ok_all { 0 } else { 1 });
+}
+
+#[cfg(feature = "tcp")]
+fn parts_blob_dummy() -> Vec<u8> {
+    b"DLSTEP01".to_vec()
 }
 
 #[cfg(feature = "tcp")]
