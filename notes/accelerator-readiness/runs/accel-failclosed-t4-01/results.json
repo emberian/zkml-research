@@ -1,0 +1,41 @@
+{
+ "cases": {
+  "tower256_good": {
+   "rc": 1,
+   "expect_zero": true,
+   "ok": false,
+   "seconds": 0.3,
+   "tail": "HARDWARE OK: Tesla T4\nout /tmp/accel/fc/good/out-tower256_good shrink 1 ells 10,12,14,16,18,20\nX_RC=1\nError: Command '['/tmp/accel/fc/good/out-tower256_good/venv/bin/python3', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.\n"
+  },
+  "tower256_broken_build": {
+   "rc": 1,
+   "expect_zero": false,
+   "ok": true,
+   "seconds": 0.2,
+   "tail": "HARDWARE OK: Tesla T4\nout /tmp/accel/fc/tbad/out-tower256_broken_build shrink 1 ells 10,12,14,16,18,20\nX_RC=1\nError: Command '['/tmp/accel/fc/tbad/out-tower256_broken_build/venv/bin/python3', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.\n"
+  },
+  "bfv_broken_build": {
+   "rc": 1,
+   "expect_zero": false,
+   "ok": true,
+   "seconds": 14.0,
+   "tail": "\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 130169 files and directories currently installed.)\nPreparing to unpack .../python3-pip-whl_24.0+dfsg-1ubuntu1.3_all.deb ...\nUnpacking python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...\nSelecting previously unselected package python3-setuptools-whl.\nPreparing to unpack .../python3-setuptools-whl_68.1.2-2ubuntu1.2_all.deb ...\nUnpacking python3-setuptools-whl (68.1.2-2ubuntu1.2) ...\nSelecting previously unselected package python3.12-venv.\nPreparing to unpack .../python3.12-venv_3.12.3-1ubuntu0.17_amd64.deb ...\nUnpacking python3.12-venv (3.12.3-1ubuntu0.17) ...\nSelecting previously unselected package python3-venv.\nPreparing to unpack .../python3-venv_3.12.3-0ubuntu2.1_amd64.deb ...\nUnpacking python3-venv (3.12.3-0ubuntu2.1) ...\nSetting up python3-setuptools-whl (68.1.2-2ubuntu1.2) ...\nSetting up python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...\nSetting up python3.12-venv (3.12.3-1ubuntu0.17) ...\nSetting up python3-venv (3.12.3-0ubuntu2.1) ...\nX_RC=1\nW: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu noble InRelease' does not seem to provide it (sources.list entry misspelt?)\nError: Command '['/tmp/accel/fc/bbad/out-bfv_broken_build/venv/bin/python3', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.\n"
+  },
+  "mma_broken_manifest": {
+   "rc": 1,
+   "expect_zero": false,
+   "ok": true,
+   "seconds": 0.1,
+   "tail": "HARDWARE OK: Tesla T4\nout /tmp/accel/fc/mbad1/out-mma_broken_manifest sku T4 shrink 1 toolkit auto cutlass auto\nprobe.cu: OK\nprobe_fixed.cu: OK\nprobe_sm75.cu: FAILED\nprobe_sm80.cu: OK\ngemm_probe.cu: OK\nrotation_probe.cu: OK\nmma_run.py: OK\nt256_vectors.jsonl: OK\nX_RC=1\nsha256sum: WARNING: 1 computed checksum did NOT match\n"
+  },
+  "mma_broken_build": {
+   "rc": 0,
+   "expect_zero": false,
+   "ok": false,
+   "seconds": 91.1,
+   "tail": "e_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n[   81.2s] PASS f16parity.m13.R2.T243 {\"m\": 13, \"P\": 1024, \"R\": 2, \"T\": 243, \"count_min\": 4370, \"count_max\": 4720, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 62}\n[   81.2s] PASS f16parity.m13.R3.T480 {\"m\": 13, \"P\": 1024, \"R\": 3, \"T\": 480, \"count_min\": 6760, \"count_max\": 7331, \"inside\": 0, \"inside_ok\": 0, \"past\": 128, \"past_read_matches\": 66}\n[   81.2s] PASS f16parity.m13.R0.T7 {\"m\": 13, \"P\": 7, \"R\": 0, \"T\": 7, \"count_min\": 7, \"count_max\": 23, \"inside\": 128, \"inside_ok\": 128, \"past\": 0, \"past_read_matches\": 0}\n[   81.2s] PASS f16parity.falsifier_past_bound {\"note\": \"past 2^(m-1) the bit no longer reads the parity\", \"tests_with_wrong_reads\": 9}\n[   81.2s] == section f16ip\n[   82.1s] PASS f16ip.2^20 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n[   82.1s] f16ip 20 0.6915 ms 1.941e+11 B/s x copy 0.80\n[   85.0s] PASS f16ip.2^22 {\"simt_ref_mismatches\": 0, \"host_mismatches\": 0}\n[   85.0s] f16ip 22 2.747 ms 1.954e+11 B/s x copy 0.81\n[   85.8s] PASS f16ip.2^24 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n[   85.8s] f16ip 24 11.2063 ms 1.916e+11 B/s x copy 0.79\n[   87.0s] PASS f16ip.2^25 {\"simt_ref_mismatches\": 0, \"host_mismatches\": null}\n[   87.0s] f16ip 25 22.3569 ms 1.921e+11 B/s x copy 0.79\n[   87.0s] DONE checks 45 failed 0 errors []\nresults /tmp/accel/fc/mbad2/out-mma_broken_build/results.json checks 45 failed 0 errors []\ndone in 91 s; results /tmp/accel/fc/mbad2/out-mma_broken_build/results.json\nX_RC=0\n"
+  }
+ },
+ "tower256_broken_file": "tower256_fri_fast_bench.rs",
+ "all_ok": false
+}

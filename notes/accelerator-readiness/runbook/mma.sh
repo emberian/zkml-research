@@ -76,9 +76,9 @@ if [[ $TOOLKIT != conda && -n $SYS_NVCC ]] && ver_ge "$SYS_VER" "$NEED"; then
   # python with numpy >= 2, cmake and ninja for CUTLASS: pinned wheels in a venv when the system lacks them
   if ! python3 -c "import numpy; assert int(numpy.__version__.split('.')[0]) >= 2" 2>/dev/null \
      || ! command -v cmake >/dev/null || ! command -v ninja >/dev/null; then
-    python3 -m venv "$OUT/venv"
-    "$OUT/venv/bin/pip" install -q numpy==2.1.3 cmake==3.31.6 ninja==1.11.1.4
-    PY="$OUT/venv/bin/python"; export PATH="$OUT/venv/bin:$PATH"
+    accel_venv "$OUT/venv"
+    "${PIP[@]}" install -q numpy==2.1.3 cmake==3.31.6 ninja==1.11.1.4
+    export PATH="$OUT/venv/bin:$PATH"
   fi
 elif [[ $TOOLKIT == system ]]; then
   echo "TOOLKIT: no system nvcc >= $NEED (have '${SYS_VER:-none}') and --toolkit system"; exit 4

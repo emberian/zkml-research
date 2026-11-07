@@ -34,3 +34,18 @@ accel_run() {  # timeout_s stall_s cmd...
   done
   wait $pid
 }
+accel_venv() {  # DIR: a venv at DIR; sets PY and PIP (array). Falls back when python3 has no ensurepip
+  # (nvidia/cuda images: apt python3-venv when root; Kaggle's conda python: --without-pip venv with the
+  # base interpreter's pip driving it through --python). Fails the script if neither works.
+  local d=$1
+  if python3 -m venv "$d" >>"$OUT/venv.log" 2>&1; then PY="$d/bin/python"; PIP=("$PY" -m pip); return 0; fi
+  rm -rf "$d"
+  if [[ $(id -u) == 0 ]] && command -v apt-get >/dev/null && [[ $(command -v python3) == /usr/bin/python3 ]]; then
+    apt-get update -qq >>"$OUT/venv.log" 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3-venv >>"$OUT/venv.log" 2>&1 \
+      && python3 -m venv "$d" >>"$OUT/venv.log" 2>&1 && { PY="$d/bin/python"; PIP=("$PY" -m pip); return 0; }
+    rm -rf "$d"
+  fi
+  python3 -m venv --without-pip "$d"
+  PY="$d/bin/python"; PIP=(python3 -m pip --python "$PY")
+  "${PIP[@]}" --version
+}

@@ -27,15 +27,11 @@ accel_hw_check "$SKU"
 
 if [[ $NOVENV == 0 ]]; then
   CUDA_MAJOR=$(nvidia-smi | sed -n 's/.*CUDA Version: *\([0-9]*\).*/\1/p' | head -1)
-  if ! python3 -m venv "$OUT/venv" 2>>"$OUT/log.txt"; then
-    if [[ $(id -u) == 0 ]]; then apt-get update -qq && apt-get install -y -qq python3-venv && python3 -m venv "$OUT/venv"
-    else echo "python3 -m venv failed and not root: install python3-venv"; exit 2; fi
-  fi
-  PY="$OUT/venv/bin/python"
+  accel_venv "$OUT/venv"
   # Pins: cupy 14.0.1 (the version measured on Kaggle, cupy-cuda13x) with its CUDA components from PyPI ([ctk]:
   # NVRTC + headers, no system toolkit needed); numpy 2.1.3 as on Kaggle. cuda12x for CUDA-12 drivers.
   if [[ ${CUDA_MAJOR:-12} -ge 13 ]]; then CUPY="cupy-cuda13x[ctk]==14.0.1"; else CUPY="cupy-cuda12x[ctk]==14.0.1"; fi
-  "$PY" -m pip install -q "numpy==2.1.3" "$CUPY" 2>&1 | tail -5
+  "${PIP[@]}" install -q "numpy==2.1.3" "$CUPY" 2>&1 | tail -5
 else
   PY=python3
 fi
