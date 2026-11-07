@@ -43,6 +43,9 @@ pub struct Prof {
     pub ret_primes: usize,
     /// with ret_primes = 2: round the returns' noise bits away, c0 to 2^b0 and c1 to 2^b1 (bfv::round_bits)
     pub ret_round: Option<(u32, u32)>,
+    /// exact truncation (genesis "XT"; notes/dark-learning-gen6/xtrunc.md): the dealer's masks uniform in [0, t), and
+    /// each custodian redoes (Err XT_REDO) a step whose truncation opening lands in the wrap zone
+    pub xt: bool,
 }
 
 pub fn prof(a: &[String]) -> Prof {
@@ -51,7 +54,7 @@ pub fn prof(a: &[String]) -> Prof {
     let pr = ntt_primes(61, l + 1, 2 * n as u64);
     let cores = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(cores);
-    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false, secure_coins: false, program: Program::HARNESS, ret_primes: std::env::var("DS_RET_PRIMES").ok().and_then(|s| s.parse().ok()).unwrap_or(0), ret_round: None }
+    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false, secure_coins: false, program: Program::HARNESS, ret_primes: std::env::var("DS_RET_PRIMES").ok().and_then(|s| s.parse().ok()).unwrap_or(0), ret_round: None, xt: false }
 }
 
 pub fn flag(args: &[String], name: &str) -> Option<String> {
@@ -212,6 +215,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
     let setup = t0.elapsed().as_secs_f64();
     let tab = pf.program.tables(pf.t);
     let mut pt = Party::new(i, pf.t, net, tape);
+    pt.xt = pf.xt;
     let t1 = Instant::now();
     // each custodian computes on its own pool: a pool shared by the three in-process parties lets one party's blocked
     // returner jobs starve the others (they are separate machines in deployment)
@@ -299,7 +303,7 @@ pub fn run_local_opts(pf: &Prof, attack: Option<(String, usize)>, proof_atoms: b
     let t0 = Instant::now();
     let plain = inputs_for(pf.d, &pf.program);
     let (cs, dl) =
-        crate::tape::deal_step_dealer_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), proof_atoms, &pf.program);
+        crate::tape::deal_step_dealer_prog_xt(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), proof_atoms, &pf.program, false, pf.xt);
     let tapes = dl.tapes;
     let deal_s = t0.elapsed().as_secs_f64();
     let listeners: Vec<TcpListener> = (0..3).map(|_| TcpListener::bind("127.0.0.1:0").unwrap()).collect();

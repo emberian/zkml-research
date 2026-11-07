@@ -39,6 +39,7 @@ def run_release(eng, W1, W2, X, labels, prog, ncls=10, kc=KC):
     p = eng.p
     eng.lb = prog.lb
     eng.rs = getattr(prog, "rs", False)
+    eng.xt = getattr(prog, "xt", False)
     d, M = len(X), len(X[0])
     z = lambda: {}
     W1f = [W1[j][k] for j in range(d) for k in range(d)] if W1 else [z() for _ in range(d * d)]

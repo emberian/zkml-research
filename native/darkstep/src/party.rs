@@ -186,7 +186,15 @@ pub struct Party {
     pub atom_log: Vec<std::ops::Range<usize>>,
     /// set around the multiplications the middle constrains (b * g1); the HE helpers' Beaver products are not
     pub middle_mul: bool,
+    /// exact truncation ("XT"; notes/dark-learning-gen6/xtrunc.md): an opened truncation c < 2^(K + 1) is in the wrap
+    /// zone; the step must be redone with fresh preprocessing (a public, data-independent event: the MAC key stays)
+    pub xt: bool,
+    /// set by trunc_vec under xt when an opening landed in the wrap zone; run_step_shares and mac_check refuse after it
+    pub xt_zone: Option<String>,
 }
+
+/// The error prefix of an XT wrap-zone abort: the caller redoes the step on fresh tape, keeping the MAC key.
+pub const XT_REDO: &str = "XT: truncation opening in the wrap zone";
 
 /// One opening staged for the transcript: phase, all broadcast shares, value, this party's MAC share.
 type Staged = (u8, [u64; 3], u64, u64);
@@ -194,7 +202,12 @@ type Staged = (u8, [u64; 3], u64, u64);
 impl Party {
     pub fn new(i: usize, p: u64, net: Net, tape: Tape) -> Self {
         Party { i, n: 3, p, net, tape, cur: 0, tr: Transcript::default(), open_log: Vec::new(), wire: BTreeMap::new(), nopen: 0,
-                atom_log: Vec::new(), middle_mul: false }
+                atom_log: Vec::new(), middle_mul: false, xt: false, xt_zone: None }
+    }
+
+    /// Err(the XT redo reason) once a truncation opening landed in the wrap zone (Party::xt_zone).
+    pub fn xt_redo(&self) -> Result<(), String> {
+        self.xt_zone.clone().map_or(Ok(()), Err)
     }
 
     pub fn alpha(&self) -> u64 {
@@ -364,6 +377,11 @@ impl Party {
         }
         let r0 = self.exchange_open(&copen.iter().map(|x| x.s).collect::<Vec<_>>());
         let cvals: Vec<u64> = r0.iter().map(|x| x.1).collect();
+        if self.xt && self.xt_zone.is_none() {
+            if let Some(k) = cvals.iter().position(|&c| c < 1u64 << (kk + 1)) {
+                self.xt_zone = Some(format!("{XT_REDO} (c < 2^(K+1) at tape entry {}; reveals nothing); redo the step", base + k * per));
+            }
+        }
         for k in 0..d {
             staged[k * ent] = (PH_TRUNC, r0[k].0, r0[k].1, copen[k].m);
         }
@@ -478,6 +496,9 @@ impl Party {
 
     /// spdz.Engine.mac_check(coin_seed) with sigma commit-then-open. Returns this party's sigma; Err on abort.
     pub fn mac_check(&mut self, coin_seed: &str) -> Result<u64, String> {
+        if let Some(e) = &self.xt_zone {
+            return Err(e.clone());
+        }
         // the commit-and-open of sigma: a link drop here is an abort, not a resume
         self.net.set_critical(true);
         let r = self.mac_check_inner(coin_seed);

@@ -81,6 +81,9 @@ pub struct Dealer {
     /// a program with "RS" (darkproof proof.md 23): each truncation's proof atoms are the K + 1 - s low bits of rhi
     /// (R2), not K + KAPPA - s; r itself is dealt as always
     pub rs: bool,
+    /// exact truncation (program flag "XT"; notes/dark-learning-gen6/xtrunc.md): each truncation mask r is uniform in
+    /// [0, p) (spdz.Engine.trunc under xt), not in [0, 2^(K + KAPPA)); the tape layout is unchanged
+    pub xt: bool,
 }
 
 impl Dealer {
@@ -89,7 +92,7 @@ impl Dealer {
         let alpha_sh: Vec<u64> = (0..n).map(|_| rng.randrange_u64(p)).collect();
         let alpha = alpha_sh.iter().fold(0, |a, &x| addmod(a, x, p));
         let tapes = alpha_sh.iter().map(|&a| Tape { alpha_i: a, ..Default::default() }).collect();
-        Dealer { p, n, rng, proof_rng: None, alpha_sh, alpha, tapes, only: None, rs: false }
+        Dealer { p, n, rng, proof_rng: None, alpha_sh, alpha, tapes, only: None, rs: false, xt: false }
     }
 
     /// spdz.Dealer.auth(v, tag), v in [0, p).
@@ -122,7 +125,7 @@ impl Dealer {
     }
 
     pub fn trunc(&mut self, s: u32, k: u32) {
-        let r = self.rng.randrange_u64(1u64 << (k + KAPPA));
+        let r = if self.xt { self.rng.randrange_u64(self.p) } else { self.rng.randrange_u64(1u64 << (k + KAPPA)) };
         self.auth(r % self.p, Tag::Tr);
         for i in 0..s {
             self.auth((r >> i) & 1, Tag::Trb);
@@ -200,8 +203,15 @@ pub fn deal_step_dealer_prog(p: u64, d: usize, dealer_seed: u64, owner_seed: u64
 /// deal_step_dealer_prog for a proof program with or without "RS" (Dealer::rs: K + 1 - s Trhb bits per truncation).
 #[allow(clippy::too_many_arguments)]
 pub fn deal_step_dealer_prog_rs(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool, pg: &crate::step::Program, rs: bool) -> (Vec<u64>, Dealer) {
+    deal_step_dealer_prog_xt(p, d, dealer_seed, owner_seed, inputs, proof_atoms, pg, rs, false)
+}
+
+/// deal_step_dealer_prog_rs with or without exact truncation (Dealer::xt: masks uniform in [0, p)).
+#[allow(clippy::too_many_arguments)]
+pub fn deal_step_dealer_prog_xt(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool, pg: &crate::step::Program, rs: bool, xt: bool) -> (Vec<u64>, Dealer) {
     let mut dl = Dealer::new(p, 3, dealer_seed);
     dl.rs = rs;
+    dl.xt = xt;
     if proof_atoms {
         dl.proof_rng = Some(PyRandom::from_u64(1));
     }

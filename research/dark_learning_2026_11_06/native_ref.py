@@ -5,6 +5,7 @@ writes the public transcript, one repr per line, so a native run can be diffed e
 
     python3 native_ref.py N L F_bits d [out_prefix] [--program GEN6]   # e.g. 4096 3 118 64; ledger: 16384 4 175 64
     (--program: a step_spec program by name; the inputs are then inputs_for(d, prog), darkstep step::inputs_for)
+    (--xt: exact truncation, notes/dark-learning-gen6/xtrunc.md: the dealer's truncation masks uniform in [0, t))
 
 Digests (all sha256 hex of CPython repr):
   transcript   repr(eng.transcript)
@@ -71,14 +72,15 @@ def inputs_for(d, prog):
     raise ValueError("inputs_for: no in-bound inputs")
 
 
-def run(N, L, F_bits, d, attack=None, prog=S.HARNESS):
+def run(N, L, F_bits, d, attack=None, prog=S.HARNESS, xt=False, cheat=None):
     Qp, t, Q = setup(N, L)
     keys = [HM.OwnKey(N, Q, t, seed=KEY_SEED0 + i) for i in range(3)]
     tab = MF.tables(t, prog)
     W1, W2, x, y = inputs_for(d, prog)
     m = lambda M: [[v % t for v in r] for r in M]
     dealer = spdz.Dealer(t, 3, DEALER_SEED)
-    eng = spdz.Engine(t, 3, dealer)
+    eng = spdz.Engine(t, 3, dealer, cheat=cheat)
+    eng.xt = xt     # exact truncation (xtrunc.md): r uniform in [0, t)
     noise = (N * (t // 2) * 32).bit_length()
     # DL_WIRE=round: the deploy lane's switched, noise-rounded returns (wire_round.py; outputs unchanged)
     wire = None
@@ -122,11 +124,16 @@ def main():
         i = args.index("--program")
         pname = args[i + 1]
         del args[i:i + 2]
+    xt = "--xt" in args
+    if xt:
+        args.remove("--xt")
     prog = getattr(S, pname) if pname else S.HARNESS
     N, L, F_bits, d = (int(a) for a in args[:4])
-    suffix = f"_{pname}" if pname else ""
+    suffix = (f"_{pname}" if pname else "") + ("_XT" if xt else "")
     prefix = args[4] if len(args) > 4 else f"native_ref_N{N}_L{L}_F{F_bits}_d{d}{suffix}"
-    out, eng = run(N, L, F_bits, d, prog=prog)
+    out, eng = run(N, L, F_bits, d, prog=prog, xt=xt)
+    if xt:
+        out["xt"] = True
     if pname:
         out["program"] = prog.as_dict()
     with open(prefix + ".transcript.txt", "w") as f:

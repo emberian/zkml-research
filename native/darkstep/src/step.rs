@@ -237,6 +237,7 @@ pub fn run_step_shares(pt: &mut Party, he: &mut He, m1: Vec<Vec<Sh>>, m2: Vec<Ve
     let z1 = he.matvec(pt, &m1, &sx, false)?;
     lap("matvec_z1", &mut t, &mut phases);
     let u1 = pt.trunc_vec(&z1, pg.s1, pg.k1);
+    pt.xt_redo()?;
     let hg = pt.lookup_vec(&u1, from_i64(-pg.t_lo, pt.p), tab, 255);
     let h: Vec<Sh> = hg.iter().map(|v| v[0]).collect();
     let g1: Vec<Sh> = hg.iter().map(|v| v[1]).collect();
@@ -244,8 +245,10 @@ pub fn run_step_shares(pt: &mut Party, he: &mut He, m1: Vec<Vec<Sh>>, m2: Vec<Ve
     let z2 = he.matvec(pt, &m2, &h, false)?;
     lap("matvec_z2", &mut t, &mut phases);
     let t2 = pt.trunc_vec(&z2, pg.s1, pg.k1);
+    pt.xt_redo()?;
     let e: Vec<Sh> = t2.iter().zip(&sy).map(|(a, b)| pt.sub(*a, *b)).collect();
     let d2 = pt.trunc_vec(&e, pg.s2, pg.k2);
+    pt.xt_redo()?;
     lap("trunc_e_d2", &mut t, &mut phases);
     let b = he.matvec(pt, &m2, &d2, true)?;
     lap("matvec_b", &mut t, &mut phases);
@@ -254,6 +257,7 @@ pub fn run_step_shares(pt: &mut Party, he: &mut He, m1: Vec<Vec<Sh>>, m2: Vec<Ve
     pt.middle_mul = false;
     let bgr: Vec<Sh> = if pg.r3 == 0 { bg.clone() } else { let c = from_i64(pg.r3, pt.p); bg.iter().map(|v| pt.cadd(c, *v)).collect() };
     let d1 = pt.trunc_vec(&bgr, pg.s3, pg.k3);
+    pt.xt_redo()?;
     lap("mul_trunc_d1", &mut t, &mut phases);
     let g2 = he.outer(pt, &d2, &h)?;
     let w2n: Vec<Vec<Sh>> = (0..d).map(|i| (0..d).map(|j| pt.sub(m2[i][j], g2[i][j])).collect()).collect();
