@@ -79,18 +79,34 @@ if [[ -z $RUST_BIN ]]; then
       cargo build --release --locked --bin tower256_fri_fast_bench )
   RUST_BIN="$OUT/target/release/tower256_fri_fast_bench"
 fi
-NPROC=$(nproc)
+# Cores this job may actually use: nproc can report the whole host (224 on a 28-vCPU vast container,
+# accel-h100-tower-e2e-01), so take the affinity set capped by the cgroup CPU quota.
+NPROC=$(python3 - <<'PYEOF'
+import math, os
+n = len(os.sched_getaffinity(0))
+try:
+    q, per = open("/sys/fs/cgroup/cpu.max").read().split()
+    if q != "max":
+        n = min(n, max(1, math.ceil(int(q) / int(per))))
+except OSError:
+    pass
+print(n)
+PYEOF
+)
+echo "cores for the CPU prover: $NPROC (nproc says $(nproc))"
 mkdir -p "$OUT/data"
 cp "$HERE/lean/tower256_fri_vectors.json" "$OUT/data/"
 echo "== CPU reference and timings"
 if (( E2E )); then
   # Batch receipts (expect_e2e_ell*.json) with the CPU's best batch schedule (one proof per core),
   # and the single-proof CPU timing at ell 20 for the direct comparison.
-  accel_run 3000 600 bash -c "'$RUST_BIN' --ell 8,10 --threads 1 --reps 1 --emit '$OUT/data' --reference-max-ell 10 > '$OUT/rust_reference.jsonl' && '$RUST_BIN' --ell 20 --threads 1,$NPROC --reps 1 > '$OUT/rust_cpu.jsonl' && '$RUST_BIN' --ell $E2E_ELLS --e2e $E2E_B --threads 1,$NPROC --reps 1 --emit '$OUT/data' >> '$OUT/rust_cpu.jsonl'"
+  # Every line is tee'd to the log so the no-output watchdog sees progress (the H100 run sat 600 s silent
+  # writing only to the jsonl). The one-thread baseline is the single ell-20 proof; the batch receipts
+  # (the GPU's expected bytes) use every core, since one thread over 256+64+16 leaves takes > 10 min.
+  accel_run 3000 600 bash -c "set -o pipefail; '$RUST_BIN' --ell 8,10 --threads 1 --reps 1 --emit '$OUT/data' --reference-max-ell 10 | tee '$OUT/rust_reference.jsonl' && '$RUST_BIN' --ell 20 --threads 1,$NPROC --reps 1 | tee '$OUT/rust_cpu.jsonl' && '$RUST_BIN' --ell $E2E_ELLS --e2e $E2E_B --threads $NPROC --reps 1 --emit '$OUT/data' | tee -a '$OUT/rust_cpu.jsonl'"
 else
-  accel_run 3000 600 bash -c "'$RUST_BIN' --ell 8,10 --threads 1 --reps 1 --emit '$OUT/data' --reference-max-ell 10 > '$OUT/rust_reference.jsonl' && '$RUST_BIN' --ell $ELLS --threads 1,$NPROC --reps 2 --emit '$OUT/data' > '$OUT/rust_cpu.jsonl'"
+  accel_run 3000 600 bash -c "set -o pipefail; '$RUST_BIN' --ell 8,10 --threads 1 --reps 1 --emit '$OUT/data' --reference-max-ell 10 | tee '$OUT/rust_reference.jsonl' && '$RUST_BIN' --ell $ELLS --threads 1,$NPROC --reps 2 --emit '$OUT/data' | tee '$OUT/rust_cpu.jsonl'"
 fi
-cat "$OUT/rust_reference.jsonl" "$OUT/rust_cpu.jsonl"
 
 # GPU build.
 CC=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -1 | tr -d .)

@@ -199,3 +199,23 @@ on 4.
     Hopper `and.popc` gives the parity directly, and the epilogue repack stays in registers) is
     the one kernel worth building. ROTATION predicts 3.2x per proof for it. If the share has
     dropped (Hopper's multiply rate scaling better than INT32 lanes), the table stays.
+
+## 8. The H100 attempt, and what a future H100 run needs (2026-11-07)
+
+- `accel-h100-tower-e2e-01` (vast H100 SXM, 28 vCPU, $0.54, destroyed and verified absent) never reached the GPU:
+  the --e2e CPU stage wrote only to its jsonl (600 s of silence tripped the script's own watchdog), ran the
+  one-thread baseline over every batch (266 s at ell 18 x 256, 272 s at ell 20 x 64), and took `nproc` = 224 on
+  a 28-vCPU container. Host numbers it did record: single proof at ell 20 on one thread 4,271 ms; all-core
+  batches 84.9 ms per proof (ell 18) and 243 ms per proof (ell 20, oversubscribed).
+- Fixed in `runbook/tower256.sh`: CPU-stage output tee'd to the log; cores from the affinity set capped by
+  the cgroup quota; one-thread baseline only on the single ell-20 proof; batch receipts on all cores.
+  `accel-tower-e2e-02` (T4, from the bundle, box build path) passed: 286 s wall, every receipt byte-identical,
+  GPU 16.9 / 67.4 / 298.0 ms per proof at ell 18 / 20 / 22 (e2e-01: 16.9 / 67.0 / 303.5), 34-36x the same box's
+  all-core CPU.
+- **Not re-run on H100** (ember, 2026-11-07: analytic and synthetic work over more GPU runs). When it is worth
+  doing, it needs: one H100 SXM, the bundle from `lane/accel-tower256-gpu` b73bb1dda or later built by
+  `runbook/tower256-bundle.sh`, `bash tower256/tower256.sh --e2e --sku H100` through `harness/vast_box.py`
+  (the key test and 5-minute ssh give-up are built in), about 20 min and under $1 at $2.34/h. Expect the CPU
+  stage to take 1-2 min with the fix; the acceptance line is §7's (two-stream per proof within 1.5x of the
+  9.6-16.6 ms device bound at ell 20, receipts byte-identical). The question it answers: the H100's lead over
+  its own host's cores (predicted 10-20x), which decides whether leaf proving rides on GPUs at all.

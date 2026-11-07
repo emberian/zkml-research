@@ -1,0 +1,199 @@
+[{"stream_name":"stdout","time":1.128006843,"data":"HARDWARE OK: Tesla T4\n"}
+,{"stream_name":"stdout","time":1.128035576,"data":"out /tmp/accel/e2e2/out shrink 1 ells 10,12,14,16,18,20\n"}
+,{"stream_name":"stdout","time":13.259609689,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":13.259637777,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":13.37528196,"data":"pip 26.2.2 from /usr/local/lib/python3.13/dist-packages/pip (python 3.13)\n"}
+,{"stream_name":"stdout","time":14.057070712,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":14.057097579,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":16.431774197,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":16.431808343,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":24.385273631,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":24.385301169,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":27.092446947,"data":"cupy 14.0.1 numpy 2.1.3\n"}
+,{"stream_name":"stdout","time":28.251335084,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":28.251361801,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":28.251761456,"data":"pycryptodome 3.23.0\n"}
+,{"stream_name":"stdout","time":39.957968371,"data":"\n"}
+,{"stream_name":"stdout","time":39.968102934,"data":"  1.89.0-x86_64-unknown-linux-gnu installed - rustc 1.89.0 (29483883e 2025-08-04)\n"}
+,{"stream_name":"stdout","time":39.968122508,"data":"\n"}
+,{"stream_name":"stdout","time":39.968363297,"data":"\n"}
+,{"stream_name":"stdout","time":39.968373794,"data":"Rust is installed now. Great!\n"}
+,{"stream_name":"stdout","time":39.968379309,"data":"\n"}
+,{"stream_name":"stdout","time":39.968566121,"data":"To get started you need Cargo's bin directory (/tmp/accel/e2e2/out/cargo/bin) \n"}
+,{"stream_name":"stdout","time":39.968578257,"data":"in your PATH\n"}
+,{"stream_name":"stdout","time":39.968582849,"data":"environment variable. This has not been done automatically.\n"}
+,{"stream_name":"stdout","time":39.968587173,"data":"\n"}
+,{"stream_name":"stdout","time":39.968591196,"data":"To configure your current shell, you need to source\n"}
+,{"stream_name":"stdout","time":39.968595384,"data":"the corresponding env file under /tmp/accel/e2e2/out/cargo.\n"}
+,{"stream_name":"stdout","time":39.968599935,"data":"\n"}
+,{"stream_name":"stdout","time":39.968605821,"data":"Consider running the right command for your shell (note the leading DOT):\n"}
+,{"stream_name":"stdout","time":39.968638619000004,"data":". \"/tmp/accel/e2e2/out/cargo/env\" # For sh/ash/dash/pdksh/bash\n"}
+,{"stream_name":"stdout","time":39.968644163,"data":"cargo:rerun-if-env-changed=CC_x86_64-unknown-linux-gnu\n"}
+,{"stream_name":"stdout","time":39.968648545,"data":"CC_x86_64-unknown-linux-gnu = None\n"}
+,{"stream_name":"stdout","time":39.968653106,"data":"cargo:rerun-if-env-changed=CC_x86_64_unknown_linux_gnu\n"}
+,{"stream_name":"stdout","time":39.968657476,"data":"CC_x86_64_unknown_linux_gnu = None\n"}
+,{"stream_name":"stdout","time":39.968661571,"data":"cargo:rerun-if-env-changed=HOST_CC\n"}
+,{"stream_name":"stdout","time":39.968665692,"data":"HOST_CC = None\n"}
+,{"stream_name":"stdout","time":39.968669753,"data":"cargo:rerun-if-env-changed=CC\n"}
+,{"stream_name":"stdout","time":39.968673922,"data":"CC = None\n"}
+,{"stream_name":"stdout","time":39.984539952,"data":"cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT\n"}
+,{"stream_name":"stdout","time":40.099702444,"data":"cargo:rerun-if-env-changed=CPATH\n"}
+,{"stream_name":"stdout","time":40.099719853,"data":"cargo:rerun-if-env-changed=C_INCLUDE_PATH\n"}
+,{"stream_name":"stdout","time":40.099725163,"data":"cargo:rerun-if-env-changed=CPLUS_INCLUDE_PATH\n"}
+,{"stream_name":"stdout","time":40.099729122,"data":"cargo:rerun-if-env-changed=OBJC_INCLUDE_PATH\n"}
+,{"stream_name":"stdout","time":40.0997333,"data":"cargo:rerun-if-env-changed=OBJCPLUS_INCLUDE_PATH\n"}
+,{"stream_name":"stdout","time":40.099737147,"data":"cargo:rerun-if-env-changed=COMPILER_PATH\n"}
+,{"stream_name":"stdout","time":40.099741199,"data":"cargo:rerun-if-env-changed=SOURCE_DATE_EPOCH\n"}
+,{"stream_name":"stdout","time":40.099844065,"data":"cargo:rerun-if-env-changed=GCC_EXEC_PREFIX\n"}
+,{"stream_name":"stdout","time":40.099850973,"data":"cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS\n"}
+,{"stream_name":"stdout","time":40.099854343,"data":"CRATE_CC_NO_DEFAULTS = None\n"}
+,{"stream_name":"stdout","time":40.099857691,"data":"cargo:rerun-if-env-changed=CFLAGS\n"}
+,{"stream_name":"stdout","time":40.099867447,"data":"CFLAGS = None\n"}
+,{"stream_name":"stdout","time":40.099870361,"data":"cargo:rerun-if-env-changed=HOST_CFLAGS\n"}
+,{"stream_name":"stdout","time":40.099887109,"data":"HOST_CFLAGS = None\n"}
+,{"stream_name":"stdout","time":40.099890884,"data":"cargo:rerun-if-env-changed=CFLAGS_x86_64_unknown_linux_gnu\n"}
+,{"stream_name":"stdout","time":40.099894384,"data":"CFLAGS_x86_64_unknown_linux_gnu = None\n"}
+,{"stream_name":"stdout","time":40.099897983,"data":"cargo:rerun-if-env-changed=CFLAGS_x86_64-unknown-linux-gnu\n"}
+,{"stream_name":"stdout","time":40.099901738,"data":"CFLAGS_x86_64-unknown-linux-gnu = None\n"}
+,{"stream_name":"stdout","time":40.175197806,"data":"    Updating crates.io index\n"}
+,{"stream_name":"stdout","time":40.316115026,"data":" Downloading crates ...\n"}
+,{"stream_name":"stdout","time":40.358762567,"data":"  Downloaded version_check v0.9.5\n"}
+,{"stream_name":"stdout","time":40.361105373,"data":"  Downloaded keccak v0.1.6\n"}
+,{"stream_name":"stdout","time":40.363288044,"data":"  Downloaded block-buffer v0.10.4\n"}
+,{"stream_name":"stdout","time":40.365212388,"data":"  Downloaded digest v0.10.7\n"}
+,{"stream_name":"stdout","time":40.368415706,"data":"  Downloaded generic-array v0.14.7\n"}
+,{"stream_name":"stdout","time":40.370739861,"data":"  Downloaded typenum v1.20.1\n"}
+,{"stream_name":"stdout","time":40.37684666,"data":"  Downloaded crypto-common v0.1.7\n"}
+,{"stream_name":"stdout","time":40.382051854,"data":"  Downloaded sha3 v0.10.9\n"}
+,{"stream_name":"stdout","time":40.416620535,"data":"   Compiling version_check v0.9.5\n"}
+,{"stream_name":"stdout","time":40.41663769,"data":"   Compiling typenum v1.20.1\n"}
+,{"stream_name":"stdout","time":40.416777186,"data":"   Compiling keccak v0.1.6\n"}
+,{"stream_name":"stdout","time":40.620198605,"data":"   Compiling generic-array v0.14.7\n"}
+,{"stream_name":"stdout","time":41.604735423,"data":"   Compiling crypto-common v0.1.7\n"}
+,{"stream_name":"stdout","time":41.604793998,"data":"   Compiling block-buffer v0.10.4\n"}
+,{"stream_name":"stdout","time":41.684376759,"data":"   Compiling digest v0.10.7\n"}
+,{"stream_name":"stdout","time":41.834209307,"data":"   Compiling sha3 v0.10.9\n"}
+,{"stream_name":"stdout","time":41.991356177,"data":"   Compiling minidregg-prover v0.1.0 (/tmp/accel/e2e2/tower256/prover)\n"}
+,{"stream_name":"stdout","time":46.935158191,"data":"    Finished `release` profile [optimized] target(s) in 6.79s\n"}
+,{"stream_name":"stdout","time":47.049315321,"data":"cores for the CPU prover: 4 (nproc says 4)\n"}
+,{"stream_name":"stdout","time":47.054014349,"data":"== CPU reference and timings\n"}
+,{"stream_name":"stdout","time":49.056711741,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":408.3,\"p256_mul_ns\":50.12,\"fanpaar_ref_mul_ns\":28531.4,\"basis_conversion_ns\":393.5,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":49.056740933,"data":"{\"kind\":\"prove\",\"ell\":8,\"m\":4,\"q\":148,\"threads\":1,\"total_ms\":3.874,\"encode_ms\":0.150,\"merkle_ms\":1.144,\"folds_ms\":0.009,\"openings_ms\":1.800,\"other_ms\":0.766,\"merkle_keccak_f\":987,\"encode_mults\":1152,\"fold_mults\":240,\"receipt_sha3_256\":\"b9e40d5c4a31474bba30792ea5383f55c342cd9865d84714823a3cb964d91c1d\"}\n"}
+,{"stream_name":"stdout","time":50.056920562,"data":"{\"kind\":\"reference\",\"ell\":8,\"reference_s\":1.1,\"identical\":true}\n"}
+,{"stream_name":"stdout","time":50.056944093,"data":"{\"kind\":\"prove\",\"ell\":10,\"m\":6,\"q\":148,\"threads\":1,\"total_ms\":8.516,\"encode_ms\":0.465,\"merkle_ms\":4.538,\"folds_ms\":0.031,\"openings_ms\":2.632,\"other_ms\":0.844,\"merkle_keccak_f\":4057,\"encode_mults\":6144,\"fold_mults\":1008,\"receipt_sha3_256\":\"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f\"}\n"}
+,{"stream_name":"stdout","time":59.057997195,"data":"{\"kind\":\"reference\",\"ell\":10,\"reference_s\":9.7,\"identical\":true}\n"}
+,{"stream_name":"stdout","time":60.058079057,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":456.2,\"p256_mul_ns\":55.36,\"fanpaar_ref_mul_ns\":27730.2,\"basis_conversion_ns\":353.6,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":66.06016728,"data":"{\"kind\":\"prove\",\"ell\":20,\"m\":16,\"q\":148,\"threads\":1,\"total_ms\":5598.879,\"encode_ms\":791.785,\"merkle_ms\":4740.486,\"folds_ms\":52.312,\"openings_ms\":12.458,\"other_ms\":1.814,\"merkle_keccak_f\":4194255,\"encode_mults\":14155776,\"fold_mults\":1048560,\"receipt_sha3_256\":\"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b\"}\n"}
+,{"stream_name":"stdout","time":68.05967292,"data":"{\"kind\":\"prove\",\"ell\":20,\"m\":16,\"q\":148,\"threads\":4,\"total_ms\":2546.440,\"encode_ms\":428.532,\"merkle_ms\":2075.634,\"folds_ms\":28.634,\"openings_ms\":11.719,\"other_ms\":1.899,\"merkle_keccak_f\":4194255,\"encode_mults\":14155776,\"fold_mults\":1048560,\"receipt_sha3_256\":\"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b\"}\n"}
+,{"stream_name":"stdout","time":69.061165115,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":404.9,\"p256_mul_ns\":49.16,\"fanpaar_ref_mul_ns\":26924.2,\"basis_conversion_ns\":357.2,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":107.065360502,"data":"{\"kind\":\"e2e_cpu\",\"ell\":18,\"batch\":64,\"threads\":4,\"wall_ms\":37722.431,\"per_proof_ms\":589.413}\n"}
+,{"stream_name":"stdout","time":147.071908848,"data":"{\"kind\":\"e2e_cpu\",\"ell\":20,\"batch\":16,\"threads\":4,\"wall_ms\":38866.857,\"per_proof_ms\":2429.179}\n"}
+,{"stream_name":"stdout","time":189.077879489,"data":"{\"kind\":\"e2e_cpu\",\"ell\":22,\"batch\":4,\"threads\":4,\"wall_ms\":40423.853,\"per_proof_ms\":10105.963}\n"}
+,{"stream_name":"stdout","time":192.510184245,"data":"Cuda compilation tools, release 13.0, V13.0.88\n"}
+,{"stream_name":"stdout","time":192.510213857,"data":"Build cuda_13.0.r13.0/compiler.36424714_0\n"}
+,{"stream_name":"stdout","time":256.337253782,"data":"ptxas info    : Compile time = 5.942 ms\n"}
+,{"stream_name":"stdout","time":256.337289232,"data":"ptxas info    : Compiling entry function 'ntt_deinterleave' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337311459,"data":"ptxas info    : Function properties for ntt_deinterleave\n"}
+,{"stream_name":"stdout","time":256.337315606,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337319546,"data":"ptxas info    : Used 22 registers, used 0 barriers, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337323906,"data":"ptxas info    : Compile time = 7.068 ms\n"}
+,{"stream_name":"stdout","time":256.337327768,"data":"ptxas info    : Compiling entry function 'ntt_taylor_step' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337332076,"data":"ptxas info    : Function properties for ntt_taylor_step\n"}
+,{"stream_name":"stdout","time":256.337335658,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337339609,"data":"ptxas info    : Used 22 registers, used 0 barriers, 376 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337343361,"data":"ptxas info    : Compile time = 7.600 ms\n"}
+,{"stream_name":"stdout","time":256.337346839,"data":"ptxas info    : Compiling entry function 'ntt_scale' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337351134,"data":"ptxas info    : Function properties for ntt_scale\n"}
+,{"stream_name":"stdout","time":256.337354915,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337358872,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337362526,"data":"ptxas info    : Compile time = 175.405 ms\n"}
+,{"stream_name":"stdout","time":256.337366567,"data":"ptxas info    : Compiling entry function 't256_span' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337370367,"data":"ptxas info    : Function properties for t256_span\n"}
+,{"stream_name":"stdout","time":256.337374054,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337378265,"data":"ptxas info    : Used 30 registers, used 0 barriers, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337382087,"data":"ptxas info    : Compile time = 3.463 ms\n"}
+,{"stream_name":"stdout","time":256.337386179,"data":"ptxas info    : Compiling entry function 't256_pow_combine' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.33739011,"data":"ptxas info    : Function properties for t256_pow_combine\n"}
+,{"stream_name":"stdout","time":256.337400201,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337404208,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337408078,"data":"ptxas info    : Compile time = 160.422 ms\n"}
+,{"stream_name":"stdout","time":256.337411602,"data":"ptxas info    : Compiling entry function 't256_pow_small' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337415482,"data":"ptxas info    : Function properties for t256_pow_small\n"}
+,{"stream_name":"stdout","time":256.337419209,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337423225,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337427521,"data":"ptxas info    : Compile time = 300.818 ms\n"}
+,{"stream_name":"stdout","time":256.337431419,"data":"ptxas info    : Compiling entry function 't256_pivot_map' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337435668,"data":"ptxas info    : Function properties for t256_pivot_map\n"}
+,{"stream_name":"stdout","time":256.337439583,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337450301,"data":"ptxas info    : Used 105 registers, used 1 barriers, 1024 bytes smem, 384 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337454502,"data":"ptxas info    : Compile time = 293.463 ms\n"}
+,{"stream_name":"stdout","time":256.3374586,"data":"ptxas info    : Compiling entry function 't256_inv' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337462392,"data":"ptxas info    : Function properties for t256_inv\n"}
+,{"stream_name":"stdout","time":256.337466517,"data":"    136 bytes stack frame, 132 bytes spill stores, 132 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337470571,"data":"ptxas info    : Used 255 registers, used 1 barriers, 136 bytes cumulative stack size, 1024 bytes smem, 376 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337474772,"data":"ptxas info    : Compile time = 531.188 ms\n"}
+,{"stream_name":"stdout","time":256.337478773,"data":"ptxas info    : Compiling entry function 't256_mul' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337482813,"data":"ptxas info    : Function properties for t256_mul\n"}
+,{"stream_name":"stdout","time":256.337486598,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337490506,"data":"ptxas info    : Used 64 registers, used 1 barriers, 1024 bytes smem, 392 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337494962,"data":"ptxas info    : Compile time = 160.895 ms\n"}
+,{"stream_name":"stdout","time":256.337527824,"data":"ptxas info    : Compiling entry function 'init_prod' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337543662,"data":"ptxas info    : Function properties for init_prod\n"}
+,{"stream_name":"stdout","time":256.337548746,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337552945,"data":"ptxas info    : Used 10 registers, used 0 barriers, 360 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337556982,"data":"ptxas info    : Compile time = 1.839 ms\n"}
+,{"stream_name":"stdout","time":256.337560516,"data":"ptxas info    : Compiling entry function 'init_tables' for 'sm_75'\n"}
+,{"stream_name":"stdout","time":256.337595157,"data":"ptxas info    : Function properties for init_tables\n"}
+,{"stream_name":"stdout","time":256.337599242,"data":"    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337602833,"data":"ptxas info    : Used 29 registers, used 0 barriers, 360 bytes cmem[0]\n"}
+,{"stream_name":"stdout","time":256.337606202,"data":"ptxas info    : Compile time = 13.559 ms\n"}
+,{"stream_name":"stdout","time":256.337610397,"data":"ptxas info    : Function properties for _Z8bits_genij\n"}
+,{"stream_name":"stdout","time":256.33761638,"data":"    32 bytes stack frame, 28 bytes spill stores, 28 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337620225,"data":"ptxas info    : Function properties for _Z8bits_mulijj\n"}
+,{"stream_name":"stdout","time":256.337625268,"data":"    48 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads\n"}
+,{"stream_name":"stdout","time":256.337745838,"data":"== GPU\n"}
+,{"stream_name":"stdout","time":256.340073781,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":408.3,\"p256_mul_ns\":50.12,\"fanpaar_ref_mul_ns\":28531.4,\"basis_conversion_ns\":393.5,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":256.340092872,"data":"{\"kind\":\"prove\",\"ell\":8,\"m\":4,\"q\":148,\"threads\":1,\"total_ms\":3.874,\"encode_ms\":0.150,\"merkle_ms\":1.144,\"folds_ms\":0.009,\"openings_ms\":1.800,\"other_ms\":0.766,\"merkle_keccak_f\":987,\"encode_mults\":1152,\"fold_mults\":240,\"receipt_sha3_256\":\"b9e40d5c4a31474bba30792ea5383f55c342cd9865d84714823a3cb964d91c1d\"}\n"}
+,{"stream_name":"stdout","time":256.34010725,"data":"{\"kind\":\"reference\",\"ell\":8,\"reference_s\":1.1,\"identical\":true}\n"}
+,{"stream_name":"stdout","time":256.340111342,"data":"{\"kind\":\"prove\",\"ell\":10,\"m\":6,\"q\":148,\"threads\":1,\"total_ms\":8.516,\"encode_ms\":0.465,\"merkle_ms\":4.538,\"folds_ms\":0.031,\"openings_ms\":2.632,\"other_ms\":0.844,\"merkle_keccak_f\":4057,\"encode_mults\":6144,\"fold_mults\":1008,\"receipt_sha3_256\":\"a825d9ddddd9b6f2741e5e7eb332cd99835a8e7101e06bc350c5716e3f6f895f\"}\n"}
+,{"stream_name":"stdout","time":256.340116604,"data":"{\"kind\":\"reference\",\"ell\":10,\"reference_s\":9.7,\"identical\":true}\n"}
+,{"stream_name":"stdout","time":256.340120509,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":456.2,\"p256_mul_ns\":55.36,\"fanpaar_ref_mul_ns\":27730.2,\"basis_conversion_ns\":353.6,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":256.340124874,"data":"{\"kind\":\"prove\",\"ell\":20,\"m\":16,\"q\":148,\"threads\":1,\"total_ms\":5598.879,\"encode_ms\":791.785,\"merkle_ms\":4740.486,\"folds_ms\":52.312,\"openings_ms\":12.458,\"other_ms\":1.814,\"merkle_keccak_f\":4194255,\"encode_mults\":14155776,\"fold_mults\":1048560,\"receipt_sha3_256\":\"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b\"}\n"}
+,{"stream_name":"stdout","time":256.340130574,"data":"{\"kind\":\"prove\",\"ell\":20,\"m\":16,\"q\":148,\"threads\":4,\"total_ms\":2546.440,\"encode_ms\":428.532,\"merkle_ms\":2075.634,\"folds_ms\":28.634,\"openings_ms\":11.719,\"other_ms\":1.899,\"merkle_keccak_f\":4194255,\"encode_mults\":14155776,\"fold_mults\":1048560,\"receipt_sha3_256\":\"793faf92dbddb3165e199a5a2bd0b6e1f8f86e31142fd1f8c1b86f5953628e2b\"}\n"}
+,{"stream_name":"stdout","time":256.340137361,"data":"{\"kind\":\"primitives\",\"clmul\":\"x86_64-pclmulqdq\",\"keccak_node_ns\":404.9,\"p256_mul_ns\":49.16,\"fanpaar_ref_mul_ns\":26924.2,\"basis_conversion_ns\":357.2,\"sink\":\"d1797d6c\"}\n"}
+,{"stream_name":"stdout","time":256.34014499,"data":"{\"kind\":\"e2e_cpu\",\"ell\":18,\"batch\":64,\"threads\":4,\"wall_ms\":37722.431,\"per_proof_ms\":589.413}\n"}
+,{"stream_name":"stdout","time":256.340148112,"data":"{\"kind\":\"e2e_cpu\",\"ell\":20,\"batch\":16,\"threads\":4,\"wall_ms\":38866.857,\"per_proof_ms\":2429.179}\n"}
+,{"stream_name":"stdout","time":256.340150818,"data":"{\"kind\":\"e2e_cpu\",\"ell\":22,\"batch\":4,\"threads\":4,\"wall_ms\":40423.853,\"per_proof_ms\":10105.963}\n"}
+,{"stream_name":"stdout","time":257.339603918,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":257.339624665,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":257.339628598,"data":"backend cupy Tesla T4\n"}
+,{"stream_name":"stdout","time":257.339632157,"data":"checks {'keccak_checked': 1024, 'keccak_mismatch': 0, 'keccak_reference': 'pycryptodome cSHAKE256', 'mul_checked': 1024, 'mul_mismatch': 0, 'inv_checked': 16, 'inv_mismatch': 0}\n"}
+,{"stream_name":"stdout","time":259.339932386,"data":"lean [{'name': 'ell2_m1_q2', 'identical': True, 'bytes': 376}, {'name': 'ell3_m0_q0', 'identical': True, 'bytes': 296}, {'name': 'ell4_m2_q3_offset9', 'identical': True, 'bytes': 1141}, {'name': 'ell6_m3_q3', 'identical': True, 'bytes': 2102}, {'name': 'ell8_m3_q4', 'identical': True, 'bytes': 3553}]\n"}
+,{"stream_name":"stdout","time":262.34052472,"data":"e2e 18 {'label': 'phases (synchronized per stage)', 'proofs': 64, 'streams': 1, 'wall_s': 1.7388409829999887, 'per_proof_ms': 27.169390359374823, 'receipts_identical': True, 'device_mults': 218235947, 'device_keccak_f': 67105856, 'phases_ms_per_proof': {'upload': 3.1287325937503496, 'encode': 12.869779562500128, 'merkle': 1.7625234374971654, 'folds': 0.6735445625016823, 'final': 0.019113375000046062, 'seeds': 0.012942062499909923, 'openings': 6.526853343750361, 'host': 1.6877853906240858, 'readback': 0.36393642187615427}}\n"}
+,{"stream_name":"stdout","time":262.340636882,"data":"e2e 18 {'label': 'single proof, latency', 'proofs': 1, 'streams': 1, 'wall_s': 0.025314904000026672, 'per_proof_ms': 25.314904000026672, 'receipts_identical': True, 'device_mults': 3407870, 'device_keccak_f': 1048529}\n"}
+,{"stream_name":"stdout","time":265.34100967,"data":"e2e 18 {'label': 'batch, 1 stream(s)', 'proofs': 64, 'streams': 1, 'wall_s': 1.1944325689999573, 'per_proof_ms': 18.663008890624333, 'receipts_identical': True, 'device_mults': 218103680, 'device_keccak_f': 67105856}\n"}
+,{"stream_name":"stdout","time":268.341638323,"data":"e2e 18 {'label': 'batch, 2 stream(s)', 'proofs': 64, 'streams': 2, 'wall_s': 1.0808187220000036, 'per_proof_ms': 16.887792531250057, 'receipts_identical': True, 'device_mults': 218103680, 'device_keccak_f': 67105856}\n"}
+,{"stream_name":"stdout","time":270.341995243,"data":"e2e 20 {'label': 'phases (synchronized per stage)', 'proofs': 16, 'streams': 1, 'wall_s': 1.1553127089999862, 'per_proof_ms': 72.20704431249914, 'receipts_identical': True, 'device_mults': 243795411, 'device_keccak_f': 67108080, 'phases_ms_per_proof': {'upload': 5.07970093750032, 'encode': 53.89368412500062, 'merkle': 7.247005250004435, 'folds': 2.787175812500209, 'final': 0.08371874999824058, 'seeds': 0.04985250000189012, 'openings': 0.688605624997507, 'host': 1.9727174374963852, 'readback': 0.3742549375012061}}\n"}
+,{"stream_name":"stdout","time":270.342017125,"data":"e2e 20 {'label': 'single proof, latency', 'proofs': 1, 'streams': 1, 'wall_s': 0.08474463700002843, 'per_proof_ms': 84.74463700002843, 'receipts_identical': True, 'device_mults': 15204352, 'device_keccak_f': 4194255}\n"}
+,{"stream_name":"stdout","time":272.342146331,"data":"e2e 20 {'label': 'batch, 1 stream(s)', 'proofs': 16, 'streams': 1, 'wall_s': 1.1388928970000052, 'per_proof_ms': 71.18080606250032, 'receipts_identical': True, 'device_mults': 243269632, 'device_keccak_f': 67108080}\n"}
+,{"stream_name":"stdout","time":275.342581285,"data":"e2e 20 {'label': 'batch, 2 stream(s)', 'proofs': 16, 'streams': 2, 'wall_s': 1.0787294439999755, 'per_proof_ms': 67.42059024999847, 'receipts_identical': True, 'device_mults': 243269632, 'device_keccak_f': 67108080}\n"}
+,{"stream_name":"stdout","time":277.342871713,"data":"e2e 22 {'label': 'phases (synchronized per stage)', 'proofs': 4, 'streams': 1, 'wall_s': 1.323129692000009, 'per_proof_ms': 330.78242300000227, 'receipts_identical': True, 'device_mults': 270534435, 'device_keccak_f': 67108660, 'phases_ms_per_proof': {'upload': 35.405558749999955, 'encode': 246.47186724999415, 'merkle': 29.67781775001299, 'folds': 11.187300999978333, 'final': 0.36523250000186636, 'seeds': 0.5445120000047154, 'openings': 0.5140545000017482, 'host': 3.8274117500094462, 'readback': 0.7516567500118754}}\n"}
+,{"stream_name":"stdout","time":278.343130538,"data":"e2e 22 {'label': 'single proof, latency', 'proofs': 1, 'streams': 1, 'wall_s': 0.34354337399997803, 'per_proof_ms': 343.54337399997803, 'receipts_identical': True, 'device_mults': 67108866, 'device_keccak_f': 16777165}\n"}
+,{"stream_name":"stdout","time":280.343372184,"data":"e2e 22 {'label': 'batch, 1 stream(s)', 'proofs': 4, 'streams': 1, 'wall_s': 1.30136365300001, 'per_proof_ms': 325.3409132500025, 'receipts_identical': True, 'device_mults': 268435464, 'device_keccak_f': 67108660}\n"}
+,{"stream_name":"stdout","time":283.343810007,"data":"e2e 22 {'label': 'batch, 2 stream(s)', 'proofs': 4, 'streams': 2, 'wall_s': 1.1920669869999756, 'per_proof_ms': 298.0167467499939, 'receipts_identical': True, 'device_mults': 268435464, 'device_keccak_f': 67108660}\n"}
+,{"stream_name":"stdout","time":283.343829793,"data":"ALL_BIT_EXACT True\n"}
+,{"stream_name":"stdout","time":286.422694191,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":286.422718186,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":286.429283422,"data":"E2E_SUMMARY [{\"ell\": 18, \"batch\": 64, \"gpu_per_proof_ms\": 16.887792531250057, \"cpu_per_proof_ms_all_cores\": 589.413, \"gpu_speedup_vs_cpu_batch\": 34.90171962435702, \"cpu_single_proof_ms\": null, \"receipts_identical\": true}, {\"ell\": 20, \"batch\": 16, \"gpu_per_proof_ms\": 67.42059024999847, \"cpu_per_proof_ms_all_cores\": 2429.179, \"gpu_speedup_vs_cpu_batch\": 36.0302244609918, \"cpu_single_proof_ms\": 2546.44, \"receipts_identical\": true}, {\"ell\": 22, \"batch\": 4, \"gpu_per_proof_ms\": 298.0167467499939, \"cpu_per_proof_ms_all_cores\": 10105.963, \"gpu_speedup_vs_cpu_batch\": 33.91072183093753, \"cpu_single_proof_ms\": null, \"receipts_identical\": true}]\n"}
+,{"stream_name":"stdout","time":286.429778323,"data":"ALL_BIT_EXACT True\n"}
+,{"stream_name":"stdout","time":286.440421701,"data":"done in 285 s; results /tmp/accel/e2e2/out/results.json\n"}
+,{"stream_name":"stdout","time":286.440825965,"data":"X_RC=0\n"}
+,{"stream_name":"stdout","time":286.441929171,"data":"KEEP {\"all_bit_exact\": true, \"cpu_reference_identical\": true, \"e2e_summary\": [{\"ell\": 18, \"batch\": 64, \"gpu_per_proof_ms\": 16.887792531250057, \"cpu_per_proof_ms_all_cores\": 589.413, \"gpu_speedup_vs_cpu_batch\": 34.90171962435702, \"cpu_single_proof_ms\": null, \"receipts_identical\": true}, {\"ell\": 20, \"batch\": 16, \"gpu_per_proof_ms\": 67.42059024999847, \"cpu_per_proof_ms_all_cores\": 2429.179, \"gpu_speedup_vs_cpu_batch\": 36.0302244609918, \"cpu_single_proof_ms\": 2546.44, \"receipts_identical\": true}, {\"ell\": 22, \"batch\": 4, \"gpu_per_proof_ms\": 298.0167467499939, \"cpu_per_proof_ms_all_cores\": 10105.963, \"gpu_speedup_vs_cpu_batch\": 33.91072183093753, \"cpu_single_proof_ms\": null, \"receipts_identical\": true}], \"nproc\": 4, \"rc\": 0}\n"}
+,{"stream_name":"stdout","time":286.97945252,"data":"ACCEL_JOB_DONE rc=0 killed=None elapsed=286.1\n"}
+,{"stream_name":"stderr","time":289.178878132,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":289.178909212,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":289.509466702,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":289.509492462,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":291.229406568,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":292.293693783,"data":"[NbConvertApp] Writing 539243 bytes to __results__.html\n"}
+]
