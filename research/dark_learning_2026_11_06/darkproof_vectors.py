@@ -34,7 +34,7 @@ def witness(p, d, dealer, live, wires):
     flat = lambda M: [x for r in M for x in r]
     cons, had, prep, ext = G.middle(live)
     return dict(p=p, d=d, n=3, alpha_sh=list(dealer.alpha_sh), dealer_state=list(dealer.rng.getstate()[1]),
-                wires={k: [sv(v) for v in (wires[k] if k in VECS else flat(wires[k]))] for k in VECS + MATS},
+                wires={k: [sv(v) for v in (wires[k] if k in VECS else flat(wires[k]))] for k in VECS + MATS if k in wires},
                 public=[v for _, _, v in live.transcript], phases=[ph for ph, _, _ in live.transcript],
                 atoms=[sv(live.atom_sh[a]) for a in prep], atom_tags=[live.atoms[a][1] for a in prep])
 
@@ -176,6 +176,18 @@ def verify_native(out, tag):
             ok_all &= ok and not ok2
             if ok:
                 parent = res[0]
+    rm = meta.get("release")
+    path = os.path.join(out, f"{tag}_rel.native.bin")
+    if rm and os.path.exists(path):
+        wit = json.load(open(os.path.join(out, rm["witness"])))
+        blob = open(path, "rb").read()
+        ok, why, res = PW.verify_release(p, blob, tuple(rm["ctx"]), rm["head_roots"], wit["X"], wit["labels"],
+                                         meta.get("program"), rm["ncls"], d)
+        bad = bytearray(blob); bad[len(bad) // 2] ^= 1
+        ok2, why2, _ = PW.verify_release(p, bytes(bad), tuple(rm["ctx"]), rm["head_roots"], wit["X"], wit["labels"],
+                                         meta.get("program"), rm["ncls"], d)
+        print(f"python verify {tag} release native: {ok} {why} {res} | flipped byte: {ok2} {why2}", flush=True)
+        ok_all &= ok and not ok2 and res[1] == rm["C"]
     print("PYVERIFY", "PASS" if ok_all else "FAIL")
     sys.exit(0 if ok_all else 1)
 
@@ -219,6 +231,44 @@ def main():
             r1 = RP.make_bundle(p, tab, d, W1, W2, x, y, (model, 0, 1))
             assert r1["blob"] == s1["blob"], "this file's flow differs from run_proofwire.make_bundle"
             print("check: identical to run_proofwire.make_bundle", flush=True)
+    if "rel" in flows:
+        # the release at the head of the pw chain (step 2's child): M public examples, the harness's program
+        import cosnark_he as CH
+        import cosnark_release as CR
+        ncls = min(10, d)
+        M = 4 if d <= 4 else 8
+        rr = random.Random(1000 + d)
+        X = [[rr.randint(0, 100) for _ in range(M)] for _ in range(d)]
+        prog = CH.Prog()
+        head = s2["wires"]
+        dec = lambda Mx: [[MF.centered(sum(v[i][0] for i in range(3)) % p, p) for v in r] for r in Mx]
+        # half the labels are the plain model's strict argmax (so C > 0), the rest random
+        osc = CR.plain_scores(dec(head["W1n"]), dec(head["W2n"]), X, prog, ncls)
+        labels = [max(range(ncls), key=lambda c: osc[c][t]) if t % 2 == 0 else rr.randrange(ncls) for t in range(M)]
+        flat = lambda Mx: [v for r in Mx for v in r]
+        dealer = spdz.Dealer(p, 3, 5)
+        live = G.RecEngine(p, 3, dealer)
+        C, z1h = CR.run_release(live, head["W1n"], head["W2n"], X, labels, prog, ncls)
+        live.mac_check("release")
+        public = [v for _, _, v in live.transcript]
+        sym = CR.replay(p, public, X, labels, prog, ncls)
+        io = CR.io_spec(p, d, M)
+        ctx = (model, 0, 2)
+        hw = dict(W1=flat(head["W1n"]), W2=flat(head["W2n"]))
+        wit = witness(p, d, dealer, live, dict(W1=head["W1n"], W2=head["W2n"]))
+        wit.update(ext={k: [sv(v) for v in z1h[k]] for k in ("z1", "h")}, X=X, labels=labels, ncls=ncls, M=M)
+        json.dump(wit, open(os.path.join(out, f"{tag}_rel.json"), "w"))
+        rel, rst = CR.prove(live, sym, hw, z1h, s2["child"], ctx, io)
+        blob = PW.encode_release(p, ctx, d, 3, M, ncls, public, rel, sym, io)
+        open(os.path.join(out, f"{tag}_rel.bin"), "wb").write(blob)
+        heads = {k: s2["child"][k].roots for k in ("W1", "W2")}
+        ok, why, res = PW.verify_release(p, blob, ctx, heads, X, labels, None, ncls, d)
+        assert ok, why
+        Cp = CR.plain_count(dec(head["W1n"]), dec(head["W2n"]), X, labels, prog, ncls)
+        assert C == Cp, (C, Cp)
+        meta["release"] = dict(blob=f"{tag}_rel.bin", witness=f"{tag}_rel.json", ctx=list(ctx), M=M, ncls=ncls, C=C,
+                               head_roots=heads)
+        print("rel", len(blob), "C =", C, "of M =", M, flush=True)
     if "si" in flows:
         rng2 = random.Random(d)
         Mm = lambda: [[rng2.randint(-7, 7) % p for _ in range(d)] for _ in range(d)]

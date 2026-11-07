@@ -188,9 +188,9 @@ def spine_schema(p, n, d, chained, bind=False):
                      ("eval_roots", L_(n, HH)), ("mask_roots", L_(n, HH)), ("prox", prox), ("pcs_cols", cols),
                      ("ligero", ligero_schema(n, [1] * (4 * ld) + [nrows - 4 * ld]))])
 
-def middle_schema(p, n, sym, d, bind=False):
+def middle_schema(p, n, sym, d, bind=False, io=None):
     cons, had, prep, ext = G.middle(sym)
-    lens, sh = GZ.public_shapes(p, prep, had, d, bind)
+    lens, sh = GZ.public_shapes(p, prep, had, d, bind, io=io)
     roots, prox, cols = pcs_schema(n, sh)
     lh = (lens["A"] - 1).bit_length()
     Lmax = max((L - 1).bit_length() for L in lens.values())
@@ -309,6 +309,72 @@ def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None,
     if not ok:
         return False, f"middle: {why}", None
     return True, "accept", ({"W1": spine["roots"]["W1n"], "W2": spine["roots"]["W2n"]}, leaf)
+
+# ----------------------------------------------------------------------------------------------- release
+RMAGIC = b"DLRELS01"
+
+def encode_release(p, ctx, d, n, M, ncls, public, middle, sym, io):
+    """The release bundle: header (magic, model, epoch, head step, d, n, M, ncls), the public transcript (its last
+    value is the released count C), the release proof (the ZK middle over the release program, io)."""
+    model, epoch, step = ctx
+    w = W(p)
+    mb = model.encode()
+    assert 1 <= len(mb) <= 64
+    w.b += RMAGIC + struct.pack(">H", len(mb)) + mb + struct.pack(">IQHBHB", epoch, step, d, n, M, ncls)
+    w.b += struct.pack(">I", len(public))
+    for v in public:
+        w.fe(v)
+    walk(w, middle_schema(p, n, sym, d, False, io), _plain(middle))
+    return bytes(w.b)
+
+def verify_release(p, blob, expect_ctx, head_roots, X, labels, program, ncls, d_pinned, kc=10):
+    """The untrusted-input verifier of a release. expect_ctx = (model, epoch, head step) and head_roots (the head's
+    W1, W2 roots) come from the ledger; X, labels and the program are the published policy, never the blob.
+    Returns (ok, why, (M, C))."""
+    import cosnark_release as CR
+    pin_params()
+    M = len(labels)
+    try:
+        r = R(p, blob)
+        if r.take(8) != RMAGIC:
+            raise ParseError("bad magic")
+        ml = struct.unpack(">H", r.take(2))[0]
+        if not 1 <= ml <= 64:
+            raise ParseError("bad model id length")
+        model_b = r.take(ml)
+        epoch, step, d, n, m_, nc = struct.unpack(">IQHBHB", r.take(18))
+        if (model_b, epoch, step) != (expect_ctx[0].encode(), expect_ctx[1], expect_ctx[2]):
+            shown = model_b.decode("utf-8", "replace")
+            return False, f"binding mismatch: release is for {(shown, epoch, step)}, expected {tuple(expect_ctx)}", None
+        if (d, n, m_, nc) != (d_pinned, 3, M, ncls) or len(X) != d or any(len(row) != M for row in X):
+            raise ParseError("shape differs from the ledger's genesis record or the release policy")
+        cnt = struct.unpack(">I", r.take(4))[0]
+        if cnt > 1 << 26:
+            raise ParseError("public transcript too long")
+        public = [r.fe() for _ in range(cnt)]
+        prog = CH.Prog.of(program or {})
+        try:
+            sym = CR.replay(p, public, X, labels, prog, ncls, kc)
+        except IndexError:
+            raise ParseError("public transcript shorter than the release program")
+        if sym.tpos != cnt:
+            raise ParseError("public transcript longer than the release program")
+        io = CR.io_spec(p, d, M)
+        middle = walk(r, middle_schema(p, n, sym, d, False, io))
+        r.end()
+    except ParseError as e:
+        return False, f"parse: {e}", None
+    except Exception as e:
+        if os.environ.get("DP_DEBUG"):
+            raise
+        return False, f"parse: {type(e).__name__}", None
+    C = public[-1]
+    if C > M:
+        return False, "released count exceeds M", None
+    ok, why = GZ.verify_middle_zk(p, n, sym, d, head_roots, tuple(expect_ctx), middle, False, io=io)
+    if not ok:
+        return False, f"release: {why}", None
+    return True, "accept", (M, C)
 
 # ----------------------------------------------------------------------------------------------- ledger
 class Ledger:

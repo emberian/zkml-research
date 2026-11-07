@@ -24,6 +24,14 @@ from cosnark import Transcript, eqv, mle
 NAMES = ("z1", "z2", "b", "y", "h", "g1", "d2", "bg", "d1")
 SPINE = ("z1", "z2", "b", "h", "g1", "d2", "bg", "d1")
 
+class IO:
+    """The middle's external vectors for a program other than the step (the release, cosnark_release): names, their
+    lengths (powers of two), the CARRIED ones (an existing commitment, used at its second life) and their shapes, and
+    the transcript label. None everywhere below means the step's (NAMES, SPINE, "middle-zk")."""
+    def __init__(self, lens, carried, label, shapes=None):
+        self.lens, self.carried, self.label, self.shapes = dict(lens), tuple(carried), label, dict(shapes or {})
+        self.names = tuple(sorted(self.lens))
+
 def build_q(p, sym, cons, had, prep, lens, gam):
     pos = {a: k for k, a in enumerate(prep)}
     q = {k: [0] * L for k, L in lens.items()}
@@ -51,13 +59,16 @@ def plen(x):
         n *= 2
     return n
 
-def public_shapes(p, prep, had, d, bind=False):
+def public_shapes(p, prep, had, d, bind=False, io=None):
     """lens: the vectors in the linear batch. sh: every commitment's shape, including the owner's "yo"
     (committed and evaluated, but not in the batch)."""
     lens = dict(P=plen(len(prep)), A=plen(len(had)), B=plen(len(had)), C=plen(len(had)))
-    lens.update({nm: plen(d) for nm in NAMES})
+    lens.update({nm: plen(d) for nm in NAMES} if io is None else io.lens)
+    carried = SPINE if io is None else io.carried
     sh = {k: ZK.PubShape(p, (L - 1).bit_length(), CS.HIDE, CS.NMASK,
-                         CS.NMASK // CS.LIVES if k in SPINE else 0) for k, L in lens.items()}
+                         CS.NMASK // CS.LIVES if k in carried else 0) for k, L in lens.items()}
+    if io is not None:
+        sh.update(io.shapes)
     if bind:
         sh["yo"] = ZK.PubShape(p, (plen(d) - 1).bit_length(), CS.HIDE, CS.NMASK, 0)
     return lens, sh
@@ -166,7 +177,7 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const):
         add(Y(len(ev) - 2), Y(len(ev) - 1, -1))
     return lin, [(X, Yr, Zr)], labels
 
-def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model", 0, 0), seed=2, owner_y=None):
+def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model", 0, 0), seed=2, owner_y=None, io=None):
     p, n = live.p, live.n
     zero = {i: (0, 0) for i in range(n)}
     cons_l, had_l, prep_l, ext_l = G.middle(live)
@@ -185,14 +196,15 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     Av = G.pad([Pv[pos[a]] for a, _, _ in had], zero)
     Bv = G.pad([Pv[pos[b]] for _, b, _ in had], zero)
     Cv = G.pad([Pv[pos[c]] for _, _, c in had], zero)
-    vecs = dict(P=Pv, A=Av, B=Bv, C=Cv, **{nm: G.pad(wires[nm], zero) for nm in NAMES})
-    d = len(wires["x"])
-    lens, _ = public_shapes(p, prep, had, d)
+    names, carried = (NAMES, SPINE) if io is None else (io.names, io.carried)
+    vecs = dict(P=Pv, A=Av, B=Bv, C=Cv, **{nm: G.pad(wires[nm], zero) for nm in names})
+    d = len(wires["x"]) if io is None else None
+    lens, _ = public_shapes(p, prep, had, d, io=io)
     assert all(len(vecs[k]) == lens[k] for k in lens)
     sh_ = lambda V: [[x[i][0] for x in V] for i in range(n)]
     com = {}
     for k, V in vecs.items():
-        if k in SPINE:
+        if k in carried:
             com[k] = spine_coms[k]                             # the spine's commitment, carried: same root
             com[k].base = com[k].block                         # its second life (second proximity mask)
         else:
@@ -200,7 +212,7 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     if owner_y is not None:
         com["yo"] = owner_y
     L = Z.Prover(Z.Params(p, ZK.K_L, ZK.T_HIDE, ZK.T_OPEN), n, (seed, context))
-    tr = Transcript("middle-zk")
+    tr = Transcript("middle-zk" if io is None else io.label)
     tr.absorb("ctx", context)
     tr.absorb("public", ZK.public_digest([v for _, _, v in live.transcript]))
     for k in sorted(com):
@@ -291,16 +303,18 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
                  first_violated=ZK.first_violated(p, L.rows, lin, quad, labels))
     return proof, stats
 
-def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False):
+def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=None):
     cons, had, prep, ext = G.middle(sym)
-    lens, sh = public_shapes(p, prep, had, d, bind)
+    lens, sh = public_shapes(p, prep, had, d, bind, io=io)
     roots = proof["roots"]
     if sorted(roots) != sorted(sh):
         return False, "proof names the wrong commitments"
-    for nm in SPINE:
+    for nm in (SPINE if io is None else io.carried):
+        if io is not None and roots[nm] != spine_roots[nm]:
+            return False, f"the {nm} commitment is not the ledger head's"
         if nm in spine_roots and roots[nm] != spine_roots[nm]:
             return False, f"middle's {nm} is not the spine's committed {nm}"
-    tr = Transcript("middle-zk")
+    tr = Transcript("middle-zk" if io is None else io.label)
     tr.absorb("ctx", context)
     tr.absorb("public", ZK.public_digest([v for _, _, v in sym.transcript]))
     for k in sorted(roots):

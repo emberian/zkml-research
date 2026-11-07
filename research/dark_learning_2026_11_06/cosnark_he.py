@@ -41,7 +41,7 @@ class Prog:
     @classmethod
     def of(cls, program):
         """From a ledger genesis "program" dict (R3, T_LO default to the harness's)."""
-        dflt = dict(R3=0, T_LO=-128)
+        dflt = dict(S1=5, K1=13, S2=4, K2=8, S3=8, K3=13, R3=0, T_LO=-128)
         return cls(*(program.get(k, dflt.get(k)) for k in cls.KEYS))
 
     def tables(self, p):

@@ -27,7 +27,7 @@ fn roots_of(v: &Value) -> BTreeMap<String, Vec<[u8; 32]>> {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check")) && !cfg!(feature = "test-det") {
+    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check")) && !cfg!(feature = "test-det") {
         eprintln!("bit-exact checks need the deterministic hook: build with --features test-det");
         std::process::exit(2);
     }
@@ -37,6 +37,7 @@ fn main() {
         Some("gen-check") => gen_check(Path::new(&args[2]), &args[3]),
         Some("bench") => bench(args[2].parse().unwrap(), &args[3]),
         Some("run-check") => run_check(Path::new(&args[2]), &args[3]),
+        Some("rel-check") => rel_check(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
@@ -456,6 +457,124 @@ fn ds_check(dir: &Path, tag: &str) {
     );
     let ok = rec_ok && agree && eq;
     println!("{}", if ok { "DS-CHECK PASS" } else { "DS-CHECK FAIL" });
+    std::process::exit(if ok { 0 } else { 1 });
+}
+
+/// The release (cosnark_release) bit-exact against the harness: the native pw chain gives the head's carried
+/// commitments, then three custodian threads prove the release from the harness's witness; the bundle must equal
+/// Python's, the native verifier must accept it against the head's roots and the published policy, and refuse a
+/// flipped byte, a wrong count claim (the count's opening changed) and another label set.
+fn rel_check(dir: &Path, tag: &str) {
+    use darkproof::run::{prove_release, PartyRelease, Policy};
+    use darkproof::spdz::{Dealer, Triple};
+    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    darkproof::field::set_p(meta["p"].as_u64().unwrap());
+    let d = meta["d"].as_u64().unwrap() as usize;
+    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let lp = pr.ligero();
+    let tables = darkproof::step::tables();
+    let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
+    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: det.clone(), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: None };
+    let mut carry = None;
+    for name in ["pw1", "pw2"] {
+        let b = &meta["bundles"][name];
+        let c = b["ctx"].as_array().unwrap();
+        let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+        let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
+        let out = make_bundle(&opts, w, &ctx, carry.take(), None).expect("prove");
+        assert_eq!(out.blob, std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap(), "{name} differs");
+        carry = Some(out.child);
+    }
+    let rm = &meta["release"];
+    let c = rm["ctx"].as_array().unwrap();
+    let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+    let wpath = dir.join(rm["witness"].as_str().unwrap());
+    let w = Witness::load(&wpath);
+    let raw: Value = serde_json::from_slice(&std::fs::read(&wpath).unwrap()).unwrap();
+    let m = raw["M"].as_u64().unwrap() as usize;
+    let ncls = raw["ncls"].as_u64().unwrap() as usize;
+    let xm = raw["X"].as_array().unwrap();
+    let x: Vec<u64> = (0..d).flat_map(|k| (0..m).map(move |t| (k, t))).map(|(k, t)| darkproof::field::from_i64(xm[k][t].as_i64().unwrap())).collect();
+    let labels: Vec<usize> = raw["labels"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap() as usize).collect();
+    let pol = Policy { x, labels, ncls, kc: 10 };
+    let prm = darkproof::step::StepParams::HARNESS;
+    let rec = darkproof::step::replay_release(&w.public, d, m, prm, &pol.x, &pol.labels, ncls, 10).expect("replay");
+    let nb = darkproof::middle::beaver_count(rec.had.len());
+    let mut dl = Dealer::from_state(&w.dealer_state, w.alpha_sh.clone());
+    let mut tapes: Vec<Vec<Triple>> = vec![Vec::with_capacity(nb); 3];
+    for _ in 0..nb {
+        let av = dl.rng.randrange_u64(darkproof::field::p());
+        let bv = dl.rng.randrange_u64(darkproof::field::p());
+        let (a, b2, cc) = (dl.auth_all(av), dl.auth_all(bv), dl.auth_all(darkproof::field::mul(av, bv)));
+        for i in 0..3 {
+            tapes[i].push((a[i], b2[i], cc[i]));
+        }
+    }
+    let ext = |name: &str, i: usize| -> Vec<darkproof::spdz::Sh> {
+        raw["ext"][name].as_array().unwrap().iter().map(|e| (e[i][0].as_u64().unwrap(), e[i][1].as_u64().unwrap())).collect()
+    };
+    let nets = darkproof::net::Nets::new(darkproof::net::transport_from_env(), 3);
+    let heads = carry.unwrap();
+    let outs: Vec<Result<(Vec<u8>, f64), String>> = std::thread::scope(|s| {
+        let hs: Vec<_> = tapes
+            .into_iter()
+            .zip(heads)
+            .enumerate()
+            .map(|(i, (tp, hd))| {
+                let (nets, w, pr, lp, ctx, pol, det) = (&nets, &w, &pr, &lp, &ctx, &pol, det.clone());
+                let mut wires = BTreeMap::new();
+                wires.insert("W1".to_string(), w.wires[i]["W1"].clone());
+                wires.insert("W2".to_string(), w.wires[i]["W2"].clone());
+                wires.insert("z1".to_string(), ext("z1", i));
+                wires.insert("h".to_string(), ext("h", i));
+                s.spawn(move || {
+                    let mut net = nets.take(i);
+                    let st = PartyRelease { i, n: 3, d, alpha_i: w.alpha_sh[i], wires, public: w.public.clone(), atoms: w.atoms[i].clone(), triples: tp, det };
+                    prove_release(pr, lp, prm, &mut *net, ctx, pol, st, hd)
+                })
+            })
+            .collect();
+        hs.into_iter().map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into()))).collect()
+    });
+    let blobs: Vec<Vec<u8>> = outs.into_iter().map(|o| o.expect("release proof").0).collect();
+    let pyb = std::fs::read(dir.join(rm["blob"].as_str().unwrap())).unwrap();
+    let eq = blobs[0] == pyb;
+    let agree = blobs.iter().all(|b| b == &blobs[0]);
+    println!(
+        "{tag} release: native {} bytes sha256 {} | python {} bytes sha256 {} | {} | parties agree {agree}",
+        blobs[0].len(), &sha(&blobs[0])[..16], pyb.len(), &sha(&pyb)[..16],
+        if eq { "EQUAL".to_string() } else { format!("DIFFER at offset {:?}", first_diff(&blobs[0], &pyb)) }
+    );
+    std::fs::write(dir.join(format!("{tag}_rel.native.bin")), &blobs[0]).unwrap();
+    let heads_r = roots_of(&rm["head_roots"]);
+    let v = wire::verify_release(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10);
+    println!("  native verify of the python release: {:?} (C = {} in the harness)", v, rm["C"]);
+    let mut ok = eq && agree && v.as_ref().map(|r| r.1 == rm["C"].as_u64().unwrap()).unwrap_or(false);
+    let mut bad = pyb.clone();
+    let pos = bad.len() / 2;
+    bad[pos] ^= 1;
+    let v2 = wire::verify_release(&pr, &lp, &bad, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10);
+    println!("  one flipped byte at {pos}: {:?}", v2);
+    ok &= v2.is_err();
+    // the count's field element (the transcript's last value) claims one more correct example
+    let off = 8 + 2 + ctx.model.len() + 18 + 4 + 8 * (w.public.len() - 1);
+    let mut lie = pyb.clone();
+    let cv = u64::from_be_bytes(lie[off..off + 8].try_into().unwrap());
+    lie[off..off + 8].copy_from_slice(&(cv + 1).to_be_bytes());
+    let v3 = wire::verify_release(&pr, &lp, &lie, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10);
+    println!("  the released count raised by one (C = {}): {:?}", cv + 1, v3);
+    ok &= v3.is_err();
+    let mut other = pol.labels.clone();
+    other[0] = (other[0] + 1) % ncls;
+    let v4 = wire::verify_release(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &other, prm, ncls, d, 10);
+    println!("  verified against another label set: {:?}", v4);
+    ok &= v4.is_err();
+    let mut wrong_head = heads_r.clone();
+    wrong_head.insert("W1".into(), roots_of(&meta["genesis_roots"])["W1"].clone());
+    let v5 = wire::verify_release(&pr, &lp, &pyb, &ctx, &wrong_head, &pol.x, &pol.labels, prm, ncls, d, 10);
+    println!("  verified against the genesis W1 instead of the head's: {:?}", v5);
+    ok &= v5.is_err();
+    println!("{}", if ok { "REL-CHECK PASS" } else { "REL-CHECK FAIL" });
     std::process::exit(if ok { 0 } else { 1 });
 }
 
