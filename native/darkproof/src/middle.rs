@@ -736,34 +736,42 @@ fn prove_g<const E: usize>(
         fill_lookup(rec, &mut atoms_v, net, sp);
     }
     tt.lap("lookup circuit filled");
-    let mut pv = atoms_v;
-    pv.resize(lens["P"], (0, 0));
-    let gather = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
-        padv(&rec.had.iter().map(|t| pv[sel(t) as usize]).collect::<Vec<_>>(), lens["A"])
+    // A, B, C keep their MACs (the zerocheck's Beaver products); P and the external vectors are committed from their
+    // shares alone, made one at a time (memory: no MAC-carrying copy of P, 2^26 x 16 B at M = 52, nor of the wires)
+    let pick = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
+        let mut v = Vec::with_capacity(lens["A"]);
+        v.extend(rec.had.iter().map(|t| atoms_v.get(sel(t) as usize).copied().unwrap_or((0, 0))));
+        v.resize(lens["A"], (0, 0));
+        v
     };
-    let mut vecs: BTreeMap<String, Vec<Sh>> = BTreeMap::new();
-    vecs.insert("A".into(), gather(|t| t.0));
-    vecs.insert("B".into(), gather(|t| t.1));
-    vecs.insert("C".into(), gather(|t| t.2));
-    vecs.insert("P".into(), pv);
-    for nm in &rec.names {
-        vecs.insert(nm.to_string(), padv(&inp.wires[*nm], lens[*nm]));
-    }
-    // from here on only the shares are read (claims, linear sumchecks), except A, B, C, whose MACs the
-    // zerocheck's Beaver products need: keep shares alone (memory: half of every vector, the large P above all)
-    // a committed vector's shares are read back from its commitment's data rows (UT::R) and not kept beside it; only
-    // the carried ones keep theirs (xs)
     let mut abc: BTreeMap<String, Vec<Sh>> = BTreeMap::new();
+    abc.insert("A".into(), pick(|t| t.0));
+    abc.insert("B".into(), pick(|t| t.1));
+    abc.insert("C".into(), pick(|t| t.2));
+    let mut psh = {
+        let mut v = Vec::with_capacity(lens["P"]);
+        v.extend(atoms_v.iter().map(|x| x.0));
+        v.resize(lens["P"], 0);
+        Some(v)
+    };
+    drop(atoms_v);
+    let mut vkeys: Vec<String> = ["A", "B", "C", "P"].iter().map(|k| k.to_string()).chain(rec.names.iter().map(|nm| nm.to_string())).collect();
+    vkeys.sort();
     let mut xs: BTreeMap<String, Vec<u64>> = BTreeMap::new();
     let carried: Vec<&str> = rec.io.as_ref().map(|io| io.carried.clone()).unwrap_or_else(|| SPINE.to_vec());
     let mut com: BTreeMap<String, PcsParty> = BTreeMap::new();
-    for (k, v) in std::mem::take(&mut vecs) {
-        let sh: Vec<u64> = v.iter().map(|x| x.0).collect();
-        if ["A", "B", "C"].contains(&k.as_str()) {
-            abc.insert(k.clone(), v);
-        } else {
-            drop(v);
-        }
+    for k in vkeys {
+        let sh: Vec<u64> = match k.as_str() {
+            "A" | "B" | "C" => abc[&k].iter().map(|x| x.0).collect(),
+            "P" => psh.take().unwrap(),
+            nm => {
+                let w = &inp.wires[nm];
+                let mut v = Vec::with_capacity(lens[nm]);
+                v.extend(w.iter().map(|x| x.0));
+                v.resize(lens[nm], 0);
+                v
+            }
+        };
         if carried.contains(&k.as_str()) {
             let mut c = spine_coms.remove(&k).expect("spine commitment");
             // DEFER: the head W has one life, opened here
