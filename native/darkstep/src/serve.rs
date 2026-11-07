@@ -56,7 +56,8 @@ impl CustodianState {
         let tab = pf.program.tables(pf.t);
         let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
         let n = net.n;
-        let pt = Party::new(i, pf.t, net, tape);
+        let mut pt = Party::new(i, pf.t, net, tape);
+        pt.xt = pf.xt;
         Ok(Box::new(CustodianState { i, pf, he, pt, w: None, step: 0, tab, pool, last_sent: vec![[0; crate::net::NTAGS]; n], last_gate: [0.0; 3], last_proof_bytes: 0 }))
     }
 
@@ -96,6 +97,7 @@ impl CustodianState {
         self.pt.atom_log.clear();
         self.pt.wire.clear();
         self.pt.nopen = 0;
+        self.pt.xt_zone = None;
         let cur0 = self.pt.cur;
         self.he.context.1 = k as u64;
         self.he.mv_calls = 0;
@@ -125,6 +127,9 @@ impl CustodianState {
         let pg = self.pf.program;
         let (pt, he, tab) = (&mut self.pt, &mut self.he, &self.tab);
         let w = self.w.take();
+        // XT (xtrunc.md): a wrap-zone opening is a public, data-independent redo; the step's input shares are kept so
+        // the step can run again on fresh preprocessing (the outputs it would have made are never formed)
+        let w_keep = if self.pf.xt { w.clone() } else { None };
         let res = self.pool.install(|| match w {
             None => {
                 if cs.len() != 2 * d * d + 2 * d {
@@ -149,7 +154,13 @@ impl CustodianState {
         let step_s = t0.elapsed().as_secs_f64();
         stop.store(true, std::sync::atomic::Ordering::Relaxed);
         let samples = sampler.join().unwrap();
-        let out = res?;
+        let out = match res {
+            Err(e) if e.starts_with(crate::party::XT_REDO) => {
+                self.w = w_keep;
+                return Err(e);
+            }
+            r => r?,
+        };
         // bytes sent to each peer during each phase (counter at the sample nearest each boundary)
         let at = |t: f64| -> &Vec<u64> { &samples.iter().min_by(|a, b| (a.0 - t).abs().partial_cmp(&(b.0 - t).abs()).unwrap()).unwrap().1 };
         let mut tb = 0.0;
@@ -537,9 +548,13 @@ pub trait StepHook {
 }
 
 /// How the step loop ended.
+/// XT redos so far in this process (the spare tapes' {r}).
+static XT_REDOS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+
 #[derive(Clone, Debug)]
 pub struct End {
-    /// 0 done, 1 refused or failed, 3 paused, 4 stopped for the hook (stop_after)
+    /// 0 done, 1 refused or failed, 3 paused, 4 stopped for the hook (stop_after), 5 an XT redo without a spare tape
+    /// (the checkpoint is at the step before; the MAC key is kept; resume with fresh preprocessing for that step)
     pub code: i32,
     /// the refused step and the reason (the mesh is aborted; the checkpoint holds the state before that step)
     pub refused: Option<(usize, String)>,
@@ -1003,7 +1018,7 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
                 }
             }
         }
-        let msg = match flag(args, "--owner-msgs").map(|p| read_owner_msg(&step_path(args, &p, k))).transpose() {
+        let mut msg = match flag(args, "--owner-msgs").map(|p| read_owner_msg(&step_path(args, &p, k))).transpose() {
             Ok(m) => m.unwrap_or_default(),
             Err(e) => {
                 eprintln!("{e}");
@@ -1011,22 +1026,55 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
                 break;
             }
         };
-        let tw = Instant::now();
-        let cs = match owner_inputs(&mut owner, &st.pt.net, k, &msg) {
-            Ok(c) => c,
-            Err(e) => {
-                eprintln!("{e}");
-                end.code = 1;
-                break;
+        // XT redo (xtrunc.md): the step's tape is spent up to a wrap-zone opening; it runs again on a spare one-step
+        // tape (--xt-spare-tapes PAT, {r} the redo count, with --xt-spare-owner-msgs) under the same MAC key, and a
+        // single continuing tape (--tape) then resumes at the next step's start. No spare: stop with code 5 (redo),
+        // the checkpoint at the step before, the key kept (never a refusal: nobody deviated).
+        let mut resume_tape: Option<(Tape, usize)> = None;
+        let mut redo_info: Option<serde_json::Value> = None;
+        let mut owner_s = 0.0;
+        let ran = loop {
+            let tw = Instant::now();
+            let cs = match owner_inputs(&mut owner, &st.pt.net, k, &msg) {
+                Ok(c) => c,
+                Err(e) => break Err(e),
+            };
+            owner_s = tw.elapsed().as_secs_f64();
+            let cur0 = st.pt.cur;
+            // a panic below is a link that died in a check phase (or past its reconnect budget): an abort
+            let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| st.run(&cs)))
+                .unwrap_or_else(|_| Err("a link to another custodian died during the step (abort)".into()));
+            match r {
+                Err(e) if e.starts_with(crate::party::XT_REDO) => {
+                    let n = XT_REDOS.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                    eprintln!("step {k}: {e}");
+                    let Some(pat) = flag(args, "--xt-spare-tapes") else { break Err(e) };
+                    let tp = pat.replace("{r}", &n.to_string()).replace("{i}", &i.to_string());
+                    let spare = match read_tape_once(&tp) {
+                        Ok(t) if t.alpha_i == st.pt.tape.alpha_i => t,
+                        Ok(_) => break Err(format!("{tp}: a spare tape under another MAC key share")),
+                        Err(x) => break Err(x),
+                    };
+                    msg = match flag(args, "--xt-spare-owner-msgs").map(|p| read_owner_msg(&p.replace("{r}", &n.to_string()).replace("{i}", &i.to_string()))).transpose() {
+                        Ok(m) => m.unwrap_or_default(),
+                        Err(x) => break Err(x),
+                    };
+                    let orig = std::mem::replace(&mut st.pt.tape, spare);
+                    if tape_pattern(args, k).is_none() && resume_tape.is_none() {
+                        resume_tape = Some((orig, cur0));
+                    }
+                    st.pt.cur = 0;
+                    redo_info = Some(json!({"redo": n, "spare_tape": tp, "reason": e}));
+                }
+                r => break r,
             }
         };
-        let owner_s = tw.elapsed().as_secs_f64();
-        // a panic below is a link that died in a check phase (or past its reconnect budget): an abort
-        let ran = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| st.run(&cs)))
-            .unwrap_or_else(|_| Err("a link to another custodian died during the step (abort)".into()));
         match ran {
             Ok((mut rep, record)) => {
                 rep["owner_wait_seconds"] = json!(owner_s);
+                if let Some(x) = redo_info.take() {
+                    rep["xt_redo"] = x;
+                }
                 let before = st.pt.net.sent_per_peer();
                 let ta = Instant::now();
                 let hooked = hook.after_step(&mut st, k, &record, &dir);
@@ -1051,6 +1099,13 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
                         break;
                     }
                 }
+                if let Some((orig, cur0)) = resume_tape.take() {
+                    // the spare held exactly one step (and its proof section): the continuing tape resumes at the next
+                    // step's start, which is as far past the failed step's start as the spare was consumed
+                    let used = st.pt.cur;
+                    st.pt.tape = orig;
+                    st.pt.cur = cur0 + used;
+                }
                 st.checkpoint(&ckpt).expect("checkpoint");
                 // a spent step's tape and owner message hold this seat's triple shares, MAC shares and alpha share:
                 // once the checkpoint after the step is durable nothing reads them again (resume starts at k + 1)
@@ -1064,6 +1119,14 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
                     end.code = 4;
                     break;
                 }
+            }
+            Err(e) if e.starts_with(crate::party::XT_REDO) => {
+                // no spare tape: stop for a redo; the mesh closes cleanly and the key stays (code 5, not a refusal)
+                let rep = json!({"party": i, "step": k, "verdict": "REDO", "by": e});
+                std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
+                println!("{rep}");
+                end.code = 5;
+                break;
             }
             Err(e) => {
                 st.pt.net.abort();

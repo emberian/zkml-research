@@ -22,6 +22,28 @@ opening outside the wrap zone has w = 0 and c = x' + r over the integers. The lo
 an integer subtraction, and the formula is floor(x / 2^s) exactly. The wrap bit is excluded publicly, so no secret
 wrap bit is computed.
 
+**Where exactness comes from.** The floor is the existing low-bit borrow. It is computed from r's authenticated low
+bits (the s Trb entries) against the public c mod 2^s by the same prefix chain as today: 2(s - 1) Beaver products.
+The high part is rhi = r >> s (Trh). XT adds no new comparison. It only guarantees that the integer identity
+c = x' + r, which the borrow formula assumes, actually holds.
+
+**The redo keeps the MAC key** (coordinator's point 1).
+- An opening c < 2^(K+1) is a public event that does not depend on the data. Its probability is 2^(K+1)/p for every
+  x, and nobody deviated.
+- So it is not a MAC failure and must not retire the key. darkstep returns `Err(XT_REDO ...)` (prefix
+  `party::XT_REDO`), distinct from "MAC check failed". The orchestrator redoes the step on the next fresh tape under
+  the same MAC key.
+- A step whose opening is in the band is never accepted:
+  - `run_step_shares` stops after that truncation;
+  - `mac_check` refuses after it as a backstop;
+  - the proof's public check refuses such a bundle by name (§4).
+- [EXECUTED: `run_xtrunc.py`, rows 2a and 2b] A wrap aborts before the MAC check. The redo on the same dealer has
+  alpha unchanged and fresh masks (no mask reused); it is accepted and refines the spec. Row 3 runs the same wrap
+  with the rule ignored: the MAC check passes but the step does not refine. So only the rule, not the MAC check,
+  stops it.
+- [EXECUTED: darkstep `tests/xt_reference.rs` `wrap_zone_is_a_redo`] All three native custodians stop with
+  XT_REDO on a tape whose first mask was moved so that c = 0.
+
 **Why it is perfectly hiding.** r is uniform on F_p, so c is uniform on F_p and independent of x. The abort depends on
 c alone. It has probability 2^(K+1)/p for every x (2^-41 at K = 19, 2^-52 at K = 8; about 2^-27.4 per d = 4096 step,
 2^-16.4 per 2000-step run). Given no abort, c is uniform on [2^(K+1), p), independent of x. An aborted step's openings
@@ -55,6 +77,16 @@ P = p mod 2^L (bit L - 1 of P is 0).
 - y = a + lt is in [0, T + 1] and is 0 iff r >= p.
 - Open rho y with rho a fresh joint random element (one product). It is 0 iff y = 0 (or rho = 0, probability 1/p,
   independent of r). Otherwise it is uniform on F_p*.
+
+**The accepted masks are uniform on [0, p)** (coordinator's point 3).
+- The 61 bits are uniform and independent, and r = sum 2^i b_i is uniform on [0, 2^61).
+- A chunk is kept iff every opened rho_k y_k is nonzero, i.e. every r_k < p and every rho_k != 0. The rho_k are
+  independent of the r's.
+- Given acceptance, the r_k are therefore independent and each is uniform on [0, 2^61) conditioned on r_k < p, which
+  is uniform on [0, p).
+- What was opened about a kept mask is rho_k y_k. Given y_k != 0 it is uniform on F_p* and independent of r_k
+  (rho_k is uniform and independent), so it carries nothing about r_k.
+- A rejected chunk is discarded whole and nothing of it is used, so rejection cannot bias the masks that are kept.
 
 If any opened rho y in a chunk is 0, the chunk is discarded and regenerated. This happens with probability 2^-39.4
 per mask and 2^-25.4 per step chunk. It reveals nothing about the masks kept: given acceptance, each is uniform on
@@ -146,4 +178,99 @@ and bundle size, and one public check per truncation instead of another.
 
 ## 7. Build log
 
-(filled as pieces land)
+**Python reference** (2c11f069) [EXECUTED]:
+- `spdz.Engine.xt` and `native_ref.py --xt`. `cosnark_he.Prog` "XT" requires RS. Under XT, `cosnark_gates.append_range`
+  refuses a c < 2^(K+1) by name ("<name>: XT wrap zone").
+- Control: the default is byte-identical. `native_ref.py 4096 3 118 8` gives transcript d649f46f… and the committed
+  party digests and sigmas.
+- `native_ref.py 4096 3 118 8 --xt` and `... 64 --program GEN6 --xt` both ACCEPT and refine the spec. They are
+  committed as `native_ref_results/*_XT.json`.
+- `run_xtrunc.py 8`:
+  - four seeds refine the spec, with masks reaching 2^61;
+  - a wrap aborts with "XT: ..." before the MAC check;
+  - the redo on the same alpha accepts;
+  - controls: the wrap with the rule ignored, and a flipped borrow, each pass the MAC check and do not refine;
+  - the statistical default is unchanged.
+
+**Native darkstep, bit-exact** (2c11f069) [EXECUTED: `cargo test --release -p darkstep --test xt_reference`]:
+- XT d = 8 (N = 4096) and GEN6 d = 64 equal `native_ref.py --xt`: transcript, every party's share digest and sigma,
+  and wire counts. Negative control: the statistical reference's transcript differs.
+- `wrap_zone_is_a_redo`.
+- Default unchanged: `vs_reference` d8, d64, ledger d64, the attacks and the proof-atoms test all pass.
+
+**darkprep** (bd1ebdfb) [EXECUTED, bb2 loopback, MASCOT tau = 5, d = 64 harness, `--xt`]:
+- The chunk verifies: 34,438 entries, every r < p, MACs consistent.
+- 17.59 Gbit against 15.08 Gbit statistical (+16.7%, about 314 kbit per added triple-equivalent); 4.27 s against
+  2.96 s.
+- `darkstep party --xt` on the exported tapes: ACCEPT x 3, `reveal` refines_spec.
+- Negative control: the same .mpc with a fake prime 2^60 + 2^59 + 1 crashes with "darkprep XT: a mask r >= p ...".
+  So the check fires when it should.
+
+**Native chain with release** [EXECUTED, Mac, `DP_PROGRAM='{"RC","LB","RS","XT"}' darkproof ds-chain 16 demo-x2de 3 8`]:
+- Three steps and the release are accepted by the ledger.
+- The head weights after 3 steps EQUAL the plaintext twin's chain, and C = 1 = the twin.
+- The same without XT: EQUAL, C = 1.
+
+**The proof, byte-equal, with refusal rows** [EXECUTED]:
+- Vectors: `DL_DETERMINISTIC=7 DP_STEPS=2 DP_PROGRAM='{"RC","LB","RS","XT"}' darkproof_vectors.py VEC 4 demo-x2de he`.
+  Python verifies he1 and he2.
+- `darkproof check`: he1 523f85f6… (2,143,980 B) and he2 a103b91f… (2,281,732 B), EQUAL.
+- `darkproof ds-check`: darkstep's XT dealer, its online step and the native prover give a bundle EQUAL to Python's
+  he1. The record equals the harness's.
+- `run_xtrunc_proof.py demo-x2de` (Python, deployed step, d = 4):
+
+| row | result |
+|---|---|
+| honest XT step | ACCEPT |
+| xt_wrap: the first mask wraps (c = 0), the custodians ignore the redo | the custodians refuse to prove (the RS masked zero test) |
+| xt_wrap, bundle forced past that | REFUSED by name: `middle: truncation input outside its proved bound (z1: XT wrap zone[0], public)` |
+| xt_wrap, forced, with the public check bypassed in-process | REFUSED: `middle: Ligero linear test: the constraints do not hold` |
+| borrow_flip: the first e truncation's borrow flipped (d2 off by one), MAC-consistent; the MAC check passes | REFUSED: Ligero linear test |
+
+The borrow_flip row needed a first attempt to be corrected:
+- The first attempt flipped the borrow at z1[0]. It was ACCEPTED, and that is correct: under LB, h is proved from
+  z1's range bits, u1 is not an output, and SIG(u1 +/- 1) was unchanged there.
+- A wrong low-bit comparison matters only where its truncation's output is semantic (d2, d1). There the proof
+  refuses it.
+
+Native refusal: `darkproof --test xt_replay`.
+- Under XT the replay records the first wrap-zone opening, and `Rec::xt_refusal` names it. The ledger
+  (`wire::verify_step` / `verify_release`) and the custodians (`run::prove_step`, `release`) call it.
+- Without XT, the same transcript passes.
+
+## 8. Measurements at d = 4096 (bb2 loopback, three custodians; GEN6, ledger-x2de + RC + LB + RS) [EXECUTED]
+
+**Preprocessing per step** (MASCOT tau = 5, `darkprep run --d 4096 --mode steady --truncs 11,19,7,8,8,19 --rs
+[--xt] --threads 8`, the step's MPC part; the proof section's 2,225,349 triples are the same under both):
+
+| | statistical | XT | delta |
+|---|---:|---:|---:|
+| bits on the wire, all parties | 810.03 Gbit | 967.81 Gbit | **+157.8 Gbit (+19.5%)** |
+| wall (loopback, 8 threads) | 43.2 s | 49.3 s | +6.2 s |
+
+- The delta equals the model: 438,272 triple-equivalents x 362 kbit = 158.7 Gbit (x 0.994).
+- Over the whole proved step (4.48M triple-eq, about 1.62 Tbit) it is +9.7%.
+- On a 1 Gbit/s seat that is +53 s per step under MASCOT.
+- Under LowGear it is +16.6 Gbit (+5.5 s at 1 Gbit/s; +4.8 min per step through hbox), at the measured unit price.
+
+**Online and proof** (`DP_PROGRAM=<GEN6 + RC LB RS [XT]> darkproof ds-bench 4096 ledger-x2de`):
+
+| | statistical | XT |
+|---|---:|---:|
+| online step (party 0) | 51.4 s | 51.1 s |
+| prove | 32.8 s | 32.4 s |
+| proof sent per party | 12,937,129 elements | 12,937,129 elements |
+| bundle | 311,673,692 B | 311,690,684 B (+17 kB, the public transcript's larger values) |
+| verify | 14.1 s, accept | 14.0 s, accept |
+| peak RSS (three in one process) | 22.33 GB | 22.08 GB |
+| proof-section triples | 2,225,349 | 2,225,349 |
+
+The online phase opens the same values in the same rounds. The proof has the same rows. XT changes only the masks'
+distribution and the public check.
+
+**Few-step chain and release** (`ds-chain 16 demo-x2de 3 8`, native, both modes):
+- three steps and the release are accepted;
+- the head weights equal the plaintext twin's chain;
+- C equals the twin (C = 1).
+
+That is d = 16. A d = 4096 chain is the run itself.

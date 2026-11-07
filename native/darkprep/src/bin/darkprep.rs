@@ -120,7 +120,8 @@ fn main() {
             Ok(())
         }
         "run" => {
-            let sp = step(&m);
+            // chunk_step: --truncs, --rs, --proof also apply to a loopback run (measurements)
+            let sp = chunk_step(&m);
             let plan = Plan::of(&sp);
             let p: u64 = get(&m, "p", 0);
             let mpspdz = PathBuf::from(m.get("mpspdz").expect("--mpspdz"));

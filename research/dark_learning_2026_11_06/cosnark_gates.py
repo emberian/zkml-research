@@ -67,8 +67,10 @@ class RecEngine(spdz.Engine):
             # TEST (XT, xtrunc.md): the first truncation's mask wraps (c = 0) and the custodians do not redo the step
             self.cheat = dict(self.cheat, xt_wrap=0, xt_ignore=True)
         if attack == "borrow_flip" and not symbolic:
-            # TEST: the first truncation's low-bit comparison flipped, MAC-consistently
-            self.cheat = dict(self.cheat, borrow_flip=0)
+            # TEST: the low-bit comparison of the first e truncation (S2, K2 = 4, 8 in the harness program: its output d2
+            # is a semantic output) flipped, MAC-consistently. (A flip at z1 can leave SIG(u1) unchanged, and under LB
+            # u1 itself is not an output: the proof rightly accepts such a step.)
+            self.cheat = dict(self.cheat, borrow_flip_sk=(4, 8))
         self.symbolic = symbolic
         self.atoms = []            # (kind, tag)
         self.atom_sh = []          # per atom: {party: share} (live only)

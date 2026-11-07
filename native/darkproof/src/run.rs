@@ -219,6 +219,7 @@ pub fn prove_step_d(
     if rec.tpos != st.public.len() {
         return Err("own transcript is longer than the step program".into());
     }
+    rec.xt_refusal().map_err(|e| format!("custodians refuse: {e}"))?;
     st.atoms = rec.witness_atoms(&st.atoms).map_err(|e| format!("middle: {e}"))?;
     let nb = spine::beaver_count_e(d, lp.ext) + rec.proof_products() + middle::beaver_count_e(rec.had.len(), lp.ext);
     let (ls, lm) = if det.on() {
@@ -671,6 +672,7 @@ pub fn prove_release_d(
     let mut tt = crate::Trace::new("release", i);
     let mut rec = step::replay_release(&st.public, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc)
         .map_err(|e| format!("own transcript: {e:?}"))?;
+    rec.xt_refusal().map_err(|e| format!("custodians refuse: {e}"))?;
     tt.lap("replay of the release program");
     if rec.tpos != st.public.len() {
         return Err("own transcript is longer than the release program".into());

@@ -383,7 +383,7 @@ fn ds_bench(d: usize, prof: &str) {
     let t0 = std::time::Instant::now();
     let nt = darkproof::run::step_section(&lp, d, prm, false, &tables);
     let plain = darkstep::step::inputs(d);
-    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_rs(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs);
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_xt(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs, prm.xt);
     darkstep::tape::deal_proof_section(&mut dl, nt);
     let tapes = dl.tapes;
     println!("d={d} profile={prof} program={prm:?} proof-section triples {nt}; dealing {:.1}s", t0.elapsed().as_secs_f64());
@@ -405,6 +405,7 @@ fn ds_bench(d: usize, prof: &str) {
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
+                    pt.xt = prm.xt;
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
                     let t = std::time::Instant::now();
                     let out = pool.install(|| darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)).expect("darkstep step");
@@ -482,6 +483,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let mut dl = darkstep::tape::Dealer::new(p, 3, darkstep::node::DEALER_SEED);
     dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
     dl.rs = prm.rs;
+    dl.xt = prm.xt;
     let mut owner = pycompat::PyRandom::from_u64(darkstep::node::OWNER_SEED);
     let mut plain = darkstep::step::inputs(d);
     // BOUND CONTROL (DP_W2SCALE=s): W2 scaled at genesis so z2 leaves its declared bound 2^K1
@@ -571,6 +573,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
+                    pt.xt = prm.xt;
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
                     let (mut carry, mut head, mut blobs, mut groots): (Option<Carry>, Option<(DS, DS)>, Vec<Vec<u8>>, _) = (None, None, Vec::new(), None);
                     if let Some((w1, w2)) = pgw {
@@ -734,6 +737,27 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     }
     let hw1 = rev([&parts[0].2, &parts[1].2, &parts[2].2], d, p);
     let hw2 = rev([&parts[0].3, &parts[1].3, &parts[2].3], d, p);
+    {
+        // the head against the plaintext twin's chain (step_spec under the same program, `steps` steps on the same x, y)
+        let mut tw = darkstep::step::Plain { w1: plain.w1.clone(), w2: plain.w2.clone(), x: plain.x.clone(), y: plain.y.clone() };
+        let mut twin_ok = true;
+        for _ in 0..steps {
+            match tw.step_prog(&pg) {
+                Ok((a, b)) => {
+                    tw.w1 = a;
+                    tw.w2 = b;
+                }
+                Err(e) => {
+                    println!("plaintext twin chain: {e}");
+                    twin_ok = false;
+                    break;
+                }
+            }
+        }
+        let eq = twin_ok && tw.w1 == hw1 && tw.w2 == hw2;
+        println!("head weights after {steps} steps vs the plaintext twin's chain: {}", if eq { "EQUAL" } else { "DIFFER" });
+        ok_all &= eq;
+    }
     let sig = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
     let mut lr = pycompat::PyRandom::from_u64(78);
     let labels: Vec<usize> = (0..m)
