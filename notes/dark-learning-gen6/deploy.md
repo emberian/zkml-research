@@ -871,3 +871,24 @@ ledger-x2de + RS (8,916,565 entries per step = `step-entries ... --profile ledge
 - Prove 37.8 / 55.0-55.5 s, verify 17.6-23.1 s; bundles 47,487,701 / 47,467,925 B (ledger-x2de; x2's ~76 MB).
 - cgroup peaks 10.94 / 9.49 / 10.71 GB.
 - Handover lane's `--self` count: **37/37**, memory scan after erasure 0.
+
+### Item 3: the rounded step through hbox (run7, 11:35-11:48 UTC) [EXECUTED]
+
+Seat 0 forge, seat 1 bb2, seat 2 hbox (swarm-build, 16G, /othersys), test-dealer tapes, darkstep serve (test4),
+`--ret-primes 2 --ret-round` (the derived rounding), no proof. Loads: forge 0.2-5.3, bb2 10-64, hbox 0.7-9.4 (prep's
+loopback LowGear test on its CPU; its link idle).
+
+| | run 2 (switched) | **run 7 (switched + rounded)** | ratio |
+|---|---:|---:|---:|
+| step seconds | 1,352 | **791.4** | 0.585 |
+| outer G2 / G1 | 608 / 645 s | 361.8 / 352.7 s | 0.57 |
+| matvec z1 / z2 / b | 33 / 39 / 19 s | 26.3 / 28.2 / 16.3 s | |
+| bytes per directed link | 2,352 MB | **1,385.6 MB** | 0.589 |
+| he_ret per link | 2,173 MB | 1,206.8 MB | 0.555 |
+| hbox upload per step | 4.70 GB | 2.77 GB | 0.59 |
+| peak RSS | 4.6-4.7 GB | 4.61 / 4.69 / 4.77 GB | |
+
+ACCEPT at all three, one transcript. On hbox's link a step is ~13 min before any proof: 2,000 steps ~18 days.
+The proof with rounding on: `DL_PROFILE=ledger-x2de DL_RS=1 DL_EXTRA=--ret-round` handover_steps
+rotation_to_a_new_committee_after_step_0 passes at d = 64 (both steps proved and accepted, weights = the twin
+after 2 steps): the proof binds openings and shares, which rounding does not touch. [OPEN] the same at d = 4096.

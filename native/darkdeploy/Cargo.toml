@@ -9,6 +9,7 @@ darkstep = { path = "../darkstep" }
 darkproof = { path = "../darkproof", features = ["tcp"] }
 darkprep = { path = "../darkprep" }
 darkhand = { path = "../darkhand" }
+dlvault = { path = "../dlvault" }
 dzkpopk = { path = "../dzkpopk" }
 darktrain = { path = "../darktrain" }
 pycompat = { path = "../pycompat" }
