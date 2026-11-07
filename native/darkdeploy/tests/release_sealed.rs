@@ -2,8 +2,8 @@
 //! checkpoint: one proved step under `--vault` (ledger profile, d = 64, public genesis); each seat's release tape
 //! sealed in 1 MiB-block form under its own epoch file key with the role "tape|rel|0" (as prep writes them); then
 //! `serve --resume --steps 0 --release`: no step tape is loaded, the release tape is opened under the key, claimed
-//! in the box's registry (its sha256 as on disk) and used. C equals the plaintext count over the revealed head.
-//! Control: a second release-only launch on the same tapes is refused by the registry (single use). Run one at a
+//! in the box's registry (its sha256 as on disk), used, and wiped (--wipe-spent). C equals the plaintext count over
+//! the revealed head. Control: the tapes restored byte for byte are refused by the registry (single use). Run one at a
 //! time (`-- --test-threads=1`).
 #![cfg(target_os = "linux")]
 use darkstep::node::prof;
@@ -115,10 +115,17 @@ fn the_release_alone_from_a_sealed_tape_after_the_checkpoint() {
     assert!(r.iter().all(|x| x.0 == 0), "{r:?}");
     let rel = |i: usize| base.join(format!("seat{i}/rel/step-0/tape_{i}.bin")).to_str().unwrap().to_string();
     let release_only = |i: usize| -> Vec<String> {
-        ["--resume", "--steps", "0", "--release", "--release-data", mnist.to_str().unwrap(), "--release-tape", &rel(i)].iter().map(|s| s.to_string()).collect()
+        ["--resume", "--steps", "0", "--release", "--release-data", mnist.to_str().unwrap(), "--release-tape", &rel(i), "--wipe-spent"].iter().map(|s| s.to_string()).collect()
     };
+    // a copy of each sealed release tape, for the control below
+    for i in 0..3 {
+        std::fs::copy(rel(i), format!("{}.copy", rel(i))).unwrap();
+    }
     let r = launch(&base, &ids, &cs, &release_only);
     assert!(r.iter().all(|x| x.0 == 0), "the release alone: {r:?}");
+    for i in 0..3 {
+        assert!(!Path::new(&rel(i)).exists(), "custodian {i}: --wipe-spent wiped the spent release tape");
+    }
     let reps: Vec<serde_json::Value> =
         (0..3).map(|i| serde_json::from_str(&std::fs::read_to_string(dir.join(format!("release_P{i}.json"))).unwrap()).unwrap()).collect();
     for (i, r) in reps.iter().enumerate() {
@@ -145,7 +152,13 @@ fn the_release_alone_from_a_sealed_tape_after_the_checkpoint() {
     let prm = darkproof::step::StepParams { rc: true, lb: true, ..darkproof::step::StepParams::HARNESS }.deployed();
     let c = darkproof::run::plain_count(&rows(&w[..d * d]), &rows(&w[d * d..]), &xi, &pol.labels, prm, pol.ncls, pol.kc);
     assert_eq!(reps[0]["C"], c, "the released C is the plaintext count over the head");
-    // control: the same release tapes again are refused (single use)
+    for (i, r) in reps.iter().enumerate() {
+        assert_eq!(r["wiped"][0][1], "ok", "custodian {i}: {r}");
+    }
+    // control: the same release tapes again (restored byte for byte) are refused (single use)
+    for i in 0..3 {
+        std::fs::rename(format!("{}.copy", rel(i)), rel(i)).unwrap();
+    }
     let r = launch(&base, &ids, &cs, &release_only);
     for i in 0..3 {
         let rep: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(dir.join(format!("release_P{i}.json"))).unwrap()).unwrap();

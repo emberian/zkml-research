@@ -82,9 +82,9 @@ def main():
     if a.layout == "hbox":
         six[2] = f"127.0.0.1:{base + 42}"
     mesh6 = ",".join(six)
-    # --ret-round (the rounded returns) joins once item 3 has run it on hbox and the proof lane has the proof of
-    # the rounded step; until then the run sends the switched returns unrounded
-    common = ["--ret-primes", "2", "--prove", "--profile", a.profile] + ([] if a.no_rs else ["--rs"]) + [ "--wipe-spent", "--tape-wait", "7200",
+    # --ret-round: the switched returns rounded to their noise bits (run7 through hbox: 0.59 of the bytes; run13: the
+    # rounded step proved and accepted at d = 4096, and its release's C equals the plaintext twin's)
+    common = ["--ret-primes", "2", "--ret-round", "--prove", "--profile", a.profile] + ([] if a.no_rs else ["--rs"]) + [ "--wipe-spent", "--tape-wait", "7200",
               "--pause-utc", "10:00-11:00", "--timeout", "3600", "--pipeline-proofs"] + \
              (["--nat", "2", "--nat6", "2,5"] if a.layout == "hbox" else [])
     def bin_(b):

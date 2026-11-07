@@ -798,12 +798,14 @@ impl Prove {
                 let (pre, rt) = darkproof::run::load_release_tape_sealed(p, nrt, key, &format!("tape|{c}|{j}"))?;
                 // claimed once opened (its MAC key share is inside the seal), before any entry is used
                 serve::claim_tape_file(&f, Some(pre.alpha_i))?;
+                *RELEASE_SPENT.lock().unwrap() = Some(f.clone());
                 (pre, rt)
             } else {
                 if serve::sealing() && !cfg!(feature = "test-harness") {
                     return Err(format!("{f}: a plain release tape, but this custodian takes only sealed preprocessing"));
                 }
                 serve::claim_tape_file(&f, None)?;
+                *RELEASE_SPENT.lock().unwrap() = Some(f.clone());
                 darkproof::run::load_release_tape(Path::new(&f), nrt)?
             };
             st.load_tape(pre)?;
@@ -956,11 +958,29 @@ impl Prove {
             let mut st = st;
             let r = self.release(&mut st, dir);
             st.pt.net.shutdown();
+            // --wipe-spent: the release's own tape once claimed (single use: spent whether the release then succeeded
+            // or not); a tape refused before its claim is unused and stays
+            let mut wiped = Value::Null;
+            if self.args.iter().any(|a| a == "--wipe-spent") {
+                if let Some(f) = RELEASE_SPENT.lock().unwrap().take() {
+                    let w = serve::wipe_file(Path::new(&f)).map(|_| "ok".to_string()).unwrap_or_else(|e| e.to_string());
+                    wiped = json!([[f, w]]);
+                }
+            }
+            let rp = dir.join(format!("release_P{i}.json"));
             return Ok(match r {
-                Ok(_) => 0,
+                Ok(_) => {
+                    if !wiped.is_null() {
+                        if let Some(mut v) = std::fs::read(&rp).ok().and_then(|b| serde_json::from_slice::<Value>(&b).ok()) {
+                            v["wiped"] = wiped;
+                            std::fs::write(&rp, serde_json::to_string_pretty(&v).unwrap()).unwrap();
+                        }
+                    }
+                    0
+                }
                 Err(e) => {
                     eprintln!("release: {e}");
-                    std::fs::write(dir.join(format!("release_P{i}.json")), serde_json::to_string_pretty(&json!({"party": i, "error": e})).unwrap()).unwrap();
+                    std::fs::write(&rp, serde_json::to_string_pretty(&json!({"party": i, "error": e, "wiped": wiped})).unwrap()).unwrap();
                     1
                 }
             });
@@ -968,6 +988,9 @@ impl Prove {
         Err(st)
     }
 }
+
+/// The release's own tape once this process has claimed it (--wipe-spent wipes it after the release).
+static RELEASE_SPENT: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
 /// --genesis-cfg CFG.json: the public genesis W = darktrain::init(cfg) (public by design: a committed genesis file
 /// with a public seed). Otherwise darkstep's --genesis-public FILE, or an owner-input genesis.
