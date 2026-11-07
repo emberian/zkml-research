@@ -537,8 +537,21 @@ State: darkhand at 09fd154d. Handover proof in F_{p^EXT} at 1bfb04a3.
 - **Shell gotcha:** in Monitor and Bash commands, zsh does not word-split `set -- $x`. Wrap such loops in `bash -c`.
   An earlier zsh monitor stayed silent because of this.
 
-**F_{p^2}:** done for the handover. The proof lane (a8ee5558dd7fe5a45) will send cut E's interface: the handover
-becomes the discharge of the head's pending claims, proof.md §21.
+**F_{p^2}:** done for the handover (1bfb04a3).
+
+**Cut E discharge through the handover (next quest; profiles demo-x2de / ledger-x2de, DEFER; proof lane
+aafff52532f04d20a; its interface is proof.md §21-22, 2adc6652):**
+- **Old side:**
+  - the head's W1, W2 (w_shape, one life, base 0) are opened once, at the pending points;
+  - the carries c1p, c2p (carry_shape(p, True), second life) are opened at the zero point, and their roots are
+    checked against `deferred_of(Ledger.pending)["carry_roots"]`;
+  - the constraints are those of close_constraints: Y(W at r_k) - C(carry) = 0.
+- **Ledger** (proofwire.py, the edit assigned to me): rotate passes `deferred_of(self.pending)` to the handover
+  verifier, and `_replay` calls `discharge("handover")` on a rotate record.
+- **Open question, asked of the proof lane:** the new commitment's lives. Either (a) the new W keeps two lives and
+  the next step accepts that parent shape, or (b) my preference: the handover leaves the new head pending through
+  new carries cN = new W(r), committed by the new committee, and the next step discharges them.
+- **Native E** waits for the proof lane's native D/E helpers.
 
 **Open:**
 - the LowGear-Secrets alpha form, which the prep lane reports;
