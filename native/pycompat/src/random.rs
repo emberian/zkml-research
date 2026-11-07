@@ -91,6 +91,26 @@ impl PyRandom {
         Self::from_biguint(&BigUint::from_bytes_be(&buf))
     }
 
+    /// `random.Random().setstate((3, words + (idx,), None))`: the 624 MT words and the position, as
+    /// `getstate()[1]` lists them (625 entries).
+    pub fn from_state(state: &[u64]) -> Self {
+        assert_eq!(state.len(), NN + 1, "getstate()[1] has 625 entries");
+        let mut mt = Box::new([0u32; NN]);
+        for (m, &w) in mt.iter_mut().zip(state) {
+            *m = u32::try_from(w).expect("MT word");
+        }
+        let idx = state[NN] as usize;
+        assert!(idx <= NN, "MT position");
+        PyRandom { mt, idx }
+    }
+
+    /// The inverse of `from_state` (625 entries).
+    pub fn state(&self) -> Vec<u64> {
+        let mut out: Vec<u64> = self.mt.iter().map(|&w| w as u64).collect();
+        out.push(self.idx as u64);
+        out
+    }
+
     fn twist(&mut self) {
         let mt = &mut self.mt;
         const UPPER: u32 = 0x8000_0000;
@@ -227,6 +247,60 @@ impl PyRandom {
         }
     }
 
+    /// getrandbits(k) into a fixed array of W little-endian limbs (k <= 64 W), no allocation.
+    #[inline]
+    pub fn getrandbits_arr<const W: usize>(&mut self, k: u32) -> [u64; W] {
+        let mut out = [0u64; W];
+        if k <= 32 {
+            out[0] = self.getrandbits_u64(k);
+            return out;
+        }
+        debug_assert!(k as usize <= 64 * W);
+        let mut rem = k as i64;
+        let mut w = 0usize;
+        while rem > 0 {
+            let mut r = self.genrand_u32();
+            if rem < 32 {
+                r >>= 32 - rem;
+            }
+            out[w / 2] |= (r as u64) << (32 * (w % 2));
+            w += 1;
+            rem -= 32;
+        }
+        out
+    }
+
+    /// _randbelow(n) for n given as W limbs, no allocation.
+    #[inline]
+    pub fn randbelow_arr<const W: usize>(&mut self, n: &[u64; W]) -> [u64; W] {
+        let k = bitlen(n);
+        if k == 0 {
+            return [0; W];
+        }
+        loop {
+            let r = self.getrandbits_arr::<W>(k);
+            if lt(&r, n) {
+                return r;
+            }
+        }
+    }
+
+    /// randint(-2^f, 2^f) as (negative?, magnitude) in W limbs, no allocation (f + 2 <= 64 W).
+    #[inline]
+    pub fn randint_sym_pow2_arr<const W: usize>(&mut self, fbits: u32) -> (bool, [u64; W]) {
+        let mut width = [0u64; W];
+        width[(fbits as usize + 1) / 64] |= 1u64 << ((fbits + 1) % 64);
+        width[0] += 1;
+        let r = self.randbelow_arr(&width);
+        let mut f = [0u64; W];
+        f[fbits as usize / 64] |= 1u64 << (fbits % 64);
+        if lt(&r, &f) {
+            (true, sub_arr(&f, &r))
+        } else {
+            (false, sub_arr(&r, &f))
+        }
+    }
+
     /// choice(seq) index for len(seq) = n.
     #[inline]
     pub fn choice_idx(&mut self, n: usize) -> usize {
@@ -269,6 +343,18 @@ pub fn sub_limbs(a: &[u64], b: &[u64]) -> Vec<u64> {
     for i in 0..a.len() {
         let y = *b.get(i).unwrap_or(&0);
         let (d1, b1) = a[i].overflowing_sub(y);
+        let (d2, b2) = d1.overflowing_sub(borrow);
+        out[i] = d2;
+        borrow = (b1 || b2) as u64;
+    }
+    out
+}
+
+fn sub_arr<const W: usize>(a: &[u64; W], b: &[u64; W]) -> [u64; W] {
+    let mut out = [0u64; W];
+    let mut borrow = 0u64;
+    for i in 0..W {
+        let (d1, b1) = a[i].overflowing_sub(b[i]);
         let (d2, b2) = d1.overflowing_sub(borrow);
         out[i] = d2;
         borrow = (b1 || b2) as u64;

@@ -45,24 +45,30 @@ def layout(d1, d2, N):
 
 class HEOuter:
     """Drop-in for eng.outer(a, x) on an spdz.Engine (live mode)."""
-    def __init__(self, eng, keys, N, Q, seed=13, flood_bits=40, attack=None, context=("model", 0, 0)):
+    def __init__(self, eng, keys, N, Q, seed=13, flood_bits=40, attack=None, context=("model", 0, 0),
+                 per_return_rng=False):
         self.eng, self.keys, self.N, self.Q = eng, keys, N, Q
         self.p = eng.p
+        self.seed = seed
         self.rng = random.Random(seed)
+        self.per_return_rng = per_return_rng   # as he_matvec.HEMatvec: one stream per return, for distributed custodians
         self.flood_bits = flood_bits
         self.attack = attack           # (kind, party)
         self.context = context
         self.wire = {"he_send": 0, "he_return": 0, "commit": 0}
         self.cts_sent = self.cts_returned = self.calls = 0
 
-    def _return(self, kj, P, ct, j_mask):
-        """i's reply: P * ct + round(Q M / t) + Enc_pk_j(0) + flood; returns (ciphertext, M)."""
+    def _return(self, kj, P, ct, j_mask, key=None):
+        """i's reply: P * ct + round(Q M / t) + Enc_pk_j(0) + flood; returns (ciphertext, M). key = (i, j, ab, b, kind)
+        names the return's own stream in per_return_rng mode."""
         Q, N, p = self.Q, self.N, self.p
+        rg = (random.Random("ho|%d|%d|%d|%d|%d|%d|%s" % ((self.seed, self.calls) + tuple(key)))
+              if self.per_return_rng else self.rng)
         acc = HM.ptxct(P, ct, Q)
-        M = [self.rng.randrange(p) for _ in range(N)]
-        z0 = kj.enc_zero_pk(self.rng)
+        M = [rg.randrange(p) for _ in range(N)]
+        z0 = kj.enc_zero_pk(rg)
         F = 1 << ((N * (p // 2) * 16 * 2).bit_length() + self.flood_bits)
-        c0 = [(x + y + (2 * Q * bfv.centered(mm, p) + p) // (2 * p) + self.rng.randint(-F, F)) % Q
+        c0 = [(x + y + (2 * Q * bfv.centered(mm, p) + p) // (2 * p) + rg.randint(-F, F)) % Q
               for x, y, mm in zip(acc[0], z0[0], M)]
         c1 = [(x + y) % Q for x, y in zip(acc[1], z0[1])]
         self.wire["he_return"] += 2 * N * 3
@@ -104,7 +110,7 @@ class HEOuter:
                         Dm[64 * r] = Am[i][ab * dr + r]
                     for b in range(d2 // dc):
                         for P, tgt, kind in ((D, G, "val"), (Dm, Gm, "mac")):
-                            ct, M = self._return(kj, P, sent[b], None)
+                            ct, M = self._return(kj, P, sent[b], None, key=(i, j, ab, b, kind))
                             dec = kj.sch.decrypt(ct)
                             for r in range(dr):
                                 for c in range(dc):
