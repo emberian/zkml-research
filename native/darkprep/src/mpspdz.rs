@@ -226,8 +226,9 @@ impl Run {
 
     /// After an abort, never reuse the MAC key: a selective failure in MASCOT's authentication can leak bits of an
     /// honest alpha_i, and the leak only stays bounded if the key that leaked is discarded. MP-SPDZ keeps alpha_i in
-    /// `Player-Data/Mascot-Secrets-p-*`; renaming the files makes the next run generate fresh keys (tapes not yet
-    /// consumed under the old key must be regenerated). Files are renamed, not deleted.
+    /// `Player-Data/Mascot-Secrets-p-*`; erasing the files makes the next run generate fresh keys (tapes not yet
+    /// consumed under the old key must be regenerated). Files are overwritten, synced and unlinked (wipe_file): a
+    /// retired alpha share left on disk would defeat the erasure the handover proves.
     pub fn retire_mac_keys(&self) -> Vec<PathBuf> {
         retire_mac_keys(&self.mpspdz, None)
     }
@@ -251,13 +252,13 @@ pub fn wipe_file(path: &Path) -> std::io::Result<()> {
     std::fs::remove_file(path)
 }
 
-/// Retire (rename) the MASCOT MAC key files of the 61-bit field, for one party (a custodian box) or all of them
-/// (a loopback test). Only `Mascot-Secrets-p-61-*` files: other protocols' material in the same directory is
-/// left alone.
+/// Retire (wipe: overwrite, sync, unlink) the MAC key files of the 61-bit field, for one party (a custodian box) or
+/// all of them (a loopback test): `Mascot-Secrets-p-61-*`, `LowGear-` / `HighGear-Secrets-*` and
+/// `3-p-61/Player-MAC-Keys-p-P<i>`, and any `*.retired-*` copy an older build left by renaming. Other fields'
+/// material in the same directory is left alone.
 pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
     {
         let dir = mpspdz.join("Player-Data");
-        let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
         let mut out = Vec::new();
         if let Ok(rd) = std::fs::read_dir(&dir) {
             for e in rd.flatten() {
@@ -265,11 +266,8 @@ pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
                 let mine = party.map(|i| name.contains(&format!("-P{i}-"))).unwrap_or(true);
                 // MASCOT keeps alpha_i in Mascot-Secrets-p-61-*; LowGear/HighGear in LowGear-/HighGear-Secrets-*
                 let keyfile = name.starts_with("Mascot-Secrets-p-61-") || name.starts_with("LowGear-Secrets-") || name.starts_with("HighGear-Secrets-");
-                if keyfile && mine && !name.contains(".retired-") {
-                    let to = dir.join(format!("{name}.retired-{stamp}"));
-                    if std::fs::rename(e.path(), &to).is_ok() {
-                        out.push(to);
-                    }
+                if keyfile && mine && wipe_file(&e.path()).is_ok() {
+                    out.push(e.path());
                 }
             }
         }
@@ -278,11 +276,9 @@ pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
             for e in rd.flatten() {
                 let name = e.file_name().to_string_lossy().into_owned();
                 let mine = party.map(|i| name == format!("Player-MAC-Keys-p-P{i}")).unwrap_or(true);
-                if name.starts_with("Player-MAC-Keys-p-P") && mine && !name.contains(".retired-") {
-                    let to = dir.join("3-p-61").join(format!("{name}.retired-{stamp}"));
-                    if std::fs::rename(e.path(), &to).is_ok() {
-                        out.push(to);
-                    }
+                let mine = mine || party.map(|i| name.starts_with(&format!("Player-MAC-Keys-p-P{i}.retired-"))).unwrap_or(false);
+                if name.starts_with("Player-MAC-Keys-p-P") && mine && wipe_file(&e.path()).is_ok() {
+                    out.push(e.path());
                 }
             }
         }
