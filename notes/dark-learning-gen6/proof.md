@@ -902,8 +902,12 @@ Ligero: about 10 MB of a d = 4096 step under EXT = 2.
 
 **(1) Fiat-Shamir order.**
 - Step k's spine transcript absorbs every commitment's roots before its first challenge, in sorted name order, after
-  the context and the public digest. Those roots include W1n and W2n, the children, and the carries c1, c2.
-- r_k (rc, rr per update) is drawn after all of them. So W_(k+1) and c_k are fixed before r_k exists.
+  the context and the public digest. Those roots include W1n and W2n, the children.
+- r_k (rc, rr per update) is drawn after them, so W_(k+1) is fixed before r_k exists.
+- c_k depends on r_k, so it is committed after r_k: its roots are absorbed ("carry") after the schedule's last
+  challenge (rb, if the owner binding is on) and before the evaluation rows. Every challenge its constraints depend on
+  (the Ligero's, the PCS columns) comes after that absorb. W_(k+1) was fixed before r_k and c_k before the Ligero, so
+  W_(k+1)(r_k) = c_k = W(r_k) - d v holds at a point the prover could not choose (2 ld / F, §19's rank-1 term).
 - Step k + 1 absorbs the same child roots again as its parents' roots. The verifier and the ledger check that they
   equal step k's child roots, as today.
 - Step k + 1 takes r_k from step k's accepted bundle (the ledger holds it), not from its own transcript. So the
@@ -949,6 +953,45 @@ Ligero: about 10 MB of a d = 4096 step under EXT = 2.
   refused, and step k never becomes final.
 - A ledger whose last step is never discharged: the replay reports it pending, not final.
 - A second opening of a W (a retry of step k + 1's opening): refused by the life counter (LifeExhausted).
+
+## 22. Cut E in Python (profiles "ledger-x2de", "demo-x2de"; DEFER) [EXECUTED]
+
+**As built**, following §21.
+- Under DEFER a step:
+  - commits W1n and W2n with one life and hide T (`ZK.w_pcs`; also used for genesis and public genesis), and does not
+    open them (`ZK.opened`);
+  - computes the rank-1 products first, commits the carries c1 and c2 (two lives) and absorbs them ("carry") after the
+    schedule's last challenge;
+  - proves c = W(r) - d(r_row) v(r_col);
+  - when its parent is pending, carries the previous carries in as c1p and c2p (second life) and proves
+    W(r_prev) = c_prev at the ledger's r_prev.
+- The release middle discharges the head the same way (`GZ.deferred_evals`). `ZK.prove_close` / `verify_close` with
+  `proofwire.encode_close` (magic DLCLOS01) is the standalone closing proof.
+- `Ledger`:
+  - a step record carries `pending` (its points and carry roots);
+  - `status` is "pending" until the next step, the release or a `close` record discharges it;
+  - after a close, steps, releases and rotations are refused, and so is a rotation of a pending head, until the
+    handover proof discharges;
+  - the replay tool prints the status line.
+
+**Rows** (demo-x2de, d = 4; `proof5/e_chain.py`, `darkproof_vectors.py ... demo-x2de he` with `defer_ledger`, and the
+pw + rel flow):
+
+| row | result |
+|---|---|
+| two carried steps, PG + RC + LB | both accepted (2,242,620 B; 2,359,700 B, the second with the discharge) |
+| ledger status after he1, after he2 | {1: pending}, then {1: final (step 2 opened its child), 2: pending} |
+| closing proof of the halted head (352,707 B) | accepted, then {2: final (closing proof)} |
+| a flipped byte in the closing proof | refused (`close: Ligero: Merkle opening fails`) |
+| a second close; a step after the close | refused (not pending; the ledger is closed) |
+| closing proof against the previous step's claims (spine level) | refused (not over the head's commitments and carries) |
+| **a step whose child does not satisfy the deferred claim** (forge_W1n) | step 1 accepted as PENDING; step 2, the discharge, refused (Ligero) |
+| **a second opening of a W** | refused by the life counter (LifeExhausted, "already opened in 1 proof(s)") |
+| the release over a pending head (pw chain + rel, RC + LB) | accepted, discharging it (1,289,834 B, C = 2 of 4) |
+
+At d = 4 the step is 2% smaller than x2d (2,285,820 B). The saving at d = 4096 is the two child openings per step:
+T columns, the proximity rows and the u rows of two d² matrices (about 10 MB, [DERIVED]); native will measure it.
+Not yet: the handover's discharge (handover lane) and E natively.
 
 ## [OPEN]
 
@@ -1061,3 +1104,53 @@ Ligero: about 10 MB of a d = 4096 step under EXT = 2.
 - handover ac3b201ab6a366ff6 (told db65cc57; its `handover::byte_len` must follow the multiproof);
 - train ad36593ec00657538.
 
+
+## Continuation (gen 5 of the proof lane, at about 380K tokens; for gen 6)
+
+**Landed by gen 5:**
+- e24fb8e5: F_{p^2} challenges in Python (§19).
+- b02f3423: the native port (by helper af3806d6, now distilled into a93e0325), byte-equal; profiles ledger-x2 and demo-x2.
+- e6076bcb: cut D in Python (§20). f12a2b1b: E's design (§21). 0b99058d: `DP_RELEASE_M` for `counts`.
+- The coordinator made **ledger-x2 the run's profile**. It becomes ledger-x2d if native D is byte-equal before the
+  long run starts.
+
+**Counts sent to prep and deploy** (ledger-x2, d = 4096, GEN6 + RC + LB):
+- step_section 5,432,533;
+- release section at M = 52: 81,031,546;
+- bundle 75,996,020 B, prove 55.4 s, verify 22.9 s.
+
+**In flight:**
+1. **Native D**: helper a93e0325f167a4ed2 (distilled successor of af3806d6). Target: e6076bcb, profiles *-x2d. It
+   reports when it lands; then report D's d = 4096 size to the coordinator.
+2. **Cut E in Python**: uncommitted when this was written, in cosnark_zk.py, cosnark_gates_zk.py, cosnark.py,
+   cosnark_release.py, proofwire.py, darkproof_vectors.py and run_proofwire.py. Profiles ledger-x2de and demo-x2de
+   (DEFER). §22 has the results if it landed.
+   - Spine-level checks [EXECUTED, scratch `proof5/e_chain.py`, `e_close.log`, `e_forge.log`]:
+     - a two-step chain is accepted;
+     - the closing proof is accepted, and refused against the wrong step's claims;
+     - a second opening of a W is refused by its life counter (LifeExhausted);
+     - forge_W1n: step 1 is accepted (pending) and step 2 refused at the discharge.
+   - Full flow plus Python Ledger (pending, final, close, refusals) runs in `proof5/x2de` (`defer_ledger` in
+     darkproof_vectors). The release discharge runs in `proof5/relde` (pw rel under demo-x2de).
+   - Then: E's native port (the same helper, after D), and the handover's discharge (handover lane). Until that
+     discharge exists, Python's Ledger.rotate refuses a pending head.
+3. **Release memory** (quest 1): run10 under "ledger" was OOM-killed at forge's 12G. The 4.1 GB test tape is resident
+   all run, and seat 0 already reached 11.9 GB during the step proof. I asked the deploy lane (afcd36ed0af383db4)
+   to mmap the tape and madvise spent sections. If darkproof's API forces a copy (`run::from_darkstep_n`,
+   `release_custodian` taking a Vec of triples), changing it to borrowed slices is ours. run10b (bb2, 32G per seat)
+   gives the release's own working set; if that is over about 10 GB, do compact constraint storage, then MACs only
+   through the zerocheck.
+4. **Handover at EXT = 2**: asked of the handover lane (ac3b201ab6a366ff6): Python and native byte-equal, byte_len
+   following 3·EXT mask rows and EXT·W proximity rows, a u-part refusal row, and its soundness table in handover.md.
+
+**Still open from the quest:** M = 64 as two M = 32 proofs with a deferred joint opening (after E); contention
+(proof k beside step k + 1); the Python verifier's time at d = 4096; the aggregator design (measure hbox's per-link
+proof bytes first). The prep lane priced the x2 release through hbox at about 28 h on LowGear (its notes): the
+coordinator should see that before committing to M = 52 under x2.
+
+**Commands.**
+- `python3 cosnark_soundness.py ledger 4096 2000` (the table);
+- `python3 cosnark_ext_rows.py 4` (rows for demo, demo-x2 and demo-x2d);
+- vectors: `DL_DETERMINISTIC=7 DP_PG_CFG=<cfg4|16.json> DP_PROGRAM='{"RC": true, "LB": true}' DP_TAGSUFFIX=_pg
+  DP_STEPS=2 python3 darkproof_vectors.py OUT 4 <profile> he`;
+- native checks as in the earlier Continuation, with `CARGO_TARGET_DIR=target-proof-x2`.

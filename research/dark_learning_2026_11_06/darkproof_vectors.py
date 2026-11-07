@@ -57,7 +57,8 @@ def step_only(p, tab, d, W1, W2, x, y, dump, carry_wires=None, cheat_phase=None,
     json.dump(witness(p, d, dealer, live, wires), open(dump, "w"))
     return wires
 
-def make_bundle(p, tab, d, W1, W2, x, y, ctx, carry=None, carry_wires=None, owner=None, signed=None, dump=None):
+def make_bundle(p, tab, d, W1, W2, x, y, ctx, carry=None, carry_wires=None, owner=None, signed=None, dump=None,
+                deferred=None):
     """run_proofwire.make_bundle, with the witness written to `dump` right after the step."""
     dealer = spdz.Dealer(p, 3, 5)
     live = G.RecEngine(p, 3, dealer)
@@ -77,7 +78,8 @@ def make_bundle(p, tab, d, W1, W2, x, y, ctx, carry=None, carry_wires=None, owne
         xs, ys = signed or (x, y)
         ox, oy = ZK.owner_commit(p, xs, "xo"), ZK.owner_commit(p, ys, "yo")
         sig = owner.sign(OS.batch_message(ctx, ox.roots, oy.roots))
-    spine, sst = ZK.prove_zk(spdz.Engine(p, 3, dealer), wires, carry=carry, context=ctx, owner_x=ox, public=public)
+    spine, sst = ZK.prove_zk(spdz.Engine(p, 3, dealer), wires, carry=carry, context=ctx, owner_x=ox, public=public,
+                             deferred=deferred)
     sym = G.RecEngine(p, 3, None, symbolic=True, transcript=list(live.transcript))
     MF.run_step(sym, None, None, [0] * d, [0] * d, tab, 9)
     middle, mst = GZ.prove_middle_zk(live, sym, wires, sst["coms"], context=ctx, owner_y=oy)
@@ -142,6 +144,7 @@ def he_flow(out, d, prof, steps=3):
         carry, parent = PW.public_genesis(p, d, W1, W2)
         carried = (PW.public_genesis_shares(p, W1, dealer.alpha_sh), PW.public_genesis_shares(p, W2, dealer.alpha_sh))
         meta["genesis_roots"], meta["pg_cfg"] = parent, os.path.abspath(pg_cfg)
+    dfr_prev = pend_prev = None
     for k in range(1, steps + 1):
         cr = k > 1 or bool(pg_cfg)
         attack = os.environ.get("DP_ATTACK") if k == 1 else None   # TEST: a malformed step 1 (refusal rows)
@@ -166,12 +169,13 @@ def he_flow(out, d, prof, steps=3):
         name = f"he{k}"
         json.dump(witness(p, d, dealer, live, wires), open(os.path.join(out, f"{tag}_{name}.json"), "w"))
         ctx = (model, 0, k)
-        spine, sst = ZK.prove_zk(spdz.Engine(p, 3, dealer), wires, carry=carry, context=ctx, public=public)
+        spine, sst = ZK.prove_zk(spdz.Engine(p, 3, dealer), wires, carry=carry, context=ctx, public=public,
+                                 deferred=dfr_prev)
         sym = CH.replay(p, public, d, tab, prog, carried=cr)
         assert sym.tpos == len(public)
         middle, mst = GZ.prove_middle_zk(live, sym, wires, sst["coms"], context=ctx)
         blob = PW.encode_step(p, ctx, d, 3, True, spine, public, middle, sym)
-        ok, why, res = PW.verify_step(p, blob, ctx, parent, tab, d, program=program)
+        ok, why, res = PW.verify_step(p, blob, ctx, parent, tab, d, program=program, deferred=pend_prev)
         if attack:
             print(f"attack {attack}: python verify: {ok} {why} | first violated row: {mst.get('first_violated')}", flush=True)
             open(os.path.join(out, f"{tag}_{name}.bin"), "wb").write(blob)
@@ -184,8 +188,36 @@ def he_flow(out, d, prof, steps=3):
                                      owner_pk=None, carried=cr)
         print(name, len(blob), len(public), "python verify:", why, flush=True)
         parent, carry, carried = res[0], sst["child"], (W1n, W2n)
+        dfr_prev, pend_prev = sst.get("deferred"), res[2]       # cut E: the claims the next step discharges
+        last = (ctx, sst)
         W1 = W2 = None
+    if ZK.DEFER and pg_cfg and steps >= 1:
+        defer_ledger(out, tag, meta, p, tab, steps, last)
     json.dump(meta, open(os.path.join(out, f"{tag}_he_meta.json"), "w"), indent=1)
+
+def defer_ledger(out, tag, meta, p, tab, steps, last):
+    """Cut E through Python's Ledger: each step is pending until the next one opens its child; the head stays pending
+    (a halted run) until the closing proof; a second closing proof, and a step after the close, are refused."""
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="defer-ledger-")
+    d = meta["d"]
+    gen = dict(d=d, owner_pk=None, custodians=["c0", "c1", "c2"], roots=meta["genesis_roots"], program=meta["program"])
+    lg = PW.Ledger(os.path.join(tmp, "mind-0.ledger"), "mind-0", gen)
+    print("defer ledger: public genesis", lg.check_public_genesis(open(meta["pg_cfg"], "rb").read()), flush=True)
+    blobs = [open(os.path.join(out, f"{tag}_he{k}.bin"), "rb").read() for k in range(1, steps + 1)]
+    for k, b in enumerate(blobs, 1):
+        r = lg.accept(p, b, tab)
+        print(f"defer ledger: accept he{k}: {r}; status {dict(sorted(lg.status.items()))}", flush=True)
+    (model, ep, st), sst = last
+    cproof, cst = ZK.prove_close(p, 3, sst["child"], sst["deferred"], (model, ep, st, "close"))
+    cblob = PW.encode_close(p, (model, ep, st), d, 3, cproof)
+    open(os.path.join(out, f"{tag}_close.bin"), "wb").write(cblob)
+    bad = bytearray(cblob); bad[-40] ^= 1
+    print("defer ledger: a flipped byte in the closing proof:", lg.close(p, bytes(bad)), flush=True)
+    print("defer ledger: close:", lg.close(p, cblob), f"({len(cblob)} B); status {dict(sorted(lg.status.items()))}", flush=True)
+    print("defer ledger: a second close:", lg.close(p, cblob), flush=True)
+    print("defer ledger: a step after the close:", lg.accept(p, blobs[-1], tab), flush=True)
+    meta["close"] = dict(blob=f"{tag}_close.bin", ctx=[model, ep, st], status={str(k): v for k, v in lg.status.items()})
 
 def verify_native(out, tag):
     """Python's verifier on the native bundles (TAG_<name>.native.bin), with a one-byte-flip control each."""
@@ -294,7 +326,8 @@ def main():
         meta["genesis_roots"] = {k: s1["genesis"][k].roots for k in ("W1", "W2")}
         cw = (s1["wires"]["W1n"], s1["wires"]["W2n"])
         s2 = make_bundle(p, tab, d, dec(s1["wires"]["W1n"]), dec(s1["wires"]["W2n"]), x, y, (model, 0, 2),
-                         carry=s1["child"], carry_wires=cw, dump=os.path.join(out, f"{tag}_pw2.json"))
+                         carry=s1["child"], carry_wires=cw, dump=os.path.join(out, f"{tag}_pw2.json"),
+                         deferred=s1["sst"].get("deferred"))
         save("pw2", (model, 0, 2), s2)
         print("pw", len(s1["blob"]), len(s2["blob"]), flush=True)
         if "check" in flows:
@@ -330,7 +363,7 @@ def main():
         wit = witness(p, d, dealer, live, dict(W1=head["W1n"], W2=head["W2n"]))
         wit.update(ext={k: [sv(v) for v in z1h[k]] for k in ("z1", "h")}, X=X, labels=labels, ncls=ncls, M=M)
         json.dump(wit, open(os.path.join(out, f"{tag}_rel.json"), "w"))
-        rel, rst = CR.prove(live, sym, hw, z1h, s2["child"], ctx, io)
+        rel, rst = CR.prove(live, sym, hw, z1h, s2["child"], ctx, io, deferred=s2["sst"].get("deferred"))
         if rel is None:
             print("rel: the custodians refuse to prove:", rst["error"], flush=True)
             import cosnark_gates_zk as GZ2
@@ -347,7 +380,11 @@ def main():
         blob = PW.encode_release(p, ctx, d, 3, M, ncls, public, rel, sym, io)
         open(os.path.join(out, f"{tag}_rel.bin"), "wb").write(blob)
         heads = {k: s2["child"][k].roots for k in ("W1", "W2")}
-        ok, why, res = PW.verify_release(p, blob, ctx, heads, X, labels, rprog, ncls, d)
+        rdef = None
+        if s2["sst"].get("deferred"):
+            sd = s2["sst"]["deferred"]
+            rdef = dict(points=sd["points"], carry_roots={k: sd["carries"][k].roots for k in ZK.CARRY_IN})
+        ok, why, res = PW.verify_release(p, blob, ctx, heads, X, labels, rprog, ncls, d, deferred=rdef)
         assert ok, why
         Cp = CR.plain_count(dec(head["W1n"]), dec(head["W2n"]), X, labels, prog, ncls)
         assert C == Cp, (C, Cp)

@@ -98,10 +98,11 @@ def replay(p, public, X, labels, prog, ncls=10, kc=KC):
     return sym
 
 
-def prove(live, sym, head_wires, z1h, head_coms, ctx, io):
-    """head_wires: the head's W1, W2 share vectors (flat d^2); z1h: run_release's z1, h share vectors."""
+def prove(live, sym, head_wires, z1h, head_coms, ctx, io, deferred=None):
+    """head_wires: the head's W1, W2 share vectors (flat d^2); z1h: run_release's z1, h share vectors. deferred (cut
+    E): the last step's stats["deferred"], whose claims the release discharges."""
     wires = dict(W1=head_wires["W1"], W2=head_wires["W2"], z1=z1h["z1"], h=z1h["h"])
-    return GZ.prove_middle_zk(live, sym, wires, head_coms, context=ctx, io=io)
+    return GZ.prove_middle_zk(live, sym, wires, head_coms, context=ctx, io=io, deferred=deferred)
 
 
 def plain_scores(W1, W2, X, prog, ncls=10):

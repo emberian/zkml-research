@@ -132,7 +132,7 @@ def row_layout(sh, ev, lh, Lmax, lens=None):
         urows.append(list(range(nxt, nxt + X.EXT * nr))); nxt += X.EXT * nr
     return zrows, crow, lrows, urows, (nxt, nxt + 1, nxt + 2), nxt + 3
 
-def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=None):
+def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=None, deferred=False):
     """As cosnark_zk.constraints: identities over F_{p^EXT}, EXT F_p constraints each. A round's or the claims
     row's value j, component k, sits at position j EXT + k."""
     zrows, crow, lrows, urows, prod, _ = layout
@@ -219,13 +219,24 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=No
         lc = X.lagc(2, rr[-1], p)
         cur[0] = f"linear sumcheck {k}: final"
         add(*[RC(lrows[-1], 3 * i + j, lc[j]) for j in range(3)], Y(3 + i, neg(coef)))
-    if len(ev) == 3 + len(ks) + 2:
+    if deferred:
+        # cut E: the carried head W's pending claims, discharged in this proof (the release)
+        e0 = len(ev) - 4
+        Cv = lambda e, coef: ev_(p, ecell([U(e, kk)[0].popitem()[0] for kk in range(E)]), coef)
+        for i, nm in enumerate(("W1", "W2")):
+            cur[0] = f"deferred claim of the head {nm}: {nm}(r_k) = c_k"
+            add(Y(e0 + 2 * i), Cv(e0 + 2 * i + 1, m1))
+    elif len(ev) == 3 + len(ks) + 2:
         cur[0] = "signed input binding: the custodians' y = the owner's signed y"
         add(Y(len(ev) - 2), Y(len(ev) - 1, m1))
     return lin, [prod], labels
 
+def deferred_evals(points):
+    cpt = [X.zero()] * ZK.carry_m()
+    return [("W1", list(points["W1"])), ("c1p", cpt), ("W2", list(points["W2"])), ("c2p", cpt)]
+
 def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model", 0, 0), seed=2, owner_y=None, io=None,
-                    ignore_range=False):
+                    ignore_range=False, deferred=None):
     p, n = live.p, live.n
     zero = {i: (0, 0) for i in range(n)}
     cons_l, had_l, prep_l, ext_l = G.middle(live)
@@ -259,11 +270,16 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     for k, V in vecs.items():
         if k in carried:
             com[k] = spine_coms[k]                             # the spine's commitment, carried: same root
-            com[k].base = com[k].block                         # its second life (second proximity mask)
+            if not (ZK.DEFER and k in ("W1", "W2")):
+                com[k].base = com[k].block                     # its second life (second proximity mask)
         else:
             com[k] = ZK.ZKPCS(p, sh_(V), k)
     if owner_y is not None:
         com["yo"] = owner_y
+    if deferred is not None:
+        for k in ZK.CARRY_IN:
+            com[k] = deferred["carries"][k]
+            com[k].base = com[k].block
     L = Z.Prover(Z.Params(p, ZK.K_L, ZK.T_HIDE, ZK.T_OPEN), n, (seed, context))
     tr = Transcript("middle-zk" if io is None else io.label)
     tr.absorb("ctx", context)
@@ -386,7 +402,7 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
         return L.commit()
     rr = run_linear_schedule(tr, p, lens, ks, croot, lround)
     rb = X.chal(tr, p, (plen(d) - 1).bit_length()) if owner_y is not None else None
-    ev = evaluations(lens, ks, zrs, rr, rb)
+    ev = evaluations(lens, ks, zrs, rr, rb) + (deferred_evals(deferred["points"]) if deferred is not None else [])
     layout = row_layout(com, ev, len(zrs), Lmax, lens)
     ys = []
     for e, (k, pt) in enumerate(ev):
@@ -406,7 +422,8 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     _, prox, pcols = CS.pcs_prove(com, [], tr, n, p)
     cols = {k: (pcols[k][0], [[sum(pcols[k][1][i][jj][0][r] for i in range(n)) % p for r in range(com[k].R)]
                               for jj in range(len(pcols[k][0]))]) for k in com}
-    lin, quad, labels = constraints(p, com, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz)
+    lin, quad, labels = constraints(p, com, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz,
+                                    deferred=deferred is not None)
     lig = L.prove(tr, lin, quad)
     eng.mac_check("middle-zk")
     proof = dict(roots={k: com[k].roots for k in sorted(com)}, claims_root=croot,
@@ -425,12 +442,17 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
                  first_violated=ZK.first_violated(p, L.rows, lin, quad, labels))
     return proof, stats
 
-def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=None):
+def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=None, deferred=None):
+    """deferred (cut E, the release): the head's pending claims from the ledger (points, carry roots)."""
     cons, had, prep, ext = G.middle(sym)
     lens, sh = public_shapes(p, prep, had, d, bind, io=io)
+    if deferred is not None:
+        sh.update({k: ZK.carry_shape(p, True) for k in ZK.CARRY_IN})
     roots = proof["roots"]
     if sorted(roots) != sorted(sh):
         return False, "proof names the wrong commitments"
+    if deferred is not None and any(roots[k] != deferred["carry_roots"][k] for k in ZK.CARRY_IN):
+        return False, "the head's carry commitments are not the last step's"
     for nm in (SPINE if io is None else io.carried):
         if io is not None and roots[nm] != spine_roots[nm]:
             return False, f"the {nm} commitment is not the ledger head's"
@@ -481,7 +503,7 @@ def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=N
         if why:
             return False, why
     rb = X.chal(tr, p, (plen(d) - 1).bit_length()) if bind else None
-    ev = evaluations(lens, ks, zrs, rr, rb)
+    ev = evaluations(lens, ks, zrs, rr, rb) + (deferred_evals(deferred["points"]) if deferred is not None else [])
     layout = row_layout(sh, ev, lh, Lmax, lens)
     tr.absorb("lig-evals", proof["eval_roots"], proof["mask_roots"])
     ok, why = CS.pcs_verify(sh, roots, [], [], {k: (None, proof["prox"][k]) for k in sh}, proof["pcs_cols"], tr, n, p)
@@ -490,7 +512,7 @@ def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=N
     pc = proof["pcs_cols"]
     cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
                            for jj in range(len(pc[k][0]))]) for k in sh}
-    lin, quad, _ = constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz)
+    lin, quad, _ = constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz, deferred=deferred is not None)
     if mask:
         ng = layout[0].nrows
         groups = [proof["g_roots"], proof["claims_root"], proof["eval_roots"]]

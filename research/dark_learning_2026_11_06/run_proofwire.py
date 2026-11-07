@@ -23,7 +23,7 @@ import spdz
 def genesis_commit(p, wires):
     """At genesis the custodians commit their shares of W1, W2; the ledger's genesis record pins the roots."""
     sh = lambda M: [[v[i][0] for r in M for v in r] for i in range(3)]
-    return {"W1": ZK.ZKPCS(p, sh(wires["W1"]), "W1"), "W2": ZK.ZKPCS(p, sh(wires["W2"]), "W2")}
+    return {"W1": ZK.w_pcs(p, sh(wires["W1"]), "W1"), "W2": ZK.w_pcs(p, sh(wires["W2"]), "W2")}
 
 def make_bundle(p, tab, d, W1, W2, x, y, ctx, carry=None, carry_wires=None, owner=None, signed=None):
     dealer = spdz.Dealer(p, 3, 5)

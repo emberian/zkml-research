@@ -124,14 +124,15 @@ class ZKPCS(CS.SharePCS):
 
 class PubShape:
     """The public shape of a ZKPCS commitment to a vector of length 2^m (what the verifier may know)."""
-    def __init__(self, p, m, hide, nmask, base):
+    def __init__(self, p, m, hide, nmask, base, lives=None):
         self.p, self.m = p, m
         self.mr = CS.row_split(m, nmask, hide)
         self.mc = m - self.mr
         self.Rd, self.C = 1 << self.mr, 1 << self.mc
         self.nmask, self.hide = nmask, hide
         self.R = self.Rd + nmask
-        self.block = nmask // CS.LIVES if nmask else 0
+        self.lives = lives or CS.LIVES
+        self.block = nmask // self.lives if nmask else 0
         self.base = base
         self.W = self.C + hide
         self.pts = CS.domain(p, CS.BLOW * self.W, self.W)
@@ -142,13 +143,52 @@ class PubShape:
 VEC = ("x", "z1", "h", "z2", "d2", "b", "g1", "bg", "d1")
 MAT = ("W1", "W2", "W1n", "W2n")
 
-def shapes(p, d, chained, bind=False):
+DEFER = False     # cut E (profile "DEFER", proof.md section 21): a step does not open its children W1n, W2n; it commits
+                  # carries c1, c2 = W(r) - d(r_row) v(r_col), and the child's next opening (the next step, the release,
+                  # the handover or a closing proof) discharges W_(k+1)(r_k) = c_k. Every W then has one life, hide T.
+CARRY = ("c1", "c2")
+CARRY_IN = ("c1p", "c2p")
+
+def carry_m():
+    """A carry holds the EXT components of one element: 2^m >= EXT entries."""
+    return (X.EXT - 1).bit_length()
+
+def w_shape(p, m):
+    """A W matrix's shape: one life under DEFER (hide T, EXT proximity masks), else two."""
+    if DEFER:
+        return PubShape(p, m, CS.T_COLS, X.EXT, 0, lives=1)
+    return None
+
+def w_pcs(p, shares, label, **kw):
+    """A W matrix's commitment (genesis, public genesis, a step's child): DEFER gives it one life, hide T."""
+    if DEFER:
+        return ZKPCS(p, shares, label, hide=CS.T_COLS, nmask=X.EXT, lives=1, **kw)
+    return ZKPCS(p, shares, label, **kw)
+
+def carry_shape(p, second):
+    return PubShape(p, carry_m(), CS.LIVES * CS.T_COLS, CS.LIVES * X.EXT, X.EXT if second else 0, lives=CS.LIVES)
+
+def shapes(p, d, chained, bind=False, deferred_in=False):
+    """deferred_in (DEFER): the parent W's carry a pending claim, so the previous step's carries are carried in."""
     ld = d.bit_length() - 1
     sh = {}
     for k in VEC + MAT + (("xo",) if bind else ()):
         m = ld if k in VEC or k == "xo" else 2 * ld
+        if DEFER and k in MAT:
+            sh[k] = w_shape(p, m)
+            continue
         sh[k] = PubShape(p, m, CS.HIDE, CS.NMASK, CS.NMASK // CS.LIVES if (chained and k in ("W1", "W2")) else 0)
+    if DEFER:
+        for k in CARRY:
+            sh[k] = carry_shape(p, False)
+        if deferred_in:
+            for k in CARRY_IN:
+                sh[k] = carry_shape(p, True)
     return sh
+
+def opened(sh):
+    """The commitments a step opens: under DEFER, not its children."""
+    return {k: v for k, v in sh.items() if not (DEFER and k in ("W1n", "W2n"))}
 
 def layout(d, ld):
     """The public schedule: (sumcheck name, kind, deg) and the evaluation list's commitment names."""
@@ -172,7 +212,7 @@ def specs(d):
     ld = d.bit_length() - 1
     return [("z1", ld, 2), ("z2", ld, 2), ("b", ld, 2), ("bg", ld, 3)]
 
-def schedule(tr, p, d, sh, round_roots_or_cb, bind=False, pre=None):
+def schedule(tr, p, d, sh, round_roots_or_cb, bind=False, pre=None, deferred=None):
     """Replays the public part of the transcript up to the evaluation list. round_roots_or_cb(name, rnd) returns
     what the round puts in the transcript (ZKSC "rows": the round's Ligero roots, prover after committing, verifier
     from the proof; "mask": the opened round message, flat). pre(tr), if given, runs first (cut D: the g group's
@@ -198,14 +238,20 @@ def schedule(tr, p, d, sh, round_roots_or_cb, bind=False, pre=None):
         rs.append(X.chal1(tr, p))
     scs["bg"] = (tau, rs)
     evals += [("b", rs), ("g1", rs), ("bg", rs)]
-    for Wn, Wo, dv, vv in (("W1n", "W1", "d1", "x"), ("W2n", "W2", "d2", "h")):
+    cpt = [X.zero()] * carry_m()
+    for (Wn, Wo, dv, vv), cn in zip((("W1n", "W1", "d1", "x"), ("W2n", "W2", "d2", "h")), CARRY):
         rc, rr = X.chal(tr, p, ld), X.chal(tr, p, ld)
         r1[Wn] = (rc, rr)
-        evals += [(Wn, rc + rr), (Wo, rc + rr), (dv, rr), (vv, rc)]
+        # DEFER: the child is not opened here; the carry c (its single row) stands for W(r) - d(r_row) v(r_col)
+        evals += [(cn, cpt) if DEFER else (Wn, rc + rr), (Wo, rc + rr), (dv, rr), (vv, rc)]
     if bind:
         # signed-input binding: the owner's committed batch x and the custodians' x agree at a fresh point
         rb = X.chal(tr, p, ld)
         evals += [("xo", rb), ("x", rb)]
+    if deferred is not None:
+        # the parent's pending claims W(r_prev) = c_prev, at the previous step's points (from the ledger)
+        for Wo, cn in (("W1", "c1p"), ("W2", "c2p")):
+            evals += [(Wo, list(deferred[Wo])), (cn, cpt)]
     return scs, evals
 
 def row_layout(d, sh, evals):
@@ -310,7 +356,7 @@ def unflat(v, deg):
     E = X.EXT
     return [tuple(v[j * E:(j + 1) * E]) for j in range(deg + 1)]
 
-def constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=None):
+def constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=None, bind=False, deferred=False):
     """The verifier's checks as Ligero constraints on hidden values. cols[k] = (J, column sums at J). Every check
     is an identity over F_{p^EXT}, emitted as EXT F_p constraints (cosnark_ext; EXT = 1: the base system)."""
     lin, labels = [], []
@@ -395,13 +441,25 @@ def constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=None):
     else:
         sumcheck("bg", 3, empty, fsum(Zv(3, neg(eq)), Y(11, eq)), 3)
     operands(3, 9, 10)
+    def Cv(e, coef=X.one()):
+        """A carry's value: its single u row's first EXT cells (component 0), as one element."""
+        return evar(p, ecell([U(e, k)[0].popitem()[0] for k in range(E)]), coef)
     for q, base in ((4, 12), (5, 16)):          # W'(r) - W(r) + d(r_row) v(r_col) = 0
-        cur[0] = f"rank-1 update {'W1n' if q == 4 else 'W2n'}: W'(r) = W(r) - d(r_row) v(r_col)"
-        add(Y(base), Y(base + 1, neg(X.one())), Zv(q, X.one()))
+        if DEFER:
+            cur[0] = f"rank-1 update {'W1n' if q == 4 else 'W2n'}: c = W(r) - d(r_row) v(r_col) (deferred)"
+            add(Cv(base), Y(base + 1, neg(X.one())), Zv(q, X.one()))
+        else:
+            cur[0] = f"rank-1 update {'W1n' if q == 4 else 'W2n'}: W'(r) = W(r) - d(r_row) v(r_col)"
+            add(Y(base), Y(base + 1, neg(X.one())), Zv(q, X.one()))
         operands(q, base + 2, base + 3)
-    if len(evals) == 22:
+    if bind or (not DEFER and len(evals) == 22):
         cur[0] = "signed input binding: the custodians' x = the owner's signed x"
         add(Y(20), Y(21, neg(X.one())))
+    if deferred:
+        e0 = 22 if bind else 20
+        for i, nm in enumerate(("W1", "W2")):
+            cur[0] = f"deferred claim of the parent {nm}: {nm}(r_prev) = c_prev"
+            add(Y(e0 + 2 * i), Cv(e0 + 2 * i + 1, neg(X.one())))
     quad = [prod]
     return lin, quad, labels
 
@@ -412,9 +470,10 @@ def public_digest(public):
     forge_public: a steered weight update accepted by the ledger)."""
     return CS.H("public-transcript", len(public), tuple(public))
 
-def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=1, owner_x=None, public=()):
+def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=1, owner_x=None, public=(), deferred=None):
     """owner_x: the data owner's share-tuple commitment to x (dealt to the custodians with its opening), whose
-    roots the owner signed; when given, the proof binds the custodians' x to it."""
+    roots the owner signed; when given, the proof binds the custodians' x to it. deferred (DEFER): the previous
+    step's stats["deferred"] (its points and carries), whose claims this step discharges."""
     p, n = eng.p, eng.n
     d = len(wires["x"])
     ld = d.bit_length() - 1
@@ -434,11 +493,19 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
             shs[0] = list(shs[0]); shs[0][3] = (shs[0][3] + 1) % p
         if carry and k in carry:
             com[k] = carry[k]
-            com[k].base = com[k].block
+            if not DEFER:
+                com[k].base = com[k].block
+            continue
+        if DEFER and k in MAT:
+            com[k] = w_pcs(p, shs, k)
             continue
         com[k] = ZKPCS(p, shs, k)
     if owner_x is not None:
         com["xo"] = owner_x
+    if deferred is not None:
+        for k in CARRY_IN:
+            com[k] = deferred["carries"][k]
+            com[k].base = com[k].block            # the carry's second life
     L = Z.Prover(Z.Params(p, K_L, T_HIDE, T_OPEN), n, (seed, context))
     tr = Transcript("step-zk")
     tr.absorb("ctx", context)
@@ -552,7 +619,34 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
         st["last"] = plain
         mz["msgs"].setdefault(name, []).append(plain)
         return X.flat(plain)
-    scs, evals = schedule(tr, p, d, com, cb, bind=owner_x is not None, pre=pre if ZKSC == "mask" else None)
+    dpts = deferred["points"] if deferred is not None else None
+    sh_pub = shapes(p, d, True, owner_x is not None, deferred is not None) if DEFER else None
+    scs, evals = schedule(tr, p, d, {**com, **({k: sh_pub[k] for k in CARRY} if DEFER else {})}, cb,
+                          bind=owner_x is not None, pre=pre if ZKSC == "mask" else None, deferred=dpts)
+    pairs = [(2, 1), (5, 4), (8, 7), (9, 10), (14, 15), (18, 19)]       # (x, y) evaluation indices per product
+    if DEFER:
+        # the products first (none involves a carry), then the carries c = W(r) - d(r_row) v(r_col), committed and
+        # absorbed after every schedule challenge and before the evaluation rows
+        ys0 = {}
+        for e in sorted({a for pr in pairs for a in pr} | {13, 17}):
+            k, pt = evals[e]
+            c = com[k]
+            a = c.eval_weights_e(pt)
+            u = [c.row_combo_e(i, a) for i in range(n)]
+            b = X.eqv(pt[:c.mc], p)
+            ys0[e] = [X.dot([tuple(u[i][kk][cc] for kk in range(X.EXT)) for cc in range(c.C)], b, p) for i in range(n)]
+        rx, ry, rz = prod_shares(L, [ys0[a] for a, _ in pairs], [ys0[b] for _, b in pairs])
+        def zval(i, q):
+            if X.EXT == 1:
+                return (rz[i][q],)
+            P1, P2, P3 = rz[i][3 * q:3 * q + 3]
+            return ((P1 + X.nr(p) * P2) % p, (P3 - P1 - P2) % p)
+        cshares = {}
+        for q, wi, cn in ((4, 13, "c1"), (5, 17, "c2")):
+            dl = [X.pad(X.sub(ys0[wi][i], zval(i, q), p)) for i in range(n)]
+            cshares[cn] = [list(v) + [0] * ((1 << carry_m()) - X.EXT) for v in dl]
+            com[cn] = ZKPCS(p, cshares[cn], cn, hide=CS.LIVES * CS.T_COLS, nmask=CS.LIVES * X.EXT, lives=CS.LIVES)
+        tr.absorb("carry", com["c1"].roots, com["c2"].roots)
     rows, urows, prod, nrows = row_layout(d, com, evals)
     # hidden evaluation row combinations u_e (no masks; EXT components) and the evaluation values' shares
     ushares, yshares = [], []
@@ -570,18 +664,19 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
         for kk in range(X.EXT):
             for s0 in range(0, c.W, K_L):
                 L.add_row([u[i][kk][s0:s0 + K_L] for i in range(n)])
-    pairs = [(2, 1), (5, 4), (8, 7), (9, 10), (14, 15), (18, 19)]       # (x, y) evaluation indices per product
-    rx, ry, rz = prod_shares(L, [yshares[a] for a, _ in pairs], [yshares[b] for _, b in pairs])
+    if not DEFER:
+        rx, ry, rz = prod_shares(L, [yshares[a] for a, _ in pairs], [yshares[b] for _, b in pairs])
     L.add_row(rx)
     L.add_row(ry)
     L.add_row(rz)
     eval_roots = L.commit()
     mask_roots = L.commit_masks()
     tr.absorb("lig-evals", eval_roots, mask_roots)
-    _, prox, pcols = CS.pcs_prove(com, [], tr, n, p)
+    _, prox, pcols = CS.pcs_prove(opened(com), [], tr, n, p)
     cols = {k: (pcols[k][0], [[sum(pcols[k][1][i][jj][0][r] for i in range(n)) % p for r in range(com[k].R)]
-                              for jj in range(len(pcols[k][0]))]) for k in com}
-    lin, quad, labels = constraints(p, d, com, scs, evals, cols, rows, urows, prod, mz=mz)
+                              for jj in range(len(pcols[k][0]))]) for k in opened(com)}
+    lin, quad, labels = constraints(p, d, com, scs, evals, cols, rows, urows, prod, mz=mz, bind=owner_x is not None,
+                                    deferred=deferred is not None)
     lig = L.prove(tr, lin, quad)
     eng.mac_check("cosnark-zk")
     proof = dict(roots={k: com[k].roots for k in sorted(com)}, eval_roots=eval_roots,
@@ -597,25 +692,34 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
                  spdz_wire={ph: v - wire0.get(ph, 0) for ph, v in eng.wire.items() if v != wire0.get(ph, 0)},
                  spdz_openings=eng.nopen - open0,
                  child={"W1": com["W1n"], "W2": com["W2n"]}, coms=com,
+                 deferred=dict(points={"W1": evals[13][1], "W2": evals[17][1]},
+                               carries={"c1p": com["c1"], "c2p": com["c2"]}) if DEFER else None,
                  first_violated=first_violated(p, L.rows, lin, quad, labels))
     return proof, stats
 
 # ------------------------------------------------------------------------------------------------- verifier
-def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public=()):
+def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public=(), deferred=None, out=None):
     """Public data only. parent_roots: the previous step's child roots for W1, W2 (None at genesis). bind: the
     proof must carry the owner's commitment "xo" and the binding constraint (its roots are checked against the
-    owner's signature by the caller)."""
+    owner's signature by the caller). DEFER: deferred = the parent's pending claims from the LEDGER (dict points
+    {"W1", "W2"} and carry roots {"c1p", "c2p"}), None when the parent is final (public genesis); out, if given,
+    receives this step's own pending claims (points and carry roots) for the ledger."""
     ld = d.bit_length() - 1
-    sh = shapes(p, d, chained, bind)
+    sh = shapes(p, d, chained, bind, deferred is not None)
     roots = proof["roots"]
-    if sorted(roots) != sorted(VEC + MAT + (("xo",) if bind else ())):
+    want = VEC + MAT + (("xo",) if bind else ()) + ((CARRY + (CARRY_IN if deferred is not None else ())) if DEFER else ())
+    if sorted(roots) != sorted(want):
         return False, "proof names the wrong commitments"
     if parent_roots is not None and (roots["W1"] != parent_roots["W1"] or roots["W2"] != parent_roots["W2"]):
         return False, "parent commitment is not the previous step's child commitment"
+    if deferred is not None and any(roots[k] != deferred["carry_roots"][k] for k in CARRY_IN):
+        return False, "the parent's carry commitments are not the previous step's"
     tr = Transcript("step-zk")
     tr.absorb("ctx", context)
     tr.absorb("public", public_digest(public))
     for k in sorted(roots):
+        if DEFER and k in CARRY:
+            continue                     # committed after r_k: absorbed below ("carry")
         tr.absorb(k, roots[k])
     E = X.EXT
     mz = None
@@ -634,7 +738,8 @@ def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public
             mz["rho"] = X.chal1(tr_, p)
         if any(len(v) != E * (degs[nm] + 1) for nm in rd for v in rd[nm]):
             return False, "sumcheck round messages of the wrong shape"
-        scs, evals = schedule(tr, p, d, sh, lambda name, rnd, tau, rs: rd[name][rnd], bind=bind, pre=pre)
+        scs, evals = schedule(tr, p, d, sh, lambda name, rnd, tau, rs: rd[name][rnd], bind=bind, pre=pre,
+                              deferred=deferred["points"] if deferred is not None else None)
         for nm, _, dg in sp:
             why = check_rounds(p, nm, mz["msgs"][nm], scs[nm][1], dg,
                                X.mul(mz["rho"], mz["G"][nm], p) if nm == "bg" else None)
@@ -644,17 +749,25 @@ def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public
         rr = proof["round_roots"]
         if sorted(rr) != ["b", "bg", "z1", "z2"] or any(len(rr[k]) != ld for k in rr):
             return False, "wrong number of sumcheck rounds"
-        scs, evals = schedule(tr, p, d, sh, lambda name, rnd, tau, rs: rr[name][rnd], bind=bind)
+        scs, evals = schedule(tr, p, d, sh, lambda name, rnd, tau, rs: rr[name][rnd], bind=bind,
+                              deferred=deferred["points"] if deferred is not None else None)
+    if DEFER:
+        tr.absorb("carry", roots["c1"], roots["c2"])
+        if out is not None:
+            out.update(points={"W1": evals[13][1], "W2": evals[17][1]},
+                       carry_roots={"c1p": roots["c1"], "c2p": roots["c2"]})
     rows, urows, prod, nrows = row_layout(d, sh, evals)
     tr.absorb("lig-evals", proof["eval_roots"], proof["mask_roots"])
-    ok, why = CS.pcs_verify(sh, roots, [], [], {k: (None, proof["prox"][k]) for k in sh}, proof["pcs_cols"],
-                            tr, n, p)
+    osh = opened(sh)
+    ok, why = CS.pcs_verify(osh, {k: roots[k] for k in osh}, [], [], {k: (None, proof["prox"][k]) for k in osh},
+                            proof["pcs_cols"], tr, n, p)
     if not ok:
         return ok, why
     pc = proof["pcs_cols"]
     cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
-                           for jj in range(len(pc[k][0]))]) for k in sh}
-    lin, quad, _ = constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=mz)
+                           for jj in range(len(pc[k][0]))]) for k in osh}
+    lin, quad, _ = constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=mz, bind=bind,
+                               deferred=deferred is not None)
     if ZKSC == "mask":
         ng = rows["g"].nrows
         group_roots, sizes = [proof["g_roots"], proof["eval_roots"]], [ng, nrows - ng]
@@ -751,3 +864,110 @@ def owner_commit(p, vec, label, n=3):
     sh = [[det.randrange(p) if det else secrets.randbelow(p) for _ in vec] for _ in range(n - 1)]
     sh.append([(v - sum(c)) % p for v, c in zip(vec, zip(*sh))])
     return ZKPCS(p, sh, label)
+
+# ------------------------------------------------------------------------------------------------- closing proof
+def close_evals(deferred_points):
+    cpt = [X.zero()] * carry_m()
+    return [(k, list(deferred_points[k])) for k in ("W1", "W2")] + [(k, cpt) for k in CARRY_IN]
+
+def close_constraints(p, sh, evals, cols, urows):
+    """The closing proof's checks: PCS consistency of the four evaluations, and W(r_k) = c_k for both updates."""
+    lin, labels, cur = [], [], ["?"]
+    E = X.EXT
+    add = eadder(p, lin, labels, cur)
+    def U(e, c):
+        nr = -(-sh[evals[e][0]].W // K_L)
+        return ecell([(urows[e][k * nr + c // K_L], c % K_L) for k in range(E)])
+    for e, (k, pt) in enumerate(evals):
+        cur[0] = f"PCS evaluation consistency ({k})"
+        s = sh[k]
+        a = s.eval_weights_e(pt)
+        J, csum = cols[k]
+        for jj, j in enumerate(J):
+            x, xs, forms = s.pts[j], 1, []
+            for c in range(s.W):
+                forms.append(evar(p, U(e, c), (xs,)))
+                xs = xs * x % p
+            add(*forms, rhs=X.dot(a, [(v,) for v in csum[jj]], p))
+    for i, nm in enumerate(("W1", "W2")):
+        k, pt = evals[i]
+        b = X.eqv(pt[:sh[k].mc], p)
+        Yf = [dict() for _ in range(E)]
+        for c in range(sh[k].C):
+            f_ = evar(p, U(i, c), b[c])
+            for kk in range(E):
+                for key, v in f_[kk].items():
+                    Yf[kk][key] = (Yf[kk].get(key, 0) + v) % p
+        Cf = evar(p, ecell([U(2 + i, k2)[0].popitem()[0] for k2 in range(E)]), X.neg(X.one(), p))
+        cur[0] = f"closing: {nm}(r_k) = c_k"
+        add(Yf, Cf)
+    return lin, labels
+
+def prove_close(p, n, coms, deferred, context, seed=3):
+    """A halted run's standalone discharge (cut E): the head's W1, W2 (coms, their single life) opened at the last
+    step's points, against its carries (deferred["carries"], second life). No MPC product is needed."""
+    com = {"W1": coms["W1"], "W2": coms["W2"]}
+    for k in CARRY_IN:
+        com[k] = deferred["carries"][k]
+        com[k].base = com[k].block
+    L = Z.Prover(Z.Params(p, K_L, T_HIDE, T_OPEN), n, (seed, context))
+    tr = Transcript("close-zk")
+    tr.absorb("ctx", context)
+    for k in sorted(com):
+        tr.absorb(k, com[k].roots)
+    evals = close_evals(deferred["points"])
+    urows, nxt = [], 0
+    for k, pt in evals:
+        c = com[k]
+        a = c.eval_weights_e(pt)
+        u = [c.row_combo_e(i, a) for i in range(n)]
+        nr = -(-c.W // K_L)
+        urows.append(list(range(nxt, nxt + X.EXT * nr))); nxt += X.EXT * nr
+        for kk in range(X.EXT):
+            for s0 in range(0, c.W, K_L):
+                L.add_row([u[i][kk][s0:s0 + K_L] for i in range(n)])
+    eval_roots = L.commit()
+    mask_roots = L.commit_masks()
+    tr.absorb("lig-evals", eval_roots, mask_roots)
+    _, prox, pcols = CS.pcs_prove(com, [], tr, n, p)
+    cols = {k: (pcols[k][0], [[sum(pcols[k][1][i][jj][0][r] for i in range(n)) % p for r in range(com[k].R)]
+                              for jj in range(len(pcols[k][0]))]) for k in com}
+    lin, labels = close_constraints(p, com, evals, cols, urows)
+    lig = L.prove(tr, lin, [])
+    proof = dict(roots={k: com[k].roots for k in sorted(com)}, eval_roots=eval_roots, mask_roots=mask_roots,
+                 prox={k: prox[k][1] for k in sorted(prox)}, pcs_cols={k: pcols[k] for k in sorted(pcols)}, ligero=lig)
+    return proof, dict(first_violated=first_violated(p, L.rows, lin, [], labels), hidden_rows=nxt)
+
+def close_shapes(p, d):
+    ld = d.bit_length() - 1
+    sh = {k: w_shape(p, 2 * ld) for k in ("W1", "W2")}
+    sh.update({k: carry_shape(p, True) for k in CARRY_IN})
+    return sh
+
+def verify_close(p, n, d, context, head_roots, deferred, proof):
+    """Public data only: head_roots = the head's W1, W2 roots, deferred = its pending claims, both from the ledger."""
+    sh = close_shapes(p, d)
+    roots = proof["roots"]
+    if sorted(roots) != sorted(sh):
+        return False, "closing proof names the wrong commitments"
+    if any(roots[k] != head_roots[k] for k in ("W1", "W2")) or any(roots[k] != deferred["carry_roots"][k] for k in CARRY_IN):
+        return False, "closing proof is not over the head's commitments and carries"
+    tr = Transcript("close-zk")
+    tr.absorb("ctx", context)
+    for k in sorted(roots):
+        tr.absorb(k, roots[k])
+    evals = close_evals(deferred["points"])
+    urows, nxt = [], 0
+    for k, _ in evals:
+        nr = -(-sh[k].W // K_L)
+        urows.append(list(range(nxt, nxt + X.EXT * nr))); nxt += X.EXT * nr
+    tr.absorb("lig-evals", proof["eval_roots"], proof["mask_roots"])
+    ok, why = CS.pcs_verify(sh, roots, [], [], {k: (None, proof["prox"][k]) for k in sh}, proof["pcs_cols"], tr, n, p)
+    if not ok:
+        return ok, why
+    pc = proof["pcs_cols"]
+    cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
+                           for jj in range(len(pc[k][0]))]) for k in sh}
+    lin, _ = close_constraints(p, sh, evals, cols, urows)
+    return Z.verify(Z.Params(p, K_L, T_HIDE, T_OPEN), n, [proof["eval_roots"]], [nxt], proof["mask_roots"], lin, [],
+                    proof["ligero"], tr)
