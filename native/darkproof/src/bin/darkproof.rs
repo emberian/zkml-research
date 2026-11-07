@@ -972,13 +972,13 @@ fn counts(d: usize, prof: &str) {
             rec.n_prep(), darkproof::spine::beaver_count_e(d, lp.ext), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count_e(nh, lp.ext), darkproof::run::step_section(&lp, d, prm, carried, &tables)
         );
     }
-    let m = 64;
+    let m: usize = std::env::var("DP_RELEASE_M").ok().and_then(|v| v.parse().ok()).unwrap_or(64);
     let pol = darkproof::run::Policy { x: vec![0; d * m], labels: vec![0; m], ncls: 10, kc: 10, ignore_range: false };
     let zeros = vec![0u64; wire::release_len(d, m, prm, 10, 10)];
     let rec = darkproof::step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, 10, 10).unwrap();
     let nh = rec.had.len();
     println!(
-        "release M = 64: hadamard rows {nh}, atoms {}, range products {}, lookup products {}, zerocheck {} (gen 5 method: {}), section total {}",
+        "release M = {m}: hadamard rows {nh}, atoms {}, range products {}, lookup products {}, zerocheck {} (gen 5 method: {}), section total {}",
         rec.n_prep(), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count_e(nh, lp.ext), 4 * (nh.next_power_of_two() - 1), darkproof::run::release_section(&lp, d, m, prm, &pol)
     );
 }
