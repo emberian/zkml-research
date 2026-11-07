@@ -99,7 +99,11 @@ impl He {
             None => ct_bytes(hdr, ct),
             Some(c) => {
                 let mut v = hdr.to_vec();
-                v.extend(crate::bfv::compress_return(&self.rns, ct, c.small.l(), coefs));
+                let w = crate::bfv::compress_return(&self.rns, ct, c.small.l(), coefs);
+                match c.round {
+                    None => v.extend(w),
+                    Some((b0, b1)) => v.extend(crate::bfv::round_wire(&c.small, &w, coefs.len(), b0, b1)),
+                }
                 u64s_to_bytes(&v)
             }
         }

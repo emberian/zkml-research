@@ -8,6 +8,10 @@ fn check(n: usize, l: usize, f: u32, d: usize) {
 }
 
 fn check_with(n: usize, l: usize, f: u32, d: usize, ret_primes: usize) -> serde_json::Value {
+    check_round(n, l, f, d, ret_primes, None)
+}
+
+fn check_round(n: usize, l: usize, f: u32, d: usize, ret_primes: usize, round: Option<(u32, u32)>) -> serde_json::Value {
     let path = format!(
         "{}/../../research/dark_learning_2026_11_06/native_ref_results/native_ref_N{n}_L{l}_F{f}_d{d}.json",
         env!("CARGO_MANIFEST_DIR")
@@ -15,6 +19,7 @@ fn check_with(n: usize, l: usize, f: u32, d: usize, ret_primes: usize) -> serde_
     let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
     let mut pf = prof(&[n.to_string(), l.to_string(), f.to_string(), d.to_string()]);
     pf.ret_primes = ret_primes;
+    pf.ret_round = round;
     let (res, _) = run_local(&pf, None);
     assert_eq!(res["verdict"], "ACCEPT");
     assert_eq!(res["refines_spec"], true);
@@ -115,4 +120,28 @@ fn return_primes_needed_is_two_at_both_profiles() {
         let rns = darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t);
         assert_eq!(darkstep::bfv::return_primes_needed(&rns), 2);
     }
+}
+
+/// The switched returns with their noise bits rounded away (bfv::round_bits): still bit-exact with the reference.
+#[test]
+fn rounded_returns_stay_bit_exact() {
+    for (n, l, f) in [(4096, 3, 118), (16384, 4, 175)] {
+        let pf = prof(&[n.to_string(), l.to_string(), f.to_string(), "64".into()]);
+        let rb = darkstep::bfv::round_bits(&darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t), f);
+        let sw = check_with(n, l, f, 64, 2);
+        let rd = check_round(n, l, f, 64, 2, Some(rb));
+        let ret = |r: &serde_json::Value| r["detail"][0]["bytes_sent"]["he_ret"].as_u64().unwrap();
+        eprintln!("N = {n}, L = {l}: round bits (c0, c1) = {rb:?}; he_ret {} -> {} ({:.3})", ret(&sw), ret(&rd), ret(&rd) as f64 / ret(&sw) as f64);
+        assert!(ret(&rd) < ret(&sw));
+    }
+}
+
+/// Control: rounding c1 nine bits past the bound (the bound is worst case; the typical |r1 s| is about
+/// sqrt(2N/3) 2^(b1-1), seven bits below it) breaks decryption, so the comparison above can fail.
+#[test]
+#[should_panic]
+fn rounding_past_the_bound_breaks_decryption() {
+    let pf = prof(&["16384".into(), "4".into(), "175".into(), "64".into()]);
+    let (b0, b1) = darkstep::bfv::round_bits(&darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t), 175);
+    check_round(16384, 4, 175, 64, 2, Some((b0, b1 + 9)));
 }

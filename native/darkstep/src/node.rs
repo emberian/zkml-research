@@ -41,6 +41,8 @@ pub struct Prof {
     pub program: Program,
     /// HE returns modulus-switched to this many primes (0: full ciphertexts; see OwnKey::set_return_primes)
     pub ret_primes: usize,
+    /// with ret_primes = 2: round the returns' noise bits away, c0 to 2^b0 and c1 to 2^b1 (bfv::round_bits)
+    pub ret_round: Option<(u32, u32)>,
 }
 
 pub fn prof(a: &[String]) -> Prof {
@@ -49,7 +51,7 @@ pub fn prof(a: &[String]) -> Prof {
     let pr = ntt_primes(61, l + 1, 2 * n as u64);
     let cores = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(cores);
-    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false, secure_coins: false, program: Program::HARNESS, ret_primes: std::env::var("DS_RET_PRIMES").ok().and_then(|s| s.parse().ok()).unwrap_or(0) }
+    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false, secure_coins: false, program: Program::HARNESS, ret_primes: std::env::var("DS_RET_PRIMES").ok().and_then(|s| s.parse().ok()).unwrap_or(0), ret_round: None }
 }
 
 pub fn flag(args: &[String], name: &str) -> Option<String> {
@@ -62,6 +64,13 @@ pub fn gated(mut pf: Prof, args: &[String]) -> Prof {
     pf.det_seed = std::env::var("DL_DETERMINISTIC").ok();
     if let Some(k) = flag(args, "--ret-primes") {
         pf.ret_primes = k.parse().expect("--ret-primes K");
+    }
+    // --ret-round: the derived rounding (bfv::round_bits); --ret-round B0,B1 sets it by hand (tests)
+    if let Some(i) = args.iter().position(|a| a == "--ret-round") {
+        pf.ret_round = Some(match args.get(i + 1).and_then(|v| v.split_once(',')) {
+            Some((a, b)) => (a.parse().unwrap(), b.parse().unwrap()),
+            None => crate::bfv::round_bits(&crate::rns::Rns::new(pf.n, &pf.qs, pf.t), pf.f_bits),
+        });
     }
     pf
 }
@@ -131,6 +140,9 @@ pub fn setup_he(i: usize, pf: &Prof, net: &Net, attack: Option<(String, usize)>)
     let mut key = key;
     if pf.ret_primes > 0 {
         key.set_return_primes(pf.ret_primes);
+        if let Some((b0, b1)) = pf.ret_round {
+            key.set_return_rounding(b0, b1);
+        }
     }
     let he = He {
         rns: rns.clone(),

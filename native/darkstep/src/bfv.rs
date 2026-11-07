@@ -37,6 +37,37 @@ pub struct OwnKey {
 pub struct Compress {
     pub small: Arc<Rns>,
     s_ntt: Vec<u64>,
+    /// noise-bit rounding of the switched return (two primes): c0 and c1 rounded to multiples of 2^b0 and 2^b1 and
+    /// sent bit-packed (`round_bits`)
+    pub round: Option<(u32, u32)>,
+}
+
+fn bitlen128(x: u128) -> u32 {
+    128 - x.leading_zeros()
+}
+
+/// The rounding of a return switched to two primes, Q2 = q0 q1, that keeps decryption exact. The return's noise
+/// after the switch is at most E = flood (2^f_bits, plus the encryption-of-zero and product noise bound) x Q2 / Q,
+/// plus (1 + N) / 2 per dropped prime. Decryption needs |noise| < Q2 / (2t) - 1. Rounding c0 to 2^b0 adds at most
+/// 2^(b0 - 1); rounding c1 to 2^b1 adds at most N 2^(b1 - 1) (times the ternary s). Each rounding takes at most half
+/// of what is left: b0, b1 are the largest with 2^(b0-1) <= T/2 and N 2^(b1-1) <= T/2, T = Q2/(2t) - 1 - E.
+pub fn round_bits(full: &Rns, f_bits: u32) -> (u32, u32) {
+    assert!(full.l() > 2);
+    let n = full.n as u128;
+    let t = full.t as u128;
+    let q2 = full.qs[0] as u128 * full.qs[1] as u128;
+    // E: the flood bound 2^f plus the product and Enc_pk(0) noise bound N t 32, scaled to Q2, rounded up, plus one
+    use num_bigint::BigUint;
+    let x = (BigUint::from(1u32) << f_bits) + BigUint::from(n) * BigUint::from(t) * 32u32;
+    let eb = (x * BigUint::from(q2) + &full.q_big - 1u32) / &full.q_big + 1u32;
+    let e: u128 = eb.try_into().expect("E fits");
+    let sw = (1 + n) / 2 * (full.l() as u128 - 2) + 1;
+    let budget = q2 / (2 * t) - 1;
+    assert!(budget > e + sw, "no room for rounding");
+    let half = (budget - e - sw) / 2;
+    let b0 = bitlen128(half); // 2^(b0-1) <= half
+    let b1 = bitlen128(half / n);
+    (b0, b1)
 }
 
 /// The fewest primes an HE return can be switched to with decryption still exact: the switching rounding term,
@@ -51,6 +82,108 @@ pub fn return_primes_needed(rns: &Rns) -> usize {
         }
     }
     rns.l()
+}
+
+fn crt2(rns: &Rns, x0: u64, x1: u64) -> u128 {
+    let (q0, q1) = (rns.qs[0], rns.qs[1]);
+    let inv = invmod(q0 % q1, q1);
+    let h = mulmod(submod(x1, x0 % q1, q1), inv, q1);
+    x0 as u128 + q0 as u128 * h as u128
+}
+
+struct BitW {
+    out: Vec<u64>,
+    acc: u128,
+    nb: u32,
+}
+
+impl BitW {
+    fn put(&mut self, v: u128, bits: u32) {
+        // bits <= 122: split into two pushes of at most 64
+        let (lo, hi) = if bits > 64 { (v & u64::MAX as u128, Some((v >> 64, bits - 64))) } else { (v, None) };
+        self.push(lo, bits.min(64));
+        if let Some((h, b)) = hi {
+            self.push(h, b);
+        }
+    }
+    fn push(&mut self, v: u128, bits: u32) {
+        self.acc |= v << self.nb;
+        self.nb += bits;
+        while self.nb >= 64 {
+            self.out.push(self.acc as u64);
+            self.acc >>= 64;
+            self.nb -= 64;
+        }
+    }
+    fn done(mut self) -> Vec<u64> {
+        if self.nb > 0 {
+            self.out.push(self.acc as u64);
+        }
+        self.out
+    }
+}
+
+struct BitR<'a> {
+    w: &'a [u64],
+    pos: usize,
+    acc: u128,
+    nb: u32,
+}
+
+impl BitR<'_> {
+    fn get(&mut self, bits: u32) -> u128 {
+        if bits > 64 {
+            let lo = self.take(64);
+            let hi = self.take(bits - 64);
+            lo | (hi << 64)
+        } else {
+            self.take(bits)
+        }
+    }
+    fn take(&mut self, bits: u32) -> u128 {
+        while self.nb < bits {
+            self.acc |= (self.w[self.pos] as u128) << self.nb;
+            self.pos += 1;
+            self.nb += 64;
+        }
+        let v = self.acc & ((1u128 << bits) - 1);
+        self.acc >>= bits;
+        self.nb -= bits;
+        v
+    }
+}
+
+/// The two-prime return wire (c0 [2 x m], c1 [2 x N], residue-major) rounded: each coefficient's value v in [0, Q2)
+/// becomes round(v / 2^b) (b = b0 for c0, b1 for c1), sent in bitlen(Q2 >> b) + 1 bits.
+pub fn round_wire(rns: &Rns, wire: &[u64], m: usize, b0: u32, b1: u32) -> Vec<u64> {
+    let n = rns.n;
+    let q2 = rns.qs[0] as u128 * rns.qs[1] as u128;
+    let mut w = BitW { out: Vec::with_capacity(wire.len()), acc: 0, nb: 0 };
+    for (base, cnt, b) in [(0usize, m, b0), (2 * m, n, b1)] {
+        let bits = bitlen128(q2 >> b) + 1;
+        for j in 0..cnt {
+            let v = crt2(rns, wire[base + j], wire[base + cnt + j]);
+            w.put((v + (1u128 << (b - 1))) >> b, bits);
+        }
+    }
+    w.done()
+}
+
+/// The inverse of round_wire up to the rounding: residues of (r 2^b) mod Q2.
+pub fn unround(rns: &Rns, packed: &[u64], m: usize, b0: u32, b1: u32) -> Vec<u64> {
+    let n = rns.n;
+    let q2 = rns.qs[0] as u128 * rns.qs[1] as u128;
+    let mut r = BitR { w: packed, pos: 0, acc: 0, nb: 0 };
+    let mut out = vec![0u64; 2 * m + 2 * n];
+    for (base, cnt, b) in [(0usize, m, b0), (2 * m, n, b1)] {
+        let bits = bitlen128(q2 >> b) + 1;
+        for j in 0..cnt {
+            let v = (r.get(bits) << b) % q2;
+            out[base + j] = (v % rns.qs[0] as u128) as u64;
+            out[base + cnt + j] = (v % rns.qs[1] as u128) as u64;
+        }
+    }
+    out
 }
 
 /// Modulus-switch a coefficient-form ciphertext from all of `rns`'s primes down to the first `k` (dropping the last
@@ -176,7 +309,16 @@ impl OwnKey {
         let small = Arc::new(Rns::new(self.rns.n, &self.rns.qs[..k], self.rns.t));
         let mut s_ntt = small.from_signed(&self.s);
         small.fwd(&mut s_ntt);
-        self.compress = Some(Arc::new(Compress { small, s_ntt }));
+        self.compress = Some(Arc::new(Compress { small, s_ntt, round: None }));
+    }
+
+    /// Also round the switched returns' noise bits away (two primes only): c0 to 2^b0, c1 to 2^b1, bit-packed.
+    pub fn set_return_rounding(&mut self, b0: u32, b1: u32) {
+        let c = self.compress.as_ref().expect("set_return_primes first");
+        assert_eq!(c.small.l(), 2, "rounding is for two-prime returns");
+        let mut s_ntt = c.small.from_signed(&self.s);
+        c.small.fwd(&mut s_ntt);
+        self.compress = Some(Arc::new(Compress { small: c.small.clone(), s_ntt, round: Some((b0, b1)) }));
     }
 
     /// Decrypt a compressed return (`compress_return`) at `coefs`.
@@ -185,6 +327,14 @@ impl OwnKey {
         let rns = &c.small;
         let (n, k) = (rns.n, rns.l());
         let m = coefs.len();
+        let unpacked;
+        let wire = match c.round {
+            None => wire,
+            Some((b0, b1)) => {
+                unpacked = unround(rns, wire, m, b0, b1);
+                &unpacked[..]
+            }
+        };
         assert_eq!(wire.len(), k * m + k * n, "compressed return length");
         let mut c1 = wire[k * m..].to_vec();
         rns.fwd(&mut c1);

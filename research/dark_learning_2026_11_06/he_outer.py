@@ -38,6 +38,7 @@ import random
 
 import bfv_ref as bfv
 import he_matvec as HM
+import wire_round as WR
 import spdz
 
 def layout(d1, d2, N):
@@ -46,13 +47,17 @@ def layout(d1, d2, N):
 class HEOuter:
     """Drop-in for eng.outer(a, x) on an spdz.Engine (live mode)."""
     def __init__(self, eng, keys, N, Q, seed=13, flood_bits=40, attack=None, context=("model", 0, 0),
-                 per_return_rng=False):
+                 per_return_rng=False, wire=None):
         self.eng, self.keys, self.N, self.Q = eng, keys, N, Q
         self.p = eng.p
         self.seed = seed
         self.rng = random.Random(seed)
-        self.per_return_rng = per_return_rng   # as he_matvec.HEMatvec: one stream per return, for distributed custodians
+        self.per_return_rng = per_return_rng
+        # wire = (primes, b0, b1): returns switched to two primes and noise-rounded (wire_round.py); outputs unchanged
+        self.wire = wire   # as he_matvec.HEMatvec: one stream per return, for distributed custodians
         self.flood_bits = flood_bits
+        # wire = (primes, b0, b1): returns switched to two primes and noise-rounded (wire_round.py); outputs unchanged
+        self.wire_mode = wire
         self.attack = attack           # (kind, party)
         self.context = context
         self.wire = {"he_send": 0, "he_return": 0, "commit": 0}
@@ -111,7 +116,7 @@ class HEOuter:
                     for b in range(d2 // dc):
                         for P, tgt, kind in ((D, G, "val"), (Dm, Gm, "mac")):
                             ct, M = self._return(kj, P, sent[b], None, key=(i, j, ab, b, kind))
-                            dec = kj.sch.decrypt(ct)
+                            dec = (WR.decrypt_wire(kj.sch, ct, *self.wire_mode) if self.wire_mode else kj.sch.decrypt(ct))
                             for r in range(dr):
                                 for c in range(dc):
                                     k = 64 * r + c
