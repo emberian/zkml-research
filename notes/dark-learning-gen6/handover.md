@@ -334,6 +334,44 @@ The red items, and what each means:
 Rerun: run11b (self-handover), with run12b (rotation) after run12 died before its handover on a TCP self-connect.
 Both binaries are at ed88a249.
 
+### run12b: three-box rotation rerun at d = 4096 [EXECUTED, dl-custodian ed88a249, ledger-sq]
+The binary has the boxed state, `--erase-extra` for the retired key's MP-SPDZ files and `--scan-extra
+wired<I>/mpspdz`. Layout as run9. Checker output: scratchpad dl-gen5/handover/run12b/check1.
+
+**Result: 71 of 74 hold.** The red three are the after-erasure memory scans: **4** alpha-share hits per seat on
+[stack]. The relaunch checks were first recorded red because the checker accepted only the TLS-key message. The
+binary now stops earlier, at the erased step-0 tape (exit 2, 0.4-2.2 s). With b3655191's criterion (non-zero exit
+at a missing erased secret), the recorded tails pass.
+
+What changed against run9:
+- **Memory:** the boxed state removed 7 of run9's 11 alpha copies. The 4 left lie 3.1, 6.0, 6.9 and 10.1 KB above
+  old_side's scanning frame, on every seat. So they are in the live frames between main and old_side, or in stale
+  slots of frames pushed onto stack the step loop dirtied: by-value Tape temporaries in serve_main_with and
+  serve_state (read_tape_once -> load_tape).
+- **Fix, asked of the deploy lane:**
+  - return the boxed state to dl-custodian's main;
+  - call `side::scrub_stack_all()` there, before rotate_out;
+  - make Tapes boxed.
+  - scrub_stack_all (b3655191) passes dl-hand local and local-self at d = 256 on forge.
+- **Disk control:** 393,220 hits before erasure in ckpt, carry, `Player-MAC-Keys-p-P<I>` (the decimal alpha form)
+  and `Mascot-Secrets-...-P<I>-3` (2 plain copies). 0 after. The two --erase-extra files are gone on every old box.
+- **Native verify-rotation:** 0.62-0.68 s, with the flipped byte refused.
+- **Python** (`handover_replay.py` on bb2): ROTATION PASS in 24 s, the flipped byte refused.
+
+| seat | reshare | prove | erase | handover total | peak RSS (VmHWM / cgroup) |
+|---|---|---|---|---|---|
+| old 0 forge | 1.74 s | 7.76 s | 0.87 s | 24.6 s | 7.6 / 7.6 GB |
+| old 1 bb2 | 2.70 s | 6.74 s | 0.82 s | 25.4 s | 7.7 / 7.7 GB |
+| old 2 bb2 | 2.25 s | 7.14 s | 0.82 s | 25.1 s | 7.8 / 7.8 GB |
+
+| seat | ceremony | reshare | commit | prove | re-auth | total | peak RSS (VmHWM at join / cgroup over the run) |
+|---|---|---|---|---|---|---|---|
+| new 0 bb2 | 0.69 s | 0.49 s | 2.32 s | 2.50 s | 3.31 s | 16.5 s | 5.6 / 8.9 GB |
+| new 1 forge | 0.68 s | 0.50 s | 1.78 s | 3.11 s | 4.23 s | 16.6 s | 5.3 / 8.3 GB |
+| new 2 bb2 | 0.71 s | 0.49 s | 2.30 s | 2.53 s | 3.33 s | 16.6 s | 5.5 / 8.6 GB |
+
+Bytes per link are as in run9: d and the profile are the same, and the Net counters agree byte for byte.
+
 ### Bounds this check does not cover [OPEN]
 - **Copy-on-write and SSD storage.** An in-place overwrite is not physical erasure there. hbox's /othersys is ZFS:
   old blocks can survive in free space and snapshots. An SSD's FTL can keep old pages on bb2 and forge too. Against
