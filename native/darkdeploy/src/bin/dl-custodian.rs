@@ -756,10 +756,18 @@ impl Prove {
         let pinned = serde_json::from_slice::<Value>(cfg).ok().and_then(|v| v["release"]["M"].as_u64().or(v["eval_n"].as_u64()));
         let m: usize = flag(&args, "--release-m").map(|x| x.parse().unwrap()).or(pinned.map(|x| x as usize)).ok_or("release: no M (--release-m or the cfg's release.M)")?;
         let pol = darkproof::run::mnist_policy(cfg, &data, m)?;
+        // the release's own tape (--release-tape): the steps' tape is freed (zeroed by the allocator) first; the tape is
+        // claimed in the box's registry (a streamed sha256), its MPC part loaded, its proof section (the last 3 x nrt
+        // entries, Beaver triples) streamed from the file by the prover
+        let mut tape_file = None;
         if let Some(f) = flag(&args, "--release-tape") {
-            // the steps' tape is spent: freed (and zeroed by the allocator) before the release's is read
             st.pt.tape = darkstep::tape::Tape { alpha_i: st.pt.tape.alpha_i, ..Default::default() };
-            st.load_tape(serve::read_tape(&f))?;
+            serve::claim_tape_file(&f)?;
+            let d = st.pf.d;
+            let nrt = darkproof::run::release_section(&self.lp, d, m, self.prm, &pol);
+            let (pre, rt) = darkproof::run::load_release_tape(Path::new(&f), nrt)?;
+            st.load_tape(pre)?;
+            tape_file = Some(rt);
         }
         let model = self.model.clone();
         let lg = self.c().ledger.as_ref().ok_or("--release needs the ledger replica (--prove)")?;
@@ -769,7 +777,7 @@ impl Prove {
         let carry = self.c().carry.take().ok_or("no carried commitment of the head")?;
         let (w1, w2) = st.w.as_ref().ok_or("no weights")?;
         let t0 = Instant::now();
-        let out = darkproof::run::release_custodian_l(&self.pr, &self.lp, self.prm, &mut st.pt, w1, w2, &pol, &ctx, carry, Some(&roots), pend.as_ref())?;
+        let out = darkproof::run::release_custodian_src(&self.pr, &self.lp, self.prm, &mut st.pt, w1, w2, &pol, &ctx, carry, Some(&roots), pend.as_ref(), tape_file)?;
         std::fs::write(dir.join(format!("release_P{i}.bin")), &out.blob).map_err(|e| e.to_string())?;
         let lp = self.pr.ligero();
         // the replica checks the policy against the genesis's pinned cfg (recomputed from darktrain's encoder)

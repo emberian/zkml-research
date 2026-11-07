@@ -602,6 +602,34 @@ pub fn read_tape_once(path: &str) -> Result<Tape, String> {
     Ok(t)
 }
 
+/// Claim a tape file in the registry without loading it (a tape another reader streams, e.g. the release's proof
+/// section): its sha256 streamed from disk, its MAC key share from the header; refused if already consumed.
+pub fn claim_tape_file(path: &str) -> Result<(), String> {
+    use sha2::Digest;
+    let mut f = std::io::BufReader::with_capacity(1 << 20, std::fs::File::open(path).map_err(|e| format!("{path}: {e}"))?);
+    let mut h = sha2::Sha256::new();
+    let mut hdr = [0u8; 24];
+    f.read_exact(&mut hdr).map_err(|e| format!("{path}: {e}"))?;
+    if &hdr[..8] != b"DLTAPE01" {
+        return Err(format!("{path}: not a tape"));
+    }
+    h.update(hdr);
+    let mut buf = vec![0u8; 1 << 20];
+    loop {
+        let n = f.read(&mut buf).map_err(|e| format!("{path}: {e}"))?;
+        if n == 0 {
+            break;
+        }
+        h.update(&buf[..n]);
+    }
+    drop_cache(std::path::Path::new(path));
+    if let Some(log) = consumed_log() {
+        let digest = pycompat::repr::hex(&h.finalize());
+        claim(log, &digest, path, u64::from_le_bytes(hdr[8..16].try_into().unwrap()))?;
+    }
+    Ok(())
+}
+
 /// The last tape this process claimed in the registry (sha256, path).
 static LAST_CLAIM: std::sync::Mutex<Option<(String, String)>> = std::sync::Mutex::new(None);
 
