@@ -52,8 +52,18 @@ fn jlist(xs: &[String]) -> String {
     format!("[{}]", xs.iter().map(|s| jstr(s)).collect::<Vec<_>>().join(", "))
 }
 
-/// PARAMS as json.dumps writes the dict (insertion order of proofwire.PROFILES).
+/// PARAMS as json.dumps writes the dict (insertion order of proofwire.PROFILES; "EXT" last, and only in a profile
+/// with F_{p^2} challenges: a profile without it is EXT = 1).
 pub fn jparams(p: &Profile) -> String {
+    let mut s = jparams_base(p);
+    if p.ext != 1 {
+        s.pop();
+        s.push_str(&format!(", \"EXT\": {}}}", p.ext));
+    }
+    s
+}
+
+fn jparams_base(p: &Profile) -> String {
     format!(
         "{{\"PROFILE\": {}, \"HE\": {{\"N\": {}, \"L\": {}, \"F_BITS\": {}}}, \"HIDE\": {}, \"NMASK\": {}, \"LIVES\": {}, \"T_COLS\": {}, \"BLOW\": {}, \"K_L\": {}, \"T_HIDE\": {}, \"T_OPEN\": {}, \"OWNER_H\": {}, \"DOMAIN\": {}, \"SPLIT\": {}, \"MERKLE\": {}}}",
         jstr(p.name), p.he.0, p.he.1, p.he.2, p.hide, p.nmask, p.lives, p.t_cols, p.blow, p.k_l, p.t_hide, p.t_open, p.owner_h,

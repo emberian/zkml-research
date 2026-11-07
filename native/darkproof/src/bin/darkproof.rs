@@ -27,7 +27,7 @@ fn roots_of(v: &Value) -> BTreeMap<String, Vec<[u8; 32]>> {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check")) && !cfg!(feature = "test-det") {
+    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check" | "ext-rows")) && !cfg!(feature = "test-det") {
         eprintln!("bit-exact checks need the deterministic hook: build with --features test-det");
         std::process::exit(2);
     }
@@ -42,6 +42,8 @@ fn main() {
         Some("pcs-bench") => pcs_bench(args[2].parse().unwrap(), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
+        #[cfg(feature = "tcp")]
+        Some("ext-rows") => ext_rows(Path::new(&args[2]), &args[3], Path::new(&args[4]), &args[5]),
         #[cfg(feature = "tcp")]
         Some("ds-bench") => ds_bench(args[2].parse().unwrap(), &args[3]),
         #[cfg(feature = "tcp")]
@@ -250,7 +252,7 @@ fn run_check(dir: &Path, tag: &str) {
         // negative controls first (on clones of the carry), at custodian 1's first middle triple:
         //   c's value share off by one (a wrong product: its MAC is untouched, the proof's constraints catch it)
         //   a's value share off by one (the opened e is not the authenticated one: the MAC check aborts)
-        let jb = darkproof::spine::beaver_count(d);
+        let jb = darkproof::spine::beaver_count_e(d, lp.ext);
         for (what, slot) in [("c", 2usize), ("a", 0usize)] {
             let mut bad = tapes.clone();
             let t = &mut bad[1][jb];
@@ -481,8 +483,12 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         darkstep::tape::deal_proof_section(&mut dl, nt);
         nts.push(nt);
     }
+    // DP_NO_RELEASE: the steps alone (no release section dealt, the run ends after the ledger accepts the steps)
+    let no_release = std::env::var_os("DP_NO_RELEASE").is_some();
     let pol0 = Policy { x: x.clone(), labels: vec![0; m], ncls, kc, ignore_range: false };
-    deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol0);
+    if !no_release {
+        deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol0);
+    }
     let tapes = dl.tapes;
     println!("d={d} profile={prof} steps={steps} M={m} program={prm:?}; dealing {:.1}s, tape {} entries per party", t0.elapsed().as_secs_f64(), tapes[0].len());
     let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
@@ -611,6 +617,11 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         let r = lg.accept(&lp, b, &tables);
         println!("ledger accepts step {}: {:?} ({:.1}s)", k + 1, r, t.elapsed().as_secs_f64());
         ok_all &= r.is_ok();
+    }
+    if no_release {
+        println!("steps only (DP_NO_RELEASE): proof-section triples per custodian {nts:?}; peak RSS {:.2} GB", peak_rss_gb());
+        println!("{}", if ok_all { "DS-CHAIN STEPS PASS" } else { "DS-CHAIN STEPS FAIL" });
+        std::process::exit(if ok_all { 0 } else { 1 });
     }
     if w2scale.is_some() {
         // the integer spec of one step (step_spec, exact floors, SIG/DSIG by their formulas) against the revealed head
@@ -762,7 +773,7 @@ fn ds_check(dir: &Path, tag: &str) {
     let ctx = Ctx::new("mind-0", 0, 1);
     let zeros = vec![0u64; prm.transcript_len(d, false)];
     let rec0 = darkproof::step::replay(&zeros, d, prm, &tables, false).unwrap();
-    let nb = darkproof::spine::beaver_count(d) + rec0.proof_products() + darkproof::middle::beaver_count(rec0.had.len());
+    let nb = darkproof::spine::beaver_count_e(d, lp.ext) + rec0.proof_products() + darkproof::middle::beaver_count_e(rec0.had.len(), lp.ext);
     let plain = if pg == darkstep::step::Program::HARNESS { darkstep::step::inputs(d) } else { darkstep::step::inputs_for(d, &pg) };
     let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg);
     darkstep::tape::deal_proof_section(&mut dl, nb);
@@ -861,7 +872,7 @@ fn rel_check(dir: &Path, tag: &str) {
     let pol = Policy { x, labels, ncls, kc: 10, ignore_range: false };
     let prm = darkproof::step::StepParams { rc: rm["rc"].as_bool().unwrap_or(false), lb: rm["lb"].as_bool().unwrap_or(false), ..darkproof::step::StepParams::HARNESS };
     let rec = darkproof::step::replay_release(&w.public, d, m, prm, &pol.x, &pol.labels, ncls, 10).expect("replay");
-    let nb = rec.proof_products() + darkproof::middle::beaver_count(rec.had.len());
+    let nb = rec.proof_products() + darkproof::middle::beaver_count_e(rec.had.len(), lp.ext);
     let mut dl = Dealer::from_state(&w.dealer_state, w.alpha_sh.clone());
     let mut tapes: Vec<Vec<Triple>> = vec![Vec::with_capacity(nb); 3];
     for _ in 0..nb {
@@ -954,11 +965,11 @@ fn counts(d: usize, prof: &str) {
         let zeros = vec![0u64; prm.transcript_len(d, carried)];
         let rec = darkproof::step::replay(&zeros, d, prm, &tables, carried).unwrap();
         let nh = rec.had.len();
-        let lig = darkproof::ligero::LigParty::tape_triples(&lp, darkproof::spine::LIG_SCALARS, 1) + darkproof::ligero::LigParty::tape_triples(&lp, darkproof::middle::LIG_SCALARS, 1);
+        let lig = darkproof::ligero::LigParty::tape_triples(&lp, darkproof::spine::lig_scalars(lp.ext), 1) + darkproof::ligero::LigParty::tape_triples(&lp, darkproof::middle::lig_scalars(lp.ext), 1);
         let gen5 = 4 * (nh.next_power_of_two() - 1);
         println!(
             "step (carried {carried}) {prm:?}: hadamard rows {nh} (range rows included), atoms {}, spine Beaver {}, range products {}, lookup products {}, zerocheck {} (gen 5 method: {gen5}), Ligero (unauthenticated) {lig}; section total {}",
-            rec.n_prep(), darkproof::spine::beaver_count(d), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count(nh), darkproof::run::step_section(&lp, d, prm, carried, &tables)
+            rec.n_prep(), darkproof::spine::beaver_count_e(d, lp.ext), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count_e(nh, lp.ext), darkproof::run::step_section(&lp, d, prm, carried, &tables)
         );
     }
     let m = 64;
@@ -968,8 +979,123 @@ fn counts(d: usize, prof: &str) {
     let nh = rec.had.len();
     println!(
         "release M = 64: hadamard rows {nh}, atoms {}, range products {}, lookup products {}, zerocheck {} (gen 5 method: {}), section total {}",
-        rec.n_prep(), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count(nh), 4 * (nh.next_power_of_two() - 1), darkproof::run::release_section(&lp, d, m, prm, &pol)
+        rec.n_prep(), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count_e(nh, lp.ext), 4 * (nh.next_power_of_two() - 1), darkproof::run::release_section(&lp, d, m, prm, &pol)
     );
+}
+
+
+/// The EXT = 2 refusal rows (cosnark_ext_rows.py's, natively) on an F_{p^2} public-genesis chain (TAG's he1, a
+/// demo-x2 or ledger-x2 vector set), with an EXT = 1 PG chain (TAG1 in DIR1) for the cross-profile rows: the honest
+/// bundle accepted; a forged sumcheck; a u-part (component 1) of a Ligero message + 1; a u-part of a PCS proximity
+/// row + 1; the EXT = 2 bundle under the EXT = 1 profile and the reverse; a ledger written under one profile reopened
+/// under the other. Each forged bundle is spliced from the decoded and re-encoded Python bundle (the unmodified
+/// re-encoding must be the Python bytes and be accepted: the control that the splice itself is sound).
+#[cfg(feature = "tcp")]
+fn ext_rows(dir: &Path, tag: &str, dir1: &Path, tag1: &str) {
+    use darkproof::ledger::{jparams, Genesis, Ledger};
+    use sha2::{Digest, Sha256};
+    let load = |dir: &Path, tag: &str| -> Value { serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap() };
+    let meta = load(dir, tag);
+    let meta1 = load(dir1, tag1);
+    darkproof::field::set_p(meta["p"].as_u64().unwrap());
+    assert_eq!(meta["p"], meta1["p"], "the two vector sets are over different fields");
+    let d = meta["d"].as_u64().unwrap() as usize;
+    let prm = program_of(&meta, d);
+    let pr = profile(meta["profile"].as_str().unwrap());
+    let pr1 = profile(meta1["profile"].as_str().unwrap());
+    assert!(pr.ext == 2 && pr1.ext == 1, "TAG must be an EXT = 2 set, TAG1 an EXT = 1 set");
+    let (lp, lp1) = (pr.ligero(), pr1.ligero());
+    let tables = darkproof::step::tables();
+    let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
+    let mut opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: Some(prm) };
+    let cfg = std::fs::read(meta["pg_cfg"].as_str().expect("a PG vector set")).unwrap();
+    assert_eq!(<[u8; 32]>::from(Sha256::digest(&cfg)), prm.pg.unwrap(), "pg_cfg is not the cfg the program pins");
+    let (dw, w1, w2) = darkproof::run::public_weights(&cfg).unwrap();
+    assert_eq!(dw, d);
+    let carry: Vec<_> = (0..3).map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3).0).collect();
+    let groots = roots_of(&meta["genesis_roots"]);
+    let groots1 = roots_of(&meta1["genesis_roots"]);
+    let b = &meta["bundles"]["he1"];
+    let c = b["ctx"].as_array().unwrap();
+    let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+    let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
+    let pyb = std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap();
+    let b1 = &meta1["bundles"]["he1"];
+    let pyb1 = std::fs::read(dir1.join(b1["blob"].as_str().unwrap())).unwrap();
+    let prm1 = program_of(&meta1, meta1["d"].as_u64().unwrap() as usize);
+    let d1 = meta1["d"].as_u64().unwrap() as usize;
+    let mut ok = true;
+    let mut row = |what: &str, r: Result<(), String>, want_accept: bool| {
+        let good = r.is_ok() == want_accept;
+        println!("{:78} {:8} {}", what, if r.is_ok() { "accept" } else { "REFUSED" }, match &r { Ok(_) => String::new(), Err(e) => e.clone() });
+        ok &= good;
+    };
+    let vs = |pr: &Profile, lp: &darkproof::ligero::LigParams, blob: &[u8], roots: &BTreeMap<String, Vec<[u8; 32]>>, d: usize, prm| {
+        wire::verify_step(pr, lp, blob, &ctx, roots, &tables, d, prm, None, 0).map(|_| ())
+    };
+    row("honest he1 (the Python bundle)", vs(&pr, &lp, &pyb, &groots, d, prm), true);
+    // a forged sumcheck: z1's committed shares off at one entry, the hidden rounds shifted to the forged claim
+    opts.spine_attack = Some("forge_sumcheck");
+    let forged = darkproof::witness::make_bundle(&opts, w.clone(), &ctx, Some(darkproof::witness::clone_carry(&carry)), None);
+    opts.spine_attack = None;
+    match forged {
+        Err(e) => row("forged sumcheck (z1 off by one, rounds shifted to the forged claim)", Err(format!("in proving: {e}")), false),
+        Ok(fb) => row("forged sumcheck (z1 off by one, rounds shifted to the forged claim)", vs(&pr, &lp, &fb.blob, &groots, d, prm), false),
+    }
+    // splices of the spine section of the Python bundle
+    let ml = u16::from_be_bytes(pyb[8..10].try_into().unwrap()) as usize;
+    let hdr = 8 + 2 + ml + 16;
+    let mut r = wire::R::new(&pyb[hdr..]);
+    let sp = wire::read_spine(&mut r, &pr, 3, d, true, false).expect("decode the spine");
+    let enc = |p: &darkproof::spine::SpineProof| -> Vec<u8> {
+        let mut ww = wire::W { b: Vec::new() };
+        wire::write_spine(&mut ww, &pr, 3, d, true, false, p);
+        ww.b
+    };
+    let sl = enc(&sp).len();
+    let splice = |p: &darkproof::spine::SpineProof| -> Vec<u8> {
+        let mut out = pyb[..hdr].to_vec();
+        out.extend(enc(p));
+        out.extend_from_slice(&pyb[hdr + sl..]);
+        out
+    };
+    let same = splice(&sp) == pyb;
+    row("control: the decoded spine re-encoded is the Python bundle", if same { vs(&pr, &lp, &splice(&sp), &groots, d, prm) } else { Err("re-encoding differs".into()) }, true);
+    let plus1 = |x: &mut u64| *x = darkproof::field::add(*x, 1);
+    let mut t = sp.clone();
+    plus1(&mut t.ligero.more[0].0[0]);
+    row("spine Ligero message w1 (the u-part of w) + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    let mut t = sp.clone();
+    plus1(&mut t.ligero.more[0].2[3]);
+    row("spine Ligero message pq1 (the u-part of pq) + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    let wn = darkproof::spine::shapes(&pr, d, true, false)["W1n"].w;
+    let mut t = sp.clone();
+    plus1(&mut t.prox.get_mut("W1n").unwrap()[0][wn]);
+    row("PCS proximity row of W1n, custodian 0, u-part entry 0 + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    let mut t = sp.clone();
+    plus1(&mut t.prox.get_mut("W1n").unwrap()[0][0]);
+    row("PCS proximity row of W1n, custodian 0, base entry 0 + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    // the profile is part of the statement
+    row("the EXT = 2 bundle verified under the EXT = 1 profile", vs(&pr1, &lp1, &pyb, &groots, d, prm), false);
+    row("the EXT = 1 bundle verified under the EXT = 2 profile", vs(&pr, &lp, &pyb1, &groots1, d1, prm1), false);
+    row("control: the EXT = 1 bundle under its own profile", vs(&pr1, &lp1, &pyb1, &groots1, d1, prm1), true);
+    // the ledger pins the profile (genesis "params"; "EXT" only when it is 2)
+    let tmp = std::env::temp_dir().join(format!("dl-ext-rows-{}", std::process::id()));
+    std::fs::create_dir_all(&tmp).unwrap();
+    let cust = vec!["c0".to_string(), "c1".to_string(), "c2".to_string()];
+    let p2 = tmp.join("x2.ledger");
+    let mut lg = Ledger::open(&p2, "mind-0", &pr, Some(Genesis { d, program: prm, owner_pk: None, custodians: cust.clone(), roots: groots.clone() })).unwrap();
+    println!("ledger genesis params under {}: {}", pr.name, jparams(&pr));
+    row("ledger (EXT = 2): the pinned public-genesis cfg", lg.check_public_genesis(&cfg), true);
+    row("ledger (EXT = 2): he1 accepted", lg.accept(&lp, &pyb, &tables), true);
+    row("ledger written under the EXT = 2 profile, reopened under it", Ledger::open(&p2, "mind-0", &pr, None).map(|_| ()), true);
+    row("ledger written under the EXT = 2 profile, reopened under the EXT = 1 one", Ledger::open(&p2, "mind-0", &pr1, None).map(|_| ()), false);
+    let p1 = tmp.join("x1.ledger");
+    Ledger::open(&p1, "mind-0", &pr1, Some(Genesis { d: d1, program: prm1, owner_pk: None, custodians: cust, roots: groots1 })).unwrap();
+    row("ledger written under the EXT = 1 profile, reopened under the EXT = 2 one", Ledger::open(&p1, "mind-0", &pr, None).map(|_| ()), false);
+    let _ = std::fs::remove_dir_all(&tmp);
+    println!("{}", if ok { "EXT-ROWS PASS" } else { "EXT-ROWS FAIL" });
+    std::process::exit(if ok { 0 } else { 1 });
 }
 
 struct Rows {

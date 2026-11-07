@@ -1,13 +1,15 @@
 //! cosnark_zk.py: the spine with ZK layers 2-3. `prove` is ONE custodian's prover (all exchanges through `Net`);
-//! `verify` is the public verifier.
+//! `verify` is the public verifier. Every challenge is an F_{p^E} element (E = the profile's EXT; cosnark_ext): the
+//! code is generic over E and dispatched once at the top, so E = 1 is the base-field protocol byte for byte.
+use crate::ext::{self, Tab};
 use crate::field;
 use crate::h::{Hash, Py};
 use crate::ligero::{self, LigParams, LigParty, LigProof, LinSink, LinSystem};
 use crate::net::{gather_hashes, Net};
 use crate::pcs::{self, colsums, PcsCols, PcsParty, Shape};
 use crate::rng::Det;
-use crate::spdz::{cmul, lin2, shadd, shsub, Sh, Spdz};
-use crate::transcript::{eqv, lagc, mle, Transcript};
+use crate::spdz::{lin2, Sh, Spdz};
+use crate::transcript::{lagc, Transcript};
 use crate::{Ctx, Profile};
 use rayon::prelude::*;
 use std::collections::BTreeMap;
@@ -54,7 +56,11 @@ pub fn public_digest(public: &[u64]) -> Hash {
 
 pub type Evals = Vec<(String, Vec<u64>)>;
 
-fn cat(a: &[u64], b: &[u64]) -> Vec<u64> {
+
+/// The evaluation list with F_{p^E} points.
+pub type EvalsE<const E: usize> = Vec<(String, Vec<[u64; E]>)>;
+
+fn cat<T: Copy>(a: &[T], b: &[T]) -> Vec<T> {
     let mut v = a.to_vec();
     v.extend_from_slice(b);
     v
@@ -62,14 +68,14 @@ fn cat(a: &[u64], b: &[u64]) -> Vec<u64> {
 
 /// The schedule's challenges: (tau, rs) per sumcheck in order z1, z2, b, bg; (rc, rr) per rank-1; rb.
 #[derive(Clone, Debug, Default)]
-pub struct Sched {
-    pub scs: BTreeMap<String, (Vec<u64>, Vec<u64>)>,
-    pub r1: Vec<(Vec<u64>, Vec<u64>)>,
-    pub rb: Option<Vec<u64>>,
+pub struct Sched<const E: usize> {
+    pub scs: BTreeMap<String, (Vec<[u64; E]>, Vec<[u64; E]>)>,
+    pub r1: Vec<(Vec<[u64; E]>, Vec<[u64; E]>)>,
+    pub rb: Option<Vec<[u64; E]>>,
 }
 
-pub fn evals_of(s: &Sched) -> Evals {
-    let mut ev: Evals = Vec::new();
+pub fn evals_of<const E: usize>(s: &Sched<E>) -> EvalsE<E> {
+    let mut ev: EvalsE<E> = Vec::new();
     for (name, wk, vk, zk, tp) in
         [("z1", "W1", "x", "z1", false), ("z2", "W2", "h", "z2", false), ("b", "W2", "d2", "b", true)]
     {
@@ -104,7 +110,9 @@ pub struct Layout {
     pub nrows: usize,
 }
 
-pub fn row_layout(ld: usize, sh: &BTreeMap<String, Shape>, ev: &Evals, kl: usize) -> Layout {
+/// Hidden-row numbering in commit order: rounds (z1, z2, b, bg; ld each; a round's value j, component k at position
+/// j E + k), then each evaluation's u rows (component-major: E blocks of ceil(W / K_L) rows), then the product rows.
+pub fn row_layout<T>(ld: usize, sh: &BTreeMap<String, Shape>, ev: &[(String, T)], kl: usize, e: usize) -> Layout {
     let mut rows = BTreeMap::new();
     let mut nxt = 0;
     for name in ["z1", "z2", "b", "bg"] {
@@ -114,74 +122,192 @@ pub fn row_layout(ld: usize, sh: &BTreeMap<String, Shape>, ev: &Evals, kl: usize
     let mut urows = Vec::new();
     for (k, _) in ev {
         let nr = sh[k].w.div_ceil(kl);
-        urows.push((nxt..nxt + nr).collect());
-        nxt += nr;
+        urows.push((nxt..nxt + e * nr).collect());
+        nxt += e * nr;
     }
     Layout { rows, urows, prod: (nxt, nxt + 1, nxt + 2), nrows: nxt + 3 }
 }
 
+// ---------------------------------------------------------------------- linear forms over F_{p^E} values
+type Cells = Vec<(u32, u32, u64)>;
+
+/// Emits identities over F_{p^E} as E consecutive F_p constraints, component 0 first (cosnark_zk.eadder).
+pub(crate) struct EEm<'a, const E: usize> {
+    pub sink: &'a mut dyn LinSink,
+    pub b: [Cells; E],
+    pub nr: u64,
+}
+
+impl<'a, const E: usize> EEm<'a, E> {
+    pub fn new(sink: &'a mut dyn LinSink) -> Self {
+        EEm { sink, b: std::array::from_fn(|_| Vec::new()), nr: ext::nr() }
+    }
+    #[inline(always)]
+    fn put(&mut self, k: usize, cell: (usize, usize), c: u64) {
+        if c != 0 {
+            self.b[k].push((cell.0 as u32, cell.1 as u32, c));
+        }
+    }
+    /// coef V, V a hidden value whose component k is the single cell cells[k] (cosnark_zk.evar).
+    #[inline(always)]
+    pub fn var(&mut self, cells: [(usize, usize); E], c: [u64; E]) {
+        if E == 1 {
+            self.put(0, cells[0], c[0]);
+        } else {
+            self.put(0, cells[0], c[0]);
+            self.put(0, cells[1], field::mul(self.nr, c[1]));
+            self.put(1, cells[1], c[0]);
+            self.put(1, cells[0], c[1]);
+        }
+    }
+    /// coef V for V's components given as linear forms.
+    pub fn form(&mut self, comps: &[Cells; E], c: [u64; E]) {
+        let mut add = |k: usize, f: &Cells, s: u64| {
+            if s != 0 {
+                for &(r, pos, v) in f {
+                    self.b[k].push((r, pos, field::mul(s, v)));
+                }
+            }
+        };
+        if E == 1 {
+            add(0, &comps[0], c[0]);
+        } else {
+            let nr = self.nr;
+            add(0, &comps[0], c[0]);
+            add(0, &comps[1], field::mul(nr, c[1]));
+            add(1, &comps[1], c[0]);
+            add(1, &comps[0], c[1]);
+        }
+    }
+    pub fn done(&mut self, label: &str, rhs: [u64; E]) {
+        for k in 0..E {
+            self.sink.con(label, &self.b[k], rhs[k]);
+            self.b[k].clear();
+        }
+    }
+}
+
+/// cosnark_zk.prod_forms: product gate q's operand and result forms and the aux constraints (E = 2: three cells per
+/// gate, x2 = x0 + x1 and y2 = y0 + y1; z = (P1 + NR P2, P3 - P1 - P2)).
+pub(crate) struct ProdForms<const E: usize> {
+    pub x: [(usize, usize); E],
+    pub y: [(usize, usize); E],
+    pub z: [Cells; E],
+    pub aux: Vec<Cells>,
+}
+
+pub(crate) fn prod_forms<const E: usize>(prod: (usize, usize, usize), q: usize) -> ProdForms<E> {
+    let (xr, yr, zr) = prod;
+    let c = |r: usize, p: usize, v: u64| (r as u32, p as u32, v);
+    if E == 1 {
+        return ProdForms {
+            x: std::array::from_fn(|_| (xr, q)),
+            y: std::array::from_fn(|_| (yr, q)),
+            z: std::array::from_fn(|_| vec![c(zr, q, 1)]),
+            aux: vec![],
+        };
+    }
+    let b = 3 * q;
+    let m1 = field::p() - 1;
+    let nr = ext::nr();
+    let mut z: [Cells; E] = std::array::from_fn(|_| Vec::new());
+    z[0] = vec![c(zr, b, 1), c(zr, b + 1, nr)];
+    z[1] = vec![c(zr, b + 2, 1), c(zr, b, m1), c(zr, b + 1, m1)];
+    ProdForms {
+        x: std::array::from_fn(|k| (xr, b + k)),
+        y: std::array::from_fn(|k| (yr, b + k)),
+        z,
+        aux: vec![vec![c(xr, b + 2, 1), c(xr, b, m1), c(xr, b + 1, m1)], vec![c(yr, b + 2, 1), c(yr, b, m1), c(yr, b + 1, m1)]],
+    }
+}
+
+/// The cells of evaluation e's u row component k, column c.
+#[inline(always)]
+fn ucells<const E: usize>(urows: &[Vec<usize>], e: usize, w: usize, kl: usize, c: usize) -> [(usize, usize); E] {
+    let nr = w.div_ceil(kl);
+    std::array::from_fn(|k| (urows[e][k * nr + c / kl], c % kl))
+}
+
+/// Y_e: coef <u_e[:C], eq(pt[:mc])> over F_{p^E}.
+pub(crate) fn y_form<const E: usize>(em: &mut EEm<E>, ev: &EvalsE<E>, shapes: &[Shape], urows: &[Vec<usize>], kl: usize, e: usize, coef: [u64; E]) {
+    let s = &shapes[e];
+    let b = ext::eqv(&ev[e].1[..s.mc]);
+    for c in 0..s.c {
+        em.var(ucells::<E>(urows, e, s.w, kl, c), ext::mul(coef, b[c]));
+    }
+}
+
+/// coef times the round row r's value j.
+#[inline(always)]
+pub(crate) fn rc<const E: usize>(em: &mut EEm<E>, r: usize, j: usize, coef: [u64; E]) {
+    em.var(std::array::from_fn(|k| (r, j * E + k)), coef);
+}
+
+/// product q's two operand identities and (E = 2) its aux constraints.
+pub(crate) fn operands<const E: usize>(
+    em: &mut EEm<E>,
+    pf: &ProdForms<E>,
+    label: &str,
+    aux_label: &str,
+    yx: &dyn Fn(&mut EEm<E>),
+    yy: &dyn Fn(&mut EEm<E>),
+) {
+    em.var(pf.x, ext::one());
+    yx(em);
+    em.done(label, ext::zero());
+    em.var(pf.y, ext::one());
+    yy(em);
+    em.done(label, ext::zero());
+    for f in &pf.aux {
+        em.sink.con(aux_label, f, 0);
+    }
+}
+
 /// The verifier's checks as Ligero constraints (cosnark_zk.constraints).
-pub struct SpineSys {
+pub struct SpineSys<const E: usize> {
     pub kl: usize,
-    pub ev: Evals,
+    pub ev: EvalsE<E>,
     pub shapes: Vec<Shape>,
     /// per evaluation's commitment: (opened columns, column sums)
     pub cols: BTreeMap<String, (Vec<usize>, Vec<Vec<u64>>)>,
     pub lay: Layout,
-    pub sched: Sched,
+    pub sched: Sched<E>,
 }
 
-struct Em<'a> {
-    sink: &'a mut dyn LinSink,
-    buf: Vec<(u32, u32, u64)>,
-}
-impl Em<'_> {
-    fn cell(&mut self, r: usize, pos: usize, c: u64) {
-        self.buf.push((r as u32, pos as u32, c));
+impl<const E: usize> SpineSys<E> {
+    fn y(&self, em: &mut EEm<E>, e: usize, coef: [u64; E]) {
+        y_form(em, &self.ev, &self.shapes, &self.lay.urows, self.kl, e, coef);
     }
-    fn done(&mut self, label: &str, rhs: u64) {
-        self.sink.con(label, &self.buf, rhs);
-        self.buf.clear();
-    }
-}
-
-impl SpineSys {
-    fn y(&self, em: &mut Em, e: usize, coef: u64) {
-        let (k, pt) = &self.ev[e];
-        let s = &self.shapes[e];
-        let _ = k;
-        let b = eqv(&pt[..s.mc]);
-        for c in 0..s.c {
-            em.cell(self.lay.urows[e][c / self.kl], c % self.kl, field::mul(coef, b[c]));
-        }
-    }
-    fn sumcheck(&self, em: &mut Em, name: &str, deg: usize, first: Option<usize>, fin: &dyn Fn(&mut Em)) {
+    fn sumcheck(&self, em: &mut EEm<E>, name: &str, deg: usize, first: Option<usize>, fin: &dyn Fn(&mut EEm<E>)) {
         let (_, rs) = &self.sched.scs[name];
         let r = &self.lay.rows[name];
-        em.cell(r[0], 0, 1);
-        em.cell(r[0], 1, 1);
+        let one = ext::one::<E>();
+        rc(em, r[0], 0, one);
+        rc(em, r[0], 1, one);
         if let Some(e) = first {
-            self.y(em, e, field::p() - 1);
+            self.y(em, e, ext::neg(one));
         }
-        em.done(&format!("sumcheck {name}: first round sum = claim"), 0);
+        em.done(&format!("sumcheck {name}: first round sum = claim"), ext::zero());
+        let lab = format!("sumcheck {name}: round sums");
         for i in 1..r.len() {
-            let lc = lagc(deg, rs[i - 1]);
-            em.cell(r[i], 0, 1);
-            em.cell(r[i], 1, 1);
+            let lc = ext::lagc(deg, rs[i - 1]);
+            rc(em, r[i], 0, one);
+            rc(em, r[i], 1, one);
             for j in 0..=deg {
-                em.cell(r[i - 1], j, field::neg(lc[j]));
+                rc(em, r[i - 1], j, ext::neg(lc[j]));
             }
-            em.done(&format!("sumcheck {name}: round sums"), 0);
+            em.done(&lab, ext::zero());
         }
-        let lc = lagc(deg, *rs.last().unwrap());
+        let lc = ext::lagc(deg, *rs.last().unwrap());
         for j in 0..=deg {
-            em.cell(*r.last().unwrap(), j, lc[j]);
+            rc(em, *r.last().unwrap(), j, lc[j]);
         }
         fin(em);
-        em.done(&format!("sumcheck {name}: final claim = product gate"), 0);
+        em.done(&format!("sumcheck {name}: final claim = product gate"), ext::zero());
     }
 }
 
+/// PCS evaluation consistency at the opened columns (base points: the handover's).
 pub fn pcs_consistency(
     em_sink: &mut dyn LinSink,
     kl: usize,
@@ -190,83 +316,105 @@ pub fn pcs_consistency(
     cols: &BTreeMap<String, (Vec<usize>, Vec<Vec<u64>>)>,
     urows: &[Vec<usize>],
 ) {
-    let mut buf: Vec<(u32, u32, u64)> = Vec::new();
+    let ev1: EvalsE<1> = ev.iter().map(|(k, pt)| (k.clone(), pt.iter().map(|&x| [x]).collect())).collect();
+    pcs_consistency_e::<1>(em_sink, kl, &ev1, shapes, cols, urows)
+}
+
+/// PCS evaluation consistency at the opened columns: component k of u_e against component k of the weights a_e.
+pub fn pcs_consistency_e<const E: usize>(
+    em_sink: &mut dyn LinSink,
+    kl: usize,
+    ev: &EvalsE<E>,
+    shapes: &[Shape],
+    cols: &BTreeMap<String, (Vec<usize>, Vec<Vec<u64>>)>,
+    urows: &[Vec<usize>],
+) {
+    let mut bufs: [Cells; E] = std::array::from_fn(|_| Vec::new());
     for (e, (k, pt)) in ev.iter().enumerate() {
         let s = &shapes[e];
-        let a = s.eval_weights(pt);
+        let a = s.eval_weights_e(pt);
         let (jj, csum) = &cols[k];
         let label = format!("PCS evaluation consistency ({k})");
+        let nr = s.w.div_ceil(kl);
         for (t, &j) in jj.iter().enumerate() {
             let x = s.dom.point(j);
             let mut xs = 1u64;
-            buf.clear();
+            for b in bufs.iter_mut() {
+                b.clear();
+            }
             for c in 0..s.w {
-                buf.push((urows[e][c / kl] as u32, (c % kl) as u32, xs));
+                for (kk, b) in bufs.iter_mut().enumerate() {
+                    b.push((urows[e][kk * nr + c / kl] as u32, (c % kl) as u32, xs));
+                }
                 xs = field::mul(xs, x);
             }
             let n = a.len().min(csum[t].len());
-            em_sink.con(&label, &buf, field::dot(&a[..n], &csum[t][..n]));
+            let rhs = ext::dot_base(&csum[t][..n], &a[..n]);
+            for kk in 0..E {
+                em_sink.con(&label, &bufs[kk], rhs[kk]);
+            }
         }
     }
 }
 
-impl LinSystem for SpineSys {
+impl<const E: usize> LinSystem for SpineSys<E> {
     fn emit(&self, sink: &mut dyn LinSink) {
-        pcs_consistency(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.lay.urows);
-        let mut em = Em { sink, buf: Vec::new() };
-        let (x, yr, zr) = self.lay.prod;
+        pcs_consistency_e(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.lay.urows);
+        let mut em = EEm::<E>::new(sink);
+        let one = ext::one::<E>();
+        let m1 = ext::neg(one);
+        let pf: Vec<ProdForms<E>> = (0..NPROD).map(|q| prod_forms::<E>(self.lay.prod, q)).collect();
         for (q, name, idx) in [(0usize, "z1", 0usize), (1, "z2", 3), (2, "b", 6)] {
-            self.sumcheck(&mut em, name, 2, Some(idx), &|em: &mut Em| em.cell(zr, q, field::p() - 1));
-            em.cell(x, q, 1);
-            self.y(&mut em, idx + 2, field::p() - 1);
-            em.done(&format!("product {q} operands"), 0);
-            em.cell(yr, q, 1);
-            self.y(&mut em, idx + 1, field::p() - 1);
-            em.done(&format!("product {q} operands"), 0);
+            self.sumcheck(&mut em, name, 2, Some(idx), &|em: &mut EEm<E>| em.form(&pf[q].z, m1));
+            operands(
+                &mut em,
+                &pf[q],
+                &format!("product {q} operands"),
+                &format!("product {q} operand sums"),
+                &|em| self.y(em, idx + 2, m1),
+                &|em| self.y(em, idx + 1, m1),
+            );
         }
         let (tau, rs) = &self.sched.scs["bg"];
-        let eq = mle(&eqv(tau), rs);
-        self.sumcheck(&mut em, "bg", 3, None, &|em: &mut Em| {
-            em.cell(zr, 3, field::neg(eq));
+        let eq = ext::mle(&ext::eqv(tau), rs);
+        self.sumcheck(&mut em, "bg", 3, None, &|em: &mut EEm<E>| {
+            em.form(&pf[3].z, ext::neg(eq));
             self.y(em, 11, eq);
         });
-        em.cell(x, 3, 1);
-        self.y(&mut em, 9, field::p() - 1);
-        em.done("product 3 operands", 0);
-        em.cell(yr, 3, 1);
-        self.y(&mut em, 10, field::p() - 1);
-        em.done("product 3 operands", 0);
+        operands(&mut em, &pf[3], "product 3 operands", "product 3 operand sums", &|em| self.y(em, 9, m1), &|em| self.y(em, 10, m1));
         for (q, base) in [(4usize, 12usize), (5, 16)] {
             let wn = if q == 4 { "W1n" } else { "W2n" };
-            self.y(&mut em, base, 1);
-            self.y(&mut em, base + 1, field::p() - 1);
-            em.cell(zr, q, 1);
-            em.done(&format!("rank-1 update {wn}: W'(r) = W(r) - d(r_row) v(r_col)"), 0);
-            em.cell(x, q, 1);
-            self.y(&mut em, base + 2, field::p() - 1);
-            em.done(&format!("product {q} operands"), 0);
-            em.cell(yr, q, 1);
-            self.y(&mut em, base + 3, field::p() - 1);
-            em.done(&format!("product {q} operands"), 0);
+            self.y(&mut em, base, one);
+            self.y(&mut em, base + 1, m1);
+            em.form(&pf[q].z, one);
+            em.done(&format!("rank-1 update {wn}: W'(r) = W(r) - d(r_row) v(r_col)"), ext::zero());
+            operands(
+                &mut em,
+                &pf[q],
+                &format!("product {q} operands"),
+                &format!("product {q} operand sums"),
+                &|em| self.y(em, base + 2, m1),
+                &|em| self.y(em, base + 3, m1),
+            );
         }
         if self.ev.len() == 22 {
-            self.y(&mut em, 20, 1);
-            self.y(&mut em, 21, field::p() - 1);
-            em.done("signed input binding: the custodians' x = the owner's signed x", 0);
+            self.y(&mut em, 20, one);
+            self.y(&mut em, 21, m1);
+            em.done("signed input binding: the custodians' x = the owner's signed x", ext::zero());
         }
     }
 }
 
 // ------------------------------------------------------------------------------------------------ prover
-/// A sumcheck's per-party state (cb in prove_zk).
-pub struct Sc {
-    pub f: Vec<Sh>,
-    pub g: Vec<Sh>,
-    pub sub: Option<Vec<Sh>>,
-    pub eq: Option<Vec<u64>>,
+/// A sumcheck's per-party state (cb in prove_zk): tables of shared elements with their structural lengths.
+pub struct Sc<const E: usize> {
+    pub f: Tab<E>,
+    pub g: Tab<E>,
+    pub sub: Option<Tab<E>>,
+    pub eq: Option<Vec<[u64; E]>>,
     pub deg: usize,
-    pub claim: Option<u64>,
-    pub last: Vec<u64>,
+    pub claim: Option<[u64; E]>,
+    pub last: Vec<[u64; E]>,
 }
 
 pub fn fold_sh(t: &[Sh], r: u64) -> Vec<Sh> {
@@ -274,40 +422,58 @@ pub fn fold_sh(t: &[Sh], r: u64) -> Vec<Sh> {
     t.par_chunks(2).map(|c| lin2(om, c[0], r, c[1])).collect()
 }
 
-/// One round: every value of the round polynomial at X = 0..deg, as this party's SPDZ shares.
-pub fn round_vals(sp: &mut Spdz, net: &mut dyn Net, st: &Sc) -> Vec<Sh> {
+/// eq folded by r: eq[2k] (1 - r) + eq[2k + 1] r.
+pub fn fold_pub<const E: usize>(t: &[[u64; E]], r: [u64; E]) -> Vec<[u64; E]> {
+    let om = ext::one_minus(r);
+    t.par_chunks(2).map(|c| ext::add(ext::mul(c[0], om), ext::mul(c[1], r))).collect()
+}
+
+/// One round: every value of the round polynomial at X = 0..deg, as this party's SPDZ shares of F_{p^E} elements.
+/// The products f(X) g(X) take 1, 2 or 3 Beaver triples each by the tables' structural lengths, in the harness's
+/// order (X-major, then pair, then the product's triples).
+pub fn round_vals<const E: usize>(sp: &mut Spdz, net: &mut dyn Net, st: &Sc<E>) -> Vec<[Sh; E]> {
     let half = st.f.len() / 2;
     let deg = st.deg;
-    let mut xs = Vec::with_capacity((deg + 1) * half);
-    let mut ys = Vec::with_capacity((deg + 1) * half);
+    let (fb, gb) = (st.f.base(), st.g.base());
+    let per = ext::mul_triples::<E>(fb, gb);
+    let nr = ext::nr();
+    let mut xs = Vec::with_capacity((deg + 1) * half * per);
+    let mut ys = Vec::with_capacity((deg + 1) * half * per);
     for xv in 0..=deg as u64 {
         let om = field::one_minus(xv);
-        let (fx, gx): (Vec<Sh>, Vec<Sh>) = (0..half)
+        let ops: Vec<([Sh; E], [Sh; E])> = (0..half)
             .into_par_iter()
-            .map(|k| (lin2(om, st.f[2 * k], xv, st.f[2 * k + 1]), lin2(om, st.g[2 * k], xv, st.g[2 * k + 1])))
-            .unzip();
-        xs.extend(fx);
-        ys.extend(gx);
+            .map(|k| {
+                (
+                    ext::slin2b(om, st.f.get(2 * k), xv, st.f.get(2 * k + 1)),
+                    ext::slin2b(om, st.g.get(2 * k), xv, st.g.get(2 * k + 1)),
+                )
+            })
+            .collect();
+        for (fx, gx) in ops {
+            ext::push_mul(fx, fb, gx, gb, &mut xs, &mut ys);
+        }
     }
     let prods = sp.mul_batch(net, &xs, &ys);
     (0..=deg)
         .map(|xv| {
-            let om = field::one_minus(xv as u64);
             let xv64 = xv as u64;
+            let om = field::one_minus(xv64);
             (0..half)
                 .into_par_iter()
                 .map(|k| {
-                    let mut term = prods[xv * half + k];
+                    let o = (xv * half + k) * per;
+                    let mut term = ext::take_mul::<E>(fb, gb, &prods[o..o + per], nr);
                     if let Some(sub) = &st.sub {
-                        term = shsub(term, lin2(om, sub[2 * k], xv64, sub[2 * k + 1]));
+                        term = ext::ssub(term, ext::slin2b(om, sub.get(2 * k), xv64, sub.get(2 * k + 1)));
                     }
                     if let Some(eq) = &st.eq {
-                        let e = field::add(field::mul(eq[2 * k], om), field::mul(eq[2 * k + 1], xv64));
-                        term = cmul(e, term);
+                        let e = ext::add(ext::scal(om, eq[2 * k]), ext::scal(xv64, eq[2 * k + 1]));
+                        term = ext::scmul(e, term, nr);
                     }
                     term
                 })
-                .reduce(|| (0, 0), shadd)
+                .reduce(ext::szero::<E>, ext::sadd)
         })
         .collect()
 }
@@ -330,21 +496,59 @@ pub struct SpineIn<'a> {
     pub lig_tape: Option<Vec<(u64, u64, u64)>>,
 }
 
-/// Plain (unauthenticated) products in the spine's Ligero: the six evaluation-pair products.
+/// Plain (unauthenticated) products in the spine's Ligero at EXT = 1: the six evaluation-pair products.
 pub const LIG_SCALARS: usize = 6;
+
+/// The spine Ligero's plain products under EXT = e: six gates, three products each at e = 2 (P1, P2, P3).
+pub fn lig_scalars(e: usize) -> usize {
+    LIG_SCALARS * if e == 1 { 1 } else { 3 }
+}
 
 pub struct SpineOut {
     pub proof: SpineProof,
     pub coms: BTreeMap<String, PcsParty>,
     pub lig_rows: Vec<Vec<u64>>,
-    pub sys: SpineSys,
+    pub sys: Box<dyn LinSystem + Send>,
     pub quad: Vec<(usize, usize, usize)>,
     pub stats: BTreeMap<String, u64>,
+}
+
+/// The product rows' shares from the operands' (cosnark_zk.prod_shares): one plain product per gate at E = 1;
+/// at E = 2 three cells per gate (x0, x1, x0 + x1) and three products, gate by gate.
+pub(crate) fn prod_shares<const E: usize>(
+    lg: &mut LigParty,
+    net: &mut dyn Net,
+    xs: &[[u64; E]],
+    ys: &[[u64; E]],
+) -> (Vec<u64>, Vec<u64>, Vec<u64>) {
+    let cells = |v: &[[u64; E]]| -> Vec<u64> {
+        v.iter().flat_map(|x| if E == 1 { vec![x[0]] } else { vec![x[0], x[1], field::add(x[0], x[1])] }).collect()
+    };
+    let (rx, ry) = (cells(xs), cells(ys));
+    let rz = lg.mul_plain_batch(net, &rx, &ry);
+    (rx, ry, rz)
 }
 
 /// cosnark_zk.prove_zk for custodian `inp.i`. carry: the previous step's child commitments (W1, W2), carried with
 /// their openings; owner_x: this party's part of the owner's x commitment.
 pub fn prove(
+    inp: &SpineIn,
+    net: &mut dyn Net,
+    sp: &mut Spdz,
+    carry: BTreeMap<String, PcsParty>,
+    owner_x: Option<PcsParty>,
+) -> Result<SpineOut, String> {
+    if inp.lp.ext != inp.pr.ext {
+        return Err("the Ligero's EXT is not the profile's".into());
+    }
+    match inp.pr.ext {
+        1 => prove_g::<1>(inp, net, sp, carry, owner_x),
+        2 => prove_g::<2>(inp, net, sp, carry, owner_x),
+        e => Err(format!("unsupported EXT {e}")),
+    }
+}
+
+fn prove_g<const E: usize>(
     inp: &SpineIn,
     net: &mut dyn Net,
     sp: &mut Spdz,
@@ -356,6 +560,7 @@ pub fn prove(
     let kl = pr.k_l;
     let attack = inp.attack.unwrap_or("");
     let w = inp.wires;
+    let nr = ext::nr();
     let mut tt = crate::Trace::new("spine", i);
     let mut com: BTreeMap<String, PcsParty> = BTreeMap::new();
     let mut honest_w1n: Option<Vec<u64>> = None;
@@ -409,24 +614,24 @@ pub fn prove(
             h.s(k).list_hx(&roots[k]);
         });
     }
-    let mut sched = Sched::default();
+    let mut sched = Sched::<E>::default();
     let mut round_roots: BTreeMap<String, Vec<Vec<Hash>>> = BTreeMap::new();
     let tables = [("z1", "W1", "x", false), ("z2", "W2", "h", false), ("b", "W2", "d2", true)];
     let nsc = tables.len() + 1;
     for sci in 0..nsc {
         let name = if sci < 3 { tables[sci].0 } else { "bg" };
-        let tau = tr.chal(ld);
-        let mut rs: Vec<u64> = Vec::new();
-        let mut st: Sc;
+        let tau = ext::chal::<E>(&mut tr, ld);
+        let mut rs: Vec<[u64; E]> = Vec::new();
+        let mut st: Sc<E>;
         if name == "bg" {
             // The harness starts this claim at 0 and re-centres every round on it, a no-op whenever bg = b * g1
             // holds (every honest step and every attack row). Natively it is not run: it would open the hidden
             // round sums.
             st = Sc {
-                f: w["b"].clone(),
-                g: w["g1"].clone(),
-                sub: Some(w["bg"].clone()),
-                eq: Some(eqv(&tau)),
+                f: Tab::B(w["b"].clone()),
+                g: Tab::B(w["g1"].clone()),
+                sub: Some(Tab::B(w["bg"].clone())),
+                eq: Some(ext::eqv(&tau)),
                 deg: 3,
                 claim: None,
                 last: vec![],
@@ -434,18 +639,22 @@ pub fn prove(
         } else {
             let (_, wk, vk, tp) = tables[sci];
             let wm = &w[wk];
-            let et = eqv(&tau);
-            let f: Vec<Sh> = (0..d)
+            let et = ext::eqv(&tau);
+            // f = sum_i eq(tau)_i W[i][.] (or its transpose): F_{p^E} weights on base shares
+            let fv: Vec<[Sh; E]> = (0..d)
                 .into_par_iter()
                 .map(|j| {
-                    let mut acc: Sh = (0, 0);
+                    let mut acc = ext::szero::<E>();
                     for ii in 0..d {
                         let wv = if !tp { wm[ii * d + j] } else { wm[j * d + ii] };
-                        acc = shadd(acc, cmul(et[ii], wv));
+                        for k in 0..E {
+                            acc[k] = crate::spdz::shadd(acc[k], crate::spdz::cmul(et[ii][k], wv));
+                        }
                     }
                     acc
                 })
                 .collect();
+            let f = if E == 1 { Tab::B(fv.into_iter().map(|a| a[0]).collect()) } else { Tab::X(fv) };
             let mut claim = None;
             if attack == "forge_sumcheck" && name == "z1" {
                 // colluders broadcast their committed z1 shares to target the forged z1's MLE
@@ -455,37 +664,38 @@ pub fn prove(
                 let all = net.all_gather(mine);
                 let zsum: Vec<u64> =
                     (0..all[0].len()).map(|k| all.iter().fold(0, |a, v| field::add(a, v[k]))).collect();
-                claim = Some(mle(&zsum, &tau));
+                claim = Some(ext::mle_base(&zsum, &tau));
             }
-            st = Sc { f, g: w[vk].clone(), sub: None, eq: None, deg: 2, claim, last: vec![] };
+            st = Sc { f, g: Tab::B(w[vk].clone()), sub: None, eq: None, deg: 2, claim, last: vec![] };
         }
         for rnd in 0..ld {
             if rnd > 0 {
                 let r = *rs.last().unwrap();
-                st.f = fold_sh(&st.f, r);
-                st.g = fold_sh(&st.g, r);
+                st.f = st.f.fold(r);
+                st.g = st.g.fold(r);
                 if let Some(s) = &st.sub {
-                    st.sub = Some(fold_sh(s, r));
+                    st.sub = Some(s.fold(r));
                 }
                 if let Some(e) = &st.eq {
-                    let om = field::one_minus(r);
-                    st.eq = Some(e.chunks(2).map(|c| field::add(field::mul(c[0], om), field::mul(c[1], r))).collect());
+                    st.eq = Some(fold_pub(e, r));
                 }
                 if st.claim.is_some() {
-                    st.claim = Some(lag3(&st.last, r));
+                    st.claim = Some(ext::interp_at(&st.last, r));
                 }
             }
             let vals = round_vals(sp, net, &st);
-            let mut shares: Vec<u64> = vals.iter().map(|v| v.0).collect();
+            let mut shares: Vec<u64> = vals.iter().flat_map(|v| ext::shares(v)).collect();
             if let Some(claim) = st.claim {
+                // colluders: make the hidden round sum match the (forged) claim
                 let all = net.all_gather(shares.clone());
-                let plain: Vec<u64> =
-                    (0..=st.deg).map(|x| all.iter().fold(0, |a, v| field::add(a, v[x]))).collect();
-                let fix = field::mul(field::sub(field::sub(claim, plain[0]), plain[1]), field::inv(2));
+                let plain: Vec<[u64; E]> = (0..=st.deg)
+                    .map(|x| std::array::from_fn(|k| all.iter().fold(0, |a, v| field::add(a, v[x * E + k]))))
+                    .collect();
+                let fix = ext::scal(field::inv(2), ext::sub(claim, ext::add(plain[0], plain[1])));
                 if i == 0 {
-                    shares = shares.iter().map(|&v| field::add(v, fix)).collect();
+                    shares = shares.iter().enumerate().map(|(pos, &v)| field::add(v, fix[pos % E])).collect();
                 }
-                st.last = plain.iter().map(|&v| field::add(v, fix)).collect();
+                st.last = plain.iter().map(|&v| ext::add(v, fix)).collect();
             }
             lg.add_row(&shares);
             let rts = lg.commit(net);
@@ -493,66 +703,69 @@ pub fn prove(
                 h.s("scr").list_hx(&rts);
             });
             round_roots.entry(name.to_string()).or_default().push(rts);
-            rs.push(tr.chal1());
+            rs.push(ext::chal1::<E>(&mut tr));
         }
         sched.scs.insert(name.to_string(), (tau, rs));
     }
     tt.lap("sumchecks");
     for _ in 0..2 {
-        let rc = tr.chal(ld);
-        let rr = tr.chal(ld);
+        let rc = ext::chal::<E>(&mut tr, ld);
+        let rr = ext::chal::<E>(&mut tr, ld);
         sched.r1.push((rc, rr));
     }
     if bind {
-        sched.rb = Some(tr.chal(ld));
+        sched.rb = Some(ext::chal::<E>(&mut tr, ld));
     }
     let ev = evals_of(&sched);
     let shp: BTreeMap<String, Shape> = com.iter().map(|(k, c)| (k.clone(), c.shape.clone())).collect();
-    let lay = row_layout(ld, &shp, &ev, kl);
-    let mut ys: Vec<u64> = Vec::with_capacity(ev.len());
+    let lay = row_layout(ld, &shp, &ev, kl, E);
+    let mut ys: Vec<[u64; E]> = Vec::with_capacity(ev.len());
     for (k, pt) in &ev {
         let c = &com[k];
-        let (mut u, mut y) = c.eval_share(pt);
+        let (mut u, mut y) = c.eval_share_e(pt);
         if attack == "lie_in_u" && k == "W1n" && i == 0 {
             let s = &c.shape;
             let hon = honest_w1n.as_ref().unwrap();
-            let mut ext = c.ext.clone();
+            let mut ext_ = c.ext.clone();
             for r in 0..s.rd {
-                ext[r * s.w..r * s.w + s.c].copy_from_slice(&hon[r * s.c..(r + 1) * s.c]);
+                ext_[r * s.w..r * s.w + s.c].copy_from_slice(&hon[r * s.c..(r + 1) * s.c]);
             }
-            let tmp = PcsParty { ext, ..shallow(c) };
-            let (u2, y2) = tmp.eval_share(pt);
+            let tmp = PcsParty { ext: ext_, ..shallow(c) };
+            let (u2, y2) = tmp.eval_share_e(pt);
             u = u2;
             y = y2;
         }
         ys.push(y);
-        for s0 in (0..c.shape.w).step_by(kl) {
-            lg.add_row(&u[s0..(s0 + kl).min(c.shape.w)]);
+        for uk in &u {
+            for s0 in (0..c.shape.w).step_by(kl) {
+                lg.add_row(&uk[s0..(s0 + kl).min(c.shape.w)]);
+            }
         }
     }
     tt.lap("evaluation rows");
     let pairs = [(2usize, 1usize), (5, 4), (8, 7), (9, 10), (14, 15), (18, 19)];
-    let xs: Vec<u64> = pairs.iter().map(|&(a, _)| ys[a]).collect();
-    let yv: Vec<u64> = pairs.iter().map(|&(_, b)| ys[b]).collect();
-    let zs = lg.mul_plain_batch(net, &xs, &yv);
-    lg.add_row(&xs);
-    lg.add_row(&yv);
-    lg.add_row(&zs);
+    let xs: Vec<[u64; E]> = pairs.iter().map(|&(a, _)| ys[a]).collect();
+    let yv: Vec<[u64; E]> = pairs.iter().map(|&(_, b)| ys[b]).collect();
+    let (rx, ry, rz) = prod_shares::<E>(&mut lg, net, &xs, &yv);
+    lg.add_row(&rx);
+    lg.add_row(&ry);
+    lg.add_row(&rz);
     let eval_roots = lg.commit(net);
     let mask_roots = lg.commit_masks(net);
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&eval_roots).list_hx(&mask_roots);
     });
     tt.lap("ligero commits");
-    let (prox, pcs_cols) = pcs_prove(pr, &mut com, &mut tr, net, n)?;
+    let (prox, pcs_cols) = pcs_prove_e::<E>(pr, &mut com, &mut tr, net, n)?;
     tt.lap("pcs openings");
     let cols = pcs_cols.iter().map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r)))).collect();
-    let sys = SpineSys { kl, shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(), ev, cols, lay, sched };
+    let sys = SpineSys::<E> { kl, shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(), ev, cols, lay, sched };
     let quad = vec![sys.lay.prod];
     let lig = lg.prove(net, &mut tr, &sys, &quad);
     tt.lap("ligero prove");
     sp.mac_check(net, "cosnark-zk")?;
     tt.lap("mac check");
+    let _ = nr;
     let mut stats = BTreeMap::new();
     stats.insert("hidden_rows".into(), sys.lay.nrows as u64);
     stats.insert("ligero_wire".into(), lg.wire);
@@ -567,7 +780,7 @@ pub fn prove(
         pcs_cols,
         ligero: lig,
     };
-    Ok(SpineOut { proof, coms: com, lig_rows: lg.rows.clone(), sys, quad, stats })
+    Ok(SpineOut { proof, coms: com, lig_rows: lg.rows.clone(), sys: Box::new(sys), quad, stats })
 }
 
 fn shallow(c: &PcsParty) -> PcsParty {
@@ -598,11 +811,24 @@ pub fn pcs_prove(
     net: &mut dyn Net,
     n: usize,
 ) -> Result<(BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>), String> {
+    pcs_prove_e::<1>(pr, com, tr, net, n)
+}
+
+/// pcs_prove with F_{p^E} proximity weights: one row per custodian, the E components of its combination
+/// concatenated (each masked by its own proximity mask row).
+#[allow(clippy::type_complexity)]
+pub fn pcs_prove_e<const E: usize>(
+    pr: &Profile,
+    com: &mut BTreeMap<String, PcsParty>,
+    tr: &mut Transcript,
+    net: &mut dyn Net,
+    n: usize,
+) -> Result<(BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>), String> {
     let mut prox = BTreeMap::new();
     for (k, c) in com.iter() {
         let s = &c.shape;
-        let gam = s.prox_weights(tr.chal(s.prox_len()));
-        let mine = c.row_combo(&gam);
+        let gam = s.prox_weights_e::<E>(ext::chal::<E>(tr, s.prox_len_e(E)));
+        let mine: Vec<u64> = c.row_combo_e(&gam).concat();
         let all = net.all_gather(mine);
         tr.absorb(|h| {
             h.s("g").s(k).list2(&all);
@@ -623,7 +849,31 @@ pub fn pcs_prove(
 
 // ------------------------------------------------------------------------------------------------ verifier
 /// cosnark_zk.verify_zk: public data only.
+#[allow(clippy::too_many_arguments)]
 pub fn verify(
+    pr: &Profile,
+    lp: &LigParams,
+    n: usize,
+    d: usize,
+    ctx: &Ctx,
+    parent_roots: Option<&BTreeMap<String, Vec<Hash>>>,
+    chained: bool,
+    proof: &SpineProof,
+    bind: bool,
+    public: &[u64],
+) -> Result<(), String> {
+    if lp.ext != pr.ext {
+        return Err("the Ligero's EXT is not the profile's".into());
+    }
+    match pr.ext {
+        1 => verify_g::<1>(pr, lp, n, d, ctx, parent_roots, chained, proof, bind, public),
+        2 => verify_g::<2>(pr, lp, n, d, ctx, parent_roots, chained, proof, bind, public),
+        e => Err(format!("unsupported EXT {e}")),
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn verify_g<const E: usize>(
     pr: &Profile,
     lp: &LigParams,
     n: usize,
@@ -663,28 +913,28 @@ pub fn verify(
     if rr.keys().map(|s| s.as_str()).ne(["b", "bg", "z1", "z2"]) || rr.values().any(|v| v.len() != ld) {
         return Err("wrong number of sumcheck rounds".into());
     }
-    let mut sched = Sched::default();
+    let mut sched = Sched::<E>::default();
     for name in ["z1", "z2", "b", "bg"] {
-        let tau = tr.chal(ld);
+        let tau = ext::chal::<E>(&mut tr, ld);
         let mut rs = Vec::new();
         for rnd in 0..ld {
             tr.absorb(|h| {
                 h.s("scr").list_hx(&rr[name][rnd]);
             });
-            rs.push(tr.chal1());
+            rs.push(ext::chal1::<E>(&mut tr));
         }
         sched.scs.insert(name.into(), (tau, rs));
     }
     for _ in 0..2 {
-        let rc = tr.chal(ld);
-        let r2 = tr.chal(ld);
+        let rc = ext::chal::<E>(&mut tr, ld);
+        let r2 = ext::chal::<E>(&mut tr, ld);
         sched.r1.push((rc, r2));
     }
     if bind {
-        sched.rb = Some(tr.chal(ld));
+        sched.rb = Some(ext::chal::<E>(&mut tr, ld));
     }
     let ev = evals_of(&sched);
-    let lay = row_layout(ld, &sh, &ev, pr.k_l);
+    let lay = row_layout(ld, &sh, &ev, pr.k_l, E);
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
     });
@@ -693,13 +943,13 @@ pub fn verify(
     let rootv: Vec<Vec<Hash>> = keys.iter().map(|k| roots[k].clone()).collect();
     let proxv: Vec<Vec<Vec<u64>>> = keys.iter().map(|k| proof.prox[k].clone()).collect();
     let colv: Vec<PcsCols> = keys.iter().map(|k| proof.pcs_cols[k].clone()).collect();
-    pcs::verify(pr, &keys, &shv, &rootv, &proxv, &colv, &mut tr, n)?;
+    pcs::verify_e::<E>(pr, &keys, &shv, &rootv, &proxv, &colv, &mut tr, n)?;
     let cols = keys
         .iter()
         .map(|k| (k.clone(), (proof.pcs_cols[k].j.clone(), colsums(&proof.pcs_cols[k], sh[k].r))))
         .collect();
     let nrows = lay.nrows;
-    let sys = SpineSys { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(), ev, cols, lay, sched };
+    let sys = SpineSys::<E> { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(), ev, cols, lay, sched };
     let mut groups: Vec<Vec<Hash>> = Vec::new();
     for nm in ["z1", "z2", "b", "bg"] {
         for i in 0..ld {
@@ -713,8 +963,26 @@ pub fn verify(
     ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
 }
 
-/// Beaver triples the spine's sumcheck rounds consume (three degree-2 matvec sumchecks and the degree-3 Hadamard
-/// zerocheck over d entries): sum over rounds of (deg + 1) * half = 9 (d - 1) + 4 (d - 1).
+/// Beaver triples the spine's sumcheck rounds consume at EXT = 1 (three degree-2 matvec sumchecks and the degree-3
+/// Hadamard zerocheck over d entries): sum over rounds of (deg + 1) * half = 9 (d - 1) + 4 (d - 1).
 pub fn beaver_count(d: usize) -> usize {
     13 * (d - 1)
+}
+
+/// The same under EXT = e, by the tables' structural lengths: round 0 of a matvec sumcheck multiplies an F_{p^e}
+/// table by a base vector (2 triples per product at e = 2), round 0 of bg two base vectors (1), every later round
+/// two F_{p^e} tables (3).
+pub fn beaver_count_e(d: usize, e: usize) -> usize {
+    if e == 1 {
+        return beaver_count(d);
+    }
+    let ld = log2(d);
+    let mut tot = 0;
+    for (deg, first) in [(2usize, 2usize), (2, 2), (2, 2), (3, 1)] {
+        for rnd in 0..ld {
+            let half = d >> (rnd + 1);
+            tot += (deg + 1) * half * if rnd == 0 { first } else { 3 };
+        }
+    }
+    tot
 }

@@ -162,6 +162,33 @@ impl Shape {
         a.resize(a.len() + self.nmask, 0);
         a
     }
+    /// This life's proximity mask rows for F_{p^E} weights: the last E rows of its block, one per component
+    /// (E = 1: [prox_row()]).
+    pub fn prox_rows_e(&self, e: usize) -> Vec<usize> {
+        (0..e).map(|k| self.rd + self.base + self.block - e + k).collect()
+    }
+    pub fn prox_len_e(&self, e: usize) -> usize {
+        self.r - if self.nmask > 0 { e } else { 0 }
+    }
+    /// gam (prox_len_e elements) with this life's k-th proximity mask row given the unit u^k, so each component of
+    /// the revealed combination is masked by its own uniform row.
+    pub fn prox_weights_e<const E: usize>(&self, gam: Vec<[u64; E]>) -> Vec<[u64; E]> {
+        let mut g = gam;
+        if self.nmask > 0 {
+            for (k, r) in self.prox_rows_e(E).into_iter().enumerate() {
+                let mut u = [0u64; E];
+                u[k] = 1;
+                g.insert(r, u);
+            }
+        }
+        g
+    }
+    /// ZKPCS.eval_weights_e: eq(pt[mc:]) on the data rows, 0 on the mask rows.
+    pub fn eval_weights_e<const E: usize>(&self, pt: &[[u64; E]]) -> Vec<[u64; E]> {
+        let mut a = crate::ext::eqv(&pt[self.mc..]);
+        a.resize(a.len() + self.nmask, [0; E]);
+        a
+    }
     /// path length: salt + (levels - 1) siblings.
     pub fn path_len(&self) -> usize {
         bitlen(self.npts - 1) + 1
@@ -470,6 +497,28 @@ impl PcsParty {
         (u, y)
     }
 
+    /// row_combo_e: sum_r a_r row_r for F_{p^E} weights, as E component rows (each length W).
+    pub fn row_combo_e<const E: usize>(&self, a: &[[u64; E]]) -> Vec<Vec<u64>> {
+        (0..E).map(|k| self.row_combo(&a.iter().map(|w| w[k]).collect::<Vec<_>>())).collect()
+    }
+
+    /// The party's share of u_e at an F_{p^E} point (E component rows) and of Y_e = <u_e[:C], eq(pt[:mc])>.
+    pub fn eval_share_e<const E: usize>(&self, pt: &[[u64; E]]) -> (Vec<Vec<u64>>, [u64; E]) {
+        let a = self.shape.eval_weights_e(pt);
+        let u = self.row_combo_e(&a);
+        let b = crate::ext::eqv(&pt[..self.shape.mc]);
+        let ue: Vec<[u64; E]> = (0..self.shape.c)
+            .map(|c| {
+                let mut v = [0u64; E];
+                for k in 0..E {
+                    v[k] = u[k][c];
+                }
+                v
+            })
+            .collect();
+        (u, crate::ext::dot(&ue, &b))
+    }
+
     /// Counts one opening life; refuses beyond max_lives (cosnark.LifeExhausted).
     pub fn take_life(&mut self, key: &str, lives: usize) -> Result<(), LifeExhausted> {
         self.opened_lives += 1;
@@ -575,6 +624,73 @@ pub fn verify(
                 let rhs = crate::poly::peval(&gsum, s.dom.point(j));
                 if lhs != rhs {
                     return Some(format!("proximity test fails ({k})"));
+                }
+                None
+            })
+            .collect();
+        if let Some(Some(e)) = fails.into_iter().find(|f| f.is_some()) {
+            return Err(e);
+        }
+    }
+    Ok(())
+}
+
+/// pcs_verify with F_{p^E} proximity weights: each custodian's proximity row is the E components of its combination
+/// concatenated (length E W); every component is tested at every opened column.
+#[allow(clippy::too_many_arguments)]
+pub fn verify_e<const E: usize>(
+    pr: &Profile,
+    keys: &[String],
+    shapes: &[Shape],
+    roots: &[Vec<Hash>],
+    prox: &[Vec<Vec<u64>>],
+    cols: &[PcsCols],
+    tr: &mut Transcript,
+    n: usize,
+) -> Result<(), String> {
+    let mut gams = Vec::with_capacity(keys.len());
+    for (ki, k) in keys.iter().enumerate() {
+        let s = &shapes[ki];
+        let g = s.prox_weights_e::<E>(crate::ext::chal::<E>(tr, s.prox_len_e(E)));
+        gams.push(g);
+        let px = &prox[ki];
+        if px.len() != n || px.iter().any(|g| g.len() != E * s.w) {
+            return Err(format!("proximity combination of the wrong shape ({k})"));
+        }
+        tr.absorb(|h| {
+            h.s("g").s(k).list2(px);
+        });
+    }
+    for (ki, k) in keys.iter().enumerate() {
+        let s = &shapes[ki];
+        let jj = tr.distinct_cols(pr.t_cols, s.npts);
+        if jj != cols[ki].j {
+            return Err("column challenge mismatch".into());
+        }
+        let gsum: Vec<Vec<u64>> = (0..E)
+            .map(|kk| (0..s.w).map(|c| prox[ki].iter().fold(0u64, |a, g| field::add(a, g[kk * s.w + c]))).collect())
+            .collect();
+        let gam: Vec<Vec<u64>> = (0..E).map(|kk| gams[ki].iter().map(|g| g[kk]).collect()).collect();
+        let fails: Vec<Option<String>> = jj
+            .par_iter()
+            .enumerate()
+            .map(|(t, &j)| {
+                let mut colsum = vec![0u64; s.r];
+                for i in 0..n {
+                    let (col, path) = &cols[ki].open[i][t];
+                    if !verify_path(&roots[ki][i], col, j, path) {
+                        return Some(format!("Merkle opening fails ({k}, custodian {i})"));
+                    }
+                    for (a, &b) in colsum.iter_mut().zip(col) {
+                        *a = field::add(*a, b);
+                    }
+                }
+                let x = s.dom.point(j);
+                for kk in 0..E {
+                    let m = s.r.min(gam[kk].len());
+                    if field::dot(&gam[kk][..m], &colsum[..m]) != crate::poly::peval(&gsum[kk], x) {
+                        return Some(format!("proximity test fails ({k})"));
+                    }
                 }
                 None
             })
