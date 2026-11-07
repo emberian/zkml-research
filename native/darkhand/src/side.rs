@@ -92,7 +92,7 @@ pub fn digest(xs: &[u64]) -> String {
 
 fn scan_json(r: &ScanReport) -> Value {
     json!({"available": r.available, "regions": r.regions, "bytes": r.bytes, "hits": r.hits, "where": r.where_,
-           "seconds": r.seconds})
+           "hits_by_kind": r.by_kind, "seconds": r.seconds})
 }
 
 /// An old custodian's state at the end of step k (everything it must erase).
@@ -113,9 +113,59 @@ pub struct OldCustodian {
     pub captured: Option<(Ct, String)>,
 }
 
-/// The old custodian's part. Returns its report; the caller exits the process.
-pub fn old_side(c: &Common, mut st: OldCustodian, net6: Net) -> Result<Value, String> {
+/// What the shallow frame needs after the erasure: the canaries, the public pieces of the decryption attempt, the
+/// files, and the report so far.
+struct Erased {
+    rep: Value,
+    can: Canaries,
+    captured: Option<(Ct, String)>,
+    s_left: Vec<i64>,
+    b: Vec<Vec<u64>>,
+    a: Vec<Vec<u64>>,
+    files: Vec<PathBuf>,
+}
+
+/// Overwrite `kb` KiB of the stack below the caller's frame (the dead frames of the setup and the handover, which
+/// held keys and shares by value: Rust moves are copies and leave the old bytes behind).
+#[inline(never)]
+pub fn scrub_stack(kb: usize) {
+    #[inline(never)]
+    fn page(left: usize) {
+        let mut buf = [0u8; 16384];
+        unsafe { crate::erase::zero_raw(buf.as_mut_ptr(), buf.len()) };
+        std::hint::black_box(&mut buf);
+        if left > 1 {
+            page(left - 1);
+        }
+    }
+    page(kb.div_ceil(16));
+}
+
+/// The old custodian's part. `setup` builds its state (keys, shares, commitment) on the heap in a frame that is
+/// dead and scrubbed before the final scan; `connect6` then joins the six-party mesh. Returns its report; the caller
+/// exits the process.
+pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6: impl FnOnce() -> Net) -> Result<Value, String> {
     let t0 = Instant::now();
+    let st = setup();
+    let e = old_side_erase(c, st, connect6())?;
+    scrub_stack(4096);
+    let post = e.can.scan();
+    // ---- the attempt: decrypt the captured ciphertext with the key material this custodian still holds
+    let rem = OwnKey::from_ceremony_secure(c.rns.clone(), &e.s_left, &e.b, &e.a);
+    let post_dec = e.captured.as_ref().map(|(ct, dg)| digest(&rem.decrypt(ct, None)) == *dg);
+    let files_left: Vec<String> = e.files.iter().filter(|f| f.exists()).map(|f| f.display().to_string()).collect();
+    let mut rep = e.rep;
+    rep["scan_after_erasure"] = scan_json(&post);
+    rep["canary_kinds"] = json!(e.can.kinds);
+    rep["decrypts_captured_after_erasure"] = json!(post_dec);
+    rep["state_files_left"] = json!(files_left);
+    rep["allocator_wiped_bytes"] = json!(crate::erase::WIPED_BYTES.load(std::sync::atomic::Ordering::Relaxed));
+    rep["seconds"] = json!(t0.elapsed().as_secs_f64());
+    Ok(rep)
+}
+
+#[inline(never)]
+fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Erased, String> {
     let (n_old, n_new) = (c.n_old, c.n_new);
     let i = st.i;
     assert!(net6.me == i && net6.n == n_old + n_new);
@@ -147,6 +197,9 @@ pub fn old_side(c: &Common, mut st: OldCustodian, net6: Net) -> Result<Value, St
     let blob = handover::encode(&c.pr, c.d, &proof);
     let proof_digest = pycompat::repr::hex(&Sha256::digest(&blob));
     drop(blob);
+    // the opened columns' salts are in the proof (public); the others must go
+    let opened: BTreeMap<String, Vec<usize>> = KINDS.iter().map(|k| (k.to_string(), proof.cols_old[*k].j.clone())).collect();
+    drop(proof);
     tn.0.shutdown();
     // ---- canaries of everything this custodian must erase (one-way tags, sampled)
     let mut can = Canaries::new();
@@ -160,18 +213,26 @@ pub fn old_side(c: &Common, mut st: OldCustodian, net6: Net) -> Result<Value, St
         s.wipe();
         m.wipe();
         can.add_words(&format!("{k} commitment rows and tails"), &st.carry[k].ext, 1 << 16);
-        let salts: Vec<u8> = st.carry[k].salts.iter().flatten().copied().collect();
-        can.add_bytes(&format!("{k} commitment salts"), &salts);
+        let mut salts: Vec<u8> = st.carry[k]
+            .salts
+            .iter()
+            .enumerate()
+            .filter(|(j, _)| !opened[k].contains(j))
+            .flat_map(|(_, s)| s.iter().copied())
+            .collect();
+        can.add_bytes(&format!("{k} unopened commitment salts"), &salts);
+        salts.wipe();
     }
     can.add_words("tape shares", &st.tape.sh, 1 << 16);
     can.add_words("tape MAC shares", &st.tape.mac, 1 << 16);
-    can.add_words("alpha share", &[st.tape.alpha_i], 1);
-    can.add_bytes("ceremony r", st.cust.r.as_bytes());
-    can.add_bytes("ceremony salt", st.cust.salt.as_bytes());
+    can.add_words("alpha share", std::slice::from_ref(&st.tape.alpha_i), 1);
     let mut s_ntt = c.rns.from_signed(&st.cust.s);
     c.rns.fwd(&mut s_ntt);
     can.add_words("HE secret key (NTT form)", &s_ntt, 1 << 16);
     s_ntt.wipe();
+    if let Some(rk) = st.key.as_ref().and_then(|k| k.return_key.as_ref()) {
+        can.add_bytes("HE return-coin key", rk);
+    }
     // control: before erasure the scan finds the material, and the key decrypts the captured ciphertext
     let pre = can.scan();
     let pre_dec = st.captured.as_ref().map(|(ct, dg)| {
@@ -190,9 +251,18 @@ pub fn old_side(c: &Common, mut st: OldCustodian, net6: Net) -> Result<Value, St
     st.carry.clear();
     st.tape.wipe();
     st.cust.wipe();
-    if let Some(mut k) = st.key.take() {
+    if let Some(k) = st.key.as_mut() {
         k.s.wipe();
-        drop(k); // s_ntt and the coin stream are freed, so zeroed by the allocator
+        if let Some(rk) = k.return_key.as_mut() {
+            rk.wipe();
+        }
+    }
+    // drop the key in place, then zero its inline bytes (the coin PRF's keyed state lives inside the struct)
+    unsafe {
+        let p: *mut Option<OwnKey> = &mut st.key;
+        std::ptr::drop_in_place(p);
+        crate::erase::zero_raw(p as *mut u8, std::mem::size_of::<Option<OwnKey>>());
+        std::ptr::write(p, None);
     }
     let mut file_errs = Vec::new();
     for f in &st.files {
@@ -201,24 +271,27 @@ pub fn old_side(c: &Common, mut st: OldCustodian, net6: Net) -> Result<Value, St
         }
     }
     let erase_s = te.elapsed().as_secs_f64();
-    let post = can.scan();
-    // ---- the attempt: decrypt the captured ciphertext with the key material this custodian still holds
     let mut s_left = st.cust.s.clone();
     s_left.resize(c.rns.n, 0);
-    let regs = (0..n_old).map(|k| st.cer.registry(k).unwrap()).collect::<Vec<_>>();
-    let rem = OwnKey::from_ceremony(c.rns.clone(), 0, &s_left, regs[i].b_res(), regs[i].a_res());
-    let post_dec = st.captured.as_ref().map(|(ct, dg)| digest(&rem.decrypt(ct, None)) == *dg);
-    let files_left: Vec<String> = st.files.iter().filter(|f| f.exists()).map(|f| f.display().to_string()).collect();
-    Ok(json!({
+    let reg = st.cer.registry(i).unwrap();
+    let rep = json!({
         "role": "old", "party": i, "reshare_seconds": reshare_s, "prove_seconds": prove_s, "erase_seconds": erase_s,
-        "proof_sha256": proof_digest, "canaries": can.len(), "canary_kinds": can.kinds,
-        "scan_before_erasure": scan_json(&pre), "scan_after_erasure": scan_json(&post),
-        "allocator_wiped_bytes": crate::erase::WIPED_BYTES.load(std::sync::atomic::Ordering::Relaxed),
-        "decrypts_captured_before_erasure": pre_dec, "decrypts_captured_after_erasure": post_dec,
+        "proof_sha256": proof_digest, "canaries": can.len(),
+        "scan_before_erasure": scan_json(&pre),
+        "decrypts_captured_before_erasure": pre_dec,
         "key_material_left": {"s_len": st.cust.s.len(), "w_len": st.w.len(), "tape_len": st.tape.len(),
                               "carry_len": st.carry.len()},
-        "state_files_left": files_left, "file_wipe_errors": file_errs, "seconds": t0.elapsed().as_secs_f64(),
-    }))
+        "file_wipe_errors": file_errs,
+    });
+    Ok(Erased {
+        rep,
+        can,
+        captured: st.captured.take(),
+        s_left,
+        b: reg.b_res().clone(),
+        a: reg.a_res().clone(),
+        files: std::mem::take(&mut st.files),
+    })
 }
 
 /// A new custodian's state after the handover: what the next step runs on.
@@ -245,8 +318,7 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
     let (cust, cer) = crate::ceremony::run(&net3, j, c.rns.n, &c.rns.qs, c.t, c.pr.t_cols, epoch)?;
     let ceremony_s = tc.elapsed().as_secs_f64();
     let regs = (0..n_new).map(|k| cer.registry(k).unwrap()).collect::<Vec<_>>();
-    let seed = u64::from_le_bytes(os_field(1, c.t)[0].to_le_bytes());
-    let key = OwnKey::from_ceremony(c.rns.clone(), seed, &cust.s, regs[j].b_res(), regs[j].a_res());
+    let key = OwnKey::from_ceremony_secure(c.rns.clone(), &cust.s, regs[j].b_res(), regs[j].a_res());
     // ---- receive and add the subshares
     let tr = Instant::now();
     let mut plain: BTreeMap<String, Vec<u64>> = BTreeMap::new();

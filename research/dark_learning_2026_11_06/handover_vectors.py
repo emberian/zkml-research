@@ -11,7 +11,6 @@ import random
 import sys
 import time
 
-import bfv_ref as bfv
 import cosnark_zk as ZK
 import handover as HO
 import proofwire as PW
@@ -22,7 +21,7 @@ def main():
     prof = sys.argv[3] if len(sys.argv) > 3 else "ledger"
     assert os.environ.get("DL_DETERMINISTIC") is not None, "vectors need the deterministic hook"
     PW.set_profile(prof)
-    p = bfv.ntt_primes(61, 4, 16384)[3]
+    p = PW.he_field()                        # the profile's field (the deployed HE plaintext modulus)
     rng = random.Random(1000 + d)
     old = {k: [[rng.randrange(p) for _ in range(d * d)] for _ in range(3)] for k in HO.KINDS}
     old_coms = {k: ZK.ZKPCS(p, old[k], k + "n") for k in HO.KINDS}
@@ -41,7 +40,7 @@ def main():
     assert ok, why
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, f"handover_d{d}_{prof}.bin"), "wb").write(blob)
-    json.dump(dict(d=d, profile=prof, model=model, epoch_old=0, epoch_new=1, after_step=1, old_set=old_set,
+    json.dump(dict(p=p, d=d, profile=prof, domain=PW.PARAMS["DOMAIN"], model=model, epoch_old=0, epoch_new=1, after_step=1, old_set=old_set,
                    new_set=new_set, old_labels={k: k + "n" for k in HO.KINDS}, old_lives_spent=1,
                    old=old, new=new, bytes=f"handover_d{d}_{prof}.bin", python_prove_seconds=round(secs, 2),
                    first_violated=st["first_violated"]),

@@ -33,6 +33,8 @@ static A: ZeroOnFree = ZeroOnFree;
 
 const MODEL: &str = "mind-h";
 const CHECK: usize = 8;
+/// the whole local run's deadline
+const DEADLINE_S: u64 = 3600;
 const OLD_SET: [&str; 3] = ["c0", "c1", "c2"];
 const NEW_SET: [&str; 3] = ["c3", "c4", "c5"];
 
@@ -130,8 +132,16 @@ fn roots_json(r: &BTreeMap<String, Vec<[u8; 32]>>) -> Value {
 /// <work>/pub, as a ciphertext it sent during the run would be), its child commitment, then the handover.
 fn old(work: &Path, i: usize, d: usize, prof: &str, base: u16) {
     let c = common(d, prof);
+    let mut rep = side::old_side(&c, || old_setup(&c, work, i, d, base), || mesh(base, 6, 6, i))
+        .unwrap_or_else(|e| json!({"role": "old", "party": i, "error": e}));
+    rep["peak_rss_mb"] = json!(peak_rss_mb());
+    write_json(&work.join(format!("pub/old{i}.json")), &rep);
+}
+
+#[inline(never)]
+fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldCustodian> {
     let dir = work.join(format!("old{i}"));
-    let tape = read_tape(&dir.join("tape.bin")).expect("old tape");
+    let tape = Box::new(read_tape(&dir.join("tape.bin")).expect("old tape"));
     let w: BTreeMap<String, Vec<Sh>> = KINDS
         .iter()
         .enumerate()
@@ -142,7 +152,7 @@ fn old(work: &Path, i: usize, d: usize, prof: &str, base: u16) {
     net3.shutdown();
     std::fs::write(dir.join("key.bin"), darkstep::net::u64s_to_bytes(&cust.s.iter().map(|&x| x as u64).collect::<Vec<_>>())).unwrap();
     let reg = cer.registry(i).unwrap();
-    let mut key = OwnKey::from_ceremony(c.rns.clone(), u64::from_le_bytes(os_field(1, c.t)[0].to_le_bytes()), &cust.s, reg.b_res(), reg.a_res());
+    let mut key = OwnKey::from_ceremony_secure(c.rns.clone(), &cust.s, reg.b_res(), reg.a_res());
     let mut m = os_field(c.rns.n, c.t);
     let ct = key.encrypt_exact(&m);
     let mdig = digest(&m);
@@ -152,31 +162,26 @@ fn old(work: &Path, i: usize, d: usize, prof: &str, base: u16) {
     let carry: BTreeMap<String, PcsParty> = KINDS
         .iter()
         .map(|k| {
-            let plain: Vec<u64> = w[*k].iter().map(|x| x.s).collect();
+            let mut plain: Vec<u64> = w[*k].iter().map(|x| x.s).collect();
             let mut pc = PcsParty::commit(&c.pr, &plain, &format!("{k}n"), i, &Det(None));
             pc.opened_lives = 1;
-            let mut plain = plain;
             plain.wipe();
             (k.to_string(), pc)
         })
         .collect();
     let roots: BTreeMap<String, Vec<[u8; 32]>> = carry.iter().map(|(k, p)| (k.clone(), vec![p.root])).collect();
     write_json(&work.join(format!("pub/old{i}.roots.json")), &roots_json(&roots));
-    let st = OldCustodian {
+    Box::new(OldCustodian {
         i,
         w,
-        tape,
+        tape: *tape,
         cust,
         cer,
         key: Some(key),
         carry,
         files: vec![dir.join("tape.bin"), dir.join("key.bin")],
         captured: Some((ct, mdig)),
-    };
-    let net6 = mesh(base, 6, 6, i);
-    let mut rep = side::old_side(&c, st, net6).unwrap_or_else(|e| json!({"role": "old", "party": i, "error": e}));
-    rep["peak_rss_mb"] = json!(peak_rss_mb());
-    write_json(&work.join(format!("pub/old{i}.json")), &rep);
+    })
 }
 
 /// One new custodian: the handover (its own ceremony at epoch 2, resharing, the joint proof, re-authentication);
@@ -231,7 +236,7 @@ fn restart(work: &Path, i: usize, d: usize, prof: &str) -> Value {
     s.resize(c.rns.n, 0);
     // the public part of its old key (b, a) is recomputed from nothing secret: a zero b gives the key s = 0's view
     let zero_b: Vec<Vec<u64>> = c.rns.qs.iter().map(|_| vec![0u64; c.rns.n]).collect();
-    let key = OwnKey::from_ceremony(c.rns.clone(), 0, &s, &zero_b, &zero_b);
+    let key = OwnKey::from_ceremony_secure(c.rns.clone(), &s, &zero_b, &zero_b);
     let mut tries = Vec::new();
     let mut targets = vec![format!("old{i}")];
     targets.extend((0..3).map(|j| format!("new{j}")));
@@ -296,11 +301,34 @@ fn local(work: &Path, d: usize, prof: &str, base: u16) -> bool {
     let tmp = work.join("ledger.jsonl.tmp");
     drop(Ledger::open(&tmp, MODEL, &c.pr, Some(g)).expect("genesis"));
     std::fs::rename(&tmp, work.join("ledger.jsonl")).unwrap();
-    let mut exits = BTreeMap::new();
-    for (name, mut k) in kids {
-        let st = k.wait().unwrap();
-        exits.insert(name.clone(), st.code());
-        let _ = std::fs::remove_file(work.join(format!("pids/{name}.pid")));
+    // wait for all six; if one fails or the run exceeds its deadline, stop the rest (the children this driver
+    // started, by the PIDs it recorded for them) so nobody waits forever on a dead peer
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(DEADLINE_S);
+    let mut exits: BTreeMap<String, Option<i32>> = BTreeMap::new();
+    let mut kids = kids;
+    while exits.len() < kids.len() {
+        let mut failed = false;
+        for (name, k) in kids.iter_mut() {
+            if exits.contains_key(name) {
+                continue;
+            }
+            if let Some(st) = k.try_wait().unwrap() {
+                exits.insert(name.clone(), st.code());
+                let _ = std::fs::remove_file(work.join(format!("pids/{name}.pid")));
+                failed |= st.code() != Some(0);
+            }
+        }
+        if failed || std::time::Instant::now() > deadline {
+            for (name, k) in kids.iter_mut() {
+                if !exits.contains_key(name) {
+                    let _ = k.kill();
+                    let _ = k.wait();
+                    exits.insert(name.clone(), None);
+                    let _ = std::fs::remove_file(work.join(format!("pids/{name}.pid")));
+                }
+            }
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
     }
     let restarts: Vec<Value> = (0..3).map(|i| restart(work, i, d, prof)).collect();
     let olds: Vec<Value> = (0..3).map(|i| read_json(&work.join(format!("pub/old{i}.json")))).collect();

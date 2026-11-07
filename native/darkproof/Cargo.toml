@@ -20,3 +20,7 @@ tcp = ["dep:darkstep", "dep:darktrain"]
 # TEST ONLY: the deterministic hook (Det seeds, bit-exact with the harness's DL_DETERMINISTIC). Without it every secret
 # coin is drawn from the OS CSPRNG whatever Det says.
 test-det = []
+
+[[test]]
+name = "handover_prover_vs_python"
+required-features = ["test-det"]

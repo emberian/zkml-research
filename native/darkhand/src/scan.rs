@@ -4,13 +4,12 @@
 //! words, so the canary set itself leaks nothing usable. The scan reads every readable, writable mapping of
 //! /proc/self/maps (heap, anonymous mappings, every thread's stack) through /proc/self/mem and tags every aligned
 //! 8-byte word; a hit is a word whose tag is a canary's. Linux only (elsewhere it reports `available: false`).
-use std::collections::HashSet;
 use std::hash::Hasher;
 
 pub struct Canaries {
     k0: u64,
     k1: u64,
-    tags: HashSet<u64>,
+    tags: std::collections::HashMap<u64, usize>,
     pub kinds: Vec<(String, usize)>,
 }
 
@@ -22,6 +21,8 @@ pub struct ScanReport {
     pub hits: u64,
     /// mapping name of the first hits (heap, stack, anon, ...)
     pub where_: Vec<String>,
+    /// hits per canary kind (index into Canaries::kinds)
+    pub by_kind: Vec<u64>,
     pub seconds: f64,
 }
 
@@ -39,7 +40,7 @@ impl Canaries {
         Canaries {
             k0: u64::from_le_bytes(b[..8].try_into().unwrap()),
             k1: u64::from_le_bytes(b[8..].try_into().unwrap()),
-            tags: HashSet::new(),
+            tags: std::collections::HashMap::new(),
             kinds: Vec::new(),
         }
     }
@@ -50,7 +51,7 @@ impl Canaries {
         let mut k = 0;
         for &w in xs.iter().step_by(step) {
             if w > 1 {
-                self.tags.insert(tag(self.k0, self.k1, w));
+                self.tags.insert(tag(self.k0, self.k1, w), self.kinds.len());
                 k += 1;
             }
         }
@@ -79,10 +80,10 @@ impl Canaries {
         let mut mem = match std::fs::File::open("/proc/self/mem") {
             Ok(f) => f,
             Err(_) => {
-                return ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], seconds: 0.0 }
+                return ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], seconds: 0.0 }
             }
         };
-        let mut rep = ScanReport { available: true, regions: 0, bytes: 0, hits: 0, where_: vec![], seconds: 0.0 };
+        let mut rep = ScanReport { available: true, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![0; self.kinds.len()], seconds: 0.0 };
         let mut buf = vec![0u8; 1 << 22];
         for line in maps.lines() {
             let mut it = line.split_whitespace();
@@ -107,8 +108,10 @@ impl Canaries {
                 rep.bytes += k as u64;
                 for c in buf[..k].chunks_exact(8) {
                     let w = u64::from_le_bytes(c.try_into().unwrap());
-                    if w > 1 && self.tags.contains(&tag(self.k0, self.k1, w)) {
+                    if w > 1 {
+                        let Some(&kd) = self.tags.get(&tag(self.k0, self.k1, w)) else { continue };
                         rep.hits += 1;
+                        rep.by_kind[kd] += 1;
                         if rep.where_.len() < 8 {
                             rep.where_.push(name.clone());
                         }
@@ -124,7 +127,7 @@ impl Canaries {
 
     #[cfg(not(target_os = "linux"))]
     pub fn scan(&self) -> ScanReport {
-        ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], seconds: 0.0 }
+        ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], seconds: 0.0 }
     }
 }
 
