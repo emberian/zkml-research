@@ -233,6 +233,24 @@ impl Run {
     }
 }
 
+/// Overwrite a file's contents with zeros in place, sync, then unlink it (every hard-linked name sees the zeros).
+pub fn wipe_file(path: &Path) -> std::io::Result<()> {
+    use std::io::{Seek, SeekFrom, Write};
+    let mut f = std::fs::OpenOptions::new().write(true).open(path)?;
+    let len = f.metadata()?.len();
+    f.seek(SeekFrom::Start(0))?;
+    let z = vec![0u8; 1 << 20];
+    let mut left = len;
+    while left > 0 {
+        let k = left.min(z.len() as u64) as usize;
+        f.write_all(&z[..k])?;
+        left -= k as u64;
+    }
+    f.sync_all()?;
+    drop(f);
+    std::fs::remove_file(path)
+}
+
 /// Retire (rename) the MASCOT MAC key files of the 61-bit field, for one party (a custodian box) or all of them
 /// (a loopback test). Only `Mascot-Secrets-p-61-*` files: other protocols' material in the same directory is
 /// left alone.

@@ -329,3 +329,18 @@ fn streamed_darkstep_tape_equals_darkstep_write_to() {
     assert_eq!(refused, 1);
     assert_eq!(darkprep::schedule::n_entries(&sp), tags(&sp).len());
 }
+
+#[test]
+fn wipe_file_zeroes_every_hard_link_then_unlinks() {
+    let dir = std::env::temp_dir().join(format!("darkprep-wipe-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let (a, b) = (dir.join("a"), dir.join("b"));
+    std::fs::write(&a, vec![0x5au8; 3 << 20 | 7]).unwrap();
+    std::fs::hard_link(&a, &b).unwrap();
+    darkprep::mpspdz::wipe_file(&a).unwrap();
+    assert!(!a.exists());
+    let rest = std::fs::read(&b).unwrap();
+    assert_eq!(rest.len(), 3 << 20 | 7);
+    assert!(rest.iter().all(|&x| x == 0), "a hard-linked name still holds data");
+    std::fs::remove_dir_all(&dir).unwrap();
+}

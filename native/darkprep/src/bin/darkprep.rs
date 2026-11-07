@@ -379,7 +379,13 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
         None => std::fs::hard_link(tmp.join(format!("step-0/tape_{party}.bin")), &all_path).map_err(|e| e.to_string())?,
     }
     drop(tx);
-    std::fs::remove_file(&txf).map_err(|e| e.to_string())?; // the tapes are now the only copy of this party's shares
+    // the tapes are now the only copy of this party's shares: overwrite, sync and unlink MP-SPDZ's copies (the
+    // Transactions file, and its memory dump, which can hold the last batch's sint registers)
+    darkprep::mpspdz::wipe_file(&txf).map_err(|e| e.to_string())?;
+    let mem = mpspdz.join(format!("Player-Data/Memory-p-P{party}"));
+    if mem.exists() {
+        darkprep::mpspdz::wipe_file(&mem).map_err(|e| e.to_string())?;
+    }
     let asm_s = ta.elapsed().as_secs_f64();
     let links = r.links.iter().map(|(ip, s, rcv)| format!("{{\"peer\": \"{ip}\", \"sent_bytes\": {s}, \"received_bytes\": {rcv}}}")).collect::<Vec<_>>().join(", ");
     let j = format!(
