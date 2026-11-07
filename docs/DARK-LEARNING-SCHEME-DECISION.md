@@ -1677,3 +1677,70 @@ the scholar's table counted matvec returns only. Their envelope is small, so the
 - a delay function or threshold reveal against selective abort;
 - the joint-key (FHE (b)) variant of the ceremony as code. It is described above; only the per-custodian keys are
   executed.
+
+
+## 22. Gen 4, item 4: the fork verdict restated, with everything built (2026-11-06)
+
+Root decisions applied first (reversible by ember):
+- **HE parameters by profile.** `proofwire.PROFILES[...]["HE"]`: the ledger profile runs the HE helpers at
+  **N = 16384, four 61-bit primes, F = 2^175**; the demo profile at N = 8192, three primes, F = 2^118. The HE set is
+  in the genesis record with the proof parameters.
+- **Selective abort.** Accepted for 3-of-3 custody as a named ledger term, ε_abort = (k+1)·p for k recorded aborts.
+  The threshold-reveal alternative is designed in one page, `notes/dark-learning-gen4/threshold-reveal.md`, and not
+  built.
+- **Lattice estimator** (malb/lattice-estimator d8576372 under Sage from conda-forge, dregg-forge,
+  `rlwe_estimate.py`): the exact RLWE instances, ternary secret, uniform [−8, 8] error, one ring sample per secret
+  (the registered key, and each return's a_j u + e1).
+
+| parameter set | log2 Q | rough (core-SVP, 0.292β) | full estimate, cheapest attack |
+|---|---:|---:|---:|
+| **ledger: N = 16384, four primes** | 244.0 | **2^213.2** (dual hybrid) | **2^240.6** (BDD) |
+| demo: N = 8192, three primes | 183.0 | **2^122.4** (dual hybrid) | 2^152.2 (BDD) |
+
+[MEASURED, classical cost models of the estimator; no quantum model was run]
+- **The deployed set clears 128 bits by a wide margin.** It is the same instance in the H2 hybrid, so Adv_RLWE ≤
+  2^-128 is conservative, and §21's computational term (2^34.5 × Adv_RLWE over 10^6 steps) is below 2^-93.5.
+- **⚠ The demo set's core-SVP estimate is 2^122.4, under 128.** The HE Standard's table (log q ≤ 202 at N = 8192)
+  assumes its own error and secret model; under the stricter core-SVP model our instance falls short. One more reason
+  the demo profile is demo-only.
+
+### 22.1 Per step at d = 4096, the deployed profile (bits)
+
+| | MPC: HE matvec + HE outer | FHE (b) |
+|---|---:|---:|
+| MASCOT preprocessing (scholar's model, §15) | 0.912 T | 0.908 T |
+| online wire | **0.214 T** HE (N = 16384; was 0.155 T at N = 8192) + 0.008 T SPDZ | 0.006 T (N = 8192 model) |
+| **total, comparable rows** | **≈ 1.13 T** | **0.914 T** (not re-costed at a privacy-correct point) |
+| ZKPoPK, built (§20), T = 309, delivered | 1.42 G | 1.23 G (masks, N = 16384) |
+| integrity proof | spine 1.19 G + middle 0.70 G = **1.89 G**, built, T = 309 | ct×ct + relinearization certificates ≥ 1.26 T, **MODEL** |
+| key setup | ceremony, built: 3 × 10.1 Mbit per epoch | joint-key ceremony, designed (§21), not built |
+| privacy of the HE returns | built and measured: 2^-70.7 per step, 2^-50.8 over 10^6 steps (statistical) + 2^34.5 × Adv_RLWE (§21) | host returns owe the same argument; not built |
+| evaluation objects outside custody | none | a relinearization key on the host |
+
+The HE wire at N = 16384 grows only ×1.38, not ×2.2: with d_r = 256 each call sends half as many ciphertexts.
+
+### 22.2 Verdict
+
+**Build the MPC fork (SPDZ custody, HE matvec + HE outer, collaborative ZK proof).** With every piece measured, it
+costs about ×1.24 FHE (b)'s modelled total. That gap is no longer what decides; three things do:
+1. **Everything MPC needs is built and runs at the deployed parameters**, except MASCOT, which is a count model in
+   both forks. FHE (b)'s two load-bearing pieces, relinearization and its certificate, are still a MODEL, so its
+   0.914 T is a floor that has not been executed.
+2. **The integrity proof is about ×670 smaller** (1.89 G against ≥ 1.26 T).
+3. **Custody:** MPC hands no evaluation key to anyone. FHE (b) puts a relinearization key on the host.
+
+The ZKPoPK no longer separates them (§20). FHE (b) stays parked, not refuted. It becomes a candidate again if
+relinearization with its certificate is built and costs under about 0.2 T per step at N = 16384.
+
+### 22.3 What remains unbuilt, in order of what it could change
+
+| unbuilt | fork | could it change the verdict? |
+|---|---|---|
+| a real MASCOT/OT preprocessing backend (0.91 T is the scholar's count model) | both | only if it diverges between forks; it is the same object in both |
+| relinearization and its certificate | FHE (b) | yes, the only route back to FHE (b) |
+| SPDZ truncation masking (KAPPA = 40), MAC and abort leakage as terms in the million-step budget | MPC | no, but the 2^-50.8 claim excludes them, so they must be added before a whole-run privacy claim |
+| handover proof that a rotated committee commits the same weights | MPC | no |
+| threshold reveal / delay function against selective abort | both | no (named budget term) |
+| QROM or knowledge-soundness proofs for the Fiat–Shamir Ligero proofs; composition of the simulators | both | no, but the security claims rest on arguments, not machine-checked proofs |
+| a native prover (Python today: 417 s for one d = 4096 call's ZKPoPK) | both | no |
+| field-extension MACs for a million-step budget | MPC | no |

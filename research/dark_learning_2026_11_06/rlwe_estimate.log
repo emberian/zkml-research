@@ -1,0 +1,18 @@
+usvp                 :: rop: ≈2^214.3, red: ≈2^214.3, δ: 1.002576, β: 734, d: 31877, tag: usvp
+dual_hybrid          :: rop: ≈2^213.2, red: ≈2^213.2, guess: ≈2^202.7, β: 730, p: 3, ζ: 20, t: 90, β': 730, N: ≈2^149.7, m: ≈2^14.0
+deployed N=16384 L=4 rough {'usvp': 214.3, 'dual_hybrid': 213.2}
+usvp                 :: rop: ≈2^240.9, red: ≈2^240.9, δ: 1.002576, β: 734, d: 31877, tag: usvp
+bdd                  :: rop: ≈2^240.6, red: ≈2^240.6, svp: ≈2^233.3, β: 733, η: 759, d: 31992, tag: bdd
+dual                 :: rop: ≈2^242.4, mem: ≈2^162.7, m: ≈2^14.0, β: 736, d: 32680, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^240.9, red: ≈2^240.9, guess: ≈2^225.6, β: 730, p: 3, ζ: 0, t: 130, β': 733, N: ≈2^143.1, m: ≈2^14.0
+deployed N=16384 L=4 full {'usvp': 240.9, 'bdd': 240.6, 'bdd_hybrid': 240.7, 'bdd_mitm_hybrid': 342.1, 'dual': 242.4, 'dual_hybrid': 240.9}
+usvp                 :: rop: ≈2^122.9, red: ≈2^122.9, δ: 1.003843, β: 421, d: 15751, tag: usvp
+dual_hybrid          :: rop: ≈2^122.4, red: ≈2^122.3, guess: ≈2^115.8, β: 419, p: 3, ζ: 10, t: 40, β': 419, N: ≈2^85.2, m: ≈2^13.0
+demo N=8192 L=3 rough {'usvp': 122.9, 'dual_hybrid': 122.4}
+usvp                 :: rop: ≈2^152.6, red: ≈2^152.6, δ: 1.003843, β: 421, d: 15751, tag: usvp
+bdd                  :: rop: ≈2^152.2, red: ≈2^152.1, svp: ≈2^147.6, β: 419, η: 452, d: 16151, tag: bdd
+dual                 :: rop: ≈2^154.0, mem: ≈2^100.1, m: ≈2^13.0, β: 422, d: 16357, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^152.9, red: ≈2^152.9, guess: ≈2^129.6, β: 418, p: 3, ζ: 0, t: 70, β': 436, N: ≈2^89.9, m: ≈2^13.0
+demo N=8192 L=3 full {'usvp': 152.6, 'bdd': 152.2, 'bdd_hybrid': 152.2, 'bdd_mitm_hybrid': 215.6, 'dual': 154.0, 'dual_hybrid': 152.9}
+ESTIMATE DONE
+est exit 0

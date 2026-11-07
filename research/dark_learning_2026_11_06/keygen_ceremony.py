@@ -62,6 +62,12 @@ def H(*parts):
     return hashlib.sha256(canonical(list(parts))).hexdigest()
 
 
+def he_profile(name="ledger"):
+    """The HE parameter set the ledger profile pins (proofwire.PROFILES[name]["HE"])."""
+    import proofwire as PW
+    return dict(PW.PROFILES[name]["HE"])
+
+
 class CeremonyError(Exception):
     pass
 
