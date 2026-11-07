@@ -5,7 +5,7 @@ use crate::h::{h_leaf, h_pad, Hash};
 use crate::net::{gather_hashes, Net};
 use crate::pcs::{auth_path, bitlen, merkle_levels, verify_path, Opening};
 use crate::poly::{self, lagrange_basis, padd, peval, pmul, pscale};
-use crate::rng::{salt, secret_rng, Det};
+use crate::rng::{salt, Coins, Det};
 use crate::transcript::Transcript;
 use pycompat::PyRandom;
 use rayon::prelude::*;
@@ -155,8 +155,10 @@ pub struct LigParty<'p> {
     pub i: usize,
     pub n: usize,
     det: bool,
-    rng: PyRandom,
-    dealer: PyRandom,
+    rng: Coins,
+    /// the ideal dealer's stream (the harness: cozk's dealer under the hook, or one stream the in-process harness
+    /// gives every party through with_dealer); None in the deployed run, which takes its triples from the tape
+    dealer: Option<PyRandom>,
     /// this party's tape triples (value shares of authenticated triples; the MAC shares are unused: the quadratic
     /// test checks z = x y). None: the ideal dealer stream.
     tape: Option<(Vec<(u64, u64, u64)>, usize)>,
@@ -192,13 +194,13 @@ impl<'p> LigParty<'p> {
     pub fn new(pp: &'p LigParams, i: usize, n: usize, seed_label: &str, det: &Det) -> Self {
         let (rng, dealer, on) = match det.on() {
             true => (
-                det.rng(&["cozk", seed_label, "party", &i.to_string()]).unwrap(),
-                det.rng(&["cozk", seed_label, "dealer"]).unwrap(),
+                det.coins(&["cozk", seed_label, "party", &i.to_string()]),
+                det.rng(&["cozk", seed_label, "dealer"]),
                 true,
             ),
-            // real runs: the dealer is an ideal functionality; in-process every party replays one secret stream,
-            // which the caller seeds identically for all parties through `with_dealer`
-            false => (secret_rng(), secret_rng(), false),
+            // real runs: OS coins; triples from the tape (with_tape), or from an ideal dealer stream the in-process
+            // harness gives every party identically through `with_dealer`
+            false => (crate::rng::secret_coins(), None, false),
         };
         LigParty {
             pp,
@@ -239,11 +241,12 @@ impl<'p> LigParty<'p> {
             *pos += 1;
             return x;
         }
-        let a = self.dealer.randrange_u64(field::p());
-        let b = self.dealer.randrange_u64(field::p());
-        let ai = deal(&mut self.dealer, &[a], n, i)[0];
-        let bi = deal(&mut self.dealer, &[b], n, i)[0];
-        let ci = deal(&mut self.dealer, &[field::mul(a, b)], n, i)[0];
+        let dl = self.dealer.as_mut().expect("no tape and no ideal dealer for the Ligero's triples");
+        let a = dl.randrange_u64(field::p());
+        let b = dl.randrange_u64(field::p());
+        let ai = deal(dl, &[a], n, i)[0];
+        let bi = deal(dl, &[b], n, i)[0];
+        let ci = deal(dl, &[field::mul(a, b)], n, i)[0];
         (ai, bi, ci)
     }
 
@@ -253,12 +256,13 @@ impl<'p> LigParty<'p> {
     fn poly_triple(&mut self, net: &mut dyn Net, deg: usize) -> (Vec<u64>, Vec<u64>, Vec<u64>) {
         let (n, i) = (self.n, self.i);
         if self.tape.is_none() {
-            let a: Vec<u64> = (0..deg).map(|_| self.dealer.randrange_u64(field::p())).collect();
-            let b: Vec<u64> = (0..deg).map(|_| self.dealer.randrange_u64(field::p())).collect();
+            let dl = self.dealer.as_mut().expect("no tape and no ideal dealer for the Ligero's triples");
+            let a: Vec<u64> = (0..deg).map(|_| dl.randrange_u64(field::p())).collect();
+            let b: Vec<u64> = (0..deg).map(|_| dl.randrange_u64(field::p())).collect();
             let cpoly = pmul(&a, &b);
-            let as_ = deal(&mut self.dealer, &a, n, i);
-            let bs_ = deal(&mut self.dealer, &b, n, i);
-            let cs_ = deal(&mut self.dealer, &cpoly, n, i);
+            let as_ = deal(dl, &a, n, i);
+            let bs_ = deal(dl, &b, n, i);
+            let cs_ = deal(dl, &cpoly, n, i);
             return (as_, bs_, cs_);
         }
         let a: Vec<u64> = (0..deg).map(|_| self.rng.randrange_u64(field::p())).collect();
@@ -275,7 +279,7 @@ impl<'p> LigParty<'p> {
 
     /// Replace the dealer stream (all parties must hold the same one: the ideal dealer).
     pub fn with_dealer(mut self, d: PyRandom) -> Self {
-        self.dealer = d;
+        self.dealer = Some(d);
         self
     }
 
@@ -296,7 +300,7 @@ impl<'p> LigParty<'p> {
     fn commit_polys(&mut self, polys: &[&Vec<u64>]) -> (Vec<Vec<u64>>, Vec<Vec<Hash>>, Vec<Hash>) {
         let pp = self.pp;
         let codes: Vec<Vec<u64>> = polys.par_iter().map(|f| pp.code(f)).collect();
-        let salts: Vec<Hash> = (0..pp.npts).map(|_| salt(if self.det { Some(&mut self.rng) } else { None })).collect();
+        let salts: Vec<Hash> = (0..pp.npts).map(|_| salt(&mut self.rng)).collect();
         let mut level: Vec<Hash> = (0..pp.npts)
             .into_par_iter()
             .map(|j| {

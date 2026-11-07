@@ -157,7 +157,7 @@ def verify_native(out, tag):
     p, d = meta["p"], meta["d"]
     tab = MF.tables(p)
     ok_all = True
-    for flow, gen in (("pw", "genesis_roots"), ("si", "si_genesis_roots")):
+    for flow, gen in (("pw", "genesis_roots"), ("si", "si_genesis_roots"), ("he", "genesis_roots")):
         parent = meta.get(gen)
         for name in sorted(b for b in meta["bundles"] if b.startswith(flow)):
             path = os.path.join(out, f"{tag}_{name}.native.bin")
@@ -166,9 +166,10 @@ def verify_native(out, tag):
             bd = meta["bundles"][name]
             blob = open(path, "rb").read()
             pk = bytes.fromhex(bd["owner_pk"]) if bd["owner_pk"] else None
-            ok, why, res = PW.verify_step(p, blob, tuple(bd["ctx"]), parent, tab, d, owner_pk=pk)
+            prog = meta.get("program")
+            ok, why, res = PW.verify_step(p, blob, tuple(bd["ctx"]), parent, tab, d, owner_pk=pk, program=prog)
             bad = bytearray(blob); bad[len(bad) // 2] ^= 1
-            ok2, why2, _ = PW.verify_step(p, bytes(bad), tuple(bd["ctx"]), parent, tab, d, owner_pk=pk)
+            ok2, why2, _ = PW.verify_step(p, bytes(bad), tuple(bd["ctx"]), parent, tab, d, owner_pk=pk, program=prog)
             print(f"python verify {tag} {name} native: {ok} {why} | flipped byte: {ok2} {why2}", flush=True)
             ok_all &= ok and not ok2
             if ok:

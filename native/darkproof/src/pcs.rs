@@ -6,7 +6,7 @@
 use crate::field;
 use crate::h::{h_leaf, h_node, h_pad, Hash};
 use crate::poly::powers;
-use crate::rng::{salt, secret_rng, Det};
+use crate::rng::{salt, Det};
 use crate::transcript::{eqv, Transcript};
 use crate::Profile;
 use rayon::prelude::*;
@@ -101,18 +101,18 @@ impl PcsParty {
         let m = bitlen(share.len() - 1);
         assert_eq!(share.len(), 1 << m);
         let shape = Shape::new(pr, m, 0);
-        let mut rng = match det.on() {
-            true => det
-                .rng(&[
-                    "pcs",
-                    label,
-                    &i.to_string(),
-                    &shape.hide.to_string(),
-                    &shape.nmask.to_string(),
-                    &crate::h::h_list_hex(share),
-                ])
-                .unwrap(),
-            false => secret_rng(),
+        // the share's hash labels the seeded stream only under the hook (never computed for OS coins)
+        let mut rng = if det.on() {
+            det.coins(&[
+                "pcs",
+                label,
+                &i.to_string(),
+                &shape.hide.to_string(),
+                &shape.nmask.to_string(),
+                &crate::h::h_list_hex(share),
+            ])
+        } else {
+            crate::rng::secret_coins()
         };
         let (w, c) = (shape.w, shape.c);
         let mut ext = vec![0u64; shape.r * w];
@@ -128,7 +128,7 @@ impl PcsParty {
             }
         }
         let salts: Vec<Hash> =
-            (0..shape.npts).map(|_| salt(if det.on() { Some(&mut rng) } else { None })).collect();
+            (0..shape.npts).map(|_| salt(&mut rng)).collect();
         let mut me = PcsParty {
             label: label.to_string(),
             shape,
