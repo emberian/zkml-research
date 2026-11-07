@@ -195,7 +195,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
 
 pub fn reveal_check(pf: &Prof, shares: &[(Vec<Vec<Sh>>, Vec<Vec<Sh>>)]) -> bool {
     let p = pf.t;
-    let plain = inputs(pf.d);
+    let plain = inputs_for(pf.d, &pf.program);
     let (e1, e2) = match plain.step_prog(&pf.program) {
         Ok(x) => x,
         Err(e) => {
@@ -227,7 +227,7 @@ pub fn run_local(pf: &Prof, attack: Option<(String, usize)>) -> (serde_json::Val
 /// proof_atoms: deal the collaborative proof's truncation range bits onto the tapes too (the step skips them).
 pub fn run_local_opts(pf: &Prof, attack: Option<(String, usize)>, proof_atoms: bool) -> (serde_json::Value, Option<String>) {
     let t0 = Instant::now();
-    let plain = inputs(pf.d);
+    let plain = inputs_for(pf.d, &pf.program);
     let (cs, dl) =
         crate::tape::deal_step_dealer_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), proof_atoms, &pf.program);
     let tapes = dl.tapes;
