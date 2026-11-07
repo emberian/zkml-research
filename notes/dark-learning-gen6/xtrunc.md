@@ -274,3 +274,30 @@ distribution and the public check.
 - C equals the twin (C = 1).
 
 That is d = 16. A d = 4096 chain is the run itself.
+
+## 9. In the run of record (coordinator's decision: XT goes in if ready and tested) [EXECUTED unless marked]
+
+The run of record uses LowGear (N = 16,384, -S 60).
+- `darkprep --xt` under `lowgear-party.x` 38adf2bf (PairwiseParams 5.77 MB = N = 16,384) on bb2 loopback, fresh
+  key, d = 4 harness chunk: it verifies with 16 masks, every r < p.
+- MASCOT at d = 64 and d = 4096 is in sections 7 and 8.
+
+Run-side changes (b1a485f8):
+- **Genesis.** `dl-custodian --xt` (needs `--rs`) pins `"XT": true` in the genesis record. A replica opened without
+  it is refused.
+- **Parties.** Every party runs with `Party::xt`. `test-deal` deals XT masks.
+- **The redo** is never a refusal, so never a self-handover:
+  - with `--xt-spare-tapes`, the step is redone on a spare under the same key;
+  - without one, the custodians exit with code 5 (verdict REDO) and the checkpoint stays at the step before.
+    `run.py resume` then continues once fresh preprocessing for that step exists. rec has no spare chunk: the event
+    has probability about 2^-24 over its 8 steps, and a spare would cost 1.92 h of hbox's uplink.
+- **The release** never opens C after a wrap-zone opening. That event has probability about 2^-23 per release; the
+  release is then redone on a new release tape.
+- **Preprocessing.** `rec-stream.sh` passes `--xt`, with darkprep and its .mpc from ws14. `rec.json` adds `--xt` to
+  the flags and points every seat and the owner at `ws-target-r14`.
+- **The r14 build** (b1a485f8 via `git archive`) is in `<deploy root>/ws14` and `ws-target-r14` on forge, bb2 and
+  hbox. `dl-custodian proof-triples ... --rs --xt` gives 2,225,349 on all three, rec's count.
+- `tests/xt_redo.rs` covers the proved run: a forced wrap-zone step is redone on its spare, every proof verifies on
+  every replica, the genesis pins XT, and the weights equal the twin.
+
+Still to do: the prep streams A and B were waiting on the key setups and must be restarted to pick up the new script.
