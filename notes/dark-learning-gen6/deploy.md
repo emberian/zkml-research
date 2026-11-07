@@ -1255,3 +1255,8 @@ Successor, before launch:
   (~0.35 h each) and the handover run ~06:00-09:30 Nov 9, possibly across Nov 9's window (the nightly stop in place covers it).
 - Condition (i) is NOT yet met: prep's first LowGear pause test ran on stale pre-fix binaries (66c09524) and proved nothing;
   a valid one on the fixed build is running. lg64f and lg64n were always on the fixed build. Do not launch without it.
+- **Condition (i) met** (prep, ~16:00 UTC Nov 7): the LowGear pause test passes on the fixed lowgear-party.x 38adf2bf (the
+  build lg64f and lg64n run): two forced-receive stops of forge's party, 330 s each (key generation; triple generation), all
+  three exit 0, 0 MAC failures over 6,044,998 entries, 0 bad triples among 2,004,482 (negative control 1 / 1). Prep's forge
+  pauser is armed for Nov 8 and Nov 9. Remaining before launch: rec-c0..c3, rec-ho, rec-n-c0 complete (~06:00 Nov 9), then
+  the readiness checks 2-5 above.
