@@ -35,7 +35,7 @@ fn main() {
     let d: usize = a[2].parse().unwrap();
     let pr = Profile::by_name(&a[3]).expect("profile");
     // the profile's field (the BFV plaintext modulus of its HE parameters), before any LigParams
-    field::set_p(if pr.name == "ledger" { field::P_LEDGER } else { field::P_DEMO });
+    field::set_p(darkproof::wire::he_field(&pr).expect("profile HE parameters"));
     let lp = pr.ligero();
     let det = Det(None);
     let t0 = Instant::now();

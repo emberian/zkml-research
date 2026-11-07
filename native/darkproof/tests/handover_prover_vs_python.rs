@@ -2,7 +2,7 @@
 //!
 //!   cd research/dark_learning_2026_11_06
 //!   DL_DETERMINISTIC=7 python3 handover_vectors.py <dir> <d> <demo|ledger>      (d = 4 and 16)
-//!   HANDOVER_PROVER_VECTORS=<dir> cargo test --release -p darkproof --test handover_prover_vs_python -- --nocapture
+//!   HANDOVER_PROVER_VECTORS=<dir> cargo test --release -p darkproof --features test-det --test handover_prover_vs_python -- --nocapture
 //!
 //! Every vector in <dir>: the native proof bytes equal Python's, every party holds the same proof, the native
 //! verifier accepts them; a third opening of the old child is refused; and (negative control) a proof for another
@@ -61,6 +61,8 @@ fn handover_prover_equals_python() {
     names.sort();
     for path in names {
         let v: Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+        // the vector's field first: LigParams and every field operation after it use it
+        darkproof::field::set_p(v["p"].as_u64().expect("vector records its field p"));
         let pr = Profile::by_name(v["profile"].as_str().unwrap()).unwrap();
         let d = v["d"].as_u64().unwrap() as usize;
         let strs = |x: &Value| x.as_array().unwrap().iter().map(|s| s.as_str().unwrap().to_string()).collect::<Vec<_>>();
