@@ -60,8 +60,6 @@ pub type Triple = (Sh, Sh, Sh);
 /// stream) or this party's preprocessing tape (the proof section of a darkstep / darkprep tape, MASCOT in the run).
 pub enum Triples {
     Dealer(Dealer),
-    /// the tape's triples in REVERSE order (the next one last): a drawn triple is popped and the spent part of the
-    /// buffer returned as it empties (memory: a release's proof section is 47.7M triples, 2.3 GB, at M = 52)
     Tape { t: Vec<Triple>, pos: usize },
 }
 
@@ -77,11 +75,8 @@ impl Triples {
                 (a, b, c)
             }
             Triples::Tape { t, pos } => {
-                let x = t.pop().expect("the tape's proof section is exhausted");
+                let x = *t.get(*pos).expect("the tape's proof section is exhausted");
                 *pos += 1;
-                if t.capacity() >= 2 * t.len() + (1 << 16) {
-                    t.shrink_to_fit();
-                }
                 x
             }
         }
@@ -98,11 +93,6 @@ pub struct Spdz {
     pub nopen: u64,
     pub triples: u64,
     pub wire: std::collections::BTreeMap<&'static str, u64>,
-    /// openings held before the MAC check runs on its own (DP_MAC_EVERY, default 2^24: 256 MiB of log); every party
-    /// opens the same counts, so all run it at the same point
-    mac_every: usize,
-    /// a failed bounded check, reported by the next explicit mac_check
-    mac_bad: Option<String>,
 }
 
 #[inline]
@@ -132,8 +122,7 @@ impl Spdz {
     }
 
     /// Party i with MAC key share alpha_i and its tape's proof-section triples.
-    pub fn from_tape(i: usize, n: usize, alpha_i: u64, mut triples: Vec<Triple>) -> Self {
-        triples.reverse();
+    pub fn from_tape(i: usize, n: usize, alpha_i: u64, triples: Vec<Triple>) -> Self {
         Self::with_source(i, n, alpha_i, Triples::Tape { t: triples, pos: 0 })
     }
 
@@ -148,8 +137,6 @@ impl Spdz {
             nopen: 0,
             triples: 0,
             wire: Default::default(),
-            mac_every: std::env::var("DP_MAC_EVERY").ok().and_then(|v| v.parse().ok()).unwrap_or(1 << 24),
-            mac_bad: None,
         }
     }
 
@@ -177,12 +164,14 @@ impl Spdz {
         }
         self.nopen += xs.len() as u64;
         *self.wire.entry(phase).or_insert(0) += (xs.len() * n * (n - 1)) as u64;
-        if self.open_log.len() >= self.mac_every {
-            if let Err(e) = self.check_log(net, "bounded") {
-                self.mac_bad.get_or_insert(e);
-            }
-        }
         out
+    }
+
+    /// A uniform authenticated value: the next triple's a (its b and c are discarded; Python draws the triple as
+    /// spdz.Engine.mul does, then keeps a).
+    pub fn rand_from_triple(&mut self) -> Sh {
+        self.triples += 1;
+        self.src.next(self.i).0
     }
 
     /// Beaver products x_k * y_k, triples drawn from the dealer in order (spdz.Engine.mul per pair), every e and f
@@ -218,17 +207,8 @@ impl Spdz {
             .collect()
     }
 
-    /// Batched MAC check over every opening so far, sigma committed before it is opened. Also reports a bounded check
-    /// (one run on its own when the log reached mac_every openings) that failed.
+    /// Batched MAC check over every opening so far, sigma committed before it is opened.
     pub fn mac_check(&mut self, net: &mut dyn Net, label: &str) -> Result<(), String> {
-        let r = self.check_log(net, label);
-        match self.mac_bad.take() {
-            Some(e) => Err(e),
-            None => r,
-        }
-    }
-
-    fn check_log(&mut self, net: &mut dyn Net, label: &str) -> Result<(), String> {
         let n = self.n;
         let mut h = self.coins.clone();
         h.update(b"mac-coins");
@@ -240,9 +220,6 @@ impl Spdz {
             let r = rng.randrange_u64(field::p());
             sig = field::add(sig, field::mul(r, field::sub(m, field::mul(self.alpha_i, v))));
         }
-        // the log and its coins are spent on sigma (pass or fail)
-        self.open_log.clear();
-        self.coins = Sha256::new();
         let nonce = crate::rng::secret_bytes(16);
         let nw: Vec<u64> = nonce.chunks(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
         let com = sigma_commit(self.i, sig, &nw);
@@ -259,6 +236,8 @@ impl Spdz {
         if tot != 0 {
             return Err("MAC check failed: an opened value is not the authenticated one".into());
         }
+        self.open_log.clear();
+        self.coins = Sha256::new();
         Ok(())
     }
 }

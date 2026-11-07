@@ -21,7 +21,8 @@ What it pins (the posture of the run; change it here, not by hand in the JSON):
 - every state file (checkpoint, carry, TLS key) sealed under the epoch's file key (darkhand::vault), destroyed at
   the erasure.
 Chunk paths follow the prep lane's layout ROOT/chunks/NAME-P<I>/step-<j>/{tape_I.bin,owner-msg-P<I>.bin} with
---chunk-steps S steps per chunk dir: NAME-c<c>-P<I> for chunk c (the old committee from step 0, the new one from K+1);
+--chunk-steps S steps per chunk dir: NAME-c<c>-P<I> for the old committee's chunk c (from step 0) and NAME-n-c<c>-P<I>
+for the new committee's (from step K + 1);
 the handover tapes NAME-ho-P<I>/step-0/tape_I.bin and the release tapes NAME-rel-P<I>/release_I.bin.
 """
 import argparse, json, sys
@@ -38,7 +39,8 @@ HBOX = {"host": "hbox", "ip": None, "root": "/othersys/lanes/dl-gen6-deploy", "p
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("layout", choices=["hbox", "wired"])
+    ap.add_argument("layout", choices=["hbox", "wired", "dev"], help="dev: forge + bb2 + bb2, a rehearsal (two seats on one box: not a deployment)")
+    ap.add_argument("--no-release", action="store_true", help="end without the release (a rehearsal while the release does not fit)")
     ap.add_argument("--steps", type=int, required=True, help="N, the run's steps")
     ap.add_argument("--handover-at", type=int, required=True, help="K: the rotation after step K")
     ap.add_argument("--chunks", required=True, help="the prep lane's chunk name for this run")
@@ -57,6 +59,8 @@ def main():
         third = HBOX
         # hbox is behind NAT: it only dials (--nat 2 in every three-party mesh, --nat6 2,5 in the six-party one,
         # where old seat 2's loopback address takes new seat 2's dial on the same box)
+    elif a.layout == "dev":
+        third = dict(BB2)
     else:
         h, ip, root = a.third.split(",")
         third = {"host": h, "ip": ip, "root": root, "prep": root.replace("dl-gen6-deploy", "dl-gen6-prep"),
@@ -79,19 +83,21 @@ def main():
     def bin_(b):
         return f"{b['root']}/ws-target-run/release"
     def seat(b, i, new):
-        c = f"{b['prep']}/chunks/{a.chunks}-c{{c}}-P{i}/step-{{j}}"
+        # the new committee's chunks count from step K + 1 again (--chunk-first): their own name
+        c = f"{b['prep']}/chunks/{a.chunks}{'-n' if new else ''}-c{{c}}-P{i}/step-{{j}}"
         s = {"host": b["host"], "root": b["root"], "bin": bin_(b), "scope": b["scope"], "env": b["env"],
              "addr": (mesh_new if new else mesh_old)[i],
              "tapes": f"{c}/tape_{i}.bin", "owner_msgs": f"{c}/owner-msg-P{i}.bin",
              "extra": ["--proof-mesh", proof_new if new else proof_old]}
         if b.get("disk_line_gb"):
             s["disk_line_gb"] = b["disk_line_gb"]
-        if b is BB2:
+        if b is BB2 and i == 1:
             s["archive"] = True
         if new:
             s["handover_tape"] = f"{b['prep']}/chunks/{a.chunks}-ho-P{i}/step-0/tape_{i}.bin"
-            s["extra"] += ["--release-data", f"{b['root']}/data/mnist",
-                           "--release-tape", f"{b['prep']}/chunks/{a.chunks}-rel-P{i}/release_{i}.bin"]
+            if not a.no_release:
+                s["extra"] += ["--release-data", f"{b['root']}/data/mnist",
+                               "--release-tape", f"{b['prep']}/chunks/{a.chunks}-rel-P{i}/release_{i}.bin"]
         elif a.key_dir:
             k = f"{b['prep']}/{a.key_dir}{i}/mpspdz"
             s["extra"] += ["--erase-extra", f"{k}/Player-Data/Mascot-Secrets-p-61-{a.key_hash}-P{i}-3",
@@ -107,7 +113,7 @@ def main():
                   "addr": f"{BB2['ip']}:{base + 9}"},
         "handover": {"at": a.handover_at, "steps_after": a.steps - a.handover_at - 1, "mesh6": mesh6, "launch_new": "deferred",
                      "new_seats": [seat(b, i, True) for i, b in enumerate(boxes)],
-                     "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1), "--release"]},
+                     "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1)] + ([] if a.no_release else ["--release"])},
         "drive_poll_s": 60,
         "vault": True,
     }
