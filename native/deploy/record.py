@@ -47,6 +47,9 @@ def main():
     ap.add_argument("--handover-at", type=int, required=True, help="K: the rotation after step K")
     ap.add_argument("--chunks", required=True, help="the prep lane's chunk name for this run")
     ap.add_argument("--chunk-steps", type=int, default=2)
+    ap.add_argument("--prep-max-ready", type=int, default=9, help="prep's `darkprep produce --max-ready R`: at most R finished "
+                    "chunks wait, one more is being made, so a process has at most (R + 1) x chunk-steps step files ahead "
+                    "(the disk plan's lookahead)")
     ap.add_argument("--third", default="NEWBOX,0.0.0.0,/srv/lanes/dl-gen6-deploy", help="HOST,IP,ROOT of the wired third box")
     ap.add_argument("--name", default="record")
     ap.add_argument("--archive-on", default="dregg-forge", help="the box whose seat keeps every bundle (one seat per committee); "
@@ -119,6 +122,7 @@ def main():
                      "new_seats": [seat(b, i, True) for i, b in enumerate(boxes)],
                      "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1)] + ([] if a.no_release else ["--release"])},
         "drive_poll_s": 60,
+        "disk": {"lookahead": (a.prep_max_ready + 1) * a.chunk_steps},
         "vault": True,
     }
     json.dump(cfg, sys.stdout, indent=1)

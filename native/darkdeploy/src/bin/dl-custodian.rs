@@ -782,7 +782,6 @@ impl Prove {
         let mut tape_file = None;
         if let Some(f) = flag(&args, "--release-tape") {
             st.pt.tape = darkstep::tape::Tape { alpha_i: st.pt.tape.alpha_i, ..Default::default() };
-            serve::claim_tape_file(&f)?;
             let d = st.pf.d;
             let nrt = darkproof::run::release_section(&self.lp, d, m, self.prm, &pol);
             let (pre, rt) = if dlvault::is_sealed(Path::new(&f)) {
@@ -796,11 +795,15 @@ impl Prove {
                     let v = g.as_ref().ok_or("the file key was handed to the erasure")?;
                     std::sync::Arc::new(dlvault::Key::new(&v.name, v.key_bytes()))
                 };
-                darkproof::run::load_release_tape_sealed(p, nrt, key, &format!("tape|{c}|{j}"))?
+                let (pre, rt) = darkproof::run::load_release_tape_sealed(p, nrt, key, &format!("tape|{c}|{j}"))?;
+                // claimed once opened (its MAC key share is inside the seal), before any entry is used
+                serve::claim_tape_file(&f, Some(pre.alpha_i))?;
+                (pre, rt)
             } else {
                 if serve::sealing() && !cfg!(feature = "test-harness") {
                     return Err(format!("{f}: a plain release tape, but this custodian takes only sealed preprocessing"));
                 }
+                serve::claim_tape_file(&f, None)?;
                 darkproof::run::load_release_tape(Path::new(&f), nrt)?
             };
             st.load_tape(pre)?;
@@ -1241,7 +1244,8 @@ fn test_deal(args: &[String]) {
 /// proof section this profile needs (run::step_section). A chunk made for another profile is refused here instead
 /// of dying after its step. A sealed tape's count is read inside its seal (serve::tape_len).
 fn check_profile(args: &[String], first: usize) -> Result<(), String> {
-    if !args.iter().any(|a| a == "--prove") {
+    // no step to run (--steps 0: the release alone after a resume): no step tape to check
+    if !args.iter().any(|a| a == "--prove") || flag(args, "--steps").as_deref() == Some("0") {
         return Ok(());
     }
     let Some(pat) = flag(args, "--tapes") else { return Ok(()) };
