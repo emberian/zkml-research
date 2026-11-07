@@ -226,7 +226,7 @@ fn gen6_program_chunk_equals_darkstep_dealer_tags() {
 /// darkproof's deployed GEN6 program with RC + LB (the release's (s1, k1) = (11, 19)).
 fn gen6_proof_params() -> darkproof::step::StepParams {
     let g = darkstep::step::Program::GEN6;
-    darkproof::step::StepParams { s1: g.s1, k1: g.k1, s2: g.s2, k2: g.k2, s3: g.s3, k3: g.k3, he: true, rc: true, r3: g.r3, t_lo: g.t_lo, lb: true, pg: None }
+    darkproof::step::StepParams { s1: g.s1, k1: g.k1, s2: g.s2, k2: g.k2, s3: g.s3, k3: g.k3, he: true, rc: true, r3: g.r3, t_lo: g.t_lo, lb: true, rs: false, pg: None }
 }
 
 #[test]

@@ -571,7 +571,9 @@ pub const RMAGIC: &[u8; 8] = b"DLRELS01";
 /// score d products and a truncation; per example ncls - 1 comparisons and ncls - 2 products; the count.
 pub fn release_len(d: usize, m: usize, prm: StepParams, ncls: usize, kc: u32) -> usize {
     let tr = |s: u32| 1 + 4 * (s as usize - 1);
-    d * m * (tr(prm.s1) + 1) + ncls * m * (2 * d + tr(prm.s1)) + m * ((ncls - 1) * tr(kc) + 2 * (ncls - 2)) + 1
+    // a lookup: the masked-power opening, or (L, proof.md 23) two openings per Beaver product of the lookup by bits
+    let lk = if prm.rs && prm.lb { 2 * step::lookup_bits_products(prm) } else { 1 };
+    d * m * (tr(prm.s1) + lk) + ncls * m * (2 * d + tr(prm.s1)) + m * ((ncls - 1) * tr(kc) + 2 * (ncls - 2)) + 1
 }
 
 /// proofwire.encode_release.

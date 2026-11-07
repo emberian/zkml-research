@@ -993,6 +993,160 @@ At d = 4 the step is 2% smaller than x2d (2,285,820 B). The saving at d = 4096 i
 T columns, the proximity rows and the u rows of two d² matrices (about 10 MB, [DERIVED]); native will measure it.
 Not yet: the handover's discharge (handover lane) and E natively.
 
+## 23. Cutting the release's preprocessing: R1, R2, L (the argument, written before the code; coordinator's GO)
+
+**Where the release's cost sits** (ledger-x2, d = 4096, M = 52, GEN6 + RC + LB; `DP_RELEASE_M=52 darkproof counts 4096
+ledger-x2`, [EXECUTED]). The proof section is 81,031,546 triples. Its 33,353,164 Hadamard rows are:
+- range products 12,406,628 (each truncation's borrow chain over L = K + KAPPA + 1 bits: 58 products for a z1);
+- truncation-bit rows 12.6M (the K + KAPPA - s bits of each rhi, b b = b);
+- the truncations' low-bit products 4.26M, W2 h 2.13M, the LB circuits 1.92M.
+
+The zerocheck is about 2 per row (66,706,346). Outside the proof, the prep lane prices the release MPC's 212,992
+masked-power lookups at 54.1M products and the truncation bits at 12.6M (its message: 154.2M per seat in all).
+
+### R1: the range chain stops at bit B (program flag "RS"; needs "RC")
+
+Notation, per checked truncation (§4): c = x + 2^K + r is opened; r = sum_(i<s) 2^i R_i + 2^s rhi (the TruncMask row),
+R_i the committed bits; the interval is x in [a, a + 2^B); lo = 2^K + a; c' = c - lo, an integer (c in [0, p)).
+
+**Today** the chain runs over all L bits: beta_0 = 0, t_i = R_i beta_i, beta_(i+1) = c'_i ? t_i : R_i + beta_i - t_i,
+then beta_L = 0 and every difference bit at i >= B is 0.
+
+**R1.** The chain runs over i < B only. One linear row replaces everything above B:
+
+    r - sum_(i<B) 2^i R_i + 2^B beta_B = 2^B C_hi,    C_hi = floor(c' / 2^B) (public; a field constant)
+
+**Why it is sound.**
+- R_i (i < B) are boolean (their b b = b rows), so beta_i is boolean by induction and each difference bit
+  diff_i = c'_i - R_i - beta_i + 2 beta_(i+1) is c'_i xor R_i xor beta_i, boolean.
+- Telescoping over i < B: (c' mod 2^B) - sum_(i<B) 2^i R_i = D_lo - 2^B beta_B, with D_lo = sum_(i<B) 2^i diff_i, an
+  integer in [0, 2^B).
+- The opening gives x = c - 2^K - r in F_p, so x - a = c' - r = 2^B C_hi + (c' mod 2^B) - r. With the high row
+  this is D_lo. So **x = a + D_lo in F_p**, and D_lo < 2^B < p is a small integer: x's representative is exactly
+  a + D_lo, in [a, a + 2^B).
+- This is an identity in F_p throughout. It needs no bound on r, rhi or C_hi: C_hi is any public integer with
+  |C_hi| < p / 2^B, taken mod p. The "borrow at bit B", beta_B, enters the high row with weight 2^B, which is what
+  makes the low B bits of c' - r equal D_lo exactly.
+- An honest run satisfies it: c' - r = x - a in [0, 2^B) as integers (honest r < 2^(K + KAPPA), no wrap), so
+  C_hi 2^B = r - (r mod 2^B) + 2^B beta_B. The public c' outside [0, 2^L) still goes to range_fail.
+- C_hi is floor(c' / 2^B) of the original integer c' (Euclidean: Python's >>, Rust's arithmetic shift on i128), not
+  of c' mod 2^L. "x's representative" means the signed encoding of the small intervals in StepParams::bound.
+- **The refusal path, masked** (from the review below). Today each truncation's violation indicator is opened. Under
+  RS the raw high-row value E_k = -2^B floor((x - a) / 2^B) would say which overflow bucket x fell in. So the
+  custodians open one masked zero test instead: S = sum_k g_k E_k, with g_k public coins from
+  sha256("dl-range-zero-test" || every c), and rho S opened, rho the a of a fresh triple (uniform, authenticated),
+  computed with one more triple. The opening is 0 iff S = 0 and uniform otherwise; a refused run learns only that
+  some input left its bound (the message no longer names it). Two proof-section triples per proof.
+
+**Cost.** B - 1 products instead of L - 2: z1 18 (was 58), score and z2 K1 = 19 (was 58), compare 10 (was 49).
+
+### R2: rhi carries B-relevant bits only (tape layout; with "RS")
+
+**Today** the tape deals the K + KAPPA - s bits of every rhi (Tag::Trhb, proof-only), and the TrhRange row
+rhi = sum 2^j trhb_j proves rhi < 2^(K + KAPPA - s). R1 needs only R_i for i < B, and B <= K + 1 for every interval.
+
+**R2.** The tape deals K + 1 - s Trhb bits per truncation (the bits of rhi below 2^(K + 1 - s); z1: 9, not 48), and
+the TrhRange row is dropped. Nothing else is dealt: the high row above uses the r atom itself.
+
+**Why the truncation stays sound without rhi's bound.** The old argument needed r < 2^(K + KAPPA) so that
+c = x + 2^K + r did not wrap mod p. Under RS every truncation is range-checked, and that replaces it:
+- The output is u = q - rhi - borrow, q = (c >> s) - 2^(K - s), borrow = [clow < r_lo] by the low-bit rows
+  (r_lo = sum_(i<s) 2^i R_i). In F_p: u 2^s = x - rem, rem = clow - r_lo + 2^s borrow, in [0, 2^s). This uses only
+  the opening and the TruncMask row, not rhi's size.
+- x - rem is divisible by 2^s as an integer: a and 2^K are multiples of 2^s (every interval: z1 a = t_lo 2^s1; the
+  others a = -2^K with s <= K), so c' = c mod 2^s; and R1's low bits give c' = r_lo + (x - a) mod 2^s. So
+  clow = r_lo + x mod 2^s and rem = x mod 2^s.
+- So u = (x - rem) / 2^s = floor(x / 2^s) exactly, with x the integer a + D_lo.
+- "RS" therefore requires "RC" on every truncation, a multiple of 2^s for each interval's a, and s <= B <= K + 1;
+  the replay refuses a program that breaks any of these (Short::Program).
+
+**Privacy.** The dealt r is unchanged: r uniform in [0, 2^(K + KAPPA)), dealt and MAC-authenticated as before. Only
+the proof-only bit shares of its high part are no longer dealt, and those were never opened. So the opened c keeps
+its statistical mask and privacy_budget.py's truncation term (|x| / 2^(K + KAPPA) per truncation) is unchanged.
+There is no new dealt value to steer. A custodian who shifts its share of r is held to the dealt share by the MAC
+check, as before. A fully colluding custodian set gains freedom in auxiliary witness atoms (rhi's high part, which
+nothing constrains now), but not in any accepted output: soundness above holds for any r and rhi. So the
+coordinator's answer stands with that refinement: MACs bind a minority to the dealt shares; against full collusion
+the constraints, not the MACs, fix every semantic output.
+
+**Cross-model review** (`codex exec -m gpt-6-astra`, scratch `proof/r12/review.txt`): R1, R2, LB under R1 and L
+found sound, the sign of beta_B checked, the prefix-product borrow checked to be exactly [clow < r_lo] against full
+collusion; one finding, the refusal path's raw residual, fixed as above. It also ran 27,300 small R1 witnesses
+including negative and large c'.
+
+**Cost.** Release: 8,345,220 fewer bit rows and as many fewer dealt bits (prep's 12.6M truncation bits -> about
+4.2M); the TrhRange rows go too.
+
+### L: the release's lookup by bits in the MPC (run::release_mpc, deal_release)
+
+**Today** the release MPC computes h = SIG(u1) by the masked-power lookup: 255 dealt powers per lookup (54.1M
+products in preprocessing), one opening. LB (§9) already proves h from z1's range bits at proof time.
+
+**L.** The release MPC computes the same thing as LB, on shares: z1's borrow chain to bit B = s1 + 8 (the R_i are
+the dealt trb and Trhb bits, c' is public after the truncation's opening: B - 1 = 18 Beaver products, in 18 rounds),
+the difference bits diff_i for i in [s1, B) (linear), then LB's circuit (9 products, depth 6). Its output is h.
+- **Opens nothing new.** Every opening is a Beaver opening (x - a, y - b) of a fresh triple: uniform, independent of
+  the data. The only data-dependent value opened is the truncation's c, already opened today.
+- **The proof is unchanged.** The MPC's chain and circuit openings are outside the middle (as the masked-power
+  opening is under LB); h is an external atom and LB's rows tie it to z1's range bits at proof time.
+- **Cost.** 27 triples per lookup instead of 255 powers: 54.1M -> 5.75M.
+- **Refusal row.** A custodian whose h share is off by one (MAC-consistently, as `lb_h`): the MPC's MAC check passes;
+  the proof is refused (`middle: Ligero linear test`, the LB rows).
+- Later, if wanted: the proof reuses the MPC's chain and circuit atoms instead of recomputing them (-5.75M more
+  section triples).
+
+### Built (program flag "RS"; L follows from "RS" + "LB" in the release) [EXECUTED]
+
+**Counts** (`DP_RELEASE_M=52 DP_PROGRAM='{GEN6, "he", "RC", "LB", "RS"}' darkproof counts 4096 ledger-x2d`; D and E add
+no products, so these hold for ledger-x2de):
+
+| d = 4096, GEN6 + RC + LB | without RS | **with RS** |
+|---|---|---|
+| step: Hadamard rows | 2,166,784 | 884,736 |
+| step: range products | 905,216 | 262,144 |
+| step: zerocheck | 4,333,589 | 1,769,475 |
+| **step_section** | 5,432,533 | **2,225,349** (-59%) |
+| release M = 52: Hadamard rows | 33,353,164 | 16,449,732 |
+| release: range products | 12,406,628 | 3,848,416 |
+| release: zerocheck | 66,706,346 | 32,899,500 |
+| **release section** | 81,031,546 | **38,666,490** (-52%) |
+| release MPC lookups (prep) | 212,992 x 254 powers = 54.1M | 212,992 x 27 triples = 5,750,784 |
+
+Both sections include the zero test's two triples. The release's comparisons were already small: 468 truncations at
+M = 52, now 10 range products each (were 49).
+
+**Byte-equality, Python = native** (scratch `proof/{rs,rsnp,rsrel,rsatk}`):
+- RS steps, demo-x2d, d = 4, PG + RC + LB + RS, two carried steps: `check` EQUAL (he1 2,186,636 B; he2 2,185,100 B,
+  e6400c2a…); native verifies Python's bundles, a flipped byte refused.
+- RS non-PG step (darkstep's MPC record → bundle): `ds-check` EQUAL (f314bcb4…, 2,186,412 B; x2d without RS
+  2,278,588 B). Control: the non-RS vector baed6b01 stays EQUAL, and so do vecAB e8729ed1… (EXT 1) and the x2de
+  chain ad1d735e…, 87ba7239….
+- Release under RS + L, pw chain, M = 4: `rel-check` EQUAL (e5f93b8a…, 985,154 B; 1,289,834 B under x2de without RS),
+  C = 2 = twin; refused: a flipped byte, C + 1, another label set, the genesis W1.
+- Native end to end, `ds-chain 16 demo-x2d 3 8` under RS: three steps and the release (MPC by bits) accepted by the
+  ledger, C = 1 = plaintext twin.
+
+**Refusal rows.**
+- Out-of-range z1 (`DP_W1SCALE=60 ds-chain 16 demo-x2d 2 8`, RS): every custodian refuses, "truncation input outside
+  its proved bound: some truncation (RS: one masked zero test)".
+- L, a custodian set's h share off by one, MAC-consistently (`DP_REL_ATTACK=lb_h`, release pw rel): the MAC check
+  passes; Python's verifier refuses (`release: Ligero linear test`).
+
+**Tape layout for the prep and deploy lanes.** Under "RS" each truncation's proof atoms are K + 1 - s Trhb entries
+(the low bits of rhi), not K + KAPPA - s; r, its s Trb bits and Trh are dealt as before (darkstep `Dealer::rs`,
+`deal_step_dealer_prog_rs`; `Party::trunc_vec` counts the Trhb run). The release under "RS" + "LB" replaces each of
+its d M lookups' 255 Lp entries by `step::lookup_bits_products(prm)` = 27 Beaver triples (run::deal_release).
+
+### Expected totals (release, M = 52, ledger-x2) [DERIVED before the build]
+
+| | now | R1 + R2 | + L |
+|---|---|---|---|
+| Hadamard rows | 33.35M | about 16.4M | the same |
+| proof section | 81.0M | about 38.6M | the same |
+| MPC lookups (prep) | 54.1M | | 5.75M |
+| truncation bits (prep) | 12.6M | about 4.2M | |
+| tape per seat (prep's 154.2M) | 154.2M | about 103M | about 55M |
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).

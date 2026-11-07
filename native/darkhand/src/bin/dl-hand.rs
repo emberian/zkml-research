@@ -219,6 +219,7 @@ fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldC
         scan_paths: vec![dir.clone()],
         captured: Some((ct, mdig)),
         vault: Some(vault),
+        old_carries: None,
     })
 }
 
@@ -488,7 +489,7 @@ fn old_seat_state(c: &Common, work: &Path, dir: &Path, i: usize, d: usize) -> Bo
         .collect();
     let roots: BTreeMap<String, Vec<[u8; 32]>> = carry.iter().map(|(k, p)| (k.clone(), vec![p.root])).collect();
     write_json(&work.join(format!("pub/old{i}.roots.json")), &roots_json(&roots));
-    Box::new(OldCustodian { i, w, tape: *tape, keys: None, key: None, carry, files: vec![dir.join("tape.bin")], scan_paths: vec![dir.to_path_buf()], captured: None, vault: None })
+    Box::new(OldCustodian { i, w, tape: *tape, keys: None, key: None, carry, files: vec![dir.join("tape.bin")], scan_paths: vec![dir.to_path_buf()], captured: None, vault: None, old_carries: None })
 }
 
 fn local_self(work: &Path, d: usize, prof: &str, base: u16) -> bool {

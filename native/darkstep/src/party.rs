@@ -339,13 +339,17 @@ impl Party {
         let p = self.p;
         let d = xs.len();
         let su = s as usize;
-        // a tape with proof atoms carries K + KAPPA - s Trhb entries after each Trh
+        // a tape with proof atoms carries K + KAPPA - s Trhb entries after each Trh, or K + 1 - s under a program
+        // with "RS" (darkproof proof.md 23); count them on the first truncation and check the count is one of the two
         let first = self.cur;
-        let nb = if self.tape.tags.get(first + 2 + su) == Some(&(Tag::Trhb as u8)) {
-            (kk + crate::tape::KAPPA - s) as usize
-        } else {
-            0
-        };
+        let mut nb = 0usize;
+        while self.tape.tags.get(first + 2 + su + nb) == Some(&(Tag::Trhb as u8)) {
+            nb += 1;
+        }
+        assert!(
+            nb == 0 || nb == (kk + crate::tape::KAPPA - s) as usize || nb == (kk + 1 - s) as usize,
+            "truncation at tape entry {first}: {nb} Trhb entries, neither K + KAPPA - s nor K + 1 - s"
+        );
         let mo = 2 + su + nb; // offset of the first multiplication triple
         let per = mo + 6 * (su - 1);
         let ent = 1 + 4 * (su - 1);

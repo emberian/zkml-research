@@ -188,8 +188,85 @@ impl Trace {
     }
     pub fn lap(&mut self, what: &str) {
         if self.on {
-            eprintln!("  [{}] {what}: {:.2}s (process RSS {:.2} GB, peak {:.2} GB)", self.label, self.t.elapsed().as_secs_f64(), rss_gb("VmRSS"), rss_gb("VmHWM"));
+            let hp = if heap::on() {
+                let (live, peak) = heap::take(0);
+                format!("; custodian 0 heap {:.2} GB, phase peak {:.2} GB", live as f64 / 1e9, peak as f64 / 1e9)
+            } else {
+                String::new()
+            };
+            eprintln!("  [{}] {what}: {:.2}s (process RSS {:.2} GB, peak {:.2} GB{hp})", self.label, self.t.elapsed().as_secs_f64(), rss_gb("VmRSS"), rss_gb("VmHWM"));
             self.t = std::time::Instant::now();
+        }
+    }
+}
+
+/// Heap accounting per custodian, for memory measurements of several custodians in one process (ds-chain): a binary
+/// installs `heap::Counting` as its global allocator and calls `heap::start()` (DP_HEAP set); every thread a custodian
+/// runs on (its own thread and its rayon pool's) is tagged with `heap::set_who(i)`. Trace laps then print custodian
+/// 0's live heap bytes and its peak since the previous lap. Untagged threads count as slot 3.
+pub mod heap {
+    use std::alloc::{GlobalAlloc, Layout, System};
+    use std::cell::Cell;
+    use std::sync::atomic::{AtomicBool, AtomicIsize, Ordering::Relaxed};
+
+    static ON: AtomicBool = AtomicBool::new(false);
+    static LIVE: [AtomicIsize; 4] = [const { AtomicIsize::new(0) }; 4];
+    static PEAK: [AtomicIsize; 4] = [const { AtomicIsize::new(0) }; 4];
+    thread_local! {
+        static WHO: Cell<usize> = const { Cell::new(3) };
+    }
+
+    pub fn start() {
+        ON.store(true, Relaxed);
+    }
+    pub fn on() -> bool {
+        ON.load(Relaxed)
+    }
+    pub fn set_who(i: usize) {
+        WHO.with(|w| w.set(i.min(3)));
+    }
+    /// (live bytes, peak since the last take) of slot k; the peak restarts from the live count.
+    pub fn take(k: usize) -> (isize, isize) {
+        let live = LIVE[k].load(Relaxed);
+        (live, PEAK[k].swap(live, Relaxed))
+    }
+    #[inline]
+    fn add(n: isize) {
+        if ON.load(Relaxed) {
+            let k = WHO.try_with(|w| w.get()).unwrap_or(3);
+            let v = LIVE[k].fetch_add(n, Relaxed) + n;
+            if n > 0 {
+                PEAK[k].fetch_max(v, Relaxed);
+            }
+        }
+    }
+
+    pub struct Counting;
+    unsafe impl GlobalAlloc for Counting {
+        unsafe fn alloc(&self, l: Layout) -> *mut u8 {
+            let p = unsafe { System.alloc(l) };
+            if !p.is_null() {
+                add(l.size() as isize);
+            }
+            p
+        }
+        unsafe fn alloc_zeroed(&self, l: Layout) -> *mut u8 {
+            let p = unsafe { System.alloc_zeroed(l) };
+            if !p.is_null() {
+                add(l.size() as isize);
+            }
+            p
+        }
+        unsafe fn dealloc(&self, p: *mut u8, l: Layout) {
+            unsafe { System.dealloc(p, l) };
+            add(-(l.size() as isize));
+        }
+        unsafe fn realloc(&self, p: *mut u8, l: Layout, new: usize) -> *mut u8 {
+            let q = unsafe { System.realloc(p, l, new) };
+            if !q.is_null() {
+                add(new as isize - l.size() as isize);
+            }
+            q
         }
     }
 }
