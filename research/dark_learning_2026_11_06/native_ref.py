@@ -3,7 +3,8 @@ HE outer, MAC check) at a given HE profile, with seeded keys, an ideal dealer an
 (he_matvec/he_outer per_return_rng=True, the mode a distributed custodian can run). Prints one JSON line of digests and
 writes the public transcript, one repr per line, so a native run can be diffed entry by entry.
 
-    python3 native_ref.py N L F_bits d [out_prefix]      # e.g. 4096 3 118 64; ledger: 16384 4 175 64
+    python3 native_ref.py N L F_bits d [out_prefix] [--program GEN6]   # e.g. 4096 3 118 64; ledger: 16384 4 175 64
+    (--program: a step_spec program by name; the inputs are then inputs_for(d, prog), darkstep step::inputs_for)
 
 Digests (all sha256 hex of CPython repr):
   transcript   repr(eng.transcript)
@@ -39,16 +40,40 @@ def wmax_for(d):
     return 7 if d <= 64 else 2 if d <= 256 else 1
 
 
-def run(N, L, F_bits, d, attack=None):
+def inputs_for(d, prog):
+    """darkstep step::inputs_for: the harness inputs for HARNESS; otherwise weights scaled to the program, redrawn
+    from random.Random(d + k) until step_spec accepts them and both layers update."""
+    if prog == S.HARNESS:
+        rng = random.Random(d)
+        wm = wmax_for(d)
+        W1 = [[rng.randint(-wm, wm) for _ in range(d)] for _ in range(d)]
+        W2 = [[rng.randint(-wm, wm) for _ in range(d)] for _ in range(d)]
+        x = [rng.randint(-7, 7) for _ in range(d)]
+        y = [rng.randint(-7, 7) for _ in range(d)]
+        return W1, W2, x, y
+    sd = math.sqrt(d)
+    a1 = int(max((16.0 * float(1 << prog.S1) * 1.732) / (4.3 * sd), 1.0))
+    a2 = int(max((32.0 * float(1 << prog.S1) * 1.732) / (4.0 * sd), 1.0))
+    for k in range(64):
+        rng = random.Random(d + k)
+        W1 = [[rng.randint(-a1, a1) for _ in range(d)] for _ in range(d)]
+        W2 = [[rng.randint(-a2, a2) for _ in range(d)] for _ in range(d)]
+        x = [rng.randint(-7, 7) for _ in range(d)]
+        y = [rng.randint(-7, 7) for _ in range(d)]
+        try:
+            n1, n2, _ = S.step(W1, W2, x, y, prog)
+        except AssertionError:
+            continue
+        if n1 != W1 and n2 != W2:
+            return W1, W2, x, y
+    raise ValueError("inputs_for: no in-bound inputs")
+
+
+def run(N, L, F_bits, d, attack=None, prog=S.HARNESS):
     Qp, t, Q = setup(N, L)
     keys = [HM.OwnKey(N, Q, t, seed=KEY_SEED0 + i) for i in range(3)]
-    tab = MF.tables(t)
-    rng = random.Random(d)
-    wm = wmax_for(d)
-    W1 = [[rng.randint(-wm, wm) for _ in range(d)] for _ in range(d)]
-    W2 = [[rng.randint(-wm, wm) for _ in range(d)] for _ in range(d)]
-    x = [rng.randint(-7, 7) for _ in range(d)]
-    y = [rng.randint(-7, 7) for _ in range(d)]
+    tab = MF.tables(t, prog)
+    W1, W2, x, y = inputs_for(d, prog)
     m = lambda M: [[v % t for v in r] for r in M]
     dealer = spdz.Dealer(t, 3, DEALER_SEED)
     eng = spdz.Engine(t, 3, dealer)
@@ -60,13 +85,13 @@ def run(N, L, F_bits, d, attack=None):
     t0 = time.time()
     try:
         W1n, W2n, _ = MF.run_step(eng, m(W1), m(W2), [v % t for v in x], [v % t for v in y], tab, OWNER_SEED,
-                                  mv=mv, ou=ou)
+                                  mv=mv, ou=ou, prog=prog)
         sig = eng.mac_check("he")
         verdict = "ACCEPT"
     except spdz.Abort as e:
         return dict(verdict="REFUSED", by=str(e), transcript_len=len(eng.transcript)), eng
     secs = time.time() - t0
-    e1, e2, _ = S.step(W1, W2, x, y)
+    e1, e2, _ = S.step(W1, W2, x, y, prog)
     rev = lambda X: [[MF.reveal(eng, c) for c in r] for r in X]
     refines = rev(W1n) == e1 and rev(W2n) == e2
     H = lambda o: hashlib.sha256(repr(o).encode()).hexdigest()
@@ -80,9 +105,19 @@ def run(N, L, F_bits, d, attack=None):
 
 
 def main():
-    N, L, F_bits, d = (int(a) for a in sys.argv[1:5])
-    prefix = sys.argv[5] if len(sys.argv) > 5 else f"native_ref_N{N}_L{L}_F{F_bits}_d{d}"
-    out, eng = run(N, L, F_bits, d)
+    args = sys.argv[1:]
+    pname = None
+    if "--program" in args:
+        i = args.index("--program")
+        pname = args[i + 1]
+        del args[i:i + 2]
+    prog = getattr(S, pname) if pname else S.HARNESS
+    N, L, F_bits, d = (int(a) for a in args[:4])
+    suffix = f"_{pname}" if pname else ""
+    prefix = args[4] if len(args) > 4 else f"native_ref_N{N}_L{L}_F{F_bits}_d{d}{suffix}"
+    out, eng = run(N, L, F_bits, d, prog=prog)
+    if pname:
+        out["program"] = prog.as_dict()
     with open(prefix + ".transcript.txt", "w") as f:
         for e in eng.transcript:
             f.write(repr(e) + "\n")
