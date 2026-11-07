@@ -25,7 +25,7 @@ struct Prove {
 }
 
 fn params_of(pg: &Program) -> StepParams {
-    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: false, r3: pg.r3, t_lo: pg.t_lo }.deployed()
+    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: false, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
 }
 
 impl StepHook for Prove {
@@ -47,6 +47,12 @@ impl StepHook for Prove {
         std::fs::write(dir.join(format!("proof_step{k}_P{i}.bin")), &sp.blob).map_err(|e| e.to_string())?;
         use sha2::{Digest, Sha256};
         let digest = pycompat::repr::hex(&Sha256::digest(&sp.blob));
+        if k == 0 && i == 0 && sp.genesis_roots.is_none() {
+            if let Some(g) = &self.parent {
+                let enc: BTreeMap<&String, Vec<String>> = g.iter().map(|(k, v)| (k, v.iter().map(|h| pycompat::repr::hex(h)).collect())).collect();
+                std::fs::write(dir.join("genesis_roots.json"), serde_json::to_string_pretty(&enc).unwrap()).map_err(|e| e.to_string())?;
+            }
+        }
         let mut out = json!({"proof_seconds": prove_s, "proof_bytes": sp.blob.len(), "proof_sha256": digest,
             "proof_field_elements_sent": sp.sent, "proof_triples": count});
         if let Some(g) = &sp.genesis_roots {
@@ -113,14 +119,30 @@ fn main() {
         let pr = darkproof::Profile::ledger();
         let lp = pr.ligero();
         let program = darkstep::serve::program_of(&args);
+        // public genesis: the program pins sha256 of the genesis cfg; every custodian commits the public W itself
+        // (identical roots), and that commitment is the parent of step 1
+        let gcfg = darkstep::node::flag(&args, "--genesis-cfg").map(|f| std::fs::read(f).expect("genesis cfg"));
+        let mut prm = params_of(&program);
+        let mut carry = None;
+        let mut parent = None;
+        if let Some(b) = &gcfg {
+            use sha2::{Digest, Sha256};
+            prm.pg = Some(Sha256::digest(b).into());
+            let (gd, w1, w2) = darkproof::run::public_weights(b).expect("genesis cfg");
+            assert_eq!(gd, pf.d, "the genesis cfg's d");
+            let i: usize = args[2].parse().unwrap();
+            let (c, roots) = darkproof::run::public_genesis(&pr, pf.d, i, &w1, &w2, 3);
+            carry = Some(c);
+            parent = Some(roots);
+        }
         let mut hook = Prove {
             model: darkstep::node::flag(&args, "--model").unwrap_or_else(|| "dl-gen6".into()),
             lp,
             pr,
             tables: darkproof::step::tables(),
-            prm: params_of(&program),
-            carry: None,
-            parent: None,
+            prm,
+            carry,
+            parent,
             chain: vec![],
         };
         std::process::exit(darkstep::serve::serve_main_with(&args, &mut hook, genesis_of(&args)));
