@@ -112,6 +112,7 @@ dependencies = [
 name = "darkprep"
 version = "0.1.0"
 dependencies = [
+ "darkhand",
  "darkproof",
  "darkstep",
  "libc",

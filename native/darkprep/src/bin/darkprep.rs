@@ -11,6 +11,9 @@
 //!                        [--handover-ar N]  (a new seat's handover tape: N auth_plain entries)  [--new-mac-key]
 //!                        [--step-tapes-only]  (no whole-chunk tape_<I>.bin: only step-<j>/tape_<I>.bin)
 //!                        [--rs]  (the proof program's "RS": K + 1 - s Trhb bits)  [--lookup-triples T]  (release, L cut)
+//!                        --vault NAME | --vault-file TLSDIR/vault.name  (required: every step's tape_<I>.bin and
+//!                        owner-msg-P<I>.bin is sealed, DLVAULT1, roles "tape|<chunk>|<j>" / "owner-msg|<chunk>|<j>";
+//!                        a build with feature test-plain-tapes may write plain files with --plain-tapes instead)
 //!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
 //!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
 //!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
@@ -294,9 +297,27 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
 }
 
 
+/// The seat's vault (--vault NAME or --vault-file PATH holding NAME), or None for a TEST build's --plain-tapes.
+fn load_vault(m: &HashMap<String, String>) -> Result<Option<darkhand::vault::Vault>, String> {
+    let name = match (m.get("vault"), m.get("vault-file")) {
+        (Some(n), _) => Some(n.trim().to_string()),
+        (None, Some(f)) => Some(std::fs::read_to_string(f).map_err(|e| format!("{f}: {e}"))?.trim().to_string()),
+        (None, None) => None,
+    };
+    match name {
+        Some(n) => darkhand::vault::Vault::load(&n).map(Some),
+        None if cfg!(feature = "test-plain-tapes") && m.contains_key("plain-tapes") => Ok(None),
+        None => Err("--vault NAME or --vault-file TLSDIR/vault.name is required: tapes at rest are sealed under the seat's epoch file key (a test build takes --plain-tapes)".into()),
+    }
+}
+
 /// One custodian's part of one chunk (see the header). Returns the measurement JSON.
 fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String> {
     let party: usize = m.get("party").expect("--party").parse().unwrap();
+    // the seat's epoch file key, loaded (never made) here: dl-custodian vault-init made it; NAME from --vault NAME or
+    // the consuming seat's TLSDIR/vault.name (--vault-file). Loaded before the MASCOT run, so a missing key costs no run.
+    let vault = load_vault(m)?;
+    let chunk_name = out.file_name().map(|s| s.to_string_lossy().into_owned()).ok_or("--out needs a directory name")?;
     let sp = chunk_step(m);
     let steps: usize = get(m, "steps", 1);
     if sp.phase != darkprep::schedule::Phase::Step && (steps != 1 || m.contains_key("genesis")) {
@@ -354,38 +375,59 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     let ta = std::time::Instant::now();
     let txf = mpspdz.join(format!("Persistence/Transactions-P{party}.data"));
     let tx = Transactions::read(&txf, p)?;
-    // streamed straight into darkstep's DLTAPE01 files (no tape is held in memory): each step's own file, and every
-    // step of the chunk back to back under one alpha (darkstep's multi-step tape; a hard link when there is one step)
+    // each step's tape and owner message, assembled in memory and sealed under the seat's epoch file key (vault):
+    // no plaintext tape reaches a disk. TEST builds may instead stream plain DLTAPE01 files (--plain-tapes), and then
+    // also the whole-chunk file (every step back to back, one alpha; a hard link when there is one step).
     let ns: Vec<usize> = chunk.iter().map(darkprep::schedule::n_entries).collect();
     let all_path = tmp.join(format!("tape_{party}.bin"));
-    // --step-tapes-only: no whole-chunk file, so a custodian that wipes each spent step's files leaves no copy behind
-    let whole = !m.contains_key("step-tapes-only");
+    let whole = vault.is_none() && !m.contains_key("step-tapes-only");
     let mut all = if whole && steps > 1 { Some(darkprep::tape::DarkstepWriter::create(&all_path, tx.alpha_i, ns.iter().sum()).map_err(|e| e.to_string())?) } else { None };
     let mut entries = Vec::new();
     for j in 0..steps {
         let sd = tmp.join(format!("step-{j}"));
         std::fs::create_dir_all(&sd).map_err(|e| e.to_string())?;
-        let mut one = darkprep::tape::DarkstepWriter::create(&sd.join(format!("tape_{party}.bin")), tx.alpha_i, ns[j]).map_err(|e| e.to_string())?;
-        let mut err: Option<std::io::Error> = None;
+        let tpath = sd.join(format!("tape_{party}.bin"));
         let mut n = 0usize;
-        darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
-            n += 1;
-            let r = one.push(t, sm).and_then(|_| match all.as_mut() { Some(a) => a.push(t, sm), None => Ok(()) });
-            if let Err(e) = r {
-                err.get_or_insert(e);
+        if let Some(v) = &vault {
+            let mut buf = darkprep::tape::DarkstepBuf::new(tx.alpha_i, ns[j]);
+            let mut err: Option<String> = None;
+            darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
+                n += 1;
+                if let Err(e) = buf.push(t, sm) {
+                    err.get_or_insert(e);
+                }
+            })?;
+            if let Some(e) = err {
+                return Err(e);
             }
-        })?;
-        if let Some(e) = err {
-            return Err(e.to_string());
+            v.seal_to(&tpath, &darkprep::tape::tape_role(&chunk_name, j), buf.finish()?).map_err(|e| e.to_string())?;
+        } else {
+            let mut one = darkprep::tape::DarkstepWriter::create(&tpath, tx.alpha_i, ns[j]).map_err(|e| e.to_string())?;
+            let mut err: Option<std::io::Error> = None;
+            darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
+                n += 1;
+                let r = one.push(t, sm).and_then(|_| match all.as_mut() { Some(a) => a.push(t, sm), None => Ok(()) });
+                if let Err(e) = r {
+                    err.get_or_insert(e);
+                }
+            })?;
+            if let Some(e) = err {
+                return Err(e.to_string());
+            }
+            one.finish().map_err(|e| e.to_string())?;
         }
         if n != ns[j] {
             return Err(format!("step {j}: assembled {n} entries, the schedule has {}", ns[j]));
         }
-        one.finish().map_err(|e| e.to_string())?;
         entries.push(n);
         let msg = owner::custodian_message_in_chunk(&chunk, &tx, j);
-        let mut f = std::fs::File::create(sd.join(format!("owner-msg-P{party}.bin"))).map_err(|e| e.to_string())?;
-        owner::write_message(&mut f, &msg).map_err(|e| e.to_string())?;
+        let mpath = sd.join(format!("owner-msg-P{party}.bin"));
+        let mut mb: Vec<u8> = Vec::new();
+        owner::write_message(&mut mb, &msg).map_err(|e| e.to_string())?;
+        match &vault {
+            Some(v) => v.seal_to(&mpath, &darkprep::tape::owner_msg_role(&chunk_name, j), mb).map_err(|e| e.to_string())?,
+            None => std::fs::write(&mpath, &mb).map_err(|e| e.to_string())?,
+        }
     }
     match all {
         Some(a) => a.finish().map_err(|e| e.to_string())?,

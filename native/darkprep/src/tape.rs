@@ -246,6 +246,69 @@ impl DarkstepWriter {
     }
 }
 
+/// A darkstep DLTAPE01 image assembled in memory, entry by entry (the same layout as DarkstepWriter), to be sealed
+/// whole: the plaintext never reaches a disk.
+pub struct DarkstepBuf {
+    buf: Vec<u8>,
+    n: usize,
+    k: usize,
+}
+
+impl DarkstepBuf {
+    pub fn new(alpha_i: u64, n: usize) -> Self {
+        let mut buf = vec![0u8; 24 + 17 * n];
+        buf[..8].copy_from_slice(b"DLTAPE01");
+        buf[8..16].copy_from_slice(&alpha_i.to_le_bytes());
+        buf[16..24].copy_from_slice(&(n as u64).to_le_bytes());
+        DarkstepBuf { buf, n, k: 0 }
+    }
+    pub fn push(&mut self, t: Tag, (s, m): (u64, u64)) -> Result<(), String> {
+        if self.k == self.n {
+            return Err("more entries than the header says".into());
+        }
+        let (n, k) = (self.n, self.k);
+        self.buf[24 + k] = t as u8 + 1; // darkstep numbers In = 1 .. Ar = 9, Trhb = 10
+        self.buf[24 + n + 8 * k..24 + n + 8 * k + 8].copy_from_slice(&s.to_le_bytes());
+        self.buf[24 + 9 * n + 8 * k..24 + 9 * n + 8 * k + 8].copy_from_slice(&m.to_le_bytes());
+        self.k += 1;
+        Ok(())
+    }
+    pub fn finish(self) -> Result<Vec<u8>, String> {
+        if self.k != self.n {
+            return Err(format!("{} entries written, the header says {}", self.k, self.n));
+        }
+        Ok(self.buf)
+    }
+}
+
+/// The vault role (AAD) of chunk `chunk`'s step `j` tape and owner message: a sealed file opens only as itself.
+pub fn tape_role(chunk: &str, j: usize) -> String {
+    format!("tape|{chunk}|{j}")
+}
+pub fn owner_msg_role(chunk: &str, j: usize) -> String {
+    format!("owner-msg|{chunk}|{j}")
+}
+
+/// Open a sealed step tape (DLVAULT1 around DLTAPE01) of chunk `chunk` (its directory's basename), step `j`. A plain
+/// DLTAPE01 file is refused: tapes at rest are sealed.
+pub fn open_sealed(vault: &darkhand::vault::Vault, path: &std::path::Path, chunk: &str, j: usize) -> Result<darkstep::tape::Tape, String> {
+    let b = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
+    if b.starts_with(b"DLTAPE01") {
+        return Err(format!("{}: an unsealed tape (DLTAPE01); tapes at rest must be sealed (DLVAULT1)", path.display()));
+    }
+    let plain = vault.open(&tape_role(chunk, j), b).map_err(|e| format!("{}: {e}", path.display()))?;
+    darkstep::tape::Tape::read_from(&mut &plain[..]).map_err(|e| format!("{}: {e}", path.display()))
+}
+
+/// Open a sealed owner message of chunk `chunk`, step `j` (refuses a plain DLOMSG1 file).
+pub fn open_sealed_owner_msg(vault: &darkhand::vault::Vault, path: &std::path::Path, chunk: &str, j: usize) -> Result<Vec<u8>, String> {
+    let b = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
+    if b.starts_with(b"DLOMSG1") {
+        return Err(format!("{}: an unsealed owner message; files at rest must be sealed (DLVAULT1)", path.display()));
+    }
+    vault.open(&owner_msg_role(chunk, j), b).map_err(|e| format!("{}: {e}", path.display()))
+}
+
 pub fn write_owner(w: &mut impl Write, p: u64, rs: &[u64]) -> std::io::Result<()> {
     w.write_all(OWNER_MAGIC)?;
     w.write_all(&p.to_le_bytes())?;
