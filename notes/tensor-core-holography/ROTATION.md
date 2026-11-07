@@ -291,7 +291,8 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 
 ## 4. What is not established
 
-- The `m` for tcgen05 FP8/FP4 (B200 hour pending). QGMMA (14) and HGMMA (24) are measured.
+- The `m` for tcgen05 FP8/FP4. Three B200 attempts on two hosts failed at ssh (public key refused), so Blackwell
+  is unmeasured and keeps 14 as a placeholder. QGMMA (14) and HGMMA (24) are measured.
 - That tcgen05 FP16 accumulates at m = 24.
 - TPU int32 overflow semantics.
 - The repack layout cost.
@@ -299,6 +300,12 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 - **A fused fixed-r kernel** (GEMM with the parity repack in its epilogue) and its end-to-end time on H100 and
   Blackwell. Every tensor win for folds and NTT layers rests on it. The next measurement is the H100 BGMMA
   fused kernel against the table.
+  - The readiness lane is building it.
+  - Acceptance: time it end to end against the table multiply measured in the same H100 session. The H100
+    table is not measured yet; the 0.72 ns is T4-scaled.
+  - The fused model predicts 0.032 ns, HBM-bound. The unfused model predicts 0.70 ns.
+  - A result above about 0.36 ns (half the table) means the epilogue repack is not hiding.
+  - For scale: in the unfused T4 run, cuBLAS's GEMM at 2^18 elements reached only about 16% of INT8 peak.
 - Lean: the Tower256 instance of `lazy_bilinear`, and any hardware refinement theorem. The measured widths
   enter as hypotheses: `qgmma_gf2_dot` takes `HoldsBelow 14` and gives up to 16,382 products;
   `hgmma_gf2_dot` takes `HoldsBelow 24`; `qgmma_m14_blocks` and `hgmma_m24_blocks` give the block lengths
