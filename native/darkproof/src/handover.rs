@@ -420,3 +420,27 @@ fn pcs_side(
     }
     Ok((prox, cols))
 }
+
+// ------------------------------------------------------------------------------------------------ resharing
+/// handover.reshare: old_shares[i] = custodian i's share vector; returns (sub[i][j], new_shares[j]). Old custodian
+/// i draws its n_new - 1 uniform subshares from `rng[i]` (its own secret stream) and sets the last so they sum to
+/// its share. With one stream for all (`rng.len() == 1`), the draws are in Python's order (random.Random(seed)).
+pub fn reshare(old_shares: &[Vec<u64>], n_new: usize, rng: &mut [pycompat::PyRandom]) -> (Vec<Vec<Vec<u64>>>, Vec<Vec<u64>>) {
+    let len = old_shares[0].len();
+    let mut sub = Vec::with_capacity(old_shares.len());
+    for (i, s) in old_shares.iter().enumerate() {
+        let r = if rng.len() == 1 { &mut rng[0] } else { &mut rng[i] };
+        let mut parts: Vec<Vec<u64>> = (0..n_new - 1).map(|_| (0..len).map(|_| r.randrange_u64(field::p())).collect()).collect();
+        let last = (0..len).map(|c| parts.iter().fold(s[c], |a, p| field::sub(a, p[c]))).collect();
+        parts.push(last);
+        sub.push(parts);
+    }
+    let new = (0..n_new).map(|j| combine(&sub.iter().map(|p| p[j].as_slice()).collect::<Vec<_>>())).collect();
+    (sub, new)
+}
+
+/// New custodian j's share: the sum of the subshares it received.
+pub fn combine(received: &[&[u64]]) -> Vec<u64> {
+    let len = received[0].len();
+    (0..len).map(|c| received.iter().fold(0u64, |a, s| field::add(a, s[c]))).collect()
+}

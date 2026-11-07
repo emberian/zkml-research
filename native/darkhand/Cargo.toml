@@ -1,0 +1,14 @@
+[package]
+name = "darkhand"
+version = "0.1.0"
+edition.workspace = true
+description = "The dark-learning custody handover as custodian processes: the new committee's key ceremony, resharing between the old and new committees' processes, the joint handover proof (darkproof::handover), re-authentication under the new MAC key, the ledger rotation, and enforced erasure of the old custodians (zeroizing allocator, explicit wipes, file wipes, a self memory scan, post-handover decryption attempts)."
+
+[dependencies]
+darkproof = { path = "../darkproof", features = ["tcp"] }
+darkstep = { path = "../darkstep" }
+dzkpopk = { path = "../dzkpopk" }
+pycompat = { path = "../pycompat" }
+serde_json = "1"
+sha2 = "0.10"
+getrandom = "0.2"
