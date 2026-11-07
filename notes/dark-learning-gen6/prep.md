@@ -574,3 +574,18 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
 - Name check (check_handover.py's `is_party_secret`, the same `find -L ... -maxdepth 2`): wired0, wired1 and wired2 each show 0 secret files.
   - Negative control: a planted `Mascot-Secrets-2-128-ctl-P0-3` was detected, then removed.
 - The chunk tapes were shredded earlier. reh2's keys (both committees) and chunks are retired and shredded the same way.
+
+**Deliberate pause test of an MP-SPDZ party through hbox [EXECUTED, 2026-11-07 14:04-14:26 UTC; `scratchpad/.../prep3/ptest.sh`]**
+- Setup:
+  - seats from `seats.sh fresh3 ptest 16500` (forge 0, bb2 1, hbox 2; fresh TLS, secrets in RAM);
+  - MASCOT tau = 5 over TLS with the EINTR-fixed mascot-party.x 4d50d76f;
+  - a d = 64 chunk with a 50,000-triple proof section, 194,998 entries;
+  - running alongside lg64f and the deploy lane's pt1 on hbox's link.
+- At 14:06:26, 90 s into the MPC, forge's party (pid 1412904) was in state S, with threads 161 futex_wait_queue, 6 wait_woken (the kernel's socket-receive wait) and 1 inet_csk_accept. That is, it was blocked on the link.
+- SIGSTOP by its PID file at 14:06:27; state T while stopped; SIGCONT at 14:11:57 (330 s).
+- Result:
+  - all three parties exited 0 with their chunk JSON (wall 1,255-1,259 s, 1.28 GB sent each);
+  - the three tapes reconstruct with 0 MAC failures over 194,998 entries and 0 bad triples among 54,482 (`dscheck.py`);
+  - negative control (one share + 1): 1 MAC failure and 1 bad triple.
+- This is the abort of 10:58 (lg64d) reproduced on purpose, and the fixed binary survives it over the real WAN.
+- The tapes, chunks and the ptest seats' keys (9 files per seat) were erased afterwards.
