@@ -177,7 +177,8 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const):
         add(Y(len(ev) - 2), Y(len(ev) - 1, -1))
     return lin, [(X, Yr, Zr)], labels
 
-def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model", 0, 0), seed=2, owner_y=None, io=None):
+def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model", 0, 0), seed=2, owner_y=None, io=None,
+                    ignore_range=False):
     p, n = live.p, live.n
     zero = {i: (0, 0) for i in range(n)}
     cons_l, had_l, prep_l, ext_l = G.middle(live)
@@ -185,6 +186,10 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
     if (len(cons_l), prep_l, ext_l) != (len(cons), prep, ext) or had_l != had:
         return None, dict(error="prover and verifier constraint systems differ")
     eng = spdz.Engine(p, n, live.dealer)
+    bad = G.fill_range(live, eng)
+    if bad and not ignore_range:
+        return None, dict(error="proving refused: truncation input outside its proved bound: "
+                          + ", ".join(f"{nm}[{k}]" for nm, k in bad[:4]) + (" ..." if len(bad) > 4 else ""))
     pos = {a: k for k, a in enumerate(prep)}
     Pv = G.pad([live.atom_sh[a] for a in prep], zero)
     if attack == "bad_triple":

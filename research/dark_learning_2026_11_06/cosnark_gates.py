@@ -74,6 +74,9 @@ class RecEngine(spdz.Engine):
         self.last = []
         import random
         self.prng = random.Random(seed)
+        self.ranges = []           # truncations whose input bound the proof checks (trunc(..., rc=...))
+        self.range_rows = []       # their rows, appended after the program (append_range)
+        self.range_fail = []       # (name, index) whose PUBLIC c - lo is already outside [0, 2^L)
 
     # ------------------------------------------------------------ atoms
     def _atom(self, kind, tag, sh=None):
@@ -134,6 +137,7 @@ class RecEngine(spdz.Engine):
             for j, b in enumerate(bits):
                 form[b] = (-(1 << j)) % p
             self.cons.append((form, 0, 0, "trh-range"))
+            self.tctx["hbits"] = bits
         elif tag == "lp":
             self.lp_run.append(a)
             if len(self.lp_run) >= 2:
@@ -182,12 +186,19 @@ class RecEngine(spdz.Engine):
         else:
             v = super().open(x, phase)
         self.cons.append((dict(_form(x)), _const(x), v, "he:" + phase if self.he else phase))
+        if self.tctx is not None and phase == "trunc":
+            self.tctx["c"] = v
         return v
 
     # ------------------------------------------------------------ gadget context
-    def trunc(self, x, s, K):
+    def trunc(self, x, s, K, rc=None):
+        """rc = (name, a, B): the proof also checks the input x in [a, a + 2^B) (append_range)."""
         self.tctx = dict(s=s, K=K, bits=[])
         out = super().trunc(x, s, K)
+        if rc is not None:
+            name, a, B = rc
+            self.ranges.append(dict(R=self.tctx["bits"] + self.tctx["hbits"], c=self.tctx["c"], K=K, s=s, a=a, B=B,
+                                    name=name, k=sum(1 for r in self.ranges if r["name"] == name)))
         self.tctx = None
         return out
 
@@ -216,7 +227,104 @@ class RecEngine(spdz.Engine):
             self.cons.append((f, x.const, 0, "io"))
 
 
-MIDDLE_PHASES = ("trunc", "lookup", "mul", "trunc-mask", "trh-range", "io", "release")
+MIDDLE_PHASES = ("trunc", "lookup", "mul", "trunc-mask", "trh-range", "io", "release", "range")
+
+
+def append_range(eng):
+    """The truncation input bound, proved (gen 6). For a truncation c = x + 2^K + r (c public; r = sum_i 2^i R_i, its
+    bits R the committed trb and trhb atoms) with the declared interval x in [a, a + 2^B), B <= K + 1: with
+    lo = 2^K + a and c' = c - lo (public), the rows prove that c' - r, as an INTEGER, lies in [0, 2^B). They are the
+    borrow chain of c' - r over L = K + KAPPA + 1 bits: with c'_i public, beta_0 = 0,
+        beta_(i+1) = c'_i ? t_i : R_i + beta_i - t_i,   t_i = R_i beta_i  (a Hadamard row)
+    (beta boolean by induction), then beta_L = 0 (no borrow: c' >= r) and the difference's bits
+    c'_i - R_i - beta_i + 2 beta_(i+1) = 0 for i >= B. Then x = c - 2^K - r = (c' - r) + a in the field and as an
+    integer: no wrap mod p, and x in [a, a + 2^B). Honest c' < 2^B + 2^(K + KAPPA) <= 2^L. A public c' outside
+    [0, 2^L) is recorded in range_fail (the verifier refuses it by name). Atoms t_i, beta_(i+1) are proof-only,
+    computed by the custodians at proof time (fill_range); rows are appended after the program, in truncation order."""
+    p = eng.p
+    for D in eng.ranges:
+        K, a, B = D["K"], D["a"], D["B"]
+        L = K + KAPPA + 1
+        lo = (1 << K) + a
+        cp = D["c"] - lo
+        if not 0 <= cp < 1 << L:
+            eng.range_fail.append((D["name"], D["k"]))
+        cb = [((cp % (1 << L)) >> i) & 1 for i in range(L)]
+        R = D["R"]
+        assert len(R) == K + KAPPA
+        ts, bs = [], []
+        beta = None
+        for i in range(L):
+            Ri = R[i] if i < len(R) else None
+            t = None
+            if Ri is not None and beta is not None:
+                t = eng._atom("proofrange", "rt", None)
+                eng.had.append((Ri, beta, t))
+            nb = eng._atom("proofrange", "rb", None)
+            f = {nb: 1}
+            if cb[i]:
+                if t is not None:
+                    f[t] = (f.get(t, 0) - 1) % p
+            else:
+                for x, co in ((Ri, -1), (beta, -1), (t, 1)):
+                    if x is not None:
+                        f[x] = (f.get(x, 0) + co) % p
+            eng.cons.append((f, 0, 0, "range"))
+            if i >= B:
+                g = {nb: 2}
+                for x in (Ri, beta):
+                    if x is not None:
+                        g[x] = (g.get(x, 0) - 1) % p
+                eng.cons.append((g, cb[i], 0, "range"))
+            ts.append(t)
+            bs.append(nb)
+            beta = nb
+        eng.cons.append(({beta: 1}, 0, 0, "range"))
+        eng.range_rows.append(dict(D, L=L, cb=cb, t=ts, b=bs))
+
+
+def fill_range(live, eng):
+    """The custodians' shares of the range rows' atoms (proof time, on the proving engine eng: its Beaver products
+    run round by round over every truncation, round i over the truncations in order). Then each truncation's
+    violation indicator beta_L + sum_(i >= B) diff_i (0 iff in bound) is opened: an honest run opens zeros. Returns
+    the violated truncations as (name, index)."""
+    rows = live.range_rows
+    if not rows:
+        return []
+    n = live.n
+    zero = {i: (0, 0) for i in range(n)}
+    sh = lambda a: live.atom_sh[a]
+    beta = [None] * len(rows)
+    for i in range(max(D["L"] for D in rows)):
+        idx = [k for k, D in enumerate(rows) if i < D["L"] and D["t"][i] is not None]
+        prods = [eng.mul(sh(rows[k]["R"][i]), beta[k]) for k in idx]
+        for k, t in zip(idx, prods):
+            live.atom_sh[rows[k]["t"][i]] = t
+        for k, D in enumerate(rows):
+            if i >= D["L"]:
+                continue
+            Ri = sh(D["R"][i]) if i < len(D["R"]) else None
+            bt = beta[k]
+            t = live.atom_sh[D["t"][i]] if D["t"][i] is not None else None
+            if D["cb"][i]:
+                nb = t if t is not None else zero
+            else:
+                nb = eng.lin([(1, x) for x in (Ri, bt) if x is not None] + ([(-1, t)] if t is not None else []))
+                nb = nb if (Ri is not None or bt is not None) else zero
+            live.atom_sh[D["b"][i]] = dict(nb)
+            beta[k] = nb
+    ind = []
+    for D in rows:
+        terms = [(1, sh(D["b"][-1]))]
+        for i in range(D["B"], D["L"]):
+            Ri = sh(D["R"][i]) if i < len(D["R"]) else None
+            bt = sh(D["b"][i - 1]) if i > 0 else None
+            terms += [(2, sh(D["b"][i]))] + [(-1, x) for x in (Ri, bt) if x is not None]
+            terms.append((D["cb"][i], None))
+        cst = sum(c for c, x in terms if x is None)
+        ind.append(eng.lin([(c, x) for c, x in terms if x is not None], cst))
+    vals = [eng.open(v, "range-check") for v in ind]
+    return [(D["name"], D["k"]) for D, v in zip(rows, vals) if v]
 
 def middle(rec):
     """Restrict the recorded system to the nonlinear middle: atoms referenced by middle constraints."""

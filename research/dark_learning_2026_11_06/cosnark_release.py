@@ -58,23 +58,27 @@ def run_release(eng, W1, W2, X, labels, prog, ncls=10, kc=KC):
             eng.cons.append((f, 0, 0, "io"))
             z1.append(G.mk(dict(sh), {a: 1}))
     tab = (sig_table(p, prog.t_lo),)
-    u1 = [eng.trunc(v, prog.s1, prog.k1) for v in z1]
+    u1 = [eng.trunc(v, prog.s1, prog.k1, rc=prog.rc_of("z1", kc)) for v in z1]
     h = [eng.lookup2(u, -prog.t_lo % p, tab, 255)[0] for u in u1]
     eng.rec_out("h", h)
     hb = [G.mk(dict(x), {eng.ext[("h", k)]: 1}) for k, x in enumerate(h)]
     # batch-friendly order (the custodians run each stage as one vector operation): every class-row product, then
     # every score truncation, then every comparison, then the products of the comparisons stage by stage
     prods = [[[eng.mul(W2v[c * d + k], hb[k * M + t]) for k in range(d)] for t in range(M)] for c in range(ncls)]
-    o = [[eng.trunc(eng.lin([(1, x) for x in prods[c][t]]), prog.s1, prog.k1) for t in range(M)] for c in range(ncls)]
+    o = [[eng.trunc(eng.lin([(1, x) for x in prods[c][t]]), prog.s1, prog.k1, rc=prog.rc_of("score", kc))
+          for t in range(M)] for c in range(ncls)]
     fs = []
     for t in range(M):
         l = labels[t]
-        qs = [eng.trunc(eng.lin([(1, o[l][t]), (-1, o[k][t])], -1), kc, kc) for k in range(ncls) if k != l]
+        qs = [eng.trunc(eng.lin([(1, o[l][t]), (-1, o[k][t])], -1), kc, kc, rc=prog.rc_of("compare", kc))
+              for k in range(ncls) if k != l]
         fs.append([eng.cadd(1, q) for q in qs])
     oks = [f[0] for f in fs]
     for j in range(1, ncls - 1):
         oks = [eng.mul(oks[t], fs[t][j]) for t in range(M)]
     C = eng.open(eng.lin([(1, x) for x in oks]), "release")
+    if prog.rc:
+        G.append_range(eng)
     return C, dict(z1=[dict(x) for x in z1], h=[dict(x) for x in h])
 
 

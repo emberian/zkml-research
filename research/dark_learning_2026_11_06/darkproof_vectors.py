@@ -33,6 +33,7 @@ def sv(v, n=3):
 def witness(p, d, dealer, live, wires):
     flat = lambda M: [x for r in M for x in r]
     cons, had, prep, ext = G.middle(live)
+    prep = [a for a in prep if live.atoms[a][0] != "proofrange"]   # the range rows' atoms are made at proof time
     return dict(p=p, d=d, n=3, alpha_sh=list(dealer.alpha_sh), dealer_state=list(dealer.rng.getstate()[1]),
                 wires={k: [sv(v) for v in (wires[k] if k in VECS else flat(wires[k]))] for k in VECS + MATS if k in wires},
                 public=[v for _, _, v in live.transcript], phases=[ph for ph, _, _ in live.transcript],
@@ -181,11 +182,12 @@ def verify_native(out, tag):
     if rm and os.path.exists(path):
         wit = json.load(open(os.path.join(out, rm["witness"])))
         blob = open(path, "rb").read()
+        prog_r = dict(meta.get("program") or {}, **({"RC": True} if rm.get("rc") else {}))
         ok, why, res = PW.verify_release(p, blob, tuple(rm["ctx"]), rm["head_roots"], wit["X"], wit["labels"],
-                                         meta.get("program"), rm["ncls"], d)
+                                         prog_r, rm["ncls"], d)
         bad = bytearray(blob); bad[len(bad) // 2] ^= 1
         ok2, why2, _ = PW.verify_release(p, bytes(bad), tuple(rm["ctx"]), rm["head_roots"], wit["X"], wit["labels"],
-                                         meta.get("program"), rm["ncls"], d)
+                                         prog_r, rm["ncls"], d)
         print(f"python verify {tag} release native: {ok} {why} {res} | flipped byte: {ok2} {why2}", flush=True)
         ok_all &= ok and not ok2 and res[1] == rm["C"]
     print("PYVERIFY", "PASS" if ok_all else "FAIL")
@@ -238,8 +240,9 @@ def main():
         ncls = min(10, d)
         M = 4 if d <= 4 else 8
         rr = random.Random(1000 + d)
-        X = [[rr.randint(0, 100) for _ in range(M)] for _ in range(d)]
-        prog = CH.Prog()
+        xs = int(os.environ.get("DP_XSCALE", "1"))        # > 1: a release whose z1 leaves the table's domain
+        X = [[rr.randint(0, 100) * xs for _ in range(M)] for _ in range(d)]
+        prog = CH.Prog(rc=bool(os.environ.get("DP_RC")))
         head = s2["wires"]
         dec = lambda Mx: [[MF.centered(sum(v[i][0] for i in range(3)) % p, p) for v in r] for r in Mx]
         # half the labels are the plain model's strict argmax (so C > 0), the rest random
@@ -259,15 +262,28 @@ def main():
         wit.update(ext={k: [sv(v) for v in z1h[k]] for k in ("z1", "h")}, X=X, labels=labels, ncls=ncls, M=M)
         json.dump(wit, open(os.path.join(out, f"{tag}_rel.json"), "w"))
         rel, rst = CR.prove(live, sym, hw, z1h, s2["child"], ctx, io)
+        if rel is None:
+            print("rel: the custodians refuse to prove:", rst["error"], flush=True)
+            import cosnark_gates_zk as GZ2
+            live2 = G.RecEngine(p, 3, spdz.Dealer(p, 3, 5))
+            CR.run_release(live2, head["W1n"], head["W2n"], X, labels, prog, ncls)
+            sym2 = CR.replay(p, [v for _, _, v in live2.transcript], X, labels, prog, ncls)
+            forced, _ = GZ2.prove_middle_zk(live2, sym2, dict(W1=hw["W1"], W2=hw["W2"], **{k: z1h[k] for k in ("z1", "h")}),
+                                             s2["child"], context=ctx, io=io, ignore_range=True)
+            fb = PW.encode_release(p, ctx, d, 3, M, ncls, [v for _, _, v in live2.transcript], forced, sym2, io)
+            heads = {k: s2["child"][k].roots for k in ("W1", "W2")}
+            print("rel: a forced bundle (the check ignored):", PW.verify_release(p, fb, ctx, heads, X, labels,
+                  dict(RC=True), ncls, d)[:2], flush=True)
+            return
         blob = PW.encode_release(p, ctx, d, 3, M, ncls, public, rel, sym, io)
         open(os.path.join(out, f"{tag}_rel.bin"), "wb").write(blob)
         heads = {k: s2["child"][k].roots for k in ("W1", "W2")}
-        ok, why, res = PW.verify_release(p, blob, ctx, heads, X, labels, None, ncls, d)
+        ok, why, res = PW.verify_release(p, blob, ctx, heads, X, labels, dict(RC=True) if prog.rc else None, ncls, d)
         assert ok, why
         Cp = CR.plain_count(dec(head["W1n"]), dec(head["W2n"]), X, labels, prog, ncls)
         assert C == Cp, (C, Cp)
         meta["release"] = dict(blob=f"{tag}_rel.bin", witness=f"{tag}_rel.json", ctx=list(ctx), M=M, ncls=ncls, C=C,
-                               head_roots=heads)
+                               head_roots=heads, rc=prog.rc)
         print("rel", len(blob), "C =", C, "of M =", M, flush=True)
     if "si" in flows:
         rng2 = random.Random(d)

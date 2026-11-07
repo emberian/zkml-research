@@ -55,7 +55,7 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
         Some(p) => {
             let f = |k: &str| p[k].as_u64().unwrap() as u32;
             let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
-            darkproof::step::StepParams { s1: f("S1"), k1: f("K1"), s2: f("S2"), k2: f("K2"), s3: f("S3"), k3: f("K3"), he: p["he"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128) }
+            darkproof::step::StepParams { s1: f("S1"), k1: f("K1"), s2: f("S2"), k2: f("K2"), s3: f("S3"), k3: f("K3"), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128) }
         }
     }
 }
@@ -171,7 +171,7 @@ fn run_check(dir: &Path, tag: &str) {
         let c = b["ctx"].as_array().unwrap();
         let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
         let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
-        let nt = tape_triples(&lp, d, n_had(d, prm, prm.carried(ctx.step), &tables));
+        let nt = darkproof::run::step_section(&lp, d, prm, prm.carried(ctx.step), &tables);
         // the custodians' tapes: authenticated triples under the step's alpha (stand-in for MASCOT)
         let mut tdl = Dealer::from_state(&pycompat::PyRandom::from_u64(1000 + k as u64).state(), w.alpha_sh.clone());
         let mut tapes: Vec<Vec<Triple>> = vec![Vec::with_capacity(nt); 3];
@@ -324,7 +324,7 @@ fn ds_bench(d: usize, prof: &str) {
     assert_eq!(pf.t, p);
     let pg = darkstep::step::Program { s1: prm.s1, k1: prm.k1, s2: prm.s2, k2: prm.k2, s3: prm.s3, k3: prm.k3, r3: prm.r3, t_lo: prm.t_lo, xmax: 7, wmax: None, check_k: false };
     let t0 = std::time::Instant::now();
-    let nt = tape_triples(&lp, d, n_had(d, prm, false, &tables));
+    let nt = darkproof::run::step_section(&lp, d, prm, false, &tables);
     let plain = darkstep::step::inputs(d);
     let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg);
     darkstep::tape::deal_proof_section(&mut dl, nt);
@@ -427,11 +427,11 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     for k in 0..steps {
         let inp = if k == 0 { genesis.clone() } else { xy.clone() };
         css.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, d, &inp, &pg));
-        let nt = tape_triples(&lp, d, n_had(d, prm, k > 0, &tables));
+        let nt = darkproof::run::step_section(&lp, d, prm, k > 0, &tables);
         darkstep::tape::deal_proof_section(&mut dl, nt);
         nts.push(nt);
     }
-    let pol0 = Policy { x: x.clone(), labels: vec![0; m], ncls, kc };
+    let pol0 = Policy { x: x.clone(), labels: vec![0; m], ncls, kc, ignore_range: false };
     deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol0);
     let tapes = dl.tapes;
     println!("d={d} profile={prof} steps={steps} M={m} program={prm:?}; dealing {:.1}s, tape {} entries per party", t0.elapsed().as_secs_f64(), tapes[0].len());
@@ -557,10 +557,9 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             if t % 2 == 0 { (0..ncls).max_by_key(|&c| (o[c], std::cmp::Reverse(c))).unwrap() } else { r }
         })
         .collect();
-    let pol = Policy { x, labels, ncls, kc };
+    let pol = Policy { x, labels, ncls, kc, ignore_range: std::env::var_os("DP_IGNORE_RANGE").is_some() };
     let cp = plain_count(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc);
-    let nh = release_n_had(d, m, prm, &pol);
-    let nrt = release_triples(&lp, nh);
+    let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
     // phase 2: the release
     let ctx = Ctx::new(model, 0, steps as u64);
     let outs: Vec<(u64, Vec<u8>, f64, f64)> = std::thread::scope(|s| {
@@ -727,10 +726,10 @@ fn rel_check(dir: &Path, tag: &str) {
     let xm = raw["X"].as_array().unwrap();
     let x: Vec<u64> = (0..d).flat_map(|k| (0..m).map(move |t| (k, t))).map(|(k, t)| darkproof::field::from_i64(xm[k][t].as_i64().unwrap())).collect();
     let labels: Vec<usize> = raw["labels"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap() as usize).collect();
-    let pol = Policy { x, labels, ncls, kc: 10 };
-    let prm = darkproof::step::StepParams::HARNESS;
+    let pol = Policy { x, labels, ncls, kc: 10, ignore_range: false };
+    let prm = darkproof::step::StepParams { rc: rm["rc"].as_bool().unwrap_or(false), ..darkproof::step::StepParams::HARNESS };
     let rec = darkproof::step::replay_release(&w.public, d, m, prm, &pol.x, &pol.labels, ncls, 10).expect("replay");
-    let nb = darkproof::middle::beaver_count(rec.had.len());
+    let nb = rec.range_products() + darkproof::middle::beaver_count(rec.had.len());
     let mut dl = Dealer::from_state(&w.dealer_state, w.alpha_sh.clone());
     let mut tapes: Vec<Vec<Triple>> = vec![Vec::with_capacity(nb); 3];
     for _ in 0..nb {

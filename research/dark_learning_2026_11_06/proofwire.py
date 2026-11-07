@@ -295,6 +295,9 @@ def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None,
         return False, f"parse: {e}", None
     except Exception as e:                       # anything else in parsing is a refusal, never a crash
         return False, f"parse: {type(e).__name__}", None
+    if sym.range_fail:
+        nm, k = sym.range_fail[0]
+        return False, f"middle: truncation input outside its proved bound ({nm}[{k}], public)", None
     ctx = tuple(expect_ctx)
     leaf = None
     if bind:
@@ -368,6 +371,9 @@ def verify_release(p, blob, expect_ctx, head_roots, X, labels, program, ncls, d_
         if os.environ.get("DP_DEBUG"):
             raise
         return False, f"parse: {type(e).__name__}", None
+    if sym.range_fail:
+        nm, k = sym.range_fail[0]
+        return False, f"release: truncation input outside its proved bound ({nm}[{k}], public)", None
     C = public[-1]
     if C > M:
         return False, "released count exceeds M", None

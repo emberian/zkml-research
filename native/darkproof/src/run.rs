@@ -57,7 +57,15 @@ pub fn n_had(d: usize, prm: StepParams, carried: bool, tables: &(Vec<u64>, Vec<u
     step::replay(&zeros, d, prm, tables, carried).expect("replay of the program's own length").had.len()
 }
 
-/// Triples one custodian's tape must hold in its proof section for one step.
+/// The proof section of one step's tape: tape_triples plus the proved bounds' products (prm.rc).
+pub fn step_section(lp: &LigParams, d: usize, prm: StepParams, carried: bool, tables: &(Vec<u64>, Vec<u64>)) -> usize {
+    let zeros = vec![0u64; prm.transcript_len(d, carried)];
+    let rec = step::replay(&zeros, d, prm, tables, carried).expect("replay of the program's own length");
+    tape_triples(lp, d, rec.had.len()) + rec.range_products()
+}
+
+/// Triples one custodian's tape must hold in its proof section for one step (without proved bounds; with them use
+/// step_section).
 pub fn tape_triples(lp: &LigParams, d: usize, n_had: usize) -> usize {
     spine::beaver_count(d)
         + middle::beaver_count(n_had)
@@ -97,10 +105,10 @@ pub fn prove_step(
     if rec.tpos != st.public.len() {
         return Err("own transcript is longer than the step program".into());
     }
-    if st.atoms.len() != rec.n_prep() {
-        return Err(format!("{} middle atoms, the program has {}", st.atoms.len(), rec.n_prep()));
+    if st.atoms.len() != rec.n_program_atoms() {
+        return Err(format!("{} middle atoms, the program has {}", st.atoms.len(), rec.n_program_atoms()));
     }
-    let nb = spine::beaver_count(d) + middle::beaver_count(rec.had.len());
+    let nb = spine::beaver_count(d) + rec.range_products() + middle::beaver_count(rec.had.len());
     let (ls, lm) = if det.on() {
         (0, 0)
     } else {
@@ -168,6 +176,7 @@ pub fn prove_step(
         det: &det,
         lig_dealer: None,
         lig_tape: if det.on() { None } else { Some(lig_m) },
+        ignore_range: false,
         cst_patch: None,
     };
     let mo = middle::prove(&mi, net, &mut sp, spine_coms, None)?;
@@ -292,6 +301,8 @@ pub struct Policy {
     pub labels: Vec<usize>,
     pub ncls: usize,
     pub kc: u32,
+    /// TEST ONLY: prove even with a truncation input outside its proved bound (a forced bundle)
+    pub ignore_range: bool,
 }
 
 /// Triples one custodian's tape must hold for the release proof.
@@ -323,11 +334,11 @@ pub fn prove_release(
     if rec.tpos != st.public.len() {
         return Err("own transcript is longer than the release program".into());
     }
-    if st.atoms.len() != rec.n_prep() {
-        return Err(format!("{} release atoms, the program has {}", st.atoms.len(), rec.n_prep()));
+    if st.atoms.len() != rec.n_program_atoms() {
+        return Err(format!("{} release atoms, the program has {}", st.atoms.len(), rec.n_program_atoms()));
     }
     let det = st.det;
-    let nb = middle::beaver_count(rec.had.len());
+    let nb = rec.range_products() + middle::beaver_count(rec.had.len());
     let lm = if det.on() { 0 } else { LigParty::tape_triples(lp, middle::LIG_SCALARS, 1) };
     if st.triples.len() != nb + lm {
         return Err(format!("the tape's release section has {} triples, the proof needs {}", st.triples.len(), nb + lm));
@@ -349,6 +360,7 @@ pub fn prove_release(
         det: &det,
         lig_dealer: None,
         lig_tape: if det.on() { None } else { Some(lig_m) },
+        ignore_range: pol.ignore_range,
         cst_patch: None,
     };
     let mo = middle::prove(&mi, net, &mut sp, head, None)?;
@@ -474,10 +486,16 @@ pub fn deal_release(dl: &mut darkstep::tape::Dealer, d: usize, m: usize, ncls: u
         dl.mul();
     }
     let _ = tables;
-    let nh = release_n_had(d, m, prm, pol);
-    for _ in 0..release_triples(lp, nh) {
+    for _ in 0..release_section(lp, d, m, prm, pol) {
         dl.mul();
     }
+}
+
+/// The release's proof section: release_triples plus the proved bounds' products (prm.rc).
+pub fn release_section(lp: &LigParams, d: usize, m: usize, prm: StepParams, pol: &Policy) -> usize {
+    let zeros = vec![0u64; wire::release_len(d, m, prm, pol.ncls, pol.kc)];
+    let rec = step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc).expect("release replay");
+    release_triples(lp, rec.had.len()) + rec.range_products()
 }
 
 /// Hadamard rows of the release proof (data-independent: a replay on a zero transcript).

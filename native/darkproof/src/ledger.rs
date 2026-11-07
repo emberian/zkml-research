@@ -126,7 +126,12 @@ impl Ledger {
                 String::new()
             } else {
                 let p = g.program;
-                let he = if p.he { ", \"he\": true" } else { "" };
+                let he = match (p.he, p.rc) {
+                    (true, true) => ", \"he\": true, \"RC\": true",
+                    (true, false) => ", \"he\": true",
+                    (false, true) => ", \"RC\": true",
+                    (false, false) => "",
+                };
                 let ext = if (p.r3, p.t_lo) != (0, -128) { format!(", \"R3\": {}, \"T_LO\": {}", p.r3, p.t_lo) } else { String::new() };
                 format!(", \"program\": {{\"S1\": {}, \"K1\": {}, \"S2\": {}, \"K2\": {}, \"S3\": {}, \"K3\": {}{}{}}}", p.s1, p.k1, p.s2, p.k2, p.s3, p.k3, ext, he)
             };
@@ -196,7 +201,11 @@ impl Ledger {
                         Some(v) => v.as_i64().ok_or_else(|| format!("genesis program: {k}")),
                     }
                 };
-                crate::step::StepParams { s1: f("S1")?, k1: f("K1")?, s2: f("S2")?, k2: f("K2")?, s3: f("S3")?, k3: f("K3")?, he, r3: gi("R3", 0)?, t_lo: gi("T_LO", -128)? }
+                crate::step::StepParams { s1: f("S1")?, k1: f("K1")?, s2: f("S2")?, k2: f("K2")?, s3: f("S3")?, k3: f("K3")?, he, rc: match p.get("RC") {
+                    None => false,
+                    Some(Value::Bool(b)) => *b,
+                    Some(_) => return Err("genesis program: RC must be a boolean".into()),
+                }, r3: gi("R3", 0)?, t_lo: gi("T_LO", -128)? }
             }
         };
         let pk = g["owner_pk"].as_str().ok_or("owner_pk")?;
