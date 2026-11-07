@@ -82,10 +82,12 @@ name = "darkdeploy"
 version = "0.1.0"
 dependencies = [
  "darkprep",
+ "darkproof",
  "darkstep",
  "darktrain",
  "pycompat",
  "serde_json",
+ "sha2",
 ]
 
 [[package]]
