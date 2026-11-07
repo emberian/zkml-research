@@ -139,3 +139,105 @@ fn three_proved_steps_over_tls() {
 fn hex(s: &str) -> Vec<u8> {
     (0..s.len() / 2).map(|i| u8::from_str_radix(&s[2 * i..2 * i + 2], 16).unwrap()).collect()
 }
+
+/// Public genesis with proofs: W = darktrain::init(cfg) enters custody as the public constant, every custodian
+/// commits it itself (the program pins sha256 of the cfg), and two proved carried steps chain from that commitment.
+#[test]
+fn public_genesis_two_proved_steps() {
+    let pf = prof(&A.map(String::from));
+    let d = pf.d;
+    let steps = 2;
+    let base = std::env::temp_dir().join(format!("dl-custodian-pg-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&base);
+    let dir = base.join("run");
+    std::fs::create_dir_all(&dir).unwrap();
+    let cfg = br#"{"d": 64, "hid": 64, "reps": 1, "tile": 0, "bias": false, "seed_init": 1, "a1": 0, "a2": 3}"#;
+    let cfgp = base.join("genesis.json");
+    std::fs::write(&cfgp, cfg).unwrap();
+    let (_, w1, w2) = darkproof::run::public_weights(cfg).unwrap();
+    assert!(w2.iter().any(|&x| x != 0), "a nontrivial public W");
+    let out = Command::new(env!("CARGO_BIN_EXE_dl-custodian")).arg("proof-triples").args(A).output().unwrap();
+    let gc = String::from_utf8(out.stdout).unwrap();
+    let c: usize = gc.trim().split_once(',').unwrap().1.parse().unwrap();
+    let xs: Vec<Vec<i64>> = (0..steps)
+        .map(|s| {
+            let mut r = pycompat::PyRandom::from_u64(2000 + s as u64);
+            (0..2 * d).map(|_| r.randint_i64(-7, 7)).collect()
+        })
+        .collect();
+    let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
+    dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
+    let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
+    let mut cs = Vec::new();
+    for x in &xs {
+        let xm: Vec<u64> = x.iter().map(|&v| darkstep::arith::from_i64(v, pf.t)).collect();
+        cs.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, d, &xm, &Program::HARNESS));
+        darkstep::tape::deal_proof_section(&mut dl, c);
+    }
+    let ids: Vec<darkstep::tls::Identity> = (0..4).map(darkstep::tls::generate).collect();
+    let certs: Vec<Vec<u8>> = ids[..3].iter().map(|x| x.cert_der.clone()).collect();
+    for i in 0..3 {
+        let own = base.join(format!("seat{i}"));
+        std::fs::create_dir_all(&own).unwrap();
+        for j in 0..3 {
+            std::fs::write(own.join(format!("cert_{j}.der")), &certs[j]).unwrap();
+        }
+        std::fs::write(own.join("cert_owner.der"), &ids[3].cert_der).unwrap();
+        std::fs::write(own.join(format!("tls_{i}.key")), &ids[i].key_der).unwrap();
+        dl.tapes[i].write_to(&mut std::io::BufWriter::new(std::fs::File::create(own.join("tape.bin")).unwrap())).unwrap();
+    }
+    let ports: Vec<u16> = (0..4).map(|_| free_port()).collect();
+    let addrs: Vec<String> = (0..3).map(|j| format!("127.0.0.1:{}", ports[j])).collect();
+    let owner_at = format!("127.0.0.1:{}", ports[3]);
+    let l = std::net::TcpListener::bind(&owner_at).unwrap();
+    let oid = darkstep::tls::Identity { key_der: ids[3].key_der.clone(), cert_der: ids[3].cert_der.clone() };
+    let ocerts = certs.clone();
+    let owner = std::thread::spawn(move || darkstep::serve::owner_serve(l, &oid, &ocerts, |k, _| cs.get(k).cloned().ok_or("no step".into())));
+    let kids: Vec<_> = (0..3)
+        .map(|i| {
+            let own = base.join(format!("seat{i}"));
+            Command::new(env!("CARGO_BIN_EXE_dl-custodian"))
+                .args(["serve", &i.to_string()])
+                .args(A)
+                .arg(&dir)
+                .args(&addrs)
+                .args(["--tls", own.to_str().unwrap(), "--owner", &owner_at, "--steps", &steps.to_string(), "--gate", "309", "--ret-primes", "2"])
+                .args(["--tape", own.join("tape.bin").to_str().unwrap(), "--timeout", "120", "--test-keep-shares", "--prove"])
+                .args(["--genesis-cfg", cfgp.to_str().unwrap()])
+                .env("DS_THREADS", "4")
+                .spawn()
+                .unwrap()
+        })
+        .collect();
+    let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
+    owner.join().unwrap().unwrap();
+    assert_eq!(codes, vec![0, 0, 0]);
+    for k in 0..steps {
+        let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(dir.join(format!("step_{k}_P0.json"))).unwrap()).unwrap();
+        assert_eq!(r["verdict"], "ACCEPT");
+        assert_eq!(r["after_step"]["verified"], true, "step {k} verifies against the public-genesis chain");
+    }
+    // the plaintext twin from the same cfg
+    let shares: Vec<Vec<Sh>> = (0..3)
+        .map(|i| {
+            let v = darkstep::net::bytes_to_u64s(&std::fs::read(dir.join(format!("shares_{i}.bin"))).unwrap());
+            v.chunks(2).map(|c| Sh { s: c[0], m: c[1] }).collect()
+        })
+        .collect();
+    let p = pf.t;
+    let cen = |v: u64| if v > p / 2 { v as i64 - p as i64 } else { v as i64 };
+    let sum: Vec<i64> = (0..2 * d * d).map(|k| cen(shares.iter().fold(0, |a, s| darkstep::arith::addmod(a, s[k].s, p)))).collect();
+    let rows = |w: &[i64]| -> Vec<Vec<i64>> { w.chunks(d).map(|r| r.to_vec()).collect() };
+    let mut pl = Plain { w1: rows(&w1), w2: rows(&w2), x: vec![], y: vec![] };
+    let pg = Program { wmax: None, check_k: true, ..Program::HARNESS };
+    for x in &xs {
+        pl.x = x[..d].to_vec();
+        pl.y = x[d..].to_vec();
+        let (a, b) = pl.step_prog(&pg).unwrap();
+        pl.w1 = a;
+        pl.w2 = b;
+    }
+    let twin: Vec<i64> = pl.w1.iter().chain(pl.w2.iter()).flatten().copied().collect();
+    assert_eq!(sum, twin, "public genesis + 2 proved steps = the twin from the same cfg");
+    std::fs::remove_dir_all(&base).ok();
+}
