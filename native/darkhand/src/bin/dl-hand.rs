@@ -14,6 +14,8 @@
 //!       the handover proof binding them to the ledger head; the old shares, tape and alpha share erased.
 //!   dl-hand seat <work> <i> <d> <profile> <port_base>        (one seat of local-self)
 //!
+//! DLH_STRAY_COPY=1 (TEST ONLY): each old seat dir also gets a copy of its tape the erasure does not know about; the
+//! disk scan after erasure must find it (the negative control of the disk check).
 //! Ports: old mesh base+0..2, new mesh base+3..5, joint mesh base+6..11. Every process uses the zeroizing allocator.
 use darkhand::erase::{Wipe, ZeroOnFree};
 use darkhand::side::{self, ct_bytes, ct_parse, digest, os_field, Common, OldCustodian, KINDS};
@@ -127,6 +129,10 @@ fn deal(work: &Path, d: usize, prof: &str) {
         std::fs::create_dir_all(&od).unwrap();
         std::fs::create_dir_all(&nd).unwrap();
         write_tape(&od.join("tape.bin"), &old.tapes[i]);
+        // TEST ONLY negative control of the disk scan: a stray copy the erasure does not know about
+        if std::env::var("DLH_STRAY_COPY").is_ok() {
+            write_tape(&od.join("stray-copy.bin"), &old.tapes[i]);
+        }
         write_tape(&nd.join("tape.bin"), &new.tapes[i]);
     }
     std::fs::create_dir_all(work.join("pub")).unwrap();
@@ -190,6 +196,7 @@ fn old_setup(c: &Common, work: &Path, i: usize, d: usize, base: u16) -> Box<OldC
         key: Some(key),
         carry,
         files: vec![dir.join("tape.bin"), dir.join("key.bin")],
+        scan_paths: vec![dir.clone()],
         captured: Some((ct, mdig)),
     })
 }
@@ -354,7 +361,7 @@ fn old_seat_state(c: &Common, work: &Path, dir: &Path, i: usize, d: usize) -> Bo
         .collect();
     let roots: BTreeMap<String, Vec<[u8; 32]>> = carry.iter().map(|(k, p)| (k.clone(), vec![p.root])).collect();
     write_json(&work.join(format!("pub/old{i}.roots.json")), &roots_json(&roots));
-    Box::new(OldCustodian { i, w, tape: *tape, keys: None, key: None, carry, files: vec![dir.join("tape.bin")], captured: None })
+    Box::new(OldCustodian { i, w, tape: *tape, keys: None, key: None, carry, files: vec![dir.join("tape.bin")], scan_paths: vec![dir.to_path_buf()], captured: None })
 }
 
 fn local_self(work: &Path, d: usize, prof: &str, base: u16) -> bool {
@@ -394,6 +401,10 @@ fn local_self(work: &Path, d: usize, prof: &str, base: u16) -> bool {
     ck("after erasure the scan finds none of them (the seat's process still runs its new role)",
        olds.iter().all(|v| v["scan_after_erasure"]["available"] == false || v["scan_after_erasure"]["hits"] == 0));
     ck("the memory scan ran (Linux)", olds.iter().all(|v| v["scan_after_erasure"]["available"] == true));
+    ck("before erasure the disk scan finds the tape (and key) material in the state files (control)",
+       olds.iter().all(|v| v["disk_scan_before_erasure"]["hits"].as_u64().unwrap_or(0) > 0));
+    ck("after erasure the disk scan of the seat's directories finds none of it",
+       olds.iter().all(|v| v["disk_scan_after_erasure"]["hits"] == 0 && v["disk_scan_after_erasure"]["unreadable"] == json!([])));
     ck("no old tape file left", olds.iter().all(|v| v["state_files_left"].as_array().map(|a| a.is_empty()).unwrap_or(false)));
     let all = checks.iter().all(|c| c.1);
     let summary = json!({
@@ -506,6 +517,10 @@ fn local(work: &Path, d: usize, prof: &str, base: u16) -> bool {
     ck("old: the zeroizing allocator was active", olds.iter().all(|v| v["allocator_wiped_bytes"].as_u64().unwrap_or(0) > 0));
     ck("old: decrypts its earlier ciphertext before erasure (control)", olds.iter().all(|v| v["decrypts_captured_before_erasure"] == true));
     ck("old: cannot decrypt it after erasure (in the same process)", olds.iter().all(|v| v["decrypts_captured_after_erasure"] == false));
+    ck("old: before erasure the disk scan finds the tape (and key) material in the state files (control)",
+       olds.iter().all(|v| v["disk_scan_before_erasure"]["hits"].as_u64().unwrap_or(0) > 0));
+    ck("old: after erasure the disk scan of the seat's directories finds none of it",
+       olds.iter().all(|v| v["disk_scan_after_erasure"]["hits"] == 0 && v["disk_scan_after_erasure"]["unreadable"] == json!([])));
     ck("old: no state files left", olds.iter().all(|v| v["state_files_left"].as_array().map(|a| a.is_empty()).unwrap_or(false)));
     ck("old restarted: no key or share material on disk",
        restarts.iter().all(|v| v["key_file_present"] == false && v["tape_file_present"] == false && v["share_entries_loaded"] == 0));

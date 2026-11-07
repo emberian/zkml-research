@@ -13,7 +13,7 @@
 //! (Party::auth_plain_vec on its own tape) and MAC-check a few openings. It returns its keys, its authenticated W
 //! wires and its commitment parts: the state for the next step.
 use crate::erase::{wipe_file, Wipe};
-use crate::scan::{Canaries, ScanReport};
+use crate::scan::{Canaries, DiskReport, ScanReport};
 use darkproof::handover::{self, HandoverCtx};
 use darkproof::ligero::LigParams;
 use darkproof::net::TcpNet;
@@ -90,6 +90,42 @@ pub fn digest(xs: &[u64]) -> String {
     pycompat::repr::hex(&h.finalize())
 }
 
+fn disk_json(r: &DiskReport) -> Value {
+    json!({"files": r.files, "bytes": r.bytes, "hits": r.hits, "hits_by_kind": r.by_kind,
+           "hit_files": r.hit_files.iter().map(|(p, h)| json!([p, h])).collect::<Vec<_>>(), "unreadable": r.unreadable,
+           "seconds": r.seconds})
+}
+
+/// The process's peak resident set (VmHWM) in MB; 0 where /proc is absent.
+pub fn peak_rss_mb() -> f64 {
+    std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|s| s.lines().find(|l| l.starts_with("VmHWM:")).and_then(|l| l.split_whitespace().nth(1)?.parse::<f64>().ok()))
+        .map(|kb| kb / 1024.0)
+        .unwrap_or(0.0)
+}
+
+/// Bytes this party sent on `net` so far, per peer, by tag name (only the tags with traffic).
+pub fn sent_json(net: &Net) -> Value {
+    const NAMES: [&str; darkstep::net::NTAGS] = ["OPEN", "HE_CT", "HE_RET", "CTRL", "PROOF", "RESHARE", "RELAY"];
+    let per = net.sent_per_peer();
+    let mut out = serde_json::Map::new();
+    for (j, row) in per.iter().enumerate() {
+        if j == net.me {
+            continue;
+        }
+        let mut m = serde_json::Map::new();
+        for (k, &b) in row.iter().enumerate() {
+            if b > 0 {
+                m.insert(NAMES[k].to_string(), json!(b));
+            }
+        }
+        m.insert("total".into(), json!(row.iter().sum::<u64>()));
+        out.insert(j.to_string(), Value::Object(m));
+    }
+    Value::Object(out)
+}
+
 fn scan_json(r: &ScanReport) -> Value {
     json!({"available": r.available, "regions": r.regions, "bytes": r.bytes, "hits": r.hits, "where": r.where_,
            "hits_by_kind": r.by_kind, "seconds": r.seconds})
@@ -124,6 +160,9 @@ pub struct OldCustodian {
     pub carry: BTreeMap<String, PcsParty>,
     /// state files on disk (key, shares, tape)
     pub files: Vec<PathBuf>,
+    /// files and directories scanned on disk for the durable canaries (shares, MAC shares, tape, alpha share, HE
+    /// key) before and after the erasure: every place this custodian's secret inputs and state may lie
+    pub scan_paths: Vec<PathBuf>,
     /// a ciphertext under this custodian's key from before the handover (an eavesdropper's capture of its HE_CT)
     /// and the digest of its plaintext
     pub captured: Option<(Ct, String)>,
@@ -134,6 +173,8 @@ pub struct OldCustodian {
 struct Erased {
     rep: Value,
     can: Canaries,
+    dcan: Canaries,
+    scan_paths: Vec<PathBuf>,
     captured: Option<(Ct, String)>,
     s_left: Vec<i64>,
     b: Vec<Vec<u64>>,
@@ -165,6 +206,7 @@ pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6:
     let st = setup();
     let e = old_side_erase(c, st, connect6())?;
     scrub_stack(4096);
+    let post_disk = e.dcan.scan_paths(&e.scan_paths);
     let post = e.can.scan();
     // ---- the attempt: decrypt the captured ciphertext with the key material this custodian still holds
     let post_dec = e.captured.as_ref().map(|(ct, dg)| {
@@ -174,6 +216,10 @@ pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6:
     let files_left: Vec<String> = e.files.iter().filter(|f| f.exists()).map(|f| f.display().to_string()).collect();
     let mut rep = e.rep;
     rep["scan_after_erasure"] = scan_json(&post);
+    rep["disk_scan_after_erasure"] = disk_json(&post_disk);
+    rep["disk_canary_kinds"] = json!(e.dcan.kinds);
+    rep["scan_paths"] = json!(e.scan_paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>());
+    rep["peak_rss_mb"] = json!(peak_rss_mb());
     rep["canary_kinds"] = json!(e.can.kinds);
     rep["decrypts_captured_after_erasure"] = json!(post_dec);
     rep["state_files_left"] = json!(files_left);
@@ -218,14 +264,19 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     // the opened columns' salts are in the proof (public); the others must go
     let opened: BTreeMap<String, Vec<usize>> = KINDS.iter().map(|k| (k.to_string(), proof.cols_old[*k].j.clone())).collect();
     drop(proof);
+    let sent6 = sent_json(&tn.0);
     tn.0.shutdown();
     // ---- canaries of everything this custodian must erase (one-way tags, sampled)
     let mut can = Canaries::new();
+    // the durable kinds (what a file may hold: checkpoint, tapes, a key file), all below 2^61
+    let mut dcan = Canaries::bounded(1u64 << 61);
     for k in KINDS {
         let s: Vec<u64> = st.w[k].iter().map(|x| x.s).collect();
         let m: Vec<u64> = st.w[k].iter().map(|x| x.m).collect();
         can.add_words(&format!("{k} share"), &s, 1 << 16);
         can.add_words(&format!("{k} MAC share"), &m, 1 << 16);
+        dcan.add_words(&format!("{k} share"), &s, 1 << 16);
+        dcan.add_words(&format!("{k} MAC share"), &m, 1 << 16);
         let mut s = s;
         let mut m = m;
         s.wipe();
@@ -244,10 +295,14 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     can.add_words("tape shares", &st.tape.sh, 1 << 16);
     can.add_words("tape MAC shares", &st.tape.mac, 1 << 16);
     can.add_words("alpha share", std::slice::from_ref(&st.tape.alpha_i), 1);
+    dcan.add_words("tape shares", &st.tape.sh, 1 << 16);
+    dcan.add_words("tape MAC shares", &st.tape.mac, 1 << 16);
+    dcan.add_words("alpha share", std::slice::from_ref(&st.tape.alpha_i), 1);
     if let Some(hs) = st.keys.as_ref() {
         let mut s_ntt = c.rns.from_signed(&hs.s);
         c.rns.fwd(&mut s_ntt);
         can.add_words("HE secret key (NTT form)", &s_ntt, 1 << 16);
+        dcan.add_words("HE secret key (NTT form)", &s_ntt, 1 << 16);
         s_ntt.wipe();
     }
     if let Some(rk) = st.key.as_ref().and_then(|k| k.return_key.as_ref()) {
@@ -255,6 +310,7 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     }
     // control: before erasure the scan finds the material, and the key decrypts the captured ciphertext
     let pre = can.scan();
+    let pre_disk = dcan.scan_paths(&st.scan_paths);
     let pre_dec = st.captured.as_ref().map(|(ct, dg)| {
         let k = st.key.as_ref().unwrap();
         digest(&k.decrypt(ct, None)) == *dg
@@ -303,6 +359,10 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
         "role": "old", "party": i, "reshare_seconds": reshare_s, "prove_seconds": prove_s, "erase_seconds": erase_s,
         "proof_sha256": proof_digest, "canaries": can.len(),
         "scan_before_erasure": scan_json(&pre),
+        "disk_scan_before_erasure": disk_json(&pre_disk),
+        "bytes_sent_per_peer": sent6,
+        "captured_ct": st.captured.as_ref().map(|(ct, _)| pycompat::repr::hex(&ct_bytes(ct))),
+        "captured_plain_sha256": st.captured.as_ref().map(|(_, dg)| dg.clone()),
         "decrypts_captured_before_erasure": pre_dec,
         "key_material_left": {"s_len": st.keys.as_ref().map(|k| k.s.len()).unwrap_or(0), "w_len": st.w.len(), "tape_len": st.tape.len(),
                               "carry_len": st.carry.len()},
@@ -311,6 +371,8 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     Ok(Erased {
         rep,
         can,
+        dcan,
+        scan_paths: std::mem::take(&mut st.scan_paths),
         captured: st.captured.take(),
         s_left,
         b,
@@ -388,6 +450,8 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
     let mut tn = TcpNet(net6);
     let proof = handover::prove(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut carry, &mut tn, &Det(None))?;
     let prove_s = tp.elapsed().as_secs_f64();
+    let sent6 = sent_json(&tn.0);
+    let sent3_before_auth = sent_json(&net3);
     tn.0.shutdown();
     let blob = handover::encode(&c.pr, c.d, &proof);
     // ---- re-authenticate under the new MAC key, then MAC-check `check` openings of each matrix
@@ -446,6 +510,8 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
         "proof_sha256": pycompat::repr::hex(&Sha256::digest(&blob)), "opened": opened, "mac_check": mac,
         "alpha_differs_from_zero": party.alpha() != 0, "ct_under_new_key": pycompat::repr::hex(&ct_bytes(&ct)),
         "ct_plain_sha256": digest(&m), "decrypts_own_ct": own_dec, "seconds": t0.elapsed().as_secs_f64(),
+        "bytes_sent_per_peer_mesh6": sent6, "bytes_sent_per_peer_mesh3_ceremony": sent3_before_auth,
+        "bytes_sent_per_peer_mesh3_total": sent_json(&party.net), "peak_rss_mb": peak_rss_mb(),
     });
     Ok(NewCustodian { j, keys, key: key2, party, w, carry, proof: blob, new_roots: proof.new_roots, report })
 }

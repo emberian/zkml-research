@@ -28,7 +28,8 @@ pub struct OldParts {
 }
 
 /// `retire_he`: a rotation (the HE key goes with the shares); false: a self-handover (it stays).
-/// `files`: the custodian's state files (its checkpoint ckpt_P<i>.bin, tape, TLS key), wiped by old_side.
+/// `files`: the custodian's state files (its checkpoint ckpt_P<i>.bin, tape, TLS key), wiped by old_side. Their
+/// directories become `old.scan_paths` (the disk scan); push more onto it before old_side.
 /// `captured`: optionally a ciphertext under its key from before the handover and its plaintext digest, for the
 /// post-erasure decryption check (rotation only).
 pub fn old_from_serve(
@@ -63,8 +64,13 @@ pub fn old_from_serve(
     } else {
         (None, None, Some(he))
     };
+    // default scan: the directories of the state files (the seat dir, the TLS dir, the step's tape dir); the caller
+    // adds every other place its secret inputs lie (all tapes of the epoch, owner messages) to `old.scan_paths`
+    let mut scan_paths: Vec<PathBuf> = files.iter().filter_map(|f| f.parent().map(|p| p.to_path_buf())).collect();
+    scan_paths.sort();
+    scan_paths.dedup();
     OldParts {
-        old: Box::new(OldCustodian { i, w: wm, tape, keys, key, carry, files, captured: if retire_he { captured } else { None } }),
+        old: Box::new(OldCustodian { i, w: wm, tape, keys, key, carry, files, scan_paths, captured: if retire_he { captured } else { None } }),
         he,
         net3,
     }
