@@ -113,6 +113,25 @@ impl Cfg {
         self.mu = (0..784).map(|k| ((0..m.train.n).map(|t| m.train.img[t * 784 + k] as u64).sum::<u64>() + n / 2).div_euclid(n) as u8).collect();
         self
     }
+    /// The step program this config trains (one S1: s1a must equal s1b).
+    pub fn program(&self) -> Result<darkstep::step::Program, String> {
+        if self.s1a != self.s1b {
+            return Err("the step program has one S1".into());
+        }
+        Ok(darkstep::step::Program {
+            s1: self.s1a,
+            k1: self.k1,
+            s2: self.s2,
+            k2: self.k2,
+            s3: self.s3,
+            k3: self.k3,
+            r3: rnd3(self),
+            t_lo: self.t_lo,
+            xmax: 7,
+            wmax: None,
+            check_k: true,
+        })
+    }
     pub fn nin(&self) -> usize {
         self.tile * 784 + self.bias as usize
     }

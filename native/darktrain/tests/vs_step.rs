@@ -58,3 +58,32 @@ fn order_is_python_shuffle() {
     assert_eq!(order(2, 10), vec![5, 9, 3, 4, 6, 7, 2, 8, 1, 0]);
     assert_ne!(order(3, 10), order(2, 10));
 }
+
+/// The committed genesis trains exactly darkstep's pinned program, and the fast step equals darkstep's
+/// Plain::step_prog (step_spec under GEN6) on MNIST steps at d = 4096 from the genesis init.
+#[test]
+fn genesis_is_gen6_and_fast_step_equals_darkstep() {
+    let g = std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/../../research/dark_learning_2026_11_06/train_genesis_gen6.json")).unwrap();
+    let c: Cfg = serde_json::from_str(&g).unwrap();
+    assert_eq!(c.program().unwrap(), darkstep::step::Program::GEN6);
+    let m = data::load(std::path::Path::new(&c.data)).unwrap();
+    let c = c.with_means(&m);
+    let d = c.d;
+    let (mut w1, mut w2) = init(&c);
+    let ord = order(c.seed_order, m.train.n);
+    let mut bd = Bounds::default();
+    for s in 0..2 {
+        let (x, y) = encode(&c, m.train.image(ord[s]), m.train.lab[ord[s]]);
+        let rows = |w: &[i64]| -> Vec<Vec<i64>> { w.chunks(d).map(|r| r.to_vec()).collect() };
+        let pl = darkstep::step::Plain { w1: rows(&w1), w2: rows(&w2), x: x.clone(), y: y.clone() };
+        let (e1, e2) = pl.step_prog(&darkstep::step::Program::GEN6).unwrap();
+        fast_step(&c, &mut w1, &mut w2, &x, &y, &mut bd);
+        assert!(rows(&w1) == e1 && rows(&w2) == e2, "step {s}");
+        // control: floor instead of round in d1 (r3 = 0) is a different program
+        let mut p0 = darkstep::step::Program::GEN6;
+        p0.r3 = 0;
+        if s == 1 {
+            assert_ne!(pl.step_prog(&p0).unwrap().0, e1);
+        }
+    }
+}

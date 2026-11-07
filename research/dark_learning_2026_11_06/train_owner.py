@@ -112,6 +112,12 @@ def digest(g, m, steps):
     for t, k, x, y in feed(g, m, 0, steps):
         W1, W2, _ = S.step(W1, W2, x, y, P)
     out["after"] = H((W1, W2))
+    import train_eval as TE
+    im, lb, _ = m["test"]
+    mu = means(m) if g["xenc"] in ("mc", "mc2") else None
+    ex = [(encode(g, mu, im[t * 784:(t + 1) * 784], lb[t])[0], lb[t]) for t in range(g.get("n_check_eval", 20))]
+    out["release"] = TE.release(P, W1, W2, ex, g["reps"])
+    out["per_example"] = [TE.correct_one(P, W1, W2, x, l, g["reps"]) for x, l in ex]   # test only: never released
     return out
 
 

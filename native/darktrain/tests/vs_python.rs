@@ -39,4 +39,22 @@ fn equals_python_owner_and_step_spec() {
     let after = digest(c.d, &w1, &w2);
     assert_eq!(after, py["after"].as_str().unwrap(), "after three steps");
     assert_ne!(before_last, after, "control: the last step changes the weights");
+    // the custodians' evaluation: per-example strict correctness on test 0..20, and the released count
+    let per: Vec<u64> = (0..20)
+        .map(|t| {
+            let ev = evaluate(&c, &w1, &w2, &TestOne(&m.test, t).split(), 1);
+            ev.acc_o as u64
+        })
+        .collect();
+    let want: Vec<u64> = py["per_example"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap()).collect();
+    assert_eq!(per, want, "per-example correctness");
+    assert_eq!(per.iter().sum::<u64>(), py["release"][1].as_u64().unwrap());
+    assert!(per.iter().any(|&v| v == 1) && per.iter().any(|&v| v == 0), "control: both outcomes occur");
+}
+
+struct TestOne<'a>(&'a data::Split, usize);
+impl TestOne<'_> {
+    fn split(&self) -> data::Split {
+        data::Split { img: self.0.image(self.1).to_vec(), lab: vec![self.0.lab[self.1]], n: 1 }
+    }
 }
