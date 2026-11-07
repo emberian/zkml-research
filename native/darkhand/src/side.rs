@@ -184,6 +184,24 @@ struct Erased {
     files: Vec<PathBuf>,
 }
 
+/// Whether a carried commitment is a PUBLIC one (darkproof's public genesis: `PcsParty::commit_public`, its tails
+/// and salts drawn from public coins seeded by the committed vector). Then its rows, tails and salts are public and
+/// legitimately live on (the seat recomputes the genesis), so they are no canaries. Exact: the first two tails must
+/// be the public coins' first two draws.
+pub fn carry_is_public(pc: &PcsParty, p: u64) -> bool {
+    let s = &pc.shape;
+    if s.rd == 0 || s.w < s.c + 2 || pc.ext.len() < s.rd * s.w {
+        return false;
+    }
+    let mut share = Vec::with_capacity(s.rd * s.c);
+    for r in 0..s.rd {
+        share.extend_from_slice(&pc.ext[r * s.w..r * s.w + s.c]);
+    }
+    share.resize(1 << darkproof::pcs::bitlen(share.len().max(2) - 1), 0);
+    let mut rng = darkproof::rng::public_coins(&["dl-public-genesis", &darkproof::h::h_list_hex(&share)]);
+    rng.randrange_u64(p) == pc.ext[s.c] && rng.randrange_u64(p) == pc.ext[s.c + 1]
+}
+
 /// Overwrite `kb` KiB of the stack below the caller's frame (the dead frames of the setup and the handover, which
 /// held keys and shares by value: Rust moves are copies and leave the old bytes behind).
 #[inline(never)]
@@ -270,6 +288,7 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     tn.0.shutdown();
     // ---- canaries of everything this custodian must erase (one-way tags, sampled)
     let mut can = Canaries::new();
+    let mut public_carry: Vec<String> = Vec::new();
     // the durable kinds (what a file may hold: checkpoint, tapes, a key file), all below 2^61
     let mut dcan = Canaries::bounded(1u64 << 61);
     for k in KINDS {
@@ -283,6 +302,10 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
         let mut m = m;
         s.wipe();
         m.wipe();
+        if carry_is_public(&st.carry[k], c.t) {
+            public_carry.push(k.to_string());
+            continue;
+        }
         can.add_words(&format!("{k} commitment rows and tails"), &st.carry[k].ext, 1 << 16);
         let mut salts: Vec<u8> = st.carry[k]
             .salts
@@ -370,6 +393,7 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
         "proof_sha256": proof_digest, "canaries": can.len(),
         "scan_before_erasure": scan_json(&pre),
         "disk_scan_before_erasure": disk_json(&pre_disk),
+        "public_carry": public_carry,
         "bytes_sent_per_peer": sent6,
         "captured_ct": st.captured.as_ref().map(|(ct, _)| pycompat::repr::hex(&ct_bytes(ct))),
         "captured_plain_sha256": st.captured.as_ref().map(|(_, dg)| dg.clone()),
