@@ -304,3 +304,126 @@ Byte forms of alpha_i, for the handover lane's disk scan [EXECUTED, wired1-sh on
 - the Transactions header holds the Montgomery form alpha * 2^64 mod p, LE.
 
 Known limit: on ZFS (hbox /othersys) and behind an SSD's FTL, an in-place overwrite is not physical erasure.
+
+## 10. The 10:58 abort, the EINTR fix, sealed tapes, RS
+
+**Abort [EXECUTED].** The first three-box LowGear key setup (lg64d) died at 10:58:32 UTC, when forge's party received
+SIGCONT at the end of the nightly SIGSTOP. All three logs share that stamp. forge's says "read_some: Interrupted system
+call [system:4]".
+- Cause: on Linux, a blocking socket call on a socket with SO_RCVTIMEO fails with EINTR after a stop/continue instead
+  of restarting (signal(7)). asio's sync_recv treats EINTR as fatal. The patched 3600 s player timeout was the trigger.
+- §9's verdict that the pause was safe was wrong: it checked the timeout path, not the stop-signal path.
+- About 6 h of hbox upload was lost. The rule is now in ~/swarm/MACHINES.md under forge's nightly rule (2ec9278).
+
+**Fix [EXECUTED, d1299708].** `build-mpspdz.sh`:
+- sets the player sockets' receive timeout to 0 (none); keepalive still detects a dead peer;
+- retries TLS reads on EINTR. TLS writes are not retried, since asio's engine may already have consumed the bytes.
+- Tarball 0d338c68, lowgear-party.x ae12b01d, mascot-party.x 4d50d76f. Installed in all three custodian runtimes
+  (`ROOT/mpspdz`).
+
+**Test [EXECUTED, hbox loopback, `eintr.sh`, S = 60, -e]**: stop P2 so that P0 blocks in a receive, then stop and
+continue P0.
+
+| binary | P0 stopped | result |
+|---|---:|---|
+| old 1b896e6e | 30 s | aborts (exit 1 1 1), P0 "Interrupted system call [system:4]" |
+| new 0d338c68 | 400 s | exit 0 0 0; darkprep verify Report { entries 1646, macs 4938, triples 162, truncs 16, chains 4, inputs 8 } |
+| new, unpaused | — | exit 0 0 0, the same Report |
+
+Stopping a party while it computes does not reproduce the abort (an old-binary run did not fail). The stopped party must
+be blocked in a receive.
+
+**Sealed tapes [EXECUTED; ad51f6da, 6103301a]**:
+- Every step tape and owner message is sealed whole as DLVAULT1 under the seat's epoch file key (darkhand::vault), with
+  roles `tape|<chunk>|<j>` and `owner-msg|<chunk>|<j>`.
+- The release tape is DLVAULT2 (crate `native/dlvault`): 1 MiB ChaCha20-Poly1305 blocks, AAD = key name, role, file id,
+  block index, count, length, block size. darkproof's `run::load_release_tape_sealed` streams it, and the proof
+  section's readers open their own blocks.
+- party-chunk takes `--vault-file TLSDIR/vault.name` (or `--vault NAME`) and only loads the key; dl-custodian
+  `vault-init` makes it. A production build refuses a chunk without a vault; only feature `test-plain-tapes` writes
+  plain files.
+- Tests (darkprep --test assemble 22/22; dlvault 3/3; the vault tests also on bb2 against the kernel keyring):
+  - a sealed file opens only as itself;
+  - after `vault.destroy()` nothing opens;
+  - plain files are refused;
+  - the sealed release's MPC part and proof-section triples equal the plain tape's;
+  - swapped, dropped and spliced blocks are refused.
+
+**Other landed changes**:
+- RS layout (be2b01e7): `StepParams.rs`, K + 1 - s Trhb bits, CLI `--rs`.
+- The release's L cut: `Release.lookup_triples`, 27 Beaver triples per lookup, CLI `--lookup-triples 27`.
+- Both checked against darkstep's and darkproof's dealers.
+- The chunk guard (02e5a5dc): a chunk without the seat's MAC key share is refused unless `--new-mac-key`.
+- Test seat layouts (`seats.sh` new|sh|newsh|newsh2|rehold|rehnew, `launch3.sh` LAYOUT of the same names).
+
+**Prices at ledger-x2de + RS [DERIVED; unit prices from §3-§5]**:
+- Step: 2,256,898 MPC + 2,225,349 proof = 4.48M triple-equivalents.
+  - Wired: about 115 s and 67 GB per seat.
+  - Through hbox: MASCOT 541 Gbit, 7.8 h; LowGear 56.5 Gbit, 0.81 h, at 19.3 Mbit/s.
+- Release, M = 52: plan 50,826,274 triples plus truncation bits, so 63.4M triple-equivalents.
+  - Wired: about 27 min.
+  - Through hbox: MASCOT 7.66 Tbit, 110 h; LowGear 0.80 Tbit, 11.5 h.
+- These replace the ledger-x2 figures (7.69M per step; 154.2M for the release).
+
+## Continuation (generation 2's hand-off, 2026-11-07 12:00 UTC)
+
+**Running: the three-box LowGear key setup `lg64e`** (party 0 forge, 1 bb2, 2 hbox; S = 60, -lg2 64; the EINTR-fixed
+binary; direct TLS over `ips.txt`; no pause scheduled). Started 11:50 UTC.
+- Launched by `BIN=target-g2/release/darkprep build/launch3.sh lg64e party-chunk --backend lowgear --extra
+  -S,60,-lg2,64 --new-mac-key --mpspdz {ROOT}/mpspdz ... --d 64 --mode steady --truncs 11,19,7,8,8,19 --steps 1
+  --threads 4 --step-tapes-only --out {ROOT}/chunks/lg64e`. It is a plain-tape build, so the d = 64 chunk it makes is
+  test-only: wipe it after.
+- PID files:
+  - the darkprep wrapper: `ROOT/runs/lg64e-P<I>.pid`;
+  - the MP-SPDZ party: `ROOT/chunks/lg64e.tmp-P<I>/mascot-P<I>.pid` (it is lowgear-party.x).
+- Logs: `ROOT/chunks/lg64e.tmp-P<I>/P<I>.log` and `ROOT/runs/lg64e-P<I>.log`. ROOT is forge `/srv/lanes/dl-gen6-prep`,
+  bb2 `/home/build/lanes/dl-gen6-prep`, hbox `/othersys/lanes/dl-gen6-prep`.
+- Progress: hbox had sent 1.09 GB at 9 min. Expect about 56.5 GB, ending about 21:30 UTC, well before the 10:00
+  nightly.
+- Done when `ROOT/chunks/lg64e` exists on all three boxes and `ROOT/mpspdz/Player-Data/LowGear-Secrets-60-*-P<I>-3`
+  exists on each.
+- Watcher on the Mac: `scratchpad/dl-gen5/prep2/wait-setup-e.sh` (log `wait-e.log`). Its task dies with the session,
+  so re-arm it.
+- If it aborts, report the cause to the coordinator before retrying.
+
+**When it finishes**:
+1. Tell the deploy lane (afcd36ed0af383db4, or its successor) at once. It may take about 15 min of hbox's link first.
+2. Run the LowGear d = 4096 GEN6 carried chunk through hbox, then the same with the proof section. Use `--rs
+   --proof-triples 2225349` (ledger-x2de + RS; confirm the count with the deploy lane first).
+   - Use `BIN=target-g3/release/darkprep` and `--backend lowgear --extra -S,60,-lg2,64 --mpspdz {ROOT}/mpspdz --ipfile
+     {ROOT}/ips.txt --step-tapes-only`. Do not pass `--new-mac-key`: the key now exists.
+   - Sealed: `--vault-file <the consuming seat's TLSDIR>/vault.name`, from the deploy lane. Without it, it needs a
+     test-plain-tapes build and `--plain-tapes`, and the deploy lane must agree to consume a plain test chunk.
+   - Measure wall time, kernel per-link bytes (the chunk JSON's `links`), CPU and peak RSS per party. Compare with
+     the loopback unit prices: 37.8 kbit per triple-equivalent, 28.5 / 68.7 Gbit at the old proof counts, now about
+     19 / 56.5 Gbit of hbox upload.
+   - Hand the chunk to the deploy lane for a gated darkstep step that refines the spec.
+3. LowGear-Secrets byte layout for the handover lane's disk scan: compare `LowGear-Secrets-*-P<I>-3` against the
+   chunk's alpha_i (method in §9). Tell the handover lane (afc2a88b82c0cca1a).
+4. Send the coordinator LowGear's privacy-budget terms with the objects per step:
+   - sacrifice 1/p per triple;
+   - BGV drowning at S = 60 per ciphertext;
+   - ZK soundness at S = 60 per proof.
+   The slot count and proof batching are in P0.log ("Finding parameters ... slots" is printed by
+   `FHE/NTL-Subs.cpp` at the end of the run), and ciphertexts per step = triple-equivalents / (slots / 2) per pair.
+
+**target-g3** (the sealing darkprep, 6103301a) is built or building in `ROOT/target-g3` on forge, bb2 and hbox:
+`scratchpad/dl-gen5/prep2/../tasks/b3628pmmd`; check `ROOT/runs/build-g3.log`. `target-g2` is the pre-vault build
+that lg64e runs on. Do not rebuild g2 while lg64e runs.
+
+**Sealed chunks wait on the deploy lane.**
+- For each run, run.py's setup writes `ROOT_deploy/<run>/seat<I>/tls/vault.name` (and `new<J>/...`, plus
+  `vault.name.next` for a self-handover).
+- ROOT_deploy is `/srv/lanes/dl-gen6-deploy` (forge) and `/home/build/lanes/dl-gen6-deploy` (bb2).
+- The deploy lane sends the list after each setup. Make each chunk on the consuming seat's box under the same uid.
+- dl-custodian must call `load_release_tape_sealed` for the release (dl-custodian.rs:785; the deploy lane's).
+
+**Open**:
+- The LowGear d = 4096 chunk through hbox, measured and consumed.
+- The release peak with a real sealed d = 4096, M = 52 tape (DP_HEAP=1). The proof lane asks for this: the release
+  fits forge's 12G only with a01a1fb9's page-cache drops, which dlvault's reader keeps because drop_cache works on the
+  path.
+- Price the ledger-x2de + RS chunks with LowGear's measured three-box rate (above: derived from loopback).
+- The test chunks on forge and bb2 (`ROOT/chunks/{w4096h*,ho-*,wn-abort,sh-abort,ho-x*,reh-*}`) are the deploy
+  lane's until it says they are spent; then wipe them (`shred -n 0 -z -u`).
+- `ROOT/lgtest/` on forge is a loopback test dir with all three parties' keys. The handover lane does not scan it.
