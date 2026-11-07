@@ -70,3 +70,18 @@ The tower256.sh used on the box gained argument pass-through after its dry run 0
   (F3's B300 column), INT8 vs FP8 rate. Blackwell has no hardware 1-bit MMA (measured by emulation cost).
 
 Per-workload detail: BFV.md, TOWER256.md, MMA.md.
+
+## 5. What actually ran (2026-11-06/07, VAST-LEDGER.md)
+
+| rental | box | outcome | cost |
+|---|---|---|---|
+| accel-smoke-01/02 | RTX 3060 Ti / 3060 | 01: host could not pull the image; 02: full path ok | $0.00 |
+| accel-b200-mma-01/02 | B200, offer 50255943 (blacklisted) | key refused on proxy and direct port | $2.70 |
+| accel-h100-all-01 | H100 SXM | launcher bug (backgrounded untar held ssh open); destroyed | $0.34 |
+| accel-h100-all-02 | H100 SXM | **bfv measured, bit-exact** (0.23-0.34 s per step); mma: no ensurepip; tower256: lock refused | $0.75 |
+| accel-h100-mma-03 | H100 SXM | **mma measured** (QGMMA m = 14, BGMMA 8.0x IGMMA, FP8 fast-accum inexact from K = 65,536) | $0.38 |
+| accel-b200-mma-03 | B200, offer 59157383 | key refused again; Blackwell stopped | $1.25 |
+| | | **total** | **$5.72** |
+
+Every instance destroyed and verified absent. Not measured: Blackwell (all items), tower256 on a paid box
+(not needed). Script fixes after the H100 run are proven by `accel-failclosed-t4-02` (7/7).
