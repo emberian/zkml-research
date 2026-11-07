@@ -1,0 +1,257 @@
+{
+ "mma_rc": 0,
+ "mma_s": 76.1,
+ "tower_rc": 0,
+ "tower_s": 155.1,
+ "towermul": {
+  "f16": {
+   "r0": {
+    "cmd": "towermul",
+    "type": "f16",
+    "logn": 18,
+    "status": "SUCCESS",
+    "reps": 10,
+    "unpack_ms": 2.614,
+    "gemm_ms": 2.4412,
+    "repack_ms": 4.1882,
+    "total_ms": 9.2392,
+    "ns_per_element": 35.2449,
+    "gemm_ns_per_element": 9.3125,
+    "checked_rows": 4096,
+    "algo": {
+     "algo_id": 5,
+     "tile": 24,
+     "splitk": 1,
+     "reduction": 0,
+     "stages": 7
+    },
+    "wall_s": 4.047,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 3840,
+    "xor_of_rust_columns_mismatches": 0
+   },
+   "r1": {
+    "cmd": "towermul",
+    "type": "f16",
+    "logn": 8,
+    "status": "SUCCESS",
+    "reps": 1,
+    "unpack_ms": 0.0082,
+    "gemm_ms": 0.0164,
+    "repack_ms": 0.0217,
+    "total_ms": 0.0463,
+    "ns_per_element": 180.875,
+    "gemm_ns_per_element": 64.0,
+    "checked_rows": 256,
+    "algo": {
+     "algo_id": 30,
+     "tile": 15,
+     "splitk": 1,
+     "reduction": 0,
+     "stages": 0
+    },
+    "wall_s": 0.538,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 0,
+    "xor_of_rust_columns_mismatches": 0
+   },
+   "r2": {
+    "cmd": "towermul",
+    "type": "f16",
+    "logn": 8,
+    "status": "SUCCESS",
+    "reps": 1,
+    "unpack_ms": 0.0099,
+    "gemm_ms": 0.0167,
+    "repack_ms": 0.0244,
+    "total_ms": 0.051,
+    "ns_per_element": 199.25,
+    "gemm_ns_per_element": 65.25,
+    "checked_rows": 256,
+    "algo": {
+     "algo_id": 30,
+     "tile": 15,
+     "splitk": 1,
+     "reduction": 0,
+     "stages": 0
+    },
+    "wall_s": 0.564,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 0,
+    "xor_of_rust_columns_mismatches": 0
+   },
+   "r3": {
+    "cmd": "towermul",
+    "type": "f16",
+    "logn": 8,
+    "status": "SUCCESS",
+    "reps": 1,
+    "unpack_ms": 0.0082,
+    "gemm_ms": 0.0159,
+    "repack_ms": 0.021,
+    "total_ms": 0.0451,
+    "ns_per_element": 176.0,
+    "gemm_ns_per_element": 62.125,
+    "checked_rows": 256,
+    "algo": {
+     "algo_id": 30,
+     "tile": 15,
+     "splitk": 1,
+     "reduction": 0,
+     "stages": 0
+    },
+    "wall_s": 0.534,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 0,
+    "xor_of_rust_columns_mismatches": 0
+   }
+  },
+  "i8": {
+   "r0": {
+    "cmd": "towermul",
+    "type": "i8",
+    "logn": 18,
+    "status": "SUCCESS",
+    "reps": 10,
+    "unpack_ms": 0.5919,
+    "gemm_ms": 1.6952,
+    "repack_ms": 3.3219,
+    "total_ms": 5.6056,
+    "ns_per_element": 21.3835,
+    "gemm_ns_per_element": 6.4668,
+    "checked_rows": 4096,
+    "algo": null,
+    "wall_s": 0.563,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 3840,
+    "xor_of_rust_columns_mismatches": 0
+   },
+   "r1": {
+    "cmd": "towermul",
+    "type": "i8",
+    "logn": 8,
+    "status": "SUCCESS",
+    "reps": 1,
+    "unpack_ms": 0.012,
+    "gemm_ms": 0.0433,
+    "repack_ms": 0.0221,
+    "total_ms": 0.0774,
+    "ns_per_element": 302.375,
+    "gemm_ns_per_element": 169.125,
+    "checked_rows": 256,
+    "algo": null,
+    "wall_s": 0.498,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 0,
+    "xor_of_rust_columns_mismatches": 0
+   },
+   "r2": {
+    "cmd": "towermul",
+    "type": "i8",
+    "logn": 8,
+    "status": "SUCCESS",
+    "reps": 1,
+    "unpack_ms": 0.0082,
+    "gemm_ms": 0.0286,
+    "repack_ms": 0.0202,
+    "total_ms": 0.0571,
+    "ns_per_element": 222.875,
+    "gemm_ns_per_element": 111.875,
+    "checked_rows": 256,
+    "algo": null,
+    "wall_s": 0.486,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 0,
+    "xor_of_rust_columns_mismatches": 0
+   },
+   "r3": {
+    "cmd": "towermul",
+    "type": "i8",
+    "logn": 8,
+    "status": "SUCCESS",
+    "reps": 1,
+    "unpack_ms": 0.0087,
+    "gemm_ms": 0.0446,
+    "repack_ms": 0.0202,
+    "total_ms": 0.0736,
+    "ns_per_element": 287.5,
+    "gemm_ns_per_element": 174.375,
+    "checked_rows": 256,
+    "algo": null,
+    "wall_s": 0.481,
+    "rust_tests": 256,
+    "rust_mismatches": 0,
+    "random_rows": 0,
+    "xor_of_rust_columns_mismatches": 0
+   }
+  }
+ },
+ "mma_checks": {
+  "towermul.f16.r0": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 4096
+  },
+  "towermul.f16.r1": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 256
+  },
+  "towermul.f16.r2": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 256
+  },
+  "towermul.f16.r3": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 256
+  },
+  "towermul.i8.r0": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 4096
+  },
+  "towermul.i8.r1": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 256
+  },
+  "towermul.i8.r2": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 256
+  },
+  "towermul.i8.r3": {
+   "pass": true,
+   "rust_mismatches": 0,
+   "xor_mismatches": 0,
+   "rows": 256
+  }
+ },
+ "bitslice_bench": {
+  "mul_variant": "logexp",
+  "tower256_mul_per_s": 78983224.75722845,
+  "tower256_mul_variant": "bit-sliced resident",
+  "ops_per_mul": 51534.993823197656,
+  "ops_per_mul_fused": 58505.98703604631,
+  "ops_per_mul_table": 8823.793505817468,
+  "ops_per_mul_f3_assumption": 718,
+  "t256_mul_per_s": 540870215.4055921
+ },
+ "tower_all_bit_exact": true
+}

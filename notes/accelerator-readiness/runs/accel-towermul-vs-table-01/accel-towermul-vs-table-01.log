@@ -1,0 +1,84 @@
+[{"stream_name":"stdout","time":77.317991436,"data":"mma rc 0 76.1 s\n"}
+,{"stream_name":"stdout","time":77.318031148,"data":".168256.AND.POPC\": 49, \"IMMA.16832.S8.S8\": 42, \"HGMMA.64x128x16.F32\": 25, \"QGMMA.64x128x32.F32.E4M3.E4M3\": 25, \"BGMMA.64x1\n"}
+,{"stream_name":"stdout","time":77.318035966,"data":"[   30.6s] compile probe_sm80.cu sm_100a rc 0 1.8s {\"HMMA.16816.F32\": 242, \"F2FP.F16.E4M3.UNPACK\": 24, \"CALL.REL.NOINC\": 498, \"IMMA.16832.U8.U8\": 34, \"IMMA.16832.S8.S8\": 234}\n"}
+,{"stream_name":"stdout","time":77.318039228,"data":"[   32.9s] compile probe_sm80.cu sm_103a rc 0 1.7s {\"HMMA.16816.F32\": 242, \"F2FP.F16.E4M3.UNPACK\": 24, \"CALL.REL.NOINC\": 498, \"IMMA.16832.U8.U8\": 34, \"IMMA.16832.S8.S8\": 234}\n"}
+,{"stream_name":"stdout","time":77.318042096,"data":"[   34.6s] compile gemm_probe.cu sm_75 rc 0 1.3s {}\n"}
+,{"stream_name":"stdout","time":77.318044504,"data":"[   36.2s] compile gemm_probe.cu sm_80 rc 0 1.3s {}\n"}
+,{"stream_name":"stdout","time":77.31804687,"data":"[   37.8s] compile gemm_probe.cu sm_89 rc 0 1.2s {}\n"}
+,{"stream_name":"stdout","time":77.318049339,"data":"[   39.7s] compile gemm_probe.cu sm_90a rc 0 1.3s {}\n"}
+,{"stream_name":"stdout","time":77.3180517,"data":"[   41.4s] compile gemm_probe.cu sm_100a rc 0 1.3s {}\n"}
+,{"stream_name":"stdout","time":77.318054113,"data":"[   43.1s] compile gemm_probe.cu sm_103a rc 0 1.3s {}\n"}
+,{"stream_name":"stdout","time":77.318056585,"data":"[   44.4s] compile rotation_probe.cu sm_75 rc 0 0.9s {\"HMMA.1688.F32\": 124}\n"}
+,{"stream_name":"stdout","time":77.318059184,"data":"[   45.7s] compile rotation_probe.cu sm_80 rc 0 0.9s {\"HMMA.1688.F32\": 124, \"CALL.REL.NOINC\": 1}\n"}
+,{"stream_name":"stdout","time":77.318061776,"data":"[   47.0s] compile rotation_probe.cu sm_89 rc 0 0.9s {\"HMMA.1688.F32\": 124, \"CALL.REL.NOINC\": 1}\n"}
+,{"stream_name":"stdout","time":77.318064296,"data":"[   48.5s] compile rotation_probe.cu sm_90a rc 0 0.9s {\"HMMA.1688.F32\": 124}\n"}
+,{"stream_name":"stdout","time":77.318066763,"data":"[   50.1s] compile rotation_probe.cu sm_100a rc 0 1.1s {\"CALL.REL.NOINC\": 1, \"HMMA.1688.F32\": 94}\n"}
+,{"stream_name":"stdout","time":77.318069414,"data":"[   51.5s] compile rotation_probe.cu sm_103a rc 0 1.0s {\"CALL.REL.NOINC\": 1, \"HMMA.1688.F32\": 94}\n"}
+,{"stream_name":"stdout","time":77.318071954,"data":"[   54.3s] build probe_sm75.cu sm_75 rc 0 2.8s\n"}
+,{"stream_name":"stdout","time":77.318074404,"data":"[   58.9s] build gemm_probe.cu sm_75 rc 0 4.7s\n"}
+,{"stream_name":"stdout","time":77.318076748,"data":"[   61.7s] build rotation_probe.cu sm_75 rc 0 2.8s\n"}
+,{"stream_name":"stdout","time":77.318079148,"data":"[   61.8s] == section towermul\n"}
+,{"stream_name":"stdout","time":77.318081558,"data":"[   66.0s] PASS towermul.f16.r0 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 4096}\n"}
+,{"stream_name":"stdout","time":77.318084273,"data":"[   66.0s] towermul f16 35.245 ns/element (gemm 9.312)\n"}
+,{"stream_name":"stdout","time":77.318086715,"data":"[   66.5s] PASS towermul.f16.r1 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":77.318089256,"data":"[   67.1s] PASS towermul.f16.r2 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":77.318091773,"data":"[   67.7s] PASS towermul.f16.r3 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":77.318094291,"data":"[   68.4s] PASS towermul.i8.r0 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 4096}\n"}
+,{"stream_name":"stdout","time":77.318097817,"data":"[   68.4s] towermul i8 21.384 ns/element (gemm 6.467)\n"}
+,{"stream_name":"stdout","time":77.318100314,"data":"[   68.9s] PASS towermul.i8.r1 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":77.318106951,"data":"[   69.4s] PASS towermul.i8.r2 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":77.318109654,"data":"[   69.9s] PASS towermul.i8.r3 {\"rust_mismatches\": 0, \"xor_mismatches\": 0, \"rows\": 256}\n"}
+,{"stream_name":"stdout","time":77.318112263,"data":"[   69.9s] DONE checks 8 failed 0 errors []\n"}
+,{"stream_name":"stdout","time":77.318114639,"data":"results /tmp/accel/tmul/m/out/results.json checks 8 failed 0 errors []\n"}
+,{"stream_name":"stdout","time":77.318125121,"data":"done in 76 s; results /tmp/accel/tmul/m/out/results.json\n"}
+,{"stream_name":"stdout","time":77.318127688,"data":"\n"}
+,{"stream_name":"stdout","time":232.43072473,"data":"tower rc 0 155.1 s\n"}
+,{"stream_name":"stdout","time":232.430754623,"data":"s': 787347, 'device_keccak_f': 262099}\n"}
+,{"stream_name":"stdout","time":232.430762538,"data":"prove {'ell': 18, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 858610, 'best_s': 0.21727307600002632, 'phases_s': {'encode': 0.015378510999994432, 'merkle': 0.005520791999856556, 'folds': 0.0034833790002153364, 'openings': 0.1703469260000361, 'other': 0.01456968199977382, 'upload': 0.007575328000029913}, 'request_gen_s': 0.23229695700001685, 'device_mults': 3540123, 'device_keccak_f': 1048529}\n"}
+,{"stream_name":"stdout","time":232.430770523,"data":"prove {'ell': 20, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 1059985, 'best_s': 0.33354086899998947, 'phases_s': {'encode': 0.07463647499997705, 'merkle': 0.011663526999939222, 'folds': 0.006198322000045664, 'openings': 0.20805035900002622, 'other': 0.01613027400003375, 'upload': 0.01640572799999518}, 'request_gen_s': 0.9509366980000209, 'device_mults': 15730115, 'device_keccak_f': 4194255}\n"}
+,{"stream_name":"stdout","time":232.430777409,"data":"batch {'ell': 14, 'words': 64, 'best_s': 0.04293224000002738, 'encode_s': 0.03928704700001617, 'merkle_s': 0.0036451930000112043, 'per_word_ms': 0.6708162500004278, 'keccak_f_per_s': 575302322.8107686, 'roots_match_single': True}\n"}
+,{"stream_name":"stdout","time":232.430783248,"data":"ALL_BIT_EXACT True\n"}
+,{"stream_name":"stdout","time":232.430788942,"data":"ALL_BIT_EXACT True\n"}
+,{"stream_name":"stdout","time":232.430822356,"data":"done in 155 s; results /tmp/accel/tmul/t/out/results.json\n"}
+,{"stream_name":"stdout","time":232.430828617,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":232.430834224,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":232.430839417,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":232.430844564,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":232.430863985,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":232.4308709,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":232.430875901,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":232.430881288,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":232.430886751,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":232.430892383,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":232.430897828,"data":"    Updating crates.io index\n"}
+,{"stream_name":"stdout","time":232.430903573,"data":" Downloading crates ...\n"}
+,{"stream_name":"stdout","time":232.430908759,"data":"  Downloaded block-buffer v0.10.4\n"}
+,{"stream_name":"stdout","time":232.430922614,"data":"  Downloaded version_check v0.9.5\n"}
+,{"stream_name":"stdout","time":232.430940576,"data":"  Downloaded crypto-common v0.1.7\n"}
+,{"stream_name":"stdout","time":232.430945061,"data":"  Downloaded generic-array v0.14.7\n"}
+,{"stream_name":"stdout","time":232.430949281,"data":"  Downloaded keccak v0.1.6\n"}
+,{"stream_name":"stdout","time":232.430953725,"data":"  Downloaded typenum v1.20.1\n"}
+,{"stream_name":"stdout","time":232.430957751,"data":"  Downloaded digest v0.10.7\n"}
+,{"stream_name":"stdout","time":232.430962005,"data":"  Downloaded sha3 v0.10.9\n"}
+,{"stream_name":"stdout","time":232.430966045,"data":"   Compiling version_check v0.9.5\n"}
+,{"stream_name":"stdout","time":232.430970299,"data":"   Compiling typenum v1.20.1\n"}
+,{"stream_name":"stdout","time":232.430974417,"data":"   Compiling keccak v0.1.6\n"}
+,{"stream_name":"stdout","time":232.430978509,"data":"   Compiling generic-array v0.14.7\n"}
+,{"stream_name":"stdout","time":232.430982677,"data":"   Compiling crypto-common v0.1.7\n"}
+,{"stream_name":"stdout","time":232.430998164,"data":"   Compiling block-buffer v0.10.4\n"}
+,{"stream_name":"stdout","time":232.431002519,"data":"   Compiling digest v0.10.7\n"}
+,{"stream_name":"stdout","time":232.431006419,"data":"   Compiling sha3 v0.10.9\n"}
+,{"stream_name":"stdout","time":232.431009935,"data":"   Compiling minidregg-prover v0.1.0 (/tmp/accel/tmul/t/tower256/prover)\n"}
+,{"stream_name":"stdout","time":232.431013573,"data":"    Finished `release` profile [optimized] target(s) in 6.26s\n"}
+,{"stream_name":"stdout","time":232.431017389,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stdout","time":232.431021734,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":232.431036311,"data":"\n"}
+,{"stream_name":"stdout","time":232.432147923,"data":"DONE ok True\n"}
+,{"stream_name":"stdout","time":233.05089755,"data":"ACCEL_JOB_DONE rc=0 killed=None elapsed=232.2\n"}
+,{"stream_name":"stderr","time":235.184372756,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":235.184403623,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":235.493486793,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":235.493513106,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":237.130555631,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":238.150728073,"data":"[NbConvertApp] Writing 738569 bytes to __results__.html\n"}
+]
