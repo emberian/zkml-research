@@ -115,6 +115,17 @@ struct Joined {
     proof: Vec<u8>,
     new_roots: BTreeMap<String, Vec<[u8; 32]>>,
     report: Value,
+    /// DEFER: the new head's pending claims' carries (this party's), joined into the carry
+    defer: Option<darkproof::defer::DeferIn>,
+}
+
+/// The carry after a handover under DEFER: the new W (one life) and this party's carries of the claims the
+/// handover left pending (the next step's prover takes them back out with run::carry_in).
+fn joined_carry(mut carry: Carry, defer: Option<darkproof::defer::DeferIn>) -> Carry {
+    if let Some(d) = defer {
+        carry.extend(d.carries);
+    }
+    carry
 }
 
 struct Prove {
@@ -149,8 +160,14 @@ fn profile_of(args: &[String]) -> darkproof::Profile {
     darkproof::Profile::by_name(&n).unwrap_or_else(|| panic!("--profile {n}: unknown"))
 }
 
-fn params_of(pg: &Program) -> StepParams {
-    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs: false, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
+/// `--rs`: the program's truncations prove their bound by one masked zero test (proof flag RS; the genesis record
+/// pins "RS": true, so a replica opened without it is refused); its tapes carry K + 1 - s bits per truncation.
+fn rs_of(args: &[String]) -> bool {
+    args.iter().any(|a| a == "--rs")
+}
+
+fn params_of(pg: &Program, rs: bool) -> StepParams {
+    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
 }
 
 fn hex_roots(g: &Roots) -> String {
@@ -256,6 +273,37 @@ fn vault_init(args: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+/// `dl-custodian close I N L F d DIR A0 A1 A2 --tls TLSDIR [--profile P] [--rs] [--model M] [--vault]`: a halted run
+/// under DEFER (cut E) whose head is pending: every custodian proves the head's pending claims closed (no MPC
+/// product, no tape), over the committee's mesh, and its ledger replica records the close (after it the ledger refuses
+/// steps, releases and rotations). DIR holds the replica (ledger_P<I>.jsonl) and the carry (carry_P<I>.bin).
+fn close_main(args: &[String]) -> Result<Value, String> {
+    let i: usize = args[2].parse().map_err(|_| "seat")?;
+    let pf = darkstep::node::prof(&args[3..7]);
+    darkproof::field::set_p(pf.t);
+    let dir = PathBuf::from(&args[7]);
+    let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
+    let pr = profile_of(args);
+    let lp = pr.ligero();
+    let model = flag(args, "--model").unwrap_or_else(|| "dl-gen6".into());
+    let mut lg = Ledger::open(&dir.join(format!("ledger_P{i}.jsonl")), &model, &pr, None)?;
+    let pend = lg.pending.clone().ok_or("the head is not pending: nothing to close")?;
+    let carry = read_carry(&dir.join(format!("carry_P{i}.bin")), &pr)?;
+    let ctx = darkproof::Ctx::new(&model, lg.epoch, lg.step);
+    let tlsdir = PathBuf::from(flag(args, "--tls").ok_or("--tls")?);
+    let (id, certs) = serve::identity(&tlsdir, i);
+    let net = serve::connect_mesh(i, &addrs, flag(args, "--listen"), &id, &certs, timeout_of(args))?;
+    let out = darkproof::run::close_custodian(&pr, &lp, &net, i, 3, &ctx, carry, &pend, pf.d)?;
+    net.shutdown();
+    lg.close(&lp, &out.blob)?;
+    use sha2::{Digest, Sha256};
+    std::fs::write(dir.join(format!("close_P{i}.bin")), &out.blob).map_err(|e| e.to_string())?;
+    let rep = json!({"party": i, "head_step": ctx.step, "epoch": ctx.epoch, "close_seconds": out.secs, "close_bytes": out.blob.len(),
+        "close_sha256": pycompat::repr::hex(&Sha256::digest(&out.blob)), "field_elements_sent": out.sent, "ledger_closed": true});
+    std::fs::write(dir.join(format!("close_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).map_err(|e| e.to_string())?;
+    Ok(rep)
+}
+
 /// `--keep-erased-copy DIR` (a check, not a deployment): copies of the sealed state files as they are before the
 /// erasure, so that a checker can show afterwards that nothing on the box opens them.
 fn keep_erased_copy(args: &[String], files: &[PathBuf]) {
@@ -333,7 +381,9 @@ impl Chain {
         let (i, k, step, epoch, count) = (self.me, job.k, job.step, job.epoch, job.count);
         let ctx = darkproof::Ctx::new(&self.model, epoch, step);
         let t0 = Instant::now();
-        let sp = darkproof::run::prove_step(&self.pr, &self.lp, &self.tables, self.prm, &mut darkproof::run::TcpRef(net), &ctx, job.ps, self.carry.take())?;
+        // DEFER (cut E): the parent's pending claims from this replica's head, this party's carries from the carry
+        let pend = self.ledger.as_ref().and_then(|l| l.pending.as_ref());
+        let sp = darkproof::run::prove_step_l(&self.pr, &self.lp, &self.tables, self.prm, &mut darkproof::run::TcpRef(net), &ctx, job.ps, self.carry.take(), pend)?;
         let prove_s = t0.elapsed().as_secs_f64();
         self.carry = Some(sp.child);
         // storage: each replica keeps only the latest bundle (the header and digest chain are in its ledger); the
@@ -489,7 +539,10 @@ impl Prove {
         if let Some(p) = flag(&args, "--tape") {
             files.push(PathBuf::from(p));
         }
-        let carry = self.c().carry.take().ok_or("no carried commitment (the handover needs --prove)")?;
+        let mut carry = self.c().carry.take().ok_or("no carried commitment (the handover needs --prove)")?;
+        // DEFER: the head's pending claims (public; the same at all six seats) and this party's carries of them
+        let pend = self.c().ledger.as_ref().and_then(|l| l.pending.clone());
+        let old_carries = darkproof::run::carry_in(&mut carry, pend.as_ref())?.map(|d| d.carries);
         self.c().ledger = None;
         let mut scan: Vec<PathBuf> = files.clone();
         scan.push(dir.to_path_buf());
@@ -530,12 +583,16 @@ impl Prove {
         // the epoch's file key goes with it (old_side destroys it: the sealed files then open under no key)
         keep_erased_copy(&args, &files);
         let setup = darkhand::serve::rotation_setup(st, carry, files, scan, Some((ct, dg)));
+        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match old_carries {
+            Some(c) => Box::new(darkhand::serve::with_old_carries(setup, c)),
+            None => Box::new(setup),
+        };
         let vault = take_vault();
         let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match vault {
             Some(v) => Box::new(darkhand::serve::with_vault(setup, v)),
             None => Box::new(setup),
         };
-        let mut rep = side::old_side(&common, setup, move || {
+        let mut rep = side::old_side_e(&common, pend.as_ref(), setup, move || {
             let net6 = serve::connect_mesh(i, &addrs6, listen6, &id, &certs6, timeout).expect("six-party mesh");
             for j in 3..6 {
                 net6.send(j, darkstep::net::CTRL, lbytes.clone());
@@ -576,7 +633,10 @@ impl Prove {
         let common = self.common(st.he.rns.clone(), d, t, &names)?;
         let epoch = self.c().ledger.as_ref().unwrap().epoch as i64;
         let new_tape = serve::read_tape(&flag(&args, "--self-handover-tape").unwrap());
-        let carry = self.c().carry.take().ok_or("no carried commitment")?;
+        let mut carry = self.c().carry.take().ok_or("no carried commitment")?;
+        // DEFER: the pending claims of the head after the last accepted step (none after a public genesis)
+        let pend = self.c().ledger.as_ref().and_then(|l| l.pending.clone());
+        let old_carries = darkproof::run::carry_in(&mut carry, pend.as_ref())?.map(|d| d.carries);
         let pf = st.pf.clone();
         // the boxed state is taken apart inside the old role's setup frame, on the old role's own (scrubbed) stack;
         // the HE side and the mesh reach the new role over darkhand's channel
@@ -613,6 +673,10 @@ impl Prove {
         let tls_key = if serve::sealing() { Some(serve::read_secret(&tlsdir.join(format!("tls_{i}.key")))?) } else { None };
         keep_erased_copy(&args, &files);
         let (setup, prx) = darkhand::serve::self_setup(st, carry, files, scan);
+        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match old_carries {
+            Some(c) => Box::new(darkhand::serve::with_old_carries(setup, c)),
+            None => Box::new(setup),
+        };
         let vault_old = take_vault();
         let had_vault = vault_old.is_some();
         let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match vault_old {
@@ -621,10 +685,11 @@ impl Prove {
         };
         let (orep, nc, he) = std::thread::scope(|s| {
             let (c6o, c6n, a6o, a6n, ido) = (certs6.clone(), certs6.clone(), addrs6.clone(), addrs6.clone(), id);
+            let pend = &pend;
             let common = &common;
             let a = std::thread::Builder::new()
                 .stack_size(64 << 20)
-                .spawn_scoped(s, move || side::old_side(common, setup, move || serve::connect_mesh(i, &a6o, None, &ido, &c6o, timeout).expect("six-party mesh (old role)")))
+                .spawn_scoped(s, move || side::old_side_e(common, pend.as_ref(), setup, move || serve::connect_mesh(i, &a6o, None, &ido, &c6o, timeout).expect("six-party mesh (old role)")))
                 .unwrap();
             let b = std::thread::Builder::new()
                 .stack_size(64 << 20)
@@ -632,9 +697,9 @@ impl Prove {
                     let (he, net3) = prx.recv().map_err(|_| "the old role ended before handing over".to_string())?;
                     let net6 = serve::connect_mesh(3 + i, &a6n, None, &id_new, &c6n, timeout)?;
                     // the kept key goes to the new role and comes back as nc.key
-                    let nc = side::new_side(common, i, net3, net6, new_tape, epoch + 1, 0, Some(he.key))?;
-                    let side::NewCustodian { j, keys, key, party, w, carry, proof, new_roots, report, .. } = nc;
-                    Ok((Joined { j, keys, party, w, carry, proof, new_roots, report }, darkstep::he::He { key, ..he }))
+                    let nc = side::new_side_e(common, pend.as_ref(), i, net3, net6, new_tape, epoch + 1, 0, Some(he.key))?;
+                    let side::NewCustodian { j, keys, key, party, w, carry, proof, new_roots, report, defer, .. } = nc;
+                    Ok((Joined { j, keys, party, w, carry, proof, new_roots, report, defer }, darkstep::he::He { key, ..he }))
                 })
                 .unwrap();
             let orep = a.join().map_err(|_| "old role panicked".to_string());
@@ -673,8 +738,9 @@ impl Prove {
             st2.load_tape(serve::read_tape(&serve::step_path(&a2, &p, k)))?;
         }
         // the state under the new key, carry beside checkpoint (the old role erased both under the old key)
-        write_carry(&dir.join(format!("carry_P{i}.bin")), &nc.carry).map_err(|e| format!("carry checkpoint: {e}"))?;
-        self.c().carry = Some(nc.carry);
+        let carry = joined_carry(nc.carry, nc.defer);
+        write_carry(&dir.join(format!("carry_P{i}.bin")), &carry).map_err(|e| format!("carry checkpoint: {e}"))?;
+        self.c().carry = Some(carry);
         self.next = None;
         st2.checkpoint(&dir.join(format!("ckpt_P{i}.bin"))).map_err(|e| e.to_string())?;
         Ok((st2, json!({"old_role": orep, "new_role": nc.report, "epoch": epoch + 1, "redo_step": k})))
@@ -698,10 +764,11 @@ impl Prove {
         let lg = self.c().ledger.as_ref().ok_or("--release needs the ledger replica (--prove)")?;
         let ctx = darkproof::Ctx::new(&model, lg.epoch, lg.step);
         let roots = lg.parent.clone();
+        let pend = lg.pending.clone();
         let carry = self.c().carry.take().ok_or("no carried commitment of the head")?;
         let (w1, w2) = st.w.as_ref().ok_or("no weights")?;
         let t0 = Instant::now();
-        let out = darkproof::run::release_custodian(&self.pr, &self.lp, self.prm, &mut st.pt, w1, w2, &pol, &ctx, carry, Some(&roots))?;
+        let out = darkproof::run::release_custodian_l(&self.pr, &self.lp, self.prm, &mut st.pt, w1, w2, &pol, &ctx, carry, Some(&roots), pend.as_ref())?;
         std::fs::write(dir.join(format!("release_P{i}.bin")), &out.blob).map_err(|e| e.to_string())?;
         let lp = self.pr.ligero();
         let (mm, c) = self.c().ledger.as_mut().unwrap().release(&lp, &out.blob, &pol)?;
@@ -878,7 +945,7 @@ fn prove_hook(args: &[String], i: usize, join: bool) -> Prove {
     // public genesis: the program pins sha256 of the genesis cfg; every custodian commits the public W itself
     // (identical roots), and that commitment is the parent of step 1
     let gcfg = flag(args, "--genesis-cfg").map(|f| std::fs::read(f).expect("genesis cfg"));
-    let mut prm = params_of(&program);
+    let mut prm = params_of(&program, rs_of(args));
     let mut carry = None;
     let mut genesis = None;
     if let Some(b) = &gcfg {
@@ -1001,7 +1068,9 @@ fn join_main(args: &[String]) -> i32 {
         let common = hook.common(rns, d, pf.t, &new_set)?;
         let epoch = lepoch as i64;
         let th = std::thread::Builder::new().stack_size(64 << 20);
-        let nc = std::thread::scope(|s| th.spawn_scoped(s, || side::new_side(&common, j, net3, net6, tape, epoch + 1, 0, None)).unwrap().join())
+        // DEFER: the received replica's pending claims (the old seats discharge them through the handover)
+        let pend = hook.c().ledger.as_ref().and_then(|l| l.pending.clone());
+        let nc = std::thread::scope(|s| th.spawn_scoped(s, || side::new_side_e(&common, pend.as_ref(), j, net3, net6, tape, epoch + 1, 0, None)).unwrap().join())
             .map_err(|_| "new side panicked".to_string())??;
         if nc.report["mac_check"] != "ok" {
             return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
@@ -1024,8 +1093,9 @@ fn join_main(args: &[String]) -> i32 {
         }
         // the carried commitment of the reshared weights beside the checkpoint: a pause before this seat's first step
         // resumes from both (serve --resume)
-        write_carry(&dir.join(format!("carry_P{j}.bin")), &nc.carry).map_err(|e| format!("carry checkpoint: {e}"))?;
-        hook.c().carry = Some(nc.carry);
+        let carry = joined_carry(nc.carry, nc.defer);
+        write_carry(&dir.join(format!("carry_P{j}.bin")), &carry).map_err(|e| format!("carry checkpoint: {e}"))?;
+        hook.c().carry = Some(carry);
         hook.next = None;
         st.checkpoint(&dir.join(format!("ckpt_P{j}.bin"))).map_err(|e| e.to_string())?;
         std::fs::write(dir.join(format!("join_P{j}.json")), serde_json::to_string_pretty(&json!({"party": j, "epoch": epoch + 1, "report": nc.report})).unwrap())
@@ -1069,7 +1139,7 @@ fn test_deal(args: &[String]) {
     let lp = pr.ligero();
     let program = serve::program_of(args);
     let gbytes = std::fs::read(flag(args, "--genesis-cfg").expect("--genesis-cfg")).unwrap();
-    let mut prm = params_of(&program);
+    let mut prm = params_of(&program, rs_of(args));
     {
         use sha2::{Digest, Sha256};
         prm.pg = Some(Sha256::digest(&gbytes).into());
@@ -1083,6 +1153,7 @@ fn test_deal(args: &[String]) {
     let mut dl = darkstep::tape::Dealer::new(pf.t, 3, darkstep::node::DEALER_SEED);
     dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
     dl.only = Some(i);
+    dl.rs = rs_of(args);
     let mut owner = pycompat::PyRandom::from_u64(darkstep::node::OWNER_SEED);
     for k in 0..steps {
         let ex = ord[k % mn.train.n];
@@ -1137,7 +1208,7 @@ fn check_profile(args: &[String], first: usize) -> Result<(), String> {
     let pr = profile_of(args);
     let lp = pr.ligero();
     let pg = serve::program_of(args);
-    let prm = params_of(&pg);
+    let prm = params_of(&pg, rs_of(&args));
     let tables = darkproof::step::tables();
     let own;
     let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
@@ -1153,7 +1224,7 @@ fn check_profile(args: &[String], first: usize) -> Result<(), String> {
 fn step_entries(lp: &darkproof::ligero::LigParams, d: usize, pg: &Program, prm: StepParams, tb: &(Vec<u64>, Vec<u64>)) -> (usize, usize) {
     let count = darkproof::run::step_section(lp, d, prm, true, tb);
     use darkprep::schedule::*;
-    let sp = StepParams { d, inputs: Inputs::Steady, trunc: [(pg.s1, pg.k1), (pg.s1, pg.k1), (pg.s2, pg.k2), (pg.s3, pg.k3)], proof_atoms: true, proof_triples: count, phase: Phase::Step };
+    let sp = StepParams { d, inputs: Inputs::Steady, trunc: [(pg.s1, pg.k1), (pg.s1, pg.k1), (pg.s2, pg.k2), (pg.s3, pg.k3)], proof_atoms: true, proof_triples: count, phase: Phase::Step, rs: prm.rs };
     (count, tags(&sp).len())
 }
 
@@ -1181,7 +1252,7 @@ fn main() {
             darkproof::field::set_p(pf.t);
             let lp = profile_of(&args).ligero();
             let tables = darkproof::step::tables();
-            let prm = params_of(&serve::program_of(&args));
+            let prm = params_of(&serve::program_of(&args), rs_of(&args));
             let own;
             let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
             let g = darkproof::run::step_section(&lp, pf.d, prm, false, tb);
@@ -1195,11 +1266,22 @@ fn main() {
             let lp = profile_of(&args).ligero();
             let tables = darkproof::step::tables();
             let pg = serve::program_of(&args);
-            let prm = params_of(&pg);
+            let prm = params_of(&pg, rs_of(&args));
             let own;
             let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
             let (c, n) = step_entries(&lp, pf.d, &pg, prm, tb);
             println!("{}", json!({"proof_triples": c, "entries": n}));
+        }
+        Some("close") => {
+            serve::set_nat(&args);
+            load_vault(&args);
+            match close_main(&args) {
+                Ok(r) => println!("{r}"),
+                Err(e) => {
+                    eprintln!("close: {e}");
+                    std::process::exit(1);
+                }
+            }
         }
         Some("vault-init") => {
             if let Err(e) = vault_init(&args) {
