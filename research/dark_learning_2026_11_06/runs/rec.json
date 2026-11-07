@@ -19,6 +19,7 @@
   "--profile",
   "ledger-x2de",
   "--rs",
+  "--xt",
   "--wipe-spent",
   "--tape-wait",
   "7200",
@@ -38,7 +39,7 @@
   {
    "host": "dregg-forge",
    "root": "/srv/lanes/dl-gen6-deploy",
-   "bin": "/srv/lanes/dl-gen6-deploy/ws-target-r13/release",
+   "bin": "/srv/lanes/dl-gen6-deploy/ws-target-r14/release",
    "scope": "systemd-run --scope -p MemoryMax=12G",
    "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
    "addr": "178.105.4.114:28600",
@@ -57,7 +58,7 @@
   {
    "host": "bb2",
    "root": "/home/build/lanes/dl-gen6-deploy",
-   "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r13/release",
+   "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r14/release",
    "scope": "systemd-run --user --scope -p MemoryMax=16G",
    "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
    "addr": "2.31.77.40:28601",
@@ -75,7 +76,7 @@
   {
    "host": "hbox",
    "root": "/othersys/lanes/dl-gen6-deploy",
-   "bin": "/othersys/lanes/dl-gen6-deploy/ws-target-r13/release",
+   "bin": "/othersys/lanes/dl-gen6-deploy/ws-target-r14/release",
    "scope": "env SWARM_MEM_MAX=16G swarm-build",
    "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
    "addr": "0.0.0.0:28602",
@@ -95,7 +96,7 @@
  "owner": {
   "host": "bb2",
   "root": "/home/build/lanes/dl-gen6-deploy",
-  "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r13/release",
+  "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r14/release",
   "scope": "systemd-run --user --scope -p MemoryMax=8G",
   "addr": "2.31.77.40:28609"
  },
@@ -108,7 +109,7 @@
    {
     "host": "dregg-forge",
     "root": "/srv/lanes/dl-gen6-deploy",
-    "bin": "/srv/lanes/dl-gen6-deploy/ws-target-r13/release",
+    "bin": "/srv/lanes/dl-gen6-deploy/ws-target-r14/release",
     "scope": "systemd-run --scope -p MemoryMax=12G",
     "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
     "addr": "178.105.4.114:28620",
@@ -128,7 +129,7 @@
    {
     "host": "bb2",
     "root": "/home/build/lanes/dl-gen6-deploy",
-    "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r13/release",
+    "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r14/release",
     "scope": "systemd-run --user --scope -p MemoryMax=16G",
     "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
     "addr": "2.31.77.40:28621",
@@ -147,7 +148,7 @@
    {
     "host": "hbox",
     "root": "/othersys/lanes/dl-gen6-deploy",
-    "bin": "/othersys/lanes/dl-gen6-deploy/ws-target-r13/release",
+    "bin": "/othersys/lanes/dl-gen6-deploy/ws-target-r14/release",
     "scope": "env SWARM_MEM_MAX=16G swarm-build",
     "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
     "addr": "0.0.0.0:28622",
