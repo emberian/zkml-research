@@ -165,6 +165,7 @@ impl CustodianState {
             "phases": out.phases.iter().map(|(n, s)| json!([n, s])).collect::<Vec<_>>(),
             "bytes_sent_to": links,
             "bytes_sent_to_by_phase": phase_bytes,
+            "reconnects": self.pt.net.reconnects(),
         });
         if let Some(g) = &self.he.gate {
             rep["gate"] = json!({
@@ -529,7 +530,10 @@ pub fn serve_main(args: &[String], hook: &mut dyn StepHook) -> i32 {
             }
         };
         let owner_s = tw.elapsed().as_secs_f64();
-        match st.run(&cs) {
+        // a panic below is a link that died in a check phase (or past its reconnect budget): an abort
+        let ran = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| st.run(&cs)))
+            .unwrap_or_else(|_| Err("a link to another custodian died during the step (abort)".into()));
+        match ran {
             Ok((mut rep, record)) => {
                 rep["owner_wait_seconds"] = json!(owner_s);
                 match hook.after_step(&mut st, k, &record, &dir) {
@@ -548,6 +552,7 @@ pub fn serve_main(args: &[String], hook: &mut dyn StepHook) -> i32 {
                 reports.push(rep);
             }
             Err(e) => {
+                st.pt.net.abort();
                 let rep = json!({"party": i, "step": k, "verdict": "REFUSED", "by": e});
                 std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
                 println!("{rep}");

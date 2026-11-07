@@ -5,7 +5,7 @@
 use std::collections::HashMap;
 use std::io::{BufReader, BufWriter, Read, Write};
 use std::net::{SocketAddr, TcpListener, TcpStream};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -32,6 +32,26 @@ pub struct Net {
     /// Bytes written to each peer, per tag (frame headers included); the own entry stays zero.
     pub sent_by_peer: Arc<Vec<[AtomicU64; NTAGS]>>,
     threads: Vec<thread::JoinHandle<()>>,
+    critical: Arc<AtomicBool>,
+    closed: Arc<AtomicBool>,
+    sessions: Vec<Option<Arc<crate::resil::Session>>>,
+}
+
+/// TEST ONLY (feature test-harness): DS_TEST_KILL=peer,bytes kills the link to `peer` once after `bytes` sent to it;
+/// DS_TEST_KILL=peer,critical kills it the first time the mesh is critical.
+fn test_kill() -> Option<(usize, u64, bool)> {
+    #[cfg(feature = "test-harness")]
+    {
+        let v = std::env::var("DS_TEST_KILL").ok()?;
+        let (p, b) = v.split_once(',')?;
+        let p: usize = p.parse().ok()?;
+        if b == "critical" {
+            return Some((p, 0, true));
+        }
+        return Some((p, b.parse().ok()?, false));
+    }
+    #[allow(unreachable_code)]
+    None
 }
 
 /// The writing half of one link: plain TCP or a TLS client stream (each direction of a TLS mesh is its own
@@ -43,101 +63,6 @@ trait Sink: Write + Send + 'static {
 impl Sink for TcpStream {
     fn close(&mut self) {
         let _ = self.shutdown(std::net::Shutdown::Write);
-    }
-}
-
-/// One TLS session shared by a link's reader and writer threads. Lock order: `sock_w`, then `conn`; nothing blocks
-/// on the network while `conn` is held, so the reader keeps decrypting while the writer waits on the socket. Every
-/// TLS record leaves through `sock_w` in the order `conn` made it.
-struct TlsLink {
-    conn: Mutex<rustls::Connection>,
-    sock_w: Mutex<TcpStream>,
-}
-
-impl TlsLink {
-    /// Encrypt-and-send whatever the session has queued (called with `sock_w` held).
-    fn drain(&self, sock: &mut TcpStream) -> std::io::Result<()> {
-        let mut out = Vec::new();
-        {
-            let mut c = self.conn.lock().unwrap();
-            while c.wants_write() {
-                c.write_tls(&mut out)?;
-            }
-        }
-        sock.write_all(&out)
-    }
-}
-
-struct TlsWriter(Arc<TlsLink>);
-
-impl Write for TlsWriter {
-    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        let mut sock = self.0.sock_w.lock().unwrap();
-        let n = {
-            let mut c = self.0.conn.lock().unwrap();
-            c.writer().write(&buf[..buf.len().min(1 << 20)])?
-        };
-        self.0.drain(&mut sock)?;
-        Ok(n)
-    }
-    fn flush(&mut self) -> std::io::Result<()> {
-        let mut sock = self.0.sock_w.lock().unwrap();
-        self.0.drain(&mut sock)?;
-        sock.flush()
-    }
-}
-
-impl Sink for TlsWriter {
-    fn close(&mut self) {
-        let mut sock = self.0.sock_w.lock().unwrap();
-        self.0.conn.lock().unwrap().send_close_notify();
-        let _ = self.0.drain(&mut sock);
-        let _ = sock.shutdown(std::net::Shutdown::Write);
-    }
-}
-
-struct TlsReader {
-    link: Arc<TlsLink>,
-    sock: TcpStream,
-    raw: Vec<u8>,
-    at: usize,
-}
-
-impl Read for TlsReader {
-    fn read(&mut self, out: &mut [u8]) -> std::io::Result<usize> {
-        loop {
-            {
-                let mut c = self.link.conn.lock().unwrap();
-                match c.reader().read(out) {
-                    Ok(n) => return Ok(n),
-                    Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {}
-                    Err(e) => return Err(e),
-                }
-                if self.at < self.raw.len() {
-                    let mut rest = &self.raw[self.at..];
-                    let k = c.read_tls(&mut rest)?;
-                    self.at += k;
-                    c.process_new_packets().map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
-                    let ww = c.wants_write();
-                    drop(c);
-                    // a record the session must send back (an alert, a key update reply); if the writer holds
-                    // the socket it drains the session itself, so never wait for it here
-                    if ww {
-                        if let Ok(mut sock) = self.link.sock_w.try_lock() {
-                            self.link.drain(&mut sock)?;
-                        }
-                    }
-                    continue;
-                }
-            }
-            self.raw.resize(1 << 20, 0);
-            let n = self.sock.read(&mut self.raw)?;
-            if n == 0 {
-                return Ok(0);
-            }
-            self.raw.truncate(n);
-            self.at = 0;
-        }
     }
 }
 
@@ -236,7 +161,7 @@ impl Net {
         for j in 0..n {
             peers.push(streams.remove(&j).map(|s| wire_up(s, j, sent.clone(), by_peer.clone(), &mut threads)));
         }
-        Net { me, n, peers, sent_bytes: sent, sent_by_peer: by_peer, threads }
+        Net { me, n, peers, sent_bytes: sent, sent_by_peer: by_peer, threads, critical: Arc::new(AtomicBool::new(false)), closed: Arc::new(AtomicBool::new(false)), sessions: vec![] }
     }
 
     /// The same mesh over mutual TLS 1.3 with pinned certificates (`tls`): party `me` dials every lower-numbered
@@ -244,105 +169,123 @@ impl Net {
     /// `certs[j]` is party j's certificate; an accepted dialer is identified by the certificate it presents, and a
     /// connection presenting anything else is refused. Fails if the mesh is not complete within `timeout`.
     pub fn connect_tls(me: usize, listener: Option<TcpListener>, addrs: &[SocketAddr], id: &crate::tls::Identity, certs: &[Vec<u8>], timeout: std::time::Duration) -> Result<Net, String> {
-        use std::time::Instant;
+        use crate::resil::{self, Session};
+        use std::time::{Duration, Instant};
         let n = addrs.len();
         let deadline = Instant::now() + timeout;
-        let left = || deadline.saturating_duration_since(Instant::now()).max(std::time::Duration::from_millis(1));
-        let mut links: HashMap<usize, (TcpStream, rustls::Connection)> = HashMap::new();
-        // accept the higher-numbered parties in a thread while dialing the lower ones
-        let want_in = n - 1 - me;
-        let acc = if want_in > 0 {
+        let budget = Duration::from_secs(std::env::var("DS_RECONNECT_SECS").ok().and_then(|s| s.parse().ok()).unwrap_or(600));
+        let critical = Arc::new(AtomicBool::new(false));
+        let closed = Arc::new(AtomicBool::new(false));
+        let sessions: Vec<Option<Arc<Session>>> = (0..n).map(|j| (j != me).then(|| Session::new(j, critical.clone(), budget))).collect();
+        let mut threads = Vec::new();
+        if me + 1 < n {
             let listener = listener.ok_or("party must listen: higher-numbered parties dial it")?;
             let others: Vec<Vec<u8>> = (me + 1..n).map(|j| certs[j].clone()).collect();
             let scfg = crate::tls::server_config(id, &others);
             let idx: Vec<(usize, Vec<u8>)> = (me + 1..n).map(|j| (j, certs[j].clone())).collect();
-            listener.set_nonblocking(true).map_err(|e| e.to_string())?;
-            Some(thread::spawn(move || -> Result<Vec<(usize, TcpStream, rustls::Connection)>, String> {
-                let (htx, hrx) = std::sync::mpsc::channel();
-                let mut got: Vec<(usize, TcpStream, rustls::Connection)> = Vec::new();
-                while got.len() < want_in {
-                    if Instant::now() > deadline {
-                        let have: Vec<usize> = got.iter().map(|g| g.0).collect();
-                        return Err(format!("party {me}: no authenticated connection from {:?} in time (have {have:?})",
-                            (me + 1..n).filter(|j| !have.contains(j)).collect::<Vec<_>>()));
-                    }
-                    match listener.accept() {
-                        Ok((mut s, from)) => {
-                            let scfg = scfg.clone();
-                            let idx = idx.clone();
-                            let htx = htx.clone();
-                            thread::spawn(move || {
-                                let r = (|| -> Result<(usize, TcpStream, rustls::Connection), String> {
-                                    s.set_nonblocking(false).map_err(|e| e.to_string())?;
-                                    s.set_read_timeout(Some(deadline.saturating_duration_since(Instant::now()).max(std::time::Duration::from_millis(1)))).ok();
-                                    let mut c = rustls::ServerConnection::new(scfg).map_err(|e| e.to_string())?;
-                                    while c.is_handshaking() {
-                                        c.complete_io(&mut s).map_err(|e| format!("handshake from {from}: {e}"))?;
-                                    }
-                                    let pc = c.peer_certificates().and_then(|v| v.first()).ok_or("no client certificate")?;
-                                    let j = idx.iter().find(|(_, d)| d.as_slice() == pc.as_ref()).map(|x| x.0).ok_or("unpinned client")?;
-                                    s.set_read_timeout(None).ok();
-                                    Ok((j, s, rustls::Connection::Server(c)))
-                                })();
-                                let _ = htx.send(r);
-                            });
-                        }
-                        Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => thread::sleep(std::time::Duration::from_millis(10)),
-                        Err(e) => return Err(e.to_string()),
-                    }
-                    while let Ok(r) = hrx.try_recv() {
-                        match r {
-                            Ok((j, s, c)) if !got.iter().any(|g| g.0 == j) => got.push((j, s, c)),
-                            Ok((j, _, _)) => eprintln!("party {me}: refused a second connection from party {j}"),
-                            Err(e) => eprintln!("party {me}: refused a connection: {e}"),
-                        }
-                    }
-                }
-                Ok(got)
-            }))
-        } else {
-            None
-        };
+            let (ss, cl) = (sessions.clone(), closed.clone());
+            threads.push(thread::spawn(move || resil::acceptor(listener, scfg, idx, ss, cl, me)));
+        }
+        let ccfgs: Vec<Option<Arc<rustls::ClientConfig>>> = (0..n).map(|j| (j < me).then(|| crate::tls::client_config(id, &certs[j]))).collect();
         for j in 0..me {
-            let mut s = loop {
-                match TcpStream::connect_timeout(&addrs[j], left()) {
-                    Ok(s) => break s,
+            let s = sessions[j].as_ref().unwrap();
+            loop {
+                match resil::dial(s, addrs[j], ccfgs[j].clone().unwrap(), j, Duration::from_secs(10)) {
+                    Ok(()) => break,
+                    Err(e) if e.contains("refused") => {
+                        closed.store(true, Ordering::Relaxed);
+                        return Err(format!("party {me}: {e}"));
+                    }
                     Err(e) => {
                         if Instant::now() > deadline {
-                            return Err(format!("party {me}: cannot reach party {j} at {}: {e}", addrs[j]));
+                            closed.store(true, Ordering::Relaxed);
+                            return Err(format!("party {me}: {e}"));
                         }
-                        thread::sleep(std::time::Duration::from_millis(50));
+                        thread::sleep(Duration::from_millis(50));
                     }
                 }
-            };
-            s.set_read_timeout(Some(left())).ok();
-            let name = rustls::pki_types::ServerName::try_from(format!("custodian-{j}")).map_err(|e| e.to_string())?;
-            let mut c = rustls::ClientConnection::new(crate::tls::client_config(id, &certs[j]), name).map_err(|e| e.to_string())?;
-            while c.is_handshaking() {
-                c.complete_io(&mut s).map_err(|e| format!("party {me}: TLS handshake with party {j} refused: {e}"))?;
             }
-            s.set_read_timeout(None).ok();
-            links.insert(j, (s, rustls::Connection::Client(c)));
         }
-        if let Some(h) = acc {
-            for (j, s, c) in h.join().map_err(|_| "acceptor panicked")?? {
-                links.insert(j, (s, c));
+        // the higher-numbered parties' first connections
+        loop {
+            let missing: Vec<usize> = (me + 1..n).filter(|&j| sessions[j].as_ref().unwrap().is_down()).collect();
+            if missing.is_empty() {
+                break;
             }
+            if Instant::now() > deadline {
+                closed.store(true, Ordering::Relaxed);
+                return Err(format!("party {me}: no authenticated connection from {missing:?} in time"));
+            }
+            thread::sleep(Duration::from_millis(10));
         }
         let sent: Arc<[AtomicU64; NTAGS]> = Arc::new(Default::default());
         let by_peer: Arc<Vec<[AtomicU64; NTAGS]>> = Arc::new((0..n).map(|_| Default::default()).collect());
-        let mut threads = Vec::new();
+        let kill = test_kill();
         let mut peers = Vec::new();
         for j in 0..n {
-            peers.push(links.remove(&j).map(|(s, c)| {
-                s.set_nodelay(true).ok();
-                let rd = s.try_clone().unwrap();
-                let link = Arc::new(TlsLink { conn: Mutex::new(c), sock_w: Mutex::new(s) });
-                let reader = TlsReader { link: link.clone(), sock: rd, raw: Vec::new(), at: 0 };
-                wire(reader, TlsWriter(link), j, sent.clone(), by_peer.clone(), &mut threads)
+            peers.push(sessions[j].clone().map(|s| {
+                let (tx, wrx) = sync_channel::<(u8, Vec<u8>)>(QCAP);
+                let (sent, by_peer) = (sent.clone(), by_peer.clone());
+                let k = kill.filter(|k| k.0 == j).map(|k| (k.1, k.2));
+                let s2 = s.clone();
+                threads.push(thread::spawn(move || {
+                    resil::writer(s2, wrx, move |tag, b| {
+                        sent[tag as usize].fetch_add(b, Ordering::Relaxed);
+                        by_peer[j][tag as usize].fetch_add(b, Ordering::Relaxed);
+                    }, k)
+                }));
+                let mut txs = Vec::new();
+                let mut rxs = Vec::new();
+                for _ in 0..NTAGS {
+                    let (t, r) = sync_channel::<Vec<u8>>(QCAP);
+                    txs.push(t);
+                    rxs.push(Mutex::new(r));
+                }
+                let s3 = s.clone();
+                threads.push(thread::spawn(move || resil::reader(s3, txs)));
+                if j < me {
+                    let s4 = s.clone();
+                    let (addr, cfg) = (addrs[j], ccfgs[j].clone().unwrap());
+                    threads.push(thread::spawn(move || resil::reconnector(s4, addr, cfg, j)));
+                }
+                Peer { tx, rx: rxs }
             }));
         }
-        Ok(Net { me, n, peers, sent_bytes: sent, sent_by_peer: by_peer, threads })
+        Ok(Net { me, n, peers, sent_bytes: sent, sent_by_peer: by_peer, threads, critical, closed, sessions })
+    }
+
+    /// Mark the check phases (MAC check, Freivalds): a link drop now is an abort, not a resume (TLS mesh only).
+    pub fn set_critical(&self, on: bool) {
+        self.critical.store(on, Ordering::Relaxed);
+    }
+
+    /// TEST ONLY: cut the current connection to peer j (as a network drop would).
+    #[cfg(feature = "test-harness")]
+    pub fn test_kill_link(&self, j: usize) {
+        if let Some(s) = self.sessions[j].as_ref() {
+            s.kill_current();
+        }
+    }
+
+    /// Abort: every peer is told at once (TLS mesh), so their receives fail instead of waiting for a resume.
+    pub fn abort(&self) {
+        for s in self.sessions.iter().flatten() {
+            s.abort_req.store(true, Ordering::Relaxed);
+        }
+        let t = std::time::Instant::now();
+        while self.sessions.iter().flatten().any(|s| !s.dead.load(Ordering::Relaxed)) && t.elapsed() < std::time::Duration::from_secs(5) {
+            thread::sleep(std::time::Duration::from_millis(10));
+        }
+    }
+
+    /// Is the session to peer j dead (a drop in a check phase, or an outage past the budget)?
+    pub fn link_dead(&self, j: usize) -> bool {
+        self.sessions.get(j).and_then(|s| s.as_ref()).map(|s| s.dead.load(Ordering::Relaxed)).unwrap_or(false)
+    }
+
+    /// Reconnections per peer so far (TLS mesh).
+    pub fn reconnects(&self) -> Vec<u64> {
+        self.sessions.iter().map(|s| s.as_ref().map(|s| s.reconnects.load(Ordering::Relaxed)).unwrap_or(0)).collect()
     }
 
     pub fn send(&self, to: usize, tag: u8, buf: Vec<u8>) {
@@ -395,7 +338,20 @@ impl Net {
     /// Close the writers (dropping the queues ends the writer threads) and join everything.
     pub fn shutdown(mut self) {
         self.peers.clear();
-        for t in self.threads.drain(..) {
+        // writers drain and say goodbye; the acceptor stops once every writer and reader has finished
+        let closed = self.closed.clone();
+        let sessions = self.sessions.clone();
+        thread::spawn(move || {
+            while sessions.iter().flatten().any(|s| !(s.closing.load(Ordering::Relaxed) || s.dead.load(Ordering::Relaxed))) {
+                thread::sleep(std::time::Duration::from_millis(20));
+            }
+            thread::sleep(std::time::Duration::from_millis(200));
+            closed.store(true, Ordering::Relaxed);
+        });
+        for (k, t) in self.threads.drain(..).enumerate() {
+            if std::env::var("DS_DEBUG_JOIN").is_ok() {
+                eprintln!("party {}: joining thread {k}", self.me);
+            }
             let _ = t.join();
         }
     }

@@ -85,6 +85,7 @@ fn tls_mesh_moves_bytes_encrypted_and_counts_links() {
     a1[0] = via;
     let nets = mesh(ids, pinned, ls, vec![addrs.clone(), a1, addrs.clone()], Duration::from_secs(20));
     let nets: Vec<Net> = nets.into_iter().map(|r| r.unwrap()).collect();
+    eprintln!("mesh up");
     let big = 24 << 20;
     thread::scope(|sc| {
         for net in &nets {
@@ -104,11 +105,12 @@ fn tls_mesh_moves_bytes_encrypted_and_counts_links() {
             });
         }
     });
+    eprintln!("data moved");
     for net in &nets {
         let per = net.sent_per_peer();
         for j in net.others() {
-            assert_eq!(per[j][HE_RET as usize], 9 + big as u64);
-            assert_eq!(per[j][HE_CT as usize], 9 + 1000);
+            assert_eq!(per[j][HE_RET as usize], 17 + big as u64, "TLS frames: tag, seq, len");
+            assert_eq!(per[j][HE_CT as usize], 17 + 1000);
         }
     }
     // each party closes on its own (its readers end when the peers close)
@@ -183,4 +185,67 @@ fn control_plain_tcp_shows_plaintext_on_the_relay() {
         h.join().unwrap();
     }
     assert!(seen.lock().unwrap().windows(MARK.len()).any(|w| w == MARK));
+}
+
+fn clean_mesh(t: Duration) -> Vec<Net> {
+    let ids: Vec<Identity> = (0..3).map(generate).collect();
+    let pinned: Vec<Vec<u8>> = ids.iter().map(|x| x.cert_der.clone()).collect();
+    let (ls, addrs) = listeners();
+    mesh(ids, pinned, ls, vec![addrs.clone(); 3], t).into_iter().map(|r| r.unwrap()).collect()
+}
+
+/// A connection killed mid-transfer (twice, on two links) is resumed: every frame arrives once, in order.
+#[test]
+fn a_dropped_link_resumes_and_delivers_every_frame_once() {
+    let nets = clean_mesh(Duration::from_secs(20));
+    let big = 8 << 20;
+    thread::scope(|sc| {
+        for net in &nets {
+            sc.spawn(move || {
+                let i = net.me;
+                for j in net.others() {
+                    for r in 0..6 {
+                        net.send(j, HE_RET, payload(i, j + 10 * r, big));
+                    }
+                }
+                for j in net.others() {
+                    for r in 0..6 {
+                        assert_eq!(net.recv(j, HE_RET), payload(j, i + 10 * r, big), "{j} -> {i} frame {r}");
+                    }
+                }
+                assert_eq!(net.exchange(CTRL, &[i as u64]), vec![vec![0], vec![1], vec![2]]);
+            });
+        }
+        let n = &nets;
+        sc.spawn(move || {
+            thread::sleep(Duration::from_millis(40));
+            n[1].test_kill_link(0);
+            thread::sleep(Duration::from_millis(60));
+            n[0].test_kill_link(2);
+        });
+    });
+    assert!(nets[1].reconnects()[0] >= 1, "link 1-0 was resumed: {:?}", nets[1].reconnects());
+    assert!(nets[2].reconnects()[0] >= 1, "link 2-0 was resumed: {:?}", nets[2].reconnects());
+    let hs: Vec<_> = nets.into_iter().map(|n| thread::spawn(move || n.shutdown())).collect();
+    for h in hs {
+        h.join().unwrap();
+    }
+}
+
+/// The same drop while the mesh is in a check phase is an abort: the link is dead and a receive on it fails.
+#[test]
+fn a_drop_in_a_check_phase_is_an_abort() {
+    let nets = clean_mesh(Duration::from_secs(20));
+    for n in &nets {
+        n.set_critical(true);
+    }
+    nets[1].test_kill_link(0);
+    let t = std::time::Instant::now();
+    while !(nets[0].link_dead(1) && nets[1].link_dead(0)) && t.elapsed() < Duration::from_secs(10) {
+        thread::sleep(Duration::from_millis(20));
+    }
+    assert!(nets[0].link_dead(1) && nets[1].link_dead(0), "both ends of the dropped link are dead");
+    assert!(!nets[2].link_dead(0) && !nets[2].link_dead(1), "the other links are not");
+    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| nets[0].recv(1, HE_RET)));
+    assert!(r.is_err(), "a receive on a dead link fails");
 }
