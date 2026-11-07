@@ -101,12 +101,22 @@ def he_flow(out, d, prof, steps=3):
     assert p == PW.he_field()
     keys = [HM.OwnKey(N, Q, t, seed=NR.KEY_SEED0 + i) for i in range(3)]
     tab = MF.tables(p)
-    rng = random.Random(d)
-    wm = NR.wmax_for(d)
-    W1 = [[rng.randint(-wm, wm) % p for _ in range(d)] for _ in range(d)]
-    W2 = [[rng.randint(-wm, wm) % p for _ in range(d)] for _ in range(d)]
-    x = [rng.randint(-7, 7) % p for _ in range(d)]
-    y = [rng.randint(-7, 7) % p for _ in range(d)]
+    if os.environ.get("DP_INPUTS"):
+        # a step_spec program's inputs (native_ref.inputs_for, darkstep step::inputs_for), e.g. DP_INPUTS=GEN6
+        import step_spec as S
+        W1, W2, x, y = NR.inputs_for(d, getattr(S, os.environ["DP_INPUTS"]))
+        W1 = [[v % p for v in r] for r in W1]
+        W2 = [[v % p for v in r] for r in W2]
+        x = [v % p for v in x]
+        y = [v % p for v in y]
+    else:
+        rng = random.Random(d)
+        wm = NR.wmax_for(d)
+        W1 = [[rng.randint(-wm, wm) % p for _ in range(d)] for _ in range(d)]
+        W2 = [[rng.randint(-wm, wm) % p for _ in range(d)] for _ in range(d)]
+        x = [rng.randint(-7, 7) % p for _ in range(d)]
+        y = [rng.randint(-7, 7) % p for _ in range(d)]
+    steps = int(os.environ.get("DP_STEPS", steps))
     program = dict(HE_PROGRAM, **json.loads(os.environ.get("DP_PROGRAM", "{}")))
     prog = CH.Prog.of(program)
     tab = prog.tables(p)

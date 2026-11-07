@@ -224,26 +224,42 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
         tr.absorb(k, com[k].roots)
     st = {}
     def zround(rnd, tau, zrs):
+        """One Beaver product per live pair per round (gen 6): the product f g is quadratic in X, so with its values
+        at X = 0, 1 known it needs only X = 2 (X = 3 by interpolation). Round 0's X = 0, 1 products are the C atoms
+        themselves (A B = C for the honest witness; a dishonest one fails the final check, whatever the prover
+        computed); a later round's are the previous round's pair products at r, by interpolation. Pairs past the
+        live length (zero padding) are zero."""
         if rnd == 0:
-            st.update(f=list(Av), g=list(Bv), sub=list(Cv), eq=eqv(tau, p))
+            st.update(f=list(Av), g=list(Bv), sub=list(Cv), eq=eqv(tau, p), live=len(had), prev=list(Cv))
         else:
             r = zrs[-1]
             fold = lambda T: [eng.lin([(1 - r, T[2 * k]), (r, T[2 * k + 1])]) for k in range(len(T) // 2)]
             st["f"], st["g"], st["sub"] = fold(st["f"]), fold(st["g"]), fold(st["sub"])
             st["eq"] = [(st["eq"][2 * k] * (1 - r) + st["eq"][2 * k + 1] * r) % p for k in range(len(st["eq"]) // 2)]
-        f, g, sub, eqt = st["f"], st["g"], st["sub"], st["eq"]
+            l0, l1, l2 = (r - 1) * (r - 2) * inv2 % p, -r * (r - 2) % p, r * (r - 1) * inv2 % p
+            st["prev"] = [eng.lin([(l0, P0), (l1, P1), (l2, P2)]) for P0, P1, P2 in st["P"]]
+            st["live"] = (st["live"] + 1) // 2
+        f, g, sub, eqt, prev = st["f"], st["g"], st["sub"], st["eq"], st["prev"]
+        half = len(f) // 2
+        na = (st["live"] + 1) // 2
+        P2 = [eng.mul(eng.lin([(-1, f[2 * k]), (2, f[2 * k + 1])]), eng.lin([(-1, g[2 * k]), (2, g[2 * k + 1])]))
+              for k in range(na)]
+        P = [(prev[2 * k], prev[2 * k + 1], P2[k] if k < na else zero) for k in range(half)]
+        st["P"] = P
         vals = []
         for Xv in range(4):
             acc = None
-            for k in range(len(f) // 2):
+            for k in range(half):
                 lo, hi = 2 * k, 2 * k + 1
-                term = eng.mul(eng.lin([(1 - Xv, f[lo]), (Xv, f[hi])]), eng.lin([(1 - Xv, g[lo]), (Xv, g[hi])]))
-                term = eng.sub(term, eng.lin([(1 - Xv, sub[lo]), (Xv, sub[hi])]))
+                P0, P1, P2k = P[k]
+                prod = (P0, P1, P2k)[Xv] if Xv < 3 else eng.lin([(1, P0), (-3, P1), (3, P2k)])
+                term = eng.sub(prod, eng.lin([(1 - Xv, sub[lo]), (Xv, sub[hi])]))
                 term = eng.cmul((eqt[lo] * (1 - Xv) + eqt[hi] * Xv) % p, term)
                 acc = term if acc is None else eng.add(acc, term)
             vals.append(acc)
         L.add_row([[v[i][0] for v in vals] for i in range(n)])
         return L.commit()
+    inv2 = pow(2, p - 2, p)
     tau, zrs, ks = schedule(tr, p, lens, zround, None, None)
     gam = tr.chal(p, len(cons) + 3 * len(had))
     q, const = build_q(p, sym, cons, had, prep, lens, gam)
