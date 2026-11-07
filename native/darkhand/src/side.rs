@@ -34,8 +34,8 @@ use std::sync::Arc;
 use std::time::Instant;
 
 /// The resharing messages travel point to point on this tag (FIFO per peer, all before the proof's exchanges).
-/// darkstep::net::PROOF until the deploy lane's RESHARE tag lands.
-pub const RESHARE: u8 = darkstep::net::PROOF;
+/// The resharing messages travel point to point on darkstep's RESHARE stream (FIFO per peer).
+pub const RESHARE: u8 = darkstep::net::RESHARE;
 pub const KINDS: [&str; 2] = ["W1", "W2"];
 
 pub struct Common {
