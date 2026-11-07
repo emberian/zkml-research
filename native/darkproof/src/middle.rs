@@ -415,11 +415,14 @@ pub struct MiddleIn<'a> {
 }
 
 /// Inputs prove_g frees once spent (the release, memory at M = 52): the constraint list after build_q (1.6 GB), the
-/// party's middle atoms after the witness is made (0.4 GB).
+/// party's middle atoms after the witness is made (0.4 GB), the fills' rows after the fills (0.7 GB).
 #[derive(Default)]
 pub struct Spent {
     pub cons: std::sync::Mutex<Option<crate::step::Cons>>,
     pub atoms: std::sync::Mutex<Option<Vec<Sh>>>,
+    /// the range rows and the lookup circuit's rows, after the fills (0.7 GB)
+    pub range_rows: std::sync::Mutex<Option<Vec<crate::step::RangeRow>>>,
+    pub lb_rows: std::sync::Mutex<Option<Vec<Vec<crate::step::LbOp>>>>,
 }
 
 /// Plain (unauthenticated) products in the middle's Ligero at EXT = 1: the zerocheck's final product.
@@ -547,8 +550,7 @@ impl<'a, const E: usize> UT<'a, E> {
 
 /// cosnark_gates.fill_range: this party's shares of the range rows' atoms (Beaver products round by round over every
 /// checked truncation), then every truncation's violation indicator opened; returns the violated ones.
-fn fill_range(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) -> Vec<(&'static str, usize)> {
-    let rows = &rec.range_rows;
+fn fill_range(rows: &[crate::step::RangeRow], a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) -> Vec<(&'static str, usize)> {
     let maxl = rows.iter().map(|r| r.l).max().unwrap_or(0);
     let mut beta: Vec<Option<Sh>> = vec![None; rows.len()];
     let add = |x: Sh, y: Sh| (field::add(x.0, y.0), field::add(x.1, y.1));
@@ -644,11 +646,11 @@ fn fill_range(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) -> Vec<
 
 /// cosnark_gates.fill_lookup: this party's shares of the lookups' bit-circuit atoms. Level by level: the linear atoms
 /// of that level (lookup by lookup, creation order), then the next level's products as one batch.
-fn fill_lookup(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) {
+fn fill_lookup(lb_rows: &[Vec<crate::step::LbOp>], a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) {
     use crate::step::LbOp;
     let mut lvl = vec![0u32; a.len()];
     let mut top = 0;
-    for ops in &rec.lb_rows {
+    for ops in lb_rows {
         for op in ops {
             let (x, l) = match op {
                 LbOp::Lin(x, f, _) => (*x, f.iter().map(|&(y, _)| lvl[y as usize]).max().unwrap_or(0)),
@@ -659,7 +661,7 @@ fn fill_lookup(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) {
         }
     }
     for l in 0..=top {
-        for ops in &rec.lb_rows {
+        for ops in lb_rows {
             for op in ops {
                 if let LbOp::Lin(x, f, c) = op {
                     if lvl[*x as usize] == l {
@@ -673,8 +675,7 @@ fn fill_lookup(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) {
                 }
             }
         }
-        let batch: Vec<(u32, u32, u32)> = rec
-            .lb_rows
+        let batch: Vec<(u32, u32, u32)> = lb_rows
             .iter()
             .flatten()
             .filter_map(|op| match op {
@@ -752,9 +753,13 @@ fn prove_g<const E: usize>(
     let cons_own: Option<crate::step::Cons> = inp.spent.and_then(|s| s.cons.lock().unwrap().take());
     let cons = cons_own.as_ref().unwrap_or(&rec.cons);
     tt.lap(&format!("witness atoms ({} cons, {} hadamard rows, {} atoms)", cons.len(), rec.had.len(), atoms_v.len()));
-    if !rec.range_rows.is_empty() {
+    // the fills' rows: the release moved them here (freed once filled)
+    let range_own = inp.spent.and_then(|s| s.range_rows.lock().unwrap().take());
+    let lb_own = inp.spent.and_then(|s| s.lb_rows.lock().unwrap().take());
+    let (range_rows, lb_rows) = (range_own.as_deref().unwrap_or(&rec.range_rows), lb_own.as_deref().unwrap_or(&rec.lb_rows));
+    if !range_rows.is_empty() {
         atoms_v.resize(rec.n_prep(), (0, 0));
-        let bad = fill_range(rec, &mut atoms_v, net, sp);
+        let bad = fill_range(range_rows, &mut atoms_v, net, sp);
         if !bad.is_empty() && !inp.ignore_range {
             let names: Vec<String> = bad.iter().take(4).map(|(nm, k)| if *k == usize::MAX { nm.to_string() } else { format!("{nm}[{k}]") }).collect();
             return Err(format!(
@@ -765,9 +770,11 @@ fn prove_g<const E: usize>(
         }
     }
     tt.lap("range rows filled");
-    if !rec.lb_rows.is_empty() {
-        fill_lookup(rec, &mut atoms_v, net, sp);
+    if !lb_rows.is_empty() {
+        fill_lookup(lb_rows, &mut atoms_v, net, sp);
     }
+    drop(range_own);
+    drop(lb_own);
     tt.lap("lookup circuit filled");
     // A, B, C keep their MACs (the zerocheck's Beaver products); P and the external vectors are committed from their
     // shares alone, made one at a time (memory: no MAC-carrying copy of P, 2^26 x 16 B at M = 52, nor of the wires)
