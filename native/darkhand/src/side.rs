@@ -128,7 +128,9 @@ pub fn sent_json(net: &Net) -> Value {
 
 fn scan_json(r: &ScanReport) -> Value {
     json!({"available": r.available, "regions": r.regions, "bytes": r.bytes, "hits": r.hits, "where": r.where_,
-           "hits_by_kind": r.by_kind, "seconds": r.seconds})
+           "hits_by_kind": r.by_kind, "seconds": r.seconds, "sp": format!("{:#x}", r.sp),
+           "hits_detail": r.detail.iter().map(|(k, n, a, l, o)| json!({"kind": k, "map": n, "start": format!("{a:#x}"), "len": l, "offset": o,
+                                                                       "above_sp": a + o > r.sp})).collect::<Vec<_>>()})
 }
 
 /// An old custodian's state at the end of step k (everything it must erase).
@@ -298,6 +300,14 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     dcan.add_words("tape shares", &st.tape.sh, 1 << 16);
     dcan.add_words("tape MAC shares", &st.tape.mac, 1 << 16);
     dcan.add_words("alpha share", std::slice::from_ref(&st.tape.alpha_i), 1);
+    // MP-SPDZ's forms of the same share (prep lane, measured): Montgomery (alpha * 2^64 mod p, LE) in its
+    // Transactions file, decimal text in Player-MAC-Keys
+    let r64 = ((1u128 << 64) % c.t as u128) as u64;
+    let mont = ((st.tape.alpha_i as u128 * r64 as u128) % c.t as u128) as u64;
+    dcan.add_words("alpha share (Montgomery form)", std::slice::from_ref(&mont), 1);
+    let mut dec = st.tape.alpha_i.to_string().into_bytes();
+    dcan.add_text16("alpha share (decimal text)", &dec);
+    dec.wipe();
     if let Some(hs) = st.keys.as_ref() {
         let mut s_ntt = c.rns.from_signed(&hs.s);
         c.rns.fwd(&mut s_ntt);
