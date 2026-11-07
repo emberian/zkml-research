@@ -795,3 +795,39 @@ aafff52532f04d20a; its interface is proof.md §21-22, 2adc6652):**
 - the LowGear-Secrets alpha form, which the prep lane reports;
 - the TLS key is not canaried in memory;
 - the ZFS / SSD bound on disk erasure.
+
+## Continuation, gen 3 (handover lane, 2026-11-07 ~11:45 UTC; for a successor)
+**Quest status:**
+1. Erasure is green on both reruns: run12c, a rotation under ledger-x2, 74/74; run11c, a self-handover under
+   ledger-x2de + RS, 37/37. Both are in §7 and were reported to the coordinator.
+   - Open: Python `handover_replay.py ledger-x2` of run12c. In `<lane>/checks/run12c` on bb2 (copies of new0's
+     ledger and handover_e1.bin) it needs more than 23 GB. Run it under `systemd-run --user --scope -p
+     MemoryMax=40G` from `py-8319`, only when `free -g` on bb2 shows room (bb2 was at 95 GB used).
+2. Cut E through the handover is done and reported:
+   - Python 63106924;
+   - native a0a07f36 (prove_defer / verify_defer, byte-equal);
+   - Ledger::rotate c18e41f8 (equal to Python on the demo-x2de dump);
+   - darkhand 17637da3 (old_side_e / new_side_e / with_old_carries; wired by deploy in dl-custodian 11e84d91).
+3. The soundness table under x2 / x2d / x2de is in §9.
+- The coordinator's additions:
+  - vault 45bb7255 and checker 1056e227;
+  - keyring refresh and expiry fail-closed 888958d3;
+  - TLS canaries.
+  The deploy lane wired the vault (c24b75fd: vault-init, --vault, --keep-erased-copy). The first vault rotation on
+  the boxes is not run yet. When it is, run the checker (rotation mode: the vault checks and `dl-hand vault-present`
+  run automatically when the report has them), and check the --keep-erased-copy files open under nothing: write a
+  small `dl-hand vault-open NAME FILE ROLE` if needed.
+
+**Tools:**
+- dl-hand at d01c914a: /srv/lanes/dl-gen6-handover/target-d01c914a/release/dl-hand (forge) and
+  ~/lanes/dl-gen6-handover/target-d01c914a/release/dl-hand (bb2). Rebuild when a run's wire format changes:
+  `git archive <c> native` -> `src-<c>`, then `cp -a target-<old> target-<c>`, then `cargo build --release -p
+  darkhand --bin dl-hand` under the box's scope.
+- Build darkhand / darkproof on a clean `git archive HEAD native` overlay in scratch (`dl-gen5/handover/wt`). Other
+  lanes' uncommitted edits in the shared tree often break the build there.
+- Vectors: `vec-e/d4-demo-x2de` (handover_defer_vs_python) and `dump-e` (handover_vs_python, cut E rotations).
+
+**Not done / open:**
+- Prep's tapes and owner messages under the vault (or MP-SPDZ Player-Data on tmpfs). Raise it with prep.
+- hbox: check its swap before routing a seat there (the vault's memory-only claim needs no swap, or encrypted swap).
+- The vault checks have not run on a deployed binary yet (see above).
