@@ -156,7 +156,7 @@ class SharePCS:
     row e with weight 1 (its revealed row combination is uniform; the custodians send m_e = <M_e, b> so the
     verifier can still subtract it). The proximity combination adds the LAST mask row with weight 1. Each
     custodian draws its own mask and tail shares locally: no communication."""
-    def __init__(self, p, shares, label, hide=None, nmask=None, legacy_public_seed=False, public=False):
+    def __init__(self, p, shares, label, hide=None, nmask=None, legacy_public_seed=False, public=False, lives=None):
         import random as _r
         import secrets as _s
         self.p, self.label = p, label
@@ -169,7 +169,9 @@ class SharePCS:
         self.Rd, self.C = 1 << self.mr, 1 << self.mc
         self.R = self.Rd + self.nmask
         self.base = 0                     # which block of mask rows this proof uses (0: first life)
-        self.block = self.nmask // LIVES if self.nmask else 0
+        self.lives = lives or LIVES      # proofs that may open it (cut E: a W matrix 1, a carry 2); the life counter
+        self.max_lives = self.lives
+        self.block = self.nmask // self.lives if self.nmask else 0
         self.W = self.C + self.hide
         self.pts = domain(p, BLOW * self.W, self.W)
         self.rows = [[s[r * self.C:(r + 1) * self.C] for r in range(self.Rd)] for s in shares]
@@ -317,7 +319,7 @@ def pcs_prove(com, evals, tr, n, p, u_hook=None):
         # custodians keep this counter (durably, in a deployment) and refuse the opening.
         c.opened_lives = getattr(c, "opened_lives", 0) + 1
         if c.hide and c.opened_lives > getattr(c, "max_lives", LIVES):
-            raise LifeExhausted(f"commitment {k} already opened in {LIVES} proofs; a further opening reveals it")
+            raise LifeExhausted(f"commitment {k} already opened in {getattr(c, 'max_lives', LIVES)} proof(s); a further opening reveals it")
         J = distinct_cols(tr, p, T_COLS, len(c.pts))
         cols[k] = (J, [[c.open_col(i, j) for j in J] for i in range(n)])
     return msgs, prox, cols

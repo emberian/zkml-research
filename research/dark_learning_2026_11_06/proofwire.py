@@ -74,6 +74,9 @@ PROFILES["demo-x2"] = dict(PROFILES["demo"], PROFILE="demo-x2", NMASK=4, EXT=2)
 # of a proof in one hidden Ligero group (cosnark_zk.GMask). A profile without "ZKSC" hides each round as a row.
 PROFILES["ledger-x2d"] = dict(PROFILES["ledger-x2"], PROFILE="ledger-x2d", ZKSC="mask")
 PROFILES["demo-x2d"] = dict(PROFILES["demo-x2"], PROFILE="demo-x2d", ZKSC="mask")
+# cut E (proof.md section 21): deferred child opening; every W one life (hide T), carries c1, c2 with two lives
+PROFILES["ledger-x2de"] = dict(PROFILES["ledger-x2d"], PROFILE="ledger-x2de", DEFER=True)
+PROFILES["demo-x2de"] = dict(PROFILES["demo-x2d"], PROFILE="demo-x2de", DEFER=True)
 PARAMS = dict(PROFILES["ledger"])
 
 def set_profile(name):
@@ -88,6 +91,7 @@ def pin_params():
     CS.SPLIT, CS.SPLIT_K = PARAMS["SPLIT"], PARAMS["K_L"]
     X.EXT = PARAMS.get("EXT", 1)
     ZK.ZKSC = PARAMS.get("ZKSC", "rows")
+    ZK.DEFER = bool(PARAMS.get("DEFER", False))
 
 pin_params()
 
@@ -227,22 +231,25 @@ def ligero_schema(n, group_sizes):
     cols = [L_(n, L_(T, ("tup", [L_(sz, FE), L_(lg, HH)]))) for sz in list(group_sizes) + [3 * E]]
     return ("dict", msgs + [("cols", ("tup", cols))])
 
-def pcs_schema(n, sh):
+def pcs_schema(n, sh, opened=None):
+    """roots for every commitment in sh; proximity and columns for the opened ones (default: all)."""
     keys = sorted(sh)
+    okeys = sorted(opened if opened is not None else sh)
     def cols(s):
         lg = (len(s.pts) - 1).bit_length() + 1
         if PARAMS.get("MERKLE") == "multi":
             return ("tup", [("jl", CS.T_COLS, len(s.pts)), L_(n, ("mp", CS.T_COLS, s.R, lg - 1))])
         return ("tup", [L_(CS.T_COLS, ("idx", len(s.pts))), L_(n, L_(CS.T_COLS, ("tup", [L_(s.R, FE), L_(lg, HH)])))])
     return (("dict", [(k, L_(n, HH)) for k in keys]),
-            ("dict", [(k, L_(n, L_(X.EXT * sh[k].W, FE))) for k in keys]),
-            ("dict", [(k, cols(sh[k])) for k in keys]))
+            ("dict", [(k, L_(n, L_(X.EXT * sh[k].W, FE))) for k in okeys]),
+            ("dict", [(k, cols(sh[k])) for k in okeys]))
 
-def spine_schema(p, n, d, chained, bind=False):
+def spine_schema(p, n, d, chained, bind=False, deferred_in=False):
     ld = d.bit_length() - 1
-    sh = ZK.shapes(p, d, chained, bind)
-    roots, prox, cols = pcs_schema(n, sh)
-    evals = ZK.schedule(_NullTr(p), p, d, sh, lambda *a: None, bind=bind)[1]
+    sh = ZK.shapes(p, d, chained, bind, deferred_in)
+    roots, prox, cols = pcs_schema(n, sh, ZK.opened(sh))
+    dz = {"W1": [X.zero()] * (2 * ld), "W2": [X.zero()] * (2 * ld)} if deferred_in else None
+    evals = ZK.schedule(_NullTr(p), p, d, sh, lambda *a: None, bind=bind, deferred=dz)[1]
     rows, _, _, nrows = ZK.row_layout(d, sh, evals)
     if ZK.ZKSC == "mask":
         E, sp = X.EXT, ZK.specs(d)
@@ -256,14 +263,18 @@ def spine_schema(p, n, d, chained, bind=False):
                      ("eval_roots", L_(n, HH)), ("mask_roots", L_(n, HH)), ("prox", prox), ("pcs_cols", cols),
                      ("ligero", ligero_schema(n, [1] * (4 * ld) + [nrows - 4 * ld]))])
 
-def middle_schema(p, n, sym, d, bind=False, io=None):
+def middle_schema(p, n, sym, d, bind=False, io=None, deferred_in=False):
     cons, had, prep, ext = G.middle(sym)
     lens, sh = GZ.public_shapes(p, prep, had, d, bind, io=io)
+    if deferred_in:
+        sh.update({k: ZK.carry_shape(p, True) for k in ZK.CARRY_IN})
     roots, prox, cols = pcs_schema(n, sh)
     lh = (lens["A"] - 1).bit_length()
     Lmax = max((L - 1).bit_length() for L in lens.values())
     ks = sorted(lens)
     ev = GZ.evaluations(lens, ks, [0] * lh, [0] * Lmax, [0] * (d.bit_length() - 1) if bind else None)
+    if deferred_in:
+        ev += GZ.deferred_evals({"W1": [], "W2": []})
     lay = GZ.row_layout(sh, ev, lh, Lmax, lens)
     nrows = lay[-1]
     if ZK.ZKSC == "mask":
@@ -295,7 +306,7 @@ def encode_step(p, ctx, d, n, chained, spine, public, middle, sym, owner_sig=Non
     assert 1 <= len(mb) <= 64
     w.b += MAGIC + struct.pack(">H", len(mb)) + mb + struct.pack(">IQHBB", epoch, step, d, n, int(chained))
     bind = owner_sig is not None
-    walk(w, spine_schema(p, n, d, chained, bind), _plain(spine))
+    walk(w, spine_schema(p, n, d, chained, bind, "c1p" in spine["roots"]), _plain(spine))
     w.b += struct.pack(">I", len(public))
     for v in public:
         w.fe(v)
@@ -321,7 +332,18 @@ def he_field(params=None):
     he = (params or PARAMS)["HE"]
     return bfv.ntt_primes(61, he["L"] + 1, 2 * he["N"])[he["L"]]
 
-def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None, min_leaf=0, program=None):
+def deferred_of(rec_pending):
+    """A ledger record's pending claims (JSON: flat points, carry roots) as verify_zk's deferred dict."""
+    if not rec_pending:
+        return None
+    E = X.EXT
+    pts = {k: [tuple(v[E * i:E * (i + 1)]) for i in range(len(v) // E)] for k, v in rec_pending["points"].items()}
+    return dict(points=pts, carry_roots=rec_pending["carry_roots"])
+
+def pending_json(out):
+    return dict(points={k: X.flat(v) for k, v in out["points"].items()}, carry_roots=out["carry_roots"])
+
+def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None, min_leaf=0, program=None, deferred=None):
     """The untrusted-input verifier. expect_ctx, parent_roots, d_pinned, owner_pk, min_leaf and program come from the
     ledger, never from the blob. program: None (the harness's plain-SPDZ step) or the genesis record's program dict;
     with "he": true it is the deployed step (cosnark_he: HE matvec and outer, the shifts S1..K3, carried weights from
@@ -342,7 +364,7 @@ def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None,
             return False, f"binding mismatch: proof is for {(shown, epoch, step)}, expected {tuple(expect_ctx)}", None
         if d != d_pinned or n != 3 or chained != 1:
             raise ParseError("shape or chaining differs from the ledger's genesis record")
-        spine = walk(r, spine_schema(p, n, d, True, bind))
+        spine = walk(r, spine_schema(p, n, d, True, bind, deferred is not None))
         cnt = struct.unpack(">I", r.take(4))[0]
         if cnt > 1 << 24:
             raise ParseError("public transcript too long")
@@ -381,13 +403,14 @@ def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None,
                          OS.batch_message(ctx, spine["roots"]["xo"], middle["roots"]["yo"]), sig):
             return False, "owner signature does not verify over (context, x and y commitments), or its leaf was used", None
         leaf = OS.sig_leaf(sig)
-    ok, why = ZK.verify_zk(p, n, d, ctx, parent_roots, True, spine, bind, public=public)
+    pend = {}
+    ok, why = ZK.verify_zk(p, n, d, ctx, parent_roots, True, spine, bind, public=public, deferred=deferred, out=pend)
     if not ok:
         return False, f"spine: {why}", None
     ok, why = GZ.verify_middle_zk(p, n, sym, d, spine["roots"], ctx, middle, bind)
     if not ok:
         return False, f"middle: {why}", None
-    return True, "accept", ({"W1": spine["roots"]["W1n"], "W2": spine["roots"]["W2n"]}, leaf)
+    return True, "accept", ({"W1": spine["roots"]["W1n"], "W2": spine["roots"]["W2n"]}, leaf, pend or None)
 
 # ----------------------------------------------------------------------------------------------- release
 RMAGIC = b"DLRELS01"
@@ -403,10 +426,10 @@ def encode_release(p, ctx, d, n, M, ncls, public, middle, sym, io):
     w.b += struct.pack(">I", len(public))
     for v in public:
         w.fe(v)
-    walk(w, middle_schema(p, n, sym, d, False, io), _plain(middle))
+    walk(w, middle_schema(p, n, sym, d, False, io, "c1p" in middle["roots"]), _plain(middle))
     return bytes(w.b)
 
-def verify_release(p, blob, expect_ctx, head_roots, X, labels, program, ncls, d_pinned, kc=10):
+def verify_release(p, blob, expect_ctx, head_roots, X, labels, program, ncls, d_pinned, kc=10, deferred=None):
     """The untrusted-input verifier of a release. expect_ctx = (model, epoch, head step) and head_roots (the head's
     W1, W2 roots) come from the ledger; X, labels and the program are the published policy, never the blob.
     Returns (ok, why, (M, C))."""
@@ -439,7 +462,7 @@ def verify_release(p, blob, expect_ctx, head_roots, X, labels, program, ncls, d_
         if sym.tpos != cnt:
             raise ParseError("public transcript longer than the release program")
         io = CR.io_spec(p, d, M)
-        middle = walk(r, middle_schema(p, n, sym, d, False, io))
+        middle = walk(r, middle_schema(p, n, sym, d, False, io, deferred is not None))
         r.end()
     except ParseError as e:
         return False, f"parse: {e}", None
@@ -453,10 +476,52 @@ def verify_release(p, blob, expect_ctx, head_roots, X, labels, program, ncls, d_
     C = public[-1]
     if C > M:
         return False, "released count exceeds M", None
-    ok, why = GZ.verify_middle_zk(p, n, sym, d, head_roots, tuple(expect_ctx), middle, False, io=io)
+    ok, why = GZ.verify_middle_zk(p, n, sym, d, head_roots, tuple(expect_ctx), middle, False, io=io, deferred=deferred)
     if not ok:
         return False, f"release: {why}", None
     return True, "accept", (M, C)
+
+# ----------------------------------------------------------------------------------------------- closing proof (cut E)
+CMAGIC = b"DLCLOS01"
+
+def close_schema(p, n, d):
+    sh = ZK.close_shapes(p, d)
+    roots, prox, cols = pcs_schema(n, sh)
+    nrows = sum(X.EXT * -(-sh[k].W // ZK.K_L) for k, _ in ZK.close_evals({"W1": [], "W2": []}))
+    return ("dict", [("roots", roots), ("eval_roots", L_(n, HH)), ("mask_roots", L_(n, HH)), ("prox", prox),
+                     ("pcs_cols", cols), ("ligero", ligero_schema(n, [nrows]))])
+
+def encode_close(p, ctx, d, n, proof):
+    """ctx = (model, epoch, step): the head step whose pending claims the proof discharges."""
+    model, epoch, step = ctx
+    w = W(p)
+    mb = model.encode()
+    w.b += CMAGIC + struct.pack(">H", len(mb)) + mb + struct.pack(">IQHB", epoch, step, d, n)
+    walk(w, close_schema(p, n, d), _plain(proof))
+    return bytes(w.b)
+
+def verify_close(p, blob, ctx, head_roots, deferred, d_pinned):
+    """ctx = (model, epoch, step, "close") from the ledger; head_roots and deferred (the head's pending claims) too."""
+    pin_params()
+    try:
+        r = R(p, blob)
+        if r.take(8) != CMAGIC:
+            raise ParseError("bad magic")
+        ml = struct.unpack(">H", r.take(2))[0]
+        model_b = r.take(ml)
+        epoch, step, d, n = struct.unpack(">IQHB", r.take(15))
+        if (model_b, epoch, step) != (ctx[0].encode(), ctx[1], ctx[2]):
+            return False, "binding mismatch: the closing proof is for another head"
+        if d != d_pinned or n != 3:
+            raise ParseError("shape differs from the ledger's genesis record")
+        proof = walk(r, close_schema(p, n, d))
+        r.end()
+    except ParseError as e:
+        return False, f"parse: {e}"
+    except Exception as e:
+        return False, f"parse: {type(e).__name__}"
+    ok, why = ZK.verify_close(p, n, d, tuple(ctx), head_roots, deferred, proof)
+    return ok, (why if ok else f"close: {why}")
 
 # ----------------------------------------------------------------------------------------------- public genesis
 def public_weights(cfg_bytes):
@@ -476,7 +541,7 @@ def public_genesis(p, d, W1, W2, n=3):
     for k, Wk in (("W1", W1), ("W2", W2)):
         assert len(Wk) == d and all(len(r) == d for r in Wk), "public genesis: W must be d x d"
         flat = [v % p for r in Wk for v in r]
-        carry[k] = ZK.ZKPCS(p, [flat] + [[0] * (d * d) for _ in range(n - 1)], k, public=True)
+        carry[k] = ZK.w_pcs(p, [flat] + [[0] * (d * d) for _ in range(n - 1)], k, public=True)
     return carry, {k: list(c.roots) for k, c in carry.items()}
 
 def public_genesis_shares(p, W, alpha_sh):
@@ -527,6 +592,13 @@ class Ledger:
         self.epoch, self.step, self.parent, self.next_leaf, self.custodians = 0, 0, g["roots"], 0, g["custodians"]
         self.released = None
         self.genesis_roots = g["roots"]
+        self.pending = None              # cut E: the head step's undischarged claims (None: the head is final)
+        self.closed = False
+        self.status = {}                 # step -> "final" | "pending" (the replay tool prints it)
+        def discharge(how):
+            if self.pending is not None:
+                self.status[self.step] = f"final ({how})"
+                self.pending = None
         for no, rec in enumerate(self.recs[1:], 2):
             if self.released is not None:
                 raise RuntimeError(f"ledger line {no}: a record after the release (fail closed)")
@@ -534,10 +606,21 @@ class Ledger:
                 if (rec["epoch"], rec["step"]) != (self.epoch, self.step) or not 0 <= rec["C"] <= rec["M"]:
                     raise RuntimeError(f"ledger line {no}: the release is not at the head (fail closed)")
                 self.released = (rec["M"], rec["C"])
+                discharge("the release opened its child")
+            elif rec["kind"] == "close":
+                if (rec["epoch"], rec["step"]) != (self.epoch, self.step) or self.pending is None:
+                    raise RuntimeError(f"ledger line {no}: a closing record not at a pending head (fail closed)")
+                discharge("closing proof")
+                self.closed = True
             elif rec["kind"] == "step":
                 if (rec["epoch"], rec["step"]) != (self.epoch, self.step + 1):
                     raise RuntimeError(f"ledger line {no} breaks the sequence (fail closed)")
+                if self.closed:
+                    raise RuntimeError(f"ledger line {no}: a step after the closing record (fail closed)")
+                discharge(f"step {rec['step']} opened its child")
                 self.step, self.parent = rec["step"], rec["child"]
+                self.status[self.step] = "pending" if rec.get("pending") else "final"
+                self.pending = rec.get("pending")
                 if rec.get("leaf") is not None:
                     self.next_leaf = rec["leaf"] + 1
             elif rec["kind"] == "rotate":
@@ -590,6 +673,25 @@ class Ledger:
         import handover as HO
         return HO.context_digest(self.model, self.epoch, self.epoch + 1, self.step, self.custodians, custodians)
 
+    def close(self, p, blob):
+        """Cut E: a halted run's standalone closing proof (cosnark_zk.prove_close; encode_close) discharges the head's
+        pending claims. Terminal for steps: the head's W have had their one opening."""
+        with open(self.path) as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            self.recs = [json.loads(l) for l in open(self.path)]
+            self._replay()
+            if self.pending is None:
+                return False, "the head is not pending: nothing to close"
+            ctx = (self.model, self.epoch, self.step, "close")
+            ok, why = verify_close(p, blob, ctx, self.parent, deferred_of(self.pending), self.d)
+            if not ok:
+                return False, why
+            rec = dict(kind="close", epoch=self.epoch, step=self.step, digest=hashlib.sha256(blob).hexdigest())
+            self._append(rec)
+            self.recs.append(rec)
+            self._replay()
+        return True, "accept"
+
     def rotate(self, p, custodians, new_roots, handover):
         """Custody rotation: a durable record, accepted only with the BYTES of a handover proof (handover.encode)
         that the new committee's roots commit the same weights as the head's. Proofs from the old committee, whose
@@ -602,6 +704,8 @@ class Ledger:
             self._replay()
             if self.released is not None:
                 return False, "rotation refused: the ledger is released"
+            if self.pending is not None or self.closed:
+                return False, "rotation refused: the head is pending (cut E) and the handover proof does not discharge it yet"
             if not handover:
                 return False, "rotation refused: no handover proof"
             try:
@@ -633,8 +737,11 @@ class Ledger:
                 return False, "the ledger is released: no further release"
             if self.step == 0:
                 return False, "no step accepted: nothing to release"
+            if self.closed:
+                return False, "the ledger is closed: the head's W have had their one opening"
             ctx = (self.model, self.epoch, self.step)
-            ok, why, out = verify_release(p, blob, ctx, self.parent, X, labels, self.program, ncls, self.d, kc)
+            ok, why, out = verify_release(p, blob, ctx, self.parent, X, labels, self.program, ncls, self.d, kc,
+                                          deferred=deferred_of(self.pending))
             if not ok:
                 return False, why
             M, C = out
@@ -654,14 +761,19 @@ class Ledger:
                 return False, self._pg_gate()
             if self.released is not None:
                 return False, "the ledger is released: no further steps"
+            if self.closed:
+                return False, "the ledger is closed: the head's W were opened by the closing proof"
             ctx, parent = self.head()
             ok, why, out = verify_step(p, blob, ctx, parent, tab, self.d, owner_pk=self.owner_pk,
-                                       min_leaf=self.next_leaf, program=self.program)
+                                       min_leaf=self.next_leaf, program=self.program,
+                                       deferred=deferred_of(self.pending))
             if not ok:
                 return False, why
-            child, leaf = out
+            child, leaf, pend = out
             rec = dict(kind="step", epoch=ctx[1], step=ctx[2], digest=hashlib.sha256(blob).hexdigest(),
                        child=child, leaf=leaf)
+            if pend is not None:
+                rec["pending"] = pending_json(pend)       # cut E: proved, final when its child is opened
             self._append(rec)
             self.recs.append(rec)
             self._replay()
@@ -756,11 +868,18 @@ def replay(native_ledger, cfg_path, bundle_dir, mnist_dir=None, workdir=None):
             same = r[0] and (mine.get("C"), mine.get("policy")) == (rec["C"], rec["policy"])
             out.append(f"release: {r}, C = {mine.get('C')} of {rec['M']}, policy digest {'equal' if same else 'DIFFERS'} ({time.time() - t:.0f}s)")
             ok &= same
+        elif rec["kind"] == "close":
+            r = lg.close(p, b)
+            out.append(f"closing proof at step {rec['step']}: {r} ({time.time() - t:.0f}s)")
+            ok &= r[0]
         else:
             out.append(f"line {no}: unknown record kind {rec['kind']}")
             return False, out
         if not ok:
             break
+    if lg.status:
+        # cut E: a step is "proved, final when its child is opened"; the head may still be pending
+        out.append("status: " + ", ".join(f"step {k} {v}" for k, v in sorted(lg.status.items())))
     return ok, out
 
 
