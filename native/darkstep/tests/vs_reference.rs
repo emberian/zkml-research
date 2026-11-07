@@ -19,6 +19,17 @@ fn check(n: usize, l: usize, f: u32, d: usize) {
         assert_eq!(res["sigma"][i], r["sigma"][i.to_string()], "party {i} sigma");
     }
     assert_eq!(res["detail"][0]["wire"], r["wire"], "SPDZ wire counts");
+    for i in 0..3 {
+        let det = &res["detail"][i];
+        let to = det["bytes_sent_to"].as_object().unwrap();
+        assert_eq!(to.len(), 2, "party {i}: one entry per peer");
+        assert!(!to.contains_key(&i.to_string()), "party {i}: no self link");
+        for tag in ["open", "he_ct", "he_ret", "ctrl", "proof"] {
+            let links: u64 = to.values().map(|l| l[tag].as_u64().unwrap()).sum();
+            assert_eq!(links, det["bytes_sent"][tag].as_u64().unwrap(), "party {i} tag {tag}: links sum to the total");
+        }
+        assert!(to.values().all(|l| l["he_ct"].as_u64().unwrap() > 0), "party {i}: HE ciphertexts go to both peers");
+    }
 }
 
 #[test]

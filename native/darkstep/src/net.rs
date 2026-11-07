@@ -29,10 +29,18 @@ pub struct Net {
     pub n: usize,
     peers: Vec<Option<Peer>>,
     pub sent_bytes: Arc<[AtomicU64; NTAGS]>,
+    /// Bytes written to each peer, per tag (frame headers included); the own entry stays zero.
+    pub sent_by_peer: Arc<Vec<[AtomicU64; NTAGS]>>,
     threads: Vec<thread::JoinHandle<()>>,
 }
 
-fn wire_up(stream: TcpStream, sent: Arc<[AtomicU64; NTAGS]>, threads: &mut Vec<thread::JoinHandle<()>>) -> Peer {
+fn wire_up(
+    stream: TcpStream,
+    peer: usize,
+    sent: Arc<[AtomicU64; NTAGS]>,
+    by_peer: Arc<Vec<[AtomicU64; NTAGS]>>,
+    threads: &mut Vec<thread::JoinHandle<()>>,
+) -> Peer {
     stream.set_nodelay(true).ok();
     let rd = stream.try_clone().unwrap();
     let (tx, wrx) = sync_channel::<(u8, Vec<u8>)>(QCAP);
@@ -46,6 +54,7 @@ fn wire_up(stream: TcpStream, sent: Arc<[AtomicU64; NTAGS]>, threads: &mut Vec<t
                 return;
             }
             sent[tag as usize].fetch_add(9 + buf.len() as u64, Ordering::Relaxed);
+            by_peer[peer][tag as usize].fetch_add(9 + buf.len() as u64, Ordering::Relaxed);
             if w.flush().is_err() {
                 return;
             }
@@ -86,6 +95,7 @@ impl Net {
     pub fn connect(me: usize, listener: TcpListener, addrs: &[SocketAddr]) -> Net {
         let n = addrs.len();
         let sent: Arc<[AtomicU64; NTAGS]> = Arc::new(Default::default());
+        let by_peer: Arc<Vec<[AtomicU64; NTAGS]>> = Arc::new((0..n).map(|_| Default::default()).collect());
         let mut threads = Vec::new();
         let mut streams: HashMap<usize, TcpStream> = HashMap::new();
         for j in 0..me {
@@ -107,9 +117,9 @@ impl Net {
         }
         let mut peers = Vec::new();
         for j in 0..n {
-            peers.push(streams.remove(&j).map(|s| wire_up(s, sent.clone(), &mut threads)));
+            peers.push(streams.remove(&j).map(|s| wire_up(s, j, sent.clone(), by_peer.clone(), &mut threads)));
         }
-        Net { me, n, peers, sent_bytes: sent, threads }
+        Net { me, n, peers, sent_bytes: sent, sent_by_peer: by_peer, threads }
     }
 
     pub fn send(&self, to: usize, tag: u8, buf: Vec<u8>) {
@@ -152,6 +162,11 @@ impl Net {
             o[k] = x.load(Ordering::Relaxed);
         }
         o
+    }
+
+    /// Bytes sent to each peer, per tag: `[peer][tag]`.
+    pub fn sent_per_peer(&self) -> Vec<[u64; NTAGS]> {
+        self.sent_by_peer.iter().map(|row| std::array::from_fn(|k| row[k].load(Ordering::Relaxed))).collect()
     }
 
     /// Close the writers (dropping the queues ends the writer threads) and join everything.

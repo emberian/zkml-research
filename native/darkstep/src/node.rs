@@ -140,11 +140,13 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
     let res = pool.install(|| run_step(&mut pt, &mut he, cs, pf.d, &tab));
     let step_s = t1.elapsed().as_secs_f64();
     let sent = pt.net.total_sent();
+    let per_peer = pt.net.sent_per_peer();
     let base = json!({
         "party": i, "setup_seconds": setup, "step_seconds": step_s,
         "transcript_len": pt.tr.len(), "tape_used": pt.cur, "tape_len": pt.tape.len(),
         "middle_atoms": pt.atom_log.iter().map(|r| r.len()).sum::<usize>(),
         "wire": pt.wire, "bytes_sent": {"open": sent[0], "he_ct": sent[1], "he_ret": sent[2], "ctrl": sent[3], "proof": sent[4]},
+        "bytes_sent_to": per_peer.iter().enumerate().filter(|(j, _)| *j != i).map(|(j, s)| (j.to_string(), json!({"open": s[0], "he_ct": s[1], "he_ret": s[2], "ctrl": s[3], "proof": s[4], "total": s.iter().sum::<u64>()}))).collect::<serde_json::Map<_, _>>(),
         "he_wire": {"mv": {"he_send": he.he_send, "he_return": he.he_return},
                     "ou": {"he_send": he.ou_send, "he_return": he.ou_return, "commit": he.ou_commit}},
     });
