@@ -37,6 +37,8 @@ pub struct Program {
 
 impl Program {
     pub const HARNESS: Program = Program { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, r3: 0, t_lo: -128, xmax: 7, wmax: Some(7), check_k: false };
+    /// Gen 6's pinned program at d = 4096 (step_spec.GEN6; notes/dark-learning-gen6/train.md).
+    pub const GEN6: Program = Program { s1: 11, k1: 19, s2: 7, k2: 8, s3: 8, k3: 19, r3: 1 << 7, t_lo: -128, xmax: 7, wmax: None, check_k: true };
 
     /// mpc_fork.tables(p) over this program's domain: SIG and DSIG interpolated at 0..256 (input code u + t_lo).
     pub fn tables(&self, p: u64) -> Vec<Vec<u64>> {
@@ -78,6 +80,33 @@ pub fn inputs(d: usize) -> Plain {
     let x = (0..d).map(|_| r.randint_i64(-7, 7)).collect();
     let y = (0..d).map(|_| r.randint_i64(-7, 7)).collect();
     Plain { w1, w2, x, y }
+}
+
+/// Step inputs for a test run under a program: `inputs(d)` for HARNESS; otherwise seeded weights scaled to the
+/// program (u1 and the output code o near +-16 and +-32 at random), x, y in [-7, 7], redrawn (seed d, d + 1, ...)
+/// until step_spec accepts them, so every bound the program asserts holds and d2, d1 are not all zero.
+pub fn inputs_for(d: usize, pg: &Program) -> Plain {
+    if *pg == Program::HARNESS {
+        return inputs(d);
+    }
+    let sd = (d as f64).sqrt();
+    let a1 = ((16.0 * (1u64 << pg.s1) as f64 * 1.732) / (4.3 * sd)).max(1.0) as i64;
+    let a2 = ((32.0 * (1u64 << pg.s1) as f64 * 1.732) / (4.0 * sd)).max(1.0) as i64;
+    for k in 0..64u64 {
+        let mut r = PyRandom::from_u64(d as u64 + k);
+        let mat = |r: &mut PyRandom, a: i64| -> Vec<Vec<i64>> { (0..d).map(|_| (0..d).map(|_| r.randint_i64(-a, a)).collect()).collect() };
+        let w1 = mat(&mut r, a1);
+        let w2 = mat(&mut r, a2);
+        let x = (0..d).map(|_| r.randint_i64(-7, 7)).collect();
+        let y = (0..d).map(|_| r.randint_i64(-7, 7)).collect();
+        let pl = Plain { w1, w2, x, y };
+        if let Ok((n1, n2)) = pl.step_prog(pg) {
+            if n1 != pl.w1 && n2 != pl.w2 {
+                return pl;
+            }
+        }
+    }
+    panic!("inputs_for: no in-bound inputs for {pg:?} at d = {d}");
 }
 
 impl Plain {

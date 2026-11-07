@@ -62,6 +62,9 @@ class Program:
 
 
 HARNESS = Program()
+# Gen 6's pinned program at d = 4096 (notes/dark-learning-gen6/train.md; genesis train_genesis_gen6.json):
+# z1, z2 >> 11 with |.| < 2^19, e >> 7 with |e| < 2^8, round(b g1 / 2^8) with |b g1 + 2^7| < 2^19, weights unbounded.
+GEN6 = Program(S1=11, K1=19, S2=7, K2=8, S3=8, K3=19, R3=1 << 7, WMAX=None)
 
 
 class Init:

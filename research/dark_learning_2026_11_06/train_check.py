@@ -4,6 +4,8 @@
         step_spec.step with the default program equals the step_spec at OLD_STEP_SPEC.py (e.g. `git show
         04d28e15:research/dark_learning_2026_11_06/step_spec.py`): outputs, traces and raised assertions, on random
         cases at d = 8 and 64 including out-of-bound ones; a control with another program differs.
+    python3 -I train_check.py genesis train_genesis_gen6.json
+        the genesis JSON's program is step_spec.GEN6.
 """
 import hashlib
 import importlib.util
@@ -58,5 +60,16 @@ def harness(old_path):
     assert same == n and 0 < asserts < n and control_differs
 
 
+def genesis(path):
+    """The committed genesis JSON trains step_spec.GEN6 (and a changed shift does not)."""
+    import json
+    import train_owner as O
+    g = dict(O.DEFAULTS, **json.load(open(path)))
+    ok = O.program(g) == S.GEN6
+    bad = O.program(dict(g, s3=g["s3"] + 1)) == S.GEN6
+    print(dict(genesis=path, program=O.program(g).as_dict(), equals_GEN6=ok, control_equal=bad))
+    assert ok and not bad
+
+
 if __name__ == "__main__":
-    {"harness": harness}[sys.argv[1]](*sys.argv[2:])
+    {"harness": harness, "genesis": genesis}[sys.argv[1]](*sys.argv[2:])
