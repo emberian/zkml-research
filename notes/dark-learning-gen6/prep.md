@@ -660,3 +660,23 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
 - The LowGear d = 4096 chunk through hbox measured on its own. The rec chunks will measure it as they run: wall, links, CPU and RSS per party are in <chunk>.json. Write them into this file.
 - LowGear's three-box per-link split. The calendar assumes hbox sends 1/3 of the total.
 - Unmount hbox's tmpfs and shred the lane's test seats (ptest*, lgp*, lgnew* after the run) at the end.
+
+**Why a LowGear key setup is 112 GB per party, and MASCOT against LowGear without hbox** (ember's question)
+- [SOURCE Protocols/LowGearKeyGen.hpp] Malicious LowGear key generation is MASCOT over the 319-bit ciphertext-modulus field. Each of the 3 parties gets its own key pair.
+  - sk and e0 each take 2 random bits per coefficient (`binomial`, NewHopeB = 1). So a key costs 4N = 65,536 MASCOT bits, and the three cost 196,608.
+  - Measured: 2.70 Tbit for all parties, 13.7 Mbit per bit. A 319-bit MASCOT triple is about (319/61)^2 x 362 kbit = 9.9 Mbit.
+  - There is no overshoot: the keygen batch is capped at min(100, batch_size).
+  - It scales with N (169.6 GB at N = 8,192, 338.3 GB at 16,384).
+- [DERIVED, untested] tau = 5 also applies to the 319-bit field, where tau = 3 already gives 160 statistical bits. A per-field N_AMPLIFY would cut keygen to about 68 GB per party.
+- Per party sent:
+
+| | MASCOT tau = 5 | LowGear N = 16,384 |
+|---|---:|---:|
+| proved step | 66.9 GB | 15.5 GB |
+| handover tape | 32.8 GB | 5.4 GB |
+| release M = 52 | 946 GB | 219 GB |
+| key setup | none | 112.5 GB per committee |
+
+- rec (8 steps, one handover, release): MASCOT 1,514 GB, LowGear 573 GB per party.
+  - Link-bound at 0.5 Gbit/s: 6.7 h against 2.5 h. At 1 Gbit/s: 3.4 h against 1.3 h. LowGear's compute (about 900 s per key setup) makes its figures lower bounds.
+- Break-even: 225 GB of key setups against a saving of 93 kbit per party per triple-eq is 19.4M triple-eq (about 4.3 steps, no release). rec is about 100M, so LowGear is about 2.6x shorter.
