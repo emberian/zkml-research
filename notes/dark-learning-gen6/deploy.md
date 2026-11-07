@@ -959,3 +959,71 @@ pause/resume, record.py.
 
 **Agents**: coordinator aa3209e8d10294bc2; prep a8fd625fd8dbd4f54; proof aafff52532f04d20a (memory helper
 aa5e2143a94a1698c, E helper a93e0325f167a4ed2); handover afc2a88b82c0cca1a; train ad36593ec00657538.
+
+## Deploy lane generation 4 (a21cca37, successor of afcd36ed, from 2026-11-07 12:30 UTC)
+
+### run13: prep's real sealed chunks, 1 rounded proved step, then the release at M = 52 (12:35-13:15 UTC) [EXECUTED]
+
+Wired layout (seat 0 forge MemoryMax=12G, seats 1, 2 bb2 12G), prep's run13-c0 (DLVAULT1 step tapes) and
+run13-rel (DLVAULT2 release tapes, 2,672,137,730 B, 157,182,170 entries, 38,666,490 of them the proof section),
+MASCOT tau = 5 under one MAC key; ledger-x2de + RS, `--ret-primes 2 --ret-round`, inline proof, --vault,
+--wipe-spent, archive on bb2. `run.py runs/run13.json launch`, then `run.py runs/run13.json resume`.
+
+Two bugs in sealed-tape paths no test had exercised end to end:
+- 12:35, r7: refused before step 0 at all three, "15416554168668176872 entries ... made for another profile":
+  dl-custodian's check_profile read a sealed (DLVAULT1) step tape's AEAD bytes as the DLTAPE01 header. Fixed in
+  fa9b08c7 (`serve::tape_len` opens the seal). darkdeploy `tests/sealed_tapes.rs` at HEAD had a duplicated fn and
+  never compiled, which is how this passed; fixed, plus the_profile_check_reads_a_sealed_tapes_count (bb2: 2 passed).
+  Nothing was claimed (consumed.jsonl unchanged).
+- 12:52, r9: step 0 ran; the release then stopped at "run13-rel-P<I>/step-0/tape_I.bin: not a tape":
+  `serve::claim_tape_file` (fb173e20) took only DLTAPE01. Fixed in 345782da: a sealed tape is claimed once opened,
+  hashed as on disk, with the opened tape's alpha_i. run13-c0 was spent by then (single use, wiped), so the release
+  ran alone from step 0's checkpoint: `serve --resume --steps 0 --release` (new: no step tape loaded or claimed, the
+  checkpoint's alpha_i, which the release tape must carry; check_profile skips; `run.py resume` does it when every
+  step ran and the release failed). Test: darkdeploy `--test release_sealed` (Linux): a proved step under --vault,
+  release tapes sealed DLVAULT2 under each seat's key, the release alone: one C equal to the plaintext count, each
+  registry holding the sealed file; control: the tapes restored byte for byte are refused as consumed (bb2: 1 passed).
+- cd4a1b00: --wipe-spent also wipes the release's own tape once claimed (run13 left run13-rel on disk; prep shredded it).
+
+Results (build r9 for step 0, r10 = 345782da for the release):
+
+| | seat 0 (forge, 12G) | 1 (bb2) | 2 (bb2) |
+|---|---:|---:|---:|
+| step 0 s (rounded, proved) / proof / verify | 102.2 / 29.7 / 15.4 | 102.2 | 102.2 |
+| bytes per directed link, step 0 | 1,385.6 MB | | |
+| release s (MPC / prove / verify) | 670.1 (14.4 / 251.4 / 201.1) | 651.0 (6.9 / 251.7 / 193.3) | 645.4 (7.2 / 251.7 / 192.9) |
+| release VmHWM | **8.94 GB** | 9.32 GB | 9.60 GB |
+| release cgroup memory.peak (sampled) | **10.27 GB** | 10.64 GB | 10.95 GB |
+
+- Step 0 ACCEPT at all three, one transcript, proof 43,243,613 B verified: **the proof with rounding on accepts at
+  d = 4096** (was [OPEN]).
+- The release: C = 8 of 52 at all three, one bundle 260,052,099 B (sha256 09dc6b19...), ledger_accepted at all three.
+  Forge's release fits 12G with 1.73 GB to spare (run10c's test-dealer tapes: 10.32 / 10.91 GB).
+- **Twin**: `darktrain shadow '<train_genesis_gen6.json>' 1 52` (order 2, as the owner feeds) gives C = 8; controls:
+  0 steps C = 0, 2 steps C = 9. The weights-equal-twin check is test-only (not in a production build); C is the
+  confirmation here.
+- record.py now carries --ret-round.
+
+### The disk plan for the run of record (coordinator-approved) [EXECUTED: run.py plan]
+
+Measured: bundle 47.47 MB per step (x2de + RS), sealed step tape 151.8 MB per seat, process state ~0.95 GB, handover
+tape 570 MB and release tape 2.67 GB per new seat, handover bundle 27.6 MB, release bundle 260 MB; prep's lookahead
+(`darkprep produce --max-ready 9`, chunk-steps 2: (R + 1) x K = 20 step files per process, confirmed by prep).
+`run.py RUN.json plan` (hbox layout, K at the middle; conservative: old seat dirs kept):
+
+| N | forge / (315 GiB free, line 30) | bb2 / (46 GiB then, 103 after the cleanup; line 30) | hbox /othersys (49 GiB, line 30) |
+|---|---:|---:|---:|
+| 2000 | 99.2 GiB (archive 88.7) | 10.5 | 10.5 |
+| 500 | 32.8 (archive 22.4) | 10.4 | 10.4 |
+
+- The archive goes on forge (`record.py --archive-on`, default); it cannot sit on bb2. The Mac (89 GiB) holds it only
+  for N = 500.
+- fa9b08c7: `run.py plan`; the gate at every launch per (host, filesystem); drive rechecks every disk_poll_s (600) and,
+  when a box would end under its line, touches each seat's DIR/PAUSE: serve `--pause-file` (any custodian's file
+  pauses the committee at the next boundary; darkstep `--test serve_steps -- pause` 2 passed); drive resumes only once
+  every box is above its line. Nothing is deleted.
+- bb2 cleanup (coordinator-approved, this session's own run dirs): 92 files, 58.59 GiB (test-dealer tapes,
+  checkpoints, carries, reveal shares of finished runs; list in bb2:~/lanes/dl-gen6-deploy/removed-2026-11-07.txt);
+  bb2 / 44.2 -> 102.8 GiB free. Kept: every log, json, bundle, and reh's sealed erased copies.
+- reh's plaintext MP-SPDZ copies (Player-MAC-Keys-p-P<I>, Mascot-Secrets-p-61-*) were already shredded by gen 3;
+  reh/seat*/erased holds only DLVAULT1 files (checked by magic). Nothing left to delete.
