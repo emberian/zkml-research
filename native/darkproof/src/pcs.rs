@@ -352,8 +352,8 @@ impl PcsParty {
     /// The leaves of the coset codeword, streamed over blocks of rows (h_leaf = H("leaf", salt, column) with the
     /// column fed in row order), never holding the codeword.
     fn stream_leaves(&self) -> Vec<Hash> {
-        const B: usize = 256;
         let (r, npts) = (self.shape.r, self.shape.npts);
+        let b = stream_rows(npts);
         let mut st: Vec<crate::h::Py> = self
             .salts
             .iter()
@@ -363,8 +363,8 @@ impl PcsParty {
                 h
             })
             .collect();
-        for r0 in (0..r).step_by(B) {
-            let nb = B.min(r - r0);
+        for r0 in (0..r).step_by(b) {
+            let nb = b.min(r - r0);
             let rows = self.encode_rows(r0, nb);
             st.par_iter_mut().enumerate().for_each(|(j, h)| {
                 for dr in 0..nb {
@@ -385,11 +385,11 @@ impl PcsParty {
 
     /// The columns js of the coset codeword, streamed (re-encoding every row, holding only the chosen columns).
     fn stream_columns(&self, js: &[usize]) -> Vec<Vec<u64>> {
-        const B: usize = 256;
         let (r, npts) = (self.shape.r, self.shape.npts);
+        let b = stream_rows(npts);
         let mut cols = vec![Vec::with_capacity(r); js.len()];
-        for r0 in (0..r).step_by(B) {
-            let nb = B.min(r - r0);
+        for r0 in (0..r).step_by(b) {
+            let nb = b.min(r - r0);
             let rows = self.encode_rows(r0, nb);
             cols.par_iter_mut().zip(js.par_iter()).for_each(|(c, &j)| {
                 for dr in 0..nb {
@@ -599,6 +599,11 @@ pub fn colsums(c: &PcsCols, r: usize) -> Vec<Vec<u64>> {
             s
         })
         .collect()
+}
+
+/// Rows per streamed block: a 64 MiB buffer of encoded rows (balanced shapes have few, long rows), at least one.
+fn stream_rows(npts: usize) -> usize {
+    ((64usize << 20) / (8 * npts)).max(1)
 }
 
 /// A carry checkpoint (secret: the share rows, tails, mask rows and salts): the child commitments a custodian carries
