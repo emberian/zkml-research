@@ -527,6 +527,14 @@ at d = 4096 (ledger: hide 618, blow 4). The commitments were 169 s + 50 s of the
   - Public genesis: `run::public_genesis(pr, d, i, w1, w2, 3) -> (carry, roots)`, `run::public_weights(cfg)`, and
     `Ledger::check_public_genesis(cfg)` before accept or release.
   - Release: `run::release_mpc`, `release_section` and `prove_release`, then `Ledger::release`.
+- **PCS domain.** Profile DOMAIN: "coset" is the default; "ledger-int" / "demo-int" keep the old points. The CLI
+  and `darkproof_vectors.py` take `DP_DOMAIN=int` for vectors made before 28769b6a. `darkproof pcs-bench M PROFILE`
+  times one commitment.
+- **Proof speed, still open.**
+  - The one-custodian-per-box time and memory (seat 0 on forge under 12 GB).
+  - Pipelining contention, on the three-box run.
+  - Leaf hashing (repr-format SHA-256, 1.0 s per d² commitment) is the next kernel; changing it changes the wire
+    format.
 - **Program flags.** "RC" (proved bounds), "LB" (bit lookup; needs RC) and "PG" (public genesis; sha256 of the cfg
   bytes). `StepParams { rc, lb, pg }`; the genesis writer pins all three.
 - **End to end:** `ds_chain` in bin/darkproof.rs.
