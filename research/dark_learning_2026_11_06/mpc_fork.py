@@ -11,17 +11,19 @@ import random
 import spdz
 import step_spec as S
 
-def tables(p):
-    sig = [S.SIG[u - 128] % p for u in range(256)]
-    dsig = [S.DSIG[u - 128] % p for u in range(256)]
+def tables(p, prog=S.HARNESS):
+    """SIG and DSIG interpolated at 0..255 = the input code u - T_LO (prog's table domain)."""
+    sig = [prog.SIG[u + prog.T_LO] % p for u in range(256)]
+    dsig = [prog.DSIG[u + prog.T_LO] % p for u in range(256)]
     return spdz.interpolate(sig, p), spdz.interpolate(dsig, p)
 
 def centered(v, p):
     return v - p if v > p // 2 else v
 
-def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None, ou=None):
+def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None, ou=None, prog=S.HARNESS):
     """The protocol, identical in live and audit mode. W1, W2, x, y are PLAIN values for the owner's input
-    (ignored in audit mode, which reads the owner's broadcasts from the transcript)."""
+    (ignored in audit mode, which reads the owner's broadcasts from the transcript). prog: the step program
+    (step_spec.Program; tab must be tables(p, prog)); the default is the harness's program, unchanged."""
     d = len(x)
     orng = random.Random(owner_seed)
     flat = lambda M: [v for r in M for v in r]
@@ -38,8 +40,8 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None, ou=None):
     ro = getattr(eng, "rec_out", None)
     if ri:
         z1 = ri("z1", z1)
-    u1 = [eng.trunc(z, S.S1, 13) for z in z1]
-    hg = [eng.lookup2(u, 128, tab, 255) for u in u1]
+    u1 = [eng.trunc(z, prog.S1, prog.K1) for z in z1]
+    hg = [eng.lookup2(u, -prog.T_LO, tab, 255) for u in u1]
     h = [a for a, _ in hg]
     g1 = [b for _, b in hg]
     if ro:
@@ -52,8 +54,8 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None, ou=None):
     if ri:
         z2 = ri("z2", z2)
         sy = ri("y", sy)
-    e = [eng.sub(eng.trunc(z, S.S1, 13), yy) for z, yy in zip(z2, sy)]
-    d2 = [eng.trunc(v, S.S2, 8) for v in e]
+    e = [eng.sub(eng.trunc(z, prog.S1, prog.K1), yy) for z, yy in zip(z2, sy)]
+    d2 = [eng.trunc(v, prog.S2, prog.K2) for v in e]
     if ro:
         ro("d2", d2)
     b = matvec(M2, d2, transpose=True)
@@ -62,7 +64,8 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, tamper=None, mv=None, ou=None):
     bg = [eng.mul(bb, g) for bb, g in zip(b, g1)]
     if ro:
         ro("bg", bg)
-    d1 = [eng.trunc(v, S.S3, 13) for v in bg]
+    bgr = [eng.cadd(prog.R3, v) for v in bg] if prog.R3 else bg     # public rounding constant (0: floor)
+    d1 = [eng.trunc(v, prog.S3, prog.K3) for v in bgr]
     if ro:
         ro("d1", d1)
     outer = ou or eng.outer          # ou: HE-assisted outer product (he_outer.HEOuter), same interface
