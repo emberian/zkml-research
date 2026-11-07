@@ -702,6 +702,53 @@ Estimate at d = 4096 after A + B: 55.9 -> about 44 MB.
 - A G that is not the committed g's sum: refused, by the Ligero constraint for G.
 - One custodian's broadcast share off by one: the proof is refused, at the same rate whatever the secrets are.
 
+## 18. Cuts A + B landed; the release at M = 52 (coordinator) [EXECUTED]
+
+**A + B** (db65cc57, ca46c2fd). The design is §16. Profiles "ledger" and "demo" now carry SPLIT balanced, K_L 512
+and MERKLE multi. "-sq" is the old layout (DP_SPLIT=square).
+
+| | before | A | A + B |
+|---|---|---|---|
+| d = 4096 step bundle (bb2, one PG step, GEN6 + RC + LB) | 250,915,469 B | 88,710,972 B (model 88.79 MB) | **54,700,356 B** (model 55.9 MB) |
+| PROOF field elements sent per custodian | 33.46M | 19.96M | 19.96M |
+| d = 4096 release bundle at M = 8 | 182.7 MB | 65.3 MB | 49.2 MB |
+| d = 16 step bundle (demo) | 9.47 MB | | 3.95 MB |
+
+**Byte-equality under the new profile.** demo, PG + RC + LB, three carried steps:
+- d = 4: e8729ed1…, f6f9bc1a…, 33118bd8…;
+- d = 16: d6410cff…, a9a1e0e0…, 980216f6….
+
+For both:
+- native = Python, and the genesis roots are equal;
+- each verifier accepts the other's bundles and refuses a flipped byte;
+- the Python ledger's PG rows and control hold as before;
+- Python's replay of a native A + B run passes.
+
+Controls:
+- the old vectors are EQUAL under -sq and DIFFER under the new profile;
+- a multiproof with a forged sibling is refused.
+
+**New counts.** step_section = 3,192,275 - 1,497 + 3,289 = 3,194,067. The Ligero's products are 2(2(k + t) - 1) + 7
+with k = 512. The release section is to be read from `run::release_section` at M = 52.
+
+**The release at M = 52.** The coordinator's decision (a), the train lane repin 0b0631a5 (twin C = 47 of 52 after
+2,000 steps).
+- In one process on bb2 the three custodians reached about 80 GB, and bb2's earlyoom ended the run (SIGTERM) because
+  other tenants were also using the box. That harness cannot bound one custodian: its own baseline before the release
+  is 37 GB.
+- The M = 8 trace at A + B (all three in one process, RSS deltas per phase) shows where the memory goes:
+  - the release replay: +0.5 GB per custodian (6.0M constraints);
+  - vectors and commitments: +2.6 GB per custodian;
+  - at M = 52, the streamed codeword buffer was 256 rows x 2.1M points, 4.3 GB per custodian. ca46c2fd bounds it to
+    64 MiB.
+- Estimate at M = 52 after ca46c2fd: about 9 GB of proof working set per custodian over its baseline. This is [DERIVED],
+  not measured. The measurement is asked of the deploy lane: one custodian per process and per box, test-dealer tapes
+  in deal_release's layout at M = 52, DP_TRACE=1, VmHWM and memory.peak.
+- If it is over 12 GB, the next items are:
+  - compact constraint storage (Rec.cons is about 85 B per constraint: about 3.3 GB at M = 52);
+  - streaming the 47.7M proof-section triples from the tape (2.3 GB);
+  - keeping MACs for A/B/C only through the zerocheck.
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).
@@ -775,52 +822,41 @@ Estimate at d = 4096 after A + B: 55.9 -> about 44 MB.
   - builds: `target-det` (pre-coset), `target` (coset, a40857d1). Rebuild after syncing `native/`.
   - No jobs of mine are running there.
 
-## Continuation (gen 4 of the proof lane, at about 300K tokens)
+## Continuation (gen 4 of the proof lane, at about 355K tokens; for gen 5)
 
-**Landed by gen 4:**
-- bb20a601: release_custodian and mnist_policy;
+**Landed by gen 4, in order:**
+- bb20a601: release_custodian, mnist_policy;
 - 6bc16a9b: carry checkpoints, Python PG;
-- 044ebd4a: the Python replay and the NTT encoder;
-- notes §13-§17.
+- 044ebd4a: Python replay, NTT;
+- db65cc57: cuts A + B, release memory;
+- ca46c2fd: stream buffer, trace points;
+- 88a87f02 and this commit: notes §13-§18.
 
-**In the working tree at this writing**, committed with the A + B landing:
-- stage A: `Profile.split`, `pcs::row_split`, K_L 512, the "-sq" profiles, DP_SPLIT=square;
-- stage B: `wire::mp_needed`, `w_multi`, `r_multi`, `LigProof.j`, Python `cosnark.mp_*` and the walk kinds "jl" and "mp";
-- release memory: middle.rs keeps vectors as shares only and stops cloning A/B/C; pcs.rs streams codewords above
-  DP_CW_HOLD_MB; release_custodian frees the tape; Trace lines carry RSS.
+**Open, in order:**
+1. The release's per-custodian peak at M = 52 against 12 GB (§18). The deploy lane (a68410e60434efcda) is wiring
+   `--release` in dl-custodian and was asked for the per-seat measurement. If it is over: compact Rec.cons (CSR forms in
+   step.rs), stream the triples, MACs for A/B/C only through the zerocheck.
+2. Cut D: the ZK sumcheck by masking polynomial. The argument is §17 and the coordinator said GO. Python
+   (cosnark_zk sumchecks, cosnark_gates_zk zerocheck, claims and linear sumchecks) and native (spine.rs, middle.rs,
+   wire), byte-equal at d = 4 and 16, plus the §17 refusal rows. Report the d = 4096 bundle (expected about 44 MB). It
+   is a new profile parameter, so put it in the profile and keep the old under a name.
+3. Cut E after D, with the coordinator's semantics (§16): pending vs final in the ledger and the replay, a standalone
+   closing opening, the handover as the discharge, hide 309 only with one opening per commitment, enforced. Then the
+   release back to M = 64 as two M = 32 proofs with one deferred joint opening.
+4. Contention (proof k beside step k+1) once the prep lane's two-step proved chunk exists.
+5. The aggregator (quest item 4) once hbox is in a run layout; measure hbox's per-link bytes first.
+6. The Python verifier's time at d = 4096 on a real bundle (the run's `D/proof_step*_P0.bin`): `proofwire.py replay`.
 
-**Checks so far:**
-- old vectors are EQUAL under -sq, and DIFFER under the new profile (the negative control);
-- native ds-chain 16 under A + B: DS-CHAIN PASS, step bundle 3.97 MB (was 9.47 MB);
-- Python replay of that native run: REPLAY PASS (Python's multiproof decoder accepts native's encoder);
-- multiproof round trip and a forged sibling: refused.
-
-**Pending:**
-1. A + B byte-equality (`scratchpad/dl-gen6/proof/vecAB`, Python jobs `d4.pid` and `d16.pid`): run
-   `darkproof check vecAB demo_d{4,16}_pg_he` and `darkproof_vectors.py verify`, then commit A + B by path. Send the
-   commit id to the handover lane (ac3b201ab6a366ff6), whose `handover::byte_len` breaks, and to the deploy lane, along
-   with the new step_section (`darkproof counts 4096 ledger`).
-2. The release memory at M = 64. bb2 `~/lanes/dl-gen6-proof/rel4096.sh 64` with DP_SPLIT=square; logs rel4096_m64*.log,
-   with run1 and run2 kept. Three custodians in one process over 85G means over about 12 GB each. If still over: the
-   remaining big items per custodian are the release section's triples (2.8 GB), the atom copies, q and the
-   linear-sumcheck tables (1-2 GB), and P at 2^27. Next options:
-   - stream the triples from the tape file;
-   - free PartyRelease.atoms after witness_atoms;
-   - as the last resort, cut the release into two proofs of M = 32. That needs a second life of the head commitments:
-     open each head commitment once, with both proofs' points in one opening.
-3. Measure d = 4096 bundle bytes under A + B for real (`ds-chain 4096 ledger 1 8` with the GEN6 program). Expected
-   about 56 MB, model `sizes/sim.py 512 1 1`. Report to the coordinator per stage: A alone about 88.8 MB, A + B about
-   55.9 MB.
-4. D (§17, argument written, coordinator GO): code in Python and native, byte-equal, plus the refusal rows listed in
-   §17.
-5. E after D, with the coordinator's semantics (§16).
-6. Contention (proof k beside step k+1) when the prep lane's two-step proved chunk exists (deploy lane).
-7. The aggregator (item 4 of the quest): raise once hbox is in a run layout.
+**Commands.** These are the §11 and §12 Continuation commands, plus:
+- `rel4096.sh M` on bb2 (`~/lanes/dl-gen6-proof`; DP_SPLIT=square for the old profile);
+- `scratchpad/dl-gen6/proof/sizes/{breakdown,sim}.py` for the size model;
+- the vectors in `scratchpad/dl-gen6/proof/{pgvec (old profile), vecAB (A + B)}`.
+- Commit with `git commit -F msg -- <paths>`.
 
 **Peers:**
 - coordinator aa3209e8d10294bc2;
-- deploy a68410e60434efcda (adds `--profile`; dry run on ledger-sq);
+- deploy a68410e60434efcda;
 - prep a5caa478aac6a0658;
-- handover ac3b201ab6a366ff6;
+- handover ac3b201ab6a366ff6 (told db65cc57; its `handover::byte_len` must follow the multiproof);
 - train ad36593ec00657538.
-Note: commit with `git commit -F msg -- <paths>`. A plain commit took the prep lane's staged files once (bb20a601).
+
