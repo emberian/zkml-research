@@ -682,6 +682,21 @@ def tower_lin_cost(kind, acc, m, macs_rate, simt_rate, bw):
     return max(t.values()), t
 
 
+OPB = {"int8": 1, "fp8": 1, "fp16": 2, "bf16": 2, "fp4": 0.5, "b1": 0.125, "b1x": 0.125}
+
+
+def tower_lin_unfused_bytes(kind):
+    """HBM bytes per element when unpack, GEMM and repack are three kernels (what accel-towermul-vs-table-01
+    built): read 32 B packed, write/read 256 unpacked operands (b1: none, already packed), write/read 256
+    32-bit counts, write 32 B packed."""
+    ops = 0 if kind.startswith("b1") else 2 * 256 * OPB[kind]
+    return 32 + ops + 2 * 256 * 4 + 32
+
+
+# MEASURED end to end on T4 (accel-towermul-vs-table-01, bit-exact, 2^18 elements, unfused): INT8 route 21.4 ns
+# per element (unpack 2.26, GEMM 6.47, repack 12.67); f16 route 35.2 ns; table multiply 1.85 ns same session.
+T4_TOWERMUL_MEAS = {"int8": 21.38e-9, "fp16": 35.24e-9, "table": 1.849e-9}
+
 # Measured SIMT anchors (T4, notes/accelerator-readiness/TOWER256.md section 4), in T4 int32-op equivalents.
 KECCAK_OPS_MEAS = 5900          # 6.9e8 Keccak-f/s on T4 (tune-03); 9,350 at 4.35e8 (dryrun-04)
 T256_MUL_TABLE_OPS = 12000      # log/exp GF(2^8) tables: 12,000-17,400 [MEASURED T4, TOWER256.md section 8]
@@ -695,8 +710,10 @@ def rot_binary(N=2 ** 25):
     print(f"\nROTATION 2b: Tower256 on the tensor units, per element (ns).  SIMT baselines in T4 op-eq scaled by SIMT rate:")
     print(f"  table {T256_MUL_TABLE_OPS:,}-{T256_MUL_TABLE_HI:,} and bit-sliced {T256_MUL_BITSLICED_OPS:,} [MEASURED T4]; "
           f"ideal instruction count {T256_MUL_IDEAL_OPS} [D, unreachable: 256 planes do not fit 255 registers]")
-    print(f"  {'target':7} {'path':5} {'inner product':>14} {'fixed-r mult':>13} {'table (best)':>12} {'ideal':>7} "
-          f"{'win vs table':>12} {'vs ideal':>9}  binding")
+    print("  fixed-r mult = FUSED kernel (only 96 B/element of HBM: predicted, not built); unfused = three kernels")
+    print("  through HBM, the shape measured on T4 (counts and unpacked operands round-trip HBM).")
+    print(f"  {'target':7} {'path':5} {'inner product':>14} {'fixed-r fused':>13} {'unfused':>9} {'table (best)':>12} {'ideal':>7} "
+          f"{'fused vs tbl':>12} {'unfused vs tbl':>14}  binding")
     res = {}
     for tgt, T in TARGETS.items():
         if not T["simt"]:
@@ -711,8 +728,13 @@ def rot_binary(N=2 ** 25):
             bi = max(ipt, key=ipt.get)
             bl = max(lnt, key=lnt.get)
             res[(tgt, kind)] = (ip, ln, sm_tbl, sm_bs)
-            print(f"  {tgt:7} {kind:5} {ip * 1e9:11.3f} ns {ln * 1e9:10.3f} ns {sm_tbl * 1e9:9.3f} ns {sm_bs * 1e9:6.3f}"
-                  f" {sm_tbl / ln:10.1f}x {sm_bs / ln:8.2f}x  ip:{bi} lin:{bl}")
+            unf = max(lnt["tc"], lnt["simt"], tower_lin_unfused_bytes(kind) / T["bw"])
+            meas = ""
+            if tgt == "T4" and kind in T4_TOWERMUL_MEAS:
+                meas = f"  MEASURED end-to-end {T4_TOWERMUL_MEAS[kind] * 1e9:.1f} ns (table {T4_TOWERMUL_MEAS['table'] * 1e9:.2f}): " \
+                       f"{T4_TOWERMUL_MEAS['table'] / T4_TOWERMUL_MEAS[kind]:.3f}x"
+            print(f"  {tgt:7} {kind:5} {ip * 1e9:11.3f} ns {ln * 1e9:10.3f} ns {unf * 1e9:7.3f} {sm_tbl * 1e9:9.3f} ns "
+                  f"{sm_bs * 1e9:6.3f} {sm_tbl / ln:10.1f}x {sm_tbl / unf:12.2f}x  ip:{bi} lin:{bl}{meas}")
     print("  'win' columns compare the fixed-r multiply (the harder case; inner products win by more).  The table")
     print("  and bit-sliced rates are measured on T4 only and scaled by SIMT throughput; the tensor rows are model.")
     return res
