@@ -2,7 +2,7 @@
 
 use crate::field::Fp;
 use crate::mpspdz::Transactions;
-use crate::schedule::{events, Event, Inputs, Plan, StepParams, Tag, DEG, KAPPA};
+use crate::schedule::{runs, Event, Inputs, Plan, StepParams, Tag, DEG, KAPPA};
 use std::io::{Read, Write};
 
 pub const MAGIC: &[u8; 8] = b"DLTAPE1\n";
@@ -101,16 +101,25 @@ pub fn assemble_step(sp: &StepParams, tx: &Transactions, party: u32, j: usize, s
 
 /// Step `j` of a chunk whose steps are `chunk` (crate::schedule::plan_of_steps).
 pub fn assemble_in_chunk(chunk: &[StepParams], tx: &Transactions, party: u32, j: usize) -> Result<Tape, String> {
+    let mut entries = Vec::with_capacity(crate::schedule::n_entries(&chunk[j]));
+    let mut t = assemble_in_chunk_emit(chunk, tx, party, j, &mut |tag, (s, m)| entries.push((tag, s, m)))?;
+    t.entries = entries;
+    Ok(t)
+}
+
+/// As assemble_in_chunk, streaming: each entry goes to `emit` in tape order, none is kept; the returned Tape has
+/// the header only (no entries).
+pub fn assemble_in_chunk_emit(chunk: &[StepParams], tx: &Transactions, party: u32, j: usize, emit: &mut dyn FnMut(Tag, (u64, u64))) -> Result<Tape, String> {
     let sp = &chunk[j];
     let fp: Fp = tx.fp;
     let one = Plan::of(sp);
     let plan = crate::schedule::plan_of_steps(chunk);
     let sec = plan.sections();
     let (o_in, o_ar, o_tri, o_lp, o_tr) = crate::schedule::offsets(chunk, j);
-    if tx.shares.len() != sec.total {
-        return Err(format!("Transactions holds {} shares, the plan needs {}", tx.shares.len(), sec.total));
+    if tx.len() != sec.total {
+        return Err(format!("Transactions holds {} shares, the plan needs {}", tx.len(), sec.total));
     }
-    let at = |(base, _nc, m): (usize, usize, usize), comp: usize, k: usize| tx.shares[base + comp * m + k];
+    let at = |(base, _nc, m): (usize, usize, usize), comp: usize, k: usize| tx.share(base + comp * m + k);
     let lin = |terms: &[(u64, (u64, u64))]| {
         terms.iter().fold((0u64, 0u64), |(s, m), &(c, (x, y))| (fp.add(s, fp.mul(c, x)), fp.add(m, fp.mul(c, y))))
     };
@@ -119,56 +128,60 @@ pub fn assemble_in_chunk(chunk: &[StepParams], tx: &Transactions, party: u32, j:
     let mut cur_tri = o_tri;
     let mut cur_lp = o_lp;
     let mut cur_tr: Vec<usize> = o_tr;
-    let mut out = Vec::new();
-    let push = |out: &mut Vec<(Tag, u64, u64)>, t: Tag, (s, m): (u64, u64)| out.push((t, s, m));
-    let triple = |out: &mut Vec<(Tag, u64, u64)>, cur: &mut usize| {
+    let triple = |emit: &mut dyn FnMut(Tag, (u64, u64)), cur: &mut usize| {
         for (c, t) in [Tag::Ta, Tag::Tb, Tag::Tc].into_iter().enumerate() {
-            out.push((t, at(sec.tri, c, *cur).0, at(sec.tri, c, *cur).1));
+            emit(t, at(sec.tri, c, *cur));
         }
         *cur += 1;
     };
-    for e in events(sp) {
-        match e {
-            Event::Input => {
-                push(&mut out, Tag::In, at(sec.input, 0, cur_in));
-                cur_in += 1;
-            }
-            Event::AuthPlain => {
-                push(&mut out, Tag::Ar, at(sec.ar, 0, cur_ar));
-                cur_ar += 1;
-            }
-            Event::Mul => triple(&mut out, &mut cur_tri),
-            Event::Trunc(s, k) => {
-                let c = plan.class_of(s, k);
-                let i = cur_tr[c];
-                cur_tr[c] += 1;
-                let nb = (k + KAPPA) as usize;
-                let bits: Vec<(u64, u64)> = (0..nb).map(|j| at(sec.tr[c], j, i)).collect();
-                let r: Vec<_> = (0..nb).map(|j| (fp.two_pow(j as u32), bits[j])).collect();
-                push(&mut out, Tag::Tr, lin(&r));
-                for b in bits.iter().take(s as usize) {
-                    push(&mut out, Tag::Trb, *b);
+    let mut bits: Vec<(u64, u64)> = Vec::new();
+    for (e, n) in runs(sp) {
+        for _ in 0..n {
+            match e {
+                Event::Input => {
+                    emit(Tag::In, at(sec.input, 0, cur_in));
+                    cur_in += 1;
                 }
-                let hi: Vec<_> = (s as usize..nb).map(|j| (fp.two_pow(j as u32 - s), bits[j])).collect();
-                push(&mut out, Tag::Trh, lin(&hi));
-                if sp.proof_atoms {
-                    for b in &bits[s as usize..] {
-                        push(&mut out, Tag::Trhb, *b);
+                Event::AuthPlain => {
+                    emit(Tag::Ar, at(sec.ar, 0, cur_ar));
+                    cur_ar += 1;
+                }
+                Event::Mul => triple(emit, &mut cur_tri),
+                Event::Trunc(s, k) => {
+                    let c = plan.class_of(s, k);
+                    let i = cur_tr[c];
+                    cur_tr[c] += 1;
+                    let nb = (k + KAPPA) as usize;
+                    bits.clear();
+                    bits.extend((0..nb).map(|j| at(sec.tr[c], j, i)));
+                    let r: Vec<_> = (0..nb).map(|j| (fp.two_pow(j as u32), bits[j])).collect();
+                    emit(Tag::Tr, lin(&r));
+                    for b in bits.iter().take(s as usize) {
+                        emit(Tag::Trb, *b);
+                    }
+                    let hi: Vec<_> = (s as usize..nb).map(|j| (fp.two_pow(j as u32 - s), bits[j])).collect();
+                    emit(Tag::Trh, lin(&hi));
+                    if sp.proof_atoms {
+                        for b in &bits[s as usize..] {
+                            emit(Tag::Trhb, *b);
+                        }
+                    }
+                    for _ in 0..2 * (s - 1) {
+                        triple(emit, &mut cur_tri);
                     }
                 }
-                for _ in 0..2 * (s - 1) {
-                    triple(&mut out, &mut cur_tri);
+                Event::Lookup => {
+                    for j in 0..DEG {
+                        emit(Tag::Lp, at(sec.lp, j, cur_lp));
+                    }
+                    cur_lp += 1;
                 }
-            }
-            Event::Lookup => {
-                for j in 0..DEG {
-                    push(&mut out, Tag::Lp, at(sec.lp, j, cur_lp));
-                }
-                cur_lp += 1;
             }
         }
     }
-    debug_assert_eq!((cur_in, cur_ar, cur_tri, cur_lp), (o_in + one.n_in, o_ar + one.n_ar, o_tri + one.n_tri, o_lp + one.n_lp));
+    if (cur_in, cur_ar, cur_tri, cur_lp) != (o_in + one.n_in, o_ar + one.n_ar, o_tri + one.n_tri, o_lp + one.n_lp) {
+        return Err("assembly consumed a different number of objects than the plan".into());
+    }
     Ok(Tape {
         p: fp.p,
         n_parties: 3,
@@ -181,8 +194,55 @@ pub fn assemble_in_chunk(chunk: &[StepParams], tx: &Transactions, party: u32, j:
             crate::schedule::Phase::Handover(_) => HANDOVER_INPUTS,
         },
         trunc: sp.trunc.map(|(s, k)| (s as u8, k as u8)),
-        entries: out,
+        entries: Vec::new(),
     })
+}
+
+/// A darkstep DLTAPE01 file written entry by entry: "DLTAPE01", alpha_i, n, then n tags, n shares, n MAC shares
+/// (darkstep::tape::Tape::write_to's layout), each column through its own buffered writer at its offset.
+pub struct DarkstepWriter {
+    cols: [std::io::BufWriter<std::fs::File>; 3],
+    n: usize,
+    k: usize,
+}
+
+impl DarkstepWriter {
+    pub fn create(path: &std::path::Path, alpha_i: u64, n: usize) -> std::io::Result<Self> {
+        use std::io::{Seek, SeekFrom, Write};
+        let mut f = std::fs::File::create(path)?;
+        let mut h = b"DLTAPE01".to_vec();
+        h.extend_from_slice(&alpha_i.to_le_bytes());
+        h.extend_from_slice(&(n as u64).to_le_bytes());
+        f.write_all(&h)?;
+        f.set_len(24 + 17 * n as u64)?;
+        let col = |off: u64| -> std::io::Result<std::io::BufWriter<std::fs::File>> {
+            let mut g = std::fs::OpenOptions::new().write(true).open(path)?;
+            g.seek(SeekFrom::Start(off))?;
+            Ok(std::io::BufWriter::with_capacity(1 << 20, g))
+        };
+        Ok(DarkstepWriter { cols: [col(24)?, col(24 + n as u64)?, col(24 + 9 * n as u64)?], n, k: 0 })
+    }
+    pub fn push(&mut self, t: Tag, (s, m): (u64, u64)) -> std::io::Result<()> {
+        use std::io::Write;
+        if self.k == self.n {
+            return Err(std::io::Error::other("more entries than the header says"));
+        }
+        self.k += 1;
+        self.cols[0].write_all(&[t as u8 + 1])?; // darkstep numbers In = 1 .. Ar = 9, Trhb = 10
+        self.cols[1].write_all(&s.to_le_bytes())?;
+        self.cols[2].write_all(&m.to_le_bytes())
+    }
+    pub fn finish(self) -> std::io::Result<()> {
+        use std::io::Write;
+        if self.k != self.n {
+            return Err(std::io::Error::other(format!("{} entries written, the header says {}", self.k, self.n)));
+        }
+        for mut c in self.cols {
+            c.flush()?;
+            c.get_ref().sync_data()?;
+        }
+        Ok(())
+    }
 }
 
 pub fn write_owner(w: &mut impl Write, p: u64, rs: &[u64]) -> std::io::Result<()> {

@@ -24,7 +24,7 @@ pub fn custodian_message_in_chunk(chunk: &[StepParams], tx: &Transactions, j: us
     let o = crate::schedule::offsets(chunk, j).0;
     let sec = crate::schedule::plan_of_steps(chunk).sections();
     let (base, _, m) = sec.input;
-    (o..o + one).map(|k| [0, 1, 2].map(|c| tx.shares[base + c * m + k].0)).collect()
+    (o..o + one).map(|k| [0, 1, 2].map(|c| tx.share(base + c * m + k).0)).collect()
 }
 
 pub fn write_message(w: &mut impl std::io::Write, msg: &[[u64; 3]]) -> std::io::Result<()> {

@@ -3,8 +3,10 @@
 # rules, detached with a PID file; then wait for all three and print their JSON lines.
 #   launch3.sh NAME darkprep-subcommand-and-args...    ({ROOT} is replaced by each box's lane root)
 # {MP} is replaced by the party's MP-SPDZ runtime dir. LAYOUT=wired: parties 1 and 2 both on bb2 (each its own
-# runtime dir wired<I>/mpspdz with its own key), party 0 on forge; otherwise 0 forge, 1 bb2, 2 hbox.
-# Logs and PID files: <ROOT>/runs/NAME[-P<I>].{log,pid} on each box.
+# runtime dir wired<I>/mpspdz with its own key), party 0 on forge; LAYOUT=wired-new / wired-sh: seats.sh's test
+# seats; otherwise 0 forge, 1 bb2, 2 hbox.
+# Logs and PID files: <ROOT>/runs/NAME[-P<I>].{log,pid} on each box. BIN (default target/release/darkprep, relative to
+# <ROOT>) picks the darkprep binary, e.g. a second target dir built while a run holds the first.
 set -u
 name=$1; shift
 declare -a HOST=(dregg-forge bb2 hbox)
@@ -14,12 +16,20 @@ declare -a MP=(mpspdz mpspdz mpspdz)
 if [ "${LAYOUT:-}" = wired ]; then
   HOST=(dregg-forge bb2 bb2); ROOT=(/srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
   WRAP=("${WRAP[0]}" "${WRAP[1]}" "${WRAP[1]}"); MP=(wired0/mpspdz wired1/mpspdz wired2/mpspdz)
+elif [ "${LAYOUT:-}" = wired-new ]; then
+  # TEST: a new committee (seats.sh new): seat 0 bb2, 1 forge, 2 bb2, each its own TLS and MAC key
+  HOST=(bb2 dregg-forge bb2); ROOT=(/home/build/lanes/dl-gen6-prep /srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
+  F=${WRAP[0]}; B=${WRAP[1]}; WRAP=("$B" "$F" "$B"); MP=(wired-new0/mpspdz wired-new1/mpspdz wired-new2/mpspdz)
+elif [ "${LAYOUT:-}" = wired-sh ]; then
+  # TEST: the wired seats after an abort (seats.sh sh): same boxes and TLS identities, a MAC key of their own
+  HOST=(dregg-forge bb2 bb2); ROOT=(/srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
+  WRAP=("${WRAP[0]}" "${WRAP[1]}" "${WRAP[1]}"); MP=(wired0-sh/mpspdz wired1-sh/mpspdz wired2-sh/mpspdz)
 fi
 for i in 0 1 2; do
   r=${ROOT[$i]}
   args=""
   for a in "$@"; do a=${a//\{MP\}/$r/${MP[$i]}}; a=${a//\{I\}/$i}; args+=" $(printf '%q' "${a//\{ROOT\}/$r}")"; done
-  ssh ${HOST[$i]} "mkdir -p $r/runs; cd $r; nohup ${WRAP[$i]} $r/target/release/darkprep$args --party $i > runs/$name-P$i.log 2>&1 < /dev/null & echo \$! > $r/runs/$name-P$i.pid"
+  ssh ${HOST[$i]} "mkdir -p $r/runs; cd $r; nohup ${WRAP[$i]} $r/${BIN:-target/release/darkprep}$args --party $i > runs/$name-P$i.log 2>&1 < /dev/null & echo \$! > $r/runs/$name-P$i.pid"
 done
 for i in 0 1 2; do
   r=${ROOT[$i]}
