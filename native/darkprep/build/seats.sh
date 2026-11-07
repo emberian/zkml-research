@@ -2,12 +2,12 @@
 # From the Mac: make a set of TEST seat runtime dirs on forge and bb2, each with its own TLS key generated on its box
 # and the three certificates pinned in each (c_rehash). MAC keys are NOT copied: each dir draws its own on first run.
 #   seats.sh new   wired-new<I>: new committee, seat 0 bb2, 1 forge, 2 bb2; ips-wired-new.txt, ports 15700 + I
-#   seats.sh sh    wired<I>-sh:  per-seat copies of wired<I> (same box, same TLS identity, a MAC key of its own);
+#   seats.sh sh    wired<I>-sh:  per-seat copies of wired<I> (same box, a fresh TLS identity and MAC key of its own);
 #                  ips-wired-sh.txt, ports 15800 + I
 #   seats.sh newsh wired-new<I>-sh: the same for the wired-new committee; ips-wired-new-sh.txt, ports 15900 + I
 #   seats.sh newsh2 wired-new<I>-sh2: the same again from wired-new<I>-sh; ips-wired-new-sh2.txt, ports 16000 + I
 #   seats.sh rehold|rehnew  reh-old<I> / reh-new<I>: the orchestrator rehearsal's two committees on the wired seats
-#                  (copies of wired<I>'s binaries and TLS identity); ips-reh-old.txt / ips-reh-new.txt, ports 16100 / 16200 + I
+#                  (copies of wired<I>'s binaries; fresh TLS identities); ips-reh-old.txt / ips-reh-new.txt, ports 16100 / 16200 + I
 set -euo pipefail
 FR=/srv/lanes/dl-gen6-prep; BR=/home/build/lanes/dl-gen6-prep
 FIP=178.105.4.114; BIP=2.31.77.40
@@ -26,8 +26,9 @@ for i in 0 1 2; do
   if [ "$1" = new ]; then  # fresh TLS keys made on the box
     ssh ${H[$i]} "cd $r && bash native/darkprep/build/setup-box.sh $d $i $r/mpspdz-tau5.tar.xz"
   else
-    # copy the binaries, compiler and this seat's TLS identity; leave every MAC key / secrets file behind
-    ssh ${H[$i]} "set -e; src=$r/${SRC[$i]}/mpspdz; dst=$d/mpspdz; mkdir -p \$dst/Player-Data \$dst/Persistence; cp -a \$src/*-party.x \$src/compile.py \$src/Compiler \$src/Programs \$dst/; cp -a \$src/Player-Data/P$i.key \$src/Player-Data/P$i.pem \$dst/Player-Data/; rm -f \$dst/Programs/Bytecode/* \$dst/Programs/Schedules/* 2>/dev/null; ls \$dst/Player-Data"
+    # copy the binaries and compiler; leave every MAC key / secrets file AND the TLS identity behind: each seat set
+    # gets a fresh TLS key made on its box, so after a rotation an old seat's key is pinned by no new seat
+    ssh ${H[$i]} "set -e; src=$r/${SRC[$i]}/mpspdz; dst=$d/mpspdz; mkdir -p \$dst/Player-Data \$dst/Persistence; cp -a \$src/*-party.x \$src/compile.py \$src/Compiler \$src/Programs \$dst/; rm -f \$dst/Programs/Bytecode/* \$dst/Programs/Schedules/* 2>/dev/null; cd \$dst; (umask 077; openssl req -x509 -newkey rsa:3072 -nodes -keyout Player-Data/P$i.key -out Player-Data/P$i.pem -days 30 -subj /CN=P$i 2>/dev/null); ls Player-Data"
   fi
   scp -q ${H[$i]}:$d/mpspdz/Player-Data/P$i.pem $S/P$i.pem
 done
@@ -37,6 +38,8 @@ for i in 0 1 2; do
   for j in 0 1 2; do [ $j = $i ] || scp -q $S/P$j.pem ${H[$i]}:$d/mpspdz/Player-Data/P$j.pem; done
   scp -q $S/$IPF ${H[$i]}:$r/$IPF
   ssh ${H[$i]} "c_rehash $d/mpspdz/Player-Data > /dev/null && ls $d/mpspdz/Player-Data | tr '\n' ' '; echo"
+  # MP-SPDZ secrets (MAC keys, Transactions) live in RAM from the first run (ramdir.sh; RAM base per box)
+  ssh ${H[$i]} "cd $r && native/darkprep/build/ramdir.sh $d/mpspdz \$( [ -d /othersys/lanes ] && echo $r/ram/${D[$i]} || echo /dev/shm/dl-gen6-prep/${D[$i]} ) | tail -1"
 done
 for i in 0 1 2; do openssl x509 -in $S/P$i.pem -noout -fingerprint -sha256; done
 rm -rf $S

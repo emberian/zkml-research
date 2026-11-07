@@ -479,3 +479,12 @@ that lg64e runs on. Do not rebuild g2 while lg64e runs.
   - At S = 80, drowning is 2^-54.9 per step.
   - Every term is below the statistical-truncation term (2^-26 per step).
 - [SOURCE NoiseBounds.cpp:77-89, OPEN for ember or the coordinator] MP-SPDZ sizes the ring as phi(m) >= 15.1 log q, from its own estimator run. That gives N = 8,192 for q = 2^312, while the HE standard's 128-bit bound for N = 8,192 is 218 bits. N = 16,384 needs a patched min_phi_m and a new key setup. lg64e is at N = 8,192.
+
+**Follow-ups (the coordinator's decisions, 2026-11-07 afternoon)**
+- **TLS identities rotate with the committee.** The MP-SPDZ TLS private key stays on disk on this condition: a new committee always gets new keys, made on their boxes, and pins only its own three certificates. Then an old seat's key authenticates to nobody after a rotation.
+  - [EXECUTED, fingerprints] `seats.sh new` already did this: wired-new pins 28:E7.., 99:82.., FB:52.., disjoint from wired's A6:A8.., 2B:55.., 14:21...
+  - The copy modes (`sh`, `newsh`, `newsh2`, `rehold`, `rehnew`) reused the source seat's TLS identity, so reh-old and reh-new pinned the same three certificates.
+  - Fixed: every seats.sh mode now runs `openssl req -newkey rsa:3072` on the box for each new seat, and applies ramdir.sh to the new runtime.
+  - A deployed rotation must take its new committee's MP-SPDZ runtimes from `seats.sh new` (or one of the modes above, as fixed), never a copy that carries the old key.
+- **lg64e is under strength.** It is N = 8,192 with q = 2^312 (MP-SPDZ's own ring choice), so it is used only to measure LowGear's cost through hbox. A LowGear key the run uses must be at N = 16,384 (min_phi_m patched in build-mpspdz.sh), or at whatever the lattice estimator says reaches 128 bits. No N = 16,384 key setup through hbox until ember has chosen the third box.
+- **hbox mount.** Recorded in ~/swarm/MACHINES.md under hbox (local commit 350825f). Undo with `sudo umount /othersys/lanes/dl-gen6-prep/ram` when the lane no longer needs it, after its processes there have exited.
