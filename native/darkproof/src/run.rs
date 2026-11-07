@@ -974,6 +974,33 @@ pub fn release_n_had(d: usize, m: usize, prm: StepParams, pol: &Policy) -> usize
     step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc).expect("release replay").had.len()
 }
 
+/// The release's truncation inputs over the integers (the plaintext twin, as plain_count) against the program's proved
+/// intervals (StepParams::bound): per truncation (z1 = W1 x, score = W2 h, compare = o_l - o_k - 1), its name,
+/// the least and greatest input, the interval [a, a + 2^B) and how many inputs fall outside it.
+pub fn plain_bounds(w1: &[Vec<i64>], w2: &[Vec<i64>], x: &[Vec<i64>], labels: &[usize], prm: StepParams, ncls: usize, kc: u32) -> Vec<(&'static str, i64, i64, i64, u32, usize)> {
+    let d = w1.len();
+    let m = labels.len();
+    let sig = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
+    let mut acc: Vec<(&'static str, Vec<i64>)> = vec![("z1", vec![]), ("score", vec![]), ("compare", vec![])];
+    for t in 0..m {
+        let z: Vec<i64> = (0..d).map(|j| (0..d).map(|k| w1[j][k] * x[k][t]).sum::<i64>()).collect();
+        let h: Vec<i64> = z.iter().map(|&v| sig(v >> prm.s1)).collect();
+        let sc: Vec<i64> = (0..ncls).map(|cl| (0..d).map(|k| w2[cl][k] * h[k]).sum::<i64>()).collect();
+        let o: Vec<i64> = sc.iter().map(|&v| v >> prm.s1).collect();
+        let l = labels[t];
+        acc[0].1.extend(z);
+        acc[1].1.extend(sc);
+        acc[2].1.extend((0..ncls).filter(|&k| k != l).map(|k| o[l] - o[k] - 1));
+    }
+    acc.into_iter()
+        .map(|(nm, v)| {
+            let (a, b) = prm.bound(nm, kc);
+            let out = v.iter().filter(|&&u| u < a || u >= a + (1i64 << b)).count();
+            (nm, *v.iter().min().unwrap(), *v.iter().max().unwrap(), a, b, out)
+        })
+        .collect()
+}
+
 /// The plaintext twin of the release (cosnark_release.plain_count): the count over the integers.
 pub fn plain_count(w1: &[Vec<i64>], w2: &[Vec<i64>], x: &[Vec<i64>], labels: &[usize], prm: StepParams, ncls: usize, kc: u32) -> u64 {
     let d = w1.len();

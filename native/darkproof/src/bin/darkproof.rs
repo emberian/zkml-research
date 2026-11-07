@@ -469,7 +469,12 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let kc = 10;
     // the public test set
     let mut xr = pycompat::PyRandom::from_u64(77);
-    let xi: Vec<Vec<i64>> = (0..d).map(|_| (0..m).map(|_| xr.randrange_u64(101) as i64).collect()).collect();
+    // inside the program's input range |x| <= 7 (XMAX: the owner's encoder never exceeds it; x in [0, 100] drove z1
+    // past the release's proved interval at small d)
+    // DP_XWIDE=<max> (TEST: a negative control): x in [0, max], outside the program's domain (z1 leaves its proved
+    // interval once max |W1 x| does); RC refuses to prove the release
+    let wide: Option<u64> = std::env::var("DP_XWIDE").ok().map(|v| v.parse().expect("DP_XWIDE=<max>"));
+    let xi: Vec<Vec<i64>> = (0..d).map(|_| (0..m).map(|_| match wide { Some(w) => xr.randrange_u64(w + 1) as i64, None => xr.randrange_u64(15) as i64 - 7 }).collect()).collect();
     let x: Vec<u64> = (0..d).flat_map(|k| (0..m).map(move |t| (k, t))).map(|(k, t)| darkproof::field::from_i64(xi[k][t])).collect();
     // one test dealer for the run
     let t0 = std::time::Instant::now();
@@ -713,6 +718,9 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         Err(_) => (pol, xi),
     };
     let cp = plain_count(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc);
+    for (nm, lo, hi, a, b, out) in darkproof::run::plain_bounds(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc) {
+        println!("plaintext twin: release truncation {nm}: inputs in [{lo}, {hi}], proved interval [{a}, {}), {out} outside", a + (1i64 << b));
+    }
     let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
     // DEFER: the ledger replica's pending claims of the head (the release, or a closing proof, discharges them)
     let pend = lg.pending.clone();
