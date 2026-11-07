@@ -4,6 +4,9 @@
 //!   darkprep assemble --tx DIR --d D --mode M --p P --out DIR [--verify]
 //!   darkprep verify   --tapes DIR
 //!   darkprep corrupt  --tape FILE --entry K --what share|mac|tag --out FILE      (test-only negative controls)
+//!   darkprep export-darkstep --tapes DIR --out DIR
+//!       native/darkstep's party input: DIR/tape_{0,1,2}.bin (its DLTAPE01 layout) and DIR/public.bin, the data
+//!       owner's broadcasts c = v - r for the harness inputs (darkstep::step::inputs(d)) under the owner's masks
 use darkprep::field::Fp;
 use darkprep::mpspdz::{Run, Transactions};
 use darkprep::schedule::{Inputs, Plan, StepParams};
@@ -153,7 +156,35 @@ fn main() {
             println!("corrupted entry {k} of {}", path.display());
             Ok(())
         }
-        _ => Err("usage: darkprep plan|run|assemble|verify|corrupt ...".into()),
+        "export-darkstep" => {
+            let (tapes, rs) = load_tapes(Path::new(m.get("tapes").expect("--tapes")))?;
+            let out = PathBuf::from(m.get("out").expect("--out"));
+            std::fs::create_dir_all(&out).map_err(|e| e.to_string())?;
+            let t0 = &tapes[0];
+            if t0.inputs != 0 {
+                return Err("darkstep runs the harness step (W1, W2, x, y input): export a harness-mode tape".into());
+            }
+            for t in &tapes {
+                let ds = darkstep::tape::Tape {
+                    alpha_i: t.alpha_i,
+                    tags: t.entries.iter().map(|e| e.0 as u8 + 1).collect(), // darkstep numbers In = 1 .. Ar = 9
+                    sh: t.entries.iter().map(|e| e.1).collect(),
+                    mac: t.entries.iter().map(|e| e.2).collect(),
+                };
+                let mut f = std::io::BufWriter::new(std::fs::File::create(out.join(format!("tape_{}.bin", t.party))).map_err(|e| e.to_string())?);
+                ds.write_to(&mut f).map_err(|e| e.to_string())?;
+            }
+            let fp = Fp::new(t0.p);
+            let v = darkstep::step::inputs(t0.d as usize).flat_mod(t0.p);
+            if v.len() != rs.len() {
+                return Err(format!("{} inputs, {} owner masks", v.len(), rs.len()));
+            }
+            let cs: Vec<u64> = v.iter().zip(&rs).map(|(&x, &r)| fp.sub(x, r)).collect();
+            std::fs::write(out.join("public.bin"), darkstep::net::u64s_to_bytes(&cs)).map_err(|e| e.to_string())?;
+            println!("exported {} entries per party and {} owner broadcasts to {}", t0.entries.len(), cs.len(), out.display());
+            Ok(())
+        }
+        _ => Err("usage: darkprep plan|run|assemble|verify|corrupt|export-darkstep ...".into()),
     })();
     if let Err(e) = res {
         eprintln!("darkprep: {e}");

@@ -397,5 +397,256 @@
    ],
    "wall_s": 5.725412475
   }
+ },
+ "variants": {
+  "note": "same d = 4096 steady program; dregg-forge unless stated",
+  "d4096s_th4_tls": {
+   "d": 4096,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in8192-ar12288-tri311298-lp4096-tr11x19x8192-tr4x8x4096-tr14x19x4096-th4-b1000",
+   "plan": {
+    "in": 8192,
+    "ar": 12288,
+    "tri": 311298,
+    "lp": 4096,
+    "trunc_classes": [
+     [
+      11,
+      19,
+      8192
+     ],
+     [
+      4,
+      8,
+      4096
+     ],
+     [
+      14,
+      19,
+      4096
+     ]
+    ]
+   },
+   "compile_s": 0.33,
+   "wall_s": 55.266,
+   "parties": [
+    {
+     "time_s": 54.7861,
+     "sent_bytes": 24989600000,
+     "rounds": 81936
+    },
+    {
+     "time_s": 54.7598,
+     "sent_bytes": 24971300000,
+     "rounds": 77190
+    },
+    {
+     "time_s": 54.7786,
+     "sent_bytes": 24971300000,
+     "rounds": 77277
+    }
+   ],
+   "total_sent_bytes": 74932200000,
+   "total_sent_bits": 599457600000,
+   "what": "-e: TLS on every channel (dishonest-majority default is unencrypted)"
+  },
+  "d4096s_th5_softspoken4": {
+   "d": 4096,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in8192-ar12288-tri311298-lp4096-tr11x19x8192-tr4x8x4096-tr14x19x4096-th5-b1000",
+   "plan": {
+    "in": 8192,
+    "ar": 12288,
+    "tri": 311298,
+    "lp": 4096,
+    "trunc_classes": [
+     [
+      11,
+      19,
+      8192
+     ],
+     [
+      4,
+      8,
+      4096
+     ],
+     [
+      14,
+      19,
+      4096
+     ]
+    ]
+   },
+   "compile_s": 0.329,
+   "wall_s": 44.516,
+   "parties": [
+    {
+     "time_s": 44.1113,
+     "sent_bytes": 21471600000,
+     "rounds": 82286
+    },
+    {
+     "time_s": 44.1172,
+     "sent_bytes": 21453300000,
+     "rounds": 77588
+    },
+    {
+     "time_s": 44.1217,
+     "sent_bytes": 21453300000,
+     "rounds": 77494
+    }
+   ],
+   "total_sent_bytes": 64378200000,
+   "total_sent_bits": 515025600000,
+   "what": "-o softspoken=4 (default 2): less OT-extension traffic, more compute"
+  },
+  "tri100000_softspoken1": {
+   "sent_bytes": [
+    1399870000.0,
+    1399070000.0,
+    1399070000.0
+   ],
+   "wall_s": 6.39277179,
+   "objects": 100000
+  },
+  "tri100000_softspoken4": {
+   "sent_bytes": [
+    937415000.0,
+    936615000.0,
+    936615000.0
+   ],
+   "wall_s": 6.748466245,
+   "objects": 100000
+  },
+  "tri100000_softspoken8": {
+   "sent_bytes": [
+    860340000.0,
+    859540000.0,
+    859540000.0
+   ],
+   "wall_s": 12.042262624,
+   "objects": 100000
+  },
+  "tau4_d64s": {
+   "d": 64,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in128-ar192-tri2562-lp64-tr5x13x128-tr4x8x64-tr8x13x64-th1-b1000",
+   "plan": {
+    "in": 128,
+    "ar": 192,
+    "tri": 2562,
+    "lp": 64,
+    "trunc_classes": [
+     [
+      5,
+      13,
+      128
+     ],
+     [
+      4,
+      8,
+      64
+     ],
+     [
+      8,
+      13,
+      64
+     ]
+    ]
+   },
+   "compile_s": 0.454,
+   "wall_s": 3.447,
+   "parties": [
+    {
+     "time_s": 2.97367,
+     "sent_bytes": 428162000,
+     "rounds": 1209
+    },
+    {
+     "time_s": 2.97389,
+     "sent_bytes": 427898000,
+     "rounds": 1137
+    },
+    {
+     "time_s": 2.9721,
+     "sent_bytes": 427898000,
+     "rounds": 1137
+    }
+   ],
+   "total_sent_bytes": 1283958000,
+   "total_sent_bits": 10271664000,
+   "assemble_s": 0.014,
+   "tape_entries": 26246,
+   "owner_masks": 128,
+   "verify": "Report { entries: 26246, macs: 78738, triples: 2562, truncs: 256, chains: 64, inputs: 128 }",
+   "what": "MP-SPDZ v0.4.4 built from source with N_AMPLIFY 4 (MASCOT tau = 4) on the Mac (Apple Silicon, no AVX OT): bytes comparable, time not"
+  },
+  "tau4_d4096s": {
+   "d": 4096,
+   "mode": "Steady",
+   "p": 2305843009210515457,
+   "prog": "darkprep-in8192-ar12288-tri311298-lp4096-tr11x19x8192-tr4x8x4096-tr14x19x4096-th4-b1000",
+   "plan": {
+    "in": 8192,
+    "ar": 12288,
+    "tri": 311298,
+    "lp": 4096,
+    "trunc_classes": [
+     [
+      11,
+      19,
+      8192
+     ],
+     [
+      4,
+      8,
+      4096
+     ],
+     [
+      14,
+      19,
+      4096
+     ]
+    ]
+   },
+   "compile_s": 0.384,
+   "wall_s": 118.276,
+   "parties": [
+    {
+     "time_s": 117.913,
+     "sent_bytes": 29553100000,
+     "rounds": 80490
+    },
+    {
+     "time_s": 117.911,
+     "sent_bytes": 29534800000,
+     "rounds": 75808
+    },
+    {
+     "time_s": 117.912,
+     "sent_bytes": 29534800000,
+     "rounds": 75808
+    }
+   ],
+   "total_sent_bytes": 88622700000,
+   "total_sent_bits": 708981600000,
+   "assemble_s": 0.91,
+   "tape_entries": 2195462,
+   "owner_masks": 8192,
+   "verify": "Report { entries: 2195462, macs: 6586386, triples: 311298, truncs: 16384, chains: 4096, inputs: 8192 }",
+   "what": "MP-SPDZ v0.4.4 built from source with N_AMPLIFY 4 (MASCOT tau = 4) on the Mac (Apple Silicon, no AVX OT): bytes comparable, time not"
+  },
+  "tau4_tri100000": {
+   "sent_bytes": [
+    1291570000.0,
+    1290770000.0,
+    1290770000.0
+   ],
+   "objects": 100000,
+   "what": "tau = 4 build (Mac), triples only"
+  }
  }
 }

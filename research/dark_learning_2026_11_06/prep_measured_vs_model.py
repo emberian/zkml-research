@@ -58,7 +58,22 @@ def main():
                                 full_run_bits=run_bits, full_run_over_model=round(run_bits / mtotal, 3),
                                 additivity=round(measured_sum / run_bits, 4), wall_s_1thread=run["wall_s"],
                                 per_party_sent_bytes=[p["sent_bytes"] for p in run["parties"]])
+    # The scholar's formula at the backend's actual parameters: MP-SPDZ uses tau = 3 (N_AMPLIFY) and SoftSpokenOT
+    # with k = 2, i.e. lambda / k = 64 bits per extended OT instead of lambda = 128.
+    v = meas["variants"]
+    tri4 = sum(v["tau4_tri100000"]["sent_bytes"]) * 8 / v["tau4_tri100000"]["objects"]
+    out["triple_formula_at_backend_parameters"] = {
+        f"tau{tau}": dict(formula=formula_triple(tau, 64), measured=round(m), over_formula=round(m / formula_triple(tau, 64), 3))
+        for tau, m in ((3, U["triple"]), (4, tri4))}
+    out["tau4_full_runs"] = {d: dict(bits=v[f"tau4_d{d}s"]["total_sent_bits"] + 2 * d * OWNER_MSG,
+                                     over_model=round((v[f"tau4_d{d}s"]["total_sent_bits"] + 2 * d * OWNER_MSG) / model_rows(d)[1], 3))
+                             for d in (64, 4096)}
+    out["d4096_variants_bits"] = {k: v[k]["total_sent_bits"] for k in ("d4096s_th4_tls", "d4096s_th5_softspoken4")}
     print(json.dumps(out, indent=1))
+
+def formula_triple(tau, lam):
+    n, k = SP.NPARTY, K
+    return n * (n - 1) * (tau * lam * k + (tau + 5) * k * k) + 5 * n * (n - 1) * k + 2 * SP.BROADCAST
 
 if __name__ == "__main__":
     main()
