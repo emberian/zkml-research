@@ -25,7 +25,13 @@ fn roots_of(v: &Value) -> BTreeMap<String, Vec<[u8; 32]>> {
         .collect()
 }
 
+#[global_allocator]
+static HEAP: darkproof::heap::Counting = darkproof::heap::Counting;
+
 fn main() {
+    if std::env::var_os("DP_HEAP").is_some() {
+        darkproof::heap::start();
+    }
     let args: Vec<String> = std::env::args().collect();
     if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check" | "ext-rows" | "e-rows")) && !cfg!(feature = "test-det") {
         eprintln!("bit-exact checks need the deterministic hook: build with --features test-det");
@@ -393,11 +399,12 @@ fn ds_bench(d: usize, prof: &str) {
             .map(|(i, (l, tape))| {
                 let (addrs, cs, pf, pr, lp, tables, pg) = (&addrs, cs.clone(), &pf, &pr, &lp, &tables, &pg);
                 s.spawn(move || {
+                    darkproof::heap::set_who(i);
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
                     let t = std::time::Instant::now();
                     let out = pool.install(|| darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)).expect("darkstep step");
                     let step_s = t.elapsed().as_secs_f64();
@@ -524,11 +531,12 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             .map(|(i, (l, tape))| {
                 let (addrs, css, pf, pr, lp, tables, pg, nts, pgw) = (&addrs, css.clone(), &pf, &pr, &lp, &tables, &pg, &nts, &pgw);
                 s.spawn(move || {
+                    darkproof::heap::set_who(i);
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
                     let (mut carry, mut head, mut blobs, mut groots): (Option<Carry>, Option<(DS, DS)>, Vec<Vec<u8>>, _) = (None, None, Vec::new(), None);
                     if let Some((w1, w2)) = pgw {
                         let (c, roots) = darkproof::run::public_genesis(pr, d, i, w1, w2, 3);
@@ -613,7 +621,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let mut ok_all = parts.iter().all(|p| p.4 == parts[0].4);
     if let (Some(cfg), Some((w1, _))) = (&pg_cfg, &pgw) {
         // public genesis: refused before the check, with another cfg, and with roots that are not the cfg's W
-        let r0 = lg.accept(&lp, &parts[0].4[0], &tables);
+        let r0 = match parts[0].4.first() { Some(b) => lg.accept(&lp, b, &tables).map(|_| ()), None => Err("no step (STEPS = 0: the release from the public genesis)".to_string()) };
         println!("public genesis: step 1 before the cfg check: {r0:?}");
         let mut other = cfg.clone();
         other.push(b'\n');
@@ -714,7 +722,9 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             .map(|(mut pt, carry, w1n, w2n, _, _)| {
                 let (pol, pr, lp, ctx) = (&pol, &pr, &lp, &ctx);
                 s.spawn(move || {
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).build().unwrap();
+                    let i = pt.i;
+                    darkproof::heap::set_who(i);
+                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
                     let o = pool.install(|| darkproof::run::release_custodian(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None)).expect("release");
                     assert_eq!(o.triples, nrt);
                     (o.c, o.blob, o.mpc_secs, o.prove_secs)
