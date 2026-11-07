@@ -46,3 +46,7 @@ required-features = ["test-harness"]
 [[test]]
 name = "close_steps"
 required-features = ["test-harness"]
+
+[[test]]
+name = "sealed_tapes"
+required-features = ["test-harness"]

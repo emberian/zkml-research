@@ -269,6 +269,36 @@ pub trait Sealer: Send + Sync {
     fn seal_to(&self, path: &std::path::Path, plain: Vec<u8>) -> std::io::Result<()>;
     /// Open a sealed file.
     fn open(&self, path: &std::path::Path) -> Result<Vec<u8>, String>;
+    /// Open a sealed file under an explicit role (the prep lane's tapes: "tape|<chunk>|<j>", "owner-msg|<chunk>|<j>").
+    fn open_role(&self, path: &std::path::Path, role: &str) -> Result<Vec<u8>, String>;
+}
+
+/// The role a prep chunk's sealed file is bound to: `<kind>|<chunk dir basename>|<j>` for CHUNK/step-<j>/FILE.
+fn chunk_role(kind: &str, path: &std::path::Path) -> Result<String, String> {
+    let sd = path.parent().ok_or("no step dir")?;
+    let j = sd.file_name().and_then(|n| n.to_str()).and_then(|n| n.strip_prefix("step-")).ok_or_else(|| format!("{}: not in a chunk's step-<j> dir", path.display()))?;
+    let c = sd.parent().and_then(|c| c.file_name()).and_then(|n| n.to_str()).ok_or("no chunk dir")?;
+    Ok(format!("{kind}|{c}|{j}"))
+}
+
+/// A chunk file (tape or owner message) as its plain bytes: opened under the sealer when it is sealed; a plain one
+/// is refused while sealing is on, outside test builds (the prep lane seals every chunk it makes).
+fn chunk_bytes(kind: &str, path: &str, raw: Vec<u8>) -> Result<Vec<u8>, String> {
+    let s = SEALER.read().unwrap().clone();
+    if raw.starts_with(SEALED_MAGIC) {
+        let s = s.ok_or_else(|| format!("{path}: sealed, and no file key is loaded"))?;
+        return s.open_role(std::path::Path::new(path), &chunk_role(kind, std::path::Path::new(path))?);
+    }
+    if s.is_some() && !cfg!(feature = "test-harness") {
+        return Err(format!("{path}: a plain {kind} file, but this custodian takes only sealed preprocessing"));
+    }
+    Ok(raw)
+}
+
+/// A step's owner message (--owner-msgs), sealed or plain (see chunk_bytes).
+pub fn read_owner_msg(path: &str) -> Result<Vec<u8>, String> {
+    let raw = std::fs::read(path).map_err(|e| format!("{path}: {e}"))?;
+    chunk_bytes("owner-msg", path, raw)
 }
 
 /// A sealed file starts with this (darkhand::vault::MAGIC).
@@ -585,6 +615,28 @@ impl<R: Read> Read for HashRead<R> {
 /// (durably, under a file lock) before handing it out.
 pub fn read_tape_once(path: &str) -> Result<Tape, String> {
     use sha2::Digest;
+    // a sealed chunk tape: hashed as it is on disk, opened under the file key, parsed from memory
+    let mut head = [0u8; 8];
+    let sealed = std::fs::File::open(path).and_then(|mut f| f.read_exact(&mut head)).is_ok() && &head == SEALED_MAGIC;
+    if sealed {
+        let raw = std::fs::read(path).map_err(|e| format!("{path}: {e}"))?;
+        let digest = pycompat::repr::hex(&sha2::Sha256::digest(&raw));
+        let plain = chunk_bytes("tape", path, raw)?;
+        let mut r = &plain[..];
+        let t = Tape::read_from(&mut r).map_err(|e| format!("{path}: {e}"))?;
+        if !r.is_empty() {
+            return Err(format!("{path}: {} trailing bytes after the tape", r.len()));
+        }
+        drop_cache(std::path::Path::new(path));
+        if let Some(log) = consumed_log() {
+            claim(log, &digest, path, t.alpha_i)?;
+            *LAST_CLAIM.lock().unwrap() = Some((digest, path.to_string()));
+        }
+        return Ok(t);
+    }
+    if sealing() && !cfg!(feature = "test-harness") {
+        return Err(format!("{path}: a plain tape, but this custodian takes only sealed preprocessing"));
+    }
     let f = std::fs::File::open(path).map_err(|e| format!("{path}: {e}"))?;
     let mut hr = HashRead { r: std::io::BufReader::new(f), h: sha2::Sha256::new() };
     let t = Tape::read_from(&mut hr).map_err(|e| format!("{path}: {e}"))?;
@@ -916,7 +968,14 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
                 }
             }
         }
-        let msg = flag(args, "--owner-msgs").map(|p| std::fs::read(step_path(args, &p, k)).expect("owner message")).unwrap_or_default();
+        let msg = match flag(args, "--owner-msgs").map(|p| read_owner_msg(&step_path(args, &p, k))).transpose() {
+            Ok(m) => m.unwrap_or_default(),
+            Err(e) => {
+                eprintln!("{e}");
+                end.code = 1;
+                break;
+            }
+        };
         let tw = Instant::now();
         let cs = match owner_inputs(&mut owner, &st.pt.net, k, &msg) {
             Ok(c) => c,

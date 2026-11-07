@@ -88,7 +88,8 @@ def setup(cfg):
     if cfg.get("vault"):
         # each seat's file key in its box's keyring (the uid's persistent keyring), its TLS key sealed under it
         for i, s in enumerate(cfg["seats"]):
-            print(sh(s["host"], f"{s['bin']}/dl-custodian vault-init {i} {seat_dir(cfg, s, i)}/tls --epoch 0"))
+            nxt = " --with-next" if "--self-handover-tape" in s.get("extra", []) else ""
+            print(sh(s["host"], f"{s['bin']}/dl-custodian vault-init {i} {seat_dir(cfg, s, i)}/tls --epoch 0{nxt}"))
         for j, s in enumerate((cfg.get("handover") or {}).get("new_seats", [])):
             print(sh(s["host"], f"{s['bin']}/dl-custodian vault-init {j} {new_dir(cfg, s, j)}/tls --epoch 1"))
     print("setup: identities made per seat; certificates distributed")
