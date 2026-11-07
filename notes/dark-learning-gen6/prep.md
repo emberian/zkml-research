@@ -538,3 +538,39 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
 - bb2's seats: memory.peak 10.64 and 10.95 GB, VmHWM 9.32 and 9.60 GB.
 - Release: 670 s (MPC 14.4 s, prove 251 s, verify 201 s). C = 8 of 52 at all three, as in the plaintext twin.
 - The run13 chunks are spent and were shredded (`shred -n 0 -z -u`).
+
+**A seat's erasure covers every field [EXECUTED, ff6f8c0d]** (the coordinator's finding: reh2's old seats kept their gf2^128 and B-64 MASCOT keys in /dev/shm after the handover)
+- MP-SPDZ keeps one MASCOT MAC key per field it initializes, in Player-Data: `Mascot-Secrets-{p-61, 2-128, B-64}`, LowGear's key-generation field `p-3xx`, and a `Player-MAC-Keys-*` file in each `3-<field>/`. It also keeps memory dumps `Memory-{p,B}-P<i>` and Transactions files.
+- All of these belong to the seat's epoch.
+- `retire_mac_keys` (used by `--new-mac-key` and on abort) now wipes every file that `is_party_secret` names, in every field and in Persistence. Before, it wiped only the 61-bit files.
+  - Test `retiring_a_seat_erases_every_secret_of_that_party_and_only_those`: 14 secret files of party 0 are erased, while another party's files and the public ones (pem, key, PairwiseParams) are kept. The old rule fails this test on the 2-128 file.
+- `ramdir.sh RT RAM erase` does the same for a whole seat runtime from the shell, then lists anything left.
+- reh2-old{0,1,2} were erased this way: 7 files each (Memory-B, the B-64 and 2-128 keys and their Player-MAC-Keys, the gf2n and clear Transactions). The deploy lane has the full --erase-extra set.
+
+**LowGear at N = 16,384 (the coordinator's call: stop lg64e and replace it) [EXECUTED]**
+- lg64e was stopped at 13:37 UTC by its PID files (SIGTERM to each lowgear-party.x).
+  - The wrappers exited with "abort, status 15"; no LowGear-Secrets had been written yet.
+  - The partial key-setup secrets (Mascot-Secrets-p-319 and the other fields) were erased with `ramdir.sh erase`.
+  - The cached N = 8,192 `PairwiseParams-*`, whose filename does not encode N, was deleted from RAM and from the skeletons.
+- Build: `build-mpspdz.sh` now patches `FHE/NoiseBounds.cpp` `min_phi_m` from `15.1 * log_q` to `40 * log_q`.
+  - Built on bb2: lowgear-party.x 38adf2bf, highgear-party.x 4434b1ab, tarball de1b6dba. mascot-party.x is unchanged (4d50d76f, the EINTR-fixed d1299708).
+  - Installed in the three custodian runtimes as lowgear and highgear only.
+- [EXECUTED, bb2 loopback, `-o verbose_he_setup`, stopped by PID file] "Need ciphertext modulus of length 314 and 16384 slots", the instance estimated at 2^179.0. The field prime is 1 mod 32,768.
+- `lg64f` is the three-box key setup at N = 16,384: the same command as lg64e (`BIN=target-g2`, `--new-mac-key`, d = 64 test chunk), started 13:5x UTC.
+  - PairwiseParams is 5.77 MB (it was 2.88 MB at N = 8,192).
+  - The secrets land in RAM. On hbox that is the 8G noswap tmpfs: LowGear-Secrets at N = 16,384 is megabytes, and Transactions for a 2-step d = 4096 chunk is about 0.3 GB.
+- run13's key on wired{0,1,2} was retired after run13 (9 files each, `ramdir.sh erase`). The deploy lane's dl-custodian `--erase-runtime RT` (902b44c4) uses the same `is_party_secret` set at a rotation.
+
+**run13's key retired [EXECUTED, 2026-11-07 ~13:47-14:00 UTC]**
+- MP-SPDZ files (`ramdir.sh erase`): 9 per seat on wired0 (forge) and wired1, wired2 (bb2), all in RAM:
+  - Mascot-Secrets-{p-61, 2-128, B-64}-*-P<I>-3;
+  - {3-p-61, 3-2-128, 3-TT-8}/Player-MAC-Keys-*-P<I>;
+  - Memory-{p,B}-P<I>;
+  - Transactions-{clear,gf2n}-P<I>.data.
+  The individual names were counted, not captured.
+- Epoch file keys: dl-vault:dl-gen6:0:0:da4e4c79b16ee4de (forge), 1:0:6eedd3acf11a0a38 and 2:0:f71f51f3e3a91a3e (bb2).
+  - Each was invalidated with `scratchpad/.../keyinv.py`: link the persistent keyring, KEYCTL_SEARCH by name (which must return the serial /proc/keys shows), then KEYCTL_INVALIDATE.
+  - /proc/keys no longer lists them.
+- Name check (check_handover.py's `is_party_secret`, the same `find -L ... -maxdepth 2`): wired0, wired1 and wired2 each show 0 secret files.
+  - Negative control: a planted `Mascot-Secrets-2-128-ctl-P0-3` was detected, then removed.
+- The chunk tapes were shredded earlier. reh2's keys (both committees) and chunks are retired and shredded the same way.
