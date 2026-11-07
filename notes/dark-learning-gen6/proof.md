@@ -508,6 +508,200 @@ at d = 4096 (ledger: hide 618, blow 4). The commitments were 169 s + 50 s of the
   - Pipelining (proof k beside step k + 1) needs no change to the proof: proof k uses step k's record and tape and
     proof k-1's children.
 
+## 13. The first proved three-box step (deploy lane's run5) [EXECUTED]
+
+The deploy lane's run5: one d = 4096 step, GEN6 + RC + LB, public genesis, on the prep lane's real MASCOT chunk
+(w4096p, proof section 3,192,275 triples per seat), seat 0 on forge and seats 1, 2 on bb2, TLS, DS_THREADS 16. Numbers
+from each seat's `D/step_0_P<i>.json` and its memory sampler (`serve<i>.mon`):
+
+| seat (box) | prove_step | own verify | bundle | PROOF bytes per link, each direction | peak memory (step + proof) |
+|---|---|---|---|---|---|
+| 0 (forge) | 12.70 s | 3.91 s | 250,915,469 B, f955a4f2… | 133,840,005 | VmHWM 7.64 GB, scope memory.peak 8.02 GB (cap 12G) |
+| 1 (bb2) | 12.66 s | 4.01 s | the same bytes | 133,840,005 | 8.30 GB |
+| 2 (bb2) | 12.70 s | 3.88 s | the same bytes | 133,840,005 | 7.78 GB |
+
+- The darkstep step took 91.3 s. The proof adds 17.6 s (prove + verify) to the after-step hook: 14% of the step.
+- Every seat holds the same bundle, and each seat's own verifier accepted it against the public genesis roots.
+- [OPEN] Contention, i.e. proving step k beside step k+1, needs a two-step proved chunk; the prep lane is making one.
+
+## 14. Public genesis in the Python reference; the skeptic's replay [EXECUTED]
+
+**The pieces** (6bc16a9b, 044ebd4a).
+- `cosnark.PubCoins` is native `rng::public_coins`: SHA-256 in counter mode, keyed by the length-prefixed label
+  parts, with rejection sampling on the masked word and 256-bit salts of four LE words.
+- `SharePCS(public=True)` is `PcsParty::commit_public`: each share's tails, mask rows and salts come from
+  `PubCoins("dl-public-genesis", H(share))`.
+- `proofwire.public_weights` (train_owner.init), `public_genesis`, `public_genesis_shares`
+  (custodian 0 holds W, MAC shares alpha_i W).
+- `verify_step` takes step 1 as the carried program under "PG".
+- `Ledger.check_public_genesis`, with the gate on accept and release that native has.
+- `darkproof_vectors.py` takes DP_PG_CFG. Native `check` reads the vectors' pg_cfg and compares its public roots with
+  Python's.
+- `cosnark.encode_coset`: Python's coset codeword by NTT, as native. It equals direct evaluation and the bytes are
+  unchanged. 0.14 s per d = 4096 row, so Python's public-genesis check at d = 4096 takes minutes.
+
+**Byte-equal** (demo profile, RC + LB + PG, three carried steps; cfgs in
+`scratchpad/dl-gen6/proof/pg/cfg{4,16}.json`; cfg4 has a2 = 0, since ten classes do not fit d = 4):
+
+| d | he1 | he2 | he3 | genesis roots | cross-verify, flipped byte |
+|---|---|---|---|---|---|
+| 4 | 41b4986d… | c7b23bcb… | 1d088eb1… | native = Python | accept both ways; refused by both |
+| 16 | 58c9f6fe… | cba40118… | e8840bb1… | native = Python | accept both ways; refused by both |
+
+The Python ledger, on the native bundles (`darkproof_vectors.py verify`):
+- refuses step 1 before the cfg check, another cfg (one byte appended), and the roots of another W;
+- accepts the pinned cfg and then he1..he3;
+- control: the same step 1 under a genesis without "PG" is refused (`public transcript shorter than the step program`).
+
+**The skeptic's replay.** `python3 proofwire.py replay PROFILE NATIVE_LEDGER CFG BUNDLE_DIR [MNIST_DIR | POLICY.json]`
+builds a fresh Python ledger from the native genesis record. It checks the public genesis against the cfg, then
+re-verifies every record in order from the bundles it finds by sha256:
+- a step's child roots must equal the native record's;
+- a rotation is checked by its handover proof;
+- the release's C and policy digest must equal the native record's; the policy is rebuilt from MNIST
+  (`proofwire.mnist_policy`, as native `run::mnist_policy`).
+
+Results:
+- On a native `ds-chain 16 demo 3 8` run (`DP_SAVE`): REPLAY PASS (PG, three steps, release C = 1 of 8).
+- A changed policy label: refused. A flipped bundle byte: refused.
+- [OPEN] Python's verify time at d = 4096.
+
+## 15. The release hook and its memory [EXECUTED]
+
+**The hook** (bb20a601).
+- `run::release_custodian(pr, lp, prm, &mut party, w1, w2, &pol, &ctx, head_carry, Some(&head_roots))` runs on the
+  custodian's own party, from its tape cursor:
+  - release_mpc;
+  - release_section(..) triples;
+  - prove_release over the party's Net (tag PROOF);
+  - the bundle checked against the head roots, and the bundle's count must equal the opened C.
+- `run::mnist_policy(cfg, mnist_dir, M)` is the train lane's policy.
+- ds-chain uses the hook (DP_MNIST for the real policy).
+- The tape layout of the release is darkproof's `deal_release`: every release truncation carries its Trhb block, as a
+  proved step's does. Told to the deploy lane for the prep lane.
+
+**d = 4096, three custodians in one process on bb2** (`rel4096.sh M`: one PG step, then the release over t10k 0..M-1):
+
+| M | release MPC | release proof | bundle | result | peak (all three) |
+|---|---|---|---|---|---|
+| 8 | 2.7 s | 28.6 s | 182,723,646 B | ledger accepts; C = 0 = plaintext twin after one step | 32.7 GB |
+| 64 (before the fixes below) | | | | killed at the 85G scope cap during the proof | > 85 GB, about 29 GB per custodian |
+
+**Where the memory went** (M = 64, per custodian): the middle's commitments P (2^27) and A, B, C (2^26) each held its
+coset codeword from commit to opening: 4.5 + 3 x 2.3 = 11.4 GB. On top of that came the tape (282M release entries,
+4.8 GB), the proof section's triples (2.8 GB) and the atom copies.
+
+**The fixes, with the bytes unchanged.**
+- A codeword above DP_CW_HOLD_MB (default 1024 MiB) is streamed. The leaves are hashed over blocks of 256 encoded rows
+  (each column's repr hash is fed in row order). An opening re-encodes the rows and keeps only the opened columns.
+  The step's d^2 codewords (620 MB) are still held, so the step is as fast as before.
+- release_custodian frees the darkstep tape and atom log once the proof section is taken (the release is terminal).
+- Check that the bytes are unchanged: with DP_CW_HOLD_MB=0 (everything streamed), `check demo_d16_pg_he` stays EQUAL
+  to Python (three bundles) and `rel-check demo_d4` stays EQUAL (e1e5fff2…).
+- DP_TRACE lines now carry the process RSS and peak.
+
+## 16. Bundle size: the breakdown and the staged cut (coordinator's decisions 2026-11-07)
+
+**Breakdown of f955a4f2** (250.9 MB; `scratchpad/dl-gen6/proof/sizes/breakdown.py`, from the public schemas; it
+reproduces the real size to the byte with the 614,411-value transcript):
+
+| component | MB | share |
+|---|---|---|
+| spine PCS column values (W1, W2, W1n, W2n: 309 columns x 4098 rows x 3 custodians each) | 126.0 | 51% |
+| middle PCS column values (P, A, B, C at 2^22: 309 x 2050 x 3) | 65.2 | 27% |
+| spine Ligero (17.4 of it: 48 sumcheck-round rows, one Merkle tree each) | 23.1 | 9% |
+| middle Ligero (45 round rows) | 20.0 | 8% |
+| PCS Merkle paths | 10.6 | 4% |
+| public transcript | 4.9 | 2% |
+| proximity rows, roots, indices | 1.1 | |
+
+**The model.** For each commitment and custodian, the cost is 309 R (columns) plus W per proximity row, plus
+309 W / K_L per evaluation (each evaluation's row combination is a Ligero witness of W / K_L rows), with R = 2^mr + nmask
+and W = 2^(m - mr) + hide. The square split mr = m / 2 is far from the optimum at T = 309.
+`sizes/sim.py K_L balanced multiproof` reproduces 250.92 MB for today's parameters:
+
+| K_L | row split | Merkle | MB per step |
+|---|---|---|---|
+| 64 | square | paths | 250.9 (today) |
+| 64 | square | multiproof | 218.4 |
+| 64 | balanced | multiproof | 93.0 |
+| 256 | balanced | multiproof | 66.4 |
+| 512 | balanced | multiproof | 55.9 |
+| 1024 | balanced | multiproof | 53.3 |
+
+Decisions (coordinator):
+- A (row split + K_L) and B (multiproofs): go. These are public parameters and an encoding, with the same rate, T and
+  hide, so soundness and ZK are unchanged. C (merging the d-vectors) is worth under 3 MB once A is in.
+- D (ZK sumcheck by a masking polynomial instead of one Ligero tree per round): go, with its soundness and ZK argument
+  written here before the code, plus a refusal row for a forged round message.
+- E (deferred child opening): after A-D, with the semantics the coordinator set out. A step is "proved, final when its
+  child is opened"; the discharge is step k+1's opening, a handover, the release, or a standalone closing opening.
+  hide drops to 309 only with exactly one opening per commitment, enforced by the life counter. The replay shows
+  pending vs final.
+
+## 17. Cut D: the ZK sumcheck by a masking polynomial (the argument, written before the code)
+
+**Today.** Every sumcheck round's polynomial s_i (shares held by the custodians) is a hidden row of the Ligero, in its
+own Merkle tree, committed before its challenge r_i. The Ligero proves the round relations s_i(0) + s_i(1) =
+s_(i-1)(r_(i-1)) and the final relation to the PCS evaluations. That is 93 trees per step (48 spine, 45 middle), each
+opened at T columns: about 11 MB at K_L = 512.
+
+**D.** For each sumcheck of sum_x f(x) = c over {0,1}^l with round degree deg:
+1. Each custodian j draws its share of g(x) = g_1(x_1) + ... + g_l(x_l), with every g_i a uniformly random polynomial
+   of degree deg. These are l (deg + 1) coefficients in total: one hidden Ligero row, one tree, committed before
+   anything below.
+2. The custodians open G = sum_x g(x) = 2^(l-1) sum_i (g_i(0) + g_i(1)). This is one public value, linear in the
+   committed row.
+3. The challenge rho is drawn after the g row's root and G.
+4. The sumcheck runs on f + rho g with claim c + rho G. Each round's polynomial s_i is OPENED (every custodian
+   broadcasts its share; it goes in the bundle in the clear: deg + 1 values) before r_i. The verifier checks
+   s_i(0) + s_i(1) = s_(i-1)(r_(i-1)) itself.
+5. The final value s_l(r_l) must equal f(r) + rho g(r), with g(r) = sum_i g_i(r_i). That is one linear constraint in the
+   Ligero over the hidden g row and the hidden atoms that today give f(r) (the PCS evaluation rows). It replaces
+   today's final-round relation.
+
+**Soundness.** Suppose the true sum of f is c' != c.
+- Then sum (f + rho g) = c' + rho G differs from the claimed c + rho G for every rho, because G is fixed by the
+  committed g before rho.
+- So rho buys the prover nothing, and the masking adds no error.
+- The sumcheck on f + rho g, whose round polynomials have degree deg, fails except with probability l deg / p, as
+  today (Schwartz-Zippel per round on the opened s_i).
+- The final constraint binds g(r) to the committed row (Ligero soundness, as for every hidden row) and f(r) to the PCS
+  evaluations (unchanged).
+- Total per sumcheck: l deg / p, the same as today's in-Ligero rounds.
+- [SOURCE, decision doc line 537] Unchanged and still open: the challenges are in F_p (p about 2^61). Per sumcheck
+  that is about 2^-55, so the non-interactive soundness of the sumchecks is far below the PCS's 2^-128. Extension-field
+  challenges are the documented fix; D neither helps nor hurts it.
+
+**Zero knowledge.** What the verifier now sees in the clear is G, s_1, ..., s_l and rho, r.
+- Write s_i(X) = A_i(X) + rho 2^(l-i) g_i(X) + B_i, where:
+  - A_i depends on f and the earlier challenges;
+  - B_i = rho 2^(l-i) (sum_(j<i) g_j(r_j) + sum_(j>i) (g_j(0) + g_j(1)) / 2) is a constant.
+- rho != 0 except with probability 1/p, and g_i is uniform of degree deg, independent of everything in the earlier
+  rounds. So s_i is uniform among the polynomials of degree deg with s_i(0) + s_i(1) = s_(i-1)(r_(i-1)).
+- That constraint is the only one: deg + 1 free coefficients, one fixed by the sum.
+- G is uniform and independent of f, because it is fed by the g_i(0) + g_i(1).
+- The simulator draws G uniform, then each s_i uniform subject to its sum constraint.
+- The last value s_l(r_l) = f(r) + rho g(r) is uniform too, because g_l(r_l) is fresh. The verifier never sees f(r) or
+  g(r) apart, only the Ligero's (hiding) check of their relation.
+- The individual custodians' shares of s_i are uniform given the sum (each custodian's share of g_i is uniform), so
+  the broadcasts reveal nothing further to the other custodians.
+
+**Openings without MACs.** A custodian that broadcasts a wrong share of s_i shifts the opened s_i by an amount that does
+not depend on any secret. The verifier's round check or the final Ligero constraint then fails whatever the secrets
+are: a failure, not a selective-failure leak. Today's rule is the same: only the Ligero's own products go
+unauthenticated, and for the same reason.
+
+**What the bytes become.** Per sumcheck and custodian: one g row (a Ligero row: part of one more group) and
+l (deg + 1) opened values (about 0.7 KB at l = 22, deg = 3), instead of l Ligero groups of T (8 + paths) bytes each.
+Estimate at d = 4096 after A + B: 55.9 -> about 44 MB.
+
+**Refusal rows to build.**
+- A forged round polynomial (s_i shifted by a constant, s_i(0) + s_i(1) kept consistent by adjusting one coefficient
+  and the next round's claim): refused, by the final constraint or a round check.
+- A G that is not the committed g's sum: refused, by the Ligero constraint for G.
+- One custodian's broadcast share off by one: the proof is refused, at the same rate whatever the secrets are.
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).
@@ -580,3 +774,53 @@ at d = 4096 (ledger: hide 618, blow 4). The commitments were 169 s + 50 s of the
   - `vec`: every int-domain set; checks.sh, the checks*.log files, rc4096b_* and cos4096_* logs;
   - builds: `target-det` (pre-coset), `target` (coset, a40857d1). Rebuild after syncing `native/`.
   - No jobs of mine are running there.
+
+## Continuation (gen 4 of the proof lane, at about 300K tokens)
+
+**Landed by gen 4:**
+- bb20a601: release_custodian and mnist_policy;
+- 6bc16a9b: carry checkpoints, Python PG;
+- 044ebd4a: the Python replay and the NTT encoder;
+- notes §13-§17.
+
+**In the working tree at this writing**, committed with the A + B landing:
+- stage A: `Profile.split`, `pcs::row_split`, K_L 512, the "-sq" profiles, DP_SPLIT=square;
+- stage B: `wire::mp_needed`, `w_multi`, `r_multi`, `LigProof.j`, Python `cosnark.mp_*` and the walk kinds "jl" and "mp";
+- release memory: middle.rs keeps vectors as shares only and stops cloning A/B/C; pcs.rs streams codewords above
+  DP_CW_HOLD_MB; release_custodian frees the tape; Trace lines carry RSS.
+
+**Checks so far:**
+- old vectors are EQUAL under -sq, and DIFFER under the new profile (the negative control);
+- native ds-chain 16 under A + B: DS-CHAIN PASS, step bundle 3.97 MB (was 9.47 MB);
+- Python replay of that native run: REPLAY PASS (Python's multiproof decoder accepts native's encoder);
+- multiproof round trip and a forged sibling: refused.
+
+**Pending:**
+1. A + B byte-equality (`scratchpad/dl-gen6/proof/vecAB`, Python jobs `d4.pid` and `d16.pid`): run
+   `darkproof check vecAB demo_d{4,16}_pg_he` and `darkproof_vectors.py verify`, then commit A + B by path. Send the
+   commit id to the handover lane (ac3b201ab6a366ff6), whose `handover::byte_len` breaks, and to the deploy lane, along
+   with the new step_section (`darkproof counts 4096 ledger`).
+2. The release memory at M = 64. bb2 `~/lanes/dl-gen6-proof/rel4096.sh 64` with DP_SPLIT=square; logs rel4096_m64*.log,
+   with run1 and run2 kept. Three custodians in one process over 85G means over about 12 GB each. If still over: the
+   remaining big items per custodian are the release section's triples (2.8 GB), the atom copies, q and the
+   linear-sumcheck tables (1-2 GB), and P at 2^27. Next options:
+   - stream the triples from the tape file;
+   - free PartyRelease.atoms after witness_atoms;
+   - as the last resort, cut the release into two proofs of M = 32. That needs a second life of the head commitments:
+     open each head commitment once, with both proofs' points in one opening.
+3. Measure d = 4096 bundle bytes under A + B for real (`ds-chain 4096 ledger 1 8` with the GEN6 program). Expected
+   about 56 MB, model `sizes/sim.py 512 1 1`. Report to the coordinator per stage: A alone about 88.8 MB, A + B about
+   55.9 MB.
+4. D (§17, argument written, coordinator GO): code in Python and native, byte-equal, plus the refusal rows listed in
+   §17.
+5. E after D, with the coordinator's semantics (§16).
+6. Contention (proof k beside step k+1) when the prep lane's two-step proved chunk exists (deploy lane).
+7. The aggregator (item 4 of the quest): raise once hbox is in a run layout.
+
+**Peers:**
+- coordinator aa3209e8d10294bc2;
+- deploy a68410e60434efcda (adds `--profile`; dry run on ledger-sq);
+- prep a5caa478aac6a0658;
+- handover ac3b201ab6a366ff6;
+- train ad36593ec00657538.
+Note: commit with `git commit -F msg -- <paths>`. A plain commit took the prep lane's staged files once (bb20a601).
