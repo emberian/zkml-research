@@ -119,12 +119,12 @@ impl PcsParty {
         for r in 0..shape.rd {
             ext[r * w..r * w + c].copy_from_slice(&share[r * c..(r + 1) * c]);
             for k in c..w {
-                ext[r * w + k] = rng.randrange_u64(field::P);
+                ext[r * w + k] = rng.randrange_u64(field::p());
             }
         }
         for r in shape.rd..shape.r {
             for k in 0..w {
-                ext[r * w + k] = rng.randrange_u64(field::P);
+                ext[r * w + k] = rng.randrange_u64(field::p());
             }
         }
         let salts: Vec<Hash> =

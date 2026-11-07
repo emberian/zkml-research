@@ -1,6 +1,6 @@
 //! cosnark_zk.py: the spine with ZK layers 2-3. `prove` is ONE custodian's prover (all exchanges through `Net`);
 //! `verify` is the public verifier.
-use crate::field::{self, P};
+use crate::field;
 use crate::h::{Hash, Py};
 use crate::ligero::{self, LigParams, LigParty, LigProof, LinSink, LinSystem};
 use crate::net::{gather_hashes, Net};
@@ -161,7 +161,7 @@ impl SpineSys {
         em.cell(r[0], 0, 1);
         em.cell(r[0], 1, 1);
         if let Some(e) = first {
-            self.y(em, e, P - 1);
+            self.y(em, e, field::p() - 1);
         }
         em.done(&format!("sumcheck {name}: first round sum = claim"), 0);
         for i in 1..r.len() {
@@ -216,12 +216,12 @@ impl LinSystem for SpineSys {
         let mut em = Em { sink, buf: Vec::new() };
         let (x, yr, zr) = self.lay.prod;
         for (q, name, idx) in [(0usize, "z1", 0usize), (1, "z2", 3), (2, "b", 6)] {
-            self.sumcheck(&mut em, name, 2, Some(idx), &|em: &mut Em| em.cell(zr, q, P - 1));
+            self.sumcheck(&mut em, name, 2, Some(idx), &|em: &mut Em| em.cell(zr, q, field::p() - 1));
             em.cell(x, q, 1);
-            self.y(&mut em, idx + 2, P - 1);
+            self.y(&mut em, idx + 2, field::p() - 1);
             em.done(&format!("product {q} operands"), 0);
             em.cell(yr, q, 1);
-            self.y(&mut em, idx + 1, P - 1);
+            self.y(&mut em, idx + 1, field::p() - 1);
             em.done(&format!("product {q} operands"), 0);
         }
         let (tau, rs) = &self.sched.scs["bg"];
@@ -231,27 +231,27 @@ impl LinSystem for SpineSys {
             self.y(em, 11, eq);
         });
         em.cell(x, 3, 1);
-        self.y(&mut em, 9, P - 1);
+        self.y(&mut em, 9, field::p() - 1);
         em.done("product 3 operands", 0);
         em.cell(yr, 3, 1);
-        self.y(&mut em, 10, P - 1);
+        self.y(&mut em, 10, field::p() - 1);
         em.done("product 3 operands", 0);
         for (q, base) in [(4usize, 12usize), (5, 16)] {
             let wn = if q == 4 { "W1n" } else { "W2n" };
             self.y(&mut em, base, 1);
-            self.y(&mut em, base + 1, P - 1);
+            self.y(&mut em, base + 1, field::p() - 1);
             em.cell(zr, q, 1);
             em.done(&format!("rank-1 update {wn}: W'(r) = W(r) - d(r_row) v(r_col)"), 0);
             em.cell(x, q, 1);
-            self.y(&mut em, base + 2, P - 1);
+            self.y(&mut em, base + 2, field::p() - 1);
             em.done(&format!("product {q} operands"), 0);
             em.cell(yr, q, 1);
-            self.y(&mut em, base + 3, P - 1);
+            self.y(&mut em, base + 3, field::p() - 1);
             em.done(&format!("product {q} operands"), 0);
         }
         if self.ev.len() == 22 {
             self.y(&mut em, 20, 1);
-            self.y(&mut em, 21, P - 1);
+            self.y(&mut em, 21, field::p() - 1);
             em.done("signed input binding: the custodians' x = the owner's signed x", 0);
         }
     }
@@ -326,7 +326,12 @@ pub struct SpineIn<'a> {
     pub attack: Option<&'a str>,
     /// the ideal dealer's stream for the Ligero's triples (real runs; identical for every party)
     pub lig_dealer: Option<pycompat::PyRandom>,
+    /// the deployed run: this party's tape triples for the Ligero's products (overrides lig_dealer)
+    pub lig_tape: Option<Vec<(u64, u64, u64)>>,
 }
+
+/// Plain (unauthenticated) products in the spine's Ligero: the six evaluation-pair products.
+pub const LIG_SCALARS: usize = 6;
 
 pub struct SpineOut {
     pub proof: SpineProof,
@@ -387,6 +392,9 @@ pub fn prove(
     let mut lg = LigParty::new(lp, i, n, &seed_label, inp.det);
     if let Some(dl) = &inp.lig_dealer {
         lg = lg.with_dealer(dl.clone());
+    }
+    if let Some(t) = &inp.lig_tape {
+        lg = lg.with_tape(t.clone());
     }
     let mut tr = Transcript::new("step-zk");
     tr.absorb(|h| {

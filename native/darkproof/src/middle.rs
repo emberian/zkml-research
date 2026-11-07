@@ -1,7 +1,7 @@
 //! cosnark_gates_zk.py: the middle (SPDZ execution integrity of the nonlinear gates) with ZK layers 2-3.
 //! `prove` is ONE custodian's prover; `verify` the public verifier. The constraint system comes from the
 //! verifier's own symbolic replay of the step (`step::replay`).
-use crate::field::{self, P};
+use crate::field;
 use crate::h::Hash;
 use crate::ligero::{self, LigParams, LigParty, LigProof, LinSink, LinSystem};
 use crate::net::{gather_hashes, Net};
@@ -200,11 +200,11 @@ impl LinSystem for MiddleSys {
         sink.con("Hadamard zerocheck: final = eq (A B - C)", &b, 0);
         b.clear();
         cell(&mut b, x, 0, 1);
-        self.y(&mut b, 0, P - 1);
+        self.y(&mut b, 0, field::p() - 1);
         sink.con("product operands", &b, 0);
         b.clear();
         cell(&mut b, yr, 0, 1);
-        self.y(&mut b, 1, P - 1);
+        self.y(&mut b, 1, field::p() - 1);
         sink.con("product operands", &b, 0);
         b.clear();
         for i in 0..self.ks.len() {
@@ -217,7 +217,7 @@ impl LinSystem for MiddleSys {
             let lab = format!("linear sumcheck {k}");
             cell(&mut b, l[0], 3 * i, 1);
             cell(&mut b, l[0], 3 * i + 1, 1);
-            cell(&mut b, self.lay.crow, i, P - 1);
+            cell(&mut b, self.lay.crow, i, field::p() - 1);
             sink.con(&lab, &b, 0);
             b.clear();
             for r in 1..l.len() {
@@ -241,7 +241,7 @@ impl LinSystem for MiddleSys {
         if self.ev.len() == 3 + self.ks.len() + 2 {
             let e = self.ev.len();
             self.y(&mut b, e - 2, 1);
-            self.y(&mut b, e - 1, P - 1);
+            self.y(&mut b, e - 1, field::p() - 1);
             sink.con("signed input binding: the custodians' y = the owner's signed y", &b, 0);
         }
     }
@@ -277,9 +277,14 @@ pub struct MiddleIn<'a> {
     pub det: &'a Det,
     /// the ideal dealer's stream for the Ligero's triples (real runs; identical for every party)
     pub lig_dealer: Option<pycompat::PyRandom>,
+    /// the deployed run: this party's tape triples for the Ligero's products (overrides lig_dealer)
+    pub lig_tape: Option<Vec<(u64, u64, u64)>>,
     /// ATTACK HOOK (fs_public_falsifier): colluders rewrite the batch constant after seeing gamma
     pub cst_patch: Option<&'a (dyn Fn(&BTreeMap<String, Vec<u64>>, u64, &[u64]) -> u64 + Sync)>,
 }
+
+/// Plain (unauthenticated) products in the middle's Ligero: the zerocheck's final product.
+pub const LIG_SCALARS: usize = 1;
 
 pub struct MiddleOut {
     pub proof: MiddleProof,
@@ -345,6 +350,9 @@ pub fn prove(
     let mut lg_ = LigParty::new(lp, i, n, &format!("(2, {})", inp.ctx.repr()), inp.det);
     if let Some(dl) = &inp.lig_dealer {
         lg_ = lg_.with_dealer(dl.clone());
+    }
+    if let Some(t) = &inp.lig_tape {
+        lg_ = lg_.with_tape(t.clone());
     }
     let mut tr = Transcript::new("middle-zk");
     tr.absorb(|h| {

@@ -4,7 +4,7 @@
 //! step. It mirrors the harness's draw order exactly, so at d = 4/16 its witness equals darkproof_vectors.py's,
 //! and at d = 4096 (where Python never ran) it supplies the timing runs. It is a witness generator, not the
 //! custodians' protocol (that is native/darkstep).
-use crate::field::{self, P};
+use crate::field;
 use crate::spdz::{Dealer, Sh};
 use crate::step::{StepParams, KAPPA};
 use crate::witness::Witness;
@@ -65,8 +65,8 @@ impl Eng {
         o
     }
     fn mul(&mut self, x: &V, y: &V) -> V {
-        let av = self.dealer.rng.randrange_u64(P);
-        let bv = self.dealer.rng.randrange_u64(P);
+        let av = self.dealer.rng.randrange_u64(field::p());
+        let bv = self.dealer.rng.randrange_u64(field::p());
         let a = self.auth(av);
         let a = self.rec(a);
         let b = self.auth(bv);
@@ -82,7 +82,7 @@ impl Eng {
     fn input(&mut self, vals: &[u64], orng: &mut PyRandom) -> Vec<V> {
         vals.iter()
             .map(|&v| {
-                let rv = orng.randrange_u64(P);
+                let rv = orng.randrange_u64(field::p());
                 let r = self.auth(rv);
                 let c = field::sub(v, rv);
                 self.public.push(c);
@@ -91,8 +91,8 @@ impl Eng {
             .collect()
     }
     fn matvec(&mut self, w: &[V], v: &[V], d: usize, tp: bool) -> Vec<V> {
-        let av: Vec<u64> = (0..d * d).map(|_| self.dealer.rng.randrange_u64(P)).collect();
-        let bv: Vec<u64> = (0..d).map(|_| self.dealer.rng.randrange_u64(P)).collect();
+        let av: Vec<u64> = (0..d * d).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
+        let bv: Vec<u64> = (0..d).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
         let a: Vec<V> = av.iter().map(|&x| self.auth(x)).collect();
         let b: Vec<V> = bv.iter().map(|&x| self.auth(x)).collect();
         let cvals: Vec<u64> = (0..d)
@@ -128,8 +128,8 @@ impl Eng {
     }
     fn outer(&mut self, a: &[V], x: &[V]) -> Vec<V> {
         let (d1, d2) = (a.len(), x.len());
-        let uv: Vec<u64> = (0..d1).map(|_| self.dealer.rng.randrange_u64(P)).collect();
-        let wv: Vec<u64> = (0..d2).map(|_| self.dealer.rng.randrange_u64(P)).collect();
+        let uv: Vec<u64> = (0..d1).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
+        let wv: Vec<u64> = (0..d2).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
         let u: Vec<V> = uv.iter().map(|&x| self.auth(x)).collect();
         let w: Vec<V> = wv.iter().map(|&x| self.auth(x)).collect();
         let mut uw = Vec::with_capacity(d1 * d2);
@@ -164,8 +164,8 @@ impl Eng {
         let val = rv >> s;
         for j in 0..k + KAPPA - s {
             let v = (val >> j) & 1;
-            let xs: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(P)).collect();
-            let ms: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(P)).collect();
+            let xs: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(field::p())).collect();
+            let ms: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(field::p())).collect();
             let lx = field::sub(v, xs.iter().fold(0, |a, &b| field::add(a, b)));
             let lm = field::sub(field::mul(self.dealer.alpha, v), ms.iter().fold(0, |a, &b| field::add(a, b)));
             self.atoms.push([(xs[0], ms[0]), (xs[1], ms[1]), (lx, lm)]);
@@ -177,7 +177,7 @@ impl Eng {
             .map(|j| {
                 let e = lin(&[(field::from_i64(1 - 2 * a[j] as i64), &bits[j])]);
                 let e = if a[j] != 0 { self.cadd(a[j], &e) } else { e };
-                let e2 = lin(&[(P - 1, &e)]);
+                let e2 = lin(&[(field::p() - 1, &e)]);
                 self.cadd(1, &e2)
             })
             .collect();
@@ -198,11 +198,11 @@ impl Eng {
             });
         }
         let q = field::from_i64((c >> s) as i64 - (1i64 << (k - s)));
-        let o = lin(&[(P - 1, &rhi), (P - 1, &borrow.unwrap())]);
+        let o = lin(&[(field::p() - 1, &rhi), (field::p() - 1, &borrow.unwrap())]);
         if q != 0 { self.cadd(q, &o) } else { o }
     }
     fn lookup2(&mut self, u: &V, offset: u64, tables: &(Vec<u64>, Vec<u64>)) -> (V, V) {
-        let rv = self.dealer.rng.randrange_u64(P);
+        let rv = self.dealer.rng.randrange_u64(field::p());
         let mut pw = Vec::with_capacity(255);
         for j in 1..=255u64 {
             let a = self.auth(field::pow(rv, j));

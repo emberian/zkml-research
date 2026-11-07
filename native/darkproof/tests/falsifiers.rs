@@ -1,6 +1,6 @@
 //! §19 lives_falsifier natively: a hiding commitment opened in a third proof reveals its data; the honest life
 //! counter refuses that opening.
-use darkproof::field::{self, P};
+use darkproof::field;
 use darkproof::pcs::PcsParty;
 use darkproof::poly::lagrange_basis;
 use darkproof::rng::Det;
@@ -36,7 +36,7 @@ fn lives_falsifier() {
     let mut rng = PyRandom::from_u64(7);
     let d = 4;
     let secret: Vec<u64> = (0..d * d).map(|_| field::from_i64(rng.randint_i64(-7, 7))).collect();
-    let mut sh: Vec<Vec<u64>> = (0..2).map(|_| secret.iter().map(|_| rng.randrange_u64(P)).collect()).collect();
+    let mut sh: Vec<Vec<u64>> = (0..2).map(|_| secret.iter().map(|_| rng.randrange_u64(field::p())).collect()).collect();
     sh.push(secret.iter().enumerate().map(|(k, &v)| field::sub(field::sub(v, sh[0][k]), sh[1][k])).collect());
     let det = Det(None);
     let mut honest: Vec<PcsParty> = (0..3).map(|i| PcsParty::commit(&pr, &sh[i], "W1n", i, &det)).collect();
