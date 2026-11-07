@@ -1229,3 +1229,14 @@ gives the twin's C; it must equal release_P<I>.json "C" at all three new seats.
   test: kept if hbox's aggregate rises >= 1.4x, else restarted after lg64f). Chunk times at 17.9 Mbit/s: rec-ho 0.67 h,
   rec-n-c0 1.92, rec-c0..c2 3.85 each, rec-c3 1.92, rec-rel 27.2. Prep's forge pauser (runs/nightly-pause.pid) stops only
   its *-party.x / darkprep PIDs in the same window. The LowGear pause test (condition i) is running on wired seats.
+
+## Launch checklist addendum (coordinator, 2026-11-07 ~15:15 UTC): where run.py drive runs
+Checked [EXECUTED, `ssh bb2 'ssh -o BatchMode=yes <host> true'`]: bb2 cannot reach dregg-forge, hbox or 178.105.4.114
+over ssh with the keys it already holds (all three: no). Running the driver on bb2 would mean placing new private keys
+on bb2, which we do not do. So `run.py drive` stays on the Mac under `caffeinate -i`, as the Continuation says.
+Successor, before launch:
+1. Confirm the Mac is on mains power and will not be closed or rebooted for the run (about 3 days); say so to the
+   coordinator if that cannot be assured.
+2. Launch drive under nohup with a PID file and logs under the lane's scratch run dir, so a dead drive is visible and is
+   restarted with the same command (it attaches to the launched run).
+3. Re-check after any Mac network change that drive has reattached (its log shows the attach line).
