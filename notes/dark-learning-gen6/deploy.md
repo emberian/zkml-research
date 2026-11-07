@@ -725,3 +725,40 @@ forge (sha256 b7b147b2... checked at both ends; bb2's copy removed).
   release_custodian copy triples out (proof lane offers borrowed slices).
 - run10b: the per-seat release peak with all three seats on bb2 at MemoryMax=32G (a memory measurement, not a
   deployment), split tapes, its own test registry (`consumed_log`, public-seed test tapes only).
+
+### run11b: the self-handover after an abort at d = 4096, on the wired-new committee (09:26-09:34 UTC) [EXECUTED]
+
+Seat 0 bb2, seat 1 forge (`--attack wrong_return:1`, test build), seat 2 bb2; prep's wn-abort (the refused step),
+ho-sh2 (handover tape), ho-sh2-steps (redo + next); ledger-sq, `--wipe-spent`, archive on bb2, ports
+28200-28255; each seat `--erase-extra` its wired-new<I> p-61 MP-SPDZ MAC-key and secrets files (the
+self-handover honours it since 64ae2ee9) and `--scan-extra` that dir. Build ws-target-test4 at 453d8e0f (the
+handover deferred to main on a zeroed stack, f2764017). bb2 also dealt run10b's tapes meanwhile: upper bounds.
+
+| | seat 0 (bb2) | 1 (forge) | 2 (bb2) |
+|---|---:|---:|---:|
+| step 0 refused, then old role s (reshare, prove, erase) | 71.9 (2.6, 6.2, 0.97) | 46.2 (2.2, 6.5, 0.84) | 67.1 (2.6, 6.0, 1.05) |
+| new role s | 21.8 | 21.8 | 21.8 |
+| redo step 0 / step 1 seconds | 149.0 / 101.8 | 149.2 / 101.8 | 148.6 / 101.8 |
+| prove / verify (s) | 22.0-24.3 / 10.8-11.6 | 22.0-24.3 / 10.3-10.5 | 21.9-24.0 / 10.6-11.6 |
+| sampled VmRSS / cgroup peak | 9.14 / 10.75 GB | 8.90 / 10.17 GB | 8.62 / 10.63 GB |
+
+- One transcript per step at epoch 1; the refused step's tape and owner message and the wired-new MP-SPDZ
+  key files are gone from the boxes after the run (checked by ls).
+- The handover lane's `--self` checker: 33 of 37. No hits on the main thread's stack any more (the deferral
+  works). Reds, both on its side: one alpha copy per seat in old_side's own frame (the generic setup closure
+  inlined into it; fixed in darkhand 09fd154d with a non-inlined setup frame), and seat 0's 470,461 memory /
+  514,737 disk "W1 share" hits, a false positive (at a step-0 abort custodian 0's share is the public genesis W;
+  09fd154d drops share canaries for a public carry). Rebuilt at 8319ea81 for run12c and the next self rerun.
+
+### For the long run (083eb2a6, fbeda41f) [EXECUTED on the Mac; not yet on the boxes]
+
+- `--tape-wait S` (serve): the three vote on CTRL each step whether their chunk is complete (chunk-P<I>.json, which
+  darkprep writes last) and wait together; `--test tape_wait` 2 passed.
+- The new committee pauses and resumes: join and self-handover write the carry beside the checkpoint; a pause
+  before a process's first step releases its unused tape in the registry; `serve --resume` in a new seat's dir
+  continues at epoch 1. `--test handover_steps` 3 passed (the new one: the_new_committee_pauses_and_resumes_as_serve).
+- run.py `drive`: launch, the new committee after step K - 1, resume after forge's window (either committee),
+  stop by PID files on anything else, collect; `record.py hbox|wired` writes the run of record's config.
+- [OPEN] hbox as the third box: behind NAT it only dials. The 3-meshes and the proof meshes are fine (it is seat
+  2), but in the six-party handover mesh old seat 2 (index 2) must accept new seats 3-5. Needs a dial-only role in
+  connect_mesh (not built) or a relay; and hbox has no ssh to bb2 or forge for a tunnel. A wired box needs neither.
