@@ -75,21 +75,50 @@ LowGear loopback unit prices (all parties, marginal, S = 60): triple 37.8 k, ran
 
 Step at d = 4096, GEN6 program (truncations (11,19), (11,19), (7,8), (8,19)), carried (x, y input): 286,722 Beaver
 triples, 1,040,384 power products, 921,600 bits, 8,192 input tuples = 2,256,898 triple-equivalents, plus 16,384
-randoms. Proof section (proof lane, commit 1a38eb82, `darkproof counts`): 4,101,581 triples.
+randoms. Proof section per step (proof lane, RC + LB, commit cebe43b4, `run::step_section`): 3,192,275 triples (it
+was 16.83M with the gen-5 method and 4,101,581 with RC alone).
 
 | backend | proof section | triple-eq per step | total (Tbit) | **hbox upload per step (Gbit)** | hours per step via hbox |
 |---|---|---:|---:|---:|---:|
 | MASCOT tau = 5 | no | 2,256,898 | 0.817 | **272.5** | 3.9 |
-| MASCOT tau = 5 | yes | 6,358,479 | 2.302 | **767.4** | 11.0 |
-| LowGear | no | 2,256,898 | 0.086 | **28.6** | 0.41 |
-| LowGear | yes | 6,358,479 | 0.242 | **80.6** | 1.16 |
+| MASCOT tau = 5 | RC + LB | 5,449,173 | 1.973 | **657.7** | 9.5 |
+| LowGear | no | 2,256,898 | 0.085 | **28.5** | 0.41 |
+| LowGear | RC + LB | 5,449,173 | 0.206 | **68.7** | 0.99 |
+
+The release (M = 64) section is 58,679,793 triples on top of the release's own step-like preprocessing. That is
+about 21 Tbit on MASCOT or 2.2 Tbit on LowGear, so 0.7 Tbit from hbox, about 10 h on LowGear [DERIVED].
 
 Traffic is symmetric (each party sends a third, half on each link; §3), so hbox's upload is total / 3. The hours assume
 hbox's MASCOT-measured 19.3 Mbit/s; LowGear's larger messages may run nearer the 40 Mbit/s raw uplink (§4 three-box
 pending). LowGear also costs a one-off key setup per epoch (230 s compute on loopback; over the WAN, over 1.2 GB from
 hbox and over 17 minutes on the first attempt).
 
-## 6. Randomness: no seeded randomness on a production tape
+## 6. Surviving hbox's link
+
+[SOURCE: MP-SPDZ Networking/sockets.cpp, Player.cpp] The stock build aborts on short stalls:
+- every client socket gets SO_RCVTIMEO and SO_SNDTIMEO of 10 s;
+- TCP keepalive is idle 1 s, interval 3 s, 5 probes, so about 16 s without an ACK kills the connection;
+- player sockets get a 300 s receive timeout. LowGear key setup over hbox's link waits longer than that.
+
+[EXECUTED] A 30-minute flow probe from hbox to forge (`trickle.py`: one idle flow with a 1-byte ping every 60 s, one at
+1 kB/s, one at 100 kB/s, default kernel TCP settings) kept all three flows. Each closed cleanly after 1,800 s with
+every byte delivered. So hbox's link stalls but does not drop flows outright on that timescale. These settings match
+the observed aborts: "write_some: Connection timed out", "Sending error (Connection timed out)",
+"Fatal error in receiving".
+
+Fix 1, built: `build-mpspdz.sh` now patches these to no send/receive timeout on client sockets, keepalive
+30 s / 30 s / 120 probes (an hour), and a player receive timeout of 3600 s. Binary sha256: lowgear-party.x
+66c09524..., mascot-party.x 8e24dfa3..., tarball 1b896e6e...
+
+Fix 2, the coordinator's call: run MP-SPDZ over darkstep's resumable relay (deploy lane, 9869e89f). On each box,
+MP-SPDZ dials 127.0.0.1:(15210 + j) for peer j, and the relay carries every connection over the seq/ack TLS mesh,
+reconnecting under pinned identities. A drop is then a stall of up to DS_RECONNECT_SECS (600 s), not an abort, so it
+costs no MAC key. Setup:
+- `build/relay3.sh start|stop`; mesh ports 47410 + I; identities from `darkstep tls-keygen I` on each box;
+- per-box ip files `ips-relay.txt`: own entry 127.0.0.1:(15200 + I), peers 127.0.0.1:(15210 + j).
+- MP-SPDZ's own TLS (-e) stays on inside the relay.
+
+## 7. Randomness: no seeded randomness on a production tape
 
 | component | randomness | source | test-only override |
 |---|---|---|---|
