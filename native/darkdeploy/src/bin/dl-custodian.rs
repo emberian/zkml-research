@@ -749,7 +749,8 @@ impl Prove {
     fn release(&mut self, st: &mut CustodianState, dir: &Path) -> Result<Value, String> {
         let args = self.args.clone();
         let i = st.i;
-        let cfg = self.gcfg.as_ref().ok_or("--release needs --genesis-cfg (the policy's encoder)")?;
+        let cfg = self.gcfg.clone().ok_or("--release needs --genesis-cfg (the policy's encoder)")?;
+        let cfg = &cfg;
         let data = PathBuf::from(flag(&args, "--release-data").ok_or("--release-data MNISTDIR")?);
         // M: --release-m, else the genesis cfg's release.M (the train lane's policy pin), else its eval_n
         let pinned = serde_json::from_slice::<Value>(cfg).ok().and_then(|v| v["release"]["M"].as_u64().or(v["eval_n"].as_u64()));
@@ -771,7 +772,8 @@ impl Prove {
         let out = darkproof::run::release_custodian_l(&self.pr, &self.lp, self.prm, &mut st.pt, w1, w2, &pol, &ctx, carry, Some(&roots), pend.as_ref())?;
         std::fs::write(dir.join(format!("release_P{i}.bin")), &out.blob).map_err(|e| e.to_string())?;
         let lp = self.pr.ligero();
-        let (mm, c) = self.c().ledger.as_mut().unwrap().release(&lp, &out.blob, &pol)?;
+        // the replica checks the policy against the genesis's pinned cfg (recomputed from darktrain's encoder)
+        let (mm, c) = self.c().ledger.as_mut().unwrap().release_checked(&lp, &out.blob, &pol, cfg, &data)?;
         if c != out.c {
             return Err(format!("release: the ledger's C = {c}, the opened C = {}", out.c));
         }
