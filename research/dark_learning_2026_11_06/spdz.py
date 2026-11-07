@@ -283,13 +283,33 @@ class Engine:
                  for j in range(d2)] for i in range(d1)]
 
     # -------------------------------------------------- truncation: exact floor(x / 2^s), |x| < 2^K
+    xt = False    # exact truncation (program flag "XT"; notes/dark-learning-gen6/xtrunc.md)
+
     def trunc(self, x, s, K):
+        """Statistical (default): r uniform in [0, 2^(K+KAPPA)), so c = x + 2^K + r < p never wraps. XT: r uniform in
+        [0, p), so c is uniform in F_p for every x (perfect), and an opening c < 2^(K+1) (a wrap is possible only there:
+        a wrap gives c = x + 2^K + r - p < x + 2^K) aborts the step, which is redone with fresh preprocessing. Outside
+        that zone c = x + 2^K + r over the integers, so the same formula is exact. Test hooks (live, XT): cheat
+        {"xt_wrap": k} deals the k-th truncation the mask p - (x + 2^K), a wrap landing at c = 0; {"xt_ignore": True}
+        continues past the zone (a deviating custodian set, for the proof's refusal rows)."""
         p = self.p
-        rv = self.dealer.rng.randrange(1 << (K + KAPPA)) if not self.audit else 0
+        k_tr = getattr(self, "n_trunc", 0)
+        self.n_trunc = k_tr + 1
+        if self.audit:
+            rv = 0
+        elif self.xt:
+            rv = self.dealer.rng.randrange(p)
+            if self.cheat.get("xt_wrap") == k_tr:
+                xv = sum(x[i][0] for i in self.active) % p
+                rv = (p - (xv + (1 << K))) % p
+        else:
+            rv = self.dealer.rng.randrange(1 << (K + KAPPA))
         r = self.prep("tr", lambda: rv)
         rbits = [self.prep("trb", lambda i=i: (rv >> i) & 1) for i in range(s)]
         rhi = self.prep("trh", lambda: rv >> s)
         c = self.open(self.add(self.cadd(1 << K, x), r), "trunc")     # c = x + 2^K + r < 2^{K+KAPPA+1} < p
+        if self.xt and not self.audit and c < 1 << (K + 1) and not self.cheat.get("xt_ignore"):
+            raise Abort("XT: truncation opening in the wrap zone (c < 2^(K+1); reveals nothing); redo the step")
         clow = c & ((1 << s) - 1)
         a = [(clow >> i) & 1 for i in range(s)]
         # borrow = [clow < rlow] = sum_i r_i (1 - a_i) prod_{j > i} (1 - (a_j xor r_j))
@@ -304,6 +324,9 @@ class Engine:
             borrow = term if borrow is None else self.add(borrow, term)
             prefix = eq[i] if prefix is None else self.mul(prefix, eq[i])
         q = (c >> s) - (1 << (K - s))
+        if self.cheat.get("borrow_flip") == k_tr and not self.audit:
+            # TEST: a colluding custodian set outputs q - rhi - (1 - borrow), MAC-consistently (a wrong low-bit comparison)
+            return self.lin([(-1, rhi), (1, borrow)], (q - 1) % p)
         return self.lin([(-1, rhi), (-1, borrow)], q % p)
 
     # -------------------------------------------------- exact table lookup at a masked point

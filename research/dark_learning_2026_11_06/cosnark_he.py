@@ -34,7 +34,8 @@ class Prog:
     [t_lo, t_lo + 256)."""
     KEYS = ("S1", "K1", "S2", "K2", "S3", "K3", "R3", "T_LO")
 
-    def __init__(self, s1=5, k1=13, s2=4, k2=8, s3=8, k3=13, r3=0, t_lo=-128, rc=False, bounds=None, lb=False, rs=False):
+    def __init__(self, s1=5, k1=13, s2=4, k2=8, s3=8, k3=13, r3=0, t_lo=-128, rc=False, bounds=None, lb=False, rs=False,
+                 xt=False):
         self.s1, self.k1, self.s2, self.k2, self.s3, self.k3 = s1, k1, s2, k2, s3, k3
         self.r3, self.t_lo = r3, t_lo
         self.rc = rc                   # the proof checks every truncation's input interval (append_range)
@@ -45,6 +46,9 @@ class Prog:
         self.rs = rs                   # R1 + R2 (proof.md 23): range chains to bit B, rhi's bits below 2^(K + 1 - s) only
         if rs and not rc:
             raise ValueError("the short range (RS) needs the range check (RC) on every truncation")
+        self.xt = xt                   # exact truncation (notes/dark-learning-gen6/xtrunc.md): r uniform in [0, p)
+        if xt and not rs:
+            raise ValueError("exact truncation (XT) needs the short range (RS): its rows hold for any r")
 
     @classmethod
     def of(cls, program):
@@ -52,7 +56,8 @@ class Prog:
         on; "BOUNDS": {name: [a, B]} overrides the default intervals; "LB": true proves the lookup by its bit circuit)."""
         dflt = dict(S1=5, K1=13, S2=4, K2=8, S3=8, K3=13, R3=0, T_LO=-128)
         return cls(*(program.get(k, dflt.get(k)) for k in cls.KEYS), rc=bool(program.get("RC")),
-                   bounds={k: tuple(v) for k, v in program.get("BOUNDS", {}).items()}, lb=bool(program.get("LB")), rs=bool(program.get("RS")))
+                   bounds={k: tuple(v) for k, v in program.get("BOUNDS", {}).items()}, lb=bool(program.get("LB")), rs=bool(program.get("RS")),
+                   xt=bool(program.get("XT")))
 
     def bound(self, name, kc=10):
         """The proved input interval [a, a + 2^B) of truncation `name`: z1 (and the release's z1) the table's domain,
@@ -147,6 +152,7 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None
     d = len(x)
     eng.lb = pg.lb
     eng.rs = pg.rs
+    eng.xt = getattr(pg, "xt", False)
     orng = random.Random(owner_seed)
     if carried is None:
         flat = lambda M: [v for r in M for v in r]

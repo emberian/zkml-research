@@ -63,6 +63,12 @@ class RecEngine(spdz.Engine):
         else:
             super().__init__(p, n, dealer, cheat=cheat)
         self.attack, self.attack_done = attack, False
+        if attack == "xt_wrap" and not symbolic:
+            # TEST (XT, xtrunc.md): the first truncation's mask wraps (c = 0) and the custodians do not redo the step
+            self.cheat = dict(self.cheat, xt_wrap=0, xt_ignore=True)
+        if attack == "borrow_flip" and not symbolic:
+            # TEST: the first truncation's low-bit comparison flipped, MAC-consistently
+            self.cheat = dict(self.cheat, borrow_flip=0)
         self.symbolic = symbolic
         self.atoms = []            # (kind, tag)
         self.atom_sh = []          # per atom: {party: share} (live only)
@@ -216,7 +222,7 @@ class RecEngine(spdz.Engine):
             name, a, B = rc
             self.ranges.append(dict(R=self.tctx["bits"] + self.tctx["hbits"], c=self.tctx["c"], K=K, s=s, a=a, B=B,
                                     name=name, k=sum(1 for r in self.ranges if r["name"] == name),
-                                    r=self.tctx["r"], rs=self.rs))
+                                    r=self.tctx["r"], rs=self.rs, xt=self.xt))
         self.tctx = None
         return out
 
@@ -351,7 +357,12 @@ def append_range(eng):
         L = K + KAPPA + 1
         lo = (1 << K) + a
         cp = D["c"] - lo
-        if not 0 <= cp < 1 << L:
+        if D.get("xt"):
+            # XT (xtrunc.md): an honest c is anywhere in [2^(K+1), p); below, a wrap is possible and the custodians
+            # must have redone the step. c >= 2^(K+1) >= lo gives c' >= 0, and R1 needs no other bound
+            if D["c"] < 1 << (K + 1):
+                eng.range_fail.append((D["name"] + ": XT wrap zone", D["k"]))
+        elif not 0 <= cp < 1 << L:
             eng.range_fail.append((D["name"], D["k"]))
         cb = [((cp % (1 << L)) >> i) & 1 for i in range(L)]
         R = D["R"]
