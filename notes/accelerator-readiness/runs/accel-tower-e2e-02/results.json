@@ -1,0 +1,35 @@
+{
+ "all_bit_exact": true,
+ "cpu_reference_identical": true,
+ "e2e_summary": [
+  {
+   "ell": 18,
+   "batch": 64,
+   "gpu_per_proof_ms": 16.887792531250057,
+   "cpu_per_proof_ms_all_cores": 589.413,
+   "gpu_speedup_vs_cpu_batch": 34.90171962435702,
+   "cpu_single_proof_ms": null,
+   "receipts_identical": true
+  },
+  {
+   "ell": 20,
+   "batch": 16,
+   "gpu_per_proof_ms": 67.42059024999847,
+   "cpu_per_proof_ms_all_cores": 2429.179,
+   "gpu_speedup_vs_cpu_batch": 36.0302244609918,
+   "cpu_single_proof_ms": 2546.44,
+   "receipts_identical": true
+  },
+  {
+   "ell": 22,
+   "batch": 4,
+   "gpu_per_proof_ms": 298.0167467499939,
+   "cpu_per_proof_ms_all_cores": 10105.963,
+   "gpu_speedup_vs_cpu_batch": 33.91072183093753,
+   "cpu_single_proof_ms": null,
+   "receipts_identical": true
+  }
+ ],
+ "nproc": 4,
+ "rc": 0
+}
