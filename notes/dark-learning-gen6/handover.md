@@ -29,6 +29,16 @@ For each of the four vectors (d = 4 and 16; demo and ledger profiles) the test c
 | demo | 40,866,492 | 3.2 s | 125 s | 123 s | 1.86 s | 0.17 s | 4.26 M | 3.5 GB |
 | ledger | 129,790,908 | 3.2 s | 147 s | 146 s | 5.62 s | 0.49 s | 13.5 M | 4.5 GB |
 
+**After the proof lane's coset-domain PCS** (28769b6a), same bench [EXECUTED] (`bench4096-coset.jsonl`):
+
+| profile | proof bytes | resharing | old commitments | NEW commitments | prove | verify | peak RSS (6 parties in one process) |
+|---|---|---|---|---|---|---|---|
+| demo | 40,866,492 | 6.0 s | 4.3 s | 4.5 s | 0.72 s | 0.20 s | 10.1 GB |
+| ledger | 129,790,908 | 6.0 s | 4.7 s | 5.0 s | 1.33 s | 0.52 s | 11.6 GB |
+
+So a d = 4096 ledger handover now costs about 5 s of new-committee commitment plus a 1.3 s prove on one 16-vCPU
+box. The proof is 130 MB. It verifies in 0.5 s.
+
 - **What a handover costs:** the new committee's commitments plus the prove. The old commitments are the step's
   child, already paid for.
 - **Commitment time:** in this run the three parties share 16 cores. [DERIVED] With each custodian on its own box,
@@ -133,3 +143,36 @@ Each fix is named in the commit (ec39b23c). The scan saw every one of these resi
 - Copies inside other libraries' non-allocating state.
 - d = 4096 erasure in local mode: six processes on one 12 GB box is too much (new custodians need about 12 GB at
   d = 4096). It belongs in the three-box run.
+
+## 5. The self-handover after an SPDZ abort [EXECUTED on forge]
+    dl-hand local-self <work> <d> <profile> <port_base>
+
+An abort retires the MAC key. Recovery keeps the same seats and the HE keys:
+- each seat reshares its W shares to itself under a new MAC key;
+- the shares are re-authenticated, and the handover proof binds the new commitment to the ledger head;
+- the ledger rotates to the same custodian set at epoch + 1;
+- the old shares, tape and alpha share are erased while the seat's process runs on.
+
+Each seat is one process, with its old and new roles as two threads on the joint six-party mesh (64 MiB stacks for
+the stack scrub). All 13 checks hold at d = 256 ledger, 1024 demo and 1024 ledger. Canary hits before erasure are
+760,837 to 988,933 per old role, and after erasure 0. The checks:
+- the processes exit 0, and both roles hold the same proof;
+- the ledger accepts, its head is the re-committed roots, and its custodian set is unchanged;
+- the MAC check under the NEW key passes, the opened entries equal the plaintext W, and the new alpha differs from
+  the old;
+- the kept HE key still decrypts;
+- the scan finds the material before erasure and none of it after, and no old tape file is left.
+
+[OPEN] The run-level test (an abort mid-step in darkstep serve, the self-handover, the run continuing, the weights
+equal to the plaintext twin) needs three things from other lanes:
+- the deploy lane's `--handover-at` and join mode;
+- the train lane's twin;
+- fresh preprocessing under the new key from the prep lane.
+
+## 6. Entry points for the serve loop (`darkhand::serve`, usage at the top of serve.rs)
+- `old_from_serve(CustodianState, carry, files, retire_he, captured)` returns `OldParts { old, he, net3 }`.
+- Then `side::old_side(&common, move || parts.old, || net6)`. In a rotation the process exits after this.
+- A new seat calls `side::new_side(&common, j, net3, net6, tape, epoch, 8, keep)`. It returns the new Party, W wires
+  (`shares_rows`), the carry (the next parent), the keys, and the proof for `Ledger::rotate`.
+- The binary declares `#[global_allocator] static A: darkhand::erase::ZeroOnFree`.
+- The resharing tag is `side::RESHARE` (PROOF until the deploy lane's RESHARE = 5).
