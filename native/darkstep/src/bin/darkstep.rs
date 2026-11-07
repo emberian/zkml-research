@@ -22,6 +22,9 @@
 //!       --pause-utc, custodian 0 decides at each step boundary whether the run pauses (all three checkpoint and exit
 //!       with code 3); --resume continues from the checkpoint. --ret-primes K (party, serve, local): HE returns
 //!       modulus-switched to K primes with c0 only where decrypted (K = 2; every custodian the same)
+//!   darkstep relay I HOST:PORT HOST:PORT HOST:PORT --tls TLSDIR --local 127.0.0.1:P --forward-base L
+//!       a resumable TCP relay over the TLS mesh (src/relay.rs): local connections to 127.0.0.1:L+j reach peer j's
+//!       --local service; link drops shorter than DS_RECONNECT_SECS are stalls, not resets
 //!   darkstep deal-steps N L F_bits d K DIR [--program P] [--only I [--public]]   (feature test-harness only)
 //!       the public-seed test dealer for K steps: DIR/tape_{0,1,2}.bin (continuous) and DIR/public_step<k>.bin;
 //!       --only I writes custodian I's tape alone (and the broadcasts only with --public)
@@ -56,6 +59,35 @@ fn main() {
     }
     match cmd {
         "serve" => std::process::exit(darkstep::serve::serve_main(&args, &mut darkstep::serve::NoHook)),
+        "relay" => {
+            // relay I HOST:PORT HOST:PORT HOST:PORT --tls TLSDIR --local 127.0.0.1:P --forward-base L [--listen ADDR]
+            let i: usize = args[2].parse().unwrap();
+            let addrs: Vec<SocketAddr> = args[3..6].iter().map(|a| a.parse().unwrap()).collect();
+            let tlsdir = std::path::PathBuf::from(flag(&args, "--tls").expect("--tls TLSDIR"));
+            let id = darkstep::tls::Identity {
+                key_der: std::fs::read(tlsdir.join(format!("tls_{i}.key"))).expect("own TLS key"),
+                cert_der: std::fs::read(tlsdir.join(format!("cert_{i}.der"))).expect("own certificate"),
+            };
+            let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tlsdir.join(format!("cert_{j}.der"))).expect("peer certificate")).collect();
+            let local: SocketAddr = flag(&args, "--local").expect("--local 127.0.0.1:P").parse().unwrap();
+            let base: u16 = flag(&args, "--forward-base").expect("--forward-base L").parse().unwrap();
+            let listener = if i + 1 < 3 {
+                let at: SocketAddr = flag(&args, "--listen").map(|a| a.parse().unwrap()).unwrap_or(addrs[i]);
+                Some(TcpListener::bind(at).unwrap())
+            } else {
+                None
+            };
+            let timeout = std::time::Duration::from_secs(flag(&args, "--timeout").map(|t| t.parse().unwrap()).unwrap_or(3600));
+            let net = darkstep::net::Net::connect_tls(i, listener, &addrs, &id, &certs, timeout).unwrap_or_else(|e| {
+                eprintln!("{e}");
+                std::process::exit(2)
+            });
+            eprintln!("relay {i}: mesh up; forwarding 127.0.0.1:{}+j to each peer j, peers reach {local}", base);
+            if let Err(e) = darkstep::relay::run(std::sync::Arc::new(net), base, local) {
+                eprintln!("{e}");
+                std::process::exit(1);
+            }
+        }
         "tls-keygen" => {
             let dir = std::path::PathBuf::from(&args[3]);
             std::fs::create_dir_all(&dir).unwrap();

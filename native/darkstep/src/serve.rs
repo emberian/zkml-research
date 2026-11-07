@@ -25,7 +25,7 @@ pub struct CustodianState {
     pub step: usize,
     pub tab: Vec<Vec<u64>>,
     pool: rayon::ThreadPool,
-    last_sent: Vec<[u64; 5]>,
+    last_sent: Vec<[u64; crate::net::NTAGS]>,
     last_gate: [f64; 3],
     last_proof_bytes: u64,
 }
@@ -55,7 +55,7 @@ impl CustodianState {
         let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
         let n = net.n;
         let pt = Party::new(i, pf.t, net, tape);
-        Ok(CustodianState { i, pf, he, pt, w: None, step: 0, tab, pool, last_sent: vec![[0; 5]; n], last_gate: [0.0; 3], last_proof_bytes: 0 })
+        Ok(CustodianState { i, pf, he, pt, w: None, step: 0, tab, pool, last_sent: vec![[0; crate::net::NTAGS]; n], last_gate: [0.0; 3], last_proof_bytes: 0 })
     }
 
     /// Continue on a new tape (the next chunk). Its MAC key share must be the one the carried shares are under.
@@ -96,7 +96,7 @@ impl CustodianState {
             let (counters, stop) = (counters.clone(), stop.clone());
             std::thread::spawn(move || {
                 let mut v: Vec<(f64, Vec<u64>)> = Vec::new();
-                let snap = |c: &Vec<[std::sync::atomic::AtomicU64; 5]>| c.iter().map(|r| r.iter().map(|x| x.load(std::sync::atomic::Ordering::Relaxed)).sum::<u64>()).collect::<Vec<u64>>();
+                let snap = |c: &Vec<[std::sync::atomic::AtomicU64; crate::net::NTAGS]>| c.iter().map(|r| r.iter().map(|x| x.load(std::sync::atomic::Ordering::Relaxed)).sum::<u64>()).collect::<Vec<u64>>();
                 loop {
                     v.push((t0.elapsed().as_secs_f64(), snap(&counters)));
                     if stop.load(std::sync::atomic::Ordering::Relaxed) {
@@ -151,8 +151,8 @@ impl CustodianState {
             .enumerate()
             .filter(|(j, _)| *j != self.i)
             .map(|(j, s)| {
-                let dlt: Vec<u64> = (0..5).map(|t| s[t] - self.last_sent[j][t]).collect();
-                (j.to_string(), json!({"open": dlt[0], "he_ct": dlt[1], "he_ret": dlt[2], "ctrl": dlt[3], "proof": dlt[4], "total": dlt.iter().sum::<u64>()}))
+                let dlt: Vec<u64> = (0..crate::net::NTAGS).map(|t| s[t] - self.last_sent[j][t]).collect();
+                (j.to_string(), json!({"open": dlt[0], "he_ct": dlt[1], "he_ret": dlt[2], "ctrl": dlt[3], "proof": dlt[4], "reshare": dlt[5], "total": dlt.iter().sum::<u64>()}))
             })
             .collect();
         self.last_sent = per;
