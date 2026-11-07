@@ -56,6 +56,16 @@ pub fn flag(args: &[String], name: &str) -> Option<String> {
     args.iter().position(|x| x == name).and_then(|k| args.get(k + 1).cloned())
 }
 
+/// --gate T, DL_DETERMINISTIC (test-det builds), --ret-primes K.
+pub fn gated(mut pf: Prof, args: &[String]) -> Prof {
+    pf.gate = flag(args, "--gate").map(|t| t.parse().expect("--gate T"));
+    pf.det_seed = std::env::var("DL_DETERMINISTIC").ok();
+    if let Some(k) = flag(args, "--ret-primes") {
+        pf.ret_primes = k.parse().expect("--ret-primes K");
+    }
+    pf
+}
+
 pub fn attack_of(args: &[String]) -> Option<(String, usize)> {
     flag(args, "--attack").map(|s| {
         let (k, p) = s.split_once(':').expect("KIND:PARTY");
