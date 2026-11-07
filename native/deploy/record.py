@@ -44,6 +44,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("layout", choices=["hbox", "wired", "dev"], help="dev: forge + bb2 + bb2, a rehearsal (two seats on one box: not a deployment)")
     ap.add_argument("--no-release", action="store_true", help="end without the release (a rehearsal while the release does not fit)")
+    ap.add_argument("--release-deferred", action="store_true", help="the new committee runs its steps without the release; "
+                    "run.py drive starts the release alone from the checkpoint once its tapes are complete (its chunk is made last)")
     ap.add_argument("--steps", type=int, required=True, help="N, the run's steps")
     ap.add_argument("--handover-at", type=int, required=True, help="K: the rotation after step K")
     ap.add_argument("--chunks", required=True, help="the prep lane's chunk name for this run")
@@ -120,7 +122,8 @@ def main():
                   "addr": f"{BB2['ip']}:{base + 9}"},
         "handover": {"at": a.handover_at, "steps_after": a.steps - a.handover_at - 1, "mesh6": mesh6, "launch_new": "deferred",
                      "new_seats": [seat(b, i, True) for i, b in enumerate(boxes)],
-                     "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1)] + ([] if a.no_release else ["--release"])},
+                     "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1)] + ([] if a.no_release or a.release_deferred else ["--release"]),
+                     **({"release": "deferred"} if a.release_deferred and not a.no_release else {})},
         "drive_poll_s": 60,
         # forge's nightly (fn2, 10:00-11:00 UTC): every process of the run on forge is stopped in place by PID file
         # (SIGSTOP 10:00:00, SIGCONT 10:58:30, nightly.sh on forge) and its peers wait on their receives (--timeout 7200)
