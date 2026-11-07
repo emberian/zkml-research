@@ -38,6 +38,8 @@ pub struct PartyStep {
     /// TEST ONLY: the deterministic hook (bit-exact with the harness). PCS and Ligero randomness come from it and the
     /// Ligeros' triples from cozk's dealer stream, so the tape holds only the Beaver section.
     pub det: Det,
+    /// TEST ONLY: prove even with a truncation input outside its proved bound (a forced bundle)
+    pub ignore_range: bool,
 }
 
 pub struct StepProof {
@@ -176,7 +178,7 @@ pub fn prove_step(
         det: &det,
         lig_dealer: None,
         lig_tape: if det.on() { None } else { Some(lig_m) },
-        ignore_range: false,
+        ignore_range: st.ignore_range,
         cst_patch: None,
     };
     let mo = middle::prove(&mi, net, &mut sp, spine_coms, None)?;
@@ -256,6 +258,7 @@ pub fn from_darkstep_n(
         atoms: rec.middle_atoms.iter().map(sh).collect(),
         triples,
         det,
+        ignore_range: false,
     })
 }
 
