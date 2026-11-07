@@ -167,8 +167,22 @@ fn rs_of(args: &[String]) -> bool {
     args.iter().any(|a| a == "--rs")
 }
 
+/// `--xt`: exact truncation (notes/dark-learning-gen6/xtrunc.md; needs --rs): the tapes' masks are uniform in [0, p)
+/// (darkprep --xt), the genesis record pins "XT": true (a replica opened without it is refused), every party runs
+/// with Party::xt, and a wrap-zone opening is a redo on fresh tape under the same key (serve: --xt-spare-tapes, else
+/// exit 5), never a refusal.
+fn xt_of(args: &[String]) -> bool {
+    let xt = args.iter().any(|a| a == "--xt");
+    assert!(!xt || rs_of(args), "--xt needs --rs (the range rows hold for any mask)");
+    xt
+}
+
 fn params_of(pg: &Program, rs: bool) -> StepParams {
     StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs, pg: None, r3: pg.r3, t_lo: pg.t_lo, xt: false }.deployed()
+}
+
+fn params_of_args(pg: &Program, args: &[String]) -> StepParams {
+    StepParams { xt: xt_of(args), ..params_of(pg, rs_of(args)) }
 }
 
 fn hex_roots(g: &Roots) -> String {
@@ -1064,7 +1078,7 @@ fn prove_hook(args: &[String], i: usize, join: bool) -> Prove {
     // public genesis: the program pins sha256 of the genesis cfg; every custodian commits the public W itself
     // (identical roots), and that commitment is the parent of step 1
     let gcfg = flag(args, "--genesis-cfg").map(|f| std::fs::read(f).expect("genesis cfg"));
-    let mut prm = params_of(&program, rs_of(args));
+    let mut prm = params_of_args(&program, args);
     let mut carry = None;
     let mut genesis = None;
     if let Some(b) = &gcfg {
@@ -1258,7 +1272,7 @@ fn test_deal(args: &[String]) {
     let lp = pr.ligero();
     let program = serve::program_of(args);
     let gbytes = std::fs::read(flag(args, "--genesis-cfg").expect("--genesis-cfg")).unwrap();
-    let mut prm = params_of(&program, rs_of(args));
+    let mut prm = params_of_args(&program, args);
     {
         use sha2::{Digest, Sha256};
         prm.pg = Some(Sha256::digest(&gbytes).into());
@@ -1273,6 +1287,7 @@ fn test_deal(args: &[String]) {
     dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
     dl.only = Some(i);
     dl.rs = rs_of(args);
+    dl.xt = xt_of(args);
     let mut owner = pycompat::PyRandom::from_u64(darkstep::node::OWNER_SEED);
     for k in 0..steps {
         let ex = ord[k % mn.train.n];
@@ -1325,7 +1340,7 @@ fn check_profile(args: &[String], first: usize) -> Result<(), String> {
     let pr = profile_of(args);
     let lp = pr.ligero();
     let pg = serve::program_of(args);
-    let prm = params_of(&pg, rs_of(&args));
+    let prm = params_of_args(&pg, &args);
     let tables = darkproof::step::tables();
     let own;
     let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
@@ -1369,7 +1384,7 @@ fn main() {
             darkproof::field::set_p(pf.t);
             let lp = profile_of(&args).ligero();
             let tables = darkproof::step::tables();
-            let prm = params_of(&serve::program_of(&args), rs_of(&args));
+            let prm = params_of_args(&serve::program_of(&args), &args);
             let own;
             let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
             let g = darkproof::run::step_section(&lp, pf.d, prm, false, tb);
@@ -1383,7 +1398,7 @@ fn main() {
             let lp = profile_of(&args).ligero();
             let tables = darkproof::step::tables();
             let pg = serve::program_of(&args);
-            let prm = params_of(&pg, rs_of(&args));
+            let prm = params_of_args(&pg, &args);
             let own;
             let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
             let (c, n) = step_entries(&lp, pf.d, &pg, prm, tb);

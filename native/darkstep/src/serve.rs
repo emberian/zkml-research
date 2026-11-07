@@ -63,7 +63,8 @@ impl CustodianState {
 
     /// A custodian from parts made elsewhere (a new committee's seat after a handover: its HE side from the new
     /// ceremony, its SPDZ party under the new MAC key, its weight shares from the resharing), at step `step`.
-    pub fn from_parts(i: usize, pf: Prof, he: He, pt: Party, w: Shares, step: usize) -> Box<Self> {
+    pub fn from_parts(i: usize, pf: Prof, he: He, mut pt: Party, w: Shares, step: usize) -> Box<Self> {
+        pt.xt = pf.xt;
         let tab = pf.program.tables(pf.t);
         let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
         let last_sent = pt.net.sent_per_peer();

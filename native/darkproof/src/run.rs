@@ -797,6 +797,9 @@ pub fn release_mpc(
     }
     pt.middle_mul = false;
     let total = acc.iter().fold(DSh { s: 0, m: 0 }, |a, x| pt.add(a, *x));
+    // XT: a truncation opening in the wrap zone makes C meaningless: C is never opened then (the release is redone on a
+    // fresh release tape under the same key; Party::xt_zone, notes/dark-learning-gen6/xtrunc.md)
+    pt.xt_redo()?;
     let c = pt.open_vec(&[total], darkstep::party::PH_MUL)[0];
     pt.mac_check("release")?;
     let sh = |x: &DSh| (x.s, x.m);

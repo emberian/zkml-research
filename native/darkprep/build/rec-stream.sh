@@ -12,9 +12,12 @@
 set -u
 S=$1; O=$2; cd ${0:A:h}
 ev() { echo "$(date -u +%FT%T) $S $*" >> $O/events.log; }
-C=(--backend lowgear --extra -S,60,-lg2,64 --mpc-src {ROOT}/native/darkprep/mpc/darkprep.mpc --p 2305843009210515457 --d 4096
-   --mode steady --truncs 11,19,7,8,8,19 --threads 8 --step-tapes-only --rs)
-export BIN=target-g3/release/darkprep
+# Exact truncation (XT, notes/dark-learning-gen6/xtrunc.md; the coordinator's decision for the run of record): every
+# truncation mask is 61 bits checked r < p inside the MPC; darkprep and its .mpc come from the r14 workspace (deploy
+# root's ws14, built in ws-target-r14 on each box), the custodians run dl-custodian --xt from the same build.
+C=(--backend lowgear --extra -S,60,-lg2,64 --mpc-src {ROOT}/../dl-gen6-deploy/ws14/darkprep/mpc/darkprep.mpc --p 2305843009210515457 --d 4096
+   --mode steady --truncs 11,19,7,8,8,19 --threads 8 --step-tapes-only --rs --xt)
+export BIN=../dl-gen6-deploy/ws-target-r14/release/darkprep
 if [ $S = A ]; then KEY=lg64f; export LAYOUT=; MP={ROOT}/mpspdz; IPF={ROOT}/ips.txt; V=seat; else KEY=lg64n; export LAYOUT=dir3:lgnew; MP={MP}; IPF={ROOT}/ips-lgnew.txt; V=new; fi
 done3() { ssh dregg-forge "test -d /srv/lanes/dl-gen6-prep/chunks/$1" && ssh bb2 "test -d /home/build/lanes/dl-gen6-prep/chunks/$1" && ssh hbox "test -d /othersys/lanes/dl-gen6-prep/chunks/$1"; }
 alive() { ssh -o ConnectTimeout=20 $1 "kill -0 \$(cat $2/runs/$KEY-P$3.pid) 2>/dev/null"; }
