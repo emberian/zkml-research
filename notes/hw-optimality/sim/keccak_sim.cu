@@ -4,6 +4,7 @@
 //   keccak_sim leaves N        merkle_leaves on N random 4-limb words, 256-thread blocks (as tower256_gpu.py)
 //   keccak_sim rate N ITERS    keccak_rate (dependent chain, ROTL, rounds not unrolled), N threads
 //   keccak_sim rateshf N ITERS keccak_rate_shf
+//   optional last arg REPS (default 1): launches 2..REPS are timed with events (ms_per_launch).
 // Every output word is checked against the same Keccak round macro run on the host with ROTL.
 #include <stdint.h>
 #include <cstdio>
@@ -210,15 +211,23 @@ static u64 sm64(u64 &s) { u64 z = (s += 0x9e3779b97f4a7c15ull); z = (z ^ (z >> 3
 #define CK(x) do { cudaError_t e_ = (x); if (e_ != cudaSuccess) { fprintf(stderr, "CUDA error %s at %d\n", cudaGetErrorString(e_), __LINE__); exit(2);} } while (0)
 int main(int argc, char **argv) {
   if (argc < 3) { fprintf(stderr, "usage: see header\n"); return 1; }
-  u64 n = strtoull(argv[2], 0, 10), seed = 7, iters = argc > 3 ? strtoull(argv[3], 0, 10) : 0;
+  bool leaves = !strcmp(argv[1], "leaves");
+  u64 n = strtoull(argv[2], 0, 10), seed = 7, iters = (!leaves && argc > 3) ? strtoull(argv[3], 0, 10) : 0;
+  int reps = leaves ? (argc > 3 ? atoi(argv[3]) : 1) : (argc > 4 ? atoi(argv[4]) : 1);
+  cudaEvent_t e0, e1; CK(cudaEventCreate(&e0)); CK(cudaEventCreate(&e1));
+  float ms = 0;
   std::vector<u64> mid(25); for (auto &m : mid) m = sm64(seed);
   u64 *dmid; CK(cudaMalloc(&dmid, 200)); CK(cudaMemcpy(dmid, mid.data(), 200, cudaMemcpyHostToDevice));
   size_t bad = 0;
-  if (!strcmp(argv[1], "leaves")) {
+  if (leaves) {
     std::vector<u64> v(4 * n), dig(4 * n); for (auto &x : v) x = sm64(seed);
     u64 *dv, *dd; CK(cudaMalloc(&dv, 32 * n)); CK(cudaMalloc(&dd, 32 * n));
     CK(cudaMemcpy(dv, v.data(), 32 * n, cudaMemcpyHostToDevice));
-    merkle_leaves<<<(unsigned)((n + 255) / 256), 256>>>(dv, dmid, dd, n);
+    for (int r = 0; r < reps; r++) {
+      if (r == 1) CK(cudaEventRecord(e0));
+      merkle_leaves<<<(unsigned)((n + 255) / 256), 256>>>(dv, dmid, dd, n);
+    }
+    if (reps > 1) CK(cudaEventRecord(e1));
     CK(cudaGetLastError()); CK(cudaDeviceSynchronize());
     CK(cudaMemcpy(dig.data(), dd, 32 * n, cudaMemcpyDeviceToHost));
     for (u64 i = 0; i < n; i++) {
@@ -232,8 +241,12 @@ int main(int argc, char **argv) {
   } else {
     std::vector<u64> out(n); u64 *dout; CK(cudaMalloc(&dout, 8 * n));
     unsigned blocks = (unsigned)((n + 255) / 256);
-    if (!strcmp(argv[1], "rate")) keccak_rate<<<blocks, 256>>>(dmid, dout, iters, n);
-    else keccak_rate_shf<<<blocks, 256>>>(dmid, dout, iters, n);
+    for (int r = 0; r < reps; r++) {
+      if (r == 1) CK(cudaEventRecord(e0));
+      if (!strcmp(argv[1], "rate")) keccak_rate<<<blocks, 256>>>(dmid, dout, iters, n);
+      else keccak_rate_shf<<<blocks, 256>>>(dmid, dout, iters, n);
+    }
+    if (reps > 1) CK(cudaEventRecord(e1));
     CK(cudaGetLastError()); CK(cudaDeviceSynchronize());
     CK(cudaMemcpy(out.data(), dout, 8 * n, cudaMemcpyDeviceToHost));
     for (u64 i = 0; i < n; i++) {
@@ -242,7 +255,8 @@ int main(int argc, char **argv) {
       bad += out[i] != a[0];
     }
   }
-  printf("{\"cmd\": \"%s\", \"n\": %llu, \"iters\": %llu, \"keccak_f\": %llu, \"bad\": %zu}\n", argv[1], n, iters,
-         n * (iters ? iters : 1), bad);
+  if (reps > 1) { CK(cudaEventSynchronize(e1)); CK(cudaEventElapsedTime(&ms, e0, e1)); ms /= (reps - 1); }
+  printf("{\"cmd\": \"%s\", \"n\": %llu, \"iters\": %llu, \"keccak_f\": %llu, \"bad\": %zu, \"reps\": %d, \"ms_per_launch\": %.5f}\n",
+         argv[1], n, iters, n * (iters ? iters : 1), bad, reps, ms);
   return bad != 0;
 }

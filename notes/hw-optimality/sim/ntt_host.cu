@@ -2,7 +2,7 @@
 // fwdBr<MODE=0 Shoup, G=3 radix-8>, one pass (E = N), THREADS threads, grid (1, rows), dynamic smem 8N bytes,
 // exactly accel_bench_cuda.Ctx.fwd for logE = logN, G = 3. Lane hw-opt-sim, 2026-11-06.
 //   ntt_host DIR N L ROWS THREADS REPS   reads DIR/{tw,twq,mc,in,expect}.bin; runs REPS launches on a fresh
-//   copy of the input each... (REPS > 1 re-transforms in place; only the first output is checked).
+//   REPS > 1 re-transforms in place (only the first output is checked); launches 2..REPS are timed with events.
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -30,13 +30,17 @@ int main(int argc, char **argv) {
   size_t smem = 8ull * N;
   CK(cudaFuncSetAttribute(fwdBr<0, 3>, cudaFuncAttributeMaxDynamicSharedMemorySize, (int)smem));
   std::vector<u64> out((size_t)rows * N);
+  cudaEvent_t e0, e1; CK(cudaEventCreate(&e0)); CK(cudaEventCreate(&e1));
+  float ms = 0;
   for (int r = 0; r < reps; r++) {
+    if (r == 1) CK(cudaEventRecord(e0));
     fwdBr<0, 3><<<dim3(1, rows), th, smem>>>(dbuf, dtw, dtwq, dmc, logN, logN, L);
-    CK(cudaGetLastError()); CK(cudaDeviceSynchronize());
-    if (r == 0) CK(cudaMemcpy(out.data(), dbuf, 8ull * rows * N, cudaMemcpyDeviceToHost));
+    CK(cudaGetLastError());
+    if (r == 0) { CK(cudaDeviceSynchronize()); CK(cudaMemcpy(out.data(), dbuf, 8ull * rows * N, cudaMemcpyDeviceToHost)); }
   }
+  if (reps > 1) { CK(cudaEventRecord(e1)); CK(cudaEventSynchronize(e1)); CK(cudaEventElapsedTime(&ms, e0, e1)); ms /= (reps - 1); }
   size_t bad = 0; for (size_t i = 0; i < out.size(); i++) bad += out[i] != ex[i];
-  printf("{\"cmd\": \"ntt\", \"N\": %d, \"L\": %d, \"rows\": %d, \"threads\": %d, \"reps\": %d, \"words\": %zu, \"bad_words\": %zu}\n",
-         N, L, rows, th, reps, out.size(), bad);
+  printf("{\"cmd\": \"ntt\", \"N\": %d, \"L\": %d, \"rows\": %d, \"threads\": %d, \"reps\": %d, \"words\": %zu, \"bad_words\": %zu, \"ms_per_launch\": %.5f}\n",
+         N, L, rows, th, reps, out.size(), bad, ms);
   return bad != 0;
 }

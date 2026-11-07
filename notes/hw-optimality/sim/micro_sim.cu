@@ -3,7 +3,7 @@
 // carries what it CAN run: a uint4 copy kernel (proxy for cudaMemcpy D2D), the gemm_probe.cu k_read streaming
 // kernel verbatim, a SIMT xor3 rate (C source; ptxas would fuse it to one LOP3, PTX mode sees 2 xor.b32),
 // and the only modelled tensor path, wmma m16n16k16 f16 -> f32.
-//   micro_sim copy  BYTES        one copy kernel launch + one read launch; prints ns from the simulator's own
+//   micro_sim copy  BYTES [REPS] copy kernel launches then read launches (2..REPS timed with events); prints ns from the simulator's own
 //                                cycle count (see gpgpu_simulation_time lines in the log), and checks the copy.
 //   micro_sim xor3  BLOCKS ITERS U=8 chains of x = x ^ a ^ y, 128 threads.
 //   micro_sim wmma  BLOCKS ITERS U=4 independent accumulators, 128 threads.
@@ -69,11 +69,18 @@ int main(int argc, char **argv) {
     CK(cudaMemcpy(a, h.data(), bytes, cudaMemcpyHostToDevice));
     cudaDeviceProp pr; CK(cudaGetDeviceProperties(&pr, 0));
     int blocks = pr.multiProcessorCount * 16;   // as gemm_probe.cu (T4 runs before 23:40 used a fixed 640 = 40 * 16)
-    k_copy<<<blocks, 256>>>(a, b, n); CK(cudaDeviceSynchronize());
-    k_read<<<blocks, 256>>>(a, n, sink); CK(cudaDeviceSynchronize());
+    int reps = argc > 3 ? atoi(argv[3]) : 1;
+    cudaEvent_t e[4]; for (auto &x : e) CK(cudaEventCreate(&x));
+    float mc = 0, mr = 0;
+    for (int r = 0; r < reps; r++) { if (r == 1) CK(cudaEventRecord(e[0])); k_copy<<<blocks, 256>>>(a, b, n); }
+    CK(cudaEventRecord(e[1])); CK(cudaDeviceSynchronize());
+    for (int r = 0; r < reps; r++) { if (r == 1) CK(cudaEventRecord(e[2])); k_read<<<blocks, 256>>>(a, n, sink); }
+    CK(cudaEventRecord(e[3])); CK(cudaDeviceSynchronize());
+    if (reps > 1) { CK(cudaEventElapsedTime(&mc, e[0], e[1])); CK(cudaEventElapsedTime(&mr, e[2], e[3])); mc /= reps - 1; mr /= reps - 1; }
     std::vector<uint32_t> g(bytes / 4);
     CK(cudaMemcpy(g.data(), b, bytes, cudaMemcpyDeviceToHost));
-    printf("{\"cmd\": \"copy\", \"bytes\": %zu, \"copy_ok\": %s}\n", bytes, g == h ? "true" : "false");
+    printf("{\"cmd\": \"copy\", \"bytes\": %zu, \"copy_ok\": %s, \"blocks\": %d, \"reps\": %d, \"copy_ms\": %.5f, \"read_ms\": %.5f}\n",
+           bytes, g == h ? "true" : "false", blocks, reps, mc, mr);
   } else if (!strcmp(argv[1], "xor3")) {
     int blocks = atoi(argv[2]); long long iters = atoll(argv[3]);
     int32_t *sink; CK(cudaMalloc(&sink, 4));
