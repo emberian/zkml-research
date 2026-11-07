@@ -165,3 +165,49 @@ Deploy-lane contract per chunk and seat:
 - read `chunk-<c>/tape_<I>.bin`, and send `chunk-<c>/step-<j>/owner-msg-P<I>.bin` to the data owner;
 - then delete the chunk directory or move it out of the queue;
 - the next chunk starts only when fewer than `--max-ready` remain.
+
+## Continuation (handover, 2026-11-07)
+
+**Running: LowGear three-box key setup** (party 0 forge, 1 bb2, 2 hbox; S = 60, -lg2 64; the patched, WAN-tolerant
+binaries; direct TLS, not the relay). It was started by `launch3.sh lg64d party-chunk --backend lowgear --extra
+-S,60,-lg2,64 ... --d 64 --mode steady --truncs 11,19,7,8,8,19 --steps 1 --threads 4 --out {ROOT}/chunks/lg64d`.
+- PID files: the darkprep wrapper is `<ROOT>/runs/lg64d.pid`, and the MP-SPDZ party is
+  `<ROOT>/chunks/lg64d.tmp-P<I>/mascot-P<I>.pid`. The name says mascot but it is the lowgear-party.x PID.
+- Party logs: `<ROOT>/chunks/lg64d.tmp-P<I>/P<I>.log`; darkprep's JSON is in `<ROOT>/runs/lg64d.log`.
+- ROOT is /srv/lanes/dl-gen6-prep on forge, /home/build/lanes/dl-gen6-prep on bb2, /othersys/lanes/dl-gen6-prep on hbox.
+- Progress: hbox's sent bytes (`ss -tinpH | grep -A1 "pid=<P>,"`, sum of bytes_acked) were 7.0 GB at 63 min, of about
+  56.5 GB expected (loopback measurement). At about 15 Mbit/s that means finishing around 8.5 h after the start.
+- It has finished when the P<I>.log lines move past "Generate secret key by binomial" (to "Key generation took",
+  "MAC key generation took", then "Time ="), when `<ROOT>/chunks/lg64d` exists (the tmp dir is renamed on success),
+  and when `<ROOT>/mpspdz/Player-Data/LowGear-Secrets-60-*-P<I>-3` exists on each box.
+- If it aborts, darkprep retires the keys and the setup starts over. Next time run it over the relay
+  (`build/relay3.sh start`, `--ipfile {ROOT}/ips-relay.txt`), which survives Wi-Fi drops as stalls.
+
+**Next, once the keys exist** (they are cached, so no setup is repeated):
+
+    LAYOUT= build/launch3.sh lg4096 party-chunk --backend lowgear --extra -S,60,-lg2,64 --mpspdz {ROOT}/mpspdz \
+      --mpc-src {ROOT}/native/darkprep/mpc/darkprep.mpc --ipfile {ROOT}/ips.txt --p 2305843009210515457 --d 4096 \
+      --mode steady --truncs 11,19,7,8,8,19 --steps 1 --threads 8 --out {ROOT}/chunks/lg4096-P{I}
+
+That gives about 29 Gbit from hbox, about 25 min (estimate). Measure it as in §3, then add `--proof --proof-triples
+3192275`. Before you do, ask the deploy lane for a window on hbox's link. Then hand the chunk dirs to the deploy lane.
+
+**Per-chunk commands for the deploy lane.** Run on box I, by that custodian only:
+- `darkprep party-chunk --party I --mpspdz ROOT/mpspdz --mpc-src ROOT/native/darkprep/mpc/darkprep.mpc --ipfile
+  ROOT/ips.txt --p 2305843009210515457 --d 4096 --truncs 11,19,7,8,8,19 --steps K [--proof --proof-triples N]
+  [--backend lowgear --extra -S,60,-lg2,64] --threads T --out CHUNKDIR`.
+- N comes from the proof lane (`darkproof counts`, run::step_section). It is 3,192,275 at GEN6 with RC + LB.
+- Outputs: `CHUNKDIR/tape_I.bin` (darkstep DLTAPE01, all K steps, one alpha_i) and
+  `CHUNKDIR/step-<j>/owner-msg-P<I>.bin` (send to the owner). The owner runs `darkprep owner --msgs m0,m1,m2 --p P
+  --out owner.bin`.
+- Continuous: `darkprep produce --queue QDIR --max-ready N --start C --count M <same options>` (§8).
+- Launchers from the Mac: `build/launch3.sh` (LAYOUT=wired puts seats 1 and 2 on bb2) and `build/relay3.sh`.
+
+**Open:**
+- the LowGear d = 4096 chunk through hbox, with and without the proof section (after the key setup above);
+- release-phase preprocessing (M = 64; per example 4,096 truncations (11, 19) plus lookups, 10 truncations (11, 19),
+  9 comparisons as truncations (10, 10) and 8 products; proof section 58,679,793 triples). Wire it once darkstep has
+  the release shape: one more Event list in schedule.rs, checked against darkstep's release dealer the same way the
+  step is;
+- the wired-layout test directories `wired<I>/` and `lgtest/` are test-only. Never route a deployed custodian
+  through them.
