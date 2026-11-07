@@ -1,0 +1,10 @@
+[package]
+name = "pycompat"
+version = "0.1.0"
+edition.workspace = true
+description = "Bit-exact CPython compatibility for the dark-learning native port: random.Random (MT19937), repr() streaming into SHA-256."
+
+[dependencies]
+sha2 = "0.10"
+num-bigint = "0.4"
+num-traits = "0.2"
