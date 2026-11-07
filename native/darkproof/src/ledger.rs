@@ -240,22 +240,40 @@ impl Ledger {
 
     /// Custody rotation. Refused until the handover verifier (research/.../handover.py) is ported: a rotation
     /// record with no verified handover would let a caller replace the model's weights (codex review, finding 1).
-    pub fn rotate(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>, handover: &[u8]) -> Result<(), String> {
-        let _ = (custodians, new_roots, handover);
-        Err("rotation refused: the handover proof verifier is not ported to native yet (fail closed)".into())
+    /// Ledger.handover_context: the context a handover to `custodians` after the head must be proved under.
+    pub fn handover_context(&self, custodians: &[String]) -> crate::handover::HandoverCtx {
+        crate::handover::HandoverCtx {
+            model: self.model.clone(),
+            epoch_old: self.epoch,
+            epoch_new: self.epoch + 1,
+            after_step: self.step,
+            old_set: self.custodians.clone(),
+            new_set: custodians.to_vec(),
+        }
     }
 
-    /// The record writer rotate will call once the handover proof verifies (kept for that port).
-    #[allow(dead_code)]
-    fn append_rotation(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>) -> Result<(), String> {
+    /// Custody rotation (proofwire.Ledger.rotate): accepted only with the bytes of a handover proof that the new
+    /// committee's roots commit the same weights as the head's; the record carries sha256 of those bytes. Every
+    /// refusal is "rotation refused: <reason>", the reason equal to Python's.
+    pub fn rotate(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>, handover: &[u8]) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
+        if handover.is_empty() {
+            return Err("rotation refused: no handover proof".into());
+        }
+        let lp = self.pr.ligero();
+        let ctx = self.handover_context(custodians);
+        let got = crate::handover::verify(&self.pr, &lp, self.d, self.custodians.len(), custodians.len(), &ctx, &self.parent, handover)
+            .map_err(|e| format!("rotation refused: {e}"))?;
+        if &got != new_roots {
+            return Err("rotation refused: the handover proof is for other new roots".into());
+        }
         let line = format!(
             "{{\"kind\": \"rotate\", \"epoch\": {}, \"custodians\": {}, \"roots\": {}, \"handover_proof\": {}}}",
             self.epoch + 1,
             jlist(custodians),
             jroots(new_roots),
-            jstr("UNBUILT: equality of the old and new commitments")
+            jstr(&hex(&Sha256::digest(handover)))
         );
         append(&self.path, &line, false)?;
         self.reload()

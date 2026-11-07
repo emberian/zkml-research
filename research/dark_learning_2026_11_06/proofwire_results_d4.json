@@ -69,6 +69,10 @@
    "verdict": "OK",
    "by": "('mind-0', 0, 3)"
   },
+  "rotation with the handover proof's bytes, verified": {
+   "verdict": "ACCEPT",
+   "by": "accept"
+  },
   "restart after rotation keeps epoch 1 and the new committee's roots": {
    "verdict": "OK",
    "by": "('mind-0', 1, 3)"

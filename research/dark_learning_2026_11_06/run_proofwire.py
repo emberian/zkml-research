@@ -115,12 +115,22 @@ def main():
     Lg2 = PW.Ledger(path, model)
     rows["restart reconstructs the head"] = dict(verdict="OK" if Lg2.head() == Lg.head() else "FAIL", by=str(Lg2.head()[0]))
     print("restart head", Lg2.head()[0], Lg2.head() == Lg.head(), flush=True)
-    # rotation: a new committee re-commits the current weights; the old committee's next proof no longer chains
+    # rotation: the old committee reshares the current weights to a new committee, which commits them; the handover
+    # proof (handover.py) shows both commitments hold the same weights. The old committee's next proof no longer chains.
+    import handover as HO
+    newsh = {}
+    for k in ("W1", "W2"):
+        oldsh = [[v[i][0] for r in w2[k + "n"] for v in r] for i in range(3)]
+        _, newsh[k] = HO.reshare(oldsh, 3, p, random.Random(77))
+    ncoms = {k: ZK.ZKPCS(p, newsh[k], k) for k in ("W1", "W2")}
+    newc = {k: ncoms[k].roots for k in ("W1", "W2")}
+    hproof, _ = HO.prove(p, d, child2, ncoms, Lg2.handover_context(["c3", "c4", "c5"]))
+    hbytes = HO.encode(p, d, hproof)
+    rec("rotation with the handover proof's bytes, verified", Lg2.rotate(p, ["c3", "c4", "c5"], newc, hbytes))
+    for c in child2.values():
+        c.max_lives = 99            # colluders bypass their counter to produce an old-committee step 3
     s3 = make_bundle(p, tab, d, dec(w2["W1n"]), dec(w2["W2n"]), x, y, (model, 1, 3), carry=child2,
                      carry_wires=(w2["W1n"], w2["W2n"]))
-    newc = {k: ZK.owner_commit(p, [sum(v[i][0] for i in range(3)) % p for r in w2[k + "n"] for v in r], k).roots
-            for k in ("W1", "W2")}
-    Lg2.rotate(["c3", "c4", "c5"], newc)
     Lg3 = PW.Ledger(path, model)
     rows["restart after rotation keeps epoch 1 and the new committee's roots"] = dict(
         verdict="OK" if Lg3.head() == ((model, 1, 3), newc) else "FAIL", by=str(Lg3.head()[0]))
