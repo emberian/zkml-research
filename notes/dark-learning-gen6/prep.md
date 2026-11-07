@@ -152,3 +152,16 @@ costs no MAC key. Setup:
 | `Processor::shared_prng` | party 0's `ReSeed`, sent to the others | OS (one party) | used only by public-random program instructions; darkprep.mpc has none |
 | TLS keys (`setup-box.sh`) | `openssl req -newkey` on each box | OS | — |
 | loopback tests (`lgtest/`, `run`) | as above, but all three keys in one directory | OS | test-only by construction (never a custodian directory) |
+
+## 8. The continuous producer
+
+[EXECUTED] `LAYOUT=wired launch3.sh prodtest produce --queue {ROOT}/queue-P{I} --max-ready 1 --start 0 --count 2 ...
+--d 64 --steps 2`. Each seat produced `chunk-000000` and then waited, because one ready chunk had filled its queue.
+After the test consumer moved chunk-000000 out of every queue, each seat produced `chunk-000001` (2 steps, back to
+back) and exited. Each seat appends one JSON line per chunk to `producer-P<I>.jsonl`. The three producers stay in
+lockstep through MP-SPDZ's own connection setup. A file `QDIR/STOP` ends a producer after its current chunk.
+
+Deploy-lane contract per chunk and seat:
+- read `chunk-<c>/tape_<I>.bin`, and send `chunk-<c>/step-<j>/owner-msg-P<I>.bin` to the data owner;
+- then delete the chunk directory or move it out of the queue;
+- the next chunk starts only when fewer than `--max-ready` remain.
