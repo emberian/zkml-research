@@ -249,3 +249,66 @@ fn a_drop_in_a_check_phase_is_an_abort() {
     let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| nets[0].recv(1, HE_RET)));
     assert!(r.is_err(), "a receive on a dead link fails");
 }
+
+/// A NAT seat (Net::connect_tls_nat): seat 0, which normally listens for both others, binds nothing and dials
+/// them; its advertised address is a port held by a listener that never accepts. The mesh comes up and moves
+/// bytes both ways. Control: the same addresses without the NAT role fail (seat 1 and 2 dial the dead port).
+#[test]
+fn a_nat_seat_dials_every_peer_and_binds_nothing() {
+    use darkstep::net::{check_nat, dials};
+    assert!(dials(0, 1, &[0]) && dials(0, 2, &[0]) && !dials(1, 0, &[0]) && dials(2, 1, &[0]));
+    assert!(dials(2, 0, &[]) && !dials(0, 2, &[]));
+    let lo: SocketAddr = "127.0.0.1:1".parse().unwrap();
+    let far: SocketAddr = "10.1.2.3:1".parse().unwrap();
+    assert!(check_nat(&[lo, far, far], &[0, 2]).is_ok(), "two NAT seats on one box: the lower one's loopback address");
+    assert!(check_nat(&[far, far, lo], &[0, 2]).unwrap_err().contains("need a relay"), "two NAT seats on two boxes are refused");
+    let run = |nat: Vec<usize>| -> Vec<Result<Net, String>> {
+        let ids: Vec<Identity> = (0..3).map(generate).collect();
+        let pinned = Arc::new(ids.iter().map(|x| x.cert_der.clone()).collect::<Vec<_>>());
+        let dead = TcpListener::bind("127.0.0.1:0").unwrap();
+        let (ls, mut addrs) = listeners();
+        addrs[0] = dead.local_addr().unwrap();
+        let mut ls: Vec<Option<TcpListener>> = ls.into_iter().map(Some).collect();
+        ls[0] = None;
+        let hs: Vec<_> = ids
+            .into_iter()
+            .zip(ls)
+            .enumerate()
+            .map(|(i, (id, l))| {
+                let (pinned, addrs, nat) = (pinned.clone(), addrs.clone(), nat.clone());
+                // a seat listens iff a peer dials it; seat 0 never has a listener of its own (without the NAT role the
+                // others dial its dead port)
+                let l = if (0..3).any(|j| j != i && dials(j, i, &nat)) { l } else { None };
+                thread::spawn(move || {
+                    let r = Net::connect_tls_nat(i, l, &addrs, &id, &pinned, Duration::from_secs(15), &nat);
+                    r
+                })
+            })
+            .collect();
+        let r = hs.into_iter().map(|h| h.join().unwrap()).collect();
+        drop(dead);
+        r
+    };
+    let nets: Vec<Net> = run(vec![0]).into_iter().map(|r| r.unwrap()).collect();
+    thread::scope(|sc| {
+        for net in &nets {
+            sc.spawn(move || {
+                let i = net.me;
+                for j in net.others() {
+                    net.send(j, CTRL, payload(i, j, 4096));
+                }
+                for j in net.others() {
+                    assert_eq!(net.recv(j, CTRL), payload(j, i, 4096));
+                }
+            });
+        }
+    });
+    // the three close together (a shutdown waits for its peers' close)
+    let hs: Vec<_> = nets.into_iter().map(|n| thread::spawn(move || n.shutdown())).collect();
+    for h in hs {
+        h.join().unwrap();
+    }
+    let ctl = run(vec![]);
+    eprintln!("control: {:?}", ctl.iter().map(|r| r.as_ref().err()).collect::<Vec<_>>());
+    assert!(ctl.iter().any(|r| r.is_err()), "control: without the NAT role the mesh cannot form");
+}

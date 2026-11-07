@@ -150,7 +150,7 @@ fn profile_of(args: &[String]) -> darkproof::Profile {
 }
 
 fn params_of(pg: &Program) -> StepParams {
-    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
+    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs: false, pg: None, r3: pg.r3, t_lo: pg.t_lo }.deployed()
 }
 
 fn hex_roots(g: &Roots) -> String {
@@ -180,15 +180,94 @@ fn with_flag(args: &[String], name: &str, val: &str) -> Vec<String> {
 }
 
 fn write_carry(path: &Path, c: &Carry) -> std::io::Result<()> {
-    use std::io::Write;
-    let tmp = path.with_extension("tmp");
-    {
-        let mut f = std::io::BufWriter::new(serve::open_private(&tmp)?);
-        darkproof::pcs::write_carry(c, &mut f)?;
-        f.flush()?;
-        f.get_ref().sync_all()?;
+    let mut b: Vec<u8> = Vec::new();
+    darkproof::pcs::write_carry(c, &mut b)?;
+    serve::write_secret(path, b)
+}
+
+fn read_carry(path: &Path, pr: &darkproof::Profile) -> Result<Carry, String> {
+    let b = serve::read_secret(path)?;
+    darkproof::pcs::read_carry(&mut &b[..], pr).map_err(|e| format!("{}: {e}", path.display()))
+}
+
+/// The epoch's file key (darkhand::vault) as darkstep's sealer: the checkpoint, the carry and the TLS key are sealed
+/// under it. A handover takes it out (old_side destroys it); a self-handover puts the new epoch's in.
+struct VaultSlot(std::sync::Mutex<Option<darkhand::vault::Vault>>);
+
+impl serve::Sealer for VaultSlot {
+    fn seal_to(&self, path: &Path, plain: Vec<u8>) -> std::io::Result<()> {
+        let g = self.0.lock().unwrap();
+        let v = g.as_ref().ok_or_else(|| std::io::Error::other("the file key was handed to the erasure"))?;
+        v.seal_to(path, &side::vault_role(path), plain)
     }
-    std::fs::rename(tmp, path)
+    fn open(&self, path: &Path) -> Result<Vec<u8>, String> {
+        let g = self.0.lock().unwrap();
+        g.as_ref().ok_or("the file key was handed to the erasure")?.open_file(path, &side::vault_role(path))
+    }
+}
+
+static VAULT: std::sync::OnceLock<std::sync::Arc<VaultSlot>> = std::sync::OnceLock::new();
+
+/// `--vault`: load this seat's file key, named in TLSDIR/vault.name (written by `vault-init` at setup, rewritten
+/// by a self-handover), and seal every state file under it. Required outside test builds.
+fn load_vault(args: &[String]) {
+    if !args.iter().any(|a| a == "--vault") {
+        if cfg!(feature = "test-harness") {
+            return;
+        }
+        eprintln!("--vault is required: the state files are sealed under the epoch's file key (dl-custodian vault-init at setup)");
+        std::process::exit(2);
+    }
+    let tls = PathBuf::from(flag(args, "--tls").expect("--tls"));
+    let name = std::fs::read_to_string(tls.join("vault.name")).unwrap_or_else(|e| panic!("{}: {e} (run vault-init)", tls.join("vault.name").display()));
+    let v = darkhand::vault::Vault::load(name.trim()).unwrap_or_else(|e| {
+        eprintln!("{e}");
+        std::process::exit(2)
+    });
+    let slot = std::sync::Arc::new(VaultSlot(std::sync::Mutex::new(Some(v))));
+    let _ = VAULT.set(slot.clone());
+    serve::set_sealer(Some(slot));
+}
+
+/// The loaded file key, taken out of the sealer (for old_side, which destroys it).
+fn take_vault() -> Option<darkhand::vault::Vault> {
+    VAULT.get().and_then(|s| s.0.lock().unwrap().take())
+}
+
+/// `dl-custodian vault-init I TLSDIR [--model M] [--epoch E]`: make seat I's file key for epoch E in the uid's
+/// persistent keyring (named by model, seat, epoch and its certificate), seal TLSDIR/tls_I.key under it in place and
+/// write the key's name (public) to TLSDIR/vault.name.
+fn vault_init(args: &[String]) -> Result<(), String> {
+    let i: usize = args[2].parse().map_err(|_| "seat")?;
+    let tls = PathBuf::from(&args[3]);
+    let model = flag(args, "--model").unwrap_or_else(|| "dl-gen6".into());
+    let epoch: u64 = flag(args, "--epoch").map(|e| e.parse().unwrap()).unwrap_or(0);
+    let cert = std::fs::read(tls.join(format!("cert_{i}.der"))).map_err(|e| e.to_string())?;
+    let name = darkhand::vault::key_name(&model, i, epoch, &darkstep::tls::cert_fingerprint(&cert));
+    let key = tls.join(format!("tls_{i}.key"));
+    let plain = std::fs::read(&key).map_err(|e| format!("{}: {e}", key.display()))?;
+    if plain.starts_with(serve::SEALED_MAGIC) {
+        return Err(format!("{}: sealed already", key.display()));
+    }
+    let v = darkhand::vault::Vault::create(&name, true)?;
+    v.seal_to(&key, &side::vault_role(&key), plain).map_err(|e| e.to_string())?;
+    std::fs::write(tls.join("vault.name"), &name).map_err(|e| e.to_string())?;
+    println!("{}", json!({"seat": i, "vault": name}));
+    Ok(())
+}
+
+/// `--keep-erased-copy DIR` (a check, not a deployment): copies of the sealed state files as they are before the
+/// erasure, so that a checker can show afterwards that nothing on the box opens them.
+fn keep_erased_copy(args: &[String], files: &[PathBuf]) {
+    if let Some(d) = flag(args, "--keep-erased-copy") {
+        let d = PathBuf::from(d);
+        let _ = std::fs::create_dir_all(&d);
+        for f in files {
+            if f.exists() && serve::sealing() {
+                let _ = std::fs::copy(f, d.join(f.file_name().unwrap()));
+            }
+        }
+    }
 }
 
 /// The handover proof (public; the ledger keeps its sha256): DIR/handover_e<E>.bin, and in the archive if any.
@@ -447,8 +526,15 @@ impl Prove {
         }
         let timeout = timeout_of(&args);
         let listen6 = flag(&args, "--listen6");
-        // the boxed state is taken apart inside old_side's setup frame (dead and scrubbed before the memory scan)
+        // the boxed state is taken apart inside old_side's setup frame (dead and scrubbed before the memory scan);
+        // the epoch's file key goes with it (old_side destroys it: the sealed files then open under no key)
+        keep_erased_copy(&args, &files);
         let setup = darkhand::serve::rotation_setup(st, carry, files, scan, Some((ct, dg)));
+        let vault = take_vault();
+        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match vault {
+            Some(v) => Box::new(darkhand::serve::with_vault(setup, v)),
+            None => Box::new(setup),
+        };
         let mut rep = side::old_side(&common, setup, move || {
             let net6 = serve::connect_mesh(i, &addrs6, listen6, &id, &certs6, timeout).expect("six-party mesh");
             for j in 3..6 {
@@ -522,7 +608,17 @@ impl Prove {
                 scan.push(PathBuf::from(&args[n + 1]));
             }
         }
+        // the seat keeps its TLS identity across a self-handover: its key file is resealed under the new epoch's file
+        // key once the old one is destroyed
+        let tls_key = if serve::sealing() { Some(serve::read_secret(&tlsdir.join(format!("tls_{i}.key")))?) } else { None };
+        keep_erased_copy(&args, &files);
         let (setup, prx) = darkhand::serve::self_setup(st, carry, files, scan);
+        let vault_old = take_vault();
+        let had_vault = vault_old.is_some();
+        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match vault_old {
+            Some(v) => Box::new(darkhand::serve::with_vault(setup, v)),
+            None => Box::new(setup),
+        };
         let (orep, nc, he) = std::thread::scope(|s| {
             let (c6o, c6n, a6o, a6n, ido) = (certs6.clone(), certs6.clone(), addrs6.clone(), addrs6.clone(), id);
             let common = &common;
@@ -553,6 +649,15 @@ impl Prove {
             return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
         }
         save_handover_proof(&args, dir, (epoch + 1) as i64, &nc.proof)?;
+        if had_vault {
+            // the new epoch's file key (the old one is destroyed): the state under the new MAC key is sealed under it
+            let cert = std::fs::read(tlsdir.join(format!("cert_{i}.der"))).map_err(|e| e.to_string())?;
+            let name = darkhand::vault::key_name(&self.model, i, epoch as u64 + 1, &darkstep::tls::cert_fingerprint(&cert));
+            let v = darkhand::vault::Vault::create(&name, true)?;
+            *VAULT.get().unwrap().0.lock().unwrap() = Some(v);
+            serve::write_secret(&tlsdir.join(format!("tls_{i}.key")), tls_key.unwrap()).map_err(|e| format!("TLS key: {e}"))?;
+            std::fs::write(tlsdir.join("vault.name"), &name).map_err(|e| e.to_string())?;
+        }
         if args.iter().any(|a| a == "--wipe-spent") {
             if let Some(f) = flag(&args, "--self-handover-tape") {
                 serve::wipe_file(Path::new(&f)).map_err(|e| format!("{f}: {e}"))?;
@@ -802,8 +907,7 @@ fn prove_hook(args: &[String], i: usize, join: bool) -> Prove {
     let mut ledger = None;
     if resume && args.iter().any(|a| a == "--prove") {
         let cp = dir.join(format!("carry_P{i}.bin"));
-        let f = std::fs::File::open(&cp).unwrap_or_else(|e| panic!("--resume --prove: {}: {e}", cp.display()));
-        carry = Some(darkproof::pcs::read_carry(&mut std::io::BufReader::new(f), &pr).expect("carry checkpoint"));
+        carry = Some(read_carry(&cp, &pr).unwrap_or_else(|e| panic!("--resume --prove: {e}")));
         let mut lg = Ledger::open(&dir.join(format!("ledger_P{i}.jsonl")), &flag(args, "--model").unwrap_or_else(|| "dl-gen6".into()), &pr, None).expect("ledger replica");
         if let Some(b) = &gcfg {
             lg.check_public_genesis(b).expect("public genesis");
@@ -1097,7 +1201,15 @@ fn main() {
             let (c, n) = step_entries(&lp, pf.d, &pg, prm, tb);
             println!("{}", json!({"proof_triples": c, "entries": n}));
         }
+        Some("vault-init") => {
+            if let Err(e) = vault_init(&args) {
+                eprintln!("vault-init: {e}");
+                std::process::exit(2);
+            }
+        }
         Some("serve") => {
+            serve::set_nat(&args);
+            load_vault(&args);
             require_consumed_log(&args);
             let i: usize = args[2].parse().unwrap();
             let first = if args.iter().any(|a| a == "--resume") {
@@ -1114,6 +1226,8 @@ fn main() {
             std::process::exit(hook.run_deferred(code));
         }
         Some("join") => {
+            serve::set_nat(&args);
+            load_vault(&args);
             require_consumed_log(&args);
             let after: usize = flag(&args, "--after-step").and_then(|k| k.parse().ok()).unwrap_or(0);
             if let Err(e) = check_profile(&args, after + 1) {

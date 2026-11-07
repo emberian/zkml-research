@@ -200,25 +200,21 @@ impl CustodianState {
     /// against) and its weight shares. Written to a temporary file and renamed, mode 0600.
     pub fn checkpoint(&self, path: &std::path::Path) -> std::io::Result<()> {
         let (w1, w2) = self.w.as_ref().expect("no weights before the genesis step");
-        let tmp = path.with_extension("tmp");
-        {
-            let mut f = std::io::BufWriter::new(open_private(&tmp)?);
-            f.write_all(b"DLCKPT01")?;
-            for x in [self.i as u64, self.step as u64, self.pf.d as u64, self.pt.tape.alpha_i, self.pt.cur as u64] {
-                f.write_all(&x.to_le_bytes())?;
-            }
-            for m in [w1, w2] {
-                for row in m {
-                    let flat: Vec<u64> = row.iter().flat_map(|x| [x.s, x.m]).collect();
-                    f.write_all(&u64s_to_bytes(&flat))?;
+        let d = self.pf.d;
+        let mut b: Vec<u8> = Vec::with_capacity(48 + 32 * d * d);
+        b.extend_from_slice(b"DLCKPT01");
+        for x in [self.i as u64, self.step as u64, d as u64, self.pt.tape.alpha_i, self.pt.cur as u64] {
+            b.extend_from_slice(&x.to_le_bytes());
+        }
+        for m in [w1, w2] {
+            for row in m {
+                for x in row {
+                    b.extend_from_slice(&x.s.to_le_bytes());
+                    b.extend_from_slice(&x.m.to_le_bytes());
                 }
             }
-            f.flush()?;
-            f.get_ref().sync_all()?;
         }
-        std::fs::rename(tmp, path)?;
-        drop_cache(path);
-        Ok(())
+        write_secret(path, b)
     }
 }
 
@@ -232,7 +228,7 @@ pub struct Checkpoint {
 }
 
 pub fn read_checkpoint(path: &std::path::Path) -> Result<Checkpoint, String> {
-    let b = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
+    let b = read_secret(path)?;
     if b.len() < 48 || &b[..8] != b"DLCKPT01" {
         return Err("not a darkstep checkpoint".into());
     }
@@ -262,6 +258,61 @@ pub fn wipe_file(p: &std::path::Path) -> std::io::Result<()> {
         f.sync_all()?;
     }
     std::fs::remove_file(p)
+}
+
+/// Sealing of a custodian's secret state files (checkpoint, carry, TLS key) under a per-epoch file key: the
+/// deployment's sealer (darkhand::vault, set by dl-custodian) encrypts what `write_secret` writes and opens what
+/// `read_secret` reads, so that destroying the key erases every copy of the files wherever their blocks are (ZFS
+/// snapshots, SSD remapping). Without one (tests, darkstep's own binary) the files are written in the clear (0600).
+pub trait Sealer: Send + Sync {
+    /// Write `plain` to `path` sealed, atomically (tmp file, fsync, rename).
+    fn seal_to(&self, path: &std::path::Path, plain: Vec<u8>) -> std::io::Result<()>;
+    /// Open a sealed file.
+    fn open(&self, path: &std::path::Path) -> Result<Vec<u8>, String>;
+}
+
+/// A sealed file starts with this (darkhand::vault::MAGIC).
+pub const SEALED_MAGIC: &[u8; 8] = b"DLVAULT1";
+
+static SEALER: std::sync::RwLock<Option<std::sync::Arc<dyn Sealer>>> = std::sync::RwLock::new(None);
+
+pub fn set_sealer(s: Option<std::sync::Arc<dyn Sealer>>) {
+    *SEALER.write().unwrap() = s;
+}
+
+pub fn sealing() -> bool {
+    SEALER.read().unwrap().is_some()
+}
+
+/// A secret state file: sealed under the sealer if one is set, else in the clear (0600); atomic either way.
+pub fn write_secret(path: &std::path::Path, bytes: Vec<u8>) -> std::io::Result<()> {
+    let s = SEALER.read().unwrap().clone();
+    if let Some(s) = s {
+        s.seal_to(path, bytes)?;
+    } else {
+        let tmp = path.with_extension("tmp");
+        {
+            let mut f = open_private(&tmp)?;
+            f.write_all(&bytes)?;
+            f.sync_all()?;
+        }
+        std::fs::rename(tmp, path)?;
+    }
+    drop_cache(path);
+    Ok(())
+}
+
+/// Read a secret state file; a sealed one needs the sealer (a clear one is refused while sealing is on).
+pub fn read_secret(path: &std::path::Path) -> Result<Vec<u8>, String> {
+    let mut head = [0u8; 8];
+    let sealed = std::fs::File::open(path).and_then(|mut f| f.read_exact(&mut head)).is_ok() && &head == SEALED_MAGIC;
+    let s = SEALER.read().unwrap().clone();
+    match (sealed, s) {
+        (true, Some(s)) => s.open(path),
+        (true, None) => Err(format!("{}: sealed, and no file key is loaded", path.display())),
+        (false, Some(_)) => Err(format!("{}: not sealed, but this custodian seals its state files", path.display())),
+        (false, None) => std::fs::read(path).map_err(|e| format!("{}: {e}", path.display())),
+    }
 }
 
 pub fn open_private(p: &std::path::Path) -> std::io::Result<std::fs::File> {
@@ -616,6 +667,7 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
     let mut pf = crate::node::gated(crate::node::prof(&args[3..7]), args);
     pf.secure_coins = true;
     pf.program = program_of(args);
+    set_nat(args);
     if let Some(l) = flag(args, "--consumed-log") {
         set_consumed_log(l.into());
     }
@@ -692,7 +744,7 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
 /// This seat's TLS identity (TLSDIR/tls_I.key, cert_I.der) and the committee's pinned certificates (cert_{0,1,2}).
 pub fn identity(tlsdir: &std::path::Path, i: usize) -> (crate::tls::Identity, Vec<Vec<u8>>) {
     let id = crate::tls::Identity {
-        key_der: std::fs::read(tlsdir.join(format!("tls_{i}.key"))).expect("own TLS key"),
+        key_der: read_secret(&tlsdir.join(format!("tls_{i}.key"))).unwrap_or_else(|e| panic!("own TLS key: {e}")),
         cert_der: std::fs::read(tlsdir.join(format!("cert_{i}.der"))).expect("own certificate"),
     };
     let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tlsdir.join(format!("cert_{j}.der"))).expect("peer certificate")).collect();
@@ -702,13 +754,34 @@ pub fn identity(tlsdir: &std::path::Path, i: usize) -> (crate::tls::Identity, Ve
 /// The mesh of `addrs.len()` parties at index i over pinned TLS: i listens (on `listen`, default addrs[i]) unless it
 /// is the highest index, and dials every lower one.
 pub fn connect_mesh(i: usize, addrs: &[SocketAddr], listen: Option<String>, id: &crate::tls::Identity, certs: &[Vec<u8>], timeout: std::time::Duration) -> Result<Net, String> {
-    let listener = if i + 1 < addrs.len() {
+    let nat = nat_of(addrs.len());
+    crate::net::check_nat(addrs, &nat)?;
+    // a NAT seat binds nothing unless a NAT peer on its own box dials it (net::dials)
+    let listener = if (0..addrs.len()).any(|j| j != i && crate::net::dials(j, i, &nat)) {
         let at: SocketAddr = listen.map(|a| a.parse().unwrap()).unwrap_or(addrs[i]);
         Some(TcpListener::bind(at).map_err(|e| format!("bind {at}: {e}"))?)
     } else {
         None
     };
-    crate::net::Net::connect_tls(i, listener, addrs, id, certs, timeout)
+    crate::net::Net::connect_tls_nat(i, listener, addrs, id, certs, timeout, &nat)
+}
+
+/// The NAT seats of this process's meshes (`--nat LIST`: indices in the committee's three-party meshes, the main, the
+/// proof and the recovery mesh; `--nat6 LIST`: indices in the six-party handover mesh, old 0-2 then new 3-5). Every
+/// process of a run is given the same lists. Set once, at start.
+static NAT3: std::sync::OnceLock<Vec<usize>> = std::sync::OnceLock::new();
+static NAT6: std::sync::OnceLock<Vec<usize>> = std::sync::OnceLock::new();
+
+pub fn set_nat(args: &[String]) {
+    let list = |f: &str| -> Vec<usize> {
+        flag(args, f).map(|v| v.split(',').filter(|x| !x.is_empty()).map(|x| x.parse().unwrap_or_else(|_| panic!("{f} {v}: indices"))).collect()).unwrap_or_default()
+    };
+    let _ = NAT3.set(list("--nat"));
+    let _ = NAT6.set(list("--nat6"));
+}
+
+fn nat_of(n: usize) -> Vec<usize> {
+    if n == 6 { NAT6.get() } else { NAT3.get() }.cloned().unwrap_or_default()
 }
 
 /// A per-step file pattern at step k: {k} the step; with --chunk-steps S (the prep lane's chunks of S steps, the

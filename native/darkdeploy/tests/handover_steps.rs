@@ -25,6 +25,14 @@ fn ports(n: usize) -> Vec<String> {
     (0..n).map(|_| format!("127.0.0.1:{}", free_port())).collect()
 }
 
+/// A port held by a listener that never accepts: a NAT seat given it as its address must neither bind it (the bind
+/// would fail) nor be dialled at it (the TLS handshake would never finish).
+fn blocked() -> (std::net::TcpListener, String) {
+    let l = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let a = format!("127.0.0.1:{}", l.local_addr().unwrap().port());
+    (l, a)
+}
+
 fn write_tape(t: &Tape, p: &Path) {
     t.write_to(&mut std::io::BufWriter::new(std::fs::File::create(p).unwrap())).unwrap();
 }
@@ -137,7 +145,15 @@ fn s(v: &[&str]) -> Vec<String> {
 
 #[test]
 fn rotation_to_a_new_committee_after_step_0() {
-    rotation(false);
+    rotation(false, None);
+}
+
+/// Seat 0 of each committee is a NAT seat (--nat 0, --nat6 0,3): it listens on no port of its three-party mesh
+/// (its address there is a port held by a listener that never accepts) and dials every peer; in the six-party mesh
+/// the old and new seat 0 share the box, the old one's loopback address taking the new one's dial.
+#[test]
+fn rotation_with_a_nat_seat() {
+    rotation(false, Some(0));
 }
 
 /// The new committee pauses (forge's nightly window) before its first step, right after the handover: each joined
@@ -145,7 +161,7 @@ fn rotation_to_a_new_committee_after_step_0() {
 /// dir (run.py's resume_new) then runs step 1 under the new key, at epoch 1, from that checkpoint.
 #[test]
 fn the_new_committee_pauses_and_resumes_as_serve() {
-    rotation(true);
+    rotation(true, None);
 }
 
 /// "HH:MM-HH:MM" from this UTC minute to 15 minutes on.
@@ -155,8 +171,35 @@ fn window_now() -> String {
     format!("{}-{}", f(m), f(m + 15))
 }
 
-fn rotation(pause: bool) {
-    let cs = Case::new(if pause { "rotp" } else { "rot" });
+/// `dl-custodian vault-init` for a seat dir: its file key in the uid's persistent keyring, its TLS key sealed.
+fn vault_init(own: &Path, i: usize, epoch: u64) -> String {
+    let o = Command::new(env!("CARGO_BIN_EXE_dl-custodian")).args(["vault-init", &i.to_string(), own.to_str().unwrap(), "--epoch", &epoch.to_string()]).output().unwrap();
+    assert!(o.status.success(), "vault-init: {}", String::from_utf8_lossy(&o.stderr));
+    assert!(std::fs::read(own.join(format!("tls_{i}.key"))).unwrap().starts_with(darkhand::vault::MAGIC), "the TLS key is sealed");
+    std::fs::read_to_string(own.join("vault.name")).unwrap()
+}
+
+fn sealed(p: &Path) -> bool {
+    std::fs::read(p).map(|b| b.starts_with(darkhand::vault::MAGIC)).unwrap_or(false)
+}
+
+/// Under the vault (Linux: the kernel's persistent keyring): every state file is sealed under the epoch's file key.
+/// The old seats' keys are destroyed at the erasure (the sealed copies kept before it open under no key the uid
+/// holds); the new seats' files are sealed under theirs, and after a pause `serve --resume` loads it from the
+/// keyring in a new process and goes on.
+#[cfg(target_os = "linux")]
+#[test]
+fn rotation_sealed_under_the_vault() {
+    rotation_v(true, None, true);
+}
+
+fn rotation(pause: bool, nat: Option<usize>) {
+    rotation_v(pause, nat, false)
+}
+
+fn rotation_v(pause: bool, nat: Option<usize>, vault: bool) {
+    let cs = Case::new(if vault { "rotv" } else if pause { "rotp" } else if nat.is_some() { "rotn" } else { "rot" });
+    let mut vnames: Vec<String> = vec![];
     let d = cs.d;
     // the old committee's tape: step 0; the new committee's: its handover section (2 d^2 + 16 authenticated randoms)
     // and then step 1, under its own MAC key
@@ -178,7 +221,17 @@ fn rotation(pause: bool) {
     let oid = &ids[6];
     let (oldids, newids) = (&ids[..3], &ids[3..6]);
     let mesh6 = ports(6).join(",");
-    let (a_old, a_new, o_at) = (ports(3), ports(3), ports(1).remove(0));
+    let (mut a_old, mut a_new, o_at) = (ports(3), ports(3), ports(1).remove(0));
+    let mut hold = Vec::new();
+    let mut natf: Vec<String> = vec![];
+    if let Some(n) = nat {
+        for a in [&mut a_old, &mut a_new] {
+            let (l, b) = blocked();
+            a[n] = b;
+            hold.push(l);
+        }
+        natf = s(&["--nat", &n.to_string(), "--nat6", &format!("{n},{}", 3 + n)]);
+    }
     let tls6 = cs.base.join("tls6");
     std::fs::create_dir_all(&tls6).unwrap();
     for j in 0..6 {
@@ -198,6 +251,11 @@ fn rotation(pause: bool) {
     for i in 0..3 {
         let own = cs.seat(&format!("old{i}"), i, oldids, oid);
         write_tape(&old.tapes[i], &own.join("tape.bin"));
+        let mut natf = natf.clone();
+        if vault {
+            vnames.push(vault_init(&own, i, 0));
+            natf.extend(s(&["--vault", "--keep-erased-copy", own.join("erased").to_str().unwrap()]));
+        }
         let mut a = s(&["serve", &i.to_string()]);
         a.extend(s(&A));
         a.push(own.join("D").to_str().unwrap().into());
@@ -205,6 +263,7 @@ fn rotation(pause: bool) {
         a.extend(s(&["--tls", own.to_str().unwrap(), "--owner", &o_at, "--steps", "1", "--gate", "309", "--ret-primes", "2", "--timeout", "180"]));
         a.extend(s(&["--tape", own.join("tape.bin").to_str().unwrap(), "--prove", "--genesis-cfg", &gen, "--handover-at", "0"]));
         a.extend(s(&["--mesh6", &mesh6, "--tls6", tls6.to_str().unwrap()]));
+        a.extend(natf.clone());
         kids.push(run(a));
         odirs.push(own);
     }
@@ -212,6 +271,11 @@ fn rotation(pause: bool) {
     for j in 0..3 {
         let own = cs.seat(&format!("new{j}"), j, newids, oid);
         write_tape(&hand[j], &own.join("handover.bin"));
+        let mut natf = natf.clone();
+        if vault {
+            vnames.push(vault_init(&own, j, 1));
+            natf.push("--vault".into());
+        }
         write_tape(&new.tapes[j], &own.join("tape1.bin"));
         let mut a = s(&["join", &j.to_string()]);
         a.extend(s(&A));
@@ -223,6 +287,7 @@ fn rotation(pause: bool) {
         if pause {
             a.extend(s(&["--pause-utc", &window_now(), "--consumed-log", reg.to_str().unwrap()]));
         }
+        a.extend(natf.clone());
         kids.push(run(a));
         ndirs.push(own);
     }
@@ -242,6 +307,9 @@ fn rotation(pause: bool) {
                 a.extend(s(&["--tls", own.to_str().unwrap(), "--owner", &o_at, "--steps", "1", "--gate", "309", "--ret-primes", "2", "--timeout", "180"]));
                 a.extend(s(&["--tapes", own.join("tape1.bin").to_str().unwrap(), "--prove", "--genesis-cfg", &gen, "--test-keep-shares", "--wipe-spent", "--resume"]));
                 a.extend(s(&["--consumed-log", reg.to_str().unwrap()]));
+                if vault {
+                    a.push("--vault".into());
+                }
                 run(a)
             })
             .collect();
@@ -251,9 +319,21 @@ fn rotation(pause: bool) {
         assert_eq!(codes, vec![0; 6], "every old and new seat exits 0");
     }
     ow.join().unwrap();
+    drop(hold);
     for (i, own) in odirs.iter().enumerate() {
         let r = json(&own.join("D").join(format!("handover_P{i}.json")));
         assert_eq!(r["pre_handover_decrypts"], true, "old seat {i}: its key decrypted before the handover (control)");
+        if vault {
+            let e = own.join("erased");
+            for f in [e.join(format!("ckpt_P{i}.bin")), e.join(format!("carry_P{i}.bin")), e.join(format!("tls_{i}.key"))] {
+                assert!(sealed(&f), "old seat {i}: {} was sealed before the erasure", f.display());
+            }
+            let va = &r["vault_after_erasure"];
+            assert_eq!(va["key_in_keyring"], false, "old seat {i}: its file key is gone from the keyring: {va}");
+            assert!(darkhand::vault::Vault::load(&vnames[i]).is_err(), "old seat {i}: nothing loads its file key");
+            let copies = va["sealed_copies"].as_array().unwrap();
+            assert!(!copies.is_empty() && copies.iter().all(|c| c["opens_by_keyring"] == false && c["opens_by_zero_key"] == false), "{va}");
+        }
         eprintln!("old seat {i} handover report: {r}");
         for f in [own.join("D").join(format!("ckpt_P{i}.bin")), own.join("D").join(format!("carry_P{i}.bin")), own.join(format!("tls_{i}.key")), own.join("tape.bin")] {
             assert!(!f.exists(), "old seat {i}: {} was wiped", f.display());
@@ -271,6 +351,11 @@ fn rotation(pause: bool) {
         use sha2::Digest;
         assert!(lg.contains(&pycompat::repr::hex(&sha2::Sha256::digest(&hp))), "new seat {j}: handover_e1.bin is the rotated proof");
         assert!(!own.join("tape1.bin").exists(), "new seat {j}: the spent step's tape was wiped (--wipe-spent)");
+        if vault {
+            assert!(sealed(&own.join("D").join(format!("ckpt_P{j}.bin"))) && sealed(&own.join("D").join(format!("carry_P{j}.bin"))), "new seat {j}: its state is sealed");
+            // the run is over: its file key goes too (it would expire with the keyring otherwise)
+            darkhand::vault::Vault::load(&vnames[3 + j]).unwrap().destroy();
+        }
     }
     let dirs: Vec<PathBuf> = ndirs.iter().map(|o| o.join("D")).collect();
     let got = cs.revealed(&dirs, &[0, 1, 2]);
@@ -281,7 +366,30 @@ fn rotation(pause: bool) {
 
 #[test]
 fn self_handover_after_an_abort_redoes_the_step() {
-    let cs = Case::new("self");
+    self_handover(None);
+}
+
+/// Seat 1 is a NAT seat (--nat 1, --nat6 1,4) in the main, the recovery and the six-party mesh of its own two roles.
+#[test]
+fn self_handover_with_a_nat_seat() {
+    self_handover(Some(1));
+}
+
+/// The self-handover under the vault: the old role destroys the epoch-0 file key; the seat reseals its TLS key and
+/// its state under a new epoch-1 key (vault.name follows), which loads from the keyring.
+#[cfg(target_os = "linux")]
+#[test]
+fn self_handover_sealed_under_the_vault() {
+    self_handover_v(None, true);
+}
+
+fn self_handover(nat: Option<usize>) {
+    self_handover_v(nat, false)
+}
+
+fn self_handover_v(nat: Option<usize>, vault: bool) {
+    let cs = Case::new(if vault { "selfv" } else if nat.is_some() { "selfn" } else { "self" });
+    let mut vnames: Vec<String> = vec![];
     let d = cs.d;
     let mut old = Dealer::new(cs.t, 3, DEALER_SEED);
     old.proof_rng = Some(pycompat::PyRandom::from_u64(1));
@@ -303,7 +411,18 @@ fn self_handover_after_an_abort_redoes_the_step() {
     let ids: Vec<darkstep::tls::Identity> = (0..4).map(darkstep::tls::generate).collect();
     let oid = &ids[3];
     let certs: Vec<Vec<u8>> = ids[..3].iter().map(|x| x.cert_der.clone()).collect();
-    let (a3, ar3, ar6, o_at) = (ports(3), ports(3).join(","), ports(6).join(","), ports(1).remove(0));
+    let (mut a3, mut r3, ar6, o_at) = (ports(3), ports(3), ports(6).join(","), ports(1).remove(0));
+    let mut hold = Vec::new();
+    let mut natf: Vec<String> = vec![];
+    if let Some(n) = nat {
+        for a in [&mut a3, &mut r3] {
+            let (l, b) = blocked();
+            a[n] = b;
+            hold.push(l);
+        }
+        natf = s(&["--nat", &n.to_string(), "--nat6", &format!("{n},{}", 3 + n)]);
+    }
+    let ar3 = r3.join(",");
     let ow = owner(&o_at, darkstep::tls::Identity { key_der: oid.key_der.clone(), cert_der: oid.cert_der.clone() }, vec![(certs.clone(), vec![c0]), (certs.clone(), vec![r0, r1])]);
     let gen = cs.base.join("genesis.json").to_str().unwrap().to_string();
     let mut kids = Vec::new();
@@ -325,15 +444,33 @@ fn self_handover_after_an_abort_redoes_the_step() {
         if i == 1 {
             a.extend(s(&["--attack", "wrong_return:1"]));
         }
+        a.extend(natf.clone());
+        if vault {
+            vnames.push(vault_init(&own, i, 0));
+            a.extend(s(&["--vault", "--keep-erased-copy", own.join("erased").to_str().unwrap()]));
+        }
         kids.push(run(a));
         dirs.push(own.join("D"));
     }
     let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
     assert_eq!(codes, vec![0, 0, 0], "all three recover and finish");
     ow.join().unwrap();
+    drop(hold);
     for (i, dir) in dirs.iter().enumerate() {
         let r = json(&dir.join(format!("self_handover_P{i}.json")));
         assert_eq!(r["redo_step"], 0);
+        if vault {
+            let own = dir.parent().unwrap();
+            let va = &r["old_role"]["vault_after_erasure"];
+            assert_eq!(va["key_in_keyring"], false, "seat {i}: the epoch-0 file key is gone: {va}");
+            assert!(darkhand::vault::Vault::load(&vnames[i]).is_err());
+            let now = std::fs::read_to_string(own.join("vault.name")).unwrap();
+            assert_ne!(now, vnames[i], "seat {i}: a new epoch's file key");
+            let v = darkhand::vault::Vault::load(&now).expect("the epoch-1 key loads from the keyring");
+            assert!(v.open_file(&own.join(format!("tls_{i}.key")), "tls").is_ok(), "seat {i}: its TLS key is resealed under it");
+            assert!(v.open_file(&dir.join(format!("ckpt_P{i}.bin")), "ckpt").is_ok(), "seat {i}: its checkpoint is sealed under it");
+            v.destroy();
+        }
         assert_eq!(r["epoch"], 1);
         for k in 0..2 {
             let st = json(&dir.join(format!("step_{k}_P{i}.json")));

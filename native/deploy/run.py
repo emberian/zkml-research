@@ -85,6 +85,12 @@ def setup(cfg):
         sh(cfg["owner"]["host"], f"mkdir -p {od}/tls-next")
         for j in range(3):
             scp_to(os.path.join(nloc, f"cert_{j}.der"), cfg["owner"]["host"], f"{od}/tls-next/")
+    if cfg.get("vault"):
+        # each seat's file key in its box's keyring (the uid's persistent keyring), its TLS key sealed under it
+        for i, s in enumerate(cfg["seats"]):
+            print(sh(s["host"], f"{s['bin']}/dl-custodian vault-init {i} {seat_dir(cfg, s, i)}/tls --epoch 0"))
+        for j, s in enumerate((cfg.get("handover") or {}).get("new_seats", [])):
+            print(sh(s["host"], f"{s['bin']}/dl-custodian vault-init {j} {new_dir(cfg, s, j)}/tls --epoch 1"))
     print("setup: identities made per seat; certificates distributed")
 
 def consumed_log(s):
@@ -173,6 +179,8 @@ def launch(cfg, seats_only=False, with_new=True):
             args += f"--genesis-cfg {sd}/genesis.json "
         args += " ".join(cfg.get("flags", []))
         args += f" --consumed-log {consumed_log(s)}"
+        if cfg.get("vault"):
+            args += " --vault"
         if s.get("archive"):
             args += f" --proof-archive {sd}/archive"
         if s.get("listen"):
@@ -193,6 +201,8 @@ def new_args(cfg, s, j):
         a += f"--genesis-cfg {new_dir(cfg, s, j)}/genesis.json "
     a += " ".join(cfg["handover"].get("flags", []))
     a += f" --consumed-log {consumed_log(s)}"
+    if cfg.get("vault"):
+        a += " --vault"
     if s.get("archive"):
         a += f" --proof-archive {new_dir(cfg, s, j)}/archive"
     if s.get("extra"):
