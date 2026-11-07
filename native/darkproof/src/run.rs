@@ -467,6 +467,26 @@ pub struct ReleaseTape {
     n: usize,
     from: usize,
     count: usize,
+    /// Some: the file is sealed (DLVAULT2) under this key and role; the readers open it block by block
+    sealed: Option<(std::sync::Arc<dlvault::Key>, String)>,
+}
+
+/// A reader of a release tape file's plaintext at `at`: the file itself, or its DLVAULT2 blocks opened in place.
+fn tape_reader(path: &std::path::Path, sealed: &Option<(std::sync::Arc<dlvault::Key>, String)>, at: u64) -> Result<Box<dyn std::io::Read + Send>, String> {
+    use std::io::{Seek, SeekFrom};
+    let ioe = |e: std::io::Error| format!("{}: {e}", path.display());
+    match sealed {
+        None => {
+            let mut f = std::fs::File::open(path).map_err(ioe)?;
+            f.seek(SeekFrom::Start(at)).map_err(ioe)?;
+            Ok(Box::new(std::io::BufReader::with_capacity(1 << 20, f)))
+        }
+        Some((k, role)) => {
+            let mut r = dlvault::Reader::open(path, k.clone(), role).map_err(ioe)?;
+            r.seek(SeekFrom::Start(at)).map_err(ioe)?;
+            Ok(Box::new(std::io::BufReader::with_capacity(1 << 16, r)))
+        }
+    }
 }
 
 impl ReleaseTape {
@@ -475,16 +495,11 @@ impl ReleaseTape {
     }
     /// triples j0 .. j0 + cnt of the section, in order
     pub fn triples(&self, j0: usize, cnt: usize) -> Result<TapeTriples, String> {
-        use std::io::{Seek, SeekFrom};
         if j0 + cnt > self.count {
             return Err("the release tape's proof section is shorter than asked".into());
         }
         let k = (self.from + 3 * j0) as u64;
-        let open = |base: u64| -> Result<std::io::BufReader<std::fs::File>, String> {
-            let mut f = std::fs::File::open(&self.path).map_err(|e| format!("{}: {e}", self.path.display()))?;
-            f.seek(SeekFrom::Start(base + 8 * k)).map_err(|e| e.to_string())?;
-            Ok(std::io::BufReader::with_capacity(1 << 20, f))
-        };
+        let open = |base: u64| tape_reader(&self.path, &self.sealed, base + 8 * k);
         let n = self.n as u64;
         Ok(TapeTriples { sh: open(24 + n)?, mac: open(24 + 9 * n)?, left: cnt, path: self.path.clone(), read: 0 })
     }
@@ -492,8 +507,8 @@ impl ReleaseTape {
 
 /// The reader of ReleaseTape::triples.
 pub struct TapeTriples {
-    sh: std::io::BufReader<std::fs::File>,
-    mac: std::io::BufReader<std::fs::File>,
+    sh: Box<dyn std::io::Read + Send>,
+    mac: Box<dyn std::io::Read + Send>,
     left: usize,
     path: std::path::PathBuf,
     read: usize,
@@ -527,14 +542,48 @@ impl Iterator for TapeTriples {
     }
 }
 
+trait ReadSeek: std::io::Read + std::io::Seek + Send {}
+impl<T: std::io::Read + std::io::Seek + Send> ReadSeek for T {}
+
 /// Load a release tape file's MPC part (the tape but its last 3 nrt entries; nrt = release_section) and the handle
 /// of its proof section, whose tags are checked to be (Ta, Tb, Tc) triples. Reads the file once, sequentially.
+/// A plain DLTAPE01 file (tests); the deployment's tape is sealed: load_release_tape_sealed.
 #[cfg(feature = "tcp")]
 pub fn load_release_tape(path: &std::path::Path, nrt: usize) -> Result<(darkstep::tape::Tape, ReleaseTape), String> {
+    if dlvault::is_sealed(path) {
+        return Err(format!("{}: a sealed tape (DLVAULT2); it needs its file key (load_release_tape_sealed)", path.display()));
+    }
+    load_release_tape_src(path, nrt, None)
+}
+
+/// load_release_tape for a sealed release tape (DLVAULT2 under the seat's epoch file key `key`, role `role`): the
+/// MPC part is decrypted block by block as it is read, the proof section's readers open their own blocks. A plain
+/// file is refused (tapes at rest are sealed).
+#[cfg(feature = "tcp")]
+pub fn load_release_tape_sealed(path: &std::path::Path, nrt: usize, key: std::sync::Arc<dlvault::Key>, role: &str) -> Result<(darkstep::tape::Tape, ReleaseTape), String> {
+    if !dlvault::is_sealed(path) {
+        return Err(format!("{}: not sealed (DLVAULT2); tapes at rest must be sealed", path.display()));
+    }
+    load_release_tape_src(path, nrt, Some((key, role.to_string())))
+}
+
+#[cfg(feature = "tcp")]
+fn load_release_tape_src(path: &std::path::Path, nrt: usize, sealed: Option<(std::sync::Arc<dlvault::Key>, String)>) -> Result<(darkstep::tape::Tape, ReleaseTape), String> {
     use darkstep::tape::Tag;
     use std::io::{Read, Seek, SeekFrom};
     let ioe = |e: std::io::Error| format!("{}: {e}", path.display());
-    let mut f = std::io::BufReader::with_capacity(1 << 20, std::fs::File::open(path).map_err(ioe)?);
+    let (mut f, len): (Box<dyn ReadSeek>, u64) = match &sealed {
+        None => {
+            let file = std::fs::File::open(path).map_err(ioe)?;
+            let len = file.metadata().map_err(ioe)?.len();
+            (Box::new(std::io::BufReader::with_capacity(1 << 20, file)), len)
+        }
+        Some((k, role)) => {
+            let r = dlvault::Reader::open(path, k.clone(), role).map_err(ioe)?;
+            let len = r.len();
+            (Box::new(std::io::BufReader::with_capacity(1 << 20, r)), len)
+        }
+    };
     let mut hdr = [0u8; 24];
     f.read_exact(&mut hdr).map_err(ioe)?;
     if &hdr[..8] != b"DLTAPE01" {
@@ -542,6 +591,9 @@ pub fn load_release_tape(path: &std::path::Path, nrt: usize) -> Result<(darkstep
     }
     let alpha_i = u64::from_le_bytes(hdr[8..16].try_into().unwrap());
     let n = u64::from_le_bytes(hdr[16..24].try_into().unwrap()) as usize;
+    if len != (24 + 17 * n) as u64 {
+        return Err(format!("{}: {len} bytes, a tape of {n} entries has {}", path.display(), 24 + 17 * n));
+    }
     if 3 * nrt > n {
         return Err(format!("{}: the tape has {n} entries, the release's proof section alone {}", path.display(), 3 * nrt));
     }
@@ -553,7 +605,7 @@ pub fn load_release_tape(path: &std::path::Path, nrt: usize) -> Result<(darkstep
     }
     tags.truncate(k);
     tags.shrink_to_fit();
-    let mut words = |f: &mut std::io::BufReader<std::fs::File>| -> Result<Vec<u64>, String> {
+    let mut words = |f: &mut Box<dyn ReadSeek>| -> Result<Vec<u64>, String> {
         let mut b = vec![0u8; 8 * k];
         f.read_exact(&mut b).map_err(ioe)?;
         Ok(b.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect())
@@ -561,12 +613,9 @@ pub fn load_release_tape(path: &std::path::Path, nrt: usize) -> Result<(darkstep
     let sh = words(&mut f)?;
     f.seek(SeekFrom::Start((24 + 9 * n) as u64)).map_err(ioe)?;
     let mac = words(&mut f)?;
-    let len = f.seek(SeekFrom::End(0)).map_err(ioe)?;
-    if len != (24 + 17 * n) as u64 {
-        return Err(format!("{}: {len} bytes, a tape of {n} entries has {}", path.display(), 24 + 17 * n));
-    }
+    drop(f);
     darkstep::serve::drop_cache(path);
-    Ok((darkstep::tape::Tape { alpha_i, tags, sh, mac }, ReleaseTape { path: path.to_path_buf(), n, from: k, count: nrt }))
+    Ok((darkstep::tape::Tape { alpha_i, tags, sh, mac }, ReleaseTape { path: path.to_path_buf(), n, from: k, count: nrt, sealed }))
 }
 
 /// The release's public policy: X[k][t] at k M + t (mod p), labels, classes, the comparison shift.

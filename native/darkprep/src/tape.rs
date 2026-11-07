@@ -281,6 +281,64 @@ impl DarkstepBuf {
     }
 }
 
+/// A darkstep DLTAPE01 image written straight into a DLVAULT2 file (sealed 1 MiB blocks): each column is buffered
+/// and handed to the block writer at its offset, so neither the tape nor its plaintext is ever whole in memory or on
+/// disk (the release tape). Read back with darkproof::run::load_release_tape_sealed or dlvault::Reader.
+pub struct SealedDarkstepWriter<'k> {
+    w: dlvault::Writer<'k>,
+    n: usize,
+    k: usize,
+    bufs: [Vec<u8>; 3],
+    offs: [u64; 3],
+}
+
+impl<'k> SealedDarkstepWriter<'k> {
+    const FLUSH: usize = 1 << 20;
+    pub fn create(path: &std::path::Path, key: &'k dlvault::Key, role: &str, alpha_i: u64, n: usize) -> std::io::Result<Self> {
+        Self::create_bs(path, key, role, alpha_i, n, dlvault::BLOCK)
+    }
+    /// With another block size (tests: many blocks from a small tape).
+    pub fn create_bs(path: &std::path::Path, key: &'k dlvault::Key, role: &str, alpha_i: u64, n: usize, bs: u32) -> std::io::Result<Self> {
+        let mut w = dlvault::Writer::create_bs(path, key, role, 24 + 17 * n as u64, bs)?;
+        let mut h = b"DLTAPE01".to_vec();
+        h.extend_from_slice(&alpha_i.to_le_bytes());
+        h.extend_from_slice(&(n as u64).to_le_bytes());
+        w.write_at(0, &h)?;
+        let n64 = n as u64;
+        Ok(SealedDarkstepWriter { w, n, k: 0, bufs: [Vec::new(), Vec::new(), Vec::new()], offs: [24, 24 + n64, 24 + 9 * n64] })
+    }
+    fn flush(&mut self, c: usize) -> std::io::Result<()> {
+        let b = std::mem::take(&mut self.bufs[c]);
+        self.w.write_at(self.offs[c], &b)?;
+        self.offs[c] += b.len() as u64;
+        Ok(())
+    }
+    pub fn push(&mut self, t: Tag, (s, m): (u64, u64)) -> std::io::Result<()> {
+        if self.k == self.n {
+            return Err(std::io::Error::other("more entries than the header says"));
+        }
+        self.k += 1;
+        self.bufs[0].push(t as u8 + 1);
+        self.bufs[1].extend_from_slice(&s.to_le_bytes());
+        self.bufs[2].extend_from_slice(&m.to_le_bytes());
+        for c in 0..3 {
+            if self.bufs[c].len() >= Self::FLUSH {
+                self.flush(c)?;
+            }
+        }
+        Ok(())
+    }
+    pub fn finish(mut self) -> std::io::Result<()> {
+        if self.k != self.n {
+            return Err(std::io::Error::other(format!("{} entries written, the header says {}", self.k, self.n)));
+        }
+        for c in 0..3 {
+            self.flush(c)?;
+        }
+        self.w.finish()
+    }
+}
+
 /// The vault role (AAD) of chunk `chunk`'s step `j` tape and owner message: a sealed file opens only as itself.
 pub fn tape_role(chunk: &str, j: usize) -> String {
     format!("tape|{chunk}|{j}")

@@ -1,0 +1,9 @@
+[package]
+name = "dlvault"
+version = "0.1.0"
+edition.workspace = true
+description = "DLVAULT2: a large file sealed in 1 MiB AEAD blocks under a seat's epoch file key, written at any offset and read with seek (the release tape); a block opens only in its own place, file and role."
+
+[dependencies]
+ring = "0.17"
+getrandom = "0.2"

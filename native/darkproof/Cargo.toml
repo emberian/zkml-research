@@ -13,6 +13,8 @@ getrandom = "0.2"
 darkstep = { path = "../darkstep", optional = true }
 # the public genesis's weights (darktrain::init of the pinned cfg), recomputed by the ledger
 darktrain = { path = "../darktrain", optional = true }
+# the release tape at rest is sealed (DLVAULT2 blocks under the seat's epoch file key); the loader reads through it
+dlvault = { path = "../dlvault" }
 
 [features]
 # the proof over darkstep's custodian sockets (tag net::PROOF)
