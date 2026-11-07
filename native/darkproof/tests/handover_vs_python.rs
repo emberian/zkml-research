@@ -68,7 +68,8 @@ fn handover_rotations_equal_python() {
             let after = std::fs::read_to_string(&path).unwrap();
             assert_eq!(after, rot["ledger_after"].as_str().unwrap(), "{name}: ledger file differs from Python's");
             if ok {
-                assert_eq!(blob.len(), handover::byte_len(&pr, d, 3, 3), "schema length");
+                let dp = handover::decode(&pr, &blob, d, 3, 3).expect("an accepted proof decodes");
+                assert_eq!(blob.len(), handover::byte_len(&pr, d, &dp), "schema length");
                 honest = Some((blob, rot["ledger_before"].as_str().unwrap().to_string()));
             }
             std::fs::remove_file(&path).unwrap();
