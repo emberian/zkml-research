@@ -502,7 +502,13 @@ positive of the canary design.**
 
 **Also found:** `--keep-erased-copy` copies the `--erase-extra` MP-SPDZ files too (Player-MAC-Keys-p-P<I>,
 Mascot-Secrets-...). They are plaintext, not sealed, so the erased dir holds a live copy of the old MAC key share.
-The deploy lane removes them (a test artifact). Sealing or tmpfs for MP-SPDZ's files is the open prep item.
+The deploy lane shredded them (`shred -u`). Since c2319a8d, `--keep-erased-copy` copies only DLVAULT1 files.
+- `shred` overwrites in place, which is not physical erasure on ZFS or an SSD: the blocks may survive. The exposure
+  is the old epoch's MAC key share, which is retired at the rotation.
+- That is exactly the gap the vault closes for sealed files, and why MP-SPDZ's files need sealing or tmpfs: the open
+  prep item.
+- The confirming rotation is reh2, on a build at or after c9771f4a and c2319a8d, once prep has made fresh-key
+  chunks.
 
 ## 8. The handover proof in F_{p^2} (profiles demo-x2, ledger-x2) [EXECUTED, 1bfb04a3]
 The proof lane's x2 cut (proof.md §19) draws every challenge in F_{p^2}. The handover follows it:
