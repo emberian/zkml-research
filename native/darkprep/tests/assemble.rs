@@ -344,3 +344,34 @@ fn wipe_file_zeroes_every_hard_link_then_unlinks() {
     assert!(rest.iter().all(|&x| x == 0), "a hard-linked name still holds data");
     std::fs::remove_dir_all(&dir).unwrap();
 }
+
+#[test]
+fn retiring_a_mac_key_erases_it_and_only_it() {
+    let root = std::env::temp_dir().join(format!("darkprep-retire-{}", std::process::id()));
+    let pd = root.join("Player-Data");
+    std::fs::create_dir_all(pd.join("3-p-61")).unwrap();
+    let files = [
+        "Mascot-Secrets-p-61-abc-P0-3",
+        "Mascot-Secrets-p-61-abc-P0-3.retired-17",
+        "LowGear-Secrets-60-def-P0-3",
+        "Mascot-Secrets-p-61-abc-P1-3",
+        "Mascot-Secrets-2-128-abc-P0-3",
+        "3-p-61/Player-MAC-Keys-p-P0",
+        "3-p-61/Player-MAC-Keys-p-P0.retired-17",
+        "3-p-61/Player-MAC-Keys-p-P1",
+    ];
+    for f in files {
+        std::fs::write(pd.join(f), b"alpha share").unwrap();
+    }
+    let keep = pd.join("keep-link");
+    std::fs::hard_link(pd.join("Mascot-Secrets-p-61-abc-P0-3"), &keep).unwrap();
+    let gone = darkprep::mpspdz::retire_mac_keys(&root, Some(0));
+    assert_eq!(gone.len(), 5, "{gone:?}");
+    for f in files {
+        let party0_key = f.contains("P0") && !f.contains("2-128");
+        assert_eq!(pd.join(f).exists(), !party0_key, "{f}");
+    }
+    // erased, not renamed: a second name for the same inode now reads zeros
+    assert!(std::fs::read(&keep).unwrap().iter().all(|&b| b == 0));
+    std::fs::remove_dir_all(&root).unwrap();
+}
