@@ -39,6 +39,7 @@ fn main() {
         Some("run-check") => run_check(Path::new(&args[2]), &args[3]),
         Some("rel-check") => rel_check(Path::new(&args[2]), &args[3]),
         Some("counts") => counts(args[2].parse().unwrap(), &args[3]),
+        Some("pcs-bench") => pcs_bench(args[2].parse().unwrap(), &args[3]),
         #[cfg(feature = "tcp")]
         Some("ds-check") => ds_check(Path::new(&args[2]), &args[3]),
         #[cfg(feature = "tcp")]
@@ -50,6 +51,16 @@ fn main() {
 }
 
 /// The step program a vector set was made with (meta "program"; absent: the harness's).
+/// The profile by name; DP_DOMAIN=int selects its gen 5 evaluation points ("<name>-int": vectors made before the
+/// coset domain, and the before/after comparison).
+fn profile(name: &str) -> Profile {
+    let name = match std::env::var("DP_DOMAIN").as_deref() {
+        Ok("int") if !name.ends_with("-int") => format!("{name}-int"),
+        _ => name.to_string(),
+    };
+    Profile::by_name(&name).unwrap_or_else(|| panic!("no profile {name}"))
+}
+
 fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
     match meta.get("program") {
         None => darkproof::step::StepParams::for_width(d),
@@ -67,7 +78,7 @@ fn check(dir: &Path, tag: &str) {
     let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
     let prm = program_of(&meta, meta["d"].as_u64().unwrap() as usize);
-    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
@@ -160,7 +171,7 @@ fn run_check(dir: &Path, tag: &str) {
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
     let d = meta["d"].as_u64().unwrap() as usize;
     let prm = program_of(&meta, d);
-    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let mut names: Vec<String> = meta["bundles"].as_object().unwrap().keys().cloned().collect();
@@ -314,7 +325,7 @@ fn ds_he(i: usize, pf: &darkstep::node::Prof, net: &darkstep::net::Net) -> darks
 fn ds_bench(d: usize, prof: &str) {
     use darkproof::run::{from_darkstep, n_had, prove_step, tape_triples, TcpRef};
     use std::sync::Arc;
-    let pr = Profile::by_name(prof).unwrap();
+    let pr = profile(prof);
     let p = wire::he_field(&pr).unwrap();
     darkproof::field::set_p(p);
     let lp = pr.ligero();
@@ -386,7 +397,7 @@ fn ds_bench(d: usize, prof: &str) {
 fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     use darkproof::run::{deal_release, from_darkstep_n, n_had, plain_count, prove_release, prove_step, release_mpc, release_n_had, release_triples, tape_triples, tape_triples_at, Policy, TcpRef};
     use std::sync::Arc;
-    let pr = Profile::by_name(prof).unwrap();
+    let pr = profile(prof);
     let p = wire::he_field(&pr).unwrap();
     darkproof::field::set_p(p);
     let lp = pr.ligero();
@@ -684,7 +695,7 @@ fn ds_check(dir: &Path, tag: &str) {
     darkproof::field::set_p(p);
     let d = meta["d"].as_u64().unwrap() as usize;
     let prm = program_of(&meta, d);
-    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables_for(prm.t_lo);
     // the darkstep program: GEN6 when the shifts are GEN6's (its inputs_for), else the harness's
@@ -770,7 +781,7 @@ fn rel_check(dir: &Path, tag: &str) {
     let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
     let d = meta["d"].as_u64().unwrap() as usize;
-    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
@@ -880,7 +891,7 @@ fn rel_check(dir: &Path, tag: &str) {
 
 /// The proof sections' triple counts for one step and for the release (DP_PROGRAM as ds-bench; M = 64, 10 classes).
 fn counts(d: usize, prof: &str) {
-    let pr = Profile::by_name(prof).unwrap();
+    let pr = profile(prof);
     darkproof::field::set_p(wire::he_field(&pr).unwrap());
     let lp = pr.ligero();
     let prm = match std::env::var("DP_PROGRAM") {
@@ -935,7 +946,7 @@ fn rows(dir: &Path, tag: &str) {
     use darkproof::owner::{det_seed, Owner};
     use darkproof::witness::{clone_carry, owner_commit, with_max_lives, OwnerIn};
     let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
-    let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
+    let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let seed = meta["seed"].as_str().unwrap().to_string();
@@ -1207,7 +1218,7 @@ fn measure_middle(p: &darkproof::middle::MiddleProof) -> (u64, u64, u64) {
 fn bench(d: usize, prof: &str) {
     use darkproof::live;
     use darkproof::step::StepParams;
-    let pr = Profile::by_name(prof).unwrap();
+    let pr = profile(prof);
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let prm = StepParams::for_width(d);
@@ -1280,4 +1291,28 @@ fn bench(d: usize, prof: &str) {
         }
     }
     println!("bench rows: hadamard {} atoms {} spine stats {:?} middle stats {:?}", rec.had.len(), rec.n_prep(), b2.spine_stats, b2.middle_stats);
+}
+
+/// One party's commitment to a random vector of length 2^m (production coins), timed; and a few opened columns
+/// checked against direct evaluation at the domain's points.
+fn pcs_bench(m: usize, prof: &str) {
+    let pr = profile(prof);
+    darkproof::field::set_p(wire::he_field(&pr).unwrap());
+    let mut r = pycompat::PyRandom::from_u64(5);
+    let v: Vec<u64> = (0..1usize << m).map(|_| r.randrange_u64(darkproof::field::p())).collect();
+    let t = std::time::Instant::now();
+    let c = darkproof::pcs::PcsParty::commit(&pr, &v, "bench", 0, &Det::off());
+    let secs = t.elapsed().as_secs_f64();
+    let s = &c.shape;
+    let mut ok = true;
+    for j in [0, 1, s.npts / 3, s.npts - 1] {
+        let pw = darkproof::poly::powers(s.dom.point(j), s.w);
+        let direct: Vec<u64> = (0..s.r).map(|rr| darkproof::field::dot(&c.ext[rr * s.w..(rr + 1) * s.w], &pw)).collect();
+        ok &= direct == c.column(j);
+    }
+    let t = std::time::Instant::now();
+    use rayon::prelude::*;
+    let _l: Vec<_> = (0..s.npts).into_par_iter().map(|j| darkproof::h::h_leaf(&c.salts[j], &c.column(j))).collect();
+    println!("  leaf hashing alone: {:.2}s ({} threads)", t.elapsed().as_secs_f64(), rayon::current_num_threads());
+    println!("pcs-bench m={m} profile={} R={} W={} npts={} dom={:?}: commit {secs:.2}s, columns equal direct evaluation: {ok}", pr.name, s.r, s.w, s.npts, s.dom);
 }

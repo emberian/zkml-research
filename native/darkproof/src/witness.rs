@@ -347,6 +347,7 @@ pub fn clone_pcs(c: &PcsParty) -> PcsParty {
         root: c.root,
         opened_lives: c.opened_lives,
         max_lives: c.max_lives,
+        cw: c.cw.clone(),
     }
 }
 

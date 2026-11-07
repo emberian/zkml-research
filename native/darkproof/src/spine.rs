@@ -197,7 +197,7 @@ pub fn pcs_consistency(
         let (jj, csum) = &cols[k];
         let label = format!("PCS evaluation consistency ({k})");
         for (t, &j) in jj.iter().enumerate() {
-            let x = (j + 1) as u64;
+            let x = s.dom.point(j);
             let mut xs = 1u64;
             buf.clear();
             for c in 0..s.w {
@@ -580,6 +580,7 @@ fn shallow(c: &PcsParty) -> PcsParty {
         root: c.root,
         opened_lives: 0,
         max_lives: c.max_lives,
+        cw: Vec::new(),
     }
 }
 

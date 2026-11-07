@@ -54,6 +54,15 @@ pub struct Profile {
     pub owner_h: usize,
     /// HE parameters that travel with the profile (N, L, F_BITS)
     pub he: (u64, u64, u64),
+    /// the PCS codeword's evaluation points (proofwire DOMAIN): cosets of a 2-power subgroup (NTT), or gen 5's
+    /// x_j = j + 1
+    pub domain: Domain,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Domain {
+    Int,
+    Coset,
 }
 
 impl Profile {
@@ -70,6 +79,7 @@ impl Profile {
             t_open: 309,
             owner_h: 12,
             he: (16384, 4, 175),
+            domain: Domain::Coset,
         }
     }
     pub fn demo() -> Self {
@@ -85,12 +95,16 @@ impl Profile {
             t_open: 97,
             owner_h: 12,
             he: (8192, 3, 118),
+            domain: Domain::Coset,
         }
     }
     pub fn by_name(s: &str) -> Option<Self> {
         match s {
             "ledger" => Some(Self::ledger()),
             "demo" => Some(Self::demo()),
+            // gen 5's evaluation points (the before/after comparison and the vectors made before the coset domain)
+            "ledger-int" => Some(Profile { name: "ledger-int", domain: Domain::Int, ..Self::ledger() }),
+            "demo-int" => Some(Profile { name: "demo-int", domain: Domain::Int, ..Self::demo() }),
             _ => None,
         }
     }
