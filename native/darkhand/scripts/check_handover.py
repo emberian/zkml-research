@@ -110,6 +110,28 @@ def main():
         ck(who, "disk scan after erasure finds none of it", da.get("hits") == 0 and da.get("unreadable") == [] and "hits" in da,
            {"hit_files": da.get("hit_files"), "unreadable": da.get("unreadable")})
         ck(who, "the zeroizing allocator was active", (o.get("allocator_wiped_bytes") or 0) > 0)
+        kinds = [k for k, _ in o.get("canary_kinds", [])]
+        if "tls_key_files_canaried" in o:            # darkhand 45bb7255 and later
+            tls = [n for n, k in enumerate(kinds) if k.startswith("TLS ")]
+            hb = sb.get("hits_by_kind") or []
+            ck(who, "the TLS private key is among the memory canaries", o["tls_key_files_canaried"] != [] and tls != [],
+               o["tls_key_files_canaried"])
+            ck(who, "memory scan before erasure finds the live TLS key (control)", sum(hb[n] for n in tls if n < len(hb)) > 0,
+               {kinds[n]: hb[n] for n in tls if n < len(hb)})
+        if o.get("vault_destroyed") is not None:     # sealed state files (darkhand::vault)
+            vb, vd, va = o.get("vault_before_erasure") or {}, o["vault_destroyed"], o.get("vault_after_erasure") or {}
+            vk = [n for n, k in enumerate(kinds) if k == "vault file key"]
+            hb = sb.get("hits_by_kind") or []
+            ck(who, "the sealed state files open under the vault key before erasure (control)",
+               (vb.get("sealed_copies_open_before_erasure") or []) != [] and all(t[2] for t in vb["sealed_copies_open_before_erasure"]),
+               vb.get("sealed_copies_open_before_erasure"))
+            ck(who, "memory scan before erasure finds the vault key (control)", sum(hb[n] for n in vk if n < len(hb)) > 0)
+            ck(who, "the vault key was in the keyring and is invalidated, absent after",
+               vd.get("in_keyring") is True and vd.get("invalidate_error") is None and vd.get("key_in_keyring_after") is False
+               and va.get("key_in_keyring") is False and isinstance(va.get("load_error"), str), [vd, va.get("load_error")])
+            ck(who, "after erasure no key the seat holds opens a copy of its sealed files",
+               (va.get("sealed_copies") or []) != [] and all(not t["opens_by_keyring"] and not t["opens_by_zero_key"] for t in va["sealed_copies"]),
+               va.get("sealed_copies"))
         ck(who, "no state file left, no wipe error", o.get("state_files_left") == [] and o.get("file_wipe_errors") == [],
            [o.get("state_files_left"), o.get("file_wipe_errors")])
         if not self_mode:
@@ -136,6 +158,10 @@ def main():
                 for j in range(len(news)):
                     subprocess.run(["scp", "-q", os.path.join(out, f"join{j}.json"), f"{h}:{work}/join_P{j}.json"], check=True)
                     jps.append(f"{work}/join_P{j}.json")
+                vname = (rep_old[i].get("vault_destroyed") or {}).get("name")
+                if vname:
+                    r = sh(h, f"{tool} vault-present {shlex.quote(vname)}", check=False)
+                    ck(who, "restarted: the uid's keyring holds no file key of the old epoch", r.returncode == 0, r.stdout.strip())
                 r = sh(h, f"nice -n 15 {tool} restart-seat {work}/restart.json {hp} {' '.join(jps)} -- {shlex.join(argv)}", check=False)
                 rs = json.loads(r.stdout) if r.returncode == 0 else {"error": r.stderr[-2000:]}
                 json.dump(rs, open(os.path.join(out, f"restart{i}.json"), "w"), indent=1)
