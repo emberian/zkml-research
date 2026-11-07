@@ -101,6 +101,27 @@ pub fn rotation_setup(
     }
 }
 
+/// The self-handover's counterpart of `rotation_setup`: the old role's setup closure (run it as old_side's setup in
+/// the old role's thread) and a receiver for what the new role keeps, the HE side and the seat's three-party mesh,
+/// sent from inside that closure once the state is taken apart. The new role's thread blocks on the receiver.
+pub fn self_setup(
+    st: Box<CustodianState>,
+    carry: BTreeMap<String, PcsParty>,
+    files: Vec<PathBuf>,
+    scan: Vec<PathBuf>,
+) -> (impl FnOnce() -> Box<OldCustodian>, std::sync::mpsc::Receiver<(darkstep::he::He, darkstep::net::Net)>) {
+    let (tx, rx) = std::sync::mpsc::sync_channel(1);
+    let f = move || {
+        let OldParts { mut old, he, net3 } = old_from_serve(*st, carry, files, false, None);
+        tx.send((he.expect("a self-handover keeps the HE side"), net3)).expect("the new role waits for its HE side and mesh");
+        old.scan_paths.extend(scan);
+        old.scan_paths.sort();
+        old.scan_paths.dedup();
+        old
+    };
+    (f, rx)
+}
+
 /// New custodian's W wires in serve's shape (d rows of d per matrix).
 pub fn shares_rows(w: &BTreeMap<String, Vec<Sh>>, d: usize) -> Shares {
     let rows = |k: &str| w[k].chunks(d).map(|r| r.to_vec()).collect::<Vec<_>>();
