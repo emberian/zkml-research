@@ -3,6 +3,7 @@
 //! proofwire, owner_sig). Every proof byte equals the harness's for the same seed (`rng::Det`).
 pub mod field;
 pub mod h;
+pub mod handover;
 pub mod ledger;
 pub mod ligero;
 pub mod live;

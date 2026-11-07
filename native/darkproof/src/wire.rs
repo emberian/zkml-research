@@ -43,17 +43,17 @@ impl W {
 }
 
 pub struct R<'a> {
-    d: &'a [u8],
-    o: usize,
+    pub(crate) d: &'a [u8],
+    pub(crate) o: usize,
 }
 impl<'a> R<'a> {
     pub fn new(d: &'a [u8]) -> Self {
         R { d, o: 0 }
     }
 }
-type PR<T> = Result<T, String>;
+pub(crate) type PR<T> = Result<T, String>;
 impl<'a> R<'a> {
-    fn take(&mut self, k: usize) -> PR<&'a [u8]> {
+    pub(crate) fn take(&mut self, k: usize) -> PR<&'a [u8]> {
         if self.o + k > self.d.len() {
             return Err("truncated".into());
         }
@@ -61,7 +61,7 @@ impl<'a> R<'a> {
         self.o += k;
         Ok(s)
     }
-    fn fe(&mut self) -> PR<u64> {
+    pub(crate) fn fe(&mut self) -> PR<u64> {
         let x = u64::from_be_bytes(self.take(8)?.try_into().unwrap());
         if x >= P {
             return Err("non-canonical field element".into());
@@ -81,7 +81,7 @@ impl<'a> R<'a> {
     fn fes(&mut self, n: usize) -> PR<Vec<u64>> {
         (0..n).map(|_| self.fe()).collect()
     }
-    fn hs(&mut self, n: usize) -> PR<Vec<Hash>> {
+    pub(crate) fn hs(&mut self, n: usize) -> PR<Vec<Hash>> {
         (0..n).map(|_| self.h()).collect()
     }
 }
@@ -114,7 +114,7 @@ fn w_ligero(w: &mut W, pr: &Profile, n: usize, sizes: &[usize], l: &LigProof) {
         }
     }
 }
-fn r_ligero(r: &mut R, pr: &Profile, n: usize, sizes: &[usize]) -> PR<LigProof> {
+pub(crate) fn r_ligero(r: &mut R, pr: &Profile, n: usize, sizes: &[usize]) -> PR<LigProof> {
     let (k, t, tt) = (pr.k_l, pr.t_hide, pr.t_open);
     let lg = crate::pcs::bitlen(pr.blow * (k + t) - 1) + 1;
     let wv = r.fes(k + t)?;
@@ -127,7 +127,7 @@ fn r_ligero(r: &mut R, pr: &Profile, n: usize, sizes: &[usize]) -> PR<LigProof> 
     Ok(LigProof { w: wv, q, pq, cols })
 }
 
-type PcsParts = (BTreeMap<String, Vec<Hash>>, BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>);
+pub(crate) type PcsParts = (BTreeMap<String, Vec<Hash>>, BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>);
 
 fn w_roots(w: &mut W, n: usize, sh: &BTreeMap<String, Shape>, roots: &BTreeMap<String, Vec<Hash>>) {
     assert!(roots.keys().eq(sh.keys()), "dict keys differ from schema");
@@ -161,14 +161,14 @@ fn w_prox_cols(
         }
     }
 }
-fn r_pcs(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<String, Shape>) -> PR<PcsParts> {
+pub(crate) fn r_pcs(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<String, Shape>) -> PR<PcsParts> {
     let mut roots = BTreeMap::new();
     for k in sh.keys() {
         roots.insert(k.clone(), r.hs(n)?);
     }
     Ok((roots, BTreeMap::new(), BTreeMap::new()))
 }
-fn r_prox_cols(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<String, Shape>, parts: &mut PcsParts) -> PR<()> {
+pub(crate) fn r_prox_cols(r: &mut R, pr: &Profile, n: usize, sh: &BTreeMap<String, Shape>, parts: &mut PcsParts) -> PR<()> {
     for (k, s) in sh {
         parts.1.insert(k.clone(), (0..n).map(|_| r.fes(s.w)).collect::<PR<Vec<_>>>()?);
     }

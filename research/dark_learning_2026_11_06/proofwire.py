@@ -297,9 +297,9 @@ class Ledger:
       genesis  pins model, d, the verifier PARAMS, the owner key (or an explicit "none"), the custodian set and the
                genesis weight commitment roots, so the first bundle cannot choose them
       step     (epoch, step, digest, child roots, owner leaf)
-      rotate   (new epoch, new custodian set, the NEW committee's commitment roots of the current weights). The
-               handover proof that the new roots commit the same weights (handover note §2e) is NOT built; the
-               record carries a placeholder and the ledger says so.
+      rotate   (new epoch, new custodian set, the NEW committee's commitment roots of the current weights), accepted
+               only with a handover proof's bytes (handover.encode, gen 5) showing the new roots commit the same weights
+               as the head's roots; the record carries sha256 of those bytes.
     The head (expected context, parent roots, next owner leaf) is replayed from the file on open; a torn or
     out-of-order line fails closed. accept() holds an exclusive file lock, so two acceptors cannot both append
     step N."""
@@ -358,16 +358,37 @@ class Ledger:
     def head(self):
         return (self.model, self.epoch, self.step + 1), self.parent
 
-    def rotate(self, custodians, new_roots, handover_proof=None):
-        """Custody rotation: a durable record. The new committee re-commits the weights (new roots); proofs from the
-        old committee, whose commitments are to the old share tuple, no longer match the parent."""
+    def handover_context(self, custodians):
+        import handover as HO
+        return HO.context_digest(self.model, self.epoch, self.epoch + 1, self.step, self.custodians, custodians)
+
+    def rotate(self, p, custodians, new_roots, handover):
+        """Custody rotation: a durable record, accepted only with the BYTES of a handover proof (handover.encode)
+        that the new committee's roots commit the same weights as the head's. Proofs from the old committee, whose
+        commitments are to the old share tuple, no longer match the parent. Returns (ok, why); fails closed on any
+        error. The record carries sha256 of the proof bytes."""
+        import handover as HO
         with open(self.path) as f:
             fcntl.flock(f, fcntl.LOCK_EX)
+            self.recs = [json.loads(l) for l in open(self.path)]
+            self._replay()
+            if not handover:
+                return False, "rotation refused: no handover proof"
+            try:
+                ok, why, got = HO.verify_bytes(p, self.d, len(self.custodians), len(custodians),
+                                               self.handover_context(custodians), self.parent, bytes(handover))
+            except Exception as e:  # untrusted input: any failure is a refusal
+                return False, f"rotation refused: malformed handover proof ({type(e).__name__})"
+            if not ok:
+                return False, f"rotation refused: {why}"
+            if got != new_roots:
+                return False, "rotation refused: the handover proof is for other new roots"
             rec = dict(kind="rotate", epoch=self.epoch + 1, custodians=custodians, roots=new_roots,
-                       handover_proof=handover_proof or "UNBUILT: equality of the old and new commitments")
+                       handover_proof=hashlib.sha256(bytes(handover)).hexdigest())
             self._append(rec)
             self.recs.append(rec)
             self._replay()
+        return True, "accept"
 
     def accept(self, p, blob, tab):
         with open(self.path) as f:
