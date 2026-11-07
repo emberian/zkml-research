@@ -631,6 +631,8 @@ pub fn prove_release_d(
     let spent = middle::Spent {
         cons: std::sync::Mutex::new(Some(std::mem::take(&mut rec.cons))),
         atoms: std::sync::Mutex::new(Some(std::mem::take(&mut st.atoms))),
+        range_rows: std::sync::Mutex::new(Some(std::mem::take(&mut rec.range_rows))),
+        lb_rows: std::sync::Mutex::new(Some(std::mem::take(&mut rec.lb_rows))),
     };
     let mi = middle::MiddleIn {
         pr,
