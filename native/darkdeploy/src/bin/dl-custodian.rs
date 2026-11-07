@@ -782,7 +782,24 @@ impl Prove {
             serve::claim_tape_file(&f)?;
             let d = st.pf.d;
             let nrt = darkproof::run::release_section(&self.lp, d, m, self.prm, &pol);
-            let (pre, rt) = darkproof::run::load_release_tape(Path::new(&f), nrt)?;
+            let (pre, rt) = if dlvault::is_sealed(Path::new(&f)) {
+                // prep's sealed release tape (DLVAULT2, read block by block under this epoch's file key)
+                let p = Path::new(&f);
+                let sd = p.parent().ok_or("release tape path")?;
+                let j = sd.file_name().and_then(|n| n.to_str()).and_then(|n| n.strip_prefix("step-")).ok_or("the release tape is not in a chunk's step-<j> dir")?;
+                let c = sd.parent().and_then(|c| c.file_name()).and_then(|n| n.to_str()).ok_or("release tape chunk dir")?;
+                let key = {
+                    let g = VAULT.get().ok_or("a sealed release tape needs --vault")?.0.lock().unwrap();
+                    let v = g.as_ref().ok_or("the file key was handed to the erasure")?;
+                    std::sync::Arc::new(dlvault::Key::new(&v.name, v.key_bytes()))
+                };
+                darkproof::run::load_release_tape_sealed(p, nrt, key, &format!("tape|{c}|{j}"))?
+            } else {
+                if serve::sealing() && !cfg!(feature = "test-harness") {
+                    return Err(format!("{f}: a plain release tape, but this custodian takes only sealed preprocessing"));
+                }
+                darkproof::run::load_release_tape(Path::new(&f), nrt)?
+            };
             st.load_tape(pre)?;
             tape_file = Some(rt);
         }
