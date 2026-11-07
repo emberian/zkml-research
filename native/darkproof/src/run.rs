@@ -147,6 +147,46 @@ pub fn prove_step(
     prove_step_d(pr, lp, tables, prm, net, ctx, st, carry, None)
 }
 
+/// DEFER in the deployed run: the discharging proof's input from a carry (StepProof.child, or the carry checkpoint,
+/// which holds this party's carries c1p, c2p beside W1, W2) and the ledger replica's pending claims (Ledger.pending:
+/// their points). Takes c1p, c2p out of the carry. None when the head is final (pend None); refused when the two
+/// disagree (a carry without the ledger's pending claims, or the reverse).
+pub fn carry_in(carry: &mut BTreeMap<String, PcsParty>, pend: Option<&crate::defer::Pending>) -> Result<Option<crate::defer::DeferIn>, String> {
+    let held = crate::defer::CARRY_IN.iter().filter(|k| carry.contains_key(**k)).count();
+    match pend {
+        None if held == 0 => Ok(None),
+        None => Err("the carry holds a step's carries, but the ledger's head is final (nothing pending)".into()),
+        Some(_) if held != 2 => Err("the ledger's head is pending, but the carry does not hold its carries (c1p, c2p)".into()),
+        Some(p) => {
+            let carries = crate::defer::CARRY_IN.iter().map(|k| (k.to_string(), carry.remove(*k).unwrap())).collect();
+            Ok(Some(crate::defer::DeferIn { points: p.points.clone(), carries }))
+        }
+    }
+}
+
+/// prove_step for the deployed run under DEFER: the parent's pending claims from the ledger replica (pend: its
+/// Ledger.pending), this party's carries from the carry (carry_in). Without DEFER (pend None) it is prove_step.
+#[allow(clippy::too_many_arguments)]
+pub fn prove_step_l(
+    pr: &Profile,
+    lp: &LigParams,
+    tables: &(Vec<u64>, Vec<u64>),
+    prm: StepParams,
+    net: &mut dyn Net,
+    ctx: &Ctx,
+    st: PartyStep,
+    carry: Option<BTreeMap<String, PcsParty>>,
+    pend: Option<&crate::defer::Pending>,
+) -> Result<StepProof, String> {
+    let mut carry = carry;
+    let dfr = match carry.as_mut() {
+        Some(c) => carry_in(c, pend)?,
+        None if pend.is_some() => return Err("the ledger's head is pending, but there is no carry".into()),
+        None => None,
+    };
+    prove_step_d(pr, lp, tables, prm, net, ctx, st, carry, dfr)
+}
+
 /// prove_step with DEFER's input: this party's side of the parent's pending claims (StepProof.deferred).
 #[allow(clippy::too_many_arguments)]
 pub fn prove_step_d(
@@ -233,8 +273,15 @@ pub fn prove_step_d(
     for k in spine::MAT {
         wires.remove(k);
     }
-    let child: BTreeMap<String, PcsParty> =
+    let mut child: BTreeMap<String, PcsParty> =
         [("W1", "W1n"), ("W2", "W2n")].iter().map(|(c, k)| (c.to_string(), so.coms.remove(*k).unwrap())).collect();
+    if let Some(df) = &deferred {
+        // DEFER: the carry also holds this step's carries (c1p, c2p), for the discharging proof (carry_in); the
+        // points of the pending claims are the ledger's (Ledger.pending)
+        for (k, c) in &df.carries {
+            child.insert(k.clone(), c.clone());
+        }
+    }
     let spine_coms: BTreeMap<String, PcsParty> =
         middle::SPINE.iter().map(|k| (k.to_string(), so.coms.remove(*k).unwrap())).collect();
     let mi = middle::MiddleIn {
@@ -634,6 +681,27 @@ pub fn release_custodian(
     head: BTreeMap<String, PcsParty>,
     head_roots: Option<&BTreeMap<String, Vec<Hash>>>,
 ) -> Result<ReleaseOut, String> {
+    release_custodian_l(pr, lp, prm, pt, w1, w2, pol, ctx, head, head_roots, None)
+}
+
+/// release_custodian under DEFER: pend = the ledger replica's pending claims of the head (Ledger.pending), discharged
+/// by the release; head = the carry (W1, W2 and, when pending, this party's carries c1p, c2p).
+#[cfg(feature = "tcp")]
+#[allow(clippy::too_many_arguments)]
+pub fn release_custodian_l(
+    pr: &Profile,
+    lp: &LigParams,
+    prm: StepParams,
+    pt: &mut darkstep::party::Party,
+    w1: &[Vec<darkstep::party::Sh>],
+    w2: &[Vec<darkstep::party::Sh>],
+    pol: &Policy,
+    ctx: &Ctx,
+    mut head: BTreeMap<String, PcsParty>,
+    head_roots: Option<&BTreeMap<String, Vec<Hash>>>,
+    pend: Option<&crate::defer::Pending>,
+) -> Result<ReleaseOut, String> {
+    let dfr = carry_in(&mut head, pend)?;
     let d = w1.len();
     let m = pol.labels.len();
     if pol.x.len() != d * m || w2.len() != d || pol.ncls > d {
@@ -656,19 +724,76 @@ pub fn release_custodian(
     tt.lap("proof section taken, tape freed");
     let mut net = TcpRef(&pt.net);
     let sent0 = net.sent();
-    let (blob, prove_secs) = prove_release(pr, lp, prm, &mut net, ctx, pol, st, head)?;
+    let (blob, prove_secs) = prove_release_d(pr, lp, prm, &mut net, ctx, pol, st, head, dfr)?;
     let sent = net.sent() - sent0;
     pt.cur = cur_after;
     let mut verify_secs = 0.0;
     if let Some(roots) = head_roots {
         let tv = std::time::Instant::now();
-        let (_, cv) = wire::verify_release(pr, lp, &blob, ctx, roots, &pol.x, &pol.labels, prm, pol.ncls, d, pol.kc)?;
+        let (_, cv) = wire::verify_release_d(pr, lp, &blob, ctx, roots, &pol.x, &pol.labels, prm, pol.ncls, d, pol.kc, pend)?;
         verify_secs = tv.elapsed().as_secs_f64();
         if cv != c {
             return Err(format!("release: the bundle's count {cv} is not the opened {c}"));
         }
     }
     Ok(ReleaseOut { c, blob, triples: nrt, mpc_secs, prove_secs, verify_secs, sent })
+}
+
+/// A halted run's closing proof (cut E), one custodian's side.
+pub struct CloseOut {
+    /// wire::encode_close: every custodian holds the same bytes; Ledger::close accepts them
+    pub blob: Vec<u8>,
+    pub secs: f64,
+    /// field elements this party sent during the proof
+    pub sent: u64,
+}
+
+/// The closing proof of the ledger head over any transport: ctx = (model, epoch, head step), head = this party's
+/// carry (W1, W2 and its carries c1p, c2p), pend = the ledger replica's pending claims (Ledger.pending). No MPC
+/// product and no tape: the head's W are opened at the last step's points against the carries.
+#[allow(clippy::too_many_arguments)]
+pub fn close_party(
+    pr: &Profile,
+    lp: &LigParams,
+    i: usize,
+    n: usize,
+    net: &mut dyn Net,
+    ctx: &Ctx,
+    mut head: BTreeMap<String, PcsParty>,
+    pend: &crate::defer::Pending,
+    d: usize,
+    det: &Det,
+) -> Result<CloseOut, String> {
+    if !pr.defer {
+        return Err("a closing proof exists only under DEFER".into());
+    }
+    if net.me() != i || net.n() != n {
+        return Err("transport is for another party or committee size".into());
+    }
+    let t0 = std::time::Instant::now();
+    let sent0 = net.sent();
+    let dfr = carry_in(&mut head, Some(pend))?.unwrap();
+    let p = crate::defer::prove_close(pr, lp, i, n, net, ctx, &head, &dfr, det)?;
+    let blob = wire::encode_close(pr, ctx, d, n, &p);
+    Ok(CloseOut { blob, secs: t0.elapsed().as_secs_f64(), sent: net.sent() - sent0 })
+}
+
+/// close_party for the deployed run: darkstep's net (tag PROOF), secret coins. The caller then calls
+/// Ledger::close(lp, &out.blob) on its replica (every custodian accepts the same bytes).
+#[cfg(feature = "tcp")]
+#[allow(clippy::too_many_arguments)]
+pub fn close_custodian(
+    pr: &Profile,
+    lp: &LigParams,
+    net: &darkstep::net::Net,
+    i: usize,
+    n: usize,
+    ctx: &Ctx,
+    head: BTreeMap<String, PcsParty>,
+    pend: &crate::defer::Pending,
+    d: usize,
+) -> Result<CloseOut, String> {
+    close_party(pr, lp, i, n, &mut TcpRef(net), ctx, head, pend, d, &Det::off())
 }
 
 /// The gen 6 release policy (train lane, train_eval.py): the first `m` official test images (t10k 0..m-1, public, with
