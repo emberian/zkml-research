@@ -324,6 +324,9 @@ class Engine:
             borrow = term if borrow is None else self.add(borrow, term)
             prefix = eq[i] if prefix is None else self.mul(prefix, eq[i])
         q = (c >> s) - (1 << (K - s))
+        flip_sk = self.cheat.get("borrow_flip_sk")
+        if flip_sk == (s, K) and not self.audit:
+            self.cheat = dict(self.cheat, borrow_flip=k_tr, borrow_flip_sk=None)   # the first truncation of that class
         if self.cheat.get("borrow_flip") == k_tr and not self.audit:
             # TEST: a colluding custodian set outputs q - rhi - (1 - borrow), MAC-consistently (a wrong low-bit comparison)
             return self.lin([(-1, rhi), (1, borrow)], (q - 1) % p)

@@ -269,6 +269,8 @@ pub struct Rec<'t> {
     pub range_rows: Vec<RangeRow>,
     /// (name, index) of truncations whose PUBLIC c' already lies outside [0, 2^L)
     pub range_fail: Vec<(&'static str, usize)>,
+    /// XT: the public transcript position of the first truncation opening in the wrap zone (c < 2^(K+1))
+    pub xt_zone: Option<usize>,
     /// atoms of the program (before the proof-only range rows)
     pub n_step_atoms: Option<usize>,
     /// prm.lb: per lookup, whether it has a g1 column (the step's) or only h (the release's)
@@ -334,6 +336,7 @@ impl Rec<'static> {
             ranges: Vec::new(),
             range_rows: Vec::new(),
             range_fail: Vec::new(),
+            xt_zone: None,
             n_step_atoms: None,
             lb_req: Vec::new(),
             lb_rows: Vec::new(),
@@ -343,6 +346,15 @@ impl Rec<'static> {
 }
 
 impl<'t> Rec<'t> {
+    /// XT (notes/dark-learning-gen6/xtrunc.md): Err naming the first truncation opening in the wrap zone; a step or
+    /// release with one must have been redone, so the verifier and the custodians refuse it.
+    pub fn xt_refusal(&self) -> Result<(), String> {
+        match self.xt_zone {
+            Some(pos) => Err(format!("XT: truncation opening in the wrap zone (c < 2^(K+1), public entry {pos})")),
+            None => Ok(()),
+        }
+    }
+
     /// cosnark_gates.append_range: the borrow-chain rows of every checked truncation, after the program's atoms.
     pub fn append_range(&mut self) {
         self.n_step_atoms = Some(self.tags.len());
@@ -634,9 +646,10 @@ impl<'t> Rec<'t> {
         let mut fo = x.terms.clone();
         fo.push((Atom::Prep(r), 1));
         let c = self.open(Form { terms: fo, c: field::add(x.c, 1u64 << k) }, Phase::Trunc)?;
-        if self.prm.xt && c < 1u64 << (k + 1) {
-            // XT: the custodians must have redone the step (a wrap is possible only here); refused by name
-            return Err(Short::Program("XT: truncation opening in the wrap zone (c < 2^(K+1), public)"));
+        if self.prm.xt && c < 1u64 << (k + 1) && self.xt_zone.is_none() {
+            // XT: the custodians must have redone the step (a wrap is possible only here); the verifier refuses by
+            // name (xt_refusal). Recorded, not an Err: the count replays run on all-zero transcripts
+            self.xt_zone = Some(self.tpos - 1);
         }
         if let Some((name, a, b)) = rc {
             let kidx = self.ranges.iter().filter(|r| r.name == name).count();
@@ -759,6 +772,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         ranges: Vec::new(),
         range_rows: Vec::new(),
         range_fail: Vec::new(),
+        xt_zone: None,
         n_step_atoms: None,
         lb_req: Vec::new(),
         lb_rows: Vec::new(),
@@ -870,6 +884,7 @@ pub fn replay_release<'t>(
         ranges: Vec::new(),
         range_rows: Vec::new(),
         range_fail: Vec::new(),
+        xt_zone: None,
         n_step_atoms: None,
         lb_req: Vec::new(),
         lb_rows: Vec::new(),

@@ -704,6 +704,7 @@ fn verify_release_inner(
     if rec.tpos != public.len() {
         return Err("parse: public transcript longer than the release program".into());
     }
+    rec.xt_refusal().map_err(|e| format!("release: {e}"))?;
     let rel = (|| -> PR<_> {
         let p = read_middle_io_d(&mut r, pr, n, d, rec.n_prep(), rec.had.len(), false, rec.io.as_ref(), dfr.is_some())?;
         if r.o != r.d.len() {
@@ -867,6 +868,7 @@ fn verify_inner(
     if rec.tpos != public.len() {
         return Err("parse: public transcript longer than the step program".into());
     }
+    rec.xt_refusal().map_err(|e| format!("middle: {e}"))?;
     let tail = (|| -> PR<_> {
         let middle = read_middle(&mut r, pr, n, d, rec.n_prep(), rec.had.len(), bind)?;
         let sig = if bind { Some(r.take(owner::sig_len(pr.owner_h))?.to_vec()) } else { None };
