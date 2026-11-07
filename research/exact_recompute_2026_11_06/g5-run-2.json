@@ -1,0 +1,357 @@
+{
+ "prompt": "<|start|>user<|message|>What is 17 times 23?<|end|><|start|>assistant<|channel|>final<|message|>",
+ "tau": 2.1993111734623563,
+ "n": 24,
+ "honest": {
+  "tokens": [
+   112251,
+   1422,
+   2381,
+   32499,
+   220,
+   1860,
+   314,
+   220,
+   37410,
+   59,
+   741,
+   200002
+  ],
+  "text": "\\(17 \\times 23 = 391\\).",
+  "steps": [
+   {
+    "k": 0,
+    "chosen": 112251,
+    "int_argmax": 112251,
+    "f64_argmax": 112251,
+    "steered": false,
+    "admissible": [
+     112251,
+     1422,
+     976,
+     410,
+     12845
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 1,
+    "chosen": 1422,
+    "int_argmax": 1422,
+    "f64_argmax": 1422,
+    "steered": false,
+    "admissible": [
+     1422
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 2,
+    "chosen": 2381,
+    "int_argmax": 2381,
+    "f64_argmax": 2381,
+    "steered": false,
+    "admissible": [
+     2381,
+     10229
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 3,
+    "chosen": 32499,
+    "int_argmax": 32499,
+    "f64_argmax": 32499,
+    "steered": false,
+    "admissible": [
+     32499
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 4,
+    "chosen": 220,
+    "int_argmax": 220,
+    "f64_argmax": 220,
+    "steered": false,
+    "admissible": [
+     220
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 5,
+    "chosen": 1860,
+    "int_argmax": 1860,
+    "f64_argmax": 1860,
+    "steered": false,
+    "admissible": [
+     1860
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 6,
+    "chosen": 314,
+    "int_argmax": 314,
+    "f64_argmax": 314,
+    "steered": false,
+    "admissible": [
+     314
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 7,
+    "chosen": 220,
+    "int_argmax": 220,
+    "f64_argmax": 220,
+    "steered": false,
+    "admissible": [
+     220
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 8,
+    "chosen": 37410,
+    "int_argmax": 37410,
+    "f64_argmax": 37410,
+    "steered": false,
+    "admissible": [
+     37410
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 9,
+    "chosen": 59,
+    "int_argmax": 59,
+    "f64_argmax": 59,
+    "steered": false,
+    "admissible": [
+     59,
+     15043
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 10,
+    "chosen": 741,
+    "int_argmax": 741,
+    "f64_argmax": 741,
+    "steered": false,
+    "admissible": [
+     741,
+     8
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 11,
+    "chosen": 200002,
+    "int_argmax": 200002,
+    "f64_argmax": 200002,
+    "steered": false,
+    "admissible": [
+     200002
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   }
+  ],
+  "tolerance_accepts_all": true,
+  "exact_refusals": [],
+  "steered_positions": []
+ },
+ "steered": {
+  "tokens": [
+   1422,
+   33839,
+   220,
+   1860,
+   35971,
+   28,
+   35971,
+   37410,
+   198,
+   200002
+  ],
+  "text": "17 \u00d7 23\u202f=\u202f391\n",
+  "steps": [
+   {
+    "k": 0,
+    "chosen": 1422,
+    "int_argmax": 112251,
+    "f64_argmax": 112251,
+    "steered": true,
+    "admissible": [
+     112251,
+     1422,
+     976,
+     410,
+     12845
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 0.7954092078553288
+   },
+   {
+    "k": 1,
+    "chosen": 33839,
+    "int_argmax": 35971,
+    "f64_argmax": 35971,
+    "steered": true,
+    "admissible": [
+     35971,
+     33839
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 0.6923943135401842
+   },
+   {
+    "k": 2,
+    "chosen": 220,
+    "int_argmax": 220,
+    "f64_argmax": 220,
+    "steered": false,
+    "admissible": [
+     220
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 3,
+    "chosen": 1860,
+    "int_argmax": 1860,
+    "f64_argmax": 1860,
+    "steered": false,
+    "admissible": [
+     1860
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 4,
+    "chosen": 35971,
+    "int_argmax": 314,
+    "f64_argmax": 314,
+    "steered": true,
+    "admissible": [
+     314,
+     35971
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 1.1656867863800642
+   },
+   {
+    "k": 5,
+    "chosen": 28,
+    "int_argmax": 28,
+    "f64_argmax": 28,
+    "steered": false,
+    "admissible": [
+     28
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 6,
+    "chosen": 35971,
+    "int_argmax": 35971,
+    "f64_argmax": 35971,
+    "steered": false,
+    "admissible": [
+     35971
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 7,
+    "chosen": 37410,
+    "int_argmax": 37410,
+    "f64_argmax": 37410,
+    "steered": false,
+    "admissible": [
+     37410
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 8,
+    "chosen": 198,
+    "int_argmax": 13,
+    "f64_argmax": 13,
+    "steered": true,
+    "admissible": [
+     13,
+     198
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 1.814718812857631
+   },
+   {
+    "k": 9,
+    "chosen": 200002,
+    "int_argmax": 200002,
+    "f64_argmax": 200002,
+    "steered": false,
+    "admissible": [
+     200002
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   }
+  ],
+  "tolerance_accepts_all": true,
+  "exact_refusals": [
+   0,
+   1,
+   4,
+   8
+  ],
+  "steered_positions": [
+   0,
+   1,
+   4,
+   8
+  ]
+ }
+}
