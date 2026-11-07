@@ -4,8 +4,12 @@
 # Run from an unpacked bundle (tower256-bundle.sh makes it from the minidregg lane branch
 # lane/accel-tower256-gpu): tower256.sh, common.sh, cuda/, lean/, prover/ (standalone crate) or bin/.
 #
-#   bash tower256.sh [--shrink] [--offline] [--rust-bin PATH] [--sku H100] [--any-gpu]
+#   bash tower256.sh [--shrink] [--e2e] [--offline] [--rust-bin PATH] [--sku H100] [--any-gpu]
 #
+# --e2e      the whole prover end to end on batches of leaves (TOWER256-SCHEDULE.md): every receipt
+#            byte-identical to the CPU prover's, per-proof wall on the GPU (one and two streams) and on
+#            the CPU (one proof per core). Shrunk (T4): ell 18 x 64, 20 x 16, 22 x 4 leaves; full
+#            (H100): ell 18 x 256, 20 x 64, 22 x 16.
 # --shrink   the T4 dry-run parameters (what ran on Kaggle): ell 10..20, batch 64 words at ell 14.
 # --offline  no venv, no pip, no rustup: system python3 must have cupy + numpy; needs --rust-bin.
 # Full run (default): ell 14..22, batch 512 words at ell 14 and 64 at ell 18; CPU reference and
@@ -20,9 +24,10 @@
 HERE=$(cd "$(dirname "$0")" && pwd)
 . "$HERE/common.sh"
 accel_init tower256 "$@"
-OFFLINE=0; RUST_BIN=""; SKU=H100
+OFFLINE=0; RUST_BIN=""; SKU=H100; E2E=0
 while (( $# )); do
   case $1 in
+    --e2e) E2E=1;;
     --offline) OFFLINE=1;;
     --rust-bin) RUST_BIN=$2; shift;;
     --sku) SKU=$2; shift;;
@@ -33,6 +38,14 @@ if (( SHRINK )); then
   ELLS=10,12,14,16,18,20; BATCH=64; BATCH_ELL=14; BATCH2=0; REPS=3; [[ $SKU == H100 ]] && SKU=T4
 else
   ELLS=14,16,18,20,22; BATCH=512; BATCH_ELL=14; BATCH2=64; REPS=3
+fi
+if (( E2E )); then
+  if (( SHRINK )); then E2E_ELLS=18,20,22; E2E_B=64,16,4; else E2E_ELLS=18,20,22; E2E_B=256,64,16; fi
+  if [[ -n ${TOWER256_E2E:-} ]]; then   # test hook: ell:batch,... (off-GPU rehearsals at small ell)
+    E2E_ELLS=$(tr , '\n' <<<"$TOWER256_E2E" | cut -d: -f1 | paste -sd, -)
+    E2E_B=$(tr , '\n' <<<"$TOWER256_E2E" | cut -d: -f2 | paste -sd, -)
+  fi
+  E2E_SPEC=$(paste -d: <(tr , '\n' <<<"$E2E_ELLS") <(tr , '\n' <<<"$E2E_B") | paste -sd, -)
 fi
 accel_hw_check "$SKU"
 cd "$OUT"
@@ -70,7 +83,13 @@ NPROC=$(nproc)
 mkdir -p "$OUT/data"
 cp "$HERE/lean/tower256_fri_vectors.json" "$OUT/data/"
 echo "== CPU reference and timings"
-accel_run 3000 600 bash -c "'$RUST_BIN' --ell 8,10 --threads 1 --reps 1 --emit '$OUT/data' --reference-max-ell 10 > '$OUT/rust_reference.jsonl' && '$RUST_BIN' --ell $ELLS --threads 1,$NPROC --reps 2 --emit '$OUT/data' > '$OUT/rust_cpu.jsonl'"
+if (( E2E )); then
+  # Batch receipts (expect_e2e_ell*.json) with the CPU's best batch schedule (one proof per core),
+  # and the single-proof CPU timing at ell 20 for the direct comparison.
+  accel_run 3000 600 bash -c "'$RUST_BIN' --ell 8,10 --threads 1 --reps 1 --emit '$OUT/data' --reference-max-ell 10 > '$OUT/rust_reference.jsonl' && '$RUST_BIN' --ell 20 --threads 1,$NPROC --reps 1 > '$OUT/rust_cpu.jsonl' && '$RUST_BIN' --ell $E2E_ELLS --e2e $E2E_B --threads 1,$NPROC --reps 1 --emit '$OUT/data' >> '$OUT/rust_cpu.jsonl'"
+else
+  accel_run 3000 600 bash -c "'$RUST_BIN' --ell 8,10 --threads 1 --reps 1 --emit '$OUT/data' --reference-max-ell 10 > '$OUT/rust_reference.jsonl' && '$RUST_BIN' --ell $ELLS --threads 1,$NPROC --reps 2 --emit '$OUT/data' > '$OUT/rust_cpu.jsonl'"
+fi
 cat "$OUT/rust_reference.jsonl" "$OUT/rust_cpu.jsonl"
 
 # GPU build.
@@ -89,9 +108,14 @@ else
 fi
 
 echo "== GPU"
-accel_run 3000 600 "$PY" "$HERE/cuda/tower256_gpu.py" --data "$OUT/data" --ells "$ELLS" --reps $REPS \
-  --batch $BATCH --batch-ell $BATCH_ELL "${GPU_SRC[@]}" --out "$OUT/results.json" ${TOWER256_GPU_ARGS:-}
-if (( BATCH2 )); then
+if (( E2E )); then
+  accel_run 3000 600 "$PY" "$HERE/cuda/tower256_gpu.py" --data "$OUT/data" --ells "" --reps 2 --skip-rates \
+    --e2e "$E2E_SPEC" --streams 1,2 "${GPU_SRC[@]}" --out "$OUT/results.json" ${TOWER256_GPU_ARGS:-}
+else
+  accel_run 3000 600 "$PY" "$HERE/cuda/tower256_gpu.py" --data "$OUT/data" --ells "$ELLS" --reps $REPS \
+    --batch $BATCH --batch-ell $BATCH_ELL "${GPU_SRC[@]}" --out "$OUT/results.json" ${TOWER256_GPU_ARGS:-}
+fi
+if (( BATCH2 && ! E2E )); then
   accel_run 3000 600 "$PY" "$HERE/cuda/tower256_gpu.py" --data "$OUT/data" --ells "" --reps $REPS \
     --batch $BATCH2 --batch-ell 18 "${GPU_SRC[@]}" --out "$OUT/results_batch18.json"
 fi
@@ -120,6 +144,17 @@ res["ptxas"] = ptx if p.exists() else "nvrtc"
 res["box"] = json.loads((out / "box.json").read_text())
 res["cpu_model"] = next((l.split(":", 1)[1].strip() for l in open("/proc/cpuinfo") if l.startswith("model name")), "?")
 res["nproc"] = len([l for l in open("/proc/cpuinfo") if l.startswith("processor")])
+cpu_e2e = {(r["ell"], r["threads"]): r for r in res["rust_cpu"] if r.get("kind") == "e2e_cpu"}
+cpu_one = {(r["ell"], r["threads"]): r for r in res["rust_cpu"] if r.get("kind") == "prove"}
+res["e2e_summary"] = []
+for row in res.get("e2e", []):
+    ell, B = row["ell"], row["batch"]
+    best_cpu = min((v["per_proof_ms"] for (e, t), v in cpu_e2e.items() if e == ell), default=None)
+    one = min((v["total_ms"] for (e, t), v in cpu_one.items() if e == ell), default=None)
+    res["e2e_summary"].append({"ell": ell, "batch": B, "gpu_per_proof_ms": row["best_per_proof_ms"],
+        "cpu_per_proof_ms_all_cores": best_cpu, "gpu_speedup_vs_cpu_batch": best_cpu / row["best_per_proof_ms"] if best_cpu else None,
+        "cpu_single_proof_ms": one, "receipts_identical": row["receipts_identical"]})
+print("E2E_SUMMARY", json.dumps(res["e2e_summary"]))
 refs = [r for r in res["rust_reference"] if r.get("kind") == "reference"]
 ref_ok = bool(refs) and all(r.get("identical") for r in refs)     # no reference records is a failure, not a pass
 res["cpu_reference_identical"] = ref_ok

@@ -256,3 +256,12 @@ planes in shared memory (padded to stride 33 against bank conflicts), and the ev
 recombination trees are spread across lanes. Estimate: about 1,700 lane-ops per product,
 around 7-10x the tables, if shared-memory traffic hides at moderate occupancy. It can be
 measured on the free T4.
+
+## 9. End to end on the GPU (2026-11-07)
+
+The whole leaf prover runs on the device, batched over leaves, and every receipt is
+byte-identical to the CPU prover's. Its schedule, prediction and measurement are in
+TOWER256-SCHEDULE.md (`accel-tower-e2e-01`).
+- **Per proof on a T4:** 16.9 ms at ell 18, 67.0 ms at ell 20, 303.5 ms at ell 22.
+- **Same-box CPU:** 33-36x slower, at its best batch schedule.
+- **Model:** within 1.02-1.13x of measured, at the session's multiply rate.
