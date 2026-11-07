@@ -467,7 +467,26 @@ impl Prove {
         let pf = st.pf.clone();
         // the boxed state is taken apart inside the old role's setup frame, on the old role's own (scrubbed) stack;
         // the HE side and the mesh reach the new role over darkhand's channel
-        let (setup, prx) = darkhand::serve::self_setup(st, carry, vec![], vec![]);
+        // what the old role erases: the refused step's tape and owner message (old key), and the state files under
+        // the old key (rewritten under the new one right after); what its disk scan covers besides
+        let mut files: Vec<PathBuf> = vec![dir.join(format!("ckpt_P{i}.bin")), dir.join(format!("carry_P{i}.bin"))];
+        let mut scan: Vec<PathBuf> = vec![dir.to_path_buf()];
+        for f in ["--tapes", "--owner-msgs"] {
+            if let Some(p) = flag(&args, f) {
+                let q = PathBuf::from(serve::step_path(&args, &p, k));
+                if let Some(c) = q.parent() {
+                    scan.push(c.to_path_buf());
+                }
+                files.push(q);
+            }
+        }
+        files.retain(|f| f.exists());
+        for (n, x) in args.iter().enumerate() {
+            if x == "--scan-extra" {
+                scan.push(PathBuf::from(&args[n + 1]));
+            }
+        }
+        let (setup, prx) = darkhand::serve::self_setup(st, carry, files, scan);
         let (orep, nc, he) = std::thread::scope(|s| {
             let (c6o, c6n, a6o, a6n, ido) = (certs6.clone(), certs6.clone(), addrs6.clone(), addrs6.clone(), id);
             let common = &common;
