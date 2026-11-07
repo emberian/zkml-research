@@ -708,6 +708,27 @@ fn tape_pattern(args: &[String], k: usize) -> Option<String> {
     flag(args, "--tapes").map(|p| step_path(args, &p, k))
 }
 
+/// Step k's preprocessing is complete on this box: its tape (and owner message) exist and, for a tape inside a prep
+/// chunk (`CHUNK/step-J/tape_I.bin`), the chunk's `chunk-P<I>.json`, which darkprep writes last, exists too.
+fn step_ready(args: &[String], k: usize, i: usize) -> bool {
+    let Some(t) = tape_pattern(args, k) else { return true };
+    let t = std::path::PathBuf::from(t);
+    if !t.exists() {
+        return false;
+    }
+    if let Some(m) = flag(args, "--owner-msgs") {
+        if !std::path::Path::new(&step_path(args, &m, k)).exists() {
+            return false;
+        }
+    }
+    match t.parent() {
+        Some(sd) if sd.file_name().is_some_and(|n| n.to_string_lossy().starts_with("step-")) => {
+            sd.parent().is_some_and(|c| c.join(format!("chunk-P{i}.json")).exists())
+        }
+        _ => true,
+    }
+}
+
 /// The step loop from `st.step` on a custodian that holds its keys and shares (a fresh run, a resumed one, or a new
 /// committee's seat after a handover): dial the owner, run `--steps K` steps with the hook after each, write the
 /// summary, close the owner link, then hand the state to the hook's `finish` or shut the mesh down.
@@ -732,16 +753,32 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
     };
     let first = st.step;
     let pause = flag(args, "--pause-utc");
+    let tape_wait: Option<u64> = flag(args, "--tape-wait").map(|x| x.parse().expect("--tape-wait SECONDS"));
+    let (mut waited_s, mut waited_total_s) = (0.0f64, 0.0f64);
     let mut end = End { code: 0, refused: None };
     while st.step < first + steps {
         let k = st.step;
-        // custodian 0 decides whether to pause here; the three agree on CTRL
-        let mine = [if i == 0 { pause.as_deref().map(in_window).unwrap_or(false) as u64 } else { 0 }];
+        // custodian 0 decides whether to pause here; every custodian says whether its step-k preprocessing is
+        // complete on its box (with --tape-wait); the three agree on CTRL, and wait together for a late chunk
+        let not_ready = k > first && tape_wait.is_some() && !step_ready(args, k, i);
+        let mine = [if i == 0 { pause.as_deref().map(in_window).unwrap_or(false) as u64 } else { 0 }, not_ready as u64];
         let votes = st.pt.net.exchange(crate::net::CTRL, &mine);
         if votes[0][0] == 1 {
             end.code = 3;
             break;
         }
+        if votes.iter().any(|v| v[1] == 1) {
+            if waited_s >= tape_wait.unwrap_or(0) as f64 {
+                eprintln!("step {k}: preprocessing not ready at {:?} after {waited_s:.0} s (--tape-wait)", votes.iter().map(|v| v[1]).collect::<Vec<_>>());
+                end.code = 1;
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_secs(20));
+            waited_s += 20.0;
+            waited_total_s += 20.0;
+            continue;
+        }
+        waited_s = 0.0;
         if k > first {
             if let Some(f) = tape_pattern(args, k) {
                 if let Err(e) = read_tape_once(&f).and_then(|t| st.load_tape(t)) {
@@ -819,7 +856,7 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
     }
     let (cpu, rss) = proc_usage();
     let summary = json!({"party": i, "first_step": first, "next_step": st.step, "exit": end.code, "paused": end.code == 3,
-        "stopped_for_hook": end.code == 4,
+        "stopped_for_hook": end.code == 4, "tape_wait_seconds": waited_total_s,
         "connect_seconds": connect_s, "setup_seconds": setup_s, "wall_seconds": t_start.elapsed().as_secs_f64(),
         "cpu_seconds": cpu, "peak_rss_kb": rss, "ceremony_seconds": st.he.gate.as_ref().map(|g| g.ceremony_s),
         "cert_sha256": (0..3).map(|j| crate::tls::cert_fingerprint(&certs[j])).collect::<Vec<_>>()});

@@ -133,7 +133,13 @@ struct Prove {
     next: Option<(u64, u64)>,
     /// the step index the run ends at (serve's --steps counted from where this process started)
     end_step: usize,
+    /// a handover the loop ended for (rotation or self-handover), run from main once serve has returned: its frames
+    /// then sit on a scrubbed stack below main's, which holds boxes only (see `run_deferred`)
+    deferred: Option<(Box<CustodianState>, End, PathBuf)>,
 }
+
+/// finish's code for "the handover is deferred to main" (never an exit code)
+const DEFERRED: i32 = -100;
 
 /// --profile NAME (darkproof::Profile::by_name; default "ledger"): the proof profile; it fixes the proof section's
 /// size, so it must be the one the tapes' proof sections were made for (e.g. "ledger-sq" for chunks made before
@@ -465,9 +471,8 @@ impl Prove {
         }
         st.w = Some(w);
         st.step = ck_step;
-        // the refused step's dead frames below this one used the alpha share (its MAC check, its openings): scrub
-        // them on this thread (the roles run on their own threads, and old_side scrubs only its own)
-        side::scrub_stack(4096);
+        // the refused step's dead frames (its MAC check, its openings used the alpha share) were zeroed by
+        // run_deferred's scrub_stack_all before this frame; the roles run on their own threads
         let tlsdir = PathBuf::from(flag(&args, "--tls").unwrap());
         let (id, certs) = serve::identity(&tlsdir, i);
         let timeout = timeout_of(&args);
@@ -659,6 +664,33 @@ impl StepHook for Prove {
             st.pt.net.shutdown();
             return Ok(1);
         }
+        let selfh = end.refused.is_some() && flag(&self.args, "--self-handover-tape").is_some();
+        if (end.code == 4 || selfh) && self.deferred.is_none() {
+            self.deferred = Some((st, end.clone(), dir.to_path_buf()));
+            return Ok(DEFERRED);
+        }
+        self.finish_release(st, end, dir)
+    }
+}
+
+impl Prove {
+    /// The handovers finish deferred, from main: every frame of the step loop has returned, the whole main-thread
+    /// stack below this frame is zeroed (the loop's dead frames held tapes and the alpha share by value), and only
+    /// then do rotate_out / self_handover and darkhand's old side run, on that zeroed stack. A self-handover goes on
+    /// serving (the redo); its own end may defer again (a rotation later in the run).
+    #[inline(never)]
+    fn run_deferred(&mut self, code: i32) -> i32 {
+        let mut code = code;
+        while code == DEFERRED {
+            let Some((st, end, dir)) = self.deferred.take() else { return 1 };
+            side::scrub_stack_all();
+            code = self.finish_deferred(st, &end, &dir);
+        }
+        code
+    }
+
+    fn finish_deferred(&mut self, st: Box<CustodianState>, end: &End, dir: &Path) -> i32 {
+        let i = st.i;
         if end.code == 4 {
             let r = self.rotate_out(st, dir);
             let (code, rep) = match r {
@@ -667,11 +699,11 @@ impl StepHook for Prove {
             };
             std::fs::write(dir.join(format!("handover_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
             println!("{}", json!({"party": i, "handover": if code == 0 { "done" } else { "failed" }}));
-            return Ok(code);
+            return code;
         }
         if let (Some((k, _)), true) = (&end.refused, flag(&self.args, "--self-handover-tape").is_some()) {
             let k = *k;
-            return Ok(match self.self_handover(st, k, dir) {
+            return match self.self_handover(st, k, dir) {
                 Ok((st2, rep)) => {
                     std::fs::write(dir.join(format!("self_handover_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
                     println!("{}", json!({"party": i, "self_handover": "done", "redo_step": k}));
@@ -684,8 +716,16 @@ impl StepHook for Prove {
                     eprintln!("self-handover: {e}");
                     1
                 }
-            });
+            };
         }
+        st.pt.net.shutdown();
+        1
+    }
+}
+
+impl Prove {
+    fn finish_release(&mut self, st: Box<CustodianState>, end: &End, dir: &Path) -> Result<i32, Box<CustodianState>> {
+        let i = st.i;
         if end.code == 0 && self.args.iter().any(|a| a == "--release") {
             let mut st = st;
             let r = self.release(&mut st, dir);
@@ -809,6 +849,7 @@ fn prove_hook(args: &[String], i: usize, join: bool) -> Prove {
         worker: None,
         next: None,
         end_step: start + steps,
+        deferred: None,
     }
 }
 
@@ -884,7 +925,8 @@ fn join_main(args: &[String]) -> i32 {
     match run() {
         Ok(st) => {
             let setup_s = t0.elapsed().as_secs_f64();
-            serve::serve_state(args, &mut hook, st, t0, 0.0, setup_s)
+            let code = serve::serve_state(args, &mut hook, st, t0, 0.0, setup_s);
+            hook.run_deferred(code)
         }
         Err(e) => {
             eprintln!("join: {e}");
@@ -1049,7 +1091,8 @@ fn main() {
                 std::process::exit(2);
             }
             let mut hook = prove_hook(&args, i, false);
-            std::process::exit(serve::serve_main_with(&args, &mut hook, genesis_of(&args)));
+            let code = serve::serve_main_with(&args, &mut hook, genesis_of(&args));
+            std::process::exit(hook.run_deferred(code));
         }
         Some("join") => {
             require_consumed_log(&args);

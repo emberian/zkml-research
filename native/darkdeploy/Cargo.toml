@@ -38,3 +38,7 @@ required-features = ["test-harness"]
 [[test]]
 name = "single_use"
 required-features = ["test-harness"]
+
+[[test]]
+name = "tape_wait"
+required-features = ["test-harness"]
