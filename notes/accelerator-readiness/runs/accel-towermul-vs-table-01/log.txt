@@ -1,0 +1,76 @@
+mma rc 0 76.1 s
+.168256.AND.POPC": 49, "IMMA.16832.S8.S8": 42, "HGMMA.64x128x16.F32": 25, "QGMMA.64x128x32.F32.E4M3.E4M3": 25, "BGMMA.64x1
+[   30.6s] compile probe_sm80.cu sm_100a rc 0 1.8s {"HMMA.16816.F32": 242, "F2FP.F16.E4M3.UNPACK": 24, "CALL.REL.NOINC": 498, "IMMA.16832.U8.U8": 34, "IMMA.16832.S8.S8": 234}
+[   32.9s] compile probe_sm80.cu sm_103a rc 0 1.7s {"HMMA.16816.F32": 242, "F2FP.F16.E4M3.UNPACK": 24, "CALL.REL.NOINC": 498, "IMMA.16832.U8.U8": 34, "IMMA.16832.S8.S8": 234}
+[   34.6s] compile gemm_probe.cu sm_75 rc 0 1.3s {}
+[   36.2s] compile gemm_probe.cu sm_80 rc 0 1.3s {}
+[   37.8s] compile gemm_probe.cu sm_89 rc 0 1.2s {}
+[   39.7s] compile gemm_probe.cu sm_90a rc 0 1.3s {}
+[   41.4s] compile gemm_probe.cu sm_100a rc 0 1.3s {}
+[   43.1s] compile gemm_probe.cu sm_103a rc 0 1.3s {}
+[   44.4s] compile rotation_probe.cu sm_75 rc 0 0.9s {"HMMA.1688.F32": 124}
+[   45.7s] compile rotation_probe.cu sm_80 rc 0 0.9s {"HMMA.1688.F32": 124, "CALL.REL.NOINC": 1}
+[   47.0s] compile rotation_probe.cu sm_89 rc 0 0.9s {"HMMA.1688.F32": 124, "CALL.REL.NOINC": 1}
+[   48.5s] compile rotation_probe.cu sm_90a rc 0 0.9s {"HMMA.1688.F32": 124}
+[   50.1s] compile rotation_probe.cu sm_100a rc 0 1.1s {"CALL.REL.NOINC": 1, "HMMA.1688.F32": 94}
+[   51.5s] compile rotation_probe.cu sm_103a rc 0 1.0s {"CALL.REL.NOINC": 1, "HMMA.1688.F32": 94}
+[   54.3s] build probe_sm75.cu sm_75 rc 0 2.8s
+[   58.9s] build gemm_probe.cu sm_75 rc 0 4.7s
+[   61.7s] build rotation_probe.cu sm_75 rc 0 2.8s
+[   61.8s] == section towermul
+[   66.0s] PASS towermul.f16.r0 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 4096}
+[   66.0s] towermul f16 35.245 ns/element (gemm 9.312)
+[   66.5s] PASS towermul.f16.r1 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 256}
+[   67.1s] PASS towermul.f16.r2 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 256}
+[   67.7s] PASS towermul.f16.r3 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 256}
+[   68.4s] PASS towermul.i8.r0 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 4096}
+[   68.4s] towermul i8 21.384 ns/element (gemm 6.467)
+[   68.9s] PASS towermul.i8.r1 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 256}
+[   69.4s] PASS towermul.i8.r2 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 256}
+[   69.9s] PASS towermul.i8.r3 {"rust_mismatches": 0, "xor_mismatches": 0, "rows": 256}
+[   69.9s] DONE checks 8 failed 0 errors []
+results /tmp/accel/tmul/m/out/results.json checks 8 failed 0 errors []
+done in 76 s; results /tmp/accel/tmul/m/out/results.json
+
+tower rc 0 155.1 s
+s': 787347, 'device_keccak_f': 262099}
+prove {'ell': 18, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 858610, 'best_s': 0.21727307600002632, 'phases_s': {'encode': 0.015378510999994432, 'merkle': 0.005520791999856556, 'folds': 0.0034833790002153364, 'openings': 0.1703469260000361, 'other': 0.01456968199977382, 'upload': 0.007575328000029913}, 'request_gen_s': 0.23229695700001685, 'device_mults': 3540123, 'device_keccak_f': 1048529}
+prove {'ell': 20, 'request_identical': True, 'receipt_identical': True, 'receipt_len': 1059985, 'best_s': 0.33354086899998947, 'phases_s': {'encode': 0.07463647499997705, 'merkle': 0.011663526999939222, 'folds': 0.006198322000045664, 'openings': 0.20805035900002622, 'other': 0.01613027400003375, 'upload': 0.01640572799999518}, 'request_gen_s': 0.9509366980000209, 'device_mults': 15730115, 'device_keccak_f': 4194255}
+batch {'ell': 14, 'words': 64, 'best_s': 0.04293224000002738, 'encode_s': 0.03928704700001617, 'merkle_s': 0.0036451930000112043, 'per_word_ms': 0.6708162500004278, 'keccak_f_per_s': 575302322.8107686, 'roots_match_single': True}
+ALL_BIT_EXACT True
+ALL_BIT_EXACT True
+done in 155 s; results /tmp/accel/tmul/t/out/results.json
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded block-buffer v0.10.4
+  Downloaded version_check v0.9.5
+  Downloaded crypto-common v0.1.7
+  Downloaded generic-array v0.14.7
+  Downloaded keccak v0.1.6
+  Downloaded typenum v1.20.1
+  Downloaded digest v0.10.7
+  Downloaded sha3 v0.10.9
+   Compiling version_check v0.9.5
+   Compiling typenum v1.20.1
+   Compiling keccak v0.1.6
+   Compiling generic-array v0.14.7
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling sha3 v0.10.9
+   Compiling minidregg-prover v0.1.0 (/tmp/accel/tmul/t/tower256/prover)
+    Finished `release` profile [optimized] target(s) in 6.26s
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+
+DONE ok True
