@@ -103,6 +103,20 @@ struct Worker {
     inflight: bool,
 }
 
+/// darkhand's NewCustodian without its key (the key went back into the seat's He).
+struct Joined {
+    #[allow(dead_code)]
+    j: usize,
+    #[allow(dead_code)]
+    keys: Option<(darkhand::side::HeSecret, dzkpopk::ceremony::Ceremony)>,
+    party: darkstep::party::Party,
+    w: BTreeMap<String, Vec<darkstep::party::Sh>>,
+    carry: Carry,
+    proof: Vec<u8>,
+    new_roots: BTreeMap<String, Vec<[u8; 32]>>,
+    report: Value,
+}
+
 struct Prove {
     me: usize,
     on: bool,
@@ -345,7 +359,7 @@ impl Prove {
     }
 
     /// Old seat of a rotation: the six-party mesh, the ledger to the new seats, darkhand's old side; then exit.
-    fn rotate_out(&mut self, st: CustodianState, dir: &Path) -> Result<Value, String> {
+    fn rotate_out(&mut self, st: Box<CustodianState>, dir: &Path) -> Result<Value, String> {
         let args = self.args.clone();
         let (i, d, n, t) = (st.i, st.pf.d, st.pf.n, st.pf.t);
         let tlsdir = PathBuf::from(flag(&args, "--tls").unwrap());
@@ -400,17 +414,17 @@ impl Prove {
                 }
             }
         }
-        let OldParts { mut old, he, net3 } = darkhand::serve::old_from_serve(st, carry, files, true, Some((ct, dg)));
-        for p in scan {
-            if !old.scan_paths.contains(&p) {
-                old.scan_paths.push(p);
+        // more places of this seat's secrets on disk, e.g. its MP-SPDZ runtime dir (--scan-extra, repeatable)
+        for (n, x) in args.iter().enumerate() {
+            if x == "--scan-extra" {
+                scan.push(PathBuf::from(&args[n + 1]));
             }
         }
-        drop(he);
-        net3.shutdown();
         let timeout = timeout_of(&args);
         let listen6 = flag(&args, "--listen6");
-        let mut rep = side::old_side(&common, move || old, move || {
+        // the boxed state is taken apart inside old_side's setup frame (dead and scrubbed before the memory scan)
+        let setup = darkhand::serve::rotation_setup(st, carry, files, scan, Some((ct, dg)));
+        let mut rep = side::old_side(&common, setup, move || {
             let net6 = serve::connect_mesh(i, &addrs6, listen6, &id, &certs6, timeout).expect("six-party mesh");
             for j in 3..6 {
                 net6.send(j, darkstep::net::CTRL, lbytes.clone());
@@ -422,7 +436,7 @@ impl Prove {
     }
 
     /// Self-handover after a refused step k: see the module doc.
-    fn self_handover(&mut self, st: CustodianState, k: usize, dir: &Path) -> Result<(CustodianState, Value), String> {
+    fn self_handover(&mut self, st: Box<CustodianState>, k: usize, dir: &Path) -> Result<(Box<CustodianState>, Value), String> {
         let args = self.args.clone();
         let mut st = st;
         let (i, d, t) = (st.i, st.pf.d, st.pf.t);
@@ -451,34 +465,48 @@ impl Prove {
         let new_tape = serve::read_tape(&flag(&args, "--self-handover-tape").unwrap());
         let carry = self.c().carry.take().ok_or("no carried commitment")?;
         let pf = st.pf.clone();
-        let OldParts { old, he, net3 } = darkhand::serve::old_from_serve(st, carry, vec![], false, None);
-        let he = he.expect("a self-handover keeps the HE side");
-        let key = he.key;
-        let (orep, nc) = std::thread::scope(|s| {
+        // the boxed state is taken apart inside the old role's setup frame, on the old role's own (scrubbed) stack;
+        // the HE side and the mesh reach the new role over darkhand's channel
+        let (setup, prx) = darkhand::serve::self_setup(st, carry, vec![], vec![]);
+        let (orep, nc, he) = std::thread::scope(|s| {
             let (c6o, c6n, a6o, a6n, ido) = (certs6.clone(), certs6.clone(), addrs6.clone(), addrs6.clone(), id);
             let common = &common;
             let a = std::thread::Builder::new()
                 .stack_size(64 << 20)
-                .spawn_scoped(s, move || side::old_side(common, move || old, move || serve::connect_mesh(i, &a6o, None, &ido, &c6o, timeout).expect("six-party mesh (old role)")))
+                .spawn_scoped(s, move || side::old_side(common, setup, move || serve::connect_mesh(i, &a6o, None, &ido, &c6o, timeout).expect("six-party mesh (old role)")))
                 .unwrap();
             let b = std::thread::Builder::new()
                 .stack_size(64 << 20)
-                .spawn_scoped(s, move || {
+                .spawn_scoped(s, move || -> Result<(Joined, darkstep::he::He), String> {
+                    let (he, net3) = prx.recv().map_err(|_| "the old role ended before handing over".to_string())?;
                     let net6 = serve::connect_mesh(3 + i, &a6n, None, &id_new, &c6n, timeout)?;
-                    side::new_side(common, i, net3, net6, new_tape, epoch + 1, 0, Some(key))
+                    // the kept key goes to the new role and comes back as nc.key
+                    let nc = side::new_side(common, i, net3, net6, new_tape, epoch + 1, 0, Some(he.key))?;
+                    let side::NewCustodian { j, keys, key, party, w, carry, proof, new_roots, report } = nc;
+                    Ok((Joined { j, keys, party, w, carry, proof, new_roots, report }, darkstep::he::He { key, ..he }))
                 })
                 .unwrap();
-            (a.join().map_err(|_| "old role panicked".to_string()), b.join().map_err(|_| "new role panicked".to_string()))
+            let orep = a.join().map_err(|_| "old role panicked".to_string());
+            match b.join().map_err(|_| "new role panicked".to_string()).and_then(|r| r) {
+                Ok((nc, he)) => (orep, Ok(nc), Some(he)),
+                Err(e) => (orep, Err(e), None),
+            }
         });
         let orep = orep??;
-        let nc = nc??;
+        let nc = nc?;
         if nc.report["mac_check"] != "ok" {
             return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
         }
         save_handover_proof(&args, dir, (epoch + 1) as i64, &nc.proof)?;
+        if args.iter().any(|a| a == "--wipe-spent") {
+            if let Some(f) = flag(&args, "--self-handover-tape") {
+                serve::wipe_file(Path::new(&f)).map_err(|e| format!("{f}: {e}"))?;
+            }
+        }
         self.c().ledger.as_mut().unwrap().rotate(&names, &nc.new_roots, &nc.proof)?;
+        let mut he = he.expect("the new role's HE side");
         // a test attack (--attack, the abort test's fault) fires in one epoch only
-        let he = darkstep::he::He { key: nc.key, attack: None, ..he };
+        he.attack = None;
         let mut st2 = CustodianState::from_parts(i, pf, he, nc.party, darkhand::serve::shares_rows(&nc.w, d), k);
         let a2 = after_self_handover(&args, k, self.end_step);
         if let Some(p) = flag(&a2, "--tapes") {
@@ -571,7 +599,7 @@ impl StepHook for Prove {
         flag(&self.args, "--handover-at").map(|h| h.parse::<usize>().unwrap() == k).unwrap_or(false)
     }
 
-    fn finish(&mut self, st: CustodianState, end: &End, dir: &Path) -> Result<i32, CustodianState> {
+    fn finish(&mut self, st: Box<CustodianState>, end: &End, dir: &Path) -> Result<i32, Box<CustodianState>> {
         let i = st.i;
         // pipelined proofs: the last step's proof finishes (on its own mesh) before anything else, so that the
         // carry, the ledger replica and the checkpoint agree at every exit, a pause included
@@ -744,7 +772,7 @@ fn join_main(args: &[String]) -> i32 {
     let dir = PathBuf::from(&args[7]);
     std::fs::create_dir_all(&dir).unwrap();
     let mut hook = prove_hook(args, j, true);
-    let mut run = || -> Result<CustodianState, String> {
+    let mut run = || -> Result<Box<CustodianState>, String> {
         let after: usize = flag(args, "--after-step").ok_or("--after-step K (the old committee's last step)")?.parse().unwrap();
         let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
         let tlsdir = PathBuf::from(flag(args, "--tls").ok_or("--tls")?);
@@ -780,6 +808,12 @@ fn join_main(args: &[String]) -> i32 {
             return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
         }
         save_handover_proof(&hook.args, &dir, epoch + 1, &nc.proof)?;
+        // the handover tape is spent (its authenticated randoms now mask the reshared weights' MACs)
+        if args.iter().any(|a| a == "--wipe-spent") {
+            if let Some(f) = flag(args, "--handover-tape") {
+                serve::wipe_file(Path::new(&f)).map_err(|e| format!("{f}: {e}"))?;
+            }
+        }
         hook.c().ledger.as_mut().unwrap().rotate(&new_set, &nc.new_roots, &nc.proof)?;
         let (hs, cer) = nc.keys.ok_or("a rotation makes a fresh key")?;
         let regs: Vec<_> = (0..3).map(|x| cer.registry(x).expect("registered key")).collect();
