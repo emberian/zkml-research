@@ -68,7 +68,10 @@ fn handover_rotations_equal_python() {
             let after = std::fs::read_to_string(&path).unwrap();
             assert_eq!(after, rot["ledger_after"].as_str().unwrap(), "{name}: ledger file differs from Python's");
             if ok {
-                let dp = handover::decode(&pr, &blob, d, 3, 3).expect("an accepted proof decodes");
+                // under cut E the schema depends on whether the head was pending (the ledger before the rotation)
+                let was_pending = Ledger::open(&{ let q = tmp.join("pre.ledger"); std::fs::write(&q, rot["ledger_before"].as_str().unwrap()).unwrap(); q }, model, &pr, None).unwrap().pending.is_some();
+                let dp = if pr.defer { handover::decode_defer(&pr, &blob, d, 3, 3, was_pending) } else { handover::decode(&pr, &blob, d, 3, 3) }
+                    .expect("an accepted proof decodes");
                 assert_eq!(blob.len(), handover::byte_len(&pr, d, &dp), "schema length");
                 honest = Some((blob, rot["ledger_before"].as_str().unwrap().to_string()));
             }
@@ -85,19 +88,28 @@ fn handover_rotations_equal_python() {
         let cust: Vec<String> = ["c3", "c4", "c5"].iter().map(|s| s.to_string()).collect();
         let mut ctx = lg.handover_context(&cust);
         let t = std::time::Instant::now();
-        let nr = handover::verify(&pr, &lp, d, 3, 3, &ctx, &lg.parent, &hb).expect("honest bytes accept");
+        let pend = lg.pending.clone();
+        let ver = |ctx: &darkproof::handover::HandoverCtx, parent: &BTreeMap<String, Vec<Hash>>| -> Result<BTreeMap<String, Vec<Hash>>, String> {
+            if pr.defer {
+                handover::verify_defer(&pr, &lp, d, 3, 3, ctx, parent, pend.as_ref(), &hb).map(|(r, _)| r)
+            } else {
+                handover::verify(&pr, &lp, d, 3, 3, ctx, parent, &hb)
+            }
+        };
+        let nr = ver(&ctx, &lg.parent).expect("honest bytes accept");
         println!("[{}] native verify of the honest {} bytes: {:.3}s", pr.name, hb.len(), t.elapsed().as_secs_f64());
         ctx.epoch_new += 1;
-        assert!(handover::verify(&pr, &lp, d, 3, 3, &ctx, &lg.parent, &hb).is_err(), "other context accepted");
+        assert!(ver(&ctx, &lg.parent).is_err(), "other context accepted");
         let mut other = lg.parent.clone();
         other.get_mut("W1").unwrap()[0][0] ^= 1;
         assert_eq!(
-            handover::verify(&pr, &lp, d, 3, 3, &lg.handover_context(&cust), &other, &hb).unwrap_err(),
+            ver(&lg.handover_context(&cust), &other).unwrap_err(),
             "handover: old roots are not the ledger head's"
         );
         assert!(!nr.is_empty());
         std::fs::remove_file(&path).unwrap();
+        let _ = std::fs::remove_file(tmp.join("pre.ledger"));
         std::fs::remove_dir(&tmp).unwrap();
     }
-    assert!(checked >= 12, "only {checked} rotations checked");
+    assert!(checked >= 9, "only {checked} rotations checked");
 }

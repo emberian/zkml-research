@@ -359,6 +359,12 @@ impl Ledger {
                     if rec["epoch"].as_u64() != Some(self.epoch + 1) {
                         return Err(format!("ledger line {no}: rotation out of order (fail closed)"));
                     }
+                    if self.closed {
+                        return Err(format!("ledger line {no}: a rotation after the closing record (fail closed)"));
+                    }
+                    // cut E: the handover opened the head's W (discharging it) and leaves the new committee's W pending
+                    // through its carries cN = new W(r)
+                    Self::discharge(&mut self.pending, &mut self.status, self.step, "the handover opened its child");
                     self.epoch += 1;
                     self.custodians = rec["custodians"]
                         .as_array()
@@ -367,6 +373,13 @@ impl Ledger {
                         .map(|c| c.as_str().unwrap_or("").to_string())
                         .collect();
                     self.parent = roots_of(&rec["roots"])?;
+                    self.pending = match rec.get("pending") {
+                        None | Some(Value::Null) => None,
+                        Some(v) => Some(pending_of(v).map_err(|e| format!("ledger line {no}: {e}"))?),
+                    };
+                    if self.pending.is_some() {
+                        self.status.insert(self.step, "pending".into());
+                    }
                 }
                 _ => return Err(format!("ledger line {no}: unknown record kind (fail closed)")),
             }
@@ -408,8 +421,6 @@ impl Ledger {
         Ok(f)
     }
 
-    /// Custody rotation. Refused until the handover verifier (research/.../handover.py) is ported: a rotation
-    /// record with no verified handover would let a caller replace the model's weights (codex review, finding 1).
     /// Ledger.handover_context: the context a handover to `custodians` after the head must be proved under.
     pub fn handover_context(&self, custodians: &[String]) -> crate::handover::HandoverCtx {
         crate::handover::HandoverCtx {
@@ -431,25 +442,34 @@ impl Ledger {
         if self.released.is_some() {
             return Err("rotation refused: the ledger is released".into());
         }
-        if self.pending.is_some() || self.closed {
-            return Err("rotation refused: the head is pending (cut E) and the handover proof does not discharge it yet".into());
+        if self.closed {
+            return Err("rotation refused: the ledger is closed (the head's W had their one opening)".into());
         }
         if handover.is_empty() {
             return Err("rotation refused: no handover proof".into());
         }
         let lp = self.pr.ligero();
         let ctx = self.handover_context(custodians);
-        let got = crate::handover::verify(&self.pr, &lp, self.d, self.custodians.len(), custodians.len(), &ctx, &self.parent, handover)
-            .map_err(|e| format!("rotation refused: {e}"))?;
+        // cut E: the handover proof discharges the head's pending claims and leaves the new head pending
+        let (got, pend) = if self.pr.defer {
+            let (r, p) = crate::handover::verify_defer(&self.pr, &lp, self.d, self.custodians.len(), custodians.len(), &ctx, &self.parent, self.pending.as_ref(), handover)
+                .map_err(|e| format!("rotation refused: {e}"))?;
+            (r, Some(p))
+        } else {
+            let r = crate::handover::verify(&self.pr, &lp, self.d, self.custodians.len(), custodians.len(), &ctx, &self.parent, handover)
+                .map_err(|e| format!("rotation refused: {e}"))?;
+            (r, None)
+        };
         if &got != new_roots {
             return Err("rotation refused: the handover proof is for other new roots".into());
         }
         let line = format!(
-            "{{\"kind\": \"rotate\", \"epoch\": {}, \"custodians\": {}, \"roots\": {}, \"handover_proof\": {}}}",
+            "{{\"kind\": \"rotate\", \"epoch\": {}, \"custodians\": {}, \"roots\": {}, \"handover_proof\": {}{}}}",
             self.epoch + 1,
             jlist(custodians),
             jroots(new_roots),
-            jstr(&hex(&Sha256::digest(handover)))
+            jstr(&hex(&Sha256::digest(handover))),
+            pend.as_ref().map(|p| format!(", \"pending\": {}", jpending(p))).unwrap_or_default()
         );
         append(&self.path, &line, false)?;
         self.reload()
