@@ -25,6 +25,79 @@ pub struct Shape {
     pub base: usize,
     pub w: usize,
     pub npts: usize,
+    /// the evaluation points (cosnark.domain)
+    pub dom: Dom,
+}
+
+/// cosnark.domain: x_j = j + 1, or x_j = z^t omega^i with (t, i) = (j >> k, j mod 2^k): T disjoint cosets of the
+/// order-2^k subgroup, each in natural NTT order.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Dom {
+    Int,
+    Coset { k: u32, t: usize, omega: u64, z: u64 },
+}
+
+/// cosnark.coset_params: k minimising T (2^(k-1) k + w) (ties to the larger k), omega = h^((p-1)/2^k) for the least
+/// non-residue h >= 2, z the least a >= 2 with a^t outside the subgroup for 0 < t < T.
+pub fn coset_params(npts: usize, w: usize) -> Dom {
+    let p = field::p();
+    let s = (p - 1).trailing_zeros();
+    let mut best: Option<(usize, u32, usize)> = None;
+    for k in 1..=s {
+        let t = npts.div_ceil(1usize << k);
+        let cost = t * ((1usize << (k - 1)) * k as usize + w);
+        if best.map_or(true, |b| cost <= b.0) {
+            best = Some((cost, k, t));
+        }
+    }
+    let (_, k, t) = best.unwrap();
+    let mut h = 2u64;
+    while field::pow(h, (p - 1) / 2) != p - 1 {
+        h += 1;
+    }
+    let omega = field::pow(h, (p - 1) >> k);
+    let mut z = 2u64;
+    while (1..t).any(|tt| field::pow(z, (tt as u64) << k) == 1) {
+        z += 1;
+    }
+    Dom::Coset { k, t, omega, z }
+}
+
+impl Dom {
+    pub fn point(&self, j: usize) -> u64 {
+        match *self {
+            Dom::Int => (j + 1) as u64,
+            Dom::Coset { k, omega, z, .. } => {
+                field::mul(field::pow(z, (j >> k) as u64), field::pow(omega, (j & ((1usize << k) - 1)) as u64))
+            }
+        }
+    }
+}
+
+/// In-place radix-2 NTT, natural order in and out: a[i] <- sum_c a[c] omega^(c i); tw[i] = omega^i for i < n / 2.
+pub fn ntt(a: &mut [u64], tw: &[u64]) {
+    let n = a.len();
+    let lg = n.trailing_zeros();
+    for i in 0..n {
+        let r = i.reverse_bits() >> (usize::BITS - lg);
+        if i < r {
+            a.swap(i, r);
+        }
+    }
+    let mut len = 2;
+    while len <= n {
+        let half = len / 2;
+        let step = n / len;
+        for st in (0..n).step_by(len) {
+            for j in 0..half {
+                let u = a[st + j];
+                let v = field::mul(a[st + j + half], tw[j * step]);
+                a[st + j] = field::add(u, v);
+                a[st + j + half] = field::sub(u, v);
+            }
+        }
+        len *= 2;
+    }
 }
 
 impl Shape {
@@ -33,6 +106,7 @@ impl Shape {
         let (rd, c) = (1usize << mr, 1usize << mc);
         let nmask = pr.nmask;
         let w = c + pr.hide;
+        let npts = pr.blow * w;
         Shape {
             m,
             mr,
@@ -45,7 +119,11 @@ impl Shape {
             block: if nmask > 0 { nmask / pr.lives } else { 0 },
             base,
             w,
-            npts: pr.blow * w,
+            npts,
+            dom: match pr.domain {
+                crate::Domain::Int => Dom::Int,
+                crate::Domain::Coset => coset_params(npts, w),
+            },
         }
     }
     pub fn prox_row(&self) -> usize {
@@ -91,6 +169,8 @@ pub struct PcsParty {
     pub root: Hash,
     pub opened_lives: usize,
     pub max_lives: usize,
+    /// the codeword, column-major (npts x R), kept for the coset domain (built by NTT; openings read it)
+    pub cw: Vec<u64>,
 }
 
 #[derive(Debug)]
@@ -152,6 +232,7 @@ impl PcsParty {
             root: [0; 32],
             opened_lives: 0,
             max_lives: pr.lives,
+            cw: Vec::new(),
         };
         me.build_tree();
         me
@@ -159,12 +240,59 @@ impl PcsParty {
 
     pub fn column(&self, j: usize) -> Vec<u64> {
         let s = &self.shape;
-        let pw = powers((j + 1) as u64, s.w);
+        if !self.cw.is_empty() {
+            return self.cw[j * s.r..(j + 1) * s.r].to_vec();
+        }
+        let pw = powers(s.dom.point(j), s.w);
         (0..s.r).map(|r| field::dot(&self.ext[r * s.w..(r + 1) * s.w], &pw)).collect()
+    }
+
+    /// Every row's codeword on the coset domain by NTT, column-major (npts x R).
+    fn encode_coset(&self) -> Vec<u64> {
+        let s = &self.shape;
+        let Dom::Coset { k, t, omega, z } = s.dom else { unreachable!() };
+        let n = 1usize << k;
+        let tw = powers(omega, n / 2);
+        // per coset: the scaling c^c (c = z^tt) of the row's coefficients, shared by every row
+        let scale: Vec<Vec<u64>> = (0..t).map(|tt| powers(field::pow(z, tt as u64), s.w)).collect();
+        let (r, w, npts) = (s.r, s.w, s.npts);
+        let mut rows = vec![0u64; r * npts];
+        rows.par_chunks_mut(npts).enumerate().for_each(|(ri, out)| {
+            let row = &self.ext[ri * w..(ri + 1) * w];
+            let mut buf = vec![0u64; n];
+            for (tt, sc) in scale.iter().enumerate() {
+                buf.iter_mut().for_each(|x| *x = 0);
+                for (c, (&a, &f)) in row.iter().zip(sc).enumerate() {
+                    let b = &mut buf[c & (n - 1)];
+                    *b = field::add(*b, field::mul(a, f));
+                }
+                ntt(&mut buf, &tw);
+                let lo = tt * n;
+                if lo < npts {
+                    let hi = (lo + n).min(npts);
+                    out[lo..hi].copy_from_slice(&buf[..hi - lo]);
+                }
+            }
+        });
+        // transpose to column-major in blocks of columns
+        let mut cw = vec![0u64; npts * r];
+        cw.par_chunks_mut(r * 64).enumerate().for_each(|(blk, dst)| {
+            let j0 = blk * 64;
+            for (dj, col) in dst.chunks_mut(r).enumerate() {
+                let j = j0 + dj;
+                for (ri, x) in col.iter_mut().enumerate() {
+                    *x = rows[ri * npts + j];
+                }
+            }
+        });
+        cw
     }
 
     fn build_tree(&mut self) {
         let npts = self.shape.npts;
+        if matches!(self.shape.dom, Dom::Coset { .. }) {
+            self.cw = self.encode_coset();
+        }
         let mut level: Vec<Hash> = (0..npts).into_par_iter().map(|j| h_leaf(&self.salts[j], &self.column(j))).collect();
         let full = 1usize << bitlen(npts - 1);
         for j in 0..full - npts {
@@ -311,7 +439,7 @@ pub fn verify(
                     }
                 }
                 let lhs = field::dot(&gam[..s.r.min(gam.len())], &colsum[..s.r.min(gam.len())]);
-                let rhs = crate::poly::peval(&gsum, (j + 1) as u64);
+                let rhs = crate::poly::peval(&gsum, s.dom.point(j));
                 if lhs != rhs {
                     return Some(format!("proximity test fails ({k})"));
                 }

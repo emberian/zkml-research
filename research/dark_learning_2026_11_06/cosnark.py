@@ -137,7 +137,7 @@ class SharePCS:
         self.base = 0                     # which block of mask rows this proof uses (0: first life)
         self.block = self.nmask // LIVES if self.nmask else 0
         self.W = self.C + self.hide
-        self.pts = list(range(1, BLOW * self.W + 1))
+        self.pts = domain(p, BLOW * self.W, self.W)
         self.rows = [[s[r * self.C:(r + 1) * self.C] for r in range(self.Rd)] for s in shares]
         self.ext = []
         dets = [det_rng("pcs", label, i, self.hide, self.nmask, H(shares[i]))
@@ -308,9 +308,61 @@ def verify_path(root, col, j, path):
         k //= 2
     return h == root
 
+DOMAIN = "int"    # the codeword's evaluation points (pinned by the profile): "int" x_j = j + 1 (gen 5); "coset" (gen 6)
+
+_DOM = {}
+
+def two_adicity(p):
+    k, n = 0, p - 1
+    while n % 2 == 0:
+        n //= 2
+        k += 1
+    return k
+
+def coset_params(p, npts, w):
+    """The coset domain's (k, T, omega, z) for a code of length npts and dimension w: T cosets z^t H of the order-2^k
+    subgroup H, k minimising T (2^(k-1) k + w) (the NTT and folding cost; ties to the larger k); omega = h^((p-1)/2^k)
+    for the least quadratic non-residue h >= 2 (order exactly 2^k); z the least a >= 2 with a^t not in H for
+    0 < t < T (the cosets are disjoint)."""
+    s = two_adicity(p)
+    best = None
+    for k in range(1, s + 1):
+        T = -(-npts // (1 << k))
+        cost = T * ((1 << (k - 1)) * k + w)
+        if best is None or cost <= best[0]:
+            best = (cost, k, T)
+    _, k, T = best
+    h = 2
+    while pow(h, (p - 1) // 2, p) != p - 1:
+        h += 1
+    omega = pow(h, (p - 1) >> k, p)
+    z = 2
+    while any(pow(z, t << k, p) == 1 for t in range(1, T)):
+        z += 1
+    return k, T, omega, z
+
+def domain(p, npts, w):
+    """The evaluation points x_0..x_(npts-1) of a row codeword (length npts, dimension w; every x_j nonzero and
+    distinct). "coset": x_j = z^t omega^i with t, i = divmod(j, 2^k), i.e. the cosets in order, each in natural NTT
+    order."""
+    if DOMAIN == "int":
+        return list(range(1, npts + 1))
+    key = (p, npts, w)
+    if key not in _DOM:
+        k, T, omega, z = coset_params(p, npts, w)
+        pts = []
+        for t in range(T):
+            c = pow(z, t, p)
+            x = c
+            for i in range(1 << k):
+                pts.append(x)
+                x = x * omega % p
+        _DOM[key] = pts[:npts]
+    return _DOM[key]
+
 def encode_pub(p, row, npts):
     out = []
-    for x in range(1, npts + 1):
+    for x in domain(p, npts, len(row)):
         acc = 0
         for c in reversed(row):
             acc = (acc * x + c) % p

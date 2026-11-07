@@ -55,8 +55,9 @@ fn jlist(xs: &[String]) -> String {
 /// PARAMS as json.dumps writes the dict (insertion order of proofwire.PROFILES).
 pub fn jparams(p: &Profile) -> String {
     format!(
-        "{{\"PROFILE\": {}, \"HE\": {{\"N\": {}, \"L\": {}, \"F_BITS\": {}}}, \"HIDE\": {}, \"NMASK\": {}, \"LIVES\": {}, \"T_COLS\": {}, \"BLOW\": {}, \"K_L\": {}, \"T_HIDE\": {}, \"T_OPEN\": {}, \"OWNER_H\": {}}}",
-        jstr(p.name), p.he.0, p.he.1, p.he.2, p.hide, p.nmask, p.lives, p.t_cols, p.blow, p.k_l, p.t_hide, p.t_open, p.owner_h
+        "{{\"PROFILE\": {}, \"HE\": {{\"N\": {}, \"L\": {}, \"F_BITS\": {}}}, \"HIDE\": {}, \"NMASK\": {}, \"LIVES\": {}, \"T_COLS\": {}, \"BLOW\": {}, \"K_L\": {}, \"T_HIDE\": {}, \"T_OPEN\": {}, \"OWNER_H\": {}, \"DOMAIN\": {}}}",
+        jstr(p.name), p.he.0, p.he.1, p.he.2, p.hide, p.nmask, p.lives, p.t_cols, p.blow, p.k_l, p.t_hide, p.t_open, p.owner_h,
+        jstr(match p.domain { crate::Domain::Int => "int", crate::Domain::Coset => "coset" })
     )
 }
 

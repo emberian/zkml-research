@@ -44,7 +44,7 @@ class PubShape:
         self.block = nmask // CS.LIVES if nmask else 0
         self.base = base
         self.W = self.C + hide
-        self.pts = list(range(1, CS.BLOW * self.W + 1))
+        self.pts = CS.domain(p, CS.BLOW * self.W, self.W)
     eval_weights = ZKPCS.eval_weights
     prox_row, prox_len, prox_weights = CS.SharePCS.prox_row, CS.SharePCS.prox_len, CS.SharePCS.prox_weights
 

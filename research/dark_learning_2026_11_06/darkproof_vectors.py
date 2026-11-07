@@ -84,6 +84,9 @@ def make_bundle(p, tab, d, W1, W2, x, y, ctx, carry=None, carry_wires=None, owne
     blob = PW.encode_step(p, ctx, d, 3, True, spine, public, middle, sym, owner_sig=sig)
     return dict(blob=blob, child=sst["child"], wires=wires, genesis=gen, sst=sst, mst=mst)
 
+# DP_DOMAIN=int: the gen 5 evaluation points x_j = j + 1 (the "<profile>-int" twin; vectors made before the coset domain)
+DOMAIN_SUFFIX = "-int" if os.environ.get("DP_DOMAIN") == "int" else ""
+
 HE_PROGRAM = dict(S1=5, K1=13, S2=4, K2=8, S3=8, K3=13, he=True)
 
 def he_flow(out, d, prof, steps=3):
@@ -172,8 +175,7 @@ def he_flow(out, d, prof, steps=3):
 def verify_native(out, tag):
     """Python's verifier on the native bundles (TAG_<name>.native.bin), with a one-byte-flip control each."""
     meta = json.load(open(os.path.join(out, f"{tag}_meta.json")))
-    if meta["profile"] != "ledger":
-        PW.set_profile(meta["profile"])
+    PW.set_profile(meta["profile"] + DOMAIN_SUFFIX)
     p, d = meta["p"], meta["d"]
     tab = MF.tables(p)
     ok_all = True
@@ -217,8 +219,7 @@ def main():
     out, d = sys.argv[1], int(sys.argv[2])
     prof = sys.argv[3] if len(sys.argv) > 3 else "ledger"
     flows = sys.argv[4:] or ["pw"]
-    if prof != "ledger":
-        PW.set_profile(prof)
+    PW.set_profile(prof + DOMAIN_SUFFIX)
     os.makedirs(out, exist_ok=True)
     if "he" in flows:
         return he_flow(out, d, prof)

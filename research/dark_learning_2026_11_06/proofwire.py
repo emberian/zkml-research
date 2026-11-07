@@ -51,10 +51,13 @@ HE_LEDGER = dict(N=16384, L=4, F_BITS=175)
 HE_DEMO = dict(N=8192, L=3, F_BITS=118)
 PROFILES = {
     "ledger": dict(PROFILE="ledger", HE=HE_LEDGER, HIDE=618, NMASK=2, LIVES=2, T_COLS=309, BLOW=4, K_L=64, T_HIDE=309, T_OPEN=309,
-                   OWNER_H=OWNER_H),
+                   OWNER_H=OWNER_H, DOMAIN="coset"),
     "demo": dict(PROFILE="demo", HE=HE_DEMO, HIDE=194, NMASK=2, LIVES=2, T_COLS=97, BLOW=4, K_L=64, T_HIDE=97, T_OPEN=97,
-                 OWNER_H=OWNER_H),
+                 OWNER_H=OWNER_H, DOMAIN="coset"),
 }
+# the gen 5 evaluation points x_j = j + 1 (the before/after comparison, and the vectors made before the coset domain)
+PROFILES["ledger-int"] = dict(PROFILES["ledger"], PROFILE="ledger-int", DOMAIN="int")
+PROFILES["demo-int"] = dict(PROFILES["demo"], PROFILE="demo-int", DOMAIN="int")
 PARAMS = dict(PROFILES["ledger"])
 
 def set_profile(name):
@@ -64,7 +67,7 @@ def set_profile(name):
     pin_params()
 
 def pin_params():
-    CS.HIDE, CS.NMASK, CS.LIVES, CS.T_COLS, CS.BLOW = (PARAMS[k] for k in ("HIDE", "NMASK", "LIVES", "T_COLS", "BLOW"))
+    CS.HIDE, CS.NMASK, CS.LIVES, CS.T_COLS, CS.BLOW, CS.DOMAIN = (PARAMS[k] for k in ("HIDE", "NMASK", "LIVES", "T_COLS", "BLOW", "DOMAIN"))
     ZK.K_L, ZK.T_HIDE, ZK.T_OPEN = PARAMS["K_L"], PARAMS["T_HIDE"], PARAMS["T_OPEN"]
 
 pin_params()
