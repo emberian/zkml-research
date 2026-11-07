@@ -16,7 +16,11 @@ pub const HE_RET: u8 = 2;
 pub const CTRL: u8 = 3;
 /// The collaborative proof's exchanges (Beaver openings, share broadcasts, commitments) between custodians.
 pub const PROOF: u8 = 4;
-const NTAGS: usize = 5;
+/// The handover's resharing (old committee to new), point to point.
+pub const RESHARE: u8 = 5;
+/// The relay's multiplexed TCP streams (`relay`).
+pub const RELAY: u8 = 6;
+pub const NTAGS: usize = 7;
 const QCAP: usize = 64;
 
 struct Peer {

@@ -15,3 +15,4 @@ pub mod gate;
 pub mod tls;
 pub mod serve;
 pub mod resil;
+pub mod relay;
