@@ -14,6 +14,10 @@
 //!       the handover proof binding them to the ledger head; the old shares, tape and alpha share erased.
 //!   dl-hand seat <work> <i> <d> <profile> <port_base>        (one seat of local-self)
 //!
+//!   dl-hand restart-seat <out.json> <handover_P<I>.json> [join_P<J>.json ...] -- serve I N L F d D ... (the seat's argv)
+//!       a deployed old seat restarted after the handover: what it can load from disk, and its decryption attempts
+//!   dl-hand verify-rotation <workdir> <ledger.jsonl> <handover_e<E>.bin> N L F d [profile]
+//!       re-verify a replica's rotation natively from the proof bytes; a one-byte-flipped copy must be refused
 //! DLH_STRAY_COPY=1 (TEST ONLY): each old seat dir also gets a copy of its tape the erasure does not know about; the
 //! disk scan after erasure must find it (the negative control of the disk check).
 //! Ports: old mesh base+0..2, new mesh base+3..5, joint mesh base+6..11. Every process uses the zeroizing allocator.
@@ -226,6 +230,7 @@ fn new(work: &Path, j: usize, d: usize, prof: &str, base: u16) {
         wait_for(&lpath);
         let mut lg = Ledger::open(&lpath, MODEL, &c.pr, None).expect("ledger");
         let cust: Vec<String> = NEW_SET.iter().map(|s| s.to_string()).collect();
+        std::fs::write(work.join("pub/handover.bin"), &out.proof).unwrap();
         rep["rotation"] = json!(match lg.rotate(&cust, &out.new_roots, &out.proof) {
             Ok(()) => "accept".to_string(),
             Err(e) => e,
@@ -270,6 +275,110 @@ fn restart(work: &Path, i: usize, d: usize, prof: &str) -> Value {
     json!({"role": "old-restarted", "party": i, "key_file_present": key_file.is_some(), "key_material_nonzero": had_key,
            "tape_file_present": tape.is_some(), "share_entries_loaded": tape.map(|t| t.len()).unwrap_or(0),
            "decryption_attempts": tries})
+}
+
+/// The deployed old seat restarted after the handover (`restart-seat`): from the seat's own command line (dl-custodian
+/// serve I N L F d D ... --tls T --tapes P --owner-msgs P --handover-at K), load everything the binary would load
+/// from disk: its TLS key (needed to sign any TLS handshake), its checkpoint (its W shares and MAC shares), its
+/// carried commitment, its tapes and owner messages of steps 0..=K. dl-custodian never writes the HE key to disk,
+/// so the only key it can rebuild is from what these files hold: none of them holds a key, and the attempt uses the
+/// zero key. It tries to decrypt the ciphertext it made under its old key just before the handover (from its
+/// handover report) and each new seat's ciphertext under the new key (from their join reports).
+fn restart_seat(out: &Path, handover_rep: &Path, joins: &[PathBuf], argv: &[String]) -> Value {
+    use darkstep::node::flag;
+    let i: usize = argv[1].parse().expect("serve I");
+    let pf = darkstep::node::prof(&argv[2..6]);
+    let dir = PathBuf::from(&argv[6]);
+    let tls = PathBuf::from(flag(argv, "--tls").expect("--tls"));
+    let k: usize = flag(argv, "--handover-at").expect("--handover-at K").parse().unwrap();
+    // step_path reads --chunk-steps / --chunk-first from the args as serve does (the args include "serve")
+    let mut a = vec!["dl-custodian".to_string()];
+    a.extend_from_slice(argv);
+    let k0: usize = flag(argv, "--chunk-first").map(|x| x.parse().unwrap()).unwrap_or(0);
+    let mut present = Vec::new();
+    let mut probe = |what: String, p: PathBuf| {
+        let md = std::fs::metadata(&p).ok();
+        present.push(json!({"what": what, "path": p.display().to_string(), "present": md.is_some(), "bytes": md.map(|m| m.len())}));
+    };
+    probe("TLS private key".into(), tls.join(format!("tls_{i}.key")));
+    probe("checkpoint (W shares, MAC shares, alpha share)".into(), dir.join(format!("ckpt_P{i}.bin")));
+    probe("checkpoint temp".into(), dir.join(format!("ckpt_P{i}.tmp")));
+    probe("carried commitment".into(), dir.join(format!("carry_P{i}.bin")));
+    for s in k0..=k {
+        for (f, what) in [("--tapes", "tape"), ("--owner-msgs", "owner messages")] {
+            if let Some(pat) = flag(argv, f) {
+                probe(format!("{what} of step {s}"), PathBuf::from(darkstep::serve::step_path(&a, &pat, s)));
+            }
+        }
+    }
+    let ck = darkstep::serve::read_checkpoint(&dir.join(format!("ckpt_P{i}.bin")));
+    let shares_loaded = ck.as_ref().map(|c| 2 * c.d * c.d).unwrap_or(0);
+    let tls_key = std::fs::read(tls.join(format!("tls_{i}.key"))).ok();
+    let tape = darkstep::serve::step_path(&a, &flag(argv, "--tapes").unwrap_or_default(), k);
+    let tape_entries = std::fs::File::open(&tape).ok().and_then(|f| darkstep::tape::Tape::read_from(&mut std::io::BufReader::new(f)).ok()).map(|t| t.len()).unwrap_or(0);
+    // the decryption attempts with the only key this seat can rebuild from disk
+    let rns = Arc::new(Rns::new(pf.n, &pf.qs, pf.t));
+    let zero_b: Vec<Vec<u64>> = rns.qs.iter().map(|_| vec![0u64; rns.n]).collect();
+    let key = OwnKey::from_ceremony_secure(rns.clone(), &vec![0i64; rns.n], &zero_b, &zero_b);
+    let mut tries = Vec::new();
+    let h = read_json(handover_rep);
+    let mut targets = vec![(format!("old seat {i}'s own ciphertext (before the handover)"), h["captured_ct"].clone(), h["captured_plain_sha256"].clone())];
+    for (x, jp) in joins.iter().enumerate() {
+        let r = read_json(jp);
+        let r = if r.get("report").is_some() { r["report"].clone() } else { r };
+        targets.push((format!("new seat {x}'s ciphertext ({})", jp.display()), r["ct_under_new_key"].clone(), r["ct_plain_sha256"].clone()));
+    }
+    for (name, ct, want) in targets {
+        let ct = ct.as_str().map(hex_decode).and_then(|b| ct_parse(&b));
+        let ok = ct.as_ref().map(|ct| Some(digest(&key.decrypt(ct, None))) == want.as_str().map(String::from));
+        tries.push(json!({"ciphertext": name, "found": ct.is_some(), "decrypted": ok}));
+    }
+    let v = json!({"role": "old-restarted", "party": i, "files": present, "tls_key_loaded": tls_key.is_some(),
+                   "share_entries_loaded": shares_loaded, "tape_entries_loaded": tape_entries,
+                   "he_key_sources_on_disk": [], "decryption_attempts": tries});
+    write_json(out, &v);
+    v
+}
+
+/// `verify-rotation`: an independent native check of a ledger replica's rotation. The ledger up to the rotation is
+/// replayed into a fresh file, then the rotation record is re-submitted with the handover proof bytes (native
+/// verifier, darkproof::handover::verify via Ledger::rotate). Negative control: the same proof with one byte
+/// flipped (at the middle) must be refused.
+fn verify_rotation(ledger: &Path, proof: &Path, nlfd: &[String], profile: &str, work: &Path) -> Value {
+    let pf = darkstep::node::prof(nlfd);
+    darkproof::field::set_p(pf.t);
+    let pr = Profile::by_name(profile).unwrap_or_else(|| panic!("profile {profile}"));
+    let text = std::fs::read_to_string(ledger).expect("ledger");
+    let lines: Vec<&str> = text.lines().collect();
+    let at = lines.iter().position(|l| serde_json::from_str::<Value>(l).map(|v| v["kind"] == "rotate").unwrap_or(false)).expect("a rotate record");
+    let rec: Value = serde_json::from_str(lines[at]).unwrap();
+    let model = serde_json::from_str::<Value>(lines[0]).unwrap()["model"].as_str().unwrap().to_string();
+    let blob = std::fs::read(proof).expect("handover proof");
+    use sha2::Digest;
+    let sha = pycompat::repr::hex(&sha2::Sha256::digest(&blob));
+    let custodians: Vec<String> = rec["custodians"].as_array().unwrap().iter().map(|x| x.as_str().unwrap().to_string()).collect();
+    let roots: BTreeMap<String, Vec<[u8; 32]>> = rec["roots"].as_object().unwrap().iter()
+        .map(|(k, v)| (k.clone(), v.as_array().unwrap().iter().map(|h| darkproof::h::unhex32(h.as_str().unwrap()).unwrap()).collect()))
+        .collect();
+    let run = |name: &str, b: &[u8]| -> (Result<(), String>, f64) {
+        let p = work.join(format!("{name}.jsonl"));
+        let _ = std::fs::remove_file(&p);
+        std::fs::write(&p, lines[..at].join("\n") + "\n").unwrap();
+        let mut lg = Ledger::open(&p, &model, &pr, None).expect("replay up to the rotation");
+        let t = std::time::Instant::now();
+        let r = lg.rotate(&custodians, &roots, b);
+        let r = r.and_then(|_| if lg.epoch == rec["epoch"].as_u64().unwrap() && lg.parent == roots { Ok(()) } else { Err("head after rotation differs".into()) });
+        (r, t.elapsed().as_secs_f64())
+    };
+    let (ok, secs) = run("verify", &blob);
+    let mut bad = blob.clone();
+    let mid = bad.len() / 2;
+    bad[mid] ^= 1;
+    let (neg, _) = run("verify-flipped", &bad);
+    json!({"ledger": ledger.display().to_string(), "proof": proof.display().to_string(), "proof_bytes": blob.len(),
+           "proof_sha256_matches_record": rec["handover_proof"].as_str() == Some(sha.as_str()), "epoch": rec["epoch"],
+           "accepted": ok.is_ok(), "error": ok.err(), "verify_seconds": secs,
+           "flipped_byte_refused": neg.is_err(), "flipped_error": neg.err()})
 }
 
 fn spawn(work: &Path, args: &[String], name: &str) -> std::process::Child {
@@ -319,6 +428,7 @@ fn seat(work: &Path, i: usize, d: usize, prof: &str, base: u16) {
                         wait_for(&lpath);
                         let mut lg = Ledger::open(&lpath, MODEL, &c.pr, None).expect("ledger");
                         let cust: Vec<String> = OLD_SET.iter().map(|s| s.to_string()).collect();
+                        std::fs::write(work.join("pub/handover.bin"), &out.proof).unwrap();
                         rep["rotation"] = json!(match lg.rotate(&cust, &out.new_roots, &out.proof) {
                             Ok(()) => "accept".to_string(),
                             Err(e) => e,
@@ -560,6 +670,19 @@ fn main() {
         Some("restart") => {
             let v = restart(&work, arg(3).parse().unwrap(), arg(4).parse().unwrap(), &arg(5));
             println!("{}", serde_json::to_string_pretty(&v).unwrap());
+        }
+        Some("restart-seat") => {
+            // dl-hand restart-seat OUT.json HANDOVER_P<I>.json [JOIN_P<J>.json ...] -- serve I N L F d D ...
+            let dd = a.iter().position(|x| x == "--").expect("-- then the seat's serve arguments");
+            let joins: Vec<PathBuf> = a[4..dd].iter().map(PathBuf::from).collect();
+            let v = restart_seat(&work, Path::new(&arg(3)), &joins, &a[dd + 1..]);
+            println!("{}", serde_json::to_string_pretty(&v).unwrap());
+        }
+        Some("verify-rotation") => {
+            // dl-hand verify-rotation WORKDIR LEDGER.jsonl HANDOVER.bin N L F d [PROFILE]
+            let v = verify_rotation(Path::new(&arg(3)), Path::new(&arg(4)), &a[5..9], a.get(9).map(|s| s.as_str()).unwrap_or("ledger"), &work);
+            println!("{}", serde_json::to_string_pretty(&v).unwrap());
+            std::process::exit(if v["accepted"] == true && v["flipped_byte_refused"] == true && v["proof_sha256_matches_record"] == true { 0 } else { 1 });
         }
         _ => {
             eprintln!("usage: see the header of darkhand/src/bin/dl-hand.rs");
