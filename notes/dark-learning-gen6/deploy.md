@@ -673,3 +673,55 @@ Next, in order:
 5. **Item 6**: the coordinator's N, the run's profile ("ledger-x2" once the proof lane lands it: re-check
    `dl-custodian step-entries ... --profile ledger-x2` against the prep lane's chunk headers), the prep schedule,
    the archive on bb2, then the long run with pipelined proofs, a handover at step k, the release at the end.
+
+## Deploy lane generation 3 (successor of a68410e6, from 2026-11-07 08:46 UTC)
+
+### run12b: the rotation rerun at d = 4096 (08:56-09:05 UTC) [EXECUTED]
+
+Old committee on the wired key (seat 0 forge, seats 1, 2 bb2; chunk w4096h5, 1 proved step), new committee on
+wired-new (new 0 bb2, new 1 forge, new 2 bb2; handover tapes ho-new3, steps ho-new2-steps), public genesis,
+`--profile ledger-sq --wipe-spent`, inline proofs, archive on bb2 (old seat 1, new seat 0), ports 28100-28135
+(below the ephemeral range; ed88a249's self-connect fix). Build ws-target-r3 at ed88a249. Each old seat
+`--erase-extra` its wired MP-SPDZ p-61 MAC-key and secrets files, `--scan-extra` its wired<I>/mpspdz.
+
+| | old 0 | old 1 | old 2 | new 0 | new 1 | new 2 |
+|---|---:|---:|---:|---:|---:|---:|
+| step 0 / 1 / 2 seconds | 83.5 | 83.5 | 83.5 | 120.7 / 88.6 | 120.6 / 88.7 | 120.7 / 88.6 |
+| prove / verify (s) | 18.8 / 9.7 | 19.2 / 9.3 | 19.2 / 9.3 | 19.6-20.3 / 9.2-9.5 | 19.8-20.3 / 9.5-9.6 | 19.6-20.3 / 9.3-9.7 |
+| old_side s (reshare, prove, erase) | 24.6 (1.7, 7.8, 0.87) | 25.4 (2.7, 6.7, 0.82) | 25.1 (2.3, 7.1, 0.82) | | | |
+| sampled VmRSS / cgroup peak | 7.05 / 8.00 GB | 7.77 / 8.10 GB | 7.31 / 8.19 GB | 8.41 / 10.36 GB | 7.70 / 9.63 GB | 8.54 / 9.79 GB |
+
+- One transcript per step; 2,350.0 MB per directed link per step; the handover proof's sha256 75179af3... at all
+  six. Prove/verify are back near run 5's (12.7 / 3.9 s alone) at 19-20 / 9-10 s beside the other tenants: the
+  memset-speed zeroing recovered most of run 9's 45 / 34 s.
+- Old seats after erasure: decrypt before yes, after no; key material left 0; the disk scan after erasure 0 hits
+  in 122-124 files (500 MB), the --erase-extra MP-SPDZ files gone.
+- The handover lane's checker: 71 of 74. Red: 4 alpha-share copies on [stack] at each old seat, 3-10 KB above
+  old_side's scanning frame: live frames between main and old_side (serve_main_with's by-value tape, the
+  loop's dead slots reused by later frames).
+- Fixed (f2764017): the hook's `finish` defers a rotation or self-handover (`Prove.deferred`); serve_main_with /
+  serve_state return, and main's `run_deferred` zeroes the whole main-thread stack below it
+  (darkhand `side::scrub_stack_all`) before rotate_out / self_handover, so old_side and its callers start on
+  zeroed memory and the live frames above hold boxes only. The rerun is run12c (prep's w4096h6 / ho-sh3 /
+  ho-sh3-steps under ledger-x2, after forge's 10:00-11:00 pause).
+
+### run10: the release at M = 52 on the three boxes: forge's seat OOM-killed at 12G (09:06-09:10 UTC) [EXECUTED]
+
+Test-dealer tapes (1 step + release, profile "ledger", 4,115,450,583 B per seat: 229,623,632 release entries,
+47,678,368 of them the release's proof section), ws-target-test3, DP_TRACE=1; seat 0 forge (12G), seats 1, 2 bb2
+(40G). Seat 0's test-deal itself was OOM-killed at 12G on forge (08:45); dealt on bb2 instead and streamed to
+forge (sha256 b7b147b2... checked at both ends; bb2's copy removed).
+- Step 0 and its proof ACCEPT at all three (95.0 s). Seat 0's DP_TRACE peak during the step's proof was already
+  11.92 GB (11.29 GB RSS at [spine] commitments) against 7.6 GB in run 5: the combined 4.1 GB tape is resident.
+- 09:10:25 the kernel killed seat 0 (anon-rss 12,555,112 kB) as the release began; bb2's seats had reached
+  VmRSS 11.3 / 12.6 GB, cgroup peak 15.7 / 15.8 GB. Stopped by PID files. The cap was not raised.
+- Fixed (453d8e0f): the release reads its own tape (`--release-tape`) after the steps' tape is freed (as in a
+  deployment, where the release's preprocessing is its own chunk); `test-deal --split-release`; serve frees the
+  last step's tape before loading the next. `--test release_steps` 2 passed (combined; split).
+- The proof lane's direction (a8ee5558): stream rather than fit (under ledger-x2 the release's proof section is
+  81,031,546 triples): map the tape read-only, hand the proof slices, MADV_DONTNEED consumed ranges. [OPEN] the
+  tape's sections are not 8-aligned on disk (24-byte header + n tag bytes before the shares): mapping needs a
+  padded tape format (prep's writer) or unaligned reads behind an accessor; darkproof's run::from_darkstep_n /
+  release_custodian copy triples out (proof lane offers borrowed slices).
+- run10b: the per-seat release peak with all three seats on bb2 at MemoryMax=32G (a memory measurement, not a
+  deployment), split tapes, its own test registry (`consumed_log`, public-seed test tapes only).
