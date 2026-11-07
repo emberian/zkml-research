@@ -224,7 +224,7 @@ fn rows(dir: &Path, tag: &str) {
         .collect();
     let mut lg2 = lg2;
     rows.rec(
-        "rotation without a verified handover proof (native verifier not ported yet)",
+        "rotation with no handover proof (empty bytes)",
         lg2.rotate(&cust(&["c3", "c4", "c5"]), &nc, b""),
     );
     rows.rec(
