@@ -94,7 +94,11 @@ pub fn digest(xs: &[u64]) -> String {
 fn disk_json(r: &DiskReport) -> Value {
     json!({"files": r.files, "bytes": r.bytes, "hits": r.hits, "hits_by_kind": r.by_kind,
            "hit_files": r.hit_files.iter().map(|(p, h)| json!([p, h])).collect::<Vec<_>>(), "unreadable": r.unreadable,
-           "seconds": r.seconds})
+           "seconds": r.seconds,
+           "ram": {"files": r.ram_files, "bytes": r.ram_bytes, "hits": r.ram_hits, "hits_by_kind": r.ram_by_kind,
+                   "hit_files": r.ram_hit_files.iter().map(|(p, h)| json!([p, h])).collect::<Vec<_>>(),
+                   "mounts": r.ram_mounts.iter().map(|(m, f, o)| json!({"mount": m, "fstype": f, "options": o})).collect::<Vec<_>>(),
+                   "swap_total_kb": r.swap_total_kb}})
 }
 
 /// The process's peak resident set (VmHWM) in MB; 0 where /proc is absent.

@@ -39,6 +39,60 @@ pub struct DiskReport {
     /// paths that could not be read (a missing path is not listed: erasure unlinks them)
     pub unreadable: Vec<String>,
     pub seconds: f64,
+    /// files on a RAM filesystem (tmpfs, ramfs: MP-SPDZ's Player-Data and Persistence since prep's ramdir.sh, reached
+    /// through symlinks): scanned like the rest but counted apart, since they are not persistent storage. `files`,
+    /// `bytes`, `hits`, `by_kind` and `hit_files` above are the persistent ones.
+    pub ram_files: usize,
+    pub ram_bytes: u64,
+    pub ram_hits: u64,
+    pub ram_by_kind: Vec<u64>,
+    pub ram_hit_files: Vec<(String, u64)>,
+    /// each RAM mount holding a scanned file: (mount point, fstype, mount options), and the box's SwapTotal in kB
+    pub ram_mounts: Vec<(String, String, String)>,
+    pub swap_total_kb: Option<u64>,
+}
+
+/// Whether a path lies on a RAM filesystem (tmpfs or ramfs), by statfs.
+#[cfg(target_os = "linux")]
+pub fn on_ram_fs(p: &std::path::Path) -> bool {
+    use std::os::unix::ffi::OsStrExt;
+    let Ok(c) = std::ffi::CString::new(p.as_os_str().as_bytes()) else { return false };
+    let mut st: libc::statfs = unsafe { std::mem::zeroed() };
+    if unsafe { libc::statfs(c.as_ptr(), &mut st) } != 0 {
+        return false;
+    }
+    let t = st.f_type as i64;
+    t == 0x0102_1994 || t == 0x8584_58f6u32 as i64
+}
+
+#[cfg(not(target_os = "linux"))]
+pub fn on_ram_fs(_: &std::path::Path) -> bool {
+    false
+}
+
+/// The mount (point, fstype, options: per-mount and superblock) holding `p`, from /proc/self/mountinfo.
+pub fn mount_of(p: &std::path::Path) -> Option<(String, String, String)> {
+    let cp = std::fs::canonicalize(p).ok()?;
+    let mi = std::fs::read_to_string("/proc/self/mountinfo").ok()?;
+    let mut best: Option<(usize, (String, String, String))> = None;
+    for l in mi.lines() {
+        let (a, b) = l.split_once(" - ")?;
+        let f: Vec<&str> = a.split_whitespace().collect();
+        let g: Vec<&str> = b.split_whitespace().collect();
+        if f.len() < 6 || g.len() < 3 {
+            continue;
+        }
+        let mp = f[4];
+        if cp.starts_with(mp) && best.as_ref().map_or(true, |(n, _)| mp.len() >= *n) {
+            best = Some((mp.len(), (mp.to_string(), g[0].to_string(), format!("{},{}", f[5], g[2]))));
+        }
+    }
+    best.map(|(_, m)| m)
+}
+
+pub fn swap_total_kb() -> Option<u64> {
+    let m = std::fs::read_to_string("/proc/meminfo").ok()?;
+    m.lines().find(|l| l.starts_with("SwapTotal:"))?.split_whitespace().nth(1)?.parse().ok()
 }
 
 #[derive(Debug, Clone)]
@@ -200,6 +254,7 @@ impl Canaries {
         let mut rep = DiskReport { by_kind: vec![0; self.kinds.len()], ..Default::default() };
         let mut files: Vec<(std::path::PathBuf, u64)> = Vec::new();
         let mut seen = std::collections::BTreeSet::new();
+        let mut seen_dirs = std::collections::BTreeSet::new();
         let mut stack: Vec<std::path::PathBuf> = paths.to_vec();
         while let Some(p) = stack.pop() {
             let md = match std::fs::symlink_metadata(&p) {
@@ -210,6 +265,16 @@ impl Canaries {
                     continue;
                 }
             };
+            if md.file_type().is_symlink() {
+                // follow a symlink only into a RAM filesystem (prep's Player-Data / Persistence): persistent targets
+                // are scanned under their own paths when they are scan paths
+                if let Ok(t) = std::fs::canonicalize(&p) {
+                    if on_ram_fs(&t) && seen_dirs.insert(t.clone()) {
+                        stack.push(t);
+                    }
+                }
+                continue;
+            }
             if md.is_dir() {
                 match std::fs::read_dir(&p) {
                     Ok(rd) => stack.extend(rd.flatten().map(|e| e.path())),
@@ -232,7 +297,10 @@ impl Canaries {
             .flat_map(|(f, (_, len))| (0..len.div_ceil(UNIT)).map(move |u| (f, u * UNIT, (len - u * UNIT).min(UNIT))))
             .collect();
         let per_file: Vec<AtomicU64> = files.iter().map(|_| AtomicU64::new(0)).collect();
+        let ram: Vec<bool> = files.iter().map(|(p, _)| on_ram_fs(p)).collect();
         let by_kind: Vec<AtomicU64> = self.kinds.iter().map(|_| AtomicU64::new(0)).collect();
+        let ram_by_kind: Vec<AtomicU64> = self.kinds.iter().map(|_| AtomicU64::new(0)).collect();
+        let ram_bytes = AtomicU64::new(0);
         let bad: Vec<std::sync::atomic::AtomicBool> = files.iter().map(|_| Default::default()).collect();
         let bytes = AtomicU64::new(0);
         let next = AtomicUsize::new(0);
@@ -263,7 +331,8 @@ impl Canaries {
                                 Err(_) => break,
                             }
                         }
-                        bytes.fetch_add(got.min(len as usize) as u64, Ordering::Relaxed);
+                        let bk = if ram[f] { &ram_by_kind } else { &by_kind };
+                        if ram[f] { &ram_bytes } else { &bytes }.fetch_add(got.min(len as usize) as u64, Ordering::Relaxed);
                         let starts = (len as usize).min(got.saturating_sub(7));
                         let mut hits = 0u64;
                         for p in 0..starts {
@@ -271,7 +340,7 @@ impl Canaries {
                             if w > 1 && w < below {
                                 if let Some(&kd) = self.tags.get(&tag(self.k0, self.k1, w)) {
                                     hits += 1;
-                                    by_kind[kd].fetch_add(1, Ordering::Relaxed);
+                                    bk[kd].fetch_add(1, Ordering::Relaxed);
                                 }
                             }
                         }
@@ -279,7 +348,7 @@ impl Canaries {
                             for p in 0..=got - 16 {
                                 if let Some(&kd) = self.text16.get(&tag16(self.k0, self.k1, &buf[p..p + 16])) {
                                     hits += 1;
-                                    by_kind[kd].fetch_add(1, Ordering::Relaxed);
+                                    bk[kd].fetch_add(1, Ordering::Relaxed);
                                 }
                             }
                         }
@@ -292,10 +361,25 @@ impl Canaries {
             }
         });
         rep.bytes = bytes.into_inner();
+        rep.ram_bytes = ram_bytes.into_inner();
         rep.by_kind = by_kind.into_iter().map(|x| x.into_inner()).collect();
+        rep.ram_by_kind = ram_by_kind.into_iter().map(|x| x.into_inner()).collect();
         rep.hits = rep.by_kind.iter().sum();
+        rep.ram_hits = rep.ram_by_kind.iter().sum();
+        rep.ram_files = ram.iter().filter(|r| **r).count();
+        rep.files -= rep.ram_files;
+        let mut mounts = std::collections::BTreeSet::new();
         for (k, (p, _)) in files.iter().enumerate() {
             let h = per_file[k].load(Ordering::Relaxed);
+            if ram[k] {
+                if let Some(m) = mount_of(p) {
+                    mounts.insert(m);
+                }
+                if h > 0 {
+                    rep.ram_hit_files.push((p.display().to_string(), h));
+                }
+                continue;
+            }
             if h > 0 {
                 rep.hit_files.push((p.display().to_string(), h));
             }
@@ -303,6 +387,8 @@ impl Canaries {
                 rep.unreadable.push(p.display().to_string());
             }
         }
+        rep.ram_mounts = mounts.into_iter().collect();
+        rep.swap_total_kb = swap_total_kb();
         rep.seconds = t.elapsed().as_secs_f64();
         rep
     }

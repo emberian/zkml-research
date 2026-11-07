@@ -510,6 +510,26 @@ The deploy lane shredded them (`shred -u`). Since c2319a8d, `--keep-erased-copy`
 - The confirming rotation is reh2, on a build at or after c9771f4a and c2319a8d, once prep has made fresh-key
   chunks.
 
+### The disk scan and RAM filesystems (prep's MP-SPDZ dirs on tmpfs) [EXECUTED on bb2]
+Prep (gen 3, a8fd625f) moved every MP-SPDZ runtime's Player-Data and Persistence into RAM: symlinks into
+`/dev/shm/dl-gen6-prep/<seat>` on forge and bb2, and a tmpfs mounted noswap on hbox.
+- **Following symlinks.** The disk scan now follows a symlink only when it leads into a RAM filesystem (statfs: tmpfs
+  or ramfs).
+- **Counting.** Files there are scanned like the others but counted apart. The report's `disk_scan_*.ram` holds
+  files, bytes, hits, hits_by_kind, hit_files, the mounts (point, fstype, options) and the box's SwapTotal. The
+  existing `files` / `hits` stay the persistent ones.
+- **Checker** (when a report has RAM files):
+  - no RAM copy is left after the erasure;
+  - every RAM mount cannot page out (the box has no swap, or the mount has `noswap`).
+- `tests/ram_scan.rs` (bb2) puts the same 64 canary words in a persistent file and in /dev/shm behind a
+  `Player-Data` symlink:
+  - each copy is counted once, in its own class (64 / 64), and the mount is reported as tmpfs;
+  - after both are removed, 0 / 0.
+- **Found on the way:** bb2's /tmp is itself a tmpfs (size 64 GB). The scan classifies it as RAM.
+- **Prep's other note:** the rehearsal seat sets shared the old seats' TLS identity. From now on, a check that an
+  old seat's identity authenticates nothing after a rotation uses fresh seat sets (prep's seats.sh mints one per
+  set).
+
 ## 8. The handover proof in F_{p^2} (profiles demo-x2, ledger-x2) [EXECUTED, 1bfb04a3]
 The proof lane's x2 cut (proof.md §19) draws every challenge in F_{p^2}. The handover follows it:
 - the point per matrix is `X.chal` / `ext::chal`;
