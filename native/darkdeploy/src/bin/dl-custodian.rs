@@ -25,7 +25,7 @@ struct Prove {
 }
 
 fn params_of(pg: &Program) -> StepParams {
-    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, r3: pg.r3, t_lo: pg.t_lo }.deployed()
+    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, r3: pg.r3, t_lo: pg.t_lo }.deployed()
 }
 
 impl StepHook for Prove {
@@ -35,7 +35,7 @@ impl StepHook for Prove {
         let carried = self.prm.carried(step);
         let own;
         let tb = if self.prm.t_lo == -128 { &self.tables } else { own = darkproof::step::tables_for(self.prm.t_lo); &own };
-        let count = darkproof::run::tape_triples(&self.lp, d, darkproof::run::n_had(d, self.prm, carried, tb));
+        let count = darkproof::run::step_section(&self.lp, d, self.prm, carried, tb);
         let (w1n, w2n) = st.w.as_ref().ok_or("no weights")?;
         let ps = darkproof::run::from_darkstep_n(i, d, rec, w1n, w2n, &st.pt.tape, Some(count), darkproof::rng::Det::off())?;
         let ctx = darkproof::Ctx::new(&self.model, 0, step);
@@ -82,8 +82,8 @@ fn main() {
         let prm = params_of(&darkstep::serve::program_of(&args));
         let own;
         let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
-        let g = darkproof::run::tape_triples(&lp, pf.d, darkproof::run::n_had(pf.d, prm, false, tb));
-        let c = darkproof::run::tape_triples(&lp, pf.d, darkproof::run::n_had(pf.d, prm, true, tb));
+        let g = darkproof::run::step_section(&lp, pf.d, prm, false, tb);
+        let c = darkproof::run::step_section(&lp, pf.d, prm, true, tb);
         println!("{g},{c}");
         return;
     }
