@@ -805,3 +805,41 @@ Split test tapes (`test-deal --split-release`: tape_I.bin 211,848,839 B, release
   record.py sets it.
 - Tests (Linux only, the keyring): `--test handover_steps -- sealed_under_the_vault` (rotation with a pause and
   `serve --resume` loading the new key in a new process; self-handover) on bb2.
+
+### Cut E, RS and the close (5835906b) [EXECUTED on the Mac]
+
+dl-custodian `--rs`; prove_step_l / release_custodian_l with the replica's pending claims; old_side_e /
+new_side_e / with_old_carries in both handovers; `close` for a halted run. Tests under DL_PROFILE=ledger-x2de
+DL_RS=1: rotation and self-handover pass (darkproof's native rotate under DEFER, c18e41f8); close_steps passes.
+Vault tests on bb2 (Linux keyring): rotation_sealed_under_the_vault and self_handover_sealed_under_the_vault
+passed (eafb85a9).
+
+## Continuation (deploy lane generation 3, 2026-11-07 ~10:50 UTC)
+
+**State**: everything to 5835906b pushed. Boxes: forge `ws/` at 8319ea81 with `ws-target-r5`/`test5` (used for
+run12c, ledger-x2 chunks, no vault/E); bb2 `ws/` at 5835906b, building `ws-target-r6`/`test6` (build-r6.pid);
+forge needs `deploy/sync.sh dregg-forge /srv/lanes/dl-gen6-deploy/ws 5835906b` and the same build after 11:00.
+hbox `/othersys/lanes/dl-gen6-deploy/bin/ws4/darkstep` (test4) for run7. Configs and summaries:
+`.../scratchpad/dl-gen5/deploy2/runs/` (run10b, run11b, run11c, run12b, run12c, run7 updated to ports 287xx).
+Mac builds: from a HEAD export (`git archive HEAD native` into the scratchpad's deploy3/wt) plus this lane's files,
+never the shared tree (other lanes' half-written darkproof edits).
+
+**Next, in order**:
+1. run12c at ~11:02 (`run.py runs/run12c.json setup`, `launch`): rotation on r5 (8319ea81), ledger-x2, chunks
+   w4096h6 / ho-sh3 / ho-sh3-steps, archive on bb2, ports 28300-28335. Tell the handover lane (afc2a88b82c0cca1a)
+   at launch and when the old seats exit; it reports the count. Report "run12b/12c all green" to the coordinator.
+2. run11c (~11:20, prep's sh-abort / ho-x / ho-x-steps under ledger-x2de + RS): runs/run11c.json is drafted on
+   test5; switch its bins to ws-target-test6 (forge too), flags `--profile ledger-x2de --rs`, check the erase-extra
+   paths (wired-new<I>-sh/mpspdz). Same reporting.
+3. The rehearsal: `python3 native/deploy/record.py dev --steps 4 --handover-at 1 --chunks reh --key-dir reh-old
+   --no-release > runs/reh.json`, bins ws-target-r6 (the generator writes ws-target-run: set "bin"), `run.py setup`
+   (vault-init runs there), then `run.py runs/reh.json drive` in the background with a PID file. Prep writes
+   reh-n-c0 last (a --tape-wait test).
+4. Item 3 (run7, the rounded hbox step) when prep says the LowGear setup's traffic ended (~15:00); prep then wants
+   hbox's link 15:15-16:45.
+5. Release memory: rerun run10b's measurement when the proof lane (aafff52532f04d20a, helper aa5e2143) sends a
+   build; the tapes must be RS tapes (`test-deal ... --rs --split-release`).
+6. The run of record: record.py hbox|wired once the coordinator sends N, K and the layout; the release must fit.
+
+**Agents**: coordinator aa3209e8d10294bc2; prep a5caa478aac6a0658; proof aafff52532f04d20a (E helper
+a93e0325f167a4ed2); handover afc2a88b82c0cca1a; train ad36593ec00657538.
