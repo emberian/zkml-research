@@ -1,0 +1,148 @@
+{
+ "d": 4,
+ "profile": "demo-x2de",
+ "seconds": 1249.2,
+ "all_as_expected": true,
+ "rows": {
+  "step 1 by the old committee": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true,
+   "status": {
+    "1": "pending"
+   }
+  },
+  "a handover that does not discharge the pending head": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: parse: non-canonical field element",
+   "as_expected": true,
+   "verify_seconds": 0.001
+  },
+  "(ii) step 1 with a forged child (forge_W1n)": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true,
+   "status": {
+    "1": "pending"
+   }
+  },
+  "(ii) a handover of a head whose child does not satisfy its carry": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 2.563,
+   "violated": "handover discharge: old W1(r_k) = c1p"
+  },
+  "handover to shifted weights, carries their evaluation": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 1.084,
+   "violated": "handover: old W1(r) = new carry c1"
+  },
+  "(i) handover to shifted weights with honest carries": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true,
+   "verify_seconds": 2.819,
+   "status": {
+    "1": "pending"
+   }
+  },
+  "(i) the next step over the shifted weights (the discharge)": {
+   "verdict": "REFUSED",
+   "by": "spine: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "violated": "deferred claim of the parent W1: W1(r_prev) = c_prev"
+  },
+  "handover proof stats": {
+   "hidden_rows": 16,
+   "lin_constraints": 1560,
+   "ligero_wire": 176760,
+   "bytes": 630808,
+   "prove_seconds": 51.07
+  },
+  "honest proof for another new custodian set": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: handover (old committee): column challenge mismatch",
+   "as_expected": true,
+   "verify_seconds": 0.039
+  },
+  "a tampered handover proof (Ligero q[0] + 1, re-encoded)": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 1.006
+  },
+  "a new carry root replaced (re-encoded)": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: handover (old committee): column challenge mismatch",
+   "as_expected": true,
+   "verify_seconds": 0.04
+  },
+  "the proof bytes with one byte flipped (middle)": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "as_expected": true,
+   "verify_seconds": 0.971
+  },
+  "the proof bytes truncated by one byte": {
+   "verdict": "REFUSED",
+   "by": "rotation refused: parse: truncated",
+   "as_expected": true,
+   "verify_seconds": 0.038
+  },
+  "honest handover": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true,
+   "verify_seconds": 2.127,
+   "status": {
+    "1": "pending"
+   },
+   "pending": true
+  },
+  "a second opening of the old head": {
+   "verdict": "REFUSED",
+   "by": "commitment W1 already opened in 1 proof(s); a further opening reveals it",
+   "as_expected": true
+  },
+  "restart after rotation: head and pending claims": {
+   "verdict": "OK",
+   "as_expected": true
+  },
+  "(iv) a closing proof right after the rotation": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true,
+   "status": {
+    "1": "final (closing proof)"
+   }
+  },
+  "after rotation: the OLD committee's step 2": {
+   "verdict": "REFUSED",
+   "by": "spine: parent commitment is not the previous step's child commitment",
+   "as_expected": true
+  },
+  "(iii) step 2 by the new committee, discharging the rotated head": {
+   "verdict": "ACCEPT",
+   "by": "accept",
+   "as_expected": true,
+   "status": {
+    "1": "final (step 2 opened its child)",
+    "2": "pending"
+   }
+  },
+  "status after step 2": {
+   "got": {
+    "1": "final (step 2 opened its child)",
+    "2": "pending"
+   },
+   "want": {
+    "1": "final (step 2 opened its child)",
+    "2": "pending"
+   },
+   "as_expected": true
+  }
+ }
+}

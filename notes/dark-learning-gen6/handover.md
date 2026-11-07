@@ -431,6 +431,128 @@ Not in the table: Merkle binding (computational) and Fiat-Shamir grinding.
 - **The TLS private key in memory.** It is wiped on disk and the process exits, but it is not canaried in the scan.
 - **Kernel socket buffers and swap**, as in section 4.
 
+## 9. Cut E through the handover, in Python (profiles demo-x2de, ledger-x2de; design (b)) [EXECUTED]
+Code: `handover.prove_defer` / `verify_defer` / `schema_defer` (magic DLHAND02), `Ledger.rotate` and `_replay`
+(proofwire.py), `run_handover.main_defer`, `handover_vectors.py` under DEFER.
+
+**What the handover does under DEFER.** The ledger head is pending: step k committed its child W_(k+1) without
+opening it, with carries c_k = W_(k+1)(r_k) to come.
+- **The old head's W1, W2** are opened once (one life, base 0). Each is evaluated twice from that one opening:
+  - at the handover point r;
+  - at the head's r_k, against the old committee's carries c1p, c2p (their second life). This is the head's
+    discharge.
+- **The new committee's W1, W2 are not opened.** Their roots are absorbed before r is drawn. The new committee then
+  commits carries cN1, cN2 = new W(r): each new custodian commits its own share's evaluation, with two lives. These
+  are absorbed ("carry") after r and before the Ligero's and the PCS columns' challenges. The proof shows old W(r) = cN.
+- **The rotate record's `pending`** is `pending_json(out)`: points {"W1", "W2"} (the handover's r) and carry_roots
+  {"c1p": cN1, "c2p": cN2}. The next step, the release or a closing proof discharges it unchanged: new W(r) = cN, at
+  new W's one opening.
+- **Fiat-Shamir order** (the proof lane's condition 1). The transcript absorbs:
+  1. ctx;
+  2. the old W roots, the old carry roots (pending head), the new W roots;
+  3. then draws r;
+  4. then absorbs "carry" (cN roots);
+  5. then "lig-evals", then the PCS proximity and columns.
+- **Ledger.**
+  - `rotate` passes `deferred_of(self.pending)` to `HO.verify_bytes` and records the new pending.
+  - `_replay` on a rotate record: `discharge("the handover opened its child")`, then `self.pending = rec["pending"]`
+    and `status[step] = "pending"`.
+  - A rotation after a close is refused (fail closed in the replay too).
+  - The "rotation refused: the head is pending" refusal is gone. In its place, a handover made as for a final head,
+    offered to a pending head, is refused (row 2 below).
+- **Outside DEFER nothing changes.** The demo-x2 handover vector is byte-identical to the one made before this cut:
+  `DL_DETERMINISTIC=7 handover_vectors.py OUT 4 demo-x2` gives sha256 fcc31bb5..., the same as vec-x2/d4-demo-x2.
+
+**Rows** (`python3 run_handover.py 4 demo-x2de`; all as expected, 1,249 s; handover_results_d4_demo-x2de.json):
+
+| row | result | refused by / status |
+|---|---|---|
+| step 1 by the old committee | ACCEPT | status {1: pending} |
+| a handover that does not discharge the pending head (proved as for a final head) | REFUSED | parse: the proof lacks the discharge's parts |
+| (ii) step 1 with a forged child (forge_W1n) | ACCEPT | {1: pending} |
+| (ii) the handover of that head (faithful resharing of the forged child) | REFUSED | Ligero; first violated "handover discharge: old W1(r_k) = c1p" |
+| new committee commits shifted weights and carries their evaluation | REFUSED | Ligero; first violated "handover: old W1(r) = new carry c1" |
+| (i) shifted weights, honest carries (cN = old W(r) != new W(r)) | ACCEPT (pending) | {1: pending} |
+| (i) the next step over those weights | REFUSED | spine Ligero; first violated "deferred claim of the parent W1: W1(r_prev) = c_prev" |
+| honest proof for another new custodian set | REFUSED | column challenge mismatch (ctx) |
+| Ligero q[0] + 1; a new carry root replaced; one byte flipped; truncated | REFUSED | Ligero / column challenge / Ligero / parse |
+| honest handover (630,808 B at d = 4; 51 s to prove) | ACCEPT | {1: pending}, the rotated head pending |
+| a second opening of the old head | REFUSED | life counter (LifeExhausted) |
+| (iv) a closing proof right after the rotation | ACCEPT | {1: final (closing proof)} |
+| the OLD committee's step 2 after the rotation | REFUSED | parent commitment is not the previous step's child |
+| (iii) step 2 by the new committee over the pending rotated head | ACCEPT | {1: final (step 2 opened its child), 2: pending} |
+
+- Status is keyed by step. After a rotation at step k the key k means the rotated head, as the proof lane specified.
+  The old head's own "final (the handover opened its child)" is overwritten by the new head's "pending".
+- **Vectors for the native port.** `DL_DETERMINISTIC=7 handover_vectors.py OUT 4 demo-x2de` (634,264 B) adds:
+  - the head's pending points;
+  - the old carries' shares (labels c1, c2, one life spent);
+  - the new carry shares;
+  - the new pending.
+  Native waits on the proof lane's native E (its helper a93e0325), then mirrors prove_defer in darkproof/handover.rs.
+
+**Soundness of one handover, at d = 4096** (`handover_soundness.py ledger-x2 4096 ledger-x2d ledger-x2de`; union bound;
+|F| = p^2), beside the proof lane's per-step table (proof.md, "Soundness, per step"):
+
+| term | ledger-x2 | ledger-x2d | ledger-x2de |
+|---|---|---|---|
+| Schwartz-Zippel old W(r) = new W(r), per matrix (24 variables) | 2^-117.4 | 2^-117.4 | 2^-117.4 (old W(r) = cN here, cN = new W(r) at the next opening) |
+| PCS proximity, old W1, W2 | 2^-104.0 each | 2^-104.0 each | 2^-104.0 each (one opening, n = 263,380) |
+| PCS proximity, new W1, W2 | 2^-104.0 each | 2^-104.0 each | not opened here (the next step's term) |
+| PCS columns, old W1, W2 | 2^-128.2 each | 2^-128.2 each | 2^-127.2 each (two evaluations of one opening) |
+| PCS columns, new W1, W2 | 2^-128.2 each | 2^-128.2 each | none |
+| carries c1p, c2p (old), cN1, cN2 (new): proximity / columns | none | none | 2^-110.7 / 2^-128.2 each |
+| Ligero proximity (n = 3,284) / linear / quadratic | 2^-110.3 / 2^-122 / 2^-122 | same | same |
+| Ligero columns | 2^-128.2 | 2^-128.2 | 2^-128.2 |
+| **the handover** | **2^-102.0** | **2^-102.0** | **2^-103.0** |
+
+- x2d changes only the step's sumchecks (ZKSC "mask"). The handover has none, so its terms equal x2's.
+- Under x2de the discharge W(r_k) = c_kp is an exact identity at a point fixed before step k's child could be chosen.
+  Its Schwartz-Zippel term is step k's rank-1 term (the proof lane's table), not the handover's.
+- Not in the table: Merkle binding (computational) and Fiat-Shamir grinding.
+
+## 10. Cryptographic erasure (darkhand::vault) and the TLS key in the memory scan [EXECUTED on bb2, 45bb7255]
+The coordinator's additions: in-place overwrites are not erasure on ZFS or SSDs, so the claim is cryptographic.
+- **The file key.** A per-epoch file key K (32 B, OS RNG) seals every secret state file with ChaCha20-Poly1305
+  (ring).
+  - Format: `DLVAULT1 | nonce | ct | tag`. The AAD is `dl-vault|<name>|<role>`. The role is the file name up to its
+    first '_' or '.': ckpt, carry, tls.
+  - K lives in process memory and in the uid's persistent kernel keyring (KEYCTL_GET_PERSISTENT), named
+    `dl-vault:<model>:<seat>:<epoch>:<TLS cert fingerprint, 16 hex>`.
+- **Restart.** A planned restart (`serve --resume`, forge's pause) loads K from the keyring (`Vault::load`). K never
+  reaches a disk.
+- **Bounds** [DERIVED]:
+  - a reboot loses K, so a reboot erases the files: a run cannot resume across a reboot;
+  - the persistent keyring expires after kernel.keys.persistent_keyring_expiry of disuse (3 days by default);
+  - neither forge nor bb2 has swap (SwapTotal 0). Check hbox's swap before routing a seat there;
+  - two seats under one uid on one box (the development layouts on bb2) can read each other's K. The deployment is
+    one custodian per machine (or per uid).
+- **Erasure.** `destroy()` runs KEYCTL_INVALIDATE (the key goes at once, whatever links it) and zeroes the in-memory
+  copy.
+- **old_side checks.**
+  - K joins the memory canaries, plus a 16-byte text canary for the disk scan.
+  - Copies of the small sealed state files are taken before the erasure, and must open under K (control).
+  - After the erasure: `present(name)` is false, `Vault::load` fails, and no copy opens, by keyring or by the zero
+    key.
+  - Report fields: vault_before_erasure, vault_destroyed, vault_after_erasure.
+- **The TLS private key in the canaries.** The `tls_*.key` state file (PKCS#8 DER, opened under K when sealed) gives:
+  - the DER's words;
+  - the P-256 scalar as big-endian bytes, as LE limbs, and as ring's Montgomery limbs (d 2^256 mod n).
+  `tests/tls_canary.rs` shows that ring's EcdsaKeyPair, the object rustls signs with, holds exactly the Montgomery
+  limbs; another key's are not in it.
+- **Executed.**
+  - `dl-hand local <work> 256 ledger-x2 27400` on bb2: 22 of 22 checks hold.
+    - Vault key: 12 memory hits before the erasure, 0 after.
+    - Keyring invalidated, name absent after.
+    - The sealed TLS copy opens by nothing.
+    - The TLS kinds have 0 hits before the erasure in dl-hand local, which holds no live TLS config. The deployed
+      seat's live rustls key is the control there.
+  - `tests/vault.rs` on bb2: a second process loads K from the keyring and opens the file; after destroy it cannot.
+- **Split with the deploy lane (agreed).**
+  - Deploy: checkpoint / read_checkpoint, the carry file and the TLS key go through the vault; join and self-handover
+    create the next epoch's vault; `serve::with_vault` hands the old one to old_side.
+  - Prep, later: tapes and owner messages under the same key, or MP-SPDZ's Player-Data on tmpfs.
+
 ## Continuation (handover lane, 2026-11-07; for a successor)
 State: every handover piece is on dev (latest darkhand commit 4ce5d616). The three-box run waits on the deploy lane
 (a68410e60434efcda) wiring the hooks below into native/darkdeploy/src/bin/dl-custodian.rs. The step-k child

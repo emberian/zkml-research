@@ -626,7 +626,15 @@ class Ledger:
             elif rec["kind"] == "rotate":
                 if rec["epoch"] != self.epoch + 1:
                     raise RuntimeError(f"ledger line {no}: rotation out of order (fail closed)")
+                if self.closed:
+                    raise RuntimeError(f"ledger line {no}: a rotation after the closing record (fail closed)")
+                # cut E: the handover opened the head's W, discharging its claims, and leaves the new committee's W
+                # pending through its carries cN = new W(r)
+                discharge("the handover opened its child")
                 self.epoch, self.custodians, self.parent = rec["epoch"], rec["custodians"], rec["roots"]
+                if rec.get("pending"):
+                    self.status[self.step] = "pending"
+                self.pending = rec.get("pending")
             else:
                 raise RuntimeError(f"ledger line {no}: unknown record kind (fail closed)")
 
@@ -704,13 +712,16 @@ class Ledger:
             self._replay()
             if self.released is not None:
                 return False, "rotation refused: the ledger is released"
-            if self.pending is not None or self.closed:
-                return False, "rotation refused: the head is pending (cut E) and the handover proof does not discharge it yet"
+            if self.closed:
+                return False, "rotation refused: the ledger is closed (the head's W had their one opening)"
             if not handover:
                 return False, "rotation refused: no handover proof"
+            pend = {}
             try:
+                # cut E: the handover proof discharges the head's pending claims (deferred_of: None for a final head)
                 ok, why, got = HO.verify_bytes(p, self.d, len(self.custodians), len(custodians),
-                                               self.handover_context(custodians), self.parent, bytes(handover))
+                                               self.handover_context(custodians), self.parent, bytes(handover),
+                                               deferred=deferred_of(self.pending), out=pend)
             except Exception as e:  # untrusted input: any failure is a refusal
                 return False, f"rotation refused: malformed handover proof ({type(e).__name__})"
             if not ok:
@@ -719,6 +730,8 @@ class Ledger:
                 return False, "rotation refused: the handover proof is for other new roots"
             rec = dict(kind="rotate", epoch=self.epoch + 1, custodians=custodians, roots=new_roots,
                        handover_proof=hashlib.sha256(bytes(handover)).hexdigest())
+            if pend:
+                rec["pending"] = pending_json(pend)       # cut E: the new head, final when its W is opened
             self._append(rec)
             self.recs.append(rec)
             self._replay()
