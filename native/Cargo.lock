@@ -78,6 +78,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "darkdeploy"
+version = "0.1.0"
+dependencies = [
+ "darkprep",
+ "darkstep",
+ "darktrain",
+ "pycompat",
+ "serde_json",
+]
+
+[[package]]
 name = "darkhand"
 version = "0.1.0"
 dependencies = [

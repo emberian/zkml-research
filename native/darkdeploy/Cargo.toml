@@ -1,0 +1,12 @@
+[package]
+name = "darkdeploy"
+version = "0.1.0"
+edition.workspace = true
+description = "The deployed dark-learning run: the data owner's process (dl-owner) that feeds the three custodian processes (darkstep serve) over pinned TLS."
+
+[dependencies]
+darkstep = { path = "../darkstep" }
+darkprep = { path = "../darkprep" }
+darktrain = { path = "../darktrain" }
+pycompat = { path = "../pycompat" }
+serde_json = "1"
