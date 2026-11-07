@@ -1248,3 +1248,10 @@ Successor, before launch:
   (`nohup python3 native/deploy/run.py S/rec.json drive > S/rec/drive.log 2>&1 & echo $! > S/rec/drive.pid`, under
   `caffeinate -i`); logs, PID files and archives are gitignored there. The old scratchpad copies are superseded; do not
   launch from them.
+- **Revised calendar (prep, ~15:30 UTC Nov 7; supersedes the one above)**: two jobs raised hbox's aggregate uplink 1.41x
+  (24.9 vs 17.6 Mbit/s), so lg64n (new key) runs beside lg64f (old key). New key ~09:45 Nov 8, then rec-ho and rec-n-c0
+  ~13:00 Nov 8; old key ~11:45 Nov 8 (across the 10:00 window), then rec-c0..c3 ~06:00 Nov 9 = **launch**; rec-rel (after
+  rec-n-c0, sharing the link) ~01:00 Nov 10, then the deferred release runs (before Nov 10's window). The 8 online steps
+  (~0.35 h each) and the handover run ~06:00-09:30 Nov 9, possibly across Nov 9's window (the nightly stop in place covers it).
+- Condition (i) is NOT yet met: prep's first LowGear pause test ran on stale pre-fix binaries (66c09524) and proved nothing;
+  a valid one on the fixed build is running. lg64f and lg64n were always on the fixed build. Do not launch without it.
