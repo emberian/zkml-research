@@ -8,6 +8,7 @@
 //!                        [--proof-triples N] --out CHUNKDIR [--threads T] [--batch B] [--plaintext] [--mpc-src FILE]
 //!                        [--backend mascot|lowgear|highgear] [--extra a,b,..]  (lowgear: --extra -S,60,-lg2,64)
 //!                        [--release M,NCLS,KC --proof-triples N]  (the release chunk instead of K steps)
+//!                        [--handover-ar N]  (a new seat's handover tape: N auth_plain entries)  [--new-mac-key]
 //!       ONE custodian's share of a chunk of K steps, run on its own box against the other two (MASCOT, TLS).
 //!       Writes CHUNKDIR/step-<j>/tape_<I>.bin (darkstep's tape format) and owner-msg-P<I>.bin (this custodian's
 //!       plain input-tuple shares, for the data owner), CHUNKDIR/chunk-P<I>.json (measurements); built in
@@ -273,6 +274,10 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
         let n = m.get("proof-triples").expect("--release needs --proof-triples N (darkproof::run::release_section)").parse().expect("--proof-triples");
         return sp.release(darkprep::schedule::Release { m: v[0], ncls: v[1], kc: v[2] as u32 }, n);
     }
+    if let Some(n) = m.get("handover-ar") {
+        // a new seat's handover tape: N auth_plain entries (2 d^2 + 16 for darkhand::side::new_side)
+        return sp.handover(n.parse().expect("--handover-ar N"));
+    }
     if m.contains_key("proof") {
         // the count is the proof lane's (darkproof::run::step_section; `darkproof counts D PROFILE`), which changes
         // with its method; there is no default here so a stale formula can never size a tape
@@ -296,8 +301,14 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     let party: usize = m.get("party").expect("--party").parse().unwrap();
     let sp = chunk_step(m);
     let steps: usize = get(m, "steps", 1);
-    if sp.release.is_some() && (steps != 1 || m.contains_key("genesis")) {
-        return Err("a release chunk is one release: --steps 1, no --genesis".into());
+    if sp.phase != darkprep::schedule::Phase::Step && (steps != 1 || m.contains_key("genesis")) {
+        return Err("a release or handover chunk is one tape: --steps 1, no --genesis".into());
+    }
+    if m.contains_key("new-mac-key") {
+        // this custodian's MAC key share is retired first, so MP-SPDZ generates a fresh one for this run (a new
+        // committee, or the same seats after an abort); later chunks reuse it
+        let retired = darkprep::mpspdz::retire_mac_keys(&PathBuf::from(m.get("mpspdz").expect("--mpspdz")), Some(party));
+        eprintln!("darkprep: new MAC key; retired {retired:?}");
     }
     let p: u64 = get(m, "p", 0);
     let mpspdz = PathBuf::from(m.get("mpspdz").expect("--mpspdz"));
@@ -362,8 +373,8 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     let asm_s = ta.elapsed().as_secs_f64();
     let links = r.links.iter().map(|(ip, s, rcv)| format!("{{\"peer\": \"{ip}\", \"sent_bytes\": {s}, \"received_bytes\": {rcv}}}")).collect::<Vec<_>>().join(", ");
     let j = format!(
-        "{{\"party\": {party}, \"chunk\": \"{}\", \"d\": {}, \"mode\": \"{:?}\", \"steps\": {steps}, \"proof_atoms\": {}, \"proof_triples_per_step\": {}, \"tape_entries_per_step\": {entries:?}, \"genesis\": {}, \"plan\": {{\"in\": {}, \"ar\": {}, \"tri\": {}, \"lp\": {}, \"trunc_classes\": [{}]}}, \"prog\": \"{prog}\", \"backend\": \"{}\", \"tls\": {}, \"compile_s\": {compile_s:.3}, \"wall_s\": {:.3}, \"assemble_s\": {asm_s:.3}, \"cpu_user_s\": {:.2}, \"cpu_sys_s\": {:.2}, \"max_rss_kb\": {}, \"mpspdz_sent_bytes\": {:.0}, \"mpspdz_rounds\": {}, \"links\": [{links}]}}",
-        out.display(), sp.d, sp.inputs, sp.proof_atoms, sp.proof_triples, m.contains_key("genesis"), plan.n_in, plan.n_ar, plan.n_tri, plan.n_lp,
+        "{{\"party\": {party}, \"chunk\": \"{}\", \"d\": {}, \"mode\": \"{:?}\", \"phase\": \"{:?}\", \"steps\": {steps}, \"proof_atoms\": {}, \"proof_triples_per_step\": {}, \"tape_entries_per_step\": {entries:?}, \"genesis\": {}, \"plan\": {{\"in\": {}, \"ar\": {}, \"tri\": {}, \"lp\": {}, \"trunc_classes\": [{}]}}, \"prog\": \"{prog}\", \"backend\": \"{}\", \"tls\": {}, \"compile_s\": {compile_s:.3}, \"wall_s\": {:.3}, \"assemble_s\": {asm_s:.3}, \"cpu_user_s\": {:.2}, \"cpu_sys_s\": {:.2}, \"max_rss_kb\": {}, \"mpspdz_sent_bytes\": {:.0}, \"mpspdz_rounds\": {}, \"links\": [{links}]}}",
+        out.display(), sp.d, sp.inputs, sp.phase, sp.proof_atoms, sp.proof_triples, m.contains_key("genesis"), plan.n_in, plan.n_ar, plan.n_tri, plan.n_lp,
         plan.trunc_classes.iter().map(|(a, b, c)| format!("[{a}, {b}, {c}]")).collect::<Vec<_>>().join(", "),
         m.get("backend").map(|s| s.as_str()).unwrap_or("mascot"), !m.contains_key("plaintext"), r.wall_s, r.cpu_user_s, r.cpu_sys_s, r.max_rss_kb, r.stats.sent_bytes, r.stats.rounds
     );

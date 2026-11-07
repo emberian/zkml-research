@@ -49,9 +49,19 @@ pub struct StepParams {
     pub proof_atoms: bool,
     /// Beaver triples dealt after the step for the collaborative proof (darkstep `deal_proof_section`)
     pub proof_triples: usize,
-    /// Some: not a step but the mind's release (darkproof::run::deal_release), with the step's (s1, k1) = trunc[0];
-    /// proof_triples is then the release's proof section (darkproof::run::release_section)
-    pub release: Option<Release>,
+    /// What this tape is for: a training step, the mind's release, or a new committee's handover tape.
+    pub phase: Phase,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Phase {
+    Step,
+    /// the mind's release (darkproof::run::deal_release), with the step's (s1, k1) = trunc[0]; proof_triples is
+    /// the release's proof section (darkproof::run::release_section)
+    Release(Release),
+    /// a new seat's handover tape: n auth_plain entries under its new MAC key (darkhand::side::new_side
+    /// re-authenticates the reshared W1, W2 on them: 2 d^2 + 16)
+    Handover(usize),
 }
 
 /// The release's shape: M public test examples, ncls classes, comparisons as truncations (kc, kc).
@@ -65,13 +75,13 @@ pub struct Release {
 impl StepParams {
     /// The harness's d = 64 step (mpc_fork.run_step hard-codes K = 13, 13, 8, 13 with S1, S2, S3 = 5, 4, 8).
     pub fn harness_d64() -> Self {
-        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, release: None }
+        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step }
     }
     /// `step_counts.params(d)`: S1 = max(5, ceil(log2(49 d / 128))), K1 = S1 + 8, S2 = 4, K2 = 8, S3 = S1 + 3, K3 = S1 + 8.
     pub fn at(d: usize, inputs: Inputs) -> Self {
         let x = 49.0 * d as f64 / 128.0;
         let s1 = (x.log2().ceil() as i64).max(5) as u32;
-        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0, release: None }
+        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0, phase: Phase::Step }
     }
     /// The step with the collaborative proof's preprocessing: Trhb atoms and the proof section's triples,
     /// darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had).
@@ -90,13 +100,20 @@ impl StepParams {
     }
     /// The release with its proof atoms and its proof section of `proof_triples` (the proof lane's count).
     pub fn release(mut self, r: Release, proof_triples: usize) -> Self {
-        self.release = Some(r);
+        self.phase = Phase::Release(r);
         self.proof_atoms = true;
         self.proof_triples = proof_triples;
         self
     }
+    /// A new seat's handover tape of n auth_plain entries.
+    pub fn handover(mut self, n: usize) -> Self {
+        self.phase = Phase::Handover(n);
+        self.proof_atoms = false;
+        self.proof_triples = 0;
+        self
+    }
     pub fn n_inputs(&self) -> usize {
-        if self.release.is_some() {
+        if self.phase != Phase::Step {
             return 0;
         }
         match self.inputs {
@@ -122,7 +139,11 @@ pub fn events(sp: &StepParams) -> Vec<Event> {
     let mut ev = Vec::new();
     let rep = |ev: &mut Vec<Event>, e: Event, k: usize| ev.extend(std::iter::repeat(e).take(k));
     let tr = |t: usize| Event::Trunc(sp.trunc[t].0, sp.trunc[t].1);
-    if let Some(r) = sp.release {
+    if let Phase::Handover(n) = sp.phase {
+        rep(&mut ev, Event::AuthPlain, n);
+        return ev;
+    }
+    if let Phase::Release(r) = sp.phase {
         // darkproof::run::deal_release (cosnark_release's order), then its proof section
         let (m, c) = (r.m, r.ncls);
         rep(&mut ev, tr(0), d * m); // u1 = z1 >> s1 per example
