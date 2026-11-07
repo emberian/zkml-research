@@ -11,13 +11,15 @@ One custodian per machine in each committee: the new committee is three new proc
 boxes, with their own TLS identities, their own MP-SPDZ key (prep's handover chunk) and their own HE ceremony.
 
 What it pins (the posture of the run; change it here, not by hand in the JSON):
-- profile ledger-x2 (F_{p^2} challenges; the genesis record carries "EXT": 2 and Ledger::open refuses another);
+- profile ledger-x2d by default (F_{p^2} challenges, cut D; the genesis record carries "EXT": 2 and Ledger::open refuses another);
 - every tape single-use (the box registry), checked against the profile before step 0, waited for (--tape-wait)
   when prep runs behind, wiped once spent (--wipe-spent);
 - pipelined proofs on their own mesh per committee; every bundle archived on bb2 (latest only elsewhere);
 - forge's nightly 10:00-11:00 UTC: custodian 0 votes the pause, run.py drive resumes after the window;
 - the handover after step K (the new committee started by drive after step K - 1, launch_new "deferred");
-- the release at the end, from the release's own tape on each box (loaded after the steps' tape is freed).
+- the release at the end, from the release's own tape on each box (loaded after the steps' tape is freed);
+- every state file (checkpoint, carry, TLS key) sealed under the epoch's file key (darkhand::vault), destroyed at
+  the erasure.
 Chunk paths follow the prep lane's layout ROOT/chunks/NAME-P<I>/step-<j>/{tape_I.bin,owner-msg-P<I>.bin} with
 --chunk-steps S steps per chunk dir: NAME-c<c>-P<I> for chunk c (the old committee from step 0, the new one from K+1);
 the handover tapes NAME-ho-P<I>/step-0/tape_I.bin and the release tapes NAME-rel-P<I>/release_I.bin.
@@ -43,6 +45,8 @@ def main():
     ap.add_argument("--chunk-steps", type=int, default=2)
     ap.add_argument("--third", default="NEWBOX,0.0.0.0,/srv/lanes/dl-gen6-deploy", help="HOST,IP,ROOT of the wired third box")
     ap.add_argument("--name", default="record")
+    ap.add_argument("--profile", default="ledger-x2d", help="the proof profile (the coordinator's rule: ledger-x2d once native D is "
+                    "byte-equal, which it is at 8319ea81; ledger-x2de if E lands too)")
     ap.add_argument("--key-dir", default=None, help="the old committee's MP-SPDZ runtime dir name in prep's ROOT (e.g. wired: "
                     "ROOT/wired<I>/mpspdz); its p-61 MAC-key and secrets files are erased at the handover and the dir scanned")
     ap.add_argument("--key-hash", default="519717d82129ff48ce3a78ec360a737b5b3d8a5f", help="the p-61 Mascot-Secrets file's parameter hash")
@@ -51,8 +55,8 @@ def main():
         sys.exit("the handover must leave the new committee at least one step")
     if a.layout == "hbox":
         third = HBOX
-        # hbox is behind NAT: it can only dial. In the 3-meshes seat 2 dials every lower seat; in the six-party
-        # mesh old seat 2 (index 2) must accept indices 3-5: --dial-only (not built) or a relay. [OPEN]
+        # hbox is behind NAT: it only dials (--nat 2 in every three-party mesh, --nat6 2,5 in the six-party one,
+        # where old seat 2's loopback address takes new seat 2's dial on the same box)
     else:
         h, ip, root = a.third.split(",")
         third = {"host": h, "ip": ip, "root": root, "prep": root.replace("dl-gen6-deploy", "dl-gen6-prep"),
@@ -63,11 +67,15 @@ def main():
     pp = lambda b, k: f"{ip(b)}:{base + k}"
     mesh_old, mesh_new = [pp(b, i) for i, b in enumerate(boxes)], [pp(b, 20 + i) for i, b in enumerate(boxes)]
     proof_old, proof_new = ",".join(pp(b, 10 + i) for i, b in enumerate(boxes)), ",".join(pp(b, 30 + i) for i, b in enumerate(boxes))
-    mesh6 = ",".join([pp(b, 40 + i) for i, b in enumerate(boxes)] + [pp(b, 43 + i) for i, b in enumerate(boxes)])
+    six = [pp(b, 40 + i) for i, b in enumerate(boxes)] + [pp(b, 43 + i) for i, b in enumerate(boxes)]
+    if a.layout == "hbox":
+        six[2] = f"127.0.0.1:{base + 42}"
+    mesh6 = ",".join(six)
     # --ret-round (the rounded returns) joins once item 3 has run it on hbox and the proof lane has the proof of
     # the rounded step; until then the run sends the switched returns unrounded
-    common = ["--ret-primes", "2", "--prove", "--profile", "ledger-x2", "--wipe-spent", "--tape-wait", "7200",
-              "--pause-utc", "10:00-11:00", "--timeout", "3600", "--pipeline-proofs"]
+    common = ["--ret-primes", "2", "--prove", "--profile", a.profile, "--wipe-spent", "--tape-wait", "7200",
+              "--pause-utc", "10:00-11:00", "--timeout", "3600", "--pipeline-proofs"] + \
+             (["--nat", "2", "--nat6", "2,5"] if a.layout == "hbox" else [])
     def bin_(b):
         return f"{b['root']}/ws-target-run/release"
     def seat(b, i, new):
@@ -101,6 +109,7 @@ def main():
                      "new_seats": [seat(b, i, True) for i, b in enumerate(boxes)],
                      "flags": common + ["--chunk-steps", str(a.chunk_steps), "--chunk-first", str(a.handover_at + 1), "--release"]},
         "drive_poll_s": 60,
+        "vault": True,
     }
     json.dump(cfg, sys.stdout, indent=1)
     print()

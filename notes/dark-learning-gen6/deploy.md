@@ -762,3 +762,46 @@ handover deferred to main on a zeroed stack, f2764017). bb2 also dealt run10b's 
 - [OPEN] hbox as the third box: behind NAT it only dials. The 3-meshes and the proof meshes are fine (it is seat
   2), but in the six-party handover mesh old seat 2 (index 2) must accept new seats 3-5. Needs a dial-only role in
   connect_mesh (not built) or a relay; and hbox has no ssh to bb2 or forge for a tunnel. A wired box needs neither.
+
+### run10b: the release's working set, all three seats on bb2 at 32G (09:37-09:45 UTC) [EXECUTED]
+
+Split test tapes (`test-deal --split-release`: tape_I.bin 211,848,839 B, release_I.bin 3,903,601,768 B, profile
+"ledger", M = 52), `--release-tape`, DS_THREADS=10, DP_TRACE=1, ws-target-test4 (453d8e0f), a test-only registry
+(`consumed_log`). bb2 at load 25-58 (other tenants). A memory measurement, not a deployment.
+- Step 0 + proof ACCEPT (204.4 s); seat 0's step-proof peak 8.10 GB (run10, with the combined tape resident: 11.92).
+- The release (seat 0's DP_TRACE): start RSS 10.71 GB (the release tape loaded); MPC 10.3 s, 12.93 GB; proof section
+  taken and tape freed, 11.57 GB; replay of the release program 65.5 s, 15.52 GB (peak 16.12); middle witness
+  (39,114,557 constraints, 33,353,164 Hadamard rows, 32,275,568 atoms), range rows, lookup circuit: 16.15 GB; then
+  "vectors and commitments": VmRSS 16 -> 31 GiB in 5 s, and all three seats were OOM-killed at 32G (09:45:22).
+- **The release at M = 52 needs more than 32 GB per custodian.** The resident tape (3.9 GB) is a minor part. The
+  cut is the proof lane's (aafff525: R1 + R2 halve the release's Hadamard rows, and a helper cuts the middle's
+  vectors phase, target < 10.5 GB under ledger-x2d); rerun on the same tapes when it lands.
+
+### NAT seats: a seat that can only dial (coordinator's request) [EXECUTED on the Mac]
+
+- `darkstep::net::dials(a, b, nat)`: without NAT seats the higher index dials the lower; a NAT seat dials every
+  peer and they accept it (pinned TLS unchanged, the acceptor's pinned set is "who dials me"). Two NAT seats
+  in one mesh are refused (`check_nat`: "need a relay"), unless they share a box and the lower one's address is
+  loopback (hbox's old and new seat in the six-party mesh). `--nat LIST` (the committee's three-party meshes: main,
+  proof, recovery) and `--nat6 LIST` (the six-party mesh), the same lists at every process; a NAT seat binds
+  nothing unless a NAT peer on its box dials it.
+- Tests: darkstep `--test tls_mesh -- a_nat_seat` (seat 0, which normally listens for both, binds nothing and dials;
+  its advertised address is a port held by a listener that never accepts; the mesh moves bytes both ways; control:
+  without the role the mesh cannot form; two NAT seats on two boxes refused); darkdeploy `--test handover_steps`
+  rotation_with_a_nat_seat (--nat 0 --nat6 0,3) and self_handover_with_a_nat_seat (--nat 1 --nat6 1,4), with the
+  NAT seats' addresses held by never-accepting listeners: both green, as are the other 3.
+- record.py's hbox layout: --nat 2 --nat6 2,5, old hbox seat's six-party address 127.0.0.1.
+
+### State files sealed under the epoch's file key (darkhand::vault, handover lane 45bb7255) [Mac: compiled; Linux tests pending]
+
+- darkstep serve: a `Sealer` hook; `write_secret` / `read_secret` (the checkpoint, `identity`'s TLS key); a sealed
+  file opens only with the sealer, a clear one is refused while sealing is on.
+- dl-custodian: `vault-init I TLSDIR --epoch E` (setup: the file key in the uid's persistent keyring, the TLS key
+  sealed in place, TLSDIR/vault.name); `--vault` (required outside test builds) loads it; the carry is sealed too.
+  A rotation hands the key to old_side (`with_vault`), which destroys it; a self-handover destroys the old one
+  and makes the epoch + 1 key, reseals the TLS key and the state under it and rewrites vault.name.
+  `--keep-erased-copy DIR` keeps the sealed files as they were before the erasure, for the checker.
+- run.py: cfg "vault": true runs vault-init at setup (old seats epoch 0, new seats epoch 1) and passes --vault;
+  record.py sets it.
+- Tests (Linux only, the keyring): `--test handover_steps -- sealed_under_the_vault` (rotation with a pause and
+  `serve --resume` loading the new key in a new process; self-handover) on bb2.

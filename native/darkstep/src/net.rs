@@ -135,6 +135,41 @@ fn wire<R: Read + Send + 'static, W: Sink>(
     Peer { tx, rx: rxs }
 }
 
+/// Between parties a and b, does a dial b? Without NAT seats the higher index dials the lower (which listens). A NAT
+/// seat (behind address translation: it can dial out, nobody can reach it) dials every peer, and those peers accept
+/// it instead of dialling it. Two NAT seats can reach each other only on one box (the lower one's address is a
+/// loopback address there); `check_nat` refuses anything else.
+pub fn dials(a: usize, b: usize, nat: &[usize]) -> bool {
+    let (na, nb) = (nat.contains(&a), nat.contains(&b));
+    match (na, nb) {
+        (true, false) => true,
+        (false, true) => false,
+        _ => a > b,
+    }
+}
+
+/// A mesh with NAT seats is connectable: every NAT index is in range, and any two NAT seats share a box (the lower's
+/// address is loopback, where the higher one dials it).
+pub fn check_nat(addrs: &[SocketAddr], nat: &[usize]) -> Result<(), String> {
+    if let Some(&x) = nat.iter().find(|&&x| x >= addrs.len()) {
+        return Err(format!("NAT seat {x} is not in a mesh of {}", addrs.len()));
+    }
+    let mut v: Vec<usize> = nat.to_vec();
+    v.sort();
+    v.dedup();
+    for (k, &lo) in v.iter().enumerate() {
+        for &hi in &v[k + 1..] {
+            if !addrs[lo].ip().is_loopback() {
+                return Err(format!(
+                    "NAT seats {lo} and {hi} cannot reach each other: two NAT seats in one mesh need a relay, unless they share a box and seat {lo}'s address is loopback (it is {})",
+                    addrs[lo]
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 impl Net {
     /// Party `me` listens on `listener` (its own address in `addrs`), dials every lower-numbered party, and accepts
     /// every higher-numbered one; each dialer announces its index.
@@ -173,7 +208,13 @@ impl Net {
     /// `certs[j]` is party j's certificate; an accepted dialer is identified by the certificate it presents, and a
     /// connection presenting anything else is refused. Fails if the mesh is not complete within `timeout`.
     pub fn connect_tls(me: usize, listener: Option<TcpListener>, addrs: &[SocketAddr], id: &crate::tls::Identity, certs: &[Vec<u8>], timeout: std::time::Duration) -> Result<Net, String> {
+        Self::connect_tls_nat(me, listener, addrs, id, certs, timeout, &[])
+    }
+
+    /// connect_tls with NAT seats (`nat`: indices that cannot accept connections): see `dials`.
+    pub fn connect_tls_nat(me: usize, listener: Option<TcpListener>, addrs: &[SocketAddr], id: &crate::tls::Identity, certs: &[Vec<u8>], timeout: std::time::Duration, nat: &[usize]) -> Result<Net, String> {
         use crate::resil::{self, Session};
+        check_nat(addrs, nat)?;
         use std::time::{Duration, Instant};
         let n = addrs.len();
         let deadline = Instant::now() + timeout;
@@ -182,16 +223,19 @@ impl Net {
         let closed = Arc::new(AtomicBool::new(false));
         let sessions: Vec<Option<Arc<Session>>> = (0..n).map(|j| (j != me).then(|| Session::new(j, critical.clone(), budget))).collect();
         let mut threads = Vec::new();
-        if me + 1 < n {
-            let listener = listener.ok_or("party must listen: higher-numbered parties dial it")?;
-            let others: Vec<Vec<u8>> = (me + 1..n).map(|j| certs[j].clone()).collect();
+        // who dials whom: `dials(a, b, nat)`; I accept from every peer that dials me
+        let inbound: Vec<usize> = (0..n).filter(|&j| j != me && dials(j, me, nat)).collect();
+        let outbound: Vec<usize> = (0..n).filter(|&j| j != me && dials(me, j, nat)).collect();
+        if !inbound.is_empty() {
+            let listener = listener.ok_or("party must listen: peers dial it")?;
+            let others: Vec<Vec<u8>> = inbound.iter().map(|&j| certs[j].clone()).collect();
             let scfg = crate::tls::server_config(id, &others);
-            let idx: Vec<(usize, Vec<u8>)> = (me + 1..n).map(|j| (j, certs[j].clone())).collect();
+            let idx: Vec<(usize, Vec<u8>)> = inbound.iter().map(|&j| (j, certs[j].clone())).collect();
             let (ss, cl) = (sessions.clone(), closed.clone());
             threads.push(thread::spawn(move || resil::acceptor(listener, scfg, idx, ss, cl, me)));
         }
-        let ccfgs: Vec<Option<Arc<rustls::ClientConfig>>> = (0..n).map(|j| (j < me).then(|| crate::tls::client_config(id, &certs[j]))).collect();
-        for j in 0..me {
+        let ccfgs: Vec<Option<Arc<rustls::ClientConfig>>> = (0..n).map(|j| outbound.contains(&j).then(|| crate::tls::client_config(id, &certs[j]))).collect();
+        for &j in &outbound {
             let s = sessions[j].as_ref().unwrap();
             loop {
                 match resil::dial(s, addrs[j], ccfgs[j].clone().unwrap(), j, Duration::from_secs(10)) {
@@ -210,9 +254,9 @@ impl Net {
                 }
             }
         }
-        // the higher-numbered parties' first connections
+        // the first connections of the peers that dial me
         loop {
-            let missing: Vec<usize> = (me + 1..n).filter(|&j| sessions[j].as_ref().unwrap().is_down()).collect();
+            let missing: Vec<usize> = inbound.iter().copied().filter(|&j| sessions[j].as_ref().unwrap().is_down()).collect();
             if missing.is_empty() {
                 break;
             }
@@ -247,7 +291,7 @@ impl Net {
                 }
                 let s3 = s.clone();
                 threads.push(thread::spawn(move || resil::reader(s3, txs)));
-                if j < me {
+                if outbound.contains(&j) {
                     let s4 = s.clone();
                     let (addr, cfg) = (addrs[j], ccfgs[j].clone().unwrap());
                     threads.push(thread::spawn(move || resil::reconnector(s4, addr, cfg, j)));
