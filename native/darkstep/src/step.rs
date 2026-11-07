@@ -14,11 +14,46 @@ pub fn dsig(u: i64) -> i64 {
     if (-28..32).contains(&u) { 1 } else { 0 }
 }
 
+/// The step program as parameters (step_spec.Program; genesis pins one). `HARNESS` is the program this file always
+/// ran: `run_step`, `tables` and `Plain::step` are the HARNESS instances and their outputs are unchanged.
+/// (S1, K1): z1 and z2 truncated by 2^S1, |v| < 2^K1; (S2, K2): e; (S3, K3): b * g1 + R3. R3 is a public constant added
+/// before the last truncation (2^(S3-1) rounds half up; 0 floors). The table's domain is [t_lo, t_lo + 256).
+/// wmax: Some(w) asserts |W| <= w at entry (step_spec's |W| <= 7); None leaves weights unbounded and asserts every
+/// truncation's input bound instead (check_k).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Program {
+    pub s1: u32,
+    pub k1: u32,
+    pub s2: u32,
+    pub k2: u32,
+    pub s3: u32,
+    pub k3: u32,
+    pub r3: i64,
+    pub t_lo: i64,
+    pub xmax: i64,
+    pub wmax: Option<i64>,
+    pub check_k: bool,
+}
+
+impl Program {
+    pub const HARNESS: Program = Program { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, r3: 0, t_lo: -128, xmax: 7, wmax: Some(7), check_k: false };
+
+    /// mpc_fork.tables(p) over this program's domain: SIG and DSIG interpolated at 0..256 (input code u + t_lo).
+    pub fn tables(&self, p: u64) -> Vec<Vec<u64>> {
+        let s: Vec<u64> = (0..256).map(|u| from_i64(sig(u + self.t_lo), p)).collect();
+        let g: Vec<u64> = (0..256).map(|u| from_i64(dsig(u + self.t_lo), p)).collect();
+        vec![interpolate(&s, p), interpolate(&g, p)]
+    }
+
+    /// The truncation calls of run_step as (shift, bound): z1, z2, e, b * g1 + R3.
+    pub fn truncs(&self) -> [(u32, u32); 4] {
+        [(self.s1, self.k1), (self.s1, self.k1), (self.s2, self.k2), (self.s3, self.k3)]
+    }
+}
+
 /// mpc_fork.tables(p): SIG and DSIG interpolated over 0..256 (input code u - 128).
 pub fn tables(p: u64) -> Vec<Vec<u64>> {
-    let s: Vec<u64> = (0..256).map(|u| from_i64(sig(u - 128), p)).collect();
-    let g: Vec<u64> = (0..256).map(|u| from_i64(dsig(u - 128), p)).collect();
-    vec![interpolate(&s, p), interpolate(&g, p)]
+    Program::HARNESS.tables(p)
 }
 
 pub struct Plain {
@@ -60,20 +95,46 @@ impl Plain {
 
     /// step_spec.step: the new weights, or the bound step_spec would assert on.
     pub fn step(&self) -> Result<(Vec<Vec<i64>>, Vec<Vec<i64>>), String> {
+        self.step_prog(&Program::HARNESS)
+    }
+
+    /// step_spec.step(W1, W2, x, y, prog): the new weights, or the assertion step_spec would raise.
+    pub fn step_prog(&self, pg: &Program) -> Result<(Vec<Vec<i64>>, Vec<Vec<i64>>), String> {
         let d = self.x.len();
+        if let Some(v) = self.x.iter().find(|v| v.abs() > pg.xmax) {
+            return Err(format!("step_spec: |x| = {} > {}", v.abs(), pg.xmax));
+        }
+        if let Some(w) = pg.wmax {
+            if self.w1.iter().chain(&self.w2).flatten().any(|v| v.abs() > w) {
+                return Err(format!("step_spec: |W| > {w}"));
+            }
+        }
         let mv = |w: &Vec<Vec<i64>>, v: &[i64]| -> Vec<i64> { (0..d).map(|i| (0..d).map(|j| w[i][j] * v[j]).sum()).collect() };
         let z1 = mv(&self.w1, &self.x);
-        let u1: Vec<i64> = z1.iter().map(|z| z >> 5).collect();
-        if let Some(u) = u1.iter().find(|u| !(-128..128).contains(*u)) {
-            return Err(format!("step_spec domain: u1 = {u} outside [-128, 128)"));
+        let u1: Vec<i64> = z1.iter().map(|z| z >> pg.s1).collect();
+        if let Some(u) = u1.iter().find(|u| !(pg.t_lo..pg.t_lo + 256).contains(*u)) {
+            return Err(format!("step_spec domain: u1 = {u} outside [{}, {})", pg.t_lo, pg.t_lo + 256));
         }
         let h: Vec<i64> = u1.iter().map(|&u| sig(u)).collect();
         let g1: Vec<i64> = u1.iter().map(|&u| dsig(u)).collect();
         let z2 = mv(&self.w2, &h);
-        let e: Vec<i64> = z2.iter().zip(&self.y).map(|(z, y)| (z >> 5) - y).collect();
-        let d2: Vec<i64> = e.iter().map(|v| v >> 4).collect();
+        let e: Vec<i64> = z2.iter().zip(&self.y).map(|(z, y)| (z >> pg.s1) - y).collect();
+        let d2: Vec<i64> = e.iter().map(|v| v >> pg.s2).collect();
         let b: Vec<i64> = (0..d).map(|j| (0..d).map(|i| self.w2[i][j] * d2[i]).sum()).collect();
-        let d1: Vec<i64> = b.iter().zip(&g1).map(|(bb, g)| (bb * g) >> 8).collect();
+        let bg: Vec<i64> = b.iter().zip(&g1).map(|(bb, g)| bb * g + pg.r3).collect();
+        if pg.check_k || pg.wmax.is_none() {
+            let out = |v: &[i64], k: u32| v.iter().any(|x| x.abs() >= 1i64 << k);
+            if out(&z1, pg.k1) || out(&z2, pg.k1) {
+                return Err("step_spec: z1/z2 outside the truncation bound 2^K1".into());
+            }
+            if out(&e, pg.k2) {
+                return Err("step_spec: e outside 2^K2".into());
+            }
+            if out(&bg, pg.k3) {
+                return Err("step_spec: b*g1 + R3 outside 2^K3".into());
+            }
+        }
+        let d1: Vec<i64> = bg.iter().map(|v| v >> pg.s3).collect();
         let w2n = (0..d).map(|i| (0..d).map(|j| self.w2[i][j] - d2[i] * h[j]).collect()).collect();
         let w1n = (0..d).map(|i| (0..d).map(|j| self.w1[i][j] - d1[i] * self.x[j]).collect()).collect();
         Ok((w1n, w2n))
@@ -100,13 +161,14 @@ pub struct ProofRecord {
     pub tape_cursor: usize,
 }
 
+/// The HARNESS program's step (what this function always ran).
 pub fn run_step(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u64>]) -> Result<StepOut, String> {
-    let mut phases = Vec::new();
-    let mut t = Instant::now();
-    let lap = |name: &'static str, t: &mut Instant, ph: &mut Vec<(&'static str, f64)>| {
-        ph.push((name, t.elapsed().as_secs_f64()));
-        *t = Instant::now();
-    };
+    run_step_prog(pt, he, cs, d, tab, &Program::HARNESS)
+}
+
+/// The step under a program; `tab` must be `pg.tables(p)`.
+pub fn run_step_prog(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u64>], pg: &Program) -> Result<StepOut, String> {
+    let t = Instant::now();
     let dd = d * d;
     let sw1 = pt.input_vec(&cs[..dd]);
     let sw2 = pt.input_vec(&cs[dd..2 * dd]);
@@ -116,26 +178,42 @@ pub fn run_step(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u6
     let m2: Vec<Vec<Sh>> = sw2.chunks(d).map(|r| r.to_vec()).collect();
     drop(sw1);
     drop(sw2);
-    lap("input", &mut t, &mut phases);
+    let input_s = t.elapsed().as_secs_f64();
+    let mut out = run_step_shares(pt, he, m1, m2, sx, sy, d, tab, pg)?;
+    out.phases.insert(0, ("input", input_s));
+    Ok(out)
+}
+
+/// The step from weights already held as shares (a carried step: the owner inputs only x and y, 2d openings, then
+/// this with the previous step's w1n, w2n). Everything run_step_prog does after its "input" phase.
+#[allow(clippy::too_many_arguments)]
+pub fn run_step_shares(pt: &mut Party, he: &mut He, m1: Vec<Vec<Sh>>, m2: Vec<Vec<Sh>>, sx: Vec<Sh>, sy: Vec<Sh>, d: usize, tab: &[Vec<u64>], pg: &Program) -> Result<StepOut, String> {
+    let mut phases = Vec::new();
+    let mut t = Instant::now();
+    let lap = |name: &'static str, t: &mut Instant, ph: &mut Vec<(&'static str, f64)>| {
+        ph.push((name, t.elapsed().as_secs_f64()));
+        *t = Instant::now();
+    };
     let z1 = he.matvec(pt, &m1, &sx, false)?;
     lap("matvec_z1", &mut t, &mut phases);
-    let u1 = pt.trunc_vec(&z1, 5, 13);
-    let hg = pt.lookup_vec(&u1, 128, tab, 255);
+    let u1 = pt.trunc_vec(&z1, pg.s1, pg.k1);
+    let hg = pt.lookup_vec(&u1, from_i64(-pg.t_lo, pt.p), tab, 255);
     let h: Vec<Sh> = hg.iter().map(|v| v[0]).collect();
     let g1: Vec<Sh> = hg.iter().map(|v| v[1]).collect();
     lap("trunc_lookup", &mut t, &mut phases);
     let z2 = he.matvec(pt, &m2, &h, false)?;
     lap("matvec_z2", &mut t, &mut phases);
-    let t2 = pt.trunc_vec(&z2, 5, 13);
+    let t2 = pt.trunc_vec(&z2, pg.s1, pg.k1);
     let e: Vec<Sh> = t2.iter().zip(&sy).map(|(a, b)| pt.sub(*a, *b)).collect();
-    let d2 = pt.trunc_vec(&e, 4, 8);
+    let d2 = pt.trunc_vec(&e, pg.s2, pg.k2);
     lap("trunc_e_d2", &mut t, &mut phases);
     let b = he.matvec(pt, &m2, &d2, true)?;
     lap("matvec_b", &mut t, &mut phases);
     pt.middle_mul = true;
     let bg = pt.mul_vec(&b, &g1);
     pt.middle_mul = false;
-    let d1 = pt.trunc_vec(&bg, 8, 13);
+    let bgr: Vec<Sh> = if pg.r3 == 0 { bg.clone() } else { let c = from_i64(pg.r3, pt.p); bg.iter().map(|v| pt.cadd(c, *v)).collect() };
+    let d1 = pt.trunc_vec(&bgr, pg.s3, pg.k3);
     lap("mul_trunc_d1", &mut t, &mut phases);
     let g2 = he.outer(pt, &d2, &h)?;
     let w2n: Vec<Vec<Sh>> = (0..d).map(|i| (0..d).map(|j| pt.sub(m2[i][j], g2[i][j])).collect()).collect();
