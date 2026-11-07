@@ -603,6 +603,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         println!("public genesis: the pinned cfg: {r3:?} ({:.1}s)", t.elapsed().as_secs_f64());
         ok_all &= r0.is_err() && r1.is_err() && r2.is_err() && r3.is_ok();
     }
+    let parts_blobs = parts[0].4.clone();
     for (k, b) in parts[0].4.iter().enumerate() {
         let t = std::time::Instant::now();
         let r = lg.accept(&lp, b, &tables);
@@ -698,6 +699,20 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let r2 = lg.accept(&lp, &parts_blob_dummy(), &tables);
     println!("a step after the release: {:?}", r2);
     ok_all &= r2.is_err();
+    if let Ok(sv) = std::env::var("DP_SAVE") {
+        // the run's ledger and every bundle it names (for the Python replay: proofwire.py replay)
+        let sv = Path::new(&sv);
+        std::fs::create_dir_all(sv).unwrap();
+        for (k, b) in parts_blobs.iter().enumerate() {
+            std::fs::write(sv.join(format!("step{}.bin", k + 1)), b).unwrap();
+        }
+        std::fs::write(sv.join("release.bin"), &outs[0].1).unwrap();
+        let xr: Vec<Vec<u64>> = (0..d).map(|k| pol.x[k * m..(k + 1) * m].to_vec()).collect();
+        let pj = serde_json::json!({"X": xr, "labels": pol.labels, "ncls": pol.ncls, "kc": pol.kc});
+        std::fs::write(sv.join("policy.json"), pj.to_string()).unwrap();
+        std::fs::copy(&lpath, sv.join("mind-0.ledger")).unwrap();
+        println!("saved the ledger and its bundles to {}", sv.display());
+    }
     println!("ledger file: {}", lpath.display());
     println!("{}", if ok_all { "DS-CHAIN PASS" } else { "DS-CHAIN FAIL" });
     std::process::exit(if ok_all { 0 } else { 1 });
