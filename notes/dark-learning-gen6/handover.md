@@ -489,7 +489,22 @@ opening it, with carries c_k = W_(k+1)(r_k) to come.
   - the old carries' shares (labels c1, c2, one life spent);
   - the new carry shares;
   - the new pending.
-  Native waits on the proof lane's native E (its helper a93e0325), then mirrors prove_defer in darkproof/handover.rs.
+
+**Native, byte-equal** [EXECUTED on the Mac]:
+- `handover::prove_defer` / `verify_defer` / `decode_defer` (a0a07f36). `HANDOVER_DEFER_VECTORS=<vec-e/d4-demo-x2de>
+  cargo test --release -p darkproof --features tcp,test-det --test handover_defer_vs_python`:
+  - 634,264 B, equal to Python's at all six parties (prove 0.39 s, verify 0.09 s); byte_len equals the length;
+  - the new pending, and each new party's carry shares, equal Python's;
+  - refused: a flipped byte; the proof offered as for a final head (parse); other pending points (Ligero); a forged
+    old carry (the discharge, Ligero); another new set;
+  - a second opening of the old head is refused by the life counter.
+- `Ledger::rotate` under DEFER (c18e41f8). It verifies against the head's pending and records the new pending.
+  `handover_vs_python` on the demo-x2de dump of run_handover.py: on all 10 rotation attempts the native verdict and
+  reason equal Python's, and so does every ledger file after them, byte for byte. The demo and demo-x2 dumps still
+  pass.
+- Non-DEFER is unchanged: handover_prover_vs_python demo-x2 d = 4 (512,480 B == Python) and handover_production pass.
+- darkhand (17637da3): `old_side_e` / `new_side_e` take the ledger's `Option<&Pending>`; `serve::with_old_carries`;
+  `NewCustodian.defer` is the next step's DeferIn. The deploy lane wired them into dl-custodian.
 
 **Soundness of one handover, at d = 4096** (`handover_soundness.py ledger-x2 4096 ledger-x2d ledger-x2de`; union bound;
 |F| = p^2), beside the proof lane's per-step table (proof.md, "Soundness, per step"):
