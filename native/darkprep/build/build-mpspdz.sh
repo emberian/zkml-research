@@ -48,8 +48,48 @@ export CPATH=$L/include LIBRARY_PATH=$L/lib
 # peer (player sockets; LowGear key setup over a slow link waits longer). Tolerate stalls of up to an hour instead.
 sed -i "s/unsigned int timeout_milli = 10000;/unsigned int timeout_milli = 0; \/\/ darkprep: no send\/receive timeout/" Networking/sockets.cpp
 sed -i "s/int keepalive_strobe_interval_secs = 3;/int keepalive_strobe_interval_secs = 30;/; s/int num_keepalive_strobes = 5;/int num_keepalive_strobes = 120;/; s/int keepalive_idle_time_secs = 1;/int keepalive_idle_time_secs = 30;/" Networking/sockets.cpp
-sed -i "s/tv.tv_sec = 300;/tv.tv_sec = 3600; \/\/ darkprep: was 300/" Networking/Player.cpp
-grep -q "timeout_milli = 0" Networking/sockets.cpp && grep -q "num_keepalive_strobes = 120" Networking/sockets.cpp && grep -q "tv.tv_sec = 3600" Networking/Player.cpp
+# No player receive timeout at all (keepalive detects a dead peer): on Linux a blocking socket call on a socket WITH
+# SO_RCVTIMEO / SO_SNDTIMEO fails with EINTR after SIGSTOP + SIGCONT instead of restarting (signal(7)), and asio
+# treats EINTR as fatal; that killed a three-box LowGear key setup at forge's nightly SIGCONT (2026-11-07 10:58).
+sed -i -E "s/tv.tv_sec = (300|3600);.*$/tv.tv_sec = 0; \/\/ darkprep: no player receive timeout (was 300)/" Networking/Player.cpp
+# and a TLS read interrupted by a signal is retried (nothing was consumed); a TLS write is NOT retried: asio's
+# ssl::stream may have taken the bytes into the engine before the lower write failed, so a retry could duplicate
+# them; with no SO_SNDTIMEO the kernel restarts an interrupted send itself.
+python3 - Networking/ssl_sockets.h <<'PY'
+import sys
+f = sys.argv[1]; s = open(f).read()
+if "darkprep: EINTR" not in s:
+    old = """inline size_t receive_non_blocking(ssl_socket* socket, octet* data, size_t length)
+{
+    return socket->read_some(boost::asio::buffer(data, length));
+}"""
+    new = """inline size_t receive_non_blocking(ssl_socket* socket, octet* data, size_t length)
+{
+    // darkprep: EINTR (a signal, e.g. SIGSTOP + SIGCONT) is retried; a TLS read consumed nothing then
+    while (true)
+    {
+        boost::system::error_code ec;
+        size_t n = socket->read_some(boost::asio::buffer(data, length), ec);
+        if (!ec)
+            return n;
+        if (ec != boost::asio::error::interrupted)
+            throw boost::system::system_error(ec);
+    }
+}"""
+    assert s.count(old) == 1
+    s = s.replace(old, new)
+    old = """    while (received < length)
+        received += socket->read_some(boost::asio::buffer(data + received, length - received));"""
+    assert s.count(old) == 1
+    s = s.replace(old, """    while (received < length)
+        received += receive_non_blocking(socket, data + received, length - received);""")
+    # receive() now calls receive_non_blocking: define it first
+    i = s.index("inline void receive(ssl_socket* socket"); j = s.index("inline size_t receive_non_blocking")
+    k = s.index("\n}\n", j) + 3
+    s = s[:i] + s[j:k] + "\n" + s[i:j] + s[k:]
+    open(f, "w").write(s)
+PY
+grep -q "timeout_milli = 0" Networking/sockets.cpp && grep -q "num_keepalive_strobes = 120" Networking/sockets.cpp && grep -q "tv.tv_sec = 0;" Networking/Player.cpp && grep -q "darkprep: EINTR" Networking/ssl_sockets.h
 grep -q -- "-lz -lzstd" Makefile || sed -i "s/\$(LDLIBS) -lz -Wl,-Bdynamic/\$(LDLIBS) -lz -lzstd -Wl,-Bdynamic/" Makefile
 make -j$J static/mascot-party.x static/lowgear-party.x static/highgear-party.x
 ldd static/mascot-party.x || true
