@@ -1027,3 +1027,42 @@ tape 570 MB and release tape 2.67 GB per new seat, handover bundle 27.6 MB, rele
   bb2 / 44.2 -> 102.8 GiB free. Kept: every log, json, bundle, and reh's sealed erased copies.
 - reh's plaintext MP-SPDZ copies (Player-MAC-Keys-p-P<I>, Mascot-Secrets-p-61-*) were already shredded by gen 3;
   reh/seat*/erased holds only DLVAULT1 files (checked by magic). Nothing left to delete.
+
+### reh2: the rehearsal rotation on the vault, sealed tapes and the TLS-canary fix (13:20-13:31 UTC) [EXECUTED]
+
+`record.py dev --steps 4 --handover-at 1 --chunks reh2 --key-dir reh2-old --no-release --name reh2`, bins r10
+(345782da, after c9771f4a and c2319a8d), --ret-round added, each old seat `--keep-erased-copy`; `run.py setup`
+(six file keys), then prep's sealed fresh-key chunks (reh2-c0 under the old keys, reh2-ho and reh2-n-c0 under the
+new; MP-SPDZ Player-Data on tmpfs), `run.py runs/reh2.json drive` (drive.pid): launched 13:20:32, the new committee
+at 13:23:20, "run ended at step 4" 13:31:00; one transcript per step.
+
+The handover lane's checker, run by this lane (coordinator's request; that lane is retired):
+`check_handover.py runs/reh2.json deploy4/check-reh2 --profile ledger-x2de --tools dregg-forge=.../ws-target-r10/release/dl-hand bb2=...`
+- **98 of 101.** All green at the three new seats and the ledger (replicas equal; one handover proof sha256).
+- Old seats: the TLS DER canary's private words 5 before / 0 after at each (reh: 8 false hits; c9771f4a confirmed on the
+  boxes), the vault file key 12 / 0, memory ~2.99M hits before / 0 after over 3.1-3.4 GB, decrypt yes / no, key
+  material 0, no state files left, keyring key invalidated, relaunch and resume exit at a missing secret, tmpfs 3 / 0,
+  RAM cannot page out.
+- `dl-hand vault-open <old name> erased/*` on each old box: 9 DLVAULT1 copies (ckpt 536,870,996, carry 288,873,140,
+  TLS key 174 B per seat), none opens by the keyring or the zero key; no MP-SPDZ plaintext copied (c2319a8d). The
+  --erase-extra p-61 MAC-key and secrets files are gone from /dev/shm (prep's gf2^128 / B-64 secrets remain there).
+- **The 3 reds**: "disk scan before erasure finds the material in the state files (control)". Persistent disk held 0
+  plaintext hits in ~1.12 GB before the erasure, because everything at rest is now sealed (state, TLS key, prep's
+  DLVAULT1 tapes) and the MP-SPDZ key is in tmpfs; the same pass found 3 hits in the RAM class. The control is the
+  checker's criterion (darkhand/scripts/check_handover.py:109), written when tapes and state were plain; proposed to
+  the coordinator: the control holds on persistent OR RAM hits, plus a positive "no plaintext at rest" check. [OPEN]
+
+### The run of record: staged (13:40 UTC)
+
+- Builds r11 at e722d02c (cd4a1b00's release-tape wipe, --ret-round, the disk plan) on forge
+  (/srv/lanes/dl-gen6-deploy/ws-target-r11), bb2 (~/lanes/dl-gen6-deploy/ws-target-r11) and hbox
+  (/othersys/lanes/dl-gen6-deploy/ws-target-r11, built under swarm-build 16G), with dl-hand.
+- hbox: MNIST copied to /othersys/lanes/dl-gen6-deploy/data/mnist (sha256 equal to bb2's); vault-init works there (file
+  key in the persistent keyring, TLS key DLVAULT1). keyctl is not installed, so the test key stays until the keyring's
+  expiry; it guards nothing (its dir is deleted). Its 8 GB swap file is full, but swarm-build runs every scope with
+  MemorySwapMax=0, so a custodian under it never pages out.
+- To launch once the coordinator sends N, K and the layout:
+  `record.py hbox|wired --steps N --handover-at K --chunks NAME --key-dir D [--third H,IP,ROOT] > runs/record.json`,
+  set "bin" to ws-target-r11 (the generator writes ws-target-run), `run.py runs/record.json plan` (prep's lookahead
+  20), `setup`, hand prep the six vault.name paths for sealed chunks, then `run.py runs/record.json drive` in the
+  background with drive.pid. Never forge + bb2 + bb2 (development only).
