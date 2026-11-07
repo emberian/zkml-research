@@ -426,7 +426,9 @@ salts, the tape shares and MAC shares, the alpha share, and the HE key in NTT fo
 | ceremony / reshare / commit / prove / re-auth / total | 1.41 / 0.63 / 9.10 / 10.94 / 5.76 / 34.6 s | 2.62 / 0.49 / 6.71 / 13.92 / 5.78 / 36.2 s | 1.36 / 0.67 / 8.80 / 11.24 / 5.57 / 34.6 s |
 
 All six seats hold one proof (sha256 86ccfd3c..., 37,603,856 B under ledger-x2), and the three replicas are equal
-through the rotation. The binary predates the vault and the TLS canaries, so their checks start with the next build.
+through the rotation. **Python** (`handover_replay.py ledger-x2` on bb2, under a 32 GB scope): ROTATION PASS. Python's
+Ledger.rotate accepts in 852 s (peak RSS about 28 GB) and appends a record equal to the native one; the flipped byte
+is refused with the native verifier's reason, "Merkle opening fails (W1, custodian 2)". The binary predates the vault and the TLS canaries, so their checks start with the next build.
 
 ### run11c: self-handover after an abort at d = 4096, ledger-x2de + RS, cut E live [EXECUTED 2026-11-07 11:22-11:27 UTC, dl-custodian 11e84d91]
 Seat 0 bb2, seat 1 forge (`--attack wrong_return:1`), seat 2 bb2. Prep's tapes: sh-abort (the refused step), ho-x
@@ -800,9 +802,7 @@ aafff52532f04d20a; its interface is proof.md §21-22, 2adc6652):**
 **Quest status:**
 1. Erasure is green on both reruns: run12c, a rotation under ledger-x2, 74/74; run11c, a self-handover under
    ledger-x2de + RS, 37/37. Both are in §7 and were reported to the coordinator.
-   - Open: Python `handover_replay.py ledger-x2` of run12c. In `<lane>/checks/run12c` on bb2 (copies of new0's
-     ledger and handover_e1.bin) it needs more than 23 GB. Run it under `systemd-run --user --scope -p
-     MemoryMax=40G` from `py-8319`, only when `free -g` on bb2 shows room (bb2 was at 95 GB used).
+   - Python's handover_replay of run12c: ROTATION PASS (852 s, about 28 GB, under a 32 GB scope on bb2).
 2. Cut E through the handover is done and reported:
    - Python 63106924;
    - native a0a07f36 (prove_defer / verify_defer, byte-equal);
