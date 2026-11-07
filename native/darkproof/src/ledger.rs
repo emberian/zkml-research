@@ -200,6 +200,9 @@ impl Ledger {
                 if p.rs {
                     more.push_str(", \"RS\": true");
                 }
+                if p.xt {
+                    more.push_str(", \"XT\": true");
+                }
                 if let Some(h) = p.pg {
                     more.push_str(&format!(", \"PG\": \"{}\"", crate::h::hex(&h)));
                 }
