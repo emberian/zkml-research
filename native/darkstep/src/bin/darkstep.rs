@@ -4,17 +4,24 @@
 //!       dealer + three custodian threads in this process, connected over 127.0.0.1 TCP
 //!       --gate T: keys from the ceremony and the ZKPoPK gate before every ptxct (T = 309 ledger, 97 demo);
 //!       DL_DETERMINISTIC=<seed> (builds with --features test-det only) seeds the ceremony and the proofs
-//!   darkstep deal N L F_bits d DIR
-//!       the ideal dealer + owner: DIR/tape_{0,1,2}.bin and DIR/public.bin (the owner's input broadcasts)
+//!   darkstep deal N L F_bits d DIR                       (feature test-harness only)
+//!       the ideal dealer + owner from the harness's PUBLIC seeds: DIR/tape_{0,1,2}.bin and DIR/public.bin. A test
+//!       stand-in for the preprocessing (darkprep); a deployment never runs it
 //!   darkstep party I N L F_bits d DIR HOST:PORT HOST:PORT HOST:PORT [--attack KIND:PARTY]
-//!       one custodian process; writes DIR/result_I.json and DIR/shares_I.bin
-//!   darkstep reveal N L F_bits d DIR
-//!       sums DIR/shares_*.bin and checks the new weights against step_spec (test only)
+//!       one custodian process; writes DIR/result_I.json and DIR/shares_I.bin. Its HE coins come from the OS
+//!       (Prof::secure_coins), never from the harness's public reference streams
+//!   darkstep reveal N L F_bits d DIR                     (feature test-harness only)
+//!       sums DIR/shares_*.bin and checks the new weights against step_spec; it reassembles the model, so a
+//!       deployed party binary cannot run it
 use darkstep::net::{bytes_to_u64s, u64s_to_bytes, Net};
 use darkstep::node::*;
+#[cfg(feature = "test-harness")]
 use darkstep::party::Sh;
+#[cfg(feature = "test-harness")]
 use darkstep::step::*;
-use darkstep::tape::{deal_step, Tape};
+#[cfg(feature = "test-harness")]
+use darkstep::tape::deal_step;
+use darkstep::tape::Tape;
 use serde_json::json;
 use std::net::{SocketAddr, TcpListener};
 use std::time::Instant;
@@ -50,6 +57,7 @@ fn main() {
             short.as_object_mut().unwrap().remove("detail");
             println!("{}", serde_json::to_string(&short).unwrap());
         }
+        #[cfg(feature = "test-harness")]
         "deal" => {
             let pf = prof(&args[2..6]);
             let dir = std::path::PathBuf::from(&args[6]);
@@ -67,7 +75,8 @@ fn main() {
         "party" => {
             let t_start = Instant::now();
             let i: usize = args[2].parse().unwrap();
-            let pf = gated(prof(&args[3..7]), &args);
+            let mut pf = gated(prof(&args[3..7]), &args);
+            pf.secure_coins = true;
             let dir = std::path::PathBuf::from(&args[7]);
             let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
             let tape = Tape::read_from(&mut std::io::BufReader::new(std::fs::File::open(dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();
@@ -91,6 +100,7 @@ fn main() {
             }
             println!("{}", serde_json::to_string(&json!({"party": i, "verdict": v["verdict"], "step_seconds": v["step_seconds"], "by": v.get("by")})).unwrap());
         }
+        #[cfg(feature = "test-harness")]
         "reveal" => {
             let pf = prof(&args[2..6]);
             let dir = std::path::PathBuf::from(&args[6]);

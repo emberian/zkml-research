@@ -7,10 +7,16 @@ description = "Native MPC-fork custodians for dark learning: SPDZ online phase, 
 [features]
 # TEST ONLY: seeded ceremony coins and ZKPoPK hiding randomness, for the bit-exact gated test (vs_reference_gated)
 test-det = ["dzkpopk/test-det"]
+# TEST ONLY: the `deal` (public-seed ideal dealer) and `reveal` (reassembles the shares) subcommands
+test-harness = []
 
 [[test]]
 name = "vs_reference_gated"
 required-features = ["test-det"]
+
+[[test]]
+name = "party_coins"
+required-features = ["test-harness"]
 
 [dependencies]
 pycompat = { path = "../pycompat" }

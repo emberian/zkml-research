@@ -267,7 +267,7 @@ impl He {
                     }
                     let mut keep = Vec::new();
                     for (jj, &(j, ref tx)) in senders.iter().enumerate() {
-                        let mut rg = PyRandom::from_str_seed(&format!(
+                        let mut rg = he.key.return_coins(&format!(
                             "hm|{}|{}|{}|{}|{}|{}",
                             he.mv_seed, calls, transpose as u8, me, j, o
                         ));
@@ -433,7 +433,7 @@ impl He {
                         let acc0 = he.rns.mul_pw(pn, c0);
                         let acc1 = he.rns.mul_pw(pn, c1);
                         let kname = if kind == 0 { "val" } else { "mac" };
-                        let mut rg = PyRandom::from_str_seed(&format!(
+                        let mut rg = he.key.return_coins(&format!(
                             "ho|{}|{}|{}|{}|{}|{}|{}",
                             he.ou_seed, calls, me, j, ab, b, kname
                         ));

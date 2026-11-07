@@ -2,6 +2,7 @@
 //! so keys, ciphertexts and decryptions are bit-identical to the harness.
 use crate::arith::*;
 use crate::rns::Rns;
+use crate::coins::{os_key, Coins, Prf};
 use pycompat::PyRandom;
 use std::sync::Arc;
 
@@ -21,14 +22,17 @@ pub struct PubKey {
 
 pub struct OwnKey {
     pub rns: Arc<Rns>,
-    pub rng: PyRandom,
+    /// encryption coins: the reference stream (`new`, `from_ceremony`) or the OS-keyed PRF (`*_secure`)
+    pub rng: Coins,
+    /// the key for this custodian's HE-return coins; None = the public reference labels (test harness only)
+    pub return_key: Option<[u8; 32]>,
     pub s: Vec<i64>,
     s_ntt: Vec<u64>,
     pub pk: PubKey,
 }
 
 /// bfv.uniform(): N draws randrange(Q), as residues.
-fn uniform(rns: &Rns, rng: &mut PyRandom) -> Vec<u64> {
+fn uniform(rns: &Rns, rng: &mut Coins) -> Vec<u64> {
     let mut ql = [0u64; 5];
     for (k, x) in rns.q_big.to_u64_digits().into_iter().enumerate() {
         ql[k] = x;
@@ -44,15 +48,23 @@ fn uniform(rns: &Rns, rng: &mut PyRandom) -> Vec<u64> {
     out
 }
 
-fn small_error(n: usize, rng: &mut PyRandom) -> Vec<i64> {
+fn small_error(n: usize, rng: &mut Coins) -> Vec<i64> {
     (0..n).map(|_| rng.randint_i64(-8, 8)).collect()
 }
 
 impl OwnKey {
     /// he_matvec.OwnKey(N, Q, t, seed).
     pub fn new(rns: Arc<Rns>, seed: u64) -> Self {
+        Self::keygen(rns, Coins::Py(PyRandom::from_u64(seed)), None)
+    }
+
+    /// A key with s, a, e and every later coin from OS randomness (a party process's ungated key).
+    pub fn new_secure(rns: Arc<Rns>) -> Self {
+        Self::keygen(rns, Coins::Prf(Prf::new(&os_key(), "ownkey")), Some(os_key()))
+    }
+
+    fn keygen(rns: Arc<Rns>, mut rng: Coins, return_key: Option<[u8; 32]>) -> Self {
         let n = rns.n;
-        let mut rng = PyRandom::from_u64(seed);
         let s: Vec<i64> = (0..n).map(|_| rng.ternary()).collect();
         let mut s_ntt = rns.from_signed(&s);
         rns.fwd(&mut s_ntt);
@@ -69,12 +81,21 @@ impl OwnKey {
             }
         }
         rns.fwd(&mut pk0);
-        OwnKey { rns, rng, s, s_ntt, pk: PubKey { pk0_ntt: pk0, pk1_ntt: a_ntt } }
+        OwnKey { rns, rng, return_key, s, s_ntt, pk: PubKey { pk0_ntt: pk0, pk1_ntt: a_ntt } }
     }
 
     /// keygen_ceremony.CeremonyKey(N, Q, t, cust, seed): the ceremony's (s, b, a); the encryption coins come from
     /// random.Random(seed), with no key draws.
     pub fn from_ceremony(rns: Arc<Rns>, seed: u64, s: &[i64], b: &[Vec<u64>], a: &[Vec<u64>]) -> Self {
+        Self::from_ceremony_coins(rns, Coins::Py(PyRandom::from_u64(seed)), None, s, b, a)
+    }
+
+    /// The ceremony's key with encryption coins and HE-return coins from OS randomness (what a party process uses).
+    pub fn from_ceremony_secure(rns: Arc<Rns>, s: &[i64], b: &[Vec<u64>], a: &[Vec<u64>]) -> Self {
+        Self::from_ceremony_coins(rns, Coins::Prf(Prf::new(&os_key(), "ownkey")), Some(os_key()), s, b, a)
+    }
+
+    fn from_ceremony_coins(rns: Arc<Rns>, rng: Coins, return_key: Option<[u8; 32]>, s: &[i64], b: &[Vec<u64>], a: &[Vec<u64>]) -> Self {
         let mut s_ntt = rns.from_signed(s);
         rns.fwd(&mut s_ntt);
         let flat = |v: &[Vec<u64>]| {
@@ -83,7 +104,19 @@ impl OwnKey {
             x
         };
         let pk = PubKey { pk0_ntt: flat(b), pk1_ntt: flat(a) };
-        OwnKey { rns: rns.clone(), rng: PyRandom::from_u64(seed), s: s.to_vec(), s_ntt, pk }
+        OwnKey { rns: rns.clone(), rng, return_key, s: s.to_vec(), s_ntt, pk }
+    }
+
+    /// A fresh HE-return key (a secure key only; the reference key keeps its public labels). The loop calls it per step.
+    pub fn refresh_return_key(&mut self) {
+        if self.return_key.is_some() {
+            self.return_key = Some(os_key());
+        }
+    }
+
+    /// The coins for one HE return: random.Random(label) for the reference key, else the PRF under return_key.
+    pub fn return_coins(&self, label: &str) -> Coins {
+        Coins::for_label(self.return_key.as_ref(), label)
     }
 
     /// bfv.encrypt_exact(m), m[i] in [0, t).
@@ -139,7 +172,7 @@ impl OwnKey {
 /// The returner's reply (he_matvec / he_outer `_return`): acc + Enc_pk_j(0) + round(Q M / t) + flood, with every draw
 /// from `rng` in the reference order: M (N x randrange(t)), u (N x choice), e0, e1 (N x randint(-8, 8) each), flood
 /// (N x randint(-2^F, 2^F)). `acc` is (c0, c1) in NTT form. Returns the coefficient-form ciphertext and M.
-pub fn make_return(rns: &Rns, pk: &PubKey, acc: (&[u64], &[u64]), rng: &mut PyRandom, f_bits: u32) -> (Ct, Vec<u64>) {
+pub fn make_return(rns: &Rns, pk: &PubKey, acc: (&[u64], &[u64]), rng: &mut Coins, f_bits: u32) -> (Ct, Vec<u64>) {
     let n = rns.n;
     let t = rns.t;
     let m: Vec<u64> = (0..n).map(|_| rng.randrange_u64(t)).collect();
