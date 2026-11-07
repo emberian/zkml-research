@@ -99,6 +99,7 @@ fn handover_prover_equals_python() {
         // the native verifier accepts them, against the old roots the proof names (the ledger head's in a run)
         let lp = pr.ligero();
         let parsed = handover::decode(&pr, &nb, d, 3, 3).unwrap();
+        assert_eq!(nb.len(), handover::byte_len(&pr, d, &parsed), "the schema's length (byte_len) differs from the bytes'");
         let tv = std::time::Instant::now();
         handover::verify(&pr, &lp, d, 3, 3, &ctx, &parsed.old_roots, &nb).expect("native verifier accepts");
         let vsecs = tv.elapsed().as_secs_f64();
