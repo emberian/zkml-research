@@ -245,12 +245,21 @@ pub fn scrub_stack(kb: usize) {
     page(kb.div_ceil(16));
 }
 
+/// Build the old custodian's state in a frame of its own, below old_side's and dead once it returns (then zeroed by
+/// scrub_stack_all). Without this the setup closure, being generic, is inlined into old_side, and the state it takes
+/// apart by value (a CustodianState carries the alpha share inline) stays in old_side's live frame: run11b found
+/// one alpha copy there, 3.9 KB above the scanning frame of every seat.
+#[inline(never)]
+fn run_setup<F: FnOnce() -> Box<OldCustodian>>(setup: F) -> Box<OldCustodian> {
+    std::hint::black_box(setup())
+}
+
 /// The old custodian's part. `setup` builds its state (keys, shares, commitment) on the heap in a frame that is
 /// dead and scrubbed before the final scan; `connect6` then joins the six-party mesh. Returns its report; the caller
 /// exits the process.
 pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6: impl FnOnce() -> Net) -> Result<Value, String> {
     let t0 = Instant::now();
-    let st = setup();
+    let st = run_setup(setup);
     let e = old_side_erase(c, st, connect6())?;
     let scrubbed_kb = scrub_stack_all();
     let post_disk = e.dcan.scan_paths(&e.scan_paths);
@@ -320,17 +329,21 @@ fn old_side_erase(c: &Common, mut st: Box<OldCustodian>, net6: Net) -> Result<Er
     // the durable kinds (what a file may hold: checkpoint, tapes, a key file), all below 2^61
     let mut dcan = Canaries::bounded(1u64 << 61);
     for k in KINDS {
+        // a public carry commits this custodian's share itself (public genesis: custodian 0 holds the public W, the
+        // others zero), so that share is public too; its MAC share (alpha W) stays secret
+        let public = carry_is_public(&st.carry[k], c.t);
         let s: Vec<u64> = st.w[k].iter().map(|x| x.s).collect();
         let m: Vec<u64> = st.w[k].iter().map(|x| x.m).collect();
-        can.add_words(&format!("{k} share"), &s, 1 << 16);
+        let sk = if public { 0 } else { 1 << 16 };
+        can.add_words(&format!("{k} share"), if public { &[] } else { &s[..] }, sk);
         can.add_words(&format!("{k} MAC share"), &m, 1 << 16);
-        dcan.add_words(&format!("{k} share"), &s, 1 << 16);
+        dcan.add_words(&format!("{k} share"), if public { &[] } else { &s[..] }, sk);
         dcan.add_words(&format!("{k} MAC share"), &m, 1 << 16);
         let mut s = s;
         let mut m = m;
         s.wipe();
         m.wipe();
-        if carry_is_public(&st.carry[k], c.t) {
+        if public {
             public_carry.push(k.to_string());
             continue;
         }
