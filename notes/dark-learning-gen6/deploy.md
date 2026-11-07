@@ -639,3 +639,37 @@ ac3b201ab6a366ff6; train ad36593ec00657538.
   the wired key's MP-SPDZ files were not reached.
 - `native/deploy/sync.sh` now ships `git archive` of a commit, not the shared working tree (another lane's
   half-written darkproof edit would otherwise reach the boxes); binaries on a box are always one commit.
+
+## Continuation, updated (deploy lane generation 2, 2026-11-07 ~08:50 UTC, near its context limit)
+
+Supersedes the continuation above where they differ. Last commit ed88a249 (pushed); the working tree holds none of
+this lane's changes. Boxes: `ws/` synced at ed88a249 on forge and bb2; builds `ws-target-r3` (prod) and
+`ws-target-test3` (test harness) running at hand-off (`build-r3.log`, `build-r3.pid` in the lane dir); use these
+for every next run (older targets r2/test2 lack the self-connect and self-handover fixes).
+
+Next, in order:
+1. **Release memory measurement (run10)** for the proof lane (a8ee5558dd7fe5a45). Test tapes are being dealt at
+   hand-off: forge `/srv/lanes/dl-gen6-deploy/run10/seat0/deal/tape_0.bin`, bb2 `~/lanes/dl-gen6-deploy/run10/seat{1,2}/deal/`
+   (seat 1 also `public_step0.bin`; logs `run10/deal<I>.log`, PID files `deal<I>.pid`), 1 step + release at M = 52,
+   profile "ledger". Then: move `seat1/deal/public_step0.bin` to `run10/owner/`, set the run10.json bins to
+   ws-target-test3, keep seats 1 and 2 at MemoryMax=40G and forge at 12G, DP_TRACE=1, `run.py runs/run10.json
+   setup` then `launch`; NOTE run.py's setup makes `run10/seat<I>/tls` beside the existing `deal/` dirs. Report each
+   seat's release_P<I>.json (C, mpc/prove/verify s, VmHWM), the sampler's cgroup peak and the DP_TRACE lines to the
+   proof lane. If forge's seat is killed at 12G, that is the finding: tell the proof lane, do not raise the cap.
+2. **Rotation rerun (run12b)** once prep has w4096h5 (old wired key) and ho-new3 (wired-new handover tapes); reuse
+   ho-new2-steps for steps 1-2. Copy runs/run12.json, set tapes to w4096h5 / handover_tape to
+   ho-new3-P<I>/step-0/tape_<I>.bin, bins ws-target-r3, and MOVE EVERY PORT below 32768 (seat addrs, mesh6) — probe
+   them first with `timeout 20 nc -l -p PORT` under a PID file on one box and `/dev/tcp` from the other. Old seats
+   keep `--erase-extra` for their wired-key MP-SPDZ files and `--scan-extra wired<I>/mpspdz`. Tell the handover
+   lane (ac3b201ab6a366ff6) at launch and when the old seats exit.
+3. **Self-handover rerun (run11b)** on the wired-new committee (seat 0 bb2, 1 forge, 2 bb2) with prep's wn-abort
+   (aborted step), ho-sh2 (handover tape), ho-sh2-steps (redo + next), test build ws-target-test3; ports below
+   32768; check on the box afterwards that the refused step's tape is gone (the files reached old_side) before
+   reporting.
+4. **Item 3 (rounded hbox step, run7)** when the prep lane reports the LowGear setup's traffic ended (~15:00 UTC):
+   run7.json is set up, tapes dealt on each box; hbox needs a fresh `bin/ws/darkstep` from ws-target-test3 (scp -3
+   from bb2) since run.py now passes `--consumed-log` (ignored by darkstep serve, harmless) and the self-connect
+   fix matters for hbox's dial-only seat too.
+5. **Item 6**: the coordinator's N, the run's profile ("ledger-x2" once the proof lane lands it: re-check
+   `dl-custodian step-entries ... --profile ledger-x2` against the prep lane's chunk headers), the prep schedule,
+   the archive on bb2, then the long run with pipelined proofs, a handover at step k, the release at the end.
