@@ -99,7 +99,25 @@ fn main() {
                     (0..2 * pf.d).map(|_| darkstep::arith::from_i64(r.randint_i64(-7, 7), pf.t)).collect()
                 })
                 .collect();
-            let (tapes, cs) = darkstep::tape::deal_steps_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), &later, false, &pf.program);
+            // --proof-triples G,C: after each step its proof section (G triples at genesis, C after a carried step) on
+            // the same dealer stream, with the truncations' range bits (proof atoms); one owner stream throughout
+            let (tapes, cs) = match flag(&args, "--proof-triples") {
+                None => darkstep::tape::deal_steps_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), &later, false, &pf.program),
+                Some(gc) => {
+                    let (g, c) = gc.split_once(',').expect("--proof-triples G,C");
+                    let (g, c): (usize, usize) = (g.parse().unwrap(), c.parse().unwrap());
+                    let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
+                    dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
+                    let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
+                    let mut cs = vec![darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &plain.flat_mod(pf.t), &pf.program)];
+                    darkstep::tape::deal_proof_section(&mut dl, g);
+                    for xs in &later {
+                        cs.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, xs, &pf.program));
+                        darkstep::tape::deal_proof_section(&mut dl, c);
+                    }
+                    (dl.tapes, cs)
+                }
+            };
             // --only I: write custodian I's tape only (run the dealer on each custodian's own box)
             let only: Option<usize> = flag(&args, "--only").map(|x| x.parse().unwrap());
             for (i, tp) in tapes.iter().enumerate() {
