@@ -1,0 +1,7 @@
+# bulky or live run outputs: logs, PID files, samplers, binaries, archives
+*.log
+*.pid
+*.mon
+*.out
+**/archive/
+**/bin/

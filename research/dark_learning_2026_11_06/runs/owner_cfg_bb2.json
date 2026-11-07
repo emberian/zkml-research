@@ -1,0 +1,66 @@
+{
+ "d": 4096,
+ "hid": 4096,
+ "reps": 1,
+ "s1a": 11,
+ "s1b": 11,
+ "k1": 19,
+ "s2": 7,
+ "k2": 8,
+ "s3": 8,
+ "k3": 19,
+ "rnd3": true,
+ "t_lo": -128,
+ "xenc": "mc",
+ "tile": 1,
+ "bias": false,
+ "ypos": 128,
+ "yneg": 0,
+ "rnd2": true,
+ "seed_init": 1,
+ "a1": 512,
+ "a2": 0,
+ "eval_n": 64,
+ "intervals": {
+  "_doc": "each truncation input in [a, a + 2^B), as [a, B]; proved, the ledger refuses a step outside",
+  "step": {
+   "z1": [
+    -262144,
+    19
+   ],
+   "z2": [
+    -524288,
+    20
+   ],
+   "e": [
+    -256,
+    9
+   ],
+   "bg_plus_R3": [
+    -524288,
+    20
+   ]
+  },
+  "release": {
+   "z1": [
+    -262144,
+    19
+   ],
+   "z2_class": [
+    -524288,
+    20
+   ],
+   "cmp": [
+    -1024,
+    11
+   ]
+  }
+ },
+ "release": {
+  "examples": "t10k indices 0..63",
+  "opened": "C = count strictly correct",
+  "KC": 10
+ },
+ "data": "/home/build/lanes/dl-gen6-deploy/data/mnist",
+ "seed_order": 2
+}

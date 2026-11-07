@@ -1180,7 +1180,9 @@ bytes (collect's summary.json, the samplers, nightly.log) for the cost report.
 
 ### Continuation addendum: launching rec from a cold start
 
-S = /private/tmp/claude-501/-Users-ember-dev-aidev/78fef112-a52f-425f-8503-f3fa24ff087c/scratchpad/dl-gen5/deploy2/runs,
+S = /Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/runs (durable; moved from the session scratchpad,
+which macOS clears on reboot: rec.json, rec.setup.json, rec.plan.json, owner_cfg_bb2.json, rec/; record.py now writes
+there by default, override with DL_RUNS),
 RUN = native/deploy/run.py (repo /Users/ember/dev/zkml-research). **Where things run**: `drive` runs on the Mac (it reaches
 the boxes over ssh; keep the Mac awake or run it under `caffeinate -i`); the custodians, the owner, the samplers and forge's
 nightly pauser run on the boxes and outlive drive. If drive dies, rerun the same drive command: it attaches to a launched
@@ -1240,3 +1242,9 @@ Successor, before launch:
 2. Launch drive under nohup with a PID file and logs under the lane's scratch run dir, so a dead drive is visible and is
    restarted with the same command (it attaches to the launched run).
 3. Re-check after any Mac network change that drive has reattached (its log shows the attach line).
+
+- Paths (coordinator, ~15:25 UTC): the run of record's config and run dir are now under
+  `research/dark_learning_2026_11_06/runs/` (S above). Launch drive from there, with its PID file and logs in `S/rec/`
+  (`nohup python3 native/deploy/run.py S/rec.json drive > S/rec/drive.log 2>&1 & echo $! > S/rec/drive.pid`, under
+  `caffeinate -i`); logs, PID files and archives are gitignored there. The old scratchpad copies are superseded; do not
+  launch from them.
