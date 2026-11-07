@@ -14,6 +14,7 @@ Digests (all sha256 hex of CPython repr):
 import hashlib
 import json
 import math
+import os
 import random
 import sys
 import time
@@ -23,6 +24,7 @@ import he_matvec as HM
 import he_outer as HO
 import mpc_fork as MF
 import spdz
+import wire_round as WR
 import step_spec as S
 
 DEALER_SEED, OWNER_SEED, KEY_SEED0, MV_SEED, OU_SEED = 5, 9, 100, 11, 13
@@ -78,10 +80,19 @@ def run(N, L, F_bits, d, attack=None, prog=S.HARNESS):
     dealer = spdz.Dealer(t, 3, DEALER_SEED)
     eng = spdz.Engine(t, 3, dealer)
     noise = (N * (t // 2) * 32).bit_length()
-    mv = HM.HEMatvec(eng, keys, N, Q, seed=MV_SEED, flood_bits=F_bits - noise, per_return_rng=True,
+    # DL_WIRE=round: the deploy lane's switched, noise-rounded returns (wire_round.py; outputs unchanged)
+    wire = None
+    if os.environ.get("DL_WIRE", "").startswith("round"):
+        b0, b1 = WR.round_bits(Qp, N, t, F_bits)
+        extra = os.environ["DL_WIRE"][len("round"):]
+        if extra:
+            b0, b1 = b0 + int(extra.split(",")[0]), b1 + int(extra.split(",")[1])
+        wire = (Qp, b0, b1)
+        print("wire", wire[1:], file=sys.stderr)
+    mv = HM.HEMatvec(eng, keys, N, Q, seed=MV_SEED, flood_bits=F_bits - noise, per_return_rng=True, wire=wire,
                      attack=attack if attack and attack[0] == "mv_wrong_return" and False else None)
     ou = HO.HEOuter(eng, keys, N, Q, seed=OU_SEED, flood_bits=F_bits - (N * (t // 2) * 16 * 2).bit_length(),
-                    per_return_rng=True, attack=attack)
+                    per_return_rng=True, attack=attack, wire=wire)
     t0 = time.time()
     try:
         W1n, W2n, _ = MF.run_step(eng, m(W1), m(W2), [v % t for v in x], [v % t for v in y], tab, OWNER_SEED,

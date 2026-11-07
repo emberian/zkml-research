@@ -30,6 +30,8 @@ Transpose: block x colrev(e-block) -> column j at 64 (d_r - 1) + j, summed over 
 import math
 import random
 
+import wire_round as WR
+
 import bfv_ref as bfv
 
 class OwnKey:
@@ -64,7 +66,7 @@ def ptxct(P, ct, Q):
 class HEMatvec:
     """Drop-in for eng.matvec(W, v, transpose) on an spdz.Engine (live mode)."""
     def __init__(self, eng, keys, N, Q, seed=11, flood_bits=40, attack=None, context=("model", 0, 0),
-                 per_return_rng=False):
+                 per_return_rng=False, wire=None):
         self.eng, self.keys, self.N, self.Q = eng, keys, N, Q
         self.p = eng.p
         self.seed = seed
@@ -75,6 +77,8 @@ class HEMatvec:
         # (native/darkstep) use this mode, and so does the bit-exact reference (native_ref.py). The default keeps the
         # single shared stream every recorded result was produced with.
         self.per_return_rng = per_return_rng
+        # wire = (primes, b0, b1): returns switched to two primes and noise-rounded (wire_round.py); outputs unchanged
+        self.wire_mode = wire
         self.flood_bits = flood_bits
         self.attack = attack           # (kind, party) for falsifiers
         self.context = context
@@ -146,7 +150,7 @@ class HEMatvec:
                     c1 = [(x + y) % Q for x, y in zip(acc[1], z0[1])]
                     self.wire["he_return"] += 2 * N * 3
                     self.cts_returned += 1
-                    dec = kj.sch.decrypt((c0, c1))
+                    dec = (WR.decrypt_wire(kj.sch, (c0, c1), *self.wire_mode) if self.wire_mode else kj.sch.decrypt((c0, c1)))
                     idx = [(64 * r + 63, o * dr + r) for r in range(dr)] if not transpose else \
                           [(64 * (dr - 1) + c, o * dc + c) for c in range(dc)]
                     for coef, out in idx:
