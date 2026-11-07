@@ -7,6 +7,9 @@ logged in VAST-LEDGER.md; refuse when total spend would exceed $25.
     python3 vast_box.py offers --gpu "H100 SXM" [--n 8]
     python3 vast_box.py run --offer ID --label NAME --bundle TAR [--bundle TAR ...] --cmd 'bash ...; bash ...'
                             --max-hours H --max-usd X --out DIR [--image IMG] [--disk GB]
+    python3 vast_box.py cpu-offers [--cores 16 --ram-gb 24 --mbit 500 --tb-up 0.6 --tb-down 1.2 --hours 24]
+    python3 vast_box.py hold --offer ID --label NAME --max-hours H --max-usd X --out DIR [--alias A] [--disk GB]
+                             (a box held for hours: OUT/ssh.json + OUT/ssh_config; touch OUT/RELEASE to destroy it)
     python3 vast_box.py list                         (our instances; should be empty between runs)
     python3 vast_box.py destroy --id N               (manual; verifies absence)
 
@@ -111,6 +114,23 @@ def offers(a):
               f"cuda {o.get('cuda_max_good')}", o.get("geolocation"), o.get("cpu_name"))
 
 
+def cpu_offers(a):
+    """On-demand offers for a CPU seat (any GPU), ranked by the total for a run: hours x rate + TB out x the host's
+    upload price + TB in x its download price (hosts bill each direction per GB)."""
+    q = {"cpu_cores_effective": {"gte": a.cores}, "cpu_ram": {"gte": a.ram_gb * 1024}, "inet_up": {"gte": a.mbit},
+         "inet_down": {"gte": a.mbit}, "rentable": {"eq": True}, "rented": {"eq": False}, "type": "on-demand",
+         "order": [["dph_total", "asc"]], "limit": 400}
+    rows = []
+    for o in api("GET", "/bundles/?q=" + urllib.parse.quote(json.dumps(q))).get("offers", []):
+        up, dn = 1000 * (o.get("inet_up_cost") or 0), 1000 * (o.get("inet_down_cost") or 0)
+        rows.append((a.hours * o["dph_total"] + a.tb_up * up + a.tb_down * dn, up, dn, o))
+    for tot, up, dn, o in sorted(rows, key=lambda r: r[0])[: a.n]:
+        print(f"${tot:6.2f}", o["id"], f"${o['dph_total']:.3f}/h", f"cpu {o.get('cpu_cores_effective', 0):.0f}",
+              f"ram {o.get('cpu_ram', 0) / 1024:.0f}G", f"up {o.get('inet_up', 0):.0f} dn {o.get('inet_down', 0):.0f} Mb",
+              f"$/TB up {up:.1f} dn {dn:.1f}", f"static {o.get('static_ip')}", f"rel {o.get('reliability2', 0):.3f}",
+              o.get("geolocation"), o.get("cpu_name"))
+
+
 def instances():
     return api("GET", "/instances/?owner=me").get("instances", [])
 
@@ -143,15 +163,21 @@ def ssh(host, port, cmd, timeout=600):
                           timeout=timeout)
 
 
-def run(a):
-    if instances():
-        sys.exit("an instance already exists on the account: one box at a time (vast_box.py list)")
+def rent(a):
+    """The rules before any rental, then create it, attach our key and write the ledger's start row."""
+    # one box of OURS at a time; other lanes (dark-learning's custodian CPU box) may hold their own on the account
+    ours = [i for i in instances() if str(i.get("label") or "").startswith("accel-")]
+    if ours:
+        sys.exit(f"an accel-* instance already exists: one box at a time ({[i.get('id') for i in ours]})")
     if a.offer in BLACKLIST:
         sys.exit(f"offer {a.offer} is blacklisted (ssh never answered)")
     spent = ledger_spent()
     if spent + a.max_usd > TOTAL_CAP:
         sys.exit(f"refused: ledger spend ${spent:.2f} + this cap ${a.max_usd:.2f} > ${TOTAL_CAP:.2f}")
     c0 = credit()
+    # the account-wide cap: ember's $27.70 credit with a stop at $25 spent, whoever on the account spent it
+    if (27.70 - c0) + a.max_usd > TOTAL_CAP:
+        sys.exit(f"refused: account spend ${27.70 - c0:.2f} + this cap ${a.max_usd:.2f} > ${TOTAL_CAP:.2f}")
     offer = api("GET", "/bundles/?q=" + urllib.parse.quote(json.dumps({"ask_contract_id": {"eq": a.offer}})))["offers"]
     if not offer:
         sys.exit(f"offer {a.offer} not available")
@@ -174,6 +200,139 @@ def run(a):
     KNOWN = KNOWN.parent / f"vast_known_hosts.{iid}"     # fresh per instance: proxy host:port pairs get reused
     ledger(["start", t0.strftime("%Y-%m-%d %H:%MZ"), iid, f"{a.offer} {o['gpu_name']}", f"{rate:.3f}", a.label, "",
             f"cap ${a.max_usd:.2f}, watchdog {hours * 60:.0f} min, image {a.image}, credit before ${c0:.2f}"])
+    return iid, o, rate, hours, c0, t0
+
+
+def wait_ssh(iid, a, state, deadline, t0):
+    """Wait for the instance to run and accept our key; raise (the caller destroys) on a boot error, a boot timeout or
+    a host that refuses ssh for longer than --ssh-timeout once running."""
+    host = port = None
+    while time.time() < deadline and time.time() - t0.timestamp() < a.boot_timeout:
+        inst = api("GET", f"/instances/{iid}/").get("instances") or {}
+        st = inst.get("actual_status")
+        if st == "running" and inst.get("ssh_host"):
+            state.setdefault("running_since", time.time())
+            cands = [(inst["ssh_host"], inst["ssh_port"])]
+            try:
+                hp = (inst.get("ports") or {}).get("22/tcp") or []
+                if inst.get("public_ipaddr") and hp:
+                    cands.append((inst["public_ipaddr"].strip(), int(hp[0]["HostPort"])))
+            except Exception:
+                pass
+            ok = False
+            for h, pt in cands:
+                r = ssh(h, pt, "true", 60)
+                if r.returncode == 0:
+                    host, port, ok = h, pt, True
+                    break
+                log(f"ssh {h}:{pt} rc {r.returncode}: {r.stderr.strip()[-160:]}")
+            if ok:
+                break
+            if time.time() - state["running_since"] > a.ssh_timeout:
+                state["reason"] = "ssh_unreachable"
+                raise RuntimeError("running but ssh unreachable")
+        msg = (inst.get("status_msg") or "").strip()
+        log("boot:", st, msg[:100])
+        bad = any(w in msg.lower() for w in ("no space left", "error response", "failed to", "unauthorized"))
+        state["bad_boot"] = state.get("bad_boot", 0) + 1 if bad else 0
+        if state["bad_boot"] >= 4:
+            state["reason"] = "host_boot_error: " + msg[:80]
+            raise RuntimeError("host cannot start the image")
+        time.sleep(20)
+    else:
+        state["reason"] = "boot_timeout"
+        raise RuntimeError("instance did not become reachable")
+    return host, port
+
+
+def close(iid, o, rate, a, c0, t0, state):
+    """Destroy, verify absence, write the ledger's end row (credit drop measured through the API)."""
+    gone = destroy(iid)
+    t1 = now()
+    time.sleep(30)
+    c1 = credit()
+    est = rate * (t1 - t0).total_seconds() / 3600
+    ledger(["end", t1.strftime("%Y-%m-%d %H:%MZ"), iid, f"{a.offer} {o['gpu_name']}", f"{rate:.3f}", a.label,
+            f"${max(c0 - c1, 0):.2f}",
+            f"est ${est:.2f} over {(t1 - t0).total_seconds() / 60:.1f} min; destroyed+verified {gone}; "
+            f"reason {state['reason'] or 'ok'}; credit after ${c1:.2f}"])
+    log(f"END instance {iid}: verified gone {gone}; est ${est:.2f}; credit ${c0:.2f} -> ${c1:.2f}")
+    if not gone:
+        log("!!! INSTANCE NOT VERIFIED GONE: destroy by hand and tell ember")
+        sys.exit(2)
+
+
+def hold(a):
+    """A box held for hours (a custodian seat): rent it, write its ssh details to OUT/ssh.json and an ssh config block
+    (Host --alias) to OUT/ssh_config, then watch it. It is destroyed (and its absence verified) at the first of: the
+    wall clock (--max-hours, or --max-usd / rate), the spend cap measured as the credit drop through the API (billed
+    bandwidth included) or as rate x elapsed, the file OUT/RELEASE (touch it to give the box back), SIGTERM / SIGINT,
+    or the instance leaving the running state. Start it detached with a PID file (nohup ... & echo $! > hold.pid)."""
+    out = pathlib.Path(a.out)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "RELEASE").unlink(missing_ok=True)
+    iid, o, rate, hours, c0, t0 = rent(a)
+    state = {"rc": None, "reason": None}
+
+    def on_term(sig, frm):
+        raise KeyboardInterrupt(f"signal {sig}")
+    signal.signal(signal.SIGTERM, on_term)
+    deadline = time.time() + hours * 3600
+    try:
+        host, port = wait_ssh(iid, a, state, deadline, t0)
+        inst = api("GET", f"/instances/{iid}/").get("instances") or {}
+        info = {"instance": iid, "offer": a.offer, "host": host, "port": port, "user": "root",
+                "public_ip": (inst.get("public_ipaddr") or "").strip(), "rate_usd_h": rate,
+                "geolocation": o.get("geolocation"), "cpu": o.get("cpu_name"), "cores": o.get("cpu_cores_effective"),
+                "ram_mb": o.get("cpu_ram"), "inet_up_usd_tb": 1000 * (o.get("inet_up_cost") or 0),
+                "inet_down_usd_tb": 1000 * (o.get("inet_down_cost") or 0), "ports": inst.get("ports"),
+                "known_hosts": str(KNOWN), "deadline_utc": dt.datetime.fromtimestamp(deadline, dt.timezone.utc).isoformat(),
+                "max_usd": a.max_usd, "credit_before": c0}
+        (out / "ssh.json").write_text(json.dumps(info, indent=1) + "\n")
+        (out / "ssh_config").write_text(
+            f"Host {a.alias}\n\tHostname {host}\n\tPort {port}\n\tUser root\n\tIdentityFile {SSH_KEY}\n"
+            f"\tIdentitiesOnly yes\n\tUserKnownHostsFile {KNOWN}\n\tStrictHostKeyChecking yes\n"
+            f"\tServerAliveInterval 30\n\tServerAliveCountMax 6\n")
+        log(f"HELD: ssh root@{host} -p {port} (alias {a.alias} in {out / 'ssh_config'}) up after "
+            f"{(now() - t0).total_seconds():.0f} s; destroyed at {info['deadline_utc']} at the latest")
+        last_credit = 0.0
+        while True:
+            if (out / "RELEASE").exists():
+                state["reason"] = "released"
+                break
+            if time.time() > deadline:
+                state["reason"] = "watchdog"
+                break
+            est = rate * (time.time() - t0.timestamp()) / 3600
+            if est >= a.max_usd:
+                state["reason"] = f"spend cap (estimate ${est:.2f})"
+                break
+            if time.time() - last_credit > 300:
+                last_credit = time.time()
+                try:
+                    drop = c0 - credit()
+                    if drop >= a.max_usd:
+                        state["reason"] = f"spend cap (credit drop ${drop:.2f})"
+                        break
+                    st = (api("GET", f"/instances/{iid}/").get("instances") or {}).get("actual_status")
+                    log(f"held: {st}; credit drop ${drop:.2f}, estimate ${est:.2f} of ${a.max_usd:.2f}")
+                    if st not in ("running", None):
+                        state["reason"] = f"instance {st}"
+                        break
+                except Exception as e:
+                    log("watch:", str(e)[:200])
+            time.sleep(20)
+        state["rc"] = 0
+    except BaseException as e:
+        state["reason"] = state["reason"] or repr(e)[:200]
+        log("ERROR / interrupt:", state["reason"])
+    finally:
+        log("releasing:", state["reason"])
+        close(iid, o, rate, a, c0, t0, state)
+
+
+def run(a):
+    iid, o, rate, hours, c0, t0 = rent(a)
     state = {"rc": None, "reason": None}
 
     def on_term(sig, frm):
@@ -183,42 +342,7 @@ def run(a):
     out = pathlib.Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     try:
-        host = port = None
-        while time.time() < deadline and time.time() - t0.timestamp() < a.boot_timeout:
-            inst = api("GET", f"/instances/{iid}/").get("instances") or {}
-            st = inst.get("actual_status")
-            if st == "running" and inst.get("ssh_host"):
-                state.setdefault("running_since", time.time())
-                cands = [(inst["ssh_host"], inst["ssh_port"])]
-                try:
-                    hp = (inst.get("ports") or {}).get("22/tcp") or []
-                    if inst.get("public_ipaddr") and hp:
-                        cands.append((inst["public_ipaddr"].strip(), int(hp[0]["HostPort"])))
-                except Exception:
-                    pass
-                ok = False
-                for h, pt in cands:
-                    r = ssh(h, pt, "true", 60)
-                    if r.returncode == 0:
-                        host, port, ok = h, pt, True
-                        break
-                    log(f"ssh {h}:{pt} rc {r.returncode}: {r.stderr.strip()[-160:]}")
-                if ok:
-                    break
-                if time.time() - state["running_since"] > a.ssh_timeout:
-                    state["reason"] = "ssh_unreachable"
-                    raise RuntimeError("running but ssh unreachable")
-            msg = (inst.get("status_msg") or "").strip()
-            log("boot:", st, msg[:100])
-            bad = any(w in msg.lower() for w in ("no space left", "error response", "failed to", "unauthorized"))
-            state["bad_boot"] = state.get("bad_boot", 0) + 1 if bad else 0
-            if state["bad_boot"] >= 4:
-                state["reason"] = "host_boot_error: " + msg[:80]
-                raise RuntimeError("host cannot start the image")
-            time.sleep(20)
-        else:
-            state["reason"] = "boot_timeout"
-            raise RuntimeError("instance did not become reachable")
+        host, port = wait_ssh(iid, a, state, deadline, t0)
         log(f"ssh root@{host} -p {port} up after {(now() - t0).total_seconds():.0f} s")
         prep = ("set -e; (command -v python3 >/dev/null && python3 -c 'import venv, ensurepip' 2>/dev/null) || "
                 "(apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 python3-venv "
@@ -263,20 +387,7 @@ def run(a):
         state["reason"] = state["reason"] or repr(e)[:200]
         log("ERROR / interrupt:", state["reason"])
     finally:
-        gone = destroy(iid)
-        t1 = now()
-        time.sleep(30)
-        c1 = credit()
-        est = rate * (t1 - t0).total_seconds() / 3600
-        ledger(["end", t1.strftime("%Y-%m-%d %H:%MZ"), iid, f"{a.offer} {o['gpu_name']}", f"{rate:.3f}", a.label,
-                f"${max(c0 - c1, 0):.2f}",
-                f"est ${est:.2f} over {(t1 - t0).total_seconds() / 60:.1f} min; destroyed+verified {gone}; "
-                f"reason {state['reason'] or 'ok'}; credit after ${c1:.2f}"])
-        log(f"END instance {iid}: verified gone {gone}; est ${est:.2f}; credit ${c0:.2f} -> ${c1:.2f}")
-        if not gone:
-            log("!!! INSTANCE NOT VERIFIED GONE: destroy by hand and tell ember")
-            sys.exit(2)
-
+        close(iid, o, rate, a, c0, t0, state)
 
 def main():
     ap = argparse.ArgumentParser()
@@ -284,6 +395,22 @@ def main():
     p = sub.add_parser("offers"); p.add_argument("--gpu", required=True); p.add_argument("--n", type=int, default=8)
     sub.add_parser("list")
     p = sub.add_parser("destroy"); p.add_argument("--id", type=int, required=True)
+    p = sub.add_parser("hold")
+    p.add_argument("--offer", type=int, required=True)
+    p.add_argument("--label", required=True)
+    p.add_argument("--alias", default="vast-held")
+    p.add_argument("--max-hours", type=float, required=True)
+    p.add_argument("--max-usd", type=float, required=True)
+    p.add_argument("--out", required=True)
+    p.add_argument("--image", default=DEFAULT_IMAGE)
+    p.add_argument("--disk", type=int, default=60)
+    p.add_argument("--boot-timeout", type=int, default=1200)
+    p.add_argument("--ssh-timeout", type=int, default=300)
+    p = sub.add_parser("cpu-offers")
+    p.add_argument("--cores", type=float, default=16); p.add_argument("--ram-gb", type=float, default=24)
+    p.add_argument("--mbit", type=float, default=500); p.add_argument("--tb-up", type=float, default=0.6)
+    p.add_argument("--tb-down", type=float, default=1.2); p.add_argument("--hours", type=float, default=24)
+    p.add_argument("--n", type=int, default=20)
     p = sub.add_parser("run")
     p.add_argument("--offer", type=int, required=True)
     p.add_argument("--label", required=True)
@@ -302,6 +429,10 @@ def main():
     elif a.cmd == "list":
         for i in instances():
             print(i.get("id"), i.get("gpu_name"), i.get("actual_status"), i.get("dph_total"), i.get("label"))
+    elif a.cmd == "hold":
+        hold(a)
+    elif a.cmd == "cpu-offers":
+        cpu_offers(a)
     elif a.cmd == "destroy":
         print("verified gone" if destroy(a.id) else "NOT verified gone")
     else:
