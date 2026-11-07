@@ -57,6 +57,16 @@ pub struct Profile {
     /// the PCS codeword's evaluation points (proofwire DOMAIN): cosets of a 2-power subgroup (NTT), or gen 5's
     /// x_j = j + 1
     pub domain: Domain,
+    /// the PCS row split (proofwire SPLIT): square mr = m / 2, or balanced (pcs::row_split)
+    pub split: Split,
+    /// every tree's openings as one multiproof (proofwire MERKLE "multi"), or one path per column ("paths")
+    pub multiproof: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Split {
+    Square,
+    Balanced,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -74,12 +84,14 @@ impl Profile {
             nmask: 2,
             lives: 2,
             blow: 4,
-            k_l: 64,
+            k_l: 512,
             t_hide: 309,
             t_open: 309,
             owner_h: 12,
             he: (16384, 4, 175),
             domain: Domain::Coset,
+            split: Split::Balanced,
+            multiproof: true,
         }
     }
     pub fn demo() -> Self {
@@ -90,12 +102,14 @@ impl Profile {
             nmask: 2,
             lives: 2,
             blow: 4,
-            k_l: 64,
+            k_l: 512,
             t_hide: 97,
             t_open: 97,
             owner_h: 12,
             he: (8192, 3, 118),
             domain: Domain::Coset,
+            split: Split::Balanced,
+            multiproof: true,
         }
     }
     pub fn by_name(s: &str) -> Option<Self> {
@@ -103,8 +117,11 @@ impl Profile {
             "ledger" => Some(Self::ledger()),
             "demo" => Some(Self::demo()),
             // gen 5's evaluation points (the before/after comparison and the vectors made before the coset domain)
-            "ledger-int" => Some(Profile { name: "ledger-int", domain: Domain::Int, ..Self::ledger() }),
-            "demo-int" => Some(Profile { name: "demo-int", domain: Domain::Int, ..Self::demo() }),
+            // before bundle cut A: the square row split and K_L = 64 (every bundle made before 2026-11-07's cut)
+            "ledger-sq" => Some(Profile { name: "ledger-sq", k_l: 64, split: Split::Square, multiproof: false, ..Self::ledger() }),
+            "demo-sq" => Some(Profile { name: "demo-sq", k_l: 64, split: Split::Square, multiproof: false, ..Self::demo() }),
+            "ledger-int" => Some(Profile { name: "ledger-int", domain: Domain::Int, k_l: 64, split: Split::Square, multiproof: false, ..Self::ledger() }),
+            "demo-int" => Some(Profile { name: "demo-int", domain: Domain::Int, k_l: 64, split: Split::Square, multiproof: false, ..Self::demo() }),
             _ => None,
         }
     }
@@ -113,7 +130,16 @@ impl Profile {
     }
 }
 
-/// Phase timing for custodian 0 when DP_TRACE is set (stderr).
+/// The process's resident memory from /proc/self/status (VmRSS now, VmHWM peak), in GB; NaN off Linux.
+pub fn rss_gb(key: &str) -> f64 {
+    std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|s| s.lines().find(|l| l.starts_with(key)).and_then(|l| l.split_whitespace().nth(1)?.parse::<f64>().ok()))
+        .map(|kb| kb / 1e6)
+        .unwrap_or(f64::NAN)
+}
+
+/// Phase timing (and process memory) for custodian 0 when DP_TRACE is set (stderr).
 pub struct Trace {
     on: bool,
     t: std::time::Instant,
@@ -125,7 +151,7 @@ impl Trace {
     }
     pub fn lap(&mut self, what: &str) {
         if self.on {
-            eprintln!("  [{}] {what}: {:.2}s", self.label, self.t.elapsed().as_secs_f64());
+            eprintln!("  [{}] {what}: {:.2}s (process RSS {:.2} GB, peak {:.2} GB)", self.label, self.t.elapsed().as_secs_f64(), rss_gb("VmRSS"), rss_gb("VmHWM"));
             self.t = std::time::Instant::now();
         }
     }

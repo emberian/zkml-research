@@ -554,15 +554,23 @@ pub fn release_custodian(
         return Err("release: the policy's shape is not the weights'".into());
     }
     let nrt = release_section(lp, d, m, prm, pol);
+    let mut tt = crate::Trace::new("release", pt.i);
+    tt.lap("start");
     let t0 = std::time::Instant::now();
     let (c, mut st) = release_mpc(pt, w1, w2, pol, prm)?;
     let mpc_secs = t0.elapsed().as_secs_f64();
+    tt.lap("MPC");
     st.triples = tape_triples_at(&pt.tape, pt.cur, Some(nrt))?;
+    // the release is terminal: nothing reads the tape after its proof section, so free it before proving
+    let cur_after = pt.cur + 3 * nrt;
+    pt.tape = darkstep::tape::Tape { alpha_i: pt.tape.alpha_i, ..Default::default() };
+    pt.atom_log = Vec::new();
+    tt.lap("proof section taken, tape freed");
     let mut net = TcpRef(&pt.net);
     let sent0 = net.sent();
     let (blob, prove_secs) = prove_release(pr, lp, prm, &mut net, ctx, pol, st, head)?;
     let sent = net.sent() - sent0;
-    pt.cur += 3 * nrt;
+    pt.cur = cur_after;
     let mut verify_secs = 0.0;
     if let Some(roots) = head_roots {
         let tv = std::time::Instant::now();

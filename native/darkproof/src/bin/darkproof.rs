@@ -54,8 +54,10 @@ fn main() {
 /// The profile by name; DP_DOMAIN=int selects its gen 5 evaluation points ("<name>-int": vectors made before the
 /// coset domain, and the before/after comparison).
 fn profile(name: &str) -> Profile {
-    let name = match std::env::var("DP_DOMAIN").as_deref() {
-        Ok("int") if !name.ends_with("-int") => format!("{name}-int"),
+    // vectors made before the coset domain (DP_DOMAIN=int) or before bundle cut A (DP_SPLIT=square)
+    let name = match (std::env::var("DP_DOMAIN").as_deref(), std::env::var("DP_SPLIT").as_deref()) {
+        (Ok("int"), _) if !name.ends_with("-int") => format!("{name}-int"),
+        (_, Ok("square")) if !name.ends_with("-sq") && !name.ends_with("-int") => format!("{name}-sq"),
         _ => name.to_string(),
     };
     Profile::by_name(&name).unwrap_or_else(|| panic!("no profile {name}"))

@@ -147,6 +147,8 @@ pub struct LigProof {
     pub pq: Vec<u64>,
     /// group (commit order, then the mask group) -> party -> opened column
     pub cols: Vec<Vec<Vec<Opening>>>,
+    /// the opened column indices (on the wire only under multiproofs; the verifier checks them against its own draw)
+    pub j: Vec<usize>,
 }
 
 /// One custodian's Ligero prover state.
@@ -474,7 +476,7 @@ impl<'p> LigParty<'p> {
             })
             .collect();
         let cols = gather_openings(net, mine);
-        LigProof { w, q, pq, cols }
+        LigProof { w, q, pq, cols, j: jj }
     }
 }
 
@@ -571,6 +573,9 @@ pub fn verify(
         h.s("lig-p").list(pq);
     });
     let jj = tr.distinct_cols(pp.tt, pp.npts);
+    if !msg.j.is_empty() && msg.j != jj {
+        return Err("Ligero column challenge mismatch".into());
+    }
     if msg.cols.len() != group_roots.len() + 1 {
         return Err("Ligero: wrong number of column groups".into());
     }

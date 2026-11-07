@@ -521,7 +521,8 @@ pub fn prove(
     if !rec.lb_rows.is_empty() {
         fill_lookup(rec, &mut atoms_v, net, sp);
     }
-    let pv = padv(&atoms_v, lens["P"]);
+    let mut pv = atoms_v;
+    pv.resize(lens["P"], (0, 0));
     let gather = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
         padv(&rec.had.iter().map(|t| pv[sel(t) as usize]).collect::<Vec<_>>(), lens["A"])
     };
@@ -533,16 +534,25 @@ pub fn prove(
     for nm in &rec.names {
         vecs.insert(nm.to_string(), padv(&inp.wires[*nm], lens[*nm]));
     }
+    // from here on only the shares are read (claims, linear sumchecks), except A, B, C, whose MACs the
+    // zerocheck's Beaver products need: keep shares alone (memory: half of every vector, the large P above all)
+    let mut abc: BTreeMap<String, Vec<Sh>> = BTreeMap::new();
+    let mut xs: BTreeMap<String, Vec<u64>> = BTreeMap::new();
+    for (k, v) in std::mem::take(&mut vecs) {
+        xs.insert(k.clone(), v.iter().map(|x| x.0).collect());
+        if ["A", "B", "C"].contains(&k.as_str()) {
+            abc.insert(k, v);
+        }
+    }
     let carried: Vec<&str> = rec.io.as_ref().map(|io| io.carried.clone()).unwrap_or_else(|| SPINE.to_vec());
     let mut com: BTreeMap<String, PcsParty> = BTreeMap::new();
-    for (k, v) in &vecs {
+    for (k, v) in &xs {
         if carried.contains(&k.as_str()) {
             let mut c = spine_coms.remove(k).expect("spine commitment");
             c.shape.base = c.shape.block;
             com.insert(k.clone(), c);
         } else {
-            let sh: Vec<u64> = v.iter().map(|x| x.0).collect();
-            com.insert(k.clone(), PcsParty::commit(pr, &sh, k, i, inp.det));
+            com.insert(k.clone(), PcsParty::commit(pr, v, k, i, inp.det));
         }
     }
     tt.lap("vectors and commitments");
@@ -580,10 +590,11 @@ pub fn prove(
     let tau = tr.chal(lh);
     let mut zrs: Vec<u64> = Vec::new();
     let mut zc_roots = Vec::new();
+    let prev0: Vec<Sh> = abc["C"].clone();
     let mut st = Sc {
-        f: vecs["A"].clone(),
-        g: vecs["B"].clone(),
-        sub: Some(vecs["C"].clone()),
+        f: abc.remove("A").unwrap(),
+        g: abc.remove("B").unwrap(),
+        sub: Some(abc.remove("C").unwrap()),
         eq: Some(eqv(&tau)),
         deg: 3,
         claim: None,
@@ -591,7 +602,7 @@ pub fn prove(
     };
     // one Beaver product per live pair per round (cosnark_gates_zk.zround): f g is quadratic in X, its X = 0, 1 values
     // are known (round 0: the C atoms; later: the previous round's pair products at r), X = 3 by interpolation
-    let mut prev: Vec<Sh> = vecs["C"].clone();
+    let mut prev: Vec<Sh> = prev0;
     let mut live = rec.had.len();
     let mut pp: Vec<(Sh, Sh, Sh)> = Vec::new();
     let inv2 = field::inv(2);
@@ -637,11 +648,11 @@ pub fn prove(
     let claims: Vec<u64> = ks
         .iter()
         .map(|k| {
-            let (qq, xx) = (&q[k], &vecs[k]);
+            let (qq, xx) = (&q[k], &xs[k]);
             (0..qq.len())
                 .into_par_iter()
                 .with_min_len(4096)
-                .map(|j| field::mul(qq[j], xx[j].0))
+                .map(|j| field::mul(qq[j], xx[j]))
                 .reduce(|| 0, field::add)
         })
         .collect();
@@ -653,7 +664,7 @@ pub fn prove(
     let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
     // lockstep linear sumchecks; a vector's zero padding is never materialized (folds of zeros stay zero)
     let mut tabs: Vec<(Vec<u64>, Vec<u64>)> =
-        ks.iter().map(|k| (q[k].clone(), vecs[k].iter().map(|x| x.0).collect())).collect();
+        ks.iter().map(|k| (q[k].clone(), xs.remove(k).unwrap())).collect();
     let mut rr: Vec<u64> = Vec::new();
     let mut lsc_roots = Vec::new();
     for rnd in 0..lmax {
