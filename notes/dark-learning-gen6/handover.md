@@ -305,6 +305,35 @@ So a d = 4096 handover moves about 1.6 GB of resharing and about 0.8 GB of re-au
 links, plus 22 MB of proof traffic on each of the 30 directed links of the six-party mesh. It finishes in under
 25 s on every seat. The old seats' peak RSS is the step-0 process's; the handover itself adds little.
 
+### run11: self-handover after an abort at d = 4096 [EXECUTED, partly superseded]
+Seat 1 ran `--attack wrong_return:1`. Step 0 was refused at all three seats ("HE outer: Freivalds check failed").
+Each seat reloaded its checkpoint and self-handed over (old role 50.6 / 76.5 / 77.6 s; reshare 2.7-2.8 s; proof
+6.6-6.7 s; erase 0.17-0.23 s; new role 22.0 s). The ledger rotated to the same set at epoch 1, and step 0 was
+redone and step 1 accepted.
+
+Checker `--self`: 31 of 37 hold. Holding, on all three seats:
+- the MAC check under the new key;
+- the kept HE key decrypting;
+- the same-set rotation at epoch 1;
+- verify-rotation, with the flipped byte refused;
+- one proof digest.
+
+The red items, and what each means:
+- **Commitment canaries:** 2.08 M hits after erasure on seat 0, 2,440 on seats 1 and 2. These are false positives
+  on darkhand's side. The carry of a step-0 abort is the PUBLIC genesis commitment (commit_public), which the seat
+  keeps. Fixed in e9c14b1f: `side::carry_is_public` recognises it exactly and leaves it out of the canaries.
+- **5 alpha-share copies per seat, real:**
+  - the partially moved checkpoint `ck.alpha_i` in self_handover's live frame;
+  - the main thread's dead stack below self_handover, which still holds the refused step's frames (old_side
+    scrubs only its own thread's stack).
+  - The deploy lane fixed both in ed88a249 (reload_shares; side::scrub_stack on the main thread before the
+    roles spawn).
+- **Disk control 0 files:** run11's binary predated the files / scan wiring, so `scan_paths` was empty. Fixed in
+  ed88a249.
+
+Rerun: run11b (self-handover), with run12b (rotation) after run12 died before its handover on a TCP self-connect.
+Both binaries are at ed88a249.
+
 ### Bounds this check does not cover [OPEN]
 - **Copy-on-write and SSD storage.** An in-place overwrite is not physical erasure there. hbox's /othersys is ZFS:
   old blocks can survive in free space and snapshots. An SSD's FTL can keep old pages on bb2 and forge too. Against
@@ -405,7 +434,8 @@ State (dev at 060b5623 for darkhand):
     (wired<I>/mpspdz), and --wipe-spent also wiping the handover tape;
   - zero_raw at memset speed (060b5623). The volatile loop had made dl-custodian's prove about 3.5x and its verify
     about 9x slower.
-- **Waiting on the deploy lane (a68410e60434efcda)** for:
+- **Waiting on the deploy lane** (gen 3 after a68410e6; the coordinator has its id) for run12b (rotation) and
+  run11b (self-handover), binaries at ed88a249. Before that, the deploy lane was waiting on:
   1. the rotation rerun at d = 4096 with the boxed state. Then: `check_handover.py RUN.json OUT --profile <p>
      --tools dregg-forge=/srv/lanes/dl-gen6-handover/target-e514/release/dl-hand bb2=/home/build/lanes/dl-gen6-handover/target-e514/release/dl-hand`;
   2. the d = 4096 self-handover after an abort (`--attack wrong_return:1`). Run the checker with `--self`.
