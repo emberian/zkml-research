@@ -1744,3 +1744,125 @@ relinearization with its certificate is built and costs under about 0.2 T per st
 | QROM or knowledge-soundness proofs for the Fiat–Shamir Ligero proofs; composition of the simulators | both | no, but the security claims rest on arguments, not machine-checked proofs |
 | a native prover (Python today: 417 s for one d = 4096 call's ZKPoPK) | both | no |
 | field-extension MACs for a million-step budget | MPC | no |
+
+
+## 23. Gen 5: the MPC fork as a native system; real preprocessing; the whole-run privacy budget; the handover proof (2026-11-07)
+
+Root decisions in force: build the MPC fork; ledger profile T = 309, HE at N = 16384, four primes, F = 2^175; demo
+profile T = 97, N = 8192, three primes, under-strength; selective abort as the named (k+1)·p term.
+Code: `native/` (Rust workspace; `native/README.md`). Lane notes: `notes/dark-learning-gen5/`.
+
+### 23.1 The native step (`native/darkstep`), bit-exact with the harness
+
+Three custodians, each its own rayon pool and process (or thread), over a full TCP mesh with per-stream bounded
+queues (`net.rs`). Each runs the SPDZ online phase from its own tape (`party.rs`), the HE matvec and HE outer product
+from its own seat over BFV in RNS/NTT (`he.rs`, `bfv.rs`, `rns.rs`), and the MAC check. `darkstep deal` writes the
+ideal dealer's tapes; `darkstep party I ...` runs one custodian; `darkstep local` runs all three in one process.
+
+- **The reference.** `native_ref.py` runs the harness step with seeded keys and `per_return_rng=True` (new in
+  he_matvec/he_outer, default off; each HE return draws from its own stream keyed by (seed, call, returner, recipient,
+  block), the only mode a distributed custodian can run). `pycompat` reproduces CPython's `random.Random` and `repr`
+  hashing bit for bit.
+- **Equality** [EXECUTED, `cargo test -p darkstep --test vs_reference`]: the public transcript, every custodian's final
+  authenticated shares and MAC-check sigma, and the SPDZ wire counts equal the harness's at d = 8 and 64 (N = 4096),
+  d = 64 demo (N = 8192) and **d = 64 ledger (N = 16384, L = 4, F = 2^175)**; transcript files byte-identical (13,963
+  entries). Three separate processes give the same digests. Negative controls: a shifted matvec or outer return is
+  refused by the same Freivalds check as in the harness.
+
+| d = 64 | Python | native (Mac) |
+|---|---:|---:|
+| N = 4096 | 145 s | 0.19 s |
+| demo, N = 8192 | 420 s | 0.26 s |
+| ledger, N = 16384 | 1,706 s (loaded) | 0.67 s |
+
+**d = 4096, ledger profile, dregg-forge (16 vCPU, shared with other lanes, load 5-17)** [EXECUTED]: ACCEPT, refines
+step_spec (weights in [-1, 1] above d = 256 so u1 stays in the table's domain, which step_spec asserts).
+
+| phase | seconds |
+|---|---:|
+| owner input (2d² + 2d values) | 0.65 |
+| three HE matvecs | 11.0 |
+| truncations, lookups, products | 0.3 |
+| two HE outer products | 36.7 |
+| MAC check | 1.2 |
+| **online step** | **49.9** (54.4 wall; ideal dealer 4.4 s) |
+
+HE wire 28.1 GB per step over loopback (the count model's 0.214 Tbit, plus framing). Kernel costs at N = 16384, L = 4
+(Mac): a return 7-13 ms (flood draws 1.4 ms of it, inherent to the bit-exact MT stream), a decryption 2-3 ms.
+
+### 23.2 Real preprocessing (`native/darkprep`; `notes/dark-learning-gen5/preprocessing.md`)
+
+MP-SPDZ v0.4.4 MASCOT (BSD-3 + Bristol's usage-report licence; a research implementation, no security review; no
+audited library does prime-field SPDZ preprocessing), three processes on 127.0.0.1, exported as darkstep tapes. Both
+darkstep and the harness (`tape_dealer.py`) run unchanged on them and refine step_spec; a flipped MAC share or `trh`
+share aborts the MAC check in both. Measured against the scholar's model, all of d = 4096 run:
+
+| d | measured | model | ratio |
+|---:|---:|---:|---:|
+| 64 | 8.69 Gbit | 12.87 Gbit | 0.675 |
+| 4096 | 0.599 Tbit (40.9 s, 4 threads per party) | 0.912 Tbit | 0.657 |
+
+The gap is MP-SPDZ's tau = 3 and 64-bit OT messages; tau = 4 measures 0.709 Tbit (0.78 of the model).
+
+### 23.3 The native ZKPoPK (`native/dzkpopk`; `notes/dark-learning-gen5/zkpopk.md`)
+
+Bit-exact proofs (sha256-identical, both ways cross-verified, flip refused) at N = 16 and on the deployed ring
+(N = 16384, four primes, T = 309); all 31 attack rows refused with the harness's reasons. The d = 4096 forward batch:
+**417 s / 217 s (Python) → 2.59 s / 0.92 s** (N = 8192); 4.84 s / 1.85 s at N = 16384. Per custodian per d = 4096 step
+about 21 s to prove and 16 s to verify. Gating darkstep's HE calls on it is in progress.
+
+### 23.4 The collaborative proof and verifier (`native/darkproof`; in progress)
+
+cozk, the ZK spine, the ZK middle, the proofwire codec, verifier, ledger and owner signature are ported and
+byte-identical at d = 4 and 16 (demo); every run_proofwire, signed-input and §16 forgery row is reproduced natively.
+**Gap found:** the verifier replays `mpc_fork.run_step` with the PLAIN SPDZ matvec/outer, so no harness path proves the
+deployed HE step. Decision (root): the middle binds the HE helpers' openings through the public digest and leaves
+matvec/outer correctness to the spine's sumchecks and rank-1 checks; the proof lane writes that reference next.
+darkstep now emits the proof's per-party record and can deal the middle's truncation range bits.
+
+### 23.5 The whole-run privacy budget (`privacy_budget.py`)
+
+Every term, d = 4096, 10^6 steps, ledger HE (log2 of the union bound):
+
+| configuration | HE stat | trunc | MAC | prep | **total** |
+|---|---:|---:|---:|---:|---:|
+| ideal dealer, as built (KAPPA = 40, F_p MACs) | -50.8 | **-6.1** | -40.1 | — | **-6.1** |
+| MASCOT tau = 3 (as released), as built | -50.8 | -6.1 | -40.1 | 0 (combine) | **0 (vacuous)** |
+| MASCOT tau = 4, as built | -50.8 | -6.1 | -40.1 | -18.1 (auth) | -6.1 |
+| MASCOT tau = 4, exact truncation | -50.8 | — | -40.1 | -18.1 | -17.4 |
+| **MASCOT tau = 5, exact truncation, F_p² checks** | -50.8 | — | -101.1 | -50.5 (combine) | **-49.6** |
+
+- **Truncation masking dominates and the field cannot fix it.** The step opens c = x + 2^K + r with r < 2^(K+40);
+  SD < 2^-40 per truncation, 4d = 2^14 per step. In a 61-bit field c < p caps KAPPA at 47 (2^-13 per run). Exact
+  truncation (r uniform in F_p, a comparison circuit) removes the term; the preprocessing lane estimates about
+  +0.5 Tbit per step at d = 4096.
+- **MAC, sacrifice, authentication and owner-check terms** are integrity terms (the collaborative proof also covers
+  integrity under full collusion) counted here because a passing forgery is what lets an abort depend on secrets. In
+  F_p they cost 2^-18 to 2^-40 per run; F_p² checks (not in MP-SPDZ for prime fields) cut them below 2^-77.
+- **MASCOT's combine at tau = 3 is vacuous in a 61-bit field** (2^-30.5 per triple); tau = 5 gives 2^-91.5 per triple.
+- Zero terms: input masks, auth_plain, lookup and Beaver openings, the outer commitments, the proofs within two lives.
+
+### 23.6 The handover proof (`handover.py`, `run_handover.py`; spec: Veil `CustodyHandover.lean`)
+
+Resharing as the Veil model (each old custodian splits its share into subshares for the new ones and erases; the new
+committee re-authenticates under its own MAC key). The proof: the old committee's commitment (the ledger head) and the
+new committee's are evaluated at one Fiat-Shamir point inside a collaborative ZK Ligero among all six custodians, with
+hidden rows u_old (old shares only) and u_new (new shares only), evaluation consistency at both commitments' opened
+columns, and <u_old - u_new, b(r)> = 0 (Schwartz-Zippel, 2 log2(d)/p). No evaluation is revealed. Under the
+both-periods rule each hidden row keeps one honest share. **Two lives suffice:** the old child is opened by its step
+and the handover and never again as a parent; the new commitment by the handover and the next step.
+`Ledger.rotate` now refuses a rotation without a verified handover proof.
+
+[EXECUTED, d = 4, demo; all 13 rows as expected]: old step 1 ACCEPT → honest handover ACCEPT → new committee's step 2,
+chained to the handover's roots, ACCEPT; REFUSED: a commitment of shifted weights, a resharing whose subshares do not
+sum to the old shares (both: Ligero linear test), the honest proof recorded with other new roots, the proof for
+another custodian set, no proof, a tampered proof, the proof replayed into the next epoch, a third opening of the old
+child (life counter), and the old committee's step 2 after rotation (parent mismatch). Native verifier: in progress.
+
+### 23.7 Decisions for ember
+
+1. **Exact truncation** (r uniform in F_p, comparison circuit; about +0.5 Tbit/step of preprocessing) to remove the
+   dominant privacy term, or accept a run bound of about 2^-6 (2^-13 at KAPPA = 47)?
+2. **Preprocessing configuration:** tau = 5 (tau = 3 as released is vacuous here), TLS (+35% wall), and F_p² sacrifice
+   and MAC checks, which MP-SPDZ lacks for prime fields (our own code, or a larger field)?
+3. **MP-SPDZ's status:** accept an unreviewed research implementation and Bristol's usage-report request?
