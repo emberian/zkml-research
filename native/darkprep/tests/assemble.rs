@@ -296,3 +296,36 @@ fn handover_tape_is_auth_plain_only_and_verifies() {
     bad[2].entries[n - 1].2 ^= 1;
     assert!(darkprep::verify::verify_step(&sp, &bad, &[]).is_err(), "a corrupted MAC verified");
 }
+
+#[test]
+fn streamed_darkstep_tape_equals_darkstep_write_to() {
+    let sp = StepParams::at(4, Inputs::Steady).with_proof();
+    let (files, _) = synth(&sp, 9);
+    let tx = Transactions::parse(&files[1], P).unwrap();
+    let t = darkprep::tape::assemble(&sp, &tx, 1).unwrap();
+    let ds = darkstep::tape::Tape {
+        alpha_i: t.alpha_i,
+        tags: t.entries.iter().map(|e| e.0 as u8 + 1).collect(),
+        sh: t.entries.iter().map(|e| e.1).collect(),
+        mac: t.entries.iter().map(|e| e.2).collect(),
+    };
+    let mut want = Vec::new();
+    ds.write_to(&mut want).unwrap();
+    let dir = std::env::temp_dir().join(format!("darkprep-stream-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("tape.bin");
+    let mut w = darkprep::tape::DarkstepWriter::create(&path, tx.alpha_i, darkprep::schedule::n_entries(&sp)).unwrap();
+    darkprep::tape::assemble_in_chunk_emit(&[sp], &tx, 1, 0, &mut |tg, sm| w.push(tg, sm).unwrap()).unwrap();
+    w.finish().unwrap();
+    let got = std::fs::read(&path).unwrap();
+    std::fs::remove_dir_all(&dir).unwrap();
+    assert_eq!(got, want);
+    // negative control: a header count one short refuses the last entry
+    let path2 = std::env::temp_dir().join(format!("darkprep-stream2-{}.bin", std::process::id()));
+    let mut w = darkprep::tape::DarkstepWriter::create(&path2, tx.alpha_i, t.entries.len() - 1).unwrap();
+    let mut refused = 0;
+    darkprep::tape::assemble_in_chunk_emit(&[sp], &tx, 1, 0, &mut |tg, sm| if w.push(tg, sm).is_err() { refused += 1 }).unwrap();
+    std::fs::remove_file(&path2).unwrap();
+    assert_eq!(refused, 1);
+    assert_eq!(darkprep::schedule::n_entries(&sp), tags(&sp).len());
+}

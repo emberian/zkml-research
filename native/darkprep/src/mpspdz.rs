@@ -5,15 +5,67 @@ use std::path::{Path, PathBuf};
 
 /// One party's `Persistence/Transactions-P<i>.data`: header (type "SPDZ gfp", the prime, the party's MAC key
 /// share), then (share, MAC share) pairs, each a 64-bit Montgomery residue (R = 2^64 mod p).
+/// The (share, MAC share) pairs are decoded on access from the file's bytes (a read-only mapping for `read`), so a
+/// release-sized file (hundreds of millions of pairs) never has to be resident twice.
 pub struct Transactions {
     pub fp: Fp,
     pub alpha_i: u64,
-    /// canonical (share, mac) pairs
-    pub shares: Vec<(u64, u64)>,
+    body: Body,
+    off: usize,
+    n: usize,
+    rinv: u64,
+}
+
+enum Body {
+    Owned(Vec<u8>),
+    Mapped(*const u8, usize),
+}
+
+// the mapping is read-only and private to this value
+unsafe impl Send for Body {}
+unsafe impl Sync for Body {}
+
+impl Drop for Body {
+    fn drop(&mut self) {
+        if let Body::Mapped(p, len) = *self {
+            unsafe { libc::munmap(p as *mut libc::c_void, len) };
+        }
+    }
+}
+
+impl Body {
+    fn bytes(&self) -> &[u8] {
+        match self {
+            Body::Owned(v) => v,
+            Body::Mapped(p, len) => unsafe { std::slice::from_raw_parts(*p, *len) },
+        }
+    }
 }
 
 impl Transactions {
+    /// Number of (share, mac) pairs.
+    pub fn len(&self) -> usize {
+        self.n
+    }
+    pub fn is_empty(&self) -> bool {
+        self.n == 0
+    }
+    /// Pair `i`, canonical (out of Montgomery form).
+    #[inline]
+    pub fn share(&self, i: usize) -> (u64, u64) {
+        assert!(i < self.n, "share {i} of {}", self.n);
+        let b = &self.body.bytes()[self.off + 16 * i..self.off + 16 * i + 16];
+        let p = self.fp.p;
+        let fm = |x: u64| self.fp.mul(x % p, self.rinv);
+        (fm(u64::from_le_bytes(b[0..8].try_into().unwrap())), fm(u64::from_le_bytes(b[8..16].try_into().unwrap())))
+    }
+
     pub fn parse(bytes: &[u8], p: u64) -> Result<Self, String> {
+        Self::from_body(Body::Owned(bytes.to_vec()), p)
+    }
+
+    fn from_body(body: Body, p: u64) -> Result<Self, String> {
+        let bytes = body.bytes();
         let fp = Fp::new(p);
         let u64le = |b: &[u8]| u64::from_le_bytes(b.try_into().unwrap());
         let u32le = |b: &[u8]| u32::from_le_bytes(b.try_into().unwrap());
@@ -48,20 +100,27 @@ impl Transactions {
         let rinv = fp.inv(((1u128 << 64) % p as u128) as u64);
         let from_mont = |x: u64| fp.mul(x % p, rinv);
         let alpha_i = from_mont(u64le(&h[o..o + 8]));
-        let body = &bytes[8 + hlen..];
-        if body.len() % 16 != 0 {
+        let off = 8 + hlen;
+        let blen = bytes.len() - off;
+        if blen % 16 != 0 {
             return Err("body is not a whole number of (share, mac) pairs".into());
         }
-        let shares = body
-            .chunks_exact(16)
-            .map(|c| (from_mont(u64le(&c[0..8])), from_mont(u64le(&c[8..16]))))
-            .collect();
-        Ok(Transactions { fp, alpha_i, shares })
+        Ok(Transactions { fp, alpha_i, off, n: blen / 16, rinv, body })
     }
 
+    /// Map the file read-only (it is not copied into memory).
     pub fn read(path: &Path, p: u64) -> Result<Self, String> {
-        let b = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
-        Self::parse(&b, p)
+        use std::os::unix::io::AsRawFd;
+        let f = std::fs::File::open(path).map_err(|e| format!("{}: {e}", path.display()))?;
+        let len = f.metadata().map_err(|e| e.to_string())?.len() as usize;
+        if len == 0 {
+            return Self::parse(&[], p);
+        }
+        let ptr = unsafe { libc::mmap(std::ptr::null_mut(), len, libc::PROT_READ, libc::MAP_PRIVATE, f.as_raw_fd(), 0) };
+        if ptr == libc::MAP_FAILED {
+            return Err(format!("{}: mmap failed: {}", path.display(), std::io::Error::last_os_error()));
+        }
+        Self::from_body(Body::Mapped(ptr as *const u8, len), p)
     }
 }
 

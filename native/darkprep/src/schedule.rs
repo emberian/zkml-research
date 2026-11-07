@@ -134,10 +134,20 @@ pub enum Event {
     Lookup,
 }
 
+/// The events in program order, expanded (small shapes and tests; `runs` for release-sized ones).
 pub fn events(sp: &StepParams) -> Vec<Event> {
+    runs(sp).into_iter().flat_map(|(e, k)| std::iter::repeat(e).take(k)).collect()
+}
+
+/// The events in program order as (event, repeat count) runs.
+pub fn runs(sp: &StepParams) -> Vec<(Event, usize)> {
     let d = sp.d;
     let mut ev = Vec::new();
-    let rep = |ev: &mut Vec<Event>, e: Event, k: usize| ev.extend(std::iter::repeat(e).take(k));
+    let rep = |ev: &mut Vec<(Event, usize)>, e: Event, k: usize| {
+        if k > 0 {
+            ev.push((e, k));
+        }
+    };
     let tr = |t: usize| Event::Trunc(sp.trunc[t].0, sp.trunc[t].1);
     if let Phase::Handover(n) = sp.phase {
         rep(&mut ev, Event::AuthPlain, n);
@@ -155,7 +165,7 @@ pub fn events(sp: &StepParams) -> Vec<Event> {
         rep(&mut ev, Event::Mul, sp.proof_triples);
         return ev;
     }
-    let matvec = |ev: &mut Vec<Event>| {
+    let matvec = |ev: &mut Vec<(Event, usize)>| {
         rep(ev, Event::AuthPlain, d); // auth_plain of the d returned shares
         rep(ev, Event::Mul, d); // Freivalds inner product: d Beaver products
     };
@@ -204,6 +214,21 @@ pub fn tags(sp: &StepParams) -> Vec<Tag> {
     out
 }
 
+/// Tape entries of one event.
+pub fn event_len(sp: &StepParams, e: Event) -> usize {
+    match e {
+        Event::Input | Event::AuthPlain => 1,
+        Event::Mul => 3,
+        Event::Trunc(s, k) => 2 + s as usize + if sp.proof_atoms { (k + KAPPA - s) as usize } else { 0 } + 6 * (s as usize - 1),
+        Event::Lookup => DEG,
+    }
+}
+
+/// Tape entries of the whole shape (= tags(sp).len(), without building it).
+pub fn n_entries(sp: &StepParams) -> usize {
+    runs(sp).iter().map(|&(e, k)| k * event_len(sp, e)).sum()
+}
+
 /// What the MASCOT program must generate for one step.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Plan {
@@ -218,19 +243,19 @@ pub struct Plan {
 impl Plan {
     pub fn of(sp: &StepParams) -> Plan {
         let mut p = Plan { n_in: 0, n_ar: 0, n_tri: 0, n_lp: 0, trunc_classes: vec![] };
-        for e in events(sp) {
+        for (e, n) in runs(sp) {
             match e {
-                Event::Input => p.n_in += 1,
-                Event::AuthPlain => p.n_ar += 1,
-                Event::Mul => p.n_tri += 1,
+                Event::Input => p.n_in += n,
+                Event::AuthPlain => p.n_ar += n,
+                Event::Mul => p.n_tri += n,
                 Event::Trunc(s, k) => {
-                    p.n_tri += 2 * (s as usize - 1);
+                    p.n_tri += n * 2 * (s as usize - 1);
                     match p.trunc_classes.iter().position(|&(a, b, _)| (a, b) == (s, k)) {
-                        Some(i) => p.trunc_classes[i].2 += 1,
-                        None => p.trunc_classes.push((s, k, 1)),
+                        Some(i) => p.trunc_classes[i].2 += n,
+                        None => p.trunc_classes.push((s, k, n)),
                     }
                 }
-                Event::Lookup => p.n_lp += 1,
+                Event::Lookup => p.n_lp += n,
             }
         }
         p

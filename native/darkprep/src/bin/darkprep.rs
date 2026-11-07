@@ -287,14 +287,6 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
     sp
 }
 
-fn darkstep_tape(t: &Tape) -> darkstep::tape::Tape {
-    darkstep::tape::Tape {
-        alpha_i: t.alpha_i,
-        tags: t.entries.iter().map(|e| e.0 as u8 + 1).collect(), // darkstep numbers In = 1 .. Ar = 9, Trhb = 10
-        sh: t.entries.iter().map(|e| e.1).collect(),
-        mac: t.entries.iter().map(|e| e.2).collect(),
-    }
-}
 
 /// One custodian's part of one chunk (see the header). Returns the measurement JSON.
 fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String> {
@@ -347,27 +339,41 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     let ta = std::time::Instant::now();
     let txf = mpspdz.join(format!("Persistence/Transactions-P{party}.data"));
     let tx = Transactions::read(&txf, p)?;
+    // streamed straight into darkstep's DLTAPE01 files (no tape is held in memory): each step's own file, and every
+    // step of the chunk back to back under one alpha (darkstep's multi-step tape; a hard link when there is one step)
+    let ns: Vec<usize> = chunk.iter().map(darkprep::schedule::n_entries).collect();
+    let all_path = tmp.join(format!("tape_{party}.bin"));
+    let mut all = if steps > 1 { Some(darkprep::tape::DarkstepWriter::create(&all_path, tx.alpha_i, ns.iter().sum()).map_err(|e| e.to_string())?) } else { None };
     let mut entries = Vec::new();
-    let mut all = darkstep::tape::Tape { alpha_i: tx.alpha_i, ..Default::default() };
     for j in 0..steps {
-        let t = darkprep::tape::assemble_in_chunk(&chunk, &tx, party as u32, j)?;
-        entries.push(t.entries.len());
         let sd = tmp.join(format!("step-{j}"));
         std::fs::create_dir_all(&sd).map_err(|e| e.to_string())?;
-        let dt = darkstep_tape(&t);
-        all.tags.extend_from_slice(&dt.tags);
-        all.sh.extend_from_slice(&dt.sh);
-        all.mac.extend_from_slice(&dt.mac);
-        let mut f = std::io::BufWriter::new(std::fs::File::create(sd.join(format!("tape_{party}.bin"))).map_err(|e| e.to_string())?);
-        dt.write_to(&mut f).map_err(|e| e.to_string())?;
+        let mut one = darkprep::tape::DarkstepWriter::create(&sd.join(format!("tape_{party}.bin")), tx.alpha_i, ns[j]).map_err(|e| e.to_string())?;
+        let mut err: Option<std::io::Error> = None;
+        let mut n = 0usize;
+        darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
+            n += 1;
+            let r = one.push(t, sm).and_then(|_| match all.as_mut() { Some(a) => a.push(t, sm), None => Ok(()) });
+            if let Err(e) = r {
+                err.get_or_insert(e);
+            }
+        })?;
+        if let Some(e) = err {
+            return Err(e.to_string());
+        }
+        if n != ns[j] {
+            return Err(format!("step {j}: assembled {n} entries, the schedule has {}", ns[j]));
+        }
+        one.finish().map_err(|e| e.to_string())?;
+        entries.push(n);
         let msg = owner::custodian_message_in_chunk(&chunk, &tx, j);
         let mut f = std::fs::File::create(sd.join(format!("owner-msg-P{party}.bin"))).map_err(|e| e.to_string())?;
         owner::write_message(&mut f, &msg).map_err(|e| e.to_string())?;
     }
-    // every step of the chunk back to back, one alpha: darkstep's multi-step tape
-    let mut f = std::io::BufWriter::new(std::fs::File::create(tmp.join(format!("tape_{party}.bin"))).map_err(|e| e.to_string())?);
-    all.write_to(&mut f).map_err(|e| e.to_string())?;
-    drop(f);
+    match all {
+        Some(a) => a.finish().map_err(|e| e.to_string())?,
+        None => std::fs::hard_link(tmp.join(format!("step-0/tape_{party}.bin")), &all_path).map_err(|e| e.to_string())?,
+    }
     drop(tx);
     std::fs::remove_file(&txf).map_err(|e| e.to_string())?; // the tapes are now the only copy of this party's shares
     let asm_s = ta.elapsed().as_secs_f64();
