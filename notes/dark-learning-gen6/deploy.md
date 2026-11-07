@@ -461,3 +461,81 @@ Tests (Mac, ledger profile N = 16384, L = 4, F = 175, d = 64, T = 309, public ge
   - self_handover_after_an_abort_redoes_the_step: seat 1 shifts an outer return in step 0 (`--attack
     wrong_return:1`), all three REFUSE ("HE outer: Freivalds check failed"), recover, rotate to the same set at
     epoch 1 under a new MAC key, redo step 0 and run step 1 (both proved at epoch 1); weights = twin after 2 steps.
+
+### Generation 2, second batch (e5143080) [EXECUTED on the Mac]
+
+- `serve --wipe-spent`: after step k's checkpoint is durable, the step's tape and owner-msg files are zeroed, synced
+  and unlinked (a hard-linked twin name is cleared too: the inode is overwritten). At a rotation every remaining
+  tape/owner-msg file of the epoch joins old_side's wipe list, and the tape files, chunk dirs, D and the TLS dir
+  join `old.scan_paths` (the handover lane's disk canary scan, darkhand 49ae41c7).
+- The handover proof is kept: DIR/handover_e<E>.bin (+ archive); its sha256 is the ledger's rotate record.
+- dl-owner `--next-tls DIR`: one session per committee.
+- Release: M defaults to the genesis cfg's `release.M` (52 since the train lane's 0b0631a5). `dl-custodian
+  test-deal` makes one seat's test-dealer tape (steps, proof sections, release section) from darktrain's real
+  inputs; darkstep's Dealer keeps only that seat's entries (`only`), so a d = 4096 release tape fits one seat.
+- Tests: `--test release_steps` 1 passed (d = 64: one proved step then the release; one C at all three, on each
+  ledger replica, equal to the plaintext count over the revealed head). Caveat: at d = 64 the cfg has tile 0, so the
+  policy images encode to zero and the check is weak; the d = 4096 release run is the real check.
+  `--test handover_steps` 2 passed again (adds: handover_e1.bin's sha256 is on the ledger; the spent tape is gone).
+- Profiles: dev's default "ledger" profile now (bundle cut db65cc57) needs 3,194,067 proof triples per step; every
+  chunk made so far has 3,192,275 = "ledger-sq". The first dry-run launch (run8) died at step 0 on this ("the
+  tape's proof section is shorter than the proof needs"); relaunched as run8b with `--profile ledger-sq` on the same
+  chunks. Step 0's preprocessing was thereby used twice, on identical inputs (public genesis, the same example): a
+  dry-run artefact, not to be repeated in the measured run.
+
+### The 10-step dry run (run8b, 07:25-07:47 UTC) [EXECUTED]
+
+Wired layout (seat 0 forge, seats 1 and 2 bb2, owner bb2), the prep lane's 10-step proved MASCOT set (five 2-step
+chunks w4096s10-c{0..4}, `--chunk-steps 2`), public genesis, `dl-owner --train` (MNIST, order 2), program gen6,
+T = 309, `--ret-primes 2`, `--prove --pipeline-proofs --proof-mesh ... --profile ledger-sq`, archive on seat 0,
+`--pause-utc 10:00-11:00`. Production build (no test harness) at 8299f315. Loads: forge 0.9-12.9, bb2 14.5-68.5
+(other tenants). Every number is an upper bound.
+
+| step | step s | proof s (P0/P1/P2, beside the next step) | verify s | waited for previous proof (P0/P1/P2) |
+|---|---:|---:|---:|---:|
+| 0 | 90.2 | 71.2 / 71.3 / 71.2 | 36.3 / 59.3 / 64.0 | 0 / 0 / 0 |
+| 1 | 109.3 | 108.0 / 87.9 / 82.9 | 36.1 / 43.8 / 44.2 | 0 / 19.4 / 23.9 |
+| 2 | 111.3 | 82.0 / 74.3 / 74.1 | 35.8 / 47.2 / 46.9 | 6.1 / 13.8 / 14.1 |
+| 3 | 106.6 | 98.0 / 87.0 / 87.1 | 36.3 / 50.0 / 51.9 | 1.9 / 13.1 / 13.0 |
+| 4 | 119.8 | 93.0 / 79.1 / 77.1 | 36.6 / 44.4 / 43.5 | 2.1 / 16.2 / 18.0 |
+| 5 | 103.5 | 81.5 / 73.7 / 74.7 | 35.8 / 43.2 / 41.3 | 8.4 / 16.7 / 15.6 |
+| 6 | 101.9 | 81.9 / 74.1 / 76.5 | 35.8 / 52.1 / 51.6 | 5.8 / 13.9 / 11.5 |
+| 7 | 105.8 | 112.0 / 95.4 / 96.1 | 35.6 / 45.0 / 46.5 | 2.7 / 19.2 / 18.7 |
+| 8 | 124.2 | 85.1 / 75.8 / 74.0 | 36.4 / 41.8 / 41.1 | 5.1 / 14.3 / 16.0 |
+| 9 | 99.4 | 51.6 / 45.9 / 46.8 | 34.6 / 34.0 / 34.3 | 9.7 / 15.3 / 14.6 |
+
+- All 30 step verdicts ACCEPT, one transcript per step; every custodian's ledger replica holds genesis + 10 steps;
+  10 bundles (250.9 MB each, 2.4 GB) in seat 0's archive.
+- Wall for 10 steps: 1,254 / 1,256 / 1,250 s, i.e. 125 s per step with the proofs pipelined, against ~138 s per
+  step inline in run 6 (step + hook). The proof beside a step takes 45-112 s instead of 13-21 s alone and the verify
+  35-64 s instead of 4-5 s: the step's 16-thread pool and the proof's rayon pool share 16 vCPU on forge and the busy
+  bb2. Pipelining saves ~10%; a smaller proof pool (or the proof on idle cores) is the next lever.
+- Bytes: 2,350.0 MB per directed link per carried step on the main mesh (2,351.8 at step 0); the proof's bytes
+  are on the proof mesh: 33.46M field elements sent per custodian per step (268 MB, ~134 MB per link).
+- CPU per process: 8,195 / 10,006 / 9,964 s (~800-1,000 s per step).
+- Memory: VmHWM 8.61 / 8.98 / 9.00 GB. **Forge's scope memory.peak reached 12,884,901,888 B, exactly its 12 GiB
+  MemoryMax**: the anon peak is 8.6 GB; the rest is page cache (tape reads, 251 MB bundle and checkpoint writes per
+  step), which the kernel reclaims at the limit (no OOM kill, the process finished). The cap was not raised. Before
+  the long run: drop the page cache of written files (fadvise DONTNEED after each bundle/checkpoint write), or move
+  the archive off forge, and watch memory.events.
+- Not in this dry run: a handover (run9 next) and the release (proof lane cutting its memory).
+
+### The coordinator's two must-fix items before the long run [EXECUTED on the Mac]
+
+1. **Single-use preprocessing, enforced.** `darkstep::serve::read_tape_once` hashes every tape file it loads
+   (sha256 streamed while parsing) and, with a registry set (`--consumed-log FILE`; run.py passes
+   `ROOT/consumed.jsonl`, one per box), refuses a digest already in it and appends {sha256, path, key digest, unix,
+   pid} under a file lock with fsync before the tape is used. Every load goes through it: the first tape, each step's
+   tape in the loop, after --resume, a join's tapes, the self-handover's, the release tape. dl-custodian refuses to
+   start without `--consumed-log` outside test builds. `--test single_use`: 1 passed (step 0 runs; a fresh start on
+   the same tapes is refused by all three before any step, with "preprocessing already consumed"; seats 1 and 2
+   share a box registry; control: `--resume` onto step 1's fresh tapes runs and ACCEPTs).
+2. **Profile against the chunk before step 0.** dl-custodian `check_profile`: the first step's tape header must
+   hold exactly the step's entries for the program (darkprep::schedule::tags) plus the profile's proof section
+   (run::step_section); otherwise exit 2 before any socket. `dl-custodian step-entries N L F d --program gen6
+   --profile P` prints it: ledger-sq 12,456,319 entries (3,192,275 triples) = the prep lane's chunks exactly;
+   ledger (A + B) 12,461,695 (3,194,067). Checked: a ledger-sq header under `--profile ledger` is refused with the
+   message, the same header under `--profile ledger-sq` passes the check. [OPEN] pinning the profile in the ledger's
+   genesis record is the proof lane's format (asked).
+- Page cache: `serve::drop_cache` (fdatasync + POSIX_FADV_DONTNEED) after every tape read, checkpoint, carry and
+  bundle write.

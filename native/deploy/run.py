@@ -169,6 +169,7 @@ def launch(cfg, seats_only=False):
         if cfg.get("genesis_cfg"):
             args += f"--genesis-cfg {sd}/genesis.json "
         args += " ".join(cfg.get("flags", []))
+        args += f" --consumed-log {s['root']}/consumed.jsonl"
         if s.get("archive"):
             args += f" --proof-archive {sd}/archive"
         if s.get("listen"):
@@ -188,6 +189,7 @@ def launch(cfg, seats_only=False):
             if cfg.get("genesis_cfg"):
                 args += f"--genesis-cfg {nd}/genesis.json "
             args += " ".join(ho.get("flags", []))
+            args += f" --consumed-log {s['root']}/consumed.jsonl"
             if s.get("archive"):
                 args += f" --proof-archive {nd}/archive"
             start(s["host"], nd, f"new{j}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/dl-custodian {args}", env=s.get("env", ""))

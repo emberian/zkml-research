@@ -33,3 +33,7 @@ required-features = ["test-harness"]
 [[test]]
 name = "release_steps"
 required-features = ["test-harness"]
+
+[[test]]
+name = "single_use"
+required-features = ["test-harness"]

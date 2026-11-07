@@ -9,6 +9,8 @@
 //!   dl-custodian join J <N L F d> DIR A0 A1 A2 --tls TLSDIR --owner HOST:PORT --steps K --mesh6 A0,..,A5
 //!       --tls6 DIR6 --handover-tape FILE --tapes PAT --owner-msgs PAT --genesis-cfg CFG --prove [...]
 //!   dl-custodian proof-triples N L F d [--program P]
+//! Every serve/join takes `--consumed-log FILE` (required outside test builds): the box's registry of consumed
+//! preprocessing; a tape whose sha256 is in it is refused (single use), including after --resume.
 //!
 //! --prove: after each accepted step k this custodian runs its share of the proof of step k + 1 (ledger counter)
 //! over the same TLS mesh (tag PROOF), from its own ProofRecord, its new weight shares and its tape's proof section
@@ -867,6 +869,58 @@ fn test_deal(args: &[String]) {
     println!("{}", json!({"party": i, "steps": steps, "tape_len": dl.tapes[i].len(), "release": rel}));
 }
 
+/// The run's proof profile against its tapes, before step 0 (or the first step after a resume or a join): the first
+/// step's tape file (--tapes) must hold exactly the step's entries (darkprep's schedule for this program) plus the
+/// proof section this profile needs (run::step_section). A chunk made for another profile is refused here instead
+/// of dying after its step.
+fn check_profile(args: &[String], first: usize) -> Result<(), String> {
+    if !args.iter().any(|a| a == "--prove") {
+        return Ok(());
+    }
+    let Some(pat) = flag(args, "--tapes") else { return Ok(()) };
+    let path = serve::step_path(args, &pat, first);
+    let mut hdr = [0u8; 24];
+    use std::io::Read;
+    std::fs::File::open(&path).and_then(|mut f| f.read_exact(&mut hdr)).map_err(|e| format!("{path}: {e}"))?;
+    let n = u64::from_le_bytes(hdr[16..24].try_into().unwrap()) as usize;
+    let pf = darkstep::node::prof(&args[3..7]);
+    darkproof::field::set_p(pf.t);
+    let pr = profile_of(args);
+    let lp = pr.ligero();
+    let pg = serve::program_of(args);
+    let prm = params_of(&pg);
+    let tables = darkproof::step::tables();
+    let own;
+    let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
+    let (count, want) = step_entries(&lp, pf.d, &pg, prm, tb);
+    if n != want {
+        let name = flag(args, "--profile").unwrap_or_else(|| "ledger".into());
+        return Err(format!("{path}: {n} entries, but a step with profile {name}'s proof section ({count} triples) needs {want}: the chunk was made for another profile"));
+    }
+    Ok(())
+}
+
+/// A carried proved step's tape: (proof-section triples, total entries) for this program and profile.
+fn step_entries(lp: &darkproof::ligero::LigParams, d: usize, pg: &Program, prm: StepParams, tb: &(Vec<u64>, Vec<u64>)) -> (usize, usize) {
+    let count = darkproof::run::step_section(lp, d, prm, true, tb);
+    use darkprep::schedule::*;
+    let sp = StepParams { d, inputs: Inputs::Steady, trunc: [(pg.s1, pg.k1), (pg.s1, pg.k1), (pg.s2, pg.k2), (pg.s3, pg.k3)], proof_atoms: true, proof_triples: count, phase: Phase::Step };
+    (count, tags(&sp).len())
+}
+
+/// Preprocessing is single-use: a deployed custodian refuses to start without the box's consumed-preprocessing
+/// registry (`--consumed-log FILE`, see darkstep::serve::read_tape_once); test builds may run without one.
+fn require_consumed_log(args: &[String]) {
+    match flag(args, "--consumed-log") {
+        Some(l) => serve::set_consumed_log(l.into()),
+        None if cfg!(feature = "test-harness") => {}
+        None => {
+            eprintln!("--consumed-log FILE is required: preprocessing is single-use and every tape loaded is recorded there");
+            std::process::exit(2);
+        }
+    }
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     match args.get(1).map(|s| s.as_str()) {
@@ -885,12 +939,43 @@ fn main() {
             let c = darkproof::run::step_section(&lp, pf.d, prm, true, tb);
             println!("{g},{c}");
         }
+        Some("step-entries") => {
+            // dl-custodian step-entries N L F d [--program P] [--profile X]: a carried proved step's tape entries
+            let pf = darkstep::node::prof(&args[2..6]);
+            darkproof::field::set_p(pf.t);
+            let lp = profile_of(&args).ligero();
+            let tables = darkproof::step::tables();
+            let pg = serve::program_of(&args);
+            let prm = params_of(&pg);
+            let own;
+            let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
+            let (c, n) = step_entries(&lp, pf.d, &pg, prm, tb);
+            println!("{}", json!({"proof_triples": c, "entries": n}));
+        }
         Some("serve") => {
+            require_consumed_log(&args);
             let i: usize = args[2].parse().unwrap();
+            let first = if args.iter().any(|a| a == "--resume") {
+                serve::read_checkpoint(&PathBuf::from(&args[7]).join(format!("ckpt_P{i}.bin"))).map(|c| c.step).unwrap_or(0)
+            } else {
+                0
+            };
+            if let Err(e) = check_profile(&args, first) {
+                eprintln!("{e}");
+                std::process::exit(2);
+            }
             let mut hook = prove_hook(&args, i, false);
             std::process::exit(serve::serve_main_with(&args, &mut hook, genesis_of(&args)));
         }
-        Some("join") => std::process::exit(join_main(&args)),
+        Some("join") => {
+            require_consumed_log(&args);
+            let after: usize = flag(&args, "--after-step").and_then(|k| k.parse().ok()).unwrap_or(0);
+            if let Err(e) = check_profile(&args, after + 1) {
+                eprintln!("{e}");
+                std::process::exit(2);
+            }
+            std::process::exit(join_main(&args))
+        }
         _ => {
             eprintln!("usage: dl-custodian serve|join|proof-triples ... (see the source's module doc)");
             std::process::exit(2);
