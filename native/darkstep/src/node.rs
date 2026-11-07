@@ -28,6 +28,10 @@ pub struct Prof {
     pub t: u64,
     /// compute threads per custodian
     pub threads: usize,
+    /// Some(T): ceremony keys and the ZKPoPK gate with T opened columns (309 ledger, 97 demo); None: OwnKey, ungated
+    pub gate: Option<usize>,
+    /// TEST ONLY (feature test-det): DL_DETERMINISTIC seed for the ceremony and the batch proofs
+    pub det_seed: Option<String>,
 }
 
 pub fn prof(a: &[String]) -> Prof {
@@ -36,7 +40,7 @@ pub fn prof(a: &[String]) -> Prof {
     let pr = ntt_primes(61, l + 1, 2 * n as u64);
     let cores = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(cores);
-    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads }
+    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None }
 }
 
 pub fn flag(args: &[String], name: &str) -> Option<String> {
@@ -54,19 +58,54 @@ pub fn attack_of(args: &[String]) -> Option<(String, usize)> {
 pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: Option<(String, usize)>) -> (serde_json::Value, Option<(Vec<Vec<Sh>>, Vec<Vec<Sh>>)>, Option<String>) {
     let t0 = Instant::now();
     let rns = Arc::new(Rns::new(pf.n, &pf.qs, pf.t));
-    let key = OwnKey::new(rns.clone(), KEY_SEED0 + i as u64);
-    // public keys: exchange (pk0_ntt, pk1_ntt)
-    let mut mine = key.pk.pk0_ntt.clone();
-    mine.extend_from_slice(&key.pk.pk1_ntt);
-    let all = net.exchange_bytes(net::CTRL, &u64s_to_bytes(&mine));
-    let ln = rns.l() * rns.n;
-    let pks = all
-        .iter()
-        .map(|b| {
-            let v = bytes_to_u64s(b);
-            crate::bfv::PubKey { pk0_ntt: v[..ln].to_vec(), pk1_ntt: v[ln..].to_vec() }
-        })
-        .collect();
+    let (key, pks, gate) = match pf.gate {
+        None => {
+            let key = OwnKey::new(rns.clone(), KEY_SEED0 + i as u64);
+            // public keys: exchange (pk0_ntt, pk1_ntt)
+            let mut mine = key.pk.pk0_ntt.clone();
+            mine.extend_from_slice(&key.pk.pk1_ntt);
+            let all = net.exchange_bytes(net::CTRL, &u64s_to_bytes(&mine));
+            let ln = rns.l() * rns.n;
+            let pks = all
+                .iter()
+                .map(|b| {
+                    let v = bytes_to_u64s(b);
+                    crate::bfv::PubKey { pk0_ntt: v[..ln].to_vec(), pk1_ntt: v[ln..].to_vec() }
+                })
+                .collect();
+            (key, pks, None)
+        }
+        Some(tcols) => {
+            // keys from the ceremony: every key registered with its key proof; the public keys ARE the registry
+            let tc = Instant::now();
+            let (cust, cer) = match crate::gate::ceremony(&net, i, pf.n, &pf.qs, pf.t, tcols, pf.det_seed.as_deref()) {
+                Ok(x) => x,
+                Err(e) => {
+                    net.shutdown();
+                    return (json!({"party": i, "verdict": "REFUSED", "by": format!("ceremony: {e}")}), None, None);
+                }
+            };
+            let regs: Vec<Arc<dzkpopk::KeyRegistry>> = (0..3).map(|k| cer.registry(k).unwrap()).collect();
+            let key = OwnKey::from_ceremony(rns.clone(), KEY_SEED0 + i as u64, &cust.s, regs[i].b_res(), regs[i].a_res());
+            let pks = regs
+                .iter()
+                .map(|r| OwnKey::from_ceremony(rns.clone(), 0, &vec![0; pf.n], r.b_res(), r.a_res()).pk)
+                .collect();
+            let g = crate::gate::Gate {
+                regs,
+                s: cust.s.clone(),
+                e_pk: cust.e.clone(),
+                tcols,
+                det_seed: pf.det_seed.clone(),
+                ceremony_s: tc.elapsed().as_secs_f64(),
+                prove_s: 0.0,
+                verify_s: 0.0,
+                proof_bytes_sent: 0,
+                proofs: vec![],
+            };
+            (key, pks, Some(g))
+        }
+    };
     let mut he = He {
         rns: rns.clone(),
         key,
@@ -85,6 +124,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
         cts_sent: 0,
         cts_returned: 0,
         attack,
+        gate,
     };
     let setup = t0.elapsed().as_secs_f64();
     let tab = tables(pf.t);
@@ -104,6 +144,15 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
         "he_wire": {"mv": {"he_send": he.he_send, "he_return": he.he_return},
                     "ou": {"he_send": he.ou_send, "he_return": he.ou_return, "commit": he.ou_commit}},
     });
+    let mut base = base;
+    if let Some(g) = &he.gate {
+        base["gate"] = json!({
+            "T": g.tcols, "ceremony_seconds": g.ceremony_s, "prove_seconds": g.prove_s, "verify_seconds": g.verify_s,
+            "proof_bytes_sent": g.proof_bytes_sent, "ceremony_seed": g.regs[0].seed.split('/').next(),
+            "key_b_sha256": g.regs.iter().map(|r| pycompat::repr::sha256_hex(&dzkpopk::Json::List(r.b.to_big().into_iter().map(|x| dzkpopk::Json::Int(x.into())).collect()).canonical())).collect::<Vec<_>>(),
+            "proofs": g.proofs.iter().map(|(l, h)| json!([l, h])).collect::<Vec<_>>(),
+        });
+    }
     let tdig = transcript_digest(&pt.tr);
     let mut dump = Vec::new();
     if i == 0 && pf.d <= 128 {

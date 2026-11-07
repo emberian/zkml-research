@@ -72,8 +72,27 @@ impl OwnKey {
         OwnKey { rns, rng, s, s_ntt, pk: PubKey { pk0_ntt: pk0, pk1_ntt: a_ntt } }
     }
 
+    /// keygen_ceremony.CeremonyKey(N, Q, t, cust, seed): the ceremony's (s, b, a); the encryption coins come from
+    /// random.Random(seed), with no key draws.
+    pub fn from_ceremony(rns: Arc<Rns>, seed: u64, s: &[i64], b: &[Vec<u64>], a: &[Vec<u64>]) -> Self {
+        let mut s_ntt = rns.from_signed(s);
+        rns.fwd(&mut s_ntt);
+        let flat = |v: &[Vec<u64>]| {
+            let mut x: Vec<u64> = v.iter().flatten().copied().collect();
+            rns.fwd(&mut x);
+            x
+        };
+        let pk = PubKey { pk0_ntt: flat(b), pk1_ntt: flat(a) };
+        OwnKey { rns: rns.clone(), rng: PyRandom::from_u64(seed), s: s.to_vec(), s_ntt, pk }
+    }
+
     /// bfv.encrypt_exact(m), m[i] in [0, t).
     pub fn encrypt_exact(&mut self, m: &[u64]) -> Ct {
+        self.encrypt_exact_w(m).0
+    }
+
+    /// encrypt_exact, also returning the error e (the sender's ZKPoPK witness).
+    pub fn encrypt_exact_w(&mut self, m: &[u64]) -> (Ct, Vec<i64>) {
         let rns = self.rns.clone();
         let n = rns.n;
         let a = uniform(&rns, &mut self.rng);
@@ -90,7 +109,7 @@ impl OwnKey {
                 c0[k * n + i] = submod(enc[k], addmod(as_[k * n + i], from_i64(e[i], q), q), q);
             }
         }
-        Ct { c0, c1: a }
+        (Ct { c0, c1: a }, e)
     }
 
     /// bfv.decrypt((c0, c1)) at the given coefficients (all when idx is None).

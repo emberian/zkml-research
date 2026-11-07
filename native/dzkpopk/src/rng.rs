@@ -2,6 +2,7 @@
 //! DL_DETERMINISTIC streams (zkpopk_ligero.det_rng / keygen_ceremony.det_custodian_rng).
 
 use crate::field::{Fe, P};
+#[cfg(feature = "test-det")]
 use pycompat::PyRandom;
 use std::io::Read;
 
@@ -63,8 +64,10 @@ fn lt_p(l: &[u64; 4]) -> bool {
 }
 
 /// TEST ONLY: random.Random(label) as the harness's DL_DETERMINISTIC hook seeds it.
+#[cfg(feature = "test-det")]
 pub struct DetHiding(pub PyRandom);
 
+#[cfg(feature = "test-det")]
 impl DetHiding {
     /// zkpopk_ligero.det_rng(label, st): random.Random(f"dl-zkpopk|{seed}|{label}|{digest hex}").
     pub fn for_statement(seed: &str, label: &str, digest: &[u8; 32]) -> DetHiding {
@@ -72,6 +75,7 @@ impl DetHiding {
     }
 }
 
+#[cfg(feature = "test-det")]
 impl Hiding for DetHiding {
     fn fe(&mut self) -> Fe {
         let v = self.0.randbelow_limbs(&P);
