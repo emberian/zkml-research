@@ -1,0 +1,202 @@
+{
+ "unit_prices_bits": {
+  "input": {
+   "model": 7564,
+   "measured": 262398
+  },
+  "random": {
+   "model": 22692,
+   "measured": 23457
+  },
+  "triple": {
+   "model": 390888,
+   "measured": 261849
+  },
+  "power_product": {
+   "model": 391620,
+   "measured": 263786
+  },
+  "bit": {
+   "model": 414678,
+   "measured": 262617
+  }
+ },
+ "tables": {
+  "64": {
+   "rows": [
+    {
+     "row": "input",
+     "count": 128,
+     "model_bits": 968192,
+     "measured_bits": 33586918,
+     "ratio": 34.69
+    },
+    {
+     "row": "random",
+     "count": 256,
+     "model_bits": 5809152,
+     "measured_bits": 6004955,
+     "ratio": 1.034
+    },
+    {
+     "row": "triple",
+     "count": 2562,
+     "model_bits": 1001455056,
+     "measured_bits": 670856626,
+     "ratio": 0.67
+    },
+    {
+     "row": "power_product",
+     "count": 16256,
+     "model_bits": 6366174720,
+     "measured_bits": 4288098761,
+     "ratio": 0.674
+    },
+    {
+     "row": "bit",
+     "count": 13248,
+     "model_bits": 5493654144,
+     "measured_bits": 3479147366,
+     "ratio": 0.633
+    }
+   ],
+   "model_total_bits": 12868061264,
+   "units_times_counts_bits": 8477694626,
+   "full_run_bits": 8687734272,
+   "full_run_over_model": 0.675,
+   "additivity": 0.9758,
+   "wall_s_1thread": 2.247,
+   "per_party_sent_bytes": [
+    362162000,
+    361898000,
+    361898000
+   ]
+  },
+  "1024": {
+   "rows": [
+    {
+     "row": "input",
+     "count": 2048,
+     "model_bits": 15491072,
+     "measured_bits": 537390694,
+     "ratio": 34.69
+    },
+    {
+     "row": "random",
+     "count": 4096,
+     "model_bits": 92946432,
+     "measured_bits": 96079282,
+     "ratio": 1.034
+    },
+    {
+     "row": "triple",
+     "count": 65538,
+     "model_bits": 25618017744,
+     "measured_bits": 17161046654,
+     "ratio": 0.67
+    },
+    {
+     "row": "power_product",
+     "count": 260096,
+     "model_bits": 101858795520,
+     "measured_bits": 68609580179,
+     "ratio": 0.674
+    },
+    {
+     "row": "bit",
+     "count": 224256,
+     "model_bits": 92994029568,
+     "measured_bits": 58893393101,
+     "ratio": 0.633
+    }
+   ],
+   "model_total_bits": 220579280336,
+   "units_times_counts_bits": 145297489910,
+   "full_run_bits": 145292724352,
+   "full_run_over_model": 0.659,
+   "additivity": 1.0,
+   "wall_s_1thread": 34.902,
+   "per_party_sent_bytes": [
+    6056770000,
+    6052340000,
+    6052340000
+   ]
+  },
+  "4096": {
+   "rows": [
+    {
+     "row": "input",
+     "count": 8192,
+     "model_bits": 61964288,
+     "measured_bits": 2149562778,
+     "ratio": 34.69
+    },
+    {
+     "row": "random",
+     "count": 16384,
+     "model_bits": 371785728,
+     "measured_bits": 384317129,
+     "ratio": 1.034
+    },
+    {
+     "row": "triple",
+     "count": 311298,
+     "model_bits": 121682652624,
+     "measured_bits": 81513007742,
+     "ratio": 0.67
+    },
+    {
+     "row": "power_product",
+     "count": 1040384,
+     "model_bits": 407435182080,
+     "measured_bits": 274438320718,
+     "ratio": 0.674
+    },
+    {
+     "row": "bit",
+     "count": 921600,
+     "model_bits": 382167244800,
+     "measured_bits": 242027642880,
+     "ratio": 0.633
+    }
+   ],
+   "model_total_bits": 911718829520,
+   "units_times_counts_bits": 600512851247,
+   "full_run_bits": 599446897408,
+   "full_run_over_model": 0.657,
+   "additivity": 1.0018,
+   "wall_s_1thread": 143.511,
+   "per_party_sent_bytes": [
+    24988900000,
+    24970700000,
+    24970700000
+   ]
+  }
+ },
+ "triple_formula_at_backend_parameters": {
+  "tau3": {
+   "formula": 251442,
+   "measured": 261849,
+   "over_formula": 1.041
+  },
+  "tau4": {
+   "formula": 297192,
+   "measured": 309849,
+   "over_formula": 1.043
+  }
+ },
+ "tau4_full_runs": {
+  "64": {
+   "bits": 10271734272,
+   "over_model": 0.798
+  },
+  "4096": {
+   "bits": 708986097408,
+   "over_model": 0.778
+  }
+ },
+ "d4096_variants_bits": {
+  "d4096s_th4_tls": 599457600000,
+  "d4096s_th5_softspoken4": 515025600000
+ }
+}
