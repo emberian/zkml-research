@@ -26,8 +26,9 @@ impl Transcript {
         (0..k).map(|i| self.chal1_i(i as u64)).collect()
     }
 
+    /// The i-th draw of a chal(k) (a streamed chal: call with i = 0, 1, ... in order).
     #[inline]
-    fn chal1_i(&mut self, i: u64) -> u64 {
+    pub fn chal1_i(&mut self, i: u64) -> u64 {
         let mut h = Py::new();
         h.hx(&self.state).s("c").int(i);
         self.state = h.done();

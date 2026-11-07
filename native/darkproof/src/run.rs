@@ -712,7 +712,11 @@ pub fn release_custodian_l(
     let t0 = std::time::Instant::now();
     let (c, mut st) = release_mpc(pt, w1, w2, pol, prm)?;
     let mpc_secs = t0.elapsed().as_secs_f64();
-    tt.lap("MPC");
+    // the party's MAC log (every opening of its life; release_mpc's MAC check covered it) is not read again: the
+    // release is terminal
+    let olog = pt.open_log.capacity() * std::mem::size_of::<(u64, u64)>();
+    pt.open_log = Vec::new();
+    tt.lap(&format!("MPC (its MAC log freed: {:.2} GB; the party transcript kept: {:.2} GB)", olog as f64 / 1e9, (pt.tr.v.capacity() * 8) as f64 / 1e9));
     // the release is terminal: its proof section is the rest of the tape (prove_release refuses a count that is not
     // the proof's), taken from the tape's end as the tape shrinks, and the rest of the tape freed before proving. The
     // count is not recomputed here: release_section replays the program (at M = 52 a transient Rec of about 7 GB).
