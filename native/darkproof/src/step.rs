@@ -160,6 +160,69 @@ pub struct Con {
     pub pos: usize,
 }
 
+/// A stored constraint, read from `Cons`.
+#[derive(Clone, Copy, Debug)]
+pub struct ConRef<'a> {
+    pub terms: &'a [(Atom, u64)],
+    pub c: u64,
+    pub value: u64,
+    pub phase: Phase,
+    pub pos: usize,
+}
+
+/// The constraint list, flat: every constraint's terms in one arena with an offset each (memory: a Vec per
+/// constraint cost about 150 B a constraint, 5.9 GB for the release at M = 52 before RS). Same order, same values.
+#[derive(Default)]
+pub struct Cons {
+    terms: Vec<(Atom, u64)>,
+    /// end of constraint j's terms in `terms`
+    end: Vec<u32>,
+    c: Vec<u64>,
+    value: Vec<u64>,
+    phase: Vec<Phase>,
+    /// u32::MAX for usize::MAX
+    pos: Vec<u32>,
+}
+
+impl Cons {
+    pub fn len(&self) -> usize {
+        self.end.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.end.is_empty()
+    }
+    pub fn push(&mut self, con: Con) {
+        self.terms.extend_from_slice(&con.form.terms);
+        self.end.push(u32::try_from(self.terms.len()).expect("constraint terms beyond u32"));
+        self.c.push(con.form.c);
+        self.value.push(con.value);
+        self.phase.push(con.phase);
+        self.pos.push(if con.pos == usize::MAX { u32::MAX } else { u32::try_from(con.pos).expect("transcript position beyond u32") });
+    }
+    pub fn get(&self, j: usize) -> ConRef<'_> {
+        let a = if j == 0 { 0 } else { self.end[j - 1] as usize };
+        ConRef {
+            terms: &self.terms[a..self.end[j] as usize],
+            c: self.c[j],
+            value: self.value[j],
+            phase: self.phase[j],
+            pos: if self.pos[j] == u32::MAX { usize::MAX } else { self.pos[j] as usize },
+        }
+    }
+    pub fn iter(&self) -> impl DoubleEndedIterator<Item = ConRef<'_>> + ExactSizeIterator + '_ {
+        (0..self.len()).map(move |j| self.get(j))
+    }
+    /// return the buffers' spare capacity (the replay is done)
+    pub fn shrink_to_fit(&mut self) {
+        self.terms.shrink_to_fit();
+        self.end.shrink_to_fit();
+        self.c.shrink_to_fit();
+        self.value.shrink_to_fit();
+        self.phase.shrink_to_fit();
+        self.pos.shrink_to_fit();
+    }
+}
+
 /// The preprocessing tags, recorded so a live witness can be checked against the replay.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Tag {
@@ -190,7 +253,7 @@ pub struct Rec<'t> {
     pub prm: StepParams,
     pub d: usize,
     pub tags: Vec<Tag>,
-    pub cons: Vec<Con>,
+    pub cons: Cons,
     pub had: Vec<(u32, u32, u32)>,
     transcript: &'t [u64],
     pub tpos: usize,
@@ -257,7 +320,7 @@ impl Rec<'static> {
             prm,
             d: 0,
             tags: Vec::new(),
-            cons: Vec::new(),
+            cons: Cons::default(),
             had: Vec::new(),
             transcript: &[],
             tpos: 0,
@@ -678,7 +741,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         prm,
         d,
         tags: Vec::new(),
-        cons: Vec::new(),
+        cons: Cons::default(),
         had: Vec::new(),
         transcript,
         tpos: 0,
@@ -762,6 +825,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     if prm.lb {
         r.append_lookup()?;
     }
+    r.cons.shrink_to_fit();
     Ok(r)
 }
 
@@ -784,7 +848,7 @@ pub fn replay_release<'t>(
         prm,
         d,
         tags: Vec::new(),
-        cons: Vec::new(),
+        cons: Cons::default(),
         had: Vec::new(),
         transcript,
         tpos: 0,
@@ -897,6 +961,7 @@ pub fn replay_release<'t>(
     if prm.lb {
         r.append_lookup()?;
     }
+    r.cons.shrink_to_fit();
     Ok(r)
 }
 
