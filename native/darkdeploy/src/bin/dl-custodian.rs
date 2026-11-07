@@ -633,7 +633,7 @@ impl Prove {
                     let net6 = serve::connect_mesh(3 + i, &a6n, None, &id_new, &c6n, timeout)?;
                     // the kept key goes to the new role and comes back as nc.key
                     let nc = side::new_side(common, i, net3, net6, new_tape, epoch + 1, 0, Some(he.key))?;
-                    let side::NewCustodian { j, keys, key, party, w, carry, proof, new_roots, report } = nc;
+                    let side::NewCustodian { j, keys, key, party, w, carry, proof, new_roots, report, .. } = nc;
                     Ok((Joined { j, keys, party, w, carry, proof, new_roots, report }, darkstep::he::He { key, ..he }))
                 })
                 .unwrap();
