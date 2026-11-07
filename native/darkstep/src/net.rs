@@ -196,7 +196,7 @@ impl Net {
             loop {
                 match resil::dial(s, addrs[j], ccfgs[j].clone().unwrap(), j, Duration::from_secs(10)) {
                     Ok(()) => break,
-                    Err(e) if e.contains("refused") => {
+                    Err(e) if e.contains("TLS handshake") => {
                         closed.store(true, Ordering::Relaxed);
                         return Err(format!("party {me}: {e}"));
                     }

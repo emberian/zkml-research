@@ -58,6 +58,11 @@ impl CustodianState {
         Ok(CustodianState { i, pf, he, pt, w: None, step: 0, tab, pool, last_sent: vec![[0; crate::net::NTAGS]; n], last_gate: [0.0; 3], last_proof_bytes: 0 })
     }
 
+    /// Count link bytes for the next step from now (after a hook that sent on the mesh).
+    pub fn rebase_sent(&mut self) {
+        self.last_sent = self.pt.net.sent_per_peer();
+    }
+
     /// Continue on a new tape (the next chunk). Its MAC key share must be the one the carried shares are under.
     pub fn load_tape(&mut self, tape: Tape) -> Result<(), String> {
         if tape.alpha_i != self.pt.tape.alpha_i {
@@ -588,7 +593,17 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
         match ran {
             Ok((mut rep, record)) => {
                 rep["owner_wait_seconds"] = json!(owner_s);
-                match hook.after_step(&mut st, k, &record, &dir) {
+                let before = st.pt.net.sent_per_peer();
+                let ta = Instant::now();
+                let hooked = hook.after_step(&mut st, k, &record, &dir);
+                let after = st.pt.net.sent_per_peer();
+                // the hook's bytes per link (the proof's, on tag PROOF), counted here and not again in the next step
+                rep["after_step_bytes_to"] = json!((0..after.len()).filter(|&j| j != i).map(|j| (j.to_string(), json!({
+                    "proof": after[j][crate::net::PROOF as usize] - before[j][crate::net::PROOF as usize],
+                    "total": after[j].iter().sum::<u64>() - before[j].iter().sum::<u64>()}))).collect::<serde_json::Map<_, _>>());
+                rep["after_step_seconds"] = json!(ta.elapsed().as_secs_f64());
+                st.rebase_sent();
+                match hooked {
                     Ok(extra) => rep["after_step"] = extra,
                     Err(e) => {
                         eprintln!("after step {k}: {e}");

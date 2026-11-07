@@ -20,3 +20,7 @@ test-harness = ["darkstep/test-harness"]
 [[test]]
 name = "prove_steps"
 required-features = ["test-harness"]
+
+[[bin]]
+name = "dl-reveal"
+required-features = ["test-harness"]
