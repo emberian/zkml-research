@@ -422,9 +422,11 @@ fn pcs_side(
 }
 
 // ------------------------------------------------------------------------------------------------ resharing
-/// handover.reshare: old_shares[i] = custodian i's share vector; returns (sub[i][j], new_shares[j]). Old custodian
-/// i draws its n_new - 1 uniform subshares from `rng[i]` (its own secret stream) and sets the last so they sum to
-/// its share. With one stream for all (`rng.len() == 1`), the draws are in Python's order (random.Random(seed)).
+/// TEST ONLY (the Python reference's draw order, for the vs-Python check): handover.reshare with Mersenne Twister
+/// streams. MT19937 is not a CSPRNG: a new custodian that sees enough of an old custodian's subshares could
+/// recover the stream and predict the subshares sent to the others. Production resharing is `reshare_os`.
+/// old_shares[i] = custodian i's share vector; returns (sub[i][j], new_shares[j]); with one stream for all
+/// (`rng.len() == 1`) the draws are in Python's order (random.Random(seed)).
 pub fn reshare(old_shares: &[Vec<u64>], n_new: usize, rng: &mut [pycompat::PyRandom]) -> (Vec<Vec<Vec<u64>>>, Vec<Vec<u64>>) {
     let len = old_shares[0].len();
     let mut sub = Vec::with_capacity(old_shares.len());
@@ -437,6 +439,33 @@ pub fn reshare(old_shares: &[Vec<u64>], n_new: usize, rng: &mut [pycompat::PyRan
     }
     let new = (0..n_new).map(|j| combine(&sub.iter().map(|p| p[j].as_slice()).collect::<Vec<_>>())).collect();
     (sub, new)
+}
+
+/// Production resharing of one old custodian's share: n_new - 1 uniform subshares from the OS CSPRNG (getrandom,
+/// rejection sampling on 61 bits) and the remainder, so they sum to the share.
+pub fn reshare_os(share: &[u64], n_new: usize) -> Vec<Vec<u64>> {
+    let p = field::p();
+    let mut parts: Vec<Vec<u64>> = (0..n_new - 1).map(|_| os_field(share.len(), p)).collect();
+    let last = (0..share.len()).map(|c| parts.iter().fold(share[c], |a, q| field::sub(a, q[c]))).collect();
+    parts.push(last);
+    parts
+}
+
+/// Uniform elements of F_p from the OS CSPRNG.
+pub fn os_field(n: usize, p: u64) -> Vec<u64> {
+    let mut out = Vec::with_capacity(n);
+    let mut buf = vec![0u8; 8 * 4096];
+    while out.len() < n {
+        getrandom::getrandom(&mut buf).expect("OS randomness");
+        for c in buf.chunks_exact(8) {
+            let x = u64::from_le_bytes(c.try_into().unwrap()) & ((1u64 << 61) - 1);
+            if x < p && out.len() < n {
+                out.push(x);
+            }
+        }
+    }
+    buf.iter_mut().for_each(|b| unsafe { std::ptr::write_volatile(b, 0) });
+    out
 }
 
 /// New custodian j's share: the sum of the subshares it received.

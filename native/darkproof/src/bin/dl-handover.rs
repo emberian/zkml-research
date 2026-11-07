@@ -39,15 +39,19 @@ fn main() {
     let lp = pr.ligero();
     let det = Det(None);
     let t0 = Instant::now();
-    let mut r = secret_rng();
+    let mut r = secret_rng(); // the bench's stand-in weights only
     let old: BTreeMap<String, Vec<Vec<u64>>> = ["W1", "W2"]
         .iter()
         .map(|k| (k.to_string(), (0..3).map(|_| (0..d * d).map(|_| r.randrange_u64(field::p())).collect()).collect()))
         .collect();
-    let mut rs: Vec<_> = (0..3).map(|_| secret_rng()).collect();
     let tr = Instant::now();
-    let new: BTreeMap<String, Vec<Vec<u64>>> =
-        old.iter().map(|(k, v)| (k.clone(), handover::reshare(v, 3, &mut rs).1)).collect();
+    let new: BTreeMap<String, Vec<Vec<u64>>> = old
+        .iter()
+        .map(|(k, v)| {
+            let subs: Vec<Vec<Vec<u64>>> = v.iter().map(|s| handover::reshare_os(s, 3)).collect();
+            (k.clone(), (0..3).map(|j| handover::combine(&subs.iter().map(|p| p[j].as_slice()).collect::<Vec<_>>())).collect())
+        })
+        .collect();
     let reshare_s = tr.elapsed().as_secs_f64();
     let ctx = HandoverCtx {
         model: "mind-h".into(),
