@@ -106,15 +106,115 @@ not part of the deployed path, and its doc comment says so.
 | genesis roots | fresh | fresh, different |
 | native verify (against its own genesis roots) | accept | accept |
 
+## 3. The release (cosnark_release; policy by the train lane)
+
+M public test examples (MNIST t10k 0..63 in the run); only (M, C) leaves custody, C = correctly classified count.
+The custodians compute z1 = W1 X locally (X public), u1 = trunc, h = SIG lookup, the class rows' scores by Beaver
+products, o = trunc, comparisons trunc(o_l - o_k - 1, 10, 10), ok_t = prod (1 + q_k), and open only C = sum ok_t.
+- **The proof.** It is the ZK middle over the release program's record, in batch-friendly order:
+  - external vectors W1 and W2 are the ledger head's commitments at their second life;
+  - z1 and h are committed fresh;
+  - z1 = W1 X is a linear IO constraint per entry, which the native build_q expands densely;
+  - the transcript label is release-zk;
+  - the context is (model, epoch, head step).
+- **The ledger record is terminal.** It holds M, C and the sha256 of the bundle and of the policy. The head's
+  commitments have no life left after it, so the ledger then refuses any further step, release or rotation.
+- **Code.**
+  - Python: `proofwire.encode_release` / `verify_release`, `Ledger.release`.
+  - Native: `wire::encode_release` / `verify_release`, `run::release_mpc` / `prove_release`, `ledger::release`.
+
+[EXECUTED] At d = 4, M = 4, head of the native pw chain, the release is byte-identical to Python both without and
+with proved bounds:
+
+| proved bounds | sha256 | bytes |
+|---|---|---|
+| without | 48dff323… | 4,780,998 |
+| with | fccb1291… | 5,586,678 |
+
+Python and native verify each other's release with C = 2, which equals the plaintext twin. These are REFUSED:
+- a flipped byte;
+- the released count raised by one;
+- another label set;
+- the genesis W1 root in place of the head's.
+
+[EXECUTED] `ds-chain 16 demo 3 8` runs in one process: three custodians over sockets, one test tape each, 3
+deployed steps proved and accepted by the native ledger, then the release MPC and proof. The ledger accepts
+C = 4 of 8, equal to the plaintext twin, and then refuses a further step.
+
+## 4. Truncation input bounds, PROVED (decision: coordinator, 2026-11-07)
+
+**The control that forced this.** Before the change, the middle proved the SPDZ program as written: each truncation
+is the floor of the canonical representative, and each lookup is the interpolated polynomial. The control
+(`ds-chain` with `DP_W2SCALE` / `DP_W1SCALE`) showed:
+- an out-of-bound z2, e or b g1 + R3 was ACCEPTED (still equal to the integer spec: no wrap);
+- an off-table u1 was ACCEPTED with weights that differ from the spec.
+
+**The check.** With program flag RC (genesis `"RC": true`), each truncation c = x + 2^K + r also proves its
+declared interval x ∈ [a, a + 2^B):
+- z1 uses the table's domain: (T_LO 2^S1, S1 + 8) = (-2^18, 19) in GEN6;
+- z2, e, b g1 + R3, the release's scores and its comparisons each use (-2^K, K + 1).
+
+**How it works.** r's bits R are already committed: trb holds the low s bits, trhb the K + 40 - s high bits. c is
+public. Let c' = c - (2^K + a), also public. The rows are the borrow chain of c' - r over L = K + 41 bits:
+- β_0 = 0, t_i = R_i β_i (a Hadamard row), β_{i+1} = (c'_i ? t_i : R_i + β_i - t_i);
+- β_L = 0;
+- c'_i - R_i - β_i + 2 β_{i+1} = 0 for i ≥ B.
+
+**Why the check excludes the wrap.**
+- R is boolean (Hadamard), so β is boolean by induction. The rows are then exactly integer subtraction: the
+  integer c' - r equals Σ_{i<B} 2^i (difference bits), which lies in [0, 2^B).
+- In the field, x = c - 2^K - r = (c' - r) + a. That is a small integer in [a, a + 2^B). Its field value equals
+  that integer, so x + 2^K + r < p and no reduction mod p happened.
+- A public c' outside [0, 2^L) (honest c' < 2^B + 2^(K+40) ≤ 2^L) is refused by name before any proof work.
+
+**Cost per checked truncation.** K + 40 proof-time Beaver products (tape proof section: `run::step_section`,
+`run::release_section`), 2(K + 41) proof-only atoms and K + 40 Hadamard rows. Before committing, the custodians
+open each truncation's violation indicator: β_L + Σ_{i≥B} difference bits, which is 0 when in bound. If any is
+nonzero they refuse to prove, naming the truncation.
+
+**Refusal rows** [EXECUTED], from `ds-chain 16 demo` with `DP_PROGRAM='{"RC": true}'`:
+
+| row | result |
+|---|---|
+| honest 3-step chain and release | accepted; C = 4 = plaintext twin |
+| W2 × 400 (z2, e and b g1 + R3 out of bound) | custodians refuse: `truncation input outside its proved bound: z2[1], z2[12], z2[15], e[1] ...` |
+| W1 × 30, × 60 (u1 off the table) | custodians refuse: `... z1[11], ...` / `z1[2], z1[8], ...` |
+| W2 × 400, bundle forced (check ignored) | ledger refuses: `middle: Ligero linear test: the constraints do not hold` |
+| W1 × 30, bundle forced | ledger refuses (same) |
+| release with X × 20 (z1 off the table) | custodians refuse (z1[0..]); forced bundle refused: `release: truncation input outside its proved bound (score[0], public)` |
+
+The verifier's refusal of a forced bundle cannot name the truncation (only the custodians see which one). The
+public c' check names it when it fires.
+
+**Privacy note (for the budget).** The check DETECTS a violation; it does not undo the opening that already
+happened. A truncation input with |x| > 2^K was opened as c = x + 2^K + r, masked by r < 2^(K+40). That loses about
+log2(|x| / 2^K) of the 40 statistical bits for that element; at |x| ≥ 2^(K+40) nothing is masked. A refused step
+halts the run: dl-custodian exits with the named reason, and the ledger accepts nothing after it. So the loss is
+bounded by one step's openings.
+
 ## [OPEN]
 
-- **Ledger-profile bit-exactness.** The ledger-profile vectors (d = 4 and 16) are still being generated by Python
-  (N = 16384 BFV in pure Python is slow).
-- **The run.** The first proved three-box step waits for the deploy lane's party loop and TLS links. Then the
-  d = 4096 sizes and times, in the run.
-- **The release proof** waits for the train lane's policy (ad36593ec00657538).
+
+- **Ledger-profile bit-exactness.** The ledger-profile HE vectors (d = 4 and 16, `~/lanes/dl-gen6-proof/vec`
+  on bb2) are still being generated by Python.
+- **The HE step with RC, bit-exact at d = 4.** Running locally: `scratchpad/dl-gen6/proof/he_rc_d4.log`, tag
+  `demo_d4_rc_he`.
+- **GEN6 three-way agreement.** For the train lane, my proof should ACCEPT native_ref's GEN6 step. Still to do:
+  the Python he flow with the GEN6 program plus RC, and native ds-check.
+- **The run, on three boxes.** The deploy lane's dl-custodian proves each step over TLS (571825d0, with rc). Then
+  the d = 4096 sizes and times in the run, and the release in the run.
+- **d = 4096 cost of RC.** Measured on bb2 (`~/lanes/dl-gen6-proof/rc4096_{on,off}.log`, PID file `rc4096.pid`);
+  the estimate is +40%.
 
 ## Continuation
+
+- **APIs for the deploy lane.** `run::prove_step(pr, lp, tables, prm, net, ctx, PartyStep, carry)` and
+  `run::from_darkstep_n`. `run::step_section` sizes each step's tape proof section. For the release:
+  `run::release_mpc`, `release_section` and `prove_release`. The ledger side is `ledger::Ledger::{accept, release}`.
+- **What it all looks like run end to end:** `ds_chain` in bin/darkproof.rs.
+- **Check commands.**
+  - Bit-exact checks: `check`, `ds-check`, `rel-check`; they need `--features tcp,test-det`.
+  - Production-coin runs: `run-check`, `ds-bench`, `ds-chain`.
 
 - **Vectors.** They live in `scratchpad/dl-gen6/proof/vec` (local) and on bb2 under `~/lanes/dl-gen6-proof/vec`,
   with PID files `he_*.pid` there.

@@ -53,9 +53,10 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
     match meta.get("program") {
         None => darkproof::step::StepParams::for_width(d),
         Some(p) => {
-            let f = |k: &str| p[k].as_u64().unwrap() as u32;
+            let w = darkproof::step::StepParams::for_width(d);
+            let f = |k: &str, dflt: u32| p.get(k).and_then(|v| v.as_u64()).map(|v| v as u32).unwrap_or(dflt);
             let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
-            darkproof::step::StepParams { s1: f("S1"), k1: f("K1"), s2: f("S2"), k2: f("K2"), s3: f("S3"), k3: f("K3"), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128) }
+            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128) }
         }
     }
 }
@@ -205,6 +206,7 @@ fn run_check(dir: &Path, tag: &str) {
                                 atoms: w.atoms[i].clone(),
                                 triples: tp,
                                 det: darkproof::rng::Det(None),
+                                ignore_range: false,
                             };
                             prove_step(pr, lp, tables, prm, &mut *net, ctx, st, cy)
                         })
@@ -472,11 +474,20 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                         let step_s = ts.elapsed().as_secs_f64();
                         let mut st = from_darkstep_n(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Some(nts[k]), Det::off()).expect("record");
                         st.public = pt.tr.v[t_from..].to_vec();
+                        st.ignore_range = std::env::var_os("DP_IGNORE_RANGE").is_some();
                         st.atoms = pt.atom_log[a_from..].iter().flat_map(|r| r.clone().map(|j| (pt.tape.sh[j], pt.tape.mac[j]))).collect();
                         let ctx = Ctx::new(model, 0, k as u64 + 1);
                         let sp = {
                             let mut tn = TcpRef(&pt.net);
-                            pool.install(|| prove_step(pr, lp, tables, prm, &mut tn, &ctx, st, carry.take())).expect("prove")
+                            match pool.install(|| prove_step(pr, lp, tables, prm, &mut tn, &ctx, st, carry.take())) {
+                                Ok(sp) => sp,
+                                Err(e) => {
+                                    println!("step {}: custodian {i}: {e}", k + 1);
+                                    std::thread::sleep(std::time::Duration::from_millis(300));
+                                    println!("REFUSED IN PROVING");
+                                    std::process::exit(3);
+                                }
+                            }
                         };
                         pt.cur += 3 * nts[k];
                         if i == 0 {
