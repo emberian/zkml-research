@@ -73,10 +73,7 @@ impl Witness {
 /// cosnark_zk.owner_commit: the owner deals vec as n additive shares and commits the share tuple; returns every
 /// custodian's part.
 pub fn owner_commit(pr: &Profile, vec: &[u64], label: &str, n: usize, det: &Det) -> Vec<PcsParty> {
-    let mut rng = match det.on() {
-        true => det.rng(&["owner-commit", label, &crate::h::h_list_hex(vec)]).unwrap(),
-        false => crate::rng::secret_rng(),
-    };
+    let mut rng = if det.on() { det.coins(&["owner-commit", label, &crate::h::h_list_hex(vec)]) } else { crate::rng::secret_coins() };
     let mut sh: Vec<Vec<u64>> = (0..n - 1).map(|_| vec.iter().map(|_| rng.randrange_u64(crate::field::p())).collect()).collect();
     let last: Vec<u64> =
         vec.iter().enumerate().map(|(c, &x)| sh.iter().fold(x, |a, s| crate::field::sub(a, s[c]))).collect();

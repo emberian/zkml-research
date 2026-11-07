@@ -27,6 +27,10 @@ fn roots_of(v: &Value) -> BTreeMap<String, Vec<[u8; 32]>> {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check")) && !cfg!(feature = "test-det") {
+        eprintln!("bit-exact checks need the deterministic hook: build with --features test-det");
+        std::process::exit(2);
+    }
     match args.get(1).map(|s| s.as_str()) {
         Some("check") => check(Path::new(&args[2]), &args[3]),
         Some("rows") => rows(Path::new(&args[2]), &args[3]),
@@ -228,7 +232,17 @@ fn run_check(dir: &Path, tag: &str) {
             println!("{tag} {name}: tape triple {what} share off by one at custodian 1: {verdict}");
             ok_all &= verdict.starts_with("REFUSED");
         }
-        let (outs, secs) = run(tapes, std::mem::take(&mut carry));
+        let (outs, secs) = run(tapes.clone(), std::mem::take(&mut carry));
+        if k == 0 {
+            // production coins: a second proof of the same witness and tape differs in bytes, and verifies too
+            let (o2, _) = run(tapes, vec![None, None, None]);
+            let p2 = o2.into_iter().next().unwrap().expect("second proof");
+            let g2 = p2.genesis_roots.clone().unwrap();
+            let v2 = wire::verify_step(&pr, &lp, &p2.blob, &ctx, &g2, &tables, d, prm, None, 0);
+            let differ = match &outs[0] { Ok(p1) => p1.blob != p2.blob, Err(_) => false };
+            println!("{tag} {name}: a second production proof of the same witness: bytes differ {differ}, verifies {:?}", v2.as_ref().map(|_| "accept"));
+            ok_all &= differ && v2.is_ok();
+        }
         let mut parts = Vec::new();
         for o in outs {
             match o {

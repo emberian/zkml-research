@@ -15,3 +15,6 @@ darkstep = { path = "../darkstep", optional = true }
 [features]
 # the proof over darkstep's custodian sockets (tag net::PROOF)
 tcp = ["dep:darkstep"]
+# TEST ONLY: the deterministic hook (Det seeds, bit-exact with the harness's DL_DETERMINISTIC). Without it every secret
+# coin is drawn from the OS CSPRNG whatever Det says.
+test-det = []
