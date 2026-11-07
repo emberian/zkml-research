@@ -256,32 +256,40 @@ impl PcsParty {
         // per coset: the scaling c^c (c = z^tt) of the row's coefficients, shared by every row
         let scale: Vec<Vec<u64>> = (0..t).map(|tt| powers(field::pow(z, tt as u64), s.w)).collect();
         let (r, w, npts) = (s.r, s.w, s.npts);
-        let mut rows = vec![0u64; r * npts];
-        rows.par_chunks_mut(npts).enumerate().for_each(|(ri, out)| {
-            let row = &self.ext[ri * w..(ri + 1) * w];
+        // blocks of 64 rows: each block's codewords are encoded into a small buffer, then written into its own
+        // (disjoint) slots of the column-major codeword, so the only large allocation is the codeword itself
+        const B: usize = 64;
+        let mut cw = vec![0u64; npts * r];
+        struct Out(*mut u64);
+        unsafe impl Send for Out {}
+        unsafe impl Sync for Out {}
+        let out = Out(cw.as_mut_ptr());
+        let out = &out;
+        (0..r.div_ceil(B)).into_par_iter().for_each(|blk| {
+            let r0 = blk * B;
+            let nb = B.min(r - r0);
+            let mut rows = vec![0u64; nb * npts];
             let mut buf = vec![0u64; n];
-            for (tt, sc) in scale.iter().enumerate() {
-                buf.iter_mut().for_each(|x| *x = 0);
-                for (c, (&a, &f)) in row.iter().zip(sc).enumerate() {
-                    let b = &mut buf[c & (n - 1)];
-                    *b = field::add(*b, field::mul(a, f));
-                }
-                ntt(&mut buf, &tw);
-                let lo = tt * n;
-                if lo < npts {
-                    let hi = (lo + n).min(npts);
-                    out[lo..hi].copy_from_slice(&buf[..hi - lo]);
+            for (dr, dst) in rows.chunks_mut(npts).enumerate() {
+                let row = &self.ext[(r0 + dr) * w..(r0 + dr + 1) * w];
+                for (tt, sc) in scale.iter().enumerate() {
+                    buf.iter_mut().for_each(|x| *x = 0);
+                    for (c, (&a, &f)) in row.iter().zip(sc).enumerate() {
+                        let b = &mut buf[c & (n - 1)];
+                        *b = field::add(*b, field::mul(a, f));
+                    }
+                    ntt(&mut buf, &tw);
+                    let lo = tt * n;
+                    if lo < npts {
+                        let hi = (lo + n).min(npts);
+                        dst[lo..hi].copy_from_slice(&buf[..hi - lo]);
+                    }
                 }
             }
-        });
-        // transpose to column-major in blocks of columns
-        let mut cw = vec![0u64; npts * r];
-        cw.par_chunks_mut(r * 64).enumerate().for_each(|(blk, dst)| {
-            let j0 = blk * 64;
-            for (dj, col) in dst.chunks_mut(r).enumerate() {
-                let j = j0 + dj;
-                for (ri, x) in col.iter_mut().enumerate() {
-                    *x = rows[ri * npts + j];
+            for j in 0..npts {
+                for dr in 0..nb {
+                    // SAFETY: entry (j, r0 + dr) belongs to this block alone, and cw outlives the loop
+                    unsafe { *out.0.add(j * r + r0 + dr) = rows[dr * npts + j] };
                 }
             }
         });
@@ -300,6 +308,17 @@ impl PcsParty {
         }
         self.tree = merkle_levels(level);
         self.root = self.tree.last().unwrap()[0];
+    }
+
+    /// The openings of columns js. On the coset domain the codeword is held from the commitment until its first
+    /// opening and released after it (memory: R npts per commitment); a later life re-encodes it once.
+    pub fn open_batch(&mut self, js: &[usize]) -> Vec<Opening> {
+        if matches!(self.shape.dom, Dom::Coset { .. }) && self.cw.is_empty() {
+            self.cw = self.encode_coset();
+        }
+        let out: Vec<Opening> = js.par_iter().map(|&j| self.open(j)).collect();
+        self.cw = Vec::new();
+        out
     }
 
     pub fn open(&self, j: usize) -> Opening {

@@ -613,7 +613,7 @@ pub fn pcs_prove(
     for (k, c) in com.iter_mut() {
         c.take_life(k, pr.lives).map_err(|e| format!("LifeExhausted: {}", e.0))?;
         let jj = tr.distinct_cols(pr.t_cols, c.shape.npts);
-        let mine: Vec<pcs::Opening> = jj.par_iter().map(|&j| c.open(j)).collect();
+        let mine: Vec<pcs::Opening> = c.open_batch(&jj);
         let all = ligero::gather_openings(net, vec![mine]);
         let _ = n;
         cols.insert(k.clone(), PcsCols { j: jj, open: all.into_iter().next().unwrap() });
