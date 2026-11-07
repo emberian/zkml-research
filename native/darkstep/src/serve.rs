@@ -241,6 +241,26 @@ pub fn open_private(p: &std::path::Path) -> std::io::Result<std::fs::File> {
 }
 
 impl CustodianState {
+    /// Public genesis: the initial weights are public by design (a committed genesis file, e.g. darktrain::init
+    /// from train_genesis_gen6.json), so they enter custody as the public constant: share W at custodian 0 and 0
+    /// elsewhere, MAC share alpha_i W at every custodian. No preprocessing and no owner input; every step, the first
+    /// included, is then a carried step (x and y only).
+    pub fn genesis_public(&mut self, w1: &[i64], w2: &[i64]) -> Result<(), String> {
+        let d = self.pf.d;
+        if w1.len() != d * d || w2.len() != d * d {
+            return Err(format!("public genesis: W must be {d} x {d}"));
+        }
+        if self.w.is_some() || self.step != 0 {
+            return Err("public genesis only before the first step".into());
+        }
+        let p = self.pf.t;
+        let conv = |w: &[i64]| -> Vec<Vec<Sh>> {
+            w.chunks(d).map(|r| r.iter().map(|&x| self.pt.cadd(crate::arith::from_i64(x, p), Sh::default())).collect()).collect()
+        };
+        self.w = Some((conv(w1), conv(w2)));
+        Ok(())
+    }
+
     /// Resume from `ck`: the weight shares and the step index; the tape at the checkpoint's cursor.
     pub fn resume(&mut self, ck: Checkpoint) -> Result<(), String> {
         if ck.i != self.i || ck.d != self.pf.d {
@@ -429,6 +449,18 @@ pub fn read_tape(path: &str) -> Tape {
 }
 
 pub fn serve_main(args: &[String], hook: &mut dyn StepHook) -> i32 {
+    // --genesis-public FILE: the public initial weights as i64 LE, W1 then W2 (d x d each, row-major)
+    let genesis = flag(args, "--genesis-public").map(|f| {
+        let b = std::fs::read(&f).unwrap_or_else(|e| panic!("{f}: {e}"));
+        let v: Vec<i64> = b.chunks_exact(8).map(|c| i64::from_le_bytes(c.try_into().unwrap())).collect();
+        let h = v.len() / 2;
+        (v[..h].to_vec(), v[h..].to_vec())
+    });
+    serve_main_with(args, hook, genesis)
+}
+
+/// serve_main with the public genesis weights given directly (dl-custodian computes them from the genesis file).
+pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option<(Vec<i64>, Vec<i64>)>) -> i32 {
     let i: usize = args[2].parse().unwrap();
     let mut pf = crate::node::gated(crate::node::prof(&args[3..7]), args);
     pf.secure_coins = true;
@@ -491,6 +523,26 @@ pub fn serve_main(args: &[String], hook: &mut dyn StepHook) -> i32 {
         }
     };
     let setup_s = tc.elapsed().as_secs_f64();
+    if let (None, Some((w1, w2))) = (&ck, &genesis) {
+        if let Err(e) = st.genesis_public(w1, w2) {
+            eprintln!("{e}");
+            st.pt.net.shutdown();
+            return 2;
+        }
+        use sha2::{Digest, Sha256};
+        let mut h = Sha256::new();
+        for x in w1.iter().chain(w2.iter()) {
+            h.update(x.to_le_bytes());
+        }
+        let dg = h.finalize().to_vec();
+        eprintln!("party {i}: public genesis W, sha256 {}", pycompat::repr::hex(&dg));
+        // the three must start from the same public W
+        if st.pt.net.exchange_bytes(crate::net::CTRL, &dg).iter().any(|x| *x != dg) {
+            eprintln!("public genesis: the custodians hold different W");
+            st.pt.net.abort();
+            return 2;
+        }
+    }
     if let Some(c) = ck {
         if let Err(e) = st.resume(c) {
             eprintln!("{e}");

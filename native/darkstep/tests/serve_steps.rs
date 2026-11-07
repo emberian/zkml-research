@@ -191,3 +191,33 @@ fn a_link_cut_in_a_check_phase_aborts() {
     let reps: Vec<String> = (0..3).filter_map(|i| std::fs::read_to_string(r.dir.join(format!("step_0_P{i}.json"))).ok()).collect();
     assert!(reps.iter().all(|t| !t.contains("\"ACCEPT\"")), "no custodian accepted the step");
 }
+
+/// Public genesis: W enters custody as a public constant (no W inputs, no preprocessing for it); both steps are
+/// carried steps, and the result equals the plaintext twin from the same W.
+#[test]
+fn public_genesis_two_carried_steps_equal_the_twin() {
+    let pf = prof(&A.map(String::from));
+    let mut r = setup("pubgen", 2);
+    let plain = inputs_for(pf.d, &Program::HARNESS);
+    // re-deal: every step carried
+    let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
+    let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
+    let to = |v: &[i64]| -> Vec<u64> { v.iter().map(|&x| darkstep::arith::from_i64(x, pf.t)).collect() };
+    let xy0: Vec<i64> = plain.x.iter().chain(plain.y.iter()).copied().collect();
+    let mut cs = vec![darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &to(&xy0), &Program::HARNESS)];
+    cs.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &to(&r.later[0]), &Program::HARNESS));
+    for (i, tp) in dl.tapes.iter().enumerate() {
+        tp.write_to(&mut std::io::BufWriter::new(std::fs::File::create(r.dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();
+    }
+    r.cs = cs;
+    let gw = r.dir.parent().unwrap().join("genesis_w.bin");
+    let w: Vec<u8> = plain.w1.iter().chain(plain.w2.iter()).flatten().flat_map(|x| x.to_le_bytes()).collect();
+    std::fs::write(&gw, w).unwrap();
+    let (codes, log) = serve(&r, 2, 0, &["--genesis-public", gw.to_str().unwrap()]);
+    assert_eq!(codes, vec![0, 0, 0]);
+    assert!(log.iter().all(|l| l["inputs"] == 2 * pf.d), "the owner sends only x and y, from step 0 on");
+    let l0 = report(&r.dir, 0, 0)["transcript_len"].as_u64().unwrap();
+    let l1 = report(&r.dir, 1, 0)["transcript_len"].as_u64().unwrap();
+    assert_eq!(l0, l1, "step 0 is a carried step");
+    assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 2));
+}
