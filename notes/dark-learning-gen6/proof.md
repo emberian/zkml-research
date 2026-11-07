@@ -1163,6 +1163,71 @@ its d M lookups' 255 Lp entries by `step::lookup_bits_products(prm)` = 27 Beaver
 - Against x2, the run's profile is -43% bundle (step 1), -40% prove, -49% verify, -59% proof-section triples.
 - The darkstep MPC itself (not in the table) took 43-54 s per step in the same runs.
 
+## 25. The skeptic's replay at d = 4096 in 3.3 GB (verifier lane, gen 6) [EXECUTED]
+
+**What changed** (verifier side only; the prover, the bytes and every check are unchanged):
+- `cozk.verify` streams its linear test (`cozk.LinSink`).
+  - Each constraint is folded into alpha = sum_c rr_c A_c and sum_c rr_c b_c when it is emitted.
+  - Its E coefficients are drawn lazily: one H(state, "c", i) chain with a running i, which is exactly
+    X.chal(tr, p, L)'s draws, so the transcript is the same.
+  - `lin` is a list (handover.py, unchanged) or a callable that emits into the sink.
+- The PCS evaluation-consistency rows go in closed form (`LinSink.geom`, `cosnark_zk.pcs_consistency`): sum_c x^c u_e[c]
+  is added to alpha as rr times a power list, with no per-term dict. These were the 3e8-entry dicts.
+- The linear test at the opened Ligero columns needs no interpolation. sum_r R_r(x) colsum_r with R_r = interp_z(alpha_r)
+  is sum_r colsum_r sum_i alpha_r[i] Lz_i(x): the same field value, without the k² work per row.
+- The middle:
+  - `lin_coef` folds q_X one variable at a time instead of building a 2^Lmax eq table. The pad factor is applied twice,
+    as the original's MLE of the padded q times pad does.
+  - `X.eq_at` gives eq(tau, r) in closed form.
+- The symbolic replay (`cosnark_he.replay`) no longer forms W1n and W2n. Those are 2 d² local subtractions, plus the
+  d² placeholder and outer-product matrices. They open nothing and never enter the middle (`run_step(children=False)`;
+  SymOuter returns nothing).
+- The prover keeps the list path, so its bundle bytes do not change.
+
+**d = 4096, ledger-x2de, GEN6 + RC + LB + RS, PG, the native chain of the continuation above** (bb2 ~/lanes/dl-gen6-proof-x2:
+vsave/, research-v/ = this tree; `ctl_replay.py` in scratchpad dl-gen6/verifier/; 16G scope, nice 15; vrun3_4k.log):
+
+| record | verdict | time | peak RSS |
+|---|---|---|---|
+| public genesis | accept | 834 s | 0.90 GB |
+| step 1, a flipped byte (middle of the blob) | refused: spine, Ligero Merkle opening | 163 s | 1.73 GB |
+| step 1, a flipped byte (40 B from the end) | refused: middle, Ligero Merkle opening | 215 s | 3.08 GB |
+| **step 1** | **accept, child roots equal the native record's** | 234 s | 3.08 GB |
+| step 2, flipped bytes (middle, tail) | refused (as step 1) | 149 s, 246 s | 3.14 GB |
+| step 2 against a moved pending point of W1 (same bytes and transcript) | refused: spine, Ligero linear test at an opened column | 139 s | 3.14 GB |
+| **step 2 (discharges step 1)** | **accept, child roots equal** | 271 s | 3.14 GB |
+| status | {1: final (step 2 opened its child), 2: pending} | 37.5 min wall | **3.29 GB max** |
+
+- Before: one step went over 16 GB. The predecessor's step-1 profile was OOM-killed at its 24G cap at about 740 s.
+- One step by stage (vmem2.log, step 1, sampled every 30 s):
+  - symbolic replay to about 75 s (1.3 GB);
+  - spine constraints streamed to about 140 s (1.6 GB), then the spine's Ligero columns;
+  - the middle from about 180 s (gam, build_q, lin_coef: 2.9 GB peak);
+  - accepted at 255 s.
+- `proofwire.py replay` itself (the skeptic's command): see the line below the table at d = 1024.
+
+**d = 1024, same program and profile**: a new native chain, `v1k.sh` (cfg = GEN6 at d = hid = 1024,
+train_genesis_gen6_1024.json). Bundles 18,937,116 B and 20,288,724 B. vrun3_1k.log:
+- public genesis 43 s (0.15 GB);
+- step 1 87 s, step 2 101 s, both accepted with child roots equal;
+- both flipped bytes refused, and the moved pending point refused at the linear test;
+- 7.8 min wall, **0.91 GB max**.
+
+**Verdicts equal, old against new** (old = HEAD 1b53e548's research dir by git archive; outputs diffed, wall-clock seconds
+stripped; all SAME):
+- the native demo-x2de PG chains d = 16 (3 steps + the release under policy.json: flipped byte refused, another label set
+  refused by the Ligero linear test, C equal to the native record's) and d = 64 (with the moved-point row);
+- py_verify_e on the native d = 4 and d = 16 x2de vector sets (steps, flipped bytes, the closing proof and its
+  flipped byte, the ledger statuses);
+- cosnark_ext_rows.py 4 (demo, demo-x2, demo-x2d: forged W1n, z1, sumcheck, lie in u, u-parts, profile swaps);
+- the middle's gate forgeries (forged trunc and lookup openings, bad triple, non-boolean bit, mask out of range) under
+  ledger, demo-x2d and demo-x2de;
+- e_chain.py demo-x2de, honest and forge_W1n: step 2's discharge refused, close refused, the second opening refused;
+- run_handover.py 4 demo-x2de (list-form lin through the same cozk.verify): all as expected.
+
+Unit checks: lin_coef against the eq-table form, and eq_at against mle(eqv), for E = 1 and 2; each has a perturbed input
+that differs. Native darkproof was not changed: no disagreement was found.
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).

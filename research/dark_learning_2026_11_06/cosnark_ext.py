@@ -101,6 +101,13 @@ def mle(vec, r, p):
         acc = add(acc, mul(a if isinstance(a, tuple) else (a,), b, p), p)
     return acc
 
+def eq_at(a, b, p):
+    """eq(a, b) = prod_k (a_k b_k + (1 - a_k)(1 - b_k)): the value of mle(eqv(a), b) without its 2^len(a) table."""
+    acc = one()
+    for x, y in zip(a, b):
+        acc = mul(acc, add(mul(x, y, p), mul(one_minus(x, p), one_minus(y, p), p), p), p)
+    return acc
+
 def lagc(deg, r, p):
     """Lagrange coefficients of the nodes 0..deg at r (cosnark_zk.lagc)."""
     out = []

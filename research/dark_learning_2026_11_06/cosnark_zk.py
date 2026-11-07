@@ -310,6 +310,37 @@ def eadder(p, lin, labels, cur):
             labels.append(cur[0])
     return add
 
+class NoLabels(list):
+    """The labels of a streamed constraint system: diagnostics only, so none are kept."""
+    def append(self, _):
+        pass
+
+def pcs_consistency(p, lin, add, cur, sh, evals, cols, urows, U):
+    """PCS evaluation consistency at the opened columns: component k of u_e against component k of a_e, i.e.
+    sum_{c < W} x_j^c u_e[c] = a_e . (column j's sums) for every opened column j. A list `lin` gets the constraints as
+    forms (the prover's); a cozk.LinSink gets each in closed form (sink.geom: the same constraint, no per-term dict).
+    u_e's component-k cells are flat cells (urows[e][0] + k ceil(W / K_L)) K_L + c, since urows[e] is consecutive."""
+    E = X.EXT
+    stream = not isinstance(lin, list)
+    for e, (k, pt) in enumerate(evals):
+        cur[0] = f"PCS evaluation consistency ({k})"
+        s = sh[k]
+        a = s.eval_weights_e(pt)
+        J, csum = cols[k]
+        nr = -(-s.W // K_L)
+        for jj, j in enumerate(J):
+            x = s.pts[j]
+            rhs = X.dot(a, [(v,) for v in csum[jj]], p)
+            if stream:
+                for kk in range(E):
+                    lin.geom((urows[e][0] + kk * nr) * K_L, s.W, x, (rhs[kk] if kk < len(rhs) else 0) % p)
+                continue
+            xs, forms = 1, []
+            for c in range(s.W):
+                forms.append(evar(p, U(e, c), (xs,)))
+                xs = xs * x % p
+            add(*forms, rhs=rhs)
+
 def prod_forms(p, prod, q):
     Xr, Yr, Zr = prod
     if X.EXT == 1:
@@ -356,10 +387,11 @@ def unflat(v, deg):
     E = X.EXT
     return [tuple(v[j * E:(j + 1) * E]) for j in range(deg + 1)]
 
-def constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=None, bind=False, deferred=False):
+def constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=None, bind=False, deferred=False, sink=None):
     """The verifier's checks as Ligero constraints on hidden values. cols[k] = (J, column sums at J). Every check
-    is an identity over F_{p^EXT}, emitted as EXT F_p constraints (cosnark_ext; EXT = 1: the base system)."""
-    lin, labels = [], []
+    is an identity over F_{p^EXT}, emitted as EXT F_p constraints (cosnark_ext; EXT = 1: the base system). sink: a
+    cozk.LinSink to stream them into (the verifier), instead of the returned list (the prover)."""
+    lin, labels = ([], []) if sink is None else (sink, NoLabels())
     cur = ["?"]
     E = X.EXT
     add = eadder(p, lin, labels, cur)
@@ -380,19 +412,7 @@ def constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=None, bind=Fal
     def RC(r, j, coef=X.one()):
         return evar(p, ecell([(r, j * E + k) for k in range(E)]), coef)
     neg = lambda c: X.neg(c, p)
-    # PCS evaluation consistency at the opened columns: component k of u_e against component k of a_e
-    for e, (k, pt) in enumerate(evals):
-        cur[0] = f"PCS evaluation consistency ({k})"
-        s = sh[k]
-        a = s.eval_weights_e(pt)
-        J, csum = cols[k]
-        for jj, j in enumerate(J):
-            x = s.pts[j]
-            xs, forms = 1, []
-            for c in range(s.W):
-                forms.append(evar(p, U(e, c), (xs,)))
-                xs = xs * x % p
-            add(*forms, rhs=X.dot(a, [(v,) for v in csum[jj]], p))
+    pcs_consistency(p, lin, add, cur, sh, evals, cols, urows, U)
     pf = [prod_forms(p, prod, q) for q in range(NPROD)]
     def Zv(q, coef):
         return evar(p, pf[q][2], coef)
@@ -766,8 +786,10 @@ def verify_zk(p, n, d, context, parent_roots, chained, proof, bind=False, public
     pc = proof["pcs_cols"]
     cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
                            for jj in range(len(pc[k][0]))]) for k in osh}
-    lin, quad, _ = constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=mz, bind=bind,
-                               deferred=deferred is not None)
+    def lin(sink):
+        constraints(p, d, sh, scs, evals, cols, rows, urows, prod, mz=mz, bind=bind, deferred=deferred is not None,
+                    sink=sink)
+    quad = [prod]
     if ZKSC == "mask":
         ng = rows["g"].nrows
         group_roots, sizes = [proof["g_roots"], proof["eval_roots"]], [ng, nrows - ng]
@@ -870,25 +892,17 @@ def close_evals(deferred_points):
     cpt = [X.zero()] * carry_m()
     return [(k, list(deferred_points[k])) for k in ("W1", "W2")] + [(k, cpt) for k in CARRY_IN]
 
-def close_constraints(p, sh, evals, cols, urows):
-    """The closing proof's checks: PCS consistency of the four evaluations, and W(r_k) = c_k for both updates."""
-    lin, labels, cur = [], [], ["?"]
+def close_constraints(p, sh, evals, cols, urows, sink=None):
+    """The closing proof's checks: PCS consistency of the four evaluations, and W(r_k) = c_k for both updates. sink:
+    as constraints'."""
+    lin, labels = ([], []) if sink is None else (sink, NoLabels())
+    cur = ["?"]
     E = X.EXT
     add = eadder(p, lin, labels, cur)
     def U(e, c):
         nr = -(-sh[evals[e][0]].W // K_L)
         return ecell([(urows[e][k * nr + c // K_L], c % K_L) for k in range(E)])
-    for e, (k, pt) in enumerate(evals):
-        cur[0] = f"PCS evaluation consistency ({k})"
-        s = sh[k]
-        a = s.eval_weights_e(pt)
-        J, csum = cols[k]
-        for jj, j in enumerate(J):
-            x, xs, forms = s.pts[j], 1, []
-            for c in range(s.W):
-                forms.append(evar(p, U(e, c), (xs,)))
-                xs = xs * x % p
-            add(*forms, rhs=X.dot(a, [(v,) for v in csum[jj]], p))
+    pcs_consistency(p, lin, add, cur, sh, evals, cols, urows, U)
     for i, nm in enumerate(("W1", "W2")):
         k, pt = evals[i]
         b = X.eqv(pt[:sh[k].mc], p)
@@ -968,6 +982,6 @@ def verify_close(p, n, d, context, head_roots, deferred, proof):
     pc = proof["pcs_cols"]
     cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
                            for jj in range(len(pc[k][0]))]) for k in sh}
-    lin, _ = close_constraints(p, sh, evals, cols, urows)
+    lin = lambda sink: close_constraints(p, sh, evals, cols, urows, sink=sink)
     return Z.verify(Z.Params(p, K_L, T_HIDE, T_OPEN), n, [proof["eval_roots"]], [nxt], proof["mask_roots"], lin, [],
                     proof["ligero"], tr)
