@@ -57,8 +57,7 @@ def main():
     ap.add_argument("--profile", default="ledger-x2de", help="the proof profile (the coordinator's: ledger-x2de with the program flag RS)")
     ap.add_argument("--no-rs", action="store_true", help="without the program flag RS (its tapes differ: K + 1 - s bits per truncation)")
     ap.add_argument("--key-dir", default=None, help="the old committee's MP-SPDZ runtime dir name in prep's ROOT (e.g. wired: "
-                    "ROOT/wired<I>/mpspdz); its p-61 MAC-key and secrets files are erased at the handover and the dir scanned")
-    ap.add_argument("--key-hash", default="519717d82129ff48ce3a78ec360a737b5b3d8a5f", help="the p-61 Mascot-Secrets file's parameter hash")
+                    "ROOT/wired<I>/mpspdz); every MP-SPDZ secret of the seat there (all fields) is erased at the handover and the dir scanned")
     a = ap.parse_args()
     if not 0 <= a.handover_at < a.steps - 1:
         sys.exit("the handover must leave the new committee at least one step")
@@ -106,9 +105,9 @@ def main():
                 s["extra"] += ["--release-data", f"{b['root']}/data/mnist",
                                "--release-tape", f"{b['prep']}/chunks/{a.chunks}-rel-P{i}/step-0/tape_{i}.bin"]
         elif a.key_dir:
+            # every MP-SPDZ secret of the seat in its runtime, every field (darkprep::mpspdz::is_party_secret)
             k = f"{b['prep']}/{a.key_dir}{i}/mpspdz"
-            s["extra"] += ["--erase-extra", f"{k}/Player-Data/Mascot-Secrets-p-61-{a.key_hash}-P{i}-3",
-                           "--erase-extra", f"{k}/Player-Data/3-p-61/Player-MAC-Keys-p-P{i}", "--scan-extra", k]
+            s["extra"] += ["--erase-runtime", k, "--scan-extra", k]
         return s
     cfg = {
         "name": a.name, "out": OUT, "prof": [16384, 4, 175, 4096], "t": 2305843009210515457, "gate": 309, "program": "gen6",

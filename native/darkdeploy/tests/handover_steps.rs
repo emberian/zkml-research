@@ -212,6 +212,38 @@ fn rotation_sealed_under_the_vault() {
     rotation_v(true, None, true);
 }
 
+/// Seat i's MP-SPDZ runtime files (relative to RT): (its secrets, in every field; what stays).
+fn runtime_files(i: usize) -> (Vec<String>, Vec<String>) {
+    let o = (i + 1) % 3;
+    (
+        vec![
+            format!("Player-Data/Mascot-Secrets-p-61-519717d8-P{i}-3"),
+            format!("Player-Data/Mascot-Secrets-2-128-9a50bc35-P{i}-3"),
+            format!("Player-Data/Mascot-Secrets-B-64-fe992139-P{i}-3"),
+            format!("Player-Data/Memory-p-P{i}"),
+            format!("Player-Data/3-p-61/Player-MAC-Keys-p-P{i}"),
+            format!("Player-Data/3-2-128/Player-MAC-Keys-2-P{i}"),
+            format!("Persistence/Transactions-P{i}.data"),
+        ],
+        vec![format!("Player-Data/P{i}.pem"), format!("Player-Data/P{i}.key"), "Player-Data/PairwiseParams-0".into(), format!("Player-Data/Mascot-Secrets-p-61-519717d8-P{o}-3")],
+    )
+}
+
+fn runtime(own: &Path, i: usize) -> PathBuf {
+    let rt = own.join("mpspdz");
+    let ram = own.join("ram-player-data");
+    std::fs::create_dir_all(&rt).unwrap();
+    std::fs::create_dir_all(&ram).unwrap();
+    std::os::unix::fs::symlink(&ram, rt.join("Player-Data")).unwrap();
+    let (a, b) = runtime_files(i);
+    for f in a.iter().chain(b.iter()) {
+        let p = rt.join(f);
+        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+        std::fs::write(&p, format!("secret-or-public {f}")).unwrap();
+    }
+    rt
+}
+
 fn rotation(pause: bool, nat: Option<usize>) {
     rotation_v(pause, nat, false)
 }
@@ -275,6 +307,10 @@ fn rotation_v(pause: bool, nat: Option<usize>, vault: bool) {
             vnames.push(vault_init(&own, i, 0));
             natf.extend(s(&["--vault", "--keep-erased-copy", own.join("erased").to_str().unwrap()]));
         }
+        // its MP-SPDZ runtime as prep lays it out: Player-Data a symlink (into tmpfs on the boxes), every field's
+        // secrets of this seat, its public files, and another party's secret (a loopback runtime holds all three)
+        let rt = runtime(&own, i);
+        natf.extend(s(&["--erase-runtime", rt.to_str().unwrap()]));
         let mut a = s(&["serve", &i.to_string()]);
         a.extend(s(&A));
         a.push(own.join("D").to_str().unwrap().into());
@@ -355,6 +391,13 @@ fn rotation_v(pause: bool, nat: Option<usize>, vault: bool) {
             assert!(darkhand::vault::Vault::load(&vnames[i]).is_err(), "old seat {i}: nothing loads its file key");
             let copies = va["sealed_copies"].as_array().unwrap();
             assert!(!copies.is_empty() && copies.iter().all(|c| c["opens_by_keyring"] == false && c["opens_by_zero_key"] == false), "{va}");
+        }
+        let rt = own.join("mpspdz");
+        for f in runtime_files(i).0 {
+            assert!(!rt.join(&f).exists(), "old seat {i}: its MP-SPDZ secret {f} was erased (--erase-runtime)");
+        }
+        for f in runtime_files(i).1 {
+            assert!(rt.join(&f).exists(), "old seat {i}: {f} (public, or another party's) stays");
         }
         eprintln!("old seat {i} handover report: {r}");
         for f in [own.join("D").join(format!("ckpt_P{i}.bin")), own.join("D").join(format!("carry_P{i}.bin")), own.join(format!("tls_{i}.key")), own.join("tape.bin")] {
@@ -466,6 +509,9 @@ fn self_handover_v(nat: Option<usize>, vault: bool) {
         if i == 1 {
             a.extend(s(&["--attack", "wrong_return:1"]));
         }
+        // the old epoch's MP-SPDZ runtime: all of it goes at the self-handover (the seat's next key is its own)
+        let rt = runtime(&own, i);
+        a.extend(s(&["--erase-runtime", rt.to_str().unwrap()]));
         a.extend(natf.clone());
         if vault {
             vnames.push(vault_init(&own, i, 0));
@@ -482,6 +528,13 @@ fn self_handover_v(nat: Option<usize>, vault: bool) {
     for (i, dir) in dirs.iter().enumerate() {
         let r = json(&dir.join(format!("self_handover_P{i}.json")));
         assert_eq!(r["redo_step"], 0);
+        let rt = dir.parent().unwrap().join("mpspdz");
+        for f in runtime_files(i).0 {
+            assert!(!rt.join(&f).exists(), "seat {i}: the old epoch's MP-SPDZ secret {f} was erased (--erase-runtime)");
+        }
+        for f in runtime_files(i).1 {
+            assert!(rt.join(&f).exists(), "seat {i}: {f} (public, or another party's) stays");
+        }
         if vault {
             let own = dir.parent().unwrap();
             let va = &r["old_role"]["vault_after_erasure"];

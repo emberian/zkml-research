@@ -3,7 +3,8 @@
 //!
 //!   dl-custodian serve <darkstep serve arguments> [--prove [--pipeline-proofs --proof-mesh A0,A1,A2]
 //!       [--profile NAME] [--proof-archive ADIR]] [--model NAME]
-//!       [--handover-at K --mesh6 A0,..,A5 --tls6 DIR6 [--listen6 HOST:PORT] [--erase-extra FILE].. [--scan-extra PATH]..]
+//!       [--handover-at K --mesh6 A0,..,A5 --tls6 DIR6 [--listen6 HOST:PORT] [--erase-extra FILE].. [--erase-runtime RT]..
+//!       [--scan-extra PATH]..]
 //!       [--self-handover-tape FILE --recover-mesh A0,A1,A2 --recover-mesh6 A0,..,A5 --tapes2 PAT --owner-msgs2 PAT]
 //!       [--release --release-data MNISTDIR [--release-m M (default: the cfg's release.M)] [--release-tape FILE]]
 //!   dl-custodian join J <N L F d> DIR A0 A1 A2 --tls TLSDIR --owner HOST:PORT --steps K --mesh6 A0,..,A5
@@ -577,7 +578,8 @@ impl Prove {
                 }
             }
         }
-        // this seat's retired MAC key outside the tapes, e.g. its MP-SPDZ key files (--erase-extra FILE, repeatable)
+        // this seat's retired MAC key outside the tapes, e.g. its MP-SPDZ key files (--erase-extra FILE, repeatable),
+        // and every MP-SPDZ secret of this seat in its runtime (--erase-runtime RT)
         let mut files = files;
         for (n, x) in args.iter().enumerate() {
             if x == "--erase-extra" {
@@ -585,6 +587,11 @@ impl Prove {
                 if f.exists() && !files.contains(&f) {
                     files.push(f);
                 }
+            }
+        }
+        for f in runtime_secrets(&args, i) {
+            if !files.contains(&f) {
+                files.push(f);
             }
         }
         // more places of this seat's secrets on disk, e.g. its MP-SPDZ runtime dir (--scan-extra, repeatable)
@@ -676,6 +683,11 @@ impl Prove {
                 if !files.contains(&f) {
                     files.push(f);
                 }
+            }
+        }
+        for f in runtime_secrets(&args, i) {
+            if !files.contains(&f) {
+                files.push(f);
             }
         }
         files.retain(|f| f.exists());
@@ -987,6 +999,40 @@ impl Prove {
         }
         Err(st)
     }
+}
+
+/// `--erase-runtime RT` (repeatable): every MP-SPDZ secret of seat `i` in the runtime RT (prep's seat set: its
+/// Player-Data, often a symlink into tmpfs, the per-field subdirectories 3-p-61, 3-2-128, 3-TT-8, 3-p-3xx, and
+/// Persistence), named by darkprep's `is_party_secret`: every field's Mascot / LowGear / HighGear secrets, Memory-*,
+/// Player-MAC-Keys-*, Transactions-*. They belong to the seat's epoch and are erased with it at a handover; the
+/// public files (certificates, links, the TLS key's .key for MP-SPDZ, PairwiseParams) stay.
+fn runtime_secrets(args: &[String], i: usize) -> Vec<PathBuf> {
+    let mut out = Vec::new();
+    for (n, x) in args.iter().enumerate() {
+        if x != "--erase-runtime" {
+            continue;
+        }
+        let rt = PathBuf::from(&args[n + 1]);
+        let mut dirs = vec![rt.join("Player-Data"), rt.join("Persistence")];
+        if let Ok(rd) = std::fs::read_dir(rt.join("Player-Data")) {
+            for e in rd.flatten() {
+                if std::fs::metadata(e.path()).map(|m| m.is_dir()).unwrap_or(false) {
+                    dirs.push(e.path());
+                }
+            }
+        }
+        for d in dirs {
+            let Ok(rd) = std::fs::read_dir(&d) else { continue };
+            for e in rd.flatten() {
+                let name = e.file_name().to_string_lossy().into_owned();
+                if std::fs::metadata(e.path()).map(|m| m.is_file()).unwrap_or(false) && darkprep::mpspdz::is_party_secret(&name, Some(i)) {
+                    out.push(e.path());
+                }
+            }
+        }
+    }
+    out.sort();
+    out
 }
 
 /// The release's own tape once this process has claimed it (--wipe-spent wipes it after the release).
