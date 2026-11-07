@@ -395,6 +395,9 @@ def validate():
           f"{100 * (inner_product('BabyBear^8', 'int8', N)['macs'] / SKUS['H100']['int8']) / 0.85e-3:.1f}% of INT8 peak "
           "in the inner product. The end-to-end 215.28 ms is NOT reproduced: perm-check (134 ms) is a GKR product")
     print("  argument whose layer schedule the paper does not give at count level.")
+    print("  MEASURED on H100 by initiative 17 (paid-h100-mma-03): the same INT8 inner product at 2^25, plane layout,")
+    print("  0.734 ms = 0.97 of the measured copy bandwidth (3.03 TB/s): the HBM-bound classification holds, and")
+    print("  TensorZKP's 0.85 ms sits 1.16x above a kernel that runs at copy speed.")
     print("\nVALIDATION 3: DATE'26 SumCATS (GF(2^128), bit-sliced SIMT, A100): n=24 d=2 measured 108.65 ms")
     c = sumcheck("GF2^128", "b1", 24, 2)
     f, b, terms = floor_s("A100", "b1", c)
@@ -538,22 +541,23 @@ TARGETS = {
         "fp16": (312e12 / 2, "fp", 24, "X datasheet; PTX: multiply and accumulate at least single precision"),
         "bf16": (312e12 / 2, "fp", 24, "X datasheet; product precision 16 bits UNVERIFIED (PTX: specified precision)"),
         "b1": (4992e12 / 2, "int", 31, "X datasheet; BMMA and/xor native (SASS)")}),
-    "H100": dict(bw=3.35e12 * 0.75, simt=16.7e12, paths={
-        "int8": (1979e12 / 2, "int", 31, "X datasheet; wgmma IGMMA"),
-        "fp8": (1979e12 / 2, "fp", 12, "X datasheet; wgmma QGMMA only (mma.sync e4m3 -> HMMA); m UNMEASURED"),
-        "fp16": (989e12 / 2, "fp", 24, "X datasheet; PTX: at least single precision (mma.sync/wgmma)"),
-        "bf16": (989e12 / 2, "fp", 24, "X datasheet; product precision UNVERIFIED"),
-        "b1": (None, "int", 31, "wgmma BGMMA and.popc native, RATE UNMEASURED; xor emulated")}),
+    "H100": dict(bw=3.03e12, simt=16.7e12, paths={
+        # [MEASURED paid-h100-mma-03, 2026-11-07]: copy 3.03 TB/s read+write; wgmma rates; QGMMA m=14
+        # (exact through 2^14, inexact from 2^14.5); HGMMA m=24; bias read passes on QGMMA m=12..14, fails m=24.
+        "int8": (9.999e14, "int", 31, "MEASURED wgmma IGMMA 1.00e15 (cuBLAS 8192^3 6.96e14)"),
+        "fp8": (8.82e14, "fp", 14, "MEASURED wgmma QGMMA 8.82e14, m=14 MEASURED (cuBLASLt fast-accum off: 0/1 exact to K=2^20)"),
+        "fp16": (4.54e14, "fp", 24, "MEASURED wgmma HGMMA 4.54e14, m=24 MEASURED"),
+        "b1": (7.988e15, "int", 31, "MEASURED wgmma BGMMA and.popc 7.99e15 = 8.0x IGMMA")}),
     "B200": dict(bw=8.0e12 * 0.75, simt=148 * 128 * 1.9e9, paths={
         "int8": (4.5e15 / 2, "int", 31, "X 2608.11693"),
-        "fp8": (4.5e15 / 2, "fp", 12, "X; tcgen05 m UNPUBLISHED"),
-        "fp4": (9e15 / 2, "fp", 12, "X; tcgen05 m UNPUBLISHED"),
+        "fp8": (4.5e15 / 2, "fp", 14, "X; tcgen05 m UNPUBLISHED (placeholder = Hopper QGMMA measured 14)"),
+        "fp4": (9e15 / 2, "fp", 14, "X; tcgen05 m UNPUBLISHED (placeholder 14)"),
         "fp16": (2.25e15 / 2, "fp", 24, "X; m=24 [A for tcgen05: no precision text found]"),
         "b1": (None, "int", 31, "EMULATED (SASS: CALL + IMMA)")}),
     "B300": dict(bw=7.7e12 * 0.75, simt=160 * 128 * 1.9e9, paths={
         "int8": (0.15e15 / 2, "int", 31, "X 2608.11693: FP8/30, no kind::i8 on sm_103a"),
-        "fp8": (4.5e15 / 2, "fp", 12, "X; tcgen05 m UNPUBLISHED"),
-        "fp4": (14e15 / 2, "fp", 12, "X HGX B300 datasheet 14 P dense (mxf4 kind); tcgen05 m UNPUBLISHED"),
+        "fp8": (4.5e15 / 2, "fp", 14, "X; tcgen05 m UNPUBLISHED (placeholder = Hopper QGMMA measured 14)"),
+        "fp4": (14e15 / 2, "fp", 14, "X HGX B300 datasheet 14 P dense (mxf4 kind); tcgen05 m UNPUBLISHED (placeholder 14)"),
         "fp16": (2.25e15 / 2, "fp", 24, "X 4.5 P sparse / 2; m=24 [A for tcgen05: no precision text found]"),
         "b1": (None, "int", 31, "EMULATED")}),
     "TPUv5e": dict(bw=8.19e11 * 0.75, simt=None, paths={
@@ -607,8 +611,8 @@ def rot_datapaths():
             print(f"  {tgt:7} {k:5} {rs} {acc:4} {m:3d} {str(bl):>12} {b01:>10} {tag}")
     print("  0/1 column: parity read; with promotion by parity XOR every block it is exact at every length.  Integer limb")
     print("  totals promoted by cvt + iadd.s32 stay bounded by the INT32 total (33,025 u8 products) unless reduced")
-    print("  mod p or widened.  m=12 rows: PTX's floor for FP8 wgmma ('higher than half'); tcgen05 has no precision")
-    print("  text at all, so 12 is a placeholder until the probe measures it.  bf16 byte limbs need 16-bit products,")
+    print("  mod p or widened.  H100 QGMMA m=14 and HGMMA m=24 are MEASURED (paid-h100-mma-03); tcgen05 has no")
+    print("  precision text, so Blackwell FP8/FP4 carry 14 as a placeholder until the B200 hour.  bf16 byte limbs need 16-bit products,")
     print("  which PTX does not promise for bf16 ('specified precision'); fp16 byte limbs are promised (single precision).")
 
 

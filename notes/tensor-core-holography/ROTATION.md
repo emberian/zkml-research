@@ -47,24 +47,35 @@ promotion.
 | A100 | INT8 | 3.1e14 | wrap | 33,025 | unbounded | [X] |
 | A100 | b1 and/xor | 2.5e15 | wrap | — | unbounded | [X], native (SASS) |
 | A100 | FP16 | 1.6e14 | 24 (PTX: at least single precision) | 258 | 16.7M | [READ] |
-| H100 | INT8 (IGMMA) | 9.9e14 | wrap | 33,025 | unbounded | [X] |
-| H100 | FP8 (QGMMA, wgmma only) | 9.9e14 | **12 to 23**, unmeasured (PTX 9.2) | 18 at m = 12 (72 at 14) | 4,095 at m = 12 | probe |
-| H100 | FP16 | 4.9e14 | 24 (PTX) | 258 | 16.7M | [READ] |
-| H100 | b1 and.popc (BGMMA) | **unmeasured** | wrap | — | unbounded | native; rate is the probe |
+| H100 | INT8 (IGMMA) | 1.00e15 | wrap | 33,025 | unbounded | [MEASURED] |
+| H100 | FP8 (QGMMA, wgmma only) | 8.8e14 | **14** [MEASURED] | 72 | 16,383 (bias read: 8,191) | [MEASURED] |
+| H100 | FP16 (HGMMA) | 4.5e14 | **24** [MEASURED] | 258 | 16.7M | [MEASURED] |
+| H100 | **b1 and.popc (BGMMA)** | **8.0e15 = 8.0x IGMMA** | wrap | — | unbounded | [MEASURED]; the Hopper binary unit |
 | B200 | INT8 | 2.25e15 | wrap | 33,025 | unbounded | [X] |
-| B200 | FP8 / FP4 (tcgen05) | 2.25e15 / 4.5e15 | **unpublished** (placeholder 12) | 18 / 63 | 4,095 | probe |
+| B200 | FP8 / FP4 (tcgen05) | 2.25e15 / 4.5e15 | **unpublished** (placeholder 14 = QGMMA) | 72 / 255 | 16,383 | probe |
 | B200 | FP16 | 1.1e15 | 24 [A: tcgen05 has no precision text] | 258 | 16.7M | [A] |
 | B300 | INT8 | 7.5e13 | wrap | 33,025 | unbounded | [X] 1/30 FP8; no `kind::i8` |
-| B300 | FP8 / FP4 (mxf4) | 2.25e15 / 7.0e15 | unpublished (placeholder 12) | 18 / 63 | 4,095 | probe (Codex: HGX B300 is 14 PF FP4, 7.7 TB/s) |
+| B300 | FP8 / FP4 (mxf4) | 2.25e15 / 7.0e15 | unpublished (placeholder 14) | 72 / 255 | 16,383 | probe (Codex: HGX B300 is 14 PF FP4, 7.7 TB/s) |
 | B300 | FP16 | 1.1e15 | 24 [A] | 258 | 16.7M | [X] rate, [A] m |
 | B200, B300 | b1 | — | — | — | — | **emulated**: not a datapath |
 | TPU v5e / v6e | INT8 (MXU) | 2.0e14 / 9.2e14 | int32; overflow semantics unverified | 33,025 if it wraps | unbounded if it wraps | [X] rate |
 | TPU v5e / v6e | bf16 (MXU) | 9.9e13 / 4.6e14 | f32 accumulate, m = 24 [A] | 258 if products are exact | 16.7M | [X] Google |
 
-Two corrections changed this table (Codex):
+Corrections to this table:
 
-- **m = 14 is not conservative for FP8 on Hopper.** PTX's "higher than half precision" allows 12, so the
-  table uses 12 as the floor. Tcgen05 has no precision text at all.
+- **The H100 rows are measured** (initiative 17, `notes/accelerator-readiness/runs/paid-h100-mma-03`,
+  2026-11-07; the run's own record is that run directory):
+  - Copy bandwidth 3.03 TB/s read+write.
+  - wgmma rates: IGMMA 1.00e15, QGMMA 8.8e14, HGMMA 4.5e14, BGMMA 8.0e15 MAC/s. cuBLAS 8192^3 peaks: INT8
+    6.96e14, FP8 7.63e14, FP16 4.31e14.
+  - **QGMMA is exact through 2^14 and inexact from 2^14.5: m = 14. HGMMA m = 24.**
+  - The 2^(m-1) bias read passes on QGMMA at m = 12-14 and on HGMMA through 24. It fails on e4m3 at
+    m = 24, as the falsifier predicts.
+  - cuBLASLt FP8 0/1 count and parity are exact to K = 2^20 with fast accumulation off (cuBLAS promotes),
+    and first inexact at K = 65,536 with it on. FP16 is exact to 2^20.
+- **Withdrawn: "m = 12 is the FP8 floor" (introduced on Codex's reading of PTX).** PTX's wording permits 12;
+  the hardware is 14. Blackwell's tcgen05 has no precision text, so it carries 14 as a placeholder (the
+  QGMMA value) until the B200 hour.
 - **bf16 byte limbs need 16-bit products, and PTX promises bf16 only "specified precision".** FP16 byte
   limbs (multiply and accumulate at least single precision) carry the integer work. bf16 keeps only 0/1
   operands, whose products are trivially exact.
@@ -82,7 +93,7 @@ Promotion changes the bounds:
 |---|---|---:|---|
 | T4 | INT8 | 44.4 ms | HBM |
 | A100 | INT8 | 7.0 ms | HBM |
-| H100 | INT8 | 4.3 ms | HBM (FP8: 4.45 ms, SIMT-bound) |
+| H100 | INT8 | 3.54 ms | HBM at the measured 3.03 TB/s (FP16 and FP8 tie) |
 | B200 | INT8 | 1.79 ms | HBM |
 | **B300** | **FP16 byte limbs** | **1.86 ms** | HBM. Then FP8 nibbles 1.91 (SIMT), FP4 2.73 (SIMT), INT8 2.98 (tensor) |
 | TPU v5e / v6e | INT8 | 17.5 / 8.7 ms | HBM (no VPU term) |
@@ -131,7 +142,9 @@ the fixed-r multiply, the harder case.
 
 | target | path | inner product | fixed-r multiply | table (12,000) | win vs table | vs ideal 860 |
 |---|---|---:|---:|---:|---:|---:|
-| H100 | INT8 or FP8 0/1 | 0.066 | 0.066 | 0.719 | **10.8x** | 0.78x |
+| **H100** | **b1 and.popc (BGMMA, measured 8.0x INT8)** | 0.021 (HBM) | 0.032 (HBM) | 0.719 | **22.7x** | 1.63x |
+| H100 | INT8 0/1 | 0.066 | 0.066 | 0.719 | 11.0x | 0.79x |
+| H100 | FP8 0/1 (QGMMA, m = 14) | 0.074 | 0.074 | 0.719 | 9.7x | 0.69x |
 | B200 | FP4 0/1 | 0.015 | 0.019 | 0.333 | **17.9x** | 1.28x |
 | B300 | FP4 0/1 (mxf4, unit scales) | 0.011 (HBM) | 0.017 (SIMT) | 0.308 | **17.9x** | 1.28x |
 | B300 | FP8 0/1 | 0.029 | 0.029 | 0.308 | 10.6x | 0.76x |
@@ -162,7 +175,8 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 | target, ell | hash | arith: table | arith: tensor (fine NTT layers on the table) | proof: table → tensor | hash share |
 |---|---:|---:|---:|---|---|
 | T4, 20 | 6.1 | 37.1 | 12.6 (b1x) | 43.2 → 18.6 (**2.3x**) | 0.14 → 0.33 |
-| H100, 20 | 1.5 | 9.0 | 2.3 (INT8) | 10.5 → 3.8 (**2.8x**) | 0.14 → 0.39 |
+| H100, 20 | 1.5 | 9.0 | 1.8 (**b1**) | 10.5 → 3.3 (**3.2x**) | 0.14 → 0.45 |
+| H100, 22 | 5.9 | 39.2 | 7.4 (b1) | 45.1 → 13.4 (**3.4x**) | 0.13 → 0.44 |
 | B200, 20 | 0.69 | 4.2 | 0.90 (FP4) | 4.9 → 1.6 (**3.1x**) | 0.14 → 0.43 |
 | B300, 20 | 0.64 | 3.9 | 0.86 (FP4) | 4.5 → 1.5 (**3.0x**) | 0.14 → 0.43 |
 | B300, 22 | 2.5 | 16.8 | 3.5 (FP4) | 19.4 → 6.1 (**3.2x**) | 0.13 → 0.42 |
@@ -198,7 +212,7 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 
 | target | best path | time | binding |
 |---|---|---:|---|
-| H100 | INT8 | 0.27 ms | HBM |
+| H100 | INT8 | 0.22 ms | HBM (measured bandwidth) |
 | B200 | INT8 | 0.11 ms | HBM |
 | B300 | **FP16 byte digits** | **0.21 ms** | HBM. INT8 1.83 (tensor), FP8 nibbles 0.71 (SIMT promotion and reconstruction) |
 | TPU v6e | INT8 | 0.55 ms | HBM, no VPU term |
@@ -215,19 +229,23 @@ Tower256 FRI prover (one column), ms per proof, with the measured table baseline
 3. **The Tower256 GPU prover is arithmetic-bound.** The measured SIMT multiply is 12,000-17,400 op-eq (table)
    or 52,700 (bit-sliced), not 718. The tensor fixed-r route is the lever, at 10.6-19.6x per multiply and
    2.3-3.2x per proof (5.3x with tensor fine layers). F3-MODEL said hash-bound.
-4. **m = 12, not 14, is the FP8 floor.**
+4. **Hopper's FP8 accumulator is m = 14, measured.** The interim "m = 12" (a PTX reading) is withdrawn.
+   **Hopper's binary unit is BGMMA `and.popc` at 8.0x INT8.** Tower256 on H100 moves from INT8 0/1 to b1:
+   the fixed-r multiply is 22.7x the table (it was 11.0x on INT8) and 3.2-3.4x per proof.
 5. **bf16 byte limbs are not spec-backed;** FP16 byte limbs are.
 6. **MXFP4 recompute runs at the FP8 rate on SIMT scale handling, not at the FP4 rate.**
 
 ## 4. What is not established
 
-- The `m` for QGMMA and tcgen05 FP8/FP4.
-- The H100 BGMMA rate.
+- The `m` for tcgen05 FP8/FP4 (B200 hour pending). QGMMA (14) and HGMMA (24) are measured.
 - That tcgen05 FP16 accumulates at m = 24.
 - TPU int32 overflow semantics.
 - The repack layout cost.
 - Whether the fine NTT layers can be moved onto the tensor path.
-- Lean: the Tower256 instance of `lazy_bilinear`, and any hardware refinement theorem. The proved bound
+- Lean: the Tower256 instance of `lazy_bilinear`, and any hardware refinement theorem. The measured widths
+  enter as hypotheses: `qgmma_gf2_dot` takes `HoldsBelow 14` and gives up to 16,382 products;
+  `hgmma_gf2_dot` takes `HoldsBelow 24`; `qgmma_m14_blocks` and `hgmma_m24_blocks` give the block lengths
+  with first failures. The proved bound
   carries one product of slack: `N + 1 < 2^m`, i.e. N ≤ 2^m − 2.
 
 ## 5. Revised probe list for initiative 17's paid hours ($30 vast.ai: B300 hour first, then H100)
@@ -249,7 +267,9 @@ All checks are decided on the host from exact integers, as in `mma_run.py`.
 6. **Tower256 fixed-r multiply** as a dense 0/1 GEMM (data N × 256 unpacked, M_r 256 × 256), with parity
    repack: ns per element against the T4 table rate. Spec for the kernel is §2(b).
 
-**H100:**
+**H100: DONE (paid-h100-mma-03).** The results are folded in above. The TensorZKP-shape INT8 inner product,
+plane layout, runs 0.734 ms at 2^25: 0.97 of measured copy bandwidth, and 1.16x faster than TensorZKP's own
+0.85 ms. The original list was:
 
 1. wgmma rates IGMMA / QGMMA / HGMMA / **BGMMA `and.popc`** (`rates_sm80.wg_*`). BGMMA ≥ 4x IGMMA makes the
    b1 path the Hopper binary unit.
