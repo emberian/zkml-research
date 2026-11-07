@@ -5,8 +5,11 @@
 //! rows, evaluation consistency at both commitments' opened columns and W_old(r) = W_new(r).
 use crate::field;
 use crate::h::{py_str_repr, Hash};
-use crate::ligero::{self, LigParams, LigProof, LinSink, LinSystem};
-use crate::pcs::{self, colsums, PcsCols, Shape};
+use crate::ligero::{self, decode_openings, encode_openings, LigParams, LigParty, LigProof, LinSink, LinSystem};
+use crate::net::{gather_hashes, Net};
+use crate::pcs::{self, colsums, Opening, PcsCols, PcsParty, Shape};
+use crate::rng::Det;
+use rayon::prelude::*;
 use crate::spine::{log2, pcs_consistency, Evals};
 use crate::transcript::{eqv, Transcript};
 use crate::wire::{r_ligero, r_pcs, r_prox_cols, R, PR};
@@ -159,33 +162,15 @@ impl LinSystem for HandoverSys {
     }
 }
 
-/// handover.verify on a parsed proof: public data only (ctx and old_roots come from the ledger).
-#[allow(clippy::too_many_arguments)]
-pub fn verify_proof(
-    pr: &Profile,
-    lp: &LigParams,
-    d: usize,
-    n_old: usize,
-    n_new: usize,
-    ctx: &HandoverCtx,
-    old_roots: &Roots,
-    proof: &HandoverProof,
-) -> Result<(), String> {
-    if &proof.old_roots != old_roots {
-        return Err("handover: old roots are not the ledger head's".into());
-    }
-    let ld = log2(d);
-    let (so, sn) = shapes(pr, d);
-    if KINDS.iter().any(|k| proof.old_roots[*k].len() != n_old || proof.new_roots[*k].len() != n_new) {
-        return Err("handover: wrong committee sizes".into());
-    }
+/// The transcript up to the evaluation points: ctx, then every commitment's root tuple (handover._keys order).
+fn transcript(ctx: &HandoverCtx, old_roots: &Roots, new_roots: &Roots) -> Transcript {
     let mut tr = Transcript::new("handover");
     let cr = ctx.repr();
     tr.absorb(|h| {
         h.s("ctx").raw(cr.as_bytes());
     });
     for side in ["old", "new"] {
-        let roots = if side == "old" { &proof.old_roots } else { &proof.new_roots };
+        let roots = if side == "old" { old_roots } else { new_roots };
         for k in KINDS {
             let key = format!("('{side}', '{k}')");
             tr.absorb(|h| {
@@ -193,6 +178,19 @@ pub fn verify_proof(
             });
         }
     }
+    tr
+}
+
+/// handover._schedule and _rows: one point per matrix, the evaluation list (old k, r), (new k, r) per k, its shapes,
+/// the hidden rows of each evaluation and the row count.
+fn schedule(
+    tr: &mut Transcript,
+    pr: &Profile,
+    d: usize,
+    so: &BTreeMap<String, Shape>,
+    sn: &BTreeMap<String, Shape>,
+) -> (Evals, Vec<Shape>, Vec<Vec<usize>>, usize) {
+    let ld = log2(d);
     let mut ev: Evals = Vec::new();
     let mut shv = Vec::new();
     for k in KINDS {
@@ -209,11 +207,49 @@ pub fn verify_proof(
         urows.push((nxt..nxt + nr).collect::<Vec<usize>>());
         nxt += nr;
     }
+    (ev, shv, urows, nxt)
+}
+
+fn colsum_map(
+    so: &BTreeMap<String, Shape>,
+    sn: &BTreeMap<String, Shape>,
+    cols_old: &BTreeMap<String, PcsCols>,
+    cols_new: &BTreeMap<String, PcsCols>,
+) -> BTreeMap<String, (Vec<usize>, Vec<Vec<u64>>)> {
+    let mut cols = BTreeMap::new();
+    for (side, sh, pc) in [("old", so, cols_old), ("new", sn, cols_new)] {
+        for k in KINDS {
+            cols.insert(format!("{side} {k}"), (pc[k].j.clone(), colsums(&pc[k], sh[k].r)));
+        }
+    }
+    cols
+}
+
+/// handover.verify on a parsed proof: public data only (ctx and old_roots come from the ledger).
+#[allow(clippy::too_many_arguments)]
+pub fn verify_proof(
+    pr: &Profile,
+    lp: &LigParams,
+    d: usize,
+    n_old: usize,
+    n_new: usize,
+    ctx: &HandoverCtx,
+    old_roots: &Roots,
+    proof: &HandoverProof,
+) -> Result<(), String> {
+    if &proof.old_roots != old_roots {
+        return Err("handover: old roots are not the ledger head's".into());
+    }
+    let (so, sn) = shapes(pr, d);
+    if KINDS.iter().any(|k| proof.old_roots[*k].len() != n_old || proof.new_roots[*k].len() != n_new) {
+        return Err("handover: wrong committee sizes".into());
+    }
+    let mut tr = transcript(ctx, &proof.old_roots, &proof.new_roots);
+    let (ev, shv, urows, nxt) = schedule(&mut tr, pr, d, &so, &sn);
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
     });
     let keys: Vec<String> = KINDS.iter().map(|k| k.to_string()).collect();
-    let mut cols = BTreeMap::new();
     for (side, nn, sh, roots, prox, pc) in [
         ("old", n_old, &so, &proof.old_roots, &proof.prox_old, &proof.cols_old),
         ("new", n_new, &sn, &proof.new_roots, &proof.prox_new, &proof.cols_new),
@@ -224,10 +260,8 @@ pub fn verify_proof(
         let cls: Vec<PcsCols> = keys.iter().map(|k| pc[k].clone()).collect();
         pcs::verify(pr, &keys, &shs, &rts, &pxs, &cls, &mut tr, nn)
             .map_err(|e| format!("handover ({side} committee): {e}"))?;
-        for k in &keys {
-            cols.insert(format!("{side} {k}"), (pc[k].j.clone(), colsums(&pc[k], sh[k].r)));
-        }
     }
+    let cols = colsum_map(&so, &sn, &proof.cols_old, &proof.cols_new);
     let sys = HandoverSys { kl: pr.k_l, ev, shapes: shv, cols, urows };
     ligero::verify(lp, n_old + n_new, &[proof.eval_roots.clone()], &[nxt], &proof.mask_roots, &sys, &[], &proof.ligero, &mut tr)
 }
@@ -254,4 +288,135 @@ pub fn verify(
         Ok(r) => r,
         Err(_) => Err("malformed handover proof (panic)".into()),
     }
+}
+
+// ------------------------------------------------------------------------------------------------ encoder
+/// handover.encode.
+pub fn encode(pr: &Profile, d: usize, p: &HandoverProof) -> Vec<u8> {
+    let (n_old, n_new) = (p.old_roots["W1"].len(), p.new_roots["W1"].len());
+    assert!(sizes_ok(d, n_old, n_new));
+    let (so, sn) = shapes(pr, d);
+    let mut w = crate::wire::W { b: Vec::new() };
+    w.b.extend_from_slice(MAGIC);
+    w.b.extend_from_slice(&(d as u16).to_be_bytes());
+    w.b.push(n_old as u8);
+    w.b.push(n_new as u8);
+    let n = n_old + n_new;
+    crate::wire::w_roots(&mut w, n_old, &so, &p.old_roots);
+    crate::wire::w_roots(&mut w, n_new, &sn, &p.new_roots);
+    w.hs(&p.eval_roots, n);
+    w.hs(&p.mask_roots, n);
+    crate::wire::w_prox_cols(&mut w, pr, n_old, &so, &p.prox_old, &p.cols_old);
+    crate::wire::w_prox_cols(&mut w, pr, n_new, &sn, &p.prox_new, &p.cols_new);
+    crate::wire::w_ligero(&mut w, pr, n, &[nrows(pr, d)], &p.ligero);
+    w.b
+}
+
+// ------------------------------------------------------------------------------------------------ prover
+/// One custodian's part of handover.prove. Parties 0..n_old are the old committee (in its order), n_old..n_old +
+/// n_new the new one; `net` connects all n_old + n_new of them. `mine` is this party's own commitment part of W1 and
+/// W2: the old committee's carried child (its first life spent in the step) or the new committee's fresh
+/// commitment. Every party returns the same proof. The old parts' second life is counted (LifeExhausted refuses a
+/// third opening).
+#[allow(clippy::too_many_arguments)]
+pub fn prove(
+    pr: &Profile,
+    lp: &LigParams,
+    d: usize,
+    n_old: usize,
+    n_new: usize,
+    ctx: &HandoverCtx,
+    mine: &mut BTreeMap<String, PcsParty>,
+    net: &mut dyn Net,
+    det: &Det,
+) -> Result<HandoverProof, String> {
+    let n = n_old + n_new;
+    let g = net.me();
+    assert_eq!(net.n(), n);
+    let old = g < n_old;
+    let (so, sn) = shapes(pr, d);
+    for k in KINDS {
+        let c = mine.get_mut(k).ok_or("handover: missing own commitment part")?;
+        let want = if old { &so[k] } else { &sn[k] };
+        c.shape.base = want.base;
+        if &c.shape != want {
+            return Err("handover: own commitment part has the wrong shape".into());
+        }
+        // refuse a further opening before sending anything (pcs_side counts the life itself)
+        if c.shape.hide > 0 && c.opened_lives + 1 > c.max_lives {
+            return Err(format!(
+                "LifeExhausted: commitment {k} already opened in {} proofs; a further opening reveals it",
+                pr.lives
+            ));
+        }
+    }
+    // roots of every party's parts; the old committee's are the first n_old
+    let all = gather_hashes(net, &[mine["W1"].root, mine["W2"].root]);
+    let side_roots = |r: std::ops::Range<usize>| -> Roots {
+        KINDS.iter().enumerate().map(|(ki, k)| (k.to_string(), r.clone().map(|p| all[p][ki]).collect())).collect()
+    };
+    let (old_roots, new_roots) = (side_roots(0..n_old), side_roots(n_old..n));
+    let mut tr = transcript(ctx, &old_roots, &new_roots);
+    let (ev, shv, urows, nr) = schedule(&mut tr, pr, d, &so, &sn);
+    let seed_label = format!("(('handover',), {})", ctx.repr());
+    let mut lg = LigParty::new(lp, g, n, &seed_label, det);
+    for (e, (key, pt)) in ev.iter().enumerate() {
+        let s = &shv[e];
+        let u = if key.starts_with("old") == old {
+            mine[&key[4..]].row_combo(&s.eval_weights(pt))
+        } else {
+            vec![0u64; s.w]
+        };
+        for s0 in (0..s.w).step_by(pr.k_l) {
+            lg.add_row(&u[s0..(s0 + pr.k_l).min(s.w)]);
+        }
+    }
+    debug_assert_eq!(lg.rows.len(), nr);
+    let eval_roots = lg.commit(net);
+    let mask_roots = lg.commit_masks(net);
+    tr.absorb(|h| {
+        h.s("lig-evals").list_hx(&eval_roots).list_hx(&mask_roots);
+    });
+    let (prox_old, cols_old) = pcs_side(pr, mine, old, 0..n_old, &mut tr, net)?;
+    let (prox_new, cols_new) = pcs_side(pr, mine, !old, n_old..n, &mut tr, net)?;
+    let cols = colsum_map(&so, &sn, &cols_old, &cols_new);
+    let sys = HandoverSys { kl: pr.k_l, ev, shapes: shv, cols, urows };
+    let ligero = lg.prove(net, &mut tr, &sys, &[]);
+    Ok(HandoverProof { old_roots, new_roots, eval_roots, mask_roots, prox_old, cols_old, prox_new, cols_new, ligero })
+}
+
+/// cosnark.pcs_prove(part, [], tr, n_side) for one committee, run over the joint net: the committee's parties
+/// contribute, the others send nothing and follow the transcript.
+fn pcs_side(
+    pr: &Profile,
+    mine: &mut BTreeMap<String, PcsParty>,
+    member: bool,
+    side: std::ops::Range<usize>,
+    tr: &mut Transcript,
+    net: &mut dyn Net,
+) -> Result<(BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>), String> {
+    let mut prox = BTreeMap::new();
+    for k in KINDS {
+        let s = mine[k].shape.clone();
+        let gam = s.prox_weights(tr.chal(s.prox_len()));
+        let v = if member { mine[k].row_combo(&gam) } else { Vec::new() };
+        let all: Vec<Vec<u64>> = net.all_gather(v)[side.clone()].to_vec();
+        tr.absorb(|h| {
+            h.s("g").s(k).list2(&all);
+        });
+        prox.insert(k.to_string(), all);
+    }
+    let mut cols = BTreeMap::new();
+    for k in KINDS {
+        let npts = mine[k].shape.npts;
+        if member {
+            mine.get_mut(k).unwrap().take_life(k, pr.lives).map_err(|e| format!("LifeExhausted: {}", e.0))?;
+        }
+        let jj = tr.distinct_cols(pr.t_cols, npts);
+        let ops: Vec<Opening> = if member { jj.par_iter().map(|&j| mine[k].open(j)).collect() } else { Vec::new() };
+        let all = net.all_gather(encode_openings(&[ops]));
+        let open = all[side.clone()].iter().map(|v| decode_openings(v).remove(0)).collect();
+        cols.insert(k.to_string(), PcsCols { j: jj, open });
+    }
+    Ok((prox, cols))
 }
