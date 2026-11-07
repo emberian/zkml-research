@@ -892,3 +892,22 @@ ACCEPT at all three, one transcript. On hbox's link a step is ~13 min before any
 The proof with rounding on: `DL_PROFILE=ledger-x2de DL_RS=1 DL_EXTRA=--ret-round` handover_steps
 rotation_to_a_new_committee_after_step_0 passes at d = 64 (both steps proved and accepted, weights = the twin
 after 2 steps): the proof binds openings and shares, which rounding does not touch. [OPEN] the same at d = 4096.
+
+### The orchestrator rehearsal (reh, 11:51-12:01 UTC) [EXECUTED]
+
+`record.py dev --steps 4 --handover-at 1 --chunks reh --key-dir reh-old --no-release` (bins r6 at 11e84d91), then
+`run.py runs/reh.json setup` (vault-init: six file keys) and `run.py runs/reh.json drive` on the Mac (drive.pid):
+launched 11:51:16; the new committee started at 11:53:35 when the old seat 0 had step 0; the old committee rotated
+after step 1; the new one ran steps 2-3; "run ended at step 4" 12:01:15; collected. Prep's MASCOT chunks (reh-c0,
+reh-ho, reh-n-c0; ledger-x2de + RS, plain), pipelined proofs on a proof mesh per committee, the archive on bb2,
+--wipe-spent, --tape-wait 7200 (no wait: reh-n-c0 was complete before step 2), --vault, --keep-erased-copy.
+
+| step | committee | step s | proof s (beside the next step) | verify s |
+|---|---|---:|---:|---:|
+| 0 | old | 90.6 | 43.4 | 16.8-22.5 |
+| 1 | old | 101.4 | 33.6 | 17.7-18.2 |
+| 2 | new | 93.1 | 48.0-48.1 | 24.6-25.3 |
+| 3 | new | 101.2 | 33.6 | 17.7-18.2 |
+
+All ACCEPT, one transcript per step; cgroup peaks 8.49-8.69 GB (old), 9.27-9.82 GB (new); old seats after the
+erasure: file key gone from the keyring, the captured ciphertext does not decrypt.
