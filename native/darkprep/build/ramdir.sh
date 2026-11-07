@@ -5,6 +5,9 @@
 # persistent storage, and the retire/wipe paths in darkprep erase the only copy.
 #   ramdir.sh RT RAM          move (first use) or rebuild (after a reboot emptied RAM) the runtime; idempotent
 #   ramdir.sh RT RAM status   print where each directory lives and whether a 61-bit MAC key share is in RAM
+#   ramdir.sh RT RAM erase    the seat's erasure: shred every file in RAM except the public ones (certificates, links,
+#                             TLS key, PairwiseParams), in Player-Data, its per-field subdirectories and Persistence;
+#                             lists what it erased and then any secret-named file left (none expected)
 # The non-secret files (TLS certificates and their c_rehash links, this party's TLS key, PairwiseParams-*) are kept on
 # disk in RT/Player-Data.skel and copied into RAM on a rebuild. A rebuild has no MAC key: the next chunk is refused
 # by darkprep's chunk guard until it runs with --new-mac-key (a re-key; under LowGear that is a new key setup).
@@ -24,6 +27,17 @@ if [ "$MODE" = status ]; then
   for d in Player-Data Persistence; do echo "$d -> $(readlink "$RT/$d" || echo "DISK (not a symlink)")"; done
   ls "$RT/Player-Data/" 2>/dev/null | grep -E '^(Mascot-Secrets-p-61-|LowGear-Secrets-|HighGear-Secrets-)' | sed 's/^/  key: /' || echo "  no 61-bit MAC key share"
   findmnt -n -o TARGET,FSTYPE,OPTIONS --target "$RAM"; exit 0
+fi
+if [ "$MODE" = erase ]; then
+  for d in Player-Data Persistence; do
+    t=$(readlink "$RT/$d") || { echo "ramdir: $RT/$d is not in RAM; refusing" >&2; exit 3; }
+    find "$t" -type f -print0 | while IFS= read -r -d '' f; do
+      if [ "$d" = Player-Data ] && skel_file "$(basename "$f")"; then continue; fi
+      shred -n 0 -z -u "$f" && echo "erased $f"
+    done
+  done
+  find -L "$RT/Player-Data" "$RT/Persistence" -type f \( -name 'Mascot-Secrets-*' -o -name 'LowGear-Secrets-*' -o -name 'HighGear-Secrets-*' -o -name 'Memory-*' -o -name 'Player-MAC-Keys-*' -o -name 'Transactions-*' \) | sed 's/^/LEFT /'
+  exit 0
 fi
 check_ram
 for d in Player-Data Persistence; do
