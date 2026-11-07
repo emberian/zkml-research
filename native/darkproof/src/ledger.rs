@@ -79,6 +79,8 @@ pub struct Ledger {
     pub pr: Profile,
     recs: Vec<Value>,
     pub d: usize,
+    /// the step program the ledger's verifier replays (pinned in genesis when it is not the harness's)
+    pub program: crate::step::StepParams,
     pub owner_pk: Option<Hash>,
     pub epoch: u64,
     pub step: u64,
@@ -89,6 +91,7 @@ pub struct Ledger {
 
 pub struct Genesis {
     pub d: usize,
+    pub program: crate::step::StepParams,
     pub owner_pk: Option<Hash>,
     pub custodians: Vec<String>,
     pub roots: BTreeMap<String, Vec<Hash>>,
@@ -109,16 +112,28 @@ fn append(path: &Path, line: &str, new: bool) -> Result<(), String> {
 
 impl Ledger {
     pub fn open(path: &Path, model: &str, pr: &Profile, genesis: Option<Genesis>) -> Result<Self, String> {
+        // the context is hashed as a Python repr; native ports that exactly for printable ASCII only
+        if model.is_empty() || model.len() > 64 || !model.bytes().all(|b| (0x20..0x7f).contains(&b)) {
+            return Err("model ids are 1..64 printable ASCII characters".into());
+        }
         if !path.exists() {
             let g = genesis.ok_or("a new ledger needs its genesis record")?;
+            // the harness's program is implied (Python's genesis records carry none); any other is pinned
+            let prog = if g.program == crate::step::StepParams::HARNESS {
+                String::new()
+            } else {
+                let p = g.program;
+                format!(", \"program\": {{\"S1\": {}, \"K1\": {}, \"S2\": {}, \"K2\": {}, \"S3\": {}, \"K3\": {}}}", p.s1, p.k1, p.s2, p.k2, p.s3, p.k3)
+            };
             let line = format!(
-                "{{\"kind\": \"genesis\", \"model\": {}, \"d\": {}, \"params\": {}, \"owner_pk\": {}, \"custodians\": {}, \"roots\": {}}}",
+                "{{\"kind\": \"genesis\", \"model\": {}, \"d\": {}, \"params\": {}, \"owner_pk\": {}, \"custodians\": {}, \"roots\": {}{}}}",
                 jstr(model),
                 g.d,
                 jparams(pr),
                 jstr(&g.owner_pk.map(|k| hex(&k)).unwrap_or_else(|| "none".into())),
                 jlist(&g.custodians),
-                jroots(&g.roots)
+                jroots(&g.roots),
+                prog
             );
             append(path, &line, true)?;
         }
@@ -128,6 +143,7 @@ impl Ledger {
             pr: pr.clone(),
             recs: vec![],
             d: 0,
+            program: crate::step::StepParams::HARNESS,
             owner_pk: None,
             epoch: 0,
             step: 0,
@@ -159,6 +175,13 @@ impl Ledger {
     fn replay(&mut self) -> Result<(), String> {
         let g = &self.recs[0];
         self.d = g["d"].as_u64().ok_or("d")? as usize;
+        self.program = match g.get("program") {
+            None => crate::step::StepParams::HARNESS,
+            Some(p) => {
+                let f = |k: &str| p[k].as_u64().map(|v| v as u32).ok_or("genesis program");
+                crate::step::StepParams { s1: f("S1")?, k1: f("K1")?, s2: f("S2")?, k2: f("K2")?, s3: f("S3")?, k3: f("K3")? }
+            }
+        };
         let pk = g["owner_pk"].as_str().ok_or("owner_pk")?;
         self.owner_pk = if pk == "none" { None } else { Some(unhex32(pk).ok_or("owner_pk hex")?) };
         self.epoch = 0;
@@ -176,8 +199,14 @@ impl Ledger {
                     }
                     self.step += 1;
                     self.parent = roots_of(&rec["child"])?;
-                    if let Some(l) = rec["leaf"].as_u64() {
-                        self.next_leaf = l + 1;
+                    // the anti-reuse counter: an owner-bound ledger needs an integer leaf above the last one, in
+                    // the owner tree; an unbound one needs null (codex review, finding 5)
+                    match (self.owner_pk.is_some(), &rec["leaf"]) {
+                        (false, Value::Null) => {}
+                        (true, l) if l.as_u64().is_some_and(|l| l >= self.next_leaf && l < 1 << self.pr.owner_h) => {
+                            self.next_leaf = l.as_u64().unwrap() + 1;
+                        }
+                        _ => return Err(format!("ledger line {no}: step record's owner leaf is malformed (fail closed)")),
                     }
                 }
                 Some("rotate") => {
@@ -209,7 +238,16 @@ impl Ledger {
         Ok(f)
     }
 
-    pub fn rotate(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>) -> Result<(), String> {
+    /// Custody rotation. Refused until the handover verifier (research/.../handover.py) is ported: a rotation
+    /// record with no verified handover would let a caller replace the model's weights (codex review, finding 1).
+    pub fn rotate(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>, handover: &[u8]) -> Result<(), String> {
+        let _ = (custodians, new_roots, handover);
+        Err("rotation refused: the handover proof verifier is not ported to native yet (fail closed)".into())
+    }
+
+    /// The record writer rotate will call once the handover proof verifies (kept for that port).
+    #[allow(dead_code)]
+    fn append_rotation(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
         let line = format!(
@@ -227,7 +265,7 @@ impl Ledger {
         let _l = self.lock()?;
         self.reload()?;
         let (ctx, parent) = self.head();
-        let acc = wire::verify_step(&self.pr, lp, blob, &ctx, &parent, tables, self.d, self.owner_pk.as_ref(), self.next_leaf)?;
+        let acc = wire::verify_step(&self.pr, lp, blob, &ctx, &parent, tables, self.d, self.program, self.owner_pk.as_ref(), self.next_leaf)?;
         let line = format!(
             "{{\"kind\": \"step\", \"epoch\": {}, \"step\": {}, \"digest\": {}, \"child\": {}, \"leaf\": {}}}",
             ctx.epoch,

@@ -4,7 +4,7 @@
 use crate::h::Hash;
 use crate::ligero::LigParams;
 use crate::middle;
-use crate::net::mem_mesh;
+use crate::net::{Nets, Transport};
 use crate::owner::{self, Owner};
 use crate::pcs::PcsParty;
 use crate::rng::Det;
@@ -16,6 +16,7 @@ use crate::{Ctx, Profile};
 use serde_json::Value;
 use std::collections::BTreeMap;
 
+#[derive(Clone)]
 pub struct Witness {
     pub d: usize,
     pub n: usize,
@@ -109,14 +110,17 @@ pub struct BundleOpts<'a> {
     pub tables: &'a (Vec<u64>, Vec<u64>),
     pub det: Det,
     pub spine_attack: Option<&'a str>,
+    /// fs_public_falsifier: shift the dead opening (the last mul f-opening) after gamma so the batch holds
+    pub fs_public_attack: bool,
     pub diagnose: bool,
+    pub transport: Transport,
 }
 
 /// run_proofwire.make_bundle with three custodian threads over the in-memory transport. carry: per party, the
 /// previous step's child commitments (W1n, W2n), used as this step's W1, W2.
 pub fn make_bundle(
     o: &BundleOpts,
-    w: &Witness,
+    w: Witness,
     ctx: &Ctx,
     carry: Option<Vec<BTreeMap<String, PcsParty>>>,
     owner: Option<OwnerIn>,
@@ -158,37 +162,84 @@ pub fn make_bundle(
     assert_eq!(rec.tpos, w.public.len());
     // real runs: one secret stream per Ligero for the ideal dealer, the same for every party
     let (dl_s, dl_m) = if o.det.on() { (None, None) } else { (Some(crate::rng::secret_rng()), Some(crate::rng::secret_rng())) };
+    // fs_public attack: the colluders' plaintext view and the patch they publish
+    let jstar = rec.cons.iter().rposition(|c| c.phase == step::Phase::Mul).unwrap();
+    let patched: std::sync::Mutex<Option<u64>> = std::sync::Mutex::new(None);
+    let plain_vecs: BTreeMap<String, Vec<u64>> = if o.fs_public_attack {
+        let (lens, _) = middle::public_shapes(pr, rec.n_prep(), rec.had.len(), d, false);
+        let sum = |f: &dyn Fn(usize) -> Vec<Sh>| -> Vec<u64> {
+            let v: Vec<Vec<Sh>> = (0..n).map(f).collect();
+            (0..v[0].len()).map(|k| v.iter().fold(0, |a, x| crate::field::add(a, x[k].0))).collect()
+        };
+        let pvals = sum(&|i| w.atoms[i].clone());
+        let mut m = BTreeMap::new();
+        let pad = |mut x: Vec<u64>, l: usize| {
+            x.resize(l, 0);
+            x
+        };
+        m.insert("A".to_string(), pad(rec.had.iter().map(|t| pvals[t.0 as usize]).collect(), lens["A"]));
+        m.insert("B".to_string(), pad(rec.had.iter().map(|t| pvals[t.1 as usize]).collect(), lens["B"]));
+        m.insert("C".to_string(), pad(rec.had.iter().map(|t| pvals[t.2 as usize]).collect(), lens["C"]));
+        m.insert("P".to_string(), pad(pvals, lens["P"]));
+        for nm in step::NAMES {
+            m.insert(nm.to_string(), pad(sum(&|i| w.wires[i][nm].clone()), lens[nm]));
+        }
+        m
+    } else {
+        BTreeMap::new()
+    };
+    let patch_fn = |q: &BTreeMap<String, Vec<u64>>, cst: u64, gam: &[u64]| -> u64 {
+        let mut resid = cst;
+        for (k, qq) in q {
+            resid = crate::field::add(resid, crate::field::dot(qq, &plain_vecs[k]));
+        }
+        let dval = crate::field::mul(resid, crate::field::inv(gam[jstar]));
+        *patched.lock().unwrap() = Some(dval);
+        crate::field::sub(cst, crate::field::mul(gam[jstar], dval))
+    };
+    let patch_ref: Option<&(dyn Fn(&BTreeMap<String, Vec<u64>>, u64, &[u64]) -> u64 + Sync)> =
+        if o.fs_public_attack { Some(&patch_fn) } else { None };
     let t0 = std::time::Instant::now();
-    let nets = mem_mesh(n);
+    let nets = Nets::new(o.transport, n);
     let mut carry = carry;
+    let public = w.public.clone();
+    let (d, dealer_state, alpha_sh) = (w.d, w.dealer_state.clone(), w.alpha_sh.clone());
+    let mut party_wires: Vec<Option<(BTreeMap<String, Vec<Sh>>, Vec<Sh>)>> =
+        w.wires.into_iter().zip(w.atoms).map(Some).collect();
     let mut ox: Vec<Option<PcsParty>> = ox.map(|v| v.into_iter().map(Some).collect()).unwrap_or_else(|| (0..n).map(|_| None).collect());
     let mut oy: Vec<Option<PcsParty>> = oy.map(|v| v.into_iter().map(Some).collect()).unwrap_or_else(|| (0..n).map(|_| None).collect());
     let results: Vec<Result<_, String>> = std::thread::scope(|s| {
         let mut hs = Vec::new();
-        for (i, mut net) in nets.into_iter().enumerate() {
+        for i in 0..n {
+            let nets = &nets;
             let carry_i = std::mem::take(&mut carry[i]);
             let ox_i = ox[i].take();
             let oy_i = oy[i].take();
             let rec = &rec;
             let (dl_s, dl_m) = (dl_s.clone(), dl_m.clone());
+            let (mut wires, atoms) = party_wires[i].take().unwrap();
+            let (dealer_state, alpha_sh, public) = (&dealer_state, &alpha_sh, &public);
             hs.push(s.spawn(move || -> Result<_, String> {
-                let wires = &w.wires[i];
-                let atoms = &w.atoms[i];
-                let mut sp = Spdz::new(i, n, Dealer::from_state(&w.dealer_state, w.alpha_sh.clone()));
+                let mut net = nets.take(i);
+                let mut sp = Spdz::new(i, n, Dealer::from_state(dealer_state, alpha_sh.clone()));
                 let si = spine::SpineIn {
                     pr: o.pr,
                     lp: o.lp,
                     i,
                     n,
                     d,
-                    wires,
+                    wires: &wires,
                     ctx,
-                    public: &w.public,
+                    public,
                     det: &o.det,
                     attack: o.spine_attack,
                     lig_dealer: dl_s,
                 };
-                let mut so = spine::prove(&si, &mut net, &mut sp, carry_i, ox_i)?;
+                let mut so = spine::prove(&si, &mut *net, &mut sp, carry_i, ox_i)?;
+                for k in spine::MAT {
+                    wires.remove(k); // the matrices are committed; the middle needs only the vectors
+                }
+                assert_eq!(sp.triples as usize, spine::beaver_count(d), "spine Beaver count");
                 let child: BTreeMap<String, PcsParty> = [("W1", "W1n"), ("W2", "W2n")]
                     .iter()
                     .map(|(c, k)| (c.to_string(), so.coms.remove(*k).unwrap()))
@@ -205,15 +256,17 @@ pub fn make_bundle(
                     i,
                     n,
                     d,
-                    atoms,
-                    wires,
+                    atoms: &atoms,
+                    wires: &wires,
                     rec,
-                    public: &w.public,
+                    public,
                     ctx,
                     det: &o.det,
                     lig_dealer: dl_m,
+                    cst_patch: patch_ref,
                 };
-                let mo = middle::prove(&mi, &mut net, &mut sp, spine_coms, oy_i)?;
+                let mo = middle::prove(&mi, &mut *net, &mut sp, spine_coms, oy_i)?;
+                assert_eq!(sp.triples as usize, spine::beaver_count(d) + middle::beaver_count(rec.had.len()), "middle Beaver count");
                 Ok((so, mo, child, carried))
             }));
         }
@@ -242,6 +295,11 @@ pub fn make_bundle(
     } else {
         (None, None)
     };
+    let mut public = public;
+    if let Some(dv) = *patched.lock().unwrap() {
+        let tp = rec.cons[jstar].pos;
+        public[tp] = crate::field::add(public[tp], dv);
+    }
     let blob = wire::encode_step(
         pr,
         ctx,
@@ -249,7 +307,7 @@ pub fn make_bundle(
         n,
         true,
         &parts[0].0.proof,
-        &w.public,
+        &public,
         &parts[0].1.proof,
         rec.n_prep(),
         rec.had.len(),

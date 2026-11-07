@@ -61,6 +61,7 @@ pub struct Spdz {
     open_log: Vec<(u64, u64)>,
     coins: Sha256,
     pub nopen: u64,
+    pub triples: u64,
     pub wire: std::collections::BTreeMap<&'static str, u64>,
 }
 
@@ -95,6 +96,7 @@ impl Spdz {
             open_log: Vec::new(),
             coins: Sha256::new(),
             nopen: 0,
+            triples: 0,
             wire: Default::default(),
         }
     }
@@ -129,7 +131,18 @@ impl Spdz {
     /// Beaver products x_k * y_k, triples drawn from the dealer in order (spdz.Engine.mul per pair), every e and f
     /// opening in one exchange (Python opens e, f per product in the same order).
     pub fn mul_batch(&mut self, net: &mut dyn Net, xs: &[Sh], ys: &[Sh]) -> Vec<Sh> {
+        // bounded exchanges: at most CHUNK products (2 CHUNK openings) per round trip
+        const CHUNK: usize = 1 << 19;
+        let mut out = Vec::with_capacity(xs.len());
+        for (cx, cy) in xs.chunks(CHUNK).zip(ys.chunks(CHUNK)) {
+            out.extend(self.mul_chunk(net, cx, cy));
+        }
+        out
+    }
+
+    fn mul_chunk(&mut self, net: &mut dyn Net, xs: &[Sh], ys: &[Sh]) -> Vec<Sh> {
         let i = self.i;
+        self.triples += xs.len() as u64;
         let mut trip = Vec::with_capacity(xs.len());
         for _ in 0..xs.len() {
             let av = self.dealer.rng.randrange_u64(P);

@@ -96,3 +96,78 @@ pub fn gather_hashes(net: &mut dyn Net, hs: &[[u8; 32]]) -> Vec<Vec<[u8; 32]>> {
     let mine: Vec<u64> = hs.iter().flat_map(|h| h2w(h)).collect();
     net.all_gather(mine).iter().map(|w| w.chunks(4).map(w2h).collect()).collect()
 }
+
+/// darkstep's custodian sockets: every proof exchange is an `exchange(net::PROOF, ..)`.
+#[cfg(feature = "tcp")]
+pub struct TcpNet(pub darkstep::net::Net);
+
+#[cfg(feature = "tcp")]
+impl Net for TcpNet {
+    fn me(&self) -> usize {
+        self.0.me
+    }
+    fn n(&self) -> usize {
+        self.0.n
+    }
+    fn all_gather(&mut self, mine: Vec<u64>) -> Vec<Vec<u64>> {
+        self.0.exchange(darkstep::net::PROOF, &mine)
+    }
+    fn sent(&self) -> u64 {
+        self.0.sent_bytes[darkstep::net::PROOF as usize].load(std::sync::atomic::Ordering::Relaxed) / 8
+    }
+}
+
+/// How make_bundle connects the three custodian threads.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Transport {
+    Mem,
+    /// three 127.0.0.1 listeners, darkstep::net::Net::connect per thread (feature "tcp")
+    Tcp,
+}
+
+pub fn transport_from_env() -> Transport {
+    if std::env::var_os("DP_TCP").is_some() { Transport::Tcp } else { Transport::Mem }
+}
+
+/// Per-thread transport factory: call `take(i)` inside party i's thread.
+pub struct Nets {
+    mem: std::sync::Mutex<Vec<Option<MemNet>>>,
+    #[cfg(feature = "tcp")]
+    tcp: std::sync::Mutex<Vec<Option<(std::net::TcpListener, Vec<std::net::SocketAddr>)>>>,
+    kind: Transport,
+}
+
+impl Nets {
+    pub fn new(kind: Transport, n: usize) -> Self {
+        #[cfg(not(feature = "tcp"))]
+        assert_eq!(kind, Transport::Mem, "build with --features tcp for the socket transport");
+        #[cfg(feature = "tcp")]
+        let tcp = if kind == Transport::Tcp {
+            let ls: Vec<std::net::TcpListener> =
+                (0..n).map(|_| std::net::TcpListener::bind("127.0.0.1:0").expect("bind 127.0.0.1")).collect();
+            let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
+            ls.into_iter().map(|l| Some((l, addrs.clone()))).collect()
+        } else {
+            vec![]
+        };
+        let mem = if kind == Transport::Mem { mem_mesh(n).into_iter().map(Some).collect() } else { vec![] };
+        Nets {
+            mem: std::sync::Mutex::new(mem),
+            #[cfg(feature = "tcp")]
+            tcp: std::sync::Mutex::new(tcp),
+            kind,
+        }
+    }
+    pub fn take(&self, i: usize) -> Box<dyn Net> {
+        match self.kind {
+            Transport::Mem => Box::new(self.mem.lock().unwrap()[i].take().unwrap()),
+            #[cfg(feature = "tcp")]
+            Transport::Tcp => {
+                let (l, addrs) = self.tcp.lock().unwrap()[i].take().unwrap();
+                Box::new(TcpNet(darkstep::net::Net::connect(i, l, &addrs)))
+            }
+            #[cfg(not(feature = "tcp"))]
+            Transport::Tcp => unreachable!(),
+        }
+    }
+}

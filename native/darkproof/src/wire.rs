@@ -356,11 +356,12 @@ pub fn verify_step(
     parent_roots: &BTreeMap<String, Vec<Hash>>,
     tables: &(Vec<u64>, Vec<u64>),
     d_pinned: usize,
+    prm: StepParams,
     owner_pk: Option<&Hash>,
     min_leaf: u64,
 ) -> Result<Accepted, String> {
     let res = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        verify_inner(pr, lp, blob, expect, parent_roots, tables, d_pinned, owner_pk, min_leaf)
+        verify_inner(pr, lp, blob, expect, parent_roots, tables, d_pinned, prm, owner_pk, min_leaf)
     }));
     match res {
         Ok(r) => r,
@@ -377,11 +378,11 @@ fn verify_inner(
     parent_roots: &BTreeMap<String, Vec<Hash>>,
     tables: &(Vec<u64>, Vec<u64>),
     d_pinned: usize,
+    prm: StepParams,
     owner_pk: Option<&Hash>,
     min_leaf: u64,
 ) -> Result<Accepted, String> {
     let bind = owner_pk.is_some();
-    let prm = StepParams::for_width(d_pinned);
     let mut r = R { d: blob, o: 0 };
     let parsed = (|| -> PR<_> {
         if r.take(8)? != MAGIC {
@@ -411,8 +412,14 @@ fn verify_inner(
         let n = n as usize;
         let spine = read_spine(&mut r, pr, n, d, true, bind)?;
         let cnt = u32::from_be_bytes(r.take(4)?.try_into().unwrap()) as usize;
-        if cnt > (1usize << 24).max(transcript_len(d, prm)) {
-            return Err("public transcript too long".into());
+        // the step program's transcript length is a function of d and the pinned program alone: anything else is
+        // refused before a single value is read (Python caps at 2^24, which d = 4096's 84.5M values exceed)
+        let want = transcript_len(d, prm);
+        if cnt > want {
+            return Err(if cnt > 1 << 24 { "public transcript too long" } else { "public transcript longer than the step program" }.into());
+        }
+        if cnt < want {
+            return Err("public transcript shorter than the step program".into());
         }
         let public = r.fes(cnt)?;
         Ok(Ok((spine, public, n, d)))

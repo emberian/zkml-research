@@ -59,6 +59,8 @@ pub struct Con {
     pub form: Form,
     pub value: u64,
     pub phase: Phase,
+    /// transcript position of an opening (usize::MAX for the relation constraints)
+    pub pos: usize,
 }
 
 /// The preprocessing tags, recorded so a live witness can be checked against the replay.
@@ -96,7 +98,7 @@ impl<'t> Rec<'t> {
     fn open(&mut self, form: Form, phase: Phase) -> Result<u64, Short> {
         let v = *self.transcript.get(self.tpos).ok_or(Short)?;
         self.tpos += 1;
-        self.cons.push(Con { form, value: v, phase });
+        self.cons.push(Con { form, value: v, phase, pos: self.tpos - 1 });
         Ok(v)
     }
     fn skip(&mut self, k: usize) -> Result<(), Short> {
@@ -152,12 +154,12 @@ impl<'t> Rec<'t> {
         for (i, &rb) in bits.iter().enumerate() {
             f.push((Atom::Prep(rb), field::neg(1u64 << i)));
         }
-        self.cons.push(Con { form: Form { terms: f, c: 0 }, value: 0, phase: Phase::TruncMask });
+        self.cons.push(Con { form: Form { terms: f, c: 0 }, value: 0, phase: Phase::TruncMask, pos: usize::MAX });
         let mut f = vec![(Atom::Prep(rhi), 1)];
         for (j, &b) in hb.iter().enumerate() {
             f.push((Atom::Prep(b), field::neg(field::pow(2, j as u64))));
         }
-        self.cons.push(Con { form: Form { terms: f, c: 0 }, value: 0, phase: Phase::TrhRange });
+        self.cons.push(Con { form: Form { terms: f, c: 0 }, value: 0, phase: Phase::TrhRange, pos: usize::MAX });
         let mut fo = x.terms.clone();
         fo.push((Atom::Prep(r), 1));
         let c = self.open(Form { terms: fo, c: field::add(x.c, 1u64 << k) }, Phase::Trunc)?;
@@ -234,7 +236,7 @@ impl<'t> Rec<'t> {
         for (k, x) in v.iter().enumerate() {
             let mut f = x.terms.clone();
             f.push((self.ext(name, k), P - 1));
-            self.cons.push(Con { form: Form { terms: f, c: x.c }, value: 0, phase: Phase::Io });
+            self.cons.push(Con { form: Form { terms: f, c: x.c }, value: 0, phase: Phase::Io, pos: usize::MAX });
         }
     }
 }
