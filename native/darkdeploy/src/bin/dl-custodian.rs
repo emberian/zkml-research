@@ -71,6 +71,22 @@ impl StepHook for Prove {
     }
 }
 
+/// --genesis-cfg CFG.json: the public genesis W = darktrain::init(cfg) (public by design: a committed genesis file
+/// with a public seed). Otherwise darkstep's --genesis-public FILE, or an owner-input genesis.
+fn genesis_of(args: &[String]) -> Option<(Vec<i64>, Vec<i64>)> {
+    if let Some(f) = darkstep::node::flag(args, "--genesis-cfg") {
+        let c: darktrain::Cfg = serde_json::from_str(&std::fs::read_to_string(&f).expect("genesis cfg")).expect("cfg json");
+        c.validate().expect("cfg");
+        return Some(darktrain::init(&c));
+    }
+    darkstep::node::flag(args, "--genesis-public").map(|f| {
+        let b = std::fs::read(&f).unwrap();
+        let v: Vec<i64> = b.chunks_exact(8).map(|c| i64::from_le_bytes(c.try_into().unwrap())).collect();
+        let h = v.len() / 2;
+        (v[..h].to_vec(), v[h..].to_vec())
+    })
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.get(1).map(|s| s.as_str()) == Some("proof-triples") {
@@ -107,7 +123,7 @@ fn main() {
             parent: None,
             chain: vec![],
         };
-        std::process::exit(darkstep::serve::serve_main(&args, &mut hook));
+        std::process::exit(darkstep::serve::serve_main_with(&args, &mut hook, genesis_of(&args)));
     }
-    std::process::exit(darkstep::serve::serve_main(&args, &mut darkstep::serve::NoHook));
+    std::process::exit(darkstep::serve::serve_main_with(&args, &mut darkstep::serve::NoHook, genesis_of(&args)));
 }

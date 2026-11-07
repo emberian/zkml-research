@@ -101,7 +101,21 @@ fn main() {
                 .collect();
             // --proof-triples G,C: after each step its proof section (G triples at genesis, C after a carried step) on
             // the same dealer stream, with the truncations' range bits (proof atoms); one owner stream throughout
-            let (tapes, cs) = match flag(&args, "--proof-triples") {
+            // --public-genesis: the weights are public (no W inputs); every step is dealt as a carried step, and
+            // DIR/genesis_w.bin holds W1, W2 as i64 LE for `serve --genesis-public`
+            let pubgen = args.iter().any(|a| a == "--public-genesis");
+            let (tapes, cs) = if pubgen {
+                let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
+                let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
+                let xy0: Vec<u64> = plain.x.iter().chain(plain.y.iter()).map(|&v| darkstep::arith::from_i64(v, pf.t)).collect();
+                let mut cs = vec![darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &xy0, &pf.program)];
+                for xs in &later {
+                    cs.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, xs, &pf.program));
+                }
+                let w: Vec<u8> = plain.w1.iter().chain(plain.w2.iter()).flatten().flat_map(|x| x.to_le_bytes()).collect();
+                std::fs::write(dir.join("genesis_w.bin"), w).unwrap();
+                (dl.tapes, cs)
+            } else { match flag(&args, "--proof-triples") {
                 None => darkstep::tape::deal_steps_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), &later, false, &pf.program),
                 Some(gc) => {
                     let (g, c) = gc.split_once(',').expect("--proof-triples G,C");
@@ -117,7 +131,7 @@ fn main() {
                     }
                     (dl.tapes, cs)
                 }
-            };
+            } };
             // --only I: write custodian I's tape only (run the dealer on each custodian's own box)
             let only: Option<usize> = flag(&args, "--only").map(|x| x.parse().unwrap());
             for (i, tp) in tapes.iter().enumerate() {
