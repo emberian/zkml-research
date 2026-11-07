@@ -280,3 +280,27 @@ Auth_plain on MASCOT costs about 32.8 GB x 8 x 3 / 33.5M = 23.5 kbit per value (
   - LowGear: 5.6 Tbit, 1.87 Tbit from hbox, 27 h at 19.3 Mbit/s or 13 h at 40 Mbit/s.
 - The earlier §5 estimate (0.7 Tbit, 10 h) counted the proof section only.
 - On the wired layout (MASCOT, forge + bb2), the w4096p unit cost scales to about 1 h of wall time.
+
+Later chunks, made for the deploy lane's handover runs. All are `--step-tapes-only` (only `step-<j>/` files) with the
+ledger-sq proof section of 3,192,275:
+
+| chunk | key | contents | wall per seat |
+|---|---|---|---:|
+| w4096h, w4096h2, w4096h3, w4096h5 | wired (old committee) | 1 proved step | 131-135 s |
+| ho-sh, then ho-sh-steps | wired<I>-sh, new key (`--new-mac-key`) | 33,554,448 Ar, then 2 proved steps | 125-130 s; 279-283 s |
+| ho-new2, ho-new3, ho-new2-steps | wired-new | 33,554,448 Ar each; 2 proved steps | about 160 s; about 320 s |
+| wn-abort | wired-new | 1 proved step (the aborted step) | about 130 s |
+| ho-sh2, then ho-sh2-steps | wired-new<I>-sh, new key (`seats.sh newsh`, ports 15900 + I) | 33,554,448 Ar, then 2 proved steps | about 130 s; about 250 s |
+
+Custody changes made at the deploy and handover lanes' request:
+- [EXECUTED, 1dfda757] Retiring a key share now wipes it (overwrite, sync, unlink), and so do older `*.retired-*` copies.
+- [EXECUTED, 831ae62c] MP-SPDZ's Transactions file and its memory dump `Player-Data/Memory-p-P<I>` are wiped after
+  assembly.
+- [EXECUTED] The spent chunks were removed with `shred -n 0 -z -u`.
+
+Byte forms of alpha_i, for the handover lane's disk scan [EXECUTED, wired1-sh on bb2]:
+- `3-p-61/Player-MAC-Keys-p-P<I>` holds decimal text;
+- `Mascot-Secrets-p-61-*` holds a plain u64 LE at offsets 8 and 9292;
+- the Transactions header holds the Montgomery form alpha * 2^64 mod p, LE.
+
+Known limit: on ZFS (hbox /othersys) and behind an SSD's FTL, an in-place overwrite is not physical erasure.
