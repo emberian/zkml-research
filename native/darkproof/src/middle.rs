@@ -115,13 +115,31 @@ pub fn build_q<const E: usize>(
     lens: &BTreeMap<String, usize>,
     gam: &[[u64; E]],
 ) -> (BTreeMap<String, Vec<[u64; E]>>, [u64; E]) {
+    let mut it = gam.iter();
+    build_q_src(rec, lens, &mut || *it.next().expect("gamma"))
+}
+
+/// build_q drawing gamma in order from `next` (cons.len() + 3 had.len() elements: the constraints', then each
+/// Hadamard row's A, B, C); only the pubmat block's gammas are kept, for its dense IO rows.
+#[allow(clippy::type_complexity)]
+pub fn build_q_src<const E: usize>(
+    rec: &Rec,
+    lens: &BTreeMap<String, usize>,
+    next: &mut dyn FnMut() -> [u64; E],
+) -> (BTreeMap<String, Vec<[u64; E]>>, [u64; E]) {
     let mut q: BTreeMap<String, Vec<[u64; E]>> = lens.iter().map(|(k, &l)| (k.clone(), vec![[0u64; E]; l])).collect();
     let mut cst = ext::zero::<E>();
-    let nc = rec.cons.len();
     {
         let mut qn: Vec<Vec<[u64; E]>> = rec.names.iter().map(|nm| std::mem::take(q.get_mut(*nm).unwrap())).collect();
         let qp = q.get_mut("P").unwrap();
-        for (g, con) in gam.iter().zip(rec.cons.iter()) {
+        let pmr = rec.pubmat.as_ref().map_or(0..0, |pm| pm.start..pm.start + pm.d * pm.m);
+        let mut pmg: Vec<[u64; E]> = Vec::with_capacity(pmr.len());
+        for (j, con) in rec.cons.iter().enumerate() {
+            let gj = next();
+            if pmr.contains(&j) {
+                pmg.push(gj);
+            }
+            let g = &gj;
             for &(a, co) in con.terms {
                 let v = ext::scal(co, *g);
                 match a {
@@ -140,7 +158,7 @@ pub fn build_q<const E: usize>(
         if let Some(pm) = &rec.pubmat {
             // z1[j M + t] - sum_k X[k][t] W1[j d + k], with gamma at start + j M + t
             let (d, m) = (pm.d, pm.m);
-            let g = &gam[pm.start..pm.start + d * m];
+            let g = &pmg[..];
             let qz = &mut qn[pm.z1 as usize];
             for (k, gv) in g.iter().enumerate() {
                 qz[k] = ext::add(qz[k], *gv);
@@ -158,13 +176,12 @@ pub fn build_q<const E: usize>(
             *q.get_mut(*nm).unwrap() = v;
         }
     }
-    let g3 = &gam[nc..];
     for (k, &(a, b, c)) in rec.had.iter().enumerate() {
-        for (j, (vn, at)) in [("A", a), ("B", b), ("C", c)].iter().enumerate() {
-            let g = g3[3 * k + j];
-            let s = &mut q.get_mut(*vn).unwrap()[k];
+        for (vn, at) in [("A", a), ("B", b), ("C", c)] {
+            let g = next();
+            let s = &mut q.get_mut(vn).unwrap()[k];
             *s = ext::add(*s, g);
-            let s = &mut q.get_mut("P").unwrap()[*at as usize];
+            let s = &mut q.get_mut("P").unwrap()[at as usize];
             *s = ext::sub(*s, g);
         }
     }
@@ -431,27 +448,25 @@ fn zc_round<const E: usize>(
     let nr = ext::nr();
     let (fb, gb) = (st.f.base(), st.g.base());
     let per = ext::mul_triples::<E>(fb, gb);
-    // the operand pairs go straight into the product queue, a block at a time (no table of all pairs)
-    let (mut xs, mut ys) = (Vec::with_capacity(na * per), Vec::with_capacity(na * per));
-    const BLK: usize = 1 << 16;
+    // the pairs' products a block at a time (operands queued, multiplied, taken), in the same order as one batch:
+    // the same triples and openings; only the block's queue is held. The pair products alone are kept: the pair's
+    // X = 0, 1 values are prev's (2k, 2k + 1), read from prev where needed
+    let mut cs: Vec<[Sh; E]> = Vec::with_capacity(half);
+    const BLK: usize = 1 << 18;
     for b0 in (0..na).step_by(BLK) {
-        let ops: Vec<([Sh; E], [Sh; E])> = (b0..(b0 + BLK).min(na))
+        let b1 = (b0 + BLK).min(na);
+        let ops: Vec<([Sh; E], [Sh; E])> = (b0..b1)
             .into_par_iter()
             .map(|k| (ext::slin2b(m1, st.f.get(2 * k), 2, st.f.get(2 * k + 1)), ext::slin2b(m1, st.g.get(2 * k), 2, st.g.get(2 * k + 1))))
             .collect();
+        let (mut xs, mut ys) = (Vec::with_capacity((b1 - b0) * per), Vec::with_capacity((b1 - b0) * per));
         for (x, y) in ops {
             ext::push_mul(x, fb, y, gb, &mut xs, &mut ys);
         }
+        let p2 = sp.mul_batch(net, &xs, &ys);
+        cs.par_extend(p2.par_chunks(per).map(|c| ext::take_mul::<E>(fb, gb, c, nr)));
     }
-    let p2 = sp.mul_batch(net, &xs, &ys);
-    drop(xs);
-    drop(ys);
-    // the pair products alone: the pair's X = 0, 1 values are prev's (2k, 2k + 1), read from prev where needed
-    let cs: Vec<[Sh; E]> = (0..half)
-        .into_par_iter()
-        .map(|k| if k < na { ext::take_mul::<E>(fb, gb, &p2[k * per..(k + 1) * per], nr) } else { ext::szero() })
-        .collect();
-    drop(p2);
+    cs.resize(half, ext::szero());
     let sub = st.sub.as_ref().unwrap();
     let eq = st.eq.as_ref().unwrap();
     let vals = (0..4u64)
@@ -869,6 +884,7 @@ fn prove_g<const E: usize>(
                 .map(|(k, &c)| ext::sadd(ext::sadd(ext::scmul(l0, pt.get(2 * k), nr), ext::scmul(l1, pt.get(2 * k + 1), nr)), ext::scmul(l2, c, nr)))
                 .collect();
             prev = Some(if E == 1 { Tab::B(pv.into_iter().map(|x| x[0]).collect()) } else { Tab::X(pv) });
+            pp = Vec::new();
             st.f = st.f.fold(r);
             st.g = st.g.fold(r);
             st.sub = Some(st.sub.as_ref().unwrap().fold(r));
@@ -900,17 +916,24 @@ fn prove_g<const E: usize>(
     drop(prev);
     drop(pp);
     tt.lap("zerocheck");
-    let gam = ext::chal::<E>(&mut tr, rec.cons.len() + 3 * rec.had.len());
-    let (mut q, mut cst) = build_q::<E>(rec, &lens, &gam);
-    if let Some(f) = inp.cst_patch {
+    let ng = rec.cons.len() + 3 * rec.had.len();
+    let (mut q, mut cst) = if let Some(f) = inp.cst_patch {
         if E != 1 {
             return Err("the fs_public attack hook is EXT = 1 only".into());
         }
+        let gam = ext::chal::<E>(&mut tr, ng);
+        let (q, mut cst) = build_q::<E>(rec, &lens, &gam);
         let q1: BTreeMap<String, Vec<u64>> = q.iter().map(|(k, v)| (k.clone(), v.iter().map(|x| x[0]).collect())).collect();
         let g1: Vec<u64> = gam.iter().map(|x| x[0]).collect();
         cst[0] = f(&q1, cst[0], &g1);
-    }
-    drop(gam);
+        (q, cst)
+    } else {
+        // gamma streamed into build_q (memory: never the 70M-element table at M = 52)
+        let mut gs = ext::ChalStream::<E>::new(&mut tr, ng);
+        let out = build_q_src::<E>(rec, &lens, &mut || gs.next());
+        assert!(gs.done(), "build_q drew every gamma");
+        out
+    };
     tt.lap("gamma and build_q");
     let mut xt: BTreeMap<String, UT<E>> = ks
         .iter()

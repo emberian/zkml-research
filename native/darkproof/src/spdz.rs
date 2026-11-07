@@ -98,7 +98,7 @@ pub struct Spdz {
     pub nopen: u64,
     pub triples: u64,
     pub wire: std::collections::BTreeMap<&'static str, u64>,
-    /// openings held before the MAC check runs on its own (DP_MAC_EVERY, default 2^24: 256 MiB of log); every party
+    /// openings held before the MAC check runs on its own (DP_MAC_EVERY, default 2^22: 64 MiB of log); every party
     /// opens the same counts, so all run it at the same point
     mac_every: usize,
     /// a failed bounded check, reported by the next explicit mac_check
@@ -148,7 +148,7 @@ impl Spdz {
             nopen: 0,
             triples: 0,
             wire: Default::default(),
-            mac_every: std::env::var("DP_MAC_EVERY").ok().and_then(|v| v.parse().ok()).unwrap_or(1 << 24),
+            mac_every: std::env::var("DP_MAC_EVERY").ok().and_then(|v| v.parse().ok()).unwrap_or(1 << 22),
             mac_bad: None,
         }
     }

@@ -132,6 +132,32 @@ pub fn chal<const E: usize>(tr: &mut Transcript, k: usize) -> Vec<[u64; E]> {
     v.chunks(E).map(|c| c.try_into().unwrap()).collect()
 }
 
+/// chal::<E>(tr, k) one element at a time, the same values in the same order (no k-element table: at M = 52 the
+/// middle's gamma is 70M elements, 1.1 GB at EXT = 2, and chal built a second, flat copy of it).
+pub struct ChalStream<'a, const E: usize> {
+    tr: &'a mut Transcript,
+    i: u64,
+    k: usize,
+}
+
+impl<'a, const E: usize> ChalStream<'a, E> {
+    pub fn new(tr: &'a mut Transcript, k: usize) -> Self {
+        ChalStream { tr, i: 0, k }
+    }
+    pub fn next(&mut self) -> [u64; E] {
+        assert!((self.i as usize) < E * self.k, "the challenge stream is exhausted");
+        std::array::from_fn(|_| {
+            let v = self.tr.chal1_i(self.i);
+            self.i += 1;
+            v
+        })
+    }
+    /// every element drawn (the transcript then stands where chal would leave it)
+    pub fn done(&self) -> bool {
+        self.i as usize == E * self.k
+    }
+}
+
 pub fn chal1<const E: usize>(tr: &mut Transcript) -> [u64; E] {
     chal::<E>(tr, 1)[0]
 }
