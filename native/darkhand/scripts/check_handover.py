@@ -146,6 +146,12 @@ def main():
                 att = rs.get("decryption_attempts", [])
                 ck(who, "restarted: decrypts neither its old ciphertext nor any new seat's (each target found)",
                    len(att) == 1 + len(news) and all(t["found"] and t["decrypted"] is False for t in att), att)
+            # every --erase-extra file (e.g. the retired key's MP-SPDZ MAC-key files) is gone from its box
+            ee = [argv[k + 1] for k, t in enumerate(argv[:-1]) if t == "--erase-extra"]
+            if ee:
+                r = sh(h, "for f in " + " ".join(shlex.quote(x) for x in ee) + "; do for g in $f; do test -e \"$g\" && echo \"LEFT $g\"; done; done; true", check=False)
+                left = [l[5:] for l in r.stdout.splitlines() if l.startswith("LEFT ")]
+                ck(who, f"the {len(ee)} --erase-extra paths (retired MP-SPDZ key files) are gone", left == [], left)
             if relaunch:
                 for variant, extra in [("serve", ""), ("serve --resume", " --resume")]:
                     pidf = f"{sdir}/relaunch{i}{'-resume' if extra else ''}.pid"
@@ -157,8 +163,13 @@ def main():
                     lines = r.stdout.splitlines()
                     code = next((int(l.split()[1]) for l in lines if l.startswith("EXIT ")), None)
                     tail = "\n".join(l for l in lines if not l.startswith("EXIT "))
-                    ok = code not in (0, 124, None) and "own TLS key" in tail
-                    ck(who, f"relaunch of the same `{variant}` command exits non-zero at the missing TLS key (cannot sign or join)", ok,
+                    # it must stop, non-zero and before its timeout, at one of its own erased secret inputs: the TLS key
+                    # (no handshake can be signed), the checkpoint, or the step's tape (no share can be contributed)
+                    secret = [f"tls_{i}.key", "own TLS key", f"ckpt_P{i}.bin", f"carry_P{i}.bin"] + \
+                             [argv[k + 1].split("{")[0] for k, t in enumerate(argv[:-1]) if t in ("--tapes", "--tape")]
+                    missing = [x for x in secret if x in tail]
+                    ok = code not in (0, 124, None) and bool(missing) and ("No such file" in tail or "own TLS key" in tail)
+                    ck(who, f"relaunch of the same `{variant}` command exits non-zero at a missing erased secret (TLS key, checkpoint or tape)", ok,
                        {"exit": code, "seconds": round(dt, 1), "tail": tail[-300:]})
     # ---- new seats
     epoch = None
