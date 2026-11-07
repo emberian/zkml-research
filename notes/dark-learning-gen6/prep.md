@@ -625,3 +625,38 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
   - All three parties exited 0 (wall 1,141-1,145 s). The tapes reconstruct with 0 MAC failures over 6,044,998 entries and 0 bad triples among 2,004,482; the negative control gives 1 and 1.
   - Run 2's abort, on the same forced receive, was the old binary's.
   - The test chunks and lgp keys (9 files per seat) were erased afterwards.
+
+## Continuation (generation 3's hand-off, 2026-11-07 15:35 UTC)
+
+**Running (do not interrupt):**
+- The two LowGear key setups, N = 16,384, -S 60, lowgear-party.x 38adf2bf, d = 64 test chunks from the plain-tape build target-g2:
+  - **lg64f**: the old committee. Custodian runtimes ROOT/mpspdz (= the deploy lane's rec-old<I>/mpspdz), ips.txt.
+  - **lg64n**: the new committee. Runtimes ROOT/lgnew<I>/mpspdz (= rec-new<I>/mpspdz), ips-lgnew.txt, ports 16700-16702.
+  - Seats 0 forge, 1 bb2, 2 hbox. PID files: ROOT/runs/<key>-P<I>.pid (wrapper) and ROOT/chunks/<key>.tmp-P<I>/mascot-P<I>.pid (the party).
+  - Done when ROOT/chunks/<key> exists on all three boxes. Expected: lg64n about 09:45 UTC Nov 8; lg64f about 11:45 Nov 8.
+  - After each lands, its d = 64 test chunk is plain: shred it (`shred -n 0 -z -u`).
+- **The run of record's chunk drivers**, detached on the Mac. State, PID files and logs are in `research/dark_learning_2026_11_06/runs/rec/prep/`: A.pid, B.pid, events.log, <chunk>.out.log, <chunk>.json.
+  - Stream A: lg64f, then rec-c0, rec-c1, rec-c2 (2 steps each) and rec-c3 (step 6), sealed under rec/seat<I>.
+  - Stream B: lg64n, then rec-ho (33,554,448 Ar), rec-n-c0 (step 7) and rec-rel (M = 52), sealed under rec/new<I>.
+  - **Restart (after a reboot or a dead driver)**: check first that the old driver is gone, with `ps -p $(cat A.pid)`. A driver started again skips finished chunks and reattaches to running ones, so it never launches a chunk twice:
+
+        cd /Users/ember/dev/zkml-research/native/darkprep/build
+        N=/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/runs/rec/prep
+        for s in A B; do nohup ./rec-stream.sh $s $N > $N/$s.log 2>&1 < /dev/null & echo $! > $N/$s.pid; done
+
+  - Tell the deploy lane (a21cca37f7d4f4bb7's successor) each "ok" in events.log. It launches when rec-ho, rec-n-c0 and rec-c0..rec-c3 are all made (about 06:00 Nov 9). rec-rel follows, about 01:00 Nov 10.
+- **The forge nightly pauser**, `build/nightly-pause.sh`, armed for Nov 8 (runs/nightly-pause.pid) and Nov 9 (runs/nightly-pause-1109.pid).
+  - At 10:00:00-10:58:30 it stops only *-party.x and darkprep processes found through prep PID files. Log: runs/nightly-pause.log.
+  - Arm Nov 10 if rec-rel will still be running then.
+  - Skipping the pause is never an option (ember's rule for forge).
+
+**Facts the successor needs:**
+- Binaries: every prep runtime carries the EINTR-fixed, ring-patched build (lowgear 38adf2bf, mascot 4d50d76f, tarball de1b6dba). Its stop/continue survival is tested for MASCOT (through hbox) and LowGear (forced receive, both phases).
+- The MP-SPDZ secrets of every runtime are in RAM (ramdir.sh). Erasure: `ramdir.sh RT RAM erase`, or dl-custodian's --erase-runtime (the same is_party_secret set).
+- hbox has a noswap tmpfs at ROOT/ram (in ~/swarm/MACHINES.md). Unmount it when the lane is done, after its processes exit.
+- hbox's root fs is at 26 GB free, near the 25 GB line. Write nothing there.
+
+**Open:**
+- The LowGear d = 4096 chunk through hbox measured on its own. The rec chunks will measure it as they run: wall, links, CPU and RSS per party are in <chunk>.json. Write them into this file.
+- LowGear's three-box per-link split. The calendar assumes hbox sends 1/3 of the total.
+- Unmount hbox's tmpfs and shred the lane's test seats (ptest*, lgp*, lgnew* after the run) at the end.
