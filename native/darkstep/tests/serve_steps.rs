@@ -168,6 +168,26 @@ fn pause_checkpoint_and_resume_equal_the_straight_run() {
     assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 3), "2 steps + resume 1 = the 3-step twin");
 }
 
+/// --pause-file: custodian 2's file (not custodian 0's, who holds the window) pauses all three at the next boundary;
+/// the files of 0 and 1 do not exist. Control: with the file gone the resume runs, and 2 + 1 steps equal the twin.
+#[test]
+fn a_pause_file_at_any_custodian_pauses_the_committee() {
+    let r = setup("pausefile", 3);
+    let pf = prof(&A.map(String::from));
+    let pat = r.dir.join("PAUSE_{i}");
+    let p2 = r.dir.join("PAUSE_2");
+    let (codes, _) = serve(&r, 2, 0, &["--pause-file", pat.to_str().unwrap()]);
+    assert_eq!(codes, vec![0, 0, 0], "no file: no pause");
+    std::fs::write(&p2, b"").unwrap();
+    let (codes, log) = serve(&r, 1, 2, &["--resume", "--pause-file", pat.to_str().unwrap()]);
+    assert_eq!(codes, vec![3, 3, 3], "custodian 2's file pauses the committee");
+    assert!(log.is_empty());
+    std::fs::remove_file(&p2).unwrap();
+    let (codes, _) = serve(&r, 1, 2, &["--resume", "--pause-file", pat.to_str().unwrap()]);
+    assert_eq!(codes, vec![0, 0, 0]);
+    assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 3), "2 steps + a paused launch + 1 = the 3-step twin");
+}
+
 /// Custodian 1's link to custodian 0 is cut mid-step (after 1 MB sent, inside the HE matvec): the link resumes under
 /// the same pinned identities and the steps still equal the plaintext twin.
 #[test]

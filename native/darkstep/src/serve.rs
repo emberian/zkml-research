@@ -611,6 +611,25 @@ impl<R: Read> Read for HashRead<R> {
     }
 }
 
+/// A tape file's entry count from its header, without claiming it: a sealed chunk tape is opened under the file key
+/// (the count is inside the seal), a plain one is read in place (24-byte header, the count at bytes 16..24).
+pub fn tape_len(path: &str) -> Result<usize, String> {
+    let mut head = [0u8; 24];
+    std::fs::File::open(path).and_then(|mut f| f.read_exact(&mut head)).map_err(|e| format!("{path}: {e}"))?;
+    if &head[..8] == SEALED_MAGIC {
+        let raw = std::fs::read(path).map_err(|e| format!("{path}: {e}"))?;
+        let plain = chunk_bytes("tape", path, raw)?;
+        if plain.len() < 24 {
+            return Err(format!("{path}: a sealed tape of {} bytes, shorter than its header", plain.len()));
+        }
+        head.copy_from_slice(&plain[..24]);
+    }
+    if &head[..8] != b"DLTAPE01" {
+        return Err(format!("{path}: not a tape"));
+    }
+    Ok(u64::from_le_bytes(head[16..24].try_into().unwrap()) as usize)
+}
+
 /// Load a tape file; with a consumed-preprocessing registry, refuse one whose sha256 is already in it, and record it
 /// (durably, under a file lock) before handing it out.
 pub fn read_tape_once(path: &str) -> Result<Tape, String> {
@@ -923,6 +942,8 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
     };
     let first = st.step;
     let pause = flag(args, "--pause-utc");
+    // --pause-file PATH ({i} is this custodian's index): its existence at a step boundary pauses the committee
+    let pause_file = flag(args, "--pause-file").map(|p| p.replace("{i}", &i.to_string()));
     let tape_wait: Option<u64> = flag(args, "--tape-wait").map(|x| x.parse().expect("--tape-wait SECONDS"));
     let (mut waited_s, mut waited_total_s) = (0.0f64, 0.0f64);
     let cur_first = st.pt.cur;
@@ -932,9 +953,13 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: Box<CustodianSt
         // custodian 0 decides whether to pause here; every custodian says whether its step-k preprocessing is
         // complete on its box (with --tape-wait); the three agree on CTRL, and wait together for a late chunk
         let not_ready = k > first && tape_wait.is_some() && !step_ready(args, k, i);
-        let mine = [if i == 0 { pause.as_deref().map(in_window).unwrap_or(false) as u64 } else { 0 }, not_ready as u64];
+        // and any custodian whose --pause-file exists asks for a pause (the driver's disk line: its box is low)
+        let window = i == 0 && pause.as_deref().map(in_window).unwrap_or(false);
+        let asked = pause_file.as_deref().map(|p| std::path::Path::new(p).exists()).unwrap_or(false);
+        let mine = [(window || asked) as u64, not_ready as u64];
         let votes = st.pt.net.exchange(crate::net::CTRL, &mine);
-        if votes[0][0] == 1 {
+        if votes.iter().any(|v| v[0] == 1) {
+            eprintln!("step {k}: pausing (votes {:?}: custodian 0's window or a pause file)", votes.iter().map(|v| v[0]).collect::<Vec<_>>());
             // paused before this process's first step: its tape (loaded at start) is unused, so the resume may load it
             if k == first && st.pt.cur == cur_first {
                 if let Err(e) = unclaim_last() {
