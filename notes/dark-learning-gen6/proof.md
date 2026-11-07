@@ -295,7 +295,7 @@ Each row runs `darkproof check VEC TAG`, `darkproof ds-check VEC TAG` (built wit
 | demo_d16_rc_he | harness + RC | 3 | EQUAL (5bac7b9b…, 668f9c12…, faeb753a…), ds-check EQUAL, Python accepts native, flipped byte refused |
 | demo_d16_g6rc_he | GEN6 + RC, native_ref.inputs_for(16, GEN6) | 3 | EQUAL (899121f7…, 2b86f102…, 8a9c73cc…), 16,004 proof-section triples; ds-check and Python verify PASS |
 | ledger_d4_rc_he | harness + RC, ledger profile | 2 | EQUAL (ea37453d…, 71d36899…), ds-check and Python verify PASS |
-| ledger_d4_he, ledger_d16_he (non-RC) | harness | 3 | first set DIFFER: generated at 03:10-03:52 UTC, before the zerocheck cut reached bb2's Python (04:11). Python accepts the native bundles. Regenerated (`he_ledger_*_r2`); see [OPEN] |
+| ledger_d4_he, ledger_d16_he (non-RC) | harness | 3 | first set DIFFER: generated at 03:10-03:52 UTC, before the zerocheck cut reached bb2's Python (04:11). Regenerated: EQUAL (d = 4: 2c2b6de9…, 4b938185…, 5415a1c9…; d = 16: 5ab9a9ec…, f91f21f1…, 4634a892…), ds-check and Python verify PASS (x_j = j + 1 domain) |
 
 ## 9. The lookup by a bit circuit (program flag "LB"; coordinator's GO) [EXECUTED]
 
@@ -449,11 +449,67 @@ box was shared:
 - The bundle size is set by power-of-two padding and the d² PCS. Per link and direction a custodian sends about half
   of "proof sent": about 134 MB per step with LB.
 
+## 12. Proving fast: the PCS on a coset domain by NTT (coordinator's request) [EXECUTED]
+
+**Where the time went.** The PCS encoded every row by naive evaluation at x_j = j + 1, a dot product with the powers
+of x_j per column. That is R w npts multiply-adds per commitment: 4098 · 4714 · 18856 ≈ 3.6·10^11 for one d² matrix
+at d = 4096 (ledger: hide 618, blow 4). The commitments were 169 s + 50 s of the 408 s proof.
+
+**The domain** (profile parameter DOMAIN = "coset" for ledger and demo; "ledger-int" / "demo-int" keep the old points;
+28769b6a).
+- **The points.** The HE plaintext moduli are NTT-friendly: p_ledger - 1 has 2-adicity 15, p_demo - 1 has 14. The
+  points are x_j = z^t ω^i with (t, i) = (j div 2^k, j mod 2^k). That is T disjoint cosets z^t H of the order-2^k
+  subgroup H, each in natural NTT order.
+- **The parameters** (`cosnark.coset_params`, `pcs::coset_params`):
+  - k minimises T (2^(k-1) k + w), ties to the larger k;
+  - ω = h^((p-1)/2^k), with h the least quadratic non-residue ≥ 2, so ω has order exactly 2^k;
+  - z is the least a ≥ 2 with a^t ∉ H for 0 < t < T.
+  - At d = 4096, ledger: k = 12, T = 5, z = 2.
+- **Encoding.** Natively each row is encoded by one NTT per coset: the coefficients are scaled by c^i, c = z^t, and
+  folded mod 2^k. The work runs in blocks of 64 rows, written into the column-major codeword. The codeword is held
+  until the commitment's first opening (`open_batch`) and re-encoded once for a later life.
+- **What follows the points.** Every check at an opened column computes the point as `Dom::point(j)`: the PCS
+  proximity test, the spine and middle evaluation consistency, and handover (through the shared code).
+
+**Soundness and hiding are unchanged.**
+- **The code.** It is Reed-Solomon of dimension w on npts = blow · w distinct points, so it is MDS with distance
+  npts - w + 1, whatever the distinct points. Its rate is 1/blow = 1/4 as before.
+- **Proximity and column soundness.** Both depend only on the rate and distance, and on T_COLS = 309 opened columns:
+  (3/4)^309 = 2^-128.25 for the ledger, as before.
+- **Hiding.** Each row's tail occupies the monomials x^c .. x^(w-1). For any ≤ hide opened points, all distinct and
+  nonzero, the map from tail to openings is diag(x_j^c) times a Vandermonde matrix, which is invertible. So the
+  opened values stay uniform, the same argument as for x_j = j + 1. 0 is not a point: every point lies in F_p^*.
+- **Ligero (cozk)** keeps its own small codewords and is unchanged.
+
+**Bit-exact under the coset domain.**
+- demo d = 4, RC + LB, three chained steps: 2eecde7b…, c8aee97f…, 605c460f…. They pass check, ds-check and Python
+  verify. A flipped byte is refused by both.
+- **Old vectors.** With DP_DOMAIN=int they pass with their old digests. Under the coset domain they fail
+  (`genesis roots differ`): the negative control.
+- `pcs-bench`: the NTT columns equal direct evaluation at the domain's points.
+
+**Times.**
+
+| | x_j = j + 1 | coset NTT |
+|---|---|---|
+| one commitment, m = 20 (Mac, 12 threads) | 4.77 s | 0.42 s |
+| one d² commitment, m = 24 (Mac) | about 100 s (est.) | 2.6 s, 1.0 GB process peak (1.0 s of it leaf hashing) |
+| d = 4096 GEN6 + RC + LB, bb2, three custodians in one process: prove | 408.2 s | **21.3 s** |
+| of which: spine commitments, middle commitments | 169.3 s, 49.6 s | 4.1 s, 2.7 s |
+| verify | 6.9 s | 7.0 s |
+| peak RSS (all three, darkstep's step included) | 15.4 GB | 23.2 GB |
+
+- **Memory.** About 7.7 GB per custodian including the step, under forge's 12 GB, but not yet measured per box.
+- **Memory knob.** The 2.5 GB per custodian over the int run is the genesis step's four d² codewords, held until the
+  spine opens them. Releasing them right after commit would cost about 5 s of re-encoding.
+- **Next.**
+  - Proving is no longer the critical path: the gated step is 94 s.
+  - The one-custodian-per-box numbers come from the deploy lane's three-box run.
+  - Pipelining (proof k beside step k + 1) needs no change to the proof: proof k uses step k's record and tape and
+    proof k-1's children.
+
 ## [OPEN]
 
-- **Ledger-profile non-RC vectors, regenerated.** `he_ledger_4_r2` and `he_ledger_16_r2` on bb2 (PID files there)
-  are SIGSTOPped while the deploy lane times a step on bb2. Resume them with `kill -CONT $(cat <pid file>)`. Then
-  run `checks.sh ledger_d4_he ledger_d16_he`.
 - **The run on three boxes (forge, bb2, hbox).** The deploy lane wires `run::public_genesis` (d0b170b7) and
   `lb: true`. Then:
   - the first proved three-box step;
