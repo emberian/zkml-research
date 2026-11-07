@@ -1,0 +1,203 @@
+{
+ "name": "rec",
+ "out": "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/runs",
+ "prof": [
+  16384,
+  4,
+  175,
+  4096
+ ],
+ "t": 2305843009210515457,
+ "gate": 309,
+ "program": "gen6",
+ "steps": 7,
+ "flags": [
+  "--ret-primes",
+  "2",
+  "--ret-round",
+  "--prove",
+  "--profile",
+  "ledger-x2de",
+  "--rs",
+  "--wipe-spent",
+  "--tape-wait",
+  "7200",
+  "--timeout",
+  "7200",
+  "--pipeline-proofs",
+  "--nat",
+  "2",
+  "--nat6",
+  "2,5",
+  "--chunk-steps",
+  "2"
+ ],
+ "genesis_cfg": "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/train_genesis_gen6.json",
+ "owner_cfg": "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/runs/owner_cfg_bb2.json",
+ "seats": [
+  {
+   "host": "dregg-forge",
+   "root": "/srv/lanes/dl-gen6-deploy",
+   "bin": "/srv/lanes/dl-gen6-deploy/ws-target-r13/release",
+   "scope": "systemd-run --scope -p MemoryMax=12G",
+   "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+   "addr": "178.105.4.114:28600",
+   "tapes": "/srv/lanes/dl-gen6-prep/chunks/rec-c{c}-P0/step-{j}/tape_0.bin",
+   "owner_msgs": "/srv/lanes/dl-gen6-prep/chunks/rec-c{c}-P0/step-{j}/owner-msg-P0.bin",
+   "extra": [
+    "--proof-mesh",
+    "178.105.4.114:28610,2.31.77.40:28611,0.0.0.0:28612",
+    "--erase-runtime",
+    "/srv/lanes/dl-gen6-prep/rec-old0/mpspdz",
+    "--scan-extra",
+    "/srv/lanes/dl-gen6-prep/rec-old0/mpspdz"
+   ],
+   "archive": true
+  },
+  {
+   "host": "bb2",
+   "root": "/home/build/lanes/dl-gen6-deploy",
+   "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r13/release",
+   "scope": "systemd-run --user --scope -p MemoryMax=16G",
+   "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+   "addr": "2.31.77.40:28601",
+   "tapes": "/home/build/lanes/dl-gen6-prep/chunks/rec-c{c}-P1/step-{j}/tape_1.bin",
+   "owner_msgs": "/home/build/lanes/dl-gen6-prep/chunks/rec-c{c}-P1/step-{j}/owner-msg-P1.bin",
+   "extra": [
+    "--proof-mesh",
+    "178.105.4.114:28610,2.31.77.40:28611,0.0.0.0:28612",
+    "--erase-runtime",
+    "/home/build/lanes/dl-gen6-prep/rec-old1/mpspdz",
+    "--scan-extra",
+    "/home/build/lanes/dl-gen6-prep/rec-old1/mpspdz"
+   ]
+  },
+  {
+   "host": "hbox",
+   "root": "/othersys/lanes/dl-gen6-deploy",
+   "bin": "/othersys/lanes/dl-gen6-deploy/ws-target-r13/release",
+   "scope": "env SWARM_MEM_MAX=16G swarm-build",
+   "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+   "addr": "0.0.0.0:28602",
+   "tapes": "/othersys/lanes/dl-gen6-prep/chunks/rec-c{c}-P2/step-{j}/tape_2.bin",
+   "owner_msgs": "/othersys/lanes/dl-gen6-prep/chunks/rec-c{c}-P2/step-{j}/owner-msg-P2.bin",
+   "extra": [
+    "--proof-mesh",
+    "178.105.4.114:28610,2.31.77.40:28611,0.0.0.0:28612",
+    "--erase-runtime",
+    "/othersys/lanes/dl-gen6-prep/rec-old2/mpspdz",
+    "--scan-extra",
+    "/othersys/lanes/dl-gen6-prep/rec-old2/mpspdz"
+   ],
+   "disk_line_gb": 30
+  }
+ ],
+ "owner": {
+  "host": "bb2",
+  "root": "/home/build/lanes/dl-gen6-deploy",
+  "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r13/release",
+  "scope": "systemd-run --user --scope -p MemoryMax=8G",
+  "addr": "2.31.77.40:28609"
+ },
+ "handover": {
+  "at": 6,
+  "steps_after": 1,
+  "mesh6": "178.105.4.114:28640,2.31.77.40:28641,127.0.0.1:28642,178.105.4.114:28643,2.31.77.40:28644,0.0.0.0:28645",
+  "launch_new": "deferred",
+  "new_seats": [
+   {
+    "host": "dregg-forge",
+    "root": "/srv/lanes/dl-gen6-deploy",
+    "bin": "/srv/lanes/dl-gen6-deploy/ws-target-r13/release",
+    "scope": "systemd-run --scope -p MemoryMax=12G",
+    "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+    "addr": "178.105.4.114:28620",
+    "tapes": "/srv/lanes/dl-gen6-prep/chunks/rec-n-c{c}-P0/step-{j}/tape_0.bin",
+    "owner_msgs": "/srv/lanes/dl-gen6-prep/chunks/rec-n-c{c}-P0/step-{j}/owner-msg-P0.bin",
+    "extra": [
+     "--proof-mesh",
+     "178.105.4.114:28630,2.31.77.40:28631,0.0.0.0:28632",
+     "--release-data",
+     "/srv/lanes/dl-gen6-deploy/data/mnist",
+     "--release-tape",
+     "/srv/lanes/dl-gen6-prep/chunks/rec-rel-P0/step-0/tape_0.bin"
+    ],
+    "archive": true,
+    "handover_tape": "/srv/lanes/dl-gen6-prep/chunks/rec-ho-P0/step-0/tape_0.bin"
+   },
+   {
+    "host": "bb2",
+    "root": "/home/build/lanes/dl-gen6-deploy",
+    "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-r13/release",
+    "scope": "systemd-run --user --scope -p MemoryMax=16G",
+    "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+    "addr": "2.31.77.40:28621",
+    "tapes": "/home/build/lanes/dl-gen6-prep/chunks/rec-n-c{c}-P1/step-{j}/tape_1.bin",
+    "owner_msgs": "/home/build/lanes/dl-gen6-prep/chunks/rec-n-c{c}-P1/step-{j}/owner-msg-P1.bin",
+    "extra": [
+     "--proof-mesh",
+     "178.105.4.114:28630,2.31.77.40:28631,0.0.0.0:28632",
+     "--release-data",
+     "/home/build/lanes/dl-gen6-deploy/data/mnist",
+     "--release-tape",
+     "/home/build/lanes/dl-gen6-prep/chunks/rec-rel-P1/step-0/tape_1.bin"
+    ],
+    "handover_tape": "/home/build/lanes/dl-gen6-prep/chunks/rec-ho-P1/step-0/tape_1.bin"
+   },
+   {
+    "host": "hbox",
+    "root": "/othersys/lanes/dl-gen6-deploy",
+    "bin": "/othersys/lanes/dl-gen6-deploy/ws-target-r13/release",
+    "scope": "env SWARM_MEM_MAX=16G swarm-build",
+    "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+    "addr": "0.0.0.0:28622",
+    "tapes": "/othersys/lanes/dl-gen6-prep/chunks/rec-n-c{c}-P2/step-{j}/tape_2.bin",
+    "owner_msgs": "/othersys/lanes/dl-gen6-prep/chunks/rec-n-c{c}-P2/step-{j}/owner-msg-P2.bin",
+    "extra": [
+     "--proof-mesh",
+     "178.105.4.114:28630,2.31.77.40:28631,0.0.0.0:28632",
+     "--release-data",
+     "/othersys/lanes/dl-gen6-deploy/data/mnist",
+     "--release-tape",
+     "/othersys/lanes/dl-gen6-prep/chunks/rec-rel-P2/step-0/tape_2.bin"
+    ],
+    "disk_line_gb": 30,
+    "handover_tape": "/othersys/lanes/dl-gen6-prep/chunks/rec-ho-P2/step-0/tape_2.bin"
+   }
+  ],
+  "flags": [
+   "--ret-primes",
+   "2",
+   "--ret-round",
+   "--prove",
+   "--profile",
+   "ledger-x2de",
+   "--rs",
+   "--wipe-spent",
+   "--tape-wait",
+   "7200",
+   "--timeout",
+   "7200",
+   "--pipeline-proofs",
+   "--nat",
+   "2",
+   "--nat6",
+   "2,5",
+   "--chunk-steps",
+   "2",
+   "--chunk-first",
+   "7"
+  ],
+  "release": "deferred"
+ },
+ "drive_poll_s": 60,
+ "nightly": {
+  "host": "dregg-forge",
+  "stop": "100000",
+  "cont": "105830"
+ },
+ "disk": {
+  "lookahead": 20
+ },
+ "vault": true
+}

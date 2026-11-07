@@ -28,10 +28,10 @@ Chunk paths follow the prep lane's layout ROOT/chunks/NAME-P<I>/step-<j>/{tape_I
 for the new committee's (from step K + 1);
 the handover tapes NAME-ho-P<I>/step-0/tape_I.bin and the release tapes NAME-rel-P<I>/step-0/tape_I.bin.
 """
-import argparse, json, sys
+import argparse, json, os, sys
 
 GEN = "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/train_genesis_gen6.json"
-OUT = "/private/tmp/claude-501/-Users-ember-dev-aidev/78fef112-a52f-425f-8503-f3fa24ff087c/scratchpad/dl-gen5/deploy2/runs"
+OUT = os.environ.get("DL_RUNS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "research", "dark_learning_2026_11_06", "runs"))
 
 FORGE = {"host": "dregg-forge", "ip": "178.105.4.114", "root": "/srv/lanes/dl-gen6-deploy", "prep": "/srv/lanes/dl-gen6-prep",
          "scope": "systemd-run --scope -p MemoryMax=12G", "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500"}

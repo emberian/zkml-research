@@ -1,0 +1,48 @@
+{
+ "steps": 8,
+ "boxes": [
+  {
+   "host": "dregg-forge",
+   "mount": "/",
+   "avail_gb": 309.5,
+   "projected_gb": 6.5,
+   "after_gb": 302.9,
+   "line_gb": 30,
+   "items_gb": {
+    "state": 1.77,
+    "tapes ahead": 1.13,
+    "archive": 0.62,
+    "handover tape": 0.53,
+    "release tape": 2.49
+   }
+  },
+  {
+   "host": "bb2",
+   "mount": "/",
+   "avail_gb": 97.9,
+   "projected_gb": 5.9,
+   "after_gb": 91.9,
+   "line_gb": 30,
+   "items_gb": {
+    "state": 1.77,
+    "tapes ahead": 1.13,
+    "handover tape": 0.53,
+    "release tape": 2.49
+   }
+  },
+  {
+   "host": "hbox",
+   "mount": "/othersys/lanes",
+   "avail_gb": 47.1,
+   "projected_gb": 5.9,
+   "after_gb": 41.2,
+   "line_gb": 30,
+   "items_gb": {
+    "state": 1.77,
+    "tapes ahead": 1.13,
+    "handover tape": 0.53,
+    "release tape": 2.49
+   }
+  }
+ ]
+}
