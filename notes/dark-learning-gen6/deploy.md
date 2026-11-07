@@ -1135,3 +1135,45 @@ the run's env. nightly.sh with stop/cont at launch + 200 s / + 620 s.
 **The calendar (draft, sent to the coordinator)**: every phase crosses hbox's 17.9 Mbit/s uplink, so they add. For N = 8,
 K = 6: old chunks + 7 steps 7.8 h, the new committee's LowGear key setup S (prep's ETA pending), then handover tape
 0.4 + new chunk 0.9 + release chunk 12.4 + handover 0.25 + step 0.24 + release 0.5 h, plus 0.98 h per forge window.
+
+### rec: the run of record (N = 8, K = 6, forge + bb2 + hbox), set up and staged (~15:00 UTC Nov 7)
+
+- Config: `.../scratchpad/dl-gen5/deploy2/runs/rec.json` = `record.py hbox --steps 8 --handover-at 6 --chunks rec
+  --key-dir rec-old --name rec --release-deferred`, bins ws-target-r13 (090a11a0; run.py from 6f3c450f on the Mac).
+  `run.py rec.json setup` done (identities; six vault keys, below). `run.py rec.json plan`: forge 302.9, bb2 91.9,
+  hbox /othersys 41.2 GiB after the run (lines 30): the gate passes.
+- Vault keys: old forge dl-vault:dl-gen6:0:0:f3745626f67eae03, bb2 ...:1:0:3ddb0b83538547c9, hbox ...:2:0:031f316c1170d515;
+  new forge ...:0:1:b30d5ff1a6a68192, bb2 ...:1:1:7fb4f6975204aa19, hbox ...:2:1:335c360e9fc7ca23. They expire only after 3
+  days without any use of the uid's persistent keyring (prep's sealing and every step reset it).
+- Deferred release (6f3c450f): the new committee runs step 7 without --release; drive waits for rec-rel-P<I>/chunk-P<I>.json
+  at every new seat, then `serve --resume --steps 0 --release`.
+- Prep's rates through hbox (17.9 Mbit/s up): LowGear key setup 14.0 h, step chunk 1.92 h, handover tape 0.67 h, release
+  chunk 27.2 h, online step ~0.35 h when sharing the link. Order given to prep: lg64f -> S (new key) -> rec-ho -> rec-n-c0
+  -> rec-c0..c3 (old key) -> rec-rel last. Launch when everything but rec-rel is complete (~12:00 Nov 9 if lg64f ends ~04:00
+  Nov 8); end ~20:00 Nov 10 (+5.4 h if lg64f ends ~09:25).
+
+## Continuation (deploy lane generation 4, 2026-11-07 ~15:05 UTC, near its context limit)
+
+Supersedes the ~14:05 continuation. Everything to 6f3c450f pushed.
+
+**Builds**: r13 = 090a11a0 (production, with dl-hand) and t13 (test-harness) on forge /srv/lanes/dl-gen6-deploy/ws-target-{r13,t13},
+bb2 ~/lanes/dl-gen6-deploy/ws-target-{r13,t13}, hbox /othersys/lanes/dl-gen6-deploy/ws-target-{r13,t13}. Build with the
+box's own `build13.sh D` pattern (deploy4/build13.sh): never `sh -c '...$D...'` with D unset (that wrote /ws-target-* on
+forge once; removed).
+
+**Launch conditions (coordinator)**: (i) prep's LowGear pause test (SIGSTOP of forge's lowgear party >= 5 min, verified)
+— pending at prep; (ii) S and the handover tape's time — confirmed by prep; (iii) the disk gate — passes. When (i) holds
+AND prep reports rec-c0..c3, rec-ho, rec-n-c0 complete (chunk-P<I>.json in each, all three seats): run `run.py rec.json
+gate`, then `nohup python3 run.py rec.json drive > runs/rec/drive.out 2>&1 & echo $! > runs/rec/drive.pid` (the Mac must
+stay awake for drive; the nightly pause itself runs on forge: rec/nightly.pid there). Send the coordinator the final
+calendar with the actual T0. Do not wait for the coordinator.
+
+**During the run, report on events**: old committee's steps 0-6 done; the handover: run
+`check_handover.py runs/rec.json OUT --profile ledger-x2de --tools dregg-forge=/srv/lanes/dl-gen6-deploy/ws-target-r13/release/dl-hand bb2=/home/build/lanes/dl-gen6-deploy/ws-target-r13/release/dl-hand`
+(hbox has no tool entry: add `hbox=/othersys/lanes/dl-gen6-deploy/ws-target-r13/release/dl-hand`), all green incl. "no MP-SPDZ
+secret file ... left (by name)"; step 7; the release: release_P<I>.json C at all three = `darktrain shadow
+'<train_genesis_gen6.json>' 8 52` (run it on the Mac: target-deploy2/release/darktrain); any abort with cause and
+recovery (`run.py resume` covers a release that failed after the last checkpoint). Record per-phase times and per-link
+bytes (collect's summary.json, the samplers, nightly.log) for the cost report.
+
+**Agents**: coordinator aa3209e8d10294bc2; prep a8fd625fd8dbd4f54; train ad36593ec00657538; proof aafff52532f04d20a.
