@@ -27,6 +27,7 @@ f_x f_y = C + E B + F A + E F locally. Integrity of the product needs no MAC: th
 import random
 
 from cosnark import H, Transcript, Tree, distinct_cols, leaf_salts, verify_path
+import cosnark_ext as X
 
 def pmul(a, b, p):
     out = [0] * (len(a) + len(b) - 1)
@@ -164,17 +165,23 @@ class Prover:
         return [t[-1][0] for t in trees]
 
     def commit_masks(self):
-        """mask_p (deg < k + t), mask_l (deg < 2k + t - 1, zero sum on zeta), mask_q (vanishing on zeta)."""
+        """Per component k < EXT of the F_{p^EXT} test coefficients: mask_p (deg < k + t), mask_l (deg < 2k + t - 1,
+        zero sum on zeta), mask_q (vanishing on zeta). Order: the EXT mask_p, the EXT mask_l, the EXT mask_q
+        (EXT = 1: mask_p, mask_l, mask_q)."""
         P, p = self.P, self.P.p
+        E = X.EXT
         ms = []
         for i in range(self.n):
             rg = self.rng[i]
-            mp = [rg.randrange(p) for _ in range(P.k + P.t)]
-            ml = [rg.randrange(p) for _ in range(2 * P.k + P.t - 1)]
-            s = sum(peval(ml, z, p) for z in P.zeta) % p
-            ml[0] = (ml[0] - s * pow(P.k, -1, p)) % p           # sum over zeta of the constant term is k * c0
-            mq = pmul(P.Vz, [rg.randrange(p) for _ in range(P.k + 2 * P.t - 1)], p)
-            ms.append([mp, ml, mq])
+            mps = [[rg.randrange(p) for _ in range(P.k + P.t)] for _ in range(E)]
+            mls = []
+            for _ in range(E):
+                ml = [rg.randrange(p) for _ in range(2 * P.k + P.t - 1)]
+                s = sum(peval(ml, z, p) for z in P.zeta) % p
+                ml[0] = (ml[0] - s * pow(P.k, -1, p)) % p           # sum over zeta of the constant term is k * c0
+                mls.append(ml)
+            mqs = [pmul(P.Vz, [rg.randrange(p) for _ in range(P.k + 2 * P.t - 1)], p) for _ in range(E)]
+            ms.append(mps + mls + mqs)
         self.masks = ms
         codes, trees = self._commit(ms)
         self.mask_group = dict(codes=codes, trees=trees)
@@ -200,27 +207,30 @@ class Prover:
         return out
 
     def prove(self, tr, lin, quad):
-        """lin: list of ({(row, pos): coef}, rhs). quad: list of (row_x, row_y, row_z). Returns the messages."""
+        """lin: list of ({(row, pos): coef}, rhs). quad: list of (row_x, row_y, row_z). Returns the messages. The test
+        coefficients are F_{p^EXT} elements; component k of each message uses component k of the coefficients and
+        its own masks (EXT = 1: the base protocol, byte for byte)."""
         P, p, n = self.P, self.P.p, self.n
+        E = X.EXT
         R = len(self.rows)
         # proximity
-        gam = tr.chal(p, R)
-        w = self.open_poly([_lincomb([(g, self.polys[r][i]) for r, g in enumerate(gam)] + [(1, self.masks[i][0])], p)
-                            for i in range(n)])
-        tr.absorb("lig-w", w)
+        gam = X.chal(tr, p, R)
+        w = [self.open_poly([_lincomb([(g[k], self.polys[r][i]) for r, g in enumerate(gam) if k < len(g)] +
+                                      [(1, self.masks[i][k])], p) for i in range(n)]) for k in range(E)]
+        tr.absorb("lig-w", *w)
         # linear
-        rr = tr.chal(p, len(lin))
-        alpha = [[0] * P.k for _ in range(R)]
-        for (terms, _), c in zip(lin, rr):
-            for (row, pos), a in terms.items():
-                alpha[row][pos] = (alpha[row][pos] + c * a) % p
-        Rp = [P.interp_z(a) if any(a) else None for a in alpha]
-        q = self.open_poly([_lincomb([(1, pmul(Rp[r], self.polys[r][i], p)) for r in range(R) if Rp[r]] +
-                                     [(1, self.masks[i][1])], p) for i in range(n)])
-        tr.absorb("lig-q", q)
-        # quadratic, with one polynomial Beaver triple per row triple
-        rho = tr.chal(p, len(quad))
-        acc = [list(self.masks[i][2]) for i in range(n)]
+        rr = X.chal(tr, p, len(lin))
+        alpha = _alpha(lin, rr, R, P.k, p)
+        q = []
+        for k in range(E):
+            Rp = [P.interp_z(a) if any(a) else None for a in alpha[k]]
+            q.append(self.open_poly([_lincomb([(1, pmul(Rp[r], self.polys[r][i], p)) for r in range(R) if Rp[r]] +
+                                              [(1, self.masks[i][E + k])], p) for i in range(n)]))
+        tr.absorb("lig-q", *q)
+        # quadratic, with one polynomial Beaver triple per row triple (the products are base polynomials: the
+        # extension's components only weight them differently)
+        rho = X.chal(tr, p, len(quad))
+        acc = [[list(self.masks[i][2 * E + k]) for i in range(n)] for k in range(E)]
         for (rx, ry, rz), c in zip(quad, rho):
             deg = P.k + P.t
             A = [self.dealer.randrange(p) for _ in range(deg)]
@@ -229,21 +239,38 @@ class Prover:
             sh = lambda v: _share(v, n, p, self.dealer)
             As, Bs, Cs = sh(A), sh(B), sh(C)
             self.poly_triples += 1
-            E = self.open_poly([padd(self.polys[rx][i], pscale(p - 1, As[i], p), p) for i in range(n)])
+            Ep = self.open_poly([padd(self.polys[rx][i], pscale(p - 1, As[i], p), p) for i in range(n)])
             F = self.open_poly([padd(self.polys[ry][i], pscale(p - 1, Bs[i], p), p) for i in range(n)])
-            EF = pmul(E, F, p)
+            EF = pmul(Ep, F, p)
             for i in range(n):
-                prod = _lincomb([(1, Cs[i]), (1, pmul(E, Bs[i], p)), (1, pmul(F, As[i], p))] +
+                prod = _lincomb([(1, Cs[i]), (1, pmul(Ep, Bs[i], p)), (1, pmul(F, As[i], p))] +
                                 ([(1, EF)] if i == 0 else []), p)
-                acc[i] = _lincomb([(1, acc[i]), (c, prod), (p - c, self.polys[rz][i])], p)
-        pq = self.open_poly(acc)
-        tr.absorb("lig-p", pq)
+                for k in range(E):
+                    ck = c[k] if k < len(c) else 0
+                    acc[k][i] = _lincomb([(1, acc[k][i]), (ck, prod), (p - ck, self.polys[rz][i])], p)
+        pq = [self.open_poly(acc[k]) for k in range(E)]
+        tr.absorb("lig-p", *pq)
         # columns
         J = distinct_cols(tr, p, P.T, P.npts)
         cols = []
         for g in self.groups + [self.mask_group]:
             cols.append([[([c[j] for c in g["codes"][i]], path(g["trees"][i], j)) for j in J] for i in range(n)])
-        return dict(w=w, q=q, pq=pq, J=J, cols=cols)
+        out = dict(w=w[0], q=q[0], pq=pq[0], J=J, cols=cols)
+        for k in range(1, E):
+            out.update({f"w{k}": w[k], f"q{k}": q[k], f"pq{k}": pq[k]})
+        return out
+
+def _alpha(lin, rr, R, k, p):
+    """alpha[comp][row][pos] = sum_c rr_c[comp] * A_c[row][pos]."""
+    alpha = [[[0] * k for _ in range(R)] for _ in range(X.EXT)]
+    for (terms, _), c in zip(lin, rr):
+        for kk, ck in enumerate(c):
+            if not ck:
+                continue
+            al = alpha[kk]
+            for (row, pos), a in terms.items():
+                al[row][pos] = (al[row][pos] + ck * a) % p
+    return alpha
 
 def _lincomb(terms, p):
     out = [0]
@@ -260,30 +287,36 @@ def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
     """group_roots[g] = per-party roots of group g (in commit order); group_sizes[g] = its row count; rows are
     numbered in commit order. Uses only public data."""
     p, k, t = P.p, P.k, P.t
+    E = X.EXT
     R = sum(group_sizes)
-    w, q, pq, cols = msgs["w"], msgs["q"], msgs["pq"], msgs["cols"]
-    if len(w) > k + t or len(q) > 2 * k + t - 1 or len(pq) > 2 * (k + t) - 1:
+    sfx = [""] + [str(c) for c in range(1, E)]
+    try:
+        w = [msgs["w" + s_] for s_ in sfx]
+        q = [msgs["q" + s_] for s_ in sfx]
+        pq = [msgs["pq" + s_] for s_ in sfx]
+    except KeyError:
+        return False, "Ligero: a message component is missing"
+    cols = msgs["cols"]
+    if any(len(w_) > k + t for w_ in w) or any(len(q_) > 2 * k + t - 1 for q_ in q) or any(len(x) > 2 * (k + t) - 1 for x in pq):
         return False, "Ligero: a message exceeds its degree bound"
-    gam = tr.chal(p, R)
-    tr.absorb("lig-w", w)
-    rr = tr.chal(p, len(lin))
-    if sum(peval(q, z, p) for z in P.zeta) % p != sum(c * b for (_, b), c in zip(lin, rr)) % p:
-        return False, "Ligero linear test: the constraints do not hold"
-    alpha = [[0] * k for _ in range(R)]
-    for (terms, _), c in zip(lin, rr):
-        for (row, pos), a in terms.items():
-            alpha[row][pos] = (alpha[row][pos] + c * a) % p
-    Rp = [P.interp_z(a) if any(a) else None for a in alpha]
-    tr.absorb("lig-q", q)
-    rho = tr.chal(p, len(quad))
-    if any(peval(pq, z, p) for z in P.zeta):
+    gam = X.chal(tr, p, R)
+    tr.absorb("lig-w", *w)
+    rr = X.chal(tr, p, len(lin))
+    for kk in range(E):
+        if sum(peval(q[kk], z, p) for z in P.zeta) % p != sum(c[kk] * b for (_, b), c in zip(lin, rr) if kk < len(c)) % p:
+            return False, "Ligero linear test: the constraints do not hold"
+    alpha = _alpha(lin, rr, R, k, p)
+    Rp = [[P.interp_z(a) if any(a) else None for a in alpha[kk]] for kk in range(E)]
+    tr.absorb("lig-q", *q)
+    rho = X.chal(tr, p, len(quad))
+    if any(peval(pq_, z, p) for pq_ in pq for z in P.zeta):
         return False, "Ligero quadratic test: a product gate does not hold"
-    tr.absorb("lig-p", pq)
+    tr.absorb("lig-p", *pq)
     J = distinct_cols(tr, p, P.T, P.npts)
     if msgs.get("J") is not None and list(msgs["J"]) != J:
         return False, "Ligero column challenge mismatch"
     roots = list(group_roots) + [mask_roots]
-    sizes = list(group_sizes) + [3]
+    sizes = list(group_sizes) + [3 * E]
     if len(cols) != len(roots):
         return False, "Ligero: wrong number of column groups"
     for jj, j in enumerate(J):
@@ -300,10 +333,11 @@ def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
                 colsum += s
             else:
                 msum = s
-        if peval(w, x, p) != (sum(g_ * c for g_, c in zip(gam, colsum)) + msum[0]) % p:
-            return False, "Ligero proximity test fails at an opened column"
-        if peval(q, x, p) != (sum(peval(Rp[r], x, p) * colsum[r] for r in range(R) if Rp[r]) + msum[1]) % p:
-            return False, "Ligero linear test fails at an opened column"
-        if peval(pq, x, p) != (sum(c * (colsum[a] * colsum[b] - colsum[z]) for (a, b, z), c in zip(quad, rho)) + msum[2]) % p:
-            return False, "Ligero quadratic test fails at an opened column"
+        for kk in range(E):
+            if peval(w[kk], x, p) != (sum(g_[kk] * c for g_, c in zip(gam, colsum)) + msum[kk]) % p:
+                return False, "Ligero proximity test fails at an opened column"
+            if peval(q[kk], x, p) != (sum(peval(Rp[kk][r], x, p) * colsum[r] for r in range(R) if Rp[kk][r]) + msum[E + kk]) % p:
+                return False, "Ligero linear test fails at an opened column"
+            if peval(pq[kk], x, p) != (sum(c[kk] * (colsum[a] * colsum[b] - colsum[z]) for (a, b, z), c in zip(quad, rho)) + msum[2 * E + kk]) % p:
+                return False, "Ligero quadratic test fails at an opened column"
     return True, "accept"

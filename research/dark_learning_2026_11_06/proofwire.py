@@ -31,6 +31,7 @@ import cosnark_gates as G
 import cosnark_he as CH
 import cosnark_gates_zk as GZ
 import cosnark_zk as ZK
+import cosnark_ext as X
 import cozk as Z
 import mpc_fork as MF
 import owner_sig as OS
@@ -65,6 +66,10 @@ PROFILES["demo-sq"] = dict(PROFILES["demo"], PROFILE="demo-sq", K_L=64, SPLIT="s
 # the gen 5 evaluation points x_j = j + 1 (the before/after comparison, and the vectors made before the coset domain)
 PROFILES["ledger-int"] = dict(PROFILES["ledger-sq"], PROFILE="ledger-int", DOMAIN="int")
 PROFILES["demo-int"] = dict(PROFILES["demo-sq"], PROFILE="demo-int", DOMAIN="int")
+# F_{p^2} challenges (cosnark_ext, proof lane gen 5): every Schwartz-Zippel and random-combination challenge has two
+# components; NMASK = 2 lives x 2 proximity masks (one per component). A profile without "EXT" is EXT = 1.
+PROFILES["ledger-x2"] = dict(PROFILES["ledger"], PROFILE="ledger-x2", NMASK=4, EXT=2)
+PROFILES["demo-x2"] = dict(PROFILES["demo"], PROFILE="demo-x2", NMASK=4, EXT=2)
 PARAMS = dict(PROFILES["ledger"])
 
 def set_profile(name):
@@ -77,6 +82,7 @@ def pin_params():
     CS.HIDE, CS.NMASK, CS.LIVES, CS.T_COLS, CS.BLOW, CS.DOMAIN = (PARAMS[k] for k in ("HIDE", "NMASK", "LIVES", "T_COLS", "BLOW", "DOMAIN"))
     ZK.K_L, ZK.T_HIDE, ZK.T_OPEN = PARAMS["K_L"], PARAMS["T_HIDE"], PARAMS["T_OPEN"]
     CS.SPLIT, CS.SPLIT_K = PARAMS["SPLIT"], PARAMS["K_L"]
+    X.EXT = PARAMS.get("EXT", 1)
 
 pin_params()
 
@@ -206,13 +212,15 @@ def ligero_schema(n, group_sizes):
     k, t, T = ZK.K_L, ZK.T_HIDE, ZK.T_OPEN
     npts = 4 * (k + t)
     lg = (npts - 1).bit_length() + 1                    # salt + siblings
+    E = X.EXT
+    msgs = [("w", L_(k + t, FE)), ("q", L_(2 * k + t - 1, FE)), ("pq", L_(2 * (k + t) - 1, FE))]
+    for c in range(1, E):                               # the F_{p^E} tests' further components
+        msgs += [(f"w{c}", L_(k + t, FE)), (f"q{c}", L_(2 * k + t - 1, FE)), (f"pq{c}", L_(2 * (k + t) - 1, FE))]
     if PARAMS.get("MERKLE") == "multi":
-        cols = [L_(n, ("mp", T, sz, lg - 1)) for sz in list(group_sizes) + [3]]
-        return ("dict", [("w", L_(k + t, FE)), ("q", L_(2 * k + t - 1, FE)), ("pq", L_(2 * (k + t) - 1, FE)),
-                         ("J", ("jl", T, npts)), ("cols", ("tup", cols))])
-    cols = [L_(n, L_(T, ("tup", [L_(sz, FE), L_(lg, HH)]))) for sz in list(group_sizes) + [3]]
-    return ("dict", [("w", L_(k + t, FE)), ("q", L_(2 * k + t - 1, FE)), ("pq", L_(2 * (k + t) - 1, FE)),
-                     ("cols", ("tup", cols))])
+        cols = [L_(n, ("mp", T, sz, lg - 1)) for sz in list(group_sizes) + [3 * E]]
+        return ("dict", msgs + [("J", ("jl", T, npts)), ("cols", ("tup", cols))])
+    cols = [L_(n, L_(T, ("tup", [L_(sz, FE), L_(lg, HH)]))) for sz in list(group_sizes) + [3 * E]]
+    return ("dict", msgs + [("cols", ("tup", cols))])
 
 def pcs_schema(n, sh):
     keys = sorted(sh)
@@ -222,7 +230,7 @@ def pcs_schema(n, sh):
             return ("tup", [("jl", CS.T_COLS, len(s.pts)), L_(n, ("mp", CS.T_COLS, s.R, lg - 1))])
         return ("tup", [L_(CS.T_COLS, ("idx", len(s.pts))), L_(n, L_(CS.T_COLS, ("tup", [L_(s.R, FE), L_(lg, HH)])))])
     return (("dict", [(k, L_(n, HH)) for k in keys]),
-            ("dict", [(k, L_(n, L_(sh[k].W, FE))) for k in keys]),
+            ("dict", [(k, L_(n, L_(X.EXT * sh[k].W, FE))) for k in keys]),
             ("dict", [(k, cols(sh[k])) for k in keys]))
 
 def spine_schema(p, n, d, chained, bind=False):

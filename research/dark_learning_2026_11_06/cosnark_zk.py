@@ -20,6 +20,7 @@ chained, proof) uses public data only, and is what the untrusted-input verifier 
 """
 import cosnark as CS
 import cozk as Z
+import cosnark_ext as X
 from cosnark import Transcript, eqv, mle
 
 K_L, T_HIDE, T_OPEN = 64, 309, 309       # Ligero row width, hiding points (>= opened), opened columns (as the PCS: T_COLS)
@@ -32,6 +33,10 @@ class ZKPCS(CS.SharePCS):
 
     def mask_corr(self, i, pt, e):
         return 0
+
+    def eval_weights_e(self, pt):
+        """The row weights of an evaluation at pt (elements): eq(pt_rows) on the data rows, 0 on the mask rows."""
+        return X.eqv(pt[self.mc:], self.p) + [X.zero()] * self.nmask
 
 class PubShape:
     """The public shape of a ZKPCS commitment to a vector of length 2^m (what the verifier may know)."""
@@ -46,8 +51,9 @@ class PubShape:
         self.base = base
         self.W = self.C + hide
         self.pts = CS.domain(p, CS.BLOW * self.W, self.W)
-    eval_weights = ZKPCS.eval_weights
+    eval_weights, eval_weights_e = ZKPCS.eval_weights, ZKPCS.eval_weights_e
     prox_row, prox_len, prox_weights = CS.SharePCS.prox_row, CS.SharePCS.prox_len, CS.SharePCS.prox_weights
+    prox_rows_e, prox_len_e, prox_weights_e = CS.SharePCS.prox_rows_e, CS.SharePCS.prox_len_e, CS.SharePCS.prox_weights_e
 
 VEC = ("x", "z1", "h", "z2", "d2", "b", "g1", "bg", "d1")
 MAT = ("W1", "W2", "W1n", "W2n")
@@ -80,38 +86,39 @@ def lagc(deg, r, p):
 def schedule(tr, p, d, sh, round_roots_or_cb, bind=False):
     """Replays the public part of the transcript up to the evaluation list. round_roots_or_cb(name, rnd) returns
     the round's Ligero roots (prover: after committing; verifier: from the proof). Returns the per-sumcheck
-    challenges and the evaluation list."""
+    challenges and the evaluation list. Every challenge is an F_{p^EXT} element (cosnark_ext)."""
     ld = d.bit_length() - 1
     evals, scs, r1 = [], {}, {}
     for name, Wk, vk, zk, tp in (("z1", "W1", "x", "z1", False), ("z2", "W2", "h", "z2", False),
                                  ("b", "W2", "d2", "b", True)):
-        tau = tr.chal(p, ld)
+        tau = X.chal(tr, p, ld)
         rs = []
         for rnd in range(ld):
             tr.absorb("scr", round_roots_or_cb(name, rnd, tau, rs))
-            rs.append(tr.chal(p)[0])
+            rs.append(X.chal1(tr, p))
         scs[name] = (tau, rs)
         evals += [(zk, tau), (vk, rs), (Wk, (rs + tau) if not tp else (tau + rs))]
-    tau = tr.chal(p, ld)
+    tau = X.chal(tr, p, ld)
     rs = []
     for rnd in range(ld):
         tr.absorb("scr", round_roots_or_cb("bg", rnd, tau, rs))
-        rs.append(tr.chal(p)[0])
+        rs.append(X.chal1(tr, p))
     scs["bg"] = (tau, rs)
     evals += [("b", rs), ("g1", rs), ("bg", rs)]
     for Wn, Wo, dv, vv in (("W1n", "W1", "d1", "x"), ("W2n", "W2", "d2", "h")):
-        rc, rr = tr.chal(p, ld), tr.chal(p, ld)
+        rc, rr = X.chal(tr, p, ld), X.chal(tr, p, ld)
         r1[Wn] = (rc, rr)
         evals += [(Wn, rc + rr), (Wo, rc + rr), (dv, rr), (vv, rc)]
     if bind:
         # signed-input binding: the owner's committed batch x and the custodians' x agree at a fresh point
-        rb = tr.chal(p, ld)
+        rb = X.chal(tr, p, ld)
         evals += [("xo", rb), ("x", rb)]
     return scs, evals
 
 def row_layout(d, sh, evals):
-    """Hidden-row numbering, in commit order: rounds (z1, z2, b, bg; ld each), then each evaluation's u rows,
-    then the product rows x, y, z."""
+    """Hidden-row numbering, in commit order: rounds (z1, z2, b, bg; ld each; a round's value j, component k at
+    position j EXT + k), then each evaluation's u rows (component-major: EXT blocks of ceil(W / K_L) rows), then the
+    product rows x, y, z (EXT = 2: three cells per product, see constraints)."""
     ld = d.bit_length() - 1
     rows, nxt = {}, 0
     for name in ("z1", "z2", "b", "bg"):
@@ -119,76 +126,151 @@ def row_layout(d, sh, evals):
     urows = []
     for k, _ in evals:
         nr = -(-sh[k].W // K_L)
-        urows.append(list(range(nxt, nxt + nr))); nxt += nr
+        urows.append(list(range(nxt, nxt + X.EXT * nr))); nxt += X.EXT * nr
     prod = (nxt, nxt + 1, nxt + 2)
     return rows, urows, prod, nxt + 3
 
+# ---------------------------------------------------------------------- linear forms over F_{p^EXT} values
+def evar(p, comps, coef):
+    """The form coef * V, V a hidden value whose components are the linear forms comps (1 or EXT dicts {cell: c}),
+    coef an element: EXT dicts, one per component of the product."""
+    out = [dict() for _ in range(X.EXT)]
+    def put(k, form, c):
+        if c % p:
+            o = out[k]
+            for key, v in form.items():
+                o[key] = (o.get(key, 0) + c * v) % p
+    if len(comps) == 1:
+        for k, ck in enumerate(coef):
+            put(k, comps[0], ck)
+    elif len(coef) == 1:
+        for k in range(len(comps)):
+            put(k, comps[k], coef[0])
+    else:
+        put(0, comps[0], coef[0]); put(0, comps[1], X.nr(p) * coef[1])
+        put(1, comps[1], coef[0]); put(1, comps[0], coef[1])
+    return out
+
+def ecell(cells):
+    """The component forms of a hidden value stored in the given cells."""
+    return [{c: 1} for c in cells]
+
+def eadder(p, lin, labels, cur):
+    """add(*forms, rhs): sum E-forms, emit EXT F_p constraints (component order)."""
+    def add(*forms, rhs=X.zero()):
+        for k in range(X.EXT):
+            t = {}
+            for f in forms:
+                for key, v in f[k].items():
+                    t[key] = (t.get(key, 0) + v) % p
+            lin.append(({kk: v for kk, v in t.items() if v}, (rhs[k] if k < len(rhs) else 0) % p))
+            labels.append(cur[0])
+    return add
+
+def prod_forms(p, prod, q):
+    Xr, Yr, Zr = prod
+    if X.EXT == 1:
+        return ecell([(Xr, q)]), ecell([(Yr, q)]), [{(Zr, q): 1}], []
+    b = 3 * q
+    m1 = p - 1
+    xf = ecell([(Xr, b), (Xr, b + 1)])
+    yf = ecell([(Yr, b), (Yr, b + 1)])
+    zf = [{(Zr, b): 1, (Zr, b + 1): X.nr(p)}, {(Zr, b + 2): 1, (Zr, b): m1, (Zr, b + 1): m1}]
+    aux = [{(Xr, b + 2): 1, (Xr, b): m1, (Xr, b + 1): m1}, {(Yr, b + 2): 1, (Yr, b): m1, (Yr, b + 1): m1}]
+    return xf, yf, zf, aux
+
+def prod_shares(L, xs, ys):
+    """The product rows' shares from the operands' shares (xs[q], ys[q]: per party, tuples of EXT ints) by the
+    Ligero's plain Beaver products (EXT = 2: P1, P2, P3 per gate, in that order)."""
+    n, p = L.n, L.P.p
+    if X.EXT == 1:
+        zs = [L.mul_plain([x[i][0] for i in range(n)], [y[i][0] for i in range(n)]) for x, y in zip(xs, ys)]
+        return ([[x[i][0] for x in xs] for i in range(n)], [[y[i][0] for y in ys] for i in range(n)],
+                [[z[i] for z in zs] for i in range(n)])
+    rx, ry, rz = [[] for _ in range(n)], [[] for _ in range(n)], [[] for _ in range(n)]
+    for x, y in zip(xs, ys):
+        xx = [[x[i][0], x[i][1], (x[i][0] + x[i][1]) % p] for i in range(n)]
+        yy = [[y[i][0], y[i][1], (y[i][0] + y[i][1]) % p] for i in range(n)]
+        zz = [L.mul_plain([xx[i][c] for i in range(n)], [yy[i][c] for i in range(n)]) for c in range(3)]
+        for i in range(n):
+            rx[i] += xx[i]; ry[i] += yy[i]; rz[i] += [zz[c][i] for c in range(3)]
+    return rx, ry, rz
+
 def constraints(p, d, sh, scs, evals, cols, rows, urows, prod):
-    """The verifier's checks as Ligero constraints on hidden values. cols[k] = (J, column sums at J)."""
+    """The verifier's checks as Ligero constraints on hidden values. cols[k] = (J, column sums at J). Every check
+    is an identity over F_{p^EXT}, emitted as EXT F_p constraints (cosnark_ext; EXT = 1: the base system)."""
     lin, labels = [], []
     cur = ["?"]
-    def ucell(e, c):
-        return (urows[e][c // K_L], c % K_L)
-    def Y(e, coef=1):
+    E = X.EXT
+    add = eadder(p, lin, labels, cur)
+    def U(e, c):
+        nr = -(-sh[evals[e][0]].W // K_L)
+        return ecell([(urows[e][k * nr + c // K_L], c % K_L) for k in range(E)])
+    def Y(e, coef=X.one()):
         k, pt = evals[e]
-        b = eqv(pt[:sh[k].mc], p)
-        return {ucell(e, c): coef * b[c] % p for c in range(sh[k].C)}
-    def add(*forms, rhs=0):
-        t = {}
+        b = X.eqv(pt[:sh[k].mc], p)
+        return fsum(*[evar(p, U(e, c), X.mul(coef, b[c], p)) for c in range(sh[k].C)])
+    def fsum(*forms):
+        out = [dict() for _ in range(E)]
         for f in forms:
-            for key, v in f.items():
-                t[key] = (t.get(key, 0) + v) % p
-        lin.append(({kk: v for kk, v in t.items() if v}, rhs % p))
-        labels.append(cur[0])
-    cell = lambda r, pos, c=1: {(r, pos): c % p}
-    # PCS evaluation consistency at the opened columns
+            for k in range(E):
+                for key, v in f[k].items():
+                    out[k][key] = (out[k].get(key, 0) + v) % p
+        return out
+    def RC(r, j, coef=X.one()):
+        return evar(p, ecell([(r, j * E + k) for k in range(E)]), coef)
+    neg = lambda c: X.neg(c, p)
+    # PCS evaluation consistency at the opened columns: component k of u_e against component k of a_e
     for e, (k, pt) in enumerate(evals):
         cur[0] = f"PCS evaluation consistency ({k})"
         s = sh[k]
-        a = s.eval_weights(pt, e)
+        a = s.eval_weights_e(pt)
         J, csum = cols[k]
         for jj, j in enumerate(J):
             x = s.pts[j]
-            xs, f = 1, {}
+            xs, forms = 1, []
             for c in range(s.W):
-                f[ucell(e, c)] = xs
+                forms.append(evar(p, U(e, c), (xs,)))
                 xs = xs * x % p
-            add(f, rhs=sum(ai * v for ai, v in zip(a, csum[jj])))
-    X, Yr, Zr = prod
+            add(*forms, rhs=X.dot(a, [(v,) for v in csum[jj]], p))
+    pf = [prod_forms(p, prod, q) for q in range(NPROD)]
+    def Zv(q, coef):
+        return evar(p, pf[q][2], coef)
+    def operands(q, ex, ey):
+        cur[0] = f"product {q} operands"
+        add(evar(p, pf[q][0], X.one()), Y(ex, neg(X.one())))      # x = W(..)
+        add(evar(p, pf[q][1], X.one()), Y(ey, neg(X.one())))      # y = v(rs)
+        for f_ in pf[q][3]:
+            lin.append((f_, 0)); labels.append(f"product {q} operand sums")
     def sumcheck(name, deg, first, final_lin, q):
         """first: form for the initial claim (rows[0][0] + rows[0][1] = first); final_lin: the last claim's link."""
         tau, rs = scs[name]
         R = rows[name]
         cur[0] = f"sumcheck {name}: first round sum = claim"
-        add(cell(R[0], 0), cell(R[0], 1), {kk: (-v) % p for kk, v in first.items()})
+        add(RC(R[0], 0), RC(R[0], 1), [{kk: (-v) % p for kk, v in f_.items()} for f_ in first])
         cur[0] = f"sumcheck {name}: round sums"
         for i in range(1, len(R)):
-            lc = lagc(deg, rs[i - 1], p)
-            add(cell(R[i], 0), cell(R[i], 1), *[cell(R[i - 1], j, -lc[j]) for j in range(deg + 1)])
-        lc = lagc(deg, rs[-1], p)
+            lc = X.lagc(deg, rs[i - 1], p)
+            add(RC(R[i], 0), RC(R[i], 1), *[RC(R[i - 1], j, neg(lc[j])) for j in range(deg + 1)])
+        lc = X.lagc(deg, rs[-1], p)
         cur[0] = f"sumcheck {name}: final claim = product gate"
-        add(*[cell(R[-1], j, lc[j]) for j in range(deg + 1)], final_lin)
+        add(*[RC(R[-1], j, lc[j]) for j in range(deg + 1)], final_lin)
+    empty = [dict() for _ in range(E)]
     for q, (name, idx) in enumerate((("z1", 0), ("z2", 3), ("b", 6))):
-        sumcheck(name, 2, Y(idx), cell(Zr, q, -1), q)
-        cur[0] = f"product {q} operands"
-        add(cell(X, q), Y(idx + 2, -1))        # x = W(..)
-        add(cell(Yr, q), Y(idx + 1, -1))       # y = v(rs)
+        sumcheck(name, 2, Y(idx), Zv(q, neg(X.one())), q)
+        operands(q, idx + 2, idx + 1)
     tau, rs = scs["bg"]
-    eq = mle(eqv(tau, p), rs, p)
-    sumcheck("bg", 3, {}, {**cell(Zr, 3, -eq), **Y(11, eq)}, 3)
-    cur[0] = "product 3 operands"
-    add(cell(X, 3), Y(9, -1))
-    add(cell(Yr, 3), Y(10, -1))
+    eq = X.mle(X.eqv(tau, p), rs, p)
+    sumcheck("bg", 3, empty, fsum(Zv(3, neg(eq)), Y(11, eq)), 3)
+    operands(3, 9, 10)
     for q, base in ((4, 12), (5, 16)):          # W'(r) - W(r) + d(r_row) v(r_col) = 0
         cur[0] = f"rank-1 update {'W1n' if q == 4 else 'W2n'}: W'(r) = W(r) - d(r_row) v(r_col)"
-        add(Y(base), Y(base + 1, -1), cell(Zr, q))
-        cur[0] = f"product {q} operands"
-        add(cell(X, q), Y(base + 2, -1))
-        add(cell(Yr, q), Y(base + 3, -1))
+        add(Y(base), Y(base + 1, neg(X.one())), Zv(q, X.one()))
+        operands(q, base + 2, base + 3)
     if len(evals) == 22:
         cur[0] = "signed input binding: the custodians' x = the owner's signed x"
-        add(Y(20), Y(21, -1))
-    quad = [(X, Yr, Zr)]
+        add(Y(20), Y(21, neg(X.one())))
+    quad = [prod]
     return lin, quad, labels
 
 # ------------------------------------------------------------------------------------------------- prover
@@ -235,82 +317,90 @@ def prove_zk(eng, wires, attack=None, carry=None, context=("model", 0, 0), seed=
     tables = {"z1": ("W1", "x", False), "z2": ("W2", "h", False), "b": ("W2", "d2", True)}
     round_roots = {}
     def cb(name, rnd, tau, rs):
-        """Compute round rnd of sumcheck `name` on shares, hide it as a Ligero row, commit, return the roots."""
+        """Compute round rnd of sumcheck `name` on shares, hide it as a Ligero row, commit, return the roots. Tables
+        hold shared elements (cosnark_ext: tuples of engine values; a product costs 1, 2 or 3 Beaver triples)."""
+        one = X.one()
+        B = lambda v: (v,)
         if rnd == 0:
             if name == "bg":
-                state[name] = dict(f=list(wires["b"]), g=list(wires["g1"]), sub=list(wires["bg"]),
-                                   eq=eqv(tau, p), deg=3, claim=0)
+                state[name] = dict(f=[B(v) for v in wires["b"]], g=[B(v) for v in wires["g1"]],
+                                   sub=[B(v) for v in wires["bg"]], eq=X.eqv(tau, p), deg=3, claim=X.zero())
             else:
                 Wk, vk, tp = tables[name]
-                W, et = wires[Wk], eqv(tau, p)
-                f = ([eng.lin([(et[i], W[i][j]) for i in range(d)]) for j in range(d)] if not tp else
-                     [eng.lin([(et[j], W[i][j]) for j in range(d)]) for i in range(d)])
+                W, et = wires[Wk], X.eqv(tau, p)
+                f = ([X.slin(eng, [(et[i], B(W[i][j])) for i in range(d)]) for j in range(d)] if not tp else
+                     [X.slin(eng, [(et[j], B(W[i][j])) for j in range(d)]) for i in range(d)])
                 claim = None
                 if attack == "forge_sumcheck" and name == "z1":
                     zsum = [sum(com["z1"].rows[i][r][c] for i in range(n)) % p for r in range(com["z1"].Rd)
                             for c in range(com["z1"].C)]
-                    claim = mle(zsum, tau, p)
-                state[name] = dict(f=f, g=list(wires[vk]), sub=None, eq=None, deg=2, claim=claim)
+                    claim = X.mle(zsum, tau, p)
+                state[name] = dict(f=f, g=[B(v) for v in wires[vk]], sub=None, eq=None, deg=2, claim=claim)
         else:
             st = state[name]
             r = rs[-1]
-            fold = lambda T: [eng.lin([(1 - r, T[2 * k]), (r, T[2 * k + 1])]) for k in range(len(T) // 2)]
+            om = X.one_minus(r, p)
+            fold = lambda T: [X.slin(eng, [(om, T[2 * k]), (r, T[2 * k + 1])]) for k in range(len(T) // 2)]
             st["f"], st["g"] = fold(st["f"]), fold(st["g"])
             if st["sub"] is not None:
                 st["sub"] = fold(st["sub"])
             if st["eq"] is not None:
-                st["eq"] = [(st["eq"][2 * k] * (1 - r) + st["eq"][2 * k + 1] * r) % p for k in range(len(st["eq"]) // 2)]
+                st["eq"] = [X.add(X.mul(st["eq"][2 * k], om, p), X.mul(st["eq"][2 * k + 1], r, p), p)
+                            for k in range(len(st["eq"]) // 2)]
             if st["claim"] is not None:
-                st["claim"] = CS.lag3(st["last"], r, p)
+                st["claim"] = X.interp_at(st["last"], r, p)
         st = state[name]
         f, g, sub, eqt, deg = st["f"], st["g"], st["sub"], st["eq"], st["deg"]
         half = len(f) // 2
         vals = []
         for Xv in range(deg + 1):
+            c0, c1 = ((1 - Xv) % p,), (Xv,)
             acc = None
             for k in range(half):
                 lo, hi = 2 * k, 2 * k + 1
-                term = eng.mul(eng.lin([(1 - Xv, f[lo]), (Xv, f[hi])]), eng.lin([(1 - Xv, g[lo]), (Xv, g[hi])]))
+                term = X.smul(eng, X.slin(eng, [(c0, f[lo]), (c1, f[hi])]), X.slin(eng, [(c0, g[lo]), (c1, g[hi])]))
                 if sub is not None:
-                    term = eng.sub(term, eng.lin([(1 - Xv, sub[lo]), (Xv, sub[hi])]))
+                    term = X.ssub(eng, term, X.slin(eng, [(c0, sub[lo]), (c1, sub[hi])]))
                 if eqt is not None:
-                    term = eng.cmul((eqt[lo] * (1 - Xv) + eqt[hi] * Xv) % p, term)
-                acc = term if acc is None else eng.add(acc, term)
-            vals.append(acc)
-        shares = [[v[i][0] for v in vals] for i in range(n)]
+                    term = X.scmul(eng, X.add(X.mul(eqt[lo], c0, p), X.mul(eqt[hi], c1, p), p), term)
+                acc = term if acc is None else X.sadd(eng, acc, term)
+            vals.append(X.spad(eng, acc))
+        shares = [[c for v in vals for c in X.shares(v, i)] for i in range(n)]
         if st["claim"] is not None:
             # colluders: make the hidden round sum match the (forged) claim
-            plain = [sum(sh_[x] for sh_ in shares) % p for x in range(deg + 1)]
-            fix = (st["claim"] - plain[0] - plain[1]) * pow(2, -1, p) % p
-            shares[0] = [(v + fix) % p for v in shares[0]]
-            st["last"] = [(v + fix) % p for v in plain]
+            E = X.EXT
+            plain = [tuple(sum(sh_[j * E + kk] for sh_ in shares) % p for kk in range(E)) for j in range(deg + 1)]
+            fix = X.scal(pow(2, -1, p), X.sub(st["claim"], X.add(plain[0], plain[1], p), p), p)
+            fix = fix + (0,) * (E - len(fix))
+            shares[0] = [(v + fix[pos % E]) % p for pos, v in enumerate(shares[0])]
+            st["last"] = [X.add(v, fix, p) for v in plain]
         L.add_row(shares)
         roots = L.commit()
         round_roots.setdefault(name, []).append(roots)
         return roots
     scs, evals = schedule(tr, p, d, com, cb, bind=owner_x is not None)
     rows, urows, prod, nrows = row_layout(d, com, evals)
-    # hidden evaluation row combinations u_e (no masks) and the evaluation values' shares
+    # hidden evaluation row combinations u_e (no masks; EXT components) and the evaluation values' shares
     ushares, yshares = [], []
     for e, (k, pt) in enumerate(evals):
         c = com[k]
-        a = c.eval_weights(pt, e)
-        u = [c.row_combo(i, a) for i in range(n)]
+        a = c.eval_weights_e(pt)
+        u = [c.row_combo_e(i, a) for i in range(n)]
         if attack == "lie_in_u" and k == "W1n":
             hon = [list(honest_W1n[0][r * c.C:(r + 1) * c.C]) + c.ext[0][r][c.C:] for r in range(c.Rd)] + c.ext[0][c.Rd:]
-            u[0] = [sum(a[r] * hon[r][cc] for r in range(c.R)) % p for cc in range(c.W)]
-        b = eqv(pt[:c.mc], p)
+            u[0] = [[sum(a[r][kk] * hon[r][cc] for r in range(c.R) if kk < len(a[r])) % p for cc in range(c.W)]
+                    for kk in range(X.EXT)]
+        b = X.eqv(pt[:c.mc], p)
         ushares.append(u)
-        yshares.append([sum(x * y for x, y in zip(u[i][:c.C], b)) % p for i in range(n)])
-        for s0 in range(0, c.W, K_L):
-            L.add_row([u[i][s0:s0 + K_L] for i in range(n)])
+        yshares.append([X.dot([tuple(u[i][kk][cc] for kk in range(X.EXT)) for cc in range(c.C)], b, p) for i in range(n)])
+        for kk in range(X.EXT):
+            for s0 in range(0, c.W, K_L):
+                L.add_row([u[i][kk][s0:s0 + K_L] for i in range(n)])
     pairs = [(2, 1), (5, 4), (8, 7), (9, 10), (14, 15), (18, 19)]       # (x, y) evaluation indices per product
-    xs = [yshares[a] for a, _ in pairs]
-    ys = [yshares[b] for _, b in pairs]
-    zs = [L.mul_plain(x, y) for x, y in zip(xs, ys)]
-    L.add_row([[x[i] for x in xs] for i in range(n)])
-    L.add_row([[y[i] for y in ys] for i in range(n)])
-    L.add_row([[z[i] for z in zs] for i in range(n)])
+    rx, ry, rz = prod_shares(L, [yshares[a] for a, _ in pairs], [yshares[b] for _, b in pairs])
+    L.add_row(rx)
+    L.add_row(ry)
+    L.add_row(rz)
     eval_roots = L.commit()
     mask_roots = L.commit_masks()
     tr.absorb("lig-evals", eval_roots, mask_roots)

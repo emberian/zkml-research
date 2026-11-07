@@ -749,6 +749,77 @@ with k = 512. The release section is to be read from `run::release_section` at M
   - streaming the 47.7M proof-section triples from the tape (2.3 GB);
   - keeping MACs for A/B/C only through the zerocheck.
 
+## 19. Challenges in F_{p^2} (coordinator, 2026-11-07; profiles "ledger-x2", "demo-x2")
+
+**Why.** Every challenge was drawn in the 61-bit field. The sumchecks' 2^-55 was not even the weakest term: the PCS
+proximity test of each commitment fails with probability n / p (Ames et al., e < d / 3), and at d = 4096 the W
+matrices have n = 264,616 codeword points (2^-43 each). The step as a whole was at about 2^-40 per step, not the
+2^-128 that T = 309 gives the column test. [DERIVED, `cosnark_soundness.py ledger 4096 2000`]
+
+**The construction** (`cosnark_ext.py`).
+- F_{p^2} = F_p[u] / (u^2 - NR), NR the least non-residue >= 2 (3 for the demo prime, 5 for the ledger prime).
+- Every Schwartz-Zippel and random-combination challenge has two components: sumcheck and zerocheck rounds, tau, the
+  linear batch's gamma, the rank-1 and binding points, the PCS proximity weights, and the Ligero proximity, linear and
+  quadratic coefficients. A challenge vector of k elements is ONE transcript call of 2k draws, grouped in pairs.
+- Committed data, shares, MACs, Merkle trees and column indices stay in F_p.
+- PCS: a combination with F_{p^2} weights of F_p rows is two F_p combinations. Each component is masked by its own
+  proximity mask row, so a life now has two (NMASK = 4). Evaluations at F_{p^2} points give two hidden u rows.
+- Ligero: three masks per component (six), three more messages (w1, q1, pq1). The polynomial products are computed
+  once; only their weights differ per component.
+- Constraints: an F_{p^2} identity is two F_p constraints. A product gate x y = z of F_{p^2} values is three F_p
+  products (P1 = x0 y0, P2 = x1 y1, P3 = (x0 + x1)(y0 + y1); z = (P1 + NR P2, P3 - P1 - P2)), with two linear
+  constraints tying the third cells.
+- Element lengths are structural: a share of committed data is length 1, a challenge-born value length 2. A Beaver
+  product costs 1, 2 or 3 triples accordingly.
+
+**The MPC price.** Linear work on shares with public challenges stays local. The products are:
+
+| products | EXT = 1 | EXT = 2 |
+|---|---|---|
+| zerocheck, round 0 (A, B are data) | ceil(n / 2) | the same |
+| zerocheck, rounds 1.. (folded tables are in F_{p^2}) | about n / 2 | about 3 n / 2 |
+| d = 4096 step: zerocheck | 2,166,791 | about 4,333,600 |
+| d = 4096 step: proof section | 3,194,067 | about 5.36M (+68%) |
+| release at M = 64: zerocheck | 41,050,055 | about 82M |
+
+The bundle grows by the second proximity row of every commitment and the second u rows. At d = 4 (demo) it is
+3,190,820 B at EXT = 1 and 3,662,780 B at EXT = 2 (+15%). [EXECUTED, Python]
+
+**Soundness, per step at d = 4096, ledger profile** (union bound; `cosnark_soundness.py`; release at M = 64):
+
+| term (summed over the step's spine and middle) | EXT = 1 | EXT = 2 |
+|---|---|---|
+| sumchecks (rounds x degree / F) | 2^-51.7 | 2^-112.7 |
+| random points tau | 2^-54.9 | 2^-115.9 |
+| rank-1 points | 2^-55.4 | 2^-116.4 |
+| linear batch gamma | 2^-61.0 | 2^-122.0 |
+| PCS proximity (n / F per commitment) | 2^-40.3 | 2^-101.3 |
+| PCS columns ((3/4)^309 per commitment) | 2^-123.5 | 2^-123.5 |
+| Ligero proximity, linear, quadratic | 2^-48.3, 2^-60, 2^-60 | 2^-109.3, 2^-121, 2^-121 |
+| Ligero columns | 2^-127.2 | 2^-127.2 |
+| **per step** | **2^-40.3** | **2^-101.3** |
+| release | 2^-39.6 | 2^-100.6 |
+| **run: 2,000 steps + release** | 2^-29.3 | **2^-90.3** |
+
+- Target picked: 2^-100 per step, and every single term below it. EXT = 2 meets it, with the PCS proximity of the
+  d² commitments as the tightest term (2^-104 each).
+- Not in the table: Merkle binding (computational), the MAC check (an abort among custodians, not the verifier's
+  soundness), and Fiat-Shamir grinding: a prover making Q hash queries gains about a factor Q on the round terms.
+- More margin, if wanted: EXT = 3 puts every field term near 2^-160, so the column tests dominate (about 2^-122 per
+  step, 2^-111 per run), at 6 products per zerocheck pair after round 0 (about 3.5x today's zerocheck). A second
+  independent proximity combination for the d² commitments alone would square their term for about 3 MB more bundle.
+
+**Executed (Python).**
+- EXT = 1 unchanged: the A + B vectors regenerate byte-identical (demo d = 4, PG + RC + LB, e8729ed1…), and pw1, pw2 of
+  the demo-sq release chain (RC + LB) are identical (d4b71658…, 2ea9b6b4…), and so is its release (e1e5fff2…).
+- EXT = 2 (demo-x2, d = 4, PG + RC + LB, two carried steps): Python's verifier accepts both bundles
+  (8c4f8dad…, ddfadda2…).
+- Refusal rows, spine at d = 4 (`cosnark_ext_rows.py 4`), under both profiles: the honest proof is accepted; forged W1n,
+  forged z1, a forged sumcheck (hidden rounds shifted to a forged claim) and a lie in an evaluation row are refused.
+  Under EXT = 2 these are also refused: a Ligero message's u-part + 1, a PCS proximity row's u-part + 1, dropped
+  u-parts, and an EXT = 2 proof under EXT = 1 parameters, and the reverse.
+- Native: in progress (a helper of this lane), byte-equal at d = 4 and 16, then the d = 4096 numbers.
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).
