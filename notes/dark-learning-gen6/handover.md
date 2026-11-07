@@ -177,6 +177,144 @@ equal to the plaintext twin) needs three things from other lanes:
 - The binary declares `#[global_allocator] static A: darkhand::erase::ZeroOnFree`.
 - The resharing tag is `side::RESHARE` (PROOF until the deploy lane's RESHARE = 5).
 
+## 7. Erasure checks against the deployed binary, on the boxes (handover lane gen 2)
+Code:
+- `darkhand::scan` disk canaries (49ae41c7, 6a7db52e);
+- `dl-hand restart-seat` / `verify-rotation` (b9a2eca6);
+- `native/darkhand/scripts/check_handover.py` and `research/.../handover_replay.py` (d8c5fd43);
+- `serve::rotation_setup` / `self_setup` (8aa3512b, 093ff839).
+
+### What each check reads
+    check_handover.py RUN.json OUT [--self] --profile ledger-sq --tools dregg-forge=<dl-hand> bb2=<dl-hand>
+
+The checker reads the deploy lane's run layout over ssh, read-only except for the relaunch. dl-hand is built from
+the same commit as dl-custodian, in /srv/lanes/dl-gen6-handover/target-e514 and ~/lanes/dl-gen6-handover/target-e514.
+
+**Per old seat, from handover_P<I>.json, which old_side writes inside dl-custodian:**
+- the memory scan before erasure (control) and after;
+- the **disk scan** before (control) and after:
+  - darkhand scans every file under `scan_paths` at every byte offset: the seat's D and TLS dirs, every tape and
+    owner-msg file of the epoch, and their chunk dirs;
+  - it looks for the durable kinds: W shares and MAC shares, tape shares and MAC shares, the alpha share, and the HE
+    key in NTT form;
+  - since 6a7db52e, also the alpha share in MP-SPDZ's Montgomery word and its decimal text (Player-MAC-Keys);
+- the pre-handover decryption (control) and the post-erasure one;
+- the state files gone, by the report and by a remote stat.
+
+**The restarted seat, on its own box after its process exited:**
+- `dl-hand restart-seat`, with the seat's own argv from `<dir>/serve<I>.cmd`. It reports what the binary could load
+  (TLS key, checkpoint, carry, tapes and owner messages of steps 0..K). It then tries to decrypt the seat's
+  pre-handover ciphertext and each new seat's ciphertext with the only key the disk can give: dl-custodian never
+  writes the HE key to disk, so that is the zero key.
+- A relaunch of the exact `serve` command line, and of its `--resume` variant, under its own PID file and
+  `timeout 300`. Each must exit non-zero at the missing TLS key. Without that key it cannot sign a TLS handshake or
+  join a mesh, so it cannot contribute a share.
+
+**Per new seat:**
+- the MAC check under its own key, its own decryption (control), and its replica's rotate record;
+- `dl-hand verify-rotation`: the replica is replayed up to the rotation into a fresh ledger, and the rotation is
+  re-submitted with handover_e1.bin (native verifier). The proof's sha256 must equal the record's, and a copy with
+  one byte flipped must be refused.
+
+**Across seats:** one proof digest; the three new replicas equal through the rotation.
+
+**Python:** `handover_replay.py PROFILE LEDGER HANDOVER.bin` (Python Ledger.rotate). It must append the same record
+as the native one and refuse the flipped byte.
+
+**Negative controls, executed at d = 16 on the Mac:**
+- `DLH_STRAY_COPY=1 dl-hand local` leaves a tape copy, a "3\n<alpha>" key file and a Montgomery-word file that the
+  erasure does not know about. The after-erasure disk scan finds each one by name and kind.
+- On a dl-hand local proof, verify-rotation and handover_replay.py both refuse the flipped byte ("Ligero linear test").
+
+### run9: three-box rotation at d = 4096 [EXECUTED 2026-11-07, ledger-sq, dl-custodian ca46c2fd]
+Layout: old seats forge 0, bb2 1, bb2 2, with --handover-at 0 --wipe-spent; new seats bb2 0, forge 1, bb2 2.
+Checker output: scratchpad dl-gen5/handover/run9/check1/{checks,measure}.json.
+
+**Result: 68 of 71 checks hold. The three after-erasure memory scans are red.**
+
+| check | old 0 (forge) | old 1 (bb2) | old 2 (bb2) |
+|---|---|---|---|
+| memory scan ran (/proc) | ok | ok | ok |
+| memory hits before erasure (control) | 1,014,170 | 1,014,171 | 1,014,170 |
+| memory hits after erasure | **11** (alpha share, [stack]) | **12** (11 alpha [stack], 1 tape MAC share [anon]) | **11** (alpha, [stack]) |
+| disk hits before erasure (control): ckpt + carry | 393,217 | 393,217 | 393,217 |
+| disk hits after erasure | 0 | 0 | 0 |
+| allocator active; no state file left; no wipe error | ok | ok | ok |
+| decrypts its ciphertext before erasure (control) / after | yes / no | yes / no | yes / no |
+| restarted: no TLS key, ckpt, carry, tape or owner msg of steps 0..K on disk | ok | ok | ok |
+| restarted: decrypts neither its old ct nor any of the 3 new seats' cts (each found) | ok | ok | ok |
+| relaunch `serve` / `serve --resume`: exit at "own TLS key" | 101 / 101 (4.1 s) | 101 / 101 (4.9 s) | 101 / 101 (4.9 s) |
+
+| check | new 0 (bb2) | new 1 (forge) | new 2 (bb2) |
+|---|---|---|---|
+| MAC check under its own key; alpha share nonzero | ok | ok | ok |
+| decrypts its own ct under the new key (control) | ok | ok | ok |
+| replica: one rotation, to epoch 1 | ok | ok | ok |
+| verify-rotation (native): accepted, sha256 = record | 0.72 s | 0.77 s | 0.74 s |
+| one-byte flip refused | "Merkle opening fails (W1, custodian 0)" | same | same |
+
+Also: the three replicas are equal through the rotation, and all six seats hold the same proof (129,790,908 bytes).
+
+**Python** [EXECUTED on forge]:
+
+    python3 handover_replay.py ledger-sq run9/new1/D/ledger_P1.jsonl run9/new1/D/handover_e1.bin
+
+Result: ROTATION PASS. Python's Ledger.rotate accepts in 18 s and appends a record equal to the native one. The
+flipped byte is refused with "Merkle opening fails (W1, custodian 0)", the same reason the native verifier gives.
+
+
+**Why the memory scan is red** [DERIVED from the code and the hit maps]:
+- `Tape.alpha_i` is inline in `Party`, so it is inline in `CustodianState`.
+- dl-custodian moves the state by value: serve_main_with -> serve_state -> finish -> rotate_out -> old_from_serve.
+  Each move leaves a copy in a frame that is still live while old_side runs.
+- darkhand scrubs only below old_side, because a live caller frame cannot be scrubbed safely. Eleven identical
+  copies on every seat fit this.
+- The [anon] hit on seat 1 is probably the cached stack of a dead worker thread. The scan now reports each hit's
+  map, start, length and offset (6a7db52e), so the next run can locate it exactly.
+- The fix:
+  - darkhand's half: `serve::rotation_setup` / `self_setup` take the boxed state apart inside old_side's scrubbed
+    setup frame;
+  - the deploy lane's half (asked): `Box<CustodianState>` from creation.
+
+### Measurements at d = 4096 (run9; ledger-sq, so the pre-cut layout)
+Per old seat:
+
+| seat | reshare | prove | erase | handover total | memory scanned (before / after) | disk scan (before / after) | peak RSS (VmHWM / cgroup) |
+|---|---|---|---|---|---|---|---|
+| old 0 forge | 1.80 s | 8.62 s | 0.80 s | 21.2 s | 4.36 / 3.30 GB | 1.17 / 0.96 s | 7.5 / 7.9 GB |
+| old 1 bb2 | 2.22 s | 8.15 s | 0.95 s | 23.7 s | 4.66 / 3.60 GB | 1.90 / 0.95 s | 7.8 / 8.3 GB |
+| old 2 bb2 | 2.09 s | 8.22 s | 1.00 s | 23.3 s | 4.57 / 3.79 GB | 1.67 / 0.94 s | 7.8 / 8.3 GB |
+
+Per new seat:
+
+| seat | ceremony | reshare (recv) | commit | prove | re-auth + check | handover total | peak RSS (VmHWM at join / cgroup over the run) |
+|---|---|---|---|---|---|---|---|
+| new 0 bb2 | 0.77 s | 0.48 s | 2.46 s | 2.85 s | 3.47 s | 17.6 s | 5.3 / 9.9 GB |
+| new 1 forge | 0.96 s | 0.53 s | 1.88 s | 3.33 s | 4.55 s | 17.8 s | 5.2 / 9.5 GB |
+| new 2 bb2 | 0.77 s | 0.50 s | 2.47 s | 2.80 s | 3.68 s | 17.6 s | 5.4 / 10.1 GB |
+
+Bytes per link, from the Net counters:
+- old i -> each new seat: 268,435,490 B RESHARE (2 d^2 field elements), 21,661,471 B PROOF and 1,770 B CTRL (the
+  ledger replica); 290.1 MB in all;
+- old i -> each other old seat: 21,661,471 B PROOF;
+- new j -> each of the other five seats on the six-party mesh: 21,661,471 B PROOF;
+- new j -> each new peer, three-party mesh: 1,781,700 B for the ceremony, then 268,435,523 B OPEN for the
+  re-authentication (auth_plain_vec opens 2 d^2 masked values).
+
+So a d = 4096 handover moves about 1.6 GB of resharing and about 0.8 GB of re-authentication openings over the
+links, plus 22 MB of proof traffic on each of the 30 directed links of the six-party mesh. It finishes in under
+25 s on every seat. The old seats' peak RSS is the step-0 process's; the handover itself adds little.
+
+### Bounds this check does not cover [OPEN]
+- **Copy-on-write and SSD storage.** An in-place overwrite is not physical erasure there. hbox's /othersys is ZFS:
+  old blocks can survive in free space and snapshots. An SSD's FTL can keep old pages on bb2 and forge too. Against
+  a disk image, the runtime dirs need encryption at rest with the key destroyed. That is ember's call.
+- **MP-SPDZ runtime dirs.** The old key's Player-MAC-Keys and Mascot-Secrets files in the prep dirs were not in
+  run9's scan paths. They are canaried now; the deploy lane adds them to the files list and the scan paths for the
+  next rotation.
+- **The TLS private key in memory.** It is wiped on disk and the process exits, but it is not canaried in the scan.
+- **Kernel socket buffers and swap**, as in section 4.
+
 ## Continuation (handover lane, 2026-11-07; for a successor)
 State: every handover piece is on dev (latest darkhand commit 4ce5d616). The three-box run waits on the deploy lane
 (a68410e60434efcda) wiring the hooks below into native/darkdeploy/src/bin/dl-custodian.rs. The step-k child
