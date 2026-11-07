@@ -449,6 +449,7 @@ def owner_commit(p, vec, label, n=3):
     """The data owner deals vec as n additive shares and commits the share tuple with secret tails (ZKPCS). It
     signs the roots; the custodians receive the commitment object (their shares and openings)."""
     import secrets
-    sh = [[secrets.randbelow(p) for _ in vec] for _ in range(n - 1)]
+    det = CS.det_rng("owner-commit", label, CS.H(list(vec)))          # TEST ONLY (cosnark.det_rng)
+    sh = [[det.randrange(p) if det else secrets.randbelow(p) for _ in vec] for _ in range(n - 1)]
     sh.append([(v - sum(c)) % p for v, c in zip(vec, zip(*sh))])
     return ZKPCS(p, sh, label)

@@ -50,6 +50,8 @@ with ||shift||_inf <= B (the scholar's envelope, recomputed here per return kind
 """
 import hashlib
 import math
+import os
+import random
 import secrets
 
 import bfv_ref as bfv
@@ -134,10 +136,22 @@ class Ceremony:
         return self.keys[j]["registry"]
 
 
+def det_custodian_rng(i):
+    """TEST ONLY (native bit-exact checks, native/dzkpopk): with DL_DETERMINISTIC=<seed> set, custodian i's coins
+    (r_i, salt_i, s_i, e_i) come from random.Random("dl-keygen|<seed>|custodian|<i>"); unset, from `secrets` as before."""
+    seed = os.environ.get("DL_DETERMINISTIC")
+    return None if seed is None else random.Random(f"dl-keygen|{seed}|custodian|{i}")
+
+
 class Custodian:
     def __init__(self, i, rng=None):
         self.i = i
-        self.r, self.salt = secrets.token_hex(32), secrets.token_hex(32)
+        self._det = det_custodian_rng(i)
+        if self._det is None:
+            self.r, self.salt = secrets.token_hex(32), secrets.token_hex(32)
+        else:
+            self.r = self._det.getrandbits(256).to_bytes(32, "little").hex()
+            self.salt = self._det.getrandbits(256).to_bytes(32, "little").hex()
 
     def commitment(self, epoch):
         return H("dl-keygen-commit", epoch, self.i, self.r, self.salt)
@@ -145,7 +159,7 @@ class Custodian:
     def make_key(self, cer):
         N, primes, t = cer.N, cer.primes, cer.t
         Q = math.prod(primes)
-        rng = secrets.SystemRandom()
+        rng = secrets.SystemRandom() if self._det is None else self._det
         s = [rng.choice((-1, 0, 1)) for _ in range(N)]
         e = [rng.randint(-8, 8) for _ in range(N)]
         a = public_a(cer.key_seed(self.i), N, Q)
