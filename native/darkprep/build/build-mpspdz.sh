@@ -43,6 +43,13 @@ CFG
 # Makefile target tries a git submodule update first (the release is not a git checkout): configure it directly
 export CPATH=$L/include LIBRARY_PATH=$L/lib
 [ -f deps/SimplestOT_C/ref10/Makefile ] || (cd deps/SimplestOT_C/ref10 && cmake . -DOC_THIRDPARTY_HINT=$L -DCMAKE_PREFIX_PATH=$L)
+# WAN links (hbox on Wi-Fi): MP-SPDZ's stock socket settings abort on any stall over ~16 s (keepalive idle 1 s,
+# interval 3 s, 5 probes), on a blocked send or receive over 10 s (client sockets), and on a party waiting 300 s for a
+# peer (player sockets; LowGear key setup over a slow link waits longer). Tolerate stalls of up to an hour instead.
+sed -i "s/unsigned int timeout_milli = 10000;/unsigned int timeout_milli = 0; \/\/ darkprep: no send\/receive timeout/" Networking/sockets.cpp
+sed -i "s/int keepalive_strobe_interval_secs = 3;/int keepalive_strobe_interval_secs = 30;/; s/int num_keepalive_strobes = 5;/int num_keepalive_strobes = 120;/; s/int keepalive_idle_time_secs = 1;/int keepalive_idle_time_secs = 30;/" Networking/sockets.cpp
+sed -i "s/tv.tv_sec = 300;/tv.tv_sec = 3600; \/\/ darkprep: was 300/" Networking/Player.cpp
+grep -q "timeout_milli = 0" Networking/sockets.cpp && grep -q "num_keepalive_strobes = 120" Networking/sockets.cpp && grep -q "tv.tv_sec = 3600" Networking/Player.cpp
 grep -q -- "-lz -lzstd" Makefile || sed -i "s/\$(LDLIBS) -lz -Wl,-Bdynamic/\$(LDLIBS) -lz -lzstd -Wl,-Bdynamic/" Makefile
 make -j$J static/mascot-party.x static/lowgear-party.x static/highgear-party.x
 ldd static/mascot-party.x || true
