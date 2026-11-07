@@ -11,7 +11,7 @@ One custodian per machine in each committee: the new committee is three new proc
 boxes, with their own TLS identities, their own MP-SPDZ key (prep's handover chunk) and their own HE ceremony.
 
 What it pins (the posture of the run; change it here, not by hand in the JSON):
-- profile ledger-x2d by default (F_{p^2} challenges, cut D; the genesis record carries "EXT": 2 and Ledger::open refuses another);
+- profile ledger-x2de with RS by default (F_{p^2} challenges, cuts D and E, one masked zero test per truncation; the genesis record carries "EXT": 2 and Ledger::open refuses another);
 - every tape single-use (the box registry), checked against the profile before step 0, waited for (--tape-wait)
   when prep runs behind, wiped once spent (--wipe-spent);
 - pipelined proofs on their own mesh per committee; every bundle archived on bb2 (latest only elsewhere);
@@ -47,8 +47,8 @@ def main():
     ap.add_argument("--chunk-steps", type=int, default=2)
     ap.add_argument("--third", default="NEWBOX,0.0.0.0,/srv/lanes/dl-gen6-deploy", help="HOST,IP,ROOT of the wired third box")
     ap.add_argument("--name", default="record")
-    ap.add_argument("--profile", default="ledger-x2d", help="the proof profile (the coordinator's rule: ledger-x2d once native D is "
-                    "byte-equal, which it is at 8319ea81; ledger-x2de if E lands too)")
+    ap.add_argument("--profile", default="ledger-x2de", help="the proof profile (the coordinator's: ledger-x2de with the program flag RS)")
+    ap.add_argument("--no-rs", action="store_true", help="without the program flag RS (its tapes differ: K + 1 - s bits per truncation)")
     ap.add_argument("--key-dir", default=None, help="the old committee's MP-SPDZ runtime dir name in prep's ROOT (e.g. wired: "
                     "ROOT/wired<I>/mpspdz); its p-61 MAC-key and secrets files are erased at the handover and the dir scanned")
     ap.add_argument("--key-hash", default="519717d82129ff48ce3a78ec360a737b5b3d8a5f", help="the p-61 Mascot-Secrets file's parameter hash")
@@ -77,7 +77,7 @@ def main():
     mesh6 = ",".join(six)
     # --ret-round (the rounded returns) joins once item 3 has run it on hbox and the proof lane has the proof of
     # the rounded step; until then the run sends the switched returns unrounded
-    common = ["--ret-primes", "2", "--prove", "--profile", a.profile, "--wipe-spent", "--tape-wait", "7200",
+    common = ["--ret-primes", "2", "--prove", "--profile", a.profile] + ([] if a.no_rs else ["--rs"]) + [ "--wipe-spent", "--tape-wait", "7200",
               "--pause-utc", "10:00-11:00", "--timeout", "3600", "--pipeline-proofs"] + \
              (["--nat", "2", "--nat6", "2,5"] if a.layout == "hbox" else [])
     def bin_(b):

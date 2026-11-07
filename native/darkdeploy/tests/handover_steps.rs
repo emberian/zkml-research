@@ -52,6 +52,20 @@ struct Case {
     c: usize,
 }
 
+/// The proof profile under test: DL_PROFILE (default "ledger"), and DL_RS=1 for the program flag RS (its tapes deal
+/// K + 1 - s bits per truncation). E.g. DL_PROFILE=ledger-x2de DL_RS=1 runs every case under cut E (DEFER).
+fn prof_args() -> Vec<String> {
+    let mut v = vec!["--profile".to_string(), std::env::var("DL_PROFILE").unwrap_or_else(|_| "ledger".into())];
+    if rs() {
+        v.push("--rs".into());
+    }
+    v
+}
+
+fn rs() -> bool {
+    std::env::var("DL_RS").is_ok_and(|v| v == "1")
+}
+
 impl Case {
     fn new(name: &str) -> Case {
         let pf = prof(&A.map(String::from));
@@ -59,7 +73,7 @@ impl Case {
         let _ = std::fs::remove_dir_all(&base);
         std::fs::create_dir_all(&base).unwrap();
         std::fs::write(base.join("genesis.json"), CFG).unwrap();
-        let out = Command::new(env!("CARGO_BIN_EXE_dl-custodian")).arg("proof-triples").args(A).output().unwrap();
+        let out = Command::new(env!("CARGO_BIN_EXE_dl-custodian")).arg("proof-triples").args(A).args(prof_args()).output().unwrap();
         let c: usize = String::from_utf8(out.stdout).unwrap().trim().split_once(',').unwrap().1.parse().unwrap();
         let xs = (0..2)
             .map(|s| {
@@ -72,6 +86,7 @@ impl Case {
 
     /// Deal step `s` (and its proof section) on `dl`; the owner's broadcasts.
     fn deal(&self, dl: &mut Dealer, owner: &mut pycompat::PyRandom, s: usize) -> Vec<u64> {
+        dl.rs = rs();
         let xm: Vec<u64> = self.xs[s].iter().map(|&v| darkstep::arith::from_i64(v, self.t)).collect();
         let cs = darkstep::tape::deal_one_step(dl, owner, self.d, &xm, &Program::HARNESS);
         darkstep::tape::deal_proof_section(dl, self.c);
@@ -264,6 +279,7 @@ fn rotation_v(pause: bool, nat: Option<usize>, vault: bool) {
         a.extend(s(&["--tape", own.join("tape.bin").to_str().unwrap(), "--prove", "--genesis-cfg", &gen, "--handover-at", "0"]));
         a.extend(s(&["--mesh6", &mesh6, "--tls6", tls6.to_str().unwrap()]));
         a.extend(natf.clone());
+        a.extend(prof_args());
         kids.push(run(a));
         odirs.push(own);
     }
@@ -288,6 +304,7 @@ fn rotation_v(pause: bool, nat: Option<usize>, vault: bool) {
             a.extend(s(&["--pause-utc", &window_now(), "--consumed-log", reg.to_str().unwrap()]));
         }
         a.extend(natf.clone());
+        a.extend(prof_args());
         kids.push(run(a));
         ndirs.push(own);
     }
@@ -310,6 +327,7 @@ fn rotation_v(pause: bool, nat: Option<usize>, vault: bool) {
                 if vault {
                     a.push("--vault".into());
                 }
+                a.extend(prof_args());
                 run(a)
             })
             .collect();
@@ -449,6 +467,7 @@ fn self_handover_v(nat: Option<usize>, vault: bool) {
             vnames.push(vault_init(&own, i, 0));
             a.extend(s(&["--vault", "--keep-erased-copy", own.join("erased").to_str().unwrap()]));
         }
+        a.extend(prof_args());
         kids.push(run(a));
         dirs.push(own.join("D"));
     }
