@@ -1,6 +1,6 @@
 # Gen 6, proof lane: the proof of the deployed step, per-step proofs in the run, the release proof
 
-Owner: proof lane (a02632eb). Code: `native/darkproof` (except the handover files) and research
+Owner: proof lane (a02632eb; gen 6 successor from §8 on). Code: `native/darkproof` (except the handover files) and research
 `cosnark_he.py`, `cosnark_gates.py` (RecEngine.he), `proofwire.py` (program), `darkproof_vectors.py` (flow `he`).
 The gen 5 record is in `notes/dark-learning-gen5/proof.md`.
 
@@ -34,7 +34,7 @@ The gen 5 record is in `notes/dark-learning-gen5/proof.md`.
 |---|---|---|---|---|---|---|
 | demo, 4 | equal, 7a2f24e5… (7,615,628 B) | equal, 0552e8ff… | equal, f4be6874… | accept both ways | refused by both | record = harness; bundle equal |
 | demo, 16 | equal, bbce47f1… (9,478,868 B) | equal, 8ac9695f… | equal, aea3fd2c… | accept both ways | refused by both | record = harness; bundle equal |
-| ledger, 4 / 16 | [OPEN] Python vectors running on bb2 | | | | | |
+| ledger, 4 / 16 | see §8 | | | | | |
 
 **The darkstep record check (`ds-check`)** covers darkstep's genesis HE step. Its ideal-dealer tapes carry the
 Trhb proof atoms and `deal_proof_section`. The step runs in three custodian threads over darkstep's sockets, and the
@@ -285,31 +285,199 @@ Estimated savings:
 The release case cuts its 105M zerocheck triples to about 45M. It is table-specific (SIG/DSIG), Python reference
 first. **[OPEN] awaiting the coordinator's go.**
 
+## 8. The remaining vectors (bb2), range check on [EXECUTED]
+
+Each row runs `darkproof check VEC TAG`, `darkproof ds-check VEC TAG` (built with `--features tcp,test-det`) and
+`darkproof_vectors.py verify VEC TAG`, on bb2 under `~/lanes/dl-gen6-proof` (`checks.sh`):
+
+| vectors | program | steps | result |
+|---|---|---|---|
+| demo_d16_rc_he | harness + RC | 3 | EQUAL (5bac7b9b…, 668f9c12…, faeb753a…), ds-check EQUAL, Python accepts native, flipped byte refused |
+| demo_d16_g6rc_he | GEN6 + RC, native_ref.inputs_for(16, GEN6) | 3 | EQUAL (899121f7…, 2b86f102…, 8a9c73cc…), 16,004 proof-section triples; ds-check and Python verify PASS |
+| ledger_d4_rc_he | harness + RC, ledger profile | 2 | EQUAL (ea37453d…, 71d36899…), ds-check and Python verify PASS |
+| ledger_d4_he, ledger_d16_he (non-RC) | harness | 3 | first set DIFFER: generated at 03:10-03:52 UTC, before the zerocheck cut reached bb2's Python (04:11). Python accepts the native bundles. Regenerated (`he_ledger_*_r2`); see [OPEN] |
+
+## 9. The lookup by a bit circuit (program flag "LB"; coordinator's GO) [EXECUTED]
+
+**What it proves.** With RC on, z1's borrow chain already proves the integer z1 - a in [0, 2^(s1 + 8)), where
+a = t_lo 2^s1. It does so through the difference bits diff_i = c'_i - R_i - beta_i + 2 beta_(i+1). Each diff_i is
+boolean, because the chain is integer subtraction: diff_i = c'_i xor R_i xor beta_i, given the borrow rows. The top
+8 bits are v = u1 - t_lo, the table index. Per lookup, after the range rows:
+- v_j = diff_(s1 + j) for j < 8: 8 atoms, each with a linear row;
+- w = v >> 2 (an atom) and q = t_lo / 4;
+- lo = [w < -7 - q], Bf = [w < 8 - q];
+- h = w Bf - w lo + (q - 7) Bf - (q + 7) lo + 7, which is clamp(floor(u1 / 4), -7, 7) = SIG[u1];
+- g1 = [v < 32 - t_lo] - [v < -28 - t_lo] = DSIG[u1] (the step only; the release has no g1 column);
+- the rows tie this h and g1 to the external atoms h[k], g1[k].
+
+**The comparisons.** Each comparison with a public constant is a bit chain, least significant bit first:
+lt_(i+1) = c_i ? 1 - b_i + b_i lt_i : lt_i - b_i lt_i, with constants folded. A product b * v whose v has more than
+one atom first makes v an atom.
+
+**Cost.** At GEN6 (t_lo = -128) each element costs:
+- 16 proof-time Beaver products and 16 Hadamard rows (9 for the release's h alone);
+- 37 atoms and 23 linear rows.
+
+That replaces 255 power atoms and 254 Hadamard rows. The products run level by level: the circuit's depth is 6, so
+6 rounds batched over every lookup.
+
+**Requirements.** "LB" needs "RC", t_lo divisible by 4, and z1's default interval. The replay refuses anything else
+(`Short::Program`).
+
+**What changes and what does not.**
+- **The MPC is unchanged.** The masked-power lookup still runs.
+- **Only the proof's view changes.**
+  - The lookup's opening has kind `lookup-lb`, outside MIDDLE_PHASES, so the power atoms enter no middle
+    constraint.
+  - The outputs are the external atoms themselves.
+  - darkstep's ProofRecord still carries the powers; `Rec::witness_atoms` drops that block (`lp_drop`).
+- **Code.**
+  - Python: `cosnark_gates.append_lookup` / `fill_lookup` (RecEngine `lb`, `lb_req`, `lb_rows`), Prog `lb`
+    (genesis "LB").
+  - Native: `step::Rec::append_lookup`, `middle::fill_lookup`, `Rec::proof_products` (every section count uses it),
+    `StepParams.lb`.
+  - The ledger's genesis writer pins "LB". That pin was missing in cebe43b4 and is fixed in d0b170b7.
+
+**Bit-exact** (cebe43b4):
+
+| vectors | steps | sha256 | rows |
+|---|---|---|---|
+| demo_d4_lb_he (harness + RC + LB) | 3 | efb4c5ff…, b9f1d61a…, 00ae29f8… | check, ds-check (darkstep record → bundle), Python verify PASS |
+| demo_d16_lb_he | 3 | 20686bd3…, 0f927186…, 404f2263… | PASS; 11,109 triples (RC alone: 14,662) |
+| demo_d16_g6lb_he (GEN6 + RC + LB) | 3 | 2f69b7f6…, 395c7e1a…, b4ec6512… | PASS; 12,458 triples (RC alone: 16,004), 6,944 middle atoms (11,024) |
+| ledger_d4 release (RC + LB, M = 4) | | ac21fa45… (17,712,782 B) | rel-check EQUAL. Python and native accept each other, C = 2 = plaintext twin. Refused: a flipped byte, C + 1, another label set, the genesis W1 |
+
+**Refusal rows.**
+- **h or g1 off by one.** A colluding custodian set shifts lookup 1's h (or g1) share by one, MAC-consistently (MAC
+  share + alpha). `DP_ATTACK=lb_h` / `lb_g1` exercises it.
+  - The MPC's MAC check passes.
+  - Python refuses: `middle: Ligero linear test`, first violated row "linear batch".
+  - Native refuses the Python bundle the same way.
+  - Native's own bundle for that witness is byte-identical.
+- **Off-table u1, refused by the range check** (`ds-chain 16 demo 2 8`, RC + LB):
+  - with W1 × 30 or × 60, the custodians refuse with `truncation input outside its proved bound: z1[11], ...`;
+  - the forced bundle is refused by the ledger (`middle: Ligero linear test`).
+- **Plaintext check of the circuit** (`scratchpad/dl-gen6/proof/lb_plain.py`):
+  - all 256 inputs satisfy every row with the honest h and g1, at four programs: (t_lo, s1) = (-128, 11),
+    (-128, 5), (-64, 5), (-200, 6);
+  - all 256 fail with h + 1, with h - 1, and with g1 flipped.
+
+**Counts and times at d = 4096**: §11.
+
+## 10. Public genesis (program "PG"; the deploy lane's request, the coordinator's decision) [EXECUTED]
+
+**The setup.** The initial weights are public: W = darktrain::init(train_genesis_gen6.json). They enter custody as
+the public constant: custodian 0's share is W, the others hold 0, and the MAC shares are alpha_i W.
+`StepParams.pg` = sha256 of the cfg's bytes, pinned in genesis as "PG". With it every step is the carried
+program, step 1's parent being W's public commitment.
+
+**The pieces.**
+- `run::public_genesis(pr, d, i, w1, w2, n) -> (carry, roots)`.
+  - Its commitments use PUBLIC coins: `rng::Coins::Public`, SHA-256 in counter mode keyed by the share's hash
+    (`PcsParty::commit_public`).
+  - So every custodian and every verifier computes the same roots.
+  - Equal shares commit equally, so the cost is two d² commitments whatever n.
+  - Hiding is not needed: W is public, and step 1's openings of it reveal combinations of public rows.
+- `Ledger::check_public_genesis(cfg)`.
+  - It checks the cfg's hash against the pinned one.
+  - It recomputes W and its commitment, and compares them to the genesis roots.
+  - Until it succeeds the ledger accepts no step and no release (fail closed). darkproof's `tcp` feature now pulls
+    in darktrain for this.
+- `prove_step` refuses a public-genesis step 1 without the carry.
+- Native only: Python's proofwire has no PG.
+
+**Run** (`DP_PG_CFG=<a d = 16 darktrain cfg> ds-chain 16 demo 3 8`, RC + LB, production coins):
+- **Accepted:** three proved steps and the release. C = 1 = plaintext twin, and the ledger then refuses a further
+  step.
+- **Refused:**
+
+| attempt | refusal |
+|---|---|
+| a step before the cfg check | `public genesis not checked against its cfg` |
+| another cfg (one byte appended) | `the cfg is not the one the genesis record pins` |
+| the roots of another W (W1[0][0] + 1) under the pinned cfg | `the genesis roots are not the public commitment of the cfg's W` |
+| custody holding W1 + e_00 under the true public commitment (`DP_PG_TAMPER`) | the ledger refuses step 1: `spine: Ligero linear test` |
+
+## 11. d = 4096, GEN6: counts and the timed rerun on the new zerocheck [EXECUTED]
+
+**Counts** (`DP_PROGRAM='{GEN6, "RC": true[, "LB": true]}' darkproof counts 4096 ledger`, per custodian; the same for a
+carried step):
+
+| | RC | RC + LB | |
+|---|---|---|---|
+| step Hadamard rows | 3,141,632 = 767 d | 2,166,784 = 529 d | estimate was 540 d |
+| step middle atoms | 4,665,344 | 3,772,416 | |
+| step: spine Beaver | 53,235 = 13(d - 1) | 53,235 | |
+| step: range products | 905,216 = 221 d | 905,216 | |
+| step: lookup products | 0 | 65,536 = 16 d | |
+| step: zerocheck | 3,141,633 | 2,166,791 | |
+| step: Ligero (unauthenticated) | 1,497 | 1,497 | |
+| **step section** (`run::step_section`) | **4,101,581** | **3,192,275** | -22% |
+| release M = 64: Hadamard rows | 105,275,328 | 41,050,048 | 245 fewer per lookup (254 → 9) |
+| release: range products | 15,269,696 | 15,269,696 | |
+| release: lookup products | 0 | 2,359,296 = 9 d M | |
+| release: zerocheck | 105,275,336 | 41,050,055 | estimate was about 45M |
+| **release section** (`run::release_section`) | **120,545,778** | **58,679,793** | 2.05x fewer |
+
+**Section formulas** (GEN6, LB; t = the program's checked truncations, each with its K and s):
+- **step:** 13(d - 1) + d Σ_t (K + 39) + 16 d + beaver_count(n_had) + 2(2(k + t) - 1) + 7,
+  where n_had = d [16 + Σ_t (K + 40 + 2(s - 1)) + 1] + d Σ_t (K + 39);
+- **release:** the same with 9 per lookup in place of 16.
+- 16 and 9 are GEN6's comparison constants (t_lo = -128). Other t_lo give other counts: `Rec::lookup_products`.
+- beaver_count(n) = Σ_i ceil(n_i / 2), with n_0 = n and n_(i+1) = ceil(n_i / 2), which is about n.
+
+**Timed rerun** (bb2, `rc4096b.sh`): three custodians in one process, 8 threads each, `ds-bench 4096 ledger`. The
+box was shared:
+- before: load 12.2, 94 GB available, the other tenant's ACL2 (sbcl ×7), clang, Lean and two of my single-core
+  Python jobs;
+- during: load about 30 (`rc4096b_box.log`).
+
+| | gen 5 zerocheck, RC (§5) | new zerocheck, RC | new zerocheck, RC + LB |
+|---|---|---|---|
+| prove | 405.7 s (load about 12) | 466.5 s | 408.2 s |
+| of which: spine commitments, middle vectors and commitments | 148.4 s, 69.1 s | 163.1 s, 76.1 s | 169.3 s, 49.6 s |
+| bundle | 520,030,532 B | 520,030,532 B | 519,350,924 B |
+| verify | 10.5 s accept | 10.5 s accept | 6.9 s accept |
+| proof sent per custodian (both peers) | 733.6 MB | 297.2 MB | 267.7 MB |
+| triples per custodian | 17,737,160 | 4,101,581 | 3,192,275 |
+| peak RSS (all three) | 21.0 GB | 16.4 GB | 15.4 GB |
+
+**What the numbers say.**
+- The commitments of the d² matrices dominate the prover; the triple cuts do not move them.
+- The zerocheck cut shows up in the bytes on the wire: 734 → 297 MB per custodian.
+- LB shows up in the middle's commitments (fewer atoms and rows) and in verify time.
+- The bundle size is set by power-of-two padding and the d² PCS. Per link and direction a custodian sends about half
+  of "proof sent": about 134 MB per step with LB.
+
 ## [OPEN]
 
-
-- **Ledger-profile bit-exactness.** The ledger-profile HE vectors (d = 4 and 16, `~/lanes/dl-gen6-proof/vec`
-  on bb2) are still being generated by Python.
-- **HE + RC at d = 16 (demo) and ledger d = 4.** Python vectors running on bb2: `~/lanes/dl-gen6-proof/vec`, logs
-  `he_rc_16.log` and `he_rc_l4.log`, PID files there. Then `check` / `ds-check` / `darkproof_vectors.py verify`
-  with tags `demo_d16_rc_he` and `ledger_d4_rc_he`.
-- **The d = 4096 measurement on the new zerocheck.** The gen 5 numbers are above. Rerun with
-  `rc4096.sh` on bb2 after rebuilding there.
-- **The run, on three boxes.** The deploy lane's dl-custodian proves each step over TLS (571825d0, with rc). Then
-  the d = 4096 sizes and times in the run, and the release in the run.
-- **d = 4096 cost of RC.** Measured on bb2 (`~/lanes/dl-gen6-proof/rc4096_{on,off}.log`, PID file `rc4096.pid`);
-  the estimate is +40%.
+- **Ledger-profile non-RC vectors, regenerated.** `he_ledger_4_r2` and `he_ledger_16_r2` on bb2 (PID files there)
+  are SIGSTOPped while the deploy lane times a step on bb2. Resume them with `kill -CONT $(cat <pid file>)`. Then
+  run `checks.sh ledger_d4_he ledger_d16_he`.
+- **The run on three boxes (forge, bb2, hbox).** The deploy lane wires `run::public_genesis` (d0b170b7) and
+  `lb: true`. Then:
+  - the first proved three-box step;
+  - proof bytes per link, from darkstep's `sent_per_peer()[peer][PROOF]`;
+  - the release proof checked against the ledger head.
+- **Proof bytes on hbox's link.** Every custodian currently receives the whole bundle. A designated aggregator (one
+  custodian assembles and publishes) would roughly halve hbox's proof upload and remove its download. Not built: it
+  changes "every party ends with the same bundle".
 
 ## Continuation
 
-- **APIs for the deploy lane.** `run::prove_step(pr, lp, tables, prm, net, ctx, PartyStep, carry)` and
-  `run::from_darkstep_n`. `run::step_section` sizes each step's tape proof section. For the release:
-  `run::release_mpc`, `release_section` and `prove_release`. The ledger side is `ledger::Ledger::{accept, release}`.
-- **What it all looks like run end to end:** `ds_chain` in bin/darkproof.rs.
-- **Check commands.**
-  - Bit-exact checks: `check`, `ds-check`, `rel-check`; they need `--features tcp,test-det`.
-  - Production-coin runs: `run-check`, `ds-bench`, `ds-chain`.
-
-- **Vectors.** They live in `scratchpad/dl-gen6/proof/vec` (local) and on bb2 under `~/lanes/dl-gen6-proof/vec`,
-  with PID files `he_*.pid` there.
-- **Builds.** `target-proof` uses `--features tcp,test-det`; `target-proof-prod` uses `--features tcp`.
+- **APIs.**
+  - Steps: `run::prove_step(pr, lp, tables, prm, net, ctx, PartyStep, carry)`, with `run::step_section` for the
+    tape. It takes darkstep's ProofRecord as is: `Rec::witness_atoms` drops the LB power block.
+  - Public genesis: `run::public_genesis(pr, d, i, w1, w2, 3) -> (carry, roots)`, `run::public_weights(cfg)`, and
+    `Ledger::check_public_genesis(cfg)` before accept or release.
+  - Release: `run::release_mpc`, `release_section` and `prove_release`, then `Ledger::release`.
+- **Program flags.** "RC" (proved bounds), "LB" (bit lookup; needs RC) and "PG" (public genesis; sha256 of the cfg
+  bytes). `StepParams { rc, lb, pg }`; the genesis writer pins all three.
+- **End to end:** `ds_chain` in bin/darkproof.rs.
+  - `DP_PG_CFG=<cfg>` for public genesis.
+  - Controls: `DP_PG_TAMPER`, `DP_W1SCALE` / `DP_W2SCALE`, `DP_IGNORE_RANGE`.
+- **Bit-exact checks:** `check`, `ds-check`, `rel-check`, which need `--features tcp,test-det`. Vector flags:
+  `DP_PROGRAM` (with "LB"), `DP_ATTACK=lb_h|lb_g1`, `DP_RC=1 DP_LB=1` for the release.
+- **Where things live.**
+  - Vectors: local `scratchpad/dl-gen6/proof/{vec,lb,pg}`; bb2 `~/lanes/dl-gen6-proof/vec`.
+  - Builds on bb2: `target-det` and `target` (`build.sh`).
