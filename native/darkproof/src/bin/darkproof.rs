@@ -779,7 +779,18 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let agree = outs.iter().all(|o| o.1 == outs[0].1 && o.0 == outs[0].0);
     println!("release: MPC {:.1}s, proof {:.1}s, bundle {} bytes; parties agree {agree}; opened C = {}", outs[0].2, outs[0].3, outs[0].1.len(), outs[0].0);
     let t = std::time::Instant::now();
-    let r = lg.release(&lp, &outs[0].1, &pol);
+    let r = match (std::env::var("DP_MNIST"), &pg_cfg) {
+        // the policy bound to the owner's encoder (Ledger::release_checked): first a policy with one x entry changed
+        (Ok(dir), Some(cfg)) => {
+            let mut bad = Policy { x: pol.x.clone(), labels: pol.labels.clone(), ..pol };
+            bad.x[0] = darkproof::field::add(bad.x[0], 1);
+            let rb = lg.release_checked(&lp, &outs[0].1, &bad, cfg, Path::new(&dir));
+            println!("a release whose policy has one x entry changed: {rb:?}");
+            ok_all &= rb.as_ref().is_err_and(|e| e.contains("not the pinned cfg's encoding"));
+            lg.release_checked(&lp, &outs[0].1, &pol, cfg, Path::new(&dir))
+        }
+        _ => lg.release(&lp, &outs[0].1, &pol),
+    };
     println!("ledger accepts the release: {:?} ({:.1}s); plaintext twin C = {cp}{}", r, t.elapsed().as_secs_f64(), if pr.defer { format!("; status {:?}", lg.status) } else { String::new() });
     ok_all &= agree && r.as_ref().map(|x| x.1 == cp && x.1 == outs[0].0).unwrap_or(false);
     let r2 = lg.accept(&lp, &parts_blob_dummy(), &tables);

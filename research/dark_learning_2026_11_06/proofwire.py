@@ -872,6 +872,12 @@ def replay(native_ledger, cfg_path, bundle_dir, mnist_dir=None, workdir=None):
                 out.append("release: no policy given (an MNIST directory or a policy json)")
                 return False, out
             if mnist_dir.endswith(".json"):           # an explicit policy: {X (d rows of M, mod p), labels, ncls, kc}
+                if (g.get("program") or {}).get("PG"):
+                    # the genesis pins the owner's encoder: the test set is the cfg's encoding of t10k 0..M-1, rebuilt
+                    # here, never read from a file (native Ledger::release_checked)
+                    out.append("release: the genesis pins a cfg: the policy is rebuilt from it and t10k (an MNIST "
+                               "directory), not read from a json")
+                    return False, out
                 pj = json.load(open(mnist_dir))
                 X, labels, ncls, kc = pj["X"], pj["labels"], pj["ncls"], pj["kc"]
             else:

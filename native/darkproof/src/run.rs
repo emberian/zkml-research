@@ -817,8 +817,6 @@ pub fn mnist_policy(cfg_json: &[u8], mnist_dir: &std::path::Path, m: usize) -> R
     Ok(Policy { x, labels, ncls: 10, kc: 10, ignore_range: false })
 }
 
-/// The release section of a TEST dealer's tapes (cosnark_release's order), then its proof section; the run's tapes
-/// come from MASCOT in this order.
 #[cfg(feature = "tcp")]
 /// L (proof.md 23; cosnark_gates.RecEngine.lookup_bits): h = SIG[u1] for the n z1 truncations just run (their tape
 /// block at `tb`, their transcript at `tv`), by z1's borrow chain to bit B = s1 + 8 and the LB circuit on shares, every
@@ -929,6 +927,9 @@ fn lookup_bits(pt: &mut darkstep::party::Party, tb: usize, tv: usize, n: usize, 
         .collect()
 }
 
+/// The release section of a TEST dealer's tapes (cosnark_release's order), then its proof section; the run's tapes
+/// come from MASCOT in this order.
+#[cfg(feature = "tcp")]
 pub fn deal_release(dl: &mut darkstep::tape::Dealer, d: usize, m: usize, ncls: usize, prm: StepParams, kc: u32, lp: &LigParams, tables: &(Vec<u64>, Vec<u64>), pol: &Policy) {
     for _ in 0..d * m {
         dl.trunc(prm.s1, prm.k1);

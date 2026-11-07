@@ -228,6 +228,7 @@ def verify_native(out, tag):
     ok_all = True
     for flow, gen in (("pw", "genesis_roots"), ("si", "si_genesis_roots"), ("he", "genesis_roots")):
         parent = meta.get(gen)
+        pend = None          # cut E: the previous step's pending claims, which this step discharges (verify_step's deferred)
         for name in sorted(b for b in meta["bundles"] if b.startswith(flow)):
             path = os.path.join(out, f"{tag}_{name}.native.bin")
             if parent is None or not os.path.exists(path):
@@ -236,13 +237,14 @@ def verify_native(out, tag):
             blob = open(path, "rb").read()
             pk = bytes.fromhex(bd["owner_pk"]) if bd["owner_pk"] else None
             prog = meta.get("program")
-            ok, why, res = PW.verify_step(p, blob, tuple(bd["ctx"]), parent, tab, d, owner_pk=pk, program=prog)
+            ok, why, res = PW.verify_step(p, blob, tuple(bd["ctx"]), parent, tab, d, owner_pk=pk, program=prog, deferred=pend)
             bad = bytearray(blob); bad[len(bad) // 2] ^= 1
-            ok2, why2, _ = PW.verify_step(p, bytes(bad), tuple(bd["ctx"]), parent, tab, d, owner_pk=pk, program=prog)
+            ok2, why2, _ = PW.verify_step(p, bytes(bad), tuple(bd["ctx"]), parent, tab, d, owner_pk=pk, program=prog,
+                                          deferred=pend)
             print(f"python verify {tag} {name} native: {ok} {why} | flipped byte: {ok2} {why2}", flush=True)
             ok_all &= ok and not ok2
             if ok:
-                parent = res[0]
+                parent, pend = res[0], res[2]
     if meta.get("pg_cfg"):
         ok_all &= pg_ledger_check(out, tag, meta, p, tab)
     rm = meta.get("release")
