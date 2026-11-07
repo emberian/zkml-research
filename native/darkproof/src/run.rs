@@ -486,7 +486,7 @@ impl ReleaseTape {
             Ok(std::io::BufReader::with_capacity(1 << 20, f))
         };
         let n = self.n as u64;
-        Ok(TapeTriples { sh: open(24 + n)?, mac: open(24 + 9 * n)?, left: cnt })
+        Ok(TapeTriples { sh: open(24 + n)?, mac: open(24 + 9 * n)?, left: cnt, path: self.path.clone(), read: 0 })
     }
 }
 
@@ -495,6 +495,16 @@ pub struct TapeTriples {
     sh: std::io::BufReader<std::fs::File>,
     mac: std::io::BufReader<std::fs::File>,
     left: usize,
+    path: std::path::PathBuf,
+    read: usize,
+}
+
+impl TapeTriples {
+    /// the file's pages out of the page cache (it is read once; under a cgroup cap the cache counts as the seat's)
+    fn drop_cache(&self) {
+        #[cfg(feature = "tcp")]
+        darkstep::serve::drop_cache(&self.path);
+    }
 }
 
 impl Iterator for TapeTriples {
@@ -505,6 +515,10 @@ impl Iterator for TapeTriples {
             return None;
         }
         self.left -= 1;
+        self.read += 1;
+        if self.read % (1 << 20) == 0 || self.left == 0 {
+            self.drop_cache();
+        }
         let (mut a, mut b) = ([0u8; 24], [0u8; 24]);
         self.sh.read_exact(&mut a).expect("release tape: shares");
         self.mac.read_exact(&mut b).expect("release tape: MACs");
@@ -551,6 +565,7 @@ pub fn load_release_tape(path: &std::path::Path, nrt: usize) -> Result<(darkstep
     if len != (24 + 17 * n) as u64 {
         return Err(format!("{}: {len} bytes, a tape of {n} entries has {}", path.display(), 24 + 17 * n));
     }
+    darkstep::serve::drop_cache(path);
     Ok((darkstep::tape::Tape { alpha_i, tags, sh, mac }, ReleaseTape { path: path.to_path_buf(), n, from: k, count: nrt }))
 }
 
