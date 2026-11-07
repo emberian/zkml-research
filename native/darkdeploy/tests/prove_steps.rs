@@ -75,6 +75,7 @@ fn three_proved_steps_over_tls() {
                 .args(&addrs)
                 .args(["--tls", own.to_str().unwrap(), "--owner", &owner_at, "--steps", &steps.to_string(), "--gate", "309", "--ret-primes", "2"])
                 .args(["--tape", own.join("tape.bin").to_str().unwrap(), "--timeout", "120", "--test-keep-shares", "--prove"])
+                .args(if i == 0 { vec!["--proof-archive".to_string(), base.join("archive").to_str().unwrap().to_string()] } else { vec![] })
                 .env("DS_THREADS", "4")
                 .spawn()
                 .unwrap()
@@ -92,7 +93,7 @@ fn three_proved_steps_over_tls() {
             assert_eq!(r["after_step"]["verified"], true, "step {k}: the bundle verifies against the chain");
             assert_eq!(r["after_step"]["proof_sha256"], reps[0]["after_step"]["proof_sha256"], "step {k}: one bundle");
         }
-        let b0 = std::fs::read(dir.join(format!("proof_step{k}_P0.bin"))).unwrap();
+        let b0 = std::fs::read(base.join("archive").join(format!("proof_e0_s{}.bin", k + 1))).unwrap();
         // control: a flipped byte in the bundle is refused by the verifier
         if k == 0 {
             let mut bad = b0.clone();
@@ -146,10 +147,30 @@ fn hex(s: &str) -> Vec<u8> {
 /// commits it itself (the program pins sha256 of the cfg), and two proved carried steps chain from that commitment.
 #[test]
 fn public_genesis_two_proved_steps() {
+    public_genesis_steps(false);
+}
+
+/// The same with --pipeline-proofs: the proof of step k on its own mesh beside step k + 1.
+#[test]
+fn public_genesis_pipelined_proofs() {
+    public_genesis_steps(true);
+}
+
+/// Pipelined, and the run split in two processes per custodian (the second with --resume).
+#[test]
+fn public_genesis_pipelined_resume() {
+    public_genesis_steps_mode(true, true);
+}
+
+fn public_genesis_steps(pipelined: bool) {
+    public_genesis_steps_mode(pipelined, false);
+}
+
+fn public_genesis_steps_mode(pipelined: bool, split: bool) {
     let pf = prof(&A.map(String::from));
     let d = pf.d;
     let steps = 2;
-    let base = std::env::temp_dir().join(format!("dl-custodian-pg-{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("dl-custodian-pg{}{}-{}", pipelined as u8, split as u8, std::process::id()));
     let _ = std::fs::remove_dir_all(&base);
     let dir = base.join("run");
     std::fs::create_dir_all(&dir).unwrap();
@@ -188,36 +209,64 @@ fn public_genesis_two_proved_steps() {
         std::fs::write(own.join(format!("tls_{i}.key")), &ids[i].key_der).unwrap();
         dl.tapes[i].write_to(&mut std::io::BufWriter::new(std::fs::File::create(own.join("tape.bin")).unwrap())).unwrap();
     }
-    let ports: Vec<u16> = (0..4).map(|_| free_port()).collect();
-    let addrs: Vec<String> = (0..3).map(|j| format!("127.0.0.1:{}", ports[j])).collect();
-    let owner_at = format!("127.0.0.1:{}", ports[3]);
-    let l = std::net::TcpListener::bind(&owner_at).unwrap();
-    let oid = darkstep::tls::Identity { key_der: ids[3].key_der.clone(), cert_der: ids[3].cert_der.clone() };
-    let ocerts = certs.clone();
-    let owner = std::thread::spawn(move || darkstep::serve::owner_serve(l, &oid, &ocerts, |k, _| cs.get(k).cloned().ok_or("no step".into())));
-    let kids: Vec<_> = (0..3)
-        .map(|i| {
-            let own = base.join(format!("seat{i}"));
-            Command::new(env!("CARGO_BIN_EXE_dl-custodian"))
-                .args(["serve", &i.to_string()])
-                .args(A)
-                .arg(&dir)
-                .args(&addrs)
-                .args(["--tls", own.to_str().unwrap(), "--owner", &owner_at, "--steps", &steps.to_string(), "--gate", "309", "--ret-primes", "2"])
-                .args(["--tape", own.join("tape.bin").to_str().unwrap(), "--timeout", "120", "--test-keep-shares", "--prove"])
-                .args(["--genesis-cfg", cfgp.to_str().unwrap()])
-                .env("DS_THREADS", "4")
-                .spawn()
-                .unwrap()
-        })
-        .collect();
-    let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
-    owner.join().unwrap().unwrap();
+    // split: one step, then a fresh process per custodian with --resume for the second (the carry checkpoint and
+    // the ledger replica carry the proof chain across)
+    let parts: Vec<(usize, bool)> = if split { vec![(1, false), (steps - 1, true)] } else { vec![(steps, false)] };
+    let mut codes = vec![];
+    for (n, resume) in parts {
+        let ports: Vec<u16> = (0..7).map(|_| free_port()).collect();
+        let pmesh: Vec<String> = (4..7).map(|j| format!("127.0.0.1:{}", ports[j])).collect();
+        let pmesh = pmesh.join(",");
+        let addrs: Vec<String> = (0..3).map(|j| format!("127.0.0.1:{}", ports[j])).collect();
+        let owner_at = format!("127.0.0.1:{}", ports[3]);
+        let l = std::net::TcpListener::bind(&owner_at).unwrap();
+        let oid = darkstep::tls::Identity { key_der: ids[3].key_der.clone(), cert_der: ids[3].cert_der.clone() };
+        let ocerts = certs.clone();
+        let cs = cs.clone();
+        let owner = std::thread::spawn(move || darkstep::serve::owner_serve(l, &oid, &ocerts, |k, _| cs.get(k).cloned().ok_or("no step".into())));
+        let kids: Vec<_> = (0..3)
+            .map(|i| {
+                let own = base.join(format!("seat{i}"));
+                Command::new(env!("CARGO_BIN_EXE_dl-custodian"))
+                    .args(["serve", &i.to_string()])
+                    .args(A)
+                    .arg(&dir)
+                    .args(&addrs)
+                    .args(["--tls", own.to_str().unwrap(), "--owner", &owner_at, "--steps", &n.to_string(), "--gate", "309", "--ret-primes", "2"])
+                    .args(["--tape", own.join("tape.bin").to_str().unwrap(), "--timeout", "120", "--test-keep-shares", "--prove"])
+                    .args(if i == 0 { vec!["--proof-archive".to_string(), base.join("archive").to_str().unwrap().to_string()] } else { vec![] })
+                    .args(["--genesis-cfg", cfgp.to_str().unwrap()])
+                    .args(if pipelined { vec!["--pipeline-proofs", "--proof-mesh", &pmesh] } else { vec![] })
+                    .args(if resume { vec!["--resume"] } else { vec![] })
+                    .env("DS_THREADS", "4")
+                    .spawn()
+                    .unwrap()
+            })
+            .collect();
+        codes = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
+        assert_eq!(codes, vec![0, 0, 0], "part of {n} step(s), resume {resume}");
+        owner.join().unwrap().unwrap();
+    }
     assert_eq!(codes, vec![0, 0, 0]);
     for k in 0..steps {
         let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(dir.join(format!("step_{k}_P0.json"))).unwrap()).unwrap();
         assert_eq!(r["verdict"], "ACCEPT");
-        assert_eq!(r["after_step"]["verified"], true, "step {k} verifies against the public-genesis chain");
+        for i in 0..3 {
+            // every custodian's own proof report (written by the proof, inline or in the worker)
+            let p: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(dir.join(format!("proof_{k}_P{i}.json"))).unwrap()).unwrap();
+            assert_eq!(p["verified"], true, "step {k}, custodian {i}: accepted by its ledger replica (public-genesis chain)");
+            assert_eq!(p["ledger_step"], k + 1);
+        }
+        if pipelined {
+            assert_eq!(r["after_step"]["pipelined"], true);
+            if k > 0 && !split {
+                assert_eq!(r["after_step"]["proof_of_previous_step"]["serve_step"], k - 1, "step {k} reports step {}'s proof", k - 1);
+            }
+        }
+    }
+    for i in 0..3 {
+        let lg = std::fs::read_to_string(dir.join(format!("ledger_P{i}.jsonl"))).unwrap();
+        assert_eq!(lg.matches("\"kind\": \"step\"").count(), steps, "custodian {i}: {steps} steps on its ledger replica");
     }
     // the plaintext twin from the same cfg
     let shares: Vec<Vec<Sh>> = (0..3)

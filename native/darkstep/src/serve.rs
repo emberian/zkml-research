@@ -58,6 +58,15 @@ impl CustodianState {
         Ok(CustodianState { i, pf, he, pt, w: None, step: 0, tab, pool, last_sent: vec![[0; crate::net::NTAGS]; n], last_gate: [0.0; 3], last_proof_bytes: 0 })
     }
 
+    /// A custodian from parts made elsewhere (a new committee's seat after a handover: its HE side from the new
+    /// ceremony, its SPDZ party under the new MAC key, its weight shares from the resharing), at step `step`.
+    pub fn from_parts(i: usize, pf: Prof, he: He, pt: Party, w: Shares, step: usize) -> Self {
+        let tab = pf.program.tables(pf.t);
+        let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
+        let last_sent = pt.net.sent_per_peer();
+        CustodianState { i, pf, he, pt, w: Some(w), step, tab, pool, last_sent, last_gate: [0.0; 3], last_proof_bytes: 0 }
+    }
+
     /// Count link bytes for the next step from now (after a hook that sent on the mesh).
     pub fn rebase_sent(&mut self) {
         self.last_sent = self.pt.net.sent_per_peer();
@@ -412,6 +421,24 @@ pub fn owner_serve(
 /// handover). It may move the tape cursor past what it consumed (a proof section).
 pub trait StepHook {
     fn after_step(&mut self, st: &mut CustodianState, k: usize, record: &ProofRecord, dir: &std::path::Path) -> Result<serde_json::Value, String>;
+    /// End the run after step k was accepted and hooked (a handover after step k): `finish` then gets the state.
+    fn stop_after(&mut self, _k: usize) -> bool {
+        false
+    }
+    /// After the loop (the owner link already closed): the hook may take the state (a handover, the release).
+    /// Ok(code): it did, and the process exits with `code`; Err(st): serve shuts the mesh down as usual.
+    fn finish(&mut self, st: CustodianState, _end: &End, _dir: &std::path::Path) -> Result<i32, CustodianState> {
+        Err(st)
+    }
+}
+
+/// How the step loop ended.
+#[derive(Clone, Debug)]
+pub struct End {
+    /// 0 done, 1 refused or failed, 3 paused, 4 stopped for the hook (stop_after)
+    pub code: i32,
+    /// the refused step and the reason (the mesh is aborted; the checkpoint holds the state before that step)
+    pub refused: Option<(usize, String)>,
 }
 
 pub struct NoHook;
@@ -474,46 +501,22 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
     std::fs::create_dir_all(&dir).unwrap();
     let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
     let tlsdir = std::path::PathBuf::from(flag(args, "--tls").expect("--tls TLSDIR"));
-    let owner_addr: SocketAddr = flag(args, "--owner").expect("--owner HOST:PORT").parse().unwrap();
-    let steps: usize = flag(args, "--steps").expect("--steps K").parse().unwrap();
     let timeout = std::time::Duration::from_secs(flag(args, "--timeout").map(|t| t.parse().unwrap()).unwrap_or(600));
-    let id = crate::tls::Identity {
-        key_der: std::fs::read(tlsdir.join(format!("tls_{i}.key"))).expect("own TLS key"),
-        cert_der: std::fs::read(tlsdir.join(format!("cert_{i}.der"))).expect("own certificate"),
-    };
-    let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tlsdir.join(format!("cert_{j}.der"))).expect("peer certificate")).collect();
-    let owner_cert = std::fs::read(tlsdir.join("cert_owner.der")).expect("owner certificate");
-    let tape_for = |k: usize| -> Option<String> {
-        flag(args, "--tapes").map(|p| p.replace("{k}", &k.to_string()))
-    };
+    let (id, certs) = identity(&tlsdir, i);
     let ckpt = dir.join(format!("ckpt_P{i}.bin"));
     let resume = args.iter().any(|a| a == "--resume");
     let ck = if resume { Some(read_checkpoint(&ckpt).unwrap_or_else(|e| panic!("--resume: {e}"))) } else { None };
     let first = ck.as_ref().map(|c| c.step).unwrap_or(0);
-    let tape = match (flag(args, "--tape"), tape_for(first)) {
+    let tape = match (flag(args, "--tape"), tape_pattern(args, first)) {
         (Some(f), _) => read_tape(&f),
         (None, Some(f)) => read_tape(&f),
         _ => panic!("--tape FILE or --tapes PATTERN"),
     };
     let t_start = Instant::now();
-    let listener = if i + 1 < 3 {
-        let at: SocketAddr = flag(args, "--listen").map(|a| a.parse().unwrap()).unwrap_or(addrs[i]);
-        Some(TcpListener::bind(at).unwrap_or_else(|e| panic!("bind {at}: {e}")))
-    } else {
-        None
-    };
-    let net = match crate::net::Net::connect_tls(i, listener, &addrs, &id, &certs, timeout) {
+    let net = match connect_mesh(i, &addrs, flag(args, "--listen"), &id, &certs, timeout) {
         Ok(n) => n,
         Err(e) => {
             eprintln!("{e}");
-            return 2;
-        }
-    };
-    let mut owner = match dial_owner(owner_addr, &id, &owner_cert, timeout) {
-        Ok(o) => o,
-        Err(e) => {
-            eprintln!("{e}");
-            net.shutdown();
             return 2;
         }
     };
@@ -547,6 +550,8 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
             st.pt.net.abort();
             return 2;
         }
+        // the state before step 0, so that an abort in step 0 can still be recovered (self-handover) or resumed
+        st.checkpoint(&ckpt).expect("checkpoint");
     }
     if let Some(c) = ck {
         if let Err(e) = st.resume(c) {
@@ -554,35 +559,100 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
             st.pt.net.shutdown();
             return 2;
         }
+        // per-step tape files: the checkpoint's cursor is in the last step's file; the resumed step starts its own
+        if first > 0 && flag(args, "--tape").is_none() && tape_pattern(args, first) != tape_pattern(args, first - 1) {
+            st.pt.cur = 0;
+        }
     }
+    serve_state(args, hook, st, t_start, connect_s, setup_s)
+}
+
+/// This seat's TLS identity (TLSDIR/tls_I.key, cert_I.der) and the committee's pinned certificates (cert_{0,1,2}).
+pub fn identity(tlsdir: &std::path::Path, i: usize) -> (crate::tls::Identity, Vec<Vec<u8>>) {
+    let id = crate::tls::Identity {
+        key_der: std::fs::read(tlsdir.join(format!("tls_{i}.key"))).expect("own TLS key"),
+        cert_der: std::fs::read(tlsdir.join(format!("cert_{i}.der"))).expect("own certificate"),
+    };
+    let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tlsdir.join(format!("cert_{j}.der"))).expect("peer certificate")).collect();
+    (id, certs)
+}
+
+/// The mesh of `addrs.len()` parties at index i over pinned TLS: i listens (on `listen`, default addrs[i]) unless it
+/// is the highest index, and dials every lower one.
+pub fn connect_mesh(i: usize, addrs: &[SocketAddr], listen: Option<String>, id: &crate::tls::Identity, certs: &[Vec<u8>], timeout: std::time::Duration) -> Result<Net, String> {
+    let listener = if i + 1 < addrs.len() {
+        let at: SocketAddr = listen.map(|a| a.parse().unwrap()).unwrap_or(addrs[i]);
+        Some(TcpListener::bind(at).map_err(|e| format!("bind {at}: {e}"))?)
+    } else {
+        None
+    };
+    crate::net::Net::connect_tls(i, listener, addrs, id, certs, timeout)
+}
+
+/// A per-step file pattern at step k: {k} the step; with --chunk-steps S (the prep lane's chunks of S steps, the
+/// first of them starting at step --chunk-first K0, default 0), {c} = (k - K0) / S the chunk and {j} = (k - K0) % S
+/// the step inside it.
+pub fn step_path(args: &[String], pattern: &str, k: usize) -> String {
+    let s: usize = flag(args, "--chunk-steps").map(|x| x.parse().unwrap()).unwrap_or(1);
+    let k0: usize = flag(args, "--chunk-first").map(|x| x.parse().unwrap()).unwrap_or(0);
+    let r = k.checked_sub(k0).unwrap_or_else(|| panic!("step {k} is before --chunk-first {k0}"));
+    pattern.replace("{k}", &k.to_string()).replace("{c}", &(r / s).to_string()).replace("{j}", &(r % s).to_string())
+}
+
+fn tape_pattern(args: &[String], k: usize) -> Option<String> {
+    flag(args, "--tapes").map(|p| step_path(args, &p, k))
+}
+
+/// The step loop from `st.step` on a custodian that holds its keys and shares (a fresh run, a resumed one, or a new
+/// committee's seat after a handover): dial the owner, run `--steps K` steps with the hook after each, write the
+/// summary, close the owner link, then hand the state to the hook's `finish` or shut the mesh down.
+pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: CustodianState, t_start: Instant, connect_s: f64, setup_s: f64) -> i32 {
+    let mut st = st;
+    let i = st.i;
+    let dir = std::path::PathBuf::from(&args[7]);
+    let tlsdir = std::path::PathBuf::from(flag(args, "--tls").expect("--tls TLSDIR"));
+    let owner_addr: SocketAddr = flag(args, "--owner").expect("--owner HOST:PORT").parse().unwrap();
+    let steps: usize = flag(args, "--steps").expect("--steps K").parse().unwrap();
+    let timeout = std::time::Duration::from_secs(flag(args, "--timeout").map(|t| t.parse().unwrap()).unwrap_or(600));
+    let (id, certs) = identity(&tlsdir, i);
+    let owner_cert = std::fs::read(tlsdir.join("cert_owner.der")).expect("owner certificate");
+    let ckpt = dir.join(format!("ckpt_P{i}.bin"));
+    let mut owner = match dial_owner(owner_addr, &id, &owner_cert, timeout) {
+        Ok(o) => o,
+        Err(e) => {
+            eprintln!("{e}");
+            st.pt.net.shutdown();
+            return 2;
+        }
+    };
+    let first = st.step;
     let pause = flag(args, "--pause-utc");
-    let mut code = 0;
-    let mut reports = Vec::new();
+    let mut end = End { code: 0, refused: None };
     while st.step < first + steps {
         let k = st.step;
         // custodian 0 decides whether to pause here; the three agree on CTRL
         let mine = [if i == 0 { pause.as_deref().map(in_window).unwrap_or(false) as u64 } else { 0 }];
         let votes = st.pt.net.exchange(crate::net::CTRL, &mine);
         if votes[0][0] == 1 {
-            code = 3;
+            end.code = 3;
             break;
         }
         if k > first {
-            if let Some(f) = tape_for(k) {
+            if let Some(f) = tape_pattern(args, k) {
                 if let Err(e) = st.load_tape(read_tape(&f)) {
                     eprintln!("{e}");
-                    code = 1;
+                    end.code = 1;
                     break;
                 }
             }
         }
-        let msg = flag(args, "--owner-msgs").map(|p| std::fs::read(p.replace("{k}", &k.to_string())).expect("owner message")).unwrap_or_default();
+        let msg = flag(args, "--owner-msgs").map(|p| std::fs::read(step_path(args, &p, k)).expect("owner message")).unwrap_or_default();
         let tw = Instant::now();
         let cs = match owner_inputs(&mut owner, &st.pt.net, k, &msg) {
             Ok(c) => c,
             Err(e) => {
                 eprintln!("{e}");
-                code = 1;
+                end.code = 1;
                 break;
             }
         };
@@ -602,34 +672,43 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
                     "proof": after[j][crate::net::PROOF as usize] - before[j][crate::net::PROOF as usize],
                     "total": after[j].iter().sum::<u64>() - before[j].iter().sum::<u64>()}))).collect::<serde_json::Map<_, _>>());
                 rep["after_step_seconds"] = json!(ta.elapsed().as_secs_f64());
+                let (_, rss) = proc_usage();
+                rep["peak_rss_kb_after_hook"] = json!(rss);
                 st.rebase_sent();
                 match hooked {
                     Ok(extra) => rep["after_step"] = extra,
                     Err(e) => {
+                        // the others may be waiting on this custodian (the next step's vote): tell them at once
+                        st.pt.net.abort();
                         eprintln!("after step {k}: {e}");
                         rep["after_step_error"] = json!(e);
                         std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
-                        code = 1;
+                        end.code = 1;
                         break;
                     }
                 }
                 st.checkpoint(&ckpt).expect("checkpoint");
                 std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
                 println!("{}", json!({"party": i, "step": k, "verdict": "ACCEPT", "step_seconds": rep["step_seconds"]}));
-                reports.push(rep);
+                if hook.stop_after(k) {
+                    end.code = 4;
+                    break;
+                }
             }
             Err(e) => {
                 st.pt.net.abort();
                 let rep = json!({"party": i, "step": k, "verdict": "REFUSED", "by": e});
                 std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
                 println!("{rep}");
-                code = 1;
+                end.code = 1;
+                end.refused = Some((k, e));
                 break;
             }
         }
     }
     let (cpu, rss) = proc_usage();
-    let summary = json!({"party": i, "first_step": first, "next_step": st.step, "exit": code, "paused": code == 3,
+    let summary = json!({"party": i, "first_step": first, "next_step": st.step, "exit": end.code, "paused": end.code == 3,
+        "stopped_for_hook": end.code == 4,
         "connect_seconds": connect_s, "setup_seconds": setup_s, "wall_seconds": t_start.elapsed().as_secs_f64(),
         "cpu_seconds": cpu, "peak_rss_kb": rss, "ceremony_seconds": st.he.gate.as_ref().map(|g| g.ceremony_s),
         "cert_sha256": (0..3).map(|j| crate::tls::cert_fingerprint(&certs[j])).collect::<Vec<_>>()});
@@ -644,7 +723,14 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
     let _ = write_frame(&mut owner, &u64::MAX.to_le_bytes());
     owner.conn.send_close_notify();
     let _ = owner.conn.complete_io(&mut owner.sock);
-    st.pt.net.shutdown();
-    code
+    match hook.finish(st, &end, &dir) {
+        Ok(code) => code,
+        Err(st) => {
+            st.pt.net.shutdown();
+            match end.code {
+                4 => 0,
+                c => c,
+            }
+        }
+    }
 }
-

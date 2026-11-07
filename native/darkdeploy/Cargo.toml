@@ -8,6 +8,7 @@ description = "The deployed dark-learning run: the data owner's process (dl-owne
 darkstep = { path = "../darkstep" }
 darkproof = { path = "../darkproof", features = ["tcp"] }
 darkprep = { path = "../darkprep" }
+darkhand = { path = "../darkhand" }
 darktrain = { path = "../darktrain" }
 pycompat = { path = "../pycompat" }
 serde_json = "1"
@@ -23,4 +24,8 @@ required-features = ["test-harness"]
 
 [[bin]]
 name = "dl-reveal"
+required-features = ["test-harness"]
+
+[[test]]
+name = "handover_steps"
 required-features = ["test-harness"]

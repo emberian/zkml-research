@@ -332,3 +332,132 @@ train ad36593ec00657538; handover a1742ccf37483c10d.
   party binary (dl-custodian).
 - **Release layout** for the prep lane: none in darkstep yet. It comes from the proof lane's release section
   (58,679,793 triples at M = 64, RC + LB).
+
+## Deploy lane generation 2 (successor of ae142f25, from 2026-11-07 06:17 UTC)
+
+### The launcher: native/deploy/run.py and sync.sh
+
+- `deploy/sync.sh HOST DEST`: rsync of the native workspace (no target dirs, no .git) to a box; prints the commit.
+- `deploy/run.py RUN.json setup|check|gate|launch|launch-seats|status|collect|stop`, driven from the Mac over ssh.
+  - setup: every seat (and the owner) makes its own TLS identity in its own run dir (`ROOT/NAME/seatI`,
+    `ROOT/NAME/owner`); only certificates travel (through the Mac); the genesis cfg and owner cfg are copied.
+  - launch: the disk gate (below), loads recorded (`loads_start.json`), then owner and seats started with
+    `cd DIR || exit 1; nohup CMD & echo $! > NAME.pid`. Bug fixed on the way: `cd DIR && nohup CMD &` backgrounds
+    a subshell, so the PID file held the subshell's PID and ssh stayed open until the job ended.
+  - per process a sampler (own PID file) writes `NAME.mon`: epoch, VmRSS kB, its cgroup's memory.current and
+    memory.peak, load1, every 5 s.
+  - collect: step_*.json, serve_*.json, logs and samplers into OUT/NAME/, plus summary.json (per step and party:
+    verdict, step seconds, CPU, peak RSS, transcript prefix, bytes per link, proof seconds/bytes, proof bytes per
+    link; per party: sampled peak RSS and cgroup peak).
+  - gate (also run by launch): per box, df of the run root against the projected bytes (checkpoint, carry, latest
+    bundle per seat; steps x bundle on the archive seat); refuses to launch if a box would end under its line
+    (30 GB default; set `disk_line_gb` 25 for hbox's /othersys).
+  - stop: by PID files only.
+- dl-owner: new `--public-genesis` (step 0 inputs only x, y when the custodians start from the public genesis).
+
+### Item 1: the gated d = 4096 step on the prep lane's real MASCOT chunk (run4, 06:29-06:32 UTC) [EXECUTED]
+
+Seat 0 forge (12G scope, nice 15, 16 threads), seats 1 and 2 separate processes on bb2 (12G user scopes), owner
+`dl-owner --train` on bb2 (own dir, own 8G scope). Chunk w4096 (MASCOT, Steady: inputs x, y only), public genesis
+(`dl-custodian serve ... --genesis-cfg train_genesis_gen6.json`), program gen6, T = 309, `--ret-primes 2`.
+Test-harness build at bb20a601 (for `--test-keep-shares`). Loads: forge 0.3-3.6, bb2 8-58 (other tenants).
+
+| | seat 0 (forge) | 1 (bb2) | 2 (bb2) |
+|---|---:|---:|---:|
+| verdict | ACCEPT | ACCEPT | ACCEPT |
+| step seconds | 139.3 | 139.3 | 139.3 |
+| CPU (process) | 666 s | 809 s | 809 s |
+| peak RSS (VmHWM) | 3.67 GB | 3.71 GB | 3.70 GB |
+| cgroup memory.peak | 3.76 GB | 5.02 GB | 4.14 GB |
+
+One transcript (dd12d71b40e2b067...). 2,351.8 MB per directed link (as run 3). The step is slower than run 3's
+94 s because bb2 ran at load 50-58. Test-only `dl-reveal` (forge's share file copied to bb2 through the Mac, then
+removed): revealed sha256 21af72e2... equals the twin after 1 step; controls: the twin at 0 and at 2 steps differ.
+
+### Item 2: the same step proved (run5, w4096p, 06:36-06:39 UTC) [EXECUTED]
+
+As run 4 with the chunk w4096p (its RC + LB proof section, 3,192,275 triples) and `--prove`, DP_TRACE=1.
+
+| | seat 0 (forge) | 1 (bb2) | 2 (bb2) |
+|---|---:|---:|---:|
+| step seconds | 91.3 | 91.3 | 91.3 |
+| proof (prove_step) | 12.70 s | 12.66 s | 12.70 s |
+| own verify | 3.91 s | 4.01 s | 3.88 s |
+| after-step hook | 17.6 s | 17.7 s | 17.6 s |
+| proof bytes on tag PROOF per link | 133.8 MB | 133.8 MB | 133.8 MB |
+| CPU (process) | 726 s | 926 s | 934 s |
+| peak RSS (VmHWM) | **7.64 GB** | 7.89 GB | 7.99 GB |
+| cgroup memory.peak | **8.02 GB** | 8.30 GB | 8.40 GB |
+
+- Forge stays under its 12 GB cap (not raised): 8.02 GB at the scope's peak.
+- One bundle, 250,915,469 B (sha256 f955a4f2...), at all three. That is ~500 GB of bundles at 2,000 steps; the
+  coordinator's interim rule: each replica keeps only the latest bundle, one seat archives all, and run.py gates on
+  the projected disk use. The proof lane is asked for a cut.
+- The MASCOT side of this one proved step sent 81.4 GB from forge (prep lane's chunk-P0.json): at d = 4096 the
+  preprocessing, not the online step, dominates the bytes.
+
+### Run 6: two proved steps back to back (w4096p2, 06:50-06:55 UTC) [EXECUTED]
+
+The prep lane's 2-step proved chunk, wired layout, bb2 at load 25-63 (other tenants). Proofs inline (in the
+step hook; not yet pipelined). Binary at bb20a601.
+
+| step | step seconds | prove (P0/P1/P2) | own verify | peak RSS after (P0/P1/P2) |
+|---|---:|---:|---:|---:|
+| 0 | 126.0 | 18.9 / 19.2 / 19.3 s | 4.4-4.8 s | 5.45 / 5.65 / 5.62 GB |
+| 1 | 110.3 | 20.9 / 20.9 / 20.7 s | 4.0-5.2 s | 7.80 / 8.06 / 7.95 GB |
+
+Whole process: wall 298 / 297 / 293 s, CPU 1,458 / 1,840 / 1,847 s, VmHWM 8.32 / 8.36 / 8.29 GB, cgroup
+memory.peak 9.43 / 9.40 / 9.33 GB (forge's under its 12 GB cap). One transcript per step.
+
+### dl-custodian as built for the run (generation 2) [EXECUTED on the Mac, see tests]
+
+- **Ledger replica per custodian** (`DIR/ledger_P<I>.jsonl`, darkproof::ledger::Ledger): opened with the Genesis
+  record (program with PG = sha256 of the genesis cfg, the committee's names = sha256 of their certificates, the
+  public-genesis roots) and `check_public_genesis(cfg)`, at start for a public genesis (so that even a refusal
+  before the first proof can rotate) or at the first proof for an owner-input genesis. Each bundle is `accept`ed
+  into it, which verifies against the head. The proof's ctx is (model, ledger epoch, ledger step + 1).
+- **Bundle storage**: each replica keeps `proof_latest_P<I>.bin`; `--proof-archive ADIR` on one seat keeps all
+  (`proof_e<epoch>_s<step>.bin`).
+- **Carry checkpoint**: `carry_P<I>.bin` (0600, darkproof::pcs::write_carry, after each accept); `--resume`
+  reads it (read_carry) and reopens the replica, so a proved run resumes across forge's nightly pause.
+- **Pipelined proofs** (`--pipeline-proofs --proof-mesh A0,A1,A2`): the step hook copies the step record and the
+  proof-section triples out (darkproof::run::from_darkstep_n), moves the cursor, and hands the job to a worker
+  thread that owns the proof chain (carry, replica) and its own three-party TLS mesh; step k + 1 runs meanwhile.
+  At most one proof is in flight; every exit (end, pause, handover, refusal) first drains it. Per proof:
+  `DIR/proof_<k>_P<I>.json`; step k + 1's report carries step k's proof report.
+- **Rotation** (`serve ... --handover-at K --mesh6 A0..A5 --tls6 DIR6`, and `join J ... --after-step K
+  --handover-tape FILE`): after step K and its proof, the serve loop ends (StepHook::stop_after) and hands the
+  state to the hook (StepHook::finish). Old seat i: a ciphertext under its key is made (and checked to decrypt) for
+  the post-erasure attempt; the 3-mesh is shut; the 6-mesh is joined at index i; its ledger replica (public) is
+  sent to the new seats; darkhand::side::old_side reshares, proves and erases (files wiped: ckpt, carry, TLS key,
+  tape), scans memory and tries to decrypt; DIR/handover_P<I>.json; exit. New seat j: its 3-mesh with the new
+  committee, the 6-mesh at 3 + j, the ledger from all three old seats (must be equal), adopted and checked,
+  darkhand::side::new_side (its own ceremony, resharing, joint proof, re-authentication under its MAC key with
+  test_reveal = 0, nothing opened), `Ledger::rotate`, then darkstep's He from the ceremony
+  (node::he_from_ceremony) and `CustodianState::from_parts`, and the loop from step K + 1 on its own tapes.
+- **Self-handover after an abort** (`--self-handover-tape FILE --recover-mesh A0,A1,A2 --recover-mesh6 A0..A5
+  --tapes2 PAT [--owner-msgs2 PAT --chunk-first2 K0]`): a refused step ends the loop (the mesh is aborted); each
+  seat reloads its checkpoint (the state before the refused step; serve now also checkpoints right after the
+  public genesis), opens a fresh 3-mesh, gives its new role an in-process TLS identity (certificate exchanged on
+  the pinned fresh mesh), runs old_side (index i) and new_side (index 3 + i, its HE key kept) as two 64 MiB
+  threads on the 6-mesh, rotates its replica to the same set at epoch + 1, and redoes the refused step on the new
+  key's tapes. One recovery per run.
+- **Release** (`--release --release-data MNISTDIR [--release-m 64 --release-tape FILE]`): after the last step,
+  darkproof::run::release_custodian (policy run::mnist_policy) and `Ledger::release`; only C is opened.
+  DIR/release_P<I>.{bin,json}. Not yet run: the proof lane measures ~29 GB per custodian at M = 64 and is cutting it.
+- ZeroOnFree is the global allocator of dl-custodian. `--profile NAME` picks the proof profile (the proof
+  section's size must match the tapes'). Patterns take {c} and {j} with `--chunk-steps S [--chunk-first K0]`.
+- serve: `StepHook::{stop_after, finish}`, `serve_state` (the loop on a held state, shared by serve, join and the
+  self-handover), `identity`, `connect_mesh`, `step_path`; a hook error now aborts the mesh (a peer no longer waits
+  forever on the next step's vote).
+- dl-owner `--public-genesis`; the owner serves one committee per session (the test drives two sessions).
+
+Tests (Mac, ledger profile N = 16384, L = 4, F = 175, d = 64, T = 309, public genesis):
+- `--test handover_steps -- --test-threads=1`: 2 passed (111 s).
+  - rotation_to_a_new_committee_after_step_0: three old processes, three `join` processes; all exit 0; old seats'
+    ckpt, carry, TLS key and tape are gone and each reported its key decrypting before the handover (control);
+    new seats accept step 1 at epoch 1, their replicas hold the rotate record; the revealed weights (test only)
+    equal the twin after 2 steps and differ from the twin after 1 (control).
+  - self_handover_after_an_abort_redoes_the_step: seat 1 shifts an outer return in step 0 (`--attack
+    wrong_return:1`), all three REFUSE ("HE outer: Freivalds check failed"), recover, rotate to the same set at
+    epoch 1 under a new MAC key, redo step 0 and run step 1 (both proved at epoch 1); weights = twin after 2 steps.
