@@ -76,6 +76,31 @@ pub fn old_from_serve(
     }
 }
 
+/// A rotation's setup for `side::old_side`, so that nothing secret is copied into a frame that stays live during
+/// the erasure. The state comes boxed, and it is taken apart inside old_side's setup frame, which is dead and
+/// scrubbed before the final scan. A by-value CustodianState carries the alpha share inline (Party.tape), and each
+/// move leaves a copy in the caller's frame: run9 found 11 per seat on [stack].
+///   let setup = serve::rotation_setup(Box::new(state) /* better: boxed from creation */, carry, files, scan, captured);
+///   let rep = side::old_side(&common, setup, || <6-party TLS Net, index i>)?;
+/// `scan`: more paths for the disk scan (all tapes and owner messages of the epoch, the MP-SPDZ dirs of this seat).
+pub fn rotation_setup(
+    st: Box<CustodianState>,
+    carry: BTreeMap<String, PcsParty>,
+    files: Vec<PathBuf>,
+    scan: Vec<PathBuf>,
+    captured: Option<(darkstep::bfv::Ct, String)>,
+) -> impl FnOnce() -> Box<OldCustodian> {
+    move || {
+        let OldParts { mut old, he, net3 } = old_from_serve(*st, carry, files, true, captured);
+        drop(he);
+        net3.shutdown();
+        old.scan_paths.extend(scan);
+        old.scan_paths.sort();
+        old.scan_paths.dedup();
+        old
+    }
+}
+
 /// New custodian's W wires in serve's shape (d rows of d per matrix).
 pub fn shares_rows(w: &BTreeMap<String, Vec<Sh>>, d: usize) -> Shares {
     let rows = |k: &str| w[k].chunks(d).map(|r| r.to_vec()).collect::<Vec<_>>();
