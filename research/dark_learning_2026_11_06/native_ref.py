@@ -33,13 +33,20 @@ def setup(N, L):
     return Qp, t, math.prod(Qp)
 
 
+def wmax_for(d):
+    """Weights in [-wmax, wmax]: 7 up to d = 64; wider layers need smaller weights so u1 = z1 >> 5 stays inside the
+    table's domain [-128, 128) (step_spec asserts it). Mirrors native/darkstep step::wmax_for."""
+    return 7 if d <= 64 else 2 if d <= 256 else 1
+
+
 def run(N, L, F_bits, d, attack=None):
     Qp, t, Q = setup(N, L)
     keys = [HM.OwnKey(N, Q, t, seed=KEY_SEED0 + i) for i in range(3)]
     tab = MF.tables(t)
     rng = random.Random(d)
-    W1 = [[rng.randint(-7, 7) for _ in range(d)] for _ in range(d)]
-    W2 = [[rng.randint(-7, 7) for _ in range(d)] for _ in range(d)]
+    wm = wmax_for(d)
+    W1 = [[rng.randint(-wm, wm) for _ in range(d)] for _ in range(d)]
+    W2 = [[rng.randint(-wm, wm) for _ in range(d)] for _ in range(d)]
     x = [rng.randint(-7, 7) for _ in range(d)]
     y = [rng.randint(-7, 7) for _ in range(d)]
     m = lambda M: [[v % t for v in r] for r in M]

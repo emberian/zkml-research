@@ -6,6 +6,8 @@ use sha2::{Digest, Sha256};
 pub struct ReprHasher {
     h: Sha256,
     buf: Vec<u8>,
+    grow: bool,
+    flushed: bool,
 }
 
 impl Default for ReprHasher {
@@ -16,12 +18,17 @@ impl Default for ReprHasher {
 
 impl ReprHasher {
     pub fn new() -> Self {
-        ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(1 << 16) }
+        ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(1 << 16), grow: false, flushed: false }
     }
 
     #[inline]
     pub fn raw(&mut self, b: &[u8]) {
+        if self.grow {
+            self.buf.extend_from_slice(b);
+            return;
+        }
         if self.buf.len() + b.len() > self.buf.capacity() {
+            self.flushed = true;
             self.h.update(&self.buf);
             self.buf.clear();
             if b.len() > self.buf.capacity() {
@@ -90,6 +97,16 @@ impl ReprHasher {
             self.u64(x);
         }
         self.raw(b"]");
+    }
+
+    /// A writer that only buffers (no hashing), for rendering a chunk in parallel; take it with into_buffer.
+    pub fn new_buffer() -> Self {
+        ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(1 << 22), grow: true, flushed: false }
+    }
+
+    pub fn into_buffer(self) -> Vec<u8> {
+        assert!(!self.flushed, "into_buffer after the buffer was flushed into the hash");
+        self.buf
     }
 
     pub fn finish(mut self) -> [u8; 32] {

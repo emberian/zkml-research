@@ -14,7 +14,9 @@ pub const OPEN: u8 = 0;
 pub const HE_CT: u8 = 1;
 pub const HE_RET: u8 = 2;
 pub const CTRL: u8 = 3;
-const NTAGS: usize = 4;
+/// The collaborative proof's exchanges (Beaver openings, share broadcasts, commitments) between custodians.
+pub const PROOF: u8 = 4;
+const NTAGS: usize = 5;
 const QCAP: usize = 64;
 
 struct Peer {

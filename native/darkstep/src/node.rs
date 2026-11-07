@@ -26,13 +26,17 @@ pub struct Prof {
     pub d: usize,
     pub qs: Vec<u64>,
     pub t: u64,
+    /// compute threads per custodian
+    pub threads: usize,
 }
 
 pub fn prof(a: &[String]) -> Prof {
     let n: usize = a[0].parse().unwrap();
     let l: usize = a[1].parse().unwrap();
     let pr = ntt_primes(61, l + 1, 2 * n as u64);
-    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l] }
+    let cores = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
+    let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(cores);
+    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads }
 }
 
 pub fn flag(args: &[String], name: &str) -> Option<String> {
@@ -86,13 +90,16 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
     let tab = tables(pf.t);
     let mut pt = Party::new(i, pf.t, net, tape);
     let t1 = Instant::now();
-    let res = run_step(&mut pt, &mut he, cs, pf.d, &tab);
+    // each custodian computes on its own pool: a pool shared by the three in-process parties lets one party's blocked
+    // returner jobs starve the others (they are separate machines in deployment)
+    let pool = rayon::ThreadPoolBuilder::new().num_threads(pf.threads).build().unwrap();
+    let res = pool.install(|| run_step(&mut pt, &mut he, cs, pf.d, &tab));
     let step_s = t1.elapsed().as_secs_f64();
     let sent = pt.net.total_sent();
     let base = json!({
         "party": i, "setup_seconds": setup, "step_seconds": step_s,
         "transcript_len": pt.tr.len(), "tape_used": pt.cur, "tape_len": pt.tape.len(),
-        "wire": pt.wire, "bytes_sent": {"open": sent[0], "he_ct": sent[1], "he_ret": sent[2], "ctrl": sent[3]},
+        "wire": pt.wire, "bytes_sent": {"open": sent[0], "he_ct": sent[1], "he_ret": sent[2], "ctrl": sent[3], "proof": sent[4]},
         "he_wire": {"mv": {"he_send": he.he_send, "he_return": he.he_return},
                     "ou": {"he_send": he.ou_send, "he_return": he.ou_return, "commit": he.ou_commit}},
     });
@@ -124,7 +131,13 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
 pub fn reveal_check(pf: &Prof, shares: &[(Vec<Vec<Sh>>, Vec<Vec<Sh>>)]) -> bool {
     let p = pf.t;
     let plain = inputs(pf.d);
-    let (e1, e2) = plain.step();
+    let (e1, e2) = match plain.step() {
+        Ok(x) => x,
+        Err(e) => {
+            eprintln!("{e}");
+            return false;
+        }
+    };
     let cen = |v: u64| if v > p / 2 { v as i64 - p as i64 } else { v as i64 };
     let rev = |sel: &dyn Fn(&(Vec<Vec<Sh>>, Vec<Vec<Sh>>)) -> &Vec<Vec<Sh>>, want: &Vec<Vec<i64>>| -> bool {
         (0..pf.d).all(|r| {
@@ -169,7 +182,11 @@ pub fn run_local(pf: &Prof, attack: Option<(String, usize)>) -> (serde_json::Val
     let outs: Vec<_> = handles.into_iter().map(|h| h.join().unwrap()).collect();
     let wall = t1.elapsed().as_secs_f64();
     let all_ok = outs.iter().all(|o| o.1.is_some());
-    let refines = all_ok && reveal_check(pf, &outs.iter().map(|o| o.1.clone().unwrap()).collect::<Vec<_>>());
+    let mut outs = outs;
+    let refines = all_ok && {
+        let sh: Vec<Shares> = outs.iter_mut().map(|o| o.1.take().unwrap()).collect();
+        reveal_check(pf, &sh)
+    };
     let res = json!({
         "verdict": if all_ok { "ACCEPT" } else { "REFUSED" }, "refines_spec": refines,
         "N": pf.n, "L": pf.l, "F_bits": pf.f_bits, "d": pf.d, "t": pf.t, "Q_primes": pf.qs,

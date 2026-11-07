@@ -28,10 +28,16 @@ pub struct Plain {
     pub y: Vec<i64>,
 }
 
-/// native_ref.run's inputs: random.Random(d), W1, W2, x, y in [-7, 7].
+/// native_ref.run's inputs: random.Random(d), W1, W2 in [-wmax, wmax], x, y in [-7, 7]. wmax = 7 up to d = 64; wider
+/// layers need smaller weights to keep u1 = z1 >> 5 inside the table's domain [-128, 128) (step_spec asserts it).
+pub fn wmax_for(d: usize) -> i64 {
+    if d <= 64 { 7 } else if d <= 256 { 2 } else { 1 }
+}
+
 pub fn inputs(d: usize) -> Plain {
+    let wmax = wmax_for(d);
     let mut r = PyRandom::from_u64(d as u64);
-    let mat = |r: &mut PyRandom| -> Vec<Vec<i64>> { (0..d).map(|_| (0..d).map(|_| r.randint_i64(-7, 7)).collect()).collect() };
+    let mat = |r: &mut PyRandom| -> Vec<Vec<i64>> { (0..d).map(|_| (0..d).map(|_| r.randint_i64(-wmax, wmax)).collect()).collect() };
     let w1 = mat(&mut r);
     let w2 = mat(&mut r);
     let x = (0..d).map(|_| r.randint_i64(-7, 7)).collect();
@@ -52,12 +58,15 @@ impl Plain {
         v
     }
 
-    /// step_spec.step: the new weights.
-    pub fn step(&self) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
+    /// step_spec.step: the new weights, or the bound step_spec would assert on.
+    pub fn step(&self) -> Result<(Vec<Vec<i64>>, Vec<Vec<i64>>), String> {
         let d = self.x.len();
         let mv = |w: &Vec<Vec<i64>>, v: &[i64]| -> Vec<i64> { (0..d).map(|i| (0..d).map(|j| w[i][j] * v[j]).sum()).collect() };
         let z1 = mv(&self.w1, &self.x);
         let u1: Vec<i64> = z1.iter().map(|z| z >> 5).collect();
+        if let Some(u) = u1.iter().find(|u| !(-128..128).contains(*u)) {
+            return Err(format!("step_spec domain: u1 = {u} outside [-128, 128)"));
+        }
         let h: Vec<i64> = u1.iter().map(|&u| sig(u)).collect();
         let g1: Vec<i64> = u1.iter().map(|&u| dsig(u)).collect();
         let z2 = mv(&self.w2, &h);
@@ -67,7 +76,7 @@ impl Plain {
         let d1: Vec<i64> = b.iter().zip(&g1).map(|(bb, g)| (bb * g) >> 8).collect();
         let w2n = (0..d).map(|i| (0..d).map(|j| self.w2[i][j] - d2[i] * h[j]).collect()).collect();
         let w1n = (0..d).map(|i| (0..d).map(|j| self.w1[i][j] - d1[i] * self.x[j]).collect()).collect();
-        (w1n, w2n)
+        Ok((w1n, w2n))
     }
 }
 
