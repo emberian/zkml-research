@@ -1,0 +1,16 @@
+24c24
+< -gpgpu_n_clusters 30
+---
+> -gpgpu_n_clusters 40
+26c26
+< -gpgpu_n_mem 12
+---
+> -gpgpu_n_mem 16
+31c31
+< -gpgpu_clock_domains 1365:1365:1365:3500.5
+---
+> -gpgpu_clock_domains 1590.0:1590.0:1590.0:2500.0
+105c105
+< -gpgpu_shmem_per_block 49152
+---
+> -gpgpu_shmem_per_block 65536
