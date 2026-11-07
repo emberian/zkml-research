@@ -77,6 +77,10 @@ class RecEngine(spdz.Engine):
         self.ranges = []           # truncations whose input bound the proof checks (trunc(..., rc=...))
         self.range_rows = []       # their rows, appended after the program (append_range)
         self.range_fail = []       # (name, index) whose PUBLIC c - lo is already outside [0, 2^L)
+        self.lb = False            # the lookup proved by a bit circuit on z1's range bits (append_lookup; "LB": true)
+        self.lb_req = []           # per lookup: dict(k, ext={column: ext atom}) (rec_out fills ext)
+        self.lb_pend = {}          # id(output value) -> (lookup index, column), until rec_out binds it
+        self.lb_rows = []          # the circuit's rows per lookup (append_lookup), filled at proof time (fill_lookup)
 
     # ------------------------------------------------------------ atoms
     def _atom(self, kind, tag, sh=None):
@@ -138,7 +142,7 @@ class RecEngine(spdz.Engine):
                 form[b] = (-(1 << j)) % p
             self.cons.append((form, 0, 0, "trh-range"))
             self.tctx["hbits"] = bits
-        elif tag == "lp":
+        elif tag == "lp" and not self.lb:
             self.lp_run.append(a)
             if len(self.lp_run) >= 2:
                 self.had.append((self.lp_run[0], self.lp_run[-2], a))
@@ -185,7 +189,8 @@ class RecEngine(spdz.Engine):
             self.open_log.append(({}, v))
         else:
             v = super().open(x, phase)
-        self.cons.append((dict(_form(x)), _const(x), v, "he:" + phase if self.he else phase))
+        kind = "he:" + phase if self.he else ("lookup-lb" if self.lb and phase == "lookup" else phase)
+        self.cons.append((dict(_form(x)), _const(x), v, kind))
         if self.tctx is not None and phase == "trunc":
             self.tctx["c"] = v
         return v
@@ -203,10 +208,29 @@ class RecEngine(spdz.Engine):
         return out
 
     def lookup2(self, u, offset, tables_coeffs, deg):
+        """With lb, the MPC is unchanged but the proof drops the masked-power relations: the opening is recorded as
+        "lookup-lb" (outside the middle), so the power atoms enter no middle constraint, and each output is a value
+        with the MPC's shares and no form yet. rec_out binds it to its external atom; append_lookup then proves that
+        atom from z1's range bits."""
         self.lp_run = []
         out = super().lookup2(u, offset, tables_coeffs, deg)
         self.lp_run = []
-        return out
+        if not self.lb:
+            return out
+        k = len(self.lb_req)
+        self.lb_req.append(dict(k=k, ext={}))
+        res = []
+        for col, o in enumerate(out):
+            o = dict(o)
+            if (self.attack, k, self.symbolic) in (("lb_h", 1, False), ("lb_g1", 1, False)) and col == (self.attack == "lb_g1"):
+                # a colluding custodian set shifts lookup 1's output by one, MAC-consistently (they hold alpha)
+                s0, m0 = o[1]
+                o[1] = ((s0 + 1) % self.p, (m0 + self.dealer.alpha) % self.p)
+                self.attack_done = True
+            v = mk(o, {})
+            self.lb_pend[id(v)] = (k, col)
+            res.append(v)
+        return res
 
     # ------------------------------------------------------------ the middle's IO
     def rec_in(self, name, vec):
@@ -222,12 +246,17 @@ class RecEngine(spdz.Engine):
         for k, x in enumerate(vec):
             a = self._atom("ext", (name, k), None)
             self.ext[(name, k)] = a
+            if id(x) in self.lb_pend:
+                j, col = self.lb_pend.pop(id(x))
+                self.lb_req[j]["ext"][col] = a
+                x.form, x.const = {a: 1}, 0
+                continue
             f = dict(x.form)
             f[a] = (f.get(a, 0) - 1) % p
             self.cons.append((f, x.const, 0, "io"))
 
 
-MIDDLE_PHASES = ("trunc", "lookup", "mul", "trunc-mask", "trh-range", "io", "release", "range")
+MIDDLE_PHASES = ("trunc", "lookup", "mul", "trunc-mask", "trh-range", "io", "release", "range", "lookup-bits")
 
 
 def append_range(eng):
@@ -325,6 +354,159 @@ def fill_range(live, eng):
         ind.append(eng.lin([(c, x) for c, x in terms if x is not None], cst))
     vals = [eng.open(v, "range-check") for v in ind]
     return [(D["name"], D["k"]) for D, v in zip(rows, vals) if v]
+
+class _Bits:
+    """The bit circuit's builder for one lookup: atoms (kind "proofbits", made at proof time), linear definitions and
+    products, in creation order. A value is a (form, const) pair, linear in the atoms."""
+
+    def __init__(self, eng):
+        self.eng, self.p = eng, eng.p
+        self.ops = []                  # ("lin", atom, form, const) | ("mul", atom, x, y)
+
+    def atom(self, form, const):
+        """A fresh atom a with a = form + const (a linear row)."""
+        a = self.eng._atom("proofbits", "lq", None)
+        f = {a: 1}
+        for x, c in form.items():
+            f[x] = (f.get(x, 0) - c) % self.p
+        self.eng.cons.append(({k: v for k, v in f.items() if v}, -const % self.p, 0, "lookup-bits"))
+        self.ops.append(("lin", a, dict(form), const % self.p))
+        return a
+
+    def mul(self, b, v):
+        """b * v for an atom b: a constant or single-atom v (alpha y + beta) costs one product b y; any other v is made
+        an atom first."""
+        p = self.p
+        form, const = v
+        if not form:
+            return ({b: const % p} if const % p else {}), 0
+        if len(form) > 1:
+            y, al, be = self.atom(form, const), 1, 0
+        else:
+            ((y, al),) = form.items()
+            be = const
+        m = self.eng._atom("proofbits", "lm", None)
+        self.eng.had.append((b, y, m))
+        self.ops.append(("mul", m, b, y))
+        out = {m: al % p}
+        if be % p:
+            out[b] = (out.get(b, 0) + be) % p
+        return {k: v for k, v in out.items() if v}, 0
+
+    def lt(self, bits, c):
+        """[value < c] for the integer value sum 2^i bits[i] (boolean atoms) and a public c, LSB first:
+        lt_(i+1) = c_i ? 1 - b_i + b_i lt_i : lt_i - b_i lt_i, constants folded."""
+        p = self.p
+        n = len(bits)
+        if c <= 0:
+            return {}, 0
+        if c >= 1 << n:
+            return {}, 1
+        cur = ({}, 0)
+        for i, b in enumerate(bits):
+            m, mc = self.mul(b, cur)
+            if (c >> i) & 1:
+                f = dict(m)
+                f[b] = (f.get(b, 0) - 1) % p
+                cur = ({k: v for k, v in f.items() if v}, (1 + mc) % p)
+            else:
+                f = dict(cur[0])
+                for k, v in m.items():
+                    f[k] = (f.get(k, 0) - v) % p
+                cur = ({k: v for k, v in f.items() if v}, (cur[1] - mc) % p)
+        return cur
+
+
+def _addf(*terms):
+    """sum of coeff * (form, const) values, mod p (the caller's field via the last argument)."""
+    p = terms[-1]
+    f, c = {}, 0
+    for co, (fm, cc) in terms[:-1]:
+        for k, v in fm.items():
+            f[k] = (f.get(k, 0) + co * v) % p
+        c = (c + co * cc) % p
+    return {k: v for k, v in f.items() if v}, c
+
+
+def append_lookup(eng, t_lo, s1):
+    """The lookup proved by a bit circuit (gen 6; program flag "LB", which needs "RC" and z1's default interval). With
+    the range check, z1's rows prove the integer z1 - a in [0, 2^(s1 + 8)), a = t_lo 2^s1, through its difference
+    bits diff_i = c'_i - R_i - beta_i + 2 beta_(i+1), each boolean (the borrow chain is integer subtraction). Its top
+    8 bits are v = u1 - t_lo, the table index. Per lookup, after the range rows:
+      bits  v_j = diff_(s1 + j), j < 8                       (8 atoms, linear rows)
+      h     = w Bf - w lo + (q - 7) Bf - (q + 7) lo + 7    w = v >> 2 = sum 2^j v_(j+2) (an atom), q = t_lo / 4,
+            lo = [w < -7 - q], Bf = [w < 8 - q]               so h = clamp(floor(u1 / 4), -7, 7) = SIG[u1]
+      g1    = [v < 32 - t_lo] - [v < -28 - t_lo]            = DSIG[u1]   (step only: a lookup with a g1 column)
+    The comparisons are bit chains on constants (_Bits.lt). Products are proof-time Beaver products (fill_lookup).
+    The rows tie the circuit's h and g1 to the lookup's external atoms."""
+    p = eng.p
+    if t_lo % 4:
+        raise ValueError("the bit lookup needs t_lo divisible by 4")
+    q = t_lo // 4
+    z1rows = {D["k"]: D for D in eng.range_rows if D["name"] == "z1"}
+    for req in eng.lb_req:
+        D = z1rows[req["k"]]
+        if (D["a"], D["B"]) != (t_lo << s1, s1 + 8) or D["s"] != s1:
+            raise ValueError("the bit lookup needs z1's interval to be the table's domain")
+        bx = _Bits(eng)
+        R, bs, cb = D["R"], D["b"], D["cb"]
+        v = []
+        for j in range(8):
+            i = s1 + j
+            f = {R[i]: 1, bs[i]: (-2) % p}
+            if i > 0:
+                f[bs[i - 1]] = (f.get(bs[i - 1], 0) + 1) % p
+            # v_j - diff_i = v_j + R_i + beta_i - 2 beta_(i+1) - c'_i
+            v.append(bx.atom({x: (-c) % p for x, c in f.items()}, cb[i]))
+        lo = bx.lt(v[2:], -7 - q)
+        Bf = bx.lt(v[2:], 8 - q)
+        if lo[0] or Bf[0]:
+            w = bx.atom({v[2 + j]: 1 << j for j in range(6)}, 0)
+            wB = bx.mul(w, Bf)
+            wl = bx.mul(w, lo)
+        else:
+            wf = ({v[2 + j]: 1 << j for j in range(6)}, 0)
+            wB = (wf[0], 0) if Bf[1] else ({}, 0)
+            wl = (wf[0], 0) if lo[1] else ({}, 0)
+        h = _addf((1, wB), (-1, wl), (q - 7, Bf), (-(q + 7), lo), (7, ({}, 1)), p)
+        outs = [h]
+        if 1 in req["ext"]:
+            outs.append(_addf((1, bx.lt(v, 32 - t_lo)), (-1, bx.lt(v, -28 - t_lo)), p))
+        for col, (fm, c) in enumerate(outs):
+            f = dict(fm)
+            a = req["ext"][col]
+            f[a] = (f.get(a, 0) - 1) % p
+            eng.cons.append(({k: x for k, x in f.items() if x}, c, 0, "lookup-bits"))
+        eng.lb_rows.append(bx.ops)
+
+
+def fill_lookup(live, eng):
+    """The custodians' shares of the bit circuit's atoms (proof time, after fill_range, on the proving engine eng). An
+    atom's level: a linear atom the max of its form's, a product one more than its operands'. Level by level, the
+    linear atoms of that level are evaluated (lookup by lookup, in creation order), then the products of the next
+    level run as one batch over every lookup in creation order."""
+    rows = live.lb_rows
+    if not rows:
+        return
+    lvl = {}
+    lev = lambda a: lvl.get(a, 0)
+    for ops in rows:
+        for op in ops:
+            if op[0] == "lin":
+                lvl[op[1]] = max([lev(x) for x in op[2]] + [0])
+            else:
+                lvl[op[1]] = max(lev(op[2]), lev(op[3])) + 1
+    top = max(lvl.values())
+    for L in range(top + 1):
+        for ops in rows:
+            for op in ops:
+                if op[0] == "lin" and lvl[op[1]] == L:
+                    _, a, form, const = op
+                    live.atom_sh[a] = dict(eng.lin([(c, live.atom_sh[x]) for x, c in form.items()], const))
+        batch = [op for ops in rows for op in ops if op[0] == "mul" and lvl[op[1]] == L + 1]
+        for op in batch:
+            live.atom_sh[op[1]] = dict(eng.mul(live.atom_sh[op[2]], live.atom_sh[op[3]]))
+
 
 def middle(rec):
     """Restrict the recorded system to the nonlinear middle: atoms referenced by middle constraints."""

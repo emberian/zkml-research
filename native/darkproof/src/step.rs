@@ -27,13 +27,16 @@ pub struct StepParams {
     pub r3: i64,
     /// the table's domain is [t_lo, t_lo + 256) (step_spec.Program.T_LO; the harness's -128)
     pub t_lo: i64,
+    /// the lookup is proved by a bit circuit on z1's range bits instead of the masked powers (cosnark_gates
+    /// append_lookup; genesis "LB": true; needs rc)
+    pub lb: bool,
 }
 
 impl StepParams {
     /// The harness's step (step_spec S1, S2, S3 = 5, 4, 8; run_step's K = 13, 8, 13).
-    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, rc: false, r3: 0, t_lo: -128 };
+    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, rc: false, r3: 0, t_lo: -128, lb: false };
     /// The d = 4096 shifts of the decision doc's count formulas (§12; cosnark_gates.counts_formula at width).
-    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, rc: false, r3: 0, t_lo: -128 };
+    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, rc: false, r3: 0, t_lo: -128, lb: false };
     /// The program a ledger of width d runs: the harness's up to d = 1024, the wide shifts beyond.
     pub fn for_width(d: usize) -> StepParams {
         if d <= 1024 { Self::HARNESS } else { Self::WIDE }
@@ -81,6 +84,8 @@ pub enum Phase {
     Release,
     /// the proved truncation input bound (append_range)
     Range,
+    /// the lookup's bit circuit (append_lookup)
+    LookupBits,
 }
 
 /// The middle's external vectors for a program other than the step (cosnark_gates_zk.IO): name and padded length,
@@ -157,6 +162,16 @@ pub enum Tag {
     /// proof-only: a range row's product t_i = R_i beta_i and its borrow beta_(i+1)
     Rt,
     Rb,
+    /// proof-only: the lookup's bit circuit, a linear atom and a product atom (append_lookup)
+    Lq,
+    Lm,
+}
+
+/// One op of a lookup's bit circuit, in creation order: atom = form (linear), or atom = x y (a proof-time product).
+#[derive(Clone, Debug)]
+pub enum LbOp {
+    Lin(u32, Vec<(u32, u64)>, u64),
+    Mul(u32, u32, u32),
 }
 
 pub struct Rec<'t> {
@@ -178,12 +193,21 @@ pub struct Rec<'t> {
     pub range_fail: Vec<(&'static str, usize)>,
     /// atoms of the program (before the proof-only range rows)
     pub n_step_atoms: Option<usize>,
+    /// prm.lb: per lookup, whether it has a g1 column (the step's) or only h (the release's)
+    pub lb_req: Vec<bool>,
+    /// prm.lb: the circuit's ops per lookup (append_lookup)
+    pub lb_rows: Vec<Vec<LbOp>>,
+    /// prm.lb: the masked-power atoms the MPC made and the proof drops, as (start, count) in the program's atom order
+    /// with them (a record from darkstep or the native live engine carries them; the replay does not)
+    pub lp_drop: Option<(usize, usize)>,
 }
 
 #[derive(Debug)]
 pub enum Short {
     /// the transcript ends before the program does
     Short,
+    /// the program's parameters do not admit a proof feature it asks for (the bit lookup's preconditions)
+    Program(&'static str),
     /// a deployed step's he_outer_commit entry is not 0 (cosnark_he.SymOuter)
     Commit,
 }
@@ -272,9 +296,102 @@ impl<'t> Rec<'t> {
         }
     }
 
+    /// cosnark_gates.append_lookup: the lookup's bit circuit, per lookup after the range rows. z1's range rows prove
+    /// z1 - a in [0, 2^(s1 + 8)) (a = t_lo 2^s1) through boolean difference bits; the top 8 are v = u1 - t_lo. Then
+    /// h = w Bf - w lo + (q - 7) Bf - (q + 7) lo + 7 (w = v >> 2, q = t_lo / 4, lo = [w < -7 - q], Bf = [w < 8 - q])
+    /// and g1 = [v < 32 - t_lo] - [v < -28 - t_lo], tied to the external atoms h[k], g1[k].
+    pub fn append_lookup(&mut self) -> Result<(), Short> {
+        let p = field::p();
+        let (t_lo, s1) = (self.prm.t_lo, self.prm.s1);
+        if !self.prm.rc {
+            return Err(Short::Program("the bit lookup (LB) needs the range check (RC)"));
+        }
+        if t_lo.rem_euclid(4) != 0 {
+            return Err(Short::Program("the bit lookup needs t_lo divisible by 4"));
+        }
+        let q = t_lo.div_euclid(4);
+        let z1rows: Vec<usize> = (0..self.range_rows.len()).filter(|&j| self.range_rows[j].d.name == "z1").collect();
+        let reqs = self.lb_req.clone();
+        for (k, &has_g1) in reqs.iter().enumerate() {
+            let row = self.range_rows[*z1rows.get(k).ok_or(Short::Program("a lookup without its z1 range row"))?].clone();
+            if (row.d.a, row.d.b, row.d.s) != (t_lo << s1, s1 + 8, s1) {
+                return Err(Short::Program("the bit lookup needs z1's interval to be the table's domain"));
+            }
+            let mut bx = Bits { rec: self, ops: Vec::new() };
+            let mut v = Vec::with_capacity(8);
+            for j in 0..8usize {
+                let i = s1 as usize + j;
+                let mut f = Lf::new();
+                f.add(row.d.bits[i], p - 1);
+                f.add(row.bb[i], 2);
+                if i > 0 {
+                    f.add(row.bb[i - 1], p - 1);
+                }
+                v.push(bx.atom(&f, row.cb[i]));
+            }
+            let lo = bx.lt(&v[2..], -7 - q);
+            let bf = bx.lt(&v[2..], 8 - q);
+            let mut wf = Lf::new();
+            for j in 0..6 {
+                wf.add(v[2 + j], 1u64 << j);
+            }
+            let (wb, wl) = if !lo.0 .0.is_empty() || !bf.0 .0.is_empty() {
+                let w = bx.atom(&wf, 0);
+                (bx.mul(w, &bf), bx.mul(w, &lo))
+            } else {
+                let pick = |c: &(Lf, u64)| if c.1 != 0 { (wf.clone(), 0) } else { (Lf::new(), 0) };
+                (pick(&bf), pick(&lo))
+            };
+            let one = (Lf::new(), 1u64);
+            let h = addf(&[(1, &wb), (-1, &wl), (q - 7, &bf), (-(q + 7), &lo), (7, &one)]);
+            let mut outs = vec![h];
+            if has_g1 {
+                let a = bx.lt(&v, 32 - t_lo);
+                let b = bx.lt(&v, -28 - t_lo);
+                outs.push(addf(&[(1, &a), (-1, &b)]));
+            }
+            let ops = bx.ops;
+            for (col, (fm, c)) in outs.into_iter().enumerate() {
+                let mut terms: Vec<(Atom, u64)> = fm.0.iter().map(|(&x, &co)| (Atom::Prep(x), co)).collect();
+                terms.push((self.ext(if col == 0 { "h" } else { "g1" }, k), p - 1));
+                self.cons.push(Con { form: Form { terms, c }, value: 0, phase: Phase::LookupBits, pos: usize::MAX });
+            }
+            self.lb_rows.push(ops);
+        }
+        Ok(())
+    }
+
+    /// Every proof-time Beaver product of the middle's proof-only rows: the range rows', then the bit lookups'.
+    pub fn proof_products(&self) -> usize {
+        self.range_products() + self.lookup_products()
+    }
+
+    /// Proof-time Beaver products of the lookups' bit circuits.
+    pub fn lookup_products(&self) -> usize {
+        self.lb_rows.iter().map(|ops| ops.iter().filter(|o| matches!(o, LbOp::Mul(..))).count()).sum()
+    }
+
     /// Proof-time Beaver products of the range rows.
     pub fn range_products(&self) -> usize {
         self.range_rows.iter().map(|r| r.t.iter().filter(|t| t.is_some()).count()).sum()
+    }
+
+    /// A witness's program atoms as the middle takes them: as is, or (prm.lb) with the MPC's masked-power atoms
+    /// dropped when the record still carries them (darkstep's ProofRecord, the native live engine).
+    pub fn witness_atoms<T: Copy>(&self, atoms: &[T]) -> Result<Vec<T>, String> {
+        let n = self.n_program_atoms();
+        if atoms.len() == n {
+            return Ok(atoms.to_vec());
+        }
+        if let Some((st, cnt)) = self.lp_drop {
+            if atoms.len() == n + cnt {
+                let mut v = Vec::with_capacity(n);
+                v.extend_from_slice(&atoms[..st]);
+                v.extend_from_slice(&atoms[st + cnt..]);
+                return Ok(v);
+            }
+        }
+        Err(format!("witness atoms differ from the replay ({} vs {n})", atoms.len()))
     }
 
     /// The program's own atoms (the witness's), before the proof-only range rows.
@@ -397,8 +514,23 @@ impl<'t> Rec<'t> {
         terms.extend(neg_form(&borrow));
         Ok(Form { terms, c: field::sub(q, borrow.c) })
     }
-    fn lookup2(&mut self, u: &Form, offset: u64) -> Result<(Form, Form), Short> {
+    fn lookup2(&mut self, u: &Form, offset: u64, cols: usize) -> Result<(Form, Form), Short> {
         let deg = 255usize;
+        if self.prm.lb {
+            // the MPC's masked-power lookup, outside the proof: its opening has no middle constraint and its power atoms
+            // are not the middle's; the outputs are the external atoms h[k], g1[k] (append_lookup proves them)
+            let k = self.lb_req.len();
+            let at = self.tags.len();
+            self.lp_drop = Some(match self.lp_drop {
+                None => (at, deg),
+                Some((st, n)) => (st, n + deg),
+            });
+            self.skip(1)?;
+            self.lb_req.push(cols == 2);
+            let h = Form { terms: vec![(self.ext("h", k), 1)], c: 0 };
+            let g = if cols == 2 { Form { terms: vec![(self.ext("g1", k), 1)], c: 0 } } else { Form::default() };
+            return Ok((h, g));
+        }
         let mut pw = Vec::with_capacity(deg);
         for _ in 0..deg {
             let a = self.atom(Tag::Lp);
@@ -431,6 +563,9 @@ impl<'t> Rec<'t> {
         (0..self.d).map(|k| Form { terms: vec![(self.ext(name, k), 1)], c: 0 }).collect()
     }
     fn rec_out(&mut self, name: &str, v: &[Form]) {
+        if self.prm.lb && (name == "h" || name == "g1") {
+            return; // the lookup's outputs are the external atoms themselves (lookup2)
+        }
         for (k, x) in v.iter().enumerate() {
             let mut f = x.terms.clone();
             f.push((self.ext(name, k), field::p() - 1));
@@ -459,6 +594,9 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         range_rows: Vec::new(),
         range_fail: Vec::new(),
         n_step_atoms: None,
+        lb_req: Vec::new(),
+        lb_rows: Vec::new(),
+        lp_drop: None,
     };
     // HE matvec: d he_auth, d Freivalds products (2 openings each), the check; plain: W - A (d^2) and v - b (d)
     let mv = if prm.he { 3 * d + 1 } else { d * d + d };
@@ -475,7 +613,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     let mut h = Vec::with_capacity(d);
     let mut g1 = Vec::with_capacity(d);
     for u in &u1 {
-        let (a, b) = r.lookup2(u, field::from_i64(-prm.t_lo))?;
+        let (a, b) = r.lookup2(u, field::from_i64(-prm.t_lo), 2)?;
         h.push(a);
         g1.push(b);
     }
@@ -525,6 +663,9 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     if prm.rc {
         r.append_range();
     }
+    if prm.lb {
+        r.append_lookup()?;
+    }
     Ok(r)
 }
 
@@ -563,6 +704,9 @@ pub fn replay_release<'t>(
         range_rows: Vec::new(),
         range_fail: Vec::new(),
         n_step_atoms: None,
+        lb_req: Vec::new(),
+        lb_rows: Vec::new(),
+        lp_drop: None,
     };
     assert_eq!(x.len(), d * m);
     assert_eq!(labels.len(), m);
@@ -580,7 +724,7 @@ pub fn replay_release<'t>(
     let off = field::from_i64(-prm.t_lo);
     let mut h = Vec::with_capacity(d * m);
     for u in &u1 {
-        h.push(r.lookup2(u, off)?.0);
+        h.push(r.lookup2(u, off, 1)?.0);
     }
     drop(u1);
     r.rec_out("h", &h);
@@ -641,7 +785,114 @@ pub fn replay_release<'t>(
     if prm.rc {
         r.append_range();
     }
+    if prm.lb {
+        r.append_lookup()?;
+    }
     Ok(r)
+}
+
+/// A linear form over Prep atoms, merged and without zero coefficients (cosnark_gates' dict forms).
+#[derive(Clone, Debug, Default)]
+struct Lf(std::collections::BTreeMap<u32, u64>);
+
+impl Lf {
+    fn new() -> Lf {
+        Lf::default()
+    }
+    fn add(&mut self, x: u32, c: u64) {
+        let e = self.0.entry(x).or_insert(0);
+        *e = field::add(*e, c);
+        if *e == 0 {
+            self.0.remove(&x);
+        }
+    }
+}
+
+/// sum co * (form, const), mod p (cosnark_gates._addf).
+fn addf(terms: &[(i64, &(Lf, u64))]) -> (Lf, u64) {
+    let mut f = Lf::new();
+    let mut c = 0u64;
+    for &(co, (fm, cc)) in terms {
+        let co = field::from_i64(co);
+        for (&x, &v) in fm.0.iter() {
+            f.add(x, field::mul(co, v));
+        }
+        c = field::add(c, field::mul(co, *cc));
+    }
+    (f, c)
+}
+
+/// cosnark_gates._Bits: one lookup's circuit builder.
+struct Bits<'a, 't> {
+    rec: &'a mut Rec<'t>,
+    ops: Vec<LbOp>,
+}
+
+impl Bits<'_, '_> {
+    /// a fresh atom a = form + c, with its linear row a - form - c = 0
+    fn atom(&mut self, form: &Lf, c: u64) -> u32 {
+        let a = self.rec.atom(Tag::Lq);
+        let mut f = Lf::new();
+        f.add(a, 1);
+        for (&x, &co) in form.0.iter() {
+            f.add(x, field::neg(co));
+        }
+        let terms = f.0.iter().map(|(&x, &co)| (Atom::Prep(x), co)).collect();
+        self.rec.cons.push(Con { form: Form { terms, c: field::neg(c) }, value: 0, phase: Phase::LookupBits, pos: usize::MAX });
+        self.ops.push(LbOp::Lin(a, form.0.iter().map(|(&x, &co)| (x, co)).collect(), c));
+        a
+    }
+    /// b v for an atom b: a constant or single-atom v costs one product; any other v is made an atom first
+    fn mul(&mut self, b: u32, v: &(Lf, u64)) -> (Lf, u64) {
+        let (form, c) = v;
+        let mut out = Lf::new();
+        if form.0.is_empty() {
+            if *c != 0 {
+                out.add(b, *c);
+            }
+            return (out, 0);
+        }
+        let (y, al, be) = if form.0.len() > 1 {
+            (self.atom(form, *c), 1u64, 0u64)
+        } else {
+            let (&y, &al) = form.0.iter().next().unwrap();
+            (y, al, *c)
+        };
+        let m = self.rec.atom(Tag::Lm);
+        self.rec.had.push((b, y, m));
+        self.ops.push(LbOp::Mul(m, b, y));
+        out.add(m, al);
+        if be != 0 {
+            out.add(b, be);
+        }
+        (out, 0)
+    }
+    /// [value < c] for value = sum 2^i bits[i] and a public c (constants folded)
+    fn lt(&mut self, bits: &[u32], c: i64) -> (Lf, u64) {
+        let n = bits.len();
+        if c <= 0 {
+            return (Lf::new(), 0);
+        }
+        if c >= 1i64 << n {
+            return (Lf::new(), 1);
+        }
+        let mut cur = (Lf::new(), 0u64);
+        for (i, &b) in bits.iter().enumerate() {
+            let (m, mc) = self.mul(b, &cur);
+            if (c >> i) & 1 == 1 {
+                let mut f = m.clone();
+                f.add(b, field::p() - 1);
+                cur = (f, field::add(1, mc));
+            } else {
+                let mut f = cur.0.clone();
+                for (&x, &v) in m.0.iter() {
+                    f.add(x, field::neg(v));
+                }
+                cur = (f, field::sub(cur.1, mc));
+            }
+        }
+        cur
+    }
 }
 
 /// spdz.taylor_shift: coefficients of P(X + c).

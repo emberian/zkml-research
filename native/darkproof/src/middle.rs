@@ -441,6 +441,57 @@ fn fill_range(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) -> Vec<
     rows.iter().zip(vals).filter(|(_, v)| *v != 0).map(|(r, _)| (r.d.name, r.d.k)).collect()
 }
 
+/// cosnark_gates.fill_lookup: this party's shares of the lookups' bit-circuit atoms. Level by level: the linear atoms
+/// of that level (lookup by lookup, creation order), then the next level's products as one batch.
+fn fill_lookup(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) {
+    use crate::step::LbOp;
+    let mut lvl = vec![0u32; a.len()];
+    let mut top = 0;
+    for ops in &rec.lb_rows {
+        for op in ops {
+            let (x, l) = match op {
+                LbOp::Lin(x, f, _) => (*x, f.iter().map(|&(y, _)| lvl[y as usize]).max().unwrap_or(0)),
+                LbOp::Mul(x, b, y) => (*x, lvl[*b as usize].max(lvl[*y as usize]) + 1),
+            };
+            lvl[x as usize] = l;
+            top = top.max(l);
+        }
+    }
+    for l in 0..=top {
+        for ops in &rec.lb_rows {
+            for op in ops {
+                if let LbOp::Lin(x, f, c) = op {
+                    if lvl[*x as usize] == l {
+                        let mut v = (0u64, 0u64);
+                        for &(y, co) in f {
+                            let s = a[y as usize];
+                            v = (field::add(v.0, field::mul(co, s.0)), field::add(v.1, field::mul(co, s.1)));
+                        }
+                        a[*x as usize] = if *c != 0 { sp.cadd(*c, v) } else { v };
+                    }
+                }
+            }
+        }
+        let batch: Vec<(u32, u32, u32)> = rec
+            .lb_rows
+            .iter()
+            .flatten()
+            .filter_map(|op| match op {
+                LbOp::Mul(x, b, y) if lvl[*x as usize] == l + 1 => Some((*x, *b, *y)),
+                _ => None,
+            })
+            .collect();
+        if batch.is_empty() {
+            continue;
+        }
+        let xs: Vec<Sh> = batch.iter().map(|t| a[t.1 as usize]).collect();
+        let ys: Vec<Sh> = batch.iter().map(|t| a[t.2 as usize]).collect();
+        for (t, pr) in batch.iter().zip(sp.mul_batch(net, &xs, &ys)) {
+            a[t.0 as usize] = pr;
+        }
+    }
+}
+
 /// prove_middle_zk for custodian `inp.i`. spine_coms: the spine's commitments of SPINE (carried, second life).
 pub fn prove(
     inp: &MiddleIn,
@@ -454,8 +505,7 @@ pub fn prove(
     let kl = pr.k_l;
     let mut tt = crate::Trace::new("middle", i);
     let (lens, _) = public_shapes_io(pr, rec.n_prep(), rec.had.len(), d, false, rec.io.as_ref());
-    assert_eq!(inp.atoms.len(), rec.n_program_atoms(), "witness atoms differ from the replay");
-    let mut atoms_v: Vec<Sh> = inp.atoms.to_vec();
+    let mut atoms_v: Vec<Sh> = rec.witness_atoms(inp.atoms)?;
     if !rec.range_rows.is_empty() {
         atoms_v.resize(rec.n_prep(), (0, 0));
         let bad = fill_range(rec, &mut atoms_v, net, sp);
@@ -467,6 +517,9 @@ pub fn prove(
                 if bad.len() > 4 { " ..." } else { "" }
             ));
         }
+    }
+    if !rec.lb_rows.is_empty() {
+        fill_lookup(rec, &mut atoms_v, net, sp);
     }
     let pv = padv(&atoms_v, lens["P"]);
     let gather = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
