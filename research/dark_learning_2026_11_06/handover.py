@@ -40,6 +40,7 @@ import os
 import struct
 
 import cosnark as CS
+import cosnark_ext as X
 import cosnark_zk as ZK
 import cozk as Z
 import proofwire as PW
@@ -69,50 +70,58 @@ def context_digest(model, epoch_old, epoch_new, after_step, old_set, new_set):
 
 
 def _schedule(tr, p, d):
-    """Per matrix: one point r of length 2 log2 d; the evaluation list is (old k, r), (new k, r) per k."""
+    """Per matrix: one point r of length 2 log2 d, in F_{p^EXT} (one transcript call of EXT 2 log2 d draws); the
+    evaluation list is (old k, r), (new k, r) per k."""
     ld = d.bit_length() - 1
     evals = []
     for k in KINDS:
-        r = tr.chal(p, 2 * ld)
+        r = X.chal(tr, p, 2 * ld)
         evals += [(("old", k), r), (("new", k), r)]
     return evals
 
 
 def _rows(sh, evals):
+    """Each evaluation's u rows, component-major: EXT blocks of ceil(W / K_L) rows (cosnark_zk.row_layout)."""
     rows, nxt = [], 0
     for key, _ in evals:
         nr = -(-sh[key].W // ZK.K_L)
-        rows.append(list(range(nxt, nxt + nr)))
-        nxt += nr
+        rows.append(list(range(nxt, nxt + X.EXT * nr)))
+        nxt += X.EXT * nr
     return rows, nxt
 
 
 def _constraints(p, sh, evals, cols, urows):
+    """Every check is an identity over F_{p^EXT}, emitted as EXT F_p constraints, component 0 first (cosnark_zk's
+    evar / ecell / eadder; EXT = 1: the base system, byte for byte)."""
     lin, labels = [], []
-    ucell = lambda e, c: (urows[e][c // ZK.K_L], c % ZK.K_L)
+    cur = ["?"]
+    E = X.EXT
+    add = ZK.eadder(p, lin, labels, cur)
+    def U(e, c):
+        nr = -(-sh[evals[e][0]].W // ZK.K_L)
+        return ZK.ecell([(urows[e][k * nr + c // ZK.K_L], c % ZK.K_L) for k in range(E)])
     for e, (key, pt) in enumerate(evals):
         s = sh[key]
-        a = s.eval_weights(pt, e)
+        a = s.eval_weights_e(pt)
         J, csum = cols[key]
+        cur[0] = f"PCS evaluation consistency ({key[0]} {key[1]})"
         for jj, j in enumerate(J):
-            x, xs, f = s.pts[j], 1, {}
+            x, xs, forms = s.pts[j], 1, []
             for c in range(s.W):
-                f[ucell(e, c)] = xs
+                forms.append(ZK.evar(p, U(e, c), (xs,)))
                 xs = xs * x % p
-            lin.append((f, sum(ai * v for ai, v in zip(a, csum[jj])) % p))
-            labels.append(f"PCS evaluation consistency ({key[0]} {key[1]})")
+            add(*forms, rhs=X.dot(a, [(v,) for v in csum[jj]], p))
     for q, k in enumerate(KINDS):
         eo, en = 2 * q, 2 * q + 1
         pt = evals[eo][1]
         s = sh[("old", k)]
-        b = eqv(pt[:s.mc], p)
-        f = {}
+        b = X.eqv(pt[:s.mc], p)
+        cur[0] = f"handover: old {k}(r) = new {k}(r)"
+        forms = []
         for c in range(s.C):
-            f[ucell(eo, c)] = b[c] % p
-            key = ucell(en, c)
-            f[key] = (f.get(key, 0) - b[c]) % p
-        lin.append(({kk: v for kk, v in f.items() if v}, 0))
-        labels.append(f"handover: old {k}(r) = new {k}(r)")
+            forms.append(ZK.evar(p, U(eo, c), b[c]))
+            forms.append(ZK.evar(p, U(en, c), X.neg(b[c], p)))
+        add(*forms)
     return lin, labels
 
 
@@ -135,12 +144,13 @@ def prove(p, d, old_coms, new_coms, ctx, seed=("handover",)):
     L = Z.Prover(Z.Params(p, ZK.K_L, ZK.T_HIDE, ZK.T_OPEN), n, (seed, ctx))
     for e, (key, pt) in enumerate(evals):
         c = com[key]
-        a = c.eval_weights(pt, e)
-        own = [c.row_combo(i, a) for i in range(len(c.ext))]
-        zero = [0] * c.W
+        a = c.eval_weights_e(pt)
+        own = [c.row_combo_e(i, a) for i in range(len(c.ext))]
+        zero = [[0] * c.W for _ in range(X.EXT)]
         shares = own + [zero] * n_new if key[0] == "old" else [zero] * n_old + own
-        for s0 in range(0, c.W, ZK.K_L):
-            L.add_row([u[s0:s0 + ZK.K_L] for u in shares])
+        for kk in range(X.EXT):
+            for s0 in range(0, c.W, ZK.K_L):
+                L.add_row([u[kk][s0:s0 + ZK.K_L] for u in shares])
     eval_roots = L.commit()
     mask_roots = L.commit_masks()
     tr.absorb("lig-evals", eval_roots, mask_roots)
@@ -220,7 +230,7 @@ def _shapes(p, d):
 def schema(p, d, n_old, n_new):
     """The handover proof's byte schema: every length a function of (d, n_old, n_new, PARAMS)."""
     sh = _shapes(p, d)
-    nrows = 4 * (-(-sh[("old", "W1")].W // ZK.K_L))
+    nrows = 4 * X.EXT * (-(-sh[("old", "W1")].W // ZK.K_L))
     ro, po, co = PW.pcs_schema(n_old, {k: sh[("old", k)] for k in KINDS})
     rn, pn, cn = PW.pcs_schema(n_new, {k: sh[("new", k)] for k in KINDS})
     n = n_old + n_new

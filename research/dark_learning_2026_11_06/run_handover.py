@@ -18,6 +18,7 @@ import time
 import proofwire as PW
 import bfv_ref as bfv
 import cosnark as CS
+import cosnark_ext as X
 import cosnark_zk as ZK
 import handover as HO
 import mpc_fork as MF
@@ -131,6 +132,13 @@ def main():
     tampered["ligero"]["q"][0] = (tampered["ligero"]["q"][0] + 1) % p
     rot("a tampered handover proof (Ligero q[0] + 1, re-encoded)", Lg, new_set, new_roots, HO.encode(p, d, tampered),
         False)
+    # the proximity row's u-part: under EXT = 2 a custodian's row is EXT * W long, component-major; + 1 on the last
+    # component's first entry (EXT = 1: the row's first entry)
+    tp = HO.decode(p, hb, d, 3, 3)
+    W = new_coms["W1"].W
+    tp["prox_new"]["W1"][0][(X.EXT - 1) * W] = (tp["prox_new"]["W1"][0][(X.EXT - 1) * W] + 1) % p
+    rot(f"a tampered proximity row (new W1, custodian 0, component {X.EXT - 1} u-part + 1, re-encoded)", Lg, new_set,
+        new_roots, HO.encode(p, d, tp), False)
     flip = bytearray(hb)
     flip[len(hb) // 2] ^= 0x01
     rot("the proof bytes with one byte flipped (middle)", Lg, new_set, new_roots, bytes(flip), False)

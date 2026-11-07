@@ -10,9 +10,10 @@ use crate::net::{gather_hashes, Net};
 use crate::pcs::{self, colsums, Opening, PcsCols, PcsParty, Shape};
 use crate::rng::Det;
 use rayon::prelude::*;
-use crate::spine::{log2, pcs_consistency, Evals};
-use crate::transcript::{eqv, Transcript};
-use crate::wire::{r_ligero, r_pcs, r_prox_cols, R, PR};
+use crate::ext;
+use crate::spine::{log2, pcs_consistency_e, EvalsE};
+use crate::transcript::Transcript;
+use crate::wire::{r_ligero, r_pcs, r_prox_cols_e, R, PR};
 use crate::Profile;
 use std::collections::BTreeMap;
 
@@ -76,9 +77,10 @@ pub fn shapes(pr: &Profile, d: usize) -> (BTreeMap<String, Shape>, BTreeMap<Stri
     (mk(old_base), mk(0))
 }
 
-/// Hidden Ligero rows: one u row combination per evaluation (old W1, new W1, old W2, new W2), ceil(W / K_L) rows each.
+/// Hidden Ligero rows: one u row combination per evaluation (old W1, new W1, old W2, new W2), EXT components of
+/// ceil(W / K_L) rows each.
 pub fn nrows(pr: &Profile, d: usize) -> usize {
-    4 * shapes(pr, d).0["W1"].w.div_ceil(pr.k_l)
+    4 * pr.ext * shapes(pr, d).0["W1"].w.div_ceil(pr.k_l)
 }
 
 fn sizes_ok(d: usize, n_old: usize, n_new: usize) -> bool {
@@ -101,14 +103,15 @@ pub fn byte_len(pr: &Profile, d: usize, p: &HandoverProof) -> usize {
         }
     };
     let pcs_side = |nn: usize, sh: &BTreeMap<String, Shape>, cols: &BTreeMap<String, PcsCols>| -> usize {
-        sh.iter().map(|(k, s)| 32 * nn + 8 * nn * s.w + 4 * pr.t_cols + nn * tree(&cols[k].j, s.r, s.path_len())).sum::<usize>()
+        sh.iter().map(|(k, s)| 32 * nn + 8 * nn * pr.ext * s.w + 4 * pr.t_cols + nn * tree(&cols[k].j, s.r, s.path_len())).sum::<usize>()
     };
     let (k, t) = (pr.k_l, pr.t_hide);
     let lg = crate::pcs::bitlen(pr.blow * (k + t) - 1) + 1;
     let lj: Vec<usize> = if pr.multiproof { p.ligero.j.clone() } else { (0..pr.t_open).collect() };
-    let lig = 8 * ((k + t) + (2 * k + t - 1) + (2 * (k + t) - 1))
+    // the tests' messages w, q, pq once per component; the mask group has 3 EXT rows
+    let lig = 8 * pr.ext * ((k + t) + (2 * k + t - 1) + (2 * (k + t) - 1))
         + if pr.multiproof { 4 * pr.t_open } else { 0 }
-        + n * (tree(&lj, nrows(pr, d), lg) + tree(&lj, 3, lg));
+        + n * (tree(&lj, nrows(pr, d), lg) + tree(&lj, 3 * pr.ext, lg));
     12 + pcs_side(n_old, &so, &p.cols_old) + pcs_side(n_new, &sn, &p.cols_new) + 2 * 32 * n + lig
 }
 
@@ -131,8 +134,8 @@ pub fn decode(pr: &Profile, blob: &[u8], d: usize, n_old: usize, n_new: usize) -
     let mut pn = r_pcs(&mut r, pr, n_new, &sn)?;
     let eval_roots = r.hs(n)?;
     let mask_roots = r.hs(n)?;
-    r_prox_cols(&mut r, pr, n_old, &so, &mut po)?;
-    r_prox_cols(&mut r, pr, n_new, &sn, &mut pn)?;
+    r_prox_cols_e(&mut r, pr, n_old, &so, &mut po, pr.ext)?;
+    r_prox_cols_e(&mut r, pr, n_new, &sn, &mut pn, pr.ext)?;
     let ligero = r_ligero(&mut r, pr, n, &[nrows(pr, d)])?;
     if r.o != r.d.len() {
         return Err("trailing bytes".into());
@@ -150,29 +153,55 @@ pub fn decode(pr: &Profile, blob: &[u8], d: usize, n_old: usize, n_new: usize) -
     })
 }
 
-/// handover._constraints: evaluation consistency at each commitment's opened columns, then old W(r) = new W(r).
-struct HandoverSys {
+/// handover._constraints: evaluation consistency at each commitment's opened columns, then old W(r) = new W(r). Every
+/// check is an identity over F_{p^E}, emitted as E F_p constraints, component 0 first (cosnark_zk.evar / eadder).
+struct HandoverSys<const E: usize> {
     kl: usize,
-    ev: Evals,
+    ev: EvalsE<E>,
     shapes: Vec<Shape>,
     cols: BTreeMap<String, (Vec<usize>, Vec<Vec<u64>>)>,
     urows: Vec<Vec<usize>>,
 }
 
-impl LinSystem for HandoverSys {
+impl<const E: usize> LinSystem for HandoverSys<E> {
     fn emit(&self, sink: &mut dyn LinSink) {
-        pcs_consistency(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.urows);
-        let mut buf: Vec<(u32, u32, u64)> = Vec::new();
+        pcs_consistency_e::<E>(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.urows);
+        let nrr = ext::nr();
+        let mut bufs: [Vec<(u32, u32, u64)>; E] = std::array::from_fn(|_| Vec::new());
         for (q, k) in KINDS.iter().enumerate() {
             let (eo, en) = (2 * q, 2 * q + 1);
             let s = &self.shapes[eo];
-            let b = eqv(&self.ev[eo].1[..s.mc]);
-            buf.clear();
-            for c in 0..s.c {
-                buf.push((self.urows[eo][c / self.kl] as u32, (c % self.kl) as u32, b[c]));
-                buf.push((self.urows[en][c / self.kl] as u32, (c % self.kl) as u32, field::neg(b[c])));
+            let nr = s.w.div_ceil(self.kl);
+            let b = ext::eqv::<E>(&self.ev[eo].1[..s.mc]);
+            for bb in bufs.iter_mut() {
+                bb.clear();
             }
-            sink.con(&format!("handover: old {k}(r) = new {k}(r)"), &buf, 0);
+            // evar(U(e, c), coef): component 0 = coef_0 V_0 + NR coef_1 V_1, component 1 = coef_0 V_1 + coef_1 V_0
+            let mut put = |bufs: &mut [Vec<(u32, u32, u64)>; E], e: usize, c: usize, coef: [u64; E]| {
+                let cell = |kk: usize| (self.urows[e][kk * nr + c / self.kl] as u32, (c % self.kl) as u32);
+                let mut push = |k: usize, kk: usize, v: u64| {
+                    if v != 0 {
+                        let (r, cc) = cell(kk);
+                        bufs[k].push((r, cc, v));
+                    }
+                };
+                if E == 1 {
+                    push(0, 0, coef[0]);
+                } else {
+                    push(0, 0, coef[0]);
+                    push(0, 1, field::mul(nrr, coef[1]));
+                    push(1, 1, coef[0]);
+                    push(1, 0, coef[1]);
+                }
+            };
+            for c in 0..s.c {
+                put(&mut bufs, eo, c, b[c]);
+                put(&mut bufs, en, c, ext::neg(b[c]));
+            }
+            let label = format!("handover: old {k}(r) = new {k}(r)");
+            for bb in bufs.iter() {
+                sink.con(&label, bb, 0);
+            }
         }
     }
 }
@@ -196,20 +225,21 @@ fn transcript(ctx: &HandoverCtx, old_roots: &Roots, new_roots: &Roots) -> Transc
     tr
 }
 
-/// handover._schedule and _rows: one point per matrix, the evaluation list (old k, r), (new k, r) per k, its shapes,
-/// the hidden rows of each evaluation and the row count.
-fn schedule(
+/// handover._schedule and _rows: one point per matrix in F_{p^E} (one transcript call of E 2 log2 d draws), the
+/// evaluation list (old k, r), (new k, r) per k, its shapes, the hidden rows of each evaluation (component-major: E
+/// blocks of ceil(W / K_L) rows) and the row count.
+fn schedule<const E: usize>(
     tr: &mut Transcript,
     pr: &Profile,
     d: usize,
     so: &BTreeMap<String, Shape>,
     sn: &BTreeMap<String, Shape>,
-) -> (Evals, Vec<Shape>, Vec<Vec<usize>>, usize) {
+) -> (EvalsE<E>, Vec<Shape>, Vec<Vec<usize>>, usize) {
     let ld = log2(d);
-    let mut ev: Evals = Vec::new();
+    let mut ev: EvalsE<E> = Vec::new();
     let mut shv = Vec::new();
     for k in KINDS {
-        let r = tr.chal(2 * ld);
+        let r = ext::chal::<E>(tr, 2 * ld);
         ev.push((format!("old {k}"), r.clone()));
         ev.push((format!("new {k}"), r));
         shv.push(so[k].clone());
@@ -218,7 +248,7 @@ fn schedule(
     let mut urows = Vec::new();
     let mut nxt = 0;
     for s in &shv {
-        let nr = s.w.div_ceil(pr.k_l);
+        let nr = E * s.w.div_ceil(pr.k_l);
         urows.push((nxt..nxt + nr).collect::<Vec<usize>>());
         nxt += nr;
     }
@@ -259,25 +289,47 @@ pub fn verify_proof(
     if KINDS.iter().any(|k| proof.old_roots[*k].len() != n_old || proof.new_roots[*k].len() != n_new) {
         return Err("handover: wrong committee sizes".into());
     }
+    if lp.ext != pr.ext {
+        return Err("handover: the Ligero's extension degree differs from the profile's".into());
+    }
+    match pr.ext {
+        1 => verify_proof_e::<1>(pr, lp, d, n_old, n_new, ctx, proof, &so, &sn),
+        2 => verify_proof_e::<2>(pr, lp, d, n_old, n_new, ctx, proof, &so, &sn),
+        e => Err(format!("handover: extension degree {e} is not supported")),
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn verify_proof_e<const E: usize>(
+    pr: &Profile,
+    lp: &LigParams,
+    d: usize,
+    n_old: usize,
+    n_new: usize,
+    ctx: &HandoverCtx,
+    proof: &HandoverProof,
+    so: &BTreeMap<String, Shape>,
+    sn: &BTreeMap<String, Shape>,
+) -> Result<(), String> {
     let mut tr = transcript(ctx, &proof.old_roots, &proof.new_roots);
-    let (ev, shv, urows, nxt) = schedule(&mut tr, pr, d, &so, &sn);
+    let (ev, shv, urows, nxt) = schedule::<E>(&mut tr, pr, d, so, sn);
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
     });
     let keys: Vec<String> = KINDS.iter().map(|k| k.to_string()).collect();
     for (side, nn, sh, roots, prox, pc) in [
-        ("old", n_old, &so, &proof.old_roots, &proof.prox_old, &proof.cols_old),
-        ("new", n_new, &sn, &proof.new_roots, &proof.prox_new, &proof.cols_new),
+        ("old", n_old, so, &proof.old_roots, &proof.prox_old, &proof.cols_old),
+        ("new", n_new, sn, &proof.new_roots, &proof.prox_new, &proof.cols_new),
     ] {
         let shs: Vec<Shape> = keys.iter().map(|k| sh[k].clone()).collect();
         let rts: Vec<Vec<Hash>> = keys.iter().map(|k| roots[k].clone()).collect();
         let pxs: Vec<Vec<Vec<u64>>> = keys.iter().map(|k| prox[k].clone()).collect();
         let cls: Vec<PcsCols> = keys.iter().map(|k| pc[k].clone()).collect();
-        pcs::verify(pr, &keys, &shs, &rts, &pxs, &cls, &mut tr, nn)
+        pcs::verify_e::<E>(pr, &keys, &shs, &rts, &pxs, &cls, &mut tr, nn)
             .map_err(|e| format!("handover ({side} committee): {e}"))?;
     }
-    let cols = colsum_map(&so, &sn, &proof.cols_old, &proof.cols_new);
-    let sys = HandoverSys { kl: pr.k_l, ev, shapes: shv, cols, urows };
+    let cols = colsum_map(so, sn, &proof.cols_old, &proof.cols_new);
+    let sys = HandoverSys::<E> { kl: pr.k_l, ev, shapes: shv, cols, urows };
     ligero::verify(lp, n_old + n_new, &[proof.eval_roots.clone()], &[nxt], &proof.mask_roots, &sys, &[], &proof.ligero, &mut tr)
 }
 
@@ -321,8 +373,8 @@ pub fn encode(pr: &Profile, d: usize, p: &HandoverProof) -> Vec<u8> {
     crate::wire::w_roots(&mut w, n_new, &sn, &p.new_roots);
     w.hs(&p.eval_roots, n);
     w.hs(&p.mask_roots, n);
-    crate::wire::w_prox_cols(&mut w, pr, n_old, &so, &p.prox_old, &p.cols_old);
-    crate::wire::w_prox_cols(&mut w, pr, n_new, &sn, &p.prox_new, &p.cols_new);
+    crate::wire::w_prox_cols_e(&mut w, pr, n_old, &so, &p.prox_old, &p.cols_old, pr.ext);
+    crate::wire::w_prox_cols_e(&mut w, pr, n_new, &sn, &p.prox_new, &p.cols_new, pr.ext);
     crate::wire::w_ligero(&mut w, pr, n, &[nrows(pr, d)], &p.ligero);
     w.b
 }
@@ -371,19 +423,51 @@ pub fn prove(
         KINDS.iter().enumerate().map(|(ki, k)| (k.to_string(), r.clone().map(|p| all[p][ki]).collect())).collect()
     };
     let (old_roots, new_roots) = (side_roots(0..n_old), side_roots(n_old..n));
+    if lp.ext != pr.ext {
+        return Err("handover: the Ligero's extension degree differs from the profile's".into());
+    }
+    match pr.ext {
+        1 => prove_e::<1>(pr, lp, d, n_old, n_new, ctx, mine, net, det, old_roots, new_roots, &so, &sn),
+        2 => prove_e::<2>(pr, lp, d, n_old, n_new, ctx, mine, net, det, old_roots, new_roots, &so, &sn),
+        e => Err(format!("handover: extension degree {e} is not supported")),
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn prove_e<const E: usize>(
+    pr: &Profile,
+    lp: &LigParams,
+    d: usize,
+    n_old: usize,
+    n_new: usize,
+    ctx: &HandoverCtx,
+    mine: &mut BTreeMap<String, PcsParty>,
+    net: &mut dyn Net,
+    det: &Det,
+    old_roots: Roots,
+    new_roots: Roots,
+    so: &BTreeMap<String, Shape>,
+    sn: &BTreeMap<String, Shape>,
+) -> Result<HandoverProof, String> {
+    let n = n_old + n_new;
+    let g = net.me();
+    let old = g < n_old;
     let mut tr = transcript(ctx, &old_roots, &new_roots);
-    let (ev, shv, urows, nr) = schedule(&mut tr, pr, d, &so, &sn);
+    let (ev, shv, urows, nr) = schedule::<E>(&mut tr, pr, d, so, sn);
     let seed_label = format!("(('handover',), {})", ctx.repr());
     let mut lg = LigParty::new(lp, g, n, &seed_label, det);
     for (e, (key, pt)) in ev.iter().enumerate() {
         let s = &shv[e];
-        let u = if key.starts_with("old") == old {
-            mine[&key[4..]].row_combo(&s.eval_weights(pt))
+        // E component rows (cosnark.row_combo_e), component-major; the other committee's parties hold zeros
+        let u: Vec<Vec<u64>> = if key.starts_with("old") == old {
+            mine[&key[4..]].row_combo_e::<E>(&s.eval_weights_e::<E>(pt))
         } else {
-            vec![0u64; s.w]
+            vec![vec![0u64; s.w]; E]
         };
-        for s0 in (0..s.w).step_by(pr.k_l) {
-            lg.add_row(&u[s0..(s0 + pr.k_l).min(s.w)]);
+        for uk in &u {
+            for s0 in (0..s.w).step_by(pr.k_l) {
+                lg.add_row(&uk[s0..(s0 + pr.k_l).min(s.w)]);
+            }
         }
     }
     debug_assert_eq!(lg.rows.len(), nr);
@@ -392,17 +476,17 @@ pub fn prove(
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&eval_roots).list_hx(&mask_roots);
     });
-    let (prox_old, cols_old) = pcs_side(pr, mine, old, 0..n_old, &mut tr, net)?;
-    let (prox_new, cols_new) = pcs_side(pr, mine, !old, n_old..n, &mut tr, net)?;
-    let cols = colsum_map(&so, &sn, &cols_old, &cols_new);
-    let sys = HandoverSys { kl: pr.k_l, ev, shapes: shv, cols, urows };
+    let (prox_old, cols_old) = pcs_side::<E>(pr, mine, old, 0..n_old, &mut tr, net)?;
+    let (prox_new, cols_new) = pcs_side::<E>(pr, mine, !old, n_old..n, &mut tr, net)?;
+    let cols = colsum_map(so, sn, &cols_old, &cols_new);
+    let sys = HandoverSys::<E> { kl: pr.k_l, ev, shapes: shv, cols, urows };
     let ligero = lg.prove(net, &mut tr, &sys, &[]);
     Ok(HandoverProof { old_roots, new_roots, eval_roots, mask_roots, prox_old, cols_old, prox_new, cols_new, ligero })
 }
 
 /// cosnark.pcs_prove(part, [], tr, n_side) for one committee, run over the joint net: the committee's parties
 /// contribute, the others send nothing and follow the transcript.
-fn pcs_side(
+fn pcs_side<const E: usize>(
     pr: &Profile,
     mine: &mut BTreeMap<String, PcsParty>,
     member: bool,
@@ -413,8 +497,9 @@ fn pcs_side(
     let mut prox = BTreeMap::new();
     for k in KINDS {
         let s = mine[k].shape.clone();
-        let gam = s.prox_weights(tr.chal(s.prox_len()));
-        let v = if member { mine[k].row_combo(&gam) } else { Vec::new() };
+        // F_{p^E} proximity weights: one row per custodian, its E components concatenated (cosnark.pcs_prove)
+        let gam = s.prox_weights_e::<E>(ext::chal::<E>(tr, s.prox_len_e(E)));
+        let v = if member { mine[k].row_combo_e::<E>(&gam).concat() } else { Vec::new() };
         let all: Vec<Vec<u64>> = net.all_gather(v)[side.clone()].to_vec();
         tr.absorb(|h| {
             h.s("g").s(k).list2(&all);
