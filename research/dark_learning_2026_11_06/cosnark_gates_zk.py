@@ -132,11 +132,14 @@ def row_layout(sh, ev, lh, Lmax, lens=None):
         urows.append(list(range(nxt, nxt + X.EXT * nr))); nxt += X.EXT * nr
     return zrows, crow, lrows, urows, (nxt, nxt + 1, nxt + 2), nxt + 3
 
-def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=None, deferred=False):
+def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=None, deferred=False, sink=None,
+                coefs=None):
     """As cosnark_zk.constraints: identities over F_{p^EXT}, EXT F_p constraints each. A round's or the claims
-    row's value j, component k, sits at position j EXT + k."""
+    row's value j, component k, sits at position j EXT + k. sink: a cozk.LinSink (streamed, the verifier); coefs:
+    the linear finals' public coefficients mle(q_X)(rr) pad(rr), if already computed (lin_coefs)."""
     zrows, crow, lrows, urows, prod, _ = layout
-    lin, labels, cur = [], [], ["?"]
+    lin, labels = ([], []) if sink is None else (sink, ZK.NoLabels())
+    cur = ["?"]
     K, E = ZK.K_L, X.EXT
     add = ZK.eadder(p, lin, labels, cur)
     ev_, ecell = ZK.evar, ZK.ecell
@@ -158,17 +161,7 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=No
         return ev_(p, ecell([(r, j * E + kk) for kk in range(E)]), coef)
     neg = lambda c: X.neg(c, p)
     m1 = neg(X.one())
-    for e, (k, pt) in enumerate(ev):
-        cur[0] = f"PCS evaluation consistency ({k})"
-        s = sh[k]
-        a = s.eval_weights_e(pt)
-        J, csum = cols[k]
-        for jj, j in enumerate(J):
-            x, xs, forms = s.pts[j], 1, []
-            for c in range(s.W):
-                forms.append(ev_(p, U(e, c), (xs,)))
-                xs = xs * x % p
-            add(*forms, rhs=X.dot(a, [(v,) for v in csum[jj]], p))
+    ZK.pcs_consistency(p, lin, add, cur, sh, ev, cols, urows, U)
     mask = ZK.ZKSC == "mask"
     def G_and_final(name, first, final, pts):
         """Cut D: G constraint; claim + rho G = s_0(0) + s_0(1) (first: hidden claim form, or None: public);
@@ -183,7 +176,7 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=No
         add(final, gm.lin_form(p, name, gm.at_coef(p, name, pts), rho), rhs=X.interp_at(msgs[-1], pts[-1], p))
     # zerocheck A * B - C = 0
     xf, yf, zf, aux = ZK.prod_forms(p, prod, 0)
-    eq = X.mle(X.eqv(tau, p), zrs, p)
+    eq = X.eq_at(tau, zrs, p)
     if mask:
         G_and_final("zc", None, fsum(ev_(p, zf, eq), Y(2, neg(eq))), zrs)
     else:
@@ -205,9 +198,7 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=No
     add(*[RC(crow, i) for i in range(len(ks))], rhs=neg(const))
     for i, k in enumerate(ks):
         m = (lens[k] - 1).bit_length()
-        coef = X.mle(q[k] + [X.zero()] * ((1 << len(rr)) - len(q[k])), rr, p)
-        for rj in rr[m:]:
-            coef = X.mul(coef, X.one_minus(rj, p), p)
+        coef = coefs[k] if coefs is not None else lin_coef(p, q[k], rr, m)
         if mask:
             G_and_final(f"l:{k}", RC(crow, i), Y(3 + i, coef), rr)
             continue
@@ -230,6 +221,21 @@ def constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=No
         cur[0] = "signed input binding: the custodians' y = the owner's signed y"
         add(Y(len(ev) - 2), Y(len(ev) - 1, m1))
     return lin, [prod], labels
+
+def lin_coef(p, qk, rr, m):
+    """The linear sumcheck final's public coefficient of X~(rr[:m]) (X of length 2^m, both q_X and X zero-padded to
+    2^len(rr)): q_pad~(rr) pad(rr), with q_pad~(rr) = q_X~(rr[:m]) pad(rr) and pad(rr) = prod_{j >= m} (1 - rr_j). The
+    MLE by folding q_X one variable at a time (bit j of the index with rr_j, as cosnark_ext.eqv pairs them): the same
+    multilinear value as <q_pad, eqv(rr)>, without the 2^len(rr) eq table."""
+    v = list(qk) + [X.zero()] * ((1 << m) - len(qk))
+    for rj in rr[:m]:
+        om = X.one_minus(rj, p)
+        v = [X.add(X.mul(a, om, p), X.mul(b, rj, p), p) for a, b in zip(v[0::2], v[1::2])]
+    coef = v[0]
+    for _ in range(2):
+        for rj in rr[m:]:
+            coef = X.mul(coef, X.one_minus(rj, p), p)
+    return coef
 
 def deferred_evals(points):
     cpt = [X.zero()] * ZK.carry_m()
@@ -512,7 +518,10 @@ def verify_middle_zk(p, n, sym, d, spine_roots, context, proof, bind=False, io=N
     pc = proof["pcs_cols"]
     cols = {k: (pc[k][0], [[sum(pc[k][1][i][jj][0][r] for i in range(n)) % p for r in range(sh[k].R)]
                            for jj in range(len(pc[k][0]))]) for k in sh}
-    lin, quad, _ = constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz, deferred=deferred is not None)
+    coefs = {k: lin_coef(p, q[k], rr, (lens[k] - 1).bit_length()) for k in ks}
+    lin = lambda sink: constraints(p, sh, lens, ks, ev, cols, layout, tau, zrs, rr, q, const, mz=mz,
+                                   deferred=deferred is not None, sink=sink, coefs=coefs)
+    quad = [layout[4]]
     if mask:
         ng = layout[0].nrows
         groups = [proof["g_roots"], proof["claims_root"], proof["eval_roots"]]

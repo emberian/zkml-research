@@ -117,7 +117,7 @@ class SymMatvec:
 
 class SymOuter:
     """The verifier's replay of one HE outer product: the commitment entry (value 0), one Beaver product, the check
-    opening."""
+    opening. It returns no matrix: the outer product feeds only the children, which the replay does not form."""
 
     def __init__(self, eng):
         self.eng = eng
@@ -135,12 +135,14 @@ class SymOuter:
             eng.open(z, "he_outer_check")
         finally:
             eng.he = False
-        return [[G.mk({}, {}) for _ in x] for _ in a]
+        return None
 
 
-def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None):
+def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None, children=True):
     """mpc_fork.run_step with the deployed helpers, a parameterized program and carried weights. carried = (M1, M2),
-    the previous step's W1n, W2n shares (then only x, y are input). Returns (W1n, W2n, wires) as mpc_fork does."""
+    the previous step's W1n, W2n shares (then only x, y are input). Returns (W1n, W2n, wires) as mpc_fork does.
+    children=False (the verifier's replay): W1n, W2n are not formed (None). They are local subtractions that open
+    nothing and never enter the middle, so the replay's constraint system is the same without their 2 d^2 forms."""
     pg = prog or Prog()
     d = len(x)
     eng.lb = pg.lb
@@ -176,8 +178,10 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None
     eng.rec_out("d1", d1)
     G2 = ou(d2, h)
     G1 = ou(d1, sx)
-    W2n = [[eng.sub(M2[i][j], G2[i][j]) for j in range(d)] for i in range(d)]
-    W1n = [[eng.sub(M1[i][j], G1[i][j]) for j in range(d)] for i in range(d)]
+    W1n = W2n = None
+    if children:
+        W2n = [[eng.sub(M2[i][j], G2[i][j]) for j in range(d)] for i in range(d)]
+        W1n = [[eng.sub(M1[i][j], G1[i][j]) for j in range(d)] for i in range(d)]
     if pg.rc:
         G.append_range(eng)
     if pg.lb:
@@ -189,9 +193,9 @@ def replay(p, public, d, tab, prog=None, carried=False):
     """The verifier's symbolic replay of the deployed step against the public values. Returns the RecEngine (its
     tpos tells how many entries the program consumed); IndexError if the transcript is shorter than the program."""
     sym = G.RecEngine(p, 3, None, symbolic=True, transcript=[("open", {}, v) for v in public])
-    z = [[G.mk({}, {}) for _ in range(d)] for _ in range(d)]
+    # carried weights enter only the HE matvec (SymMatvec reads none of them) and the children, which are not formed
     run_step(sym, None, None, [0] * d, [0] * d, tab, 9, SymMatvec(sym), SymOuter(sym), prog=prog,
-             carried=(z, z) if carried else None)
+             carried=(None, None) if carried else None, children=False)
     return sym
 
 

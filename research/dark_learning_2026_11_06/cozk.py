@@ -283,9 +283,71 @@ def _share(v, n, p, rng):
     last = [(x - sum(c)) % p for x, c in zip(v, zip(*xs))] if n > 1 else list(v)
     return xs + [last]
 
+class LinSink:
+    """The verifier's linear test, streamed: each constraint A_c w = b_c is folded into alpha = sum_c rr_c A_c and
+    sum_c rr_c b_c as it is emitted, and its E coefficients rr_c are drawn lazily. The draws are those of
+    X.chal(tr, p, L) for the L constraints emitted: one H(state, "c", i) chain with a running counter i, E draws per
+    constraint, so the transcript state after the last constraint equals that one call's. Nothing per constraint is
+    kept, so a constraint system far larger than memory can be checked. alpha is flat: cell (row, pos) is row k + pos.
+
+    add(terms, rhs): a constraint {(row, pos): coefficient} = rhs.
+    geom(off, W, x, rhs): the PCS evaluation-consistency row sum_{c < W} x^c cell(off + c) = rhs (flat cells, a u row
+    block in commit order), in closed form: no per-term dict."""
+    def __init__(self, tr, p, R, k):
+        self.tr, self.p, self.k, self.E = tr, p, k, X.EXT
+        self.i = 0
+        self.n = 0
+        self.alpha = [[0] * (R * k) for _ in range(self.E)]
+        self.rhs = [0] * self.E
+        self._px, self._pw = None, None
+
+    def _coef(self):
+        tr, p, out = self.tr, self.p, []
+        for _ in range(self.E):
+            tr.state = H(tr.state, "c", self.i)
+            self.i += 1
+            out.append(int(tr.state, 16) % p)
+        self.n += 1
+        return out
+
+    def add(self, terms, rhs):
+        k, c = self.k, self._coef()
+        for kk, ck in enumerate(c):
+            if not ck:
+                continue
+            al = self.alpha[kk]
+            for (row, pos), a in terms.items():
+                al[row * k + pos] += ck * a
+            self.rhs[kk] += ck * rhs
+
+    def append(self, con):
+        self.add(*con)
+
+    def geom(self, off, W, x, rhs):
+        from itertools import accumulate, repeat
+        from operator import add, mul
+        p, c = self.p, self._coef()
+        if self._px != (x, W):
+            self._pw = list(accumulate(repeat(x, W - 1), lambda a, b: a * b % p, initial=1))
+            self._px = (x, W)
+        pw = self._pw
+        for kk, ck in enumerate(c):
+            if not ck:
+                continue
+            al = self.alpha[kk]
+            al[off:off + W] = map(add, al[off:off + W], map(mul, repeat(ck), pw))
+            self.rhs[kk] += ck * rhs
+
+    def done(self):
+        p = self.p
+        for al in self.alpha:
+            al[:] = [a % p for a in al]
+        self.rhs = [b % p for b in self.rhs]
+
 def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
     """group_roots[g] = per-party roots of group g (in commit order); group_sizes[g] = its row count; rows are
-    numbered in commit order. Uses only public data."""
+    numbered in commit order. Uses only public data. lin: a list of ({(row, pos): coef}, rhs), or a callable
+    lin(sink) that emits the constraints into a LinSink (streamed; the same test, the same transcript)."""
     p, k, t = P.p, P.k, P.t
     E = X.EXT
     R = sum(group_sizes)
@@ -301,12 +363,21 @@ def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
         return False, "Ligero: a message exceeds its degree bound"
     gam = X.chal(tr, p, R)
     tr.absorb("lig-w", *w)
-    rr = X.chal(tr, p, len(lin))
+    sink = LinSink(tr, p, R, k)
+    if callable(lin):
+        lin(sink)
+    else:
+        for terms, b in lin:
+            sink.add(terms, b)
+    sink.done()
     for kk in range(E):
-        if sum(peval(q[kk], z, p) for z in P.zeta) % p != sum(c[kk] * b for (_, b), c in zip(lin, rr) if kk < len(c)) % p:
+        if sum(peval(q[kk], z, p) for z in P.zeta) % p != sink.rhs[kk]:
             return False, "Ligero linear test: the constraints do not hold"
-    alpha = _alpha(lin, rr, R, k, p)
-    Rp = [[P.interp_z(a) if any(a) else None for a in alpha[kk]] for kk in range(E)]
+    # sum_r R_r(x) colsum_r with R_r = interp_z(alpha_r) is sum_r colsum_r sum_i alpha_r[i] Lz_i(x): no interpolation
+    live = []
+    for al in sink.alpha:
+        live.append([(r, al[r * k:(r + 1) * k]) for r in range(R) if any(al[r * k:(r + 1) * k])])
+    sink.alpha = None
     tr.absorb("lig-q", *q)
     rho = X.chal(tr, p, len(quad))
     if any(peval(pq_, z, p) for pq_ in pq for z in P.zeta):
@@ -319,6 +390,7 @@ def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
     sizes = list(group_sizes) + [3 * E]
     if len(cols) != len(roots):
         return False, "Ligero: wrong number of column groups"
+    from operator import mul
     for jj, j in enumerate(J):
         x = j + 1
         colsum, msum = [], None
@@ -333,10 +405,12 @@ def verify(P, n, group_roots, group_sizes, mask_roots, lin, quad, msgs, tr):
                 colsum += s
             else:
                 msum = s
+        lz = [peval(l, x, p) for l in P.Lz]
         for kk in range(E):
             if peval(w[kk], x, p) != (sum(g_[kk] * c for g_, c in zip(gam, colsum)) + msum[kk]) % p:
                 return False, "Ligero proximity test fails at an opened column"
-            if peval(q[kk], x, p) != (sum(peval(Rp[kk][r], x, p) * colsum[r] for r in range(R) if Rp[kk][r]) + msum[E + kk]) % p:
+            lin_x = sum(colsum[r] * (sum(map(mul, a_r, lz)) % p) for r, a_r in live[kk])
+            if peval(q[kk], x, p) != (lin_x + msum[E + kk]) % p:
                 return False, "Ligero linear test fails at an opened column"
             if peval(pq[kk], x, p) != (sum(c[kk] * (colsum[a] * colsum[b] - colsum[z]) for (a, b, z), c in zip(quad, rho)) + msum[2 * E + kk]) % p:
                 return False, "Ligero quadratic test fails at an opened column"
