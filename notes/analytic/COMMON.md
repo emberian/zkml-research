@@ -29,3 +29,11 @@ Stopping processes: PID file or nothing (incident 2026-10-10). A subagent ran `p
 - Every subagent brief you write quotes this block verbatim.
 
 Reporting: report on events (something lands, something is red, you're blocked, you need a decision); no status chatter. Keep a notes file at /Users/ember/dev/zkml-research/notes/analytic/<your-name>.md. When something lands, add or update a row in /Users/ember/dev/whatember/INITIATIVES.md, committing that file by name and pushing. Your final message: the theorem statements verbatim, the SHAs, and what's next.
+
+## Roster (SendMessage ids)
+- transport (proof-repair transport; iroot widening): a858795fecc47ab27
+- generator (wp-derived constraints, verified IR optimizer): ab0acb782766f8ab1
+- costmodel (Lean cost function, Pareto, bounds, roofline): aaebb426de60a31e9
+- calculus (certificate composition calculus, Datalog certs, rewriting AIR): a6e364a645656b481
+- pcdsystem (DAG PCD, composed proof system, dark-learning impossibility): a522bd5f7343d9608
+- initiative-10 lane (single-tick descriptor; hands its iroot branch to transport): a4023c63242bc44ab
