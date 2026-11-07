@@ -234,6 +234,23 @@ impl Run {
     }
 }
 
+/// Does this runtime's Player-Data hold party `party`'s MAC key share for `backend` (mascot: Mascot-Secrets-p-61-*,
+/// lowgear / highgear: LowGear- / HighGear-Secrets-*)?
+pub fn has_mac_key(player_data: &Path, backend: &str, party: usize) -> bool {
+    let prefix = match backend {
+        "lowgear" => "LowGear-Secrets-",
+        "highgear" => "HighGear-Secrets-",
+        _ => "Mascot-Secrets-p-61-",
+    };
+    let tail = format!("-P{party}-3");
+    std::fs::read_dir(player_data)
+        .map(|rd| rd.flatten().any(|e| {
+            let n = e.file_name().to_string_lossy().into_owned();
+            n.starts_with(prefix) && n.ends_with(&tail)
+        }))
+        .unwrap_or(false)
+}
+
 /// Overwrite a file's contents with zeros in place, sync, then unlink it (every hard-linked name sees the zeros).
 pub fn wipe_file(path: &Path) -> std::io::Result<()> {
     use std::io::{Seek, SeekFrom, Write};

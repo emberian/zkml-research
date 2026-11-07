@@ -375,3 +375,17 @@ fn retiring_a_mac_key_erases_it_and_only_it() {
     assert!(std::fs::read(&keep).unwrap().iter().all(|&b| b == 0));
     std::fs::remove_dir_all(&root).unwrap();
 }
+
+#[test]
+fn has_mac_key_sees_only_the_partys_live_key() {
+    let pd = std::env::temp_dir().join(format!("darkprep-haskey-{}", std::process::id()));
+    std::fs::create_dir_all(&pd).unwrap();
+    assert!(!darkprep::mpspdz::has_mac_key(&pd, "mascot", 0));
+    std::fs::write(pd.join("Mascot-Secrets-p-61-abc-P1-3"), b"x").unwrap();
+    std::fs::write(pd.join("Mascot-Secrets-p-61-abc-P0-3.retired-9"), b"x").unwrap();
+    std::fs::write(pd.join("LowGear-Secrets-60-def-P0-3"), b"x").unwrap();
+    assert!(!darkprep::mpspdz::has_mac_key(&pd, "mascot", 0));
+    assert!(darkprep::mpspdz::has_mac_key(&pd, "mascot", 1));
+    assert!(darkprep::mpspdz::has_mac_key(&pd, "lowgear", 0));
+    std::fs::remove_dir_all(&pd).unwrap();
+}

@@ -28,6 +28,10 @@ elif [ "${LAYOUT:-}" = wired-new-sh ]; then
   # TEST: the wired-new seats after an abort (seats.sh newsh)
   HOST=(bb2 dregg-forge bb2); ROOT=(/home/build/lanes/dl-gen6-prep /srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
   F=${WRAP[0]}; B=${WRAP[1]}; WRAP=("$B" "$F" "$B"); MP=(wired-new0-sh/mpspdz wired-new1-sh/mpspdz wired-new2-sh/mpspdz)
+elif [ "${LAYOUT:-}" = wired-new-sh2 ]; then
+  # TEST: the wired-new-sh seats after an abort (seats.sh newsh2)
+  HOST=(bb2 dregg-forge bb2); ROOT=(/home/build/lanes/dl-gen6-prep /srv/lanes/dl-gen6-prep /home/build/lanes/dl-gen6-prep)
+  F=${WRAP[0]}; B=${WRAP[1]}; WRAP=("$B" "$F" "$B"); MP=(wired-new0-sh2/mpspdz wired-new1-sh2/mpspdz wired-new2-sh2/mpspdz)
 fi
 for i in 0 1 2; do
   r=${ROOT[$i]}
