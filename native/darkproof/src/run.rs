@@ -259,6 +259,43 @@ pub fn prove_step_d(
     Ok(StepProof { deferred, blob, child, genesis_roots, secs: t0.elapsed().as_secs_f64(), sent: net.sent() - sent0 })
 }
 
+/// tape_triples_at(tape, from, None) for a terminal section: the tape is cut to `from` as the triples are read (from
+/// its end, its buffers shrinking every 2^20 triples), so the section and the tape are never both held.
+#[cfg(feature = "tcp")]
+pub fn take_tape_triples(tape: &mut darkstep::tape::Tape, from: usize) -> Result<Vec<Triple>, String> {
+    use darkstep::tape::Tag;
+    let end = tape.len();
+    if from > end || (end - from) % 3 != 0 {
+        return Err("the tape's proof section is not whole triples".into());
+    }
+    let count = (end - from) / 3;
+    let cut = |tape: &mut darkstep::tape::Tape, k: usize| {
+        tape.tags.truncate(k);
+        tape.sh.truncate(k);
+        tape.mac.truncate(k);
+        tape.tags.shrink_to_fit();
+        tape.sh.shrink_to_fit();
+        tape.mac.shrink_to_fit();
+    };
+    let mut triples = Vec::with_capacity(count);
+    let mut k = end;
+    while k > from {
+        let j = k - 3;
+        if (tape.tags[j], tape.tags[j + 1], tape.tags[j + 2]) != (Tag::Ta as u8, Tag::Tb as u8, Tag::Tc as u8) {
+            return Err(format!("the tape's proof section is not (Ta, Tb, Tc) triples at entry {j}"));
+        }
+        let e = |j: usize| (tape.sh[j], tape.mac[j]);
+        triples.push((e(j), e(j + 1), e(j + 2)));
+        k = j;
+        if triples.len() % (1 << 20) == 0 {
+            cut(tape, k);
+        }
+    }
+    cut(tape, from);
+    triples.reverse();
+    Ok(triples)
+}
+
 /// The (Ta, Tb, Tc) triples of a tape section: `count` triples from entry `from` (None: to the tape's end).
 #[cfg(feature = "tcp")]
 pub fn tape_triples_at(tape: &darkstep::tape::Tape, from: usize, count: Option<usize>) -> Result<Vec<Triple>, String> {
@@ -602,15 +639,17 @@ pub fn release_custodian(
     if pol.x.len() != d * m || w2.len() != d || pol.ncls > d {
         return Err("release: the policy's shape is not the weights'".into());
     }
-    let nrt = release_section(lp, d, m, prm, pol);
     let mut tt = crate::Trace::new("release", pt.i);
     tt.lap("start");
     let t0 = std::time::Instant::now();
     let (c, mut st) = release_mpc(pt, w1, w2, pol, prm)?;
     let mpc_secs = t0.elapsed().as_secs_f64();
     tt.lap("MPC");
-    st.triples = tape_triples_at(&pt.tape, pt.cur, Some(nrt))?;
-    // the release is terminal: nothing reads the tape after its proof section, so free it before proving
+    // the release is terminal: its proof section is the rest of the tape (prove_release refuses a count that is not
+    // the proof's), taken from the tape's end as the tape shrinks, and the rest of the tape freed before proving. The
+    // count is not recomputed here: release_section replays the program (at M = 52 a transient Rec of about 7 GB).
+    st.triples = take_tape_triples(&mut pt.tape, pt.cur)?;
+    let nrt = st.triples.len();
     let cur_after = pt.cur + 3 * nrt;
     pt.tape = darkstep::tape::Tape { alpha_i: pt.tape.alpha_i, ..Default::default() };
     pt.atom_log = Vec::new();
