@@ -109,6 +109,12 @@ def main():
         ck(who, "disk scan before erasure finds the material in the state files (control)", db.get("hits", 0) > 0, db.get("hit_files"))
         ck(who, "disk scan after erasure finds none of it", da.get("hits") == 0 and da.get("unreadable") == [] and "hits" in da,
            {"hit_files": da.get("hit_files"), "unreadable": da.get("unreadable")})
+        rb, ra = db.get("ram") or {}, da.get("ram") or {}
+        if rb.get("files"):                          # RAM filesystems (tmpfs: prep's MP-SPDZ dirs), darkhand after c9771f4a
+            ck(who, "RAM-filesystem (tmpfs) copies: none left after erasure", ra.get("hits") == 0, ra.get("hit_files"))
+            sw = rb.get("swap_total_kb") or 0
+            ck(who, "RAM filesystems cannot page out (no swap on the box, or mounted noswap)",
+               all(sw == 0 or "noswap" in m["options"] for m in rb.get("mounts") or []), [rb.get("mounts"), sw])
         ck(who, "the zeroizing allocator was active", (o.get("allocator_wiped_bytes") or 0) > 0)
         kinds = [k for k, _ in o.get("canary_kinds", [])]
         # the TLS key retires with the seat in a rotation; a self-handover keeps the seat's identity (not erased)
