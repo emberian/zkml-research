@@ -318,6 +318,8 @@ pub struct MiddleIn<'a> {
     pub lig_dealer: Option<pycompat::PyRandom>,
     /// the deployed run: this party's tape triples for the Ligero's products (overrides lig_dealer)
     pub lig_tape: Option<Vec<(u64, u64, u64)>>,
+    /// TEST ONLY: prove even when a truncation input is outside its proved bound (the forced-bundle refusal rows)
+    pub ignore_range: bool,
     /// ATTACK HOOK (fs_public_falsifier): colluders rewrite the batch constant after seeing gamma
     pub cst_patch: Option<&'a (dyn Fn(&BTreeMap<String, Vec<u64>>, u64, &[u64]) -> u64 + Sync)>,
 }
@@ -339,6 +341,70 @@ fn padv(v: &[Sh], l: usize) -> Vec<Sh> {
     o
 }
 
+/// cosnark_gates.fill_range: this party's shares of the range rows' atoms (Beaver products round by round over every
+/// checked truncation), then every truncation's violation indicator opened; returns the violated ones.
+fn fill_range(rec: &Rec, a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) -> Vec<(&'static str, usize)> {
+    let rows = &rec.range_rows;
+    let maxl = rows.iter().map(|r| r.l).max().unwrap_or(0);
+    let mut beta: Vec<Option<Sh>> = vec![None; rows.len()];
+    let add = |x: Sh, y: Sh| (field::add(x.0, y.0), field::add(x.1, y.1));
+    let sub = |x: Sh, y: Sh| (field::sub(x.0, y.0), field::sub(x.1, y.1));
+    for i in 0..maxl {
+        let idx: Vec<usize> = (0..rows.len()).filter(|&k| i < rows[k].l && rows[k].t[i].is_some()).collect();
+        let xs: Vec<Sh> = idx.iter().map(|&k| a[rows[k].d.bits[i] as usize]).collect();
+        let ys: Vec<Sh> = idx.iter().map(|&k| beta[k].unwrap()).collect();
+        let prods = sp.mul_batch(net, &xs, &ys);
+        for (&k, t) in idx.iter().zip(prods) {
+            a[rows[k].t[i].unwrap() as usize] = t;
+        }
+        for (k, row) in rows.iter().enumerate() {
+            if i >= row.l {
+                continue;
+            }
+            let ri = row.d.bits.get(i).map(|&x| a[x as usize]);
+            let t = row.t[i].map(|x| a[x as usize]);
+            let nb = if row.cb[i] == 1 {
+                t.unwrap_or((0, 0))
+            } else {
+                let mut v = (0, 0);
+                if let Some(r) = ri {
+                    v = add(v, r);
+                }
+                if let Some(b) = beta[k] {
+                    v = add(v, b);
+                }
+                if let Some(t) = t {
+                    v = sub(v, t);
+                }
+                v
+            };
+            a[row.bb[i] as usize] = nb;
+            beta[k] = Some(nb);
+        }
+    }
+    let ind: Vec<Sh> = rows
+        .iter()
+        .map(|row| {
+            let mut v = a[row.bb[row.l - 1] as usize];
+            let mut cst = 0u64;
+            for i in row.d.b as usize..row.l {
+                let nb = a[row.bb[i] as usize];
+                v = add(v, add(nb, nb));
+                if let Some(&r) = row.d.bits.get(i) {
+                    v = sub(v, a[r as usize]);
+                }
+                if i > 0 {
+                    v = sub(v, a[row.bb[i - 1] as usize]);
+                }
+                cst = field::add(cst, row.cb[i]);
+            }
+            if cst != 0 { sp.cadd(cst, v) } else { v }
+        })
+        .collect();
+    let vals = sp.open_batch(net, &ind, "range-check");
+    rows.iter().zip(vals).filter(|(_, v)| *v != 0).map(|(r, _)| (r.d.name, r.d.k)).collect()
+}
+
 /// prove_middle_zk for custodian `inp.i`. spine_coms: the spine's commitments of SPINE (carried, second life).
 pub fn prove(
     inp: &MiddleIn,
@@ -352,8 +418,21 @@ pub fn prove(
     let kl = pr.k_l;
     let mut tt = crate::Trace::new("middle", i);
     let (lens, _) = public_shapes_io(pr, rec.n_prep(), rec.had.len(), d, false, rec.io.as_ref());
-    assert_eq!(inp.atoms.len(), rec.n_prep(), "witness atoms differ from the replay");
-    let pv = padv(inp.atoms, lens["P"]);
+    assert_eq!(inp.atoms.len(), rec.n_program_atoms(), "witness atoms differ from the replay");
+    let mut atoms_v: Vec<Sh> = inp.atoms.to_vec();
+    if !rec.range_rows.is_empty() {
+        atoms_v.resize(rec.n_prep(), (0, 0));
+        let bad = fill_range(rec, &mut atoms_v, net, sp);
+        if !bad.is_empty() && !inp.ignore_range {
+            let names: Vec<String> = bad.iter().take(4).map(|(nm, k)| format!("{nm}[{k}]")).collect();
+            return Err(format!(
+                "proving refused: truncation input outside its proved bound: {}{}",
+                names.join(", "),
+                if bad.len() > 4 { " ..." } else { "" }
+            ));
+        }
+    }
+    let pv = padv(&atoms_v, lens["P"]);
     let gather = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
         padv(&rec.had.iter().map(|t| pv[sel(t) as usize]).collect::<Vec<_>>(), lens["A"])
     };

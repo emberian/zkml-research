@@ -265,10 +265,11 @@ pub fn make_bundle(
                     det: &o.det,
                     lig_dealer: dl_m,
                     lig_tape: None,
+                    ignore_range: false,
                     cst_patch: patch_ref,
                 };
                 let mo = middle::prove(&mi, &mut *net, &mut sp, spine_coms, oy_i)?;
-                assert_eq!(sp.triples as usize, spine::beaver_count(d) + middle::beaver_count(rec.had.len()), "middle Beaver count");
+                assert_eq!(sp.triples as usize, spine::beaver_count(d) + rec.range_products() + middle::beaver_count(rec.had.len()), "middle Beaver count");
                 Ok((so, mo, child, carried))
             }));
         }

@@ -21,6 +21,8 @@ pub struct StepParams {
     /// the deployed step (research cosnark_he): HE matvec and HE outer, weights carried from step 2 on, over the HE
     /// profile's field; false: the harness's plain-SPDZ step (matrix and outer-product triples, W input every step)
     pub he: bool,
+    /// the proof checks every truncation's input interval (cosnark_gates.append_range; genesis "RC": true)
+    pub rc: bool,
     /// public constant added to b * g1 before its truncation (step_spec.Program.R3; 0 floors)
     pub r3: i64,
     /// the table's domain is [t_lo, t_lo + 256) (step_spec.Program.T_LO; the harness's -128)
@@ -29,9 +31,9 @@ pub struct StepParams {
 
 impl StepParams {
     /// The harness's step (step_spec S1, S2, S3 = 5, 4, 8; run_step's K = 13, 8, 13).
-    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, r3: 0, t_lo: -128 };
+    pub const HARNESS: StepParams = StepParams { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, he: false, rc: false, r3: 0, t_lo: -128 };
     /// The d = 4096 shifts of the decision doc's count formulas (§12; cosnark_gates.counts_formula at width).
-    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, r3: 0, t_lo: -128 };
+    pub const WIDE: StepParams = StepParams { s1: 11, k1: 19, s2: 4, k2: 8, s3: 14, k3: 19, he: false, rc: false, r3: 0, t_lo: -128 };
     /// The program a ledger of width d runs: the harness's up to d = 1024, the wide shifts beyond.
     pub fn for_width(d: usize) -> StepParams {
         if d <= 1024 { Self::HARNESS } else { Self::WIDE }
@@ -77,6 +79,8 @@ pub enum Phase {
     Io,
     /// the release's one opening (cosnark_release)
     Release,
+    /// the proved truncation input bound (append_range)
+    Range,
 }
 
 /// The middle's external vectors for a program other than the step (cosnark_gates_zk.IO): name and padded length,
@@ -86,6 +90,30 @@ pub struct Io {
     pub lens: Vec<(&'static str, usize)>,
     pub carried: Vec<&'static str>,
     pub label: &'static str,
+}
+
+/// One truncation whose input interval [a, a + 2^b) the proof checks: the bit atoms R of its mask r (trb then
+/// trhb), its opened c, its K and s, and the truncation's name and index (for refusals).
+#[derive(Clone, Debug)]
+pub struct RangeD {
+    pub name: &'static str,
+    pub k: usize,
+    pub bits: Vec<u32>,
+    pub c: u64,
+    pub kk: u32,
+    pub s: u32,
+    pub a: i64,
+    pub b: u32,
+}
+
+/// Its rows (append_range): L = K + KAPPA + 1, c' = c - (2^K + a) bitwise, the product and borrow atoms.
+#[derive(Clone, Debug)]
+pub struct RangeRow {
+    pub d: RangeD,
+    pub l: usize,
+    pub cb: Vec<u64>,
+    pub t: Vec<Option<u32>>,
+    pub bb: Vec<u32>,
 }
 
 /// The release's z1 = W1 X binding (X public): d M linear IO constraints at cons[start..start + d M], entry (j, t) at
@@ -126,6 +154,9 @@ pub enum Tag {
     Tb,
     Tc,
     Lp,
+    /// proof-only: a range row's product t_i = R_i beta_i and its borrow beta_(i+1)
+    Rt,
+    Rb,
 }
 
 pub struct Rec<'t> {
@@ -141,6 +172,12 @@ pub struct Rec<'t> {
     pub names: Vec<&'static str>,
     pub io: Option<Io>,
     pub pubmat: Option<PubMat>,
+    pub ranges: Vec<RangeD>,
+    pub range_rows: Vec<RangeRow>,
+    /// (name, index) of truncations whose PUBLIC c' already lies outside [0, 2^L)
+    pub range_fail: Vec<(&'static str, usize)>,
+    /// atoms of the program (before the proof-only range rows)
+    pub n_step_atoms: Option<usize>,
 }
 
 #[derive(Debug)]
@@ -155,7 +192,96 @@ fn neg_form(f: &Form) -> Vec<(Atom, u64)> {
     f.terms.iter().map(|&(a, c)| (a, field::neg(c))).collect()
 }
 
+impl StepParams {
+    /// cosnark_he.Prog.bound: the proved interval (a, B) of truncation `name`.
+    pub fn bound(&self, name: &str, kc: u32) -> (i64, u32) {
+        match name {
+            "z1" => (self.t_lo << self.s1, self.s1 + 8),
+            "z2" | "score" => (-(1i64 << self.k1), self.k1 + 1),
+            "e" => (-(1i64 << self.k2), self.k2 + 1),
+            "bg" => (-(1i64 << self.k3), self.k3 + 1),
+            "compare" => (-(1i64 << kc), kc + 1),
+            _ => panic!("no truncation {name}"),
+        }
+    }
+    pub fn rc_of(&self, name: &'static str, kc: u32) -> Option<(&'static str, i64, u32)> {
+        if self.rc {
+            let (a, b) = self.bound(name, kc);
+            Some((name, a, b))
+        } else {
+            None
+        }
+    }
+}
+
 impl<'t> Rec<'t> {
+    /// cosnark_gates.append_range: the borrow-chain rows of every checked truncation, after the program's atoms.
+    pub fn append_range(&mut self) {
+        self.n_step_atoms = Some(self.tags.len());
+        let ds = std::mem::take(&mut self.ranges);
+        for d in ds.iter() {
+            let l = (d.kk + KAPPA + 1) as usize;
+            let lo = (1i128 << d.kk) + d.a as i128;
+            let cp = d.c as i128 - lo;
+            if !(0..(1i128 << l)).contains(&cp) {
+                self.range_fail.push((d.name, d.k));
+            }
+            let cpm = cp.rem_euclid(1i128 << l);
+            let cb: Vec<u64> = (0..l).map(|i| ((cpm >> i) & 1) as u64).collect();
+            assert_eq!(d.bits.len(), (d.kk + KAPPA) as usize);
+            let mut ts = Vec::with_capacity(l);
+            let mut bs = Vec::with_capacity(l);
+            let mut beta: Option<u32> = None;
+            for i in 0..l {
+                let ri = d.bits.get(i).copied();
+                let t = match (ri, beta) {
+                    (Some(rv), Some(bv)) => {
+                        let t = self.atom(Tag::Rt);
+                        self.had.push((rv, bv, t));
+                        Some(t)
+                    }
+                    _ => None,
+                };
+                let nb = self.atom(Tag::Rb);
+                let mut f = vec![(Atom::Prep(nb), 1u64)];
+                if cb[i] == 1 {
+                    if let Some(t) = t {
+                        f.push((Atom::Prep(t), field::p() - 1));
+                    }
+                } else {
+                    for (x, co) in [(ri, field::p() - 1), (beta, field::p() - 1), (t, 1)] {
+                        if let Some(x) = x {
+                            f.push((Atom::Prep(x), co));
+                        }
+                    }
+                }
+                self.cons.push(Con { form: Form { terms: f, c: 0 }, value: 0, phase: Phase::Range, pos: usize::MAX });
+                if i >= d.b as usize {
+                    let mut g = vec![(Atom::Prep(nb), 2u64)];
+                    for x in [ri, beta].into_iter().flatten() {
+                        g.push((Atom::Prep(x), field::p() - 1));
+                    }
+                    self.cons.push(Con { form: Form { terms: g, c: cb[i] }, value: 0, phase: Phase::Range, pos: usize::MAX });
+                }
+                ts.push(t);
+                bs.push(nb);
+                beta = Some(nb);
+            }
+            self.cons.push(Con { form: Form { terms: vec![(Atom::Prep(beta.unwrap()), 1)], c: 0 }, value: 0, phase: Phase::Range, pos: usize::MAX });
+            self.range_rows.push(RangeRow { d: d.clone(), l, cb, t: ts, bb: bs });
+        }
+    }
+
+    /// Proof-time Beaver products of the range rows.
+    pub fn range_products(&self) -> usize {
+        self.range_rows.iter().map(|r| r.t.iter().filter(|t| t.is_some()).count()).sum()
+    }
+
+    /// The program's own atoms (the witness's), before the proof-only range rows.
+    pub fn n_program_atoms(&self) -> usize {
+        self.n_step_atoms.unwrap_or(self.tags.len())
+    }
+
     fn open(&mut self, form: Form, phase: Phase) -> Result<u64, Short> {
         let v = *self.transcript.get(self.tpos).ok_or(Short::Short)?;
         self.tpos += 1;
@@ -194,6 +320,11 @@ impl<'t> Rec<'t> {
         Ok(Form { terms, c: field::mul(e, f) })
     }
     fn trunc(&mut self, x: &Form, s: u32, k: u32) -> Result<Form, Short> {
+        self.trunc_rc(x, s, k, None)
+    }
+
+    /// rc = (name, a, B): the proof also checks x in [a, a + 2^B) (append_range).
+    fn trunc_rc(&mut self, x: &Form, s: u32, k: u32, rc: Option<(&'static str, i64, u32)>) -> Result<Form, Short> {
         let r = self.atom(Tag::Tr);
         let bits: Vec<u32> = (0..s)
             .map(|_| {
@@ -224,6 +355,12 @@ impl<'t> Rec<'t> {
         let mut fo = x.terms.clone();
         fo.push((Atom::Prep(r), 1));
         let c = self.open(Form { terms: fo, c: field::add(x.c, 1u64 << k) }, Phase::Trunc)?;
+        if let Some((name, a, b)) = rc {
+            let kidx = self.ranges.iter().filter(|r| r.name == name).count();
+            let mut all = bits.clone();
+            all.extend(&hb);
+            self.ranges.push(RangeD { name, k: kidx, bits: all, c, kk: k, s, a, b });
+        }
         let clow = c & ((1u64 << s) - 1);
         let a: Vec<u64> = (0..s).map(|i| (clow >> i) & 1).collect();
         // eq_j = 1 - (a_j xor r_j) = -(1 - 2 a_j) r_j + (1 - a_j)
@@ -318,6 +455,10 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         names: NAMES.to_vec(),
         io: None,
         pubmat: None,
+        ranges: Vec::new(),
+        range_rows: Vec::new(),
+        range_fail: Vec::new(),
+        n_step_atoms: None,
     };
     // HE matvec: d he_auth, d Freivalds products (2 openings each), the check; plain: W - A (d^2) and v - b (d)
     let mv = if prm.he { 3 * d + 1 } else { d * d + d };
@@ -329,7 +470,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     let z1 = r.rec_in("z1");
     let mut u1 = Vec::with_capacity(d);
     for z in &z1 {
-        u1.push(r.trunc(z, prm.s1, prm.k1)?);
+        u1.push(r.trunc_rc(z, prm.s1, prm.k1, prm.rc_of("z1", 10))?);
     }
     let mut h = Vec::with_capacity(d);
     let mut g1 = Vec::with_capacity(d);
@@ -345,14 +486,14 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     let y = r.rec_in("y");
     let mut e = Vec::with_capacity(d);
     for (z, yy) in z2.iter().zip(&y) {
-        let t = r.trunc(z, prm.s1, prm.k1)?;
+        let t = r.trunc_rc(z, prm.s1, prm.k1, prm.rc_of("z2", 10))?;
         let mut terms = t.terms;
         terms.extend(neg_form(yy));
         e.push(Form { terms, c: field::sub(t.c, yy.c) });
     }
     let mut d2 = Vec::with_capacity(d);
     for v in &e {
-        d2.push(r.trunc(v, prm.s2, prm.k2)?);
+        d2.push(r.trunc_rc(v, prm.s2, prm.k2, prm.rc_of("e", 10))?);
     }
     r.rec_out("d2", &d2);
     r.skip(mv)?; // matvec b (transposed)
@@ -366,7 +507,7 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
     for v in &bg {
         // b * g1 + r3 (a public constant: the form's constant moves)
         let v = Form { terms: v.terms.clone(), c: field::add(v.c, field::from_i64(prm.r3)) };
-        d1.push(r.trunc(&v, prm.s3, prm.k3)?);
+        d1.push(r.trunc_rc(&v, prm.s3, prm.k3, prm.rc_of("bg", 10))?);
     }
     r.rec_out("d1", &d1);
     for _ in 0..2 {
@@ -380,6 +521,9 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         } else {
             r.skip(2 * d)?;
         }
+    }
+    if prm.rc {
+        r.append_range();
     }
     Ok(r)
 }
@@ -415,6 +559,10 @@ pub fn replay_release<'t>(
             label: "release-zk",
         }),
         pubmat: None,
+        ranges: Vec::new(),
+        range_rows: Vec::new(),
+        range_fail: Vec::new(),
+        n_step_atoms: None,
     };
     assert_eq!(x.len(), d * m);
     assert_eq!(labels.len(), m);
@@ -427,7 +575,7 @@ pub fn replay_release<'t>(
     let z1: Vec<Form> = (0..d * m).map(|k| Form { terms: vec![(r.ext("z1", k), 1)], c: 0 }).collect();
     let mut u1 = Vec::with_capacity(d * m);
     for z in &z1 {
-        u1.push(r.trunc(z, prm.s1, prm.k1)?);
+        u1.push(r.trunc_rc(z, prm.s1, prm.k1, prm.rc_of("z1", 10))?);
     }
     let off = field::from_i64(-prm.t_lo);
     let mut h = Vec::with_capacity(d * m);
@@ -457,7 +605,7 @@ pub fn replay_release<'t>(
     for c in 0..ncls {
         let mut row = Vec::with_capacity(m);
         for t in 0..m {
-            row.push(r.trunc(&sums[c * m + t], prm.s1, prm.k1)?);
+            row.push(r.trunc_rc(&sums[c * m + t], prm.s1, prm.k1, prm.rc_of("score", kc))?);
         }
         o.push(row);
     }
@@ -473,7 +621,7 @@ pub fn replay_release<'t>(
             let mut terms = o[l][t].terms.clone();
             terms.extend(neg_form(&o[k][t]));
             let diff = Form { terms, c: field::sub(field::sub(o[l][t].c, o[k][t].c), 1) };
-            let q = r.trunc(&diff, kc, kc)?;
+            let q = r.trunc_rc(&diff, kc, kc, prm.rc_of("compare", kc))?;
             f_t.push(Form { terms: q.terms, c: field::add(q.c, 1) });
         }
         fs.push(f_t);
@@ -490,6 +638,9 @@ pub fn replay_release<'t>(
         oks.c = field::add(oks.c, a.c);
     }
     r.open(oks, Phase::Release)?;
+    if prm.rc {
+        r.append_range();
+    }
     Ok(r)
 }
 
