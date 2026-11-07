@@ -589,3 +589,33 @@ seat; DLVAULT2 tape 2,672,137,730 bytes; (sealed, empty) owner message 52 bytes.
   - negative control (one share + 1): 1 MAC failure and 1 bad triple.
 - This is the abort of 10:58 (lg64d) reproduced on purpose, and the fixed binary survives it over the real WAN.
 - The tapes, chunks and the ptest seats' keys (9 files per seat) were erased afterwards.
+
+**LowGear at N = 16,384: measured prices and the run of record's calendar [EXECUTED]**
+- bb2 loopback (`lg16k.sh`, per-socket bytes, -S 60, 38adf2bf):
+  - key setup: 338.3 GB for all parties (112.5 GB per party, twice N = 8,192), in 458 s (key generation 391 s, MAC key 50 s);
+  - triples: **82.9 kbit per generated triple**, for all parties. 100k -> 300k nominal is one batch of U · slots = 163,840 triples, costing 1,698.9 MB. The same method gives 46.1 kbit at N = 8,192; the earlier 37.8 k was per nominal triple;
+  - randoms: 3.84 kbit each.
+- hbox's uplink: lg64f alone 17.5-17.9 Mbit/s. With lg64n beside it (14:47-15:08, 1,203 s): lg64f 11.5, lg64n 13.2, wlo1 TX 24.9 Mbit/s, which is **1.41x**. So both key setups run at once (the coordinator's rule).
+- Through hbox, alone at 17.9 Mbit/s, assuming hbox sends 1/3 of the total:
+
+| item | time |
+|---|---:|
+| key setup | 14.0 h |
+| one proved step | 1.92 h |
+| handover tape | 0.67 h |
+| release, M = 52 | 27.2 h |
+| MASCOT tau = 5 step (comparison) | 8.4 h |
+
+- rec, the run of record. Old committee on ROOT/mpspdz with lg64f's key; new committee on ROOT/lgnew<I> with lg64n's key. The deploy lane's paths are symlinks: `rec-old<I>/mpspdz` and `rec-new<I>/mpspdz`.
+- `build/rec-stream.sh A|B OUTDIR` runs detached on the Mac (PID files and an event log in `scratchpad/.../prep3/rec/`):
+  - stream A: lg64f, then rec-c0, rec-c1, rec-c2 (2 steps each) and rec-c3 (1 step);
+  - stream B: lg64n, then rec-ho, rec-n-c0 and rec-rel.
+  - Each verdict comes from the boxes: the wrappers have exited by their PID files, and all three chunk dirs exist.
+- Expected: new key about 09:45 Nov 8; old key about 11:45 Nov 8; launch about 06:00 Nov 9; rec-rel about 01:00 Nov 10.
+
+**The LowGear pause tests**
+- Runs 1 and 2 used stale test-seat binaries (66c09524, before the EINTR fix). `seats.sh fresh` copied them from wired<I>.
+  - Run 1: stops in key generation and in triple generation that did not land on a socket receive. It passed, with tapes 0/6,044,998 MAC failures and 0/2,004,482 bad triples.
+  - Run 2: forced receive (4 wait_woken threads). It aborted on SIGCONT: "read_some: Interrupted system call".
+- Neither run tests the fixed build. All prep runtimes now carry 38adf2bf / 4d50d76f, and `seats.sh fresh` copies from the custodian runtime.
+- Run 3, on the fixed build, follows.

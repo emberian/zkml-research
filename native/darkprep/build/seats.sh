@@ -20,8 +20,8 @@ case $1 in
   rehold) H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(reh-old0 reh-old1 reh-old2); SRC=(wired0 wired1 wired2); IP=($FIP $BIP $BIP); PORT=16100; IPF=ips-reh-old.txt;;
   rehnew) H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(reh-new0 reh-new1 reh-new2); SRC=(wired0 wired1 wired2); IP=($FIP $BIP $BIP); PORT=16200; IPF=ips-reh-new.txt;;
   fresh)  # seats.sh fresh NAME PORT: a fresh seat set NAME<I> on the wired boxes (0 forge, 1 bb2, 2 bb2), binaries
-          # from wired<I>, new TLS keys and no MAC key; ips-NAME.txt, ports PORT + I; launch3.sh LAYOUT=dir:NAME
-    N=${2:?seats.sh fresh NAME PORT}; H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(${N}0 ${N}1 ${N}2); SRC=(wired0 wired1 wired2)
+          # from each box's custodian runtime mpspdz/ (the EINTR-fixed build), new TLS keys and no MAC key; ips-NAME.txt, ports PORT + I; launch3.sh LAYOUT=dir:NAME
+    N=${2:?seats.sh fresh NAME PORT}; H=(dregg-forge bb2 bb2); R=($FR $BR $BR); D=(${N}0 ${N}1 ${N}2); SRC=(. . .)
     IP=($FIP $BIP $BIP); PORT=${3:?seats.sh fresh NAME PORT}; IPF=ips-$N.txt;;
   fresh3)  # seats.sh fresh3 NAME PORT: a fresh seat set NAME<I> on the three custodian boxes (0 forge, 1 bb2, 2 hbox,
            # which only dials out), binaries from each box's mpspdz/; ips-NAME.txt, ports PORT + I; LAYOUT=dir3:NAME
