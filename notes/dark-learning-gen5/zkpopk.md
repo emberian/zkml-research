@@ -218,3 +218,41 @@ process, 16 vCPU, nice 15, `/srv/lanes/dl-gen5-zkpopk/step4096b.sh`. Same binary
 (about 90 s), because the ZK work is on the critical path of each call. This figure is derived from
 `dzkpopk bench` rows and has not been measured as a 3-machine run. Two things would hide part of it: verifying one
 sender's batch while proving one's own, and starting to verify the first batch as it arrives.
+
+## Run plan: the gated d = 4096 step as deployed (three `darkstep party` processes, forge + bb2) [OPEN]
+
+Handed on: the lane stopped here, near its context limit. Facts were checked on 2026-11-07.
+- **Machines.** forge is 178.105.4.114 (16 vCPU, 12 GB job cap). bb2 is 2.31.77.40 (32 cores, 122 GB, 96 GB
+  available, 186 GB free on /). Both are on public networks; no firewall test has been run between them yet.
+
+1. **Code.** dev at f8e6cd77 or later. Build `darkstep` WITHOUT `test-det`; this is a production build, so no seeds.
+   - forge: `/srv/lanes/dl-gen5-zkpopk/native` is already synced and built (use `--offline` with the vendored
+     tree in `/srv/lanes/dl-gen5-zkpopk/vendor`).
+   - bb2: rsync the same `native/` (pycompat, dzkpopk, darkstep, a workspace Cargo.toml listing those three,
+     Cargo.lock, `.cargo/config.toml` pointing at a copied `vendor/`) to `~/lanes/dl-gen5-zkpopk/`, then
+     `nice -n 15 cargo build --release --offline -p darkstep`.
+2. **Bytes per link.** `Net.sent_bytes` counts per tag only. Before the run, add a [peer][tag] counter in
+   `darkstep/src/net.rs` (the writer thread knows its peer) and print it in result_i.json, so bytes per link can be
+   reported. This is a small change, and the bit-exact tests must still pass.
+3. **Deal.** On one box: `darkstep deal 16384 4 175 4096 DIR`. Copy `DIR/tape_i.bin` to custodian i's box, and
+   `DIR/public.bin` to every box. Measure the tape sizes first; they may be GBs, so copy with rsync.
+4. **Reachability.** Pick three ports. Test them both ways with a short `nc -l` / `nc` pair, each started with a
+   PID file and stopped by it. If the ports are blocked, use ssh tunnels bound to 127.0.0.1, and say so: the link
+   bytes are then measured inside the tunnel.
+5. **Run.** Each custodian is its own process in its own scope, detached with a PID file. Bind on the box's own
+   address, for this test only.
+   - custodian 0 on forge:
+     `nohup nice -n 15 systemd-run --scope -p MemoryMax=12G darkstep party 0 16384 4 175 4096 DIR
+     178.105.4.114:P0 2.31.77.40:P1 2.31.77.40:P2 --gate 309 & echo $! > party0.pid`
+   - custodians 1 and 2 on bb2: the same with `party 1` / `party 2`, each with its own memory cap (a user scope,
+     or `prlimit --as`), each with its own PID file.
+   - Do not run during forge's 10:00-11:00 UTC pause.
+   - In party mode `colocated` is false, so the stored (fast) prover is used. The ZK lock is per process, so it is
+     uncontended; `zk_lock_wait_seconds` in result_i.json answers whether the lock was needed (it should be about 0).
+6. **Collect.** From each result_i.json: gate prove / verify / wait seconds, step_seconds, the phases, and bytes
+   per tag and per link. Copy `shares_*.bin` to one box and run `darkstep reveal 16384 4 175 4096 DIR`, which
+   must print refines_spec true.
+7. **Teardown.** Stop every party and listener by its PID file. Delete only the files this run created.
+
+Expected: about 90 s per step [DERIVED, see above]. The parties of one call wait on one another (verify before
+returning), so the slowest sender sets the pace.
