@@ -53,6 +53,24 @@ is the harness's synthetic d = 64 inputs.
 Unit price, measured three-box tau = 5 with TLS: 62.3 Gbit / 172,273 triple-equivalents = **362 kbit per triple**
 (all parties). The scholar's formula at tau = 5 and SoftSpoken's 64 bits per OT gives 342,942: measured x 1.055.
 
+## 3b. The wired layout at d = 4096 (no home link): real MASCOT tau = 5, carried step
+
+[EXECUTED] `LAYOUT=wired launch3.sh w4096 party-chunk ... --d 4096 --mode steady --truncs 11,19,7,8,8,19 --steps 1
+--threads 8`. Seat 0 is on forge; seats 1 and 2 run on bb2 as separate processes, each with its own runtime dir
+(`wired<I>/mpspdz`), TLS key and MAC key. TLS throughout. 2,109,446 tape entries per seat.
+
+| seat | wall | CPU user / sys | peak RSS | MP-SPDZ bytes sent | wire per link, sent |
+|---|---:|---:|---:|---:|---|
+| 0 (forge) | 74.0 s | 286.5 / 56.9 s | 1.94 GB | 33.76 GB | 33.82 GB to bb2 (both seats) |
+| 1 (bb2) | 71.4 s | 257.8 / 56.4 s | 1.98 GB | 33.75 GB | 16.91 GB to forge, 16.89 GB to seat 2 |
+| 2 (bb2) | 69.5 s | 256.5 / 55.9 s | 1.97 GB | 33.75 GB | 16.91 GB to forge, 16.89 GB to seat 1 |
+
+The total is 0.810 Tbit, against the 0.817 Tbit predicted from the d = 64 unit price (§5): x 0.99.
+
+With the RC + LB proof section (`--proof --proof-triples 3192275`, `w4096p`, 12,456,319 entries per seat): wall
+138-142 s, CPU 621-625 s user plus 152-189 s sys, peak RSS 1.54-1.56 GB, 81.3 GB sent per seat (40.7 GB per link).
+The total is 1.953 Tbit against 1.973 Tbit predicted. Both chunks were handed to the deploy lane.
+
 ## 4. LowGear (HE-based, Overdrive) against MASCOT
 
 [EXECUTED, loopback on forge, `lgtest/` (a test directory with its own keys, separate from custodian 0's)]:
@@ -64,7 +82,13 @@ Unit price, measured three-box tau = 5 with TLS: 62.3 Gbit / 172,273 triple-equi
 | LowGear S = 40 | 300,000 | 1,887.81 MB | **37.8 k** (100k -> 300k) | 28.8 s |
 | LowGear S = 60, -lg2 64 | 100,000 / 300,000 | 943.84 / 1,887.81 MB | 37.8 k | 14.6 / 29.0 s |
 
-S = 60 costs nothing measurable in bytes. LowGear sends about **9.6x fewer bits per triple** than MASCOT tau = 5
+S = 60 costs nothing measurable in bytes.
+
+**LowGear key setup is large.** [EXECUTED, loopback, fresh keys at S = 55 and 56; `lgsetup.sh` per-socket `ss` and
+`lgsetup2.sh` lo-interface TX counters agree]: one setup sends **169.6 GB in total (about 56.5 GB per party) in 237 s**.
+MP-SPDZ's "Data sent" leaves it out. [SOURCE: Protocols/LowGearKeyGen.h] Malicious LowGear generates the BGV key
+components inside a MASCOT computation over the ciphertext-modulus primes (`Mascot-Secrets-p-312`). It runs once per
+epoch and is cached in `LowGear-Secrets-*` until an abort retires it. Through hbox that is about 452 Gbit, 6.5-9.6 h. LowGear sends about **9.6x fewer bits per triple** than MASCOT tau = 5
 (362 k). Key setup (BGV keys + MAC key) takes about 230 s per epoch and is cached in `LowGear-Secrets-*`.
 Three-box LowGear: see §5 (pending).
 
