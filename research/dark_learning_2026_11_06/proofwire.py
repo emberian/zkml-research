@@ -275,8 +275,8 @@ def verify_step(p, blob, expect_ctx, parent_roots, tab, d_pinned, owner_pk=None,
             if program and program.get("he"):
                 if p != he_field():
                     raise ParseError("the deployed program's field is the HE profile's plaintext modulus")
-                prog = CH.Prog(*(program[k] for k in ("S1", "K1", "S2", "K2", "S3", "K3")))
-                sym = CH.replay(p, public, d, tab, prog, carried=expect_ctx[2] > 1)
+                prog = CH.Prog.of(program)
+                sym = CH.replay(p, public, d, prog.tables(p), prog, carried=expect_ctx[2] > 1)
             elif program:
                 raise ParseError("a plain-SPDZ program other than the harness's is not supported")
             else:

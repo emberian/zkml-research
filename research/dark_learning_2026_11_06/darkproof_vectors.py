@@ -106,10 +106,12 @@ def he_flow(out, d, prof, steps=3):
     W2 = [[rng.randint(-wm, wm) % p for _ in range(d)] for _ in range(d)]
     x = [rng.randint(-7, 7) % p for _ in range(d)]
     y = [rng.randint(-7, 7) % p for _ in range(d)]
-    prog = CH.Prog(*(HE_PROGRAM[k] for k in ("S1", "K1", "S2", "K2", "S3", "K3")))
+    program = dict(HE_PROGRAM, **json.loads(os.environ.get("DP_PROGRAM", "{}")))
+    prog = CH.Prog.of(program)
+    tab = prog.tables(p)
     dealer = spdz.Dealer(p, 3, NR.DEALER_SEED)
-    tag = f"{prof}_d{d}"
-    meta = dict(d=d, profile=prof, seed=os.environ["DL_DETERMINISTIC"], p=p, program=HE_PROGRAM, he=dict(N=N, L=L, F=F),
+    tag = f"{prof}_d{d}" + os.environ.get("DP_TAGSUFFIX", "")
+    meta = dict(d=d, profile=prof, seed=os.environ["DL_DETERMINISTIC"], p=p, program=program, he=dict(N=N, L=L, F=F),
                 bundles={})
     model, carry, carried, parent = "mind-0", None, None, None
     for k in range(1, steps + 1):
@@ -139,7 +141,7 @@ def he_flow(out, d, prof, steps=3):
         assert sym.tpos == len(public)
         middle, mst = GZ.prove_middle_zk(live, sym, wires, sst["coms"], context=ctx)
         blob = PW.encode_step(p, ctx, d, 3, True, spine, public, middle, sym)
-        ok, why, res = PW.verify_step(p, blob, ctx, parent, tab, d, program=HE_PROGRAM)
+        ok, why, res = PW.verify_step(p, blob, ctx, parent, tab, d, program=program)
         assert ok, why
         open(os.path.join(out, f"{tag}_{name}.bin"), "wb").write(blob)
         meta["bundles"][name] = dict(ctx=list(ctx), witness=f"{tag}_{name}.json", blob=f"{tag}_{name}.bin",
