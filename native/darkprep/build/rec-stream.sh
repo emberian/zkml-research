@@ -20,7 +20,9 @@ C=(--backend lowgear --extra -S,60,-lg2,64 --mpc-src {ROOT}/../dl-gen6-deploy/ws
 export BIN=../dl-gen6-deploy/ws-target-r14/release/darkprep
 if [ $S = A ]; then KEY=lg64f; export LAYOUT=; MP={ROOT}/mpspdz; IPF={ROOT}/ips.txt; V=seat; else KEY=lg64n; export LAYOUT=dir3:lgnew; MP={MP}; IPF={ROOT}/ips-lgnew.txt; V=new; fi
 done3() { ssh dregg-forge "test -d /srv/lanes/dl-gen6-prep/chunks/$1" && ssh bb2 "test -d /home/build/lanes/dl-gen6-prep/chunks/$1" && ssh hbox "test -d /othersys/lanes/dl-gen6-prep/chunks/$1"; }
-alive() { ssh -o ConnectTimeout=20 $1 "kill -0 \$(cat $2/runs/$KEY-P$3.pid) 2>/dev/null"; }
+# alive HOST ROOT I: false only if the box answers that the wrapper is gone; an unreachable box (ssh failure) counts as
+# alive, so a network drop is never read as a failed chunk (a 2026-11-07 bb2 ssh drop did exactly that)
+alive() { local r; r=$(ssh -o ConnectTimeout=20 $1 "kill -0 \$(cat $2/runs/$KEY-P$3.pid) 2>/dev/null && echo ALIVE || echo DEAD" 2>/dev/null); [ "$r" != DEAD ]; }
 ev "$KEY wait"
 until done3 $KEY; do
   for b in "dregg-forge /srv/lanes/dl-gen6-prep 0" "bb2 /home/build/lanes/dl-gen6-prep 1" "hbox /othersys/lanes/dl-gen6-prep 2"; do
