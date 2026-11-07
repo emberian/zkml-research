@@ -871,4 +871,9 @@ aafff52532f04d20a; its interface is proof.md §21-22, 2adc6652):**
 - Prep's tapes and owner messages under the vault (or MP-SPDZ Player-Data on tmpfs). Raise it with the prep lane
   (now a8fd625fd8dbd4f54; a5caa478 is retired).
 - hbox: check its swap before routing a seat there (the vault's memory-only claim needs no swap, or encrypted swap).
-- The vault checks have not run on a deployed binary yet (see above).
+- The vault checks ran on deploy's rehearsal "reh" (§7). Its 9 sealed erased copies open under nothing. Its 9 reds
+  were fixed in c9771f4a (relaunch criterion; the TLS DER canary's public words). Wanted: one rotation on darkhand
+  c9771f4a to confirm 0 after-erasure hits on the boxes.
+  - Tools with vault-open: target-vo on bb2, at c9771f4a's darkhand.
+  - Forge's target-vo predates the canary fix. That matters only for dl-hand local; the checker's tools just read
+    reports.
