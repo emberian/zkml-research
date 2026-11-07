@@ -573,3 +573,45 @@ ho-new, then ho-new-steps for steps 1-2). Public genesis, dl-owner --train with 
 - Cost found: proof 45 s / verify 34 s here and in the dry run against 12.7 / 3.9 s in run 5 (same d, profile):
   the ZeroOnFree allocator's byte-wise volatile zeroing. The handover lane has replaced it with memset-speed
   zeroing plus a compiler barrier (darkhand); the next run measures the recovery.
+
+## Continuation (deploy lane generation 2, 2026-11-07 ~08:25 UTC)
+
+**State on dev**: everything up to 68083b34 is pushed (plus `--erase-extra` in the working tree of dl-custodian.rs:
+commit it by name with the next change). Boxes: forge `/srv/lanes/dl-gen6-deploy/` and bb2
+`~/lanes/dl-gen6-deploy/` hold `ws/` (synced sources, `native/deploy/sync.sh`), targets `ws-target-r2/` (prod,
+68083b34) and `ws-target-test2/` (test harness, 68083b34), run dirs run4..run11, `consumed.jsonl` (the box's
+single-use registry), `data/mnist`. hbox `/othersys/lanes/dl-gen6-deploy/` has `bin/ws/darkstep` (test build at
+bb20a601) and run7 (identities and test-dealer tapes for the rounded hbox step). Run configs and collected results
+are in the scratchpad: `.../scratchpad/dl-gen5/deploy2/runs/run*.json` and `runs/run*/summary.json`.
+
+**Launcher**: `python3 native/deploy/run.py RUN.json setup|check|gate|launch|status|collect|stop|resume`. A
+config has seats (host, root, bin, scope, addr, tapes|tape, owner_msgs, env, extra, archive), owner, flags,
+optional `handover` (at, steps_after, mesh6, new_seats with handover_tape, flags) and `owner_repeat`. Every
+process: `<dir>/<name>.{cmd,log,pid,mon}`; stop only via `run.py stop` (PID files).
+
+**Done**: items 1, 2 (run4, run5, run6), the 10-step pipelined dry run (run8b), the three-box rotation (run9, 68/71
+in the handover lane's checker; the 3 reds fixed in 5898187e), the must-fix items (single-use registry, profile
+check: b838f9dc).
+
+**In flight / next, in order**:
+1. run11: the d = 4096 self-handover after an abort (launched 08:19 UTC). Collect (`run.py runs/run11.json
+   collect`), tell the handover lane (ac3b201ab6a366ff6), which runs its `--self` checker, and the coordinator.
+2. run12: the rotation rerun on prep's w4096h2 / ho-new2 / ho-new2-steps (ready ~08:25), as run9 with bins
+   ws-target-r2 and, per old seat, `--erase-extra` for its retired MP-SPDZ key files
+   (`<prep>/wired<I>/mpspdz/Player-Data/Mascot-Secrets-p-61-*-P<I>-3` and `.../3-p-61/Player-MAC-Keys-p-P<I>`; list
+   them by ssh at config time) and `--scan-extra <prep>/wired<I>/mpspdz`. Expect the [stack] reds gone and the
+   prove/verify times back toward 12.7 / 3.9 s (the handover lane's zero_raw fix).
+3. run10: the release memory measurement (proof lane a8ee5558dd7fe5a45): `dl-custodian test-deal` on each box
+   (seat tapes of 1 step + release at M = 52, `--profile ledger`), seats 1 and 2 on bb2 at MemoryMax=40G, forge at
+   12G, DP_TRACE=1; config drafted in runs/run10.json (deal first: `test-deal CFG 1 I DIR --genesis-cfg GEN
+   --program gen6 --profile ledger --release [--public on seat 1]`, CFG = runs/deal_cfg_forge_m52.json on forge,
+   owner_cfg_bb2_m52.json on bb2, copied into the seat dirs). Send the proof lane VmHWM, memory.peak, the logs.
+4. Item 3, the rounded hbox step: run7 config (runs/run7.json) is set up and its tapes dealt; launch when the
+   prep lane says hbox's LowGear key-setup traffic has stopped (~15:00 UTC), before its own hbox chunks.
+5. Item 6, the measured run: N from the coordinator; prep throughput (~75 h of MASCOT for 2,000 proved steps at
+   today's rate) is the binding constraint, so agree the N and the chunk schedule with the coordinator and the prep
+   lane first. Use `--pipeline-proofs --proof-mesh`, archive on bb2 (coordinator: move it off forge), `--wipe-spent`,
+   `--consumed-log`, `--pause-utc 10:00-11:00` + `run.py resume`, a handover at step k, `--release` at the end.
+
+**Agents**: coordinator aa3209e8d10294bc2; prep a5caa478aac6a0658; proof a8ee5558dd7fe5a45; handover
+ac3b201ab6a366ff6; train ad36593ec00657538.
