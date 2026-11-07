@@ -187,6 +187,7 @@ def prove_middle_zk(live, sym, wires, spine_coms, attack=None, context=("model",
         return None, dict(error="prover and verifier constraint systems differ")
     eng = spdz.Engine(p, n, live.dealer)
     bad = G.fill_range(live, eng)
+    G.fill_lookup(live, eng)
     if bad and not ignore_range:
         return None, dict(error="proving refused: truncation input outside its proved bound: "
                           + ", ".join(f"{nm}[{k}]" for nm, k in bad[:4]) + (" ..." if len(bad) > 4 else ""))

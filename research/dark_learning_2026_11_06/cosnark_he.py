@@ -34,19 +34,22 @@ class Prog:
     [t_lo, t_lo + 256)."""
     KEYS = ("S1", "K1", "S2", "K2", "S3", "K3", "R3", "T_LO")
 
-    def __init__(self, s1=5, k1=13, s2=4, k2=8, s3=8, k3=13, r3=0, t_lo=-128, rc=False, bounds=None):
+    def __init__(self, s1=5, k1=13, s2=4, k2=8, s3=8, k3=13, r3=0, t_lo=-128, rc=False, bounds=None, lb=False):
         self.s1, self.k1, self.s2, self.k2, self.s3, self.k3 = s1, k1, s2, k2, s3, k3
         self.r3, self.t_lo = r3, t_lo
         self.rc = rc                   # the proof checks every truncation's input interval (append_range)
         self.over = dict(bounds or {})
+        self.lb = lb                   # the lookup proved by a bit circuit on z1's range bits (append_lookup)
+        if lb and not rc:
+            raise ValueError("the bit lookup (LB) needs the range check (RC)")
 
     @classmethod
     def of(cls, program):
         """From a ledger genesis "program" dict (R3, T_LO default to the harness's; "RC": true turns the proved bounds
-        on; "BOUNDS": {name: [a, B]} overrides the default intervals)."""
+        on; "BOUNDS": {name: [a, B]} overrides the default intervals; "LB": true proves the lookup by its bit circuit)."""
         dflt = dict(S1=5, K1=13, S2=4, K2=8, S3=8, K3=13, R3=0, T_LO=-128)
         return cls(*(program.get(k, dflt.get(k)) for k in cls.KEYS), rc=bool(program.get("RC")),
-                   bounds={k: tuple(v) for k, v in program.get("BOUNDS", {}).items()})
+                   bounds={k: tuple(v) for k, v in program.get("BOUNDS", {}).items()}, lb=bool(program.get("LB")))
 
     def bound(self, name, kc=10):
         """The proved input interval [a, a + 2^B) of truncation `name`: z1 (and the release's z1) the table's domain,
@@ -137,6 +140,7 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None
     the previous step's W1n, W2n shares (then only x, y are input). Returns (W1n, W2n, wires) as mpc_fork does."""
     pg = prog or Prog()
     d = len(x)
+    eng.lb = pg.lb
     orng = random.Random(owner_seed)
     if carried is None:
         flat = lambda M: [v for r in M for v in r]
@@ -172,6 +176,8 @@ def run_step(eng, W1, W2, x, y, tab, owner_seed, mv, ou, prog=None, carried=None
     W1n = [[eng.sub(M1[i][j], G1[i][j]) for j in range(d)] for i in range(d)]
     if pg.rc:
         G.append_range(eng)
+    if pg.lb:
+        G.append_lookup(eng, pg.t_lo, pg.s1)
     return W1n, W2n, dict(h=h, d2=d2, d1=d1, x=sx, y=sy, z1=z1, z2=z2, b=b, g1=g1, bg=bg, W1=M1, W2=M2)
 
 

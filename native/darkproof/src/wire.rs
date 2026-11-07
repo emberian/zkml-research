@@ -595,6 +595,7 @@ fn verify_inner(
         Ok(rec) => rec,
         Err(step::Short::Commit) => return Err("parse: he_outer_commit entry is not 0".into()),
         Err(step::Short::Short) => return Err("parse: public transcript shorter than the step program".into()),
+        Err(step::Short::Program(e)) => return Err(format!("program: {e}")),
     };
     if rec.tpos != public.len() {
         return Err("parse: public transcript longer than the step program".into());

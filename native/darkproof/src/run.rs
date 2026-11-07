@@ -63,7 +63,7 @@ pub fn n_had(d: usize, prm: StepParams, carried: bool, tables: &(Vec<u64>, Vec<u
 pub fn step_section(lp: &LigParams, d: usize, prm: StepParams, carried: bool, tables: &(Vec<u64>, Vec<u64>)) -> usize {
     let zeros = vec![0u64; prm.transcript_len(d, carried)];
     let rec = step::replay(&zeros, d, prm, tables, carried).expect("replay of the program's own length");
-    tape_triples(lp, d, rec.had.len()) + rec.range_products()
+    tape_triples(lp, d, rec.had.len()) + rec.proof_products()
 }
 
 /// Triples one custodian's tape must hold in its proof section for one step (without proved bounds; with them use
@@ -85,7 +85,7 @@ pub fn prove_step(
     prm: StepParams,
     net: &mut dyn Net,
     ctx: &Ctx,
-    st: PartyStep,
+    mut st: PartyStep,
     carry: Option<BTreeMap<String, PcsParty>>,
 ) -> Result<StepProof, String> {
     let t0 = std::time::Instant::now();
@@ -107,10 +107,8 @@ pub fn prove_step(
     if rec.tpos != st.public.len() {
         return Err("own transcript is longer than the step program".into());
     }
-    if st.atoms.len() != rec.n_program_atoms() {
-        return Err(format!("{} middle atoms, the program has {}", st.atoms.len(), rec.n_program_atoms()));
-    }
-    let nb = spine::beaver_count(d) + rec.range_products() + middle::beaver_count(rec.had.len());
+    st.atoms = rec.witness_atoms(&st.atoms).map_err(|e| format!("middle: {e}"))?;
+    let nb = spine::beaver_count(d) + rec.proof_products() + middle::beaver_count(rec.had.len());
     let (ls, lm) = if det.on() {
         (0, 0)
     } else {
@@ -323,7 +321,7 @@ pub fn prove_release(
     net: &mut dyn Net,
     ctx: &Ctx,
     pol: &Policy,
-    st: PartyRelease,
+    mut st: PartyRelease,
     head: BTreeMap<String, PcsParty>,
 ) -> Result<(Vec<u8>, f64), String> {
     let t0 = std::time::Instant::now();
@@ -337,11 +335,9 @@ pub fn prove_release(
     if rec.tpos != st.public.len() {
         return Err("own transcript is longer than the release program".into());
     }
-    if st.atoms.len() != rec.n_program_atoms() {
-        return Err(format!("{} release atoms, the program has {}", st.atoms.len(), rec.n_program_atoms()));
-    }
+    st.atoms = rec.witness_atoms(&st.atoms).map_err(|e| format!("release: {e}"))?;
     let det = st.det;
-    let nb = rec.range_products() + middle::beaver_count(rec.had.len());
+    let nb = rec.proof_products() + middle::beaver_count(rec.had.len());
     let lm = if det.on() { 0 } else { LigParty::tape_triples(lp, middle::LIG_SCALARS, 1) };
     if st.triples.len() != nb + lm {
         return Err(format!("the tape's release section has {} triples, the proof needs {}", st.triples.len(), nb + lm));
@@ -498,7 +494,7 @@ pub fn deal_release(dl: &mut darkstep::tape::Dealer, d: usize, m: usize, ncls: u
 pub fn release_section(lp: &LigParams, d: usize, m: usize, prm: StepParams, pol: &Policy) -> usize {
     let zeros = vec![0u64; wire::release_len(d, m, prm, pol.ncls, pol.kc)];
     let rec = step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc).expect("release replay");
-    release_triples(lp, rec.had.len()) + rec.range_products()
+    release_triples(lp, rec.had.len()) + rec.proof_products()
 }
 
 /// Hadamard rows of the release proof (data-independent: a replay on a zero transcript).

@@ -205,7 +205,11 @@ impl Ledger {
                     None => false,
                     Some(Value::Bool(b)) => *b,
                     Some(_) => return Err("genesis program: RC must be a boolean".into()),
-                }, r3: gi("R3", 0)?, t_lo: gi("T_LO", -128)? }
+                }, r3: gi("R3", 0)?, t_lo: gi("T_LO", -128)?, lb: match p.get("LB") {
+                    None => false,
+                    Some(Value::Bool(b)) => *b,
+                    Some(_) => return Err("genesis program: LB must be a boolean".into()),
+                } }
             }
         };
         let pk = g["owner_pk"].as_str().ok_or("owner_pk")?;

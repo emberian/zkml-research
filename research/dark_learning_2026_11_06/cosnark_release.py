@@ -37,6 +37,7 @@ def run_release(eng, W1, W2, X, labels, prog, ncls=10, kc=KC):
     """The release program on a RecEngine (live: W1, W2 are the head's share matrices; symbolic: None). X: d x M
     public (mod p), labels: M ints < ncls. Returns (C, the external vectors z1 and h as shares)."""
     p = eng.p
+    eng.lb = prog.lb
     d, M = len(X), len(X[0])
     z = lambda: {}
     W1f = [W1[j][k] for j in range(d) for k in range(d)] if W1 else [z() for _ in range(d * d)]
@@ -79,6 +80,8 @@ def run_release(eng, W1, W2, X, labels, prog, ncls=10, kc=KC):
     C = eng.open(eng.lin([(1, x) for x in oks]), "release")
     if prog.rc:
         G.append_range(eng)
+    if prog.lb:
+        G.append_lookup(eng, prog.t_lo, prog.s1)
     return C, dict(z1=[dict(x) for x in z1], h=[dict(x) for x in h])
 
 
