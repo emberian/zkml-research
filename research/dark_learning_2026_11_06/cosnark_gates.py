@@ -216,7 +216,7 @@ class RecEngine(spdz.Engine):
             self.cons.append((f, x.const, 0, "io"))
 
 
-MIDDLE_PHASES = ("trunc", "lookup", "mul", "trunc-mask", "trh-range", "io")
+MIDDLE_PHASES = ("trunc", "lookup", "mul", "trunc-mask", "trh-range", "io", "release")
 
 def middle(rec):
     """Restrict the recorded system to the nonlinear middle: atoms referenced by middle constraints."""

@@ -241,3 +241,89 @@ impl Net for TcpRef<'_> {
         self.0.total_sent()[darkstep::net::PROOF as usize] / 8
     }
 }
+
+/// One custodian's inputs for the release proof (cosnark_release): its shares of the head's W1, W2 (d * d,
+/// row-major), of the release's external vectors z1, h (d M), the public transcript, the release's atoms in creation
+/// order, and its tape's release proof section (`release_triples(..)` triples).
+pub struct PartyRelease {
+    pub i: usize,
+    pub n: usize,
+    pub d: usize,
+    pub alpha_i: u64,
+    pub wires: BTreeMap<String, Vec<Sh>>,
+    pub public: Vec<u64>,
+    pub atoms: Vec<Sh>,
+    pub triples: Vec<Triple>,
+    /// TEST ONLY (feature test-det), as PartyStep.det
+    pub det: Det,
+}
+
+/// The release's public policy: X[k][t] at k M + t (mod p), labels, classes, the comparison shift.
+pub struct Policy {
+    pub x: Vec<u64>,
+    pub labels: Vec<usize>,
+    pub ncls: usize,
+    pub kc: u32,
+}
+
+/// Triples one custodian's tape must hold for the release proof.
+pub fn release_triples(lp: &LigParams, n_had: usize) -> usize {
+    middle::beaver_count(n_had) + LigParty::tape_triples(lp, middle::LIG_SCALARS, 1)
+}
+
+/// The release proof by custodian st.i: ctx = (model, epoch, head step); head: this party's carried commitments of
+/// the head's W1, W2 (the last step's StepProof.child). Every party returns the same bytes.
+#[allow(clippy::too_many_arguments)]
+pub fn prove_release(
+    pr: &Profile,
+    lp: &LigParams,
+    prm: StepParams,
+    net: &mut dyn Net,
+    ctx: &Ctx,
+    pol: &Policy,
+    st: PartyRelease,
+    head: BTreeMap<String, PcsParty>,
+) -> Result<(Vec<u8>, f64), String> {
+    let t0 = std::time::Instant::now();
+    let (i, n, d) = (st.i, st.n, st.d);
+    let m = pol.labels.len();
+    if net.me() != i || net.n() != n {
+        return Err("transport is for another party or committee size".into());
+    }
+    let rec = step::replay_release(&st.public, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc)
+        .map_err(|e| format!("own transcript: {e:?}"))?;
+    if rec.tpos != st.public.len() {
+        return Err("own transcript is longer than the release program".into());
+    }
+    if st.atoms.len() != rec.n_prep() {
+        return Err(format!("{} release atoms, the program has {}", st.atoms.len(), rec.n_prep()));
+    }
+    let det = st.det;
+    let nb = middle::beaver_count(rec.had.len());
+    let lm = if det.on() { 0 } else { LigParty::tape_triples(lp, middle::LIG_SCALARS, 1) };
+    if st.triples.len() != nb + lm {
+        return Err(format!("the tape's release section has {} triples, the proof needs {}", st.triples.len(), nb + lm));
+    }
+    let mut tri = st.triples;
+    let lig_m: Vec<(u64, u64, u64)> = tri.split_off(nb).into_iter().map(|(a, b, c)| (a.0, b.0, c.0)).collect();
+    let mut sp = Spdz::from_tape(i, n, st.alpha_i, tri);
+    let mi = middle::MiddleIn {
+        pr,
+        lp,
+        i,
+        n,
+        d,
+        atoms: &st.atoms,
+        wires: &st.wires,
+        rec: &rec,
+        public: &st.public,
+        ctx,
+        det: &det,
+        lig_dealer: None,
+        lig_tape: if det.on() { None } else { Some(lig_m) },
+        cst_patch: None,
+    };
+    let mo = middle::prove(&mi, net, &mut sp, head, None)?;
+    let blob = wire::encode_release(pr, ctx, d, n, m, pol.ncls, &st.public, &mo.proof, &rec);
+    Ok((blob, t0.elapsed().as_secs_f64()))
+}

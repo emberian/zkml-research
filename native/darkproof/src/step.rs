@@ -75,6 +75,30 @@ pub enum Phase {
     TruncMask,
     TrhRange,
     Io,
+    /// the release's one opening (cosnark_release)
+    Release,
+}
+
+/// The middle's external vectors for a program other than the step (cosnark_gates_zk.IO): name and padded length,
+/// the carried ones (an existing commitment at its second life), and the transcript label.
+#[derive(Clone, Debug)]
+pub struct Io {
+    pub lens: Vec<(&'static str, usize)>,
+    pub carried: Vec<&'static str>,
+    pub label: &'static str,
+}
+
+/// The release's z1 = W1 X binding (X public): d M linear IO constraints at cons[start..start + d M], entry (j, t) at
+/// start + j M + t: z1[j M + t] - sum_k X[k][t] W1[j d + k] = 0. Stored densely; build_q expands it.
+#[derive(Clone, Debug)]
+pub struct PubMat {
+    pub d: usize,
+    pub m: usize,
+    /// X[k][t] at k M + t
+    pub x: Vec<u64>,
+    pub start: usize,
+    pub z1: u8,
+    pub w1: u8,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -113,6 +137,10 @@ pub struct Rec<'t> {
     transcript: &'t [u64],
     pub tpos: usize,
     tables: (Vec<u64>, Vec<u64>),
+    /// the external vectors' names (Atom::Ext indexes this): NAMES for the step
+    pub names: Vec<&'static str>,
+    pub io: Option<Io>,
+    pub pubmat: Option<PubMat>,
 }
 
 #[derive(Debug)]
@@ -260,7 +288,7 @@ impl<'t> Rec<'t> {
         Ok((mk(&t0), mk(&t1)))
     }
     fn ext(&self, name: &str, k: usize) -> Atom {
-        Atom::Ext(NAMES.iter().position(|&x| x == name).unwrap() as u8, k as u32)
+        Atom::Ext(self.names.iter().position(|&x| x == name).unwrap() as u8, k as u32)
     }
     fn rec_in(&self, name: &str) -> Vec<Form> {
         (0..self.d).map(|k| Form { terms: vec![(self.ext(name, k), 1)], c: 0 }).collect()
@@ -287,6 +315,9 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
         transcript,
         tpos: 0,
         tables: tables.clone(),
+        names: NAMES.to_vec(),
+        io: None,
+        pubmat: None,
     };
     // HE matvec: d he_auth, d Freivalds products (2 openings each), the check; plain: W - A (d^2) and v - b (d)
     let mv = if prm.he { 3 * d + 1 } else { d * d + d };
@@ -350,6 +381,101 @@ pub fn replay<'t>(transcript: &'t [u64], d: usize, prm: StepParams, tables: &(Ve
             r.skip(2 * d)?;
         }
     }
+    Ok(r)
+}
+
+/// The release program (cosnark_release.run_release) replayed against the public transcript: external vectors W1,
+/// W2 (the head's, carried), z1, h; x = the public inputs X[k][t] at k M + t (mod p); labels < ncls; the comparison
+/// truncation shift kc (= its bound).
+#[allow(clippy::too_many_arguments)]
+pub fn replay_release<'t>(
+    transcript: &'t [u64],
+    d: usize,
+    m: usize,
+    prm: StepParams,
+    x: &[u64],
+    labels: &[usize],
+    ncls: usize,
+    kc: u32,
+) -> Result<Rec<'t>, Short> {
+    let sig = tables_for(prm.t_lo).0;
+    let mut r = Rec {
+        prm,
+        d,
+        tags: Vec::new(),
+        cons: Vec::new(),
+        had: Vec::new(),
+        transcript,
+        tpos: 0,
+        tables: (sig.clone(), sig),
+        names: vec!["W1", "W2", "z1", "h"],
+        io: Some(Io {
+            lens: vec![("W1", d * d), ("W2", d * d), ("z1", (d * m).next_power_of_two()), ("h", (d * m).next_power_of_two())],
+            carried: vec!["W1", "W2"],
+            label: "release-zk",
+        }),
+        pubmat: None,
+    };
+    assert_eq!(x.len(), d * m);
+    assert_eq!(labels.len(), m);
+    // z1 = W1 X: the d M IO constraints, densely (build_q expands them)
+    let start = r.cons.len();
+    for _ in 0..d * m {
+        r.cons.push(Con { form: Form::default(), value: 0, phase: Phase::Io, pos: usize::MAX });
+    }
+    r.pubmat = Some(PubMat { d, m, x: x.to_vec(), start, z1: 2, w1: 0 });
+    let z1: Vec<Form> = (0..d * m).map(|k| Form { terms: vec![(r.ext("z1", k), 1)], c: 0 }).collect();
+    let mut u1 = Vec::with_capacity(d * m);
+    for z in &z1 {
+        u1.push(r.trunc(z, prm.s1, prm.k1)?);
+    }
+    let off = field::from_i64(-prm.t_lo);
+    let mut h = Vec::with_capacity(d * m);
+    for u in &u1 {
+        h.push(r.lookup2(u, off)?.0);
+    }
+    drop(u1);
+    r.rec_out("h", &h);
+    drop(h);
+    let mut o: Vec<Vec<Form>> = Vec::with_capacity(ncls);
+    for c in 0..ncls {
+        let mut row = Vec::with_capacity(m);
+        for t in 0..m {
+            let mut acc = Form::default();
+            for k in 0..d {
+                let w = Form { terms: vec![(r.ext("W2", c * d + k), 1)], c: 0 };
+                let hb = Form { terms: vec![(r.ext("h", k * m + t), 1)], c: 0 };
+                let pr_ = r.mul(&w, &hb)?;
+                acc.terms.extend(pr_.terms);
+                acc.c = field::add(acc.c, pr_.c);
+            }
+            row.push(r.trunc(&acc, prm.s1, prm.k1)?);
+        }
+        o.push(row);
+    }
+    let mut oks = Form::default();
+    for t in 0..m {
+        let l = labels[t];
+        let mut acc: Option<Form> = None;
+        for k in 0..ncls {
+            if k == l {
+                continue;
+            }
+            let mut terms = o[l][t].terms.clone();
+            terms.extend(neg_form(&o[k][t]));
+            let diff = Form { terms, c: field::sub(field::sub(o[l][t].c, o[k][t].c), 1) };
+            let q = r.trunc(&diff, kc, kc)?;
+            let f = Form { terms: q.terms, c: field::add(q.c, 1) };
+            acc = Some(match acc {
+                None => f,
+                Some(a) => r.mul(&a, &f)?,
+            });
+        }
+        let a = acc.expect("ncls >= 2");
+        oks.terms.extend(a.terms);
+        oks.c = field::add(oks.c, a.c);
+    }
+    r.open(oks, Phase::Release)?;
     Ok(r)
 }
 

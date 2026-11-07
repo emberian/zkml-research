@@ -9,7 +9,7 @@ use crate::pcs::{self, colsums, PcsCols, PcsParty, Shape};
 use crate::rng::Det;
 use crate::spdz::{Sh, Spdz};
 use crate::spine::{self, public_digest, round_vals, Evals, Sc};
-use crate::step::{Atom, Rec, NAMES};
+use crate::step::{Atom, Io, Rec, NAMES};
 use crate::transcript::{eqv, lagc, mle, Transcript};
 use crate::{Ctx, Profile};
 use rayon::prelude::*;
@@ -46,18 +46,40 @@ pub fn public_shapes(
     d: usize,
     bind: bool,
 ) -> (BTreeMap<String, usize>, BTreeMap<String, Shape>) {
+    public_shapes_io(pr, n_prep, n_had, d, bind, None)
+}
+
+/// public_shapes for a program's external vectors (io; None: the step's NAMES, SPINE carried).
+pub fn public_shapes_io(
+    pr: &Profile,
+    n_prep: usize,
+    n_had: usize,
+    d: usize,
+    bind: bool,
+    io: Option<&Io>,
+) -> (BTreeMap<String, usize>, BTreeMap<String, Shape>) {
     let mut lens = BTreeMap::new();
     lens.insert("P".to_string(), plen(n_prep));
     for k in ["A", "B", "C"] {
         lens.insert(k.to_string(), plen(n_had));
     }
-    for nm in NAMES {
-        lens.insert(nm.to_string(), plen(d));
+    match io {
+        None => {
+            for nm in NAMES {
+                lens.insert(nm.to_string(), plen(d));
+            }
+        }
+        Some(io) => {
+            for (nm, l) in &io.lens {
+                lens.insert(nm.to_string(), *l);
+            }
+        }
     }
+    let carried: Vec<&str> = io.map(|io| io.carried.clone()).unwrap_or_else(|| SPINE.to_vec());
     let block = if pr.nmask > 0 { pr.nmask / pr.lives } else { 0 };
     let mut sh: BTreeMap<String, Shape> = lens
         .iter()
-        .map(|(k, &l)| (k.clone(), Shape::new(pr, lg(l), if SPINE.contains(&k.as_str()) { block } else { 0 })))
+        .map(|(k, &l)| (k.clone(), Shape::new(pr, lg(l), if carried.contains(&k.as_str()) { block } else { 0 })))
         .collect();
     if bind {
         sh.insert("yo".into(), Shape::new(pr, lg(plen(d)), 0));
@@ -71,7 +93,7 @@ pub fn build_q(rec: &Rec, lens: &BTreeMap<String, usize>, gam: &[u64]) -> (BTree
     let mut cst = 0u64;
     let nc = rec.cons.len();
     {
-        let mut qn: Vec<Vec<u64>> = NAMES.iter().map(|nm| std::mem::take(q.get_mut(*nm).unwrap())).collect();
+        let mut qn: Vec<Vec<u64>> = rec.names.iter().map(|nm| std::mem::take(q.get_mut(*nm).unwrap())).collect();
         let qp = q.get_mut("P").unwrap();
         for (g, con) in gam.iter().zip(&rec.cons) {
             for &(a, co) in &con.form.terms {
@@ -89,7 +111,24 @@ pub fn build_q(rec: &Rec, lens: &BTreeMap<String, usize>, gam: &[u64]) -> (BTree
             }
             cst = field::add(cst, field::mul(*g, field::sub(con.form.c, con.value)));
         }
-        for (nm, v) in NAMES.iter().zip(qn) {
+        if let Some(pm) = &rec.pubmat {
+            // z1[j M + t] - sum_k X[k][t] W1[j d + k], with gamma at start + j M + t
+            let (d, m) = (pm.d, pm.m);
+            let g = &gam[pm.start..pm.start + d * m];
+            let qz = &mut qn[pm.z1 as usize];
+            for (k, &gv) in g.iter().enumerate() {
+                qz[k] = field::add(qz[k], gv);
+            }
+            let qw = &mut qn[pm.w1 as usize];
+            qw[..d * d].par_chunks_mut(d).enumerate().for_each(|(j, row)| {
+                let gj = &g[j * m..(j + 1) * m];
+                for (k, s) in row.iter_mut().enumerate() {
+                    let v = field::dot(gj, &pm.x[k * m..(k + 1) * m]);
+                    *s = field::sub(*s, v);
+                }
+            });
+        }
+        for (nm, v) in rec.names.iter().zip(qn) {
             *q.get_mut(*nm).unwrap() = v;
         }
     }
@@ -312,7 +351,7 @@ pub fn prove(
     let rec = inp.rec;
     let kl = pr.k_l;
     let mut tt = crate::Trace::new("middle", i);
-    let (lens, _) = public_shapes(pr, rec.n_prep(), rec.had.len(), d, false);
+    let (lens, _) = public_shapes_io(pr, rec.n_prep(), rec.had.len(), d, false, rec.io.as_ref());
     assert_eq!(inp.atoms.len(), rec.n_prep(), "witness atoms differ from the replay");
     let pv = padv(inp.atoms, lens["P"]);
     let gather = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
@@ -323,12 +362,13 @@ pub fn prove(
     vecs.insert("B".into(), gather(|t| t.1));
     vecs.insert("C".into(), gather(|t| t.2));
     vecs.insert("P".into(), pv);
-    for nm in NAMES {
-        vecs.insert(nm.into(), padv(&inp.wires[nm], lens[nm]));
+    for nm in &rec.names {
+        vecs.insert(nm.to_string(), padv(&inp.wires[*nm], lens[*nm]));
     }
+    let carried: Vec<&str> = rec.io.as_ref().map(|io| io.carried.clone()).unwrap_or_else(|| SPINE.to_vec());
     let mut com: BTreeMap<String, PcsParty> = BTreeMap::new();
     for (k, v) in &vecs {
-        if SPINE.contains(&k.as_str()) {
+        if carried.contains(&k.as_str()) {
             let mut c = spine_coms.remove(k).expect("spine commitment");
             c.shape.base = c.shape.block;
             com.insert(k.clone(), c);
@@ -354,7 +394,7 @@ pub fn prove(
     if let Some(t) = &inp.lig_tape {
         lg_ = lg_.with_tape(t.clone());
     }
-    let mut tr = Transcript::new("middle-zk");
+    let mut tr = Transcript::new(rec.io.as_ref().map(|io| io.label).unwrap_or("middle-zk"));
     tr.absorb(|h| {
         h.s("ctx").ctx(inp.ctx);
     });
@@ -553,19 +593,30 @@ pub fn verify(
     bind: bool,
     public: &[u64],
 ) -> Result<(), String> {
-    let (lens, sh) = public_shapes(pr, rec.n_prep(), rec.had.len(), d, bind);
+    let (lens, sh) = public_shapes_io(pr, rec.n_prep(), rec.had.len(), d, bind, rec.io.as_ref());
     let roots = &proof.roots;
     if roots.keys().ne(sh.keys()) {
         return Err("proof names the wrong commitments".into());
     }
-    for nm in SPINE {
-        if let Some(sr) = spine_roots.get(nm) {
-            if &roots[nm] != sr {
-                return Err(format!("middle's {nm} is not the spine's committed {nm}"));
+    match &rec.io {
+        None => {
+            for nm in SPINE {
+                if let Some(sr) = spine_roots.get(nm) {
+                    if &roots[nm] != sr {
+                        return Err(format!("middle's {nm} is not the spine's committed {nm}"));
+                    }
+                }
+            }
+        }
+        Some(io) => {
+            for nm in &io.carried {
+                if spine_roots.get(*nm) != Some(&roots[*nm]) {
+                    return Err(format!("the {nm} commitment is not the ledger head's"));
+                }
             }
         }
     }
-    let mut tr = Transcript::new("middle-zk");
+    let mut tr = Transcript::new(rec.io.as_ref().map(|io| io.label).unwrap_or("middle-zk"));
     tr.absorb(|h| {
         h.s("ctx").ctx(ctx);
     });

@@ -237,8 +237,8 @@ struct MShape {
     sizes: Vec<usize>,
 }
 
-fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool) -> MShape {
-    let (lens, sh) = middle::public_shapes(pr, n_prep, n_had, d, bind);
+fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool, io: Option<&step::Io>) -> MShape {
+    let (lens, sh) = middle::public_shapes_io(pr, n_prep, n_had, d, bind, io);
     let lg = |x: usize| crate::pcs::bitlen(x - 1);
     let lh = lg(lens["A"]);
     let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
@@ -251,7 +251,12 @@ fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool)
 }
 
 pub fn write_middle(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, p: &MiddleProof) {
-    let ms = middle_shape(pr, n_prep, n_had, d, bind);
+    write_middle_io(w, pr, n, d, n_prep, n_had, bind, None, p)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn write_middle_io(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, io: Option<&step::Io>, p: &MiddleProof) {
+    let ms = middle_shape(pr, n_prep, n_had, d, bind, io);
     w_roots(w, n, &ms.sh, &p.roots);
     assert_eq!(p.zc_roots.len(), ms.lh);
     for r in &p.zc_roots {
@@ -269,7 +274,12 @@ pub fn write_middle(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, 
 }
 
 pub fn read_middle(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool) -> PR<MiddleProof> {
-    let ms = middle_shape(pr, n_prep, n_had, d, bind);
+    read_middle_io(r, pr, n, d, n_prep, n_had, bind, None)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn read_middle_io(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, io: Option<&step::Io>) -> PR<MiddleProof> {
+    let ms = middle_shape(pr, n_prep, n_had, d, bind, io);
     let mut parts = r_pcs(r, pr, n, &ms.sh)?;
     let zc_roots = (0..ms.lh).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?;
     let claims_root = r.hs(n)?;
@@ -329,6 +339,139 @@ pub fn encode_step(
         w.b.extend_from_slice(s);
     }
     w.b
+}
+
+pub const RMAGIC: &[u8; 8] = b"DLRELS01";
+
+/// The release program's public transcript length: per hidden unit and example a truncation and a lookup; per class
+/// score d products and a truncation; per example ncls - 1 comparisons and ncls - 2 products; the count.
+pub fn release_len(d: usize, m: usize, prm: StepParams, ncls: usize, kc: u32) -> usize {
+    let tr = |s: u32| 1 + 4 * (s as usize - 1);
+    d * m * (tr(prm.s1) + 1) + ncls * m * (2 * d + tr(prm.s1)) + m * ((ncls - 1) * tr(kc) + 2 * (ncls - 2)) + 1
+}
+
+/// proofwire.encode_release.
+#[allow(clippy::too_many_arguments)]
+pub fn encode_release(pr: &Profile, ctx: &Ctx, d: usize, n: usize, m: usize, ncls: usize, public: &[u64], rel: &MiddleProof, rec: &step::Rec) -> Vec<u8> {
+    let mut w = W { b: Vec::new() };
+    let mb = ctx.model.as_bytes();
+    assert!((1..=64).contains(&mb.len()));
+    w.b.extend_from_slice(RMAGIC);
+    w.b.extend_from_slice(&(mb.len() as u16).to_be_bytes());
+    w.b.extend_from_slice(mb);
+    w.b.extend_from_slice(&(ctx.epoch as u32).to_be_bytes());
+    w.b.extend_from_slice(&ctx.step.to_be_bytes());
+    w.b.extend_from_slice(&(d as u16).to_be_bytes());
+    w.b.push(n as u8);
+    w.b.extend_from_slice(&(m as u16).to_be_bytes());
+    w.b.push(ncls as u8);
+    w.b.extend_from_slice(&(public.len() as u32).to_be_bytes());
+    for &v in public {
+        w.fe(v);
+    }
+    write_middle_io(&mut w, pr, n, d, rec.n_prep(), rec.had.len(), false, rec.io.as_ref(), rel);
+    w.b
+}
+
+/// proofwire.verify_release: expect = (model, epoch, head step) and head_roots (the head's W1, W2 roots) from the
+/// ledger; x (X[k][t] at k M + t), labels, the program, ncls and kc are the published policy. Returns (M, C).
+#[allow(clippy::too_many_arguments)]
+pub fn verify_release(
+    pr: &Profile,
+    lp: &crate::ligero::LigParams,
+    blob: &[u8],
+    expect: &Ctx,
+    head_roots: &BTreeMap<String, Vec<Hash>>,
+    x: &[u64],
+    labels: &[usize],
+    prm: StepParams,
+    ncls: usize,
+    d_pinned: usize,
+    kc: u32,
+) -> Result<(usize, u64), String> {
+    let res = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        verify_release_inner(pr, lp, blob, expect, head_roots, x, labels, prm, ncls, d_pinned, kc)
+    }));
+    match res {
+        Ok(r) => r,
+        Err(_) => Err("parse: panic".into()),
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn verify_release_inner(
+    pr: &Profile,
+    lp: &crate::ligero::LigParams,
+    blob: &[u8],
+    expect: &Ctx,
+    head_roots: &BTreeMap<String, Vec<Hash>>,
+    x: &[u64],
+    labels: &[usize],
+    prm: StepParams,
+    ncls: usize,
+    d_pinned: usize,
+    kc: u32,
+) -> Result<(usize, u64), String> {
+    let m = labels.len();
+    let mut r = R { d: blob, o: 0 };
+    let parsed = (|| -> PR<_> {
+        if r.take(8)? != RMAGIC {
+            return Err("bad magic".into());
+        }
+        let ml = u16::from_be_bytes(r.take(2)?.try_into().unwrap()) as usize;
+        if !(1..=64).contains(&ml) {
+            return Err("bad model id length".into());
+        }
+        let model_b = r.take(ml)?.to_vec();
+        let hdr = r.take(18)?;
+        let epoch = u32::from_be_bytes(hdr[0..4].try_into().unwrap()) as u64;
+        let step = u64::from_be_bytes(hdr[4..12].try_into().unwrap());
+        let d = u16::from_be_bytes(hdr[12..14].try_into().unwrap()) as usize;
+        let n = hdr[14] as usize;
+        let m_ = u16::from_be_bytes(hdr[15..17].try_into().unwrap()) as usize;
+        let nc = hdr[17] as usize;
+        if (model_b.as_slice(), epoch, step) != (expect.model.as_bytes(), expect.epoch, expect.step) {
+            let shown = String::from_utf8_lossy(&model_b).to_string();
+            return Ok(Err(format!("binding mismatch: release is for {}, expected {}", tuple_repr(&shown, epoch, step), expect.repr())));
+        }
+        if (d, n, m_, nc) != (d_pinned, 3, m, ncls) || x.len() != d * m {
+            return Err("shape differs from the ledger's genesis record or the release policy".into());
+        }
+        let cnt = u32::from_be_bytes(r.take(4)?.try_into().unwrap()) as usize;
+        let want = release_len(d, m, prm, ncls, kc);
+        if cnt > want {
+            return Err(if cnt > 1 << 26 { "public transcript too long" } else { "public transcript longer than the release program" }.into());
+        }
+        if cnt < want {
+            return Err("public transcript shorter than the release program".into());
+        }
+        let public = r.fes(cnt)?;
+        Ok(Ok((public, n, d)))
+    })();
+    let (public, n, d) = match parsed {
+        Err(e) => return Err(format!("parse: {e}")),
+        Ok(Err(e)) => return Err(e),
+        Ok(Ok(v)) => v,
+    };
+    let rec = step::replay_release(&public, d, m, prm, x, labels, ncls, kc)
+        .map_err(|_| "parse: public transcript shorter than the release program".to_string())?;
+    if rec.tpos != public.len() {
+        return Err("parse: public transcript longer than the release program".into());
+    }
+    let rel = (|| -> PR<_> {
+        let p = read_middle_io(&mut r, pr, n, d, rec.n_prep(), rec.had.len(), false, rec.io.as_ref())?;
+        if r.o != r.d.len() {
+            return Err("trailing bytes".into());
+        }
+        Ok(p)
+    })()
+    .map_err(|e| format!("parse: {e}"))?;
+    let c = *public.last().unwrap();
+    if c > m as u64 {
+        return Err("released count exceeds M".into());
+    }
+    middle::verify(pr, lp, n, &rec, d, head_roots, expect, &rel, false, &public).map_err(|e| format!("release: {e}"))?;
+    Ok((m, c))
 }
 
 /// The step program's public transcript length (data-independent).
