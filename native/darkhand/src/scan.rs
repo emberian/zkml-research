@@ -11,6 +11,22 @@ pub struct Canaries {
     k1: u64,
     tags: std::collections::HashMap<u64, usize>,
     pub kinds: Vec<(String, usize)>,
+    /// words at or above this are never canaries (`bounded`): the disk scan then tags only words below it
+    below: Option<u64>,
+}
+
+/// A scan of files on disk (`Canaries::scan_paths`).
+#[derive(Debug, Clone, Default)]
+pub struct DiskReport {
+    pub files: usize,
+    pub bytes: u64,
+    pub hits: u64,
+    pub by_kind: Vec<u64>,
+    /// (path, hits) of every file with a hit
+    pub hit_files: Vec<(String, u64)>,
+    /// paths that could not be read (a missing path is not listed: erasure unlinks them)
+    pub unreadable: Vec<String>,
+    pub seconds: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -42,7 +58,15 @@ impl Canaries {
             k1: u64::from_le_bytes(b[8..].try_into().unwrap()),
             tags: std::collections::HashMap::new(),
             kinds: Vec::new(),
+            below: None,
         }
+    }
+
+    /// Canaries of words below `bound` only (field elements and NTT residues: below 2^61). A file scan tags a word
+    /// only when it is below the bound, so it can look at every byte offset (files are not word-aligned) at about
+    /// twice the aligned cost instead of eight times.
+    pub fn bounded(bound: u64) -> Self {
+        Canaries { below: Some(bound), ..Canaries::new() }
     }
 
     /// Add up to `max` words of `xs`, evenly spaced (all when fewer). Words 0 and 1 are skipped (not secret).
@@ -50,7 +74,7 @@ impl Canaries {
         let step = xs.len().div_ceil(max.max(1)).max(1);
         let mut k = 0;
         for &w in xs.iter().step_by(step) {
-            if w > 1 {
+            if w > 1 && self.below.map_or(true, |b| w < b) {
                 self.tags.insert(tag(self.k0, self.k1, w), self.kinds.len());
                 k += 1;
             }
@@ -128,6 +152,116 @@ impl Canaries {
     #[cfg(not(target_os = "linux"))]
     pub fn scan(&self) -> ScanReport {
         ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], seconds: 0.0 }
+    }
+}
+
+impl Canaries {
+    /// Scan every regular file under `paths` (directories recursively; symlinks are not followed) at every byte
+    /// offset, on all cores (`DLH_SCAN_THREADS` caps them). Read buffers are zeroed after use.
+    pub fn scan_paths(&self, paths: &[std::path::PathBuf]) -> DiskReport {
+        use std::os::unix::fs::FileExt;
+        use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
+        let t = std::time::Instant::now();
+        let mut rep = DiskReport { by_kind: vec![0; self.kinds.len()], ..Default::default() };
+        let mut files: Vec<(std::path::PathBuf, u64)> = Vec::new();
+        let mut seen = std::collections::BTreeSet::new();
+        let mut stack: Vec<std::path::PathBuf> = paths.to_vec();
+        while let Some(p) = stack.pop() {
+            let md = match std::fs::symlink_metadata(&p) {
+                Ok(m) => m,
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => continue,
+                Err(_) => {
+                    rep.unreadable.push(p.display().to_string());
+                    continue;
+                }
+            };
+            if md.is_dir() {
+                match std::fs::read_dir(&p) {
+                    Ok(rd) => stack.extend(rd.flatten().map(|e| e.path())),
+                    Err(_) => rep.unreadable.push(p.display().to_string()),
+                }
+            } else if md.is_file() {
+                let key = std::fs::canonicalize(&p).unwrap_or(p.clone());
+                if seen.insert(key) {
+                    files.push((p, md.len()));
+                }
+            }
+        }
+        files.sort();
+        rep.files = files.len();
+        // work units of 64 MiB; a unit reads 7 bytes past its end so that a word starting in it is seen whole
+        const UNIT: u64 = 64 << 20;
+        let units: Vec<(usize, u64, u64)> = files
+            .iter()
+            .enumerate()
+            .flat_map(|(f, (_, len))| (0..len.div_ceil(UNIT)).map(move |u| (f, u * UNIT, (len - u * UNIT).min(UNIT))))
+            .collect();
+        let per_file: Vec<AtomicU64> = files.iter().map(|_| AtomicU64::new(0)).collect();
+        let by_kind: Vec<AtomicU64> = self.kinds.iter().map(|_| AtomicU64::new(0)).collect();
+        let bad: Vec<std::sync::atomic::AtomicBool> = files.iter().map(|_| Default::default()).collect();
+        let bytes = AtomicU64::new(0);
+        let next = AtomicUsize::new(0);
+        let nt = std::env::var("DLH_SCAN_THREADS").ok().and_then(|x| x.parse().ok())
+            .unwrap_or_else(|| std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4)).max(1);
+        let below = self.below.unwrap_or(u64::MAX);
+        std::thread::scope(|s| {
+            for _ in 0..nt {
+                s.spawn(|| {
+                    let mut buf = vec![0u8; UNIT as usize + 8];
+                    let mut open: Option<(usize, std::fs::File)> = None;
+                    loop {
+                        let u = next.fetch_add(1, Ordering::Relaxed);
+                        let Some(&(f, off, len)) = units.get(u) else { break };
+                        if open.as_ref().map(|o| o.0) != Some(f) {
+                            open = std::fs::File::open(&files[f].0).ok().map(|h| (f, h));
+                        }
+                        let Some((_, h)) = open.as_ref() else {
+                            bad[f].store(true, Ordering::Relaxed);
+                            continue;
+                        };
+                        let want = (len + 7).min(files[f].1 - off) as usize;
+                        let mut got = 0;
+                        while got < want {
+                            match h.read_at(&mut buf[got..want], off + got as u64) {
+                                Ok(0) => break,
+                                Ok(k) => got += k,
+                                Err(_) => break,
+                            }
+                        }
+                        bytes.fetch_add(got.min(len as usize) as u64, Ordering::Relaxed);
+                        let starts = (len as usize).min(got.saturating_sub(7));
+                        let mut hits = 0u64;
+                        for p in 0..starts {
+                            let w = u64::from_le_bytes(buf[p..p + 8].try_into().unwrap());
+                            if w > 1 && w < below {
+                                if let Some(&kd) = self.tags.get(&tag(self.k0, self.k1, w)) {
+                                    hits += 1;
+                                    by_kind[kd].fetch_add(1, Ordering::Relaxed);
+                                }
+                            }
+                        }
+                        if hits > 0 {
+                            per_file[f].fetch_add(hits, Ordering::Relaxed);
+                        }
+                    }
+                    unsafe { crate::erase::zero_raw(buf.as_mut_ptr(), buf.len()) };
+                });
+            }
+        });
+        rep.bytes = bytes.into_inner();
+        rep.by_kind = by_kind.into_iter().map(|x| x.into_inner()).collect();
+        rep.hits = rep.by_kind.iter().sum();
+        for (k, (p, _)) in files.iter().enumerate() {
+            let h = per_file[k].load(Ordering::Relaxed);
+            if h > 0 {
+                rep.hit_files.push((p.display().to_string(), h));
+            }
+            if bad[k].load(Ordering::Relaxed) {
+                rep.unreadable.push(p.display().to_string());
+            }
+        }
+        rep.seconds = t.elapsed().as_secs_f64();
+        rep
     }
 }
 
