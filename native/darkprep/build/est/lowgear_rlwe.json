@@ -1,0 +1,30 @@
+{
+ "N=8192 logq=312": {
+  "rough": {
+   "usvp": 53.7,
+   "dual_hybrid": 53.7
+  },
+  "full": {
+   "usvp": 87.0,
+   "bdd": 86.8,
+   "bdd_hybrid": 86.8,
+   "bdd_mitm_hybrid": 98.2,
+   "dual": 88.1,
+   "dual_hybrid": 87.8
+  }
+ },
+ "N=16384 logq=314": {
+  "rough": {
+   "usvp": 149.8,
+   "dual_hybrid": 149.2
+  },
+  "full": {
+   "usvp": 179.2,
+   "bdd": 179.0,
+   "bdd_hybrid": 179.0,
+   "bdd_mitm_hybrid": 243.2,
+   "dual": 180.5,
+   "dual_hybrid": 179.4
+  }
+ }
+}
