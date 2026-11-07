@@ -879,6 +879,77 @@ T columns, roughly 11 MB of §16's 55.9 MB. The native numbers will replace this
 Both carried steps of the full flow (`darkproof_vectors.py ... demo-x2d he`) are accepted by Python's verifier
 (4c0e2fd6…, d51d7d47…). Native: next, by the same helper, after its EXT = 2 port.
 
+## 21. Cut E: deferred child opening (the design, written before the code; coordinator's semantics)
+
+**Today.** Step k opens its children W1n and W2n (life 1) to prove the rank-1 identity at its point r_k. Step k + 1
+opens them again as its parents W1 and W2 (life 2). So every W carries hide = 2T = 618 and two proximity masks per
+component. Opening a child costs its T columns, its proximity row (EXT W values per custodian) and its u rows in the
+Ligero: about 10 MB of a d = 4096 step under EXT = 2.
+
+**E.**
+- Step k does not open W1n or W2n. It commits them: their roots are absorbed with every other root at the head of
+  step k's transcript, as today.
+- For each update it commits a carry c_k (see (3)). The rank-1 identity becomes c_k = W(r_k) - d(r_row) v(r_col),
+  proved in step k's Ligero. W is step k's parent and is opened in step k.
+- The deferred claim W_(k+1)(r_k) = c_k, with W_(k+1) = step k's child, is proved where the child is next opened. That
+  is the discharge:
+  - step k + 1, where the child is the parent;
+  - the release, which opens the head;
+  - the handover, which opens the head;
+  - for a halted run, a standalone closing proof that opens the head at r_k alone.
+- Ledger: step k is recorded "proved, pending". It becomes "final" when a later record discharges it. The Python
+  replay tool prints pending versus final per step.
+
+**(1) Fiat-Shamir order.**
+- Step k's spine transcript absorbs every commitment's roots before its first challenge, in sorted name order, after
+  the context and the public digest. Those roots include W1n and W2n, the children, and the carries c1, c2.
+- r_k (rc, rr per update) is drawn after all of them. So W_(k+1) and c_k are fixed before r_k exists.
+- Step k + 1 absorbs the same child roots again as its parents' roots. The verifier and the ledger check that they
+  equal step k's child roots, as today.
+- Step k + 1 takes r_k from step k's accepted bundle (the ledger holds it), not from its own transcript. So the
+  discharge's point cannot be moved either.
+
+**(2) One opening, two points, hide 309.**
+- In step k + 1, W_(k+1) is opened ONCE: one proximity combination (masked by its single life's EXT mask rows) and
+  T = 309 columns. Two evaluations use that opening: r_k (the deferred claim) and step k + 1's own points (the parent's
+  matvec and rank-1 points). Each evaluation's row combination u_e is a hidden Ligero row, and its consistency with the
+  opened columns is a set of Ligero linear constraints (§1, ZKPCS). No evaluation value is ever revealed.
+- **Soundness.** Proximity (n / F, §19) and binding at the opened columns are per opening, not per evaluation. For
+  each evaluation, a u_e that is not the committed rows' combination differs from it as a codeword. It then agrees
+  with the opened columns only with probability (3/4)^T, so the union over the two evaluations is 2 (3/4)^309 =
+  2^-127.25. The deferred claim's sumcheck-free identity W(r_k) = c_k is an exact equality of two evaluations: no
+  Schwartz-Zippel term.
+- **Zero knowledge.**
+  - The verifier sees, from W_(k+1), its root, one masked proximity combination (uniform, because of the life's mask
+    rows) and T columns.
+  - Each column is uniform given the data, because the hiding tails have hide = T = 309 coefficients and exactly T
+    points are revealed (the opening is the commitment's only one).
+  - The evaluations add nothing visible: they live in the Ligero, whose own T revealed columns are covered by its t =
+    309 hiding values per row.
+  - A second opening would reveal T more columns and break this. Hence the rule: W lives = 1, enforced by the life
+    counter (take_life), which refuses the second opening.
+
+**(3) The carry c_k.**
+- It is a ZKPCS commitment, the same share-PCS as every vector, to the secret value
+  delta_k = W(r_k) - d(r_row) v(r_col): a vector of EXT entries, its F_{p^EXT} components.
+- Each custodian commits its own share with its own tails, mask rows and salts, so the commitment hides like any other.
+- It has exactly two lives: step k (its defining constraint) and its discharge (the deferred claim). So hide = 2T = 618
+  and two blocks of EXT proximity masks.
+- Its row is C + hide = EXT + 618 values wide (mr = 0): a few kilobytes per opening.
+- In each proof its value is read from its one hidden u row: u = row 0 = (delta components, tails).
+
+**What changes in shape.**
+- Hiding is per commitment: hide = T x lives. W matrices: 1 life, hide 309, EXT masks. Vectors shared between the
+  spine and middle: 2 lives (unchanged). P, A, B, C and the owner commitments: 1 life. Carries: 2 lives.
+- The step's genesis W (public genesis) has one life, opened by step 1.
+
+**Refusal rows to build.**
+- A step k whose child does not satisfy the deferred claim (custodian 0's W1n share altered, as forge_W1n): step k
+  is accepted as pending, since its child is not opened there. Its discharge (step k + 1, or the closing proof) is
+  refused, and step k never becomes final.
+- A ledger whose last step is never discharged: the replay reports it pending, not final.
+- A second opening of a W (a retry of step k + 1's opening): refused by the life counter (LifeExhausted).
+
 ## [OPEN]
 
 - **The three-box run** (forge seat 0, bb2, hbox), driven by the deploy lane (ae142f25de791a39c).
