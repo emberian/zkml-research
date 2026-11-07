@@ -605,3 +605,101 @@ def policy_digest(X, labels, ncls, kc):
             h.update(struct.pack(">Q", X[k][t]))
     h.update(bytes(labels))
     return h.hexdigest()
+
+
+def mnist_policy(cfg_bytes, data_dir, M, p):
+    """The gen 6 release policy (native run::mnist_policy; train lane, train_eval.py): the first M official test
+    images (t10k 0..M-1) under the cfg's encoder (training-split means), X[k][t] mod p, their labels, 10 classes,
+    kc = 10. Returns (X, labels, ncls, kc)."""
+    import train_owner as TO
+    g = json.loads(cfg_bytes)
+    assert 10 * g["reps"] == 10, "release policy: one W2 row per class (reps = 1)"
+    m = TO.load(data_dir)
+    im, lb, n = m["test"]
+    assert 0 < M <= n
+    mu = TO.means(m) if g["xenc"] in ("mc", "mc2") else None
+    xs = [TO.encode(g, mu, im[t * 784:(t + 1) * 784], lb[t])[0] for t in range(M)]
+    X = [[xs[t][k] % p for t in range(M)] for k in range(g["d"])]
+    return X, list(lb[:M]), 10, 10
+
+
+def replay(native_ledger, cfg_path, bundle_dir, mnist_dir=None, workdir=None):
+    """A skeptic's check of a whole run's ledger in Python: a fresh Python ledger from the native ledger's genesis
+    record (the profile must be set to its params), the public genesis checked against the cfg, then every record
+    re-verified in order from the bundle bytes found in bundle_dir by their sha256: each step (its child roots must
+    equal the native record's), each rotation (the handover proof), and the release (its C and policy digest must
+    equal the native record's; the policy is rebuilt from MNIST, or read from a policy json). Returns (ok, lines)."""
+    import glob
+    import tempfile
+    recs = [json.loads(l) for l in open(native_ledger)]
+    g = recs[0]
+    if g.get("kind") != "genesis" or g["params"] != PARAMS:
+        return False, ["the native genesis record is missing or has other parameters than this profile's"]
+    by_digest = {}
+    for f in glob.glob(os.path.join(bundle_dir, "**", "*.bin"), recursive=True):
+        by_digest.setdefault(hashlib.sha256(open(f, "rb").read()).hexdigest(), f)
+    blob = lambda h: open(by_digest[h], "rb").read() if h in by_digest else None
+    p = he_field()
+    tab = MF.tables(p)
+    wd = workdir or tempfile.mkdtemp(prefix="pw-replay-")
+    lg = Ledger(os.path.join(wd, g["model"] + ".ledger"), g["model"],
+                dict(d=g["d"], owner_pk=None if g["owner_pk"] == "none" else bytes.fromhex(g["owner_pk"]),
+                     custodians=g["custodians"], roots=g["roots"], program=g.get("program")))
+    out, ok = [], True
+    cfg = open(cfg_path, "rb").read()
+    if (g.get("program") or {}).get("PG"):
+        import time
+        t = time.time()
+        r = lg.check_public_genesis(cfg)
+        out.append(f"public genesis: {r} ({time.time() - t:.0f}s)")
+        ok &= r[0]
+    for no, rec in enumerate(recs[1:], 2):
+        b = blob(rec.get("digest") or rec.get("handover_proof"))
+        if b is None:
+            out.append(f"line {no} ({rec['kind']}): no bundle with sha256 {rec.get('digest') or rec.get('handover_proof')}")
+            return False, out
+        import time
+        t = time.time()
+        if rec["kind"] == "step":
+            r = lg.accept(p, b, tab)
+            same = r[0] and lg.parent == rec["child"]
+            out.append(f"step {rec['step']}: {r}, child roots {'equal' if same else 'DIFFER from'} the native record's ({time.time() - t:.0f}s)")
+            ok &= same
+        elif rec["kind"] == "rotate":
+            r = lg.rotate(p, rec["custodians"], rec["roots"], b)
+            out.append(f"rotation to epoch {rec['epoch']}: {r} ({time.time() - t:.0f}s)")
+            ok &= r[0]
+        elif rec["kind"] == "release":
+            if mnist_dir is None:
+                out.append("release: no policy given (an MNIST directory or a policy json)")
+                return False, out
+            if mnist_dir.endswith(".json"):           # an explicit policy: {X (d rows of M, mod p), labels, ncls, kc}
+                pj = json.load(open(mnist_dir))
+                X, labels, ncls, kc = pj["X"], pj["labels"], pj["ncls"], pj["kc"]
+            else:
+                X, labels, ncls, kc = mnist_policy(cfg, mnist_dir, rec["M"], p)
+            r = lg.release(p, b, X, labels, ncls, kc)
+            mine = lg.recs[-1] if r[0] else {}
+            same = r[0] and (mine.get("C"), mine.get("policy")) == (rec["C"], rec["policy"])
+            out.append(f"release: {r}, C = {mine.get('C')} of {rec['M']}, policy digest {'equal' if same else 'DIFFERS'} ({time.time() - t:.0f}s)")
+            ok &= same
+        else:
+            out.append(f"line {no}: unknown record kind {rec['kind']}")
+            return False, out
+        if not ok:
+            break
+    return ok, out
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) >= 6 and sys.argv[1] == "replay":
+        # python3 proofwire.py replay PROFILE NATIVE_LEDGER CFG BUNDLE_DIR [MNIST_DIR | POLICY.json]
+        set_profile(sys.argv[2])
+        ok, lines = replay(sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6] if len(sys.argv) > 6 else None)
+        for l in lines:
+            print(l, flush=True)
+        print("REPLAY", "PASS" if ok else "FAIL")
+        sys.exit(0 if ok else 1)
+    print("usage: python3 proofwire.py replay PROFILE NATIVE_LEDGER CFG BUNDLE_DIR [MNIST_DIR | POLICY.json]")
+    sys.exit(2)

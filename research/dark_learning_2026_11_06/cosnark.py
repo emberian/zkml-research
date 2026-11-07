@@ -195,6 +195,8 @@ class SharePCS:
 
     def encode(self, row):
         p = self.p
+        if DOMAIN == "coset":
+            return encode_coset(p, row, len(self.pts))
         out = []
         for x in self.pts:
             acc = 0
@@ -396,7 +398,65 @@ def domain(p, npts, w):
         _DOM[key] = pts[:npts]
     return _DOM[key]
 
+_COSET = {}
+
+def _ntt(a, p, tw):
+    """In place: a[i] <- sum_c a[c] omega^(c i), natural order in and out (len a = 2^k; tw[j] = omega^j, j < 2^(k-1))."""
+    n = len(a)
+    j = 0
+    for i in range(1, n):
+        bit = n >> 1
+        while j & bit:
+            j ^= bit
+            bit >>= 1
+        j |= bit
+        if i < j:
+            a[i], a[j] = a[j], a[i]
+    m = 2
+    while m <= n:
+        h, step = m >> 1, n // m
+        tws = tw[::step][:h]
+        for s0 in range(0, n, m):
+            for k in range(h):
+                u, v = a[s0 + k], a[s0 + k + h] * tws[k] % p
+                a[s0 + k], a[s0 + k + h] = (u + v) % p, (u - v) % p
+        m <<= 1
+    return a
+
+def encode_coset(p, row, npts):
+    """The codeword of `row` on the coset domain (domain(p, npts, len(row))), by one NTT per coset as native
+    PcsParty::encode_coset does: coset t's coefficients scaled by c^i (c = z^t) and folded mod 2^k. Equal to the
+    direct evaluation at every point."""
+    w = len(row)
+    key = (p, npts, w)
+    if key not in _COSET:
+        k, T, omega, z = coset_params(p, npts, w)
+        n = 1 << k
+        tw = [1] * (n // 2)
+        for i in range(1, n // 2):
+            tw[i] = tw[i - 1] * omega % p
+        scale = []
+        for t in range(T):
+            c, sc, x = pow(z, t, p), [], 1
+            for _ in range(w):
+                sc.append(x)
+                x = x * c % p
+            scale.append(sc)
+        _COSET[key] = (n, tw, scale)
+    n, tw, scale = _COSET[key]
+    out = []
+    for sc in scale:
+        buf = [0] * n
+        for i, (a, f) in enumerate(zip(row, sc)):
+            buf[i & (n - 1)] += a * f
+        out += _ntt([v % p for v in buf], p, tw)
+        if len(out) >= npts:
+            break
+    return out[:npts]
+
 def encode_pub(p, row, npts):
+    if DOMAIN == "coset":
+        return encode_coset(p, row, npts)
     out = []
     for x in domain(p, npts, len(row)):
         acc = 0
