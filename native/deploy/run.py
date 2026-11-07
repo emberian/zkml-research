@@ -55,7 +55,40 @@ def setup(cfg):
             scp_to(cfg["genesis_cfg"], s["host"], f"{d}/genesis.json")
     if cfg.get("owner_cfg"):
         scp_to(cfg["owner_cfg"], cfg["owner"]["host"], f"{owner_dir(cfg)}/cfg.json")
+    ho = cfg.get("handover")
+    if ho:
+        # the new committee: its own identities; cert_0..2 are ITS certificates; the six-party mesh's cert6_0..5 are
+        # the old committee's then the new one's; the owner gets the new certificates for its second session
+        nloc = os.path.join(loc, "new")
+        os.makedirs(nloc, exist_ok=True)
+        news = [(str(j), s, new_dir(cfg, s, j)) for j, s in enumerate(ho["new_seats"])]
+        for seat, s, d in news:
+            sh(s["host"], f"mkdir -p {d}/tls {d}/D && {s['bin']}/darkstep tls-keygen {seat} {d}/tls")
+            scp_from(s["host"], f"{d}/tls/cert_{seat}.der", nloc)
+        six = os.path.join(loc, "tls6")
+        os.makedirs(six, exist_ok=True)
+        for j in range(3):
+            subprocess.run(["cp", os.path.join(loc, f"cert_{j}.der"), os.path.join(six, f"cert6_{j}.der")], check=True)
+            subprocess.run(["cp", os.path.join(nloc, f"cert_{j}.der"), os.path.join(six, f"cert6_{3 + j}.der")], check=True)
+        for seat, s, d in news:
+            for c in ["0", "1", "2"]:
+                if c != seat:
+                    scp_to(os.path.join(nloc, f"cert_{c}.der"), s["host"], f"{d}/tls/")
+            scp_to(os.path.join(loc, "cert_owner.der"), s["host"], f"{d}/tls/")
+            if cfg.get("genesis_cfg"):
+                scp_to(cfg["genesis_cfg"], s["host"], f"{d}/genesis.json")
+        for seat, s, d in [(str(i), s, seat_dir(cfg, s, i)) for i, s in enumerate(cfg["seats"])] + news:
+            sh(s["host"], f"mkdir -p {d}/tls6")
+            for j in range(6):
+                scp_to(os.path.join(six, f"cert6_{j}.der"), s["host"], f"{d}/tls6/")
+        od = owner_dir(cfg)
+        sh(cfg["owner"]["host"], f"mkdir -p {od}/tls-next")
+        for j in range(3):
+            scp_to(os.path.join(nloc, f"cert_{j}.der"), cfg["owner"]["host"], f"{od}/tls-next/")
     print("setup: identities made per seat; certificates distributed")
+
+def new_dir(cfg, s, j):
+    return f"{s['root']}/{cfg['name']}/new{j}"
 
 def loads(cfg):
     hosts = sorted({s["host"] for s in cfg["seats"]} | {cfg["owner"]["host"]})
@@ -81,6 +114,8 @@ done'''
 def start(host, d, name, cmd, env=""):
     pidf = f"{d}/{name}.pid"
     # no "cd && cmd &": that backgrounds a subshell, whose PID would land in the file and which holds ssh open
+    # the exact command line, for a later check that relaunches it (e.g. an old seat after its handover)
+    sh(host, f"cat > {d}/{name}.cmd << 'EOF_CMD'\ncd {d} && {env} {cmd}\nEOF_CMD")
     sh(host, f"cd {d} || exit 1; {env} nohup {cmd} > {d}/{name}.log 2>&1 < /dev/null & echo $! > {pidf}")
     start_sampler(host, d, name)
 
@@ -120,7 +155,8 @@ def launch(cfg, seats_only=False):
     o = cfg["owner"]
     od = owner_dir(cfg)
     ocmd = f"nice -n 15 {o.get('scope', '')} {o['bin']}/dl-owner --listen {o['addr']} --tls {od}/tls --t {cfg['t']} --d {d} " + \
-           (f"--train {od}/cfg.json" + (" --public-genesis" if cfg.get("genesis_cfg") else "") if cfg.get("owner_cfg") else f"--test-public {o['test_public']}")
+           (f"--train {od}/cfg.json" + (" --public-genesis" if cfg.get("genesis_cfg") else "") if cfg.get("owner_cfg") else f"--test-public {o['test_public']}") + \
+           (f" --next-tls {od}/tls-next" if cfg.get("handover") else "")
     if not seats_only:
         start(o["host"], od, "owner", ocmd)
     addrs = " ".join(s["addr"] for s in cfg["seats"])
@@ -137,13 +173,32 @@ def launch(cfg, seats_only=False):
             args += f" --proof-archive {sd}/archive"
         if s.get("listen"):
             args += f" --listen {s['listen']}"
+        ho = cfg.get("handover")
+        if ho:
+            args += f" --handover-at {ho['at']} --mesh6 {ho['mesh6']} --tls6 {sd}/tls6"
         start(s["host"], sd, f"serve{i}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/{exe} {args}", env=s.get("env", ""))
+    ho = cfg.get("handover")
+    if ho:
+        naddrs = " ".join(s["addr"] for s in ho["new_seats"])
+        for j, s in enumerate(ho["new_seats"]):
+            nd = new_dir(cfg, s, j)
+            args = f"join {j} {N} {L} {F} {d} {nd}/D {naddrs} --tls {nd}/tls --owner {o['addr']} --steps {ho['steps_after']} " \
+                   f"--after-step {ho['at']} --gate {cfg['gate']} --program {cfg['program']} --tapes {s['tapes']} " \
+                   f"--owner-msgs {s['owner_msgs']} --handover-tape {s['handover_tape']} --mesh6 {ho['mesh6']} --tls6 {nd}/tls6 "
+            if cfg.get("genesis_cfg"):
+                args += f"--genesis-cfg {nd}/genesis.json "
+            args += " ".join(ho.get("flags", []))
+            if s.get("archive"):
+                args += f" --proof-archive {nd}/archive"
+            start(s["host"], nd, f"new{j}", f"nice -n 15 {s.get('scope', '')} {s['bin']}/dl-custodian {args}", env=s.get("env", ""))
     print("launched; status with: run.py RUN.json status")
 
 def procs(cfg):
     yield cfg["owner"]["host"], owner_dir(cfg), "owner"
     for i, s in enumerate(cfg["seats"]):
         yield s["host"], seat_dir(cfg, s, i), f"serve{i}"
+    for j, s in enumerate((cfg.get("handover") or {}).get("new_seats", [])):
+        yield s["host"], new_dir(cfg, s, j), f"new{j}"
 
 def status(cfg):
     for h, d, n in procs(cfg):
@@ -164,32 +219,40 @@ def collect(cfg):
             subprocess.run(f"scp -q '{h}:{d}/D/*.json' {os.path.join(loc, n)}/", shell=True)
     steps = {}
     party = {}
-    for i in range(3):
-        pd = os.path.join(loc, f"serve{i}")
+    proofs = {}
+    names = [(f"serve{i}", f"P{i}") for i in range(3)] + [(f"new{j}", f"N{j}") for j in range(len((cfg.get("handover") or {}).get("new_seats", [])))]
+    for dname, key in names:
+        pd = os.path.join(loc, dname)
         for f in sorted(os.listdir(pd)):
             if f.startswith("step_") and f.endswith(".json"):
                 r = json.load(open(os.path.join(pd, f)))
-                steps.setdefault(r["step"], {})[i] = r
-            if f.startswith("serve_P"):
-                party[i] = json.load(open(os.path.join(pd, f)))
-        mon = os.path.join(pd, f"serve{i}.mon")
+                steps.setdefault(r["step"], {})[key] = r
+            if f.startswith("proof_") and f.endswith(".json") and f[6:-5].split("_")[0].isdigit():
+                r = json.load(open(os.path.join(pd, f)))
+                proofs.setdefault(r["serve_step"], {})[key] = r
+            if f.startswith("serve_P") or f.startswith("handover_P") or f.startswith("join_P") or f.startswith("self_handover_P") or f.startswith("release_P"):
+                party.setdefault(key, {})[f.split("_P")[0]] = json.load(open(os.path.join(pd, f)))
+        mon = os.path.join(pd, f"{dname}.mon")
         if os.path.exists(mon):
             rows = [l.split() for l in open(mon) if len(l.split()) == 5]
             if rows:
-                party.setdefault(i, {})["sampled_peak_rss_kb"] = max(int(r[1]) for r in rows)
-                party[i]["sampled_cgroup_peak_bytes"] = max(int(r[3]) for r in rows)
+                party.setdefault(key, {})["sampled_peak_rss_kb"] = max(int(r[1]) for r in rows)
+                party[key]["sampled_cgroup_peak_bytes"] = max(int(r[3]) for r in rows)
+                party[key]["load1_range"] = [min(float(r[4]) for r in rows), max(float(r[4]) for r in rows)]
     table = []
     for k in sorted(steps):
         row = {"step": k}
-        for i, r in sorted(steps[k].items()):
-            a = r.get("after_step") or {}
-            row[f"P{i}"] = {"verdict": r.get("verdict"), "step_s": r.get("step_seconds"), "cpu_s": r.get("cpu_seconds"),
-                            "peak_rss_kb": r.get("peak_rss_kb"), "transcript": (r.get("transcript") or "")[:16],
-                            "bytes_to": {j: v["total"] for j, v in (r.get("bytes_sent_to") or {}).items()},
-                            "proof_s": a.get("proof_seconds"), "proof_bytes": a.get("proof_bytes"),
-                            "verify_s": a.get("verify_seconds"), "after_step_s": r.get("after_step_seconds"),
-                            "proof_bytes_to": {j: v["proof"] for j, v in (r.get("after_step_bytes_to") or {}).items()}}
-        ts = {row[f"P{i}"]["transcript"] for i in range(3) if f"P{i}" in row}
+        for key, r in sorted(steps[k].items()):
+            a = (r.get("after_step") or {}) if isinstance(r.get("after_step"), dict) else {}
+            pr = proofs.get(k, {}).get(key) or a
+            row[key] = {"verdict": r.get("verdict"), "step_s": r.get("step_seconds"), "cpu_s": r.get("cpu_seconds"),
+                        "peak_rss_kb": r.get("peak_rss_kb"), "transcript": (r.get("transcript") or "")[:16],
+                        "bytes_to": {j: v["total"] for j, v in (r.get("bytes_sent_to") or {}).items()},
+                        "proof_s": pr.get("proof_seconds"), "proof_bytes": pr.get("proof_bytes"), "verify_s": pr.get("verify_seconds"),
+                        "proof_elements_sent": pr.get("proof_field_elements_sent"), "after_step_s": r.get("after_step_seconds"),
+                        "waited_for_proof_s": a.get("waited_for_previous_proof_seconds"),
+                        "proof_bytes_to": {j: v["proof"] for j, v in (r.get("after_step_bytes_to") or {}).items()}}
+        ts = {v["transcript"] for kk, v in row.items() if kk != "step"}
         row["one_transcript"] = len(ts) == 1
         table.append(row)
     json.dump({"steps": table, "parties": party}, open(os.path.join(loc, "summary.json"), "w"), indent=1)

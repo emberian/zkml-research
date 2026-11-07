@@ -75,6 +75,9 @@ pub struct Dealer {
     pub alpha_sh: Vec<u64>,
     pub alpha: u64,
     pub tapes: Vec<Tape>,
+    /// Some(i): keep only party i's tape (the streams are drawn as always; the others are not stored), so one seat's
+    /// test tape at d = 4096 with a release section fits in that seat's memory cap
+    pub only: Option<usize>,
 }
 
 impl Dealer {
@@ -83,7 +86,7 @@ impl Dealer {
         let alpha_sh: Vec<u64> = (0..n).map(|_| rng.randrange_u64(p)).collect();
         let alpha = alpha_sh.iter().fold(0, |a, &x| addmod(a, x, p));
         let tapes = alpha_sh.iter().map(|&a| Tape { alpha_i: a, ..Default::default() }).collect();
-        Dealer { p, n, rng, proof_rng: None, alpha_sh, alpha, tapes }
+        Dealer { p, n, rng, proof_rng: None, alpha_sh, alpha, tapes, only: None }
     }
 
     /// spdz.Dealer.auth(v, tag), v in [0, p).
@@ -96,6 +99,9 @@ impl Dealer {
         let sm = ms.iter().fold(0, |a, &x| addmod(a, x, p));
         ms.push(submod(mulmod(self.alpha, v, p), sm, p));
         for i in 0..n {
+            if self.only.is_some_and(|o| o != i) {
+                continue;
+            }
             let t = &mut self.tapes[i];
             t.tags.push(tag as u8);
             t.sh.push(xs[i]);
@@ -131,6 +137,9 @@ impl Dealer {
                 let sm = ms.iter().fold(0, |a, &x| addmod(a, x, p));
                 ms.push(submod(mulmod(self.alpha, v, p), sm, p));
                 for i in 0..n {
+                    if self.only.is_some_and(|o| o != i) {
+                        continue;
+                    }
                     let t = &mut self.tapes[i];
                     t.tags.push(Tag::Trhb as u8);
                     t.sh.push(xs[i]);

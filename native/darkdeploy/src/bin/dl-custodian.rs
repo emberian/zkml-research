@@ -5,7 +5,7 @@
 //!       [--profile NAME] [--proof-archive ADIR]] [--model NAME]
 //!       [--handover-at K --mesh6 A0,..,A5 --tls6 DIR6 [--listen6 HOST:PORT]]
 //!       [--self-handover-tape FILE --recover-mesh A0,A1,A2 --recover-mesh6 A0,..,A5 --tapes2 PAT --owner-msgs2 PAT]
-//!       [--release --release-data MNISTDIR [--release-m 64] [--release-tape FILE]]
+//!       [--release --release-data MNISTDIR [--release-m M (default: the cfg's release.M)] [--release-tape FILE]]
 //!   dl-custodian join J <N L F d> DIR A0 A1 A2 --tls TLSDIR --owner HOST:PORT --steps K --mesh6 A0,..,A5
 //!       --tls6 DIR6 --handover-tape FILE --tapes PAT --owner-msgs PAT --genesis-cfg CFG --prove [...]
 //!   dl-custodian proof-triples N L F d [--program P]
@@ -167,6 +167,16 @@ fn write_carry(path: &Path, c: &Carry) -> std::io::Result<()> {
         f.get_ref().sync_all()?;
     }
     std::fs::rename(tmp, path)
+}
+
+/// The handover proof (public; the ledger keeps its sha256): DIR/handover_e<E>.bin, and in the archive if any.
+fn save_handover_proof(args: &[String], dir: &Path, epoch: i64, proof: &[u8]) -> Result<(), String> {
+    std::fs::write(dir.join(format!("handover_e{epoch}.bin")), proof).map_err(|e| e.to_string())?;
+    if let Some(a) = flag(args, "--proof-archive") {
+        std::fs::create_dir_all(&a).map_err(|e| e.to_string())?;
+        std::fs::write(Path::new(&a).join(format!("handover_e{epoch}.bin")), proof).map_err(|e| e.to_string())?;
+    }
+    Ok(())
 }
 
 /// The serve arguments after a self-handover at refused step k: the remaining steps, the new key's tapes and owner
@@ -354,15 +364,46 @@ impl Prove {
         let dg = side::digest(&st.he.key.decrypt(&ct, None));
         let pre_decrypts = dg == side::digest(&m);
         let mut files = vec![dir.join(format!("ckpt_P{i}.bin")), dir.join(format!("carry_P{i}.bin")), tlsdir.join(format!("tls_{i}.key"))];
-        if let Some(p) = flag(&args, "--tapes") {
-            files.push(PathBuf::from(serve::step_path(&args, &p, st.step.saturating_sub(1))));
+        // every tape and owner message of steps 0..=K still on disk (--wipe-spent removes them step by step)
+        for f in ["--tapes", "--owner-msgs"] {
+            if let Some(p) = flag(&args, f) {
+                let k0: usize = flag(&args, "--chunk-first").map(|x| x.parse().unwrap()).unwrap_or(0);
+                for k in k0..st.step {
+                    let q = PathBuf::from(serve::step_path(&args, &p, k));
+                    if q.exists() && !files.contains(&q) {
+                        files.push(q);
+                    }
+                }
+            }
         }
         if let Some(p) = flag(&args, "--tape") {
             files.push(PathBuf::from(p));
         }
         let carry = self.c().carry.take().ok_or("no carried commitment (the handover needs --prove)")?;
         self.c().ledger = None;
-        let OldParts { old, he, net3 } = darkhand::serve::old_from_serve(st, carry, files, true, Some((ct, dg)));
+        let mut scan: Vec<PathBuf> = files.clone();
+        scan.push(dir.to_path_buf());
+        scan.push(tlsdir.clone());
+        // the chunk dirs (a whole-chunk tape file beside the step files is caught too)
+        for f in ["--tapes", "--owner-msgs"] {
+            if let Some(p) = flag(&args, f) {
+                let k0: usize = flag(&args, "--chunk-first").map(|x| x.parse().unwrap()).unwrap_or(0);
+                for k in k0..st.step {
+                    let q = PathBuf::from(serve::step_path(&args, &p, k));
+                    if let Some(c) = q.parent().and_then(|s| if s.file_name().is_some_and(|n| n.to_string_lossy().starts_with("step-")) { s.parent() } else { Some(s) }) {
+                        if !scan.iter().any(|x| x == c) {
+                            scan.push(c.to_path_buf());
+                        }
+                    }
+                }
+            }
+        }
+        let OldParts { mut old, he, net3 } = darkhand::serve::old_from_serve(st, carry, files, true, Some((ct, dg)));
+        for p in scan {
+            if !old.scan_paths.contains(&p) {
+                old.scan_paths.push(p);
+            }
+        }
         drop(he);
         net3.shutdown();
         let timeout = timeout_of(&args);
@@ -432,6 +473,7 @@ impl Prove {
         if nc.report["mac_check"] != "ok" {
             return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
         }
+        save_handover_proof(&args, dir, (epoch + 1) as i64, &nc.proof)?;
         self.c().ledger.as_mut().unwrap().rotate(&names, &nc.new_roots, &nc.proof)?;
         // a test attack (--attack, the abort test's fault) fires in one epoch only
         let he = darkstep::he::He { key: nc.key, attack: None, ..he };
@@ -451,7 +493,9 @@ impl Prove {
         let i = st.i;
         let cfg = self.gcfg.as_ref().ok_or("--release needs --genesis-cfg (the policy's encoder)")?;
         let data = PathBuf::from(flag(&args, "--release-data").ok_or("--release-data MNISTDIR")?);
-        let m: usize = flag(&args, "--release-m").map(|x| x.parse().unwrap()).unwrap_or(64);
+        // M: --release-m, else the genesis cfg's release.M (the train lane's policy pin), else its eval_n
+        let pinned = serde_json::from_slice::<Value>(cfg).ok().and_then(|v| v["release"]["M"].as_u64().or(v["eval_n"].as_u64()));
+        let m: usize = flag(&args, "--release-m").map(|x| x.parse().unwrap()).or(pinned.map(|x| x as usize)).ok_or("release: no M (--release-m or the cfg's release.M)")?;
         let pol = darkproof::run::mnist_policy(cfg, &data, m)?;
         if let Some(f) = flag(&args, "--release-tape") {
             st.load_tape(serve::read_tape(&f))?;
@@ -733,6 +777,7 @@ fn join_main(args: &[String]) -> i32 {
         if nc.report["mac_check"] != "ok" {
             return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
         }
+        save_handover_proof(&hook.args, &dir, epoch + 1, &nc.proof)?;
         hook.c().ledger.as_mut().unwrap().rotate(&new_set, &nc.new_roots, &nc.proof)?;
         let (hs, cer) = nc.keys.ok_or("a rotation makes a fresh key")?;
         let regs: Vec<_> = (0..3).map(|x| cer.registry(x).expect("registered key")).collect();
@@ -763,9 +808,70 @@ fn join_main(args: &[String]) -> i32 {
     }
 }
 
+/// TEST ONLY: `dl-custodian test-deal CFG STEPS I DIR --genesis-cfg GEN [--program gen6] [--profile P] [--release]
+/// [--public]`: seat I's tape from the public-seed test dealer (darkstep's Dealer, kept to seat I's entries) for STEPS
+/// carried steps after a public genesis, each with its proof section, then (with --release) the release section
+/// (darkproof::run::deal_release, policy mnist_policy at the genesis cfg's M), in the order a custodian consumes
+/// them: DIR/tape_I.bin. With --public also the owner's broadcasts DIR/public_step<k>.bin for `dl-owner
+/// --test-public`. The values are the run's own: darktrain's encoding of the owner's examples (CFG: the genesis
+/// plus "data" and "seed_order").
+#[cfg(feature = "test-harness")]
+fn test_deal(args: &[String]) {
+    let c: darktrain::Cfg = serde_json::from_str(&std::fs::read_to_string(&args[2]).expect("cfg")).expect("cfg json");
+    c.validate().unwrap();
+    let steps: usize = args[3].parse().unwrap();
+    let i: usize = args[4].parse().unwrap();
+    let dir = PathBuf::from(&args[5]);
+    std::fs::create_dir_all(&dir).unwrap();
+    let d = c.d;
+    let pf = darkstep::node::prof(&["16384".into(), "4".into(), "175".into(), d.to_string()]);
+    darkproof::field::set_p(pf.t);
+    let pr = profile_of(args);
+    let lp = pr.ligero();
+    let program = serve::program_of(args);
+    let gbytes = std::fs::read(flag(args, "--genesis-cfg").expect("--genesis-cfg")).unwrap();
+    let mut prm = params_of(&program);
+    {
+        use sha2::{Digest, Sha256};
+        prm.pg = Some(Sha256::digest(&gbytes).into());
+    }
+    let tables = darkproof::step::tables();
+    let own;
+    let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
+    let mn = darktrain::data::load(Path::new(&c.data)).unwrap();
+    let c = c.with_means(&mn);
+    let ord = darktrain::order(c.seed_order, mn.train.n);
+    let mut dl = darkstep::tape::Dealer::new(pf.t, 3, darkstep::node::DEALER_SEED);
+    dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
+    dl.only = Some(i);
+    let mut owner = pycompat::PyRandom::from_u64(darkstep::node::OWNER_SEED);
+    for k in 0..steps {
+        let ex = ord[k % mn.train.n];
+        let (x, y) = darktrain::encode(&c, mn.train.image(ex), mn.train.lab[ex]);
+        let xm: Vec<u64> = x.iter().chain(y.iter()).map(|&v| darkstep::arith::from_i64(v, pf.t)).collect();
+        let cs = darkstep::tape::deal_one_step(&mut dl, &mut owner, d, &xm, &program);
+        darkstep::tape::deal_proof_section(&mut dl, darkproof::run::step_section(&lp, d, prm, prm.carried(k as u64 + 1), tb));
+        if args.iter().any(|a| a == "--public") {
+            std::fs::write(dir.join(format!("public_step{k}.bin")), darkstep::net::u64s_to_bytes(&cs)).unwrap();
+        }
+    }
+    let mut rel = json!(null);
+    if args.iter().any(|a| a == "--release") {
+        let gm = serde_json::from_slice::<Value>(&gbytes).unwrap()["release"]["M"].as_u64().expect("the genesis cfg's release.M") as usize;
+        let pol = darkproof::run::mnist_policy(&gbytes, Path::new(&c.data), gm).unwrap();
+        let before = dl.tapes[i].len();
+        darkproof::run::deal_release(&mut dl, d, gm, pol.ncls, prm, pol.kc, &lp, &tables, &pol);
+        rel = json!({"M": gm, "entries": dl.tapes[i].len() - before, "proof_section": darkproof::run::release_section(&lp, d, gm, prm, &pol)});
+    }
+    dl.tapes[i].write_to(&mut std::io::BufWriter::new(std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();
+    println!("{}", json!({"party": i, "steps": steps, "tape_len": dl.tapes[i].len(), "release": rel}));
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     match args.get(1).map(|s| s.as_str()) {
+        #[cfg(feature = "test-harness")]
+        Some("test-deal") => test_deal(&args),
         Some("proof-triples") => {
             // dl-custodian proof-triples N L F d [--program P]: the proof section's size after a genesis and a carried step
             let pf = darkstep::node::prof(&args[2..6]);

@@ -243,6 +243,23 @@ pub fn read_checkpoint(path: &std::path::Path) -> Result<Checkpoint, String> {
     Ok(Checkpoint { i: h[0] as usize, step: h[1] as usize, d, alpha_i: h[3], cur: h[4] as usize, w: (rows[..d].to_vec(), rows[d..].to_vec()) })
 }
 
+/// Overwrite a file with zeros, sync it, then remove it (what a spent secret file gets).
+pub fn wipe_file(p: &std::path::Path) -> std::io::Result<()> {
+    let n = std::fs::metadata(p)?.len();
+    {
+        let mut f = std::fs::OpenOptions::new().write(true).open(p)?;
+        let z = vec![0u8; 1 << 20];
+        let mut left = n;
+        while left > 0 {
+            let m = left.min(z.len() as u64) as usize;
+            f.write_all(&z[..m])?;
+            left -= m as u64;
+        }
+        f.sync_all()?;
+    }
+    std::fs::remove_file(p)
+}
+
 pub fn open_private(p: &std::path::Path) -> std::io::Result<std::fs::File> {
     let mut o = std::fs::OpenOptions::new();
     o.write(true).create(true).truncate(true);
@@ -688,6 +705,12 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: CustodianState,
                     }
                 }
                 st.checkpoint(&ckpt).expect("checkpoint");
+                // a spent step's tape and owner message hold this seat's triple shares, MAC shares and alpha share:
+                // once the checkpoint after the step is durable nothing reads them again (resume starts at k + 1)
+                if args.iter().any(|a| a == "--wipe-spent") {
+                    let spent: Vec<String> = ["--tapes", "--owner-msgs"].iter().filter_map(|f| flag(args, f)).map(|p| step_path(args, &p, k)).collect();
+                    rep["wiped"] = json!(spent.iter().map(|f| (f.clone(), wipe_file(std::path::Path::new(f)).map(|_| "ok".to_string()).unwrap_or_else(|e| e.to_string()))).collect::<Vec<_>>());
+                }
                 std::fs::write(dir.join(format!("step_{k}_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
                 println!("{}", json!({"party": i, "step": k, "verdict": "ACCEPT", "step_seconds": rep["step_seconds"]}));
                 if hook.stop_after(k) {

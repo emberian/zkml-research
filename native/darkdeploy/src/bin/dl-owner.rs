@@ -3,6 +3,7 @@
 //! custodian the broadcasts c = v - r (mod t) of the step's values v.
 //!
 //!   dl-owner --listen HOST:PORT --tls TLSDIR --t T --d D (--test-public DIR | --train CFG.json) [--public-genesis]
+//!   - --next-tls DIR (repeatable): after the committee closes (a handover), serve the next one (DIR/cert_{0,1,2}.der)
 //!   - --public-genesis: the custodians start from the public genesis W (dl-custodian --genesis-cfg), so step 0 inputs
 //!     x and y only, like every later step
 //!   - TLSDIR: tls_owner.key, cert_owner.der, cert_{0,1,2}.der
@@ -59,7 +60,18 @@ fn main() {
     let public_genesis = a.iter().any(|x| x == "--public-genesis");
     let l = TcpListener::bind(flag(&a, "--listen").expect("--listen")).unwrap();
     let fp = darkprep::field::Fp::new(t);
-    let res = darkstep::serve::owner_serve(l, &id, &certs, |k, msgs| match &vals {
+    // one session per committee: TLSDIR's custodians, then (after they close: a handover) each --next-tls DIR's
+    // cert_{0,1,2}.der, serving whatever steps they ask for
+    let mut sessions = vec![certs];
+    for (n, x) in a.iter().enumerate() {
+        if x == "--next-tls" {
+            let dir = std::path::PathBuf::from(&a[n + 1]);
+            sessions.push((0..3).map(|j| std::fs::read(dir.join(format!("cert_{j}.der"))).unwrap()).collect());
+        }
+    }
+    let mut res = Ok(vec![]);
+    for certs in &sessions {
+        res = darkstep::serve::owner_serve(l.try_clone().unwrap(), &id, certs, |k, msgs| match &vals {
         Values::Test(dir) => std::fs::read(dir.join(format!("public_step{k}.bin"))).map(|b| darkstep::net::bytes_to_u64s(&b)).map_err(|e| e.to_string()),
         Values::Train { c, m, ord } => {
             let mut v: Vec<i64> = Vec::new();
@@ -79,7 +91,11 @@ fn main() {
             }
             Ok(v.iter().zip(&rs).map(|(&x, &r)| darkstep::arith::submod(darkstep::arith::from_i64(x, t), r, t)).collect())
         }
-    });
+        });
+        if res.is_err() {
+            break;
+        }
+    }
     if let Err(e) = res {
         eprintln!("{e}");
         std::process::exit(1);

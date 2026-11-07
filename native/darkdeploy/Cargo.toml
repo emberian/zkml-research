@@ -29,3 +29,7 @@ required-features = ["test-harness"]
 [[test]]
 name = "handover_steps"
 required-features = ["test-harness"]
+
+[[test]]
+name = "release_steps"
+required-features = ["test-harness"]
