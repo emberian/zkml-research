@@ -196,7 +196,7 @@ fn rotation_to_a_new_committee_after_step_0() {
         a.extend(a_new.clone());
         a.extend(s(&["--tls", own.to_str().unwrap(), "--owner", &o_at, "--steps", "1", "--after-step", "0", "--gate", "309", "--ret-primes", "2"]));
         a.extend(s(&["--timeout", "180", "--handover-tape", own.join("handover.bin").to_str().unwrap(), "--tapes", own.join("tape1.bin").to_str().unwrap()]));
-        a.extend(s(&["--prove", "--genesis-cfg", &gen, "--mesh6", &mesh6, "--tls6", tls6.to_str().unwrap(), "--test-keep-shares"]));
+        a.extend(s(&["--prove", "--genesis-cfg", &gen, "--mesh6", &mesh6, "--tls6", tls6.to_str().unwrap(), "--test-keep-shares", "--wipe-spent"]));
         kids.push(run(a));
         ndirs.push(own);
     }
@@ -218,6 +218,11 @@ fn rotation_to_a_new_committee_after_step_0() {
         assert_eq!(st["after_step"]["epoch"], 1, "step 1 is proved at the new epoch");
         let lg = std::fs::read_to_string(own.join("D").join(format!("ledger_P{j}.jsonl"))).unwrap();
         assert!(lg.contains("\"kind\": \"rotate\""), "new seat {j}: the rotation is on its ledger");
+        // the handover proof is kept (public), and its sha256 is the one on the ledger
+        let hp = std::fs::read(own.join("D").join("handover_e1.bin")).unwrap();
+        use sha2::Digest;
+        assert!(lg.contains(&pycompat::repr::hex(&sha2::Sha256::digest(&hp))), "new seat {j}: handover_e1.bin is the rotated proof");
+        assert!(!own.join("tape1.bin").exists(), "new seat {j}: the spent step's tape was wiped (--wipe-spent)");
     }
     let dirs: Vec<PathBuf> = ndirs.iter().map(|o| o.join("D")).collect();
     let got = cs.revealed(&dirs, &[0, 1, 2]);
