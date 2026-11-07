@@ -1103,3 +1103,35 @@ After the handover run check_handover.py (rotation, --profile ledger-x2de, dl-ha
 the coordinator wants one before the run of record.
 
 **Agents**: coordinator aa3209e8d10294bc2; prep a8fd625fd8dbd4f54; train ad36593ec00657538; proof aafff52532f04d20a.
+
+### The short run of record over hbox, and forge's nightly as a stop in place (coordinator, ~14:00 UTC)
+
+The run of record is a short complete run on forge + bb2 + hbox (N = 8-10 proved steps, a rotation, the release at
+M = 52 against the twin); it spans nights with forge's processes stopped in place 10:00:00-10:58:30 UTC by PID file.
+The full 2,000-step run waits for a better-connected third box.
+
+**The mechanism (090a11a0)**: native/deploy/nightly.sh on forge (SIGSTOP / SIGCONT by this run's PID files, only
+dl-custodian / darkstep / dl-owner / the sampler; daily; a SKIP file skips), started by `run.py launch` from cfg
+"nightly", stopped by `run.py stop` (which also SIGCONTs after each TERM). darkstep resil: DS_WRITE_TIMEOUT_SECS
+(default 120 s) — with 120 s a peer writing to the stopped forge drops its link, redials cannot handshake with a stopped
+process, and after DS_RECONNECT_SECS (600) the run aborts (a drop in a check phase aborts the step). record.py: both 4500,
+--timeout 7200, no --pause-utc.
+
+### pt1: the deliberate pause test for dl-custodian (14:04-14:22 UTC) [EXECUTED]
+
+forge (12G) + bb2 + hbox (swarm-build 16G, --nat 2), 1 GEN6 d = 4096 step on test-dealer tapes (`test-deal ... --rs`,
+each tape on its own box), `--ret-primes 2 --ret-round --rs --timeout 7200 --test-keep-shares`, build t13 = 090a11a0,
+the run's env. nightly.sh with stop/cont at launch + 200 s / + 620 s.
+- SIGSTOP 14:06:56 (2.7 min into the step, outer HE-return phases), SIGCONT 14:13:57: 421 s. While stopped (ss): forge's
+  Recv-Q 5,865,202 (from bb2) and 4,493,880 (from hbox), bb2's Send-Q 4,043,272 on a blocked write; the peers alive.
+- ACCEPT at all three, one transcript (60049c289011dbe2), step 1,067.8 s (647 s of work + the stop; run7: 791 s),
+  1,385.6 MB per directed link, **reconnects 0 on every link**.
+- dl-reveal (test only): `{"equal":true,"revealed_sha256":"21af72e2...","twin_sha256":"21af72e2..."}`, the digest
+  `darktrain shadow ... 1 52` prints independently. (A first copy of hbox's shares was truncated in transit; recopied,
+  sha256 checked at both ends.) The test share files were removed afterwards.
+- Prep's MP-SPDZ pause test (MASCOT, EINTR-fixed mascot-party.x 4d50d76f, forge's party blocked in a socket receive,
+  SIGSTOP 330 s): the chunk completes, 0 MAC failures, 0 bad triples (prep.md da426840).
+
+**The calendar (draft, sent to the coordinator)**: every phase crosses hbox's 17.9 Mbit/s uplink, so they add. For N = 8,
+K = 6: old chunks + 7 steps 7.8 h, the new committee's LowGear key setup S (prep's ETA pending), then handover tape
+0.4 + new chunk 0.9 + release chunk 12.4 + handover 0.25 + step 0.24 + release 0.5 h, plus 0.98 h per forge window.
