@@ -379,8 +379,10 @@ pub fn prove_release(
     if net.me() != i || net.n() != n {
         return Err("transport is for another party or committee size".into());
     }
+    let mut tt = crate::Trace::new("release", i);
     let rec = step::replay_release(&st.public, d, m, prm, &pol.x, &pol.labels, pol.ncls, pol.kc)
         .map_err(|e| format!("own transcript: {e:?}"))?;
+    tt.lap("replay of the release program");
     if rec.tpos != st.public.len() {
         return Err("own transcript is longer than the release program".into());
     }

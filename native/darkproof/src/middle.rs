@@ -506,6 +506,7 @@ pub fn prove(
     let mut tt = crate::Trace::new("middle", i);
     let (lens, _) = public_shapes_io(pr, rec.n_prep(), rec.had.len(), d, false, rec.io.as_ref());
     let mut atoms_v: Vec<Sh> = rec.witness_atoms(inp.atoms)?;
+    tt.lap(&format!("witness atoms ({} cons, {} hadamard rows, {} atoms)", rec.cons.len(), rec.had.len(), atoms_v.len()));
     if !rec.range_rows.is_empty() {
         atoms_v.resize(rec.n_prep(), (0, 0));
         let bad = fill_range(rec, &mut atoms_v, net, sp);
@@ -518,9 +519,11 @@ pub fn prove(
             ));
         }
     }
+    tt.lap("range rows filled");
     if !rec.lb_rows.is_empty() {
         fill_lookup(rec, &mut atoms_v, net, sp);
     }
+    tt.lap("lookup circuit filled");
     let mut pv = atoms_v;
     pv.resize(lens["P"], (0, 0));
     let gather = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
