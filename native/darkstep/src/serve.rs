@@ -214,7 +214,9 @@ impl CustodianState {
             f.flush()?;
             f.get_ref().sync_all()?;
         }
-        std::fs::rename(tmp, path)
+        std::fs::rename(tmp, path)?;
+        drop_cache(path);
+        Ok(())
     }
 }
 
@@ -494,7 +496,86 @@ pub fn in_window(w: &str) -> bool {
 }
 
 pub fn read_tape(path: &str) -> Tape {
-    Tape::read_from(&mut std::io::BufReader::new(std::fs::File::open(path).unwrap_or_else(|e| panic!("{path}: {e}")))).unwrap()
+    read_tape_once(path).unwrap_or_else(|e| panic!("{e}"))
+}
+
+/// The box's registry of consumed preprocessing (set by `--consumed-log FILE`): sha256 of every tape file this box's
+/// custodians have loaded. Preprocessing is single-use: a reused triple or mask on other inputs reveals the
+/// difference of the values it masked.
+static CONSUMED: std::sync::OnceLock<std::path::PathBuf> = std::sync::OnceLock::new();
+
+pub fn set_consumed_log(p: std::path::PathBuf) {
+    let _ = CONSUMED.set(p);
+}
+
+pub fn consumed_log() -> Option<&'static std::path::PathBuf> {
+    CONSUMED.get()
+}
+
+struct HashRead<R: Read> {
+    r: R,
+    h: sha2::Sha256,
+}
+
+impl<R: Read> Read for HashRead<R> {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        use sha2::Digest;
+        let n = self.r.read(buf)?;
+        self.h.update(&buf[..n]);
+        Ok(n)
+    }
+}
+
+/// Load a tape file; with a consumed-preprocessing registry, refuse one whose sha256 is already in it, and record it
+/// (durably, under a file lock) before handing it out.
+pub fn read_tape_once(path: &str) -> Result<Tape, String> {
+    use sha2::Digest;
+    let f = std::fs::File::open(path).map_err(|e| format!("{path}: {e}"))?;
+    let mut hr = HashRead { r: std::io::BufReader::new(f), h: sha2::Sha256::new() };
+    let t = Tape::read_from(&mut hr).map_err(|e| format!("{path}: {e}"))?;
+    let mut rest = Vec::new();
+    hr.read_to_end(&mut rest).map_err(|e| format!("{path}: {e}"))?;
+    if !rest.is_empty() {
+        return Err(format!("{path}: {} trailing bytes after the tape", rest.len()));
+    }
+    let digest = pycompat::repr::hex(&hr.h.finalize());
+    drop_cache(std::path::Path::new(path));
+    if let Some(log) = consumed_log() {
+        claim(log, &digest, path, t.alpha_i)?;
+    }
+    Ok(t)
+}
+
+fn claim(log: &std::path::Path, digest: &str, path: &str, alpha_i: u64) -> Result<(), String> {
+    let mut f = std::fs::OpenOptions::new().create(true).read(true).append(true).open(log).map_err(|e| format!("{}: {e}", log.display()))?;
+    f.lock().map_err(|e| e.to_string())?;
+    let mut have = String::new();
+    f.read_to_string(&mut have).map_err(|e| e.to_string())?;
+    if let Some(l) = have.lines().find(|l| l.contains(digest)) {
+        return Err(format!("preprocessing already consumed (single use): {path} has sha256 {digest}, recorded as {l}"));
+    }
+    // the alpha share is secret: only a digest of it, to tell keys apart in the log
+    use sha2::Digest;
+    let key = pycompat::repr::hex(&sha2::Sha256::digest(alpha_i.to_le_bytes()))[..16].to_string();
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    let line = json!({"sha256": digest, "path": path, "key": key, "unix": now, "pid": std::process::id()}).to_string();
+    f.write_all(line.as_bytes()).and_then(|_| f.write_all(b"\n")).and_then(|_| f.sync_all()).map_err(|e| e.to_string())
+}
+
+/// Ask the kernel to drop a file's pages from the page cache (Linux; elsewhere nothing). The large files a custodian
+/// reads once or writes for later (tapes, checkpoints, bundles, carries) otherwise fill its memory cgroup up to its
+/// MemoryMax with cache: forge's 12 GiB scope reached its limit that way in the dry run.
+pub fn drop_cache(path: &std::path::Path) {
+    #[cfg(target_os = "linux")]
+    if let Ok(f) = std::fs::File::open(path) {
+        use std::os::unix::io::AsRawFd;
+        let _ = f.sync_data();
+        unsafe {
+            libc::posix_fadvise(f.as_raw_fd(), 0, 0, libc::POSIX_FADV_DONTNEED);
+        }
+    }
+    #[cfg(not(target_os = "linux"))]
+    let _ = path;
 }
 
 pub fn serve_main(args: &[String], hook: &mut dyn StepHook) -> i32 {
@@ -514,6 +595,9 @@ pub fn serve_main_with(args: &[String], hook: &mut dyn StepHook, genesis: Option
     let mut pf = crate::node::gated(crate::node::prof(&args[3..7]), args);
     pf.secure_coins = true;
     pf.program = program_of(args);
+    if let Some(l) = flag(args, "--consumed-log") {
+        set_consumed_log(l.into());
+    }
     let dir = std::path::PathBuf::from(&args[7]);
     std::fs::create_dir_all(&dir).unwrap();
     let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
@@ -656,7 +740,7 @@ pub fn serve_state(args: &[String], hook: &mut dyn StepHook, st: CustodianState,
         }
         if k > first {
             if let Some(f) = tape_pattern(args, k) {
-                if let Err(e) = st.load_tape(read_tape(&f)) {
+                if let Err(e) = read_tape_once(&f).and_then(|t| st.load_tape(t)) {
                     eprintln!("{e}");
                     end.code = 1;
                     break;

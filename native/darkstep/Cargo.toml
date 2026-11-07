@@ -23,6 +23,7 @@ name = "serve_steps"
 required-features = ["test-harness"]
 
 [dependencies]
+libc = "0.2"
 pycompat = { path = "../pycompat" }
 dzkpopk = { path = "../dzkpopk" }
 num-bigint = "0.4"
