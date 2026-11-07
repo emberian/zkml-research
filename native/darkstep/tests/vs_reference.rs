@@ -52,3 +52,19 @@ fn attacks_refused() {
 fn d64_n16384_ledger_profile() {
     check(16384, 4, 175, 64);
 }
+
+/// Tapes that also carry the proof's truncation range bits (Tag::Trhb, cosnark_gates.RecEngine's stream) give the same
+/// step, and the middle's atom count grows by exactly those bits: sum over truncations of K + 40 - s.
+#[test]
+fn proof_atoms_on_the_tape_leave_the_step_unchanged() {
+    let pf = prof(&["4096".into(), "3".into(), "118".into(), "64".into()]);
+    let (a, _) = darkstep::node::run_local_opts(&pf, None, false);
+    let (b, _) = darkstep::node::run_local_opts(&pf, None, true);
+    assert_eq!(a["transcript"], b["transcript"]);
+    assert_eq!(a["parties"], b["parties"]);
+    let d = 64u64;
+    let bits = 2 * d * (13 + 40 - 5) + d * (8 + 40 - 4) + d * (13 + 40 - 8);
+    let ma = a["detail"][0]["middle_atoms"].as_u64().unwrap();
+    let mb = b["detail"][0]["middle_atoms"].as_u64().unwrap();
+    assert_eq!(mb - ma, bits);
+}
