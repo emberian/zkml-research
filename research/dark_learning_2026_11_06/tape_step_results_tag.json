@@ -1,0 +1,9 @@
+{
+ "tag": {
+  "verdict": "REFUSED",
+  "stage": "online",
+  "by": "tape: party 0 entry 0 is 'ta', the step asks for 'in'",
+  "consumed": 0,
+  "secs": 0
+ }
+}

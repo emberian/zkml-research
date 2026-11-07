@@ -68,7 +68,13 @@ Negative controls (same command, one tape entry changed with `darkprep corrupt`)
 - party 2's share of entry 34,389 (the last `trh`; a wrong value that no Freivalds check sees): REFUSED by the MAC check.
 - (`darkprep verify` refuses both tapes too, naming the entry.)
 
-[EXECUTED] Python harness on the same tapes (`run_tape_step.py`, HE helpers at N = 16384, L = 4): see §3a.
+[EXECUTED] **Python harness on the same tapes** (`python3 run_tape_step.py <tapes> honest|mac|share|tag`; TapeDealer +
+TapeEngine, `he_matvec.HEMatvec` and `he_outer.HEOuter` at N = 16384, L = 4; 1,686 s each on the Mac, three in
+parallel; results in `tape_step_results_{honest,mac,share,tag}.json`):
+- honest: ACCEPT, `refines_spec: true`, MAC check passes, all 34,438 entries and 8,320 owner masks consumed;
+- mac (party 1's MAC share of entry 8,384): REFUSED at the MAC check; the values were right (`refines_spec: true`);
+- share (party 2's share of the last `trh`): REFUSED at the MAC check (`refines_spec: false`: the value was wrong);
+- tag (party 0's entry 0 relabelled): REFUSED at once, "party 0 entry 0 is 'ta', the step asks for 'in'".
 
 ## 4. Measured cost, against the count model
 

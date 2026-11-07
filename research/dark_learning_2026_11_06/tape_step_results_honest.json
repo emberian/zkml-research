@@ -1,0 +1,16 @@
+{
+ "honest": {
+  "verdict": "ACCEPT",
+  "refines_spec": true,
+  "consumed": 34438,
+  "tape_entries": 34438,
+  "exhausted": true,
+  "prep_auth_values": 34438,
+  "commitments": [
+   "674f3018aecfaee49e7914beb616df87f8096b887a6415a4f4dd62b142b4d937",
+   "a53fbee6a1d4120781455e0fd62733d678964f8b9b5fdcddbda52967efa75e04",
+   "dea01451b3ab0c9e6cf2f6fedd830d092362553834aad152de0cf6fca1c7713b"
+  ],
+  "secs": 1686
+ }
+}
