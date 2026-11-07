@@ -43,8 +43,8 @@ and `python3 darkproof_vectors.py verify VEC <tag>`:
 | demo, 4 | equal, sha256 784ebdd3… | equal, 250b5493… | — | accept | accept | refused by both |
 | demo, 16 | equal, 81dc037c… | equal, bae30506… | equal, 3da15e8f… | accept | accept | refused by both |
 | ledger, 4 | equal, 1d1eacf2… (28,306,548 B) | equal, 65cf7c5d… | equal, 9309878b… | accept | accept | refused by both |
-| ledger, 16 | [OPEN] Python vectors still running | | | | | |
-| demo / ledger, 64 | [OPEN] Python vectors running on bb2 | | | | | |
+| ledger, 16 | equal, f325f240… (34,555,932 B) | equal, 4e9deb79… | equal, 4aba4e58… | accept | accept | refused by both |
+| demo / ledger, 64 | [OPEN] Python vectors running on bb2 (`~/lanes/dl-gen5-proof/`, PID files there) | | | | | |
 
 The comparison can fail. The first run of step 2 differed at byte offset 32 (a carried-commitment key bug), and
 that was caught and fixed. `check` reports the sha256 and the first differing offset.
