@@ -153,3 +153,68 @@ Its findings, all fixed (regression `attacks::review_regressions`):
   darkstep keeps RNS form end to end, a residue-native `Statement` would skip the CRT for the digest only.
 - [OPEN] The prover holds every encoded row (about 1.4 GB at N = 16384, 64 cts); streaming rows into the Merkle
   leaves would cut that if three custodians share a box.
+
+## The gate in the native custodians (darkstep `--gate T`)
+
+Built 2026-11-07 (`native/darkstep/src/gate.rs`, `he.rs::swap_cts`, `node.rs`; reference
+`research/dark_learning_2026_11_06/native_ref_gated.py`).
+- **Keys.** With `--gate T` the three custodians run the ceremony over their mesh (CTRL): commit, reveal, seed,
+  `make_key` (b_j and its key proof), and every custodian registers all three keys
+  (`Ceremony::register` verifies each key proof). The HE keys are the ceremony's (`OwnKey::from_ceremony` =
+  `keygen_ceremony.CeremonyKey`: s_j, pk = (b_j, a_j = public_a(seed/j)), encryption coins from
+  random.Random(100 + j)).
+- **Gate.** In every HE call each sender proves its batch: one `dzkpopk` "sk" proof per (sender, call), with
+  context ["dl-he-batch", "model", 0, 0, kind, call, transpose, sender] and the call's layout slots. The proof is
+  sent on HE_CT after the ciphertexts. Each recipient verifies against the sender's REGISTERED key and the context
+  and slots it computes itself, before any ptxct. The three then exchange verdicts on CTRL; any refusal aborts the
+  step for all three with one reason (the first refusal in (sender, recipient) order).
+- **Ungated path unchanged.** Without `--gate`, `vs_reference` d64_n4096 and attacks_refused still pass.
+- **Determinism is test-only.** `ProveOpts::det_seed`, `Custodian::new_det` and `run_ceremony_det` exist only
+  under the cargo feature `test-det` (darkstep `test-det` enables it). A custodian build cannot seed a proof, and
+  `DL_DETERMINISTIC` is refused without the feature.
+
+[EXECUTED] Bit-exact, Mac, N = 4096, L = 3, F = 118, d = 64, T = 309, seed g1
+(`cargo test --release -p darkstep --features test-det --test vs_reference_gated -- --nocapture`, 2 passed):
+- transcript, all three share digests and sigmas: equal to the reference, and to the ungated reference (the gate
+  does not change the step's outputs);
+- ceremony seed and all three b_j: equal;
+- all 15 batch proofs (5 calls x 3 senders): sha256 equal.
+- Negative control `--attack zk_off_layout:0`: sender 0's first matvec batch has 12345 at coefficient 64 with a
+  forged proof. All three custodians abort with the reference's reason, "ZKPoPK gate: custodian 1 refused custodian
+  0's batch (mv call 1): linear test: the folded limb equations do not hold". There are no matvec returns natively,
+  and the reference made 0 products.
+- Python reference: 642 s for the step, 532 s of it in the gate.
+- [EXECUTED] Ledger profile, N = 16384, L = 4, F = 175, d = 64 (`gated_d64_ledger`): the same equalities hold
+  (step digests, ceremony seed and keys, all 15 proof hashes). The Python reference took 2,952 s, 1,873 s of it in
+  the gate.
+
+**Low-memory prover.** `ProveOpts::low_memory` re-encodes the round-1 rows on each pass (commit with streamed
+column hashes, accumulate, open columns) instead of keeping the m1 x nD table. Same bytes:
+`vs_python::n16_bit_exact_and_cross_verified` checks it against Python, and
+`low_memory_equals_stored_many_chunks` (N = 4096, 29-51 rows) against the stored prover. Forge, 64 x 64 batch at
+N = 16384: prove 8.08 s vs 5.34 s stored; verify the same.
+- Why it is needed: `darkstep local` puts three custodians in one 12 GB job, and the ungated d = 4096 step alone
+  peaks at 11 GB. With three stored provers at once the gated step was OOM-killed twice.
+- Co-located custodians therefore prove low-memory and take turns on one in-process lock for proving and
+  verifying. The lock wait is reported apart; in a deployment each custodian is its own process and the lock is
+  uncontended.
+
+[EXECUTED] **The gated d = 4096 step** on dregg-forge: N = 16384, L = 4, F = 175, T = 309, three custodians in one
+process, 16 vCPU, nice 15, `/srv/lanes/dl-gen5-zkpopk/step4096b.sh`. Same binary, back to back:
+
+| | step (wall) | matvec z1 / z2 / b | outer G2 / G1 | memory peak |
+|---|---:|---:|---:|---:|
+| ungated | 50.0 s (54.5 s with deal) | 4.0 / 3.6 / 3.2 | 18.9 / 17.9 | 11 GB |
+| **gated** | **198.3 s** (203.5 s) | 38.1 / 37.8 / 13.7 | 52.2 / 54.1 | 11.4 GB |
+
+- Both runs ACCEPT, refines_spec true, the same transcript (`081b142f...`).
+- Per custodian: prove 31.5-34.6 s for its 5 batches, verify 16.7-17.4 s for the other two's 10, ceremony 0.8 s,
+  proof bytes sent 59.1 MB (each proof goes to two recipients).
+- The 148 s of overhead is the three custodians' ZK work run one after another through the lock:
+  3 x (33 + 17) = 150 s.
+
+**Separate machines.** [DERIVED] With one machine per custodian (stored prover, no lock), a custodian adds about
+4 x 5.3 + 1.6 = 22.8 s of proving plus 2 x (4 x 2.0 + 0.55) = 17.1 s of verifying, about 40 s, to the 50 s step
+(about 90 s), because the ZK work is on the critical path of each call. This figure is derived from
+`dzkpopk bench` rows and has not been measured as a 3-machine run. Two things would hide part of it: verifying one
+sender's batch while proving one's own, and starting to verify the first batch as it arrives.

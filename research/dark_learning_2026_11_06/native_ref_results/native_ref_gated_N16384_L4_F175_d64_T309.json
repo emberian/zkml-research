@@ -1,0 +1,118 @@
+{
+ "verdict": "ACCEPT",
+ "refines_spec": true,
+ "N": 16384,
+ "L": 4,
+ "F_bits": 175,
+ "d": 64,
+ "t": 2305843009210515457,
+ "Q_primes": [
+  2305843009211662337,
+  2305843009211596801,
+  2305843009211400193,
+  2305843009210580993
+ ],
+ "seconds": 2952.3,
+ "transcript_len": 13963,
+ "transcript": "dd03a8ae1203e8d4e6d38b820e63aacc9db7f4629507a66ffc0059900d313361",
+ "parties": {
+  "0": "c83d232c0cb4d70301389aab29a897cf797390f4bbb52df07c22474dedf410e4",
+  "1": "9411806d14f2edf34791b82e0dd96aac68fff76052b407b7ce7d32e660139e44",
+  "2": "f00663c7f0b4e9c42ca1dad916b87ca4430027454f00934a7e4f2a8051e41fe2"
+ },
+ "sigma": {
+  "0": 1915123413431297156,
+  "1": 1717154718131721983,
+  "2": 979407886858011775
+ },
+ "wire": {
+  "freivalds": 18,
+  "he_auth": 1152,
+  "he_outer_check": 12,
+  "input": 24960,
+  "lookup": 384,
+  "mac_check": 12,
+  "mul": 30744,
+  "trunc": 1536
+ },
+ "gate": {
+  "T": 309,
+  "ceremony_seed": "35646604fc93af842ba3af595268746246efb580db459bd2b8a64c12e2d2f853",
+  "ceremony_seconds": 214.9,
+  "key_b_sha256": [
+   "6bbe18d5637c67ad34042031ffe21c6ae22204e522df8ca9296635c351d07b28",
+   "89da154419fe608fdf6d3d6db5f5fd798687feb23712096d7e2624443f91619a",
+   "c9d07a055224f50856e460e83e6dc9363228b62c9b0e8512bb87bda7bae466f2"
+  ],
+  "proofs": {
+   "0": [
+    [
+     "mv-1-0-0",
+     "e2d267b010a0124fb5e1bc611ccf1d7959362de732840680b649a1fbf0e9bca8"
+    ],
+    [
+     "mv-2-0-0",
+     "a29473d35c8cff148804f1b5e7a8b4869d9acc9e59a96fce1d64cd3c3bed1a5a"
+    ],
+    [
+     "mv-3-1-0",
+     "489b175736721c6a8d294637a66113a0dff77e47783d03a8e606527b1c91e0b2"
+    ],
+    [
+     "ou-1-0-0",
+     "a0d24cfd9b735d86c2374ac1020f91ab00424b362bf3a3f7be01a14a716804d6"
+    ],
+    [
+     "ou-2-0-0",
+     "bbff0bbf8ddb290052944cfa71acb71d37eec1b1374beed0a6e71825fae59bad"
+    ]
+   ],
+   "1": [
+    [
+     "mv-1-0-1",
+     "9fee974bb22b7c5fa7492b250e97389da45506e019fe3706ffec4b4661163ffb"
+    ],
+    [
+     "mv-2-0-1",
+     "bff1ba83ad13ac117639854792db4a6b640d905eb98e7a42830030c8e5877f1e"
+    ],
+    [
+     "mv-3-1-1",
+     "e9566099731d8c2ede0c52104d34b717c33035195478459196fcfb184474d9fc"
+    ],
+    [
+     "ou-1-0-1",
+     "3cfe150a0ac542558bed8c9c955316e606dd0c1577cbf55eea58c2cbfb422e78"
+    ],
+    [
+     "ou-2-0-1",
+     "b08583201674abd0ff04d282cf3fdc4d7e0063adf5b51bc4cb1f1d6e4bd955db"
+    ]
+   ],
+   "2": [
+    [
+     "mv-1-0-2",
+     "c41d47db33c4ece28b6b3aaec3254872f697ae5ebf1bdc2c79048ff8eb933789"
+    ],
+    [
+     "mv-2-0-2",
+     "358d81e793d39b1405ba781e57cae04432131b4dd9f39f59a79ec066c061248e"
+    ],
+    [
+     "mv-3-1-2",
+     "2693efa38a140193ca984135dfedfb399e8af2090dcd4dad835900e7df62c127"
+    ],
+    [
+     "ou-1-0-2",
+     "b1fb34b1d9fe6c8902be5de34161df6ff7fb0c8a322f1f3903a8c57e3b34c759"
+    ],
+    [
+     "ou-2-0-2",
+     "abbb8d11b2aaabd1520a29360bdf4aab22b39dc4e62fa5ffd958ff6baa2ce7c6"
+    ]
+   ]
+  },
+  "gate_seconds": 1872.9,
+  "products": 42
+ }
+}

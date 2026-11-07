@@ -20,10 +20,9 @@ fn gated(n: usize, l: usize, f: u32, d: usize, t: usize) -> darkstep::node::Prof
     pf
 }
 
-#[test]
-fn gated_d64_n4096() {
-    let r = reference("native_ref_gated_N4096_L3_F118_d64_T309");
-    let (res, _) = run_local(&gated(4096, 3, 118, 64, 309), None);
+fn check(n: usize, l: usize, f: u32) {
+    let r = reference(&format!("native_ref_gated_N{n}_L{l}_F{f}_d64_T309"));
+    let (res, _) = run_local(&gated(n, l, f, 64, 309), None);
     assert_eq!(res["verdict"], "ACCEPT");
     assert_eq!(res["refines_spec"], true);
     assert_eq!(res["transcript"], r["transcript"], "transcript digest");
@@ -37,8 +36,19 @@ fn gated_d64_n4096() {
         println!("party {i}: {} batch proofs equal; prove {:.2} s, verify {:.2} s", g["proofs"].as_array().unwrap().len(), g["prove_seconds"], g["verify_seconds"]);
     }
     // the gate does not change the step: the digests are the ungated reference's too
-    let u = reference("native_ref_N4096_L3_F118_d64");
+    let u = reference(&format!("native_ref_N{n}_L{l}_F{f}_d64"));
     assert_eq!(res["transcript"], u["transcript"]);
+}
+
+#[test]
+fn gated_d64_n4096() {
+    check(4096, 3, 118);
+}
+
+/// The ledger profile: N = 16384, four primes, F = 175.
+#[test]
+fn gated_d64_ledger() {
+    check(16384, 4, 175);
 }
 
 #[test]

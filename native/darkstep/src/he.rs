@@ -151,16 +151,13 @@ impl He {
             })
             .collect();
         if let Some(g) = self.gate.as_mut() {
-            let t0 = std::time::Instant::now();
-            let others = pt.net.others();
-            let gr = &*g;
-            let rns = &self.rns;
-            let verdicts: Vec<(usize, Result<(), String>)> = others
-                .par_iter()
-                .map(|&j| (j, gr.verify(rns, j, &theirs[j], slots, crate::gate::context(kind, call, transpose, j), &proofs[j])))
-                .collect();
-            g.verify_s += t0.elapsed().as_secs_f64();
-            let refusals: Vec<(usize, String)> = verdicts.into_iter().filter_map(|(j, r)| r.err().map(|e| (j, e))).collect();
+            // one batch at a time (memory); each verification is internally parallel
+            let mut refusals: Vec<(usize, String)> = vec![];
+            for j in pt.net.others() {
+                if let Err(e) = g.verify(&self.rns, j, &theirs[j], slots, crate::gate::context(kind, call, transpose, j), &proofs[j]) {
+                    refusals.push((j, e));
+                }
+            }
             crate::gate::agree(&pt.net, me, &refusals, &format!("{kind} call {call}"))?;
         }
         Ok(theirs)

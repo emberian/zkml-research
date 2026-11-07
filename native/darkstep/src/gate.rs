@@ -12,6 +12,11 @@ use std::time::Instant;
 
 pub const EPOCH: i64 = 1;
 
+/// Custodians that share one process (`darkstep local`) take turns proving and verifying: three 64-ciphertext
+/// provers at once need about 3 x 3 GB next to the step's own memory, more than a 12 GB job may use. Each custodian
+/// of a deployment is its own process, where this lock is uncontended. The time spent waiting is reported apart.
+static ZK_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 pub struct Gate {
     /// every custodian's registered key (from this custodian's own view of the ceremony)
     pub regs: Vec<Arc<KeyRegistry>>,
@@ -22,6 +27,10 @@ pub struct Gate {
     pub ceremony_s: f64,
     pub prove_s: f64,
     pub verify_s: f64,
+    /// waiting for the in-process ZK lock (co-located custodians only)
+    pub wait_s: f64,
+    /// the low-memory prover (re-encodes rows instead of keeping them): for custodians sharing one machine
+    pub low_memory: bool,
     pub proof_bytes_sent: u64,
     /// (label, sha256 of my proof) per call, and (label, sender, statement digest) per verified batch
     pub proofs: Vec<(String, String)>,
@@ -76,10 +85,13 @@ pub fn witness_r(rns: &Rns, m: &[u64], slots: &[usize]) -> Vec<i64> {
 impl Gate {
     /// Prove my batch for this call (`forge`: the falsifier's cheat path, which skips the prover's own checks).
     pub fn prove(&mut self, rns: &Rns, me: usize, cts: &[Ct], ws: Vec<SkCt>, slots: &[usize], ctx: Json, lbl: &str, forge: bool) -> Result<Vec<u8>, String> {
+        let tw = Instant::now();
+        let _g = ZK_LOCK.lock().unwrap();
+        self.wait_s += tw.elapsed().as_secs_f64();
         let t0 = Instant::now();
         let st = statement(rns, &self.regs[me], cts, slots, ctx)?;
         let wit = Witness::Sk { s: self.s.clone(), e_pk: self.e_pk.clone(), cts: ws };
-        let mut opts = ProveOpts::default();
+        let mut opts = ProveOpts { low_memory: self.low_memory, ..Default::default() };
         #[cfg(feature = "test-det")]
         {
             opts.det_seed = self.det_seed.clone();
@@ -95,9 +107,15 @@ impl Gate {
     }
 
     /// Verify sender j's batch against the statement I build from MY expected context and j's registered key.
-    pub fn verify(&self, rns: &Rns, j: usize, cts: &[Ct], slots: &[usize], ctx: Json, proof: &[u8]) -> Result<(), String> {
+    pub fn verify(&mut self, rns: &Rns, j: usize, cts: &[Ct], slots: &[usize], ctx: Json, proof: &[u8]) -> Result<(), String> {
+        let tw = Instant::now();
+        let _g = ZK_LOCK.lock().unwrap();
+        self.wait_s += tw.elapsed().as_secs_f64();
+        let t0 = Instant::now();
         let st = statement(rns, &self.regs[j], cts, slots, ctx)?;
-        dzkpopk::verify(&st, proof, self.tcols)
+        let r = dzkpopk::verify(&st, proof, self.tcols);
+        self.verify_s += t0.elapsed().as_secs_f64();
+        r
     }
 }
 

@@ -55,6 +55,9 @@ fn n16_bit_exact_and_cross_verified() {
         println!("{kind}: python {} native {} bytes {} first-diff {:?}", sha(&pyb), sha(&nat), nat.len(), first_diff(&pyb, &nat));
         assert_eq!(first_diff(&pyb, &nat), None, "{kind}: native proof differs from the harness");
         assert_eq!(sha(&pyb), sha(&nat));
+        // the low-memory prover (re-encoding the rows on each pass) emits the same bytes
+        let mut lean = ProveOpts { det_seed: Some(SEED.into()), low_memory: true, ..Default::default() };
+        assert_eq!(first_diff(&pyb, &prove_with(&st, &wit, T, &mut lean).unwrap()), None, "{kind}: low-memory prover");
         // negative control on the comparison: another seed gives other bytes, found at offset 0 (root 1)
         let mut other = ProveOpts { det_seed: Some("another-seed".into()), ..Default::default() };
         let nat2 = prove_with(&st, &wit, T, &mut other).unwrap();
@@ -113,4 +116,20 @@ fn python_default_is_still_random() {
     let b = std::fs::read(d2.join("py_key.bin")).unwrap();
     assert_eq!(a.len(), b.len());
     assert_ne!(a, b);
+}
+
+#[test]
+fn low_memory_equals_stored_many_chunks() {
+    // N = 4096: enough rows that the low-memory prover walks several chunks
+    for (kind, st, wit) in instances(4096, 3, 3) {
+        let sh = shape(&st, T).unwrap();
+        let mut a = ProveOpts { det_seed: Some(SEED.into()), ..Default::default() };
+        let mut b = ProveOpts { det_seed: Some(SEED.into()), low_memory: true, ..Default::default() };
+        let pa = prove_with(&st, &wit, T, &mut a).unwrap();
+        let pb = prove_with(&st, &wit, T, &mut b).unwrap();
+        println!("{kind}: {} rows, stored == low-memory: {}", sh.m1 + sh.m2, pa == pb);
+        assert!(sh.m1 > 2 * rayon::current_num_threads(), "{kind}: needs more rows than one chunk");
+        assert_eq!(first_diff(&pa, &pb), None);
+        assert_eq!(verify(&st, &pb, T), Ok(()));
+    }
 }

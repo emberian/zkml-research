@@ -32,6 +32,8 @@ pub struct Prof {
     pub gate: Option<usize>,
     /// TEST ONLY (feature test-det): DL_DETERMINISTIC seed for the ceremony and the batch proofs
     pub det_seed: Option<String>,
+    /// the three custodians share this process and machine (`darkstep local`): low-memory ZK proving
+    pub colocated: bool,
 }
 
 pub fn prof(a: &[String]) -> Prof {
@@ -40,7 +42,7 @@ pub fn prof(a: &[String]) -> Prof {
     let pr = ntt_primes(61, l + 1, 2 * n as u64);
     let cores = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(cores);
-    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None }
+    Prof { n, l, f_bits: a[2].parse().unwrap(), d: a[3].parse().unwrap(), qs: pr[..l].to_vec(), t: pr[l], threads, gate: None, det_seed: None, colocated: false }
 }
 
 pub fn flag(args: &[String], name: &str) -> Option<String> {
@@ -100,6 +102,8 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
                 ceremony_s: tc.elapsed().as_secs_f64(),
                 prove_s: 0.0,
                 verify_s: 0.0,
+                wait_s: 0.0,
+                low_memory: std::env::var("DS_ZK_LOWMEM").map(|v| v != "0").unwrap_or(pf.colocated),
                 proof_bytes_sent: 0,
                 proofs: vec![],
             };
@@ -147,7 +151,7 @@ pub fn custodian(i: usize, pf: &Prof, net: Net, tape: Tape, cs: &[u64], attack: 
     let mut base = base;
     if let Some(g) = &he.gate {
         base["gate"] = json!({
-            "T": g.tcols, "ceremony_seconds": g.ceremony_s, "prove_seconds": g.prove_s, "verify_seconds": g.verify_s,
+            "T": g.tcols, "ceremony_seconds": g.ceremony_s, "prove_seconds": g.prove_s, "verify_seconds": g.verify_s, "zk_lock_wait_seconds": g.wait_s, "low_memory": g.low_memory,
             "proof_bytes_sent": g.proof_bytes_sent, "ceremony_seed": g.regs[0].seed.split('/').next(),
             "key_b_sha256": g.regs.iter().map(|r| pycompat::repr::sha256_hex(&dzkpopk::Json::List(r.b.to_big().into_iter().map(|x| dzkpopk::Json::Int(x.into())).collect()).canonical())).collect::<Vec<_>>(),
             "proofs": g.proofs.iter().map(|(l, h)| json!([l, h])).collect::<Vec<_>>(),
@@ -228,7 +232,8 @@ pub fn run_local_opts(pf: &Prof, attack: Option<(String, usize)>, proof_atoms: b
             let addrs = addrs.clone();
             let cs = cs.clone();
             let attack = attack.clone();
-            let pf2 = pf.clone();
+            let mut pf2 = pf.clone();
+            pf2.colocated = true;
             std::thread::spawn(move || {
                 let net = Net::connect(i, l, &addrs);
                 custodian(i, &pf2, net, tape, &cs, attack)
