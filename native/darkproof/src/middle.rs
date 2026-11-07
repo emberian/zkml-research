@@ -277,6 +277,8 @@ pub struct MiddleIn<'a> {
     pub det: &'a Det,
     /// the ideal dealer's stream for the Ligero's triples (real runs; identical for every party)
     pub lig_dealer: Option<pycompat::PyRandom>,
+    /// ATTACK HOOK (fs_public_falsifier): colluders rewrite the batch constant after seeing gamma
+    pub cst_patch: Option<&'a (dyn Fn(&BTreeMap<String, Vec<u64>>, u64, &[u64]) -> u64 + Sync)>,
 }
 
 pub struct MiddleOut {
@@ -394,7 +396,10 @@ pub fn prove(
     drop(st);
     tt.lap("zerocheck");
     let gam = tr.chal(rec.cons.len() + 3 * rec.had.len());
-    let (q, cst) = build_q(rec, &lens, &gam);
+    let (q, mut cst) = build_q(rec, &lens, &gam);
+    if let Some(f) = inp.cst_patch {
+        cst = f(&q, cst, &gam);
+    }
     tt.lap("gamma and build_q");
     let ks: Vec<String> = lens.keys().cloned().collect();
     // claims <q_X, X> (shares only: they are never opened)
@@ -633,4 +638,9 @@ pub fn verify(
     sizes.push(nrows - lh - 1 - lmax);
     let quad = vec![sys.lay.prod];
     ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
+}
+
+/// Beaver triples the middle's degree-3 zerocheck consumes over plen(n_had) entries: 4 (L - 1).
+pub fn beaver_count(n_had: usize) -> usize {
+    4 * (plen(n_had) - 1)
 }

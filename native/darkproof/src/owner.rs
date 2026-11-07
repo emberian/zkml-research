@@ -25,6 +25,12 @@ pub struct Owner {
 impl Owner {
     /// seed None: 32 bytes from the OS; `det_seed(seed, k)` gives the harness's deterministic k-th owner.
     pub fn new(h_: usize, seed: Option<Vec<u8>>, state_path: Option<std::path::PathBuf>) -> Self {
+        Self::open(h_, seed, state_path).expect("owner state")
+    }
+
+    /// As `new`, but an existing state file that cannot be read or parsed is an error (never a reset to leaf 0,
+    /// which would reuse one-time keys); only a missing file starts at leaf 0.
+    pub fn open(h_: usize, seed: Option<Vec<u8>>, state_path: Option<std::path::PathBuf>) -> Result<Self, String> {
         let seed = seed.unwrap_or_else(|| crate::rng::secret_bytes(32));
         let leaves: Vec<Hash> = (0..1u64 << h_).into_par_iter().map(|i| pkhash(&seed, i)).collect();
         let mut tree = vec![leaves];
@@ -36,11 +42,13 @@ impl Owner {
         let pk = tree.last().unwrap()[0];
         let mut next_leaf = 0;
         if let Some(p) = &state_path {
-            if let Ok(s) = std::fs::read_to_string(p) {
-                next_leaf = s.trim().parse().expect("owner state");
+            match std::fs::read_to_string(p) {
+                Ok(s) => next_leaf = s.trim().parse().map_err(|_| format!("owner state {}: not a leaf counter", p.display()))?,
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                Err(e) => return Err(format!("owner state {}: {e} (refusing to restart at leaf 0)", p.display())),
             }
         }
-        Owner { h: h_, seed, tree, pk, next_leaf, state_path }
+        Ok(Owner { h: h_, seed, tree, pk, next_leaf, state_path })
     }
 
     pub fn sign(&mut self, msg: &[u8]) -> Result<Vec<u8>, String> {

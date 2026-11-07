@@ -252,17 +252,23 @@ pub fn run_step(w1: &[u64], w2: &[u64], x: &[u64], y: &[u64], d: usize, prm: Ste
     let b = e.matvec(&sw2, &d2, d, true);
     let bg: Vec<V> = b.iter().zip(&g1).map(|(bb, g)| e.mul(bb, g)).collect();
     let d1: Vec<V> = bg.iter().map(|v| e.trunc(v, prm.s3, prm.k3)).collect();
-    let g2 = e.outer(&d2, &h);
-    let g1o = e.outer(&d1, &sx);
-    let w2n: Vec<V> = sw2.iter().zip(&g2).map(|(a, b)| Eng::sub(a, b)).collect();
-    let w1n: Vec<V> = sw1.iter().zip(&g1o).map(|(a, b)| Eng::sub(a, b)).collect();
     let mut wires: Vec<BTreeMap<String, Vec<Sh>>> = vec![BTreeMap::new(); N];
-    let put = |wires: &mut Vec<BTreeMap<String, Vec<Sh>>>, k: &str, v: &[V]| {
+    let put = |wires: &mut Vec<BTreeMap<String, Vec<Sh>>>, k: &str, v: Vec<V>| {
         for (i, m) in wires.iter_mut().enumerate() {
             m.insert(k.to_string(), v.iter().map(|x| x[i]).collect());
         }
     };
-    for (k, v) in [("x", &sx), ("y", &sy), ("z1", &z1), ("h", &h), ("z2", &z2), ("d2", &d2), ("b", &b), ("g1", &g1), ("bg", &bg), ("d1", &d1), ("W1", &sw1), ("W2", &sw2), ("W1n", &w1n), ("W2n", &w2n)] {
+    let g2 = e.outer(&d2, &h);
+    let w2n: Vec<V> = sw2.iter().zip(&g2).map(|(a, b)| Eng::sub(a, b)).collect();
+    drop(g2);
+    put(&mut wires, "W2n", w2n);
+    let g1o = e.outer(&d1, &sx);
+    let w1n: Vec<V> = sw1.iter().zip(&g1o).map(|(a, b)| Eng::sub(a, b)).collect();
+    drop(g1o);
+    put(&mut wires, "W1n", w1n);
+    put(&mut wires, "W1", sw1);
+    put(&mut wires, "W2", sw2);
+    for (k, v) in [("x", sx), ("y", sy), ("z1", z1), ("h", h), ("z2", z2), ("d2", d2), ("b", b), ("g1", g1), ("bg", bg), ("d1", d1)] {
         put(&mut wires, k, v);
     }
     Witness {

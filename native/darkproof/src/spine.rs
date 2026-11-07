@@ -703,3 +703,9 @@ pub fn verify(
     let quad = vec![sys.lay.prod];
     ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
 }
+
+/// Beaver triples the spine's sumcheck rounds consume (three degree-2 matvec sumchecks and the degree-3 Hadamard
+/// zerocheck over d entries): sum over rounds of (deg + 1) * half = 9 (d - 1) + 4 (d - 1).
+pub fn beaver_count(d: usize) -> usize {
+    13 * (d - 1)
+}
