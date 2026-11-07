@@ -1925,3 +1925,17 @@ about 20:00 UTC Nov 10 [DERIVED]. The 2,000-step accuracy run waits for a better
 1. The third custodian box for the 2,000-step run (a wired box: about 2 min per step, 3-4 days).
 2. Exact truncation (removes the dominant privacy term; 2000-step budget then about 2^-26 [DERIVED]).
 3. MP-SPDZ's unreviewed status and Bristol's usage-report request.
+
+### 24.4 MP-SPDZ's status (ember, 2026-11-07: keep using it)
+The preprocessing backend is MP-SPDZ v0.4.4 (CSIRO/Data61, BSD-3; parts under Bristol's Open Access Software Licence,
+ref. 1914, which asks users to report use). **It is unreviewed research code**: its authors state it has had no
+security review, and no audited library implements prime-field SPDZ preprocessing. We build it from source with three
+recorded changes (`native/darkprep/build/build-mpspdz.sh`): MASCOT N_AMPLIFY = 5, LowGear min_phi_m raised to N = 16,384
+(lattice estimator 2^179.0 against 2^86.8 at the stock N = 8,192), and EINTR-safe socket reads with no receive timeout.
+The usage note to Bristol is drafted, unsent, in `notes/dark-learning-gen6/bristol-usage-note-DRAFT.md`.
+
+### 24.5 Re-plan (ember, 2026-11-07)
+No custody traffic through hbox's home link: the third custodian moves to a rented datacenter box (vast.ai, within the
+$25 cap). LowGear N = 16,384 is the backend for the run of record (573 GB per party against MASCOT's 1,514 GB; the
+112.5 GB per key setup is the distributed BGV key generation itself, 65,536 MASCOT random bits per key in the 319-bit
+field). Exact truncation is being tried and is used in the run of record if its cost is reasonable.
