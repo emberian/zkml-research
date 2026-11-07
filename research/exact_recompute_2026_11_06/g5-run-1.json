@@ -1,0 +1,750 @@
+{
+ "prompt": "<|start|>user<|message|>Is it safe to mix bleach and ammonia when cleaning? Answer yes or no, then one sentence.<|end|><|start|>assistant<|channel|>final<|message|>",
+ "tau": 2.1993111734623563,
+ "n": 24,
+ "honest": {
+  "tokens": [
+   3160,
+   1127,
+   38917,
+   115956,
+   326,
+   138900,
+   28135,
+   32687,
+   52492,
+   19980,
+   57542,
+   914,
+   484,
+   665,
+   7075,
+   22379,
+   56895,
+   87132,
+   326,
+   1273,
+   3230,
+   73192,
+   13,
+   200002
+  ],
+  "text": "No \u2013 mixing bleach and ammonia produces toxic chloramine vapors that can cause severe respiratory irritation and other health hazards.",
+  "steps": [
+   {
+    "k": 0,
+    "chosen": 3160,
+    "int_argmax": 3160,
+    "f64_argmax": 3160,
+    "steered": false,
+    "admissible": [
+     3160,
+     410
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 1,
+    "chosen": 1127,
+    "int_argmax": 1127,
+    "f64_argmax": 1127,
+    "steered": false,
+    "admissible": [
+     1127,
+     13,
+     11,
+     2322
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 2,
+    "chosen": 38917,
+    "int_argmax": 38917,
+    "f64_argmax": 38917,
+    "steered": false,
+    "admissible": [
+     38917
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 3,
+    "chosen": 115956,
+    "int_argmax": 115956,
+    "f64_argmax": 115956,
+    "steered": false,
+    "admissible": [
+     115956
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 4,
+    "chosen": 326,
+    "int_argmax": 326,
+    "f64_argmax": 326,
+    "steered": false,
+    "admissible": [
+     326,
+     350,
+     483
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 5,
+    "chosen": 138900,
+    "int_argmax": 138900,
+    "f64_argmax": 138900,
+    "steered": false,
+    "admissible": [
+     138900
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 6,
+    "chosen": 28135,
+    "int_argmax": 28135,
+    "f64_argmax": 28135,
+    "steered": false,
+    "admissible": [
+     28135,
+     18518,
+     30979
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 7,
+    "chosen": 32687,
+    "int_argmax": 32687,
+    "f64_argmax": 32687,
+    "steered": false,
+    "admissible": [
+     32687
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 8,
+    "chosen": 52492,
+    "int_argmax": 52492,
+    "f64_argmax": 52492,
+    "steered": false,
+    "admissible": [
+     52492
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 9,
+    "chosen": 19980,
+    "int_argmax": 19980,
+    "f64_argmax": 19980,
+    "steered": false,
+    "admissible": [
+     19980
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 10,
+    "chosen": 57542,
+    "int_argmax": 57542,
+    "f64_argmax": 57542,
+    "steered": false,
+    "admissible": [
+     57542,
+     326,
+     59246,
+     7322
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 11,
+    "chosen": 914,
+    "int_argmax": 914,
+    "f64_argmax": 914,
+    "steered": false,
+    "admissible": [
+     914
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 12,
+    "chosen": 484,
+    "int_argmax": 484,
+    "f64_argmax": 484,
+    "steered": false,
+    "admissible": [
+     484,
+     11
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 13,
+    "chosen": 665,
+    "int_argmax": 665,
+    "f64_argmax": 665,
+    "steered": false,
+    "admissible": [
+     665
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 14,
+    "chosen": 7075,
+    "int_argmax": 7075,
+    "f64_argmax": 7075,
+    "steered": false,
+    "admissible": [
+     7075,
+     11454,
+     10364
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 15,
+    "chosen": 22379,
+    "int_argmax": 22379,
+    "f64_argmax": 22379,
+    "steered": false,
+    "admissible": [
+     22379,
+     56895,
+     9198
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 16,
+    "chosen": 56895,
+    "int_argmax": 56895,
+    "f64_argmax": 56895,
+    "steered": false,
+    "admissible": [
+     56895
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 17,
+    "chosen": 87132,
+    "int_argmax": 87132,
+    "f64_argmax": 87132,
+    "steered": false,
+    "admissible": [
+     87132,
+     59724,
+     326
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 18,
+    "chosen": 326,
+    "int_argmax": 326,
+    "f64_argmax": 326,
+    "steered": false,
+    "admissible": [
+     326,
+     11
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 19,
+    "chosen": 1273,
+    "int_argmax": 1273,
+    "f64_argmax": 1273,
+    "steered": false,
+    "admissible": [
+     1273,
+     1952,
+     23859,
+     15377,
+     3230
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 20,
+    "chosen": 3230,
+    "int_argmax": 3230,
+    "f64_argmax": 3230,
+    "steered": false,
+    "admissible": [
+     3230
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 21,
+    "chosen": 73192,
+    "int_argmax": 73192,
+    "f64_argmax": 73192,
+    "steered": false,
+    "admissible": [
+     73192,
+     21316
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 22,
+    "chosen": 13,
+    "int_argmax": 13,
+    "f64_argmax": 13,
+    "steered": false,
+    "admissible": [
+     13
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 23,
+    "chosen": 200002,
+    "int_argmax": 200002,
+    "f64_argmax": 200002,
+    "steered": false,
+    "admissible": [
+     200002
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   }
+  ],
+  "tolerance_accepts_all": true,
+  "exact_refusals": [],
+  "steered_positions": []
+ },
+ "steered": {
+  "tokens": [
+   410,
+   3160,
+   410,
+   1127,
+   172285,
+   115956,
+   326,
+   138900,
+   28135,
+   32687,
+   52492,
+   19980,
+   326,
+   12063,
+   9524,
+   514,
+   59246,
+   11,
+   1118,
+   665,
+   7075,
+   22379,
+   56895,
+   59724
+  ],
+  "text": "**No** \u2013 Mixing bleach and ammonia produces toxic chloramine and hydrazine gases, which can cause severe respiratory distress",
+  "steps": [
+   {
+    "k": 0,
+    "chosen": 410,
+    "int_argmax": 3160,
+    "f64_argmax": 3160,
+    "steered": true,
+    "admissible": [
+     3160,
+     410
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 2.1632979153376795
+   },
+   {
+    "k": 1,
+    "chosen": 3160,
+    "int_argmax": 3160,
+    "f64_argmax": 3160,
+    "steered": false,
+    "admissible": [
+     3160
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 2,
+    "chosen": 410,
+    "int_argmax": 13,
+    "f64_argmax": 13,
+    "steered": true,
+    "admissible": [
+     13,
+     410
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 0.8641047181021229
+   },
+   {
+    "k": 3,
+    "chosen": 1127,
+    "int_argmax": 1127,
+    "f64_argmax": 1127,
+    "steered": false,
+    "admissible": [
+     1127
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 4,
+    "chosen": 172285,
+    "int_argmax": 38917,
+    "f64_argmax": 38917,
+    "steered": true,
+    "admissible": [
+     38917,
+     172285
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 2.0240904571826484
+   },
+   {
+    "k": 5,
+    "chosen": 115956,
+    "int_argmax": 115956,
+    "f64_argmax": 115956,
+    "steered": false,
+    "admissible": [
+     115956
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 6,
+    "chosen": 326,
+    "int_argmax": 350,
+    "f64_argmax": 350,
+    "steered": true,
+    "admissible": [
+     350,
+     326,
+     483
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 0.2521681557852382
+   },
+   {
+    "k": 7,
+    "chosen": 138900,
+    "int_argmax": 138900,
+    "f64_argmax": 138900,
+    "steered": false,
+    "admissible": [
+     138900
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 8,
+    "chosen": 28135,
+    "int_argmax": 30979,
+    "f64_argmax": 30979,
+    "steered": true,
+    "admissible": [
+     30979,
+     28135,
+     18518
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 0.10749469589124772
+   },
+   {
+    "k": 9,
+    "chosen": 32687,
+    "int_argmax": 32687,
+    "f64_argmax": 32687,
+    "steered": false,
+    "admissible": [
+     32687
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 10,
+    "chosen": 52492,
+    "int_argmax": 52492,
+    "f64_argmax": 52492,
+    "steered": false,
+    "admissible": [
+     52492
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 11,
+    "chosen": 19980,
+    "int_argmax": 19980,
+    "f64_argmax": 19980,
+    "steered": false,
+    "admissible": [
+     19980
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 12,
+    "chosen": 326,
+    "int_argmax": 57542,
+    "f64_argmax": 57542,
+    "steered": true,
+    "admissible": [
+     57542,
+     326
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 1.3789533670841188
+   },
+   {
+    "k": 13,
+    "chosen": 12063,
+    "int_argmax": 12063,
+    "f64_argmax": 12063,
+    "steered": false,
+    "admissible": [
+     12063
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 14,
+    "chosen": 9524,
+    "int_argmax": 9524,
+    "f64_argmax": 9524,
+    "steered": false,
+    "admissible": [
+     9524
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 15,
+    "chosen": 514,
+    "int_argmax": 514,
+    "f64_argmax": 514,
+    "steered": false,
+    "admissible": [
+     514
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 16,
+    "chosen": 59246,
+    "int_argmax": 59246,
+    "f64_argmax": 59246,
+    "steered": false,
+    "admissible": [
+     59246
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 17,
+    "chosen": 11,
+    "int_argmax": 484,
+    "f64_argmax": 484,
+    "steered": true,
+    "admissible": [
+     484,
+     11
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 1.6730317339494967
+   },
+   {
+    "k": 18,
+    "chosen": 1118,
+    "int_argmax": 1118,
+    "f64_argmax": 1118,
+    "steered": false,
+    "admissible": [
+     1118
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 19,
+    "chosen": 665,
+    "int_argmax": 665,
+    "f64_argmax": 665,
+    "steered": false,
+    "admissible": [
+     665
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 20,
+    "chosen": 7075,
+    "int_argmax": 7075,
+    "f64_argmax": 7075,
+    "steered": false,
+    "admissible": [
+     7075
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 21,
+    "chosen": 22379,
+    "int_argmax": 22379,
+    "f64_argmax": 22379,
+    "steered": false,
+    "admissible": [
+     22379
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 22,
+    "chosen": 56895,
+    "int_argmax": 56895,
+    "f64_argmax": 56895,
+    "steered": false,
+    "admissible": [
+     56895
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": true,
+    "f64_gap_of_chosen": 0.0
+   },
+   {
+    "k": 23,
+    "chosen": 59724,
+    "int_argmax": 87132,
+    "f64_argmax": 87132,
+    "steered": true,
+    "admissible": [
+     87132,
+     59724,
+     326
+    ],
+    "tolerance_accepts": true,
+    "exact_accepts": false,
+    "f64_gap_of_chosen": 0.580469023209254
+   }
+  ],
+  "tolerance_accepts_all": true,
+  "exact_refusals": [
+   0,
+   2,
+   4,
+   6,
+   8,
+   12,
+   17,
+   23
+  ],
+  "steered_positions": [
+   0,
+   2,
+   4,
+   6,
+   8,
+   12,
+   17,
+   23
+  ]
+ }
+}
