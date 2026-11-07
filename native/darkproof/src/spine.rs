@@ -3,6 +3,7 @@
 //! code is generic over E and dispatched once at the top, so E = 1 is the base-field protocol byte for byte.
 use crate::ext::{self, Tab};
 use crate::field;
+use crate::gmask::{self, GMask, MaskZ};
 use crate::h::{Hash, Py};
 use crate::ligero::{self, LigParams, LigParty, LigProof, LinSink, LinSystem};
 use crate::net::{gather_hashes, Net};
@@ -21,12 +22,18 @@ pub const NPROD: usize = 6;
 #[derive(Clone, Debug, PartialEq)]
 pub struct SpineProof {
     pub roots: BTreeMap<String, Vec<Hash>>,
+    /// ZKSC "rows": every round's Ligero roots by sumcheck (empty under "mask")
     pub round_roots: BTreeMap<String, Vec<Vec<Hash>>>,
     pub eval_roots: Vec<Hash>,
     pub mask_roots: Vec<Hash>,
     pub prox: BTreeMap<String, Vec<Vec<u64>>>,
     pub pcs_cols: BTreeMap<String, PcsCols>,
     pub ligero: LigProof,
+    /// ZKSC "mask" (cut D; all empty under "rows"): the g group's roots, the opened G values (spec order, flat), the
+    /// opened round messages by sumcheck (each flat: (deg + 1) E values)
+    pub g_roots: Vec<Hash>,
+    pub g_open: Vec<u64>,
+    pub rounds: BTreeMap<String, Vec<Vec<u64>>>,
 }
 
 pub fn log2(d: usize) -> usize {
@@ -104,7 +111,10 @@ pub fn evals_of<const E: usize>(s: &Sched<E>) -> EvalsE<E> {
 }
 
 pub struct Layout {
+    /// ZKSC "rows": the round rows by sumcheck (empty under "mask")
     pub rows: BTreeMap<String, Vec<usize>>,
+    /// ZKSC "mask": the g group's rows, first (0 under "rows")
+    pub ng: usize,
     pub urows: Vec<Vec<usize>>,
     pub prod: (usize, usize, usize),
     pub nrows: usize,
@@ -113,11 +123,20 @@ pub struct Layout {
 /// Hidden-row numbering in commit order: rounds (z1, z2, b, bg; ld each; a round's value j, component k at position
 /// j E + k), then each evaluation's u rows (component-major: E blocks of ceil(W / K_L) rows), then the product rows.
 pub fn row_layout<T>(ld: usize, sh: &BTreeMap<String, Shape>, ev: &[(String, T)], kl: usize, e: usize) -> Layout {
+    row_layout_g(ld, sh, ev, kl, e, None)
+}
+
+/// The same with ZKSC "mask": ng = Some(the g group's rows), which come first in place of the round rows.
+pub fn row_layout_g<T>(ld: usize, sh: &BTreeMap<String, Shape>, ev: &[(String, T)], kl: usize, e: usize, ng: Option<usize>) -> Layout {
     let mut rows = BTreeMap::new();
     let mut nxt = 0;
-    for name in ["z1", "z2", "b", "bg"] {
-        rows.insert(name.to_string(), (nxt..nxt + ld).collect());
-        nxt += ld;
+    if let Some(g) = ng {
+        nxt = g;
+    } else {
+        for name in ["z1", "z2", "b", "bg"] {
+            rows.insert(name.to_string(), (nxt..nxt + ld).collect());
+            nxt += ld;
+        }
     }
     let mut urows = Vec::new();
     for (k, _) in ev {
@@ -125,7 +144,7 @@ pub fn row_layout<T>(ld: usize, sh: &BTreeMap<String, Shape>, ev: &[(String, T)]
         urows.push((nxt..nxt + e * nr).collect());
         nxt += e * nr;
     }
-    Layout { rows, urows, prod: (nxt, nxt + 1, nxt + 2), nrows: nxt + 3 }
+    Layout { rows, ng: ng.unwrap_or(0), urows, prod: (nxt, nxt + 1, nxt + 2), nrows: nxt + 3 }
 }
 
 // ---------------------------------------------------------------------- linear forms over F_{p^E} values
@@ -272,6 +291,8 @@ pub struct SpineSys<const E: usize> {
     pub cols: BTreeMap<String, (Vec<usize>, Vec<Vec<u64>>)>,
     pub lay: Layout,
     pub sched: Sched<E>,
+    /// ZKSC "mask": the opened masking data (None: hidden round rows)
+    pub mz: Option<MaskZ<E>>,
 }
 
 impl<const E: usize> SpineSys<E> {
@@ -364,8 +385,15 @@ impl<const E: usize> LinSystem for SpineSys<E> {
         let one = ext::one::<E>();
         let m1 = ext::neg(one);
         let pf: Vec<ProdForms<E>> = (0..NPROD).map(|q| prod_forms::<E>(self.lay.prod, q)).collect();
+        let (tau, rs) = &self.sched.scs["bg"];
+        let eq = ext::mle(&ext::eqv(tau), rs);
         for (q, name, idx) in [(0usize, "z1", 0usize), (1, "z2", 3), (2, "b", 6)] {
-            self.sumcheck(&mut em, name, 2, Some(idx), &|em: &mut EEm<E>| em.form(&pf[q].z, m1));
+            if let Some(mz) = &self.mz {
+                let first = |em: &mut EEm<E>| self.y(em, idx, one);
+                mz.sumcheck(&mut em, name, &self.sched.scs[name].1, Some(&first), &|em: &mut EEm<E>| em.form(&pf[q].z, one));
+            } else {
+                self.sumcheck(&mut em, name, 2, Some(idx), &|em: &mut EEm<E>| em.form(&pf[q].z, m1));
+            }
             operands(
                 &mut em,
                 &pf[q],
@@ -375,12 +403,17 @@ impl<const E: usize> LinSystem for SpineSys<E> {
                 &|em| self.y(em, idx + 1, m1),
             );
         }
-        let (tau, rs) = &self.sched.scs["bg"];
-        let eq = ext::mle(&ext::eqv(tau), rs);
-        self.sumcheck(&mut em, "bg", 3, None, &|em: &mut EEm<E>| {
-            em.form(&pf[3].z, ext::neg(eq));
-            self.y(em, 11, eq);
-        });
+        if let Some(mz) = &self.mz {
+            mz.sumcheck(&mut em, "bg", rs, None, &|em: &mut EEm<E>| {
+                em.form(&pf[3].z, eq);
+                self.y(em, 11, ext::neg(eq));
+            });
+        } else {
+            self.sumcheck(&mut em, "bg", 3, None, &|em: &mut EEm<E>| {
+                em.form(&pf[3].z, ext::neg(eq));
+                self.y(em, 11, eq);
+            });
+        }
         operands(&mut em, &pf[3], "product 3 operands", "product 3 operand sums", &|em| self.y(em, 9, m1), &|em| self.y(em, 10, m1));
         for (q, base) in [(4usize, 12usize), (5, 16)] {
             let wn = if q == 4 { "W1n" } else { "W2n" };
@@ -616,6 +649,12 @@ fn prove_g<const E: usize>(
     }
     let mut sched = Sched::<E>::default();
     let mut round_roots: BTreeMap<String, Vec<Vec<Hash>>> = BTreeMap::new();
+    // cut D: every g of the spine committed as one group, the G values opened, rho drawn (before the first tau)
+    let mut gmz: Option<(MaskZ<E>, Vec<u64>, Vec<Hash>)> = None;
+    if pr.mask {
+        let gm = GMask::new(gmask::spine_specs(ld), 0, kl, E);
+        gmz = Some(gmask::commit::<E>(gm, &mut lg, net, &mut tr, if attack == "forge_G" && i == 0 { Some("z2") } else { None }));
+    }
     let tables = [("z1", "W1", "x", false), ("z2", "W2", "h", false), ("b", "W2", "d2", true)];
     let nsc = tables.len() + 1;
     for sci in 0..nsc {
@@ -633,7 +672,8 @@ fn prove_g<const E: usize>(
                 sub: Some(Tab::B(w["bg"].clone())),
                 eq: Some(ext::eqv(&tau)),
                 deg: 3,
-                claim: None,
+                // the harness's claim 0 (a no-op when bg = b g1); under "mask" the round is opened anyway
+                claim: if pr.mask { Some(ext::zero()) } else { None },
                 last: vec![],
             };
         } else {
@@ -684,6 +724,36 @@ fn prove_g<const E: usize>(
                 }
             }
             let vals = round_vals(sp, net, &st);
+            if let Some((mz, gsh, _)) = &mut gmz {
+                // cut D: the opened message s_rnd = f part + rho g part
+                if rnd == 0 {
+                    if let Some(c) = st.claim {
+                        st.claim = Some(ext::add(c, ext::mul(mz.rho, mz.g[name])));
+                    }
+                }
+                let fv: Vec<[u64; E]> = vals.iter().map(|v| ext::shares(v)).collect();
+                let bump = if attack == "bad_share" && name == "b" && rnd == 0 && i == 0 { Some(("b", 0)) } else { None };
+                let mut plain = gmask::open_round::<E>(mz, gsh, net, &[name], rnd, &rs, &[fv], bump).remove(0);
+                if let Some(claim) = st.claim {
+                    // colluders: shift the opened message so its sum matches the (forged) claim
+                    let fix = ext::scal(field::inv(2), ext::sub(claim, ext::add(plain[0], plain[1])));
+                    plain = plain.iter().map(|&v| ext::add(v, fix)).collect();
+                }
+                if attack == "forge_round" && name == "z2" && rnd == 1 {
+                    // a forged message whose own sum is kept: +5 at X = 0, -5 at X = 1; later rounds follow it at r
+                    plain[0] = ext::add(plain[0], ext::lift(5));
+                    plain[1] = ext::sub(plain[1], ext::lift(5));
+                    st.claim = Some(ext::zero());
+                }
+                let fl = gmask::flat(&plain);
+                st.last = plain.clone();
+                mz.msgs.entry(name.to_string()).or_default().push(plain);
+                tr.absorb(|h| {
+                    h.s("scr").list(&fl);
+                });
+                rs.push(ext::chal1::<E>(&mut tr));
+                continue;
+            }
             let mut shares: Vec<u64> = vals.iter().flat_map(|v| ext::shares(v)).collect();
             if let Some(claim) = st.claim {
                 // colluders: make the hidden round sum match the (forged) claim
@@ -718,7 +788,7 @@ fn prove_g<const E: usize>(
     }
     let ev = evals_of(&sched);
     let shp: BTreeMap<String, Shape> = com.iter().map(|(k, c)| (k.clone(), c.shape.clone())).collect();
-    let lay = row_layout(ld, &shp, &ev, kl, E);
+    let lay = row_layout_g(ld, &shp, &ev, kl, E, gmz.as_ref().map(|g| g.0.gm.nrows));
     let mut ys: Vec<[u64; E]> = Vec::with_capacity(ev.len());
     for (k, pt) in &ev {
         let c = &com[k];
@@ -759,7 +829,15 @@ fn prove_g<const E: usize>(
     let (prox, pcs_cols) = pcs_prove_e::<E>(pr, &mut com, &mut tr, net, n)?;
     tt.lap("pcs openings");
     let cols = pcs_cols.iter().map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r)))).collect();
-    let sys = SpineSys::<E> { kl, shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(), ev, cols, lay, sched };
+    let (mz, g_roots) = match gmz {
+        Some((mz, _, gr)) => (Some(mz), gr),
+        None => (None, Vec::new()),
+    };
+    let (g_open, rounds) = match &mz {
+        Some(m) => (m.g_flat(), m.msgs.iter().map(|(k, v)| (k.clone(), v.iter().map(|x| gmask::flat(x)).collect())).collect()),
+        None => (Vec::new(), BTreeMap::new()),
+    };
+    let sys = SpineSys::<E> { kl, shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(), ev, cols, lay, sched, mz };
     let quad = vec![sys.lay.prod];
     let lig = lg.prove(net, &mut tr, &sys, &quad);
     tt.lap("ligero prove");
@@ -779,6 +857,9 @@ fn prove_g<const E: usize>(
         prox,
         pcs_cols,
         ligero: lig,
+        g_roots,
+        g_open,
+        rounds,
     };
     Ok(SpineOut { proof, coms: com, lig_rows: lg.rows.clone(), sys: Box::new(sys), quad, stats })
 }
@@ -910,7 +991,25 @@ fn verify_g<const E: usize>(
         });
     }
     let rr = &proof.round_roots;
-    if rr.keys().map(|s| s.as_str()).ne(["b", "bg", "z1", "z2"]) || rr.values().any(|v| v.len() != ld) {
+    let mut mz: Option<MaskZ<E>> = None;
+    if pr.mask {
+        let rd = &proof.rounds;
+        let sp = gmask::spine_specs(ld);
+        if rd.keys().map(|s| s.as_str()).ne(["b", "bg", "z1", "z2"])
+            || rd.values().any(|v| v.len() != ld)
+            || proof.g_open.len() != E * sp.len()
+            || proof.g_roots.len() != n
+        {
+            return Err("wrong number of sumcheck rounds".into());
+        }
+        if sp.iter().any(|(nm, _, dg)| rd[nm].iter().any(|v| v.len() != E * (dg + 1))) {
+            return Err("sumcheck round messages of the wrong shape".into());
+        }
+        let gm = GMask::new(sp, 0, pr.k_l, E);
+        let mut m = MaskZ::<E>::from_wire(gm, &proof.g_roots, &proof.g_open, &mut tr);
+        m.msgs = rd.iter().map(|(k, v)| (k.clone(), v.iter().map(|x| gmask::unflat::<E>(x)).collect())).collect();
+        mz = Some(m);
+    } else if rr.keys().map(|s| s.as_str()).ne(["b", "bg", "z1", "z2"]) || rr.values().any(|v| v.len() != ld) {
         return Err("wrong number of sumcheck rounds".into());
     }
     let mut sched = Sched::<E>::default();
@@ -918,12 +1017,25 @@ fn verify_g<const E: usize>(
         let tau = ext::chal::<E>(&mut tr, ld);
         let mut rs = Vec::new();
         for rnd in 0..ld {
-            tr.absorb(|h| {
-                h.s("scr").list_hx(&rr[name][rnd]);
-            });
+            if mz.is_some() {
+                tr.absorb(|h| {
+                    h.s("scr").list(&proof.rounds[name][rnd]);
+                });
+            } else {
+                tr.absorb(|h| {
+                    h.s("scr").list_hx(&rr[name][rnd]);
+                });
+            }
             rs.push(ext::chal1::<E>(&mut tr));
         }
         sched.scs.insert(name.into(), (tau, rs));
+    }
+    if let Some(m) = &mz {
+        // cut D: the round sums in the clear (bg's claim is public: rho G)
+        for (nm, _, dg) in &m.gm.specs {
+            let c0 = if nm == "bg" { Some(ext::mul(m.rho, m.g[nm])) } else { None };
+            gmask::check_rounds::<E>(nm, &m.msgs[nm], &sched.scs[nm].1, *dg, c0)?;
+        }
     }
     for _ in 0..2 {
         let rc = ext::chal::<E>(&mut tr, ld);
@@ -934,7 +1046,7 @@ fn verify_g<const E: usize>(
         sched.rb = Some(ext::chal::<E>(&mut tr, ld));
     }
     let ev = evals_of(&sched);
-    let lay = row_layout(ld, &sh, &ev, pr.k_l, E);
+    let lay = row_layout_g(ld, &sh, &ev, pr.k_l, E, mz.as_ref().map(|m| m.gm.nrows));
     tr.absorb(|h| {
         h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
     });
@@ -949,16 +1061,25 @@ fn verify_g<const E: usize>(
         .map(|k| (k.clone(), (proof.pcs_cols[k].j.clone(), colsums(&proof.pcs_cols[k], sh[k].r))))
         .collect();
     let nrows = lay.nrows;
-    let sys = SpineSys::<E> { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(), ev, cols, lay, sched };
+    let ng = lay.ng;
+    let masked = mz.is_some();
+    let sys = SpineSys::<E> { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(), ev, cols, lay, sched, mz };
     let mut groups: Vec<Vec<Hash>> = Vec::new();
-    for nm in ["z1", "z2", "b", "bg"] {
-        for i in 0..ld {
-            groups.push(rr[nm][i].clone());
+    let mut sizes;
+    if masked {
+        groups.push(proof.g_roots.clone());
+        sizes = vec![ng];
+        sizes.push(nrows - ng);
+    } else {
+        for nm in ["z1", "z2", "b", "bg"] {
+            for i in 0..ld {
+                groups.push(rr[nm][i].clone());
+            }
         }
+        sizes = vec![1usize; 4 * ld];
+        sizes.push(nrows - 4 * ld);
     }
     groups.push(proof.eval_roots.clone());
-    let mut sizes = vec![1usize; 4 * ld];
-    sizes.push(nrows - 4 * ld);
     let quad = vec![sys.lay.prod];
     ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
 }

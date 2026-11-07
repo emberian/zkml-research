@@ -53,12 +53,16 @@ fn jlist(xs: &[String]) -> String {
 }
 
 /// PARAMS as json.dumps writes the dict (insertion order of proofwire.PROFILES; "EXT" last, and only in a profile
-/// with F_{p^2} challenges: a profile without it is EXT = 1).
+/// with F_{p^2} challenges: a profile without it is EXT = 1; "ZKSC" after it, only in a cut D profile).
 pub fn jparams(p: &Profile) -> String {
     let mut s = jparams_base(p);
     if p.ext != 1 {
         s.pop();
         s.push_str(&format!(", \"EXT\": {}}}", p.ext));
+    }
+    if p.mask {
+        s.pop();
+        s.push_str(", \"ZKSC\": \"mask\"}");
     }
     s
 }

@@ -306,20 +306,53 @@ fn spine_sizes(pr: &Profile, d: usize, sh: &BTreeMap<String, Shape>, bind: bool)
         s.rb = Some(vec![[0]; ld]);
     }
     let ev = spine::evals_of(&s);
+    if pr.mask {
+        let ng = spine_gmask(pr, ld).nrows;
+        let nrows = spine::row_layout_g(ld, sh, &ev, pr.k_l, pr.ext, Some(ng)).nrows;
+        return vec![ng, nrows - ng];
+    }
     let nrows = spine::row_layout(ld, sh, &ev, pr.k_l, pr.ext).nrows;
     let mut sizes = vec![1usize; 4 * ld];
     sizes.push(nrows - 4 * ld);
     sizes
 }
 
+fn spine_gmask(pr: &Profile, ld: usize) -> crate::gmask::GMask {
+    crate::gmask::GMask::new(crate::gmask::spine_specs(ld), 0, pr.k_l, pr.ext)
+}
+
+/// ZKSC "mask": g_roots, G (E per spec), the opened rounds by sorted sumcheck name ((deg + 1) E values each).
+fn w_spine_mask(w: &mut W, pr: &Profile, n: usize, ld: usize, p: &SpineProof) {
+    let gm = spine_gmask(pr, ld);
+    w.hs(&p.g_roots, n);
+    w.fes(&p.g_open, pr.ext * gm.specs.len());
+    assert!(p.rounds.keys().map(|s| s.as_str()).eq(["b", "bg", "z1", "z2"]), "dict keys differ from schema");
+    for (nm, l, dg) in sorted_specs(&gm) {
+        assert_eq!(p.rounds[&nm].len(), l);
+        for v in &p.rounds[&nm] {
+            w.fes(v, (dg + 1) * pr.ext);
+        }
+    }
+}
+
+fn sorted_specs(gm: &crate::gmask::GMask) -> Vec<(String, usize, usize)> {
+    let mut sp = gm.specs.clone();
+    sp.sort();
+    sp
+}
+
 pub fn write_spine(w: &mut W, pr: &Profile, n: usize, d: usize, chained: bool, bind: bool, p: &SpineProof) {
     let sh = spine::shapes(pr, d, chained, bind);
     let ld = log2(d);
     w_roots(w, n, &sh, &p.roots);
-    for nm in RNAMES {
-        assert_eq!(p.round_roots[nm].len(), ld);
-        for rr in &p.round_roots[nm] {
-            w.hs(rr, n);
+    if pr.mask {
+        w_spine_mask(w, pr, n, ld, p);
+    } else {
+        for nm in RNAMES {
+            assert_eq!(p.round_roots[nm].len(), ld);
+            for rr in &p.round_roots[nm] {
+                w.hs(rr, n);
+            }
         }
     }
     w.hs(&p.eval_roots, n);
@@ -333,14 +366,24 @@ pub fn read_spine(r: &mut R, pr: &Profile, n: usize, d: usize, chained: bool, bi
     let ld = log2(d);
     let mut parts = r_pcs(r, pr, n, &sh)?;
     let mut round_roots = BTreeMap::new();
-    for nm in RNAMES {
-        round_roots.insert(nm.to_string(), (0..ld).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?);
+    let (mut g_roots, mut g_open, mut rounds) = (Vec::new(), Vec::new(), BTreeMap::new());
+    if pr.mask {
+        let gm = spine_gmask(pr, ld);
+        g_roots = r.hs(n)?;
+        g_open = r.fes(pr.ext * gm.specs.len())?;
+        for (nm, l, dg) in sorted_specs(&gm) {
+            rounds.insert(nm, (0..l).map(|_| r.fes((dg + 1) * pr.ext)).collect::<PR<Vec<_>>>()?);
+        }
+    } else {
+        for nm in RNAMES {
+            round_roots.insert(nm.to_string(), (0..ld).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?);
+        }
     }
     let eval_roots = r.hs(n)?;
     let mask_roots = r.hs(n)?;
     r_prox_cols_e(r, pr, n, &sh, &mut parts, pr.ext)?;
     let ligero = r_ligero(r, pr, n, &spine_sizes(pr, d, &sh, bind))?;
-    Ok(SpineProof { roots: parts.0, round_roots, eval_roots, mask_roots, prox: parts.1, pcs_cols: parts.2, ligero })
+    Ok(SpineProof { roots: parts.0, round_roots, eval_roots, mask_roots, prox: parts.1, pcs_cols: parts.2, ligero, g_roots, g_open, rounds })
 }
 
 struct MShape {
@@ -348,6 +391,9 @@ struct MShape {
     lh: usize,
     lmax: usize,
     sizes: Vec<usize>,
+    /// ZKSC "mask": the number of masking polynomials and of linear sumchecks
+    nsp: usize,
+    nks: usize,
 }
 
 fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool, io: Option<&step::Io>) -> MShape {
@@ -357,10 +403,17 @@ fn middle_shape(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool,
     let lmax = lens.values().map(|&l| lg(l)).max().unwrap();
     let rb = vec![[0u64]; log2(d)];
     let ev = middle::evaluations::<1>(&lens, &vec![[0]; lh], &vec![[0]; lmax], if bind { Some(&rb) } else { None });
+    let ks: Vec<String> = lens.keys().cloned().collect();
+    if pr.mask {
+        let gm = crate::gmask::GMask::new(crate::gmask::middle_specs(lh, lmax, &ks), 0, pr.k_l, pr.ext);
+        let ng = gm.nrows;
+        let nrows = middle::row_layout_g(&sh, &ev, lh, lmax, pr.k_l, pr.ext, Some(ng)).nrows;
+        return MShape { sh, lh, lmax, sizes: vec![ng, 1, nrows - ng - 1], nsp: gm.specs.len(), nks: ks.len() };
+    }
     let nrows = middle::row_layout(&sh, &ev, lh, lmax, pr.k_l, pr.ext).nrows;
     let mut sizes = vec![1usize; lh + 1 + lmax];
     sizes.push(nrows - lh - 1 - lmax);
-    MShape { sh, lh, lmax, sizes }
+    MShape { sh, lh, lmax, sizes, nsp: 0, nks: ks.len() }
 }
 
 pub fn write_middle(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, p: &MiddleProof) {
@@ -371,14 +424,29 @@ pub fn write_middle(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, 
 pub fn write_middle_io(w: &mut W, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, io: Option<&step::Io>, p: &MiddleProof) {
     let ms = middle_shape(pr, n_prep, n_had, d, bind, io);
     w_roots(w, n, &ms.sh, &p.roots);
-    assert_eq!(p.zc_roots.len(), ms.lh);
-    for r in &p.zc_roots {
-        w.hs(r, n);
-    }
-    w.hs(&p.claims_root, n);
-    assert_eq!(p.lsc_roots.len(), ms.lmax);
-    for r in &p.lsc_roots {
-        w.hs(r, n);
+    let e = pr.ext;
+    if pr.mask {
+        w.hs(&p.g_roots, n);
+        w.fes(&p.g_open, e * ms.nsp);
+        assert_eq!(p.zc.len(), ms.lh);
+        for v in &p.zc {
+            w.fes(v, 4 * e);
+        }
+        w.hs(&p.claims_root, n);
+        assert_eq!(p.lsc.len(), ms.lmax);
+        for v in &p.lsc {
+            w.fes(v, 3 * e * ms.nks);
+        }
+    } else {
+        assert_eq!(p.zc_roots.len(), ms.lh);
+        for r in &p.zc_roots {
+            w.hs(r, n);
+        }
+        w.hs(&p.claims_root, n);
+        assert_eq!(p.lsc_roots.len(), ms.lmax);
+        for r in &p.lsc_roots {
+            w.hs(r, n);
+        }
     }
     w.hs(&p.eval_roots, n);
     w.hs(&p.mask_roots, n);
@@ -394,9 +462,21 @@ pub fn read_middle(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize, n
 pub fn read_middle_io(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize, n_had: usize, bind: bool, io: Option<&step::Io>) -> PR<MiddleProof> {
     let ms = middle_shape(pr, n_prep, n_had, d, bind, io);
     let mut parts = r_pcs(r, pr, n, &ms.sh)?;
-    let zc_roots = (0..ms.lh).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?;
-    let claims_root = r.hs(n)?;
-    let lsc_roots = (0..ms.lmax).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?;
+    let e = pr.ext;
+    let (mut zc_roots, mut lsc_roots, mut g_roots, mut g_open, mut zc, mut lsc) =
+        (Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new());
+    let claims_root;
+    if pr.mask {
+        g_roots = r.hs(n)?;
+        g_open = r.fes(e * ms.nsp)?;
+        zc = (0..ms.lh).map(|_| r.fes(4 * e)).collect::<PR<Vec<_>>>()?;
+        claims_root = r.hs(n)?;
+        lsc = (0..ms.lmax).map(|_| r.fes(3 * e * ms.nks)).collect::<PR<Vec<_>>>()?;
+    } else {
+        zc_roots = (0..ms.lh).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?;
+        claims_root = r.hs(n)?;
+        lsc_roots = (0..ms.lmax).map(|_| r.hs(n)).collect::<PR<Vec<_>>>()?;
+    }
     let eval_roots = r.hs(n)?;
     let mask_roots = r.hs(n)?;
     r_prox_cols_e(r, pr, n, &ms.sh, &mut parts, pr.ext)?;
@@ -411,6 +491,10 @@ pub fn read_middle_io(r: &mut R, pr: &Profile, n: usize, d: usize, n_prep: usize
         prox: parts.1,
         pcs_cols: parts.2,
         ligero,
+        g_roots,
+        g_open,
+        zc,
+        lsc,
     })
 }
 

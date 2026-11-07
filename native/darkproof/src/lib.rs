@@ -3,6 +3,7 @@
 //! proofwire, owner_sig). Every proof byte equals the harness's for the same seed (`rng::Det`).
 pub mod ext;
 pub mod field;
+pub mod gmask;
 pub mod h;
 pub mod handover;
 pub mod ledger;
@@ -64,6 +65,9 @@ pub struct Profile {
     pub multiproof: bool,
     /// the challenges' field F_{p^ext} (proofwire EXT; cosnark_ext): 1, or 2 for the "-x2" profiles
     pub ext: usize,
+    /// proofwire ZKSC "mask" (cut D, cosnark_zk.GMask): every sumcheck's round messages opened, masked by one g per
+    /// sumcheck, all of a proof's g in one hidden Ligero group; false ("rows"): each round message a hidden row
+    pub mask: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -96,6 +100,7 @@ impl Profile {
             split: Split::Balanced,
             multiproof: true,
             ext: 1,
+            mask: false,
         }
     }
     pub fn demo() -> Self {
@@ -115,6 +120,7 @@ impl Profile {
             split: Split::Balanced,
             multiproof: true,
             ext: 1,
+            mask: false,
         }
     }
     pub fn by_name(s: &str) -> Option<Self> {
@@ -130,6 +136,9 @@ impl Profile {
             // F_{p^2} challenges: two lives x two proximity masks (one per component)
             "ledger-x2" => Some(Profile { name: "ledger-x2", nmask: 4, ext: 2, ..Self::ledger() }),
             "demo-x2" => Some(Profile { name: "demo-x2", nmask: 4, ext: 2, ..Self::demo() }),
+            // cut D in F_{p^2}: the masked sumcheck
+            "ledger-x2d" => Some(Profile { name: "ledger-x2d", nmask: 4, ext: 2, mask: true, ..Self::ledger() }),
+            "demo-x2d" => Some(Profile { name: "demo-x2d", nmask: 4, ext: 2, mask: true, ..Self::demo() }),
             _ => None,
         }
     }
