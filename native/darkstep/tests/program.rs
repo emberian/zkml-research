@@ -42,11 +42,26 @@ fn floor_d1_custodians_do_not_refine_gen6() {
 /// committed in native_ref_results/): public transcript, every party's final shares and MAC-check sigma, SPDZ wire.
 #[test]
 fn gen6_equals_native_ref() {
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../research/dark_learning_2026_11_06/native_ref_results/native_ref_N4096_L3_F118_d64_GEN6.json");
-    let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+    gen6_vs(4096);
+}
+
+/// The demo HE profile: the step the proof lane proved (its bundle sha256 052e5156..., notes/dark-learning-gen6/proof.md).
+#[test]
+fn gen6_equals_native_ref_demo_profile() {
+    gen6_vs(8192);
+}
+
+fn gen6_vs(n: usize) {
+    let path = format!("{}/../../research/dark_learning_2026_11_06/native_ref_results/native_ref_N{n}_L3_F118_d64_GEN6.json", env!("CARGO_MANIFEST_DIR"));
+    let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
     assert_eq!(r["verdict"], "ACCEPT");
     assert_eq!(r["refines_spec"], true);
-    let (res, _) = run_local(&pf(Program::GEN6), None);
+    let mut p = pf(Program::GEN6);
+    if n != 4096 {
+        p = prof(&[n.to_string(), "3".into(), "118".into(), "64".into()]);
+        p.program = Program::GEN6;
+    }
+    let (res, _) = run_local(&p, None);
     assert_eq!(res["refines_spec"], true);
     assert_eq!(res["transcript"], r["transcript"], "transcript digest");
     for i in 0..3 {

@@ -186,3 +186,7 @@ Cross-model review (`codex exec -m gpt-6-astra --sandbox read-only`) covered com
   | release comparisons | [-2^10, 2^10) (B 11) |
 
   - The non-harness check changed from |v| < 2^K to -2^K <= v < 2^K, which is the MPC's exact precondition. The proof proves these intervals and the ledger refuses a step outside them.
+- Three-way agreement on a GEN6 step at d = 64 [EXECUTED]:
+  - The proof lane proved the step at the demo HE profile (N = 8192) with the truncation intervals proved. The native bundle is byte-identical to Python's (sha256 052e5156…) and verifies both ways (notes/dark-learning-gen6/proof.md §6, commit 6c20f284).
+  - The harness reference for that profile is committed: native_ref_results/native_ref_N8192_L3_F118_d64_GEN6.json, transcript 1fc6dc13…
+  - darkstep equals it (`--test program` gen6_equals_native_ref_demo_profile), as it equals the N = 4096 one.
