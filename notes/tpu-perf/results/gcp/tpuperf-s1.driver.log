@@ -1,0 +1,99 @@
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone - --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-s1 --zone us-central1-a --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-us-central1
+Create request issued for: [tpuperf-s1]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-central1-a/operations/operation-1794006995147-65fa3cdab9b4e-05dad547-4d37d80e] to complete...
+.......................................................................................................................................failed.
+ERROR: (gcloud.compute.tpus.tpu-vm.create) {
+  "code": 8,
+  "message": "There is no more capacity in the zone \"us-central1-a\"; you can try in another zone where Cloud TPU Nodes are offered (see https://cloud.google.com/tpu/docs/regions) [EID: 0x45d778f0d2e89d66]"
+}
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-central1-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-s1 --zone us-east5-a --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-us-east5
+Create request issued for: [tpuperf-s1]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east5-a/operations/operation-1794007033979-65fa3cffc22ac-a396fc1e-d5a9e94b] to complete...
+......................failed.
+ERROR: (gcloud.compute.tpus.tpu-vm.create) {
+  "code": 5,
+  "message": "Reservation not found"
+}
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-east5-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-s1 --zone us-east5-b --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-us-east5
+Create request issued for: [tpuperf-s1]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east5-b/operations/operation-1794007045235-65fa3d0a7e393-fc748b1f-b272ffcc] to complete...
+.....................failed.
+ERROR: (gcloud.compute.tpus.tpu-vm.create) {
+  "code": 8,
+  "message": "Insufficient capacity. Try again in a different zone or at a later time.  [EID: 0xe220e68ec519899c]"
+}
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-east5-b --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-s1 --zone us-east5-c --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-us-east5
+Create request issued for: [tpuperf-s1]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east5-c/operations/operation-1794007056405-65fa3d15254a2-a1a7d9b5-52b6d21b] to complete...
+......................failed.
+ERROR: (gcloud.compute.tpus.tpu-vm.create) {
+  "code": 5,
+  "message": "Reservation not found"
+}
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-east5-c --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-s1 --zone us-east1-c --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-us-east1
+Create request issued for: [tpuperf-s1]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east1-c/operations/operation-1794007067039-65fa3d1f496b7-11e32d06-f37daf87] to complete...
+...........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................done.
+Created tpu [tpuperf-s1].
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/bundle.tgz tpuperf-s1:bundle.tgz
+Propagating SSH public key to all TPU workers...
+...................................................................done.
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
+Warning: Permanently added 'tpu.9144014805510806474-0-aiatr8' (ED25519) to the list of known hosts.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm ssh tpuperf-s1 --zone us-east1-c --command python3 --version; mkdir -p b && tar xzf bundle.tgz -C b && (pip install -q 'jax[tpu]==0.12.0.1' || pip install -q -U 'jax[tpu]') 2>&1 | tail -3; python3 -c 'import jax; print(jax.__version__, 
+Python 3.10.12
+ERROR: No matching distribution found for jax[tpu]==0.12.0.1
+  WARNING: The scripts f2py and numpy-config are installed in '/home/ember/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+0.6.2 [TpuDevice(id=0, process_index=0, coords=(0,0,0), core_on_chip=0)]
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm ssh tpuperf-s1 --zone us-east1-c --command cd b && ACCEL_RESULTS=$HOME/b/results.json timeout 3734 bash session.sh > run.log 2>&1; echo RC=$?; tail -40 run.log
+RC=1
+CALIB_RC=0
+The virtual environment was not created successfully because ensurepip is not
+available.  On Debian/Ubuntu systems, you need to install the python3-venv
+package using the following command.
+
+    apt install python3.10-venv
+
+You may need to use sudo with that command.  After installing the python3-venv
+package, recreate your virtual environment.
+
+Failing command: /tmp/er/bin/python3
+
+ER_PIP_RC=1
+ER_RC=1
+KERNELS_RC=0
+tail: option used in invalid context -- 5
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/calib02.json /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/calib02.json
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/calib02.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/calib02.log
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/g2-tpu.json /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/g2-tpu.json
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/er.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/er.log
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/er-pip.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/er-pip.log
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/kernels.json /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/kernels.json
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/kernels.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/kernels.log
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c tpuperf-s1:b/run.log /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s1/run.log
+ERROR: (gcloud.compute.tpus.tpu-vm.scp) This TPU has state "DELETING", so it cannot be currently connected to.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm delete tpuperf-s1 --zone us-east1-c --quiet
+Delete request issued for: [tpuperf-s1]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east1-c/operations/operation-1794007354523-65fa3e3174035-1031fb64-eeac7208] to complete...
+...........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................done.
+Deleted tpu [tpuperf-s1].
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-east1-c --format=value(name)
+{"name": "tpuperf-s1", "outcome": "created in us-east1-c after us-central1-a:capacity, us-east5-a:}, us-east5-b:capacity, us-east5-c:}; rc 1", "gone": true, "hours": 0.1896113422222222, "cost": 0.06813285398936889, "cumulative": 0.06813285398936889}

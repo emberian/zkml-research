@@ -1,0 +1,620 @@
+[
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "cublas_i8_8192",
+  "pred_s": 0.35001930594444275,
+  "tiles": [
+   64.0,
+   8192.0,
+   128.0
+  ],
+  "t4_measured_s": 0.0249889,
+  "ratio": 14.006991341933528
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "cublas_f16_8192",
+  "pred_s": 0.35001930594444275,
+  "tiles": [
+   64.0,
+   8192.0,
+   128.0
+  ],
+  "t4_measured_s": 0.0347947,
+  "ratio": 10.05955809202099
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p20",
+  "pred_s": 0.0016976632177829742,
+  "tiles": [
+   32.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.000404,
+  "ratio": 4.202136677680629
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p22",
+  "pred_s": 0.0071905506774783134,
+  "tiles": [
+   32.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.001592,
+  "ratio": 4.516677561230096
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p24",
+  "pred_s": 0.03165919706225395,
+  "tiles": [
+   32.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.005398,
+  "ratio": 5.864986488005549
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p25",
+  "pred_s": 0.06840302795171738,
+  "tiles": [
+   64.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.013832,
+  "ratio": 4.945273854230579
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "gptoss_gateup_T2048",
+  "pred_s": 0.012058185413479805,
+  "tiles": [
+   64.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "gptoss_down_T2048",
+  "pred_s": 0.006729982793331146,
+  "tiles": [
+   64.0,
+   2944.0,
+   128.0
+  ]
+ },
+ {
+  "device": "T4",
+  "variant": "fp32_config",
+  "shape": "gptoss_gateup_T256",
+  "pred_s": 0.0014275049325078726,
+  "tiles": [
+   32.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "cublas_i8_8192",
+  "pred_s": 0.010142181068658829,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ],
+  "t4_measured_s": 0.0249889,
+  "ratio": 0.4058674478932177
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "cublas_f16_8192",
+  "pred_s": 0.010142181068658829,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ],
+  "t4_measured_s": 0.0347947,
+  "ratio": 0.2914863777718684
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p20",
+  "pred_s": 0.0011423806427046657,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.000404,
+  "ratio": 2.8276748581798654
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p22",
+  "pred_s": 0.004194109700620174,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.001592,
+  "ratio": 2.6344910179774965
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p24",
+  "pred_s": 0.015283608809113503,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.005398,
+  "ratio": 2.8313465744930535
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p25",
+  "pred_s": 0.031039945781230927,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ],
+  "t4_measured_s": 0.013832,
+  "ratio": 2.2440677979490258
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_gateup_T2048",
+  "pred_s": 0.0009498181752860546,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_down_T2048",
+  "pred_s": 0.0005393563187681139,
+  "tiles": [
+   128.0,
+   2944.0,
+   128.0
+  ]
+ },
+ {
+  "device": "T4",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_gateup_T256",
+  "pred_s": 0.000623116095084697,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "cublas_i8_8192",
+  "pred_s": 0.06114315986633301,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "cublas_f16_8192",
+  "pred_s": 0.06114315986633301,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p20",
+  "pred_s": 0.0006771718617528677,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p22",
+  "pred_s": 0.002900802530348301,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p24",
+  "pred_s": 0.011435103602707386,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p25",
+  "pred_s": 0.025229092687368393,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "gptoss_gateup_T2048",
+  "pred_s": 0.004306708462536335,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "gptoss_down_T2048",
+  "pred_s": 0.002213115803897381,
+  "tiles": [
+   128.0,
+   2944.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "fp32_config",
+  "shape": "gptoss_gateup_T256",
+  "pred_s": 0.0011144191958010197,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "cublas_i8_8192",
+  "pred_s": 0.004900181200355291,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "cublas_f16_8192",
+  "pred_s": 0.004900181200355291,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p20",
+  "pred_s": 0.00024141822359524667,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p22",
+  "pred_s": 0.0010631389450281858,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p24",
+  "pred_s": 0.00543380668386817,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p25",
+  "pred_s": 0.012165959924459457,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_gateup_T2048",
+  "pred_s": 0.0005569809582084417,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_down_T2048",
+  "pred_s": 0.0002868007286451757,
+  "tiles": [
+   128.0,
+   2944.0,
+   128.0
+  ]
+ },
+ {
+  "device": "A100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_gateup_T256",
+  "pred_s": 0.0010603285627439618,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "cublas_i8_8192",
+  "pred_s": 0.02454245835542679,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "cublas_f16_8192",
+  "pred_s": 0.02454245835542679,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p20",
+  "pred_s": 0.00028803086024709046,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p22",
+  "pred_s": 0.0010024179937317967,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p24",
+  "pred_s": 0.004126242361962795,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "bb8_ip_2p25",
+  "pred_s": 0.008822491392493248,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "gptoss_gateup_T2048",
+  "pred_s": 0.0012169526889920235,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "gptoss_down_T2048",
+  "pred_s": 0.0006660447688773274,
+  "tiles": [
+   128.0,
+   2944.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "fp32_config",
+  "shape": "gptoss_gateup_T256",
+  "pred_s": 0.0004361339670140296,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "cublas_i8_8192",
+  "pred_s": 0.0015275337500497699,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "cublas_f16_8192",
+  "pred_s": 0.0015275337500497699,
+  "tiles": [
+   128.0,
+   8192.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p20",
+  "pred_s": 0.0001395100844092667,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p22",
+  "pred_s": 0.0005886536091566086,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p24",
+  "pred_s": 0.0029442606028169394,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "bb8_ip_2p25",
+  "pred_s": 0.0064623998478055,
+  "tiles": [
+   128.0,
+   32.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_gateup_T2048",
+  "pred_s": 0.00019245516159571707,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_down_T2048",
+  "pred_s": 0.00011177331180078909,
+  "tiles": [
+   128.0,
+   2944.0,
+   128.0
+  ]
+ },
+ {
+  "device": "H100",
+  "variant": "tensor_peak_as_SingleFLOPs",
+  "shape": "gptoss_gateup_T256",
+  "pred_s": 0.0007978694629855454,
+  "tiles": [
+   128.0,
+   5760.0,
+   128.0
+  ]
+ }
+]

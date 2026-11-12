@@ -1,0 +1,416 @@
+[
+ {
+  "kernel": "rns_ntt61",
+  "cfg": "N8192_B1024",
+  "gen": "v5e",
+  "params": {
+   "B": 1024,
+   "N": 8192,
+   "N1": 64
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 103079215104
+   },
+   "vpu_elems": {
+    "32": 3288334464
+   },
+   "vpu_by_op": {
+    "add:i32": 838860816,
+    "and:i32": 553648128,
+    "shift_right_arithmetic:i32": 536870912,
+    "select:i32": 402653200,
+    "subtract:i32": 268435456,
+    "convert:i32": 201326608,
+    "xor:ui8": 134217728,
+    "multiply:i32": 134217728,
+    "multiply:f32": 83886080,
+    "add:f32": 50331648,
+    "compare:i32": 33554480,
+    "floor:f32": 16777216
+   },
+   "move_elems": 3036742176,
+   "hbm_in": 134479872,
+   "hbm_out": 67108864,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0005352106875,
+   "unit": "vpu",
+   "per_unit_s": {
+    "mxu": 0.0005232447467208122,
+    "vpu": 0.0005352106875,
+    "hbm": 0.0002458399219512195
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     2,
+     256
+    ],
+    "issues": [],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 512]",
+      "block": [
+       8,
+       32,
+       512
+      ],
+      "bytes": 131072
+     },
+     {
+      "array": "int8[512, 131072]",
+      "block": [
+       512,
+       512
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int32[8, 64, 1]",
+      "block": [
+       8,
+       32,
+       1
+      ],
+      "bytes": 1024
+     },
+     {
+      "array": "int8[8, 64, 131072]",
+      "block": [
+       8,
+       32,
+       512
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 1050624,
+    "vmem_limit": 16777216,
+    "steps": 512,
+    "macs_per_step": 67108864
+   },
+   {
+    "name": "None",
+    "grid": [
+     64,
+     4
+    ],
+    "issues": [],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 1024, 128]",
+      "block": [
+       8,
+       1,
+       256,
+       128
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int8[64, 8, 128, 1024]",
+      "block": [
+       1,
+       8,
+       128,
+       1024
+      ],
+      "bytes": 1048576
+     },
+     {
+      "array": "int32[64, 8, 128]",
+      "block": [
+       1,
+       8,
+       128
+      ],
+      "bytes": 4096
+     },
+     {
+      "array": "int8[64, 8, 1024, 128]",
+      "block": [
+       1,
+       8,
+       256,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 3153920,
+    "vmem_limit": 67108864,
+    "steps": 256,
+    "macs_per_step": 268435456
+   }
+  ],
+  "compile_s": 1.4,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": 271595008.0,
+   "optimal_seconds": 0.00036818423541262746
+  },
+  "memory": {
+   "argument_size_in_bytes": 134479872,
+   "output_size_in_bytes": 67108864,
+   "temp_size_in_bytes": 67205632,
+   "generated_code_size_in_bytes": 1027072
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ ENTRY (HBM pass)": 2,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 1736064,
+   "scoped_vmem_max": 6361088,
+   "async_prefetch": 3,
+   "n_instructions": 19,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.1",
+     "layouts": [
+      "{3,1,2,0:T(8,128)(4,1)}"
+     ],
+     "line": "%copy.3 = s8[64,8,1024,128]{3,1,2,0:T(8,128)(4,1)} copy(%bitcast.9), backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"64\",\"16\",\"1\",\"1\"],\"input_window_bounds\":[],\"estimated_cycles\":\"936256"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.1",
+     "layouts": [
+      "{3,2,1,0:T(32,128)(4,1)}"
+     ],
+     "line": "%copy.1 = s8[64,8,1024,128]{3,2,1,0:T(32,128)(4,1)} copy(%bitcast.10), backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"1\",\"8\",\"128\",\"1\"],\"input_window_bounds\":[],\"estimated_cycles\":\"7998"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "rns_ntt61",
+  "cfg": "N8192_B1024",
+  "gen": "v6e",
+  "params": {
+   "B": 1024,
+   "N": 8192,
+   "N1": 64
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 103079215104
+   },
+   "vpu_elems": {
+    "32": 3288334464
+   },
+   "vpu_by_op": {
+    "add:i32": 838860816,
+    "and:i32": 553648128,
+    "shift_right_arithmetic:i32": 536870912,
+    "select:i32": 402653200,
+    "subtract:i32": 268435456,
+    "convert:i32": 201326608,
+    "xor:ui8": 134217728,
+    "multiply:i32": 134217728,
+    "multiply:f32": 83886080,
+    "add:f32": 50331648,
+    "compare:i32": 33554480,
+    "floor:f32": 16777216
+   },
+   "move_elems": 3036742176,
+   "hbm_in": 134479872,
+   "hbm_out": 67108864,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.00012599296,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 0.00011204262511304348,
+    "hbm": 0.00012599296
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)",
+   "caveat": "VPU peak unknown for this generation: the bound omits VPU work and is a lower bound only"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     2,
+     256
+    ],
+    "issues": [],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 512]",
+      "block": [
+       8,
+       32,
+       512
+      ],
+      "bytes": 131072
+     },
+     {
+      "array": "int8[512, 131072]",
+      "block": [
+       512,
+       512
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int32[8, 64, 1]",
+      "block": [
+       8,
+       32,
+       1
+      ],
+      "bytes": 1024
+     },
+     {
+      "array": "int8[8, 64, 131072]",
+      "block": [
+       8,
+       32,
+       512
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 1050624,
+    "vmem_limit": 16777216,
+    "steps": 512,
+    "macs_per_step": 67108864
+   },
+   {
+    "name": "None",
+    "grid": [
+     64,
+     4
+    ],
+    "issues": [
+     "R2 in-kernel dot K=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 1024, 128]",
+      "block": [
+       8,
+       1,
+       256,
+       128
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int8[64, 8, 128, 1024]",
+      "block": [
+       1,
+       8,
+       128,
+       1024
+      ],
+      "bytes": 1048576
+     },
+     {
+      "array": "int32[64, 8, 128]",
+      "block": [
+       1,
+       8,
+       128
+      ],
+      "bytes": 4096
+     },
+     {
+      "array": "int8[64, 8, 1024, 128]",
+      "block": [
+       1,
+       8,
+       256,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 3153920,
+    "vmem_limit": 67108864,
+    "steps": 256,
+    "macs_per_step": 268435456
+   }
+  ],
+  "compile_s": 0.9,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": 271593568.0,
+   "optimal_seconds": 0.00016580804367549717
+  },
+  "memory": {
+   "argument_size_in_bytes": 134479872,
+   "output_size_in_bytes": 67108864,
+   "temp_size_in_bytes": 67207072,
+   "generated_code_size_in_bytes": 993280
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ ENTRY (HBM pass)": 2,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 1062016,
+   "scoped_vmem_max": 12582912,
+   "async_prefetch": 3,
+   "n_instructions": 19,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.1",
+     "layouts": [
+      "{3,1,2,0:T(8,128)(4,1)}"
+     ],
+     "line": "%copy.3 = s8[64,8,1024,128]{3,1,2,0:T(8,128)(4,1)} copy(%bitcast.12), backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"1\",\"1024\",\"1\",\"1\"],\"input_window_bounds\":[],\"estimated_cycles\":\"5668"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.1",
+     "layouts": [
+      "{3,2,1,0:T(32,128)(4,1)}"
+     ],
+     "line": "%copy.1 = s8[64,8,1024,128]{3,2,1,0:T(32,128)(4,1)} copy(%bitcast.9), backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"1\",\"8\",\"128\",\"1\"],\"input_window_bounds\":[],\"estimated_cycles\":\"49516"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ }
+]

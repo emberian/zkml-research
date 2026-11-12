@@ -1,0 +1,7 @@
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-calib-02 --zone us-west4-a --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot
+ERROR: (gcloud.compute.tpus.tpu-vm.create) INVALID_ARGUMENT: Cloud TPU received a bad request. The value "default" provided for field "Network" does not exist. See "https://cloud.google.com/vpc/docs/create-modify-vpc-networks" for more information: invalid argument; The value "default" provided for field "Subnetwork" does not exist. See "https://cloud.google.com/vpc/docs/create-modify-vpc-networks" for more information: invalid argument [EID: 0xdc2f898bfd378baf]
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
+{"name": "tpuperf-calib-02", "outcome": "create failed: ERROR: (gcloud.compute.tpus.tpu-vm.create) INVALID_ARGUMENT: Cloud TPU received a bad request. The value \"default\" provi", "gone": true, "hours": 0.003948953055555556, "cost": 0.0, "cumulative": 0.0}

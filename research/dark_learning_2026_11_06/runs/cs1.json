@@ -1,0 +1,77 @@
+{
+ "name": "cs1",
+ "out": "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/runs",
+ "prof": [
+  16384,
+  4,
+  175,
+  4096
+ ],
+ "t": 2305843009210515457,
+ "gate": 309,
+ "program": "gen6",
+ "steps": 1,
+ "flags": [
+  "--ret-primes",
+  "2",
+  "--ret-round",
+  "--timeout",
+  "7200",
+  "--test-keep-shares",
+  "--nat",
+  "2",
+  "--rs"
+ ],
+ "genesis_cfg": "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/train_genesis_gen6.json",
+ "custodian": "dl-custodian",
+ "ssh_config": "/Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/runs/dl-cloud.ssh_config",
+ "seats": [
+  {
+   "host": "dregg-forge",
+   "root": "/srv/lanes/dl-gen6-deploy",
+   "bin": "/srv/lanes/dl-gen6-deploy/ws-target-t13/release",
+   "scope": "systemd-run --scope -p MemoryMax=12G",
+   "addr": "178.105.4.114:28700",
+   "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+   "tape": "/srv/lanes/dl-gen6-deploy/cs1/seat0/deal/tape_0.bin",
+   "consumed_log": "/srv/lanes/dl-gen6-deploy/cs1/consumed-test.jsonl"
+  },
+  {
+   "host": "bb2",
+   "root": "/home/build/lanes/dl-gen6-deploy",
+   "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-t13/release",
+   "scope": "systemd-run --user --scope -p MemoryMax=12G",
+   "addr": "2.31.77.40:28701",
+   "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+   "tape": "/home/build/lanes/dl-gen6-deploy/cs1/seat1/deal/tape_1.bin",
+   "consumed_log": "/home/build/lanes/dl-gen6-deploy/cs1/consumed-test.jsonl"
+  },
+  {
+   "host": "dl-cloud",
+   "root": "/srv/lanes/dl-gen6-deploy",
+   "bin": "/srv/lanes/dl-gen6-deploy/ws-target-t13/release",
+   "scope": "systemd-run --scope -p MemoryMax=16G",
+   "addr": "0.0.0.0:28702",
+   "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500",
+   "tape": "/srv/lanes/dl-gen6-deploy/cs1/seat2/deal/tape_2.bin",
+   "consumed_log": "/srv/lanes/dl-gen6-deploy/cs1/consumed-test.jsonl"
+  }
+ ],
+ "owner": {
+  "host": "bb2",
+  "root": "/home/build/lanes/dl-gen6-deploy",
+  "bin": "/home/build/lanes/dl-gen6-deploy/ws-target-t13/release",
+  "scope": "systemd-run --user --scope -p MemoryMax=8G",
+  "addr": "2.31.77.40:28709",
+  "test_public": "/home/build/lanes/dl-gen6-deploy/cs1/seat1/deal"
+ },
+ "bundle_bytes": 0,
+ "disk": {
+  "lookahead": 0
+ },
+ "nightly": {
+  "host": "dl-cloud",
+  "stop": "TBD",
+  "cont": "TBD"
+ }
+}

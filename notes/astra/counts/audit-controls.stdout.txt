@@ -1,0 +1,45 @@
+SPACE ENUMERATION
+compatible points: 76248
+
+SPACE AUDIT TENSOR ELIGIBILITY
+original U1 crypto/proxy: 3.202079721514152e-05 6.341519502246437e-05
+per-request mults / audit mults: 5629583065.462365 56295830.65462365
+corrected U1 crypto/proxy: 3.258867909915832e-05 6.398307690648117e-05
+corrected/original: 1.0089549812756333
+per-request unchanged: True
+SASH/U1 old and corrected: 675.4596824051914 669.4646390973758
+
+BF16 ROUNDING PATH COUNTEREXAMPLE
+x = 1 + 2^-8 + 2^-30: 1.0039062509313226
+direct nearest bf16 code by exact rational distances: 0x3f81
+existing float64 -> float32 -> bf16 code: 0x3f80
+
+ACTIVATION CANCELLATION CONTROLS
+sigmoid derivative input 40.0 current 0.0 0x0 algebraically equivalent stable evaluation 4.248354255291589e-18 0x229d
+tanh derivative input 20.0 current 0.0 0x0 algebraically equivalent stable evaluation 1.6993417021166355e-17 0x239d
+GELU value input -10.0 current -0.0 0x8000 algebraically equivalent stable evaluation -7.619853024160593e-23 0x9ab8
+Stable controls expose mismatch; they are not a certified exact-real census.
+
+DARK SIGNED-RANGE CONTROL
+full signed 4x8-bit magnitudes 8,128: 504
+symmetric magnitudes 7,127: 580
+full signed 4x4-bit magnitudes 8,8: 8064
+symmetric magnitudes 7,7 (current script): 10532
+current claimed-control LHS (with unexplained +137): 503 asserts only <=604
+
+MMA REPRESENTATION CONTROL
+generic p=67 base13 signed helper says limbs: 2 but 65 representable: False
+least-absolute representatives: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: -8, 6: 6, 7: -6, 8: 8, 9: -4, 10: -3, 11: -2, 12: -1} max magnitude: 8
+M31 L= 9 upper bound on last quotient= 3 all terminal values representable= True
+BabyBear L= 9 upper bound on last quotient= 3 all terminal values representable= True
+KoalaBear L= 9 upper bound on last quotient= 3 all terminal values representable= True
+Goldilocks L= 18 upper bound on last quotient= 2 all terminal values representable= True
+For that explicit encoder max digit product is 64; conservative <2^24 bound: 262143
+
+DARK RANGE-INVARIANT COUNTEREXAMPLE
+row gates: {'pq': True, 'depth': True, 'wrap': True, 'read': True} W0= 7 W1= 56 initial dot= 200704 next dot= 1605632 centered cap= 516096
+A cap on accumulated state modulo t is not the fixed 4-bit operand invariant used by matvec_tiles.
+
+OMITTED ENVELOPE COMPUTATION
+fhe+mpc-boundary env_ctct 1024 host increment 6543114240.0 fraction 0.00960981679746695
+mpc-only env square triples 4194304 host increment 423624704 fraction 0.12484548825710753 online increment 25165824 fraction 0.18181818181818182

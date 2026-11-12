@@ -1,0 +1,19 @@
+RC=1
+CALIB_RC=0
+The virtual environment was not created successfully because ensurepip is not
+available.  On Debian/Ubuntu systems, you need to install the python3-venv
+package using the following command.
+
+    apt install python3.10-venv
+
+You may need to use sudo with that command.  After installing the python3-venv
+package, recreate your virtual environment.
+
+Failing command: /tmp/er/bin/python3
+
+ER_PIP_RC=1
+ER_RC=1
+KERNELS_RC=0
+tail: option used in invalid context -- 5
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...

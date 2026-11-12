@@ -10,6 +10,7 @@ logged in VAST-LEDGER.md; refuse when total spend would exceed $25.
     python3 vast_box.py cpu-offers [--cores 16 --ram-gb 24 --mbit 500 --tb-up 0.6 --tb-down 1.2 --hours 24]
     python3 vast_box.py hold --offer ID --label NAME --max-hours H --max-usd X --out DIR [--alias A] [--disk GB]
                              (a box held for hours: OUT/ssh.json + OUT/ssh_config; touch OUT/RELEASE to destroy it)
+    python3 vast_box.py adopt --out DIR --label NAME --max-usd X   (a newer watch over a held box; see adopt())
     python3 vast_box.py list                         (our instances; should be empty between runs)
     python3 vast_box.py destroy --id N               (manual; verifies absence)
 
@@ -185,7 +186,7 @@ def rent(a):
     rate = float(o["dph_total"])
     hours = min(a.max_hours, a.max_usd / rate)
     log(f"offer {a.offer}: {o['gpu_name']} ${rate:.3f}/h; watchdog {hours * 60:.0f} min (cap ${a.max_usd:.2f}); credit ${c0:.2f}")
-    body = {"client_id": "me", "image": a.image, "disk": a.disk, "runtype": "ssh_direct ssh_proxy",
+    body = {"client_id": "me", "image": a.image, "disk": a.disk, "runtype": getattr(a, "runtype", "ssh_direct ssh_proxy"),
             "label": a.label, "onstart": "touch /root/onstart.ok"}
     r = api("PUT", f"/asks/{a.offer}/", body)
     iid = r.get("new_contract")
@@ -246,28 +247,97 @@ def wait_ssh(iid, a, state, deadline, t0):
 
 
 def close(iid, o, rate, a, c0, t0, state):
-    """Destroy, verify absence, write the ledger's end row (credit drop measured through the API)."""
+    """Destroy, verify absence, write the ledger's end row. Its cost is this instance's own charges (own_cost, read
+    just before the destroy); the account's credit drop is beside it, as other lanes' boxes share the account."""
+    own = None
+    try:
+        inst = api("GET", f"/instances/{iid}/").get("instances") or {}
+        own = own_cost(inst, t0) if inst else None
+    except Exception as e:
+        log("own cost:", str(e)[:160])
     gone = destroy(iid)
     t1 = now()
     time.sleep(30)
     c1 = credit()
     est = rate * (t1 - t0).total_seconds() / 3600
+    cost = own if own is not None else max(c0 - c1, 0)
     ledger(["end", t1.strftime("%Y-%m-%d %H:%MZ"), iid, f"{a.offer} {o['gpu_name']}", f"{rate:.3f}", a.label,
-            f"${max(c0 - c1, 0):.2f}",
-            f"est ${est:.2f} over {(t1 - t0).total_seconds() / 60:.1f} min; destroyed+verified {gone}; "
+            f"${cost:.2f}",
+            f"own cost {'measured' if own is not None else 'unavailable: credit drop'}; est ${est:.2f} over "
+            f"{(t1 - t0).total_seconds() / 60:.1f} min; account credit drop ${max(c0 - c1, 0):.2f}; destroyed+verified {gone}; "
             f"reason {state['reason'] or 'ok'}; credit after ${c1:.2f}"])
-    log(f"END instance {iid}: verified gone {gone}; est ${est:.2f}; credit ${c0:.2f} -> ${c1:.2f}")
+    log(f"END instance {iid}: verified gone {gone}; own cost {cost:.2f}; credit ${c0:.2f} -> ${c1:.2f}")
     if not gone:
         log("!!! INSTANCE NOT VERIFIED GONE: destroy by hand and tell ember")
         sys.exit(2)
 
 
+ACCOUNT_START = 27.70   # ember's credit on 2026-11-06; TOTAL_CAP applies to the account's spend from it
+
+
+def own_cost(inst, t0):
+    """This instance's own charges: its hourly total (storage included) over the time since t0, plus its billed bytes
+    at its per-GB prices (inet_*_billed is in MB). Never the account's credit drop, which other lanes' boxes share."""
+    h = (time.time() - t0.timestamp()) / 3600
+    bw = ((inst.get("inet_up_billed") or 0) * (inst.get("inet_up_cost") or 0)
+          + (inst.get("inet_down_billed") or 0) * (inst.get("inet_down_cost") or 0)) / 1024
+    return float(inst.get("dph_total") or 0) * h + bw
+
+
+def write_ssh(a, out, iid, o, rate, host, port, deadline, c0):
+    inst = api("GET", f"/instances/{iid}/").get("instances") or {}
+    info = {"instance": iid, "offer": a.offer, "host": host, "port": port, "user": "root",
+            "public_ip": (inst.get("public_ipaddr") or "").strip(), "rate_usd_h": rate,
+            "geolocation": o.get("geolocation"), "cpu": o.get("cpu_name"), "cores": o.get("cpu_cores_effective"),
+            "ram_mb": o.get("cpu_ram"), "inet_up_usd_tb": 1000 * (o.get("inet_up_cost") or 0),
+            "inet_down_usd_tb": 1000 * (o.get("inet_down_cost") or 0), "ports": inst.get("ports"),
+            "known_hosts": str(KNOWN), "deadline_utc": dt.datetime.fromtimestamp(deadline, dt.timezone.utc).isoformat(),
+            "max_usd": a.max_usd, "credit_before": c0}
+    (out / "ssh.json").write_text(json.dumps(info, indent=1) + "\n")
+    (out / "ssh_config").write_text(
+        f"Host {a.alias}\n\tHostname {host}\n\tPort {port}\n\tUser root\n\tIdentityFile {SSH_KEY}\n"
+        f"\tIdentitiesOnly yes\n\tUserKnownHostsFile {KNOWN}\n\tStrictHostKeyChecking yes\n"
+        f"\tServerAliveInterval 30\n\tServerAliveCountMax 6\n")
+    return info
+
+
+def watch(iid, a, state, deadline, t0, out):
+    """Until a stop condition: OUT/RELEASE, the wall clock, this instance's own cost >= --max-usd (own_cost), the
+    account's spend from ACCOUNT_START reaching TOTAL_CAP (ember's stop, whoever spent it), or the instance leaving
+    "running"."""
+    last = 0.0
+    while True:
+        if (out / "RELEASE").exists():
+            state["reason"] = "released"
+            return
+        if time.time() > deadline:
+            state["reason"] = "watchdog"
+            return
+        if time.time() - last > 300:
+            last = time.time()
+            try:
+                inst = api("GET", f"/instances/{iid}/").get("instances") or {}
+                cost, acct = own_cost(inst, t0), ACCOUNT_START - credit()
+                st = inst.get("actual_status")
+                log(f"held: {st}; own cost ${cost:.2f} of ${a.max_usd:.2f}; account spend ${acct:.2f} of ${TOTAL_CAP:.2f}")
+                if cost >= a.max_usd:
+                    state["reason"] = f"spend cap (own cost ${cost:.2f})"
+                    return
+                if acct >= TOTAL_CAP:
+                    state["reason"] = f"account stop (spend ${acct:.2f})"
+                    return
+                if st not in ("running", None):
+                    state["reason"] = f"instance {st}"
+                    return
+            except Exception as e:
+                log("watch:", str(e)[:200])
+        time.sleep(20)
+
+
 def hold(a):
     """A box held for hours (a custodian seat): rent it, write its ssh details to OUT/ssh.json and an ssh config block
-    (Host --alias) to OUT/ssh_config, then watch it. It is destroyed (and its absence verified) at the first of: the
-    wall clock (--max-hours, or --max-usd / rate), the spend cap measured as the credit drop through the API (billed
-    bandwidth included) or as rate x elapsed, the file OUT/RELEASE (touch it to give the box back), SIGTERM / SIGINT,
-    or the instance leaving the running state. Start it detached with a PID file (nohup ... & echo $! > hold.pid)."""
+    (Host --alias) to OUT/ssh_config, then watch it (watch()). It is destroyed and its absence verified at the first
+    stop condition, or on SIGTERM / SIGINT. Start it detached with a PID file (nohup ... & echo $! > hold.pid)."""
     out = pathlib.Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "RELEASE").unlink(missing_ok=True)
@@ -280,48 +350,10 @@ def hold(a):
     deadline = time.time() + hours * 3600
     try:
         host, port = wait_ssh(iid, a, state, deadline, t0)
-        inst = api("GET", f"/instances/{iid}/").get("instances") or {}
-        info = {"instance": iid, "offer": a.offer, "host": host, "port": port, "user": "root",
-                "public_ip": (inst.get("public_ipaddr") or "").strip(), "rate_usd_h": rate,
-                "geolocation": o.get("geolocation"), "cpu": o.get("cpu_name"), "cores": o.get("cpu_cores_effective"),
-                "ram_mb": o.get("cpu_ram"), "inet_up_usd_tb": 1000 * (o.get("inet_up_cost") or 0),
-                "inet_down_usd_tb": 1000 * (o.get("inet_down_cost") or 0), "ports": inst.get("ports"),
-                "known_hosts": str(KNOWN), "deadline_utc": dt.datetime.fromtimestamp(deadline, dt.timezone.utc).isoformat(),
-                "max_usd": a.max_usd, "credit_before": c0}
-        (out / "ssh.json").write_text(json.dumps(info, indent=1) + "\n")
-        (out / "ssh_config").write_text(
-            f"Host {a.alias}\n\tHostname {host}\n\tPort {port}\n\tUser root\n\tIdentityFile {SSH_KEY}\n"
-            f"\tIdentitiesOnly yes\n\tUserKnownHostsFile {KNOWN}\n\tStrictHostKeyChecking yes\n"
-            f"\tServerAliveInterval 30\n\tServerAliveCountMax 6\n")
+        info = write_ssh(a, out, iid, o, rate, host, port, deadline, c0)
         log(f"HELD: ssh root@{host} -p {port} (alias {a.alias} in {out / 'ssh_config'}) up after "
             f"{(now() - t0).total_seconds():.0f} s; destroyed at {info['deadline_utc']} at the latest")
-        last_credit = 0.0
-        while True:
-            if (out / "RELEASE").exists():
-                state["reason"] = "released"
-                break
-            if time.time() > deadline:
-                state["reason"] = "watchdog"
-                break
-            est = rate * (time.time() - t0.timestamp()) / 3600
-            if est >= a.max_usd:
-                state["reason"] = f"spend cap (estimate ${est:.2f})"
-                break
-            if time.time() - last_credit > 300:
-                last_credit = time.time()
-                try:
-                    drop = c0 - credit()
-                    if drop >= a.max_usd:
-                        state["reason"] = f"spend cap (credit drop ${drop:.2f})"
-                        break
-                    st = (api("GET", f"/instances/{iid}/").get("instances") or {}).get("actual_status")
-                    log(f"held: {st}; credit drop ${drop:.2f}, estimate ${est:.2f} of ${a.max_usd:.2f}")
-                    if st not in ("running", None):
-                        state["reason"] = f"instance {st}"
-                        break
-                except Exception as e:
-                    log("watch:", str(e)[:200])
-            time.sleep(20)
+        watch(iid, a, state, deadline, t0, out)
         state["rc"] = 0
     except BaseException as e:
         state["reason"] = state["reason"] or repr(e)[:200]
@@ -329,6 +361,40 @@ def hold(a):
     finally:
         log("releasing:", state["reason"])
         close(iid, o, rate, a, c0, t0, state)
+
+
+def adopt(a):
+    """Take over the watch of a box a previous `hold` rented (OUT/ssh.json names it), e.g. to run a newer watch:
+    the old hold process is stopped first with SIGKILL by its PID (its finally would destroy the box). The deadline
+    and the start time stay those of the rental (the ledger's start row); the end row is written as by hold."""
+    out = pathlib.Path(a.out)
+    info = json.loads((out / "ssh.json").read_text())
+    iid = int(info["instance"])
+    live = [i for i in instances() if i.get("id") == iid]
+    if not live:
+        sys.exit(f"instance {iid} is not on the account")
+    inst = live[0]
+    t0 = dt.datetime.fromtimestamp(float(inst["start_date"]), dt.timezone.utc)
+    deadline = dt.datetime.fromisoformat(info["deadline_utc"]).timestamp()
+    o = {"gpu_name": inst.get("gpu_name")}
+    a.offer, a.max_usd = info["offer"], min(a.max_usd, info["max_usd"])
+    global KNOWN
+    KNOWN = pathlib.Path(info["known_hosts"])
+    state = {"rc": None, "reason": None}
+
+    def on_term(sig, frm):
+        raise KeyboardInterrupt(f"signal {sig}")
+    signal.signal(signal.SIGTERM, on_term)
+    log(f"ADOPTED instance {iid} (started {t0.isoformat()}); destroyed at {info['deadline_utc']} at the latest")
+    try:
+        watch(iid, a, state, deadline, t0, out)
+        state["rc"] = 0
+    except BaseException as e:
+        state["reason"] = state["reason"] or repr(e)[:200]
+        log("ERROR / interrupt:", state["reason"])
+    finally:
+        log("releasing:", state["reason"])
+        close(iid, o, float(inst.get("dph_total") or 0), a, float(info["credit_before"]), t0, state)
 
 
 def run(a):
@@ -399,6 +465,7 @@ def main():
     p.add_argument("--offer", type=int, required=True)
     p.add_argument("--label", required=True)
     p.add_argument("--alias", default="vast-held")
+    p.add_argument("--runtype", default="ssh_direct ssh_proxy", help="a VM offer (vms_enabled; image docker.io/vastai/kvm:...) takes ssh_direct")
     p.add_argument("--max-hours", type=float, required=True)
     p.add_argument("--max-usd", type=float, required=True)
     p.add_argument("--out", required=True)
@@ -406,6 +473,10 @@ def main():
     p.add_argument("--disk", type=int, default=60)
     p.add_argument("--boot-timeout", type=int, default=1200)
     p.add_argument("--ssh-timeout", type=int, default=300)
+    p = sub.add_parser("adopt")
+    p.add_argument("--out", required=True)
+    p.add_argument("--label", required=True)
+    p.add_argument("--max-usd", type=float, required=True)
     p = sub.add_parser("cpu-offers")
     p.add_argument("--cores", type=float, default=16); p.add_argument("--ram-gb", type=float, default=24)
     p.add_argument("--mbit", type=float, default=500); p.add_argument("--tb-up", type=float, default=0.6)
@@ -431,6 +502,8 @@ def main():
             print(i.get("id"), i.get("gpu_name"), i.get("actual_status"), i.get("dph_total"), i.get("label"))
     elif a.cmd == "hold":
         hold(a)
+    elif a.cmd == "adopt":
+        adopt(a)
     elif a.cmd == "cpu-offers":
         cpu_offers(a)
     elif a.cmd == "destroy":

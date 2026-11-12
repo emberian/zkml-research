@@ -1,0 +1,962 @@
+[
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "gateup_T256",
+  "gen": "v5e",
+  "params": {
+   "T": 256,
+   "K": 2880,
+   "N": 5760
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 4246732800
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 17326080,
+   "hbm_out": 5898240,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 2.8322341463414633e-05,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 2.15570192893401e-05,
+    "vpu": 0.0,
+    "hbm": 2.8322341463414633e-05
+   }
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     1,
+     45,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[256, 2880]",
+      "block": [
+       256,
+       2880
+      ],
+      "bytes": 737280
+     },
+     {
+      "array": "int8[2880, 5760]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[256, 5760]",
+      "block": [
+       256,
+       128
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 2605056,
+    "vmem_limit": 16777216,
+    "steps": 45,
+    "macs_per_step": 94371840
+   },
+   {
+    "name": "None",
+    "grid": [
+     1,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[256, 2880]",
+      "block": [
+       256,
+       2880
+      ],
+      "bytes": 737280
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[256, 128]",
+      "block": [
+       256,
+       128
+      ],
+      "bytes": 131072
+     }
+    ],
+    "vmem_bytes_double_buffered": 2605056,
+    "vmem_limit": 16777216,
+    "steps": 1,
+    "macs_per_step": 94371840
+   }
+  ],
+  "compile_s": 1.0,
+  "cost_analysis": {
+   "flops": 65536.0,
+   "bytes accessed": 1884160.0,
+   "optimal_seconds": 2.5542367438902147e-06
+  },
+  "memory": {
+   "argument_size_in_bytes": 17694720,
+   "output_size_in_bytes": 5898240,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 273408
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ ENTRY (HBM pass)": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 13526,
+   "scoped_vmem_max": 999424,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 2671,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[256,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"32\",\"23\"],\"input_w"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": 9.017333333333333e-06,
+  "bound_over_compiler_est": 3.140877731415197
+ },
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "gateup_T2048",
+  "gen": "v5e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 5760
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 33973862400
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 22487040,
+   "hbm_out": 47185920,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0001724561543147208,
+   "unit": "mxu",
+   "per_unit_s": {
+    "mxu": 0.0001724561543147208,
+    "vpu": 0.0,
+    "hbm": 8.496702439024391e-05
+   }
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     4,
+     45,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 5760]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 5760]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 180,
+    "macs_per_step": 188743680
+   },
+   {
+    "name": "None",
+    "grid": [
+     4,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 128]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 4,
+    "macs_per_step": 188743680
+   }
+  ],
+  "compile_s": 0.7,
+  "cost_analysis": {
+   "flops": 524288.0,
+   "bytes accessed": 15073280.0,
+   "optimal_seconds": 2.0433893951121718e-05
+  },
+  "memory": {
+   "argument_size_in_bytes": 22855680,
+   "output_size_in_bytes": 47185920,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 420864
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ ENTRY (HBM pass)": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 85484,
+   "scoped_vmem_max": 2097152,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 8660,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"128\",\"8\"],\"input_"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": 5.6989333333333333e-05,
+  "bound_over_compiler_est": 3.0261128570502223
+ },
+ {
+  "kernel": "mxfp4_w4a8",
+  "cfg": "down_T2048",
+  "gen": "v5e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 2944
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 17364418560
+   },
+   "vpu_elems": {},
+   "vpu_by_op": {},
+   "move_elems": 0,
+   "hbm_in": 14376960,
+   "hbm_out": 24117248,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 8.814425664974619e-05,
+   "unit": "mxu",
+   "per_unit_s": {
+    "mxu": 8.814425664974619e-05,
+    "vpu": 0.0,
+    "hbm": 4.6944156097560974e-05
+   }
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     4,
+     23,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 2944]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 2944]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 92,
+    "macs_per_step": 188743680
+   },
+   {
+    "name": "None",
+    "grid": [
+     4,
+     1,
+     1
+    ],
+    "issues": [
+     "R2 in-kernel dot K=2880 not a multiple of MXU edge 128"
+    ],
+    "blocks": [
+     {
+      "array": "int8[2048, 2880]",
+      "block": [
+       512,
+       2880
+      ],
+      "bytes": 1474560
+     },
+     {
+      "array": "int8[2880, 128]",
+      "block": [
+       2880,
+       128
+      ],
+      "bytes": 368640
+     },
+     {
+      "array": "int32[2048, 128]",
+      "block": [
+       512,
+       128
+      ],
+      "bytes": 262144
+     }
+    ],
+    "vmem_bytes_double_buffered": 4472832,
+    "vmem_limit": 16777216,
+    "steps": 4,
+    "macs_per_step": 188743680
+   }
+  ],
+  "compile_s": 0.7,
+  "cost_analysis": {
+   "flops": 524288.0,
+   "bytes accessed": 15073280.0,
+   "optimal_seconds": 2.0433893951121718e-05
+  },
+  "memory": {
+   "argument_size_in_bytes": 14745600,
+   "output_size_in_bytes": 24117248,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 420864
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ ENTRY (HBM pass)": 1,
+    "custom-call": 2
+   },
+   "est_cycles_entry": 85484,
+   "scoped_vmem_max": 2097152,
+   "async_prefetch": 0,
+   "n_instructions": 17,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 8660,
+     "calls": "fused_computation.1"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "ENTRY (HBM pass)",
+     "comp": "main.2",
+     "layouts": [
+      "{1,0:T(32,128)(4,1)S(1)}"
+     ],
+     "line": "%copy.x_ref = s8[2048,2880]{1,0:T(32,128)(4,1)S(1)} copy(%x_ref.1), sharding={mesh[], [{}, {}]}, metadata={op_name=\"x\"}, backend_config={\"flag_configs\":[],\"window_config\":{\"kernel_window_bounds\":[],\"output_window_bounds\":[\"128\",\"8\"],\"input_"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.2"
+    }
+   ]
+  },
+  "compiler_est_s": 5.6989333333333333e-05,
+  "bound_over_compiler_est": 1.546679904714558
+ },
+ {
+  "kernel": "rns_ntt61",
+  "cfg": "N8192_B1024",
+  "gen": "v5e",
+  "params": {
+   "B": 1024,
+   "N": 8192,
+   "N1": 64
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 103079215104
+   },
+   "vpu_elems": {
+    "32": 3154116608
+   },
+   "vpu_by_op": {
+    "add:i32": 838860800,
+    "and:i32": 553648128,
+    "shift_right_arithmetic:i32": 536870912,
+    "subtract:i32": 268435456,
+    "select:i32": 268435456,
+    "convert:i32": 201326592,
+    "xor:ui8": 134217728,
+    "multiply:i32": 134217728,
+    "multiply:f32": 83886080,
+    "add:f32": 50331648,
+    "compare:i32": 33554432,
+    "floor:f32": 16777216
+   },
+   "move_elems": 2835677696,
+   "hbm_in": 134479872,
+   "hbm_out": 67108864,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0005232447467208122,
+   "unit": "mxu",
+   "per_unit_s": {
+    "mxu": 0.0005232447467208122,
+    "vpu": 0.0005133653333333334,
+    "hbm": 0.0002458399219512195
+   }
+  },
+  "lint": [],
+  "compile_error": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/hbox/lanes/tpu-perf/.venv/lib/python3.12/site-packages/jax/_src/compiler.py\", line 516, in compile_or_get_cached\n    return _compile_and_write_cache(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/hbox/lanes/tpu-perf/.venv/lib/python3.12/site-packages/jax/_src/compiler.py\", line 781, in _compile_and_write_cache\n    executable = backend_compile_and_load(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/hbox/lanes/tpu-perf/.venv/lib/python3.12/site-packages/jax/_src/profiler.py\", line 588, in wrapper\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/hbox/lanes/tpu-perf/.venv/lib/python3.12/site-packages/jax/_src/compiler.py\", line 412, in backend_compile_and_load\n    raise e\n  File \"/home/hbox/lanes/tpu-perf/.venv/lib/python3.12/site-packages/jax/_src/compiler.py\", line 386, in backend_compile_and_load\n    return backend.compile(  # pyrefly: ignore[bad-return]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\njax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: E1001: CompileTimeScopedVmemOom:\nRan out of memory in memory space vmem while allocating on stack for %copy.8 = s8[64,128,8,128,8]{1,3,2,4,0:T(32,128)(4,1)} copy(%bitcast), metadata={op_name=\"jit(ntt)/reshape\" stack_frame_id=53}. Scoped allocation with size 16.01M and limit 16.00M exceeded scoped vmem limit by 8.0K. It should not be possible to run out of scoped vmem - \nSee https://openxla.org/xla/errors/error_1001 for more details.\n"
+ },
+ {
+  "kernel": "sumcheck_bb4_round",
+  "cfg": "H2p22",
+  "gen": "v5e",
+  "params": {
+   "H": 4194304
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 60129542144
+   },
+   "vpu_elems": {
+    "32": 11207180288
+   },
+   "vpu_by_op": {
+    "add:i32": 1744830464,
+    "and:i32": 1140850688,
+    "shift_right_arithmetic:i32": 1073741824,
+    "shift_right_logical:ui32": 671088640,
+    "and:ui32": 671088640,
+    "convert:ui32": 671088640,
+    "xor:ui8": 671088640,
+    "subtract:i32": 536870912,
+    "select:i32": 536870912,
+    "convert:i8": 402653184,
+    "reduce:i32": 402653184,
+    "convert:i32": 335544320
+   },
+   "move_elems": 14126821440,
+   "hbm_in": 536887360,
+   "hbm_out": 269234176,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0018240853333333334,
+   "unit": "vpu",
+   "per_unit_s": {
+    "mxu": 0.0003052261022538071,
+    "vpu": 0.0018240853333333334,
+    "hbm": 0.0009830750439024391
+   }
+  },
+  "lint": [],
+  "compile_s": 10.7,
+  "cost_analysis": {
+   "flops": 133345714176.0,
+   "bytes accessed": 25196589056.0,
+   "optimal_seconds": -4.965842247009277
+  },
+  "memory": {
+   "argument_size_in_bytes": 536889344,
+   "output_size_in_bytes": 269234688,
+   "temp_size_in_bytes": 2150161408,
+   "generated_code_size_in_bytes": 50811904
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "pad @ standalone fusion (HBM pass)": 56,
+    "copy @ standalone fusion (HBM pass)": 20,
+    "copy @ in-MXU-fusion (VMEM, on the fly)": 6,
+    "copy @ ENTRY (HBM pass)": 30,
+    "custom-call": 19,
+    "while loop": 14
+   },
+   "est_cycles_entry": 98161365,
+   "scoped_vmem_max": 15859712,
+   "async_prefetch": 11,
+   "n_instructions": 2012,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 2010752,
+     "calls": "fused_computation.178"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875328,
+     "calls": "fused_computation.177"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.117"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 619008,
+     "calls": "fused_computation.7"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2010752,
+     "calls": "fused_computation.186"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875328,
+     "calls": "fused_computation.185"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.113"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 619008,
+     "calls": "fused_computation.9"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2416528,
+     "calls": "fused_computation.59"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 4974047,
+     "calls": "fused_computation.170"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875328,
+     "calls": "fused_computation.181"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.115"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 619008,
+     "calls": "fused_computation.8"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 3579345,
+     "calls": "fused_computation.57"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 4068912,
+     "calls": "fused_computation.162"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1872000,
+     "calls": "fused_computation.54"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 4974047,
+     "calls": "fused_computation.166"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875328,
+     "calls": "fused_computation.173"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.119"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 619008,
+     "calls": "fused_computation.6"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2416528,
+     "calls": "fused_computation.56"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 4068912,
+     "calls": "fused_computation.158"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1872000,
+     "calls": "fused_computation.55"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2704128,
+     "calls": "fused_computation.165"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875328,
+     "calls": "fused_computation.149"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.131"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2704128,
+     "calls": "fused_computation.169"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875328,
+     "calls": "fused_computation.153"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.129"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 285289,
+     "calls": "fused_computation.196"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.127"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2011520,
+     "calls": "fused_computation.125"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 285289,
+     "calls": "fused_computation.195"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.123"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1875072,
+     "calls": "fused_computation.121"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 376816,
+     "calls": "fused_computation.194"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 5494,
+     "calls": "fused_computation.193"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 665088,
+     "calls": "fused_computation.10"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 800576,
+     "calls": "fused_computation.11"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1865,
+     "calls": "fused_computation.200"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 665088,
+     "calls": "fused_computation.12"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 800576,
+     "calls": "fused_computation.13"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1865,
+     "calls": "fused_computation.199"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 665088,
+     "calls": "fused_computation.14"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 800576,
+     "calls": "fused_computation.15"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1865,
+     "calls": "fused_computation.198"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 1995,
+     "calls": "fused_computation.197"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.117",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.71 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_3.331, %constant.169), padding=0_0x0_3x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=38}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.117",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.70 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_2.507, %constant.169), padding=0_0x1_2x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=38}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.117",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.69 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_1.637, %constant.169), padding=0_0x2_1x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=38}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.117",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.68 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_0.571, %constant.169), padding=0_0x3_0x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=38}"
+    },
+    {
+     "kind": "copy",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "wide.body.6.sunk",
+     "layouts": [],
+     "line": "%copy.110 = u32[]{:T(128)S(6)} copy(%get-tuple-element.488), backend_config={\"flag_configs\":[],\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[],\"aliasing_operands\":{\"lists\":[]}}"
+    },
+    {
+     "kind": "copy",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "wide.body.7.sunk",
+     "layouts": [],
+     "line": "%copy.116 = u32[]{:T(128)S(6)} copy(%get-tuple-element.512), backend_config={\"flag_configs\":[],\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[],\"aliasing_operands\":{\"lists\":[]}}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.113",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.63 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_3.327, %constant.165), padding=0_0x0_3x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=32}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.113",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.62 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_2.503, %constant.165), padding=0_0x1_2x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=32}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.113",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.61 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_1.633, %constant.165), padding=0_0x2_1x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=32}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.113",
+     "layouts": [
+      "{2,1,0:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.60 = u8[4,4,4194304]{2,1,0:T(4,128)(4,1)} pad(%param_0.573, %constant.165), padding=0_0x3_0x0_0, metadata={op_name=\"jit(round_fn)/stack\" stack_frame_id=32}"
+    },
+    {
+     "kind": "copy",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "wide.body.2.sunk",
+     "layouts": [],
+     "line": "%copy.122 = u32[]{:T(128)S(6)} copy(%get-tuple-element.536), backend_config={\"flag_configs\":[],\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[],\"aliasing_operands\":{\"lists\":[]}}"
+    },
+    {
+     "kind": "copy",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "wide.body.3.sunk",
+     "layouts": [],
+     "line": "%copy.128 = u32[]{:T(128)S(6)} copy(%get-tuple-element.560), backend_config={\"flag_configs\":[],\"scoped_memory_configs\":[],\"used_scoped_memory_configs\":[],\"aliasing_operands\":{\"lists\":[]}}"
+    }
+   ]
+  },
+  "compiler_est_s": 0.06544091,
+  "bound_over_compiler_est": 0.027873777020113767
+ }
+]

@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/restricted_ring_arithmetic/build/Compiler/RestrictedRingWindow.olean",
+    "Compiler/RestrictedRingWindow.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/restricted_ring_arithmetic",
+  "LEAN_PATH": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/restricted_ring_arithmetic/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "431371ad1694d026808de86360282aa0f819b584c33b29a0b30182bdca1b14ef",
+  "started_utc": "2026-09-08T22:48:31.266991+00:00",
+  "timeout_seconds": 180,
+  "exit_code": 1,
+  "elapsed_seconds": 4.225104166020174
+}

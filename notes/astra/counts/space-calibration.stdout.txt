@@ -1,0 +1,11 @@
+CALIBRATION against SASH (Stwo, M31, Blake2s, blowup 2, Llama-3.1-8B, 1 H100)
+  model committed cells/position      : 7.900e+07  (SASH measured 79.0e6, incl. lookup cols)
+  model CRYPTO proxy s/position (SIMT): 2.142e-03
+  SASH measured proof-system rate     : 1.3e9 cells/s -> 6.077e-02 s/position
+  => the crypto proxy is 28x optimistic against the measured proof system
+     (memory traffic, not arithmetic, is the gap; the proxy is spec-sheet ALU only).
+  witness generation is CALIBRATED to 95% of the anchor (SASH: proof system ~5% of GPU time):
+     WITGEN_OPS_PER_CELL = 8602 int32-op-equiv per committed cell, applied to every point.
+  model total proxy s/position        : 4.283e-02; SASH full loop at 99e6 cells/s: 7.980e-01
+  => because witgen is calibrated against the proxy, totals inherit the crypto proxy's ~30x optimism;
+     ratios between points remain the only meaningful reading.  Tensor cores accelerate only crypto_s.

@@ -1,0 +1,27 @@
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone - --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-s2 --zone us-east1-c --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-us-east1
+Create request issued for: [tpuperf-s2]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east1-c/operations/operation-1794007689856-65fa3f7140564-fcf8f5e1-9a108ac3] to complete...
+..............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................done.
+Created tpu [tpuperf-s2].
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm scp --zone us-east1-c /Users/ember/dev/zkml-research/notes/tpu-perf/results/gcp/tpuperf-s2/bundle.tgz tpuperf-s2:bundle.tgz
+Propagating SSH public key to all TPU workers...
+................................................................done.
+Using scp batch size of 1.Attempting to SCP into 1 nodes with a total of 1 workers.
+SCP: Attempting to connect to worker 0...
+Warning: Permanently added 'tpu.1925427106899811739-0-hlkjiq' (ED25519) to the list of known hosts.
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm ssh tpuperf-s2 --zone us-east1-c --command mkdir -p b && tar xzf bundle.tgz -C b && (curl -LsSf https://astral.sh/uv/install.sh | sh) >/dev/null 2>&1; export PATH=$HOME/.local/bin:$PATH; uv venv -q -p 3.12 /tmp/tp && uv pip install -q -
+Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.
+SSH: Attempting to connect to worker 0...
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'jax'
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-east1-c --format=value(name)
+tpuperf-s2
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm delete tpuperf-s2 --zone us-east1-c --quiet
+Delete request issued for: [tpuperf-s2]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-east1-c/operations/operation-1794007826829-65fa3ff3e1263-e8378f28-0402a5e3] to complete...
+......................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................done.
+Deleted tpu [tpuperf-s2].
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-east1-c --format=value(name)
+{"name": "tpuperf-s2", "outcome": "error: RuntimeError('rc=1: Using ssh batch size of 1. Attempting to SSH into 1 nodes with a total of 1 workers.\\nSSH: Attempting to connect to worker 0...\\nT", "gone": true, "hours": 0.1581889238888889, "cost": 0.056841867832070556, "cumulative": 0.12484186783207056}

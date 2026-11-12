@@ -1,0 +1,78 @@
+non-test .rs files: 2839
+distinct include_str!(*.json) artifacts (Lean-emitted descriptors and fixtures):
+     208
+Rust-built 'EffectVmDescriptor2 {' literals by file:
+circuit/src/descriptor_ir2.rs:33
+circuit/src/descriptor_ir2_canonical.rs:7
+circuit/src/effect_vm_descriptors.rs:6
+circuit-prove/src/joint_turn_recursive.rs:4
+perf/src/lib.rs:3
+circuit/src/bilateral_aggregation_air.rs:3
+circuit/src/whole_image_fold.rs:2
+circuit/src/refusal.rs:2
+circuit/src/membership_descriptor_general.rs:2
+circuit/src/direct_logic_frontend.rs:2
+circuit/src/delegate_descriptor.rs:2
+circuit-prove/src/solvency_leaf_adapter.rs:2
+circuit-prove/src/hatchery_leaf_adapter.rs:2
+circuit-prove/src/factory_leaf_adapter.rs:2
+circuit-prove/src/caveat_admission_leaf_adapter.rs:2
+circuit-prove/src/carrier_pin_twin.rs:2
+zkoracle-prove/src/zk_leg.rs:1
+turn/src/umem.rs:1
+dregg-doc/src/ci_assurance.rs:1
+dregg-automatafl/src/step_marks_witness.rs:1
+dregg-automatafl/src/resolve_witness.rs:1
+dregg-automatafl/src/resolve_marks_witness.rs:1
+dregg-automatafl/src/legc_witness.rs:1
+circuit/src/poseidon2_air.rs:1
+circuit/src/note_spend_witness.rs:1
+circuit/src/membership_descriptor_4ary.rs:1
+circuit/src/effect_action_air.rs:1
+circuit/src/descriptor_proof_backend.rs:1
+circuit/src/custom_leaf_lowering.rs:1
+circuit/src/cross_cell_conservation_air.rs:1
+circuit/src/blinded_membership_witness.rs:1
+circuit/src/adjacency_witness.rs:1
+circuit-prove/src/zkoracle_leaf_adapter.rs:1
+circuit-prove/src/sovereign_leaf_adapter.rs:1
+circuit-prove/src/shielded/wide_value_binding.rs:1
+circuit-prove/src/shielded/transfer_link_2out.rs:1
+circuit-prove/src/shielded/transfer_link.rs:1
+circuit-prove/src/shielded/spend_complete.rs:1
+circuit-prove/src/shielded/shield_opening.rs:1
+circuit-prove/src/shielded/deshield_link.rs:1
+circuit-prove/src/private_preference_cell.rs:1
+circuit-prove/src/private_graph_rewrite_cell.rs:1
+circuit-prove/src/private_book_bfv_terminal/fused.rs:1
+circuit-prove/src/note_spend_leaf_adapter.rs:1
+circuit-prove/src/mina_wrap_closing_fold.rs:1
+circuit-prove/src/membership_leaf_adapter.rs:1
+circuit-prove/src/field_delta_range_air.rs:1
+circuit-prove/src/deco_leaf_adapter.rs:1
+circuit-prove/src/cert_f_air.rs:1
+bridge/src/present.rs:1
+app-framework/src/stark_rehydrate.rs:1
+hand 'impl Air<AB> for' blocks (non-test src):
+circuit/src/plonky3_prover.rs:2
+circuit/src/mina_fixture_emit.rs:1
+circuit/src/descriptor_ir2.rs:2
+circuit/src/plonky3_recursion.rs:1
+circuit/src/lean_descriptor_air.rs:2
+circuit/src/bilateral_aggregation_air.rs:2
+circuit/src/dsl/dsl_p3_air.rs:1
+circuit-prove/src/dregg_outer_config.rs:1
+circuit-prove/src/lean_lookup_air.rs:1
+circuit-prove/src/effect_vm_p3_air.rs:1
+builder assert_* constraint calls (non-test src) by file:
+circuit/src/descriptor_ir2.rs:21
+circuit/src/dsl/dsl_p3_air.rs:15
+circuit/src/lean_descriptor_air.rs:13
+circuit/src/bilateral_aggregation_air.rs:10
+circuit-prove/src/effect_vm_p3_air.rs:10
+circuit/src/plonky3_prover.rs:7
+circuit-prove/src/dregg_outer_config.rs:5
+circuit/src/plonky3_recursion.rs:3
+circuit-prove/src/lean_lookup_air.rs:3
+files that call their own code a Rust twin/mirror of Lean:
+     128

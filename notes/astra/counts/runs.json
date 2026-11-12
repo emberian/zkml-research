@@ -1,0 +1,154 @@
+[
+  {
+    "name": "tradeoff-default",
+    "command": [
+      "python3",
+      "-I",
+      "notes/dark-learning-scripts/tradeoff_space.py"
+    ],
+    "exit_code": 0,
+    "sha256": "26f4e1367b7efe961583124c294f730485428b504ff8b33bfa2ad7e3e1214dea"
+  },
+  {
+    "name": "tradeoff-small",
+    "command": [
+      "python3",
+      "-I",
+      "notes/dark-learning-scripts/tradeoff_space.py",
+      "--d",
+      "1024",
+      "--L",
+      "12"
+    ],
+    "exit_code": 0,
+    "sha256": "87dbd555fec820326cce9735fb95dc1c3b2ced9ce844836fc7bb94f9777f339f"
+  },
+  {
+    "name": "activation-census",
+    "command": [
+      "python3",
+      "-I",
+      "notes/dark-learning-scripts/backward_table_virtualization.py"
+    ],
+    "exit_code": 0,
+    "sha256": "6291f47aa8057e03a482badff1bb049138c1d2b23bf52b5b51852b9711a154c9"
+  },
+  {
+    "name": "mma-limbs",
+    "command": [
+      "python3",
+      "-I",
+      "/Users/ember/dev/degg-research/experiments/mma-field-mapping/mma_limbs.py"
+    ],
+    "exit_code": 0,
+    "sha256": "37eb529eb3febf0d2cce2f2bd69154869c7d585b872a6973104c0f89ac539b68"
+  },
+  {
+    "name": "space-calibration",
+    "command": [
+      "python3",
+      "-I",
+      "notes/construction-search/space.py",
+      "--calibrate"
+    ],
+    "exit_code": 0,
+    "sha256": "e48f7e45b85c9fa450502e14191bf0d83769c8146e52114612e0a5589e7a7b8f"
+  },
+  {
+    "name": "space-u1",
+    "command": [
+      "python3",
+      "-I",
+      "notes/construction-search/space.py",
+      "--point",
+      "U1"
+    ],
+    "exit_code": 0,
+    "sha256": "59769b8dbaae866666660c7cdded8651cbb0803053663ca41d67e34c8544c97c"
+  },
+  {
+    "name": "space-sensitivity",
+    "command": [
+      "python3",
+      "-I",
+      "notes/construction-search/space.py",
+      "--sensitivity"
+    ],
+    "exit_code": 0,
+    "sha256": "8cd14447a48016373eeb2fc7d7cdedaaac836576f7390283d93ab8c2ac7323fc"
+  },
+  {
+    "name": "air-census",
+    "command": [
+      "sh",
+      "/Users/ember/dev/degg-research/experiments/air-census/air_census.sh",
+      "/Users/ember/dev/breadstuffs"
+    ],
+    "env": {
+      "TMPDIR": "/Users/ember/dev/zkml-research/notes/astra/counts/air-tmp"
+    },
+    "exit_code": 0
+  },
+  {
+    "name": "audit-controls",
+    "command": [
+      "python3",
+      "-I",
+      "notes/astra/counts/audit_controls.py"
+    ],
+    "cwd": null,
+    "exit_code": 0
+  },
+  {
+    "name": "activation-witnesses",
+    "command": [
+      "python3",
+      "-I",
+      "notes/astra/counts/activation_witnesses.py"
+    ],
+    "cwd": null,
+    "exit_code": 0
+  },
+  {
+    "name": "make-repairs",
+    "command": [
+      "python3",
+      "-I",
+      "notes/astra/counts/make_repairs.py"
+    ],
+    "cwd": null,
+    "exit_code": 0
+  },
+  {
+    "name": "make-mma-repair",
+    "command": [
+      "python3",
+      "-I",
+      "notes/astra/counts/make_mma_repair.py"
+    ],
+    "cwd": null,
+    "exit_code": 0
+  },
+  {
+    "name": "patch-check",
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "notes/astra/counts-model-repairs.patch"
+    ],
+    "cwd": null,
+    "exit_code": 0
+  },
+  {
+    "name": "mma-patch-check",
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/notes/astra/mma-representation.patch"
+    ],
+    "cwd": "/Users/ember/dev/degg-research",
+    "exit_code": 0
+  }
+]

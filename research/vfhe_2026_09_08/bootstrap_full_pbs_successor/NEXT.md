@@ -1,0 +1,3 @@
+[OPEN — HELD] User/root architectural reassessment supersedes the launch plan below. No setup or fullPBS launch is currently allowed. Preserve source/build pending new direction.
+
+[OPEN] Complete and freeze the preceding selected external-product proof first. Then finalize/review the concrete existing-routine u32 composition, freeze exact source/binary/profile pins, and execute the one authorized fullPBS with public-output-before-private-comparison chronology. Only after that passes, execute its same-key keyswitch extension within the same ephemeral-key session. Do not invent full-proof coverage for later dense digits.

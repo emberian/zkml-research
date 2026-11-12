@@ -86,6 +86,7 @@ dependencies = [
  "darkproof",
  "darkstep",
  "darktrain",
+ "dlvault",
  "dzkpopk",
  "pycompat",
  "serde_json",

@@ -1,0 +1,147 @@
+[{"stream_name":"stdout","time":192.834278469,"data":"{\n"}
+,{"stream_name":"stdout","time":192.834335329,"data":" \"backend\": \"jax-int8-limbs-gpu\",\n"}
+,{"stream_name":"stdout","time":192.834342904,"data":" \"ids\": [\n"}
+,{"stream_name":"stdout","time":192.834348237,"data":"  976,\n"}
+,{"stream_name":"stdout","time":192.83435331,"data":"  9029,\n"}
+,{"stream_name":"stdout","time":192.834357869,"data":"  328,\n"}
+,{"stream_name":"stdout","time":192.834362402,"data":"  10128,\n"}
+,{"stream_name":"stdout","time":192.834366947,"data":"  382,\n"}
+,{"stream_name":"stdout","time":192.834371407,"data":"  12650,\n"}
+,{"stream_name":"stdout","time":192.834375719,"data":"  13,\n"}
+,{"stream_name":"stdout","time":192.834380335,"data":"  623,\n"}
+,{"stream_name":"stdout","time":192.83438482,"data":"  9029,\n"}
+,{"stream_name":"stdout","time":192.834390002,"data":"  328,\n"}
+,{"stream_name":"stdout","time":192.834394362,"data":"  10198,\n"}
+,{"stream_name":"stdout","time":192.834399162,"data":"  382\n"}
+,{"stream_name":"stdout","time":192.834403748,"data":" ],\n"}
+,{"stream_name":"stdout","time":192.83442568,"data":" \"P\": {\n"}
+,{"stream_name":"stdout","time":192.834431596,"data":"  \"fa\": 10,\n"}
+,{"stream_name":"stdout","time":192.83445454,"data":"  \"fqk\": 8,\n"}
+,{"stream_name":"stdout","time":192.834459166,"data":"  \"fv\": 12,\n"}
+,{"stream_name":"stdout","time":192.834472881,"data":"  \"fm\": 12,\n"}
+,{"stream_name":"stdout","time":192.834475926,"data":"  \"fh\": 9\n"}
+,{"stream_name":"stdout","time":192.834493465,"data":" },\n"}
+,{"stream_name":"stdout","time":192.834495932,"data":" \"digests\": {\n"}
+,{"stream_name":"stdout","time":192.834498569,"data":"  \"a\": \"f5d145fb0dbdf694059ff20a14ee81fab3ab46b23548133530504870e23a6f5d\",\n"}
+,{"stream_name":"stdout","time":192.83450137,"data":"  \"q\": \"5cce2ddb3a6285070a767d5396c2186d8ae51b296e9193a3f9614ee36279b873\",\n"}
+,{"stream_name":"stdout","time":192.834504209,"data":"  \"k\": \"dfddab2736e0d3bc9f051c3c4de2215b5bf5a506f9c06b7f3e7ff809cb629c30\",\n"}
+,{"stream_name":"stdout","time":192.834506925,"data":"  \"v\": \"28879b85ec1c460bb14d0fceabb9e3eab3d7c37bf5cf7d3bd152dc0752ad9e0a\",\n"}
+,{"stream_name":"stdout","time":192.83450957,"data":"  \"o\": \"2a4057a29ba478ca889c8178c5b9398637126190e7d7380dfed7bb8f6a5c70dd\",\n"}
+,{"stream_name":"stdout","time":192.834512296,"data":"  \"x1\": \"bcba32b70cd5a7dbf7db6aa5f1a2e53fa7b69c7fcfaf2220f0e5d4a4c58b56b1\",\n"}
+,{"stream_name":"stdout","time":192.834515034,"data":"  \"m\": \"6b29321ebcfde35c3fb29566069cbd004a32660bd0656cea7b149489113b93eb\",\n"}
+,{"stream_name":"stdout","time":192.834517672,"data":"  \"logits\": \"3634df339e5e84b6a637dd0c5ce1192b48ed31be3fc89f6adfbd19d65b8aa7a2\",\n"}
+,{"stream_name":"stdout","time":192.834520487,"data":"  \"x2\": \"5be6487fbe04b8b809d3b0fcf0d3ef566d00cbf81a8f58a73b4a933189d69479\"\n"}
+,{"stream_name":"stdout","time":192.834523167,"data":" },\n"}
+,{"stream_name":"stdout","time":192.834532049,"data":" \"seconds\": 152.5\n"}
+,{"stream_name":"stdout","time":192.834534854,"data":"}\n"}
+,{"stream_name":"stdout","time":278.329293719,"data":"{\n"}
+,{"stream_name":"stdout","time":278.329335222,"data":" \"backend\": \"jax-f32-FALSIFIER-gpu\",\n"}
+,{"stream_name":"stdout","time":278.329342839,"data":" \"ids\": [\n"}
+,{"stream_name":"stdout","time":278.329349036,"data":"  976,\n"}
+,{"stream_name":"stdout","time":278.329355196,"data":"  9029,\n"}
+,{"stream_name":"stdout","time":278.329360854,"data":"  328,\n"}
+,{"stream_name":"stdout","time":278.329366639,"data":"  10128,\n"}
+,{"stream_name":"stdout","time":278.329561792,"data":"  382,\n"}
+,{"stream_name":"stdout","time":278.329596164,"data":"  12650,\n"}
+,{"stream_name":"stdout","time":278.329599449,"data":"  13,\n"}
+,{"stream_name":"stdout","time":278.329602096,"data":"  623,\n"}
+,{"stream_name":"stdout","time":278.329604579,"data":"  9029,\n"}
+,{"stream_name":"stdout","time":278.329607144,"data":"  328,\n"}
+,{"stream_name":"stdout","time":278.329609636,"data":"  10198,\n"}
+,{"stream_name":"stdout","time":278.329612121,"data":"  382\n"}
+,{"stream_name":"stdout","time":278.329614661,"data":" ],\n"}
+,{"stream_name":"stdout","time":278.329617389,"data":" \"P\": {\n"}
+,{"stream_name":"stdout","time":278.329619965,"data":"  \"fa\": 10,\n"}
+,{"stream_name":"stdout","time":278.32962257,"data":"  \"fqk\": 8,\n"}
+,{"stream_name":"stdout","time":278.329625144,"data":"  \"fv\": 12,\n"}
+,{"stream_name":"stdout","time":278.329627731,"data":"  \"fm\": 12,\n"}
+,{"stream_name":"stdout","time":278.329630284,"data":"  \"fh\": 9\n"}
+,{"stream_name":"stdout","time":278.329632768,"data":" },\n"}
+,{"stream_name":"stdout","time":278.329635221,"data":" \"digests\": {\n"}
+,{"stream_name":"stdout","time":278.329637858,"data":"  \"a\": \"f5d145fb0dbdf694059ff20a14ee81fab3ab46b23548133530504870e23a6f5d\",\n"}
+,{"stream_name":"stdout","time":278.329640626,"data":"  \"q\": \"5cce2ddb3a6285070a767d5396c2186d8ae51b296e9193a3f9614ee36279b873\",\n"}
+,{"stream_name":"stdout","time":278.329643262,"data":"  \"k\": \"dfddab2736e0d3bc9f051c3c4de2215b5bf5a506f9c06b7f3e7ff809cb629c30\",\n"}
+,{"stream_name":"stdout","time":278.329645946,"data":"  \"v\": \"f77e1d72d1473b70909a16d7764052486ccc3a07e643eca545e9adb2affa7765\",\n"}
+,{"stream_name":"stdout","time":278.329648551,"data":"  \"o\": \"39dbf7741a7a1a5e2506ba300980b844f6d7f9cc07be36eb5cd5ca05b8fc6eaf\",\n"}
+,{"stream_name":"stdout","time":278.329651171,"data":"  \"x1\": \"93204969ebba8429d09bde545cff972fa4d1b77d30ad008a27912d11bd42c905\",\n"}
+,{"stream_name":"stdout","time":278.329653831,"data":"  \"m\": \"0734bbf1c0c3dba8f4028a65d22dc53af4918121e997d60e84f94e7e9bb15ab4\",\n"}
+,{"stream_name":"stdout","time":278.329656471,"data":"  \"logits\": \"4ed70aa32f68ae96cc8bb3c707fa57a0552b182606de44d723d63842a95ea010\",\n"}
+,{"stream_name":"stdout","time":278.329659144,"data":"  \"x2\": \"de6fe144e43dd34eac98bc6f60015b6f6cbe81041be26e0c33a6b651e4170232\"\n"}
+,{"stream_name":"stdout","time":278.329661849,"data":" },\n"}
+,{"stream_name":"stdout","time":278.329664323,"data":" \"seconds\": 85.35\n"}
+,{"stream_name":"stdout","time":278.329666897,"data":"}\n"}
+,{"stream_name":"stdout","time":278.448770081,"data":"{\n"}
+,{"stream_name":"stdout","time":278.448798594,"data":" \"jax\": {\n"}
+,{"stream_name":"stdout","time":278.448804309,"data":"  \"kernel\": \"jax-int8-limbs-gpu\",\n"}
+,{"stream_name":"stdout","time":278.44880936,"data":"  \"seconds\": 152.5,\n"}
+,{"stream_name":"stdout","time":278.448813778,"data":"  \"digests\": {\n"}
+,{"stream_name":"stdout","time":278.448818025,"data":"   \"a\": \"f5d145fb0dbdf694059ff20a14ee81fab3ab46b23548133530504870e23a6f5d\",\n"}
+,{"stream_name":"stdout","time":278.448822664,"data":"   \"q\": \"5cce2ddb3a6285070a767d5396c2186d8ae51b296e9193a3f9614ee36279b873\",\n"}
+,{"stream_name":"stdout","time":278.44882696,"data":"   \"k\": \"dfddab2736e0d3bc9f051c3c4de2215b5bf5a506f9c06b7f3e7ff809cb629c30\",\n"}
+,{"stream_name":"stdout","time":278.448831953,"data":"   \"v\": \"28879b85ec1c460bb14d0fceabb9e3eab3d7c37bf5cf7d3bd152dc0752ad9e0a\",\n"}
+,{"stream_name":"stdout","time":278.448836149,"data":"   \"o\": \"2a4057a29ba478ca889c8178c5b9398637126190e7d7380dfed7bb8f6a5c70dd\",\n"}
+,{"stream_name":"stdout","time":278.448841453,"data":"   \"x1\": \"bcba32b70cd5a7dbf7db6aa5f1a2e53fa7b69c7fcfaf2220f0e5d4a4c58b56b1\",\n"}
+,{"stream_name":"stdout","time":278.448856669,"data":"   \"m\": \"6b29321ebcfde35c3fb29566069cbd004a32660bd0656cea7b149489113b93eb\",\n"}
+,{"stream_name":"stdout","time":278.448861558,"data":"   \"logits\": \"3634df339e5e84b6a637dd0c5ce1192b48ed31be3fc89f6adfbd19d65b8aa7a2\",\n"}
+,{"stream_name":"stdout","time":278.448865726,"data":"   \"x2\": \"5be6487fbe04b8b809d3b0fcf0d3ef566d00cbf81a8f58a73b4a933189d69479\"\n"}
+,{"stream_name":"stdout","time":278.448870754,"data":"  },\n"}
+,{"stream_name":"stdout","time":278.448875215,"data":"  \"equal_to_mac_numpy\": {\n"}
+,{"stream_name":"stdout","time":278.448879818,"data":"   \"a\": true,\n"}
+,{"stream_name":"stdout","time":278.448883951,"data":"   \"q\": true,\n"}
+,{"stream_name":"stdout","time":278.44888854,"data":"   \"k\": true,\n"}
+,{"stream_name":"stdout","time":278.448892813,"data":"   \"v\": true,\n"}
+,{"stream_name":"stdout","time":278.448897096,"data":"   \"o\": true,\n"}
+,{"stream_name":"stdout","time":278.448901721,"data":"   \"x1\": true,\n"}
+,{"stream_name":"stdout","time":278.448905937,"data":"   \"m\": true,\n"}
+,{"stream_name":"stdout","time":278.448909811,"data":"   \"logits\": true,\n"}
+,{"stream_name":"stdout","time":278.448914357,"data":"   \"x2\": true\n"}
+,{"stream_name":"stdout","time":278.448918564,"data":"  },\n"}
+,{"stream_name":"stdout","time":278.448922674,"data":"  \"wall\": 153.2\n"}
+,{"stream_name":"stdout","time":278.448927165,"data":" },\n"}
+,{"stream_name":"stdout","time":278.448931401,"data":" \"backend\": \"gpu\",\n"}
+,{"stream_name":"stdout","time":278.44893561599997,"data":" \"devices\": [\n"}
+,{"stream_name":"stdout","time":278.448939229,"data":"  \"Tesla T4\",\n"}
+,{"stream_name":"stdout","time":278.448943419,"data":"  \"Tesla T4\"\n"}
+,{"stream_name":"stdout","time":278.448947809,"data":" ],\n"}
+,{"stream_name":"stdout","time":278.44895146,"data":" \"fetch\": {\n"}
+,{"stream_name":"stdout","time":278.448955469,"data":"  \"ranges\": 31,\n"}
+,{"stream_name":"stdout","time":278.448959248,"data":"  \"bytes\": 476967528,\n"}
+,{"stream_name":"stdout","time":278.448963245,"data":"  \"seconds\": 16.3\n"}
+,{"stream_name":"stdout","time":278.448967763,"data":" },\n"}
+,{"stream_name":"stdout","time":278.448971404,"data":" \"jax-f32\": {\n"}
+,{"stream_name":"stdout","time":278.448975466,"data":"  \"kernel\": \"jax-f32-FALSIFIER-gpu\",\n"}
+,{"stream_name":"stdout","time":278.448979929,"data":"  \"seconds\": 85.35,\n"}
+,{"stream_name":"stdout","time":278.448983858,"data":"  \"digests\": {\n"}
+,{"stream_name":"stdout","time":278.448996552,"data":"   \"a\": \"f5d145fb0dbdf694059ff20a14ee81fab3ab46b23548133530504870e23a6f5d\",\n"}
+,{"stream_name":"stdout","time":278.449001309,"data":"   \"q\": \"5cce2ddb3a6285070a767d5396c2186d8ae51b296e9193a3f9614ee36279b873\",\n"}
+,{"stream_name":"stdout","time":278.449005314,"data":"   \"k\": \"dfddab2736e0d3bc9f051c3c4de2215b5bf5a506f9c06b7f3e7ff809cb629c30\",\n"}
+,{"stream_name":"stdout","time":278.44900948,"data":"   \"v\": \"f77e1d72d1473b70909a16d7764052486ccc3a07e643eca545e9adb2affa7765\",\n"}
+,{"stream_name":"stdout","time":278.449013372,"data":"   \"o\": \"39dbf7741a7a1a5e2506ba300980b844f6d7f9cc07be36eb5cd5ca05b8fc6eaf\",\n"}
+,{"stream_name":"stdout","time":278.449017407,"data":"   \"x1\": \"93204969ebba8429d09bde545cff972fa4d1b77d30ad008a27912d11bd42c905\",\n"}
+,{"stream_name":"stdout","time":278.449021943,"data":"   \"m\": \"0734bbf1c0c3dba8f4028a65d22dc53af4918121e997d60e84f94e7e9bb15ab4\",\n"}
+,{"stream_name":"stdout","time":278.449026463,"data":"   \"logits\": \"4ed70aa32f68ae96cc8bb3c707fa57a0552b182606de44d723d63842a95ea010\",\n"}
+,{"stream_name":"stdout","time":278.449045566,"data":"   \"x2\": \"de6fe144e43dd34eac98bc6f60015b6f6cbe81041be26e0c33a6b651e4170232\"\n"}
+,{"stream_name":"stdout","time":278.449050001,"data":"  },\n"}
+,{"stream_name":"stdout","time":278.449054294,"data":"  \"equal_to_mac_numpy\": {\n"}
+,{"stream_name":"stdout","time":278.449062937,"data":"   \"a\": true,\n"}
+,{"stream_name":"stdout","time":278.449067061,"data":"   \"q\": true,\n"}
+,{"stream_name":"stdout","time":278.449070765,"data":"   \"k\": true,\n"}
+,{"stream_name":"stdout","time":278.449074896,"data":"   \"v\": false,\n"}
+,{"stream_name":"stdout","time":278.449079871,"data":"   \"o\": false,\n"}
+,{"stream_name":"stdout","time":278.449086917,"data":"   \"x1\": false,\n"}
+,{"stream_name":"stdout","time":278.449107371,"data":"   \"m\": false,\n"}
+,{"stream_name":"stdout","time":278.449111605,"data":"   \"logits\": false,\n"}
+,{"stream_name":"stdout","time":278.449115473,"data":"   \"x2\": false\n"}
+,{"stream_name":"stdout","time":278.449119546,"data":"  },\n"}
+,{"stream_name":"stdout","time":278.449123843,"data":"  \"wall\": 85.5\n"}
+,{"stream_name":"stdout","time":278.449127715,"data":" },\n"}
+,{"stream_name":"stdout","time":278.449131966,"data":" \"bit_identical\": true\n"}
+,{"stream_name":"stdout","time":278.44913687,"data":"}\n"}
+,{"stream_name":"stdout","time":285.323152463,"data":"ACCEL_JOB_DONE rc=0 killed=None elapsed=284.1\n"}
+,{"stream_name":"stderr","time":287.687770477,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":287.687803283,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":288.035989234,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":288.036017731,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":289.058245511,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":290.174652415,"data":"[NbConvertApp] Writing 313302 bytes to __results__.html\n"}
+]

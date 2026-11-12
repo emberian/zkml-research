@@ -1,0 +1,110 @@
+{
+ "as_built (KAPPA = 40, MACs in F_p)": {
+  "d": 4096,
+  "steps": 1000000,
+  "N": 8192,
+  "L": 3,
+  "F_bits": 118,
+  "p": 2305843009212399617,
+  "kappa": 40,
+  "mac_field_degree": 1,
+  "exact_trunc": false,
+  "truncations_per_step": 16384,
+  "log2_per_step": {
+   "he_stat": -14.71,
+   "he_rlwe": -112.39,
+   "trunc": -26.0,
+   "mac": -60.0
+  },
+  "log2_run": {
+   "he_stat": 0.0,
+   "he_rlwe": -92.46,
+   "trunc": -6.07,
+   "mac": -40.07
+  },
+  "log2_run_total": 0.0,
+  "dominant": "he_stat",
+  "kappa_max_in_field": 47
+ },
+ "KAPPA at the field's limit, MACs in F_p": {
+  "d": 4096,
+  "steps": 1000000,
+  "N": 8192,
+  "L": 3,
+  "F_bits": 118,
+  "p": 2305843009212399617,
+  "kappa": 47,
+  "mac_field_degree": 1,
+  "exact_trunc": false,
+  "truncations_per_step": 16384,
+  "log2_per_step": {
+   "he_stat": -14.71,
+   "he_rlwe": -112.39,
+   "trunc": -33.0,
+   "mac": -60.0
+  },
+  "log2_run": {
+   "he_stat": 0.0,
+   "he_rlwe": -92.46,
+   "trunc": -13.07,
+   "mac": -40.07
+  },
+  "log2_run_total": 0.0,
+  "dominant": "he_stat",
+  "kappa_max_in_field": 47
+ },
+ "exact truncation, MACs in F_p": {
+  "d": 4096,
+  "steps": 1000000,
+  "N": 8192,
+  "L": 3,
+  "F_bits": 118,
+  "p": 2305843009212399617,
+  "kappa": 40,
+  "mac_field_degree": 1,
+  "exact_trunc": true,
+  "truncations_per_step": 0,
+  "log2_per_step": {
+   "he_stat": -14.71,
+   "he_rlwe": -112.39,
+   "trunc": -Infinity,
+   "mac": -60.0
+  },
+  "log2_run": {
+   "he_stat": 0.0,
+   "he_rlwe": -92.46,
+   "trunc": -Infinity,
+   "mac": -40.07
+  },
+  "log2_run_total": 0.0,
+  "dominant": "he_stat",
+  "kappa_max_in_field": 47
+ },
+ "exact truncation, MACs in F_p^2": {
+  "d": 4096,
+  "steps": 1000000,
+  "N": 8192,
+  "L": 3,
+  "F_bits": 118,
+  "p": 2305843009212399617,
+  "kappa": 40,
+  "mac_field_degree": 2,
+  "exact_trunc": true,
+  "truncations_per_step": 0,
+  "log2_per_step": {
+   "he_stat": -14.71,
+   "he_rlwe": -112.39,
+   "trunc": -Infinity,
+   "mac": -121.0
+  },
+  "log2_run": {
+   "he_stat": 0.0,
+   "he_rlwe": -92.46,
+   "trunc": -Infinity,
+   "mac": -101.07
+  },
+  "log2_run_total": 0.0,
+  "dominant": "he_stat",
+  "kappa_max_in_field": 47
+ }
+}

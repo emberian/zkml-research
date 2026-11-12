@@ -1,0 +1,25 @@
+{
+  "_note": "Our measured or statically-checked shapes. int8 operands, int32 accumulate unless noted. Sources: MMA.md section 4 (T4), F3-MODEL.md, tpu-perf results/static, exact_recompute_2026_11_06.",
+  "gemm": [
+    {"name": "cublas_i8_8192", "M": 8192, "N": 8192, "K": 8192, "batch": 1, "dtype": "int8",
+     "t4_measured_s": 0.0249889, "t4_measured_note": "2.20e13 MAC/s -> 8192^3/2.20e13 [MEASURED dry-02]"},
+    {"name": "cublas_f16_8192", "M": 8192, "N": 8192, "K": 8192, "batch": 1, "dtype": "fp16",
+     "t4_measured_s": 0.0347947, "t4_measured_note": "1.58e13 MAC/s [MEASURED dry-02]"},
+    {"name": "bb8_ip_2p20", "M": 32, "N": 32, "K": 32768, "batch": 32, "dtype": "int8", "t4_measured_s": 0.000404},
+    {"name": "bb8_ip_2p22", "M": 32, "N": 32, "K": 32768, "batch": 128, "dtype": "int8", "t4_measured_s": 0.001592},
+    {"name": "bb8_ip_2p24", "M": 32, "N": 32, "K": 32768, "batch": 512, "dtype": "int8", "t4_measured_s": 0.005398},
+    {"name": "bb8_ip_2p25", "M": 32, "N": 32, "K": 32768, "batch": 1024, "dtype": "int8", "t4_measured_s": 0.013832},
+    {"name": "gptoss_gateup_T2048", "M": 2048, "N": 5760, "K": 2880, "batch": 1, "dtype": "int8",
+     "note": "one expert's prefolded W4A8 matmul as in tpuperf mxfp4_w4a8 (T=2048 rows routed to it); 32 experts top-4: 2048 tokens*4/32 = 256 rows avg per expert"},
+    {"name": "gptoss_down_T2048", "M": 2048, "N": 2944, "K": 2880, "batch": 1, "dtype": "int8"},
+    {"name": "gptoss_gateup_T256", "M": 256, "N": 5760, "K": 2880, "batch": 1, "dtype": "int8"},
+    {"name": "xla_i8_1024", "M": 1024, "N": 1024, "K": 1024, "batch": 1, "dtype": "int8",
+     "tpu_v5e_optimal_seconds": 1.66e-05, "tpu_note": "deviceless libtpu cost_analysis, GROUNDING.md section 0 [READ]"}
+  ],
+  "tpu_static": {
+    "_note": "tpuperf bound (scaling-book peaks, compulsory bytes) and the compiler's optimal_seconds from results/static (static-20261106T212653Z.json). Pallas custom-call kernels: cost_analysis flops=5.24e5 for every shape, i.e. the compiler does not cost the Mosaic kernel; optimal_seconds there is not a kernel prediction.",
+    "gptoss_gateup_T2048": {"v5e": {"tpuperf_bound_s": 1.72e-4, "unit": "mxu", "optimal_seconds": 2.04e-5}, "v6e": {"tpuperf_bound_s": 4.35e-5, "unit": "hbm", "optimal_seconds": 9.20e-6}},
+    "gptoss_down_T2048":   {"v5e": {"tpuperf_bound_s": 8.81e-5, "unit": "mxu", "optimal_seconds": 2.04e-5}, "v6e": {"tpuperf_bound_s": 2.41e-5, "unit": "hbm", "optimal_seconds": 2.99e-5}},
+    "gptoss_gateup_T256":  {"v5e": {"tpuperf_bound_s": 2.83e-5, "unit": "hbm", "optimal_seconds": 2.55e-6}, "v6e": {"tpuperf_bound_s": 1.45e-5, "unit": "hbm", "optimal_seconds": 1.15e-6}}
+  }
+}

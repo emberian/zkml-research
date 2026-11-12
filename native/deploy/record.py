@@ -54,6 +54,9 @@ def main():
                     "chunks wait, one more is being made, so a process has at most (R + 1) x chunk-steps step files ahead "
                     "(the disk plan's lookahead)")
     ap.add_argument("--third", default="NEWBOX,0.0.0.0,/srv/lanes/dl-gen6-deploy", help="HOST,IP,ROOT of the wired third box")
+    ap.add_argument("--third-nat", action="store_true", help="the third box only dials (a rented VM with no inbound ports): "
+                    "seat 2 dials every mesh as hbox does (--nat 2, --nat6 2,5, old seat 2's six-party address on loopback)")
+    ap.add_argument("--ssh-config", default=None, help="an ssh config for run.py's ssh/scp (a held box's alias; cfg \"ssh_config\")")
     ap.add_argument("--name", default="record")
     ap.add_argument("--archive-on", default="dregg-forge", help="the box whose seat keeps every bundle (one seat per committee); "
                     "forge by default: at ~47.5 MB a step, 2,000 steps are ~89 GiB, which only forge holds above its line (run.py plan)")
@@ -72,7 +75,7 @@ def main():
         third = dict(BB2)
     else:
         h, ip, root = a.third.split(",")
-        third = {"host": h, "ip": ip, "root": root, "prep": root.replace("dl-gen6-deploy", "dl-gen6-prep"),
+        third = {"host": h, "ip": None if a.third_nat else ip, "root": root, "prep": root.replace("dl-gen6-deploy", "dl-gen6-prep"),
                  "scope": "systemd-run --scope -p MemoryMax=16G", "env": "DS_THREADS=16 DS_WRITE_TIMEOUT_SECS=4500 DS_RECONNECT_SECS=4500"}
     boxes = [FORGE, BB2, third]
     ip = lambda b: b["ip"] or "0.0.0.0"
@@ -81,14 +84,15 @@ def main():
     mesh_old, mesh_new = [pp(b, i) for i, b in enumerate(boxes)], [pp(b, 20 + i) for i, b in enumerate(boxes)]
     proof_old, proof_new = ",".join(pp(b, 10 + i) for i, b in enumerate(boxes)), ",".join(pp(b, 30 + i) for i, b in enumerate(boxes))
     six = [pp(b, 40 + i) for i, b in enumerate(boxes)] + [pp(b, 43 + i) for i, b in enumerate(boxes)]
-    if a.layout == "hbox":
+    nat = a.layout == "hbox" or (a.layout == "wired" and a.third_nat)
+    if nat:
         six[2] = f"127.0.0.1:{base + 42}"
     mesh6 = ",".join(six)
     # --ret-round: the switched returns rounded to their noise bits (run7 through hbox: 0.59 of the bytes; run13: the
     # rounded step proved and accepted at d = 4096, and its release's C equals the plaintext twin's)
     common = ["--ret-primes", "2", "--ret-round", "--prove", "--profile", a.profile] + ([] if a.no_rs else ["--rs"]) + [ "--wipe-spent", "--tape-wait", "7200",
               "--timeout", "7200", "--pipeline-proofs"] + \
-             (["--nat", "2", "--nat6", "2,5"] if a.layout == "hbox" else [])
+             (["--nat", "2", "--nat6", "2,5"] if nat else [])
     def bin_(b):
         return f"{b['root']}/ws-target-run/release"
     def seat(b, i, new):
@@ -131,6 +135,8 @@ def main():
         "disk": {"lookahead": (a.prep_max_ready + 1) * a.chunk_steps},
         "vault": True,
     }
+    if a.ssh_config:
+        cfg["ssh_config"] = a.ssh_config
     json.dump(cfg, sys.stdout, indent=1)
     print()
 

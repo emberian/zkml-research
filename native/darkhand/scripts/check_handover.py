@@ -29,14 +29,16 @@ Exits 0 when every check holds. Writes OUT/checks.json and OUT/measure.json. The
 """
 import hashlib, json, os, shlex, subprocess, sys, time
 
+SSH_F = []   # the run cfg's "ssh_config" (run.py's: a held box's alias beside Include ~/.ssh/config)
+
 def sh(host, cmd, check=True, timeout=None):
-    r = subprocess.run(["ssh", "-o", "BatchMode=yes", host, cmd], text=True, capture_output=True, timeout=timeout)
+    r = subprocess.run(["ssh", *SSH_F, "-o", "BatchMode=yes", host, cmd], text=True, capture_output=True, timeout=timeout)
     if check and r.returncode != 0:
         raise SystemExit(f"[{host}] {cmd}\n{r.stdout}\n{r.stderr}")
     return r
 
 def fetch(host, path, local):
-    r = subprocess.run(["scp", "-q", f"{host}:{path}", local], capture_output=True, text=True)
+    r = subprocess.run(["scp", *SSH_F, "-q", f"{host}:{path}", local], capture_output=True, text=True)
     return r.returncode == 0
 
 def cmd_argv(cmdline):
@@ -95,6 +97,8 @@ def main():
     if a and a[0] == "--reports":
         sys.exit(reports_only([x for x in a[1:] if not x.startswith("--")], "--assume-vault" in a))
     cfg = json.load(open(a[0]))
+    if cfg.get("ssh_config"):
+        SSH_F[:] = ["-F", cfg["ssh_config"]]
     out = a[1]
     self_mode = "--self" in a
     relaunch = "--no-relaunch" not in a
@@ -196,10 +200,10 @@ def main():
             if tool:
                 sh(h, f"mkdir -p {work}")
                 hp = f"{work}/handover_P{i}.json"
-                subprocess.run(["scp", "-q", os.path.join(out, f"old{i}.json"), f"{h}:{hp}"], check=True)
+                subprocess.run(["scp", *SSH_F, "-q", os.path.join(out, f"old{i}.json"), f"{h}:{hp}"], check=True)
                 jps = []
                 for j in range(len(news)):
-                    subprocess.run(["scp", "-q", os.path.join(out, f"join{j}.json"), f"{h}:{work}/join_P{j}.json"], check=True)
+                    subprocess.run(["scp", *SSH_F, "-q", os.path.join(out, f"join{j}.json"), f"{h}:{work}/join_P{j}.json"], check=True)
                     jps.append(f"{work}/join_P{j}.json")
                 vname = (rep_old[i].get("vault_destroyed") or {}).get("name")
                 if vname:

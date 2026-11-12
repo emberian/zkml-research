@@ -1,0 +1,96 @@
+--- a/notes/construction-search/space.py
++++ b/notes/construction-search/space.py
+@@ -350,7 +350,8 @@
+     mops = MULT_OPS[field]["cpu" if hw == "cpu" else "simt"]
+     if hw == "tc":
+         L = TC_LIMBS[field]
+-        tc_share = min(1.0, (tc_cell * commit + S["virt"] * PIOP[piop]["virt_mult"]) / max(mults, 1))
++        # Eligible work and total work must use the same audit amortization.
++        tc_share = min(1.0, p * (tc_cell * commit + S["virt"] * PIOP[piop]["virt_mult"]) / max(mults, 1))
+         mult_cost = mults * (tc_share * (L * L * TC_MAC_OPEQ + 0.25) + (1 - tc_share) * mops)
+     else:
+         mult_cost = mults * mops
+@@ -359,7 +360,7 @@
+     wg_rate = HW_THROUGHPUT["simt" if hw == "tc" else hw]
+     witgen_s = (S["commit"] * (WITGEN_OPS_PER_CELL or 0) * p) / wg_rate
+     proxy_s = crypto_s + witgen_s
+-    pq = field != "lattice-Rq" or True
++    pq = None  # Unknown: requires a scheme, parameter set, and adversary model; field choice cannot certify PQ.
+     formal = min(FORMAL[pcs_name], FORMAL[piop], FORMAL[lookup], FORMAL[rec])
+     return dict(field=field, pcs=pcs_name, rate=rate, hash=h, piop=piop, lookup=lookup, rec=rec,
+                 hw=hw, shape=shape, amort=amort, regime=regime, weights=weights, q=q,
+--- a/notes/dark-learning-scripts/tradeoff_space.py
++++ b/notes/dark-learning-scripts/tradeoff_space.py
+@@ -31,7 +31,7 @@
+ PQ_CEILING = {4096: 101, 8192: 202, 16384: 411}
+ T = 1032193                  # deployed plaintext modulus [MEASURED]
+ T_BITS = 20
+-W_BITS, A_BITS = 4, 4        # integer recipe: signed 4-bit weights-or-factors and activations (F1) [MODEL]
++W_BITS, A_BITS = 4, 4        # [MODEL] symmetric signed recipe, excludes -2^(bits-1); not the full signed range
+ BRIDGE_BITS = 30             # 2-felt base-2^30 BabyBear bridge per residue (mle_gpu.rs:479) [READ]
+ LOOKUP_BITS = 16             # LogUp range-check limb width [MODEL]
+ EPS_CHK_LOG2 = -100          # [MODEL; deployed FRI is 34 bits at UDR (VERDICTS 2): not quotable]
+@@ -168,7 +168,7 @@
+         envelope = env_ctct * (fct + cert)
+         step_proof = o["ctct"] * (fct + cert) + o["ctpt"] * fct + nonlin_proof
+         if custody == "fhe+mpc-boundary":
+-            host = o["ctct"] * W_CTCT + o["ctpt"] * W_CTPT + act * KAPPA * C_PRE
++            host = (o["ctct"] + env_ctct) * W_CTCT + o["ctpt"] * W_CTPT + act * KAPPA * C_PRE
+             online = 2 * NPARTY * (cross * N + act * KAPPA)
+             events = cross * STEPS * mult
+             leak = math.log2(max(events, 1)) + smudge_event_log2(logq, N)
+@@ -176,7 +176,7 @@
+         else:
+             boots = cross
+             step_proof += 15 * boots * (fct + cert)
+-            host = (o["ctct"] + 15 * boots * (1 + KAPPA)) * W_CTCT + o["ctpt"] * W_CTPT
++            host = (o["ctct"] + env_ctct + 15 * boots * (1 + KAPPA)) * W_CTCT + o["ctpt"] * W_CTPT
+             online, leak = 0, -999
+             dep_ok = depth_avail >= 15 + o["depth"]
+         # append-only histories must merge before the integer state wraps; dense updates are charged a
+@@ -187,8 +187,9 @@
+         lin = (o["ctct"] + o["ctpt"] / 2) * N            # no split-sign doubling on shares (Codex d)
+         step_proof = 3 * triples + lin + nonlin_proof
+         envelope = 3 * o["env"]                          # squares of shared factor entries
+-        host = lin + (triples + act * KAPPA) * C_PRE
+-        online = 2 * NPARTY * (triples + act * KAPPA)
++        # Mandatory envelope squares consume triples and communication even when step proofs are sampled.
++        host = lin + o["env"] + (triples + o["env"] + act * KAPPA) * C_PRE
++        online = 2 * NPARTY * (triples + o["env"] + act * KAPPA)
+         leak, dep_ok, wrap_ok = -999, True, True         # integer truncation semantics still owed (Codex g)
+     elif custody == "tee-plaintext":
+         step_proof = (o["ctct"] + o["ctpt"] / 2) * N + nonlin_proof
+@@ -245,7 +246,8 @@
+     assert felts_per_ct("RNS3-109@4096", False) == 49152, "cross-limb table control"
+     assert 3 * 4096 * 109 == 1339392
+     # control against bfv_coeff_matmul.rs: signed 4 x 8-bit at deployed t gives inner dim 504 [READ via Codex]
+-    assert ((T - 1) // 2) // (7 * 127 + 137) <= 504 + 100
++    assert ((T - 1) // 2) // (8 * 128) == 504  # deployed full signed 4 x 8-bit bound
++    assert ((T - 1) // 2) // (7 * 127) == 580  # distinct symmetric-range recipe used here
+     print("controls: felts/ct deployed = 49,152; booleanity 3*4096*109 = 1,339,392; "
+           f"k_wrap at signed {W_BITS}x{A_BITS}-bit = {k_wrap():,}; wrap_steps = {wrap_steps():,}")
+ 
+--- a/notes/dark-learning-scripts/backward_table_virtualization.py
++++ b/notes/dark-learning-scripts/backward_table_virtualization.py
+@@ -10,9 +10,9 @@
+ inputs mapping to y disagree on the bf16-rounded derivative? Each such y is a place where "derive sigma'
+ from sigma" returns a different number than the spec (sigma' evaluated at the input).
+ 
+-Pure Python, no deps. Semantics: exact real function of the bf16 input, rounded once to bf16
+-(round-to-nearest-even), which is the "exact 2^16 table" semantics the project uses for forward tables.
+-NaN/inf inputs excluded. Prints counts, not timings.
++Pure Python, no deps. Semantics: binary64/libm approximations at bf16 inputs, converted through
++binary32 then bf16. Cancellation and double rounding occur; these counts are NOT a certified
++exact-real, single-rounding table census. NaN/inf inputs excluded. Prints counts, not timings.
+ """
+ import math
+ import struct
+@@ -88,7 +88,7 @@
+             note = "y=0 code: x<=0 has d=0; x=-0.0/+0.0 tie"
+         print(f"{name:8} {len(groups):9} {len(colliding):15} {len(bad):17} {affected:15} {maxgap:12.4g}  {note}")
+     print("\nReading: 'codes w/ >1 deriv' > 0 means a backward table keyed on the forward OUTPUT cannot reproduce the")
+-    print("spec's derivative at those codes; the repair is to key the backward lookup on the INPUT code (the forward")
++    print("implemented derivative at those codes; the repair is to key the backward lookup on the INPUT code (the forward")
+     print("table's address, already committed by the forward lookup), i.e. one table with a two-column row")
+     print("(x -> sigma(x), sigma'(x)), which costs one extra column, not a second table.")
+ 

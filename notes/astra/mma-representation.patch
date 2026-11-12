@@ -1,0 +1,76 @@
+--- a/experiments/mma-field-mapping/mma_limbs.py
++++ b/experiments/mma-field-mapping/mma_limbs.py
+@@ -19,10 +19,42 @@
+     reach = {(r % base) for r in digitset}
+     return len(reach) == base
+ 
+-def limbs(p, base, signed):
+-    # signed (balanced) digits need one extra limb of headroom in the worst case
+-    # balanced digits cover [-(b^L-1)/2, (b^L-1)/2], so they need b^L > 2p
+-    return math.ceil(math.log(2 * p + 1, base)) if signed else math.ceil(math.log(p, base))
++def representatives(base, digitset):
++    # Fix an encoder, not just a complete residue set.  Each quotient stays nonnegative.
++    reps = {r: min((d for d in digitset if d % base == r and d <= r), key=abs)
++            for r in range(base)}
++    assert reps[0] == 0
++    return reps
++
++def limbs(p, base, digitset):
++    """Certified upper count for this explicit quotient/remainder encoder on 0 <= x < p.
++    If 0 <= q <= M and r is the chosen digit then
++    0 <= (q-r)//base <= (M-min(reps))//base.  Stop when every possible final quotient
++    is itself a digit.  The old balanced-interval formula was false for this gapped set.
++    """
++    assert p >= 2 and base >= 2
++    reps = representatives(base, digitset)
++    terminal = 0
++    while terminal + 1 in digitset:
++        terminal += 1
++    bound, count = p - 1, 1
++    while bound > terminal:
++        nxt = (bound - min(reps.values())) // base
++        if nxt >= bound:
++            raise ValueError("digit set has no decreasing nonnegative quotient bound")
++        bound, count = nxt, count + 1
++    return count
++
++def encode(x, base, digitset, count):
++    reps = representatives(base, digitset)
++    out = []
++    for _ in range(count - 1):
++        digit = reps[x % base]
++        out.append(digit)
++        x = (x - digit) // base
++    assert x in digitset
++    out.append(x)
++    return out
+ 
+ SCHEMES = [
+     # name, base, digit set (in format's integer scale), signed?
+@@ -35,14 +67,24 @@
+           ("Goldilocks", 2**64 - 2**32 + 1)]
+ 
+ def main():
++    assert limbs(67, 13, SCHEMES[2][2]) == 3  # 65 had no two-digit representation
++    for x in range(67):
++        enc = encode(x, 13, SCHEMES[2][2], 3)
++        assert sum(d * 13**i for i, d in enumerate(enc)) == x
+     int8P = {}
+     rows = []
+     for pname, p in PRIMES:
+         for sname, base, ds, signed in SCHEMES:
+             assert digits_ok(base, ds), sname
+-            L = limbs(p, base, signed)
++            L = limbs(p, base, ds)
++            for x in (0, 1, p // 2, p - 1):
++                enc = encode(x, base, ds, L)
++                assert sum(d * base**i for i, d in enumerate(enc)) == x
+             P = L * L
+-            maxd = max(abs(d) for d in ds)
++            terminal = 0
++            while terminal + 1 in ds:
++                terminal += 1
++            maxd = max(terminal, max(abs(d) for d in representatives(base, ds).values()))
+             # digit after carry-normalisation is bounded by the digit set itself
+             maxprod = maxd * maxd
+             # TensorZKP layout: each (limb_i, limb_j) pair is its own MMA output entry

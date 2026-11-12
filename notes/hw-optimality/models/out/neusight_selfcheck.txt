@@ -1,0 +1,13 @@
+B5 M125 N4 K2: label 0.0339 ms pred 0.0142 ms ratio 0.42 GFLOP/s(label) 0
+B5 M36 N60 K646: label 0.0585 ms pred 0.0369 ms ratio 0.63 GFLOP/s(label) 239
+B207 M251 N73 K6: label 0.1926 ms pred 0.1454 ms ratio 0.75 GFLOP/s(label) 236
+B252 M131 N19 K83: label 0.1135 ms pred 0.1141 ms ratio 1.01 GFLOP/s(label) 917
+B43 M240 N74 K136: label 0.0890 ms pred 0.0961 ms ratio 1.08 GFLOP/s(label) 2334
+B44 M380 N657 K17: label 0.4516 ms pred 0.3252 ms ratio 0.72 GFLOP/s(label) 827
+B65 M168 N759 K39: label 0.3653 ms pred 0.2660 ms ratio 0.73 GFLOP/s(label) 1770
+B89 M359 N127 K141: label 0.3377 ms pred 0.4236 ms ratio 1.25 GFLOP/s(label) 3388
+B219 M48 N227 K421: label 0.6211 ms pred 0.7141 ms ratio 1.15 GFLOP/s(label) 3235
+B253 M21 N1008 K347: label 1.7684 ms pred 2.6887 ms ratio 1.52 GFLOP/s(label) 2102
+B476 M96 N902 K93: label 4.0244 ms pred 3.5463 ms ratio 0.88 GFLOP/s(label) 1905
+B215 M103 N463 K974: label 6.3888 ms pred 7.3410 ms ratio 1.15 GFLOP/s(label) 3126
+B870 M455 N886 K890: label 217.5918 ms pred 199.9933 ms ratio 0.92 GFLOP/s(label) 2869

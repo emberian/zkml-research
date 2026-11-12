@@ -31,8 +31,12 @@ Each seat's dir is ROOT/NAME/seatI; the owner's is ROOT/NAME/owner. Paths in tap
 """
 import json, os, shlex, subprocess, sys, time
 
+# cfg "ssh_config": an ssh config file for every ssh/scp of the run (a rented seat's Host block beside
+# `Include ~/.ssh/config`), so a held box is reached by its alias without editing the user's own config
+SSH_F = []
+
 def sh(host, cmd, check=True, capture=True):
-    r = subprocess.run(["ssh", "-o", "BatchMode=yes", host, cmd], text=True,
+    r = subprocess.run(["ssh", *SSH_F, "-o", "BatchMode=yes", host, cmd], text=True,
                        stdout=subprocess.PIPE if capture else None, stderr=subprocess.STDOUT if capture else None)
     if check and r.returncode != 0:
         raise SystemExit(f"[{host}] {cmd}\n{r.stdout}")
@@ -45,10 +49,10 @@ def owner_dir(cfg):
     return f"{cfg['owner']['root']}/{cfg['name']}/owner"
 
 def scp_from(host, path, local):
-    subprocess.run(["scp", "-q", f"{host}:{path}", local], check=True)
+    subprocess.run(["scp", *SSH_F, "-q", f"{host}:{path}", local], check=True)
 
 def scp_to(local, host, path):
-    subprocess.run(["scp", "-q", local, f"{host}:{path}"], check=True)
+    subprocess.run(["scp", *SSH_F, "-q", local, f"{host}:{path}"], check=True)
 
 def setup(cfg):
     loc = os.path.join(cfg["out"], cfg["name"], "certs")
@@ -700,6 +704,8 @@ def drive(cfg):
 
 if __name__ == "__main__":
     cfg = json.load(open(sys.argv[1]))
+    if cfg.get("ssh_config"):
+        SSH_F[:] = ["-F", cfg["ssh_config"]]
     if sys.argv[2] == "launch-seats":
         launch(cfg, seats_only=True)
         sys.exit(0)

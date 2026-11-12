@@ -1,0 +1,549 @@
+[
+ {
+  "kernel": "freivalds_bb",
+  "cfg": "gateup_T2048",
+  "gen": "v5e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 5760,
+   "s": 2
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 557383680,
+    "mxu_int8@pad": 8934916096
+   },
+   "vpu_elems": {
+    "32": 167770626
+   },
+   "vpu_by_op": {
+    "shift_right_arithmetic:i32": 47580544,
+    "convert:i32": 47297536,
+    "and:i32": 35788928,
+    "subtract:i32": 35627394,
+    "add:i32": 719104,
+    "select:i32": 212480,
+    "multiply:f32": 110720,
+    "multiply:i32": 88576,
+    "shift_left:i32": 88576,
+    "compare:i32": 79616,
+    "add:f32": 66432,
+    "or:i32": 66432
+   },
+   "move_elems": 167384068,
+   "hbm_in": 69903368,
+   "hbm_out": 32768,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 8.528797073170732e-05,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 4.535490404060914e-05,
+    "vpu": 2.73064169921875e-05,
+    "hbm": 8.528797073170732e-05
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified",
+   "mxu_ideal_unpadded_s": 2.8293587817258884e-06
+  },
+  "lint": [],
+  "compile_s": 1.8,
+  "cost_analysis": {
+   "flops": 1282293120.0,
+   "bytes accessed": 318515712.0,
+   "optimal_seconds": -0.9995683431625366
+  },
+  "memory": {
+   "argument_size_in_bytes": 69903872,
+   "output_size_in_bytes": 33280,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 2223616
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "copy @ in-MXU-fusion (VMEM, on the fly)": 3,
+    "MXU underfill": 14,
+    "pad @ standalone fusion (HBM pass)": 4,
+    "copy @ standalone fusion (HBM pass)": 2,
+    "custom-call": 1,
+    "copy @ prefetch HBM->VMEM": 1
+   },
+   "est_cycles_entry": 299650,
+   "scoped_vmem_max": 12582912,
+   "async_prefetch": 3,
+   "n_instructions": 912,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 1825,
+     "calls": "fused_computation.211"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 7700,
+     "calls": "fused_computation.213"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2790,
+     "calls": "fused_computation.42"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2301,
+     "calls": "fused_computation.44"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 3043,
+     "calls": "fused_computation.40"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 5732,
+     "calls": "fused_computation.4"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2263,
+     "calls": "fused_computation.212"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2470,
+     "calls": "fused_computation.189"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 224895,
+     "calls": "fused_computation.2"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 2920,
+     "calls": "fused_computation.22"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3612,
+     "calls": "fused_computation.6"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3612,
+     "calls": "fused_computation.14"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 2920,
+     "calls": "fused_computation.24"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3612,
+     "calls": "fused_computation.8"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3612,
+     "calls": "fused_computation.16"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 2920,
+     "calls": "fused_computation.26"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 2944,
+     "calls": "fused_computation.34"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3612,
+     "calls": "fused_computation.10"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3612,
+     "calls": "fused_computation.18"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3636,
+     "calls": "fused_computation.36"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3636,
+     "calls": "fused_computation.35"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 3586,
+     "calls": "fused_computation.37"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "copy",
+     "where": "in-MXU-fusion (VMEM, on the fly)",
+     "comp": "copy_fusion",
+     "layouts": [
+      "{1,0:T(8,128)(4,1)}"
+     ],
+     "line": "ROOT %copy.22 = s8[2880,5760]{1,0:T(8,128)(4,1)} copy(%input)"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.213",
+     "detail": "minor dim 8 not a multiple of 128",
+     "line": "ROOT %convolution.33 = s32[2880,8]{0,1:T(8,128)S(1)} convolution(%fusion.133, %fusion.134), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=152}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.40",
+     "layouts": [
+      "{0,2,1:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.7 = s8[2880,4,2]{0,2,1:T(4,128)(4,1)} pad(%param_3.273, %constant.217), padding=0_0x0_3x0_0, metadata={op_name=\"jit(f)/stack\" stack_frame_id=63}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.40",
+     "layouts": [
+      "{0,2,1:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.6 = s8[2880,4,2]{0,2,1:T(4,128)(4,1)} pad(%param_2.407, %constant.217), padding=0_0x1_2x0_0, metadata={op_name=\"jit(f)/stack\" stack_frame_id=63}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.40",
+     "layouts": [
+      "{0,2,1:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.5 = s8[2880,4,2]{0,2,1:T(4,128)(4,1)} pad(%param_1.617, %constant.217), padding=0_0x2_1x0_0, metadata={op_name=\"jit(f)/stack\" stack_frame_id=63}"
+    },
+    {
+     "kind": "pad",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.40",
+     "layouts": [
+      "{0,2,1:T(4,128)(4,1)}"
+     ],
+     "line": "%pad.4 = s8[2880,4,2]{0,2,1:T(4,128)(4,1)} pad(%param_0.86, %constant.217), padding=0_0x3_0x0_0, metadata={op_name=\"jit(f)/stack\" stack_frame_id=63}"
+    },
+    {
+     "kind": "copy",
+     "where": "in-MXU-fusion (VMEM, on the fly)",
+     "comp": "copy_fusion.1",
+     "layouts": [
+      "{0,1:T(8,128)(4,1)}"
+     ],
+     "line": "ROOT %copy.23 = s8[2048,2880]{0,1:T(8,128)(4,1)} copy(%input.1)"
+    },
+    {
+     "kind": "copy",
+     "where": "in-MXU-fusion (VMEM, on the fly)",
+     "comp": "fused_computation.57",
+     "layouts": [
+      "{2,0,1:T(4,128)(4,1)}"
+     ],
+     "line": "ROOT %copy.13 = s8[4,2,2880]{2,0,1:T(4,128)(4,1)} copy(%param_0.141), metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=110}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.4",
+     "detail": "minor dim 2 not a multiple of 128",
+     "line": "ROOT %convolution.14 = s32[2048,4,2]{0,1,2:T(4,128)S(1)} convolution(%fusion.1, %fusion.45), window={size=2 pad=1_1 rhs_reversal=1}, dim_labels=bf0_o0i->bf0, metadata={op_name=\"jit(f)/dot_general\" sta"
+    },
+    {
+     "kind": "copy",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.189",
+     "layouts": [
+      "{0,2,1:T(2,128)}"
+     ],
+     "line": "%copy.21 = s32[2048,1,2]{0,2,1:T(2,128)} copy(%param_2.405), metadata={op_name=\"jit(f)/slice\" stack_frame_id=113}"
+    },
+    {
+     "kind": "copy",
+     "where": "standalone fusion (HBM pass)",
+     "comp": "fused_computation.189",
+     "layouts": [
+      "{0,2,1:T(2,128)}"
+     ],
+     "line": "%copy.19 = s32[2048,1,2]{0,2,1:T(2,128)} copy(%param_0.612)"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.22",
+     "detail": "minor dim 8 not a multiple of 128",
+     "line": "ROOT %convolution.23 = s32[2048,8]{0,1:T(8,128)S(1)} convolution(%fusion.19, %fusion.123), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=150}"
+    }
+   ]
+  },
+  "compiler_est_s": 0.00019976666666666668,
+  "bound_over_compiler_est": 0.4269379479311229
+ },
+ {
+  "kernel": "freivalds_bb",
+  "cfg": "gateup_T2048",
+  "gen": "v6e",
+  "params": {
+   "T": 2048,
+   "K": 2880,
+   "N": 5760,
+   "s": 2
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 557383680,
+    "mxu_int8@pad": 8934916096
+   },
+   "vpu_elems": {
+    "32": 167770626
+   },
+   "vpu_by_op": {
+    "shift_right_arithmetic:i32": 47580544,
+    "convert:i32": 47297536,
+    "and:i32": 35788928,
+    "subtract:i32": 35627394,
+    "add:i32": 719104,
+    "select:i32": 212480,
+    "multiply:f32": 110720,
+    "multiply:i32": 88576,
+    "shift_left:i32": 88576,
+    "compare:i32": 79616,
+    "add:f32": 66432,
+    "or:i32": 66432
+   },
+   "move_elems": 167384068,
+   "hbm_in": 69903368,
+   "hbm_out": 32768,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 4.3710085e-05,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 9.711865321739131e-06,
+    "hbm": 4.3710085e-05
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)",
+   "mxu_ideal_unpadded_s": 6.058518260869566e-07,
+   "caveat": "VPU peak unknown for this generation: the bound omits VPU work and is a lower bound only"
+  },
+  "lint": [],
+  "compile_s": 2.4,
+  "cost_analysis": {
+   "flops": 1282293120.0,
+   "bytes accessed": 252187360.0,
+   "optimal_seconds": -0.9998461008071899
+  },
+  "memory": {
+   "argument_size_in_bytes": 69903872,
+   "output_size_in_bytes": 32800,
+   "temp_size_in_bytes": 0,
+   "generated_code_size_in_bytes": 3539968
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "MXU underfill": 13,
+    "copy @ in-MXU-fusion (VMEM, on the fly)": 2,
+    "pad @ standalone fusion (HBM pass)": 4,
+    "custom-call": 1
+   },
+   "est_cycles_entry": 211670,
+   "scoped_vmem_max": 15728640,
+   "async_prefetch": 4,
+   "n_instructions": 872,
+   "entry_fusions": [
+    {
+     "kind": "kLoop",
+     "est_cycles": 133416,
+     "calls": "fused_computation.3"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.16"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.29"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.30"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.31"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.8"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.32"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.33"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 4096,
+     "calls": "fused_computation.34"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3840,
+     "calls": "fused_computation.22"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3840,
+     "calls": "fused_computation.24"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3840,
+     "calls": "fused_computation.36"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 3840,
+     "calls": "fused_computation.37"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 10880,
+     "calls": "fused_computation.214"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2819,
+     "calls": "fused_computation.47"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2465,
+     "calls": "fused_computation.49"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2885,
+     "calls": "fused_computation.45"
+    },
+    {
+     "kind": "kOutput",
+     "est_cycles": 5120,
+     "calls": "fused_computation.28"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 2120,
+     "calls": "fused_computation.213"
+    },
+    {
+     "kind": "kLoop",
+     "est_cycles": 3837,
+     "calls": "fused_computation.42"
+    }
+   ],
+   "findings_head": [
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.22",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "ROOT %convolution.23 = s32[2048,8]{0,1:T(8,128)S(1)} convolution(%fusion.19, %fusion.142), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.24",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "ROOT %convolution.24 = s32[2048,8]{0,1:T(8,128)S(1)} convolution(%fusion.21, %fusion.143), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.36",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.42 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.47, %fusion.144), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.37",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.44 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.50, %fusion.141), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.8",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "ROOT %convolution.16 = s32[2048,8]{0,1:T(8,128)S(1)} convolution(%fusion.5, %fusion.90), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.32",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.34 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.35, %fusion.91), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.33",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.36 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.38, %fusion.89), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.34",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.38 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.41, %fusion.88), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.16",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "ROOT %convolution.20 = s32[2048,8]{0,1:T(8,128)S(1)} convolution(%fusion.13, %fusion.105), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.29",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.28 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.26, %fusion.106), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.30",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.30 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.29, %fusion.104), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    },
+    {
+     "kind": "MXU underfill",
+     "where": "fused_computation.31",
+     "detail": "minor dim 8 not a multiple of 256",
+     "line": "%convolution.32 = s32[2048,8]{0,1:T(8,128)} convolution(%fusion.32, %fusion.103), dim_labels=bf_io->bf, metadata={op_name=\"jit(f)/dot_general\" stack_frame_id=149}"
+    }
+   ]
+  },
+  "compiler_est_s": 6.031306573913044e-05,
+  "bound_over_compiler_est": 0.7247199999591695
+ }
+]

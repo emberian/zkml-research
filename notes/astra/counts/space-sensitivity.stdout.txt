@@ -1,0 +1,6 @@
+SENSITIVITY of U1 (audited, tensor-core) to the [A] constants
+  TC MAC cost x0.5 : proxy 0.99x of base
+  TC MAC cost x2.0 : proxy 1.01x of base
+  TC MAC cost x4.0 : proxy 1.04x of base
+  boundary commit x0.5 : proxy 0.52x of base
+  boundary commit x2.0 : proxy 1.95x of base

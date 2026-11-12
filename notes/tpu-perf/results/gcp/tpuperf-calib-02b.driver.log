@@ -1,0 +1,13 @@
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm create tpuperf-calib-02b --zone us-west4-a --accelerator-type v5litepod-1 --version v2-alpha-tpuv5-lite --spot --network tpuperf-net --subnetwork tpuperf-usw4
+Create request issued for: [tpuperf-calib-02b]
+Waiting for operation [projects/gen-lang-client-0657209111/locations/us-west4-a/operations/operation-1794006726059-65fa3bda1a64d-8e32fbad-bf68c944] to complete...
+.........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................failed.
+ERROR: (gcloud.compute.tpus.tpu-vm.create) {
+  "code": 8,
+  "message": "There is no more capacity in the zone \"us-west4-a\"; you can try in another zone where Cloud TPU Nodes are offered (see https://cloud.google.com/tpu/docs/regions) [EID: 0x10e4a50209677e0d]"
+}
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
++ gcloud --project gen-lang-client-0657209111 compute tpus tpu-vm list --zone us-west4-a --format=value(name)
+{"name": "tpuperf-calib-02b", "outcome": "create failed: }", "gone": true, "hours": 0.028950595000000003, "cost": 0.0, "cumulative": 0.0}

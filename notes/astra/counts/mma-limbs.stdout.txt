@@ -1,0 +1,22 @@
+prime      scheme                                       L  P=L^2  max|ab|     N<2^31    N<2^24  N<2^14 breakeven r
+M31        INT8 (u8 limbs, TensorZKP)                   4     16    65025      33025       258       0        1.00
+M31        FP8 E4M3 (ints 0..15)                        8     64      225    9544371     74565      72        4.00
+M31        FP4 E2M1 doubled, base 13 (Ozaki, obend)     9     81      144   14913080    116508     113        5.06
+M31        FP4 E2M1 doubled, base 5 (digits 0..4)      14    196       16  134217727   1048575    1023       12.25
+BabyBear   INT8 (u8 limbs, TensorZKP)                   4     16    65025      33025       258       0        1.00
+BabyBear   FP8 E4M3 (ints 0..15)                        8     64      225    9544371     74565      72        4.00
+BabyBear   FP4 E2M1 doubled, base 13 (Ozaki, obend)     9     81      144   14913080    116508     113        5.06
+BabyBear   FP4 E2M1 doubled, base 5 (digits 0..4)      14    196       16  134217727   1048575    1023       12.25
+KoalaBear  INT8 (u8 limbs, TensorZKP)                   4     16    65025      33025       258       0        1.00
+KoalaBear  FP8 E4M3 (ints 0..15)                        8     64      225    9544371     74565      72        4.00
+KoalaBear  FP4 E2M1 doubled, base 13 (Ozaki, obend)     9     81      144   14913080    116508     113        5.06
+KoalaBear  FP4 E2M1 doubled, base 5 (digits 0..4)      14    196       16  134217727   1048575    1023       12.25
+Goldilocks INT8 (u8 limbs, TensorZKP)                   8     64    65025      33025       258       0        1.00
+Goldilocks FP8 E4M3 (ints 0..15)                       16    256      225    9544371     74565      72        4.00
+Goldilocks FP4 E2M1 doubled, base 13 (Ozaki, obend)    18    324      144   14913080    116508     113        5.06
+Goldilocks FP4 E2M1 doubled, base 5 (digits 0..4)      28    784       16  134217727   1048575    1023       12.25
+
+Reading: an MMA format beats INT8 for field dot products only on a SKU where
+TOPS(fmt)/TOPS(INT8) exceeds 'breakeven r'. N columns: longest exact block before
+an off-MMA modular reduction, for an accumulator with that many significand bits.
+FP formats accumulate in FP; INT32 column applies to INT8 only, FP32/truncated to FP8/FP4.

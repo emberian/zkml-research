@@ -1,0 +1,16 @@
+{
+  "sources": {
+    "notes/construction-search/space.py": "58376dacc3b7806aeaa5f70fc636c76f239bb5b24481c428600c6056e34ffc4a",
+    "notes/dark-learning-scripts/tradeoff_space.py": "743bcd9efc3e97c0390d2a26d97a9cdc89b90b93c72694b5c41062898d59af35",
+    "notes/dark-learning-scripts/backward_table_virtualization.py": "6869985662a3c6891cfbafe4d3df944bde843386820570d76d5d3a79507dda44",
+    "notes/dark-learning-tradeoff-space.md": "030c8808fe91962d623ee29c8a60314d71513e4514667057f45ce62290bf4296",
+    "/Users/ember/dev/degg-research/experiments/air-census/air_census.sh": "dcc6a67bb3532730dd5e789e5c91949d468b4dca8793825210373a8d1e7f5e1e",
+    "/Users/ember/dev/degg-research/experiments/mma-field-mapping/mma_limbs.py": "93d110d1638612f0b0f8153f43c5c2e31a8bd115b59ce9c83b84a846963a34a6",
+    "/Users/ember/dev/degg-research/research/governance-literature-notes-2026-11-05.md": "e63e88949ec62d0091572c1cf95ba34b0406f083682e9750ff51a8abcd4215c6"
+  },
+  "heads": {
+    "zkml-research": "f31fe3c77eaa140b601e35939db7660823334781",
+    "degg-research": "6b70d64c532fd5007850d236bd7c60ea7ea21a0d",
+    "breadstuffs": "22fad151e9f118e3aa001a823e075918ffa139e8"
+  }
+}

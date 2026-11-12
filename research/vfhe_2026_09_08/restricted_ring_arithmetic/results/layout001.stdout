@@ -1,0 +1,18 @@
+Compiler/RestrictedRingWindow.lean:46:79: error: unsolved goals
+⊢ 2 ^ 289 ≤ 254629497041810760783555711051172270131433549208242031329517556169297662470417088272924672
+'Minidregg.Compiler.RestrictedRingWindow.capacity_and_public_width' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+Compiler/RestrictedRingWindow.lean:125:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Compiler.RestrictedRingWindow.capacity_and_public_width' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Compiler.RestrictedRingWindow.capacity_and_public_width' depends on axioms: [propext,
++  sorryAx,
++  Classical.choice,
++  Quot.sound]
+'Minidregg.Compiler.RestrictedRingWindow.all_public_limbs' depends on axioms: [propext, Quot.sound]
+Compiler/RestrictedRingWindow.lean:134:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Compiler.RestrictedRingWindow.all_public_limbs' does not depend on any axioms
++ info: 'Minidregg.Compiler.RestrictedRingWindow.all_public_limbs' depends on axioms: [propext, Quot.sound]

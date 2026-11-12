@@ -1,7 +1,7 @@
 {
  "d": 4,
  "profile": "demo-x2de",
- "seconds": 1249.2,
+ "seconds": 1271.2,
  "all_as_expected": true,
  "rows": {
   "step 1 by the old committee": {
@@ -16,7 +16,7 @@
    "verdict": "REFUSED",
    "by": "rotation refused: parse: non-canonical field element",
    "as_expected": true,
-   "verify_seconds": 0.001
+   "verify_seconds": 0.002
   },
   "(ii) step 1 with a forged child (forge_W1n)": {
    "verdict": "ACCEPT",
@@ -30,21 +30,21 @@
    "verdict": "REFUSED",
    "by": "rotation refused: Ligero linear test: the constraints do not hold",
    "as_expected": true,
-   "verify_seconds": 2.563,
+   "verify_seconds": 0.97,
    "violated": "handover discharge: old W1(r_k) = c1p"
   },
   "handover to shifted weights, carries their evaluation": {
    "verdict": "REFUSED",
    "by": "rotation refused: Ligero linear test: the constraints do not hold",
    "as_expected": true,
-   "verify_seconds": 1.084,
+   "verify_seconds": 0.987,
    "violated": "handover: old W1(r) = new carry c1"
   },
   "(i) handover to shifted weights with honest carries": {
    "verdict": "ACCEPT",
    "by": "accept",
    "as_expected": true,
-   "verify_seconds": 2.819,
+   "verify_seconds": 1.973,
    "status": {
     "1": "pending"
    }
@@ -59,44 +59,44 @@
    "hidden_rows": 16,
    "lin_constraints": 1560,
    "ligero_wire": 176760,
-   "bytes": 630808,
-   "prove_seconds": 51.07
+   "bytes": 622360,
+   "prove_seconds": 48.74
   },
   "honest proof for another new custodian set": {
    "verdict": "REFUSED",
    "by": "rotation refused: handover (old committee): column challenge mismatch",
    "as_expected": true,
-   "verify_seconds": 0.039
+   "verify_seconds": 0.043
   },
   "a tampered handover proof (Ligero q[0] + 1, re-encoded)": {
    "verdict": "REFUSED",
    "by": "rotation refused: Ligero linear test: the constraints do not hold",
    "as_expected": true,
-   "verify_seconds": 1.006
+   "verify_seconds": 1.101
   },
   "a new carry root replaced (re-encoded)": {
    "verdict": "REFUSED",
    "by": "rotation refused: handover (old committee): column challenge mismatch",
    "as_expected": true,
-   "verify_seconds": 0.04
+   "verify_seconds": 0.042
   },
   "the proof bytes with one byte flipped (middle)": {
    "verdict": "REFUSED",
-   "by": "rotation refused: Ligero linear test: the constraints do not hold",
+   "by": "rotation refused: Ligero quadratic test: a product gate does not hold",
    "as_expected": true,
-   "verify_seconds": 0.971
+   "verify_seconds": 1.765
   },
   "the proof bytes truncated by one byte": {
    "verdict": "REFUSED",
    "by": "rotation refused: parse: truncated",
    "as_expected": true,
-   "verify_seconds": 0.038
+   "verify_seconds": 0.039
   },
   "honest handover": {
    "verdict": "ACCEPT",
    "by": "accept",
    "as_expected": true,
-   "verify_seconds": 2.127,
+   "verify_seconds": 2.13,
    "status": {
     "1": "pending"
    },

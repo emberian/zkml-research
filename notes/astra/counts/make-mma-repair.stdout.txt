@@ -1,0 +1,1 @@
+Generated mma-representation.patch; executed encoder controls and repaired table.

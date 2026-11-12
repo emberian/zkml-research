@@ -1,0 +1,387 @@
+[
+ {
+  "kernel": "rns_ntt61",
+  "cfg": "N8192_B1024",
+  "gen": "v5e",
+  "params": {
+   "B": 1024,
+   "N": 8192,
+   "N1": 64
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 103079215104
+   },
+   "vpu_elems": {
+    "32": 3288334464
+   },
+   "vpu_by_op": {
+    "add:i32": 838860816,
+    "and:i32": 553648128,
+    "shift_right_arithmetic:i32": 536870912,
+    "select:i32": 402653200,
+    "subtract:i32": 268435456,
+    "convert:i32": 201326608,
+    "xor:ui8": 134217728,
+    "multiply:i32": 134217728,
+    "multiply:f32": 83886080,
+    "add:f32": 50331648,
+    "compare:i32": 33554480,
+    "floor:f32": 16777216
+   },
+   "move_elems": 3036742176,
+   "hbm_in": 134479872,
+   "hbm_out": 67108864,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.0005352106875,
+   "unit": "vpu",
+   "per_unit_s": {
+    "mxu": 0.0005232447467208122,
+    "vpu": 0.0005352106875,
+    "hbm": 0.0002458399219512195
+   },
+   "vpu_peak": 6144000000000.0,
+   "vpu_src": "INFERRED-unverified"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     128
+    ],
+    "issues": [],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 512]",
+      "block": [
+       8,
+       64,
+       512
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "int32[8, 64, 1]",
+      "block": [
+       8,
+       64,
+       1
+      ],
+      "bytes": 2048
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     }
+    ],
+    "vmem_bytes_double_buffered": 2625536,
+    "vmem_limit": 16777216,
+    "steps": 128,
+    "macs_per_step": 268435456
+   },
+   {
+    "name": "None",
+    "grid": [
+     8,
+     4
+    ],
+    "issues": [
+     "R1 block (8, 256, 8, 128): int8 packs 32 rows per tile; 8 pads"
+    ],
+    "blocks": [
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       256,
+       8,
+       128
+      ],
+      "bytes": 2097152
+     },
+     {
+      "array": "int8[64, 8, 128, 1024]",
+      "block": [
+       8,
+       8,
+       128,
+       1024
+      ],
+      "bytes": 8388608
+     },
+     {
+      "array": "int32[64, 8, 128]",
+      "block": [
+       8,
+       8,
+       128
+      ],
+      "bytes": 32768
+     },
+     {
+      "array": "int8[64, 8, 1024, 128]",
+      "block": [
+       8,
+       8,
+       256,
+       128
+      ],
+      "bytes": 2097152
+     }
+    ],
+    "vmem_bytes_double_buffered": 25231360,
+    "vmem_limit": 100663296,
+    "steps": 32,
+    "macs_per_step": 2147483648
+   }
+  ],
+  "compile_s": 24.3,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": null,
+   "optimal_seconds": null
+  },
+  "memory": {
+   "argument_size_in_bytes": 134479872,
+   "output_size_in_bytes": 67108864,
+   "temp_size_in_bytes": 67108864,
+   "generated_code_size_in_bytes": 3030016
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "custom-call": 2
+   },
+   "est_cycles_entry": 0,
+   "scoped_vmem_max": 26300416,
+   "async_prefetch": 0,
+   "n_instructions": 7,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ },
+ {
+  "kernel": "rns_ntt61",
+  "cfg": "N8192_B1024",
+  "gen": "v6e",
+  "params": {
+   "B": 1024,
+   "N": 8192,
+   "N1": 64
+  },
+  "counts": {
+   "mxu_macs": {
+    "mxu_int8": 103079215104
+   },
+   "vpu_elems": {
+    "32": 3288334464
+   },
+   "vpu_by_op": {
+    "add:i32": 838860816,
+    "and:i32": 553648128,
+    "shift_right_arithmetic:i32": 536870912,
+    "select:i32": 402653200,
+    "subtract:i32": 268435456,
+    "convert:i32": 201326608,
+    "xor:ui8": 134217728,
+    "multiply:i32": 134217728,
+    "multiply:f32": 83886080,
+    "add:f32": 50331648,
+    "compare:i32": 33554480,
+    "floor:f32": 16777216
+   },
+   "move_elems": 3036742176,
+   "hbm_in": 134479872,
+   "hbm_out": 67108864,
+   "flags": []
+  },
+  "bound": {
+   "bound_s": 0.00012599296,
+   "unit": "hbm",
+   "per_unit_s": {
+    "mxu": 0.00011204262511304348,
+    "hbm": 0.00012599296
+   },
+   "vpu_peak": null,
+   "vpu_src": "unknown (no v6e on Kaggle)",
+   "caveat": "VPU peak unknown for this generation: the bound omits VPU work and is a lower bound only"
+  },
+  "lint": [
+   {
+    "name": "None",
+    "grid": [
+     128
+    ],
+    "issues": [
+     "R2 in-kernel dot N=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[8, 64, 512]",
+      "block": [
+       8,
+       64,
+       512
+      ],
+      "bytes": 262144
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     },
+     {
+      "array": "int32[8, 64, 1]",
+      "block": [
+       8,
+       64,
+       1
+      ],
+      "bytes": 2048
+     },
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       8,
+       64,
+       128
+      ],
+      "bytes": 524288
+     }
+    ],
+    "vmem_bytes_double_buffered": 2625536,
+    "vmem_limit": 16777216,
+    "steps": 128,
+    "macs_per_step": 268435456
+   },
+   {
+    "name": "None",
+    "grid": [
+     8,
+     4
+    ],
+    "issues": [
+     "R1 block (8, 256, 8, 128): int8 packs 32 rows per tile; 8 pads",
+     "R2 in-kernel dot K=128 not a multiple of MXU edge 256"
+    ],
+    "blocks": [
+     {
+      "array": "int8[8, 1024, 64, 128]",
+      "block": [
+       8,
+       256,
+       8,
+       128
+      ],
+      "bytes": 2097152
+     },
+     {
+      "array": "int8[64, 8, 128, 1024]",
+      "block": [
+       8,
+       8,
+       128,
+       1024
+      ],
+      "bytes": 8388608
+     },
+     {
+      "array": "int32[64, 8, 128]",
+      "block": [
+       8,
+       8,
+       128
+      ],
+      "bytes": 32768
+     },
+     {
+      "array": "int8[64, 8, 1024, 128]",
+      "block": [
+       8,
+       8,
+       256,
+       128
+      ],
+      "bytes": 2097152
+     }
+    ],
+    "vmem_bytes_double_buffered": 25231360,
+    "vmem_limit": 100663296,
+    "steps": 32,
+    "macs_per_step": 2147483648
+   }
+  ],
+  "compile_s": 24.3,
+  "cost_analysis": {
+   "flops": null,
+   "bytes accessed": 1052704.0,
+   "optimal_seconds": 6.426764684874797e-07
+  },
+  "memory": {
+   "argument_size_in_bytes": 134479872,
+   "output_size_in_bytes": 67108864,
+   "temp_size_in_bytes": 67141600,
+   "generated_code_size_in_bytes": 3053056
+  },
+  "fits_hbm": true,
+  "inspect": {
+   "summary": {
+    "custom-call": 2
+   },
+   "est_cycles_entry": 0,
+   "scoped_vmem_max": 26963968,
+   "async_prefetch": 1,
+   "n_instructions": 9,
+   "entry_fusions": [],
+   "findings_head": [
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    },
+    {
+     "kind": "custom-call",
+     "target": "tpu_custom_call",
+     "where": "main.1"
+    }
+   ]
+  },
+  "compiler_est_s": null
+ }
+]

@@ -1,0 +1,4 @@
+sigmoid inputs 7 8 common exact-real/single-round bf16 output 0x3f80 distinct derivative codes 0x3a6f 0x39b0
+tanh inputs 4 5 common exact-real/single-round bf16 output 0x3f80 distinct derivative codes 0x3ab0 0x393e
+Each endpoint interval rounds to one code using exact rational comparisons.
+Thus output-keyed derivatives fail under the claimed exact-real semantics too; no full census claimed.
