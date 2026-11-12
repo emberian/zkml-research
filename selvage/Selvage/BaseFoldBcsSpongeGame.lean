@@ -1,0 +1,149 @@
+/-
+# Selvage.BaseFoldBcsSpongeGame — put the exact receipt schedule in the ROM game
+
+`BaseFoldBcsFiatShamir` defines the precise construction queries and charges
+their absorbed blocks.  This module supplies the missing type-level adapter:
+the same ordered challenge/query schedule is a `Distinguisher` in the
+work-indexed sponge game, for any Boolean verdict over its answers.
+
+The adapter is intentionally receipt-indexed.  It proves that a fixed
+candidate receipt enters the game with exactly `transcriptPrimitiveWork`
+primitive calls, rather than the smaller public draw count `m + queryCount`.
+It does not turn the receipt into an online prover or prove the remaining
+adaptive eager/deferred coupling.
+-/
+
+import Selvage.BaseFoldBcsFiatShamir
+
+namespace Minidregg.Selvage.BaseFoldBcsSpongeGame
+
+open Minidregg.Selvage
+open Minidregg.Selvage.BaseFoldBcsFiatShamir
+
+set_option autoImplicit false
+
+noncomputable section
+
+/-- The exact public-query schedule: all causal challenge draws, followed by
+all post-round query-seed draws. -/
+def constructionQuerySchedule {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    Fin (m + queryCount) → SpQuery Rate Cap :=
+  Fin.append
+    (fun j => challengeConstructionQuery statement receipt j)
+    (fun a => queryConstructionQuery statement receipt a)
+
+/-- The schedule function enumerates literally the canonical query list used
+by `transcriptPrimitiveWork`. -/
+theorem constructionQueries_eq_ofFn {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    constructionQueries statement receipt =
+      List.ofFn (constructionQuerySchedule statement receipt) := by
+  simp [constructionQueries, constructionQuerySchedule]
+
+/-- Put a fixed candidate receipt into the adaptive sponge-game interface.
+The verdict remains a parameter because algebraic/Merkle acceptance is
+already represented by `Accepts`; this adapter is responsible only for the
+random-oracle interaction and its exact cost. -/
+def constructionDistinguisher {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    Distinguisher Rate Cap (m + queryCount) where
+  move answers :=
+    if h : answers.length < m + queryCount then
+      constructionQuerySchedule statement receipt ⟨answers.length, h⟩
+    else
+      .fwd (0, 0)
+  out := verdict
+
+/-- At public round `j`, every hypothetical answer trace has length `j`, so
+the adapter selects exactly schedule entry `j`. -/
+theorem constructionDistinguisher_move {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (answers : Fin (m + queryCount) → SpAnswer Rate Cap)
+    (j : Fin (m + queryCount)) :
+  (constructionDistinguisher statement receipt verdict).move
+        ((List.ofFn answers).take j) =
+      constructionQuerySchedule statement receipt j := by
+  simp [constructionDistinguisher, List.length_take]
+
+/-- Exact work identity for every hypothetical answer trace.  In particular,
+adaptivity in the surrounding game cannot cause this receipt schedule to be
+charged by public draw count instead of absorbed-block count. -/
+theorem constructionDistinguisher_primitiveWorkOn_exact
+    {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (answers : Fin (m + queryCount) → SpAnswer Rate Cap) :
+    (constructionDistinguisher statement receipt verdict).primitiveWorkOn
+        answers =
+      transcriptPrimitiveWork statement receipt := by
+  unfold Distinguisher.primitiveWorkOn transcriptPrimitiveWork
+  conv_rhs =>
+    rw [constructionQueries_eq_ofFn, List.map_ofFn, List.ofFn_eq_map]
+  rw [bind_pure_comp]
+  change
+    (List.map
+      (fun j =>
+        ((constructionDistinguisher statement receipt verdict).move
+          ((List.ofFn answers).take j)).primitiveCalls)
+      (List.map Fin.val (List.finRange (m + queryCount)))).sum = _
+  rw [List.map_map]
+  apply congrArg List.sum
+  apply List.map_congr_left
+  intro j _
+  simp only [Function.comp_apply]
+  rw [constructionDistinguisher_move]
+
+/-- The precise ledger is therefore a valid `PrimitiveWorkBound` witness for
+the exact BaseFold receipt schedule in `SpongeIndiffWorkGame`. -/
+theorem constructionDistinguisher_workBound {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    PrimitiveWorkBound
+      (constructionDistinguisher statement receipt verdict)
+      (transcriptPrimitiveWork statement receipt) := by
+  intro answers
+  rw [constructionDistinguisher_primitiveWorkOn_exact]
+
+/-- Instantiating the named BaseFold ROM target now uses the exact receipt
+ledger automatically.  This is conditional on the still-open generic
+indifferentiability target and does not idealize the deployed permutation. -/
+theorem constructionDistinguisher_romBound
+    {m queryCount : Nat}
+    (hrom : BaseFoldPoseidon2Rom.romConstructionTarget)
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    |realProb (constructionDistinguisher statement receipt verdict) (0, 0) -
+        idealProb (constructionDistinguisher statement receipt verdict) (0, 0)|
+      ≤ BaseFoldPoseidon2Rom.romError
+          (transcriptPrimitiveWork statement receipt) := by
+  have bound := hrom (m + queryCount)
+    (transcriptPrimitiveWork statement receipt)
+    (constructionDistinguisher statement receipt verdict)
+    (constructionDistinguisher_workBound statement receipt verdict)
+  unfold BaseFoldPoseidon2Rom.romError
+  simp only [
+    BaseFoldPoseidon2Rom.capacity_card,
+    BaseFoldPoseidon2Rom.state_card, Nat.cast_pow] at bound
+  simpa only [Nat.cast_pow] using bound
+
+#check @constructionQueries_eq_ofFn
+#check @constructionDistinguisher_primitiveWorkOn_exact
+#check @constructionDistinguisher_workBound
+#check @constructionDistinguisher_romBound
+
+/-- info: 'Minidregg.Selvage.BaseFoldBcsSpongeGame.constructionDistinguisher_primitiveWorkOn_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms constructionDistinguisher_primitiveWorkOn_exact
+/-- info: 'Minidregg.Selvage.BaseFoldBcsSpongeGame.constructionDistinguisher_workBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms constructionDistinguisher_workBound
+/-- info: 'Minidregg.Selvage.BaseFoldBcsSpongeGame.constructionDistinguisher_romBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms constructionDistinguisher_romBound
+
+end
+
+end Minidregg.Selvage.BaseFoldBcsSpongeGame
