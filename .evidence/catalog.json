@@ -1,0 +1,8 @@
+{
+  "original_tip": "b950c9910ada18520adc0f53b09bfa517e36a3b6",
+  "paths": 1068,
+  "format": "objects",
+  "index_sha256": "0f3f0d11fbebc56332db30843787aefa7b289659a11f9d7c73db6c544b3b02c7",
+  "payload_commit": "a3f3ad1027881a79dd1b0db2a08165e7b6dece97",
+  "payload_ref": "refs/evidence/retained-20261113"
+}

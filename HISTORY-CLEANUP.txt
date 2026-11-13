@@ -1,0 +1,13 @@
+History cleanup, 2026-11-13
+
+Large generated evidence was removed from the source commit stream. The retained current evidence remains in canonical Git storage and restores with original byte identities and modes; see EVIDENCE.txt. Source and research prose were preserved. Commits made empty by payload removal were retained.
+
+Original tip: b950c9910ada18520adc0f53b09bfa517e36a3b6
+Pre-rewrite portable Git bundle SHA256: 7492c3884df1caf5c83f1ddc00fc0310596cca05dfd68ce5e346408905fc0dca
+Local archival bundle: /Users/ember/repo-archives/2026-11-13/zkml-research.bundle
+Independent host copy: hbox:~/repo-archives/2026-11-13/zkml-research.bundle
+Both copies were hash-verified; local restoration passed git fsck --full. Recorded non-Git cache and verifier inputs have a separate checked archive beside the bundles.
+
+.evidence/history-map.tsv.xz maps original commits to rewritten commits. The pre-rewrite bundle retains original historical payload versions and full commit identities. These historical archives are separate from the self-contained current evidence.
+
+Existing clones still contain old history. Do not merge or force-push it back. Preserve local work before migrating; this cleanup did not reset, stash or otherwise alter existing working trees.
