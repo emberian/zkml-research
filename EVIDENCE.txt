@@ -1,0 +1,11 @@
+Retained experiment evidence
+
+Large generated run payloads are losslessly stored under .evidence/. Restore their original paths with:
+
+  python3 tools/evidence.py restore
+
+Use --only ORIGINAL_PATH_OR_DIRECTORY to restore a subset. Verify materialized bytes with python3 tools/evidence.py verify. Existing differing files are never overwritten. Restored paths are ignored by Git. The retained corpus is in this same Git repository at refs/evidence/retained-20261113. An ordinary clone omits that ref; restore explicitly fetches it once, checking the pinned commit. --only limits materialized paths, not the initial corpus fetch. A git clone --mirror includes all evidence.
+
+The index records original Git blob identities and modes. Original tip: 4b58721ba5edd958a4f699e0c486f6c75d8cb7d7
+
+Older payload versions and original commit identities are preserved in portable pre-rewrite Git bundles. See the cleanup record for archival hashes and commit mapping. Exact source/compiled-output provenance is retained; generation is not assumed.
