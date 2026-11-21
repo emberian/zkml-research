@@ -1,0 +1,9 @@
+variant,scale,max_rel_err_band_neg6_0,max_q15_ulp_diff_sup,L4096_max_rel_denom_err,L4096_max_out_ulp_vs_v0,L4096_proj_argmax_flips_of_200,gptoss20b_24L_argmax_agree_v0,gptoss20b_24L_argmax_agree_f64,gptoss20b_24L_pos,gptoss20b_24L_max_dlogit_vs_v0,gptoss20b_24L_max_dlogit_vs_f64
+gptoss_exact_q15,32768,0.006026,0,0.002895,0,0,32,32,32,0.0,2.1993
+Rank1_8_8_0rs,65536,0.575894,64,0.089342,371,2,32,32,32,2.17346,0.8615
+Rank1_10_10_0rs,1048576,0.18192,16,0.025966,261,2,32,32,32,1.30826,2.5706
+Rank1_15_15_0rs,1073741824,0.002755,1,0.00196,33,0,32,32,32,2.11629,0.8672
+Rank1_18_12_0rs,1073741824,0.000469,4,0.002069,46,0,32,32,32,2.01456,0.7203
+Rank1_15_15_1rs,32768,0.006401,1,0.002043,43,1,32,32,32,2.02213,0.6542
+StructuredExp_k4_clamped,32768,0.006095,18,0.201398,2344,1,32,32,32,2.17996,0.2858
+StructuredExp_unclamped,32768,0.006095,18,0.004537,29,0,,,,,
