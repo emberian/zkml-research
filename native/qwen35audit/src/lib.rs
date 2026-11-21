@@ -1,0 +1,12 @@
+//! Real pretrained `Qwen3.5-0.8B` (`24L: 18 GDN + 6 GQA`) & `Qwen3.8-Flash-Next-FP8` (`4L` HTTP-Range slice:
+//! `3 GDN [H_v=48, d=128, C=64] + 1 QSA + 4-branch GR + 512E Top-10+1 MoE + 51.2B SplitMix64 PLE`)
+//! `U1` commit-then-audit prover & standalone succinct `BabyBear Ext4` (`X^4 - 11`, `cSHAKE256`) verifier.
+
+pub mod ext4;
+pub mod gruen_ext4;
+pub mod pcs_ext4;
+pub mod py_bundle;
+pub mod qwen35_layer;
+pub mod qwen38fn_slice;
+pub mod safetensors_mmap;
+pub mod u1_audit;

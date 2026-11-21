@@ -23,9 +23,11 @@
 
 pub mod bigint;
 pub mod cert;
+pub mod dark_gdn;
 pub mod digits;
 pub mod logup_gkr;
 pub mod rns_hoist;
+pub mod succinct_pcs;
 
 use darkstep::arith::{invmod, mulmod, ntt_primes, submod, Modulus};
 use num_bigint::BigUint;

@@ -354,6 +354,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "qwen35audit"
+version = "0.1.0"
+dependencies = [
+ "libc",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sha3",
+]
+
+[[package]]
 name = "rayon"
 version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
