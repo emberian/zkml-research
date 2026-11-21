@@ -1,0 +1,19 @@
+# `breadstuffs` Revival — Next Steps & Resumable Execution Queue (`breadstuffs_revival_2026_11_21`)
+
+**Context:** All 8 `bread-*` revival audits and [MASTER_REVIVAL_ALIGNMENT.md](file:///Users/ember/dev/zkml-research/research/breadstuffs_revival_2026_11_21/MASTER_REVIVAL_ALIGNMENT.md) are complete (`[SOURCE]`). Per Ember's `#114` ruling, forward implementation targets **`~/dev/obend` + `minidregg` (`Selvage`) + `zkml-research/native`**, treating `/Users/ember/dev/breadstuffs` strictly as a read-only donor quarry (`206 / 232` workspace crates retired; `26` narrow donor surfaces quarried) `[DERIVED]`.
+
+## Immediate Maintainer & Engineering Queue
+
+1. **Resolve Executive Decisions `D1–D10` (`MASTER_REVIVAL_ALIGNMENT.md` §5.2, `[OPEN]`):**
+   - Review and confirm the 10 architectural choices (`Effects.Revival` open registry in `obend`, `orb-compiler` `v4.35.0` behind `LcnfCode`, Goldilocks vs BabyBear `Ext4` boundary, `n - f` `Simplex` + `IConfluent` pushout floor, L1 settlement target, `.spk` `fd 3` compatibility scope, PQ `ZkBiscuit` credentials, ARM64 vs SEV-SNP `seL4` chokepoint target, and `R_refresh = 1` default on `dark_block.rs`).
+2. **Fold Verified Findings into [docs/VERDICTS.md](file:///Users/ember/dev/zkml-research/docs/VERDICTS.md) & Index `notes/breadstuffs-*.md` (`[OPEN]`):**
+   - Maintainer fold of §5.1 (`plonky3-recursion@fc3c6df` 3 unpinned bugs & `b471aca7` ancestry; `constraint-lowering` `bits=30` BabyBear wraparound; `CAP-01..30`, `C1–C13`, `S1–S12`, `F1–F8`, `B1–B3`, `V1–V8`; `WhirMultiRoundSoundness.lean:668` `1,424 vs 66,560`; `Tower256AlgebraicCert` `#125`/`#130` gates; and `PdSuccinctProof` quarantine + `#122` `dark_block.rs`).
+3. **Execute Phase 0 Kernel & Wire Hygiene Gates (`G1–G5`, `[OPEN]`):**
+   - Delete stale `minidregg/Theory/ObjectiveBend*` (`46` tracked files).
+   - Land `G1` (`mustBeLinear` on `Ty.custody` in `obend/lean/Obend/Core/Ty.lean:377-378` before widening `Check.lean:645-648`), `G2` (explicit `-creditLimit` vs `+minReserve` `FloorPolicy`), `G3` (widen `Obend.Polis.CapTP` `SwissNum`/`handoffNonce`/`SortedU64Set` from `UInt64` to 256-bit `Digest` & reject `msg_epoch == 0`), `G4` (prove 32B Little-Endian Fan–Paar `Tower256` reversal isomorphism in `Obend/Crypto/BinaryTower256.lean:339`), and `G5` (generalize `Obend/Consensus/SimplexProtocol.lean:149` to `3f + 1 <= n` with VOTE/COMMIT quorum `n - f`).
+4. **Close Wave-7 Cryptographic & `zkML`/`vFHE` Gates (`G7–G10`, `[OPEN]`):**
+   - **`G8` (`Tower256AlgebraicCert` `#125`/`#130`):** Bind post-challenge `eval_fold_roots` (`w_1..w_d`) inside a `(d+1)`-round BaseFold (`ZCF23`) evaluation-opening sumcheck (closing `(1 - 2^{-d})^{fq} = 86.5%` false-accept) alongside `#125` middle-round `[X^3] p_j(X)` masking & `2*fq + 1 <= 2^d`, and prove coherent-path ArkLib MCA transfer before lowering raw FRI queries from `2,738` to `148`.
+   - **`G9` (`qwen35audit`):** Unify salted byte PCS profile (`pad >= 2048`), bind `drand` after countersignature on `U1`, open `bytes_pcs_root` vs `mle(w_clean)`, pin full `weight_root`, check WY `UW` & QSA Top-$K_B$, and enforce `CMUNLN02` `colspan(K) ⊆ colspan(U)` + `S_unlearned` bounds.
+   - **`G10` (`darkvfhe` × `fhegg::threshold`):** Blind `R_PD` inside `GMask61`/`WhirPcs61` (retiring raw `PdSuccinctProof`), place persisted `C8` `OpeningAuthorization` + `verify_hoisted_whir_bundle` ahead of multi-process `partial_decrypt`, and hard-enforce `R_refresh = 1` in `tvd_40b_strict_mode`.
+5. **Quarry the 6 Narrow `obend/crates/*` Companion Leaves & First 3 `.obend` Flagships (Phases 1–3, `[OPEN]`):**
+   - Extract `obend-jail`, `obend-net`, `obend-lightclients`, `obend-oracles-e2ee`, `obend-surfaces` (`deos-view` `ViewNode`), and `obend-prove-worker`, then cut over (1) Fog-of-War `attested-dm`, (2) Payable `SpeculativePrefill` Compute, and (3) `NoSingleViewer = 2` `DarkBazaar` + Private Voting.

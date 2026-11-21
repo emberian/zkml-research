@@ -37,7 +37,14 @@ pub const E2M1_X2_MAGS: [u32; 8] = [0, 1, 2, 3, 4, 6, 8, 12];
 pub struct TensorInfo {
     pub dtype: String,
     pub shape: Vec<usize>,
-    pub data_offsets: [usize; 2],
+    data_offsets: [usize; 2],
+}
+
+impl TensorInfo {
+    #[inline]
+    pub fn data_offsets(&self) -> [usize; 2] {
+        self.data_offsets
+    }
 }
 
 /// Zero-copy `libc::mmap` handle over a `safetensors` shard.
@@ -62,17 +69,34 @@ impl Drop for MmapSafetensors {
     }
 }
 
+struct RawMmapGuard {
+    ptr: *mut libc::c_void,
+    len: usize,
+}
+
+impl Drop for RawMmapGuard {
+    fn drop(&mut self) {
+        if !self.ptr.is_null() && self.len > 0 {
+            unsafe {
+                libc::munmap(self.ptr, self.len);
+            }
+        }
+    }
+}
+
 impl MmapSafetensors {
     /// Memory-map a `safetensors` file read-only (`PROT_READ`, `MAP_PRIVATE`) and parse its header.
     pub fn open(path: impl AsRef<Path>) -> Result<Self, String> {
         let file = File::open(path.as_ref())
             .map_err(|e| format!("failed to open safetensors {}: {e}", path.as_ref().display()))?;
-        let len = file
+        let len_u64 = file
             .metadata()
             .map_err(|e| format!("metadata failed: {e}"))?
-            .len() as usize;
-        if len < 8 {
-            return Err("safetensors file shorter than 8 bytes".to_string());
+            .len();
+        let len = usize::try_from(len_u64)
+            .map_err(|_| "safetensors file exceeds usize::MAX".to_string())?;
+        if len < 8 || len > isize::MAX as usize {
+            return Err("invalid safetensors file length".to_string());
         }
         let ptr = unsafe {
             libc::mmap(
@@ -87,16 +111,16 @@ impl MmapSafetensors {
         if ptr == libc::MAP_FAILED {
             return Err("libc::mmap failed".to_string());
         }
+        let mut guard = RawMmapGuard { ptr, len };
         let ptr_u8 = ptr as *const u8;
         let bytes = unsafe { std::slice::from_raw_parts(ptr_u8, len) };
-        let header_len = u64::from_le_bytes(bytes[0..8].try_into().unwrap()) as usize;
+        let header_len_u64 = u64::from_le_bytes(bytes[0..8].try_into().unwrap());
+        let header_len = usize::try_from(header_len_u64)
+            .map_err(|_| "header_len exceeds usize::MAX".to_string())?;
         let data_start = 8usize
             .checked_add(header_len)
             .ok_or_else(|| "header_len overflow".to_string())?;
         if data_start > len {
-            unsafe {
-                libc::munmap(ptr, len);
-            }
             return Err("header_len exceeds file size".to_string());
         }
 
@@ -110,14 +134,18 @@ impl MmapSafetensors {
             }
             let info: TensorInfo = serde_json::from_value(v)
                 .map_err(|e| format!("invalid tensor entry {k}: {e}"))?;
-            if info.data_offsets[0] > info.data_offsets[1]
-                || data_start + info.data_offsets[1] > len
-            {
+            let end_abs = data_start
+                .checked_add(info.data_offsets[1])
+                .ok_or_else(|| format!("offset overflow for tensor {k}"))?;
+            if info.data_offsets[0] > info.data_offsets[1] || end_abs > len {
                 return Err(format!("out-of-bounds offsets for tensor {k}"));
             }
             tensors.insert(k, info);
         }
 
+        // Disarm guard now that ownership transfers to `Self`.
+        guard.ptr = ptr::null_mut();
+        guard.len = 0;
         Ok(Self {
             ptr: ptr_u8,
             len,
@@ -134,10 +162,19 @@ impl MmapSafetensors {
             .tensors
             .get(name)
             .ok_or_else(|| format!("missing tensor {name}"))?;
-        let start = self.data_start + info.data_offsets[0];
-        let end = self.data_start + info.data_offsets[1];
-        let slice = unsafe { std::slice::from_raw_parts(self.ptr.add(start), end - start) };
-        Ok((info, slice))
+        let start = self
+            .data_start
+            .checked_add(info.data_offsets[0])
+            .ok_or_else(|| format!("start offset overflow for tensor {name}"))?;
+        let end = self
+            .data_start
+            .checked_add(info.data_offsets[1])
+            .ok_or_else(|| format!("end offset overflow for tensor {name}"))?;
+        if start > end || end > self.len {
+            return Err(format!("out-of-bounds slice for tensor {name}"));
+        }
+        let all_bytes = unsafe { std::slice::from_raw_parts(self.ptr, self.len) };
+        Ok((info, &all_bytes[start..end]))
     }
 
     /// Convert a `BF16` or `F32` tensor into `Vec<f32>` directly from the mmap slice.

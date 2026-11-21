@@ -145,6 +145,39 @@ by kernel and 7 insufficient for every policy. `release-gate-routing.md` — min
 releases only public information; the kernel's Settlement is one by type; at Stage 0 the descriptor
 forces Z and the receipt is bound evidence (binds, does not hide).
 
+**Wave 7A — AFP Formalizations, `WHIR + GMask` Compression, Dark-Block & Verifiable Integer `Qwen` (2026-11-21)** —
+`afp-sumcheck-hvzk-and-whir-lean.md` — minidregg `Theory/SumcheckHvzkMask.lean` + `Selvage/WhirMultiRoundSoundness.lean`:
+exact `(1 + dℓ)` `GMask` bijection (`IsUnit 2`), `PublicGMaskView` `gapAtMost 0`, equal-sum `ZMod 2` `(ℓ=3,d=1)` leak tooth,
+and multi-round $2^k$-ary WHIR soundness (`1,424` vs `66,560` openings at $m=20$).
+`speculative-prefill-and-looped-moe-proving.md` — `Assurance/SpeculativePrefillAudit.lean` + `qwen35audit::spec_prefill`:
+batched integer prefill proving over unverified float speculation (`18×–58×` prefill speedup, `3.02×` looped MoE reuse).
+`dual-characteristic-bpe-token-byte-bridge.md` — `Theory/DualCharTokenBridge.lean` + `qwen35audit::bpe_bridge`:
+`248,320`-vocab Qwen BPE census (`0` prefix-free, `246,729` overlaps) and `BabyBear Ext4 <-> Tower256` token-to-byte weld.
+`tower256-zero-leakage-algebraic-certificates.md` — `Compiler/Tower256AlgebraicCert.lean` + `prover::tower256_algebraic_cert`:
+zero-byte-leakage `GF(2^256)` zerocheck + `θ`-weighted `LogUp256` + `(d+1)`-round `[ZCF23]` BaseFold (`UD-100`, `0` leaked slices).
+`whir-gmask-succinct-proof-compression.md` — `darkvfhe::whir_pcs` (`5.15×–11.20×`, `508–747 KiB` @ $d \le 1024$, `130.08b` UDR)
+and `qwen35audit::whir_ext4` (`7.95×–9.65×`, `584.5 KiB` `Qwen3.5 U1`, `548.6 KiB` `Qwen3.8` w/ `QSA` Top-$K_B$, `<20 ms` verify).
+`darkvfhe-homomorphic-state-and-hybrid-block.md` — `darkvfhe::dark_block`: Blum-prime $t = 4{,}355{,}803{,}843$ in-BFV
+`HomomorphicGdnState` (`R_refresh = 3`) + 3-custodian `EncryptedQwenHybridBlock` (`max|diff| = 0`, `0` leaked expert IDs).
+`verifiable-integer-qwen-agent-e2e.md` — `Assurance/VerifiableAgentTurnWeld.lean` + `qwen35audit::agent_runner`:
+`1T == 12T` bit-exact 24L `Qwen3.5-0.8B` runner (`44.09 tok/s` prefill, `16.08 tok/s` decode) welded to `QW35U1P2` + `Absent`.
+`grammar-typed-capabilities-and-hyperdoc-gate.md` — `Theory/GrammarTypedCapability.lean` + `Assurance/SealedHyperdocGrammarGate.lean`
++ `prover::grammar_capability`: `54 µs` 3-hop product-DFA/LL(1) attenuation & `5.02 ms` 4 KiB sealed-hyperdoc gate.
+`verifiable-continual-learning-and-unlearning.md` — `Theory/VerifiableContinualLearning.lean` + `qwen35audit::continual_memory`:
+exact `(1 - U U^T) S` counterfactual fast-weight unlearning (`EpB 100% -> 0%`, `85.9–90.9 dB` `EpA/EpC` SNR, `W0/W1/<P/2` welds).
+`wave7-claude-codex-adversarial-audit.md` — 3-round `Claude Fable 5-2` ↔ `Codex gpt-6.2-astra` cross-family audit (`27` shards).
+
+**Wave 7B — `breadstuffs` Revival & `~/dev/obend` × `Selvage` Extrapolation (2026-11-21)** —
+Full dossiers and [MASTER_REVIVAL_ALIGNMENT.md](../research/breadstuffs_revival_2026_11_21/MASTER_REVIVAL_ALIGNMENT.md) (`206/232` crates retired, `26` quarried):
+`breadstuffs-cv-waves-and-vision-archaeology.md` (`422` `cv` sessions, `594` commits across Waves 1–8),
+`breadstuffs-metatheory-and-effects-revival.md` (`Core4` + `Effects.Revival` open registry, `G1/G2`),
+`breadstuffs-stark-pipeline-replacement-plan.md` (`34.58b` IR-v2 & `fc3c6df` recursion retirement -> `Selvage` / `WhirPcs61`),
+`breadstuffs-distributed-ui-and-obend-revival.md` (`deos-view` 25-variant `ViewNode` IR + `WorldTree` / `Frustum`),
+`breadstuffs-grains-captp-and-sandbox-revival.md` (`CAP-01..30` audit, 256b `CapTP` `G3`, `obend-jail`, mathlib-free `seL4`),
+`breadstuffs-dsls-orb-and-specs-revival.md` (`constraint-lowering` `bits=30` wraparound, `orb-compiler` `v4.35.0` `G6`, `CellModel.tla`),
+`breadstuffs-blocklace-consensus-and-settlement-revival.md` (`tau` retirement -> `IConfluent` + `n-f` `Simplex` `G5`, `S1–S12`),
+`breadstuffs-apps-dreggnet-and-zkml-revival.md` (`63 -> 8` app/DreggNet collapse, `fhIR-0` `FHQPB001` KKT quarry).
+
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
 instrument; absence claims are only as good as those two lines.

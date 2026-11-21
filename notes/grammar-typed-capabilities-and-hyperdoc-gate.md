@@ -1,0 +1,63 @@
+# Grammar-Typed Capabilities & Sealed `Hyperdocument` Blinded-Patch Gate
+
+**Date:** 2026-11-21
+**Status:** Verified end-to-end (`exit 0` on Lean `4.35.0` kernel `22.81s` + `check-import-boundary.sh` + `--release` Rust; cross-audited & hardened by `afp-codex-claude-xaudit`)
+**Metered search ledger:** `kagi.py`: `0` queries; `scry.py`: `0` queries (`[EXECUTED]`).
+
+## 1. Problem & Architectural Scope
+
+Coarse object capabilities (`TargetSet`, `Verb`, `perRequestBytes` in [TypedAuthorization.lean](file:///Users/ember/dev/minidregg/Theory/TypedAuthorization.lean#L833-L860)) bound *which* `Hyperdocument` cell an agent mutates (`[SOURCE]`), but not the *syntactic or regular-language surface* of a delegated subagent's payload. When a root authority delegates `Root -> TeamLead -> UntrustedCoderAgent`, three escalation classes arise unless payload syntax and automata guards attenuate monotonically along the capability chain (`[DERIVED]`):
+1. **Syntactic tool/target/budget widening or duplicate-key AST smuggling:** a child grammar adds an unauthorized tool (`"wipe_prod"`) or introduces duplicate-key ambiguity (`ll1Deterministic = false`), causing downstream consumers to parse a different AST than the delegator authorized (`[DERIVED]`).
+2. **Guard dropping or hit-interval widening:** a child drops `Absent("sk-")` / `Absent("DROP ")` or widens an operation-count bound `[1, 5]` to `[1, 6]` (`[DERIVED]`).
+3. **Cleartext leakage or bait-and-switch on sealed `Hyperdocument` edits:** durable `.sealedObject` atoms ([Hyperdocument.lean](file:///Users/ember/dev/minidregg/Theory/Hyperdocument.lean#L292-L335)) must store empty cleartext `payload = []` (`K-NARROW-HIDE`) while binding encrypted `AuthoredFragment` bytes to the audited `Tower256` `saltedContentCommit` root (`[SOURCE]`, `[DERIVED]`).
+
+## 2. Lean 4.35.0 Formalization (`0 sorry`, `0` custom `axiom`, `0 native_decide`, `0 #guard`)
+
+### 2.1 `Theory` Tier — [GrammarTypedCapability.lean](file:///Users/ember/dev/minidregg/Theory/GrammarTypedCapability.lean) (`1,974` lines, `15` `#print axioms` pins)
+
+Imports strictly `Mathlib.*` + `Theory.*` (`[EXECUTED]`). Formalizes:
+- **Byte DFAs & 5-mode `AutomatonBound` ([GrammarTypedCapability.lean](file:///Users/ember/dev/minidregg/Theory/GrammarTypedCapability.lean#L71-L789)):** dense byte DFAs (`DfaSpec`: `states`, `initial`, `accepting`, `delta`), `complement` (`complement_accepts` at `L181`), `hitCount` (`L223`), and `AutomatonBound` (`.mustAccept`, `.mustReject`, `.maxHits hi`, `.exactHits n`, `.rangeHits lo hi`) (`[DERIVED]`).
+- **Sound-and-complete lockstep product-DFA inclusion & BFS counterexamples ([GrammarTypedCapability.lean](file:///Users/ember/dev/minidregg/Theory/GrammarTypedCapability.lean#L245-L755)):** `ReachSafe` (`L245`), 256-byte lockstep row walker `dfaProductCheck` (`L435`), and `dfaSublanguageDecide` (`L558`), with both soundness (`dfaSublanguageDecide_sound` at `L563`, axioms `[propext, Quot.sound]`) and completeness on `WellFormed` DFAs via `Finset.range dc.states ×ˢ Finset.range dp.states` (`dfaSublanguageDecide_iff` at `L573`, yielding boolean transitivity `dfaSublanguageDecide_trans` at `L595`, `hitCount_le_of_sublanguage` at `L605`, and `hitCount_eq_of_bislanguage` at `L619`). Paired with FIFO BFS counterexample synthesis `dfaCounterexample?` (`L659`) and `dfaCounterexample?_sound` (`L747`) (`[DERIVED]`).
+- **Guard, redaction, & unambiguous LL(1) sub-grammar attenuation ([GrammarTypedCapability.lean](file:///Users/ember/dev/minidregg/Theory/GrammarTypedCapability.lean#L857-L1420)):**
+  - `automatonBoundEntails` (`L857`, `automatonBoundEntails_sound` at `L871`, `automatonBoundEntails_trans` at `L935`) handles covariant `.mustAccept`, contravariant `.mustReject` via `complement`, upper-bounded `[0, hi]` hit dominance ($L(d_p) \subseteq L(d_c)$), and positive-lower-bound `[lo, hi]` bislanguage equivalence ($L(d_c) = L(d_p)$) (`[DERIVED]`).
+  - `redactFixedPoint_iff_absent` (`L1061`) proves that under `allRulesSafe`, fixed-point cleanliness `w = redactBytes rules w` holds iff every forbidden pattern is `AbsentW`, yielding `redactRulesAttenuate_sound` (`L1080`; note `redactRulesAttenuate` certifies fixed-point trigger absence rather than active scrub-span monotonicity) (`[DERIVED]`).
+  - `grammarPolicyAttenuates_sound` (`L1241`), `grammarPolicyAttenuates_trans` (`L1284`), `policyChainAttenuates_sound` (`L1336`), and `GrammarCapLineage.attenuates_root` (`L1410`): whenever `grammarPolicyAttenuates child parent = true`, every payload `w` and rule certificate `rs` admitted by `child` satisfies `PolicyAdmits parent w rs ast` with the **identical unique AST** (`∀ rs' ast', AttrReplay parent.cfg rs' w ast' → ast' = ast ∧ rs' = rs`) (`[DERIVED]`).
+- **3-hop capability chain & 4 `by decide` privilege-escalation teeth ([GrammarTypedCapability.lean](file:///Users/ember/dev/minidregg/Theory/GrammarTypedCapability.lean#L1705-L1920)):**
+  - `threeHop_delegation_verified` (`L1758`): kernel-verifies `rootCapPolicy -> serviceCapPolicy -> subagentToolCapPolicy` (`191 -> 97 -> 53` productions) and unique AST admission on `"{\"tool\":\"patch_atom\",\"target\":\"sandbox/note_01\",\"amount\":3}"` (`[EXECUTED]`).
+  - `[REFUTED: syntactic/automata escalation on attenuated GrammarPolicy]`: kernel-proves refusal of (i) widening `.rangeHits 1 5` to `.rangeHits 1 6` (`L1790`), (ii) dropping `Absent("sk-")` with minimal 3-byte counterexample `"sk-"` (`L1836`), (iii) adding unauthorized `"wipe_prod"` (`L1857`), and (iv) duplicate-key splice ambiguity (`L1910`) (`[EXECUTED]`).
+
+### 2.2 `Assurance` Tier — [SealedHyperdocGrammarGate.lean](file:///Users/ember/dev/minidregg/Assurance/SealedHyperdocGrammarGate.lean) (`841` lines, `8` `#print axioms` pins)
+
+Welds `GrammarPolicy` chains, [CredentialLineageAdmission.lean](file:///Users/ember/dev/minidregg/Theory/CredentialLineageAdmission.lean#L75-L120), [HyperdocumentOperations.lean](file:///Users/ember/dev/minidregg/Theory/HyperdocumentOperations.lean#L171-L186), [PolicyAstTransducerEmit.lean](file:///Users/ember/dev/minidregg/Compiler/PolicyAstTransducerEmit.lean#L1-L80), and [Tower256PrivateContentCert.lean](file:///Users/ember/dev/minidregg/Compiler/Tower256PrivateContentCert.lean#L283-L300) (`[SOURCE]`, `[DERIVED]`):
+- **`satisfiesClaim_boundToClaim_eq` ([SealedHyperdocGrammarGate.lean](file:///Users/ember/dev/minidregg/Assurance/SealedHyperdocGrammarGate.lean#L117-L136)):** exact equivalence between `AutomatonBound.holds` and `Dfaops.satisfiesClaim` across all 5 guard modes (`[DERIVED]`).
+- **`verifySealedHyperdocPatch_sound_or_collision` ([SealedHyperdocGrammarGate.lean](file:///Users/ember/dev/minidregg/Assurance/SealedHyperdocGrammarGate.lean#L379-L489)):** for any salted record `(wNamed, sNamed)` committed at `(stmt.patchLen, stmt.saltedPatchRoot)`, an accepted gate check guarantees `PolicyAdmits stmt.rootPolicy wNamed wit.ruleSeq stmt.claimedAst`, `AbsentPlain` + `Regex.paddedComplement` on all root `redactRules`, `Dfaops.satisfiesClaim` on all root `bounds`, unique root AST, per-hop `policyId` + epoch + capability/ancestor/channel non-revocation, adjacent `checkCapEdge` chain attenuation across all hops (`checkCapEdges_getElem`), root anchoring (`expectedRootCapId`, `expectedIssuer`), leaf author & `[notBefore, notAfter]` height validity, leaf scope coverage (`targets.Covers`, `.mutateObject`, `patchLen ≤ perRequestBytes`), and `postAtom.payload = []` — **or** extracts an SP 800-185 `cSHAKE256` `FramedXofCollision cshakeC` (`[DERIVED, EXECUTED]`).
+- **`succinctGuardBundle_sound_or_miss_or_collision` ([SealedHyperdocGrammarGate.lean](file:///Users/ember/dev/minidregg/Assurance/SealedHyperdocGrammarGate.lean#L495-L531)):** root-only observer soundness for `SuccinctGuardBundle`s up to `StepSamplingMiss` or `PrivateCertCollision` (`[DERIVED]`).
+- **Symbolic inhabitation, 4 assurance refusal teeth, & JSON conformance ([SealedHyperdocGrammarGate.lean](file:///Users/ember/dev/minidregg/Assurance/SealedHyperdocGrammarGate.lean#L655-L813)):** proves `demo_sealedHyperdocGate_verified`, `demo_refuses_revoked_intermediate`, `demo_refuses_stale_policy_epoch`, `demo_refuses_cleartext_atom_payload`, and `demo_refuses_non_delegatable_redelegation`, and emits [grammar_capability_conformance.json](file:///Users/ember/dev/minidregg/prover/testdata/grammar_capability_conformance.json) (`5,383 B`) via pure-`Init` `#eval` (`[EXECUTED]`).
+
+## 3. Native Rust Engine, Benchmarks, & Security Calibration
+
+Implemented in [grammar_capability.rs](file:///Users/ember/dev/minidregg/prover/src/grammar_capability.rs) and [grammar_capability_gate.rs](file:///Users/ember/dev/minidregg/prover/tests/grammar_capability_gate.rs) (`[EXECUTED]`):
+- **257-bit stack-bitset `fast_byte_ll1_deterministic` & unforgeable `SemanticsHandle`:** zero inner-loop heap allocations (`O(|rhs|)` backward `FOLLOW` pass + 5-word bitwise `AND` predict disjointness), regression-tested equivalent to `policy_transducer::ll1_deterministic` (`[DERIVED, EXECUTED]`).
+- **Product-DFA inclusion, `dfa_intersection`, & shortest counterexample:** FIFO BFS over `0u8..=255u8` returning either an independently verifiable `ProductReachabilityCert` (`verify_reachability_cert`, rejecting duplicate pairs) or the shortest, lexicographically smallest $w \in L(\text{child}) \setminus L(\text{parent})$ (`[EXECUTED]`).
+- **Domain-separated `cSHAKE256` sealing & decryptor verification:** 8-thread strided `cubeRoot` `fast_salted_content_commit`, `derive_hyperdoc_cell_salts` (`0x0B`), `seal_hyperdoc_fragment_bytes` (`0x09` stream vs `0x0A` MAC over `context || len || ciphertext`), and constant-time `unseal_and_verify_hyperdoc_fragment` (`GateRejection::CiphertextSealMismatch`) (`[EXECUTED]`).
+
+| Benchmark / Verification Gate (`--release`, Apple Silicon, `CARGO_TARGET_DIR=.../target-gramcap`) | Target | Measured (`[EXECUTED]`) |
+| --- | --- | --- |
+| Lean `4.35.0` `Theory.GrammarTypedCapability` + `Assurance.SealedHyperdocGrammarGate` (`-DwarningAsError=true`) | `exit 0`, `0` warnings | `exit 0`, `0` warnings (`23` `#print axioms` pins, `22.81 s`) |
+| 3-hop `Root -> TeamLead -> UntrustedCoderAgent` `policy_chain_attenuates` (`191 -> 97 -> 53` rules + DFAs) | `< 1.0 ms` | **`0.054 ms`** (`54 µs`, `18.5x` under budget) |
+| `4 KiB` (`4,096 B`) blinded `Hyperdocument` patch gate (`verify_sealed_hyperdoc_patch`, 3-hop + salted root + AST) | `< 20.0 ms` | **`5.02 ms`** (`4.0x` under budget) |
+| `4 KiB` public observer bundle (`4` `Tower256` `PrivateReceipt`s, `175,800 B` wire, `>= 6 B` slice scan) | `< 20.0 ms` verify | **`17.45 ms`** verify (`1,318.75 ms` prove) |
+
+## 4. Exact Security & Privacy Calibration + Open Seams (`[DERIVED]`, `[OPEN]`)
+
+- **Pairwise vs conjunctive `boundsAttenuate` (`[DERIVED]`):** `boundsAttenuate` decides witness-per-parent-guard entailment; `dfaCounterexample?` witnesses non-inclusion on the regular accept/reject projection.
+- **Root capability & custodian key anchoring (`[OPEN]`):** `is_valid_root` / `verifySealedHyperdocPatch` anchor root `id` and `issuer` (authentic root scope/validity requires pinning a full root capability digest or issuer signature). Write-time `CiphertextSealMismatch` requires `cell_blinding_key` to be statement/custodian-supplied rather than witness-chosen (and `operation_id` must be unique per seal to prevent keystream/salt reuse), while key-holding readers catch ciphertext tampering unconditionally via `unseal_and_verify_hyperdoc_fragment` (`[DERIVED, OPEN]`).
+- **Observer `PrivateReceipt` sampling vs algebraic zero-knowledge (`[DERIVED]`, `[OPEN]`):** `Tower256PrivateContentCert::PrivateReceipt` opens `first_row`, `last_row`, and `2 * step_queries` step positions per guard (so multi-guard openings accumulate across `guards.len()`, and `MIN_PUBLIC_STEP_QUERIES = 6` is a sanity floor rather than a global transition proof — reflected explicitly by the `StepSamplingMiss` disjunct in `succinctGuardBundle_sound_or_miss_or_collision`). Full zero-byte-opening soundness (`0` opened trace rows, global LogUp transition check) composes with `Tower256AlgebraicCert` once BaseFold evaluation proximity is closed (`[OPEN]`).
+
+## 5. Reproduction Command & Proposed Maintainer Folds
+
+```bash
+bash /Users/ember/dev/zkml-research/research/afp_and_unified_wave_2026_11_21/formal_grammar_cap/build_and_verify.sh
+```
+
+- **Proposed maintainer folds (not edited in this run):** add `import Theory.GrammarTypedCapability` to `minidregg/Theory.lean`, `import Assurance.SealedHyperdocGrammarGate` to `minidregg/Assurance.lean`, and record the `0.054 ms` 3-hop grammar-capability attenuation + `5.02 ms` `4 KiB` sealed `Hyperdocument` gate verdict in `docs/VERDICTS.md`.

@@ -172,9 +172,20 @@ impl PcsShape {
         let m = cur.read_u8()? as usize;
         let lg_blow = cur.read_u8()? as u32;
         let t_cols = cur.read_u32()? as usize;
-        let zk = cur.read_u8()? != 0;
+        let zk_byte = cur.read_u8()?;
+        if zk_byte > 1 {
+            return Err("non-canonical PcsShape zk byte".to_string());
+        }
+        let zk = zk_byte == 1;
         let max_evals = cur.read_u8()? as usize;
-        if m > 26 || lg_blow < 1 || lg_blow > 6 || max_evals == 0 || max_evals > 8 || t_cols == 0 {
+        if m > 26
+            || lg_blow < 1
+            || lg_blow > 6
+            || max_evals == 0
+            || max_evals > 8
+            || t_cols == 0
+            || t_cols > 4096
+        {
             return Err("invalid PcsShape parameters".to_string());
         }
         Ok(Self::new(
@@ -379,6 +390,25 @@ impl PcsOpeningProof {
         if num_claims == 0 || num_claims > shape.max_evals {
             return Err(format!("invalid num_claims {num_claims} > {}", shape.max_evals));
         }
+        let total_cells = shape
+            .t_cols
+            .checked_mul(shape.r_total)
+            .ok_or_else(|| "PcsOpeningProof total_cells overflow".to_string())?;
+        let min_poly_bytes = (num_claims + 1)
+            .checked_mul(shape.w_poly)
+            .and_then(|n| n.checked_mul(16))
+            .ok_or_else(|| "PcsOpeningProof poly byte count overflow".to_string())?;
+        let min_col_bytes = total_cells
+            .checked_mul(4)
+            .ok_or_else(|| "PcsOpeningProof col byte count overflow".to_string())?;
+        let min_salt_bytes = if shape.zk { shape.t_cols * 16 } else { 0 };
+        let min_required = min_poly_bytes
+            .checked_add(min_col_bytes)
+            .and_then(|n| n.checked_add(min_salt_bytes))
+            .ok_or_else(|| "PcsOpeningProof min_required overflow".to_string())?;
+        if cur.remaining() < min_required {
+            return Err("truncated PcsOpeningProof wire buffer before allocation".to_string());
+        }
         let mut claim_openings = Vec::with_capacity(num_claims);
         for _ in 0..num_claims {
             let s_mask = if shape.zk {
@@ -407,7 +437,6 @@ impl PcsOpeningProof {
         } else {
             opened_salts.resize(shape.t_cols, [0u8; 16]);
         }
-        let total_cells = shape.t_cols * shape.r_total;
         let mut opened_cols = Vec::with_capacity(total_cells);
         for _ in 0..total_cells {
             opened_cols.push(cur.read_bb()?);
