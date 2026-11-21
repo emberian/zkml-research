@@ -681,6 +681,10 @@ gating-defaults-to-silence shape, declared this time).
 
 - **MXFP4 within-block exactness holds; NVFP4 preserves it but destroys the
   power-of-two-scale shift argument** — our arithmetization is MXFP4-specific.
+  Native 3-operand `EinSumcheck` (`ikb,jkb,jk -> ij`) proves the exact MXFP4
+  block-scaled contraction without offline weight dequantization at round
+  degrees `(2^5, 3^7, 3^log₂N)`, cutting `gpt-oss-20b` MoE committed felts
+  1.94× (§9, 2026-11-20).
 - **Router binding must be ZERO-KNOWLEDGE** — expert selections recover 91% of
   tokens. DeepSeek-V4's early-block **hash routing** makes selection a public
   function of the token id, so binding is free there.
@@ -1899,3 +1903,58 @@ outcome exits 1.
   now also depends on a hash of the witness (the commitment roots in succinct form), and both forgeries
   are refused. The d = 64 "every attack refused" rows held only against non-adaptive attackers until this
   fix.
+
+## 9. ⚑ zkTransformer read, audited, and priced, 2026-11-20: EinSumcheck adopted (GQA 8×, native MXFP4 1.94× felts); StructuredExp rejected (0/25)
+
+`notes/zktransformer-verdicts.md`, `research/zktransformer_2026_11_20/`; Lean on minidregg
+`lane/zkml-einsumcheck` (`Theory/ZkmlEinsum.lean`, `Assurance/ZkmlEinSumcheck.lean`, 45 `#guard_msgs`
+axiom pins, 0 `sorry`); upstream `uiuc-kang-lab/zkTransformer` (`main` @ `55344d7`) Issue `#1` and PR `#2`.
+
+**`EinSumcheck` (`(F₁, F_{≥2}, S)` multilinear contraction compiler) — ADOPTED.**
+- **One degree-3 wire covers every 2-operand tensor contraction.** Partitioning free indices into `F₁`
+  (appearing in one operand: bound directly to verifier challenges before sumcheck, zero rounds, zero `eq`)
+  and `F_{≥2}` (appearing in ≥2 operands: wrapped in `eq(r_{F_{≥2}}, h)` and summed alongside contracted
+  indices `S`) unifies `ZkmlMatmulSumcheck` (`F₁={i,k}, F_{≥2}=∅, S={j}`) and `cubicForm_hadamard`
+  (`F₁=∅, F_{≥2}={i}, S=∅`) into `einsum_mle_identity` over any `CommRing` on `AirSumcheckCubic.cubicForm`
+  (`C ≡ 0, D ≡ 1`), zero wiring commitments, wrong-output-table soundness
+  `≤ (μ_L + μ_R + μ_S)/|F| + (μ_S + κ)·3/|F|`. (Paper Lemma 3.2 writes `(m+1)v/|F|` with `v = max_t |I_t|`,
+  which holds conservatively when one operand carries all summed indices and undercounts on disjoint summed
+  indices: `bp,bq->b` has `v = 3 < 5` rounds, kernel-decided.)
+- **Un-repeated GQA (`tgrd,ngd -> tgrn` and `tgrn,ngd -> tgrd` on `gpt-oss-20b`).** Factoring 64 query heads
+  into `(g, r) ∈ [8] × [8]` puts intra-group query index `r` in `F₁` (0 rounds) and only KV-group `g` in
+  `F_{≥2}` (3 rounds), cutting attention sumcheck rounds `12 → 9` (`6 + log₂ t → 3 + log₂ t`) and sumcheck
+  `Ext4` multiplications **8×** (`2,614` vs `20,870` at `t = 32`) without `repeat_kv(8)` expansion.
+- **Native MXFP4 3-operand `EinSumcheck` (`ikb,jkb,jk -> ij`).** Committing signed E2M1 integer mantissas
+  `Q[j,k,b] ∈ {0, ±1, ±2, ±3, ±4, ±6, ±8, ±12}` and per-32-element relative block scales
+  `S[j,k] = 2^{sh[j,k]}` directly proves `D[i,j] = Σ_{k,b} X[i,k,b]·Q[j,k,b]·S[j,k]` without offline weight
+  dequantization at exact round degrees **`(2^5, 3^⌈log₂ K_blk⌉, 3^log₂ N)`** under `b → k → j` (never
+  degree 4; verified over BabyBear via `jaxint.py`'s 2-limb `int8` activation split and over Goldilocks).
+  Across `gpt-oss-20b`'s 24 MoE layers (`19.11B` weights), committed felts drop **1.94×** (`1.03125` vs
+  `2.000` `(Wh, Wl)` limbs/w) and committed bits drop **5.49–6.82×** against the 29-bit spec window
+  (**2.46–3.06×** like-for-like against measured ~13-bit row spread). Static weight-domain membership is an
+  offline registration check.
+
+**`StructuredExp` — REJECTED (`0/25` grid points); `exp` lookup frontier priced.**
+- `StructuredExp` relies on BN254 `KZH-3`/`Sparse-KZH-3` free zero-commitments (non-PQ, trusted SRS) and
+  still loses at **all 25 `(m, b)` grid points** (`m ∈ [2^10, 2^22]`, `b ∈ {8,12,15,16,20}`) to hi-lo
+  product subtable decomposition (`Rank1ProdExp`; prior art in `zkLLM` §5.1, `2025/507` §5.1, `2026/199`
+  §3.3, `2026/1390` §8.5 `EXP-5`) and helper-free fraction-tree LogUp-GKR (**D1b**, `m + 2^b` cells —
+  **5× fewer committed cells** than committed-inverse **D1a**).
+- Over BabyBear, 0-rescale `Rank1ProdExp` overflows a single felt once ≥2 weights are summed
+  (`2·32768² > p_BB`); the usable **1-rescale `Rank1ProdExp`** (`5m + n_sub` cells) crosses **D1b**
+  LogUp-GKR at **`m* ≈ 8,032` cells at `b = 15`** (`16,192` for 0-rescale on ≥64-bit fields). On
+  `gptoss-int v0`'s 2,840-entry `EXP_TAB` (padded to `4,096`, `b = 12`) and multi-layer inference
+  (`m ≥ 2^16`), **direct D1b LogUp-GKR** (or 4-bit `BinaryShout` on `Tower256`) wins outright (`4.4–12.8×`
+  fewer muls than `StructuredExp`), matching `2026/1390`'s Separation Principle when `2^b ≪ m`.
+
+**External artifact audit (`uiuc-kang-lab/zkTransformer`, `main` @ `55344d7`).**
+- Published NanoGPT Table 4 (`356.33 KB`) omitted `74.2%` (`574/774`) of sparse lookup block commitments and
+  emitted `0` `SparseKZH3` openings, left `ClampLower` advice uncommitted (decoupling `Reducer` across its 3
+  consumers), read `commitment.srs` instead of `VerifierKey`, omitted lookup terminal sumcheck checks,
+  `TwoPow` Hamming-weight-1, and `StructuredExp` `|r|` bounds, and evaluated `ppl_repro/` on `K_BITS=5`
+  quartic Taylor + `Q30` norm advice rather than the Rust circuit's `K_BITS=4` cubic + `Q10`/`Q15`. With
+  unbatched per-claim openings and `ClampLower` commitment restored (`PR #2`, `67/67` tests green), NanoGPT
+  (`SEQ_LEN=1`) measures **`1.82 MB`**. Unconstrained model-level advice (`SoftmaxConst`, `SigmoidConst`,
+  `RMSReciprocal` sign, `ScaleDown` mod-`p` quotient wrap) and unblinded `KZH-3` openings reinforce
+  `gptoss-int v0`'s canonical integer division (`ao * den + rem = num`, `0 ≤ rem < den`) and registry-bound
+  weights.
