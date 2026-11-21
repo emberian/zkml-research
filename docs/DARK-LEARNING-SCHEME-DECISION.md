@@ -1939,3 +1939,56 @@ No custody traffic through hbox's home link: the third custodian moves to a rent
 $25 cap). LowGear N = 16,384 is the backend for the run of record (573 GB per party against MASCOT's 1,514 GB; the
 112.5 GB per key setup is the distributed BGV key generation itself, 65,536 MASCOT random bits per key in the 319-bit
 field). Exact truncation is being tried and is used in the run of record if its cost is reasonable.
+
+
+---
+
+## 24 Addendum (2026-11-21): `HoistedB61` Sum-Before-Rescale & `τ=64` Temporal Flush Flip `FHE vs MPC` at `d = 4096`
+
+Companions: [vfhe-hoisted-certificate-breakthrough.md](file:///Users/ember/dev/zkml-research/notes/vfhe-hoisted-certificate-breakthrough.md), [BfvHoistedRescale.lean](file:///Users/ember/dev/zkml-research/research/vfhe_sota_2026_11_21/formal/Theory/BfvHoistedRescale.lean) (landed in `minidregg` `Theory/BfvHoistedRescale.lean`, plus `breadstuffs` `Bfv/ScaleLiftRefinement.lean`), and [vfhe_hoisted_b61_and_pir.py](file:///Users/ember/dev/zkml-research/research/vfhe_sota_2026_11_21/experiments/vfhe_hoisted_b61_and_pir.py) (`exit 0`).
+
+### 24A.1 Why §§1, 7, and 8 Priced Hybrid FHE `46×–75×` Above `MPC` at `d = 4096`
+
+In §§1, 7, and 8 ([step_counts.py](file:///Users/ember/dev/zkml-research/research/dark_learning_2026_11_06/step_counts.py#L155-L195)), hybrid `B61 + SPDZ` beat pure `SPDZ MPC` in online custodian wire by **`19.9×`** at $d = 4096$ (`15.35M` vs `305.9M` elements), yet lost in committed proof volume (`1,453.5 Gbit = 46.1× MPC` in Variant (a); `2,368.9 Gbit = 75.2× MPC` in Variant (b) under strict `digits61`, or `2,958.4 Gbit` once `step_counts.py:195`'s omitted `relin` range digits are included) `[SOURCE: docs/DARK-LEARNING-SCHEME-DECISION.md §§7–8; step_counts.py:155-195]`. Two baseline artifacts — neither required by BFV semantics — accounted for `85%–88%` of that bill:
+
+1. **Eager per-block rescaling (`6,144` `cert_b61` certificates/step):** At $N = 8192, d = 4096$ (`32 × 64 = 2,048` blocks of `128 × 64` per matrix), `step_counts.py` BEHZ-rescaled every individual block product *before* summing across the contracted dimension (`64` col-blocks on `z1 = W1 x` and `z2 = W2 h`; `32` row-blocks on `b = W2^T d2`).
+2. **Canonical-lift double-pay in `cert_b61.py`:** `cert_b61.py:139-151` committed `(v_0, v_1, v_2, u, in_B, z_res, ext_s, ext_y)` *and then* added `12` 16-bit `canon` digits per polynomial to pin `u`, while re-lifting shared inputs `x, h, d2` across every block.
+
+### 24A.2 Four Stacked `HoistedB61` Reductions (`[DERIVED]`, `[EXECUTED]`)
+
+1. **Spatial Hoisted Sum-Before-Rescale (`6,144 → 128` Matvec Certificates, `25.3×–34.2×` Cut):**
+   For each output group $r$ (`32 + 32` forward row-groups of $K = 64$ blocks + `64` transpose col-groups of $K = 32$ blocks reusing `cW2` without transpose key-switching), accumulate the unrescaled integer tensor over $\mathbb{Z}[X]/(X^N+1)$ first and BEHZ-rescale **once**:
+   $$D_k^{(r)}(X) = \sum_{c=0}^{K-1} \mathrm{pair}_k\bigl(A^{(r,c)}(X), B^{(c)}(X)\bigr) \bmod (X^N+1), \qquad y_{k,j}^{(r)} = \left\lfloor \frac{t \cdot D_{k,j}^{(r)} + \lfloor Q/2\rfloor}{Q} \right\rfloor.$$
+   At $\log_2 Q \approx 183, \log_2 t \approx 61, N = 8192, K = 64$, $|t D_{1,j}^{(r)} + \lfloor Q/2\rfloor| + |Q y_{1,j}^{(r)} + s_{1,j}^{(r)}| < 2^{446} \ll Q \cdot B \approx 2^{488}$ (**fits in the existing $k = 5$ `61`-bit extension primes with `42` bits spare**). Matvec certificates drop **`581.93 → 17.01 Gbit` (`34.2×`, packed $w=20$)** and **`1,234.22 → 48.74 Gbit` (`25.3×`, strict `digits61`)**, while zero-error rounding noise on `bfv_ref` shrinks **`589 → 77` (`7.65×`)** `[EXECUTED: vfhe_hoisted_b61_and_pir.py]`. Mechanized in [BfvHoistedRescale.lean](file:///Users/ember/dev/zkml-research/research/vfhe_sota_2026_11_21/formal/Theory/BfvHoistedRescale.lean) (`sumMulPhase_encrypt_eq`, `sumMulPhase_noise_le`, `deployed_hoisted64_margin_holds`, and `eager_vs_hoisted_rounding_gap`).
+2. **Fused `d`-Free Rescale Identity + `Direct-20` / `Exact-Garner-15` Canonical Lifts:**
+   Substituting $t d_k^{(r)} + \lfloor Q/2\rfloor \mathbf{1}_N = Q y_k^{(r)} + s_k^{(r)}$ into $P_{k,\text{sum}}^{(r)} = d_k^{(r)} + (X^N+1)K_k^{(r)}$ eliminates the intermediate remainder $d_k^{(r)}$:
+   $$t \sum_{c=0}^{K-1} \mathrm{pair}_k\bigl(A^{(r,c)}(X), B^{(c)}(X)\bigr) + \lfloor Q/2\rfloor \sum_{j=0}^{N-1} X^j = Q y_k^{(r)}(X) + s_k^{(r)}(X) + t(X^N + 1)K_k^{(r)}(X).$$
+   Theorem `hoistedRescaleCert_unique` (`BfvHoistedRescale.lean:486`) proves $(y_k^{(r)}, s_k^{(r)}, K_k^{(r)})$ is uniquely pinned in $\mathbb{Z}[X]$ when $\deg y, \deg s < N$ and $s_j \in [0, Q)$. Committing unsigned base-$2^{20}$ digits of shifted $u = x + \lfloor Q/2\rfloor$ directly (`10` columns in `Direct-20`, or **`15` columns in `Exact-Garner-15`** exploiting $2^{61} - q_i < 2^{20}$ to enforce $u \in [0, Q-1]$ with **zero slack**, closing `Astra E4/E7`'s $[Q, 2^{183})$ boundary strip) deletes `v_i, u, in_B, z_res, ext_s` (`96N` elements/group vs `~621N` for range-checked single-field `p61` bivariate carry `(Y - 2^{16})C(X,Y)`, which loses `5.8×–6.5×` `[EXECUTED]`).
+3. **Deduplicated Input Lifts & Persistent Offline Weights (`Inference-Only vFHEML` & `LoRA-16`):**
+   Shared vectors `x` (`64` cts), `h` (`64` cts), `d2` (`32` cts), and `cW2` (`2,048` cts) lift once per step. When weights are frozen (`Inference-Only vFHEML`, $\Delta W = 0$), `Enc(W)`'s canonical digits are 100% persistent offline (**`0` online weight lifts**); for `LoRA` ($r = 16$), only `192` adapter ciphertexts update (`21.3×` fewer weight lifts than `4,096` dense blocks).
+4. **`τ = 64` Temporal+Spatial Hoisted Flush (`Hoist(b, τ=64)` — Exact Dense SGD):**
+   Because $W^{(m)} v_m = W^{(0)} v_m - \sum_{i=0}^{m-1} u_i (z_i^\top v_m) \pmod t$ is an **exact ring identity**, steps $m \in [0, \tau-1]$ keep `Enc(W^{(0)})` untouched, apply the rank-$m$ bilinear correction inside SPDZ (`+0.28 Gbit` view, `+16.9M` wire at $\tau = 64, d = 4096$), and at step $\tau - 1$ hoist-sum all $\tau = 64$ outer-product tensors before a **single** BEHZ rescale, relinearization, and `W` digit commitment (fitting in the same $k = 5$ extension primes and refining `step_spec.step` **bit-for-bit** `[EXECUTED: vfhe_hoisted_b61_and_pir.py:886-1027]`).
+
+### 24A.3 Updated Custody Decision Table at `d = 4096, N = 8192` (`[EXECUTED]`)
+
+All rows below are deterministic outputs of `python3 research/vfhe_sota_2026_11_21/experiments/vfhe_hoisted_b61_and_pir.py` (`13/13` adversarial falsifiers refused):
+
+| Custody / Workload Mode (`d = 4096`) | Packed (`w=20` / `16b`) | Strict `digits61` (`1 dig = 61b`) | `digits61` + §20.2 Ligero ZKPoPK | Online Wire / Step | Verdict vs Pure `MPC` (`digits61`) |
+|---|---:|---:|---:|---:|---|
+| **Pure `SPDZ MPC` (2-layer SGD step)** | `31.50 Gbit` | **`31.50 Gbit`** | `31.50 Gbit` | `305.92 M` | Baseline (`1.00×` bits, `1.0×` wire) |
+| Legacy `Base FHE (a)` (`step_counts.py`) | `661.44 Gbit` | `1,453.49 Gbit` | — | `17.72 M` | `46.1×` larger bits (`17.3×` less wire) |
+| Legacy `Base FHE (b)` (`step_counts.py` / +relin) | `1,264.87 Gbit` | `2,368.89 Gbit`* | — | `15.35 M` | `75.2×` (`93.9×`*) larger bits |
+| `HoistedB61 FHE (a)` (`τ = 1`, dense `S2E`) | `69.47 Gbit` | `240.95 Gbit` | **`103.40 Gbit`** | `17.72 M` | `14.1×` cut vs `Base (a)`; `S2E`-bound |
+| `HoistedB61 FHE (b, τ = 1)` (per-step relin) | `178.64 Gbit` | `374.34 Gbit` | `359.69 Gbit` | `15.35 M` | `6.6×` cut vs `Base (b)` (`19.9×` less wire) |
+| **`HoistedB61 FHE (b, τ = 64)` (`Direct-20`)** | **`11.08 Gbit`** | `36.15 Gbit` | **`21.50 Gbit`** | **`32.24 M`** | **`0.68× MPC` bits (`0.35×` packed) & `9.5×` less wire** |
+| **`HoistedB61 FHE (b, τ = 64)` (`Exact-Garner-15`)** | `15.65 Gbit` | `39.73 Gbit` | **`25.08 Gbit`** | **`32.24 M`** | **`0.80× MPC` bits (zero `[Q,2^183)` slack) & `9.5×` less wire** |
+| **`HoistedB61 LoRA-16` (`r = 16` adapters)** | **`16.12 Gbit`** | `46.60 Gbit` | **`31.95 Gbit`** | **`15.35 M`** | **`1.01× MPC` bits (`0.51×` packed) & `19.9×` less wire** |
+| **`Inference-Only vFHEML` (2-layer forward)** | **`3.73 Gbit`** | **`10.78 Gbit`** | **`10.78 Gbit`** | **`11.50 M`** | **`0.84×` 2L-MPC (`12.89 Gbit`) & `17.7×` less wire** |
+| **Dark Encrypted-Embedding `vPIR` (`V=151,936`)** | **`8.58 Gbit`** | **`25.37 Gbit`** | **`25.37 Gbit`** | `32` hoisted cts | **`601.4×` smaller** than eager (`15,260.7 Gbit`) |
+
+*\*`2,958.4 Gbit` once `step_counts.py:195`'s omitted `relin` range-lookup digits are counted (`81.8×` reduction to `36.15 Gbit` before §20.2 ZKPoPK).*
+
+### 24A.4 Revised Custody Selection Rule & Remaining `[OPEN]` Boundaries
+
+- **Revised custody rule (`[DERIVED]`):** At **`d ≥ 4096`**, hybrid **`HoistedB61 + SPDZ` (`Hoist(b, τ=64)` for exact dense SGD, `Hoisted LoRA` for adapter tuning, and `Inference-Only vFHEML` for dark inference — including constant-state depth-1 `Gated DeltaNet` blocks)** now dominates pure `SPDZ MPC` **simultaneously in committed proof bits (`0.68×–0.84×` under strict `digits61`, `0.29×–0.51×` packed) and online custodian wire (`9.5×–19.9×` smaller)**. Pure `SPDZ MPC` remains the right choice at **`d ≤ 1024`** under strict `digits61` (`MPC` `2.10 Gbit` vs `Hoist(b, τ=64)` `4.71 Gbit` at $d=1024$) or when policy forbids $\tau > 1$ step batching on dense full-matrix updates.
+- **Unverified / `[OPEN]`:** (1) Full-PDF audit of `PRISM` (`ePrint 2026/1956`, CCS'26; above local ePrint mirror cutoff `2026/1861`) for potential MF-PCS composition with `HoistedB61`; (2) end-to-end multithreaded Rust WHIR + `D1b` wall-clock proving benchmarks on the `21.50–25.08 Gbit` `HoistedB61` schedule.

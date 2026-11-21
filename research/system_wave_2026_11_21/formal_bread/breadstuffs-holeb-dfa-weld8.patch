@@ -1,0 +1,1643 @@
+diff --git a/metatheory/Bfv.lean b/metatheory/Bfv.lean
+--- a/metatheory/Bfv.lean
++++ b/metatheory/Bfv.lean
+@@ -41,6 +41,13 @@
+     TAUTOLOGY (`crt_consistency_vacuous`: the CRT map is a bijection, so the check can never
+     refuse). ct×pt narrows it — Hole B absent (`scalarStep_limb_local`), Hole A alive at `K^L`
+     rather than `(K²)^L` — and a singleton pool closes it outright.
++  * **`Bfv.ScaleLiftRefinement`** — the `Hole B` closure (`VERDICTS.md` §7.5):
++    `BFVScaleLiftRefinement` lifts extended-basis `LimbMulRel` to exact `ℤ` equality
++    (`z = negaMul a b`) and pins every output coefficient via `IntScaleCert` to
++    `rescale t Q (negaMul a b k)`; `hoistedRescaleCert_refines_negaMul_sum` bridges the fused
++    `d`-free `Polynomial ℤ` certificate (`HoistedRescaleCert`) directly to `Bfv.Ring.negaMul` sums;
++    `sumMulPhase` proves the `+1` hoisted rounding noise bound; and the `Q = 31, t = 4` `1`-vs-`32`
++    falsifiers exhibit the exact mod-`Q`-only forgery refused by both certificates.
+ 
+ ## NOT proved here, named plainly (the honesty ledger)
+ 
+@@ -72,6 +79,7 @@
+ import Bfv.Ring
+ import Bfv.CrossLimb
+ import Bfv.ZqSumcheck
++import Bfv.ScaleLiftRefinement
+ 
+ /-! Namespace-wide axiom hygiene: every theorem under `Bfv` pinned to the kernel triple. -/
+ #assert_namespace_axioms Bfv
+diff --git a/metatheory/Bfv/ScaleLiftRefinement.lean b/metatheory/Bfv/ScaleLiftRefinement.lean
+new file mode 100644
+--- /dev/null
++++ b/metatheory/Bfv/ScaleLiftRefinement.lean
+@@ -0,0 +1,855 @@
++/-
++# Bfv.ScaleLiftRefinement — `BFVScaleLiftRefinement`, Hoisted Sum-Before-Rescale, and `Hole B` Closure
++
++Closes `VERDICTS.md` §7.5 (`Hole B`, `BFVScaleLiftRefinement`) directly over `breadstuffs`'s actual
++`Bfv` carriers (`Bfv.Params`, `Bfv.Rn`, `Bfv.negaMul`, `Bfv.toPoly`, `Bfv.RnsCt`, `Bfv.LimbMulRel`,
++`Bfv.rescale`, `Bfv.perLimb_pins_modProd`, `Bfv.fheRs4096`).
++
++## What is proved
++
++1. **Exact integer rescale & `IntScaleCert`:**
++   * `ediv_add_half_eq_rescale` — for every `Q > 0` (both even and odd) and `t, z : ℤ`,
++     `(t * z + Q / 2) / Q = rescale t Q z`.
++   * `intScaleCert_iff` — `IntScaleCert Q t z y s` (`0 ≤ s < Q ∧ t * z + Q / 2 = Q * y + s`)
++     uniquely pins `y = rescale t Q z` and `s = (t * z + Q / 2) % Q`.
++2. **`BFVScaleLiftRefinement` (`VERDICTS.md` §7.5):**
++   * Given a pairwise-coprime extended RNS basis `q_ext : Fin L_ext → ℕ` with product
++     `Q_ext = ∏ i, (q_ext i : ℤ)`, bounded operand representatives `NormInfLE a A`, `NormInfLE b B`
++     with `(N : ℤ) * A * B < Q_ext / 2`, per-limb `LimbMulRel (q_ext i) a b (z_rns i)` where
++     `z_rns i k = z k` and `NormInfLE z ((N : ℤ) * A * B)`, and coefficientwise
++     `IntScaleCert Q t (z k) (y k) (s k)` (`0 < Q`):
++     `perLimb_pins_modProd` pins `z = negaMul a b` in `ℤ` (NOT merely mod `Q`), and
++     `y k = rescale t Q (negaMul a b k)` for every `k : Fin N`.
++   * `bfvScaleLiftRefinement_witness` inhabits all premises concretely (`Q_ext = 3 · 5 = 15`,
++     `N = 2`, `A = B = 1`, `Q = 31`, `t = 4`).
++3. **Fused `d`-Free Polynomial Rescale Certificate (`HoistedRescaleCert`) + `Bfv.Ring` Bridge:**
++   * `HoistedRescaleCert`, `hoistedRescaleCert_iff`, `hoistedRescaleCert_iff_of_deg_lt`,
++     `hoistedRescaleCert_unique`, `hoistedRescaleCert_witness_N2`.
++   * `hoistedRescaleCert_refines_negaMul_sum` — for `P_sum = ∑ c : Fin K, toPoly (a c) * toPoly (b c)`
++     (`[NeZero N]`, `0 < Q`, `t ≠ 0`), `HoistedRescaleCert N Q t P_sum y_poly s_poly K_quot` pins
++     `∀ k : Fin N, y_poly.coeff (k : ℕ) = rescale t Q (∑ c : Fin K, negaMul (a c) (b c) k)`.
++4. **Hoisted Sum-Before-Rescale (`sumMulPhase`) on `Bfv.Params` / `Bfv.fheRs4096`:**
++   * `sumMulPhase_singleton`, `sumMulPhase_encrypt_eq`, `sumMulPhase_noise_le`,
++     `deployed_hoisted64_margin_holds`, and the constructive rounding-gap tooth
++     `eager_vs_hoisted_rounding_gap`.
++5. **`Q = 31, t = 4` `1`-vs-`32` (`1·1 = 1` vs `2·16 = 32 ≡ 1 mod 31`) Falsifiers:**
++   * `bfvScaleLiftRefinement_modQ_falsifier` (integer / `IntScaleCert` / `negaMul` level) and
++     `holeB_modQ_alias_falsifier` (polynomial / `HoistedRescaleCert` level): a mod-`Q`-only check
++     accepts forged `y = 0` on `2·16 = 32`, while both `IntScaleCert` and `HoistedRescaleCert`
++     refuse `y = 0` for every remainder `s` and quotient `K_quot`.
++
++Pure. Zero `sorry`, zero custom `axiom`, zero `native_decide`, zero `#guard`.
++-/
++import Mathlib.Algebra.Polynomial.Div
++import Bfv.Params
++import Bfv.Fold
++import Bfv.Mul
++import Bfv.Ring
++import Bfv.CrossLimb
++
++namespace Bfv
++
++open Finset Polynomial
++
++/-! ## 1. Exact Integer Rescale & `IntScaleCert` -/
++
++/-- **Exact equivalence of `⌊(t·z + ⌊Q/2⌋) / Q⌋` and `Bfv.rescale t Q z`** for EVERY `Q > 0`
++(both even and odd). -/
++theorem ediv_add_half_eq_rescale {Q : ℤ} (hQ : 0 < Q) (t z : ℤ) :
++    (t * z + Q / 2) / Q = rescale t Q z := by
++  unfold rescale
++  set q := (t * z + Q / 2) / Q
++  set r := (t * z + Q / 2) % Q
++  have hQne : Q ≠ 0 := ne_of_gt hQ
++  have h2Q : (0 : ℤ) < 2 * Q := by linarith
++  have h2Qne : (2 * Q) ≠ 0 := ne_of_gt h2Q
++  have hqr : Q * q + r = t * z + Q / 2 := Int.mul_ediv_add_emod (t * z + Q / 2) Q
++  have hr0 : 0 ≤ r := Int.emod_nonneg _ hQne
++  have hrQ : r < Q := Int.emod_lt_of_pos _ hQ
++  have hQ2 : 2 * (Q / 2) + Q % 2 = Q := Int.mul_ediv_add_emod Q 2
++  have hm0 : 0 ≤ Q % 2 := Int.emod_nonneg Q (by decide)
++  have hm2 : Q % 2 < 2 := Int.emod_lt_of_pos Q (by decide)
++  have hnum : 2 * t * z + Q = (2 * r + Q % 2) + q * (2 * Q) := by linarith
++  have hrem0 : 0 ≤ 2 * r + Q % 2 := by omega
++  have hrem_lt : 2 * r + Q % 2 < 2 * Q := by omega
++  rw [hnum, Int.add_mul_ediv_right _ _ h2Qne, Int.ediv_eq_zero_of_lt hrem0 hrem_lt, zero_add]
++
++/-- **Coefficientwise integer BEHZ rescale certificate (`IntScaleCert`)**: proves in `ℤ` (NOT
++modulo `Q`) that `t · z + ⌊Q/2⌋ = Q · y + s` with `0 ≤ s < Q`. -/
++def IntScaleCert (Q t z y s : ℤ) : Prop :=
++  0 ≤ s ∧ s < Q ∧ t * z + Q / 2 = Q * y + s
++
++/-- **`intScaleCert_iff`**: for `Q > 0`, `IntScaleCert Q t z y s` holds iff `y = rescale t Q z`
++and `s = (t * z + Q / 2) % Q`. -/
++theorem intScaleCert_iff {Q : ℤ} (hQ : 0 < Q) (t z y s : ℤ) :
++    IntScaleCert Q t z y s ↔ y = rescale t Q z ∧ s = (t * z + Q / 2) % Q := by
++  have hQne : Q ≠ 0 := ne_of_gt hQ
++  constructor
++  · rintro ⟨hs0, hsQ, heq⟩
++    have hsplit : t * z + Q / 2 = s + y * Q := by linarith
++    have hy : (t * z + Q / 2) / Q = y := by
++      rw [hsplit, Int.add_mul_ediv_right _ _ hQne, Int.ediv_eq_zero_of_lt hs0 hsQ, zero_add]
++    have hs : (t * z + Q / 2) % Q = s := by
++      rw [hsplit, Int.add_mul_emod_self_right, Int.emod_eq_of_lt hs0 hsQ]
++    rw [ediv_add_half_eq_rescale hQ t z] at hy
++    exact ⟨hy.symm, hs.symm⟩
++  · rintro ⟨rfl, rfl⟩
++    refine ⟨Int.emod_nonneg _ hQne, Int.emod_lt_of_pos _ hQ, ?_⟩
++    rw [← ediv_add_half_eq_rescale hQ t z]
++    exact (Int.mul_ediv_add_emod (t * z + Q / 2) Q).symm
++
++/-! ## 2. `BFVScaleLiftRefinement` (`VERDICTS.md` §7.5) -/
++
++/-- Helper: if `Q_ext ∣ d` and `|d| < Q_ext`, then `d = 0`. -/
++private theorem eq_zero_of_dvd_of_abs_lt {Q d : ℤ} (hdvd : Q ∣ d) (habs : |d| < Q) : d = 0 := by
++  obtain ⟨m, rfl⟩ := hdvd
++  have hQ0 : 0 ≤ Q := le_of_lt (lt_of_le_of_lt (abs_nonneg _) habs)
++  rw [abs_mul, abs_of_nonneg hQ0] at habs
++  by_cases hm : m = 0
++  · simp [hm]
++  · have hm1 : (1 : ℤ) ≤ |m| := Int.one_le_abs hm
++    have hle : Q * 1 ≤ Q * |m| := mul_le_mul_of_nonneg_left hm1 hQ0
++    linarith
++
++/-- **`BFVScaleLiftRefinement` (`VERDICTS.md` §7.5):**
++Given:
++* a pairwise-coprime extended RNS basis `q_ext : Fin L_ext → ℕ` with product
++  `Q_ext = ∏ i, (q_ext i : ℤ)`,
++* bounded operand representatives `NormInfLE a A`, `NormInfLE b B` (`0 ≤ A`) whose worst-case
++  negacyclic product bound `(N : ℤ) * A * B` fits strictly below `Q_ext / 2`,
++* per-limb `LimbMulRel (q_ext i) a b (z_rns i)` where every limb carries the SAME integer
++  representative `z_rns i k = z k` with `NormInfLE z ((N : ℤ) * A * B)`, and
++* coefficientwise integer rescale certificates `IntScaleCert Q t (z k) (y k) (s k)` (`0 < Q`),
++
++then:
++1. `perLimb_pins_modProd` lifts the per-limb congruences to EXACT integer equality
++   `z = negaMul a b` in `ℤ` (NOT merely mod `Q`), and
++2. every output coefficient is uniquely pinned to `y k = rescale t Q (negaMul a b k)`. -/
++theorem BFVScaleLiftRefinement {L_ext N : ℕ}
++    (q_ext : Fin L_ext → ℕ)
++    (hcop : Pairwise (fun i j => Nat.Coprime (q_ext i) (q_ext j)))
++    (a b z y s : Rn N) (z_rns : RnsCt L_ext N) (A B Q t : ℤ)
++    (hA : 0 ≤ A)
++    (ha : NormInfLE a A) (hb : NormInfLE b B)
++    (hQext : (N : ℤ) * A * B < (∏ i : Fin L_ext, (q_ext i : ℤ)) / 2)
++    (hz_eq : ∀ i : Fin L_ext, ∀ k : Fin N, z_rns i k = z k)
++    (hlimb : ∀ i : Fin L_ext, LimbMulRel (q_ext i) a b (z_rns i))
++    (hz_bound : NormInfLE z ((N : ℤ) * A * B))
++    (hQ : 0 < Q)
++    (hcert : ∀ k : Fin N, IntScaleCert Q t (z k) (y k) (s k)) :
++    z = negaMul a b ∧ ∀ k : Fin N, y k = rescale t Q (negaMul a b k) := by
++  have hcopZ : Pairwise (fun i j => IsCoprime (q_ext i : ℤ) (q_ext j : ℤ)) :=
++    fun i j hij => Nat.isCoprime_iff_coprime.mpr (hcop hij)
++  have hprod_bound : NormInfLE (negaMul a b) ((N : ℤ) * A * B) := negaMul_normInf_le ha hb hA
++  have hz_eq_nega : z = negaMul a b := by
++    funext k
++    have hdvd_i : ∀ i : Fin L_ext, (q_ext i : ℤ) ∣ (negaMul a b k - z k) := by
++      intro i
++      have hrel := hlimb i k
++      rw [hz_eq i k] at hrel
++      exact Int.modEq_iff_dvd.mp hrel
++    have hdvd_all : (∏ i : Fin L_ext, (q_ext i : ℤ)) ∣ (negaMul a b k - z k) :=
++      perLimb_pins_modProd (fun i => (q_ext i : ℤ)) hcopZ (z k) (negaMul a b k) hdvd_i
++    have habs_diff : |negaMul a b k - z k| < ∏ i : Fin L_ext, (q_ext i : ℤ) := by
++      have htri : |negaMul a b k - z k| ≤ |negaMul a b k| + |z k| := by
++        simpa [sub_eq_add_neg, abs_neg] using abs_add_le (negaMul a b k) (-z k)
++      have h1 := hprod_bound k
++      have h2 := hz_bound k
++      have htwice : 2 * ((N : ℤ) * A * B) < ∏ i : Fin L_ext, (q_ext i : ℤ) := by omega
++      linarith
++    have hzero : negaMul a b k - z k = 0 := eq_zero_of_dvd_of_abs_lt hdvd_all habs_diff
++    linarith
++  refine ⟨hz_eq_nega, fun k => ?_⟩
++  have hy := ((intScaleCert_iff hQ t (z k) (y k) (s k)).mp (hcert k)).1
++  rw [hz_eq_nega] at hy
++  exact hy
++
++/-- **Non-vacuity witness for `BFVScaleLiftRefinement`**: at `L_ext = 2`, `q_ext = (3, 5)`
++(`Q_ext = 15`), `N = 2`, `a = b = (1, 1)` (`A = B = 1`, `2·1·1 = 2 < 7 = 15/2`), `Q = 31`,
++`t = 4`, all premises of `BFVScaleLiftRefinement` are jointly inhabited and fire cleanly. -/
++theorem bfvScaleLiftRefinement_witness :
++    let a : Rn 2 := fun _ => 1
++    let b : Rn 2 := fun _ => 1
++    let z : Rn 2 := fun k => if k = 0 then 0 else 2
++    let y : Rn 2 := fun _ => 0
++    z = negaMul a b ∧ ∀ k : Fin 2, y k = rescale 4 31 (negaMul a b k) := by
++  apply BFVScaleLiftRefinement exhibitQ
++    (by
++      intro i j hij
++      fin_cases i <;> fin_cases j <;> simp [exhibitQ] at hij ⊢ <;> norm_num)
++    (fun _ => 1) (fun _ => 1) (fun k => if k = 0 then 0 else 2) (fun _ => 0)
++    (fun k => if k = 0 then 15 else 23) (fun _ k => if k = 0 then 0 else 2) 1 1 31 4
++    (by decide)
++    (fun k => by fin_cases k <;> decide)
++    (fun k => by fin_cases k <;> decide)
++    (by decide)
++    (fun _ _ => rfl)
++    (fun i => by fin_cases i <;> decide)
++    (fun k => by fin_cases k <;> decide)
++    (by decide)
++    (fun k => by fin_cases k <;> (unfold IntScaleCert; decide))
++
++/-! ## 3. Fused `d`-Free Polynomial Rescale Certificate (`HoistedRescaleCert`) + `Bfv.Ring` Bridge -/
++
++/-- All-ones degree-`< N` polynomial `∑_{j=0}^{N-1} X^j`, carrying the uniform `+ ⌊Q/2⌋` rounding
++offset across every ring slot simultaneously. -/
++noncomputable def onesPoly (N : ℕ) : Polynomial ℤ :=
++  (Finset.range N).sum (fun j => Polynomial.X ^ j)
++
++@[simp] theorem coeff_onesPoly (N j : ℕ) :
++    (onesPoly N).coeff j = if j < N then 1 else 0 := by
++  unfold onesPoly
++  rw [Polynomial.finsetSum_coeff]
++  simp [Polynomial.coeff_X_pow]
++
++/-- **`Hole B` Fused `d`-Free Polynomial Rescale Certificate (`HoistedRescaleCert`)**:
++certifies in a single `ℤ[X]` equation that `y` is the exact coefficientwise `round(t · d / Q)`
++rescale of `d := P_sum mod (X^N + 1)`, with sub-`Q` remainder `s` and ring quotient `K_quot`,
++without materializing `d`:
++* `y` and `s` vanish in degree `≥ N`,
++* `0 ≤ s.coeff j < Q` for every `j < N`, and
++* `t · P_sum + (Q / 2) · ∑_{j<N} X^j = Q · y + s + t · (X^N + 1) · K_quot`. -/
++def HoistedRescaleCert (N : ℕ) (Q t : ℤ) (P_sum y s K_quot : Polynomial ℤ) : Prop :=
++  (∀ j ≥ N, y.coeff j = 0) ∧
++  (∀ j ≥ N, s.coeff j = 0) ∧
++  (∀ j < N, 0 ≤ s.coeff j ∧ s.coeff j < Q) ∧
++  Polynomial.C t * P_sum + Polynomial.C (Q / 2) * (Finset.range N).sum (fun j => Polynomial.X ^ j) =
++    Polynomial.C Q * y + s + Polynomial.C t * (Polynomial.X ^ N + 1) * K_quot
++
++/-- Key degree-separation lemma: if `((X^N + 1) * R).coeff j = 0` for all `j ≥ N` (`N > 0`),
++then `R = 0`. -/
++theorem eq_zero_of_X_pow_add_one_mul_coeff_zero {N : ℕ} (hN : 0 < N) {R : Polynomial ℤ}
++    (h : ∀ j ≥ N, ((Polynomial.X ^ N + 1) * R).coeff j = 0) :
++    R = 0 := by
++  by_contra hR
++  set m := R.natDegree
++  have hcoeff := h (m + N) (Nat.le_add_left N m)
++  rw [add_mul, one_mul, Polynomial.coeff_add, Polynomial.coeff_X_pow_mul] at hcoeff
++  have hhigh : R.coeff (m + N) = 0 :=
++    Polynomial.coeff_eq_zero_of_natDegree_lt (by omega)
++  rw [hhigh, add_zero] at hcoeff
++  exact Polynomial.leadingCoeff_ne_zero.mpr hR hcoeff
++
++/-- Monicity of the cyclotomic power-of-two modulus `X^N + 1` for `N > 0`. -/
++theorem monic_X_pow_add_one {N : ℕ} (hN : 0 < N) :
++    ((Polynomial.X : Polynomial ℤ) ^ N + 1).Monic := by
++  simpa using Polynomial.monic_X_pow_add_C (1 : ℤ) (Nat.ne_of_gt hN)
++
++/-- Every coefficient of `P_sum %ₘ (X^N + 1)` at index `j ≥ N` is zero (`N > 0`). -/
++theorem coeff_modByMonic_X_pow_add_one_eq_zero {N : ℕ} (hN : 0 < N)
++    (P_sum : Polynomial ℤ) {j : ℕ} (hj : j ≥ N) :
++    (P_sum %ₘ (Polynomial.X ^ N + 1)).coeff j = 0 := by
++  have hM := monic_X_pow_add_one hN
++  by_cases h0 : P_sum %ₘ (Polynomial.X ^ N + 1) = 0
++  · simp [h0]
++  · have hdeg := Polynomial.degree_modByMonic_lt P_sum hM
++    have hdegM : ((Polynomial.X : Polynomial ℤ) ^ N + 1).degree = (N : WithBot ℕ) := by
++      have hnd : ((Polynomial.X : Polynomial ℤ) ^ N + 1).natDegree = N := by
++        have h1 := Polynomial.natDegree_X_pow_add_C (n := N) (r := (1 : ℤ))
++        simp at h1 ⊢
++      rw [Polynomial.degree_eq_natDegree hM.ne_zero, hnd]
++    rw [hdegM, Polynomial.degree_eq_natDegree h0] at hdeg
++    have hlt : (P_sum %ₘ (Polynomial.X ^ N + 1)).natDegree < N := WithBot.coe_lt_coe.mp hdeg
++    exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le hlt hj)
++
++/-- **Exact characterization of `HoistedRescaleCert` (`hoistedRescaleCert_iff`)**:
++for `N > 0, Q > 0, t ≠ 0`, `HoistedRescaleCert N Q t P_sum y s K_quot` holds iff `K_quot` is
++`divByMonic`, `y` and `s` vanish at degrees `≥ N`, and for all `j < N`, `y.coeff j` and
++`s.coeff j` equal the exact Euclidean quotient (`= rescale t Q`) and remainder mod `Q`. -/
++theorem hoistedRescaleCert_iff {N : ℕ} {Q t : ℤ}
++    (hN : 0 < N) (hQ : 0 < Q) (ht : t ≠ 0)
++    (P_sum y s K_quot : Polynomial ℤ) :
++    HoistedRescaleCert N Q t P_sum y s K_quot ↔
++      K_quot = P_sum /ₘ (Polynomial.X ^ N + 1) ∧
++      (∀ j ≥ N, y.coeff j = 0) ∧
++      (∀ j ≥ N, s.coeff j = 0) ∧
++      (∀ j < N,
++        y.coeff j = (t * (P_sum %ₘ (Polynomial.X ^ N + 1)).coeff j + Q / 2) / Q ∧
++        s.coeff j = (t * (P_sum %ₘ (Polynomial.X ^ N + 1)).coeff j + Q / 2) % Q) := by
++  set M : Polynomial ℤ := Polynomial.X ^ N + 1
++  have hdiv_id : P_sum %ₘ M + M * (P_sum /ₘ M) = P_sum := Polynomial.modByMonic_add_div P_sum M
++  constructor
++  · rintro ⟨hy, hs, hs_range, heq⟩
++    set d := P_sum %ₘ M
++    set K₀ := P_sum /ₘ M
++    have h1 : (Finset.range N).sum (fun j => (Polynomial.X : Polynomial ℤ) ^ j) = onesPoly N := rfl
++    rw [h1] at heq
++    have hM_def : (Polynomial.X : Polynomial ℤ) ^ N + 1 = M := rfl
++    rw [hM_def] at heq
++    have hdiff :
++        M * (Polynomial.C t * (K_quot - K₀)) =
++          (Polynomial.C t * d + Polynomial.C (Q / 2) * onesPoly N)
++            - (Polynomial.C Q * y + s) := by
++      calc M * (Polynomial.C t * (K_quot - K₀))
++          = (Polynomial.C Q * y + s + Polynomial.C t * M * K_quot)
++              - (Polynomial.C Q * y + s) - Polynomial.C t * M * K₀ := by ring
++        _ = (Polynomial.C t * P_sum + Polynomial.C (Q / 2) * onesPoly N)
++              - (Polynomial.C Q * y + s) - Polynomial.C t * M * K₀ := by rw [← heq]
++        _ = (Polynomial.C t * (d + M * K₀) + Polynomial.C (Q / 2) * onesPoly N)
++              - (Polynomial.C Q * y + s) - Polynomial.C t * M * K₀ := by rw [hdiv_id]
++        _ = (Polynomial.C t * d + Polynomial.C (Q / 2) * onesPoly N)
++              - (Polynomial.C Q * y + s) := by ring
++    have hhigh_zero : ∀ j ≥ N, (M * (Polynomial.C t * (K_quot - K₀))).coeff j = 0 := by
++      intro j hj
++      rw [hdiff]
++      have hd0 : d.coeff j = 0 := coeff_modByMonic_X_pow_add_one_eq_zero hN P_sum hj
++      have hones0 : (onesPoly N).coeff j = 0 := by simp [Nat.not_lt.mpr hj]
++      simp [hd0, hones0, hy j hj, hs j hj]
++    have hR0 : Polynomial.C t * (K_quot - K₀) = 0 :=
++      eq_zero_of_X_pow_add_one_mul_coeff_zero hN hhigh_zero
++    have hK : K_quot = K₀ := by
++      apply sub_eq_zero.mp
++      ext k
++      have hk := congrArg (fun p => p.coeff k) hR0
++      simp only [Polynomial.coeff_C_mul, Polynomial.coeff_zero, mul_eq_zero] at hk
++      exact hk.resolve_left ht
++    have hlow_poly :
++        Polynomial.C t * d + Polynomial.C (Q / 2) * onesPoly N = Polynomial.C Q * y + s := by
++      rw [hR0, mul_zero] at hdiff
++      exact sub_eq_zero.mp hdiff.symm
++    refine ⟨hK, hy, hs, fun j hj => ?_⟩
++    have hcj := congrArg (fun p => p.coeff j) hlow_poly
++    have hones1 : (onesPoly N).coeff j = 1 := by simp [hj]
++    simp only [Polynomial.coeff_add, Polynomial.coeff_C_mul, hones1, mul_one] at hcj
++    obtain ⟨hs0, hsQ⟩ := hs_range j hj
++    have h_ediv : (t * d.coeff j + Q / 2) / Q = y.coeff j := by
++      have h_eq : t * d.coeff j + Q / 2 = s.coeff j + y.coeff j * Q := by linarith
++      rw [h_eq, Int.add_mul_ediv_right _ _ (ne_of_gt hQ), Int.ediv_eq_zero_of_lt hs0 hsQ, zero_add]
++    have h_emod : (t * d.coeff j + Q / 2) % Q = s.coeff j := by
++      have h_eq : t * d.coeff j + Q / 2 = s.coeff j + y.coeff j * Q := by linarith
++      rw [h_eq, Int.add_mul_emod_self_right, Int.emod_eq_of_lt hs0 hsQ]
++    exact ⟨h_ediv.symm, h_emod.symm⟩
++  · rintro ⟨rfl, hy, hs, hys⟩
++    refine ⟨hy, hs, ?_, ?_⟩
++    · intro j hj
++      rw [(hys j hj).2]
++      exact ⟨Int.emod_nonneg _ (ne_of_gt hQ), Int.emod_lt_of_pos _ hQ⟩
++    · set d := P_sum %ₘ M
++      have hlow_poly :
++          Polynomial.C t * d + Polynomial.C (Q / 2) * onesPoly N = Polynomial.C Q * y + s := by
++        ext j
++        by_cases hj : j < N
++        · obtain ⟨hyj, hsj⟩ := hys j hj
++          have hones1 : (onesPoly N).coeff j = 1 := by simp [hj]
++          simp only [Polynomial.coeff_add, Polynomial.coeff_C_mul, hones1, mul_one, hyj, hsj]
++          exact (Int.mul_ediv_add_emod (t * d.coeff j + Q / 2) Q).symm
++        · have hjN : j ≥ N := Nat.le_of_not_lt hj
++          have hd0 : d.coeff j = 0 := coeff_modByMonic_X_pow_add_one_eq_zero hN P_sum hjN
++          have hones0 : (onesPoly N).coeff j = 0 := by simp [hj]
++          simp [hd0, hones0, hy j hjN, hs j hjN]
++      have h1 : (Finset.range N).sum (fun j => (Polynomial.X : Polynomial ℤ) ^ j) = onesPoly N := rfl
++      have hM_def : (Polynomial.X : Polynomial ℤ) ^ N + 1 = M := rfl
++      rw [h1, hM_def]
++      calc Polynomial.C t * P_sum + Polynomial.C (Q / 2) * onesPoly N
++          = Polynomial.C t * (d + M * (P_sum /ₘ M)) + Polynomial.C (Q / 2) * onesPoly N := by
++              rw [hdiv_id]
++        _ = (Polynomial.C t * d + Polynomial.C (Q / 2) * onesPoly N)
++              + Polynomial.C t * M * (P_sum /ₘ M) := by ring
++        _ = Polynomial.C Q * y + s + Polynomial.C t * M * (P_sum /ₘ M) := by rw [hlow_poly]
++
++/-- **Full witness uniqueness (`hoistedRescaleCert_unique`)**: at most one `(y, s, K_quot)` triple
++satisfies `HoistedRescaleCert N Q t P_sum`. -/
++theorem hoistedRescaleCert_unique {N : ℕ} {Q t : ℤ}
++    (hN : 0 < N) (hQ : 0 < Q) (ht : t ≠ 0)
++    {P_sum y₁ s₁ K₁ y₂ s₂ K₂ : Polynomial ℤ}
++    (h₁ : HoistedRescaleCert N Q t P_sum y₁ s₁ K₁)
++    (h₂ : HoistedRescaleCert N Q t P_sum y₂ s₂ K₂) :
++    y₁ = y₂ ∧ s₁ = s₂ ∧ K₁ = K₂ := by
++  rw [hoistedRescaleCert_iff hN hQ ht] at h₁ h₂
++  obtain ⟨hK₁, hy₁, hs₁, hys₁⟩ := h₁
++  obtain ⟨hK₂, hy₂, hs₂, hys₂⟩ := h₂
++  refine ⟨Polynomial.ext fun j => ?_, Polynomial.ext fun j => ?_, hK₁.trans hK₂.symm⟩
++  · by_cases hj : j < N
++    · exact (hys₁ j hj).1.trans (hys₂ j hj).1.symm
++    · exact (hy₁ j (Nat.le_of_not_lt hj)).trans (hy₂ j (Nat.le_of_not_lt hj)).symm
++  · by_cases hj : j < N
++    · exact (hys₁ j hj).2.trans (hys₂ j hj).2.symm
++    · exact (hs₁ j (Nat.le_of_not_lt hj)).trans (hs₂ j (Nat.le_of_not_lt hj)).symm
++
++/-- **Satisfying witness (`hoistedRescaleCert_witness_N2`)**: concrete `N = 2, Q = 31, t = 4`
++certificate with nonzero negacyclic wrap quotient `K_quot = 5`. -/
++theorem hoistedRescaleCert_witness_N2 :
++    let P_sum : Polynomial ℤ := C 32 + C 10 * X + C 5 * X ^ 2
++    let y : Polynomial ℤ := C 3 + X
++    let s : Polynomial ℤ := C 30 + C 24 * X
++    let K_quot : Polynomial ℤ := C 5
++    K_quot ≠ 0 ∧ HoistedRescaleCert 2 31 4 P_sum y s K_quot := by
++  refine ⟨by simp, ?_⟩
++  refine ⟨?_, ?_, ?_, ?_⟩
++  · intro j hj
++    rcases j with _ | _ | j
++    · omega
++    · omega
++    · simp [Polynomial.coeff_X]
++  · intro j hj
++    rcases j with _ | _ | j
++    · omega
++    · omega
++    · simp [Polynomial.coeff_X]
++  · intro j hj
++    rcases j with _ | _ | j
++    · simp [Polynomial.coeff_X]
++    · simp [Polynomial.coeff_X]
++    · omega
++  · ext k
++    rcases k with _ | _ | _ | k <;>
++      simp [Finset.sum_range_succ, Polynomial.coeff_X, Polynomial.coeff_one, pow_two]
++
++/-- Every coefficient of `toPoly a` at index `j ≥ N` is zero. -/
++theorem toPoly_coeff_eq_zero_of_ge {N : ℕ} (a : Rn N) {j : ℕ} (hj : j ≥ N) :
++    (toPoly a).coeff j = 0 := by
++  unfold toPoly
++  rw [Polynomial.finsetSum_coeff]
++  refine Finset.sum_eq_zero fun i _ => ?_
++  rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, ite_eq_right (by omega), mul_zero]
++
++/-- `toPoly` distributes over finite sums of `Rn N` elements. -/
++theorem toPoly_sum {N K : ℕ} (f : Fin K → Rn N) :
++    toPoly (fun k => ∑ c : Fin K, f c k) = ∑ c : Fin K, toPoly (f c) := by
++  unfold toPoly
++  have h1 : ∀ i : Fin N,
++      Polynomial.C (∑ c : Fin K, f c i) * Polynomial.X ^ (i : ℕ) =
++        ∑ c : Fin K, Polynomial.C (f c i) * Polynomial.X ^ (i : ℕ) := by
++    intro i
++    rw [map_sum, Finset.sum_mul]
++  rw [Finset.sum_congr rfl fun i _ => h1 i, Finset.sum_comm]
++
++/-- **`P_sum %ₘ (X^N + 1)` equals `toPoly (∑ c, negaMul (a c) (b c))`**, bridging `Polynomial ℤ`
++division by `X^N + 1` directly to `Bfv.Ring.negaMul`. -/
++theorem modByMonic_sum_toPoly_mul_eq {N K : ℕ} [NeZero N] (a b : Fin K → Rn N) :
++    (∑ c : Fin K, toPoly (a c) * toPoly (b c)) %ₘ (Polynomial.X ^ N + 1) =
++      toPoly (fun k => ∑ c : Fin K, negaMul (a c) (b c) k) := by
++  set M : Polynomial ℤ := Polynomial.X ^ N + 1
++  set P_sum : Polynomial ℤ := ∑ c : Fin K, toPoly (a c) * toPoly (b c)
++  set S_rn : Rn N := fun k => ∑ c : Fin K, negaMul (a c) (b c) k
++  have hdvd : M ∣ (P_sum - toPoly S_rn) := by
++    rw [toPoly_sum, ← Finset.sum_sub_distrib]
++    exact Finset.dvd_sum fun c _ => negaMul_toPoly_dvd (a c) (b c)
++  obtain ⟨q, hq⟩ := hdvd
++  have hdiv : P_sum %ₘ M + M * (P_sum /ₘ M) = P_sum := Polynomial.modByMonic_add_div P_sum M
++  have hdiff : M * (q - P_sum /ₘ M) = P_sum %ₘ M - toPoly S_rn := by
++    calc M * (q - P_sum /ₘ M)
++        = M * q - M * (P_sum /ₘ M) := by ring
++      _ = (P_sum - toPoly S_rn) - M * (P_sum /ₘ M) := by rw [← hq]
++      _ = (P_sum %ₘ M + M * (P_sum /ₘ M) - toPoly S_rn) - M * (P_sum /ₘ M) := by rw [hdiv]
++      _ = P_sum %ₘ M - toPoly S_rn := by ring
++  have hN : 0 < N := NeZero.pos N
++  have hhigh : ∀ j ≥ N, (M * (q - P_sum /ₘ M)).coeff j = 0 := by
++    intro j hj
++    rw [hdiff, Polynomial.coeff_sub, coeff_modByMonic_X_pow_add_one_eq_zero hN P_sum hj,
++      toPoly_coeff_eq_zero_of_ge S_rn hj, sub_self]
++  have hq0 : q - P_sum /ₘ M = 0 := eq_zero_of_X_pow_add_one_mul_coeff_zero hN hhigh
++  rw [hq0, mul_zero] at hdiff
++  exact sub_eq_zero.mp hdiff.symm
++
++/-- **Bridge Theorem (`hoistedRescaleCert_refines_negaMul_sum`):**
++For `P_sum = ∑ c : Fin K, toPoly (a c) * toPoly (b c)` (`[NeZero N]`, `0 < Q`, `t ≠ 0`),
++`HoistedRescaleCert N Q t P_sum y_poly s_poly K_quot` pins every coefficient `k : Fin N` of
++`y_poly` to `rescale t Q (∑ c : Fin K, negaMul (a c) (b c) k)`. -/
++theorem hoistedRescaleCert_refines_negaMul_sum {N K : ℕ} [NeZero N] {Q t : ℤ}
++    (hQ : 0 < Q) (ht : t ≠ 0) (a b : Fin K → Rn N) (y_poly s_poly K_quot : Polynomial ℤ)
++    (hcert : HoistedRescaleCert N Q t
++      (∑ c : Fin K, toPoly (a c) * toPoly (b c)) y_poly s_poly K_quot) :
++    ∀ k : Fin N, y_poly.coeff (k : ℕ) = rescale t Q (∑ c : Fin K, negaMul (a c) (b c) k) := by
++  have hiff := (hoistedRescaleCert_iff (NeZero.pos N) hQ ht _ y_poly s_poly K_quot).mp hcert
++  intro k
++  have hy := (hiff.2.2.2 (k : ℕ) k.isLt).1
++  rw [modByMonic_sum_toPoly_mul_eq a b, toPoly_coeff] at hy
++  rw [hy, ediv_add_half_eq_rescale hQ]
++
++/-! ## 4. Hoisted Sum-Before-Rescale (`sumMulPhase`) on `Bfv.Params` / `Bfv.fheRs4096` -/
++
++/-- **Hoisted BFV dot-product rescale (`sumMulPhase`)**: accumulate all unrescaled integer phase
++products `∑ (p₁ᵢ · p₂ᵢ)` in `ℤ` first, then apply a single `round(t · (∑ p₁ᵢ p₂ᵢ) / q)`. -/
++def sumMulPhase (P : Params) (ps : List (ℤ × ℤ)) : ℤ :=
++  (2 * (P.t : ℤ) * (ps.map (fun x => x.1 * x.2)).sum + P.q) / (2 * (P.q : ℤ))
++
++/-- **Eager per-product rescale sum**: rescaling each pair individually via `mulPhase`. -/
++def eagerSumMulPhase (P : Params) (ps : List (ℤ × ℤ)) : ℤ :=
++  (ps.map (fun x => mulPhase P x.1 x.2)).sum
++
++/-- At length `1`, `sumMulPhase` reduces identically to `Bfv.mulPhase`. -/
++theorem sumMulPhase_singleton (P : Params) (p₁ p₂ : ℤ) :
++    sumMulPhase P [(p₁, p₂)] = mulPhase P p₁ p₂ := by
++  simp [sumMulPhase, mulPhase]
++
++/-- Encrypt a list of `((m₁, e₁), (m₂, e₂))` operand descriptors into phase pairs. -/
++def encPhasePairs (P : Params) (os : List ((ℕ × ℤ) × (ℕ × ℤ))) : List (ℤ × ℤ) :=
++  os.map (fun o => ((P.Δ : ℤ) * o.1.1 + o.1.2, (P.Δ : ℤ) * o.2.1 + o.2.2))
++
++/-- Hoisted dot-product ciphertext before relinearization. -/
++def hoistedDotCt (P : Params) (os : List ((ℕ × ℤ) × (ℕ × ℤ))) : Ct P :=
++  ⟨sumMulPhase P (encPhasePairs P os)⟩
++
++/-- Summed sub-`q` multiplicative remainder across a list of encrypted operand pairs. -/
++def sumMulRemainder (P : Params) (os : List ((ℕ × ℤ) × (ℕ × ℤ))) : ℤ :=
++  (os.map (fun o => mulRemainder P o.1.1 o.2.1 o.1.2 o.2.2)).sum
++
++/-- Unrounded `t`-scaled product sum identity across `K` encrypted pairs. -/
++theorem scaled_encPhasePairs_sum_eq (P : Params) (os : List ((ℕ × ℤ) × (ℕ × ℤ))) :
++    (P.t : ℤ) * ((encPhasePairs P os).map (fun x => x.1 * x.2)).sum =
++      (P.q : ℤ) * ((P.Δ : ℤ) * (((os.map (fun o => o.1.1 * o.2.1)).sum : ℕ) : ℤ)
++        + (os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum)
++      + sumMulRemainder P os := by
++  have hQeq : (P.q : ℤ) = (P.Δ : ℤ) * (P.t : ℤ) + (P.r : ℤ) := by exact_mod_cast P.q_eq
++  induction os with
++  | nil => simp [encPhasePairs, sumMulRemainder]
++  | cons o os ih =>
++      simp only [encPhasePairs, sumMulRemainder, List.map_cons, List.sum_cons,
++        Nat.cast_add, Nat.cast_mul] at ih ⊢
++      rw [mul_add, ih]
++      unfold mulRemainder
++      rw [hQeq]
++      ring
++
++/-- **Exact `K`-pair hoisted multiplicative phase decomposition (`sumMulPhase_encrypt_eq`)**. -/
++theorem sumMulPhase_encrypt_eq (P : Params) (os : List ((ℕ × ℤ) × (ℕ × ℤ))) :
++    sumMulPhase P (encPhasePairs P os) =
++      (P.Δ : ℤ) * (((os.map (fun o => o.1.1 * o.2.1)).sum : ℕ) : ℤ)
++        + (os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum
++        + (2 * sumMulRemainder P os + P.q) / (2 * (P.q : ℤ)) := by
++  have hq : (0 : ℤ) < (P.q : ℤ) := by exact_mod_cast P.q_pos
++  have hq0 : (2 * (P.q : ℤ)) ≠ 0 := by linarith
++  unfold sumMulPhase
++  have hscaled := scaled_encPhasePairs_sum_eq P os
++  have hnum :
++      2 * (P.t : ℤ) * ((encPhasePairs P os).map (fun x => x.1 * x.2)).sum + (P.q : ℤ) =
++        (2 * sumMulRemainder P os + (P.q : ℤ))
++          + ((P.Δ : ℤ) * (((os.map (fun o => o.1.1 * o.2.1)).sum : ℕ) : ℤ)
++              + (os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum)
++            * (2 * (P.q : ℤ)) := by
++    calc 2 * (P.t : ℤ) * ((encPhasePairs P os).map (fun x => x.1 * x.2)).sum + (P.q : ℤ)
++        = 2 * ((P.t : ℤ) * ((encPhasePairs P os).map (fun x => x.1 * x.2)).sum) + (P.q : ℤ) := by
++            ring
++      _ = _ := by
++            rw [hscaled]
++            ring
++  rw [hnum, Int.add_mul_ediv_right _ _ hq0]
++  ring
++
++/-- **Sound worst-case noise bound for a `K`-term hoisted dot-product + ONE relinearization**:
++rounding slack is `+ 1` total (not `+ K`), and `Bks` is paid once. -/
++def hoistedMulNoiseBound (P : Params) (K : ℕ) (M₁ M₂ B₁ B₂ Bks : ℤ) : ℤ :=
++  (K : ℤ) * (M₁ * B₂ + M₂ * B₁)
++    + ((K : ℤ) * ((P.t : ℤ) * (B₁ * B₂) + (P.r : ℤ) * (P.Δ : ℤ) * (M₁ * M₂)
++        + (P.r : ℤ) * (M₁ * B₂ + M₂ * B₁))) / (P.q : ℤ)
++    + 1 + Bks
++
++/-- **Hoisted dot-product noise bound (`sumMulPhase_noise_le`)**. -/
++theorem sumMulPhase_noise_le (P : Params) (os : List ((ℕ × ℤ) × (ℕ × ℤ))) (eks : ℤ)
++    (K : ℕ) (M₁ M₂ B₁ B₂ Bks : ℤ)
++    (hlen : os.length ≤ K)
++    (hm₁ : ∀ o ∈ os, (o.1.1 : ℤ) ≤ M₁)
++    (hm₂ : ∀ o ∈ os, (o.2.1 : ℤ) ≤ M₂)
++    (he₁ : ∀ o ∈ os, |o.1.2| ≤ B₁)
++    (he₂ : ∀ o ∈ os, |o.2.2| ≤ B₂)
++    (hks : |eks| ≤ Bks)
++    (hM₁0 : 0 ≤ M₁) (hM₂0 : 0 ≤ M₂) (hB₁0 : 0 ≤ B₁) (hB₂0 : 0 ≤ B₂) :
++    |((hoistedDotCt P os).relin eks).noiseAt ((os.map (fun o => o.1.1 * o.2.1)).sum)|
++      ≤ hoistedMulNoiseBound P K M₁ M₂ B₁ B₂ Bks := by
++  have hq : (0 : ℤ) < (P.q : ℤ) := by exact_mod_cast P.q_pos
++  have ht0 : (0 : ℤ) ≤ (P.t : ℤ) := Int.natCast_nonneg _
++  have hr0 : (0 : ℤ) ≤ (P.r : ℤ) := Int.natCast_nonneg _
++  have hd0 : (0 : ℤ) ≤ (P.Δ : ℤ) := Int.natCast_nonneg _
++  have hlenZ : (os.length : ℤ) ≤ (K : ℤ) := by exact_mod_cast hlen
++  have hnoise_eq :
++      ((hoistedDotCt P os).relin eks).noiseAt ((os.map (fun o => o.1.1 * o.2.1)).sum) =
++        (os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum
++          + (2 * sumMulRemainder P os + P.q) / (2 * (P.q : ℤ)) + eks := by
++    simp only [hoistedDotCt, Ct.relin, Ct.noiseAt]
++    rw [sumMulPhase_encrypt_eq]
++    ring
++  have hcross_each : ∀ x ∈ os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2),
++      |x| ≤ M₁ * B₂ + M₂ * B₁ := by
++    intro x hx
++    obtain ⟨o, ho, rfl⟩ := List.mem_map.mp hx
++    have hm1o : (0 : ℤ) ≤ (o.1.1 : ℤ) := Int.natCast_nonneg _
++    have hm2o : (0 : ℤ) ≤ (o.2.1 : ℤ) := Int.natCast_nonneg _
++    have h1 : (o.1.1 : ℤ) * |o.2.2| ≤ M₁ * B₂ :=
++      mul_le_mul (hm₁ o ho) (he₂ o ho) (abs_nonneg _) hM₁0
++    have h2 : (o.2.1 : ℤ) * |o.1.2| ≤ M₂ * B₁ :=
++      mul_le_mul (hm₂ o ho) (he₁ o ho) (abs_nonneg _) hM₂0
++    calc |(o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2|
++        ≤ |(o.1.1 : ℤ) * o.2.2| + |(o.2.1 : ℤ) * o.1.2| := abs_add_le _ _
++      _ = (o.1.1 : ℤ) * |o.2.2| + (o.2.1 : ℤ) * |o.1.2| := by
++          rw [abs_mul, abs_mul, abs_of_nonneg hm1o, abs_of_nonneg hm2o]
++      _ ≤ M₁ * B₂ + M₂ * B₁ := by linarith
++  have hcross_sum :
++      |(os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum|
++        ≤ (K : ℤ) * (M₁ * B₂ + M₂ * B₁) := by
++    have h1 := abs_sum_le_length_mul _ _ hcross_each
++    simp only [List.length_map] at h1
++    have hCB0 : 0 ≤ M₁ * B₂ + M₂ * B₁ := by positivity
++    exact h1.trans (mul_le_mul_of_nonneg_right hlenZ hCB0)
++  set E_unit : ℤ := (P.t : ℤ) * (B₁ * B₂) + (P.r : ℤ) * (P.Δ : ℤ) * (M₁ * M₂)
++    + (P.r : ℤ) * (M₁ * B₂ + M₂ * B₁)
++  have hE_unit0 : 0 ≤ E_unit := by positivity
++  have hrem_each : ∀ x ∈ os.map (fun o => mulRemainder P o.1.1 o.2.1 o.1.2 o.2.2),
++      |x| ≤ E_unit := by
++    intro x hx
++    obtain ⟨o, ho, rfl⟩ := List.mem_map.mp hx
++    have hm1o : (0 : ℤ) ≤ (o.1.1 : ℤ) := Int.natCast_nonneg _
++    have hm2o : (0 : ℤ) ≤ (o.2.1 : ℤ) := Int.natCast_nonneg _
++    have hcr : |(o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2| ≤ M₁ * B₂ + M₂ * B₁ :=
++      hcross_each _ (List.mem_map_of_mem ho)
++    have h1 : |(P.t : ℤ) * (o.1.2 * o.2.2)| ≤ (P.t : ℤ) * (B₁ * B₂) := by
++      rw [abs_mul, abs_of_nonneg ht0, abs_mul]
++      exact mul_le_mul_of_nonneg_left (mul_le_mul (he₁ o ho) (he₂ o ho) (abs_nonneg _) hB₁0) ht0
++    have h2 : |(P.r : ℤ) * (P.Δ : ℤ) * ((o.1.1 : ℤ) * o.2.1)|
++        ≤ (P.r : ℤ) * (P.Δ : ℤ) * (M₁ * M₂) := by
++      rw [abs_mul, abs_of_nonneg (mul_nonneg hr0 hd0), abs_mul,
++        abs_of_nonneg hm1o, abs_of_nonneg hm2o]
++      exact mul_le_mul_of_nonneg_left
++        (mul_le_mul (hm₁ o ho) (hm₂ o ho) hm2o hM₁0) (mul_nonneg hr0 hd0)
++    have h3 : |(P.r : ℤ) * ((o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)|
++        ≤ (P.r : ℤ) * (M₁ * B₂ + M₂ * B₁) := by
++      rw [abs_mul, abs_of_nonneg hr0]
++      exact mul_le_mul_of_nonneg_left hcr hr0
++    have hsplit : mulRemainder P o.1.1 o.2.1 o.1.2 o.2.2 =
++        (P.t : ℤ) * (o.1.2 * o.2.2)
++          + -((P.r : ℤ) * (P.Δ : ℤ) * ((o.1.1 : ℤ) * o.2.1))
++          + -((P.r : ℤ) * ((o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)) := by
++      unfold mulRemainder; ring
++    calc |mulRemainder P o.1.1 o.2.1 o.1.2 o.2.2|
++        ≤ |(P.t : ℤ) * (o.1.2 * o.2.2)
++            + -((P.r : ℤ) * (P.Δ : ℤ) * ((o.1.1 : ℤ) * o.2.1))|
++          + |-((P.r : ℤ) * ((o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2))| := by
++            rw [hsplit]; exact abs_add_le _ _
++      _ ≤ |(P.t : ℤ) * (o.1.2 * o.2.2)|
++          + |-((P.r : ℤ) * (P.Δ : ℤ) * ((o.1.1 : ℤ) * o.2.1))|
++          + |-((P.r : ℤ) * ((o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2))| := by
++            have := abs_add_le ((P.t : ℤ) * (o.1.2 * o.2.2))
++              (-((P.r : ℤ) * (P.Δ : ℤ) * ((o.1.1 : ℤ) * o.2.1)))
++            linarith
++      _ ≤ E_unit := by
++            rw [abs_neg, abs_neg]; unfold E_unit; linarith
++  have hrem_sum : |sumMulRemainder P os| ≤ (K : ℤ) * E_unit := by
++    unfold sumMulRemainder
++    have h1 := abs_sum_le_length_mul _ _ hrem_each
++    simp only [List.length_map] at h1
++    exact h1.trans (mul_le_mul_of_nonneg_right hlenZ hE_unit0)
++  have hF := abs_mulRound_le (P.q : ℤ) (sumMulRemainder P os) hq
++  have hdiv : |sumMulRemainder P os| / (P.q : ℤ) ≤ ((K : ℤ) * E_unit) / (P.q : ℤ) :=
++    Int.ediv_le_ediv hq hrem_sum
++  rw [hnoise_eq]
++  unfold hoistedMulNoiseBound
++  have htri :
++      |(os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum
++          + (2 * sumMulRemainder P os + P.q) / (2 * (P.q : ℤ)) + eks|
++        ≤ |(os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum|
++          + |(2 * sumMulRemainder P os + P.q) / (2 * (P.q : ℤ))| + |eks| := by
++    have h1 := abs_add_le ((os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum
++      + (2 * sumMulRemainder P os + P.q) / (2 * (P.q : ℤ))) eks
++    have h2 := abs_add_le ((os.map (fun o => (o.1.1 : ℤ) * o.2.2 + (o.2.1 : ℤ) * o.1.2)).sum)
++      ((2 * sumMulRemainder P os + P.q) / (2 * (P.q : ℤ)))
++    linarith
++  linarith
++
++/-- Computable `ℕ`-side hoisted margin check for `K` summed products + 1 relinearization. -/
++def hoistedMulNoiseBoundN (P : Params) (K M₁ M₂ B₁ B₂ Bks : ℕ) : ℕ :=
++  K * (M₁ * B₂ + M₂ * B₁)
++    + (K * (P.t * (B₁ * B₂) + P.r * P.Δ * (M₁ * M₂) + P.r * (M₁ * B₂ + M₂ * B₁))) / P.q
++    + 1 + Bks
++
++/-- Deployed `fheRs4096` witness: `K = 64` hoisted column-block products stay safely inside the
++decrypt noise margin even after `4096×` worst-case ring-expansion inflation. -/
++theorem deployed_hoisted64_margin_holds :
++    marginHolds fheRs4096 4096
++      (hoistedMulNoiseBoundN fheRs4096 64 127 127 (2 ^ 20) (2 ^ 20) (2 ^ 40)) = true := by
++  decide
++
++/-- Concrete valid BFV parameters (`q = 16, t = 2, Δ = 8, r = 0`) for the constructive
++rounding-bias tooth. -/
++def gapParams : Params where
++  q := 16
++  t := 2
++  t_pos := by decide
++  t_lt_q := by decide
++
++/-- Four honest encrypted pairs of `(m₁ = 0, m₂ = 0)` with noises `(e₁ = 1, e₂ = 4)`. -/
++def gapEncPairs : List ((ℕ × ℤ) × (ℕ × ℤ)) :=
++  List.replicate 4 ((0, 1), (0, 4))
++
++/-- **Witness + Falsifier Tooth (`eager_vs_hoisted_rounding_gap`)**:
++eager `mulPhase` summation deviates from hoisted `sumMulPhase` by `4 - 2 = 2` and silently
++mis-decrypts `0` as `1`, whereas `sumMulPhase` decrypts to the exact clear dot-product `0`. -/
++theorem eager_vs_hoisted_rounding_gap :
++    let ps := encPhasePairs gapParams gapEncPairs
++    ps.length = 4 ∧
++    eagerSumMulPhase gapParams ps = 4 ∧
++    sumMulPhase gapParams ps = 2 ∧
++    eagerSumMulPhase gapParams ps - sumMulPhase gapParams ps ≥ 2 ∧
++    decryptPhase gapParams (sumMulPhase gapParams ps) = 0 ∧
++    decryptPhase gapParams (eagerSumMulPhase gapParams ps) = 1 := by
++  decide
++
++/-! ## 5. `Q = 31, t = 4` `1`-vs-`32` (`1·1 = 1` vs `2·16 = 32 ≡ 1 mod 31`) Falsifiers -/
++
++/-- Buggy mod-`Q`-only integer rescale check: reduces `t · z + Q / 2 - (Q · y + s)` mod `Q`,
++erasing `Q · y` completely. -/
++def ModQIntScaleCheck (Q t z y s : ℤ) : Prop :=
++  0 ≤ s ∧ s < Q ∧ (t * z + Q / 2 - (Q * y + s)) % Q = 0
++
++/-- **`Q = 31, t = 4` `1`-vs-`32` Integer Falsifier (`bfvScaleLiftRefinement_modQ_falsifier`)**:
++Over `Rn 1` (`1·1 = 1` vs `2·16 = 32`):
++1. `negaMul (fun _ => 2) (fun _ => 16) 0 = 32` and `negaMul (fun _ => 1) (fun _ => 1) 0 = 1`
++   agree modulo `Q = 31`, yet scale to `4` vs `0`;
++2. `ModQIntScaleCheck 31 4 32 0 19` **ACCEPTS** forged output `y = 0` on `2·16 = 32`;
++3. `IntScaleCert 31 4 32 0 s` **REFUSES** `y = 0` for EVERY remainder `s : ℤ`. -/
++theorem bfvScaleLiftRefinement_modQ_falsifier :
++    let Q : ℤ := 31
++    let t : ℤ := 4
++    let a₁ : Rn 1 := fun _ => 1
++    let b₁ : Rn 1 := fun _ => 1
++    let a₂ : Rn 1 := fun _ => 2
++    let b₂ : Rn 1 := fun _ => 16
++    negaMul a₁ b₁ 0 = 1 ∧
++    negaMul a₂ b₂ 0 = 32 ∧
++    negaMul a₂ b₂ 0 % Q = negaMul a₁ b₁ 0 % Q ∧
++    rescale t Q (negaMul a₁ b₁ 0) = 0 ∧
++    rescale t Q (negaMul a₂ b₂ 0) = 4 ∧
++    ModQIntScaleCheck Q t (negaMul a₂ b₂ 0) 0 19 ∧
++    (∀ s : ℤ, ¬ IntScaleCert Q t (negaMul a₂ b₂ 0) 0 s) := by
++  refine ⟨by decide, by decide, by decide, by decide, by decide, by unfold ModQIntScaleCheck; decide, ?_⟩
++  intro s hcert
++  have hy := ((intScaleCert_iff (Q := 31) (by decide) 4 (negaMul (fun _ : Fin 1 => (2 : ℤ))
++    (fun _ : Fin 1 => (16 : ℤ)) 0) 0 s).mp hcert).1
++  have h4 : rescale 4 31 (negaMul (fun _ : Fin 1 => (2 : ℤ)) (fun _ : Fin 1 => (16 : ℤ)) 0) = 4 := by
++    decide
++  rw [h4] at hy
++  omega
++
++/-- Buggy mod-`Q`-only polynomial rescale check: checking the `Hole B` polynomial identity only
++modulo `Q` erases `Q · y` and accepts forged outputs. -/
++def ModQPolyRescaleCheck (N : ℕ) (Q t : ℤ) (P_sum y s K_quot : Polynomial ℤ) : Prop :=
++  (∀ j ≥ N, y.coeff j = 0) ∧
++  (∀ j ≥ N, s.coeff j = 0) ∧
++  (∀ j < N, 0 ≤ s.coeff j ∧ s.coeff j < Q) ∧
++  (∀ j, ((Polynomial.C t * P_sum
++      + Polynomial.C (Q / 2) * (Finset.range N).sum (fun k => Polynomial.X ^ k)
++      - (Polynomial.C Q * y + s + Polynomial.C t * (Polynomial.X ^ N + 1) * K_quot)).coeff j) % Q = 0)
++
++/-- **`Q = 31, t = 4` Polynomial Alias Falsifier (`holeB_modQ_alias_falsifier`)**:
++1. `z_true = 32` and `z_alias = 1` have the same residue mod `31`, yet scale to `4` vs `0`;
++2. On `P_true = C 32` (`N = 2`), the honest `HoistedRescaleCert` holds with `y_true = C 4`;
++3. `ModQPolyRescaleCheck` **ACCEPTS** forged output `y_forge = 0` on `P_true = C 32`;
++4. `HoistedRescaleCert` **REFUSES** `y_forge = 0` for EVERY `s, K_quot : Polynomial ℤ`. -/
++theorem holeB_modQ_alias_falsifier :
++    let Q : ℤ := 31
++    let t : ℤ := 4
++    let z_true : ℤ := 32
++    let z_alias : ℤ := 1
++    let P_true : Polynomial ℤ := C z_true
++    let y_true : Polynomial ℤ := C 4
++    let y_forge : Polynomial ℤ := 0
++    let s_true : Polynomial ℤ := C 19 + C 15 * X
++    (z_true % Q = z_alias % Q ∧
++      ((t * z_true + Q / 2) / Q) % Q = 4 ∧
++      ((t * z_alias + Q / 2) / Q) % Q = 0) ∧
++    HoistedRescaleCert 2 Q t P_true y_true s_true 0 ∧
++    ModQPolyRescaleCheck 2 Q t P_true y_forge s_true 0 ∧
++    (∀ s K_quot : Polynomial ℤ, ¬ HoistedRescaleCert 2 Q t P_true y_forge s K_quot) := by
++  refine ⟨by decide, ?_, ?_, ?_⟩
++  · refine ⟨?_, ?_, ?_, ?_⟩
++    · intro j hj
++      rcases j with _ | _ | j
++      · omega
++      · omega
++      · simp
++    · intro j hj
++      rcases j with _ | _ | j
++      · omega
++      · omega
++      · simp [Polynomial.coeff_X]
++    · intro j hj
++      rcases j with _ | _ | j
++      · simp [Polynomial.coeff_X]
++      · simp [Polynomial.coeff_X]
++      · omega
++    · ext k
++      rcases k with _ | _ | _ | k <;>
++        simp [Finset.sum_range_succ, Polynomial.coeff_X, Polynomial.coeff_one, pow_two]
++  · refine ⟨?_, ?_, ?_, ?_⟩
++    · intro j _; simp
++    · intro j hj
++      rcases j with _ | _ | j
++      · omega
++      · omega
++      · simp [Polynomial.coeff_X]
++    · intro j hj
++      rcases j with _ | _ | j
++      · simp [Polynomial.coeff_X]
++      · simp [Polynomial.coeff_X]
++      · omega
++    · intro j
++      rcases j with _ | _ | j <;>
++        simp [Finset.sum_range_succ, Polynomial.coeff_X, Polynomial.coeff_one]
++  · intro s K_quot hcert
++    have hiff := (hoistedRescaleCert_iff (N := 2) (Q := 31) (t := 4)
++      (by decide) (by decide) (by decide) (C 32) 0 s K_quot).mp hcert
++    have hy0 := (hiff.2.2.2 0 (by decide)).1
++    have hmod : (C (32 : ℤ) %ₘ ((Polynomial.X : Polynomial ℤ) ^ 2 + 1)) = C 32 := by
++      apply (Polynomial.modByMonic_eq_self_iff (monic_X_pow_add_one (N := 2) (by decide))).mpr
++      have hdegM : ((Polynomial.X : Polynomial ℤ) ^ 2 + 1).degree = 2 := by
++        have hM := monic_X_pow_add_one (N := 2) (by decide)
++        have hnd : ((Polynomial.X : Polynomial ℤ) ^ 2 + 1).natDegree = 2 := by
++          have h1 := Polynomial.natDegree_X_pow_add_C (n := 2) (r := (1 : ℤ))
++          simp at h1 ⊢
++        rw [Polynomial.degree_eq_natDegree hM.ne_zero, hnd]
++        rfl
++      rw [hdegM]
++      exact lt_of_le_of_lt Polynomial.degree_C_le (by decide)
++    rw [hmod] at hy0
++    simp at hy0
++
++/-! ## 6. Axiom Hygiene (`#assert_all_clean` + `#guard_msgs in #print axioms`) -/
++
++#assert_all_clean [
++  Bfv.ediv_add_half_eq_rescale,
++  Bfv.intScaleCert_iff,
++  Bfv.BFVScaleLiftRefinement,
++  Bfv.bfvScaleLiftRefinement_witness,
++  Bfv.hoistedRescaleCert_iff,
++  Bfv.hoistedRescaleCert_unique,
++  Bfv.hoistedRescaleCert_witness_N2,
++  Bfv.modByMonic_sum_toPoly_mul_eq,
++  Bfv.hoistedRescaleCert_refines_negaMul_sum,
++  Bfv.sumMulPhase_singleton,
++  Bfv.sumMulPhase_encrypt_eq,
++  Bfv.sumMulPhase_noise_le,
++  Bfv.deployed_hoisted64_margin_holds,
++  Bfv.eager_vs_hoisted_rounding_gap,
++  Bfv.bfvScaleLiftRefinement_modQ_falsifier,
++  Bfv.holeB_modQ_alias_falsifier
++]
++
++/-- info: 'Bfv.ediv_add_half_eq_rescale' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms ediv_add_half_eq_rescale
++/-- info: 'Bfv.intScaleCert_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms intScaleCert_iff
++/-- info: 'Bfv.BFVScaleLiftRefinement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms BFVScaleLiftRefinement
++/-- info: 'Bfv.bfvScaleLiftRefinement_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms bfvScaleLiftRefinement_witness
++/-- info: 'Bfv.hoistedRescaleCert_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms hoistedRescaleCert_iff
++/-- info: 'Bfv.hoistedRescaleCert_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms hoistedRescaleCert_unique
++/-- info: 'Bfv.hoistedRescaleCert_witness_N2' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms hoistedRescaleCert_witness_N2
++/-- info: 'Bfv.hoistedRescaleCert_refines_negaMul_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms hoistedRescaleCert_refines_negaMul_sum
++/-- info: 'Bfv.sumMulPhase_encrypt_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms sumMulPhase_encrypt_eq
++/-- info: 'Bfv.sumMulPhase_noise_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms sumMulPhase_noise_le
++/-- info: 'Bfv.deployed_hoisted64_margin_holds' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms deployed_hoisted64_margin_holds
++/-- info: 'Bfv.eager_vs_hoisted_rounding_gap' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms eager_vs_hoisted_rounding_gap
++/-- info: 'Bfv.bfvScaleLiftRefinement_modQ_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms bfvScaleLiftRefinement_modQ_falsifier
++/-- info: 'Bfv.holeB_modQ_alias_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms holeB_modQ_alias_falsifier
++
++end Bfv
+diff --git a/metatheory/Dregg2/Crypto/Deriv/PaddedAbsence.lean b/metatheory/Dregg2/Crypto/Deriv/PaddedAbsence.lean
+new file mode 100644
+--- /dev/null
++++ b/metatheory/Dregg2/Crypto/Deriv/PaddedAbsence.lean
+@@ -0,0 +1,403 @@
++/-
++# Dregg2.Crypto.Deriv.PaddedAbsence — `CERTIFICATES.md` P4 (Padded Complement = Substring Absence)
++and P6 Instance-Level Separation + P6∘P4 Composition.
++
++## What is proved
++
++1. **P4 (`CERTIFICATES.md` §2 L3 & §5 P4):**
++   * `slice w i j := (w.take j).drop i` and `padded r := .cat (.star any) (.cat r (.star any))`.
++   * `slice_eq_factor_iff` — `s` is a slice of `w` iff `w = u ++ s ++ v` for some `u, v`.
++   * `derives_any_true` & `derives_star_any` — `any = .sym .tt` accepts every `Value` (all
++     constructors, record and non-record alike), so `.star any` accepts every word.
++   * `absent_iff_padded_complement` — `(∀ i j, ¬ derives (slice w i j) r = true) ↔
++     derives w (.neg (.cat (.star any) (.cat r (.star any)))) = true`
++     (and `absent_matches_iff_padded_complement` in `Matches` form).
++   * `whole_word_complement_is_not_absence` — concrete falsifier showing `derives w (.neg r) = true`
++     does NOT imply substring absence (while `.neg (padded r)` rejects `w`).
++2. **P6 Instance-Level Separation (`CERTIFICATES.md` §5 P6):**
++   * `dfa_bound_sound` — content-bound DFA verifier soundness.
++   * `splice_verifierKernel_separation` — constructs an actual `DfaVerifierKernel` instance
++     (`spliceUnboundKernel`, `extractable := True`, firing `dfa_verify_sound` on `Dfa.Reference`)
++     whose `verify` ignores the record, and proves that NO `DfaBoundVerifierKernel` on
++     `Dfa.Reference.idScheme` sharing that record-ignoring `verify` (with `interpret = id`) can
++     inhabit `extractable`.
++3. **P6∘P4 Bridge (`dfa_bound_padded_absence_or_collides`):**
++   * Composes `DfaBoundVerifierKernel` + `TableDfa` + `absent_matches_iff_padded_complement`: an
++     accepted content-bound proof over a `TableDfa` recognizing `derives · (.neg (padded r))` for
++     `record` concludes that EITHER no slice of `record` matches `r`, OR the extracted word is a
++     concrete commitment collision with `record`.
++   * `dfa_bound_padded_absence_witness` jointly inhabits all premises and fires the bridge on a
++     concrete `Value` word.
++
++Pure. Zero `sorry`, zero custom `axiom`, zero `native_decide`, zero `#guard`.
++-/
++import Dregg2.Crypto.Deriv.Core
++import Dregg2.Crypto.Deriv.Correctness
++import Dregg2.Crypto.Deriv.TableDfa
++import Dregg2.Crypto.Dfa
++import Dregg2.Tactics
++
++namespace Dregg2.Crypto.Deriv
++
++open Dregg2.Exec
++open Dregg2.Exec.PredAlgebra
++open Dregg2.Crypto.Deriv.PredRE
++open Dregg2.Crypto.Dfa
++
++/-! ## §1. P4 — Substring Absence Equals Padded Complement (`CERTIFICATES.md` §2 L3, §5 P4) -/
++
++/-- Contiguous slice `w[i..j)` of a word of `Value` frames. -/
++def slice (w : List Value) (i j : ℕ) : List Value :=
++  (w.take j).drop i
++
++/-- Padded regex `Σ* · r · Σ*`, matching any word containing a contiguous factor matching `r`. -/
++def padded (r : PredRE) : PredRE :=
++  .cat (.star PredRE.any) (.cat r (.star PredRE.any))
++
++/-- **`slice_eq_factor_iff`**: `s` is a slice `slice w i j` iff `s` is a contiguous factor
++`u ++ s ++ v = w`. Works for all `i, j` (including `i ≥ j`, where `slice w i j = []`). -/
++theorem slice_eq_factor_iff (w s : List Value) :
++    (∃ i j : ℕ, s = slice w i j) ↔ (∃ u v : List Value, u ++ s ++ v = w) := by
++  constructor
++  · rintro ⟨i, j, rfl⟩
++    refine ⟨(w.take j).take i, w.drop j, ?_⟩
++    unfold slice
++    rw [List.take_append_drop, List.take_append_drop]
++  · rintro ⟨u, v, huv⟩
++    refine ⟨u.length, u.length + s.length, ?_⟩
++    unfold slice
++    rw [← huv, ← List.length_append, List.take_left, List.drop_left]
++
++/-- `PredRE.any = .sym .tt` accepts every single `Value` (every constructor: `.int`, `.dig`,
++`.sym`, `.record`). -/
++theorem derives_any_true (a : Value) : derives [a] PredRE.any = true := rfl
++
++/-- `.star PredRE.any` accepts every word `w : List Value`. -/
++theorem derives_star_any (w : List Value) : derives w (.star PredRE.any) = true := by
++  induction w with
++  | nil => rfl
++  | cons a as ih =>
++    rw [derives_star_cons]
++    have hder : der a PredRE.any = .ε := rfl
++    rw [hder, derives_cat]
++    exact ⟨[], as, rfl, rfl, ih⟩
++
++/-- `derives w (padded r) = true` iff some contiguous slice `slice w i j` satisfies `derives · r`. -/
++theorem derives_padded_iff (w : List Value) (r : PredRE) :
++    derives w (padded r) = true ↔ ∃ i j : ℕ, derives (slice w i j) r = true := by
++  unfold padded
++  rw [derives_cat]
++  constructor
++  · rintro ⟨u, w', huw', _, hrest⟩
++    rw [derives_cat] at hrest
++    obtain ⟨s, v, hsv, hsr, _⟩ := hrest
++    have hfac : u ++ s ++ v = w := by rw [List.append_assoc, hsv, huw']
++    obtain ⟨i, j, hsij⟩ := (slice_eq_factor_iff w s).mpr ⟨u, v, hfac⟩
++    exact ⟨i, j, hsij ▸ hsr⟩
++  · rintro ⟨i, j, hsr⟩
++    obtain ⟨u, v, huv⟩ := (slice_eq_factor_iff w (slice w i j)).mp ⟨i, j, rfl⟩
++    refine ⟨u, slice w i j ++ v, by simpa [List.append_assoc] using huv, derives_star_any u, ?_⟩
++    rw [derives_cat]
++    exact ⟨slice w i j, v, rfl, hsr, derives_star_any v⟩
++
++/-- **`absent_iff_padded_complement` (`CERTIFICATES.md` P4)**:
++`r` matches no contiguous slice of `w` iff `w` derives `¬(Σ* · r · Σ*)`. -/
++theorem absent_iff_padded_complement (w : List Value) (r : PredRE) :
++    (∀ i j : ℕ, ¬ derives (slice w i j) r = true) ↔
++      derives w (.neg (.cat (.star PredRE.any) (.cat r (.star PredRE.any)))) = true := by
++  change (∀ i j : ℕ, ¬ derives (slice w i j) r = true) ↔ derives w (.neg (padded r)) = true
++  rw [derives_neg, Bool.not_eq_true', Bool.eq_false_iff]
++  constructor
++  · intro hall hpad
++    obtain ⟨i, j, hij⟩ := (derives_padded_iff w r).mp hpad
++    exact hall i j hij
++  · intro hnot i j hij
++    exact hnot ((derives_padded_iff w r).mpr ⟨i, j, hij⟩)
++
++/-- **`absent_matches_iff_padded_complement`**: denotational (`Matches`) form of P4. -/
++theorem absent_matches_iff_padded_complement (w : List Value) (r : PredRE) :
++    (∀ i j : ℕ, ¬ Matches (slice w i j) r) ↔ derives w (.neg (padded r)) = true := by
++  unfold padded
++  rw [← absent_iff_padded_complement w r]
++  constructor
++  · intro h i j hd
++    exact h i j ((PredRE.correctness (slice w i j) r).mp hd)
++  · intro h i j hm
++    exact h i j ((PredRE.correctness (slice w i j) r).mpr hm)
++
++/-- **`whole_word_complement_is_not_absence` (P4 Falsifier)**:
++whole-word complement `.neg r` ACCEPTS a 2-frame word `[v9, v7]` that contains a matching slice
++`slice [v9, v7] 1 2 = [v7]`, whereas `.neg (padded r)` REJECTS it. -/
++theorem whole_word_complement_is_not_absence :
++    ∃ (w : List Value) (r : PredRE),
++      derives w (.neg r) = true ∧
++      (∃ i j : ℕ, derives (slice w i j) r = true) ∧
++      derives w (.neg (padded r)) = false := by
++  let v7 : Value := .record [("k", .sym 7)]
++  let v9 : Value := .record [("k", .sym 9)]
++  let w : List Value := [v9, v7]
++  let r : PredRE := .sym (.symEq "k" 7)
++  refine ⟨w, r, by decide, ⟨1, 2, by decide⟩, by decide⟩
++
++/-! ## §2. P6 Strengthening — `DfaVerifierKernel` vs `DfaBoundVerifierKernel` Instance Separation -/
++
++/-- **`dfa_bound_sound` (`CERTIFICATES.md` P6)**: content-bound DFA verifier soundness, extracting
++an accepting run whose word commits to the disclosed commitment `c`. -/
++theorem dfa_bound_sound {State Sym D Proof Input : Type} {S : ContentScheme Sym D}
++    [K : DfaBoundVerifierKernel State Sym D S Proof Input]
++    (hext : K.extractable (Input := Input)) (stmt : Input) (proof : Proof)
++    (haccept : K.verify stmt proof = true) :
++    ∃ w : List Sym, S.commit w = (K.interpret stmt).c ∧
++      ∃ trace : List (Step State Sym),
++        DfaAccepts (K.interpret stmt).δ (K.interpret stmt).q₀ (K.interpret stmt).accept trace ∧
++        traceWord trace = w :=
++  dfa_bound_verify_sound (K := K) hext stmt proof haccept
++
++/-- The `Dfa.Reference` automaton packaged as a `Dfa.Statement Nat Nat`. -/
++def refStatement : Dfa.Statement Nat Nat :=
++  { δ := Dfa.Reference.δ, q₀ := Dfa.Reference.q₀, accept := Dfa.Reference.accept }
++
++/-- Record-ignoring DFA verification oracle: decides whether `tr` is an accepting run of the
++automaton in `stmt` and ignores any record/commitment. -/
++noncomputable def spliceVerify (stmt : Dfa.Statement Nat Nat) (tr : List (Step Nat Nat)) : Bool :=
++  open Classical in
++  decide (DfaAccepts stmt.δ stmt.q₀ stmt.accept tr)
++
++theorem spliceVerify_eq_true_iff (stmt : Dfa.Statement Nat Nat) (tr : List (Step Nat Nat)) :
++    spliceVerify stmt tr = true ↔ DfaAccepts stmt.δ stmt.q₀ stmt.accept tr := by
++  classical
++  unfold spliceVerify
++  exact decide_eq_true_iff
++
++/-- Concrete unbound `DfaVerifierKernel` whose `verify` ignores the record (`extractable := True`). -/
++@[instance_reducible] noncomputable def spliceUnboundKernel :
++    DfaVerifierKernel Nat Nat (List (Step Nat Nat)) where
++  verify := spliceVerify
++  extractable := True
++  extract := fun _ stmt tr h => ⟨⟨tr⟩, (spliceVerify_eq_true_iff stmt tr).mp h⟩
++
++/-- **`splice_verifierKernel_separation` (`CERTIFICATES.md` P6 Instance-Level Falsifier)**:
++1. `spliceUnboundKernel` is a genuine `DfaVerifierKernel` (`extractable := True`) whose `verify`
++   accepts `Dfa.Reference.aabTrace` and fires the OLD `dfa_verify_sound`;
++2. NO `DfaBoundVerifierKernel Nat Nat (List Nat) Dfa.Reference.idScheme (List (Step Nat Nat))`
++   with `interpret = id` sharing that record-ignoring `verify` (`fun stmt tr => spliceVerify
++   stmt.toStatement tr`) can inhabit `extractable`! -/
++theorem splice_verifierKernel_separation :
++    (spliceUnboundKernel.extractable ∧
++      spliceUnboundKernel.verify refStatement Dfa.Reference.aabTrace = true ∧
++      ∃ trace : List (Step Nat Nat),
++        DfaAccepts refStatement.δ refStatement.q₀ refStatement.accept trace) ∧
++    (∀ K : DfaBoundVerifierKernel Nat Nat (List Nat) Dfa.Reference.idScheme (List (Step Nat Nat)),
++      K.interpret = id →
++      K.verify = (fun stmt tr => spliceVerify stmt.toStatement tr) →
++      ¬ K.extractable) := by
++  refine ⟨?_, ?_⟩
++  · have hacc : spliceUnboundKernel.verify refStatement Dfa.Reference.aabTrace = true :=
++      (spliceVerify_eq_true_iff refStatement Dfa.Reference.aabTrace).mpr Dfa.Reference.aab_accepts
++    exact ⟨trivial, hacc,
++      dfa_verify_sound (K := spliceUnboundKernel) trivial refStatement Dfa.Reference.aabTrace hacc⟩
++  · intro K hinterp hver hext
++    let stmtZ : BoundStatement Nat Nat (List Nat) :=
++      { toStatement := refStatement, c := [0x7a] }
++    have hacc : K.verify stmtZ Dfa.Reference.aabTrace = true := by
++      rw [hver]
++      exact (spliceVerify_eq_true_iff refStatement Dfa.Reference.aabTrace).mpr
++        Dfa.Reference.aab_accepts
++    obtain ⟨circuit, hsat, hcomm⟩ := K.extract hext stmtZ Dfa.Reference.aabTrace hacc
++    rw [hinterp] at hsat hcomm
++    have hsep := Dfa.Reference.splice_fails_bound_of_sep Dfa.Reference.idScheme [0x7a] (by
++      intro tr htr hc
++      obtain ⟨_, _, _, _, _, _, hvalid, _⟩ := htr
++      have hw : traceWord tr = [0x7a] := hc
++      cases tr with
++      | nil => simp at hw
++      | cons s rest =>
++        simp only [traceWord_cons, List.cons.injEq] at hw
++        have hv := hvalid s List.mem_cons_self
++        unfold stepValid Dfa.Reference.δ at hv
++        rw [hw.1] at hv
++        rcases hv with ⟨_, h, _⟩ | ⟨_, h, _⟩ | ⟨_, h, _⟩ | ⟨_, h, _⟩ | ⟨_, h, _⟩ <;> omega)
++    exact hsep.2 ⟨circuit, hsat, hcomm⟩
++
++/-! ## §3. P6∘P4 Bridge — Content-Bound `TableDfa` Proof Implies Substring Absence or Collision -/
++
++/-- Helper: threading `td.runState` across a valid, chained trace recovers `last.next`. -/
++private theorem tableDfa_runState_of_trace {State Sym : Type} (td : TableDfa State Sym) :
++    ∀ (trace : List (Step State Sym)) (first last : Step State Sym),
++      trace.head? = some first →
++      trace.getLast? = some last →
++      (∀ s ∈ trace, stepValid td.δ s) →
++      chained trace →
++      td.runState first.state (traceWord trace) = last.next
++  | [], _, _, hhead, _, _, _ => by simp at hhead
++  | [s], first, last, hhead, hlast, hvalid, _ => by
++      simp only [List.head?_cons, Option.some.injEq] at hhead
++      simp only [List.getLast?_singleton, Option.some.injEq] at hlast
++      subst hhead; subst hlast
++      have hv : s.next = td.step s.state s.sym := hvalid s List.mem_cons_self
++      simp [TableDfa.runState, traceWord, hv]
++  | s₁ :: s₂ :: rest, first, last, hhead, hlast, hvalid, hch => by
++      simp only [List.head?_cons, Option.some.injEq] at hhead
++      subst hhead
++      have hv₁ : s₁.next = td.step s₁.state s₁.sym := hvalid s₁ List.mem_cons_self
++      have hlink : s₂.state = s₁.next := hch.1
++      have hch' : chained (s₂ :: rest) := hch.2
++      have hlast' : (s₂ :: rest).getLast? = some last := by
++        simpa [List.getLast?_cons_cons] using hlast
++      have hvalid' : ∀ s ∈ s₂ :: rest, stepValid td.δ s :=
++        fun s hs => hvalid s (List.mem_cons_of_mem _ hs)
++      have ih := tableDfa_runState_of_trace td (s₂ :: rest) s₂ last rfl hlast' hvalid' hch'
++      simp only [traceWord_cons, TableDfa.runState]
++      rw [← hv₁, ← hlink]
++      exact ih
++
++/-- Any `DfaAccepts` run of a `TableDfa`'s deterministic transition relation `td.δ` certifies
++`td.accepts (traceWord trace)`. -/
++theorem dfaAccepts_tableDfa_imp_accepts {State Sym : Type} (td : TableDfa State Sym)
++    (trace : List (Step State Sym))
++    (h : DfaAccepts td.δ td.start td.accept trace) :
++    td.accepts (traceWord trace) := by
++  obtain ⟨first, last, hhead, hlast, hstart, hacc, hvalid, hch⟩ := h
++  unfold TableDfa.accepts
++  rw [← hstart, tableDfa_runState_of_trace td trace first last hhead hlast hvalid hch]
++  exact hacc
++
++/-- **`dfa_bound_padded_absence_or_collides` (P6∘P4 Composition)**:
++Given an accepted `DfaBoundVerifierKernel` proof for a `TableDfa` `td` recognizing
++`derives · (.neg (padded r))` and a `record : List Value` committing to the disclosed `c`,
++EITHER no contiguous slice of `record` matches `r` (`∀ i j, ¬ Matches (slice record i j) r`),
++OR there exists a distinct word `w' ≠ record` colliding with `record` under `S.commit`. -/
++theorem dfa_bound_padded_absence_or_collides
++    {State D Proof Input : Type} {S : ContentScheme Value D}
++    [K : DfaBoundVerifierKernel State Value D S Proof Input]
++    (hext : K.extractable (Input := Input))
++    (td : TableDfa State Value) (r : PredRE)
++    (hagree : ∀ w : List Value, td.accepts w ↔ derives w (.neg (padded r)) = true)
++    (stmt : Input) (proof : Proof)
++    (haccept : K.verify stmt proof = true)
++    (hδ : (K.interpret stmt).δ = td.δ)
++    (hq₀ : (K.interpret stmt).q₀ = td.start)
++    (hacc : (K.interpret stmt).accept = td.accept)
++    (record : List Value) (hrec : S.commit record = (K.interpret stmt).c) :
++    (∀ i j : ℕ, ¬ Matches (slice record i j) r) ∨
++      (∃ w' : List Value, w' ≠ record ∧ S.commit w' = S.commit record) := by
++  obtain ⟨trace, htr, hcase⟩ :=
++    dfa_bound_identifies_record_or_collides (K := K) hext stmt proof haccept record hrec
++  rcases hcase with hword | ⟨hne, hcoll⟩
++  · left
++    rw [hδ, hq₀, hacc] at htr
++    have htd : td.accepts (traceWord trace) := dfaAccepts_tableDfa_imp_accepts td trace htr
++    rw [hword] at htd
++    exact (absent_matches_iff_padded_complement record r).mpr ((hagree record).mp htd)
++  · right
++    exact ⟨traceWord trace, hne, hcoll⟩
++
++/-! ### Non-Vacuity Witness Firing ALL Premises of `dfa_bound_padded_absence_or_collides` -/
++
++/-- Canonical derivative `TableDfa` for any `PredRE`. -/
++def derTableDfa (R : PredRE) : TableDfa PredRE Value :=
++  { step := fun s a => der a s, start := R, accept := fun s => null s = true }
++
++private theorem derTableDfa_runState_null (R : PredRE) :
++    ∀ (q : PredRE) (w : List Value), null ((derTableDfa R).runState q w) = derives w q
++  | _, [] => rfl
++  | q, a :: as => derTableDfa_runState_null R (der a q) as
++
++theorem derTableDfa_accepts_iff (R : PredRE) (w : List Value) :
++    (derTableDfa R).accepts w ↔ derives w R = true := by
++  unfold TableDfa.accepts derTableDfa
++  exact Eq.congr_left (derTableDfa_runState_null R R w)
++
++/-- Identity content scheme over `List Value`. -/
++def valueIdScheme : ContentScheme Value (List Value) := ⟨id⟩
++
++/-- Reference bound verifier kernel over `Value` with identity commitment. -/
++@[instance_reducible] noncomputable def valueBoundRefKernel :
++    DfaBoundVerifierKernel PredRE Value (List Value) valueIdScheme (List (Step PredRE Value)) where
++  interpret := id
++  verify := fun stmt tr =>
++    open Classical in
++    decide (DfaAccepts stmt.δ stmt.q₀ stmt.accept tr ∧ traceWord tr = stmt.c)
++  extractable := True
++  extract := by
++    classical
++    intro _ stmt tr h
++    have ⟨hacc, hw⟩ := of_decide_eq_true h
++    exact ⟨⟨tr⟩, hacc, hw⟩
++
++private theorem runTrace_traceWord {State Sym : Type} (td : TableDfa State Sym) :
++    ∀ (q : State) (w : List Sym), traceWord (td.runTrace q w) = w
++  | _, [] => rfl
++  | q, a :: as => by
++      simp only [TableDfa.runTrace, traceWord_cons, runTrace_traceWord td (td.step q a) as]
++
++/-- **Non-vacuity witness (`dfa_bound_padded_absence_witness`)**:
++jointly inhabits ALL premises of `dfa_bound_padded_absence_or_collides` on the concrete record
++`[v9, v9]` and forbidden pattern `.sym (.symEq "k" 7)`, firing the theorem to conclude that
++no contiguous slice of `[v9, v9]` matches `.sym (.symEq "k" 7)`. -/
++theorem dfa_bound_padded_absence_witness :
++    let v9 : Value := .record [("k", .sym 9)]
++    let r : PredRE := .sym (.symEq "k" 7)
++    let record : List Value := [v9, v9]
++    ∀ i j : ℕ, ¬ Matches (slice record i j) r := by
++  classical
++  let v9 : Value := .record [("k", .sym 9)]
++  let r : PredRE := .sym (.symEq "k" 7)
++  let record : List Value := [v9, v9]
++  let td : TableDfa PredRE Value := derTableDfa (.neg (padded r))
++  let stmt : BoundStatement PredRE Value (List Value) :=
++    { δ := td.δ, q₀ := td.start, accept := td.accept, c := record }
++  let proof : List (Step PredRE Value) := td.runTrace td.start record
++  have hder : derives record (.neg (padded r)) = true := by decide
++  have htd_acc : td.accepts record := (derTableDfa_accepts_iff (.neg (padded r)) record).mpr hder
++  have hdfa : DfaAccepts td.δ td.start td.accept proof :=
++    (TableDfa.tableRun_dfaAccepts td v9 [v9]).mpr htd_acc
++  have hword : traceWord proof = record := runTrace_traceWord td td.start record
++  have hverify : valueBoundRefKernel.verify stmt proof = true := by
++    unfold valueBoundRefKernel
++    exact decide_eq_true ⟨hdfa, hword⟩
++  rcases dfa_bound_padded_absence_or_collides (K := valueBoundRefKernel) trivial td r
++      (derTableDfa_accepts_iff (.neg (padded r))) stmt proof hverify rfl rfl rfl record rfl with
++      habs | ⟨w', hne, hcoll⟩
++  · exact habs
++  · exact False.elim (hne hcoll)
++
++/-! ## §4. Axiom Hygiene (`#assert_all_clean` + `#guard_msgs in #print axioms`) -/
++
++#assert_all_clean [
++  Dregg2.Crypto.Deriv.slice_eq_factor_iff,
++  Dregg2.Crypto.Deriv.derives_any_true,
++  Dregg2.Crypto.Deriv.derives_star_any,
++  Dregg2.Crypto.Deriv.derives_padded_iff,
++  Dregg2.Crypto.Deriv.absent_iff_padded_complement,
++  Dregg2.Crypto.Deriv.absent_matches_iff_padded_complement,
++  Dregg2.Crypto.Deriv.whole_word_complement_is_not_absence,
++  Dregg2.Crypto.Deriv.dfa_bound_sound,
++  Dregg2.Crypto.Deriv.splice_verifierKernel_separation,
++  Dregg2.Crypto.Deriv.dfaAccepts_tableDfa_imp_accepts,
++  Dregg2.Crypto.Deriv.dfa_bound_padded_absence_or_collides,
++  Dregg2.Crypto.Deriv.dfa_bound_padded_absence_witness
++]
++
++/-- info: 'Dregg2.Crypto.Deriv.slice_eq_factor_iff' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms slice_eq_factor_iff
++/-- info: 'Dregg2.Crypto.Deriv.derives_any_true' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms derives_any_true
++/-- info: 'Dregg2.Crypto.Deriv.derives_star_any' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms derives_star_any
++/-- info: 'Dregg2.Crypto.Deriv.absent_iff_padded_complement' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms absent_iff_padded_complement
++/-- info: 'Dregg2.Crypto.Deriv.absent_matches_iff_padded_complement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms absent_matches_iff_padded_complement
++/-- info: 'Dregg2.Crypto.Deriv.whole_word_complement_is_not_absence' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms whole_word_complement_is_not_absence
++/-- info: 'Dregg2.Crypto.Deriv.dfa_bound_sound' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms dfa_bound_sound
++/-- info: 'Dregg2.Crypto.Deriv.splice_verifierKernel_separation' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms splice_verifierKernel_separation
++/-- info: 'Dregg2.Crypto.Deriv.dfa_bound_padded_absence_or_collides' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms dfa_bound_padded_absence_or_collides
++/-- info: 'Dregg2.Crypto.Deriv.dfa_bound_padded_absence_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms dfa_bound_padded_absence_witness
++
++end Dregg2.Crypto.Deriv
+diff --git a/metatheory/Dregg2/Circuit/Emit/AttestedAutomatonWeld8Closure.lean b/metatheory/Dregg2/Circuit/Emit/AttestedAutomatonWeld8Closure.lean
+new file mode 100644
+--- /dev/null
++++ b/metatheory/Dregg2/Circuit/Emit/AttestedAutomatonWeld8Closure.lean
+@@ -0,0 +1,345 @@
++/-
++# Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure — Chip-Generic 8-Lane Root Uniqueness,
++Completion-Lane Pinning, and the `DescriptorIR2` `.mapOp → holdsAt8` Equivalence Bridge (`P9`).
++
++Closes `CERTIFICATES.md` §0.3 & §5 P9 WITHOUT touching the shared `DescriptorIR2.lean` (43 legacy
++consumer files stay intact):
++
++1. **Chip-generic 8-lane root & completion-lane pinning (for ANY `S8 : Heap8Scheme`, not just
++   `constChip`):**
++   * `weld8_canonical_root_pins_all_8_lanes` — for a fixed heap `m`, `CommitsAutomaton8By S8 m R8₁ d`
++     and `CommitsAutomaton8By S8 m R8₂ d` force `R8₁ = R8₂` on ALL 8 lanes `Fin 8`.
++   * `weld8_completion_lanes_unique_at_canonical_heap` — for ANY `S8 : Heap8Scheme`, changing ANY
++     of lanes `1..7` away from `autoRoot8 S8 d` either violates `Satisfied2Lanes8 S8` on a
++     non-empty canonical run OR forces a distinct `2^16`-leaf sorted heap `mRow ≠ autoHeapW d`
++     whose 8-felt root is `mapRoot8 S8 MAP_TREE_DEPTH mRow = R8_forged ≠ autoRoot8 S8 d`.
++   * `weld8_two_runs_same_pubRoot_collides` — for ANY `S8 : Heap8Scheme`, if two Lanes8-accepted
++     canonical runs publish the same 8-felt `pubRoot` while disagreeing on the output state of a
++     traversed `(s, y)`, their row heaps exhibit a concrete `MapRootColl S8 MAP_TREE_DEPTH`
++     collision (floor-free, no `Compress8CR`).
++   * `weld8_completion_lanes_not_free_of_unattained_lane` — chip-generic falsifier: for ANY
++     `S8 : Heap8Scheme` with any unattained value `v` on any completion lane `l ≠ 0`,
++     `Satisfied2Lanes8 S8` refutes `weld_completion_lanes_free`.
++2. **Explicit `DescriptorIR2` `.mapOp → holdsAt8` repointing bridge:**
++   * `Satisfied2Repointed` — defined arm-for-arm identically to `DescriptorIR2.Satisfied2Public`,
++     with ONLY `.mapOp` repointed from `MapOp.holdsAt` / `mapLog` to `MapOp.holdsAt8` / `mapLog8`.
++   * `satisfied2_repointed_iff_lanes8` — `Satisfied2Repointed ↔ Satisfied2Lanes8` for EVERY
++     `S8 : Heap8Scheme` and EVERY `EffectVmDescriptor2`.
++   * `satisfied2_repointed_witness` — unconditional non-vacuity witness for every `S8`.
++   * `satisfied2_repointed_refutes_completion_lanes_free` — proves that repointing
++     `DescriptorIR2.MapOp.holdsAt` / `mapLog` to `holdsAt8` / `mapLog8` flips
++     `AttestedAutomatonWeld8.weld_completion_lanes_free` from provable to refutable.
++
++Pure. Zero `sorry`, zero custom `axiom`, zero `native_decide`, zero `#guard`.
++-/
++import Dregg2.Circuit.Emit.AttestedAutomatonLanes8
++import Dregg2.Circuit.Emit.AttestedAutomatonBound
++
++namespace Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure
++
++open Dregg2.Circuit (Assignment)
++open Dregg2.Circuit.Emit.EffectVmEmit (VmRowEnv siteHoldsAll)
++open Dregg2.Crypto
++open Dregg2.Circuit.DescriptorIR2
++open Dregg2.Substrate
++open Dregg2.Circuit.DeployedCapTree (Digest8)
++open Dregg2.Circuit.DeployedHeapTree (Heap8Scheme)
++open Dregg2.Circuit.MapMerkleRoot
++  (mapRoot8 opensToMerkle8 MapRootColl opensToMerkle8_functional_or_collides)
++open Dregg2.Crypto.DfaAcceptanceAir (TableDfa)
++open Dregg2.Circuit.Emit.DfaRoutingTableEmit (CURRENT SYMBOL NEXT envAt_loc)
++open Dregg2.Circuit.Emit.AttestedAutomatonEmit (ASYM ASTATES keyOf)
++open Dregg2.Circuit.Emit.AttestedAutomatonWeld8
++open Dregg2.Circuit.Emit.AttestedAutomatonLanes8
++
++set_option autoImplicit false
++
++/-! ## §1. Chip-Generic 8-Lane Root & Completion-Lane Pinning (Arbitrary `S8 : Heap8Scheme`) -/
++
++/-- **`weld8_canonical_root_pins_all_8_lanes`**: for ANY `S8 : Heap8Scheme` and fixed heap `m`,
++the 8-felt commitment root is uniquely determined on ALL 8 lanes `Fin 8`. -/
++theorem weld8_canonical_root_pins_all_8_lanes (S8 : Heap8Scheme) (m : Heap.FeltHeap)
++    (R8₁ R8₂ : Digest8) (d : TableDfa Nat Nat)
++    (h₁ : CommitsAutomaton8By S8 m R8₁ d) (h₂ : CommitsAutomaton8By S8 m R8₂ d) :
++    R8₁ = R8₂ ∧ ∀ l : Fin 8, R8₁ l = R8₂ l := by
++  have heq : R8₁ = R8₂ := h₁.2.2.1.symm.trans h₂.2.2.1
++  exact ⟨heq, fun l => congrFun heq l⟩
++
++/-- **`weld8_completion_lanes_unique_at_canonical_heap`**: for ANY `S8 : Heap8Scheme`, ANY
++automaton `d`, and ANY forged digest `R8_forged` differing from `autoRoot8 S8 d` on at least one
++completion lane `l ≠ 0`, every non-empty canonical run `t` publishing `pubRoot t = R8_forged`
++EITHER fails `Satisfied2Lanes8 S8`, OR supplies a concrete sorted `2^16`-leaf heap `mRow` whose
++8-felt root is `mapRoot8 S8 MAP_TREE_DEPTH mRow = R8_forged ≠ autoRoot8 S8 d` (so
++`mRow ≠ autoHeapW d`) and which opens row 0's edge. -/
++theorem weld8_completion_lanes_unique_at_canonical_heap (S8 : Heap8Scheme) (hash : List ℤ → ℤ)
++    (name : String) (minit : ℤ → ℤ) (mfin : ℤ → ℤ × Nat) (maddrs : List ℤ)
++    (d : TableDfa Nat Nat) (R8_forged : Digest8)
++    (hchange : ∃ l : Fin 8, l ≠ 0 ∧ R8_forged l ≠ autoRoot8 S8 d l)
++    (t : VmTrace) (hne : t.rows ≠ []) (hcan : LaneCanonical t) (hpub : pubRoot t = R8_forged) :
++    ¬ Satisfied2Lanes8 S8 hash (weldDesc name) minit mfin maddrs t ∨
++      ∃ mRow : Heap.FeltHeap,
++        Heap.SortedKeys mRow ∧
++        mRow.length = 2 ^ MAP_TREE_DEPTH ∧
++        mapRoot8 S8 MAP_TREE_DEPTH mRow = R8_forged ∧
++        mapRoot8 S8 MAP_TREE_DEPTH mRow ≠ autoRoot8 S8 d ∧
++        mRow ≠ autoHeapW d ∧
++        Heap.get mRow (2 * (envAt t 0).loc CURRENT + (envAt t 0).loc SYMBOL)
++          = some ((envAt t 0).loc NEXT) := by
++  by_cases hsat : Satisfied2Lanes8 S8 hash (weldDesc name) minit mfin maddrs t
++  · right
++    have h0 : 0 < t.rows.length := List.length_pos_of_ne_nil hne
++    have hopen := lanes8_row_opens_public S8 hash name minit mfin maddrs t hsat hcan 0 h0
++    rw [hpub] at hopen
++    obtain ⟨mRow, hsort, hlen, hroot, hget⟩ := hopen
++    have hne_root : R8_forged ≠ autoRoot8 S8 d := by
++      intro heq
++      obtain ⟨l, _, hdiff⟩ := hchange
++      exact hdiff (congrFun heq l)
++    have hne_mroot : mapRoot8 S8 MAP_TREE_DEPTH mRow ≠ autoRoot8 S8 d := by
++      rw [hroot]
++      exact hne_root
++    have hne_heap : mRow ≠ autoHeapW d := by
++      intro heq
++      apply hne_mroot
++      rw [heq]
++      exact (autoRoot8_commits S8 d).2.2.1
++    exact ⟨mRow, hsort, hlen, hroot, hne_mroot, hne_heap, hget⟩
++  · exact Or.inl hsat
++
++/-- **`weld8_two_runs_same_pubRoot_collides`**: for ANY `S8 : Heap8Scheme`, if two Lanes8-accepted
++canonical runs `t₁, t₂` claim the SAME 8-felt public root `pubRoot t₁ = pubRoot t₂` while
++traversing the same `(s, y)` pair to DIFFERENT next states `n₁ ≠ n₂`, their opening heaps exhibit
++a concrete `MapRootColl S8 MAP_TREE_DEPTH` collision (floor-free, no `Compress8CR`). -/
++theorem weld8_two_runs_same_pubRoot_collides (S8 : Heap8Scheme) (hash : List ℤ → ℤ)
++    (name₁ name₂ : String)
++    (minit₁ minit₂ : ℤ → ℤ) (mfin₁ mfin₂ : ℤ → ℤ × Nat) (maddrs₁ maddrs₂ : List ℤ)
++    (t₁ t₂ : VmTrace)
++    (h₁ : Satisfied2Lanes8 S8 hash (weldDesc name₁) minit₁ mfin₁ maddrs₁ t₁)
++    (h₂ : Satisfied2Lanes8 S8 hash (weldDesc name₂) minit₂ mfin₂ maddrs₂ t₂)
++    (hcan₁ : LaneCanonical t₁) (hcan₂ : LaneCanonical t₂)
++    (hsame : pubRoot t₁ = pubRoot t₂)
++    (i₁ : Nat) (hi₁ : i₁ < t₁.rows.length) (i₂ : Nat) (hi₂ : i₂ < t₂.rows.length)
++    (s y : Nat)
++    (hcur₁ : (envAt t₁ i₁).loc CURRENT = Int.ofNat s)
++    (hsym₁ : (envAt t₁ i₁).loc SYMBOL = Int.ofNat y)
++    (hcur₂ : (envAt t₂ i₂).loc CURRENT = Int.ofNat s)
++    (hsym₂ : (envAt t₂ i₂).loc SYMBOL = Int.ofNat y)
++    (hdiff : (envAt t₁ i₁).loc NEXT ≠ (envAt t₂ i₂).loc NEXT) :
++    ∃ mRow₁ mRow₂ : Heap.FeltHeap,
++      Heap.SortedKeys mRow₁ ∧ mRow₁.length = 2 ^ MAP_TREE_DEPTH ∧
++      mapRoot8 S8 MAP_TREE_DEPTH mRow₁ = pubRoot t₁ ∧
++      Heap.get mRow₁ ((keyOf s y : Nat) : ℤ) = some ((envAt t₁ i₁).loc NEXT) ∧
++      Heap.SortedKeys mRow₂ ∧ mRow₂.length = 2 ^ MAP_TREE_DEPTH ∧
++      mapRoot8 S8 MAP_TREE_DEPTH mRow₂ = pubRoot t₁ ∧
++      Heap.get mRow₂ ((keyOf s y : Nat) : ℤ) = some ((envAt t₂ i₂).loc NEXT) ∧
++      MapRootColl S8 MAP_TREE_DEPTH mRow₁ mRow₂ := by
++  have hkey : (2 : ℤ) * Int.ofNat s + Int.ofNat y = ((keyOf s y : Nat) : ℤ) := by
++    simp only [keyOf, Int.ofNat_eq_natCast]
++    push_cast
++    ring
++  have hopen₁ := lanes8_row_opens_public S8 hash name₁ minit₁ mfin₁ maddrs₁ t₁ h₁ hcan₁ i₁ hi₁
++  rw [hcur₁, hsym₁, hkey] at hopen₁
++  obtain ⟨mRow₁, hsort₁, hlen₁, hroot₁, hget₁⟩ := hopen₁
++  have hopen₂ := lanes8_row_opens_public S8 hash name₂ minit₂ mfin₂ maddrs₂ t₂ h₂ hcan₂ i₂ hi₂
++  rw [hcur₂, hsym₂, hkey, ← hsame] at hopen₂
++  obtain ⟨mRow₂, hsort₂, hlen₂, hroot₂, hget₂⟩ := hopen₂
++  refine ⟨mRow₁, mRow₂, hsort₁, hlen₁, hroot₁, hget₁, hsort₂, hlen₂, hroot₂, hget₂, ?_⟩
++  rcases opensToMerkle8_functional_or_collides S8 MAP_TREE_DEPTH hlen₁ hroot₁ hget₁
++      hlen₂ hroot₂ hget₂ with heq | hc
++  · exfalso
++    exact hdiff (Option.some.inj heq)
++  · exact hc
++
++/-- **Chip-generic completion-lane non-freedom (`weld8_completion_lanes_not_free_of_unattained_lane`)**:
++for ANY `S8 : Heap8Scheme` that has at least one unattained value `v` on some completion lane
++`l₀ ≠ 0` (e.g. any BabyBear-range chip where `v = -1` or `2013265921` is unattained, or `constChip`
++with `v = 1`), `Satisfied2Lanes8 S8` refutes arbitrary completion-lane freedom. -/
++theorem weld8_completion_lanes_not_free_of_unattained_lane (S8 : Heap8Scheme)
++    (l₀ : Fin 8) (hl₀ : l₀ ≠ 0) (v : ℤ)
++    (hunattained : ∀ m : Heap.FeltHeap, m.length = 2 ^ MAP_TREE_DEPTH →
++      mapRoot8 S8 MAP_TREE_DEPTH m l₀ ≠ v)
++    (hash : List ℤ → ℤ) (d : TableDfa Nat Nat) (r0 : ℤ)
++    (q : Nat) (w : List Nat) (hw : w ≠ []) (name : String) :
++    ¬ ∀ hi : Fin 8 → ℤ,
++      Satisfied2Lanes8 S8 hash (weldDesc name) (fun _ => 0) (fun _ => (0, 0)) []
++        (weldWit8 d (fun l => if l = 0 then r0 else hi l) q w) := by
++  intro hall
++  let R8 : Digest8 := fun l => if l = 0 then r0 else v
++  have hsat := hall (fun _ => v)
++  have h0 : 0 < (weldWit8 d R8 q w).rows.length := by
++    show 0 < (rowsW d R8 q w).length
++    rw [rowsW_length]
++    exact List.length_pos_of_ne_nil hw
++  obtain ⟨mRow, _, hlen, hroot, _⟩ :=
++    lanes8_row_opens S8 hash name (fun _ => 0) (fun _ => (0, 0)) [] (weldWit8 d R8 q w) hsat 0 h0
++  have hrow_l : rowRoot (weldWit8 d R8 q w) 0 l₀ = v := by
++    show (envAt (weldWit8 d R8 q w) 0).loc (W8ROOT l₀) = v
++    rw [envAt_weldWit8, envAt_loc (t := weldWit d R8 q w) h0]
++    show ((rowsW d R8 q w)[0]'h0) (W8ROOT l₀) = v
++    rw [rowsW_root d R8 l₀ w q 0 h0]
++    simp [R8, hl₀]
++  have hlane := congrFun hroot l₀
++  rw [hrow_l] at hlane
++  exact hunattained mRow hlen hlane
++
++/-! ## §2. Explicit `DescriptorIR2` `.mapOp → holdsAt8` Repointing Bridge -/
++
++/-- Per-row meaning of `VmConstraint2` written out arm-for-arm identically to
++`DescriptorIR2.VmConstraint2.holdsAt`, with ONLY `.mapOp` repointed from `MapOp.holdsAt`
++(lane 0) to `MapOp.holdsAt8` (all 8 lanes). -/
++def VmConstraint2.holdsAtRepointed (S8 : Heap8Scheme) (_hash : List ℤ → ℤ) (tf : TraceFamily)
++    (env : VmRowEnv) (isFirst isLast : Bool) : VmConstraint2 → Prop
++  | .base c       => c.holdsVm env isFirst isLast
++  | .lookup l     => l.holdsAt tf env
++  | .memOp _      => True
++  | .mapOp m      => m.holdsAt8 S8 env
++  | .umemOp _     => True
++  | .proofBind m  => m.holdsAt env
++  | .windowGate w => w.holdsAt env isLast
++  | .chalGate w   => w.holdsAt env isLast
++
++/-- Arm-by-arm identity between `holdsAtRepointed` and `VmConstraint2.holdsAt8`. -/
++theorem vmConstraint2_holdsAtRepointed_iff_holdsAt8 (S8 : Heap8Scheme) (hash : List ℤ → ℤ)
++    (tf : TraceFamily) (env : VmRowEnv) (isFirst isLast : Bool) (c : VmConstraint2) :
++    VmConstraint2.holdsAtRepointed S8 hash tf env isFirst isLast c ↔
++      c.holdsAt8 S8 hash tf env isFirst isLast := by
++  cases c <;> rfl
++
++/-- Base `DescriptorIR2.Satisfied2` with `.mapOp` repointed to `MapOp.holdsAt8` and `mapLog`
++repointed to `mapLog8` (19-felt rows). -/
++structure Satisfied2RepointedBase (S8 : Heap8Scheme) (hash : List ℤ → ℤ) (d : EffectVmDescriptor2)
++    (minit : ℤ → ℤ) (mfin : ℤ → ℤ × Nat) (maddrs : List ℤ) (t : VmTrace) : Prop where
++  rowConstraints : ∀ i < t.rows.length, ∀ c ∈ d.constraints,
++    VmConstraint2.holdsAtRepointed S8 hash t.tf (envAt t i) (i == 0) (i + 1 == t.rows.length) c
++  rowHashes : ∀ i < t.rows.length, siteHoldsAll hash (envAt t i) d.hashSites
++  rowRanges : ∀ i < t.rows.length, ∀ r ∈ d.ranges, r.holds (envAt t i)
++  memAddrsNodup : maddrs.Nodup
++  memClosed : ∀ op ∈ memLog d t, op.addr ∈ maddrs
++  memDisciplined : MemoryChecking.Disciplined (memLog d t)
++  memBalanced : MemoryChecking.MemCheck minit mfin maddrs (memLog d t)
++  memTableFaithful : t.tf .memory = (memLog d t).map opRow
++  mapTableFaithful : t.tf .mapOps = mapLog8 d t
++
++/-- **`Satisfied2Repointed`**: identical in structure to `DescriptorIR2.Satisfied2Public`
++(`extends Satisfied2RepointedBase` + `publicTablesFaithful` + `publicLookupBalanced`), with ONLY
++the `.mapOp` arm repointed to `MapOp.holdsAt8` and `mapTableFaithful` repointed to `mapLog8`. -/
++structure Satisfied2Repointed (S8 : Heap8Scheme) (hash : List ℤ → ℤ) (d : EffectVmDescriptor2)
++    (minit : ℤ → ℤ) (mfin : ℤ → ℤ × Nat) (maddrs : List ℤ) (t : VmTrace) : Prop
++    extends Satisfied2RepointedBase S8 hash d minit mfin maddrs t where
++  publicTablesFaithful : PublicTablesFaithful d t
++  publicLookupBalanced : PublicLookupBalanced d t
++
++/-- **`satisfied2_repointed_iff_lanes8`**: for EVERY `S8 : Heap8Scheme` and EVERY v2 descriptor `d`,
++repointing `DescriptorIR2.Satisfied2Public`'s `.mapOp` leg (`MapOp.holdsAt`/`mapLog` →
++`MapOp.holdsAt8`/`mapLog8`) is LOGICALLY EQUIVALENT to `AttestedAutomatonLanes8.Satisfied2Lanes8`. -/
++theorem satisfied2_repointed_iff_lanes8 (S8 : Heap8Scheme) (hash : List ℤ → ℤ)
++    (d : EffectVmDescriptor2) (minit : ℤ → ℤ) (mfin : ℤ → ℤ × Nat) (maddrs : List ℤ)
++    (t : VmTrace) :
++    Satisfied2Repointed S8 hash d minit mfin maddrs t ↔
++      Satisfied2Lanes8 S8 hash d minit mfin maddrs t := by
++  constructor
++  · intro h
++    refine
++      { rowConstraints := fun i hi c hc =>
++          (vmConstraint2_holdsAtRepointed_iff_holdsAt8 S8 hash t.tf (envAt t i)
++            (i == 0) (i + 1 == t.rows.length) c).mp (h.rowConstraints i hi c hc)
++      , rowHashes := h.rowHashes
++      , rowRanges := h.rowRanges
++      , memAddrsNodup := h.memAddrsNodup
++      , memClosed := h.memClosed
++      , memDisciplined := h.memDisciplined
++      , memBalanced := h.memBalanced
++      , memTableFaithful := h.memTableFaithful
++      , mapTableFaithful8 := h.mapTableFaithful
++      , publicTablesFaithful := h.publicTablesFaithful
++      , publicLookupBalanced := h.publicLookupBalanced }
++  · intro h
++    refine
++      { rowConstraints := fun i hi c hc =>
++          (vmConstraint2_holdsAtRepointed_iff_holdsAt8 S8 hash t.tf (envAt t i)
++            (i == 0) (i + 1 == t.rows.length) c).mpr (h.rowConstraints i hi c hc)
++      , rowHashes := h.rowHashes
++      , rowRanges := h.rowRanges
++      , memAddrsNodup := h.memAddrsNodup
++      , memClosed := h.memClosed
++      , memDisciplined := h.memDisciplined
++      , memBalanced := h.memBalanced
++      , memTableFaithful := h.memTableFaithful
++      , mapTableFaithful := h.mapTableFaithful8
++      , publicTablesFaithful := h.publicTablesFaithful
++      , publicLookupBalanced := h.publicLookupBalanced }
++
++/-- **Non-vacuity witness for `Satisfied2Repointed`**: unconditionally inhabited for EVERY
++`S8 : Heap8Scheme`, automaton `d`, and non-empty in-domain run `w`. -/
++theorem satisfied2_repointed_witness (S8 : Heap8Scheme) (hash : List ℤ → ℤ)
++    (d : TableDfa Nat Nat) (hstep : ∀ s y, d.step s y < ASTATES) (q : Nat) (hq : q < ASTATES)
++    (w : List Nat) (hw : w ≠ []) (hsym : ∀ y ∈ w, y < ASYM) (name : String) :
++    Satisfied2Repointed S8 hash (weldDesc name) (fun _ => 0) (fun _ => (0, 0)) []
++      (weldWit8 d (autoRoot8 S8 d) q w) :=
++  (satisfied2_repointed_iff_lanes8 S8 hash (weldDesc name) (fun _ => 0) (fun _ => (0, 0)) []
++    (weldWit8 d (autoRoot8 S8 d) q w)).mpr
++    (weldWit8_satisfies_constructed S8 hash d hstep q hq w hw hsym name)
++
++/-- **`satisfied2_repointed_refutes_completion_lanes_free`**: under `Satisfied2Repointed`
++(`DescriptorIR2.Satisfied2Public` with `.mapOp` repointed to `holdsAt8`/`mapLog8`),
++`AttestedAutomatonWeld8.weld_completion_lanes_free` FLIPS from provable to REFUTED — both at
++`constChip` and for any `S8 : Heap8Scheme` with an unattained completion-lane value. -/
++theorem satisfied2_repointed_refutes_completion_lanes_free (hash : List ℤ → ℤ)
++    (d : TableDfa Nat Nat) (r0 : ℤ) (q : Nat) (w : List Nat) (hw : w ≠ []) (name : String) :
++    ¬ ∀ hi : Fin 8 → ℤ,
++      Satisfied2Repointed constChip hash (weldDesc name) (fun _ => 0) (fun _ => (0, 0)) []
++        (weldWit8 d (fun l => if l = 0 then r0 else hi l) q w) := by
++  intro hall
++  exact weld_completion_lanes_not_free hash d r0 q w hw name (fun hi =>
++    (satisfied2_repointed_iff_lanes8 constChip hash (weldDesc name)
++      (fun _ => 0) (fun _ => (0, 0)) [] _).mp (hall hi))
++
++/-- Chip-generic transfer of `weld8_completion_lanes_not_free_of_unattained_lane` to
++`Satisfied2Repointed`. -/
++theorem satisfied2_repointed_refutes_free_of_unattained_lane (S8 : Heap8Scheme)
++    (l₀ : Fin 8) (hl₀ : l₀ ≠ 0) (v : ℤ)
++    (hunattained : ∀ m : Heap.FeltHeap, m.length = 2 ^ MAP_TREE_DEPTH →
++      mapRoot8 S8 MAP_TREE_DEPTH m l₀ ≠ v)
++    (hash : List ℤ → ℤ) (d : TableDfa Nat Nat) (r0 : ℤ)
++    (q : Nat) (w : List Nat) (hw : w ≠ []) (name : String) :
++    ¬ ∀ hi : Fin 8 → ℤ,
++      Satisfied2Repointed S8 hash (weldDesc name) (fun _ => 0) (fun _ => (0, 0)) []
++        (weldWit8 d (fun l => if l = 0 then r0 else hi l) q w) := by
++  intro hall
++  exact weld8_completion_lanes_not_free_of_unattained_lane S8 l₀ hl₀ v hunattained
++    hash d r0 q w hw name (fun hi =>
++      (satisfied2_repointed_iff_lanes8 S8 hash (weldDesc name)
++        (fun _ => 0) (fun _ => (0, 0)) [] _).mp (hall hi))
++
++/-! ## §3. Axiom Hygiene (`#assert_all_clean` + `#guard_msgs in #print axioms`) -/
++
++#assert_all_clean [
++  weld8_canonical_root_pins_all_8_lanes,
++  weld8_completion_lanes_unique_at_canonical_heap,
++  weld8_two_runs_same_pubRoot_collides,
++  weld8_completion_lanes_not_free_of_unattained_lane,
++  vmConstraint2_holdsAtRepointed_iff_holdsAt8,
++  satisfied2_repointed_iff_lanes8,
++  satisfied2_repointed_witness,
++  satisfied2_repointed_refutes_completion_lanes_free,
++  satisfied2_repointed_refutes_free_of_unattained_lane
++]
++
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.weld8_canonical_root_pins_all_8_lanes' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms weld8_canonical_root_pins_all_8_lanes
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.weld8_completion_lanes_unique_at_canonical_heap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms weld8_completion_lanes_unique_at_canonical_heap
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.weld8_two_runs_same_pubRoot_collides' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms weld8_two_runs_same_pubRoot_collides
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.weld8_completion_lanes_not_free_of_unattained_lane' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms weld8_completion_lanes_not_free_of_unattained_lane
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.satisfied2_repointed_iff_lanes8' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms satisfied2_repointed_iff_lanes8
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.satisfied2_repointed_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms satisfied2_repointed_witness
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.satisfied2_repointed_refutes_completion_lanes_free' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms satisfied2_repointed_refutes_completion_lanes_free
++/-- info: 'Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure.satisfied2_repointed_refutes_free_of_unattained_lane' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms satisfied2_repointed_refutes_free_of_unattained_lane
++
++end Dregg2.Circuit.Emit.AttestedAutomatonWeld8Closure

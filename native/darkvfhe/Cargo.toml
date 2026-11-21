@@ -1,0 +1,24 @@
+[package]
+name = "darkvfhe"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+description = "Native multithreaded (rayon) HoistedB61 RNS-NTT ct x ct engine, Direct-20 & Exact-Garner-15 canonical digit lifts, witness-bound Fiat-Shamir polynomial rescale certificate, and 61-bit D1b LogUp-GKR fraction-tree prover/verifier."
+
+[dependencies]
+darkstep = { path = "../darkstep" }
+darkproof = { path = "../darkproof" }
+dzkpopk = { path = "../dzkpopk" }
+pycompat = { path = "../pycompat" }
+libc = "0.2"
+num-bigint = "0.4"
+num-integer = "0.1"
+num-traits = "0.2"
+rayon = "1.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+
+[[bin]]
+name = "bench_hoist61"
+path = "src/bin/bench_hoist61.rs"
