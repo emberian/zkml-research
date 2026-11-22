@@ -7,6 +7,7 @@ pub mod bpe_bridge;
 pub mod continual_memory;
 pub mod dregg180_hem_bridge;
 pub mod ext4;
+pub mod full_model_24l_audit;
 pub mod gruen_ext4;
 pub mod pcs_ext4;
 pub mod py_bundle;

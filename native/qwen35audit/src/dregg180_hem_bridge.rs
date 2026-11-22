@@ -17,6 +17,7 @@ use crate::whir_ext4::{
     open_whir_batch_ext4, verify_whir_batch_ext4, JointLinearClaimExt4, WhirBatchOpeningProofExt4,
     WhirCommittedMatrixExt4, WhirExt4MatrixShape, WHIR_EXT4_BLOWUP,
 };
+use rayon::prelude::*;
 use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 // ================================================================================================
@@ -570,7 +571,41 @@ pub const P2_DOMAIN_FS_ABSORB_LIMBS: u64 = 0x5032_4653_414C_4D42;
 pub const P2_DOMAIN_FS_SQUEEZE_EXT4: u64 = 0x5032_4653_5351_4534;
 pub const P2_DOMAIN_FS_SQUEEZE_IDX: u64 = 0x5032_4653_5351_4958;
 pub const P2_DOMAIN_FS_POW: u64 = 0x5032_4653_504F_5701;
+pub const P2_DOMAIN_FS_POW_T1: u64 = 0x5032_4653_504F_5731;
+pub const P2_DOMAIN_FS_POW_T2: u64 = 0x5032_4653_504F_5732;
+pub const P2_DOMAIN_ORDERED_COMPRESS: u64 = 0x5032_4F52_4443_4D50;
+pub const P2_DOMAIN_PROG_HASH: u64 = 0x5032_5052_4F47_4853;
 pub const FS_INIT_CAP: [u64; 4] = [P2_DOMAIN_FS_INIT, 0, 0, P2_IV];
+
+/// Production `UD-100` Canopy BaseFold/WHIR query & PoW schedule (post `gpt-6.2-astra` H2 hardening):
+/// rate `rho = 1/8` (`blowup = 8`, unique-decoding radius `delta_UD = 7/16`, `1 - delta_UD = 9/16`,
+/// `log2(16/9) = 0.830075` bits/query).
+/// - Bare query-only two-table union bound (ZERO PoW credit needed): `2 * (9/16)^122 = 2^{-100.27} < 2^{-100}`.
+/// - Single-table bare query bound: `(9/16)^122 = 2^{-101.27} < 2^{-101}`.
+/// - Combined with single-read bound `16`-bit PoW grinding: `2 * (9/16)^122 * 2^{-16} = 2^{-116.27} < 2^{-116}`.
+/// - Remaining interactive terms over `|F_GL^4| = p_GL^4 ~= 2^{256}` (sumcheck `< 2^{-250}`, LogUp poles
+///   `<= 83,968 / p_GL^4 < 2^{-239}`, BaseFold batching/folding `[BCIKS20]`/`[H24]` `< 2^{-230}`) + ROM FS.
+pub const UD100_BLOWUP: usize = 8;
+pub const UD100_NUM_QUERIES: usize = 122;
+pub const UD100_POW_BITS: u8 = 16;
+
+/// Non-native `BabyBear` prime `p_BB = 15 * 2^27 + 1 = 2,013,265,921` embedded inside `Goldilocks`.
+pub const BABYBEAR_PRIME_U64: u64 = 2_013_265_921;
+/// Safe Fiat-Shamir quotient ceiling `floor((p_GL - 1) / p_BB) - 1 = 9,162,596,890` guaranteeing
+/// `(q_fs + 1) * p_BB <= p_GL`, hence `q_fs * p_BB + r < p_GL` for all `r < p_BB` (proved in Lean!).
+pub const BABYBEAR_FS_Q_SAFE: u64 = 9_162_596_890;
+/// Execution trace size `N_exec = 2^12 = 4,096` (supports `m = 1..=6` full cubic `BabyBear Ext4`
+/// sumcheck + full in-circuit `chi(x)`/`W_bb(r)`/`eq(tau, r)` terminal evaluation + `4 x 256` DFA ROM
+/// + up to `4,096`-byte committed payloads).
+pub const HEM_EXEC_VARS: usize = 12;
+pub const HEM_EXEC_ROWS: usize = 1 << HEM_EXEC_VARS;
+/// Maximum supported `BabyBear Ext4` child sumcheck rounds with full in-circuit committed `W_bb(r)` evaluation.
+pub const HEM_MAX_BB_ROUNDS: usize = 6;
+/// Fixed start row of committed `W_bb = (A_bb[0..2^m], B_bb[0..2^m])` in Table 1 (`rows 32..32+2^{m+1}`).
+pub const HEM_ROW_WBB_START: usize = 32;
+/// `[0, 2^16)` LogUp range table size `N_rng = 2^16 = 65,536`.
+pub const HEM_RNG16_VARS: usize = 16;
+pub const HEM_RNG16_ROWS: usize = 1 << HEM_RNG16_VARS;
 
 /// `Dregg-180` `H_ZK_PIN` constant (`qsag_ni_model.py:33`).
 pub const H_ZK_PIN: u128 = 0x9E37_79B9_7F4A_7C15_504F_5332_5F47_4C31;
@@ -758,6 +793,30 @@ pub fn p2_canopy_node(left: [u64; 4], right: [u64; 4], key3: [u64; 3], node_idx:
         Goldilocks::from_u128_reduced(key3[0] as u128),
         Goldilocks::from_u128_reduced(key3[1] as u128),
         Goldilocks::from_u128_reduced(key3[2] as u128),
+    ];
+    let mut st = [
+        l[0], l[1], l[2], l[3], r[0], r[1], r[2], r[3], c[0], c[1], c[2], c[3],
+    ];
+    poseidon2_perm12(&mut st);
+    let mut out = [0u64; 4];
+    for i in 0..4 {
+        let v = st[i] + l[i] + (Goldilocks::TWO * r[i]) + (Goldilocks(4) * c[i]);
+        out[i] = v.0;
+    }
+    out
+}
+
+/// Ordered 2-to-1 Davies-Meyer `Poseidon2-12` compression binding `(tag, acc[4], val[4])` in disjoint
+/// state lanes (`st[0..4] + acc + 2*val + 4*cap`). Defeats `C1` additive-sum replay collisions!
+#[inline]
+pub fn p2_ordered_compress(acc: [u64; 4], val: [u64; 4], tag: u64) -> [u64; 4] {
+    let l = acc.map(|x| Goldilocks::from_u128_reduced(x as u128));
+    let r = val.map(|x| Goldilocks::from_u128_reduced(x as u128));
+    let c = [
+        Goldilocks::from_u128_reduced(P2_DOMAIN_ORDERED_COMPRESS as u128),
+        Goldilocks::from_u128_reduced(tag as u128),
+        Goldilocks::ZERO,
+        Goldilocks::from_u128_reduced(P2_IV as u128),
     ];
     let mut st = [
         l[0], l[1], l[2], l[3], r[0], r[1], r[2], r[3], c[0], c[1], c[2], c[3],
@@ -1045,18 +1104,55 @@ pub fn cshake256_canopy_ext4_pair_leaf(
     v0: GoldilocksExt4,
     v1: GoldilocksExt4,
 ) -> [u8; 32] {
-    let hdr = [
-        stage,
-        (fiber_idx & 0xFF) as u8,
-        ((fiber_idx >> 8) & 0xFF) as u8,
-        ((fiber_idx >> 16) & 0xFF) as u8,
-        ((fiber_idx >> 24) & 0xFF) as u8,
-    ];
-    let mut payload = [0u8; 64];
-    for (i, g) in v0.0.iter().chain(v1.0.iter()).enumerate() {
-        payload[8 * i..8 * (i + 1)].copy_from_slice(&g.0.to_le_bytes());
+    let mut words = [0u64; 8];
+    words[0..4].copy_from_slice(&v0.to_u64_limbs());
+    words[4..8].copy_from_slice(&v1.to_u64_limbs());
+    cshake256_canopy_words_leaf(stage, fiber_idx, &words)
+}
+
+/// `cSHAKE256` Canopy multi-word fiber leaf `cSHAKE256("QSAG.PCS.CANOPY/v2", 0x12 || stage || fiber_idx_le4 || words_le)`.
+/// Matches `Dregg180StreamVm`'s streaming `H_FIBER_ACC` sponge bit-for-bit.
+pub fn cshake256_canopy_words_leaf(stage: u8, fiber_idx: u32, words: &[u64]) -> [u8; 32] {
+    let mut st = CANOPY_CSHAKE_MIDSTATE;
+    let mut blk = [0u8; 136];
+    blk[0] = 0x12;
+    blk[1] = stage;
+    let f_le = fiber_idx.to_le_bytes();
+    blk[2..6].copy_from_slice(&f_le);
+    let mut pos = 6usize;
+    for &w in words {
+        for &byte in &w.to_le_bytes() {
+            blk[pos] = byte;
+            pos += 1;
+            if pos == 136 {
+                for l in 0..17 {
+                    let b = 8 * l;
+                    st[l] ^= u64::from_le_bytes([
+                        blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5],
+                        blk[b + 6], blk[b + 7],
+                    ]);
+                }
+                keccak_p1600_stack(&mut st, 24);
+                blk = [0u8; 136];
+                pos = 0;
+            }
+        }
     }
-    cshake256_canopy_stack(0x12, &[&hdr, &payload])
+    blk[pos] ^= 0x04;
+    blk[135] ^= 0x80;
+    for l in 0..17 {
+        let b = 8 * l;
+        st[l] ^= u64::from_le_bytes([
+            blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5], blk[b + 6],
+            blk[b + 7],
+        ]);
+    }
+    keccak_p1600_stack(&mut st, 24);
+    let mut out = [0u8; 32];
+    for l in 0..4 {
+        out[8 * l..8 * (l + 1)].copy_from_slice(&st[l].to_le_bytes());
+    }
+    out
 }
 
 /// Carryless product mod `z^128 + z^7 + z^2 + z + 1` (`rtl/qsag_gf128_clmul.sv`, `qsag_prims.py:322`).
@@ -1104,6 +1200,23 @@ pub const H_ASSERT_POW: u8 = 7;
 pub const H_MERKLE: u8 = 8;
 pub const H_BIND_IDX: u8 = 9;
 pub const H_CSHAKE_MERKLE: u8 = 10;
+pub const H_BF_AUX: u8 = 11;
+pub const H_FIBER_ACC: u8 = 12;
+pub const H_BF_FOLD_FIBER: u8 = 13;
+
+/// Sub-opcodes for `H_BF_AUX = 11` (zero-heap BaseFold/WHIR & public MLE hardware micro-ops).
+pub const BF_AUX_LATCH_Z: u8 = 0;
+pub const BF_AUX_LATCH_BF: u8 = 1;
+pub const BF_AUX_EVAL_EQ_Z_BF: u8 = 2;
+pub const BF_AUX_FOLD_FINAL_POLY: u8 = 3;
+pub const BF_AUX_ASSERT_FINAL_EVAL: u8 = 4;
+pub const BF_AUX_EVAL_PUBLIC_MLE_Z: u8 = 5;
+pub const BF_AUX_EVAL_SPARSE_SEL_Z: u8 = 6;
+pub const BF_AUX_LATCH_FINAL_POLY: u8 = 7;
+pub const BF_AUX_STAGE0_FOLD2: u8 = 8;
+pub const BF_AUX_LATCH_TAU: u8 = 9;
+pub const BF_AUX_EVAL_EQ_TAU_Z: u8 = 10;
+pub const BF_AUX_COMPRESS_REG: u8 = 11;
 
 /// Exact `Dregg-180` (`gf180mcuD` `SLOT_0P5X0P5`) hardware cycle constants (`README.md:390-399`).
 pub mod silicon_cycles {
@@ -1147,6 +1260,7 @@ pub struct Dregg180VmVerdict {
     pub response_header: u64,
     pub status_word: u64,
     pub program_digest_gf128: u128,
+    pub public_program_hash: [u64; 4],
     pub receipt_turboshake: [u8; 32],
     pub final_ch: [u64; 5],
     pub zk_pin: Option<[u64; 4]>,
@@ -1206,6 +1320,7 @@ enum ActiveRecordPhase {
     },
     CShakeMerkleIdx {
         depth: u8,
+        bound_leaf: bool,
     },
     CShakeMerkleLeaf {
         depth: u8,
@@ -1221,6 +1336,45 @@ enum ActiveRecordPhase {
         buf5: [u64; 5],
         cur_digest: [u8; 32],
     },
+    BfSparseSel {
+        len: u8,
+        dst: u8,
+        lam_reg: u8,
+        rem_words: u16,
+        acc: GoldilocksExt4,
+    },
+    BfLatchFinalPoly {
+        seen: u8,
+        rate_pos: u8,
+    },
+    BfCompressReg {
+        dst: u8,
+        src_a: u8,
+        src_b: u8,
+    },
+    FiberAcc {
+        is_ext4: bool,
+        use_cs_leaf: bool,
+        eta_reg: u8,
+        half_words: u16,
+        total_words: u16,
+        seen: u16,
+        rate_pos: u8,
+        limb_pos: u8,
+        cur_limbs: [Goldilocks; 4],
+    },
+    BfFoldFiber {
+        k: u8,
+        log_n_cur: u8,
+        round_start: u8,
+        expected_reg: u8,
+        dst_reg: u8,
+        want_slot: u8,
+        f_cur: u64,
+        total_words: u8,
+        seen: u8,
+        rate_pos: u8,
+    },
     DrainBad {
         rem_words: u16,
         word_idx: u16,
@@ -1235,6 +1389,9 @@ enum ActiveRecordPhase {
 pub struct Dregg180StreamVm {
     regs: [[u64; 5]; 16],
     p2_state: [Goldilocks; 12],
+    prog_p2_state: [Goldilocks; 12],
+    prog_rate_pos: u8,
+    expected_prog_hash: Option<[u64; 4]>,
     tail_ring: [u64; 8],
     word_shift: [u8; 8],
     word_fill: u8,
@@ -1257,11 +1414,36 @@ pub struct Dregg180StreamVm {
     rec_count: u16,
     idx_armed: bool,
     bound_idx: u64,
+    // Streaming BaseFold/WHIR & dual-Canopy leaf hardware registers (`0` heap allocs!):
+    cs_st: [u64; 25],
+    cs_blk: [u8; 136],
+    cs_pos: u8,
+    cur_cs_leaf: [u8; 32],
+    cs_leaf_valid: bool,
+    bf_saved_idx: u64,
+    bf_chain_active: bool,
+    bf_final_poly_loaded: bool,
+    fiber_buf: [GoldilocksExt4; 8],
+    bf_final_poly: [GoldilocksExt4; 8],
+    tau_chals: [GoldilocksExt4; 16],
+    z_chals: [GoldilocksExt4; 16],
+    bf_chals: [GoldilocksExt4; 16],
     phase: ActiveRecordPhase,
     metrics: Dregg180CycleMetrics,
 }
 
 const _: () = assert!(core::mem::size_of::<Dregg180StreamVm>() <= DREGG180_VM_MAX_STATIC_BYTES);
+
+#[inline(always)]
+const fn reg_to_ext4(r: [u64; 5]) -> GoldilocksExt4 {
+    GoldilocksExt4::from_u64_limbs([r[0], r[1], r[2], r[3]])
+}
+
+#[inline(always)]
+const fn ext4_to_reg(x: GoldilocksExt4) -> [u64; 5] {
+    let l = x.to_u64_limbs();
+    [l[0], l[1], l[2], l[3], 0]
+}
 
 impl Dregg180StreamVm {
     #[inline]
@@ -1270,9 +1452,15 @@ impl Dregg180StreamVm {
     }
 
     pub const fn new_unkeyed(expected_pdig: Option<u128>) -> Self {
+        let mut prog_st = [Goldilocks::ZERO; 12];
+        prog_st[8] = Goldilocks::from_u128_reduced(P2_DOMAIN_PROG_HASH as u128);
+        prog_st[11] = Goldilocks::from_u128_reduced(P2_IV as u128);
         Self {
             regs: [[0u64; 5]; 16],
             p2_state: [Goldilocks::ZERO; 12],
+            prog_p2_state: prog_st,
+            prog_rate_pos: 0,
+            expected_prog_hash: None,
             tail_ring: [0u64; 8],
             word_shift: [0u8; 8],
             word_fill: 0,
@@ -1295,6 +1483,19 @@ impl Dregg180StreamVm {
             rec_count: 0,
             idx_armed: false,
             bound_idx: 0,
+            cs_st: [0u64; 25],
+            cs_blk: [0u8; 136],
+            cs_pos: 0,
+            cur_cs_leaf: [0u8; 32],
+            cs_leaf_valid: false,
+            bf_saved_idx: 0,
+            bf_chain_active: false,
+            bf_final_poly_loaded: false,
+            fiber_buf: [GoldilocksExt4::ZERO; 8],
+            bf_final_poly: [GoldilocksExt4::ZERO; 8],
+            tau_chals: [GoldilocksExt4::ZERO; 16],
+            z_chals: [GoldilocksExt4::ZERO; 16],
+            bf_chals: [GoldilocksExt4::ZERO; 16],
             phase: ActiveRecordPhase::Idle,
             metrics: Dregg180CycleMetrics {
                 core_cycles: 0,
@@ -1312,6 +1513,14 @@ impl Dregg180StreamVm {
         }
     }
 
+    /// Trustless keyless verifier (`pin_mode = false`, `k_mac = None`) that enforces only the
+    /// deterministic public verifier bytecode & public statement immediates via keyless `Poseidon2-12`.
+    pub const fn new_unkeyed_pinned_program(expected_prog_hash: [u64; 4]) -> Self {
+        let mut s = Self::new_unkeyed(None);
+        s.expected_prog_hash = Some(expected_prog_hash);
+        s
+    }
+
     pub const fn new_keyed(k_mac: [u8; 16], expected_pdig: Option<u128>) -> Self {
         let mut s = Self::new_unkeyed(expected_pdig);
         s.keyed = true;
@@ -1321,10 +1530,70 @@ impl Dregg180StreamVm {
     }
 
     #[inline(always)]
+    fn prog_hash_absorb(&mut self, word: u64) {
+        // Absorb as two injective 32-bit limbs (< 2^32 << p_GL) so no 64-bit header can alias mod p_GL.
+        let lo = Goldilocks(word & 0xFFFF_FFFF);
+        let hi = Goldilocks(word >> 32);
+        self.prog_p2_state[self.prog_rate_pos as usize] += lo;
+        self.prog_rate_pos += 1;
+        if self.prog_rate_pos == 8 {
+            poseidon2_perm12(&mut self.prog_p2_state);
+            self.prog_rate_pos = 0;
+        }
+        self.prog_p2_state[self.prog_rate_pos as usize] += hi;
+        self.prog_rate_pos += 1;
+        if self.prog_rate_pos == 8 {
+            poseidon2_perm12(&mut self.prog_p2_state);
+            self.prog_rate_pos = 0;
+        }
+    }
+
+    #[inline(always)]
     fn ghash_step(&mut self, word: u64) {
         self.pdig = gf128_mul(self.pdig ^ (word as u128), self.delta);
+        self.prog_hash_absorb(word);
         self.metrics.gf128_steps += 1;
         self.metrics.core_cycles += silicon_cycles::GF128_STEP;
+    }
+
+    #[inline(always)]
+    fn cs_stream_byte(&mut self, byte: u8) {
+        self.cs_blk[self.cs_pos as usize] = byte;
+        self.cs_pos += 1;
+        if self.cs_pos == 136 {
+            for l in 0..17 {
+                let b = 8 * l;
+                self.cs_st[l] ^= u64::from_le_bytes([
+                    self.cs_blk[b], self.cs_blk[b + 1], self.cs_blk[b + 2], self.cs_blk[b + 3],
+                    self.cs_blk[b + 4], self.cs_blk[b + 5], self.cs_blk[b + 6], self.cs_blk[b + 7],
+                ]);
+            }
+            keccak_p1600_stack(&mut self.cs_st, 24);
+            self.metrics.keccak_perms += 1;
+            self.metrics.core_cycles += silicon_cycles::KECCAK_F24;
+            self.cs_blk = [0u8; 136];
+            self.cs_pos = 0;
+        }
+    }
+
+    #[inline(always)]
+    fn cs_stream_finish(&mut self) {
+        self.cs_blk[self.cs_pos as usize] ^= 0x04;
+        self.cs_blk[135] ^= 0x80;
+        for l in 0..17 {
+            let b = 8 * l;
+            self.cs_st[l] ^= u64::from_le_bytes([
+                self.cs_blk[b], self.cs_blk[b + 1], self.cs_blk[b + 2], self.cs_blk[b + 3],
+                self.cs_blk[b + 4], self.cs_blk[b + 5], self.cs_blk[b + 6], self.cs_blk[b + 7],
+            ]);
+        }
+        keccak_p1600_stack(&mut self.cs_st, 24);
+        self.metrics.keccak_perms += 1;
+        self.metrics.core_cycles += silicon_cycles::KECCAK_F24;
+        for l in 0..4 {
+            self.cur_cs_leaf[8 * l..8 * (l + 1)].copy_from_slice(&self.cs_st[l].to_le_bytes());
+        }
+        self.cs_leaf_valid = true;
     }
 
     #[inline(always)]
@@ -1665,7 +1934,13 @@ impl Dregg180StreamVm {
                     H_CSHAKE_MERKLE => {
                         self.has_assert = true;
                         let depth = a & 63;
-                        if depth == 0 || depth > 32 || n != (1 + 5 + 5 * (depth as u16)) {
+                        let bound_leaf = b == 1;
+                        let want_n = if bound_leaf {
+                            1 + 5 * (depth as u16)
+                        } else {
+                            1 + 5 + 5 * (depth as u16)
+                        };
+                        if depth == 0 || depth > 32 || (b != 0 && b != 1) || n != want_n || k != 0 {
                             self.mark_bad();
                             if n > 0 {
                                 self.phase = ActiveRecordPhase::DrainBad {
@@ -1675,7 +1950,353 @@ impl Dregg180StreamVm {
                                 };
                             }
                         } else {
-                            self.phase = ActiveRecordPhase::CShakeMerkleIdx { depth };
+                            self.phase = ActiveRecordPhase::CShakeMerkleIdx { depth, bound_leaf };
+                        }
+                    }
+                    H_BF_AUX => {
+                        match a {
+                            BF_AUX_LATCH_Z => {
+                                if n != 0 || k != 0 || b >= 16 {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    self.z_chals[b as usize] = reg_to_ext4(self.regs[(c & 15) as usize]);
+                                    self.metrics.core_cycles += silicon_cycles::EXT4_ADDSUB;
+                                }
+                            }
+                            BF_AUX_LATCH_BF => {
+                                if n != 0 || k != 0 || b >= 16 {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    self.bf_chals[b as usize] = reg_to_ext4(self.regs[(c & 15) as usize]);
+                                    self.metrics.core_cycles += silicon_cycles::EXT4_ADDSUB;
+                                }
+                            }
+                            BF_AUX_LATCH_TAU => {
+                                if n != 0 || k != 0 || b >= 16 {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    self.tau_chals[b as usize] = reg_to_ext4(self.regs[(c & 15) as usize]);
+                                    self.metrics.core_cycles += silicon_cycles::EXT4_ADDSUB;
+                                }
+                            }
+                            BF_AUX_EVAL_EQ_Z_BF | BF_AUX_EVAL_EQ_TAU_Z => {
+                                let len = b as usize;
+                                if n != 0 || k != 0 || len == 0 || len > 16 {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    let mut acc = GoldilocksExt4::ONE;
+                                    for j in 0..len {
+                                        let lhs = if a == BF_AUX_EVAL_EQ_Z_BF { self.z_chals[j] } else { self.tau_chals[j] };
+                                        let rhs = if a == BF_AUX_EVAL_EQ_Z_BF { self.bf_chals[j] } else { self.z_chals[j] };
+                                        let term = (GoldilocksExt4::ONE - lhs) * (GoldilocksExt4::ONE - rhs) + (lhs * rhs);
+                                        acc = acc * term;
+                                    }
+                                    self.regs[(c & 15) as usize] = ext4_to_reg(acc);
+                                    self.metrics.ext4_muls += (3 * len) as u32;
+                                    self.metrics.ext4_addsubs += (3 * len) as u32;
+                                    self.metrics.core_cycles += (len as u64) * (3 * silicon_cycles::EXT4_MUL + 3 * silicon_cycles::EXT4_ADDSUB);
+                                }
+                            }
+                            BF_AUX_FOLD_FINAL_POLY => {
+                                let start = b as usize;
+                                if n != 0 || k != 0 || start + 3 > 16 || !self.bf_final_poly_loaded {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    let mut cur = self.bf_final_poly;
+                                    let mut len = 8usize;
+                                    for step in 0..3 {
+                                        let r = self.bf_chals[start + step];
+                                        let half = len / 2;
+                                        for i in 0..half {
+                                            let v0 = cur[2 * i];
+                                            let v1 = cur[2 * i + 1];
+                                            cur[i] = v0 + r * (v1 - v0);
+                                        }
+                                        len = half;
+                                    }
+                                    self.regs[(c & 15) as usize] = ext4_to_reg(cur[0]);
+                                    self.metrics.ext4_muls += 7;
+                                    self.metrics.ext4_addsubs += 14;
+                                    self.metrics.core_cycles += 7 * silicon_cycles::EXT4_MUL + 14 * silicon_cycles::EXT4_ADDSUB;
+                                }
+                            }
+                            BF_AUX_ASSERT_FINAL_EVAL => {
+                                self.has_assert = true;
+                                if n != 0 || k != 0 || b > 24 || !self.bf_chain_active || !self.bf_final_poly_loaded || self.bf_saved_idx >= 64 {
+                                    self.mark_bad();
+                                    self.bf_chain_active = false;
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    let mut shift = Goldilocks::SEVEN;
+                                    for _ in 0..b {
+                                        shift = shift.square();
+                                    }
+                                    let omega = Goldilocks::two_adic_generator(6); // N_final = 64
+                                    let x_final = shift * omega.pow(self.bf_saved_idx);
+                                    let x_ext = GoldilocksExt4::from_base(x_final);
+                                    let want = GoldilocksExt4::eval_univariate(&self.bf_final_poly, x_ext);
+                                    let got = reg_to_ext4(self.regs[(c & 15) as usize]);
+                                    if want != got {
+                                        self.mark_bad();
+                                    }
+                                    self.bf_chain_active = false;
+                                    self.metrics.ext4_muls += 7;
+                                    self.metrics.ext4_addsubs += 7;
+                                    self.metrics.core_cycles += ((b as u64) + 6) * silicon_cycles::GL64_MUL
+                                        + 7 * silicon_cycles::EXT4_MUL
+                                        + 7 * silicon_cycles::EXT4_ADDSUB;
+                                }
+                            }
+                            BF_AUX_EVAL_PUBLIC_MLE_Z => {
+                                let len = (b & 31) as usize;
+                                let mode = (c >> 4) & 15;
+                                let dst = (c & 15) as usize;
+                                if n != 0 || k != 0 || len == 0 || len > 16 || (mode == 1 && len < 8) || (mode == 2 && len < 10) || mode > 4 {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    let val = match mode {
+                                        0 => {
+                                            let mut acc = GoldilocksExt4::ZERO;
+                                            for j in 0..len {
+                                                acc = acc + self.z_chals[j].scale_base(Goldilocks(1u64 << j));
+                                            }
+                                            acc
+                                        }
+                                        1 => {
+                                            let mut acc = GoldilocksExt4::ZERO;
+                                            for j in 0..8 {
+                                                acc = acc + self.z_chals[j].scale_base(Goldilocks(1u64 << j));
+                                            }
+                                            acc
+                                        }
+                                        2 => self.z_chals[8] + self.z_chals[9].scale_base(Goldilocks::TWO),
+                                        3 => {
+                                            let mut acc = GoldilocksExt4::ONE;
+                                            for j in 0..len {
+                                                acc = acc * (GoldilocksExt4::ONE - self.z_chals[j]);
+                                            }
+                                            acc
+                                        }
+                                        _ => {
+                                            let mut acc = GoldilocksExt4::ONE;
+                                            for j in 0..len {
+                                                acc = acc * self.z_chals[j];
+                                            }
+                                            acc
+                                        }
+                                    };
+                                    self.regs[dst] = ext4_to_reg(val);
+                                    self.metrics.ext4_muls += len as u32;
+                                    self.metrics.ext4_addsubs += len as u32;
+                                    self.metrics.core_cycles += (len as u64) * (silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB);
+                                }
+                            }
+                            BF_AUX_EVAL_SPARSE_SEL_Z => {
+                                let len = b & 31;
+                                if n == 0 || k != n || len == 0 || len > 16 {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    self.phase = ActiveRecordPhase::BfSparseSel {
+                                        len,
+                                        dst: c & 15,
+                                        lam_reg: (c >> 4) & 15,
+                                        rem_words: n,
+                                        acc: GoldilocksExt4::ZERO,
+                                    };
+                                }
+                            }
+                            BF_AUX_LATCH_FINAL_POLY => {
+                                if n != 32 || k != 0 {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    let rch = self.regs[R_CH as usize];
+                                    self.p2_state = [Goldilocks::ZERO; 12];
+                                    for i in 0..4 {
+                                        self.p2_state[8 + i] = Goldilocks::from_u128_reduced(rch[i] as u128);
+                                    }
+                                    self.p2_state[0] += Goldilocks::from_u128_reduced(P2_DOMAIN_FS_ABSORB_LIMBS as u128);
+                                    self.p2_state[1] += Goldilocks(32);
+                                    self.phase = ActiveRecordPhase::BfLatchFinalPoly { seen: 0, rate_pos: 2 };
+                                }
+                            }
+                            BF_AUX_STAGE0_FOLD2 => {
+                                let log_n = b as usize;
+                                if n != 0 || k != 0 || !(4..=24).contains(&log_n) || !self.bf_chain_active || self.bf_saved_idx >= (1u64 << (log_n - 1)) {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    let v0 = reg_to_ext4(self.regs[R_A as usize]);
+                                    let v1 = reg_to_ext4(self.regs[R_B as usize]);
+                                    let omega = Goldilocks::two_adic_generator(log_n);
+                                    let x = Goldilocks::SEVEN * omega.pow(self.bf_saved_idx);
+                                    let inv2_x = (Goldilocks::TWO * x).inv();
+                                    let even = (v0 + v1).scale_base(GOLDILOCKS_INV2);
+                                    let odd = (v0 - v1).scale_base(inv2_x);
+                                    let folded = even + self.bf_chals[0] * (odd - even);
+                                    self.regs[(c & 15) as usize] = ext4_to_reg(folded);
+                                    self.metrics.ext4_muls += 1;
+                                    self.metrics.ext4_addsubs += 4;
+                                    self.metrics.core_cycles += ((log_n as u64) + 64) * silicon_cycles::GL64_MUL
+                                        + silicon_cycles::EXT4_MUL
+                                        + 4 * silicon_cycles::EXT4_ADDSUB;
+                                }
+                            }
+                            BF_AUX_COMPRESS_REG => {
+                                let dst = c & 15;
+                                let src_a = b & 15;
+                                let src_b = (b >> 4) & 15;
+                                if n != 1 || k != 1 || dst == R_CH || self.fp5_mode {
+                                    self.mark_bad();
+                                    if n > 0 {
+                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    }
+                                } else {
+                                    self.phase = ActiveRecordPhase::BfCompressReg { dst, src_a, src_b };
+                                }
+                            }
+                            _ => {
+                                self.mark_bad();
+                                if n > 0 {
+                                    self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                }
+                            }
+                        }
+                    }
+                    H_FIBER_ACC => {
+                        let stage_id = a & 7;
+                        let is_ext4 = (a & 8) != 0;
+                        let reset_acc = (a & 16) != 0;
+                        let use_cs_leaf = (a & 32) != 0;
+                        let key_reg = (b & 15) as usize;
+                        let eta_reg = (b >> 4) & 15;
+                        let num_cols = c as u16;
+                        let words_per_col = if is_ext4 { 4u16 } else { 1u16 };
+                        let expected_n = 2 * num_cols * words_per_col;
+                        if num_cols == 0
+                            || num_cols > 32
+                            || n != expected_n
+                            || k != 0
+                            || !self.idx_armed
+                            || (!reset_acc && (!self.bf_chain_active || self.bound_idx != self.bf_saved_idx))
+                        {
+                            self.mark_bad();
+                            if n > 0 {
+                                self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                            }
+                        } else {
+                            if reset_acc {
+                                self.regs[R_A as usize] = [0u64; 5];
+                                self.regs[R_B as usize] = [0u64; 5];
+                                self.bf_saved_idx = self.bound_idx;
+                                self.bf_chain_active = true;
+                            }
+                            let kr = self.regs[key_reg];
+                            self.p2_state = [Goldilocks::ZERO; 12];
+                            for i in 0..4 {
+                                self.p2_state[8 + i] = Goldilocks::from_u128_reduced(kr[i] as u128);
+                            }
+                            self.p2_state[0] += Goldilocks::from_u128_reduced(P2_DOMAIN_CANOPY_LEAF as u128);
+                            self.p2_state[1] += Goldilocks(n as u64);
+                            if use_cs_leaf {
+                                self.cs_st = CANOPY_CSHAKE_MIDSTATE;
+                                self.cs_blk = [0u8; 136];
+                                self.cs_pos = 0;
+                                self.cs_leaf_valid = false;
+                                self.cs_stream_byte(0x12);
+                                self.cs_stream_byte(stage_id);
+                                for byte in (self.bound_idx as u32).to_le_bytes() {
+                                    self.cs_stream_byte(byte);
+                                }
+                            }
+                            self.phase = ActiveRecordPhase::FiberAcc {
+                                is_ext4,
+                                use_cs_leaf,
+                                eta_reg,
+                                half_words: num_cols * words_per_col,
+                                total_words: n,
+                                seen: 0,
+                                rate_pos: 2,
+                                limb_pos: 0,
+                                cur_limbs: [Goldilocks::ZERO; 4],
+                            };
+                        }
+                    }
+                    H_BF_FOLD_FIBER => {
+                        let fold_k = a & 3;
+                        let log_n_cur = (a >> 2) & 31;
+                        let key_reg = (b & 15) as usize;
+                        let round_start = (b >> 4) & 15;
+                        let expected_reg = c & 15;
+                        let dst_reg = (c >> 4) & 15;
+                        let expected_n = if fold_k >= 1 && fold_k <= 3 { (1u16 << fold_k) * 4 } else { 0 };
+                        if fold_k == 0
+                            || fold_k > 3
+                            || log_n_cur <= fold_k
+                            || log_n_cur > 24
+                            || round_start + fold_k > 16
+                            || n != expected_n
+                            || k != 0
+                            || !self.bf_chain_active
+                            || self.bf_saved_idx >= (1u64 << log_n_cur)
+                        {
+                            self.mark_bad();
+                            if n > 0 {
+                                self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                            }
+                        } else {
+                            let log_nfib = log_n_cur - fold_k;
+                            let f_cur = self.bf_saved_idx & ((1u64 << log_nfib) - 1);
+                            let want_slot = (self.bf_saved_idx >> log_nfib) as u8;
+                            self.bound_idx = f_cur;
+                            self.idx_armed = true;
+                            self.bf_saved_idx = f_cur;
+                            let kr = self.regs[key_reg];
+                            self.p2_state = [Goldilocks::ZERO; 12];
+                            for i in 0..4 {
+                                self.p2_state[8 + i] = Goldilocks::from_u128_reduced(kr[i] as u128);
+                            }
+                            self.p2_state[0] += Goldilocks::from_u128_reduced(P2_DOMAIN_CANOPY_LEAF as u128);
+                            self.p2_state[1] += Goldilocks(n as u64);
+                            self.phase = ActiveRecordPhase::BfFoldFiber {
+                                k: fold_k,
+                                log_n_cur,
+                                round_start,
+                                expected_reg,
+                                dst_reg,
+                                want_slot,
+                                f_cur,
+                                total_words: n as u8,
+                                seen: 0,
+                                rate_pos: 2,
+                            };
                         }
                     }
                     _ => {
@@ -1777,6 +2398,10 @@ impl Dregg180StreamVm {
             ActiveRecordPhase::LoadLimbs { dst, seen, imm_k } => {
                 let l = self.limbs_per_reg;
                 self.check_data_word(word, seen as u16, imm_k, true);
+                // L3 hardening: reject non-canonical (`>= p_GL`) immediate limbs on register loads too!
+                if word >= GOLDILOCKS_PRIME {
+                    self.non_canonical = true;
+                }
                 self.regs[dst as usize][seen as usize] = Goldilocks::from_u128_reduced(word as u128).0;
                 let next_seen = seen + 1;
                 if next_seen == l {
@@ -1791,11 +2416,13 @@ impl Dregg180StreamVm {
             }
             ActiveRecordPhase::MerkleIdx { depth, key_reg } => {
                 self.metrics.proof_words += 1;
-                if (word >> 32) != 0 || (self.idx_armed && word != self.bound_idx) {
+                // L2 hardening: fail closed unless `H_BIND_IDX` / `H_BF_FOLD_FIBER` armed an index AND `idx < 2^depth`!
+                let max_idx = 1u64 << depth;
+                if !self.idx_armed || word >= max_idx || word != self.bound_idx {
                     self.mark_bad();
                 }
                 self.idx_armed = false;
-                let heap_idx = (1u64 << depth) | (word & 0xFFFF_FFFF);
+                let heap_idx = max_idx | (word & 0xFFFF_FFFF);
                 self.phase = ActiveRecordPhase::MerkleSiblings {
                     depth,
                     cur_lvl: 0,
@@ -1862,19 +2489,36 @@ impl Dregg180StreamVm {
                     }
                 }
             }
-            ActiveRecordPhase::CShakeMerkleIdx { depth } => {
+            ActiveRecordPhase::CShakeMerkleIdx { depth, bound_leaf } => {
                 self.metrics.proof_words += 1;
-                if (word >> 32) != 0 || (self.idx_armed && word != self.bound_idx) {
+                // L2 hardening: require armed index and `idx < 2^depth` on all cSHAKE Canopy queries!
+                let max_idx = 1u64 << depth;
+                if !self.idx_armed || word >= max_idx || word != self.bound_idx {
                     self.mark_bad();
                 }
                 self.idx_armed = false;
-                let heap_idx = (1u64 << depth) | (word & 0xFFFF_FFFF);
-                self.phase = ActiveRecordPhase::CShakeMerkleLeaf {
-                    depth,
-                    heap_idx,
-                    pos: 0,
-                    buf5: [0u64; 5],
-                };
+                let heap_idx = max_idx | (word & 0xFFFF_FFFF);
+                if bound_leaf {
+                    if !self.cs_leaf_valid {
+                        self.mark_bad();
+                    }
+                    self.cs_leaf_valid = false;
+                    self.phase = ActiveRecordPhase::CShakeMerkleSiblings {
+                        depth,
+                        cur_lvl: 0,
+                        heap_idx,
+                        pos: 0,
+                        buf5: [0u64; 5],
+                        cur_digest: self.cur_cs_leaf,
+                    };
+                } else {
+                    self.phase = ActiveRecordPhase::CShakeMerkleLeaf {
+                        depth,
+                        heap_idx,
+                        pos: 0,
+                        buf5: [0u64; 5],
+                    };
+                }
             }
             ActiveRecordPhase::CShakeMerkleLeaf {
                 depth,
@@ -1980,6 +2624,274 @@ impl Dregg180StreamVm {
                     }
                 }
             }
+            ActiveRecordPhase::BfSparseSel {
+                len,
+                dst,
+                lam_reg,
+                rem_words,
+                acc,
+            } => {
+                self.ghash_step(word);
+                self.metrics.immediate_words += 1;
+                let mut eq_z = GoldilocksExt4::ONE;
+                if word >= (1u64 << len) {
+                    self.mark_bad();
+                } else {
+                    for j in 0..(len as usize) {
+                        let factor = if ((word >> j) & 1) == 1 {
+                            self.z_chals[j]
+                        } else {
+                            GoldilocksExt4::ONE - self.z_chals[j]
+                        };
+                        eq_z = eq_z * factor;
+                    }
+                }
+                let lam = reg_to_ext4(self.regs[lam_reg as usize]);
+                let next_acc = acc * lam + eq_z;
+                self.metrics.ext4_muls += (len as u32) + 1;
+                self.metrics.ext4_addsubs += (len as u32) + 1;
+                self.metrics.core_cycles += ((len as u64) + 1) * (silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB);
+                if rem_words <= 1 {
+                    self.regs[dst as usize] = ext4_to_reg(next_acc);
+                    self.phase = ActiveRecordPhase::Idle;
+                } else {
+                    self.phase = ActiveRecordPhase::BfSparseSel {
+                        len,
+                        dst,
+                        lam_reg,
+                        rem_words: rem_words - 1,
+                        acc: next_acc,
+                    };
+                }
+            }
+            ActiveRecordPhase::BfLatchFinalPoly { seen, rate_pos } => {
+                self.metrics.proof_words += 1;
+                if word >= GOLDILOCKS_PRIME {
+                    self.non_canonical = true;
+                }
+                let canon = Goldilocks::from_u128_reduced(word as u128);
+                self.bf_final_poly[(seen / 4) as usize].0[(seen % 4) as usize] = canon;
+                self.p2_state[rate_pos as usize] += canon;
+                let next_seen = seen + 1;
+                let mut next_rate = rate_pos + 1;
+                if next_rate == 8 {
+                    poseidon2_perm12(&mut self.p2_state);
+                    self.metrics.poseidon2_perms += 1;
+                    self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+                    next_rate = 0;
+                }
+                if next_seen == 32 {
+                    if next_rate > 0 {
+                        poseidon2_perm12(&mut self.p2_state);
+                        self.metrics.poseidon2_perms += 1;
+                        self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+                    }
+                    let mut res = [0u64; 5];
+                    for i in 0..4 {
+                        res[i] = self.p2_state[i].0;
+                    }
+                    self.regs[R_T0 as usize] = res;
+                    self.regs[R_CH as usize] = res;
+                    self.bf_final_poly_loaded = true;
+                    self.phase = ActiveRecordPhase::Idle;
+                } else {
+                    self.phase = ActiveRecordPhase::BfLatchFinalPoly {
+                        seen: next_seen,
+                        rate_pos: next_rate,
+                    };
+                }
+            }
+            ActiveRecordPhase::FiberAcc {
+                is_ext4,
+                use_cs_leaf,
+                eta_reg,
+                half_words,
+                total_words,
+                seen,
+                rate_pos,
+                limb_pos,
+                mut cur_limbs,
+            } => {
+                self.metrics.proof_words += 1;
+                if word >= GOLDILOCKS_PRIME {
+                    self.non_canonical = true;
+                }
+                let canon = Goldilocks::from_u128_reduced(word as u128);
+                self.p2_state[rate_pos as usize] += canon;
+                let mut next_rate = rate_pos + 1;
+                if next_rate == 8 {
+                    poseidon2_perm12(&mut self.p2_state);
+                    self.metrics.poseidon2_perms += 1;
+                    self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+                    next_rate = 0;
+                }
+                if use_cs_leaf {
+                    for byte in word.to_le_bytes() {
+                        self.cs_stream_byte(byte);
+                    }
+                }
+                let target_reg = if seen < half_words { R_A as usize } else { R_B as usize };
+                let eta = reg_to_ext4(self.regs[eta_reg as usize]);
+                let mut next_limb_pos = limb_pos;
+                if !is_ext4 {
+                    let cur_acc = reg_to_ext4(self.regs[target_reg]);
+                    let next_acc = cur_acc * eta + GoldilocksExt4::from_base(canon);
+                    self.regs[target_reg] = ext4_to_reg(next_acc);
+                    self.metrics.ext4_muls += 1;
+                    self.metrics.ext4_addsubs += 1;
+                    self.metrics.core_cycles += silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB;
+                } else {
+                    cur_limbs[limb_pos as usize] = canon;
+                    if limb_pos == 3 {
+                        let cur_acc = reg_to_ext4(self.regs[target_reg]);
+                        let next_acc = cur_acc * eta + GoldilocksExt4(cur_limbs);
+                        self.regs[target_reg] = ext4_to_reg(next_acc);
+                        self.metrics.ext4_muls += 1;
+                        self.metrics.ext4_addsubs += 1;
+                        self.metrics.core_cycles += silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB;
+                        next_limb_pos = 0;
+                        cur_limbs = [Goldilocks::ZERO; 4];
+                    } else {
+                        next_limb_pos = limb_pos + 1;
+                    }
+                }
+                let next_seen = seen + 1;
+                if next_seen == total_words {
+                    if next_rate > 0 {
+                        poseidon2_perm12(&mut self.p2_state);
+                        self.metrics.poseidon2_perms += 1;
+                        self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+                    }
+                    for i in 0..4 {
+                        self.regs[R_X as usize][i] = self.p2_state[i].0;
+                    }
+                    if use_cs_leaf {
+                        self.cs_stream_finish();
+                    }
+                    self.phase = ActiveRecordPhase::Idle;
+                } else {
+                    self.phase = ActiveRecordPhase::FiberAcc {
+                        is_ext4,
+                        use_cs_leaf,
+                        eta_reg,
+                        half_words,
+                        total_words,
+                        seen: next_seen,
+                        rate_pos: next_rate,
+                        limb_pos: next_limb_pos,
+                        cur_limbs,
+                    };
+                }
+            }
+            ActiveRecordPhase::BfFoldFiber {
+                k,
+                log_n_cur,
+                round_start,
+                expected_reg,
+                dst_reg,
+                want_slot,
+                f_cur,
+                total_words,
+                seen,
+                rate_pos,
+            } => {
+                self.metrics.proof_words += 1;
+                if word >= GOLDILOCKS_PRIME {
+                    self.non_canonical = true;
+                }
+                let canon = Goldilocks::from_u128_reduced(word as u128);
+                self.fiber_buf[(seen / 4) as usize].0[(seen % 4) as usize] = canon;
+                self.p2_state[rate_pos as usize] += canon;
+                let mut next_rate = rate_pos + 1;
+                if next_rate == 8 {
+                    poseidon2_perm12(&mut self.p2_state);
+                    self.metrics.poseidon2_perms += 1;
+                    self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+                    next_rate = 0;
+                }
+                let next_seen = seen + 1;
+                if next_seen == total_words {
+                    if next_rate > 0 {
+                        poseidon2_perm12(&mut self.p2_state);
+                        self.metrics.poseidon2_perms += 1;
+                        self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+                    }
+                    for i in 0..4 {
+                        self.regs[R_X as usize][i] = self.p2_state[i].0;
+                    }
+                    self.has_assert = true;
+                    let expected_val = reg_to_ext4(self.regs[expected_reg as usize]);
+                    if self.fiber_buf[want_slot as usize] != expected_val {
+                        self.mark_bad();
+                    }
+                    let log_nfib = (log_n_cur - k) as usize;
+                    let mut cur_len = 1usize << k;
+                    let mut shift = Goldilocks::SEVEN;
+                    for _ in 0..round_start {
+                        shift = shift.square();
+                    }
+                    let mut cur_log_n = log_n_cur as usize;
+                    for step in 0..(k as usize) {
+                        let half = cur_len / 2;
+                        let omega = Goldilocks::two_adic_generator(cur_log_n);
+                        let step_root = omega.pow(1u64 << log_nfib);
+                        let base_x = shift * omega.pow(f_cur);
+                        let r_chal = self.bf_chals[(round_start as usize) + step];
+                        let mut x_m = base_x;
+                        for m in 0..half {
+                            let v0 = self.fiber_buf[m];
+                            let v1 = self.fiber_buf[m + half];
+                            let even = (v0 + v1).scale_base(GOLDILOCKS_INV2);
+                            let odd = (v0 - v1).scale_base((Goldilocks::TWO * x_m).inv());
+                            self.fiber_buf[m] = even + r_chal * (odd - even);
+                            x_m *= step_root;
+                        }
+                        self.metrics.ext4_muls += half as u32;
+                        self.metrics.ext4_addsubs += (4 * half) as u32;
+                        self.metrics.core_cycles += (half as u64)
+                            * (64 * silicon_cycles::GL64_MUL
+                                + silicon_cycles::EXT4_MUL
+                                + 4 * silicon_cycles::EXT4_ADDSUB);
+                        shift = shift.square();
+                        cur_log_n -= 1;
+                        cur_len = half;
+                    }
+                    self.regs[dst_reg as usize] = ext4_to_reg(self.fiber_buf[0]);
+                    self.phase = ActiveRecordPhase::Idle;
+                } else {
+                    self.phase = ActiveRecordPhase::BfFoldFiber {
+                        k,
+                        log_n_cur,
+                        round_start,
+                        expected_reg,
+                        dst_reg,
+                        want_slot,
+                        f_cur,
+                        total_words,
+                        seen: next_seen,
+                        rate_pos: next_rate,
+                    };
+                }
+            }
+            ActiveRecordPhase::BfCompressReg { dst, src_a, src_b } => {
+                self.check_data_word(word, 0, 1, true);
+                if word >= GOLDILOCKS_PRIME {
+                    self.non_canonical = true;
+                    self.mark_bad();
+                } else {
+                    let ra = self.regs[src_a as usize];
+                    let rb = self.regs[src_b as usize];
+                    let out = p2_ordered_compress(
+                        [ra[0], ra[1], ra[2], ra[3]],
+                        [rb[0], rb[1], rb[2], rb[3]],
+                        word,
+                    );
+                    self.regs[dst as usize] = [out[0], out[1], out[2], out[3], 0];
+                    self.metrics.poseidon2_perms += 1;
+                    self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+                }
+                self.phase = ActiveRecordPhase::Idle;
+            }
             ActiveRecordPhase::DrainBad {
                 rem_words,
                 word_idx,
@@ -2025,13 +2937,27 @@ impl Dregg180StreamVm {
             return Err(Dregg180StreamError::TruncatedStream);
         }
 
-        let pdig_mismatch = self.expected_pdig.is_some_and(|want| want != self.pdig);
+        // Finalize keyless Poseidon2-12 public program digest (covers wire_hdr, all record headers, all imm_k words):
+        self.prog_p2_state[self.prog_rate_pos as usize] += Goldilocks::ONE;
+        poseidon2_perm12(&mut self.prog_p2_state);
+        self.metrics.poseidon2_perms += 1;
+        self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
+        let public_program_hash = [
+            self.prog_p2_state[0].0,
+            self.prog_p2_state[1].0,
+            self.prog_p2_state[2].0,
+            self.prog_p2_state[3].0,
+        ];
+
+        let pdig_mismatch = self.expected_pdig.is_some_and(|want| want != self.pdig)
+            || self.expected_prog_hash.is_some_and(|want| want != public_program_hash);
         let verdict = !self.sticky_fail
             && !self.non_canonical
             && self.has_assert
             && self.rec_count != 0
             && !pdig_mismatch
-            && !self.idx_armed;
+            && !self.idx_armed
+            && !self.bf_chain_active;
 
         let l = self.limbs_per_reg as usize;
         let ch = self.regs[R_CH as usize];
@@ -2081,6 +3007,7 @@ impl Dregg180StreamVm {
             response_header,
             status_word,
             program_digest_gf128: self.pdig,
+            public_program_hash,
             receipt_turboshake: receipt,
             final_ch: ch,
             zk_pin,
@@ -2238,6 +3165,162 @@ impl Dregg180HvmAssembler {
             data.extend_from_slice(&pack_digest32_to_5_limbs(s));
         }
         self.push_rec(H_CSHAKE_MERKLE, siblings.len() as u8, 0, 0, data, 0);
+    }
+
+    /// Bound-leaf `cSHAKE256` Canopy path verification consuming `self.cur_cs_leaf` latched by `H_FIBER_ACC`.
+    pub fn cshake_merkle_bound(&mut self, leaf_index: u32, siblings: &[[u8; 32]]) {
+        let mut data = Vec::with_capacity(1 + 5 * siblings.len());
+        data.push(leaf_index as u64);
+        for s in siblings {
+            data.extend_from_slice(&pack_digest32_to_5_limbs(s));
+        }
+        self.push_rec(H_CSHAKE_MERKLE, siblings.len() as u8, 1, 0, data, 0);
+    }
+
+    pub fn bf_latch_z(&mut self, idx: u8, src_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_LATCH_Z, idx, src_reg & 15, Vec::new(), 0);
+    }
+
+    pub fn bf_latch_bf(&mut self, idx: u8, src_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_LATCH_BF, idx, src_reg & 15, Vec::new(), 0);
+    }
+
+    pub fn bf_latch_tau(&mut self, idx: u8, src_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_LATCH_TAU, idx, src_reg & 15, Vec::new(), 0);
+    }
+
+    pub fn bf_eval_eq_z_bf(&mut self, len: u8, dst_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_EVAL_EQ_Z_BF, len, dst_reg & 15, Vec::new(), 0);
+    }
+
+    pub fn bf_eval_eq_tau_z(&mut self, len: u8, dst_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_EVAL_EQ_TAU_Z, len, dst_reg & 15, Vec::new(), 0);
+    }
+
+    pub fn bf_fold_final_poly(&mut self, round_start: u8, dst_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_FOLD_FINAL_POLY, round_start, dst_reg & 15, Vec::new(), 0);
+    }
+
+    pub fn bf_assert_final_eval(&mut self, total_folded_rounds: u8, got_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_ASSERT_FINAL_EVAL, total_folded_rounds, got_reg & 15, Vec::new(), 0);
+    }
+
+    pub fn bf_eval_public_mle_z(&mut self, len: u8, mode: u8, dst_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_EVAL_PUBLIC_MLE_Z, len & 31, ((mode & 15) << 4) | (dst_reg & 15), Vec::new(), 0);
+    }
+
+    pub fn bf_eval_sparse_sel_z(&mut self, len: u8, lam_reg: u8, dst_reg: u8, row_indices: &[u64]) {
+        self.push_rec(
+            H_BF_AUX,
+            BF_AUX_EVAL_SPARSE_SEL_Z,
+            len & 31,
+            ((lam_reg & 15) << 4) | (dst_reg & 15),
+            row_indices.to_vec(),
+            row_indices.len() as u16,
+        );
+    }
+
+    pub fn bf_latch_final_poly(&mut self, coeffs: &[GoldilocksExt4; 8]) {
+        let mut data = Vec::with_capacity(32);
+        for c in coeffs {
+            data.extend_from_slice(&c.to_u64_limbs());
+        }
+        self.push_rec(H_BF_AUX, BF_AUX_LATCH_FINAL_POLY, 0, 0, data, 0);
+    }
+
+    pub fn bf_stage0_fold2(&mut self, log_n: u8, dst_reg: u8) {
+        self.push_rec(H_BF_AUX, BF_AUX_STAGE0_FOLD2, log_n, dst_reg & 15, Vec::new(), 0);
+    }
+
+    /// Ordered Davies-Meyer `Poseidon2-12` compression `dst = H_ord(tag, regs[src_a], regs[src_b])`.
+    /// `tag` is pinned as an immediate (`imm_k = 1`). Defeats `C1` additive-sum replay collisions!
+    pub fn bf_compress_reg(&mut self, dst: u8, src_a: u8, src_b: u8, tag: u64) {
+        let b = (src_a & 15) | ((src_b & 15) << 4);
+        self.push_rec(H_BF_AUX, BF_AUX_COMPRESS_REG, b, dst & 15, vec![tag], 1);
+    }
+
+    pub fn fiber_acc(
+        &mut self,
+        stage_id: u8,
+        is_ext4: bool,
+        reset_acc: bool,
+        use_cs_leaf: bool,
+        key_reg: u8,
+        eta_reg: u8,
+        num_cols: u8,
+        words: &[u64],
+    ) {
+        let a = (stage_id & 7)
+            | ((is_ext4 as u8) << 3)
+            | ((reset_acc as u8) << 4)
+            | ((use_cs_leaf as u8) << 5);
+        let b = (key_reg & 15) | ((eta_reg & 15) << 4);
+        self.push_rec(H_FIBER_ACC, a, b, num_cols, words.to_vec(), 0);
+    }
+
+    pub fn bf_fold_fiber(
+        &mut self,
+        fold_k: u8,
+        log_n_cur: u8,
+        key_reg: u8,
+        round_start: u8,
+        expected_reg: u8,
+        dst_reg: u8,
+        fiber: &[GoldilocksExt4],
+    ) {
+        let a = (fold_k & 3) | ((log_n_cur & 31) << 2);
+        let b = (key_reg & 15) | ((round_start & 15) << 4);
+        let c = (expected_reg & 15) | ((dst_reg & 15) << 4);
+        let mut data = Vec::with_capacity(fiber.len() * 4);
+        for v in fiber {
+            data.extend_from_slice(&v.to_u64_limbs());
+        }
+        self.push_rec(H_BF_FOLD_FIBER, a, b, c, data, 0);
+    }
+
+    /// Compute the keyless `Poseidon2-12` public program hash covering ONLY `(wire_hdr, record headers, imm_k words)`.
+    pub fn compute_public_program_hash(&self) -> [u64; 4] {
+        let total_words: usize = self.records.iter().map(|r| 1 + r.data.len()).sum();
+        let flags = (if self.pin_mode { 8u64 } else { 0 }) | (if self.fp5_mode { 16u64 } else { 0 });
+        let wire_hdr = (QSAG_WIRE_MAGIC as u64)
+            | ((self.op as u64) << 8)
+            | (flags << 16)
+            | (((total_words * 8) as u64) << 24);
+        let mut st = [Goldilocks::ZERO; 12];
+        st[8] = Goldilocks::from_u128_reduced(P2_DOMAIN_PROG_HASH as u128);
+        st[11] = Goldilocks::from_u128_reduced(P2_IV as u128);
+        let mut pos = 0usize;
+        let mut absorb = |w: u64| {
+            st[pos] += Goldilocks(w & 0xFFFF_FFFF);
+            pos += 1;
+            if pos == 8 {
+                poseidon2_perm12(&mut st);
+                pos = 0;
+            }
+            st[pos] += Goldilocks(w >> 32);
+            pos += 1;
+            if pos == 8 {
+                poseidon2_perm12(&mut st);
+                pos = 0;
+            }
+        };
+        absorb(wire_hdr);
+        for r in &self.records {
+            let hdr_w = (r.hop as u64)
+                | ((r.a as u64) << 8)
+                | ((r.b as u64) << 16)
+                | ((r.c as u64) << 24)
+                | ((r.data.len() as u64) << 32)
+                | ((r.imm_k as u64) << 48);
+            absorb(hdr_w);
+            let bound = (r.imm_k as usize).min(r.data.len());
+            for &w in &r.data[..bound] {
+                absorb(w);
+            }
+        }
+        st[pos] += Goldilocks::ONE;
+        poseidon2_perm12(&mut st);
+        [st[0].0, st[1].0, st[2].0, st[3].0]
     }
 
     /// Encode to `QSAG-Wire v1` little-endian byte stream and compute exact `GF(2^128)` `pdig`.
@@ -2848,66 +3931,255 @@ pub struct CompiledDregg180HemStream {
     pub p2_stage1_root: [u64; 4],
     pub wire_bytes: Vec<u8>,
     pub pinned_program_digest: u128,
+    pub public_program_hash: [u64; 4],
     pub num_records: usize,
 }
 
-struct DualCanopyStage {
-    log_fibers: usize,
-    fibers: Vec<[GoldilocksExt4; 2]>,
-    p2_nodes: Vec<[u64; 4]>,
-    cshake_leaves: Vec<[u8; 32]>,
-    cshake_nodes: Vec<[u8; 32]>,
+/// Coset Reed-Solomon encoding over `shift * H` (`|H| = coeffs.len() * blowup`) for base-field `Goldilocks`.
+pub fn encode_rs_coset_goldilocks(coeffs: &[Goldilocks], blowup: usize, shift: Goldilocks) -> Vec<Goldilocks> {
+    assert!(coeffs.len().is_power_of_two() && blowup.is_power_of_two() && blowup >= 2);
+    let domain_len = coeffs.len() * blowup;
+    let mut buf = vec![Goldilocks::ZERO; domain_len];
+    let mut sp = Goldilocks::ONE;
+    for (i, &c) in coeffs.iter().enumerate() {
+        buf[i] = c * sp;
+        sp *= shift;
+    }
+    ntt_goldilocks_in_place(&mut buf, false);
+    buf
 }
 
-impl DualCanopyStage {
-    fn commit(stage_id: u8, coeffs: &[GoldilocksExt4], blowup: usize, canopy_key4: [u64; 4]) -> Self {
-        let code = encode_rs_coset_ext4(coeffs, blowup, Goldilocks::SEVEN);
-        let n_dom = code.len();
+#[inline]
+fn fs_squeeze_ext4_local(ch_cur: [u64; 4], label: &[u8], ctr: u64) -> GoldilocksExt4 {
+    let mut inp = pack_bytes_7_limbs(label);
+    inp.push(ctr);
+    GoldilocksExt4::from_u64_limbs(p2_sponge_hash_limbs(P2_DOMAIN_FS_SQUEEZE_EXT4, ch_cur, &inp))
+}
+
+#[inline]
+fn fs_absorb_limbs_local(ch_cur: [u64; 4], label: &[u8], limbs: &[u64]) -> [u64; 4] {
+    let mut v = pack_bytes_7_limbs(label);
+    v.extend_from_slice(limbs);
+    p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch_cur, &v)
+}
+
+#[inline]
+fn emit_compress_reg(asm: &mut Dregg180HvmAssembler, acc: u8, val: u8, tag: u64) {
+    // C1 fix: ordered Davies-Meyer `Poseidon2-12` compression binding `(tag, regs[acc], regs[val])`
+    // in disjoint state lanes directly from live VM registers (zero additive collision!).
+    asm.bf_compress_reg(acc, acc, val, tag);
+}
+
+#[inline]
+fn emit_copy_reg(asm: &mut Dregg180HvmAssembler, dst: u8, src: u8) {
+    if dst != src {
+        asm.esub(dst, dst, dst);
+        asm.eadd(dst, dst, src);
+    }
+}
+
+#[inline]
+fn emit_zero_reg(asm: &mut Dregg180HvmAssembler, dst: u8) {
+    asm.esub(dst, dst, dst);
+}
+
+#[inline]
+fn build_eq_table_lsb_gl_ext4(pt: &[GoldilocksExt4]) -> Vec<GoldilocksExt4> {
+    let mut tab = vec![GoldilocksExt4::ONE; 1];
+    for &p_j in pt.iter().rev() {
+        let one_minus = GoldilocksExt4::ONE - p_j;
+        let mut next = Vec::with_capacity(tab.len() * 2);
+        for &v in &tab {
+            next.push(v * one_minus);
+            next.push(v * p_j);
+        }
+        tab = next;
+    }
+    tab
+}
+
+#[inline]
+fn mle_eval_ext4_gl_ext4(col: &[GoldilocksExt4], eq_tab: &[GoldilocksExt4]) -> GoldilocksExt4 {
+    let mut acc = GoldilocksExt4::ZERO;
+    for (&c, &e) in col.iter().zip(eq_tab.iter()) {
+        acc = acc + (e * c);
+    }
+    acc
+}
+
+/// Grind a `pow_bits`-bit `Poseidon2-12` PoW nonce in parallel via `rayon` (deterministic lowest chunk),
+/// returning BOTH `(nonce, ch_after_pow)` so the checked PoW digest IS the exact transcript state `R_CH`
+/// used to squeeze all query indices (closing `H1` single-read PoW binding!).
+fn grind_p2_pow(domain: u64, ch: [u64; 4], pow_bits: u8) -> (u64, [u64; 4]) {
+    let pow_mask = (1u64 << pow_bits) - 1;
+    let chunk_size = 1u64 << 14;
+    let mut base = 0u64;
+    loop {
+        let found = (0..16u64)
+            .into_par_iter()
+            .filter_map(|c| {
+                let start = base + c * chunk_size;
+                for n in start..(start + chunk_size) {
+                    let nw = [n & 0xFFFF_FFFF, n >> 32];
+                    let out = p2_sponge_hash_limbs(domain, ch, &nw);
+                    if (out[0] & pow_mask) == 0 {
+                        return Some((n, out));
+                    }
+                }
+                None
+            })
+            .min_by_key(|&(n, _)| n);
+        if let Some(res) = found {
+            return res;
+        }
+        base += 16 * chunk_size;
+    }
+}
+
+/// Stage-0 multi-column dual-Canopy (`Poseidon2-12` + `cSHAKE256`) RS commitment at `blowup = 8`.
+#[derive(Clone)]
+pub struct Stage0MatrixCanopy {
+    pub stage_id: u8,
+    pub is_ext4: bool,
+    pub num_cols: usize,
+    pub log_fibers: usize,
+    pub canopy_key: [u64; 4],
+    pub words_per_fiber: usize,
+    pub fiber_words_flat: Vec<u64>,
+    pub p2_nodes: Vec<[u64; 4]>,
+    pub cshake_nodes: Vec<[u8; 32]>,
+}
+
+impl Stage0MatrixCanopy {
+    pub fn commit_base(stage_id: u8, cols: &[Vec<Goldilocks>], blowup: usize, canopy_key: [u64; 4]) -> Self {
+        let num_cols = cols.len();
+        assert!(num_cols >= 1 && num_cols <= 32);
+        let codes: Vec<Vec<Goldilocks>> = cols
+            .par_iter()
+            .map(|c| encode_rs_coset_goldilocks(c, blowup, Goldilocks::SEVEN))
+            .collect();
+        let n_dom = codes[0].len();
         let n_fibers = n_dom / 2;
         let log_fibers = n_fibers.trailing_zeros() as usize;
-        let mut fibers = Vec::with_capacity(n_fibers);
-        let mut p2_nodes = vec![[0u64; 4]; 2 * n_fibers];
-        let mut cshake_leaves = Vec::with_capacity(n_fibers);
-        let mut cshake_nodes = vec![[0u8; 32]; 2 * n_fibers];
+        let words_per_fiber = 2 * num_cols;
+        let leaves: Vec<(Vec<u64>, [u64; 4], [u8; 32])> = (0..n_fibers)
+            .into_par_iter()
+            .map(|f| {
+                let mut w = Vec::with_capacity(words_per_fiber);
+                for c in 0..num_cols {
+                    w.push(codes[c][f].0);
+                }
+                for c in 0..num_cols {
+                    w.push(codes[c][f + n_fibers].0);
+                }
+                let p2 = p2_sponge_hash_limbs(P2_DOMAIN_CANOPY_LEAF, canopy_key, &w);
+                let cs = cshake256_canopy_words_leaf(stage_id, f as u32, &w);
+                (w, p2, cs)
+            })
+            .collect();
+        Self::finish_tree(stage_id, false, num_cols, log_fibers, canopy_key, words_per_fiber, leaves)
+    }
 
-        for f in 0..n_fibers {
-            let v0 = code[f];
-            let v1 = code[f + n_fibers];
-            fibers.push([v0, v1]);
-            let mut l8 = [0u64; 8];
-            l8[0..4].copy_from_slice(&v0.to_u64_limbs());
-            l8[4..8].copy_from_slice(&v1.to_u64_limbs());
-            p2_nodes[n_fibers + f] = p2_sponge_hash_limbs(P2_DOMAIN_CANOPY_LEAF, canopy_key4, &l8);
-            let cs_leaf = cshake256_canopy_ext4_pair_leaf(stage_id, f as u32, v0, v1);
-            cshake_leaves.push(cs_leaf);
-            cshake_nodes[n_fibers + f] = cs_leaf;
+    pub fn commit_ext4(stage_id: u8, cols: &[Vec<GoldilocksExt4>], blowup: usize, canopy_key: [u64; 4]) -> Self {
+        let num_cols = cols.len();
+        assert!(num_cols >= 1 && num_cols <= 32);
+        let codes: Vec<Vec<GoldilocksExt4>> = cols
+            .par_iter()
+            .map(|c| encode_rs_coset_ext4(c, blowup, Goldilocks::SEVEN))
+            .collect();
+        let n_dom = codes[0].len();
+        let n_fibers = n_dom / 2;
+        let log_fibers = n_fibers.trailing_zeros() as usize;
+        let words_per_fiber = 8 * num_cols;
+        let leaves: Vec<(Vec<u64>, [u64; 4], [u8; 32])> = (0..n_fibers)
+            .into_par_iter()
+            .map(|f| {
+                let mut w = Vec::with_capacity(words_per_fiber);
+                for c in 0..num_cols {
+                    w.extend_from_slice(&codes[c][f].to_u64_limbs());
+                }
+                for c in 0..num_cols {
+                    w.extend_from_slice(&codes[c][f + n_fibers].to_u64_limbs());
+                }
+                let p2 = p2_sponge_hash_limbs(P2_DOMAIN_CANOPY_LEAF, canopy_key, &w);
+                let cs = cshake256_canopy_words_leaf(stage_id, f as u32, &w);
+                (w, p2, cs)
+            })
+            .collect();
+        Self::finish_tree(stage_id, true, num_cols, log_fibers, canopy_key, words_per_fiber, leaves)
+    }
+
+    fn finish_tree(
+        stage_id: u8,
+        is_ext4: bool,
+        num_cols: usize,
+        log_fibers: usize,
+        canopy_key: [u64; 4],
+        words_per_fiber: usize,
+        leaves: Vec<(Vec<u64>, [u64; 4], [u8; 32])>,
+    ) -> Self {
+        let n_fibers = 1usize << log_fibers;
+        let mut fiber_words_flat = Vec::with_capacity(n_fibers * words_per_fiber);
+        let mut p2_nodes = vec![[0u64; 4]; 2 * n_fibers];
+        let mut cshake_nodes = vec![[0u8; 32]; 2 * n_fibers];
+        for (f, (w, p2, cs)) in leaves.into_iter().enumerate() {
+            fiber_words_flat.extend_from_slice(&w);
+            p2_nodes[n_fibers + f] = p2;
+            cshake_nodes[n_fibers + f] = cs;
         }
-        let key3 = [canopy_key4[0], canopy_key4[1], canopy_key4[2]];
-        for idx in (1..n_fibers).rev() {
-            p2_nodes[idx] = p2_canopy_node(p2_nodes[2 * idx], p2_nodes[2 * idx + 1], key3, idx as u32);
-            cshake_nodes[idx] =
-                cshake256_canopy_node(&cshake_nodes[2 * idx], &cshake_nodes[2 * idx + 1], idx as u32);
+        let key3 = [canopy_key[0], canopy_key[1], canopy_key[2]];
+        let mut level_size = n_fibers / 2;
+        while level_size >= 1 {
+            let start = level_size;
+            let (p2_lvl, cs_lvl): (Vec<[u64; 4]>, Vec<[u8; 32]>) = (start..(2 * start))
+                .into_par_iter()
+                .map(|idx| {
+                    (
+                        p2_canopy_node(p2_nodes[2 * idx], p2_nodes[2 * idx + 1], key3, idx as u32),
+                        cshake256_canopy_node(&cshake_nodes[2 * idx], &cshake_nodes[2 * idx + 1], idx as u32),
+                    )
+                })
+                .unzip();
+            for (off, (p2, cs)) in p2_lvl.into_iter().zip(cs_lvl.into_iter()).enumerate() {
+                p2_nodes[start + off] = p2;
+                cshake_nodes[start + off] = cs;
+            }
+            level_size /= 2;
         }
         Self {
+            stage_id,
+            is_ext4,
+            num_cols,
             log_fibers,
-            fibers,
+            canopy_key,
+            words_per_fiber,
+            fiber_words_flat,
             p2_nodes,
-            cshake_leaves,
             cshake_nodes,
         }
     }
 
-    fn p2_root(&self) -> [u64; 4] {
+    pub fn p2_root(&self) -> [u64; 4] {
         self.p2_nodes[1]
     }
 
-    fn cshake_root(&self) -> [u8; 32] {
+    pub fn cshake_root(&self) -> [u8; 32] {
         self.cshake_nodes[1]
     }
 
-    fn p2_siblings(&self, fiber_idx: usize) -> Vec<[u64; 4]> {
+    pub fn cshake_root_pin4(&self) -> [u64; 4] {
+        let limbs5 = pack_digest32_to_5_limbs(&self.cshake_nodes[1]);
+        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &limbs5)
+    }
+
+    pub fn fiber_words(&self, f: usize) -> &[u64] {
+        let off = f * self.words_per_fiber;
+        &self.fiber_words_flat[off..off + self.words_per_fiber]
+    }
+
+    pub fn p2_siblings(&self, f: usize) -> Vec<[u64; 4]> {
         let n_fibers = 1usize << self.log_fibers;
-        let mut idx = n_fibers + fiber_idx;
+        let mut idx = n_fibers + f;
         let mut out = Vec::with_capacity(self.log_fibers);
         for _ in 0..self.log_fibers {
             out.push(self.p2_nodes[idx ^ 1]);
@@ -2916,9 +4188,9 @@ impl DualCanopyStage {
         out
     }
 
-    fn cshake_siblings(&self, fiber_idx: usize) -> Vec<[u8; 32]> {
+    pub fn cshake_siblings(&self, f: usize) -> Vec<[u8; 32]> {
         let n_fibers = 1usize << self.log_fibers;
-        let mut idx = n_fibers + fiber_idx;
+        let mut idx = n_fibers + f;
         let mut out = Vec::with_capacity(self.log_fibers);
         for _ in 0..self.log_fibers {
             out.push(self.cshake_nodes[idx ^ 1]);
@@ -2928,9 +4200,290 @@ impl DualCanopyStage {
     }
 }
 
+/// Intermediate `2^k`-ary BaseFold RS commitment (`Poseidon2-12` Canopy).
+struct BaseFoldStageCanopy {
+    log_n_cur: usize,
+    log_fibers: usize,
+    canopy_key: [u64; 4],
+    fibers: Vec<Vec<GoldilocksExt4>>,
+    p2_nodes: Vec<[u64; 4]>,
+}
+
+impl BaseFoldStageCanopy {
+    fn commit(coeffs: &[GoldilocksExt4], blowup: usize, round_start: usize, fold_k: usize, canopy_key: [u64; 4]) -> Self {
+        let mut shift = Goldilocks::SEVEN;
+        for _ in 0..round_start {
+            shift = shift.square();
+        }
+        let code = encode_rs_coset_ext4(coeffs, blowup, shift);
+        let n_dom = code.len();
+        let log_n_cur = n_dom.trailing_zeros() as usize;
+        let arity = 1usize << fold_k;
+        let n_fibers = n_dom / arity;
+        let log_fibers = n_fibers.trailing_zeros() as usize;
+        let leaves: Vec<(Vec<GoldilocksExt4>, [u64; 4])> = (0..n_fibers)
+            .into_par_iter()
+            .map(|f| {
+                let mut fib = Vec::with_capacity(arity);
+                let mut w = Vec::with_capacity(4 * arity);
+                for m in 0..arity {
+                    let v = code[f + m * n_fibers];
+                    fib.push(v);
+                    w.extend_from_slice(&v.to_u64_limbs());
+                }
+                let p2 = p2_sponge_hash_limbs(P2_DOMAIN_CANOPY_LEAF, canopy_key, &w);
+                (fib, p2)
+            })
+            .collect();
+        let mut fibers = Vec::with_capacity(n_fibers);
+        let mut p2_nodes = vec![[0u64; 4]; 2 * n_fibers];
+        for (f, (fib, p2)) in leaves.into_iter().enumerate() {
+            fibers.push(fib);
+            p2_nodes[n_fibers + f] = p2;
+        }
+        let key3 = [canopy_key[0], canopy_key[1], canopy_key[2]];
+        let mut level_size = n_fibers / 2;
+        while level_size >= 1 {
+            let start = level_size;
+            let p2_lvl: Vec<[u64; 4]> = (start..(2 * start))
+                .into_par_iter()
+                .map(|idx| p2_canopy_node(p2_nodes[2 * idx], p2_nodes[2 * idx + 1], key3, idx as u32))
+                .collect();
+            for (off, p2) in p2_lvl.into_iter().enumerate() {
+                p2_nodes[start + off] = p2;
+            }
+            level_size /= 2;
+        }
+        Self {
+            log_n_cur,
+            log_fibers,
+            canopy_key,
+            fibers,
+            p2_nodes,
+        }
+    }
+
+    fn p2_root(&self) -> [u64; 4] {
+        self.p2_nodes[1]
+    }
+
+    fn p2_siblings(&self, f: usize) -> Vec<[u64; 4]> {
+        let n_fibers = 1usize << self.log_fibers;
+        let mut idx = n_fibers + f;
+        let mut out = Vec::with_capacity(self.log_fibers);
+        for _ in 0..self.log_fibers {
+            out.push(self.p2_nodes[idx ^ 1]);
+            idx >>= 1;
+        }
+        out
+    }
+}
+
+/// Complete lockstep BaseFold opening data for a `2^num_vars`-coeff batched polynomial (`final_poly` deg `< 8`).
+struct LockstepBaseFoldProof {
+    round_c0_c2: Vec<(GoldilocksExt4, GoldilocksExt4)>,
+    stages: Vec<BaseFoldStageCanopy>,
+    final_poly: [GoldilocksExt4; 8],
+}
+
+fn prove_lockstep_basefold(
+    mut poly_coeffs: Vec<GoldilocksExt4>,
+    z_point: &[GoldilocksExt4],
+    stage_ks: &[usize],
+    base_key_seed: u64,
+    label_prefix: &[u8],
+    ch: &mut [u64; 4],
+) -> LockstepBaseFoldProof {
+    let num_vars = z_point.len();
+    assert_eq!(poly_coeffs.len(), 1usize << num_vars);
+    let folded_total: usize = 1 + stage_ks.iter().sum::<usize>();
+    assert_eq!(folded_total + 3, num_vars);
+    let mut eq_tab = build_eq_table_lsb_gl_ext4(z_point);
+    let mut round_c0_c2 = Vec::with_capacity(num_vars);
+    let mut stages = Vec::with_capacity(stage_ks.len());
+    let mut final_poly = [GoldilocksExt4::ZERO; 8];
+
+    // Precompute round boundaries at which each stage commitment or `final_poly` is absorbed:
+    // After round 0 completes -> commit stage 0 (`stage_ks[0]`);
+    // After round `1 + sum(stage_ks[..s]) - 1` completes -> commit stage `s` (or `final_poly` when `s == stage_ks.len()`).
+    let mut next_stage_idx = 0usize;
+    let mut next_commit_after_round = 0usize; // after round 0 (Stage 0 -> Stage 1)
+
+    let mut lab_c0 = label_prefix.to_vec();
+    lab_c0.extend_from_slice(b"_C0");
+    let mut lab_c2 = label_prefix.to_vec();
+    lab_c2.extend_from_slice(b"_C2");
+    let mut lab_ch = label_prefix.to_vec();
+    lab_ch.extend_from_slice(b"_CH");
+    let mut lab_rt = label_prefix.to_vec();
+    lab_rt.extend_from_slice(b"_RT");
+
+    for rnd in 0..num_vars {
+        let half = poly_coeffs.len() / 2;
+        let (c0, c2) = if half >= 1024 {
+            (0..half)
+                .into_par_iter()
+                .map(|i| {
+                    let (e0, e1) = (eq_tab[2 * i], eq_tab[2 * i + 1]);
+                    let (a0, a1) = (poly_coeffs[2 * i], poly_coeffs[2 * i + 1]);
+                    (e0 * a0, (e1 - e0) * (a1 - a0))
+                })
+                .reduce(
+                    || (GoldilocksExt4::ZERO, GoldilocksExt4::ZERO),
+                    |(a0, b0), (a1, b1)| (a0 + a1, b0 + b1),
+                )
+        } else {
+            let mut s0 = GoldilocksExt4::ZERO;
+            let mut s2 = GoldilocksExt4::ZERO;
+            for i in 0..half {
+                let (e0, e1) = (eq_tab[2 * i], eq_tab[2 * i + 1]);
+                let (a0, a1) = (poly_coeffs[2 * i], poly_coeffs[2 * i + 1]);
+                s0 = s0 + (e0 * a0);
+                s2 = s2 + ((e1 - e0) * (a1 - a0));
+            }
+            (s0, s2)
+        };
+        round_c0_c2.push((c0, c2));
+        *ch = fs_absorb_limbs_local(*ch, &lab_c0, &c0.to_u64_limbs());
+        *ch = fs_absorb_limbs_local(*ch, &lab_c2, &c2.to_u64_limbs());
+        let r_j = fs_squeeze_ext4_local(*ch, &lab_ch, rnd as u64);
+
+        // Lockstep fold BOTH `eq_tab` and `poly_coeffs` with the exact same `r_j`:
+        if half >= 1024 {
+            let (next_eq, next_poly): (Vec<GoldilocksExt4>, Vec<GoldilocksExt4>) = (0..half)
+                .into_par_iter()
+                .map(|i| {
+                    (
+                        eq_tab[2 * i] + r_j * (eq_tab[2 * i + 1] - eq_tab[2 * i]),
+                        poly_coeffs[2 * i] + r_j * (poly_coeffs[2 * i + 1] - poly_coeffs[2 * i]),
+                    )
+                })
+                .unzip();
+            eq_tab = next_eq;
+            poly_coeffs = next_poly;
+        } else {
+            let mut next_eq = Vec::with_capacity(half);
+            let mut next_poly = Vec::with_capacity(half);
+            for i in 0..half {
+                next_eq.push(eq_tab[2 * i] + r_j * (eq_tab[2 * i + 1] - eq_tab[2 * i]));
+                next_poly.push(poly_coeffs[2 * i] + r_j * (poly_coeffs[2 * i + 1] - poly_coeffs[2 * i]));
+            }
+            eq_tab = next_eq;
+            poly_coeffs = next_poly;
+        }
+
+        if rnd == next_commit_after_round {
+            if next_stage_idx < stage_ks.len() {
+                let k = stage_ks[next_stage_idx];
+                let key = [
+                    base_key_seed ^ ((next_stage_idx as u64) + 1),
+                    0x4341_4E50_0000_0000 ^ (next_stage_idx as u64),
+                    0x4246_5354_0000_0000 | (rnd as u64),
+                    P2_IV,
+                ];
+                let st = BaseFoldStageCanopy::commit(&poly_coeffs, UD100_BLOWUP, rnd + 1, k, key);
+                *ch = fs_absorb_limbs_local(*ch, &lab_rt, &st.p2_root());
+                stages.push(st);
+                next_commit_after_round += k;
+                next_stage_idx += 1;
+            } else {
+                assert_eq!(poly_coeffs.len(), 8);
+                final_poly.copy_from_slice(&poly_coeffs[..8]);
+                let mut f32 = [0u64; 32];
+                for i in 0..8 {
+                    f32[4 * i..4 * (i + 1)].copy_from_slice(&final_poly[i].to_u64_limbs());
+                }
+                *ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, *ch, &f32);
+                next_commit_after_round = usize::MAX;
+            }
+        }
+    }
+    LockstepBaseFoldProof {
+        round_c0_c2,
+        stages,
+        final_poly,
+    }
+}
+
+/// Emit bytecode for a complete `LockstepBaseFoldProof` sumcheck (`R_A` holds initial claim `Y`,
+/// `z_chals[0..num_vars]` holds `z`), absorbing stage roots (optionally compressing each root into `root_bundle_reg`),
+/// latching `final_poly[0..8]`, and asserting `eq(z, r_bf) * fold(final_poly) == terminal_claim`!
+fn emit_lockstep_basefold_sumcheck(
+    asm: &mut Dregg180HvmAssembler,
+    num_vars: usize,
+    stage_ks: &[usize],
+    label_prefix: &[u8],
+    stage_root_regs: Option<&[u8]>,
+    root_bundle_reg: Option<(u8, u64)>,
+    proof: Option<&LockstepBaseFoldProof>,
+) {
+    let mut lab_c0 = label_prefix.to_vec();
+    lab_c0.extend_from_slice(b"_C0");
+    let mut lab_c2 = label_prefix.to_vec();
+    lab_c2.extend_from_slice(b"_C2");
+    let mut lab_ch = label_prefix.to_vec();
+    lab_ch.extend_from_slice(b"_CH");
+    let mut lab_rt = label_prefix.to_vec();
+    lab_rt.extend_from_slice(b"_RT");
+
+    let mut next_stage_idx = 0usize;
+    let mut next_commit_after_round = 0usize;
+    let zero4 = [0u64; 4];
+
+    for rnd in 0..num_vars {
+        let (c0_w, c2_w) = match proof {
+            Some(p) => (p.round_c0_c2[rnd].0.to_u64_limbs(), p.round_c0_c2[rnd].1.to_u64_limbs()),
+            None => (zero4, zero4),
+        };
+        asm.absorb_limbs_proof(&lab_c0, &c0_w, R_X, 0);
+        asm.absorb_limbs_proof(&lab_c2, &c2_w, R_Y, 0);
+        asm.squeeze_ext4(R_B, &lab_ch, rnd as u64);
+        asm.bf_latch_bf(rnd as u8, R_B);
+        // `c1 = claim - 2*c0 - c2`, `claim <- c0 + r_j*(c1 + r_j*c2)`:
+        asm.esub(R_T0, R_A, R_X);
+        asm.esub(R_T0, R_T0, R_X);
+        asm.esub(R_T0, R_T0, R_Y);
+        asm.emul(R_Y, R_Y, R_B);
+        asm.eadd(R_Y, R_Y, R_T0);
+        asm.emul(R_Y, R_Y, R_B);
+        asm.eadd(R_A, R_Y, R_X);
+
+        if rnd == next_commit_after_round {
+            if next_stage_idx < stage_ks.len() {
+                let root_w = match proof {
+                    Some(p) => p.stages[next_stage_idx].p2_root(),
+                    None => zero4,
+                };
+                asm.absorb_limbs_proof(&lab_rt, &root_w, R_X, 0);
+                if let Some(regs) = stage_root_regs {
+                    emit_copy_reg(asm, regs[next_stage_idx], R_X);
+                }
+                if let Some((b_reg, tag_base)) = root_bundle_reg {
+                    emit_compress_reg(asm, b_reg, R_X, tag_base + (next_stage_idx as u64));
+                }
+                next_commit_after_round += stage_ks[next_stage_idx];
+                next_stage_idx += 1;
+            } else {
+                let fp = match proof {
+                    Some(p) => p.final_poly,
+                    None => [GoldilocksExt4::ZERO; 8],
+                };
+                asm.bf_latch_final_poly(&fp);
+                next_commit_after_round = usize::MAX;
+            }
+        }
+    }
+    // Check `eq(z_chals[0..num_vars], bf_chals[0..num_vars]) * fold(final_poly) == R_A`:
+    asm.bf_eval_eq_z_bf(num_vars as u8, R_X);
+    asm.bf_fold_final_poly((num_vars - 3) as u8, R_Y);
+    asm.emul(R_T0, R_X, R_Y);
+    asm.assert_eq(R_A, R_T0);
+}
+
 /// Compile verified heterogeneous child leaf claims (`BabyBear Ext4` + `Tower256` `Absent` + `Simplex` `FinCert`)
-/// into a single `GoldilocksExt4` `Hem` Canopy WHIR (`Poseidon2-12` + `cSHAKE256` + PoW + CWYZ duet-fold +
-/// sumcheck) stream executable inside `< 16 KiB` `Dregg180StreamVm`.
+/// into a real **`UD-100` (`blowup = 8`, `122` dual Canopy queries, single-read bound `16`-bit PoW,
+/// complete lockstep BaseFold closing to `final_poly[0..8]`)** `GoldilocksExt4` `Hem` stream
+/// executable inside `< 16 KiB` `Dregg180StreamVm`.
 pub fn compile_deferred_leaves_to_dregg180_hem_stream(
     leaf_claims: [DeferredLeafClaim; 3],
     pin_mode: bool,
@@ -2950,321 +4503,112 @@ pub fn compile_deferred_leaves_to_dregg180_hem_stream(
 
     let num_vars = 6usize; // 64-element multilinear polynomial over GoldilocksExt4
     let n_coeffs = 1usize << num_vars;
-    let blowup_0 = 8usize; // N_0 = 512, 256 fibers, depth = 8
-    let blowup_1 = 8usize; // N_1 = 256, 128 fibers, depth = 7 on 32-coeff folded Stage-1 oracle
-    let pow_bits = 10u8;   // 10-bit Poseidon2 transcript PoW (~1,024 hashes)
-    let num_queries = 6usize;
+    let stage_ks: &[usize] = &[2]; // Stage 0 (2-ary) -> Stage 1 (4-ary, depth 6) -> final_poly[8]
+    let canopy_key0 = [0x4452_4731_8000_0001, 0x4341_4E50_0000_0000, 0x5354_4730_0000_0001, P2_IV];
 
     let mut asm = Dregg180HvmAssembler::new(OP_HEM, pin_mode, false);
 
-    // 1. Bind relation & schedule into `R_CH` (`P2_DOMAIN_FS_BIND_REL`):
-    let mut rel_imm = pack_bytes_7_limbs(b"DREGG180.SHE.HETERO.HEM/v1");
-    rel_imm.extend_from_slice(&[num_vars as u64, blowup_0 as u64, blowup_1 as u64, num_queries as u64, pow_bits as u64]);
+    // 1. Bind relation & `UD-100` schedule into `R_CH` (`P2_DOMAIN_FS_BIND_REL`):
+    let mut rel_imm = pack_bytes_7_limbs(b"DREGG180.SHE.HETERO.UD100/v2");
+    rel_imm.extend_from_slice(&[
+        num_vars as u64,
+        UD100_BLOWUP as u64,
+        UD100_NUM_QUERIES as u64,
+        UD100_POW_BITS as u64,
+    ]);
     asm.hash(R_CH, None, P2_DOMAIN_FS_BIND_REL, &rel_imm, &[], 0, 0);
     let mut ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_BIND_REL, FS_INIT_CAP, &rel_imm);
 
-    // 2. `OP_ABSORB_ROOT` x3: absorb all 3 commitment-pinned `DeferredLeafClaim`s as program immediates!
+    // 2. Absorb all 3 commitment-pinned `DeferredLeafClaim`s as program immediates:
     let labels: [&[u8]; 3] = [b"LEAF0_QWEN_BB4", b"LEAF1_T256_ABS", b"LEAF2_SMPX_FIN"];
     for (i, claim) in leaf_claims.iter().enumerate() {
         let imm16 = claim.to_immediate_limbs();
         asm.absorb_limbs_immediate(labels[i], &imm16, 0, 0);
-        let mut full = pack_bytes_7_limbs(labels[i]);
-        full.extend_from_slice(&imm16);
-        ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &full);
+        ch = fs_absorb_limbs_local(ch, labels[i], &imm16);
     }
 
-    // 3. Build multilinear polynomial `W(X_0..X_5)` encoding the 3 `DeferredLeafClaim` evaluations
-    //    (with top 2 monomial slots zeroed so CWYZ fold has exact degree `< 32`) and commit Stage-0
-    //    under BOTH `Poseidon2-12` Canopy AND `cSHAKE256` Canopy:
+    // 3. Build polynomial `W` encoding the 3 `DeferredLeafClaim` evaluations & commit Stage-0 dual Canopy:
     let mut evals = vec![GoldilocksExt4::ZERO; n_coeffs];
     evals[0] = leaf_claims[0].reduced_ext4_eval();
     evals[1] = leaf_claims[1].reduced_ext4_eval();
     evals[2] = leaf_claims[2].reduced_ext4_eval();
     evals[3] = evals[0] + evals[1] + evals[2];
-    for i in 4..(n_coeffs - 2) {
+    for i in 4..n_coeffs {
         evals[i] = evals[i % 4].scale_base(Goldilocks((i as u64) + 11));
     }
-    // Convert hypercube evaluations `evals` to univariate/monomial coeffs for RS coset Commitment:
-    let coeffs_0 = evals.clone();
-    let canopy_key0 = [0x4452_4731_8000_0001, 0x4341_4E50_0000_0000, 0x5354_4730_0000_0001, P2_IV];
-    let stage0 = DualCanopyStage::commit(0, &coeffs_0, blowup_0, canopy_key0);
+    let stage0 = Stage0MatrixCanopy::commit_ext4(0, &[evals.clone()], UD100_BLOWUP, canopy_key0);
     let p2_root0 = stage0.p2_root();
     let cs_root0 = stage0.cshake_root();
-    let cs_root0_limbs5 = pack_digest32_to_5_limbs(&cs_root0);
-    let cs_root0_pin4 = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &cs_root0_limbs5);
+    let cs_root0_pin4 = stage0.cshake_root_pin4();
 
-    // Absorb Stage-0 Poseidon2 Canopy root (`R_6 = p2_root0`) and cSHAKE256 Canopy root (`R_7 = cs_root0_pin4`):
+    // Latch Stage-0 roots into `R_6 = p2_root0`, `R_7 = cs_root0_pin4`:
     asm.absorb_limbs_proof(b"PCS_S0_P2_ROOT", &p2_root0, 6, 0);
-    {
-        let mut v = pack_bytes_7_limbs(b"PCS_S0_P2_ROOT");
-        v.extend_from_slice(&p2_root0);
-        ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &v);
-    }
+    ch = fs_absorb_limbs_local(ch, b"PCS_S0_P2_ROOT", &p2_root0);
     asm.absorb_limbs_proof(b"PCS_S0_CS_ROOT", &cs_root0_pin4, 7, 0);
-    {
-        let mut v = pack_bytes_7_limbs(b"PCS_S0_CS_ROOT");
-        v.extend_from_slice(&cs_root0_pin4);
-        ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &v);
-    }
+    ch = fs_absorb_limbs_local(ch, b"PCS_S0_CS_ROOT", &cs_root0_pin4);
 
-    // 4. Squeeze CWYZ Duet-Fold challenges `(alpha, beta, theta)` from `R_CH`, fold `coeffs_0` -> `coeffs_1`
-    //    (`32` coeffs), and commit Stage-1 with escalated blowup `16` (`R_8 = p2_root1`):
-    let fold_lab = pack_bytes_7_limbs(b"WHIR_S0_DUET_CHAL");
-    let squeeze_local = |ch_cur: [u64; 4], label_limbs: &[u64], ctr: u64| -> GoldilocksExt4 {
-        let mut inp = label_limbs.to_vec();
-        inp.push(ctr);
-        GoldilocksExt4::from_u64_limbs(p2_sponge_hash_limbs(P2_DOMAIN_FS_SQUEEZE_EXT4, ch_cur, &inp))
-    };
-    let alpha0 = squeeze_local(ch, &fold_lab, 0);
-    let beta0 = squeeze_local(ch, &fold_lab, 1);
-    let theta0 = squeeze_local(ch, &fold_lab, 2);
-    // Latch `(alpha0, beta0, theta0)` into scratch registers `R_9, R_10, R_11` right now while `R_CH == ch`:
-    asm.squeeze_ext4(9, b"WHIR_S0_DUET_CHAL", 0);
-    asm.squeeze_ext4(10, b"WHIR_S0_DUET_CHAL", 1);
-    asm.squeeze_ext4(11, b"WHIR_S0_DUET_CHAL", 2);
-
-    // Fold polynomial `P(X) = P_even(X^2) + X * P_odd(X^2)` into `P^{(1)}(Y)`:
-    // On each fiber `(x0, -x0)` where `y0 = x0`, `even = P_even(y0^2)`, `odd = P_odd(y0^2)`,
-    // `P^{(1)}(y0^2) = odd + (alpha0 + beta0 * y0^2) * (even + theta0 * odd)`.
-    let half_c = n_coeffs / 2;
-    let mut even_c = vec![GoldilocksExt4::ZERO; half_c];
-    let mut odd_c = vec![GoldilocksExt4::ZERO; half_c];
-    for i in 0..half_c {
-        even_c[i] = coeffs_0[2 * i];
-        odd_c[i] = coeffs_0[2 * i + 1];
-    }
-    let mut mixed_c = vec![GoldilocksExt4::ZERO; half_c];
-    for i in 0..half_c {
-        mixed_c[i] = even_c[i] + (theta0 * odd_c[i]);
-    }
-    // Since `coeffs_0[62] == coeffs_0[63] == 0`, `mixed_c[half_c - 1] == 0`, so `P^{(1)}(Y)` has
-    // exact degree `< 32` (`half_c` coefficients) and evaluates over coset `49 * H_{256}` (`128` fibers, depth `7`):
-    let mut coeffs_1 = vec![GoldilocksExt4::ZERO; half_c];
-    for i in 0..half_c {
-        coeffs_1[i] = coeffs_1[i] + odd_c[i] + (alpha0 * mixed_c[i]);
-        if i + 1 < half_c {
-            coeffs_1[i + 1] = coeffs_1[i + 1] + (beta0 * mixed_c[i]);
-        }
-    }
-    let canopy_key1 = [0x4452_4731_8000_0002, 0x4341_4E50_0000_0001, 0x5354_4731_0000_0002, P2_IV];
-    let code_1 = encode_rs_coset_ext4(&coeffs_1, blowup_1, Goldilocks(49));
-    let n_fib1 = code_1.len() / 2;
-    let mut stage1_p2_nodes = vec![[0u64; 4]; 2 * n_fib1];
-    let mut stage1_fibers = Vec::with_capacity(n_fib1);
-    for f in 0..n_fib1 {
-        let u0 = code_1[f];
-        let u1 = code_1[f + n_fib1];
-        stage1_fibers.push([u0, u1]);
-        let mut l8 = [0u64; 8];
-        l8[0..4].copy_from_slice(&u0.to_u64_limbs());
-        l8[4..8].copy_from_slice(&u1.to_u64_limbs());
-        stage1_p2_nodes[n_fib1 + f] = p2_sponge_hash_limbs(P2_DOMAIN_CANOPY_LEAF, canopy_key1, &l8);
-    }
-    let key1_3 = [canopy_key1[0], canopy_key1[1], canopy_key1[2]];
-    for idx in (1..n_fib1).rev() {
-        stage1_p2_nodes[idx] = p2_canopy_node(
-            stage1_p2_nodes[2 * idx],
-            stage1_p2_nodes[2 * idx + 1],
-            key1_3,
-            idx as u32,
-        );
-    }
-    let p2_root1 = stage1_p2_nodes[1];
-    // `H_HASH` latch is 3 bits (`c & 7`, `R_1..=R_7`); latch `p2_root1` into `R_B` (`3`) then copy to `R_8` (`R_15 == 0`):
-    asm.absorb_limbs_proof(b"PCS_S1_P2_ROOT", &p2_root1, R_B, 0);
-    asm.eadd(8, R_B, 15);
-    {
-        let mut v = pack_bytes_7_limbs(b"PCS_S1_P2_ROOT");
-        v.extend_from_slice(&p2_root1);
-        ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &v);
-    }
-
-    // 5. 6-Round Quadratic Sumcheck over `GoldilocksExt4`:
-    //    Prove `sum_{x in {0,1}^6} eq(tau, x) * W(x) == claimed_eval`, with every round challenge
-    //    squeezed inside `Dregg180StreamVm`!
-    let tau_lab = pack_bytes_7_limbs(b"HEM_EQ_TAU");
-    let mut tau = Vec::with_capacity(num_vars);
+    // 4. Squeeze evaluation point `z[0..6]` on chip, claim `W(z)`, and prove `W(z)` via REAL Lockstep BaseFold!
+    let mut z_pt = Vec::with_capacity(num_vars);
     for j in 0..num_vars {
-        tau.push(squeeze_local(ch, &tau_lab, j as u64));
+        let zj = fs_squeeze_ext4_local(ch, b"HEM_EVAL_Z", j as u64);
+        asm.squeeze_ext4(R_T0, b"HEM_EVAL_Z", j as u64);
+        asm.bf_latch_z(j as u8, R_T0);
+        z_pt.push(zj);
     }
-    let mut eq_tab = vec![GoldilocksExt4::ONE; 1];
-    for &t_j in &tau {
-        let mut next = Vec::with_capacity(eq_tab.len() * 2);
-        let one_minus_t = GoldilocksExt4::ONE - t_j;
-        for &v in &eq_tab {
-            next.push(v * one_minus_t);
-            next.push(v * t_j);
-        }
-        eq_tab = next;
-    }
-    let mut w_tab = evals.clone();
-    let mut init_claim = GoldilocksExt4::ZERO;
-    for i in 0..n_coeffs {
-        init_claim = init_claim + (eq_tab[i] * w_tab[i]);
-    }
+    let eq_z = build_eq_table_lsb_gl_ext4(&z_pt);
+    let init_claim = mle_eval_ext4_gl_ext4(&evals, &eq_z);
     asm.absorb_limbs_proof(b"HEM_SC_CLAIM", &init_claim.to_u64_limbs(), R_A, 0);
-    {
-        let mut v = pack_bytes_7_limbs(b"HEM_SC_CLAIM");
-        v.extend_from_slice(&init_claim.to_u64_limbs());
-        ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &v);
-    }
+    ch = fs_absorb_limbs_local(ch, b"HEM_SC_CLAIM", &init_claim.to_u64_limbs());
 
-    let mut sc_chals = Vec::with_capacity(num_vars);
-    for rnd in 0..num_vars {
-        let half = w_tab.len() / 2;
-        let mut c0 = GoldilocksExt4::ZERO;
-        let mut c2 = GoldilocksExt4::ZERO;
-        for i in 0..half {
-            let (e0, e1) = (eq_tab[2 * i], eq_tab[2 * i + 1]);
-            let (a0, a1) = (w_tab[2 * i], w_tab[2 * i + 1]);
-            c0 = c0 + (e0 * a0);
-            c2 = c2 + ((e1 - e0) * (a1 - a0));
-        }
-        asm.absorb_limbs_proof(b"HEM_SC_C0", &c0.to_u64_limbs(), R_X, 0);
-        {
-            let mut v = pack_bytes_7_limbs(b"HEM_SC_C0");
-            v.extend_from_slice(&c0.to_u64_limbs());
-            ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &v);
-        }
-        asm.absorb_limbs_proof(b"HEM_SC_C2", &c2.to_u64_limbs(), R_Y, 0);
-        {
-            let mut v = pack_bytes_7_limbs(b"HEM_SC_C2");
-            v.extend_from_slice(&c2.to_u64_limbs());
-            ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &v);
-        }
-        let sc_lab = pack_bytes_7_limbs(b"HEM_SC_CHAL");
-        let r_j = squeeze_local(ch, &sc_lab, rnd as u64);
-        asm.squeeze_ext4(R_B, b"HEM_SC_CHAL", rnd as u64);
-        // `c1 = claim - 2*c0 - c2`, `claim <- c0 + r_j*(c1 + r_j*c2)` on chip:
-        asm.esub(R_T0, R_A, R_X);
-        asm.esub(R_T0, R_T0, R_X);
-        asm.esub(R_T0, R_T0, R_Y);
-        asm.emul(R_Y, R_Y, R_B);
-        asm.eadd(R_Y, R_Y, R_T0);
-        asm.emul(R_Y, R_Y, R_B);
-        asm.eadd(R_A, R_Y, R_X);
+    let bf_proof = prove_lockstep_basefold(evals, &z_pt, stage_ks, 0x4452_4731_8000_0000, b"BF_LEAF", &mut ch);
+    let p2_root1 = bf_proof.stages[0].p2_root();
+    let stage1_key = bf_proof.stages[0].canopy_key;
+    emit_lockstep_basefold_sumcheck(&mut asm, num_vars, stage_ks, b"BF_LEAF", Some(&[8]), None, Some(&bf_proof));
 
-        sc_chals.push(r_j);
-        let mut next_eq = Vec::with_capacity(half);
-        let mut next_w = Vec::with_capacity(half);
-        for i in 0..half {
-            next_eq.push(eq_tab[2 * i] + (r_j * (eq_tab[2 * i + 1] - eq_tab[2 * i])));
-            next_w.push(w_tab[2 * i] + (r_j * (w_tab[2 * i + 1] - w_tab[2 * i])));
-        }
-        eq_tab = next_eq;
-        w_tab = next_w;
-    }
-    let terminal_claim = eq_tab[0] * w_tab[0];
-    asm.load(R_Y, &terminal_claim.to_u64_limbs(), true);
-    asm.assert_eq(R_A, R_Y);
-
-    // 6. Grind Poseidon2 Transcript Proof-of-Work (`pow_bits = 10`) & verify via `H_ASSERT_POW`:
-    let pow_mask = (1u64 << pow_bits) - 1;
-    let mut pow_nonce = 0u64;
-    loop {
-        let nw = [pow_nonce & 0xFFFF_FFFF, pow_nonce >> 32];
-        if (p2_sponge_hash_limbs(P2_DOMAIN_FS_POW, ch, &nw)[0] & pow_mask) == 0 {
-            break;
-        }
-        pow_nonce += 1;
-    }
+    // 5. Grind `16`-bit `Poseidon2-12` Transcript Proof-of-Work ONCE directly into `R_CH` & check `H_ASSERT_POW(R_CH, 16)` (H1 fix!):
+    let (pow_nonce, ch_after_pow) = grind_p2_pow(P2_DOMAIN_FS_POW, ch, UD100_POW_BITS);
     let nonce_words = [pow_nonce & 0xFFFF_FFFF, pow_nonce >> 32];
-    asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_POW, &[], &nonce_words, 0, 0);
-    asm.assert_pow(R_T0, pow_bits);
-    asm.absorb_limbs_proof(b"HEM_POW_NONCE", &nonce_words, 0, 0);
-    {
-        let mut v = pack_bytes_7_limbs(b"HEM_POW_NONCE");
-        v.extend_from_slice(&nonce_words);
-        ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, ch, &v);
-    }
+    asm.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_POW, &[], &nonce_words, 0, 0);
+    asm.assert_pow(R_CH, UD100_POW_BITS);
+    ch = ch_after_pow;
 
-    // 7. Open `num_queries` Transcript-Bound Canopy Fibers across Stage-0 (`Poseidon2` + `cSHAKE256`)
-    //    and Stage-1 (`Poseidon2`), verifying CWYZ asymmetric duet-fold in `GoldilocksExt4`!
-    let omega_dom0 = Goldilocks::two_adic_generator(9); // N_0 = 512 = 2^9
-    for q_idx in 0..num_queries {
-        let mut qlab = pack_bytes_7_limbs(b"WHIR_S0_QUERY");
+    // 6. Execute `122` Transcript-Bound Dual-Canopy Query Chains (bare `(9/16)^122 < 2^{-101.27}`, + 16-bit PoW = `2^{-117.27}`):
+    //    Stage 0 (2-ary, depth 8, bound P2 + cSHAKE leaves via `H_FIBER_ACC`) -> Stage 1 (4-ary, depth 6, `H_BF_FOLD_FIBER`)
+    //    -> `BF_AUX_ASSERT_FINAL_EVAL` against `final_poly[0..8]`!
+    asm.load(9, &GoldilocksExt4::ONE.to_u64_limbs(), true); // eta = 1 (single column)
+    for q_idx in 0..UD100_NUM_QUERIES {
+        let mut qlab = pack_bytes_7_limbs(b"UD100_QUERY");
         qlab.push(q_idx as u64);
-        let f_idx = (p2_sponge_hash_limbs(P2_DOMAIN_FS_SQUEEZE_IDX, ch, &qlab)[0] as usize) & 0xFF;
-        let [v0, v1] = stage0.fibers[f_idx];
-        let mut l8 = [0u64; 8];
-        l8[0..4].copy_from_slice(&v0.to_u64_limbs());
-        l8[4..8].copy_from_slice(&v1.to_u64_limbs());
+        let f0 = (p2_sponge_hash_limbs(P2_DOMAIN_FS_SQUEEZE_IDX, ch, &qlab)[0] as usize)
+            & ((1usize << stage0.log_fibers) - 1);
 
-        // 7a. Stage-0 `Poseidon2-12` Canopy path (`H_BIND_IDX` + `H_MERKLE` -> `R_6`):
+        // Stage-0 bound dual Canopy opening (exact same words feed P2 leaf, cSHAKE leaf, and Stage-0 fold!):
         asm.load(12, &canopy_key0, true);
-        asm.hash(R_X, Some(12), P2_DOMAIN_CANOPY_LEAF, &[], &l8, 0, 0);
         asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
         asm.bind_idx(R_T0, 0, stage0.log_fibers as u8);
-        asm.merkle(12, f_idx as u32, &stage0.p2_siblings(f_idx));
+        asm.fiber_acc(0, true, true, true, 12, 9, 1, stage0.fiber_words(f0));
+        asm.merkle(12, f0 as u32, &stage0.p2_siblings(f0));
         asm.assert_eq(R_X, 6);
-
-        // 7b. Stage-0 `cSHAKE256("QSAG.PCS.CANOPY/v2")` Canopy path (`H_BIND_IDX` + `H_CSHAKE_MERKLE` -> `R_7`):
-        let cs_leaf = stage0.cshake_leaves[f_idx];
-        let cs_leaf_limbs5 = pack_digest32_to_5_limbs(&cs_leaf);
-        asm.hash(R_X, None, P2_DOMAIN_FS_ABSORB_LIMBS, &[], &cs_leaf_limbs5, 0, 0);
         asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
         asm.bind_idx(R_T0, 0, stage0.log_fibers as u8);
-        asm.cshake_merkle(f_idx as u32, &cs_leaf, &stage0.cshake_siblings(f_idx));
+        asm.cshake_merkle_bound(f0 as u32, &stage0.cshake_siblings(f0));
         asm.assert_eq(R_X, 7);
+        asm.bf_stage0_fold2((stage0.log_fibers + 1) as u8, R_A);
 
-        // 7c. CWYZ Asymmetric Duet-Fold step (`R_9 = alpha0, R_10 = beta0, R_11 = theta0`):
-        let y0 = Goldilocks::SEVEN * omega_dom0.pow(f_idx as u64);
-        let inv2_y0 = (Goldilocks::TWO * y0).inv();
-        let y0_sq = y0.square();
-        let folded_want = GoldilocksExt4::cwyz_duet_fold(
-            v0,
-            v1,
-            alpha0,
-            beta0,
-            theta0,
-            GOLDILOCKS_INV2,
-            inv2_y0,
-            y0_sq,
-        );
-        asm.load(R_Y, &[y0_sq.0, 0, 0, 0], true);
-        asm.emul(R_B, 10, R_Y);
-        asm.eadd(R_B, 9, R_B); // R_B = gamma = alpha0 + beta0 * y0^2
-        asm.load(R_T0, &v0.to_u64_limbs(), false);
-        asm.load(R_Y, &v1.to_u64_limbs(), false);
-        asm.eadd(R_T0, R_T0, R_Y); // T0 = v0 + v1
-        asm.esub(R_Y, R_T0, R_Y);  // Y = v0
-        asm.eadd(R_Y, R_Y, R_Y);   // Y = 2*v0
-        asm.esub(R_Y, R_Y, R_T0);  // Y = v0 - v1
-        asm.load(13, &[GOLDILOCKS_INV2.0, 0, 0, 0], true);
-        asm.emul(R_T0, R_T0, 13);  // even = (v0 + v1) * inv2
-        asm.load(13, &[inv2_y0.0, 0, 0, 0], true);
-        asm.emul(R_Y, R_Y, 13);    // odd = (v0 - v1) * inv2_y0
-        asm.emul(13, 11, R_Y);     // theta0 * odd
-        asm.eadd(R_T0, R_T0, 13);  // mixed
-        asm.emul(R_T0, R_T0, R_B); // gamma * mixed
-        asm.eadd(14, R_T0, R_Y);   // R_14 = folded = odd + gamma * mixed
-
-        // 7d. Stage-1 `Poseidon2-12` Canopy opening at `s1_f = f_idx & 0x7F` (`depth = 7`) -> `R_8`:
-        let s1_f = f_idx & 0x7F;
-        let [u0, u1] = stage1_fibers[s1_f];
-        let u_expected = if (f_idx & 128) == 0 { u0 } else { u1 };
-        assert_eq!(u_expected, folded_want);
-        asm.load(13, &u_expected.to_u64_limbs(), false);
-        asm.assert_eq(14, 13);
-        let mut s1_l8 = [0u64; 8];
-        s1_l8[0..4].copy_from_slice(&u0.to_u64_limbs());
-        s1_l8[4..8].copy_from_slice(&u1.to_u64_limbs());
-        let mut s1_sibs = Vec::with_capacity(7);
-        let mut h_idx = n_fib1 + s1_f;
-        for _ in 0..7 {
-            s1_sibs.push(stage1_p2_nodes[h_idx ^ 1]);
-            h_idx >>= 1;
-        }
-        asm.load(12, &canopy_key1, true);
-        asm.hash(R_X, Some(12), P2_DOMAIN_CANOPY_LEAF, &[], &s1_l8, 0, 0);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
-        asm.bind_idx(R_T0, 0, 7);
-        asm.merkle(12, s1_f as u32, &s1_sibs);
+        // Stage-1 4-ary BaseFold check & fold (f1 = f0 & 63, depth 6):
+        let f1 = f0 & ((1usize << bf_proof.stages[0].log_fibers) - 1);
+        asm.load(12, &stage1_key, true);
+        asm.bf_fold_fiber(2, bf_proof.stages[0].log_n_cur as u8, 12, 1, R_A, R_A, &bf_proof.stages[0].fibers[f1]);
+        asm.merkle(12, f1 as u32, &bf_proof.stages[0].p2_siblings(f1));
         asm.assert_eq(R_X, 8);
+
+        // Final degree-<8 polynomial check at `x_final = 7^8 * omega_64^{f1}`:
+        asm.bf_assert_final_eval(3, R_A);
     }
 
     let delta_override = k_mac_opt.map(u128::from_le_bytes);
     let (wire_bytes, pinned_program_digest) = asm.build_wire_bytes_and_pdig(delta_override);
+    let public_program_hash = asm.compute_public_program_hash();
     let num_records = asm.records.len();
 
     Ok(CompiledDregg180HemStream {
@@ -3274,6 +4618,7 @@ pub fn compile_deferred_leaves_to_dregg180_hem_stream(
         p2_stage1_root: p2_root1,
         wire_bytes,
         pinned_program_digest,
+        public_program_hash,
         num_records,
     })
 }
@@ -3372,4 +4717,2812 @@ pub fn bridge_payable_compute_receipt_to_dregg180_stream(
         },
     ];
     compile_deferred_leaves_to_dregg180_hem_stream(claims, pin_mode, k_mac_opt)
+}
+
+// ================================================================================================
+// §7. Trustless (`pin_mode = false`, `k_mac = None`) `UD-100` Non-Native `BabyBear Ext4` (`X^4-11`)
+//     Sumcheck + `Absent("sk-")` 4-State DFA `GoldilocksExt4` `OP_HEM` AIR & `[0, 2^16)` LogUp
+// ================================================================================================
+
+const CANOPY_KEY_VK: [u64; 4] = [0x4452_4731_564B_0001, 0x4341_4E50_0000_0010, 0x564B_5330_0000_0001, P2_IV];
+const CANOPY_KEY_BYTES: [u64; 4] = [0x4452_4731_4259_0002, 0x4341_4E50_0000_0020, 0x4259_5330_0000_0002, P2_IV];
+const CANOPY_KEY_WIT1: [u64; 4] = [0x4452_4731_5731_0003, 0x4341_4E50_0000_0030, 0x5731_5330_0000_0003, P2_IV];
+const CANOPY_KEY_WIT2: [u64; 4] = [0x4452_4731_5732_0004, 0x4341_4E50_0000_0040, 0x5732_5330_0000_0004, P2_IV];
+const CANOPY_KEY_MRNG: [u64; 4] = [0x4452_4731_4D52_0005, 0x4341_4E50_0000_0050, 0x4D52_5330_0000_0005, P2_IV];
+const CANOPY_KEY_HRNG: [u64; 4] = [0x4452_4731_4852_0006, 0x4341_4E50_0000_0060, 0x4852_5330_0000_0006, P2_IV];
+const CANOPY_KEY_WBB: [u64; 4] = [0x4452_4731_5742_0007, 0x4341_4E50_0000_0070, 0x5742_5330_0000_0007, P2_IV];
+const T1_BF_KEY_SEED: u64 = 0x4452_4731_5431_0000;
+const T2_BF_KEY_SEED: u64 = 0x4452_4731_5432_0000;
+const T1_STAGE_KS: &[usize] = &[3, 3, 2]; // 1 + 3 + 3 + 2 = 9 = 12 - 3 -> final_poly[8]
+const T2_STAGE_KS: &[usize] = &[3, 3, 3, 3]; // 1 + 3 + 3 + 3 + 3 = 13 = 16 - 3 -> final_poly[8]
+
+/// 4-state Padded-Complement `Absent("sk-")` DFA matching Lean `Selvage.GoldilocksDregg180Bridge.noSkDashStep`:
+///   - `0`: idle (accepting)
+///   - `1`: matched `'s'` (`115`, accepting)
+///   - `2`: matched `"sk"` (`107`, accepting)
+///   - `3`: **INESCAPABLE SINK** — matched `"sk-"` (`45`, non-accepting!)
+#[inline]
+pub const fn no_sk_dash_step_4state(q: u8, b: u8) -> u8 {
+    if q == 3 {
+        3
+    } else if q == 2 && b == b'-' {
+        3
+    } else if q == 1 && b == b'k' {
+        2
+    } else if b == b's' {
+        1
+    } else {
+        0
+    }
+}
+
+/// Run the 4-state `Absent("sk-")` DFA on `bytes`, returning `(final_state, states_len_plus_1)`.
+pub fn run_no_sk_dash_dfa_4state(bytes: &[u8]) -> (u8, Vec<u8>) {
+    let mut states = Vec::with_capacity(bytes.len() + 1);
+    let mut q = 0u8;
+    states.push(q);
+    for &b in bytes {
+        q = no_sk_dash_step_4state(q, b);
+        states.push(q);
+    }
+    (q, states)
+}
+
+/// Public commitment to a `<= 1,024`-byte payload (`0x00`-padded to `1,024` bytes, which preserves
+/// sink `3` vs accepting `{0, 1, 2}` in `no_sk_dash_step_4state`).
+#[derive(Clone)]
+pub struct PayloadBytesCommitment {
+    pub padded_bytes: Vec<Goldilocks>,
+    pub canopy: Stage0MatrixCanopy,
+}
+
+impl PayloadBytesCommitment {
+    pub fn commit(payload: &[u8]) -> Result<Self, String> {
+        if payload.len() > HEM_EXEC_ROWS {
+            return Err(format!("payload length {} exceeds HEM_EXEC_ROWS={}", payload.len(), HEM_EXEC_ROWS));
+        }
+        let mut padded_bytes = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        for (i, &b) in payload.iter().enumerate() {
+            padded_bytes[i] = Goldilocks(b as u64);
+        }
+        let canopy = Stage0MatrixCanopy::commit_base(1, &[padded_bytes.clone()], UD100_BLOWUP, CANOPY_KEY_BYTES);
+        Ok(Self { padded_bytes, canopy })
+    }
+
+    pub fn p2_root(&self) -> [u64; 4] {
+        self.canopy.p2_root()
+    }
+
+    pub fn cshake_root(&self) -> [u8; 32] {
+        self.canopy.cshake_root()
+    }
+
+    pub fn cshake_root_pin4(&self) -> [u64; 4] {
+        self.canopy.cshake_root_pin4()
+    }
+}
+
+/// Public dual-Canopy (`Poseidon2-12` + `cSHAKE256`) commitment to the child `BabyBear` witness table
+/// `W_bb = (A_bb[0..2^m], B_bb[0..2^m])` placed at Table 1 rows `32..32+2^{m+1}`.
+/// Every entry is enforced `< p_BB` via `C_wbb = sel_wbb*(r_val - w_bb)` + `r_val + d_val = p_BB - 1`,
+/// and `A(r) * B(r) * eq(tau, r) == claim_m` is proved 100% INSIDE `GoldilocksExt4` on `Dregg180StreamVm`
+/// (ZERO `Option` terminal oracle callback, ZERO unverified terminal claim loophole!).
+#[derive(Clone)]
+pub struct BabyBearWitnessCommitment {
+    pub bb_num_rounds: usize,
+    pub w_bb_col: Vec<Goldilocks>,
+    pub canopy: Stage0MatrixCanopy,
+}
+
+impl BabyBearWitnessCommitment {
+    pub fn commit(m_rounds: usize, a_vals: &[u32], b_vals: &[u32]) -> Result<Self, String> {
+        if m_rounds == 0 || m_rounds > HEM_MAX_BB_ROUNDS {
+            return Err(format!("m_rounds must be in 1..={HEM_MAX_BB_ROUNDS}, got {m_rounds}"));
+        }
+        let n_bb = 1usize << m_rounds;
+        if a_vals.len() != n_bb || b_vals.len() != n_bb {
+            return Err("BabyBearWitnessCommitment dimension mismatch".into());
+        }
+        let mut w_bb_col = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        for i in 0..n_bb {
+            if (a_vals[i] as u64) >= BABYBEAR_PRIME_U64 || (b_vals[i] as u64) >= BABYBEAR_PRIME_U64 {
+                return Err("BabyBearWitnessCommitment contains non-canonical entry >= p_BB".into());
+            }
+            w_bb_col[HEM_ROW_WBB_START + i] = Goldilocks(a_vals[i] as u64);
+            w_bb_col[HEM_ROW_WBB_START + n_bb + i] = Goldilocks(b_vals[i] as u64);
+        }
+        let canopy = Stage0MatrixCanopy::commit_base(6, &[w_bb_col.clone()], UD100_BLOWUP, CANOPY_KEY_WBB);
+        Ok(Self { bb_num_rounds: m_rounds, w_bb_col, canopy })
+    }
+
+    pub fn p2_root(&self) -> [u64; 4] {
+        self.canopy.p2_root()
+    }
+
+    /// Test-only helper that commits raw `Goldilocks` entries without `< p_BB` check so adversarial tests
+    /// can prove `Dregg180StreamVm` rejects a committed `W_bb` containing non-canonical `>= p_BB` entries!
+    pub fn commit_unchecked_raw(m_rounds: usize, a_vals: &[u64], b_vals: &[u64]) -> Result<Self, String> {
+        let n_bb = 1usize << m_rounds;
+        if m_rounds == 0 || m_rounds > HEM_MAX_BB_ROUNDS || a_vals.len() != n_bb || b_vals.len() != n_bb {
+            return Err("commit_unchecked_raw dimension mismatch".into());
+        }
+        let mut w_bb_col = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        for i in 0..n_bb {
+            w_bb_col[HEM_ROW_WBB_START + i] = Goldilocks(a_vals[i]);
+            w_bb_col[HEM_ROW_WBB_START + n_bb + i] = Goldilocks(b_vals[i]);
+        }
+        let canopy = Stage0MatrixCanopy::commit_base(6, &[w_bb_col.clone()], UD100_BLOWUP, CANOPY_KEY_WBB);
+        Ok(Self { bb_num_rounds: m_rounds, w_bb_col, canopy })
+    }
+
+    pub fn cshake_root(&self) -> [u8; 32] {
+        self.canopy.cshake_root()
+    }
+
+    pub fn cshake_root_pin4(&self) -> [u64; 4] {
+        self.canopy.cshake_root_pin4()
+    }
+}
+
+/// Deterministic preprocessed circuit layout for `m_rounds` (`1..=6`) full degree-3 cubic
+/// `BabyBear Ext4` (`X^4 - 11`) sumcheck rounds + full in-circuit `chi(x)` / `W_bb(r)` / `eq(tau, r)`
+/// terminal evaluation against committed `W_bb` + `4 x 256` `Absent("sk-")` 4-state DFA ROM.
+#[derive(Clone)]
+pub struct TrustlessHemCircuitLayout {
+    pub bb_num_rounds: usize,
+    pub vk_cols: Vec<Vec<Goldilocks>>, // [sel_mac, sel_eq, sel_fs, sel_wbb, src_a, src_b, src_c, rom_q_next]
+    pub g_rows: Vec<[[usize; 4]; 4]>,  // g_rows[rnd][coeff 0..4][limb 0..4]
+    pub fs_rows: Vec<[usize; 4]>,      // fs_rows[rnd][limb 0..4]
+    pub pub_r_indices: Vec<u64>,       // constants(4) + init_claim(4) + tau(4*m) + g_i(16*m)
+    pub pub_a_indices: Vec<u64>,       // raw_r_i(4*m)
+    pub first_mac_row: usize,
+    pub total_used_rows: usize,
+}
+
+impl TrustlessHemCircuitLayout {
+    pub fn build(bb_num_rounds: usize) -> Result<Self, String> {
+        if bb_num_rounds == 0 || bb_num_rounds > HEM_MAX_BB_ROUNDS {
+            return Err(format!(
+                "bb_num_rounds must be in 1..={HEM_MAX_BB_ROUNDS} for N_exec={HEM_EXEC_ROWS}, got {bb_num_rounds}"
+            ));
+        }
+        let mut sel_mac = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        let mut sel_eq = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        let mut sel_fs = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        let mut sel_wbb = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        let mut src_a = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        let mut src_b = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        let mut src_c = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        let mut rom_q_next = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+        for u in 0..HEM_EXEC_ROWS {
+            rom_q_next[u] = Goldilocks(no_sk_dash_step_4state(((u >> 8) & 3) as u8, (u & 0xFF) as u8) as u64);
+        }
+
+        // Fixed public header rows `0..32`:
+        //   0 = const 0, 1 = const 1, 2 = const 11 (`X^4 - 11`), 3 = const `p_BB - 1` (`-1 mod p_BB`),
+        //   4..8 = `bb_initial_claim`, 8..8+4m = `bb_tau[0..m]`.
+        const ROW_ZERO: usize = 0;
+        const ROW_ONE: usize = 1;
+        const ROW_ELEVEN: usize = 2;
+        const ROW_NEG_ONE: usize = 3;
+        let init_claim_rows = [4usize, 5, 6, 7];
+        let mut pub_r_indices: Vec<u64> = (0..8u64).collect();
+        let mut tau_rows = Vec::with_capacity(bb_num_rounds);
+        for j in 0..bb_num_rounds {
+            let base = 8 + 4 * j;
+            tau_rows.push([base, base + 1, base + 2, base + 3]);
+            for l in 0..4 {
+                pub_r_indices.push((base + l) as u64);
+            }
+        }
+
+        // Committed `W_bb` witness table rows `32..32 + 2^{m+1}` (`sel_wbb = 1` enforces `r_val == w_bb_col` & `< p_BB`!):
+        let n_bb = 1usize << bb_num_rounds;
+        let mut w_a_rows = Vec::with_capacity(n_bb);
+        let mut w_b_rows = Vec::with_capacity(n_bb);
+        for i in 0..n_bb {
+            let ra = HEM_ROW_WBB_START + i;
+            let rb = HEM_ROW_WBB_START + n_bb + i;
+            sel_wbb[ra] = Goldilocks::ONE;
+            sel_wbb[rb] = Goldilocks::ONE;
+            w_a_rows.push(ra);
+            w_b_rows.push(rb);
+        }
+        let mut cur_row = HEM_ROW_WBB_START + 2 * n_bb;
+        let mut first_mac_row = 0usize;
+
+        let mut push_gate = |is_mac: bool, sa: usize, sb: usize, sc: usize, row: &mut usize| -> usize {
+            let r = *row;
+            if is_mac {
+                if first_mac_row == 0 {
+                    first_mac_row = r;
+                }
+                sel_mac[r] = Goldilocks::ONE;
+            } else {
+                sel_eq[r] = Goldilocks::ONE;
+            }
+            src_a[r] = Goldilocks(sa as u64);
+            src_b[r] = Goldilocks(sb as u64);
+            src_c[r] = Goldilocks(sc as u64);
+            *row += 1;
+            r
+        };
+
+        fn push_ext4_mul<F: FnMut(bool, usize, usize, usize, &mut usize) -> usize>(
+            push_gate: &mut F,
+            a: [usize; 4],
+            b: [usize; 4],
+            row: &mut usize,
+        ) -> [usize; 4] {
+            let t1 = push_gate(true, a[1], b[3], ROW_ZERO, row);
+            let t2 = push_gate(true, a[2], b[2], t1, row);
+            let t3 = push_gate(true, a[3], b[1], t2, row);
+            let t4 = push_gate(true, ROW_ELEVEN, t3, ROW_ZERO, row);
+            let p0 = push_gate(true, a[0], b[0], t4, row);
+
+            let t5 = push_gate(true, a[2], b[3], ROW_ZERO, row);
+            let t6 = push_gate(true, a[3], b[2], t5, row);
+            let t7 = push_gate(true, ROW_ELEVEN, t6, ROW_ZERO, row);
+            let t8 = push_gate(true, a[0], b[1], t7, row);
+            let p1 = push_gate(true, a[1], b[0], t8, row);
+
+            let t9 = push_gate(true, a[3], b[3], ROW_ZERO, row);
+            let t10 = push_gate(true, ROW_ELEVEN, t9, ROW_ZERO, row);
+            let t11 = push_gate(true, a[0], b[2], t10, row);
+            let t12 = push_gate(true, a[1], b[1], t11, row);
+            let p2 = push_gate(true, a[2], b[0], t12, row);
+
+            let t13 = push_gate(true, a[0], b[3], ROW_ZERO, row);
+            let t14 = push_gate(true, a[1], b[2], t13, row);
+            let t15 = push_gate(true, a[2], b[1], t14, row);
+            let p3 = push_gate(true, a[3], b[0], t15, row);
+            [p0, p1, p2, p3]
+        }
+
+        let mut g_rows = Vec::with_capacity(bb_num_rounds);
+        let mut fs_rows = Vec::with_capacity(bb_num_rounds);
+        let mut pub_a_indices: Vec<u64> = Vec::with_capacity(4 * bb_num_rounds);
+
+        // 1. `m` full cubic `BabyBear Ext4` sumcheck rounds (`g_i(0) + g_i(1) == claim_i`, `g_i(r_i) == claim_{i+1}`):
+        let mut claim_rows = init_claim_rows;
+        for _rnd in 0..bb_num_rounds {
+            let mut gr = [[0usize; 4]; 4];
+            for k in 0..4 {
+                for l in 0..4 {
+                    gr[k][l] = cur_row;
+                    pub_r_indices.push(cur_row as u64);
+                    cur_row += 1;
+                }
+            }
+            g_rows.push(gr);
+
+            let mut fr = [0usize; 4];
+            for l in 0..4 {
+                sel_fs[cur_row] = Goldilocks::ONE;
+                fr[l] = cur_row;
+                pub_a_indices.push(cur_row as u64);
+                cur_row += 1;
+            }
+            fs_rows.push(fr);
+
+            let mut s1 = [0usize; 4];
+            let mut s2 = [0usize; 4];
+            let mut s3 = [0usize; 4];
+            let mut s4 = [0usize; 4];
+            for l in 0..4 {
+                s1[l] = push_gate(true, ROW_ONE, gr[0][l], gr[0][l], &mut cur_row);
+                s2[l] = push_gate(true, ROW_ONE, s1[l], gr[1][l], &mut cur_row);
+                s3[l] = push_gate(true, ROW_ONE, s2[l], gr[2][l], &mut cur_row);
+                s4[l] = push_gate(true, ROW_ONE, s3[l], gr[3][l], &mut cur_row);
+                push_gate(false, s4[l], claim_rows[l], ROW_ZERO, &mut cur_row);
+            }
+
+            let mut acc = gr[3];
+            for step_c in [gr[2], gr[1], gr[0]] {
+                let prod = push_ext4_mul(&mut push_gate, acc, fr, &mut cur_row);
+                let mut next_acc = [0usize; 4];
+                for l in 0..4 {
+                    next_acc[l] = push_gate(true, ROW_ONE, prod[l], step_c[l], &mut cur_row);
+                }
+                acc = next_acc;
+            }
+            claim_rows = acc;
+        }
+
+        // 2. In-circuit LSB Lagrange basis `chi[x] = prod_{j=0}^{m-1} ((1 - x_j)(1 - r_j) + x_j*r_j)` in `BbExt4`:
+        let mut chi_rows: Vec<[usize; 4]> = Vec::with_capacity(n_bb);
+        let one_minus_r0 = [
+            push_gate(true, ROW_NEG_ONE, fs_rows[0][0], ROW_ONE, &mut cur_row),
+            push_gate(true, ROW_NEG_ONE, fs_rows[0][1], ROW_ZERO, &mut cur_row),
+            push_gate(true, ROW_NEG_ONE, fs_rows[0][2], ROW_ZERO, &mut cur_row),
+            push_gate(true, ROW_NEG_ONE, fs_rows[0][3], ROW_ZERO, &mut cur_row),
+        ];
+        chi_rows.push(one_minus_r0);
+        chi_rows.push(fs_rows[0]);
+        for rnd in 1..bb_num_rounds {
+            let cur_len = chi_rows.len();
+            let ri = fs_rows[rnd];
+            for idx in 0..cur_len {
+                let base = chi_rows[idx];
+                let hi = push_ext4_mul(&mut push_gate, base, ri, &mut cur_row);
+                let lo = [
+                    push_gate(true, ROW_NEG_ONE, hi[0], base[0], &mut cur_row),
+                    push_gate(true, ROW_NEG_ONE, hi[1], base[1], &mut cur_row),
+                    push_gate(true, ROW_NEG_ONE, hi[2], base[2], &mut cur_row),
+                    push_gate(true, ROW_NEG_ONE, hi[3], base[3], &mut cur_row),
+                ];
+                chi_rows[idx] = lo;
+                chi_rows.push(hi);
+            }
+        }
+
+        // 3. Exact in-circuit committed multilinear evaluations `A_bb(r)` & `B_bb(r)` against `W_bb` Canopy:
+        let mut eval_a = [
+            push_gate(true, chi_rows[0][0], w_a_rows[0], ROW_ZERO, &mut cur_row),
+            push_gate(true, chi_rows[0][1], w_a_rows[0], ROW_ZERO, &mut cur_row),
+            push_gate(true, chi_rows[0][2], w_a_rows[0], ROW_ZERO, &mut cur_row),
+            push_gate(true, chi_rows[0][3], w_a_rows[0], ROW_ZERO, &mut cur_row),
+        ];
+        for i in 1..n_bb {
+            for l in 0..4 {
+                eval_a[l] = push_gate(true, chi_rows[i][l], w_a_rows[i], eval_a[l], &mut cur_row);
+            }
+        }
+        let mut eval_b = [
+            push_gate(true, chi_rows[0][0], w_b_rows[0], ROW_ZERO, &mut cur_row),
+            push_gate(true, chi_rows[0][1], w_b_rows[0], ROW_ZERO, &mut cur_row),
+            push_gate(true, chi_rows[0][2], w_b_rows[0], ROW_ZERO, &mut cur_row),
+            push_gate(true, chi_rows[0][3], w_b_rows[0], ROW_ZERO, &mut cur_row),
+        ];
+        for i in 1..n_bb {
+            for l in 0..4 {
+                eval_b[l] = push_gate(true, chi_rows[i][l], w_b_rows[i], eval_b[l], &mut cur_row);
+            }
+        }
+
+        // 4. Exact in-circuit `eq(tau, r) = prod_{j=0}^{m-1} (1 + 2*tau_j*r_j - tau_j - r_j)` in `BbExt4`:
+        let mut eq_acc = [0usize; 4];
+        for j in 0..bb_num_rounds {
+            let tr = push_ext4_mul(&mut push_gate, tau_rows[j], fs_rows[j], &mut cur_row);
+            let mut two_tr = [0usize; 4];
+            let mut m1 = [0usize; 4];
+            let mut m2 = [0usize; 4];
+            for l in 0..4 {
+                two_tr[l] = push_gate(true, ROW_ONE, tr[l], tr[l], &mut cur_row);
+                m1[l] = push_gate(true, ROW_NEG_ONE, tau_rows[j][l], two_tr[l], &mut cur_row);
+                m2[l] = push_gate(true, ROW_NEG_ONE, fs_rows[j][l], m1[l], &mut cur_row);
+            }
+            let fac = [
+                push_gate(true, ROW_ONE, m2[0], ROW_ONE, &mut cur_row),
+                m2[1],
+                m2[2],
+                m2[3],
+            ];
+            if j == 0 {
+                eq_acc = fac;
+            } else {
+                eq_acc = push_ext4_mul(&mut push_gate, eq_acc, fac, &mut cur_row);
+            }
+        }
+
+        // 5. In-circuit terminal weld `claim_m == eq(tau, r) * A_bb(r) * B_bb(r)` (ZERO host oracle / ZERO `Option`!):
+        let ab_prod = push_ext4_mul(&mut push_gate, eval_a, eval_b, &mut cur_row);
+        let computed_term = push_ext4_mul(&mut push_gate, eq_acc, ab_prod, &mut cur_row);
+        for l in 0..4 {
+            push_gate(false, claim_rows[l], computed_term[l], ROW_ZERO, &mut cur_row);
+        }
+        if cur_row > HEM_EXEC_ROWS {
+            return Err(format!("circuit rows {cur_row} exceed HEM_EXEC_ROWS={HEM_EXEC_ROWS}"));
+        }
+
+        Ok(Self {
+            bb_num_rounds,
+            vk_cols: vec![sel_mac, sel_eq, sel_fs, sel_wbb, src_a, src_b, src_c, rom_q_next],
+            g_rows,
+            fs_rows,
+            pub_r_indices,
+            pub_a_indices,
+            first_mac_row,
+            total_used_rows: cur_row,
+        })
+    }
+}
+
+/// Opaque preprocessed public Verifier Key (depends ONLY on `bb_num_rounds`, zero witness!).
+/// Fields are private so external/untrusted callers cannot fabricate a VK with forged roots (`H4` fix).
+#[derive(Clone)]
+pub struct TrustlessHemVk {
+    layout: TrustlessHemCircuitLayout,
+    canopy: Stage0MatrixCanopy,
+}
+
+impl TrustlessHemVk {
+    pub fn build(bb_num_rounds: usize) -> Result<Self, String> {
+        let layout = TrustlessHemCircuitLayout::build(bb_num_rounds)?;
+        let canopy = Stage0MatrixCanopy::commit_base(0, &layout.vk_cols, UD100_BLOWUP, CANOPY_KEY_VK);
+        Ok(Self { layout, canopy })
+    }
+
+    #[inline]
+    pub fn bb_num_rounds(&self) -> usize {
+        self.layout.bb_num_rounds
+    }
+
+    #[inline]
+    pub fn p2_root(&self) -> [u64; 4] {
+        self.canopy.p2_root()
+    }
+
+    #[inline]
+    pub fn cshake_root(&self) -> [u8; 32] {
+        self.canopy.cshake_root()
+    }
+}
+
+/// Verifier-owned canonical VK cache for all supported round counts (`bb_num_rounds ∈ 1..=6`).
+/// Guarantees `verify_trustless_dregg180_hem_stream` NEVER relies on a caller/prover-supplied VK (`H4` fix!).
+pub fn canonical_trustless_vk(bb_num_rounds: usize) -> Result<&'static TrustlessHemVk, String> {
+    use std::sync::OnceLock;
+    if bb_num_rounds == 0 || bb_num_rounds > HEM_MAX_BB_ROUNDS {
+        return Err(format!("bb_num_rounds must be in 1..={HEM_MAX_BB_ROUNDS}, got {bb_num_rounds}"));
+    }
+    static CACHE: [OnceLock<TrustlessHemVk>; HEM_MAX_BB_ROUNDS] = [
+        OnceLock::new(), OnceLock::new(), OnceLock::new(),
+        OnceLock::new(), OnceLock::new(), OnceLock::new(),
+    ];
+    Ok(CACHE[bb_num_rounds - 1].get_or_init(|| {
+        TrustlessHemVk::build(bb_num_rounds).expect("canonical TrustlessHemVk build")
+    }))
+}
+
+/// Public statement for Trustless (`pin_mode = false`, `k_mac = None`) `UD-100` `OP_HEM` verification.
+/// Contains NO unverified terminal evaluation claim — `Dregg180StreamVm` itself proves
+/// `claim_m == eq(bb_tau, r) * A_bb(r) * B_bb(r) (mod p_BB)` directly against `(w_bb_p2_root, w_bb_cs_root)`!
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TrustlessHemPublicStatement {
+    pub bb_num_rounds: usize,
+    pub bb_tau: [BbExt4; HEM_MAX_BB_ROUNDS],
+    pub bb_initial_claim: BbExt4,
+    pub vk_p2_root: [u64; 4],
+    pub vk_cs_root: [u8; 32],
+    pub w_bb_p2_root: [u64; 4],
+    pub w_bb_cs_root: [u8; 32],
+    pub bytes_p2_root: [u64; 4],
+    pub bytes_cs_root: [u8; 32],
+}
+
+/// Caller/verifier-owned expected statement (ZERO `Option` callbacks — 100% self-contained on `Dregg180StreamVm`!).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct VerifierExpectedTrustlessStatement {
+    pub bb_num_rounds: usize,
+    pub bb_tau: [BbExt4; HEM_MAX_BB_ROUNDS],
+    pub bb_initial_claim: BbExt4,
+    pub w_bb_p2_root: [u64; 4],
+    pub w_bb_cs_root: [u8; 32],
+    pub bytes_p2_root: [u64; 4],
+    pub bytes_cs_root: [u8; 32],
+}
+
+impl TrustlessHemPublicStatement {
+    pub fn vk_cs_pin4(&self) -> [u64; 4] {
+        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &pack_digest32_to_5_limbs(&self.vk_cs_root))
+    }
+
+    pub fn w_bb_cs_pin4(&self) -> [u64; 4] {
+        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &pack_digest32_to_5_limbs(&self.w_bb_cs_root))
+    }
+
+    pub fn bytes_cs_pin4(&self) -> [u64; 4] {
+        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &pack_digest32_to_5_limbs(&self.bytes_cs_root))
+    }
+
+    /// Strict statement-ingress canonicality check (`L3` + BabyBear canonicality + unused-slot zeroing).
+    pub fn validate_canonical(&self) -> Result<(), String> {
+        if self.bb_num_rounds == 0 || self.bb_num_rounds > HEM_MAX_BB_ROUNDS {
+            return Err(format!(
+                "statement bb_num_rounds={} out of range 1..={HEM_MAX_BB_ROUNDS}",
+                self.bb_num_rounds
+            ));
+        }
+        for (name, root) in [
+            ("vk_p2_root", self.vk_p2_root),
+            ("w_bb_p2_root", self.w_bb_p2_root),
+            ("bytes_p2_root", self.bytes_p2_root),
+        ] {
+            if root.iter().any(|&w| w >= GOLDILOCKS_PRIME) {
+                return Err(format!("statement {name} contains non-canonical Goldilocks limb >= p_GL"));
+            }
+        }
+        if !self.bb_initial_claim.is_canonical() {
+            return Err("statement contains non-canonical BabyBear Ext4 initial claim >= p_BB".into());
+        }
+        for i in 0..self.bb_num_rounds {
+            if !self.bb_tau[i].is_canonical() {
+                return Err(format!("statement bb_tau[{i}] contains non-canonical limb >= p_BB"));
+            }
+        }
+        for i in self.bb_num_rounds..HEM_MAX_BB_ROUNDS {
+            if self.bb_tau[i] != BbExt4::ZERO {
+                return Err(format!("statement unused bb_tau[{i}] must be zero"));
+            }
+        }
+        Ok(())
+    }
+
+    /// Compute the causal Fiat-Shamir `R_CH` state immediately BEFORE Pass 1 (`g_0..g_{m-1}`),
+    /// binding the `v3` schedule, canonical `vk`, committed `w_bb`, committed `bytes`, `bb_tau`, and `bb_initial_claim`.
+    pub fn transcript_ch_before_pass1(&self) -> [u64; 4] {
+        let mut rel_imm = pack_bytes_7_limbs(b"DREGG180.TRUSTLESS.BB4_DFA.UD100/v3");
+        rel_imm.extend_from_slice(&[
+            self.bb_num_rounds as u64,
+            HEM_EXEC_VARS as u64,
+            HEM_RNG16_VARS as u64,
+            UD100_BLOWUP as u64,
+            UD100_NUM_QUERIES as u64,
+            UD100_POW_BITS as u64,
+        ]);
+        let mut ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_BIND_REL, FS_INIT_CAP, &rel_imm);
+        ch = fs_absorb_limbs_local(ch, b"VK_P2_ROOT", &self.vk_p2_root);
+        ch = fs_absorb_limbs_local(ch, b"VK_CS_ROOT", &self.vk_cs_pin4());
+        ch = fs_absorb_limbs_local(ch, b"WBB_P2_ROOT", &self.w_bb_p2_root);
+        ch = fs_absorb_limbs_local(ch, b"WBB_CS_ROOT", &self.w_bb_cs_pin4());
+        ch = fs_absorb_limbs_local(ch, b"BYTES_P2_ROOT", &self.bytes_p2_root);
+        ch = fs_absorb_limbs_local(ch, b"BYTES_CS_ROOT", &self.bytes_cs_pin4());
+        for j in 0..self.bb_num_rounds {
+            let t4 = self.bb_tau[j].0.map(|x| x as u64);
+            ch = fs_absorb_limbs_local(ch, b"BB_TAU", &t4);
+        }
+        let ic = self.bb_initial_claim.0.map(|x| x as u64);
+        ch = fs_absorb_limbs_local(ch, b"BB_INIT_CLAIM", &ic);
+        ch
+    }
+}
+
+/// Real child `BabyBear Ext4` (`X^4 - 11`) cubic sumcheck transcript (`g_i(X) = c0 + c1*X + c2*X^2 + c3*X^3`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ChildBabyBearSumcheckTranscript {
+    pub bb_tau: [BbExt4; HEM_MAX_BB_ROUNDS],
+    pub initial_claim: BbExt4,
+    pub round_polys: Vec<[BbExt4; 4]>,
+    pub raw_gl_challenges: Vec<[u64; 4]>,
+    pub bb_challenges: Vec<BbExt4>,
+    pub expected_terminal_eval: BbExt4,
+}
+
+/// Prove a genuine `m_rounds`-variable cubic `BabyBear Ext4` (`X^4 - 11`) sumcheck
+/// `sum_{x in {0,1}^m} eq(tau, x) * A(x) * B(x) == initial_claim` using the exact causal
+/// `Poseidon2-12` (`Goldilocks -> BabyBear`) Fiat-Shamir challenges matching `Dregg180StreamVm` Pass 1!
+pub fn prove_child_babybear_ext4_cubic_sumcheck(
+    m_rounds: usize,
+    vk: &TrustlessHemVk,
+    w_bb_comm: &BabyBearWitnessCommitment,
+    payload_comm: &PayloadBytesCommitment,
+    a_vals: &[u32],
+    b_vals: &[u32],
+    tau_bb: &[BbExt4],
+) -> Result<ChildBabyBearSumcheckTranscript, String> {
+    let n = 1usize << m_rounds;
+    if m_rounds == 0 || m_rounds > HEM_MAX_BB_ROUNDS || a_vals.len() != n || b_vals.len() != n || tau_bb.len() != m_rounds {
+        return Err("child BabyBear sumcheck dimension mismatch".into());
+    }
+    let mut tau_arr = [BbExt4::ZERO; HEM_MAX_BB_ROUNDS];
+    for j in 0..m_rounds {
+        tau_arr[j] = tau_bb[j];
+    }
+    let mut eq_t = crate::ext4::build_eq_table_lsb_ext4(tau_bb);
+    let mut a_t: Vec<BbExt4> = a_vals.iter().map(|&v| BbExt4::from_bb(v)).collect();
+    let mut b_t: Vec<BbExt4> = b_vals.iter().map(|&v| BbExt4::from_bb(v)).collect();
+    let mut initial_claim = BbExt4::ZERO;
+    for i in 0..n {
+        initial_claim = initial_claim.add(eq_t[i].mul(a_t[i]).mul(b_t[i]));
+    }
+    let dummy_stmt = TrustlessHemPublicStatement {
+        bb_num_rounds: m_rounds,
+        bb_tau: tau_arr,
+        bb_initial_claim: initial_claim,
+        vk_p2_root: vk.p2_root(),
+        vk_cs_root: vk.cshake_root(),
+        w_bb_p2_root: w_bb_comm.p2_root(),
+        w_bb_cs_root: w_bb_comm.cshake_root(),
+        bytes_p2_root: payload_comm.p2_root(),
+        bytes_cs_root: payload_comm.cshake_root(),
+    };
+    let mut ch = dummy_stmt.transcript_ch_before_pass1();
+    let inv2_bb = crate::ext4::INV2_BB;
+    let inv6_bb = crate::ext4::binv(6).unwrap();
+    let bb_two = BbExt4::from_bb(2);
+    let bb_three = BbExt4::from_bb(3);
+    let bb_six = BbExt4::from_bb(6);
+
+    let mut round_polys = Vec::with_capacity(m_rounds);
+    let mut raw_gl_challenges = Vec::with_capacity(m_rounds);
+    let mut bb_challenges = Vec::with_capacity(m_rounds);
+    let mut running = initial_claim;
+
+    for rnd in 0..m_rounds {
+        let half = a_t.len() / 2;
+        let (mut y0, mut y1, mut y2, mut y3) = (BbExt4::ZERO, BbExt4::ZERO, BbExt4::ZERO, BbExt4::ZERO);
+        for i in 0..half {
+            let (e0, e1) = (eq_t[2 * i], eq_t[2 * i + 1]);
+            let (u0, u1) = (a_t[2 * i], a_t[2 * i + 1]);
+            let (v0, v1) = (b_t[2 * i], b_t[2 * i + 1]);
+            let de = e1.sub(e0);
+            let du = u1.sub(u0);
+            let dv = v1.sub(v0);
+            y0 = y0.add(e0.mul(u0).mul(v0));
+            y1 = y1.add(e1.mul(u1).mul(v1));
+            let (e2, u2, v2) = (e1.add(de), u1.add(du), v1.add(dv));
+            y2 = y2.add(e2.mul(u2).mul(v2));
+            let (e3, u3, v3) = (e2.add(de), u2.add(du), v2.add(dv));
+            y3 = y3.add(e3.mul(u3).mul(v3));
+        }
+        // Newton forward-difference cubic interpolation on `{0, 1, 2, 3}` in `BabyBear Ext4`:
+        // `c0 = y0`, `c3 = (y3 - 3*y2 + 3*y1 - y0) / 6`,
+        // `c2 = (y2 - 2*y1 + y0) / 2 - 3*c3`, `c1 = y1 - y0 - c2 - c3`.
+        let d1_0 = y1.sub(y0);
+        let d1_1 = y2.sub(y1);
+        let d1_2 = y3.sub(y2);
+        let d2_0 = d1_1.sub(d1_0);
+        let d2_1 = d1_2.sub(d1_1);
+        let d3_0 = d2_1.sub(d2_0);
+        let c0 = y0;
+        let c3 = d3_0.scale_bb(inv6_bb);
+        let c2 = d2_0.scale_bb(inv2_bb).sub(c3.mul(bb_three));
+        let c1 = d1_0.sub(c2).sub(c3);
+        let _ = (bb_two, bb_six);
+        debug_assert_eq!(c0.add(c0).add(c1).add(c2).add(c3), running);
+        let poly = [c0, c1, c2, c3];
+        round_polys.push(poly);
+
+        for k in 0..4 {
+            let mut lab = *b"BB_SC_G0";
+            lab[7] = b'0' + (k as u8);
+            let limbs4 = poly[k].0.map(|x| x as u64);
+            ch = fs_absorb_limbs_local(ch, &lab, &limbs4);
+        }
+        let raw_ext = fs_squeeze_ext4_local(ch, b"BB_SC_RAW_R", rnd as u64);
+        let raw4 = raw_ext.to_u64_limbs();
+        for &w in &raw4 {
+            if w / BABYBEAR_PRIME_U64 > BABYBEAR_FS_Q_SAFE {
+                return Err("squeezed Goldilocks challenge exceeded BABYBEAR_FS_Q_SAFE tail (prob 4.7e-11)".into());
+            }
+        }
+        let r_bb = BbExt4([
+            (raw4[0] % BABYBEAR_PRIME_U64) as u32,
+            (raw4[1] % BABYBEAR_PRIME_U64) as u32,
+            (raw4[2] % BABYBEAR_PRIME_U64) as u32,
+            (raw4[3] % BABYBEAR_PRIME_U64) as u32,
+        ]);
+        raw_gl_challenges.push(raw4);
+        bb_challenges.push(r_bb);
+        running = c3.mul(r_bb).add(c2).mul(r_bb).add(c1).mul(r_bb).add(c0);
+
+        let mut n_eq = Vec::with_capacity(half);
+        let mut n_a = Vec::with_capacity(half);
+        let mut n_b = Vec::with_capacity(half);
+        for i in 0..half {
+            n_eq.push(eq_t[2 * i].add(r_bb.mul(eq_t[2 * i + 1].sub(eq_t[2 * i]))));
+            n_a.push(a_t[2 * i].add(r_bb.mul(a_t[2 * i + 1].sub(a_t[2 * i]))));
+            n_b.push(b_t[2 * i].add(r_bb.mul(b_t[2 * i + 1].sub(b_t[2 * i]))));
+        }
+        eq_t = n_eq;
+        a_t = n_a;
+        b_t = n_b;
+    }
+    debug_assert_eq!(eq_t[0].mul(a_t[0]).mul(b_t[0]), running);
+    Ok(ChildBabyBearSumcheckTranscript {
+        bb_tau: tau_arr,
+        initial_claim,
+        round_polys,
+        raw_gl_challenges,
+        bb_challenges,
+        expected_terminal_eval: running,
+    })
+}
+
+/// Adversarial tamper hooks for testing an untrusted prover (with NO `K_MAC`, `pin_mode = false`)
+/// against `verify_trustless_dregg180_hem_stream`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TrustlessHemTamper {
+    None,
+    /// Tamper `g_0(0)` limb 0 by `+1 mod p_BB` so `g_0(0) + g_0(1) != initial_claim`.
+    WrongBabyBearRoundSum,
+    /// Tamper last-round `g_{m-1}` so `g_{m-1}(r_{m-1}) != eq(tau, r) * A_bb(r) * B_bb(r)` while `g_{m-1}(0)+g_{m-1}(1) == claim_{m-1}`!
+    WrongBabyBearHornerEval,
+    /// Forge a non-canonical BabyBear remainder `r = r_honest + p_BB < 2^32` (`q = q_honest - 1`, `d = 0`),
+    /// passing `a*b + c == q*p_BB + r` AND 2-limb 16-bit range, caught ONLY by `r + d == p_BB - 1`!
+    NonCanonicalBabyBearAliasGtPbb,
+    /// Forge exact `r = p_BB` (alias of `0`) on a MAC row with `a*b + c == q_honest*p_BB + 0` (`r_honest == 0`),
+    /// so MAC residual is IDENTICALLY ZERO and ONLY canonical slack `r + d == p_BB - 1` rejects (`M3` fix!).
+    NonCanonicalBabyBearExactPbbAlias,
+    /// Corrupt quotient `q_lo` by `+1` on a BabyBear MAC row (breaking `a*b + c == q*p_BB + r`).
+    WrongBabyBearQuotient,
+    /// Payload contains `"sk-"`; untrusted prover tries to lie `s_terminal = 0` while keeping honest DFA trace.
+    ForgedDfaTerminalState,
+    /// Payload contains `"sk-"`; untrusted prover forges transition `(2, '-') -> 0` instead of sink `3`.
+    ForgedDfaTransitionBypass,
+    /// Payload contains `"sk-"`; untrusted prover breaks state continuity `dfa_s[t+1] = 0 != dfa_s_next[t] = 3`.
+    ForgedDfaShiftBreak,
+    /// Untrusted prover corrupts `[0, 2^16)` LogUp multiplicity `m_rng16` on Table 2.
+    ForgedRange16Multiplicity,
+    /// Untrusted prover corrupts one Stage-1 BaseFold fiber evaluation on Table 1.
+    TamperedStage1BaseFoldFiber,
+    /// Untrusted prover flips 1 bit in a Stage-0 `cSHAKE256` Canopy sibling on Table 1.
+    TamperedStage0CShakeSibling,
+}
+
+struct ExecChallengeTuple {
+    gamma_w: GoldilocksExt4,
+    beta_w: GoldilocksExt4,
+    gamma_dfa: GoldilocksExt4,
+    beta_dfa: GoldilocksExt4,
+    gamma_sh: GoldilocksExt4,
+    beta_sh: GoldilocksExt4,
+    beta_16: GoldilocksExt4,
+    alpha_exec: GoldilocksExt4,
+}
+
+/// Evaluate `G_exec` at a single (hypercube or extrapolated) point from all 37 column values + public MLEs.
+#[inline]
+#[allow(clippy::too_many_arguments)]
+fn eval_g_exec_point(
+    v: &[GoldilocksExt4; 37],
+    eq_tau: GoldilocksExt4,
+    idx: GoldilocksExt4,
+    rom_b: GoldilocksExt4,
+    rom_q: GoldilocksExt4,
+    eq_first: GoldilocksExt4,
+    eq_last: GoldilocksExt4,
+    pub_sel_r: GoldilocksExt4,
+    pub_sel_a: GoldilocksExt4,
+    ch: &ExecChallengeTuple,
+) -> GoldilocksExt4 {
+    let sel_mac = v[0];
+    let sel_eq = v[1];
+    let sel_fs = v[2];
+    let sel_wbb = v[3];
+    let src_a = v[4];
+    let src_b = v[5];
+    let src_c = v[6];
+    let rom_q_next = v[7];
+    let dfa_b = v[8];
+    let w_bb = v[9];
+    let a = v[10];
+    let b = v[11];
+    let c = v[12];
+    let r_lo = v[13];
+    let r_hi = v[14];
+    let d_lo = v[15];
+    let d_hi = v[16];
+    let q_lo = v[17];
+    let q_hi = v[18];
+    let q_top = v[19];
+    let dq_lo = v[20];
+    let dq_hi = v[21];
+    let dq_top = v[22];
+    let m_wire = v[23];
+    let dfa_s = v[24];
+    let dfa_s_next = v[25];
+    let dfa_b_slack = v[26];
+    let m_dfa_rom = v[27];
+    let h_w01 = v[28];
+    let h_w2r = v[29];
+    let h_dfa = v[30];
+    let h_sh = v[31];
+    let h_rng0 = v[32];
+    let h_rng1 = v[33];
+    let h_rng2 = v[34];
+    let h_rng3 = v[35];
+    let h_rng4 = v[36];
+
+    let two16 = Goldilocks(1u64 << 16);
+    let two32 = Goldilocks(1u64 << 32);
+    let p_bb = Goldilocks(BABYBEAR_PRIME_U64);
+    let p_bb_m1 = GoldilocksExt4::from_base(Goldilocks(BABYBEAR_PRIME_U64 - 1));
+    let q_safe = GoldilocksExt4::from_base(Goldilocks(BABYBEAR_FS_Q_SAFE));
+    let two_ext = GoldilocksExt4::from_base(Goldilocks::TWO);
+    let c255 = GoldilocksExt4::from_base(Goldilocks(255));
+
+    let r_val = r_lo + r_hi.scale_base(two16);
+    let d_val = d_lo + d_hi.scale_base(two16);
+    let q_val = q_lo + q_hi.scale_base(two16);
+    let q_fs = q_val + q_top.scale_base(two32);
+    let dq_fs = dq_lo + dq_hi.scale_base(two16) + dq_top.scale_base(two32);
+
+    let c0 = sel_mac * (a * b + c - q_val.scale_base(p_bb) - r_val);
+    let c1 = sel_eq * (a - b);
+    let c2 = sel_fs * (a - q_fs.scale_base(p_bb) - r_val);
+    let c3 = sel_fs * (q_fs + dq_fs - q_safe);
+    let c4 = q_top * (q_top - GoldilocksExt4::ONE) * (q_top - two_ext);
+    let c5 = dq_top * (dq_top - GoldilocksExt4::ONE) * (dq_top - two_ext);
+    let c6 = r_val + d_val - p_bb_m1;
+    let c7 = dfa_b + dfa_b_slack - c255;
+
+    let dw_a = ch.beta_w - (src_a + ch.gamma_w * a);
+    let dw_b = ch.beta_w - (src_b + ch.gamma_w * b);
+    let c8 = h_w01 * dw_a * dw_b - ((GoldilocksExt4::ONE - sel_fs) * dw_b + dw_a);
+
+    let dw_c = ch.beta_w - (src_c + ch.gamma_w * c);
+    let dw_r = ch.beta_w - (idx + ch.gamma_w * r_val);
+    let c9 = h_w2r * dw_c * dw_r - (dw_r - m_wire * dw_c);
+
+    let g_dfa2 = ch.gamma_dfa * ch.gamma_dfa;
+    let dd_l = ch.beta_dfa - (dfa_s + ch.gamma_dfa * dfa_b + g_dfa2 * dfa_s_next);
+    let dd_r = ch.beta_dfa - (rom_q + ch.gamma_dfa * rom_b + g_dfa2 * rom_q_next);
+    let c10 = h_dfa * dd_l * dd_r - (dd_r - m_dfa_rom * dd_l);
+
+    let ds_l = ch.beta_sh - (idx + GoldilocksExt4::ONE + ch.gamma_sh * dfa_s_next);
+    let ds_r = ch.beta_sh - (idx + ch.gamma_sh * dfa_s);
+    let n_sh_l = GoldilocksExt4::ONE - eq_last;
+    let n_sh_r = GoldilocksExt4::ONE - eq_first;
+    let c11 = h_sh * ds_l * ds_r - (n_sh_l * ds_r - n_sh_r * ds_l);
+
+    let rng_c = |h: GoldilocksExt4, x0: GoldilocksExt4, x1: GoldilocksExt4| -> GoldilocksExt4 {
+        let d0 = ch.beta_16 - x0;
+        let d1 = ch.beta_16 - x1;
+        h * d0 * d1 - (d0 + d1)
+    };
+    let c12 = rng_c(h_rng0, r_lo, r_hi);
+    let c13 = rng_c(h_rng1, d_lo, d_hi);
+    let c14 = rng_c(h_rng2, q_lo, q_hi);
+    let c15 = rng_c(h_rng3, dq_lo, dq_hi);
+    let c16 = rng_c(h_rng4, dfa_b, dfa_b_slack);
+    // C_17: bind Table 1 witness rows `32..32+2^{m+1}` to the public committed `W_bb` Canopy column!
+    let c17 = sel_wbb * (r_val - w_bb);
+
+    let cs = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17];
+    let mut zero_acc = GoldilocksExt4::ZERO;
+    let mut ap = GoldilocksExt4::ONE;
+    for &ck in &cs {
+        zero_acc = zero_acc + ap * ck;
+        ap = ap * ch.alpha_exec;
+    }
+    // `ap == alpha_exec^18` now:
+    let mut tot = eq_tau * zero_acc;
+    let sum_terms = [
+        h_w01 + h_w2r,                                     // 18
+        h_dfa,                                             // 19
+        h_sh,                                              // 20
+        h_rng0 + h_rng1 + h_rng2 + h_rng3 + h_rng4,        // 21
+        pub_sel_r * r_val,                                 // 22
+        pub_sel_a * a,                                     // 23
+        eq_first * dfa_s,                                  // 24
+        eq_last * dfa_s_next,                              // 25
+    ];
+    for &st in &sum_terms {
+        tot = tot + ap * st;
+        ap = ap * ch.alpha_exec;
+    }
+    tot
+}
+
+struct TrustlessHemInternalProof {
+    bb_round_polys: Vec<[BbExt4; 4]>,
+    bb_raw_chals: Vec<[u64; 4]>,
+    wit1_p2_root: [u64; 4],
+    wit1_cs_pin4: [u64; 4],
+    mrng_p2_root: [u64; 4],
+    mrng_cs_pin4: [u64; 4],
+    s_terminal: GoldilocksExt4,
+    wit2_p2_root: [u64; 4],
+    wit2_cs_pin4: [u64; 4],
+    hrng_p2_root: [u64; 4],
+    hrng_cs_pin4: [u64; 4],
+    s_rng16: GoldilocksExt4,
+    ch_logup_ckpt: [u64; 4],
+    ch_sc_ckpt: [u64; 4],
+    t1_sc_rounds: Vec<[GoldilocksExt4; 4]>, // (c0, c2, c3, c4) per round
+    t1_evals_37: [GoldilocksExt4; 37],
+    t1_bf: LockstepBaseFoldProof,
+    t1_pow_nonce: u64,
+    t1_queries: Vec<Table1QueryOpening>,
+    t2_sc_rounds: Vec<[GoldilocksExt4; 3]>, // (c0, c2, c3) per round
+    t2_evals_2: [GoldilocksExt4; 2],        // [m_rng16(z), h_rng_tab(z)]
+    t2_bf: LockstepBaseFoldProof,
+    t2_pow_nonce: u64,
+    t2_queries: Vec<Table2QueryOpening>,
+}
+
+struct Table1QueryOpening {
+    f0: u32,
+    vk_words: Vec<u64>,
+    vk_p2_sibs: Vec<[u64; 4]>,
+    vk_cs_sibs: Vec<[u8; 32]>,
+    bytes_words: Vec<u64>,
+    bytes_p2_sibs: Vec<[u64; 4]>,
+    bytes_cs_sibs: Vec<[u8; 32]>,
+    w_bb_words: Vec<u64>,
+    w_bb_p2_sibs: Vec<[u64; 4]>,
+    w_bb_cs_sibs: Vec<[u8; 32]>,
+    wit1_words: Vec<u64>,
+    wit1_p2_sibs: Vec<[u64; 4]>,
+    wit1_cs_sibs: Vec<[u8; 32]>,
+    wit2_words: Vec<u64>,
+    wit2_p2_sibs: Vec<[u64; 4]>,
+    wit2_cs_sibs: Vec<[u8; 32]>,
+    stage_fibers: Vec<(u32, Vec<GoldilocksExt4>, Vec<[u64; 4]>)>,
+}
+
+struct Table2QueryOpening {
+    f0: u32,
+    mrng_words: Vec<u64>,
+    mrng_p2_sibs: Vec<[u64; 4]>,
+    mrng_cs_sibs: Vec<[u8; 32]>,
+    hrng_words: Vec<u64>,
+    hrng_p2_sibs: Vec<[u64; 4]>,
+    hrng_cs_sibs: Vec<[u8; 32]>,
+    stage_fibers: Vec<(u32, Vec<GoldilocksExt4>, Vec<[u64; 4]>)>,
+}
+
+/// Complete trustless (`pin_mode = false`, `k_mac = None`) `UD-100` `OP_HEM` proof bundle.
+#[derive(Clone, Debug)]
+pub struct TrustlessHemProofBundle {
+    pub stmt: TrustlessHemPublicStatement,
+    pub wire_bytes: Vec<u8>,
+    pub public_program_hash: [u64; 4],
+    pub s_terminal: u8,
+    pub num_records: usize,
+}
+
+/// Helper: load selected indices from `evals_37` into `(idx, dst_reg)` registers while verifying
+/// the 256-bit Davies-Meyer `Poseidon2-12` commitment `R_12 == compress(evals_37)`.
+fn emit_checked_evals37_load(
+    asm: &mut Dregg180HvmAssembler,
+    evals_opt: Option<&[GoldilocksExt4; 37]>,
+    want_digest_reg: u8,
+    latches: &[(usize, u8)],
+) {
+    debug_assert!(
+        latches.iter().all(|&(_, dst)| dst != R_T0 && dst != R_X && dst != R_Y),
+        "emit_checked_evals37_load latches must not target clobbered scratch regs R_T0/R_X/R_Y"
+    );
+    emit_zero_reg(asm, R_Y);
+    for k in 0..37 {
+        let w = match evals_opt {
+            Some(e) => e[k].to_u64_limbs(),
+            None => [0u64; 4],
+        };
+        asm.load(R_X, &w, false);
+        for &(idx, dst) in latches {
+            if idx == k {
+                emit_copy_reg(asm, dst, R_X);
+            }
+        }
+        emit_compress_reg(asm, R_Y, R_X, 0xE000 + (k as u64));
+    }
+    asm.assert_eq(R_Y, want_digest_reg);
+}
+
+/// Helper: squeeze a Fiat-Shamir `GoldilocksExt4` challenge from a saved checkpoint register `ckpt_reg`!
+fn emit_squeeze_from_ckpt(asm: &mut Dregg180HvmAssembler, dst: u8, ckpt_reg: u8, label: &[u8], ctr: u64) {
+    let mut imm = pack_bytes_7_limbs(label);
+    imm.push(ctr);
+    asm.hash(dst, Some(ckpt_reg), P2_DOMAIN_FS_SQUEEZE_EXT4, &imm, &[], 0, 0);
+}
+
+/// Single unified deterministic bytecode emitter for BOTH:
+/// - `proof = Some(p)`: real untrusted prover stream (`pin_mode = false`, `k_mac = None`), AND
+/// - `proof = None`: trustless verifier's keyless `public_program_hash` derivation from `stmt` ALONE!
+fn emit_trustless_hem_stream(
+    stmt: &TrustlessHemPublicStatement,
+    layout: &TrustlessHemCircuitLayout,
+    proof: Option<&TrustlessHemInternalProof>,
+) -> Dregg180HvmAssembler {
+    let mut asm = Dregg180HvmAssembler::new(OP_HEM, false, false);
+    let zero4 = [0u64; 4];
+    let m = stmt.bb_num_rounds;
+
+    // --------------------------------------------------------------------------------------------
+    // Round 0: Public Statement & `UD-100` Schedule Immediates (pinned by keyless `public_program_hash`)
+    // --------------------------------------------------------------------------------------------
+    let mut rel_imm = pack_bytes_7_limbs(b"DREGG180.TRUSTLESS.BB4_DFA.UD100/v3");
+    rel_imm.extend_from_slice(&[
+        m as u64,
+        HEM_EXEC_VARS as u64,
+        HEM_RNG16_VARS as u64,
+        UD100_BLOWUP as u64,
+        UD100_NUM_QUERIES as u64,
+        UD100_POW_BITS as u64,
+    ]);
+    asm.hash(R_CH, None, P2_DOMAIN_FS_BIND_REL, &rel_imm, &[], 0, 0);
+    asm.absorb_limbs_immediate(b"VK_P2_ROOT", &stmt.vk_p2_root, 0, 0);
+    asm.absorb_limbs_immediate(b"VK_CS_ROOT", &stmt.vk_cs_pin4(), 0, 0);
+    asm.absorb_limbs_immediate(b"WBB_P2_ROOT", &stmt.w_bb_p2_root, 0, 0);
+    asm.absorb_limbs_immediate(b"WBB_CS_ROOT", &stmt.w_bb_cs_pin4(), 0, 0);
+    asm.absorb_limbs_immediate(b"BYTES_P2_ROOT", &stmt.bytes_p2_root, 0, 0);
+    asm.absorb_limbs_immediate(b"BYTES_CS_ROOT", &stmt.bytes_cs_pin4(), 0, 0);
+    for j in 0..m {
+        let tau_limbs = stmt.bb_tau[j].0.map(|x| x as u64);
+        asm.absorb_limbs_immediate(b"BB_TAU", &tau_limbs, 0, 0);
+    }
+    let init_claim_limbs = stmt.bb_initial_claim.0.map(|x| x as u64);
+    asm.absorb_limbs_immediate(b"BB_INIT_CLAIM", &init_claim_limbs, 0, 0);
+
+    // --------------------------------------------------------------------------------------------
+    // Round 1 (Pass 1): Child `BabyBear Ext4` Transcript `g_i -> raw_r_i`, compressed into `R_12`!
+    // --------------------------------------------------------------------------------------------
+    emit_zero_reg(&mut asm, 12);
+    for rnd in 0..m {
+        let mut g16 = [0u64; 16];
+        if let Some(p) = proof {
+            for k in 0..4 {
+                for l in 0..4 {
+                    g16[4 * k + l] = p.bb_round_polys[rnd][k].0[l] as u64;
+                }
+            }
+        }
+        for k in 0..4 {
+            let mut lab = *b"BB_SC_G0";
+            lab[7] = b'0' + (k as u8);
+            asm.absorb_limbs_proof(&lab, &g16[4 * k..4 * (k + 1)], R_X, 0);
+            emit_compress_reg(&mut asm, 12, R_X, 0xB000 + ((rnd * 5 + k) as u64));
+        }
+        asm.squeeze_ext4(R_T0, b"BB_SC_RAW_R", rnd as u64);
+        emit_compress_reg(&mut asm, 12, R_T0, 0xB000 + ((rnd * 5 + 4) as u64));
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Round 2: Commit Phase-1 Witness Tables (`wit1`, `m_rng16`) + `s_terminal` (checked ∈ {0, 1, 2}!)
+    // --------------------------------------------------------------------------------------------
+    emit_zero_reg(&mut asm, 14); // `t1_root_bundle`
+    emit_zero_reg(&mut asm, 15); // `t2_root_bundle`
+    let (w1_p2, w1_cs, mr_p2, mr_cs, s_term_w) = match proof {
+        Some(p) => (p.wit1_p2_root, p.wit1_cs_pin4, p.mrng_p2_root, p.mrng_cs_pin4, p.s_terminal.to_u64_limbs()),
+        None => (zero4, zero4, zero4, zero4, zero4),
+    };
+    asm.absorb_limbs_proof(b"WIT1_P2_ROOT", &w1_p2, R_X, 0);
+    emit_compress_reg(&mut asm, 14, R_X, 0x1001);
+    asm.absorb_limbs_proof(b"WIT1_CS_ROOT", &w1_cs, R_X, 0);
+    emit_compress_reg(&mut asm, 14, R_X, 0x1002);
+    asm.absorb_limbs_proof(b"MRNG_P2_ROOT", &mr_p2, R_X, 0);
+    emit_compress_reg(&mut asm, 15, R_X, 0x2001);
+    asm.absorb_limbs_proof(b"MRNG_CS_ROOT", &mr_cs, R_X, 0);
+    emit_compress_reg(&mut asm, 15, R_X, 0x2002);
+    asm.absorb_limbs_proof(b"DFA_S_TERM", &s_term_w, R_X, 0);
+    emit_copy_reg(&mut asm, 9, R_X); // `R_9 = s_terminal`
+    // Enforce `s_terminal * (s_terminal - 1) * (s_terminal - 2) == 0` right on chip (`s_T ∈ {0, 1, 2}`!):
+    asm.load(R_Y, &[1, 0, 0, 0], true);
+    asm.esub(R_A, 9, R_Y);       // s - 1
+    asm.emul(R_A, 9, R_A);       // s * (s - 1)
+    asm.load(R_Y, &[2, 0, 0, 0], true);
+    asm.esub(R_B, 9, R_Y);       // s - 2
+    asm.emul(R_A, R_A, R_B);     // s * (s - 1) * (s - 2)
+    emit_zero_reg(&mut asm, R_Y);
+    asm.assert_eq(R_A, R_Y);
+
+    // Snapshot `R_11 = R_CH` (checkpoint for LogUp challenges AFTER Phase-1 commitment!):
+    emit_copy_reg(&mut asm, 11, R_CH);
+
+    // --------------------------------------------------------------------------------------------
+    // Round 4: Commit Phase-2 LogUp Helpers (`wit2`, `h_rng_tab`) + `S_rng16`
+    // --------------------------------------------------------------------------------------------
+    let (w2_p2, w2_cs, hr_p2, hr_cs, s_rng_w) = match proof {
+        Some(p) => (p.wit2_p2_root, p.wit2_cs_pin4, p.hrng_p2_root, p.hrng_cs_pin4, p.s_rng16.to_u64_limbs()),
+        None => (zero4, zero4, zero4, zero4, zero4),
+    };
+    asm.absorb_limbs_proof(b"WIT2_P2_ROOT", &w2_p2, R_X, 0);
+    emit_compress_reg(&mut asm, 14, R_X, 0x1003);
+    asm.absorb_limbs_proof(b"WIT2_CS_ROOT", &w2_cs, R_X, 0);
+    emit_compress_reg(&mut asm, 14, R_X, 0x1004);
+    asm.absorb_limbs_proof(b"HRNG_P2_ROOT", &hr_p2, R_X, 0);
+    emit_compress_reg(&mut asm, 15, R_X, 0x2003);
+    asm.absorb_limbs_proof(b"HRNG_CS_ROOT", &hr_cs, R_X, 0);
+    emit_compress_reg(&mut asm, 15, R_X, 0x2004);
+    asm.absorb_limbs_proof(b"LOGUP_S_RNG16", &s_rng_w, R_X, 0);
+    emit_copy_reg(&mut asm, 8, R_X); // `R_8 = S_rng16`
+
+    // Snapshot `R_10 = R_CH` (checkpoint for Sumcheck challenges AFTER Phase-2 commitment!):
+    emit_copy_reg(&mut asm, 10, R_CH);
+
+    // --------------------------------------------------------------------------------------------
+    // Round 5 + Pass 2: Compute `PubRhs_r` (`R_6`) and `PubRhs_a` (`R_7`) and assert Pass 2 == Pass 1 (`R_12`)!
+    // --------------------------------------------------------------------------------------------
+    emit_squeeze_from_ckpt(&mut asm, R_B, 10, b"SC_LAMBDA_PUB", 0); // `R_B = lambda_pub`
+    emit_zero_reg(&mut asm, 6);  // `PubRhs_r` (Horner over `pub_r_indices`)
+    emit_zero_reg(&mut asm, 7);  // `PubRhs_a` (Horner over `pub_a_indices`)
+    emit_zero_reg(&mut asm, 13); // `pass2_digest_check`
+
+    // Prefix of `pub_r`: constants `[0, 1, 11, p_BB - 1]`, `bb_initial_claim[0..4]`, `bb_tau[0..m][0..4]` (all immediates!):
+    let mut pub_r_fixed: Vec<u64> = vec![
+        0,
+        1,
+        11,
+        BABYBEAR_PRIME_U64 - 1,
+        init_claim_limbs[0],
+        init_claim_limbs[1],
+        init_claim_limbs[2],
+        init_claim_limbs[3],
+    ];
+    for j in 0..m {
+        for l in 0..4 {
+            pub_r_fixed.push(stmt.bb_tau[j].0[l] as u64);
+        }
+    }
+    for &val in &pub_r_fixed {
+        asm.emul(6, 6, R_B);
+        asm.load(R_X, &[val, 0, 0, 0], true);
+        asm.eadd(6, 6, R_X);
+    }
+    let basis_e: [[u64; 4]; 4] = [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+    ];
+    let inv7 = Goldilocks::SEVEN.inv().0;
+    for rnd in 0..m {
+        for k in 0..4 {
+            emit_zero_reg(&mut asm, R_A); // reconstruct 4-limb `g_i[k]`
+            for l in 0..4 {
+                let limb = proof.map_or(0u64, |p| p.bb_round_polys[rnd][k].0[l] as u64);
+                asm.push_rec(H_LOAD, R_X, 0, 0, vec![0, 0, 0, limb], 3);
+                asm.load(R_Y, &[0, 0, inv7, 0], true);
+                asm.emul(R_X, R_X, R_Y); // `R_X = [limb, 0, 0, 0]` GUARANTEED pure base-field!
+                asm.emul(6, 6, R_B);
+                asm.eadd(6, 6, R_X); // `PubRhs_r = PubRhs_r * lambda + limb`
+                asm.load(R_Y, &basis_e[l], true);
+                asm.emul(R_T0, R_X, R_Y);
+                asm.eadd(R_A, R_A, R_T0); // accumulate exact 4-limb `Ext4` `g_i[k]`
+            }
+            emit_compress_reg(&mut asm, 13, R_A, 0xB000 + ((rnd * 5 + k) as u64));
+        }
+        emit_zero_reg(&mut asm, R_A); // reconstruct 4-limb `raw_r_i`
+        for l in 0..4 {
+            let limb = proof.map_or(0u64, |p| p.bb_raw_chals[rnd][l]);
+            asm.push_rec(H_LOAD, R_X, 0, 0, vec![0, 0, 0, limb], 3);
+            asm.load(R_Y, &[0, 0, inv7, 0], true);
+            asm.emul(R_X, R_X, R_Y); // `R_X = [limb, 0, 0, 0]` GUARANTEED pure base-field!
+            asm.emul(7, 7, R_B);
+            asm.eadd(7, 7, R_X); // `PubRhs_a = PubRhs_a * lambda + limb`
+            asm.load(R_Y, &basis_e[l], true);
+            asm.emul(R_T0, R_X, R_Y);
+            asm.eadd(R_A, R_A, R_T0);
+        }
+        emit_compress_reg(&mut asm, 13, R_A, 0xB000 + ((rnd * 5 + 4) as u64));
+    }
+    asm.assert_eq(13, 12); // Pass 2 `(g_i, raw_r_i)` == Pass 1 `(g_i, raw_r_i)`!
+
+    // --------------------------------------------------------------------------------------------
+    // Round 6a: Table 1 (`N_exec = 4096`) 12-Round Degree-4 AIR + LogUp + Boundary Sumcheck!
+    // --------------------------------------------------------------------------------------------
+    // Latch `tau_exec[0..12]` from `R_10` (`ch_sc_ckpt`):
+    for j in 0..HEM_EXEC_VARS {
+        emit_squeeze_from_ckpt(&mut asm, R_T0, 10, b"SC_TAU_EXEC", j as u64);
+        asm.bf_latch_tau(j as u8, R_T0);
+    }
+    // Compute `InitClaim_exec = alpha^{21} * S_rng16 + alpha^{22} * PubRhs_r + alpha^{23} * PubRhs_a + alpha^{25} * s_terminal` into `R_A`:
+    emit_squeeze_from_ckpt(&mut asm, R_B, 10, b"SC_ALPHA_EXEC", 0); // `R_B = alpha_exec`
+    asm.load(R_X, &[1, 0, 0, 0], true);
+    for _ in 0..21 {
+        asm.emul(R_X, R_X, R_B); // `R_X = alpha^21`
+    }
+    asm.emul(R_A, R_X, 8);       // `alpha^21 * S_rng16`
+    asm.emul(R_X, R_X, R_B);     // `alpha^22`
+    asm.emul(R_T0, R_X, 6);
+    asm.eadd(R_A, R_A, R_T0);    // `+ alpha^22 * PubRhs_r`
+    asm.emul(R_X, R_X, R_B);     // `alpha^23`
+    asm.emul(R_T0, R_X, 7);
+    asm.eadd(R_A, R_A, R_T0);    // `+ alpha^23 * PubRhs_a`
+    asm.emul(R_X, R_X, R_B);     // `alpha^24`
+    asm.emul(R_X, R_X, R_B);     // `alpha^25`
+    asm.emul(R_T0, R_X, 9);
+    asm.eadd(R_A, R_A, R_T0);    // `+ alpha^25 * s_terminal`
+
+    // Execute 10 rounds of degree-4 sumcheck (`c0, c2, c3, c4` sent; `c1 = claim - 2*c0 - c2 - c3 - c4`):
+    // Use `R_6 = c0, R_7 = c2, R_9 = c3, R_12 = c4` (all free now!).
+    for rnd in 0..HEM_EXEC_VARS {
+        let (c0w, c2w, c3w, c4w) = match proof {
+            Some(p) => (
+                p.t1_sc_rounds[rnd][0].to_u64_limbs(),
+                p.t1_sc_rounds[rnd][1].to_u64_limbs(),
+                p.t1_sc_rounds[rnd][2].to_u64_limbs(),
+                p.t1_sc_rounds[rnd][3].to_u64_limbs(),
+            ),
+            None => (zero4, zero4, zero4, zero4),
+        };
+        asm.absorb_limbs_proof(b"T1_SC_C0", &c0w, 6, 0);
+        asm.absorb_limbs_proof(b"T1_SC_C2", &c2w, 7, 0);
+        asm.absorb_limbs_proof(b"T1_SC_C3", &c3w, R_X, 0);
+        emit_copy_reg(&mut asm, 9, R_X);
+        asm.absorb_limbs_proof(b"T1_SC_C4", &c4w, R_X, 0);
+        emit_copy_reg(&mut asm, 12, R_X);
+        asm.squeeze_ext4(R_B, b"T1_SC_Z", rnd as u64);
+        asm.bf_latch_z(rnd as u8, R_B);
+        // `c1 = R_A - 2*R_6 - R_7 - R_9 - R_12`:
+        asm.esub(R_T0, R_A, 6);
+        asm.esub(R_T0, R_T0, 6);
+        asm.esub(R_T0, R_T0, 7);
+        asm.esub(R_T0, R_T0, 9);
+        asm.esub(R_T0, R_T0, 12);
+        // Horner `(((c4 * z + c3) * z + c2) * z + c1) * z + c0`:
+        asm.emul(R_Y, 12, R_B);
+        asm.eadd(R_Y, R_Y, 9);
+        asm.emul(R_Y, R_Y, R_B);
+        asm.eadd(R_Y, R_Y, 7);
+        asm.emul(R_Y, R_Y, R_B);
+        asm.eadd(R_Y, R_Y, R_T0);
+        asm.emul(R_Y, R_Y, R_B);
+        asm.eadd(R_A, R_Y, 6);
+    }
+    // Save `term_exec` in `R_13`!
+    emit_copy_reg(&mut asm, 13, R_A);
+
+    // Absorb all 37 claimed evaluations at `z_exec` into `R_CH` AND compress into `R_12`:
+    emit_zero_reg(&mut asm, 12);
+    for k in 0..37 {
+        let w = proof.map_or(zero4, |p| p.t1_evals_37[k].to_u64_limbs());
+        asm.absorb_limbs_proof(b"T1_EV", &w, R_X, 0);
+        emit_compress_reg(&mut asm, 12, R_X, 0xE000 + (k as u64));
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // On-chip exact evaluation of `G_exec(z_exec)` into `R_7` and `H_ASSERT_EQ(R_7, R_13)`!
+    // Live persistent regs here: `R_7 = G_acc`, `R_8 = S_rng16`, `R_9 = alpha_pow`, `R_10 = ch_sc_ckpt`,
+    // `R_11 = ch_logup_ckpt`, `R_12 = evals_digest`, `R_13 = term_exec`, `R_14 = t1_bundle`, `R_15 = t2_bundle`.
+    // Free scratch: `R_T0, R_A, R_B, R_X, R_Y, R_6` (inside `emit_checked_evals37_load`, `R_X, R_Y` are used).
+    // --------------------------------------------------------------------------------------------
+    let evals_opt = proof.map(|p| &p.t1_evals_37);
+    emit_zero_reg(&mut asm, 7); // `zero_acc` (`sum_{k=0..17} alpha^k C_k`)
+    asm.load(9, &[1, 0, 0, 0], true); // `R_9 = alpha_pow = 1`
+    let add_c_term = |asm: &mut Dregg180HvmAssembler, c_reg: u8| {
+        asm.emul(R_T0, 9, c_reg);
+        asm.eadd(7, 7, R_T0);
+        emit_squeeze_from_ckpt(asm, R_T0, 10, b"SC_ALPHA_EXEC", 0);
+        asm.emul(9, 9, R_T0);
+    };
+
+    // Helper: compute `lo + 2^16 * hi` into `dst` using `tmp` (neither `R_T0`, `R_X`, nor `R_Y`!):
+    let load_lin2 = |asm: &mut Dregg180HvmAssembler, idx_lo: usize, idx_hi: usize, dst: u8, tmp: u8| {
+        emit_checked_evals37_load(asm, evals_opt, 12, &[(idx_lo, dst), (idx_hi, tmp)]);
+        asm.load(R_Y, &[1u64 << 16, 0, 0, 0], true);
+        asm.emul(tmp, tmp, R_Y);
+        asm.eadd(dst, dst, tmp);
+    };
+
+    // C_0 = sel_mac (0) * (a (10) * b (11) + c (12) - q_val (17,18) * p_BB - r_val (13,14)):
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(10, R_A), (11, R_B), (12, 6)]);
+    asm.emul(R_A, R_A, R_B);
+    asm.eadd(6, R_A, 6); // `R_6 = a*b + c`
+    load_lin2(&mut asm, 17, 18, R_A, R_B); // `R_A = q_val`
+    asm.load(R_Y, &[BABYBEAR_PRIME_U64, 0, 0, 0], true);
+    asm.emul(R_A, R_A, R_Y);
+    asm.esub(6, 6, R_A); // `R_6 = a*b + c - q_val*p_BB`
+    load_lin2(&mut asm, 13, 14, R_A, R_B); // `R_A = r_val`
+    asm.esub(6, 6, R_A);
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(0, R_A)]); // `sel_mac`
+    asm.emul(6, R_A, 6);
+    add_c_term(&mut asm, 6);
+
+    // C_1 = sel_eq (1) * (a (10) - b (11)):
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(1, 6), (10, R_A), (11, R_B)]);
+    asm.esub(R_A, R_A, R_B);
+    asm.emul(6, 6, R_A);
+    add_c_term(&mut asm, 6);
+
+    // C_2 = sel_fs (2) * (a (10) - q_fs (17,18,19) * p_BB - r_val (13,14)) & C_3 = sel_fs * (q_fs + dq_fs - Q_SAFE):
+    load_lin2(&mut asm, 17, 18, 6, R_A); // `q_val`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(19, R_A)]); // `q_top`
+    asm.load(R_Y, &[1u64 << 32, 0, 0, 0], true);
+    asm.emul(R_A, R_A, R_Y);
+    asm.eadd(6, 6, R_A); // `R_6 = q_fs`
+    emit_copy_reg(&mut asm, R_B, 6); // save `q_fs` in `R_B`
+    asm.load(R_Y, &[BABYBEAR_PRIME_U64, 0, 0, 0], true);
+    asm.emul(6, 6, R_Y); // `6 = q_fs * p_BB`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(13, R_A)]); // `r_lo`
+    asm.eadd(6, 6, R_A);
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(14, R_A)]); // `r_hi`
+    asm.load(R_Y, &[1u64 << 16, 0, 0, 0], true);
+    asm.emul(R_A, R_A, R_Y);
+    asm.eadd(6, 6, R_A); // `6 = q_fs * p_BB + r_val`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(10, R_A)]); // `a`
+    asm.esub(R_A, R_A, 6); // `R_A = a - q_fs*p_BB - r_val`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(2, 6)]); // `sel_fs`
+    asm.emul(6, 6, R_A); // `C_2`
+    add_c_term(&mut asm, 6);
+
+    // C_3: `R_B` STILL holds `q_fs`!
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(20, 6), (21, R_A)]); // `dq_lo, dq_hi`
+    asm.load(R_Y, &[1u64 << 16, 0, 0, 0], true);
+    asm.emul(R_A, R_A, R_Y);
+    asm.eadd(6, 6, R_A);
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(22, R_A)]); // `dq_top`
+    asm.load(R_Y, &[1u64 << 32, 0, 0, 0], true);
+    asm.emul(R_A, R_A, R_Y);
+    asm.eadd(6, 6, R_A); // `dq_fs`
+    asm.eadd(6, 6, R_B); // `q_fs + dq_fs`
+    asm.load(R_Y, &[BABYBEAR_FS_Q_SAFE, 0, 0, 0], true);
+    asm.esub(6, 6, R_Y);
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(2, R_A)]); // `sel_fs`
+    asm.emul(6, R_A, 6); // `C_3`
+    add_c_term(&mut asm, 6);
+
+    // C_4 = q_top (19) * (q_top - 1) * (q_top - 2) & C_5 = dq_top (22) * (dq_top - 1) * (dq_top - 2):
+    for col_idx in [19usize, 22usize] {
+        emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(col_idx, 6)]);
+        asm.load(R_Y, &[1, 0, 0, 0], true);
+        asm.esub(R_A, 6, R_Y);
+        asm.emul(R_A, 6, R_A);
+        asm.load(R_Y, &[2, 0, 0, 0], true);
+        asm.esub(R_B, 6, R_Y);
+        asm.emul(6, R_A, R_B);
+        add_c_term(&mut asm, 6);
+    }
+
+    // C_6 = r_val (13,14) + d_val (15,16) - (p_BB - 1):
+    load_lin2(&mut asm, 13, 14, 6, R_A);
+    load_lin2(&mut asm, 15, 16, R_A, R_B);
+    asm.eadd(6, 6, R_A);
+    asm.load(R_Y, &[BABYBEAR_PRIME_U64 - 1, 0, 0, 0], true);
+    asm.esub(6, 6, R_Y);
+    add_c_term(&mut asm, 6);
+
+    // C_7 = dfa_b (8) + dfa_b_slack (26) - 255:
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(8, 6), (26, R_A)]);
+    asm.eadd(6, 6, R_A);
+    asm.load(R_Y, &[255, 0, 0, 0], true);
+    asm.esub(6, 6, R_Y);
+    add_c_term(&mut asm, 6);
+
+    // C_8 (`h_w01` = 28): `h_w01 * dw_a * dw_b - ((1 - sel_fs)*dw_b + dw_a)`:
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(4, R_A), (10, R_B)]); // `src_a, a`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_W", 0);
+    asm.emul(R_B, R_B, R_T0);
+    asm.eadd(R_A, R_A, R_B);
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_W", 0);
+    asm.esub(6, R_T0, R_A); // `R_6 = dw_a`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(5, R_A), (11, R_B)]); // `src_b, b`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_W", 0);
+    asm.emul(R_B, R_B, R_T0);
+    asm.eadd(R_A, R_A, R_B);
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_W", 0);
+    asm.esub(R_B, R_T0, R_A); // `R_B = dw_b`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(2, R_A)]); // `sel_fs`
+    asm.load(R_Y, &[1, 0, 0, 0], true);
+    asm.esub(R_A, R_Y, R_A); // `1 - sel_fs`
+    asm.emul(R_A, R_A, R_B); // `(1 - sel_fs) * dw_b`
+    asm.eadd(R_A, R_A, 6);   // `R_A = (1 - sel_fs)*dw_b + dw_a`
+    asm.emul(6, 6, R_B);     // `6 = dw_a * dw_b`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(28, R_B)]); // `h_w01`
+    asm.emul(6, R_B, 6);
+    asm.esub(6, 6, R_A);     // `C_8`
+    add_c_term(&mut asm, 6);
+
+    // C_9 (`h_w2r` = 29): `h_w2r * dw_c * dw_r - (dw_r - m_wire * dw_c)`:
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(6, R_A), (12, R_B)]); // `src_c, c`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_W", 0);
+    asm.emul(R_B, R_B, R_T0);
+    asm.eadd(R_A, R_A, R_B);
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_W", 0);
+    asm.esub(6, R_T0, R_A); // `R_6 = dw_c`
+    load_lin2(&mut asm, 13, 14, R_B, R_A); // `r_val`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_W", 0);
+    asm.emul(R_B, R_B, R_T0);
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 0, R_A); // `idx(z)`
+    asm.eadd(R_A, R_A, R_B);
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_W", 0);
+    asm.esub(R_B, R_T0, R_A); // `R_B = dw_r`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(23, R_A)]); // `m_wire`
+    asm.emul(R_A, R_A, 6);   // `m_wire * dw_c`
+    asm.esub(R_A, R_B, R_A); // `R_A = dw_r - m_wire * dw_c`
+    asm.emul(6, 6, R_B);     // `6 = dw_c * dw_r`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(29, R_B)]); // `h_w2r`
+    asm.emul(6, R_B, 6);
+    asm.esub(6, 6, R_A);     // `C_9`
+    add_c_term(&mut asm, 6);
+
+    // C_10 (`h_dfa` = 30): `h_dfa * dd_l * dd_r - (dd_r - m_dfa_rom * dd_l)`:
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(24, 6), (8, R_A), (25, R_B)]); // `dfa_s, dfa_b, dfa_s_next`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_DFA", 0);
+    asm.emul(R_A, R_A, R_T0);
+    asm.eadd(6, 6, R_A);
+    asm.emul(R_T0, R_T0, R_T0); // `gamma_dfa^2`
+    asm.emul(R_B, R_B, R_T0);
+    asm.eadd(6, 6, R_B);
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_DFA", 0);
+    asm.esub(6, R_T0, 6); // `R_6 = dd_l`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(7, R_B)]); // `rom_q_next`
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 2, R_A); // `rom_q(z) = z_8 + 2*z_9`
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 1, R_X); // `rom_b(z)`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_DFA", 0);
+    asm.emul(R_X, R_X, R_T0);
+    asm.eadd(R_A, R_A, R_X);
+    asm.emul(R_T0, R_T0, R_T0);
+    asm.emul(R_B, R_B, R_T0);
+    asm.eadd(R_A, R_A, R_B);
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_DFA", 0);
+    asm.esub(R_B, R_T0, R_A); // `R_B = dd_r`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(27, R_A)]); // `m_dfa_rom`
+    asm.emul(R_A, R_A, 6);
+    asm.esub(R_A, R_B, R_A); // `R_A = dd_r - m_dfa_rom * dd_l`
+    asm.emul(6, 6, R_B);     // `6 = dd_l * dd_r`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(30, R_B)]); // `h_dfa`
+    asm.emul(6, R_B, 6);
+    asm.esub(6, 6, R_A);     // `C_10`
+    add_c_term(&mut asm, 6);
+
+    // C_11 (`h_sh` = 31): `h_sh * ds_l * ds_r - ((1 - eq_last)*ds_r - (1 - eq_first)*ds_l)`:
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(25, R_A)]); // `dfa_s_next`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_SH", 0);
+    asm.emul(R_A, R_A, R_T0);
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 0, R_B); // `idx(z)`
+    asm.eadd(R_A, R_A, R_B);
+    asm.load(R_Y, &[1, 0, 0, 0], true);
+    asm.eadd(R_A, R_A, R_Y); // `idx + 1 + gamma_sh * dfa_s_next`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_SH", 0);
+    asm.esub(6, R_T0, R_A); // `R_6 = ds_l`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(24, R_A)]); // `dfa_s`
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_GAMMA_SH", 0);
+    asm.emul(R_A, R_A, R_T0);
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 0, R_B);
+    asm.eadd(R_A, R_A, R_B);
+    emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_SH", 0);
+    asm.esub(R_B, R_T0, R_A); // `R_B = ds_r`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(31, R_A)]); // `h_sh`
+    asm.emul(R_X, R_A, 6);
+    asm.emul(R_X, R_X, R_B); // `h_sh * ds_l * ds_r`
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 4, R_A); // `eq_last`
+    asm.load(R_Y, &[1, 0, 0, 0], true);
+    asm.esub(R_A, R_Y, R_A);
+    asm.emul(R_A, R_A, R_B); // `(1 - eq_last) * ds_r`
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 3, R_T0); // `eq_first`
+    asm.esub(R_T0, R_Y, R_T0);
+    asm.emul(R_T0, R_T0, 6); // `(1 - eq_first) * ds_l`
+    asm.esub(R_A, R_A, R_T0);
+    asm.esub(6, R_X, R_A); // `C_11`
+    add_c_term(&mut asm, 6);
+
+    // C_12..C_16 (`h_rng0..h_rng4` for `(r_lo,r_hi), (d_lo,d_hi), (q_lo,q_hi), (dq_lo,dq_hi), (dfa_b,dfa_b_slack)`):
+    for (h_idx, x0_idx, x1_idx) in [
+        (32usize, 13usize, 14usize),
+        (33, 15, 16),
+        (34, 17, 18),
+        (35, 20, 21),
+        (36, 8, 26),
+    ] {
+        emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(h_idx, 6), (x0_idx, R_A), (x1_idx, R_B)]);
+        emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_16", 0);
+        asm.esub(R_A, R_T0, R_A); // `d0`
+        asm.esub(R_B, R_T0, R_B); // `d1`
+        asm.emul(R_X, 6, R_A);
+        asm.emul(R_X, R_X, R_B); // `h * d0 * d1`
+        asm.eadd(R_Y, R_A, R_B); // `d0 + d1`
+        asm.esub(6, R_X, R_Y);
+        add_c_term(&mut asm, 6);
+    }
+
+    // C_17 (`sel_wbb * (r_val - w_bb)`): binds Table 1 witness rows `32..32+2^{m+1}` to committed `W_bb` Canopy!
+    load_lin2(&mut asm, 13, 14, 6, R_A); // `r_val`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(3, R_A), (9, R_B)]); // `sel_wbb, w_bb`
+    asm.esub(6, 6, R_B); // `r_val - w_bb`
+    asm.emul(6, R_A, 6); // `sel_wbb * (r_val - w_bb)`
+    add_c_term(&mut asm, 6);
+
+    // Multiply `R_7` (`zero_acc`) by `eq(tau_exec, z_exec)`!
+    asm.bf_eval_eq_tau_z(HEM_EXEC_VARS as u8, R_T0);
+    asm.emul(7, 7, R_T0);
+
+    // Sum terms 18..25 (`R_9 == alpha_exec^18`!):
+    // 18: `h_w01 + h_w2r`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(28, 6), (29, R_A)]);
+    asm.eadd(6, 6, R_A);
+    add_c_term(&mut asm, 6);
+    // 19: `h_dfa`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(30, 6)]);
+    add_c_term(&mut asm, 6);
+    // 20: `h_sh`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(31, 6)]);
+    add_c_term(&mut asm, 6);
+    // 21: `h_rng0 + h_rng1 + h_rng2 + h_rng3 + h_rng4`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(32, 6), (33, R_A), (34, R_B)]);
+    asm.eadd(6, 6, R_A);
+    asm.eadd(6, 6, R_B);
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(35, R_A), (36, R_B)]);
+    asm.eadd(6, 6, R_A);
+    asm.eadd(6, 6, R_B);
+    add_c_term(&mut asm, 6);
+    // 22: `pub_sel_r(z_exec) * r_val(z_exec)`
+    load_lin2(&mut asm, 13, 14, 6, R_A);
+    emit_squeeze_from_ckpt(&mut asm, R_B, 10, b"SC_LAMBDA_PUB", 0);
+    asm.bf_eval_sparse_sel_z(HEM_EXEC_VARS as u8, R_B, R_A, &layout.pub_r_indices);
+    asm.emul(6, 6, R_A);
+    add_c_term(&mut asm, 6);
+    // 23: `pub_sel_a(z_exec) * a(z_exec)`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(10, 6)]);
+    emit_squeeze_from_ckpt(&mut asm, R_B, 10, b"SC_LAMBDA_PUB", 0);
+    asm.bf_eval_sparse_sel_z(HEM_EXEC_VARS as u8, R_B, R_A, &layout.pub_a_indices);
+    asm.emul(6, 6, R_A);
+    add_c_term(&mut asm, 6);
+    // 24: `eq(z_exec, 0) * dfa_s(z_exec)`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(24, 6)]);
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 3, R_A);
+    asm.emul(6, 6, R_A);
+    add_c_term(&mut asm, 6);
+    // 25: `eq(z_exec, 4095) * dfa_s_next(z_exec)`
+    emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(25, 6)]);
+    asm.bf_eval_public_mle_z(HEM_EXEC_VARS as u8, 4, R_A);
+    asm.emul(6, 6, R_A);
+    add_c_term(&mut asm, 6);
+
+    // Assert exact algebraic identity `G_exec(z_exec) == term_exec`!
+    asm.assert_eq(7, 13);
+
+    // --------------------------------------------------------------------------------------------
+    // Round 6b: Table 1 Lockstep `UD-100` BaseFold Opening (`N_exec = 4096`, `122` dual Canopy queries + `16`-bit PoW!)
+    // --------------------------------------------------------------------------------------------
+    // First carry Table 2's 3 needed checkpoints `(S_rng16=R_8, ch_sc_ckpt=R_10, ch_logup_ckpt=R_11)` into `R_15` (`t2_bundle`)
+    // so `R_6..R_14` are ALL free during Table 1's 122 queries!
+    emit_compress_reg(&mut asm, 15, 8, 0x2010);
+    emit_compress_reg(&mut asm, 15, 10, 0x2011);
+    emit_compress_reg(&mut asm, 15, 11, 0x2012);
+
+    // Squeeze `eta_1` into `R_B`, save into `R_13`, compress into `R_14` (`t1_bundle`),
+    // and compute `Y_1 = sum eta_1^{36-k} evals_37[k]` into `R_A` while verifying `evals_37` matches `R_12`:
+    asm.squeeze_ext4(R_B, b"T1_BF_ETA", 0);
+    emit_copy_reg(&mut asm, 13, R_B);
+    emit_compress_reg(&mut asm, 14, R_B, 0x1005);
+    emit_zero_reg(&mut asm, R_A);
+    emit_zero_reg(&mut asm, R_Y);
+    for k in 0..37 {
+        let w = proof.map_or(zero4, |p| p.t1_evals_37[k].to_u64_limbs());
+        asm.load(R_X, &w, false);
+        asm.emul(R_A, R_A, R_B);
+        asm.eadd(R_A, R_A, R_X);
+        emit_compress_reg(&mut asm, R_Y, R_X, 0xE000 + (k as u64));
+    }
+    asm.assert_eq(R_Y, 12);
+
+    // Run 12-round Table 1 Lockstep BaseFold sumcheck (`stage_ks = &[3, 3, 2]` -> `final_poly[8]`):
+    emit_lockstep_basefold_sumcheck(
+        &mut asm,
+        HEM_EXEC_VARS,
+        T1_STAGE_KS,
+        b"T1_BF",
+        None,
+        Some((14, 0x1010)),
+        proof.map(|p| &p.t1_bf),
+    );
+
+    // `16`-bit PoW #1 (`H1` fix: single nonce read hashed ONCE directly into `R_CH`, checked on `R_CH`,
+    // and immediately used as query seed — zero decoupled second read!):
+    let t1_pow_w = proof.map_or([0u64; 2], |p| [p.t1_pow_nonce & 0xFFFF_FFFF, p.t1_pow_nonce >> 32]);
+    asm.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_POW_T1, &[], &t1_pow_w, 0, 0);
+    asm.assert_pow(R_CH, UD100_POW_BITS);
+
+    // Reload Table 1's prover roots into `R_6..R_12` (`R_13` already holds `eta_1`!) and verify `compress(...) == R_14`!
+    let t1_s1_w = proof.map_or(zero4, |p| p.t1_bf.stages[0].p2_root());
+    let t1_s2_w = proof.map_or(zero4, |p| p.t1_bf.stages[1].p2_root());
+    let t1_s3_w = proof.map_or(zero4, |p| p.t1_bf.stages[2].p2_root());
+    emit_zero_reg(&mut asm, R_A); // recompute `t1_root_bundle` check in `R_A`
+    asm.load(6, &w1_p2, false);
+    emit_compress_reg(&mut asm, R_A, 6, 0x1001);
+    asm.load(7, &w1_cs, false);
+    emit_compress_reg(&mut asm, R_A, 7, 0x1002);
+    asm.load(8, &w2_p2, false);
+    emit_compress_reg(&mut asm, R_A, 8, 0x1003);
+    asm.load(9, &w2_cs, false);
+    emit_compress_reg(&mut asm, R_A, 9, 0x1004);
+    emit_compress_reg(&mut asm, R_A, 13, 0x1005); // `R_13` holds `eta_1`!
+    asm.load(10, &t1_s1_w, false);
+    emit_compress_reg(&mut asm, R_A, 10, 0x1010);
+    asm.load(11, &t1_s2_w, false);
+    emit_compress_reg(&mut asm, R_A, 11, 0x1011);
+    asm.load(12, &t1_s3_w, false);
+    emit_compress_reg(&mut asm, R_A, 12, 0x1012);
+    asm.assert_eq(R_A, 14); // 100% proves `R_6..R_13` match committed roots & `eta_1`!
+
+    // Execute `122` Transcript-Bound Dual-Canopy Query Chains on Table 1 (`N_exec = 4096`, `depth_0 = 14`):
+    let t1_s_keys: [[u64; 4]; 3] = [
+        [T1_BF_KEY_SEED ^ 1, 0x4341_4E50_0000_0000, 0x4246_5354_0000_0000, P2_IV],
+        [T1_BF_KEY_SEED ^ 2, 0x4341_4E50_0000_0001, 0x4246_5354_0000_0003, P2_IV],
+        [T1_BF_KEY_SEED ^ 3, 0x4341_4E50_0000_0002, 0x4246_5354_0000_0006, P2_IV],
+    ];
+    let dummy_sib14_p2 = vec![zero4; 14];
+    let dummy_sib14_cs = vec![[0u8; 32]; 14];
+    let dummy_w16 = vec![0u64; 16];
+    let dummy_w2 = vec![0u64; 2];
+    let dummy_w36 = vec![0u64; 36];
+    let dummy_w72 = vec![0u64; 72];
+    let dummy_fib8_t1 = vec![GoldilocksExt4::ZERO; 8];
+    let dummy_fib4_t1 = vec![GoldilocksExt4::ZERO; 4];
+    let dummy_sibs_t1 = [vec![zero4; 11], vec![zero4; 8], vec![zero4; 6]];
+
+    for q_idx in 0..UD100_NUM_QUERIES {
+        let mut qlab = pack_bytes_7_limbs(b"T1_UD100_Q");
+        qlab.push(q_idx as u64);
+        let q = proof.map(|p| &p.t1_queries[q_idx]);
+        let f0 = q.map_or(0u32, |x| x.f0);
+
+        // Stage 0a: `vk` (`8` base cols, public roots `vk_p2_root` & `vk_cs_pin4`!)
+        asm.load(14, &CANOPY_KEY_VK, true);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.fiber_acc(0, false, true, true, 14, 13, 8, q.map_or(&dummy_w16, |x| &x.vk_words));
+        asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.vk_p2_sibs));
+        asm.load(R_Y, &stmt.vk_p2_root, true);
+        asm.assert_eq(R_X, R_Y);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.vk_cs_sibs));
+        asm.load(R_Y, &stmt.vk_cs_pin4(), true);
+        asm.assert_eq(R_X, R_Y);
+
+        // Stage 0b: `bytes` (`1` base col, public payload roots `bytes_p2_root` & `bytes_cs_pin4`!)
+        asm.load(14, &CANOPY_KEY_BYTES, true);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.fiber_acc(1, false, false, true, 14, 13, 1, q.map_or(&dummy_w2, |x| &x.bytes_words));
+        asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.bytes_p2_sibs));
+        asm.load(R_Y, &stmt.bytes_p2_root, true);
+        asm.assert_eq(R_X, R_Y);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.bytes_cs_sibs));
+        asm.load(R_Y, &stmt.bytes_cs_pin4(), true);
+        asm.assert_eq(R_X, R_Y);
+
+        // Stage 0c: `w_bb` (`1` base col, public child witness roots `w_bb_p2_root` & `w_bb_cs_pin4`!)
+        asm.load(14, &CANOPY_KEY_WBB, true);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.fiber_acc(6, false, false, true, 14, 13, 1, q.map_or(&dummy_w2, |x| &x.w_bb_words));
+        asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.w_bb_p2_sibs));
+        asm.load(R_Y, &stmt.w_bb_p2_root, true);
+        asm.assert_eq(R_X, R_Y);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.w_bb_cs_sibs));
+        asm.load(R_Y, &stmt.w_bb_cs_pin4(), true);
+        asm.assert_eq(R_X, R_Y);
+
+        // Stage 0d: `wit1` (`18` base cols -> `R_6`, `R_7`)
+        asm.load(14, &CANOPY_KEY_WIT1, true);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.fiber_acc(2, false, false, true, 14, 13, 18, q.map_or(&dummy_w36, |x| &x.wit1_words));
+        asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.wit1_p2_sibs));
+        asm.assert_eq(R_X, 6);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.wit1_cs_sibs));
+        asm.assert_eq(R_X, 7);
+
+        // Stage 0e: `wit2` (`9` Ext4 cols -> `R_8`, `R_9`)
+        asm.load(14, &CANOPY_KEY_WIT2, true);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.fiber_acc(3, true, false, true, 14, 13, 9, q.map_or(&dummy_w72, |x| &x.wit2_words));
+        asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.wit2_p2_sibs));
+        asm.assert_eq(R_X, 8);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 14);
+        asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.wit2_cs_sibs));
+        asm.assert_eq(R_X, 9);
+
+        // Stage-0 2-ary fold (`R_A, R_B` -> `R_A` on `D_0 = 2^15`):
+        asm.bf_stage0_fold2(15, R_A);
+
+        // Stages 1, 2, 3 (`k = 3, 3, 2`, `log_n_cur = 14, 11, 8`, `round_start = 1, 4, 7`, roots in `R_10, R_11, R_12`):
+        for (s_idx, &(fk, log_n_cur, rnd_st, root_reg)) in
+            [(3u8, 14u8, 1u8, 10u8), (3, 11, 4, 11), (2, 8, 7, 12)].iter().enumerate()
+        {
+            let default_fib = if fk == 3 { dummy_fib8_t1.as_slice() } else { dummy_fib4_t1.as_slice() };
+            let (fi, fib, sibs) = match q {
+                Some(x) => (x.stage_fibers[s_idx].0, x.stage_fibers[s_idx].1.as_slice(), x.stage_fibers[s_idx].2.as_slice()),
+                None => (0u32, default_fib, dummy_sibs_t1[s_idx].as_slice()),
+            };
+            asm.load(14, &t1_s_keys[s_idx], true);
+            asm.bf_fold_fiber(fk, log_n_cur, 14, rnd_st, R_A, R_A, fib);
+            asm.merkle(14, fi, sibs);
+            asm.assert_eq(R_X, root_reg);
+        }
+        // Final degree-<8 polynomial check at `x_final = 7^{2^9} * omega_64^{f_3}`:
+        asm.bf_assert_final_eval(9, R_A);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Round 7: Table 2 (`N_rng = 65536 = 2^16`) `[0, 2^16)` LogUp Sumcheck + Lockstep `UD-100` BaseFold!
+    // --------------------------------------------------------------------------------------------
+    // Reload Table 2's committed roots & checkpoints and verify against `R_15`!
+    // `R_6 = mrng_p2`, `R_7 = mrng_cs`, `R_8 = hrng_p2`, `R_9 = hrng_cs`,
+    // `R_10 = S_rng16`, `R_11 = ch_sc_ckpt`, `R_12 = ch_logup_ckpt`.
+    let ch_sc_w = proof.map_or(zero4, |p| p.ch_sc_ckpt);
+    let ch_lu_w = proof.map_or(zero4, |p| p.ch_logup_ckpt);
+    emit_zero_reg(&mut asm, R_A);
+    asm.load(6, &mr_p2, false);
+    emit_compress_reg(&mut asm, R_A, 6, 0x2001);
+    asm.load(7, &mr_cs, false);
+    emit_compress_reg(&mut asm, R_A, 7, 0x2002);
+    asm.load(8, &hr_p2, false);
+    emit_compress_reg(&mut asm, R_A, 8, 0x2003);
+    asm.load(9, &hr_cs, false);
+    emit_compress_reg(&mut asm, R_A, 9, 0x2004);
+    asm.load(10, &s_rng_w, false);
+    emit_compress_reg(&mut asm, R_A, 10, 0x2010);
+    asm.load(11, &ch_sc_w, false);
+    emit_compress_reg(&mut asm, R_A, 11, 0x2011);
+    asm.load(12, &ch_lu_w, false);
+    emit_compress_reg(&mut asm, R_A, 12, 0x2012);
+    asm.assert_eq(R_A, 15); // 100% proves `R_6..R_12` match committed Table-2 roots & checkpoints!
+
+    // Latch `tau_rng[0..16]` from `R_11` (`ch_sc_ckpt`):
+    for j in 0..HEM_RNG16_VARS {
+        emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"SC_TAU_RNG", j as u64);
+        asm.bf_latch_tau(j as u8, R_T0);
+    }
+    // Initial Table 2 sumcheck claim: `R_A = alpha_rng * S_rng16` (`R_10 = S_rng16`):
+    emit_squeeze_from_ckpt(&mut asm, R_B, 11, b"SC_ALPHA_RNG", 0);
+    asm.emul(R_A, R_B, 10);
+
+    // 16-round degree-3 sumcheck on Table 2 (`c0, c2, c3` sent; `c1 = claim - 2*c0 - c2 - c3`):
+    // Free scratch during sumcheck: `R_13 = c0, R_14 = c2, R_15 = c3` (`R_6..R_12` stay untouched!)
+    for rnd in 0..HEM_RNG16_VARS {
+        let (c0w, c2w, c3w) = match proof {
+            Some(p) => (
+                p.t2_sc_rounds[rnd][0].to_u64_limbs(),
+                p.t2_sc_rounds[rnd][1].to_u64_limbs(),
+                p.t2_sc_rounds[rnd][2].to_u64_limbs(),
+            ),
+            None => (zero4, zero4, zero4),
+        };
+        asm.absorb_limbs_proof(b"T2_SC_C0", &c0w, R_X, 0);
+        emit_copy_reg(&mut asm, 13, R_X);
+        asm.absorb_limbs_proof(b"T2_SC_C2", &c2w, R_X, 0);
+        emit_copy_reg(&mut asm, 14, R_X);
+        asm.absorb_limbs_proof(b"T2_SC_C3", &c3w, R_X, 0);
+        emit_copy_reg(&mut asm, 15, R_X);
+        asm.squeeze_ext4(R_B, b"T2_SC_Z", rnd as u64);
+        asm.bf_latch_z(rnd as u8, R_B);
+        // `c1 = R_A - 2*R_13 - R_14 - R_15`:
+        asm.esub(R_T0, R_A, 13);
+        asm.esub(R_T0, R_T0, 13);
+        asm.esub(R_T0, R_T0, 14);
+        asm.esub(R_T0, R_T0, 15);
+        // Horner `((c3 * z + c2) * z + c1) * z + c0`:
+        asm.emul(R_Y, 15, R_B);
+        asm.eadd(R_Y, R_Y, 14);
+        asm.emul(R_Y, R_Y, R_B);
+        asm.eadd(R_Y, R_Y, R_T0);
+        asm.emul(R_Y, R_Y, R_B);
+        asm.eadd(R_A, R_Y, 13);
+    }
+
+    // Absorb `m_rng16(z_rng)` (`R_13`) and `h_rng_tab(z_rng)` (`R_14`), verify exact `G_rng(z_rng) == R_A`:
+    // `G_rng(z) = eq(tau_rng, z) * (h_rng_tab(z) * (beta_16 - id(z)) - m_rng16(z)) + alpha_rng * h_rng_tab(z)`!
+    let (m_ev_w, h_ev_w) = match proof {
+        Some(p) => (p.t2_evals_2[0].to_u64_limbs(), p.t2_evals_2[1].to_u64_limbs()),
+        None => (zero4, zero4),
+    };
+    asm.absorb_limbs_proof(b"T2_EV_M", &m_ev_w, R_X, 0);
+    emit_copy_reg(&mut asm, 13, R_X);
+    asm.absorb_limbs_proof(b"T2_EV_H", &h_ev_w, R_X, 0);
+    emit_copy_reg(&mut asm, 14, R_X);
+
+    emit_squeeze_from_ckpt(&mut asm, R_X, 12, b"LU_BETA_16", 0); // `beta_16` from `ch_logup_ckpt`
+    asm.bf_eval_public_mle_z(HEM_RNG16_VARS as u8, 0, R_Y);      // `id(z_rng)`
+    asm.esub(R_X, R_X, R_Y);                                     // `beta_16 - id(z_rng)`
+    asm.emul(R_X, 14, R_X);                                      // `h_rng * (beta_16 - id)`
+    asm.esub(R_X, R_X, 13);                                      // `- m_rng16`
+    asm.bf_eval_eq_tau_z(HEM_RNG16_VARS as u8, R_Y);             // `eq(tau_rng, z_rng)`
+    asm.emul(R_X, R_X, R_Y);                                     // `eq * (...)`
+    emit_squeeze_from_ckpt(&mut asm, R_Y, 11, b"SC_ALPHA_RNG", 0); // `alpha_rng` from `ch_sc_ckpt`
+    asm.emul(R_Y, R_Y, 14);                                      // `alpha_rng * h_rng`
+    asm.eadd(R_X, R_X, R_Y);                                     // `G_rng(z_rng)`
+    asm.assert_eq(R_A, R_X);
+
+    // Table 2 Lockstep `UD-100` BaseFold Opening (`N_rng = 65536`, `stage_ks = &[3, 3, 3, 3]` -> `final_poly[8]`):
+    // Squeeze `eta_2` into `R_15`, compute `Y_2 = m_rng(z) * eta_2 + h_rng(z)` into `R_A`!
+    // Wait: `R_10..R_12` (`S_rng16, ch_sc_ckpt, ch_logup_ckpt`) are NO LONGER NEEDED — free `R_10..R_13` for `t2_s1..t2_s4`!
+    // Layout for Table 2's 122 queries:
+    //   `R_6 = mrng_p2`, `R_7 = mrng_cs`, `R_8 = hrng_p2`, `R_9 = hrng_cs`,
+    //   `R_10 = t2_s1`, `R_11 = t2_s2`, `R_12 = t2_s3`, `R_13 = t2_s4`, `R_15 = eta_2`, `R_14 = key scratch`!
+    asm.squeeze_ext4(R_B, b"T2_BF_ETA", 0);
+    emit_copy_reg(&mut asm, 15, R_B); // `R_15 = eta_2`
+    asm.emul(R_A, 13, 15);
+    asm.eadd(R_A, R_A, 14);           // `Y_2 = m_rng(z) * eta_2 + h_rng(z)`
+
+    emit_lockstep_basefold_sumcheck(
+        &mut asm,
+        HEM_RNG16_VARS,
+        T2_STAGE_KS,
+        b"T2_BF",
+        Some(&[10, 11, 12, 13]),
+        None,
+        proof.map(|p| &p.t2_bf),
+    );
+
+    // `16`-bit PoW #2 (`H1` fix: single nonce read hashed ONCE directly into `R_CH`, checked on `R_CH`,
+    // and immediately used as Table 2 query seed — zero decoupled second read!):
+    let t2_pow_w = proof.map_or([0u64; 2], |p| [p.t2_pow_nonce & 0xFFFF_FFFF, p.t2_pow_nonce >> 32]);
+    asm.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_POW_T2, &[], &t2_pow_w, 0, 0);
+    asm.assert_pow(R_CH, UD100_POW_BITS);
+
+    // Execute `122` Transcript-Bound Dual-Canopy Query Chains on Table 2 (`N_rng = 65536`, `depth_0 = 18`):
+    let t2_s_keys: [[u64; 4]; 4] = [
+        [T2_BF_KEY_SEED ^ 1, 0x4341_4E50_0000_0000, 0x4246_5354_0000_0000, P2_IV],
+        [T2_BF_KEY_SEED ^ 2, 0x4341_4E50_0000_0001, 0x4246_5354_0000_0003, P2_IV],
+        [T2_BF_KEY_SEED ^ 3, 0x4341_4E50_0000_0002, 0x4246_5354_0000_0006, P2_IV],
+        [T2_BF_KEY_SEED ^ 4, 0x4341_4E50_0000_0003, 0x4246_5354_0000_0009, P2_IV],
+    ];
+    let dummy_sib18_p2 = vec![zero4; 18];
+    let dummy_sib18_cs = vec![[0u8; 32]; 18];
+    let dummy_w8 = vec![0u64; 8];
+    let dummy_fib8 = vec![GoldilocksExt4::ZERO; 8];
+    let dummy_sibs_t2 = [
+        vec![zero4; 15],
+        vec![zero4; 12],
+        vec![zero4; 9],
+        vec![zero4; 6],
+    ];
+
+    for q_idx in 0..UD100_NUM_QUERIES {
+        let mut qlab = pack_bytes_7_limbs(b"T2_UD100_Q");
+        qlab.push(q_idx as u64);
+        let q = proof.map(|p| &p.t2_queries[q_idx]);
+        let f0 = q.map_or(0u32, |x| x.f0);
+
+        // Stage 0a: `m_rng16` (`1` base col -> `R_6`, `R_7`)
+        asm.load(14, &CANOPY_KEY_MRNG, true);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 18);
+        asm.fiber_acc(4, false, true, true, 14, 15, 1, q.map_or(&dummy_w2, |x| &x.mrng_words));
+        asm.merkle(14, f0, q.map_or(&dummy_sib18_p2, |x| &x.mrng_p2_sibs));
+        asm.assert_eq(R_X, 6);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 18);
+        asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib18_cs, |x| &x.mrng_cs_sibs));
+        asm.assert_eq(R_X, 7);
+
+        // Stage 0b: `h_rng_tab` (`1` Ext4 col -> `R_8`, `R_9`)
+        asm.load(14, &CANOPY_KEY_HRNG, true);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 18);
+        asm.fiber_acc(5, true, false, true, 14, 15, 1, q.map_or(&dummy_w8, |x| &x.hrng_words));
+        asm.merkle(14, f0, q.map_or(&dummy_sib18_p2, |x| &x.hrng_p2_sibs));
+        asm.assert_eq(R_X, 8);
+        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.bind_idx(R_T0, 0, 18);
+        asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib18_cs, |x| &x.hrng_cs_sibs));
+        asm.assert_eq(R_X, 9);
+
+        // Stage-0 2-ary fold (`R_A, R_B` -> `R_A` on `D_0 = 2^19`):
+        asm.bf_stage0_fold2(19, R_A);
+
+        // Stages 1, 2, 3, 4 (each 8-ary `k=3`, `log_n_cur = 18, 15, 12, 9`, `round_start = 1, 4, 7, 10`, roots `R_10..R_13`):
+        for (s_idx, &(log_n_cur, rnd_st, root_reg)) in
+            [(18u8, 1u8, 10u8), (15, 4, 11), (12, 7, 12), (9, 10, 13)].iter().enumerate()
+        {
+            let (fi, fib, sibs) = match q {
+                Some(x) => (
+                    x.stage_fibers[s_idx].0,
+                    x.stage_fibers[s_idx].1.as_slice(),
+                    x.stage_fibers[s_idx].2.as_slice(),
+                ),
+                None => (0u32, dummy_fib8.as_slice(), dummy_sibs_t2[s_idx].as_slice()),
+            };
+            asm.load(14, &t2_s_keys[s_idx], true);
+            asm.bf_fold_fiber(3, log_n_cur, 14, rnd_st, R_A, R_A, fib);
+            asm.merkle(14, fi, sibs);
+            asm.assert_eq(R_X, root_reg);
+        }
+        // Final degree-<8 polynomial check at `x_final = 7^{2^{13}} * omega_64^{f_4}`:
+        asm.bf_assert_final_eval(13, R_A);
+    }
+
+    asm
+}
+
+/// Deterministically compute the keyless `Poseidon2-12` public verifier program hash from `stmt` ALONE
+/// (zero witness, zero `K_MAC`, `pin_mode = false`).
+///
+/// **L1 Memory Scoping Note:** Host/setup derivation here allocates the assembler buffer to hash the
+/// canonical program; embedded streaming verification (`Dregg180StreamVm::new_unkeyed_pinned_program`)
+/// runs in `size_of::<Dregg180StreamVm>() = 3,632 B <= 16,384 B` static RAM with **0 heap allocations**.
+pub fn compute_expected_trustless_program_hash(stmt: &TrustlessHemPublicStatement) -> Result<[u64; 4], String> {
+    stmt.validate_canonical()?;
+    let canon_vk = canonical_trustless_vk(stmt.bb_num_rounds)?;
+    let asm = emit_trustless_hem_stream(stmt, &canon_vk.layout, None);
+    Ok(asm.compute_public_program_hash())
+}
+
+/// Trustless (`pin_mode = false`, `k_mac = None`) standalone `UD-100` verifier executing inside `< 16 KiB`
+/// `Dregg180StreamVm`:
+/// - Selects the **verifier-owned** canonical preprocessed VK via `canonical_trustless_vk` (`H4` fix — no caller VK trust!);
+/// - Enforces strict statement canonicality (`L3` fix) and equality against verifier-owned `expected` statement;
+/// - **ZERO `Option` terminal oracle callback / ZERO unverified terminal claim loophole:** `Dregg180StreamVm` itself
+///   proves `claim_m == eq(bb_tau, r) * A_bb(r) * B_bb(r) (mod p_BB)` directly against `(w_bb_p2_root, w_bb_cs_root)`!
+/// - Derives the keyless `public_program_hash` and runs `Dregg180StreamVm` (`0` heap allocs during VM streaming!).
+pub fn verify_trustless_dregg180_hem_stream(
+    expected: &VerifierExpectedTrustlessStatement,
+    stmt: &TrustlessHemPublicStatement,
+    wire_bytes: &[u8],
+) -> Result<Dregg180VmVerdict, String> {
+    stmt.validate_canonical()?;
+    let canon_vk = canonical_trustless_vk(expected.bb_num_rounds)?;
+    if stmt.bb_num_rounds != expected.bb_num_rounds {
+        return Err("statement bb_num_rounds != verifier expected bb_num_rounds".into());
+    }
+    if stmt.vk_p2_root != canon_vk.p2_root() || stmt.vk_cs_root != canon_vk.cshake_root() {
+        return Err("statement VK Canopy roots do not match verifier-owned canonical VK".into());
+    }
+    if stmt.bb_tau != expected.bb_tau {
+        return Err("statement bb_tau != verifier expected bb_tau".into());
+    }
+    if stmt.bb_initial_claim != expected.bb_initial_claim {
+        return Err("statement bb_initial_claim != verifier expected bb_initial_claim".into());
+    }
+    if stmt.w_bb_p2_root != expected.w_bb_p2_root || stmt.w_bb_cs_root != expected.w_bb_cs_root {
+        return Err("statement W_bb Canopy roots != verifier expected W_bb roots".into());
+    }
+    if stmt.bytes_p2_root != expected.bytes_p2_root || stmt.bytes_cs_root != expected.bytes_cs_root {
+        return Err("statement payload Canopy roots != verifier expected payload roots".into());
+    }
+    let expected_hash = compute_expected_trustless_program_hash(stmt)?;
+    let mut vm = Dregg180StreamVm::new_unkeyed_pinned_program(expected_hash);
+    vm.verify_stream(wire_bytes)
+        .map_err(|e| format!("Dregg180StreamVm trustless UD-100 rejection: {e:?}"))
+}
+
+/// Honest trustless prover (`pin_mode = false`, `k_mac = None`) proving BOTH:
+/// (a) Exact Non-Native `BabyBear Ext4` (`X^4 - 11`) cubic sumcheck verification (`g_i(0)+g_i(1)=claim_i`,
+///     Horner `g_i(r_i)=claim_{i+1}`, causal `Poseidon2` `Goldilocks -> BabyBear` Fiat-Shamir, `r < p_BB`),
+///     PLUS full in-circuit `chi(x)` / `A_bb(r)` / `B_bb(r)` / `eq(tau, r)` terminal evaluation against
+///     committed `w_bb_comm` (`W_bb` dual Canopy), AND
+/// (b) Exact `Absent("sk-")` 4-state DFA trace over the `4 x 256` transition ROM bound to `payload_comm`,
+/// inside `GoldilocksExt4` sumcheck + `[0, 2^16)` LogUp + `UD-100` Lockstep BaseFold (`122` dual Canopy queries + `16`-bit PoW).
+pub fn prove_trustless_nonnative_babybear_and_dfa_hem(
+    vk: &TrustlessHemVk,
+    w_bb_comm: &BabyBearWitnessCommitment,
+    payload_comm: &PayloadBytesCommitment,
+    transcript: &ChildBabyBearSumcheckTranscript,
+) -> Result<TrustlessHemProofBundle, String> {
+    prove_trustless_hem_with_wbb_override(
+        vk,
+        w_bb_comm,
+        &w_bb_comm.w_bb_col,
+        payload_comm,
+        transcript,
+        TrustlessHemTamper::None,
+    )
+}
+
+/// Prover entry point with explicit adversarial tamper hooks (`TrustlessHemTamper::None` = honest prover)
+/// to test that an untrusted prover with NO `K_MAC` (`pin_mode = false`) cannot forge any BabyBear,
+/// canonicality, committed-table, DFA, range-check, BaseFold, or Canopy violation!
+pub fn prove_trustless_hem_with_tamper(
+    vk: &TrustlessHemVk,
+    w_bb_comm: &BabyBearWitnessCommitment,
+    payload_comm: &PayloadBytesCommitment,
+    transcript: &ChildBabyBearSumcheckTranscript,
+    tamper: TrustlessHemTamper,
+) -> Result<TrustlessHemProofBundle, String> {
+    prove_trustless_hem_with_wbb_override(
+        vk,
+        w_bb_comm,
+        &w_bb_comm.w_bb_col,
+        payload_comm,
+        transcript,
+        tamper,
+    )
+}
+
+/// Adversarial prover entry point that allows populating `r_val[32..32+2^{m+1}]` from `witness_wbb_col`
+/// (e.g., a fake witness table `(A_fake, B_fake)` matching `transcript`) while Stage-0 Canopy still opens
+/// the verifier-pinned `w_bb_comm` (`(A_honest, B_honest)`), proving `C_wbb = sel_wbb * (r_val - w_bb)`
+/// catches witness-table substitution even when every MAC and terminal `sel_eq` gate passes locally!
+pub fn prove_trustless_hem_with_wbb_override(
+    vk: &TrustlessHemVk,
+    w_bb_comm: &BabyBearWitnessCommitment,
+    witness_wbb_col: &[Goldilocks],
+    payload_comm: &PayloadBytesCommitment,
+    transcript: &ChildBabyBearSumcheckTranscript,
+    tamper: TrustlessHemTamper,
+) -> Result<TrustlessHemProofBundle, String> {
+    let layout = &vk.layout;
+    let m = layout.bb_num_rounds;
+    if transcript.round_polys.len() != m || transcript.raw_gl_challenges.len() != m {
+        return Err("transcript round count does not match VK".into());
+    }
+    if w_bb_comm.bb_num_rounds != m || witness_wbb_col.len() != HEM_EXEC_ROWS {
+        return Err("W_bb commitment dimension does not match VK".into());
+    }
+    let mut bb_round_polys = transcript.round_polys.clone();
+    if tamper == TrustlessHemTamper::WrongBabyBearRoundSum {
+        bb_round_polys[0][0].0[0] = crate::ext4::badd(bb_round_polys[0][0].0[0], 1);
+    }
+    if tamper == TrustlessHemTamper::WrongBabyBearHornerEval {
+        // Keep `g_{m-1}(0) + g_{m-1}(1) == 2*c0 + c1 + c2 + c3 == claim_{m-1}` intact while altering `g_{m-1}(r_{m-1})`!
+        bb_round_polys[m - 1][1].0[0] = crate::ext4::badd(bb_round_polys[m - 1][1].0[0], 1);
+        bb_round_polys[m - 1][2].0[0] = crate::ext4::bsub(bb_round_polys[m - 1][2].0[0], 1);
+    }
+
+    let stmt = TrustlessHemPublicStatement {
+        bb_num_rounds: m,
+        bb_tau: transcript.bb_tau,
+        bb_initial_claim: transcript.initial_claim,
+        vk_p2_root: vk.p2_root(),
+        vk_cs_root: vk.cshake_root(),
+        w_bb_p2_root: w_bb_comm.p2_root(),
+        w_bb_cs_root: w_bb_comm.cshake_root(),
+        bytes_p2_root: payload_comm.p2_root(),
+        bytes_cs_root: payload_comm.cshake_root(),
+    };
+
+    // --------------------------------------------------------------------------------------------
+    // 1. Causal Pass-1 transcript `g_i -> raw_r_i`:
+    // --------------------------------------------------------------------------------------------
+    let mut ch = stmt.transcript_ch_before_pass1();
+    let mut bb_raw_chals = Vec::with_capacity(m);
+    for rnd in 0..m {
+        for k in 0..4 {
+            let mut lab = *b"BB_SC_G0";
+            lab[7] = b'0' + (k as u8);
+            let limbs4 = bb_round_polys[rnd][k].0.map(|x| x as u64);
+            ch = fs_absorb_limbs_local(ch, &lab, &limbs4);
+        }
+        let raw_ext = fs_squeeze_ext4_local(ch, b"BB_SC_RAW_R", rnd as u64);
+        bb_raw_chals.push(raw_ext.to_u64_limbs());
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // 2. Populate Execution Witness Table 1 (`18` base cols on `N_exec = 4096`) + `m_rng16` on `65536`:
+    // --------------------------------------------------------------------------------------------
+    let mut a_col = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut b_col = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut c_col = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut r_vals = vec![0u64; HEM_EXEC_ROWS];
+    let mut d_vals = vec![BABYBEAR_PRIME_U64 - 1; HEM_EXEC_ROWS];
+    let mut q_vals = vec![0u64; HEM_EXEC_ROWS];
+    let mut q_top = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut dq_vals = vec![0u64; HEM_EXEC_ROWS];
+    let mut dq_top = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+
+    let set_r_honest = |row: usize, val: u64, rv: &mut [u64], dv: &mut [u64]| {
+        if val < BABYBEAR_PRIME_U64 {
+            rv[row] = val;
+            dv[row] = (BABYBEAR_PRIME_U64 - 1) - val;
+        } else {
+            // Adversarial non-canonical `W_bb` entry (`>= p_BB`): prover cannot find valid `d >= 0`!
+            rv[row] = val;
+            dv[row] = 0;
+        }
+    };
+    set_r_honest(0, 0, &mut r_vals, &mut d_vals);
+    set_r_honest(1, 1, &mut r_vals, &mut d_vals);
+    set_r_honest(2, 11, &mut r_vals, &mut d_vals);
+    set_r_honest(3, BABYBEAR_PRIME_U64 - 1, &mut r_vals, &mut d_vals);
+    for l in 0..4 {
+        set_r_honest(4 + l, stmt.bb_initial_claim.0[l] as u64, &mut r_vals, &mut d_vals);
+    }
+    for j in 0..m {
+        for l in 0..4 {
+            set_r_honest(8 + 4 * j + l, stmt.bb_tau[j].0[l] as u64, &mut r_vals, &mut d_vals);
+        }
+    }
+    let n_bb = 1usize << m;
+    for i in 0..(2 * n_bb) {
+        let row = HEM_ROW_WBB_START + i;
+        set_r_honest(row, witness_wbb_col[row].0, &mut r_vals, &mut d_vals);
+    }
+    for rnd in 0..m {
+        for k in 0..4 {
+            for l in 0..4 {
+                set_r_honest(layout.g_rows[rnd][k][l], bb_round_polys[rnd][k].0[l] as u64, &mut r_vals, &mut d_vals);
+            }
+        }
+        for l in 0..4 {
+            let row = layout.fs_rows[rnd][l];
+            let raw = bb_raw_chals[rnd][l];
+            let q_full = raw / BABYBEAR_PRIME_U64;
+            let rem = raw % BABYBEAR_PRIME_U64;
+            if q_full > BABYBEAR_FS_Q_SAFE {
+                return Err("raw Goldilocks challenge exceeded BABYBEAR_FS_Q_SAFE".into());
+            }
+            let dq_full = BABYBEAR_FS_Q_SAFE - q_full;
+            a_col[row] = Goldilocks(raw);
+            q_vals[row] = q_full & 0xFFFF_FFFF;
+            q_top[row] = Goldilocks(q_full >> 32);
+            dq_vals[row] = dq_full & 0xFFFF_FFFF;
+            dq_top[row] = Goldilocks(dq_full >> 32);
+            set_r_honest(row, rem, &mut r_vals, &mut d_vals);
+        }
+    }
+
+    // Evaluate all MAC and EQ rows in topological order (`row = 0..4096`):
+    let sel_mac = &layout.vk_cols[0];
+    let sel_eq = &layout.vk_cols[1];
+    let sel_fs = &layout.vk_cols[2];
+    let src_a = &layout.vk_cols[4];
+    let src_b = &layout.vk_cols[5];
+    let src_c = &layout.vk_cols[6];
+    let rom_q_next_col = &layout.vk_cols[7];
+    let mut alias_injected = false;
+    let mut exact_pbb_injected = false;
+
+    for row in 0..HEM_EXEC_ROWS {
+        if sel_mac[row].0 == 1 {
+            let va = r_vals[src_a[row].0 as usize];
+            let vb = r_vals[src_b[row].0 as usize];
+            let vc = r_vals[src_c[row].0 as usize];
+            a_col[row] = Goldilocks(va);
+            b_col[row] = Goldilocks(vb);
+            c_col[row] = Goldilocks(vc);
+            let prod_sum = (va as u128) * (vb as u128) + (vc as u128);
+            let mut q_mac = (prod_sum / (BABYBEAR_PRIME_U64 as u128)) as u64;
+            let mut r_mac = (prod_sum % (BABYBEAR_PRIME_U64 as u128)) as u64;
+
+            if tamper == TrustlessHemTamper::NonCanonicalBabyBearAliasGtPbb
+                && !alias_injected
+                && q_mac >= 1
+                && (r_mac + BABYBEAR_PRIME_U64) < (1u64 << 32)
+            {
+                // Forged alias: `q' = q - 1`, `r' = r + p_BB < 2^32` (exact MAC match, passes 16-bit limbs, fails `r + d = p_BB - 1`!)
+                q_mac -= 1;
+                r_mac += BABYBEAR_PRIME_U64;
+                q_vals[row] = q_mac;
+                r_vals[row] = r_mac;
+                d_vals[row] = 0; // prover has no valid `d >= 0` in `[0, 2^32)`!
+                alias_injected = true;
+            } else if tamper == TrustlessHemTamper::NonCanonicalBabyBearExactPbbAlias
+                && !exact_pbb_injected
+                && q_mac >= 1
+                && r_mac == 0
+            {
+                // M3 fix: inject exact `r = p_BB` alias ONLY on a row where `a*b + c == q_mac * p_BB`
+                // (`r_honest == 0`), so MAC residual `a*b + c - q'*p_BB - r' == 0` IDENTICALLY and
+                // ONLY the canonical slack `r' + d == p_BB - 1` rejects!
+                q_mac -= 1;
+                q_vals[row] = q_mac;
+                r_vals[row] = BABYBEAR_PRIME_U64;
+                d_vals[row] = 0;
+                let mac_lhs = Goldilocks(va) * Goldilocks(vb) + Goldilocks(vc);
+                let mac_rhs = Goldilocks(q_mac) * Goldilocks(BABYBEAR_PRIME_U64) + Goldilocks(r_vals[row]);
+                assert_eq!(mac_lhs, mac_rhs, "M3 invariant: ExactPbbAlias MUST leave MAC residual == 0");
+                let slack_res = Goldilocks(r_vals[row]) + Goldilocks(d_vals[row]) - Goldilocks(BABYBEAR_PRIME_U64 - 1);
+                assert_ne!(slack_res, Goldilocks::ZERO, "M3 invariant: ExactPbbAlias MUST make canonical slack != 0");
+                exact_pbb_injected = true;
+            } else {
+                if tamper == TrustlessHemTamper::WrongBabyBearQuotient && row == layout.first_mac_row {
+                    q_mac = q_mac.wrapping_add(1);
+                }
+                q_vals[row] = q_mac;
+                set_r_honest(row, r_mac, &mut r_vals, &mut d_vals);
+            }
+        } else if sel_eq[row].0 == 1 {
+            a_col[row] = Goldilocks(r_vals[src_a[row].0 as usize]);
+            b_col[row] = Goldilocks(r_vals[src_b[row].0 as usize]);
+            c_col[row] = Goldilocks(r_vals[src_c[row].0 as usize]);
+            set_r_honest(row, 0, &mut r_vals, &mut d_vals);
+        } else if sel_fs[row].0 == 0 {
+            a_col[row] = Goldilocks(r_vals[src_a[row].0 as usize]);
+            b_col[row] = Goldilocks(r_vals[src_b[row].0 as usize]);
+            c_col[row] = Goldilocks(r_vals[src_c[row].0 as usize]);
+        }
+    }
+    if tamper == TrustlessHemTamper::NonCanonicalBabyBearAliasGtPbb && !alias_injected {
+        return Err("NonCanonicalBabyBearAliasGtPbb found no eligible MAC row".into());
+    }
+    if tamper == TrustlessHemTamper::NonCanonicalBabyBearExactPbbAlias && !exact_pbb_injected {
+        return Err("NonCanonicalBabyBearExactPbbAlias requires a MAC row with q_mac >= 1 and r_mac == 0".into());
+    }
+
+    // Wiring multiplicities `m_wire[j]` = count of reads of `(j, r[j])` across non-FS `a`, all `b`, all `c`:
+    let mut m_wire = vec![0u64; HEM_EXEC_ROWS];
+    for row in 0..HEM_EXEC_ROWS {
+        if sel_fs[row].0 == 0 {
+            m_wire[src_a[row].0 as usize] += 1;
+        }
+        m_wire[src_b[row].0 as usize] += 1;
+        m_wire[src_c[row].0 as usize] += 1;
+    }
+
+    // 4-state `Absent("sk-")` DFA trace on `payload_comm.padded_bytes`:
+    let mut dfa_s = vec![0u8; HEM_EXEC_ROWS];
+    let mut dfa_s_next = vec![0u8; HEM_EXEC_ROWS];
+    let mut dfa_b_slack = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut m_dfa_rom = vec![0u64; HEM_EXEC_ROWS];
+    let mut q_cur = 0u8;
+    for t in 0..HEM_EXEC_ROWS {
+        let byte_u8 = payload_comm.padded_bytes[t].0 as u8;
+        dfa_b_slack[t] = Goldilocks(255u64.saturating_sub(payload_comm.padded_bytes[t].0));
+        dfa_s[t] = q_cur;
+        let mut q_nxt = no_sk_dash_step_4state(q_cur, byte_u8);
+        if tamper == TrustlessHemTamper::ForgedDfaTransitionBypass && q_cur == 2 && byte_u8 == b'-' {
+            // Untrusted prover lies `(2, '-') -> 0` instead of sink `3`!
+            q_nxt = 0;
+        }
+        dfa_s_next[t] = q_nxt;
+        if q_nxt == no_sk_dash_step_4state(q_cur, byte_u8) {
+            m_dfa_rom[((q_cur as usize) << 8) | (byte_u8 as usize)] += 1;
+        }
+        q_cur = if tamper == TrustlessHemTamper::ForgedDfaShiftBreak && q_nxt == 3 {
+            // Untrusted prover breaks shift continuity `dfa_s[t+1] = 0 != dfa_s_next[t] = 3`!
+            0
+        } else {
+            q_nxt
+        };
+    }
+    let true_s_terminal = dfa_s_next[HEM_EXEC_ROWS - 1];
+    if tamper == TrustlessHemTamper::None && true_s_terminal >= 3 {
+        return Err("honest prover refused: payload contains forbidden \"sk-\" (DFA reached sink state 3)".into());
+    }
+    let claimed_s_terminal: u8 = if tamper == TrustlessHemTamper::ForgedDfaTerminalState {
+        0 // lie that terminal state is 0 even though `dfa_s_next[1023] == 3`!
+    } else {
+        true_s_terminal.min(2)
+    };
+    let s_terminal_ext = GoldilocksExt4::from_base(Goldilocks(claimed_s_terminal as u64));
+
+    // Split 16-bit limbs + count `[0, 2^16)` multiplicities `m_rng16[0..65536]`:
+    let mut r_lo = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut r_hi = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut d_lo = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut d_hi = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut q_lo = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut q_hi = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut dq_lo = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut dq_hi = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
+    let mut m_rng16 = vec![0u64; HEM_RNG16_ROWS];
+    for t in 0..HEM_EXEC_ROWS {
+        let vals10 = [
+            r_vals[t] & 0xFFFF,
+            (r_vals[t] >> 16) & 0xFFFF,
+            d_vals[t] & 0xFFFF,
+            (d_vals[t] >> 16) & 0xFFFF,
+            q_vals[t] & 0xFFFF,
+            (q_vals[t] >> 16) & 0xFFFF,
+            dq_vals[t] & 0xFFFF,
+            (dq_vals[t] >> 16) & 0xFFFF,
+            payload_comm.padded_bytes[t].0 & 0xFFFF,
+            dfa_b_slack[t].0 & 0xFFFF,
+        ];
+        r_lo[t] = Goldilocks(vals10[0]);
+        r_hi[t] = Goldilocks(vals10[1]);
+        d_lo[t] = Goldilocks(vals10[2]);
+        d_hi[t] = Goldilocks(vals10[3]);
+        q_lo[t] = Goldilocks(vals10[4]);
+        q_hi[t] = Goldilocks(vals10[5]);
+        dq_lo[t] = Goldilocks(vals10[6]);
+        dq_hi[t] = Goldilocks(vals10[7]);
+        for &u in &vals10 {
+            m_rng16[u as usize] += 1;
+        }
+    }
+    if tamper == TrustlessHemTamper::ForgedRange16Multiplicity {
+        m_rng16[0] = m_rng16[0].saturating_sub(1);
+    }
+
+    let wit1_cols: Vec<Vec<Goldilocks>> = vec![
+        a_col,
+        b_col,
+        c_col,
+        r_lo,
+        r_hi,
+        d_lo,
+        d_hi,
+        q_lo,
+        q_hi,
+        q_top,
+        dq_lo,
+        dq_hi,
+        dq_top,
+        m_wire.iter().map(|&x| Goldilocks(x)).collect(),
+        dfa_s.iter().map(|&x| Goldilocks(x as u64)).collect(),
+        dfa_s_next.iter().map(|&x| Goldilocks(x as u64)).collect(),
+        dfa_b_slack,
+        m_dfa_rom.iter().map(|&x| Goldilocks(x)).collect(),
+    ];
+    let mrng_col: Vec<Goldilocks> = m_rng16.iter().map(|&x| Goldilocks(x)).collect();
+
+    // Commit Phase-1 witness tables under dual Canopy (`Poseidon2-12` + `cSHAKE256`):
+    let wit1_canopy = Stage0MatrixCanopy::commit_base(2, &wit1_cols, UD100_BLOWUP, CANOPY_KEY_WIT1);
+    let mrng_canopy = Stage0MatrixCanopy::commit_base(4, &[mrng_col.clone()], UD100_BLOWUP, CANOPY_KEY_MRNG);
+    let wit1_p2_root = wit1_canopy.p2_root();
+    let wit1_cs_pin4 = wit1_canopy.cshake_root_pin4();
+    let mrng_p2_root = mrng_canopy.p2_root();
+    let mrng_cs_pin4 = mrng_canopy.cshake_root_pin4();
+
+    ch = fs_absorb_limbs_local(ch, b"WIT1_P2_ROOT", &wit1_p2_root);
+    ch = fs_absorb_limbs_local(ch, b"WIT1_CS_ROOT", &wit1_cs_pin4);
+    ch = fs_absorb_limbs_local(ch, b"MRNG_P2_ROOT", &mrng_p2_root);
+    ch = fs_absorb_limbs_local(ch, b"MRNG_CS_ROOT", &mrng_cs_pin4);
+    ch = fs_absorb_limbs_local(ch, b"DFA_S_TERM", &s_terminal_ext.to_u64_limbs());
+    let ch_logup_ckpt = ch;
+
+    // --------------------------------------------------------------------------------------------
+    // 3. Squeeze LogUp challenges AFTER Phase-1 commitment & build Phase-2 LogUp Helper Columns!
+    // --------------------------------------------------------------------------------------------
+    let gamma_w = fs_squeeze_ext4_local(ch_logup_ckpt, b"LU_GAMMA_W", 0);
+    let beta_w = fs_squeeze_ext4_local(ch_logup_ckpt, b"LU_BETA_W", 0);
+    let gamma_dfa = fs_squeeze_ext4_local(ch_logup_ckpt, b"LU_GAMMA_DFA", 0);
+    let beta_dfa = fs_squeeze_ext4_local(ch_logup_ckpt, b"LU_BETA_DFA", 0);
+    let gamma_sh = fs_squeeze_ext4_local(ch_logup_ckpt, b"LU_GAMMA_SH", 0);
+    let beta_sh = fs_squeeze_ext4_local(ch_logup_ckpt, b"LU_BETA_SH", 0);
+    let beta_16 = fs_squeeze_ext4_local(ch_logup_ckpt, b"LU_BETA_16", 0);
+    let gamma_dfa2 = gamma_dfa * gamma_dfa;
+
+    let mut h_w01 = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_w2r = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_dfa = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_sh = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_rng0 = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_rng1 = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_rng2 = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_rng3 = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut h_rng4 = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut s_rng16 = GoldilocksExt4::ZERO;
+
+    // M1 hardening: fail closed if a LogUp denominator pole (`== 0`) is ever hit (prob `<= 83,968 / p_GL^4 < 2^{-239}`)
+    // instead of silently computing `inv(0) = 0`.
+    let checked_inv = |d: GoldilocksExt4, label: &str| -> Result<GoldilocksExt4, String> {
+        if d == GoldilocksExt4::ZERO {
+            return Err(format!("LogUp exceptional zero-denominator pole hit at {label}"));
+        }
+        Ok(d.inv())
+    };
+
+    for t in 0..HEM_EXEC_ROWS {
+        let r_t = GoldilocksExt4::from_base(wit1_cols[3][t] + wit1_cols[4][t] * Goldilocks(1u64 << 16));
+        let dw_a = beta_w - (GoldilocksExt4::from_base(src_a[t]) + gamma_w.scale_base(wit1_cols[0][t]));
+        let dw_b = beta_w - (GoldilocksExt4::from_base(src_b[t]) + gamma_w.scale_base(wit1_cols[1][t]));
+        let n_wa = GoldilocksExt4::ONE - GoldilocksExt4::from_base(sel_fs[t]);
+        h_w01[t] = (n_wa * dw_b + dw_a) * checked_inv(dw_a * dw_b, "h_w01")?;
+
+        let dw_c = beta_w - (GoldilocksExt4::from_base(src_c[t]) + gamma_w.scale_base(wit1_cols[2][t]));
+        let dw_r = beta_w - (GoldilocksExt4::from_base(Goldilocks(t as u64)) + gamma_w * r_t);
+        let mw = GoldilocksExt4::from_base(wit1_cols[13][t]);
+        h_w2r[t] = (dw_r - mw * dw_c) * checked_inv(dw_c * dw_r, "h_w2r")?;
+
+        let dd_l = beta_dfa
+            - (GoldilocksExt4::from_base(wit1_cols[14][t])
+                + gamma_dfa.scale_base(payload_comm.padded_bytes[t])
+                + gamma_dfa2.scale_base(wit1_cols[15][t]));
+        let dd_r = beta_dfa
+            - (GoldilocksExt4::from_base(Goldilocks(((t >> 8) & 3) as u64))
+                + gamma_dfa.scale_base(Goldilocks((t & 0xFF) as u64))
+                + gamma_dfa2.scale_base(rom_q_next_col[t]));
+        let md = GoldilocksExt4::from_base(wit1_cols[17][t]);
+        h_dfa[t] = (dd_r - md * dd_l) * checked_inv(dd_l * dd_r, "h_dfa")?;
+
+        let ds_l = beta_sh
+            - (GoldilocksExt4::from_base(Goldilocks((t + 1) as u64))
+                + gamma_sh.scale_base(wit1_cols[15][t]));
+        let ds_r = beta_sh
+            - (GoldilocksExt4::from_base(Goldilocks(t as u64)) + gamma_sh.scale_base(wit1_cols[14][t]));
+        let nl = if t + 1 == HEM_EXEC_ROWS { GoldilocksExt4::ZERO } else { GoldilocksExt4::ONE };
+        let nr = if t == 0 { GoldilocksExt4::ZERO } else { GoldilocksExt4::ONE };
+        h_sh[t] = (nl * ds_r - nr * ds_l) * checked_inv(ds_l * ds_r, "h_sh")?;
+
+        let pair_inv = |x0: Goldilocks, x1: Goldilocks| -> Result<GoldilocksExt4, String> {
+            let d0 = beta_16 - GoldilocksExt4::from_base(x0);
+            let d1 = beta_16 - GoldilocksExt4::from_base(x1);
+            Ok((d0 + d1) * checked_inv(d0 * d1, "h_rng")?)
+        };
+        h_rng0[t] = pair_inv(wit1_cols[3][t], wit1_cols[4][t])?;
+        h_rng1[t] = pair_inv(wit1_cols[5][t], wit1_cols[6][t])?;
+        h_rng2[t] = pair_inv(wit1_cols[7][t], wit1_cols[8][t])?;
+        h_rng3[t] = pair_inv(wit1_cols[10][t], wit1_cols[11][t])?;
+        h_rng4[t] = pair_inv(payload_comm.padded_bytes[t], wit1_cols[16][t])?;
+        s_rng16 = s_rng16 + h_rng0[t] + h_rng1[t] + h_rng2[t] + h_rng3[t] + h_rng4[t];
+    }
+
+    // Build `h_rng_tab[0..65536]` in parallel, failing closed on any exceptional zero denominator:
+    let h_rng_tab: Vec<GoldilocksExt4> = (0..HEM_RNG16_ROWS)
+        .into_par_iter()
+        .map(|u| -> Result<GoldilocksExt4, String> {
+            let denom = beta_16 - GoldilocksExt4::from_base(Goldilocks(u as u64));
+            if denom == GoldilocksExt4::ZERO {
+                return Err(format!("LogUp exceptional zero-denominator pole at Table 2 row {u}"));
+            }
+            Ok(denom.inv().scale_base(mrng_col[u]))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let wit2_cols: Vec<Vec<GoldilocksExt4>> = vec![
+        h_w01, h_w2r, h_dfa, h_sh, h_rng0, h_rng1, h_rng2, h_rng3, h_rng4,
+    ];
+    let wit2_canopy = Stage0MatrixCanopy::commit_ext4(3, &wit2_cols, UD100_BLOWUP, CANOPY_KEY_WIT2);
+    let hrng_canopy = Stage0MatrixCanopy::commit_ext4(5, &[h_rng_tab.clone()], UD100_BLOWUP, CANOPY_KEY_HRNG);
+    let wit2_p2_root = wit2_canopy.p2_root();
+    let wit2_cs_pin4 = wit2_canopy.cshake_root_pin4();
+    let hrng_p2_root = hrng_canopy.p2_root();
+    let hrng_cs_pin4 = hrng_canopy.cshake_root_pin4();
+
+    ch = fs_absorb_limbs_local(ch, b"WIT2_P2_ROOT", &wit2_p2_root);
+    ch = fs_absorb_limbs_local(ch, b"WIT2_CS_ROOT", &wit2_cs_pin4);
+    ch = fs_absorb_limbs_local(ch, b"HRNG_P2_ROOT", &hrng_p2_root);
+    ch = fs_absorb_limbs_local(ch, b"HRNG_CS_ROOT", &hrng_cs_pin4);
+    ch = fs_absorb_limbs_local(ch, b"LOGUP_S_RNG16", &s_rng16.to_u64_limbs());
+    let ch_sc_ckpt = ch;
+
+    // --------------------------------------------------------------------------------------------
+    // 4. Table 1 (`N_exec = 4096`) 12-Round Degree-4 Sumcheck + Lockstep `UD-100` BaseFold!
+    // --------------------------------------------------------------------------------------------
+    let lambda_pub = fs_squeeze_ext4_local(ch_sc_ckpt, b"SC_LAMBDA_PUB", 0);
+    let alpha_exec = fs_squeeze_ext4_local(ch_sc_ckpt, b"SC_ALPHA_EXEC", 0);
+    let tau_exec: Vec<GoldilocksExt4> = (0..HEM_EXEC_VARS)
+        .map(|j| fs_squeeze_ext4_local(ch_sc_ckpt, b"SC_TAU_EXEC", j as u64))
+        .collect();
+    let exec_ch = ExecChallengeTuple {
+        gamma_w,
+        beta_w,
+        gamma_dfa,
+        beta_dfa,
+        gamma_sh,
+        beta_sh,
+        beta_16,
+        alpha_exec,
+    };
+
+    // Build all 37 column tables as `Vec<GoldilocksExt4>` for folding during Table 1 sumcheck:
+    let mut cols37: Vec<Vec<GoldilocksExt4>> = Vec::with_capacity(37);
+    for col in &layout.vk_cols {
+        cols37.push(col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
+    }
+    cols37.push(payload_comm.padded_bytes.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
+    cols37.push(w_bb_comm.w_bb_col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
+    for col in &wit1_cols {
+        cols37.push(col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
+    }
+    for col in &wit2_cols {
+        cols37.push(col.clone());
+    }
+    assert_eq!(cols37.len(), 37);
+
+    let mut eq_tau_t = build_eq_table_lsb_gl_ext4(&tau_exec);
+    let mut idx_t: Vec<GoldilocksExt4> = (0..HEM_EXEC_ROWS)
+        .map(|t| GoldilocksExt4::from_base(Goldilocks(t as u64)))
+        .collect();
+    let mut rom_b_t: Vec<GoldilocksExt4> = (0..HEM_EXEC_ROWS)
+        .map(|t| GoldilocksExt4::from_base(Goldilocks((t & 0xFF) as u64)))
+        .collect();
+    let mut rom_q_t: Vec<GoldilocksExt4> = (0..HEM_EXEC_ROWS)
+        .map(|t| GoldilocksExt4::from_base(Goldilocks(((t >> 8) & 3) as u64)))
+        .collect();
+    let mut eq_first_t = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    eq_first_t[0] = GoldilocksExt4::ONE;
+    let mut eq_last_t = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    eq_last_t[HEM_EXEC_ROWS - 1] = GoldilocksExt4::ONE;
+
+    // Sparse public selectors `pub_sel_r[t] = sum_{i} lambda^{n-1-i} * [t == pub_r_indices[i]]`:
+    let mut pub_sel_r_t = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let n_pr = layout.pub_r_indices.len();
+    let mut lp = GoldilocksExt4::ONE;
+    for &idx in layout.pub_r_indices.iter().rev() {
+        pub_sel_r_t[idx as usize] = pub_sel_r_t[idx as usize] + lp;
+        lp = lp * lambda_pub;
+    }
+    let mut pub_sel_a_t = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    let mut lp = GoldilocksExt4::ONE;
+    for &idx in layout.pub_a_indices.iter().rev() {
+        pub_sel_a_t[idx as usize] = pub_sel_a_t[idx as usize] + lp;
+        lp = lp * lambda_pub;
+    }
+    let _ = n_pr;
+
+    let inv2_gl = GOLDILOCKS_INV2;
+    let inv6_gl = Goldilocks(6).inv();
+    let inv12_gl = Goldilocks(12).inv();
+    let two_gl = Goldilocks::TWO;
+    let three_gl = Goldilocks(3);
+    let four_gl = Goldilocks(4);
+
+    let mut t1_sc_rounds = Vec::with_capacity(HEM_EXEC_VARS);
+    let mut z_exec = Vec::with_capacity(HEM_EXEC_VARS);
+    for rnd in 0..HEM_EXEC_VARS {
+        let half = eq_tau_t.len() / 2;
+        let eval_t1_pair = |i: usize| -> [GoldilocksExt4; 5] {
+            let extrap = |v0: GoldilocksExt4, v1: GoldilocksExt4| -> [GoldilocksExt4; 5] {
+                let d = v1 - v0;
+                [v0, v1, v0 - d, v1 + d, v0 - d.scale_base(two_gl)]
+            };
+            let mut pts_v = [[GoldilocksExt4::ZERO; 37]; 5];
+            for c in 0..37 {
+                let ex = extrap(cols37[c][2 * i], cols37[c][2 * i + 1]);
+                for p in 0..5 {
+                    pts_v[p][c] = ex[p];
+                }
+            }
+            let e_tau = extrap(eq_tau_t[2 * i], eq_tau_t[2 * i + 1]);
+            let e_idx = extrap(idx_t[2 * i], idx_t[2 * i + 1]);
+            let e_rb = extrap(rom_b_t[2 * i], rom_b_t[2 * i + 1]);
+            let e_rq = extrap(rom_q_t[2 * i], rom_q_t[2 * i + 1]);
+            let e_f0 = extrap(eq_first_t[2 * i], eq_first_t[2 * i + 1]);
+            let e_fl = extrap(eq_last_t[2 * i], eq_last_t[2 * i + 1]);
+            let e_pr = extrap(pub_sel_r_t[2 * i], pub_sel_r_t[2 * i + 1]);
+            let e_pa = extrap(pub_sel_a_t[2 * i], pub_sel_a_t[2 * i + 1]);
+            let mut out = [GoldilocksExt4::ZERO; 5];
+            for p in 0..5 {
+                out[p] = eval_g_exec_point(
+                    &pts_v[p], e_tau[p], e_idx[p], e_rb[p], e_rq[p], e_f0[p], e_fl[p], e_pr[p], e_pa[p],
+                    &exec_ch,
+                );
+            }
+            out
+        };
+        let s_pts = if half >= 256 {
+            (0..half)
+                .into_par_iter()
+                .map(eval_t1_pair)
+                .reduce(
+                    || [GoldilocksExt4::ZERO; 5],
+                    |a, b| [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3], a[4] + b[4]],
+                )
+        } else {
+            let mut acc = [GoldilocksExt4::ZERO; 5];
+            for i in 0..half {
+                let v = eval_t1_pair(i);
+                for p in 0..5 {
+                    acc[p] = acc[p] + v[p];
+                }
+            }
+            acc
+        };
+        // Interpolate degree-4 monomial coeffs `(c0, c1, c2, c3, c4)` from `{0, 1, -1, 2, -2}`:
+        let c0 = s_pts[0];
+        let e1 = (s_pts[1] + s_pts[2]).scale_base(inv2_gl) - c0;
+        let o1 = (s_pts[1] - s_pts[2]).scale_base(inv2_gl);
+        let e2 = (s_pts[3] + s_pts[4]).scale_base(inv2_gl) - c0;
+        let o2 = (s_pts[3] - s_pts[4]).scale_base(inv2_gl);
+        let c4 = (e2 - e1.scale_base(four_gl)).scale_base(inv12_gl);
+        let c2 = e1 - c4;
+        let c3 = (o2 - o1.scale_base(two_gl)).scale_base(inv6_gl);
+        let _ = three_gl;
+        t1_sc_rounds.push([c0, c2, c3, c4]);
+
+        ch = fs_absorb_limbs_local(ch, b"T1_SC_C0", &c0.to_u64_limbs());
+        ch = fs_absorb_limbs_local(ch, b"T1_SC_C2", &c2.to_u64_limbs());
+        ch = fs_absorb_limbs_local(ch, b"T1_SC_C3", &c3.to_u64_limbs());
+        ch = fs_absorb_limbs_local(ch, b"T1_SC_C4", &c4.to_u64_limbs());
+        let z_j = fs_squeeze_ext4_local(ch, b"T1_SC_Z", rnd as u64);
+        z_exec.push(z_j);
+
+        let fold_vec = |v: &[GoldilocksExt4]| -> Vec<GoldilocksExt4> {
+            let mut out = Vec::with_capacity(half);
+            for i in 0..half {
+                out.push(v[2 * i] + z_j * (v[2 * i + 1] - v[2 * i]));
+            }
+            out
+        };
+        for c in 0..37 {
+            cols37[c] = fold_vec(&cols37[c]);
+        }
+        eq_tau_t = fold_vec(&eq_tau_t);
+        idx_t = fold_vec(&idx_t);
+        rom_b_t = fold_vec(&rom_b_t);
+        rom_q_t = fold_vec(&rom_q_t);
+        eq_first_t = fold_vec(&eq_first_t);
+        eq_last_t = fold_vec(&eq_last_t);
+        pub_sel_r_t = fold_vec(&pub_sel_r_t);
+        pub_sel_a_t = fold_vec(&pub_sel_a_t);
+    }
+
+    let mut t1_evals_37 = [GoldilocksExt4::ZERO; 37];
+    for k in 0..37 {
+        t1_evals_37[k] = cols37[k][0];
+        ch = fs_absorb_limbs_local(ch, b"T1_EV", &t1_evals_37[k].to_u64_limbs());
+    }
+
+    // Batch all 37 columns of Table 1 in Horner order `F_1 = sum_{k=0..36} eta_1^{36-k} col_k`:
+    let eta_1 = fs_squeeze_ext4_local(ch, b"T1_BF_ETA", 0);
+    let mut f1_poly = vec![GoldilocksExt4::ZERO; HEM_EXEC_ROWS];
+    for t in 0..HEM_EXEC_ROWS {
+        let mut acc = GoldilocksExt4::ZERO;
+        for col in &layout.vk_cols {
+            acc = acc * eta_1 + GoldilocksExt4::from_base(col[t]);
+        }
+        acc = acc * eta_1 + GoldilocksExt4::from_base(payload_comm.padded_bytes[t]);
+        acc = acc * eta_1 + GoldilocksExt4::from_base(w_bb_comm.w_bb_col[t]);
+        for col in &wit1_cols {
+            acc = acc * eta_1 + GoldilocksExt4::from_base(col[t]);
+        }
+        for col in &wit2_cols {
+            acc = acc * eta_1 + col[t];
+        }
+        f1_poly[t] = acc;
+    }
+
+    let mut t1_bf = prove_lockstep_basefold(f1_poly, &z_exec, T1_STAGE_KS, T1_BF_KEY_SEED, b"T1_BF", &mut ch);
+    let (t1_pow_nonce, ch_after_t1_pow) = grind_p2_pow(P2_DOMAIN_FS_POW_T1, ch, UD100_POW_BITS);
+    ch = ch_after_t1_pow;
+
+    let mut t1_queries = Vec::with_capacity(UD100_NUM_QUERIES);
+    for q_idx in 0..UD100_NUM_QUERIES {
+        let mut qlab = pack_bytes_7_limbs(b"T1_UD100_Q");
+        qlab.push(q_idx as u64);
+        let f0 = (p2_sponge_hash_limbs(P2_DOMAIN_FS_SQUEEZE_IDX, ch, &qlab)[0] as usize) & 0x3FFF;
+        let mut cur_idx = f0;
+        let mut stage_fibers = Vec::with_capacity(3);
+        for s_idx in 0..3 {
+            let st = &t1_bf.stages[s_idx];
+            let fi = cur_idx & ((1usize << st.log_fibers) - 1);
+            let mut fib = st.fibers[fi].clone();
+            if tamper == TrustlessHemTamper::TamperedStage1BaseFoldFiber && q_idx == 0 && s_idx == 0 {
+                fib[0] = fib[0] + GoldilocksExt4::ONE;
+            }
+            stage_fibers.push((fi as u32, fib, st.p2_siblings(fi)));
+            cur_idx = fi;
+        }
+        let mut wit1_cs_sibs = wit1_canopy.cshake_siblings(f0);
+        if tamper == TrustlessHemTamper::TamperedStage0CShakeSibling && q_idx == 0 {
+            wit1_cs_sibs[0][0] ^= 0x01;
+        }
+        t1_queries.push(Table1QueryOpening {
+            f0: f0 as u32,
+            vk_words: vk.canopy.fiber_words(f0).to_vec(),
+            vk_p2_sibs: vk.canopy.p2_siblings(f0),
+            vk_cs_sibs: vk.canopy.cshake_siblings(f0),
+            bytes_words: payload_comm.canopy.fiber_words(f0).to_vec(),
+            bytes_p2_sibs: payload_comm.canopy.p2_siblings(f0),
+            bytes_cs_sibs: payload_comm.canopy.cshake_siblings(f0),
+            w_bb_words: w_bb_comm.canopy.fiber_words(f0).to_vec(),
+            w_bb_p2_sibs: w_bb_comm.canopy.p2_siblings(f0),
+            w_bb_cs_sibs: w_bb_comm.canopy.cshake_siblings(f0),
+            wit1_words: wit1_canopy.fiber_words(f0).to_vec(),
+            wit1_p2_sibs: wit1_canopy.p2_siblings(f0),
+            wit1_cs_sibs,
+            wit2_words: wit2_canopy.fiber_words(f0).to_vec(),
+            wit2_p2_sibs: wit2_canopy.p2_siblings(f0),
+            wit2_cs_sibs: wit2_canopy.cshake_siblings(f0),
+            stage_fibers,
+        });
+    }
+    let _ = &mut t1_bf;
+
+    // --------------------------------------------------------------------------------------------
+    // 5. Table 2 (`N_rng = 65536 = 2^16`) 16-Round Degree-3 Sumcheck + Lockstep `UD-100` BaseFold!
+    // --------------------------------------------------------------------------------------------
+    let alpha_rng = fs_squeeze_ext4_local(ch_sc_ckpt, b"SC_ALPHA_RNG", 0);
+    let tau_rng: Vec<GoldilocksExt4> = (0..HEM_RNG16_VARS)
+        .map(|j| fs_squeeze_ext4_local(ch_sc_ckpt, b"SC_TAU_RNG", j as u64))
+        .collect();
+    let mut eq_tau_r = build_eq_table_lsb_gl_ext4(&tau_rng);
+    let mut id_r: Vec<GoldilocksExt4> = (0..HEM_RNG16_ROWS)
+        .map(|u| GoldilocksExt4::from_base(Goldilocks(u as u64)))
+        .collect();
+    let mut m_r: Vec<GoldilocksExt4> = mrng_col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect();
+    let mut h_r: Vec<GoldilocksExt4> = h_rng_tab.clone();
+
+    let mut t2_sc_rounds = Vec::with_capacity(HEM_RNG16_VARS);
+    let mut z_rng = Vec::with_capacity(HEM_RNG16_VARS);
+    for rnd in 0..HEM_RNG16_VARS {
+        let half = m_r.len() / 2;
+        let eval_pair = |i: usize| -> [GoldilocksExt4; 4] {
+            let (e0, e1) = (eq_tau_r[2 * i], eq_tau_r[2 * i + 1]);
+            let (id0, id1) = (id_r[2 * i], id_r[2 * i + 1]);
+            let (m0, m1) = (m_r[2 * i], m_r[2 * i + 1]);
+            let (h0, h1) = (h_r[2 * i], h_r[2 * i + 1]);
+            let pts_e = [e0, e1, e0 - (e1 - e0), e1 + (e1 - e0)];
+            let pts_id = [id0, id1, id0 - (id1 - id0), id1 + (id1 - id0)];
+            let pts_m = [m0, m1, m0 - (m1 - m0), m1 + (m1 - m0)];
+            let pts_h = [h0, h1, h0 - (h1 - h0), h1 + (h1 - h0)];
+            let mut out = [GoldilocksExt4::ZERO; 4];
+            for p in 0..4 {
+                out[p] = pts_e[p] * (pts_h[p] * (beta_16 - pts_id[p]) - pts_m[p]) + alpha_rng * pts_h[p];
+            }
+            out
+        };
+        let s_pts = if half >= 1024 {
+            (0..half)
+                .into_par_iter()
+                .map(eval_pair)
+                .reduce(
+                    || [GoldilocksExt4::ZERO; 4],
+                    |a, b| [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]],
+                )
+        } else {
+            let mut acc = [GoldilocksExt4::ZERO; 4];
+            for i in 0..half {
+                let v = eval_pair(i);
+                for p in 0..4 {
+                    acc[p] = acc[p] + v[p];
+                }
+            }
+            acc
+        };
+        // Interpolate degree-3 monomial coeffs `(c0, c1, c2, c3)` from `{0, 1, -1, 2}`:
+        let c0 = s_pts[0];
+        let c2 = (s_pts[1] + s_pts[2]).scale_base(inv2_gl) - c0;
+        let o1 = (s_pts[1] - s_pts[2]).scale_base(inv2_gl);
+        let c3 = (s_pts[3] - c0 - c2.scale_base(four_gl) - o1.scale_base(two_gl)).scale_base(inv6_gl);
+        t2_sc_rounds.push([c0, c2, c3]);
+
+        ch = fs_absorb_limbs_local(ch, b"T2_SC_C0", &c0.to_u64_limbs());
+        ch = fs_absorb_limbs_local(ch, b"T2_SC_C2", &c2.to_u64_limbs());
+        ch = fs_absorb_limbs_local(ch, b"T2_SC_C3", &c3.to_u64_limbs());
+        let z_j = fs_squeeze_ext4_local(ch, b"T2_SC_Z", rnd as u64);
+        z_rng.push(z_j);
+
+        let fold_par = |v: &[GoldilocksExt4]| -> Vec<GoldilocksExt4> {
+            if half >= 1024 {
+                (0..half)
+                    .into_par_iter()
+                    .map(|i| v[2 * i] + z_j * (v[2 * i + 1] - v[2 * i]))
+                    .collect()
+            } else {
+                (0..half).map(|i| v[2 * i] + z_j * (v[2 * i + 1] - v[2 * i])).collect()
+            }
+        };
+        eq_tau_r = fold_par(&eq_tau_r);
+        id_r = fold_par(&id_r);
+        m_r = fold_par(&m_r);
+        h_r = fold_par(&h_r);
+    }
+
+    let t2_evals_2 = [m_r[0], h_r[0]];
+    ch = fs_absorb_limbs_local(ch, b"T2_EV_M", &t2_evals_2[0].to_u64_limbs());
+    ch = fs_absorb_limbs_local(ch, b"T2_EV_H", &t2_evals_2[1].to_u64_limbs());
+
+    let eta_2 = fs_squeeze_ext4_local(ch, b"T2_BF_ETA", 0);
+    let f2_poly: Vec<GoldilocksExt4> = (0..HEM_RNG16_ROWS)
+        .into_par_iter()
+        .map(|u| eta_2.scale_base(mrng_col[u]) + h_rng_tab[u])
+        .collect();
+
+    let t2_bf = prove_lockstep_basefold(f2_poly, &z_rng, T2_STAGE_KS, T2_BF_KEY_SEED, b"T2_BF", &mut ch);
+    let (t2_pow_nonce, ch_after_t2_pow) = grind_p2_pow(P2_DOMAIN_FS_POW_T2, ch, UD100_POW_BITS);
+    ch = ch_after_t2_pow;
+
+    let mut t2_queries = Vec::with_capacity(UD100_NUM_QUERIES);
+    for q_idx in 0..UD100_NUM_QUERIES {
+        let mut qlab = pack_bytes_7_limbs(b"T2_UD100_Q");
+        qlab.push(q_idx as u64);
+        let f0 = (p2_sponge_hash_limbs(P2_DOMAIN_FS_SQUEEZE_IDX, ch, &qlab)[0] as usize) & 0x3_FFFF;
+        let mut cur_idx = f0;
+        let mut stage_fibers = Vec::with_capacity(4);
+        for s_idx in 0..4 {
+            let st = &t2_bf.stages[s_idx];
+            let fi = cur_idx & ((1usize << st.log_fibers) - 1);
+            stage_fibers.push((fi as u32, st.fibers[fi].clone(), st.p2_siblings(fi)));
+            cur_idx = fi;
+        }
+        t2_queries.push(Table2QueryOpening {
+            f0: f0 as u32,
+            mrng_words: mrng_canopy.fiber_words(f0).to_vec(),
+            mrng_p2_sibs: mrng_canopy.p2_siblings(f0),
+            mrng_cs_sibs: mrng_canopy.cshake_siblings(f0),
+            hrng_words: hrng_canopy.fiber_words(f0).to_vec(),
+            hrng_p2_sibs: hrng_canopy.p2_siblings(f0),
+            hrng_cs_sibs: hrng_canopy.cshake_siblings(f0),
+            stage_fibers,
+        });
+    }
+
+    let internal = TrustlessHemInternalProof {
+        bb_round_polys,
+        bb_raw_chals,
+        wit1_p2_root,
+        wit1_cs_pin4,
+        mrng_p2_root,
+        mrng_cs_pin4,
+        s_terminal: s_terminal_ext,
+        wit2_p2_root,
+        wit2_cs_pin4,
+        hrng_p2_root,
+        hrng_cs_pin4,
+        s_rng16,
+        ch_logup_ckpt,
+        ch_sc_ckpt,
+        t1_sc_rounds,
+        t1_evals_37,
+        t1_bf,
+        t1_pow_nonce,
+        t1_queries,
+        t2_sc_rounds,
+        t2_evals_2,
+        t2_bf,
+        t2_pow_nonce,
+        t2_queries,
+    };
+    let asm = emit_trustless_hem_stream(&stmt, layout, Some(&internal));
+    let (wire_bytes, _) = asm.build_wire_bytes_and_pdig(None);
+    let public_program_hash = asm.compute_public_program_hash();
+    let num_records = asm.records.len();
+
+    Ok(TrustlessHemProofBundle {
+        stmt,
+        wire_bytes,
+        public_program_hash,
+        s_terminal: claimed_s_terminal,
+        num_records,
+    })
 }
