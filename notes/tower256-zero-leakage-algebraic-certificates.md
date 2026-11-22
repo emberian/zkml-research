@@ -16,8 +16,8 @@ We close both gaps end-to-end with an algebraic `Tower256` (`GF(2^256)`) multili
 
 | Component | Artifact | Lines | Pins / Tests | Measured Result (`[EXECUTED]`) |
 |---|---|---:|---:|---|
-| Algebraic controller, hiding, `LogUp256`, & soundness | [Tower256AlgebraicCert.lean](file:///Users/ember/dev/minidregg/Compiler/Tower256AlgebraicCert.lean#L1-L4718) | 4,718 | 17 `#print axioms` | Kernel-verified in `215.18s` (`0 sorry`, `0` custom `axiom`, `0 native_decide`, `0 #guard`, `0` warnings) |
-| Separated `#eval` conformance emitter | [Tower256AlgebraicCertConformance.lean](file:///Users/ember/dev/minidregg/Compiler/Tower256AlgebraicCertConformance.lean#L1-L142) | 142 | 1 `#print axioms` + 4 vectors | Emits `.accept true`, `.accept false`, `.count 2`, `.bound 2 4` + rejects 5 negative mutants via `checkAlgebraic` |
+| Algebraic controller, hiding, `LogUp256`, & soundness | [Tower256AlgebraicCert.lean](file:///Users/ember/dev/minidregg/Compiler/Tower256AlgebraicCert.lean#L1-L4718) | 4,718 | 17 `#print axioms` | Kernel-verified in `124.17s` (`0 sorry`, `0` custom `axiom`, `0 native_decide`, `0 #guard`, `0` warnings) |
+| Separated native conformance emitter | [Tower256AlgebraicCertConformance.lean](file:///Users/ember/dev/minidregg/Compiler/Tower256AlgebraicCertConformance.lean#L1-L143) | 143 | 1 `#print axioms` + 4 vectors | `2.83s` kernel check + `178.19s` `0`-stub native `leanc` execution emitting `.accept`/`.count`/`.bound` + 5 mutant checks |
 | Native `Tower256` prover, BaseFold, & Octopus wire codec | [tower256_algebraic_cert.rs](file:///Users/ember/dev/minidregg/prover/src/tower256_algebraic_cert.rs#L1-L3591) | 3,591 | 2 unit + 3 E2E suites | `0` verifier inversions; precomputed coset-theta novel-basis encoder + Octopus multiproof deduplication |
 | Conformance, `UD-100` (`q=148`) bench, & falsifier suite | [tower256_algebraic_cert.rs (tests)](file:///Users/ember/dev/minidregg/prover/tests/tower256_algebraic_cert.rs#L1-L663) | 663 | 4 golden + 10 attacks | Bit-exact Lean parity; `0` leaked `>= 8B` slices; `0` 1-byte pin correlations; all sumcheck & BaseFold coeffs blinded |
 
@@ -52,12 +52,12 @@ Executed via `CARGO_TARGET_DIR=/Users/ember/dev/minidregg/prover/target-algcert 
 
 | Document Size | Grid (`d, ell, q`) | Policy + Claim | Prove (`ms`) | Verify (`ms`) | Prover `Keccak-f` | Verifier `Keccak-f` | Octopus Wire Bytes | Leaked `>=8B` / `1B` Pin Corr |
 |---:|---|---:|---:|---:|---:|---:|---:|---:|
-| `1,024 B` (`1 KiB`) | `d=10, ell=13, q=148` | `Absent("sk-")` `[.accept true]` | `482.02` | `30.60` | `285,849` | `87,651` | `538,554 B` (`525.9 KiB`) | `0` / `0` |
-| `1,024 B` (`1 KiB`) | `d=12, ell=15, q=148` | `Markers(TODO\|RULE)` `[.bound 2..9]` | `1,712.17` | `67.32` | `1,134,841` | `122,379` | `707,651 B` (`691.1 KiB`) | `0` / `0` |
-| `4,096 B` (`4 KiB`) | `d=12, ell=15, q=148` | `Absent("sk-")` `[.accept true]` | `1,830.62` | `67.75` | `1,122,433` | `109,971` | `699,166 B` (`682.8 KiB`) | `0` / `0` |
-| `4,096 B` (`4 KiB`) | `d=12, ell=15, q=148` | `Markers(TODO\|RULE)` `[.bound 2..25]` | `1,628.76` | `64.20` | `1,134,841` | `122,379` | `719,907 B` (`703.0 KiB`) | `0` / `0` |
-| `16,384 B` (`16 KiB`) | `d=14, ell=17, q=148` | `Absent("sk-")` `[.accept true]` | `6,522.34` | `87.68` | `4,465,911` | `134,801` | `919,522 B` (`898.0 KiB`) | `0` / `0` |
-| `16,384 B` (`16 KiB`) | `d=14, ell=17, q=148` | `Markers(TODO\|RULE)` `[.bound 2..95]` | `7,125.36` | `76.18` | `4,478,333` | `147,223` | `917,447 B` (`895.9 KiB`) | `0` / `0` |
+| `1,024 B` (`1 KiB`) | `d=10, ell=13, q=148` | `Absent("sk-")` `[.accept true]` | `370.76` | `27.75` | `285,849` | `87,651` | `538,554 B` (`525.9 KiB`) | `0` / `0` |
+| `1,024 B` (`1 KiB`) | `d=12, ell=15, q=148` | `Markers(TODO\|RULE)` `[.bound 2..9]` | `1,016.10` | `38.35` | `1,134,841` | `122,379` | `707,651 B` (`691.1 KiB`) | `0` / `0` |
+| `4,096 B` (`4 KiB`) | `d=12, ell=15, q=148` | `Absent("sk-")` `[.accept true]` | `1,029.54` | `35.71` | `1,122,433` | `109,971` | `699,166 B` (`682.8 KiB`) | `0` / `0` |
+| `4,096 B` (`4 KiB`) | `d=12, ell=15, q=148` | `Markers(TODO\|RULE)` `[.bound 2..25]` | `1,052.06` | `38.70` | `1,134,841` | `122,379` | `719,907 B` (`703.0 KiB`) | `0` / `0` |
+| `16,384 B` (`16 KiB`) | `d=14, ell=17, q=148` | `Absent("sk-")` `[.accept true]` | `4,373.39` | `45.37` | `4,465,911` | `134,801` | `919,522 B` (`898.0 KiB`) | `0` / `0` |
+| `16,384 B` (`16 KiB`) | `d=14, ell=17, q=148` | `Markers(TODO\|RULE)` `[.bound 2..95]` | `4,443.81` | `48.69` | `4,478,333` | `147,223` | `917,447 B` (`895.9 KiB`) | `0` / `0` |
 
 ---
 

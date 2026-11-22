@@ -1,0 +1,1760 @@
+diff --git a/lean/Obend/Core/Bidirectional.lean b/lean/Obend/Core/Bidirectional.lean
+index d5f54482..80323076 100644
+--- a/lean/Obend/Core/Bidirectional.lean
++++ b/lean/Obend/Core/Bidirectional.lean
+@@ -218,12 +218,18 @@ def armsShareable (assumptions : Assumptions) (row : Ty) (arms : List (String ×
+     | some payload => payload.shareableUnder assumptions.shareableVariables
+     | none => true
+ 
++/-- Any arm whose resolved payload bears custody forces a `linear` payload binding (`mustBeLinear`). -/
++def armsCustody (row : Ty) (arms : List (String × Term)) : Bool :=
++  arms.any fun arm => match rowMember row arm.1 with
++    | some payload => payload.bearsCustody
++    | none => false
++
+ /-- The case's payload quantity: its annotation's, else `caseQuantity`. -/
+ def caseQuantityAt (assumptions : Assumptions) (annotations : Annotations) (path : List Nat) (context : Context)
+     (uses : Uses) (row : Ty) (arms : List (String × Term)) : Quantity :=
+   match annotations path with
+   | some annotation => annotation.parameter
+-  | none => caseQuantity assumptions context uses (armsShareable assumptions row arms)
++  | none => caseQuantity assumptions context uses (armsShareable assumptions row arms) (armsCustody row arms)
+ 
+ theorem caseQuantityAt_some {assumptions : Assumptions} {annotations : Annotations} {path : List Nat}
+     {annotation : LambdaAnnotation} (h : annotations path = some annotation) (context : Context) (uses : Uses)
+@@ -252,7 +258,7 @@ def checkSpine (assumptions : Assumptions) (context : Context) (path : List Nat)
+         if agrees : sameType assumptions actual member = true then do
+           let ⟨hc⟩ ← need (!member.isComputation) (.activityMisplaced (path ++ [1]) member)
+           let ⟨ha⟩ ← need (caseAllowed assumptions quantity context uses) (caseRefusal path quantity context uses)
+-          let ⟨hu⟩ ← need (quantity != .unrestricted || member.shareableUnder assumptions.shareableVariables)
++          let ⟨hu⟩ ← need (validContext assumptions.shareableVariables [⟨member, quantity⟩])
+             (.notShareable (path ++ [1]) member)
+           let rest ← checkSpine assumptions context path uses row names codomain
+           pure ⟨rest.1, reuse, quantity, member, codomain, shape,
+diff --git a/lean/Obend/Core/Check.lean b/lean/Obend/Core/Check.lean
+index cc1b6b88..71e2eb67 100644
+--- a/lean/Obend/Core/Check.lean
++++ b/lean/Obend/Core/Check.lean
+@@ -391,27 +391,32 @@ def argumentAllowed (assumptions : Assumptions) (quantity : Quantity)
+ it), so this is `argumentAllowed`'s quantity clauses. A scrutinee that uses a `linear` hypothesis
+ binds a `linear` payload, which the arm uses exactly once; one whose captures are not all reusable
+ binds at most `affine`; an `unrestricted` payload needs reusable captures (and, per arm, a
+-shareable payload type: `validContext`). -/
++shareable payload type: `validContext`). A custody-bearing payload is bound `linear` whatever the
++scrutinee: `validContext` includes `mustBeLinear` (`ArmsTyping.custody_linear`). -/
+ def caseAllowed (assumptions : Assumptions) (quantity : Quantity) (context : Context) (uses : Uses) : Bool :=
+   (quantity == .linear || linearFree context uses) &&
+     (quantity != .unrestricted || reusableCaptures assumptions.shareableVariables context uses)
+ 
+-/-- The quantity a `case` binds its payload at when no annotation names one: `linear` for a
+-scrutinee that uses a `linear` hypothesis, `unrestricted` for one whose captures are reusable when
+-every payload is shareable, `affine` otherwise. The most permissive quantity `caseAllowed` admits. -/
+-def caseQuantity (assumptions : Assumptions) (context : Context) (uses : Uses) (shareable : Bool) : Quantity :=
+-  if !linearFree context uses then .linear
++/-- The quantity a `case` binds its payload at when no annotation names one: `linear` when an arm
++payload bears custody or the scrutinee uses a `linear` hypothesis, `unrestricted` for one whose
++captures are reusable when every payload is shareable, `affine` otherwise. -/
++def caseQuantity (assumptions : Assumptions) (context : Context) (uses : Uses)
++    (shareable : Bool) (custody : Bool := false) : Quantity :=
++  if custody || !linearFree context uses then .linear
+   else if reusableCaptures assumptions.shareableVariables context uses && shareable then .unrestricted
+   else .affine
+ 
+-theorem caseQuantity_allowed (assumptions : Assumptions) (context : Context) (uses : Uses) (shareable : Bool) :
+-    caseAllowed assumptions (caseQuantity assumptions context uses shareable) context uses = true := by
++theorem caseQuantity_allowed (assumptions : Assumptions) (context : Context) (uses : Uses)
++    (shareable : Bool) (custody : Bool := false) :
++    caseAllowed assumptions (caseQuantity assumptions context uses shareable custody) context uses = true := by
+   unfold caseQuantity caseAllowed
+-  by_cases hl : linearFree context uses = true
+-  · by_cases hr : (reusableCaptures assumptions.shareableVariables context uses && shareable) = true
+-    · simp [hl, hr]; simp at hr; exact hr.1
+-    · simp [hl, hr]
+-  · simp [hl]
++  by_cases hc : (custody || !linearFree context uses) = true
++  · simp [hc]
++  · simp only [Bool.not_eq_true, Bool.or_eq_false_iff, Bool.not_eq_false'] at hc
++    by_cases hr : (reusableCaptures assumptions.shareableVariables context uses && shareable) = true
++    · simp only [hc.1, hc.2, Bool.not_true, Bool.or_self, Bool.false_eq_true, ↓reduceIte, hr]
++      simpa using (Bool.and_eq_true_iff.mp hr).1
++    · simp [hc.1, hc.2, hr]
+ 
+ def overlay : Ty → Ty → Ty
+   | .field name member rest, inherited => .field name member (overlay rest inherited)
+@@ -460,7 +465,7 @@ parameter takes a shareable member. What remains after the last name is `result`
+         sameType assumptions found member = true) ∧
+       member.isComputation = false ∧
+       caseAllowed assumptions quantity context uses = true ∧
+-      (quantity != .unrestricted || member.shareableUnder assumptions.shareableVariables) = true ∧
++      validContext assumptions.shareableVariables [⟨member, quantity⟩] = true ∧
+       SplitSpine assumptions context uses row names codomain result
+ 
+ /-- `SplitSpine` without the target's uses, its members listed: what the machine's destructor frame
+@@ -472,7 +477,7 @@ needs of its function. -/
+       (∃ fuel found, row.lookup assumptions.bounds fuel name = some found ∧
+         sameType assumptions found member = true) ∧
+       member.isComputation = false ∧
+-      (quantity != .unrestricted || member.shareableUnder assumptions.shareableVariables) = true ∧
++      validContext assumptions.shareableVariables [⟨member, quantity⟩] = true ∧
+       SplitShape assumptions row names members codomain result
+   | _, _, _, _ => False
+ 
+@@ -794,6 +799,46 @@ unrestricted binder either. -/
+ theorem computation_not_shareable (plan response result : Ty) (variables : List Nat) :
+     (Ty.computation plan response result).shareableUnder variables = false := rfl
+ 
++/-! ## Custody is bound `linear` (`mustBeLinear`, gate G1) -/
++
++/-- Every arm of a `case` binds a custody-bearing payload `linear`: `ArmsTyping.cons` requires
++`validContext` of the payload binding, which includes `mustBeLinear`. -/
++theorem ArmsTyping.custody_linear {assumptions : Assumptions} {context : Context} {q : Quantity} :
++    ∀ {arms : List (String × Term)} {row result : Ty} {uses : Uses},
++      ArmsTyping assumptions context q arms row result uses → row.bearsCustody = true → q = .linear
++  | _, _, _, _, .nil _ _ _, h => by simp at h
++  | _, _, _, _, @ArmsTyping.cons _ _ _ _ _ _ payload _ _ _ _ _ _ valid _ rest _, h => by
++    simp only [Ty.bearsCustody, Bool.or_eq_true] at h
++    rcases h with h | h
++    · exact validContext_custody_linear (binding := ⟨payload, q⟩) valid List.mem_cons_self h
++    · exact ArmsTyping.custody_linear rest h
++
++/-- `effectCase` binds a custody-bearing result payload `linear`: its arms are an `ArmsTyping`
++at the case's quantity (`PartialTyping.effectCase`, second premise). -/
++theorem effectCase_custody_linear {assumptions : Assumptions} {context : Context}
++    {arms : List (String × Term)} {planType response row result : Ty} {au : Uses} {q : Quantity}
++    (armsTyped : ArmsTyping assumptions context q arms row (.computation planType response result) au)
++    (custody : row.bearsCustody = true) : q = .linear :=
++  ArmsTyping.custody_linear armsTyped custody
++
++/-- A response is first-order data, so `perform` never hands a custody-bearing response to an
++`effectCase` arm (before `.perform` is widened beyond `Ty.isData`). -/
++theorem perform_response_custody_free {response : Ty} (data : response.isData = true) :
++    response.bearsCustody = false :=
++  Ty.bearsCustody_of_isData data
++
++/-- A `Checked` term's context binds custody `linear`. -/
++theorem Checked.custody_linear {source : AnnotatedTerm} {context : Context} (checked : Checked source context)
++    {binding : Binding} (member : binding ∈ context) (custody : binding.type.bearsCustody = true) :
++    binding.quantity = .linear :=
++  validContext_custody_linear checked.contextValid member custody
++
++/-- A lambda whose parameter is custody-bearing takes it `linear`. -/
++theorem lambda_custody_linear {assumptions : Assumptions} {context : Context} {annotation : LambdaAnnotation}
++    (valid : validContext assumptions.shareableVariables (⟨annotation.domain, annotation.parameter⟩ :: context) = true)
++    (custody : annotation.domain.bearsCustody = true) : annotation.parameter = .linear :=
++  validContext_custody_linear (binding := ⟨annotation.domain, annotation.parameter⟩) valid List.mem_cons_self custody
++
+ end Obend.Core.Check
+ 
+ end
+\ No newline at end of file
+diff --git a/lean/Obend/Core/EquiRecursiveSubstitution.lean b/lean/Obend/Core/EquiRecursiveSubstitution.lean
+index feaf25f8..56456503 100644
+--- a/lean/Obend/Core/EquiRecursiveSubstitution.lean
++++ b/lean/Obend/Core/EquiRecursiveSubstitution.lean
+@@ -266,6 +266,7 @@ public structure Discharges (σ : Nat → Ty) (template instance_ : Assumptions)
+   row : ∀ k bound, k ∈ template.rigid → template.bounds.lookup k = some bound →
+     ∀ fuel, bound.isRow template.bounds fuel = true → (σ k).isRow instance_.bounds (fuel + extra) = true
+   shareable : ∀ j, (σ j).shareableUnder instance_.shareableVariables = template.shareableVariables.contains j
++  custody : ∀ j, (σ j).bearsCustody = false
+   pure : ∀ j, (σ j).isComputation = false
+   /-- A hole the template declares, the instance declares at the instantiated types. -/
+   holes : ∀ n decl, template.holes.lookup n = some decl →
+diff --git a/lean/Obend/Core/Proofs/CheckerTransport.lean b/lean/Obend/Core/Proofs/CheckerTransport.lean
+index c810d87a..5c4a95f5 100644
+--- a/lean/Obend/Core/Proofs/CheckerTransport.lean
++++ b/lean/Obend/Core/Proofs/CheckerTransport.lean
+@@ -68,7 +68,7 @@ public theorem Discharges.checked_instantiate {σ : Nat → Ty} {instance_ : Ass
+   have safe : safeUses (instantiateContext σ context) checked.uses = true :=
+     (safeUses_instantiate (σ := σ) context checked.uses).trans checked.safe
+   have contextValid : validContext instance_.shareableVariables (instantiateContext σ context) = true :=
+-    (validContext_instantiate D.shareable context).trans checked.contextValid
++    (validContext_instantiate D.shareable D.custody context).trans checked.contextValid
+   exact annotated_complete (source := ⟨source.term, fun _ => none, instance_⟩) typed safe contextValid valid
+ 
+ /-- **The template theorem for the checker** (`check_instantiate` restated over `checkAgainst`): a
+diff --git a/lean/Obend/Core/Proofs/Force.lean b/lean/Obend/Core/Proofs/Force.lean
+index 032b5541..62a80b7b 100644
+--- a/lean/Obend/Core/Proofs/Force.lean
++++ b/lean/Obend/Core/Proofs/Force.lean
+@@ -507,13 +507,13 @@ theorem settle_resume_runBounded {state resumed : State} {response : Term}
+   exact ⟨resumed', again, agree_runBounded limits ticks _ _ agree⟩
+ 
+ /-- The self origin is typed at the cell's own assigned type: the closure `bound 0`
+-over the one-address environment `[address]`, its binding affine (read at most once). -/
++over the one-address environment `[address]`, its binding linear (read once, valid for custody too). -/
+ public def selfOriginTyping (assumptions : Assumptions) {types : AddressTypes} {address : Nat} {type : Ty}
+     (assigned : types[address]? = some type) : ClosureTyping assumptions types (selfOrigin address) type where
+-  context := [⟨type, .affine⟩]
+-  uses := variableUses [⟨type, .affine⟩] 0
+-  environment := (EnvironmentTyping.empty types).cons (binding := ⟨type, .affine⟩) assigned
+-  source := .bound (binding := ⟨type, .affine⟩) rfl
++  context := [⟨type, .linear⟩]
++  uses := variableUses [⟨type, .linear⟩] 0
++  environment := (EnvironmentTyping.empty types).cons (binding := ⟨type, .linear⟩) assigned
++  source := .bound (binding := ⟨type, .linear⟩) rfl
+   safe := by simp [safeUses, variableUses, safeQuantity]
+   contextValid := by simp [validContext]
+ 
+diff --git a/lean/Obend/Core/Proofs/Preservation/Base/Insert.lean b/lean/Obend/Core/Proofs/Preservation/Base/Insert.lean
+index 0b0c2656..17aeaa88 100644
+--- a/lean/Obend/Core/Proofs/Preservation/Base/Insert.lean
++++ b/lean/Obend/Core/Proofs/Preservation/Base/Insert.lean
+@@ -201,7 +201,8 @@ theorem valid_context_insert (variables : List Nat) (context : Context) (depth :
+       | nil => simp at bound
+       | cons first context =>
+           have tailBound : depth ≤ context.length := by simpa using bound
+-          have facts : (first.quantity != .unrestricted || first.type.shareableUnder variables) = true ∧ validContext variables context = true := by
++          have facts : ((first.quantity != .unrestricted || first.type.shareableUnder variables) &&
++              mustBeLinear first) = true ∧ validContext variables context = true := by
+             simpa [validContext] using valid
+           simpa [validContext,List.insertIdx_succ_cons] using And.intro facts.1 (ih context facts.2 tailBound)
+ 
+diff --git a/lean/Obend/Core/Proofs/Preservation/Cases/Functions.lean b/lean/Obend/Core/Proofs/Preservation/Cases/Functions.lean
+index f712e86f..0f3b70eb 100644
+--- a/lean/Obend/Core/Proofs/Preservation/Cases/Functions.lean
++++ b/lean/Obend/Core/Proofs/Preservation/Cases/Functions.lean
+@@ -163,12 +163,14 @@ composition does not make an affine captured environment duplicable. -/
+       (.arrow .reusable .unrestricted self (.arrow .reusable .unrestricted inherited provided)) := by
+   let selfBinding : Binding := ⟨self,.unrestricted⟩
+   let inheritedBinding : Binding := ⟨inherited,.unrestricted⟩
+-  have selfValid : validContext assumptions.shareableVariables [selfBinding] = true := by simp [validContext,selfBinding,selfShare]
+-  have inheritedValid : validContext assumptions.shareableVariables [inheritedBinding] = true := by simp [validContext,inheritedBinding,inheritedShare]
++  have selfValid : validContext assumptions.shareableVariables [selfBinding] = true := by
++    simp [validContext,selfBinding,selfShare,Ty.bearsCustody_of_shareableUnder selfShare]
++  have inheritedValid : validContext assumptions.shareableVariables [inheritedBinding] = true := by
++    simp [validContext,inheritedBinding,inheritedShare,Ty.bearsCustody_of_shareableUnder inheritedShare]
+   have oneValid : validContext assumptions.shareableVariables (selfBinding :: context) = true := by
+-    simpa [validContext,selfBinding,selfShare] using contextValid
++    simpa [validContext,selfBinding,selfShare,Ty.bearsCustody_of_shareableUnder selfShare] using contextValid
+   have twoValid : validContext assumptions.shareableVariables (inheritedBinding :: selfBinding :: context) = true := by
+-    simpa [validContext,inheritedBinding,inheritedShare] using oneValid
++    simpa [validContext,inheritedBinding,inheritedShare,Ty.bearsCustody_of_shareableUnder inheritedShare] using oneValid
+   have lowerCaptures := reusable_add_uses_left assumptions.shareableVariables context lu uu (source_uses_length lowerTyped) (source_uses_length upperTyped) captures
+   have upperCaptures := reusable_add_uses_left assumptions.shareableVariables context uu lu (source_uses_length upperTyped) (source_uses_length lowerTyped) (by simpa only [add_uses_comm] using captures)
+   let lowerReusable : ReusableTerm assumptions context lower lowerType := ⟨lu,lowerTyped,lowerCaptures⟩
+@@ -203,7 +205,8 @@ termination of that knot is required by this construction. -/
+       reusableCaptures assumptions.shareableVariables context iu = true) := by
+     simpa [argumentAllowed] using seedAllowed
+   let binding : Binding := ⟨target,.unrestricted⟩
+-  have valid : validContext assumptions.shareableVariables [binding] = true := by simp [validContext,binding,targetShare]
++  have valid : validContext assumptions.shareableVariables [binding] = true := by
++    simp [validContext,binding,targetShare,Ty.bearsCustody_of_shareableUnder targetShare]
+   let specReusable : ReusableTerm assumptions context spec specType := ⟨su,specTyped,specCaptures⟩
+   let seedReusable : ReusableTerm assumptions context seed inherited := ⟨iu,seedTyped,seedFacts.2⟩
+   let selfTerm : ReusableTerm assumptions (binding :: context) (.bound 0) target :=
+@@ -308,7 +311,7 @@ public theorem typed_fix_preserved {assumptions : Assumptions} {types : AddressT
+       rw [← typed.heap.length]
+       simp [after]
+     have valid : validContext assumptions.shareableVariables (⟨target,.unrestricted⟩ :: origin.context) = true := by
+-      simpa [validContext,share] using origin.contextValid
++      simpa [validContext,share,Ty.bearsCustody_of_shareableUnder share] using origin.contextValid
+     let next : ClosureTyping assumptions after
+         ⟨.app (.app (spec.rename Nat.succ) (.bound 0)) (seed.rename Nat.succ),state.heap.size :: environment⟩ target :=
+       ⟨⟨target,.unrestricted⟩ :: origin.context,expanded.uses,
+diff --git a/lean/Obend/Core/Proofs/Preservation/Cases/Split.lean b/lean/Obend/Core/Proofs/Preservation/Cases/Split.lean
+index 21b94d4c..eb56d411 100644
+--- a/lean/Obend/Core/Proofs/Preservation/Cases/Split.lean
++++ b/lean/Obend/Core/Proofs/Preservation/Cases/Split.lean
+@@ -102,23 +102,23 @@ theorem split_frames_typed {assumptions : Assumptions} {types : AddressTypes} {r
+   | [], [], _, _, [], shape, .nil, restTyped => by cases shape; simpa [splitFrames] using restTyped
+   | _ :: _, member :: _, _, _, address :: fresh, ⟨reuse, quantity, codomain, callable, _, pure, share, shape⟩,
+       .cons assigned related, restTyped => by
+-    let binder : Quantity := if quantity = .unrestricted then .unrestricted else .affine
++    let binder : Quantity := if quantity = .erased then .affine else quantity
+     let context : Context := [⟨member, binder⟩]
+     have valid : validContext assumptions.shareableVariables context = true := by
+-      by_cases u : quantity = .unrestricted
+-      · subst u; simp at share; simp [context, binder, validContext, share]
+-      · simp [context, binder, u, validContext]
++      cases quantity <;> simp_all [context, binder, validContext]
+     have safe : safeUses context (variableUses context 0) = true := by
+-      by_cases u : quantity = .unrestricted <;> simp [context, binder, u, safeUses, variableUses, safeQuantity]
++      cases quantity <;> simp [context, binder, safeUses, variableUses, safeQuantity]
+     let argument : ClosureTyping assumptions types ⟨.bound 0, [address]⟩ member :=
+       ⟨context, variableUses context 0, (EnvironmentTyping.empty types).cons assigned,
+         PartialTyping.bound (binding := ⟨member, binder⟩) rfl, safe, valid⟩
+     have allowed : argumentAllowed assumptions quantity argument.context member argument.uses = true := by
+       change argumentAllowed assumptions quantity context member (variableUses context 0) = true
+-      by_cases u : quantity = .unrestricted
+-      · subst u; simp at share
+-        simp [argumentAllowed, context, binder, pure, share, linearFree, reusableCaptures, variableUses]
+-      · cases quantity <;> simp_all [argumentAllowed, context, binder, linearFree, variableUses]
++      cases quantity
++      · simp [argumentAllowed, context, binder, pure, linearFree, variableUses]
++      · simp [argumentAllowed, context, binder, pure, linearFree, variableUses]
++      · simp [argumentAllowed, context, binder, pure, linearFree, variableUses]
++      · simp [validContext] at share
++        simp [argumentAllowed, context, binder, pure, share.1, linearFree, reusableCaptures, variableUses]
+     exact .cons (.argument argument callable allowed)
+       (by simpa [splitFrames] using split_frames_typed fresh shape related restTyped)
+   | [], _ :: _, _, _, _, h, _, _ | _ :: _, [], _, _, _, h, _, _ => h.elim
+@@ -135,14 +135,14 @@ theorem split_cells_typed {assumptions : Assumptions} {types : AddressTypes} :
+     ∀ (cells : List (Address × Ty)) (members : List Ty) (offset : Nat) (context : Context),
+       Both (fun cell member => types[cell.1]? = some cell.2 ∧ ConversionPath assumptions cell.2 member)
+         cells members →
+-      (∀ i cell, cells[i]? = some cell → context[offset + i]? = some ⟨cell.2, .affine⟩) →
+-      (∀ binding ∈ context, binding.quantity = .affine) →
++      (∀ i cell, cells[i]? = some cell → context[offset + i]? = some ⟨cell.2, .linear⟩) →
++      (∀ binding ∈ context, binding.quantity = .linear) →
+       (∀ member ∈ members, member.isComputation = false) →
+       Both (fun cell type => ∃ uses, PartialTyping assumptions context cell.2 type uses ∧
+         safeUses context uses = true ∧ type.isComputation = false)
+         ((List.range' offset cells.length).map fun index => ("", Term.bound index)) members
+   | [], [], _, _, .nil, _, _, _ => by simp only [List.length_nil, List.range'_zero, List.map_nil]; exact .nil
+-  | cell :: cells, member :: members, offset, context, .cons ⟨_, path⟩ rest, at_, affine, pure => by
++  | cell :: cells, member :: members, offset, context, .cons ⟨_, path⟩ rest, at_, linear, pure => by
+     simp only [List.length_cons, List.range'_succ, List.map_cons]
+     refine .cons ⟨variableUses context offset, source_convert_path (.bound (by simpa using at_ 0 cell rfl)) path,
+       ?_, ?_⟩ ?_
+@@ -152,14 +152,14 @@ theorem split_cells_typed {assumptions : Assumptions} {types : AddressTypes} :
+       refine List.all_eq_true.mpr fun pair member => ?_
+       obtain ⟨⟨binding, count⟩, hm, rfl⟩ : ∃ p ∈ context.zip ((List.range context.length).map
+           fun position => if position = offset then 1 else 0), p = pair := ⟨pair, member, rfl⟩
+-      have q := affine binding (List.of_mem_zip hm).1
++      have q := linear binding (List.of_mem_zip hm).1
+       have c : count ≤ 1 := by
+         obtain ⟨k, hk, he⟩ := List.mem_iff_getElem.mp (List.of_mem_zip hm).2
+         rw [← he]; simp; split <;> omega
+       simp [safeQuantity, q, c]
+     · exact pure member (by simp)
+     · exact split_cells_typed cells members (offset + 1) context rest
+-        (fun i c h => by simpa [Nat.add_assoc, Nat.add_comm 1] using at_ (i + 1) c h) affine
++        (fun i c h => by simpa [Nat.add_assoc, Nat.add_comm 1] using at_ (i + 1) c h) linear
+         (fun m hm => pure m (by simp [hm]))
+   | [], _ :: _, _, _, h, _, _, _ | _ :: _, [], _, _, h, _, _, _ => by cases h
+ 
+@@ -214,7 +214,7 @@ public theorem typed_split_preserved {assumptions : Assumptions} {types : Addres
+   obtain ⟨fuel, isRow⟩ := closed_isRow (bounds := assumptions.bounds) closed
+   obtain ⟨fields, rfl⟩ := record_value_form rowTyped fuel isRow
+   obtain ⟨cells, values, related⟩ := split_lookups rowTyped shape
+-  let context : Context := cells.map fun cell => ⟨cell.2, .affine⟩
++  let context : Context := cells.map fun cell => ⟨cell.2, .linear⟩
+   have environmentTyped : EnvironmentTyping types context (cells.map Prod.fst) := by
+     refine ⟨by simp [context], fun i binding found => ?_⟩
+     simp only [context, List.getElem?_map, Option.map_eq_some_iff] at found
+diff --git a/lean/Obend/Core/Proofs/Preservation/Cases/Sums.lean b/lean/Obend/Core/Proofs/Preservation/Cases/Sums.lean
+index 455c7b7a..dc763968 100644
+--- a/lean/Obend/Core/Proofs/Preservation/Cases/Sums.lean
++++ b/lean/Obend/Core/Proofs/Preservation/Cases/Sums.lean
+@@ -218,9 +218,9 @@ public theorem typed_case_preserved {assumptions : Assumptions} {types : Address
+     have freshAssigned : after[state.heap.size]? = some armMember := by
+       rw [← typed.heap.length]
+       simp [after]
+-    let bindingContext : Context := [⟨actual,.affine⟩]
++    let bindingContext : Context := [⟨actual,.linear⟩]
+     have bindingSource : PartialTyping assumptions bindingContext (.bound 0) armMember (variableUses bindingContext 0) :=
+-      source_convert_path (PartialTyping.bound (context := bindingContext) (binding := ⟨actual,.affine⟩) rfl) toPayload
++      source_convert_path (PartialTyping.bound (context := bindingContext) (binding := ⟨actual,.linear⟩) rfl) toPayload
+     have bindingSafe : safeUses bindingContext (variableUses bindingContext 0) = true := by
+       simp [bindingContext,safeUses,variableUses,safeQuantity]
+     have bindingValid : validContext assumptions.shareableVariables bindingContext = true := by
+@@ -229,8 +229,8 @@ public theorem typed_case_preserved {assumptions : Assumptions} {types : Address
+       ⟨bindingContext,variableUses bindingContext 0,(EnvironmentTyping.empty after).cons addressAssigned,
+         bindingSource,bindingSafe,bindingValid⟩
+     have bodyValid : validContext assumptions.shareableVariables (⟨armMember,q⟩ :: context) = true := by
+-      simp only [validContext,List.all_cons,List.all_nil,Bool.and_true] at valid shareable ⊢
+-      simp [shareable,valid]
++      simp only [validContext,List.all_cons,List.all_nil,Bool.and_true,Bool.and_eq_true] at valid shareable ⊢
++      exact ⟨shareable,valid⟩
+     have pure : armMember.isComputation = false := by
+       rw [← conversionPath_isComputation toPayload]; exact heap_type_pure typed.heap assigned
+     let next : ClosureTyping assumptions after ⟨body,state.heap.size :: environment⟩ branchType :=
+diff --git a/lean/Obend/Core/Proofs/SubjectReduction.lean b/lean/Obend/Core/Proofs/SubjectReduction.lean
+index e84991f6..1f7e979d 100644
+--- a/lean/Obend/Core/Proofs/SubjectReduction.lean
++++ b/lean/Obend/Core/Proofs/SubjectReduction.lean
+@@ -135,7 +135,8 @@ theorem captures_below {V : List Nat} {Γ : Context} {x y : Uses} (valid : valid
+       refine ⟨q, ?_⟩
+       unfold validContext at valid
+       have := List.all_eq_true.mp valid b (List.mem_of_getElem? hb)
+-      simpa [q] using this
++      have h' : b.type.shareableUnder V = true ∧ b.type.bearsCustody = false := by simpa [q] using this
++      exact h'.1
+   · rcases hc j b hb with z | r
+     · left; have := h j b hb q; omega
+     · exact absurd r.1 q
+@@ -626,8 +627,8 @@ theorem split_apply_typed {a : Assumptions} {Γ : Context} {fields : List (Strin
+             Bool.not_eq_true']
+           refine ⟨⟨noAct, lin.imp id (fun free => linearFree_below free len below)⟩, ?_⟩
+           by_cases qu : q = .unrestricted
+-          · subst qu; simp at share
+-            exact .inr ⟨share, captures_below valid (unr rfl) len below⟩
++          · subst qu; simp [validContext] at share
++            exact .inr ⟨share.1, captures_below valid (unr rfl) len below⟩
+           · exact .inl qu
+         have happ : PartialTyping a Γ (.app function value) c (addUses fu bu) :=
+           .application hfun (.conversion hb (sameType_trans s0 same)) shape rfl argAllowed
+diff --git a/lean/Obend/Core/Proofs/Templates.lean b/lean/Obend/Core/Proofs/Templates.lean
+index e2ffd699..4beaab98 100644
+--- a/lean/Obend/Core/Proofs/Templates.lean
++++ b/lean/Obend/Core/Proofs/Templates.lean
+@@ -207,6 +207,16 @@ theorem shareableUnder_instantiate {vars vars' : List Nat}
+   | variant r ih => simp [Ty.instantiate, Ty.shareableUnder, ih]
+   | _ => simp [Ty.instantiate, Ty.shareableUnder, Ty.shareable]
+ 
++theorem bearsCustody_instantiate (custody : ∀ j, (σ j).bearsCustody = false) (type : Ty) :
++    (type.instantiate σ).bearsCustody = type.bearsCustody := by
++  induction type with
++  | «variable» j => simpa [Ty.instantiate] using custody j
++  | field _ m t ihm iht => simp [Ty.instantiate, Ty.bearsCustody, ihm, iht]
++  | specification m e ihm ihe => simp [Ty.instantiate, Ty.bearsCustody, ihm, ihe]
++  | prototype s t ihs iht => simp [Ty.instantiate, Ty.bearsCustody, ihs, iht]
++  | variant r ih => simp [Ty.instantiate, Ty.bearsCustody, ih]
++  | _ => simp [Ty.instantiate, Ty.bearsCustody]
++
+ theorem instantiate_of_isData {type : Ty} (data : type.isData = true) : type.instantiate σ = type := by
+   induction type with
+   | field _ m t ihm iht =>
+@@ -271,12 +281,13 @@ theorem reusableCaptures_instantiate {vars vars' : List Nat}
+   simp [shareableUnder_instantiate shareable]
+ 
+ public theorem validContext_instantiate {vars vars' : List Nat}
+-    (shareable : ∀ j, (σ j).shareableUnder vars' = vars.contains j) (context : Context) :
++    (shareable : ∀ j, (σ j).shareableUnder vars' = vars.contains j)
++    (custody : ∀ j, (σ j).bearsCustody = false) (context : Context) :
+     validContext vars' (instantiateContext σ context) = validContext vars context := by
+   simp only [validContext, instantiateContext, List.all_map]
+   congr 1
+   funext binding
+-  simp [shareableUnder_instantiate shareable]
++  simp [shareableUnder_instantiate shareable, bearsCustody_instantiate custody]
+ 
+ theorem getElem?_instantiateContext (context : Context) (index : Nat) :
+     (instantiateContext σ context)[index]? =
+@@ -399,7 +410,7 @@ theorem Discharges.caseAllowed_instantiate (quantity : Quantity) (context : Cont
+ theorem Discharges.validBinder_instantiate (payload : Ty) (quantity : Quantity) :
+     validContext instance_.shareableVariables [⟨payload.instantiate σ, quantity⟩] =
+       validContext template.shareableVariables [⟨payload, quantity⟩] := by
+-  simp [validContext, shareableUnder_instantiate D.shareable]
++  simp [validContext, shareableUnder_instantiate D.shareable, bearsCustody_instantiate D.custody]
+ 
+ theorem Discharges.reusableAllowed_instantiate (reuse : Reuse) (context : Context) (uses : Uses) :
+     reusableAllowed instance_ reuse (instantiateContext σ context) uses = reusableAllowed template reuse context uses := by
+@@ -420,7 +431,7 @@ theorem Discharges.splitSpine_instantiate (instanceValid : instance_.valid = tru
+         D.sameType_instantiate instanceValid same⟩,
+       by rw [instantiate_isComputation D.pure]; exact pure,
+       by rw [D.caseAllowed_instantiate]; exact allowed,
+-      by rw [shareableUnder_instantiate D.shareable]; exact share,
++      by rw [D.validBinder_instantiate]; exact share,
+       Discharges.splitSpine_instantiate instanceValid rest⟩
+ 
+ /-- **The template theorem on the typing relation** (MODULAR-TYPING §6): a derivation under rigid
+@@ -456,7 +467,7 @@ public theorem Discharges.partialTyping_instantiate (instanceValid : instance_.v
+     intro Γ body annotation bodyUses _ safe valid captures fits ih
+     exact .lambda (annotation := instantiateAnnotation σ annotation) ih
+       ((safeUses_instantiate (σ := σ) (⟨annotation.domain, annotation.parameter⟩ :: Γ) bodyUses).trans safe)
+-      ((validContext_instantiate D.shareable (⟨annotation.domain, annotation.parameter⟩ :: Γ)).trans valid)
++      ((validContext_instantiate D.shareable D.custody (⟨annotation.domain, annotation.parameter⟩ :: Γ)).trans valid)
+       (by rw [D.reusableAllowed_instantiate]; exact captures) fits
+   case conversion =>
+     intro Γ term actual expected uses _ agreement ih
+@@ -633,6 +644,10 @@ public theorem coloured_discharges : Discharges colouredSelf templateAssumptions
+     by_cases e : j = 5
+     · subst e; simp [colouredSelf, colouredRow, Ty.shareableUnder, Ty.shareable, templateAssumptions]
+     · simp [colouredSelf, e, Ty.shareableUnder, Ty.shareable, templateAssumptions]
++  custody j := by
++    by_cases e : j = 5
++    · subst e; simp [colouredSelf, colouredRow]
++    · simp [colouredSelf, e]
+   pure j := by
+     by_cases e : j = 5
+     · subst e; simp [colouredSelf, colouredRow, Ty.isComputation]
+diff --git a/lean/Obend/Core/Proofs/TypedSubstitution.lean b/lean/Obend/Core/Proofs/TypedSubstitution.lean
+index 91eed864..a9373056 100644
+--- a/lean/Obend/Core/Proofs/TypedSubstitution.lean
++++ b/lean/Obend/Core/Proofs/TypedSubstitution.lean
+@@ -285,8 +285,8 @@ private theorem validContext_cons_unrestricted {asm : Assumptions} {Γ : Context
+     (valid : validContext asm.shareableVariables Γ = true)
+     (share : type.shareableUnder asm.shareableVariables = true) :
+     validContext asm.shareableVariables (⟨type, .unrestricted⟩ :: Γ) = true := by
+-  simp [validContext, validContext] at valid ⊢
+-  exact ⟨share, valid⟩
++  simp [validContext] at valid ⊢
++  exact ⟨⟨share, Ty.bearsCustody_of_shareableUnder share⟩, valid⟩
+ 
+ /-- Simultaneous substitution on typing evidence. The mutual recursor also handles
+ fields and arms; conversions and their types are retained without consulting a checker. -/
+diff --git a/lean/Obend/Core/Ty.lean b/lean/Obend/Core/Ty.lean
+index 4cdd7bf0..563fb531 100644
+--- a/lean/Obend/Core/Ty.lean
++++ b/lean/Obend/Core/Ty.lean
+@@ -374,8 +374,79 @@ at every quantity, so the uses of a term stay a function of the term alone (`use
+   uses.length == context.length && (context.zip uses).all (fun pair =>
+     pair.2 == 0 || (pair.1.quantity == .unrestricted && pair.1.type.shareableUnder variables))
+ 
++/-- The type holds custody where a value of it can carry it: `custody` itself, or a record,
++specification, prototype or sum with a custody-bearing member. An arrow is not inspected (what a
++closure captures is checked at its own binder), and an activity is never bound (`Ty.computation`
++is not shareable and no cell-allocating rule admits it). A rigid variable is custody-free here
++and discharged custody-free by `Templates.Discharges.custody`. -/
++@[expose, simp] def Ty.bearsCustody : Ty → Bool
++  | .custody _ => true
++  | .field _ member tail => member.bearsCustody || tail.bearsCustody
++  | .specification metadata extension => metadata.bearsCustody || extension.bearsCustody
++  | .prototype spec target => spec.bearsCustody || target.bearsCustody
++  | .variant row => row.bearsCustody
++  | .natural | .label | .boolean | .variable _ | .arrow _ _ _ _ | .emptyRow | .computation _ _ _ => false
++
++/-- A shareable type bears no custody (`Ty.shareable` refuses `custody` under every wrapper). -/
++theorem Ty.bearsCustody_of_shareableUnder {variables : List Nat} :
++    ∀ {type : Ty}, type.shareableUnder variables = true → type.bearsCustody = false
++  | .field _ member tail, h => by
++    simp only [Ty.shareableUnder, Bool.and_eq_true] at h
++    simp [Ty.bearsCustody_of_shareableUnder h.1, Ty.bearsCustody_of_shareableUnder h.2]
++  | .specification m e, h => by
++    simp only [Ty.shareableUnder, Bool.and_eq_true] at h
++    simp [Ty.bearsCustody_of_shareableUnder h.1, Ty.bearsCustody_of_shareableUnder h.2]
++  | .prototype s t, h => by
++    simp only [Ty.shareableUnder, Bool.and_eq_true] at h
++    simp [Ty.bearsCustody_of_shareableUnder h.1, Ty.bearsCustody_of_shareableUnder h.2]
++  | .variant row, h => by
++    simp only [Ty.shareableUnder] at h
++    simp [Ty.bearsCustody_of_shareableUnder h]
++  | .custody _, h => by simp [Ty.shareableUnder, Ty.shareable] at h
++  | .natural, _ | .label, _ | .boolean, _ | .variable _, _ | .arrow _ _ _ _, _ | .emptyRow, _
++  | .computation _ _ _, _ => rfl
++
++@[simp] theorem Ty.bearsCustody_of_shareable {type : Ty} (h : type.shareable = true) :
++    type.bearsCustody = false :=
++  Ty.bearsCustody_of_shareableUnder (variables := []) (by simpa using h)
++
++/-- First-order data never bears custody: a response (`Ty.isData`) is custody-free. -/
++@[simp] theorem Ty.bearsCustody_of_isData : ∀ {type : Ty}, type.isData = true → type.bearsCustody = false
++  | .natural, _ | .label, _ | .boolean, _ | .emptyRow, _ => rfl
++  | .field _ member tail, h => by
++    simp only [Ty.isData, Bool.and_eq_true] at h
++    simp [Ty.bearsCustody_of_isData h.1, Ty.bearsCustody_of_isData h.2]
++  | .variant row, h => by
++    simp only [Ty.isData] at h
++    simp [Ty.bearsCustody_of_isData h]
++  | .variable _, h | .arrow _ _ _ _, h | .specification _ _, h | .prototype _ _, h | .custody _, h
++  | .computation _ _ _, h => by simp [Ty.isData] at h
++
++/-- Custody is held `linear`: a binder of a custody-bearing type is neither droppable (`erased`,
++`affine`) nor shareable (`unrestricted`). -/
++@[expose, simp] def mustBeLinear (binding : Binding) : Bool :=
++  !binding.type.bearsCustody || binding.quantity == .linear
++
++/-- A context is valid when every `unrestricted` binding is shareable and every custody-bearing
++binding is `linear` (`mustBeLinear`). -/
+ @[expose] def validContext (variables : List Nat) (context : Context) : Bool :=
+-  context.all (fun binding => binding.quantity != .unrestricted || binding.type.shareableUnder variables)
++  context.all (fun binding =>
++    (binding.quantity != .unrestricted || binding.type.shareableUnder variables) &&
++      mustBeLinear binding)
++
++/-- A valid context binds custody `linear`. -/
++theorem validContext_custody_linear {variables : List Nat} {context : Context} {binding : Binding}
++    (valid : validContext variables context = true) (member : binding ∈ context)
++    (custody : binding.type.bearsCustody = true) : binding.quantity = .linear := by
++  unfold validContext at valid
++  have h := (List.all_eq_true.mp valid) binding member
++  simp only [Bool.and_eq_true, mustBeLinear, custody, Bool.not_true, Bool.false_or, beq_iff_eq] at h
++  exact h.2
++
++/-- An `affine` custody binding is refused. -/
++theorem validContext_refuses_affine_custody (variables : List Nat) (identity : Nat) (context : Context) :
++    validContext variables (⟨.custody identity, .affine⟩ :: context) = false := by
++  simp [validContext]
+ 
+ /-- No affine/linear binding can occur twice in a checked computation. This
+ is syntactic safety; machine conservation and terminal discharge are separate. -/
+diff --git a/lean/Obend/Elab/Coerce.lean b/lean/Obend/Elab/Coerce.lean
+index e5a84cce..ba659011 100644
+--- a/lean/Obend/Elab/Coerce.lean
++++ b/lean/Obend/Elab/Coerce.lean
+@@ -113,8 +113,12 @@ structure Component where
+   and its captures reusable. -/
+   shared : Bool
+ 
++def identityQuantity (source : Ty) : Quantity :=
++  if source.bearsCustody then .linear else .affine
++
+ def identityEmitted (source target : Ty) : Emitted :=
+-  ⟨.lam (.bound 0), .node (some ⟨source, target, .affine, .reusable⟩) [.node none []], .affine⟩
++  let q := identityQuantity source
++  ⟨.lam (.bound 0), .node (some ⟨source, target, q, .reusable⟩) [.node none []], q⟩
+ 
+ mutual
+ def emit (a : Assumptions) : Nat → Ty → Ty → Except CoercionRefusal Emitted
+@@ -228,15 +232,20 @@ theorem emit_identity_checks {a : Assumptions} {source target : Ty} (valid : a.v
+     ∃ checked, checkAgainst ⟨(identityEmitted source target).term,
+       treeAnnotations (identityEmitted source target).tree, a⟩ []
+       ((identityEmitted source target).type source target) = .ok checked := by
+-  have safe : safeUses [⟨source, .affine⟩] [1] = true := rfl
+-  have validCtx : validContext a.shareableVariables [⟨source, .affine⟩] = true := rfl
++  have safe : safeUses [⟨source, identityQuantity source⟩] [1] = true := by
++    unfold identityQuantity; split <;> rfl
++  have validCtx : validContext a.shareableVariables [⟨source, identityQuantity source⟩] = true := by
++    unfold identityQuantity; split <;> simp_all [validContext]
+   have captures : reusableAllowed a .reusable [] [] = true := rfl
+-  have fits : Quantity.affine.fits 1 = true := rfl
++  have fits : (identityQuantity source).fits 1 = true := by
++    unfold identityQuantity; split <;> rfl
++  have validNil : validContext a.shareableVariables [] = true := rfl
++  have safeNil : safeUses [] [] = true := rfl
+   simp [checkAgainst, checkAt, elaborate, identityEmitted, Emitted.type, treeAnnotations,
+-    AnnotationTree.lookup, AnnotationTree.child, emptyTree, finish, agrees, sameType_refl, need_ok, safe,
+-    validCtx, captures, need_ok fits, valid, bind, Except.bind, pure, Except.pure, variableUses, checkedSynth,
+-    safeUses, validContext, zeroUses, List.getElem?_cons_zero, List.range_succ, safeQuantity, reusableAllowed,
+-    reusableCaptures, Except.map, Functor.map]
++    AnnotationTree.lookup, finish, agrees, sameType_refl,
++    variableUses, List.getElem?_cons_zero, List.range_succ, List.tail_cons, checkedSynth,
++    need_ok safe, need_ok validCtx, need_ok captures, need_ok fits, need_ok safeNil, need_ok validNil,
++    need_ok valid, bind, Except.bind, pure, Except.pure]
+ 
+ /-! ### Width and representative record coercions check, by proof -/
+ 
+@@ -322,7 +331,7 @@ names each field once): then the emitted record of
+ projections is accepted at `source ⇒ target` without running the checker. -/
+ theorem width_checks {a : Assumptions} {source : Ty} {fields : List (String × Ty)} (valid : a.valid = true)
+     (kept : KeptAgree a source fields)
+-    (sharing : fields.length ≤ 1 ∨ source.shareableUnder a.shareableVariables = true)
++    (sharing : (fields.length ≤ 1 ∧ source.bearsCustody = false) ∨ source.shareableUnder a.shareableVariables = true)
+     (distinct : labelsDistinct (fields.map fun (name, _) => (name, Term.get (.bound 0) name)) = true) :
+     ∃ checked, checkAgainst ⟨widthTerm fields, treeAnnotations (widthTree source (rowOf fields) fields), a⟩ []
+       (.arrow .reusable (widthQuantity fields) source (rowOf fields)) = .ok checked := by
+@@ -334,10 +343,18 @@ theorem width_checks {a : Assumptions} {source : Ty} {fields : List (String × T
+   have safe : safeUses [⟨source, widthQuantity fields⟩] members.uses = true := by
+     rw [membersUses]; unfold widthQuantity; split <;> simp_all [safeUses, safeQuantity]
+   have validCtx : validContext a.shareableVariables [⟨source, widthQuantity fields⟩] = true := by
++    have noCustody : source.bearsCustody = false := by
++      rcases sharing with ⟨_, hc⟩ | hs
++      · exact hc
++      · exact Ty.bearsCustody_of_shareableUnder hs
+     unfold widthQuantity; split
+-    · simp [validContext]
++    · simp [validContext, noCustody]
+     · rename_i long
+-      simp [validContext, sharing.resolve_left long]
++      have hs : source.shareableUnder a.shareableVariables = true := by
++        rcases sharing with ⟨hle, _⟩ | hs
++        · exact False.elim (long hle)
++        · exact hs
++      simp [validContext, hs, noCustody]
+   have captures : reusableAllowed a .reusable [] members.uses.tail = true := by
+     rw [membersUses]; rfl
+   have fits : (widthQuantity fields).fits (members.uses.headD 0) = true := by
+@@ -346,7 +363,6 @@ theorem width_checks {a : Assumptions} {source : Ty} {fields : List (String × T
+   have topValid : validContext a.shareableVariables [] = true := rfl
+   simp [checkAgainst, checkAt, elaborate, widthTerm, root, recordRoot, introduce, membersOk, finish,
+     checkedSynth, sameType_refl, need_ok safe, need_ok validCtx, need_ok captures, need_ok fits, need_ok valid, hint,
+-    need_ok top, need_ok topValid, need_ok distinct, bind, Except.bind, pure, Except.pure, annotations, Except.map,
+-    Functor.map]
++    need_ok top, need_ok topValid, need_ok distinct, bind, Except.bind, pure, Except.pure, annotations]
+ 
+ end Obend.Elab.Coerce
+\ No newline at end of file
+diff --git a/lean/Obend/Elab/Prepare.lean b/lean/Obend/Elab/Prepare.lean
+index 360c158a..88a755e9 100644
+--- a/lean/Obend/Elab/Prepare.lean
++++ b/lean/Obend/Elab/Prepare.lean
+@@ -92,7 +92,7 @@ def letQuantity (assumptions : Assumptions) (context : Context) (argumentType :
+   if argumentType.shareableUnder assumptions.shareableVariables &&
+       reusableCaptures assumptions.shareableVariables context (occurrences context.length argument)
+   then .unrestricted
+-  else if linearFree context (occurrences context.length argument) then .affine else .linear
++  else if !argumentType.bearsCustody && linearFree context (occurrences context.length argument) then .affine else .linear
+ 
+ /-- The lambda annotation that makes an introduction form in synthesis position
+ check against its own predicted type in both modes. -/
+@@ -445,6 +445,7 @@ def prepare (assumptions : Assumptions) (hints : Annotations) (context : Context
+       -- the payload quantity the checker computes for the resolved arm row (`caseQuantityAt`)
+       let q := caseQuantity assumptions context (occurrences context.length scrutinee)
+         (armsShareable assumptions row ((name, body) :: rest))
++        (armsCustody row ((name, body) :: rest))
+       match mode with
+       | .check expected => do
+         let expectedHead := whnf assumptions expected
+diff --git a/lean/Obend/Elab/Proofs/PrepareChecks.lean b/lean/Obend/Elab/Proofs/PrepareChecks.lean
+index 44a333c7..a85b6468 100644
+--- a/lean/Obend/Elab/Proofs/PrepareChecks.lean
++++ b/lean/Obend/Elab/Proofs/PrepareChecks.lean
+@@ -25,8 +25,12 @@ set_option autoImplicit false
+ greatest-fixed-point shareability over `a.bounds`. Evaluates to `true` by `rfl` on empty bounds
+ (`{}`) and holds on non-empty equi-recursive sum, function, prototype, and row bounds. -/
+ @[expose] public def ShareableComplete (a : Assumptions) : Bool :=
+-  a.bounds.all fun (index, _) =>
+-    a.shareableVariables.contains index == Obend.Core.RecursiveRows.shareable a (.variable index)
++  (a.bounds.all fun (index, _) =>
++    a.shareableVariables.contains index == Obend.Core.RecursiveRows.shareable a (.variable index)) &&
++  (a.bounds.all fun (index, _) =>
++    match a.bounds.lookup index with
++    | some bound => !bound.bearsCustody
++    | none => true)
+ 
+ public theorem shareableComplete_empty : ShareableComplete {} = true := rfl
+ 
+@@ -128,20 +132,23 @@ public theorem valid_shareableUnder_semantic {a : Assumptions} (valid : a.valid
+ public theorem shareableComplete_of_all_shareable {a : Assumptions} (valid : a.valid = true)
+     (allDeclared : ∀ p ∈ a.bounds, a.shareableVariables.contains p.1 = true) :
+     ShareableComplete a = true := by
+-  simp only [ShareableComplete, List.all_eq_true, beq_iff_eq]
+-  intro ⟨index, bound⟩ hmem
+-  have hc : a.shareableVariables.contains index = true := allDeclared (index, bound) hmem
+-  have hsem : Obend.Core.RecursiveRows.shareable a (.variable index) = true :=
+-    valid_shareableUnder_semantic valid (by simpa [Ty.shareableUnder] using hc)
+-  rw [hc, hsem]
++  simp only [ShareableComplete, Bool.and_eq_true, List.all_eq_true, beq_iff_eq]
++  refine ⟨fun ⟨index, bound⟩ hmem => ?_, fun ⟨index, _⟩ hmem => ?_⟩
++  · have hc : a.shareableVariables.contains index = true := allDeclared (index, bound) hmem
++    have hsem : Obend.Core.RecursiveRows.shareable a (.variable index) = true :=
++      valid_shareableUnder_semantic valid (by simpa [Ty.shareableUnder] using hc)
++    rw [hc, hsem]
++  · have hc : a.shareableVariables.contains index = true := allDeclared _ hmem
++    obtain ⟨bound, hlook, hsh⟩ := valid_lookup_shareable valid hc
++    simp [hlook, Ty.bearsCustody_of_shareableUnder hsh]
+ 
+ theorem semantic_variable {a : Assumptions} (sc : ShareableComplete a = true) (index : Nat) :
+     Obend.Core.RecursiveRows.shareable a (.variable index) = a.shareableVariables.contains index := by
+   cases h : a.bounds.lookup index with
+   | some bound =>
+     have hmem := mem_of_lookup h
+-    simp only [ShareableComplete, List.all_eq_true, beq_iff_eq] at sc
+-    exact (sc (index, bound) hmem).symm
++    simp only [ShareableComplete, Bool.and_eq_true, List.all_eq_true, beq_iff_eq] at sc
++    exact (sc.1 (index, bound) hmem).symm
+   | none =>
+     have hAlias : a.alias index = none := by
+       cases ha : a.alias index with
+@@ -182,6 +189,371 @@ public theorem shareable_congr {a : Assumptions} (sc : ShareableComplete a = tru
+   rw [shareable_semantic sc, shareable_semantic sc]
+   exact equivalent_shareable ((sameType_iff _ _ _).mp agrees)
+ 
++/-! ### Custody-Freedom Invariance (`bearsCustody_congr`) Under `ShareableComplete` -/
++
++theorem bound_custodyFree {a : Assumptions} (sc : ShareableComplete a = true) {index : Nat} {bound : Ty}
++    (hlook : a.bounds.lookup index = some bound) : bound.bearsCustody = false := by
++  have hmem := mem_of_lookup hlook
++  simp only [ShareableComplete, Bool.and_eq_true, List.all_eq_true] at sc
++  have hb := sc.2 (index, bound) hmem
++  simpa [hlook] using hb
++
++theorem aliasChain_bearsCustody {a : Assumptions} (sc : ShareableComplete a = true)
++    {start finish : Ty} {path : List Nat} (chain : AliasChain a start path finish) :
++    start.bearsCustody = finish.bearsCustody := by
++  induction chain with
++  | nil => rfl
++  | @cons index body _ _ aliased _ _ ih =>
++    have hb := bound_custodyFree sc (Assumptions.alias_bound aliased)
++    rw [← ih, hb]; rfl
++
++def labelCustodyFree : Label → Bool
++  | .ordinary (.custody _) _ => false
++  | _ => true
++
++def labelStopsCustody : Label → Bool
++  | .ordinary (.arrow _ _) _ | .ordinary .computation _ => true
++  | _ => false
++
++def custodyFreeGraph (a : Assumptions) : Obend.Core.FinitePresentation.Graph Node Bool where
++  label := fun n => labelCustodyFree ((graph a).label n)
++  successors := fun n => if labelStopsCustody ((graph a).label n) then [] else (graph a).successors n
++
++theorem children_mem_right {α : Type} {R : α → α → Prop} :
++    ∀ {xs ys : List α}, Obend.Core.FiniteBisimulation.Children R xs ys →
++      ∀ y ∈ ys, ∃ x ∈ xs, R x y
++  | [], [], _, _, hy => by cases hy
++  | _ :: _, [], h, _, _ => False.elim h
++  | [], _ :: _, h, _, _ => False.elim h
++  | x :: xs, _ :: ys, ⟨hxy, hrest⟩, z, hz => by
++    rcases List.mem_cons.mp hz with rfl | hmem
++    · exact ⟨x, List.mem_cons_self, hxy⟩
++    · obtain ⟨w, hw, hr⟩ := children_mem_right hrest z hmem
++      exact ⟨w, List.mem_cons_of_mem _ hw, hr⟩
++
++theorem bisimilar_custodyFree {a : Assumptions} {n₁ n₂ : Node}
++    (hbisim : FP.Bisimilar (graph a) n₁ n₂)
++    (hsafe : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) n₁) :
++    Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) n₂ := by
++  refine ⟨fun m => ∃ n, FP.Bisimilar (graph a) n m ∧ Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) n,
++    ?_, ⟨n₁, hbisim, hsafe⟩⟩
++  rintro m ⟨n, hrel, hnSafe⟩
++  obtain ⟨hlab, hsucc⟩ := Obend.Core.FinitePresentation.bisimilar_closed (graph a) n m hrel
++  obtain ⟨hnLab, hnChildren⟩ := Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) n hnSafe
++  refine ⟨by simpa [custodyFreeGraph, hlab] using hnLab, ?_⟩
++  intro child' hmem'
++  simp only [custodyFreeGraph, ← hlab] at hmem'
++  split at hmem'
++  · cases hmem'
++  · rename_i hnotStop
++    obtain ⟨child, hmem, hcRel⟩ := children_mem_right hsucc child' hmem'
++    have hcMem : child ∈ (custodyFreeGraph a).successors n := by
++      simp [custodyFreeGraph, hnotStop, hmem]
++    exact ⟨child, hcRel, hnChildren child hcMem⟩
++
++theorem scanStream_bearsCustody_false {a : Assumptions} (sc : ShareableComplete a = true)
++    (remaining : List Ty) (label : String) (first : Bool) {row m tl : Ty}
++    (hrow : row.bearsCustody = false)
++    (hemit : Obend.Core.RecursiveRows.scanStream a remaining label first row = .emit m tl) :
++    m.bearsCustody = false ∧ tl.bearsCustody = false := by
++  rw [Obend.Core.RecursiveRows.scanStream] at hemit
++  split at hemit
++  · cases hemit
++  · cases hemit
++  · rename_i obs hexp
++    split at hemit
++    · cases hemit
++    · rename_i fname fmem ftail htag hch
++      have hshape : obs = ⟨.field fname, [fmem, ftail]⟩ := by cases obs; simp_all
++      rw [hshape] at hexp
++      obtain ⟨src, path, chain, raw⟩ := Obend.Core.TypeGraph.expose_constructor_chain a row _ hexp
++      have hsrc : src = .field fname fmem ftail := by cases src <;> simp_all [constructorHead]
++      subst hsrc
++      have hbc := (aliasChain_bearsCustody sc chain).symm.trans hrow
++      simp only [Ty.bearsCustody, Bool.or_eq_false_iff] at hbc
++      split at hemit
++      · split at hemit
++        · cases hemit; exact hbc
++        · exact scanStream_bearsCustody_false sc (remaining.erase row) label first hbc.2 hemit
++      · cases hemit
++    · cases hemit
++termination_by remaining.length
++decreasing_by
++  have present : row ∈ remaining := by assumption
++  rw [List.length_erase_of_mem present]
++  have positive := List.length_pos_of_mem present
++  omega
++
++theorem scanResidual_bearsCustody_false {a : Assumptions} (sc : ShareableComplete a = true)
++    (remaining : List Ty) {row res : Ty} (hrow : row.bearsCustody = false)
++    (hres : Obend.Core.RecursiveRows.scanResidual a remaining row = .nonRow res) :
++    res.bearsCustody = false := by
++  rw [Obend.Core.RecursiveRows.scanResidual] at hres
++  split at hres
++  · cases hres
++  · cases hres
++  · rename_i obs hexp
++    split at hres
++    · cases hres
++    · rename_i fname fmem ftail htag hch
++      have hshape : obs = ⟨.field fname, [fmem, ftail]⟩ := by cases obs; simp_all
++      rw [hshape] at hexp
++      obtain ⟨src, path, chain, raw⟩ := Obend.Core.TypeGraph.expose_constructor_chain a row _ hexp
++      have hsrc : src = .field fname fmem ftail := by cases src <;> simp_all [constructorHead]
++      subst hsrc
++      have hbc := (aliasChain_bearsCustody sc chain).symm.trans hrow
++      simp only [Ty.bearsCustody, Bool.or_eq_false_iff] at hbc
++      split at hres
++      · exact scanResidual_bearsCustody_false sc (remaining.erase row) hbc.2 hres
++      · cases hres
++    · cases hres; exact hrow
++termination_by remaining.length
++decreasing_by
++  have present : row ∈ remaining := by assumption
++  rw [List.length_erase_of_mem present]
++  have positive := List.length_pos_of_mem present
++  omega
++
++theorem safe_of_bearsCustody_false {a : Assumptions} (sc : ShareableComplete a = true)
++    {t : Ty} (ht : t.bearsCustody = false) :
++    Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.type t) := by
++  let P : Node → Prop := fun
++    | .type u => u.bearsCustody = false
++    | .stream row _ _ => row.bearsCustody = false
++  have hRow {u : Ty} {obs : Constructor} (hu : u.bearsCustody = false)
++      (hexp : expose a u = .constructor obs) (hrowTag : rowTag obs.tag = true) :
++      (custodyFreeGraph a).label (.type u) = true ∧
++        ∀ child ∈ (custodyFreeGraph a).successors (.type u), P child := by
++    refine ⟨by simp [custodyFreeGraph, graph, observe, hexp, hrowTag, rowObservation, labelCustodyFree], ?_⟩
++    intro child hmem
++    simp only [custodyFreeGraph, graph, observe, hexp, hrowTag, ↓reduceIte, rowObservation,
++      labelStopsCustody, Bool.false_eq_true, rowChildren, List.mem_append, List.mem_map] at hmem
++    rcases hmem with ⟨lbl, _, rfl⟩ | htail
++    · exact hu
++    · cases hres : RR.residual a u with
++      | nonRow res =>
++        simp only [hres, tailChildren, List.mem_cons, List.not_mem_nil, or_false] at htail
++        subst child
++        exact scanResidual_bearsCustody_false sc _ hu hres
++      | _ => simp [hres, tailChildren] at htail
++  refine ⟨P, ?_, ht⟩
++  intro n hn
++  cases n with
++  | stream row label first =>
++    change row.bearsCustody = false at hn
++    cases hstep : RR.streamStep a row label first with
++    | «end» _ => simp [custodyFreeGraph, graph, observe, hstep, labelCustodyFree, labelStopsCustody]
++    | emit m tl =>
++      obtain ⟨hm, htl⟩ := scanStream_bearsCustody_false sc _ label first hn hstep
++      refine ⟨by simp [custodyFreeGraph, graph, observe, hstep, labelCustodyFree], ?_⟩
++      intro child hmem
++      simp only [custodyFreeGraph, graph, observe, hstep, labelStopsCustody,
++        Bool.false_eq_true, ↓reduceIte, List.mem_cons, List.not_mem_nil, or_false] at hmem
++      rcases hmem with rfl | rfl <;> assumption
++  | type u =>
++    change u.bearsCustody = false at hn
++    cases hexp : expose a u with
++    | nominal idx => simp [custodyFreeGraph, graph, observe, hexp, labelCustodyFree, labelStopsCustody]
++    | unproductive idx => simp [custodyFreeGraph, graph, observe, hexp, labelCustodyFree, labelStopsCustody]
++    | constructor obs =>
++      obtain ⟨src, path, chain, hhead⟩ := Obend.Core.TypeGraph.expose_constructor_chain a u _ hexp
++      have hsrc : src.bearsCustody = false := (aliasChain_bearsCustody sc chain).symm.trans hn
++      cases src with
++      | «variable» _ => simp [constructorHead] at hhead
++      | custody _ => simp [Ty.bearsCustody] at hsrc
++      | natural | label | boolean =>
++        cases hhead; simp [custodyFreeGraph, graph, observe, hexp, rowTag, labelCustodyFree, labelStopsCustody]
++      | arrow _ _ _ _ =>
++        cases hhead; simp [custodyFreeGraph, graph, observe, hexp, rowTag, labelCustodyFree, labelStopsCustody]
++      | computation _ _ _ =>
++        cases hhead; simp [custodyFreeGraph, graph, observe, hexp, rowTag, labelCustodyFree, labelStopsCustody]
++      | specification m e =>
++        cases hhead
++        simp only [Ty.bearsCustody, Bool.or_eq_false_iff] at hsrc
++        refine ⟨by simp [custodyFreeGraph, graph, observe, hexp, rowTag, labelCustodyFree], ?_⟩
++        intro child hmem
++        simp only [custodyFreeGraph, graph, observe, hexp, rowTag, Bool.false_eq_true, ↓reduceIte,
++          labelStopsCustody, List.map, List.mem_cons, List.not_mem_nil, or_false] at hmem
++        rcases hmem with rfl | rfl
++        · exact hsrc.1
++        · exact hsrc.2
++      | prototype s g =>
++        cases hhead
++        simp only [Ty.bearsCustody, Bool.or_eq_false_iff] at hsrc
++        refine ⟨by simp [custodyFreeGraph, graph, observe, hexp, rowTag, labelCustodyFree], ?_⟩
++        intro child hmem
++        simp only [custodyFreeGraph, graph, observe, hexp, rowTag, Bool.false_eq_true, ↓reduceIte,
++          labelStopsCustody, List.map, List.mem_cons, List.not_mem_nil, or_false] at hmem
++        rcases hmem with rfl | rfl
++        · exact hsrc.1
++        · exact hsrc.2
++      | variant row =>
++        cases hhead
++        simp only [Ty.bearsCustody] at hsrc
++        refine ⟨by simp [custodyFreeGraph, graph, observe, hexp, rowTag, labelCustodyFree], ?_⟩
++        intro child hmem
++        simp only [custodyFreeGraph, graph, observe, hexp, rowTag, Bool.false_eq_true, ↓reduceIte,
++          labelStopsCustody, List.map, List.mem_cons, List.not_mem_nil, or_false] at hmem
++        subst child; exact hsrc
++      | emptyRow =>
++        cases hhead; exact hRow hn hexp rfl
++      | field _ _ _ =>
++        cases hhead; exact hRow hn hexp rfl
++
++theorem safe_stream_false_to_true {a : Assumptions} (sc : ShareableComplete a = true)
++    {row : Ty} {name : String}
++    (h : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.stream row name false)) :
++    Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.stream row name true) := by
++  cases hemit : RR.streamStep a row name true with
++  | «end» _ =>
++    exact Obend.Core.FiniteSafety.safe_of_children
++      (by simp [custodyFreeGraph, graph, observe, hemit, labelCustodyFree])
++      (by simp [custodyFreeGraph, graph, observe, hemit, labelStopsCustody])
++  | emit m tl =>
++    cases hsh : RR.shareable a m with
++    | false =>
++      exact bisimilar_custodyFree (hide_emit_resourceful a row m tl name hsh hemit) h
++    | true =>
++      have hmSh : m.shareableUnder a.shareableVariables = true := by
++        rw [shareable_semantic sc]; exact hsh
++      have hmSafe : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.type m) :=
++        safe_of_bearsCustody_false sc (Ty.bearsCustody_of_shareableUnder hmSh)
++      have htlSafe : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.stream tl name false) :=
++        bisimilar_custodyFree (RowHit.hide_emit_shareable a name row m tl hemit hsh) h
++      refine Obend.Core.FiniteSafety.safe_of_children
++        (by simp [custodyFreeGraph, graph, observe, hemit, labelCustodyFree]) ?_
++      intro child hmem
++      simp only [custodyFreeGraph, graph, observe, hemit, labelStopsCustody,
++        Bool.false_eq_true, ↓reduceIte, List.mem_cons, List.not_mem_nil, or_false] at hmem
++      rcases hmem with rfl | rfl
++      · exact hmSafe
++      · exact htlSafe
++
++theorem safe_field_components {a : Assumptions} (sc : ShareableComplete a = true)
++    {name : String} {member tail : Ty}
++    (h : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.type (.field name member tail))) :
++    Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.type member) ∧
++      Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.type tail) := by
++  let r := Ty.field name member tail
++  have hObsR : observe a (.type r) = rowObservation a r := by
++    simp [r, observe, raw_field_observation, rowTag]
++  have hClosedR := (Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) (.type r) h).2
++  have hSuccR : ∀ c ∈ (RR.labels a r).map (fun l => Node.stream r l true) ++ tailChildren (RR.residual a r),
++      Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) c := by
++    intro c hc
++    apply hClosedR
++    simpa [custodyFreeGraph, graph, hObsR, rowObservation, labelStopsCustody, rowChildren] using hc
++  have hNameIn : name ∈ RR.labels a r := by
++    dsimp only [r]; rw [Obend.Core.RecursiveRows.labels_field]
++    exact (Obend.Core.RecursiveRows.mem_insertLabel name name _).mpr (.inl rfl)
++  have hStreamR : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.stream r name true) :=
++    hSuccR _ (List.mem_append_left _ (List.mem_map.mpr ⟨name, hNameIn, rfl⟩))
++  have hEmitR : observe a (.stream r name true) = (.streamEmit, [.type member, .stream tail name false]) :=
++    RowHit.stream_emit_observe_eq a name true r member tail (by simp [r, RowHit.step, raw_field_observation])
++  have hEmitChildren := (Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) (.stream r name true) hStreamR).2
++  have hmSafe : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.type member) :=
++    hEmitChildren _ (by simp [custodyFreeGraph, graph, hEmitR, labelStopsCustody])
++  have htlFalse : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.stream tail name false) :=
++    hEmitChildren _ (by simp [custodyFreeGraph, graph, hEmitR, labelStopsCustody])
++  have htlName : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.stream tail name true) :=
++    safe_stream_false_to_true sc htlFalse
++  refine ⟨hmSafe, ?_⟩
++  cases hexp : expose a tail with
++  | nominal _ =>
++    exact Obend.Core.FiniteSafety.safe_of_children
++      (by simp [custodyFreeGraph, graph, observe, hexp, labelCustodyFree])
++      (by simp [custodyFreeGraph, graph, observe, hexp, labelStopsCustody])
++  | unproductive _ =>
++    exact Obend.Core.FiniteSafety.safe_of_children
++      (by simp [custodyFreeGraph, graph, observe, hexp, labelCustodyFree])
++      (by simp [custodyFreeGraph, graph, observe, hexp, labelStopsCustody])
++  | constructor obs =>
++    by_cases hrow : rowTag obs.tag = true
++    · refine Obend.Core.FiniteSafety.safe_of_children
++        (by simp [custodyFreeGraph, graph, observe, hexp, hrow, rowObservation, labelCustodyFree]) ?_
++      intro child hmem
++      simp only [custodyFreeGraph, graph, observe, hexp, hrow, ↓reduceIte, rowObservation,
++        labelStopsCustody, Bool.false_eq_true, rowChildren, List.mem_append, List.mem_map] at hmem
++      rcases hmem with ⟨lbl, hlbl, rfl⟩ | htail
++      · by_cases hsame : lbl = name
++        · subst hsame; exact htlName
++        · have hLblInR : lbl ∈ RR.labels a r := by
++            dsimp only [r]; rw [Obend.Core.RecursiveRows.labels_field]
++            exact (Obend.Core.RecursiveRows.mem_insertLabel name lbl _).mpr (.inr hlbl)
++          have hStreamRL : Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.stream r lbl true) :=
++            hSuccR _ (List.mem_append_left _ (List.mem_map.mpr ⟨lbl, hLblInR, rfl⟩))
++          have hSkip : observe a (.stream r lbl true) = observe a (.stream tail lbl true) :=
++            RowHit.stream_skip_observe_eq a lbl true r tail
++              (by simp [r, RowHit.step, raw_field_observation, Ne.symm hsame])
++          obtain ⟨hLabL, hChL⟩ := Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) _ hStreamRL
++          have hLEq : (custodyFreeGraph a).label (.stream tail lbl true) =
++              (custodyFreeGraph a).label (.stream r lbl true) := by
++            change labelCustodyFree (observe a (.stream tail lbl true)).1 =
++              labelCustodyFree (observe a (.stream r lbl true)).1
++            rw [hSkip]
++          have hCEq : ∀ c, c ∈ (custodyFreeGraph a).successors (.stream tail lbl true) →
++              c ∈ (custodyFreeGraph a).successors (.stream r lbl true) := by
++            intro c hc
++            change c ∈ (if labelStopsCustody (observe a (.stream tail lbl true)).1 = true then []
++              else (observe a (.stream tail lbl true)).2) at hc
++            change c ∈ (if labelStopsCustody (observe a (.stream r lbl true)).1 = true then []
++              else (observe a (.stream r lbl true)).2)
++            rwa [hSkip]
++          exact Obend.Core.FiniteSafety.safe_of_children
++            (hLEq.trans hLabL)
++            (fun c hc => hChL c (hCEq c hc))
++      · rw [← Obend.Core.RecursiveRows.residual_field a name member tail] at htail
++        exact hSuccR child (List.mem_append_right _ htail)
++    · have hresTail : RR.residual a tail = .nonRow tail :=
++        (nonrow_scans a tail obs hexp hrow).2
++      have hresR : RR.residual a r = .nonRow tail := by
++        dsimp only [r]; rw [Obend.Core.RecursiveRows.residual_field, hresTail]
++      exact hSuccR (.type tail) (List.mem_append_right _ (by simp [hresR, tailChildren]))
++
++theorem bearsCustody_false_of_safe {a : Assumptions} (sc : ShareableComplete a = true) :
++    ∀ {t : Ty}, Obend.Core.FiniteSafety.Safe (custodyFreeGraph a) (.type t) → t.bearsCustody = false
++  | .natural, _ | .label, _ | .boolean, _ | .variable _, _ | .arrow .., _ | .emptyRow, _
++  | .computation .., _ => rfl
++  | .custody id, h => by
++    have hlab := (Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) _ h).1
++    simp [custodyFreeGraph, graph, observe, expose, exposeWalk, constructorHead, rowTag, labelCustodyFree] at hlab
++  | .specification m e, h => by
++    have hch := (Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) _ h).2
++    have hm := bearsCustody_false_of_safe sc (hch (.type m)
++      (by simp [custodyFreeGraph, graph, observe_specification, labelStopsCustody]))
++    have he := bearsCustody_false_of_safe sc (hch (.type e)
++      (by simp [custodyFreeGraph, graph, observe_specification, labelStopsCustody]))
++    simp [Ty.bearsCustody, hm, he]
++  | .prototype s g, h => by
++    have hch := (Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) _ h).2
++    have hs := bearsCustody_false_of_safe sc (hch (.type s)
++      (by simp [custodyFreeGraph, graph, observe_prototype, labelStopsCustody]))
++    have hg := bearsCustody_false_of_safe sc (hch (.type g)
++      (by simp [custodyFreeGraph, graph, observe_prototype, labelStopsCustody]))
++    simp [Ty.bearsCustody, hs, hg]
++  | .variant row, h => by
++    have hch := (Obend.Core.FiniteSafety.safe_closed (custodyFreeGraph a) _ h).2
++    have hr := bearsCustody_false_of_safe sc (hch (.type row)
++      (by simp [custodyFreeGraph, graph, observe_variant, labelStopsCustody]))
++    simp [Ty.bearsCustody, hr]
++  | .field _ _ _, h => by
++    obtain ⟨hm, htl⟩ := safe_field_components sc h
++    simp [Ty.bearsCustody, bearsCustody_false_of_safe sc hm, bearsCustody_false_of_safe sc htl]
++
++/-- Under `ShareableComplete`, `bearsCustody` is invariant under equi-recursive agreement `sameType`. -/
++public theorem bearsCustody_congr {a : Assumptions} (sc : ShareableComplete a = true) {t u : Ty}
++    (agrees : sameType a t u = true) :
++    t.bearsCustody = u.bearsCustody := by
++  have hEqv := (sameType_iff _ _ _).mp agrees
++  cases ht : t.bearsCustody <;> cases hu : u.bearsCustody
++  · rfl
++  · have hSafeU := bisimilar_custodyFree hEqv (safe_of_bearsCustody_false sc ht)
++    rw [bearsCustody_false_of_safe sc hSafeU] at hu; cases hu
++  · have hSafeT := bisimilar_custodyFree ((FP.bisimilar_equivalence (graph a)).symm hEqv)
++      (safe_of_bearsCustody_false sc hu)
++    rw [bearsCustody_false_of_safe sc hSafeT] at ht; cases ht
++  · rfl
++
+ /-! ### Unconditional Weak-Head (`whnf`) Inversion Over Arbitrary `Assumptions` -/
+ 
+ theorem insertCanonical_not_variable (row : Ty) (name : String) (member : Ty) (idx : Nat) :
+@@ -747,7 +1119,8 @@ public theorem exposeCallable_transport {a : Assumptions} {target t : Ty}
+ /-! ## 3. Context Refinement (`Refines`) Under `ShareableComplete` -/
+ 
+ public def QuantityRefines (a : Assumptions) (b' b : Binding) : Prop :=
+-  b'.quantity = b.quantity ∨ (b'.quantity = .affine ∧ b.quantity ≠ .unrestricted) ∨
++  b'.quantity = b.quantity ∨
++    (b'.quantity = .affine ∧ b'.type.bearsCustody = false ∧ b.quantity ≠ .unrestricted) ∨
+     (b'.quantity = .unrestricted ∧ b'.type.shareableUnder a.shareableVariables = true)
+ 
+ public def BindingRefines (a : Assumptions) (b' b : Binding) : Prop :=
+@@ -787,7 +1160,7 @@ public theorem refines_getElem {a : Assumptions} {Γ' Γ : Context} (h : Refines
+ theorem safeQuantity_refines {a : Assumptions} {b' b : Binding} (h : QuantityRefines a b' b)
+     {count : Nat} (safe : safeQuantity b.quantity count = true) :
+     safeQuantity b'.quantity count = true := by
+-  rcases h with same | ⟨affine, notU⟩ | ⟨unrestricted, _⟩
++  rcases h with same | ⟨affine, _, notU⟩ | ⟨unrestricted, _⟩
+   · rw [same]; exact safe
+   · rw [affine]; cases hq : b.quantity <;> simp_all [safeQuantity] <;> omega
+   · rw [unrestricted]; rfl
+@@ -816,10 +1189,12 @@ public theorem validContext_refines {a : Assumptions} (sc : ShareableComplete a
+     simp only [validContext, List.all_cons, Bool.and_eq_true] at valid ⊢
+     refine ⟨?_, ih valid.2⟩
+     have hb := valid.1
+-    rcases head with ⟨agrees, same | ⟨affine, _⟩ | ⟨unrestricted, share⟩⟩
+-    · rw [same, shareable_congr sc agrees]; exact hb
+-    · simp [affine]
+-    · simp [share]
++    rcases head with ⟨agrees, same | ⟨affine, noCust, _⟩ | ⟨unrestricted, share⟩⟩
++    · simp only [mustBeLinear] at hb ⊢
++      rw [same, shareable_congr sc agrees, bearsCustody_congr sc agrees]
++      exact hb
++    · simp [affine, mustBeLinear, noCust]
++    · simp [unrestricted, share, mustBeLinear, Ty.bearsCustody_of_shareableUnder share]
+ 
+ public theorem reusableCaptures_refines {a : Assumptions} (sc : ShareableComplete a = true)
+     {Γ' Γ : Context} (h : Refines a Γ' Γ) {uses : Uses}
+@@ -837,7 +1212,7 @@ public theorem reusableCaptures_refines {a : Assumptions} (sc : ShareableComplet
+       simp only [reusableCaptures, Bool.and_eq_true, beq_iff_eq] at tail
+       refine ⟨tail.1, ?_, tail.2⟩
+       have hb := captures.2.1
+-      rcases head with ⟨agrees, same | ⟨affine, notU⟩ | ⟨unrestricted, share⟩⟩
++      rcases head with ⟨agrees, same | ⟨affine, _, notU⟩ | ⟨unrestricted, share⟩⟩
+       · rw [same, shareable_congr sc agrees]; exact hb
+       · simp only [Bool.or_eq_true, beq_iff_eq, Bool.and_eq_true] at hb ⊢
+         rcases hb with zero | ⟨isU, _⟩
+@@ -867,7 +1242,7 @@ public theorem linearFree_refines {a : Assumptions} {Γ' Γ : Context} (h : Refi
+       rcases free.1 with zero | notLinear
+       · exact .inl zero
+       · refine .inr ?_
+-        rcases q with same | ⟨affine, _⟩ | ⟨unrestricted, _⟩
++        rcases q with same | ⟨affine, _, _⟩ | ⟨unrestricted, _⟩
+         · rw [same]; exact notLinear
+         · rw [affine]; decide
+         · rw [unrestricted]; decide
+@@ -888,7 +1263,7 @@ public theorem branchesAgree_refines {a : Assumptions} {Γ' Γ : Context} (h : R
+         refine ⟨?_, ih agreeing.2⟩
+         have q := head.2
+         have here := agreeing.1
+-        rcases q with same | ⟨affine, _⟩ | ⟨unrestricted, _⟩
++        rcases q with same | ⟨affine, _, _⟩ | ⟨unrestricted, _⟩
+         · rw [same]; exact here
+         · rw [affine]; rfl
+         · rw [unrestricted]; rfl
+@@ -1460,6 +1835,20 @@ theorem motive_application (sc : ShareableComplete a = true) {Γ : Context} {fun
+       have notFree : ¬ (linearFree Γ au = true) := fun free => used (linearFree_refines r free)
+       simp only [argumentAllowed, Bool.and_eq_true, Bool.or_eq_true, beq_iff_eq] at allowed
+       exact allowed.1.2.resolve_right notFree
++    have linear_of_not_affine : ∀ argumentType, sameType a argumentType domain = true →
++        ¬ ((!argumentType.bearsCustody && linearFree Γ' (occurrences Γ'.length argument)) = true) →
++        q0 = .linear := by
++      intro argumentType agrees notAff
++      cases hcust : argumentType.bearsCustody with
++      | true =>
++        have hd0Cust : d0.bearsCustody = true := by
++          rw [← bearsCustody_congr sc (sameType_trans agrees (sameType_symm hd1))]
++          exact hcust
++        exact validContext_custody_linear valid List.mem_cons_self hd0Cust
++      | false =>
++        have used : ¬ (linearFree Γ' (occurrences Γ'.length argument) = true) :=
++          fun hf => notAff (by simp [hcust, hf])
++        exact linear_of_used used
+     have binderOf : ∀ argumentType, sameType a argumentType domain = true →
+         BindingRefines a ⟨argumentType, letQuantity a Γ' argumentType argument⟩ ⟨d0, q0⟩ := by
+       intro argumentType agrees
+@@ -1470,28 +1859,32 @@ theorem motive_application (sc : ShareableComplete a = true) {Γ : Context} {fun
+         exact .inr (.inr ⟨rfl, (Bool.and_eq_true_iff.mp condition).1⟩)
+       · rename_i condition
+         split
+-        · refine .inr (.inl ⟨rfl, fun unrestricted => condition ?_⟩)
++        · rename_i affCond
++          have hNoCust : argumentType.bearsCustody = false := by
++            simpa using (Bool.and_eq_true_iff.mp affCond).1
++          refine .inr (.inl ⟨rfl, hNoCust, fun unrestricted => condition ?_⟩)
+           simp only at unrestricted
+           subst unrestricted
+           simp only [argumentAllowed, Bool.and_eq_true, bne_self_eq_false, Bool.false_or] at allowed
+           rw [Bool.and_eq_true_iff, shareable_congr sc agrees, lengths, ← argumentUses]
+           exact ⟨allowed.2.1, reusableCaptures_refines sc r allowed.2.2⟩
+-        · rename_i used
+-          exact .inl (linear_of_used used).symm
+-    have qOf : ∀ argumentType, letQuantity a Γ' argumentType argument = .linear → q0 = .linear := by
+-      intro argumentType isLinear
++        · rename_i notAff
++          exact .inl (linear_of_not_affine argumentType agrees notAff).symm
++    have qOf : ∀ argumentType, sameType a argumentType domain = true →
++        letQuantity a Γ' argumentType argument = .linear → q0 = .linear := by
++      intro argumentType agrees isLinear
+       unfold letQuantity at isLinear
+       split at isLinear
+       · cases isLinear
+       · split at isLinear
+         · cases isLinear
+-        · rename_i used; exact linear_of_used used
++        · rename_i notAff; exact linear_of_not_affine argumentType agrees notAff
+     have fitsOf : ∀ argumentType, sameType a argumentType domain = true →
+         (letQuantity a Γ' argumentType argument).fits (bodyUses.headD 0) = true := by
+       intro argumentType agrees
+       have refines := (binderOf argumentType agrees).2
+       cases hq : letQuantity a Γ' argumentType argument with
+-      | linear => rw [qOf argumentType hq] at fits0; exact fits0
++      | linear => rw [qOf argumentType agrees hq] at fits0; exact fits0
+       | unrestricted => rfl
+       | erased =>
+         unfold letQuantity at hq
+@@ -1501,7 +1894,7 @@ theorem motive_application (sc : ShareableComplete a = true) {Γ : Context} {fun
+       | affine =>
+         rw [hq] at refines
+         have head := safeUses_head safe
+-        rcases refines with same' | ⟨_, notU⟩ | ⟨h, _⟩
++        rcases refines with same' | ⟨_, _, notU⟩ | ⟨h, _⟩
+         · rw [← same'] at head; simpa [Quantity.fits, safeQuantity] using head
+         · cases q0 <;> simp_all [Quantity.fits, safeQuantity]
+         · cases h
+@@ -1520,8 +1913,10 @@ theorem motive_application (sc : ShareableComplete a = true) {Γ : Context} {fun
+           Bool.or_true]
+         exact condition
+       · split
+-        · rename_i free
+-          rw [lengths, ← argumentUses] at free
++        · rename_i affCond
++          have free : linearFree Γ' au = true := by
++            have hf := (Bool.and_eq_true_iff.mp affCond).2
++            rwa [lengths, ← argumentUses] at hf
+           simp [argumentAllowed, notActivity, free]
+         · simp [argumentAllowed, notActivity]
+     have once : ∀ Γ'' uses, reusableAllowed a .once Γ'' uses = true := by intros; rfl
+@@ -2353,13 +2748,17 @@ theorem membersAgree_of_rowAgrees {Γ : Context} :
+       (membersAgree_of_rowAgrees restTyped distinct.2 ht)
+ 
+ public def ArmRefines (a : Assumptions) (q' q : Quantity) (row' : Ty) (arms : List (String × Term)) : Prop :=
+-  q' = q ∨ (q' = .affine ∧ q ≠ .unrestricted) ∨ (q' = .unrestricted ∧ armsShareable a row' arms = true)
++  q' = q ∨
++    (q' = .affine ∧ armsCustody row' arms = false ∧ q ≠ .unrestricted) ∨
++    (q' = .unrestricted ∧ armsShareable a row' arms = true)
+ 
+ theorem armRefines_tail {q' q : Quantity} {row' : Ty} {arm : String × Term} {rest : List (String × Term)}
+     (h : ArmRefines a q' q row' (arm :: rest)) : ArmRefines a q' q row' rest := by
+-  rcases h with same | affine | ⟨unr, sh⟩
++  rcases h with same | ⟨affine, noCust, notU⟩ | ⟨unr, sh⟩
+   · exact .inl same
+-  · exact .inr (.inl affine)
++  · refine .inr (.inl ⟨affine, ?_, notU⟩)
++    simp only [armsCustody, List.any_cons, Bool.or_eq_false_iff] at noCust
++    exact noCust.2
+   · refine .inr (.inr ⟨unr, ?_⟩)
+     simp only [armsShareable, List.all_cons, Bool.and_eq_true] at sh
+     simpa [armsShareable] using sh.2
+@@ -2424,7 +2823,7 @@ theorem armsMotive_cons (sc : ShareableComplete a = true) {Γ : Context} {name :
+       rw [ub]; exact safeUses_refines binder safe
+     have fits' : q'.fits (vb.uses.headD 0) = true := by
+       rw [ub]
+-      rcases headQ with same' | ⟨affine, notU⟩ | ⟨unr, _⟩
++      rcases headQ with same' | ⟨affine, _, notU⟩ | ⟨unr, _⟩
+       · simp only at same'; rw [same']; exact fits
+       · simp only at affine notU; rw [affine]
+         cases q <;> simp_all [Quantity.fits] <;> omega
+@@ -2441,9 +2840,11 @@ theorem armsMotive_cons (sc : ShareableComplete a = true) {Γ : Context} {name :
+       ArmRefines a q' q row' ((name, body) :: rest) →
+       QuantityRefines a ⟨payload', q'⟩ ⟨payload, q⟩ := by
+     intro row' payload' q' found qr
+-    rcases qr with same' | ⟨affine, notU⟩ | ⟨unr, sh⟩
++    rcases qr with same' | ⟨affine, noCust, notU⟩ | ⟨unr, sh⟩
+     · exact .inl same'
+-    · exact .inr (.inl ⟨affine, notU⟩)
++    · refine .inr (.inl ⟨affine, ?_, notU⟩)
++      simp only [armsCustody, List.any_cons, Bool.or_eq_false_iff, found] at noCust
++      exact noCust.1
+     · refine .inr (.inr ⟨unr, ?_⟩)
+       simp only [armsShareable, List.all_cons, Bool.and_eq_true, found] at sh
+       exact sh.1
+@@ -2479,32 +2880,52 @@ theorem armsShareable_of_unrestricted (sc : ShareableComplete a = true) {Γ : Co
+     obtain ⟨⟨payload', found, same⟩, agreesRest⟩ := agrees
+     simp only [labelsDistinct, Bool.and_eq_true] at distinct
+     have tail := armsShareable_of_unrestricted sc restTyped agreesRest distinct.2
+-    simp only [validContext, List.all_cons, List.all_nil, Bool.and_true] at share
++    simp only [validContext, List.all_cons, List.all_nil, Bool.and_true, Bool.and_eq_true] at share
+     simp only [armsShareable, List.all_cons, found, Bool.and_eq_true] at tail ⊢
+     refine ⟨?_, tail⟩
+-    rw [shareable_congr sc same]; simpa using share
++    rw [shareable_congr sc same]; simpa using share.1
++
++theorem linear_of_armsCustody (sc : ShareableComplete a = true) {Γ : Context} {row' : Ty} :
++    ∀ {q : Quantity} {arms : List (String × Term)} {row result : Ty} {uses : Uses},
++      ArmsTyping a Γ q arms row result uses → MembersAgree a row' row →
++      armsCustody row' arms = true → q = .linear
++  | _, [], _, _, _, .nil .., _, h => by simp [armsCustody] at h
++  | _, (name, body) :: rest, _, _, _, .cons (payload := payload) _ _ share _ restTyped _, agrees, h => by
++    obtain ⟨⟨payload', found, same⟩, agreesRest⟩ := agrees
++    simp only [armsCustody, List.any_cons, found, Bool.or_eq_true] at h
++    rcases h with hhead | htail
++    · have hcust : payload.bearsCustody = true := by
++        rw [← bearsCustody_congr sc same]; exact hhead
++      exact validContext_custody_linear share List.mem_cons_self hcust
++    · exact linear_of_armsCustody sc restTyped agreesRest htail
+ 
+ theorem caseQuantity_refines (sc : ShareableComplete a = true) {Γ Γ' : Context} (r : Refines a Γ' Γ) {q : Quantity}
+     {su : Uses} (allowed : caseAllowed a q Γ su = true) {arms : List (String × Term)} {row result row' : Ty}
+     {uses : Uses} (typed : ArmsTyping a Γ q arms row result uses) (agrees : MembersAgree a row' row)
+     (distinct : labelsDistinct arms = true) :
+-    ArmRefines a (caseQuantity a Γ' su (armsShareable a row' arms)) q row' arms := by
++    ArmRefines a (caseQuantity a Γ' su (armsShareable a row' arms) (armsCustody row' arms)) q row' arms := by
+   simp only [caseAllowed, Bool.and_eq_true, Bool.or_eq_true, beq_iff_eq, bne_iff_ne, ne_eq] at allowed
+   unfold caseQuantity
+-  by_cases hl : linearFree Γ' su = true
++  by_cases hc : (armsCustody row' arms || !linearFree Γ' su) = true
++  · simp only [hc, ↓reduceIte]
++    rcases Bool.or_eq_true_iff.mp hc with hcust | hnotFree
++    · exact .inl (linear_of_armsCustody sc typed agrees hcust).symm
++    · rcases allowed.1 with isL | free
++      · exact .inl isL.symm
++      · exact absurd (linearFree_refines r free) (by simpa using hnotFree)
+   · by_cases hr : (reusableCaptures a.shareableVariables Γ' su && armsShareable a row' arms) = true
+-    · simp only [hl, hr, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
++    · simp only [hc, hr, Bool.false_eq_true, ↓reduceIte]
+       exact .inr (.inr ⟨rfl, (Bool.and_eq_true_iff.mp hr).2⟩)
+-    · simp only [hl, hr, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
+-      refine .inr (.inl ⟨rfl, fun isU => hr ?_⟩)
++    · simp only [hc, hr, Bool.false_eq_true, ↓reduceIte]
++      have hnoCust : armsCustody row' arms = false := by
++        cases h : armsCustody row' arms with
++        | false => rfl
++        | true => simp [h] at hc
++      refine .inr (.inl ⟨rfl, hnoCust, fun isU => hr ?_⟩)
+       subst isU
+       have captures := allowed.2.resolve_left (by simp)
+       rw [Bool.and_eq_true]
+       exact ⟨reusableCaptures_refines sc r captures, armsShareable_of_unrestricted sc typed agrees distinct⟩
+-  · simp only [hl, Bool.not_false, ↓reduceIte]
+-    rcases allowed.1 with isL | free
+-    · exact .inl isL.symm
+-    · exact absurd (linearFree_refines r free) hl
+ 
+ theorem motive_case (sc : ShareableComplete a = true) {Γ : Context} {scrutinee : Term} {arms : List (String × Term)}
+     {row result : Ty} {su au : Uses} {q : Quantity}
+@@ -2565,7 +2986,8 @@ theorem motive_case (sc : ShareableComplete a = true) {Γ : Context} {scrutinee
+       obtain ⟨row', foundRow, rowAgrees⟩ := lookupRow_arms_agrees typed distinct rawRow
+         (fun nm member _ fnd => lookupV_transport hrow fnd)
+       have ma : MembersAgree a row' row := membersAgree_of_rowAgrees typed distinct rowAgrees
+-      let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee) (armsShareable a row' ((name, body) :: rest))
++      let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee)
++        (armsShareable a row' ((name, body) :: rest)) (armsCustody row' ((name, body) :: rest))
+       have hqr : ArmRefines a q' q row' ((name, body) :: rest) := by
+         dsimp only [q']
+         rw [← suOcc]
+@@ -2591,7 +3013,7 @@ theorem motive_case (sc : ShareableComplete a = true) {Γ : Context} {scrutinee
+         have hQAt : caseQuantityAt a annotations path Γ' su row' ((name, body) :: rest) = q' := by
+           simp [caseQuantityAt, root, ann]
+         have allowed' : caseAllowed a ta.quantity Γ' su = true := by
+-          rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _
++          rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _ _
+         have finishSame : sameType a expectedHead expected = true := whnf_sameType a expected
+         change Yields (elaborate a annotations Γ' path (.case scrutinee ((name, body) :: rest)) (.check expected)) _
+         rw [elaborate]
+@@ -2611,7 +3033,8 @@ theorem motive_case (sc : ShareableComplete a = true) {Γ : Context} {scrutinee
+     have ma : MembersAgree a row' row := membersAgree_of_rowAgrees typed distinct rowAgrees
+     have suOcc : su = occurrences Γ'.length scrutinee := by
+       rw [refines_length r]; exact uses_determined scrutineeTyped
+-    let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee) (armsShareable a row' ((name, body) :: rest))
++    let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee)
++      (armsShareable a row' ((name, body) :: rest)) (armsCustody row' ((name, body) :: rest))
+     have hqr : ArmRefines a q' q row' ((name, body) :: rest) := by
+       dsimp only [q']
+       rw [← suOcc]
+@@ -2645,7 +3068,7 @@ theorem motive_case (sc : ShareableComplete a = true) {Γ : Context} {scrutinee
+       have hQAt : caseQuantityAt a annotations path Γ' su row' ((name, body) :: rest) = q' := by
+         simp [caseQuantityAt, root, ann]
+       have allowed' : caseAllowed a ta.quantity Γ' su = true := by
+-        rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _
++        rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _ _
+       constructor
+       · change Yields (elaborate a annotations Γ' path (.case scrutinee ((name, body) :: rest)) .synth) _
+         rw [elaborate]
+@@ -2744,7 +3167,8 @@ theorem motive_effectCase (sc : ShareableComplete a = true) {Γ : Context} {scru
+       obtain ⟨row', foundRow, rowAgrees⟩ := lookupRow_arms_agrees typed distinct rawRow
+         (fun nm member _ fnd => lookupV_transport hrow fnd)
+       have ma : MembersAgree a row' row := membersAgree_of_rowAgrees typed distinct rowAgrees
+-      let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee) (armsShareable a row' ((name, body) :: rest))
++      let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee)
++        (armsShareable a row' ((name, body) :: rest)) (armsCustody row' ((name, body) :: rest))
+       have hqr : ArmRefines a q' q row' ((name, body) :: rest) := by
+         dsimp only [q']
+         rw [← suOcc]
+@@ -2778,7 +3202,7 @@ theorem motive_effectCase (sc : ShareableComplete a = true) {Γ : Context} {scru
+         have hQAt : caseQuantityAt a annotations path Γ' su row' ((name, body) :: rest) = q' := by
+           simp [caseQuantityAt, root, ann]
+         have allowed' : caseAllowed a ta.quantity Γ' su = true := by
+-          rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _
++          rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _ _
+         change Yields (elaborate a annotations Γ' path (.case scrutinee ((name, body) :: rest)) (.check expected)) _
+         rw [elaborate]
+         simp [root, ann, scrutRep, expectedHead, ok, Except.map, checkedSynth, need_ok distinct,
+@@ -2798,7 +3222,8 @@ theorem motive_effectCase (sc : ShareableComplete a = true) {Γ : Context} {scru
+     have ma : MembersAgree a row' row := membersAgree_of_rowAgrees typed distinct rowAgrees
+     have suOcc : su = occurrences Γ'.length scrutinee := by
+       rw [refines_length r]; exact uses_determined scrutineeTyped
+-    let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee) (armsShareable a row' ((name, body) :: rest))
++    let q' := caseQuantity a Γ' (occurrences Γ'.length scrutinee)
++      (armsShareable a row' ((name, body) :: rest)) (armsCustody row' ((name, body) :: rest))
+     have hqr : ArmRefines a q' q row' ((name, body) :: rest) := by
+       dsimp only [q']
+       rw [← suOcc]
+@@ -2846,7 +3271,7 @@ theorem motive_effectCase (sc : ShareableComplete a = true) {Γ : Context} {scru
+       have hQAt : caseQuantityAt a annotations path Γ' su row' ((name, body) :: rest) = q' := by
+         simp [caseQuantityAt, root, ann]
+       have allowed' : caseAllowed a ta.quantity Γ' su = true := by
+-        rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _
++        rw [qA, suOcc]; exact caseQuantity_allowed _ _ _ _ _
+       constructor
+       · change Yields (elaborate a annotations Γ' path (.case scrutinee ((name, body) :: rest)) .synth) _
+         rw [elaborate]
+diff --git a/lean/Obend/Equiv/EffectHandlers.lean b/lean/Obend/Equiv/EffectHandlers.lean
+index 72c4b2ab..6e623eba 100644
+--- a/lean/Obend/Equiv/EffectHandlers.lean
++++ b/lean/Obend/Equiv/EffectHandlers.lean
+@@ -114,7 +114,8 @@ theorem TypedHandler.opFn_typed {θ Γ kQty P R P' R' A B}
+   have hvK : validContext θ.shareableVariables (⟨ResumpTy R P' R' B, kQty⟩ :: ⟨P, H.opPlanQty⟩ :: Γ) = true := by
+     have hk : (kQty != .unrestricted || (ResumpTy R P' R' B).shareableUnder θ.shareableVariables) = true := by
+       rcases H.oneShot with rfl | rfl <;> rfl
+-    simp only [validContext, List.all_cons, Bool.and_eq_true] at hvP ⊢; exact ⟨hk, hvP⟩
++    have hml : mustBeLinear ⟨ResumpTy R P' R' B, kQty⟩ = true := rfl
++    simp only [validContext, List.all_cons, Bool.and_eq_true] at hvP ⊢; exact ⟨⟨hk, hml⟩, hvP⟩
+   have hSafeTail : safeUses (⟨P, H.opPlanQty⟩ :: Γ) H.opUses.tail = true := by
+     have hlen := source_uses_length H.opTyped
+     cases hu : H.opUses with
+@@ -303,7 +304,7 @@ theorem yields_typed_reify_resumption {θ : Assumptions} {m plan : Term} {ctx :
+             ((Obend.Core.TypeGraph.equivalent_equivalence θ).refl _))
+         obtain ⟨hcc, hpT, hPlugInner⟩ := ihS rfl hScrutSame hr rfl hys
+         have hb0Valid : validContext θ.shareableVariables [⟨R0, .unrestricted⟩] = true := by
+-          simp [validContext, isData_shareableUnder _ hr]
++          simp [validContext, isData_shareableUnder _ hr, hr]
+         have haWeak := weaken_closed_arms hb0Valid haT
+         let rec convArms {arms0 : List (String × Term)} {r0 : Ty} {u0 : Uses} :
+             ArmsTyping θ [⟨R0, .unrestricted⟩] q arms0 r0 (.computation pTy rTy res) u0 →
+@@ -343,14 +344,16 @@ theorem yields_typed_reify_resumption {θ : Assumptions} {m plan : Term} {ctx :
+       cases hy with | split _ _ hyt => exact False.elim (typed_pure_never_yields htT (Obend.Core.Proofs.Preservation.tail_empty_not_computation hr) hyt)
+   obtain ⟨hcc, hpT, hPlugT⟩ := aux hTyped (sameType_refl θ _) hRData hAPure hYield
+   have hvR : validContext θ.shareableVariables [⟨R, .unrestricted⟩] = true := by
+-    simp [validContext, isData_shareableUnder _ hRData]
++    simp [validContext, isData_shareableUnder _ hRData, hRData]
+   exact ⟨hcc, hpT, .lambda (annotation := ⟨R, .computation P R A, .unrestricted, .once⟩) hPlugT rfl hvR rfl rfl⟩
+ 
+ private theorem closed_app_typed {θ : Assumptions} {f a : Term} {r : Reuse} {q : Quantity} {dom cod : Ty}
+     (hf : PartialTyping θ [] f (.arrow r q dom cod) []) (ha : PartialTyping θ [] a dom [])
+     (haPure : dom.isComputation = false) (hv : validContext θ.shareableVariables [⟨dom, q⟩] = true) :
+     PartialTyping θ [] (.app f a) cod [] := by
+-  have hsh : (q != .unrestricted || dom.shareableUnder θ.shareableVariables) = true := by simpa [validContext] using hv
++  have h' : (q != .unrestricted || dom.shareableUnder θ.shareableVariables) = true ∧
++      mustBeLinear ⟨dom, q⟩ = true := by simpa [validContext] using hv
++  have hsh := h'.1
+   have hall : argumentAllowed θ q [] dom [] = true := by
+     cases q <;> simp [argumentAllowed, haPure, linearFree, reusableCaptures] at hsh ⊢ <;> exact hsh
+   exact .application hf ha rfl rfl hall
+@@ -426,7 +429,7 @@ theorem multi_turn_shallow_trace_preserves_typing {θ : Assumptions} {kQty : Qua
+       rcases H.oneShot with rfl | rfl <;> rfl
+     have hDisp := closed_app_typed (closed_app_typed hOpFn hpT (isPlan_shareableUnder θ.shareableVariables H.planValid).2 H.opValidP) hkT rfl hvK
+     have hvR : validContext θ.shareableVariables [⟨R, .unrestricted⟩] = true := by
+-      simp [validContext, isData_shareableUnder _ H.respData]
++      simp [validContext, isData_shareableUnder _ H.respData, H.respData]
+     obtain ⟨_, hallD, hallT⟩ := ih (closed_app_typed hkT hResp (isData_not_computation H.respData) hvR)
+     refine ⟨by simp, fun d hm => ?_, fun pr hm => ?_⟩
+     · rcases List.mem_cons.mp hm with rfl | hm'
+@@ -594,7 +597,7 @@ private theorem allUnrestricted_valid {vars : List Nat} {Γ : Context} (hΓ : Al
+     obtain ⟨hq, hsh⟩ := hΓ b (List.mem_cons_self ..)
+     have hrest := ih (fun x hx => hΓ x (List.mem_cons_of_mem _ hx))
+     simp only [validContext, List.all_cons, Bool.and_eq_true] at hrest ⊢
+-    exact ⟨by simp [hq, hsh], hrest⟩
++    exact ⟨by simp [hq, hsh, Ty.bearsCustody_of_shareableUnder hsh], hrest⟩
+ 
+ private theorem allUnrestricted_safe {vars : List Nat} {Γ : Context} (hΓ : AllUnrestricted vars Γ)
+     {u : Uses} (hlen : u.length = Γ.length) : safeUses Γ u = true := by
+@@ -624,7 +627,8 @@ private theorem weaken_closed_ctx {θ : Assumptions} {t : Term} {τ : Ty}
+   | [], _ => ht
+   | b :: _, hΓ => by
+       obtain ⟨hq, hsh⟩ := hΓ b (List.mem_cons_self ..)
+-      have hbV : validContext θ.shareableVariables [b] = true := by simp [validContext, hq, hsh]
++      have hbV : validContext θ.shareableVariables [b] = true := by
++        simp [validContext, hq, hsh, Ty.bearsCustody_of_shareableUnder hsh]
+       have hw := Obend.Core.Proofs.Preservation.source_weaken
+         (weaken_closed_ctx ht (fun x hx => hΓ x (List.mem_cons_of_mem _ hx))) b hbV
+       rw [closed_rename_id (source_scoped ht) Nat.succ] at hw
+@@ -732,12 +736,14 @@ private theorem compileDeep_typing_aux {θ : Assumptions} {kQty : Quantity} {P R
+     (fun {Γ tag body rest payload row _ _ C} hPayData _ _ ihB ihR hP hR hΓ rowFull {kRet ku} hRowData hkT => by
+       subst hP hR
+       have hPaySh := isData_shareableUnder θ.shareableVariables hPayData
+-      have hbPayValid : validContext θ.shareableVariables [⟨payload, .unrestricted⟩] = true := by simp [validContext, hPaySh]
++      have hbPayValid : validContext θ.shareableVariables [⟨payload, .unrestricted⟩] = true := by
++        simp [validContext, hPaySh, Ty.bearsCustody_of_shareableUnder hPaySh]
+       have hΓPay := allUnrestricted_cons hPaySh hΓ
+       obtain ⟨bu, hbT⟩ := ihB rfl rfl hΓPay (Obend.Core.Proofs.Preservation.source_weaken hkT ⟨payload, .unrestricted⟩ hbPayValid)
+       have hVarSh : (Ty.variant rowFull).shareableUnder θ.shareableVariables = true := by
+         simpa [Ty.shareableUnder] using isData_shareableUnder θ.shareableVariables hRowData
+-      have hbVarValid : validContext θ.shareableVariables [⟨.variant rowFull, .unrestricted⟩] = true := by simp [validContext, hVarSh]
++      have hbVarValid : validContext θ.shareableVariables [⟨.variant rowFull, .unrestricted⟩] = true := by
++        simp [validContext, hVarSh, hRowData]
+       have hshift1 : Obend.Core.Proofs.Preservation.shiftIndex 1 = liftRename Nat.succ := by
+         funext idx; cases idx <;> simp [Obend.Core.Proofs.Preservation.shiftIndex, liftRename, Nat.succ_eq_add_one]
+       have hbIns := Obend.Core.Proofs.Preservation.source_insert_binding hbT 1 ⟨.variant rowFull, .unrestricted⟩ (by simp) hbVarValid
+diff --git a/lean/Obend/Law/Proofs/Typing.lean b/lean/Obend/Law/Proofs/Typing.lean
+index cecd7be0..7fd3e43d 100644
+--- a/lean/Obend/Law/Proofs/Typing.lean
++++ b/lean/Obend/Law/Proofs/Typing.lean
+@@ -263,6 +263,15 @@ theorem armsShareable_chk {ctx : Context} {row result : Ty} :
+     simp only [Obend.Core.Bidirectional.armsShareable, List.all_cons, hm, Bool.and_eq_true] at tail ⊢
+     exact ⟨by simpa using hs, tail⟩
+ 
++theorem armsCustody_chk {ctx : Context} {row result : Ty} :
++    ∀ {sub : Ty} {arms : List (String × Term)}, ArmsChk ctx row result sub arms →
++      Obend.Core.Bidirectional.armsCustody row arms = false
++  | _, _, .nil => rfl
++  | _, _, .cons hm hs _ rest => by
++    have tail := armsCustody_chk rest
++    simp only [Obend.Core.Bidirectional.armsCustody, List.any_cons, hm, Bool.or_eq_false_iff] at tail ⊢
++    exact ⟨Ty.bearsCustody_of_shareable hs, tail⟩
++
+ theorem checkArms_ok {ctx : Context} {row result : Ty} (hctx : Clean ctx) :
+     ∀ {sub : Ty} {arms : List (String × Term)}, ArmsChk ctx row result sub arms →
+       ∀ path idx, ∃ typed, checkArms {} noAnn ctx .unrestricted path idx row result arms = .ok typed ∧
+@@ -274,7 +283,7 @@ theorem checkArms_ok {ctx : Context} {row result : Ty} (hctx : Clean ctx) :
+     obtain ⟨t, ht, hr, hq⟩ := checkArms_ok hctx rest path (idx + 1)
+     have hl := Obend.Core.MachineTyping.source_uses_length a.derivation
+     simp only [checkArms, hm, bind, Except.bind]
+-    rw [need_ok (by simpa [validContext] using hs)]
++    rw [need_ok (by simp [validContext, hs])]
+     simp only [ha]
+     rw [need_ok (safeUses_clean hc hl), need_ok (show Quantity.unrestricted.fits (a.uses.headD 0) = true from rfl)]
+     simp only [ht, pure, Except.pure, need_ok (show (_ || branchesAgree ctx a.uses.tail t.uses) = true by
+@@ -295,7 +304,7 @@ public theorem chk_case {ctx : Context} {s : Term} {arms : List (String × Term)
+     have vl := Obend.Core.MachineTyping.source_uses_length v.derivation
+     have quantity : Obend.Core.Bidirectional.caseQuantityAt {} noAnn path ctx v.uses row ((name, body) :: rest) = .unrestricted := by
+       simp [Obend.Core.Bidirectional.caseQuantityAt, noAnn, caseQuantity, linearFree_noLinear hctx.noLinear, reusable_clean hctx vl,
+-        armsShareable_chk ha]
++        armsShareable_chk ha, armsCustody_chk ha]
+     simp only [elaborate, noAnn, hv, bind, Except.bind]
+     rw [need_ok hd]
+     have hw : representativeHead {} noAnn path v.type = .variant row := by rw [hvT]; exact hV
+diff --git a/lean/Obend/Teeth/Core/CheckTeeth.lean b/lean/Obend/Teeth/Core/CheckTeeth.lean
+index 9068de2e..b0800dac 100644
+--- a/lean/Obend/Teeth/Core/CheckTeeth.lean
++++ b/lean/Obend/Teeth/Core/CheckTeeth.lean
+@@ -84,12 +84,14 @@ macro_rules
+     simp only [sameType_refl, bind, Except.bind, pure, Except.pure, Except.toOption, Functor.map, Except.map,
+       ↓reduceIte, ↓reduceDIte, dite_true, Bool.not_false, Option.isSome_some, $second,*]
+     simp (config := {decide := true}) only [linearFree, variableUses, zeroUses, addUses, safeUses, safeQuantity,
+-      Quantity.fits, validContext, reusableAllowed, reusableCaptures, Ty.isComputation, Assumptions.valid, overlay,
++      Quantity.fits, validContext, mustBeLinear, Ty.bearsCustody, reusableAllowed, reusableCaptures, Ty.isComputation,
++      Assumptions.valid, overlay,
+       sameType_refl, List.range_succ, List.range_zero, List.map_cons, List.map_nil,
+       List.nil_append, List.cons_append, List.zipWith_cons_cons, List.zipWith_nil_left, List.zip_cons_cons,
+       List.zip_nil_left, List.all_cons, List.all_nil, List.length_cons, List.length_nil, List.headD_cons,
+       List.tail_cons, List.replicate_succ, List.replicate_zero, Bool.not_false, dite_true, ↓reduceIte,
+-      ↓reduceDIte, Bool.and_true, Bool.true_and, Bool.or_true, Bool.true_or, beq_self_eq_true,
++      ↓reduceDIte, Bool.and_true, Bool.true_and, Bool.or_true, Bool.true_or, Bool.false_or, Bool.or_false,
++      beq_self_eq_true,
+       Option.isSome_some, Option.get_some, Except.toOption, bind, Except.bind, pure, Except.pure, $first,*]))
+ 
+ @[local simp] def reusableNaturalCapture : AnnotatedTerm :=
+@@ -163,7 +165,9 @@ theorem future_row_instantiation_accepted (self super : Ty)
+   have row : isRowV [] [] super = true := (isRowV_iff _ _).2 ⟨64, superRow⟩
+   have selfUnder : self.shareableUnder [] = true := Ty.shareableUnder_of_shareable [] selfShareable
+   have superUnder : super.shareableUnder [] = true := Ty.shareableUnder_of_shareable [] superShareable
+-  future_reduce [futureRowInstantiation, futureRowSource, selfUnder, superUnder] [row]
++  have selfCust : self.bearsCustody = false := Ty.bearsCustody_of_shareable selfShareable
++  have superCust : super.bearsCustody = false := Ty.bearsCustody_of_shareable superShareable
++  future_reduce [futureRowInstantiation, futureRowSource, selfUnder, superUnder, selfCust, superCust] [row]
+ 
+ /-- A total law provider proves a law ABOUT the partial runtime term; source
+ law names alone cannot construct this evidence. Compatible retention is chosen
+@@ -193,7 +197,9 @@ theorem future_row_typed : FutureRowTyped futureRowInstantiation := by
+   have row : isRowV [] [] super = true := (isRowV_iff _ _).2 ⟨64, hr⟩
+   have selfUnder : self.shareableUnder [] = true := Ty.shareableUnder_of_shareable [] hs
+   have superUnder : super.shareableUnder [] = true := Ty.shareableUnder_of_shareable [] ht
+-  future_reduce [futureRowInstanceChecked, futureRowInstantiation, futureRowSource, selfUnder, superUnder] [row]
++  have selfCust : self.bearsCustody = false := Ty.bearsCustody_of_shareable hs
++  have superCust : super.bearsCustody = false := Ty.bearsCustody_of_shareable ht
++  future_reduce [futureRowInstanceChecked, futureRowInstantiation, futureRowSource, selfUnder, superUnder, selfCust, superCust] [row]
+ 
+ /-- Independently authored code changes a self-sensitive method type at every
+ future Self instantiation, including negative arrow occurrences. -/
+diff --git a/lean/Obend/Teeth/Core/LinearTeeth.lean b/lean/Obend/Teeth/Core/LinearTeeth.lean
+index 32a1d000..b7556304 100644
+--- a/lean/Obend/Teeth/Core/LinearTeeth.lean
++++ b/lean/Obend/Teeth/Core/LinearTeeth.lean
+@@ -43,12 +43,21 @@ example :
+       | .error (.linearBinderUnused []) => true
+       | _ => false) = true := by decide
+ 
+-/-- The same program with an `affine` custody is accepted: dropping is within "at most once". -/
++/-- Under Gate G1 (`mustBeLinear`), binding custody at `affine` is refused (`invalidContext`),
++whereas a custody-free `affine` binder may still be dropped. -/
+ example :
+-    (checkAgainst (droppedCustody .affine) [] (droppedCustodyType .affine)).toBool = true := by decide
++    (match checkAgainst (droppedCustody .affine) [] (droppedCustodyType .affine) with
++      | .error (.invalidContext []) => true
++      | _ => false) = true := by decide
++
++example :
++    (checkAgainst ⟨.lam (.nat 0), fun path => if path = [] then some ⟨.natural, .natural, .affine, .once⟩ else none, {}⟩
++      [] (.arrow .once .affine .natural .natural)).toBool = true := by decide
+ 
+ /-- `λ(h : Custody). (λ(z : Custody). 0) h`: the custody is passed to a callee whose parameter has
+-quantity `q`. -/
++quantity `q`. At `affine`, G1 already refuses the callee's `affine` custody binder at `[0, 0]`;
++for a custody-free `linear` binder (`handedLinearNat`), the checker reaches `[0, 1]` and refuses
++`linearArgumentDropped`. -/
+ def handedCustody (q : Quantity) : AnnotatedTerm :=
+   ⟨.lam (.app (.lam (.nat 0)) (.bound 0)), fun path =>
+     if path = [] then some ⟨.custody 0, .natural, .linear, .once⟩
+@@ -56,11 +65,23 @@ def handedCustody (q : Quantity) : AnnotatedTerm :=
+     else if path = [0, 0] then some ⟨.custody 0, .natural, q, .once⟩
+     else none, {}⟩
+ 
++def handedLinearNat (q : Quantity) : AnnotatedTerm :=
++  ⟨.lam (.app (.lam (.nat 0)) (.bound 0)), fun path =>
++    if path = [] then some ⟨.natural, .natural, .linear, .once⟩
++    else if path = [0] then some ⟨.arrow .once q .natural .natural, .natural, .affine, .once⟩
++    else if path = [0, 0] then some ⟨.natural, .natural, q, .once⟩
++    else none, {}⟩
++
++example :
++    (match checkAgainst (handedCustody .affine) [] (droppedCustodyType .linear) with
++      | .error (.invalidContext [0, 0]) => true
++      | _ => false) = true := by decide
++
+ /-- TOOTH (a `linear` hypothesis handed to an `affine` callee, which drops it, is refused by name:
+ the argument at `[0, 1]` uses hypothesis `0`). The binder count is one, so exact discharge at the
+ binder alone would have accepted it. -/
+ example :
+-    (match checkAgainst (handedCustody .affine) [] (droppedCustodyType .linear) with
++    (match checkAgainst (handedLinearNat .affine) [] (.arrow .once .linear .natural .natural) with
+       | .error (.linearArgumentDropped [0, 1] 0 .affine) => true
+       | _ => false) = true := by decide
+ 
+@@ -265,7 +286,7 @@ theorem case_quantity_of_linear_use (a : Assumptions) (ctx : Context) (uses : Us
+     (shareable : Bool) (h : linearFree ctx uses = false) :
+     caseQuantity a ctx uses shareable = .linear := by simp [caseQuantity, h]
+ 
+-#tooth case_quantity_of_linear_use by mutation caseQuantity := fun _ _ _ _ => .affine
++#tooth case_quantity_of_linear_use by mutation caseQuantity := fun _ _ _ _ _ => .affine
+ 
+ /-- The same arm duplicating the payload, `case l h of l x. x + x`, is a copy of `h` in one step. -/
+ example :
+@@ -350,5 +371,63 @@ example :
+       | .error (.typeMismatch [] expected actual) => expected == oneField && actual == .emptyRow
+       | _ => false) = true := by decide
+ 
++/-! ## Custody is bound `linear` (`mustBeLinear`, gate G1)
++
++`validContext` requires `mustBeLinear` of every binding: a custody-bearing binder is `linear`, so
++custody is never dropped (`erased`, `affine`) or shared (`unrestricted`). The lambda rule, the arms
++of a `case`/`effectCase` (`ArmsTyping.cons`), `SplitSpine` and `Checked` all require `validContext`. -/
++
++example : validContext [] [⟨.custody 7, .affine⟩] = false := by decide
++example : validContext [] [⟨.custody 7, .erased⟩] = false := by decide
++example : validContext [] [⟨.custody 7, .unrestricted⟩] = false := by decide
++example : validContext [] [⟨.custody 7, .linear⟩] = true := by decide
++/-- Custody under a record field or a sum is still custody. -/
++example : validContext [] [⟨.field "c" (.custody 7) .emptyRow, .affine⟩] = false := by decide
++example : validContext [] [⟨.variant (.field "c" (.custody 7) .emptyRow), .affine⟩] = false := by decide
++/-- A custody-free record may still be `affine`. -/
++example : validContext [] [⟨.field "n" .natural .emptyRow, .affine⟩] = true := by decide
++
++/-- The checker refuses a top-level context with an `affine` custody binding... -/
++example :
++    (match checkAgainst ⟨.nat 0, fun _ => none, {}⟩ [⟨.custody 7, .affine⟩] .natural with
++      | .error (.invalidContext []) => true
++      | _ => false) = true := by decide
++/-- ...and accepts the same term over a `linear` one. -/
++example :
++    (match checkAgainst ⟨.nat 0, fun _ => none, {}⟩ [⟨.custody 7, .linear⟩] .natural with
++      | .ok _ => true
++      | _ => false) = true := by decide
++
++/-- A lambda that takes custody at `affine` is refused; at `linear` it checks. -/
++example :
++    (match checkAgainst ⟨.lam (.bound 0), fun p =>
++        if p = [] then some ⟨.custody 7, .custody 7, .affine, .once⟩ else none, {}⟩
++        [] (.arrow .once .affine (.custody 7) (.custody 7)) with
++      | .error (.invalidContext _) => true
++      | _ => false) = true := by decide
++example :
++    (match checkAgainst ⟨.lam (.bound 0), fun p =>
++        if p = [] then some ⟨.custody 7, .custody 7, .linear, .once⟩ else none, {}⟩
++        [] (.arrow .once .linear (.custody 7) (.custody 7)) with
++      | .ok _ => true
++      | _ => false) = true := by decide
++
++theorem caseQuantity_custody_linear (a : Assumptions) (ctx : Context) (uses : Uses) (sh : Bool) :
++    caseQuantity a ctx uses sh true = .linear := by
++  simp [caseQuantity]
++
++-- Without `mustBeLinear` (and `custody` in `caseQuantity`) the stored proofs fail: an `affine`
++-- custody context would be valid, and an unannotated `case` could bind a custody payload `affine`.
++#tooth Obend.Core.Ty.validContext_refuses_affine_custody by mutation Obend.Core.Ty.mustBeLinear :=
++  fun _ => true
++#tooth Obend.Core.Ty.validContext_custody_linear by mutation Obend.Core.Ty.mustBeLinear :=
++  fun _ => true
++#tooth Obend.Core.Check.lambda_custody_linear by mutation Obend.Core.Ty.mustBeLinear :=
++  fun _ => true
++#tooth caseQuantity_custody_linear by mutation caseQuantity := fun a ctx uses sh _ =>
++  if !linearFree ctx uses then .linear
++  else if reusableCaptures a.shareableVariables ctx uses && sh then .unrestricted
++  else .affine
++
+ end Obend.Teeth.Core.LinearTeeth
+ end
+diff --git a/lean/tests/extracted/CoerceProbesTest.lean b/lean/tests/extracted/CoerceProbesTest.lean
+index 58265518..4ce3bfda 100644
+--- a/lean/tests/extracted/CoerceProbesTest.lean
++++ b/lean/tests/extracted/CoerceProbesTest.lean
+@@ -51,15 +51,17 @@ def projection (q : Quantity) (kept : List String) : Bool :=
+       fun path => if path = [] then some ⟨custodyRow, target, q, .once⟩ else none, {}⟩
+     [] (.arrow .once q custodyRow target)).toBool
+ 
+--- one kept field consumes the receiver once: accepted with an affine binder
+-#guard projection .affine ["handle"]
+-#guard projection .affine ["tag"]
+--- two kept fields mention it twice; it cannot be unrestricted: refused at every quantity
++-- custody-bearing records must be bound `linear` (`mustBeLinear`), and `.get` refuses `linear`
++-- projection (dropping siblings), so width projection of `custodyRow` is refused at every quantity
++#guard quantities.all fun q => !projection q ["handle"]
++#guard quantities.all fun q => !projection q ["tag"]
+ #guard quantities.all fun q => !projection q ["handle", "tag"]
+ 
+--- `coerce` agrees: the one-field width coercion is emitted and checks, the two-field one is the
+--- named sharing obstruction
+-#guard (coerce {} custodyRow (.field "handle" (.custody 0) .emptyRow)).toBool
++-- `coerce` agrees: identity on `custodyRow` checks (`linear`), one-field width projection is
++-- refused by the checker (`invalidContext` on the `affine` binder), and two-field is `needsSharing`
++#guard (coerce {} custodyRow custodyRow).toBool
++#guard (match coerce {} custodyRow (.field "handle" (.custody 0) .emptyRow) with
++  | .error (.checker (.invalidContext [])) => true | _ => false)
+ #guard (match coerce {} custodyRow (.field "handle" (.custody 0) (.field "tag" .natural .emptyRow)) with
+   | .error (.needsSharing _) => true | _ => false)
+ 
+diff --git a/lean/tests/metasystem/CoreMetatheoryElevationTest.lean b/lean/tests/metasystem/CoreMetatheoryElevationTest.lean
+index 930c50aa..09b2b06b 100644
+--- a/lean/tests/metasystem/CoreMetatheoryElevationTest.lean
++++ b/lean/tests/metasystem/CoreMetatheoryElevationTest.lean
+@@ -121,6 +121,10 @@ private theorem mkCounterDischarges (priv : Ty) (extra : Nat)
+     by_cases hj : j = 0
+     · simp [singleTySubst, hj, θ_counter, hSh]
+     · simp [singleTySubst, hj, θ_counter, Ty.shareable]
++  custody j := by
++    by_cases hj : j = 0
++    · simpa [singleTySubst, hj] using Ty.bearsCustody_of_shareableUnder hSh
++    · simp [singleTySubst, hj]
+   pure j := by by_cases hj : j = 0 <;> simp [singleTySubst, hj, Ty.kinded, Ty.isComputation]
+   holes _ _ h := by simp [θ_counter] at h
+ 

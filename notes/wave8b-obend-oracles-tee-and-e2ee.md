@@ -1,0 +1,34 @@
+# Wave-8B Quarry: `obend-oracles-e2ee` — Hardened Multi-Vendor TEE/GPU Gate (`CAP-24..26`), Pinned TLSNotary/`calltree` & E2EE Binding (`V3`/`V4`), and Exact Integer `FHSDD001`/`FHQPB001` KKT
+
+**Date:** 2026-11-21 · **Lane:** `w8b-obend-oracles-tee` (`Phase 1` `crates/obend-oracles-e2ee`) · **Commit:** `8955afc5584c6a6cdc83ad10e7094e93819978d9` on `revival-obend-oracles-tee` · **Metered search ledger:** `Scry: 0, Kagi: 0, eprint.iacr.org: 0` `[EXECUTED]`
+
+## 1. Scope & Donor Provenance
+
+- `[SOURCE]` **TEE & GPU attestation donor (`CAP-24..26`):** `breadstuffs/tee-verify/src/{lib.rs,snp.rs,snp_chain.rs,tdx.rs,nvidia.rs,nvidia_rim.rs,nvidia_ocsp.rs}` (audited in [GRAINS_CAPTP_AND_SANDBOX_AUDIT.md](file:///Users/ember/dev/zkml-research/research/breadstuffs_revival_2026_11_21/GRAINS_CAPTP_AND_SANDBOX_AUDIT.md#L57)).
+- `[SOURCE]` **TLSNotary / `calltree` & E2EE donor (`V3`/`V4`):** `breadstuffs/dregg-oracle/src/lib.rs:168-305`, `breadstuffs/calltree/verify/src/main.rs:54-99`, `breadstuffs/dregg-chutes-e2ee/src/{attest.rs,crypto.rs,session.rs}` (audited in [STARBRIDGE_APPS_DREGGNET_AND_ZKML_SYNTHESIS.md](file:///Users/ember/dev/zkml-research/research/breadstuffs_revival_2026_11_21/STARBRIDGE_APPS_DREGGNET_AND_ZKML_SYNTHESIS.md#L190-L192)).
+- `[SOURCE]` **Exact integer SDD/KKT donor (`FHSDD001`/`FHQPB001`):** `breadstuffs/fhir/src/{compile.rs:150-510,qp_certificate.rs:30-1030}` and `breadstuffs/fhegg-solver/src/{qp_exact.rs:62-415,qp_strict.rs:30-240}`, aligned with `minidregg/Theory/ExactKktClearingCert.lean`.
+- `[DERIVED]` Zero-dependency pure-`std` Rust (`#![forbid(unsafe_code)]`, `0` external crates, `0` floats in `src/`) matching `crates/obend-lightclients` (`8` files, `+5,153` lines): `Cargo.toml`, `src/{lib.rs,sha256.rs,tee.rs,tlsn_e2ee.rs,kkt.rs}`, `tests/oracles_tee_conformance.rs`.
+
+## 2. Hardened Security Gates Implemented (`[SOURCE]`, `[DERIVED]`)
+
+| Subsystem | Audit Defect Closed | Mechanism in `crates/obend-oracles-e2ee` |
+|---|---|---|
+| **RFC 5280 Chain Gate** (`src/tee.rs`) | **`CAP-24`** (leaf-signed child cert forging `device_chain[0]`, missing CA role checks) | `verify_rfc5280_cert_chain` + pure-Rust ASN.1 DER `parse_der_basic_constraints` / `parse_der_key_usage`: mandates `is_ca=true` + `keyCertSign` on every root/intermediate, forbids `is_ca=true` on leaf, mandates `digitalSignature` on leaf, enforces `pathLenConstraint`, issuer/subject continuity, pinned root SHA-256, and `now_secs > 0`. |
+| **AMD SEV-SNP Gate** (`src/tee.rs`) | **`CAP-25`** (empty default CRL set, below-floor TCB returned as `Ok`) | `verify_amd_sev_snp` requires a 3-cert ARK→ASK→VCEK chain, **mandatory non-empty, non-expired CRL** signed by a `cRLSign` CA checking ASK & VCEK serials, report/VCEK TCB & chip-ID corroboration, and fails closed directly on below-floor TCB (`SnpTcbBelowFloor`). |
+| **Intel TDX 1.0/1.5 & NVIDIA H100/B200 Gate** (`src/tee.rs`) | **`CAP-26`** (`dcap_qvl::new_prod` rejecting pinned `MR_SERVICETD`, `now_secs=0` clock fallback, GH100-only, weak FWID pin) | `verify_intel_tdx` pins `MRTD`+`RTMR0..2` (optional `RTMR3`), custom `accepted_service_tds` allowlist for TD 1.5 `MR_SERVICETD`, strict TCB allowlist, and `now_secs > 0`. `verify_nvidia_gpu` supports `HopperH100` (`GH100`) & `BlackwellB200` (`GB200`), strict SPDM 1.1 `GET_MEASUREMENTS` wire parsing (`0` trailing bytes), OCSP non-revocation, and 3-way `FWID` pin (`SPDM TLV 20 == leaf DICE DER ext == signed RIM expected_fwid`). All gates mint sealed `VerifiedTeeEvidence`. |
+| **TLSNotary / `calltree` Verifier** (`src/tlsn_e2ee.rs`) | **`V3`** (self-asserted `notary_key_hex`, unexecuted CFG leg labels, unpinned path) & **`V4`** (`'X'` unauthed body injection) | `verify_tlsn_transcript` verifies presentations strictly against caller-supplied `PinnedNotaryRegistry` (refusing rogue keys even when echoed in `claimed_notary_key_hex`), enforces HTTP `Host` + request path pinning, refuses any `unauthed_recv_ranges` intersecting HTTP delimiter/body, runs strict RFC 8259 duplicate-key-rejecting JSON extraction, and records only executed legs. `verify_calltree_recording` verifies multi-hop DAG edges + canonical root digest. |
+| **E2EE Session Channel Binding** (`src/tlsn_e2ee.rs`) | Unpinned MITM pubkey swap, opt-in GPU bypass, missing AEAD AAD | `verify_e2ee_channel` checks `cpu_tee.report_data_32() == SHA-256(ascii(nonce_hex) \|\| ascii(e2e_pubkey_b64))` over validated 1184-byte ML-KEM-768 keys, mandates paired `NvidiaGpu` `VerifiedTeeEvidence` with matching nonce & `FWID` (`min_gpus=1` default), derives channel-bound HKDF-SHA256 keys (`e2e-{req,resp,stream}-v1`) + mandatory AEAD AAD, and enforces single-use invocation nonces + TTL via `E2eeSessionGuard`. |
+| **Exact Integer `FHSDD001` & `FHQPB001` Verifier** (`src/kkt.rs`) | Omitted `FHQPB001` Matrix-Pin (`tooth_matrix_pin_omitted_unsound`), wrong-sign dual forgery, float rounding | `0` floats anywhere (`checked_*` `i128`): `O(\|E\|+n)` `SddFactorWitness` PSD check, byte-compatible `FHSDD001` & `FHQPB001` wire codecs with domain-separated SHA-256 checksums, mandatory entry-for-entry Matrix-Pin (`admission.exact_entries() == kkt.p`), exact primal/dual/normal-cone residuals, complete `(P,q,A,l,u)` problem binding, and `verify_attested_solver_quote` binding `FHQPB001` to `VerifiedTeeEvidence.report_data`. |
+
+## 3. Remote Verification & Lint Evidence (`[EXECUTED]`)
+
+- **Zero macOS builds enforced:** Synced worktree to `bb2:~/.cache/obb-worktrees/w8b-oracles`, executed:
+  `SWARM_MEM_MAX=12G timeout --kill-after=10s 600s env RUSTFLAGS="-D warnings" cargo test --release -p obend-oracles-e2ee -- --nocapture`
+  - Result: **`exit 0`**, **`0` warnings**, **`9/9` conformance & adversarial tests passed** in `2.52s` (NIST SHA-256 / RFC 4231 HMAC / RFC 5869 HKDF KATs; `CAP-24` DER & leaf-signed forgery; `CAP-25` SNP empty/expired/revoked CRL & below-floor TCB; `CAP-26` TDX 1.5 `MR_SERVICETD`/`RTMR` & NVIDIA `H100`/`B200` SPDM+FWID; AWS Nitro; `V3` rogue notary & `V4` redaction + `calltree`; E2EE MITM pubkey swap, missing GPU, replay/TTL; `FHSDD001`/`FHQPB001` omitted matrix-pin API + wire splice, wrong-sign dual, `i128` overflow, attested solver quote).
+  - Remote scratch `~/.cache/obb-worktrees/w8b-oracles` deleted afterward (`remote-scratch-clean`).
+- **Local `obb lint`:** `/Users/ember/dev/obebuilder/target/release/obb lint --repo "$WT" --json` → **`0` findings** on `obend-oracles-e2ee`.
+- **Static float hygiene:** `rg -n "\b(f32|f64)\b" crates/obend-oracles-e2ee/src` → **`0` code occurrences** (doc comment mention only).
+
+## 4. Remaining `[OPEN]` Boundaries
+
+- `[OPEN]` Phase-2 live crypto transport wiring: feed real P-384 / RSA-4096-PSS / `dcap-qvl` / `tlsn` / FIPS 203 ML-KEM-768 / ChaCha20-Poly1305 cryptographic verification hooks into the `sig_verified` / `dcap_quote_sig_ok` / `mpc_signature_ok` carriers and connect `VerifiedTeeEvidence` + `VerifiedSolverQuote` to `Obend.Vault.Escrow` / `Obend.Judge.Clearing`.

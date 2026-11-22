@@ -1,0 +1,8 @@
+[package]
+name = "quarried_shells"
+version = "0.1.0"
+edition = "2021"
+description = "Wave-8 quarried standalone Rust shells: toolkit-free 25-variant ViewNode IR + Frustum fog-of-war scrubber + S11-hardened Electra & CometBFT light-client gates"
+
+[dependencies]
+# Zero external dependencies: zero GPUI, zero legacy breadstuffs/cell, pure Rust std.

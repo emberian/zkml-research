@@ -1,0 +1,178 @@
+diff --git a/lean/Obend/Crypto/BinaryTower256.lean b/lean/Obend/Crypto/BinaryTower256.lean
+index e9a924ee..fcdcf2bf 100644
+--- a/lean/Obend/Crypto/BinaryTower256.lean
++++ b/lean/Obend/Crypto/BinaryTower256.lean
+@@ -2,6 +2,7 @@ module
+ public import Obend.Crypto.Sumcheck
+ public import Obend.Digest.HashBytes
+ import all Obend.Crypto.Sumcheck
++import Obend.Tactic.Tooth
+ 
+ public section
+ namespace Obend.Crypto.BinaryTower256
+@@ -335,22 +336,50 @@ def ofExec256 (a : Tower256Exec) : Tower256 := unpackTower 8 a
+ @[simp] theorem toExec256_ofExec256 (a : Tower256Exec) : toExec256 (ofExec256 a) = a :=
+   packTower_unpackTower 8 a
+ 
+-/-- Canonical big-endian 32-byte serialization; all 256 bits are retained. -/
++/-- Canonical 32-byte little-endian Fan–Paar wire serialization (Gate `G4`); all 256 bits are
++retained, matching `Minidregg.Theory.BinaryTowerFanPaarCodec.encode` and `Tower256::to_le_bytes`
++via pure 32-byte reversal (`List.reverse` / index `i ↦ 31 - i`) of big-endian `HashBytes.be 32`. -/
+ def toBytes32 (a : Tower256Exec) : ByteArray :=
+-  ⟨(Obend.Digest.HashBytes.be 32 a.toNat).toArray⟩
++  ⟨(Obend.Digest.HashBytes.be 32 a.toNat).reverse.toArray⟩
+ 
++/-- Canonical 32-byte little-endian Fan–Paar wire deserialization (Gate `G4`). -/
+ def ofBytes32 (bs : ByteArray) : Option Tower256Exec :=
+-  if bs.size = 32 then some (.ofNat 256 (Obend.Digest.HashBytes.ofBE bs.data.toList)) else none
++  if bs.size = 32 then
++    some (.ofNat 256 (Obend.Digest.HashBytes.ofBE bs.data.toList.reverse))
++  else none
+ 
+ theorem toBytes32_size (a : Tower256Exec) : (toBytes32 a).size = 32 := by
+-  change (Obend.Digest.HashBytes.be 32 a.toNat).toArray.size = 32
++  change (Obend.Digest.HashBytes.be 32 a.toNat).reverse.toArray.size = 32
+   simp
+ 
++theorem toBytes32_eq_reverse_be (a : Tower256Exec) :
++    (toBytes32 a).data.toList = (Obend.Digest.HashBytes.be 32 a.toNat).reverse := by
++  change (Obend.Digest.HashBytes.be 32 a.toNat).reverse.toArray.toList =
++    (Obend.Digest.HashBytes.be 32 a.toNat).reverse
++  exact List.toList_toArray
++
++private theorem list_getElem_eq_of_eq {α : Type} {l₁ l₂ : List α} (h : l₁ = l₂)
++    (i : Nat) (h₁ : i < l₁.length) (h₂ : i < l₂.length) : l₁[i]'h₁ = l₂[i]'h₂ := by
++  subst h; rfl
++
++theorem toBytes32_index_reversal (a : Tower256Exec) (i : Fin 32) :
++    (toBytes32 a).data.toList[i.val]'(by rw [toBytes32_eq_reverse_be]; simp) =
++      (Obend.Digest.HashBytes.be 32 a.toNat)[31 - i.val]'(by simp; omega) := by
++  have hlen : (Obend.Digest.HashBytes.be 32 a.toNat).length = 32 :=
++    Obend.Digest.HashBytes.length_be 32 a.toNat
++  have hrev := toBytes32_eq_reverse_be a
++  have h1 : (toBytes32 a).data.toList[i.val]'(by rw [hrev]; simp) =
++      (Obend.Digest.HashBytes.be 32 a.toNat).reverse[i.val]'(by rw [List.length_reverse, hlen]; exact i.isLt) :=
++    list_getElem_eq_of_eq hrev i.val _ _
++  rw [h1, List.getElem_reverse]
++  have hidx : (Obend.Digest.HashBytes.be 32 a.toNat).length - 1 - i.val = 31 - i.val := by omega
++  congr 1
++
+ theorem ofBytes32_toBytes32 (a : Tower256Exec) : ofBytes32 (toBytes32 a) = some a := by
+   have hp : 256 ^ 32 = 2 ^ 256 := by decide
+   have ha : a.toNat < 256 ^ 32 := by rw [hp]; exact a.isLt
+-  have ht : (toBytes32 a).data.toList = Obend.Digest.HashBytes.be 32 a.toNat := by
+-    exact List.toList_toArray
++  have ht : (toBytes32 a).data.toList.reverse = Obend.Digest.HashBytes.be 32 a.toNat := by
++    rw [toBytes32_eq_reverse_be, List.reverse_reverse]
+   unfold ofBytes32
+   rw [toBytes32_size, ite_eq_left rfl, ht, Obend.Digest.HashBytes.ofBE_be ha]
+   exact congrArg some ((BitVec.ofNat_toNat 256 a).trans (BitVec.setWidth_eq a))
+@@ -383,19 +412,88 @@ theorem toBytes32_ofBytes32 (bs : ByteArray) (a : Tower256Exec)
+   · rename_i hs
+     have he := Option.some.inj h
+     subst a
+-    have hlen : bs.data.toList.length = 32 := by
+-      rw [Array.length_toList, ByteArray.size_data, hs]
+-    have hlt := Obend.Digest.HashBytes.ofBE_lt bs.data.toList
++    have hlen : bs.data.toList.reverse.length = 32 := by
++      rw [List.length_reverse, Array.length_toList, ByteArray.size_data, hs]
++    have hlt := Obend.Digest.HashBytes.ofBE_lt bs.data.toList.reverse
+     rw [hlen] at hlt
+     have hp : 256 ^ 32 = 2 ^ 256 := by decide
+     rw [hp] at hlt
+     apply ByteArray.ext
+     apply Array.toList_inj.mp
+     change (Obend.Digest.HashBytes.be 32 (BitVec.ofNat 256
+-      (Obend.Digest.HashBytes.ofBE bs.data.toList)).toNat).toArray.toList = bs.data.toList
+-    rw [List.toList_toArray, BitVec.toNat_ofNat, Nat.mod_eq_of_lt hlt, ← hlen, be_ofBE]
++      (Obend.Digest.HashBytes.ofBE bs.data.toList.reverse)).toNat).reverse.toArray.toList =
++        bs.data.toList
++    rw [List.toList_toArray, BitVec.toNat_ofNat, Nat.mod_eq_of_lt hlt, ← hlen, be_ofBE,
++      List.reverse_reverse]
+   · cases h
+ 
++/-! ### Gate `G4` Little-Endian Fan–Paar Wire Conformance Teeth & Asymmetric Vectors -/
++
++def g4VecA : Tower256Exec :=
++  0x80000000000000010f0ff0f055aaaa55fedcba98765432100123456789abcdef#256
++
++def g4VecB : Tower256Exec :=
++  0x0102030405060708aaaa5555ffff00001122334455667788deadbeefcafebabe#256
++
++def g4FpGen6 : Tower256Exec := BitVec.ofNat 256 (2 ^ 64)
++def g4FpGen7 : Tower256Exec := BitVec.ofNat 256 (2 ^ 128)
++
++def g4SwapU64LimbsOnly (bs : List UInt8) : List UInt8 :=
++  (bs.drop 24).take 8 ++ (bs.drop 16).take 8 ++ (bs.drop 8).take 8 ++ bs.take 8
++
++def g4ReverseWithinU64Limbs (bs : List UInt8) : List UInt8 :=
++  (bs.take 8).reverse ++ ((bs.drop 8).take 8).reverse ++
++  ((bs.drop 16).take 8).reverse ++ ((bs.drop 24).take 8).reverse
++
++def g4SwapTowerHalvesOnly (bs : List UInt8) : List UInt8 :=
++  bs.drop 16 ++ bs.take 16
++
++def g4ReverseAllBits32 (bs : List UInt8) : List UInt8 :=
++  bs.reverse.map (fun b => UInt8.ofBitVec b.toBitVec.reverse)
++
++/-- Gate `G4` LE wire anchor: `1` sits at byte 0 (`0x01`) and `fpGen 7` (`2^128`) sits at byte 16. -/
++theorem toBytes32_basis_anchors :
++    (toBytes32 (1#256)).data.toList[0]! = 1 ∧
++    (toBytes32 (1#256)).data.toList[31]! = 0 ∧
++    (toBytes32 g4FpGen7).data.toList[16]! = 1 ∧
++    (toBytes32 g4FpGen7).data.toList[15]! = 0 := by
++  decide +kernel
++
++/-- Asymmetric non-palindromic falsifiers: BE identity, 4×`u64` limb-only swap, within-`u64` byte
++reversal, 16B `T_7` half-swap, and NIST bit-within-byte reflection all disagree with canonical LE. -/
++theorem toBytes32_asymmetric_falsifiers :
++    let beA := Obend.Digest.HashBytes.be 32 g4VecA.toNat
++    let leA := (toBytes32 g4VecA).data.toList
++    beA ≠ leA ∧
++    g4SwapU64LimbsOnly beA ≠ leA ∧
++    g4ReverseWithinU64Limbs beA ≠ leA ∧
++    g4SwapTowerHalvesOnly beA ≠ leA ∧
++    g4ReverseAllBits32 beA ≠ leA ∧
++    mulExec 8 g4VecA g4VecB =
++      0xbc34b99b865dbfd3efc1d145035df65692d8d39380691deba31bf1bf79a7c6a5#256 ∧
++    mulExec 8 g4FpGen7 g4FpGen7 = (mulExec 8 g4FpGen6 g4FpGen7 ^^^ 1#256) := by
++  decide +kernel
++
++/-- Reading big-endian `1` or `fpGen 7` directly through little-endian `ofBytes32` yields
++`2^248` and `2^120`, breaking multiplicative idempotence (`1² = 1`) and the level-8 Fan–Paar
++quadratic `y_7² + y_6 y_7 + 1 = 0`. -/
++theorem ofBytes32_missing_reversal_breaks_field_laws :
++    let oneBE : ByteArray := ⟨(Obend.Digest.HashBytes.be 32 1).toArray⟩
++    let y7BE : ByteArray := ⟨(Obend.Digest.HashBytes.be 32 g4FpGen7.toNat).toArray⟩
++    ofBytes32 oneBE = some (BitVec.ofNat 256 (2 ^ 248)) ∧
++    mulExec 8 (BitVec.ofNat 256 (2 ^ 248)) (BitVec.ofNat 256 (2 ^ 248)) ≠
++      BitVec.ofNat 256 (2 ^ 248) ∧
++    ofBytes32 y7BE = some (BitVec.ofNat 256 (2 ^ 120)) ∧
++    mulExec 8 (BitVec.ofNat 256 (2 ^ 120)) (BitVec.ofNat 256 (2 ^ 120)) ^^^
++      mulExec 8 g4FpGen6 (BitVec.ofNat 256 (2 ^ 120)) ^^^ 1#256 ≠ 0#256 := by
++  decide +kernel
++
++private def toBytes32UnreversedBE (a : Tower256Exec) : ByteArray :=
++  ⟨(Obend.Digest.HashBytes.be 32 a.toNat).toArray⟩
++
++#tooth ofBytes32_toBytes32 by mutation toBytes32 := toBytes32UnreversedBE
++#tooth toBytes32_eq_reverse_be by mutation toBytes32 := toBytes32UnreversedBE
++
+ /-- Tower-basis polynomial authentication. A TLS wire adapter must supply the
+ AES-GCM polynomial-basis isomorphism; reinterpreting its bytes is insufficient. -/
+ def ghashPoly (H : Tower128) (blocks : List Tower128) : Tower128 :=
+diff --git a/lean/Obend/Vault/WorldTree.lean b/lean/Obend/Vault/WorldTree.lean
+index 2c6c3ca6..e81e2319 100644
+--- a/lean/Obend/Vault/WorldTree.lean
++++ b/lean/Obend/Vault/WorldTree.lean
+@@ -5076,8 +5076,8 @@ theorem slotBytes_injective {a b : Slot} (h : slotBytes a = slotBytes b) : a = b
+       have hv := be_injective (by simpa using a.2.isLt) (by simpa using b.2.isLt) he.2
+       exact congrArg some (Prod.ext (BitVec.eq_of_toNat_eq hk) (BitVec.eq_of_toNat_eq hv))
+ 
+-/-- Row forests hold all 256 bits of each framed slot digest. -/
+-def digestWord (d : Digest) : Val := BitVec.ofNat 256 (ofBE d.val.data.toList)
++/-- Row forests hold all 256 bits of each framed slot digest (canonical LE wire order, Gate `G4`). -/
++def digestWord (d : Digest) : Val := BitVec.ofNat 256 (ofBE d.val.data.toList.reverse)
+ 
+ theorem digestWord_injective {a b : Digest} (h : digestWord a = digestWord b) : a = b := by
+   open Obend.Crypto.BinaryTower256 in

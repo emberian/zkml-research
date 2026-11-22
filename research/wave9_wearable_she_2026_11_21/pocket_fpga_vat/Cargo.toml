@@ -1,0 +1,8 @@
+[package]
+name = "pocket_fpga_vat"
+version = "0.1.0"
+edition = "2021"
+description = "Cycle-exact Dregg-180 Pocket-FPGA CapTP Vat RTL simulator, any-bit power-cut 2-slot SPI-FRAM monotone counter, and LUT4/PIP bitstream readback & Trojan detector"
+publish = false
+
+[dependencies]

@@ -1,0 +1,557 @@
+diff --git a/lean/Obend/Ledger/Floors.lean b/lean/Obend/Ledger/Floors.lean
+index 32867357..85b88c28 100644
+--- a/lean/Obend/Ledger/Floors.lean
++++ b/lean/Obend/Ledger/Floors.lean
+@@ -6,23 +6,27 @@ Mathlib-free port of `minidregg/Theory/CanonicalResourceKernel.lean` unified dir
+ `Obend.Ledger.Register`:
+ 
+ 1. **Typed Protected Account Namespaces (`AccountKind` & `AccountAddr`)**:
+-   - Distinguishes `user | issuerWell | seat | escrow | feePool` at the type level,
++   - Distinguishes `user | issuerWell | seat | escrow | feePool | member` at the type level,
+      eliminating integer collisions between `AssetId` issuer wells and user/seat `AccountId`s.
++     A `member` is the one kind that may hold a credit line (minidregg's "credit limit for a
++     member").
+ 2. **Finite-Support Balance Maps (`FinMap K`)**:
+    - Pure Lean 4 finite-support integer maps (`DecidableEq`, `Repr`, zero closures) with
+      canonical duplicate-free `support`, `mem_support_iff` (`k ∈ m.support ↔ m.get k ≠ 0`),
+      and global algebraic conservation (`totalSum`).
+-3. **Per-Account Floor Enforcement (`FloorBook`, `FloorsHold`)**:
+-   - Enforces `floors ≥ 0` on all non-`issuerWell` accounts (`user`, `seat`, `escrow`, `feePool`)
+-     while permitting `issuerWell` accounts to carry negative supply balances (bounded by optional
+-     issuance floor caps or unbounded when uncapped), with algebraic conservation and
+-     floor-preservation theorems.
++3. **Per-Account Floor Enforcement with Explicit Polarity (`FloorPolicy`, `FloorBook`, `FloorsHold`)**:
++   - Every floor is a `FloorPolicy` whose constructor carries its sign: a member's
++     `creditLimit` (down to `-limit`, `user` accounts only), a `minReserve` (at least `+reserve`),
++     or the asset's own `issuerWell` (down to `-cap`, or unbounded when uncapped). Custodial
++     accounts (`seat`, `escrow`, `feePool`) never go negative. Algebraic conservation and
++     floor-preservation theorems hold for every policy.
+ 4. **Direct Realization on `Obend.Ledger.Register.Reg` + `Movement`**:
+    - Encodes `(AccountAddr, AssetId)` injectively into `Register` account strings, compiles
+      every `TypedPosting` to balanced `Register.Movement` pairs, and proves exact per-account
+      balance agreement, register debit/credit conservation, and floor preservation on `Reg`.
+ -/
+ public import Obend.Ledger.Register
++import Obend.Tactic.Tooth
+ 
+ @[expose] public section
+ namespace Obend.Ledger
+@@ -60,6 +64,8 @@ inductive AccountKind where
+   | seat
+   | escrow
+   | feePool
++  /-- A credit-capable member account: the only kind whose `creditLimit` policy is honoured. -/
++  | member
+   deriving DecidableEq, Repr
+ 
+ /-- Typed account address pairing an `AccountKind` namespace with a numeric identifier. -/
+@@ -167,6 +173,7 @@ def issuerWell (ast : AssetId) : AccountAddr := ⟨.issuerWell, ast⟩
+ def seat (id : Nat) : AccountAddr := ⟨.seat, id⟩
+ def escrow (id : Nat) : AccountAddr := ⟨.escrow, id⟩
+ def feePool (id : Nat) : AccountAddr := ⟨.feePool, id⟩
++def member (id : Nat) : AccountAddr := ⟨.member, id⟩
+ 
+ theorem issuerWell_ne_user (ast id : Nat) : issuerWell ast ≠ user id := by
+   intro h; cases h
+@@ -189,6 +196,7 @@ def kindChar : AccountKind → Char
+   | .seat       => 'S'
+   | .escrow     => 'E'
+   | .feePool    => 'F'
++  | .member     => 'M'
+ 
+ def ofKindChar? : Char → Option AccountKind
+   | 'U' => some .user
+@@ -196,6 +204,7 @@ def ofKindChar? : Char → Option AccountKind
+   | 'S' => some .seat
+   | 'E' => some .escrow
+   | 'F' => some .feePool
++  | 'M' => some .member
+   | _   => none
+ 
+ @[simp] theorem ofKindChar?_kindChar (k : AccountKind) :
+@@ -240,13 +249,14 @@ theorem toRegAccount_injective {a₁ a₂ : AccountAddr} {ast₁ ast₂ : AssetI
+   exact hdec
+ 
+ /-- Injective numeric coordinate encoding `AccountAddr → AccountId`:
+-    `5 * id + tag`, injective across all `AccountKind`s and `Nat` identifiers. -/
++    `6 * id + tag`, injective across all `AccountKind`s and `Nat` identifiers. -/
+ def toTag : AccountKind → Nat
+   | .user       => 0
+   | .issuerWell => 1
+   | .seat       => 2
+   | .escrow     => 3
+   | .feePool    => 4
++  | .member     => 5
+ 
+ def ofTag? : Nat → Option AccountKind
+   | 0 => some .user
+@@ -254,28 +264,29 @@ def ofTag? : Nat → Option AccountKind
+   | 2 => some .seat
+   | 3 => some .escrow
+   | 4 => some .feePool
++  | 5 => some .member
+   | _ => none
+ 
+ @[simp] theorem ofTag?_toTag (k : AccountKind) : ofTag? (toTag k) = some k := by
+   cases k <;> rfl
+ 
+-theorem toTag_lt_five (k : AccountKind) : toTag k < 5 := by
++theorem toTag_lt_six (k : AccountKind) : toTag k < 6 := by
+   cases k <;> decide
+ 
+ def toCoord (addr : AccountAddr) : AccountId :=
+-  5 * addr.id + toTag addr.kind
++  6 * addr.id + toTag addr.kind
+ 
+ def ofCoord (c : AccountId) : AccountAddr :=
+-  match ofTag? (c % 5) with
+-  | some k => ⟨k, c / 5⟩
+-  | none   => ⟨.user, c / 5⟩
++  match ofTag? (c % 6) with
++  | some k => ⟨k, c / 6⟩
++  | none   => ⟨.user, c / 6⟩
+ 
+ @[simp] theorem ofCoord_toCoord (addr : AccountAddr) :
+     ofCoord (toCoord addr) = addr := by
+   rcases addr with ⟨k, id⟩
+-  have hlt := toTag_lt_five k
+-  have hmod : (5 * id + toTag k) % 5 = toTag k := by omega
+-  have hdiv : (5 * id + toTag k) / 5 = id := by omega
++  have hlt := toTag_lt_six k
++  have hmod : (6 * id + toTag k) % 6 = toTag k := by omega
++  have hdiv : (6 * id + toTag k) / 6 = id := by omega
+   simp [ofCoord, toCoord, hmod, hdiv]
+ 
+ theorem toCoord_injective {a b : AccountAddr} (h : toCoord a = toCoord b) : a = b := by
+@@ -389,7 +400,18 @@ def totalSum {K : Type} (m : FinMap K) : Int :=
+ 
+ end FinMap
+ 
+-/-! ## 3. Typed Resource Kernel with Non-Negative Floors (Except `issuerWell`) -/
++/-! ## 3. Typed Resource Kernel with Explicit Floor Polarity (`FloorPolicy`)
++
++`minidregg/Theory/CanonicalResourceKernel.lean:108` reads a floor as a credit line (`-floor`),
++while a reserve is a `+floor`. A bare `Nat` cannot say which, so the sign lives in the
++constructor of a `FloorPolicy`:
++
++- `creditLimit limit`: a member's credit line; the balance may go down to `-limit`. Honoured
++  only on `member` accounts (`FloorBook.policyOf_creditLimit`): every other non-issuer account
++  (`user`, `seat`, `escrow`, `feePool`) never goes negative (`nonIssuer_floor_nonneg`).
++- `minReserve reserve`: a reserve; the balance must stay at or above `+reserve`.
++- `issuerWell cap`: the asset's own issuer well; `some cap` permits down to `-cap`, `none` is
++  unbounded below. Granted to that well only (`FloorBook.policyOf_issuerWell`). -/
+ 
+ /-- A conserved typed transfer leg moving `amount` of `asset` from `source` to `destination`. -/
+ structure TypedPosting where
+@@ -399,11 +421,60 @@ structure TypedPosting where
+   amount      : Nat
+   deriving DecidableEq, Repr
+ 
+-/-- Per-account minimum-balance floor configuration. -/
++/-- A floor with its sign carried by the constructor, never inferred from a bare `Nat`. -/
++inductive FloorPolicy where
++  | creditLimit (limit : Nat)
++  | minReserve (reserve : Nat)
++  | issuerWell (cap : Option Nat)
++  deriving DecidableEq, Repr
++
++namespace FloorPolicy
++
++/-- The least admitted balance, or `none` when unbounded below. -/
++def floor? : FloorPolicy → Option Int
++  | .creditLimit limit => some (-(limit : Int))
++  | .minReserve reserve => some (reserve : Int)
++  | .issuerWell (some cap) => some (-(cap : Int))
++  | .issuerWell none => none
++
++/-- `bal` respects the policy. -/
++def admits (p : FloorPolicy) (bal : Int) : Bool :=
++  match p.floor? with
++  | none => true
++  | some f => decide (f ≤ bal)
++
++theorem creditLimit_admits_iff (limit : Nat) (bal : Int) :
++    (creditLimit limit).admits bal = true ↔ -(limit : Int) ≤ bal := by
++  simp [admits, floor?]
++
++theorem minReserve_admits_iff (reserve : Nat) (bal : Int) :
++    (minReserve reserve).admits bal = true ↔ (reserve : Int) ≤ bal := by
++  simp [admits, floor?]
++
++theorem issuerWell_capped_admits_iff (cap : Nat) (bal : Int) :
++    (issuerWell (some cap)).admits bal = true ↔ -(cap : Int) ≤ bal := by
++  simp [admits, floor?]
++
++theorem issuerWell_uncapped_admits (bal : Int) : (issuerWell none).admits bal = true := rfl
++
++/-- Polarity is observable: for `0 < n` the balance `-n` is admitted by the credit line `n` and
++refused by the reserve `n`. A kernel that reads one as the other admits or refuses that balance
++wrongly. -/
++theorem polarity_separates (n : Nat) (hn : 0 < n) :
++    (creditLimit n).admits (-(n : Int)) = true ∧ (minReserve n).admits (-(n : Int)) = false := by
++  refine ⟨(creditLimit_admits_iff n _).mpr (Int.le_refl _), ?_⟩
++  cases h : (minReserve n).admits (-(n : Int)) with
++  | false => rfl
++  | true => have := (minReserve_admits_iff n _).mp h; omega
++
++end FloorPolicy
++
++/-- Per-account floor configuration: an explicit `FloorPolicy` per `(account, asset)` (absent =
++`minReserve 0`) and the issuance caps of issuer wells. -/
+ structure FloorBook where
+-  balances     : FinMap (AccountAddr × AssetId) := FinMap.empty
+-  nonIssuerMin : List ((AccountAddr × AssetId) × Nat) := []
+-  issuerCaps   : List (AssetId × Nat) := []
++  balances   : FinMap (AccountAddr × AssetId) := FinMap.empty
++  policies   : List ((AccountAddr × AssetId) × FloorPolicy) := []
++  issuerCaps : List (AssetId × Nat) := []
+   deriving DecidableEq, Repr
+ 
+ def FloorBook.empty : FloorBook := {}
+@@ -411,33 +482,52 @@ def FloorBook.empty : FloorBook := {}
+ def FloorBook.balance (fb : FloorBook) (addr : AccountAddr) (ast : AssetId) : Int :=
+   fb.balances.get (addr, ast)
+ 
+-/-- Minimum allowed balance for `(addr, ast)`:
+-    - Non-issuer accounts (`addr.kind ≠ .issuerWell`) ALWAYS have a non-negative minimum floor
+-      `some (minBal : Int)` with `0 ≤ minBal`.
+-    - Issuer-well accounts (`addr = ⟨.issuerWell, a⟩`) have `some (-(cap : Int))` if capped in
+-      `issuerCaps`, or `none` (unbounded below) if uncapped. -/
++/-- The policy in force at `(addr, ast)`:
++    - the issuer well of `ast` holds `issuerWell` with its cap from `issuerCaps` (whatever the
++      entries say);
++    - a `creditLimit` entry is honoured on a `member` account only; on any other account, as an
++      `issuerWell` entry on an account that is not that asset's well, it falls back to the
++      reserve `0`;
++    - a `minReserve` entry is honoured on every account but an asset's own issuer well. -/
++def FloorBook.policyOf (fb : FloorBook) (addr : AccountAddr) (ast : AssetId) : FloorPolicy :=
++  if addr.kind = .issuerWell ∧ addr.id = ast then .issuerWell (fb.issuerCaps.lookup ast)
++  else
++    match fb.policies.lookup (addr, ast) with
++    | some (.creditLimit limit) => if addr.kind = .member then .creditLimit limit else .minReserve 0
++    | some (.minReserve reserve) => .minReserve reserve
++    | some (.issuerWell _) => .minReserve 0
++    | none => .minReserve 0
++
++/-- Minimum allowed balance for `(addr, ast)`: the floor of the policy in force. -/
+ def FloorBook.minBalance? (fb : FloorBook) (addr : AccountAddr) (ast : AssetId) : Option Int :=
+-  match addr.kind with
+-  | .issuerWell =>
+-    if addr.id == ast then
+-      match fb.issuerCaps.lookup ast with
+-      | some cap => some (-(cap : Int))
+-      | none     => none
+-    else
+-      some 0
+-  | _ =>
+-    let floorNat := (fb.nonIssuerMin.lookup (addr, ast)).getD 0
+-    some (floorNat : Int)
+-
+-/-- Every non-`issuerWell` account has a floor `≥ 0`. -/
++  (fb.policyOf addr ast).floor?
++
++/-- Only an asset's own issuer well is ever unbounded or issuer-capped. -/
++theorem FloorBook.policyOf_issuerWell {fb : FloorBook} {addr : AccountAddr} {ast : AssetId}
++    {cap : Option Nat} (h : fb.policyOf addr ast = .issuerWell cap) :
++    addr.kind = .issuerWell ∧ addr.id = ast := by
++  unfold FloorBook.policyOf at h
++  split at h
++  · assumption
++  · split at h <;> (try split at h) <;> cases h
++
++/-- Only a `member` account ever holds a credit line. -/
++theorem FloorBook.policyOf_creditLimit {fb : FloorBook} {addr : AccountAddr} {ast : AssetId}
++    {limit : Nat} (h : fb.policyOf addr ast = .creditLimit limit) : addr.kind = .member := by
++  unfold FloorBook.policyOf at h
++  split at h
++  · cases h
++  · split at h <;> (try split at h) <;> first | assumption | cases h
++
++/-- Every account that is neither an issuer well nor a credit-capable `member` has a floor `≥ 0`. -/
+ theorem FloorBook.nonIssuer_floor_nonneg (fb : FloorBook) (addr : AccountAddr) (ast : AssetId)
+-    (hkind : addr.kind ≠ .issuerWell) :
++    (hkind : addr.kind ≠ .issuerWell) (hcust : addr.kind ≠ .member) :
+     ∃ (f : Int), fb.minBalance? addr ast = some f ∧ 0 ≤ f := by
+   unfold FloorBook.minBalance?
+-  cases hk : addr.kind <;> try exact absurd hk hkind
+-  all_goals
+-    refine ⟨((fb.nonIssuerMin.lookup (addr, ast)).getD 0 : Int), rfl, ?_⟩
+-    omega
++  cases hp : fb.policyOf addr ast with
++  | creditLimit limit => exact absurd (fb.policyOf_creditLimit hp) hcust
++  | minReserve reserve => exact ⟨(reserve : Int), rfl, by omega⟩
++  | issuerWell cap => exact absurd (fb.policyOf_issuerWell hp).1 hkind
+ 
+ /-- Predicate that a single `(addr, ast)` balance respects its floor. -/
+ def FloorBook.accountFloorHoldsB (fb : FloorBook) (addr : AccountAddr) (ast : AssetId) : Bool :=
+@@ -452,27 +542,51 @@ def FloorsHold (fb : FloorBook) : Prop :=
+     | none   => True
+     | some f => f ≤ fb.balance addr ast
+ 
++/-- `FloorsHold` is the policy reading at every account. -/
++theorem floorsHold_iff_admits (fb : FloorBook) :
++    FloorsHold fb ↔ ∀ addr ast, (fb.policyOf addr ast).admits (fb.balance addr ast) = true := by
++  have h : ∀ addr ast, (fb.policyOf addr ast).admits (fb.balance addr ast) = true ↔
++      (match fb.minBalance? addr ast with
++        | none => True
++        | some f => f ≤ fb.balance addr ast) := by
++    intro addr ast
++    unfold FloorPolicy.admits FloorBook.minBalance?
++    cases (fb.policyOf addr ast).floor? <;> simp
++  exact ⟨fun hf addr ast => (h addr ast).mpr (hf addr ast), fun hf addr ast => (h addr ast).mp (hf addr ast)⟩
++
+ theorem floorsHold_empty : FloorsHold FloorBook.empty := by
+   intro addr ast
+-  unfold FloorBook.minBalance? FloorBook.balance FloorBook.empty FinMap.get FinMap.empty
+-  cases addr.kind
+-  · exact Int.le_refl 0
+-  · cases addr.id == ast
+-    · exact Int.le_refl 0
+-    · trivial
+-  · exact Int.le_refl 0
+-  · exact Int.le_refl 0
+-  · exact Int.le_refl 0
+-
+-/-- Under `FloorsHold`, every non-`issuerWell` account has balance `≥ 0` across all assets. -/
++  have hb : FloorBook.empty.balance addr ast = 0 := rfl
++  have hp : FloorBook.empty.policyOf addr ast =
++      if addr.kind = .issuerWell ∧ addr.id = ast then .issuerWell none else .minReserve 0 := rfl
++  unfold FloorBook.minBalance?
++  rw [hp, hb]
++  by_cases h : addr.kind = .issuerWell ∧ addr.id = ast
++  · rw [ite_eq_left h]; exact trivial
++  · rw [ite_eq_right h]; exact (by decide : ((0 : Nat) : Int) ≤ 0)
++
++/-- Under `FloorsHold`, every account that is neither an issuer well nor a `member` (`user`,
++`seat`, `escrow`, `feePool`) has balance `≥ 0` across all assets. -/
+ theorem nonIssuer_balance_nonneg_of_floorsHold {fb : FloorBook} (hfl : FloorsHold fb)
+-    (addr : AccountAddr) (ast : AssetId) (hkind : addr.kind ≠ .issuerWell) :
++    (addr : AccountAddr) (ast : AssetId) (hkind : addr.kind ≠ .issuerWell) (hcust : addr.kind ≠ .member) :
+     0 ≤ fb.balance addr ast := by
+-  obtain ⟨f, hmin, hf0⟩ := fb.nonIssuer_floor_nonneg addr ast hkind
++  obtain ⟨f, hmin, hf0⟩ := fb.nonIssuer_floor_nonneg addr ast hkind hcust
+   have h := hfl addr ast
+   rw [hmin] at h
+   omega
+ 
++/-- Under `FloorsHold`, a reserve account holds at least `+reserve`. -/
++theorem reserve_le_balance_of_floorsHold {fb : FloorBook} (hfl : FloorsHold fb)
++    {addr : AccountAddr} {ast : AssetId} {reserve : Nat}
++    (hp : fb.policyOf addr ast = .minReserve reserve) : (reserve : Int) ≤ fb.balance addr ast :=
++  (FloorPolicy.minReserve_admits_iff reserve _).mp (hp ▸ (floorsHold_iff_admits fb).mp hfl addr ast)
++
++/-- Under `FloorsHold`, a `member` with a credit line holds at least `-limit`. -/
++theorem neg_creditLimit_le_balance_of_floorsHold {fb : FloorBook} (hfl : FloorsHold fb)
++    {addr : AccountAddr} {ast : AssetId} {limit : Nat}
++    (hp : fb.policyOf addr ast = .creditLimit limit) : -(limit : Int) ≤ fb.balance addr ast :=
++  (FloorPolicy.creditLimit_admits_iff limit _).mp (hp ▸ (floorsHold_iff_admits fb).mp hfl addr ast)
++
+ /-- Per-asset algebraic sum across all typed accounts in `fb`. -/
+ def FloorBook.assetSum (fb : FloorBook) (ast : AssetId) : Int :=
+   ((fb.balances.entries.filter (fun p => p.1.2 == ast)).map Prod.snd).sum
+@@ -657,7 +771,8 @@ def realizeBatchOnReg : List (TypedPosting × String × String) → FloorBook 
+     Whenever `FloorBook` and `Reg` agree on all `(addr, ast)` balances initially (`h_agree`),
+     `FloorsHold fb` holds, and `realizeBatchOnReg items fb g = some (fb', g')`:
+     1. `g'` and `fb'` continue to agree identically on EVERY `(addr, ast)` balance,
+-    2. `FloorsHold fb'` holds, so every non-`issuerWell` account in `g'` has `0 ≤ g'.accountBalance (addr.toRegAccount ast)`,
++    2. `FloorsHold fb'` holds, so every account that is neither an issuer well nor a `member`
++       (the only kind that may hold a credit line) in `g'` has `0 ≤ g'.accountBalance (addr.toRegAccount ast)`,
+     3. Every asset's algebraic sum is conserved (`fb'.assetSum ast = fb.assetSum ast`). -/
+ theorem realizeBatchOnReg_sound {items : List (TypedPosting × String × String)}
+     {fb fb' : FloorBook} {g g' : Reg}
+@@ -669,15 +784,16 @@ theorem realizeBatchOnReg_sound {items : List (TypedPosting × String × String)
+       g'.accountBalance (addr.toRegAccount ast) = fb'.balance addr ast) ∧
+     FloorsHold fb' ∧
+     (∀ (addr : AccountAddr) (ast : AssetId),
+-      addr.kind ≠ AccountKind.issuerWell → 0 ≤ g'.accountBalance (addr.toRegAccount ast)) ∧
++      addr.kind ≠ AccountKind.issuerWell → addr.kind ≠ AccountKind.member →
++        0 ≤ g'.accountBalance (addr.toRegAccount ast)) ∧
+     (∀ (ast : AssetId), fb'.assetSum ast = fb.assetSum ast) := by
+   induction items generalizing fb g with
+   | nil =>
+     cases hrun
+     refine ⟨h_agree, hfl, ?_, fun _ => rfl⟩
+-    intro addr ast hk
++    intro addr ast hk hu
+     rw [h_agree addr ast]
+-    exact nonIssuer_balance_nonneg_of_floorsHold hfl addr ast hk
++    exact nonIssuer_balance_nonneg_of_floorsHold hfl addr ast hk hu
+   | cons item rest ih =>
+     rcases item with ⟨p, doc, orig⟩
+     unfold realizeBatchOnReg at hrun
+@@ -701,6 +817,60 @@ theorem realizeBatchOnReg_sound {items : List (TypedPosting × String × String)
+       exact ⟨hag', hfl', hnonneg', fun ast => (hcons' ast).trans (hcons1 ast)⟩
+     · cases hrun
+ 
++/-! ## 5. Teeth: floor polarity (gate G2) -/
++
++/-- The polarity is observable on concrete balances: a reserve of 5 refuses `-5`, a credit line
++of 5 admits it. -/
++example : (FloorPolicy.minReserve 5).admits (-5) = false := by decide
++example : (FloorPolicy.creditLimit 5).admits (-5) = true := by decide
++
++/-- A credit line is honoured on a `member` and ignored on a `user`. -/
++example : ({ policies := [((.member 1, 0), .creditLimit 10)] } : FloorBook).policyOf (.member 1) 0 =
++    .creditLimit 10 := by decide
++example : ({ policies := [((.user 1, 0), .creditLimit 10)] } : FloorBook).policyOf (.user 1) 0 =
++    .minReserve 0 := by decide
++/-- An `issuerWell` entry on an account that is not that asset's well is not honoured. -/
++example : ({ policies := [((.user 1, 0), .issuerWell none)] } : FloorBook).policyOf (.user 1) 0 =
++    .minReserve 0 := by decide
++
++/-- A member with a credit line of 10 may go to `-10` and no further; a user holding a reserve of
++3 may not go below `+3`. -/
++example : (({ policies := [((.member 1, 0), .creditLimit 10)] } : FloorBook).admitPosting
++    ⟨.member 1, .user 2, 0, 10⟩).isSome = true := by decide
++example : (({ policies := [((.member 1, 0), .creditLimit 10)] } : FloorBook).admitPosting
++    ⟨.member 1, .user 2, 0, 11⟩).isSome = false := by decide
++example : (({ policies := [((.member 1, 0), .creditLimit 10), ((.user 2, 0), .minReserve 3)] } :
++    FloorBook).admitBatch [⟨.member 1, .user 2, 0, 10⟩, ⟨.user 2, .member 1, 0, 7⟩]).isSome = true := by
++  decide
++example : (({ policies := [((.member 1, 0), .creditLimit 10), ((.user 2, 0), .minReserve 3)] } :
++    FloorBook).admitBatch [⟨.member 1, .user 2, 0, 10⟩, ⟨.user 2, .member 1, 0, 8⟩]).isSome = false := by
++  decide
++
++-- Reading a reserve as a credit line (`minReserve r ↦ -r`, the `-floor` convention) breaks
++-- the stored proofs of the reserve reading and of non-negativity.
++#tooth Obend.Ledger.FloorPolicy.minReserve_admits_iff by mutation Obend.Ledger.FloorPolicy.floor? :=
++  fun p => match p with
++    | .creditLimit limit => some (-(limit : Int))
++    | .minReserve reserve => some (-(reserve : Int))
++    | .issuerWell (some cap) => some (-(cap : Int))
++    | .issuerWell none => none
++#tooth Obend.Ledger.FloorBook.nonIssuer_floor_nonneg by mutation Obend.Ledger.FloorPolicy.floor? :=
++  fun p => match p with
++    | .creditLimit limit => some (-(limit : Int))
++    | .minReserve reserve => some (-(reserve : Int))
++    | .issuerWell (some cap) => some (-(cap : Int))
++    | .issuerWell none => none
++
++-- Honouring a credit line on every account breaks `policyOf_creditLimit`.
++#tooth Obend.Ledger.FloorBook.policyOf_creditLimit by mutation Obend.Ledger.FloorBook.policyOf :=
++  fun fb addr ast => match fb.policies.lookup (addr, ast) with
++    | some (.creditLimit limit) => .creditLimit limit
++    | _ => .minReserve 0
++
++-- Admitting without the floor check breaks floor preservation.
++#tooth Obend.Ledger.FloorBook.admitPosting_preserves_floors by mutation
++  Obend.Ledger.FloorBook.admitPosting := fun fb p => some (fb.applyRaw p)
++
+ end Obend.Ledger
+ 
+ end
+diff --git a/lean/Obend/Ledger/Seat.lean b/lean/Obend/Ledger/Seat.lean
+index e9e95fb0..911f1e20 100644
+--- a/lean/Obend/Ledger/Seat.lean
++++ b/lean/Obend/Ledger/Seat.lean
+@@ -1357,6 +1357,13 @@ theorem addrOf_seat_kind {a : AccountId} (hlo : protectedBase ≤ a) (hhi : a <
+   unfold addrOf
+   rw [ite_eq_right (Nat.not_lt.mpr hlo), ite_eq_left hhi]
+   intro h; cases h
++/-- No `Book` coordinate is a credit-capable `member`, so none holds a credit line
++(`FloorBook.policyOf_creditLimit`). -/
++theorem addrOf_not_member (a : AccountId) : (addrOf a).kind ≠ .member := by
++  unfold addrOf
++  split
++  · intro h; cases h
++  · split <;> (intro h; cases h)
+ theorem addrOf_user_kind {a : AccountId} (h : a < protectedBase) :
+     (addrOf a).kind ≠ .issuerWell := by
+   unfold addrOf
+@@ -1966,7 +1973,8 @@ theorem zoe_offer_safety_unconditional (H : Hash) (guest : GuestContract)
+   obtain ⟨⟨hfl, _, _, hbd, hsafe⟩, hc, _⟩ :=
+     trace_invariant H guest turns _ f (fundedHost_invariant grants) ht
+   exact ⟨hfl, hc, hsafe, fun s hs ast =>
+-    nonIssuer_balance_nonneg_of_floorsHold hfl _ ast (addrOf_seat_kind s.h_protected (hbd s hs).1)⟩
++    nonIssuer_balance_nonneg_of_floorsHold hfl _ ast (addrOf_seat_kind s.h_protected (hbd s hs).1)
++      (addrOf_not_member _)⟩
+ 
+ /-! ## 8. What entering, reallocating and exiting do to the `FloorBook` -/
+ 
+@@ -1999,6 +2007,7 @@ theorem enterOffer_escrows {h f : ZoeHost} {invId : Nat} {offerer payee : Accoun
+       hag (protectedBase + seatId) ast]
+     simp [Ne.symm hne]
+   have h0 := nonIssuer_balance_nonneg_of_floorsHold hfl' (addrOf offerer) ast (addrOf_user_kind ho)
++    (addrOf_not_member offerer)
+   exact ⟨h1, h2, by omega, hg, hspent⟩
+ 
+ /-- An unmarked donation (zero `want`, `donate = false`) is refused by name, whatever the books
+@@ -2033,7 +2042,7 @@ theorem exit_pays_payee {H : Hash} {h f : ZoeHost} {seatId : SeatId} {cap : List
+   have hnn : ∀ ast, 0 ≤ h.seatBook.balance s.account ast := fun ast => by
+     rw [hag s.account ast]
+     exact nonIssuer_balance_nonneg_of_floorsHold hfl _ ast
+-      (addrOf_seat_kind s.h_protected (hbd s hs).1)
++      (addrOf_seat_kind s.h_protected (hbd s hs).1) (addrOf_not_member _)
+   obtain ⟨hzero, hpaid, _⟩ := exit_sweeps_all_assets h.seatBook s hnn
+   have hb'' : f.seatBook = exitSeat h.seatBook s := hb'
+   refine ⟨s, hs, hacc, fun ast => ?_, fun ast => ?_, fun t ht => ?_⟩
+diff --git a/lean/Obend/Polis/JointCoReceipt.lean b/lean/Obend/Polis/JointCoReceipt.lean
+index 19803b00..b686e916 100644
+--- a/lean/Obend/Polis/JointCoReceipt.lean
++++ b/lean/Obend/Polis/JointCoReceipt.lean
+@@ -769,7 +769,7 @@ theorem stepJoint_refines_floorBook {n : Nat} {s s' : LedgerState} {shared : Byt
+   obtain ⟨hfl', hsum⟩ := FloorBook.admitBatch_preserves_floors _ hfl hb
+   exact ⟨hb, hfl', hsum, stepJoint_balances h, fun v =>
+     Obend.Ledger.nonIssuer_balance_nonneg_of_floorsHold hfl' (.user v) s'.asset
+-      (by simp [AccountAddr.user])⟩
++      (by simp [AccountAddr.user]) (by simp [AccountAddr.user])⟩
+ /-- **The step is complete.** On a book whose floors hold, a turn that passes the guard is applied
+ unless it takes a vat below a floor the book configures: guard and floors are the only refusals. -/
+ theorem stepJoint_complete {n : Nat} {s : LedgerState} {shared : ByteArray}
+@@ -876,7 +876,7 @@ theorem jointTrace_preserves_floors (n : Nat) (trace : List (ByteArray × List L
+     trace s s' h hfl
+   exact ⟨hR.1, hR.2, fun v =>
+     Obend.Ledger.nonIssuer_balance_nonneg_of_floorsHold hR.1 (.user v) s'.asset
+-      (by simp [AccountAddr.user])⟩
++      (by simp [AccountAddr.user]) (by simp [AccountAddr.user])⟩
+ /-- Every turn of a valid trace was new when the trace began. -/
+ theorem jointTrace_fresh (n : Nat) (trace : List (ByteArray × List LocalTurn)) :
+     ∀ s s' : LedgerState, ValidJointTrace n s trace s' →
+diff --git a/lean/Obend/Vault/UnifiedDeos.lean b/lean/Obend/Vault/UnifiedDeos.lean
+index 6de86076..703dce27 100644
+--- a/lean/Obend/Vault/UnifiedDeos.lean
++++ b/lean/Obend/Vault/UnifiedDeos.lean
+@@ -17,7 +17,7 @@ Simplex BFT Finality stack — with zero shadow worlds and zero tautological cer
+      `seats` (`UnifiedDeosSpine.zoeHost`, `unifiedDeos_zoe_trace_on_spine`): every Zoe trace keeps
+      the floors, conserves each asset, and hands back seats that pass `checkUnifiedTurn`'s seat
+      clause.
+-   - Connects finite-support typed-account `FloorBook` (`AccountKind`: `user | issuerWell | seat | escrow | feePool`)
++   - Connects finite-support typed-account `FloorBook` (`AccountKind`: `user | issuerWell | seat | escrow | feePool | member`)
+      to `Register.Reg` + `Movement` (`realizeBatchOnReg_sound`), one-time `Invitation` spending
+      (`InvitationRegistry.no_double_redeem`), `donate` gift guards (`admitOffer_donationUnmarked_refused`),
+      full-support `exitSeat` (`exit_sweeps_all_assets`), and `EscrowReachable` no-theft (`sealedescrow_no_theft`).
+@@ -327,7 +327,7 @@ theorem unifiedDeos_ledger_and_turn_sound
+         (∀ (addr : AccountAddr) (ast : AssetId),
+           reg'.accountBalance (addr.toRegAccount ast) = S'.floorBook.balance addr ast) ∧
+         (∀ (addr : AccountAddr) (ast : AssetId), addr.kind ≠ AccountKind.issuerWell →
+-          0 ≤ reg'.accountBalance (addr.toRegAccount ast))) ∧
++          addr.kind ≠ AccountKind.member → 0 ≤ reg'.accountBalance (addr.toRegAccount ast))) ∧
+     (∀ ast ∈ stateAssets,
+       (turn.writeCells.map (fun d => extractCellAssetBalance d.postState ast)).foldl (· + ·) 0 =
+         (turn.writeCells.map (fun d => extractCellAssetBalance d.preState ast)).foldl (· + ·) 0) ∧
+diff --git a/lean/tests/metasystem/DistributedPredicatesAndCoReceiptTest.lean b/lean/tests/metasystem/DistributedPredicatesAndCoReceiptTest.lean
+index e9aaaf51..20a32eb6 100644
+--- a/lean/tests/metasystem/DistributedPredicatesAndCoReceiptTest.lean
++++ b/lean/tests/metasystem/DistributedPredicatesAndCoReceiptTest.lean
+@@ -531,7 +531,7 @@ example (env : WireEnv) (shared : ByteArray) (a b : CoReceipt) (f g : FulfillPor
+ -- A later debit fails its configured floor after an earlier debit would have succeeded.
+ def threeBook : FloorBook := book0.applyRaw ⟨.issuerWell 0, .user 2, 0, 10⟩
+ def floorLedger : LedgerState :=
+-  ⟨{ threeBook with nonIssuerMin := [((.user 1, 0), 10)] }, 0, RevokedSet.empty, 0⟩
++  ⟨{ threeBook with policies := [((.user 1, 0), .minReserve 10)] }, 0, RevokedSet.empty, 0⟩
+ def lateFailure := sealTurn
+   [demoLeg 0 (-1) .empty, demoLeg 1 (-1) .empty, demoLeg 2 2 .empty]
+ #guard checkJoint lateFailure.1 lateFailure.2
+diff --git a/lean/tests/metasystem/DurableHostAndZoeSeatTest.lean b/lean/tests/metasystem/DurableHostAndZoeSeatTest.lean
+index 5b419749..21e1764b 100644
+--- a/lean/tests/metasystem/DurableHostAndZoeSeatTest.lean
++++ b/lean/tests/metasystem/DurableHostAndZoeSeatTest.lean
+@@ -77,7 +77,7 @@ example (fb' : FloorBook) (g' : Reg)
+       g'.accountBalance (addr.toRegAccount ast) = fb'.balance addr ast) ∧
+     FloorsHold fb' ∧
+     (∀ (addr : AccountAddr) (ast : AssetId), addr.kind ≠ AccountKind.issuerWell →
+-      0 ≤ g'.accountBalance (addr.toRegAccount ast)) ∧
++      addr.kind ≠ AccountKind.member → 0 ≤ g'.accountBalance (addr.toRegAccount ast)) ∧
+     (∀ ast, fb'.assetSum ast = FloorBook.empty.assetSum ast) :=
+   realizeBatchOnReg_sound floorsHold_empty (fun _ _ => rfl) hrun
+ 

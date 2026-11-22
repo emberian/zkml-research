@@ -1,0 +1,531 @@
+diff --git a/lean/Obend/Consensus/Finality.lean b/lean/Obend/Consensus/Finality.lean
+index 345437ff..8701f2ab 100644
+--- a/lean/Obend/Consensus/Finality.lean
++++ b/lean/Obend/Consensus/Finality.lean
+@@ -9,7 +9,7 @@ Binds Obend's 4-tier finality ladder directly to `SimplexProtocol` (`Protocol`,
+ 1. `speculative`  (Tier 0): Local turn proposal, optimistic execution, read uncommitted.
+ 2. `attested`     (Tier 1): Leader proposal attested in `SimplexProtocol.Sent`, read-only preview.
+ 3. `quorum_final` (Tier 2): `SimplexProtocol.FinCert` verified (`cert.checks P sent = true`),
+-                            witnessing `2f + 1` committee `finalize` votes (`Finalized P sent`),
++                            witnessing `n - f` committee `finalize` votes (`Finalized P sent`),
+                             state-write committed.
+ 4. `collapsed`    (Tier 3): Finalized chain digest + vault Merkle state root folded via
+                             domain-separated `cshake256Kernel` into canonical `collapsedRoot`.
+@@ -374,7 +374,7 @@ def SimplexFinalityGate.init (turnId : Digest) : SimplexFinalityGate :=
+ /-- Advance `SimplexFinalityGate` against `SimplexProtocol`:
+     - Tier 0 → Tier 1 (`attestProposal`): verifies `leader ∈ P.committee`, `leader = P.leader view`,
+       the leader's `.propose` message is in `sent`, and `vaultRoot` is a 32-byte digest.
+-    - Tier 1 → Tier 2 (`finalizeWithCert`): verifies `cert.checks P sent = true` (`2f + 1` distinct
++    - Tier 1 → Tier 2 (`finalizeWithCert`): verifies `cert.checks P sent = true` (`n - f` distinct
+       committee `finalize` votes in `sent`) and matching 32-byte `vaultRoot`.
+     - Tier 2 → Tier 3 (`collapseArchive`): requires `gate.finCert = some cert` and matching
+       `gate.vaultRoot = some vaultRoot`, folding `chainDigest cert.chain` and `vaultRoot` via
+diff --git a/lean/Obend/Consensus/Simplex.lean b/lean/Obend/Consensus/Simplex.lean
+index c8f46775..a6477bdc 100644
+--- a/lean/Obend/Consensus/Simplex.lean
++++ b/lean/Obend/Consensus/Simplex.lean
+@@ -6,6 +6,9 @@ Mathlib-free quorum combinatorics and view-timing primitives backing
+ `Obend.Consensus.SimplexProtocol` and `Obend.Consensus.SimplexTrace`:
+ - `honest_quorum_intersection`: any two `2f + 1` quorums in a `3f + 1` committee with at most
+   `f` faulty members share at least one honest member.
++- `honest_quorum_intersection_nf` (with `quorum_overlap_nf`): any two `n - f` quorums in a
++  committee of `n ≥ 3f + 1` with at most `f` faulty members overlap in `≥ n - 2f ≥ f + 1` members
++  and share an honest one. `SimplexProtocol` uses this threshold.
+ - `qc_same_view_unique`: two `2f + 1` quorums in the same view whose honest voters vote once
+   must agree on the certified value.
+ - `nodup_filter_simplex`: filtering a duplicate-free committee preserves `Nodup`.
+@@ -61,7 +64,7 @@ theorem list_filter_add_card {α : Type} (p q : α → Bool) (l : List α) :
+   | nil => rfl
+   | cons x xs ih =>
+     simp only [List.filter_cons]
+-    cases hp : p x <;> cases hq : q x <;> simp [hp, hq] <;> omega
++    cases hp : p x <;> cases hq : q x <;> simp <;> omega
+ 
+ theorem list_filter_length_le {α : Type} (p : α → Bool) (l : List α) :
+     (l.filter p).length ≤ l.length := by
+@@ -78,7 +81,7 @@ theorem list_filter_sub {α : Type} (p q : α → Bool) (l : List α) :
+   | nil => rfl
+   | cons x xs ih =>
+     simp only [List.filter_cons]
+-    cases hp : p x <;> cases hq : q x <;> simp [hp, hq] <;> omega
++    cases hp : p x <;> cases hq : q x <;> simp <;> omega
+ 
+ theorem list_filter_and_le {α : Type} (p q : α → Bool) (l : List α) :
+     (l.filter (fun x => p x && q x)).length ≤ (l.filter q).length := by
+@@ -86,7 +89,7 @@ theorem list_filter_and_le {α : Type} (p q : α → Bool) (l : List α) :
+   | nil => simp
+   | cons x xs ih =>
+     simp only [List.filter_cons]
+-    cases hp : p x <;> cases hq : q x <;> simp [hp, hq] <;> omega
++    cases hp : p x <;> cases hq : q x <;> simp <;> omega
+ 
+ /-- Filtering a `Nodup` list preserves `Nodup`. -/
+ theorem nodup_filter_simplex {α : Type} (p : α → Bool) :
+@@ -103,37 +106,50 @@ theorem nodup_filter_simplex {α : Type} (p : α → Bool) :
+           (fun y hy => h_not_mem y (List.mem_filter.mp hy).1)
+           (nodup_filter_simplex p h_xs)
+ 
++/-- Two `n - f` quorums of an `n`-element list overlap in at least `n - 2f` positions: by
++inclusion–exclusion, `|p| + |q| = |p ∨ q| + |p ∧ q|` and `|p ∨ q| ≤ n`. No `Nodup` is needed, since
++every count is over the same list. -/
++theorem quorum_overlap_nf {α : Type} (l : List α) (f : Nat) (p q : α → Bool)
++    (h_p : l.length - f ≤ (l.filter p).length)
++    (h_q : l.length - f ≤ (l.filter q).length) :
++    l.length - 2 * f ≤ (l.filter (fun x => p x && q x)).length := by
++  have h_sum := list_filter_add_card p q l
++  have h_union := list_filter_length_le (fun x => p x || q x) l
++  omega
++
++/-- **Metatheorem 1′: Quorum Intersection at `n - f`** (gate G5, 2026-11-21).
++    In a committee of `n ≥ 3f + 1` with at most `f` faulty members, any two quorums of size
++    `≥ n - f` overlap in `≥ n - 2f ≥ f + 1` members (`quorum_overlap_nf`), so they share an honest
++    one. At `n = 3f + 1` the threshold `n - f` is `2f + 1` and this is `honest_quorum_intersection`;
++    for `n > 3f + 1` a fixed `2f + 1` threshold no longer intersects honestly (`n = 5, f = 1`). -/
++theorem honest_quorum_intersection_nf {α : Type} (l : List α) (f : Nat)
++    (p q faulty : α → Bool)
++    (h_size : 3 * f + 1 ≤ l.length)
++    (h_p : l.length - f ≤ (l.filter p).length)
++    (h_q : l.length - f ≤ (l.filter q).length)
++    (h_faulty : (l.filter faulty).length ≤ f) :
++    ∃ x ∈ l, p x = true ∧ q x = true ∧ faulty x = false := by
++  have h_overlap := quorum_overlap_nf l f p q h_p h_q
++  have h_sub := list_filter_sub (fun x => p x && q x) faulty l
++  have h_le := list_filter_and_le (fun x => p x && q x) faulty l
++  have h_honest_pos : 0 < (l.filter (fun x => (p x && q x) && !faulty x)).length := by
++    omega
++  obtain ⟨x, hx⟩ := List.exists_mem_of_length_pos h_honest_pos
++  have ⟨h_in_l, h_cond⟩ := List.mem_filter.mp hx
++  simp only [Bool.and_eq_true, Bool.not_eq_true'] at h_cond
++  exact ⟨x, h_in_l, h_cond.1.1, h_cond.1.2, h_cond.2⟩
++
+ /-- **Metatheorem 1: Quorum Intersection**.
+-    Any two quorums of size `≥ 2f + 1` in a `3f + 1` committee share an honest validator. -/
++    Any two quorums of size `≥ 2f + 1` in a `3f + 1` committee share an honest validator: the
++    `n = 3f + 1` instance of `honest_quorum_intersection_nf`, where `n - f = 2f + 1`. -/
+ theorem honest_quorum_intersection {α : Type} (l : List α) (f : Nat)
+     (p q faulty : α → Bool)
+     (h_size : l.length = 3 * f + 1)
+     (h_p : 2 * f + 1 ≤ (l.filter p).length)
+     (h_q : 2 * f + 1 ≤ (l.filter q).length)
+     (h_faulty : (l.filter faulty).length ≤ f) :
+-    ∃ x ∈ l, p x = true ∧ q x = true ∧ faulty x = false := by
+-  have h_sum := list_filter_add_card p q l
+-  have h_union := list_filter_length_le (fun x => p x || q x) l
+-  have h_inter : f + 1 ≤ (l.filter (fun x => p x && q x)).length := by
+-    rw [h_size] at h_union
+-    omega
+-  have h_sub := list_filter_sub (fun x => p x && q x) faulty l
+-  have h_faulty_inter : (l.filter (fun x => (p x && q x) && faulty x)).length ≤ f := by
+-    have h_le := list_filter_and_le (fun x => p x && q x) faulty l
+-    omega
+-  have h_honest_pos : 0 < (l.filter (fun x => (p x && q x) && !faulty x)).length := by
+-    omega
+-  match h_match : l.filter (fun x => (p x && q x) && !faulty x) with
+-  | [] =>
+-    rw [h_match] at h_honest_pos
+-    contradiction
+-  | head :: rest =>
+-    have h_mem : head ∈ l.filter (fun x => (p x && q x) && !faulty x) := by
+-      rw [h_match]
+-      exact List.Mem.head rest
+-    have ⟨h_in_l, h_cond⟩ := (List.mem_filter.mp h_mem)
+-    simp only [Bool.and_eq_true, Bool.not_eq_true'] at h_cond
+-    exact ⟨head, h_in_l, h_cond.1.1, h_cond.1.2, h_cond.2⟩
++    ∃ x ∈ l, p x = true ∧ q x = true ∧ faulty x = false :=
++  honest_quorum_intersection_nf l f p q faulty (by omega) (by omega) (by omega) h_faulty
+ 
+ /-- **Metatheorem 2: Same-View QC Uniqueness**.
+     Two QCs formed for the same view must agree on their value. -/
+diff --git a/lean/Obend/Consensus/SimplexLiveness.lean b/lean/Obend/Consensus/SimplexLiveness.lean
+index 89c4e2d9..09b04bc4 100644
+--- a/lean/Obend/Consensus/SimplexLiveness.lean
++++ b/lean/Obend/Consensus/SimplexLiveness.lean
+@@ -677,7 +677,7 @@ theorem mem_honestMembers_iff (P : Protocol) (n : NodeId) :
+   rw [List.mem_filter]
+   simp
+ 
+-/-- **Honest Quorum Sufficiency**: at least `2f + 1 = P.quorum` committee members are honest. -/
++/-- **Honest Quorum Sufficiency**: at least `n - f = P.quorum` committee members are honest. -/
+ theorem honestMembers_length_ge_quorum (P : Protocol) :
+     P.quorum ≤ (honestMembers P).length := by
+   have hSub := list_filter_sub (fun _ => true) P.faulty P.committee
+@@ -689,7 +689,7 @@ theorem honestMembers_length_ge_quorum (P : Protocol) :
+     simp [honestMembers]
+   have hFaultEq : P.committee.filter (fun x => true && P.faulty x) = P.committee.filter P.faulty := by
+     simp
+-  rw [hTrue, hHonEq, hFaultEq, P.size] at hSub
++  rw [hTrue, hHonEq, hFaultEq] at hSub
+   have hFb := P.faultBound
+   unfold Protocol.quorum
+   omega
+diff --git a/lean/Obend/Consensus/SimplexProtocol.lean b/lean/Obend/Consensus/SimplexProtocol.lean
+index 9aa083b5..e25d3a0d 100644
+--- a/lean/Obend/Consensus/SimplexProtocol.lean
++++ b/lean/Obend/Consensus/SimplexProtocol.lean
+@@ -16,18 +16,24 @@ it holds no protocol. This module is the protocol, as a relation (2026-11-04):
+   extends a chain whose every entry is notarized) and `finalize` (only a block the node voted for
+   in that view and has seen notarized). `Reach` closes the steps from the empty message list.
+ - `Inv` is what every reachable message list satisfies (`reach_inv`); the theorems below take
+-  `Inv` and the `Protocol`'s bounds (`committee.length = 3f+1`, at most `f` faulty, `Nodup`).
++  `Inv` and the `Protocol`'s bounds (`3f+1 ≤ committee.length`, at most `f` faulty, `Nodup`).
++- The QUORUM for notarizing (vote) and finalizing is `n - f` of the `n = committee.length`
++  members (`Protocol.quorum`; gate G5, 2026-11-21). At `n = 3f+1` that is the familiar `2f+1`;
++  for `n > 3f+1` a fixed `2f+1` would let two quorums meet only in faulty nodes (at `n = 5, f = 1`
++  two 3-member quorums can share one node), while two `n - f` quorums share `n - 2f ≥ f+1`.
+ 
+-What is proved, all from `Simplex.honest_quorum_intersection`:
++What is proved, all from `Simplex.honest_quorum_intersection_nf`:
+ - `notarized_block_unique`: one view notarizes one block.
+ - `finalized_no_dummy`: a view that finalized a block did not notarize its dummy.
+ - `finalized_prefix_of_notarized`: a finalized chain is a prefix of every notarized chain that
+   reaches its view; hence `finalized_consistent` (two finalized chains, one is a prefix of the
+   other) and `fin_cert_unique_per_height` (two finalized chains of one height carry the same
+   blocks).
+-- `accountable`: two conflicting quorums in one view name at least `f+1` signers, each with its
+-  two votes in the message list, which `SlashingReceipt.checks` re-reads; none of them kept the
+-  vote-once rule, and under the fault bound each is faulty (`signers_faulty`).
++- `accountable_of_threshold`: two conflicting quorums of `q` votes in one view, with
++  `n + f + 1 ≤ 2q`, name at least `f+1` signers, each with its two votes in the message list,
++  which `SlashingReceipt.checks` re-reads; none of them kept the vote-once rule, and under the
++  fault bound each is faulty (`signers_faulty`). `accountable_nf` and `accountable_protocol` are
++  the `n - f` instances (`n ≥ 3f+1`); `accountable` is the `2f+1`-in-at-most-`3f+1` instance.
+ 
+ `Entry.encode` is the one wire form of an entry (tag, 8-byte view, 32-byte payload): a block's
+ payload is a 256-bit digest, and `Entry.encode_injective` reads every canonical entry back. The
+@@ -79,7 +85,7 @@ end Obend.Digest.HashBytes
+ 
+ namespace Obend.Consensus.SimplexProtocol
+ 
+-open Obend.Consensus.Simplex (NodeId honest_quorum_intersection list_filter_add_card
++open Obend.Consensus.Simplex (NodeId honest_quorum_intersection_nf list_filter_add_card
+   list_filter_length_le nodup_filter_simplex)
+ open Obend.Digest
+ 
+@@ -140,16 +146,18 @@ imported abbreviation. -/
+ 
+ /-! ## 2. The committee and the adversary -/
+ 
+-/-- A committee of `3f+1` distinct nodes of which at most `f` are faulty. -/
++/-- A committee of `n ≥ 3f+1` distinct nodes of which at most `f` are faulty. -/
+ structure Protocol where
+   committee : List NodeId
+   f : Nat
+   faulty : NodeId → Bool
+   nodup : committee.Nodup
+-  size : committee.length = 3 * f + 1
++  size : 3 * f + 1 ≤ committee.length
+   faultBound : (committee.filter faulty).length ≤ f
+ 
+-abbrev Protocol.quorum (P : Protocol) : Nat := 2 * P.f + 1
++/-- The vote and finalize quorum: `n - f` of the `n` committee members (`2f+1` when `n = 3f+1`).
++Two such quorums overlap in `n - 2f ≥ f+1` members (`Simplex.quorum_overlap_nf`). -/
++abbrev Protocol.quorum (P : Protocol) : Nat := P.committee.length - P.f
+ 
+ abbrev Protocol.honest (P : Protocol) (n : NodeId) : Prop := n ∈ P.committee ∧ P.faulty n = false
+ 
+@@ -472,7 +480,7 @@ theorem honest_of_quorum (P : Protocol) (p : NodeId → Bool)
+     (h : P.quorum ≤ (P.committee.filter p).length) :
+     ∃ n ∈ P.committee, p n = true ∧ P.faulty n = false := by
+   obtain ⟨n, hn, hp, _, hf⟩ :=
+-    honest_quorum_intersection P.committee P.f p p P.faulty P.size h h P.faultBound
++    honest_quorum_intersection_nf P.committee P.f p p P.faulty P.size h h P.faultBound
+   exact ⟨n, hn, hp, hf⟩
+ 
+ /-- **One view notarizes one block.** Two notarizing quorums share an honest member, who voted
+@@ -481,7 +489,7 @@ theorem notarized_block_unique {P : Protocol} {sent : Sent} (hI : Inv P sent) {v
+     {c₁ c₂ : Chain} (h₁ : NotarizedBlock P sent v c₁) (h₂ : NotarizedBlock P sent v c₂) :
+     c₁ = c₂ := by
+   obtain ⟨n, hn, hv₁, hv₂, hf⟩ :=
+-    honest_quorum_intersection P.committee P.f (fun n => voted sent n v (.block c₁))
++    honest_quorum_intersection_nf P.committee P.f (fun n => voted sent n v (.block c₁))
+       (fun n => voted sent n v (.block c₂)) P.faulty P.size h₁ h₂ P.faultBound
+   have hm₁ := (voted_iff sent n v (.block c₁)).1 hv₁
+   have hm₂ := (voted_iff sent n v (.block c₂)).1 hv₂
+@@ -494,7 +502,7 @@ theorem finalized_no_dummy {P : Protocol} {sent : Sent} (hI : Inv P sent) {v : N
+     (hf : Finalized P sent v c) : ¬ NotarizedDummy P sent v := by
+   intro hd
+   obtain ⟨n, hn, hfin, hdum, hfault⟩ :=
+-    honest_quorum_intersection P.committee P.f (fun n => finalizeVoted sent n v c)
++    honest_quorum_intersection_nf P.committee P.f (fun n => finalizeVoted sent n v c)
+       (fun n => voted sent n v (.dummy v)) P.faulty P.size hf hd P.faultBound
+   have hmf := (finalizeVoted_iff sent n v c).1 hfin
+   have hvb := (hI.finRule _ hmf ⟨hn, hfault⟩ rfl c rfl).1
+@@ -632,13 +640,14 @@ def extractReceipt (committee : List NodeId) (sent : Sent) (v : Nat) (a b : Targ
+     SlashingReceipt :=
+   ⟨v, a, b, committee.filter fun n => voted sent n v a && voted sent n v b⟩
+ 
+-/-- **Accountability**: two conflicting quorums of `2f+1` in a committee of at most `3f+1` name at
+-least `f+1` signers, each with both votes in the message list (`checks`), none of whom kept the
+-vote-once rule. No fault bound is assumed: this is what a stranger learns when the bound failed. -/
+-theorem accountable (committee : List NodeId) (f : Nat) (sent : Sent) (v : Nat) (a b : Target)
+-    (hsize : committee.length ≤ 3 * f + 1) (hne : a ≠ b)
+-    (ha : 2 * f + 1 ≤ (committee.filter fun n => voted sent n v a).length)
+-    (hb : 2 * f + 1 ≤ (committee.filter fun n => voted sent n v b).length) :
++/-- **Accountability**, at any threshold: two conflicting quorums of `q` votes in a committee of
++`n` with `n + f + 1 ≤ 2q` name at least `f+1` signers, each with both votes in the message list
++(`checks`), none of whom kept the vote-once rule. No fault bound is assumed: this is what a
++stranger learns when the bound failed. -/
++theorem accountable_of_threshold (committee : List NodeId) (f q : Nat) (sent : Sent) (v : Nat)
++    (a b : Target) (hq : committee.length + f + 1 ≤ 2 * q) (hne : a ≠ b)
++    (ha : q ≤ (committee.filter fun n => voted sent n v a).length)
++    (hb : q ≤ (committee.filter fun n => voted sent n v b).length) :
+     let r := extractReceipt committee sent v a b
+     r.checks sent = true ∧ f + 1 ≤ r.signers.length ∧
+       ∀ n ∈ r.signers, n ∈ committee ∧ ¬ VoteOnce sent n v := by
+@@ -655,6 +664,37 @@ theorem accountable (committee : List NodeId) (f : Nat) (sent : Sent) (v : Nat)
+   have hmem := List.mem_filter.1 hn
+   exact ⟨hmem.1, ((SlashingReceipt.checks_sound hchecks).2 n hn).2.2⟩
+ 
++/-- **Accountability at `2f+1`**: two conflicting quorums of `2f+1` in a committee of at most
++`3f+1` name at least `f+1` signers (the `q = 2f+1` instance of `accountable_of_threshold`). -/
++theorem accountable (committee : List NodeId) (f : Nat) (sent : Sent) (v : Nat) (a b : Target)
++    (hsize : committee.length ≤ 3 * f + 1) (hne : a ≠ b)
++    (ha : 2 * f + 1 ≤ (committee.filter fun n => voted sent n v a).length)
++    (hb : 2 * f + 1 ≤ (committee.filter fun n => voted sent n v b).length) :
++    let r := extractReceipt committee sent v a b
++    r.checks sent = true ∧ f + 1 ≤ r.signers.length ∧
++      ∀ n ∈ r.signers, n ∈ committee ∧ ¬ VoteOnce sent n v :=
++  accountable_of_threshold committee f (2 * f + 1) sent v a b (by omega) hne ha hb
++
++/-- **Accountability at `n - f`**: two conflicting quorums of `n - f` in a committee of
++`n ≥ 3f+1` name at least `f+1` signers (`2(n - f) - n = n - 2f ≥ f+1`). -/
++theorem accountable_nf (committee : List NodeId) (f : Nat) (sent : Sent) (v : Nat) (a b : Target)
++    (hsize : 3 * f + 1 ≤ committee.length) (hne : a ≠ b)
++    (ha : committee.length - f ≤ (committee.filter fun n => voted sent n v a).length)
++    (hb : committee.length - f ≤ (committee.filter fun n => voted sent n v b).length) :
++    let r := extractReceipt committee sent v a b
++    r.checks sent = true ∧ f + 1 ≤ r.signers.length ∧
++      ∀ n ∈ r.signers, n ∈ committee ∧ ¬ VoteOnce sent n v :=
++  accountable_of_threshold committee f (committee.length - f) sent v a b (by omega) hne ha hb
++
++/-- **Accountability for a `Protocol`**: two conflicting quorums (`P.quorum = n - f`) in one view
++name at least `f+1` double-signers. Only the committee size bound is used, not the fault bound. -/
++theorem accountable_protocol (P : Protocol) (sent : Sent) (v : Nat) (a b : Target) (hne : a ≠ b)
++    (ha : P.quorum ≤ votesFor P sent v a) (hb : P.quorum ≤ votesFor P sent v b) :
++    let r := extractReceipt P.committee sent v a b
++    r.checks sent = true ∧ P.f + 1 ≤ r.signers.length ∧
++      ∀ n ∈ r.signers, n ∈ P.committee ∧ ¬ VoteOnce sent n v :=
++  accountable_nf P.committee P.f sent v a b P.size hne ha hb
++
+ /-- Under the fault bound and the invariant, every signer of an extracted receipt is faulty: an
+ honest node votes once. -/
+ theorem signers_faulty {P : Protocol} {sent : Sent} (hI : Inv P sent) {v : Nat} {a b : Target}
+@@ -733,7 +773,7 @@ structure FinCert where
+ deriving instance @[expose] DecidableEq for SlashingReceipt, FinCert
+ 
+ /-- Verify a `FinCert` against committee `P` and message history `sent`:
+-    `signers` are duplicate-free, meet `P.quorum` (`2f + 1`), belong to `P.committee`,
++    `signers` are duplicate-free, meet `P.quorum` (`n - f`), belong to `P.committee`,
+     and each cast a `finalize` vote for `chain` in `view`. -/
+ @[expose] def FinCert.checks (c : FinCert) (P : Protocol) (sent : Sent) : Bool :=
+   decide c.signers.Nodup &&
+diff --git a/lean/Obend/Consensus/SimplexTrace.lean b/lean/Obend/Consensus/SimplexTrace.lean
+index 1c603fbf..e5853dff 100644
+--- a/lean/Obend/Consensus/SimplexTrace.lean
++++ b/lean/Obend/Consensus/SimplexTrace.lean
+@@ -600,10 +600,10 @@ theorem simplexProtocolRefutes_exact (refutes : TraceClause → Bool)
+   complete := by intro P _ _; exact ⟨[], 0, rfl⟩
+   mono := by intro _ _ _ _ _ _; rfl
+ 
+-/-- A committee of `3f+1` distinct nodes with the declared faulty ones bounded by `f`. -/
++/-- A committee of at least `3f+1` distinct nodes with the declared faulty ones bounded by `f`. -/
+ def mkProtocol? (committee : List Nat) (f : Nat) (faultyL : List Nat) : Option Protocol :=
+   let faulty := fun n => faultyL.contains n
+-  if h : committee.Nodup ∧ committee.length = 3 * f + 1 ∧ (committee.filter faulty).length ≤ f then
++  if h : committee.Nodup ∧ 3 * f + 1 ≤ committee.length ∧ (committee.filter faulty).length ≤ f then
+     some ⟨committee, f, faulty, h.1, h.2.1, h.2.2⟩
+   else none
+ 
+@@ -614,7 +614,7 @@ def decodeProtocol (s : String) : Except String Protocol := do
+   let faultyL ← (← (← j.getObjVal? "faulty").getArr?).toList.mapM (·.getNat?)
+   match mkProtocol? committee f faultyL with
+   | some P => pure P
+-  | none => throw "the committee must be 3f+1 distinct nodes with at most f declared faulty"
++  | none => throw "the committee must be at least 3f+1 distinct nodes with at most f declared faulty"
+ 
+ def decodeEntry (j : Json) : Except String Entry := do
+   match j.getObjVal? "dummy" with
+@@ -776,7 +776,7 @@ theorem traceVerdict_refutes_trace {P : Protocol} {tr : List Msg} {k : TraceClau
+   rw [traceVerdict_complete hm] at h
+   cases h
+ 
+-/-- A committee is never empty: it has `3f+1` members. So `simplexRunJudge`'s fragment is every
++/-- A committee is never empty: it has at least `3f+1` members. So `simplexRunJudge`'s fragment is every
+ run, and its completeness is unconditional. -/
+ theorem committee_ne_nil (P : Protocol) : P.committee ≠ [] := by
+   intro h
+diff --git a/lean/Obend/Teeth/Extracted/CoreTeeth.lean b/lean/Obend/Teeth/Extracted/CoreTeeth.lean
+index c3a2e78c..0d7cdf12 100644
+--- a/lean/Obend/Teeth/Extracted/CoreTeeth.lean
++++ b/lean/Obend/Teeth/Extracted/CoreTeeth.lean
+@@ -2,7 +2,7 @@ module
+ /-
+ # `Obend.Teeth.Extracted.CoreTeeth` — Core, Equiv, FFI, Ledger, Logic, Reasons, Kind, Law & Spec Mutation Teeth
+ 
+-On-demand Tier-2B `#tooth` mutation suite (31 mutation witnesses) extracted from
++On-demand Tier-2B `#tooth` mutation suite (33 mutation witnesses) extracted from
+ Tier-1 `Obend` modules so `lake build Obend` elaborates pure definitions and proofs without
+ mutation replay overhead. Uses `import all` to preserve `LAW-M1` `.olean.private` encapsulation.
+ -/
+@@ -10,6 +10,8 @@ public import Obend.Tactic.Tooth
+ import all Obend.Analysis.Impact
+ import all Obend.Analysis.Hybrid
+ import all Obend.Analysis.SosLyapunov
++import all Obend.Consensus.Simplex
++import all Obend.Consensus.SimplexProtocol
+ import all Obend.Consensus.SimplexTrace
+ import all Obend.Core.Bidirectional
+ import all Obend.Core.Brand
+@@ -369,3 +371,139 @@ example : Obend.Hardware.GeometryCAM.radialClear ⟨0,0⟩ ⟨0,0⟩ 1 = false :
+ #tooth Obend.Hardware.GeometryCAM.checkKdZ_vertical_radial by mutation
+   Obend.Hardware.GeometryCAM.radialClear := fun _ _ _ => true
+ end SignedSimplexAndCam
++
++/-! ## Simplex quorum `n - f` (gate G5, 2026-11-21)
++
++* At `n = 5, f = 1` the old threshold `2f + 1 = 3` fails: two 3-member quorums `{0, 1, 2}` and
++  `{0, 3, 4}` meet only in the faulty node `0` (`old_threshold_no_honest_overlap`), and the same
++  split is a reachable run in which two blocks of view 1 each collect `2f + 1` votes
++  (`old_threshold_two_blocks`), neither the `n - f = 4` that notarizes
++  (`new_threshold_refuses_split`).
++* The `n - f` threshold intersects there (`new_threshold_overlap`, `new_threshold_honest`), and the
++  protocol theorem applies to the 5-node committee (`p5_notarized_block_unique`).
++* The stored proofs of `honest_of_quorum` and `accountable_protocol` are rejected when
++  `Protocol.quorum` is mutated back to `2 * P.f + 1`. -/
++
++namespace Obend.Teeth.Extracted.CoreTeeth.SimplexQuorum
++
++open Obend.Consensus.Simplex (honest_quorum_intersection_nf quorum_overlap_nf)
++open Obend.Consensus.SimplexProtocol
++
++/-! ## (a) `2f + 1` fails at `n = 5, f = 1` -/
++
++def committee5 : List Nat := [0, 1, 2, 3, 4]
++def faulty5 : Nat → Bool := (· == 0)
++def quorumA : Nat → Bool := fun n => [0, 1, 2].contains n
++def quorumB : Nat → Bool := fun n => [0, 3, 4].contains n
++
++/-- Both sets are `2f + 1 = 3` quorums of a committee of `5 ≥ 3f + 1` with one faulty member, and
++no member of both is honest. -/
++theorem old_threshold_no_honest_overlap :
++    3 * 1 + 1 ≤ committee5.length ∧
++    2 * 1 + 1 ≤ (committee5.filter quorumA).length ∧
++    2 * 1 + 1 ≤ (committee5.filter quorumB).length ∧
++    (committee5.filter faulty5).length ≤ 1 ∧
++    ¬ ∃ x ∈ committee5, quorumA x = true ∧ quorumB x = true ∧ faulty5 x = false := by
++  decide
++
++/-- Their only common member is the faulty one. -/
++theorem old_threshold_overlap_is_faulty :
++    committee5.filter (fun x => quorumA x && quorumB x) = [0] ∧ faulty5 0 = true := by
++  decide
++
++/-- **The `2f + 1` intersection statement is false for `n > 3f + 1`.** -/
++theorem old_threshold_lemma_false :
++    ¬ ∀ (l : List Nat) (f : Nat) (p q faulty : Nat → Bool),
++      3 * f + 1 ≤ l.length → 2 * f + 1 ≤ (l.filter p).length → 2 * f + 1 ≤ (l.filter q).length →
++      (l.filter faulty).length ≤ f → ∃ x ∈ l, p x = true ∧ q x = true ∧ faulty x = false := by
++  intro h
++  obtain ⟨h1, h2, h3, h4, h5⟩ := old_threshold_no_honest_overlap
++  exact h5 (h committee5 1 quorumA quorumB faulty5 h1 h2 h3 h4)
++
++/-- The 5-node protocol, node `0` faulty (and the leader of view 1). -/
++def p5 : Protocol := ⟨committee5, 1, faulty5, by decide, by decide, by decide⟩
++
++theorem p5_quorum : p5.quorum = 4 := by decide
++
++def blockA : Chain := [.block 1 10]
++def blockB : Chain := [.block 1 11]
++
++/-- The faulty leader proposes and votes for both blocks; honest `1, 2` vote for `A`, honest `3, 4`
++for `B`. Newest first. -/
++def splitRun : Sent :=
++  [ ⟨4, 1, .vote, .block blockB⟩, ⟨3, 1, .vote, .block blockB⟩
++  , ⟨2, 1, .vote, .block blockA⟩, ⟨1, 1, .vote, .block blockA⟩
++  , ⟨0, 1, .vote, .block blockB⟩, ⟨0, 1, .vote, .block blockA⟩
++  , ⟨0, 1, .propose, .block blockB⟩, ⟨0, 1, .propose, .block blockA⟩ ]
++
++private theorem voteRule_view1 (sent : Sent) (x : Nat)
++    (hp : (⟨p5.leader 1, 1, .propose, .block [.block 1 x]⟩ : Msg) ∈ sent) :
++    VoteRule p5 sent 1 (.block [.block 1 x]) :=
++  ⟨Nat.le_refl 1, [], x, rfl, rfl, fun k hk => absurd hk (Nat.not_lt_zero k), hp⟩
++
++private theorem reach_vote {sent : Sent} (n x : Nat) (hn : n ∈ committee5 ∧ faulty5 n = false)
++    (hfresh : votedAny sent n 1 = false)
++    (hp : (⟨p5.leader 1, 1, .propose, .block [.block 1 x]⟩ : Msg) ∈ sent) (h : Reach p5 sent) :
++    Reach p5 (⟨n, 1, .vote, .block [.block 1 x]⟩ :: sent) :=
++  .step h (.vote sent n 1 _ hn hfresh (voteRule_view1 sent x hp))
++
++private theorem reach_inject {sent : Sent} (m : Msg) (hf : faulty5 m.sender = true)
++    (h : Reach p5 sent) : Reach p5 (m :: sent) :=
++  .step h (.inject sent m hf)
++
++/-- **`splitRun` is reachable**: every message is a step of the protocol (the faulty leader's four
++by `inject`, the honest four by `vote`, each its sender's first vote of view 1). -/
++theorem splitRun_reach : Reach p5 splitRun :=
++  reach_vote 4 11 (by decide) (by decide) (by decide) <|
++  reach_vote 3 11 (by decide) (by decide) (by decide) <|
++  reach_vote 2 10 (by decide) (by decide) (by decide) <|
++  reach_vote 1 10 (by decide) (by decide) (by decide) <|
++  reach_inject _ (by decide) <| reach_inject _ (by decide) <|
++  reach_inject _ (by decide) <| reach_inject _ (by decide) .nil
++
++/-- **Under `2f + 1`, one reachable view would notarize two blocks**: both collect `3` votes. -/
++theorem old_threshold_two_blocks :
++    Reach p5 splitRun ∧ blockA ≠ blockB ∧
++      2 * p5.f + 1 ≤ votesFor p5 splitRun 1 (.block blockA) ∧
++      2 * p5.f + 1 ≤ votesFor p5 splitRun 1 (.block blockB) :=
++  ⟨splitRun_reach, by decide, by decide, by decide⟩
++
++/-- Under `n - f`, neither block of the split is notarized. -/
++theorem new_threshold_refuses_split :
++    ¬ NotarizedBlock p5 splitRun 1 blockA ∧ ¬ NotarizedBlock p5 splitRun 1 blockB := by
++  decide
++
++/-! ## (b) `n - f` holds at `n = 5, f = 1` -/
++
++/-- Two `4`-member quorums of the five share at least `3 ≥ f + 1` members. -/
++theorem new_threshold_overlap (p q : Nat → Bool)
++    (hp : 4 ≤ (committee5.filter p).length) (hq : 4 ≤ (committee5.filter q).length) :
++    3 ≤ (committee5.filter fun x => p x && q x).length :=
++  quorum_overlap_nf committee5 1 p q hp hq
++
++/-- ... and, with at most one faulty member, an honest one. -/
++theorem new_threshold_honest (p q faulty : Nat → Bool)
++    (hp : 4 ≤ (committee5.filter p).length) (hq : 4 ≤ (committee5.filter q).length)
++    (hf : (committee5.filter faulty).length ≤ 1) :
++    ∃ x ∈ committee5, p x = true ∧ q x = true ∧ faulty x = false :=
++  honest_quorum_intersection_nf committee5 1 p q faulty (by decide) hp hq hf
++
++/-- The protocol theorem at the 5-node committee: one view notarizes one block. -/
++theorem p5_notarized_block_unique {sent : Sent} (hr : Reach p5 sent) {v : Nat} {c₁ c₂ : Chain}
++    (h₁ : NotarizedBlock p5 sent v c₁) (h₂ : NotarizedBlock p5 sent v c₂) : c₁ = c₂ :=
++  notarized_block_unique (reach_inv hr) h₁ h₂
++
++/-! ## (c) Mutation teeth
++
++`notarized_block_unique` cannot be the target: its closure reaches the structure `Inv` (and
++`Step`, `Reach`), whose fields mention `NotarizedBlock`, hence `Protocol.quorum`; `#tooth`
++refuses to clone affected inductives. `honest_of_quorum` and `accountable_protocol` are the
++quorum-dependent steps every safety theorem goes through and reach no affected inductive. -/
++
++#tooth Obend.Consensus.SimplexProtocol.honest_of_quorum by mutation
++  Obend.Consensus.SimplexProtocol.Protocol.quorum := fun P => 2 * P.f + 1
++
++#tooth Obend.Consensus.SimplexProtocol.accountable_protocol by mutation
++  Obend.Consensus.SimplexProtocol.Protocol.quorum := fun P => 2 * P.f + 1
++
++end Obend.Teeth.Extracted.CoreTeeth.SimplexQuorum
+diff --git a/lean/tests/metasystem/InnerSeamWeldTest.lean b/lean/tests/metasystem/InnerSeamWeldTest.lean
+index 88290d1d..2d5ec842 100644
+--- a/lean/tests/metasystem/InnerSeamWeldTest.lean
++++ b/lean/tests/metasystem/InnerSeamWeldTest.lean
+@@ -121,7 +121,7 @@ def demoProtocol : Protocol where
+   f := 1
+   faulty := fun n => n == 3
+   nodup := by decide
+-  size := rfl
++  size := by decide
+   faultBound := by decide
+ 
+ def demoSentFinalized : Sent :=

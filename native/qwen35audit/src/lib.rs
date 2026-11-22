@@ -5,6 +5,7 @@
 pub mod agent_runner;
 pub mod bpe_bridge;
 pub mod continual_memory;
+pub mod dregg180_hem_bridge;
 pub mod ext4;
 pub mod gruen_ext4;
 pub mod pcs_ext4;
@@ -13,6 +14,7 @@ pub mod qwen35_layer;
 pub mod qwen38fn_slice;
 pub mod safetensors_mmap;
 pub mod spec_prefill;
+pub mod streaming_gdn_carry;
 pub mod u1_audit;
 pub mod unified_turn_weld;
 pub mod whir_ext4;

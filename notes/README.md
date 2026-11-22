@@ -178,6 +178,34 @@ Full dossiers and [MASTER_REVIVAL_ALIGNMENT.md](../research/breadstuffs_revival_
 `breadstuffs-blocklace-consensus-and-settlement-revival.md` (`tau` retirement -> `IConfluent` + `n-f` `Simplex` `G5`, `S1–S12`),
 `breadstuffs-apps-dreggnet-and-zkml-revival.md` (`63 -> 8` app/DreggNet collapse, `fhIR-0` `FHQPB001` KKT quarry).
 
+**Wave 8A & 8B — Coherent Extrapolated Systems & `~/dev/obend` Revival Cutover (2026-11-21..22)** —
+13 commits pushed live to `obend` `origin/dev` (`dae8cd03..d6a39879`) + 6 `minidregg` Lean `v4.35.0` modules & `zkml-research/native` engines:
+`wave8-char2-deg4-sumcheck-hvzk-lean.md` (`G8/#125` `CharP F 2` degree-4 sumcheck & BaseFold round-poly HVZK, `|F|^4` bijection, 4th mask column `Z_3`),
+`wave8-tower256-endian-wire-bridge.md` (`G4` 32B LE vs BE Fan–Paar `GF(2^256)` wire isomorphism & `obend` `b5482693`),
+`wave8-pq-selective-biscuit-credentials.md` (`D8` / `CAP-01,10,12` `Tower256` + `cSHAKE256` `WOTS+` PQ `ZkBiscuit` selective disclosure),
+`wave8-per-slot-confinement-and-sealed-patch.md` (`G7` / `CAP-21` / `L8` / `F4` per-slot `X25519+ML-KEM-768` & keyless `saltedPatchRoot` weld),
+`wave8-exact-kkt-clearing-and-dark-bazaar.md` (`FHSDD001` & `FHQPB001` exact integer SDD/KKT clearing + `DarkBazaar` `WhirPcs61`),
+`wave8-threshold-custody-and-blind-pd.md` (`(t, n)` Shamir BFV decryption + `drand` `#1,000,000` epoch binding + `TVD=0` blind PD),
+`wave8-unified-qwen-turn-and-payable-receipt.md` (1-command real `Qwen3.5-0.8B` `PayableComputeReceipt`, `614.53 KiB` / `21.53 ms` verify),
+`wave8-obend-phase0-gates-patchkit.md` (`obend` `G1` `mustBeLinear`, `G2` `FloorPolicy`, `G3` 256b `CapTP`, `G5` `n-f` `Simplex`),
+`wave8-orb-pancake-v435-lcnf-bridge.md` (`G6` `Obend.Lower.Pancake` `v4.35.0` HOL4 `PanSem`, `CondSClk`, `RefinesClkPan` `149f4105`),
+`wave8-viewnode-and-lightclient-quarry.md` (`D7`/`S11` `obend-surfaces` 25-variant `ViewNode`+`Frustum` & `obend-lightclients` Electra/CometBFT+ICS-23),
+`wave8b-obend-prove-worker-and-grinder.md` (`obend-prove-worker` bounded `ProveService<I,O>` & deterministic `c=1/4` grinder `ba650b53`),
+`wave8b-obend-oracles-tee-and-e2ee.md` (`obend-oracles-e2ee` `CAP-24..26` TEE/GPU gate, `V3/V4` TLSNotary/E2EE, exact KKT `3f07402f`),
+`wave8b-obend-sel4-four-pd-verifier.md` (`G11` `obend-sel4-verifier` 4-PD Microkit chokepoint, TRNG gate, `FinCert`+`effectsRoot` `6e60a47e`),
+`wave8b-obend-open-turn-waist-and-iconfluent.md` (`D2` open `RegisteredHandlerSpec` turn waist & `D5` `IConfluent` tier relaxation `89eeec8d`),
+`wave8b-obend-sandbox-and-spk-hardening.md` (`G11`/`CAP-17` `obend-sandbox` Seatbelt/seccomp, `.spk` `verify_strict`, Wasm fuel `d7a046f5`),
+`wave8b-obend-finality-bound-l1-settlement.md` (`G12`/`S1–S7` `Obend.Apps.SovereignDrex` `2x128b` `FinCert`+`effectsRoot` settlement `d6a39879`).
+
+**Wave 9 — *Rainbows End* Live Wearable/Edge Sovereign Hardware Environment (SHE) & `Dregg-180` Bridge (2026-11-21..22)** —
+6 deconflicted wearable/edge SHE organs spanning `~/dev/qsag` (`Dregg-180`), `~/dev/minidregg`, and `zkml-research`:
+`she-dregg180-op-hem-hetero-bridge.md` (Organ #1: `1,056 B` zero-heap `Dregg180StreamVm` `OP_HEM` `GoldilocksExt4` VM & `BabyBear`+`Tower256`+`Simplex` bridge),
+`she-streaming-gdn-state-carry-jitt.md` (Organ #2: continuous wearable JITT `4x64` real `Qwen3.5-0.8B` `S_c -> S_{c+1}` GDN carry, `8.23 ms` verify, `0` drift, `TVD=0`),
+`she-wearable-belief-circles-and-tof.md` (Organ #3: `dregg_distance_tdc` `(3/4)^k` ToF distance-bounding, `Theory.Channel` covert-free RF cells, 0-round `IConfluent` AR merge),
+`she-sensory-roi-zk-and-deepfake-refusal.md` (Organ #4: 720p 60fps CSI-2/I2S 2-subleaf tile-Merkle ROI reveal, `TVD=0` blur/envelope ZK, `425 fps` prove),
+`she-wetware-safety-and-duress-deniability.md` (Organ #5: IEEE 1789 / ITU-R BT.1702 luma `Y'` flicker & stego scrubber at `442 fps` + 2-slot indistinguishable duress vault),
+`she-pocket-fpga-captp-vat-and-fram.md` (Organ #6: COTS Pocket-FPGA `dregg_captp_vat` touch+ToF gate, unconditional any-bit power-cut 2-slot SPI-FRAM counter, LUT4/PIP readback).
+
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
 instrument; absence claims are only as good as those two lines.

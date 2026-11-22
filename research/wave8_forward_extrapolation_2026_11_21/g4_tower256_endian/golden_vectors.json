@@ -1,0 +1,92 @@
+{
+  "gate": "G4",
+  "description": "Asymmetric 32-byte Little-Endian (Minidregg / bpe_bridge.rs) vs Big-Endian (Obend BinaryTower256.lean:339) Fan-Paar Tower256 (GF(2^256)) golden test vectors",
+  "wire_relation": "pure_32_byte_reversal (obend_be = list_reverse(minidregg_le), index i <-> 31 - i, no bit-within-byte reversal, no limb-only swap)",
+  "tower_definition": "T_0 = GF(2), T_{k+1} = T_k[y_k]/(y_k^2 + g_k*y_k + 1), g_0 = 1, g_{k+1} = y_k",
+  "sources": {
+    "obend": "/Users/ember/dev/obend/lean/Obend/Crypto/BinaryTower256.lean:339 (commit 063e9e06)",
+    "minidregg_lean": "/Users/ember/dev/minidregg/Theory/BinaryTowerFanPaarCodec.lean:256 (commit 0ce6d9cf8)",
+    "minidregg_bridge": "/Users/ember/dev/minidregg/Theory/Tower256EndianBridge.lean",
+    "rust_bpe_bridge": "/Users/ember/dev/zkml-research/native/qwen35audit/src/bpe_bridge.rs:345",
+    "rust_prover": "/Users/ember/dev/minidregg/prover/src/binary_tower_256.rs:166"
+  },
+  "elements": [
+    {
+      "name": "zero",
+      "limbs_u64_le": ["0x0000000000000000", "0x0000000000000000", "0x0000000000000000", "0x0000000000000000"],
+      "le_bytes_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "be_bytes_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "palindromic": true
+    },
+    {
+      "name": "one",
+      "limbs_u64_le": ["0x0000000000000001", "0x0000000000000000", "0x0000000000000000", "0x0000000000000000"],
+      "le_bytes_hex": "0100000000000000000000000000000000000000000000000000000000000000",
+      "be_bytes_hex": "0000000000000000000000000000000000000000000000000000000000000001",
+      "palindromic": false
+    },
+    {
+      "name": "fpGen_0_y0",
+      "limbs_u64_le": ["0x0000000000000002", "0x0000000000000000", "0x0000000000000000", "0x0000000000000000"],
+      "le_bytes_hex": "0200000000000000000000000000000000000000000000000000000000000000",
+      "be_bytes_hex": "0000000000000000000000000000000000000000000000000000000000000002",
+      "palindromic": false
+    },
+    {
+      "name": "fpGen_6_y6",
+      "limbs_u64_le": ["0x0000000000000000", "0x0000000000000001", "0x0000000000000000", "0x0000000000000000"],
+      "le_bytes_hex": "0000000000000000010000000000000000000000000000000000000000000000",
+      "be_bytes_hex": "0000000000000000000000000000000000000000000000010000000000000000",
+      "palindromic": false
+    },
+    {
+      "name": "fpGen_7_y7",
+      "limbs_u64_le": ["0x0000000000000000", "0x0000000000000000", "0x0000000000000001", "0x0000000000000000"],
+      "le_bytes_hex": "0000000000000000000000000000000001000000000000000000000000000000",
+      "be_bytes_hex": "0000000000000000000000000000000100000000000000000000000000000000",
+      "palindromic": false
+    },
+    {
+      "name": "vec_ramp",
+      "limbs_u64_le": ["0x0807060504030201", "0x100f0e0d0c0b0a09", "0x1817161514131211", "0x201f1e1d1c1b1a19"],
+      "le_bytes_hex": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "be_bytes_hex": "201f1e1d1c1b1a191817161514131211100f0e0d0c0b0a090807060504030201",
+      "square_be_hex": "f9c914599965b951e7ad71d3c956da4c0f33fb3fb7fc3fc8d954974c974c4cc3",
+      "inv_be_hex": "4f8e77dc21e7ba8842cfe415e119b4b34b8201366054524b876d179f4f22c551",
+      "pow256_be_hex": "81baaf91751fd80e11b2393146a92f423d5f7df2088fcc8c7c2bfdf4a34daa44",
+      "palindromic": false
+    },
+    {
+      "name": "vec_rust_smoke_a",
+      "limbs_u64_le": ["0x0123456789abcdef", "0xfedcba9876543210", "0x0f0ff0f055aaaa55", "0x8000000000000001"],
+      "le_bytes_hex": "efcdab89674523011032547698badcfe55aaaa55f0f00f0f0100000000000080",
+      "be_bytes_hex": "80000000000000010f0ff0f055aaaa55fedcba98765432100123456789abcdef",
+      "square_be_hex": "47365a06185dc63a26c6636cc63a6da545bb8c48291e49e2abe3b4323e9ba556",
+      "inv_be_hex": "d58bdb96e156956ca475ac4208f6d502e1a95645c40069e0d358cf0ae52c7e4b",
+      "pow256_be_hex": "f1c03a65138471d09b2d0c2ea1de8e32609dfa484627089595ddd4e1a11ff67b",
+      "palindromic": false
+    },
+    {
+      "name": "vec_rust_smoke_b",
+      "limbs_u64_le": ["0xdeadbeefcafebabe", "0x1122334455667788", "0xaaaa5555ffff0000", "0x0102030405060708"],
+      "le_bytes_hex": "bebafecaefbeadde88776655443322110000ffff5555aaaa0807060504030201",
+      "be_bytes_hex": "0102030405060708aaaa5555ffff00001122334455667788deadbeefcafebabe",
+      "square_be_hex": "e1bff2adfe6a844a0804844d844a4310e894ead4ea832a848f204926e3108415",
+      "inv_be_hex": "9cccf5460450c5bf50afd7c4ea7c9cbef38f0c2dbdab80b4d78693ff2a5f9754",
+      "pow256_be_hex": "930ed4395b383e9189b21b4f0f69968472729236dc801c86ff5ad7b9120b0417",
+      "palindromic": false
+    }
+  ],
+  "binary_ops": {
+    "a_plus_b_be_hex": "8102030405060709a5a5a5a5aa55aa55effe89dc23324598df8efb8843557751",
+    "a_plus_b_le_hex": "5177554388fb8edf98453223dc89feef55aa55aaa5a5a5a50907060504030281",
+    "a_mul_b_be_hex": "bc34b99b865dbfd3efc1d145035df65692d8d39380691deba31bf1bf79a7c6a5",
+    "a_mul_b_le_hex": "a5c6a779bff11ba3eb1d698093d3d89256f65d0345d1c1efd3bf5d869bb934bc"
+  },
+  "falsifiers": {
+    "missing_reversal_one_be_as_le_sq_be_hex": "fae8a894e8849441a894844094414010a8948440944140109441401040101001",
+    "missing_reversal_y7_be_as_le_quad_residual_be_hex": "00000000000000000000000000000000b8958540954140109541401040101000",
+    "fan_paar_t3_0x02_sq": "0x03",
+    "aes_poly_basis_0x02_sq": "0x04"
+  }
+}
