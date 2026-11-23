@@ -1,3 +1,4 @@
+/native/target-*/
 
 # python bytecode
 __pycache__/

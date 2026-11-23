@@ -1,6 +1,7 @@
 //! Straight-line, public-shape ZKBoo evaluator. Clear evaluation uses the
 //! same operations for witness preflight and for computing the tape length.
 use super::{zk, Plan, View};
+use crate::trie_opening::{NODE_HASH_DOMAIN, OUTER_HASH_DOMAIN};
 use crate::Digest;
 
 type Word<const N: usize> = [u64; N];
@@ -85,7 +86,7 @@ impl<const N: usize> Eval<'_, N> {
         let inner = words(&data[32..64]);
         let mut outer: Vec<_> = plan.frame.iter().map(|&x| [u64::from(x); N]).collect();
         outer.extend_from_slice(&data[..64]);
-        let mut output = self.hash(b"DREGG/PRIVATE-CELL/OUTER/v2", &outer).to_vec();
+        let mut output = self.hash(OUTER_HASH_DOMAIN, &outer).to_vec();
         let mut rest = &data[64..];
         for job in &plan.jobs {
             let mut h = constant(&job.below);
@@ -99,7 +100,7 @@ impl<const N: usize> Eval<'_, N> {
                 input.extend_from_slice(path);
                 input[65] = input[65].map(|v| v & 240);
                 input.extend_from_slice(content);
-                let leaf = self.hash(b"DREGG/PRIVATE-CELL/NODE/v2", &input);
+                let leaf = self.hash(NODE_HASH_DOMAIN, &input);
                 h = self.select(terminal, leaf, h);
             }
             let mut steps = Vec::with_capacity(job.prefix.len());
@@ -133,7 +134,7 @@ impl<const N: usize> Eval<'_, N> {
                 let mut input = vec![[1; N]];
                 input.extend(bytes(&left));
                 input.extend(bytes(&right));
-                let parent = self.hash(b"DREGG/PRIVATE-CELL/NODE/v2", &input);
+                let parent = self.hash(NODE_HASH_DOMAIN, &input);
                 h = if job.count <= 1 {
                     self.select(active, parent, h)
                 } else {

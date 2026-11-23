@@ -28,6 +28,7 @@ something it never said.
 
 ## Evidence — what each file measured
 
+- [Bit-sliced cSHAKE256 selective cell openings](compact-bitsliced-cshake256-opening.md) — [EXECUTED] Four-worker medians of 67.229 ms prove and 14.367 ms verify. [DERIVED] At most 91,041 bytes including the measured three-sibling branch.
 - [Wave 13 compact cSHAKE and private trie openings](w13-compact-ggm-cshake256-opening.md) — [DERIVED] 78,544-byte worst-case resident proof. [EXECUTED] Private prefix proofs reject omitted members and false empty answers.
 - [Wave 12 resident custody and cSHAKE openings](w12-resident-custody-and-cshake-opening.md) — [EXECUTED] operator migration across SIGKILL and snapshot restore, 3-of-4 failover, and measured 219-round Boolean proofs for blinded byte projections.
 

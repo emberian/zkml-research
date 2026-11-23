@@ -266,7 +266,7 @@ impl Witness {
 
 fn fs(st: &Statement) -> Result<Shake256> {
     Ok(transcript(
-        b"W13 private framed OpeningRel 219 ZKBoo",
+        b"private framed OpeningRel 219 ZKBoo",
         &[&bincode::serialize(st)?],
     ))
 }

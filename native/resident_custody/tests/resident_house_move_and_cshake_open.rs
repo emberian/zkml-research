@@ -459,9 +459,8 @@ fn selective_open_benchmark_and_falsifiers() -> Result<()> {
     let mut wrong = st.clone();
     wrong.ranges[0] = (1, 5);
     assert!(rejected(&wrong, &proof));
-    let round_len = 96 + 32 + 4800;
-    let correction = proof.len() - opening::REPETITIONS * round_len;
-    for off in [0, 32, correction, correction + 96, correction + 128] {
+    let tail = proof.len() - 32;
+    for off in [0, 32, 64, 96, tail] {
         let mut changed = proof.clone();
         changed[off] ^= 1;
         assert!(rejected(&st, &changed));
@@ -475,7 +474,7 @@ fn selective_open_benchmark_and_falsifiers() -> Result<()> {
     hidden[16] ^= 1;
     assert!(opening::prove(&blind, &hidden, &st).is_err());
     println!("cSHAKE256 width=64 projected=8 repetitions={} n=9 min/median/max bytes={}/{}/{} prove_ms={:.3}/{:.3}/{:.3} verify_ms={:.3}/{:.3}/{:.3} wire/statement_falsifiers=10/10 refused",
-        opening::REPETITIONS,sizes[0],sizes[4],sizes[8],prove_ms[0],prove_ms[4],prove_ms[8],verify_ms[0],verify_ms[4],verify_ms[8]);
+        opening::ONLINE_INSTANCES,sizes[0],sizes[4],sizes[8],prove_ms[0],prove_ms[4],prove_ms[8],verify_ms[0],verify_ms[4],verify_ms[8]);
     Ok(())
 }
 

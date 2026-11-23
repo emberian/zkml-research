@@ -1,9 +1,8 @@
-//! Isolated Wave 12 research protocols.
+//! Resident custody and selective disclosure protocols.
 #![forbid(unsafe_code)]
 
 pub mod belt_latch_kernel;
 pub mod cshake_selective_open;
-pub mod cshake_selective_open_v2;
 pub mod custody_mesh;
 mod tower;
 mod trace_pack;

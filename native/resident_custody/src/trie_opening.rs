@@ -2,14 +2,19 @@
 //! The caller pins the world root, path, width and release policy. The caller
 //! may use an early-stop leaf, since its digest commits to all 516 path bits.
 use crate::{
-    cshake_selective_open::{self as v1, Statement},
-    cshake_selective_open_v2 as v2, Digest,
+    cshake_selective_open::{self as opening, Statement},
+    Digest,
 };
 use anyhow::{ensure, Result};
 use sha3::{
     digest::{ExtendableOutput, Update, XofReader},
     CShake256, CShake256Core,
 };
+
+// Persisted store hash customizations, shared by the clear and MPC readers.
+// Compiler/PrivateCellRoot.lean defines these bytes in the companion tree.
+pub(crate) const NODE_HASH_DOMAIN: &[u8] = b"DREGG/PRIVATE-CELL/NODE/v2";
+pub(crate) const OUTER_HASH_DOMAIN: &[u8] = b"DREGG/PRIVATE-CELL/OUTER/v2";
 
 pub type Path = [u8; 65];
 pub struct Branch<'a> {
@@ -18,7 +23,7 @@ pub struct Branch<'a> {
     pub siblings: &'a [Digest],
 }
 fn node(parts: &[&[u8]]) -> Digest {
-    let mut h = CShake256::from_core(CShake256Core::new(b"DREGG/PRIVATE-CELL/NODE/v2"));
+    let mut h = CShake256::from_core(CShake256Core::new(NODE_HASH_DOMAIN));
     for p in parts {
         h.update(p);
     }
@@ -45,7 +50,7 @@ impl Branch<'_> {
     pub(crate) fn binding(&self, world: &Digest, leaf: &Digest) -> Result<Digest> {
         ensure!(self.root(leaf)? == *world, "world membership");
         let mut h = crate::transcript(
-            b"W13 authenticated resident byte projection",
+            b"authenticated resident byte projection",
             &[
                 world,
                 self.path,
@@ -67,7 +72,7 @@ impl Branch<'_> {
         cell: &[u8],
         st: &Statement,
     ) -> Result<Vec<u8>> {
-        v2::prove(blind, cell, st, &self.binding(world, &st.cell_root)?)
+        opening::prove_with_context(blind, cell, st, &self.binding(world, &st.cell_root)?)
     }
     pub fn verify(
         &self,
@@ -77,7 +82,7 @@ impl Branch<'_> {
         st: &Statement,
         proof: &[u8],
     ) -> Result<()> {
-        v2::verify(
+        opening::verify_with_context(
             width,
             permitted,
             st,
@@ -86,7 +91,7 @@ impl Branch<'_> {
         )
     }
 }
-pub use v1::statement;
+pub use opening::statement;
 
 /// Private prefix witnesses and framed custody proofs for canonical wire views.
 pub mod deployed;
