@@ -1,0 +1,249 @@
+[EXECUTED] 2026-11-23. Local host Darwin arm64, hbox Linux x86-64. Stage 1 commit 09630393.
+
+$ git -C /Users/ember/dev/obend diff 25dd6789 -- lean/Obend/Lower/Pancake/{BeltLatch.lean,beltLatch.pnk,beltLatch.c} lean/tests/metasystem/PancakeBeltLatchTest.lean
+(empty diff against checkout 3543a3b6)
+$ sha256sum beltLatch.pnk beltLatch.c
+c55f55c76ccdd038a807d61cbc3951b77f8263edfb6c90c7434a2ba066695c1b  beltLatch.pnk
+bbf530f18975c1d0f988dd99190b3de6a5311e451e2c099e8aacb7098161882e  beltLatch.c
+$ /home/hbox/r05/cake-x64-64/cake --pancake --main_return=true < ../../beltlatch/beltLatch.pnk > beltLatch.S
+$ cc -O2 -static -Wl,-z,noexecstack ../../beltlatch/beltLatch.c beltLatch.S -o beltLatch
+$ cmp beltLatch ../../beltlatch/beltLatch && sha256sum beltLatch
+1aa9a16056afb2dde0f05c9955111ea1e4e50980c0ed9de7053637752c9a2f19  beltLatch
+$ python3 research/w15_resident_house_move/lean_vectors.py /Users/ember/dev/obend native/resident_custody/tests/fixtures/belt_latch_records.bin
+21 Lean records, 11256 bytes
+$ shasum -a 256 native/resident_custody/tests/fixtures/belt_latch_records.bin
+1eb40f2257ee719d732448a8d9bf3e009fdc86ea1e82f35f249753f46a20d268  native/resident_custody/tests/fixtures/belt_latch_records.bin
+$ # Independent hbox Python check, one invocation of the rebuilt ELF for each fixture.
+$ # For each 536-byte record: write its first 264 bytes, require check_output(["./beltLatch", record]) == fixture[264:].
+21/21 Lean-generated inputs and expected output frames matched rebuilt native ELF
+
+## Local warnings-as-errors suite
+$ cd native && RUSTFLAGS="-D warnings" cargo test --release -p resident_custody
+   Compiling resident_custody v0.1.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w15/l6-zkml/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 7.03s
+     Running unittests src/lib.rs (target/release/deps/resident_custody-c5faf0f20f6aafd0)
+
+running 19 tests
+test cshake_selective_open::tests::authenticated_release_gate ... ignored, serial wall-clock benchmark
+test cshake_selective_open::circuit::all_inverse_rows_and_hints ... ok
+test obend_latch_abi::tests::digest_limbs_are_the_little_endian_memory_image ... ok
+test obend_latch_abi::tests::native_beltlatch_parity ... ignored, needs OBEND_BELTLATCH_EXE, a cake --pancake build of Obend's beltLatch.pnk
+test obend_latch_abi::tests::lean_conformance_vectors ... ok
+test obend_latch_abi::tests::word_and_structured_kernels_agree_under_mutation ... ok
+test cshake_selective_open::tests::worst_case_wire_budget ... ok
+test trie_opening::deployed::tests::full_field_prefix_proof ... ignored, measures a depth-260 private field proof
+test cshake_selective_open::tests::native_trace_and_batched_beaver_identity ... ok
+test seat_receipt::tests::dreggnet_v1_golden_vector ... ok
+test seat_receipt::tests::refusals_match_dreggnet_variants ... ok
+test cshake_selective_open::tests::exact_cheating_splits ... ok
+test trie_opening::tests::full_depth_pinned_wire_vector ... ok
+test trace_pack::tests::deployed_trace_and_every_basis_coordinate ... ok
+test cshake_selective_open::circuit::every_party_matches_scalar_polarization ... ok
+test cshake_selective_open::framed::tests::verifier_checks_hidden_witness_without_prover_preflight ... ok
+test trie_opening::deployed::tests::private_prefix_answers_bind_every_member_and_version ... ok
+test cshake_selective_open::tests::authenticated_projection_and_adversarial_openings ... ok
+test trie_opening::deployed::tests::private_early_stop_empty_and_singleton ... ok
+
+test result: ok. 16 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running unittests src/bin/custodian_node.rs (target/release/deps/custodian_node-8de34976f7c26aa3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/resident_house_move.rs (target/release/deps/resident_house_move-fd751143de557d54)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/resident_operator.rs (target/release/deps/resident_operator-ff69c256ab59943c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/full_resident_house_move.rs (target/release/deps/full_resident_house_move-7752d4cf9ff3891e)
+
+running 3 tests
+test house_move_latency ... ignored, serial wall-clock benchmark
+test paid_move_from_genesis_through_cli ... ok
+Error: durable bind failed, Obend MissingAck; exit and recover the WAL
+
+Caused by:
+    injected WAL failure
+test full_resident_house_move ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.73s
+
+     Running tests/resident_house_move_and_cshake_open.rs (target/release/deps/resident_house_move_and_cshake_open-bc85af5879cad7a3)
+
+running 5 tests
+test keccak_padding_and_deployed_outer_hash ... ok
+test selective_open_benchmark_and_falsifiers ... ok
+test quorum_failover_and_grant_binding ... ok
+test resident_house_move_and_crash_boundaries ... ok
+test same_projection_privacy_observations ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.90s
+
+   Doc-tests resident_custody
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+## Upstream billing modules and integration fixtures
+$ sh research/w15_resident_house_move/check_billing.sh /Users/ember/dev/DreggNet
+    Updating crates.io index
+     Locking 100 packages to latest Rust 1.98.0-nightly compatible versions
+      Adding ed25519-dalek v2.2.0 (available: v3.0.0)
+      Adding generic-array v0.14.7 (available: v0.14.9)
+      Adding rusqlite v0.32.1 (available: v0.43.0)
+      Adding sha2 v0.10.9 (available: v0.11.1)
+   Compiling resident_custody v0.1.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w15/l6-zkml/native/resident_custody)
+   Compiling dreggnet-billing v0.0.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w15/l6-zkml/native/target/billing-interop.6PdwlV)
+    Finished `release` profile [optimized] target(s) in 5.51s
+     Running tests/handoff.rs (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w15/l6-zkml/native/target/release/deps/handoff-ff6293ca4dfa3ba9)
+
+running 6 tests
+test sealing_requires_the_source_operators_key ... ok
+test v1_wire_encoding_is_byte_identical_to_the_original_verifier ... ok
+test tampering_after_sealing_breaks_the_seat_root_or_signature ... ok
+test policy_mismatches_are_refused ... ok
+test cross_crate_receipts ... ok
+test correctly_signed_false_claims_are_refused ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+## hbox ABI suite, regenerated Lean fixture and rebuilt native ELF
+$ RUSTFLAGS="-D warnings" OBEND_BELTLATCH_EXE=$PWD/../elf/beltLatch swarm-build cargo test --release --locked -j4 -p resident_custody --lib obend_latch_abi -- --include-ignored --nocapture
+   Compiling resident_custody v0.1.0 (/home/hbox/lanes/w15-l6-house-move/audit/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 7.39s
+     Running unittests src/lib.rs (../../target/release/build/resident_custody/63949df6b027946e/out/resident_custody-63949df6b027946e)
+
+running 4 tests
+test obend_latch_abi::tests::digest_limbs_are_the_little_endian_memory_image ... ok
+test obend_latch_abi::tests::lean_conformance_vectors ... ok
+test obend_latch_abi::tests::word_and_structured_kernels_agree_under_mutation ... ok
+4153 native comparisons (21 Lean vectors, 132 single-word mutations, 4000 pseudorandom): status, 14 state words, 19 request words identical; by status 0..6 [911, 1183, 194, 1013, 440, 315, 97]
+test obend_latch_abi::tests::native_beltlatch_parity ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 1.28s
+
+
+## hbox ABI and live CLI refusal suite on ext4
+$ RUSTFLAGS="-D warnings" RESIDENT_MESH_DIR=$PWD/../../mesh OBEND_BELTLATCH_EXE=$PWD/../../beltlatch/beltLatch swarm-build cargo test --release --locked -j4 -p resident_custody --test full_resident_house_move -- --nocapture --test-threads=1
+Filesystem     Type 1K-blocks      Used Available Use% Mounted on
+/dev/nvme0n1p4 ext4 476946328 418914116  33731208  93% /
+1aa9a16056afb2dde0f05c9955111ea1e4e50980c0ed9de7053637752c9a2f19  /home/hbox/lanes/w15-l6-house-move/audit/native/../../beltlatch/beltLatch
+   Compiling resident_custody v0.1.0 (/home/hbox/lanes/w15-l6-house-move/audit/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 8.48s
+     Running unittests src/lib.rs (../../target/release/build/resident_custody/63949df6b027946e/out/resident_custody-63949df6b027946e)
+
+running 4 tests
+test obend_latch_abi::tests::digest_limbs_are_the_little_endian_memory_image ... ok
+test obend_latch_abi::tests::lean_conformance_vectors ... ok
+test obend_latch_abi::tests::word_and_structured_kernels_agree_under_mutation ... ok
+4153 native comparisons (21 Lean vectors, 132 single-word mutations, 4000 pseudorandom): status, 14 state words, 19 request words identical; by status 0..6 [911, 1183, 194, 1013, 440, 315, 97]
+test obend_latch_abi::tests::native_beltlatch_parity ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 1.40s
+
+   Compiling resident_custody v0.1.0 (/home/hbox/lanes/w15-l6-house-move/audit/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 10.49s
+     Running tests/full_resident_house_move.rs (../../target/release/build/resident_custody/e6234dd4bd001c17/out/full_resident_house_move-e6234dd4bd001c17)
+
+running 3 tests
+test full_resident_house_move ... house move A -> B, 3 custodian daemons, Obend native differential on
+      1.700 ms  A seals seat receipt, offers Migrate
+    138.517 ms  B checks seat, certifies succession and verifies header
+     36.784 ms  public log admits package
+      6.998 ms  restored A Learn fenced (3 daemons)
+    183.999 ms  total
+package 94632 bytes: header proof 89840 bytes, seat receipt 3175 bytes
+Error: durable bind failed, Obend MissingAck; exit and recover the WAL
+
+Caused by:
+    injected WAL failure
+public log process: admitted epoch 6 operator 78ba83063d6b4aa1c79504e654c72112e4cdd7d0a30e18538d60d5861d7b33ed seat_root 62b2b72a3ed5ce4569f589ae1937dfbfc98234284ad0cdb9be4a73ae3df18d5f cursor 4 experienced 1 told 1 inferred 1 forgotten 1
+12 cross-layer attacks, all refused:
+   1. disputed seat receipt: seat receipt: malformed seat transfer receipt: unknown variant `Disputed`, expected `Provisional` or `Settled` at line 1 column 1628
+   2. over-cap seat receipt: seat receipt: unbacked reserve claim
+   3. wrong target_operator: seat receipt: wrong handoff operator
+   4. BeltLatch parent-digest fork: Obend latch refused: ParentFork (code 4)
+   5. policy-digest drift: Obend latch refused: PolicyDrift (code 5)
+   6. missing persist_ack: custodian 0 logged Obend MissingAck with persistAck 0, cast no vote: quorum refusal; public log process: exit 2, refused: Obend latch refused: MissingAck (code 6)
+   7. tampered cSHAKE256 projection: header opening: cut-and-choose transcript
+   8. replayed Tulip journal cursor: header opening: world membership
+   9. restored Operator A Learn: fenced at 3/3 custodians
+  10. restored Operator A Infer: fenced at 3/3 custodians
+  11. restored Operator A Migrate: fenced at 3/3 custodians
+  12. seat receipt transplant: seat binding: receipt seat root is not the certified seat claim; rebound: seat binding: seat does not belong to this resident
+Tulip resume under B: replied to [104, 105]; 101, 102, 103 and the second 104 refused as duplicate episodes at 3/3; post-learn Infer refused by the carried exposure cap at 3/3; header JournalHeader { cursor: 7, experienced: 2, told: 2, inferred: 2, forgotten: 1 }
+custodian 0: 30 Obend steps, by status 0..6 [26, 0, 3, 0, 0, 0, 1], native on every step
+custodian 1: 29 Obend steps, by status 0..6 [25, 0, 4, 0, 0, 0, 0], native on every step
+custodian 2: 29 Obend steps, by status 0..6 [25, 0, 4, 0, 0, 0, 0], native on every step
+ok
+test house_move_latency ... ignored, serial wall-clock benchmark
+test paid_move_from_genesis_through_cli ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.96s
+
+
+## Mac APFS full CLI benchmark
+$ cd native && uptime && RAYON_NUM_THREADS=6 RUSTFLAGS="-D warnings" cargo test --release -p resident_custody --test full_resident_house_move house_move_latency -- --ignored --nocapture
+17:09  up 10 days,  5:12, 12 users, load averages: 6.79 13.89 14.79
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.08s
+     Running tests/full_resident_house_move.rs (target/release/deps/full_resident_house_move-7752d4cf9ff3891e)
+
+running 1 test
+11 house moves, fresh 3-daemon mesh each, native differential off
+  min    3.818  median    4.109  max   28.055 ms  A seals seat receipt, offers Migrate
+  min   64.575  median   70.042  max  276.041 ms  B checks seat, certifies succession and verifies header
+  min   29.001  median   30.670  max   97.754 ms  public log admits package
+  min    9.045  median    9.625  max   29.891 ms  restored A Learn fenced (3 daemons)
+  min  106.617  median  114.087  max  414.479 ms  total
+test house_move_latency ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 10.38s
+
+
+## Shared hbox ext4 full CLI benchmark
+$ uptime && RUSTFLAGS="-D warnings" RESIDENT_MESH_DIR=$PWD/../../mesh swarm-build cargo test --release --locked -j4 -p resident_custody --test full_resident_house_move house_move_latency -- --ignored --nocapture
+ 17:09:44 up  1:16,  8 users,  load average: 15.25, 12.81, 9.68
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.04s
+     Running tests/full_resident_house_move.rs (../../target/release/build/resident_custody/e6234dd4bd001c17/out/full_resident_house_move-e6234dd4bd001c17)
+
+running 1 test
+11 house moves, fresh 3-daemon mesh each, native differential off
+  min    1.605  median    2.581  max    2.801 ms  A seals seat receipt, offers Migrate
+  min  107.148  median  123.888  max  348.167 ms  B checks seat, certifies succession and verifies header
+  min   32.744  median   37.712  max   47.310 ms  public log admits package
+  min    6.703  median    6.966  max    7.154 ms  restored A Learn fenced (3 daemons)
+  min  151.648  median  168.110  max  389.495 ms  total
+test house_move_latency ... FAILED
+
+failures:
+
+failures:
+    house_move_latency
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.56s
+
+
+thread 'house_move_latency' (139015) panicked at resident_custody/tests/full_resident_house_move.rs:870:5:
+median house move exceeded 120 ms
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p resident_custody --test full_resident_house_move`
+
+## Post-run process and identifier checks
+$ ps -A -o pid=,ppid=,comm=  # local basename filter for the four experiment executables
+0 matches
+$ ssh hbox 'ps -A -o pid=,ppid=,comm='  # includes Linux truncated command names
+0 matches
+$ rg -in '(_v2|wave)' native/resident_custody/src native/resident_custody/tests -g '*.rs'
+native/resident_custody/tests/resident_house_move_and_cshake_open.rs:322:    // Independent Go standard-library vector in research/wave12_resident_custody.

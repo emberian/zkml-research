@@ -1,13 +1,9 @@
-# Wave 15 lane 6: resident house move
+# Resident house move audit
 
-[EXECUTED] One A → B house move across three live custodian daemons. It took a median 112.8 ms on hbox with the mesh on ext4 (11 runs, load 4.6–5.8) and 185.2 ms on the M2 Max on APFS (11 runs, load 6.9–11.7). The hbox median covers the DreggNet v1 seat receipt, the Obend-latched quorum succession, the cSHAKE256 journal-header opening, the public log's durable admission, and A's restored snapshot fenced at 3/3. [Raw outputs](bench.log) · [Note](../../notes/resident-house-move-protocol-weld.md)
+[EXECUTED] The complete CLI move met the 120 ms median target on M2 Max/APFS at 114.087 ms. The shared hbox/ext4 run measured 168.110 ms. Each had 11 samples. The native hbox integration test passed all 12 refusal cases with 88 native-checked custodian latch steps. The default warnings-as-errors release suite passed 23 tests with four opt-in tests skipped. The native ABI and latency tests were also run explicitly. [Audit log](audit.log) · [Protocol, scope and timing boundaries](../../notes/resident-house-move-protocol-weld.md)
 
-[EXECUTED] Every custodian transition probes and then steps Obend's `stepBeltLatch` word ABI, cross-checked against the qsag kernel by an explicit outcome table. Rust matched the CakeML ELF on 4,153 of 4,153 records: the 21 Lean vectors, 132 mutations and 4,000 pseudorandom pairs. With `OBEND_BELTLATCH_EXE` set, all 88 custodian steps of the end-to-end test also ran natively.
+[EXECUTED] The Rust codec and independently rebuilt ELF matched all 21 Lean-generated input/output records. Rust and the ELF agreed on every byte across 4,153 comparisons. Two receipt fixtures crossed the pinned DreggNet verifier boundary in both directions. Reopening the public log recovered the exact package, latch and head. An explicit failed write followed by retry produced one committed epoch. [Fixture generator](lean_vectors.py) · [Billing interop](check_billing.sh)
 
-[EXECUTED] Twelve cross-layer attacks met their intended refusals: DreggNet `Malformed`, `UnbackedReserve` and `WrongOperator`; Obend `ParentFork` and `PolicyDrift`; `MissingAck` at a custodian and at the log process; opening transcript and world-membership failures; A fenced for Learn, Infer and Migrate; seat binding twice.
+[DERIVED] The complete journal opening is bounded by 90,976 bytes. The public proof exposes the cursor, counts and a blinded W0 sibling, while private journal data remains with the custodians. Votes authenticate the mesh-domain digest of the 152-byte acknowledged Obend request. Receipt verification covers the exporter's signed transferable backing and reserve arithmetic. The Tulip result covers certified episode IDs and a 16-byte W0 continuity check. [Audited protocol](../../notes/resident-house-move-protocol-weld.md)
 
-[EXECUTED] `seat_receipt.rs` reproduces DreggNet's pinned v1 digest `18a1d5bc…5174`. Votes sign the exact 152-byte Obend request record with `persistAck = 1`. The checkpoint is written after the vote; recovery reads only the WAL.
-
-Files: `native/resident_custody/src/{obend_latch_abi,seat_receipt,house_move}.rs`, `src/bin/resident_house_move.rs`, `src/custody_mesh.rs` (latch gate, world trie, header request, votes), `tests/full_resident_house_move.rs`, `tests/common/mod.rs` (harness shared with the existing test).
-
-hbox scratch, created by this lane: `/home/hbox/lanes/w15-l6-house-move/` (`beltlatch/` ELF build, `native/` source copy, `target/` 277 MB, `mesh/` empty).
+[REPORTED] Stage 1 measured 112.792 ms on hbox and 185.249 ms on Mac using a latch-only persistence callback. Those historical measurements describe commit `09630393`. [Original outputs](bench.log)

@@ -28,7 +28,7 @@ something it never said.
 
 ## Evidence — what each file measured
 
-- [Resident house move: billing, custody and the Obend latch](resident-house-move-protocol-weld.md) — [EXECUTED] 112.8 ms durable median A → B move on hbox (185.2 ms on M2 Max); 4,153/4,153 Rust–CakeML `stepBeltLatch` comparisons; twelve cross-layer attacks refused.
+- [Resident house move: billing, custody and the Obend latch](resident-house-move-protocol-weld.md) — [EXECUTED] CLI A → B median of 114.1 ms on M2 Max and 168.1 ms on shared hbox, a complete opening bounded by 90,976 bytes, 4,153 matching Rust–CakeML records and twelve specified refusals.
 - [Bit-sliced cSHAKE256 selective cell openings](compact-bitsliced-cshake256-opening.md) — [EXECUTED] Four-worker medians of 67.229 ms prove and 14.367 ms verify. [DERIVED] At most 91,041 bytes including the measured three-sibling branch.
 - [Wave 13 compact cSHAKE and private trie openings](w13-compact-ggm-cshake256-opening.md) — [DERIVED] 78,544-byte worst-case resident proof. [EXECUTED] Private prefix proofs reject omitted members and false empty answers.
 - [Wave 12 resident custody and cSHAKE openings](w12-resident-custody-and-cshake-opening.md) — [EXECUTED] operator migration across SIGKILL and snapshot restore, 3-of-4 failover, and measured 219-round Boolean proofs for blinded byte projections.

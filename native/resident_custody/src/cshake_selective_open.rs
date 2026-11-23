@@ -536,6 +536,12 @@ mod tests {
             + ONLINE_INSTANCES
                 * (PARTIES.ilog2() as usize * 16 + 96 + 32 + 64 + circuit::TRACE_BYTES);
         assert_eq!(bytes, 90_880);
+        let header = crate::custody_mesh::HeaderOpening {
+            w0_leaf: [0; 32], cell_root: [0; 32],
+            journal: Default::default(), proof: vec![0; bytes],
+        };
+        assert_eq!(bincode::serialized_size(&header).unwrap(), crate::custody_mesh::MAX_HEADER_WIRE);
+        assert!(crate::custody_mesh::MAX_HEADER_WIRE <= 91_000);
         assert!(bytes + 65 + 3 * 32 <= 92_000);
     }
 

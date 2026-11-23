@@ -5,7 +5,7 @@
 //! (`obend_latch_abi`) holds the installed head as genesis, epoch, `head_root` and policy and
 //! decides whether a proposal extends it; the qsag kernel (`belt_latch_kernel`) decides
 //! idempotent replay. Their outcomes must agree as `Node::prepare` and `Node::persist` state,
-//! and a vote signs the exact Obend request record with `persistAck = 1`.
+//! and a vote authenticates the Obend record with `persistAck = 1` in the mesh signature domain.
 use crate::belt_latch_kernel::*;
 use crate::cshake_selective_open as opening;
 use crate::obend_latch_abi::{self as obend, NativeBeltLatch, RequestWords, StateWords, Status};
@@ -132,7 +132,7 @@ pub fn latch_state(head: &Head) -> StateWords {
 }
 
 /// The Obend request that installs `head` over the head its `parent_commitment` names.
-/// With `persist_ack` these 19 words are what every custodian vote for `head` signs.
+/// These 19 words are the payload authenticated by each vote for `head`.
 pub fn succession_request(head: &Head, persist_ack: bool) -> Result<RequestWords> {
     Ok(obend::LatchRequest {
         genesis: obend::limbs(&head.genesis_id),
@@ -189,6 +189,9 @@ pub struct JournalHeader {
 }
 
 pub const HEADER_BYTES: u16 = 48;
+// Fixed bincode fields (sibling, root, journal and proof length) plus the 64-byte
+// cell circuit's worst-case proof. Pinned by worst_case_wire_budget.
+pub(crate) const MAX_HEADER_WIRE: u64 = 96 + 90_880;
 const IDENTITY_BYTES: usize = 24;
 
 /// The resident identity a journal header carries: its genesis and its policy.
@@ -208,21 +211,6 @@ impl JournalHeader {
             out[32 + 4 * i..36 + 4 * i].copy_from_slice(&n.to_le_bytes());
         }
         out
-    }
-    pub fn parse(bytes: &[u8], identity: &Digest) -> Result<Self> {
-        ensure!(bytes.len() == usize::from(HEADER_BYTES), "header length");
-        ensure!(
-            bytes[..IDENTITY_BYTES] == identity[..IDENTITY_BYTES],
-            "foreign resident header"
-        );
-        let count = |i: usize| u32::from_le_bytes(bytes[32 + 4 * i..36 + 4 * i].try_into().unwrap());
-        Ok(Self {
-            cursor: u64::from_le_bytes(bytes[24..32].try_into().unwrap()),
-            experienced: count(0),
-            told: count(1),
-            inferred: count(2),
-            forgotten: count(3),
-        })
     }
 }
 
@@ -249,7 +237,8 @@ fn leaf(path: &TriePath, cell_root: &Digest) -> Digest {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct HeaderOpening {
     pub w0_leaf: Digest,
-    pub statement: opening::Statement,
+    pub cell_root: Digest,
+    pub journal: JournalHeader,
     pub proof: Bytes,
 }
 
@@ -257,6 +246,12 @@ impl HeaderOpening {
     /// The header of `head`: membership of the journal cell in its world root, the cSHAKE256
     /// projection of exactly `[0, HEADER_BYTES)`, its identity and its cursor.
     pub fn verify(&self, head: &Head) -> Result<JournalHeader> {
+        let identity = resident_identity(&head.genesis_id, &head.policy_hash);
+        let statement = opening::Statement {
+            cell_root: self.cell_root,
+            ranges: vec![(0, HEADER_BYTES)],
+            projected_bytes: self.journal.public_bytes(&identity).to_vec(),
+        };
         Branch {
             path: &JOURNAL_PATH,
             siblings: &[self.w0_leaf],
@@ -265,18 +260,14 @@ impl HeaderOpening {
             &head.state_commitment,
             CELL_BYTES,
             &[(0, HEADER_BYTES)],
-            &self.statement,
+            &statement,
             &self.proof,
         )?;
-        let header = JournalHeader::parse(
-            &self.statement.projected_bytes,
-            &resident_identity(&head.genesis_id, &head.policy_hash),
-        )?;
         ensure!(
-            header.cursor == head.journal_cursor,
+            self.journal.cursor == head.journal_cursor,
             "journal cursor disagrees with the certified head"
         );
-        Ok(header)
+        Ok(self.journal)
     }
 }
 
@@ -387,8 +378,8 @@ pub struct Vote {
 }
 
 impl Vote {
-    /// Custodian `signer`'s vote for `head`: a signature over its Obend request record with
-    /// `persistAck = 1`. A custodian signs only after its own latch accepted that record.
+    /// Sign the mesh's domain-separated digest of the encoded request with `persistAck = 1`.
+    /// The daemon calls this after durable acceptance or an exact WAL-backed replay.
     pub fn sign(key: &SigningKey, signer: u16, head: &Head) -> Result<Self> {
         Ok(Self {
             signer,
@@ -718,7 +709,7 @@ fn write_slot(
 ) -> Result<()> {
     let tmp = dir.join(format!("{name}.new"));
     let mut file = File::create(&tmp)?;
-    bincode::serialize_into(&mut file, value)?;
+    file.write_all(&bincode::serialize(value)?)?;
     file.sync_all()?;
     barrier(dir, pause_before_rename, "pre")?;
     fs::rename(tmp, dir.join(name))?;
@@ -908,15 +899,27 @@ pub fn open_header(
     operator: &SigningKey,
 ) -> Result<(HeaderOpening, JournalHeader)> {
     cert.verify(cfg)?;
+    let opened = request_header(
+        socket,
+        cert,
+        signature(operator, b"release resident header", &cert.head),
+    )?;
+    let header = opened.verify(&cert.head)?;
+    Ok((opened, header))
+}
+
+fn request_header(
+    socket: &Path,
+    cert: &Certificate,
+    operator_signature: Bytes,
+) -> Result<HeaderOpening> {
     let req = Request::Header {
         certificate: cert.clone(),
-        operator_signature: signature(operator, b"release resident header", &cert.head),
+        operator_signature,
     };
-    if let Answer::Header(opened) = rpc(socket, &req)? {
-        let header = opened.verify(&cert.head)?;
-        Ok((opened, header))
-    } else {
-        bail!("expected header opening")
+    match rpc(socket, &req)? {
+        Answer::Header(opened) => Ok(opened),
+        _ => bail!("expected header opening"),
     }
 }
 
@@ -1058,7 +1061,8 @@ impl Node {
             (Status::Accepted, Ok(BeltLatchBindOutcome::Fresh)) => {}
             (Status::MissingAck, Err(BeltLatchKernelError::WalPersistFailed)) => {
                 ensure!(words == self.latch, "Obend refusal changed the latch");
-                return io.context("durable bind failed, Obend MissingAck; exit and recover the WAL");
+                return io
+                    .context("durable bind failed, Obend MissingAck; exit and recover the WAL");
             }
             other => bail!("latch disagreement on a durable successor: {other:?}"),
         }
@@ -1075,94 +1079,92 @@ impl Node {
     /// the vote is on its way, off the acknowledgment path.
     fn checkpoint(&mut self) -> Result<()> {
         if std::mem::take(&mut self.stale_checkpoint) {
-            atomic(&self.dir, "checkpoint", &self.state)?;
+            // This diagnostic copy is replaceable. Recovery unconditionally rebuilds
+            // it from the fsynced WAL before listening, including after power loss.
+            let tmp = self.dir.join("checkpoint.new");
+            fs::write(&tmp, bincode::serialize(&self.state)?)?;
+            fs::rename(tmp, self.dir.join("checkpoint"))?;
             barrier(&self.dir, self.barriers, "post")?;
         }
         Ok(())
     }
-    fn answer(&mut self, req: Request) -> Result<Answer> {
-        match req {
-            Request::Bind(p) => {
-                match self.prepare(&p) {
-                    Err(e) => return Ok(Answer::Refused(e.to_string())),
-                    Ok(None) => {}
-                    Ok(Some(next)) => self.persist(next)?,
-                }
-                Ok(Answer::Vote(
-                    self.state.head.clone(),
-                    Vote::sign(&self.key, self.identity.signer, &self.state.head)?,
-                ))
-            }
-            Request::Release {
-                certificate,
-                operator_signature,
-            } => {
-                let result = (|| -> Result<Answer> {
-                    certificate.verify(&self.identity.cfg)?;
-                    ensure!(certificate.head == self.state.head, "fenced release");
-                    verify_sig(
-                        self.state.head.operator_id,
-                        b"release certified output",
-                        &self.state.head,
-                        &operator_signature,
-                    )?;
-                    let ranges = self
-                        .state
-                        .releasable
-                        .clone()
-                        .context("no inference grant")?;
-                    let cell = self.state.cell();
-                    let st = opening::statement(&self.state.blind, &cell, ranges)?;
-                    let journal_leaf = self.state.journal_leaf();
-                    // The branch binding refuses a checkpoint whose cells miss the root.
-                    let proof = Branch {
-                        path: &W0_PATH,
-                        siblings: &[journal_leaf],
-                    }
-                    .prove(&self.state.head.state_commitment, &self.state.blind, &cell, &st)?;
-                    Ok(Answer::Opening(st, journal_leaf, proof))
-                })();
-                Ok(result.unwrap_or_else(|e| Answer::Refused(e.to_string())))
-            }
-            Request::Header {
-                certificate,
-                operator_signature,
-            } => {
-                let result = (|| -> Result<Answer> {
-                    certificate.verify(&self.identity.cfg)?;
-                    ensure!(certificate.head == self.state.head, "fenced header");
-                    verify_sig(
-                        self.state.head.operator_id,
-                        b"release resident header",
-                        &self.state.head,
-                        &operator_signature,
-                    )?;
-                    let cell = self.state.journal_cell();
-                    let st = opening::statement(
-                        &self.state.journal_blind,
-                        &cell,
-                        vec![(0, HEADER_BYTES)],
-                    )?;
-                    let w0_leaf = self.state.w0_leaf();
-                    let proof = Branch {
-                        path: &JOURNAL_PATH,
-                        siblings: &[w0_leaf],
-                    }
-                    .prove(
-                        &self.state.head.state_commitment,
-                        &self.state.journal_blind,
-                        &cell,
-                        &st,
-                    )?;
-                    Ok(Answer::Header(HeaderOpening {
-                        w0_leaf,
-                        statement: st,
-                        proof,
-                    }))
-                })();
-                Ok(result.unwrap_or_else(|e| Answer::Refused(e.to_string())))
-            }
+    fn bind(&mut self, p: Proposal) -> Result<Answer> {
+        match self.prepare(&p) {
+            Err(e) => return Ok(Answer::Refused(e.to_string())),
+            Ok(None) => {}
+            Ok(Some(next)) => self.persist(next)?,
         }
+        Ok(Answer::Vote(
+            self.state.head.clone(),
+            Vote::sign(&self.key, self.identity.signer, &self.state.head)?,
+        ))
+    }
+
+    fn release(&self, certificate: Certificate, operator_signature: Bytes) -> Result<Answer> {
+        certificate.verify(&self.identity.cfg)?;
+        ensure!(certificate.head == self.state.head, "fenced release");
+        verify_sig(
+            self.state.head.operator_id,
+            b"release certified output",
+            &self.state.head,
+            &operator_signature,
+        )?;
+        let ranges = self
+            .state
+            .releasable
+            .clone()
+            .context("no inference grant")?;
+        let cell = self.state.cell();
+        let st = opening::statement(&self.state.blind, &cell, ranges)?;
+        let journal_leaf = self.state.journal_leaf();
+        // The branch binding refuses a checkpoint whose cells miss the root.
+        let proof = Branch {
+            path: &W0_PATH,
+            siblings: &[journal_leaf],
+        }
+        .prove(
+            &self.state.head.state_commitment,
+            &self.state.blind,
+            &cell,
+            &st,
+        )?;
+        Ok(Answer::Opening(st, journal_leaf, proof))
+    }
+
+    fn header_job(
+        &self,
+        certificate: Certificate,
+        operator_signature: Bytes,
+    ) -> Result<impl FnOnce() -> Result<Answer> + Send + 'static> {
+        certificate.verify(&self.identity.cfg)?;
+        ensure!(certificate.head == self.state.head, "fenced header");
+        verify_sig(
+            self.state.head.operator_id,
+            b"release resident header",
+            &self.state.head,
+            &operator_signature,
+        )?;
+        // Authorization and the snapshot are taken together in the serialized server loop.
+        // The worker owns only the witness for this public header.
+        let cell = self.state.journal_cell();
+        let journal = self.state.journal;
+        let blind = self.state.journal_blind;
+        let world = self.state.head.state_commitment;
+        let w0_leaf = self.state.w0_leaf();
+        Ok(move || {
+            let st = opening::statement(&blind, &cell, vec![(0, HEADER_BYTES)])?;
+            let branch = Branch {
+                path: &JOURNAL_PATH,
+                siblings: &[w0_leaf],
+            };
+            let proof = branch.prove(&world, &blind, &cell, &st)?;
+            Ok(Answer::Header(HeaderOpening {
+                w0_leaf,
+                cell_root: st.cell_root,
+                journal,
+                proof,
+            }))
+        })
     }
 }
 
@@ -1212,6 +1214,7 @@ pub fn serve(dir: &Path, barriers: bool) -> Result<()> {
         barriers,
         stale_checkpoint: false,
     };
+    let mut worker: Option<std::thread::JoinHandle<()>> = None;
     for stream in listener.incoming() {
         let mut stream = stream?;
         if timeouts(&stream).is_err() {
@@ -1220,7 +1223,35 @@ pub fn serve(dir: &Path, barriers: bool) -> Result<()> {
         if let Ok(req) = recv(&mut stream) {
             // A WAL error exits the process before any vote can escape. A
             // disconnected client can safely retry its command.
-            let reply = node.answer(req)?;
+            let refused = |e: anyhow::Error| Answer::Refused(e.to_string());
+            let reply = match req {
+                Request::Bind(p) => node.bind(p)?,
+                Request::Release {
+                    certificate,
+                    operator_signature,
+                } => node
+                    .release(certificate, operator_signature)
+                    .unwrap_or_else(refused),
+                Request::Header {
+                    certificate,
+                    operator_signature,
+                } => match node.header_job(certificate, operator_signature) {
+                    Err(e) => refused(e),
+                    Ok(_) if worker.as_ref().is_some_and(|w| !w.is_finished()) => {
+                        Answer::Refused("header prover busy".into())
+                    }
+                    Ok(job) => {
+                        worker = Some(
+                            std::thread::Builder::new()
+                                .name("journal-proof".into())
+                                .spawn(move || {
+                                    let _ = send(&mut stream, &job().unwrap_or_else(refused));
+                                })?,
+                        );
+                        continue;
+                    }
+                },
+            };
             let _ = send(&mut stream, &reply);
             drop(stream);
             // A checkpoint error also exits; recovery rewrites it from the WAL.
@@ -1354,4 +1385,107 @@ pub fn operate(dir: &Path, op: Operation) -> Result<Outcome> {
     let cert = certify(&seat.cfg, &seat.sockets, &proposal)?;
     atomic(dir, "cursor", &Some(&cert))?;
     Ok(Outcome::Certified(cert))
+}
+
+/// A's paid offer authorizes fetching the public header from the parent while B acquires
+/// the quorum. A move preserves the world root, so B can verify that proof against its successor.
+#[derive(Clone, Serialize, Deserialize)]
+pub struct PaidMoveOffer {
+    pub proposal: Proposal,
+    pub seat_receipt: Vec<u8>,
+    header_signature: Bytes,
+}
+
+pub fn offer_paid_move(dir: &Path, grant: Grant, seat_receipt: Vec<u8>) -> Result<PaidMoveOffer> {
+    let seat: Seat = load(dir, "seat")?;
+    let key = SigningKey::from_bytes(&seat.secret);
+    let header_signature = signature(&key, b"release resident header", &grant.parent);
+    let Outcome::Offered(proposal) = operate(dir, Operation::Offer(grant))? else {
+        bail!("expected migration offer");
+    };
+    Ok(PaidMoveOffer {
+        proposal,
+        seat_receipt,
+        header_signature,
+    })
+}
+
+pub fn accept_paid_move(
+    dir: &Path,
+    offer: PaidMoveOffer,
+    admission: &crate::house_move::SeatAdmission,
+) -> Result<crate::house_move::ResidentMigrationPackage> {
+    let seat: Seat = load(dir, "seat")?;
+    let key = SigningKey::from_bytes(&seat.secret);
+    let proposal = offer.proposal;
+    let command = proposal.command.clone().accept(&key);
+    command.authenticate(&seat.cfg)?;
+    let Action::Migrate {
+        successor,
+        seat_payment_claim,
+    } = command.grant.action
+    else {
+        bail!("expected Migrate");
+    };
+    admission.verify_for(
+        &offer.seat_receipt,
+        &command.grant.parent,
+        successor,
+        seat_payment_claim,
+    )?;
+    let parent = proposal
+        .parent_certificate
+        .clone()
+        .unwrap_or_else(|| Certificate {
+            head: seat.genesis.clone(),
+            votes: vec![],
+        });
+    crate::house_move::check_package_capacity(
+        &parent,
+        &command,
+        &offer.seat_receipt,
+        seat.cfg.roster.len(),
+    )?;
+    let socket = seat.sockets.last().context("empty custodian roster")?;
+    let (successor, opening) = std::thread::scope(|scope| -> Result<_> {
+        let opening = proposal.parent_certificate.as_ref().map(|_| {
+            scope.spawn(|| -> Result<_> {
+                let proof = request_header(socket, &parent, offer.header_signature)?;
+                proof.verify(&parent.head)?;
+                Ok(proof)
+            })
+        });
+        let Outcome::Certified(cert) = operate(dir, Operation::Accept(proposal))? else {
+            bail!("expected succession certificate");
+        };
+        Ok((cert, opening.and_then(|t| t.join().ok()?.ok())))
+    })?;
+    // The prover transcript and header projection depend on these four head fields.
+    // The parent opening was verified while the operator was collecting votes.
+    ensure!(
+        successor.head.genesis_id == parent.head.genesis_id
+            && successor.head.policy_hash == parent.head.policy_hash
+            && successor.head.state_commitment == parent.head.state_commitment
+            && successor.head.journal_cursor == parent.head.journal_cursor,
+        "migration changed memory"
+    );
+    let header = match opening {
+        Some(header) => header,
+        // An exact retry can arrive after the parent was consumed. The successor now
+        // authorizes the same opening. Also use this route for a move from genesis.
+        _ => {
+            seat.sockets
+                .iter()
+                .find_map(|s| open_header(s, &seat.cfg, &successor, &key).ok())
+                .context("no custodian served the certified successor header")?
+                .0
+        }
+    };
+    Ok(crate::house_move::ResidentMigrationPackage {
+        parent,
+        command,
+        succession: successor,
+        header,
+        seat_receipt: offer.seat_receipt,
+    })
 }

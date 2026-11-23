@@ -246,7 +246,7 @@ pub fn record_bytes(current: &StateWords, candidate: &RequestWords) -> [u8; RECO
     out
 }
 
-/// The request words alone, little-endian: the bytes a custody quorum signs.
+/// The request words alone, little-endian, used as the payload of a custody vote.
 pub fn request_bytes(candidate: &RequestWords) -> [u8; 8 * REQUEST_WORDS] {
     let mut out = [0; 8 * REQUEST_WORDS];
     for (chunk, w) in out.chunks_exact_mut(8).zip(candidate) {
@@ -313,15 +313,16 @@ impl NativeBeltLatch {
     /// Run one step natively and in Rust. Both must return the same status and leave both
     /// buffers word-for-word identical.
     pub fn differential(&self, current: &mut StateWords, candidate: &RequestWords) -> Result<u64> {
-        let before = *current;
-        let code = step_words(current, candidate);
-        let native = self.run(&before, candidate)?;
+        let mut next = *current;
+        let code = step_words(&mut next, candidate);
+        let native = self.run(current, candidate)?;
         ensure!(
-            native == (code, *current, *candidate),
+            native == (code, next, *candidate),
             "native beltLatch disagrees: native {:?}, rust {:?}",
             native,
-            (code, *current, *candidate)
+            (code, next, *candidate)
         );
+        *current = next;
         Ok(code)
     }
 }
@@ -410,11 +411,14 @@ mod tests {
         let vectors = conformance_vectors();
         assert_eq!(vectors.len(), 21);
         let mut statuses = std::collections::BTreeSet::new();
-        for (s, r, want) in &vectors {
+        const LEAN: &[u8; 21 * (RECORD_BYTES + OUTPUT_BYTES)] =
+            include_bytes!("../tests/fixtures/belt_latch_records.bin");
+        for ((s, r, want), fixture) in vectors.iter().zip(LEAN.chunks_exact(RECORD_BYTES + OUTPUT_BYTES)) {
             let (status, next) = step(s, r);
             assert_eq!(status, *want);
             let mut words = s.to_words();
             let req = r.to_words();
+            assert_eq!(record_bytes(&words, &req).as_slice(), &fixture[..RECORD_BYTES]);
             assert_eq!(step_words(&mut words, &req), want.code());
             assert_eq!(words, next.to_words());
             let mut expected = s.to_words();
@@ -424,6 +428,7 @@ mod tests {
             }
             assert_eq!(words, expected);
             let out = output_bytes(status.code(), &words, &req);
+            assert_eq!(out.as_slice(), &fixture[RECORD_BYTES..]);
             assert_eq!(parse_output(&out).unwrap(), (want.code(), words, req));
             statuses.insert(*want);
         }
