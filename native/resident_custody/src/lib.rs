@@ -4,6 +4,9 @@
 pub mod belt_latch_kernel;
 pub mod cshake_selective_open;
 pub mod custody_mesh;
+pub mod house_move;
+pub mod obend_latch_abi;
+pub mod seat_receipt;
 mod tower;
 mod trace_pack;
 pub mod trie_opening;

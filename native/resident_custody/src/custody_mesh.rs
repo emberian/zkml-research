@@ -1,7 +1,15 @@
 //! One durable vote per epoch. A transition needs a certified parent, a
 //! policy issuer's exact-action grant, and the active operator's signature.
+//!
+//! Every custodian transition runs two latch kernels. Obend's proved `stepBeltLatch`
+//! (`obend_latch_abi`) holds the installed head as genesis, epoch, `head_root` and policy and
+//! decides whether a proposal extends it; the qsag kernel (`belt_latch_kernel`) decides
+//! idempotent replay. Their outcomes must agree as `Node::prepare` and `Node::persist` state,
+//! and a vote signs the exact Obend request record with `persistAck = 1`.
 use crate::belt_latch_kernel::*;
 use crate::cshake_selective_open as opening;
+use crate::obend_latch_abi::{self as obend, NativeBeltLatch, RequestWords, StateWords, Status};
+use crate::trie_opening::{Branch, Path as TriePath};
 use crate::{digest, Digest};
 use anyhow::{anyhow, bail, ensure, Context, Result};
 use bincode::Options;
@@ -84,6 +92,9 @@ impl Config {
     pub fn genesis(&self) -> Digest {
         hash(b"mesh genesis", self)
     }
+    pub fn policy_hash(&self) -> Digest {
+        hash(b"policy", &self.policy)
+    }
 }
 
 // This complete head is the signed migration manifest. parent_commitment
@@ -103,10 +114,177 @@ pub struct Head {
     pub output_rank: u64,
 }
 
+/// The digest an Obend latch installs for `head`, and the `parent_commitment` of its child.
+pub fn head_root(head: &Head) -> Digest {
+    hash(b"parent", head)
+}
+
+/// The 14 Obend latch words once `head` is installed.
+pub fn latch_state(head: &Head) -> StateWords {
+    obend::LatchState {
+        initialized: 1,
+        genesis: obend::limbs(&head.genesis_id),
+        epoch: head.epoch,
+        digest: obend::limbs(&head_root(head)),
+        policy: obend::limbs(&head.policy_hash),
+    }
+    .to_words()
+}
+
+/// The Obend request that installs `head` over the head its `parent_commitment` names.
+/// With `persist_ack` these 19 words are what every custodian vote for `head` signs.
+pub fn succession_request(head: &Head, persist_ack: bool) -> Result<RequestWords> {
+    Ok(obend::LatchRequest {
+        genesis: obend::limbs(&head.genesis_id),
+        parent_epoch: head
+            .epoch
+            .checked_sub(1)
+            .context("the genesis head has no succession")?,
+        next_epoch: head.epoch,
+        parent: obend::limbs(&head.parent_commitment),
+        next_digest: obend::limbs(&head_root(head)),
+        policy: obend::limbs(&head.policy_hash),
+        persist_ack: u64::from(persist_ack),
+    }
+    .to_words())
+}
+
+/// A request for a child of `parent` before the child exists. The kernel reads `nextDigest`
+/// only to install it, so the probe refuses exactly where the child's own request will.
+fn probe_request(parent: &Head) -> Result<RequestWords> {
+    Ok(obend::LatchRequest {
+        genesis: obend::limbs(&parent.genesis_id),
+        parent_epoch: parent.epoch,
+        next_epoch: parent.epoch.checked_add(1).context("epoch overflow")?,
+        parent: obend::limbs(&head_root(parent)),
+        next_digest: [0; 4],
+        policy: obend::limbs(&parent.policy_hash),
+        persist_ack: 1,
+    }
+    .to_words())
+}
+
+fn vote_message(head: &Head) -> Result<Bytes> {
+    Ok(obend::request_bytes(&succession_request(head, true)?).to_vec())
+}
+
+/// Origin of a journaled Tulip episode, as the resident's event memory tags it.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub enum Provenance {
+    Experienced,
+    Told,
+    Inferred,
+}
+
+/// The public part of the resident's journal cell, bytes `[0, HEADER_BYTES)`: 24 bytes of
+/// [`resident_identity`], the journal cursor, and the journaled counts by provenance plus
+/// forgotten episodes. Bytes `[HEADER_BYTES, 64)` hold the private Tulip journal chain.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+pub struct JournalHeader {
+    pub cursor: u64,
+    pub experienced: u32,
+    pub told: u32,
+    pub inferred: u32,
+    pub forgotten: u32,
+}
+
+pub const HEADER_BYTES: u16 = 48;
+const IDENTITY_BYTES: usize = 24;
+
+/// The resident identity a journal header carries: its genesis and its policy.
+pub fn resident_identity(genesis_id: &Digest, policy_hash: &Digest) -> Digest {
+    digest(b"resident header identity", &[genesis_id, policy_hash])
+}
+
+impl JournalHeader {
+    pub fn public_bytes(&self, identity: &Digest) -> [u8; HEADER_BYTES as usize] {
+        let mut out = [0; HEADER_BYTES as usize];
+        out[..IDENTITY_BYTES].copy_from_slice(&identity[..IDENTITY_BYTES]);
+        out[24..32].copy_from_slice(&self.cursor.to_le_bytes());
+        for (i, n) in [self.experienced, self.told, self.inferred, self.forgotten]
+            .into_iter()
+            .enumerate()
+        {
+            out[32 + 4 * i..36 + 4 * i].copy_from_slice(&n.to_le_bytes());
+        }
+        out
+    }
+    pub fn parse(bytes: &[u8], identity: &Digest) -> Result<Self> {
+        ensure!(bytes.len() == usize::from(HEADER_BYTES), "header length");
+        ensure!(
+            bytes[..IDENTITY_BYTES] == identity[..IDENTITY_BYTES],
+            "foreign resident header"
+        );
+        let count = |i: usize| u32::from_le_bytes(bytes[32 + 4 * i..36 + 4 * i].try_into().unwrap());
+        Ok(Self {
+            cursor: u64::from_le_bytes(bytes[24..32].try_into().unwrap()),
+            experienced: count(0),
+            told: count(1),
+            inferred: count(2),
+            forgotten: count(3),
+        })
+    }
+}
+
+/// Leaf paths of the two-cell world trie under `Head::state_commitment`. The first path bit
+/// orders the leaves and each leaf digest commits to its whole 65-byte path.
+pub const W0_PATH: TriePath = [0; 65];
+pub const JOURNAL_PATH: TriePath = {
+    let mut p = [0; 65];
+    p[0] = 0x80;
+    p
+};
+
+fn leaf(path: &TriePath, cell_root: &Digest) -> Digest {
+    Branch {
+        path,
+        siblings: &[],
+    }
+    .root(cell_root)
+    .expect("canonical leaf path")
+}
+
+/// The journal header proved inside a certified world root. Its only sibling is the W0 leaf,
+/// a commitment under a private blind, so the opening carries no witness.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct HeaderOpening {
+    pub w0_leaf: Digest,
+    pub statement: opening::Statement,
+    pub proof: Bytes,
+}
+
+impl HeaderOpening {
+    /// The header of `head`: membership of the journal cell in its world root, the cSHAKE256
+    /// projection of exactly `[0, HEADER_BYTES)`, its identity and its cursor.
+    pub fn verify(&self, head: &Head) -> Result<JournalHeader> {
+        Branch {
+            path: &JOURNAL_PATH,
+            siblings: &[self.w0_leaf],
+        }
+        .verify(
+            &head.state_commitment,
+            CELL_BYTES,
+            &[(0, HEADER_BYTES)],
+            &self.statement,
+            &self.proof,
+        )?;
+        let header = JournalHeader::parse(
+            &self.statement.projected_bytes,
+            &resident_identity(&head.genesis_id, &head.policy_hash),
+        )?;
+        ensure!(
+            header.cursor == head.journal_cursor,
+            "journal cursor disagrees with the certified head"
+        );
+        Ok(header)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Action {
     Learn {
         episode: u64,
+        provenance: Provenance,
         step: GdnStep,
     },
     Infer {
@@ -149,15 +327,26 @@ pub struct Command {
 impl Command {
     pub fn authorize(grant: Grant, operator: &SigningKey, successor: Option<&SigningKey>) -> Self {
         let operator_signature = signature(operator, b"exercise grant", &grant);
-        let successor_signature =
-            successor.map(|s| signature(s, b"accept signed move", &(&grant, &operator_signature)));
-        Self {
+        let command = Self {
             grant,
             operator_signature,
-            successor_signature,
+            successor_signature: None,
+        };
+        match successor {
+            Some(s) => command.accept(s),
+            None => command,
         }
     }
-    fn authenticate(&self, cfg: &Config) -> Result<()> {
+    /// The successor's acceptance of an offered move.
+    pub fn accept(mut self, successor: &SigningKey) -> Self {
+        self.successor_signature = Some(signature(
+            successor,
+            b"accept signed move",
+            &(&self.grant, &self.operator_signature),
+        ));
+        self
+    }
+    pub fn authenticate(&self, cfg: &Config) -> Result<()> {
         let g = &self.grant;
         verify_sig(
             cfg.policy.issuer,
@@ -186,7 +375,7 @@ impl Command {
             (_, None) => Ok(()),
         }
     }
-    fn id(&self) -> Digest {
+    pub fn id(&self) -> Digest {
         hash(b"transition", self)
     }
 }
@@ -195,6 +384,17 @@ impl Command {
 pub struct Vote {
     pub signer: u16,
     pub signature: Bytes,
+}
+
+impl Vote {
+    /// Custodian `signer`'s vote for `head`: a signature over its Obend request record with
+    /// `persistAck = 1`. A custodian signs only after its own latch accepted that record.
+    pub fn sign(key: &SigningKey, signer: u16, head: &Head) -> Result<Self> {
+        Ok(Self {
+            signer,
+            signature: signature(key, b"durable epoch", &vote_message(head)?),
+        })
+    }
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Certificate {
@@ -206,14 +406,14 @@ impl Certificate {
     pub fn verify(&self, cfg: &Config) -> Result<()> {
         cfg.validate()?;
         ensure!(
-            self.head.genesis_id == cfg.genesis()
-                && self.head.policy_hash == hash(b"policy", &cfg.policy),
+            self.head.genesis_id == cfg.genesis() && self.head.policy_hash == cfg.policy_hash(),
             "foreign manifest"
         );
         ensure!(
             self.votes.len() >= usize::from(cfg.threshold) && self.votes.len() <= cfg.roster.len(),
             "insufficient or excessive quorum"
         );
+        let message = vote_message(&self.head)?;
         let mut seen = BTreeSet::new();
         for v in &self.votes {
             ensure!(seen.insert(v.signer), "duplicate signer");
@@ -221,7 +421,7 @@ impl Certificate {
                 .roster
                 .get(usize::from(v.signer))
                 .context("unknown signer")?;
-            verify_sig(*pk, b"durable epoch", &self.head, &v.signature)?;
+            verify_sig(*pk, b"durable epoch", &message, &v.signature)?;
         }
         Ok(())
     }
@@ -290,18 +490,22 @@ struct State {
     observed: [u64; 8],
     blinding_key: Digest,
     blind: Digest,
+    journal: JournalHeader,
+    // Hash chain over every journal entry, in order. Its first 16 bytes are the private
+    // part of the journal cell.
+    chain: Digest,
+    journal_blind: Digest,
     releasable: Option<Vec<(u16, u16)>>,
 }
 
 impl State {
     fn genesis(cfg: &Config, secret: Digest) -> Self {
         let genesis_id = cfg.genesis();
-        let blind = digest(b"genesis blind", &[&secret, &genesis_id]);
         let head = Head {
             genesis_id,
             epoch: 0,
-            state_commitment: opening::root(&blind, &[0; CELL_BYTES]),
-            policy_hash: hash(b"policy", &cfg.policy),
+            state_commitment: [0; 32],
+            policy_hash: cfg.policy_hash(),
             journal_cursor: 0,
             seat_payment_claim: [0; 32],
             operator_id: cfg.first_operator,
@@ -310,18 +514,46 @@ impl State {
             output_bits: 0,
             output_rank: 0,
         };
-        Self {
+        let mut s = Self {
             head,
             history: vec![],
             weights: [0; 8],
             observed: [0; 8],
             blinding_key: secret,
-            blind,
+            blind: digest(b"genesis blind", &[&secret, &genesis_id]),
+            journal: JournalHeader::default(),
+            chain: digest(b"tulip journal", &[&genesis_id]),
+            journal_blind: digest(b"genesis journal blind", &[&secret, &genesis_id]),
             releasable: None,
-        }
+        };
+        s.head.state_commitment = s.world_root();
+        s
     }
     fn cell(&self) -> Vec<u8> {
         self.weights.iter().flat_map(|w| w.to_le_bytes()).collect()
+    }
+    fn journal_cell(&self) -> Vec<u8> {
+        let identity = resident_identity(&self.head.genesis_id, &self.head.policy_hash);
+        let mut cell = self.journal.public_bytes(&identity).to_vec();
+        cell.extend_from_slice(&self.chain[..CELL_BYTES - usize::from(HEADER_BYTES)]);
+        cell
+    }
+    fn w0_leaf(&self) -> Digest {
+        leaf(&W0_PATH, &opening::root(&self.blind, &self.cell()))
+    }
+    fn journal_leaf(&self) -> Digest {
+        leaf(
+            &JOURNAL_PATH,
+            &opening::root(&self.journal_blind, &self.journal_cell()),
+        )
+    }
+    fn world_root(&self) -> Digest {
+        Branch {
+            path: &W0_PATH,
+            siblings: &[self.journal_leaf()],
+        }
+        .root(&opening::root(&self.blind, &self.cell()))
+        .expect("canonical leaf path")
     }
 
     fn replay(&self) -> Result<[u64; 8]> {
@@ -381,8 +613,13 @@ impl State {
         s.releasable = None;
         let action = &cmd.grant.action;
         match action {
-            Action::Learn { episode, step } => {
+            Action::Learn {
+                episode,
+                provenance,
+                step,
+            } => {
                 step.validate()?;
+                // Forgotten episodes stay in the history, so this also refuses resurrection.
                 ensure!(
                     !s.history.iter().any(|e| e.id == *episode),
                     "duplicate episode"
@@ -395,6 +632,20 @@ impl State {
                     delta,
                     forgotten: false,
                 });
+                let count = match provenance {
+                    Provenance::Experienced => &mut s.journal.experienced,
+                    Provenance::Told => &mut s.journal.told,
+                    Provenance::Inferred => &mut s.journal.inferred,
+                };
+                *count = count.checked_add(1).context("journal count overflow")?;
+                s.chain = digest(
+                    b"tulip journal learn",
+                    &[
+                        &s.chain,
+                        &episode.to_le_bytes(),
+                        &bincode::serialize(&(provenance, step))?,
+                    ],
+                );
             }
             Action::Forget { episode } => {
                 let pos = s
@@ -416,6 +667,12 @@ impl State {
                     *w = (*w + PRIME - mul(d, decay)) % PRIME;
                 }
                 e.forgotten = true;
+                s.journal.forgotten = s
+                    .journal
+                    .forgotten
+                    .checked_add(1)
+                    .context("journal count overflow")?;
+                s.chain = digest(b"tulip journal forget", &[&s.chain, &episode.to_le_bytes()]);
             }
             Action::Infer { ranges } => s.charge(&cfg.policy, ranges)?,
             Action::Migrate {
@@ -430,11 +687,13 @@ impl State {
         if matches!(action, Action::Learn { .. } | Action::Forget { .. }) {
             ensure!(s.weights == s.replay()?, "W0 replay mismatch");
             s.head.journal_cursor += 1;
+            s.journal.cursor = s.head.journal_cursor;
             s.blind = digest(b"cell blind", &[&s.blinding_key, &s.head.change]);
-            s.head.state_commitment = opening::root(&s.blind, &s.cell());
+            s.journal_blind = digest(b"journal blind", &[&s.blinding_key, &s.head.change]);
+            s.head.state_commitment = s.world_root();
             s.observed = [0; 8];
         }
-        s.head.parent_commitment = hash(b"parent", &self.head);
+        s.head.parent_commitment = head_root(&self.head);
         s.head.epoch += 1;
         Ok(s)
     }
@@ -508,11 +767,17 @@ pub enum Request {
         certificate: Certificate,
         operator_signature: Bytes,
     },
+    Header {
+        certificate: Certificate,
+        operator_signature: Bytes,
+    },
 }
 #[derive(Serialize, Deserialize)]
 pub enum Answer {
     Vote(Head, Vote),
-    Opening(opening::Statement, Bytes),
+    /// A W0 projection, the journal leaf it needs as sibling, and the proof.
+    Opening(opening::Statement, Digest, Bytes),
+    Header(HeaderOpening),
     Refused(String),
 }
 
@@ -558,6 +823,8 @@ pub fn certify(cfg: &Config, sockets: &[PathBuf], proposal: &Proposal) -> Result
     let req = Request::Bind(proposal.clone());
     let mut groups = std::collections::BTreeMap::<Digest, Certificate>::new();
     let mut errors = vec![];
+    // Custodians are asked in roster order. Racing proposals for one epoch then meet first at
+    // custodian 0, and a proposer stalled there has bound no other custodian.
     for socket in sockets {
         match rpc(socket, &req) {
             Ok(Answer::Vote(head, v)) => {
@@ -573,16 +840,15 @@ pub fn certify(cfg: &Config, sockets: &[PathBuf], proposal: &Proposal) -> Result
                                     .epoch
                                     .checked_add(1)
                                     .context("epoch")?
-                            && head.parent_commitment
-                                == hash(b"parent", &proposal.command.grant.parent),
+                            && head.parent_commitment == head_root(&proposal.command.grant.parent),
                         "unexpected vote"
                     );
                     let pk = cfg
                         .roster
                         .get(usize::from(v.signer))
                         .context("unknown signer")?;
-                    verify_sig(*pk, b"durable epoch", &head, &v.signature)?;
-                    let group = groups.entry(hash(b"parent", &head)).or_insert(Certificate {
+                    verify_sig(*pk, b"durable epoch", &vote_message(&head)?, &v.signature)?;
+                    let group = groups.entry(head_root(&head)).or_insert(Certificate {
                         head,
                         votes: vec![],
                     });
@@ -621,15 +887,36 @@ pub fn release(
         certificate: cert.clone(),
         operator_signature: signature(operator, b"release certified output", &cert.head),
     };
-    if let Answer::Opening(st, proof) = rpc(socket, &req)? {
-        ensure!(
-            st.cell_root == cert.head.state_commitment,
-            "uncertified cell commitment"
-        );
-        opening::verify(CELL_BYTES, ranges, &st, &proof)?;
+    if let Answer::Opening(st, journal_leaf, proof) = rpc(socket, &req)? {
+        Branch {
+            path: &W0_PATH,
+            siblings: &[journal_leaf],
+        }
+        .verify(&cert.head.state_commitment, CELL_BYTES, ranges, &st, &proof)?;
         Ok((st, proof))
     } else {
         bail!("expected projection")
+    }
+}
+
+/// Ask one custodian for the journal header of the certified head. Only that head's operator
+/// may ask; the header is public, so this releases nothing the exposure policy meters.
+pub fn open_header(
+    socket: &Path,
+    cfg: &Config,
+    cert: &Certificate,
+    operator: &SigningKey,
+) -> Result<(HeaderOpening, JournalHeader)> {
+    cert.verify(cfg)?;
+    let req = Request::Header {
+        certificate: cert.clone(),
+        operator_signature: signature(operator, b"release resident header", &cert.head),
+    };
+    if let Answer::Header(opened) = rpc(socket, &req)? {
+        let header = opened.verify(&cert.head)?;
+        Ok((opened, header))
+    } else {
+        bail!("expected header opening")
     }
 }
 
@@ -645,7 +932,7 @@ fn barrier(dir: &Path, enabled: bool, phase: &str) -> Result<()> {
     Ok(())
 }
 
-fn latch_request(epoch: u64, id: Digest, persist_ok: bool) -> BeltLatchBindRequest {
+fn qsag_request(epoch: u64, id: Digest, persist_ok: bool) -> BeltLatchBindRequest {
     BeltLatchBindRequest {
         epoch,
         msg_digest: id,
@@ -661,8 +948,8 @@ fn latch_request(epoch: u64, id: Digest, persist_ok: bool) -> BeltLatchBindReque
     }
 }
 
-fn latch(head: &Head) -> Result<BeltLatchKernel> {
-    let r = latch_request(head.epoch, head.change, true);
+fn qsag_latch(head: &Head) -> Result<BeltLatchKernel> {
+    let r = qsag_request(head.epoch, head.change, true);
     BeltLatchKernel::recover(
         BELT_LATCH_MAX_CAPACITY_LIMIT,
         head.epoch + 1,
@@ -681,11 +968,33 @@ struct Node {
     dir: PathBuf,
     identity: Identity,
     state: State,
+    /// The Obend latch buffer for `state.head`, provisioned from the WAL at start.
+    latch: StateWords,
+    native: Option<NativeBeltLatch>,
+    steps: File,
     key: SigningKey,
     barriers: bool,
+    /// The checkpoint trails the WAL until the vote has been sent.
+    stale_checkpoint: bool,
 }
 
 impl Node {
+    /// One Obend `stepBeltLatch` over `words`, also run by the native kernel when one is
+    /// configured. Every step is logged as `status ack native`.
+    fn obend(&self, words: &mut StateWords, request: &RequestWords) -> Result<Status> {
+        let code = match &self.native {
+            Some(native) => native.differential(words, request)?,
+            None => obend::step_words(words, request),
+        };
+        writeln!(
+            &self.steps,
+            "{code} {} {}",
+            request[obend::request::PERSIST_ACK],
+            u8::from(self.native.is_some())
+        )?;
+        Status::from_code(code).context("unknown Obend status")
+    }
+
     fn prepare(&self, p: &Proposal) -> Result<Option<State>> {
         let cmd = &p.command;
         cmd.authenticate(&self.identity.cfg)?;
@@ -697,40 +1006,79 @@ impl Node {
                 ensure!(cert.head == *parent, "wrong parent certificate");
             }
         }
-        let epoch = parent.epoch.checked_add(1).context("epoch overflow")?;
-        if epoch <= self.state.head.epoch {
-            // The kernel resolves all consumed/in-flight requests before
-            // consulting persistence. No bytes were written on this path.
-            let (_, result) = latch(&self.state.head)?.bind(latch_request(epoch, cmd.id(), false));
-            ensure!(
-                result == Ok(BeltLatchBindOutcome::Replay),
-                "fenced: {result:?}"
-            );
-            return Ok(None);
+        // Obend decides whether `parent` is the installed head. No bytes were written yet.
+        let mut probe = self.latch;
+        let status = self.obend(&mut probe, &probe_request(parent)?)?;
+        let epoch = parent.epoch + 1;
+        match status {
+            Status::Accepted => {
+                // Accepted means `parent` hashes to the installed head, the qsag fresh case.
+                ensure!(
+                    epoch == self.state.head.epoch + 1 && epoch < BELT_LATCH_MAX_CAPACITY_LIMIT,
+                    "latch disagreement: Obend accepted a non-successor epoch"
+                );
+                Ok(Some(self.state.advance(&self.identity.cfg, cmd)?))
+            }
+            Status::StaleParent if epoch <= self.state.head.epoch => {
+                // A consumed parent. Only the exact installed transition is replayed; the
+                // qsag kernel resolves it before consulting persistence.
+                let (_, result) =
+                    qsag_latch(&self.state.head)?.bind(qsag_request(epoch, cmd.id(), false));
+                ensure!(
+                    result == Ok(BeltLatchBindOutcome::Replay),
+                    "fenced: Obend {status:?}, qsag {result:?}"
+                );
+                ensure!(
+                    self.state.head.parent_commitment == head_root(parent),
+                    "latch disagreement: replayed change over another parent"
+                );
+                Ok(None)
+            }
+            refused => bail!("fenced: Obend {refused:?} (code {})", refused.code()),
         }
-        ensure!(
-            epoch == self.state.head.epoch + 1 && epoch < BELT_LATCH_MAX_CAPACITY_LIMIT,
-            "fenced: non-successor epoch"
-        );
-        Ok(Some(self.state.advance(&self.identity.cfg, cmd)?))
     }
 
     fn persist(&mut self, next: State) -> Result<()> {
-        let previous = latch(&self.state.head)?;
+        let previous = qsag_latch(&self.state.head)?;
+        // persistAck is exactly the durability of the WAL record, which recovery reads.
         let io = (|| -> Result<()> {
+            if self.barriers && self.dir.join("fail-wal").try_exists()? {
+                bail!("injected WAL failure");
+            }
             write_slot(&self.dir, "epoch.wal", &next, self.barriers)?;
-            barrier(&self.dir, self.barriers, "wal")?;
-            atomic(&self.dir, "checkpoint", &next)
+            barrier(&self.dir, self.barriers, "wal")
         })();
-        let (kernel, result) =
-            previous.bind(latch_request(next.head.epoch, next.head.change, io.is_ok()));
-        io.context("durable bind failed; exit and recover the WAL")?;
+        let ack = io.is_ok();
+        let (kernel, qsag) = previous.bind(qsag_request(next.head.epoch, next.head.change, ack));
+        let mut words = self.latch;
+        let status = self.obend(&mut words, &succession_request(&next.head, ack)?)?;
+        // The two kernels must tell the same story: a fresh qsag binding is an accepted
+        // succession, a failed persist poisons qsag and is Obend's missing acknowledgment.
+        match (status, qsag) {
+            (Status::Accepted, Ok(BeltLatchBindOutcome::Fresh)) => {}
+            (Status::MissingAck, Err(BeltLatchKernelError::WalPersistFailed)) => {
+                ensure!(words == self.latch, "Obend refusal changed the latch");
+                return io.context("durable bind failed, Obend MissingAck; exit and recover the WAL");
+            }
+            other => bail!("latch disagreement on a durable successor: {other:?}"),
+        }
         ensure!(
-            result == Ok(BeltLatchBindOutcome::Fresh) && kernel.next_epoch() == next.head.epoch + 1,
+            words == latch_state(&next.head) && kernel.next_epoch() == next.head.epoch + 1,
             "latch disagrees with durable successor"
         );
+        self.latch = words;
         self.state = next;
-        barrier(&self.dir, self.barriers, "post")
+        self.stale_checkpoint = true;
+        Ok(())
+    }
+    /// The checkpoint is a copy of the WAL that recovery never reads, so it is written after
+    /// the vote is on its way, off the acknowledgment path.
+    fn checkpoint(&mut self) -> Result<()> {
+        if std::mem::take(&mut self.stale_checkpoint) {
+            atomic(&self.dir, "checkpoint", &self.state)?;
+            barrier(&self.dir, self.barriers, "post")?;
+        }
+        Ok(())
     }
     fn answer(&mut self, req: Request) -> Result<Answer> {
         match req {
@@ -742,10 +1090,7 @@ impl Node {
                 }
                 Ok(Answer::Vote(
                     self.state.head.clone(),
-                    Vote {
-                        signer: self.identity.signer,
-                        signature: signature(&self.key, b"durable epoch", &self.state.head),
-                    },
+                    Vote::sign(&self.key, self.identity.signer, &self.state.head)?,
                 ))
             }
             Request::Release {
@@ -768,12 +1113,52 @@ impl Node {
                         .context("no inference grant")?;
                     let cell = self.state.cell();
                     let st = opening::statement(&self.state.blind, &cell, ranges)?;
-                    ensure!(
-                        st.cell_root == self.state.head.state_commitment,
-                        "corrupt checkpoint"
-                    );
-                    let proof = opening::prove(&self.state.blind, &cell, &st)?;
-                    Ok(Answer::Opening(st, proof))
+                    let journal_leaf = self.state.journal_leaf();
+                    // The branch binding refuses a checkpoint whose cells miss the root.
+                    let proof = Branch {
+                        path: &W0_PATH,
+                        siblings: &[journal_leaf],
+                    }
+                    .prove(&self.state.head.state_commitment, &self.state.blind, &cell, &st)?;
+                    Ok(Answer::Opening(st, journal_leaf, proof))
+                })();
+                Ok(result.unwrap_or_else(|e| Answer::Refused(e.to_string())))
+            }
+            Request::Header {
+                certificate,
+                operator_signature,
+            } => {
+                let result = (|| -> Result<Answer> {
+                    certificate.verify(&self.identity.cfg)?;
+                    ensure!(certificate.head == self.state.head, "fenced header");
+                    verify_sig(
+                        self.state.head.operator_id,
+                        b"release resident header",
+                        &self.state.head,
+                        &operator_signature,
+                    )?;
+                    let cell = self.state.journal_cell();
+                    let st = opening::statement(
+                        &self.state.journal_blind,
+                        &cell,
+                        vec![(0, HEADER_BYTES)],
+                    )?;
+                    let w0_leaf = self.state.w0_leaf();
+                    let proof = Branch {
+                        path: &JOURNAL_PATH,
+                        siblings: &[w0_leaf],
+                    }
+                    .prove(
+                        &self.state.head.state_commitment,
+                        &self.state.journal_blind,
+                        &cell,
+                        &st,
+                    )?;
+                    Ok(Answer::Header(HeaderOpening {
+                        w0_leaf,
+                        statement: st,
+                        proof,
+                    }))
                 })();
                 Ok(result.unwrap_or_else(|e| Answer::Refused(e.to_string())))
             }
@@ -801,7 +1186,8 @@ pub fn serve(dir: &Path, barriers: bool) -> Result<()> {
     ensure!(
         state.head.genesis_id == identity.cfg.genesis()
             && state.head.epoch < BELT_LATCH_MAX_CAPACITY_LIMIT
-            && state.head.state_commitment == opening::root(&state.blind, &state.cell())
+            && state.head.state_commitment == state.world_root()
+            && state.journal.cursor == state.head.journal_cursor
             && state.replay()? == state.weights,
         "corrupt WAL"
     );
@@ -815,9 +1201,16 @@ pub fn serve(dir: &Path, barriers: bool) -> Result<()> {
     let mut node = Node {
         dir: dir.to_owned(),
         identity,
+        latch: latch_state(&state.head),
         state,
+        native: NativeBeltLatch::from_env(dir.join("obend-record")),
+        steps: OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(dir.join("obend-steps.log"))?,
         key,
         barriers,
+        stale_checkpoint: false,
     };
     for stream in listener.incoming() {
         let mut stream = stream?;
@@ -825,10 +1218,13 @@ pub fn serve(dir: &Path, barriers: bool) -> Result<()> {
             continue;
         }
         if let Ok(req) = recv(&mut stream) {
-            // A persistence error exits the process before any vote can
-            // escape. A disconnected client can safely retry its command.
+            // A WAL error exits the process before any vote can escape. A
+            // disconnected client can safely retry its command.
             let reply = node.answer(req)?;
             let _ = send(&mut stream, &reply);
+            drop(stream);
+            // A checkpoint error also exits; recovery rewrites it from the WAL.
+            node.checkpoint()?;
         }
     }
     Ok(())
@@ -929,11 +1325,7 @@ pub fn operate(dir: &Path, op: Operation) -> Result<Outcome> {
                 }
                 None => ensure!(g.parent == seat.genesis, "unsigned manifest"),
             }
-            p.command.successor_signature = Some(signature(
-                &key,
-                b"accept signed move",
-                &(g, &p.command.operator_signature),
-            ));
+            p.command = p.command.accept(&key);
             p.command.authenticate(&seat.cfg)?;
             p
         }

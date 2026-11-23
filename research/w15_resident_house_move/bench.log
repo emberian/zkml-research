@@ -1,0 +1,172 @@
+# Wave 15 lane 6: resident house move. Raw outputs, unedited except for cargo build lines.
+# zkml-research base 9533427f, branch w15-resident-house-move-e2e. Commands in ../../notes/resident-house-move-protocol-weld.md.
+
+## hbox (i9-12900, Linux, ext4 on nvme0n1p4), ELF build of Obend beltLatch, 2026-11-23
+
+$ sha256sum beltLatch.pnk beltLatch.c        # copied read-only from obend 25dd6789 (unchanged at 3543a3b6)
+c55f55c76ccdd038a807d61cbc3951b77f8263edfb6c90c7434a2ba066695c1b  beltLatch.pnk
+bbf530f18975c1d0f988dd99190b3de6a5311e451e2c099e8aacb7098161882e  beltLatch.c
+$ swarm-build bash -c '/home/hbox/r05/cake-x64-64/cake --pancake --main_return=true < beltLatch.pnk > beltLatch.S && cc -O2 -static -Wl,-z,noexecstack beltLatch.c beltLatch.S -o beltLatch'
+$ sha256sum beltLatch
+1aa9a16056afb2dde0f05c9955111ea1e4e50980c0ed9de7053637752c9a2f19  beltLatch
+beltLatch: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), statically linked, for GNU/Linux 3.2.0
+$ taskset -c 6 ./beltLatch --bench          # load 9.86 9.42 6.46
+accepted 4.79 ns/call
+accepted 4.80 ns/call
+accepted 4.82 ns/call
+accepted 4.96 ns/call
+accepted 5.17 ns/call
+missingAck 6.55 ns/call
+missingAck 4.39 ns/call
+missingAck 4.47 ns/call
+missingAck 4.47 ns/call
+missingAck 4.66 ns/call
+
+## hbox, Rust ABI vs native ELF (OBEND_BELTLATCH_EXE set), load 9.91 8.19 8.11
+
+$ OBEND_BELTLATCH_EXE=.../beltLatch swarm-build cargo test --release -p resident_custody --lib -- obend_latch_abi --include-ignored --nocapture
+test obend_latch_abi::tests::digest_limbs_are_the_little_endian_memory_image ... ok
+test obend_latch_abi::tests::lean_conformance_vectors ... ok
+test obend_latch_abi::tests::word_and_structured_kernels_agree_under_mutation ... ok
+4153 native comparisons (21 Lean vectors, 132 single-word mutations, 4000 pseudorandom): status, 14 state words, 19 request words identical; by status 0..6 [911, 1183, 194, 1013, 440, 315, 97]
+test obend_latch_abi::tests::native_beltlatch_parity ... ok
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 1.30s
+
+## Mac (Apple M2 Max, 12 cores, macOS, APFS /private/tmp), full_resident_house_move, native off
+
+running 1 test
+test full_resident_house_move ... house move A -> B, 3 custodian daemons, Obend native differential off
+      0.640 ms  A seals seat receipt, offers Migrate
+      0.104 ms  B verifies seat receipt
+     88.095 ms  quorum succession (3 daemons)
+     52.778 ms  header opening (prove + verify)
+     20.619 ms  public log admits package
+      2.073 ms  restored A Learn fenced (3 daemons)
+    164.310 ms  total
+package 93703 bytes: header proof 88880 bytes, seat receipt 3162 bytes
+Error: durable bind failed, Obend MissingAck; exit and recover the WAL
+
+Caused by:
+    injected WAL failure
+public log process: admitted epoch 6 operator 785df9493bae96cea0bea50c04ea3bbc4c24cfe2d2da84694eaafaf122fd3056 seat_root f50083560650bc0d01d9a8cc0ba2799f0b8a427c621b20816269c354baec2467 cursor 4 experienced 1 told 1 inferred 1 forgotten 1
+12 cross-layer attacks, all refused:
+   1. disputed seat receipt: seat receipt: malformed seat transfer receipt: unknown variant `Disputed`, expected `Provisional` or `Settled` at line 1 column 1621
+   2. over-cap seat receipt: seat receipt: unbacked reserve claim
+   3. wrong target_operator: seat receipt: wrong handoff operator
+   4. BeltLatch parent-digest fork: Obend latch refused: ParentFork (code 4)
+   5. policy-digest drift: Obend latch refused: PolicyDrift (code 5)
+   6. missing persist_ack: custodian 0 logged Obend MissingAck with persistAck 0, cast no vote: quorum refusal; public log process: exit 2, refused: Obend latch refused: MissingAck (code 6)
+   7. tampered cSHAKE256 projection: header opening: cut-and-choose transcript
+   8. replayed Tulip journal cursor: header opening: world membership
+   9. restored Operator A Learn: fenced at 3/3 custodians
+  10. restored Operator A Infer: fenced at 3/3 custodians
+  11. restored Operator A Migrate: fenced at 3/3 custodians
+  12. seat receipt transplant: seat binding: receipt seat root is not the certified seat claim; rebound: seat binding: seat does not belong to this resident
+Tulip resume under B: replied to [104, 105]; 101, 102, 103 and the second 104 refused as duplicate episodes at 3/3; post-learn Infer refused by the carried exposure cap at 3/3; header JournalHeader { cursor: 7, experienced: 2, told: 2, inferred: 2, forgotten: 1 }
+custodian 0: 30 Obend steps, by status 0..6 [26, 0, 3, 0, 0, 0, 1], native off
+custodian 1: 29 Obend steps, by status 0..6 [25, 0, 4, 0, 0, 0, 0], native off
+custodian 2: 29 Obend steps, by status 0..6 [25, 0, 4, 0, 0, 0, 0], native off
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1.70s
+
+## hbox, full_resident_house_move with OBEND_BELTLATCH_EXE and RESIDENT_MESH_DIR on ext4, then 7-move latency with native on
+
+load before: 9.40 7.54 7.80 5/1400 89549
+test full_resident_house_move ... house move A -> B, 3 custodian daemons, Obend native differential on
+      0.698 ms  A seals seat receipt, offers Migrate
+      0.126 ms  B verifies seat receipt
+     52.180 ms  quorum succession (3 daemons)
+     67.081 ms  header opening (prove + verify)
+     23.501 ms  public log admits package
+      4.901 ms  restored A Learn fenced (3 daemons)
+    148.488 ms  total
+package 94816 bytes: header proof 90000 bytes, seat receipt 3155 bytes
+public log process: admitted epoch 6 operator 1d1f867cfc2d81a4fe265a4e3dded63b16e208cf4b197849d798621bfaf48c11 seat_root a2fe0b8f452fc53402042ec2e6e6a5535a6f6949821d93b8a605999bd80ae6c1 cursor 4 experienced 1 told 1 inferred 1 forgotten 1
+12 cross-layer attacks, all refused:
+   6. missing persist_ack: custodian 0 logged Obend MissingAck with persistAck 0, cast no vote: quorum refusal; public log process: exit 2, refused: Obend latch refused: MissingAck (code 6)
+   8. replayed Tulip journal cursor: header opening: world membership
+Tulip resume under B: replied to [104, 105]; 101, 102, 103 and the second 104 refused as duplicate episodes at 3/3; post-learn Infer refused by the carried exposure cap at 3/3; header JournalHeader { cursor: 7, experienced: 2, told: 2, inferred: 2, forgotten: 1 }
+custodian 0: 30 Obend steps, by status 0..6 [26, 0, 3, 0, 0, 0, 1], native on every step
+custodian 1: 29 Obend steps, by status 0..6 [25, 0, 4, 0, 0, 0, 0], native on every step
+custodian 2: 29 Obend steps, by status 0..6 [25, 0, 4, 0, 0, 0, 0], native on every step
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1.20s
+test house_move_latency ... 7 house moves, fresh 3-daemon mesh each, native differential on
+  min    0.373  median    0.440  max    0.569 ms  A seals seat receipt, offers Migrate
+  min    0.092  median    0.098  max    0.114 ms  B verifies seat receipt
+  min   44.767  median   49.849  max   54.746 ms  quorum succession (3 daemons)
+  min   55.486  median   86.002  max  103.540 ms  header opening (prove + verify)
+  min   20.459  median   23.802  max   31.747 ms  public log admits package
+  min    3.070  median    4.232  max    4.807 ms  restored A Learn fenced (3 daemons)
+  min  136.825  median  165.304  max  183.800 ms  total
+median house move exceeded 120 ms
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 5.07s
+load after: 9.21 7.56 7.81 8/1401 90701
+
+## hbox, 11-move latency, mesh on /tmp = tmpfs. NOT DURABLE: fsync is free on tmpfs. Kept to show why RESIDENT_MESH_DIR exists; do not cite.
+
+load before: 7.57 8.00 8.06 4/1413 74065
+24
+test house_move_latency ... 11 house moves, fresh 3-daemon mesh each, native differential off
+  min    0.305  median    0.431  max    0.807 ms  A seals seat receipt, offers Migrate
+  min    0.068  median    0.094  max    0.190 ms  B verifies seat receipt
+  min    2.388  median    3.443  max    7.234 ms  quorum succession (3 daemons)
+  min   50.354  median   70.150  max   74.564 ms  header opening (prove + verify)
+  min   10.187  median   14.569  max   16.969 ms  public log admits package
+  min    1.182  median    1.629  max    2.229 ms  restored A Learn fenced (3 daemons)
+  min   64.841  median   91.020  max   96.561 ms  total
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 2.79s
+load after: 7.57 8.00 8.06 4/1413 74917
+
+## hbox, 11-move latency, mesh on ext4, checkpoint still before the vote (superseded)
+
+ext4   /dev/nvme0n1p4
+load before: 7.89 8.03 8.06 11/1404 75756
+test house_move_latency ... 11 house moves, fresh 3-daemon mesh each, native differential off
+  min    0.449  median    0.481  max    0.879 ms  A seals seat receipt, offers Migrate
+  min    0.096  median    0.123  max    0.199 ms  B verifies seat receipt
+  min   46.475  median   54.071  max   56.190 ms  quorum succession (3 daemons)
+  min   92.807  median   98.224  max  106.842 ms  header opening (prove + verify)
+  min   24.238  median   26.290  max  494.318 ms  public log admits package
+  min    1.740  median    3.555  max    3.739 ms  restored A Learn fenced (3 daemons)
+  min  174.164  median  184.829  max  647.246 ms  total
+thread 'house_move_latency' (75913) panicked at resident_custody/tests/full_resident_house_move.rs:707:5:
+median house move exceeded 120 ms
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 9.23s
+load after: 10.04 8.47 8.21 11/1418 77134
+0
+
+## hbox, 11-move latency, mesh on ext4, checkpoint after the vote (current code), native off
+
+load before: 4.60 7.13 7.77 3/1375 79071
+test house_move_latency ... 11 house moves, fresh 3-daemon mesh each, native differential off
+  min    0.284  median    0.306  max    0.598 ms  A seals seat receipt, offers Migrate
+  min    0.066  median    0.069  max    0.128 ms  B verifies seat receipt
+  min   42.023  median   46.584  max  321.669 ms  quorum succession (3 daemons)
+  min   47.050  median   47.938  max   51.951 ms  header opening (prove + verify)
+  min   14.554  median   16.634  max   79.247 ms  public log admits package
+  min    1.196  median    1.344  max    1.983 ms  restored A Learn fenced (3 daemons)
+  min  108.097  median  112.792  max  386.666 ms  total
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 6.76s
+load after: 5.76 7.33 7.83 2/1375 80071
+
+## Mac, 11-move latency, APFS, native off (load before 6.94 10.09 11.65)
+
+test house_move_latency ... 11 house moves, fresh 3-daemon mesh each, native differential off
+  min    0.574  median    0.625  max    0.683 ms  A seals seat receipt, offers Migrate
+  min    0.079  median    0.086  max    0.095 ms  B verifies seat receipt
+  min   75.634  median   91.914  max  107.674 ms  quorum succession (3 daemons)
+  min   46.625  median   62.979  max   87.533 ms  header opening (prove + verify)
+  min   19.544  median   27.244  max   44.447 ms  public log admits package
+  min    2.037  median    2.276  max    4.643 ms  restored A Learn fenced (3 daemons)
+  min  146.356  median  185.249  max  243.261 ms  total
+median house move exceeded 120 ms
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 11.54s
+
+## Unit costs
+
+hbox, load 5.30: ext4 write+fsync+dir fsync (one durable slot write): min 2.103 median 3.070 max 13.598 ms   (60 samples, python os.fsync)
+hbox, load 5.12: cshake_selective_open::tests::authenticated_release_gate (--ignored), workers=22 public_branch_bytes=161
+                 medians bytes=89360 prove_ms=50.083 verify_ms=12.553   (9 proofs)
+Mac:             APFS write+F_FULLFSYNC+dir F_FULLFSYNC (one durable slot write): min 4.108 median 9.421 max 15.506 ms   (60 samples)
+
