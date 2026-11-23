@@ -3,9 +3,11 @@
 
 pub mod belt_latch_kernel;
 pub mod cshake_selective_open;
+pub mod cshake_selective_open_v2;
 pub mod custody_mesh;
 mod tower;
 mod trace_pack;
+pub mod trie_opening;
 
 use sha3::digest::{ExtendableOutput, Update, XofReader};
 use sha3::{Shake256, Shake256Reader};

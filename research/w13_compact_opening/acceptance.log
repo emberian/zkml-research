@@ -1,0 +1,68 @@
+   Compiling resident_custody v0.1.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w13/l1-zkml/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 4.15s
+     Running unittests src/lib.rs (target/w13/release/deps/resident_custody-5ac23f7dd89f9590)
+
+running 11 tests
+test cshake_selective_open_v2::tests::release_comparison ... ignored, serial wall-clock benchmark
+test trie_opening::deployed::tests::full_field_prefix_proof ... ignored, measures a depth-260 private field proof
+test cshake_selective_open_v2::tests::worst_case_wire_budget ... ok
+N=1024 M=4096 tau=14 worst_k=11 escape=364/144499717871560619686749429294570399596544 bits=128.222323926
+test cshake_selective_open_v2::tests::native_trace_and_batched_beaver_identity ... ok
+N=64 M=343 tau=27 worst_k=22 escape=80730/28695233342751496215678265769290685239787520 bits=128.062901915
+N=16 M=242 tau=36 worst_k=23 escape=2310789600/398125136855715062287184708786571178694357811200 bits=127.018103662
+N=32 M=285 tau=30 worst_k=22 escape=5852925/432326458395611437404315602267682636614860800 bits=125.796230946
+test cshake_selective_open_v2::tests::exact_cheating_splits ... ok
+test trie_opening::tests::full_depth_pinned_wire_vector ... ok
+test trace_pack::tests::deployed_trace_and_every_basis_coordinate ... ok
+test cshake_selective_open::tests::verifier_checks_hidden_witness_without_prover_preflight ... ok
+private body prefix two members, one hidden entry: 4255296 proof bytes; inner=[b3, d9, 82, 88, b9, d6, 23, 14, 70, 07, 07, d8, e1, 3e, fe, 06, 48, d2, 71, ff, c2, fd, 05, e4, ea, e3, d3, b9, b7, c4, 81, 8b] outer=[ae, 61, 0f, 27, f3, 86, cb, 56, f0, cb, 2d, da, 38, 63, be, 8c, 62, 4e, ee, 44, 2f, 69, c9, a6, 37, 6e, 0a, f0, e4, 2c, f4, de]
+private body prefix empty answer with hidden singleton: 5378815 proof bytes
+test trie_opening::deployed::tests::private_prefix_answers_bind_every_member_and_version ... ok
+test trie_opening::deployed::tests::private_early_stop_empty_and_singleton ... ok
+authenticated leaf proof 77584 bytes; neither private 32-byte string appeared
+rejected GGM puncture
+rejected hidden party commitment
+rejected masked chi bit
+rejected nonce
+rejected preprocessing correction
+rejected offline seed
+test cshake_selective_open_v2::tests::authenticated_projection_and_adversarial_openings has been running for over 60 seconds
+rejected changed hidden witness with 0 corrupted preprocessing instances
+rejected changed hidden witness with 11 corrupted preprocessing instances
+rejected sibling, policy, authenticated context transplant, answer, truncation, bypassed hidden-byte mutation
+test cshake_selective_open_v2::tests::authenticated_projection_and_adversarial_openings ... ok
+
+test result: ok. 9 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 87.43s
+
+     Running unittests src/bin/custodian_node.rs (target/w13/release/deps/custodian_node-2a041f97748e0d86)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/resident_operator.rs (target/w13/release/deps/resident_operator-1f0c1ac5ecfaee48)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/resident_house_move_and_cshake_open.rs (target/w13/release/deps/resident_house_move_and_cshake_open-cdf4d64591098a40)
+
+running 5 tests
+test keccak_padding_and_deployed_outer_hash ... ok
+cSHAKE256 width=64 projected=8 repetitions=219 n=9 min/median/max bytes=1087168/1087488/1087744 prove_ms=10.096/10.352/12.385 verify_ms=6.571/6.800/7.167 wire/statement_falsifiers=10/10 refused
+test selective_open_benchmark_and_falsifiers ... ok
+privacy observations: 32 accepted fresh blinds/proofs, 0/64 whole private strings found, preselected digest-low-bit classifier 16/32
+test same_projection_privacy_observations ... ok
+mesh n=4 t=3 f=1: three signed with one SIGKILLed, fourth caught up by exact replay
+test quorum_failover_and_grant_binding ... ok
+mesh n=3 t=3 f=1: SIGKILL A mid-RPC, node0 pre-WAL, node0 post-WAL, node1 post-checkpoint; B recovered epoch 5, old Learn/Infer/Migrate refused, post-move bits/rank=256/128, B Learn certified epoch 7
+test resident_house_move_and_crash_boundaries ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.58s
+
+   Doc-tests resident_custody
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

@@ -24,7 +24,7 @@ pub fn root(blind: &Digest, cell: &[u8]) -> Digest {
     Circuit::resident(cell.len()).root(blind, cell)
 }
 
-fn encode_nat(mut n: u64) -> Vec<u8> {
+pub(crate) fn encode_nat(mut n: u64) -> Vec<u8> {
     let mut bytes = vec![];
     while n > 0 {
         bytes.push((n % 255) as u8);
@@ -39,7 +39,7 @@ fn encode_nat(mut n: u64) -> Vec<u8> {
 /// suffix is the 32-byte custody secret and the 32-byte index digest.
 pub struct Circuit {
     domain: &'static [u8],
-    frame: Vec<u8>,
+    pub(crate) frame: Vec<u8>,
     width: usize,
 }
 impl Circuit {
@@ -97,7 +97,7 @@ pub fn check_ranges(width: usize, ranges: &[(u16, u16)]) -> Result<usize> {
     Ok(size)
 }
 
-fn project(cell: &[u8], ranges: &[(u16, u16)]) -> Vec<u8> {
+pub(crate) fn project(cell: &[u8], ranges: &[(u16, u16)]) -> Vec<u8> {
     ranges
         .iter()
         .flat_map(|&(a, b)| cell[usize::from(a)..usize::from(b)].iter().copied())
@@ -115,7 +115,7 @@ pub fn statement(blind: &Digest, cell: &[u8], ranges: Vec<(u16, u16)>) -> Result
 
 // SP 800-185 bytepad(encode_string("") || encode_string(DOMAIN), 136).
 // This whole first absorb is public and can be evaluated once in the clear.
-fn prefix(domain: &[u8]) -> [u64; 25] {
+pub(crate) fn prefix(domain: &[u8]) -> [u64; 25] {
     let mut block = [0u8; RATE];
     let bits = u16::try_from(domain.len() * 8).unwrap();
     let mut encoded = vec![1, 136, 1, 0];
@@ -133,7 +133,7 @@ fn prefix(domain: &[u8]) -> [u64; 25] {
     s
 }
 
-fn absorb(s: &mut [u64; 25], block: &[u8]) {
+pub(crate) fn absorb(s: &mut [u64; 25], block: &[u8]) {
     for (w, b) in s.iter_mut().zip(block.chunks_exact(8)) {
         *w ^= u64::from_le_bytes(b.try_into().unwrap());
     }
@@ -143,7 +143,7 @@ fn absorb(s: &mut [u64; 25], block: &[u8]) {
 const ROT: [u32; 25] = [
     0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14,
 ];
-const RC: [u64; 24] = [
+pub(crate) const RC: [u64; 24] = [
     0x1,
     0x8082,
     0x800000000000808a,
@@ -170,7 +170,7 @@ const RC: [u64; 24] = [
     0x8000000080008008,
 ];
 
-fn linear(s: [u64; 25]) -> [u64; 25] {
+pub(crate) fn linear(s: [u64; 25]) -> [u64; 25] {
     let parity: [u64; 5] =
         std::array::from_fn(|x| s[x] ^ s[x + 5] ^ s[x + 10] ^ s[x + 15] ^ s[x + 20]);
     let mut b = [0; 25];
@@ -183,19 +183,19 @@ fn linear(s: [u64; 25]) -> [u64; 25] {
     b
 }
 
-struct View {
+pub(crate) struct View {
     seed: Digest,
-    input: Vec<u8>,
-    masks: Vec<u64>,
-    gates: Vec<u8>,
-    output: Vec<u8>,
+    pub(crate) input: Vec<u8>,
+    pub(crate) masks: Vec<u64>,
+    pub(crate) gates: Vec<u8>,
+    pub(crate) output: Vec<u8>,
 }
 impl View {
-    fn new(seed: Digest, len: usize, frame_len: usize) -> Self {
+    fn new(seed: Digest, len: usize, gate_words: usize) -> Self {
         let mut input = vec![0; len];
         let mut tape = stream(b"private tape", &[&seed]);
         tape.read(&mut input);
-        let mut bytes = vec![0; ((len + frame_len) / RATE + 1) * GATES * 8];
+        let mut bytes = vec![0; gate_words * 8];
         tape.read(&mut bytes);
         let masks = bytes
             .chunks_exact(8)
@@ -369,12 +369,6 @@ fn finish(h: Shake256) -> Digest {
     d
 }
 
-struct Round {
-    correction: Vec<u8>,
-    gates: [Vec<u8>; 3],
-    commitments: [Digest; 3],
-}
-
 pub fn prove(blind: &Digest, cell: &[u8], st: &Statement) -> Result<Vec<u8>> {
     Circuit::resident(cell.len()).prove(blind, cell, st)
 }
@@ -395,56 +389,78 @@ impl Circuit {
         blind: &Digest,
         cell: &[u8],
         st: &Statement,
-        mut h: Shake256,
+        h: Shake256,
     ) -> Result<Vec<u8>> {
-        let mut tree = vec![[0; 32]; 2 * TREE];
-        tree[1] = random_seed()?;
-        expand(&mut tree, 1);
         let mut witness = [blind.as_slice(), cell].concat();
         crate::trace_pack::encode(&mut witness);
-        let mut rounds = Vec::with_capacity(REPETITIONS);
-        for r in 0..REPETITIONS {
-            let mut views = std::array::from_fn(|p| {
-                View::new(
-                    tree[TREE + p * REPETITIONS + r],
-                    witness.len(),
-                    self.frame.len(),
-                )
-            });
-            let mut correction = witness.clone();
-            for v in &views {
-                xor(&mut correction, &v.input);
-            }
-            xor(&mut views[2].input, &correction);
-            evaluate(&mut views, &st.ranges, self, None);
-            let commitments = views.each_ref().map(View::commit);
-            h.update(&correction);
-            for (c, v) in commitments.iter().zip(&views) {
-                h.update(c);
-                h.update(&v.output);
-            }
-            rounds.push(Round {
-                correction,
-                gates: views.map(|v| v.gates),
-                commitments,
-            });
-        }
-        let d = finish(h);
-        let challenges = trits(&d);
-        let mut proof = d.to_vec();
-        for i in frontier(&challenges) {
-            proof.extend(tree[i]);
-        }
-        for (r, p) in rounds.iter().zip(challenges) {
-            proof.extend(&r.correction);
-            proof.extend(r.commitments[(p + 2) % 3]);
-            proof.extend(&r.gates[(p + 1) % 3]);
-        }
-        Ok(proof)
+        let gates = self.gate_words();
+        prove_mpc(witness, gates, h, |views| {
+            evaluate(views, &st.ranges, self, None)
+        })
+    }
+
+    fn gate_words(&self) -> usize {
+        ((self.width + 32 + self.frame.len()) / RATE + 1) * GATES
     }
 }
 
-fn take<'a>(proof: &mut &'a [u8], n: usize) -> Result<&'a [u8]> {
+pub(crate) fn prove_mpc(
+    witness: Vec<u8>,
+    gate_words: usize,
+    mut h: Shake256,
+    eval: impl Fn(&mut [View; 3]),
+) -> Result<Vec<u8>> {
+    let mut tree = vec![[0; 32]; 2 * TREE];
+    tree[1] = random_seed()?;
+    expand(&mut tree, 1);
+    // Deep private-prefix circuits can have hundreds of permutations. Replay
+    // from the committed seeds to bound temporary view storage in that case.
+    let cache = gate_words <= (32 << 20) / (8 * 3 * REPETITIONS);
+    let make_views = |r: usize| {
+        let mut views = std::array::from_fn(|p| {
+            View::new(tree[TREE + p * REPETITIONS + r], witness.len(), gate_words)
+        });
+        let mut correction = witness.clone();
+        for v in &views {
+            xor(&mut correction, &v.input);
+        }
+        xor(&mut views[2].input, &correction);
+        eval(&mut views);
+        (correction, views)
+    };
+    let mut rounds = Vec::with_capacity(REPETITIONS);
+    for r in 0..REPETITIONS {
+        let (correction, views) = make_views(r);
+        let commitments = views.each_ref().map(View::commit);
+        h.update(&correction);
+        for (c, v) in commitments.iter().zip(&views) {
+            h.update(c);
+            h.update(&v.output);
+        }
+        rounds.push((
+            commitments,
+            cache.then(|| (correction, views.map(|v| v.gates))),
+        ));
+    }
+    let d = finish(h);
+    let challenges = trits(&d);
+    let mut proof = d.to_vec();
+    for i in frontier(&challenges) {
+        proof.extend(tree[i]);
+    }
+    for (r, ((commitments, cached), p)) in rounds.into_iter().zip(challenges).enumerate() {
+        let (correction, gates) = cached.unwrap_or_else(|| {
+            let (correction, views) = make_views(r);
+            (correction, views.map(|v| v.gates))
+        });
+        proof.extend(correction);
+        proof.extend(commitments[(p + 2) % 3]);
+        proof.extend_from_slice(&gates[(p + 1) % 3]);
+    }
+    Ok(proof)
+}
+
+pub(crate) fn take<'a>(proof: &mut &'a [u8], n: usize) -> Result<&'a [u8]> {
     let (a, b) = proof.split_at_checked(n).context("truncated proof")?;
     *proof = b;
     Ok(a)
@@ -455,56 +471,72 @@ pub fn verify(width: usize, permitted: &[(u16, u16)], st: &Statement, proof: &[u
     Circuit::resident(width).verify(permitted, st, proof)
 }
 impl Circuit {
-    pub fn verify(&self, permitted: &[(u16, u16)], st: &Statement, mut proof: &[u8]) -> Result<()> {
+    pub fn verify(&self, permitted: &[(u16, u16)], st: &Statement, proof: &[u8]) -> Result<()> {
         ensure!(permitted == st.ranges, "slice permission");
-        let mut h = fs(self, st)?;
-        let d: Digest = take(&mut proof, 32)?.try_into()?;
-        let challenges = trits(&d);
-        let nodes = frontier(&challenges);
-        let len = self.width + 32;
-        let trace_len = ((len + self.frame.len()) / RATE + 1) * GATES * 8;
-        ensure!(
-            proof.len() == nodes.len() * 32 + REPETITIONS * (len + 32 + trace_len),
-            "proof length"
-        );
-        let mut tree = vec![[0; 32]; 2 * TREE];
-        for i in nodes {
-            tree[i] = take(&mut proof, 32)?.try_into()?;
-            expand(&mut tree, i);
-        }
-        for (r, p) in challenges.into_iter().enumerate() {
-            let q = (p + 1) % 3;
-            let hidden = (p + 2) % 3;
-            let correction = take(&mut proof, len)?;
-            let hidden_commit = take(&mut proof, 32)?;
-            let trace = take(&mut proof, trace_len)?;
-            let mut views = [p, q].map(|party| {
-                let mut v = View::new(tree[TREE + party * REPETITIONS + r], len, self.frame.len());
-                if party == 2 {
-                    xor(&mut v.input, correction);
-                }
-                v
-            });
-            evaluate(&mut views, &st.ranges, self, Some(trace));
-            let mut hidden_output = [st.cell_root.as_slice(), &st.projected_bytes].concat();
-            for v in &views {
-                xor(&mut hidden_output, &v.output);
-            }
-            h.update(correction);
-            for party in 0..3 {
-                if party == hidden {
-                    h.update(hidden_commit);
-                    h.update(&hidden_output);
-                } else {
-                    let v = &views[usize::from(party == q)];
-                    h.update(&v.commit());
-                    h.update(&v.output);
-                }
-            }
-        }
-        ensure!(finish(h) == d, "Fiat-Shamir transcript");
-        Ok(())
+        verify_mpc(
+            self.width + 32,
+            self.gate_words(),
+            &[st.cell_root.as_slice(), &st.projected_bytes].concat(),
+            fs(self, st)?,
+            proof,
+            |views, trace| evaluate(views, &st.ranges, self, Some(trace)),
+        )
     }
+}
+
+pub(crate) fn verify_mpc(
+    len: usize,
+    gate_words: usize,
+    expected: &[u8],
+    mut h: Shake256,
+    mut proof: &[u8],
+    eval: impl Fn(&mut [View; 2], &[u8]),
+) -> Result<()> {
+    let d: Digest = take(&mut proof, 32)?.try_into()?;
+    let challenges = trits(&d);
+    let nodes = frontier(&challenges);
+    let trace_len = gate_words * 8;
+    ensure!(
+        proof.len() == nodes.len() * 32 + REPETITIONS * (len + 32 + trace_len),
+        "proof length"
+    );
+    let mut tree = vec![[0; 32]; 2 * TREE];
+    for i in nodes {
+        tree[i] = take(&mut proof, 32)?.try_into()?;
+        expand(&mut tree, i);
+    }
+    for (r, p) in challenges.into_iter().enumerate() {
+        let q = (p + 1) % 3;
+        let hidden = (p + 2) % 3;
+        let correction = take(&mut proof, len)?;
+        let hidden_commit = take(&mut proof, 32)?;
+        let trace = take(&mut proof, trace_len)?;
+        let mut views = [p, q].map(|party| {
+            let mut v = View::new(tree[TREE + party * REPETITIONS + r], len, gate_words);
+            if party == 2 {
+                xor(&mut v.input, correction);
+            }
+            v
+        });
+        eval(&mut views, trace);
+        let mut hidden_output = expected.to_vec();
+        for v in &views {
+            xor(&mut hidden_output, &v.output);
+        }
+        h.update(correction);
+        for party in 0..3 {
+            if party == hidden {
+                h.update(hidden_commit);
+                h.update(&hidden_output);
+            } else {
+                let v = &views[usize::from(party == q)];
+                h.update(&v.commit());
+                h.update(&v.output);
+            }
+        }
+    }
+    ensure!(finish(h) == d, "Fiat-Shamir transcript");
+    Ok(())
 }
 
 #[cfg(test)]
