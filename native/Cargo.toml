@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["pycompat", "darkstep", "dzkpopk", "darkproof", "darkprep", "darktrain", "darkhand", "darkdeploy", "dlvault", "darkvfhe", "qwen35audit"]
+members = ["pycompat", "darkstep", "dzkpopk", "darkproof", "darkprep", "darktrain", "darkhand", "darkdeploy", "dlvault", "darkvfhe", "qwen35audit", "resident_custody"]
 
 [workspace.package]
 edition = "2021"

@@ -1,0 +1,38 @@
+   Compiling resident_custody v0.1.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w12/l5-zkml/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 1.56s
+     Running unittests src/lib.rs (target/release/deps/resident_custody-eee0db6d4eeeae07)
+
+running 2 tests
+test trace_pack::tests::deployed_trace_and_every_basis_coordinate ... ok
+test cshake_selective_open::tests::verifier_checks_hidden_witness_without_prover_preflight ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/bin/custodian_node.rs (target/release/deps/custodian_node-e8c0e77c14361a2c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/resident_operator.rs (target/release/deps/resident_operator-846d9504538f51a2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/resident_house_move_and_cshake_open.rs (target/release/deps/resident_house_move_and_cshake_open-d2ddb156107c2cd4)
+
+running 5 tests
+test keccak_padding_and_deployed_outer_hash ... ok
+test selective_open_benchmark_and_falsifiers ... ok
+test same_projection_privacy_observations ... ok
+test quorum_failover_and_grant_binding ... ok
+test resident_house_move_and_crash_boundaries ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.77s
+
+   Doc-tests resident_custody
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

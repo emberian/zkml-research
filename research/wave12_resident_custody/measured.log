@@ -1,0 +1,42 @@
+   Compiling resident_custody v0.1.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w12/l5-zkml/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 3.07s
+     Running unittests src/lib.rs (target/release/deps/resident_custody-eee0db6d4eeeae07)
+
+running 2 tests
+test cshake_selective_open::tests::verifier_checks_hidden_witness_without_prover_preflight ... ok
+test trace_pack::tests::deployed_trace_and_every_basis_coordinate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests src/bin/custodian_node.rs (target/release/deps/custodian_node-e8c0e77c14361a2c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/resident_operator.rs (target/release/deps/resident_operator-846d9504538f51a2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/resident_house_move_and_cshake_open.rs (target/release/deps/resident_house_move_and_cshake_open-d2ddb156107c2cd4)
+
+running 5 tests
+test keccak_padding_and_deployed_outer_hash ... ok
+test quorum_failover_and_grant_binding ... mesh n=4 t=3 f=1: three signed with one SIGKILLed, fourth caught up by exact replay
+ok
+test resident_house_move_and_crash_boundaries ... mesh n=3 t=3 f=1: SIGKILL A mid-RPC, node0 pre-WAL, node0 post-WAL, node1 post-checkpoint; B recovered epoch 5, old Learn/Infer/Migrate refused, post-move bits/rank=256/128, B Learn certified epoch 7
+ok
+test same_projection_privacy_observations ... privacy observations: 32 accepted fresh blinds/proofs, 0/64 whole private strings found, preselected digest-low-bit classifier 18/32
+ok
+test selective_open_benchmark_and_falsifiers ... cSHAKE256 width=64 projected=8 repetitions=219 n=9 min/median/max bytes=1086784/1087552/1088032 prove_ms=13.096/13.368/14.082 verify_ms=8.458/8.598/9.190 wire/statement_falsifiers=10/10 refused
+ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.16s
+
+   Doc-tests resident_custody
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

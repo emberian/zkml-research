@@ -28,6 +28,8 @@ something it never said.
 
 ## Evidence — what each file measured
 
+- [Wave 12 resident custody and cSHAKE openings](w12-resident-custody-and-cshake-opening.md) — [EXECUTED] operator migration across SIGKILL and snapshot restore, 3-of-4 failover, and measured 219-round Boolean proofs for blinded byte projections.
+
 **Prover cost and proof-system design**
 - `prover-floor.md` — the cost function per committed felt; sumcheck is 2–17% of prover time; lb=6 is 2.9× off the optimum
 - `fast-systems-recon.md` — six systems read at source, hashing/LDE timed here; the base→ext 2.95× cliff; our soundness posture against five production systems
