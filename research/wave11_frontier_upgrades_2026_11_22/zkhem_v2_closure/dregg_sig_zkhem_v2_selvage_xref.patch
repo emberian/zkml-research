@@ -1,0 +1,321 @@
+--- a/crates/agg/SECURITY.md
++++ b/crates/agg/SECURITY.md
+@@ -54,7 +54,8 @@
+    which costs five base-field blinders per residue class (Lemma V2.2).
+ 3. *266 Stage-0 queries* is replaced by the table of V2.7 (item 1).
+ 4. *Tables above `2^24` cells* do not reach `2^-264.4` with this mask line at rate 1/4 and
+-   `s = 6`; v2 profiles reject them.
++   `s = 6` under `[BCGM25]`; superseded by V2.12 item 1 (`[DKT26]` Theorem 5.12, tables up to
++   `2^28`).
+ 5. *Poseidon2 profiles* do not exist in v2: a 400-bit digest is seven Goldilocks limbs, two
+    children of seven limbs do not fit one width-12 permutation, and the sponge rate would
+    fall from eight to five (V2.10).
+@@ -66,9 +67,16 @@
+ preserves the ZK bound". The proven zero-knowledge WHIR,
+ `2026-chiesa-fenzi-weissenberg-zk-iopps-constrained-interleaved-codes-rev-2026-11-16-2026-391`
+ (Corollary 2), uses a zero-knowledge encoding, which raises the degree and is a different
+-commitment. `2026-feneuil-provin-rivain-sum-checking-smallwood-hash-based-zk-arguments-2026-2880`
++commitment.
++VEIL (`2026-dalal-hemo-rabinovich-rothblum-veil-lightweight-zk-hash-based-multilinear-2026-683`,
++Definition 2.20 and the proof of Lemma 3.4) uses the same scalar line: a zero-knowledge
++proximity generator supported on `F^(t-1) x F^*` and the combination `x' = rho_1 w' + rho_2 r'`
++with `rho_2 != 0`. Lemma V2.4 uses the scalar specialization `rho_1 = 1`.
++VEIL also requires a zk-code and a proximity bound. CFW Lemma 3.29 supplies a strong
++query-private encoding; Section 10.1 budgets the two spare coordinates for nonterminal stages.
++`2026-feneuil-provin-rivain-sum-checking-smallwood-hash-based-zk-arguments-2026-2880`
+ Lemma 1 proves the count used in Lemma V2.2 from the other side: a base-field mask with fewer
+-than `[E : F_p]` coordinates cannot hide an `E`-valued evaluation. The proofs below are this
++than `[E : F_p]` coordinates cannot span the entire evaluation field `E`. The proofs below are this
+ project's.
+ 
+ ### V2.1 The protocol
+@@ -161,7 +169,13 @@
+ `(rx_0, rx_1, rx_2) = (X, X^2, X^4)` the determinant is 16) or a corner factor, a
+ product of `n - 3` linear forms, does; `x^(2^s) in F_p` has at most `2^s (p - 1) + 1`
+ solutions; `x^(2^s) = sigma^i(y^(2^s))` has at most `2^s` for each of ten pairs and five
+-`i`; the remaining conditions are single field elements. The failure probability affects
++`i`; the remaining conditions are single field elements. The first count is loose: since
++`(p^5 - 1)/(p - 1) = p^4 + p^3 + p^2 + p + 1` is odd, `x^(2^s) in F_p` holds exactly for
++`x in F_p` (`p` solutions), so `5 * 2^s * p` may be read as `5 p`, and every `2^s`-th root
++of unity of `E` lies in `F_p`. The degree bound on each conjugate collision stays `2^s` (checked in
++minidregg `Selvage/ZkHemV2SoundnessAndPrivacy.lean`: `quintic_nonbase_pow_two_not_in_base`,
++`quintic_two_pow_roots_of_unity_in_base`). Neither changes the `2^-59` envelope, which
++`15 / p` dominates. The failure probability affects
+ completeness only (see Theorem V2.Z).
+ 
+ ### V2.2 Zero knowledge
+@@ -363,7 +377,7 @@
+ | `omega_1..omega_5` | `(l_0^2 / 2) ((N + 2) / |E|)^5` | [ACFY24b] Lemma 4.25 with five samples |
+ | `w_1..w_5` | `5 l_0 / |E|` | linear identity per list member |
+ | `phi_i`; `(theta, alpha, beta)_i` | `L_i / |E|` each | [CWYZ26] Theorem 5.1, (5.5) |
+-| `beta_R` | `(m + 1/2)^7 |D'|^2 / (3 rho'^(3/2) (|E| - 1)) + l' / (|E| - 1)` | [BCGM25] Lemma 9.3, `d = 1`; `l'` pairs, one root each |
++| `beta_R` | `(m + 1/2)^7 |D'|^2 / (3 rho'^(3/2) (|E| - 1)) + l' / (|E| - 1)`; since V2.12 the calculator uses `ceil((2m + 1)^3 |D'|^2 / (3 D)) + l'` over `|E^*|`, `D = N / 2^s + 1` | [BCGM25] Lemma 9.3, `d = 1`; V2.12: [DKT26] Theorem 5.12; `l'` pairs, one root each |
+ | two out-of-domain points of stage `i >= 1` | `(l_i^2 / 2) ((2^{r_i} + 2) / |E|)^2` | [ACFY24b] Lemma 4.25 |
+ | queries of stage `i`, and weights batching them with the next OOD claims | `C(A_i + s_i, q_i) / C(n_i, q_i) + (q_i + 2) l_{i+1} / |E|` | distinct uniform fibers; polynomial identity in the batching challenge |
+ | last-stage queries after the terminal polynomial | `C(A_i + s_i, q_i) / C(n_i, q_i)` | terminal coefficients fixed before the queries; no next-stage batching |
+@@ -401,7 +415,14 @@
+ term `C/|E|^2` of (4.13); hence `C/|E|^2 < 1/|E|` over the larger field as well.
+ 
+ Theorems 2 and 3 apply with `sigma = 400` and `|E| = p^5`. No grinding is used, so the
+-classical and quantum round errors coincide. Models D1 and D3 are unchanged (D3 now asks
++classical and quantum round errors coincide. It also means the level takes no proof-of-work
++credit. Bünz–Chen–Guan (2026/2326, Theorem 6.1) exclude simultaneous strength and
++two-fold non-amortization under their verifier-cost and error hypotheses. **[open]**
++For a circuit that can evaluate its own Fiat–Shamir challenge, zero grinding supplies
++no strong-PoW defense. Construction 7.1 and Theorem 7.2 use two PoWs for a relativized
++Σ-protocol, with separate circuit-query, binding, and padding hypotheses.
++`zk_hem/recursive_ivc.rs` uses a Poseidon2 transcript and explicitly leaves composed
++QROM extraction open. A transfer to that construction needs its own reduction. Models D1 and D3 are unchanged (D3 now asks
+ cSHAKE256 and TurboSHAKE256, capacity 512, to behave as random oracles with 400-bit output).
+ D2 does not arise.
+ 
+@@ -410,14 +431,15 @@
+ In the random-oracle model with independent uniform salts, the joint compiled interactive
+ view differs from the ideal-oracle simulation by at most `t P / 2^256 + delta_salt`
+ classically, `2 t sqrt(P / 2^256) + delta_salt` against quantum queries, where
+-`delta_salt = H * binom(P,2) / 2^256` and `H` bounds the Stage-0 leaves per proof.
++`delta_salt = H * binom(P,2) / 2^256` and `H` bounds the Stage-0 leaves per proof (since
++V2.12 item 2 the per-tree `tree_nonce` gives `binom(P,2) / 2^256` for `P` single-tree proofs).
+ For one proof `delta_salt = 0`: the quantum bounds are `2^-87` at `t = 2^40` and
+ `2^-63` at `t = 2^64`. [proof, using [cited] one-way to hiding as in section 4.4.]
+ 
+ Couple the algebraic transcript by V2.Z, including the opened `Z,R` symbols and salts.
+ Assign shared independent random digest labels to every unopened Stage-0 leaf in the two
+ worlds; hash the internal nodes and root identically from those labels. First exclude
+-equal salts at the same index in different proofs, costing at most `delta_salt`; indices
++equal tree nonces across proofs, costing at most `delta_salt`; indices
+ already separate leaves within one proof. All programmed leaf preimages are then distinct
+ across proofs, so assigning the shared labels respects random-oracle consistency. This couples the
+ root and all authentication siblings jointly, not merely their marginals. Program each
+@@ -469,6 +491,21 @@
+ the bridge must use the `2^s` distinct roots
+ of each `x^(2^s)-z_j` and their disjoint Frobenius orbits (all roots lie in `E`, since
+ `omega_j` does and `2^s` divides `p-1`), followed by the evaluation/residue isomorphism.
++The evaluation half of that bridge is checked in minidregg `Selvage/ZkHemV2SoundnessAndPrivacy.lean`
++(Lean v4.35, Mathlib; axioms `propext`, `Classical.choice`, `Quot.sound`):
++`fiber_roots_distinct_orbits` (the `t 2^s` roots over non-base, pairwise non-conjugate `z_j`
++have pairwise distinct Frobenius orbits), `distinct_frobenius_orbits_full_rank_5m` and
++`quintic_full_rank_5m` (base-field blinders of degree `< 5m` evaluated at `m` such points
++form an `F_p`-linear bijection onto `E^m`), and `maskPointsGood_full_rank` (the one-sided
++`j < i`, `k = 0..4` test of `v2/pcs.rs::mask_points_good` implies that hypothesis). Teeth:
++`frobenius_conjugate_ood_rank_collapse` (a conjugate pair defeats every blinder count;
++`25 -> 20` measured at `m = 5`), `base_ood_point_not_surjective`,
++`insufficient_base_blinders_leak` (fewer than five base blinders cannot span `E`,
++the count of `2026/2880` Lemma 1). `maskPointsGood_residue_coordinates` proves bijectivity on strided coefficient blocks:
++the coefficient of `X^r` in a residue is `B_r(z_j)`. The quotient-ring identification,
++simultaneous base openings, and multiplication by the high-degree monomial remain to be
++composed in Lean. For V2.4, `maskLine_joint_fiber_card` counts preimages of a word
++together with its public linear claims.
+ Lemma V2.3 (b), Theorem V2.Z as a composition and Theorem V2.1 are not formalized.
+ 
+ ### V2.7 Numbers
+@@ -483,8 +520,8 @@
+ Both profiles have the same numbers. Bits are `-log2`; a reported level is a downward
+ bound in millibits on `log2` of the query count where the summed error reaches one.
+ Assumptions behind every row: [CWYZ26] Theorem 5.1 (arXiv preprint, its
+-closing note says the proofs were produced with AI assistance; unrefereed), [BCGM25]
+-Lemma 9.3, [ACFY24b] Lemma 4.25, [CDHZ25] Theorems 6.10, 8.3, 11.3, [BCS16] Theorem 7.1,
++closing note says the proofs were produced with AI assistance; unrefereed), [DKT26]
++Theorem 5.12 for the current mask line, [ACFY24b] Lemma 4.25, [CDHZ25] Theorems 6.10, 8.3, 11.3, [BCS16] Theorem 7.1,
+ models D1 and D3, and the state-function argument of Theorems 1 and V2.1 ([proof] at the
+ rigour of this document, not machine checked). This is conditional knowledge soundness,
+ not a claim of 128-bit quantum zero knowledge. Uniform challenges, exact distinct-fiber
+@@ -500,7 +537,7 @@
+ `1280 t (2t+1)^2 + 960 t (t+1+q_V+rounds)^2 + 300 t^3`, the commutativity remainder
+ `480 q_V^2 (t+rounds+q_V+2)`, and the offline remainder `128 q_Pi * 28`, all divided by
+ `2^400`. The state-restoration remainder `4(t+rounds+1) rounds / 2^319` is absorbed in
+-the round slack (the canonical worst-round bound is no stronger than 266 bits).
++the round slack (the tabulated canonical worst-round exponents are at most 266.5 bits).
+ At the smallest `t`, the digest offsets consume less than 0.004 of its leading term;
+ `2^0.023 - 1 > 0.016`, leaving room for both remainders. These ratios decrease with `t`.
+ Thus no unnamed lower-order term is discarded from the reported envelope. The classical
+@@ -508,12 +545,26 @@
+ 
+ | Rows, variables | Cells | Queries per stage | `m` | Weakest round | Classical level | QROM level (round term, digest term alone) | QROM error at `t = 2^64` | Proof bytes (upper bound) | v1 tag 4, same rows |
+ | --- | ---: | --- | ---: | --- | ---: | --- | ---: | ---: | ---: |
+-| 2^17, 82,000 | 2^17 | 281, 136, 92 | 11 | 264.827 (Stage-0 queries) | 198.999 | **128.123** (128.241, 129.112) | 2^-128.481 | 356,040 | 528,380 |
+-| 2^17, 2^17 | 2^18 | 287, 136, 92 | 9 | 264.838 (mask line) | 198.999 | **128.129** (128.246, 129.112) | 2^-128.492 | 386,838 | 528,380 |
+-| 2^20, 2^20 | 2^21 | 300, 136, 92 | 6 | 264.667 (mask line) | 198.999 | **128.062** (128.161, 129.112) | 2^-128.321 | 534,692 | 896,644 |
+-| 2^21, 1,088,721 | 2^21 | 300, 136, 92 | 6 | 264.667 (mask line) | 198.999 | **128.062** (128.161, 129.112) | 2^-128.321 | 535,212 | 966,957 (2^22 cells) |
+-| 2^22, 2^22 | 2^23 | 342, 136, 92, 70 | 3 | 265.042 (Stage-0 queries) | 198.999 | **128.209** (128.348, 129.112) | 2^-128.696 | 692,954 | 966,957 |
+-| 2^23, 2^23 | 2^24 | 342, 136, 92, 70 | 3 | 264.918 (mask line) | 198.999 | **128.158** (128.286, 129.112) | 2^-128.572 | 730,594 | - |
++| 2^17, 82,000 | 2^17 | 267, 136, 92 | 54 | 265.183 (Stage-0 queries) | 198.999 | **128.253** (128.419, 129.112) | 2^-128.837 | 347,280 | 528,380 |
++| 2^17, 2^17 | 2^18 | 267, 136, 92 | 75 | 264.811 (Stage-0 queries) | 198.999 | **128.121** (128.233, 129.112) | 2^-128.465 | 373,310 | 528,380 |
++| 2^20, 2^20 | 2^21 | 267, 136, 92 | 145 | 265.009 (Stage-0 queries) | 198.999 | **128.192** (128.332, 129.112) | 2^-128.663 | 500,602 | 896,644 |
++| 2^21, 1,088,721 | 2^21 | 267, 136, 92 | 145 | 265.009 (Stage-0 queries) | 198.999 | **128.192** (128.332, 129.112) | 2^-128.663 | 501,122 | 966,957 (2^22 cells) |
++| 2^22, 2^22 | 2^23 | 267, 136, 92, 70 | 271 | 265.374 (Stage-0 queries) | 198.999 | **128.317** (128.514, 129.112) | 2^-129.028 | 607,936 | 966,957 |
++| 2^23, 2^23 | 2^24 | 266, 136, 92, 70 | 364 | 264.514 (Stage-0 queries) | 198.999 | **128.001** (128.084, 129.112) | 2^-128.168 | 640,642 | - |
++| 2^25, 2^25 | 2^26 | 266, 136, 92, 70 | 511 | 264.634 (Stage-0 queries) | 198.999 | **128.048** (128.144, 129.112) | 2^-128.288 | 791,962 | - |
++| 2^27, 2^27 | 2^28 | 266, 136, 92, 70 | 512 | 264.627 (Stage-0 queries) | 198.999 | **128.050** (128.141, 129.112) | 2^-128.281 | 1,027,882 | - |
++
++Rows regenerated after V2.12 (`[DKT26]` mask line, `STAGE0_QUERIES`) from a standalone port of
++`v2/bounds.rs` and `v2/params.rs` (zkml-research
++`research/wave11_frontier_upgrades_2026_11_22/zkhem_v2_closure/`, `zkhem_v2_conformance.json`;
++its no-lookup tests reproduce the shared ledger pins). The QROM, `t = 2^64` and classical
++columns at `size(L, 2^(L-1))`, `L = 16..=28`, are re-derived from `rbr` by the kernel-checked
++integer replica in minidregg `Selvage/ZkHemV2SoundnessAndPrivacy.lean`
++(`v2_ledger_rows_certified`). The weakest round is now the Stage-0 query round at every size;
++the thinnest margin is `2^24` cells at 128.001 (one millibit), and at `2^27` and `2^28` cells
++the `m` search stops at its cap of 512 with the mask line 0.95 bit above the weakest round at
++`2^28` cells. The rows before V2.12 (281 to 342 queries, `[BCGM25]` line) are internally
++consistent (`security_md_v27_table_consistent`) but no longer describe the calculator.
+ 
+ A relation whose variables fill its cube exactly (the rows with `2^r` variables) moves to the
+ next table size because the masks and blinders need room; the 82,000- and 1,088,721-variable
+@@ -522,13 +573,13 @@
+ `Report::qrom_work_bits` searches for the last millibit certified by the rounded upper
+ bound on the **sum** of the quadratic round term and cubic digest term, including the
+ slack above. Directed logarithm rounding makes this a lower bound on the exact crossover;
+-it is not the minimum of the two single-term figures. The classical method likewise
+-solves the sum. Stage-0 queries by table size (`params::STAGE0_QUERIES`, the minimum for a level of
+-128 bits; `bounds::tests::stage0_queries_are_minimal`): 281, 281, 287, 295, 300, 300, 320,
+-342, 342 for `2^16..2^24` cells. At `2^25` cells no count suffices.
++the correction has eighth-bit steps, so the passing set can be disconnected. Both work
++methods scan down from the smaller single-term ceiling to the first passing millibit. Stage-0 queries by table size (`params::STAGE0_QUERIES`, the minimum for a level of
++128 bits; `bounds::tests::stage0_queries_are_minimal`): 267 for `2^16..=2^23` cells and 266
++for `2^24..=2^28` cells (V2.12). At `2^29` cells there is no layout.
+ 
+ The byte column bounds the current `ZkHemV2Proof::to_bytes` encoding: magic (8), profile
+-(1), log cells (1), Stage-0 root (50), then all prover field elements in round order.
++(1), log cells (1), tree nonce (32), Stage-0 root (50), then all prover field elements in round order.
+ Each later root is 50 bytes; field elements are 40 bytes, base symbols 8, Stage-0 salts 32.
+ Only authentication-sibling vectors carry a count (one little-endian `u32` per stage).
+ All other lengths follow from the public shape and schedule; relation digest, statement,
+@@ -539,7 +590,7 @@
+ `u = ceil(log2 q)` and height `h`, the upper `u` levels contribute at most `2^u-q`
+ siblings, and the remaining levels at most `q(h-u)`; their sum is no larger than the
+ displayed bound. The serializer-field
+-test checks this byte accounting at all nine sizes and both tags; actual multiproofs may
++test checks this byte accounting at all thirteen sizes and both tags; actual multiproofs may
+ use fewer siblings. This records the existing encoding, without changing its fields.
+ 
+ Zero knowledge at every size: perfect for the oracle proof (`blind_cells` equals
+@@ -547,17 +598,20 @@
+ `2 t sqrt(P) / 2^128 + delta_salt` quantum (V2.4; seed expansion is separate).
+ Completeness error (abort) below `2^-59` per attempt.
+ 
+-Where the bytes go at `2^21` cells (535 KB): 4,663 digests of 50 bytes, 233 KB; 300 Stage-0
++Historical breakdown for the pre-V2.12 schedule at `2^21` cells (535 KB): 4,663 digests of 50 bytes, 233 KB; 300 Stage-0
+ leaves of 584 bytes, 175 KB; later-stage leaves, 102 KB; everything else, 25 KB. The digests
+ are now the largest part; v1's 4,199 digests were 134 KB of 897 KB.
+ 
+ Tests (`cargo test --release -p dregg-sig-agg --lib -- zk_hem::v2::bounds`):
+ `stage0_queries_are_minimal`, `every_accepted_size_reaches_128_bits_classical_and_qrom`,
+-`one_query_fewer_or_a_shorter_digest_misses_the_target`,
+-`mask_line_matches_the_lemma_by_hand`, `layout_puts_everything_in_one_cube`,
+-`directed_rounding_and_summed_crossovers`, `byte_bound_matches_serializer_fields`,
+-`documented_table_matches_calculator`, `calculator_rejects_malformed_geometry`,
+-`hiding_counts_cross_proof_salt_collisions`.
++`dkt26_thm512_and_beyond_johnson_prop510_rational_verification`,
++`lookup_rbr_terms_include_padded_pole_and_both_lists`, `layout_puts_everything_in_one_cube`,
++`directed_rounding_and_summed_crossovers`, `rounded_work_predicates_can_reenter`,
++`tree_nonce_eliminates_fiber_count_birthday_loss_in_multiproof_hiding`,
++`byte_bound_matches_serializer_fields` (the working tree no longer contains
++`one_query_fewer_or_a_shorter_digest_misses_the_target`, `mask_line_matches_the_lemma_by_hand`,
++`documented_table_matches_calculator`, `calculator_rejects_malformed_geometry` or
++`hiding_counts_cross_proof_salt_collisions`).
+ 
+ ### V2.8 Not adopted: affine mask cascade
+ 
+--- a/crates/agg/src/zk_hem/v2/bounds.rs
++++ b/crates/agg/src/zk_hem/v2/bounds.rs
+@@ -336,17 +336,10 @@
+     }
+ 
+     pub fn classical_work_bits(&self) -> MilliBits {
+-        let (mut lo, mut hi) = (0, self.rbr_bits.min((self.digest_millibits() - 2000) / 2));
++        let (lo, hi) = (0, self.rbr_bits.min((self.digest_millibits() - 2000) / 2));
+         assert!(self.classical_sum_bits(lo) >= 0);
+-        while lo < hi {
+-            let mid = lo + (hi - lo + 1) / 2;
+-            if self.classical_sum_bits(mid) >= 0 {
+-                lo = mid;
+-            } else {
+-                hi = mid - 1;
+-            }
+-        }
+-        lo
++        // Rounding the log-sum correction to eighth-bit buckets can split the passing set.
++        (lo..=hi).rev().find(|&w| self.classical_sum_bits(w) >= 0).unwrap()
+     }
+ 
+     pub fn classical_error_bits(&self, log_queries: u32) -> MilliBits {
+@@ -371,17 +364,10 @@
+ 
+     pub fn qrom_work_bits(&self) -> MilliBits {
+         let (rbr, digest) = self.qrom_work_terms();
+-        let (mut lo, mut hi) = (24_000, rbr.min(digest));
++        let (lo, hi) = (24_000, rbr.min(digest));
+         assert!(self.rounds < 1 << 9 && self.qrom_sum_bits(lo) >= 0 && hi >= lo);
+-        while lo < hi {
+-            let mid = lo + (hi - lo + 1) / 2;
+-            if self.qrom_sum_bits(mid) >= 0 {
+-                lo = mid;
+-            } else {
+-                hi = mid - 1;
+-            }
+-        }
+-        lo
++        // Rounding the log-sum correction to eighth-bit buckets can split the passing set.
++        (lo..=hi).rev().find(|&w| self.qrom_sum_bits(w) >= 0).unwrap()
+     }
+ 
+     pub fn qrom_error_bits(&self, log_queries: u32) -> MilliBits {
+@@ -881,7 +867,7 @@
+         assert!((512 * (a21 - 1)).pow(2) < 513u128.pow(2) * n21 * k21);
+         assert_eq!(b_cf21, (513u128.pow(3) * n21 * n21).div_ceil(3 * (k21 - 1)));
+         let (_, bits21) = mask_line(4, 15, 256);
+-        // 319.998 - log2(23_595_299_139_184) = 319.998 - 44.425 = 275.573 bits!
++        // b_cf = 23_593_235_614_501; 319.998 - log2_hi(b_cf) = 319.998 - 44.425 = 275.573 bits.
+         assert!((275_550..=275_580).contains(&bits21), "bits21={bits21}");
+ 
+         //    At the lifted ceiling 2^28 cells, 6 folds (`rem = 22`, `n = 2^24`, `D = 2^22 + 1`),
+@@ -981,6 +967,17 @@
+                 + 6380.0 * 2.0f64.powf(3.0 * x - 400.0);
+             assert!(exact <= 1.0, "l={l}: {exact}");
+         }
++    }
++
++    #[test]
++    fn rounded_work_predicates_can_reenter() {
++        let mut r = report(Profile::CshakeJohnson400, size(17, 82_000)).unwrap();
++        r.rbr_bits = 267_508;
++        assert!(r.qrom_sum_bits(128_798) < 0 && r.qrom_sum_bits(128_799) >= 0);
++        assert_eq!(r.qrom_work_bits(), 128_799);
++        r.rbr_bits = 200_094;
++        assert!(r.classical_sum_bits(198_530) < 0 && r.classical_sum_bits(198_531) >= 0);
++        assert_eq!(r.classical_work_bits(), 198_531);
+     }
+ 
+     #[test]
+--- a/crates/agg/src/zk_hem/v2/pcs.rs
++++ b/crates/agg/src/zk_hem/v2/pcs.rs
+@@ -729,6 +729,11 @@
+ // ============================================================================
+ 
+ /// Condition (G2): each `omega_j^(2^step_vars)` lies outside `F_p` and no two are Frobenius conjugates.
++///
++/// The one-sided test (`j < i`, `k = 0..4`) implies the symmetric hypothesis of Lemma V2.2, and
++/// `z.is_base()` is equivalent to `omega.is_base()` because `(p^5 - 1)/(p - 1)` is odd: minidregg
++/// `Selvage/ZkHemV2SoundnessAndPrivacy.lean` (`maskPointsGood_full_rank`,
++/// `quintic_nonbase_pow_two_not_in_base`).
+ pub fn mask_points_good(omegas: &[Fp5], step_vars: usize) -> bool {
+     let z: Vec<Fp5> = omegas
+         .iter()
+--- a/crates/migrate/SECURITY.md
++++ b/crates/migrate/SECURITY.md
+@@ -72,10 +72,11 @@
+ * **Field:** `QuinticGoldilocks` (`Fp5 = F_p[u] / (u^5 - 3)`, ~320-bit extension).
+ * **Commitments:** 400-bit Merkle digests (~133-bit QROM collision resistance) with a
+   32-byte per-tree `tree_nonce` absorbed into every Stage-0 leaf (`|D'|`-independent
+-  multi-tree salt security) and 16-bit proof-of-work.
++  multi-tree salt security) and no grinding (no proof-of-work; `v2/params.rs` profiles,
++  `v2/bounds.rs`).
+ * **Soundness:** Dao–Kominers–Thaler (`2026/2056`) Theorem 5.12 line-point soundness
+-  across `N <= 2^28` with 266 Stage-0 queries (`>= 128` bits classical & quantum
+-  round-by-round soundness; see `crates/agg/SECURITY.md` §V2).
++  across `N <= 2^28` with 267 (`2^16..=2^23` cells) or 266 (`2^24..=2^28`) Stage-0 queries (the no-lookup calculator gives a conditional
++  classical and QROM work level of at least 128 bits; see `crates/agg/SECURITY.md` §V2.7).
+ 
+ ## Threshold collaborative proving (`hem::collab`)
+ 

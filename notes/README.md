@@ -206,6 +206,23 @@ Full dossiers and [MASTER_REVIVAL_ALIGNMENT.md](../research/breadstuffs_revival_
 `she-wetware-safety-and-duress-deniability.md` (Organ #5: IEEE 1789 / ITU-R BT.1702 luma `Y'` flicker & stego scrubber at `442 fps` + 2-slot indistinguishable duress vault),
 `she-pocket-fpga-captp-vat-and-fram.md` (Organ #6: COTS Pocket-FPGA `dregg_captp_vat` touch+ToF gate, unconditional any-bit power-cut 2-slot SPI-FRAM counter, LUT4/PIP readback).
 
+**Wave 10 — Reality Hardening ("Kill-or-Make-Real", 2026-11-22)** —
+5 reality-hardened upgrades across `obend` (`f06c2dac`, `bca767c1`), `minidregg` (`0b577756a`, `8cd1f660a`), and `zkml-research` (`c11c25a9`):
+`w10-obend-full-wasm10-rustc-guest.md` (full Wasm 1.0 + Sign-Ext + Sat-Trunc + Bulk-Memory + `funcref` deterministic interpreter running real `rustc --target wasm32-unknown-unknown` `#![no_std]` guest),
+`w10-obend-real-p384-bls12381-ed25519.md` (zero fake `*_sig_ok` booleans: pure-Rust P-256/P-384, RSA-PSS, Ed25519 `verify_strict`, BLS12-381 pairing + `hash_to_g2` passing real Ethereum Mainnet Electra, `cosmoshub-4`, AWS Nitro, Intel TDX v4, AMD Genoa SEV-SNP, and NVIDIA Hopper `GH100` captures),
+`w10-real-zk-sensory-blur-and-roi.md` (`BabyBearExt4` HVZK masked sumcheck + bare `UD-100` `q=148` `BlurDownscaleZkProof` & `AmbientEnvelopeZkProof` + asymmetric PQ `WotsCshake256`),
+`w10-argon2id-multisnap-duress-vault.md` (RFC 7693 `BLAKE2b` + RFC 9106 `Argon2id` `64 MiB, t=3, p=4` + $K$-snapshot `TVD=0` `MultiSnapshotDuressVault`),
+`w10-dregg180-ud100-nonnative-babybear.md` (`3,632 B` zero-heap `Dregg180StreamVm` bare `UD-100` `q=122` + exact Goldilocks quotient-bound BabyBear modular MAC + committed `W_bb(r)` weld),
+`w10-qwen35-all-24-layers-whir-weld.md` (all 24 `Qwen3.5-0.8B` layers + `embed_tokens` + `248,320`-vocab tied `lm_head` proved against `WeightModelRoot24L` in batched `WhirExt4Pcs + GMaskExt4`: `" Paris"` exact `f32` parity, `134.00 ms` verify, `3,777.07 KiB` wire receipt, `10/10` falsifiers rejected).
+
+**Wave 11 — Credible `SVCS` Compiler, `2026/2770` Trace-Packed `Tower256`, `zk-Hem v2` Closure, Cert/Datalog Calculus & `B61` Continual GDN (2026-11-22)** —
+5 synthetic compiler/algebra/assurance upgrades grounded in late-2026 literature (`2026/2880`, `2026/587`, `2026/2770`, `2026/391`, `2026/683`, `2026/2326`, `2026/857`, `arXiv:2605.01660`):
+`w11-credible-svcs-proof-producing-compiler.md` (`Compiler/SvcsCredibleCompiler.lean` + `prover::svcs_smallval_engine`: `Axon`-style `CredibleLoweringCert` into *SmallWood+* `SVCS` + Dao–Thaler `2026/587` small-value/split-`eq` engine, `3.23×–3.58×` speedup across `2^{14}..2^{18}` rows),
+`w11-frigo-shelat-tower256-trace-packing.md` (`Theory/Tower256TraceBitPacking.lean` + `obend` `Tower256TracePack.lean` + `prover::tower256_trace_pack`: Frigo–shelat `2026/2770` 68-bit Fan–Paar trace mask, 65,536-pair dual basis, `32×`/`256×` smaller byte/bit MLEs, `7.7×`–`42.0×` faster proving, constructive Artin–Schreier `(r, r^2)` ZK),
+`w11-dregg-sig-zkhem-v2-soundness-closure.md` (`Selvage/ZkHemV2SoundnessAndPrivacy.lean` + differential crate + `dregg_sig_zkhem_v2_selvage_xref.patch`: `QuinticGoldilocks` irreducibility, `25->20` Frobenius-conjugate collapse, `L=24` `128,001`-mbit margin, non-monotone QROM/classical search fix),
+`w11-certificate-and-merkelized-datalog-calculus.md` (`Assurance/CertificateAndDatalogCalculus.lean` + `prover::datalog_and_cert_calculus`: collision-explicit shared-commit `CertJudgment` + `0.0049–0.0566 ms` stratified Datalog gap/derivation verify over `100,000`-fact SHA3 EDB),
+`w11-b61-spdz-dark-gdn-continual-memory.md` (`Assurance/DarkB61ContinualGdn.lean` + `darkvfhe::dark_gdn_continual`: single-provider branching impossibility vs `t>=2` custody, stride-128 `B61` `32`-ciphertext `16x128x128` GDN adaptation in `66.5 s` / orthogonal unlearning in `8.14 s` / `70.8–73.5 ms` verify vs `Lasagne`'s `6.11–12.47 min`).
+
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
 instrument; absence claims are only as good as those two lines.

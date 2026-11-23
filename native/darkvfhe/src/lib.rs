@@ -26,6 +26,7 @@ pub mod cert;
 pub mod dark_block;
 pub mod dark_clearing;
 pub mod dark_gdn;
+pub mod dark_gdn_continual;
 pub mod digits;
 pub mod logup_gkr;
 pub mod rns_hoist;

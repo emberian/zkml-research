@@ -1,0 +1,17 @@
+[package]
+name = "zkhem_v2_closure"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Standalone differential replica of dregg-sig zk-Hem v2 millibit bounds + quintic-Goldilocks rank checks (research only)"
+
+# Own workspace table: never attach to any parent workspace.
+[workspace]
+
+[dependencies]
+
+[profile.release]
+# dregg-sig's unit tests run with debug overflow checks; keep them on so a u128 overflow
+# in the ported ledger panics here too instead of wrapping silently.
+overflow-checks = true
+debug-assertions = true
