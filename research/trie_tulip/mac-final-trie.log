@@ -1,0 +1,10 @@
+19:43  up 10 days,  7:46, 12 users, load averages: 11.96 14.58 10.96
+test trie_opening::deployed::tests::full_field_prefix_proof ... 260-bit private prefix: workers=12 input_bytes=8424 committed_words=103348 checks=103361 witness_bytes=835208 proof_bytes=19221256 max_proof_bytes=19223016 prove_ms=3383.361 verify_ms=459.126
+        3.99 real        41.15 user         0.32 sys
+            58015744  maximum resident set size
+test trie_opening::deployed::tests::synthetic_prefix_depths ... depth-8 prefix, one member: workers=12 input_bytes=328 committed_words=3556 checks=3565 witness_bytes=28776 proof_bytes=674120 max_proof_bytes=675080 prove_ms=130.258 verify_ms=23.622
+depth-8 prefix, empty answer: workers=12 input_bytes=440 committed_words=3959 checks=3970 witness_bytes=32112 proof_bytes=749968 max_proof_bytes=751808 prove_ms=139.965 verify_ms=24.171
+depth-16 prefix, one member: workers=12 input_bytes=584 committed_words=6724 checks=6733 witness_bytes=54376 proof_bytes=1262760 max_proof_bytes=1263880 prove_ms=232.513 verify_ms=36.019
+depth-16 prefix, empty answer: workers=12 input_bytes=696 committed_words=7127 checks=7138 witness_bytes=57712 proof_bytes=1339888 max_proof_bytes=1340608 prove_ms=256.447 verify_ms=47.822
+        0.98 real         9.08 user         0.13 sys
+            54231040  maximum resident set size

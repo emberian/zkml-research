@@ -1,0 +1,59 @@
++ cd /Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w16p/l2-zkml/native
++ export 'RUSTFLAGS=-D warnings'
++ RUSTFLAGS='-D warnings'
++ git rev-parse HEAD
+691c42f61a27c92a48ce38fec2630d1b96384b91
++ cargo test --release -p resident_custody --lib --no-run
++ tail -3
+   Compiling resident_custody v0.1.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w16p/l2-zkml/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 9.49s
+  Executable unittests src/lib.rs (target/release/deps/resident_custody-c5faf0f20f6aafd0)
++ RAYON_NUM_THREADS=4
++ /usr/bin/time -l cargo test --release -p resident_custody --lib authenticated_release_gate -- --ignored --nocapture --test-threads=1
++ grep -v '^ *[0-9]* *\(page\|block\|messages\|signals\|voluntary\|involuntary\|instructions\|cycles\)'
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/resident_custody-c5faf0f20f6aafd0)
+
+running 1 test
+test cshake_selective_open::tests::authenticated_release_gate ... workers=4 public_branch_bytes=161
+bytes=89120 prove_ms=69.171 verify_ms=14.858
+bytes=89760 prove_ms=68.539 verify_ms=14.922
+bytes=89680 prove_ms=68.391 verify_ms=15.022
+bytes=90240 prove_ms=68.406 verify_ms=14.987
+bytes=89280 prove_ms=68.232 verify_ms=14.816
+bytes=89120 prove_ms=68.213 verify_ms=14.882
+bytes=89840 prove_ms=68.104 verify_ms=14.868
+bytes=89920 prove_ms=68.576 verify_ms=14.970
+bytes=90080 prove_ms=67.932 verify_ms=14.790
+medians bytes=89760 prove_ms=68.391 verify_ms=14.882
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.75s
+
+        0.85 real         2.80 user         0.08 sys
+            54312960  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                   0  swaps
+            29033192  peak memory footprint
++ /usr/bin/time -l cargo test --release -p resident_custody --lib full_field_prefix_proof -- --ignored --nocapture --test-threads=1
++ grep -v '^ *[0-9]* *\(page\|block\|messages\|signals\|voluntary\|involuntary\|instructions\|cycles\)'
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/resident_custody-c5faf0f20f6aafd0)
+
+running 1 test
+test trie_opening::deployed::tests::full_field_prefix_proof ... 260-bit private prefix proof bytes=278549100 prove_ms=3906.529 verify_ms=1584.571
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 5.49s
+
+        5.58 real         5.39 user         0.13 sys
+           310935552  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                   0  swaps
+            28214016  peak memory footprint
++ uptime
+19:06  up 10 days,  7:09, 12 users, load averages: 12.63 9.44 12.98

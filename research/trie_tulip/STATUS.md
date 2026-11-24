@@ -1,0 +1,1 @@
+[EXECUTED] The resident package tests, all-target package Clippy, isolated prefix measurements and crash fixtures passed. The workspace Clippy run also selected other crates and failed there. The [research note](../../notes/compact-private-trie-and-tulip-crash-continuity.md) gives the results and links the supporting runs.

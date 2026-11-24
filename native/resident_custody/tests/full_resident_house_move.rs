@@ -21,67 +21,7 @@ use std::path::PathBuf;
 use std::process::Command as Process;
 use std::time::Instant;
 
-const ASSET: Bytes32 = [0xcd; 32];
-const CAP: u64 = 10_000;
 const PRIME: u128 = (1 << 61) - 1;
-
-fn claim(seat: Bytes32, pi: &str, event: &str, amount: u64) -> PaymentClaim {
-    PaymentClaim {
-        event_id: event.into(),
-        event_type: "payment_intent.succeeded".into(),
-        payment_intent_id: pi.into(),
-        customer_seat: seat,
-        amount_minor: amount,
-        currency: "usd".into(),
-        payload_sha256: sha256(event.as_bytes()),
-        stripe_timestamp: 1_763_900_000,
-        stripe_v1: sha256(pi.as_bytes()),
-        mint_idempotency_key: payment_nullifier(&ASSET, pi),
-    }
-}
-
-/// The resident's paid seat: one provisional and one settled payment.
-fn seat_transfer(source: &SigningKey, target: Bytes32, seat: Bytes32) -> SeatTransfer {
-    let credit = |c: PaymentClaim, remaining_minor, backing| TransferredCredit {
-        mint: MintReceipt::new(&c, MintReceipt::expected_effect(&c)).unwrap(),
-        claim: c,
-        remaining_minor,
-        backing,
-    };
-    SeatTransfer {
-        source_operator_id: pk(source),
-        target_operator_id: target,
-        transfer_epoch: 1,
-        asset: ASSET,
-        customer_seat: seat,
-        credits: vec![
-            credit(
-                claim(seat, "pi_tulip_1", "evt_1", 2_500),
-                1_800,
-                CreditBacking::Provisional,
-            ),
-            credit(
-                claim(seat, "pi_tulip_2", "evt_2", 4_000),
-                4_000,
-                CreditBacking::Settled {
-                    deposit_sha256: sha256(b"bank-deposit-2"),
-                },
-            ),
-        ],
-        unsettled_provisional_minor: 2_500,
-        reversal_deficit_minor: 0,
-        operator_reserve_cap_minor: CAP,
-    }
-}
-
-fn admission() -> SeatAdmission {
-    SeatAdmission {
-        asset: ASSET,
-        currency: "usd".into(),
-        epoch_floor: 0,
-        max_reserve_cap_minor: CAP,
-    }
-}
 
 /// A receipt sealed over transfer JSON the caller edited, so its signature is valid for
 /// exactly those bytes. With no edit this is byte-identical to `SeatTransferReceipt::seal`.

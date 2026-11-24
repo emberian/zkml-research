@@ -1,14 +1,15 @@
 //! OpeningRel for framed custody, at the canonical wire-image boundary.
 //! The caller supplies its trusted kind/layout, fieldOf and StoreCodec
-//! encodings of the public view. Every reveal byte stays in the MPC witness.
+//! encodings of the public view. Every reveal byte stays in the private witness of the
+//! extended-witness KKW circuit in [`mpc`].
 use super::{node, Path};
-use crate::cshake_selective_open::{self as zk, View};
-use crate::{transcript, Digest};
+use crate::cshake_selective_open::{self as zk};
+use crate::{kkw, Digest};
 use anyhow::{ensure, Result};
 use serde::Serialize;
 use sha3::{
     digest::{ExtendableOutput, Update, XofReader},
-    CShake256, CShake256Core, Shake256,
+    CShake256, CShake256Core,
 };
 use std::collections::BTreeSet;
 
@@ -137,14 +138,16 @@ struct Job {
     count: usize,
     below: Digest,
 }
-struct Plan {
+pub(crate) struct Plan {
+    root: Digest,
     frame: Vec<u8>,
     jobs: Vec<Job>,
+    /// Private input bytes.
     len: usize,
+    statement: Vec<u8>,
 }
 impl Plan {
     fn new(st: &Statement) -> Result<Self> {
-        let frame = zk::Circuit::private_cell_outer(&st.layout, &st.cell, st.version)?.frame;
         let prefixes: BTreeSet<_> = match &st.fields {
             None => [vec![]].into_iter().collect(),
             Some(fields) => fields
@@ -158,6 +161,11 @@ impl Plan {
                 })
                 .collect(),
         };
+        Self::with_prefixes(st, prefixes)
+    }
+    /// The plan for arbitrary reader prefixes. Only [`Plan::new`] derives them from fields.
+    fn with_prefixes(st: &Statement, prefixes: BTreeSet<Vec<bool>>) -> Result<Self> {
+        let frame = zk::Circuit::private_cell_outer(&st.layout, &st.cell, st.version)?.frame;
         let leaves = sorted_image(&st.view)?;
         ensure!(
             leaves
@@ -166,7 +174,8 @@ impl Plan {
             "answer outside scope"
         );
         let mut jobs = vec![];
-        let mut len = 64usize;
+        let mut words = 8usize;
+        let statement = bincode::serialize(&(st, &prefixes))?;
         for prefix in prefixes {
             let members: Vec<_> = leaves
                 .iter()
@@ -175,14 +184,20 @@ impl Plan {
                 .collect();
             let count = members.len();
             let below = subtree(&members, prefix.len());
-            len += prefix.len() * (32 + usize::from(count <= 1)) + if count == 0 { 98 } else { 0 };
+            words += mpc::job_words(prefix.len(), count);
             jobs.push(Job {
                 prefix,
                 count,
                 below,
             });
         }
-        Ok(Self { frame, jobs, len })
+        Ok(Self {
+            root: st.root,
+            frame,
+            jobs,
+            len: 8 * words,
+            statement,
+        })
     }
 }
 pub struct Reveal {
@@ -200,7 +215,9 @@ impl Witness {
     /// Build the private index and actual reveals from a canonical live store.
     /// The entries supplied here exclude the custody/blinding address.
     pub fn from_index(st: &Statement, secret: Digest, entries: &[Entry]) -> Result<Self> {
-        let plan = Plan::new(st)?;
+        Self::from_plan(&Plan::new(st)?, secret, entries)
+    }
+    fn from_plan(plan: &Plan, secret: Digest, entries: &[Entry]) -> Result<Self> {
         let leaves = sorted_image(entries)?;
         let inner = subtree(&leaves, 0);
         let reveals = plan
@@ -236,70 +253,59 @@ impl Witness {
         ensure!(self.reveals.len() == plan.jobs.len(), "missing prefix");
         let mut bytes = [self.secret, self.inner].concat();
         for (job, r) in plan.jobs.iter().zip(&self.reveals) {
+            let n = job.prefix.len();
             ensure!(
-                r.siblings.len() <= job.prefix.len()
-                    && (job.count < 2 || r.siblings.len() == job.prefix.len()),
+                r.siblings.len() <= n && (job.count < 2 || r.siblings.len() == n),
                 "reveal shape"
             );
             if job.count == 0 {
-                bytes.push(u8::from(r.other.is_some()));
+                bytes.extend(u64::from(r.other.is_some()).to_le_bytes());
                 let leaf = r.other.unwrap_or(Leaf {
                     path: [0; 65],
                     content: [0; 32],
                 });
                 ensure!(leaf.path[64] & 15 == 0, "noncanonical path");
                 bytes.extend(leaf.path);
+                bytes.extend([0; 8 * mpc::PATH_WORDS - 65]);
                 bytes.extend(leaf.content);
             } else {
                 ensure!(r.other.is_none(), "unexpected early member");
             }
-            for i in 0..job.prefix.len() {
-                if job.count <= 1 {
-                    bytes.push(u8::from(i < r.siblings.len()));
+            if job.count <= 1 {
+                for k in 0..n.div_ceil(64) {
+                    let walked = r.siblings.len().saturating_sub(64 * k).min(64);
+                    let w = if walked == 64 {
+                        u64::MAX
+                    } else {
+                        (1 << walked) - 1
+                    };
+                    bytes.extend(u64::to_le_bytes(w));
                 }
+            }
+            for i in 0..n {
                 bytes.extend(r.siblings.get(i).copied().unwrap_or([0; 32]));
             }
         }
+        ensure!(bytes.len() == plan.len, "witness layout");
         Ok(bytes)
     }
 }
 
-fn fs(st: &Statement) -> Result<Shake256> {
-    Ok(transcript(
-        b"private framed OpeningRel 219 ZKBoo",
-        &[&bincode::serialize(st)?],
-    ))
-}
 pub fn prove(st: &Statement, w: &Witness) -> Result<Vec<u8>> {
     let plan = Plan::new(st)?;
-    let witness = w.pack(&plan)?;
-    let (output, gates) = mpc::clear(&plan, &witness);
-    ensure!(
-        output[..32] == st.root && output[32..].iter().all(|&v| v == 0),
-        "private opening relation"
-    );
-    zk::prove_mpc(witness, gates, fs(st)?, |views| {
-        mpc::evaluate(&plan, views, None)
-    })
+    let input = w.pack(&plan)?;
+    kkw::prove(&plan, &input, &[])
 }
 pub fn verify(st: &Statement, proof: &[u8]) -> Result<()> {
-    let plan = Plan::new(st)?;
-    let (mut expected, gates) = mpc::clear(&plan, &vec![0; plan.len]);
-    expected.fill(0);
-    expected[..32].copy_from_slice(&st.root);
-    zk::verify_mpc(
-        plan.len,
-        gates,
-        &expected,
-        fs(st)?,
-        proof,
-        |views, trace| mpc::evaluate(&plan, views, Some(trace)),
-    )
+    kkw::verify(&Plan::new(st)?, &[], proof)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::kkw::Shape;
+    use std::time::Instant;
+
     fn entry(field: Field, address: u8) -> Entry {
         Entry {
             field: Some(field),
@@ -331,10 +337,12 @@ mod tests {
             .root(&w.secret, &w.inner);
         Ok(w)
     }
+    /// Prove with the honest-prover preflight bypassed: correct preprocessing, one falsified
+    /// party message per instance.
     fn unchecked(st: &Statement, private: Vec<u8>) -> Result<Vec<u8>> {
         let plan = Plan::new(st)?;
-        let (_, gates) = mpc::clear(&plan, &private);
-        zk::prove_mpc(private, gates, fs(st)?, |v| mpc::evaluate(&plan, v, None))
+        assert!(!kkw::satisfied(&plan, &private)?);
+        kkw::prove_cheating(&plan, &private, &[], 0)
     }
     #[test]
     fn private_prefix_answers_bind_every_member_and_version() -> Result<()> {
@@ -359,8 +367,17 @@ mod tests {
         );
         let p = prove(&st, &w)?;
         verify(&st, &p)?;
+        let plan = Plan::new(&st)?;
+        assert_eq!(
+            p.len(),
+            Shape::of(&plan)?.proof_len(kkw::tests::challenge_frontier(&p[64..96].try_into()?))
+        );
         println!("private body prefix two members, one hidden entry: {} proof bytes; inner={:02x?} outer={:02x?}",p.len(),w.inner,st.root);
         assert!(!p.windows(32).any(|b| b == w.secret || b == w.inner));
+        let hidden = index[2].image();
+        assert!(p
+            .windows(32)
+            .all(|b| b != hidden.content && b != &hidden.path[..32]));
         let mut relabeled = st.clone();
         relabeled.version += 1;
         assert!(verify(&relabeled, &p).is_err());
@@ -369,6 +386,8 @@ mod tests {
         let plan = Plan::new(&omitted)?;
         let proof = unchecked(&omitted, w.pack(&plan)?)?;
         assert!(verify(&omitted, &proof).is_err());
+        let mixed = kkw::prove_cheating(&plan, &w.pack(&plan)?, &[], 14)?;
+        assert!(verify(&omitted, &mixed).is_err());
         let mut changed = st.clone();
         changed.view[1].value.push(42);
         assert!(prove(&changed, &w).is_err());
@@ -377,6 +396,32 @@ mod tests {
         assert!(Plan::new(&substituted).is_err());
         Ok(())
     }
+
+    /// Prove and verify, and check the length against the public shape.
+    fn measure(label: &str, plan: &Plan, w: &Witness) -> Result<usize> {
+        let input = w.pack(plan)?;
+        let shape = Shape::of(plan)?;
+        let start = Instant::now();
+        let p = kkw::prove(plan, &input, &[])?;
+        let prove_ms = start.elapsed().as_secs_f64() * 1000.;
+        let start = Instant::now();
+        kkw::verify(plan, &[], &p)?;
+        let verify_ms = start.elapsed().as_secs_f64() * 1000.;
+        let frontier = kkw::tests::challenge_frontier(&p[64..96].try_into()?);
+        assert_eq!(p.len(), shape.proof_len(frontier));
+        println!(
+            "{label}: workers={} input_bytes={} committed_words={} checks={} witness_bytes={} proof_bytes={} max_proof_bytes={} prove_ms={prove_ms:.3} verify_ms={verify_ms:.3}",
+            rayon::current_num_threads(),
+            shape.input_len,
+            shape.words,
+            shape.checks,
+            shape.witness_len(),
+            p.len(),
+            shape.proof_len(109),
+        );
+        Ok(p.len())
+    }
+
     #[test]
     #[ignore = "measures a depth-260 private field proof"]
     fn full_field_prefix_proof() -> Result<()> {
@@ -384,18 +429,64 @@ mod tests {
         st.fields = Some(vec![Field::Code]);
         st.view = index[2..].to_vec();
         let w = prepare(&mut st, &index)?;
-        let start = std::time::Instant::now();
-        let p = prove(&st, &w)?;
-        let pt = start.elapsed();
-        let start = std::time::Instant::now();
-        verify(&st, &p)?;
-        println!(
-            "260-bit private prefix proof bytes={} prove_ms={:.3} verify_ms={:.3}",
-            p.len(),
-            pt.as_secs_f64() * 1000.,
-            start.elapsed().as_secs_f64() * 1000.
-        );
+        let plan = Plan::new(&st)?;
+        assert!(kkw::satisfied(&plan, &w.pack(&plan)?)?);
+        let shape = Shape::of(&plan)?;
+        assert_eq!(shape.blocks(), 51_681);
+        assert!(kkw::tests::sound_at(shape.blocks()));
+        let bytes = measure("260-bit private prefix", &plan, &w)?;
+        assert!(Shape::of(&plan)?.proof_len(109) < 20_000_000);
+        assert!(bytes < 20_000_000);
         Ok(())
+    }
+
+    /// Reader prefixes of 8 and 16 bits, which no field tag produces: one member under the
+    /// prefix (private stop depth), and an empty answer with a private early singleton.
+    fn synthetic_prefix(depth: usize, empty: bool) -> Result<()> {
+        let (mut st, index) = fixture();
+        let body = index[0].image().path;
+        let secret = [17; 32];
+        st.root = zk::Circuit::private_cell_outer(&st.layout, &st.cell, st.version)?
+            .root(&secret, &subtree(&sorted_image(&index)?, 0));
+        let mut prefix: Vec<_> = (0..depth).map(|d| bit(&body, d)).collect();
+        let answer = if empty {
+            prefix[depth - 1] ^= true;
+            st.view.clear();
+            "empty answer"
+        } else {
+            st.view = index[..1].to_vec();
+            "one member"
+        };
+        let plan = Plan::with_prefixes(&st, [prefix].into_iter().collect())?;
+        assert_eq!(plan.jobs[0].count, usize::from(!empty));
+        let w = Witness::from_plan(&plan, secret, &index)?;
+        assert_eq!(w.reveals[0].other.is_some(), empty);
+        measure(&format!("depth-{depth} prefix, {answer}"), &plan, &w)?;
+        Ok(())
+    }
+
+    #[test]
+    #[ignore = "measures one synthetic private prefix in isolation"]
+    fn depth_8_member() -> Result<()> {
+        synthetic_prefix(8, false)
+    }
+
+    #[test]
+    #[ignore = "measures one synthetic private prefix in isolation"]
+    fn depth_8_empty() -> Result<()> {
+        synthetic_prefix(8, true)
+    }
+
+    #[test]
+    #[ignore = "measures one synthetic private prefix in isolation"]
+    fn depth_16_member() -> Result<()> {
+        synthetic_prefix(16, false)
+    }
+
+    #[test]
+    #[ignore = "measures one synthetic private prefix in isolation"]
+    fn depth_16_empty() -> Result<()> {
+        synthetic_prefix(16, true)
     }
 
     #[test]
@@ -410,6 +501,15 @@ mod tests {
             "private body prefix empty answer with hidden singleton: {} proof bytes",
             p.len()
         );
+        let hidden = w.reveals[0].other.unwrap();
+        for canary in [&hidden.path[..32], &hidden.content, &w.secret, &w.inner] {
+            assert!(p.windows(canary.len()).all(|window| window != canary));
+        }
+        // With a private walk the last allocated word is the AND in the final
+        // digest select. Commit an inconsistent output before drawing the challenge.
+        let plan = Plan::new(&st)?;
+        let corrupt = kkw::tests::with_flipped_last_word(&plan, &w.pack(&plan)?)?;
+        assert!(verify(&st, &corrupt).is_err());
         // Keep a genuine root for a selected leaf and try to present it as a
         // private early terminal with empty answer. Bypass prover preflight.
         let selected = index[0].image();
@@ -434,9 +534,13 @@ mod tests {
             st.view = visible.to_vec();
             let w = prepare(&mut st, index)?;
             let plan = Plan::new(&st)?;
-            let (out, _) = mpc::clear(&plan, &w.pack(&plan)?);
-            assert_eq!(&out[..32], &st.root);
-            assert!(out[32..].iter().all(|&v| v == 0));
+            let input = w.pack(&plan)?;
+            assert!(kkw::satisfied(&plan, &input)?);
+            kkw::tests::differential(&plan, &input)?;
+            // The same input under another root fails the outer hash.
+            let mut other = st.clone();
+            other.root[0] ^= 1;
+            assert!(!kkw::satisfied(&Plan::new(&other)?, &input)?);
         }
         Ok(())
     }

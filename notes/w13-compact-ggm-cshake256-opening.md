@@ -1,5 +1,7 @@
 # Compact Boolean cSHAKE openings and private trie answers
 
+> [DERIVED] The private trie backend measured here is replaced in place: the 219-round engine is deleted and `OpeningRel` runs on the extended-witness KKW engine, 14.0–14.5× smaller. [Current](compact-private-trie-and-tulip-crash-continuity.md)
+
 [DERIVED] A 64-byte resident opening fits in **78,544 bytes for every challenge**, including the salt, masked-wire root, final challenge digest and every GGM and Merkle opening. The budget covers the serialized ZK proof. The authenticated request also has a public path, sibling digests, root, ranges and answer. The private-store protocol has a different public statement and its own measurements below. [Wire-budget test](https://github.com/emberian/zkml-research/blob/2adc9cb22e4c079315450d127a7e2af9ec24dbdf/native/resident_custody/src/cshake_selective_open_v2.rs)
 
 ## Release measurements

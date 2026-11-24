@@ -1,0 +1,18 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/resident_custody-c5faf0f20f6aafd0)
+
+running 1 test
+test cshake_selective_open::tests::authenticated_release_gate ... workers=4 public_branch_bytes=161
+bytes=85632 prove_ms=64.585 verify_ms=14.585
+bytes=85312 prove_ms=64.005 verify_ms=14.353
+bytes=85152 prove_ms=64.371 verify_ms=14.561
+bytes=85472 prove_ms=64.160 verify_ms=14.512
+bytes=85872 prove_ms=63.679 verify_ms=14.406
+bytes=84832 prove_ms=64.017 verify_ms=14.386
+bytes=86032 prove_ms=64.214 verify_ms=14.505
+bytes=83952 prove_ms=63.712 verify_ms=14.225
+bytes=85312 prove_ms=63.593 verify_ms=14.353
+medians bytes=85312 prove_ms=64.017 verify_ms=14.406
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.71s

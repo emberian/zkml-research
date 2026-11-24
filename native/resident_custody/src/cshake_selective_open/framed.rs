@@ -1,18 +1,15 @@
-//! A three-view ZKBoo Boolean circuit. The fixed public cell width is a circuit
-//! parameter. Coordinates are half-open byte intervals. Only χ consumes tape.
-use crate::{digest, random_seed, stream, transcript, Digest};
-use anyhow::{ensure, Context, Result};
+//! The cSHAKE256 framing of resident cells: SP 800-185 prefix and padding, the custody
+//! frame of a private store cell, statements and byte ranges. Coordinates are half-open byte
+//! intervals. Proofs run on the extended-witness engine for every width and frame.
+use super::circuit::Cell;
+use crate::{kkw, Digest};
+use anyhow::{ensure, Result};
 use serde::{Deserialize, Serialize};
 use sha3::digest::{ExtendableOutput, Update, XofReader};
-use sha3::{CShake256, CShake256Core, Shake256};
+use sha3::{CShake256, CShake256Core};
 
-/// Repetitions of the framed and multi-block three-view proof.
-pub const REPETITIONS: usize = 219;
 pub const DOMAIN: &[u8] = b"resident-custody/blinded-cell/v1";
 const RATE: usize = 136;
-const GATES: usize = 24 * 25;
-const LEAVES: usize = 3 * REPETITIONS;
-const TREE: usize = LEAVES.next_power_of_two();
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Statement {
@@ -39,9 +36,9 @@ pub(crate) fn encode_nat(mut n: u64) -> Vec<u8> {
 /// caller-selected layout digest, cell identity and version. Its private
 /// suffix is the 32-byte custody secret and the 32-byte index digest.
 pub struct Circuit {
-    domain: &'static [u8],
+    pub(crate) domain: &'static [u8],
     pub(crate) frame: Vec<u8>,
-    width: usize,
+    pub(crate) width: usize,
 }
 impl Circuit {
     pub fn resident(width: usize) -> Self {
@@ -140,403 +137,40 @@ pub(crate) fn absorb(s: &mut [u64; 25], block: &[u8]) {
     }
 }
 
-// FIPS 202, lane x+5y, bit z stored in bit z of the u64.
-pub(super) const ROT: [u32; 25] = [
-    0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14,
-];
-pub(crate) const RC: [u64; 24] = [
-    0x1,
-    0x8082,
-    0x800000000000808a,
-    0x8000000080008000,
-    0x808b,
-    0x80000001,
-    0x8000000080008081,
-    0x8000000000008009,
-    0x8a,
-    0x88,
-    0x80008009,
-    0x8000000a,
-    0x8000808b,
-    0x800000000000008b,
-    0x8000000000008089,
-    0x8000000000008003,
-    0x8000000000008002,
-    0x8000000000000080,
-    0x800a,
-    0x800000008000000a,
-    0x8000000080008081,
-    0x8000000000008080,
-    0x80000001,
-    0x8000000080008008,
-];
-
-pub(crate) fn linear(s: [u64; 25]) -> [u64; 25] {
-    let parity: [u64; 5] =
-        std::array::from_fn(|x| s[x] ^ s[x + 5] ^ s[x + 10] ^ s[x + 15] ^ s[x + 20]);
-    let mut b = [0; 25];
-    for y in 0..5 {
-        for x in 0..5 {
-            let d = parity[(x + 4) % 5] ^ parity[(x + 1) % 5].rotate_left(1);
-            b[y + 5 * ((2 * x + 3 * y) % 5)] = (s[x + 5 * y] ^ d).rotate_left(ROT[x + 5 * y]);
-        }
-    }
-    b
-}
-
-pub(crate) struct View {
-    seed: Digest,
-    pub(crate) input: Vec<u8>,
-    pub(crate) masks: Vec<u64>,
-    pub(crate) gates: Vec<u8>,
-    pub(crate) output: Vec<u8>,
-}
-impl View {
-    fn new(seed: Digest, len: usize, gate_words: usize) -> Self {
-        let mut input = vec![0; len];
-        let mut tape = stream(b"private tape", &[&seed]);
-        tape.read(&mut input);
-        let mut bytes = vec![0; gate_words * 8];
-        tape.read(&mut bytes);
-        let masks = bytes
-            .chunks_exact(8)
-            .map(|b| u64::from_le_bytes(b.try_into().unwrap()))
-            .collect();
-        Self {
-            seed,
-            input,
-            masks,
-            gates: Vec::with_capacity(bytes.len()),
-            output: vec![],
-        }
-    }
-    fn commit(&self) -> Digest {
-        digest(
-            b"party view",
-            &[&self.seed, &self.input, &self.gates, &self.output],
-        )
-    }
-}
-
-fn xor(dst: &mut [u8], src: &[u8]) {
-    debug_assert_eq!(dst.len(), src.len());
-    for (d, s) in dst.iter_mut().zip(src) {
-        *d ^= s;
-    }
-}
-
-// For an opened adjacent pair, the neighbor's AND messages come from
-// the proof. Every gate of the first view is independently recomputed.
-fn evaluate<const N: usize>(
-    views: &mut [View; N],
-    ranges: &[(u16, u16)],
-    circuit: &Circuit,
-    neighbor: Option<&[u8]>,
-) {
-    let mut states = [prefix(circuit.domain); N];
-    let inputs = views.each_ref().map(|v| {
-        let mut raw = v.input.clone();
-        crate::trace_pack::decode(&mut raw);
-        [circuit.frame.as_slice(), raw.as_slice()].concat()
-    });
-    let len = inputs[0].len();
-    let mut gate = 0;
-    for block in 0..=len / RATE {
-        for (state, input) in states.iter_mut().zip(&inputs) {
-            let mut bytes = [0; RATE];
-            let rem = &input[block * RATE..];
-            let n = rem.len().min(RATE);
-            bytes[..n].copy_from_slice(&rem[..n]);
-            if n < RATE {
-                bytes[n] ^= 0x04;
-                bytes[RATE - 1] ^= 0x80;
-            }
-            absorb(state, &bytes);
-        }
-        for rc in RC {
-            let b = states.map(linear);
-            for i in 0..25 {
-                let row = i / 5 * 5;
-                let j = row + (i + 1) % 5;
-                let k = row + (i + 2) % 5;
-                for p in 0..N {
-                    let q = (p + 1) % N;
-                    let z = if let Some(trace) = neighbor.filter(|_| p + 1 == N) {
-                        u64::from_le_bytes(trace[gate * 8..gate * 8 + 8].try_into().unwrap())
-                    } else {
-                        // For XOR shares x, y: z_p = x_p y_p + x_p y_q
-                        // + x_q y_p + r_p + r_q, where q=p+1 modulo 3.
-                        (!b[p][j] & b[p][k])
-                            ^ (!b[p][j] & b[q][k])
-                            ^ (!b[q][j] & b[p][k])
-                            ^ views[p].masks[gate]
-                            ^ views[q].masks[gate]
-                    };
-                    states[p][i] = b[p][i] ^ z;
-                    views[p].gates.extend(z.to_le_bytes());
-                }
-                gate += 1;
-            }
-            for state in &mut states {
-                state[0] ^= rc;
-            }
-        }
-    }
-    for ((state, v), input) in states.iter().zip(views.iter_mut()).zip(&inputs) {
-        for lane in &state[..4] {
-            v.output.extend(lane.to_le_bytes());
-        }
-        v.output
-            .extend(project(&input[circuit.frame.len() + 32..], ranges));
-    }
-}
-
-fn seed_children(seed: &Digest) -> [Digest; 2] {
-    let mut children = [[0; 32]; 2];
-    let mut r = stream(b"GGM children", &[seed]);
-    for child in &mut children {
-        r.read(child);
-    }
-    children
-}
-
-fn expand(tree: &mut [Digest], i: usize) {
-    if i < TREE {
-        let [a, b] = seed_children(&tree[i]);
-        tree[2 * i] = a;
-        tree[2 * i + 1] = b;
-        expand(tree, 2 * i);
-        expand(tree, 2 * i + 1);
-    }
-}
-
-// Return maximal subtrees containing opened views only. Omit padding.
-fn frontier(challenges: &[usize]) -> Vec<usize> {
-    let mut hidden = vec![false; 2 * TREE];
-    for (r, &p) in challenges.iter().enumerate() {
-        hidden[TREE + (p + 2) % 3 * REPETITIONS + r] = true;
-    }
-    for i in (1..TREE).rev() {
-        hidden[i] = hidden[2 * i] || hidden[2 * i + 1];
-    }
-    fn collect(out: &mut Vec<usize>, hidden: &[bool], i: usize, start: usize, width: usize) {
-        if start >= LEAVES {
-            return;
-        }
-        if !hidden[i] {
-            out.push(i);
-        } else if width > 1 {
-            collect(out, hidden, 2 * i, start, width / 2);
-            collect(out, hidden, 2 * i + 1, start + width / 2, width / 2);
-        }
-    }
-    let mut nodes = vec![];
-    collect(&mut nodes, &hidden, 1, 0, TREE);
-    nodes
-}
-
-fn trits(h: &Digest) -> Vec<usize> {
-    let mut r = stream(b"uniform challenges", &[h]);
-    let mut out = Vec::with_capacity(REPETITIONS);
-    while out.len() < REPETITIONS {
-        let mut byte = [0];
-        r.read(&mut byte);
-        if byte[0] < 255 {
-            out.push(usize::from(byte[0] % 3));
-        }
-    }
-    out
-}
-
-fn fs(circuit: &Circuit, st: &Statement) -> Result<Shake256> {
-    ensure!(
-        check_ranges(circuit.width, &st.ranges)? == st.projected_bytes.len(),
-        "projection width"
-    );
-    Ok(transcript(
-        b"FS 219 Keccak ZKBoo",
-        &[
-            circuit.domain,
-            &circuit.frame,
-            &(circuit.width as u64).to_le_bytes(),
-            &bincode::serialize(st)?,
-        ],
-    ))
-}
-
-fn finish(h: Shake256) -> Digest {
-    let mut d = [0; 32];
-    h.finalize_xof().read(&mut d);
-    d
-}
-
 impl Circuit {
     pub fn prove(&self, blind: &Digest, cell: &[u8], st: &Statement) -> Result<Vec<u8>> {
+        self.prove_with(blind, cell, st, &[])
+    }
+    /// Prove an opening bound to the caller's additional public `binding`.
+    pub(crate) fn prove_with(
+        &self,
+        blind: &Digest,
+        cell: &[u8],
+        st: &Statement,
+        binding: &[u8],
+    ) -> Result<Vec<u8>> {
         ensure!(cell.len() == self.width, "wrong circuit width");
-        if self.domain == DOMAIN && self.width <= 103 {
-            return super::prove_with_context(blind, cell, st, &[]);
-        }
-        let h = fs(self, st)?;
+        let c = Cell::new(self, st)?;
         ensure!(
             self.root(blind, cell) == st.cell_root
                 && project(cell, &st.ranges) == st.projected_bytes,
             "witness mismatch"
         );
-        self.prove_views(blind, cell, st, h)
+        kkw::prove(&c, &[blind.as_slice(), cell].concat(), binding)
     }
-
-    fn prove_views(
-        &self,
-        blind: &Digest,
-        cell: &[u8],
-        st: &Statement,
-        h: Shake256,
-    ) -> Result<Vec<u8>> {
-        let mut witness = [blind.as_slice(), cell].concat();
-        crate::trace_pack::encode(&mut witness);
-        let gates = self.gate_words();
-        prove_mpc(witness, gates, h, |views| {
-            evaluate(views, &st.ranges, self, None)
-        })
-    }
-
-    fn gate_words(&self) -> usize {
-        ((self.width + 32 + self.frame.len()) / RATE + 1) * GATES
-    }
-}
-
-pub(crate) fn prove_mpc(
-    witness: Vec<u8>,
-    gate_words: usize,
-    mut h: Shake256,
-    eval: impl Fn(&mut [View; 3]),
-) -> Result<Vec<u8>> {
-    let mut tree = vec![[0; 32]; 2 * TREE];
-    tree[1] = random_seed()?;
-    expand(&mut tree, 1);
-    // Deep private-prefix circuits can have hundreds of permutations. Replay
-    // from the committed seeds to bound temporary view storage in that case.
-    let cache = gate_words <= (32 << 20) / (8 * 3 * REPETITIONS);
-    let make_views = |r: usize| {
-        let mut views = std::array::from_fn(|p| {
-            View::new(tree[TREE + p * REPETITIONS + r], witness.len(), gate_words)
-        });
-        let mut correction = witness.clone();
-        for v in &views {
-            xor(&mut correction, &v.input);
-        }
-        xor(&mut views[2].input, &correction);
-        eval(&mut views);
-        (correction, views)
-    };
-    let mut rounds = Vec::with_capacity(REPETITIONS);
-    for r in 0..REPETITIONS {
-        let (correction, views) = make_views(r);
-        let commitments = views.each_ref().map(View::commit);
-        h.update(&correction);
-        for (c, v) in commitments.iter().zip(&views) {
-            h.update(c);
-            h.update(&v.output);
-        }
-        rounds.push((
-            commitments,
-            cache.then(|| (correction, views.map(|v| v.gates))),
-        ));
-    }
-    let d = finish(h);
-    let challenges = trits(&d);
-    let mut proof = d.to_vec();
-    for i in frontier(&challenges) {
-        proof.extend(tree[i]);
-    }
-    for (r, ((commitments, cached), p)) in rounds.into_iter().zip(challenges).enumerate() {
-        let (correction, gates) = cached.unwrap_or_else(|| {
-            let (correction, views) = make_views(r);
-            (correction, views.map(|v| v.gates))
-        });
-        proof.extend(correction);
-        proof.extend(commitments[(p + 2) % 3]);
-        proof.extend_from_slice(&gates[(p + 1) % 3]);
-    }
-    Ok(proof)
-}
-
-pub(crate) fn take<'a>(proof: &mut &'a [u8], n: usize) -> Result<&'a [u8]> {
-    let (a, b) = proof.split_at_checked(n).context("truncated proof")?;
-    *proof = b;
-    Ok(a)
-}
-
-impl Circuit {
     pub fn verify(&self, permitted: &[(u16, u16)], st: &Statement, proof: &[u8]) -> Result<()> {
-        if self.domain == DOMAIN && self.width <= 103 {
-            return super::verify_with_context(self.width, permitted, st, &[], proof);
-        }
+        self.verify_with(permitted, st, &[], proof)
+    }
+    pub(crate) fn verify_with(
+        &self,
+        permitted: &[(u16, u16)],
+        st: &Statement,
+        binding: &[u8],
+        proof: &[u8],
+    ) -> Result<()> {
         ensure!(permitted == st.ranges, "slice permission");
-        verify_mpc(
-            self.width + 32,
-            self.gate_words(),
-            &[st.cell_root.as_slice(), &st.projected_bytes].concat(),
-            fs(self, st)?,
-            proof,
-            |views, trace| evaluate(views, &st.ranges, self, Some(trace)),
-        )
+        kkw::verify(&Cell::new(self, st)?, binding, proof)
     }
-}
-
-pub(crate) fn verify_mpc(
-    len: usize,
-    gate_words: usize,
-    expected: &[u8],
-    mut h: Shake256,
-    mut proof: &[u8],
-    eval: impl Fn(&mut [View; 2], &[u8]),
-) -> Result<()> {
-    let d: Digest = take(&mut proof, 32)?.try_into()?;
-    let challenges = trits(&d);
-    let nodes = frontier(&challenges);
-    let trace_len = gate_words * 8;
-    ensure!(
-        proof.len() == nodes.len() * 32 + REPETITIONS * (len + 32 + trace_len),
-        "proof length"
-    );
-    let mut tree = vec![[0; 32]; 2 * TREE];
-    for i in nodes {
-        tree[i] = take(&mut proof, 32)?.try_into()?;
-        expand(&mut tree, i);
-    }
-    for (r, p) in challenges.into_iter().enumerate() {
-        let q = (p + 1) % 3;
-        let hidden = (p + 2) % 3;
-        let correction = take(&mut proof, len)?;
-        let hidden_commit = take(&mut proof, 32)?;
-        let trace = take(&mut proof, trace_len)?;
-        let mut views = [p, q].map(|party| {
-            let mut v = View::new(tree[TREE + party * REPETITIONS + r], len, gate_words);
-            if party == 2 {
-                xor(&mut v.input, correction);
-            }
-            v
-        });
-        eval(&mut views, trace);
-        let mut hidden_output = expected.to_vec();
-        for v in &views {
-            xor(&mut hidden_output, &v.output);
-        }
-        h.update(correction);
-        for party in 0..3 {
-            if party == hidden {
-                h.update(hidden_commit);
-                h.update(&hidden_output);
-            } else {
-                let v = &views[usize::from(party == q)];
-                h.update(&v.commit());
-                h.update(&v.output);
-            }
-        }
-    }
-    ensure!(finish(h) == d, "Fiat-Shamir transcript");
-    Ok(())
 }
 
 #[cfg(test)]
@@ -544,13 +178,18 @@ mod tests {
     use super::*;
     #[test]
     fn verifier_checks_hidden_witness_without_prover_preflight() -> Result<()> {
-        let blind = random_seed()?;
+        let blind = crate::random_seed()?;
         let mut cell = [7u8; 104];
         let st = statement(&blind, &cell, vec![(0, 2)])?;
         cell[63] ^= 1;
         let c = Circuit::resident(104);
-        let malformed = c.prove_views(&blind, &cell, &st, fs(&c, &st)?)?;
-        assert!(c.verify(&st.ranges, &st, &malformed).is_err());
+        let input = [blind.as_slice(), &cell].concat();
+        let circuit = Cell::new(&c, &st)?;
+        assert!(!kkw::satisfied(&circuit, &input)?);
+        for forged in [0, kkw::INSTANCES] {
+            let malformed = kkw::prove_cheating(&circuit, &input, &[], forged)?;
+            assert!(c.verify(&st.ranges, &st, &malformed).is_err());
+        }
         Ok(())
     }
 }

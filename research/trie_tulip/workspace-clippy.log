@@ -1,0 +1,10 @@
+native/ $ cargo clippy --all-targets --keep-going -- -D warnings
+Selected locations and Cargo failure summaries:
+   --> pycompat/src/random.rs:158:18
+error: could not compile `pycompat` (lib) due to 1 previous error
+error: could not compile `pycompat` (lib test) due to 1 previous error
+   --> dlvault/src/lib.rs:172:34
+error: could not compile `dlvault` (lib test) due to 1 previous error
+error: could not compile `dlvault` (lib) due to 1 previous error
+error: could not compile `qwen35audit` (lib) due to 283 previous errors
+error: could not compile `qwen35audit` (lib test) due to 283 previous errors

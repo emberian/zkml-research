@@ -1,0 +1,13 @@
+  Executable unittests src/lib.rs (/home/hbox/lanes/trie-tulip/target-old/release/build/resident_custody/e66560c4ed157693/out/resident_custody-e66560c4ed157693)
+  Executable unittests src/lib.rs (/home/hbox/lanes/trie-tulip/target-new/release/build/resident_custody/e66560c4ed157693/out/resident_custody-e66560c4ed157693)
+ 19:40:02 up  3:47,  6 users,  load average: 9.16, 8.56, 7.68
+old medians bytes=89440 prove_ms=116.928 verify_ms=26.469
+new medians bytes=85472 prove_ms=91.333 verify_ms=27.121
+old medians bytes=89680 prove_ms=130.058 verify_ms=28.477
+new medians bytes=85712 prove_ms=87.469 verify_ms=28.030
+old medians bytes=89520 prove_ms=113.855 verify_ms=25.370
+new medians bytes=85632 prove_ms=83.466 verify_ms=25.485
+old medians bytes=89600 prove_ms=118.839 verify_ms=27.687
+new medians bytes=85392 prove_ms=78.846 verify_ms=26.600
+ 19:40:12 up  3:47,  6 users,  load average: 8.74, 8.49, 7.67
+done

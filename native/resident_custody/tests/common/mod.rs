@@ -3,6 +3,8 @@
 
 use anyhow::{anyhow, ensure, Result};
 use ed25519_dalek::SigningKey;
+use resident_custody::house_move::SeatAdmission;
+use resident_custody::seat_receipt::*;
 use resident_custody::{custody_mesh::*, random_seed};
 use std::fs;
 use std::os::unix::net::UnixStream;
@@ -35,8 +37,9 @@ impl OwnedChild {
     pub fn try_status(&mut self) -> Result<Option<std::process::ExitStatus>> {
         Ok(self.child.try_wait()?)
     }
-    pub fn output(&mut self) -> Result<Outcome> {
-        let deadline = Instant::now() + Duration::from_secs(30);
+    /// Wait for exit; its stdout on success, its stderr as the error otherwise.
+    pub fn finish(&mut self) -> Result<Vec<u8>> {
+        let deadline = Instant::now() + Duration::from_secs(60);
         let status = loop {
             if let Some(s) = self.child.try_wait()? {
                 break s;
@@ -49,9 +52,10 @@ impl OwnedChild {
                 self.pidfile.with_extension("err")
             )?));
         }
-        Ok(bincode::deserialize_from(fs::File::open(
-            self.pidfile.with_extension("out"),
-        )?)?)
+        Ok(fs::read(self.pidfile.with_extension("out"))?)
+    }
+    pub fn output(&mut self) -> Result<Outcome> {
+        Ok(bincode::deserialize(&self.finish()?)?)
     }
 }
 impl Drop for OwnedChild {
@@ -178,6 +182,19 @@ impl Mesh {
             .stderr(fs::File::create(file.with_extension("err"))?);
         OwnedChild::spawn(&mut cmd, file.with_extension("pid"))
     }
+    /// `resident_operator` on seat `name` with `args` after the seat directory.
+    pub fn seat_process(&self, name: &str, args: &[&std::ffi::OsStr]) -> Result<OwnedChild> {
+        let (_, file) = tempfile::Builder::new()
+            .prefix("seat-")
+            .tempfile_in(self.temp.path())?
+            .keep()?;
+        let mut cmd = Process::new(env!("CARGO_BIN_EXE_resident_operator"));
+        cmd.arg(self.temp.path().join(name))
+            .args(args)
+            .stdout(fs::File::create(file.with_extension("out"))?)
+            .stderr(fs::File::create(file.with_extension("err"))?);
+        OwnedChild::spawn(&mut cmd, file.with_extension("pid"))
+    }
     pub fn exercise(&self, name: &str, head: &Head, action: Action) -> Result<Certificate> {
         certified(
             self.operator(name, Operation::Exercise(self.grant(head, action)))?
@@ -215,3 +232,63 @@ pub fn learn_as(id: u64, provenance: Provenance, coord: u8, value: u64) -> Actio
     }
 }
 
+pub const ASSET: Bytes32 = [0xcd; 32];
+pub const CAP: u64 = 10_000;
+
+pub fn claim(seat: Bytes32, pi: &str, event: &str, amount: u64) -> PaymentClaim {
+    PaymentClaim {
+        event_id: event.into(),
+        event_type: "payment_intent.succeeded".into(),
+        payment_intent_id: pi.into(),
+        customer_seat: seat,
+        amount_minor: amount,
+        currency: "usd".into(),
+        payload_sha256: sha256(event.as_bytes()),
+        stripe_timestamp: 1_763_900_000,
+        stripe_v1: sha256(pi.as_bytes()),
+        mint_idempotency_key: payment_nullifier(&ASSET, pi),
+    }
+}
+
+/// The resident's paid seat: one provisional and one settled payment.
+pub fn seat_transfer(source: &SigningKey, target: Bytes32, seat: Bytes32) -> SeatTransfer {
+    let credit = |c: PaymentClaim, remaining_minor, backing| TransferredCredit {
+        mint: MintReceipt::new(&c, MintReceipt::expected_effect(&c)).unwrap(),
+        claim: c,
+        remaining_minor,
+        backing,
+    };
+    SeatTransfer {
+        source_operator_id: pk(source),
+        target_operator_id: target,
+        transfer_epoch: 1,
+        asset: ASSET,
+        customer_seat: seat,
+        credits: vec![
+            credit(
+                claim(seat, "pi_tulip_1", "evt_1", 2_500),
+                1_800,
+                CreditBacking::Provisional,
+            ),
+            credit(
+                claim(seat, "pi_tulip_2", "evt_2", 4_000),
+                4_000,
+                CreditBacking::Settled {
+                    deposit_sha256: sha256(b"bank-deposit-2"),
+                },
+            ),
+        ],
+        unsettled_provisional_minor: 2_500,
+        reversal_deficit_minor: 0,
+        operator_reserve_cap_minor: CAP,
+    }
+}
+
+pub fn admission() -> SeatAdmission {
+    SeatAdmission {
+        asset: ASSET,
+        currency: "usd".into(),
+        epoch_floor: 0,
+        max_reserve_cap_minor: CAP,
+    }
+}

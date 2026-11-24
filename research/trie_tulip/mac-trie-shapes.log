@@ -1,0 +1,14 @@
+rejected GGM puncture
+rejected hidden party commitment
+rejected masked round state
+rejected inverse chi hint
+rejected committed online broadcasts
+rejected nonce
+rejected preprocessing correction
+rejected offline seed
+rejected changed hidden witness with 0 corrupted preprocessing instances
+rejected changed hidden witness with 14 corrupted preprocessing instances
+rejected sibling, policy, authenticated context transplant, answer, truncation, bypassed hidden-byte mutation
+test trie_opening::deployed::tests::private_early_stop_empty_and_singleton ... private body prefix empty answer with hidden singleton: 382928 proof bytes
+test trie_opening::deployed::tests::private_prefix_answers_bind_every_member_and_version ... private body prefix two members, one hidden entry: 303488 proof bytes
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 17 filtered out; finished in 0.59s

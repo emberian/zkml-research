@@ -1,0 +1,84 @@
+   Compiling resident_custody v0.1.0 (/Users/ember/.gemini/antigravity-cli/worktrees/7b8891ea-w16p/l2-zkml/native/resident_custody)
+    Finished `release` profile [optimized + debuginfo] target(s) in 9.27s
+     Running unittests src/lib.rs (target/release/deps/resident_custody-c5faf0f20f6aafd0)
+
+running 20 tests
+test cshake_selective_open::framed::tests::verifier_checks_hidden_witness_without_prover_preflight ... ok
+test cshake_selective_open::tests::authenticated_projection_and_adversarial_openings ... ok
+test cshake_selective_open::tests::authenticated_release_gate ... ignored, serial wall-clock benchmark
+test cshake_selective_open::tests::every_party_matches_scalar_polarization ... ok
+test cshake_selective_open::tests::exact_cheating_splits ... ok
+test cshake_selective_open::tests::worst_case_wire_budget ... ok
+test kkw::keccak::tests::all_inverse_rows_and_hints ... ok
+test kkw::keccak::tests::checkpoints_reproduce_keccak_and_satisfy_their_equations ... ok
+test kkw::tests::exact_soundness_ledger_at_the_largest_circuit ... ok
+test obend_latch_abi::tests::digest_limbs_are_the_little_endian_memory_image ... ok
+test obend_latch_abi::tests::lean_conformance_vectors ... ok
+test obend_latch_abi::tests::native_beltlatch_parity ... ignored, needs OBEND_BELTLATCH_EXE, a cake --pancake build of Obend's beltLatch.pnk
+test obend_latch_abi::tests::word_and_structured_kernels_agree_under_mutation ... ok
+test seat_receipt::tests::dreggnet_v1_golden_vector ... ok
+test seat_receipt::tests::refusals_match_dreggnet_variants ... ok
+test trie_opening::deployed::tests::full_field_prefix_proof ... ignored, measures a depth-260 private field proof
+test trie_opening::deployed::tests::private_early_stop_empty_and_singleton ... ok
+test trie_opening::deployed::tests::private_prefix_answers_bind_every_member_and_version ... ok
+test trie_opening::deployed::tests::synthetic_prefix_depths ... ignored, measures synthetic private prefix depths
+test trie_opening::tests::full_depth_pinned_wire_vector ... ok
+
+test result: ok. 16 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.70s
+
+     Running unittests src/bin/custodian_node.rs (target/release/deps/custodian_node-8de34976f7c26aa3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/resident_house_move.rs (target/release/deps/resident_house_move-fd751143de557d54)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/resident_operator.rs (target/release/deps/resident_operator-ff69c256ab59943c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/tulip_broker.rs (target/release/deps/tulip_broker-888ee6ebc4b494d2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/full_resident_house_move.rs (target/release/deps/full_resident_house_move-344302d8ba1a3a4f)
+
+running 3 tests
+test full_resident_house_move ... Error: durable bind failed, Obend MissingAck; exit and recover the WAL
+
+Caused by:
+    injected WAL failure
+ok
+test house_move_latency ... ignored, serial wall-clock benchmark
+test paid_move_from_genesis_through_cli ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.99s
+
+     Running tests/resident_house_move_and_cshake_open.rs (target/release/deps/resident_house_move_and_cshake_open-641d0d0ace296495)
+
+running 5 tests
+test keccak_padding_and_deployed_outer_hash ... ok
+test quorum_failover_and_grant_binding ... ok
+test resident_house_move_and_crash_boundaries ... ok
+test same_projection_privacy_observations ... ok
+test selective_open_benchmark_and_falsifiers ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.38s
+
+     Running tests/tulip_crash_house_move.rs (target/release/deps/tulip_crash_house_move-4e34b4a321796211)
+
+running 3 tests
+test crash_after_broker_before_ack ... ok
+test crash_after_quorum_before_broker ... ok
+test crash_before_quorum_learn ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s

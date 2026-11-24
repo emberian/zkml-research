@@ -1,0 +1,42 @@
+ 19:40:51 up  3:48,  6 users,  load average: 8.55, 8.48, 7.70
+=== old
+    Finished `release` profile [optimized] target(s) in 4.22s
+  Executable unittests src/lib.rs (/home/hbox/lanes/trie-tulip/target/release/build/resident_custody/e66560c4ed157693/out/resident_custody-e66560c4ed157693)
+medians bytes=89520 prove_ms=125.377 verify_ms=28.017
+thread 'cshake_selective_open::tests::authenticated_release_gate' (935206) panicked at resident_custody/src/cshake_selective_open.rs:694:9:
+medians bytes=89680 prove_ms=115.652 verify_ms=24.638
+medians bytes=89440 prove_ms=115.262 verify_ms=24.441
+test trie_opening::deployed::tests::full_field_prefix_proof ... 260-bit private prefix proof bytes=278549004 prove_ms=7287.370 verify_ms=2983.404
+	User time (seconds): 8.81
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.32
+	Maximum resident set size (kbytes): 284484
+ 19:41:10 up  3:48,  6 users,  load average: 8.48, 8.46, 7.70
+=== new
+    Finished `release` profile [optimized] target(s) in 5.49s
+  Executable unittests src/lib.rs (/home/hbox/lanes/trie-tulip/target/release/build/resident_custody/e66560c4ed157693/out/resident_custody-e66560c4ed157693)
+medians bytes=85472 prove_ms=93.576 verify_ms=30.232
+medians bytes=85392 prove_ms=78.948 verify_ms=24.756
+medians bytes=85472 prove_ms=80.255 verify_ms=25.652
+test trie_opening::deployed::tests::full_field_prefix_proof ... 260-bit private prefix: workers=22 input_bytes=8424 committed_words=103348 checks=103361 witness_bytes=835208 proof_bytes=19222136 max_proof_bytes=19223016 prove_ms=4945.194 verify_ms=605.124
+	User time (seconds): 102.96
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.60
+	Maximum resident set size (kbytes): 51304
+ 19:41:25 up  3:48,  6 users,  load average: 9.70, 8.70, 7.79
+test trie_opening::deployed::tests::synthetic_prefix_depths ... depth-8 prefix, one member: workers=22 input_bytes=328 committed_words=3556 checks=3565 witness_bytes=28776 proof_bytes=673560 max_proof_bytes=675080 prove_ms=182.960 verify_ms=35.746
+depth-8 prefix, empty answer: workers=22 input_bytes=440 committed_words=3959 checks=3970 witness_bytes=32112 proof_bytes=750368 max_proof_bytes=751808 prove_ms=210.877 verify_ms=49.566
+depth-16 prefix, one member: workers=22 input_bytes=584 committed_words=6724 checks=6733 witness_bytes=54376 proof_bytes=1262840 max_proof_bytes=1263880 prove_ms=326.443 verify_ms=56.069
+depth-16 prefix, empty answer: workers=22 input_bytes=696 committed_words=7127 checks=7138 witness_bytes=57712 proof_bytes=1339728 max_proof_bytes=1340608 prove_ms=362.659 verify_ms=54.595
+test crash_after_broker_before_ack ... AfterBroker: broker at kill [101, 102, 103]; recovered epoch 3; handoff pending 1; B delivered [(103, true), (104, false)]; broker replies [101, 102, 103, 104]
+  zombie outbox flush: Error: broker refused: fenced: stale seat at epoch 3, broker has seen epoch 5
+  zombie Learn(104): Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+test crash_after_quorum_before_broker ... AfterQuorum: broker at kill [101, 102]; recovered epoch 3; handoff pending 1; B delivered [(103, false), (104, false)]; broker replies [101, 102, 103, 104]
+  zombie outbox flush: Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+  zombie Learn(104): Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+test crash_before_quorum_learn ... BeforeQuorum: broker at kill [101, 102]; recovered epoch 2; handoff pending 0; B delivered [(103, false), (104, false)]; broker replies [101, 102, 103, 104]
+  zombie outbox flush: Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+  zombie Learn(104): Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.34s
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 2.39s
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.44s
+ 19:41:46 up  3:48,  6 users,  load average: 12.41, 9.47, 8.07
+done

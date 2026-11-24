@@ -1,0 +1,12 @@
+19:43  up 10 days,  7:46, 12 users, load averages: 12.76 14.70 11.02
+test cshake_selective_open::tests::authenticated_release_gate ... workers=4 public_branch_bytes=161
+bytes=85312 prove_ms=49.622 verify_ms=14.246
+bytes=85312 prove_ms=49.468 verify_ms=14.179
+bytes=85392 prove_ms=49.730 verify_ms=13.930
+bytes=85392 prove_ms=48.671 verify_ms=13.751
+bytes=85792 prove_ms=48.980 verify_ms=13.915
+bytes=85312 prove_ms=48.756 verify_ms=13.768
+bytes=86032 prove_ms=48.852 verify_ms=13.862
+bytes=85632 prove_ms=48.948 verify_ms=13.757
+bytes=85312 prove_ms=48.847 verify_ms=13.829
+medians bytes=85392 prove_ms=48.948 verify_ms=13.862

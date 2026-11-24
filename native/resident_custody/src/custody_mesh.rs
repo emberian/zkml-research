@@ -41,11 +41,11 @@ fn key(pk: Digest) -> Result<VerifyingKey> {
     Ok(k)
 }
 
-fn signature(sk: &SigningKey, domain: &[u8], t: &impl Serialize) -> Bytes {
+pub(crate) fn signature(sk: &SigningKey, domain: &[u8], t: &impl Serialize) -> Bytes {
     sk.sign(&hash(domain, t)).to_bytes().to_vec()
 }
 
-fn verify_sig(pk: Digest, domain: &[u8], t: &impl Serialize, sig: &[u8]) -> Result<()> {
+pub(crate) fn verify_sig(pk: Digest, domain: &[u8], t: &impl Serialize, sig: &[u8]) -> Result<()> {
     key(pk)?.verify_strict(&hash(domain, t), &Signature::from_slice(sig)?)?;
     Ok(())
 }
@@ -191,7 +191,7 @@ pub struct JournalHeader {
 pub const HEADER_BYTES: u16 = 48;
 // Fixed bincode fields (sibling, root, journal and proof length) plus the 64-byte
 // cell circuit's worst-case proof. Pinned by worst_case_wire_budget.
-pub(crate) const MAX_HEADER_WIRE: u64 = 96 + 90_880;
+pub(crate) const MAX_HEADER_WIRE: u64 = 96 + 86_832;
 const IDENTITY_BYTES: usize = 24;
 
 /// The resident identity a journal header carries: its genesis and its policy.
@@ -287,6 +287,14 @@ pub enum Action {
     Migrate {
         successor: Digest,
         seat_payment_claim: Digest,
+    },
+    /// A Learn whose certified command also binds its outgoing reply. Appended to preserve
+    /// the bincode tags and signatures of existing custody operations.
+    LearnWithReply {
+        episode: u64,
+        provenance: Provenance,
+        step: GdnStep,
+        reply: Digest,
     },
 }
 
@@ -608,6 +616,12 @@ impl State {
                 episode,
                 provenance,
                 step,
+            }
+            | Action::LearnWithReply {
+                episode,
+                provenance,
+                step,
+                ..
             } => {
                 step.validate()?;
                 // Forgotten episodes stay in the history, so this also refuses resurrection.
@@ -629,13 +643,15 @@ impl State {
                     Provenance::Inferred => &mut s.journal.inferred,
                 };
                 *count = count.checked_add(1).context("journal count overflow")?;
+                let payload = match action {
+                    Action::LearnWithReply { reply, .. } => {
+                        bincode::serialize(&(provenance, step, reply))?
+                    }
+                    _ => bincode::serialize(&(provenance, step))?,
+                };
                 s.chain = digest(
                     b"tulip journal learn",
-                    &[
-                        &s.chain,
-                        &episode.to_le_bytes(),
-                        &bincode::serialize(&(provenance, step))?,
-                    ],
+                    &[&s.chain, &episode.to_le_bytes(), &payload],
                 );
             }
             Action::Forget { episode } => {
@@ -675,7 +691,10 @@ impl State {
             }
         }
         s.head.change = cmd.id();
-        if matches!(action, Action::Learn { .. } | Action::Forget { .. }) {
+        if matches!(
+            action,
+            Action::Learn { .. } | Action::LearnWithReply { .. } | Action::Forget { .. }
+        ) {
             ensure!(s.weights == s.replay()?, "W0 replay mismatch");
             s.head.journal_cursor += 1;
             s.journal.cursor = s.head.journal_cursor;
@@ -751,6 +770,7 @@ fn load<T: DeserializeOwned>(dir: &Path, name: &str) -> Result<T> {
     Ok(bincode::deserialize_from(File::open(dir.join(name))?)?)
 }
 
+#[allow(clippy::large_enum_variant)] // one message per request
 #[derive(Serialize, Deserialize)]
 pub enum Request {
     Bind(Proposal),
@@ -772,7 +792,7 @@ pub enum Answer {
     Refused(String),
 }
 
-fn recv<T: DeserializeOwned>(stream: &mut UnixStream) -> Result<T> {
+pub(crate) fn recv<T: DeserializeOwned>(stream: &mut UnixStream) -> Result<T> {
     let mut size = [0; 4];
     stream.read_exact(&mut size)?;
     let n = u32::from_be_bytes(size) as usize;
@@ -785,14 +805,14 @@ fn recv<T: DeserializeOwned>(stream: &mut UnixStream) -> Result<T> {
         .reject_trailing_bytes()
         .deserialize(&buf)?)
 }
-fn send(stream: &mut UnixStream, t: &impl Serialize) -> Result<()> {
+pub(crate) fn send(stream: &mut UnixStream, t: &impl Serialize) -> Result<()> {
     let buf = bincode::serialize(t)?;
     ensure!(buf.len() <= FRAME, "frame too large");
     stream.write_all(&(buf.len() as u32).to_be_bytes())?;
     stream.write_all(&buf)?;
     Ok(())
 }
-fn timeouts(s: &UnixStream) -> Result<()> {
+pub(crate) fn timeouts(s: &UnixStream) -> Result<()> {
     let timeout = Some(Duration::from_secs(10));
     s.set_read_timeout(timeout)?;
     s.set_write_timeout(timeout)?;
@@ -925,7 +945,7 @@ fn request_header(
 
 // Block only when the local test controller has armed this exact boundary.
 // SIGKILL is delivered externally by the owner of the Child handle.
-fn barrier(dir: &Path, enabled: bool, phase: &str) -> Result<()> {
+pub(crate) fn barrier(dir: &Path, enabled: bool, phase: &str) -> Result<()> {
     if enabled && dir.join(format!("arm-{phase}")).try_exists()? {
         fs::write(dir.join(format!("at-{phase}")), [])?;
         while dir.join(format!("arm-{phase}")).try_exists()? {
@@ -1271,6 +1291,29 @@ struct Seat {
     genesis: Head,
 }
 
+/// An operator seat as read from disk: its resident, key and last certified head.
+pub(crate) struct SeatView {
+    pub(crate) cfg: Config,
+    pub(crate) key: SigningKey,
+    pub(crate) genesis: Head,
+    pub(crate) cursor: Option<Certificate>,
+}
+
+impl SeatView {
+    pub(crate) fn open(dir: &Path) -> Result<Self> {
+        let seat: Seat = load(dir, "seat")?;
+        Ok(Self {
+            key: SigningKey::from_bytes(&seat.secret),
+            cfg: seat.cfg,
+            genesis: seat.genesis,
+            cursor: load(dir, "cursor")?,
+        })
+    }
+    pub(crate) fn head(&self) -> &Head {
+        self.cursor.as_ref().map_or(&self.genesis, |c| &c.head)
+    }
+}
+
 pub fn provision_operator(
     dir: &Path,
     cfg: &Config,
@@ -1297,6 +1340,7 @@ pub fn provision_operator(
     atomic(dir, "cursor", &Option::<Certificate>::None)
 }
 
+#[allow(clippy::large_enum_variant)] // one message per request
 #[derive(Serialize, Deserialize)]
 pub enum Operation {
     Exercise(Grant),
@@ -1304,6 +1348,7 @@ pub enum Operation {
     Accept(Proposal),
 }
 
+#[allow(clippy::large_enum_variant)] // one message per request
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Outcome {
     Certified(Certificate),
@@ -1311,6 +1356,17 @@ pub enum Outcome {
 }
 
 pub fn operate(dir: &Path, op: Operation) -> Result<Outcome> {
+    operate_with(dir, op, |_| Ok(()))
+}
+
+/// [`operate`], running `after_quorum` once the custodians certified a fresh successor and
+/// before this seat records it. A crash there leaves the quorum ahead of the seat; the same
+/// signed command recovers the certificate by exact replay.
+pub(crate) fn operate_with(
+    dir: &Path,
+    op: Operation,
+    after_quorum: impl FnOnce(&Certificate) -> Result<()>,
+) -> Result<Outcome> {
     let lock = OpenOptions::new()
         .create(true)
         .truncate(false)
@@ -1383,6 +1439,7 @@ pub fn operate(dir: &Path, op: Operation) -> Result<Outcome> {
         return Ok(Outcome::Offered(proposal));
     }
     let cert = certify(&seat.cfg, &seat.sockets, &proposal)?;
+    after_quorum(&cert)?;
     atomic(dir, "cursor", &Some(&cert))?;
     Ok(Outcome::Certified(cert))
 }

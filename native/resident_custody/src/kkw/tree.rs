@@ -1,6 +1,8 @@
 //! Canonical, position-bound GGM and Merkle trees. Padded leaves have
 //! no instances and are never serialized.
-use super::*;
+use super::prg;
+use crate::{digest, Digest};
+use sha3::digest::XofReader;
 pub(super) type Seed = [u8; 16];
 
 pub(super) fn tree(salt: &Digest, id: u32, n: usize, root: Seed) -> Vec<Seed> {

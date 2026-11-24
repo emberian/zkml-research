@@ -1,5 +1,7 @@
 # Moving a resident between operators
 
+> [DERIVED] Tulip delivery across an operator SIGKILL and this paid move, with zero drops and zero duplicates at a local broker: [current](compact-private-trie-and-tulip-crash-continuity.md).
+
 [EXECUTED] A paid move through the `offer`, `accept` and `admit` commands took **114.087 ms median on M2 Max/APFS** and **168.110 ms median on shared hbox/ext4**. Each sample included three live custodian daemons, proof generation, independent verification by B and the public log, durable publication of the package, and a restored A failing to learn at all three custodians. On hbox, a separate run with native differential checking refused all twelve specified cases. [Integration test](../native/resident_custody/tests/full_resident_house_move.rs) · [Audit output](../research/w15_resident_house_move/audit.log)
 
 | Release measurement | Moves | Native differential | Minimum | Median | Maximum |

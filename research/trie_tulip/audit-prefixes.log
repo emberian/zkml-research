@@ -1,0 +1,126 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.08s
+
+running 1 test
+test trie_opening::deployed::tests::full_field_prefix_proof ... 260-bit private prefix: workers=12 input_bytes=8424 committed_words=103348 checks=103361 witness_bytes=835208 proof_bytes=19222296 max_proof_bytes=19223016 prove_ms=5935.506 verify_ms=603.245
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 6.54s
+
+        6.54 real        62.54 user         0.52 sys
+            60948480  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                3930  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+               88752  involuntary context switches
+        754275253239  instructions retired
+        186388600449  cycles elapsed
+            59163056  peak memory footprint
+
+running 1 test
+test trie_opening::deployed::tests::depth_8_member ... depth-8 prefix, one member: workers=12 input_bytes=328 committed_words=3556 checks=3565 witness_bytes=28776 proof_bytes=673800 max_proof_bytes=675080 prove_ms=209.685 verify_ms=31.548
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.24s
+
+        0.24 real         2.32 user         0.02 sys
+            10207232  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                 835  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                4266  involuntary context switches
+         27325425433  instructions retired
+          6909071102  cycles elapsed
+             8470960  peak memory footprint
+
+running 1 test
+test trie_opening::deployed::tests::depth_8_empty ... depth-8 prefix, empty answer: workers=12 input_bytes=440 committed_words=3959 checks=3970 witness_bytes=32112 proof_bytes=750368 max_proof_bytes=751808 prove_ms=262.579 verify_ms=30.781
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.29s
+
+        0.29 real         2.57 user         0.02 sys
+            10240000  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                 838  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                3969  involuntary context switches
+         30276867789  instructions retired
+          7622988947  cycles elapsed
+             8503728  peak memory footprint
+
+running 1 test
+test trie_opening::deployed::tests::depth_16_member ... depth-16 prefix, one member: workers=12 input_bytes=584 committed_words=6724 checks=6733 witness_bytes=54376 proof_bytes=1261960 max_proof_bytes=1263880 prove_ms=382.241 verify_ms=46.685
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.43s
+
+        0.43 real         4.31 user         0.04 sys
+            11780096  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                 936  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                5729  involuntary context switches
+         50406899458  instructions retired
+         12645929137  cycles elapsed
+            10043824  peak memory footprint
+
+running 1 test
+test trie_opening::deployed::tests::depth_16_empty ... depth-16 prefix, empty answer: workers=12 input_bytes=696 committed_words=7127 checks=7138 witness_bytes=57712 proof_bytes=1339968 max_proof_bytes=1340608 prove_ms=420.021 verify_ms=47.954
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.47s
+
+        0.47 real         4.50 user         0.05 sys
+            11714560  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                 920  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                7219  involuntary context switches
+         53373523956  instructions retired
+         13258558464  cycles elapsed
+             9978288  peak memory footprint

@@ -1,0 +1,10 @@
+test crash_after_broker_before_ack ... AfterBroker: broker at kill [101, 102, 103]; recovered epoch 3; handoff pending 1; B delivered [(103, true), (104, false)]; broker replies [101, 102, 103, 104]
+  zombie outbox flush: Error: broker refused: fenced: stale seat at epoch 3, broker has seen epoch 5
+  zombie Learn(104): Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+test crash_after_quorum_before_broker ... AfterQuorum: broker at kill [101, 102]; recovered epoch 3; handoff pending 1; B delivered [(103, false), (104, false)]; broker replies [101, 102, 103, 104]
+  zombie outbox flush: Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+  zombie Learn(104): Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+test crash_before_quorum_learn ... BeforeQuorum: broker at kill [101, 102]; recovered epoch 2; handoff pending 0; B delivered [(103, false), (104, false)]; broker replies [101, 102, 103, 104]
+  zombie outbox flush: Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+  zombie Learn(104): Error: quorum refusal: fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed), fenced: Obend StaleParent, qsag Err(EpochConsumed)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.56s

@@ -1,15 +1,18 @@
 //! Resident custody and selective disclosure protocols.
 #![forbid(unsafe_code)]
 
+// Kept line for line with qsag's BeltLatch::bind, nested branches included.
+#[allow(clippy::collapsible_if)]
 pub mod belt_latch_kernel;
 pub mod cshake_selective_open;
 pub mod custody_mesh;
 pub mod house_move;
+mod kkw;
 pub mod obend_latch_abi;
 pub mod seat_receipt;
 mod tower;
-mod trace_pack;
 pub mod trie_opening;
+pub mod tulip_bridge;
 
 use sha3::digest::{ExtendableOutput, Update, XofReader};
 use sha3::{Shake256, Shake256Reader};
